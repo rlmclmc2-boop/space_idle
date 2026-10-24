@@ -1,10 +1,10 @@
 {
   "designCommit": "a815d2a843976e22cb3fb24e7683d4a54c65fd3f",
   "baseline": "b4729b9a9803458b5ac19a4945c2fe0d5f76e51f",
-  "compilerTests": 13,
+  "compilerTests": 15,
   "nativeAmount": "passed",
   "headless": {
-    "amountCases": 12,
+    "amountCases": 14,
     "failures": [],
     "nativeKernel": true,
     "ok": true,
@@ -19,14 +19,21 @@
   },
   "godot": "4.7.2.stable.official.ed1daf0bf",
   "godotCpp": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
-  "dllSha256": "65e17d02ddd6b501db5fa57fe496ebe1a67f0041b6c075a232844d6b8714471c",
+  "dllSha256": "de4ed1b570dc8d0de0d698493edb89509377f02a44fa2ae2748ab9e80c025cac",
   "sources": {
-    "addons\\native_battle\\src\\amount.h": "3db4dd2ccffaa3861bc212abc858d508ed11fe7ad689722b0dae7eaea462952c",
+    "addons\\native_battle\\src\\amount.h": "65f0e1a3c68a86a06436e45e41d9a3599d727673a1717ef00a158e61fdab5657",
     "addons\\native_battle\\src\\amount_binding.h": "bafcba25fd13aac770de2205822509533d97e2e6065b55806b20a6ea338510d3",
     "addons\\native_battle\\src\\combat_execution_kernel.h": "22443b632c0f15ffa81ea7e8d087aa02bd23a1dad52b7ee6768f48032fe57bb4",
     "addons\\native_battle\\src\\combat_presentation.h": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
     "addons\\native_battle\\src\\combat_retained_presentation.h": "5341a9f9045d101e76977df2a7c2c31bbeae2fb887b312278b6a5fb714da3aa9",
     "addons\\native_battle\\src\\save_io.h": "7424d8c8d67febb9d90af16699d525cd7001667c3980ffb8db7bf441078b0835",
     "addons\\native_battle\\src\\space_native.cpp": "4375770fbc9877a0d9c351dd103159e3faffe83dd8a71f83501827d5cdf0df22"
-  }
+  },
+  "reviewFixes": [
+    "canonical decimal floor/ceil and integer idempotence",
+    "keep validated backup after corrupt active + failed manifest",
+    "structured HeaderMismatch for typed tables",
+    "nonzero underflow returns canonical zero",
+    "fixture generation does not relax production requiredness"
+  ]
 }

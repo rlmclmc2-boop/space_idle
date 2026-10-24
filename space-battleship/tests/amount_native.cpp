@@ -14,6 +14,9 @@ int main() {
     assert(Amount(0).e==0);
     assert(Amount::from_decimal("0.00001").e==-5);
     assert(Amount::from_decimal("1e-9000000000000001").m==0);
+    assert(Amount::from_decimal("1e-9000000000100001").m==0);
+    assert(Amount::from_decimal("1e-999999999999999999999999").m==0);
+    assert(Amount::from_decimal("0e999999999999999999999999").m==0);
     assert(Amount::decode("1","500").compare(a)==0);
     assert(Amount(0.1,Amount::limit+1).e==Amount::limit);
     assert(Amount(100,-Amount::limit-1).e==-Amount::limit+1);
@@ -30,6 +33,14 @@ int main() {
     assert(Amount(2).to_ratio(Amount(4))==0.5);
     assert(Amount(6.01).ceil().compare(Amount(7))==0);
     assert(Amount(6.99).floor().compare(Amount(6))==0);
+    for(int i=0;i<=10000;++i) {
+        auto integer=Amount::from_decimal(std::to_string(i));
+        assert(integer.floor().compare(integer)==0);
+        assert(integer.ceil().compare(integer)==0);
+    }
+    assert(Amount::from_decimal("201.000000001").ceil().compare(Amount(202))==0);
+    assert(Amount::from_decimal("200.999999999").floor().compare(Amount(200))==0);
+    assert(Amount::from_decimal("999999999999999").floor().compare(Amount::from_decimal("999999999999999"))==0);
     assert(Amount(1.23456).round_significant(3).compare(Amount(1.23))==0);
     std::cout<<"Amount native boundary checks passed\n";
 }

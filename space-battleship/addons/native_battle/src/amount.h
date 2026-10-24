@@ -21,6 +21,10 @@ struct Amount {
     void normalize(double mantissa, int64_t exponent) {
         if (!std::isfinite(mantissa) || mantissa < 0) throw std::domain_error("InvalidAmount");
         if (mantissa == 0) { m = 0; e = 0; return; }
+        // A finite double shifts by at most 324 decimal places. Check before
+        // adding that shift, including externally supplied int64 extremes.
+        if (exponent > limit + 324) throw std::overflow_error("AmountRangeExceeded");
+        if (exponent < -limit - 324) { m = 0; e = 0; return; }
         auto shift = static_cast<int64_t>(std::floor(std::log10(mantissa)));
         // pow(10,-324) underflows for subnormal input. Scale in two pieces.
         double scaled = shift < -300 ? mantissa * 1e300 / std::pow(10.0, double(shift + 300))
@@ -40,15 +44,19 @@ struct Amount {
         if (!std::regex_match(text, parts, pattern)) throw std::domain_error("InvalidAmount");
         std::string digits = parts[1].str() + parts[2].str();
         const auto first = digits.find_first_not_of('0');
+        if (first == std::string::npos) return {};
         int64_t exponent = 0;
         if (parts[3].matched) {
             try { exponent = std::stoll(parts[3].str()); }
-            catch (...) { throw std::overflow_error("AmountRangeExceeded"); }
-            if (exponent > limit + 100000 || exponent < -limit - 100000)
+            catch (...) {
+                if (parts[3].str()[0] == '-') return {};
                 throw std::overflow_error("AmountRangeExceeded");
+            }
         }
-        if (first == std::string::npos) return {};
-        exponent += static_cast<int64_t>(parts[1].length()) - static_cast<int64_t>(first) - 1;
+        int64_t offset = static_cast<int64_t>(parts[1].length()) - static_cast<int64_t>(first) - 1;
+        if (offset > 0 && exponent > INT64_MAX - offset) throw std::overflow_error("AmountRangeExceeded");
+        if (offset < 0 && exponent < INT64_MIN - offset) return {};
+        exponent += offset;
         std::string significant = digits.substr(first, 17);
         significant.insert(1, ".");
         return Amount(std::stod(significant), exponent);
@@ -110,16 +118,25 @@ struct Amount {
         auto exponent = static_cast<int64_t>(std::floor(logarithm));
         return Amount(double(std::pow(10.0L, logarithm - exponent)), exponent);
     }
-    Amount floor() const {
-        if (m == 0 || e < 0) return {};
-        if (e >= 15) return *this;
-        return Amount(std::floor(m * std::pow(10.0, double(e))));
-    }
-    Amount ceil() const {
+    Amount integral(bool upward) const {
         if (m == 0 || e >= 15) return *this;
-        if (e < 0) return Amount(1);
-        return Amount(std::ceil(m * std::pow(10.0, double(e))));
+        if (e < 0) return upward ? Amount(1) : Amount();
+        // Round the canonical 15-digit decimal value, not a binary residual
+        // introduced by m*10^e (e.g. 2.01*100 can be 200.99999999999997).
+        std::string digits = mantissa_text();
+        auto dot = digits.find('.');
+        int64_t fraction = dot == std::string::npos ? 0 : int64_t(digits.size() - dot - 1);
+        if (dot != std::string::npos) digits.erase(dot,1);
+        uint64_t coefficient = std::stoull(digits), scale = 1;
+        int64_t places = e - fraction;
+        for (int64_t i=0; i<std::abs(places); ++i) scale *= 10;
+        if (places >= 0) return Amount(double(coefficient * scale));
+        uint64_t whole = coefficient / scale;
+        if (upward && coefficient % scale) ++whole;
+        return Amount(double(whole));
     }
+    Amount floor() const { return integral(false); }
+    Amount ceil() const { return integral(true); }
     Amount round_significant(int digits) const {
         if (digits < 1 || digits > 15) throw std::domain_error("InvalidAmountPrecision");
         double scale = std::pow(10.0, digits - 1);

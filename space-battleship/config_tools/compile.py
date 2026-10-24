@@ -189,7 +189,7 @@ def compile_bundle(manifest_path: Path):
                 if not visit(row[id_field]): location_error(table,row,field,'DependencyCycle',str(row[id_field])); break
     # Literal contract tables select their value type in Excel, not by display format.
     for table, spec in specs.items():
-        if not spec.get('typedValues'): continue
+        if table not in tables or not spec.get('typedValues'): continue
         for row in tables[table]:
             value, kind = row.get('value'), row.get('data_type')
             good = {'null':value is None,'string':isinstance(value,str),'bool':isinstance(value,bool),'int':type(value) is int,'float':type(value) in (int,float)}

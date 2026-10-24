@@ -88,8 +88,11 @@ func _write_snapshot(envelope: Dictionary, fault: String) -> Dictionary:
 	if fault == "snapshot_readback" or FileAccess.get_file_as_string(directory.path_join(file_name)) != text:
 		return _failure("SnapshotReadback")
 	var pointer := {"generation": envelope.generation, "file": file_name, "checksum": text.sha256_text()}
-	var old := FileAccess.get_file_as_string(directory.path_join("active.json")) if FileAccess.file_exists(directory.path_join("active.json")) else ""
-	if not old.is_empty():
+	# A damaged active may have forced recovery through backup. Never replace
+	# that last valid pointer with unchecked active bytes before committing.
+	var previous := load_latest()
+	if previous.get("ok", false):
+		var old := JSON.stringify(previous.pointer)
 		if fault == "backup_write" or io.write_atomic(directory.path_join("backup.json"), old.to_utf8_buffer()) != 0:
 			return _failure("BackupWrite")
 	if fault == "manifest_write":
@@ -122,7 +125,7 @@ func _read_candidate(pointer_name: String) -> Dictionary:
 			return _failure("EnvelopeInteger")
 	if value.generation != pointer.generation or int(value.generation) <= 0 or JSON.stringify(value.payload).sha256_text() != value.get("payloadHash", ""):
 		return _failure("PayloadHash")
-	return {"ok": true, "envelope": value}
+	return {"ok": true, "envelope": value, "pointer": pointer}
 
 func load_latest() -> Dictionary:
 	var active := _read_candidate("active.json")

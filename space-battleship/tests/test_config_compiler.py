@@ -59,6 +59,13 @@ class CompilerCases(unittest.TestCase):
         self.edit(lambda b:setattr(b['res']['A4'],'value',None))
         self.expect_error('EmptyPrimaryKey')
 
+    def test_fixture_does_not_relax_production_requiredness(self):
+        schema=json.loads(compiler.SCHEMA.read_text(encoding='utf-8'))
+        self.assertNotIn('null',schema['tables']['res']['fields']['name']['types'])
+        self.assertNotIn('null',schema['tables']['mon']['fields']['health']['types'])
+        self.edit(lambda b:setattr(b['res']['B4'],'value',None))
+        self.expect_error('LiteralType')
+
     def test_formula_without_cache(self):
         self.edit(lambda b:setattr(b['res']['A4'],'value','=70+1'))
         self.expect_error('FormulaCacheMissing')
@@ -66,6 +73,13 @@ class CompilerCases(unittest.TestCase):
     def test_unknown_sheet(self):
         self.edit(lambda b:b.create_sheet('secret'))
         self.expect_error('UnexpectedSheet')
+
+    def test_typed_table_bad_header(self):
+        self.edit(lambda b:b.create_sheet('bad_typed').append(['wrong']))
+        manifest=json.loads(self.manifest.read_text())
+        manifest['workbooks'][0]['sheets'].append(dict(sheet='bad_typed',table='hyperspace_config_00'))
+        self.manifest.write_text(json.dumps(manifest))
+        self.expect_error('HeaderMismatch')
 
     def test_unknown_rule(self):
         self.edit(lambda b:setattr(b['amount_case']['B4'],'value','free_money'))

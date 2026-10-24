@@ -329,28 +329,24 @@
         },
         "dmg": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "cd": {
           "types": [
-            "number",
-            "null"
+            "number"
           ]
         },
         "dmgtype": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "para1": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
@@ -435,28 +431,24 @@
         },
         "des": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "level": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "dmgtype": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "dmg": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
@@ -468,8 +460,7 @@
         },
         "cd": {
           "types": [
-            "number",
-            "null"
+            "number"
           ]
         },
         "res_1": {
@@ -513,8 +504,7 @@
         },
         "para1": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
@@ -2022,49 +2012,42 @@
         },
         "length": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "monGroup": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "atkRatio": {
           "types": [
             "number",
-            "string",
-            "null"
+            "string"
           ]
         },
         "lifeRatio": {
           "types": [
             "number",
-            "string",
-            "null"
+            "string"
           ]
         },
         "resRatio": {
           "types": [
             "number",
-            "string",
-            "null"
+            "string"
           ]
         },
         "jewelRatio": {
           "types": [
-            "number",
-            "null"
+            "number"
           ]
         },
         "planetExpRatio": {
           "types": [
             "number",
-            "string",
-            "null"
+            "string"
           ]
         },
         "entryAtkRatio": {
@@ -2128,73 +2111,62 @@
         },
         "des": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "equipment": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "dmgMultiple": {
           "types": [
-            "number",
-            "null"
+            "number"
           ]
         },
         "health": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "armourType": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "res": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "size": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "shield": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "shieldType": {
           "types": [
-            "number",
-            "null"
+            "number"
           ],
           "integer": true
         },
         "shieldRecovery": {
           "types": [
-            "number",
-            "null"
+            "number"
           ]
         },
         "shieldDelay": {
           "types": [
-            "number",
-            "null"
+            "number"
           ]
         },
         "reactiveReduction": {
@@ -2263,14 +2235,12 @@
         },
         "des": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "mon": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         },
         "combatTier": {
@@ -2554,8 +2524,7 @@
         },
         "name": {
           "types": [
-            "string",
-            "null"
+            "string"
           ]
         }
       },

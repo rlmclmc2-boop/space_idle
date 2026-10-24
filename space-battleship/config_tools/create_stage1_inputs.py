@@ -88,6 +88,8 @@ def main():
         ['N01-pow','pow','2e250',None,2,0,'4e500',None],
         ['N01-ceil','ceil','6.01',None,0,0,'7',None],
         ['N01-floor','floor','6.99',None,0,0,'6',None],
+        ['N01-int-floor','floor','113',None,0,0,'113',None],
+        ['N01-int-ceil','ceil','201',None,0,0,'201',None],
         ['N01-series','sum_geometric','2',None,2,4,'30',None],
         ['N01-linear','sum_geometric','2e500',None,1,10000,'2e504',None],
         ['N01-div-zero','div','1','0',0,0,None,'AmountDivisionByZero'],
@@ -106,13 +108,8 @@ def main():
         s=book.create_sheet(name);cols=tables[name]['columns'];s.append(cols);s.append(['independent']*len(cols));s.append(['literal']*len(cols))
         for values in data[1:]:
             mapped=dict(zip(data[0],values));s.append([mapped.get(c) for c in cols])
-        # Fixture deliberately omits production-optional values, but uses the
-        # exact same types and columns. Optional is a schema property.
-        for definition in tables[name]['fields'].values():
-            if 'null' not in definition['types']: definition['types'].append('null')
-        for f in tables[name]['primary']: tables[name]['fields'][f]['types'].remove('null')
     book.save(fixture/'core_rules.xlsx')
-    # Include optional declarations above before final schema write.
+    # Fixture authoring never changes production requiredness.
     (ROOT/'config_tools/schema.json').write_text(json.dumps(dict(version=1,tables=tables),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     test_manifest=dict(schemaVersion=1,kind='test',inputRoot='.',workbooks=[dict(path='core_rules.xlsx',classification='active',sheets=[dict(sheet=s,table=s) for s in book.sheetnames])])
     (fixture/'core_rules.json').write_text(json.dumps(test_manifest,indent=2)+'\n',encoding='utf-8')

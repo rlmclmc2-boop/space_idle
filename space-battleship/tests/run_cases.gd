@@ -136,4 +136,16 @@ func verify_saves(path: String, hash_value: String) -> void:
 	files.request(snapshot, 4, "fixture-session", 1237)
 	await wait_save(files)
 	check(files.saved_change == 4 and not files.dirty(4), "SerializedHighestGeneration")
+	# Recovery through backup must survive a subsequent failed publication.
+	var active_before: Dictionary = files.load_latest()
+	var corrupt_file := FileAccess.open(path.path_join(active_before.pointer.file), FileAccess.WRITE)
+	corrupt_file.store_string("corrupt")
+	corrupt_file.close()
+	var recovered: Dictionary = files.load_latest()
+	check(recovered.get("ok", false), "RecoverPreviousGeneration")
+	files.fault_boundary = "manifest_write"
+	files.request(snapshot, 5, "fixture-session", 1238)
+	await wait_save(files)
+	var retained: Dictionary = files.load_latest()
+	check(not files.last_result.get("ok", false) and retained.get("ok", false) and retained.envelope.generation == recovered.envelope.generation, "KeepValidBackupAfterBadActive")
 	files.close()
