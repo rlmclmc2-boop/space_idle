@@ -8,7 +8,6 @@ var _pending: Dictionary = {}
 var _generation: int = 0
 var saved_change: String = ""
 var last_result: Dictionary = {}
-var fault_boundary: String = ""
 
 func _init(directory: String, config_hash: String) -> void:
 	_directory = directory
@@ -61,7 +60,7 @@ func request(payload: Dictionary, change_number: String, session_id: String, utc
 		"generation": str(_generation), "configHash": _config_hash, "savedUtc": utc,
 		"payloadHash": JSON.stringify(snapshot).sha256_text(), "payload": snapshot}
 	_pending = {"directory": _directory, "config": _config_hash, "envelope": JSON.stringify(envelope),
-		"generation": str(_generation), "change": change_number, "fault": fault_boundary}
+		"generation": str(_generation), "change": change_number}
 	poll()
 	return {"ok": true, "generation": str(_generation)}
 
@@ -107,9 +106,8 @@ static func write_snapshot(job: Dictionary) -> Dictionary:
 	var old := read_store(directory, job.config)
 	if not old.ok and old.error != "MissingSave": return {"ok": false, "error": old.error}
 	var filename := "slot-1.json" if old.ok and old.pointer.file == "slot-0.json" else "slot-0.json"
-	if job.fault == "data_write" or not publish_file(directory, filename, job.envelope, disk): return {"ok": false, "error": "DataWrite"}
+	if not publish_file(directory, filename, job.envelope, disk): return {"ok": false, "error": "DataWrite"}
 	var pointer := {"file": filename, "generation": job.generation, "checksum": job.envelope.sha256_text()}
-	if job.fault == "data_verify": return {"ok": false, "error": "DataVerify"}
 	# Validate the complete envelope before replacing either publication pointer.
 	var probe_name: String = "probe-" + job.generation + ".json"
 	if not publish_file(directory, probe_name, JSON.stringify(pointer), disk): return {"ok": false, "error": "DataVerify"}
@@ -117,6 +115,6 @@ static func write_snapshot(job: Dictionary) -> Dictionary:
 	DirAccess.remove_absolute(directory.path_join(probe_name))
 	if not verified.ok: return {"ok": false, "error": "DataVerify"}
 	if old.ok:
-		if job.fault == "backup_replace" or not publish_file(directory, "previous.json", JSON.stringify(old.pointer), disk): return {"ok": false, "error": "BackupWrite"}
-	if job.fault == "manifest_replace" or not publish_file(directory, "active.json", JSON.stringify(pointer), disk): return {"ok": false, "error": "ManifestWrite"}
+		if not publish_file(directory, "previous.json", JSON.stringify(old.pointer), disk): return {"ok": false, "error": "BackupWrite"}
+	if not publish_file(directory, "active.json", JSON.stringify(pointer), disk): return {"ok": false, "error": "ManifestWrite"}
 	return {"ok": true, "generation": job.generation, "change": job.change}
