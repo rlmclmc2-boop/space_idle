@@ -1,6 +1,7 @@
 """Build the portable lab from its entrypoint closure and explicit dynamic data."""
 import argparse
 import filecmp
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -104,6 +105,12 @@ def build(output: Path, engine: Path | None = None) -> None:
     runtime = output / "runtime/analyzer.exe"
     if not runtime.exists() or not filecmp.cmp(engine, runtime, shallow=False):
         shutil.copy2(engine, runtime)
+    # Provenance describes staged bytes, never a later reread of the source tree.
+    provenance = {"version": 1, "kind": "portable_lab", "scripts": {
+        "scripts/" + name: hashlib.sha256((output / "scripts" / name).read_bytes()).hexdigest()
+        for name in manifest["scripts"]}, "engine_sha256": hashlib.sha256(runtime.read_bytes()).hexdigest(),
+        "configuration_generation": configuration.identity, "native": "not_used"}
+    (output / "execution-provenance.json").write_text(json.dumps(provenance, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     (output / "使用说明.txt").write_text(
         "双击 start.bat 启动。敌舰群页生成组合，自动关卡页从当前组合生成关卡并导出 Excel；周期关卡页可读取 generated_levels.json。\n"
         "结果写入本目录的 results 文件夹。当前窗口没有独立批量战斗或结果分析页。\n"

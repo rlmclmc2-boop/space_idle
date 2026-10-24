@@ -45,7 +45,6 @@ func sample(runner, force := false) -> void:
 		"overflow_keys":metrics.overflow_seconds.size(),"choices":timeline.choices.size(),"marks":timeline.marks.size(),
 		"cleared":game.profile.cleared.size(),"unlocks":game.profile.get("grantedUnlocks",[]).size(),
 		"effect_entries":game.tick_effect_entries.size(),"repair_entries":game.repair_entries.size(),
-		"research_rates":game.research_rates.size(),"research_active":game.research_active.size(),
 		"unlock_cache":game.db.unlock_ids.size() if game.db.get("unlock_ids") != null else 0,
 		"enemy_rows":game.db.enemy_rows.size() if game.db.get("enemy_rows") != null else 0,
 		"reports":runner.reports.size(),"warnings":runner.warning_count,"equipment_rows":game.db.equipment_rows.size() if game.db.get("equipment_rows") != null else 0,

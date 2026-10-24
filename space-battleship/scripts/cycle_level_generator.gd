@@ -79,6 +79,8 @@ func _less(left: Array,right: Array) -> bool:
 func generate(config: Dictionary,source: Dictionary) -> Dictionary:
 	var problem:=validate(config,source)
 	if not problem.is_empty():return {"error":problem}
+	var capture=preload("res://scripts/execution_identity.gd").new()
+	var identity:Dictionary=capture.capture(database,["res://scripts/cycle_level_generator.gd"],"cycle_level_generation",{"source_sha256":capture.content_digest(source)},config)
 	var fleets: Array=source.levels.duplicate()
 	fleets.sort_custom(func(a,b):return str(a.enemy_id)<str(b.enemy_id))
 	var by_id: Dictionary={}
@@ -149,4 +151,4 @@ func generate(config: Dictionary,source: Dictionary) -> Dictionary:
 			points.append({"battle_point_index":point_index+1,"enemy_fleet_id":selected_id,"mon_group_id":int(selected.enemy_group),"battle_point_offset":offset,"target_strength":target,"fallback_level":tier,"fallback_reason":["exact","within_tolerance","closest_weapon","weapon_relaxed","closest_legal"][tier],"reuse_count":reuse[selected_id]})
 		levels.append({"level_id":level_id,"strength_offset":level_strength,"weapon_bias":bias,"battle_points":points})
 	var total: int=int(config.level_count)*int(config.battle_points_per_level)
-	return {"statistics":{"levels":levels.size(),"battle_points":total,"unique_fleets_used":reuse.size(),"exact_match_rate":float(exact)/float(total),"fallback_count":fallback},"levels":levels}
+	return {"execution_identity":identity,"source_execution_identity":source.get("execution_identity",{"status":"unknown"}).duplicate(true),"statistics":{"levels":levels.size(),"battle_points":total,"unique_fleets_used":reuse.size(),"exact_match_rate":float(exact)/float(total),"fallback_count":fallback},"levels":levels}

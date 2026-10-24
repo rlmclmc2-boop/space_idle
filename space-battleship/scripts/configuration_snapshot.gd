@@ -20,6 +20,8 @@ static func active()->RefCounted:
 static func text(path:String)->String:
  return active().read_bytes(path).get_string_from_utf8()
 
+func members()->Array:return _files.keys()
+
 func has(path:String)->bool:return error.is_empty() and _files.has(path.trim_prefix("res://"))
 
 func read_bytes(path:String)->PackedByteArray:

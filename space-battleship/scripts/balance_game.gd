@@ -1,5 +1,21 @@
 extends BattleGame
 ## No save/load, scene tree, particles, audio or wall-clock economics in the lab.
+# Observe the existing commit result; UI resource notifications are throttled.
+# The proposal's validated wallet is the committed target, so later UI callbacks
+# cannot contaminate this cost with an unrelated wallet mutation.
+class ResearchMetrics extends "res://scripts/progress_runtime.gd":
+	func commit_research_advance_result(g,proposal:Dictionary)->Dictionary:
+		var costs:Dictionary={}
+		if g.metrics!=null:
+			for id in proposal.get("paid",[]):costs[id]=N.subtract(g.economy.balance(id),proposal.resources[id])
+		var result:Dictionary=super.commit_research_advance_result(g,proposal)
+		if result.status=="committed" and g.metrics!=null:g.metrics.spend("research",costs)
+		return result
+
+const Execution = preload("res://scripts/execution_contract.gd")
+var execution_error := ""
+var execution_admission: Dictionary = {}
+var execution_inputs: Array = []
 var metrics = null
 var simulated_time := 0.0
 var source_weapon := "unknown"
@@ -7,7 +23,6 @@ var source_weapon := "unknown"
 # Only known stationary-target, single-hit projectiles are eligible. The original
 # fire caller retains its shot until tick_projectiles, so jewel metadata is intact.
 var simulation_mode := "exact"
-var skip_empty_batch_research := false
 var player_power_multiplier := 1.0
 var pending_hits: Array[Dictionary] = []
 var fresh_shots: Array[Dictionary] = []
@@ -29,23 +44,30 @@ var repair_stats := {}
 var tick_effects_active := false
 var tick_effect_entries: Array = []
 var tick_effect_values: Array = []
-# Active assignments and research rates cannot change during this synchronous
-# Lab call: its only signal consumer is observe/metrics. Levels/point balances
-# still change through the original implementation, including furnace boundaries.
-var research_scope := false
-var research_rates := {}
-var research_active: Array = []
+func admit_execution(force := false) -> bool:
+	if not execution_error.is_empty():return false
+	var inputs: Array = [simulation_mode,attributes.configuration_inputs(self),enhancement_growth.attacks(),enhancement_growth.hits()]
+	if force or inputs!=execution_inputs:
+		execution_admission=Execution.lab(self,simulation_mode)
+		execution_inputs=inputs.duplicate(true)
+		if not execution_admission.ok:execution_error=execution_admission.error
+	return execution_error.is_empty()
 
-func stat(key: String) -> float:
+func _tick_combat_step(dt: float) -> void:
+	# Shared progress may change research/equipment before this same combat step.
+	if not admit_execution():return
+	super._tick_combat_step(dt)
+
+func stat(key: String) -> Variant:
 	var value: Variant = super.stat(key)
-	return value * player_power_multiplier if key in ["armour", "shield"] else value
+	return N.multiply(value,player_power_multiplier) if key in ["armour", "shield"] else value
 
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 	var attack := super.jewel_attack(index, multiplier)
-	attack.damage *= player_power_multiplier
+	attack.damage = N.multiply(attack.damage,player_power_multiplier)
 	return attack
 
-func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
+func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	super.fire(source,target,weapon,raw,hostile,key,offset,visual_spread)
 	if simulation_mode == "fast":fresh_shots.append(projectiles.back())
 
@@ -81,8 +103,12 @@ func clear_pending_hits() -> void:
 	fresh_shots.clear()
 
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
+	execution_error="";execution_inputs=[]
+	if not admit_execution(true):return false
 	var result := super.start(level,loop_mode,checkpoint)
-	if result:clear_pending_hits()
+	if result:
+		clear_pending_hits()
+		return admit_execution(true)
 	return result
 
 func leave(next: State) -> void:
@@ -124,7 +150,7 @@ func tick_projectiles(dt: float) -> void:
 		if shot.target.is_empty():continue
 		if shot.hostile:
 			if not player_alive():continue
-		elif shot.target.hp <= 0 or not enemies.has(shot.target):continue
+		elif N.compare(shot.target.hp,0)<=0 or not enemies.has(shot.target):continue
 		shot.x = item.destination.x
 		shot.y = item.destination.y
 		projectiles.append(shot)
@@ -133,27 +159,6 @@ func tick_projectiles(dt: float) -> void:
 	if added:projectiles.sort_custom(func(a,b):return a.serial < b.serial)
 	# Reuse impact events, hit functions, death clearing, AOE and gem triggers.
 	super.tick_projectiles(dt)
-
-func research_rate(key: String, crew_effects: Dictionary = {}) -> float:
-	if not research_scope:return super.research_rate(key,crew_effects)
-	if not research_rates.has(key):research_rates[key] = super.research_rate(key,crew_effects)
-	return float(research_rates[key])
-
-func active_research(rates: Dictionary = {}) -> Array:
-	if not research_scope:return super.active_research(rates)
-	rates.assign(research_rates)
-	return research_active
-
-func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
-	# Batch loadouts have no scientists, research or furnaces. The guard keeps
-	# the original path for any profile that can advance either system.
-	if skip_empty_batch_research and profile.hightechLevels.is_empty() and profile.scientistAssignments.is_empty() and profile.techPoints.is_empty():return
-	research_active = super.active_research(research_rates)
-	research_scope = true
-	super.advance_hightech(dt,real_dt,end_time)
-	research_scope = false
-	research_rates.clear()
-	research_active.clear()
 
 func advance_jewel_repair(dt: float) -> bool:
 	repair_cache_active = true
@@ -199,6 +204,7 @@ func _init(database: ShipDatabase) -> void:
 	super(database,false)
 	if not startup_error.is_empty():return
 	profile.hightechSavedAt = 0.0
+	progress_runtime = ResearchMetrics.new()
 	event.connect(observe)
 
 func create_load_candidate(database:ShipDatabase)->BattleGame:
@@ -213,7 +219,6 @@ func install_loaded_session(candidate:BattleGame)->void:
 	pending_hits.clear();fresh_shots.clear();projectile_tick=0
 	repair_cache_active=false;repair_entries.clear();repair_effects.clear();repair_stats.clear()
 	tick_effects_active=false;clear_tick_effects()
-	research_scope=false;research_rates.clear();research_active.clear()
 
 func economy_time() -> float:
 	return simulated_time
@@ -222,6 +227,7 @@ func save_progress() -> void:
 	pass
 
 func tick(dt: float) -> void:
+	if not admit_execution():return
 	if paused or commit_effects.active or logical_step_active:return
 	# This independent analysis clock substitutes for live wall time.
 	if not step_progress.active:
@@ -246,25 +252,32 @@ func observe(kind: String, payload: Dictionary) -> void:
 		if kind == "state" and state == State.LEVEL_CLEAR:metrics.timeline.discover(self,simulated_time)
 
 func spawn_group(keep_distance := false) -> void:
+	if not execution_error.is_empty():return
+	execution_error=Execution.encounter(self)
+	if not execution_error.is_empty():return
 	super.spawn_group(keep_distance)
+	if not admit_execution(true):return
 	if metrics == null:return
 	metrics.born.clear()
 	metrics.encounter_start = simulated_time
 	for enemy in enemies:
 		metrics.born[enemy.uid] = simulated_time
 		metrics.spawn_count += 1
-		metrics.spawn_hp += float(enemy.max_hp)
+		metrics.spawn_hp = N.add(metrics.spawn_hp,enemy.max_hp)
 	if is_boss_encounter():metrics.timeline.record("BOSS",simulated_time,stage,{"wave":group_index})
 
 func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false, context: Dictionary = {}) -> void:
-	var before := float(enemy.hp)
+	if not execution_error.is_empty():return
+	execution_error=Execution.enemy_state(enemy)
+	if not execution_error.is_empty():return
+	var before: Variant = enemy.hp
 	var weapon := source_weapon
 	var boss := is_boss_encounter()
 	super.hit_enemy(enemy,raw,type,effects,critical,context)
-	if simulation_mode == "fast" and before > 0 and enemy.hp <= 0 and boss and targets().is_empty():clear_pending_hits()
-	if metrics == null or before <= 0:return
-	metrics.add(metrics.damage,weapon,before-float(enemy.hp))
-	if enemy.hp <= 0 and metrics.born.has(enemy.uid):
+	if simulation_mode == "fast" and N.compare(before,0)>0 and N.compare(enemy.hp,0)<=0 and boss and targets().is_empty():clear_pending_hits()
+	if metrics == null or N.compare(before,0)<=0:return
+	metrics.add(metrics.damage,weapon,N.subtract(before,enemy.hp))
+	if N.compare(enemy.hp,0)<=0 and metrics.born.has(enemy.uid):
 		metrics.ttk_sum += simulated_time-float(metrics.born[enemy.uid])
 		metrics.kills += 1
 		if not boss:
@@ -276,15 +289,15 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			metrics.boss_ttk_sum += simulated_time-metrics.encounter_start
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
-	var armour := float(player.armour)
-	var shield := float(player.shield)
+	var armour: Variant = player.armour
+	var shield: Variant = player.shield
 	super.hit_player(raw,type,context)
 	if metrics == null:return
-	metrics.health_lost += maxf(0,armour-float(player.armour))
-	metrics.shield_absorbed += maxf(0,shield-float(player.shield))
-	metrics.received += maxf(0,armour+shield-float(player.armour)-float(player.shield))
-	metrics.min_health = minf(metrics.min_health,float(player.armour))
-	metrics.min_shield = minf(metrics.min_shield,float(player.shield))
+	metrics.health_lost = N.add(metrics.health_lost,N.subtract(armour,player.armour))
+	metrics.shield_absorbed = N.add(metrics.shield_absorbed,N.subtract(shield,player.shield))
+	metrics.received = N.add(metrics.received,N.subtract(N.add(armour,shield),N.add(player.armour,player.shield)))
+	metrics.min_health = player.armour if metrics.min_health==null else N.minimum(metrics.min_health,player.armour)
+	metrics.min_shield = player.shield if metrics.min_shield==null else N.minimum(metrics.min_shield,player.shield)
 
 func begin_retreat() -> void:
 	# All ordinary targets are lost on death; none may hit a reset player later.
@@ -296,30 +309,20 @@ func begin_retreat() -> void:
 		metrics.born.clear()
 	super.begin_retreat()
 
-func generate_scientist(amount := 1) -> bool:
-	var before: Dictionary = economy.resources().duplicate()
-	var previous_count:int=int(profile.scientists)
-	var result := super.generate_scientist(amount)
-	if result and metrics != null:
-		for id in before:before[id] = float(before[id])-float(economy.balance(id))
-		metrics.spend("scientists",before)
-		metrics.use("scientists",int(profile.scientists)-previous_count)
-	return result
-
 func upgrade_reactor(amount: int) -> bool:
-	var before := float(economy.balance(str(int(db.config.reactorUraniumId))))
+	var before: Variant = economy.balance(str(int(db.config.reactorUraniumId)))
 	var result := super.upgrade_reactor(amount)
 	if result and metrics != null:
-		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):before-float(economy.balance(str(int(db.config.reactorUraniumId))))})
+		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):N.subtract(before,economy.balance(str(int(db.config.reactorUraniumId))))})
 		metrics.use("reactor_levels",amount)
 	return result
 
 func upgrade_enhancement(count := 1) -> int:
-	var before := float(economy.balance("jewel"))
+	var before: Variant = economy.balance("jewel")
 	var purchased := super.upgrade_enhancement(count)
 	if metrics!=null and purchased>0:
 		metrics.use("enhancement_levels",purchased)
-		metrics.spend("enhancements",{"jewel_fragments":before-float(economy.balance("jewel"))})
+		metrics.spend("enhancements",{"jewel_fragments":N.subtract(before,economy.balance("jewel"))})
 	return purchased
 
 func commit_income_receipt(id:String,earned:Variant,source:String,notices:Array,drop:Dictionary={},manual:=false,production_base:Variant=null)->Dictionary:

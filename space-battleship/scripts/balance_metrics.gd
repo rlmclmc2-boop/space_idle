@@ -1,4 +1,5 @@
 extends RefCounted
+const N = preload("res://scripts/growth_number.gd")
 const Timeline := preload("res://scripts/balance_timeline.gd")
 ## Lab-only cumulative statistics. Enemy records live only until death/retreat.
 const THRESHOLDS := {"dominance":0.70,"unused":0.01,"ttk_low":0.25,"ttk_high":60.0,"idle_seconds":300.0,"surplus_minutes":30.0}
@@ -17,11 +18,11 @@ var kills := 0
 var boss_ttk_sum := 0.0
 var boss_kills := 0
 var encounter_start := 0.0
-var received := 0.0
-var shield_absorbed := 0.0
-var health_lost := 0.0
-var min_health := INF
-var min_shield := INF
+var received: Variant = 0.0
+var shield_absorbed: Variant = 0.0
+var health_lost: Variant = 0.0
+var min_health: Variant = null
+var min_shield: Variant = null
 var deaths := 0
 var first_death: Variant = null
 var upgrades := 0
@@ -38,7 +39,7 @@ var current_stage := 1
 var normal_kills := 0
 var normal_ttk_sum := 0.0
 var spawn_count := 0
-var spawn_hp := 0.0
+var spawn_hp: Variant = 0.0
 var blocked_marked := false
 
 func initialize(game: BattleGame) -> void:
@@ -48,30 +49,30 @@ func initialize(game: BattleGame) -> void:
 		spending[id] = 0.0
 	income.jewel_fragments = 0.0
 	spending.jewel_fragments = 0.0
-	for system in ["weapons","defence","scientists","reactor","jewels"]:
+	for system in ["weapons","defence","research","reactor","jewels"]:
 		spending_by_system[system] = {}
 		for id in spending:spending_by_system[system][id] = 0.0
-	for key in ["upgrade","research","scientists","reactor_levels","jewel_pickup","enhancement_levels","equipment_equip","ship_switch"]:uses[key] = 0
-	min_health = float(game.player.armour)
-	min_shield = float(game.player.shield)
+	for key in ["upgrade","research","reactor_levels","jewel_pickup","enhancement_levels","equipment_equip","ship_switch"]:uses[key] = 0
+	min_health = game.player.armour
+	min_shield = game.player.shield
 	current_stage = game.stage
 	timeline.discover(game,0,true)
 
-func add(target: Dictionary, key: String, amount: float) -> void:
-	target[key] = float(target.get(key,0.0)) + amount
+func add(target: Dictionary, key: String, amount: Variant) -> void:
+	target[key] = N.add(target.get(key,0.0),amount)
 
 func use(key: String, count := 1) -> void:
 	add(uses,key,count)
 	last_used[key] = time
-	var decisions := {"upgrade":"UPGRADE","equipment_equip":"EQUIP","ship_switch":"EQUIP","scientists":"PURCHASE","reactor_levels":"REACTOR_UPGRADE","enhancement_levels":"ENHANCEMENT_UPGRADE"}
+	var decisions := {"upgrade":"UPGRADE","equipment_equip":"EQUIP","ship_switch":"EQUIP","reactor_levels":"REACTOR_UPGRADE","enhancement_levels":"ENHANCEMENT_UPGRADE"}
 	if count > 0 and decisions.has(key):timeline.record(decisions[key],time,current_stage,{"system":key,"count":count},true)
 	if count > 0 and key in ["upgrade","research","reactor_levels","enhancement_levels"]:timeline.growth(time)
 
 func spend(system: String, costs: Dictionary) -> void:
 	if not spending_by_system.has(system):spending_by_system[system] = {}
 	for id in costs:
-		add(spending,str(id),float(costs[id]))
-		add(spending_by_system[system],str(id),float(costs[id]))
+		add(spending,str(id),costs[id])
+		add(spending_by_system[system],str(id),costs[id])
 
 func upgraded(count: int) -> void:
 	if upgrades > 0:
@@ -82,7 +83,7 @@ func upgraded(count: int) -> void:
 	upgrades += count
 
 func on_event(kind: String, payload: Dictionary) -> void:
-	if kind == "collect":add(income,str(payload.id),float(payload.amount))
+	if kind == "collect":add(income,str(payload.id),payload.amount)
 	elif kind == "upgrade":
 		spend("weapons" if str(payload.slot).begins_with("weapons") else "defence",payload.cost)
 		upgraded(int(payload.levels))
@@ -111,15 +112,15 @@ func sample(game: BattleGame, seconds: float, affordable: bool) -> void:
 		blocked_marked = true
 	elif affordable:blocked_marked = false
 	for id in game.economy.resources():
-		var rate := float(income.get(id,0))/maxf(time/60.0,1.0)
-		if rate > 0 and float(game.economy.balance(id)) > rate*THRESHOLDS.surplus_minutes:
+		var rate: Variant = N.divide(income.get(id,0),maxf(time/60.0,1.0))
+		if N.compare(rate,0)>0 and N.compare(game.economy.balance(id),N.multiply(rate,THRESHOLDS.surplus_minutes))>0:
 			add(overflow_seconds,str(id),seconds)
 		else:overflow_seconds[id] = 0.0
 		longest_overflow[id] = maxf(float(longest_overflow.get(id,0)),float(overflow_seconds[id]))
 
 func report(game: BattleGame) -> Dictionary:
-	var total := 0.0
-	for value in damage.values():total += float(value)
+	var total: Variant = 0.0
+	for value in damage.values():total = N.add(total,value)
 	var shares := {}
 	var utilization := {}
 	var unused_for := {}
@@ -128,14 +129,14 @@ func report(game: BattleGame) -> Dictionary:
 	for key in BattleGame.EQUIPMENT:
 		utilization[key] = float(usage_seconds.get(key,0))/maxf(time,0.000001)
 		unused_for[key] = time-float(last_used.get(key,0))
-	for key in damage:shares[key] = float(damage[key])/total if total > 0 else 0.0
+	for key in damage:shares[key] = N.ratio(damage[key],total)
 	var per_minute := {}
 	var resource_shares := {}
-	for id in income:per_minute[id] = float(income[id])/maxf(time/60.0,0.000001)
+	for id in income:per_minute[id] = N.divide(income[id],maxf(time/60.0,0.000001))
 	for system in spending_by_system:
 		resource_shares[system] = {}
 		for id in spending_by_system[system]:
-			resource_shares[system][id] = float(spending_by_system[system][id])/maxf(float(spending.get(id,0)),0.000001)
+			resource_shares[system][id] = N.ratio(spending_by_system[system][id],N.maximum(spending.get(id,0),0.000001))
 	var ttk: Variant = ttk_sum/kills if kills > 0 else null
 	var warnings := []
 	for key in shares:
@@ -143,7 +144,7 @@ func report(game: BattleGame) -> Dictionary:
 	if time >= THRESHOLDS.idle_seconds:
 		for key in utilization:
 			if utilization[key] < THRESHOLDS.unused:warnings.append({"code":"equipment_unused","key":key,"value":utilization[key],"unlocked":game.profile.unlocked.has(key)})
-		for system in ["upgrade","research","scientists","reactor_levels","jewel_pickup","enhancement_levels"]:
+		for system in ["upgrade","research","reactor_levels","jewel_pickup","enhancement_levels"]:
 			if uses.get(system,0) == 0:warnings.append({"code":"system_unused","key":system})
 	if ttk != null and (ttk < THRESHOLDS.ttk_low or ttk > THRESHOLDS.ttk_high):warnings.append({"code":"ttk_outside_range","value":ttk})
 	var gap := maxf(longest_upgrade_gap,time-last_upgrade)
@@ -152,13 +153,13 @@ func report(game: BattleGame) -> Dictionary:
 	for id in longest_overflow:
 		if longest_overflow[id] >= THRESHOLDS.idle_seconds:warnings.append({"code":"resource_surplus","key":id,"value":longest_overflow[id]})
 	var balance: Dictionary = game.economy.resources().duplicate()
-	balance.jewel_fragments = float(game.economy.balance("jewel"))
-	return {"game_seconds":time,"final_stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
-		"dps":total/maxf(time,0.000001),"combat_dps":total/maxf(combat_seconds,0.000001),"combat_seconds":combat_seconds,
+	balance.jewel_fragments = game.economy.balance("jewel")
+	return {"damage_basis":"enemy_hp_removed_excluding_shield","game_seconds":time,"final_stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
+		"dps":N.divide(total,maxf(time,0.000001)),"combat_dps":N.divide(total,maxf(combat_seconds,0.000001)),"combat_seconds":combat_seconds,
 		"damage":damage.duplicate(),"weapon_damage_share":shares,"ttk":ttk,"kills":kills,
 		"boss_ttk":boss_ttk_sum/boss_kills if boss_kills > 0 else null,"boss_kills":boss_kills,"unfinished_enemies":born.size(),
 		"normal_ttk":normal_ttk_sum/normal_kills if normal_kills > 0 else null,"normal_kills":normal_kills,
-		"defence":{"damage_received":received,"shield_absorbed":shield_absorbed,"health_lost":health_lost,"min_health":min_health if is_finite(min_health) else null,"min_shield":min_shield if is_finite(min_shield) else null,"deaths":deaths,"first_death":first_death},
+		"defence":{"damage_received":received,"shield_absorbed":shield_absorbed,"health_lost":health_lost,"min_health":min_health,"min_shield":min_shield,"deaths":deaths,"first_death":first_death},
 		"resources":{"income":income.duplicate(),"spending":spending.duplicate(),"per_minute":per_minute,"balance":balance,"by_system":spending_by_system.duplicate(true),"system_share":resource_shares},
 		"upgrades":upgrades,"upgrade_interval":interval_sum/interval_count if interval_count > 0 else null,"longest_upgrade_gap":gap,
 		"system_uses":uses.duplicate(),"system_unused_seconds":system_unused_for,"equipment_utilization":utilization,"equipment_unused_seconds":unused_for,

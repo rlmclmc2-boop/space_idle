@@ -1,4 +1,6 @@
 extends RefCounted
+const N = preload("res://scripts/growth_number.gd")
+const Report = preload("res://scripts/balance_report.gd")
 const Analyzer := preload("res://scripts/balance_analyzer.gd")
 const METRICS := ["final_stage","ttk","boss_ttk","upgrade_interval","dps","defence/deaths","decision_interval","longest_growth_gap","resource_surplus","weapon_damage_share/laser","weapon_damage_share/missile","weapon_damage_share/cannon","weapon_damage_share/longLaser"]
 
@@ -29,7 +31,7 @@ static func load_baseline(path: String) -> Dictionary:
 		for entry in report[section].values():
 			if not entry is Dictionary or not entry.has("mean"):return {"error":"invalid_baseline"}
 			var value: Variant = entry.mean
-			if value != null and ((not value is float and not value is int) or not is_finite(float(value))):return {"error":"invalid_baseline"}
+			if value != null and not N.valid(value) and ((not value is float and not value is int) or not is_finite(float(value))):return {"error":"invalid_baseline"}
 	return {"report":report}
 
 static func signature(report: Dictionary) -> Array:
@@ -44,8 +46,11 @@ static func mean(report: Dictionary, key: String) -> Variant:
 	return report.get("metrics_summary",{}).get(key,{}).get("mean")
 
 static func compare(baseline: Dictionary, current: Dictionary) -> Dictionary:
+	if not current.get("config") is Dictionary or not current.get("summary") is Dictionary:
+		return {"compatible":false,"reasons":["no_comparable_report"],"rows":[],"warnings":[]}
 	if baseline.is_empty():return {"compatible":false,"reasons":["no_baseline"],"rows":[],"warnings":[]}
-	var reasons := []
+	var identity: Dictionary=preload("res://scripts/execution_identity.gd").compare(baseline.config.get("execution_identity",{}),current.config.get("execution_identity",{}),"comparison")
+	var reasons: Array=identity.reasons.duplicate()
 	if baseline.config.get("simulation_mode","exact") != current.config.get("simulation_mode","exact"):reasons.append("different_simulation_mode")
 	if signature(baseline) != signature(current):reasons.append("different_samples_or_partial")
 	for key in ["policy","initial_state","step_seconds","sample_interval","max_samples"]:
@@ -61,9 +66,9 @@ static func compare(baseline: Dictionary, current: Dictionary) -> Dictionary:
 		var change: Variant = null
 		var absolute: Variant = null
 		if before != null and after != null:
-			absolute = float(after)-float(before)
-			if pp:change = absolute*100.0
-			elif float(before) != 0:change = absolute/absf(float(before))*100.0
-		rows.append({"metric":key,"baseline":before,"current":after,"absolute":absolute,"change":change,"unit":"pp" if pp else "%"})
+			absolute = Report.finite_difference(before,after)
+			if pp and absolute!=null:change = float(absolute)*100.0
+			elif N.compare(before,0)!=0:change = Report.finite_change(before,after)
+		rows.append({"metric":key,"baseline":before,"current":after,"absolute":absolute,"change":change,"unit":"pp" if pp else "%","unavailable_reason":"outside_finite_report_range" if before!=null and after!=null and (absolute==null or (N.compare(before,0)!=0 and change==null)) else ""})
 	return {"compatible":reasons.is_empty(),"reasons":reasons,"baseline_hash":baseline.config.get("data_sha256",""),"current_hash":current.config.get("data_sha256",""),
-		"rows":rows,"warnings":Analyzer.comparison_warnings(rows) if reasons.is_empty() else []}
+		"identity_differences":identity.differences,"rows":rows,"warnings":Analyzer.comparison_warnings(rows) if reasons.is_empty() else []}

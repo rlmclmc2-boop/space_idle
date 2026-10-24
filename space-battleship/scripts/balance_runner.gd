@@ -1,4 +1,6 @@
 extends RefCounted
+const Identity = preload("res://scripts/execution_identity.gd")
+var execution_capture: RefCounted
 const LabGame := preload("res://scripts/balance_game.gd")
 const Metrics := preload("res://scripts/balance_metrics.gd")
 const AutoPlayer := preload("res://scripts/balance_autoplayer.gd")
@@ -19,6 +21,7 @@ var baseline := {}
 var jobs := []
 var reports := []
 var status := "idle"
+var execution_error := ""
 var speed := 100.0
 var credit := 0.0
 var steps := 0
@@ -54,6 +57,8 @@ func start(request: Dictionary) -> String:
 	config.policy = "rules_v2"
 	config.initial_state = "fresh_profile"
 	config.engine_version = Engine.get_version_info().string
+	execution_capture=Identity.new()
+	config.execution_identity=execution_capture.capture(database,["res://scripts/balance_runner.gd"],"BalanceGame/"+str(config.simulation_mode),config,{"policy":config.policy})
 	jobs = planned.jobs
 	speed = requested_speed
 	status = "running"
@@ -112,6 +117,11 @@ func step_once() -> void:
 	var remaining := float(config.duration)-steps*STEP
 	var dt := minf(STEP,remaining)
 	game.tick(dt)
+	if not game.execution_error.is_empty():
+		execution_error=game.execution_error
+		status="error"
+		completed={"status":"error","error":execution_error,"execution":game.execution_admission,"runs":reports.duplicate()}
+		return
 	total_game_seconds += dt
 	steps += 1
 	logic_steps_total += 1
@@ -132,6 +142,8 @@ func step_once() -> void:
 func finish_run(partial: bool) -> void:
 	metrics.timeline.snapshot(game,metrics,true)
 	var result: Dictionary = metrics.report(game)
+	result.execution_identity=config.execution_identity.duplicate(true)
+	result.execution=game.execution_admission.duplicate(true)
 	result.seed = jobs[job_index].seed
 	result.simulation_mode = config.simulation_mode
 	result.projectile_processing = {"scheduled":game.fast_scheduled,"resolved":game.fast_resolved,"pending_peak":game.fast_peak,"fallback":game.fast_fallback}
@@ -180,6 +192,8 @@ func stop() -> void:
 	credit = 0.0
 
 func reset() -> void:
+	execution_capture=null
+	execution_error=""
 	performance_log.close()
 	performance_log = PerformanceLog.new()
 	logic_steps_total = 0

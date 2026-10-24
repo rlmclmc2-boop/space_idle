@@ -3,7 +3,7 @@ const Runner := preload("res://scripts/balance_runner.gd")
 const Scan := preload("res://scripts/balance_scan.gd")
 const Report := preload("res://scripts/balance_report.gd")
 const Views := preload("res://scripts/balance_views.gd")
-const STATUS_TEXT := {"idle":"lab.status.idle","running":"lab.status.running","paused":"lab.status.paused","completed":"lab.status.completed","stopped":"lab.status.stopped"}
+const STATUS_TEXT := {"error":"lab.status.stopped","idle":"lab.status.idle","running":"lab.status.running","paused":"lab.status.paused","completed":"lab.status.completed","stopped":"lab.status.stopped"}
 const WARNING_TEXT := {"weapon_dominance":"lab.warning.weapon_dominance","equipment_unused":"lab.warning.equipment_unused","system_unused":"lab.warning.system_unused","ttk_outside_range":"lab.warning.ttk_outside_range","upgrade_gap":"lab.warning.upgrade_gap","unaffordable":"lab.warning.unaffordable","resource_surplus":"lab.warning.resource_surplus"}
 var runner = Runner.new()
 var speed_select: OptionButton
@@ -242,7 +242,8 @@ func refresh_status() -> void:
 		start_button.disabled = busy
 		pause_button.disabled = not busy
 		pause_button.text = UIText.t("lab.resume" if runner.status == "paused" else "lab.pause")
-		export_button.disabled = runner.completed.is_empty()
+		export_button.disabled = runner.completed.is_empty() or runner.status=="error"
+		if runner.status=="error":output.text=UIText.t("lab.error",{"error":runner.execution_error})
 		if runner.status in ["completed","stopped"]:
 			run_select.max_value = maxi(1,runner.reports.size())
 			dirty_tabs.fill(true)
@@ -268,21 +269,21 @@ func concise_report() -> String:
 		var values := PackedStringArray([UIText.t("lab.no_scan") if point.parameter == null else str(point.parameter)])
 		for key in ["final_stage","ttk","first_death_seconds","upgrade_interval","resource_surplus"]:
 			var value: Variant = point_summary[key].mean
-			values.append("—" if value == null else "%.3f" % float(value))
+			values.append("—" if value == null else Views.value(value))
 		lines.append(" | ".join(values))
 	for index in mini(runner.reports.size(),20):
 		var report: Dictionary = runner.reports[index]
-		lines.append(UIText.t("lab.run_summary",{"run":str(index+1),"seed":str(report.seed),"dps":"%.3f" % report.dps,"deaths":str(report.defence.deaths),"upgrades":str(report.upgrades),"warnings":str(report.anomalies.size())}))
+		lines.append(UIText.t("lab.run_summary",{"run":str(index+1),"seed":str(report.seed),"dps":Views.value(report.dps),"deaths":str(report.defence.deaths),"upgrades":str(report.upgrades),"warnings":str(report.anomalies.size())}))
 		for anomaly in report.anomalies:
 			var values := {}
 			if anomaly.has("key"):values.key = str(anomaly.key)
-			if anomaly.has("value"):values.value = "%.3f" % float(anomaly.value)
+			if anomaly.has("value"):values.value = Views.value(anomaly.value)
 			lines.append("  "+UIText.t(WARNING_TEXT[anomaly.code],values))
 	if runner.reports.size() > 20:lines.append(UIText.t("lab.more_runs"))
 	return "\n".join(lines)
 
 func save_report() -> void:
-	if runner.completed.is_empty():return
+	if runner.completed.is_empty() or runner.status=="error":return
 	exports = Report.save(runner.completed,directory.text)
 	if exports.has("error"):output.text += "\n"+UIText.t("lab.error",{"error":str(exports.error)})
 	else:output.text += "\n"+UIText.t("lab.saved",{"path":str(exports.json)})
@@ -338,7 +339,7 @@ func refresh_active_tab() -> void:
 	if not dirty_tabs[index]:return
 	dirty_tabs[index] = false
 	var report: Dictionary = runner.completed
-	if report.is_empty():
+	if report.is_empty() or runner.status=="error":
 		var names: Array = [["strategies"],["sweep","sensitivity"],["comparison"],["timeline","events"],["diagnosis"]][index]
 		for name in names:views.fill(name,[])
 		if index == 2:comparison_status.text = UIText.t("lab.v2.no_comparison")

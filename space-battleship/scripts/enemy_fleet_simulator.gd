@@ -1,4 +1,6 @@
 extends RefCounted
+var execution_capture:RefCounted
+var execution_identity:Dictionary={}
 ## Read-only analysis of ShipDatabase groups. Never constructs BattleGame or entities.
 
 const POLICY_PATH := "res://data/enemy_fleet_analysis.json"
@@ -43,6 +45,9 @@ func _init(database: ShipDatabase, settings: Dictionary = {}) -> void:
 	ids.sort()
 	for id in ids:
 		var row: Dictionary = db.enemies[id]
+		for key in ["health","size","dmgMultiple","shield"]:
+			if not preload("res://scripts/execution_contract.gd").finite(row.get(key,0)):
+				error="unsupported_enemy_analysis_scalar:"+key;return
 		var stats := {"durability":float(row.health), "burst":0.0, "sustained":0.0, "hull":float(row.size), "armor":0.0, "single_target":0.0}
 		var families: Array[String]=[]
 		if int(row.armourType) > 0:
@@ -51,6 +56,9 @@ func _init(database: ShipDatabase, settings: Dictionary = {}) -> void:
 			var family:=str(entry.name).trim_suffix("_mon").trim_suffix("-mon")
 			if not families.has(family):families.append(family)
 			var weapon := db.enemy_weapon(str(entry.name))
+			for key in ["dmg","cd"]:
+				if not preload("res://scripts/execution_contract.gd").finite(weapon.get(key)):
+					error="unsupported_enemy_analysis_weapon:"+key;return
 			if weapon.is_empty() or weapon.get("cd") == null or float(weapon.cd) <= 0 or weapon.get("dmg") == null:
 				error = "invalid_weapon"
 				continue
@@ -64,6 +72,7 @@ func _init(database: ShipDatabase, settings: Dictionary = {}) -> void:
 			stats.burst += damage
 			stats.sustained += peak / float(weapon.cd)
 			stats.single_target = 1.0
+		if not is_finite(stats.burst) or not is_finite(stats.sustained):error="unsupported_enemy_analysis_projection";return
 		stats.strength = (stats.durability * float(policy.strength.health_weight) + stats.sustained * float(policy.strength.firepower_seconds)) / float(policy.strength.unit)
 		families.sort()
 		stats.family="+".join(families)
@@ -71,7 +80,9 @@ func _init(database: ShipDatabase, settings: Dictionary = {}) -> void:
 		for key in reference:
 			reference[key] = maxf(reference[key], stats[key])
 		projections[str(id)] = stats
-	fingerprint = JSON.stringify({"enemies":db.enemies,"equipment":db.equipment,"config":db.config,"slots":slot_count,"policy":policy}).sha256_text()
+	execution_capture=preload("res://scripts/execution_identity.gd").new()
+	execution_identity=execution_capture.capture(db,["res://scripts/enemy_fleet_simulator.gd"],"enemy_generation",{},policy)
+	fingerprint=execution_capture.content_digest({"enemies":db.enemies,"equipment":db.equipment,"config":db.config,"slots":slot_count,"policy":policy,"rules":execution_identity.rules_sha256,"numeric":execution_identity.numeric_version,"engine":execution_identity.engine})
 
 func validate(options: Dictionary) -> String:
 	if not error.is_empty():return error

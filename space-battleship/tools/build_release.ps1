@@ -183,6 +183,12 @@ try {
         [IO.File]::WriteAllBytes($destination,$configuration[$name])
     }
     $nativeHash = (FileHash (Join-Path $project 'bin/space_native.dll'))
+    $scriptHashes = [ordered]@{}
+    foreach ($scriptFile in (Get-ChildItem -LiteralPath (Join-Path $staging 'scripts') -Filter '*.gd' -File)) {
+        $scriptHashes['scripts/' + $scriptFile.Name] = FileHash $scriptFile.FullName
+    }
+    $provenance = [ordered]@{version=1; kind='player'; scripts=$scriptHashes; exporter_sha256=(FileHash $engine); template_sha256=(FileHash $template); native=@{sha256=$nativeHash; origin='prebuilt'; source='unknown'; toolchain='unknown'}}
+    [IO.File]::WriteAllText((Join-Path $staging 'execution-provenance.json'), ($provenance | ConvertTo-Json -Depth 8), $utf8)
     $presetPath = Join-Path $project 'export_presets.cfg'
     $preset = [IO.File]::ReadAllText($presetPath)
     $templateSetting = '(?m)^custom_template/release\s*=\s*[^\r\n]*'

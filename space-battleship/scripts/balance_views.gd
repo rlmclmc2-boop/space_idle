@@ -48,6 +48,7 @@ func fill(name: String, rows: Array) -> void:
 
 static func value(data: Variant) -> String:
 	if data == null:return "—"
+	if data is Dictionary and GrowthNumber.valid(data):return GrowthNumber.text(data)
 	if data is float:return "%.3f" % data
 	if data is Dictionary or data is Array:return JSON.stringify(data)
 	return str(data)
