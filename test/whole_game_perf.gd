@@ -164,12 +164,14 @@ func run():
 		var preparation_game_seconds:float=g.production_time()-preparation_time_before
 		var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[];var live_enemies=[]
 		var memory=0;var nodes=0;var resources=0
+		var work_before:Dictionary={}
 		var galaxy_before:Dictionary={};var settlement_samples:Array=[];var native_frames:=0
 		meter.enabled=false;meter.times.clear()
 		var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
 		for i in range(count+15):
 			if i==15:
 				galaxy_before=galaxy_progress(g)
+				work_before=work_state(g)
 				meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
 			var settlements_before:=galaxy_settlements
 			var effects_before:int=g.galaxy.effect_generation if owned else 0
@@ -192,7 +194,7 @@ func run():
 				projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size());live_enemies.append(g.enemies.size())
 		meter.enabled=false
 		var viewport_rows=[];views(root,viewport_rows)
-		var row={"preparation_stages":preparation_stages,"preparation_timings":preparation_timings,"loading_shell_visible":shell_visible,"preparation_us":preparation_us,"preparation_frames_us":preparation_frames,"preparation_game_seconds":preparation_game_seconds,"galaxy_before":galaxy_before,"galaxy_after":galaxy_progress(g),"settlement_samples":settlement_samples,"native_frames":native_frames,"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_timings":switch_timings,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"live_enemies":stats(live_enemies),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+		var row={"work_before":work_before,"work_after":work_state(g),"measured_steps":count,"preparation_stages":preparation_stages,"preparation_timings":preparation_timings,"loading_shell_visible":shell_visible,"preparation_us":preparation_us,"preparation_frames_us":preparation_frames,"preparation_game_seconds":preparation_game_seconds,"galaxy_before":galaxy_before,"galaxy_after":galaxy_progress(g),"settlement_samples":settlement_samples,"native_frames":native_frames,"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_timings":switch_timings,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"live_enemies":stats(live_enemies),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
 		results.append(row);print("ROW ",JSON.stringify(row))
 		if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
 			await RenderingServer.frame_post_draw
@@ -296,3 +298,9 @@ func page_preparing(scene,page:int)->bool:
 		for card in scene.planet_panel.cards.values():
 			if card.icon.get("preparing")==true or (card.has("visual") and card.visual.get("preparing")==true):return true
 	return false
+
+# Observed outside measured work. Common outputs, not implementation versions.
+func work_state(g)->Dictionary:
+	var enemies:Array=[]
+	for e in g.enemies:enemies.append({"id":e.id,"hp":e.hp,"shield":e.get("shield",0),"x":e.x,"y":e.y})
+	return {"time":g.production_time(),"rng":str(g.rng.state),"stage":g.stage,"group":g.group_index,"state":g.state,"player":g.player.duplicate(true),"enemies":enemies,"equipment":g.equipment.save_data(),"economy":g.economy.save_data(),"research":g.research.save_data(),"projectiles":g.projectiles.size(),"missile_queue":g.missile_queue.size(),"attack_serial":g.main_attack_serial}

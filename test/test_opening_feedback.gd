@@ -66,7 +66,7 @@ func run() -> void:
 	scene.pickup_comparison(neighbour)
 	scene.pickup_comparison(fragment)
 	check(scene.pickup_preview_builds==preview_builds+1 and scene.pickup_preview_cache.size()==2,"Nearby drops retain independent bounded previews")
-	scene.game.invalidate_stat_cache()
+	scene.game.notify_configuration_changed()
 	scene.pickup_comparison(fragment)
 	check(scene.pickup_preview_builds==preview_builds+2,"Configuration revision invalidates fragment preview")
 	scene.game.drops.append(fragment)
@@ -83,7 +83,7 @@ func run() -> void:
 	check(scene.pickup_preview_builds==preview_builds,"Large-number drop reuses preview without type errors")
 	scene.game.income_history.replace_records([{"time":100.0,"id":"jewel","amount":2.5}])
 	scene.resource_rate_mode=true
-	check(scene.game.resource_minute_total("jewel",100.0)==2.5 and scene.resource_display("jewel",100.0)==UIText.t("inventory.rate",{"rate":scene.NUMBER_FORMAT.rate(2.5/60.0)}),"Fragment top rate follows actual minute samples")
+	check(scene.game.income_history.display_total("jewel",100.0)==2.5 and scene.resource_display("jewel",100.0)==UIText.t("inventory.rate",{"rate":scene.NUMBER_FORMAT.rate(2.5/60.0)}),"Fragment top rate follows actual minute samples")
 	print("Opening feedback: %d checks, %d failures" % [checks,failures])
 	scene.queue_free();fresh.queue_free()
 	quit(1 if failures else 0)

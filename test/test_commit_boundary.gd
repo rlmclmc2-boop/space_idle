@@ -91,7 +91,7 @@ func _initialize()->void:
 	var g:=fixture()
 	var tracker:=TrackedCrew.new()
 	tracker.install_snapshot(g.crew.save_data(),g.db)
-	g.event.disconnect(g.crew.on_event);g.crew=tracker;tracker.attach(g)
+	g.crew=tracker;tracker.attach(g)
 	g.assign_crew("navigator","equipment_upgrade","equipment")
 	tracker.commits=0;tracker.timers.clear();tracker.intervals.clear()
 	var plan:=plan_for(g)
@@ -194,7 +194,7 @@ func _initialize()->void:
 	var hot:=fixture()
 	hot.select_tech("singularity");hot.set_tech_input("1",1)
 	var hot_tracker:=TrackedCrew.new();hot_tracker.install_snapshot(hot.crew.save_data(),hot.db)
-	hot.event.disconnect(hot.crew.on_event);hot.crew=hot_tracker;hot_tracker.attach(hot)
+	hot.crew=hot_tracker;hot_tracker.attach(hot)
 	var paid_notices:Array=[];var nested_time:Array=[]
 	hot.event.connect(func(kind,payload):
 		if kind=="resources_changed":
@@ -233,7 +233,7 @@ func cold_growth_commands()->void:
 	var raw:=g.enhancement_growth.save_data();raw.enhancementLevel=40
 	check(g.enhancement_growth.install_snapshot(raw),"current growth fixture installs")
 	var tracker:=TrackedCrew.new();tracker.install_snapshot(g.crew.save_data(),g.db)
-	g.event.disconnect(g.crew.on_event);g.crew=tracker;tracker.attach(g)
+	g.crew=tracker;tracker.attach(g)
 	var order:=g.enhancement_order("weapons");order.reverse()
 	var commands:Array=[func():return g.upgrade_reactor_result(1),func():return g.set_reactor_allocation_result("weapons",1),func():return g.equalize_reactor_allocation_result(),func():return g.upgrade_enhancement_result(1),func():return g.set_enhancement_order_result("weapons",order),func():return g.set_enhancement_branch_result("weapons","proficiency",1,"B")]
 	for index in commands.size():

@@ -22,6 +22,8 @@ def completed(output, test, phase):
         return re.search(r"^Save boundaries: [1-9]\d* checks, 0 failures$", output, re.M) is not None
     if test == "probe_native_admission_stale_pose.gd":
         return re.search(r"^GEOMETRY LIFECYCLE: [1-9]\d* checks, 0 failures$", output, re.M) is not None
+    if test == "test_fleet_battle_speed.gd":
+        return re.search(r"^BATTLE SPEED failures=0$", output, re.M) is not None and len(re.findall(r"^BATTLE SPEED budget_us=", output, re.M)) == 2
     if test == "test_crew_performance.gd":
         # Existing fixture: 2 ships * 2 pages * 3 modes * 3 budgets + 4 scheduler cases.
         return re.search(r"^CREW_PERF_COMPLETE 40 scenarios$", output, re.M) is not None

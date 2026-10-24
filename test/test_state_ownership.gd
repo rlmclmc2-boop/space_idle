@@ -23,7 +23,7 @@ func snapshot(game: BattleGame) -> Dictionary:
 	return {"profile":game.profile.duplicate(true),"equipment":game.equipment.save_data(),"economy":game.economy.save_data(),"research":game.research.save_data(),"reactor":game.reactor.save_data(),"crew":game.crew.save_data(),"planets":game.planets.save_data(),"galaxy":game.galaxy.save_data(),"hyperspace":game.hyperspace.save_data(),"enhancement":game.enhancement_growth.save_data(),"cooldowns":game.cooldowns.duplicate(true),"player":game.player.duplicate(true)}
 
 func check_reads(game: BattleGame, label: String) -> void:
-	var readers := {"weapons":game.weapon_entries,"defence":game.defense_entries,"shield":game.max_shield,"movement":game.ship_movement,"name":game.ship_name,"limit":game.equipment_limit,"tech slots":game.hightech_slots,"income":game.resource_minute_total.bind("1")}
+	var readers := {"weapons":game.weapon_entries,"defence":game.defense_entries,"shield":game.max_shield,"movement":game.ship_movement,"name":game.ship_name,"limit":game.equipment_limit,"tech slots":game.hightech_slots,"income":game.income_history.display_total.bind("1",game.economy_time())}
 	readers["research snapshot"]=game.tech_tree_snapshot
 	for key in BattleGame.EQUIPMENT:
 		readers["stat/"+key]=game.stat.bind(key)
