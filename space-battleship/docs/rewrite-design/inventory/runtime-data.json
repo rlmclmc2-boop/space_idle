@@ -1,0 +1,380 @@
+[
+  {
+    "path": "data/ai_tech_tree.json",
+    "sha256": "4b6688206c1dabd8779890f1edfc063b09b6dd84e291dd7ee0c47a52251cf224",
+    "root_type": "dict",
+    "keys": [
+      "singularity",
+      "weapon_accuracy",
+      "equipment_reinforcement",
+      "resource_refining",
+      "fragment_condensation",
+      "equipment_finishing",
+      "uranium_extraction",
+      "unification"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 8
+  },
+  {
+    "path": "data/auto_level_generation.json",
+    "sha256": "87f1a462b23d8df5806d4ee973310e04eff093a44799053a1f12976919a869dd",
+    "root_type": "dict",
+    "keys": [
+      "version",
+      "max_loadouts",
+      "pass_winrate",
+      "max_level",
+      "max_total_battles",
+      "max_per_level",
+      "coarse_runs",
+      "max_seconds",
+      "seed",
+      "similarity",
+      "group_position",
+      "final_wave"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 12
+  },
+  {
+    "path": "data/battle_result_analysis.json",
+    "sha256": "8d5fed12716b552951f37735e4fb631b19ffa81c8ee351f37ab833be056bd0d9",
+    "root_type": "dict",
+    "keys": [
+      "version",
+      "design",
+      "retest",
+      "min_tests",
+      "high_tests",
+      "wilson_z",
+      "max_interval_width",
+      "boundary_low",
+      "boundary_high",
+      "good_rate",
+      "bad_rate",
+      "dominant_rate",
+      "hopeless_rate",
+      "outcome_variance",
+      "time_cv",
+      "short_seconds",
+      "long_seconds",
+      "discrimination_high",
+      "discrimination_low",
+      "min_configurations",
+      "max_excluded_ratio",
+      "max_pairs",
+      "max_input_bytes"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 23
+  },
+  {
+    "path": "data/enemy_fleet_analysis.json",
+    "sha256": "976babec798a8f255ed371b8d25a326a00f2885532e1179ae215f112bcd6307a",
+    "root_type": "dict",
+    "keys": [
+      "version",
+      "formation",
+      "batch",
+      "player",
+      "limits",
+      "defaults",
+      "strength",
+      "primary_limit",
+      "secondary_limit",
+      "feature_notes",
+      "tags"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 11
+  },
+  {
+    "path": "data/equipment_evolution.json",
+    "sha256": "6f494f85b50d4e6d3a993ce03a7f5420cbdd04deb979a2cde1734253b4d9c99c",
+    "root_type": "dict",
+    "keys": [
+      "interval",
+      "first_stat_multiplier",
+      "later_stat_multiplier",
+      "material_id",
+      "material_cost_per_tier",
+      "visual_palette",
+      "visual_strength_start",
+      "visual_strength_per_tier"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 8
+  },
+  {
+    "path": "data/game_data.json",
+    "sha256": "6495f35f28b35573b3dce4548d19b816addf69480df71f5ac1ef5a16b3285a75",
+    "root_type": "dict",
+    "keys": [
+      "source",
+      "ship",
+      "equipment",
+      "enemies",
+      "groups",
+      "levels",
+      "resources",
+      "config",
+      "defaults",
+      "fallbacks",
+      "source_files",
+      "hightech",
+      "unlock",
+      "crew",
+      "crew_assignment",
+      "planet",
+      "crew_config",
+      "planet_build",
+      "planet_buff",
+      "galaxy",
+      "galaxy_build",
+      "galaxy_config",
+      "enhance_config",
+      "weapon_motion",
+      "enemy_weapon_base",
+      "battle_design"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 26
+  },
+  {
+    "path": "data/hyperspace_config.json",
+    "sha256": "47fcb756d075c4070cfe1b18b68d5d79ba3ecffa58a385411baccbdc2ba4d36c",
+    "root_type": "dict",
+    "keys": [
+      "version",
+      "unlock_stage",
+      "minimum_level",
+      "energy_rate",
+      "energy_cap",
+      "ticket",
+      "minimum_duration",
+      "warehouse_capacity",
+      "overflow_capacity",
+      "reforge_capacity_gain",
+      "initial_retention_capacity",
+      "retention_capacity_gain",
+      "maximum_equipped",
+      "maximum_legendary",
+      "maximum_ultimate",
+      "completion_budget",
+      "routes",
+      "quality_limits",
+      "modernization_tier_weights",
+      "hull_capacities",
+      "quality_weights",
+      "weapon_level_bonuses",
+      "ultimate_weapon_bonus",
+      "affix_initial_probability",
+      "hanging_initial_probability",
+      "additional_probability_factor",
+      "tier_weights",
+      "value_precision",
+      "amplification_rate",
+      "amplification_start_level",
+      "material_base_reward",
+      "material_reward_level_step",
+      "material_reward_start_level",
+      "dismantle_amounts",
+      "maximum_filter_conditions",
+      "maximum_filter_string_length",
+      "maximum_forecast_attempts",
+      "maximum_command_id_length",
+      "policies",
+      "forge_costs",
+      "lock_cost_multiplier",
+      "reroll_guarantee_multiplier",
+      "modernization_cost_base",
+      "modernization_level_step",
+      "modernization_legendary_multiplier",
+      "affixes",
+      "hanging_modules",
+      "legendary_effects",
+      "late_supply_unlock_stage",
+      "late_energy_rate_multiplier",
+      "late_material_reward_multiplier",
+      "late_supply_ramp_seconds",
+      "modernization_base_coefficient",
+      "material_unit_scale",
+      "ultimate_core_probability"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 55
+  },
+  {
+    "path": "data/hyperspace_entity_schema.json",
+    "sha256": "6137f45d5b7292508b83dbdad694502ae58d0620636efbf12d286fbc840f986f",
+    "root_type": "dict",
+    "keys": [
+      "version",
+      "sources_origin",
+      "source_commit",
+      "tables",
+      "templates",
+      "editable_paths",
+      "frozen_inputs",
+      "note"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 8
+  },
+  {
+    "path": "data/hyperspace_visuals.json",
+    "sha256": "1c432da564cc3c187432582cbb643a867b05048526cc3affe6408f0e7a2a0a19",
+    "root_type": "dict",
+    "keys": [
+      "version",
+      "quality",
+      "ultimate_color",
+      "emission",
+      "animate",
+      "high_tier_max",
+      "ornament_scale",
+      "body_tint",
+      "tier_glyph_scale"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 9
+  },
+  {
+    "path": "data/level_generation_config.json",
+    "sha256": "595b2e04733c0dcd619f7d334b3bf406686ab4cf74194808b85c0aeeee2b4841",
+    "root_type": "dict",
+    "keys": [
+      "level_count",
+      "battle_points_per_level",
+      "small_cycle",
+      "large_cycle",
+      "strength_pattern",
+      "weapon_pattern",
+      "battle_point_offsets",
+      "strength_tolerance",
+      "fleet_reuse_limit",
+      "recent_fleet_window",
+      "similarity_window",
+      "seed"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 12
+  },
+  {
+    "path": "data/ship_weapon_visuals.json",
+    "sha256": "8aaa0722dd5468242529edd5b31b153b105cd0696c4725b724d5887633e60d5f",
+    "root_type": "dict",
+    "keys": [
+      "ships",
+      "weapons",
+      "enemy_rotating_art"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 3
+  },
+  {
+    "path": "data/space_enemy_candidates.json",
+    "sha256": "1d27ecacd93e4208bccc8a3b79568516c169846fea2213bb79e4e68fbd3dcd14",
+    "root_type": "dict",
+    "keys": [
+      "schema_version",
+      "status",
+      "scope",
+      "base_commit",
+      "groups",
+      "enemies",
+      "acceptance",
+      "reward_data"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 8
+  },
+  {
+    "path": "data/space_enemy_reward_catalog.json",
+    "sha256": "3a6cb4d121d30c6ab0c32f4f5b094be81b29449c42d159b1b375ca4df1c14e7b",
+    "root_type": "dict",
+    "keys": [
+      "schema_version",
+      "status",
+      "references",
+      "source_hashes"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 4
+  },
+  {
+    "path": "data/space_enemy_reward_early_frozen.json",
+    "sha256": "98cd28eff0860449fabaee6c5b8b9e705ec076da49181726e593b1cac0e2b64a",
+    "root_type": "dict",
+    "keys": [
+      "schema_version",
+      "baseline_commit",
+      "waves",
+      "groups",
+      "enemies"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 5
+  },
+  {
+    "path": "data/space_enemy_reward_recipes.json",
+    "sha256": "c7bebfc0e645a2957a559aecb885102c9742cccb0cca043aef47177ae9367077",
+    "root_type": "dict",
+    "keys": [
+      "schema_version",
+      "groups"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 2
+  },
+  {
+    "path": "data/space_enemy_reward_sources.json",
+    "sha256": "4c92f2168c9c9b36da933934a10d4cfe4226870825b43dd228c3132ba4b8780a",
+    "root_type": "dict",
+    "keys": [
+      "schema_version",
+      "source_sha256",
+      "waves"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 3
+  },
+  {
+    "path": "data/space_enemy_routes.json",
+    "sha256": "4470c2af1bea87ad20f476840e4e69a547ab1222438d7802c881e94e6dfdfe58",
+    "root_type": "dict",
+    "keys": [
+      "schema_version",
+      "scope",
+      "data_status",
+      "candidate_config",
+      "routes",
+      "selected_mainline_level_policy",
+      "binding_contract",
+      "display_weapon_names",
+      "acceptance"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 9
+  },
+  {
+    "path": "data/ui_text.json",
+    "sha256": "d8d315b7206baa44f2b866f6f2323c2e67ab37c206bcd5ffece07ea30e08121b",
+    "root_type": "list",
+    "keys": [],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 2487
+  },
+  {
+    "path": "data/ui_text_contract.json",
+    "sha256": "bd060b742700c28843ea2765b78038e1f224cf18093daa0bab2db7d47c323d66",
+    "root_type": "dict",
+    "keys": [
+      "entries",
+      "bindings"
+    ],
+    "authority": "generated_only_or_must_move_to_excel",
+    "records": 2
+  }
+]

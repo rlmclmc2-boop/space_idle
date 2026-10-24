@@ -1,0 +1,686 @@
+path,sheet,column,field,description,type_or_note,populated_rows,formula_rows,missing_formula_cache,chapter,role,disposition
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,1,id,稳定键,文本,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,2,name,科技名称,文本,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,3,description,每级效果说明,文本,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,4,tier,层级,independent/basic/core/ultimate,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,5,base_seconds,0→1 秒数,正数,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,6,growth,耗时倍率,>1,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,7,effect,受益类别,英文类别,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,8,factor,每级乘数,正数,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,9,unlock,额外解锁,空或 enhancement,1,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,10,requirements,前置：ID:等级;ID:等级,固定级或 10*k+1,3,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ai_tech_tree.xlsx,ai_tech_tree,11,legacy_unlock,Legacy research visibility gate,string,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,1,id,候选标识,string,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,2,group_id,仅引用新编组，不写已有level,int,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,3,tier,普通/精英/BOSS/终极,string,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,4,counter,预期克制或中立；必须实测确认,string,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,5,base_level,固定二级Destroyer全部有效模块的+0等级,int,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,6,min_upgrade,优势武器预期最低增量,int,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,7,target_seconds,优势武器目标战斗时长（秒），±20%工作容差,float,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,8,status,草案/待机制批准/通过,string,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,9,description,构成及测试条件说明,string,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,10,pair_id,原版与变体共有的稳定模板标识,string,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,11,attack_variant,仅指敌方输出：energy_attack / physical_attack,string,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,12,attack_type,敌方实际伤害类型：1能量/2物理；与counter所指防御克制独立,int,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/battle_design.xlsx,battle_design,13,paired_group_id,同模板另一攻击版本的monGroup ID,int,40,0,0,11,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/config.xlsx,config,1,name,这个配置的名字,如上,38,0,0,09,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/config.xlsx,config,2,des,配置的描述,如上,38,0,0,09,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/config.xlsx,config,3,para_1,配置的参数,如上,38,0,0,09,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,1,id,唯一ID,,20,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,2,name,船员名称,,20,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,3,description,船员说明,,20,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,4,icon,图标资源路径,,20,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,5,basePower,基础能力,,20,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,6,defaultAssignment,默认岗位，空为待命,,3,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,7,unlockId,引用unlock，空为开放,,20,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,8,equipmentSlotCount,未开放装备槽数量,,20,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew.xlsx,crew,9,defaultTargetId,默认目标ID，岗位非空时填写,,3,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,1,id,系统分配ID,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,2,targetType,目标模块注册名,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,3,effectType,效果注册名,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,4,baseValue,基础效果值,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,5,levelScale,成长倍率指数,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,6,powerScale,基础能力指数,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,7,interval,检查间隔秒；被动为0,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,8,maxCrew,每岗位每目标人数上限,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,9,description,岗位说明，空文案ID时显示,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,10,titleTextId,可选文案KEY；空则显示说明,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,11,descTextId,可选效果模板KEY；空则显示说明,,5,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,12,targetCategory,目标分类过滤，留空允许整个系统,,1,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_assignment.xlsx,crew_assignment,13,upgradeModes,升级数量选项，逗号分隔；max为最大值,,1,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_config.xlsx,crew_config,1,id,配置标识,string,12,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_config.xlsx,crew_config,2,value,参数值,number,8,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_config.xlsx,crew_config,3,des,显示文案,string,10,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/crew_config.xlsx,crew_config,4,targetType,岗位系统,string,4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enemy_weapon_base.xlsx,enemy_weapon_base,1,id,基础武器ID；仅供敌方缺行/空字段回退,string,4,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enemy_weapon_base.xlsx,enemy_weapon_base,2,dmg,原敌方回退基础伤害,number,4,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enemy_weapon_base.xlsx,enemy_weapon_base,3,cd,原敌方回退冷却（秒）,number,4,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enemy_weapon_base.xlsx,enemy_weapon_base,4,dmgtype,1能量/2物理,integer,4,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enemy_weapon_base.xlsx,enemy_weapon_base,5,para1,原敌方回退参数1,number/null,4,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enemy_weapon_base.xlsx,enemy_weapon_base,6,para2,原敌方回退参数2,number/null,2,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enemy_weapon_base.xlsx,enemy_weapon_base,7,para3,原敌方光束蓄能秒数,number/null,1,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enhance_config.xlsx,enhance_config,1,id,参数键,string,68,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enhance_config.xlsx,enhance_config,2,value,可调数值,number,68,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enhance_config.xlsx,enhance_config,3,unit,单位,string,68,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/enhance_config.xlsx,enhance_config,4,des,简短含义,string,68,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,1,name,武器名,如上,11,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,2,des,武器说明,如上,11,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,3,level,武器等级,如上,11,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,4,dmgtype,伤害类型，1为能量，2为物理。,如上,11,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,5,dmg,一级基础伤害，按dmgMulti计算目标等级后取整；玩家导弹已回填现行有效基础值，无额外隐藏伤害倍率。,如上,11,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,6,dmgMulti,"武器命中时的伤害随等级放大,算法为dmg*(1+dmgMulti)^(等级-1),除了首2位其他位都是0,四舍五入,如果不足100,则末尾为5",如上,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,7,cd,玩家武器冷却或光束周期（秒）；敌方专用行仍属敌方，空字段取enemy_weapon_base表。,如上,11,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,8,<unnamed>,,,0,0,0,05,current_excel_source,blank structural column
+config_excel/equipment.xlsx,equipment,9,res_1,升级该武器需要的资源,支持不做修改就能扩展，格式均为res_x。如res_2，res_3就表示第二种，第三种资源。资源为res表的id,7,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,10,cost_1,升到该等级需要的资源数量,支持不做修改就能扩展，格式均为cost_x。如cost_2，cost_3就表示第二种，第三种资源消耗量。与res_x一一对应,7,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,11,costMulti_1,资源的等级乘算,"算法为cost*(1+costMulti)^(等级-1),除了首2位其他位都是0,四舍五入,如果不足100,则末尾为5",7,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,12,res_2,升级该武器需要的资源,支持不做修改就能扩展，格式均为res_x。如res_2，res_3就表示第二种，第三种资源。资源为res表的id,0,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,13,cost_2,升到该等级需要的资源数量,支持不做修改就能扩展，格式均为cost_x。如cost_2，cost_3就表示第二种，第三种资源消耗量。与res_x一一对应,0,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,14,costMulti_2,资源的等级乘算,"算法为cost*(1+costMulti)^(等级-1),除了首2位其他位都是0,四舍五入,如果不足100,则末尾为5",0,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,15,para1,导弹：每批数量（整数）；激光/火炮：速度（单位/秒）；光束：达到最高增幅的秒数。,如上,11,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,16,para2,导弹：巡航速度（单位/秒）；光束：最高伤害增幅；其他装备仍按其说明。,如上,6,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,17,para3,武器的额外参数。具体每个武器再定义，一般可参考des,如上,3,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/equipment.xlsx,equipment,18,para4,武器的额外参数。具体每个武器再定义，一般可参考des,如上,1,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,1,id,编号,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,2,key,稳定键,string,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,3,name,名称,string,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,4,order,顺序,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,5,unlock_type,解锁条件,string,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,6,unlock_value,解锁参数,string,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,7,next_galaxy,后续星系,string,0,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,8,map_w,逻辑图宽,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,9,map_h,逻辑图高,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,10,start_w,起始宽,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,11,start_h,起始高,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,12,building_slot_count,功能槽数,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,13,slot_seed,布局种子,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,14,explore_work_total,探索总工程量,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,15,explore_power_base,基础探索量/秒,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,16,explore_power_per_crew,每船员探索量/秒,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,17,ship_per_crew,每船员探索船,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,18,build_interval,生成尝试间隔秒,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,19,construction_time,新建施工秒,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,20,upgrade_power_base,基础升级量/秒,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,21,upgrade_power_per_crew,每船员升级量/秒,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,22,upgrade_cost_lv2,升2级工程量,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,23,upgrade_cost_lv3,升3级工程量,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,24,upgrade_cost_lv4,升4级工程量,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,25,upgrade_cost_lv5,升5级工程量,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,26,concurrent_upgrade_count,并行升级数,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,27,special_cycle,稀有建筑轮数,float,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,28,core_asset,核心模型路径,string,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy.xlsx,galaxy,29,des,说明,string,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,1,id,编号,float,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,2,key,稳定键,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,3,galaxy_key,所属星系,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,4,name,名称,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,5,group,分组,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,6,max_lv,等级上限,float,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,7,effect_type,效果类型,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,8,base_effect,每级效果,float,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,9,asset_lv1,1级模型,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,10,asset_lv2,2级模型,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,11,asset_lv3,3级模型,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,12,asset_lv4,4级模型,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,13,asset_lv5,5级模型,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,14,visual_category,视觉类型,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_build.xlsx,galaxy_build,15,des,说明,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_config.xlsx,galaxy_config,1,key,稳定键,string,13,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_config.xlsx,galaxy_config,2,value,配置值,float,13,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_config.xlsx,galaxy_config,3,type,值类型,string,13,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/galaxy_config.xlsx,galaxy_config,4,des,说明,string,13,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,1,name,这个神器的名字,如上,4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,2,des,神器的效果,如上,4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,3,description,界面上的描述,如上,4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,4,tpCostBase,升级高科技需要的基础时间,如上,4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,5,tpCostMutiple,"每次升级后升级时间的乘数。tpCostBase*(1+tpCostMutiple*等级),四舍五入",如上,4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,6,tpCostMutiple2,"每次升级后升级时间的乘数。tpCostBase*(1+tpCostMutiple*等级),四舍五入","400级开始启用,公式改为tpCostBase*(1+tpCostMutiple*等级)*(1+tpCostMutiple2)^(LV-400)",4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,7,para1,可变参数，具体效果参看神器的效果des,如上,4,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hightech.xlsx,hightech,8,para2,可变参数，具体效果参看神器的效果des,如上,2,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,基础参数,1,key,"现有或本次明确规划的配置键
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,基础参数,2,data_type,"本键固定数据类型，不随单元格显示格式改变
+单位：类型标签
+约束：int/float/bool/string/null；必须符合键契约；锁定",enum,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,基础参数,3,value,"按本键固定类型读入的单一字面值
+单位：见unit列
+约束：拒绝公式；不得把数字放进文本；null键用空值且类型为null；有限值；每键专属范围见KEY_CONTRACT",typed_literal,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,基础参数,4,unit,"值的中文单位与比例口径
+单位：说明
+约束：必填；只作说明，不改变数值计算",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,基础参数,5,description,"中文用途/联动说明
+单位：说明
+约束：必填；不参与JSON业务值",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,基础参数,6,constraint,"固定范围/外键/不可编辑理由
+单位：说明
+约束：必填；以代码契约执行，不能编辑此文案绕过校验",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,基础参数,7,editable,"该键是否真实允许调整；不是功能开关
+单位：权限标签
+约束：锁定并匹配契约；false拒绝改离基线",bool,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,路线,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,路线,2,route_id,"现有alpha/beta/gamma/delta路线
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,路线,3,weapon,"路线武器结构绑定；四个既有ID唯一覆盖
+单位：已有ID引用
+约束：必须存在于现有装备/敌武器注册表；保持当前引用，变更需跨表校验",string,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,路线,4,material,"现有专属材料结构ID；与改造成本及存档一致
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",string,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,品质,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,品质,2,quality,"来源品质或独占核心抽签结果
+单位：稳定ID
+约束：white/blue/gold/legendary/ultimate_core固定集合；核心行的非weight列必须空；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,品质,3,weight,"相对抽签权重，概率=本权重/所有结果总和；默认总和1.09。不是0.5独立50%。调大提高该结果相对出现率。
+单位：相对权重
+约束：非负；合计>0；默认合计1.09，不能当互斥绝对概率",float,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,品质,4,affix_limit,"词缀槽上限，受品质硬上限0/2/3/3；调大可生成/添加更多，不自动补已有机。
+单位：槽
+约束：非负；不超过既有0/2/3/3硬上限；仅ultimate_core行必须空，导出时不新增对应品质字段",int_or_blank,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,品质,5,hanging_limit,"挂设槽上限，硬上限4/2/1/0；传说化保留原挂设，不能用传说0误解成清空。
+单位：槽
+约束：非负；不超过既有4/2/1/0硬上限；仅ultimate_core行必须空，导出时不新增对应品质字段",int_or_blank,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,品质,6,weapon_level_bonus,"非究极武器有效等级增量，蓝来源优先，蓝转传说继续用蓝值；究极覆盖，不叠加。
+单位：武器有效等级增量
+约束：非负；蓝来源继承规则不改；仅ultimate_core行必须空，导出时不新增对应品质字段",int_or_blank,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,品质,7,dismantle_amount,"一次拆解的专属材料份数及随机模块份数共用此值。首份模块解锁，重复增加经验；须与自动筛除奖励验证上限联动。
+单位：份/次
+约束：正整数；现行为同一个数，不拆成两个可独立调参来源；奖励校验上界联动；仅ultimate_core行必须空，导出时不新增对应品质字段",int_or_blank,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,舰型容量,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,舰型容量,2,hull_id,"现有舰型ID
+单位：已有ID引用
+约束：必须存在于ship.xlsx；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,舰型容量,3,capacity,"该舰型无人机装备容量；调大可同时生效更多机，调小更少；仍受全局上限约束
+单位：架
+约束：1..5，且满足全局maximum_equipped",int,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,阶级权重,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,阶级权重,2,tier,"现有词缀阶级，1为最高
+单位：阶
+约束：1..5完整唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,阶级权重,3,draw_weight,"生成及升阶成功判定相对权重；1阶最强。抽到更强阶即成功，但仅提升1阶，不跳阶。
+单位：相对权重
+约束：>0；保留默认1/5/15/45/135及order",float,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,阶级权重,4,modernization_weight,"此阶每条普通词缀的现代化费用附加系数，与初始系数相加；调大该阶词缀越多报价越贵，不影响生成概率。
+单位：无量纲
+约束：非负；保留默认10/5/3/1/0.5；与draw_weight是不同用途，不混为一项",float,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀定义,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀定义,2,affix_id,"已实现聚合器支持的词缀ID
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀定义,3,weapon,"适用武器；空字符串代表全局
+单位：武器ID/空字符串
+约束：已支持武器或空；空保持为""""而非null；结构绑定必须基线等值",string,4,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀定义,4,amplified,"固定：是否按等级放大已有词缀值
+单位：bool
+约束：必须基线等值；不改变词缀行为",bool,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀区间,1,affix_id,"词缀定义外键
+单位：已有ID引用
+约束：必须存在于词缀定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,62,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀区间,2,tier,"该词缀有定义的阶级
+单位：阶
+约束：1..5；仅导出存在的阶，不凭空补缺；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,62,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀区间,3,minimum,"原始词缀下界；比例词缀0.1=+10%，chain_count为数量。调大新抽取/重洗下限更高；未改已存值；区间含量化网格点。
+单位：原始加成；1=100%或数量
+约束：有限；≤maximum；value_precision网格至少有一个可取值",float,62,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,词缀区间,4,maximum,"原始词缀上界，需≥下界；调大新抽取潜力更高，也会增加保底最大值期望成本；数量词缀最终聚合转int。
+单位：同minimum
+约束：有限；≥minimum；数量词缀现有量化及最终int投影保持",float,62,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,挂设成长,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,挂设成长,2,module_id,"既有五种挂设ID
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,挂设成长,3,base_exp,"每重复模块输入经验，同时各级阈值基数；首份只解锁。调大两者同比，不等于单纯更易升级。
+单位：经验/重复模块
+约束：>0且有限",float,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,挂设成长,4,exp_growth,"升级所需经验=base_exp×(1+本值)^当前等级。调大后续升级更慢。
+单位：比例；1=100%
+约束：≥0且有限，经验需求不得非有限",float,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,挂设成长,5,effect_growth,"每架已挂设加成=(1+本值)^全局模块等级−1。0.1、2级=21%，两架42%；仓库未装备不计。
+单位：比例；1=100%
+约束：≥0且有限，实际公式pow(1+g,L)-1保持",float,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,挂设成长,6,unlock_stage,"模块可挂设及参与效果的最高到达主线门槛；调大延后使用，不代表模块抽取概率。
+单位：关
+约束：非负整数",int,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,挂设成长,7,effects_note,"当前effects数组的说明，仅标签非路由
+单位：只读说明
+约束：从基线说明映射；不编辑扩玩法；原JSON effects数组由锁定契约保留",string,5,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说定义,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,12,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说定义,2,effect_id,"既有十二种传说效果ID
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,12,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说定义,3,weapon,"固定结构绑定；空字符串表示全武器通用
+单位：武器ID/空字符串
+约束：仅已有武器或空字符串；结构绑定必须基线等值",string,8,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说定义,4,score_parameter_note,"当前强弱比较读取第一个parameter键
+单位：只读参数名
+约束：保持当前首参数或空；只是说明，不新增可调primary策略",string,11,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说随机参数,1,effect_id,"传说定义外键
+单位：已有ID引用
+约束：必须存在于传说定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说随机参数,2,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说随机参数,3,parameter,"该效果已实现参数名
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说随机参数,4,minimum,"新生成/重洗范围下端
+单位：依参数；倍率/比例
+约束：≤maximum、有限、量化网格非空；比例类满足既有语义范围",float,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说随机参数,5,maximum,"新生成/重洗范围上端
+单位：同minimum
+约束：≥minimum；不得混入旧存值许可范围",float,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说随机参数,6,unit,"值的中文单位与比例口径
+单位：说明
+约束：必填；只作说明，不改变数值计算",string,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说随机参数,7,description,"中文用途/联动说明
+单位：说明
+约束：必填；不参与JSON业务值",string,13,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,1,effect_id,"传说定义外键
+单位：已有ID引用
+约束：必须存在于传说定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,2,constant_path,"效果内固定常量路径，如quality_ratios/white
+单位：相对字段路径
+约束：仅当前支持的已知路径，不接受脚本/任意表达式；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,3,data_type,"本键固定数据类型，不随单元格显示格式改变
+单位：类型标签
+约束：int/float/bool/string/null；必须符合键契约；锁定",enum,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,4,value,"按本键固定类型读入的单一字面值
+单位：见unit列
+约束：拒绝公式；不得把数字放进文本；null键用空值且类型为null；有限值；每键专属范围见KEY_CONTRACT",typed_literal,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,5,unit,"值的中文单位与比例口径
+单位：说明
+约束：必填；只作说明，不改变数值计算",string,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,6,description,"中文用途/联动说明
+单位：说明
+约束：必填；不参与JSON业务值",string,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,7,constraint,"固定范围/外键/不可编辑理由
+单位：说明
+约束：必填；以代码契约执行，不能编辑此文案绕过校验",string,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,传说常量,8,editable,"该键是否真实允许调整；不是功能开关
+单位：权限标签
+约束：锁定并匹配契约；false拒绝改离基线",bool,22,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,改造费用,1,operation_order,"已有改造操作输出顺序
+单位：0起序号
+约束：固定操作顺序，锁定",int,10,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,改造费用,2,operation,"已有Forge操作ID
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,10,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,改造费用,3,resource,"费用资源结构引用；当前为固定身份，只读，不因显示editable就能换资源。
+单位：已有ID引用
+约束：必须存在于路线材料与核心账本；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,10,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,改造费用,4,resource_order,"同一操作中资源键的原插入顺序
+单位：0起序号
+约束：同operation内唯一连续且锁定，不能依物理行排序",int,10,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,改造费用,5,amount,"指定操作每次基础资源消耗。调大更贵；锁定/定向/保底操作还叠加其倍率或抽取次数；究极还原消耗核心，不退款。
+单位：份/次
+约束：非负整数；同(operation,resource)唯一；真实preview/commit共用此来源",int,10,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,固定规则_兼容说明,1,key,"保护参数或已存在policies子键
+单位：稳定键
+约束：允许清单，路径映射由契约指定；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,固定规则_兼容说明,2,data_type,"本键固定数据类型，不随单元格显示格式改变
+单位：类型标签
+约束：int/float/bool/string/null；必须符合键契约；锁定",enum,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,固定规则_兼容说明,3,value,"按本键固定类型读入的单一字面值
+单位：见unit列
+约束：拒绝公式；不得把数字放进文本；null键用空值且类型为null；有限值；每键专属范围见KEY_CONTRACT",typed_literal,15,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,固定规则_兼容说明,4,unit,"值的中文单位与比例口径
+单位：说明
+约束：必填；只作说明，不改变数值计算",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,固定规则_兼容说明,5,description,"中文用途/联动说明
+单位：说明
+约束：必填；不参与JSON业务值",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,固定规则_兼容说明,6,constraint,"固定范围/外键/不可编辑理由
+单位：说明
+约束：必填；以代码契约执行，不能编辑此文案绕过校验",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,固定规则_兼容说明,7,editable,"该键是否真实允许调整；不是功能开关
+单位：权限标签
+约束：锁定并匹配契约；false拒绝改离基线",bool,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,无人机外观,1,key,"外观字段稳定路径，品质ID引用正式品质配置
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,无人机外观,2,data_type,"本键固定数据类型，不随单元格显示格式改变
+单位：类型标签
+约束：int/float/bool/string/null；必须符合键契约；锁定",enum,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,无人机外观,3,value,"按本键固定类型读入的单一字面值
+单位：见unit列
+约束：拒绝公式；固定字面类型；每字段范围/品质外键见本行constraint；有限值；不参与战斗数值",typed_literal,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,无人机外观,4,unit,"值的中文单位与比例口径
+单位：说明
+约束：必填；只作说明，不改变数值计算",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,无人机外观,5,description,"逐字段中文用途、调大调小及纯表现边界
+单位：说明
+约束：必填；不参与JSON业务值",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,无人机外观,6,constraint,"本字段固定类型、范围或品质外键限制
+单位：说明
+约束：必填；以代码契约执行，不能编辑此文案绕过校验",string,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_config.xlsx,无人机外观,7,editable,"该键是否真实允许调整；不是功能开关
+单位：权限标签
+约束：锁定并匹配契约；false拒绝改离基线",bool,16,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,2,enemy_id,"现有独立异空间敌人ID
+单位：ID
+约束：正整数，当前223个既有ID；不得与主线ID冲突；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,3,description,"已有敌人描述
+单位：文本
+约束：必须基线等值；不创造美术/新指南",string,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,4,size,"敌舰尺寸档位，影响战场几何/舰型；调大需重新检查阵型合法，不是生命倍率。
+单位：尺寸档
+约束：正整数且现有模型/几何支持",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,5,health,"敌人基础生命，另乘所选主线lifeRatio。调大更耐打，不复制主线等级倍率。
+单位：生命
+约束：>0且有限",number,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,6,armour_type,"装甲伤害类型ID（0/1/2），与当前武器伤害类型匹配才使用相应抗性；不是减伤百分比。
+单位：枚举码
+约束：0/1/2",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,7,shield,"敌人基础护盾容量，另乘所选生命倍率；0表示无盾。调大增加容量，不增生命本体。
+单位：护盾
+约束：≥0且有限",number,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,8,shield_type,"护盾伤害类型ID0/1/2，作用于盾的类型抗性，和装甲类型分别处理。
+单位：枚举码
+约束：0/1/2",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,9,shield_recovery,"护盾恢复比例参数；按主线敌盾现有规则处理，调大恢复更快，0禁恢复；需结合盾容量。
+单位：比例/游戏秒
+约束：≥0且有限",number,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,10,shield_delay,"护盾被命中后的恢复等待游戏秒；调大更晚恢复，0为立即恢复条件。
+单位：游戏秒
+约束：≥0且有限",number,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,敌人,11,damage_multiplier,"敌人攻击基础乘数，另继承所选主线atkRatio；调大造成更多伤害，不改变攻击间隔。
+单位：无量纲
+约束：≥0且有限",number,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,武器安装,1,enemy_id,"异空间敌人外键
+单位：ID
+约束：必须存在于异空间敌人；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,武器安装,2,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,武器安装,3,weapon_id,"现有敌武器安装键
+单位：已有ID引用
+约束：必须存在于enemy_weapon_base.xlsx/现有ShipDatabase.enemy_weapon；保持当前引用，变更需跨表校验",string,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队,1,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队,2,group_id,"现有四十组独立编队ID
+单位：ID
+约束：正整数，当前7001..7040既有集合，不与主线冲突；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队,3,description,"已有编队名称/描述
+单位：文本
+约束：必须基线等值；不创造新描述",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队,4,tier,"普通/精英/Boss/地区Boss档位
+单位：档位
+约束：normal/elite/boss/ultimate；总计16/16/4/4，当前不扩组",enum,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队,5,reward_reference_id,"奖励预算设计参考键
+单位：已有ID引用
+约束：必须存在于奖励参考；保持当前引用，变更需跨表校验",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队槽位,1,group_id,"编队外键
+单位：ID
+约束：必须存在于异空间编队；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队槽位,2,slot_index,"15槽中的0起索引，保留不规则空位；目前schema锁定，不能标可编辑。
+单位：0起索引
+约束：0..14，group内唯一，不能自动密排；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队槽位,3,enemy_id,"该现有非空槽使用的异空间敌ID，替换需保持合法尺寸/几何及recipe衍生ID一致。
+单位：ID
+约束：必须存在于异空间敌人",int,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队槽位,4,x,"逻辑战场横坐标，调大向右；范围54..518，非像素截图坐标。
+单位：逻辑战场单位
+约束：有限且54..518；实际几何合法",number,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,编队槽位,5,y,"逻辑战场纵坐标，调大向下；范围80..350，检查前后/中心扇区。
+单位：逻辑战场单位
+约束：有限且80..350；大型舰前后顺序/中心扇区合法",number,180,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,路线编排,1,route_id,"异空间路线外键
+单位：已有ID引用
+约束：必须存在于路线；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,路线编排,2,tier,"战斗档位
+单位：档位
+约束：normal/elite/boss/ultimate固定顺序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",enum,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,路线编排,3,order,"固定输出/随机选择顺序；物理行排序不改变它
+单位：0起序号
+约束：按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,路线编排,4,group_id,"该路线该档有序编队引用；必须唯一覆盖40组、档位匹配4/4/1/1。更换需与其他行联动，不能复制组突破数量。
+单位：ID
+约束：存在于异空间编队且档位一致；每路线4/4/1/1，无跨路线重复",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,奖励参考,1,reference_id,"现有奖励参考设计键
+单位：稳定ID
+约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,奖励参考,2,source_design_group_id,"现有正式主线原设计组引用
+单位：ID
+约束：存在于正式monGroup；仅引用，不复制预算；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,奖励参考,3,reference_member_count,"从正式原设计组非空slots导出的参考成员数
+单位：个
+约束：现值锁定，与正式monGroup实时派生值一致；不是第二份可调预算",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,奖励参考,4,late_reference_level_id,"现有晚段回退引用关卡
+单位：关卡ID
+约束：存在于正式level且对应group确属该关卡；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,奖励参考,5,late_reference_group_id,"现有晚段回退引用组
+单位：group ID
+约束：存在于正式monGroup；真实blocks从mon的drops读取；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",int,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,奖励参考,6,boundary_note,"已有主线实例预算由主线表派生；25无早段实例95块来自回退页；sources为冻结结构映射。不能以编辑备注改变预算。
+单位：只读说明
+约束：锁定；不把catalog未消费分界字段当参数；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",string,40,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,成员分配,1,group_id,"异空间奖励组外键
+单位：ID
+约束：存在于异空间编队；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,242,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,成员分配,2,member_order,"组内原成员记录顺序，锁定；保留零预算成员位置，避免随机调用/奖励映射漂移。
+单位：0起序号
+约束：同group/slot重复值一致；组内唯一成员顺序连续；锁定；导出按它排列成员",int,242,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,成员分配,3,slot_index,"实际收取该预算块的异空间非空槽
+单位：0起索引
+约束：必须为该组非空槽；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,242,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,成员分配,4,order,"同成员预算数组原顺序，锁定。空只用于零预算；物理行排序不改变输出。
+单位：0起序号
+约束：同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int_or_blank,200,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,成员分配,5,reference_member_ordinal,"源预算成员0起序号，0是第一个真实预算块；空表示该成员零预算，必须保留行。更换须全组完整覆盖且不重复；不填金额。
+单位：0起索引
+约束：覆盖0..reference_count-1且无重复；每个非空槽有成员记录，允许零预算；零预算成员必须保留一行，order与ordinal都为空，导出[]和jewelDropRolls=0",int_or_blank,200,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,早段回退预算,1,reference_id,"无早段主线实例的既有奖励参考ID
+单位：稳定ID
+约束：仅既有25参考；锁定；不复制有主线来源的预算；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",string,95,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,早段回退预算,2,reference_member_ordinal,"参考成员预算块索引
+单位：0起索引
+约束：每参考0..count-1；原95块结构锁定；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,95,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,早段回退预算,3,drop_order,"块内掉落数组顺序
+单位：0起序号
+约束：现有每块一项，order0锁定；不新增条目；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",int,95,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,早段回退预算,4,resource_id,"既有普通资源ID，当前1为铁；不是无人机专属材料ID。变更须确认资源注册表及预算类型，禁止新增未知资源。
+单位：正式res资源ID
+约束：必须存在于本次正式主线投影resources；不复制资源本身数值",int,95,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,早段回退预算,5,amount,"资源参考关≤5且当前主线来源无匹配时的回退单块基础数量。默认8/20，乘资源倍率后发放；调大该块更多，不是专属材料奖励。
+单位：资源份/预算块
+约束：非负有限且<9e15；不影响15已有主线早段模板及40晚段预算",number,95,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/hyperspace_enemies.xlsx,早段回退预算,6,chance,"该回退块掉落概率0..1，默认1必掉；调大更常出，不改掉落数量。
+单位：概率，1=100%
+约束：有限，0..1",float,95,0,0,07,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,1,id,关卡的id,如上,220,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,2,length,关卡长度,如上,220,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,3,monGroup,怪物群id,格式为{id|比例，id|比例....}，id为monGroup表的id，比例表示在关卡长度的%多少处出现,220,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,4,atkRatio,攻击倍率,敌方飞行器的器伤害*这个值（向上取整，没有小数）,220,160,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,5,lifeRatio,生命倍率,敌方飞行器的生命*这个值（向上取整，没有小数）,220,160,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,6,resRatio,资源倍率,敌方飞行器摧毁时获得的资源乘该值,220,160,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,7,jewelRatio,宝石倍率,,220,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,8,planetExpRatio,星球探索经验系数,30关为1，之前为0，之后每关增长20%并保留两位小数,220,150,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,9,entryAtkRatio,首战点攻击倍率（可选）,正有限数；空值继承上一关终点,1,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,10,entryLifeRatio,首战点生命倍率（可选）,正有限数；空值继承上一关终点,1,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level.xlsx,level,11,rewardReferenceGroups,未挂载的旧奖励来源组，按原战点序号排列；只用于已冻结超空间来源校验,JSON整数ID数组或空,7,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,1,id,关卡的id,如上,200,0,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,2,length,关卡长度,如上,70,0,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,3,monGroup,怪物群id,格式为{id|比例，id|比例....}，id为monGroup表的id，比例表示在关卡长度的%多少处出现,200,0,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,4,atkRatio,攻击倍率,敌方飞行器的器伤害*这个值（向上取整，没有小数）,70,67,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,5,lifeRatio,生命倍率,敌方飞行器的生命*这个值（向上取整，没有小数）,70,68,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,6,resRatio,资源倍率,敌方飞行器摧毁时获得的资源乘该值,70,68,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,7,jewelRatio,宝石倍率,,70,0,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/level_monGroup_generated.xlsx,level,8,planetExpRatio,星球探索经验系数,30关为1，之前为0，之后每关增长20%并保留两位小数,70,0,0,11,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,1,id,敌方飞行器id,如上,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,2,des,飞行器描述,如上,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,3,equipment,"使用的武器，从equipment表中读出来，逻辑等都使用该武器表的,格式为｛name|数量，name|数量...}",如上,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,4,dmgMultiple,武器的伤害乘该值，这样计算完后的就是这个飞行器的伤害,如上,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,5,health,飞行器生命,如上,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,6,armourType,护甲类型,1为能量，2为物理,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,7,res,掉落的资源,格式为｛id，数量，概率｝，id为res表的id，数量就是掉出来的数量，概率是被击毁时有多大概率掉落该资源,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,8,size,大小,战场中占据的格子数,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,9,shield,独立护盾容量，随关卡生命倍率；0为无盾,float,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,10,shieldType,护盾抗性类型：0无、1能量、2物理,int,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,11,shieldRecovery,每秒恢复最大盾量比例，受击暂停；0不恢复,float,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,12,shieldDelay,有效命中后等待多少游戏秒才恢复,float,10461,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,13,reactiveReduction,短窗连续齐射减伤标记，0关1开,int,79,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,14,archetype_id,稳定视觉舰型标识，不推断战斗规则,string,79,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,15,intelTrait,敌情页短特点；仅说明已配置敌种的战术身份，不承载伤害、抗性或机制数值,string,71,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,16,intelName,玩家可见敌舰名，不从内部描述裁剪,string,71,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,17,intelVisualRef,战斗舰型引用，填同一行 archetype_id；具体资源由战斗视觉解析器决定,string,71,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/mon.xlsx,mon,18,intelMechanics,有序机制键，以逗号分隔；无机制填 none,string,71,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/monGroup.xlsx,monGroup,1,id,敌方飞行器组id,如上,2330,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/monGroup.xlsx,monGroup,2,des,飞行器组描述,如上,2330,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/monGroup.xlsx,monGroup,3,mon,格式为{id1，id2....｝,战场从上到下一共是10个格子，这里的id是mon表的id，1-10分别对应10个格子的位置，null表示此处无飞船｝,2330,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/monGroup.xlsx,monGroup,4,combatTier,"Runtime wave tier, separate from final-wave completion",string,2053,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,1,id,数字ID,int,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,2,name,星球名称,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,3,unlockId,解锁配置ID,string,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,4,baseTime,探索秒数,number,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,5,baseExp,基础经验,number,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,6,tags,星球标签,string,0,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,7,visual,动态天体外观（JSON；缺项继承通用默认）,string,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,8,reforgeStartLevel,重铸后起始关卡,int,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet.xlsx,planet,9,minTime,探索时间下限（秒）,float,6,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,1,id,唯一ID,int,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,2,planet_id,所属星球ID,int,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,3,source,Buff来源,string,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,4,source_id,来源对象ID,string,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,5,condition,生效条件,string,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,6,buff_type,效果类型,string,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,7,target,作用对象,string,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,8,value,效果数值,number,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,9,stack,叠加方式,string,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,10,order,展示顺序,int,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_buff.xlsx,planet_buff,11,des,效果说明,string,35,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,1,id,建筑ID,string,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,2,name,建筑名称,string,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,3,des,效果说明,string,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,4,min_planet,最小星球ID,int,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,5,planet_rule,适用规则,string,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,6,planet_value,规则参数,string,2,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,7,order,发展顺序,int,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,8,unlock_explore,解锁探索度,int,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,9,build_explore,施工次数,int,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,10,extra_crew,额外船员数,int,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,11,type,效果类型,string,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,12,config1,效果参数1,float,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,13,config2,效果参数2,float,5,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/planet_build.xlsx,planet_build,14,previous_id,仅用于旧建筑存档ID迁移，不改变建造玩法,string,1,0,0,08,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,1,id,关卡的id,如上,220,0,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,2,length,关卡长度,如上,220,0,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,3,monGroup,怪物群id,格式为{id|比例，id|比例....}，id为monGroup表的id，比例表示在关卡长度的%多少处出现,220,0,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,4,atkRatio,攻击倍率,敌方飞行器的器伤害*这个值（向上取整，没有小数）,220,160,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,5,lifeRatio,生命倍率,敌方飞行器的生命*这个值（向上取整，没有小数）,220,160,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,6,resRatio,资源倍率,敌方飞行器摧毁时获得的资源乘该值,220,160,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,7,jewelRatio,宝石倍率,,220,0,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,8,planetExpRatio,星球探索经验系数,30关为1，之前为0，之后每关增长20%并保留两位小数,220,150,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,9,entryAtkRatio,首战点攻击倍率（可选）,正有限数；空值继承上一关终点,1,0,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,10,entryLifeRatio,首战点生命倍率（可选）,正有限数；空值继承上一关终点,1,0,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/level.xlsx,level,11,rewardReferenceGroups,未挂载的旧奖励来源组，按原战点序号排列；只用于已冻结超空间来源校验,JSON整数ID数组或空,7,0,0,05,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,1,id,敌方飞行器id,如上,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,2,des,飞行器描述,如上,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,3,equipment,"使用的武器，从equipment表中读出来，逻辑等都使用该武器表的,格式为｛name|数量，name|数量...}",如上,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,4,dmgMultiple,武器的伤害乘该值，这样计算完后的就是这个飞行器的伤害,如上,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,5,health,飞行器生命,如上,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,6,armourType,护甲类型,1为能量，2为物理,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,7,res,掉落的资源,格式为｛id，数量，概率｝，id为res表的id，数量就是掉出来的数量，概率是被击毁时有多大概率掉落该资源,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,8,size,大小,战场中占据的格子数,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,9,shield,独立护盾容量，随关卡生命倍率；0为无盾,float,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,10,shieldType,护盾抗性类型：0无、1能量、2物理,int,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,11,shieldRecovery,每秒恢复最大盾量比例，受击暂停；0不恢复,float,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,12,shieldDelay,有效命中后等待多少游戏秒才恢复,float,10461,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,13,reactiveReduction,短窗连续齐射减伤标记，0关1开,int,79,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,14,archetype_id,稳定视觉舰型标识，不推断战斗规则,string,79,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,15,intelTrait,敌情页短特点；仅说明已配置敌种的战术身份，不承载伤害、抗性或机制数值,string,71,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,16,intelName,玩家可见敌舰名，不从内部描述裁剪,string,71,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,17,intelVisualRef,战斗舰型引用，填同一行 archetype_id；具体资源由战斗视觉解析器决定,string,71,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/mon.xlsx,mon,18,intelMechanics,有序机制键，以逗号分隔；无机制填 none,string,71,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/monGroup.xlsx,monGroup,1,id,敌方飞行器组id,如上,2330,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/monGroup.xlsx,monGroup,2,des,飞行器组描述,如上,2330,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/monGroup.xlsx,monGroup,3,mon,格式为{id1，id2....｝,战场从上到下一共是10个格子，这里的id是mon表的id，1-10分别对应10个格子的位置，null表示此处无飞船｝,2330,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/published/monGroup.xlsx,monGroup,4,combatTier,"Runtime wave tier, separate from final-wave completion",string,2053,0,0,04,derived_copy_not_authority,chapter + Excel value; no cached fallback
+config_excel/res.xlsx,res,1,id,资源id,如上,2,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/res.xlsx,res,2,name,资源名,如上,2,0,0,06,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ship.xlsx,ship,1,name,这个配置的名字,如上,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ship.xlsx,ship,2,des,配置的描述,如上,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ship.xlsx,ship,3,para_1,配置的参数,飞船初始具有几个武器槽,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ship.xlsx,ship,4,para_2,配置的参数,飞船初始具有几个护甲槽,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ship.xlsx,ship,5,para_3,配置的参数,移动速度,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ship.xlsx,ship,6,<unnamed>,,,0,0,0,05,current_excel_source,blank structural column
+config_excel/ship.xlsx,ship,7,para_5,配置的参数,战舰占地,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/ship.xlsx,ship,8,para_6,配置的参数,同种武器上限,5,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/unlock.xlsx,unlock,1,name,稳定唯一ID,string,46,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/unlock.xlsx,unlock,2,type,内容类型,string,46,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/unlock.xlsx,unlock,3,target,原配置键,string,46,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/unlock.xlsx,unlock,4,level,通关关卡；0初始开放,int,46,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/unlock.xlsx,unlock,5,mode,cleared指定关；reached累计达到,string,46,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/unlock.xlsx,unlock,6,title,解锁标题,string,46,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/unlock.xlsx,unlock,7,desc,解锁描述,string,46,0,0,05,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/weapon_motion.xlsx,weapon_motion,1,id,参数ID,string,29,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/weapon_motion.xlsx,weapon_motion,2,value,实际数值；正式读表优先,number,29,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/weapon_motion.xlsx,weapon_motion,3,unit,单位,string,29,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/weapon_motion.xlsx,weapon_motion,4,description,用途；编辑后走正式导出并重新加载游戏,string,29,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+config_excel/weapon_motion.xlsx,weapon_motion,5,scope,影响范围,string,29,0,0,04,current_excel_source,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,总览,1,<unnamed>,,太空战舰是一个科幻飞行器不断攻击敌方飞行器的小游戏，横版，即时，有相关画面。玩家不需操作,58,0,0,02,legacy_source_not_authority,REVIEW
+../太空战舰.xlsx,总览,2,<unnamed>,,,50,0,0,02,legacy_source_not_authority,REVIEW
+../太空战舰.xlsx,总览,3,<unnamed>,,,12,0,0,02,legacy_source_not_authority,REVIEW
+../太空战舰.xlsx,总览,4,<unnamed>,,,1,0,0,02,legacy_source_not_authority,REVIEW
+../太空战舰.xlsx,level,1,id,关卡的id,如上,70,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,level,2,length,关卡长度,如上,70,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,level,3,monGroup,怪物群id,格式为{id|比例，id|比例....}，id为monGroup表的id，比例表示在关卡长度的%多少处出现,70,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,level,4,atkRatio,攻击倍率,敌方飞行器的器伤害*这个值（向上取整，没有小数）,70,69,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,level,5,lifeRatio,生命倍率,敌方飞行器的生命*这个值（向上取整，没有小数）,70,70,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,level,6,resRatio,资源倍率,敌方飞行器摧毁时获得的资源乘该值,70,70,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,1,name,武器名,如上,503,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,2,des,武器说明,如上,503,198,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,3,level,武器等级,如上,503,421,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,4,dmgtype,伤害类型，1为能量，2为物理。,如上,503,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,5,dmg,武器命中时的伤害,如上,503,297,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,6,cd,武器发射需要的时间,如上,503,99,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,7,unlock,对应level表id，通关对应id的关卡后解锁该武器。不填则这行无意义,如上,300,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,8,res_1,升级该武器需要的资源,支持不做修改就能扩展，格式均为res_x。如res_2，res_3就表示第二种，第三种资源。资源为res表的id,500,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,9,cost_1,升到该等级需要的资源数量,支持不做修改就能扩展，格式均为cost_x。如cost_2，cost_3就表示第二种，第三种资源消耗量。与res_x一一对应,500,495,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,10,res_2,升级该武器需要的资源,支持不做修改就能扩展，格式均为res_x。如res_2，res_3就表示第二种，第三种资源。资源为res表的id,455,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,11,cost_2,升到该等级需要的资源数量,支持不做修改就能扩展，格式均为cost_x。如cost_2，cost_3就表示第二种，第三种资源消耗量。与res_x一一对应,455,450,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,12,para1,武器的额外参数。具体每个武器再定义，一般可参考des,如上,503,297,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,13,para2,武器的额外参数。具体每个武器再定义，一般可参考des,如上,201,99,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,equipment,14,para3,武器的额外参数。具体每个武器再定义，一般可参考des,如上,100,0,0,05,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,1,id,敌方飞行器id,如上,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,2,des,飞行器描述,如上,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,3,equipment,"使用的武器，从equipment表中读出来，逻辑等都使用该武器表的,格式为｛name|数量，name|数量...}",如上,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,4,dmgMultiple,武器的伤害乘该值，这样计算完后的就是这个飞行器的伤害,如上,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,5,health,飞行器生命,如上,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,6,armourType,护甲类型,1为能量，2为物理,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,7,res,掉落的资源,格式为｛id，数量，概率｝，id为res表的id，数量就是掉出来的数量，概率是被击毁时有多大概率掉落该资源,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,mon,8,size,大小,战场中占据的格子数,6,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,monGroup,1,id,敌方飞行器组id,如上,8,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,monGroup,2,des,飞行器组描述,如上,8,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,monGroup,3,mon,格式为{id1，id2....｝,战场从上到下一共是10个格子，这里的id是mon表的id，1-10分别对应10个格子的位置，null表示此处无飞船｝,8,0,0,04,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,res,1,id,资源id,如上,2,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,res,2,name,资源名,如上,2,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,config,1,name,这个配置的名字,如上,7,0,0,09,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,config,2,des,配置的描述,如上,7,0,0,09,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,config,3,para_1,配置的参数,如上,7,0,0,09,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,1,name,这个神器的名字,如上,3,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,2,des,神器的效果,如上,3,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,3,description,界面上的描述,如上,3,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,4,timeCostBase,升级神器需要的基础时间,如上,3,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,5,timeCostMutiple,每次升级后升级时间的乘数。例如1级10秒，这个值为0.2，则2级12秒，3级14秒...四舍五入取整,如上,3,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,6,unlock,通过第几关后解锁,如上,3,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,7,para1,可变参数，具体效果参看神器的效果des,如上,3,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
+../太空战舰.xlsx,hightech,8,para2,可变参数，具体效果参看神器的效果des,如上,1,0,0,06,legacy_source_not_authority,chapter + Excel value; no cached fallback
