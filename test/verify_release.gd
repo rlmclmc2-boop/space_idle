@@ -8,6 +8,7 @@ var default_native_auto:=false
 var default_compiled:=false
 var default_cache:=false
 var default_save:=false
+var execution_provenance:Dictionary={}
 
 func check(ok: bool, message: String) -> void:
 	if not ok:
@@ -61,6 +62,14 @@ func verify() -> void:
 				break
 	check(native_admitted,"Normal release game did not admit actual native kernel")
 	check(native_sha256.length()==64,"Missing release DLL hash proof")
+	var provenance:Variant=JSON.parse_string(FileAccess.get_file_as_string("res://execution-provenance.json"))
+	check(provenance is Dictionary,"Missing embedded execution provenance")
+	if provenance is Dictionary:
+		execution_provenance=provenance
+		check(provenance.get("version")==1 and provenance.get("kind")=="player","Unexpected execution provenance contract")
+		check(provenance.get("scripts") is Dictionary and provenance.get("scripts",{}).has("scripts/game.gd"),"Missing staged game rule identity")
+		check(str(provenance.get("exporter_sha256","")).length()==64 and str(provenance.get("template_sha256","")).length()==64,"Missing build toolchain identity")
+		check(provenance.get("native",{}).get("sha256","")==native_sha256,"Embedded native identity differs from actual release DLL")
 	check(main.db.levels.size() > 0 and main.db.equipment.size() > 0, "Missing embedded game data")
 	check(main.font is FontVariation and main.font.base_font is FontFile, "Release must use embedded font")
 	var text_server := TextServerManager.get_primary_interface()
@@ -102,7 +111,7 @@ func verify() -> void:
 	finish()
 
 func finish() -> void:
-	var report := {"passed": failures.is_empty(), "failures": failures,
+	var report := {"execution_provenance":execution_provenance,"passed": failures.is_empty(), "failures": failures,
 		"executable": OS.get_executable_path(), "user_data": OS.get_user_data_dir(),
 		"renderer": RenderingServer.get_video_adapter_name(),"native_admitted":native_admitted,"native_sha256":native_sha256,"native_path":native_path,"default_native_auto":default_native_auto,"default_compiled":default_compiled,"default_cache":default_cache,"default_save":default_save}
 	var file := FileAccess.open("user://release-verification.json", FileAccess.WRITE)
