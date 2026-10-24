@@ -52,3 +52,10 @@ python foundation/run_checks.py --bindings D:/CodexBuild/space_idle/godot-cpp --
 绑定源码固定为 `507ed9d840c01a3c5b2a39af8bb4000bfac30bf5`，构建器核对 revision。隔离构建直接编译当前 shipping C++ 源码并链接该绑定库，不依赖任何旧游戏宿主。portable engine、用户目录、日志、临时 fixture 包和测试存档全部在 `.stage1-work/`。未运行 shipping SCons/发布打包流程；测试验证的是同源隔离 DLL。
 
 最终验证数据和源文件指纹见 `verification.json`。交付后暂停，等待 dot 与指定 Astra 双审，不进入第二阶段、不合 main。
+
+
+## 首阶段审核返工
+
+修复普通整数取整再次还原 double 后跨边界的问题：floor/ceil 直接对规范尾数的 15 位十进制表示取商/余数，避免 113 被 floor 成 112、109 被 ceil 成 110；不添加 epsilon，也不改变真实可表示的小数边界。十进制输入先按同一精度舍入再构造尾数，范围校验包含归一化指数及尾数进位；下溢仍按既定合同规范为零。
+
+编译器对 amount_text 及紧凑掉落金额执行相同的字面量范围检查，越界返回带 Excel 坐标的 AmountRangeExceeded；主键为空或全空白返回 Required，42 条明确的零预算 null-order 标记继续保留。新增回归覆盖普通整数与邻接小数、指数上界及进位、下溢、Unicode 空白主键。返工后为 24 个编译器测试、119 项同源 DLL 断言（16 数值/1 同核/7 保存），另有原生普通整数 0–10000 与接近普通范围边界的取整检查。

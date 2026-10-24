@@ -17,6 +17,24 @@ int main() {
     equal(a("0.0001").ceil_value(), "1");
     equal(a("123.75").floor_value(), "123");
     equal(a("123.25").ceil_value(), "124");
+    equal(a("113").floor_value(), "113");
+    equal(a("109").ceil_value(), "109");
+    equal(a("112.9999999999").floor_value(), "112");
+    equal(a("113.0000000001").ceil_value(), "114");
+    equal(a("108.9999999999").floor_value(), "108");
+    equal(a("109.0000000001").ceil_value(), "110");
+    for (int64_t n = 0; n <= 10000; ++n) {
+        auto integer = Amount::decimal(std::to_string(n));
+        assert(integer.floor_value().compare(integer) == 0);
+        assert(integer.ceil_value().compare(integer) == 0);
+    }
+    for (const char *n : {"99999999999999", "100000000000113", "999999999999999"}) {
+        auto integer = a(n);
+        assert(integer.floor_value().compare(integer) == 0);
+        assert(integer.ceil_value().compare(integer) == 0);
+    }
+    equal(a("1e-999999999999999999999999999999"), "0");
+    equal(a("9.999999999999994e9000000000000000"), "9.99999999999999e9000000000000000");
     equal(a("201.000000001").ceil_value(), "202");
     equal(a("200.999999999").floor_value(), "200");
     equal(a("1e-9000000000000000").divide(a("10")), "0");
@@ -30,7 +48,7 @@ int main() {
     for (std::function<void()> f : std::vector<std::function<void()>>{
         std::function<void()>([&] { a("-1"); }), [&] { a("NaN"); },
         [&] { a("1").divide(a("0")); }, [&] { a("1e9000000000000000").power(2); },
-        [&] { a("1e9000000000000001"); }, [&] { Amount::normalized(INFINITY); }}) {
+        [&] { a("1e9000000000000001"); }, [&] { a("10e9000000000000000"); }, [&] { a("9.999999999999995e9000000000000000"); }, [&] { Amount::normalized(INFINITY); }}) {
         bool rejected = false; try { f(); } catch (const std::exception &) { rejected = true; }
         assert(rejected);
     }

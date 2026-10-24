@@ -41,6 +41,30 @@ def literal_kind(value):
     return 'string' if isinstance(value, str) else 'invalid'
 
 
+def amount_text_error(value):
+    """Lexical representability only, matching Amount's normalized exponent.
+
+    This validates a declared input encoding; it performs no economic arithmetic.
+    Zero and nonzero underflow follow the native canonical-zero contract.
+    """
+    if not isinstance(value, str): return 'AmountLiteral'
+    match = re.fullmatch(r'\+?([0-9]+)(?:\.([0-9]*))?(?:[eE]([+-]?[0-9]+))?', value)
+    if not match: return 'AmountLiteral'
+    whole, fraction, power = match.group(1), match.group(2) or '', match.group(3) or '0'
+    digits = whole + fraction
+    first = next((i for i, digit in enumerate(digits) if digit != '0'), None)
+    if first is None: return None
+    magnitude = power.lstrip('+-').lstrip('0')
+    # A sheet cell cannot contain enough significand digits to offset an
+    # exponent this large. Avoid Python's unbounded integer-string conversion.
+    if len(magnitude) > 18:
+        return None if power.startswith('-') else 'AmountRangeExceeded'
+    exponent = int(('-' if power.startswith('-') else '') + (magnitude or '0')) + len(whole) - first - 1
+    significant = digits[first:]
+    if len(significant) > 15 and significant[:15] == '9' * 15 and significant[15] >= '5': exponent += 1
+    return 'AmountRangeExceeded' if exponent > 9000000000000000 else None
+
+
 def compile_bundle(manifest_path):
     manifest_path = Path(manifest_path).resolve()
     manifest_bytes = manifest_path.read_bytes()
@@ -127,7 +151,11 @@ def compile_bundle(manifest_path):
                     if cell.data_type == 'f' and (spec.get('literalOnly') or cache.value is None):
                         code = 'FormulaForbidden' if spec.get('literalOnly') else 'FormulaCacheMissing'
                     elif cell.data_type == 'e' or cache.data_type == 'e': code = 'CellError'
-                    elif value is None and contract.get('required'): code = 'Required'
+                    elif (value is None or isinstance(value, str) and not value.strip()) and (contract.get('required') or field in spec['primary']):
+                        # The explicit null-order budget marker is the sole
+                        # nullable part of a declared composite row identity.
+                        if not (value is None and field == 'order' and spec.get('nullOrderMeaning') == 'zero_budget_member'):
+                            code = 'Required'
                     elif literal_kind(value) not in contract['types']: code = 'LiteralType'
                     elif value is not None and 'enum' in contract and value not in contract['enum']: code = 'UnknownRule'
                     elif literal_kind(value) == 'number':
@@ -136,7 +164,7 @@ def compile_bundle(manifest_path):
                         elif 'min' in contract and value < contract['min']: code = 'Range'
                         elif 'max' in contract and value > contract['max']: code = 'Range'
                     if contract.get('literal') == 'amount_text' and value is not None:
-                        if not isinstance(value, str) or not re.fullmatch(r'\+?[0-9]+(?:\.[0-9]*)?(?:[eE][+-]?[0-9]+)?', value): code = 'AmountLiteral'
+                        code = amount_text_error(value) or code
                     if contract.get('literal') == 'int64_text' and value is not None:
                         if not isinstance(value, str) or not re.fullmatch(r'0|[1-9][0-9]*', value) or int(value) > 9223372036854775807: code = 'IntegerEncoding'
                     if code:
@@ -229,7 +257,11 @@ def compile_bundle(manifest_path):
             for segment in block.split(';'):
                 try:
                     resource, amount, chance = segment.split(',')
-                    if int(resource) not in {r['id'] for r in tables.get('res', [])} or not re.fullmatch(r'\+?[0-9]+(?:\.[0-9]*)?(?:[eE][+-]?[0-9]+)?', amount.strip()) or not 0 <= float(chance) <= 1: raise ValueError()
+                    amount_error = amount_text_error(amount.strip())
+                    if amount_error:
+                        row_error('mon', row, 'res', amount_error, amount)
+                        continue
+                    if int(resource) not in {r['id'] for r in tables.get('res', [])} or not 0 <= float(chance) <= 1: raise ValueError()
                 except (ValueError, OverflowError): row_error('mon', row, 'res', 'DropReference', segment)
     for row in tables.get('unlock', []):
         kind, target = row['type'], row['target']

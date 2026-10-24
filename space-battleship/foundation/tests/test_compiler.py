@@ -93,6 +93,26 @@ class ConfigContracts(unittest.TestCase):
         self.edit(lambda b: setattr(b['amount_case']['C4'], 'value', '-1e500'))
         self.reject('AmountLiteral')
 
+    def test_amount_normalized_exponent_overflow(self):
+        for text in ['1e9000000000000001', '10e9000000000000000',
+                     '9.999999999999995e9000000000000000', '1e999999999999999999999999999999']:
+            with self.subTest(text=text):
+                self.edit(lambda b: setattr(b['amount_case']['C4'], 'value', text))
+                self.reject('AmountRangeExceeded')
+
+    def test_amount_boundary_encodings(self):
+        for text in ['1e9000000000000000', '0.01e9000000000000001',
+                     '9.999999999999994e9000000000000000', '1e-9000000000000001',
+                     '1e-999999999999999999999999999999', '0e9000000000000001']:
+            with self.subTest(text=text):
+                self.edit(lambda b: setattr(b['amount_case']['C4'], 'value', text))
+                compiler.compile_bundle(self.manifest)
+
+    def test_whitespace_string_primary_key(self):
+        self.edit(lambda b: setattr(b['amount_case']['A4'], 'value', ' \t\u3000 '))
+        errors = self.reject('Required')
+        self.assertTrue(any(e['sheet'] == 'amount_case' and e['column'] == 'A' and e['row'] == 4 for e in errors))
+
     def test_integer_encoding(self):
         self.edit(lambda b: setattr(b['amount_case']['F12'], 'value', '9223372036854775808'))
         self.reject('IntegerEncoding')

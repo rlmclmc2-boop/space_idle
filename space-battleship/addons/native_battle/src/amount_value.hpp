@@ -20,6 +20,14 @@ class Amount {
         long double scale = std::pow(10.L, digits - 1 - int(std::floor(std::log10(x))));
         return double(std::floor(static_cast<long double>(x) * scale + 0.5L) / scale);
     }
+    int64_t decimal_significand() const {
+        return std::llround(coefficient_ * 1e14);
+    }
+    int64_t integer_unit() const {
+        int64_t unit = 1;
+        for (int64_t i = power_; i < 14; ++i) unit *= 10;
+        return unit;
+    }
 public:
     Amount() = default;
     static Amount normalized(double m, int64_t e = 0) {
@@ -47,13 +55,23 @@ public:
         if (first == std::string::npos) return {};
         int64_t exponent = 0;
         try { if (found[3].matched) exponent = std::stoll(found[3].str()); }
-        catch (...) { throw std::overflow_error("AmountRangeExceeded"); }
-        if (exponent > limit + 100000 || exponent < -limit - 100000)
+        catch (...) {
+            if (found[3].str().front() == '-') return {};
             throw std::overflow_error("AmountRangeExceeded");
-        exponent += int64_t(found[1].length()) - int64_t(first) - 1;
-        std::string tail = digits.substr(first, 17);
-        tail.insert(1, ".");
-        return normalized(std::stod(tail), exponent);
+        }
+        int64_t shift = int64_t(found[1].length()) - int64_t(first) - 1;
+        if (exponent > limit - shift) throw std::overflow_error("AmountRangeExceeded");
+        if (exponent < -limit - shift) return {};
+        exponent += shift;
+        std::string tail = digits.substr(first);
+        bool round_up = tail.size() > 15 && tail[15] >= '5';
+        tail.resize(15, '0');
+        uint64_t significand = std::stoull(tail) + uint64_t(round_up);
+        if (significand == 1000000000000000ULL) {
+            significand /= 10;
+            if (++exponent > limit) throw std::overflow_error("AmountRangeExceeded");
+        }
+        return normalized(double(significand) / 1e14, exponent);
     }
     double mantissa() const { return coefficient_; }
     int64_t exponent() const { return power_; }
@@ -79,8 +97,8 @@ public:
         if (power_ - b.power_ <= 1) {
             // Canonical mantissas have 15 decimal digits. Resolve close
             // cancellation in that representation before returning to double.
-            int64_t left = std::llround(coefficient_ * 1e14);
-            int64_t right = std::llround(b.coefficient_ * 1e14);
+            int64_t left = decimal_significand();
+            int64_t right = b.decimal_significand();
             if (power_ != b.power_) left *= 10;
             return normalized(double(left - right), b.power_ - 14);
         }
@@ -115,12 +133,13 @@ public:
     Amount floor_value() const {
         if (!coefficient_ || power_ >= 15) return *this;
         if (power_ < 0) return {};
-        return normalized(std::floor(coefficient_ * std::pow(10., double(power_))));
+        return normalized(double(decimal_significand() / integer_unit()));
     }
     Amount ceil_value() const {
         if (!coefficient_ || power_ >= 15) return *this;
         if (power_ < 0) return normalized(1);
-        return normalized(std::ceil(coefficient_ * std::pow(10., double(power_))));
+        int64_t unit = integer_unit();
+        return normalized(double((decimal_significand() + unit - 1) / unit));
     }
     Amount rounded(int digits) const {
         if (digits < 1 || digits > 15) throw std::domain_error("AmountPrecision");
