@@ -251,10 +251,7 @@ func _step(dt: float) -> void:
 			_place_global(lerpf(retreat_from, retreat_to, minf(1.0, retreat_elapsed / duration)))
 			if retreat_elapsed >= duration:
 				kernel.finish_retreat()
-				var point: int = 0
-				while point < campaign.points.size() - 1 and float(campaign.points[point].position) * float(level_definitions[int(campaign.stage)].length) < float(campaign.distance):
-					point += 1
-				campaign.point = point
+				var point: int = int(campaign.point)
 				if guard.enabled and int(guard.death_option) == 2:
 					guard.stage = campaign.stage
 					guard.point = point
@@ -436,6 +433,12 @@ func _place_global(position: float) -> void:
 		_set_stage(stage, position)
 	else:
 		campaign.distance = position
+	# Stage, distance and the next battle point form one position update. Shared
+	# income may read this position during retreat, before retreat completes.
+	var point: int = 0
+	while point < campaign.points.size() - 1 and float(campaign.points[point].position) * float(level_definitions[int(campaign.stage)].length) < float(campaign.distance):
+		point += 1
+	campaign.point = point
 
 func _fail(reason: String) -> Dictionary:
 	last_error = reason

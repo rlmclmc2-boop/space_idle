@@ -65,8 +65,9 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 		"counter_log_base": float(enhancement.counter_log_base),
 		"counter_round_scale": float(enhancement.bonus_round_scale),
 		"jewel_probability": 0.0, "jewel_ratio": 1.0}
-	for key in ["reactive_volley_window", "reactive_stack_seconds", "reactive_per_stack", "reactive_stack_limit"]:
+	for key in ["reactive_volley_window", "reactive_stack_seconds", "reactive_per_stack"]:
 		descriptor[key] = rules[key]
+	descriptor.reactive_stack_limit = int(rules.reactive_stack_limit)
 	for key in ["projectile_min_x", "projectile_max_x", "projectile_min_y", "projectile_max_y"]:
 		descriptor[key] = geometry[key]
 	var motion_keys := {"missile_departure_angle": "missile_departure_angle",
