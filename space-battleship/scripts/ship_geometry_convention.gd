@@ -44,7 +44,10 @@ static func normalized_hull(image: Image) -> PackedVector2Array:
 		for point in polygon:
 			points.append(point / size - Vector2(0.5, 0.5))
 	# One convex authored silhouette, shared unchanged with the display consumer.
-	return Geometry2D.convex_hull(points)
+	var hull: PackedVector2Array = Geometry2D.convex_hull(points)
+	if hull.size() > 1 and hull[0] == hull[hull.size() - 1]:
+		hull.resize(hull.size() - 1)
+	return hull
 
 static func transform_hull(normalized: PackedVector2Array, origin: Vector2, dimensions: Vector2, angle: float) -> PackedVector2Array:
 	var result := PackedVector2Array()
