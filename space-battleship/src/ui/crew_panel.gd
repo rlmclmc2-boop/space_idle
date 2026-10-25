@@ -6,7 +6,6 @@ var _host: Callable
 var _crew
 var _planet
 var _galaxy
-var _watch_visibility: bool = false
 var _pending_member_options: bool = false
 var _pending_full: bool = false
 var _pending_targets: bool = false
@@ -44,27 +43,36 @@ func _init(crew, planet, galaxy, coordinate: Callable, command: Callable) -> voi
 	_command(box, "刷新发展列表", func():
 		refresh()
 		return {"ok": true})
-	_crew.members_changed.connect(_members_changed)
-	_crew.options_changed.connect(_refresh_members)
-	_planet.assignment_options_changed.connect(_refresh_construction_choices)
-	_planet.availability_changed.connect(_refresh_assignments)
-	_galaxy.availability_changed.connect(_refresh_assignments)
+	_crew.members_changed.connect(_queue_members)
+	_crew.options_changed.connect(_queue_member_options)
+	_planet.assignment_options_changed.connect(_queue_construction_choices)
+	_planet.availability_changed.connect(_queue_assignments)
+	_galaxy.availability_changed.connect(_queue_assignments)
 	refresh()
 
 func _picker_value(picker: OptionButton, fallback = ""):
 	return fallback if picker.selected < 0 else picker.get_item_metadata(picker.selected)
 
 func refresh() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_full = true
-		return
+	_pending_full = true
+
+func _queue_member_options() -> void:
+	_pending_member_options = true
+
+func _queue_members(ids: Array) -> void:
+	for id in ids: _pending_members[id] = true
+
+func _queue_assignments() -> void:
+	_pending_targets = true
+
+func _queue_construction_choices(ids: Array) -> void:
+	for id in ids: _pending_construction[id] = true
+
+func _refresh_all() -> void:
 	_refresh_members()
 	_refresh_assignments()
 
 func _refresh_members() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_member_options = true
-		return
 	var selected: String = str(_picker_value(world_crew_picker))
 	world_crew_picker.clear()
 	for option in _crew.member_options():
@@ -74,10 +82,7 @@ func _refresh_members() -> void:
 		if str(option.id) == selected: world_crew_picker.select(index)
 	_refresh_status()
 
-func _members_changed(ids: Array) -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		for id in ids: _pending_members[id] = true
-		return
+func _refresh_member_rows(ids: Array) -> void:
 	for option in _crew.member_options(ids):
 		for index in world_crew_picker.item_count:
 			if world_crew_picker.get_item_metadata(index) == option.id: world_crew_picker.set_item_text(index, option.name)
@@ -92,18 +97,12 @@ func _append_assignment(option: Dictionary, previous: Dictionary) -> void:
 	if value == previous: world_assignment_picker.select(index)
 
 func _refresh_assignments() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_targets = true
-		return
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
 	world_assignment_picker.clear()
 	for option in _crew.job_options() + _planet.assignment_options() + _galaxy.assignment_options():
 		_append_assignment(option, previous)
 
 func _refresh_construction_choices(ids: Array) -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		for id in ids: _pending_construction[id] = true
-		return
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
 	for index in range(world_assignment_picker.item_count - 1, -1, -1):
 		var value: Dictionary = world_assignment_picker.get_item_metadata(index)
@@ -135,12 +134,14 @@ func _command(parent: Control, text: String, action: Callable):
 		return result)
 
 func _ready() -> void:
-	_watch_visibility = true
-	visibility_changed.connect(_flush_pending)
+	process_priority = 1
+
+func _process(_dt: float) -> void:
 	_flush_pending()
 
 func _flush_pending() -> void:
 	if not is_visible_in_tree(): return
+	if not _pending_full and not _pending_member_options and not _pending_targets and _pending_members.is_empty() and _pending_construction.is_empty(): return
 	var member_options: bool = _pending_member_options
 	_pending_member_options = false
 	var full: bool = _pending_full
@@ -152,9 +153,9 @@ func _flush_pending() -> void:
 	_pending_members = {}
 	_pending_construction = {}
 	if full:
-		refresh()
+		_refresh_all()
 		return
 	if targets: _refresh_assignments()
 	elif not construction.is_empty(): _refresh_construction_choices(construction)
 	if member_options: _refresh_members()
-	elif not members.is_empty(): _members_changed(members)
+	elif not members.is_empty(): _refresh_member_rows(members)

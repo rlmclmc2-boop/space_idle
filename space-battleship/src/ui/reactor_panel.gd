@@ -7,15 +7,12 @@ var _host_command: Callable
 var module_picker: OptionButton
 var allocation_input: LineEdit
 var _reactor
-var _inputs: Callable
 
-var _watch_visibility: bool = false
 var _pending_choices: bool = false
 
 func _init(reactor, inputs: Callable, can_pay: Callable, publish: Callable, command: Callable) -> void:
 	_host_command = command
 	_reactor = reactor
-	_inputs = inputs
 	var box: Control = self
 	_caption(box, "反应炉")
 	var reactor_buttons := _row(box)
@@ -23,11 +20,6 @@ func _init(reactor, inputs: Callable, can_pay: Callable, publish: Callable, comm
 	_command(reactor_buttons, "平均分配", func(): return reactor.distribute(inputs.call(), publish))
 	var allocation := _row(box)
 	module_picker = OptionButton.new()
-	for option in reactor.panel_options():
-		var index: int = module_picker.item_count
-		module_picker.add_item(option.name)
-		module_picker.set_item_metadata(index, option.id)
-		module_picker.set_item_disabled(index, not option.enabled)
 	allocation.add_child(module_picker)
 	allocation_input = LineEdit.new()
 	allocation_input.placeholder_text = "分配能源"
@@ -36,11 +28,12 @@ func _init(reactor, inputs: Callable, can_pay: Callable, publish: Callable, comm
 	_command(allocation, "分配", func():
 		return reactor.allocate_text(str(module_picker.get_item_metadata(module_picker.selected)), allocation_input.text, inputs.call(), publish))
 	_reactor.choices_changed.connect(refresh_choices)
+	refresh_choices()
 
 func refresh_choices() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_choices = true
-		return
+	_pending_choices = true
+
+func _refresh_choices() -> void:
 	var selected: String = "" if module_picker.selected < 0 else str(module_picker.get_item_metadata(module_picker.selected))
 	module_picker.clear()
 	for option in _reactor.panel_options():
@@ -70,11 +63,12 @@ func _command(parent: Control, text: String, action: Callable):
 		return result)
 
 func _ready() -> void:
-	_watch_visibility = true
-	visibility_changed.connect(_flush_pending)
+	process_priority = 1
+
+func _process(_dt: float) -> void:
 	_flush_pending()
 
 func _flush_pending() -> void:
 	if is_visible_in_tree() and _pending_choices:
 		_pending_choices = false
-		refresh_choices()
+		_refresh_choices()

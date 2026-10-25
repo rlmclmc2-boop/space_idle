@@ -3,7 +3,6 @@ extends VBoxContainer
 const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工"}
 var _host: Callable
 var _planet
-var _watch_visibility: bool = false
 var _pending_full: bool = false
 var _pending_all_status: bool = false
 var _pending_status: Dictionary = {}
@@ -20,7 +19,7 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable) -> vo
 	_status = VBoxContainer.new()
 	box.add_child(_status)
 	world_planet_picker = OptionButton.new()
-	world_planet_picker.item_selected.connect(func(_index): _refresh_world_buildings())
+	world_planet_picker.item_selected.connect(func(_index): _queue_buildings([str(_picker_value(world_planet_picker))]))
 	box.add_child(world_planet_picker)
 	var automatic := _row(box)
 	_command(automatic, "开启自动探索", func(): return planet.set_automatic(str(_picker_value(world_planet_picker)), true))
@@ -31,14 +30,21 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable) -> vo
 	var construction := _row(box)
 	_command(construction, "领取建筑", func(): return planet.claim_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker)), publish))
 	_planet.availability_changed.connect(refresh)
-	_planet.status_changed.connect(_refresh_status)
-	_planet.buildings_changed.connect(_buildings_changed)
+	_planet.status_changed.connect(_queue_status)
+	_planet.buildings_changed.connect(_queue_buildings)
 	refresh()
 
 func refresh() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_full = true
-		return
+	_pending_full = true
+
+func _queue_status(ids: Array = []) -> void:
+	if ids.is_empty(): _pending_all_status = true
+	for id in ids: _pending_status[id] = true
+
+func _queue_buildings(ids: Array) -> void:
+	for id in ids: _pending_buildings[id] = true
+
+func _refresh_all() -> void:
 	var selected: String = str(_picker_value(world_planet_picker))
 	world_planet_picker.clear()
 	for option in _planet.planet_options():
@@ -59,16 +65,9 @@ func _refresh_world_buildings() -> void:
 		if str(option.id) == selected: world_building_picker.select(index)
 
 func _buildings_changed(ids: Array) -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		for id in ids: _pending_buildings[id] = true
-		return
 	if str(_picker_value(world_planet_picker)) in ids: _refresh_world_buildings()
 
 func _refresh_status(ids: Array = []) -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		if ids.is_empty(): _pending_all_status = true
-		for id in ids: _pending_status[id] = true
-		return
 	for row in _planet.status_rows(ids):
 		if not _labels.has(row.id):
 			var label := Label.new()
@@ -96,12 +95,14 @@ static func describe_error(reason: String) -> String:
 	return str(ERRORS.get(reason, ""))
 
 func _ready() -> void:
-	_watch_visibility = true
-	visibility_changed.connect(_flush_pending)
+	process_priority = 1
+
+func _process(_dt: float) -> void:
 	_flush_pending()
 
 func _flush_pending() -> void:
 	if not is_visible_in_tree(): return
+	if not _pending_full and not _pending_all_status and _pending_status.is_empty() and _pending_buildings.is_empty(): return
 	var full: bool = _pending_full
 	var all_status: bool = _pending_all_status
 	var status: Array = _pending_status.keys()
@@ -111,7 +112,7 @@ func _flush_pending() -> void:
 	_pending_status = {}
 	_pending_buildings = {}
 	if full:
-		refresh()
+		_refresh_all()
 		return
 	if not buildings.is_empty(): _buildings_changed(buildings)
 	if all_status: _refresh_status()

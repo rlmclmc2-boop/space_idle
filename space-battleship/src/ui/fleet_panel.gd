@@ -4,7 +4,6 @@ var _campaign
 var _host: Callable
 var ship_picker: OptionButton
 
-var _watch_visibility: bool = false
 var _pending_choices: bool = false
 
 func _init(campaign, refit: Callable, command: Callable) -> void:
@@ -18,14 +17,14 @@ func _init(campaign, refit: Callable, command: Callable) -> void:
 		var reason: String = str(result.get("reason", ""))
 		if not result.get("ok", false) and ERRORS.has(reason): result.message = ERRORS[reason]
 		return result)
-	_campaign.ship_changed.connect(_refresh_choices)
-	_campaign.progress_changed.connect(_refresh_choices)
-	_refresh_choices()
+	_campaign.ship_changed.connect(_queue_choices)
+	_campaign.progress_changed.connect(_queue_choices)
+	_queue_choices()
+
+func _queue_choices() -> void:
+	_pending_choices = true
 
 func _refresh_choices() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_choices = true
-		return
 	ship_picker.clear()
 	for option in _campaign.ship_options():
 		var index: int = ship_picker.item_count
@@ -35,8 +34,9 @@ func _refresh_choices() -> void:
 		if option.selected: ship_picker.select(index)
 
 func _ready() -> void:
-	_watch_visibility = true
-	visibility_changed.connect(_flush_pending)
+	process_priority = 1
+
+func _process(_dt: float) -> void:
 	_flush_pending()
 
 func _flush_pending() -> void:

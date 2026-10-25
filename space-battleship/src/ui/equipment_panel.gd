@@ -9,7 +9,6 @@ var equipment_picker: OptionButton
 var upgrade_price: Label
 var _equipment
 var _inputs: Callable
-var _watch_visibility: bool = false
 var _pending_full: bool = false
 var _pending_options: bool = false
 var _pending_slots: Dictionary = {}
@@ -22,7 +21,7 @@ func _init(equipment, inputs: Callable, can_pay: Callable, pay: Callable, publis
 	_caption(box, "槽位升级（换装备保留等级）")
 	slot_picker = OptionButton.new()
 	box.add_child(slot_picker)
-	slot_picker.item_selected.connect(func(_index): _populate_equipment_picker())
+	slot_picker.item_selected.connect(func(_index): _queue_options())
 	upgrade_price = Label.new()
 	box.add_child(upgrade_price)
 	var upgrades := _row(box)
@@ -33,18 +32,24 @@ func _init(equipment, inputs: Callable, can_pay: Callable, pay: Callable, publis
 	equipment_picker = OptionButton.new()
 	box.add_child(equipment_picker)
 	_command(box, "更换所选装备", func(): return equipment.equip_slot(_selected_slot(), str(equipment_picker.get_item_metadata(equipment_picker.selected)), inputs.call(), publish_refit))
-	_equipment.slots_changed.connect(_refresh_slot_prices)
+	_equipment.slots_changed.connect(_queue_slots)
 	_equipment.loadout_changed.connect(refresh)
-	_equipment.options_changed.connect(_populate_equipment_picker)
+	_equipment.options_changed.connect(_queue_options)
 	refresh()
 
 func _selected_slot() -> String:
 	return "" if slot_picker.selected < 0 else str(slot_picker.get_item_metadata(slot_picker.selected))
 
 func refresh() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_full = true
-		return
+	_pending_full = true
+
+func _queue_slots(ids: Array) -> void:
+	for id in ids: _pending_slots[id] = true
+
+func _queue_options() -> void:
+	_pending_options = true
+
+func _refresh_all() -> void:
 	var selected: String = _selected_slot()
 	slot_picker.clear()
 	for option in _equipment.panel_slots(_inputs.call().mounts):
@@ -55,9 +60,6 @@ func refresh() -> void:
 	_populate_equipment_picker()
 
 func _refresh_slot_prices(ids: Array, update_price: bool = true) -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		for id in ids: _pending_slots[id] = true
-		return
 	for option in _equipment.panel_slots(_inputs.call().mounts, ids):
 		for index in slot_picker.item_count:
 			if slot_picker.get_item_metadata(index) == option.id:
@@ -68,9 +70,6 @@ func _refresh_upgrade_price() -> void:
 	upgrade_price.text = _equipment.price_text(_selected_slot())
 
 func _populate_equipment_picker() -> void:
-	if _watch_visibility and not is_visible_in_tree():
-		_pending_options = true
-		return
 	_refresh_upgrade_price()
 	equipment_picker.clear()
 	for option in _equipment.panel_equipment(_selected_slot()):
@@ -99,12 +98,14 @@ func _command(parent: Control, text: String, action: Callable):
 		return result)
 
 func _ready() -> void:
-	_watch_visibility = true
-	visibility_changed.connect(_flush_pending)
+	process_priority = 1
+
+func _process(_dt: float) -> void:
 	_flush_pending()
 
 func _flush_pending() -> void:
 	if not is_visible_in_tree(): return
+	if not _pending_full and not _pending_options and _pending_slots.is_empty(): return
 	var full: bool = _pending_full
 	var options: bool = _pending_options
 	var ids: Array = _pending_slots.keys()
@@ -112,7 +113,7 @@ func _flush_pending() -> void:
 	_pending_options = false
 	_pending_slots = {}
 	if full:
-		refresh()
+		_refresh_all()
 		return
 	if not ids.is_empty(): _refresh_slot_prices(ids, not options)
 	if options: _populate_equipment_picker()
