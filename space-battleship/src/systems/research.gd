@@ -76,7 +76,7 @@ static func refresh_income(state: Dictionary, samples: Array, wall: float, game:
 		for resource in ["1", "2", "jewel"]:
 			var actual: Dictionary = zero
 			for sample in samples:
-				if sample.resource != resource or float(sample.wall) <= wall - float(rules.research_income_window) or float(sample.wall) > wall or sample.source not in ["enemy_drop", "fragment_drop"]:
+				if sample.resource != resource or float(sample.wall) <= wall - float(rules.research_income_window) or float(sample.wall) > wall or sample.source not in ["enemy_drop", "timed_drop", "fragment_drop"]:
 					continue
 				var total = api.apply("add", [actual, sample.actual])
 				if not total.ok:
