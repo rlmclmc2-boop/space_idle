@@ -1753,7 +1753,7 @@ class SpaceCombatKernel : public RefCounted {
         if (final_cleared) return;
         if (w.kind != 3 && a->repeats)
             repeats.push(
-                {clock + repeat_delay, ++event_serial, 2, wi, 0, candidates.front(), a, w.repeat_multiplier});
+                {clock + a->birth->repeat_delay, ++event_serial, 2, wi, 0, candidates.front(), a, a->birth->repeat_multiplier});
         if (w.kind != 3 && a->secondary && candidates.size() > 1) {
             launch(wi, candidates[1], a, 1, true, false, -1, primary_instance);
         }
@@ -1861,14 +1861,14 @@ class SpaceCombatKernel : public RefCounted {
                 }
         }
         if (!final_cleared && f.ticks == 1 && !f.repeated && f.instance->attack->repeats) {
-            Timed pending{at + repeat_delay,
+            Timed pending{at + f.instance->attack->birth->repeat_delay,
                           ++event_serial,
                           2,
                           f.weapon,
                           0,
                           f.target,
                           f.instance->attack,
-                          weapons[f.weapon].repeat_multiplier};
+                          f.instance->attack->birth->repeat_multiplier};
             pending.owner_flight = id;
             pending.owner_generation = f.generation;
             repeats.push(pending);
