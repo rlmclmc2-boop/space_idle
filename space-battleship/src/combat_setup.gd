@@ -1,5 +1,4 @@
 extends RefCounted
-const Equipment = preload("res://src/systems/equipment.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const KINDS := {"laser": 0, "cannon": 1, "missile": 2, "longLaser": 3}
 
@@ -19,52 +18,12 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 		"entry": {"key": key, "name": key, "slot": slot},
 		"branch_factors": [], "external_factors": []}
 
-static func values(slots: Array, extra_levels: int, definitions: Dictionary, evolution: Dictionary, api,
-		ai: Dictionary, reactor: Dictionary, weapons: bool, defences: bool) -> Dictionary:
-	var result: Dictionary = {"ok": true, "weapons": {}, "defences": {}}
-	for slot in slots:
-		if str(slot.equipment_id).is_empty() or (slot.category == "weapon" and not weapons) or (slot.category == "defence" and not defences): continue
-		var row: Dictionary = definitions[str(slot.equipment_id)]
-		var value = Equipment.charged_base(row, definitions.armour, slot, extra_levels, evolution,
-			ai.equipment_durability if slot.category == "defence" else ai.weapon_damage,
-			reactor.defence if slot.category == "defence" else reactor.weapons, api)
-		if not value.ok: return value
-		var text = api.apply("to_display", [value.value])
-		if not text.ok: return text
-		result["defences" if slot.category == "defence" else "weapons"][str(slot.id)] = {"key": str(row.name), "generation": int(slot.generation), "base": text.text, "paid_level": int(slot.paid_level), "effective_level": int(slot.paid_level) + int(slot.extra_levels) + extra_levels}
-	return result
-
-static func build_player(slots: Array, extra_levels: int, equipment_definitions: Dictionary, evolution: Dictionary,
-		api, player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary, rules: Dictionary,
+static func build_player(equipment_contribution: Dictionary, geometry: Dictionary, rules: Dictionary,
 		resistance: float, motion: Dictionary, upgrades: Dictionary, factors: Dictionary, drone_weapons: Array, seed_value: int) -> Dictionary:
-	var base_values = values(slots, extra_levels, equipment_definitions, evolution, api,
-		{"weapon_damage": factors.ai_weapon, "equipment_durability": factors.ai_defence},
-		{"weapons": factors.reactor_weapon, "defence": factors.reactor_defence}, true, true)
-	if not base_values.ok: return base_values
+	var base_values: Dictionary = equipment_contribution["values"]
+	var weapons: Array = equipment_contribution.weapons
+	var defences: Array = equipment_contribution.defences
 	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
-	var weapons: Array = []
-	var defences: Array = []
-	for slot in slots:
-		if str(slot.equipment_id).is_empty():
-			continue
-		var row: Dictionary = equipment_definitions[str(slot.equipment_id)]
-		var text: Dictionary = {"text": base_values["defences" if slot.category == "defence" else "weapons"][str(slot.id)].base}
-		if row.name in ["armour", "shield"]:
-			defences.append({"entry": {"id": str(slot.id), "key": str(row.name), "generation": int(slot.generation)},
-				"layer": 0 if row.name == "shield" else 1, "type": int(row.dmgtype),
-				"base": text.text, "maximum": text.text, "factor": 1.0, "loss": "0", "buffer": "0",
-				"delay": float(row.para3) if row.name == "shield" else 0.0,
-				"rate": float(row.para2) if row.name == "shield" else 0.0,
-				"branch_factors": [], "external_factors": factors.external.duplicate()})
-		else:
-			var row_weapon: Dictionary = weapon(row, str(row.name), str(text.text), int(slot.index), false, motion)
-			row_weapon.muzzle = Geometry.mount_position(player_art, int(slot.index), player_point, player_dimensions)
-			row_weapon.external_factors = factors.external.duplicate()
-			row_weapon.entry.id = str(slot.id)
-			row_weapon.entry.generation = int(slot.generation)
-			row_weapon.entry.paid_level = int(slot.paid_level)
-			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels) + extra_levels
-			weapons.append(row_weapon)
 	for drone in drone_weapons:
 		var external: Array = factors.external.duplicate()
 		external.append_array(drone.get("external_factors", []))
@@ -122,7 +81,7 @@ static func ratio(current: Dictionary, previous_stage: Dictionary, field: String
 
 static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dictionary,
 		point_index: int, point_count: int, enemy_definitions: Dictionary, enemy_weapon_definitions: Dictionary,
-		equipment_definitions: Dictionary, geometry: Dictionary, motion: Dictionary,
+		weapon_overrides: Callable, geometry: Dictionary, motion: Dictionary,
 		jewel_rolls: int, jewel_probability: float, next_uid: int, api) -> Dictionary:
 	var slots: Array = JSON.parse_string(str(group.mon).replace("｛", "[").replace("｝", "]").replace("{", "[").replace("}", "]").replace("，", ","))
 	var positions: Dictionary = Geometry.formation_positions(slots, enemy_definitions, geometry, group.get("formation_positions"))
@@ -205,10 +164,9 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 			var exact_key: String = parts[0]
 			var key: String = exact_key.replace("_mon", "").replace("-mon", "")
 			var definition: Dictionary = enemy_weapon_definitions[key].duplicate(true)
-			if equipment_definitions.has(exact_key):
-				for field in equipment_definitions[exact_key]:
-					if equipment_definitions[exact_key][field] != null:
-						definition[field] = equipment_definitions[exact_key][field]
+			var overrides: Dictionary = weapon_overrides.call(exact_key)
+			for field in overrides:
+				if overrides[field] != null: definition[field] = overrides[field]
 			var damage = api.apply("from_decimal", [str(definition.dmg)])
 			var multiple = api.apply("from_decimal", [str(row.dmgMultiple)])
 			if not damage.ok or not multiple.ok:

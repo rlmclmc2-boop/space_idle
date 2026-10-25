@@ -1,4 +1,5 @@
 extends Node2D
+const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
 const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
@@ -21,9 +22,6 @@ var world_mode_picker: OptionButton
 var world_planet_picker: OptionButton
 var world_building_picker: OptionButton
 var growth_status: Label
-var upgrade_price: Label
-var slot_picker: OptionButton
-var equipment_picker: OptionButton
 var ship_picker: OptionButton
 var research_panel
 var reactor_panel
@@ -195,8 +193,8 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(func():
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
-		var labels := {"GalaxyUnavailable": "星系尚未开放", "UnknownPlanet": "尚未选择星球", "HyperspaceCrewReserved": "船员仍被超空间任务占用", "CrewAssignmentUnavailable": "岗位暂不可用", "CrewLocked": "船员尚未解锁", "CrewTargetOccupied": "目标人数已满", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewJobLocked": "岗位尚未开放", "NoChange": "没有变更", "InsufficientResources": "资源不足", "EquipmentSwitchLocked": "换装冷却尚未结束", "EquipmentLocked": "装备尚未解锁", "EnhancementLocked": "强化尚未解锁", "EnhancementBranchLocked": "强化分支尚未开放", "ReactorLocked": "反应炉尚未解锁", "ReactorModuleLocked": "反应炉模块尚未开放", "ResearchLocked": "科研前置条件未满足", "EvolutionMaterialLocked": "进化材料尚未开放", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
-		growth_status.text = "完成" if result.get("ok", false) else str(labels.get(reason, reason))
+		var labels := {"GalaxyUnavailable": "星系尚未开放", "UnknownPlanet": "尚未选择星球", "HyperspaceCrewReserved": "船员仍被超空间任务占用", "CrewAssignmentUnavailable": "岗位暂不可用", "CrewLocked": "船员尚未解锁", "CrewTargetOccupied": "目标人数已满", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewJobLocked": "岗位尚未开放", "NoChange": "没有变更", "InsufficientResources": "资源不足", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
+		growth_status.text = "完成" if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
 		)
 	return button
 
@@ -234,52 +232,26 @@ func _setup_growth_panel() -> void:
 	open.pressed.connect(func():
 		growth_panel.visible = not growth_panel.visible
 		if growth_panel.visible:
-			_refresh_growth_pickers()
+			_refresh_ship_choices()
 			_refresh_world_pickers()
 			session.take_display_changes())
-	_caption(box, "槽位升级（换装备保留等级）")
-	slot_picker = OptionButton.new()
-	box.add_child(slot_picker)
-	slot_picker.item_selected.connect(func(_index): _populate_equipment_picker())
-	upgrade_price = Label.new()
-	box.add_child(upgrade_price)
-	var upgrades := _row(box)
-	_command_button(upgrades, "+1", func(): return session.buy_levels(_selected_slot(), 1))
-	_command_button(upgrades, "+10", func(): return session.buy_levels(_selected_slot(), 10))
-	_command_button(upgrades, "MAX", func(): return session.buy_max_levels(_selected_slot()))
-	_command_button(upgrades, "全体 +1", func(): return session.buy_all_levels(1))
-	equipment_picker = OptionButton.new()
-	box.add_child(equipment_picker)
-	_command_button(box, "更换所选装备", func(): return session.equip_slot(_selected_slot(), str(equipment_picker.get_item_metadata(equipment_picker.selected))))
+	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.can_pay_budget,
+		session.pay_budget, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
+	session.ship_changed.connect(_refresh_ship_choices)
 	ship_picker = OptionButton.new()
 	box.add_child(ship_picker)
 	_command_button(box, "更换舰体", func(): return session.change_ship(str(ship_picker.get_item_metadata(ship_picker.selected))))
-	reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.publish_reactor, _command_button)
+	reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.check_costs, session.publish_reactor, _command_button)
 	box.add_child(reactor_panel)
 	research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
 	box.add_child(EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
 		session.can_pay_costs, session.publish_enhancement, _command_button))
 	_setup_world_controls(box)
-	_refresh_growth_pickers()
+	_refresh_ship_choices()
 	_refresh_world_pickers()
 
-func _selected_slot() -> String:
-	return "" if slot_picker.selected < 0 else str(slot_picker.get_item_metadata(slot_picker.selected))
-
-func _refresh_growth_pickers() -> void:
-	if slot_picker == null:
-		return
-	var selected: String = _selected_slot()
-	slot_picker.clear()
-	var ship: Dictionary = session.ship_definitions[session.selected_ship]
-	for slot in session.slots:
-		if int(slot.index) >= int(ship.para_1 if slot.category == "weapon" else ship.para_2):
-			continue
-		var index: int = slot_picker.item_count
-		slot_picker.add_item(("武器 " if slot.category == "weapon" else "防具 ") + str(int(slot.index) + 1) + " · " + session.equipment_label(str(slot.equipment_id)) + " · Lv." + str(slot.paid_level))
-		slot_picker.set_item_metadata(index, slot.id)
-		if str(slot.id) == selected: slot_picker.select(index)
+func _refresh_ship_choices() -> void:
 	ship_picker.clear()
 	for key in session.ship_definitions:
 		var index: int = ship_picker.item_count
@@ -287,39 +259,6 @@ func _refresh_growth_pickers() -> void:
 		ship_picker.set_item_metadata(index, key)
 		ship_picker.set_item_disabled(index, not session.unlocked("ship", key))
 		if key == session.selected_ship: ship_picker.select(index)
-	_populate_equipment_picker()
-
-func _refresh_slot_prices(ids: Array) -> void:
-	for slot in session.slots:
-		if slot.id not in ids: continue
-		for index in slot_picker.item_count:
-			if slot_picker.get_item_metadata(index) == slot.id:
-				slot_picker.set_item_text(index, ("武器 " if slot.category == "weapon" else "防具 ") + str(int(slot.index) + 1) + " · " + session.equipment_label(str(slot.equipment_id)) + " · Lv." + str(slot.paid_level))
-	if _selected_slot() in ids: _refresh_upgrade_price()
-
-func _refresh_upgrade_price() -> void:
-	var quote = session.quote_levels(_selected_slot(), 1)
-	var prices: PackedStringArray = []
-	if quote.ok:
-		for resource in quote.costs:
-			var value = session.amount_api.apply("to_display", [quote.costs[resource]])
-			prices.append(("铁 " if resource == "1" else "铀 " if resource == "2" else "进化材料 ") + str(value.text))
-	upgrade_price.text = "下一级：" + "，".join(prices) if quote.ok else "进化材料未开放或无法报价"
-
-func _populate_equipment_picker() -> void:
-	if equipment_picker == null:
-		return
-	var id: String = _selected_slot()
-	var weapon: bool = id.begins_with("weapon:")
-	_refresh_upgrade_price()
-	equipment_picker.clear()
-	equipment_picker.add_item("卸下")
-	equipment_picker.set_item_metadata(0, "")
-	for key in (["laser", "missile", "cannon", "longLaser"] if weapon else ["armour", "shield"]):
-		var index: int = equipment_picker.item_count
-		equipment_picker.add_item(session.equipment_label(key))
-		equipment_picker.set_item_metadata(index, key)
-		equipment_picker.set_item_disabled(index, not session.unlocked("equipment", key))
 
 const CREW_JOB_NAMES := {"equipment_upgrade": "装备升级", "hightech_scientists": "科研", "jewel_auto": "强化", "reactor_upgrade": "反应炉"}
 const PLANET_BUILD_STATES := {"locked": "未解锁", "building": "施工中", "ready": "待领取", "built": "已建成"}
@@ -471,11 +410,9 @@ func _flush_display_changes() -> void:
 	var changes: Dictionary = session.take_display_changes()
 	if changes.is_empty(): return
 	if changes.has("unlocks"):
-		_refresh_growth_pickers()
+		_refresh_ship_choices()
 		_refresh_world_pickers()
 		return
-	if changes.has("loadout"): _refresh_growth_pickers()
-	elif changes.has("slots"): _refresh_slot_prices(changes.slots.keys())
 	if changes.has("crew"):
 		for index in world_crew_picker.item_count:
 			var id: String = str(world_crew_picker.get_item_metadata(index))

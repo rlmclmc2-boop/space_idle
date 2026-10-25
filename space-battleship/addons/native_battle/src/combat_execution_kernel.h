@@ -458,7 +458,7 @@ class SpaceCombatKernel : public RefCounted {
             Dictionary v = weapons[i];
             if (!schema_required(v, {"kind"}) || !schema_integers(v, {"kind","type","slot","source","salvo","chain_count"}) ||
                 !schema_types(v, Variant::BOOL, {"hostile"}) || !schema_types(v, Variant::VECTOR2, {"muzzle"}) ||
-                !schema_types(v, Variant::DICTIONARY, {"entry","row"}) || !schema_types(v, Variant::ARRAY, {"branch_factors","external_factors"}) ||
+                !schema_types(v, Variant::DICTIONARY, {"entry"}) || !schema_types(v, Variant::ARRAY, {"branch_factors","external_factors"}) ||
                 !numeric_fields(v, {"damage","factor","interval","remaining","speed","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","secondary_probability"}, decode_modules) ||
                 !schema_nonnegative(v, {"damage","factor","ramp","maximum","critical_multiplier","repeat_multiplier","chain_count","slot"}) ||
                 !schema_probabilities(v, {"critical_rate","repeat_probability","secondary_probability"})) return false;
