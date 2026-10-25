@@ -68,6 +68,12 @@ powershell -ExecutionPolicy Bypass -File run_game.ps1
 
 `GameSession` 持有航程、固定步余量、钱包、待领取掉落及长期成长数据，直接调用 `combat_setup.gd` 和 `src/systems/` 普通函数。核只初始化一次，随后通过 `start_wave/finish_wave/begin_retreat/finish_retreat/advance/take_results` 推进；成长和换装调用 `set_player_configuration` 原位更新，提交入口校验一次。已飞出攻击持有出生快照，防具模块损伤是生命的唯一权威，合计盾甲仅供读取。
 
+船员的唯一占用是 `crew_progress[crewId].kind/target`；星球推进接收即时人员视图，完成详情由 Session 当场消费，不在星球状态重复保存人员。建筑达到探索门槛即进入 `building`，后续探索完成才累计施工；缺少额外施工人员时暂停并保留次数，`ready` 后由玩家领取。关闭自动探索完成本次后停止，取消才立即中止；每秒购买岗位离岗清余量，科研续研和投入周期独立保留。
+
+`systems/galaxy.gd::generate` 按 Excel 槽数从核心四方向广度展开，仅生成节点身份、父节点和深度；可达性只读取父节点探索状态。总探索工程量分给全部节点，地图视觉面积不决定工作量。蓝图不消耗随机数；配置 seed 用于同深度节点选择、普通类型洗牌及特殊类型选择。星系探索/施工与并行升级分别推进，完成本项只丢本项余时。
+
+世界成长以 `refit` 原位更新核，付费防具仍走 `upgrade`，科研、强化、反应炉保持绝对生命。Session 进度仅驻留内存，本阶段不接 SaveFiles，也不提供绕过重铸代价的首次征服动作；永久 Buff 读取已记录的征服标记。
+
 核内金额和宿主钱包共用 C++ Amount；边界使用 Amount 生成的十进制文本。装备函数只组装到 `charged_base`，熟练、适应和战斗临时效果由 native 计算。装备 Q 与首级特例只在 `systems/equipment.gd` 定义，单级、批量及 MAX 共用报价；Amount 只保留通用数值运算。
 
 纯几何函数位于 `scripts/ship_geometry_convention.gd`。舰体 alpha 轮廓生成的逻辑凸包同时供接触计算与绘制；`GameSession._sync_geometry` 以稳定来源 ID 提供炮口，避免禁用无人机或内部槽复用改变数组对应。表现读取现有核与运动租约，不拥有伤害结算。
@@ -78,8 +84,8 @@ powershell -ExecutionPolicy Bypass -File run_game.ps1
 
 掉落按花括号内分号拆项，再解析资源、数量和概率。待领集合使用 `native:<DropId>` 与 `timed:<宿主序号>` 分域；native 登记游标只消费死亡结果流，两域领取后删除待领项，不积累永久已领集合。重复登记由游标拒绝，重复领取无效。
 
-定时资源来自 `config.autoGenRes`，在航行、战斗、清关等待、驻守等待和撤退中累计生成时间，离港和暂停不推进。数量按战点倍率用 Amount 计算并取整，自顶部移动，到达、手动领取和终波强制领取共用入账函数。移动物不使用死亡掉落的自动领取期限；`timed_drop` 与 `enemy_drop/fragment_drop` 一同计入原生收入峰值。科研完成先同步收入效果；峰值在入账变化时更新，样本按现实与游戏时间窗口裁剪，自动投入到期计算。
+定时资源来自 `config.autoGenRes`，在航行、战斗、清关等待、驻守等待和撤退中累计生成时间，离港和暂停不推进。数量按战点倍率用 Amount 计算并取整，自顶部移动，到达、手动领取和终波强制领取共用入账函数。移动物不使用死亡掉落的自动领取期限；`timed_drop` 与 `enemy_drop/fragment_drop` 一同计入原生收入峰值。收入样本维护和窗口查询归 Economy；Research 只消费查询结果。星系收益参与 AI 实际收入，不进入原生峰值或生产基数。科研完成先同步收入效果；峰值在原生入账变化时更新，自动投入到期计算，最短续研平局保留 Excel 顺序。
 
-`src/main.gd` 提供输入、只读显示与现有 retained/GPU 接线。空格暂停，G 切换当前战点驻守，点击掉落手动领取；成长面板调用 Session 的装备、强化、反应炉和科研命令。到期或终波强制领取按自动损耗规则处理，普通碎片不套用资源自动损耗。
+`src/main.gd` 提供输入、只读显示与现有 retained/GPU 接线。空格暂停，G 切换当前战点驻守，点击掉落手动领取；成长面板调用 Session 的装备、强化、反应炉、科研、船员派遣、自动探索和建筑领取命令，并显示星系工程及升级状态。到期或终波强制领取按自动损耗规则处理，普通碎片不套用资源自动损耗。
 
 当前验证范围仅为 C++/GDScript 编译及既有独立 Amount 测试，不新增配置、保存或战斗测试设施。整体玩法、完整页面和长期保存恢复仍待后续阶段统一运行验证。

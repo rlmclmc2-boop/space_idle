@@ -43,12 +43,6 @@ static func set_automatic(progress: Dictionary, enabled: bool) -> Dictionary:
 	progress.automatic = enabled
 	return {"ok": true}
 
-static func start_build(progress: Dictionary, building: String) -> Dictionary:
-	if not progress.buildings.has(building) or progress.buildings[building].state != "available":
-		return {"ok": false, "reason": "PlanetBuildingUnavailable"}
-	progress.buildings[building].state = "building"
-	return {"ok": true}
-
 static func claim_build(progress: Dictionary, building: String) -> Dictionary:
 	if not progress.buildings.has(building) or progress.buildings[building].state != "ready":
 		return {"ok": false, "reason": "PlanetBuildingNotReady"}
@@ -69,7 +63,7 @@ static func advance(state: Dictionary, definitions: Dictionary, buildings: Dicti
 			return {"ok": false, "reason": "PlanetExplorationRangeExceeded"}
 		var released: Array = []
 		# Construction sees the pre-completion unlock state, so a threshold crossing
-		# cannot also advance a newly available building.
+		# cannot also advance a newly unlocked building.
 		for key in progress.buildings:
 			var build: Dictionary = progress.buildings[key]
 			var row: Dictionary = buildings[key]
@@ -81,7 +75,7 @@ static func advance(state: Dictionary, definitions: Dictionary, buildings: Dicti
 		progress.exploration = int(progress.exploration) + 1
 		for key in progress.buildings:
 			if progress.buildings[key].state == "locked" and int(progress.exploration) >= int(buildings[key].unlock_explore):
-				progress.buildings[key].state = "available"
+				progress.buildings[key].state = "building"
 		var again: bool = progress.automatic and progress.buildings.station.state == "built"
 		progress.running = again
 		progress.elapsed = 0.0
@@ -132,3 +126,17 @@ static func factors(state: Dictionary, buildings: Dictionary, api) -> Dictionary
 			if row.type == "equipment": equipment = total.value
 			else: refinery = total.value
 	return {"ok": true, "equipment": equipment, "refinery": refinery}
+
+static func experience_reward(definition: Dictionary, stage_ratio, galaxy_factor: Dictionary, api) -> Dictionary:
+	var earned = api.apply("from_decimal", [str(definition.baseExp)])
+	var ratio = api.apply("from_decimal", [str(stage_ratio)])
+	for result in [earned, ratio]:
+		if not result.ok: return result
+	earned = api.apply("mul", [earned.value, ratio.value])
+	if not earned.ok: return earned
+	earned = api.apply("mul", [earned.value, galaxy_factor])
+	if not earned.ok: return earned
+	var half = api.apply("from_decimal", ["0.5"])
+	earned = api.apply("add", [earned.value, half.value])
+	if not earned.ok: return earned
+	return api.apply("floor", [earned.value])

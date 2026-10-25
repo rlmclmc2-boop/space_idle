@@ -206,6 +206,10 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	crew_progress = Crew.initial(crew_definitions, amount_api)
 	planet_progress = Planet.initial(planet_definitions, planet_buildings)
+	var galaxies = Galaxy.initial(galaxy_definitions)
+	if not galaxies.ok:
+		return _fail(str(galaxies.reason))
+	galaxy_progress = galaxies.regions
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
 	reactor_progress = Reactor.initial(parameters)
 	var setup = _growth_setup(slots, enhancement_progress, reactor_progress, research_progress)
@@ -1023,16 +1027,16 @@ func _world_contributions() -> Dictionary:
 		if not result.ok:
 			return result
 	var external: Array = []
-	for value in [planet.equipment, equipment.value, galaxy.values.equipment_value]:
+	for value in [planet.equipment, equipment.value, galaxy["values"].equipment_value]:
 		var text = amount_api.apply("to_display", [value])
 		if not text.ok:
 			return text
 		external.append(text.text)
-	capacity = amount_api.apply("mul", [capacity.value, galaxy.values.charge_max])
+	capacity = amount_api.apply("mul", [capacity.value, galaxy["values"].charge_max])
 	if not capacity.ok:
 		return capacity
 	return {"ok": true, "external": external, "capacity": capacity.value, "fragments": fragments.value,
-		"galaxy_fragments": galaxy.values.gem_fragment, "crew_experience": galaxy.values.crew_exp,
+		"galaxy_fragments": galaxy["values"].gem_fragment, "crew_experience": galaxy["values"].crew_exp,
 		"research": research.value, "refinery": planet.refinery,
 		"equipment_levels": int(Planet.buff(planet_progress, planet_buffs, "level_bonus", "equipment")),
 		"enhancement_levels": int(Planet.buff(planet_progress, planet_buffs, "level_bonus", "enhancement")),
@@ -1115,11 +1119,6 @@ func set_planet_automatic(id: String, enabled: bool) -> Dictionary:
 		return {"ok": false, "reason": "PlanetLocked"}
 	return Planet.set_automatic(planet_progress[id], enabled)
 
-func start_planet_build(id: String, building: String) -> Dictionary:
-	if not planet_unlocked(id):
-		return {"ok": false, "reason": "PlanetLocked"}
-	return Planet.start_build(planet_progress[id], building)
-
 func claim_planet_build(id: String, building: String) -> Dictionary:
 	if not planet_unlocked(id):
 		return {"ok": false, "reason": "PlanetLocked"}
@@ -1138,15 +1137,8 @@ func _advance_planets(dt: float) -> bool:
 		var id: String = str(completion.planet)
 		if unlocked("feature", "crew_level"):
 			var recipients: Array = crew_progress.keys() if Planet.buff(planet_progress, planet_buffs, "crew_exp_share", "all", id) > 0 else [completion.explorer]
-			var experience = amount_api.apply("from_decimal", [str(planet_definitions[id].baseExp)])
 			var level: int = maxi(int(campaign.highest_reached), int(campaign.lifetime_highest_reached))
-			var ratio = amount_api.apply("from_decimal", [str(level_definitions[level].planetExpRatio)])
-			experience = amount_api.apply("mul", [experience.value, ratio.value])
-			if experience.ok:
-				experience = amount_api.apply("mul", [experience.value, galaxy_crew_experience])
-			if experience.ok:
-				experience = amount_api.apply("add", [experience.value, amount_api.apply("from_decimal", ["0.5"]).value])
-				experience = amount_api.apply("floor", [experience.value])
+			var experience = Planet.experience_reward(planet_definitions[id], level_definitions[level].planetExpRatio, galaxy_crew_experience, amount_api)
 			if not experience.ok:
 				_fail(str(experience.error))
 				return false
@@ -1182,19 +1174,13 @@ func _advance_crew_jobs(dt: float) -> bool:
 		if not last_error.is_empty(): return false
 	return true
 
-func _initialize_galaxy_progress(blueprints: Dictionary) -> Dictionary:
-	var result = Galaxy.initial(galaxy_definitions, blueprints)
-	if result.ok:
-		galaxy_progress = result.regions
-	return result
-
 func galaxy_unlocked(key: String) -> bool:
 	if not galaxy_progress.has(key) or not galaxy_definitions.has(key):
 		return false
 	if galaxy_progress[key].get("unlocked", false):
 		return true
 	var row: Dictionary = galaxy_definitions[key]
-	return row.unlock_type == "stage_cleared" and campaign.cleared_stages.has(int(row.unlock_value))
+	return unlocked("feature", "galaxy") and row.unlock_type == "stage_cleared" and campaign.cleared_stages.has(int(row.unlock_value))
 
 func _advance_galaxies(dt: float) -> bool:
 	Economy.prune_income(income_samples, wall_time, game_time, float(rules.research_income_window))
@@ -1218,19 +1204,12 @@ func _advance_galaxies(dt: float) -> bool:
 			return false
 		for payment in result.payments:
 			var region: Dictionary = {payment.galaxy: galaxy_progress[payment.galaxy]}
-			var growth = Galaxy.factors(region, galaxy_buildings, amount_api)
-			if not growth.ok:
-				_fail(str(growth.get("error", "GalaxyFactorsFailed")))
+			var income = Galaxy.income(region, galaxy_buildings, production.rates, float(payment.seconds), amount_api)
+			if not income.ok:
+				_fail(str(income.get("error", "GalaxyIncomeFailed")))
 				return false
-			for pair in [["1", "iron_auto_ratio"], ["2", "uranium_auto_ratio"]]:
-				var quantity = amount_api.apply("mul", [production.rates[pair[0]], growth.values[pair[1]]])
-				if quantity.ok:
-					quantity = amount_api.apply("mul", [quantity.value, amount_api.apply("from_decimal", [str(payment.seconds)]).value])
-				if not quantity.ok:
-					_fail(str(quantity.error))
-					return false
-				if amount_api.apply("compare", [quantity.value, amount_api.apply("zero", []).value]).scalar <= 0: continue
-				var credited = Economy.credit_yield(wallet, income_samples, str(pair[0]), quantity.value, wall_time, game_time, amount_api)
+			for resource in income.amounts:
+				var credited = Economy.credit_yield(wallet, income_samples, str(resource), income.amounts[resource], wall_time, game_time, amount_api)
 				if not credited.ok:
 					_fail(str(credited.get("error", "GalaxyCreditFailed")))
 					return false

@@ -254,7 +254,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(func():
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
-		var labels := {"GalaxyUnavailable": "星系尚未开放", "UnknownPlanet": "尚未选择星球", "HyperspaceCrewReserved": "船员仍被超空间任务占用", "CrewAssignmentUnavailable": "岗位暂不可用", "CrewLocked": "船员尚未解锁", "CrewTargetOccupied": "目标人数已满", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑尚不可施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewJobLocked": "岗位尚未开放", "NoChange": "没有变更", "InsufficientResources": "资源不足", "EquipmentSwitchLocked": "换装冷却尚未结束", "EquipmentLocked": "装备尚未解锁", "EnhancementLocked": "强化尚未解锁", "EnhancementBranchLocked": "强化分支尚未开放", "ReactorLocked": "反应炉尚未解锁", "ReactorModuleLocked": "反应炉模块尚未开放", "ResearchLocked": "科研前置条件未满足", "EvolutionMaterialLocked": "进化材料尚未开放", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
+		var labels := {"GalaxyUnavailable": "星系尚未开放", "UnknownPlanet": "尚未选择星球", "HyperspaceCrewReserved": "船员仍被超空间任务占用", "CrewAssignmentUnavailable": "岗位暂不可用", "CrewLocked": "船员尚未解锁", "CrewTargetOccupied": "目标人数已满", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewJobLocked": "岗位尚未开放", "NoChange": "没有变更", "InsufficientResources": "资源不足", "EquipmentSwitchLocked": "换装冷却尚未结束", "EquipmentLocked": "装备尚未解锁", "EnhancementLocked": "强化尚未解锁", "EnhancementBranchLocked": "强化分支尚未开放", "ReactorLocked": "反应炉尚未解锁", "ReactorModuleLocked": "反应炉模块尚未开放", "ResearchLocked": "科研前置条件未满足", "EvolutionMaterialLocked": "进化材料尚未开放", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
 		growth_status.text = "完成" if result.get("ok", false) else str(labels.get(reason, reason))
 		_refresh_growth_pickers())
 	return button
@@ -438,13 +438,14 @@ func _populate_equipment_picker() -> void:
 		equipment_picker.set_item_disabled(index, not session.unlocked("equipment", key))
 
 const CREW_JOB_NAMES := {"equipment_upgrade": "装备升级", "hightech_scientists": "科研", "jewel_auto": "强化", "reactor_upgrade": "反应炉"}
-const PLANET_BUILD_STATES := {"locked": "未解锁", "available": "可开工", "building": "施工中", "ready": "待领取", "built": "已建成"}
+const PLANET_BUILD_STATES := {"locked": "未解锁", "building": "施工中", "ready": "待领取", "built": "已建成"}
 
 func _picker_value(picker: OptionButton, fallback = ""):
 	return fallback if picker == null or picker.selected < 0 else picker.get_item_metadata(picker.selected)
 
 func _setup_world_controls(box: Control) -> void:
 	_caption(box, "船员与星球")
+	_caption(box, "星球通关30、星系通关60后开放。")
 	world_status = Label.new()
 	world_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(world_status)
@@ -471,7 +472,6 @@ func _setup_world_controls(box: Control) -> void:
 	world_building_picker = OptionButton.new()
 	box.add_child(world_building_picker)
 	var construction := _row(box)
-	_command_button(construction, "开始施工", func(): return session.start_planet_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker))))
 	_command_button(construction, "领取建筑", func(): return session.claim_planet_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker))))
 	_command_button(box, "刷新世界列表", func(): return {"ok": true})
 
@@ -551,8 +551,16 @@ func _refresh_world_status() -> void:
 		var region: Dictionary = session.galaxy_progress[key]
 		var explored: int = 0
 		var active: int = 0
+		var levels: int = 0
+		var upgrading: int = 0
 		for node in region.nodes.values():
 			if node.explored: explored += 1
 			if node.state == "active": active += 1
-		lines.append("%s · 探索 %d/%d · 建成 %d" % [session.galaxy_definitions[key].name, explored, region.nodes.size(), active])
+			levels += int(node.level)
+			if float(node.upgrade_remaining) > 0.0: upgrading += 1
+		var phase: String = str({"exploring": "探索建设", "developing": "发展升级", "complete": "已完成"}[region.phase])
+		lines.append("%s · %s · 探索 %d/%d · 建成 %d · 等级合计 %d · 升级中 %d" % [session.galaxy_definitions[key].name, phase, explored, region.nodes.size(), active, levels, upgrading])
+		if not str(region.active_node).is_empty():
+			var work: Dictionary = region.nodes[str(region.active_node)]
+			lines.append("%s · %s" % [session.galaxy_buildings[work.building].name, "剩余探索工作 %.1f" % float(work.explore_remaining) if not work.explored else "剩余施工 %.1f 秒" % float(work.construction_remaining)])
 	world_status.text = "\n".join(lines) if not lines.is_empty() else "通关第 10 关后解锁首位船员。"

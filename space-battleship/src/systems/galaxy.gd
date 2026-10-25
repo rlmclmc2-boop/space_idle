@@ -1,24 +1,43 @@
 extends RefCounted
 ## Region work and RNG belong to Session progress; personnel arrive as current counts.
 
-static func initial(definitions: Dictionary, blueprints: Dictionary) -> Dictionary:
+static func generate(count: int) -> Array:
+	var nodes: Array = []
+	var positions: Dictionary = {Vector2i.ZERO: -1}
+	var queue: Array[Vector2i] = [Vector2i.ZERO]
+	var cursor: int = 0
+	while nodes.size() < count:
+		var parent: Vector2i = queue[cursor]
+		cursor += 1
+		var parent_id: int = int(positions[parent])
+		var depth: int = 1 if parent_id == -1 else int(nodes[parent_id].depth) + 1
+		for direction in [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]:
+			var cell: Vector2i = parent + direction
+			if positions.has(cell) or nodes.size() >= count: continue
+			var id: int = nodes.size()
+			nodes.append({"id": id, "parent_id": parent_id, "depth": depth})
+			positions[cell] = id
+			queue.append(cell)
+	return nodes
+
+static func initial(definitions: Dictionary) -> Dictionary:
 	var regions: Dictionary = {}
 	for key in definitions:
 		var definition: Dictionary = definitions[key]
-		if not blueprints.has(key) or blueprints[key].size() != int(definition.building_slot_count):
-			return {"ok": false, "reason": "GalaxyBlueprintRequired"}
+		var count: int = int(definition.building_slot_count)
+		if count <= 0 or float(definition.explore_work_total) <= 0.0:
+			return {"ok": false, "reason": "InvalidGalaxyWorkDefinition"}
+		var blueprint: Array = generate(count)
 		var nodes: Dictionary = {}
-		for source in blueprints[key]:
+		var quota: float = float(definition.explore_work_total) / blueprint.size()
+		var remaining: float = float(definition.explore_work_total)
+		for source in blueprint:
 			var id: String = str(int(source.id))
-			if nodes.has(id) or int(source.depth) < 0:
-				return {"ok": false, "reason": "InvalidGalaxyBlueprint"}
-			nodes[id] = {"id": id, "depth": int(source.depth), "neighbors": source.neighbors.duplicate(),
-				"explored": false, "explore_remaining": float(definition.explore_work_total) / blueprints[key].size(),
+			var work: float = remaining if int(source.id) == blueprint.size() - 1 else quota
+			remaining = maxf(0.0, remaining - work)
+			nodes[id] = {"parent_id": int(source.parent_id), "depth": int(source.depth),
+				"explored": false, "explore_remaining": work,
 				"state": "empty", "building": "", "level": 0, "construction_remaining": 0.0, "upgrade_remaining": 0.0}
-		for id in nodes:
-			for neighbor in nodes[id].neighbors:
-				if int(neighbor) != -1 and not nodes.has(str(int(neighbor))):
-					return {"ok": false, "reason": "InvalidGalaxyBlueprint"}
 		var random := RandomNumberGenerator.new()
 		random.seed = int(definition.slot_seed)
 		regions[key] = {"unlocked": false, "phase": "exploring", "nodes": nodes, "active_node": "", "attempt_elapsed": 0.0,
@@ -31,12 +50,9 @@ static func _reachable(region: Dictionary) -> Array:
 	for id in region.nodes:
 		var node: Dictionary = region.nodes[id]
 		if node.state != "empty": continue
-		var reachable: bool = false
-		for neighbor in node.neighbors:
-			if int(neighbor) == -1 or region.nodes[str(int(neighbor))].explored:
-				reachable = true
-				break
-		if not reachable or int(node.depth) > depth: continue
+		var parent: int = int(node.parent_id)
+		if parent != -1 and not region.nodes[str(parent)].explored: continue
+		if int(node.depth) > depth: continue
 		if int(node.depth) < depth:
 			choices.clear()
 			depth = int(node.depth)
@@ -178,3 +194,17 @@ static func factors(regions: Dictionary, buildings: Dictionary, api) -> Dictiona
 			if not result.ok: return result
 			values[effect] = result.value
 	return {"ok": true, "values": values}
+
+static func income(regions: Dictionary, buildings: Dictionary, production_rates: Dictionary, seconds: float, api) -> Dictionary:
+	var growth = factors(regions, buildings, api)
+	if not growth.ok: return growth
+	var duration = api.apply("from_decimal", [str(seconds)])
+	if not duration.ok: return duration
+	var amounts: Dictionary = {}
+	for pair in [["1", "iron_auto_ratio"], ["2", "uranium_auto_ratio"]]:
+		var quantity = api.apply("mul", [production_rates[pair[0]], growth["values"][pair[1]]])
+		if not quantity.ok: return quantity
+		quantity = api.apply("mul", [quantity.value, duration.value])
+		if not quantity.ok: return quantity
+		amounts[pair[0]] = quantity.value
+	return {"ok": true, "amounts": amounts}

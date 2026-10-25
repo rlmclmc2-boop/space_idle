@@ -232,6 +232,8 @@ static func income_rates(samples: Array, wall: float, game: float, window: float
 
 static func credit_yield(wallet: Dictionary, samples: Array, resource: String, quantity: Dictionary, wall: float, game: float, api) -> Dictionary:
 	var zero: Dictionary = api.apply("zero", []).value
+	if api.apply("compare", [quantity, zero]).scalar <= 0:
+		return {"ok": true}
 	var total = api.apply("add", [wallet.get(resource, zero), quantity])
 	if not total.ok:
 		return total
