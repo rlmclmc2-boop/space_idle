@@ -2155,7 +2155,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         return true;
     }
-    bool read_weapon(Dictionary v, int i, int actor_offset, double delay, Weapon &w, Dictionary initial = Dictionary()) const {
+    bool read_weapon(Dictionary v, int i, double delay, Weapon &w, Dictionary initial = Dictionary()) const {
         w.kind = v["kind"];
         if (w.kind < 0 || w.kind > 3)
             return false;
@@ -2164,9 +2164,8 @@ class SpaceCombatKernel : public RefCounted {
         w.hostile = v.get("hostile", false);
         int source = v.get("source", -1);
         if (w.hostile) {
-            int count = initial.is_empty() ? int(actors.size()) - actor_offset : Array(initial["enemies"]).size();
-            if (source < 0 || source >= count) return false;
-            w.source = initial.is_empty() ? handle(source + actor_offset) : Handle{uint32_t(source + actor_offset), 1};
+            if (source < 0) return false; // Descriptor admission validates the upper bound.
+            w.source.index = uint32_t(source); // Generation and encounter offset belong to installation.
         }
         w.interval = v.get("interval", 1.0); w.normal_interval = w.interval;
         w.base = read_amount(v.get("damage", 1.0));
@@ -2220,17 +2219,15 @@ class SpaceCombatKernel : public RefCounted {
         }
         return values;
     }
-    bool install_weapons(Array wvalues, int actor_offset, double delay) {
-        for (int i = 0; i < wvalues.size(); ++i) {
-            Weapon w;
-            if (!read_weapon(wvalues[i], i, actor_offset, delay, w)) return false;
+    void install_weapons(std::vector<Weapon> prepared, int actor_offset) {
+        for (Weapon &w : prepared) {
+            if (w.hostile) w.source = handle(w.source.index + actor_offset);
             int index = 0;
             while (index < int(weapons.size()) && !weapons[index].vacant) ++index;
-            if (index == int(weapons.size())) weapons.push_back(w);
-            else weapons[index] = w;
-            roots.push({clock + w.remaining, ++event_serial, 0, index});
+            if (index == int(weapons.size())) weapons.push_back(std::move(w));
+            else weapons[index] = std::move(w);
+            roots.push({clock + weapons[index].remaining, ++event_serial, 0, index});
         }
-        return true;
     }
 
   protected:
@@ -2386,7 +2383,18 @@ class SpaceCombatKernel : public RefCounted {
         descriptor["reactive_stack_limit"] = reactive_stack_limit;
         descriptor["enemies"] = wave.get("enemies", Array());
         descriptor["weapons"] = wave.get("weapons", Array());
-        if (!configuration_schema(descriptor) || Array(descriptor["enemies"]).is_empty()) return false;
+        std::vector<Weapon> prepared;
+        try {
+            if (!configuration_schema(descriptor) || Array(descriptor["enemies"]).is_empty()) return false;
+            Array rows = descriptor["weapons"];
+            for (int i = 0; i < rows.size(); ++i) {
+                Weapon value;
+                if (!read_weapon(rows[i], i, repeat_delay, value)) return false;
+                prepared.push_back(std::move(value));
+            }
+        } catch (const std::exception &) {
+            return false; // Decoding cannot retire the old encounter or change its failure state.
+        }
         reclaim_finished_wave();
         if (final_cleared) {
             compact();
@@ -2404,7 +2412,8 @@ class SpaceCombatKernel : public RefCounted {
         }
         const int actor_offset = int(actors.size());
         ++encounter_generation;
-        if (!install_actors(descriptor["enemies"]) || !install_weapons(descriptor["weapons"], actor_offset, repeat_delay)) return false;
+        if (!install_actors(descriptor["enemies"])) return false;
+        install_weapons(std::move(prepared), actor_offset);
         final_encounter = wave.get("final", false);
         final_cleared = false;
         wave_active = true; battle_started = true;
@@ -2471,20 +2480,25 @@ class SpaceCombatKernel : public RefCounted {
     }
 
     bool configure(Dictionary d) {
-        if (!configuration_schema(d, false)) return false;
         std::vector<Weapon> prepared_weapons;
-        Array source_rows = d["weapons"];
-        for (int i = 0; i < source_rows.size(); ++i) {
-            Weapon value;
-            if (!read_weapon(source_rows[i], i, 0, d.get("repeat_delay", 0.5), value, d)) return false;
-            prepared_weapons.push_back(std::move(value));
-        }
         std::vector<Defence> prepared_defences;
-        Array module_rows = d.get("defences", Array());
-        for (int i = 0; i < module_rows.size(); ++i) prepared_defences.push_back(read_defence(module_rows[i]));
-        auto drone_values = read_drone_globals(d.get("equipped_drones", Array()));
-        if (!configuration_arithmetic(d, int64_t(d.get("attack_counter",int64_t(0))),
-                int64_t(d.get("incoming_counter",int64_t(0))), prepared_weapons, prepared_defences)) return false;
+        std::vector<std::array<Amount, 2>> drone_values;
+        try {
+            if (!configuration_schema(d, false)) return false;
+            Array source_rows = d["weapons"];
+            for (int i = 0; i < source_rows.size(); ++i) {
+                Weapon value;
+                if (!read_weapon(source_rows[i], i, d.get("repeat_delay", 0.5), value, d)) return false;
+                prepared_weapons.push_back(std::move(value));
+            }
+            Array module_rows = d.get("defences", Array());
+            for (int i = 0; i < module_rows.size(); ++i) prepared_defences.push_back(read_defence(module_rows[i]));
+            drone_values = read_drone_globals(d.get("equipped_drones", Array()));
+            if (!configuration_arithmetic(d, int64_t(d.get("attack_counter",int64_t(0))),
+                    int64_t(d.get("incoming_counter",int64_t(0))), prepared_weapons, prepared_defences)) return false;
+        } catch (const std::exception &) {
+            return false; // Admission failure: no owner mutation or stopped/failure state change.
+        }
         cancel();
         feedback.clear();
         actors.clear();
@@ -2552,8 +2566,7 @@ class SpaceCombatKernel : public RefCounted {
         secondary_probability = d.get("secondary_probability", 0.0);
         chain_count = d.get("chain_count", 0);
         if (!install_actors(d["enemies"])) return false;
-        weapons = std::move(prepared_weapons);
-        for (int i = 0; i < int(weapons.size()); ++i) roots.push({clock + weapons[i].remaining, ++event_serial, 0, i});
+        install_weapons(std::move(prepared_weapons), 0);
         attack_counter = d.get("attack_counter", int64_t(0));
         incoming_counter = d.get("incoming_counter", int64_t(0));
         counter_growth = d.get("counter_growth", 0.0);
@@ -2668,7 +2681,7 @@ class SpaceCombatKernel : public RefCounted {
                 Dictionary row = rows[i], entry = row.get("entry", Dictionary());
                 String id = entry.get("id", "");
                 if (id.is_empty() || !identities.insert(id).second || bool(row.get("hostile", false))) return false;
-                if (String(field) == "weapons") { Weapon parsed; if (!read_weapon(row, i, 0, d.get("repeat_delay", repeat_delay), parsed)) return false; prepared.push_back(std::move(parsed)); }
+                if (String(field) == "weapons") { Weapon parsed; if (!read_weapon(row, i, d.get("repeat_delay", repeat_delay), parsed)) return false; prepared.push_back(std::move(parsed)); }
                 else modules.push_back(read_defence(row));
             }
         }
