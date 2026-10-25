@@ -111,7 +111,7 @@ static func _combat(state: Dictionary, bonus: int, rules: Dictionary, available:
 	var cap: float = float(rules.memory_buffer_fraction) * level * memory_factor if enabled.memory.active else 0.0
 	if enabled.memory.b3: cap *= 1.0 + armours * float(rules.memory_b3_armour_capacity_bonus)
 	var scale: float = float(rules.deferred_percent_scale)
-	return {"ok": true, "rules": rules, "effects": flags,
+	return {"ok": true, "rules": rules, "effects": flags, "initial_wait_from_interval": enabled.proficiency.b2,
 		"globals": {"counter_level": level if (enabled.proficiency.active and float(rules.proficiency_growth) != 0.0) or (enabled.adaptation.active and float(rules.adaptation_growth) != 0.0) else 0, "counter_growth": float(rules.proficiency_growth) if enabled.proficiency.active else 0.0,
 			"defence_counter_growth": float(rules.adaptation_growth) if enabled.adaptation.active else 0.0,
 			"counter_log_base": float(rules.counter_log_base), "counter_round_scale": float(rules.bonus_round_scale),

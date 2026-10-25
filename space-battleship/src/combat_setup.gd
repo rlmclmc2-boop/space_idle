@@ -42,7 +42,7 @@ static func build_player(equipment_contribution: Dictionary, geometry: Dictionar
 		mounted.base_interval = mounted.interval
 		mounted.merge(upgrades.weapon, true)
 		mounted.interval = float(mounted.base_interval) * float(upgrades.weapon.interval_multiplier)
-		if upgrades.effects.proficiency.b2: mounted.remaining = 0.0 if int(mounted.kind) == 3 else mounted.interval
+		if upgrades.initial_wait_from_interval: mounted.remaining = 0.0 if int(mounted.kind) == 3 else mounted.interval
 	for key in ["reactive_volley_window", "reactive_stack_seconds", "reactive_per_stack"]:
 		descriptor[key] = rules[key]
 	descriptor.reactive_stack_limit = int(rules.reactive_stack_limit)
