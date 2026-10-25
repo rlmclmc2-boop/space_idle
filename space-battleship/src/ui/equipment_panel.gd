@@ -1,4 +1,5 @@
 extends VBoxContainer
+const EconomyView = preload("res://src/ui/economy_view.gd")
 
 const ERRORS := {"EquipmentSwitchLocked": "换装冷却尚未结束", "EquipmentLocked": "装备尚未解锁", "EvolutionMaterialLocked": "进化材料尚未开放"}
 var _host_command: Callable
@@ -79,5 +80,7 @@ func _command(parent: Control, text: String, action: Callable):
 	return _host_command.call(parent, text, func():
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "")))
-		if not result.get("ok", false) and ERRORS.has(reason): result.message = ERRORS[reason]
+		if not result.get("ok", false) and not result.has("message"):
+			var message: String = str(ERRORS.get(reason, EconomyView.describe_error(reason)))
+			if not message.is_empty(): result.message = message
 		return result)

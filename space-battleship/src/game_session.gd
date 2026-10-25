@@ -1,5 +1,6 @@
 extends RefCounted
 
+const BattleStatistics = preload("res://src/systems/battle_statistics.gd")
 const Campaign = preload("res://src/systems/campaign.gd")
 const CombatSetup = preload("res://src/combat_setup.gd")
 const Equipment = preload("res://src/systems/equipment.gd")
@@ -38,11 +39,8 @@ var research_factors: Dictionary = {}
 var reactor_factors: Dictionary = {}
 var combat_values: Dictionary = {}
 var equipped_drones: Array = []
-var legendary_definitions: Dictionary = {}
-var legendary_constants: Dictionary = {}
-var legendary_ranges: Dictionary = {}
-var drone_limits: Dictionary = {}
-var damage_statistics: Dictionary = {}
+var battle_statistics
+var battle_configuration: Dictionary = {}
 var income_factors: Dictionary = {}
 var motion: Dictionary = {}
 var models: Dictionary = {}
@@ -77,25 +75,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		rules[str(row.id)] = row.value
 	for row in configuration.battle_geometry.battle_geometry:
 		geometry[str(row.id)] = row.value
-	for row in configuration.hyperspace_config["\u4f20\u8bf4\u5b9a\u4e49"]:
-		legendary_definitions[str(row.effect_id)] = row
-	for row in configuration.hyperspace_config["\u4f20\u8bf4\u968f\u673a\u53c2\u6570"]:
-		if not legendary_ranges.has(str(row.effect_id)):
-			legendary_ranges[str(row.effect_id)] = {}
-		legendary_ranges[str(row.effect_id)][str(row.parameter)] = {"minimum": row.minimum, "maximum": row.maximum}
-	var legacy_bounds: Dictionary = {}
-	for row in configuration.hyperspace_config["\u56fa\u5b9a\u89c4\u5219_\u517c\u5bb9\u8bf4\u660e"]:
-		legacy_bounds[str(row.key)] = row.value
-	var old_key: String = "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/"
-	if legacy_bounds.has(old_key + "0") and legacy_bounds.has(old_key + "1"):
-		legendary_ranges.drone_master.maximum_reduction.compatibility_minimum = legacy_bounds[old_key + "0"]
-		legendary_ranges.drone_master.maximum_reduction.compatibility_maximum = legacy_bounds[old_key + "1"]
-	for row in configuration.hyperspace_config["\u4f20\u8bf4\u5e38\u91cf"]:
-		if not legendary_constants.has(str(row.effect_id)):
-			legendary_constants[str(row.effect_id)] = {}
-		legendary_constants[str(row.effect_id)][str(row.constant_path)] = row.value
-	for row in configuration.hyperspace_config["\u57fa\u7840\u53c2\u6570"]:
-		drone_limits[str(row.key)] = row.value
+	battle_configuration = CombatSetup.legendary_configuration(configuration.hyperspace_config)
 	for row in configuration.weapon_motion.weapon_motion:
 		motion[str(row.id)] = row.value
 	campaign_system = Campaign.new(configuration, parameters, rules)
@@ -119,6 +99,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	player_geometry_height = float(models[campaign_system.selected_ship()].geometry_height)
 	player_dimensions = models[campaign_system.selected_ship()].size * float(player_art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + campaign_system.selected_ship()])
 	amount_api = ClassDB.instantiate("FoundationAmount")
+	battle_statistics = BattleStatistics.new(amount_api)
 	economy = Economy.new(parameters, rules, amount_api)
 	equipment = Equipment.new(configuration.equipment.equipment, configuration.equipment_evolution.equipment_evolution,
 		configuration.unlock.unlock, parameters, rules, amount_api)
@@ -226,20 +207,10 @@ func _advance_kernel(dt: float) -> bool:
 		_fail(reason if not reason.is_empty() else "NativeAdvanceRejected")
 		return false
 	var result: Dictionary = kernel.take_results()
-	for source in kernel.take_damage_stats():
-		var key: String = str(source.source)
-		var previous: Dictionary = damage_statistics.get(key, {"shield": amount_api.apply("zero", []).value, "health": amount_api.apply("zero", []).value})
-		for field in ["shield", "health"]:
-			var value = amount_api.apply("from_decimal", [str(source[field])])
-			if not value.ok:
-				_fail(str(value.error))
-				return false
-			var total = amount_api.apply("add", [previous[field], value.value])
-			if not total.ok:
-				_fail(str(total.error))
-				return false
-			previous[field] = total.value
-		damage_statistics[key] = previous
+	var recorded = battle_statistics.record(kernel.take_damage_stats())
+	if not recorded.ok:
+		_fail(str(recorded.error))
+		return false
 	last_events.append_array(result.events)
 	var registered = economy.register_drops(result.drops, game_time, income_factors.refinery)
 	if not registered.ok:
@@ -345,10 +316,7 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	setup.enhancement_values = upgrades
 	setup.reactor_update = reactor
 	setup.descriptor.equipped_drones = next_drones.duplicate(true)
-	setup.descriptor.legendary_definitions = legendary_definitions
-	setup.descriptor.legendary_constants = legendary_constants
-	setup.descriptor.legendary_ranges = legendary_ranges
-	setup.descriptor.drone_limits = drone_limits
+	setup.descriptor.merge(battle_configuration)
 	setup.descriptor.drone_capacity = int(ship.drone_capacity)
 	setup.descriptor.rail_trail_width = float(motion.rail_trail_width)
 	setup.descriptor.higgs_minimum_width = float(rules.higgs_minimum_width)

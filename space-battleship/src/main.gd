@@ -1,4 +1,5 @@
 extends Node2D
+const BattleStatisticsView = preload("res://src/ui/battle_statistics_view.gd")
 const FleetPanel = preload("res://src/ui/fleet_panel.gd")
 const CampaignView = preload("res://src/ui/campaign_view.gd")
 const CrewPanel = preload("res://src/ui/crew_panel.gd")
@@ -44,6 +45,7 @@ func _ready() -> void:
 	if not result.ok:
 		startup_error = str(result.reason)
 	else:
+		add_child(BattleStatisticsView.new(session.battle_statistics))
 		add_child(CampaignView.new(session.campaign_system))
 		add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 		_setup_growth_panel()
@@ -99,14 +101,6 @@ func _draw() -> void:
 	draw_string(font, Vector2(18, 53), "攻击 %s   来袭 %s" % [history.attacks, history.incoming], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("a9c6db"))
 	var player: Dictionary = kernel.player_view()
 	draw_string(font, Vector2(18, 765), "装甲 %s   护盾 %s" % [player.armour, player.shield], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8ede6"))
-	var statistics: PackedStringArray = []
-	for source in session.damage_statistics:
-		var entry: Dictionary = session.damage_statistics[source]
-		var total = session.amount_api.apply("add", [entry.shield, entry.health])
-		var text = session.amount_api.apply("to_display", [total.value])
-		statistics.append(str(source) + " " + str(text.text))
-	if not statistics.is_empty():
-		draw_string(font, Vector2(18, 825), "伤害 " + "  ".join(statistics), HORIZONTAL_ALIGNMENT_LEFT, 536, 12, Color("c1d5f0"))
 	draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
 	if not session.last_error.is_empty():
 		draw_string(font, Vector2(18, 850), session.last_error, HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
@@ -172,7 +166,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(func():
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
-		var labels := {"NoChange": "没有变更", "InsufficientResources": "资源不足", "NativeConfigurationRejected": "配装或属性不满足条件"}
+		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
 		growth_status.text = "完成" if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
 		)
 	return button

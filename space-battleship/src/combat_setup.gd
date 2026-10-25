@@ -190,3 +190,30 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 				mount += 1
 	return {"ok": true, "wave": {"enemies": enemies, "weapons": weapons, "final": final,
 		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": jewel_probability}, "next_uid": next_uid, "muzzles": muzzles}
+
+static func legendary_configuration(source: Dictionary) -> Dictionary:
+	var legendary_definitions: Dictionary = {}
+	var legendary_constants: Dictionary = {}
+	var legendary_ranges: Dictionary = {}
+	var drone_limits: Dictionary = {}
+	for row in source["\u4f20\u8bf4\u5b9a\u4e49"]:
+		legendary_definitions[str(row.effect_id)] = row
+	for row in source["\u4f20\u8bf4\u968f\u673a\u53c2\u6570"]:
+		if not legendary_ranges.has(str(row.effect_id)):
+			legendary_ranges[str(row.effect_id)] = {}
+		legendary_ranges[str(row.effect_id)][str(row.parameter)] = {"minimum": row.minimum, "maximum": row.maximum}
+	var legacy_bounds: Dictionary = {}
+	for row in source["\u56fa\u5b9a\u89c4\u5219_\u517c\u5bb9\u8bf4\u660e"]:
+		legacy_bounds[str(row.key)] = row.value
+	var old_key: String = "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/"
+	if legacy_bounds.has(old_key + "0") and legacy_bounds.has(old_key + "1"):
+		legendary_ranges.drone_master.maximum_reduction.compatibility_minimum = legacy_bounds[old_key + "0"]
+		legendary_ranges.drone_master.maximum_reduction.compatibility_maximum = legacy_bounds[old_key + "1"]
+	for row in source["\u4f20\u8bf4\u5e38\u91cf"]:
+		if not legendary_constants.has(str(row.effect_id)):
+			legendary_constants[str(row.effect_id)] = {}
+		legendary_constants[str(row.effect_id)][str(row.constant_path)] = row.value
+	for row in source["\u57fa\u7840\u53c2\u6570"]:
+		drone_limits[str(row.key)] = row.value
+	return {"legendary_definitions": legendary_definitions, "legendary_constants": legendary_constants,
+		"legendary_ranges": legendary_ranges, "drone_limits": drone_limits}
