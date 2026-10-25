@@ -86,6 +86,98 @@ static func charged_base(row: Dictionary, armour_row: Dictionary, paid_level: in
 		return result
 	return amount_api.apply("ceil", [result.value])
 
+# One equipment policy for attributes, individual prices, batch purchases and MAX.
+static func _price(base, rate: float, target: int, api) -> Dictionary:
+	var value = growth(base, rate, target, api)
+	if not value.ok:
+		return value
+	return api.apply("ceil", [value.value])
+
+static func quote_cost(base, rate: float, level: int, count: int, api) -> Dictionary:
+	if not is_finite(rate) or rate < 0 or level < 0 or count < 1 or level > 9223372036854775807 - count:
+		return {"ok": false, "reason": "InvalidPriceRange"}
+	var threshold: Dictionary = api.apply("from_decimal", ["1e15"]).value
+	var total: Dictionary = api.apply("zero", []).value
+	var at: int = level + 1
+	var last: int = level + count
+	# The authored first level may lie above its following Q bucket. Handle it
+	# separately; all subsequent prices form monotone contiguous equal-price runs.
+	if at == 1:
+		var first = _price(base, rate, at, api)
+		if not first.ok:
+			return first
+		total = first.value
+		if at == last:
+			return {"ok": true, "value": total, "extreme": api.apply("compare", [total, threshold]).scalar >= 0}
+		at += 1
+	if rate == 0.0:
+		var unit = _price(base, rate, at, api)
+		if not unit.ok:
+			return unit
+		var terms = api.apply("from_decimal", [str(last - at + 1)])
+		var part = api.apply("mul", [unit.value, terms.value])
+		if not part.ok:
+			return part
+		var sum = api.apply("add", [total, part.value])
+		if not sum.ok:
+			return sum
+		return {"ok": true, "value": sum.value, "extreme": api.apply("compare", [sum.value, threshold]).scalar >= 0}
+	while at <= last and api.apply("compare", [total, threshold]).scalar < 0:
+		var unit = _price(base, rate, at, api)
+		if not unit.ok:
+			return unit
+		if api.apply("compare", [unit.value, threshold]).scalar >= 0:
+			break
+		var low: int = at
+		var high: int = last
+		while low < high:
+			@warning_ignore("integer_division")
+			var middle: int = low + (high - low) / 2 + 1
+			var candidate = _price(base, rate, middle, api)
+			if not candidate.ok:
+				return candidate
+			if api.apply("compare", [candidate.value, unit.value]).scalar == 0:
+				low = middle
+			else:
+				high = middle - 1
+		var terms = api.apply("from_decimal", [str(low - at + 1)])
+		var part = api.apply("mul", [unit.value, terms.value])
+		if not part.ok:
+			return part
+		var sum = api.apply("add", [total, part.value])
+		if not sum.ok:
+			return sum
+		total = sum.value
+		if api.apply("compare", [total, threshold]).scalar >= 0:
+			break
+		if low == last:
+			return {"ok": true, "value": total, "extreme": false}
+		at = low + 1
+	# Same Amount precision boundary for every caller; extreme quotations use
+	# the raw geometric approximation rather than iterating levels.
+	var quantity = api.apply("from_decimal", [str(base)])
+	var factor = api.apply("from_decimal", [str(1.0 + rate)])
+	for result in [quantity, factor]:
+		if not result.ok:
+			return result
+	factor = api.apply("pow", [factor.value, level])
+	if not factor.ok:
+		return factor
+	quantity = api.apply("mul", [quantity.value, factor.value])
+	if not quantity.ok:
+		return quantity
+	var series = api.apply("sum_geometric", [1.0 + rate, str(count)])
+	if not series.ok:
+		return series
+	quantity = api.apply("mul", [quantity.value, series.value])
+	if not quantity.ok:
+		return quantity
+	quantity = api.apply("max", [quantity.value, threshold])
+	quantity = api.apply("ceil", [quantity.value])
+	if quantity.ok:
+		quantity.extreme = true
+	return quantity
+
 static func quote_levels(row: Dictionary, level: int, count: int, evolution: Dictionary,
 		material_unlocked: bool, amount_api) -> Dictionary:
 	if count < 1 or level > 9223372036854775807 - count:
@@ -96,10 +188,7 @@ static func quote_levels(row: Dictionary, level: int, count: int, evolution: Dic
 	while row.has("res_" + str(column)):
 		var resource = row["res_" + str(column)]
 		if resource != null:
-			var base = amount_api.apply("from_decimal", [str(row["cost_" + str(column)])])
-			if not base.ok:
-				return base
-			var cost = amount_api.apply("quote_curve", [base.value, 1.0 + float(row["costMulti_" + str(column)]), str(level), str(count), true])
+			var cost = quote_cost(row["cost_" + str(column)], float(row["costMulti_" + str(column)]), level, count, amount_api)
 			if not cost.ok:
 				return cost
 			var key: String = str(int(resource))

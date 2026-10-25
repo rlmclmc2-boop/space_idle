@@ -54,7 +54,7 @@ static func quote(state: Dictionary, count: int, rules: Dictionary, amount_api) 
 	var base = amount_api.apply("from_decimal", [str(rules.cost_base)])
 	if not base.ok:
 		return base
-	var cost = amount_api.apply("quote_curve", [base.value, float(rules.cost_growth), str(int(state.level)), str(count), false])
+	var cost = amount_api.apply("sum_ceiled_geometric", [base.value, float(rules.cost_growth), str(int(state.level)), str(count)])
 	if not cost.ok:
 		return cost
 	return {"ok": true, "costs": {"jewel": cost.value}, "count": count, "extreme": cost.extreme}

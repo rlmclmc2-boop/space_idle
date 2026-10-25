@@ -10,7 +10,7 @@ static func quote(state: Dictionary, count: int, parameters: Dictionary, api) ->
 	if not base.ok:
 		return base
 	# The level-L reactor buys its next level at base * growth^(L-1).
-	var result = api.apply("quote_curve", [base.value, float(parameters.reactorUpgradeGrowth), str(int(state.level) - 1), str(count), false])
+	var result = api.apply("sum_ceiled_geometric", [base.value, float(parameters.reactorUpgradeGrowth), str(int(state.level) - 1), str(count)])
 	if not result.ok:
 		return result
 	return {"ok": true, "costs": {str(int(parameters.reactorUraniumId)): result.value}, "count": count, "extreme": result.extreme}
