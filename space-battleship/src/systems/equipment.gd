@@ -232,3 +232,33 @@ static func quote_levels(row: Dictionary, level: int, count: int, evolution: Dic
 			return sum
 		costs[str(evolution.material_id)] = sum.value
 	return {"ok": true, "count": count, "costs": costs, "extreme": extreme}
+
+# The economy supplies only affordability; equipment owns MAX search and its limits.
+static func quote_affordable_levels(row: Dictionary, level: int, evolution: Dictionary, material_unlocked: bool, api, can_pay: Callable) -> Dictionary:
+	var limit: int = 9223372036854775807 - level
+	if limit <= 0:
+		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+	var accepted: Dictionary = {}
+	var low: int = 0
+	var high: int = 1
+	while high <= limit:
+		var quote = quote_levels(row, level, high, evolution, material_unlocked, api)
+		if not quote.ok or not bool(can_pay.call(quote.costs)):
+			break
+		low = high
+		accepted = quote
+		if high == limit:
+			return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+		high = limit if high > limit / 2 else high * 2
+	while low + 1 < high:
+		@warning_ignore("integer_division")
+		var middle: int = low + (high - low) / 2
+		var quote = quote_levels(row, level, middle, evolution, material_unlocked, api)
+		if quote.ok and bool(can_pay.call(quote.costs)):
+			low = middle
+			accepted = quote
+		else:
+			high = middle
+	if low == 0:
+		return {"ok": false, "reason": "NoChange"}
+	return accepted

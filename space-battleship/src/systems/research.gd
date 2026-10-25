@@ -11,10 +11,23 @@ static func select(state: Dictionary, id: String) -> Dictionary:
 	state.current = id
 	return {"ok": true}
 
-static func refresh_gates(state: Dictionary, definitions: Dictionary, gates: Dictionary) -> void:
+# Campaign supplies progress facts and the shared unlock table, never per-research gates.
+static func refresh_progress(state: Dictionary, definitions: Dictionary, unlocks: Array, highest_reached: int, cleared_stages: Dictionary) -> void:
+	var gates: Dictionary = {}
+	for key in definitions:
+		var row: Dictionary = definitions[key]
+		gates[key] = (row.legacy_unlock == null or _progress_unlocked("hightech", str(row.legacy_unlock), unlocks, highest_reached, cleared_stages)) and (row.unlock == null or _progress_unlocked("feature", "jewels", unlocks, highest_reached, cleared_stages))
 	if state.gates == gates and not state.available.is_empty(): return
 	state.gates = gates
 	_refresh_available(state, definitions)
+
+static func _progress_unlocked(kind: String, target: String, unlocks: Array, highest_reached: int, cleared_stages: Dictionary) -> bool:
+	for row in unlocks:
+		if str(row.type) != kind or str(row.target) != target: continue
+		var gate: int = int(row.level)
+		if gate == 0: return true
+		return highest_reached > gate if row.mode == "reached" else cleared_stages.has(gate)
+	return false
 
 static func _refresh_available(state: Dictionary, definitions: Dictionary) -> void:
 	for id in definitions: state.available[id] = available(definitions[id], state.levels, state.gates)

@@ -106,3 +106,27 @@ static func quote(state: Dictionary, count: int, rules: Dictionary, amount_api) 
 	if not cost.ok:
 		return cost
 	return {"ok": true, "costs": {"jewel": cost.value}, "count": count, "extreme": cost.extreme}
+
+# Purchase quantity is enhancement policy; the economy supplies a read-only predicate.
+static func quote_purchase(state: Dictionary, count: int, rules: Dictionary, api, can_pay: Callable) -> Dictionary:
+	if count < 1 or int(state.level) > 9223372036854775807 - count:
+		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
+	var quoted = quote(state, count, rules, api)
+	if not quoted.ok:
+		return quoted
+	if bool(can_pay.call(quoted.costs)): return quoted
+	var accepted: Dictionary = {}
+	var low: int = 0
+	var high: int = count
+	while low < high:
+		@warning_ignore("integer_division")
+		var middle: int = low + (high - low) / 2 + 1
+		var candidate = quote(state, middle, rules, api)
+		if candidate.ok and bool(can_pay.call(candidate.costs)):
+			low = middle
+			accepted = candidate
+		else:
+			high = middle - 1
+	if low == 0:
+		return {"ok": false, "reason": "NoChange"}
+	return accepted

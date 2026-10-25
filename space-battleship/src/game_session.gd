@@ -222,7 +222,8 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 			"equipment_id": starting_defences[index] if index < starting_defences.size() else "",
 			"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
 	research_progress = Research.initial(rules)
-	_refresh_research_gates()
+	Research.refresh_progress(research_progress, research_definitions, configuration.unlock.unlock,
+		int(campaign.highest_reached), campaign.cleared_stages)
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	crew_progress = Crew.initial(crew_definitions, amount_api)
 	planet_progress = Planet.initial(planet_definitions, planet_buildings)
@@ -456,7 +457,8 @@ func _advance_kernel(dt: float) -> bool:
 				return false
 			if not campaign.cleared_stages.has(int(campaign.stage)):
 				campaign.cleared_stages[int(campaign.stage)] = true
-				_refresh_research_gates()
+				Research.refresh_progress(research_progress, research_definitions, configuration.unlock.unlock,
+					int(campaign.highest_reached), campaign.cleared_stages)
 				_display_changed("unlocks")
 			campaign.state = "waiting"
 			campaign.wait = _guard_interval() if _guard_matches() else float(rules.clear_wait_seconds)
@@ -548,7 +550,8 @@ func _set_stage(stage: int, distance: float) -> void:
 	campaign.distance = distance
 	if stage > int(campaign.highest_reached):
 		campaign.highest_reached = stage
-		_refresh_research_gates()
+		Research.refresh_progress(research_progress, research_definitions, configuration.unlock.unlock,
+			int(campaign.highest_reached), campaign.cleared_stages)
 		_display_changed("unlocks")
 	var entries: PackedStringArray = str(level_definitions[stage].monGroup).replace("{", "").replace("}", "").replace("｛", "").replace("｝", "").replace("，", ",").split(",")
 	campaign.points = []
@@ -617,13 +620,6 @@ func reactor_modules() -> Array:
 			if module != "condensation" or unlocked("reactor_module", module):
 				enabled.append(module)
 	return enabled
-
-func _refresh_research_gates() -> void:
-	var gates: Dictionary = {}
-	for key in research_definitions:
-		var row: Dictionary = research_definitions[key]
-		gates[key] = (row.legacy_unlock == null or unlocked("hightech", str(row.legacy_unlock))) and (row.unlock == null or unlocked("feature", "jewels"))
-	Research.refresh_gates(research_progress, research_definitions, gates)
 
 func _active_slots(source: Array, ship: Dictionary) -> Array:
 	return source.filter(func(slot): return int(slot.index) < int(ship.para_1 if slot.category == "weapon" else ship.para_2))
@@ -801,32 +797,13 @@ func buy_reactor(count: int = 1, automatic: bool = false) -> Dictionary:
 func buy_enhancement(count: int = 1) -> Dictionary:
 	if not unlocked("feature", "jewels"):
 		return {"ok": false, "reason": "EnhancementLocked"}
-	if count < 1 or int(enhancement_progress.level) > 9223372036854775807 - count:
-		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
-	var quote = Enhancement.quote(enhancement_progress, count, enhancement, amount_api)
-	if not quote.ok:
-		return quote
+	var quote = Enhancement.quote_purchase(enhancement_progress, count, enhancement, amount_api,
+		func(costs): return Economy.can_pay(wallet, costs, amount_api).ok)
+	if not quote.ok: return quote
 	var paid = Economy.payment(wallet, quote.costs, amount_api)
-	if not paid.ok:
-		var accepted: Dictionary = {}
-		var low: int = 0
-		var high: int = count
-		while low < high:
-			@warning_ignore("integer_division")
-			var middle: int = low + (high - low) / 2 + 1
-			var candidate = Enhancement.quote(enhancement_progress, middle, enhancement, amount_api)
-			if candidate.ok and Economy.can_pay(wallet, candidate.costs, amount_api).ok:
-				low = middle
-				accepted = candidate
-			else:
-				high = middle - 1
-		if low == 0:
-			return {"ok": false, "reason": "NoChange"}
-		count = low
-		quote = accepted
-		paid = Economy.payment(wallet, quote.costs, amount_api)
+	if not paid.ok: return paid
 	var next: Dictionary = enhancement_progress.duplicate(true)
-	next.level = int(next.level) + count
+	next.level = int(next.level) + int(quote.count)
 	return _commit_enhancement(next, paid.wallet, "growth")
 
 func set_enhancement_order(category: String, order: Array) -> Dictionary:
@@ -901,42 +878,13 @@ func quote_levels(slot_id: String, count: int) -> Dictionary:
 			return Equipment.quote_levels(row, int(slot.paid_level), count, evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached), amount_api)
 	return {"ok": false, "reason": "UnknownSlot"}
 
-func _quote_affordable_levels(slot: Dictionary, balances: Dictionary) -> Dictionary:
-	var row: Dictionary = equipment_definitions.laser if slot.category == "weapon" else equipment_definitions.armour
-	var level: int = int(slot.paid_level)
-	var material_unlocked: bool = int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached)
-	var limit: int = 9223372036854775807 - level
-	if limit <= 0:
-		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
-	var accepted: Dictionary = {}
-	var low: int = 0
-	var high: int = 1
-	while high <= limit:
-		var quote = Equipment.quote_levels(row, level, high, evolution, material_unlocked, amount_api)
-		if not quote.ok or not Economy.can_pay(balances, quote.costs, amount_api).ok:
-			break
-		low = high
-		accepted = quote
-		if high == limit:
-			return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
-		high = limit if high > limit / 2 else high * 2
-	while low + 1 < high:
-		@warning_ignore("integer_division")
-		var middle: int = low + (high - low) / 2
-		var quote = Equipment.quote_levels(row, level, middle, evolution, material_unlocked, amount_api)
-		if quote.ok and Economy.can_pay(balances, quote.costs, amount_api).ok:
-			low = middle
-			accepted = quote
-		else:
-			high = middle
-	if low == 0:
-		return {"ok": false, "reason": "NoChange"}
-	return accepted
-
 func buy_max_levels(slot_id: String) -> Dictionary:
 	for index in slots.size():
 		if str(slots[index].id) == slot_id:
-			return _buy_quoted_levels(index, _quote_affordable_levels(slots[index], wallet))
+			return _buy_quoted_levels(index, Equipment.quote_affordable_levels(
+				equipment_definitions.laser if slots[index].category == "weapon" else equipment_definitions.armour,
+				int(slots[index].paid_level), evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached),
+				amount_api, func(costs): return Economy.can_pay(wallet, costs, amount_api).ok))
 	return {"ok": false, "reason": "UnknownSlot"}
 
 func buy_all_levels(count: int, maximum: bool = false) -> Dictionary:
@@ -952,7 +900,8 @@ func buy_all_levels(count: int, maximum: bool = false) -> Dictionary:
 			if slot.category != category or int(slot.index) >= int(ship.para_1 if category == "weapon" else ship.para_2):
 				continue
 			var row: Dictionary = equipment_definitions.laser if category == "weapon" else equipment_definitions.armour
-			var quote = _quote_affordable_levels(slot, balances) if maximum else Equipment.quote_levels(row, int(slot.paid_level), count, evolution, material_unlocked, amount_api)
+			var quote = Equipment.quote_affordable_levels(row, int(slot.paid_level), evolution, material_unlocked, amount_api,
+				func(costs): return Economy.can_pay(balances, costs, amount_api).ok) if maximum else Equipment.quote_levels(row, int(slot.paid_level), count, evolution, material_unlocked, amount_api)
 			var paid = Economy.payment(balances, quote.costs, amount_api) if quote.ok else quote
 			if paid.ok:
 				balances = paid.wallet
