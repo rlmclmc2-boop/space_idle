@@ -639,8 +639,11 @@ func _commit_growth(next_slots: Array, next_enhancement: Dictionary, next_reacto
 	if not setup.ok:
 		return setup
 	# No page callbacks or asynchronous work can interleave this commit.
-	if not kernel.set_player_configuration(setup.descriptor, change_kind):
-		return {"ok": false, "reason": "NativeConfigurationRejected"}
+	var committed: Dictionary = kernel.set_player_configuration(setup.descriptor, change_kind)
+	if not committed.ok:
+		if committed.fault:
+			return _fail(str(committed.reason))
+		return committed
 	slots = next_slots
 	selected_ship = setup.ship_key
 	player_art = setup.player_art

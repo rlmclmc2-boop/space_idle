@@ -154,7 +154,7 @@ class SpaceCombatKernel : public RefCounted {
         // The row at actual carrier birth can differ from Attack.birth after
         // an upgrade while a repeat is queued. Retain that immutable descriptor.
         std::shared_ptr<const BirthConfig> view_birth;
-        uint64_t born_step = 0, serial = 0;
+        uint64_t born_step = 0, serial = 0, contact_order = 0;
         int weapon = -1, type = 0, source_slot = 0;
         int64_t source_uid = 0;
         Handle source, target;
@@ -268,7 +268,7 @@ class SpaceCombatKernel : public RefCounted {
     uint64_t rebuild_epoch = 0;
     double rebuild_bonus = 0, dodge_ready_at = 0, black_next_at = 0, black_until = 0;
     Amount black_accumulated, black_release, iron_drop_factor = 1;
-    uint64_t black_release_serial = 0;
+    uint64_t black_release_order = 0;
     double rail_trail_width = 0, higgs_minimum_width = 0;
     double memory_reduction_until = 0, deferred_reduction_until = 0;
     double deferred_unforced_probability = 0;
@@ -303,6 +303,11 @@ class SpaceCombatKernel : public RefCounted {
     double missile_departure_angle = 0, missile_launch_edge_margin = 0, missile_launch_forward_y = 0;
     uint32_t encounter_generation = 1;
     uint64_t step_serial = 0, event_serial = 0, attack_serial = 0, instance_serial = 0, flight_serial = 0;
+    uint64_t contact_serial = 0;
+    uint64_t next_contact_order() {
+        if (contact_serial == std::numeric_limits<uint64_t>::max()) throw std::overflow_error("ContactOrderRangeExceeded");
+        return ++contact_serial;
+    }
     double clock = 0;
     Amount player_hp = 0;
     Amount player_shield = 0;
@@ -743,6 +748,7 @@ class SpaceCombatKernel : public RefCounted {
         f.chain = chain;
         f.beam = w.kind == 3 && !chain;
         f.serial = ++flight_serial;
+        f.contact_order = next_contact_order();
         f.born_step = step_serial;
         f.active_index = active.size();
         active.push_back(id);
@@ -1032,7 +1038,7 @@ class SpaceCombatKernel : public RefCounted {
             int count = a->hp <= 0 ? strange_kill_spawns : (rng->randf() < strange_probability ? 1 : 0);
             for (int i = 0; i < count; ++i) {
                 StrangePacket p;
-                p.order = ++strange_serial; p.root = inst->attack->id;
+                ++strange_serial; p.order = next_contact_order(); p.root = inst->attack->id;
                 p.damage = raw * strange_multiplier; p.type = strange_type;
                 p.source = source; p.source_slot = inst->attack->birth->slot;
                 strange_pending.emplace(std::make_tuple(at + strange_delay, p.source_slot, p.order), p);
@@ -1339,7 +1345,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!legend_active("black_hole")) return;
         if (black_until > 0 && clock + 1e-9 >= black_until) {
             black_release = black_accumulated * legend_value("black_hole", "damage_multiplier");
-            black_accumulated = 0; black_until = 0; black_release_serial = ++event_serial;
+            black_accumulated = 0; black_until = 0; black_release_order = next_contact_order();
         }
         if (black_next_at > 0 && clock + 1e-9 >= black_next_at) {
             black_until = clock + legend_constant("black_hole", "absorption_duration");
@@ -2054,17 +2060,17 @@ class SpaceCombatKernel : public RefCounted {
                 for (double due = f.next_hit; due <= f.age + 1e-9; due += f.interval) {
                     double at = clock - f.age + due;
                     if (std::abs(at - clock) <= 1e-9) at = clock;
-                    contacts.push_back({at, due, id, f.generation, true, f.hostile, f.source_slot, weapons[f.weapon].slot, f.serial});
+                    contacts.push_back({at, due, id, f.generation, true, f.hostile, f.source_slot, weapons[f.weapon].slot, f.contact_order});
                 }
             } else if (!f.beam && f.born_step < step_serial) {
-                contacts.push_back({clock, 0, id, f.generation, false, f.hostile, f.source_slot, weapons[f.weapon].slot, f.serial});
+                contacts.push_back({clock, 0, id, f.generation, false, f.hostile, f.source_slot, weapons[f.weapon].slot, f.contact_order});
             }
         }
         if (black_release > 0) {
             Dictionary owner = selected_legends.get("black_hole", Dictionary()); String id = owner.get("id", "");
             int slot = INT32_MAX;
             for (const Weapon &w : weapons) if (w.enabled && String(w.entry.get("drone_id", "")) == id) { slot = w.slot; break; }
-            contacts.push_back({clock, 0, SIZE_MAX, 0, false, false, slot, slot, black_release_serial});
+            contacts.push_back({clock, 0, SIZE_MAX, 0, false, false, slot, slot, black_release_order});
         }
         // Snapshot identities, never the mutable dense active order. Each hit and
         // its local derivatives finish before the next source gets to settle.
@@ -2565,8 +2571,6 @@ class SpaceCombatKernel : public RefCounted {
         if (!finite_descriptor(d) || !d.has("player") || !d.has("enemies") || !d.has("weapons") ||
             !Array(d.get("unsupported_rules", Array())).is_empty())
             return false;
-        if (!numeric_fields(d["player"], {"armour", "shield"}))
-            return false;
 
         target_slot_center = d["target_slot_center"];
         battle_width = d.get("battle_width", 0.0); battle_height = d.get("battle_height", 0.0);
@@ -2760,9 +2764,13 @@ class SpaceCombatKernel : public RefCounted {
         return true;
         } catch (const std::exception &) { return false; }
     }
-    bool set_player_configuration(Dictionary d, String change_kind) {
+    Dictionary set_player_configuration(Dictionary d, String change_kind) {
+        Dictionary outcome;
         try {
-        if (!can_set_player_configuration(d, change_kind)) return false;
+        if (!can_set_player_configuration(d, change_kind)) {
+            outcome["ok"] = false; outcome["fault"] = false; outcome["reason"] = "NativeConfigurationRejected";
+            return outcome; // No owner mutation has happened.
+        }
         const Amount before[2] = {layer_health(0), layer_health(1)}, old_capacity[2] = {capacity(0), capacity(1)};
         const size_t old_size = weapons.size();
         std::vector<bool> was_configured(old_size);
@@ -2774,7 +2782,7 @@ class SpaceCombatKernel : public RefCounted {
         for (int n = 0; n < rows.size(); ++n) {
             Dictionary row = rows[n], entry = row["entry"];
             Weapon replacement;
-            if (!read_weapon(row, n, 0, d.get("repeat_delay", repeat_delay), replacement)) return false;
+            if (!read_weapon(row, n, 0, d.get("repeat_delay", repeat_delay), replacement)) throw std::runtime_error("NativeConfigurationCommitFailed");
             size_t match = SIZE_MAX;
             for (size_t i = 0; i < old_size; ++i) {
                 const Weapon &old = weapons[i];
@@ -2845,8 +2853,13 @@ class SpaceCombatKernel : public RefCounted {
             if (change_kind != "upgrade" || retreating) set_layer_health(layer, target);
         }
         publish_player(); retain_configuration_bounds(); compact();
-        return true;
-        } catch (const std::exception &e) { failure_reason = String(e.what()); stopped = true; executing = false; return false; }
+        outcome["ok"] = true; outcome["fault"] = false;
+        return outcome;
+        } catch (const std::exception &e) {
+            failure_reason = String(e.what()); stopped = true; executing = false;
+            outcome["ok"] = false; outcome["fault"] = true; outcome["reason"] = failure_reason;
+            return outcome; // A commit fault can leave partial native state; never resume it.
+        }
     }
     Array target_views(int type) {
         Array values;
