@@ -82,7 +82,7 @@ class SpaceCombatKernel : public RefCounted {
         int kind = 0, type = 0, slot = 0;
         bool hostile = false, endless = false, vacant = false, enabled = true, configured = true;
         Handle source;
-        double interval = 1, normal_interval = 1;
+        double interval = 1, normal_interval = 1, base_interval = 1;
         int normal_chain_count = 0;
         double remaining = 1;
         Amount base = 1;
@@ -1106,25 +1106,46 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary effect = enhancement_effects.get(name, Dictionary()); return effect.get("active", false) && bool(effect.get(node, false));
     }
     double enhancement_rule(const char *name) const { return enhancement_rules.get(name, 0.0); }
-    void configure_enhancement(Dictionary descriptor) {
-        Dictionary state = descriptor.get("enhancement_state", Dictionary());
-        enhancement_effects = Dictionary(state.get("effects", Dictionary())).duplicate(true);
-        enhancement_rules = Dictionary(state.get("rules", Dictionary())).duplicate(true);
-        deferred_unforced_probability = descriptor.get("clear_probability", 0.0);
+    void configure_enhancement(Dictionary descriptor, bool partial = false) {
+        Dictionary state = descriptor.get("enhancement_state", Dictionary()), effects = state.get("effects", Dictionary());
+        if (partial) { Array keys = effects.keys(); for (int i = 0; i < keys.size(); ++i) enhancement_effects[keys[i]] = Dictionary(effects[keys[i]]).duplicate(); }
+        else { enhancement_effects = effects.duplicate(true); enhancement_rules = Dictionary(state.get("rules", Dictionary())).duplicate(true); }
+        deferred_unforced_probability = descriptor.get("clear_probability", partial ? deferred_unforced_probability : 0.0);
         clear_probability = branch("deferred", "b3") ? enhancement_rule("deferred_b3_forced_probability") : branch("deferred", "b2") ? 0.0 : deferred_unforced_probability;
-        for (Weapon &w : weapons) if (!w.hostile) {
-            if (!branch("proficiency", "b1")) w.focus_uid = -1;
-            if (!branch("critical", "b1")) w.critical_attacks = 0;
-            if (!branch("critical", "b2")) { w.critical_stacks = 0; w.critical_until = 0; }
+        if (!partial || effects.has("proficiency") || effects.has("critical")) for (Weapon &w : weapons) if (!w.hostile && w.configured && !w.vacant) {
+            if ((!partial || effects.has("proficiency")) && !branch("proficiency", "b1")) w.focus_uid = -1;
+            if (!partial || effects.has("critical")) {
+                if (!branch("critical", "b1")) w.critical_attacks = 0;
+                if (!branch("critical", "b2")) { w.critical_stacks = 0; w.critical_until = 0; }
+            }
         }
-        for (Defence &d : defences) {
-            if (!branch("adaptation", "b1")) d.source_stacks.clear();
-            if (!branch("adaptation", "b2")) { d.cover = 0; d.cover_next = d.cover_until = 0; }
-            else if (d.cover_next <= 0) d.cover_next = defence_time + enhancement_rule("adaptation_b2_interval");
-            if (!branch("memory", "b2")) { d.protection_type = 0; d.protection_until = d.protection_lockout = 0; }
+        if (!partial || effects.has("adaptation") || effects.has("memory")) for (Defence &d : defences) {
+            if (!partial || effects.has("adaptation")) {
+                if (!branch("adaptation", "b1")) d.source_stacks.clear();
+                if (!branch("adaptation", "b2")) { d.cover = 0; d.cover_next = d.cover_until = 0; }
+                else if (d.cover_next <= 0) d.cover_next = defence_time + enhancement_rule("adaptation_b2_interval");
+            }
+            if ((!partial || effects.has("memory")) && !branch("memory", "b2")) { d.protection_type = 0; d.protection_until = d.protection_lockout = 0; }
         }
-        if (!branch("memory", "b1")) memory_reduction_until = 0;
-        if (!branch("deferred", "b1")) deferred_reduction_until = 0;
+        if ((!partial || effects.has("memory")) && !branch("memory", "b1")) memory_reduction_until = 0;
+        if ((!partial || effects.has("deferred")) && !branch("deferred", "b1")) deferred_reduction_until = 0;
+    }
+    void enhance_weapon(Weapon &w, Dictionary changes) const {
+        if (changes.has("branch_factors")) w.branch_factors = read_factors(changes["branch_factors"]);
+        if (changes.has("interval_multiplier")) { w.normal_interval = w.base_interval * double(changes["interval_multiplier"]); w.interval = w.normal_interval / (1.0 + drone_scalar("attack_speed_bonus")); }
+        if (changes.has("chain_count")) {
+            const int64_t count = changes["chain_count"]; const double combined = double(count) + drone_scalar("chain_count_bonus");
+            if (count < 0 || combined > std::numeric_limits<int>::max() || combined != std::floor(combined)) throw std::domain_error("InvalidChainCount");
+            w.normal_chain_count = int(count); w.chain_count = int(combined);
+        }
+        w.crit_rate = changes.get("critical_rate", w.crit_rate); w.crit_multiplier = changes.get("critical_multiplier", w.crit_multiplier);
+        w.repeat_probability = changes.get("repeat_probability", w.repeat_probability); w.repeat_multiplier = changes.get("repeat_multiplier", w.repeat_multiplier);
+        w.secondary_probability = changes.get("secondary_probability", w.secondary_probability);
+        if (w.interval <= 0 || !finite(w.interval) || clock + w.interval <= clock) throw std::domain_error("InvalidWeaponInterval");
+        if (changes.has("interval_multiplier") || changes.has("chain_count") || changes.has("repeat_multiplier") || changes.has("proficiency_pierce") || changes.has("pierce_resistance")) {
+            auto birth = std::make_shared<BirthConfig>(*w.birth); birth->interval = w.interval; birth->chain_count = w.chain_count; birth->repeat_multiplier = w.repeat_multiplier;
+            birth->proficiency_pierce = changes.get("proficiency_pierce", birth->proficiency_pierce); birth->pierce_resistance = changes.get("pierce_resistance", birth->pierce_resistance); w.birth = birth;
+        }
     }
     bool legend_active(const char *key) const { return selected_legends.has(key); }
     double legend_constant(const char *key, const char *parameter) const {
@@ -2173,7 +2194,7 @@ class SpaceCombatKernel : public RefCounted {
             if (source < 0) return false; // Descriptor admission validates the upper bound.
             w.source.index = uint32_t(source); // Generation and encounter offset belong to installation.
         }
-        w.interval = v.get("interval", 1.0); w.normal_interval = w.interval;
+        w.interval = v.get("interval", 1.0); w.normal_interval = w.interval; w.base_interval = v.get("base_interval", w.interval);
         w.base = read_amount(v.get("damage", 1.0));
         read_amount(v.get("maximum", 1.0)); // Validate the legacy scalar spelling once.
         if (w.interval <= 0 || double(v.get("speed", 720.0)) <= 0 || w.base < 0 ||
@@ -2260,7 +2281,7 @@ class SpaceCombatKernel : public RefCounted {
   protected:
     static void _bind_methods() {
         ClassDB::bind_method(D_METHOD("set_player_configuration", "descriptor", "change_kind"), &SpaceCombatKernel::set_player_configuration);
-        ClassDB::bind_method(D_METHOD("set_player_values", "weapons", "defences", "kind", "iron_factor"), &SpaceCombatKernel::set_player_values, DEFVAL(String()));
+        ClassDB::bind_method(D_METHOD("set_player_values", "weapons", "defences", "kind", "iron_factor", "enhancement"), &SpaceCombatKernel::set_player_values, DEFVAL(String()), DEFVAL(Dictionary()));
         ClassDB::bind_method(D_METHOD("evaluate_module", "module", "count"), &SpaceCombatKernel::evaluate_module);
         ClassDB::bind_method(D_METHOD("take_results"), &SpaceCombatKernel::take_results);
         ClassDB::bind_method(D_METHOD("presentation_clock"), &SpaceCombatKernel::presentation_clock);
@@ -3068,13 +3089,20 @@ class SpaceCombatKernel : public RefCounted {
     Dictionary player_view() const {
         return player_row;
     }
-    Dictionary set_player_values(Dictionary weapon_values, Dictionary defence_values, String kind, String iron_factor) {
+    Dictionary set_player_values(Dictionary weapon_values, Dictionary defence_values, String kind, String iron_factor, Dictionary upgrades) {
         Dictionary result; result["ok"] = false; result["fault"] = false; result["reason"] = "NativeConfigurationRejected";
         if (!admitted || executing || (kind != "growth" && kind != "selection" && kind != "refit" && kind != "upgrade")) return result;
         bool committing = false;
         try {
             Amount iron;
             if (!iron_factor.is_empty()) iron = read_amount(iron_factor);
+            if (!finite_descriptor(upgrades)) return result;
+            Dictionary g = upgrades.get("globals", Dictionary()), ew = upgrades.get("weapon", Dictionary()), ed = upgrades.get("defence", Dictionary());
+            double attack_growth = g.get("counter_growth", counter_growth), defence_growth = g.get("defence_counter_growth", defence_counter_growth);
+            int64_t level = g.get("counter_level", counter_level);
+            double log_base = g.get("counter_log_base", counter_log_base), round_scale = g.get("counter_round_scale", counter_round_scale);
+            bool defence_history = defence_growth != defence_counter_growth || ((defence_growth != 0 || defence_counter_growth != 0) && level != counter_level);
+            bool attack_history = attack_growth != counter_growth || ((attack_growth != 0 || counter_growth != 0) && level != counter_level);
             std::vector<std::pair<size_t, Weapon>> sources;
             std::vector<std::pair<size_t, Defence>> modules;
             for (bool defence : {false, true}) {
@@ -3092,7 +3120,6 @@ class SpaceCombatKernel : public RefCounted {
                         if (row.has("base")) next.base = read_amount(row["base"]);
                         if (row.has("external")) next.external_factors = read_factors(row["external"]);
                         if (next.base == defences[found].base && next.external_factors == defences[found].external_factors) continue;
-                        evaluate_module_value(next.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, next.branch_factors, next.external_factors) * next.factor * drone_defence(next.layer);
                         modules.push_back({found, std::move(next)});
                     } else {
                         for (size_t i = 0; i < weapons.size(); ++i) if (!weapons[i].hostile && weapons[i].configured && !weapons[i].vacant && weapons[i].entry.get("id", "") == id && weapons[i].entry.get("key", "") == row["key"] && weapons[i].entry.get("generation", int64_t(0)) == row["generation"]) { found = i; break; }
@@ -3105,10 +3132,32 @@ class SpaceCombatKernel : public RefCounted {
                             auto birth = std::make_shared<BirthConfig>(*next.birth); birth->entry = next.entry.duplicate(true); birth->entry.make_read_only(); next.birth = birth;
                         }
                         if (next.base == weapons[found].base && next.external_factors == weapons[found].external_factors && next.birth == weapons[found].birth) continue;
-                        evaluate_module_value(next.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, next.branch_factors, next.external_factors) * next.factor * drone_weapon(next.kind);
                         sources.push_back({found, std::move(next)});
                     }
                 }
+            }
+            if (!ew.is_empty() || attack_history) for (size_t i = 0; i < weapons.size(); ++i) {
+                if (weapons[i].hostile || !weapons[i].configured || weapons[i].vacant) continue;
+                auto found = std::find_if(sources.begin(), sources.end(), [i](const auto &v) { return v.first == i; });
+                if (found == sources.end()) { sources.push_back({i, weapons[i]}); found = sources.end() - 1; }
+                enhance_weapon(found->second, ew);
+            }
+            if (!ed.is_empty() || defence_history) for (size_t i = 0; i < defences.size(); ++i) {
+                auto found = std::find_if(modules.begin(), modules.end(), [i](const auto &v) { return v.first == i; });
+                if (found == modules.end()) { modules.push_back({i, defences[i]}); found = modules.end() - 1; }
+                Defence &d = found->second;
+                if (ed.has("branch_factors")) d.branch_factors = read_factors(ed["branch_factors"]);
+                d.memory_heal = ed.get("memory_heal", d.memory_heal); d.memory_cap = ed.get("memory_cap", d.memory_cap); d.deferred_fraction = ed.get("deferred_fraction", d.deferred_fraction);
+            }
+            for (const auto &v : sources) {
+                const Weapon &w = v.second;
+                evaluate_module_value(w.base, attack_counter, attack_growth, level, log_base, round_scale, w.branch_factors, w.external_factors) * w.factor * drone_weapon(w.kind);
+            }
+            std::vector<size_t> changed;
+            for (const auto &v : modules) {
+                const Defence &d = v.second;
+                Amount maximum = evaluate_module_value(d.base, incoming_counter, defence_growth, level, log_base, round_scale, d.branch_factors, d.external_factors) * d.factor * drone_defence(d.layer);
+                if (maximum != defences[v.first].maximum) changed.push_back(v.first);
             }
             const Amount before[2] = {layer_health(0), layer_health(1)}, old_capacity[2] = {capacity(0), capacity(1)};
             committing = true;
@@ -3116,17 +3165,22 @@ class SpaceCombatKernel : public RefCounted {
             for (auto &value : sources) {
                 Weapon &target = weapons[value.first];
                 endless_changed = endless_changed || (target.kind == 3 && target.entry.get("paid_level", 1) != value.second.entry.get("paid_level", 1));
-                target.base = value.second.base; target.external_factors = std::move(value.second.external_factors);
-                target.entry = value.second.entry; target.birth = value.second.birth;
+                target = std::move(value.second);
+                retained_min_interval = minimum(retained_min_interval, target.interval); retained_chain_bound = maximum(retained_chain_bound, target.chain_count);
             }
             if (endless_changed) select_endless_source();
-            std::vector<size_t> changed;
-            for (auto &value : modules) {
-                Defence &target = defences[value.first]; target.base = value.second.base; target.external_factors = std::move(value.second.external_factors); changed.push_back(value.first);
+            for (auto &value : modules) defences[value.first] = std::move(value.second);
+            counter_growth = attack_growth; defence_counter_growth = defence_growth; counter_level = level; counter_log_base = log_base; counter_round_scale = round_scale;
+            repeat_delay = g.get("repeat_delay", repeat_delay); memory_interval = g.get("memory_interval", memory_interval);
+            deferred_interval = g.get("deferred_interval", deferred_interval); deferred_duration = g.get("deferred_duration", deferred_duration);
+            if (!upgrades.is_empty()) {
+                Dictionary descriptor, state; state["effects"] = upgrades.get("effects", Dictionary()); descriptor["enhancement_state"] = state;
+                descriptor["clear_probability"] = g.get("clear_probability", deferred_unforced_probability); configure_enhancement(descriptor, true);
             }
             if (!iron_factor.is_empty()) iron_drop_factor = iron;
-            if (!changed.empty()) {
-                apply_defence_capacity(kind, before, old_capacity, &changed); publish_player();
+            if (!changed.empty()) { apply_defence_capacity(kind, before, old_capacity, &changed); publish_player(); }
+            if (ed.has("memory_cap")) for (const auto &value : modules) if (std::find(changed.begin(), changed.end(), value.first) == changed.end()) {
+                Defence &d = defences[value.first]; d.buffer = minimum(d.buffer, d.maximum * d.memory_cap);
             }
             result["ok"] = true; result.erase("reason"); return result;
         } catch (const std::exception &e) {

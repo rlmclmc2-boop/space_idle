@@ -22,6 +22,7 @@ var geometry: Dictionary = {}
 var evolution: Dictionary = {}
 var enhancement: Dictionary = {}
 var enhancement_progress: Dictionary = Enhancement.initial()
+var enhancement_values: Dictionary = {}
 var reactor_progress: Dictionary = {}
 var research_progress: Dictionary = {}
 var research_definitions: Dictionary = {}
@@ -248,6 +249,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	reactor_progress = setup.reactor_state
 	reactor_factors = setup.reactor_factors
 	research_factors = setup.research_factors
+	enhancement_values = setup.enhancement_values
 	combat_values = setup["values"]
 	income_factors = setup.income_factors
 	research_speed = setup.research_speed
@@ -643,11 +645,8 @@ func _growth_setup(next_slots: Array, next_enhancement: Dictionary, next_reactor
 	if not ai.ok: return ai
 	var factors := {"ai_weapon": ai["values"].weapon_damage, "ai_defence": ai["values"].equipment_durability,
 		"reactor_weapon": reactor.factors.weapons, "reactor_defence": reactor.factors.defence, "external": world.external}
-	var effective_enhancement: Dictionary = next_enhancement.duplicate(true)
-	if int(effective_enhancement.extra_levels) > 9223372036854775807 - int(world.enhancement_levels):
-		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
-	effective_enhancement.extra_levels = int(effective_enhancement.extra_levels) + int(world.enhancement_levels)
-	var effects: Dictionary = Enhancement.describe(effective_enhancement, enhancement, unlocked("feature", "jewels"))
+	var upgrades = Enhancement.combat(next_enhancement, int(world.enhancement_levels), enhancement, unlocked("feature", "jewels"), enabled_slots)
+	if not upgrades.ok: return upgrades
 	var drone_weapons: Array = []
 	for index in next_drones.size():
 		var contribution: Dictionary = next_drones[index]
@@ -658,7 +657,7 @@ func _growth_setup(next_slots: Array, next_enhancement: Dictionary, next_reactor
 		weapon_row.slot = int(ship.para_1) + index
 		drone_weapons.append(weapon_row)
 	var setup = CombatSetup.build_player(enabled_slots, int(world.equipment_levels), equipment_definitions, evolution, amount_api,
-		art, dimensions, geometry, rules, float(parameters.dmgReduce), motion, enhancement, effects, factors, drone_weapons, seed_value)
+		art, dimensions, geometry, rules, float(parameters.dmgReduce), motion, upgrades, factors, drone_weapons, seed_value)
 	if not setup.ok:
 		return setup
 	setup.income_factors = {"condensation": reactor.factors.condensation, "refinery": world.refinery, "crew_fragments": world.fragments, "galaxy_fragments": world.galaxy_fragments}
@@ -673,6 +672,7 @@ func _growth_setup(next_slots: Array, next_enhancement: Dictionary, next_reactor
 	if not iron_text.ok:
 		return iron_text
 	setup.descriptor.iron_drop_factor = iron_text.text
+	setup.enhancement_values = upgrades
 	setup.reactor_state = reactor.state
 	setup.descriptor.equipped_drones = next_drones.duplicate(true)
 	setup.descriptor.legendary_definitions = legendary_definitions
@@ -718,6 +718,7 @@ func _commit_growth(next_slots: Array, next_enhancement: Dictionary, next_reacto
 	reactor_progress = setup.reactor_state
 	reactor_factors = setup.reactor_factors
 	research_factors = setup.research_factors
+	enhancement_values = setup.enhancement_values
 	combat_values = setup["values"]
 	income_factors = setup.income_factors
 	research_speed = setup.research_speed
@@ -823,19 +824,30 @@ func buy_enhancement(count: int = 1) -> Dictionary:
 		paid = Economy.payment(wallet, quote.costs, amount_api)
 	var next: Dictionary = enhancement_progress.duplicate(true)
 	next.level = int(next.level) + count
-	return _commit_growth(slots, next, reactor_progress, research_progress, paid.wallet, "growth")
+	return _commit_enhancement(next, paid.wallet, "growth")
 
 func set_enhancement_order(category: String, order: Array) -> Dictionary:
 	var changed = Enhancement.reorder(enhancement_progress, category, order)
 	if not changed.ok:
 		return changed
-	return _commit_growth(slots, changed.state, reactor_progress, research_progress, wallet, "selection")
+	return _commit_enhancement(changed.state, wallet, "selection")
 
 func set_enhancement_branch(effect: String, node: int, choice: String) -> Dictionary:
 	var changed = Enhancement.choose(enhancement_progress, effect, node, choice, enhancement, unlocked("feature", "jewels"))
 	if not changed.ok:
 		return changed
-	return _commit_growth(slots, changed.state, reactor_progress, research_progress, wallet, "selection")
+	return _commit_enhancement(changed.state, wallet, "selection")
+
+func _commit_enhancement(next: Dictionary, balances: Dictionary, kind: String) -> Dictionary:
+	var output = Enhancement.combat(next, int(world_factors.enhancement_levels), enhancement, unlocked("feature", "jewels"), _active_slots(slots, ship_definitions[selected_ship]))
+	if not output.ok: return output
+	var changed: Dictionary = Enhancement.changes(enhancement_values, output)
+	var result = _commit_values({"weapons": {}, "defences": {}}, kind, "", changed)
+	if result.ok:
+		enhancement_values = output
+		enhancement_progress = next
+		wallet = balances
+	return result
 
 func allocate_reactor(module: String, quantity: Dictionary) -> Dictionary:
 	var changed = Reactor.allocate(reactor_progress, module, quantity, parameters, reactor_modules(), amount_api, world_factors.capacity)
@@ -1052,9 +1064,9 @@ func _publish_native_values(ai: Dictionary, reactor: Dictionary, kind: String) -
 			if values[group][id] == combat_values[group].get(id): values[group].erase(id)
 	return _commit_values(values, kind, iron)
 
-func _commit_values(values: Dictionary, kind: String, iron: String = "") -> Dictionary:
-	if values.weapons.is_empty() and values.defences.is_empty() and iron.is_empty(): return {"ok": true}
-	var committed: Dictionary = kernel.set_player_values(values.weapons, values.defences, kind, iron)
+func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrades: Dictionary = {}) -> Dictionary:
+	if values.weapons.is_empty() and values.defences.is_empty() and iron.is_empty() and upgrades.is_empty(): return {"ok": true}
+	var committed: Dictionary = kernel.set_player_values(values.weapons, values.defences, kind, iron, upgrades)
 	if not committed.ok: return _fail(str(committed.reason)) if committed.fault else committed
 	for group in ["weapons", "defences"]:
 		for id in values[group]:
@@ -1101,12 +1113,19 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 			var external: Array = world_factors.external.duplicate()
 			external.append_array(drone.weapon.get("external_factors", []))
 			values.weapons["drone:" + str(drone.id)] = {"key": entry.key, "generation": int(drone.generation), "external": external}
+	var output: Dictionary = enhancement_values
+	var upgrades: Dictionary = {}
+	if world_factors.enhancement_levels != previous.enhancement_levels:
+		output = Enhancement.combat(enhancement_progress, int(world_factors.enhancement_levels), enhancement, unlocked("feature", "jewels"), active)
+		if not output.ok: return output
+		upgrades = Enhancement.changes(enhancement_values, output)
 	var iron: String = ""
 	if reactor.factors.smelting != reactor_factors.smelting:
 		var text = amount_api.apply("to_display", [reactor.factors.smelting])
 		if not text.ok: return text
 		iron = text.text
-	var result = _commit_values(values, "refit", iron)
+	var result = _commit_values(values, "refit", iron, upgrades)
+	if result.ok: enhancement_values = output
 	if result.ok:
 		reactor_progress = reactor.state
 		reactor_factors = reactor.factors
@@ -1155,9 +1174,7 @@ func _commit_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 	research_speed = world.research
 	galaxy_crew_experience = world.crew_experience
 	var result: Dictionary = {"ok": true}
-	if world.enhancement_levels != previous.enhancement_levels:
-		result = _commit_growth(slots, enhancement_progress, reactor_progress, research_progress, wallet, "refit")
-	elif world.external != previous.external or world.equipment_levels != previous.equipment_levels or world.capacity != previous.capacity or world.free_charge != previous.free_charge:
+	if world.enhancement_levels != previous.enhancement_levels or world.external != previous.external or world.equipment_levels != previous.equipment_levels or world.capacity != previous.capacity or world.free_charge != previous.free_charge:
 		result = _publish_world_values(previous)
 	if not result.ok and last_error.is_empty():
 		return _fail(str(result.get("error", result.get("reason", "WorldGrowthUpdateFailed"))))
