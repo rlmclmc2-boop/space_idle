@@ -2793,6 +2793,7 @@ class SpaceCombatKernel : public RefCounted {
             if (ed.has("memory_cap")) for (const auto &value : modules) if (std::find(changed.begin(), changed.end(), value.first) == changed.end()) {
                 Defence &d = defences[value.first]; d.buffer = minimum(d.buffer, d.maximum * d.memory_cap);
             }
+            result["defence_changed"] = !changed.empty();
             result["ok"] = true; result.erase("reason"); return result;
         } catch (const std::exception &e) {
             if (committing) { failure_reason = String(e.what()); stopped = true; result["fault"] = true; result["reason"] = failure_reason; }

@@ -167,7 +167,7 @@ func filter_values(values: Dictionary) -> void:
 
 func commit_values(values: Dictionary, kind: String, iron: String, upgrades: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	if values.weapons.is_empty() and values.defences.is_empty() and iron.is_empty() and upgrades.is_empty(): return {"ok": true}
+	if values.weapons.is_empty() and values.defences.is_empty() and iron.is_empty() and upgrades.is_empty(): return {"ok": true, "defence_changed": false}
 	var result: Dictionary = _kernel.set_player_values(values.weapons, values.defences, kind, iron, upgrades)
 	if not result.ok:
 		if result.get("fault", false): _run_state.fail(str(result.reason))

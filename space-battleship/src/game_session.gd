@@ -374,7 +374,7 @@ func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrade
 	if not run_state.is_running(): return run_state.rejection()
 	var committed: Dictionary = battle.commit_values(values, kind, iron, upgrades)
 	if not committed.ok: return _fail(str(committed.reason)) if committed.get("fault", false) else committed
-	campaign_system.retreat_if_dead(equipment.clear_switch_locks)
+	if committed.defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return {"ok": true}
 
 func publish_equipment_levels(balances: Dictionary, changed: Array) -> Dictionary:
