@@ -2770,7 +2770,11 @@ class SpaceCombatKernel : public RefCounted {
                 Amount maximum = evaluate_module_value(d.base, incoming_counter, defence_growth, level, log_base, round_scale, d.branch_factors, d.external_factors) * d.factor * drone_defence(d.layer);
                 if (maximum != defences[v.first].maximum) changed.push_back(v.first);
             }
-            const Amount before[2] = {layer_health(0), layer_health(1)}, old_capacity[2] = {capacity(0), capacity(1)};
+            Amount before[2], old_capacity[2];
+            if (!changed.empty()) {
+                before[0] = layer_health(0); before[1] = layer_health(1);
+                old_capacity[0] = capacity(0); old_capacity[1] = capacity(1);
+            }
             committing = true;
             bool endless_changed = false;
             for (auto &value : sources) {
