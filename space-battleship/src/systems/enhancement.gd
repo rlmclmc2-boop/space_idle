@@ -12,8 +12,8 @@ func _init(rows: Array, api) -> void:
 	for row in rows: _rules[str(row.id)] = row.value
 	_api = api
 
-func evaluate(bonus: int, available: bool, armours: int) -> Dictionary:
-	return _combat(_state, bonus, _rules, available, armours)
+func evaluate(bonus: int, unlocked: Callable, armours: int) -> Dictionary:
+	return _combat(_state, bonus, _rules, bool(unlocked.call("feature", "jewels")), armours)
 
 func published_output() -> Dictionary:
 	return _values
@@ -27,7 +27,7 @@ func difference(output: Dictionary) -> Dictionary:
 # Inputs are equipment/world facts. The publisher performs the economy/native transaction.
 # Callbacks exist only for this synchronous command; the module retains no Session reference.
 func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: String, publish: Callable) -> Dictionary:
-	var output = _combat(next, int(inputs.bonus), _rules, bool(inputs.available), int(inputs.armours))
+	var output = _combat(next, int(inputs.bonus), _rules, bool(inputs.unlocked.call("feature", "jewels")), int(inputs.armours))
 	if not output.ok: return output
 	var committed: Dictionary = publish.call(_changes(_values, output), costs, kind)
 	if committed.ok:
@@ -36,7 +36,7 @@ func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: Stri
 	return committed
 
 func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
-	if not inputs.available: return {"ok": false, "reason": "EnhancementLocked"}
+	if not bool(inputs.unlocked.call("feature", "jewels")): return {"ok": false, "reason": "EnhancementLocked"}
 	var quoted = _quote_purchase(_state, count, _rules, _api, can_pay)
 	if not quoted.ok: return quoted
 	var next: Dictionary = _state.duplicate(true)
@@ -60,7 +60,7 @@ func move_forward(effect: String, inputs: Dictionary, publish: Callable) -> Dict
 	return set_order(category, order, inputs, publish)
 
 func set_branch(effect: String, node: int, choice: String, inputs: Dictionary, publish: Callable) -> Dictionary:
-	var changed = _choose(_state, effect, node, choice, _rules, bool(inputs.available))
+	var changed = _choose(_state, effect, node, choice, _rules, bool(inputs.unlocked.call("feature", "jewels")))
 	if not changed.ok: return changed
 	return _submit(changed.state, inputs, {}, "selection", publish)
 

@@ -24,7 +24,8 @@ func _init(rows: Array, buildings: Array, rules: Array, api) -> void:
 func initialization_result() -> Dictionary:
 	return {"ok": _initial_error.is_empty(), "reason": _initial_error}
 
-func refresh_availability(enabled: bool, cleared_stages: Dictionary) -> void:
+func refresh_availability(unlocked: Callable, cleared_stages: Dictionary) -> void:
+	var enabled: bool = bool(unlocked.call("feature", "galaxy"))
 	var next: Dictionary = {}
 	for key in _regions:
 		var row: Dictionary = _definitions[key]
@@ -36,6 +37,9 @@ func refresh_availability(enabled: bool, cleared_stages: Dictionary) -> void:
 
 func is_available(key: String) -> bool:
 	return _available.get(key, false)
+
+func assignment_admission(key: String) -> Dictionary:
+	return {"ok": true} if is_available(key) else {"ok": false, "reason": "GalaxyUnavailable"}
 
 func contributions(changes: Array = []) -> Dictionary:
 	var output = _contributions(_regions, _buildings, _api, _factors, changes)

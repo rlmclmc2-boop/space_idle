@@ -30,6 +30,9 @@ func refresh_availability(unlocked: Callable) -> void:
 		_features = features
 		options_changed.emit()
 
+func experience_enabled() -> bool:
+	return _features.levels
+
 func _mark_jobs(jobs: Array) -> void:
 	for job in jobs:
 		if job not in _dirty_jobs: _dirty_jobs.append(job)

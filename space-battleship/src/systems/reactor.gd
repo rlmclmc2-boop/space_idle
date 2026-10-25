@@ -22,9 +22,9 @@ func panel_options(inputs: Dictionary) -> Array:
 
 func enabled_modules(inputs: Dictionary) -> Array:
 	var enabled: Array = []
-	if inputs.available:
+	if bool(inputs.unlocked.call("feature", "reactor")):
 		for module in str(_parameters.reactorModules).split(","):
-			if module != "condensation" or inputs.condensation: enabled.append(module)
+			if module != "condensation" or bool(inputs.unlocked.call("reactor_module", module)): enabled.append(module)
 	return enabled
 
 func modules_changed(inputs: Dictionary) -> bool:
@@ -50,7 +50,7 @@ func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: Stri
 	return result
 
 func purchase(count: int, automatic: bool, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
-	if not inputs.available: return {"ok": false, "reason": "ReactorLocked"}
+	if not bool(inputs.unlocked.call("feature", "reactor")): return {"ok": false, "reason": "ReactorLocked"}
 	var changed = _purchase(_state, count, automatic, _parameters, _api)
 	if not changed.ok: return changed
 	var affordable: Dictionary = can_pay.call(changed.costs)

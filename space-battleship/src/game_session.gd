@@ -116,7 +116,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	galaxy_system = Galaxy.new(configuration.galaxy.galaxy, configuration.galaxy_build.galaxy_build, configuration.galaxy_config.galaxy_config, amount_api)
 	var galaxies = galaxy_system.initialization_result()
 	if not galaxies.ok: return _fail(str(galaxies.reason))
-	galaxy_system.refresh_availability(campaign_system.available("feature", "galaxy"), campaign_system.progress_facts().cleared_stages)
+	galaxy_system.refresh_availability(campaign_system.available, campaign_system.progress_facts().cleared_stages)
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
 	campaign_system.bind_native(kernel, amount_api)
 	planet_factors = planet_system.contributions()
@@ -260,7 +260,7 @@ func economy_display_context() -> Dictionary:
 	return {"wall": wall_time, "game": game_time, "factors": income_factors}
 
 func reactor_inputs() -> Dictionary:
-	return {"available": campaign_system.available("feature", "reactor"), "condensation": campaign_system.available("reactor_module", "condensation"),
+	return {"unlocked": campaign_system.available,
 		"capacity": world_factors.capacity, "free_charge": world_factors.free_charge}
 
 func equipment_inputs() -> Dictionary:
@@ -284,7 +284,7 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	if not ai.ok: return ai
 	var factors := {"ai_weapon": ai["values"].weapon_damage, "ai_defence": ai["values"].equipment_durability,
 		"reactor_weapon": reactor.factors.weapons, "reactor_defence": reactor.factors.defence, "external": world.external}
-	var upgrades = enhancement.evaluate(int(world.enhancement_levels), campaign_system.available("feature", "jewels"), equipment.equipped_armours(ship.mounts, next_slots))
+	var upgrades = enhancement.evaluate(int(world.enhancement_levels), campaign_system.available, equipment.equipped_armours(ship.mounts, next_slots))
 	if not upgrades.ok: return upgrades
 	var drone_weapons: Array = []
 	for index in next_drones.size():
@@ -399,7 +399,7 @@ func refresh_growth() -> bool:
 
 # World/equipment availability and payment/native publication are the cross-module ports.
 func enhancement_inputs() -> Dictionary:
-	return {"bonus": int(world_factors.enhancement_levels), "available": campaign_system.available("feature", "jewels"),
+	return {"bonus": int(world_factors.enhancement_levels), "unlocked": campaign_system.available,
 		"armours": equipment.equipped_armours(campaign_system.ship_facts().mounts)}
 
 func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
@@ -509,7 +509,7 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 	var output: Dictionary = enhancement.published_output()
 	var upgrades: Dictionary = {}
 	if world_factors.enhancement_levels != previous.enhancement_levels:
-		output = enhancement.evaluate(int(world_factors.enhancement_levels), campaign_system.available("feature", "jewels"), equipment.equipped_armours(campaign_system.ship_facts().mounts))
+		output = enhancement.evaluate(int(world_factors.enhancement_levels), campaign_system.available, equipment.equipped_armours(campaign_system.ship_facts().mounts))
 		if not output.ok: return output
 		upgrades = enhancement.difference(output)
 	var iron: String = ""
@@ -570,7 +570,7 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 
 func assignment_admission(kind: String, target: String) -> Dictionary:
 	if kind in ["planet_explore", "planet_build"]: return planet_system.assignment_capacity(kind, target)
-	return {"ok": true} if galaxy_system.is_available(target) else {"ok": false, "reason": "GalaxyUnavailable"}
+	return galaxy_system.assignment_admission(target)
 
 func coordinate_assignment(id: String, kind: String, target: String, mode: String = "1") -> Dictionary:
 	var changed = crew_system.assign(id, kind, target, mode, assignment_admission)
@@ -589,9 +589,7 @@ func coordinate_planet_cancel(id: String) -> Dictionary:
 	return cancelled
 
 func planet_experience_context() -> Dictionary:
-	var context: Dictionary = campaign_system.planet_experience()
-	context.factor = galaxy_crew_experience
-	return context
+	return {"enabled": crew_system.experience_enabled(), "ratio": campaign_system.planet_experience_ratio(), "factor": galaxy_crew_experience}
 
 func _publish_progress() -> void:
 	var facts: Dictionary = campaign_system.progress_facts()
@@ -599,7 +597,7 @@ func _publish_progress() -> void:
 	equipment.refresh_availability(campaign_system.available, int(facts.highest_reached))
 	crew_system.refresh_availability(campaign_system.available)
 	planet_system.refresh_availability(campaign_system.available)
-	galaxy_system.refresh_availability(campaign_system.available("feature", "galaxy"), facts.cleared_stages)
+	galaxy_system.refresh_availability(campaign_system.available, facts.cleared_stages)
 
 func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) -> bool:
 	var result = planet_system.advance(explorers, builders, dt, planet_experience_context)

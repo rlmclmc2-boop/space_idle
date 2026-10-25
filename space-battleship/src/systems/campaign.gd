@@ -78,8 +78,8 @@ func progress_facts() -> Dictionary:
 func resource_generation_active() -> bool:
 	return _state.state in ["travel", "combat", "waiting", "guard_wait", "retreat"]
 
-func planet_experience() -> Dictionary:
-	return {"enabled": available("feature", "crew_level"), "ratio": _levels[int(_state.highest_reached)].planetExpRatio}
+func planet_experience_ratio():
+	return _levels[int(_state.highest_reached)].planetExpRatio
 
 func departure_active() -> bool:
 	return _departure_remaining > 0
