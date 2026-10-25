@@ -18,7 +18,7 @@ static func payment(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictio
 		next[resource] = remaining.value
 	return {"ok": true, "wallet": next}
 
-static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array, now: float, rules: Dictionary, amount_api) -> Dictionary:
+static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array, now: float, rules: Dictionary, amount_api, refinery: Dictionary) -> Dictionary:
 	# Native emits monotonically increasing IDs through one synchronous result stream.
 	# Keep only its registration frontier, plus the still-unclaimed drops themselves.
 	var registered_through: int = int(cursor.registered_through)
@@ -36,6 +36,11 @@ static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array,
 		var base = amount_api.apply("from_decimal", [str(row.get("production_base", row.amount))])
 		if not base.ok:
 			return base
+		if str(row.id) in ["1", "2"]:
+			quantity = amount_api.apply("mul", [quantity.value, refinery])
+			if not quantity.ok:
+				return quantity
+			quantity = amount_api.apply("ceil", [quantity.value])
 		row.domain = "native"
 		row.income_source = "fragment_drop" if row.get("jewel", false) else "enemy_drop"
 		row.amount = quantity.value
@@ -76,8 +81,10 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 			return result
 		base = result.value
 	if resource == "jewel":
-		if income_factors.has("condensation"):
-			result = amount_api.apply("mul", [quantity, income_factors.condensation])
+		for contribution in ["crew_fragments", "condensation", "galaxy_fragments"]:
+			if not income_factors.has(contribution):
+				continue
+			result = amount_api.apply("mul", [quantity, income_factors[contribution]])
 			if not result.ok:
 				return result
 			quantity = result.value
@@ -145,7 +152,7 @@ static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array,
 
 static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resource: String,
 		base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2,
-		born_at: float, amount_api) -> Dictionary:
+		born_at: float, amount_api, refinery: Dictionary) -> Dictionary:
 	if int(generator.next_id) == 9223372036854775807:
 		return {"ok": false, "reason": "TimedDropIdRangeExceeded"}
 	var base = amount_api.apply("from_decimal", [base_text])
@@ -157,10 +164,16 @@ static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resourc
 	base = amount_api.apply("ceil", [base.value])
 	if not base.ok:
 		return base
+	var quantity = amount_api.apply("mul", [base.value, refinery])
+	if not quantity.ok:
+		return quantity
+	quantity = amount_api.apply("ceil", [quantity.value])
+	if not quantity.ok:
+		return quantity
 	var id: int = int(generator.next_id) + 1
 	var key: String = "timed:" + str(id)
 	pending[key] = {"domain": "timed", "uid": id, "id": resource,
-		"amount": base.value, "production_base": base.value, "income_source": "timed_drop",
+		"amount": quantity.value, "production_base": base.value, "income_source": "timed_drop",
 		"x": origin.x, "y": origin.y, "origin_y": origin.y, "born_at": born_at,
 		"moving": true, "speed": speed}
 	generator.next_id = id
@@ -183,3 +196,46 @@ static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples
 				return result
 			collected = true
 	return {"ok": true, "collected": collected}
+
+static func prune_income(samples: Array, wall: float, game: float, window: float) -> void:
+	while not samples.is_empty() and float(samples[0].wall) <= wall - window and float(samples[0].game) <= game - window:
+		samples.pop_front()
+
+static func income_rates(samples: Array, wall: float, game: float, window: float, kind: String, api) -> Dictionary:
+	if kind not in ["peak", "investment", "production"]:
+		return {"ok": false, "reason": "UnknownIncomeQuery"}
+	var zero: Dictionary = api.apply("zero", []).value
+	var rates: Dictionary = {"1": zero, "2": zero}
+	if kind != "production":
+		rates.jewel = zero
+	var field: String = "production_base" if kind == "production" else "actual"
+	var clock: String = "wall" if kind == "peak" else "game"
+	var now: float = wall if kind == "peak" else game
+	for sample in samples:
+		if not rates.has(sample.resource) or float(sample[clock]) <= now - window or float(sample[clock]) > now:
+			continue
+		if sample.source not in ["enemy_drop", "timed_drop", "fragment_drop"] and not (kind == "investment" and sample.source == "galaxy_yield"):
+			continue
+		var sum = api.apply("add", [rates[sample.resource], sample[field]])
+		if not sum.ok:
+			return sum
+		rates[sample.resource] = sum.value
+	var duration = api.apply("from_decimal", [str(window)])
+	if not duration.ok:
+		return duration
+	for resource in rates:
+		var rate = api.apply("div", [rates[resource], duration.value])
+		if not rate.ok:
+			return rate
+		rates[resource] = rate.value
+	return {"ok": true, "rates": rates}
+
+static func credit_yield(wallet: Dictionary, samples: Array, resource: String, quantity: Dictionary, wall: float, game: float, api) -> Dictionary:
+	var zero: Dictionary = api.apply("zero", []).value
+	var total = api.apply("add", [wallet.get(resource, zero), quantity])
+	if not total.ok:
+		return total
+	wallet[resource] = total.value
+	samples.append({"resource": resource, "actual": quantity, "production_base": zero,
+		"wall": wall, "game": game, "source": "galaxy_yield"})
+	return {"ok": true}

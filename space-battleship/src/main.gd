@@ -19,6 +19,12 @@ var beam_instances: MultiMeshInstance2D
 var beam_material: ShaderMaterial
 var contact_layer: Node2D
 var growth_panel: PanelContainer
+var world_status: Label
+var world_crew_picker: OptionButton
+var world_assignment_picker: OptionButton
+var world_mode_picker: OptionButton
+var world_planet_picker: OptionButton
+var world_building_picker: OptionButton
 var growth_status: Label
 var upgrade_price: Label
 var slot_picker: OptionButton
@@ -71,6 +77,8 @@ func _process(dt: float) -> void:
 					native_display.record_contact(0 if event.get("hostile", false) else 1, event.position, event.direction,
 						float(event.clock), int(event.kind) == 0, bool(event.critical), int(event.type))
 			native_display.prune_contacts(float(kernel.presentation_clock()), false)
+	if world_status != null and growth_panel.visible:
+		_refresh_world_status()
 	queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -246,7 +254,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(func():
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
-		var labels := {"NoChange": "没有变更", "InsufficientResources": "资源不足", "EquipmentSwitchLocked": "换装冷却尚未结束", "EquipmentLocked": "装备尚未解锁", "EnhancementLocked": "强化尚未解锁", "EnhancementBranchLocked": "强化分支尚未开放", "ReactorLocked": "反应炉尚未解锁", "ReactorModuleLocked": "反应炉模块尚未开放", "ResearchLocked": "科研前置条件未满足", "EvolutionMaterialLocked": "进化材料尚未开放", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
+		var labels := {"GalaxyUnavailable": "星系尚未开放", "UnknownPlanet": "尚未选择星球", "HyperspaceCrewReserved": "船员仍被超空间任务占用", "CrewAssignmentUnavailable": "岗位暂不可用", "CrewLocked": "船员尚未解锁", "CrewTargetOccupied": "目标人数已满", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑尚不可施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewJobLocked": "岗位尚未开放", "NoChange": "没有变更", "InsufficientResources": "资源不足", "EquipmentSwitchLocked": "换装冷却尚未结束", "EquipmentLocked": "装备尚未解锁", "EnhancementLocked": "强化尚未解锁", "EnhancementBranchLocked": "强化分支尚未开放", "ReactorLocked": "反应炉尚未解锁", "ReactorModuleLocked": "反应炉模块尚未开放", "ResearchLocked": "科研前置条件未满足", "EvolutionMaterialLocked": "进化材料尚未开放", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
 		growth_status.text = "完成" if result.get("ok", false) else str(labels.get(reason, reason))
 		_refresh_growth_pickers())
 	return button
@@ -379,12 +387,14 @@ func _setup_growth_panel() -> void:
 		order[index] = held
 		return session.set_enhancement_order(category, order))
 	_caption(box, "连发第二节点 B 仅保留选择，不产生第二代连发。")
+	_setup_world_controls(box)
 	_refresh_growth_pickers()
 
 func _selected_slot() -> String:
 	return "" if slot_picker.selected < 0 else str(slot_picker.get_item_metadata(slot_picker.selected))
 
 func _refresh_growth_pickers() -> void:
+	_refresh_world_pickers()
 	if slot_picker == null:
 		return
 	var selected: String = _selected_slot()
@@ -426,3 +436,123 @@ func _populate_equipment_picker() -> void:
 		equipment_picker.add_item(session.equipment_label(key))
 		equipment_picker.set_item_metadata(index, key)
 		equipment_picker.set_item_disabled(index, not session.unlocked("equipment", key))
+
+const CREW_JOB_NAMES := {"equipment_upgrade": "装备升级", "hightech_scientists": "科研", "jewel_auto": "强化", "reactor_upgrade": "反应炉"}
+const PLANET_BUILD_STATES := {"locked": "未解锁", "available": "可开工", "building": "施工中", "ready": "待领取", "built": "已建成"}
+
+func _picker_value(picker: OptionButton, fallback = ""):
+	return fallback if picker == null or picker.selected < 0 else picker.get_item_metadata(picker.selected)
+
+func _setup_world_controls(box: Control) -> void:
+	_caption(box, "船员与星球")
+	world_status = Label.new()
+	world_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(world_status)
+	world_crew_picker = OptionButton.new()
+	box.add_child(world_crew_picker)
+	world_assignment_picker = OptionButton.new()
+	box.add_child(world_assignment_picker)
+	world_mode_picker = OptionButton.new()
+	for mode in ["1", "10", "max"]:
+		world_mode_picker.add_item("装备自动购买 " + mode.to_upper())
+		world_mode_picker.set_item_metadata(world_mode_picker.item_count - 1, mode)
+	box.add_child(world_mode_picker)
+	_command_button(box, "派遣所选船员", func():
+		var assignment: Dictionary = _picker_value(world_assignment_picker, {"kind": "", "target": ""})
+		return session.assign_crew(str(_picker_value(world_crew_picker)), assignment.kind, assignment.target, str(_picker_value(world_mode_picker, "1"))))
+	_command_button(box, "撤回所选船员", func(): return session.assign_crew(str(_picker_value(world_crew_picker)), "", ""))
+	world_planet_picker = OptionButton.new()
+	world_planet_picker.item_selected.connect(func(_index): _refresh_world_buildings())
+	box.add_child(world_planet_picker)
+	var automatic := _row(box)
+	_command_button(automatic, "开启自动探索", func(): return session.set_planet_automatic(str(_picker_value(world_planet_picker)), true))
+	_command_button(automatic, "本次完成后停止", func(): return session.set_planet_automatic(str(_picker_value(world_planet_picker)), false))
+	_command_button(box, "立即取消探索", func(): return session.cancel_planet(str(_picker_value(world_planet_picker))))
+	world_building_picker = OptionButton.new()
+	box.add_child(world_building_picker)
+	var construction := _row(box)
+	_command_button(construction, "开始施工", func(): return session.start_planet_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker))))
+	_command_button(construction, "领取建筑", func(): return session.claim_planet_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker))))
+	_command_button(box, "刷新世界列表", func(): return {"ok": true})
+
+func _world_assignment(label: String, kind: String, target: String, previous: Dictionary) -> void:
+	var value := {"kind": kind, "target": target}
+	var index: int = world_assignment_picker.item_count
+	world_assignment_picker.add_item(label)
+	world_assignment_picker.set_item_metadata(index, value)
+	if value == previous:
+		world_assignment_picker.select(index)
+
+func _refresh_world_pickers() -> void:
+	if world_crew_picker == null:
+		return
+	var selected: String = str(_picker_value(world_crew_picker))
+	world_crew_picker.clear()
+	for id in session.crew_definitions:
+		if not session.unlocked("crew", id): continue
+		var index: int = world_crew_picker.item_count
+		world_crew_picker.add_item(str(session.crew_definitions[id].name) + " · Lv." + str(session.crew_progress[id].level))
+		world_crew_picker.set_item_metadata(index, id)
+		if id == selected: world_crew_picker.select(index)
+	var previous: Dictionary = _picker_value(world_assignment_picker, {})
+	world_assignment_picker.clear()
+	for job in CREW_JOB_NAMES:
+		_world_assignment(CREW_JOB_NAMES[job], "system_job", job, previous)
+	var planet: String = str(_picker_value(world_planet_picker))
+	world_planet_picker.clear()
+	for id in session.planet_definitions:
+		if not session.planet_unlocked(id): continue
+		var name: String = str(session.planet_definitions[id].name)
+		var index: int = world_planet_picker.item_count
+		world_planet_picker.add_item(name)
+		world_planet_picker.set_item_metadata(index, id)
+		if id == planet: world_planet_picker.select(index)
+		_world_assignment("探索 · " + name, "planet_explore", id, previous)
+		for key in session.planet_progress[id].buildings:
+			if session.planet_progress[id].buildings[key].state == "building" and int(session.planet_buildings[key].extra_crew) > 0:
+				_world_assignment("施工 · " + name + " · " + str(session.planet_buildings[key].name), "planet_build", str(id) + ":" + str(key), previous)
+	for key in session.galaxy_progress:
+		if session.galaxy_unlocked(key):
+			_world_assignment("星系 · " + str(session.galaxy_definitions[key].name), "galaxy", key, previous)
+	_refresh_world_buildings()
+	_refresh_world_status()
+
+func _refresh_world_buildings() -> void:
+	var selected: String = str(_picker_value(world_building_picker))
+	world_building_picker.clear()
+	var id: String = str(_picker_value(world_planet_picker))
+	if not session.planet_progress.has(id): return
+	for key in session.planet_progress[id].buildings:
+		var progress: Dictionary = session.planet_progress[id].buildings[key]
+		var row: Dictionary = session.planet_buildings[key]
+		var index: int = world_building_picker.item_count
+		world_building_picker.add_item(str(row.name) + " · " + str(PLANET_BUILD_STATES[progress.state]) + " %d/%d" % [int(progress.work), int(row.build_explore)])
+		world_building_picker.set_item_metadata(index, key)
+		if key == selected: world_building_picker.select(index)
+
+func _refresh_world_status() -> void:
+	var lines: PackedStringArray = []
+	for id in session.crew_progress:
+		if not session.unlocked("crew", id): continue
+		var member: Dictionary = session.crew_progress[id]
+		var job: String = "空闲"
+		if member.kind == "system_job": job = str(CREW_JOB_NAMES.get(member.target, member.target))
+		elif member.kind == "planet_explore": job = "星球探索"
+		elif member.kind == "planet_build": job = "建筑施工"
+		elif member.kind == "galaxy": job = "星系建设"
+		var experience = session.amount_api.apply("to_display", [member.exp])
+		lines.append("%s Lv.%d · %s · 经验 %s" % [session.crew_definitions[id].name, int(member.level), job, experience.text])
+	for id in session.planet_progress:
+		if not session.planet_unlocked(id): continue
+		var progress: Dictionary = session.planet_progress[id]
+		lines.append("%s · 探索 %d · %s" % [session.planet_definitions[id].name, int(progress.exploration), "%.1f/%.1f 秒" % [float(progress.elapsed), float(progress.duration)] if progress.running else "待派遣"])
+	for key in session.galaxy_progress:
+		if not session.galaxy_unlocked(key): continue
+		var region: Dictionary = session.galaxy_progress[key]
+		var explored: int = 0
+		var active: int = 0
+		for node in region.nodes.values():
+			if node.explored: explored += 1
+			if node.state == "active": active += 1
+		lines.append("%s · 探索 %d/%d · 建成 %d" % [session.galaxy_definitions[key].name, explored, region.nodes.size(), active])
+	world_status.text = "\n".join(lines) if not lines.is_empty() else "通关第 10 关后解锁首位船员。"

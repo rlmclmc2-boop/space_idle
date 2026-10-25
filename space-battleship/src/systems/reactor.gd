@@ -15,7 +15,7 @@ static func quote(state: Dictionary, count: int, parameters: Dictionary, api) ->
 		return result
 	return {"ok": true, "costs": {str(int(parameters.reactorUraniumId)): result.value}, "count": count, "extreme": result.extreme}
 
-static func evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, api) -> Dictionary:
+static func evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary, free_bonus: float) -> Dictionary:
 	var base = api.apply("from_decimal", [str(parameters.reactorEnergyBase)])
 	var growth = api.apply("from_decimal", [str(parameters.reactorEnergyGrowth)])
 	for result in [base, growth]:
@@ -27,13 +27,16 @@ static func evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, 
 	var capacity = api.apply("mul", [base.value, growth.value])
 	if not capacity.ok:
 		return capacity
+	capacity = api.apply("mul", [capacity.value, capacity_factor])
+	if not capacity.ok:
+		return capacity
 	capacity = api.apply("floor", [capacity.value])
 	if not capacity.ok:
 		return capacity
 	var zero = api.apply("zero", [])
 	var one = api.apply("from_decimal", ["1"])
 	var scale = api.apply("from_decimal", [str(parameters.reactorPercentScale)])
-	var free = api.apply("from_decimal", [str(state.free_charge)])
+	var free = api.apply("from_decimal", [str(float(state.free_charge) + free_bonus)])
 	free = api.apply("mul", [free.value, capacity.value])
 	if not free.ok:
 		return free
@@ -65,7 +68,7 @@ static func evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, 
 		factors[module] = charged.value
 	return {"ok": true, "capacity": capacity.value, "remaining": remaining, "allocations": allocations, "factors": factors}
 
-static func allocate(state: Dictionary, module: String, requested: Dictionary, parameters: Dictionary, enabled: Array, api) -> Dictionary:
+static func allocate(state: Dictionary, module: String, requested: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary, free_bonus: float) -> Dictionary:
 	if module not in enabled:
 		return {"ok": false, "reason": "ReactorModuleLocked"}
 	var next: Dictionary = state.duplicate(true)
@@ -73,7 +76,7 @@ static func allocate(state: Dictionary, module: String, requested: Dictionary, p
 	if not value.ok:
 		return value
 	next.allocations.erase(module)
-	var current = evaluate(next, parameters, enabled, api)
+	var current = evaluate(next, parameters, enabled, api, capacity_factor, free_bonus)
 	if not current.ok:
 		return current
 	value = api.apply("min", [value.value, current.remaining])
@@ -83,10 +86,10 @@ static func allocate(state: Dictionary, module: String, requested: Dictionary, p
 	next.allocations[module] = value.value
 	return {"ok": true, "state": next}
 
-static func distribute(state: Dictionary, parameters: Dictionary, enabled: Array, api) -> Dictionary:
+static func distribute(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary, free_bonus: float) -> Dictionary:
 	if enabled.is_empty():
 		return {"ok": false, "reason": "ReactorModuleLocked"}
-	var current = evaluate(state, parameters, enabled, api)
+	var current = evaluate(state, parameters, enabled, api, capacity_factor, free_bonus)
 	if not current.ok:
 		return current
 	var divisor = api.apply("from_decimal", [str(enabled.size())])

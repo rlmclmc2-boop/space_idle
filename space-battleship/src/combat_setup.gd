@@ -47,15 +47,20 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 				"base": text.text, "maximum": text.text, "factor": 1.0, "loss": "0", "buffer": "0",
 				"delay": float(row.para3) if row.name == "shield" else 0.0,
 				"rate": float(row.para2) if row.name == "shield" else 0.0,
-				"branch_factors": [], "external_factors": []})
+				"branch_factors": [], "external_factors": factors.external.duplicate()})
 		else:
 			var row_weapon: Dictionary = weapon(row, str(row.name), str(text.text), int(slot.index), false, motion)
 			row_weapon.muzzle = Geometry.mount_position(player_art, int(slot.index), player_point, player_dimensions)
+			row_weapon.external_factors = factors.external.duplicate()
 			row_weapon.entry.id = str(slot.id)
 			row_weapon.entry.generation = int(slot.generation)
 			row_weapon.entry.paid_level = int(slot.paid_level)
 			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels)
 			weapons.append(row_weapon)
+	for drone in drone_weapons:
+		var external: Array = factors.external.duplicate()
+		external.append_array(drone.get("external_factors", []))
+		drone.external_factors = external
 	weapons.append_array(drone_weapons)
 	var descriptor := {"player": {"x": player_point.x, "y": player_point.y},
 		"enemies": [], "weapons": weapons, "defences": defences,

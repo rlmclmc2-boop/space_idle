@@ -62,30 +62,14 @@ static func factor(state: Dictionary, definitions: Dictionary, effect: String, r
 			return value
 	return value
 
-static func refresh_income(state: Dictionary, samples: Array, wall: float, game: float, rules: Dictionary, api, income_changed: bool) -> Dictionary:
-	var seconds: float = float(rules.research_income_window)
-	while not samples.is_empty() and float(samples[0].wall) <= wall - seconds and float(samples[0].game) <= game - seconds:
-		samples.pop_front()
-	var automatic_due: bool = state.auto_invest and float(state.refresh_elapsed) >= seconds
+static func refresh_income(state: Dictionary, peak_rates: Dictionary, investment_rates: Dictionary, rules: Dictionary, api, income_changed: bool, automatic_due: bool) -> Dictionary:
 	if not income_changed and not automatic_due:
 		return {"ok": true, "state": state}
 	var next: Dictionary = state.duplicate(true)
 	var zero: Dictionary = api.apply("zero", []).value
-	var window = api.apply("from_decimal", [str(rules.research_income_window)])
 	if income_changed:
 		for resource in ["1", "2", "jewel"]:
-			var actual: Dictionary = zero
-			for sample in samples:
-				if sample.resource != resource or float(sample.wall) <= wall - float(rules.research_income_window) or float(sample.wall) > wall or sample.source not in ["enemy_drop", "timed_drop", "fragment_drop"]:
-					continue
-				var total = api.apply("add", [actual, sample.actual])
-				if not total.ok:
-					return total
-				actual = total.value
-			var rate = api.apply("div", [actual, window.value])
-			if not rate.ok:
-				return rate
-			var peak = api.apply("max", [next.peaks.get(resource, zero), rate.value])
+			var peak = api.apply("max", [next.peaks.get(resource, zero), peak_rates[resource]])
 			if not peak.ok:
 				return peak
 			next.peaks[resource] = peak.value
@@ -94,30 +78,40 @@ static func refresh_income(state: Dictionary, samples: Array, wall: float, game:
 		var ratio = api.apply("from_decimal", [str(next.ratio)])
 		var one = api.apply("from_decimal", ["1"])
 		for resource in ["1", "2"]:
-			var sum: Dictionary = zero
-			for sample in samples:
-				if sample.resource == resource and float(sample.game) > game - float(rules.research_income_window) and float(sample.game) <= game and sample.source in ["enemy_drop", "timed_drop", "fragment_drop"]:
-					var added = api.apply("add", [sum, sample.actual])
-					if not added.ok:
-						return added
-					sum = added.value
-			var rate = api.apply("div", [sum, window.value])
-			if not rate.ok:
-				return rate
-			rate = api.apply("mul", [rate.value, ratio.value])
+			var rate = api.apply("mul", [investment_rates[resource], ratio.value])
 			if not rate.ok:
 				return rate
 			rate = api.apply("floor", [rate.value])
-			if not rate.ok:
-				return rate
 			rate = api.apply("max", [one.value, rate.value])
 			if not rate.ok:
 				return rate
 			next.investment[resource] = rate.value
 	return {"ok": true, "state": next}
 
+static func select_shortest(state: Dictionary, definitions: Dictionary, gates: Dictionary, api) -> Dictionary:
+	if not str(state.current).is_empty():
+		return {"ok": true}
+	var chosen: String = ""
+	var shortest: Dictionary = api.apply("zero", []).value
+	var keys: Array = definitions.keys()
+	keys.sort()
+	for key in keys:
+		if not available(definitions[key], state.levels, gates):
+			continue
+		var work = required_work(definitions[key], int(state.levels.get(key, 0)), api)
+		if not work.ok:
+			return work
+		work = api.apply("sub_nonnegative", [work.value, state.work.get(key, api.apply("zero", []).value)])
+		if not work.ok:
+			return work
+		if chosen.is_empty() or api.apply("compare", [work.value, shortest]).scalar < 0:
+			chosen = key
+			shortest = work.value
+	state.current = chosen
+	return {"ok": true}
+
 static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictionary, gates: Dictionary,
-		dt: float, rules: Dictionary, api) -> Dictionary:
+		dt: float, rules: Dictionary, api, crew_speed: Dictionary) -> Dictionary:
 	var next: Dictionary = state.duplicate(true)
 	var balances: Dictionary = wallet.duplicate(true)
 	next.refresh_elapsed = float(next.refresh_elapsed) + dt
@@ -166,6 +160,9 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 			paying[resource] = rate
 		var duration = api.apply("from_decimal", [str(piece)])
 		var speed_value = api.apply("from_decimal", [str(speed)])
+		speed_value = api.apply("mul", [speed_value.value, crew_speed])
+		if not speed_value.ok:
+			return speed_value
 		var work = api.apply("mul", [speed_value.value, duration.value])
 		var deficit = api.apply("sub_nonnegative", [required.value, progress])
 		for result in [work, deficit]:
