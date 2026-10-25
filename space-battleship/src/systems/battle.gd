@@ -29,6 +29,7 @@ var _initial_result: Dictionary
 func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary, ship_keys: Array, selected_ship: String, api, seed: int, run_state) -> void:
 	_api = api
 	_run_state = run_state
+	_enemy_hulls.make_read_only()
 	_parameters = parameters
 	_rules = rules
 	_seed = seed
@@ -37,6 +38,7 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 	for row in configuration.weapon_motion.weapon_motion: _motion[str(row.id)] = row.value
 	_configuration = CombatSetup.legendary_configuration(configuration.hyperspace_config)
 	_initial_result = _load_models(ship_keys)
+	_initial_result.make_read_only()
 	if not _initial_result.ok: return
 	_kernel = ClassDB.instantiate("SpaceCombatKernel")
 	_statistics = Statistics.new(api, run_state)
@@ -89,7 +91,9 @@ func enemy_hulls() -> Array:
 	return _enemy_hulls
 
 func events() -> Array:
-	return _events
+	var snapshot: Array = _events.duplicate()
+	snapshot.make_read_only()
+	return snapshot
 
 func presentation_active() -> bool:
 	return _run_state.is_running()
@@ -196,6 +200,7 @@ func advance(dt: float) -> Dictionary:
 	if not recorded.ok:
 		_run_state.fail(str(recorded.error))
 		return recorded
+	for event in result.events: event.make_read_only()
 	_events.append_array(result.events)
 	result.ok = true
 	return result
@@ -227,6 +232,7 @@ func _sync_geometry() -> Dictionary:
 	var packet = Geometry.battle_geometry(_kernel.enemy_views(), _models, _ship_key, _player_art,
 		_player_dimensions, _player_geometry_height, _player_muzzles, _enemy_muzzles, _geometry, _parameters)
 	_enemy_hulls = packet.hulls
+	_enemy_hulls.make_read_only()
 	_kernel.input_geometry(packet.points, packet.muzzles)
 	_kernel.input_ballistic_geometry(packet.hulls, packet.points, packet.muzzles, packet.stationary)
 	_kernel.input_player_point(packet.player_point)

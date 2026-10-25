@@ -48,7 +48,9 @@ func acknowledge_income() -> void:
 	_income_dirty = false
 
 func drop_markers() -> Array:
-	return _markers.values()
+	var markers: Array = _markers.values()
+	markers.make_read_only()
+	return markers
 
 func balances_text() -> String:
 	if _balance_dirty:
@@ -152,6 +154,7 @@ func register_drops(rows: Array, now: float, refinery: Dictionary) -> Dictionary
 	for id in captured:
 		pending[id] = captured[id]
 		_markers[id] = {"x": captured[id].x, "y": captured[id].y, "resource": str(captured[id].id)}
+		_markers[id].make_read_only()
 	cursor.registered_through = next_frontier
 	if not captured.is_empty(): display_changed.emit()
 	return {"ok": true}
@@ -297,6 +300,7 @@ func _spawn_timed_drop(resource: String, base_text: String, speed: float, resour
 		"moving": true, "speed": speed}
 	generator.next_id = id
 	_markers[key] = {"x": origin.x, "y": origin.y, "resource": resource}
+	_markers[key].make_read_only()
 	display_changed.emit()
 	return {"ok": true}
 
@@ -311,8 +315,12 @@ func _advance_timed_drops(target_y: float, wall: float, game: float, income_fact
 			continue
 		var previous_y: float = float(row.y)
 		row.y = minf(target_y, float(row.origin_y) + float(row.speed) * maxf(0.0, game - float(row.born_at)))
-		_markers[key].y = row.y
-		if float(row.y) != previous_y: display_changed.emit()
+		if float(row.y) != previous_y:
+			var marker: Dictionary = _markers[key].duplicate()
+			marker.y = row.y
+			marker.make_read_only()
+			_markers[key] = marker
+			display_changed.emit()
 		if float(row.y) + 1e-9 >= target_y:
 			row.y = target_y
 			var result = collect_drop(str(key), true, wall, game, income_factors)
