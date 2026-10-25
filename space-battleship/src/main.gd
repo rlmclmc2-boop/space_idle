@@ -5,13 +5,6 @@ var session
 var kernel
 var startup_error: String = ""
 var native_display
-var draw_surface: Node2D
-var prototype_enabled: bool = true
-var pulse_vfx_enabled: bool = true
-var enemy_vfx_enabled: bool = true
-var missile_vfx_enabled: bool = true
-var retained_contacts_enabled: bool = true
-var accelerated_visual_mode: bool = false
 var projectile_visuals: Array = []
 var particles: Array = []
 var beam_rows: Array = []
@@ -71,7 +64,7 @@ func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
 		if native_display != null:
-			native_display.advance_visuals(self, dt)
+			native_display.advance_visuals(dt)
 			for event in session.last_events:
 				if int(event.kind) in [0, 1]:
 					native_display.record_contact(0 if event.get("hostile", false) else 1, event.position, event.direction,
@@ -107,9 +100,9 @@ func _draw() -> void:
 	if beam_instances != null:
 		beam_instances.multimesh.visible_instance_count = 0
 	if native_display != null:
-		var prepared = native_display.prepare_flights(self, [], Vector2.ZERO)
-		native_display.draw_flights(self, prepared, Vector2.ZERO)
-		flush_projectile_packet_batch()
+		var prepared = native_display.prepare_flights([], Vector2.ZERO)
+		native_display.draw_flights(prepared, Vector2.ZERO)
+		_upload_beams()
 		native_display.draw_contacts(contact_layer.get_canvas_item(), float(kernel.presentation_clock()), true)
 	var player_point := Vector2(float(session.geometry.player_x), float(session.geometry.player_y))
 	var player_hull: PackedVector2Array = Geometry.transform_hull(session.models[session.selected_ship].hull, player_point, session.player_dimensions, 0.0)
@@ -150,7 +143,6 @@ func _draw() -> void:
 		draw_string(font, Vector2(18, 850), session.last_error, HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 
 func _setup_native_display() -> void:
-	draw_surface = self
 	native_display = ClassDB.instantiate("SpaceCombatPresentation")
 	var retained := ShaderMaterial.new()
 	retained.shader = load("res://shaders/retained_flights.gdshader")
@@ -185,6 +177,9 @@ func _setup_native_display() -> void:
 	instances.mesh = mesh
 	beam_instances.multimesh = instances
 	add_child(beam_instances)
+	native_display.configure_surface(kernel, get_canvas_item(), projectile_visuals, particles,
+		_prepare_projectile_flight, _draw_projectile_foreground_flight,
+		restore_native_laser_visuals, prepare_native_laser_display, _advance_projectile_visual_record)
 
 func _prepare_projectile_flight(shot: Dictionary, index: Dictionary, offset: Vector2) -> Dictionary:
 	if shot.get("dead", false) or shot.get("await_target", false):
@@ -224,7 +219,7 @@ func _draw_projectile_foreground_flight(flight: Dictionary, _offset: Vector2) ->
 			continue
 		beam_rows.append({"from": point, "to": Vector2(float(linked.x), float(linked.y)), "power": power, "charge": -1.0 if active else 0.0, "link": true})
 
-func flush_projectile_packet_batch() -> void:
+func _upload_beams() -> void:
 	if beam_instances == null:
 		return
 	var mesh: MultiMesh = beam_instances.multimesh

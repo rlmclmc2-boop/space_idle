@@ -99,7 +99,7 @@ class SpaceCombatKernel : public RefCounted {
         Vector2 muzzle, screen_muzzle;
         PackedVector2Array presentation_muzzles; // Display inputs only; never used by combat.
         Dictionary entry, row;
-        Array branch_factors, external_factors;
+        std::vector<Amount> branch_factors, external_factors;
         int64_t beam = -1, focus_uid = -1;
         double focus_since = 0, critical_until = 0;
         int critical_stacks = 0, critical_attacks = 0;
@@ -204,7 +204,7 @@ class SpaceCombatKernel : public RefCounted {
     };
     struct Defence {
         Dictionary entry;
-        Array branch_factors, external_factors;
+        std::vector<Amount> branch_factors, external_factors;
         Amount maximum = 0;
         int layer = 0, type = 0;
         Amount base = 0;
@@ -227,8 +227,6 @@ class SpaceCombatKernel : public RefCounted {
         bool player = false, critical = false, hostile = false, critical_bonus_applied = false, killed = false;
         String source;
         int64_t attack_id = 0;
-        Amount raw = 0, intercepted = 0, cover_absorbed = 0, memory_absorbed = 0;
-        Amount shield_loss = 0, armour_loss = 0, deferred_amount = 0;
         int64_t uid = 0;
         Amount amount = 0;
         Amount absorbed = 0;
@@ -536,10 +534,16 @@ class SpaceCombatKernel : public RefCounted {
         // The gameplay formula rounds the bonus; Amount owns all magnitude arithmetic.
         return (bonus * round_scale + 0.5).floor_value() / round_scale;
     }
-    static Amount evaluate_module_value(const Amount &charged, int64_t count, double growth, int64_t level, double log_base, double round_scale, Array branches = {}, Array external = {}) {
+    static std::vector<Amount> read_factors(Array values) {
+        std::vector<Amount> result; result.reserve(values.size());
+        for (int i = 0; i < values.size(); ++i) result.push_back(read_amount(values[i]));
+        return result;
+    }
+    static Amount evaluate_module_value(const Amount &charged, int64_t count, double growth, int64_t level, double log_base, double round_scale,
+            const std::vector<Amount> &branches = {}, const std::vector<Amount> &external = {}) {
         Amount value = (charged * (Amount(1) + history_bonus(count, growth, level, log_base, round_scale))).ceil_value();
-        for (int i = 0; i < branches.size(); ++i) value *= read_amount(branches[i]);
-        for (int i = 0; i < external.size(); ++i) value *= read_amount(external[i]);
+        for (const Amount &factor : branches) value *= factor;
+        for (const Amount &factor : external) value *= factor;
         return value;
     }
     static bool configuration_arithmetic(Dictionary d, int64_t attacks, int64_t incoming) {
@@ -553,14 +557,14 @@ class SpaceCombatKernel : public RefCounted {
                 Dictionary row = weapons[i];
                 Amount value = bool(row.get("hostile", false)) ? read_amount(row.get("damage", 1.0)) :
                     evaluate_module_value(read_amount(row.get("damage", 1.0)), attacks, d.get("counter_growth", 0.0), level,
-                        log_base, scale, row.get("branch_factors", Array()), row.get("external_factors", Array()));
+                        log_base, scale, read_factors(row.get("branch_factors", Array())), read_factors(row.get("external_factors", Array())));
                 value *= read_amount(row.get("factor", 1.0));
             }
             for (int i = 0; i < defences.size(); ++i) {
                 Dictionary row = defences[i];
                 Amount value = evaluate_module_value(read_amount(row.get("base", 0.0)), incoming,
                     d.get("defence_counter_growth", 0.0), level, log_base, scale,
-                    row.get("branch_factors", Array()), row.get("external_factors", Array()));
+                    read_factors(row.get("branch_factors", Array())), read_factors(row.get("external_factors", Array())));
                 value *= read_amount(row.get("factor", 1.0));
             }
             return true;
@@ -961,15 +965,9 @@ class SpaceCombatKernel : public RefCounted {
                 : String("module:") + String::num_int64(birth.slot);
         }
         if (source.is_empty()) source = "other";
-        const Amount attack_raw = raw;
         if (!bypass_absorption && black_absorbing()) {
             black_accumulated += raw;
-            Effect receipt; receipt.kind = 2; receipt.time = at; receipt.point = a->point; receipt.absorbed = raw; receipt.intercepted = raw; receipt.raw = raw; receipt.type = type;
-            receipt.uid = receipt.target_uid = a->uid; receipt.source = source;
-            receipt.attack_id = inst ? int64_t(inst->attack->id) : context ? int64_t(context->root) : int64_t(source_attack_id);
-            receipt.critical = inst && inst->attack->critical;
-            receipt.critical_bonus_applied = inst && inst->attack->critical_bonus_applied;
-            feedback.push_back(receipt); ++hit_count;
+            ++hit_count;
             return;
         }
         a->hit_at = at;
@@ -1017,23 +1015,6 @@ class SpaceCombatKernel : public RefCounted {
         a->view["shield"] = wire(a->shield);
         a->view["shield_hit_at"] = at;
         ++hit_count;
-        Effect e;
-        e.kind = 2;
-        e.uid = a->uid;
-        e.type = type;
-        e.shield_loss = nonnegative(shield_before - a->shield);
-        e.armour_loss = nonnegative(hp_before - a->hp);
-        e.amount = e.shield_loss + e.armour_loss;
-        e.raw = attack_raw; e.source = source; e.target_uid = a->uid;
-        e.attack_id = inst ? int64_t(inst->attack->id) : context ? int64_t(context->root) : int64_t(source_attack_id);
-        e.killed = hp_before > 0 && a->hp <= 0;
-        e.critical_bonus_applied = inst && inst->attack->critical_bonus_applied;
-        e.time = at;
-        e.critical = inst && inst->attack->critical;
-        e.reactive_stacks = reactive_stacks;
-        e.reactive_multiplier = reactive_multiplier;
-        e.point = a->point;
-        feedback.push_back(e);
         if (strange_enabled && trigger && inst && wi >= 0 && !weapons[wi].hostile && weapons[wi].kind == 1) {
             int count = a->hp <= 0 ? strange_kill_spawns : (rng->randf() < strange_probability ? 1 : 0);
             for (int i = 0; i < count; ++i) {
@@ -1060,9 +1041,6 @@ class SpaceCombatKernel : public RefCounted {
             ++a->generation;
             ++dead_count;
             for (Defence &defence : defences) defence.source_stacks.erase(a->uid);
-            e.kind = 3;
-            e.amount = 0;
-            feedback.push_back(e);
             if (drop_rules) {
                 for (int roll = 0; roll < a->jewel_rolls; ++roll)
                     if (rng->randf() < jewel_probability) {
@@ -1430,13 +1408,13 @@ class SpaceCombatKernel : public RefCounted {
         // Capacity changes preserve absolute health; the module losses own it.
         set_layer_health(0, before[0]); set_layer_health(1, before[1]);
     }
-    Amount protection(Amount amount, Amount &absorbed, Effect &receipt, int type = 0) {
+    Amount protection(Amount amount, Amount &absorbed, int type = 0) {
         Amount rest = amount;
         for (Defence &d : defences) {
             if (rest <= 0)
                 break;
             Amount cover_paid = minimum(d.cover, rest);
-            d.cover -= cover_paid; rest -= cover_paid; absorbed += cover_paid; receipt.cover_absorbed += cover_paid;
+            d.cover -= cover_paid; rest -= cover_paid; absorbed += cover_paid;
         }
         for (Defence &d : defences) {
             if (rest <= 0) break;
@@ -1444,7 +1422,7 @@ class SpaceCombatKernel : public RefCounted {
             Amount paid = minimum(d.buffer, rest * factor);
             d.buffer -= paid;
             rest = factor > 0 ? nonnegative(rest - paid / factor) : Amount{};
-            absorbed += paid; receipt.memory_absorbed += paid;
+            absorbed += paid;
             if (paid > 0)
                 d.last_hit = defence_time;
         }
@@ -1462,15 +1440,7 @@ class SpaceCombatKernel : public RefCounted {
             defence_time_rows[int64_t(i)] = defence_time - defences[i].last_hit;
         }
     }
-    void incoming_effect(Effect e, double at) {
-        e.kind = 2;
-        e.player = true;
-        e.point = player_point;
-        e.amount = e.shield_loss + e.armour_loss;
-        e.absorbed = e.intercepted + e.cover_absorbed + e.memory_absorbed;
-        e.time = at;
-        e.killed = layer_health(1) <= 0;
-        feedback.push_back(e);
+    void finish_player_hit() {
         ++hit_count;
         publish_player();
         if (player_hp <= 0)
@@ -1492,12 +1462,9 @@ class SpaceCombatKernel : public RefCounted {
     }
     void pay_debt(Amount amount, double at) {
         Amount absorbed = 0;
-        Effect receipt; receipt.raw = amount; receipt.source = "deferred";
-        const Amount before[2] = {layer_health(0), layer_health(1)};
-        Amount rest = protection(amount, absorbed, receipt);
+        Amount rest = protection(amount, absorbed);
         Amount loss = 0;
         for (int layer = 0; layer < 2 && rest > 0; ++layer) {
-            reconcile_defence();
             Amount total = 0;
             for (const Defence &d : defences)
                 if (d.layer == layer)
@@ -1512,12 +1479,7 @@ class SpaceCombatKernel : public RefCounted {
             loss += total - layer_health(layer);
             rest = nonnegative(rest - taken);
         }
-        if (loss > 0 || absorbed > 0)
-            {
-                receipt.shield_loss = nonnegative(before[0] - layer_health(0));
-                receipt.armour_loss = nonnegative(before[1] - layer_health(1));
-                incoming_effect(receipt, at);
-            }
+        if (loss > 0 || absorbed > 0) finish_player_hit();
     }
     void recover(double dt, double begin_at) {
         double seconds_left = dt;
@@ -1530,7 +1492,6 @@ class SpaceCombatKernel : public RefCounted {
             const double previous = defence_time;
             defence_time += piece; memory_elapsed += piece; deferred_elapsed += piece;
             seconds_left = nonnegative(seconds_left - piece);
-            reconcile_defence();
             int shields = 0;
             for (const Defence &d : defences) if (d.layer == 0) ++shields;
             for (Defence &d : defences) {
@@ -1587,14 +1548,12 @@ class SpaceCombatKernel : public RefCounted {
         if (!increment_history(incoming_counter)) return;
         last_incoming_at = at;
         reconcile_defence();
-        Effect receipt; receipt.raw = raw; receipt.type = type; receipt.attack_id = int64_t(attack_id); receipt.source = String("enemy:") + String::num_int64(source_uid);
-        if (black_absorbing() || dodge_incoming()) { receipt.intercepted = raw; incoming_effect(receipt, at); return; }
+        if (black_absorbing() || dodge_incoming()) { finish_player_hit(); return; }
         if (legend_active("drone_master")) raw *= 1.0 - minimum(1.0, legend_value("drone_master", "maximum_reduction") * highest_drone_quality() / legend_constant("drone_master", "quality_ratios/ultimate"));
         if (defence_time < memory_reduction_until) raw *= 1.0 - enhancement_rule("memory_b1_reduction");
         if (defence_time < deferred_reduction_until) raw *= 1.0 - enhancement_rule("deferred_b1_reduction");
         if (branch("deferred", "b2")) raw *= 1.0 - deferred_unforced_probability * enhancement_rule("deferred_b2_probability_conversion");
         if (branch("deferred", "b3")) raw *= 1.0 + (1.0 - deferred_unforced_probability) * enhancement_rule("deferred_b3_damage_scale");
-        reconcile_defence();
         // A hit restarts every shield delay, even when cover or armour pays it.
         for (Defence &d : defences)
             if (d.layer == 0)
@@ -1607,7 +1566,7 @@ class SpaceCombatKernel : public RefCounted {
                 d.protection_type = type; d.protection_until = defence_time + enhancement_rule("memory_b2_duration");
             }
         }
-        Amount rest = protection(raw, absorbed, receipt, type);
+        Amount rest = protection(raw, absorbed, type);
         const Amount before[2] = {layer_health(0), layer_health(1)};
         std::array<Amount, 2> payments{};
         std::array<bool, 2> deferred{};
@@ -1646,7 +1605,7 @@ class SpaceCombatKernel : public RefCounted {
                     delayed = nonnegative(taken - immediate);
                 }
                 deferred[layer] = deferred[layer] || delayed > 0;
-                queue_debt(layer, delayed); receipt.deferred_amount += delayed;
+                queue_debt(layer, delayed);
                 d.loss = minimum(d.maximum, d.loss + immediate);
                 payments[layer] += immediate;
                 spent += factor <= 0 ? weighted : taken / factor;
@@ -1663,8 +1622,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         if (branch("adaptation", "b1") && source_uid != 0) for (Defence &d : defences)
             d.source_stacks[source_uid] = minimum(int(enhancement_rule("adaptation_b1_stacks")), d.source_stacks[source_uid] + 1);
-        receipt.shield_loss = nonnegative(before[0] - layer_health(0)); receipt.armour_loss = nonnegative(before[1] - layer_health(1));
-        incoming_effect(receipt, at);
+        finish_player_hit();
     }
     void launch(int wi, Handle target, std::shared_ptr<const Attack> a, Amount multiplier,
                 bool repeated = false, bool distribute = true, double inherited_maximum = -1,
@@ -2280,8 +2238,8 @@ class SpaceCombatKernel : public RefCounted {
             return false;
         w.remaining = v.get("remaining", w.kind == 3 ? 0.0 : w.interval);
         w.base = read_amount(v.get("damage", 1.0));
-        w.branch_factors = Array(v.get("branch_factors", Array())).duplicate(true);
-        w.external_factors = Array(v.get("external_factors", Array())).duplicate(true);
+        w.branch_factors = read_factors(v.get("branch_factors", Array()));
+        w.external_factors = read_factors(v.get("external_factors", Array()));
         w.factor = v.get("factor", 1.0);
         w.speed = v.get("speed", 720.0);
         w.salvo = v.get("salvo", 1);
@@ -2452,7 +2410,7 @@ class SpaceCombatKernel : public RefCounted {
             Amount value = evaluate_module_value(read_amount(module["charged_base"]), count,
                 module.get("history_growth", 0.0), module.get("effective_enhancement_level", int64_t(0)),
                 module.get("counter_log_base", 10.0), module.get("counter_round_scale", 100.0),
-                module.get("branch_factors", Array()), module.get("external_factors", Array()));
+                read_factors(module.get("branch_factors", Array())), read_factors(module.get("external_factors", Array())));
             result["ok"] = true; result["value"] = wire(value);
         } catch (const std::exception &e) { result["ok"] = false; result["error"] = String(e.what()); }
         return result;
@@ -2543,7 +2501,7 @@ class SpaceCombatKernel : public RefCounted {
         for (const Actor &a : actors) if (a.live) { cleared = false; break; }
         out["events"] = events; out["drops"] = drops;
         out["wave_cleared"] = cleared; out["final_cleared"] = cleared && final_cleared;
-        out["player_dead"] = player_hp <= 0; out["history"] = read_history(); out["error"] = failure_reason;
+        out["player_dead"] = player_hp <= 0; out["error"] = failure_reason;
         if (cleared) wave_active = false;
         return out;
     }
@@ -2649,8 +2607,8 @@ class SpaceCombatKernel : public RefCounted {
             a.layer = v.get("layer", 0);
             a.type = v.get("type", 0);
             a.base = read_amount(v.get("base", 0.0));
-            a.branch_factors = Array(v.get("branch_factors", Array())).duplicate(true);
-            a.external_factors = Array(v.get("external_factors", Array())).duplicate(true);
+            a.branch_factors = read_factors(v.get("branch_factors", Array()));
+            a.external_factors = read_factors(v.get("external_factors", Array()));
             a.factor = v.get("factor", 1.0);
             a.maximum = read_amount(v.get("maximum", 0.0));
             a.loss = read_amount(v.get("loss", 0.0));
@@ -2690,7 +2648,7 @@ class SpaceCombatKernel : public RefCounted {
         ballistic_checks = ballistic_skips = ballistic_ray_queries = 0;
         return admitted;
     }
-    bool can_set_player_configuration(Dictionary d, String change_kind) const {
+    bool prepare_player_configuration(Dictionary d, String change_kind, std::vector<Weapon> &prepared) const {
         try {
         if (!admitted || executing || (change_kind != "upgrade" && change_kind != "refit" && change_kind != "growth" && change_kind != "selection")) return false;
         if (!configuration_schema(d) || !configuration_arithmetic(d, attack_counter, incoming_counter)) return false;
@@ -2758,7 +2716,7 @@ class SpaceCombatKernel : public RefCounted {
                 Dictionary row = rows[i], entry = row.get("entry", Dictionary());
                 String id = entry.get("id", "");
                 if (id.is_empty() || !identities.insert(id).second || bool(row.get("hostile", false))) return false;
-                if (String(field) == "weapons") { Weapon parsed; if (!read_weapon(row, i, 0, d.get("repeat_delay", repeat_delay), parsed)) return false; }
+                if (String(field) == "weapons") { Weapon parsed; if (!read_weapon(row, i, 0, d.get("repeat_delay", repeat_delay), parsed)) return false; prepared.push_back(std::move(parsed)); }
             }
         }
         return true;
@@ -2767,7 +2725,8 @@ class SpaceCombatKernel : public RefCounted {
     Dictionary set_player_configuration(Dictionary d, String change_kind) {
         Dictionary outcome;
         try {
-        if (!can_set_player_configuration(d, change_kind)) {
+        std::vector<Weapon> prepared;
+        if (!prepare_player_configuration(d, change_kind, prepared)) {
             outcome["ok"] = false; outcome["fault"] = false; outcome["reason"] = "NativeConfigurationRejected";
             return outcome; // No owner mutation has happened.
         }
@@ -2781,8 +2740,7 @@ class SpaceCombatKernel : public RefCounted {
         Array rows = d["weapons"];
         for (int n = 0; n < rows.size(); ++n) {
             Dictionary row = rows[n], entry = row["entry"];
-            Weapon replacement;
-            if (!read_weapon(row, n, 0, d.get("repeat_delay", repeat_delay), replacement)) throw std::runtime_error("NativeConfigurationCommitFailed");
+            Weapon replacement = std::move(prepared[n]);
             size_t match = SIZE_MAX;
             for (size_t i = 0; i < old_size; ++i) {
                 const Weapon &old = weapons[i];
@@ -2794,6 +2752,7 @@ class SpaceCombatKernel : public RefCounted {
                 replacement.focus_uid = weapons[match].focus_uid; replacement.focus_since = weapons[match].focus_since;
                 replacement.critical_stacks = weapons[match].critical_stacks; replacement.critical_until = weapons[match].critical_until; replacement.critical_attacks = weapons[match].critical_attacks;
                 replacement.beam = weapons[match].beam;
+                replacement.muzzle = weapons[match].muzzle; replacement.screen_muzzle = weapons[match].screen_muzzle;
                 replacement.presentation_muzzles = weapons[match].presentation_muzzles;
                 weapons[match] = replacement; // Existing roots keep their due time; Attacks keep immutable birth snapshots.
             } else {
@@ -2819,7 +2778,7 @@ class SpaceCombatKernel : public RefCounted {
             Dictionary row = defs[i]; Defence value;
             value.entry = Dictionary(row["entry"]).duplicate(true);
             value.layer = row["layer"]; value.type = row["type"]; value.base = read_amount(row["base"]);
-            value.factor = row.get("factor", 1.0); value.branch_factors = row.get("branch_factors", Array()); value.external_factors = row.get("external_factors", Array());
+            value.factor = row.get("factor", 1.0); value.branch_factors = read_factors(row.get("branch_factors", Array())); value.external_factors = read_factors(row.get("external_factors", Array()));
             value.delay = row.get("delay", 0.0); value.rate = row.get("rate", 0.0);
             value.memory_heal = row.get("memory_heal", 0.0); value.memory_cap = row.get("memory_cap", 0.0); value.deferred_fraction = row.get("deferred_fraction", 0.0);
             for (const Defence &old : defences) if (old.entry.get("id", "") == value.entry.get("id", "") && old.entry.get("key", "") == value.entry.get("key", "") && old.entry.get("generation", int64_t(0)) == value.entry.get("generation", int64_t(0))) {
@@ -3153,14 +3112,6 @@ class SpaceCombatKernel : public RefCounted {
             d["critical"] = e.critical;
             d["amount"] = wire(e.amount);
             d["absorbed"] = wire(e.absorbed);
-            if (e.kind == 2) {
-                d["source"] = e.source; d["attack_id"] = e.attack_id;
-                d["raw"] = wire(e.raw); d["intercepted"] = wire(e.intercepted);
-                d["cover_absorbed"] = wire(e.cover_absorbed); d["memory_absorbed"] = wire(e.memory_absorbed);
-                d["shield_loss"] = wire(e.shield_loss); d["armour_loss"] = wire(e.armour_loss);
-                d["deferred"] = wire(e.deferred_amount); d["killed"] = e.killed;
-                d["critical_bonus_applied"] = e.critical_bonus_applied;
-            }
             d["clock"] = e.time;
             d["position"] = e.point;
             d["direction"] = e.direction;

@@ -31,14 +31,16 @@ All four are fully assembled versions of the approved reference, with no missing
 
 ## 接入与扩展
 
-共享大厅使用 `hall-background-v2.png`（1536×1024），由内置 imagegen 生成并接入 `scripts/hightech_hall.gd`；不包含 UI、建筑或平台。它替代程序绘制的重复吊架、网格和大圆底座。完整生成提示词及来源见 [hall-background-v2.prompt.md](hall-background-v2.prompt.md)。
+共享大厅使用 `hall-background-v2.png`（1536×1024），由内置 imagegen 生成并接入 已删除的旧科技大厅入口；不包含 UI、建筑或平台。它替代程序绘制的重复吊架、网格和大圆底座。完整生成提示词及来源见 [hall-background-v2.prompt.md](hall-background-v2.prompt.md)。
 
 图集、顺序图在所有建造舱之间共享；每舱只持有独立进度/能量参数。首个实例一次性从素材提取四项施工分区与真实亮部落点，随后释放CPU图集像素。分区按底座、支撑、环弧、核心推进；蜂窝片与每颗晶体作为完整组件。同一分区内三架AI对准真实结构像素，并跟随12档局部生长前沿。组件内部使用固定不规则阈值逐点凝聚、柔化边缘；暂停时阈值不变。炉的收尾仅补齐真实能量丝亮点，避免中央矩形缺口。能量只增强已有亮线，时钟由可见动画采样驱动，不使用自动TIME。
 
-未登记美术的配置暂用现有炉体图集作为蓝图占位，不再生成几何建筑。新增专属美术时在 `scripts/hightech_construction.gd` 的 PROFILES 登记稳定科技ID、shape、color、texture、grid、cell；单张图用 grid=Vector2i(1,1)、cell=Vector2i(0,0)。不以中文名称判断、不修改研究业务或页面结构。
+未登记美术的配置暂用现有炉体图集作为蓝图占位，不再生成几何建筑。新增专属美术时在 已删除的旧施工入口 的 PROFILES 登记稳定科技ID、shape、color、texture、grid、cell；单张图用 grid=Vector2i(1,1)、cell=Vector2i(0,0)。不以中文名称判断、不修改研究业务或页面结构。
 
 当前工位读数、AI 管理、详情和按钮使用 `hightech_presentation.gd` / `hightech_dock_bay.gd` 的奶油白、海军蓝和青色组件。机器图集、大厅与施工遮罩尚未进行卡通资产替换；原写实平台/控制台 PNG 的来源记录仍见 [reference-v2.prompt.md](reference-v2.prompt.md)。`unrevealed-bay.svg` 继续提供无身份蓝图，不使用未解锁项目的轮廓或类型色。扫描与施工效果仍由独立动态层绘制。
 
 单个炼铁工位的卡通资产试作与成本/遮罩契约见 [AI工厂原型说明](prototypes/README.md)，尚未扩展到其余工位。
 
 运行时分区图属于程序生成的建造遮罩，不修改生成的原始PNG。不同材料共用原图坐标，因此最终造型始终来自确认美术，而非独立拼装的近似几何。
+
+当前入口为 `src/main.tscn → src/main.gd`；以上旧页面接入记录仅供素材溯源，不表示已接入本轮重构场景。

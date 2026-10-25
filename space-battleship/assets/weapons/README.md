@@ -1,6 +1,6 @@
 # 武器弹体素材
 
-2026-09-14 用户要求：三种攻击武器图像应更有区分度并贴合名称。使用内置 image_gen 生成，原始透明 PNG 原样复制入项目；未修改玩法或数值。消费端：scripts/main.gd 的 PROJECTILE_TEXTURES / PROJECTILE_SIZES。
+2026-09-14 用户要求：三种攻击武器图像应更有区分度并贴合名称。使用内置 image_gen 生成，原始透明 PNG 原样复制入项目；未修改玩法或数值。当前入口为 `src/main.gd`，通过 `SpaceCombatPresentation` 接入保留的原生/GPU 武器表现。
 
 - laser-pulse.png：青白细长脉冲光束。
 - cannon-slug.png：铜箍金属弹丸、橙色曳光。

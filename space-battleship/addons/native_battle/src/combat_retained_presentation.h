@@ -1,18 +1,16 @@
 // Single native presentation table. Kernel active order/generation is read-only authority.
 // Per-slot descriptors are populated only at birth; dynamic motion remains in its lease.
-bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
-    Ref<SpaceCombatKernel> kernel=surface->get("kernel");
-    if(!supports_compact_lasers(surface)||kernel.is_null()||!kernel->admitted||kernel->stopped||
-       !bool(surface->get("prototype_enabled"))||!bool(surface->get("pulse_vfx_enabled"))||
-       !bool(surface->get("enemy_vfx_enabled"))||!bool(surface->get("missile_vfx_enabled"))) {
+bool SpaceCombatPresentation::advance_retained(double dt) {
+    Ref<SpaceCombatKernel> kernel=display_kernel;
+    if(!supports_compact_lasers()||kernel.is_null()||!kernel->admitted||kernel->stopped) {
         // Entry initialization selects the mode. Presentation never mutates it.
         if (kernel.is_valid() && kernel->admitted && !kernel->stopped && kernel->compact_laser_births) return true;
-        surface->call("restore_native_laser_visuals");
+        restore_lasers.call();
         clear_retained_frame();
         return false;
     }
     ++retained_advances;
-    Array visuals=surface->get("projectile_visuals");
+    Array visuals=display_visuals;
     if(retained_kernel!=kernel||retained_frame.is_null()||retained_encounter!=kernel->encounter_generation) {
         // Cold ownership/reset boundary only: serials may restart. Keep records
         // registered for this exact flight, never a same-number previous encounter.
@@ -96,14 +94,14 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
     }
     return true;
 }
-void SpaceCombatPresentation::prepare_retained(Object *surface,Vector2 offset) {
+void SpaceCombatPresentation::prepare_retained(Vector2 offset) {
     retained_frame->presentation_time=retained_kernel->clock;retained_frame->presentation_offset=offset;
-    Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");begin();
-    Array particles=surface->get("particles");
+    RID rid=display_canvas;begin();
+    Array particles=display_particles;
     for(size_t id:retained_frame->background) {
         auto &f=retained_frame->flights[id];
         if(f.beam||(f.render_kind<0&&!(f.key=="missile"&&!f.hostile))) {
-            paint(rid);Dictionary legacy=surface->call("_prepare_projectile_flight",f.shot,visual_by_serial,offset);
+            paint(rid);Dictionary legacy=prepare_flight.call(f.shot,visual_by_serial,offset);
             f.draw=!legacy.is_empty();if(f.draw){f.point=Vector2(legacy["pos"])-offset;f.budget=legacy.get("budget",1);}
         } else if(f.hostile) {
             Color color=Color::html(f.damage_type==2?"ffaf61":"64b5ff");color.a=0.16;line(f.point+offset-f.axis*15,f.point+offset,color,1.0);
@@ -142,16 +140,16 @@ void SpaceCombatPresentation::flush_retained(RID canvas) {
     std::copy(retained_upload.begin(),retained_upload.end(),buffer.ptrw());batch->set_buffer(buffer);batch->set_visible_instance_count(count);
     retained_upload_bytes+=size*sizeof(float);RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());retained_upload.clear();
 }
-void SpaceCombatPresentation::draw_retained(Object *surface,Vector2 offset) {
-    ++retained_draws;prepare_retained_mesh();Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
+void SpaceCombatPresentation::draw_retained(Vector2 offset) {
+    ++retained_draws;prepare_retained_mesh();RID rid=display_canvas;
     if(std::find(retained_canvases.begin(),retained_canvases.end(),rid)==retained_canvases.end()){retained_canvases.push_back(rid);RenderingServer::get_singleton()->canvas_item_set_material(rid,retained_material->get_rid());}
     double epoch=std::floor(retained_kernel->clock/128.0)*128.0;
     retained_material->set_shader_parameter("simulation_clock",float(retained_kernel->clock-epoch));
-    retained_cursor=0;retained_upload.clear();begin();bool script_run=false;
+    retained_cursor=0;retained_upload.clear();begin();
     for(size_t id:retained_frame->order) {
         const auto &f=retained_frame->flights[id];if(!f.draw)continue;
         if(f.render_kind>=0) {
-            if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+
             paint(rid);Vector2 p=f.point+offset,axis=f.axis;
             // One shared topology stream retains mixed pulse/chain/enemy order.
             // Only missiles and script operations form draw barriers.
@@ -170,12 +168,12 @@ void SpaceCombatPresentation::draw_retained(Object *surface,Vector2 offset) {
         }
         flush_retained(rid);
         if(!f.hostile&&f.key=="missile"&&!f.beam) {
-            if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+
             flight(f.point+offset,f.axis,f.motion->motion().age,!Dictionary(f.shot["target"]).is_empty(),f.visual,offset,f.budget==0?0.5:1.0);
         } else {
-            paint(rid);Dictionary legacy=f.legacy();legacy["pos"]=f.point+offset;surface->call("_draw_projectile_foreground_flight",legacy,offset);script_run=true;
+            paint(rid);Dictionary legacy=f.legacy();legacy["pos"]=f.point+offset;draw_foreground.call(legacy,offset);
         }
     }
-    paint(rid);flush_retained(rid);if(script_run)surface->call("flush_projectile_packet_batch");
+    paint(rid);flush_retained(rid);
     for(size_t i=retained_cursor;i<retained_batches.size();++i)retained_batches[i]->set_visible_instance_count(0);
 }

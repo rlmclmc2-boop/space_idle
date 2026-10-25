@@ -112,12 +112,15 @@ static func select_shortest(state: Dictionary, definitions: Dictionary, gates: D
 
 static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictionary, gates: Dictionary,
 		dt: float, rules: Dictionary, api, crew_speed: Dictionary) -> Dictionary:
-	var next: Dictionary = state.duplicate(true)
-	var balances: Dictionary = wallet.duplicate(true)
+	var next: Dictionary = state.duplicate()
 	next.refresh_elapsed = float(next.refresh_elapsed) + dt
 	var key: String = str(next.current)
 	if key.is_empty():
-		return {"ok": true, "state": next, "wallet": balances, "completed": false}
+		return {"ok": true, "state": next, "wallet": wallet, "completed": false}
+	next.levels = state.levels.duplicate()
+	next.work = state.work.duplicate()
+	next.completed_unread = state.completed_unread.duplicate()
+	var balances: Dictionary = wallet.duplicate()
 	if not definitions.has(key) or not available(definitions[key], next.levels, gates):
 		return {"ok": false, "reason": "ResearchUnavailable"}
 	var level: int = int(next.levels.get(key, 0))

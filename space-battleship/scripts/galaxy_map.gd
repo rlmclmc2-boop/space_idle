@@ -3,6 +3,8 @@ extends Control
 signal slot_selected(id: int)
 const BUILDING_SCALE := 1.4
 var region
+var definition: Dictionary = {}
+var buildings: Dictionary = {}
 var preparing := false
 var prepare_stage := 0
 var prepare_index := 0
@@ -30,7 +32,6 @@ var material_cache := {}
 var construction_material_cache := {}
 var asset_bounds := {}
 var transit := preload("res://scripts/galaxy_transit.gd").new()
-var route_revision := -1
 var frame_size := 120.0
 var frame_origin := Vector2.ZERO
 var construction := {}
@@ -42,7 +43,6 @@ var rng := RandomNumberGenerator.new()
 var fog_image: Image
 var fog_texture: ImageTexture
 var space_material := ShaderMaterial.new()
-var building_revision := -1
 var draw_updates := 0
 var visual_ticks := 0
 var visual_clock := 0.0
@@ -205,9 +205,11 @@ func share_materials(node: Node) -> void:
 func configure(config: Dictionary) -> void:
 	settings=config
 func setting(key: String, default: float) -> float:return float(settings.get(key,{}).get("value",default))
-func select(value) -> void:
-	if region==value:return
+func select(value, row: Dictionary, building_definitions: Dictionary) -> void:
+	if region==value and definition==row and buildings==building_definitions:return
 	region=value
+	definition=row
+	buildings=building_definitions
 	preparing=false;core_warmup.clear();core_meshes.clear();loading.hide();container.show()
 	for child in models.get_children():child.free()
 	for pool in [transports,explorers,pulses]:
@@ -219,8 +221,6 @@ func select(value) -> void:
 	lane_states.clear()
 	construction.clear()
 	activity.clear()
-	building_revision=-1
-	route_revision=-1
 	transit.clear()
 	selected_slot=-1
 	hover_slot=-1
@@ -265,12 +265,13 @@ func prepare_frame() -> void:
 func prepare_part() -> bool:
 	match prepare_stage:
 		0:
-			resource_ready(str(region.row.core_asset))
+			resource_ready(str(definition.core_asset))
 			resource_ready("assets/galaxy/v3/ships/transport_shuttle.glb")
-			for slot in region.slots:
-				if slot.status!="empty":resource_ready(visual_path(slot))
+			for node_id in region.nodes:
+				var slot: Dictionary = region.nodes[node_id]
+				if visual_state(slot)!="empty":resource_ready(visual_path(slot))
 			city_layout.configure(region);layout();city.begin_configure(city_layout)
-			rng.seed=int(region.row.slot_seed)+12345
+			rng.seed=int(definition.slot_seed)+12345
 			prepare_stage=1
 		1:
 			city.bake(city.hub);prepare_stage=2
@@ -283,7 +284,7 @@ func prepare_part() -> bool:
 			else:city.rebuild_count+=1;prepare_stage=4;prepare_index=0
 		4:
 			loading.text="正在装配星系设施\n舰队与建设继续运行，可随时切换页面"
-			if not resource_ready(str(region.row.core_asset)) or not resource_ready("assets/galaxy/v3/ships/transport_shuttle.glb"):return false
+			if not resource_ready(str(definition.core_asset)) or not resource_ready("assets/galaxy/v3/ships/transport_shuttle.glb"):return false
 			prepare_core();prepare_stage=7 if not core_warmup.is_empty() else 5
 			return false
 		7:
@@ -297,39 +298,39 @@ func prepare_part() -> bool:
 				prepare_index+=1
 			else:
 				for item in core_meshes:item.node.material_override=item.override;item.node.visible=item.visible
-				core_warmup.clear();core_meshes.clear();presented_assets[str(region.row.core_asset)]=true
+				core_warmup.clear();core_meshes.clear();presented_assets[str(definition.core_asset)]=true
 				prepare_index=0;prepare_stage=5
 			return false
 		5:
-			if prepare_index<region.slots.size():prepare_slot(region.slots[prepare_index]);prepare_index+=1
+			if prepare_index<region.nodes.size():prepare_slot(prepare_index);prepare_index+=1
 			else:prepare_stage=6;prepare_index=0
 		6:
-			if prepare_index<region.slots.size():
-				var slot:Dictionary=region.slots[prepare_index]
-				if slot.status!="empty" and not resource_ready(visual_path(slot)):return false
-				var path:=visual_path(slot) if slot.status!="empty" else "empty"
+			if prepare_index<region.nodes.size():
+				var slot:Dictionary=region.nodes[str(prepare_index)]
+				if visual_state(slot)!="empty" and not resource_ready(visual_path(slot)):return false
+				var path:=visual_path(slot) if visual_state(slot)!="empty" else "empty"
 				var first_draw:bool=path!="empty" and not presented_assets.has(path)
-				refresh_slot(slot);prepare_index+=1
+				refresh_slot(prepare_index);prepare_index+=1
 				if first_draw:
 					presented_assets[path]=true
 					return false # A new model's GPU upload is not in the CPU time budget.
 			else:
 				# State may have changed while hidden or during resource preparation.
 				# Reconcile only changed slots against the current live view.
-				for index in region.slots.size():
-					var slot:Dictionary=region.slots[index]
-					var path:=visual_path(slot) if slot.status!="empty" else "empty"
-					if slot_snapshots.get(int(slot.id),[])!=[str(slot.status),int(slot.level),path]:
+				for index in region.nodes.size():
+					var slot:Dictionary=region.nodes[str(index)]
+					var path:=visual_path(slot) if visual_state(slot)!="empty" else "empty"
+					if slot_snapshots.get(index,[])!=[str(visual_state(slot)),int(slot.level),path]:
 						prepare_index=index;return true
 				preparing=false;finish_selection();loading.hide();container.show()
 	return true
 
 func prepare_core() -> void:
-	core=asset(str(region.row.core_asset))
+	core=asset(str(definition.core_asset))
 	core.scale=Vector3.ONE*1.2
 	models.add_child(core)
 	core.position=city_layout.core_offset
-	if not presented_assets.has(str(region.row.core_asset)):
+	if not presented_assets.has(str(definition.core_asset)):
 		var pairs:Dictionary={}
 		for mesh in core.find_children("*","MeshInstance3D",true,false):
 			core_meshes.append({"node":mesh,"visible":mesh.visible,"override":mesh.material_override})
@@ -340,19 +341,21 @@ func prepare_core() -> void:
 				if not pairs.has(key):pairs[key]=true;core_warmup.append({"node":mesh,"material":mat})
 			mesh.visible=false
 	# Build the same R8 mask in one upload; no per-pixel Image/Color calls.
-	var fog_bytes: PackedByteArray = region.cells.duplicate()
-	for index in fog_bytes.size():fog_bytes[index]=255 if fog_bytes[index]!=0 else 0
-	fog_image=Image.create_from_data(int(region.row.map_w),int(region.row.map_h),false,Image.FORMAT_R8,fog_bytes)
+	var fog_bytes := PackedByteArray()
+	fog_bytes.resize(int(definition.map_w)*int(definition.map_h))
+	fog_bytes.fill(255)
+	fog_image=Image.create_from_data(int(definition.map_w),int(definition.map_h),false,Image.FORMAT_R8,fog_bytes)
 	fog_texture=ImageTexture.create_from_image(fog_image)
 	space_material.set_shader_parameter("explored",fog_texture)
 
-func prepare_slot(slot:Dictionary) -> void:
+func prepare_slot(id: int) -> void:
+	var slot: Dictionary = region.nodes[str(id)]
 	var node := Node3D.new()
-	node.name="Slot%d"%int(slot.id)
-	node.position=city_layout.positions[int(slot.id)]
-	node.rotation.y=float(region.blueprint.nodes[int(slot.id)].rotation_y)
+	node.name="Slot%d"%id
+	node.position=city_layout.positions[id]
+	node.rotation.y=0.0
 	models.add_child(node)
-	slot_nodes[int(slot.id)]=node
+	slot_nodes[id]=node
 	var footprint := ring(5.7,planned_material)
 	footprint.name="SurveyFootprint"
 	footprint.position.y=0.04
@@ -378,13 +381,13 @@ func prepare_slot(slot:Dictionary) -> void:
 	var drone := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
 	drone.scale=Vector3.ONE*0.46
 	scaffold.add_child(drone)
-	construction[int(slot.id)]={"ring":scaffold,"drone":drone,"upper":upper,"posts":posts,"height":-1.0,"flash":0.0,"level":int(slot.level)}
+	construction[id]={"ring":scaffold,"drone":drone,"upper":upper,"posts":posts,"height":-1.0,"flash":0.0,"level":int(slot.level)}
 
-func refresh_slot(slot:Dictionary) -> Node3D:
-	var id := int(slot.id)
+func refresh_slot(id: int) -> Node3D:
+	var slot: Dictionary = region.nodes[str(id)]
 	var node: Node3D=slot_nodes[id]
-	var path := visual_path(slot) if slot.status!="empty" else "empty"
-	var snapshot := [str(slot.status),int(slot.level),path]
+	var path := visual_path(slot) if visual_state(slot)!="empty" else "empty"
+	var snapshot := [str(visual_state(slot)),int(slot.level),path]
 	var changed: bool=slot_snapshots.get(id,[])!=snapshot
 	if model_paths.get(id)!=path:
 		var old=node.get_node_or_null("Building")
@@ -398,15 +401,15 @@ func refresh_slot(slot:Dictionary) -> Node3D:
 	var building=node.get_node_or_null("Building")
 	if changed:
 		update_construction_route(id)
-		city.update_mount(id,path,node,asset_bounds.get(path,[10,6,10]),str(slot.planned_type))
+		city.update_mount(id,path,node,asset_bounds.get(path,[10,6,10]),str(slot.building))
 		if int(construction[id].level)<int(slot.level):construction[id].flash=0.55
 		construction[id].level=int(slot.level)
 		construction[id].height=-1.0
-		if building!=null:set_construction_material(building,slot.status=="constructing")
-		node.get_node("SurveyFootprint").visible=slot.status=="empty"
-		construction[id].ring.visible=slot.status in ["constructing","upgrading"]
-		if slot.status=="upgrading":construction[id].upper.position.y=0.4
-		for post in construction[id].posts:post.visible=slot.status!="upgrading"
+		if building!=null:set_construction_material(building,visual_state(slot)=="constructing")
+		node.get_node("SurveyFootprint").visible=visual_state(slot)=="empty"
+		construction[id].ring.visible=visual_state(slot) in ["constructing","upgrading"]
+		if visual_state(slot)=="upgrading":construction[id].upper.position.y=0.4
+		for post in construction[id].posts:post.visible=visual_state(slot)!="upgrading"
 		slot_snapshots[id]=snapshot
 		draw_updates+=1
 	return building
@@ -464,11 +467,14 @@ func fit_size() -> float:
 	var aspect:=float(view.size.x)/maxf(1,view.size.y)
 	return 134.0*maxf(1.0,(815.0/558.0)/aspect)
 
+func visual_state(node: Dictionary) -> String:
+	if node.state == "exploring": return "empty"
+	return "upgrading" if float(node.upgrade_remaining) > 0.0 else str(node.state)
+
 func visual_path(slot: Dictionary) -> String:
-	var key := str(slot.get("type",""))
-	if key.is_empty():key=str(slot.get("planned_type",""))
-	if not region.builds.has(key):return ""
-	return str(region.builds[key].get("asset_lv%d"%maxi(1,int(slot.level)),""))
+	var key := str(slot.building)
+	if not buildings.has(key):return ""
+	return str(buildings[key].get("asset_lv%d"%maxi(1,int(slot.level)),""))
 
 func construction_material(mat: StandardMaterial3D) -> ShaderMaterial:
 	var key := mat.resource_name
@@ -500,28 +506,26 @@ func set_construction_height(node: Node, height: float) -> void:
 
 func refresh() -> void:
 	if preparing or region==null or not is_visible_in_tree():return
-	if building_revision!=region.building_revision:
-		building_revision=region.building_revision
-		activity.clear()
-		var core_ring=core.find_child("ActivityRing",true,false)
-		if core_ring is Node3D:activity.append(core_ring)
-		var next_lane_states: Array=[]
-		for slot in region.slots:
-			var building := refresh_slot(slot)
-			if building!=null:
-				var part=building.find_child("ActivityRing",true,false)
-				if part is Node3D and slot.status!="constructing":activity.append(part)
-			next_lane_states.append("planned" if slot.status=="empty" else "building" if slot.status=="constructing" else "operating")
-		if next_lane_states!=lane_states:
-			refresh_city_routes()
-			lane_states=next_lane_states
-			route_revision=building_revision
-		layout()
+	activity.clear()
+	var core_ring=core.find_child("ActivityRing",true,false)
+	if core_ring is Node3D:activity.append(core_ring)
+	var next_lane_states: Array=[]
+	for node_id in region.nodes:
+		var slot: Dictionary = region.nodes[node_id]
+		var building := refresh_slot(int(node_id))
+		if building!=null:
+			var part=building.find_child("ActivityRing",true,false)
+			if part is Node3D and visual_state(slot)!="constructing":activity.append(part)
+		next_lane_states.append("planned" if visual_state(slot)=="empty" else "building" if visual_state(slot)=="constructing" else "operating")
+	if next_lane_states!=lane_states:
+		refresh_city_routes()
+		lane_states=next_lane_states
+	layout()
 	sync_transports()
 func desired_transport_count(built_count: int) -> int:
 	return mini(maxi(0,int(setting("max_transport_ships",12))),ceili(maxi(0,built_count)/maxf(1,setting("transport_buildings_per_ship",3))))
 func sync_transports() -> void:
-	var built_count: int=region.slots.filter(func(slot):return slot.status in ["active","upgrading"]).size()
+	var built_count: int=region.nodes.values().filter(func(slot):return visual_state(slot) in ["active","upgrading"]).size()
 	var count := desired_transport_count(built_count) if built_count>0 else 0
 	while transports.size()>count:transports.pop_back().node.free()
 	var first := transports.size()
@@ -538,10 +542,11 @@ func dock(id: int) -> Vector3:
 	return socket.global_position if socket is Node3D else node.global_position+Vector3(0,2,0)
 func new_route(item: Dictionary) -> void:
 	var destinations: Array[int]=[-1]
-	var roof := float(asset_bounds.get(str(region.row.core_asset),[25.0,11.16,25.0])[1])*1.2
-	for slot in region.slots:
-		if slot.status not in ["active","upgrading"]:continue
-		destinations.append(int(slot.id))
+	var roof := float(asset_bounds.get(str(definition.core_asset),[25.0,11.16,25.0])[1])*1.2
+	for node_id in region.nodes:
+		var slot: Dictionary = region.nodes[node_id]
+		if visual_state(slot) not in ["active","upgrading"]:continue
+		destinations.append(int(node_id))
 		roof=maxf(roof,float(asset_bounds[visual_path(slot)][1])*BUILDING_SCALE)
 	if destinations.size()<2:
 		item.node.visible=false;item.phase=0.0;item.duration=1.0
@@ -576,18 +581,19 @@ func update_construction_route(id:int) -> void:
 func refresh_city_routes() -> void:
 	# Visible flight paths only; Region still owns construction work and prerequisites.
 	transit.active_edges.clear()
-	for slot in region.slots:
-		var id:=int(slot.id)
+	for node_id in region.nodes:
+		var slot: Dictionary = region.nodes[node_id]
+		var id:=int(node_id)
 		if not transit.curves.has(id):update_construction_route(id)
-		if slot.status in ["active","upgrading"]:transit.active_edges.append(id)
+		if visual_state(slot) in ["active","upgrading"]:transit.active_edges.append(id)
 
 func update_explorers() -> void:
-	var targets: Array=region.slots.filter(func(slot):return slot.status=="constructing")
+	var targets: Array=region.nodes.keys().filter(func(id):return region.nodes[id].state=="exploring")
 	# Crew can arrive while the page is hidden, before refresh prepared city routes.
 	for target in targets:
-		var id: int=int(target.id)
+		var id: int=int(target)
 		if not transit.curves.has(id) or transit.curves[id].point_count<2:update_construction_route(id)
-	var count := mini(12,crew_count*int(region.row.ship_per_crew)) if not targets.is_empty() else 0
+	var count := mini(12,crew_count*int(definition.ship_per_crew)) if not targets.is_empty() else 0
 	while explorers.size()>count:explorers.pop_back().node.free()
 	while explorers.size()<count:
 		var ship := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
@@ -595,10 +601,10 @@ func update_explorers() -> void:
 		world.add_child(ship)
 		explorers.append({"node":ship,"curve":Curve3D.new(),"target":-1,"phase":1.0,"duration":4.0})
 	for item in explorers:
-		if float(item.phase)<1.0 and targets.any(func(slot):return int(slot.id)==int(item.target)) and item.curve.point_count>=2:continue
-		var target: Dictionary=targets[rng.randi_range(0,targets.size()-1)]
-		item.target=int(target.id)
-		item.curve=transit.curves[int(target.id)]
+		if float(item.phase)<1.0 and targets.has(str(item.target)) and item.curve.point_count>=2:continue
+		var target: String=targets[rng.randi_range(0,targets.size()-1)]
+		item.target=int(target)
+		item.curve=transit.curves[int(target)]
 		item.duration=maxf(3.0,item.curve.get_baked_length()/4.0)
 		item.phase=0.0
 func _process(dt: float) -> void:
@@ -610,15 +616,16 @@ func _process(dt: float) -> void:
 	visual_clock+=dt
 	for i in activity.size():
 		if i%3==0:activity[i].rotate_y(dt*0.08)
-	for slot in region.slots:
-		var item: Dictionary=construction[int(slot.id)]
+	for node_id in region.nodes:
+		var slot: Dictionary = region.nodes[node_id]
+		var item: Dictionary=construction[int(node_id)]
 		if float(item.flash)>0:item.flash=maxf(0,float(item.flash)-dt)
-		var busy: bool=slot.status in ["constructing","upgrading"] and crew_count>0
-		var frame_visible: bool=slot.status in ["constructing","upgrading"] or float(item.flash)>0
+		var busy: bool=visual_state(slot) in ["constructing","upgrading"] and crew_count>0
+		var frame_visible: bool=visual_state(slot) in ["constructing","upgrading"] or float(item.flash)>0
 		if item.ring.visible!=frame_visible:item.ring.visible=frame_visible
 		if item.drone.visible!=busy:item.drone.visible=busy
 		if busy:
-			item.drone.position=Vector3(cos(visual_clock*0.7+slot.id)*5,2.5+sin(visual_clock)*0.4,sin(visual_clock*0.7+slot.id)*5)
+			item.drone.position=Vector3(cos(visual_clock*0.7+int(node_id))*5,2.5+sin(visual_clock)*0.4,sin(visual_clock*0.7+int(node_id))*5)
 	for i in transports.size():
 		var item: Dictionary=transports[i]
 		if visual_clock<float(item.depart_at):continue
@@ -664,10 +671,11 @@ func pick(position_in_control: Vector2) -> int:
 	var result := -1
 	# Test building volume before the ground footprint. Nearest volume wins;
 	# the hollow headquarters is not an opaque box that masks nearby buildings.
-	for slot in region.slots:
-		if slot.status=="empty":continue
-		var id := int(slot.id)
-		var height := float(construction[id].height) if slot.status=="constructing" else -1.0
+	for node_id in region.nodes:
+		var slot: Dictionary = region.nodes[node_id]
+		if visual_state(slot)=="empty":continue
+		var id := int(node_id)
+		var height := float(construction[id].height) if visual_state(slot)=="constructing" else -1.0
 		var hit=model_hit(slot_nodes[id],asset_bounds.get(visual_path(slot),[10.0,6.0,10.0]),BUILDING_SCALE,origin,direction,height)
 		if hit!=null and origin.distance_squared_to(hit)<closest:
 			closest=origin.distance_squared_to(hit)
@@ -675,11 +683,11 @@ func pick(position_in_control: Vector2) -> int:
 	if closest<INF:return result
 	var ground=ground_at(position_in_control)
 	if ground==null:return -1
-	for plan in region.blueprint.nodes:
-		var node: Node3D=slot_nodes[int(plan.id)]
-		if region.slots[int(plan.id)].status=="empty" and not node.get_node("SurveyFootprint").visible:continue
+	for node_id in region.nodes:
+		var node: Node3D=slot_nodes[int(node_id)]
+		if visual_state(region.nodes[node_id])=="empty" and not node.get_node("SurveyFootprint").visible:continue
 		var half:=Vector2(8,8) # The independently selectable platform, including its rim.
-		if absf(ground.x-node.position.x)<=half.x and absf(ground.z-node.position.z)<=half.y:return int(plan.id)
+		if absf(ground.x-node.position.x)<=half.x and absf(ground.z-node.position.z)<=half.y:return int(node_id)
 	return -1
 
 func request_visual_frame() -> void:

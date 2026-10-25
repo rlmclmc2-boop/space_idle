@@ -93,6 +93,10 @@ class SpaceCombatPresentation : public RefCounted {
     std::vector<std::vector<PreparedFlight>> spare_frames;
     void recycle_frame(std::vector<PreparedFlight> &flights){flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}}
     Dictionary visual_by_serial;
+    Ref<SpaceCombatKernel> display_kernel;
+    RID display_canvas;
+    Array display_visuals, display_particles;
+    Callable prepare_flight, draw_foreground, restore_lasers, prepare_lasers, advance_visual;
     Ref<SpaceCombatKernel> retained_kernel;
     uint32_t retained_encounter=0;
     Ref<SpaceCombatFlightFrame> retained_frame;
@@ -109,9 +113,9 @@ class SpaceCombatPresentation : public RefCounted {
         retained_frame.unref();retained_kernel.unref();retained_encounter=0;
         for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
     }
-    bool advance_retained(Object *surface,double dt);
-    void prepare_retained(Object *surface,Vector2 offset);
-    void draw_retained(Object *surface,Vector2 offset);
+    bool advance_retained(double dt);
+    void prepare_retained(Vector2 offset);
+    void draw_retained(Vector2 offset);
     void prepare_retained_mesh();
     void flush_retained(RID canvas);
 
@@ -240,12 +244,14 @@ public:
             if(category==0){d["damage_type"]=e.type;if(e.launch)d["kind"]="fire";}
             else {d["kind"]=e.launch?"fire":"hit";d["critical"]=e.critical;}result.push_back(d);}return result;
     }
-    bool supports_compact_lasers(Object *surface) const {
-        Ref<SpaceCombatKernel> kernel=surface->get("kernel");
-        return kernel.is_valid() && !retained_material.is_null() && !bool(surface->get("accelerated_visual_mode")) &&
-            bool(surface->get("retained_contacts_enabled")) &&
-            bool(surface->get("prototype_enabled")) && bool(surface->get("pulse_vfx_enabled")) &&
-            bool(surface->get("enemy_vfx_enabled")) && bool(surface->get("missile_vfx_enabled"));
+    void configure_surface(Ref<SpaceCombatKernel> kernel, RID canvas, Array visuals, Array particles,
+            Callable prepare, Callable foreground, Callable restore, Callable lasers, Callable advance) {
+        display_kernel=kernel; display_canvas=canvas; display_visuals=visuals; display_particles=particles;
+        prepare_flight=prepare; draw_foreground=foreground;
+        restore_lasers=restore; prepare_lasers=lasers; advance_visual=advance;
+    }
+    bool supports_compact_lasers() const {
+        return display_kernel.is_valid() && retained_material.is_valid();
     }
     Dictionary create_visual(Dictionary shot,double angle,int64_t mount,Vector2 origin,Vector2 logical,double spread) {
         Dictionary v;v["shot"]=shot;v["angle"]=angle;v["mount"]=mount;v["age"]=0.0;v["origin"]=origin;v["logical_origin"]=logical;v["spread"]=spread;v["head"]=0;v["samples"]=1;
@@ -285,9 +291,9 @@ public:
     void register_visual(Dictionary shot,Dictionary visual,int64_t index){if(shot.has("serial"))visual_by_serial[shot["serial"]]=visual;}
     void draw_contacts(RID canvas,double now,bool pulse_enabled);
     void flight(Vector2 point,Vector2 axis,double age,bool powered,Dictionary visual,Vector2 offset,double budget);
-    Ref<SpaceCombatFlightFrame> prepare_flights(Object *surface,Array shots,Vector2 offset);
-    void draw_flights(Object *surface,Variant prepared,Vector2 offset);
-    void advance_visuals(Object *surface,double dt);
+    Ref<SpaceCombatFlightFrame> prepare_flights(Array shots,Vector2 offset);
+    void draw_flights(Variant prepared,Vector2 offset);
+    void advance_visuals(double dt);
 };
 SpaceCombatFlightFrame::~SpaceCombatFlightFrame(){if(recycler.is_valid())recycler->recycle_frame(flights);}
 void SpaceCombatPresentation::line(Vector2 from, Vector2 to, Color color, double width) {
@@ -510,23 +516,23 @@ void SpaceCombatPresentation::flush_pulses(RID canvas) {
     batch->set_visible_instance_count(pulse_transforms.size());
     RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
 }
-Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *surface,Array shots,Vector2 offset) {
-    if (!supports_compact_lasers(surface) && retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped) {
+Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Array shots,Vector2 offset) {
+    if (!supports_compact_lasers() && retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped) {
         // Only the entry may change kernel presentation mode.
         if (retained_kernel->compact_laser_births) return retained_frame;
-        shots=retained_kernel->presentation_projectile_rows(); surface->call("restore_native_laser_visuals"); clear_retained_frame();
+        shots=retained_kernel->presentation_projectile_rows(); restore_lasers.call(); clear_retained_frame();
     }
     if (retained_kernel.is_valid() && (!retained_kernel->admitted || retained_kernel->stopped)) clear_retained_frame();
-    if(bool(surface->get("accelerated_visual_mode")))clear_retained_frame();
-    if(retained_frame.is_valid()&&retained_kernel.is_valid()){prepare_retained(surface,offset);return retained_frame;}
+
+    if(retained_frame.is_valid()&&retained_kernel.is_valid()){prepare_retained(offset);return retained_frame;}
     ++old_prepares;
     // References and the serial index exist only for this draw. The native
     // continuous state and the original visual records remain authoritative.
-    Dictionary index;Array visuals=surface->get("projectile_visuals"),particles=surface->get("particles");
+    Dictionary index;Array visuals=display_visuals,particles=display_particles;
     for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i],p=v["shot"];if(p.has("serial"))index[p["serial"]]=v;}
-    Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
-    bool prototype=surface->get("prototype_enabled");
-    bool missile_enabled=surface->get("missile_vfx_enabled"),pulse_enabled=surface->get("pulse_vfx_enabled"),enemy_enabled=surface->get("enemy_vfx_enabled");
+    RID rid=display_canvas;
+    bool prototype=true;
+    bool missile_enabled=true,pulse_enabled=true,enemy_enabled=true;
     Ref<SpaceCombatFlightFrame> result;result.instantiate();result->recycler=Ref<SpaceCombatPresentation>(this);
     if(!spare_frames.empty()){result->flights.swap(spare_frames.back());spare_frames.pop_back();}
     result->flights.reserve(shots.size());
@@ -549,7 +555,7 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
             // Script preparation may draw a beam/trail into this same layer.
             // Keep preceding native trails before that script command sequence.
             paint(rid);
-            Dictionary f=surface->call("_prepare_projectile_flight",p,index,offset);
+            Dictionary f=prepare_flight.call(p,index,offset);
             if(!f.is_empty())append(p,f["visual"],m,Ref<SpaceVisualLease>(Dictionary(f["visual"]).get("visual_lease",Variant())),f["pos"],f["budget"],key,hostile,chain);
             continue;
         }
@@ -581,15 +587,15 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
     paint(rid);
     return result;
 }
-void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vector2 offset) {
+void SpaceCombatPresentation::draw_flights(Variant prepared,Vector2 offset) {
     if(prepared.get_type()==Variant::OBJECT) {
         Ref<SpaceCombatFlightFrame> direct=prepared;
         if(direct.is_valid()&&direct->persistent&&direct==retained_frame) {
-            if(supports_compact_lasers(surface)){draw_retained(surface,offset);return;}
-            if(!bool(surface->call("prepare_native_laser_display",true)))return;
+            if(supports_compact_lasers()){draw_retained(offset);return;}
+            if(!bool(prepare_lasers.call(true)))return;
             Variant fallback=direct->to_array();
             if(fallback.get_type()!=Variant::ARRAY)return; // Do not clear/recycle the previous display.
-            clear_retained_frame();draw_flights(surface,fallback,offset);return;
+            clear_retained_frame();draw_flights(fallback,offset);return;
         }
     }
     ++old_draws;
@@ -607,12 +613,12 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
         }
     }
     const std::vector<PreparedFlight> &flights=frame.is_valid()?frame->flights:compatibility;
-    Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
-    const bool own_missiles=bool(surface->get("prototype_enabled"))&&bool(surface->get("missile_vfx_enabled"));
-    const bool own_pulses=bool(surface->get("prototype_enabled"))&&bool(surface->get("pulse_vfx_enabled"));
-    const bool simple_enemies=bool(surface->get("prototype_enabled"))&&bool(surface->get("enemy_vfx_enabled"));
+    RID rid=display_canvas;
+    const bool own_missiles=true;
+    const bool own_pulses=true;
+    const bool simple_enemies=true;
     if(own_pulses)prepare_pulse_mesh();pulse_cursor=0;pulse_transforms.clear();
-    begin();bool script_run=false;
+    begin();
     for(const PreparedFlight &f:flights) {
         const Dictionary &shot=f.shot,&visual=f.visual;Vector2 point=f.point;const Ref<SpaceMotionLease> &lease=f.motion;
         bool is_chain=f.chain;
@@ -620,7 +626,7 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
         bool is_pulse=own_pulses&&!f.hostile&&f.key=="laser"&&!bool(shot.get("beam",false));
         bool is_enemy=simple_enemies&&f.hostile&&(f.key=="laser"||f.key=="cannon")&&!bool(shot.get("beam",false));
         if(is_missile) {
-            if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+
             flush_pulses(rid);
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
             const Ref<SpaceVisualLease> &native_visual=f.visual_state;
@@ -631,7 +637,7 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
             continue;
         }
         if(is_pulse||is_enemy) {
-            if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+
             const Ref<SpaceVisualLease> &native_visual=f.visual_state;
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
             double angle=shot.has("fixed_screen_step")?engine_angle(Vector2(shot["fixed_screen_step"])):native_visual.is_valid()?native_visual->angle:double(visual.get("angle",engine_angle(direction)));Vector2 axis=engine_from_angle(angle);
@@ -650,15 +656,15 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
             }
             continue;
         }
-        paint(rid);flush_pulses(rid);surface->call("_draw_projectile_foreground_flight",f.legacy(),offset);script_run=true;
+        paint(rid);flush_pulses(rid);draw_foreground.call(f.legacy(),offset);
     }
-    paint(rid);flush_pulses(rid);if(script_run)surface->call("flush_projectile_packet_batch");
+    paint(rid);flush_pulses(rid);
 }
-void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
-    if(advance_retained(surface,dt))return;
+void SpaceCombatPresentation::advance_visuals(double dt) {
+    if(advance_retained(dt))return;
     ++old_advances;
-    Ref<SpaceCombatKernel> kernel=surface->get("kernel");
-    Array shots=kernel.is_valid()?kernel->presentation_projectile_rows():Array(),visuals=surface->get("projectile_visuals");
+    Ref<SpaceCombatKernel> kernel=display_kernel;
+    Array shots=kernel.is_valid()?kernel->presentation_projectile_rows():Array(),visuals=display_visuals;
     Dictionary active;
     for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;}
     auto inverse=[this](Vector2 p)->Vector2 {
@@ -677,7 +683,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
         if(!alive){visuals.remove_at(i);continue;}
         if(shot.has("serial"))visual_by_serial[shot["serial"]]=visual;
         Ref<SpaceVisualLease> v=visual.get("visual_lease",Variant());
-        if(v.is_null()){surface->call("_advance_projectile_visual_record",visual,dt);continue;}
+        if(v.is_null()){advance_visual.call(visual,dt);continue;}
         Ref<SpaceMotionLease> m=shot.get("motion_lease",Variant());
         Vector2 logical=m.is_valid()?position(m->motion()):Vector2(shot["x"],shot["y"]);
         Vector2 direction=m.is_valid()?m->motion().direction:Vector2(shot["direction"]);
@@ -699,7 +705,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
 }
 #include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
-    ClassDB::bind_method(D_METHOD("supports_compact_lasers","surface"),&SpaceCombatPresentation::supports_compact_lasers);
+    ClassDB::bind_method(D_METHOD("supports_compact_lasers"),&SpaceCombatPresentation::supports_compact_lasers);
     ClassDB::bind_method(D_METHOD("configure_logical_coordinates","enabled"),&SpaceCombatPresentation::configure_logical_coordinates);
     ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
     ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
@@ -712,9 +718,10 @@ void SpaceCombatPresentation::_bind_methods(){
     ClassDB::bind_method(D_METHOD("register_visual","shot","visual","index"),&SpaceCombatPresentation::register_visual);
     ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceCombatPresentation::find_visual);
     ClassDB::bind_method(D_METHOD("bind_visual","visual"),&SpaceCombatPresentation::bind_visual);
-    ClassDB::bind_method(D_METHOD("advance_visuals","surface","dt"),&SpaceCombatPresentation::advance_visuals);
-    ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceCombatPresentation::prepare_flights);
-    ClassDB::bind_method(D_METHOD("draw_flights","surface","flights","offset"),&SpaceCombatPresentation::draw_flights);
+    ClassDB::bind_method(D_METHOD("advance_visuals","dt"),&SpaceCombatPresentation::advance_visuals);
+    ClassDB::bind_method(D_METHOD("configure_surface","kernel","canvas","visuals","particles","prepare","foreground","restore","lasers","advance"),&SpaceCombatPresentation::configure_surface);
+    ClassDB::bind_method(D_METHOD("prepare_flights","shots","offset"),&SpaceCombatPresentation::prepare_flights);
+    ClassDB::bind_method(D_METHOD("draw_flights","flights","offset"),&SpaceCombatPresentation::draw_flights);
     ClassDB::bind_method(D_METHOD("record_contact","category","point","direction","born","launch","critical","type"),&SpaceCombatPresentation::record_contact);
     ClassDB::bind_method(D_METHOD("prune_contacts","now","clear_enemy"),&SpaceCombatPresentation::prune_contacts);
     ClassDB::bind_method(D_METHOD("clear_contacts"),&SpaceCombatPresentation::clear_contacts);

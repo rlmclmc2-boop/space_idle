@@ -456,42 +456,13 @@ func _start_wave() -> void:
 	_sync_geometry()
 
 func _sync_geometry() -> void:
-	var hulls: Array = []
-	var points := PackedVector2Array()
-	var stationary := PackedByteArray()
-	var actors: Array = kernel.enemy_views()
-	for actor in actors:
-		var point := Vector2(float(actor.x), float(actor.y))
-		var model: Dictionary = models["enemy_" + str(int(actor.size))]
-		var random := RandomNumberGenerator.new()
-		random.seed = int(actor.uid) * 7919 + int(actor.slot) * 104729
-		random.randf()
-		random.randf_range(-1.0, 1.0)
-		var variance_range: Array = JSON.parse_string(str(geometry.enemy_scale_variance))
-		var variance: float = random.randf_range(float(variance_range[0]), float(variance_range[1]))
-		var angle: float = deg_to_rad(random.randf_range(-float(geometry.enemy_rotation_variance), float(geometry.enemy_rotation_variance)))
-		var width: float = Geometry.enemy_width(int(actor.size), bool(actor.wave_final),
-			int(actor.formation_count), float(player_art.display_scale) * float(geometry.player_display_multiplier),
-			player_geometry_height, float(parameters["enemyVisualScaleSize" + str(int(actor.size))]), variance, geometry)
-		var hull: PackedVector2Array = Geometry.transform_hull(model.hull, point, Vector2(width, width * float(geometry.enemy_model_height_ratio)) * float(actor.hull_scale), angle)
-		hulls.append(hull)
-		points.append(point)
-		stationary.append(1)
-	var muzzles: Dictionary = player_muzzles.duplicate()
-	for actor in actors:
-		var entries: PackedStringArray = str(actor.equipment).replace("｛", "").replace("｝", "").replace("{", "").replace("}", "").replace("，", ",").split(",")
-		var mount: int = 0
-		for entry in entries:
-			for _mount in int(entry.split("|")[1]):
-				muzzles["enemy:" + str(actor.uid) + ":" + str(mount)] = Vector2(float(actor.x), float(actor.y))
-				mount += 1
-	enemy_hulls = hulls
-	kernel.input_geometry(points, muzzles)
-	kernel.input_ballistic_geometry(hulls, points, muzzles, stationary)
-	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
-	kernel.input_player_point(player_point)
-	var player_hull: PackedVector2Array = Geometry.transform_hull(models[selected_ship].hull, player_point, player_dimensions, 0.0)
-	if not kernel.input_player_hull(player_hull):
+	var packet = Geometry.battle_geometry(kernel.enemy_views(), models, selected_ship, player_art,
+		player_dimensions, player_geometry_height, player_muzzles, geometry, parameters)
+	enemy_hulls = packet.hulls
+	kernel.input_geometry(packet.points, packet.muzzles)
+	kernel.input_ballistic_geometry(packet.hulls, packet.points, packet.muzzles, packet.stationary)
+	kernel.input_player_point(packet.player_point)
+	if not kernel.input_player_hull(packet.player_hull):
 		_fail("InvalidPlayerGeometry")
 
 func collect_drop(id: String) -> Dictionary:
@@ -697,6 +668,12 @@ func _growth_setup(next_slots: Array, next_enhancement: Dictionary, next_reactor
 
 func _commit_growth(next_slots: Array, next_enhancement: Dictionary, next_reactor: Dictionary,
 		next_research: Dictionary, next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null) -> Dictionary:
+	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != selected_ship) or contributions != null
+	if not geometry_changed:
+		for index in next_slots.size():
+			if index >= slots.size() or next_slots[index].equipment_id != slots[index].equipment_id:
+				geometry_changed = true
+				break
 	var setup = _growth_setup(next_slots, next_enhancement, next_reactor, next_research, next_ship, contributions)
 	if not setup.ok:
 		return setup
@@ -722,7 +699,8 @@ func _commit_growth(next_slots: Array, next_enhancement: Dictionary, next_reacto
 	player_muzzles = {}
 	for row in setup.descriptor.weapons:
 		player_muzzles[str(row.entry.id)] = row.muzzle
-	_sync_geometry()
+	if geometry_changed:
+		_sync_geometry()
 	combat_config_dirty = false
 	var armour = amount_api.apply("from_decimal", [str(kernel.player_view().armour)])
 	if armour.ok and amount_api.apply("compare", [armour.value, amount_api.apply("zero", []).value]).scalar <= 0 and campaign.state not in ["menu", "retreat", "departing"]:
@@ -810,7 +788,7 @@ func buy_enhancement(count: int = 1) -> Dictionary:
 			@warning_ignore("integer_division")
 			var middle: int = low + (high - low) / 2 + 1
 			var candidate = Enhancement.quote(enhancement_progress, middle, enhancement, amount_api)
-			if candidate.ok and Economy.payment(wallet, candidate.costs, amount_api).ok:
+			if candidate.ok and Economy.can_pay(wallet, candidate.costs, amount_api).ok:
 				low = middle
 			else:
 				high = middle - 1
@@ -908,49 +886,39 @@ func quote_levels(slot_id: String, count: int) -> Dictionary:
 	return {"ok": false, "reason": "UnknownSlot"}
 
 func buy_max_levels(slot_id: String) -> Dictionary:
-	var level: int = -1
 	for slot in slots:
 		if str(slot.id) == slot_id:
-			level = int(slot.paid_level)
-	if level < 0:
-		return {"ok": false, "reason": "UnknownSlot"}
-	var limit: int = 9223372036854775807 - level
-	if limit <= 0:
-		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
-	var low: int = 0
-	var high: int = 1
-	while high <= limit:
-		var quote = quote_levels(slot_id, high)
-		if not quote.ok or not Economy.payment(wallet, quote.costs, amount_api).ok:
-			break
-		low = high
-		if high == limit:
-			return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
-		high = limit if high > limit / 2 else high * 2
-	while low + 1 < high:
-		@warning_ignore("integer_division")
-		var middle: int = low + (high - low) / 2
-		var quote = quote_levels(slot_id, middle)
-		if quote.ok and Economy.payment(wallet, quote.costs, amount_api).ok:
-			low = middle
-		else:
-			high = middle
-	if low == 0:
-		return {"ok": false, "reason": "NoChange"}
-	return buy_levels(slot_id, low)
+			var row: Dictionary = equipment_definitions.laser if slot.category == "weapon" else equipment_definitions.armour
+			var quote = Equipment.quote_max(row, int(slot.paid_level), wallet, evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached), amount_api)
+			return buy_levels(slot_id, int(quote.count)) if quote.ok else quote
+	return {"ok": false, "reason": "UnknownSlot"}
 
-func buy_all_levels(count: int) -> Dictionary:
+func buy_all_levels(count: int, maximum: bool = false) -> Dictionary:
 	var purchased: Array = []
+	var next: Array = slots.duplicate(true)
+	var balances: Dictionary = wallet
+	var failure: Dictionary = {}
 	var ship: Dictionary = ship_definitions[selected_ship]
+	var material_unlocked: bool = int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached)
 	for category in ["weapon", "defence"]:
-		for slot in slots:
+		for slot in next:
 			if slot.category != category or int(slot.index) >= int(ship.para_1 if category == "weapon" else ship.para_2):
 				continue
-			var result = buy_levels(str(slot.id), count)
-			if result.ok:
+			var row: Dictionary = equipment_definitions.laser if category == "weapon" else equipment_definitions.armour
+			var quote = Equipment.quote_max(row, int(slot.paid_level), balances, evolution, material_unlocked, amount_api) if maximum else Equipment.quote_levels(row, int(slot.paid_level), count, evolution, material_unlocked, amount_api)
+			var paid = Economy.payment(balances, quote.costs, amount_api) if quote.ok else quote
+			if paid.ok:
+				balances = paid.wallet
+				slot.paid_level = int(slot.paid_level) + int(quote.count)
 				purchased.append(str(slot.id))
-			elif result.get("reason", "") not in ["InsufficientResources", "EvolutionMaterialLocked"]:
-				return result
+			elif not maximum and paid.get("reason", "") not in ["InsufficientResources", "EvolutionMaterialLocked"]:
+				failure = paid
+				break
+		if not failure.is_empty(): break
+	if not purchased.is_empty():
+		var committed = _commit_growth(next, enhancement_progress, reactor_progress, research_progress, balances, "upgrade")
+		if not committed.ok: return committed
+	if not failure.is_empty(): return failure
 	return {"ok": not purchased.is_empty(), "reason": "NoChange" if purchased.is_empty() else "", "slots": purchased}
 
 func _clear_switch_locks() -> void:
@@ -1158,12 +1126,7 @@ func _advance_crew_jobs(dt: float) -> bool:
 			if attempt.mode != "max":
 				buy_all_levels(int(attempt.mode))
 			else:
-				var ship: Dictionary = ship_definitions[selected_ship]
-				for category in ["weapon", "defence"]:
-					for slot in slots:
-						if slot.category == category and int(slot.index) < int(ship.para_1 if category == "weapon" else ship.para_2):
-							buy_max_levels(str(slot.id))
-							if not last_error.is_empty(): return false
+				buy_all_levels(1, true)
 		elif attempt.job == "jewel_auto":
 			buy_enhancement(1)
 		elif attempt.job == "reactor_upgrade":

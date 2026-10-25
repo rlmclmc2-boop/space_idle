@@ -2,8 +2,7 @@ extends RefCounted
 ## These functions mutate the session's ledger only after Amount operations succeed.
 ## Death sampling and damage belong to the native kernel.
 
-static func payment(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictionary:
-	var next: Dictionary = wallet.duplicate(true)
+static func can_pay(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictionary:
 	var zero = amount_api.apply("zero", [])
 	for resource in costs:
 		var balance: Dictionary = wallet.get(resource, zero.value)
@@ -12,6 +11,16 @@ static func payment(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictio
 			return compared
 		if compared.scalar < 0:
 			return {"ok": false, "reason": "InsufficientResources"}
+	return {"ok": true}
+
+static func payment(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictionary:
+	var affordable = can_pay(wallet, costs, amount_api)
+	if not affordable.ok:
+		return affordable
+	var next: Dictionary = wallet.duplicate()
+	var zero = amount_api.apply("zero", [])
+	for resource in costs:
+		var balance: Dictionary = wallet.get(resource, zero.value)
 		var remaining = amount_api.apply("sub_nonnegative", [balance, costs[resource]])
 		if not remaining.ok:
 			return remaining

@@ -26,7 +26,7 @@ func configure(region) -> void:
 	var zs:Array=[-64.0,-42.0,-20.0,0.0,21.0,44.0,66.0]
 	for i in cells.size():
 		var id:=slot_id(i)
-		if id<region.slots.size():positions[id]=Vector3(xs[cells[i].x+3],0,zs[cells[i].y+3])
+		if region.nodes.has(str(id)):positions[id]=Vector3(xs[cells[i].x+3],0,zs[cells[i].y+3])
 	for edge in edges:
 		var a:=slot_id(edge[0]);var b:=slot_id(edge[1])
 		if (a<0 or positions.has(a)) and positions.has(b):links.append([a,b])

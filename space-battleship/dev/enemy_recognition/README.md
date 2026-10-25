@@ -1,6 +1,6 @@
 # 敌人识别审图样板
 
-独立美术候选：样板语法已接入正式 `main.tscn → scripts/battlefield.gd` 绘制入口，仍未合main。基线 `b3767d1452ab0a4c100f3bc4f26d51c7113a6c0f`；正式 Excel → `data/game_data.json` 仍为配置权威，预览只读JSON，不实例化BattleGame、不写玩家存档。未经视觉认可不推广40组、不合main。
+历史独立美术候选。旧 `scripts/battlefield.gd` 入口已删除；当前入口为 `src/main.tscn → src/main.gd`，不连接本预览。基线 `b3767d1452ab0a4c100f3bc4f26d51c7113a6c0f`；当前 Excel 导入产物为 `generated/config.json`，预览只读JSON，不实例化BattleGame、不写玩家存档。未经视觉认可不推广40组、不合main。
 
 ## 当前最小映射
 

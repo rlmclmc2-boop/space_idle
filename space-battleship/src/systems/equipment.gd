@@ -1,4 +1,5 @@
 extends RefCounted
+const Economy = preload("res://src/systems/economy.gd")
 ## Static equipment arithmetic stops at charged_base. History stays in native.
 
 static func growth(base, rate: float, effective_level: int, amount_api) -> Dictionary:
@@ -223,3 +224,29 @@ static func quote_levels(row: Dictionary, level: int, count: int, evolution: Dic
 			return sum
 		costs[str(evolution.material_id)] = sum.value
 	return {"ok": true, "count": count, "costs": costs, "extreme": extreme}
+
+static func quote_max(row: Dictionary, level: int, wallet: Dictionary, evolution: Dictionary, material_unlocked: bool, api) -> Dictionary:
+	var limit: int = 9223372036854775807 - level
+	if limit <= 0:
+		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+	var low: int = 0
+	var high: int = 1
+	while high <= limit:
+		var quote = quote_levels(row, level, high, evolution, material_unlocked, api)
+		if not quote.ok or not Economy.can_pay(wallet, quote.costs, api).ok:
+			break
+		low = high
+		if high == limit:
+			return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+		high = limit if high > limit / 2 else high * 2
+	while low + 1 < high:
+		@warning_ignore("integer_division")
+		var middle: int = low + (high - low) / 2
+		var quote = quote_levels(row, level, middle, evolution, material_unlocked, api)
+		if quote.ok and Economy.can_pay(wallet, quote.costs, api).ok:
+			low = middle
+		else:
+			high = middle
+	if low == 0:
+		return {"ok": false, "reason": "NoChange"}
+	return quote_levels(row, level, low, evolution, material_unlocked, api)

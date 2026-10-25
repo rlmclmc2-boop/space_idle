@@ -74,9 +74,9 @@ powershell -ExecutionPolicy Bypass -File run_game.ps1
 
 世界成长以 `refit` 原位更新核，付费防具仍走 `upgrade`，科研、强化、反应炉保持绝对生命。Session 进度仅驻留内存，本阶段不接 SaveFiles，也不提供绕过重铸代价的首次征服动作；永久 Buff 读取已记录的征服标记。
 
-核内金额和宿主钱包共用 C++ Amount；边界使用 Amount 生成的十进制文本。装备函数只组装到 `charged_base`，熟练、适应和战斗临时效果由 native 计算。装备 Q 与首级特例只在 `systems/equipment.gd` 定义，单级、批量及 MAX 共用报价；Amount 只保留通用数值运算。
+核内金额和宿主钱包共用 C++ Amount；边界使用 Amount 生成的十进制文本。装备函数只组装到 `charged_base`，熟练、适应和战斗临时效果由 native 计算。装备 Q、首级特例和 MAX 搜索只在 `systems/equipment.gd` 定义；MAX 通过 Economy.can_pay 比较余额，不生成候选钱包。批量和岗位 MAX 按武器、防具及槽位原序报价扣款，仅将最终成长提交一次；付费防具保持模块损伤。Amount 只保留通用数值运算。
 
-纯几何函数位于 `scripts/ship_geometry_convention.gd`。舰体 alpha 轮廓生成的逻辑凸包同时供接触计算与绘制；`GameSession._sync_geometry` 以稳定来源 ID 提供炮口，避免禁用无人机或内部槽复用改变数组对应。表现读取现有核与运动租约，不拥有伤害结算。
+纯几何函数位于 `scripts/ship_geometry_convention.gd`。舰体 alpha 轮廓生成的逻辑凸包同时供接触计算与绘制；`ship_geometry_convention.gd::battle_geometry` 组装凸包和稳定来源 ID 炮口，Session 只提交几何输入，避免禁用无人机或内部槽复用改变数组对应。表现读取现有核与运动租约，不拥有伤害结算。
 
 推进按武器、连发、离管、光束及奇异物质的真实到期时间切段。同刻先恢复及延期结算，再按来源处理出生（我方炮在出生调用内命中），随后把已有光束跳、飞行接触和到期奇异物质按时刻、阵营、来源槽、武器槽及生成序结算。每项执行前复查存活和代际；命中及其合法局部派生结束后再处理下一项。奇异物质到期伤害不重新触发主攻击派生。
 
@@ -89,3 +89,7 @@ powershell -ExecutionPolicy Bypass -File run_game.ps1
 `src/main.gd` 提供输入、只读显示与现有 retained/GPU 接线。空格暂停，G 切换当前战点驻守，点击掉落手动领取；成长面板调用 Session 的装备、强化、反应炉、科研、船员派遣、自动探索和建筑领取命令，并显示星系工程及升级状态。到期或终波强制领取按自动损耗规则处理，普通碎片不套用资源自动损耗。
 
 当前验证范围仅为 C++/GDScript 编译及既有独立 Amount 测试，不新增配置、保存或战斗测试设施。整体玩法、完整页面和长期保存恢复仍待后续阶段统一运行验证。
+
+本轮职责整理：普通成长不重建几何，开波、换船、换装及无人机来源变化才提交几何。Research 闲置只推进投入时钟，复用嵌套进度和钱包；研究推进只复制会修改的容器。原生配置接收时解析成长因子，校验构造的武器直接用于提交；攻击与防御仍按原顺序逐因子乘算。防具上限在来袭计数、配置或传说贡献变化时调和，恢复和延期支付复用当前上限。取消无消费者的伤害回执、死亡通知及每步历史副本；UI 历史仍按需读取，掉落、出生/命中表现与伤害统计保留。
+
+`SpaceCombatPresentation.configure_surface` 由入口显式提供核、画布、视觉数组及具体回调，表现层不再反射读取场景属性；光束由入口收集后每帧上传一次。保留的星系地图直接读取领域 `nodes` 的键、state、building、upgrade_remaining；定义与建筑表显式传入 select，不构造旧 Region/slots/blueprint。地图仍未接入当前场景。反应炉 set_ratio/set_trunk_ratio/hover/click 会重新计算动画启停。本阶段未增加第五阶段功能或测试体系。
