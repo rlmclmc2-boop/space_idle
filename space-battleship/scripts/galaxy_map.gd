@@ -208,6 +208,7 @@ func setting(key: String, default: float) -> float:return float(settings.get(key
 func select(value, row: Dictionary, building_definitions: Dictionary) -> void:
 	if region==value and definition==row and buildings==building_definitions:return
 	region=value
+	fog_image=null;fog_texture=null
 	definition=row
 	buildings=building_definitions
 	preparing=false;core_warmup.clear();core_meshes.clear();loading.hide();container.show()
@@ -340,13 +341,31 @@ func prepare_core() -> void:
 				var key:=str(mesh.mesh.get_rid())+str(mat.get_rid())
 				if not pairs.has(key):pairs[key]=true;core_warmup.append({"node":mesh,"material":mat})
 			mesh.visible=false
-	# Build the same R8 mask in one upload; no per-pixel Image/Color calls.
-	var fog_bytes := PackedByteArray()
-	fog_bytes.resize(int(definition.map_w)*int(definition.map_h))
-	fog_bytes.fill(255)
-	fog_image=Image.create_from_data(int(definition.map_w),int(definition.map_h),false,Image.FORMAT_R8,fog_bytes)
-	fog_texture=ImageTexture.create_from_image(fog_image)
-	space_material.set_shader_parameter("explored",fog_texture)
+	refresh_explored()
+
+func refresh_explored() -> void:
+	var bounds := Rect2(-130, -130, 260, 260)
+	for point: Vector3 in city_layout.positions.values():
+		bounds = bounds.expand(Vector2(point.x - 24, point.z - 24))
+		bounds = bounds.expand(Vector2(point.x + 24, point.z + 24))
+	var width: int = int(definition.map_w)
+	var height: int = int(definition.map_h)
+	fog_image = Image.create(width, height, false, Image.FORMAT_R8)
+	fog_image.fill(Color.BLACK)
+	var revealed: Array[Rect2] = [Rect2(-19, -19, 38, 38)]
+	for id in region.nodes:
+		if not region.nodes[id].explored: continue
+		var point: Vector3 = city_layout.positions[int(id)]
+		revealed.append(Rect2(point.x - 12, point.z - 12, 24, 24))
+	for area in revealed:
+		var start := ((area.position - bounds.position) / bounds.size * Vector2(width, height)).floor()
+		var finish := ((area.end - bounds.position) / bounds.size * Vector2(width, height)).ceil()
+		var pixels := Rect2i(Vector2i(start), Vector2i(finish - start)).intersection(Rect2i(0, 0, width, height))
+		fog_image.fill_rect(pixels, Color.WHITE)
+	if fog_texture == null: fog_texture = ImageTexture.create_from_image(fog_image)
+	else: fog_texture.update(fog_image)
+	space_material.set_shader_parameter("explored", fog_texture)
+	space_material.set_shader_parameter("explored_bounds", Vector4(bounds.position.x, bounds.position.y, bounds.size.x, bounds.size.y))
 
 func prepare_slot(id: int) -> void:
 	var slot: Dictionary = region.nodes[str(id)]
@@ -465,7 +484,13 @@ func fit_size() -> float:
 	# Adapt only to a narrower viewport; air traffic never moves or shrinks the city.
 	frame_origin=Vector2(-1,-1)
 	var aspect:=float(view.size.x)/maxf(1,view.size.y)
-	return 134.0*maxf(1.0,(815.0/558.0)/aspect)
+	var fit: float = 134.0
+	if city_layout.positions.size() > 30:
+		var bounds := Rect2(-65, -64, 129, 130)
+		for point: Vector3 in city_layout.positions.values(): bounds = bounds.expand(Vector2(point.x, point.z))
+		frame_origin = bounds.get_center()
+		fit = maxf(fit, (bounds.size.x + bounds.size.y + 32) / sqrt(2.0))
+	return fit*maxf(1.0,(815.0/558.0)/aspect)
 
 func visual_state(node: Dictionary) -> String:
 	if node.state == "exploring": return "empty"
@@ -506,6 +531,7 @@ func set_construction_height(node: Node, height: float) -> void:
 
 func refresh() -> void:
 	if preparing or region==null or not is_visible_in_tree():return
+	refresh_explored()
 	activity.clear()
 	var core_ring=core.find_child("ActivityRing",true,false)
 	if core_ring is Node3D:activity.append(core_ring)
