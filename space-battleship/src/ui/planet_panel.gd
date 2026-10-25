@@ -76,3 +76,6 @@ func _command(parent: Control, text: String, action: Callable):
 		var reason: String = str(result.get("reason", result.get("error", "")))
 		if not result.get("ok", false) and ERRORS.has(reason): result.message = ERRORS[reason]
 		return result)
+
+static func describe_error(reason: String) -> String:
+	return str(ERRORS.get(reason, ""))

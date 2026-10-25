@@ -1,4 +1,5 @@
 extends Node2D
+const CrewPanel = preload("res://src/ui/crew_panel.gd")
 const GalaxyPanel = preload("res://src/ui/galaxy_panel.gd")
 const PlanetPanel = preload("res://src/ui/planet_panel.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
@@ -17,15 +18,8 @@ var beam_instances: MultiMeshInstance2D
 var beam_material: ShaderMaterial
 var contact_layer: Node2D
 var growth_panel: PanelContainer
-var world_status: VBoxContainer
-var world_labels: Dictionary = {}
-var world_crew_picker: OptionButton
-var world_assignment_picker: OptionButton
-var world_mode_picker: OptionButton
 var growth_status: Label
 var ship_picker: OptionButton
-var research_panel
-var reactor_panel
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -62,8 +56,6 @@ func _process(dt: float) -> void:
 					native_display.record_contact(0 if event.get("hostile", false) else 1, event.position, event.direction,
 						float(event.clock), int(event.kind) == 0, bool(event.critical), int(event.type))
 			native_display.prune_contacts(float(kernel.presentation_clock()), false)
-	if world_status != null and growth_panel.visible:
-		_flush_display_changes()
 	queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -182,20 +174,10 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(func():
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
-		var labels := {"GalaxyUnavailable": "星系尚未开放", "UnknownPlanet": "尚未选择星球", "HyperspaceCrewReserved": "船员仍被超空间任务占用", "CrewAssignmentUnavailable": "岗位暂不可用", "CrewLocked": "船员尚未解锁", "CrewTargetOccupied": "目标人数已满", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewJobLocked": "岗位尚未开放", "NoChange": "没有变更", "InsufficientResources": "资源不足", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
+		var labels := {"NoChange": "没有变更", "InsufficientResources": "资源不足", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
 		growth_status.text = "完成" if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
 		)
 	return button
-
-func _row(parent: Control) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	parent.add_child(row)
-	return row
-
-func _caption(parent: Control, text: String) -> void:
-	var label := Label.new()
-	label.text = text
-	parent.add_child(label)
 
 func _setup_growth_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -220,25 +202,24 @@ func _setup_growth_panel() -> void:
 	box.add_child(growth_status)
 	open.pressed.connect(func():
 		growth_panel.visible = not growth_panel.visible
-		if growth_panel.visible:
-			_refresh_ship_choices()
-			_refresh_world_pickers()
-			session.take_display_changes())
+		if growth_panel.visible: _refresh_ship_choices())
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
 	session.ship_changed.connect(_refresh_ship_choices)
+	session.progress_changed.connect(_refresh_ship_choices)
 	ship_picker = OptionButton.new()
 	box.add_child(ship_picker)
 	_command_button(box, "更换舰体", func(): return session.change_ship(str(ship_picker.get_item_metadata(ship_picker.selected))))
-	reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.can_pay, session.publish_reactor, _command_button)
+	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.can_pay, session.publish_reactor, _command_button)
 	box.add_child(reactor_panel)
-	research_panel = ResearchPanel.new(session.research, _command_button)
+	var research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
 	box.add_child(EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
 		session.economy.affordable, session.publish_enhancement, _command_button))
-	_setup_world_controls(box)
+	box.add_child(CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
+	box.add_child(GalaxyPanel.new(session.galaxy_system))
+	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_world, _command_button))
 	_refresh_ship_choices()
-	_refresh_world_pickers()
 
 func _refresh_ship_choices() -> void:
 	ship_picker.clear()
@@ -248,115 +229,3 @@ func _refresh_ship_choices() -> void:
 		ship_picker.set_item_metadata(index, key)
 		ship_picker.set_item_disabled(index, not session.unlocked("ship", key))
 		if key == session.selected_ship: ship_picker.select(index)
-
-const CREW_JOB_NAMES := {"equipment_upgrade": "装备升级", "hightech_scientists": "科研", "jewel_auto": "强化", "reactor_upgrade": "反应炉"}
-
-func _picker_value(picker: OptionButton, fallback = ""):
-	return fallback if picker == null or picker.selected < 0 else picker.get_item_metadata(picker.selected)
-
-func _setup_world_controls(box: Control) -> void:
-	_caption(box, "船员与星球")
-	_caption(box, "随进度逐步开放星球与星系。")
-	world_status = VBoxContainer.new()
-	box.add_child(world_status)
-	world_crew_picker = OptionButton.new()
-	box.add_child(world_crew_picker)
-	world_assignment_picker = OptionButton.new()
-	box.add_child(world_assignment_picker)
-	world_mode_picker = OptionButton.new()
-	for mode in ["1", "10", "max"]:
-		world_mode_picker.add_item("装备自动购买 " + mode.to_upper())
-		world_mode_picker.set_item_metadata(world_mode_picker.item_count - 1, mode)
-	box.add_child(world_mode_picker)
-	_command_button(box, "派遣所选船员", func():
-		var assignment: Dictionary = _picker_value(world_assignment_picker, {"kind": "", "target": ""})
-		return session.assign_crew(str(_picker_value(world_crew_picker)), assignment.kind, assignment.target, str(_picker_value(world_mode_picker, "1"))))
-	_command_button(box, "撤回所选船员", func(): return session.assign_crew(str(_picker_value(world_crew_picker)), "", ""))
-	box.add_child(GalaxyPanel.new(session.galaxy_system))
-	session.galaxy_system.availability_changed.connect(_refresh_world_assignments)
-	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_world, _command_button))
-	session.planet_system.assignment_options_changed.connect(_refresh_construction_choices)
-	session.planet_system.availability_changed.connect(_refresh_world_assignments)
-	_command_button(box, "刷新世界列表", func():
-		_refresh_world_pickers()
-		return {"ok": true})
-
-func _world_assignment(label: String, kind: String, target: String, previous: Dictionary) -> void:
-	var value := {"kind": kind, "target": target}
-	var index: int = world_assignment_picker.item_count
-	world_assignment_picker.add_item(label)
-	world_assignment_picker.set_item_metadata(index, value)
-	if value == previous:
-		world_assignment_picker.select(index)
-
-func _refresh_world_pickers() -> void:
-	if world_crew_picker == null:
-		return
-	var selected: String = str(_picker_value(world_crew_picker))
-	var show_levels: bool = session.unlocked("feature", "crew_level")
-	world_crew_picker.clear()
-	for id in session.crew_definitions:
-		if not session.unlocked("crew", id): continue
-		var index: int = world_crew_picker.item_count
-		var crew_label: String = str(session.crew_definitions[id].name)
-		if show_levels:
-			crew_label += " · Lv." + str(session.crew_progress[id].level)
-		world_crew_picker.add_item(crew_label)
-		world_crew_picker.set_item_metadata(index, id)
-		if id == selected: world_crew_picker.select(index)
-	_refresh_world_assignments()
-	_refresh_world_status()
-
-func _refresh_world_assignments() -> void:
-	var previous: Dictionary = _picker_value(world_assignment_picker, {})
-	world_assignment_picker.clear()
-	for job in CREW_JOB_NAMES:
-		_world_assignment(CREW_JOB_NAMES[job], "system_job", job, previous)
-	for option in session.planet_system.assignment_options():
-		_world_assignment(option.label, option.kind, option.target, previous)
-	for option in session.galaxy_system.assignment_options():
-		_world_assignment(option.label, option.kind, option.target, previous)
-
-func _refresh_construction_choices(ids: Array) -> void:
-	var previous: Dictionary = _picker_value(world_assignment_picker, {})
-	for index in range(world_assignment_picker.item_count - 1, -1, -1):
-		var value: Dictionary = world_assignment_picker.get_item_metadata(index)
-		if value.kind == "planet_build" and str(value.target).get_slice(":", 0) in ids: world_assignment_picker.remove_item(index)
-	for option in session.planet_system.assignment_options(ids, true):
-		_world_assignment(option.label, option.kind, option.target, previous)
-
-func _status_label(kind: String, id: String, text: String) -> void:
-	var key: String = kind + ":" + id
-	if not world_labels.has(key):
-		var label := Label.new()
-		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		world_status.add_child(label)
-		world_labels[key] = label
-	world_labels[key].text = text
-
-func _refresh_world_status(changes: Dictionary = {}) -> void:
-	if changes.is_empty(): changes = {"crew": session.crew_progress}
-	var show_levels: bool = session.unlocked("feature", "crew_level")
-	for id in changes.get("crew", {}):
-		if not session.unlocked("crew", id): continue
-		var member: Dictionary = session.crew_progress[id]
-		var job: String = str(CREW_JOB_NAMES.get(member.target, member.target)) if member.kind == "system_job" else str({"": "空闲", "planet_explore": "星球探索", "planet_build": "星球施工", "galaxy": "星系工程"}.get(member.kind, member.kind))
-		var text: String = "%s · %s" % [session.crew_definitions[id].name, job]
-		if show_levels:
-			var experience = session.amount_api.apply("to_display", [member.exp])
-			text = "%s Lv.%d · %s · 经验 %s" % [session.crew_definitions[id].name, int(member.level), job, experience.text]
-		_status_label("crew", str(id), text)
-
-func _flush_display_changes() -> void:
-	var changes: Dictionary = session.take_display_changes()
-	if changes.is_empty(): return
-	if changes.has("unlocks"):
-		_refresh_ship_choices()
-		_refresh_world_pickers()
-		return
-	if changes.has("crew"):
-		for index in world_crew_picker.item_count:
-			var id: String = str(world_crew_picker.get_item_metadata(index))
-			if not changes.crew.has(id): continue
-			world_crew_picker.set_item_text(index, str(session.crew_definitions[id].name) + (" · Lv." + str(session.crew_progress[id].level) if session.unlocked("feature", "crew_level") else ""))
-	_refresh_world_status(changes)

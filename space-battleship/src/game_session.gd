@@ -1,5 +1,6 @@
 extends RefCounted
 
+signal progress_changed
 signal ship_changed
 const CombatSetup = preload("res://src/combat_setup.gd")
 const Equipment = preload("res://src/systems/equipment.gd")
@@ -14,7 +15,6 @@ const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const STEP: float = 1.0 / 60.0
 const FRAME_STEPS: int = 64
 
-var display_changes: Dictionary = {}
 var kernel
 var amount_api
 var configuration: Dictionary = {}
@@ -26,11 +26,8 @@ var economy
 var enhancement
 var reactor_system
 var research
-var crew_definitions: Dictionary = {}
-var crew_rules: Dictionary = {}
-var crew_jobs: Dictionary = {}
-var crew_progress: Dictionary = {}
 var planet_system
+var crew_system
 var galaxy_system
 var galaxy_crew_experience: Dictionary = {}
 var research_speed: Dictionary = {}
@@ -79,15 +76,6 @@ var retreat_to: float = 0.0
 var retreat_elapsed: float = 0.0
 var guard: Dictionary = {"enabled": false, "stage": 1, "point": 0, "distance": 0.0, "death_option": 0}
 
-func _display_changed(kind: String, id: String = "") -> void:
-	if not display_changes.has(kind): display_changes[kind] = {}
-	display_changes[kind][id] = true
-
-func take_display_changes() -> Dictionary:
-	var changed: Dictionary = display_changes
-	display_changes = {}
-	return changed
-
 func initialize(path: String, combat_seed: int) -> Dictionary:
 	if kernel != null:
 		return {"ok": false, "reason": "AlreadyInitialized"}
@@ -123,12 +111,6 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		legendary_constants[str(row.effect_id)][str(row.constant_path)] = row.value
 	for row in configuration.hyperspace_config["\u57fa\u7840\u53c2\u6570"]:
 		drone_limits[str(row.key)] = row.value
-	for row in configuration.crew.crew:
-		crew_definitions[str(row.id)] = row
-	for row in configuration.crew_config.crew_config:
-		crew_rules[str(row.id)] = row.value
-	for row in configuration.crew_assignment.crew_assignment:
-		crew_jobs[str(row.id)] = row
 	for row in configuration.weapon_motion.weapon_motion:
 		motion[str(row.id)] = row.value
 	for row in configuration.enemy_weapon_base.enemy_weapon_base:
@@ -174,7 +156,8 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	enhancement = Enhancement.new(configuration.enhance_config.enhance_config, amount_api)
 	research = Research.new(configuration.ai_tech_tree.ai_tech_tree, rules, configuration.unlock.unlock, amount_api)
 	research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
-	crew_progress = Crew.initial(crew_definitions, amount_api)
+	crew_system = Crew.new(configuration.crew.crew, configuration.crew_config.crew_config, configuration.crew_assignment.crew_assignment, amount_api)
+	crew_system.refresh_availability(unlocked)
 	planet_system = Planet.new(configuration.planet.planet, configuration.planet_build.planet_build, configuration.planet_buff.planet_buff, amount_api)
 	planet_system.refresh_availability(unlocked)
 	galaxy_system = Galaxy.new(configuration.galaxy.galaxy, configuration.galaxy_build.galaxy_build, configuration.galaxy_config.galaxy_config, amount_api)
@@ -183,7 +166,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
 	planet_factors = planet_system.contributions()
-	crew_factors = Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api)
+	crew_factors = crew_system.contributions()
 	galaxy_factors = galaxy_system.contributions()
 	world_factors = _world_contributions()
 	if not world_factors.ok: return _fail(str(world_factors.get("error", "WorldAssemblyFailed")))
@@ -265,7 +248,7 @@ func frame(real_dt: float, _focused: bool) -> void:
 func _step(dt: float) -> void:
 	game_time += dt
 	economy.prune_income(wall_time, game_time, research.income_window())
-	var people: Dictionary = Crew.step_assignments(crew_progress)
+	var people: Dictionary = crew_system.step_assignments()
 	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
 		return
 	var advanced = economy.advance_timed(dt, campaign.state in ["travel", "combat", "waiting", "guard_wait", "retreat"], timed_resource_ratio,
@@ -407,9 +390,10 @@ func _advance_kernel(dt: float) -> bool:
 				campaign.cleared_stages[int(campaign.stage)] = true
 				research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
 				equipment.refresh_availability(unlocked, int(campaign.highest_reached))
+				crew_system.refresh_availability(unlocked)
 				planet_system.refresh_availability(unlocked)
 				galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
-				_display_changed("unlocks")
+				progress_changed.emit()
 			campaign.state = "waiting"
 			campaign.wait = _guard_interval() if _guard_matches() else float(rules.clear_wait_seconds)
 		elif _guard_matches():
@@ -493,9 +477,10 @@ func _set_stage(stage: int, distance: float) -> void:
 		campaign.highest_reached = stage
 		research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
 		equipment.refresh_availability(unlocked, int(campaign.highest_reached))
+		crew_system.refresh_availability(unlocked)
 		planet_system.refresh_availability(unlocked)
 		galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
-		_display_changed("unlocks")
+		progress_changed.emit()
 	var entries: PackedStringArray = str(level_definitions[stage].monGroup).replace("{", "").replace("}", "").replace("｛", "").replace("｝", "").replace("，", ",").split(",")
 	campaign.points = []
 	for entry in entries:
@@ -873,47 +858,24 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 		return _fail(str(result.get("error", result.get("reason", "WorldGrowthUpdateFailed"))))
 	return result
 
-func assign_crew(id: String, kind: String, target: String, mode: String = "1") -> Dictionary:
-	if not crew_progress.has(id) or not unlocked("crew", id):
-		return {"ok": false, "reason": "CrewLocked"}
-	var capacity: int = 0
-	if kind == "system_job":
-		if not crew_jobs.has(target) or crew_jobs[target].targetType == "galaxy":
-			return {"ok": false, "reason": "UnknownCrewJob"}
-		if (target == "jewel_auto" and not unlocked("feature", "jewels")) or (target == "reactor_upgrade" and not unlocked("feature", "reactor")):
-			return {"ok": false, "reason": "CrewJobLocked"}
-		capacity = int(crew_jobs[target].maxCrew)
-	elif kind in ["planet_explore", "planet_build"]:
-		var admitted = planet_system.assignment_capacity(kind, target)
-		if not admitted.ok: return admitted
-		capacity = int(admitted.capacity)
-	elif kind == "galaxy":
-		if not galaxy_system.is_available(target):
-			return {"ok": false, "reason": "GalaxyUnavailable"}
-		capacity = int(crew_jobs.galaxy_explore.maxCrew)
-	elif not kind.is_empty():
-		return {"ok": false, "reason": "CrewAssignmentUnavailable"}
-	var old_kind: String = str(crew_progress[id].kind)
-	var old_target: String = str(crew_progress[id].target)
-	if old_kind == "hyperspace":
-		return {"ok": false, "reason": "HyperspaceCrewReserved"}
-	var selected_mode: String = mode if kind == "system_job" and target == "equipment_upgrade" else str(crew_progress[id].mode)
-	var changed = Crew.assign(crew_progress, id, kind, target if not kind.is_empty() else "", capacity, selected_mode)
-	if not changed.ok:
-		return changed
-	if old_kind == "planet_explore" and (kind != old_kind or target != old_target):
-		planet_system.set_explorer(old_target, false)
+func assignment_admission(kind: String, target: String) -> Dictionary:
+	if kind in ["planet_explore", "planet_build"]: return planet_system.assignment_capacity(kind, target)
+	return {"ok": true} if galaxy_system.is_available(target) else {"ok": false, "reason": "GalaxyUnavailable"}
+
+func coordinate_assignment(id: String, kind: String, target: String, mode: String = "1") -> Dictionary:
+	var changed = crew_system.assign(id, kind, target, mode, assignment_admission)
+	if not changed.ok: return changed
+	if changed.old_kind == "planet_explore" and (kind != changed.old_kind or target != changed.old_target):
+		planet_system.set_explorer(str(changed.old_target), false)
 	if kind == "planet_explore":
 		var started = planet_system.set_explorer(target, true)
-		if not started.ok:
-			return _fail(str(started.reason))
-	_display_changed("crew", id)
-	return publish_world({}, Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api, crew_factors, changed.jobs)) if not changed.jobs.is_empty() else {"ok": true}
+		if not started.ok: return _fail(str(started.reason))
+	return publish_world({}, crew_system.contributions()) if changed.effects_changed else {"ok": true}
 
 func coordinate_planet_cancel(id: String) -> Dictionary:
 	var cancelled = planet_system.cancel(id)
 	if not cancelled.ok: return cancelled
-	for member in Crew.release(crew_progress, "planet_explore", id): _display_changed("crew", str(member))
+	crew_system.release("planet_explore", id)
 	return cancelled
 
 func planet_experience_context() -> Dictionary:
@@ -925,38 +887,29 @@ func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) ->
 	if not result.ok:
 		_fail(str(result.get("error", result.get("reason", "PlanetAdvanceFailed"))))
 		return false
-	var changed_jobs: Array = []
+	var crew_changed: bool = false
 	for completion in result.completed:
 		for target in completion.released:
-			for member in Crew.release(crew_progress, "planet_build", str(target)): _display_changed("crew", str(member))
+			crew_system.release("planet_build", str(target))
 		if completion.award_experience:
-			var recipients: Array = crew_progress.keys() if completion.share_experience else [completion.explorer]
-			var awarded = Crew.add_experience(crew_progress, recipients, completion.experience, crew_rules, amount_api)
+			var awarded = crew_system.award_exploration(str(completion.explorer), bool(completion.share_experience), completion.experience)
 			if not awarded.ok:
 				_fail(str(awarded.get("error", awarded.get("reason", "CrewExperienceFailed"))))
 				return false
-			for member in awarded.members: _display_changed("crew", str(member))
-			for job in awarded.jobs:
-				if job not in changed_jobs: changed_jobs.append(job)
+			crew_changed = crew_changed or awarded.effects_changed
 		if not completion.again:
-			_display_changed("crew", str(completion.explorer))
-			Crew.release(crew_progress, "planet_explore", str(completion.planet))
+			crew_system.release("planet_explore", str(completion.planet))
 	if not result.completed.is_empty() and not publish_world(result.contributions,
-		Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api, crew_factors, changed_jobs) if not changed_jobs.is_empty() else {}).ok:
+		crew_system.contributions() if crew_changed else {}).ok:
 		return false
 	return true
 
 func _advance_crew_jobs(dt: float, ids: Array) -> bool:
-	for attempt in Crew.advance_jobs(crew_progress, ids, crew_jobs, dt):
-		if attempt.job == "equipment_upgrade":
-			if attempt.mode != "max":
-				equipment.buy_all_levels(int(attempt.mode), false, equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
-			else:
-				equipment.buy_all_levels(1, true, equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
-		elif attempt.job == "jewel_auto":
-			enhancement.purchase(1, enhancement_inputs(), economy.affordable, publish_enhancement)
-		elif attempt.job == "reactor_upgrade":
-			reactor_system.purchase(1, true, reactor_inputs(), economy.can_pay, publish_reactor)
+	for request in crew_system.advance_jobs(ids, dt):
+		match str(request.module):
+			"equipment": equipment.buy_all_levels(int(request.count), bool(request.maximum), equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
+			"enhancement": enhancement.purchase(int(request.count), enhancement_inputs(), economy.affordable, publish_enhancement)
+			"reactor": reactor_system.purchase(int(request.count), bool(request.automatic), reactor_inputs(), economy.can_pay, publish_reactor)
 		if not last_error.is_empty(): return false
 	return true
 

@@ -107,10 +107,10 @@ func assignment_options(ids: Array = [], building_only: bool = false) -> Array:
 	for id in (_definitions.keys() if ids.is_empty() else ids):
 		if not is_available(str(id)): continue
 		var name: String = str(_definitions[id].name)
-		if not building_only: rows.append({"label": "探索 · " + name, "kind": "planet_explore", "target": str(id)})
+		if not building_only: rows.append({"label": "探索 · " + name, "kind": "planet_explore", "group": str(id), "target": str(id)})
 		for key in _state[id].buildings:
 			if _state[id].buildings[key].state == "building" and int(_buildings[key].extra_crew) > 0:
-				rows.append({"label": "施工 · " + name + " · " + str(_buildings[key].name), "kind": "planet_build", "target": str(id) + ":" + str(key)})
+				rows.append({"label": "施工 · " + name + " · " + str(_buildings[key].name), "kind": "planet_build", "group": str(id), "target": str(id) + ":" + str(key)})
 	return rows
 
 func building_options(id: String) -> Array:

@@ -17,3 +17,6 @@ func _refresh_status(keys: Array = []) -> void:
 			add_child(label)
 			_labels[row.id] = label
 		_labels[row.id].text = row.text
+
+static func describe_error(reason: String) -> String:
+	return "星系尚未开放" if reason == "GalaxyUnavailable" else ""
