@@ -20,7 +20,10 @@ var _material_gate: int
 
 func _init(rows: Array, evolution_rows: Array, unlocks: Array, parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
 	_run_state = run_state
-	for row in rows: _definitions[str(row.name)] = row
+	for row in rows:
+		var definition: Dictionary = row.duplicate()
+		definition.make_read_only()
+		_definitions[str(row.name)] = definition
 	for row in evolution_rows: _evolution[str(row.key)] = row.value
 	for row in unlocks:
 		if row.type == "equipment": _labels[str(row.target)] = str(row.title)
