@@ -43,7 +43,6 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 
 func _load_models(ship_keys: Array) -> Dictionary:
 	var art_data = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
-	_player_art = art_data.ships[_ship_key]
 	var model_keys: Array = ship_keys.duplicate()
 	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
 	for key in model_keys:
@@ -57,9 +56,6 @@ func _load_models(ship_keys: Array) -> Dictionary:
 			return {"ok": false, "reason": "MissingGeometryAsset:" + str(key)}
 		_models[key] = {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()), "art": art,
 			"geometry_height": float(logical_image.get_height())}
-	_player_geometry_height = float(_models[_ship_key].geometry_height)
-	_player_dimensions = _models[_ship_key].size * float(_player_art.display_scale) * float(_geometry.player_display_multiplier) * float(_parameters["playerVisualScale" + _ship_key])
-	_player_hull = Geometry.transform_hull(_models[_ship_key].hull, Vector2(float(_geometry.player_x), float(_geometry.player_y)), _player_dimensions, 0.0)
 	return {"ok": true}
 
 func initialization_result() -> Dictionary:
@@ -103,7 +99,7 @@ func begin_frame() -> void:
 	_events = []
 
 func prepare_player(mounted: Dictionary, upgrades: Dictionary, factors: Dictionary, reactor: Dictionary,
-		ship: Dictionary, ship_key: String, contributions, damage_types: Dictionary) -> Dictionary:
+		ship: Dictionary, ship_key: String, mount: Dictionary, contributions, damage_types: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var source: Array = _equipped_drones if contributions == null else contributions
 	var next_drones: Array = source.slice(0, int(ship.drone_capacity)).duplicate(true)
@@ -127,7 +123,6 @@ func prepare_player(mounted: Dictionary, upgrades: Dictionary, factors: Dictiona
 	setup.descriptor.rail_trail_width = float(_motion.rail_trail_width)
 	setup.descriptor.higgs_minimum_width = float(_rules.higgs_minimum_width)
 	setup.descriptor.merge(damage_types)
-	var mount: Dictionary = mount_inputs(ship_key)
 	setup.ship_key = ship_key
 	setup.player_art = mount.art
 	setup.player_dimensions = mount.dimensions
@@ -143,7 +138,6 @@ func _accept_player(setup: Dictionary) -> void:
 	_values = setup["values"]
 	_player_muzzles = {}
 	for row in setup.descriptor.weapons: _player_muzzles[str(row.entry.id)] = row.muzzle
-	_player_hull = Geometry.transform_hull(_models[_ship_key].hull, Vector2(float(_geometry.player_x), float(_geometry.player_y)), _player_dimensions, 0.0)
 
 func initialize_player(setup: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
@@ -151,6 +145,7 @@ func initialize_player(setup: Dictionary) -> Dictionary:
 		_run_state.fail("NativeInitializationFailed")
 		return {"ok": false, "reason": "NativeInitializationFailed"}
 	_accept_player(setup)
+	_player_hull = Geometry.transform_hull(_models[_ship_key].hull, Vector2(float(_geometry.player_x), float(_geometry.player_y)), _player_dimensions, 0.0)
 	_kernel.set_damage_stats_enabled(true)
 	return {"ok": true}
 

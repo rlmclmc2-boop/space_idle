@@ -133,8 +133,9 @@ func _step(dt: float) -> void:
 	var people: Dictionary = crew_system.step_assignments()
 	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
 		return
+	var positions: Dictionary = battle.resource_positions()
 	var advanced = economy.advance_timed(dt, campaign_system.resource_generation_active(), campaign_system.timed_resource_ratio,
-		battle.resource_positions().origin, float(battle.resource_positions().target_y), wall_time, game_time, income_factors)
+		positions.origin, float(positions.target_y), wall_time, game_time, income_factors)
 	if not advanced.ok:
 		_fail(str(advanced.get("error", advanced.get("reason", "TimedResourceFailed"))))
 		return
@@ -229,7 +230,7 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	var mounted = equipment.mounted_configuration(ship.mounts, next_slots, int(world.equipment_levels), ai["values"], reactor.factors,
 		mount.art, mount.dimensions, mount.geometry, mount.motion, world.external)
 	if not mounted.ok: return mounted
-	var setup = battle.prepare_player(mounted, upgrades, factors, reactor.factors, ship, ship_key, contributions, equipment.damage_types())
+	var setup = battle.prepare_player(mounted, upgrades, factors, reactor.factors, ship, ship_key, mount, contributions, equipment.damage_types())
 	if not setup.ok:
 		return setup
 	setup.income_factors = {"condensation": reactor.factors.condensation, "refinery": world.refinery, "crew_fragments": world.fragments, "galaxy_fragments": world.galaxy_fragments}
