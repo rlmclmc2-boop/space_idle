@@ -1,4 +1,5 @@
 extends RefCounted
+var _run_state
 const CombatSetup = preload("res://src/combat_setup.gd")
 signal progress_changed
 signal ship_changed
@@ -18,7 +19,6 @@ var _departure_remaining: float = 0.0
 var _retreat_from: float = 0.0
 var _retreat_to: float = 0.0
 var _retreat_elapsed: float = 0.0
-var _halted: bool = false
 var _kernel
 var _api
 var _state: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
@@ -26,7 +26,8 @@ var _state: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
 	"cleared_stages": {}, "origin": 0.0, "speed": 0.0, "wait": 0.0}
 var _guard: Dictionary = {"enabled": false, "stage": 1, "point": 0, "distance": 0.0, "death_option": 0}
 
-func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary) -> void:
+func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary, run_state) -> void:
+	_run_state = run_state
 	for row in configuration.level.level: _levels[int(row.id)] = row
 	for row in configuration.monGroup.monGroup: _groups[int(row.id)] = row
 	for row in configuration.ship.ship: _ships[str(row.name)] = row
@@ -41,11 +42,9 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary)
 			break
 
 func bind_native(kernel, api) -> void:
+	if not _run_state.is_running(): return
 	_kernel = kernel
 	_api = api
-
-func halt() -> void:
-	_halted = true
 
 func selected_ship() -> String:
 	return _selected_ship
@@ -63,11 +62,13 @@ func ship_options() -> Array:
 	return options
 
 func change_ship(id: String, refit: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if id == _selected_ship: return {"ok": false, "reason": "NoChange"}
 	if not _ships.has(id) or not available("ship", id): return {"ok": false, "reason": "ShipLocked"}
 	return refit.call(id)
 
 func accept_ship(id: String) -> void:
+	if not _run_state.is_running(): return
 	if id == _selected_ship: return
 	_selected_ship = id
 	ship_changed.emit()
@@ -85,6 +86,7 @@ func departure_active() -> bool:
 	return _departure_remaining > 0
 
 func consume_departure(seconds: float) -> float:
+	if not _run_state.is_running(): return 0.0
 	var accepted: float = seconds
 	if _departure_remaining > 0:
 		var used: float = minf(_departure_remaining, accepted)
@@ -99,14 +101,17 @@ func status_text() -> String:
 	return "关卡 %s · %s · %.0f" % [_state.stage, _state.state, _state.distance]
 
 func toggle_guard() -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	return set_guard(not _guard.enabled, int(_guard.death_option))
 
 func advance(dt: float, advance_native: Callable, start_wave: Callable) -> void:
+	if not _run_state.is_running(): return
 	var before: Array = [_state.stage, _state.state, _state.distance]
 	_advance(dt, advance_native, start_wave)
 	if before != [_state.stage, _state.state, _state.distance]: status_changed.emit()
 
 func prepare_wave(enemy_override: Callable, geometry: Dictionary, motion: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var point: int = int(_state.point)
 	var stage: Dictionary = _levels[int(_state.stage)]
 	var previous: Dictionary = _levels.get(int(_state.stage) - 1, {})
@@ -116,6 +121,7 @@ func prepare_wave(enemy_override: Callable, geometry: Dictionary, motion: Dictio
 		enemy_override, geometry, motion, jewel_rolls, float(_parameters.jewelDrop), _next_enemy_uid, _api)
 
 func accept_wave(update: Dictionary) -> void:
+	if not _run_state.is_running(): return
 	_next_enemy_uid = int(update.next_uid)
 	_state.state = "combat"
 	status_changed.emit()
@@ -131,7 +137,8 @@ func available(kind: String, target: String) -> bool:
 	return false
 
 func start_sortie(stage: int, clear_locks: Callable) -> Dictionary:
-	if _kernel == null or _halted:
+	if not _run_state.is_running(): return _run_state.rejection()
+	if _kernel == null:
 		return {"ok": false, "reason": "SessionUnavailable"}
 	if not _levels.has(stage) or stage > int(_state.highest_reached):
 		return {"ok": false, "reason": "StageLocked"}
@@ -150,6 +157,7 @@ func start_sortie(stage: int, clear_locks: Callable) -> Dictionary:
 	return {"ok": true}
 
 func set_guard(enabled: bool, death_option: int = 0) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if death_option < 0 or death_option > 2:
 		return {"ok": false, "reason": "InvalidGuardPolicy"}
 	if enabled and _state.points.is_empty():
@@ -238,7 +246,7 @@ func _advance(dt: float, advance_native: Callable, start_wave: Callable) -> void
 				return
 			if time_to_point <= dt:
 				start_wave.call()
-				if not _halted:
+				if _run_state.is_running():
 					advance_native.call(dt - travel_time)
 		"combat":
 			advance_native.call(dt)
@@ -269,7 +277,7 @@ func _advance(dt: float, advance_native: Callable, start_wave: Callable) -> void
 					_state.point = int(_state.point) + 1
 					_begin_travel()
 		"retreat":
-			advance_native.call(dt)
+			if not advance_native.call(dt): return
 			_retreat_elapsed += dt
 			var duration: float = clampf(float(_rules.death_retreat_duration), 0.001, 3.0)
 			_place_global(lerpf(_retreat_from, _retreat_to, minf(1.0, _retreat_elapsed / duration)))
@@ -291,6 +299,7 @@ func _advance(dt: float, advance_native: Callable, start_wave: Callable) -> void
 			advance_native.call(dt)
 
 func observe_battle(result: Dictionary, clear_locks: Callable, settle_collection: Callable) -> bool:
+	if not _run_state.is_running(): return false
 	if result.player_dead and _state.state != "retreat":
 		_begin_death_retreat(clear_locks)
 	elif result.wave_cleared:
@@ -323,7 +332,7 @@ func _begin_death_retreat(clear_locks: Callable) -> void:
 	status_changed.emit()
 
 func retreat_if_dead(clear_locks: Callable) -> void:
+	if not _run_state.is_running(): return
 	var armour = _api.apply("from_decimal", [str(_kernel.player_view().armour)])
 	if armour.ok and _api.apply("compare", [armour.value, _api.apply("zero", []).value]).scalar <= 0 and _state.state not in ["menu", "retreat", "departing"]:
 		_begin_death_retreat(clear_locks)
-

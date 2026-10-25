@@ -1,8 +1,8 @@
 extends RefCounted
 
-const BattleStatistics = preload("res://src/systems/battle_statistics.gd")
+const Battle = preload("res://src/systems/battle.gd")
+const RunState = preload("res://src/systems/run_state.gd")
 const Campaign = preload("res://src/systems/campaign.gd")
-const CombatSetup = preload("res://src/combat_setup.gd")
 const Equipment = preload("res://src/systems/equipment.gd")
 const Enhancement = preload("res://src/systems/enhancement.gd")
 const Reactor = preload("res://src/systems/reactor.gd")
@@ -11,16 +11,12 @@ const Economy = preload("res://src/systems/economy.gd")
 const Crew = preload("res://src/systems/crew.gd")
 const Planet = preload("res://src/systems/planet.gd")
 const Galaxy = preload("res://src/systems/galaxy.gd")
-const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const STEP: float = 1.0 / 60.0
 const FRAME_STEPS: int = 64
 
-var kernel
+var battle
+var run_state = RunState.new()
 var amount_api
-var configuration: Dictionary = {}
-var parameters: Dictionary = {}
-var rules: Dictionary = {}
-var geometry: Dictionary = {}
 var equipment
 var economy
 var enhancement
@@ -37,88 +33,55 @@ var crew_factors: Dictionary = {}
 var galaxy_factors: Dictionary = {}
 var research_factors: Dictionary = {}
 var reactor_factors: Dictionary = {}
-var combat_values: Dictionary = {}
-var equipped_drones: Array = []
-var battle_statistics
-var battle_configuration: Dictionary = {}
 var income_factors: Dictionary = {}
-var motion: Dictionary = {}
-var models: Dictionary = {}
-var player_art: Dictionary = {}
-var player_dimensions := Vector2.ZERO
-var player_geometry_height: float = 0.0
-var player_muzzles: Dictionary = {}
-var enemy_hulls: Array = []
-var enemy_muzzles: Dictionary = {}
-var seed_value: int = 1
 var campaign_system
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
 var wall_time: float = 0.0
 var game_time: float = 0.0
-var last_error: String = ""
-var last_events: Array = []
 
 func initialize(path: String, combat_seed: int) -> Dictionary:
-	if kernel != null:
+	if not run_state.is_running(): return run_state.rejection()
+	if battle != null:
 		return {"ok": false, "reason": "AlreadyInitialized"}
 	if not ClassDB.class_exists("SpaceCombatKernel") or not ClassDB.class_exists("FoundationAmount"):
 		return _fail("NativeExtensionRequired")
 	var parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if not parsed is Dictionary:
 		return _fail("ConfigurationReadFailed")
-	configuration = parsed
-	seed_value = combat_seed
+	var configuration: Dictionary = parsed
+	var parameters: Dictionary = {}
+	var rules: Dictionary = {}
 	for row in configuration.config.config:
 		parameters[str(row.name)] = row.para_1
 	for row in configuration.game_rules.game_rules:
 		rules[str(row.id)] = row.value
-	for row in configuration.battle_geometry.battle_geometry:
-		geometry[str(row.id)] = row.value
-	battle_configuration = CombatSetup.legendary_configuration(configuration.hyperspace_config)
-	for row in configuration.weapon_motion.weapon_motion:
-		motion[str(row.id)] = row.value
-	campaign_system = Campaign.new(configuration, parameters, rules)
+	campaign_system = Campaign.new(configuration, parameters, rules, run_state)
 	if campaign_system.selected_ship().is_empty():
 		return _fail("InitialShipUnavailable")
-	var art_data = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
-	player_art = art_data.ships[campaign_system.selected_ship()]
-	var model_keys: Array = campaign_system.ship_keys()
-	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
-	for key in model_keys:
-		var art: Dictionary = art_data.ships[key]
-		var image := Image.load_from_file(str(art.texture))
-		if image == null or image.is_empty():
-			return _fail("MissingHullAsset:" + str(key))
-		var logical_path: String = str(art.get("geometry_texture", art.texture))
-		var logical_image := image if logical_path == str(art.texture) else Image.load_from_file(logical_path)
-		if logical_image == null or logical_image.is_empty():
-			return _fail("MissingGeometryAsset:" + str(key))
-		models[key] = {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()), "art": art,
-			"geometry_height": float(logical_image.get_height())}
-	player_geometry_height = float(models[campaign_system.selected_ship()].geometry_height)
-	player_dimensions = models[campaign_system.selected_ship()].size * float(player_art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + campaign_system.selected_ship()])
 	amount_api = ClassDB.instantiate("FoundationAmount")
-	battle_statistics = BattleStatistics.new(amount_api)
-	economy = Economy.new(parameters, rules, amount_api)
+	battle = Battle.new(configuration, parameters, rules, campaign_system.ship_keys(), campaign_system.selected_ship(), amount_api, combat_seed, run_state)
+	var battle_ready = battle.initialization_result()
+	if not battle_ready.ok: return _fail(str(battle_ready.reason))
+	economy = Economy.new(parameters, rules, amount_api, run_state)
 	equipment = Equipment.new(configuration.equipment.equipment, configuration.equipment_evolution.equipment_evolution,
-		configuration.unlock.unlock, parameters, rules, amount_api)
+		configuration.unlock.unlock, parameters, rules, amount_api, run_state)
 	equipment.refresh_availability(campaign_system.available, int(campaign_system.progress_facts().highest_reached))
 	equipment.initialize_slots(str(parameters.startEquip), campaign_system.ship_facts().mounts)
-	reactor_system = Reactor.new(parameters, amount_api)
-	enhancement = Enhancement.new(configuration.enhance_config.enhance_config, amount_api)
-	research = Research.new(configuration.ai_tech_tree.ai_tech_tree, rules, configuration.unlock.unlock, amount_api)
-	research.refresh_progress(int(campaign_system.progress_facts().highest_reached), campaign_system.progress_facts().cleared_stages)
-	crew_system = Crew.new(configuration.crew.crew, configuration.crew_config.crew_config, configuration.crew_assignment.crew_assignment, amount_api)
+	reactor_system = Reactor.new(parameters, amount_api, run_state)
+	reactor_system.refresh_availability(campaign_system.available)
+	enhancement = Enhancement.new(configuration.enhance_config.enhance_config, amount_api, run_state)
+	research = Research.new(configuration.ai_tech_tree.ai_tech_tree, rules, amount_api, run_state)
+	research.refresh_progress(campaign_system.available)
+	crew_system = Crew.new(configuration.crew.crew, configuration.crew_config.crew_config, configuration.crew_assignment.crew_assignment, amount_api, run_state)
 	crew_system.refresh_availability(campaign_system.available)
-	planet_system = Planet.new(configuration.planet.planet, configuration.planet_build.planet_build, configuration.planet_buff.planet_buff, amount_api)
+	planet_system = Planet.new(configuration.planet.planet, configuration.planet_build.planet_build, configuration.planet_buff.planet_buff, amount_api, run_state)
 	planet_system.refresh_availability(campaign_system.available)
-	galaxy_system = Galaxy.new(configuration.galaxy.galaxy, configuration.galaxy_build.galaxy_build, configuration.galaxy_config.galaxy_config, amount_api)
+	galaxy_system = Galaxy.new(configuration.galaxy.galaxy, configuration.galaxy_build.galaxy_build, configuration.galaxy_config.galaxy_config, amount_api, run_state)
 	var galaxies = galaxy_system.initialization_result()
 	if not galaxies.ok: return _fail(str(galaxies.reason))
 	galaxy_system.refresh_availability(campaign_system.available, campaign_system.progress_facts().cleared_stages)
-	kernel = ClassDB.instantiate("SpaceCombatKernel")
-	campaign_system.bind_native(kernel, amount_api)
+	campaign_system.bind_native(battle.native_owner(), amount_api)
 	planet_factors = planet_system.contributions()
 	crew_factors = crew_system.contributions()
 	galaxy_factors = galaxy_system.contributions()
@@ -127,31 +90,29 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	var setup = _growth_setup()
 	if not setup.ok:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
-	for row in setup.descriptor.weapons:
-		player_muzzles[str(row.entry.id)] = row.muzzle
+	var initialized = battle.initialize_player(setup)
+	if not initialized.ok: return _fail(str(initialized.reason))
 	reactor_system.accept(setup.reactor_update)
 	reactor_factors = setup.reactor_factors
 	research_factors = setup.research_factors
 	enhancement.accept_output(setup.enhancement_values)
-	combat_values = setup["values"]
 	income_factors = setup.income_factors
 	research_speed = setup.research_speed
 	galaxy_crew_experience = setup.galaxy_crew_experience
-	if not kernel.initialize(setup.descriptor):
-		return _fail("NativeInitializationFailed")
 	campaign_system.progress_changed.connect(_publish_progress)
-	kernel.set_damage_stats_enabled(true)
 	return {"ok": true}
 
 func set_pause(reason: String, held: bool) -> void:
+	if not run_state.is_running(): return
 	if held:
 		pause_reasons[reason] = true
 	else:
 		pause_reasons.erase(reason)
 
 func frame(real_dt: float, _focused: bool) -> void:
-	last_events = []
-	if kernel == null or not last_error.is_empty() or not is_finite(real_dt) or real_dt < 0:
+	if not run_state.is_running(): return
+	if battle != null: battle.begin_frame()
+	if battle == null or not is_finite(real_dt) or real_dt < 0:
 		return
 	wall_time += real_dt
 	if not pause_reasons.is_empty():
@@ -159,19 +120,21 @@ func frame(real_dt: float, _focused: bool) -> void:
 	var accepted: float = campaign_system.consume_departure(real_dt)
 	pending_seconds += accepted
 	var steps: int = 0
-	while pending_seconds >= STEP and steps < FRAME_STEPS and not campaign_system.departure_active() and pause_reasons.is_empty() and last_error.is_empty():
+	while pending_seconds >= STEP and steps < FRAME_STEPS and not campaign_system.departure_active() and pause_reasons.is_empty() and run_state.is_running():
 		_step(STEP)
+		if not run_state.is_running(): return
 		pending_seconds -= STEP
 		steps += 1
 
 func _step(dt: float) -> void:
+	if not run_state.is_running(): return
 	game_time += dt
 	economy.prune_income(wall_time, game_time, research.income_window())
 	var people: Dictionary = crew_system.step_assignments()
 	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
 		return
 	var advanced = economy.advance_timed(dt, campaign_system.resource_generation_active(), campaign_system.timed_resource_ratio,
-		Vector2(float(geometry.player_x), float(geometry.timed_drop_spawn_y)), float(geometry.player_y), wall_time, game_time, income_factors)
+		battle.resource_positions().origin, float(battle.resource_positions().target_y), wall_time, game_time, income_factors)
 	if not advanced.ok:
 		_fail(str(advanced.get("error", advanced.get("reason", "TimedResourceFailed"))))
 		return
@@ -202,22 +165,13 @@ func _step(dt: float) -> void:
 func _advance_kernel(dt: float) -> bool:
 	if dt <= 0:
 		return true
-	if not kernel.advance(dt):
-		var reason: String = str(kernel.take_results().get("error", ""))
-		_fail(reason if not reason.is_empty() else "NativeAdvanceRejected")
+	var result = battle.advance(dt)
+	if not result.ok:
+		_fail(str(result.get("error", result.get("reason", "NativeAdvanceRejected"))))
 		return false
-	var result: Dictionary = kernel.take_results()
-	var recorded = battle_statistics.record(kernel.take_damage_stats())
-	if not recorded.ok:
-		_fail(str(recorded.error))
-		return false
-	last_events.append_array(result.events)
 	var registered = economy.register_drops(result.drops, game_time, income_factors.refinery)
 	if not registered.ok:
 		_fail(str(registered.get("error", "DropRegistrationFailed")))
-		return false
-	if not str(result.error).is_empty():
-		_fail(str(result.error))
 		return false
 	return campaign_system.observe_battle(result, equipment.clear_switch_locks, settle_final_collection)
 
@@ -229,30 +183,19 @@ func settle_final_collection() -> bool:
 	return refresh_growth()
 
 func _start_wave() -> void:
-	var setup = campaign_system.prepare_wave(equipment.enemy_override, geometry, motion)
+	var inputs: Dictionary = battle.wave_inputs()
+	var setup = campaign_system.prepare_wave(equipment.enemy_override, inputs.geometry, inputs.motion)
 	if not setup.ok:
 		_fail(str(setup.get("error", setup.get("reason", "WaveAssemblyFailed"))))
 		return
-	if not kernel.start_wave(setup.wave):
-		_fail("NativeWaveRejected")
+	var started = battle.start_wave(setup)
+	if not started.ok:
+		_fail(str(started.reason))
 		return
 	campaign_system.accept_wave(setup)
-	enemy_muzzles = setup.muzzles
-	_sync_geometry()
-
-func _sync_geometry() -> void:
-	var packet = Geometry.battle_geometry(kernel.enemy_views(), models, campaign_system.selected_ship(), player_art,
-		player_dimensions, player_geometry_height, player_muzzles, enemy_muzzles, geometry, parameters)
-	enemy_hulls = packet.hulls
-	kernel.input_geometry(packet.points, packet.muzzles)
-	kernel.input_ballistic_geometry(packet.hulls, packet.points, packet.muzzles, packet.stationary)
-	kernel.input_player_point(packet.player_point)
-	if not kernel.input_player_hull(packet.player_hull):
-		_fail("InvalidPlayerGeometry")
 
 func _fail(reason: String) -> Dictionary:
-	last_error = reason
-	if campaign_system != null: campaign_system.halt()
+	run_state.fail(reason)
 	pause_reasons.error = true
 	return {"ok": false, "reason": reason}
 
@@ -260,23 +203,20 @@ func economy_display_context() -> Dictionary:
 	return {"wall": wall_time, "game": game_time, "factors": income_factors}
 
 func reactor_inputs() -> Dictionary:
-	return {"unlocked": campaign_system.available,
-		"capacity": world_factors.capacity, "free_charge": world_factors.free_charge}
+	return {"capacity": world_factors.capacity, "free_charge": world_factors.free_charge}
 
 func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
-		"game_time": game_time, "highest_reached": int(campaign_system.progress_facts().highest_reached)}
+		"game_time": game_time}
 
 func _growth_setup(next_slots = null, next_ship: String = "", contributions = null) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var ship_key: String = campaign_system.selected_ship() if next_ship.is_empty() else next_ship
 	var ship: Dictionary = campaign_system.ship_facts(ship_key)
-	var art: Dictionary = models[ship_key].art
-	var dimensions: Vector2 = models[ship_key].size * float(art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + ship_key])
+	var mount: Dictionary = battle.mount_inputs(ship_key)
 	var world = world_factors
 	if not world.ok:
 		return world
-	var source_drones: Array = equipped_drones if contributions == null else contributions
-	var next_drones: Array = source_drones.slice(0, int(ship.drone_capacity)).duplicate(true)
 	var reactor = reactor_system.prepare(reactor_inputs())
 	if not reactor.ok:
 		return reactor
@@ -286,19 +226,10 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 		"reactor_weapon": reactor.factors.weapons, "reactor_defence": reactor.factors.defence, "external": world.external}
 	var upgrades = enhancement.evaluate(int(world.enhancement_levels), campaign_system.available, equipment.equipped_armours(ship.mounts, next_slots))
 	if not upgrades.ok: return upgrades
-	var drone_weapons: Array = []
-	for index in next_drones.size():
-		var contribution: Dictionary = next_drones[index]
-		var weapon_row: Dictionary = contribution.weapon.duplicate(true)
-		weapon_row.entry.id = "drone:" + str(contribution.id)
-		weapon_row.entry.drone_id = str(contribution.id)
-		weapon_row.entry.generation = int(contribution.generation)
-		weapon_row.slot = int(ship.mounts.weapon) + index
-		drone_weapons.append(weapon_row)
 	var mounted = equipment.mounted_configuration(ship.mounts, next_slots, int(world.equipment_levels), ai["values"], reactor.factors,
-		art, dimensions, geometry, motion, world.external)
+		mount.art, mount.dimensions, mount.geometry, mount.motion, world.external)
 	if not mounted.ok: return mounted
-	var setup = CombatSetup.build_player(mounted, geometry, rules, float(parameters.dmgReduce), motion, upgrades, factors, drone_weapons, seed_value)
+	var setup = battle.prepare_player(mounted, upgrades, factors, reactor.factors, ship, ship_key, contributions, equipment.damage_types())
 	if not setup.ok:
 		return setup
 	setup.income_factors = {"condensation": reactor.factors.condensation, "refinery": world.refinery, "crew_fragments": world.fragments, "galaxy_fragments": world.galaxy_fragments}
@@ -309,63 +240,40 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	setup.income_factors.jewel = ai["values"].fragment_income
 	setup.research_factors = ai["values"]
 	setup.reactor_factors = reactor.factors
-	var iron_text = amount_api.apply("to_display", [reactor.factors.smelting])
-	if not iron_text.ok:
-		return iron_text
-	setup.descriptor.iron_drop_factor = iron_text.text
 	setup.enhancement_values = upgrades
 	setup.reactor_update = reactor
-	setup.descriptor.equipped_drones = next_drones.duplicate(true)
-	setup.descriptor.merge(battle_configuration)
-	setup.descriptor.drone_capacity = int(ship.drone_capacity)
-	setup.descriptor.rail_trail_width = float(motion.rail_trail_width)
-	setup.descriptor.higgs_minimum_width = float(rules.higgs_minimum_width)
-	setup.descriptor.merge(equipment.damage_types())
-	setup.ship_key = ship_key
-	setup.player_art = art
-	setup.player_dimensions = dimensions
-	setup.equipped_drones = next_drones
 	return setup
 
 func publish_equipment_refit(next_slots,
 		next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
 	geometry_changed = geometry_changed or equipment.geometry_changed(next_slots)
 	var setup = _growth_setup(next_slots, next_ship, contributions)
 	if not setup.ok:
 		return setup
 	# No page callbacks or asynchronous work can interleave this commit.
-	var committed: Dictionary = kernel.set_player_configuration(setup.descriptor, change_kind)
+	var committed: Dictionary = battle.commit_player(setup, change_kind, geometry_changed)
 	if not committed.ok:
-		if committed.fault:
+		if committed.get("fault", false):
 			return _fail(str(committed.reason))
 		return committed
 	campaign_system.accept_ship(setup.ship_key)
-	player_art = setup.player_art
-	player_dimensions = setup.player_dimensions
-	player_geometry_height = float(models[campaign_system.selected_ship()].geometry_height)
-	equipped_drones = setup.equipped_drones
 	reactor_system.accept(setup.reactor_update)
 	reactor_factors = setup.reactor_factors
 	research_factors = setup.research_factors
 	enhancement.accept_output(setup.enhancement_values)
-	combat_values = setup["values"]
 	income_factors = setup.income_factors
 	research_speed = setup.research_speed
 	galaxy_crew_experience = setup.galaxy_crew_experience
 	economy.accept_budget(next_wallet)
-	player_muzzles = {}
-	for row in setup.descriptor.weapons:
-		player_muzzles[str(row.entry.id)] = row.muzzle
-	if geometry_changed:
-		_sync_geometry()
 	campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return {"ok": true}
 
 func refresh_growth() -> bool:
-	var reactor_context: Dictionary = reactor_inputs()
-	if reactor_system.modules_changed(reactor_context):
-		var updated = reactor_system.refresh(reactor_context, publish_reactor)
+	if not run_state.is_running(): return false
+	if reactor_system.modules_changed():
+		var updated = reactor_system.refresh(reactor_inputs(), publish_reactor)
 		if not updated.ok:
 			_fail(str(updated.get("error", updated.get("reason", "ReactorUpdateFailed"))))
 			return false
@@ -403,6 +311,7 @@ func enhancement_inputs() -> Dictionary:
 		"armours": equipment.equipped_armours(campaign_system.ship_facts().mounts)}
 
 func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var paid: Dictionary = {"ok": true, "wallet": economy.budget()}
 	if not costs.is_empty(): paid = economy.payment(costs)
 	if not paid.ok: return paid
@@ -411,17 +320,14 @@ func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -
 	return result
 
 func commit_ship_refit(ship_id: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	return equipment.resize_mounts(campaign_system.ship_facts().mounts, campaign_system.ship_facts(ship_id).mounts,
 		economy.budget(), publish_equipment_refit.bind(ship_id))
 
 func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
-	# These are assembled contributions from actual equipped entities, not a
-	# warehouse, item generator, reward path or second owner of drone progress.
-	if contributions.size() > int(campaign_system.ship_facts().drone_capacity):
-		return {"ok": false, "reason": "DroneCapacityExceeded"}
-	for contribution in contributions:
-		if not contribution is Dictionary or not contribution.get("id") is String or str(contribution.id).is_empty() or not contribution.has("generation") or not contribution.get("weapon") is Dictionary or not contribution.weapon.get("entry") is Dictionary:
-			return {"ok": false, "reason": "InvalidDroneContribution"}
+	if not run_state.is_running(): return run_state.rejection()
+	var valid = battle.validate_drones(contributions, int(campaign_system.ship_facts().drone_capacity))
+	if not valid.ok: return valid
 	return publish_equipment_refit(null, economy.budget(), "refit", "", contributions)
 
 func _world_contributions() -> Dictionary:
@@ -460,25 +366,18 @@ func _publish_native_values(ai: Dictionary, reactor: Dictionary, kind: String) -
 	if weapons or defences:
 		values = equipment.values(campaign_system.ship_facts().mounts, int(world_factors.equipment_levels), ai, reactor, weapons, defences)
 		if not values.ok: return values
-	for group in ["weapons", "defences"]:
-		for id in values[group].keys():
-			if values[group][id] == combat_values[group].get(id): values[group].erase(id)
+	battle.filter_values(values)
 	return _commit_values(values, kind, iron)
 
 func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrades: Dictionary = {}) -> Dictionary:
-	if values.weapons.is_empty() and values.defences.is_empty() and iron.is_empty() and upgrades.is_empty(): return {"ok": true}
-	var committed: Dictionary = kernel.set_player_values(values.weapons, values.defences, kind, iron, upgrades)
-	if not committed.ok: return _fail(str(committed.reason)) if committed.fault else committed
-	for group in ["weapons", "defences"]:
-		for id in values[group]:
-			if not values[group][id].has("base"): continue
-			var row: Dictionary = values[group][id].duplicate()
-			row.erase("external")
-			combat_values[group][id] = row
+	if not run_state.is_running(): return run_state.rejection()
+	var committed: Dictionary = battle.commit_values(values, kind, iron, upgrades)
+	if not committed.ok: return _fail(str(committed.reason)) if committed.get("fault", false) else committed
 	campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return {"ok": true}
 
-func publish_equipment_levels(next: Array, balances: Dictionary, changed: Array) -> Dictionary:
+func publish_equipment_levels(balances: Dictionary, changed: Array) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var values = equipment.values(campaign_system.ship_facts().mounts, int(world_factors.equipment_levels), research_factors, reactor_factors, true, true, changed)
 	if not values.ok: return values
 	var result = _commit_values(values, "upgrade")
@@ -501,11 +400,7 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 	if world_factors.external != previous.external:
 		equipment.apply_external(values, campaign_system.ship_facts().mounts, world_factors.external)
 	if world_factors.external != previous.external:
-		for drone in equipped_drones:
-			var entry: Dictionary = drone.weapon.entry
-			var external: Array = world_factors.external.duplicate()
-			external.append_array(drone.weapon.get("external_factors", []))
-			values.weapons["drone:" + str(drone.id)] = {"key": entry.key, "generation": int(drone.generation), "external": external}
+		battle.apply_drone_external(values, world_factors.external)
 	var output: Dictionary = enhancement.published_output()
 	var upgrades: Dictionary = {}
 	if world_factors.enhancement_levels != previous.enhancement_levels:
@@ -538,6 +433,7 @@ func _publish_research() -> Dictionary:
 	return {"ok": true}
 
 func publish_reactor(factors: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var paid: Dictionary = {"ok": true, "wallet": economy.budget()}
 	if not costs.is_empty(): paid = economy.payment(costs)
 	if not paid.ok: return paid
@@ -549,6 +445,7 @@ func publish_reactor(factors: Dictionary, costs: Dictionary, kind: String) -> Di
 	return {"ok": true}
 
 func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	if not planet.is_empty(): planet_factors = planet
 	if not crew.is_empty(): crew_factors = crew
 	if not galaxy.is_empty(): galaxy_factors = galaxy
@@ -564,7 +461,7 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 	var result: Dictionary = {"ok": true}
 	if world.enhancement_levels != previous.enhancement_levels or world.external != previous.external or world.equipment_levels != previous.equipment_levels or world.capacity != previous.capacity or world.free_charge != previous.free_charge:
 		result = _publish_world_values(previous)
-	if not result.ok and last_error.is_empty():
+	if not result.ok and run_state.is_running():
 		return _fail(str(result.get("error", result.get("reason", "WorldGrowthUpdateFailed"))))
 	return result
 
@@ -573,6 +470,7 @@ func assignment_admission(kind: String, target: String) -> Dictionary:
 	return galaxy_system.assignment_admission(target)
 
 func coordinate_assignment(id: String, kind: String, target: String, mode: String = "1") -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var changed = crew_system.assign(id, kind, target, mode, assignment_admission)
 	if not changed.ok: return changed
 	if changed.old_kind == "planet_explore" and (kind != changed.old_kind or target != changed.old_target):
@@ -583,6 +481,7 @@ func coordinate_assignment(id: String, kind: String, target: String, mode: Strin
 	return publish_world({}, crew_system.contributions()) if changed.effects_changed else {"ok": true}
 
 func coordinate_planet_cancel(id: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var cancelled = planet_system.cancel(id)
 	if not cancelled.ok: return cancelled
 	crew_system.release("planet_explore", id)
@@ -592,8 +491,10 @@ func planet_experience_context() -> Dictionary:
 	return {"enabled": crew_system.experience_enabled(), "ratio": campaign_system.planet_experience_ratio(), "factor": galaxy_crew_experience}
 
 func _publish_progress() -> void:
+	if not run_state.is_running(): return
 	var facts: Dictionary = campaign_system.progress_facts()
-	research.refresh_progress(int(facts.highest_reached), facts.cleared_stages)
+	research.refresh_progress(campaign_system.available)
+	reactor_system.refresh_availability(campaign_system.available)
 	equipment.refresh_availability(campaign_system.available, int(facts.highest_reached))
 	crew_system.refresh_availability(campaign_system.available)
 	planet_system.refresh_availability(campaign_system.available)
@@ -627,7 +528,7 @@ func _advance_crew_jobs(dt: float, ids: Array) -> bool:
 			"equipment": equipment.buy_all_levels(int(request.count), bool(request.maximum), equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
 			"enhancement": enhancement.purchase(int(request.count), enhancement_inputs(), economy.affordable, publish_enhancement)
 			"reactor": reactor_system.purchase(int(request.count), bool(request.automatic), reactor_inputs(), economy.can_pay, publish_reactor)
-		if not last_error.is_empty(): return false
+		if not run_state.is_running(): return false
 	return true
 
 func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
@@ -635,7 +536,7 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 	if not result.ok:
 		_fail(str(result.get("reason", "GalaxyAdvanceFailed")))
 		return false
-	if not result.changes.is_empty():
+	if result.has("contributions"):
 		var contributions: Dictionary = result.contributions
 		if not contributions.ok:
 			_fail(str(contributions.get("error", "GalaxyContributionFailed")))

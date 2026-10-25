@@ -1,4 +1,5 @@
 extends RefCounted
+var _run_state
 ## Economy owns balances, drop ownership, timed production and income history.
 signal display_changed
 
@@ -16,7 +17,8 @@ var _income_dirty: bool = false
 var _balance_dirty: bool = true
 var _balance_text: String = ""
 
-func _init(parameters: Dictionary, rules: Dictionary, api) -> void:
+func _init(parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
+	_run_state = run_state
 	_spec = str(parameters.autoGenRes).replace("\uff0c", ",").split(",")
 	_auto_reduce = float(parameters.autoCollectReduce)
 	_rules = {"fragment_drop_auto_seconds": rules.fragment_drop_auto_seconds, "ordinary_drop_auto_seconds": rules.ordinary_drop_auto_seconds}
@@ -27,6 +29,7 @@ func budget() -> Dictionary:
 	return _wallet
 
 func accept_budget(next: Dictionary) -> void:
+	if not _run_state.is_running(): return
 	if next == _wallet: return
 	_wallet = next
 	_balance_dirty = true
@@ -39,6 +42,7 @@ func income_changed() -> bool:
 	return _income_dirty
 
 func acknowledge_income() -> void:
+	if not _run_state.is_running(): return
 	_income_dirty = false
 
 func drop_markers() -> Array:
@@ -55,6 +59,7 @@ func balances_text() -> String:
 	return _balance_text
 
 func collect_at(point: Vector2, wall: float, game: float, factors: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	for id in _markers:
 		var marker: Dictionary = _markers[id]
 		if point.distance_to(Vector2(float(marker.x), float(marker.y))) <= 18.0:
@@ -62,6 +67,7 @@ func collect_at(point: Vector2, wall: float, game: float, factors: Dictionary) -
 	return {"ok": false, "reason": "NoChange"}
 
 func advance_timed(dt: float, active: bool, resource_ratio: Callable, origin: Vector2, target_y: float, wall: float, game: float, factors: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if active:
 		_generator.elapsed = float(_generator.elapsed) + dt
 		var interval: float = float(_spec[0])
@@ -88,6 +94,7 @@ func can_pay(costs: Dictionary, candidate = null) -> Dictionary:
 	return {"ok": true}
 
 func payment(costs: Dictionary, candidate = null) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var wallet: Dictionary = _wallet if candidate == null else candidate
 	if costs.is_empty(): return {"ok": true, "wallet": wallet}
 	var amount_api = _api
@@ -105,6 +112,7 @@ func payment(costs: Dictionary, candidate = null) -> Dictionary:
 	return {"ok": true, "wallet": next}
 
 func register_drops(rows: Array, now: float, refinery: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var pending: Dictionary = _drops
 	var cursor: Dictionary = _cursor
 	var rules: Dictionary = _rules
@@ -147,6 +155,7 @@ func register_drops(rows: Array, now: float, refinery: Dictionary) -> Dictionary
 	return {"ok": true}
 
 func collect_drop(id: String, automatic: bool, wall: float, game: float, income_factors: Dictionary = {}) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var pending: Dictionary = _drops
 	var wallet: Dictionary = _wallet
 	var samples: Array = _samples
@@ -234,6 +243,7 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 	return {"ok": true, "amount": quantity, "resource": resource}
 
 func collect_due(wall: float, game: float, force: bool = false, income_factors: Dictionary = {}) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var pending: Dictionary = _drops
 	# Stable birth order; collection never depends on Dictionary iteration order.
 	var collected: bool = false
@@ -307,6 +317,7 @@ func _advance_timed_drops(target_y: float, wall: float, game: float, income_fact
 	return {"ok": true, "collected": collected}
 
 func prune_income(wall: float, game: float, window: float) -> void:
+	if not _run_state.is_running(): return
 	var samples: Array = _samples
 	while not samples.is_empty() and float(samples[0].wall) <= wall - window and float(samples[0].game) <= game - window:
 		samples.pop_front()
@@ -343,6 +354,7 @@ func income_rates(wall: float, game: float, window: float, kind: String) -> Dict
 	return {"ok": true, "rates": rates}
 
 func credit_yield(resource: String, quantity: Dictionary, wall: float, game: float) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var wallet: Dictionary = _wallet
 	var samples: Array = _samples
 	var api = _api

@@ -1,4 +1,5 @@
 extends RefCounted
+var _run_state
 
 const WEAPON := ["proficiency", "repeat", "critical"]
 const DEFENCE := ["adaptation", "memory", "deferred"]
@@ -8,17 +9,20 @@ var _rules: Dictionary = {}
 var _api
 var _values: Dictionary = {}
 
-func _init(rows: Array, api) -> void:
+func _init(rows: Array, api, run_state) -> void:
+	_run_state = run_state
 	for row in rows: _rules[str(row.id)] = row.value
 	_api = api
 
 func evaluate(bonus: int, unlocked: Callable, armours: int) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	return _combat(_state, bonus, _rules, bool(unlocked.call("feature", "jewels")), armours)
 
 func published_output() -> Dictionary:
 	return _values
 
 func accept_output(output: Dictionary) -> void:
+	if not _run_state.is_running(): return
 	_values = output
 
 func difference(output: Dictionary) -> Dictionary:
@@ -36,6 +40,7 @@ func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: Stri
 	return committed
 
 func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if not bool(inputs.unlocked.call("feature", "jewels")): return {"ok": false, "reason": "EnhancementLocked"}
 	var quoted = _quote_purchase(_state, count, _rules, _api, can_pay)
 	if not quoted.ok: return quoted
@@ -44,11 +49,13 @@ func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callab
 	return _submit(next, inputs, quoted.costs, "growth", publish)
 
 func set_order(category: String, order: Array, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var changed = _reorder(_state, category, order)
 	if not changed.ok: return changed
 	return _submit(changed.state, inputs, {}, "selection", publish)
 
 func move_forward(effect: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var category: String = "weapon" if effect in WEAPON else "defence"
 	var order: Array = _state[category + "_order"].duplicate()
 	var index: int = order.find(effect)
@@ -60,6 +67,7 @@ func move_forward(effect: String, inputs: Dictionary, publish: Callable) -> Dict
 	return set_order(category, order, inputs, publish)
 
 func set_branch(effect: String, node: int, choice: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var changed = _choose(_state, effect, node, choice, _rules, bool(inputs.unlocked.call("feature", "jewels")))
 	if not changed.ok: return changed
 	return _submit(changed.state, inputs, {}, "selection", publish)

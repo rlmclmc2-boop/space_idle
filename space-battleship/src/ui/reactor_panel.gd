@@ -23,7 +23,7 @@ func _init(reactor, inputs: Callable, can_pay: Callable, publish: Callable, comm
 	_command(reactor_buttons, "平均分配", func(): return reactor.distribute(inputs.call(), publish))
 	var allocation := _row(box)
 	module_picker = OptionButton.new()
-	for option in reactor.panel_options(inputs.call()):
+	for option in reactor.panel_options():
 		var index: int = module_picker.item_count
 		module_picker.add_item(option.name)
 		module_picker.set_item_metadata(index, option.id)
@@ -43,7 +43,7 @@ func refresh_choices() -> void:
 		return
 	var selected: String = "" if module_picker.selected < 0 else str(module_picker.get_item_metadata(module_picker.selected))
 	module_picker.clear()
-	for option in _reactor.panel_options(_inputs.call()):
+	for option in _reactor.panel_options():
 		var index: int = module_picker.item_count
 		module_picker.add_item(option.name)
 		module_picker.set_item_metadata(index, option.id)

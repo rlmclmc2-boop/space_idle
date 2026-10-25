@@ -1,15 +1,18 @@
 extends RefCounted
+var _run_state
 signal changed
 var _totals: Dictionary = {}
 var _api
 var _dirty: bool = true
 var _text: String = ""
 
-func _init(api) -> void:
+func _init(api, run_state) -> void:
+	_run_state = run_state
 	_api = api
 
 # Preserve the existing per-native-advance Amount aggregation order.
 func record(rows: Array) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	for source in rows:
 		var key: String = str(source.source)
 		var previous: Dictionary = _totals.get(key, {"shield": _api.apply("zero", []).value, "health": _api.apply("zero", []).value})

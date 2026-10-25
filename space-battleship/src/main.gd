@@ -1,4 +1,5 @@
 extends Node2D
+const BattleView = preload("res://src/ui/battle_view.gd")
 const BattleStatisticsView = preload("res://src/ui/battle_statistics_view.gd")
 const FleetPanel = preload("res://src/ui/fleet_panel.gd")
 const CampaignView = preload("res://src/ui/campaign_view.gd")
@@ -11,15 +12,9 @@ const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
 const Session = preload("res://src/game_session.gd")
-const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 var session
-var kernel
 var startup_error: String = ""
-var native_display
-var beam_rows: Array = []
-var beam_instances: MultiMeshInstance2D
-var beam_material: ShaderMaterial
-var contact_layer: Node2D
+var _overlay: Node2D
 var growth_panel: PanelContainer
 var growth_status: Label
 
@@ -38,14 +33,14 @@ func _ready() -> void:
 	if not result.ok:
 		startup_error = str(result.reason)
 		return
-	get_window().content_scale_size = Vector2i(int(session.geometry.view_width), int(session.geometry.view_height))
-	kernel = session.kernel
-	_setup_native_display()
+	get_window().content_scale_size = session.battle.view_size()
 	result = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if not result.ok:
 		startup_error = str(result.reason)
 	else:
-		add_child(BattleStatisticsView.new(session.battle_statistics))
+		add_child(BattleView.new(session.battle))
+		add_child(BattleStatisticsView.new(session.battle.statistics()))
+		_setup_shell_overlay()
 		add_child(CampaignView.new(session.campaign_system))
 		add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 		_setup_growth_panel()
@@ -53,17 +48,11 @@ func _ready() -> void:
 func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
-		if native_display != null:
-			native_display.advance_visuals()
-			for event in session.last_events:
-				if int(event.kind) in [0, 1]:
-					native_display.record_contact(0 if event.get("hostile", false) else 1, event.position, event.direction,
-						float(event.clock), int(event.kind) == 0, bool(event.critical), int(event.type))
-			native_display.prune_contacts(float(kernel.presentation_clock()), false)
+	if _overlay != null: _overlay.queue_redraw()
 	queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if session == null or not startup_error.is_empty():
+	if session == null or not startup_error.is_empty() or not session.run_state.is_running():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		session.set_pause("user", not session.pause_reasons.has("user"))
@@ -74,96 +63,29 @@ func _draw() -> void:
 	if not startup_error.is_empty():
 		draw_string(font, Vector2(18, 45), startup_error, HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 		return
-	if session == null or kernel == null:
-		return
-	beam_rows.clear()
-	if beam_instances != null:
-		beam_instances.multimesh.visible_instance_count = 0
-	if native_display != null:
-		var prepared = native_display.prepare_flights(Vector2.ZERO)
-		native_display.draw_flights(prepared, Vector2.ZERO)
-		_upload_beams()
-		native_display.draw_contacts(contact_layer.get_canvas_item(), float(kernel.presentation_clock()), true)
-	var player_point := Vector2(float(session.geometry.player_x), float(session.geometry.player_y))
-	var player_hull: PackedVector2Array = Geometry.transform_hull(session.models[session.campaign_system.selected_ship()].hull, player_point, session.player_dimensions, 0.0)
-	if player_hull.size() >= 3:
-		draw_colored_polygon(player_hull, Color("66d9dc"))
-	var enemies: Array = kernel.enemy_views()
-	for index in enemies.size():
-		var actor: Dictionary = enemies[index]
-		if actor.get("dead", false) or index >= session.enemy_hulls.size():
-			continue
-		var hull: PackedVector2Array = session.enemy_hulls[index]
-		if hull.size() >= 3:
-			draw_colored_polygon(hull, Color("ce6978"))
-		draw_string(font, Vector2(float(actor.x) - 24, float(actor.y) + 35), str(actor.hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f1d9dc"))
-	var history: Dictionary = kernel.read_history()
-	draw_string(font, Vector2(18, 53), "攻击 %s   来袭 %s" % [history.attacks, history.incoming], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("a9c6db"))
-	var player: Dictionary = kernel.player_view()
-	draw_string(font, Vector2(18, 765), "装甲 %s   护盾 %s" % [player.armour, player.shield], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8ede6"))
-	draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
-	if not session.last_error.is_empty():
-		draw_string(font, Vector2(18, 850), session.last_error, HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 
-func _setup_native_display() -> void:
-	native_display = ClassDB.instantiate("SpaceCombatPresentation")
-	var retained := ShaderMaterial.new()
-	retained.shader = load("res://shaders/retained_flights.gdshader")
-	var pulse := Image.load_from_file("res://assets/weapons/laser-pulse.png")
-	if pulse != null and not pulse.is_empty():
-		retained.set_shader_parameter("pulse_texture", ImageTexture.create_from_image(pulse))
-	native_display.configure_logical_coordinates(true)
-	native_display.configure_retained_gpu(retained)
-	contact_layer = Node2D.new()
-	contact_layer.z_index = 2
-	add_child(contact_layer)
-	var contacts := ShaderMaterial.new()
-	contacts.shader = load("res://shaders/gpu_contacts.gdshader")
-	var topology = load("res://scripts/gpu_contact_mesh.gd")
-	native_display.configure_contact_gpu([topology.build(0), topology.build(1)], contact_layer.get_canvas_item(), contacts)
-	beam_material = ShaderMaterial.new()
-	beam_material.shader = load("res://shaders/retained_beams.gdshader")
-	var mesh := ArrayMesh.new()
-	var arrays: Array = []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = PackedVector3Array([Vector3.ZERO, Vector3.RIGHT, Vector3(1, 1, 0), Vector3.ZERO, Vector3(1, 1, 0), Vector3.UP])
-	arrays[Mesh.ARRAY_TEX_UV] = PackedVector2Array([Vector2.ZERO, Vector2.RIGHT, Vector2.ONE, Vector2.ZERO, Vector2.ONE, Vector2.DOWN])
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	mesh.custom_aabb = AABB(Vector3(-8192, -8192, -1), Vector3(16384, 16384, 2))
-	beam_instances = MultiMeshInstance2D.new()
-	beam_instances.z_index = 1
-	beam_instances.material = beam_material
-	var instances := MultiMesh.new()
-	instances.transform_format = MultiMesh.TRANSFORM_2D
-	instances.use_colors = true
-	instances.use_custom_data = true
-	instances.mesh = mesh
-	beam_instances.multimesh = instances
-	add_child(beam_instances)
-	native_display.configure_surface(kernel, get_canvas_item(), _collect_beams)
+func _setup_shell_overlay() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 9
+	add_child(layer)
+	_overlay = Node2D.new()
+	layer.add_child(_overlay)
+	_overlay.draw.connect(_draw_shell)
 
-func _collect_beams(segments: Array) -> void:
-	beam_rows.append_array(segments)
-
-func _upload_beams() -> void:
-	if beam_instances == null:
-		return
-	var mesh: MultiMesh = beam_instances.multimesh
-	mesh.instance_count = beam_rows.size()
-	mesh.visible_instance_count = beam_rows.size()
-	beam_material.set_shader_parameter("clock", fmod(float(kernel.presentation_clock()), 128.0))
-	for i in beam_rows.size():
-		var row: Dictionary = beam_rows[i]
-		var delta: Vector2 = row.to - row.from
-		mesh.set_instance_transform_2d(i, Transform2D(delta.angle(), row.from))
-		mesh.set_instance_color(i, Color(delta.length(), -1.0, delta.angle(), 1.0 if row.link else 0.0))
-		mesh.set_instance_custom_data(i, Color(1.0, row.power, 0.0, row.charge))
+func _draw_shell() -> void:
+	var font: Font = ThemeDB.fallback_font
+	_overlay.draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
+	if not session.run_state.is_running():
+		_overlay.draw_string(font, Vector2(18, 850), session.run_state.reason(), HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	parent.add_child(button)
 	button.pressed.connect(func():
+		if not session.run_state.is_running():
+			growth_status.text = session.run_state.reason()
+			return
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}

@@ -65,7 +65,7 @@ func _refresh_slot_prices(ids: Array, update_price: bool = true) -> void:
 		if update_price and _selected_slot() == str(option.id): _refresh_upgrade_price()
 
 func _refresh_upgrade_price() -> void:
-	upgrade_price.text = _equipment.price_text(_selected_slot(), int(_inputs.call().highest_reached))
+	upgrade_price.text = _equipment.price_text(_selected_slot())
 
 func _populate_equipment_picker() -> void:
 	if _watch_visibility and not is_visible_in_tree():

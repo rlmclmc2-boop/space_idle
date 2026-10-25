@@ -1,56 +1,69 @@
 extends RefCounted
+var _run_state
 
 signal choices_changed
 
+var _enabled: Array = []
+var _available: bool = false
 var _state: Dictionary
 var _parameters: Dictionary = {}
 var _api
 
-func _init(parameters: Dictionary, api) -> void:
+func _init(parameters: Dictionary, api, run_state) -> void:
+	_run_state = run_state
 	for key in parameters:
 		if str(key).begins_with("reactor"): _parameters[key] = parameters[key]
 	_api = api
 	_state = _initial(_parameters)
 
-func panel_options(inputs: Dictionary) -> Array:
+func panel_options() -> Array:
 	var labels := {"weapons": "武器", "defence": "防御", "smelting": "冶炼", "condensation": "碎片凝结"}
-	var enabled: Array = enabled_modules(inputs)
+	var enabled: Array = enabled_modules()
 	var options: Array = []
 	for id in str(_parameters.reactorModules).split(","):
 		options.append({"id": id, "name": str(labels.get(id, id)), "enabled": id in enabled})
 	return options
 
-func enabled_modules(inputs: Dictionary) -> Array:
+func refresh_availability(unlocked: Callable) -> void:
+	if not _run_state.is_running(): return
+	var available: bool = bool(unlocked.call("feature", "reactor"))
 	var enabled: Array = []
-	if bool(inputs.unlocked.call("feature", "reactor")):
+	if available:
 		for module in str(_parameters.reactorModules).split(","):
-			if module != "condensation" or bool(inputs.unlocked.call("reactor_module", module)): enabled.append(module)
-	return enabled
+			if module != "condensation" or bool(unlocked.call("reactor_module", module)): enabled.append(module)
+	if available != _available or enabled != _enabled:
+		_available = available
+		_enabled = enabled
+		choices_changed.emit()
 
-func modules_changed(inputs: Dictionary) -> bool:
-	return _state.get("_enabled", []) != enabled_modules(inputs)
+func enabled_modules() -> Array:
+	return _enabled
+
+func modules_changed() -> bool:
+	return _state.get("_enabled", []) != _enabled
 
 # The candidate carries module-private state until native publication succeeds.
 func prepare(inputs: Dictionary) -> Dictionary:
-	return _evaluate(_state, _parameters, enabled_modules(inputs), _api, inputs.capacity, inputs.free_charge)
+	if not _run_state.is_running(): return _run_state.rejection()
+	return _evaluate(_state, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
 
 func _adopt(next: Dictionary) -> void:
-	var changed: bool = _state.get("_enabled", []) != next.get("_enabled", [])
 	_state = next
-	if changed: choices_changed.emit()
 
 func accept(candidate: Dictionary) -> void:
+	if not _run_state.is_running(): return
 	if candidate.has("state"): _adopt(candidate.state)
 
 func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: String, publish: Callable) -> Dictionary:
-	var candidate = _evaluate(next, _parameters, enabled_modules(inputs), _api, inputs.capacity, inputs.free_charge)
+	var candidate = _evaluate(next, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
 	if not candidate.ok: return candidate
 	var result: Dictionary = publish.call(candidate.factors, costs, kind)
 	if result.ok: _adopt(candidate.state)
 	return result
 
 func purchase(count: int, automatic: bool, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
-	if not bool(inputs.unlocked.call("feature", "reactor")): return {"ok": false, "reason": "ReactorLocked"}
+	if not _run_state.is_running(): return _run_state.rejection()
+	if not _available: return {"ok": false, "reason": "ReactorLocked"}
 	var changed = _purchase(_state, count, automatic, _parameters, _api)
 	if not changed.ok: return changed
 	var affordable: Dictionary = can_pay.call(changed.costs)
@@ -58,18 +71,21 @@ func purchase(count: int, automatic: bool, inputs: Dictionary, can_pay: Callable
 	return _submit(changed.state, inputs, changed.costs, "growth", publish)
 
 func allocate_text(module: String, text: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var quantity = _api.apply("from_decimal", [text])
 	if not quantity.ok: return quantity
-	var changed = _allocate(_state, module, quantity.value, _parameters, enabled_modules(inputs), _api, inputs.capacity)
+	var changed = _allocate(_state, module, quantity.value, _parameters, enabled_modules(), _api, inputs.capacity)
 	if not changed.ok: return changed
 	return _submit(changed.state, inputs, {}, "selection", publish)
 
 func distribute(inputs: Dictionary, publish: Callable) -> Dictionary:
-	var changed = _distribute(_state, _parameters, enabled_modules(inputs), _api, inputs.capacity)
+	if not _run_state.is_running(): return _run_state.rejection()
+	var changed = _distribute(_state, _parameters, enabled_modules(), _api, inputs.capacity)
 	if not changed.ok: return changed
 	return _submit(changed.state, inputs, {}, "selection", publish)
 
 func refresh(inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	return _submit(_state, inputs, {}, "growth", publish)
 
 static func _initial(parameters: Dictionary) -> Dictionary:

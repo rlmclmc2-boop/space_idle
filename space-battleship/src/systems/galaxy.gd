@@ -1,4 +1,5 @@
 extends RefCounted
+var _run_state
 ## Region work, RNG, opening rules and contribution ledgers have one owner.
 signal status_changed(keys: Array)
 signal availability_changed
@@ -12,7 +13,8 @@ var _factors: Dictionary = {}
 var _initial_error: String = ""
 var _api
 
-func _init(rows: Array, buildings: Array, rules: Array, api) -> void:
+func _init(rows: Array, buildings: Array, rules: Array, api, run_state) -> void:
+	_run_state = run_state
 	for row in rows: _definitions[str(row.key)] = row
 	for row in buildings: _buildings[str(row.key)] = row
 	for row in rules: _rules[str(row.key)] = row.value
@@ -25,6 +27,7 @@ func initialization_result() -> Dictionary:
 	return {"ok": _initial_error.is_empty(), "reason": _initial_error}
 
 func refresh_availability(unlocked: Callable, cleared_stages: Dictionary) -> void:
+	if not _run_state.is_running(): return
 	var enabled: bool = bool(unlocked.call("feature", "galaxy"))
 	var next: Dictionary = {}
 	for key in _regions:
@@ -42,17 +45,22 @@ func assignment_admission(key: String) -> Dictionary:
 	return {"ok": true} if is_available(key) else {"ok": false, "reason": "GalaxyUnavailable"}
 
 func contributions(changes: Array = []) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var output = _contributions(_regions, _buildings, _api, _factors, changes)
-	if output.ok: _factors = output
-	return output
+	if not output.ok: return output
+	_factors = output
+	return {"ok": true, "values": output["values"].duplicate(), "growth_changed": output.get("growth_changed", false)}
 
 func advance(counts: Dictionary, dt: float) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _advance(_regions, _definitions, _buildings, counts, _available, dt, float(_rules.income_interval))
 	if not result.ok: return result
 	if not result.displayed.is_empty(): status_changed.emit(result.displayed)
 	if not result.changes.is_empty():
 		result.contributions = contributions(result.changes)
 		if not result.contributions.ok: return result.contributions
+	result.erase("changes")
+	result.erase("displayed")
 	return result
 
 func income(region: String, production_rates: Dictionary, seconds: float) -> Dictionary:

@@ -1,4 +1,5 @@
 extends RefCounted
+var _run_state
 const BattleSchema = preload("res://src/combat_setup.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 
@@ -17,7 +18,8 @@ var _api
 var _cooldown: float
 var _material_gate: int
 
-func _init(rows: Array, evolution_rows: Array, unlocks: Array, parameters: Dictionary, rules: Dictionary, api) -> void:
+func _init(rows: Array, evolution_rows: Array, unlocks: Array, parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
+	_run_state = run_state
 	for row in rows: _definitions[str(row.name)] = row
 	for row in evolution_rows: _evolution[str(row.key)] = row.value
 	for row in unlocks:
@@ -27,6 +29,7 @@ func _init(rows: Array, evolution_rows: Array, unlocks: Array, parameters: Dicti
 	_api = api
 
 func refresh_availability(unlocked: Callable, highest_reached: int) -> void:
+	if not _run_state.is_running(): return
 	var next: Dictionary = {}
 	for key in _definitions: next[key] = bool(unlocked.call("equipment", key))
 	var material: bool = highest_reached >= _material_gate
@@ -36,6 +39,7 @@ func refresh_availability(unlocked: Callable, highest_reached: int) -> void:
 		options_changed.emit()
 
 func initialize_slots(starts: String, mounts: Dictionary) -> void:
+	if not _run_state.is_running(): return
 	var initial: Dictionary = {"weapon": [], "defence": []}
 	for candidate in starts.split(","):
 		if not _available.get(candidate, false): continue
@@ -67,6 +71,7 @@ func equipped_armours(mounts: Dictionary, candidate = null) -> int:
 	return _armour_count(_slots_for(mounts, candidate))
 
 func clear_switch_locks() -> void:
+	if not _run_state.is_running(): return
 	for source in [_slots, _pending_slots]:
 		for slot in source: slot.switch_ready_at = 0.0
 
@@ -88,8 +93,8 @@ func panel_equipment(id: String) -> Array:
 		options.append({"id": key, "name": label(key), "enabled": _available.get(key, false)})
 	return options
 
-func price_text(id: String, highest_reached: int) -> String:
-	var quote = quote_slot(id, 1, highest_reached)
+func price_text(id: String) -> String:
+	var quote = quote_slot(id, 1)
 	var prices: PackedStringArray = []
 	if quote.ok:
 		for resource in quote.costs:
@@ -99,7 +104,7 @@ func price_text(id: String, highest_reached: int) -> String:
 
 func _submit_levels(next: Array, balances: Dictionary, changed: Array, publish: Callable) -> Dictionary:
 	_pending_slots = next
-	var result: Dictionary = publish.call(next, balances, changed)
+	var result: Dictionary = publish.call(balances, changed)
 	_pending_slots = []
 	if result.ok:
 		_slots = next
@@ -387,6 +392,7 @@ static func _armour_count(slots: Array) -> int:
 	return count
 
 func buy_levels(slot_id: String, count: int, inputs: Dictionary, pay: Callable, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var index: int = -1
 	for candidate in _slots.size():
 		if _slots[candidate].id == slot_id:
@@ -395,7 +401,7 @@ func buy_levels(slot_id: String, count: int, inputs: Dictionary, pay: Callable, 
 		return {"ok": false, "reason": "UnknownSlot"}
 	var slot: Dictionary = _slots[index]
 	var row: Dictionary = _definitions.laser if slot.category == "weapon" else _definitions.armour
-	var quote = _quote_levels(row, int(slot.paid_level), count, _evolution, int(inputs.highest_reached) >= _material_gate, _api)
+	var quote = _quote_levels(row, int(slot.paid_level), count, _evolution, _material_available, _api)
 	return _buy_quoted_levels(index, quote, inputs, pay, publish)
 
 func _buy_quoted_levels(index: int, quote: Dictionary, inputs: Dictionary, pay: Callable, publish: Callable) -> Dictionary:
@@ -407,6 +413,7 @@ func _buy_quoted_levels(index: int, quote: Dictionary, inputs: Dictionary, pay: 
 	return _submit_levels(next, paid.wallet, [next[index]], publish)
 
 func equip_slot(slot_id: String, equipment_id: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var index: int = -1
 	for candidate in _slots.size():
 		if _slots[candidate].id == slot_id:
@@ -431,30 +438,32 @@ func equip_slot(slot_id: String, equipment_id: String, inputs: Dictionary, publi
 	next[index].switch_ready_at = float(inputs.game_time) + _cooldown
 	return _submit_refit(next, inputs.balances, publish)
 
-func quote_slot(slot_id: String, count: int, highest_reached: int) -> Dictionary:
+func quote_slot(slot_id: String, count: int) -> Dictionary:
 	for slot in _slots:
 		if str(slot.id) == slot_id:
 			var row: Dictionary = _definitions.laser if slot.category == "weapon" else _definitions.armour
-			return _quote_levels(row, int(slot.paid_level), count, _evolution, highest_reached >= _material_gate, _api)
+			return _quote_levels(row, int(slot.paid_level), count, _evolution, _material_available, _api)
 	return {"ok": false, "reason": "UnknownSlot"}
 
 func buy_max_levels(slot_id: String, inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	for index in _slots.size():
 		if str(_slots[index].id) == slot_id:
 			return _buy_quoted_levels(index, _quote_affordable_levels(
 				_definitions.laser if _slots[index].category == "weapon" else _definitions.armour,
-				int(_slots[index].paid_level), _evolution, int(inputs.highest_reached) >= _material_gate,
+				int(_slots[index].paid_level), _evolution, _material_available,
 				_api, func(costs): return bool(can_pay.call(costs, inputs.balances))), inputs, pay, publish)
 	return {"ok": false, "reason": "UnknownSlot"}
 
 func buy_all_levels(count: int, maximum: bool, inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var purchased: Array = []
 	var changed: Array = []
 	var next: Array = _slots.duplicate(true)
 	var balances: Dictionary = inputs.balances
 	var failure: Dictionary = {}
 	var mounts: Dictionary = inputs.mounts
-	var material_unlocked: bool = int(inputs.highest_reached) >= _material_gate
+	var material_unlocked: bool = _material_available
 	for category in ["weapon", "defence"]:
 		for slot in next:
 			if slot.category != category or int(slot.index) >= int(mounts[category]):
@@ -479,6 +488,7 @@ func buy_all_levels(count: int, maximum: bool, inputs: Dictionary, can_pay: Call
 	return {"ok": not purchased.is_empty(), "reason": "NoChange" if purchased.is_empty() else "", "slots": purchased}
 
 func resize_mounts(current: Dictionary, target: Dictionary, balances: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var next: Array = _slots.duplicate(true)
 	for category in ["weapon", "defence"]:
 		var old_count: int = int(current[category])
@@ -500,6 +510,7 @@ func resize_mounts(current: Dictionary, target: Dictionary, balances: Dictionary
 	return _submit_refit(next, balances, publish)
 
 func values(mounts: Dictionary, extra_levels: int, ai: Dictionary, reactor: Dictionary, weapons: bool, defences: bool, candidate = null) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var slots: Array = _slots_for(mounts, candidate)
 	var definitions: Dictionary = _definitions
 	var evolution: Dictionary = _evolution
@@ -519,6 +530,7 @@ func values(mounts: Dictionary, extra_levels: int, ai: Dictionary, reactor: Dict
 
 func mounted_configuration(mounts: Dictionary, candidate, extra_levels: int, ai: Dictionary, reactor: Dictionary,
 		player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary, motion: Dictionary, external: Array) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var slots: Array = _slots_for(mounts, candidate)
 	var base_values = values(mounts, extra_levels, ai, reactor, true, true, candidate)
 	if not base_values.ok: return base_values
@@ -549,6 +561,7 @@ func mounted_configuration(mounts: Dictionary, candidate, extra_levels: int, ai:
 	return {"ok": true, "weapons": weapons, "defences": defences, "values": base_values}
 
 func apply_external(values: Dictionary, mounts: Dictionary, external: Array) -> void:
+	if not _run_state.is_running(): return
 	for slot in _slots_for(mounts):
 		if str(slot.equipment_id).is_empty(): continue
 		var group: String = "weapons" if slot.category == "weapon" else "defences"

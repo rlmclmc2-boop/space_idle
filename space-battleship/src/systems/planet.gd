@@ -1,4 +1,5 @@
 extends RefCounted
+var _run_state
 ## Exploration/construction retain no personnel state; callers provide current crew views.
 signal status_changed(ids: Array)
 signal buildings_changed(ids: Array)
@@ -14,7 +15,8 @@ var _available: Dictionary = {}
 var _factors: Dictionary = {}
 var _api
 
-func _init(rows: Array, buildings: Array, buffs: Array, api) -> void:
+func _init(rows: Array, buildings: Array, buffs: Array, api, run_state) -> void:
+	_run_state = run_state
 	for row in rows: _definitions[str(int(row.id))] = row
 	for row in buildings: _buildings[str(row.id)] = row
 	_buffs = buffs
@@ -22,6 +24,7 @@ func _init(rows: Array, buildings: Array, buffs: Array, api) -> void:
 	_state = _initial(_definitions, _buildings)
 
 func refresh_availability(unlocked: Callable) -> void:
+	if not _run_state.is_running(): return
 	for id in _definitions: _gates[id] = bool(unlocked.call("planet", id))
 	_refresh_available()
 
@@ -45,21 +48,25 @@ func assignment_capacity(kind: String, target: String) -> Dictionary:
 	return {"ok": true, "capacity": int(_buildings[parts[1]].extra_crew)}
 
 func set_explorer(id: String, assigned: bool) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _set_explorer(_state[id], _definitions[id], assigned)
 	status_changed.emit([id])
 	return result
 
 func cancel(id: String) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if not _state.has(id): return {"ok": false, "reason": "UnknownPlanet"}
 	_cancel(_state[id])
 	status_changed.emit([id])
 	return {"ok": true}
 
 func set_automatic(id: String, enabled: bool) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if not is_available(id): return {"ok": false, "reason": "PlanetLocked"}
 	return _set_automatic(_state[id], enabled)
 
 func claim_build(id: String, building: String, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if not is_available(id): return {"ok": false, "reason": "PlanetLocked"}
 	var claimed = _claim_build(_state[id], building)
 	if not claimed.ok: return claimed
@@ -70,15 +77,19 @@ func claim_build(id: String, building: String, publish: Callable) -> Dictionary:
 	return publish.call(output)
 
 func contributions(changes: Dictionary = {}) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var output = _contributions(_state, _buildings, _buffs, _api, _factors, changes)
-	if output.ok: _factors = output
-	return output
+	if not output.ok: return output
+	_factors = output
+	return {"ok": true, "equipment": output.equipment, "refinery": output.refinery,
+		"equipment_levels": output.equipment_levels, "enhancement_levels": output.enhancement_levels, "free_charge": output.free_charge}
 
 func advance(explorers: Dictionary, builders: Dictionary, dt: float, experience_context: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _advance(_state, _definitions, _buildings, explorers, builders, dt)
 	if not result.ok: return result
 	if not result.progressed.is_empty(): status_changed.emit(result.progressed)
-	if result.completed.is_empty(): return result
+	if result.completed.is_empty(): return {"ok": true, "completed": []}
 	var context: Dictionary = experience_context.call()
 	var changes: Dictionary = {}
 	for completion in result.completed:
@@ -86,6 +97,8 @@ func advance(explorers: Dictionary, builders: Dictionary, dt: float, experience_
 		changes[id] = []
 		if completion.buildings_changed: buildings_changed.emit([id])
 		if completion.assignments_changed: assignment_options_changed.emit([id])
+		completion.erase("buildings_changed")
+		completion.erase("assignments_changed")
 		completion.award_experience = context.enabled
 		if context.enabled:
 			var earned = _experience_reward(_definitions[id], context.ratio, context.factor, _api)
@@ -94,7 +107,7 @@ func advance(explorers: Dictionary, builders: Dictionary, dt: float, experience_
 			completion.share_experience = _buff(_state, _buffs, "crew_exp_share", "all", id) > 0
 	result.contributions = contributions(changes)
 	if not result.contributions.ok: return result.contributions
-	return result
+	return {"ok": true, "completed": result.completed, "contributions": result.contributions}
 
 func planet_options() -> Array:
 	var rows: Array = []

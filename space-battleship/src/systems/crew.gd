@@ -1,4 +1,5 @@
 extends RefCounted
+var _run_state
 signal members_changed(ids: Array)
 signal options_changed
 const FACTOR_JOBS := {"equipment_upgrade": "equipment", "reactor_upgrade": "capacity", "jewel_auto": "fragments", "hightech_scientists": "research"}
@@ -14,7 +15,8 @@ var _factors: Dictionary = {}
 var _dirty_jobs: Array = []
 var _api
 
-func _init(rows: Array, rules: Array, jobs: Array, api) -> void:
+func _init(rows: Array, rules: Array, jobs: Array, api, run_state) -> void:
+	_run_state = run_state
 	for row in rows: _definitions[str(row.id)] = row
 	for row in rules: _rules[str(row.id)] = row.value
 	for row in jobs: _jobs[str(row.id)] = row
@@ -22,6 +24,7 @@ func _init(rows: Array, rules: Array, jobs: Array, api) -> void:
 	_members = _initial(_definitions, api)
 
 func refresh_availability(unlocked: Callable) -> void:
+	if not _run_state.is_running(): return
 	var next: Dictionary = {}
 	for id in _definitions: next[id] = bool(unlocked.call("crew", id))
 	var features := {"levels": bool(unlocked.call("feature", "crew_level")), "jewels": bool(unlocked.call("feature", "jewels")), "reactor": bool(unlocked.call("feature", "reactor"))}
@@ -38,16 +41,18 @@ func _mark_jobs(jobs: Array) -> void:
 		if job not in _dirty_jobs: _dirty_jobs.append(job)
 
 func contributions() -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _contributions(_members, _definitions, _jobs, _rules, _api, _factors, _dirty_jobs)
 	if result.ok:
 		_factors = result
 		_dirty_jobs = []
-	return result
+	return result.duplicate()
 
 func step_assignments() -> Dictionary:
 	return _step_assignments(_members)
 
 func assign(id: String, kind: String, target: String, mode: String, target_admission: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	if not _members.has(id) or not _available.get(id, false): return {"ok": false, "reason": "CrewLocked"}
 	var capacity: int = 0
 	if kind == "system_job":
@@ -70,11 +75,13 @@ func assign(id: String, kind: String, target: String, mode: String, target_admis
 	return {"ok": true, "old_kind": old_kind, "old_target": old_target, "effects_changed": not changed.jobs.is_empty()}
 
 func release(kind: String, target: String) -> Array:
+	if not _run_state.is_running(): return []
 	var ids = _release(_members, kind, target)
 	if not ids.is_empty(): members_changed.emit(ids)
 	return ids
 
 func award_exploration(explorer: String, share: bool, amount: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _add_experience(_members, _members.keys() if share else [explorer], amount, _rules, _api)
 	if result.ok:
 		_mark_jobs(result.jobs)
@@ -83,6 +90,7 @@ func award_exploration(explorer: String, share: bool, amount: Dictionary) -> Dic
 	return result
 
 func advance_jobs(ids: Array, dt: float) -> Array:
+	if not _run_state.is_running(): return []
 	var requests: Array = []
 	for attempt in _advance_jobs(_members, ids, _jobs, dt):
 		if attempt.job == "equipment_upgrade": requests.append({"module": "equipment", "count": 1 if attempt.mode == "max" else int(attempt.mode), "maximum": attempt.mode == "max"})

@@ -1,18 +1,18 @@
 extends RefCounted
+var _run_state
 
 signal choices_changed
 
 var _state: Dictionary
 var _definitions: Dictionary = {}
 var _rules: Dictionary = {}
-var _unlocks: Array
 var _api
 
-func _init(rows: Array, rules: Dictionary, unlocks: Array, api) -> void:
+func _init(rows: Array, rules: Dictionary, api, run_state) -> void:
+	_run_state = run_state
 	for row in rows: _definitions[str(row.id)] = row
 	for key in rules:
 		if str(key).begins_with("research_"): _rules[key] = rules[key]
-	_unlocks = unlocks
 	_api = api
 	_state = _initial(_rules)
 
@@ -39,34 +39,27 @@ static func _initial(rules: Dictionary) -> Dictionary:
 		"peaks": {}, "required_work": {}, "gates": {}, "available": {}}
 
 func select(id: String) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var state: Dictionary = _state
 	if not state.available.get(id, false):
 		return {"ok": false, "reason": "ResearchLocked"}
 	state.current = id
 	return {"ok": true}
 
-# Campaign supplies progress facts and the shared unlock table, never per-research gates.
-func refresh_progress(highest_reached: int, cleared_stages: Dictionary) -> void:
+# Research interprets its fields; generic progress availability has one authority.
+func refresh_progress(unlocked: Callable) -> void:
+	if not _run_state.is_running(): return
 	var state: Dictionary = _state
 	var definitions: Dictionary = _definitions
-	var unlocks: Array = _unlocks
 	var gates: Dictionary = {}
 	for key in definitions:
 		var row: Dictionary = definitions[key]
-		gates[key] = (row.legacy_unlock == null or _progress_unlocked("hightech", str(row.legacy_unlock), unlocks, highest_reached, cleared_stages)) and (row.unlock == null or _progress_unlocked("feature", "jewels", unlocks, highest_reached, cleared_stages))
+		gates[key] = (row.legacy_unlock == null or bool(unlocked.call("hightech", str(row.legacy_unlock)))) and (row.unlock == null or bool(unlocked.call("feature", "jewels")))
 	if state.gates == gates and not state.available.is_empty(): return
 	state.gates = gates
 	var previous: Dictionary = state.available.duplicate()
 	_refresh_available(state, definitions)
 	if state.available != previous: choices_changed.emit()
-
-static func _progress_unlocked(kind: String, target: String, unlocks: Array, highest_reached: int, cleared_stages: Dictionary) -> bool:
-	for row in unlocks:
-		if str(row.type) != kind or str(row.target) != target: continue
-		var gate: int = int(row.level)
-		if gate == 0: return true
-		return highest_reached > gate if row.mode == "reached" else cleared_stages.has(gate)
-	return false
 
 static func _refresh_available(state: Dictionary, definitions: Dictionary) -> void:
 	for id in definitions: state.available[id] = _available(definitions[id], state.levels, state.gates)
@@ -76,11 +69,13 @@ func choices() -> Dictionary:
 	return state.available.duplicate()
 
 func set_investment_text(resource: String, text: String) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var quantity = _api.apply("from_decimal", [text])
 	if not quantity.ok: return quantity
 	return set_investment(resource, quantity.value)
 
 func set_investment(resource: String, quantity: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var state: Dictionary = _state
 	var api = _api
 	if resource not in ["1", "2"]: return {"ok": false, "reason": "InvalidResearchResource"}
@@ -90,6 +85,7 @@ func set_investment(resource: String, quantity: Dictionary) -> Dictionary:
 	return {"ok": true}
 
 func set_automatic(enabled: bool, ratio: float) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var state: Dictionary = _state
 	var rules: Dictionary = _rules
 	if not is_finite(ratio) or ratio < float(rules.research_minimum_ratio) or ratio > 1.0:
@@ -104,6 +100,7 @@ func automatic_due(assigned: bool) -> bool:
 	return assigned and state.auto_invest and float(state.refresh_elapsed) >= float(rules.research_income_window)
 
 func contributions() -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var state: Dictionary = _state
 	var definitions: Dictionary = _definitions
 	var rules: Dictionary = _rules
@@ -178,6 +175,7 @@ static func _factor(state: Dictionary, definitions: Dictionary, effect: String, 
 	return value
 
 func refresh_income(peak_rates: Dictionary, investment_rates: Dictionary, income_changed: bool, automatic_due: bool) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var state: Dictionary = _state
 	var definitions: Dictionary = _definitions
 	var rules: Dictionary = _rules
@@ -250,6 +248,7 @@ static func _select_shortest(state: Dictionary, definitions: Dictionary, api) ->
 	return {"ok": true}
 
 func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_research: bool) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var state: Dictionary = _state
 	var definitions: Dictionary = _definitions
 	var rules: Dictionary = _rules
