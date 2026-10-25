@@ -2666,7 +2666,7 @@ class SpaceCombatKernel : public RefCounted {
         uint64_t serial = 0;
         Ref<SpaceMotionLease> motion;
         int kind = 0, type = 0, ticks = 0, links = 0;
-        bool hostile = false, chain = false, beam = false, fixed = false, awaiting = false, powered = false;
+        bool hostile = false, beam = false, fixed = false, awaiting = false, powered = false;
         Vector2 launch, ray_origin, ray_step;
         double age = 0, charge = 0, ramp = 1;
     };
@@ -2681,7 +2681,7 @@ class SpaceCombatKernel : public RefCounted {
         if (id >= flights.size() || !flights[id].live) return false;
         const Flight &f = flights[id];
         view.serial = f.serial; view.motion = f.lease; view.kind = f.instance->attack->birth->kind;
-        view.hostile = f.hostile; view.chain = f.chain; view.beam = f.beam; view.type = f.type;
+        view.hostile = f.hostile; view.beam = f.beam; view.type = f.type;
         view.awaiting = f.await_target; view.powered = view.kind == 2 && !f.chain && !f.target_lost;
         view.fixed = f.fixed_ray; view.launch = f.launch_point;
         view.ray_origin = f.ray_origin;
