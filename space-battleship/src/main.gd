@@ -445,7 +445,7 @@ func _picker_value(picker: OptionButton, fallback = ""):
 
 func _setup_world_controls(box: Control) -> void:
 	_caption(box, "船员与星球")
-	_caption(box, "星球通关30、星系通关60后开放。")
+	_caption(box, "随进度逐步开放星球与星系。")
 	world_status = Label.new()
 	world_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(world_status)
@@ -487,11 +487,15 @@ func _refresh_world_pickers() -> void:
 	if world_crew_picker == null:
 		return
 	var selected: String = str(_picker_value(world_crew_picker))
+	var show_levels: bool = session.unlocked("feature", "crew_level")
 	world_crew_picker.clear()
 	for id in session.crew_definitions:
 		if not session.unlocked("crew", id): continue
 		var index: int = world_crew_picker.item_count
-		world_crew_picker.add_item(str(session.crew_definitions[id].name) + " · Lv." + str(session.crew_progress[id].level))
+		var crew_label: String = str(session.crew_definitions[id].name)
+		if show_levels:
+			crew_label += " · Lv." + str(session.crew_progress[id].level)
+		world_crew_picker.add_item(crew_label)
 		world_crew_picker.set_item_metadata(index, id)
 		if id == selected: world_crew_picker.select(index)
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
@@ -532,6 +536,7 @@ func _refresh_world_buildings() -> void:
 
 func _refresh_world_status() -> void:
 	var lines: PackedStringArray = []
+	var show_levels: bool = session.unlocked("feature", "crew_level")
 	for id in session.crew_progress:
 		if not session.unlocked("crew", id): continue
 		var member: Dictionary = session.crew_progress[id]
@@ -540,8 +545,11 @@ func _refresh_world_status() -> void:
 		elif member.kind == "planet_explore": job = "星球探索"
 		elif member.kind == "planet_build": job = "建筑施工"
 		elif member.kind == "galaxy": job = "星系建设"
-		var experience = session.amount_api.apply("to_display", [member.exp])
-		lines.append("%s Lv.%d · %s · 经验 %s" % [session.crew_definitions[id].name, int(member.level), job, experience.text])
+		if show_levels:
+			var experience = session.amount_api.apply("to_display", [member.exp])
+			lines.append("%s Lv.%d · %s · 经验 %s" % [session.crew_definitions[id].name, int(member.level), job, experience.text])
+		else:
+			lines.append("%s · %s" % [session.crew_definitions[id].name, job])
 	for id in session.planet_progress:
 		if not session.planet_unlocked(id): continue
 		var progress: Dictionary = session.planet_progress[id]
@@ -563,4 +571,4 @@ func _refresh_world_status() -> void:
 		if not str(region.active_node).is_empty():
 			var work: Dictionary = region.nodes[str(region.active_node)]
 			lines.append("%s · %s" % [session.galaxy_buildings[work.building].name, "剩余探索工作 %.1f" % float(work.explore_remaining) if not work.explored else "剩余施工 %.1f 秒" % float(work.construction_remaining)])
-	world_status.text = "\n".join(lines) if not lines.is_empty() else "通关第 10 关后解锁首位船员。"
+	world_status.text = "\n".join(lines) if not lines.is_empty() else "继续推进关卡以解锁船员。"
