@@ -68,7 +68,7 @@ func move_forward(effect: String, inputs: Dictionary, publish: Callable) -> Dict
 
 func set_branch(effect: String, node: int, choice: String, inputs: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	var changed = _choose(_state, effect, node, choice, _rules, bool(inputs.unlocked.call("feature", "jewels")))
+	var changed = _choose(_state, effect, node, choice, _rules, bool(inputs.unlocked.call("feature", "jewels")), int(inputs.bonus))
 	if not changed.ok: return changed
 	return _submit(changed.state, inputs, {}, "selection", publish)
 
@@ -76,8 +76,12 @@ static func _initial() -> Dictionary:
 	return {"level": 0, "extra_levels": 0, "weapon_order": WEAPON.duplicate(),
 		"defence_order": DEFENCE.duplicate(), "branches": {}}
 
-static func _describe(state: Dictionary, rules: Dictionary, available: bool) -> Dictionary:
-	var level: int = int(state.level) + int(state.extra_levels)
+static func _effective_level(state: Dictionary, bonus: int) -> Dictionary:
+	if int(state.extra_levels) > 9223372036854775807 - bonus or int(state.level) > 9223372036854775807 - int(state.extra_levels) - bonus:
+		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
+	return {"ok": true, "level": int(state.level) + (int(state.extra_levels) + bonus)}
+
+static func _describe(state: Dictionary, level: int, rules: Dictionary, available: bool) -> Dictionary:
 	var effects: Dictionary = {}
 	for order in [state.weapon_order, state.defence_order]:
 		for position in order.size():
@@ -96,11 +100,9 @@ static func _describe(state: Dictionary, rules: Dictionary, available: bool) -> 
 	return {"level": level, "effects": effects, "rules": rules}
 
 static func _combat(state: Dictionary, bonus: int, rules: Dictionary, available: bool, armours: int) -> Dictionary:
-	if int(state.extra_levels) > 9223372036854775807 - bonus or int(state.level) > 9223372036854775807 - int(state.extra_levels) - bonus:
-		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
-	var effective: Dictionary = state.duplicate()
-	effective.extra_levels = int(state.extra_levels) + bonus
-	var description: Dictionary = _describe(effective, rules, available)
+	var effective = _effective_level(state, bonus)
+	if not effective.ok: return effective
+	var description: Dictionary = _describe(state, int(effective.level), rules, available)
 	var enabled: Dictionary = description.effects
 	var level: int = int(description.level)
 	var flags: Dictionary = {}
@@ -151,12 +153,14 @@ static func _reorder(state: Dictionary, category: String, order: Array) -> Dicti
 	next[category + "_order"] = order.duplicate()
 	return {"ok": true, "state": next}
 
-static func _choose(state: Dictionary, effect: String, node: int, choice: String, rules: Dictionary, available: bool) -> Dictionary:
+static func _choose(state: Dictionary, effect: String, node: int, choice: String, rules: Dictionary, available: bool, bonus: int) -> Dictionary:
 	if node < 0 or node > 2 or choice not in ["A", "B"]:
 		return {"ok": false, "reason": "InvalidEnhancementBranch"}
+	var effective = _effective_level(state, bonus)
+	if not effective.ok: return effective
 	var order: Array = state.weapon_order if effect in WEAPON else state.defence_order if effect in DEFENCE else []
 	var position: int = order.find(effect)
-	if not available or position < 0 or int(state.level) + int(state.extra_levels) < int(rules["branch_threshold_" + str(node + 1)]) + int(rules["branch_position_offset_" + str(position + 1)]):
+	if not available or position < 0 or int(effective.level) < int(rules["branch_threshold_" + str(node + 1)]) + int(rules["branch_position_offset_" + str(position + 1)]):
 		return {"ok": false, "reason": "EnhancementBranchLocked"}
 	var next: Dictionary = state.duplicate(true)
 	var choices: Array = next.branches.get(effect, ["", "", ""])
