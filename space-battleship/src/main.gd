@@ -48,10 +48,6 @@ func _ready() -> void:
 		return
 	get_window().content_scale_size = Vector2i(int(session.geometry.view_width), int(session.geometry.view_height))
 	kernel = session.kernel
-	# Mode is chosen by the entry once. Display code only reads kernel data.
-	if kernel.set_compact_laser_births(true) < 0:
-		startup_error = "原生显示初始化失败"
-		return
 	_setup_native_display()
 	result = session.start_sortie(1)
 	if not result.ok:

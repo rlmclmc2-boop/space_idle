@@ -23,9 +23,8 @@ class SpaceCombatFlightFrame : public RefCounted {
     std::vector<PreparedFlight> flights;
     std::vector<size_t> order, background;
 protected:
-    static void _bind_methods(){ClassDB::bind_method(D_METHOD("size"),&SpaceCombatFlightFrame::size);}
+    static void _bind_methods(){}
 public:
-    int64_t size() const{return order.size();}
 };
 class SpaceCombatPresentation : public RefCounted {
     GDCLASS(SpaceCombatPresentation,RefCounted)
@@ -42,7 +41,6 @@ class SpaceCombatPresentation : public RefCounted {
     std::vector<float> retained_upload;
     std::vector<RID> retained_canvases;
     size_t retained_cursor=0;
-    int64_t retained_advances=0,retained_births=0,retained_draws=0,retained_upload_bytes=0;
     void clear_retained_frame() {
         if(retained_frame.is_valid()){retained_frame->order.clear();retained_frame->background.clear();retained_frame->flights.clear();}
         retained_frame.unref();retained_kernel.unref();
@@ -69,12 +67,7 @@ class SpaceCombatPresentation : public RefCounted {
     bool templates_ready = false;
     bool logical_coordinates = false;
     Vector2 display_point(Vector2 point) const { return logical_coordinates ? point : battle_point(point); }
-    Vector2 logical_point(Vector2 point) const { return logical_coordinates ? point : inverse_battle_point(point); }
     Ref<ArrayMesh> pulse_mesh;
-    std::vector<Ref<MultiMesh>> pulse_pool;
-    std::vector<PackedFloat32Array> pulse_buffers;
-    std::vector<Transform2D> pulse_transforms;
-    size_t pulse_cursor = 0;
     struct ContactEvent {Vector2 point,direction;double born;bool launch,critical;int type;};
     std::array<std::vector<ContactEvent>,2> contact_events;
     std::vector<Vector2> contact_path;
@@ -84,7 +77,6 @@ class SpaceCombatPresentation : public RefCounted {
     std::array<PackedFloat32Array,2> gpu_contact_buffers;
     std::array<bool,2> contact_dirty{{true,true}};
     double contact_epoch=0;
-    int64_t gpu_contact_uploads=0,gpu_contact_instances=0;
     bool draw_gpu_contacts(double now,bool pulse_enabled);
 
     void tri(Vector2 a, Vector2 b, Vector2 c, Color ca, Color cb, Color cc) {
@@ -102,7 +94,6 @@ class SpaceCombatPresentation : public RefCounted {
     }
     void prepare_templates();
     void prepare_pulse_mesh();
-    void flush_pulses(RID canvas);
     void template_at(const std::vector<Vector2>& points, const std::vector<Color>& tints, Vector2 point, Vector2 axis) {
         Transform2D transform(double(axis.angle()) + Math::PI / 2.0, point);
         for (size_t i = 0; i < points.size(); ++i) { vertices.push_back(transform.xform(points[i])); colors.push_back(tints[i]); }
@@ -121,39 +112,6 @@ public:
         for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
         retained_upload.clear();
     }
-    Dictionary retained_metrics() const {Dictionary d;d["advances"]=retained_advances;d["births"]=retained_births;d["draws"]=retained_draws;d["upload_bytes"]=retained_upload_bytes;d["live"]=retained_frame.is_valid()?retained_frame->size():0;return d;}
-    Vector2 battle_logical_point(Vector2 point) const { return logical_point(point); }
-    double rotated_outlines_min_y(const Array &outlines,double angle) const {
-        // Same per-vertex float rotation as Vector2.rotated in the script solver.
-        // Batch the reduction across the ABI; no shape approximation or cache.
-        double top=0.0;
-        for(int i=0;i<outlines.size();++i) {
-            PackedVector2Array outline=outlines[i];
-            for(int j=0;j<outline.size();++j)top=std::min(top,double(outline[j].rotated(angle).y));
-        }
-        return top;
-    }
-    Vector2 damage_text_position(Vector2 origin,const Dictionary &metrics,Vector2 limits,const Dictionary &excluded,const Array &occupied,const Array &enemies) const {
-        // One synchronous search over the caller's current layout. No cached text,
-        // identity, age or enemy state survives this invocation.
-        double width=metrics["width"],height=metrics["height"],ascent=metrics["ascent"];
-        std::vector<Rect2> text_bounds,enemy_bounds;
-        text_bounds.reserve(occupied.size());enemy_bounds.reserve(enemies.size());
-        for(int i=0;i<occupied.size();++i){Array row=occupied[i];if(!same(row[0],excluded))text_bounds.push_back(row[1]);}
-        for(int i=0;i<enemies.size();++i)enemy_bounds.push_back(enemies[i]);
-        for(int row=0;row<2;++row)for(int shift:{0,-56,56,-140,140}){
-            // Utility clamp preserves the script's edge behavior for text wider
-            // than the available view; do not use std::clamp with inverted limits.
-            Vector2 point(UtilityFunctions::clampf(double(origin.x)-width/2.0+shift,8.0,double(limits.x)-8.0-width),double(origin.y)-row*(height+8.0));
-            Rect2 bounds=Rect2(display_point(point)-Vector2(0,ascent),Vector2(width,height)).grow(4);
-            if(bounds.position.y<8||(bounds.position+bounds.size).y>double(limits.y)-8)continue;
-            bool blocked=false;Rect2 text_clearance=bounds.grow(8);
-            for(const Rect2 &other:text_bounds)if(text_clearance.intersects(other)){blocked=true;break;}
-            if(!blocked)for(const Rect2 &other:enemy_bounds)if(bounds.intersects(other)){blocked=true;break;}
-            if(!blocked)return point;
-        }
-        return Vector2(INFINITY,INFINITY);
-    }
     void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
         ERR_FAIL_INDEX(category,2);
         contact_events[category].push_back({point,direction,born,launch,critical,type});contact_dirty[category]=true;
@@ -162,7 +120,6 @@ public:
         for(int k=0;k<2;++k){auto &events=contact_events[k];size_t old_size=events.size();
             events.erase(std::remove_if(events.begin(),events.end(),[&](const ContactEvent &e){return (k==0&&clear_enemy)||!(now-e.born<(k==0?0.12:0.14));}),events.end());if(events.size()!=old_size)contact_dirty[k]=true;}
     }
-    void clear_contacts(){for(int k=0;k<2;++k){contact_events[k].clear();contact_dirty[k]=true;if(gpu_contact_batches[k].is_valid())gpu_contact_batches[k]->set_visible_instance_count(0);}}
     void configure_contact_gpu(Array meshes,RID canvas,Ref<ShaderMaterial> material) {
         gpu_contact_canvas=canvas;gpu_contact_material=material;
         for(int k=0;k<2;++k){gpu_contact_batches[k].unref();gpu_contact_buffers[k]=PackedFloat32Array();contact_dirty[k]=true;}
@@ -172,24 +129,13 @@ public:
             batch->set_custom_aabb(AABB(Vector3(-8192,-8192,-1),Vector3(16384,16384,2)));
         }
     }
-    Dictionary contact_gpu_metrics() const {Dictionary result;result["enabled"]=gpu_contact_canvas.is_valid();result["uploads"]=gpu_contact_uploads;result["uploaded_instances"]=gpu_contact_instances;return result;}
-    Array contact_snapshot(int category) const {
-        ERR_FAIL_INDEX_V(category,2,Array());
-        Array result;for(const ContactEvent &e:contact_events[category]){Dictionary d;d["position"]=e.point;d["direction"]=e.direction;d["born"]=e.born;
-            if(category==0){d["damage_type"]=e.type;if(e.launch)d["kind"]="fire";}
-            else {d["kind"]=e.launch?"fire":"hit";d["critical"]=e.critical;}result.push_back(d);}return result;
-    }
     void configure_surface(Ref<SpaceCombatKernel> kernel, RID canvas, Callable beams) {
         display_kernel=kernel; display_canvas=canvas; draw_beams=beams;
     }
-    bool supports_compact_lasers() const {
+    bool retained_ready() const {
         return display_kernel.is_valid() && retained_material.is_valid();
     }
     void begin() { prepare_templates(); vertices.clear(); colors.clear(); }
-    void chain_flight(Vector2 point, Vector2 direction) {
-        prepare_templates(); Vector2 axis = direction.is_zero_approx() ? Vector2(0,-1) : direction.normalized();
-        template_at(chain, chain_colors, point, axis);
-    }
     void paint(RID canvas) {
         if (vertices.empty()) return;
         packed_vertices.resize(vertices.size()); packed_colors.resize(colors.size());
@@ -337,7 +283,7 @@ bool SpaceCombatPresentation::draw_gpu_contacts(double now,bool pulse_enabled) {
                 row[8]=float(e.born-contact_epoch);row[9]=(e.type==2?100.0f:0.0f)+float(engine_angle(axis));row[10]=e.launch?11.0f:10.0f;row[11]=e.critical?1.0f:0.0f;
                 if(!p.is_finite()||!axis.is_finite()||(k==1&&e.launch&&axis.is_zero_approx())){row[0]=row[1]=row[4]=row[5]=0;row[3]=row[7]=0;}
             }
-            if(capacity>0)batch->set_buffer(buffer);++gpu_contact_uploads;gpu_contact_instances+=events.size();contact_dirty[k]=false;
+            if(capacity>0)batch->set_buffer(buffer);contact_dirty[k]=false;
         }
         batch->set_visible_instance_count(k==1&&!pulse_enabled?0:events.size());
         if(batch->get_visible_instance_count()>0)RenderingServer::get_singleton()->canvas_item_add_multimesh(gpu_contact_canvas,batch->get_rid());
@@ -399,31 +345,6 @@ void SpaceCombatPresentation::prepare_pulse_mesh() {
     Array arrays;arrays.resize(Mesh::ARRAY_MAX);arrays[Mesh::ARRAY_VERTEX]=points;arrays[Mesh::ARRAY_COLOR]=tints;arrays[Mesh::ARRAY_INDEX]=indices;
     pulse_mesh.instantiate();pulse_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES,arrays);begin();
 }
-void SpaceCombatPresentation::flush_pulses(RID canvas) {
-    if(pulse_transforms.empty())return;
-    if(pulse_cursor==pulse_pool.size()) {
-        Ref<MultiMesh> batch;batch.instantiate();batch->set_transform_format(MultiMesh::TRANSFORM_2D);batch->set_mesh(pulse_mesh);pulse_pool.push_back(batch);pulse_buffers.emplace_back();
-    }
-    const size_t slot=pulse_cursor++;
-    Ref<MultiMesh> batch=pulse_pool[slot];
-    if(batch->get_instance_count()<int64_t(pulse_transforms.size())) {
-        int capacity=std::max(8,batch->get_instance_count());while(capacity<int64_t(pulse_transforms.size()))capacity*=2;batch->set_instance_count(capacity);
-    }
-    // Godot 4.7.2 TRANSFORM_2D, without colors/custom data: two padded
-    // rows of four floats. Upload allocated capacity, draw only live instances.
-    PackedFloat32Array &buffer=pulse_buffers[slot];
-    const int64_t buffer_size=int64_t(batch->get_instance_count())*8;
-    if(buffer.size()!=buffer_size){buffer.resize(buffer_size);buffer.fill(0.0f);}
-    float *write=buffer.ptrw();
-    for(size_t i=0;i<pulse_transforms.size();++i) {
-        const Transform2D &t=pulse_transforms[i];float *row=write+i*8;
-        row[0]=t[0].x;row[1]=t[1].x;row[2]=0.0f;row[3]=t[2].x;
-        row[4]=t[0].y;row[5]=t[1].y;row[6]=0.0f;row[7]=t[2].y;
-    }
-    batch->set_buffer(buffer);
-    batch->set_visible_instance_count(pulse_transforms.size());
-    RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
-}
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Vector2 offset) {
     if(retained_frame.is_valid())prepare_retained(offset);
     return retained_frame;
@@ -434,22 +355,14 @@ void SpaceCombatPresentation::draw_flights(Ref<SpaceCombatFlightFrame> prepared,
 void SpaceCombatPresentation::advance_visuals() { advance_retained(); }
 #include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
-    ClassDB::bind_method(D_METHOD("supports_compact_lasers"),&SpaceCombatPresentation::supports_compact_lasers);
     ClassDB::bind_method(D_METHOD("configure_logical_coordinates","enabled"),&SpaceCombatPresentation::configure_logical_coordinates);
     ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
-    ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
     ClassDB::bind_method(D_METHOD("configure_contact_gpu","meshes","canvas","material"),&SpaceCombatPresentation::configure_contact_gpu);
-    ClassDB::bind_method(D_METHOD("contact_gpu_metrics"),&SpaceCombatPresentation::contact_gpu_metrics);
-    ClassDB::bind_method(D_METHOD("damage_text_position","origin","metrics","limits","excluded","occupied","enemies"),&SpaceCombatPresentation::damage_text_position);
-    ClassDB::bind_method(D_METHOD("battle_logical_point","point"),&SpaceCombatPresentation::battle_logical_point);
-    ClassDB::bind_method(D_METHOD("rotated_outlines_min_y","outlines","angle"),&SpaceCombatPresentation::rotated_outlines_min_y);
     ClassDB::bind_method(D_METHOD("advance_visuals"),&SpaceCombatPresentation::advance_visuals);
     ClassDB::bind_method(D_METHOD("configure_surface","kernel","canvas","beams"),&SpaceCombatPresentation::configure_surface);
     ClassDB::bind_method(D_METHOD("prepare_flights","offset"),&SpaceCombatPresentation::prepare_flights);
     ClassDB::bind_method(D_METHOD("draw_flights","flights","offset"),&SpaceCombatPresentation::draw_flights);
     ClassDB::bind_method(D_METHOD("record_contact","category","point","direction","born","launch","critical","type"),&SpaceCombatPresentation::record_contact);
     ClassDB::bind_method(D_METHOD("prune_contacts","now","clear_enemy"),&SpaceCombatPresentation::prune_contacts);
-    ClassDB::bind_method(D_METHOD("clear_contacts"),&SpaceCombatPresentation::clear_contacts);
-    ClassDB::bind_method(D_METHOD("contact_snapshot","category"),&SpaceCombatPresentation::contact_snapshot);
     ClassDB::bind_method(D_METHOD("draw_contacts","canvas","now","pulse_enabled"),&SpaceCombatPresentation::draw_contacts);
 }

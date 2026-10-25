@@ -2,10 +2,9 @@
 // Per-slot descriptors are populated only at birth; dynamic motion remains in its lease.
 bool SpaceCombatPresentation::advance_retained() {
     Ref<SpaceCombatKernel> kernel=display_kernel;
-    if(!supports_compact_lasers()||!kernel->presentation_running()) {
+    if(!retained_ready()||!kernel->presentation_running()) {
         clear_retained_frame();return false;
     }
-    ++retained_advances;
     if(retained_kernel!=kernel||retained_frame.is_null()) {
         clear_retained_frame();retained_kernel=kernel;retained_frame.instantiate();
     }
@@ -17,7 +16,7 @@ bool SpaceCombatPresentation::advance_retained() {
         if(!kernel->presentation_read(id,source))continue;
         auto &f=frame.flights[id];const bool born=f.motion!=source.motion;
         if(born) {
-            ++retained_births;f=PreparedFlight();f.serial=source.serial;
+            f=PreparedFlight();f.serial=source.serial;
             f.motion=source.motion;f.hostile=source.hostile;f.chain=source.chain;f.beam=source.beam;f.damage_type=source.type;
             f.kind=source.kind;
             f.fixed=source.fixed;
@@ -103,10 +102,10 @@ void SpaceCombatPresentation::flush_retained(RID canvas) {
     if(batch->get_instance_count()<count){int cap=std::max(8,batch->get_instance_count());while(cap<count)cap*=2;batch->set_instance_count(cap);}
     auto &buffer=retained_buffers[slot];int size=batch->get_instance_count()*12;if(buffer.size()!=size){buffer.resize(size);buffer.fill(0);}
     std::copy(retained_upload.begin(),retained_upload.end(),buffer.ptrw());batch->set_buffer(buffer);batch->set_visible_instance_count(count);
-    retained_upload_bytes+=size*sizeof(float);RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());retained_upload.clear();
+    RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());retained_upload.clear();
 }
 void SpaceCombatPresentation::draw_retained(Vector2 offset) {
-    ++retained_draws;prepare_retained_mesh();RID rid=display_canvas;
+    prepare_retained_mesh();RID rid=display_canvas;
     if(std::find(retained_canvases.begin(),retained_canvases.end(),rid)==retained_canvases.end()){retained_canvases.push_back(rid);RenderingServer::get_singleton()->canvas_item_set_material(rid,retained_material->get_rid());}
     double epoch=std::floor(retained_kernel->presentation_clock()/128.0)*128.0;
     retained_material->set_shader_parameter("simulation_clock",float(retained_kernel->presentation_clock()-epoch));
