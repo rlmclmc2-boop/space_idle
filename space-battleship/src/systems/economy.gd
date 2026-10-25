@@ -144,7 +144,9 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false, income_factors: Dictionary = {}) -> Dictionary:
 	# Stable birth order; collection never depends on Dictionary iteration order.
 	var collected: bool = false
-	var ids: Array = pending.keys()
+	var ids: Array = []
+	for id in pending:
+		if force or (not pending[id].get("moving", false) and float(pending[id].auto_at) <= game): ids.append(id)
 	ids.sort_custom(func(a, b):
 		var left: Dictionary = pending[a]
 		var right: Dictionary = pending[b]
@@ -152,11 +154,10 @@ static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array,
 		if str(left.domain) != str(right.domain): return str(left.domain) < str(right.domain)
 		return int(left.uid) < int(right.uid))
 	for id in ids:
-		if force or (not pending[id].get("moving", false) and float(pending[id].auto_at) <= game):
-			var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api, income_factors)
-			if not result.ok:
-				return result
-			collected = true
+		var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api, income_factors)
+		if not result.ok:
+			return result
+		collected = true
 	return {"ok": true, "collected": collected}
 
 static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resource: String,
@@ -192,7 +193,7 @@ static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples
 		target_y: float, auto_reduce: float, wall: float, game: float, amount_api, income_factors: Dictionary = {}) -> Dictionary:
 	var collected: bool = false
 	var ids: Array = pending.keys()
-	ids.sort_custom(func(a, b): return int(pending[a].uid) < int(pending[b].uid))
+	# Timed IDs are inserted monotonically; erasure preserves their insertion order.
 	for key in ids:
 		var row: Dictionary = pending[key]
 		if not row.get("moving", false):

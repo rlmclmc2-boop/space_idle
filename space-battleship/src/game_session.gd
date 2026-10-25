@@ -73,7 +73,7 @@ var slots: Array = []
 var seed_value: int = 1
 var next_enemy_uid: int = 0
 var campaign: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
-	"point": 0, "points": [], "highest_reached": 1, "lifetime_highest_reached": 1,
+	"point": 0, "points": [], "highest_reached": 1,
 	"cleared_stages": {}, "origin": 0.0, "speed": 0.0, "wait": 0.0}
 var wallet: Dictionary = {}
 var drops: Dictionary = {}
@@ -104,10 +104,7 @@ func take_display_changes() -> Dictionary:
 	return changed
 
 func research_choices() -> Dictionary:
-	var gates: Dictionary = _research_gates()
-	var choices: Dictionary = {}
-	for id in research_definitions: choices[id] = Research.available(research_definitions[id], research_progress.levels, gates)
-	return choices
+	return Research.choices(research_progress)
 
 func initialize(path: String, combat_seed: int) -> Dictionary:
 	if kernel != null:
@@ -197,15 +194,13 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		var image := Image.load_from_file(str(art.texture))
 		if image == null or image.is_empty():
 			return _fail("MissingHullAsset:" + str(key))
-		var logical_image := Image.load_from_file(str(art.get("geometry_texture", art.texture)))
+		var logical_path: String = str(art.get("geometry_texture", art.texture))
+		var logical_image := image if logical_path == str(art.texture) else Image.load_from_file(logical_path)
 		if logical_image == null or logical_image.is_empty():
 			return _fail("MissingGeometryAsset:" + str(key))
 		models[key] = {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()), "art": art,
 			"geometry_height": float(logical_image.get_height())}
-	var geometry_image := Image.load_from_file(str(player_art.get("geometry_texture", player_art.texture)))
-	if geometry_image == null or geometry_image.is_empty():
-		return _fail("MissingGeometryAsset")
-	player_geometry_height = float(geometry_image.get_height())
+	player_geometry_height = float(models[selected_ship].geometry_height)
 	player_dimensions = models[selected_ship].size * float(player_art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + selected_ship])
 	var starts: PackedStringArray = str(parameters.startEquip).split(",")
 	var starting_weapons: Array = []
@@ -227,6 +222,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 			"equipment_id": starting_defences[index] if index < starting_defences.size() else "",
 			"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
 	research_progress = Research.initial(rules)
+	_refresh_research_gates()
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	crew_progress = Crew.initial(crew_definitions, amount_api)
 	planet_progress = Planet.initial(planet_definitions, planet_buildings)
@@ -318,11 +314,13 @@ func frame(real_dt: float, _focused: bool) -> void:
 
 func _step(dt: float) -> void:
 	game_time += dt
-	if not _advance_planets(dt) or not _advance_galaxies(dt) or not _advance_crew_jobs(dt):
+	Economy.prune_income(income_samples, wall_time, game_time, float(rules.research_income_window))
+	var people: Dictionary = Crew.step_assignments(crew_progress)
+	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
 		return
 	if not _advance_timed_resources(dt):
 		return
-	var researched = Research.advance(research_progress, wallet, research_definitions, _research_gates(), dt, rules, amount_api, research_speed, crew_factors.research_staffed)
+	var researched = Research.advance(research_progress, wallet, research_definitions, dt, rules, amount_api, research_speed, crew_factors.research_staffed)
 	if not researched.ok:
 		_fail(str(researched.get("error", researched.get("reason", "ResearchFailed"))))
 		return
@@ -456,8 +454,10 @@ func _advance_kernel(dt: float) -> bool:
 			income_dirty = income_dirty or settled.collected
 			if not _refresh_growth():
 				return false
-			if not campaign.cleared_stages.has(int(campaign.stage)): _display_changed("unlocks")
-			campaign.cleared_stages[int(campaign.stage)] = true
+			if not campaign.cleared_stages.has(int(campaign.stage)):
+				campaign.cleared_stages[int(campaign.stage)] = true
+				_refresh_research_gates()
+				_display_changed("unlocks")
 			campaign.state = "waiting"
 			campaign.wait = _guard_interval() if _guard_matches() else float(rules.clear_wait_seconds)
 		elif _guard_matches():
@@ -546,9 +546,10 @@ func _begin_travel() -> void:
 func _set_stage(stage: int, distance: float) -> void:
 	campaign.stage = stage
 	campaign.distance = distance
-	if stage > int(campaign.highest_reached): _display_changed("unlocks")
-	campaign.highest_reached = maxi(int(campaign.highest_reached), stage)
-	campaign.lifetime_highest_reached = maxi(int(campaign.lifetime_highest_reached), stage)
+	if stage > int(campaign.highest_reached):
+		campaign.highest_reached = stage
+		_refresh_research_gates()
+		_display_changed("unlocks")
 	var entries: PackedStringArray = str(level_definitions[stage].monGroup).replace("{", "").replace("}", "").replace("｛", "").replace("｝", "").replace("，", ",").split(",")
 	campaign.points = []
 	for entry in entries:
@@ -617,12 +618,12 @@ func reactor_modules() -> Array:
 				enabled.append(module)
 	return enabled
 
-func _research_gates() -> Dictionary:
+func _refresh_research_gates() -> void:
 	var gates: Dictionary = {}
 	for key in research_definitions:
 		var row: Dictionary = research_definitions[key]
 		gates[key] = (row.legacy_unlock == null or unlocked("hightech", str(row.legacy_unlock))) and (row.unlock == null or unlocked("feature", "jewels"))
-	return gates
+	Research.refresh_gates(research_progress, research_definitions, gates)
 
 func _active_slots(source: Array, ship: Dictionary) -> Array:
 	return source.filter(func(slot): return int(slot.index) < int(ship.para_1 if slot.category == "weapon" else ship.para_2))
@@ -739,7 +740,6 @@ func _refresh_growth() -> bool:
 		if not updated.ok:
 			_fail(str(updated.get("error", updated.get("reason", "ReactorUpdateFailed"))))
 			return false
-	Economy.prune_income(income_samples, wall_time, game_time, float(rules.research_income_window))
 	var automatic_due: bool = Research.automatic_due(research_progress, crew_factors.research_staffed, rules)
 	var peaks: Dictionary = {}
 	var investment: Dictionary = {}
@@ -779,13 +779,14 @@ func buy_levels(slot_id: String, count: int) -> Dictionary:
 	var slot: Dictionary = slots[index]
 	var row: Dictionary = equipment_definitions.laser if slot.category == "weapon" else equipment_definitions.armour
 	var quote = Equipment.quote_levels(row, int(slot.paid_level), count, evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached), amount_api)
-	if not quote.ok:
-		return quote
+	return _buy_quoted_levels(index, quote)
+
+func _buy_quoted_levels(index: int, quote: Dictionary) -> Dictionary:
+	if not quote.ok: return quote
 	var paid = Economy.payment(wallet, quote.costs, amount_api)
-	if not paid.ok:
-		return paid
+	if not paid.ok: return paid
 	var next: Array = slots.duplicate(true)
-	next[index].paid_level = int(slot.paid_level) + count
+	next[index].paid_level = int(slots[index].paid_level) + int(quote.count)
 	return _commit_levels(next, paid.wallet, [next[index]])
 
 func buy_reactor(count: int = 1, automatic: bool = false) -> Dictionary:
@@ -807,6 +808,7 @@ func buy_enhancement(count: int = 1) -> Dictionary:
 		return quote
 	var paid = Economy.payment(wallet, quote.costs, amount_api)
 	if not paid.ok:
+		var accepted: Dictionary = {}
 		var low: int = 0
 		var high: int = count
 		while low < high:
@@ -815,12 +817,13 @@ func buy_enhancement(count: int = 1) -> Dictionary:
 			var candidate = Enhancement.quote(enhancement_progress, middle, enhancement, amount_api)
 			if candidate.ok and Economy.can_pay(wallet, candidate.costs, amount_api).ok:
 				low = middle
+				accepted = candidate
 			else:
 				high = middle - 1
 		if low == 0:
 			return {"ok": false, "reason": "NoChange"}
 		count = low
-		quote = Enhancement.quote(enhancement_progress, count, enhancement, amount_api)
+		quote = accepted
 		paid = Economy.payment(wallet, quote.costs, amount_api)
 	var next: Dictionary = enhancement_progress.duplicate(true)
 	next.level = int(next.level) + count
@@ -858,7 +861,7 @@ func distribute_reactor() -> Dictionary:
 	return _publish_reactor(changed.state, wallet, "selection") if changed.ok else changed
 
 func select_research(id: String) -> Dictionary:
-	return Research.select(research_progress, id, research_definitions, _research_gates())
+	return Research.select(research_progress, id)
 
 func set_research_investment(resource: String, quantity: Dictionary) -> Dictionary:
 	return Research.set_investment(research_progress, resource, quantity, amount_api)
@@ -905,6 +908,7 @@ func _quote_affordable_levels(slot: Dictionary, balances: Dictionary) -> Diction
 	var limit: int = 9223372036854775807 - level
 	if limit <= 0:
 		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+	var accepted: Dictionary = {}
 	var low: int = 0
 	var high: int = 1
 	while high <= limit:
@@ -912,6 +916,7 @@ func _quote_affordable_levels(slot: Dictionary, balances: Dictionary) -> Diction
 		if not quote.ok or not Economy.can_pay(balances, quote.costs, amount_api).ok:
 			break
 		low = high
+		accepted = quote
 		if high == limit:
 			return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
 		high = limit if high > limit / 2 else high * 2
@@ -921,17 +926,17 @@ func _quote_affordable_levels(slot: Dictionary, balances: Dictionary) -> Diction
 		var quote = Equipment.quote_levels(row, level, middle, evolution, material_unlocked, amount_api)
 		if quote.ok and Economy.can_pay(balances, quote.costs, amount_api).ok:
 			low = middle
+			accepted = quote
 		else:
 			high = middle
 	if low == 0:
 		return {"ok": false, "reason": "NoChange"}
-	return Equipment.quote_levels(row, level, low, evolution, material_unlocked, amount_api)
+	return accepted
 
 func buy_max_levels(slot_id: String) -> Dictionary:
-	for slot in slots:
-		if str(slot.id) == slot_id:
-			var quote = _quote_affordable_levels(slot, wallet)
-			return buy_levels(slot_id, int(quote.count)) if quote.ok else quote
+	for index in slots.size():
+		if str(slots[index].id) == slot_id:
+			return _buy_quoted_levels(index, _quote_affordable_levels(slots[index], wallet))
 	return {"ok": false, "reason": "UnknownSlot"}
 
 func buy_all_levels(count: int, maximum: bool = false) -> Dictionary:
@@ -1180,19 +1185,6 @@ func _commit_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 		return _fail(str(result.get("error", result.get("reason", "WorldGrowthUpdateFailed"))))
 	return result
 
-func _personnel_view(kind: String) -> Dictionary:
-	var view: Dictionary = {}
-	for id in crew_progress:
-		var member: Dictionary = crew_progress[id]
-		if member.kind != kind:
-			continue
-		if not view.has(member.target):
-			view[member.target] = []
-		view[member.target].append(id)
-	for target in view:
-		view[target].sort()
-	return view
-
 func planet_unlocked(id: String) -> bool:
 	return planet_definitions.has(id) and unlocked("planet", id) and (int(id) == 1 or Planet.buff(planet_progress, planet_buffs, "planet_unlock", "planet") >= int(id))
 
@@ -1245,10 +1237,9 @@ func assign_crew(id: String, kind: String, target: String, mode: String = "1") -
 func cancel_planet(id: String) -> Dictionary:
 	if not planet_progress.has(id):
 		return {"ok": false, "reason": "UnknownPlanet"}
-	for member in Crew.assigned(crew_progress, "planet_explore", id): _display_changed("crew", str(member))
 	_display_changed("planets", id)
 	Planet.cancel(planet_progress[id])
-	Crew.release(crew_progress, "planet_explore", id)
+	for member in Crew.release(crew_progress, "planet_explore", id): _display_changed("crew", str(member))
 	return {"ok": true}
 
 func set_planet_automatic(id: String, enabled: bool) -> Dictionary:
@@ -1263,9 +1254,9 @@ func claim_planet_build(id: String, building: String) -> Dictionary:
 	if result.ok: _display_changed("buildings", id)
 	return _commit_world(Planet.contributions(planet_progress, planet_buildings, planet_buffs, amount_api, planet_factors, {id: [building]})) if result.ok else result
 
-func _advance_planets(dt: float) -> bool:
+func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) -> bool:
 	var result = Planet.advance(planet_progress, planet_definitions, planet_buildings,
-		_personnel_view("planet_explore"), _personnel_view("planet_build"), dt)
+		explorers, builders, dt)
 	if not result.ok:
 		_fail(str(result.get("reason", "PlanetAdvanceFailed")))
 		return false
@@ -1274,15 +1265,14 @@ func _advance_planets(dt: float) -> bool:
 	var changed_planets: Dictionary = {}
 	for completion in result.completed:
 		for target in completion.released:
-			for member in Crew.assigned(crew_progress, "planet_build", str(target)): _display_changed("crew", str(member))
-			Crew.release(crew_progress, "planet_build", str(target))
+			for member in Crew.release(crew_progress, "planet_build", str(target)): _display_changed("crew", str(member))
 		var id: String = str(completion.planet)
 		changed_planets[id] = []
 		if completion.buildings_changed: _display_changed("buildings", id)
 		if completion.assignments_changed: _display_changed("construction", id)
 		if unlocked("feature", "crew_level"):
 			var recipients: Array = crew_progress.keys() if Planet.buff(planet_progress, planet_buffs, "crew_exp_share", "all", id) > 0 else [completion.explorer]
-			var level: int = maxi(int(campaign.highest_reached), int(campaign.lifetime_highest_reached))
+			var level: int = int(campaign.highest_reached)
 			var experience = Planet.experience_reward(planet_definitions[id], level_definitions[level].planetExpRatio, galaxy_crew_experience, amount_api)
 			if not experience.ok:
 				_fail(str(experience.error))
@@ -1301,8 +1291,8 @@ func _advance_planets(dt: float) -> bool:
 		return false
 	return true
 
-func _advance_crew_jobs(dt: float) -> bool:
-	for attempt in Crew.advance_jobs(crew_progress, crew_jobs, dt):
+func _advance_crew_jobs(dt: float, ids: Array) -> bool:
+	for attempt in Crew.advance_jobs(crew_progress, ids, crew_jobs, dt):
 		if attempt.job == "equipment_upgrade":
 			if attempt.mode != "max":
 				buy_all_levels(int(attempt.mode))
@@ -1323,13 +1313,9 @@ func galaxy_unlocked(key: String) -> bool:
 	var row: Dictionary = galaxy_definitions[key]
 	return unlocked("feature", "galaxy") and row.unlock_type == "stage_cleared" and campaign.cleared_stages.has(int(row.unlock_value))
 
-func _advance_galaxies(dt: float) -> bool:
-	Economy.prune_income(income_samples, wall_time, game_time, float(rules.research_income_window))
-	var personnel: Dictionary = _personnel_view("galaxy")
-	var counts: Dictionary = {}
+func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 	var enabled: Dictionary = {}
 	for key in galaxy_progress:
-		counts[key] = personnel.get(key, []).size()
 		enabled[key] = galaxy_unlocked(key)
 		if enabled[key]: galaxy_progress[key].unlocked = true
 	var result = Galaxy.advance(galaxy_progress, galaxy_definitions, galaxy_buildings, counts, enabled, dt, float(galaxy_rules.income_interval))

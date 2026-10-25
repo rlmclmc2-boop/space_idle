@@ -3,13 +3,24 @@ extends RefCounted
 static func initial(rules: Dictionary) -> Dictionary:
 	return {"levels": {}, "work": {}, "current": "", "investment": {},
 		"auto_invest": false, "ratio": float(rules.research_default_ratio), "contributions": {}, "refresh_elapsed": 0.0,
-		"peaks": {}, "completed_unread": {}}
+		"peaks": {}, "required_work": {}, "gates": {}, "available": {}}
 
-static func select(state: Dictionary, id: String, definitions: Dictionary, gates: Dictionary) -> Dictionary:
-	if not definitions.has(id) or not available(definitions[id], state.levels, gates):
+static func select(state: Dictionary, id: String) -> Dictionary:
+	if not state.available.get(id, false):
 		return {"ok": false, "reason": "ResearchLocked"}
 	state.current = id
 	return {"ok": true}
+
+static func refresh_gates(state: Dictionary, definitions: Dictionary, gates: Dictionary) -> void:
+	if state.gates == gates and not state.available.is_empty(): return
+	state.gates = gates
+	_refresh_available(state, definitions)
+
+static func _refresh_available(state: Dictionary, definitions: Dictionary) -> void:
+	for id in definitions: state.available[id] = available(definitions[id], state.levels, state.gates)
+
+static func choices(state: Dictionary) -> Dictionary:
+	return state.available.duplicate()
 
 static func set_investment(state: Dictionary, resource: String, quantity: Dictionary, api) -> Dictionary:
 	if resource not in ["1", "2"]: return {"ok": false, "reason": "InvalidResearchResource"}
@@ -49,7 +60,10 @@ static func available(row: Dictionary, levels: Dictionary, gates: Dictionary) ->
 			return false
 	return true
 
-static func required_work(row: Dictionary, level: int, api) -> Dictionary:
+static func required_work(state: Dictionary, row: Dictionary, api) -> Dictionary:
+	var key: String = str(row.id)
+	if state.required_work.has(key): return {"ok": true, "value": state.required_work[key]}
+	var level: int = int(state.levels.get(key, 0))
 	var base = api.apply("from_decimal", [str(row.base_seconds)])
 	var growth = api.apply("from_decimal", [str(row.growth)])
 	for result in [base, growth]:
@@ -58,7 +72,9 @@ static func required_work(row: Dictionary, level: int, api) -> Dictionary:
 	growth = api.apply("pow", [growth.value, level])
 	if not growth.ok:
 		return growth
-	return api.apply("mul", [base.value, growth.value])
+	var result = api.apply("mul", [base.value, growth.value])
+	if result.ok: state.required_work[key] = result.value
+	return result
 
 static func factor(state: Dictionary, definitions: Dictionary, effect: String, rules: Dictionary, api) -> Dictionary:
 	var value = api.apply("from_decimal", ["1"])
@@ -138,17 +154,17 @@ static func refresh_income(state: Dictionary, definitions: Dictionary, peak_rate
 				factors_changed = true
 	return {"ok": true, "state": next, "factors_changed": factors_changed}
 
-static func select_shortest(state: Dictionary, definitions: Dictionary, gates: Dictionary, api) -> Dictionary:
+static func select_shortest(state: Dictionary, definitions: Dictionary, api) -> Dictionary:
 	if not str(state.current).is_empty():
 		return {"ok": true}
 	var chosen: String = ""
-	var shortest: Dictionary = api.apply("zero", []).value
+	var shortest: Dictionary = {}
 	# Dictionary insertion order is the imported Excel row order; ties keep it.
 	var keys: Array = definitions.keys()
 	for key in keys:
-		if not available(definitions[key], state.levels, gates):
+		if not state.available.get(key, false):
 			continue
-		var work = required_work(definitions[key], int(state.levels.get(key, 0)), api)
+		var work = required_work(state, definitions[key], api)
 		if not work.ok:
 			return work
 		work = api.apply("sub_nonnegative", [work.value, state.work.get(key, api.apply("zero", []).value)])
@@ -160,26 +176,25 @@ static func select_shortest(state: Dictionary, definitions: Dictionary, gates: D
 	state.current = chosen
 	return {"ok": true}
 
-static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictionary, gates: Dictionary,
+static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictionary,
 		dt: float, rules: Dictionary, api, crew_speed: Dictionary, continue_research: bool) -> Dictionary:
 	var next: Dictionary = state.duplicate()
 	next.refresh_elapsed = float(next.refresh_elapsed) + dt
 	var key: String = str(next.current)
 	if key.is_empty():
 		if continue_research:
-			var selected = select_shortest(next, definitions, gates, api)
+			var selected = select_shortest(next, definitions, api)
 			if not selected.ok: return selected
 		return {"ok": true, "state": next, "wallet": wallet, "completed": false}
-	next.levels = state.levels.duplicate()
 	next.work = state.work.duplicate()
-	next.completed_unread = state.completed_unread.duplicate()
 	var balances: Dictionary = wallet.duplicate()
-	if not definitions.has(key) or not available(definitions[key], next.levels, gates):
+	# Selection admits gates/requirements; both stay valid until this level completes.
+	if not definitions.has(key):
 		return {"ok": false, "reason": "ResearchUnavailable"}
 	var level: int = int(next.levels.get(key, 0))
 	if level == 9223372036854775807:
 		return {"ok": false, "reason": "ResearchLevelRangeExceeded"}
-	var required = required_work(definitions[key], level, api)
+	var required = required_work(next, definitions[key], api)
 	if not required.ok:
 		return required
 	var zero: Dictionary = api.apply("zero", []).value
@@ -246,14 +261,18 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 			return added
 		progress = added.value
 		if completed:
+			next.levels = state.levels.duplicate()
 			next.levels[key] = level + 1
+			next.available = state.available.duplicate()
+			_refresh_available(next, definitions)
+			next.required_work = state.required_work.duplicate()
+			next.required_work.erase(key)
 			next.work[key] = zero
 			next.current = ""
-			next.completed_unread[key] = true
 			next.contributions = state.contributions.duplicate()
 			for effect in str(definitions[key].effect).split(","): next.contributions.erase(effect)
 			if continue_research:
-				var selected = select_shortest(next, definitions, gates, api)
+				var selected = select_shortest(next, definitions, api)
 				if not selected.ok:
 					return {"ok": true, "state": next, "wallet": balances, "completed": true, "continuation_error": selected.get("error", selected.get("reason", "ResearchContinuationFailed"))}
 			return {"ok": true, "state": next, "wallet": balances, "completed": true}

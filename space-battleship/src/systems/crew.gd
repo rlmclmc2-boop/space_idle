@@ -8,6 +8,20 @@ static func initial(definitions: Dictionary, api) -> Dictionary:
 		members[id] = {"level": 0, "exp": api.apply("zero", []).value, "kind": "", "target": "", "mode": "1", "elapsed": 0.0}
 	return members
 
+static func step_assignments(members: Dictionary) -> Dictionary:
+	var views: Dictionary = {"explorers": {}, "builders": {}, "galaxies": {}, "jobs": []}
+	for id in members:
+		var member: Dictionary = members[id]
+		if member.kind == "system_job": views.jobs.append(id)
+		elif member.kind == "galaxy": views.galaxies[member.target] = int(views.galaxies.get(member.target, 0)) + 1
+		elif member.kind in ["planet_explore", "planet_build"]:
+			var group: Dictionary = views.explorers if member.kind == "planet_explore" else views.builders
+			if not group.has(member.target): group[member.target] = []
+			group[member.target].append(id)
+	for group in [views.explorers, views.builders]:
+		for ids in group.values(): ids.sort()
+	return views
+
 static func assigned(members: Dictionary, kind: String, target: String) -> Array:
 	var found: Array = []
 	for id in members:
@@ -37,9 +51,10 @@ static func assign(members: Dictionary, id: String, kind: String, target: String
 	member.mode = mode
 	return {"ok": true, "jobs": changed_jobs}
 
-static func release(members: Dictionary, kind: String, target: String) -> void:
-	for id in assigned(members, kind, target):
-		assign(members, id, "", "", 0, str(members[id].mode))
+static func release(members: Dictionary, kind: String, target: String) -> Array:
+	var ids: Array = assigned(members, kind, target)
+	for id in ids: assign(members, id, "", "", 0, str(members[id].mode))
+	return ids
 
 static func job_factor(members: Dictionary, definitions: Dictionary, jobs: Dictionary, job: String, rules: Dictionary, api) -> Dictionary:
 	var ids: Array = assigned(members, "system_job", job)
@@ -81,9 +96,9 @@ static func contributions(members: Dictionary, definitions: Dictionary, jobs: Di
 		if job == "hightech_scientists": result.research_staffed = value.staffed
 	return result
 
-static func advance_jobs(members: Dictionary, jobs: Dictionary, dt: float) -> Array:
+static func advance_jobs(members: Dictionary, ids: Array, jobs: Dictionary, dt: float) -> Array:
 	var due: Array = []
-	for id in members:
+	for id in ids:
 		var member: Dictionary = members[id]
 		if member.kind != "system_job" or not jobs.has(member.target):
 			continue
@@ -150,6 +165,7 @@ static func add_experience(members: Dictionary, recipients: Array, amount: Dicti
 		var limit: int = 9223372036854775807 - int(member.level)
 		if limit <= 0:
 			return {"ok": false, "reason": "CrewLevelRangeExceeded"}
+		var accepted: Dictionary = {}
 		var low: int = 0
 		var high: int = mini(1, limit)
 		while high > 0:
@@ -157,6 +173,7 @@ static func add_experience(members: Dictionary, recipients: Array, amount: Dicti
 			if not cost.ok or api.apply("compare", [cost.value, balance.value]).scalar > 0:
 				break
 			low = high
+			accepted = cost
 			if high == limit:
 				return {"ok": false, "reason": "CrewLevelRangeExceeded"}
 			@warning_ignore("integer_division")
@@ -167,11 +184,11 @@ static func add_experience(members: Dictionary, recipients: Array, amount: Dicti
 			var cost = experience_cost(int(member.level), middle, rules, api)
 			if cost.ok and api.apply("compare", [cost.value, balance.value]).scalar <= 0:
 				low = middle
+				accepted = cost
 			else:
 				high = middle
 		if low > 0:
-			var cost = experience_cost(int(member.level), low, rules, api)
-			balance = api.apply("sub_nonnegative", [balance.value, cost.value])
+			balance = api.apply("sub_nonnegative", [balance.value, accepted.value])
 			if not balance.ok:
 				return balance
 		if low > 0 and member.kind == "system_job" and FACTOR_JOBS.has(member.target) and member.target not in changed_jobs: changed_jobs.append(member.target)
