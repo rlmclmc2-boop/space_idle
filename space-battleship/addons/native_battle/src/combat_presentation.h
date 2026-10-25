@@ -120,6 +120,7 @@ public:
         for(int k=0;k<2;++k){gpu_contact_batches[k].unref();gpu_contact_buffers[k]=PackedFloat32Array();contact_dirty[k]=true;}
         if(!canvas.is_valid()||material.is_null())return;
         ERR_FAIL_COND(meshes.size()!=2);
+        RenderingServer::get_singleton()->canvas_item_set_material(canvas,material->get_rid());
         for(int k=0;k<2;++k){auto &batch=gpu_contact_batches[k];batch.instantiate();batch->set_transform_format(MultiMesh::TRANSFORM_2D);batch->set_use_custom_data(true);batch->set_mesh(meshes[k]);
             batch->set_custom_aabb(AABB(Vector3(-8192,-8192,-1),Vector3(16384,16384,2)));
         }
