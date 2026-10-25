@@ -1,4 +1,5 @@
 extends Node2D
+const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
 const Session = preload("res://src/game_session.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
@@ -26,11 +27,6 @@ var ship_picker: OptionButton
 var research_panel
 var module_picker: OptionButton
 var allocation_input: LineEdit
-var effect_picker: OptionButton
-var branch_node: SpinBox
-var branch_choice: OptionButton
-const EFFECT_IDS := ["proficiency", "repeat", "critical", "adaptation", "memory", "deferred"]
-const EFFECT_NAMES := ["熟练", "连发", "暴击", "适应", "记忆材料", "延迟伤害"]
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -279,34 +275,8 @@ func _setup_growth_panel() -> void:
 		return session.allocate_reactor(str(module_picker.get_item_metadata(module_picker.selected)), quantity.value) if quantity.ok else quantity)
 	research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
-	_caption(box, "全局强化")
-	var enhancement_buttons := _row(box)
-	_command_button(enhancement_buttons, "购买 1 级", func(): return session.buy_enhancement(1))
-	_command_button(enhancement_buttons, "最多购买 10 级", func(): return session.buy_enhancement(10))
-	var branches := _row(box)
-	effect_picker = OptionButton.new()
-	for label in EFFECT_NAMES: effect_picker.add_item(label)
-	branches.add_child(effect_picker)
-	branch_node = SpinBox.new()
-	branch_node.min_value = 1
-	branch_node.max_value = 3
-	branch_node.step = 1
-	branches.add_child(branch_node)
-	branch_choice = OptionButton.new()
-	branch_choice.add_item("A")
-	branch_choice.add_item("B")
-	branches.add_child(branch_choice)
-	_command_button(box, "设置分支", func(): return session.set_enhancement_branch(EFFECT_IDS[effect_picker.selected], int(branch_node.value) - 1, "A" if branch_choice.selected == 0 else "B"))
-	_command_button(box, "将所选效果前移一位", func():
-		var category: String = "weapon" if effect_picker.selected < 3 else "defence"
-		var order: Array = session.enhancement_progress[category + "_order"].duplicate()
-		var index: int = order.find(EFFECT_IDS[effect_picker.selected])
-		var previous: int = (index + order.size() - 1) % order.size()
-		var held = order[previous]
-		order[previous] = order[index]
-		order[index] = held
-		return session.set_enhancement_order(category, order))
-	_caption(box, "连发第二节点 B 仅保留选择，不产生第二代连发。")
+	box.add_child(EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
+		session.can_pay_costs, session.publish_enhancement, _command_button))
 	_setup_world_controls(box)
 	_refresh_growth_pickers()
 	_refresh_world_pickers()

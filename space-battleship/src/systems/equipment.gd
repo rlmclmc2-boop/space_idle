@@ -262,3 +262,9 @@ static func quote_affordable_levels(row: Dictionary, level: int, evolution: Dict
 	if low == 0:
 		return {"ok": false, "reason": "NoChange"}
 	return accepted
+
+static func armour_count(slots: Array) -> int:
+	var count: int = 0
+	for slot in slots:
+		if slot.equipment_id == "armour": count += 1
+	return count

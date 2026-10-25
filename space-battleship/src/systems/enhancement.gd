@@ -3,11 +3,72 @@ extends RefCounted
 const WEAPON := ["proficiency", "repeat", "critical"]
 const DEFENCE := ["adaptation", "memory", "deferred"]
 
-static func initial() -> Dictionary:
+var _state: Dictionary = _initial()
+var _rules: Dictionary = {}
+var _api
+var _values: Dictionary = {}
+
+func _init(rows: Array, api) -> void:
+	for row in rows: _rules[str(row.id)] = row.value
+	_api = api
+
+func evaluate(bonus: int, available: bool, armours: int) -> Dictionary:
+	return _combat(_state, bonus, _rules, available, armours)
+
+func published_output() -> Dictionary:
+	return _values
+
+func accept_output(output: Dictionary) -> void:
+	_values = output
+
+func difference(output: Dictionary) -> Dictionary:
+	return _changes(_values, output)
+
+# Inputs are equipment/world facts. The publisher performs the economy/native transaction.
+# Callbacks exist only for this synchronous command; the module retains no Session reference.
+func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: String, publish: Callable) -> Dictionary:
+	var output = _combat(next, int(inputs.bonus), _rules, bool(inputs.available), int(inputs.armours))
+	if not output.ok: return output
+	var committed: Dictionary = publish.call(_changes(_values, output), costs, kind)
+	if committed.ok:
+		_state = next
+		_values = output
+	return committed
+
+func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
+	if not inputs.available: return {"ok": false, "reason": "EnhancementLocked"}
+	var quoted = _quote_purchase(_state, count, _rules, _api, can_pay)
+	if not quoted.ok: return quoted
+	var next: Dictionary = _state.duplicate(true)
+	next.level = int(next.level) + int(quoted.count)
+	return _submit(next, inputs, quoted.costs, "growth", publish)
+
+func set_order(category: String, order: Array, inputs: Dictionary, publish: Callable) -> Dictionary:
+	var changed = _reorder(_state, category, order)
+	if not changed.ok: return changed
+	return _submit(changed.state, inputs, {}, "selection", publish)
+
+func move_forward(effect: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	var category: String = "weapon" if effect in WEAPON else "defence"
+	var order: Array = _state[category + "_order"].duplicate()
+	var index: int = order.find(effect)
+	if index < 0: return {"ok": false, "reason": "InvalidEnhancementOrder"}
+	var previous: int = (index + order.size() - 1) % order.size()
+	var held = order[previous]
+	order[previous] = order[index]
+	order[index] = held
+	return set_order(category, order, inputs, publish)
+
+func set_branch(effect: String, node: int, choice: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	var changed = _choose(_state, effect, node, choice, _rules, bool(inputs.available))
+	if not changed.ok: return changed
+	return _submit(changed.state, inputs, {}, "selection", publish)
+
+static func _initial() -> Dictionary:
 	return {"level": 0, "extra_levels": 0, "weapon_order": WEAPON.duplicate(),
 		"defence_order": DEFENCE.duplicate(), "branches": {}}
 
-static func describe(state: Dictionary, rules: Dictionary, available: bool) -> Dictionary:
+static func _describe(state: Dictionary, rules: Dictionary, available: bool) -> Dictionary:
 	var level: int = int(state.level) + int(state.extra_levels)
 	var effects: Dictionary = {}
 	for order in [state.weapon_order, state.defence_order]:
@@ -26,21 +87,18 @@ static func describe(state: Dictionary, rules: Dictionary, available: bool) -> D
 			effects[key] = effect
 	return {"level": level, "effects": effects, "rules": rules}
 
-static func combat(state: Dictionary, bonus: int, rules: Dictionary, available: bool, slots: Array) -> Dictionary:
+static func _combat(state: Dictionary, bonus: int, rules: Dictionary, available: bool, armours: int) -> Dictionary:
 	if int(state.extra_levels) > 9223372036854775807 - bonus or int(state.level) > 9223372036854775807 - int(state.extra_levels) - bonus:
 		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
 	var effective: Dictionary = state.duplicate()
 	effective.extra_levels = int(state.extra_levels) + bonus
-	var description: Dictionary = describe(effective, rules, available)
+	var description: Dictionary = _describe(effective, rules, available)
 	var enabled: Dictionary = description.effects
 	var level: int = int(description.level)
 	var flags: Dictionary = {}
 	for key in enabled:
 		var effect: Dictionary = enabled[key]
 		flags[key] = {"active": effect.b1 or effect.b2 or effect.b3, "b1": effect.b1, "b2": effect.b2, "b3": effect.b3}
-	var armours: int = 0
-	for slot in slots:
-		if slot.equipment_id == "armour": armours += 1
 	var memory_factor: float = 1.0 + int(enabled.memory.a) * float(rules.memory_a_bonus)
 	var cap: float = float(rules.memory_buffer_fraction) * level * memory_factor if enabled.memory.active else 0.0
 	if enabled.memory.b3: cap *= 1.0 + armours * float(rules.memory_b3_armour_capacity_bonus)
@@ -65,7 +123,7 @@ static func combat(state: Dictionary, bonus: int, rules: Dictionary, available: 
 			"memory_heal": float(rules.memory_heal_fraction) * level * memory_factor if enabled.memory.active else 0.0, "memory_cap": cap,
 			"deferred_fraction": maxf(0.0, (scale - maxf(1.0, ceilf(scale / (1.0 + float(rules.deferred_curve_coefficient) * level)))) / scale) if enabled.deferred.active else 0.0}}
 
-static func changes(previous: Dictionary, next: Dictionary) -> Dictionary:
+static func _changes(previous: Dictionary, next: Dictionary) -> Dictionary:
 	var changed: Dictionary = {}
 	for group in ["globals", "weapon", "defence", "effects"]:
 		for key in next[group]:
@@ -74,7 +132,7 @@ static func changes(previous: Dictionary, next: Dictionary) -> Dictionary:
 			changed[group][key] = next[group][key]
 	return changed
 
-static func reorder(state: Dictionary, category: String, order: Array) -> Dictionary:
+static func _reorder(state: Dictionary, category: String, order: Array) -> Dictionary:
 	var expected: Array = WEAPON if category == "weapon" else DEFENCE if category == "defence" else []
 	if order.size() != expected.size() or expected.is_empty():
 		return {"ok": false, "reason": "InvalidEnhancementOrder"}
@@ -85,7 +143,7 @@ static func reorder(state: Dictionary, category: String, order: Array) -> Dictio
 	next[category + "_order"] = order.duplicate()
 	return {"ok": true, "state": next}
 
-static func choose(state: Dictionary, effect: String, node: int, choice: String, rules: Dictionary, available: bool) -> Dictionary:
+static func _choose(state: Dictionary, effect: String, node: int, choice: String, rules: Dictionary, available: bool) -> Dictionary:
 	if node < 0 or node > 2 or choice not in ["A", "B"]:
 		return {"ok": false, "reason": "InvalidEnhancementBranch"}
 	var order: Array = state.weapon_order if effect in WEAPON else state.defence_order if effect in DEFENCE else []
@@ -98,7 +156,7 @@ static func choose(state: Dictionary, effect: String, node: int, choice: String,
 	next.branches[effect] = choices
 	return {"ok": true, "state": next}
 
-static func quote(state: Dictionary, count: int, rules: Dictionary, amount_api) -> Dictionary:
+static func _quote(state: Dictionary, count: int, rules: Dictionary, amount_api) -> Dictionary:
 	var base = amount_api.apply("from_decimal", [str(rules.cost_base)])
 	if not base.ok:
 		return base
@@ -108,10 +166,10 @@ static func quote(state: Dictionary, count: int, rules: Dictionary, amount_api) 
 	return {"ok": true, "costs": {"jewel": cost.value}, "count": count, "extreme": cost.extreme}
 
 # Purchase quantity is enhancement policy; the economy supplies a read-only predicate.
-static func quote_purchase(state: Dictionary, count: int, rules: Dictionary, api, can_pay: Callable) -> Dictionary:
+static func _quote_purchase(state: Dictionary, count: int, rules: Dictionary, api, can_pay: Callable) -> Dictionary:
 	if count < 1 or int(state.level) > 9223372036854775807 - count:
 		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
-	var quoted = quote(state, count, rules, api)
+	var quoted = _quote(state, count, rules, api)
 	if not quoted.ok:
 		return quoted
 	if bool(can_pay.call(quoted.costs)): return quoted
@@ -121,7 +179,7 @@ static func quote_purchase(state: Dictionary, count: int, rules: Dictionary, api
 	while low < high:
 		@warning_ignore("integer_division")
 		var middle: int = low + (high - low) / 2 + 1
-		var candidate = quote(state, middle, rules, api)
+		var candidate = _quote(state, middle, rules, api)
 		if candidate.ok and bool(can_pay.call(candidate.costs)):
 			low = middle
 			accepted = candidate
