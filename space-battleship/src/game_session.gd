@@ -1175,9 +1175,10 @@ func _advance_crew_jobs(dt: float) -> bool:
 		elif attempt.job == "jewel_auto":
 			buy_enhancement(1)
 		elif attempt.job == "reactor_upgrade":
-			buy_reactor(1)
+			var purchase = buy_reactor(1)
 			if not last_error.is_empty(): return false
-			distribute_reactor()
+			if purchase.ok:
+				distribute_reactor()
 		if not last_error.is_empty(): return false
 	return true
 
