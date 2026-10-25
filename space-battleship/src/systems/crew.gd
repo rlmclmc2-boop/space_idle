@@ -26,13 +26,16 @@ static func assign(members: Dictionary, id: String, kind: String, target: String
 	var member: Dictionary = members[id]
 	if member.kind == kind and member.target == target and member.mode == mode:
 		return {"ok": false, "reason": "NoChange"}
-	var effect_changed: bool = (member.kind != kind or member.target != target) and ((member.kind == "system_job" and FACTOR_JOBS.has(member.target)) or (kind == "system_job" and FACTOR_JOBS.has(target)))
+	var changed_jobs: Array = []
+	if member.kind != kind or member.target != target:
+		if member.kind == "system_job" and FACTOR_JOBS.has(member.target): changed_jobs.append(member.target)
+		if kind == "system_job" and FACTOR_JOBS.has(target) and target not in changed_jobs: changed_jobs.append(target)
 	if member.kind != kind or member.target != target:
 		member.elapsed = 0.0
 	member.kind = kind
 	member.target = target
 	member.mode = mode
-	return {"ok": true, "contributions_changed": effect_changed}
+	return {"ok": true, "jobs": changed_jobs}
 
 static func release(members: Dictionary, kind: String, target: String) -> void:
 	for id in assigned(members, kind, target):
@@ -45,9 +48,6 @@ static func job_factor(members: Dictionary, definitions: Dictionary, jobs: Dicti
 		result.staffed = false
 		return result
 	var id: String = str(ids[0])
-	var cached: Dictionary = members[id].get("_factor", {})
-	if cached.get("job") == job and cached.get("level") == members[id].level:
-		return {"ok": true, "value": cached.value, "staffed": true}
 	var row: Dictionary = jobs[job]
 	# levelScale deliberately does not enter the general assignment function.
 	var base: float = float(row.baseValue) * pow(float(definitions[id].basePower), float(row.powerScale))
@@ -66,12 +66,15 @@ static func job_factor(members: Dictionary, definitions: Dictionary, jobs: Dicti
 		return power
 	var result = api.apply("mul", [value.value, power.value])
 	result.staffed = true
-	if result.ok: members[id]._factor = {"job": job, "level": level, "value": result.value}
 	return result
 
-static func contributions(members: Dictionary, definitions: Dictionary, jobs: Dictionary, rules: Dictionary, api) -> Dictionary:
-	var result: Dictionary = {"ok": true}
-	for job in FACTOR_JOBS:
+static func contributions(members: Dictionary, definitions: Dictionary, jobs: Dictionary, rules: Dictionary, api, previous: Dictionary = {}, changed_jobs: Array = []) -> Dictionary:
+	var result: Dictionary = previous.duplicate()
+	if result.is_empty():
+		result = {"ok": true, "research_staffed": false}
+		var one: Dictionary = api.apply("from_decimal", ["1"]).value
+		for effect in FACTOR_JOBS.values(): result[effect] = one
+	for job in changed_jobs:
 		var value = job_factor(members, definitions, jobs, job, rules, api)
 		if not value.ok: return value
 		result[FACTOR_JOBS[job]] = value.value
@@ -135,7 +138,8 @@ static func experience_cost(level: int, count: int, rules: Dictionary, api) -> D
 	return api.apply("mul", [raw.value, series.value])
 
 static func add_experience(members: Dictionary, recipients: Array, amount: Dictionary, rules: Dictionary, api) -> Dictionary:
-	var effect_changed: bool = false
+	var changed_jobs: Array = []
+	var changed_members: Array = []
 	for id in recipients:
 		if not members.has(id):
 			return {"ok": false, "reason": "UnknownCrew"}
@@ -170,7 +174,8 @@ static func add_experience(members: Dictionary, recipients: Array, amount: Dicti
 			balance = api.apply("sub_nonnegative", [balance.value, cost.value])
 			if not balance.ok:
 				return balance
-		effect_changed = effect_changed or (low > 0 and member.kind == "system_job" and FACTOR_JOBS.has(member.target))
+		if low > 0 and member.kind == "system_job" and FACTOR_JOBS.has(member.target) and member.target not in changed_jobs: changed_jobs.append(member.target)
+		if low > 0 or member.exp != balance.value: changed_members.append(id)
 		member.level = int(member.level) + low
 		member.exp = balance.value
-	return {"ok": true, "contributions_changed": effect_changed}
+	return {"ok": true, "jobs": changed_jobs, "members": changed_members}

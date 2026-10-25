@@ -31,7 +31,7 @@ static func values(slots: Array, extra_levels: int, definitions: Dictionary, evo
 		if not value.ok: return value
 		var text = api.apply("to_display", [value.value])
 		if not text.ok: return text
-		result["defences" if slot.category == "defence" else "weapons"][str(slot.id)] = {"key": str(row.name), "generation": int(slot.generation), "base": text.text}
+		result["defences" if slot.category == "defence" else "weapons"][str(slot.id)] = {"key": str(row.name), "generation": int(slot.generation), "base": text.text, "paid_level": int(slot.paid_level), "effective_level": int(slot.paid_level) + int(slot.extra_levels) + extra_levels}
 	return result
 
 static func build_player(slots: Array, extra_levels: int, equipment_definitions: Dictionary, evolution: Dictionary,

@@ -1,38 +1,42 @@
 // Renderer cache uses only published serials, motion leases and drawing outputs.
 // Per-slot descriptors are populated only at birth; dynamic motion remains in its lease.
-bool SpaceCombatPresentation::advance_retained(double dt) {
+bool SpaceCombatPresentation::advance_retained() {
     Ref<SpaceCombatKernel> kernel=display_kernel;
     if(!supports_compact_lasers()||!kernel->presentation_running()) {
         clear_retained_frame();return false;
     }
     ++retained_advances;
-    const auto views=kernel->presentation_flights();
-    std::unordered_map<uint64_t,const SpaceCombatKernel::PresentationFlight*> current;
-    for(const auto &view:views)current[view.serial]=&view;
     if(retained_kernel!=kernel||retained_frame.is_null()) {
         clear_retained_frame();retained_kernel=kernel;retained_frame.instantiate();
     }
     auto &frame=*retained_frame.ptr();
-    for(size_t serial:frame.order) {
-        auto found=current.find(serial);
-        if(found==current.end()||frame.flights[serial].motion!=found->second->motion)frame.flights.erase(serial);
-    }
-    frame.order.clear();frame.background.clear();frame.order.reserve(views.size());
-    for(const auto &source:views) {
-        const size_t id=source.serial;
-        auto &f=frame.flights[id];
-        if(f.motion!=source.motion) {
+    for(size_t id:frame.order) if(!kernel->presentation_matches(id,frame.flights[id].serial,frame.flights[id].motion)) frame.flights[id]=PreparedFlight();
+    frame.flights.resize(kernel->presentation_slots());frame.order.clear();frame.background.clear();
+    for(size_t order=0;order<kernel->presentation_count();++order) {
+        size_t id=kernel->presentation_index(order);SpaceCombatKernel::PresentationFlight source;
+        if(!kernel->presentation_read(id,source))continue;
+        auto &f=frame.flights[id];const bool born=f.motion!=source.motion;
+        if(born) {
             ++retained_births;f=PreparedFlight();f.serial=source.serial;
             f.motion=source.motion;f.hostile=source.hostile;f.chain=source.chain;f.beam=source.beam;f.damage_type=source.type;
-            f.key=source.key;
+            f.kind=source.kind;
             f.fixed=source.fixed;
             if(f.fixed){f.launch=source.launch;f.ray_origin=source.ray_origin;f.ray_step=source.ray_step;f.ray_direction=f.motion->motion().direction;}
-            f.render_kind=f.beam?-1:(!f.hostile&&f.key=="laser")?0:(f.hostile&&(f.key=="laser"||f.key=="cannon"))?(source.type==2?3:2):-1;
+            f.render_kind=f.beam?-1:(!f.hostile&&f.kind==0)?0:(f.hostile&&(f.kind==0||f.kind==1))?(source.type==2?3:2):-1;
             f.anchor_speed=-1;f.trail.fill(position(f.motion->motion()));f.visual_angle=f.motion->motion().direction.angle();
         }
-        f.segments=source.segments;f.awaiting=source.awaiting;f.powered=source.powered;frame.order.push_back(id);f.draw=true;
+        f.segments.clear();f.awaiting=source.awaiting;f.powered=source.powered;frame.order.push_back(id);f.draw=true;
+        Vector2 point;
+        if(f.beam&&!f.awaiting&&kernel->presentation_endpoint(id,-1,point)) {
+            const double power=source.ramp>0?std::clamp(std::max(0.0,source.age-source.charge)/source.ramp,0.0,1.0):1.0;
+            Dictionary segment;segment["from"]=source.launch;segment["to"]=point;segment["power"]=power;
+            segment["charge"]=source.ticks>0?-1.0:std::clamp(source.age/std::max(source.charge,0.001),0.0,1.0);segment["link"]=false;f.segments.push_back(segment);
+            for(int link=0;link<source.links;++link) {Vector2 target;if(!kernel->presentation_endpoint(id,link,target))continue;
+                Dictionary part;part["from"]=point;part["to"]=target;part["power"]=power;part["charge"]=source.ticks>0?-1.0:0.0;part["link"]=true;f.segments.push_back(part);
+            }
+        }
         const Motion &m=f.motion->motion();Vector2 logical=position(m);
-        const bool missile=!f.hostile&&f.key=="missile";
+        const bool missile=!f.hostile&&f.kind==2;
         if(f.render_kind==0&&f.fixed) {
             // Straight motion has fixed birth velocity. Re-anchor only on actual
             // velocity changes, not every display. Shader clock is simulation time.
@@ -49,10 +53,10 @@ bool SpaceCombatPresentation::advance_retained(double dt) {
             else f.axis=m.direction.normalized();
         }
         if(missile) {
-            f.visual_age+=dt;Vector2 delta=display_point(logical)-display_point(f.trail[f.head]);
+            const double elapsed=std::max(0.0,m.age-f.motion_age);f.motion_age=m.age;Vector2 delta=display_point(logical)-display_point(f.trail[f.head]);
             double wanted=delta.length_squared()>0.001?double(delta.angle()):double(m.direction.angle());
-            f.visual_angle=Math::lerp_angle(f.visual_angle,wanted,1.0-std::exp(-dt*16.0));
-            if(dt>0){f.head=(f.head+1)%14;f.trail[f.head]=logical;f.samples=std::min(14,f.samples+1);}
+            f.visual_angle=Math::lerp_angle(f.visual_angle,wanted,1.0-std::exp(-elapsed*16.0));
+            if(!born&&elapsed>0){f.head=(f.head+1)%14;f.trail[f.head]=logical;f.samples=std::min(14,f.samples+1);}
             if(f.samples>1){delta=display_point(f.trail[f.head])-display_point(f.trail[(f.head+13)%14]);if(delta.length_squared()>0.001)f.visual_angle=delta.angle();}
             f.axis=engine_from_angle(f.visual_angle);
         }
@@ -64,7 +68,7 @@ void SpaceCombatPresentation::prepare_retained(Vector2 offset) {
     RID rid=display_canvas;begin();
     for(size_t id:retained_frame->background) {
         auto &f=retained_frame->flights[id];
-        if(f.beam||(f.render_kind<0&&!(f.key=="missile"&&!f.hostile))) {
+        if(f.beam||(f.render_kind<0&&!(f.kind==2&&!f.hostile))) {
             f.draw=!f.awaiting;
             if(f.draw)f.point=position(f.motion->motion());
         } else if(f.hostile) {
@@ -128,7 +132,7 @@ void SpaceCombatPresentation::draw_retained(Vector2 offset) {
             retained_upload.insert(retained_upload.end(),row,row+12);continue;
         }
         flush_retained(rid);
-        if(!f.hostile&&f.key=="missile"&&!f.beam) {
+        if(!f.hostile&&f.kind==2&&!f.beam) {
 
             flight(f,offset);
         } else {

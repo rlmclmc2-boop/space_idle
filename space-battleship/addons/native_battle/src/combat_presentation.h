@@ -4,7 +4,7 @@ struct PreparedFlight {
     Array segments;
     Ref<SpaceMotionLease> motion;
     Vector2 point;
-    String key;
+    int kind=0;
     bool hostile=false,chain=false;
     uint64_t serial=0;
     int render_kind=-1,damage_type=0;
@@ -14,13 +14,13 @@ struct PreparedFlight {
     Vector2 anchor_point;
     std::array<Vector2,14> trail;
     int head=0,samples=1;
-    double visual_age=0,visual_angle=0;
+    double motion_age=0,visual_angle=0;
 };
 class SpaceCombatPresentation;
 class SpaceCombatFlightFrame : public RefCounted {
     GDCLASS(SpaceCombatFlightFrame,RefCounted)
     friend class SpaceCombatPresentation;
-    std::unordered_map<uint64_t, PreparedFlight> flights;
+    std::vector<PreparedFlight> flights;
     std::vector<size_t> order, background;
 protected:
     static void _bind_methods(){ClassDB::bind_method(D_METHOD("size"),&SpaceCombatFlightFrame::size);}
@@ -48,7 +48,7 @@ class SpaceCombatPresentation : public RefCounted {
         retained_frame.unref();retained_kernel.unref();
         for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
     }
-    bool advance_retained(double dt);
+    bool advance_retained();
     void prepare_retained(Vector2 offset);
     void draw_retained(Vector2 offset);
     void prepare_retained_mesh();
@@ -202,7 +202,7 @@ public:
     void flight(const PreparedFlight &visual,Vector2 offset);
     Ref<SpaceCombatFlightFrame> prepare_flights(Vector2 offset);
     void draw_flights(Ref<SpaceCombatFlightFrame> prepared,Vector2 offset);
-    void advance_visuals(double dt);
+    void advance_visuals();
 };
 void SpaceCombatPresentation::line(Vector2 from, Vector2 to, Color color, double width) {
     if(width<=2.5)width*=0.5;
@@ -301,7 +301,7 @@ void SpaceCombatPresentation::prepare_templates() {
 }
 void SpaceCombatPresentation::flight(const PreparedFlight &visual,Vector2 offset) {
     Vector2 point=visual.point+offset,axis=visual.axis;
-    const double age=visual.visual_age;const bool powered=visual.powered;
+    const double age=visual.motion->motion().age;const bool powered=visual.powered;
     prepare_templates();axis=axis.length_squared()>0.0001?axis.normalized():Vector2(0,-1);
     Color amber=Color::html("ffad4c"),hot=Color::html("fff0be"),smoke=Color::html("aaa4a1");
     if(powered&&age>=0.22) {
@@ -431,7 +431,7 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Vector2 off
 void SpaceCombatPresentation::draw_flights(Ref<SpaceCombatFlightFrame> prepared,Vector2 offset) {
     if(prepared.is_valid()&&prepared==retained_frame)draw_retained(offset);
 }
-void SpaceCombatPresentation::advance_visuals(double dt) { advance_retained(dt); }
+void SpaceCombatPresentation::advance_visuals() { advance_retained(); }
 #include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
     ClassDB::bind_method(D_METHOD("supports_compact_lasers"),&SpaceCombatPresentation::supports_compact_lasers);
@@ -443,7 +443,7 @@ void SpaceCombatPresentation::_bind_methods(){
     ClassDB::bind_method(D_METHOD("damage_text_position","origin","metrics","limits","excluded","occupied","enemies"),&SpaceCombatPresentation::damage_text_position);
     ClassDB::bind_method(D_METHOD("battle_logical_point","point"),&SpaceCombatPresentation::battle_logical_point);
     ClassDB::bind_method(D_METHOD("rotated_outlines_min_y","outlines","angle"),&SpaceCombatPresentation::rotated_outlines_min_y);
-    ClassDB::bind_method(D_METHOD("advance_visuals","dt"),&SpaceCombatPresentation::advance_visuals);
+    ClassDB::bind_method(D_METHOD("advance_visuals"),&SpaceCombatPresentation::advance_visuals);
     ClassDB::bind_method(D_METHOD("configure_surface","kernel","canvas","beams"),&SpaceCombatPresentation::configure_surface);
     ClassDB::bind_method(D_METHOD("prepare_flights","offset"),&SpaceCombatPresentation::prepare_flights);
     ClassDB::bind_method(D_METHOD("draw_flights","flights","offset"),&SpaceCombatPresentation::draw_flights);

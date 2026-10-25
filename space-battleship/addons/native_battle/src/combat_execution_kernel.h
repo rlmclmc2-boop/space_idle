@@ -1134,6 +1134,24 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary source = selected_legends.get(key, Dictionary());
         Dictionary parameters = source.get("legendary_parameters", Dictionary()); return parameters.get(parameter, 0.0);
     }
+    void select_endless_source() {
+        int selected = -1;
+        for (int i = 0; i < int(weapons.size()); ++i) {
+            const Weapon &w = weapons[i];
+            if (w.hostile || w.vacant || !w.enabled || w.kind != 3 || w.entry.has("drone_id")) continue;
+            if (selected < 0 || int64_t(w.entry.get("paid_level", 1)) > int64_t(weapons[selected].entry.get("paid_level", 1)) ||
+                (w.entry.get("paid_level", 1) == weapons[selected].entry.get("paid_level", 1) && w.slot < weapons[selected].slot)) selected = i;
+        }
+        for (int i = 0; i < int(weapons.size()); ++i) {
+            Weapon &w = weapons[i];
+            if (w.hostile || w.vacant || !w.enabled || w.kind != 3) continue;
+            bool endless = legend_active("endless_beam") && i == selected;
+            double maximum = w.normal_maximum + (endless ? legend_value("endless_beam", "maximum_multiplier_bonus") : 0.0);
+            if (w.endless == endless && w.maximum == maximum) continue;
+            w.endless = endless; w.maximum = maximum;
+            if (w.birth) { auto updated = std::make_shared<BirthConfig>(*w.birth); updated->maximum = maximum; w.birth = updated; }
+        }
+    }
     void select_legends() {
         std::array<Amount, 2> sums{};
         for (int i = 0; i < equipped_drone_rows.size(); ++i) {
@@ -1173,21 +1191,10 @@ class SpaceCombatKernel : public RefCounted {
         strange_enabled = legend_active("strange_matter"); strange_probability = legend_constant("strange_matter", "spawn_probability");
         strange_delay = legend_constant("strange_matter", "delay"); strange_multiplier = legend_value("strange_matter", "damage_multiplier");
         strange_kill_spawns = int(legend_constant("strange_matter", "kill_spawns"));
-        int laser_sources = 0, endless = -1;
-        for (int i = 0; i < int(weapons.size()); ++i) {
-            Weapon &w = weapons[i];
-            if (w.hostile || w.vacant || !w.enabled) continue;
-            if (w.kind == 0) ++laser_sources;
-            w.endless = false; w.maximum = w.normal_maximum;
-            if (w.kind == 3 && !w.entry.has("drone_id")) {
-                if (endless < 0 || int64_t(w.entry.get("paid_level", int64_t(1))) > int64_t(weapons[endless].entry.get("paid_level", int64_t(1))) ||
-                    (w.entry.get("paid_level", 1) == weapons[endless].entry.get("paid_level", 1) && w.slot < weapons[endless].slot)) endless = i;
-            }
-        }
+        int laser_sources = 0;
+        for (const Weapon &w : weapons) if (!w.hostile && !w.vacant && w.enabled && w.kind == 0) ++laser_sources;
         laser_charge_multiplier = legend_active("laser_charge") ? 1.0 + minimum(legend_value("laser_charge", "maximum_bonus"), laser_sources * legend_constant("laser_charge", "bonus_per_laser")) : 1.0;
-        if (legend_active("endless_beam") && endless >= 0) {
-            Weapon &w = weapons[endless]; w.endless = true; w.maximum += legend_value("endless_beam", "maximum_multiplier_bonus");
-        }
+        select_endless_source();
         for (Weapon &w : weapons) if (!w.hostile && w.enabled && w.birth) {
             auto updated = std::make_shared<BirthConfig>(*w.birth); updated->maximum = w.maximum;
             w.interval = w.normal_interval / (1.0 + drone_scalar("attack_speed_bonus"));
@@ -2218,10 +2225,10 @@ class SpaceCombatKernel : public RefCounted {
         }
         return values;
     }
-    void apply_defence_capacity(const String &change_kind, const Amount (&before)[2], const Amount (&old_capacity)[2], const std::vector<std::pair<size_t, Amount>> *changed = nullptr) {
+    void apply_defence_capacity(const String &change_kind, const Amount (&before)[2], const Amount (&old_capacity)[2], const std::vector<size_t> *changed = nullptr) {
         unsigned layers = changed ? 0 : 3;
         for (size_t i = 0; i < defences.size(); ++i) {
-            if (changed && std::none_of(changed->begin(), changed->end(), [i](const auto &entry) { return entry.first == i; })) continue;
+            if (changed && std::find(changed->begin(), changed->end(), i) == changed->end()) continue;
             Defence &value = defences[i]; layers |= 1u << value.layer;
             const Amount health = nonnegative(value.maximum - value.loss);
             value.maximum = evaluate_module_value(value.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, value.branch_factors, value.external_factors) * value.factor * drone_defence(value.layer);
@@ -2283,9 +2290,6 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("deferred_total"), &SpaceCombatKernel::deferred_total_text);
         ClassDB::bind_method(D_METHOD("set_compact_laser_births", "enabled"), &SpaceCombatKernel::set_compact_laser_births);
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
-        ClassDB::bind_method(D_METHOD("presentation_projectile_rows"), &SpaceCombatKernel::presentation_projectile_rows);
-        ClassDB::bind_method(D_METHOD("presentation_membership"), &SpaceCombatKernel::presentation_membership);
-        ClassDB::bind_method(D_METHOD("presentation_beams"), &SpaceCombatKernel::presentation_beams);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("set_damage_stats_enabled", "enabled"), &SpaceCombatKernel::set_damage_stats_enabled);
         ClassDB::bind_method(D_METHOD("take_damage_stats"), &SpaceCombatKernel::take_damage_stats);
@@ -3016,85 +3020,38 @@ class SpaceCombatKernel : public RefCounted {
     struct PresentationFlight {
         uint64_t serial = 0;
         Ref<SpaceMotionLease> motion;
-        String key;
+        int kind = 0, type = 0, ticks = 0, links = 0;
         bool hostile = false, chain = false, beam = false, fixed = false, awaiting = false, powered = false;
-        int type = 0;
         Vector2 launch, ray_origin, ray_step;
-        Array segments;
+        double age = 0, charge = 0, ramp = 1;
     };
     bool presentation_running() const { return admitted && !stopped; }
-    std::vector<PresentationFlight> presentation_flights() const {
-        std::vector<PresentationFlight> result; result.reserve(active.size());
-        for (size_t id : active) {
-            const Flight &f = flights[id];
-            if (!f.live) continue;
-            PresentationFlight view;
-            view.serial = f.serial; view.motion = f.lease;
-            static const char *keys[] = {"laser", "cannon", "missile", "longLaser"};
-            view.key = keys[f.view_birth->kind];
-            view.hostile = f.hostile; view.chain = f.chain; view.beam = f.beam; view.type = f.type;
-            view.awaiting = f.await_target; view.powered = !Dictionary(f.view.get("target", Dictionary())).is_empty();
-            view.fixed = f.fixed_ray; view.launch = f.launch_point;
-            view.ray_origin = f.presentation_ray ? f.presentation_origin : f.ray_origin;
-            view.ray_step = f.presentation_ray ? f.presentation_step : f.ray_step;
-            if (f.beam && !f.await_target) {
-                Dictionary target = f.view.get("target", Dictionary());
-                if (!target.is_empty() && !bool(target.get("dead", false))) {
-                    const Vector2 origin = f.view.get("launch_point", f.launch_point);
-                    const Vector2 point = Vector2(target.get("x", origin.x), target.get("y", origin.y));
-                    const double power = f.ramp > 0 ? std::clamp(std::max(0.0, f.age - f.charge) / f.ramp, 0.0, 1.0) : 1.0;
-                    Dictionary segment; segment["from"] = origin; segment["to"] = point;
-                    segment["power"] = power; segment["charge"] = f.ticks > 0 ? -1.0 : std::clamp(f.age / std::max(f.charge, 0.001), 0.0, 1.0); segment["link"] = false;
-                    view.segments.push_back(segment);
-                    Dictionary chain = f.instance->view.get("chain", Dictionary()); Array links = chain.get("links", Array());
-                    for (int i = 0; i < links.size(); ++i) {
-                        Dictionary link = links[i], linked = link.get("target", Dictionary());
-                        if (bool(link.get("broken", false)) || linked.is_empty() || bool(linked.get("dead", false))) continue;
-                        Dictionary part; part["from"] = point; part["to"] = Vector2(linked["x"], linked["y"]);
-                        part["power"] = power; part["charge"] = f.ticks > 0 ? -1.0 : 0.0; part["link"] = true; view.segments.push_back(part);
-                    }
-                }
-            }
-            result.push_back(std::move(view));
-        }
-        return result;
+    size_t presentation_slots() const { return flights.size(); }
+    size_t presentation_count() const { return active.size(); }
+    size_t presentation_index(size_t order) const { return active[order]; }
+    bool presentation_matches(size_t id, uint64_t serial, const Ref<SpaceMotionLease> &lease) const {
+        return id < flights.size() && flights[id].live && flights[id].serial == serial && flights[id].lease == lease;
     }
-    Array presentation_projectile_rows() const { return flight_rows; }
-    Array presentation_beams() const {
-        // Compaction swaps the full flight order independently of beam order.
-        // Sort only these beam indices to preserve the existing alpha draw order.
-        std::vector<size_t> ordered = active_beams;
-        std::sort(ordered.begin(), ordered.end(), [this](size_t a, size_t b) {
-            return flights[a].active_index < flights[b].active_index;
-        });
-        Array beams;
-        for (size_t id : ordered) beams.push_back(flights[id].view);
-        return beams;
+    bool presentation_read(size_t id, PresentationFlight &view) const {
+        if (id >= flights.size() || !flights[id].live) return false;
+        const Flight &f = flights[id];
+        view.serial = f.serial; view.motion = f.lease; view.kind = f.instance->attack->birth->kind;
+        view.hostile = f.hostile; view.chain = f.chain; view.beam = f.beam; view.type = f.type;
+        view.awaiting = f.await_target; view.powered = view.kind == 2 && !f.chain && !Dictionary(f.view.get("target", Dictionary())).is_empty();
+        view.fixed = f.fixed_ray; view.launch = f.beam ? Vector2(f.view.get("launch_point", f.launch_point)) : f.launch_point;
+        view.ray_origin = f.presentation_ray ? f.presentation_origin : f.ray_origin;
+        view.ray_step = f.presentation_ray ? f.presentation_step : f.ray_step;
+        view.age = f.age; view.charge = f.charge; view.ramp = f.ramp; view.ticks = f.ticks;
+        view.links = f.beam ? int(f.instance->links.size()) : 0;
+        return true;
     }
-    Dictionary presentation_membership() const {
-        // Read existing typed ownership, never another combat snapshot. All actor
-        // rows (including dead actors) survive for this kernel's whole encounter.
-        Array beams = presentation_beams();
-        PackedInt64Array muzzle_serials, compact_laser_serials;
-        for (size_t id : active_beams) {
-            const Flight &f = flights[id];
-            muzzle_serials.push_back(int64_t(f.serial));
-        }
-        // Only rail and beam feedback owns a retained muzzle in the scene.
-        // Ordinary flight rows need no GDScript traversal at display publication.
-        for (size_t id : active) {
-            const Flight &f = flights[id];
-            if (f.compact_laser) compact_laser_serials.push_back(int64_t(f.serial));
-            if (!f.beam && f.weapon >= 0 && weapons[f.weapon].kind == 1)
-                muzzle_serials.push_back(int64_t(f.serial));
-        }
-        Dictionary result;
-        result["beams"] = beams;
-        result["muzzle_serials"] = muzzle_serials;
-        result["compact_laser_serials"] = compact_laser_serials;
-        return result;
+    bool presentation_endpoint(size_t id, int link, Vector2 &point) const {
+        const Flight &f = flights[id];
+        if (link < 0 && f.hostile) { point = Vector2(player_row["x"], player_row["y"]); return !bool(player_row.get("dead", false)); }
+        const Actor *target = resolve(link < 0 ? f.target : f.instance->links[link]);
+        if (!target) return false;
+        point = target->logical; return true;
     }
-
     double cooldown_remaining(int slot, int64_t source_uid = -1) const {
         // Read the existing root deadline; no mirrored clock or exported world.
         if (!admitted || stopped) return std::numeric_limits<double>::infinity();
@@ -3113,43 +3070,63 @@ class SpaceCombatKernel : public RefCounted {
     }
     Dictionary set_player_values(Dictionary weapon_values, Dictionary defence_values, String kind, String iron_factor) {
         Dictionary result; result["ok"] = false; result["fault"] = false; result["reason"] = "NativeConfigurationRejected";
-        if (!admitted || executing || (kind != "growth" && kind != "selection" && kind != "refit")) return result;
+        if (!admitted || executing || (kind != "growth" && kind != "selection" && kind != "refit" && kind != "upgrade")) return result;
         bool committing = false;
         try {
             Amount iron;
             if (!iron_factor.is_empty()) iron = read_amount(iron_factor);
-            std::vector<std::pair<size_t, Amount>> sources, modules;
+            std::vector<std::pair<size_t, Weapon>> sources;
+            std::vector<std::pair<size_t, Defence>> modules;
             for (bool defence : {false, true}) {
                 Dictionary inputs = defence ? defence_values : weapon_values;
                 Array keys = inputs.keys();
                 for (int n = 0; n < keys.size(); ++n) {
                     if (Variant(keys[n]).get_type() != Variant::STRING || Variant(inputs[keys[n]]).get_type() != Variant::DICTIONARY) return result;
                     String id = keys[n]; Dictionary row = inputs[keys[n]];
-                    if (!schema_required(row, {"key", "generation", "base"}) || !schema_types(row, Variant::STRING, {"key"}) || !schema_integers(row, {"generation"}, false)) return result;
-                    Amount base = read_amount(row["base"]);
+                    if (!schema_required(row, {"key", "generation"}) || !schema_types(row, Variant::STRING, {"key"}) || !schema_integers(row, {"generation"}, false)) return result;
                     size_t found = SIZE_MAX;
                     if (defence) {
                         for (size_t i = 0; i < defences.size(); ++i) if (defences[i].entry.get("id", "") == id && defences[i].entry.get("key", "") == row["key"] && defences[i].entry.get("generation", int64_t(0)) == row["generation"]) { found = i; break; }
                         if (found == SIZE_MAX) return result;
-                        const Defence &d = defences[found];
-                        evaluate_module_value(base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, d.branch_factors, d.external_factors) * d.factor;
-                        if (base != d.base) modules.push_back({found, base});
+                        Defence next = defences[found];
+                        if (row.has("base")) next.base = read_amount(row["base"]);
+                        if (row.has("external")) next.external_factors = read_factors(row["external"]);
+                        if (next.base == defences[found].base && next.external_factors == defences[found].external_factors) continue;
+                        evaluate_module_value(next.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, next.branch_factors, next.external_factors) * next.factor * drone_defence(next.layer);
+                        modules.push_back({found, std::move(next)});
                     } else {
-                        for (size_t i = 0; i < weapons.size(); ++i) if (!weapons[i].hostile && weapons[i].configured && !weapons[i].vacant && !weapons[i].entry.has("drone_id") && weapons[i].entry.get("id", "") == id && weapons[i].entry.get("key", "") == row["key"] && weapons[i].entry.get("generation", int64_t(0)) == row["generation"]) { found = i; break; }
+                        for (size_t i = 0; i < weapons.size(); ++i) if (!weapons[i].hostile && weapons[i].configured && !weapons[i].vacant && weapons[i].entry.get("id", "") == id && weapons[i].entry.get("key", "") == row["key"] && weapons[i].entry.get("generation", int64_t(0)) == row["generation"]) { found = i; break; }
                         if (found == SIZE_MAX) return result;
-                        const Weapon &w = weapons[found];
-                        evaluate_module_value(base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, w.branch_factors, w.external_factors) * w.factor;
-                        if (base != w.base) sources.push_back({found, base});
+                        Weapon next = weapons[found];
+                        if (row.has("base")) next.base = read_amount(row["base"]);
+                        if (row.has("external")) next.external_factors = read_factors(row["external"]);
+                        if (row.has("paid_level") && (next.entry.get("paid_level", 0) != row["paid_level"] || next.entry.get("effective_level", 0) != row["effective_level"])) {
+                            next.entry = next.entry.duplicate(); next.entry["paid_level"] = row["paid_level"]; next.entry["effective_level"] = row["effective_level"];
+                            auto birth = std::make_shared<BirthConfig>(*next.birth); birth->entry = next.entry.duplicate(true); birth->entry.make_read_only(); next.birth = birth;
+                        }
+                        if (next.base == weapons[found].base && next.external_factors == weapons[found].external_factors && next.birth == weapons[found].birth) continue;
+                        evaluate_module_value(next.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, next.branch_factors, next.external_factors) * next.factor * drone_weapon(next.kind);
+                        sources.push_back({found, std::move(next)});
                     }
                 }
             }
             const Amount before[2] = {layer_health(0), layer_health(1)}, old_capacity[2] = {capacity(0), capacity(1)};
             committing = true;
-            for (const auto &value : sources) weapons[value.first].base = value.second;
-            for (const auto &value : modules) defences[value.first].base = value.second;
+            bool endless_changed = false;
+            for (auto &value : sources) {
+                Weapon &target = weapons[value.first];
+                endless_changed = endless_changed || (target.kind == 3 && target.entry.get("paid_level", 1) != value.second.entry.get("paid_level", 1));
+                target.base = value.second.base; target.external_factors = std::move(value.second.external_factors);
+                target.entry = value.second.entry; target.birth = value.second.birth;
+            }
+            if (endless_changed) select_endless_source();
+            std::vector<size_t> changed;
+            for (auto &value : modules) {
+                Defence &target = defences[value.first]; target.base = value.second.base; target.external_factors = std::move(value.second.external_factors); changed.push_back(value.first);
+            }
             if (!iron_factor.is_empty()) iron_drop_factor = iron;
-            if (!modules.empty()) {
-                apply_defence_capacity(kind, before, old_capacity, &modules); publish_player();
+            if (!changed.empty()) {
+                apply_defence_capacity(kind, before, old_capacity, &changed); publish_player();
             }
             result["ok"] = true; result.erase("reason"); return result;
         } catch (const std::exception &e) {

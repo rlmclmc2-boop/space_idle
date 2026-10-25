@@ -41,7 +41,7 @@ static func initial(definitions: Dictionary) -> Dictionary:
 		var random := RandomNumberGenerator.new()
 		random.seed = int(definition.slot_seed)
 		regions[key] = {"unlocked": false, "phase": "exploring", "nodes": nodes, "active_node": "", "attempt_elapsed": 0.0,
-			"income_elapsed": 0.0, "_factors": {}, "bag": [], "bag_round": 0, "special_pending": false, "rng_state": random.state}
+			"income_elapsed": 0.0, "explored_count": 0, "active_count": 0, "total_levels": 0, "upgrades": [], "bag": [], "bag_round": 0, "special_pending": false, "rng_state": random.state}
 	return {"ok": true, "regions": regions}
 
 static func _reachable(region: Dictionary) -> Array:
@@ -85,7 +85,8 @@ static func _draw(region: Dictionary, buildings: Dictionary, key: String, cycle:
 	return selected
 
 static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dictionary, personnel: Dictionary, enabled: Dictionary, dt: float, income_interval: float) -> Dictionary:
-	var changed: bool = false
+	var changes: Array = []
+	var displayed: Array = []
 	var payments: Array = []
 	for key in regions:
 		if not enabled.get(key, false): continue
@@ -99,16 +100,17 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 		if count <= 0: continue
 		var random := RandomNumberGenerator.new()
 		random.state = int(region.rng_state)
-		var upgrading: Array = []
-		for id in region.nodes:
-			if float(region.nodes[id].upgrade_remaining) > 0.0: upgrading.append(id)
+		var upgrading: Array = region.upgrades.duplicate()
+		var display_changed: bool = false
 		var had_active: bool = not str(region.active_node).is_empty()
 		if had_active:
+			display_changed = true
 			var node: Dictionary = region.nodes[str(region.active_node)]
 			if not node.explored:
 				node.explore_remaining = maxf(0.0, float(node.explore_remaining) - dt * (float(row.explore_power_base) + float(row.explore_power_per_crew) * count))
 				if float(node.explore_remaining) <= 1e-9:
 					node.explore_remaining = 0.0
+					region.explored_count += 1
 					node.explored = true
 					node.state = "constructing"
 					node.construction_remaining = float(row.construction_time)
@@ -116,12 +118,12 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 				node.construction_remaining = maxf(0.0, float(node.construction_remaining) - dt)
 				if float(node.construction_remaining) <= 1e-9:
 					node.construction_remaining = 0.0
+					region.active_count += 1
+					region.total_levels += 1
 					node.level = 1
 					node.state = "active"
+					changes.append({"region": key, "node": str(region.active_node)})
 					region.active_node = ""
-					var effect: String = str(buildings[node.building].effect_type)
-					region._factors.erase(effect)
-					changed = changed or effect not in ["iron_auto_ratio", "uranium_auto_ratio"]
 		elif region.phase == "exploring":
 			region.attempt_elapsed = float(region.attempt_elapsed) + dt
 			if float(region.attempt_elapsed) + 1e-9 >= float(row.build_interval):
@@ -134,10 +136,8 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 					region.nodes[id].state = "exploring"
 					region.nodes[id].building = building
 					region.active_node = id
-		var all_explored: bool = true
-		for id in region.nodes:
-			if not region.nodes[id].explored: all_explored = false
-		if all_explored and region.phase == "exploring": region.phase = "developing"
+					display_changed = true
+		if int(region.explored_count) == region.nodes.size() and region.phase == "exploring": region.phase = "developing"
 		if not upgrading.is_empty():
 			var power: float = (float(row.upgrade_power_base) + float(row.upgrade_power_per_crew) * count) / upgrading.size()
 			for id in upgrading:
@@ -145,12 +145,13 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 				node.upgrade_remaining = maxf(0.0, float(node.upgrade_remaining) - dt * power)
 				if float(node.upgrade_remaining) <= 1e-9:
 					node.upgrade_remaining = 0.0
+					region.total_levels += 1
+					region.upgrades.erase(id)
+					display_changed = true
 					node.level = int(node.level) + 1
-					var effect: String = str(buildings[node.building].effect_type)
-					region._factors.erase(effect)
-					changed = changed or effect not in ["iron_auto_ratio", "uranium_auto_ratio"]
-		if region.phase == "developing":
-			var active_upgrades: int = 0
+					changes.append({"region": key, "node": str(id)})
+		if region.phase == "developing" and region.upgrades.size() < int(row.concurrent_upgrade_count):
+			var active_upgrades: int = region.upgrades.size()
 			var candidates: Array = []
 			var complete: bool = true
 			for id in region.nodes:
@@ -159,8 +160,7 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 					complete = false
 					continue
 				if int(node.level) < int(buildings[node.building].max_lv): complete = false
-				if float(node.upgrade_remaining) > 0.0: active_upgrades += 1
-				elif int(node.level) < int(buildings[node.building].max_lv): candidates.append(id)
+				if float(node.upgrade_remaining) <= 0.0 and int(node.level) < int(buildings[node.building].max_lv): candidates.append(id)
 			candidates.sort_custom(func(a, b): return int(a) < int(b))
 			while active_upgrades < int(row.concurrent_upgrade_count) and not candidates.is_empty():
 				var index: int = random.randi_range(0, candidates.size() - 1)
@@ -168,48 +168,77 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 				candidates.remove_at(index)
 				region.nodes[id].upgrade_remaining = float(row["upgrade_cost_lv" + str(int(region.nodes[id].level) + 1)])
 				active_upgrades += 1
-			if complete: region.phase = "complete"
+				region.upgrades.append(id)
+				display_changed = true
+			if complete and region.phase != "complete":
+				region.phase = "complete"
+				display_changed = true
+		if display_changed: displayed.append(key)
 		region.rng_state = random.state
-	return {"ok": true, "changed": changed, "payments": payments}
+	return {"ok": true, "changes": changes, "payments": payments, "displayed": displayed}
 
-static func factors(regions: Dictionary, buildings: Dictionary, api, effects: Array) -> Dictionary:
+static func contributions(regions: Dictionary, buildings: Dictionary, api, previous: Dictionary = {}, changes: Array = []) -> Dictionary:
+	var result: Dictionary = previous.duplicate()
+	if not previous.is_empty():
+		result._sources = previous._sources.duplicate()
+		result._regional = previous._regional.duplicate()
+		result["values"] = previous["values"].duplicate()
 	var one: Dictionary = api.apply("from_decimal", ["1"]).value
 	var zero: Dictionary = api.apply("zero", []).value
-	var values: Dictionary = {}
-	for effect in effects: values[effect] = zero if effect in ["iron_auto_ratio", "uranium_auto_ratio"] else one
-	for key in regions:
-		var cached: Dictionary = regions[key]._factors
-		for effect in effects:
-			if not cached.has(effect):
-				var sum: Dictionary = zero
-				for node in regions[key].nodes.values():
-					if node.state != "active" or buildings[node.building].effect_type != effect: continue
-					var base = api.apply("from_decimal", [str(buildings[node.building].base_effect)])
-					var level = api.apply("from_decimal", [str(node.level)])
-					var value = api.apply("mul", [base.value, level.value])
-					if not value.ok: return value
-					value = api.apply("add", [sum, value.value])
-					if not value.ok: return value
-					sum = value.value
-				cached[effect] = sum
-			var result: Dictionary
-			if effect in ["iron_auto_ratio", "uranium_auto_ratio"]:
-				result = api.apply("add", [values[effect], cached[effect]])
-			else:
-				var factor = api.apply("add", [one, cached[effect]])
-				result = api.apply("mul", [values[effect], factor.value])
-			if not result.ok: return result
-			values[effect] = result.value
-	return {"ok": true, "values": values}
+	var affected: Dictionary = {}
+	if result.is_empty():
+		result = {"ok": true, "values": {}, "_sources": {}, "_regional": {}}
+		for effect in ["crew_exp", "equipment_value", "charge_max", "gem_fragment", "iron_auto_ratio", "uranium_auto_ratio"]:
+			result._sources[effect] = {}
+			result._regional[effect] = {}
+			for key in regions:
+				result._sources[effect][key] = {}
+				result._regional[effect][key] = zero
+			if effect not in ["iron_auto_ratio", "uranium_auto_ratio"]: result["values"][effect] = one
+	for change in changes:
+		var node: Dictionary = regions[change.region].nodes[change.node]
+		var row: Dictionary = buildings[node.building]
+		var effect: String = str(row.effect_type)
+		var base = api.apply("from_decimal", [str(row.base_effect)])
+		var level = api.apply("from_decimal", [str(node.level)])
+		var value = api.apply("mul", [base.value, level.value])
+		if not value.ok: return value
+		if not affected.has(effect):
+			affected[effect] = {}
+			result._sources[effect] = result._sources[effect].duplicate()
+			result._regional[effect] = result._regional[effect].duplicate()
+		if not affected[effect].has(change.region): result._sources[effect][change.region] = result._sources[effect][change.region].duplicate()
+		result._sources[effect][change.region][change.node] = value.value
+		affected[effect][change.region] = true
+	result.growth_changed = false
+	for effect in affected:
+		for region in affected[effect]:
+			var sources: Dictionary = result._sources[effect][region]
+			var ids: Array = sources.keys()
+			ids.sort_custom(func(a, b): return int(a) < int(b))
+			var sum: Dictionary = zero
+			for id in ids:
+				var added = api.apply("add", [sum, sources[id]])
+				if not added.ok: return added
+				sum = added.value
+			result._regional[effect][region] = sum
+		if effect in ["iron_auto_ratio", "uranium_auto_ratio"]: continue
+		var total: Dictionary = one
+		for sum in result._regional[effect].values():
+			var factor = api.apply("add", [one, sum])
+			var value = api.apply("mul", [total, factor.value])
+			if not value.ok: return value
+			total = value.value
+		result.growth_changed = result.growth_changed or total != result["values"][effect]
+		result["values"][effect] = total
+	return result
 
-static func income(regions: Dictionary, buildings: Dictionary, production_rates: Dictionary, seconds: float, api) -> Dictionary:
-	var growth = factors(regions, buildings, api, ["iron_auto_ratio", "uranium_auto_ratio"])
-	if not growth.ok: return growth
+static func income(contributions: Dictionary, region: String, production_rates: Dictionary, seconds: float, api) -> Dictionary:
 	var duration = api.apply("from_decimal", [str(seconds)])
 	if not duration.ok: return duration
 	var amounts: Dictionary = {}
 	for pair in [["1", "iron_auto_ratio"], ["2", "uranium_auto_ratio"]]:
-		var quantity = api.apply("mul", [production_rates[pair[0]], growth["values"][pair[1]]])
+		var quantity = api.apply("mul", [production_rates[pair[0]], contributions._regional[pair[1]][region]])
 		if not quantity.ok: return quantity
 		quantity = api.apply("mul", [quantity.value, duration.value])
 		if not quantity.ok: return quantity

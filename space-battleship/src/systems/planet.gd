@@ -57,37 +57,45 @@ static func claim_build(progress: Dictionary, building: String) -> Dictionary:
 
 static func advance(state: Dictionary, definitions: Dictionary, buildings: Dictionary, explorers: Dictionary, builders: Dictionary, dt: float) -> Dictionary:
 	var completed: Array = []
+	var progressed: Array = []
 	for id in state:
 		var progress: Dictionary = state[id]
 		var people: Array = explorers.get(id, [])
 		if not progress.running or people.is_empty():
 			continue
+		progressed.append(id)
 		progress.elapsed = minf(float(progress.duration), float(progress.elapsed) + dt)
 		if float(progress.elapsed) + 1e-9 < float(progress.duration):
 			continue
 		if int(progress.exploration) == 9223372036854775807:
 			return {"ok": false, "reason": "PlanetExplorationRangeExceeded"}
 		var released: Array = []
+		var buildings_changed: bool = false
+		var assignments_changed: bool = false
 		# Construction sees the pre-completion unlock state, so a threshold crossing
 		# cannot also advance a newly unlocked building.
 		for key in progress.buildings:
 			var build: Dictionary = progress.buildings[key]
 			var row: Dictionary = buildings[key]
 			if build.state == "building" and builders.get(str(id) + ":" + str(key), []).size() >= int(row.extra_crew):
+				buildings_changed = true
 				build.work = int(build.work) + 1
 				if int(build.work) >= int(row.build_explore):
+					assignments_changed = true
 					build.state = "ready"
 					released.append(str(id) + ":" + str(key))
 		progress.exploration = int(progress.exploration) + 1
 		for key in progress.buildings:
 			if progress.buildings[key].state == "locked" and int(progress.exploration) >= int(buildings[key].unlock_explore):
+				buildings_changed = true
+				assignments_changed = true
 				progress.buildings[key].state = "building"
 		var again: bool = progress.automatic and progress.buildings.station.state == "built"
 		progress.running = again
 		progress.elapsed = 0.0
 		progress.duration = duration(progress, definitions[id]) if again else 0.0
-		completed.append({"planet": id, "explorer": str(people[0]), "released": released, "again": again})
-	return {"ok": true, "completed": completed}
+		completed.append({"planet": id, "explorer": str(people[0]), "released": released, "again": again, "buildings_changed": buildings_changed, "assignments_changed": assignments_changed})
+	return {"ok": true, "completed": completed, "progressed": progressed}
 
 static func buff(state: Dictionary, rows: Array, kind: String, target: String, only_planet: String = "") -> float:
 	var add: float = 0.0
@@ -109,39 +117,44 @@ static func buff(state: Dictionary, rows: Array, kind: String, target: String, o
 			maximum = maxf(maximum, float(row.value))
 	return maxf((add if has_add else 1.0 if has_multiply else 0.0) * multiply, maximum)
 
-static func factors(state: Dictionary, buildings: Dictionary, rows: Array, api) -> Dictionary:
-	var equipment: Dictionary = api.apply("from_decimal", ["1"]).value
-	var refinery: Dictionary = equipment
-	for id in state:
-		for key in state[id].buildings:
+static func contributions(state: Dictionary, buildings: Dictionary, rows: Array, api, previous: Dictionary = {}, changes: Dictionary = {}) -> Dictionary:
+	var result: Dictionary = previous.duplicate()
+	if not previous.is_empty(): result._sources = previous._sources.duplicate()
+	var affected: Dictionary = {}
+	var one: Dictionary = api.apply("from_decimal", ["1"]).value
+	if result.is_empty():
+		result = {"ok": true, "equipment": one, "refinery": one, "_sources": {"equipment": {}, "refinery": {}},
+			"equipment_levels": int(buff(state, rows, "level_bonus", "equipment")),
+			"enhancement_levels": int(buff(state, rows, "level_bonus", "enhancement")), "free_charge": buff(state, rows, "free_charge", "all")}
+		for id in state:
+			changes[id] = []
+			for key in state[id].buildings:
+				if buildings[key].type in ["equipment", "refinery"]: result._sources[buildings[key].type][str(id) + ":" + str(key)] = one
+	for id in changes:
+		var keys: Array = state[id].buildings.keys() if changes[id].is_empty() else changes[id]
+		for key in keys:
 			var row: Dictionary = buildings[key]
-			if state[id].buildings[key].state != "built" or row.type not in ["equipment", "refinery"]:
-				continue
-			var entry: Dictionary = state[id].buildings[key]
-			var cached: Dictionary = entry.get("_factor", {})
-			var factor: Dictionary
-			if cached.get("exploration") == state[id].exploration:
-				factor = {"ok": true, "value": cached.value}
-			else:
-				var count = api.apply("from_decimal", [str(state[id].exploration)])
-				var scale = api.apply("from_decimal", [str(row.config1)])
-				count = api.apply("mul", [count.value, scale.value])
-				if not count.ok:
-					return count
-				count = api.apply("add", [api.apply("from_decimal", ["1"]).value, count.value])
-				factor = api.apply("pow", [count.value, float(row.config2)])
-				if not factor.ok:
-					return factor
-				entry._factor = {"exploration": state[id].exploration, "value": factor.value}
-			var total = api.apply("mul", [equipment if row.type == "equipment" else refinery, factor.value])
-			if not total.ok:
-				return total
-			if row.type == "equipment": equipment = total.value
-			else: refinery = total.value
-	return {"ok": true, "equipment": equipment, "refinery": refinery,
-		"equipment_levels": int(buff(state, rows, "level_bonus", "equipment")),
-		"enhancement_levels": int(buff(state, rows, "level_bonus", "enhancement")),
-		"free_charge": buff(state, rows, "free_charge", "all")}
+			if row.type not in ["equipment", "refinery"] or state[id].buildings[key].state != "built": continue
+			var count = api.apply("from_decimal", [str(state[id].exploration)])
+			var scale = api.apply("from_decimal", [str(row.config1)])
+			count = api.apply("mul", [count.value, scale.value])
+			if not count.ok: return count
+			count = api.apply("add", [one, count.value])
+			var value = api.apply("pow", [count.value, float(row.config2)])
+			if not value.ok: return value
+			var source: String = str(id) + ":" + str(key)
+			if value.value == result._sources[row.type][source]: continue
+			if not affected.has(row.type): result._sources[row.type] = result._sources[row.type].duplicate()
+			result._sources[row.type][source] = value.value
+			affected[row.type] = true
+	for effect in affected:
+		var value: Dictionary = one
+		for factor in result._sources[effect].values():
+			var multiplied = api.apply("mul", [value, factor])
+			if not multiplied.ok: return multiplied
+			value = multiplied.value
+		result[effect] = value
+	return result
 
 static func experience_reward(definition: Dictionary, stage_ratio, galaxy_factor: Dictionary, api) -> Dictionary:
 	var earned = api.apply("from_decimal", [str(definition.baseExp)])

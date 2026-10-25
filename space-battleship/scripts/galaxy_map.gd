@@ -434,6 +434,7 @@ func refresh_slot(id: int) -> Node3D:
 	return building
 
 func finish_selection() -> void:
+	refresh_explored()
 	for _i in int(setting("max_visual_pulses",4)):
 		var pulse := MeshInstance3D.new()
 		var mesh := SphereMesh.new()
