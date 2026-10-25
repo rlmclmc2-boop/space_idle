@@ -54,19 +54,21 @@ func accept(candidate: Dictionary) -> void:
 	if not _run_state.is_running(): return
 	if candidate.has("state"): _adopt(candidate.state)
 
-func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: String, publish: Callable) -> Dictionary:
+func _submit(next: Dictionary, inputs: Dictionary, next_wallet, kind: String, publish: Callable) -> Dictionary:
 	var candidate = _evaluate(next, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
 	if not candidate.ok: return candidate
-	var result: Dictionary = publish.call(candidate.factors, costs, kind)
+	var result: Dictionary = publish.call(candidate.factors, next_wallet, kind)
 	if result.ok: _adopt(candidate.state)
 	return result
 
-func purchase(count: int, automatic: bool, inputs: Dictionary, publish: Callable) -> Dictionary:
+func purchase(count: int, automatic: bool, inputs: Dictionary, pay: Callable, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not _available: return {"ok": false, "reason": "ReactorLocked"}
 	var changed = _purchase(_state, count, automatic, _parameters, _api)
 	if not changed.ok: return changed
-	return _submit(changed.state, inputs, changed.costs, "growth", publish)
+	var paid: Dictionary = pay.call(changed.costs)
+	if not paid.ok: return paid
+	return _submit(changed.state, inputs, paid.wallet, "growth", publish)
 
 func allocate_text(module: String, text: String, inputs: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
@@ -74,17 +76,17 @@ func allocate_text(module: String, text: String, inputs: Dictionary, publish: Ca
 	if not quantity.ok: return quantity
 	var changed = _allocate(_state, module, quantity.value, _parameters, enabled_modules(), _api, inputs.capacity)
 	if not changed.ok: return changed
-	return _submit(changed.state, inputs, {}, "selection", publish)
+	return _submit(changed.state, inputs, null, "selection", publish)
 
 func distribute(inputs: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var changed = _distribute(_state, _parameters, enabled_modules(), _api, inputs.capacity)
 	if not changed.ok: return changed
-	return _submit(changed.state, inputs, {}, "selection", publish)
+	return _submit(changed.state, inputs, null, "selection", publish)
 
 func refresh(inputs: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	return _submit(_state, inputs, {}, "growth", publish)
+	return _submit(_state, inputs, null, "growth", publish)
 
 static func _initial(parameters: Dictionary) -> Dictionary:
 	return {"level": int(parameters.reactorInitialLevel), "allocations": {}, "free_charge": 0.0}

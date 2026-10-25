@@ -433,15 +433,12 @@ func _publish_research() -> Dictionary:
 	income_factors.jewel = values.fragment_income
 	return {"ok": true}
 
-func publish_reactor(factors: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
+func publish_reactor(factors: Dictionary, next_wallet, kind: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	var paid: Dictionary = {"ok": true, "wallet": economy.budget()}
-	if not costs.is_empty(): paid = economy.payment(costs)
-	if not paid.ok: return paid
 	var updated = _publish_native_values(research_factors, factors, kind)
 	if not updated.ok: return updated
 	reactor_factors = factors
-	economy.accept_budget(paid.wallet)
+	if next_wallet != null: economy.accept_budget(next_wallet)
 	income_factors.condensation = factors.condensation
 	return {"ok": true}
 
@@ -528,7 +525,7 @@ func _advance_crew_jobs(dt: float, ids: Array) -> bool:
 		match str(request.module):
 			"equipment": equipment.buy_all_levels(int(request.count), bool(request.maximum), equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
 			"enhancement": enhancement.purchase(int(request.count), enhancement_inputs(), economy.affordable, publish_enhancement)
-			"reactor": reactor_system.purchase(int(request.count), bool(request.automatic), reactor_inputs(), publish_reactor)
+			"reactor": reactor_system.purchase(int(request.count), bool(request.automatic), reactor_inputs(), economy.payment, publish_reactor)
 		if not run_state.is_running(): return false
 	return true
 
