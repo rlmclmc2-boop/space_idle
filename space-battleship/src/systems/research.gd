@@ -93,8 +93,8 @@ static func select_shortest(state: Dictionary, definitions: Dictionary, gates: D
 		return {"ok": true}
 	var chosen: String = ""
 	var shortest: Dictionary = api.apply("zero", []).value
+	# Dictionary insertion order is the imported Excel row order; ties keep it.
 	var keys: Array = definitions.keys()
-	keys.sort()
 	for key in keys:
 		if not available(definitions[key], state.levels, gates):
 			continue
