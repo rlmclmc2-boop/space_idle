@@ -1,18 +1,51 @@
 extends RefCounted
 
-static func initial(rules: Dictionary) -> Dictionary:
+var _state: Dictionary
+var _definitions: Dictionary = {}
+var _rules: Dictionary = {}
+var _unlocks: Array
+var _api
+
+func _init(rows: Array, rules: Dictionary, unlocks: Array, api) -> void:
+	for row in rows: _definitions[str(row.id)] = row
+	for key in rules:
+		if str(key).begins_with("research_"): _rules[key] = rules[key]
+	_unlocks = unlocks
+	_api = api
+	_state = _initial(_rules)
+
+func income_window() -> float:
+	return float(_rules.research_income_window)
+
+func panel_model() -> Dictionary:
+	var options: Array = []
+	for key in _definitions:
+		options.append({"id": key, "name": str(_definitions[key].name)})
+	return {"options": options, "ratio": _state.ratio, "minimum_ratio": _rules.research_minimum_ratio}
+
+func _finish_advance(next: Dictionary, wallet: Dictionary, completed: bool, continuation_error = null) -> Dictionary:
+	_state = next
+	var result := {"ok": true, "wallet": wallet, "completed": completed}
+	if continuation_error != null: result.continuation_error = continuation_error
+	return result
+
+static func _initial(rules: Dictionary) -> Dictionary:
 	return {"levels": {}, "work": {}, "current": "", "investment": {},
 		"auto_invest": false, "ratio": float(rules.research_default_ratio), "contributions": {}, "refresh_elapsed": 0.0,
 		"peaks": {}, "required_work": {}, "gates": {}, "available": {}}
 
-static func select(state: Dictionary, id: String) -> Dictionary:
+func select(id: String) -> Dictionary:
+	var state: Dictionary = _state
 	if not state.available.get(id, false):
 		return {"ok": false, "reason": "ResearchLocked"}
 	state.current = id
 	return {"ok": true}
 
 # Campaign supplies progress facts and the shared unlock table, never per-research gates.
-static func refresh_progress(state: Dictionary, definitions: Dictionary, unlocks: Array, highest_reached: int, cleared_stages: Dictionary) -> void:
+func refresh_progress(highest_reached: int, cleared_stages: Dictionary) -> void:
+	var state: Dictionary = _state
+	var definitions: Dictionary = _definitions
+	var unlocks: Array = _unlocks
 	var gates: Dictionary = {}
 	for key in definitions:
 		var row: Dictionary = definitions[key]
@@ -30,37 +63,53 @@ static func _progress_unlocked(kind: String, target: String, unlocks: Array, hig
 	return false
 
 static func _refresh_available(state: Dictionary, definitions: Dictionary) -> void:
-	for id in definitions: state.available[id] = available(definitions[id], state.levels, state.gates)
+	for id in definitions: state.available[id] = _available(definitions[id], state.levels, state.gates)
 
-static func choices(state: Dictionary) -> Dictionary:
+func choices() -> Dictionary:
+	var state: Dictionary = _state
 	return state.available.duplicate()
 
-static func set_investment(state: Dictionary, resource: String, quantity: Dictionary, api) -> Dictionary:
+func set_investment_text(resource: String, text: String) -> Dictionary:
+	var quantity = _api.apply("from_decimal", [text])
+	if not quantity.ok: return quantity
+	return set_investment(resource, quantity.value)
+
+func set_investment(resource: String, quantity: Dictionary) -> Dictionary:
+	var state: Dictionary = _state
+	var api = _api
 	if resource not in ["1", "2"]: return {"ok": false, "reason": "InvalidResearchResource"}
 	var value = api.apply("floor", [quantity])
 	if not value.ok: return value
 	state.investment[resource] = value.value
 	return {"ok": true}
 
-static func set_automatic(state: Dictionary, enabled: bool, ratio: float, rules: Dictionary) -> Dictionary:
+func set_automatic(enabled: bool, ratio: float) -> Dictionary:
+	var state: Dictionary = _state
+	var rules: Dictionary = _rules
 	if not is_finite(ratio) or ratio < float(rules.research_minimum_ratio) or ratio > 1.0:
 		return {"ok": false, "reason": "InvalidResearchRatio"}
 	state.auto_invest = enabled
 	state.ratio = ratio
 	return {"ok": true}
 
-static func automatic_due(state: Dictionary, assigned: bool, rules: Dictionary) -> bool:
+func automatic_due(assigned: bool) -> bool:
+	var state: Dictionary = _state
+	var rules: Dictionary = _rules
 	return assigned and state.auto_invest and float(state.refresh_elapsed) >= float(rules.research_income_window)
 
-static func contributions(state: Dictionary, definitions: Dictionary, rules: Dictionary, api) -> Dictionary:
+func contributions() -> Dictionary:
+	var state: Dictionary = _state
+	var definitions: Dictionary = _definitions
+	var rules: Dictionary = _rules
+	var api = _api
 	for effect in ["weapon_damage", "equipment_durability", "iron_income", "uranium_income", "fragment_income"]:
 		if state.contributions.has(effect): continue
-		var value = factor(state, definitions, effect, rules, api)
+		var value = _factor(state, definitions, effect, rules, api)
 		if not value.ok: return value
 		state.contributions[effect] = value.value
 	return {"ok": true, "values": state.contributions.duplicate()}
 
-static func available(row: Dictionary, levels: Dictionary, gates: Dictionary) -> bool:
+static func _available(row: Dictionary, levels: Dictionary, gates: Dictionary) -> bool:
 	if not gates.get(str(row.id), false):
 		return false
 	if row.requirements == null:
@@ -73,7 +122,7 @@ static func available(row: Dictionary, levels: Dictionary, gates: Dictionary) ->
 			return false
 	return true
 
-static func required_work(state: Dictionary, row: Dictionary, api) -> Dictionary:
+static func _required_work(state: Dictionary, row: Dictionary, api) -> Dictionary:
 	var key: String = str(row.id)
 	if state.required_work.has(key): return {"ok": true, "value": state.required_work[key]}
 	var level: int = int(state.levels.get(key, 0))
@@ -89,7 +138,7 @@ static func required_work(state: Dictionary, row: Dictionary, api) -> Dictionary
 	if result.ok: state.required_work[key] = result.value
 	return result
 
-static func factor(state: Dictionary, definitions: Dictionary, effect: String, rules: Dictionary, api) -> Dictionary:
+static func _factor(state: Dictionary, definitions: Dictionary, effect: String, rules: Dictionary, api) -> Dictionary:
 	var value = api.apply("from_decimal", ["1"])
 	for key in definitions:
 		var row: Dictionary = definitions[key]
@@ -122,9 +171,13 @@ static func factor(state: Dictionary, definitions: Dictionary, effect: String, r
 			return value
 	return value
 
-static func refresh_income(state: Dictionary, definitions: Dictionary, peak_rates: Dictionary, investment_rates: Dictionary, rules: Dictionary, api, income_changed: bool, automatic_due: bool) -> Dictionary:
+func refresh_income(peak_rates: Dictionary, investment_rates: Dictionary, income_changed: bool, automatic_due: bool) -> Dictionary:
+	var state: Dictionary = _state
+	var definitions: Dictionary = _definitions
+	var rules: Dictionary = _rules
+	var api = _api
 	if not income_changed and not automatic_due:
-		return {"ok": true, "state": state, "factors_changed": false}
+		return {"ok": true, "factors_changed": false}
 	var next: Dictionary = state.duplicate()
 	next.peaks = state.peaks.duplicate()
 	next.investment = state.investment.duplicate()
@@ -157,7 +210,7 @@ static func refresh_income(state: Dictionary, definitions: Dictionary, peak_rate
 		for effect in ["weapon_damage", "equipment_durability", "iron_income", "uranium_income", "fragment_income"]:
 			if effect not in effects: continue
 			var before: Dictionary = {"ok": true, "value": state.contributions[effect]}
-			var after = factor(next, definitions, effect, rules, api)
+			var after = _factor(next, definitions, effect, rules, api)
 			for result in [before, after]:
 				if not result.ok: return result
 			next.contributions[effect] = after.value
@@ -165,9 +218,10 @@ static func refresh_income(state: Dictionary, definitions: Dictionary, peak_rate
 			if not compared.ok: return compared
 			if compared.scalar != 0:
 				factors_changed = true
-	return {"ok": true, "state": next, "factors_changed": factors_changed}
+	_state = next
+	return {"ok": true, "factors_changed": factors_changed}
 
-static func select_shortest(state: Dictionary, definitions: Dictionary, api) -> Dictionary:
+static func _select_shortest(state: Dictionary, definitions: Dictionary, api) -> Dictionary:
 	if not str(state.current).is_empty():
 		return {"ok": true}
 	var chosen: String = ""
@@ -177,7 +231,7 @@ static func select_shortest(state: Dictionary, definitions: Dictionary, api) -> 
 	for key in keys:
 		if not state.available.get(key, false):
 			continue
-		var work = required_work(state, definitions[key], api)
+		var work = _required_work(state, definitions[key], api)
 		if not work.ok:
 			return work
 		work = api.apply("sub_nonnegative", [work.value, state.work.get(key, api.apply("zero", []).value)])
@@ -189,16 +243,19 @@ static func select_shortest(state: Dictionary, definitions: Dictionary, api) -> 
 	state.current = chosen
 	return {"ok": true}
 
-static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictionary,
-		dt: float, rules: Dictionary, api, crew_speed: Dictionary, continue_research: bool) -> Dictionary:
+func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_research: bool) -> Dictionary:
+	var state: Dictionary = _state
+	var definitions: Dictionary = _definitions
+	var rules: Dictionary = _rules
+	var api = _api
 	var next: Dictionary = state.duplicate()
 	next.refresh_elapsed = float(next.refresh_elapsed) + dt
 	var key: String = str(next.current)
 	if key.is_empty():
 		if continue_research:
-			var selected = select_shortest(next, definitions, api)
+			var selected = _select_shortest(next, definitions, api)
 			if not selected.ok: return selected
-		return {"ok": true, "state": next, "wallet": wallet, "completed": false}
+		return _finish_advance(next, wallet, false)
 	next.work = state.work.duplicate()
 	var balances: Dictionary = wallet.duplicate()
 	# Selection admits gates/requirements; both stay valid until this level completes.
@@ -207,7 +264,7 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 	var level: int = int(next.levels.get(key, 0))
 	if level == 9223372036854775807:
 		return {"ok": false, "reason": "ResearchLevelRangeExceeded"}
-	var required = required_work(next, definitions[key], api)
+	var required = _required_work(next, definitions[key], api)
 	if not required.ok:
 		return required
 	var zero: Dictionary = api.apply("zero", []).value
@@ -285,10 +342,10 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 			next.contributions = state.contributions.duplicate()
 			for effect in str(definitions[key].effect).split(","): next.contributions.erase(effect)
 			if continue_research:
-				var selected = select_shortest(next, definitions, api)
+				var selected = _select_shortest(next, definitions, api)
 				if not selected.ok:
-					return {"ok": true, "state": next, "wallet": balances, "completed": true, "continuation_error": selected.get("error", selected.get("reason", "ResearchContinuationFailed"))}
-			return {"ok": true, "state": next, "wallet": balances, "completed": true}
+					return _finish_advance(next, balances, true, selected.get("error", selected.get("reason", "ResearchContinuationFailed")))
+			return _finish_advance(next, balances, true)
 		remaining = maxf(0.0, remaining - piece)
 	next.work[key] = progress
-	return {"ok": true, "state": next, "wallet": balances, "completed": false}
+	return _finish_advance(next, balances, false)

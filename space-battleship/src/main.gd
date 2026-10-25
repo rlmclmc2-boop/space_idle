@@ -1,4 +1,5 @@
 extends Node2D
+const ResearchPanel = preload("res://src/ui/research_panel.gd")
 const Session = preload("res://src/game_session.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 var session
@@ -22,7 +23,7 @@ var upgrade_price: Label
 var slot_picker: OptionButton
 var equipment_picker: OptionButton
 var ship_picker: OptionButton
-var research_picker: OptionButton
+var research_panel
 var module_picker: OptionButton
 var allocation_input: LineEdit
 var effect_picker: OptionButton
@@ -276,36 +277,8 @@ func _setup_growth_panel() -> void:
 	_command_button(allocation, "分配", func():
 		var quantity = session.amount_api.apply("from_decimal", [allocation_input.text])
 		return session.allocate_reactor(str(module_picker.get_item_metadata(module_picker.selected)), quantity.value) if quantity.ok else quantity)
-	_caption(box, "AI 科研（切换保留各项工作量）")
-	research_picker = OptionButton.new()
-	box.add_child(research_picker)
-	for key in session.research_definitions:
-		var index: int = research_picker.item_count
-		research_picker.add_item(str(session.research_definitions[key].name))
-		research_picker.set_item_metadata(index, key)
-	_command_button(box, "选择研究", func(): return session.select_research(str(research_picker.get_item_metadata(research_picker.selected))))
-	for resource in ["1", "2"]:
-		var investment := _row(box)
-		_caption(investment, "铁/秒" if resource == "1" else "铀/秒")
-		var input := LineEdit.new()
-		input.text = "0"
-		input.custom_minimum_size.x = 140
-		investment.add_child(input)
-		_command_button(investment, "设置投入", func():
-			var quantity = session.amount_api.apply("from_decimal", [input.text])
-			return session.set_research_investment(resource, quantity.value) if quantity.ok else quantity)
-	var automatic := _row(box)
-	var toggle := CheckBox.new()
-	toggle.text = "自动投入"
-	automatic.add_child(toggle)
-	var ratio := SpinBox.new()
-	ratio.min_value = float(session.rules.research_minimum_ratio) * 100.0
-	ratio.max_value = 100.0
-	ratio.step = 0.1
-	ratio.value = float(session.research_progress.ratio) * 100.0
-	ratio.suffix = "%"
-	automatic.add_child(ratio)
-	_command_button(automatic, "应用", func(): return session.set_research_automatic_investment(toggle.button_pressed, ratio.value / 100.0))
+	research_panel = ResearchPanel.new(session.research, _command_button)
+	box.add_child(research_panel)
 	_caption(box, "全局强化")
 	var enhancement_buttons := _row(box)
 	_command_button(enhancement_buttons, "购买 1 级", func(): return session.buy_enhancement(1))
@@ -543,8 +516,7 @@ func _refresh_world_status(changes: Dictionary = {}) -> void:
 		_status_label("galaxy", str(key), text)
 
 func _refresh_tech_choices(modules_changed: bool = true) -> void:
-	var choices: Dictionary = session.research_choices()
-	for index in research_picker.item_count: research_picker.set_item_disabled(index, not choices[str(research_picker.get_item_metadata(index))])
+	research_panel.refresh_choices()
 	if modules_changed:
 		var modules: Array = session.reactor_modules()
 		for index in module_picker.item_count: module_picker.set_item_disabled(index, str(module_picker.get_item_metadata(index)) not in modules)
