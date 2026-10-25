@@ -110,7 +110,10 @@ func contributions() -> Dictionary:
 		var value = _factor(state, definitions, effect, rules, api)
 		if not value.ok: return value
 		state.contributions[effect] = value.value
-	return {"ok": true, "values": state.contributions.duplicate()}
+	state.contributions.make_read_only()
+	var output := {"ok": true, "values": state.contributions}
+	output.make_read_only()
+	return output
 
 static func _available(row: Dictionary, levels: Dictionary, gates: Dictionary) -> bool:
 	if not gates.get(str(row.id), false):

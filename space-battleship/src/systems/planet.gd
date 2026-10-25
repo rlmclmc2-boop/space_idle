@@ -81,8 +81,10 @@ func contributions(changes: Dictionary = {}) -> Dictionary:
 	var output = _contributions(_state, _buildings, _buffs, _api, _factors, changes)
 	if not output.ok: return output
 	_factors = output
-	return {"ok": true, "equipment": output.equipment, "refinery": output.refinery,
+	var published := {"ok": true, "equipment": output.equipment, "refinery": output.refinery,
 		"equipment_levels": output.equipment_levels, "enhancement_levels": output.enhancement_levels, "free_charge": output.free_charge}
+	published.make_read_only()
+	return published
 
 func advance(explorers: Dictionary, builders: Dictionary, dt: float, experience_context: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

@@ -48,8 +48,11 @@ func contributions(changes: Array = []) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var output = _contributions(_regions, _buildings, _api, _factors, changes)
 	if not output.ok: return output
+	output["values"].make_read_only()
 	_factors = output
-	return {"ok": true, "values": output["values"].duplicate(), "growth_changed": output.get("growth_changed", false)}
+	var published := {"ok": true, "values": output["values"], "growth_changed": output.get("growth_changed", false)}
+	published.make_read_only()
+	return published
 
 func advance(counts: Dictionary, dt: float) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

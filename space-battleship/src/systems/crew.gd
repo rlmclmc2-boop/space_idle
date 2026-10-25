@@ -44,9 +44,10 @@ func contributions() -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _contributions(_members, _definitions, _jobs, _rules, _api, _factors, _dirty_jobs)
 	if result.ok:
+		result.make_read_only()
 		_factors = result
 		_dirty_jobs = []
-	return result.duplicate()
+	return result
 
 func step_assignments() -> Dictionary:
 	return _step_assignments(_members)

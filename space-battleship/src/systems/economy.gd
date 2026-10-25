@@ -33,7 +33,6 @@ func accept_budget(next: Dictionary) -> void:
 	if not _run_state.is_running(): return
 	if next == _wallet: return
 	_wallet = next.duplicate()
-	for amount in _wallet.values(): amount.make_read_only()
 	_wallet.make_read_only()
 	_balance_dirty = true
 	display_changed.emit()
@@ -236,7 +235,6 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 		return result
 	# One completed collection: wallet, history and ownership change together.
 	wallet = wallet.duplicate()
-	result.value.make_read_only()
 	wallet[resource] = result.value
 	wallet.make_read_only()
 	_wallet = wallet
@@ -372,7 +370,6 @@ func credit_yield(resource: String, quantity: Dictionary, wall: float, game: flo
 	if not total.ok:
 		return total
 	wallet = wallet.duplicate()
-	total.value.make_read_only()
 	wallet[resource] = total.value
 	wallet.make_read_only()
 	_wallet = wallet
