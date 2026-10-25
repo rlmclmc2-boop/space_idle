@@ -385,7 +385,6 @@ func _refresh_world_pickers() -> void:
 		if id == selected: world_crew_picker.select(index)
 	_refresh_world_assignments()
 	_refresh_world_status()
-	_refresh_tech_choices()
 
 func _refresh_world_assignments() -> void:
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
@@ -468,11 +467,6 @@ func _refresh_world_status(changes: Dictionary = {}) -> void:
 			text += "\n%s · %s" % [session.galaxy_buildings[work.building].name, "剩余探索工作 %.1f" % float(work.explore_remaining) if not work.explored else "剩余施工 %.1f 秒" % float(work.construction_remaining)]
 		_status_label("galaxy", str(key), text)
 
-func _refresh_tech_choices(modules_changed: bool = true) -> void:
-	research_panel.refresh_choices()
-	if modules_changed:
-		reactor_panel.refresh_choices()
-
 func _flush_display_changes() -> void:
 	var changes: Dictionary = session.take_display_changes()
 	if changes.is_empty(): return
@@ -489,5 +483,4 @@ func _flush_display_changes() -> void:
 			world_crew_picker.set_item_text(index, str(session.crew_definitions[id].name) + (" · Lv." + str(session.crew_progress[id].level) if session.unlocked("feature", "crew_level") else ""))
 	if changes.has("construction"): _refresh_construction_choices(changes.construction.keys())
 	if changes.get("buildings", {}).has(str(_picker_value(world_planet_picker))): _refresh_world_buildings()
-	if changes.has("research"): _refresh_tech_choices(false)
 	_refresh_world_status(changes)

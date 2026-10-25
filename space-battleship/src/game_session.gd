@@ -317,7 +317,6 @@ func _step(dt: float) -> void:
 		return
 	wallet = researched.wallet
 	if researched.completed:
-		_display_changed("research")
 		# Publish completion effects before collection; income-window/automatic
 		# investment refresh still happens once, after this step's collections.
 		var changed = _publish_research()

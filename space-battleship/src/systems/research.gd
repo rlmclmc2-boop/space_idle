@@ -1,5 +1,7 @@
 extends RefCounted
 
+signal choices_changed
+
 var _state: Dictionary
 var _definitions: Dictionary = {}
 var _rules: Dictionary = {}
@@ -24,7 +26,9 @@ func panel_model() -> Dictionary:
 	return {"options": options, "ratio": _state.ratio, "minimum_ratio": _rules.research_minimum_ratio}
 
 func _finish_advance(next: Dictionary, wallet: Dictionary, completed: bool, continuation_error = null) -> Dictionary:
+	var changed: bool = _state.available != next.available
 	_state = next
+	if changed: choices_changed.emit()
 	var result := {"ok": true, "wallet": wallet, "completed": completed}
 	if continuation_error != null: result.continuation_error = continuation_error
 	return result
@@ -52,7 +56,9 @@ func refresh_progress(highest_reached: int, cleared_stages: Dictionary) -> void:
 		gates[key] = (row.legacy_unlock == null or _progress_unlocked("hightech", str(row.legacy_unlock), unlocks, highest_reached, cleared_stages)) and (row.unlock == null or _progress_unlocked("feature", "jewels", unlocks, highest_reached, cleared_stages))
 	if state.gates == gates and not state.available.is_empty(): return
 	state.gates = gates
+	var previous: Dictionary = state.available.duplicate()
 	_refresh_available(state, definitions)
+	if state.available != previous: choices_changed.emit()
 
 static func _progress_unlocked(kind: String, target: String, unlocks: Array, highest_reached: int, cleared_stages: Dictionary) -> bool:
 	for row in unlocks:

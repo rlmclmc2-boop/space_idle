@@ -1,5 +1,7 @@
 extends RefCounted
 
+signal choices_changed
+
 var _state: Dictionary
 var _parameters: Dictionary = {}
 var _api
@@ -10,13 +12,18 @@ func _init(parameters: Dictionary, api) -> void:
 	_api = api
 	_state = _initial(_parameters)
 
-func module_ids() -> PackedStringArray:
-	return str(_parameters.reactorModules).split(",")
+func panel_options(inputs: Dictionary) -> Array:
+	var labels := {"weapons": "武器", "defence": "防御", "smelting": "冶炼", "condensation": "碎片凝结"}
+	var enabled: Array = enabled_modules(inputs)
+	var options: Array = []
+	for id in str(_parameters.reactorModules).split(","):
+		options.append({"id": id, "name": str(labels.get(id, id)), "enabled": id in enabled})
+	return options
 
 func enabled_modules(inputs: Dictionary) -> Array:
 	var enabled: Array = []
 	if inputs.available:
-		for module in module_ids():
+		for module in str(_parameters.reactorModules).split(","):
 			if module != "condensation" or inputs.condensation: enabled.append(module)
 	return enabled
 
@@ -27,14 +34,19 @@ func modules_changed(inputs: Dictionary) -> bool:
 func prepare(inputs: Dictionary) -> Dictionary:
 	return _evaluate(_state, _parameters, enabled_modules(inputs), _api, inputs.capacity, inputs.free_charge)
 
+func _adopt(next: Dictionary) -> void:
+	var changed: bool = _state.get("_enabled", []) != next.get("_enabled", [])
+	_state = next
+	if changed: choices_changed.emit()
+
 func accept(candidate: Dictionary) -> void:
-	if candidate.has("state"): _state = candidate.state
+	if candidate.has("state"): _adopt(candidate.state)
 
 func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: String, publish: Callable) -> Dictionary:
 	var candidate = _evaluate(next, _parameters, enabled_modules(inputs), _api, inputs.capacity, inputs.free_charge)
 	if not candidate.ok: return candidate
 	var result: Dictionary = publish.call(candidate.factors, costs, kind)
-	if result.ok: _state = candidate.state
+	if result.ok: _adopt(candidate.state)
 	return result
 
 func purchase(count: int, automatic: bool, inputs: Dictionary, publish: Callable) -> Dictionary:

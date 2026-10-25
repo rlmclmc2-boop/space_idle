@@ -36,6 +36,8 @@ func _init(research, command: Callable) -> void:
 	ratio.suffix = "%"
 	automatic.add_child(ratio)
 	command.call(automatic, "应用", func(): return research.set_automatic(toggle.button_pressed, ratio.value / 100.0))
+	_research.choices_changed.connect(refresh_choices)
+	refresh_choices()
 
 func refresh_choices() -> void:
 	var choices: Dictionary = _research.choices()

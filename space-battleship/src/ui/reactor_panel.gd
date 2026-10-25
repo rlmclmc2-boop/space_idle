@@ -15,11 +15,11 @@ func _init(reactor, inputs: Callable, publish: Callable, command: Callable) -> v
 	command.call(reactor_buttons, "平均分配", func(): return reactor.distribute(inputs.call(), publish))
 	var allocation := _row(box)
 	module_picker = OptionButton.new()
-	var module_names := ["武器", "防御", "炼铁", "碎片凝聚"]
-	var modules: PackedStringArray = reactor.module_ids()
-	for i in modules.size():
-		module_picker.add_item(module_names[i])
-		module_picker.set_item_metadata(i, modules[i])
+	for option in reactor.panel_options(inputs.call()):
+		var index: int = module_picker.item_count
+		module_picker.add_item(option.name)
+		module_picker.set_item_metadata(index, option.id)
+		module_picker.set_item_disabled(index, not option.enabled)
 	allocation.add_child(module_picker)
 	allocation_input = LineEdit.new()
 	allocation_input.placeholder_text = "分配能源"
@@ -27,11 +27,17 @@ func _init(reactor, inputs: Callable, publish: Callable, command: Callable) -> v
 	allocation.add_child(allocation_input)
 	command.call(allocation, "分配", func():
 		return reactor.allocate_text(str(module_picker.get_item_metadata(module_picker.selected)), allocation_input.text, inputs.call(), publish))
+	_reactor.choices_changed.connect(refresh_choices)
 
 func refresh_choices() -> void:
-	var enabled: Array = _reactor.enabled_modules(_inputs.call())
-	for index in module_picker.item_count:
-		module_picker.set_item_disabled(index, str(module_picker.get_item_metadata(index)) not in enabled)
+	var selected: String = "" if module_picker.selected < 0 else str(module_picker.get_item_metadata(module_picker.selected))
+	module_picker.clear()
+	for option in _reactor.panel_options(_inputs.call()):
+		var index: int = module_picker.item_count
+		module_picker.add_item(option.name)
+		module_picker.set_item_metadata(index, option.id)
+		module_picker.set_item_disabled(index, not option.enabled)
+		if str(option.id) == selected: module_picker.select(index)
 
 func _row(parent: Control) -> HBoxContainer:
 	var row := HBoxContainer.new()
