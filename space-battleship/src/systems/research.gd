@@ -62,27 +62,34 @@ static func factor(state: Dictionary, definitions: Dictionary, effect: String, r
 			return value
 	return value
 
-static func refresh_income(state: Dictionary, samples: Array, wall: float, game: float, rules: Dictionary, api) -> Dictionary:
+static func refresh_income(state: Dictionary, samples: Array, wall: float, game: float, rules: Dictionary, api, income_changed: bool) -> Dictionary:
+	var seconds: float = float(rules.research_income_window)
+	while not samples.is_empty() and float(samples[0].wall) <= wall - seconds and float(samples[0].game) <= game - seconds:
+		samples.pop_front()
+	var automatic_due: bool = state.auto_invest and float(state.refresh_elapsed) >= seconds
+	if not income_changed and not automatic_due:
+		return {"ok": true, "state": state}
 	var next: Dictionary = state.duplicate(true)
 	var zero: Dictionary = api.apply("zero", []).value
 	var window = api.apply("from_decimal", [str(rules.research_income_window)])
-	for resource in ["1", "2", "jewel"]:
-		var actual: Dictionary = zero
-		for sample in samples:
-			if sample.resource != resource or float(sample.wall) <= wall - float(rules.research_income_window) or float(sample.wall) > wall or sample.source not in ["enemy_drop", "timed_drop", "fragment_drop"]:
-				continue
-			var total = api.apply("add", [actual, sample.actual])
-			if not total.ok:
-				return total
-			actual = total.value
-		var rate = api.apply("div", [actual, window.value])
-		if not rate.ok:
-			return rate
-		var peak = api.apply("max", [next.peaks.get(resource, zero), rate.value])
-		if not peak.ok:
-			return peak
-		next.peaks[resource] = peak.value
-	if next.auto_invest and float(next.refresh_elapsed) >= float(rules.research_income_window):
+	if income_changed:
+		for resource in ["1", "2", "jewel"]:
+			var actual: Dictionary = zero
+			for sample in samples:
+				if sample.resource != resource or float(sample.wall) <= wall - float(rules.research_income_window) or float(sample.wall) > wall or sample.source not in ["enemy_drop", "fragment_drop"]:
+					continue
+				var total = api.apply("add", [actual, sample.actual])
+				if not total.ok:
+					return total
+				actual = total.value
+			var rate = api.apply("div", [actual, window.value])
+			if not rate.ok:
+				return rate
+			var peak = api.apply("max", [next.peaks.get(resource, zero), rate.value])
+			if not peak.ok:
+				return peak
+			next.peaks[resource] = peak.value
+	if automatic_due:
 		next.refresh_elapsed = fmod(float(next.refresh_elapsed), float(rules.research_income_window))
 		var ratio = api.apply("from_decimal", [str(next.ratio)])
 		var one = api.apply("from_decimal", ["1"])

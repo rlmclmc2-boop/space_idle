@@ -122,13 +122,12 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 	wallet[resource] = result.value
 	samples.append({"resource": resource, "actual": quantity, "production_base": base,
 		"wall": wall, "game": game, "source": row.income_source})
-	while not samples.is_empty() and float(samples[0].wall) <= wall - 60.0 and float(samples[0].game) <= game - 60.0:
-		samples.pop_front()
 	pending.erase(id)
 	return {"ok": true, "amount": quantity, "resource": resource}
 
 static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false, income_factors: Dictionary = {}) -> Dictionary:
 	# Stable birth order; collection never depends on Dictionary iteration order.
+	var collected: bool = false
 	var ids: Array = pending.keys()
 	ids.sort_custom(func(a, b):
 		var left: Dictionary = pending[a]
@@ -141,7 +140,8 @@ static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array,
 			var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api, income_factors)
 			if not result.ok:
 				return result
-	return {"ok": true}
+			collected = true
+	return {"ok": true, "collected": collected}
 
 static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resource: String,
 		base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2,
@@ -168,6 +168,7 @@ static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resourc
 
 static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples: Array,
 		target_y: float, auto_reduce: float, wall: float, game: float, amount_api, income_factors: Dictionary = {}) -> Dictionary:
+	var collected: bool = false
 	var ids: Array = pending.keys()
 	ids.sort_custom(func(a, b): return int(pending[a].uid) < int(pending[b].uid))
 	for key in ids:
@@ -180,4 +181,5 @@ static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples
 			var result = collect_drop(pending, wallet, samples, str(key), true, auto_reduce, wall, game, amount_api, income_factors)
 			if not result.ok:
 				return result
-	return {"ok": true}
+			collected = true
+	return {"ok": true, "collected": collected}

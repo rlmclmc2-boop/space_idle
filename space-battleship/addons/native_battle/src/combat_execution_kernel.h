@@ -1317,6 +1317,8 @@ class SpaceCombatKernel : public RefCounted {
         legendary_constants = Dictionary(descriptor.get("legendary_constants", Dictionary())).duplicate(true);
         rail_trail_width = descriptor.get("rail_trail_width", 0.0); higgs_minimum_width = descriptor.get("higgs_minimum_width", 0.0);
         iron_drop_factor = read_amount(descriptor.get("iron_drop_factor", String("1")));
+        strange_type = descriptor.get("strange_damage_type", strange_type);
+        wild_damage_type = descriptor.get("wild_damage_type", wild_damage_type);
         select_legends();
     }
     // Contributions are resolved per entity; rebuild removes that entity's whole contribution.
@@ -1355,6 +1357,17 @@ class SpaceCombatKernel : public RefCounted {
         }
         return highest;
     }
+    void discard_disabled_tasks() {
+        auto prune = [&](auto &queue) {
+            std::vector<Timed> kept;
+            while (!queue.empty()) {
+                Timed event = queue.top(); queue.pop();
+                if (weapons[event.weapon].enabled) kept.push_back(event);
+            }
+            for (const Timed &event : kept) queue.push(event);
+        };
+        prune(roots); prune(ejections); prune(repeats);
+    }
     bool try_rebuild() {
         if (!legend_active("drone_rebuild") || rebuild_count >= int(legend_constant("drone_rebuild", "maximum_stacks"))) return false;
         Dictionary sacrifice; double lowest = std::numeric_limits<double>::infinity();
@@ -1371,6 +1384,7 @@ class SpaceCombatKernel : public RefCounted {
         ++rebuild_count; ++rebuild_epoch; disabled_drones.insert(id);
         for (Weapon &w : weapons) if (String(w.entry.get("drone_id", "")) == id) w.enabled = false;
         for (size_t flight : active) if (flights[flight].live && flights[flight].beam && !weapons[flights[flight].weapon].enabled) retire(flight);
+        discard_disabled_tasks();
         select_legends();
         reconcile_defence();
         for (Defence &d : defences) d.loss = 0;
@@ -1379,15 +1393,18 @@ class SpaceCombatKernel : public RefCounted {
     }
     void restore_drone_contributions(bool schedule = true) {
         if (disabled_drones.empty() && rebuild_count == 0) return;
+        discard_disabled_tasks();
+        std::vector<int> restored;
         for (int i = 0; i < int(weapons.size()); ++i) {
             Weapon &w = weapons[i]; String id = w.entry.get("drone_id", "");
             if (!id.is_empty() && disabled_drones.count(id) && w.configured && !w.vacant) {
-                w.enabled = true;
-                if (schedule) roots.push({clock + w.interval, ++event_serial, 0, i});
+                w.enabled = true; restored.push_back(i);
             }
         }
         disabled_drones.clear(); rebuild_count = 0; rebuild_bonus = 0; ++rebuild_epoch;
-        select_legends(); reconcile_defence(); publish_player();
+        select_legends();
+        if (schedule) for (int i : restored) roots.push({clock + (weapons[i].kind == 3 ? 0 : weapons[i].interval), ++event_serial, 0, i});
+        reconcile_defence(); publish_player();
     }
     bool black_absorbing() const { return legend_active("black_hole") && black_until > 0 && clock < black_until; }
     void advance_legend_timers() {
@@ -1489,6 +1506,9 @@ class SpaceCombatKernel : public RefCounted {
                 break;
             Amount cover_paid = minimum(d.cover, rest);
             d.cover -= cover_paid; rest -= cover_paid; absorbed += cover_paid; receipt.cover_absorbed += cover_paid;
+        }
+        for (Defence &d : defences) {
+            if (rest <= 0) break;
             double factor = type > 0 && type == d.protection_type && defence_time < d.protection_until ? 1.0 - enhancement_rule("memory_b2_resistance") : 1.0;
             Amount paid = minimum(d.buffer, rest * factor);
             d.buffer -= paid;
@@ -2894,6 +2914,7 @@ class SpaceCombatKernel : public RefCounted {
             value.delay = row.get("delay", 0.0); value.rate = row.get("rate", 0.0);
             value.memory_heal = row.get("memory_heal", 0.0); value.memory_cap = row.get("memory_cap", 0.0); value.deferred_fraction = row.get("deferred_fraction", 0.0);
             for (const Defence &old : defences) if (old.entry.get("id", "") == value.entry.get("id", "") && old.entry.get("key", "") == value.entry.get("key", "") && old.entry.get("generation", int64_t(0)) == value.entry.get("generation", int64_t(0))) {
+                value.maximum = old.maximum; value.loss = old.loss;
                 value.buffer = old.buffer; value.last_hit = old.last_hit;
                 value.cover = old.cover; value.cover_next = old.cover_next; value.cover_until = old.cover_until;
                 value.protection_type = old.protection_type; value.protection_until = old.protection_until; value.protection_lockout = old.protection_lockout;
@@ -2908,15 +2929,19 @@ class SpaceCombatKernel : public RefCounted {
         deferred_interval = d.get("deferred_interval", deferred_interval); deferred_duration = d.get("deferred_duration", deferred_duration); clear_probability = d.get("clear_probability", 0.0);
         configure_enhancement(d); configure_legends(d);
         for (Defence &value : defences) {
+            const Amount health = nonnegative(value.maximum - value.loss);
             value.maximum = evaluate_module_value(value.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, value.branch_factors, value.external_factors) * value.factor * drone_defence(value.layer);
-            value.loss = value.maximum;
+            if (change_kind == "refit") value.loss = value.maximum;
+            else if (change_kind == "upgrade" && !retreating) value.loss = minimum(value.loss, value.maximum);
+            else value.loss = value.maximum - minimum(value.maximum, health);
             value.buffer = minimum(value.buffer, value.maximum * value.memory_cap);
         }
         for (int layer = 0; layer < 2; ++layer) {
             Amount target = before[layer];
             if (change_kind == "refit") target = old_capacity[layer] > 0 ? capacity(layer) * before[layer] / old_capacity[layer] : Amount{};
-            else if (change_kind == "upgrade" && !retreating && capacity(layer) > old_capacity[layer]) target += capacity(layer) - old_capacity[layer];
-            set_layer_health(layer, target);
+            // Paid upgrades preserve each module's loss; other actions coordinate
+            // absolute health, or rebuild losses from the explicit refit ratio.
+            if (change_kind != "upgrade" || retreating) set_layer_health(layer, target);
         }
         publish_player(); retain_configuration_bounds(); compact(); ++refit_epoch;
         return true;
@@ -3125,7 +3150,27 @@ class SpaceCombatKernel : public RefCounted {
         for (int i = 0; i < rows.size(); ++i) weapons[i].presentation_muzzles = rows[i];
         return true;
     }
-    void input_ballistic_geometry(Array hulls, PackedVector2Array points, PackedVector2Array muzzles, PackedByteArray stationary = PackedByteArray()) {
+    void apply_muzzles(Variant values, bool screen) {
+        if (values.get_type() == Variant::DICTIONARY) {
+            Dictionary rows = values;
+            for (Weapon &w : weapons) {
+                if (w.vacant || (!w.hostile && !w.configured)) continue;
+                String key = w.hostile && w.source.index < actors.size()
+                    ? String("enemy:") + String::num_int64(actors[w.source.index].uid) + ":" + String::num_int64(w.slot)
+                    : String(w.entry.get("id", ""));
+                if (!rows.has(key) || Variant(rows[key]).get_type() != Variant::VECTOR2) continue;
+                Vector2 point = rows[key];
+                if (!point.is_finite()) continue;
+                if (screen) w.screen_muzzle = point; else w.muzzle = point;
+            }
+        } else if (values.get_type() == Variant::PACKED_VECTOR2_ARRAY) {
+            PackedVector2Array rows = values; int index = 0;
+            for (int id : current_weapon_order()) if (index < rows.size()) {
+                if (screen) weapons[id].screen_muzzle = rows[index++]; else weapons[id].muzzle = rows[index++];
+            }
+        }
+    }
+    void input_ballistic_geometry(Array hulls, PackedVector2Array points, Variant muzzles, PackedByteArray stationary = PackedByteArray()) {
         for (int i = 0; i < int(actors.size()) && i < hulls.size() && i < points.size(); ++i) {
             const PackedVector2Array hull = hulls[i];
             const bool fixed = i < stationary.size() && stationary[i] != 0;
@@ -3135,8 +3180,7 @@ class SpaceCombatKernel : public RefCounted {
             actors[i].stationary_geometry = fixed;
             actors[i].screen_point = points[i];
         }
-        int muzzle_index = 0;
-        for (int id : current_weapon_order()) if (muzzle_index < muzzles.size()) weapons[id].screen_muzzle = muzzles[muzzle_index++];
+        apply_muzzles(muzzles, true);
     }
     void refresh_ray_contact(Flight &f, const Actor &target) {
         ++ballistic_ray_queries;
@@ -3184,11 +3228,10 @@ class SpaceCombatKernel : public RefCounted {
         player_collision_hull = hull;
         return true;
     }
-    void input_geometry(PackedVector2Array points, PackedVector2Array muzzles) {
+    void input_geometry(PackedVector2Array points, Variant muzzles) {
         for (int i = 0; i < points.size() && i < int(actors.size()); ++i)
             actors[i].point = points[i];
-        int muzzle_index = 0;
-        for (int id : current_weapon_order()) if (muzzle_index < muzzles.size()) weapons[id].muzzle = muzzles[muzzle_index++];
+        apply_muzzles(muzzles, false);
     }
     bool advance(double seconds) {
         try {

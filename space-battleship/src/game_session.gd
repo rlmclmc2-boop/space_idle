@@ -40,7 +40,7 @@ var models: Dictionary = {}
 var player_art: Dictionary = {}
 var player_dimensions := Vector2.ZERO
 var player_geometry_height: float = 0.0
-var player_muzzles := PackedVector2Array()
+var player_muzzles: Dictionary = {}
 var enemy_hulls: Array = []
 var selected_ship: String = ""
 var slots: Array = []
@@ -55,6 +55,7 @@ var drop_cursor: Dictionary = {"registered_through": 0}
 var timed_resource_spec: PackedStringArray = []
 var timed_resources: Dictionary = {"elapsed": 0.0, "next_id": 0}
 var income_samples: Array = []
+var income_dirty: bool = false
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
 var wall_time: float = 0.0
@@ -175,7 +176,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	if not setup.ok:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
 	for row in setup.descriptor.weapons:
-		player_muzzles.append(row.muzzle)
+		player_muzzles[str(row.entry.id)] = row.muzzle
 	reactor_progress = setup.reactor_state
 	income_factors = setup.income_factors
 	if not kernel.initialize(setup.descriptor):
@@ -251,11 +252,19 @@ func _step(dt: float) -> void:
 	research_progress = researched.state
 	wallet = researched.wallet
 	combat_config_dirty = combat_config_dirty or researched.completed
+	if researched.completed:
+		# Publish completion effects before collection; income-window/automatic
+		# investment refresh still happens once, after this step's collections.
+		var changed = _commit_growth(slots, enhancement_progress, reactor_progress, research_progress, wallet, "growth")
+		if not changed.ok:
+			_fail(str(changed.get("error", changed.get("reason", "ResearchGrowthUpdateFailed"))))
+			return
 	var settled = Economy.collect_due(drops, wallet, income_samples,
 		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, false, income_factors)
 	if not settled.ok:
 		_fail(str(settled.get("error", "CollectionFailed")))
 		return
+	income_dirty = income_dirty or settled.collected
 	if not _refresh_growth():
 		return
 	match str(campaign.state):
@@ -364,6 +373,7 @@ func _advance_kernel(dt: float) -> bool:
 			if not settled.ok:
 				_fail(str(settled.get("error", "FinalCollectionFailed")))
 				return false
+			income_dirty = income_dirty or settled.collected
 			if not _refresh_growth():
 				return false
 			campaign.cleared_stages[int(campaign.stage)] = true
@@ -418,14 +428,14 @@ func _sync_geometry() -> void:
 		hulls.append(hull)
 		points.append(point)
 		stationary.append(1)
-	var muzzles := PackedVector2Array()
-	# Native weapon order is player slots followed by wave-local enemy mounts.
-	muzzles.append_array(player_muzzles)
+	var muzzles: Dictionary = player_muzzles.duplicate()
 	for actor in actors:
 		var entries: PackedStringArray = str(actor.equipment).replace("｛", "").replace("｝", "").replace("{", "").replace("}", "").replace("，", ",").split(",")
+		var mount: int = 0
 		for entry in entries:
 			for _mount in int(entry.split("|")[1]):
-				muzzles.append(Vector2(float(actor.x), float(actor.y)))
+				muzzles["enemy:" + str(actor.uid) + ":" + str(mount)] = Vector2(float(actor.x), float(actor.y))
+				mount += 1
 	enemy_hulls = hulls
 	kernel.input_geometry(points, muzzles)
 	kernel.input_ballistic_geometry(hulls, points, muzzles, stationary)
@@ -438,8 +448,10 @@ func _sync_geometry() -> void:
 func collect_drop(id: String) -> Dictionary:
 	var result = Economy.collect_drop(drops, wallet, income_samples, id, false,
 		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, income_factors)
-	if result.ok and not _refresh_growth():
-		return {"ok": false, "reason": last_error}
+	if result.ok:
+		income_dirty = true
+		if not _refresh_growth():
+			return {"ok": false, "reason": last_error}
 	return result
 
 func set_guard(enabled: bool, death_option: int = 0) -> Dictionary:
@@ -540,6 +552,7 @@ func _advance_timed_resources(dt: float) -> bool:
 	if not moved.ok:
 		_fail(str(moved.get("error", "TimedResourceCollectionFailed")))
 		return false
+	income_dirty = income_dirty or moved.collected
 	return true
 
 func _reactor_modules() -> Array:
@@ -612,6 +625,8 @@ func _growth_setup(next_slots: Array, next_enhancement: Dictionary, next_reactor
 	setup.descriptor.drone_capacity = int(ship.para_5)
 	setup.descriptor.rail_trail_width = float(motion.rail_trail_width)
 	setup.descriptor.higgs_minimum_width = float(rules.higgs_minimum_width)
+	setup.descriptor.strange_damage_type = int(equipment_definitions.cannon.dmgtype)
+	setup.descriptor.wild_damage_type = int(equipment_definitions.missile.dmgtype)
 	setup.ship_key = ship_key
 	setup.player_art = art
 	setup.player_dimensions = dimensions
@@ -639,9 +654,9 @@ func _commit_growth(next_slots: Array, next_enhancement: Dictionary, next_reacto
 	income_factors = setup.income_factors
 	research_progress = next_research
 	wallet = next_wallet
-	player_muzzles = PackedVector2Array()
+	player_muzzles = {}
 	for row in setup.descriptor.weapons:
-		player_muzzles.append(row.muzzle)
+		player_muzzles[str(row.entry.id)] = row.muzzle
 	_sync_geometry()
 	combat_config_dirty = false
 	var armour = amount_api.apply("from_decimal", [str(kernel.player_view().armour)])
@@ -650,12 +665,13 @@ func _commit_growth(next_slots: Array, next_enhancement: Dictionary, next_reacto
 	return {"ok": true}
 
 func _refresh_growth() -> bool:
-	var refreshed = Research.refresh_income(research_progress, income_samples, wall_time, game_time, rules, amount_api)
+	var refreshed = Research.refresh_income(research_progress, income_samples, wall_time, game_time, rules, amount_api, income_dirty)
 	if not refreshed.ok:
 		_fail(str(refreshed.get("error", "ResearchIncomeFailed")))
 		return false
 	combat_config_dirty = combat_config_dirty or refreshed.state.peaks != research_progress.peaks
 	research_progress = refreshed.state
+	income_dirty = false
 	if combat_config_dirty:
 		var changed = _commit_growth(slots, enhancement_progress, reactor_progress, research_progress, wallet, "growth")
 		if not changed.ok:
