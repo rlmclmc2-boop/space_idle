@@ -6,11 +6,13 @@ signal choices_changed
 var _enabled: Array = []
 var _available: bool = false
 var _state: Dictionary
+var _prepared_state: Dictionary = {}
 var _parameters: Dictionary = {}
 var _api
 
 func _init(parameters: Dictionary, api, run_state) -> void:
 	_run_state = run_state
+	_enabled.make_read_only()
 	for key in parameters:
 		if str(key).begins_with("reactor"): _parameters[key] = parameters[key]
 	_api = api
@@ -33,6 +35,7 @@ func refresh_availability(unlocked: Callable) -> void:
 			if module != "condensation" or bool(unlocked.call("reactor_module", module)): enabled.append(module)
 	if available != _available or enabled != _enabled:
 		_available = available
+		enabled.make_read_only()
 		_enabled = enabled
 		choices_changed.emit()
 
@@ -45,14 +48,20 @@ func modules_changed() -> bool:
 # The candidate carries module-private state until native publication succeeds.
 func prepare(inputs: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	return _evaluate(_state, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
+	var candidate = _evaluate(_state, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
+	if not candidate.ok: return candidate
+	_prepared_state = candidate.state
+	var output := {"ok": true, "factors": candidate.factors}
+	output.make_read_only()
+	return output
 
 func _adopt(next: Dictionary) -> void:
 	_state = next
+	_prepared_state = {}
 
-func accept(candidate: Dictionary) -> void:
+func accept() -> void:
 	if not _run_state.is_running(): return
-	if candidate.has("state"): _adopt(candidate.state)
+	if not _prepared_state.is_empty(): _adopt(_prepared_state)
 
 func _submit(next: Dictionary, inputs: Dictionary, next_wallet, kind: String, publish: Callable) -> Dictionary:
 	var candidate = _evaluate(next, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
@@ -180,7 +189,8 @@ static func _evaluate(state: Dictionary, parameters: Dictionary, enabled: Array,
 	var next: Dictionary = state.duplicate()
 	next.allocations = allocations
 	next._factors = next_cache
-	next._enabled = enabled.duplicate()
+	next._enabled = enabled
+	factors.make_read_only()
 	return {"ok": true, "state": next, "capacity": capacity.value, "remaining": remaining, "factors": factors}
 
 static func _allocate(state: Dictionary, module: String, requested: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
@@ -202,7 +212,7 @@ static func _allocate(state: Dictionary, module: String, requested: Dictionary, 
 		remaining = left.value
 	value = api.apply("min", [value.value, remaining])
 	if not value.ok: return value
-	var next: Dictionary = state.duplicate(true)
+	var next: Dictionary = state.duplicate()
 	next.allocations = allocations
 	next.allocations[module] = value.value
 	return {"ok": true, "state": next}
@@ -223,7 +233,7 @@ static func _distribute(state: Dictionary, parameters: Dictionary, enabled: Arra
 	var used = api.apply("mul", [share.value, divisor.value])
 	var extra = api.apply("sub_nonnegative", [current.value, used.value])
 	var one = api.apply("from_decimal", ["1"])
-	var next: Dictionary = state.duplicate(true)
+	var next: Dictionary = state.duplicate()
 	next.allocations = {}
 	for module in str(parameters.reactorModules).split(","):
 		if module not in enabled:
@@ -243,7 +253,7 @@ static func _purchase(state: Dictionary, count: int, automatic: bool, parameters
 	if not quoted.ok: return quoted
 	if int(state.level) > 9223372036854775807 - count:
 		return {"ok": false, "reason": "ReactorLevelRangeExceeded"}
-	var next: Dictionary = state.duplicate(true)
+	var next: Dictionary = state.duplicate()
 	next.level = int(next.level) + count
 	if automatic: next._distribute = true
 	return {"ok": true, "state": next, "costs": quoted.costs}

@@ -8,22 +8,29 @@ var _state: Dictionary = _initial()
 var _rules: Dictionary = {}
 var _api
 var _values: Dictionary = {}
+var _pending_output: Dictionary = {}
 
 func _init(rows: Array, api, run_state) -> void:
 	_run_state = run_state
 	for row in rows: _rules[str(row.id)] = row.value
+	_rules.make_read_only()
+	_values.make_read_only()
 	_api = api
 
 func evaluate(bonus: int, unlocked: Callable, armours: int) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	return _combat(_state, bonus, _rules, bool(unlocked.call("feature", "jewels")), armours)
+	var output = _combat(_state, bonus, _rules, bool(unlocked.call("feature", "jewels")), armours)
+	_pending_output = output if output.ok else {}
+	return output
 
 func published_output() -> Dictionary:
 	return _values
 
-func accept_output(output: Dictionary) -> void:
+func accept_output() -> void:
 	if not _run_state.is_running(): return
-	_values = output
+	if not _pending_output.is_empty():
+		_values = _pending_output
+		_pending_output = {}
 
 func difference(output: Dictionary) -> Dictionary:
 	return _changes(_values, output)
@@ -37,6 +44,7 @@ func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: Stri
 	if committed.ok:
 		_state = next
 		_values = output
+		_pending_output = {}
 	return committed
 
 func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
@@ -113,7 +121,7 @@ static func _combat(state: Dictionary, bonus: int, rules: Dictionary, available:
 	var cap: float = float(rules.memory_buffer_fraction) * level * memory_factor if enabled.memory.active else 0.0
 	if enabled.memory.b3: cap *= 1.0 + armours * float(rules.memory_b3_armour_capacity_bonus)
 	var scale: float = float(rules.deferred_percent_scale)
-	return {"ok": true, "rules": rules, "effects": flags, "initial_wait_from_interval": enabled.proficiency.b2,
+	var output := {"ok": true, "rules": rules, "effects": flags, "initial_wait_from_interval": enabled.proficiency.b2,
 		"globals": {"counter_level": level if (enabled.proficiency.active and float(rules.proficiency_growth) != 0.0) or (enabled.adaptation.active and float(rules.adaptation_growth) != 0.0) else 0, "counter_growth": float(rules.proficiency_growth) if enabled.proficiency.active else 0.0,
 			"defence_counter_growth": float(rules.adaptation_growth) if enabled.adaptation.active else 0.0,
 			"counter_log_base": float(rules.counter_log_base), "counter_round_scale": float(rules.bonus_round_scale),
@@ -132,6 +140,15 @@ static func _combat(state: Dictionary, bonus: int, rules: Dictionary, available:
 		"defence": {"branch_factors": [1.0 + int(enabled.adaptation.a) * float(rules.adaptation_a_capacity_bonus)],
 			"memory_heal": float(rules.memory_heal_fraction) * level * memory_factor if enabled.memory.active else 0.0, "memory_cap": cap,
 			"deferred_fraction": maxf(0.0, (scale - maxf(1.0, ceilf(scale / (1.0 + float(rules.deferred_curve_coefficient) * level)))) / scale) if enabled.deferred.active else 0.0}}
+
+	for effect in flags.values(): effect.make_read_only()
+	flags.make_read_only()
+	output.globals.make_read_only()
+	for group in ["weapon", "defence"]:
+		output[group].branch_factors.make_read_only()
+		output[group].make_read_only()
+	output.make_read_only()
+	return output
 
 static func _changes(previous: Dictionary, next: Dictionary) -> Dictionary:
 	var changed: Dictionary = {}

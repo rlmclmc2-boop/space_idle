@@ -92,10 +92,10 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
 	var initialized = battle.initialize_player(setup)
 	if not initialized.ok: return _fail(str(initialized.reason))
-	reactor_system.accept(setup.reactor_update)
+	reactor_system.accept()
 	reactor_factors = setup.reactor_factors
 	research_factors = setup.research_factors
-	enhancement.accept_output(setup.enhancement_values)
+	enhancement.accept_output()
 	income_factors = setup.income_factors
 	research_speed = setup.research_speed
 	galaxy_crew_experience = setup.galaxy_crew_experience
@@ -241,8 +241,6 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	setup.income_factors.jewel = ai["values"].fragment_income
 	setup.research_factors = ai["values"]
 	setup.reactor_factors = reactor.factors
-	setup.enhancement_values = upgrades
-	setup.reactor_update = reactor
 	return setup
 
 func publish_equipment_refit(next_slots,
@@ -260,10 +258,10 @@ func publish_equipment_refit(next_slots,
 			return _fail(str(committed.reason))
 		return committed
 	campaign_system.accept_ship(setup.ship_key)
-	reactor_system.accept(setup.reactor_update)
+	reactor_system.accept()
 	reactor_factors = setup.reactor_factors
 	research_factors = setup.research_factors
-	enhancement.accept_output(setup.enhancement_values)
+	enhancement.accept_output()
 	income_factors = setup.income_factors
 	research_speed = setup.research_speed
 	galaxy_crew_experience = setup.galaxy_crew_experience
@@ -388,7 +386,8 @@ func publish_equipment_levels(balances: Dictionary, changed: Array) -> Dictionar
 
 func _publish_world_values(previous: Dictionary) -> Dictionary:
 	var reactor: Dictionary = {"ok": true, "factors": reactor_factors}
-	if world_factors.capacity != previous.capacity or world_factors.free_charge != previous.free_charge:
+	var reactor_prepared: bool = world_factors.capacity != previous.capacity or world_factors.free_charge != previous.free_charge
+	if reactor_prepared:
 		reactor = reactor_system.prepare(reactor_inputs())
 		if not reactor.ok: return reactor
 	var levels: bool = world_factors.equipment_levels != previous.equipment_levels
@@ -404,7 +403,8 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 		battle.apply_drone_external(values, world_factors.external)
 	var output: Dictionary = enhancement.published_output()
 	var upgrades: Dictionary = {}
-	if world_factors.enhancement_levels != previous.enhancement_levels:
+	var enhancement_prepared: bool = world_factors.enhancement_levels != previous.enhancement_levels
+	if enhancement_prepared:
 		output = enhancement.evaluate(int(world_factors.enhancement_levels), campaign_system.available, equipment.equipped_armours(campaign_system.ship_facts().mounts))
 		if not output.ok: return output
 		upgrades = enhancement.difference(output)
@@ -414,9 +414,9 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 		if not text.ok: return text
 		iron = text.text
 	var result = _commit_values(values, "refit", iron, upgrades)
-	if result.ok: enhancement.accept_output(output)
+	if result.ok and enhancement_prepared: enhancement.accept_output()
 	if result.ok:
-		reactor_system.accept(reactor)
+		if reactor_prepared: reactor_system.accept()
 		reactor_factors = reactor.factors
 		income_factors.condensation = reactor.factors.condensation
 	return result
