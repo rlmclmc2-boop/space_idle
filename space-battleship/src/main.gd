@@ -1,4 +1,5 @@
 extends Node2D
+const GalaxyPanel = preload("res://src/ui/galaxy_panel.gd")
 const PlanetPanel = preload("res://src/ui/planet_panel.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
@@ -271,6 +272,8 @@ func _setup_world_controls(box: Control) -> void:
 		var assignment: Dictionary = _picker_value(world_assignment_picker, {"kind": "", "target": ""})
 		return session.assign_crew(str(_picker_value(world_crew_picker)), assignment.kind, assignment.target, str(_picker_value(world_mode_picker, "1"))))
 	_command_button(box, "撤回所选船员", func(): return session.assign_crew(str(_picker_value(world_crew_picker)), "", ""))
+	box.add_child(GalaxyPanel.new(session.galaxy_system))
+	session.galaxy_system.availability_changed.connect(_refresh_world_assignments)
 	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_world, _command_button))
 	session.planet_system.assignment_options_changed.connect(_refresh_construction_choices)
 	session.planet_system.availability_changed.connect(_refresh_world_assignments)
@@ -311,9 +314,8 @@ func _refresh_world_assignments() -> void:
 		_world_assignment(CREW_JOB_NAMES[job], "system_job", job, previous)
 	for option in session.planet_system.assignment_options():
 		_world_assignment(option.label, option.kind, option.target, previous)
-	for key in session.galaxy_progress:
-		if session.galaxy_unlocked(key):
-			_world_assignment("星系 · " + str(session.galaxy_definitions[key].name), "galaxy", key, previous)
+	for option in session.galaxy_system.assignment_options():
+		_world_assignment(option.label, option.kind, option.target, previous)
 
 func _refresh_construction_choices(ids: Array) -> void:
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
@@ -333,7 +335,7 @@ func _status_label(kind: String, id: String, text: String) -> void:
 	world_labels[key].text = text
 
 func _refresh_world_status(changes: Dictionary = {}) -> void:
-	if changes.is_empty(): changes = {"crew": session.crew_progress, "galaxies": session.galaxy_progress}
+	if changes.is_empty(): changes = {"crew": session.crew_progress}
 	var show_levels: bool = session.unlocked("feature", "crew_level")
 	for id in changes.get("crew", {}):
 		if not session.unlocked("crew", id): continue
@@ -344,15 +346,6 @@ func _refresh_world_status(changes: Dictionary = {}) -> void:
 			var experience = session.amount_api.apply("to_display", [member.exp])
 			text = "%s Lv.%d · %s · 经验 %s" % [session.crew_definitions[id].name, int(member.level), job, experience.text]
 		_status_label("crew", str(id), text)
-	for key in changes.get("galaxies", {}):
-		if not session.galaxy_unlocked(key): continue
-		var region: Dictionary = session.galaxy_progress[key]
-		var phase: String = str({"exploring": "探索施工", "developing": "发展升级", "complete": "已完成"}[region.phase])
-		var text: String = "%s · %s · 探索 %d/%d · 建筑 %d · 等级合计 %d · 升级中 %d" % [session.galaxy_definitions[key].name, phase, region.explored_count, region.nodes.size(), region.active_count, region.total_levels, region.upgrades.size()]
-		if not str(region.active_node).is_empty():
-			var work: Dictionary = region.nodes[str(region.active_node)]
-			text += "\n%s · %s" % [session.galaxy_buildings[work.building].name, "剩余探索工作 %.1f" % float(work.explore_remaining) if not work.explored else "剩余施工 %.1f 秒" % float(work.construction_remaining)]
-		_status_label("galaxy", str(key), text)
 
 func _flush_display_changes() -> void:
 	var changes: Dictionary = session.take_display_changes()

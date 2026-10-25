@@ -1,7 +1,79 @@
 extends RefCounted
-## Region work and RNG belong to Session progress; personnel arrive as current counts.
+## Region work, RNG, opening rules and contribution ledgers have one owner.
+signal status_changed(keys: Array)
+signal availability_changed
 
-static func generate(count: int) -> Array:
+var _definitions: Dictionary = {}
+var _buildings: Dictionary = {}
+var _rules: Dictionary = {}
+var _regions: Dictionary = {}
+var _available: Dictionary = {}
+var _factors: Dictionary = {}
+var _initial_error: String = ""
+var _api
+
+func _init(rows: Array, buildings: Array, rules: Array, api) -> void:
+	for row in rows: _definitions[str(row.key)] = row
+	for row in buildings: _buildings[str(row.key)] = row
+	for row in rules: _rules[str(row.key)] = row.value
+	_api = api
+	var result = _initial(_definitions)
+	if result.ok: _regions = result.regions
+	else: _initial_error = str(result.reason)
+
+func initialization_result() -> Dictionary:
+	return {"ok": _initial_error.is_empty(), "reason": _initial_error}
+
+func refresh_availability(enabled: bool, cleared_stages: Dictionary) -> void:
+	var next: Dictionary = {}
+	for key in _regions:
+		var row: Dictionary = _definitions[key]
+		next[key] = _regions[key].get("unlocked", false) or (enabled and row.unlock_type == "stage_cleared" and cleared_stages.has(int(row.unlock_value)))
+		if next[key]: _regions[key].unlocked = true
+	if next != _available:
+		_available = next
+		availability_changed.emit()
+
+func is_available(key: String) -> bool:
+	return _available.get(key, false)
+
+func contributions(changes: Array = []) -> Dictionary:
+	var output = _contributions(_regions, _buildings, _api, _factors, changes)
+	if output.ok: _factors = output
+	return output
+
+func advance(counts: Dictionary, dt: float) -> Dictionary:
+	var result = _advance(_regions, _definitions, _buildings, counts, _available, dt, float(_rules.income_interval))
+	if not result.ok: return result
+	if not result.displayed.is_empty(): status_changed.emit(result.displayed)
+	if not result.changes.is_empty():
+		result.contributions = contributions(result.changes)
+		if not result.contributions.ok: return result.contributions
+	return result
+
+func income(region: String, production_rates: Dictionary, seconds: float) -> Dictionary:
+	return _income(_factors, region, production_rates, seconds, _api)
+
+func assignment_options() -> Array:
+	var options: Array = []
+	for key in _regions:
+		if is_available(key): options.append({"label": "星系 · " + str(_definitions[key].name), "kind": "galaxy", "target": key})
+	return options
+
+func status_rows(keys: Array = []) -> Array:
+	var rows: Array = []
+	for key in (_regions.keys() if keys.is_empty() else keys):
+		if not is_available(str(key)): continue
+		var region: Dictionary = _regions[key]
+		var phase: String = str({"exploring": "探索施工", "developing": "发展升级", "complete": "已完成"}[region.phase])
+		var text: String = "%s · %s · 探索 %d/%d · 建筑 %d · 等级合计 %d · 升级中 %d" % [_definitions[key].name, phase, region.explored_count, region.nodes.size(), region.active_count, region.total_levels, region.upgrades.size()]
+		if not str(region.active_node).is_empty():
+			var work: Dictionary = region.nodes[str(region.active_node)]
+			text += "\n%s · %s" % [_buildings[work.building].name, "剩余探索工作 %.1f" % float(work.explore_remaining) if not work.explored else "剩余施工 %.1f 秒" % float(work.construction_remaining)]
+		rows.append({"id": str(key), "text": text})
+	return rows
+
+static func _generate(count: int) -> Array:
 	var nodes: Array = []
 	var positions: Dictionary = {Vector2i.ZERO: -1}
 	var queue: Array[Vector2i] = [Vector2i.ZERO]
@@ -20,14 +92,14 @@ static func generate(count: int) -> Array:
 			queue.append(cell)
 	return nodes
 
-static func initial(definitions: Dictionary) -> Dictionary:
+static func _initial(definitions: Dictionary) -> Dictionary:
 	var regions: Dictionary = {}
 	for key in definitions:
 		var definition: Dictionary = definitions[key]
 		var count: int = int(definition.building_slot_count)
 		if count <= 0 or float(definition.explore_work_total) <= 0.0:
 			return {"ok": false, "reason": "InvalidGalaxyWorkDefinition"}
-		var blueprint: Array = generate(count)
+		var blueprint: Array = _generate(count)
 		var nodes: Dictionary = {}
 		var quota: float = float(definition.explore_work_total) / blueprint.size()
 		var remaining: float = float(definition.explore_work_total)
@@ -84,7 +156,7 @@ static func _draw(region: Dictionary, buildings: Dictionary, key: String, cycle:
 		region.special_pending = int(region.bag_round) % cycle == 0
 	return selected
 
-static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dictionary, personnel: Dictionary, enabled: Dictionary, dt: float, income_interval: float) -> Dictionary:
+static func _advance(regions: Dictionary, definitions: Dictionary, buildings: Dictionary, personnel: Dictionary, enabled: Dictionary, dt: float, income_interval: float) -> Dictionary:
 	var changes: Array = []
 	var displayed: Array = []
 	var payments: Array = []
@@ -177,7 +249,7 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 		region.rng_state = random.state
 	return {"ok": true, "changes": changes, "payments": payments, "displayed": displayed}
 
-static func contributions(regions: Dictionary, buildings: Dictionary, api, previous: Dictionary = {}, changes: Array = []) -> Dictionary:
+static func _contributions(regions: Dictionary, buildings: Dictionary, api, previous: Dictionary = {}, changes: Array = []) -> Dictionary:
 	var result: Dictionary = previous.duplicate()
 	if not previous.is_empty():
 		result._sources = previous._sources.duplicate()
@@ -233,7 +305,7 @@ static func contributions(regions: Dictionary, buildings: Dictionary, api, previ
 		result["values"][effect] = total
 	return result
 
-static func income(contributions: Dictionary, region: String, production_rates: Dictionary, seconds: float, api) -> Dictionary:
+static func _income(contributions: Dictionary, region: String, production_rates: Dictionary, seconds: float, api) -> Dictionary:
 	var duration = api.apply("from_decimal", [str(seconds)])
 	if not duration.ok: return duration
 	var amounts: Dictionary = {}

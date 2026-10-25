@@ -31,10 +31,7 @@ var crew_rules: Dictionary = {}
 var crew_jobs: Dictionary = {}
 var crew_progress: Dictionary = {}
 var planet_system
-var galaxy_definitions: Dictionary = {}
-var galaxy_buildings: Dictionary = {}
-var galaxy_rules: Dictionary = {}
-var galaxy_progress: Dictionary = {}
+var galaxy_system
 var galaxy_crew_experience: Dictionary = {}
 var research_speed: Dictionary = {}
 var world_factors: Dictionary = {}
@@ -132,12 +129,6 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		crew_rules[str(row.id)] = row.value
 	for row in configuration.crew_assignment.crew_assignment:
 		crew_jobs[str(row.id)] = row
-	for row in configuration.galaxy.galaxy:
-		galaxy_definitions[str(row.key)] = row
-	for row in configuration.galaxy_build.galaxy_build:
-		galaxy_buildings[str(row.key)] = row
-	for row in configuration.galaxy_config.galaxy_config:
-		galaxy_rules[str(row.key)] = row.value
 	for row in configuration.weapon_motion.weapon_motion:
 		motion[str(row.id)] = row.value
 	for row in configuration.enemy_weapon_base.enemy_weapon_base:
@@ -186,14 +177,14 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	crew_progress = Crew.initial(crew_definitions, amount_api)
 	planet_system = Planet.new(configuration.planet.planet, configuration.planet_build.planet_build, configuration.planet_buff.planet_buff, amount_api)
 	planet_system.refresh_availability(unlocked)
-	var galaxies = Galaxy.initial(galaxy_definitions)
-	if not galaxies.ok:
-		return _fail(str(galaxies.reason))
-	galaxy_progress = galaxies.regions
+	galaxy_system = Galaxy.new(configuration.galaxy.galaxy, configuration.galaxy_build.galaxy_build, configuration.galaxy_config.galaxy_config, amount_api)
+	var galaxies = galaxy_system.initialization_result()
+	if not galaxies.ok: return _fail(str(galaxies.reason))
+	galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
 	planet_factors = planet_system.contributions()
 	crew_factors = Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api)
-	galaxy_factors = Galaxy.contributions(galaxy_progress, galaxy_buildings, amount_api)
+	galaxy_factors = galaxy_system.contributions()
 	world_factors = _world_contributions()
 	if not world_factors.ok: return _fail(str(world_factors.get("error", "WorldAssemblyFailed")))
 	var setup = _growth_setup()
@@ -417,6 +408,7 @@ func _advance_kernel(dt: float) -> bool:
 				research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
 				equipment.refresh_availability(unlocked, int(campaign.highest_reached))
 				planet_system.refresh_availability(unlocked)
+				galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
 				_display_changed("unlocks")
 			campaign.state = "waiting"
 			campaign.wait = _guard_interval() if _guard_matches() else float(rules.clear_wait_seconds)
@@ -502,6 +494,7 @@ func _set_stage(stage: int, distance: float) -> void:
 		research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
 		equipment.refresh_availability(unlocked, int(campaign.highest_reached))
 		planet_system.refresh_availability(unlocked)
+		galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
 		_display_changed("unlocks")
 	var entries: PackedStringArray = str(level_definitions[stage].monGroup).replace("{", "").replace("}", "").replace("｛", "").replace("｝", "").replace("，", ",").split(",")
 	campaign.points = []
@@ -895,7 +888,7 @@ func assign_crew(id: String, kind: String, target: String, mode: String = "1") -
 		if not admitted.ok: return admitted
 		capacity = int(admitted.capacity)
 	elif kind == "galaxy":
-		if not galaxy_unlocked(target):
+		if not galaxy_system.is_available(target):
 			return {"ok": false, "reason": "GalaxyUnavailable"}
 		capacity = int(crew_jobs.galaxy_explore.maxCrew)
 	elif not kind.is_empty():
@@ -967,26 +960,13 @@ func _advance_crew_jobs(dt: float, ids: Array) -> bool:
 		if not last_error.is_empty(): return false
 	return true
 
-func galaxy_unlocked(key: String) -> bool:
-	if not galaxy_progress.has(key) or not galaxy_definitions.has(key):
-		return false
-	if galaxy_progress[key].get("unlocked", false):
-		return true
-	var row: Dictionary = galaxy_definitions[key]
-	return unlocked("feature", "galaxy") and row.unlock_type == "stage_cleared" and campaign.cleared_stages.has(int(row.unlock_value))
-
 func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
-	var enabled: Dictionary = {}
-	for key in galaxy_progress:
-		enabled[key] = galaxy_unlocked(key)
-		if enabled[key]: galaxy_progress[key].unlocked = true
-	var result = Galaxy.advance(galaxy_progress, galaxy_definitions, galaxy_buildings, counts, enabled, dt, float(galaxy_rules.income_interval))
+	var result = galaxy_system.advance(counts, dt)
 	if not result.ok:
 		_fail(str(result.get("reason", "GalaxyAdvanceFailed")))
 		return false
-	for key in result.displayed: _display_changed("galaxies", str(key))
 	if not result.changes.is_empty():
-		var contributions = Galaxy.contributions(galaxy_progress, galaxy_buildings, amount_api, galaxy_factors, result.changes)
+		var contributions: Dictionary = result.contributions
 		if not contributions.ok:
 			_fail(str(contributions.get("error", "GalaxyContributionFailed")))
 			return false
@@ -998,7 +978,7 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 			_fail(str(production.get("error", "ProductionQueryFailed")))
 			return false
 		for payment in result.payments:
-			var income = Galaxy.income(galaxy_factors, str(payment.galaxy), production.rates, float(payment.seconds), amount_api)
+			var income = galaxy_system.income(str(payment.galaxy), production.rates, float(payment.seconds))
 			if not income.ok:
 				_fail(str(income.get("error", "GalaxyIncomeFailed")))
 				return false
