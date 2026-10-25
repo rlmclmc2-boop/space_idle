@@ -7,6 +7,7 @@ var _crew
 var _planet
 var _galaxy
 var _watch_visibility: bool = false
+var _pending_member_options: bool = false
 var _pending_full: bool = false
 var _pending_targets: bool = false
 var _pending_members: Dictionary = {}
@@ -44,7 +45,7 @@ func _init(crew, planet, galaxy, coordinate: Callable, command: Callable) -> voi
 		refresh()
 		return {"ok": true})
 	_crew.members_changed.connect(_members_changed)
-	_crew.options_changed.connect(refresh)
+	_crew.options_changed.connect(_refresh_members)
 	_planet.assignment_options_changed.connect(_refresh_construction_choices)
 	_planet.availability_changed.connect(_refresh_assignments)
 	_galaxy.availability_changed.connect(_refresh_assignments)
@@ -57,6 +58,13 @@ func refresh() -> void:
 	if _watch_visibility and not is_visible_in_tree():
 		_pending_full = true
 		return
+	_refresh_members()
+	_refresh_assignments()
+
+func _refresh_members() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_member_options = true
+		return
 	var selected: String = str(_picker_value(world_crew_picker))
 	world_crew_picker.clear()
 	for option in _crew.member_options():
@@ -64,7 +72,6 @@ func refresh() -> void:
 		world_crew_picker.add_item(option.name)
 		world_crew_picker.set_item_metadata(index, option.id)
 		if str(option.id) == selected: world_crew_picker.select(index)
-	_refresh_assignments()
 	_refresh_status()
 
 func _members_changed(ids: Array) -> void:
@@ -134,6 +141,8 @@ func _ready() -> void:
 
 func _flush_pending() -> void:
 	if not is_visible_in_tree(): return
+	var member_options: bool = _pending_member_options
+	_pending_member_options = false
 	var full: bool = _pending_full
 	var targets: bool = _pending_targets
 	var members: Array = _pending_members.keys()
@@ -147,4 +156,5 @@ func _flush_pending() -> void:
 		return
 	if targets: _refresh_assignments()
 	elif not construction.is_empty(): _refresh_construction_choices(construction)
-	if not members.is_empty(): _members_changed(members)
+	if member_options: _refresh_members()
+	elif not members.is_empty(): _members_changed(members)
