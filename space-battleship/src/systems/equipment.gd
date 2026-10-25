@@ -8,7 +8,8 @@ signal loadout_changed
 signal options_changed
 
 var _slots: Array = []
-var _pending_slots: Array = []
+var _pending_slots = null
+var _pending_level_slots: Array = []
 var _material_available: bool = false
 var _definitions: Dictionary = {}
 var _evolution: Dictionary = {}
@@ -64,19 +65,20 @@ func _slots_for(mounts: Dictionary, candidate = null) -> Array:
 	var source: Array = _slots if candidate == null else candidate
 	return source.filter(func(slot): return int(slot.index) < int(mounts[slot.category]))
 
-func geometry_changed(candidate) -> bool:
-	if candidate == null: return false
-	for index in candidate.size():
-		if index >= _slots.size() or candidate[index].equipment_id != _slots[index].equipment_id: return true
+func geometry_changed() -> bool:
+	if _pending_slots == null: return false
+	for index in _pending_slots.size():
+		if index >= _slots.size() or _pending_slots[index].equipment_id != _slots[index].equipment_id: return true
 	return false
 
-func equipped_armours(mounts: Dictionary, candidate = null) -> int:
-	return _armour_count(_slots_for(mounts, candidate))
+func equipped_armours(mounts: Dictionary) -> int:
+	return _armour_count(_slots_for(mounts, _pending_slots))
 
 func clear_switch_locks() -> void:
 	if not _run_state.is_running(): return
-	for source in [_slots, _pending_slots]:
-		for slot in source: slot.switch_ready_at = 0.0
+	for slot in _slots: slot.switch_ready_at = 0.0
+	if _pending_slots != null:
+		for slot in _pending_slots: slot.switch_ready_at = 0.0
 
 func label(id: String) -> String:
 	return "空槽" if id.is_empty() else str(_labels.get(id, id))
@@ -107,19 +109,22 @@ func price_text(id: String) -> String:
 
 func _submit_levels(next: Array, balances: Dictionary, changed: Array, publish: Callable) -> Dictionary:
 	_pending_slots = next
-	var result: Dictionary = publish.call(balances, changed)
-	_pending_slots = []
+	_pending_level_slots = changed
+	var result: Dictionary = publish.call(balances)
+	_pending_slots = null
+	_pending_level_slots = []
 	if result.ok:
 		_slots = next
 		var rows: Array = []
 		for slot in changed: rows.append(str(slot.id))
+		rows.make_read_only()
 		slots_changed.emit(rows)
 	return result
 
 func _submit_refit(next: Array, balances: Dictionary, publish: Callable) -> Dictionary:
 	_pending_slots = next
-	var result: Dictionary = publish.call(next, balances, "refit")
-	_pending_slots = []
+	var result: Dictionary = publish.call(balances, "refit")
+	_pending_slots = null
 	if result.ok:
 		_slots = next
 		loadout_changed.emit()
@@ -512,9 +517,9 @@ func resize_mounts(current: Dictionary, target: Dictionary, balances: Dictionary
 					"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
 	return _submit_refit(next, balances, publish)
 
-func values(mounts: Dictionary, extra_levels: int, ai: Dictionary, reactor: Dictionary, weapons: bool, defences: bool, candidate = null) -> Dictionary:
+func values(mounts: Dictionary, extra_levels: int, ai: Dictionary, reactor: Dictionary, weapons: bool, defences: bool, changed_only: bool = false) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	var slots: Array = _slots_for(mounts, candidate)
+	var slots: Array = _slots_for(mounts, _pending_level_slots if changed_only else _pending_slots)
 	var definitions: Dictionary = _definitions
 	var evolution: Dictionary = _evolution
 	var api = _api
@@ -531,11 +536,11 @@ func values(mounts: Dictionary, extra_levels: int, ai: Dictionary, reactor: Dict
 		result["defences" if slot.category == "defence" else "weapons"][str(slot.id)] = {"key": str(row.name), "generation": int(slot.generation), "base": text.text, "paid_level": int(slot.paid_level), "effective_level": int(slot.paid_level) + int(slot.extra_levels) + extra_levels}
 	return result
 
-func mounted_configuration(mounts: Dictionary, candidate, extra_levels: int, ai: Dictionary, reactor: Dictionary,
+func mounted_configuration(mounts: Dictionary, extra_levels: int, ai: Dictionary, reactor: Dictionary,
 		player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary, motion: Dictionary, external: Array) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	var slots: Array = _slots_for(mounts, candidate)
-	var base_values = values(mounts, extra_levels, ai, reactor, true, true, candidate)
+	var slots: Array = _slots_for(mounts, _pending_slots)
+	var base_values = values(mounts, extra_levels, ai, reactor, true, true)
 	if not base_values.ok: return base_values
 	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
 	var weapons: Array = []
@@ -561,7 +566,20 @@ func mounted_configuration(mounts: Dictionary, candidate, extra_levels: int, ai:
 			row_weapon.entry.paid_level = int(slot.paid_level)
 			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels) + extra_levels
 			weapons.append(row_weapon)
-	return {"ok": true, "weapons": weapons, "defences": defences, "values": base_values}
+	for group in [weapons, defences]:
+		for mounted in group:
+			mounted.entry.make_read_only()
+			mounted.branch_factors.make_read_only()
+			mounted.external_factors.make_read_only()
+			mounted.make_read_only()
+		group.make_read_only()
+	for group in ["weapons", "defences"]:
+		for value in base_values[group].values(): value.make_read_only()
+		base_values[group].make_read_only()
+	base_values.make_read_only()
+	var output := {"ok": true, "weapons": weapons, "defences": defences, "values": base_values}
+	output.make_read_only()
+	return output
 
 func apply_external(values: Dictionary, mounts: Dictionary, external: Array) -> void:
 	if not _run_state.is_running(): return

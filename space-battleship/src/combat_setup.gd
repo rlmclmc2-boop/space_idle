@@ -20,15 +20,15 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 
 static func build_player(equipment_contribution: Dictionary, geometry: Dictionary, rules: Dictionary,
 		resistance: float, motion: Dictionary, upgrades: Dictionary, factors: Dictionary, drone_weapons: Array, seed_value: int) -> Dictionary:
-	var base_values: Dictionary = equipment_contribution["values"]
-	var weapons: Array = equipment_contribution.weapons
-	var defences: Array = equipment_contribution.defences
+	var base_values: Dictionary = equipment_contribution["values"].duplicate()
+	for group in ["weapons", "defences"]: base_values[group] = base_values[group].duplicate()
+	var weapons: Array = []
+	var defences: Array = []
 	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
 	for drone in drone_weapons:
 		var external: Array = factors.external.duplicate()
 		external.append_array(drone.get("external_factors", []))
 		drone.external_factors = external
-	weapons.append_array(drone_weapons)
 	var descriptor := {"player": {"x": player_point.x, "y": player_point.y},
 		"enemies": [], "weapons": weapons, "defences": defences,
 		"requires_drop_rules": true, "drop_rules_compiled": true,
@@ -37,12 +37,18 @@ static func build_player(equipment_contribution: Dictionary, geometry: Dictionar
 		"attack_counter": 0, "incoming_counter": 0, "jewel_probability": 0.0, "jewel_ratio": 1.0}
 	descriptor.merge(upgrades.globals, true)
 	descriptor.enhancement_state = {"effects": upgrades.effects, "rules": upgrades.rules}
-	for defence in defences: defence.merge(upgrades.defence, true)
-	for mounted in weapons:
-		mounted.base_interval = mounted.interval
-		mounted.merge(upgrades.weapon, true)
-		mounted.interval = float(mounted.base_interval) * float(upgrades.weapon.interval_multiplier)
-		if upgrades.initial_wait_from_interval: mounted.remaining = 0.0 if int(mounted.kind) == 3 else mounted.interval
+	for source in equipment_contribution.defences:
+		var defence: Dictionary = source.duplicate()
+		defence.merge(upgrades.defence, true)
+		defences.append(defence)
+	for group in [equipment_contribution.weapons, drone_weapons]:
+		for source in group:
+			var mounted: Dictionary = source.duplicate()
+			mounted.base_interval = mounted.interval
+			mounted.merge(upgrades.weapon, true)
+			mounted.interval = float(mounted.base_interval) * float(upgrades.weapon.interval_multiplier)
+			if upgrades.initial_wait_from_interval: mounted.remaining = 0.0 if int(mounted.kind) == 3 else mounted.interval
+			weapons.append(mounted)
 	for key in ["reactive_volley_window", "reactive_stack_seconds", "reactive_per_stack"]:
 		descriptor[key] = rules[key]
 	descriptor.reactive_stack_limit = int(rules.reactive_stack_limit)

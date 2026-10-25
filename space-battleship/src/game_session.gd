@@ -215,7 +215,7 @@ func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
 		"game_time": game_time}
 
-func _growth_setup(next_slots = null, next_ship: String = "", contributions = null) -> Dictionary:
+func _growth_setup(next_ship: String = "", contributions = null) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var ship_key: String = campaign_system.selected_ship() if next_ship.is_empty() else next_ship
 	var ship: Dictionary = campaign_system.ship_facts(ship_key)
@@ -230,9 +230,9 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	if not ai.ok: return ai
 	var factors := {"ai_weapon": ai["values"].weapon_damage, "ai_defence": ai["values"].equipment_durability,
 		"reactor_weapon": reactor.factors.weapons, "reactor_defence": reactor.factors.defence, "external": world.external}
-	var upgrades = enhancement.evaluate(int(world.enhancement_levels), campaign_system.available, equipment.equipped_armours(ship.mounts, next_slots))
+	var upgrades = enhancement.evaluate(int(world.enhancement_levels), campaign_system.available, equipment.equipped_armours(ship.mounts))
 	if not upgrades.ok: return upgrades
-	var mounted = equipment.mounted_configuration(ship.mounts, next_slots, int(world.equipment_levels), ai["values"], reactor.factors,
+	var mounted = equipment.mounted_configuration(ship.mounts, int(world.equipment_levels), ai["values"], reactor.factors,
 		mount.art, mount.dimensions, mount.geometry, mount.motion, world.external)
 	if not mounted.ok: return mounted
 	var setup = battle.prepare_player(mounted, upgrades, factors, reactor.factors, ship, ship_key, mount, contributions, equipment.damage_types())
@@ -249,12 +249,11 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	setup.reactor_factors = reactor.factors
 	return setup
 
-func publish_equipment_refit(next_slots,
-		next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null) -> Dictionary:
+func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
-	geometry_changed = geometry_changed or equipment.geometry_changed(next_slots)
-	var setup = _growth_setup(next_slots, next_ship, contributions)
+	geometry_changed = geometry_changed or equipment.geometry_changed()
+	var setup = _growth_setup(next_ship, contributions)
 	if not setup.ok:
 		return setup
 	# No page callbacks or asynchronous work can interleave this commit.
@@ -333,7 +332,7 @@ func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var valid = battle.validate_drones(contributions, int(campaign_system.ship_facts().drone_capacity))
 	if not valid.ok: return valid
-	return publish_equipment_refit(null, economy.budget(), "refit", "", contributions)
+	return publish_equipment_refit(economy.budget(), "refit", "", contributions)
 
 func _world_contributions() -> Dictionary:
 	for result in [planet_factors, crew_factors, galaxy_factors]:
@@ -381,9 +380,9 @@ func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrade
 	if committed.defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return {"ok": true}
 
-func publish_equipment_levels(balances: Dictionary, changed: Array) -> Dictionary:
+func publish_equipment_levels(balances: Dictionary) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	var values = equipment.values(campaign_system.ship_facts().mounts, int(world_factors.equipment_levels), research_factors, reactor_factors, true, true, changed)
+	var values = equipment.values(campaign_system.ship_facts().mounts, int(world_factors.equipment_levels), research_factors, reactor_factors, true, true, true)
 	if not values.ok: return values
 	var result = _commit_values(values, "upgrade")
 	if result.ok:
