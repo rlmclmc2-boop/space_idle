@@ -528,7 +528,7 @@ func _advance_crew_jobs(dt: float, ids: Array) -> bool:
 		match str(request.module):
 			"equipment": equipment.buy_all_levels(int(request.count), bool(request.maximum), equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
 			"enhancement": enhancement.purchase(int(request.count), enhancement_inputs(), economy.affordable, publish_enhancement)
-			"reactor": reactor_system.purchase(int(request.count), bool(request.automatic), reactor_inputs(), economy.can_pay, publish_reactor)
+			"reactor": reactor_system.purchase(int(request.count), bool(request.automatic), reactor_inputs(), publish_reactor)
 		if not run_state.is_running(): return false
 	return true
 

@@ -61,13 +61,11 @@ func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: Stri
 	if result.ok: _adopt(candidate.state)
 	return result
 
-func purchase(count: int, automatic: bool, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
+func purchase(count: int, automatic: bool, inputs: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not _available: return {"ok": false, "reason": "ReactorLocked"}
 	var changed = _purchase(_state, count, automatic, _parameters, _api)
 	if not changed.ok: return changed
-	var affordable: Dictionary = can_pay.call(changed.costs)
-	if not affordable.ok: return affordable
 	return _submit(changed.state, inputs, changed.costs, "growth", publish)
 
 func allocate_text(module: String, text: String, inputs: Dictionary, publish: Callable) -> Dictionary:

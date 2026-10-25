@@ -118,7 +118,7 @@ func _setup_growth_panel() -> void:
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
-	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.can_pay, session.publish_reactor, _command_button)
+	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.publish_reactor, _command_button)
 	box.add_child(reactor_panel)
 	var research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)

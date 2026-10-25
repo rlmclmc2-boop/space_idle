@@ -10,13 +10,13 @@ var _reactor
 
 var _pending_choices: bool = false
 
-func _init(reactor, inputs: Callable, can_pay: Callable, publish: Callable, command: Callable) -> void:
+func _init(reactor, inputs: Callable, publish: Callable, command: Callable) -> void:
 	_host_command = command
 	_reactor = reactor
 	var box: Control = self
 	_caption(box, "反应炉")
 	var reactor_buttons := _row(box)
-	_command(reactor_buttons, "购买 1 级", func(): return reactor.purchase(1, false, inputs.call(), can_pay, publish))
+	_command(reactor_buttons, "购买 1 级", func(): return reactor.purchase(1, false, inputs.call(), publish))
 	_command(reactor_buttons, "平均分配", func(): return reactor.distribute(inputs.call(), publish))
 	var allocation := _row(box)
 	module_picker = OptionButton.new()
