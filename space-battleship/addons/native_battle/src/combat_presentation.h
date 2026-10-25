@@ -5,7 +5,7 @@ struct PreparedFlight {
     Ref<SpaceMotionLease> motion;
     Vector2 point;
     int kind=0;
-    bool hostile=false,chain=false;
+    bool hostile=false;
     uint64_t serial=0;
     int render_kind=-1,damage_type=0;
     bool beam=false,fixed=false,draw=true,awaiting=false,powered=false;
@@ -58,14 +58,11 @@ class SpaceCombatPresentation : public RefCounted {
     PackedColorArray packed_colors;
     std::vector<Vector2> body;
     std::vector<Color> body_colors;
-    std::vector<Vector2> chain;
-    std::vector<Color> chain_colors;
     std::vector<Vector2> ribbon_input;
     std::array<std::vector<Vector2>,3> ribbon_points;
     std::array<std::vector<Color>,3> ribbon_colors;
     std::array<Vector2, 65> circle;
     bool templates_ready = false;
-    Ref<ArrayMesh> pulse_mesh;
     struct ContactEvent {Vector2 point,direction;double born;bool launch,critical;int type;};
     std::array<std::vector<ContactEvent>,2> contact_events;
     RID gpu_contact_canvas;
@@ -89,7 +86,6 @@ class SpaceCombatPresentation : public RefCounted {
         for (int i = 0; i < 64; ++i) tri(center, center + circle[i] * radius, center + circle[i+1] * radius, color);
     }
     void prepare_templates();
-    void prepare_pulse_mesh();
     void template_at(const std::vector<Vector2>& points, const std::vector<Color>& tints, Vector2 point, Vector2 axis) {
         Transform2D transform(double(axis.angle()) + Math::PI / 2.0, point);
         for (size_t i = 0; i < points.size(); ++i) { vertices.push_back(transform.xform(points[i])); colors.push_back(tints[i]); }
@@ -236,10 +232,6 @@ void SpaceCombatPresentation::prepare_templates() {
     line(-axis*9.0+side*1.5,-axis*21.0+side*1.5,shadow,1.5);
     line(-axis*9.0-side*1.7,-axis*20.0-side*1.7,Color(1,1,1),0.9);
     body.swap(vertices);body_colors.swap(colors);
-    Color chain_light=Color::html("a7fff0");chain_light.a=0.5;
-    line(Vector2(0,18),Vector2(),chain_light,3.0);
-    line(Vector2(0,10),Vector2(0,-2),Color::html("f2fffc"),1.4);
-    disk(Vector2(),3,Color::html("a7fff0"));chain.swap(vertices);chain_colors.swap(colors);
 }
 void SpaceCombatPresentation::flight(const PreparedFlight &visual,Vector2 offset) {
     Vector2 point=visual.point+offset,axis=visual.axis;
@@ -284,24 +276,6 @@ void SpaceCombatPresentation::draw_contacts(double now) {
         batch->set_visible_instance_count(events.size());
         if(batch->get_visible_instance_count()>0)RenderingServer::get_singleton()->canvas_item_add_multimesh(gpu_contact_canvas,batch->get_rid());
     }
-}
-void SpaceCombatPresentation::prepare_pulse_mesh() {
-    if(pulse_mesh.is_valid())return;
-    prepare_templates();begin();
-    Color cyan=Color::html("42edee"),blue=Color::html("398bdf"),white=Color::html("f1ffff");
-    Color glow=blue;glow.a=0.2;line(Vector2(-11,0),Vector2(9,0),glow,12);
-    auto polygon=[&](std::initializer_list<Vector2> points,Color color) {
-        std::vector<Vector2> p(points);for(size_t i=1;i+1<p.size();++i)tri(p[0],p[i],p[i+1],color);
-    };
-    polygon({Vector2(9,0),Vector2(0,-4.5),Vector2(-11,0),Vector2(0,4.5)},cyan);
-    polygon({Vector2(9,0),Vector2(1,-2.2),Vector2(-6,0),Vector2(1,2.2)},white);
-    blue.a=0.7;for(double side:{-1.0,1.0})line(Vector2(-11,-side*2),Vector2(-25,-side*3),blue,1.8);
-    cyan.a=0.8;line(Vector2(2,5),Vector2(2,-5),cyan,1.2);
-    PackedVector3Array points;PackedColorArray tints;PackedInt32Array indices;
-    points.resize(vertices.size());tints.resize(colors.size());indices.resize(vertices.size());
-    for(size_t i=0;i<vertices.size();++i){points[i]=Vector3(vertices[i].x,vertices[i].y,0);tints[i]=colors[i];indices[i]=i;}
-    Array arrays;arrays.resize(Mesh::ARRAY_MAX);arrays[Mesh::ARRAY_VERTEX]=points;arrays[Mesh::ARRAY_COLOR]=tints;arrays[Mesh::ARRAY_INDEX]=indices;
-    pulse_mesh.instantiate();pulse_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES,arrays);begin();
 }
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Vector2 offset) {
     if(retained_frame.is_valid())prepare_retained(offset);

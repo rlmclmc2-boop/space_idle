@@ -11,22 +11,16 @@ void vertex() {
             VERTEX = vec2(0.0);
             COLOR.a = 0.0;
         } else if (kind < 0.5) {
-            // The native pulse topology begins with one six-vertex glow quad.
-            // Reuse only this quad; collapse the old diamond/ridge/tail triangles.
-            if (VERTEX_ID < 6) {
-                vec2 corner = vec2(0.0);
-                if (VERTEX_ID == 1 || VERTEX_ID == 2 || VERTEX_ID == 4) corner.x = 1.0;
-                if (VERTEX_ID == 2 || VERTEX_ID == 4 || VERTEX_ID == 5) corner.y = 1.0;
-                VERTEX = vec2((corner.x - 0.5) * 34.0, (corner.y - 0.5) * 14.0);
-                pulse_uv = vec2(corner.y, 1.0 - corner.x);
-                static_pulse = 1.0;
-                COLOR = vec4(1.0);
-                float age = (simulation_clock - INSTANCE_CUSTOM.y) - INSTANCE_CUSTOM.z;
-                VERTEX.x += INSTANCE_CUSTOM.w * age;
-            } else {
-                VERTEX = vec2(0.0);
-                COLOR.a = 0.0;
-            }
+            // Native type 0 contains exactly these six pulse vertices.
+            vec2 corner = vec2(0.0);
+            if (VERTEX_ID == 1 || VERTEX_ID == 2 || VERTEX_ID == 4) corner.x = 1.0;
+            if (VERTEX_ID == 2 || VERTEX_ID == 4 || VERTEX_ID == 5) corner.y = 1.0;
+            VERTEX = vec2((corner.x - 0.5) * 34.0, (corner.y - 0.5) * 14.0);
+            pulse_uv = vec2(corner.y, 1.0 - corner.x);
+            static_pulse = 1.0;
+            COLOR = vec4(1.0);
+            float age = (simulation_clock - INSTANCE_CUSTOM.y) - INSTANCE_CUSTOM.z;
+            VERTEX.x += INSTANCE_CUSTOM.w * age;
         }
     }
 }

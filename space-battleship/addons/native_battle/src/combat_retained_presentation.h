@@ -17,7 +17,7 @@ bool SpaceCombatPresentation::advance_retained() {
         auto &f=frame.flights[id];const bool born=f.motion!=source.motion;
         if(born) {
             f=PreparedFlight();f.serial=source.serial;
-            f.motion=source.motion;f.hostile=source.hostile;f.chain=source.chain;f.beam=source.beam;f.damage_type=source.type;
+            f.motion=source.motion;f.hostile=source.hostile;f.beam=source.beam;f.damage_type=source.type;
             f.kind=source.kind;
             f.fixed=source.fixed;
             if(f.fixed){f.launch=source.launch;f.ray_origin=source.ray_origin;f.ray_step=source.ray_step;f.ray_direction=f.motion->motion().direction;}
@@ -77,19 +77,20 @@ void SpaceCombatPresentation::prepare_retained(Vector2 offset) {
 }
 void SpaceCombatPresentation::prepare_retained_mesh() {
     if(retained_mesh.is_valid())return;
-    prepare_pulse_mesh();prepare_templates();
+    prepare_templates();
     PackedVector3Array points;PackedColorArray tints;PackedVector2Array tags;PackedInt32Array indices;
-    auto append=[&](const std::vector<Vector2> &v,const std::vector<Color> &c,int kind,bool turn){
-        for(size_t i=0;i<v.size();++i){Vector2 p=turn?Vector2(-v[i].y,v[i].x):v[i];indices.push_back(points.size());points.push_back(Vector3(p.x,p.y,0));tints.push_back(c[i]);tags.push_back(Vector2(kind,0));}
+    auto append=[&](const std::vector<Vector2> &v,const std::vector<Color> &c,int kind){
+        for(size_t i=0;i<v.size();++i){Vector2 p=v[i];indices.push_back(points.size());points.push_back(Vector3(p.x,p.y,0));tints.push_back(c[i]);tags.push_back(Vector2(kind,0));}
     };
-    Array pulse=pulse_mesh->surface_get_arrays(0);PackedVector3Array pv=pulse[Mesh::ARRAY_VERTEX];PackedColorArray pc=pulse[Mesh::ARRAY_COLOR];
-    for(int i=0;i<pv.size();++i){indices.push_back(points.size());points.push_back(pv[i]);tints.push_back(pc[i]);tags.push_back(Vector2(0,0));}
-    append(chain,chain_colors,1,true);
+    // Type 0 is exactly the textured pulse quad consumed by the shader.
+    for(Vector2 p:{Vector2(-17,-7),Vector2(17,-7),Vector2(17,7),Vector2(-17,-7),Vector2(17,7),Vector2(-17,7)}) {
+        indices.push_back(points.size());points.push_back(Vector3(p.x,p.y,0));tints.push_back(Color(1,1,1));tags.push_back(Vector2(0,0));
+    }
     for(int kind=2;kind<=3;++kind) {
         begin();Color color=Color::html(kind==3?"ffaf61":"64b5ff");
         if(kind==3){Color glow=color;glow.a=0.5;line(Vector2(-9,0),Vector2(-1,0),glow,1.5);line(Vector2(),Vector2(8,0),color,3.5);line(Vector2(5,0),Vector2(8,0),Color::html("ffe5bf"),2.0);}
         else{line(Vector2(-9,0),Vector2(9,0),color,2.0);line(Vector2(-7,0),Vector2(7,0),Color::html("d8f3ff"),1.0);}
-        append(vertices,colors,kind,false);
+        append(vertices,colors,kind);
     }
     Array arrays;arrays.resize(Mesh::ARRAY_MAX);arrays[Mesh::ARRAY_VERTEX]=points;arrays[Mesh::ARRAY_COLOR]=tints;arrays[Mesh::ARRAY_TEX_UV]=tags;arrays[Mesh::ARRAY_INDEX]=indices;
     retained_mesh.instantiate();retained_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES,arrays);begin();
@@ -114,7 +115,7 @@ void SpaceCombatPresentation::draw_retained(Vector2 offset) {
         if(f.render_kind>=0) {
 
             paint(rid);Vector2 p=f.point+offset,axis=f.axis;
-            // One shared topology stream retains mixed pulse/chain/enemy order.
+            // One shared topology stream retains mixed pulse/enemy order.
             // Only missiles and script operations form draw barriers.
             const bool ballistic=f.render_kind==0&&f.fixed;
             // Compatibility stores INSTANCE_CUSTOM in half floats. Split the
