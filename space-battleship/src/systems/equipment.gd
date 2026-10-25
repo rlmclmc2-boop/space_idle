@@ -2,7 +2,7 @@ extends RefCounted
 const BattleSchema = preload("res://src/combat_setup.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 
-signal slots_changed(rows: Array)
+signal slots_changed(ids: Array)
 signal loadout_changed
 signal options_changed
 
@@ -76,9 +76,10 @@ func label(id: String) -> String:
 func _slot_option(slot: Dictionary) -> Dictionary:
 	return {"id": str(slot.id), "label": ("武器 " if slot.category == "weapon" else "防具 ") + str(int(slot.index) + 1) + " · " + label(str(slot.equipment_id)) + " · Lv." + str(slot.paid_level)}
 
-func panel_slots(mounts: Dictionary) -> Array:
+func panel_slots(mounts: Dictionary, ids: Array = []) -> Array:
 	var rows: Array = []
-	for slot in _slots_for(mounts): rows.append(_slot_option(slot))
+	for slot in _slots_for(mounts):
+		if ids.is_empty() or str(slot.id) in ids: rows.append(_slot_option(slot))
 	return rows
 
 func panel_equipment(id: String) -> Array:
@@ -103,7 +104,7 @@ func _submit_levels(next: Array, balances: Dictionary, changed: Array, publish: 
 	if result.ok:
 		_slots = next
 		var rows: Array = []
-		for slot in changed: rows.append(_slot_option(slot))
+		for slot in changed: rows.append(str(slot.id))
 		slots_changed.emit(rows)
 	return result
 

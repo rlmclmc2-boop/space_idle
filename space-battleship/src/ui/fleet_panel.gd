@@ -4,6 +4,9 @@ var _campaign
 var _host: Callable
 var ship_picker: OptionButton
 
+var _watch_visibility: bool = false
+var _pending_choices: bool = false
+
 func _init(campaign, refit: Callable, command: Callable) -> void:
 	_campaign = campaign
 	_host = command
@@ -20,6 +23,9 @@ func _init(campaign, refit: Callable, command: Callable) -> void:
 	_refresh_choices()
 
 func _refresh_choices() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_choices = true
+		return
 	ship_picker.clear()
 	for option in _campaign.ship_options():
 		var index: int = ship_picker.item_count
@@ -27,3 +33,13 @@ func _refresh_choices() -> void:
 		ship_picker.set_item_metadata(index, option.id)
 		ship_picker.set_item_disabled(index, not option.enabled)
 		if option.selected: ship_picker.select(index)
+
+func _ready() -> void:
+	_watch_visibility = true
+	visibility_changed.connect(_flush_pending)
+	_flush_pending()
+
+func _flush_pending() -> void:
+	if is_visible_in_tree() and _pending_choices:
+		_pending_choices = false
+		_refresh_choices()

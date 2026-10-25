@@ -6,6 +6,11 @@ var _host: Callable
 var _crew
 var _planet
 var _galaxy
+var _watch_visibility: bool = false
+var _pending_full: bool = false
+var _pending_targets: bool = false
+var _pending_members: Dictionary = {}
+var _pending_construction: Dictionary = {}
 var world_status: VBoxContainer
 var world_labels: Dictionary = {}
 var world_crew_picker: OptionButton
@@ -49,6 +54,9 @@ func _picker_value(picker: OptionButton, fallback = ""):
 	return fallback if picker.selected < 0 else picker.get_item_metadata(picker.selected)
 
 func refresh() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_full = true
+		return
 	var selected: String = str(_picker_value(world_crew_picker))
 	world_crew_picker.clear()
 	for option in _crew.member_options():
@@ -60,6 +68,9 @@ func refresh() -> void:
 	_refresh_status()
 
 func _members_changed(ids: Array) -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		for id in ids: _pending_members[id] = true
+		return
 	for option in _crew.member_options(ids):
 		for index in world_crew_picker.item_count:
 			if world_crew_picker.get_item_metadata(index) == option.id: world_crew_picker.set_item_text(index, option.name)
@@ -74,12 +85,18 @@ func _append_assignment(option: Dictionary, previous: Dictionary) -> void:
 	if value == previous: world_assignment_picker.select(index)
 
 func _refresh_assignments() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_targets = true
+		return
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
 	world_assignment_picker.clear()
 	for option in _crew.job_options() + _planet.assignment_options() + _galaxy.assignment_options():
 		_append_assignment(option, previous)
 
 func _refresh_construction_choices(ids: Array) -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		for id in ids: _pending_construction[id] = true
+		return
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
 	for index in range(world_assignment_picker.item_count - 1, -1, -1):
 		var value: Dictionary = world_assignment_picker.get_item_metadata(index)
@@ -109,3 +126,25 @@ func _command(parent: Control, text: String, action: Callable):
 			if message.is_empty(): message = GalaxyPanel.describe_error(reason)
 			if not message.is_empty(): result.message = message
 		return result)
+
+func _ready() -> void:
+	_watch_visibility = true
+	visibility_changed.connect(_flush_pending)
+	_flush_pending()
+
+func _flush_pending() -> void:
+	if not is_visible_in_tree(): return
+	var full: bool = _pending_full
+	var targets: bool = _pending_targets
+	var members: Array = _pending_members.keys()
+	var construction: Array = _pending_construction.keys()
+	_pending_full = false
+	_pending_targets = false
+	_pending_members = {}
+	_pending_construction = {}
+	if full:
+		refresh()
+		return
+	if targets: _refresh_assignments()
+	elif not construction.is_empty(): _refresh_construction_choices(construction)
+	if not members.is_empty(): _members_changed(members)

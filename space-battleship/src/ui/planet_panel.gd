@@ -3,6 +3,11 @@ extends VBoxContainer
 const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工"}
 var _host: Callable
 var _planet
+var _watch_visibility: bool = false
+var _pending_full: bool = false
+var _pending_all_status: bool = false
+var _pending_status: Dictionary = {}
+var _pending_buildings: Dictionary = {}
 var world_planet_picker: OptionButton
 var world_building_picker: OptionButton
 var _status: VBoxContainer
@@ -31,6 +36,9 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable) -> vo
 	refresh()
 
 func refresh() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_full = true
+		return
 	var selected: String = str(_picker_value(world_planet_picker))
 	world_planet_picker.clear()
 	for option in _planet.planet_options():
@@ -51,9 +59,16 @@ func _refresh_world_buildings() -> void:
 		if str(option.id) == selected: world_building_picker.select(index)
 
 func _buildings_changed(ids: Array) -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		for id in ids: _pending_buildings[id] = true
+		return
 	if str(_picker_value(world_planet_picker)) in ids: _refresh_world_buildings()
 
 func _refresh_status(ids: Array = []) -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		if ids.is_empty(): _pending_all_status = true
+		for id in ids: _pending_status[id] = true
+		return
 	for row in _planet.status_rows(ids):
 		if not _labels.has(row.id):
 			var label := Label.new()
@@ -79,3 +94,25 @@ func _command(parent: Control, text: String, action: Callable):
 
 static func describe_error(reason: String) -> String:
 	return str(ERRORS.get(reason, ""))
+
+func _ready() -> void:
+	_watch_visibility = true
+	visibility_changed.connect(_flush_pending)
+	_flush_pending()
+
+func _flush_pending() -> void:
+	if not is_visible_in_tree(): return
+	var full: bool = _pending_full
+	var all_status: bool = _pending_all_status
+	var status: Array = _pending_status.keys()
+	var buildings: Array = _pending_buildings.keys()
+	_pending_full = false
+	_pending_all_status = false
+	_pending_status = {}
+	_pending_buildings = {}
+	if full:
+		refresh()
+		return
+	if not buildings.is_empty(): _buildings_changed(buildings)
+	if all_status: _refresh_status()
+	elif not status.is_empty(): _refresh_status(status)

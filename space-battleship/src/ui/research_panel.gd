@@ -6,6 +6,9 @@ var _host_command: Callable
 var research_picker: OptionButton
 var _research
 
+var _watch_visibility: bool = false
+var _pending_choices: bool = false
+
 func _init(research, command: Callable) -> void:
 	_host_command = command
 	_research = research
@@ -44,6 +47,9 @@ func _init(research, command: Callable) -> void:
 	refresh_choices()
 
 func refresh_choices() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_choices = true
+		return
 	var choices: Dictionary = _research.choices()
 	for index in research_picker.item_count:
 		research_picker.set_item_disabled(index, not choices[str(research_picker.get_item_metadata(index))])
@@ -64,3 +70,13 @@ func _command(parent: Control, text: String, action: Callable):
 		var reason: String = str(result.get("reason", result.get("error", "")))
 		if not result.get("ok", false) and ERRORS.has(reason): result.message = ERRORS[reason]
 		return result)
+
+func _ready() -> void:
+	_watch_visibility = true
+	visibility_changed.connect(_flush_pending)
+	_flush_pending()
+
+func _flush_pending() -> void:
+	if is_visible_in_tree() and _pending_choices:
+		_pending_choices = false
+		refresh_choices()

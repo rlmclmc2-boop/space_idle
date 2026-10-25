@@ -9,6 +9,9 @@ var allocation_input: LineEdit
 var _reactor
 var _inputs: Callable
 
+var _watch_visibility: bool = false
+var _pending_choices: bool = false
+
 func _init(reactor, inputs: Callable, can_pay: Callable, publish: Callable, command: Callable) -> void:
 	_host_command = command
 	_reactor = reactor
@@ -35,6 +38,9 @@ func _init(reactor, inputs: Callable, can_pay: Callable, publish: Callable, comm
 	_reactor.choices_changed.connect(refresh_choices)
 
 func refresh_choices() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_choices = true
+		return
 	var selected: String = "" if module_picker.selected < 0 else str(module_picker.get_item_metadata(module_picker.selected))
 	module_picker.clear()
 	for option in _reactor.panel_options(_inputs.call()):
@@ -62,3 +68,13 @@ func _command(parent: Control, text: String, action: Callable):
 			var message: String = str(ERRORS.get(reason, EconomyView.describe_error(reason)))
 			if not message.is_empty(): result.message = message
 		return result)
+
+func _ready() -> void:
+	_watch_visibility = true
+	visibility_changed.connect(_flush_pending)
+	_flush_pending()
+
+func _flush_pending() -> void:
+	if is_visible_in_tree() and _pending_choices:
+		_pending_choices = false
+		refresh_choices()

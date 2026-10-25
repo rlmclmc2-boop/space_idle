@@ -9,6 +9,10 @@ var equipment_picker: OptionButton
 var upgrade_price: Label
 var _equipment
 var _inputs: Callable
+var _watch_visibility: bool = false
+var _pending_full: bool = false
+var _pending_options: bool = false
+var _pending_slots: Dictionary = {}
 
 func _init(equipment, inputs: Callable, can_pay: Callable, pay: Callable, publish_levels: Callable, publish_refit: Callable, command: Callable) -> void:
 	_host_command = command
@@ -38,6 +42,9 @@ func _selected_slot() -> String:
 	return "" if slot_picker.selected < 0 else str(slot_picker.get_item_metadata(slot_picker.selected))
 
 func refresh() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_full = true
+		return
 	var selected: String = _selected_slot()
 	slot_picker.clear()
 	for option in _equipment.panel_slots(_inputs.call().mounts):
@@ -47,17 +54,23 @@ func refresh() -> void:
 		if str(option.id) == selected: slot_picker.select(index)
 	_populate_equipment_picker()
 
-func _refresh_slot_prices(rows: Array) -> void:
-	for option in rows:
+func _refresh_slot_prices(ids: Array, update_price: bool = true) -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		for id in ids: _pending_slots[id] = true
+		return
+	for option in _equipment.panel_slots(_inputs.call().mounts, ids):
 		for index in slot_picker.item_count:
 			if slot_picker.get_item_metadata(index) == option.id:
 				slot_picker.set_item_text(index, option.label)
-		if _selected_slot() == str(option.id): _refresh_upgrade_price()
+		if update_price and _selected_slot() == str(option.id): _refresh_upgrade_price()
 
 func _refresh_upgrade_price() -> void:
 	upgrade_price.text = _equipment.price_text(_selected_slot(), int(_inputs.call().highest_reached))
 
 func _populate_equipment_picker() -> void:
+	if _watch_visibility and not is_visible_in_tree():
+		_pending_options = true
+		return
 	_refresh_upgrade_price()
 	equipment_picker.clear()
 	for option in _equipment.panel_equipment(_selected_slot()):
@@ -84,3 +97,22 @@ func _command(parent: Control, text: String, action: Callable):
 			var message: String = str(ERRORS.get(reason, EconomyView.describe_error(reason)))
 			if not message.is_empty(): result.message = message
 		return result)
+
+func _ready() -> void:
+	_watch_visibility = true
+	visibility_changed.connect(_flush_pending)
+	_flush_pending()
+
+func _flush_pending() -> void:
+	if not is_visible_in_tree(): return
+	var full: bool = _pending_full
+	var options: bool = _pending_options
+	var ids: Array = _pending_slots.keys()
+	_pending_full = false
+	_pending_options = false
+	_pending_slots = {}
+	if full:
+		refresh()
+		return
+	if not ids.is_empty(): _refresh_slot_prices(ids, not options)
+	if options: _populate_equipment_picker()
