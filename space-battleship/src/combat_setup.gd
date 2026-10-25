@@ -19,12 +19,28 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 		"entry": {"key": key, "name": key, "slot": slot}, "row": row.duplicate(true),
 		"branch_factors": [], "external_factors": []}
 
-static func build_player(slots: Array, equipment_definitions: Dictionary, evolution: Dictionary,
+static func values(slots: Array, extra_levels: int, definitions: Dictionary, evolution: Dictionary, api,
+		ai: Dictionary, reactor: Dictionary, weapons: bool, defences: bool) -> Dictionary:
+	var result: Dictionary = {"ok": true, "weapons": {}, "defences": {}}
+	for slot in slots:
+		if str(slot.equipment_id).is_empty() or (slot.category == "weapon" and not weapons) or (slot.category == "defence" and not defences): continue
+		var row: Dictionary = definitions[str(slot.equipment_id)]
+		var value = Equipment.charged_base(row, definitions.armour, slot, extra_levels, evolution,
+			ai.equipment_durability if slot.category == "defence" else ai.weapon_damage,
+			reactor.defence if slot.category == "defence" else reactor.weapons, api)
+		if not value.ok: return value
+		var text = api.apply("to_display", [value.value])
+		if not text.ok: return text
+		result["defences" if slot.category == "defence" else "weapons"][str(slot.id)] = {"key": str(row.name), "generation": int(slot.generation), "base": text.text}
+	return result
+
+static func build_player(slots: Array, extra_levels: int, equipment_definitions: Dictionary, evolution: Dictionary,
 		api, player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary, rules: Dictionary,
 		resistance: float, motion: Dictionary, enhancement: Dictionary, effects: Dictionary, factors: Dictionary, drone_weapons: Array, seed_value: int) -> Dictionary:
-	var one = api.apply("from_decimal", ["1"])
-	if not one.ok:
-		return one
+	var base_values = values(slots, extra_levels, equipment_definitions, evolution, api,
+		{"weapon_damage": factors.ai_weapon, "equipment_durability": factors.ai_defence},
+		{"weapons": factors.reactor_weapon, "defence": factors.reactor_defence}, true, true)
+	if not base_values.ok: return base_values
 	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
 	var weapons: Array = []
 	var defences: Array = []
@@ -32,15 +48,7 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 		if str(slot.equipment_id).is_empty():
 			continue
 		var row: Dictionary = equipment_definitions[str(slot.equipment_id)]
-		var value = Equipment.charged_base(row, equipment_definitions.armour,
-			int(slot.paid_level), int(slot.extra_levels), evolution,
-			factors.ai_defence if slot.category == "defence" else factors.ai_weapon,
-			factors.reactor_defence if slot.category == "defence" else factors.reactor_weapon, api)
-		if not value.ok:
-			return value
-		var text = api.apply("to_display", [value.value])
-		if not text.ok:
-			return text
+		var text: Dictionary = {"text": base_values["defences" if slot.category == "defence" else "weapons"][str(slot.id)].base}
 		if row.name in ["armour", "shield"]:
 			defences.append({"entry": {"id": str(slot.id), "key": str(row.name), "generation": int(slot.generation)},
 				"layer": 0 if row.name == "shield" else 1, "type": int(row.dmgtype),
@@ -55,7 +63,7 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 			row_weapon.entry.id = str(slot.id)
 			row_weapon.entry.generation = int(slot.generation)
 			row_weapon.entry.paid_level = int(slot.paid_level)
-			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels)
+			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels) + extra_levels
 			weapons.append(row_weapon)
 	for drone in drone_weapons:
 		var external: Array = factors.external.duplicate()
@@ -125,7 +133,7 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 		"hit_radius": "missile_hit_radius", "chain_speed": "chain_carrier_speed"}
 	for key in motion_keys:
 		descriptor[key] = motion[motion_keys[key]]
-	return {"ok": true, "descriptor": descriptor}
+	return {"ok": true, "descriptor": descriptor, "values": base_values}
 
 static func ratio(current: Dictionary, previous_stage: Dictionary, field: String, point: int, points: int, api) -> Dictionary:
 	var previous = 1 if int(current.id) == 1 else previous_stage[field]
@@ -161,6 +169,7 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 			return result
 	var enemies: Array = []
 	var weapons: Array = []
+	var muzzles: Dictionary = {}
 	var tier: String = str(group.combatTier) if group.combatTier != null else "normal"
 	var leader: int = -1
 	for candidate in slots.size():
@@ -253,6 +262,7 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 				row_weapon.source = source
 				row_weapon.muzzle = positions[slot]
 				weapons.append(row_weapon)
+				muzzles["enemy:" + str(actor.uid) + ":" + str(mount)] = positions[slot]
 				mount += 1
 	return {"ok": true, "wave": {"enemies": enemies, "weapons": weapons, "final": final,
-		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": jewel_probability}, "next_uid": next_uid}
+		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": jewel_probability}, "next_uid": next_uid, "muzzles": muzzles}

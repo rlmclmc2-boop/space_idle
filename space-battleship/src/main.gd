@@ -5,8 +5,6 @@ var session
 var kernel
 var startup_error: String = ""
 var native_display
-var projectile_visuals: Array = []
-var particles: Array = []
 var beam_rows: Array = []
 var beam_instances: MultiMeshInstance2D
 var beam_material: ShaderMaterial
@@ -100,7 +98,7 @@ func _draw() -> void:
 	if beam_instances != null:
 		beam_instances.multimesh.visible_instance_count = 0
 	if native_display != null:
-		var prepared = native_display.prepare_flights([], Vector2.ZERO)
+		var prepared = native_display.prepare_flights(Vector2.ZERO)
 		native_display.draw_flights(prepared, Vector2.ZERO)
 		_upload_beams()
 		native_display.draw_contacts(contact_layer.get_canvas_item(), float(kernel.presentation_clock()), true)
@@ -177,47 +175,10 @@ func _setup_native_display() -> void:
 	instances.mesh = mesh
 	beam_instances.multimesh = instances
 	add_child(beam_instances)
-	native_display.configure_surface(kernel, get_canvas_item(), projectile_visuals, particles,
-		_prepare_projectile_flight, _draw_projectile_foreground_flight,
-		restore_native_laser_visuals, prepare_native_laser_display, _advance_projectile_visual_record)
+	native_display.configure_surface(kernel, get_canvas_item(), _collect_beams)
 
-func _prepare_projectile_flight(shot: Dictionary, index: Dictionary, offset: Vector2) -> Dictionary:
-	if shot.get("dead", false) or shot.get("await_target", false):
-		return {}
-	var serial: int = int(shot.get("serial", 0))
-	var visual: Dictionary = index.get(serial, {})
-	var lease = shot.get("motion_lease")
-	var point: Vector2 = lease.position() if lease != null else shot.get("launch_point", Vector2.ZERO)
-	if visual.is_empty():
-		var direction: Vector2 = lease.direction() if lease != null else shot.get("direction", Vector2.UP)
-		visual = native_display.create_visual(shot, direction.angle(), int(shot.get("mount", 0)), point, point, 0.0)
-		projectile_visuals.append(visual)
-		native_display.register_visual(shot, visual, projectile_visuals.size() - 1)
-	return {"shot": shot, "visual": visual, "pos": point + offset, "budget": 1}
-
-func _draw_projectile_foreground_flight(flight: Dictionary, _offset: Vector2) -> void:
-	var shot: Dictionary = flight.shot
-	if not shot.get("beam", false):
-		return
-	var target: Dictionary = shot.get("target", {})
-	if target.is_empty() or target.get("dead", false):
-		return
-	var origin: Vector2 = shot.get("launch_point", flight.pos)
-	var point := Vector2(float(target.get("x", origin.x)), float(target.get("y", origin.y)))
-	var age: float = float(shot.get("elapsed", 0.0))
-	var row: Dictionary = shot.get("weapon", {})
-	var ramp: float = float(row.get("para1", 1.0))
-	var charge: float = float(row.get("para3", 0.0))
-	var active: bool = int(shot.get("ticks", 0)) > 0
-	var power: float = clampf(maxf(0.0, age - charge) / ramp, 0.0, 1.0) if ramp > 0 else 1.0
-	beam_rows.append({"from": origin, "to": point, "power": power, "charge": -1.0 if active else clampf(age / maxf(charge, 0.001), 0.0, 1.0), "link": false})
-	var instance: Dictionary = shot.get("attack_instance", {})
-	var chain: Dictionary = instance.get("chain", {})
-	for link in chain.get("links", []):
-		var linked: Dictionary = link.get("target", {})
-		if link.get("broken", false) or linked.is_empty() or linked.get("dead", false):
-			continue
-		beam_rows.append({"from": point, "to": Vector2(float(linked.x), float(linked.y)), "power": power, "charge": -1.0 if active else 0.0, "link": true})
+func _collect_beams(segments: Array) -> void:
+	beam_rows.append_array(segments)
 
 func _upload_beams() -> void:
 	if beam_instances == null:
@@ -233,15 +194,6 @@ func _upload_beams() -> void:
 		mesh.set_instance_color(i, Color(delta.length(), -1.0, delta.angle(), 1.0 if row.link else 0.0))
 		mesh.set_instance_custom_data(i, Color(1.0, row.power, 0.0, row.charge))
 
-func _advance_projectile_visual_record(visual: Dictionary, dt: float) -> void:
-	visual.age = float(visual.get("age", 0.0)) + dt
-
-func restore_native_laser_visuals() -> void:
-	projectile_visuals.clear()
-
-func prepare_native_laser_display(_compatibility: bool) -> bool:
-	return true
-
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
@@ -251,7 +203,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"GalaxyUnavailable": "星系尚未开放", "UnknownPlanet": "尚未选择星球", "HyperspaceCrewReserved": "船员仍被超空间任务占用", "CrewAssignmentUnavailable": "岗位暂不可用", "CrewLocked": "船员尚未解锁", "CrewTargetOccupied": "目标人数已满", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewJobLocked": "岗位尚未开放", "NoChange": "没有变更", "InsufficientResources": "资源不足", "EquipmentSwitchLocked": "换装冷却尚未结束", "EquipmentLocked": "装备尚未解锁", "EnhancementLocked": "强化尚未解锁", "EnhancementBranchLocked": "强化分支尚未开放", "ReactorLocked": "反应炉尚未解锁", "ReactorModuleLocked": "反应炉模块尚未开放", "ResearchLocked": "科研前置条件未满足", "EvolutionMaterialLocked": "进化材料尚未开放", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
 		growth_status.text = "完成" if result.get("ok", false) else str(labels.get(reason, reason))
-		_refresh_growth_pickers())
+		)
 	return button
 
 func _row(parent: Control) -> HBoxContainer:
@@ -287,7 +239,9 @@ func _setup_growth_panel() -> void:
 	box.add_child(growth_status)
 	open.pressed.connect(func():
 		growth_panel.visible = not growth_panel.visible
-		if growth_panel.visible: _refresh_growth_pickers())
+		if growth_panel.visible:
+			_refresh_growth_pickers()
+			_refresh_world_pickers())
 	_caption(box, "槽位升级（换装备保留等级）")
 	slot_picker = OptionButton.new()
 	box.add_child(slot_picker)
@@ -295,16 +249,16 @@ func _setup_growth_panel() -> void:
 	upgrade_price = Label.new()
 	box.add_child(upgrade_price)
 	var upgrades := _row(box)
-	_command_button(upgrades, "+1", func(): return session.buy_levels(_selected_slot(), 1))
-	_command_button(upgrades, "+10", func(): return session.buy_levels(_selected_slot(), 10))
-	_command_button(upgrades, "MAX", func(): return session.buy_max_levels(_selected_slot()))
-	_command_button(upgrades, "全体 +1", func(): return session.buy_all_levels(1))
+	_command_button(upgrades, "+1", func(): return session.buy_levels(_selected_slot(), 1)).pressed.connect(_refresh_slot_prices)
+	_command_button(upgrades, "+10", func(): return session.buy_levels(_selected_slot(), 10)).pressed.connect(_refresh_slot_prices)
+	_command_button(upgrades, "MAX", func(): return session.buy_max_levels(_selected_slot())).pressed.connect(_refresh_slot_prices)
+	_command_button(upgrades, "全体 +1", func(): return session.buy_all_levels(1)).pressed.connect(func(): _refresh_slot_prices(true))
 	equipment_picker = OptionButton.new()
 	box.add_child(equipment_picker)
-	_command_button(box, "更换所选装备", func(): return session.equip_slot(_selected_slot(), str(equipment_picker.get_item_metadata(equipment_picker.selected))))
+	_command_button(box, "更换所选装备", func(): return session.equip_slot(_selected_slot(), str(equipment_picker.get_item_metadata(equipment_picker.selected)))).pressed.connect(_refresh_slot_prices)
 	ship_picker = OptionButton.new()
 	box.add_child(ship_picker)
-	_command_button(box, "更换舰体", func(): return session.change_ship(str(ship_picker.get_item_metadata(ship_picker.selected))))
+	_command_button(box, "更换舰体", func(): return session.change_ship(str(ship_picker.get_item_metadata(ship_picker.selected)))).pressed.connect(_refresh_growth_pickers)
 	_caption(box, "反应炉")
 	var reactor_buttons := _row(box)
 	_command_button(reactor_buttons, "购买 1 级", func(): return session.buy_reactor())
@@ -384,12 +338,12 @@ func _setup_growth_panel() -> void:
 	_caption(box, "连发第二节点 B 仅保留选择，不产生第二代连发。")
 	_setup_world_controls(box)
 	_refresh_growth_pickers()
+	_refresh_world_pickers()
 
 func _selected_slot() -> String:
 	return "" if slot_picker.selected < 0 else str(slot_picker.get_item_metadata(slot_picker.selected))
 
 func _refresh_growth_pickers() -> void:
-	_refresh_world_pickers()
 	if slot_picker == null:
 		return
 	var selected: String = _selected_slot()
@@ -411,18 +365,29 @@ func _refresh_growth_pickers() -> void:
 		if key == session.selected_ship: ship_picker.select(index)
 	_populate_equipment_picker()
 
-func _populate_equipment_picker() -> void:
-	if equipment_picker == null:
-		return
-	var id: String = _selected_slot()
-	var weapon: bool = id.begins_with("weapon:")
-	var quote = session.quote_levels(id, 1)
+func _refresh_slot_prices(all_slots: bool = false) -> void:
+	for slot in session.slots:
+		if not all_slots and slot.id != _selected_slot(): continue
+		for index in slot_picker.item_count:
+			if slot_picker.get_item_metadata(index) == slot.id:
+				slot_picker.set_item_text(index, ("武器 " if slot.category == "weapon" else "防具 ") + str(int(slot.index) + 1) + " · " + session.equipment_label(str(slot.equipment_id)) + " · Lv." + str(slot.paid_level))
+	_refresh_upgrade_price()
+
+func _refresh_upgrade_price() -> void:
+	var quote = session.quote_levels(_selected_slot(), 1)
 	var prices: PackedStringArray = []
 	if quote.ok:
 		for resource in quote.costs:
 			var value = session.amount_api.apply("to_display", [quote.costs[resource]])
 			prices.append(("铁 " if resource == "1" else "铀 " if resource == "2" else "进化材料 ") + str(value.text))
 	upgrade_price.text = "下一级：" + "，".join(prices) if quote.ok else "进化材料未开放或无法报价"
+
+func _populate_equipment_picker() -> void:
+	if equipment_picker == null:
+		return
+	var id: String = _selected_slot()
+	var weapon: bool = id.begins_with("weapon:")
+	_refresh_upgrade_price()
 	equipment_picker.clear()
 	equipment_picker.add_item("卸下")
 	equipment_picker.set_item_metadata(0, "")
@@ -455,20 +420,20 @@ func _setup_world_controls(box: Control) -> void:
 	box.add_child(world_mode_picker)
 	_command_button(box, "派遣所选船员", func():
 		var assignment: Dictionary = _picker_value(world_assignment_picker, {"kind": "", "target": ""})
-		return session.assign_crew(str(_picker_value(world_crew_picker)), assignment.kind, assignment.target, str(_picker_value(world_mode_picker, "1"))))
-	_command_button(box, "撤回所选船员", func(): return session.assign_crew(str(_picker_value(world_crew_picker)), "", ""))
+		return session.assign_crew(str(_picker_value(world_crew_picker)), assignment.kind, assignment.target, str(_picker_value(world_mode_picker, "1")))).pressed.connect(_refresh_world_pickers)
+	_command_button(box, "撤回所选船员", func(): return session.assign_crew(str(_picker_value(world_crew_picker)), "", "")).pressed.connect(_refresh_world_pickers)
 	world_planet_picker = OptionButton.new()
 	world_planet_picker.item_selected.connect(func(_index): _refresh_world_buildings())
 	box.add_child(world_planet_picker)
 	var automatic := _row(box)
 	_command_button(automatic, "开启自动探索", func(): return session.set_planet_automatic(str(_picker_value(world_planet_picker)), true))
 	_command_button(automatic, "本次完成后停止", func(): return session.set_planet_automatic(str(_picker_value(world_planet_picker)), false))
-	_command_button(box, "立即取消探索", func(): return session.cancel_planet(str(_picker_value(world_planet_picker))))
+	_command_button(box, "立即取消探索", func(): return session.cancel_planet(str(_picker_value(world_planet_picker)))).pressed.connect(_refresh_world_pickers)
 	world_building_picker = OptionButton.new()
 	box.add_child(world_building_picker)
 	var construction := _row(box)
-	_command_button(construction, "领取建筑", func(): return session.claim_planet_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker))))
-	_command_button(box, "刷新世界列表", func(): return {"ok": true})
+	_command_button(construction, "领取建筑", func(): return session.claim_planet_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker)))).pressed.connect(_refresh_world_pickers)
+	_command_button(box, "刷新世界列表", func(): return {"ok": true}).pressed.connect(_refresh_world_pickers)
 
 func _world_assignment(label: String, kind: String, target: String, previous: Dictionary) -> void:
 	var value := {"kind": kind, "target": target}

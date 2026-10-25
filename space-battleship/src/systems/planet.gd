@@ -22,6 +22,12 @@ static func duration(progress: Dictionary, definition: Dictionary) -> float:
 	var base: float = float(definition.baseTime)
 	return maxf(float(definition.minTime), base * base / (base + float(progress.exploration)))
 
+static func set_explorer(progress: Dictionary, definition: Dictionary, assigned: bool) -> Dictionary:
+	if not assigned:
+		cancel(progress)
+		return {"ok": true}
+	return start(progress, definition) if not progress.running else {"ok": true}
+
 static func start(progress: Dictionary, definition: Dictionary) -> Dictionary:
 	if progress.running:
 		return {"ok": false, "reason": "PlanetAlreadyExploring"}
@@ -103,7 +109,7 @@ static func buff(state: Dictionary, rows: Array, kind: String, target: String, o
 			maximum = maxf(maximum, float(row.value))
 	return maxf((add if has_add else 1.0 if has_multiply else 0.0) * multiply, maximum)
 
-static func factors(state: Dictionary, buildings: Dictionary, api) -> Dictionary:
+static func factors(state: Dictionary, buildings: Dictionary, rows: Array, api) -> Dictionary:
 	var equipment: Dictionary = api.apply("from_decimal", ["1"]).value
 	var refinery: Dictionary = equipment
 	for id in state:
@@ -111,21 +117,31 @@ static func factors(state: Dictionary, buildings: Dictionary, api) -> Dictionary
 			var row: Dictionary = buildings[key]
 			if state[id].buildings[key].state != "built" or row.type not in ["equipment", "refinery"]:
 				continue
-			var count = api.apply("from_decimal", [str(state[id].exploration)])
-			var scale = api.apply("from_decimal", [str(row.config1)])
-			count = api.apply("mul", [count.value, scale.value])
-			if not count.ok:
-				return count
-			count = api.apply("add", [api.apply("from_decimal", ["1"]).value, count.value])
-			var factor = api.apply("pow", [count.value, float(row.config2)])
-			if not factor.ok:
-				return factor
+			var entry: Dictionary = state[id].buildings[key]
+			var cached: Dictionary = entry.get("_factor", {})
+			var factor: Dictionary
+			if cached.get("exploration") == state[id].exploration:
+				factor = {"ok": true, "value": cached.value}
+			else:
+				var count = api.apply("from_decimal", [str(state[id].exploration)])
+				var scale = api.apply("from_decimal", [str(row.config1)])
+				count = api.apply("mul", [count.value, scale.value])
+				if not count.ok:
+					return count
+				count = api.apply("add", [api.apply("from_decimal", ["1"]).value, count.value])
+				factor = api.apply("pow", [count.value, float(row.config2)])
+				if not factor.ok:
+					return factor
+				entry._factor = {"exploration": state[id].exploration, "value": factor.value}
 			var total = api.apply("mul", [equipment if row.type == "equipment" else refinery, factor.value])
 			if not total.ok:
 				return total
 			if row.type == "equipment": equipment = total.value
 			else: refinery = total.value
-	return {"ok": true, "equipment": equipment, "refinery": refinery}
+	return {"ok": true, "equipment": equipment, "refinery": refinery,
+		"equipment_levels": int(buff(state, rows, "level_bonus", "equipment")),
+		"enhancement_levels": int(buff(state, rows, "level_bonus", "enhancement")),
+		"free_charge": buff(state, rows, "free_charge", "all")}
 
 static func experience_reward(definition: Dictionary, stage_ratio, galaxy_factor: Dictionary, api) -> Dictionary:
 	var earned = api.apply("from_decimal", [str(definition.baseExp)])

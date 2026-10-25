@@ -103,7 +103,7 @@ static func approved_mount_position(fit:Dictionary,point:Array)->Vector3:
 	return Vector3(fit.position)+Vector3(float(point[0])*mesh_size.x,0.08,float(point[1])*mesh_size.y)*scale
 
 static func battle_geometry(actors: Array, models: Dictionary, selected_ship: String, player_art: Dictionary,
-		player_dimensions: Vector2, player_geometry_height: float, player_muzzles: Dictionary,
+		player_dimensions: Vector2, player_geometry_height: float, player_muzzles: Dictionary, enemy_muzzles: Dictionary,
 		geometry: Dictionary, parameters: Dictionary) -> Dictionary:
 	var hulls: Array = []
 	var points := PackedVector2Array()
@@ -126,13 +126,7 @@ static func battle_geometry(actors: Array, models: Dictionary, selected_ship: St
 		points.append(point)
 		stationary.append(1)
 	var muzzles: Dictionary = player_muzzles.duplicate()
-	for actor in actors:
-		var entries: PackedStringArray = str(actor.equipment).replace("｛", "").replace("｝", "").replace("{", "").replace("}", "").replace("，", ",").split(",")
-		var mount: int = 0
-		for entry in entries:
-			for _mount in int(entry.split("|")[1]):
-				muzzles["enemy:" + str(actor.uid) + ":" + str(mount)] = Vector2(float(actor.x), float(actor.y))
-				mount += 1
+	muzzles.merge(enemy_muzzles)
 	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
 	return {"hulls": hulls, "points": points, "muzzles": muzzles, "stationary": stationary,
 		"player_point": player_point, "player_hull": transform_hull(models[selected_ship].hull, player_point, player_dimensions, 0.0)}

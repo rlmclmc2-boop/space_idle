@@ -117,7 +117,7 @@ void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
     ClassDB::register_class<FoundationAmount>();ClassDB::register_class<FoundationDisk>();
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceCombatKernel>();
-    ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceCombatFlightFrame>();ClassDB::register_class<SpaceCombatPresentation>();
+    ClassDB::register_class<SpaceCombatFlightFrame>();ClassDB::register_class<SpaceCombatPresentation>();
 }
 void terminate(ModuleInitializationLevel) {}
 extern "C" GDExtensionBool GDE_EXPORT space_native_init(GDExtensionInterfaceGetProcAddress get_proc,GDExtensionClassLibraryPtr library,GDExtensionInitialization *initialization) {

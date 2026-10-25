@@ -41,7 +41,7 @@ static func initial(definitions: Dictionary) -> Dictionary:
 		var random := RandomNumberGenerator.new()
 		random.seed = int(definition.slot_seed)
 		regions[key] = {"unlocked": false, "phase": "exploring", "nodes": nodes, "active_node": "", "attempt_elapsed": 0.0,
-			"income_elapsed": 0.0, "bag": [], "bag_round": 0, "special_pending": false, "rng_state": random.state}
+			"income_elapsed": 0.0, "_factors": {}, "bag": [], "bag_round": 0, "special_pending": false, "rng_state": random.state}
 	return {"ok": true, "regions": regions}
 
 static func _reachable(region: Dictionary) -> Array:
@@ -119,7 +119,9 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 					node.level = 1
 					node.state = "active"
 					region.active_node = ""
-					changed = true
+					var effect: String = str(buildings[node.building].effect_type)
+					region._factors.erase(effect)
+					changed = changed or effect not in ["iron_auto_ratio", "uranium_auto_ratio"]
 		elif region.phase == "exploring":
 			region.attempt_elapsed = float(region.attempt_elapsed) + dt
 			if float(region.attempt_elapsed) + 1e-9 >= float(row.build_interval):
@@ -144,7 +146,9 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 				if float(node.upgrade_remaining) <= 1e-9:
 					node.upgrade_remaining = 0.0
 					node.level = int(node.level) + 1
-					changed = true
+					var effect: String = str(buildings[node.building].effect_type)
+					region._factors.erase(effect)
+					changed = changed or effect not in ["iron_auto_ratio", "uranium_auto_ratio"]
 		if region.phase == "developing":
 			var active_upgrades: int = 0
 			var candidates: Array = []
@@ -168,35 +172,38 @@ static func advance(regions: Dictionary, definitions: Dictionary, buildings: Dic
 		region.rng_state = random.state
 	return {"ok": true, "changed": changed, "payments": payments}
 
-static func factors(regions: Dictionary, buildings: Dictionary, api) -> Dictionary:
+static func factors(regions: Dictionary, buildings: Dictionary, api, effects: Array) -> Dictionary:
 	var one: Dictionary = api.apply("from_decimal", ["1"]).value
 	var zero: Dictionary = api.apply("zero", []).value
-	var values: Dictionary = {"crew_exp": one, "equipment_value": one, "charge_max": one, "gem_fragment": one, "iron_auto_ratio": zero, "uranium_auto_ratio": zero}
+	var values: Dictionary = {}
+	for effect in effects: values[effect] = zero if effect in ["iron_auto_ratio", "uranium_auto_ratio"] else one
 	for key in regions:
-		var sums: Dictionary = {}
-		for node in regions[key].nodes.values():
-			if node.state != "active": continue
-			var row: Dictionary = buildings[node.building]
-			var base = api.apply("from_decimal", [str(row.base_effect)])
-			var level = api.apply("from_decimal", [str(node.level)])
-			var effect = api.apply("mul", [base.value, level.value])
-			if not effect.ok: return effect
-			var sum = api.apply("add", [sums.get(row.effect_type, zero), effect.value])
-			if not sum.ok: return sum
-			sums[row.effect_type] = sum.value
-		for effect in values:
+		var cached: Dictionary = regions[key]._factors
+		for effect in effects:
+			if not cached.has(effect):
+				var sum: Dictionary = zero
+				for node in regions[key].nodes.values():
+					if node.state != "active" or buildings[node.building].effect_type != effect: continue
+					var base = api.apply("from_decimal", [str(buildings[node.building].base_effect)])
+					var level = api.apply("from_decimal", [str(node.level)])
+					var value = api.apply("mul", [base.value, level.value])
+					if not value.ok: return value
+					value = api.apply("add", [sum, value.value])
+					if not value.ok: return value
+					sum = value.value
+				cached[effect] = sum
 			var result: Dictionary
 			if effect in ["iron_auto_ratio", "uranium_auto_ratio"]:
-				result = api.apply("add", [values[effect], sums.get(effect, zero)])
+				result = api.apply("add", [values[effect], cached[effect]])
 			else:
-				var factor = api.apply("add", [one, sums.get(effect, zero)])
+				var factor = api.apply("add", [one, cached[effect]])
 				result = api.apply("mul", [values[effect], factor.value])
 			if not result.ok: return result
 			values[effect] = result.value
 	return {"ok": true, "values": values}
 
 static func income(regions: Dictionary, buildings: Dictionary, production_rates: Dictionary, seconds: float, api) -> Dictionary:
-	var growth = factors(regions, buildings, api)
+	var growth = factors(regions, buildings, api, ["iron_auto_ratio", "uranium_auto_ratio"])
 	if not growth.ok: return growth
 	var duration = api.apply("from_decimal", [str(seconds)])
 	if not duration.ok: return duration

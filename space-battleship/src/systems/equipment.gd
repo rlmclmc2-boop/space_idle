@@ -35,9 +35,16 @@ static func growth(base, rate: float, effective_level: int, amount_api) -> Dicti
 	var five = amount_api.apply("from_decimal", ["5"])
 	return amount_api.apply("add", [quantity.value, five.value])
 
-static func charged_base(row: Dictionary, armour_row: Dictionary, paid_level: int, extra_levels: int, evolution: Dictionary, ai_factor: Dictionary, reactor_factor: Dictionary, amount_api) -> Dictionary:
+static func charged_base(row: Dictionary, armour_row: Dictionary, slot: Dictionary, extra_bonus: int, evolution: Dictionary, ai_factor: Dictionary, reactor_factor: Dictionary, amount_api) -> Dictionary:
+	var paid_level: int = int(slot.paid_level)
+	if int(slot.extra_levels) > 9223372036854775807 - extra_bonus:
+		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+	var extra_levels: int = int(slot.extra_levels) + extra_bonus
 	if paid_level < 1 or extra_levels < 0 or paid_level > 9223372036854775807 - extra_levels:
 		return {"ok": false, "reason": "InvalidEquipmentLevel"}
+	var inputs: Array = [row.name, paid_level, extra_levels, ai_factor, reactor_factor]
+	var cached: Dictionary = slot.get("_charged", {})
+	if cached.get("inputs", []) == inputs: return {"ok": true, "value": cached.value}
 	var level: int = paid_level + extra_levels
 	var defensive: bool = row.name in ["armour", "shield"]
 	var source: Dictionary = armour_row if row.name == "shield" else row
@@ -84,7 +91,9 @@ static func charged_base(row: Dictionary, armour_row: Dictionary, paid_level: in
 	result = amount_api.apply("mul", [result.value, reactor_factor])
 	if not result.ok:
 		return result
-	return amount_api.apply("ceil", [result.value])
+	result = amount_api.apply("ceil", [result.value])
+	if result.ok: slot._charged = {"inputs": inputs, "value": result.value}
+	return result
 
 # One equipment policy for attributes, individual prices, batch purchases and MAX.
 static func _price(base, rate: float, target: int, api) -> Dictionary:

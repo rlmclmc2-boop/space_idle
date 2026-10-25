@@ -531,14 +531,26 @@ func set_construction_height(node: Node, height: float) -> void:
 
 func refresh() -> void:
 	if preparing or region==null or not is_visible_in_tree():return
-	refresh_explored()
+	var changed: bool = lane_states.is_empty()
+	var revealed: bool = false
+	for node_id in region.nodes:
+		var slot: Dictionary = region.nodes[node_id]
+		var phase: String = visual_state(slot)
+		var path: String = visual_path(slot) if phase != "empty" else "empty"
+		var previous: Array = slot_snapshots.get(int(node_id), [])
+		if previous == [phase, int(slot.level), path]: continue
+		revealed = revealed or (not previous.is_empty() and previous[0] == "empty" and phase != "empty")
+		refresh_slot(int(node_id))
+		changed = true
+	if revealed: refresh_explored()
+	if not changed: return
 	activity.clear()
 	var core_ring=core.find_child("ActivityRing",true,false)
 	if core_ring is Node3D:activity.append(core_ring)
 	var next_lane_states: Array=[]
 	for node_id in region.nodes:
 		var slot: Dictionary = region.nodes[node_id]
-		var building := refresh_slot(int(node_id))
+		var building=slot_nodes[int(node_id)].get_node_or_null("Building")
 		if building!=null:
 			var part=building.find_child("ActivityRing",true,false)
 			if part is Node3D and visual_state(slot)!="constructing":activity.append(part)
@@ -546,8 +558,8 @@ func refresh() -> void:
 	if next_lane_states!=lane_states:
 		refresh_city_routes()
 		lane_states=next_lane_states
-	layout()
-	sync_transports()
+		sync_transports()
+	request_visual_frame()
 func desired_transport_count(built_count: int) -> int:
 	return mini(maxi(0,int(setting("max_transport_ships",12))),ceili(maxi(0,built_count)/maxf(1,setting("transport_buildings_per_ship",3))))
 func sync_transports() -> void:
