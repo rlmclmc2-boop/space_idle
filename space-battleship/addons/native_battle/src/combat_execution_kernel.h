@@ -294,7 +294,6 @@ class SpaceCombatKernel : public RefCounted {
     int64_t laser_view_revision = 0;
     size_t compact_laser_count = 0;
     Dictionary player_row;
-    Dictionary buffer_rows, loss_rows, defence_time_rows;
     Vector2 player_point;
     PackedVector2Array player_collision_hull;
     double target_slot_center = 0, battle_width = 0, battle_height = 0;
@@ -1434,11 +1433,6 @@ class SpaceCombatKernel : public RefCounted {
         player_row["max_shield"] = wire(capacity(0));
         player_row["armour"] = wire(player_hp);
         player_row["shield"] = wire(player_shield);
-        for (size_t i = 0; i < defences.size(); ++i) {
-            buffer_rows[int64_t(i)] = wire(defences[i].buffer);
-            loss_rows[int64_t(i)] = wire(defences[i].loss);
-            defence_time_rows[int64_t(i)] = defence_time - defences[i].last_hit;
-        }
     }
     void finish_player_hit() {
         ++hit_count;
@@ -2300,11 +2294,8 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("input_player_point", "point"), &SpaceCombatKernel::input_player_point);
         ClassDB::bind_method(D_METHOD("input_player_hull", "hull"), &SpaceCombatKernel::input_player_hull);
         ClassDB::bind_method(D_METHOD("enemy_views"), &SpaceCombatKernel::enemy_views);
-        ClassDB::bind_method(D_METHOD("buffer_view"), &SpaceCombatKernel::buffer_view);
         ClassDB::bind_method(D_METHOD("deferred_total"), &SpaceCombatKernel::deferred_total_text);
         ClassDB::bind_method(D_METHOD("set_compact_laser_births", "enabled"), &SpaceCombatKernel::set_compact_laser_births);
-        ClassDB::bind_method(D_METHOD("loss_view"), &SpaceCombatKernel::loss_view);
-        ClassDB::bind_method(D_METHOD("defence_time_view"), &SpaceCombatKernel::defence_time_view);
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
         ClassDB::bind_method(D_METHOD("presentation_projectile_rows"), &SpaceCombatKernel::presentation_projectile_rows);
         ClassDB::bind_method(D_METHOD("presentation_membership"), &SpaceCombatKernel::presentation_membership);
@@ -2514,9 +2505,6 @@ class SpaceCombatKernel : public RefCounted {
         weapons.clear();
         defences.clear();
         debts.clear();
-        buffer_rows = Dictionary();
-        loss_rows = Dictionary();
-        defence_time_rows = Dictionary();
         actor_rows = Array();
         actor_rows.set_typed(Variant::DICTIONARY, StringName(), Variant());
         compact_laser_births = false; compact_laser_count = 0; laser_view_revision = 0; compatibility_flights.clear();
@@ -3026,15 +3014,6 @@ class SpaceCombatKernel : public RefCounted {
         for (const auto &due : debts)
             total += due.second[0] + due.second[1];
         return total;
-    }
-    Dictionary buffer_view() const {
-        return buffer_rows;
-    }
-    Dictionary loss_view() const {
-        return loss_rows;
-    }
-    Dictionary defence_time_view() const {
-        return defence_time_rows;
     }
     Array enemy_views() const {
         return actor_rows;

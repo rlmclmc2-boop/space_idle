@@ -62,9 +62,9 @@ static func factor(state: Dictionary, definitions: Dictionary, effect: String, r
 			return value
 	return value
 
-static func refresh_income(state: Dictionary, peak_rates: Dictionary, investment_rates: Dictionary, rules: Dictionary, api, income_changed: bool, automatic_due: bool) -> Dictionary:
+static func refresh_income(state: Dictionary, definitions: Dictionary, peak_rates: Dictionary, investment_rates: Dictionary, rules: Dictionary, api, income_changed: bool, automatic_due: bool) -> Dictionary:
 	if not income_changed and not automatic_due:
-		return {"ok": true, "state": state}
+		return {"ok": true, "state": state, "factors_changed": false}
 	var next: Dictionary = state.duplicate(true)
 	var zero: Dictionary = api.apply("zero", []).value
 	if income_changed:
@@ -86,7 +86,23 @@ static func refresh_income(state: Dictionary, peak_rates: Dictionary, investment
 			if not rate.ok:
 				return rate
 			next.investment[resource] = rate.value
-	return {"ok": true, "state": next}
+	var factors_changed: bool = false
+	# Only unification consumes peaks. Compare the actual factors used by Session,
+	# keeping peak history even when its effective multipliers stay unchanged.
+	if next.peaks != state.peaks and int(state.levels.get("unification", 0)) > 0:
+		var effects: PackedStringArray = str(definitions.unification.effect).split(",")
+		for effect in ["weapon_damage", "equipment_durability", "iron_income", "uranium_income", "fragment_income"]:
+			if effect not in effects: continue
+			var before = factor(state, definitions, effect, rules, api)
+			var after = factor(next, definitions, effect, rules, api)
+			for result in [before, after]:
+				if not result.ok: return result
+			var compared = api.apply("compare", [before.value, after.value])
+			if not compared.ok: return compared
+			if compared.scalar != 0:
+				factors_changed = true
+				break
+	return {"ok": true, "state": next, "factors_changed": factors_changed}
 
 static func select_shortest(state: Dictionary, definitions: Dictionary, gates: Dictionary, api) -> Dictionary:
 	if not str(state.current).is_empty():

@@ -724,11 +724,11 @@ func _refresh_growth() -> bool:
 			_fail(str(query.get("error", "IncomeQueryFailed")))
 			return false
 		investment = query.rates
-	var refreshed = Research.refresh_income(research_progress, peaks, investment, rules, amount_api, income_dirty, automatic_due)
+	var refreshed = Research.refresh_income(research_progress, research_definitions, peaks, investment, rules, amount_api, income_dirty, automatic_due)
 	if not refreshed.ok:
 		_fail(str(refreshed.get("error", "ResearchIncomeFailed")))
 		return false
-	combat_config_dirty = combat_config_dirty or refreshed.state.peaks != research_progress.peaks
+	combat_config_dirty = combat_config_dirty or refreshed.factors_changed
 	research_progress = refreshed.state
 	income_dirty = false
 	if combat_config_dirty:
@@ -885,11 +885,39 @@ func quote_levels(slot_id: String, count: int) -> Dictionary:
 			return Equipment.quote_levels(row, int(slot.paid_level), count, evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached), amount_api)
 	return {"ok": false, "reason": "UnknownSlot"}
 
+func _quote_affordable_levels(slot: Dictionary, balances: Dictionary) -> Dictionary:
+	var row: Dictionary = equipment_definitions.laser if slot.category == "weapon" else equipment_definitions.armour
+	var level: int = int(slot.paid_level)
+	var material_unlocked: bool = int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached)
+	var limit: int = 9223372036854775807 - level
+	if limit <= 0:
+		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+	var low: int = 0
+	var high: int = 1
+	while high <= limit:
+		var quote = Equipment.quote_levels(row, level, high, evolution, material_unlocked, amount_api)
+		if not quote.ok or not Economy.can_pay(balances, quote.costs, amount_api).ok:
+			break
+		low = high
+		if high == limit:
+			return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+		high = limit if high > limit / 2 else high * 2
+	while low + 1 < high:
+		@warning_ignore("integer_division")
+		var middle: int = low + (high - low) / 2
+		var quote = Equipment.quote_levels(row, level, middle, evolution, material_unlocked, amount_api)
+		if quote.ok and Economy.can_pay(balances, quote.costs, amount_api).ok:
+			low = middle
+		else:
+			high = middle
+	if low == 0:
+		return {"ok": false, "reason": "NoChange"}
+	return Equipment.quote_levels(row, level, low, evolution, material_unlocked, amount_api)
+
 func buy_max_levels(slot_id: String) -> Dictionary:
 	for slot in slots:
 		if str(slot.id) == slot_id:
-			var row: Dictionary = equipment_definitions.laser if slot.category == "weapon" else equipment_definitions.armour
-			var quote = Equipment.quote_max(row, int(slot.paid_level), wallet, evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached), amount_api)
+			var quote = _quote_affordable_levels(slot, wallet)
 			return buy_levels(slot_id, int(quote.count)) if quote.ok else quote
 	return {"ok": false, "reason": "UnknownSlot"}
 
@@ -905,7 +933,7 @@ func buy_all_levels(count: int, maximum: bool = false) -> Dictionary:
 			if slot.category != category or int(slot.index) >= int(ship.para_1 if category == "weapon" else ship.para_2):
 				continue
 			var row: Dictionary = equipment_definitions.laser if category == "weapon" else equipment_definitions.armour
-			var quote = Equipment.quote_max(row, int(slot.paid_level), balances, evolution, material_unlocked, amount_api) if maximum else Equipment.quote_levels(row, int(slot.paid_level), count, evolution, material_unlocked, amount_api)
+			var quote = _quote_affordable_levels(slot, balances) if maximum else Equipment.quote_levels(row, int(slot.paid_level), count, evolution, material_unlocked, amount_api)
 			var paid = Economy.payment(balances, quote.costs, amount_api) if quote.ok else quote
 			if paid.ok:
 				balances = paid.wallet
