@@ -40,6 +40,9 @@ var pending_seconds: float = 0.0
 var wall_time: float = 0.0
 var game_time: float = 0.0
 
+func _init() -> void:
+	income_factors.make_read_only()
+
 func initialize(path: String, combat_seed: int) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	if battle != null:
@@ -201,7 +204,9 @@ func _fail(reason: String) -> Dictionary:
 	return {"ok": false, "reason": reason}
 
 func economy_display_context() -> Dictionary:
-	return {"wall": wall_time, "game": game_time, "factors": income_factors}
+	var context := {"wall": wall_time, "game": game_time, "factors": income_factors}
+	context.make_read_only()
+	return context
 
 func reactor_inputs() -> Dictionary:
 	return {"capacity": world_factors.capacity, "free_charge": world_factors.free_charge}
@@ -239,6 +244,7 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	setup.income_factors.iron = ai["values"].iron_income
 	setup.income_factors.uranium = ai["values"].uranium_income
 	setup.income_factors.jewel = ai["values"].fragment_income
+	setup.income_factors.make_read_only()
 	setup.research_factors = ai["values"]
 	setup.reactor_factors = reactor.factors
 	return setup
@@ -418,7 +424,11 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 	if result.ok:
 		if reactor_prepared: reactor_system.accept()
 		reactor_factors = reactor.factors
-		income_factors.condensation = reactor.factors.condensation
+		if income_factors.condensation != reactor.factors.condensation:
+			var income: Dictionary = income_factors.duplicate()
+			income.condensation = reactor.factors.condensation
+			income.make_read_only()
+			income_factors = income
 	return result
 
 func _publish_research() -> Dictionary:
@@ -428,9 +438,13 @@ func _publish_research() -> Dictionary:
 	var updated = _publish_native_values(values, reactor_factors, "growth")
 	if not updated.ok: return updated
 	research_factors = values
-	income_factors.iron = values.iron_income
-	income_factors.uranium = values.uranium_income
-	income_factors.jewel = values.fragment_income
+	if income_factors.iron != values.iron_income or income_factors.uranium != values.uranium_income or income_factors.jewel != values.fragment_income:
+		var income: Dictionary = income_factors.duplicate()
+		income.iron = values.iron_income
+		income.uranium = values.uranium_income
+		income.jewel = values.fragment_income
+		income.make_read_only()
+		income_factors = income
 	return {"ok": true}
 
 func publish_reactor(factors: Dictionary, next_wallet, kind: String) -> Dictionary:
@@ -439,7 +453,11 @@ func publish_reactor(factors: Dictionary, next_wallet, kind: String) -> Dictiona
 	if not updated.ok: return updated
 	reactor_factors = factors
 	if next_wallet != null: economy.accept_budget(next_wallet)
-	income_factors.condensation = factors.condensation
+	if income_factors.condensation != factors.condensation:
+		var income: Dictionary = income_factors.duplicate()
+		income.condensation = factors.condensation
+		income.make_read_only()
+		income_factors = income
 	return {"ok": true}
 
 func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}) -> Dictionary:
@@ -451,9 +469,13 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 	if not world.ok: return _fail(str(world.get("error", "WorldAssemblyFailed")))
 	var previous: Dictionary = world_factors
 	world_factors = world
-	income_factors.refinery = world.refinery
-	income_factors.crew_fragments = world.fragments
-	income_factors.galaxy_fragments = world.galaxy_fragments
+	if income_factors.refinery != world.refinery or income_factors.crew_fragments != world.fragments or income_factors.galaxy_fragments != world.galaxy_fragments:
+		var income: Dictionary = income_factors.duplicate()
+		income.refinery = world.refinery
+		income.crew_fragments = world.fragments
+		income.galaxy_fragments = world.galaxy_fragments
+		income.make_read_only()
+		income_factors = income
 	research_speed = world.research
 	galaxy_crew_experience = world.crew_experience
 	var result: Dictionary = {"ok": true}
