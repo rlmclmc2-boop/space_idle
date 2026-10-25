@@ -670,7 +670,7 @@ func _growth_setup(next_slots: Array, next_ship: String = "", contributions = nu
 	setup.equipped_drones = next_drones
 	return setup
 
-func _commit_growth(next_slots: Array, 
+func _commit_growth(next_slots: Array,
 		next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null) -> Dictionary:
 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != selected_ship) or contributions != null
 	if not geometry_changed:

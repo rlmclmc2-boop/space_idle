@@ -217,4 +217,3 @@ static func _purchase(state: Dictionary, count: int, automatic: bool, parameters
 	next.level = int(next.level) + count
 	if automatic: next._distribute = true
 	return {"ok": true, "state": next, "costs": quoted.costs}
-

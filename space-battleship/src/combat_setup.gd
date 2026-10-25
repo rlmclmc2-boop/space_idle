@@ -16,7 +16,7 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 		"charge": float(row.para3) if kind == 3 else 0.0,
 		"ramp": float(row.para1) if kind == 3 else 1.0,
 		"maximum": float(row.para2) if kind == 3 else 1.0,
-		"entry": {"key": key, "name": key, "slot": slot}, "row": row.duplicate(true),
+		"entry": {"key": key, "name": key, "slot": slot},
 		"branch_factors": [], "external_factors": []}
 
 static func values(slots: Array, extra_levels: int, definitions: Dictionary, evolution: Dictionary, api,
