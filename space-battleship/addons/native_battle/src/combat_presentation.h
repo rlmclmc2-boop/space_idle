@@ -659,9 +659,8 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
     ++old_advances;
     Ref<SpaceCombatKernel> kernel=surface->get("kernel");
     Array shots=kernel.is_valid()?kernel->presentation_projectile_rows():Array(),visuals=surface->get("projectile_visuals");
-    Dictionary active;int density=0;
-    for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;if(!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile")++density;}
-    surface->set("missile_density",density);
+    Dictionary active;
+    for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;}
     auto inverse=[this](Vector2 p)->Vector2 {
         if(logical_coordinates)return p;
         constexpr double offset=110.0/(1<<20);

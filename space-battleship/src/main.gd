@@ -14,7 +14,6 @@ var retained_contacts_enabled: bool = true
 var accelerated_visual_mode: bool = false
 var projectile_visuals: Array = []
 var particles: Array = []
-var missile_density: int = 0
 var beam_rows: Array = []
 var beam_instances: MultiMeshInstance2D
 var beam_material: ShaderMaterial
@@ -31,7 +30,6 @@ var allocation_input: LineEdit
 var effect_picker: OptionButton
 var branch_node: SpinBox
 var branch_choice: OptionButton
-var investment_inputs: Dictionary = {}
 const EFFECT_IDS := ["proficiency", "repeat", "critical", "adaptation", "memory", "deferred"]
 const EFFECT_NAMES := ["熟练", "连发", "暴击", "适应", "记忆材料", "延迟伤害"]
 
@@ -338,7 +336,6 @@ func _setup_growth_panel() -> void:
 		input.text = "0"
 		input.custom_minimum_size.x = 140
 		investment.add_child(input)
-		investment_inputs[resource] = input
 		_command_button(investment, "设置投入", func():
 			var quantity = session.amount_api.apply("from_decimal", [input.text])
 			return session.set_research_investment(resource, quantity.value) if quantity.ok else quantity)

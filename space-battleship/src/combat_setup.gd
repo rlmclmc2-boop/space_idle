@@ -57,9 +57,9 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels)
 			weapons.append(row_weapon)
 	weapons.append_array(drone_weapons)
-	var descriptor := {"player": {"armour": "0", "shield": "0", "x": player_point.x, "y": player_point.y},
+	var descriptor := {"player": {"x": player_point.x, "y": player_point.y},
 		"enemies": [], "weapons": weapons, "defences": defences,
-		"requires_module_defense": true, "requires_drop_rules": true, "drop_rules_compiled": true,
+		"requires_drop_rules": true, "drop_rules_compiled": true,
 		"resistance": resistance, "rng_state": seed_value,
 		"target_slot_center": float(geometry.target_slot_center), "battle_width": float(geometry.view_width), "battle_height": float(geometry.view_height),
 		"attack_counter": 0, "incoming_counter": 0, "counter_level": int(effects.level),

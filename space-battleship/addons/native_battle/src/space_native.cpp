@@ -61,12 +61,7 @@ struct MotionArena {
     }
 };
 bool same(const Variant &a, const Variant &b) { return UtilityFunctions::is_same(a, b); }
-bool chain_hp_positive(const Variant &hp) {
-    // GrowthNumber.compare(hp,0), including its mantissa/exponent authority.
-    return hp.get_type()==Variant::DICTIONARY ? double(Dictionary(hp)["m"])!=0.0 : double(hp)>0.0;
-}
 Vector2 position(const Motion &m) { return Vector2(m.x, m.y); }
-Vector2 movement(const Motion &m, double dt) { return (m.direction * m.speed) * dt; }
 Vector2 battle_point(Vector2 p) { return Vector2(p.x, double(p.y) + Math::smoothstep(220.0, 420.0, double(p.y)) * 220.0); }
 Vector2 inverse_battle_point(Vector2 p) {
     constexpr double offset=110.0/(1<<20);
@@ -99,11 +94,6 @@ public:
     double get_orphan() const { return motion().orphan; }
     Vector2 get_last_aim() const { return motion().last_aim; }
     bool has_missile_fields() const { return motion().missile_fields; }
-    void set_position(Vector2 p) { motion().x = p.x; motion().y = p.y; }
-    void set_direction(Vector2 v) { motion().direction = v; }
-    void set_speed(double v) { motion().speed = v; }
-    void set_age(double v) { motion().age = v; }
-    void set_orphan(double v) { motion().orphan = v; }
 };
 Motion &SpaceMotionLease::motion() const { return arena->motions[slot]; }
 SpaceMotionLease::~SpaceMotionLease() { if (arena) arena->release(slot, generation); }
@@ -117,11 +107,6 @@ void SpaceMotionLease::_bind_methods() {
     ClassDB::bind_method(D_METHOD("orphan"),&SpaceMotionLease::get_orphan);
     ClassDB::bind_method(D_METHOD("last_aim"),&SpaceMotionLease::get_last_aim);
     ClassDB::bind_method(D_METHOD("missile_fields"),&SpaceMotionLease::has_missile_fields);
-    ClassDB::bind_method(D_METHOD("set_position","value"),&SpaceMotionLease::set_position);
-    ClassDB::bind_method(D_METHOD("set_direction","value"),&SpaceMotionLease::set_direction);
-    ClassDB::bind_method(D_METHOD("set_speed","value"),&SpaceMotionLease::set_speed);
-    ClassDB::bind_method(D_METHOD("set_age","value"),&SpaceMotionLease::set_age);
-    ClassDB::bind_method(D_METHOD("set_orphan","value"),&SpaceMotionLease::set_orphan);
 }
 #include "combat_execution_kernel.h"
 #include "combat_presentation.h"

@@ -42,7 +42,7 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
         if(bool(shot.get("dead",false))){forget_visual(shot.get("serial",Variant()),shot);visuals.remove_at(i);}
     }
     frame.flights.resize(kernel->flights.size());frame.order.clear();frame.background.clear();
-    frame.order.reserve(kernel->active.size());int density=0;
+    frame.order.reserve(kernel->active.size());
     for(size_t id:kernel->active) {
         const auto &source=kernel->flights[id];if(!source.live)continue;
         auto &f=frame.flights[id];
@@ -62,7 +62,6 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
         frame.order.push_back(id);f.draw=true;
         const Motion &m=f.motion->motion();Vector2 logical=position(m);
         const bool missile=!f.hostile&&f.key=="missile";
-        if(missile)++density;
         if(f.render_kind==0&&f.fixed) {
             // Straight motion has fixed birth velocity. Re-anchor only on actual
             // velocity changes, not every display. Shader clock is simulation time.
@@ -95,7 +94,6 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
         }
         if(f.beam||f.hostile||missile||f.render_kind<0)frame.background.push_back(id);
     }
-    surface->set("missile_density",density);
     return true;
 }
 void SpaceCombatPresentation::prepare_retained(Object *surface,Vector2 offset) {
