@@ -128,10 +128,11 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 	var zero: Dictionary = api.apply("zero", []).value
 	var progress: Dictionary = next.work.get(key, zero)
 	var remaining: float = dt
-	while remaining > 1e-12:
+	while remaining > 0.0:
 		var piece: float = remaining
 		var speed: float = (float(int(next.levels.get("singularity", 0))) + float(rules.research_ai_divisor)) / float(rules.research_ai_divisor)
 		var paying: Dictionary = {}
+		var exhausted: Array = []
 		var full_dt = api.apply("from_decimal", [str(remaining)])
 		for resource in ["1", "2"]:
 			var rate: Dictionary = next.investment.get(resource, zero)
@@ -144,7 +145,13 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 			var ratio = api.apply("to_ratio", [balance, wanted.value])
 			if not ratio.ok:
 				return ratio
-			piece = minf(piece, remaining * ratio.scalar)
+			if api.apply("compare", [balance, wanted.value]).scalar <= 0:
+				var affordable: float = remaining * ratio.scalar
+				if affordable < piece:
+					piece = affordable
+					exhausted.clear()
+				if affordable == piece:
+					exhausted.append(resource)
 			var log_rate = api.apply("log10", [rate])
 			if not log_rate.ok:
 				return log_rate
@@ -170,7 +177,10 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 			var left = api.apply("sub_nonnegative", [balances.get(resource, zero), cost.value])
 			if not left.ok:
 				return left
-			balances[resource] = left.value
+			# The Amount comparison owns this exhaustion boundary. A duration
+			# may round to zero as a float; consume the limiting balance once
+			# and recompute the remaining step without its acceleration.
+			balances[resource] = zero if not completed and resource in exhausted else left.value
 		var added = api.apply("add", [progress, work.value])
 		if not added.ok:
 			return added
@@ -182,7 +192,5 @@ static func advance(state: Dictionary, wallet: Dictionary, definitions: Dictiona
 			next.completed_unread[key] = true
 			return {"ok": true, "state": next, "wallet": balances, "completed": true}
 		remaining = maxf(0.0, remaining - piece)
-		if piece <= 1e-12:
-			return {"ok": false, "reason": "ResearchTimeResolutionExceeded"}
 	next.work[key] = progress
 	return {"ok": true, "state": next, "wallet": balances, "completed": false}
