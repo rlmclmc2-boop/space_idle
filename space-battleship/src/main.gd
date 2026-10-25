@@ -1,4 +1,5 @@
 extends Node2D
+const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
 const Session = preload("res://src/game_session.gd")
@@ -25,8 +26,7 @@ var slot_picker: OptionButton
 var equipment_picker: OptionButton
 var ship_picker: OptionButton
 var research_panel
-var module_picker: OptionButton
-var allocation_input: LineEdit
+var reactor_panel
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -254,25 +254,8 @@ func _setup_growth_panel() -> void:
 	ship_picker = OptionButton.new()
 	box.add_child(ship_picker)
 	_command_button(box, "更换舰体", func(): return session.change_ship(str(ship_picker.get_item_metadata(ship_picker.selected))))
-	_caption(box, "反应炉")
-	var reactor_buttons := _row(box)
-	_command_button(reactor_buttons, "购买 1 级", func(): return session.buy_reactor())
-	_command_button(reactor_buttons, "平均分配", func(): return session.distribute_reactor())
-	var allocation := _row(box)
-	module_picker = OptionButton.new()
-	var module_names := ["武器", "防御", "炼铁", "碎片凝聚"]
-	var modules: PackedStringArray = str(session.parameters.reactorModules).split(",")
-	for i in modules.size():
-		module_picker.add_item(module_names[i])
-		module_picker.set_item_metadata(i, modules[i])
-	allocation.add_child(module_picker)
-	allocation_input = LineEdit.new()
-	allocation_input.placeholder_text = "分配能源"
-	allocation_input.custom_minimum_size.x = 120
-	allocation.add_child(allocation_input)
-	_command_button(allocation, "分配", func():
-		var quantity = session.amount_api.apply("from_decimal", [allocation_input.text])
-		return session.allocate_reactor(str(module_picker.get_item_metadata(module_picker.selected)), quantity.value) if quantity.ok else quantity)
+	reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.publish_reactor, _command_button)
+	box.add_child(reactor_panel)
 	research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
 	box.add_child(EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
@@ -488,8 +471,7 @@ func _refresh_world_status(changes: Dictionary = {}) -> void:
 func _refresh_tech_choices(modules_changed: bool = true) -> void:
 	research_panel.refresh_choices()
 	if modules_changed:
-		var modules: Array = session.reactor_modules()
-		for index in module_picker.item_count: module_picker.set_item_disabled(index, str(module_picker.get_item_metadata(index)) not in modules)
+		reactor_panel.refresh_choices()
 
 func _flush_display_changes() -> void:
 	var changes: Dictionary = session.take_display_changes()

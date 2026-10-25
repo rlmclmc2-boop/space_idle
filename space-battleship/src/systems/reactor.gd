@@ -1,9 +1,67 @@
 extends RefCounted
 
-static func initial(parameters: Dictionary) -> Dictionary:
+var _state: Dictionary
+var _parameters: Dictionary = {}
+var _api
+
+func _init(parameters: Dictionary, api) -> void:
+	for key in parameters:
+		if str(key).begins_with("reactor"): _parameters[key] = parameters[key]
+	_api = api
+	_state = _initial(_parameters)
+
+func module_ids() -> PackedStringArray:
+	return str(_parameters.reactorModules).split(",")
+
+func enabled_modules(inputs: Dictionary) -> Array:
+	var enabled: Array = []
+	if inputs.available:
+		for module in module_ids():
+			if module != "condensation" or inputs.condensation: enabled.append(module)
+	return enabled
+
+func modules_changed(inputs: Dictionary) -> bool:
+	return _state.get("_enabled", []) != enabled_modules(inputs)
+
+# The candidate carries module-private state until native publication succeeds.
+func prepare(inputs: Dictionary) -> Dictionary:
+	return _evaluate(_state, _parameters, enabled_modules(inputs), _api, inputs.capacity, inputs.free_charge)
+
+func accept(candidate: Dictionary) -> void:
+	if candidate.has("state"): _state = candidate.state
+
+func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: String, publish: Callable) -> Dictionary:
+	var candidate = _evaluate(next, _parameters, enabled_modules(inputs), _api, inputs.capacity, inputs.free_charge)
+	if not candidate.ok: return candidate
+	var result: Dictionary = publish.call(candidate.factors, costs, kind)
+	if result.ok: _state = candidate.state
+	return result
+
+func purchase(count: int, automatic: bool, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not inputs.available: return {"ok": false, "reason": "ReactorLocked"}
+	var changed = _purchase(_state, count, automatic, _parameters, _api)
+	if not changed.ok: return changed
+	return _submit(changed.state, inputs, changed.costs, "growth", publish)
+
+func allocate_text(module: String, text: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	var quantity = _api.apply("from_decimal", [text])
+	if not quantity.ok: return quantity
+	var changed = _allocate(_state, module, quantity.value, _parameters, enabled_modules(inputs), _api, inputs.capacity)
+	if not changed.ok: return changed
+	return _submit(changed.state, inputs, {}, "selection", publish)
+
+func distribute(inputs: Dictionary, publish: Callable) -> Dictionary:
+	var changed = _distribute(_state, _parameters, enabled_modules(inputs), _api, inputs.capacity)
+	if not changed.ok: return changed
+	return _submit(changed.state, inputs, {}, "selection", publish)
+
+func refresh(inputs: Dictionary, publish: Callable) -> Dictionary:
+	return _submit(_state, inputs, {}, "growth", publish)
+
+static func _initial(parameters: Dictionary) -> Dictionary:
 	return {"level": int(parameters.reactorInitialLevel), "allocations": {}, "free_charge": 0.0}
 
-static func quote(state: Dictionary, count: int, parameters: Dictionary, api) -> Dictionary:
+static func _quote(state: Dictionary, count: int, parameters: Dictionary, api) -> Dictionary:
 	if count < 1:
 		return {"ok": false, "reason": "InvalidPurchaseCount"}
 	var base = api.apply("from_decimal", [str(parameters.reactorUpgradeBase)])
@@ -39,9 +97,9 @@ static func _capacity(state: Dictionary, parameters: Dictionary, api, capacity_f
 	state._capacity = {"level": state.level, "factor": capacity_factor, "value": capacity.value}
 	return capacity
 
-static func evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary, free_bonus: float) -> Dictionary:
+static func _evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary, free_bonus: float) -> Dictionary:
 	if state.get("_distribute", false):
-		var distributed = distribute(state, parameters, enabled, api, capacity_factor)
+		var distributed = _distribute(state, parameters, enabled, api, capacity_factor)
 		if not distributed.ok: return distributed
 		state = distributed.state
 		state.erase("_distribute")
@@ -95,7 +153,7 @@ static func evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, 
 	next._enabled = enabled.duplicate()
 	return {"ok": true, "state": next, "capacity": capacity.value, "remaining": remaining, "factors": factors}
 
-static func allocate(state: Dictionary, module: String, requested: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
+static func _allocate(state: Dictionary, module: String, requested: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
 	if module not in enabled:
 		return {"ok": false, "reason": "ReactorModuleLocked"}
 	var value = api.apply("floor", [requested])
@@ -119,7 +177,7 @@ static func allocate(state: Dictionary, module: String, requested: Dictionary, p
 	next.allocations[module] = value.value
 	return {"ok": true, "state": next}
 
-static func distribute(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
+static func _distribute(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
 	if enabled.is_empty():
 		return {"ok": false, "reason": "ReactorModuleLocked"}
 	var current = _capacity(state, parameters, api, capacity_factor)
@@ -150,8 +208,8 @@ static func distribute(state: Dictionary, parameters: Dictionary, enabled: Array
 		next.allocations[module] = balance
 	return {"ok": true, "state": next}
 
-static func purchase(state: Dictionary, count: int, automatic: bool, parameters: Dictionary, api) -> Dictionary:
-	var quoted = quote(state, count, parameters, api)
+static func _purchase(state: Dictionary, count: int, automatic: bool, parameters: Dictionary, api) -> Dictionary:
+	var quoted = _quote(state, count, parameters, api)
 	if not quoted.ok: return quoted
 	if int(state.level) > 9223372036854775807 - count:
 		return {"ok": false, "reason": "ReactorLevelRangeExceeded"}
@@ -160,5 +218,3 @@ static func purchase(state: Dictionary, count: int, automatic: bool, parameters:
 	if automatic: next._distribute = true
 	return {"ok": true, "state": next, "costs": quoted.costs}
 
-static func modules_changed(state: Dictionary, enabled: Array) -> bool:
-	return state.get("_enabled", []) != enabled
