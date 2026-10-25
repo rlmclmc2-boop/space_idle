@@ -255,7 +255,8 @@ class SpaceCombatKernel : public RefCounted {
     std::vector<Effect> feedback;
     std::shared_ptr<MotionArena> motion_arena = std::make_shared<MotionArena>();
     Ref<RandomNumberGenerator> rng;
-    Array actor_rows;
+    mutable Array actor_view_rows;
+    mutable bool actor_views_dirty = true;
     Dictionary player_row;
     Vector2 player_point;
     PackedVector2Array player_collision_hull;
@@ -805,7 +806,7 @@ class SpaceCombatKernel : public RefCounted {
                 sum[1] += hp_loss;
             }
         }
-        a->view["hp"] = wire(a->hp);
+        a->view["hp"] = wire(a->hp); actor_views_dirty = true;
 
         if (strange_enabled && trigger && inst && wi >= 0 && !weapons[wi].hostile && weapons[wi].kind == 1) {
             int count = a->hp <= 0 ? strange_kill_spawns : (rng->randf() < strange_probability ? 1 : 0);
@@ -1240,10 +1241,10 @@ class SpaceCombatKernel : public RefCounted {
     }
     void publish_player() {
         player_hp = layer_health(1); player_shield = layer_health(0);
-        player_row["max_armour"] = wire(capacity(1));
-        player_row["max_shield"] = wire(capacity(0));
-        player_row["armour"] = wire(player_hp);
-        player_row["shield"] = wire(player_shield);
+        Dictionary row; row["x"] = player_point.x; row["y"] = player_point.y;
+        row["max_armour"] = wire(capacity(1)); row["max_shield"] = wire(capacity(0));
+        row["armour"] = wire(player_hp); row["shield"] = wire(player_shield);
+        row.make_read_only(); player_row = row;
     }
     void finish_player_hit() {
 
@@ -1923,7 +1924,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         // Global encounter generations invalidate every old target/source
         // handle while independent live enemy carriers keep their weapon slot.
-        actors.clear(); actor_rows.clear();
+        actors.clear(); actor_views_dirty = true;
     }
     bool install_actors(Array values) {
         for (int i = 0; i < values.size(); ++i) {
@@ -1966,7 +1967,7 @@ class SpaceCombatKernel : public RefCounted {
             if (!finite(a.hp))
                 return false;
             actors.push_back(a);
-            actor_rows.push_back(a.view);
+            actor_views_dirty = true;
         }
         return true;
     }
@@ -2177,7 +2178,7 @@ class SpaceCombatKernel : public RefCounted {
         reclaim_finished_wave();
         if (final_cleared) {
             compact();
-            actors.clear(); actor_rows.clear();
+            actors.clear(); actor_views_dirty = true;
             weapons.erase(std::remove_if(weapons.begin(), weapons.end(), [](const Weapon &w) { return w.hostile || !w.configured; }), weapons.end());
             for (int i = 0; i < int(weapons.size()); ++i) {
                 weapons[i].beam = -1;
@@ -2216,11 +2217,12 @@ class SpaceCombatKernel : public RefCounted {
         if (legend_active("black_hole")) black_next_at = clock + legend_constant("black_hole", "period");
         for (Defence &d : defences) d.source_stacks.clear();
         for (Actor &a : actors) { a.live = false; a.view["dead"] = true; ++a.generation; }
+        actor_views_dirty = true;
         debts.clear();
     }
     void finish_retreat() {
         if (executing || !stopped || !admitted) return;
-        actors.clear(); actor_rows.clear();
+        actors.clear(); actor_views_dirty = true;
         weapons.erase(std::remove_if(weapons.begin(), weapons.end(), [](const Weapon &w) { return w.hostile || !w.configured; }), weapons.end());
         for (Defence &d : defences) { d.loss = 0; d.buffer = 0; d.cover = 0; d.source_stacks.clear(); d.protection_type = 0; d.protection_until = d.protection_lockout = 0; d.cover_next = branch("adaptation", "b2") ? defence_time + enhancement_rule("adaptation_b2_interval") : 0; }
         reconcile_defence(); publish_player();
@@ -2230,6 +2232,7 @@ class SpaceCombatKernel : public RefCounted {
             roots.push({clock, ++event_serial, 0, i});
         }
     }
+    SpaceCombatKernel() { player_row.make_read_only(); }
     void clear_encounter(const String &) { begin_retreat(); battle_started = false; }
     double presentation_clock() const { return clock; }
     Dictionary read_history() const {
@@ -2284,8 +2287,7 @@ class SpaceCombatKernel : public RefCounted {
         weapons.clear();
         defences.clear();
         debts.clear();
-        actor_rows = Array();
-        actor_rows.set_typed(Variant::DICTIONARY, StringName(), Variant());
+        actor_views_dirty = true;
         admitted = false;
         stopped = false; retreating = false;
         final_encounter = d.get("final_encounter", false); final_cleared = false;
@@ -2324,8 +2326,8 @@ class SpaceCombatKernel : public RefCounted {
         if (ejection_gap <= 0 || cruise_at <= ignition)
             return false;
         resistance = d.get("resistance", 0.5);
-        player_row = Dictionary(d["player"]).duplicate(true);
-        player_point = Vector2(player_row.get("x", 286.0), player_row.get("y", 520.0));
+        Dictionary initial_player = d["player"];
+        player_point = Vector2(initial_player.get("x", 286.0), initial_player.get("y", 520.0));
         player_collision_hull.clear();
         player_hp = 0; player_shield = 0; // Read-only module-health projections, populated below.
         rng.instantiate();
@@ -2659,7 +2661,14 @@ class SpaceCombatKernel : public RefCounted {
         }
     }
     Array enemy_views() const {
-        return actor_rows;
+        if (actor_views_dirty) {
+            Array rows; rows.set_typed(Variant::DICTIONARY, StringName(), Variant());
+            for (const Actor &actor : actors) {
+                Dictionary row = actor.view.duplicate(); row.make_read_only(); rows.push_back(row);
+            }
+            rows.make_read_only(); actor_view_rows = rows; actor_views_dirty = false;
+        }
+        return actor_view_rows;
     }
     // Native drawing reads typed ownership; no projectile dictionary inventory.
     struct PresentationFlight {
