@@ -85,3 +85,52 @@ static func charged_base(row: Dictionary, armour_row: Dictionary, paid_level: in
 	if not result.ok:
 		return result
 	return amount_api.apply("ceil", [result.value])
+
+static func quote_levels(row: Dictionary, level: int, count: int, evolution: Dictionary,
+		material_unlocked: bool, amount_api) -> Dictionary:
+	if count < 1 or level > 9223372036854775807 - count:
+		return {"ok": false, "reason": "InvalidEquipmentLevel"}
+	var costs: Dictionary = {}
+	var extreme: bool = false
+	var column: int = 1
+	while row.has("res_" + str(column)):
+		var resource = row["res_" + str(column)]
+		if resource != null:
+			var base = amount_api.apply("from_decimal", [str(row["cost_" + str(column)])])
+			if not base.ok:
+				return base
+			var cost = amount_api.apply("quote_curve", [base.value, 1.0 + float(row["costMulti_" + str(column)]), str(level), str(count), true])
+			if not cost.ok:
+				return cost
+			var key: String = str(int(resource))
+			if costs.has(key):
+				var merged = amount_api.apply("add", [costs[key], cost.value])
+				if not merged.ok:
+					return merged
+				costs[key] = merged.value
+			else:
+				costs[key] = cost.value
+			extreme = extreme or cost.extreme
+		column += 1
+	var interval: int = int(evolution.interval)
+	@warning_ignore("integer_division")
+	var first: int = level / interval + 1
+	@warning_ignore("integer_division")
+	var last: int = (level + count) / interval
+	if last >= first:
+		if not material_unlocked:
+			return {"ok": false, "reason": "EvolutionMaterialLocked"}
+		var sum = amount_api.apply("from_decimal", [str(first + last)])
+		var terms = amount_api.apply("from_decimal", [str(last - first + 1)])
+		var half_cost = amount_api.apply("from_decimal", [str(float(evolution.material_cost_per_tier) / 2.0)])
+		for item in [sum, terms, half_cost]:
+			if not item.ok:
+				return item
+		sum = amount_api.apply("mul", [sum.value, terms.value])
+		if not sum.ok:
+			return sum
+		sum = amount_api.apply("mul", [sum.value, half_cost.value])
+		if not sum.ok:
+			return sum
+		costs[str(evolution.material_id)] = sum.value
+	return {"ok": true, "count": count, "costs": costs, "extreme": extreme}

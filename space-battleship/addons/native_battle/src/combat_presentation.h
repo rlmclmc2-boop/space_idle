@@ -128,6 +128,9 @@ class SpaceCombatPresentation : public RefCounted {
     std::array<std::vector<Color>,3> ribbon_colors;
     std::array<Vector2, 65> circle;
     bool templates_ready = false;
+    bool logical_coordinates = false;
+    Vector2 display_point(Vector2 point) const { return logical_coordinates ? point : battle_point(point); }
+    Vector2 logical_point(Vector2 point) const { return logical_coordinates ? point : inverse_battle_point(point); }
     Ref<ArrayMesh> pulse_mesh;
     std::vector<Ref<MultiMesh>> pulse_pool;
     std::vector<PackedFloat32Array> pulse_buffers;
@@ -168,6 +171,7 @@ class SpaceCombatPresentation : public RefCounted {
 protected:
     static void _bind_methods();
 public:
+    void configure_logical_coordinates(bool enabled) { logical_coordinates = enabled; clear_retained_frame(); }
     void configure_retained_gpu(Ref<ShaderMaterial> material) {
         for(RID canvas:retained_canvases)if(canvas.is_valid())RenderingServer::get_singleton()->canvas_item_set_material(canvas,RID());
         retained_canvases.clear();
@@ -179,7 +183,7 @@ public:
         retained_upload.clear();
     }
     Dictionary retained_metrics() const {Dictionary d;d["old_advance"]=old_advances;d["old_prepare"]=old_prepares;d["old_draw"]=old_draws;d["advances"]=retained_advances;d["births"]=retained_births;d["draws"]=retained_draws;d["upload_bytes"]=retained_upload_bytes;d["live"]=retained_frame.is_valid()?retained_frame->size():0;return d;}
-    Vector2 battle_logical_point(Vector2 point) const { return inverse_battle_point(point); }
+    Vector2 battle_logical_point(Vector2 point) const { return logical_point(point); }
     double rotated_outlines_min_y(const Array &outlines,double angle) const {
         // Same per-vertex float rotation as Vector2.rotated in the script solver.
         // Batch the reduction across the ABI; no shape approximation or cache.
@@ -202,7 +206,7 @@ public:
             // Utility clamp preserves the script's edge behavior for text wider
             // than the available view; do not use std::clamp with inverted limits.
             Vector2 point(UtilityFunctions::clampf(double(origin.x)-width/2.0+shift,8.0,double(limits.x)-8.0-width),double(origin.y)-row*(height+8.0));
-            Rect2 bounds=Rect2(battle_point(point)-Vector2(0,ascent),Vector2(width,height)).grow(4);
+            Rect2 bounds=Rect2(display_point(point)-Vector2(0,ascent),Vector2(width,height)).grow(4);
             if(bounds.position.y<8||(bounds.position+bounds.size).y>double(limits.y)-8)continue;
             bool blocked=false;Rect2 text_clearance=bounds.grow(8);
             for(const Rect2 &other:text_bounds)if(text_clearance.intersects(other)){blocked=true;break;}
@@ -237,8 +241,8 @@ public:
             else {d["kind"]=e.launch?"fire":"hit";d["critical"]=e.critical;}result.push_back(d);}return result;
     }
     bool supports_compact_lasers(Object *surface) const {
-        Object *slice=surface->get("battle_slice_runtime");
-        return slice!=nullptr && !retained_material.is_null() && !bool(surface->get("accelerated_visual_mode")) &&
+        Ref<SpaceCombatKernel> kernel=surface->get("kernel");
+        return kernel.is_valid() && !retained_material.is_null() && !bool(surface->get("accelerated_visual_mode")) &&
             bool(surface->get("retained_contacts_enabled")) &&
             bool(surface->get("prototype_enabled")) && bool(surface->get("pulse_vfx_enabled")) &&
             bool(surface->get("enemy_vfx_enabled")) && bool(surface->get("missile_vfx_enabled"));
@@ -390,8 +394,8 @@ void SpaceCombatPresentation::flight(Vector2 point,Vector2 axis,double age,bool 
         int count=std::min(native_visual.is_valid()?native_visual->samples:int(visual.get("samples",0)),4),head=native_visual.is_valid()?native_visual->head:int(visual.get("head",0));
         auto sample=[&](int index)->Vector2{return native_visual.is_valid()?native_visual->trail[index]:samples[index];};
         if(count>=2) {
-            Vector2 newest=battle_point(sample(head))-axis*23.0;ribbon_input.clear();ribbon_input.reserve(4);
-            for(int i=0;i<count;++i){Vector2 p=battle_point(sample((head-i+14)%14))-axis*23.0,delta=p-newest;
+            Vector2 newest=display_point(sample(head))-axis*23.0;ribbon_input.clear();ribbon_input.reserve(4);
+            for(int i=0;i<count;++i){Vector2 p=display_point(sample((head-i+14)%14))-axis*23.0,delta=p-newest;
                 if(delta.length()>28.0){ribbon_input.push_back(newest+delta.normalized()*28.0+offset);break;}ribbon_input.push_back(p+offset);}
             amber.a=0.22+std::clamp(budget,0.0,1.0)*0.16;ribbon(ribbon_input,amber,1.4,false);
         }
@@ -413,7 +417,7 @@ bool SpaceCombatPresentation::draw_gpu_contacts(double now,bool pulse_enabled) {
         if(contact_dirty[k]){
             int capacity=batch->get_instance_count();if(capacity<int(events.size())){capacity=std::max(capacity,8);while(capacity<int(events.size()))capacity*=2;batch->set_instance_count(capacity);}
             auto &buffer=gpu_contact_buffers[k];buffer.resize(capacity*12);float *out=buffer.ptrw();
-            for(size_t i=0;i<events.size();++i){const auto &e=events[i];float *row=out+i*12;Vector2 p=battle_point(e.point),axis=(k==0&&!e.launch&&e.type==2)?Vector2(1,0):e.direction;
+            for(size_t i=0;i<events.size();++i){const auto &e=events[i];float *row=out+i*12;Vector2 p=display_point(e.point),axis=(k==0&&!e.launch&&e.type==2)?Vector2(1,0):e.direction;
                 // Contacts use the exact supplied direction, not a new targeting solve.
                 row[0]=axis.x;row[1]=-axis.y;row[2]=0;row[3]=p.x;row[4]=axis.y;row[5]=axis.x;row[6]=0;row[7]=p.y;
                 row[8]=float(e.born-contact_epoch);row[9]=(e.type==2?100.0f:0.0f)+float(engine_angle(axis));row[10]=e.launch?11.0f:10.0f;row[11]=e.critical?1.0f:0.0f;
@@ -430,7 +434,7 @@ void SpaceCombatPresentation::draw_contacts(RID canvas,double now,bool pulse_ena
     if(draw_gpu_contacts(now,pulse_enabled))return;
     begin();
     for(const ContactEvent &e:contact_events[0]) {
-        Vector2 p=battle_point(e.point),axis=e.direction,side=axis.orthogonal();double age=now-e.born;
+        Vector2 p=display_point(e.point),axis=e.direction,side=axis.orthogonal();double age=now-e.born;
         double fade=Math::clamp(1.0-age/0.12,0.0,1.0);bool physical=e.type==2;
         Color color(Color::html(physical?"ffaf61":"64b5ff"),fade);
         if(e.launch){if(physical)line(p-axis*2,p+axis*4,color,2.5);else for(int sign:{-1,1})line(p+side*sign*2,p+axis*4,color,1.0);continue;}
@@ -439,7 +443,7 @@ void SpaceCombatPresentation::draw_contacts(RID canvas,double now,bool pulse_ena
         else {line(p-side*radius,p+side*radius,color,1.2);line(p-axis*radius*0.6,p+axis*radius*0.6,color,1.0);}
     }
     if(pulse_enabled)for(const ContactEvent &e:contact_events[1]) {
-        double age=now-e.born;Vector2 p=battle_point(e.point),axis=e.direction,across=axis.orthogonal();
+        double age=now-e.born;Vector2 p=display_point(e.point),axis=e.direction,across=axis.orthogonal();
         Color cyan=Color::html("42edee"),blue=Color::html("398bdf"),white=Color::html("f1ffff");
         if(e.launch) {
             if(!std::isfinite(age)||age>=0.075||!p.is_finite()||!axis.is_finite()||axis.is_zero_approx())continue;
@@ -558,9 +562,9 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
         } else {
             if(!missile&&!v.is_empty()&&v.has("fixed_step")) {
                 double distance=(logical-Vector2(v["logical_origin"])).dot(Vector2(v["fixed_direction"]));
-                logical=inverse_battle_point(Vector2(v["fixed_origin"])+Vector2(v["fixed_step"])*distance);
+                logical=logical_point(Vector2(v["fixed_origin"])+Vector2(v["fixed_step"])*distance);
             }
-            point=battle_point(logical)+offset;
+            point=display_point(logical)+offset;
         }
         int budget=1;
         if(missile&&visual.is_valid()&&visual->samples>5) {
@@ -658,12 +662,13 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
     Dictionary active;int density=0;
     for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;if(!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile")++density;}
     surface->set("missile_density",density);
-    auto inverse=[](Vector2 p)->Vector2 {
+    auto inverse=[this](Vector2 p)->Vector2 {
+        if(logical_coordinates)return p;
         constexpr double offset=110.0/(1<<20);
         if(p.y>=-512.0&&p.y<=220.0)return Vector2(p.x,double(p.y)-offset);
         if(p.y>=640.0&&p.y<=2048.0)return Vector2(p.x,double(p.y)-220.0+offset);
         double low=double(p.y)-220.0,high=p.y;
-        for(int i=0;i<20;++i){double middle=(low+high)*0.5;if(battle_point(Vector2(0,middle)).y<p.y)low=middle;else high=middle;}
+        for(int i=0;i<20;++i){double middle=(low+high)*0.5;if(display_point(Vector2(0,middle)).y<p.y)low=middle;else high=middle;}
         return Vector2(p.x,(low+high)*0.5);
     };
     visual_by_serial.clear();
@@ -683,12 +688,12 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
             next=inverse(Vector2(visual["fixed_origin"])+Vector2(visual["fixed_step"])*distance);
         }
         v->age+=dt;
-        Vector2 delta=battle_point(next)-battle_point(v->trail[v->head]);
+        Vector2 delta=display_point(next)-display_point(v->trail[v->head]);
         double wanted=delta.length_squared()>0.001?double(delta.angle()):double(direction.angle());
         v->angle=Math::lerp_angle(v->angle,wanted,1.0-std::exp(-dt*16.0));
         if(dt>0){v->head=(v->head+1)%14;v->times[v->head]=v->age;v->trail[v->head]=next;v->samples=std::min(14,v->samples+1);}
         if(bool(shot.get("prototype_missile",false))) {
-            if(v->samples>1){Vector2 delta=battle_point(v->trail[v->head])-battle_point(v->trail[(v->head+13)%14]);if(delta.length_squared()>0.001)v->angle=delta.angle();}
+            if(v->samples>1){Vector2 delta=display_point(v->trail[v->head])-display_point(v->trail[(v->head+13)%14]);if(delta.length_squared()>0.001)v->angle=delta.angle();}
             v->last_render=v->trail[v->head];v->last_logical=logical;Dictionary target=shot["target"];v->had_target=!target.is_empty();
         }
     }
@@ -696,6 +701,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
 #include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
     ClassDB::bind_method(D_METHOD("supports_compact_lasers","surface"),&SpaceCombatPresentation::supports_compact_lasers);
+    ClassDB::bind_method(D_METHOD("configure_logical_coordinates","enabled"),&SpaceCombatPresentation::configure_logical_coordinates);
     ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
     ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
     ClassDB::bind_method(D_METHOD("configure_contact_gpu","meshes","canvas","material"),&SpaceCombatPresentation::configure_contact_gpu);

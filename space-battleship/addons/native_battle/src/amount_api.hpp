@@ -42,6 +42,45 @@ class FoundationAmount : public godot::RefCounted {
             throw std::domain_error("AmountEncoding");
         return a;
     }
+    // The same per-level price is used by preview, direct purchase and MAX.
+    // Equal rounded prices form contiguous runs, including rates very near one.
+    static Value curve_cost(Value base, double rate, int64_t level, int64_t count, bool quantized, bool &extreme) {
+        if (rate < 1 || level < 0 || count < 0 || level > INT64_MAX - count)
+            throw std::domain_error("InvalidPriceRange");
+        if (!count) return {};
+        auto unit = [&](int64_t target) {
+            Value raw = base.multiply(Value::normalized(rate).power(double(target - 1)));
+            if (quantized && target != 1) {
+                if (raw.compare(Value::normalized(100)) >= 0) raw = raw.rounded(2);
+                else raw = raw.divide(Value::normalized(10)).floor_value().multiply(Value::normalized(10)).add(Value::normalized(5));
+            }
+            return raw.ceil_value();
+        };
+        const Value threshold = Value::decimal("1e15");
+        if (rate == 1) {
+            Value total;
+            if (quantized && level == 0 && count > 1) total = unit(1).add(unit(2).multiply(Value::decimal(std::to_string(count - 1))));
+            else total = unit(level + 1).multiply(Value::decimal(std::to_string(count)));
+            extreme = total.compare(threshold) >= 0; return total;
+        }
+        Value total;
+        int64_t at = level + 1, last = level + count;
+        while (at <= last) {
+            Value price = unit(at);
+            if (price.compare(threshold) >= 0) { extreme = true; break; }
+            int64_t lo = at, hi = last;
+            while (lo < hi) {
+                int64_t mid = lo + (hi - lo) / 2 + 1;
+                if (unit(mid).compare(price) == 0) lo = mid; else hi = mid - 1;
+            }
+            total = total.add(price.multiply(Value::decimal(std::to_string(lo - at + 1))));
+            if (total.compare(threshold) >= 0) { extreme = true; break; }
+            if (lo == last) return total;
+            at = lo + 1;
+        }
+        Value raw = base.multiply(Value::normalized(rate).power(double(level))).multiply(Value::geometric(rate, count));
+        return (raw.compare(threshold) < 0 ? threshold : raw).ceil_value();
+    }
 protected:
     static void _bind_methods() {
         godot::ClassDB::bind_method(godot::D_METHOD("apply", "operation", "operands"), &FoundationAmount::apply);
@@ -62,6 +101,12 @@ public:
                 require(2); value = Value::normalized(scalar(operands[0]), integer(operands[1]));
             } else if (op == "sum_geometric") {
                 require(2); value = Value::geometric(scalar(operands[0]), integer(operands[1]));
+            } else if (op == "quote_curve") {
+                require(5);
+                if (operands[4].get_type() != Variant::BOOL) throw std::domain_error("PriceRoundingKind");
+                bool extreme = false;
+                value = curve_cost(decode(operands[0]), scalar(operands[1]), integer(operands[2]), integer(operands[3]), bool(operands[4]), extreme);
+                result["extreme"] = extreme;
             } else {
                 if (op != "add" && op != "sub_nonnegative" && op != "mul" && op != "div" && op != "pow" && op != "compare" && op != "min" && op != "max" && op != "round_significant" && op != "to_ratio" && op != "floor" && op != "ceil" && op != "decode" && op != "encode" && op != "log10" && op != "to_display") throw std::domain_error("AmountOperation");
                 int arity = (op == "add" || op == "sub_nonnegative" || op == "mul" || op == "div" ||

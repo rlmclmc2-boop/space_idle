@@ -21,7 +21,7 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 
 static func build_player(slots: Array, equipment_definitions: Dictionary, evolution: Dictionary,
 		api, player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary, rules: Dictionary,
-		resistance: float, motion: Dictionary, enhancement: Dictionary, seed_value: int) -> Dictionary:
+		resistance: float, motion: Dictionary, enhancement: Dictionary, effects: Dictionary, factors: Dictionary, drone_weapons: Array, seed_value: int) -> Dictionary:
 	var one = api.apply("from_decimal", ["1"])
 	if not one.ok:
 		return one
@@ -33,14 +33,16 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 			continue
 		var row: Dictionary = equipment_definitions[str(slot.equipment_id)]
 		var value = Equipment.charged_base(row, equipment_definitions.armour,
-			int(slot.paid_level), int(slot.extra_levels), evolution, one.value, one.value, api)
+			int(slot.paid_level), int(slot.extra_levels), evolution,
+			factors.ai_defence if slot.category == "defence" else factors.ai_weapon,
+			factors.reactor_defence if slot.category == "defence" else factors.reactor_weapon, api)
 		if not value.ok:
 			return value
 		var text = api.apply("to_display", [value.value])
 		if not text.ok:
 			return text
 		if row.name in ["armour", "shield"]:
-			defences.append({"entry": {"id": str(slot.id), "key": str(row.name)},
+			defences.append({"entry": {"id": str(slot.id), "key": str(row.name), "generation": int(slot.generation)},
 				"layer": 0 if row.name == "shield" else 1, "type": int(row.dmgtype),
 				"base": text.text, "maximum": text.text, "factor": 1.0, "loss": "0", "buffer": "0",
 				"delay": float(row.para3) if row.name == "shield" else 0.0,
@@ -54,17 +56,55 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 			row_weapon.entry.paid_level = int(slot.paid_level)
 			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels)
 			weapons.append(row_weapon)
+	weapons.append_array(drone_weapons)
 	var descriptor := {"player": {"armour": "0", "shield": "0", "x": player_point.x, "y": player_point.y},
 		"enemies": [], "weapons": weapons, "defences": defences,
 		"requires_module_defense": true, "requires_drop_rules": true, "drop_rules_compiled": true,
 		"resistance": resistance, "rng_state": seed_value,
-		"target_slot_center": float(geometry.target_slot_center), "battle_width": float(geometry.view_width),
-		"attack_counter": 0, "incoming_counter": 0, "counter_level": 0,
-		"counter_growth": float(enhancement.proficiency_growth),
-		"defence_counter_growth": float(enhancement.adaptation_growth),
+		"target_slot_center": float(geometry.target_slot_center), "battle_width": float(geometry.view_width), "battle_height": float(geometry.view_height),
+		"attack_counter": 0, "incoming_counter": 0, "counter_level": int(effects.level),
+		"counter_growth": float(enhancement.proficiency_growth) if effects.effects.proficiency.active else 0.0,
+		"defence_counter_growth": float(enhancement.adaptation_growth) if effects.effects.adaptation.active else 0.0,
 		"counter_log_base": float(enhancement.counter_log_base),
 		"counter_round_scale": float(enhancement.bonus_round_scale),
 		"jewel_probability": 0.0, "jewel_ratio": 1.0}
+	descriptor.enhancement_state = effects
+	descriptor.repeat_delay = float(enhancement.repeat_delay)
+	descriptor.memory_interval = float(enhancement.memory_interval)
+	descriptor.deferred_interval = float(enhancement.deferred_interval)
+	descriptor.deferred_duration = float(enhancement.deferred_duration)
+	var enabled: Dictionary = effects.effects
+	var level: int = int(effects.level)
+	descriptor.clear_probability = clampf(float(enhancement.deferred_clear_probability) + int(enabled.deferred.a) * float(enhancement.deferred_a_clear_probability), 0.0, 1.0) if enabled.deferred.active else 0.0
+	var shields: int = 0
+	var armours: int = 0
+	for defence in defences:
+		if int(defence.layer) == 0: shields += 1
+		else: armours += 1
+	for defence in defences:
+		defence.branch_factors = [1.0 + int(enabled.adaptation.a) * float(enhancement.adaptation_a_capacity_bonus)]
+		if enabled.memory.active:
+			var memory_factor: float = 1.0 + int(enabled.memory.a) * float(enhancement.memory_a_bonus)
+			defence.memory_heal = float(enhancement.memory_heal_fraction) * level * memory_factor
+			defence.memory_cap = float(enhancement.memory_buffer_fraction) * level * memory_factor
+			if enabled.memory.b3:
+				defence.memory_cap *= 1.0 + armours * float(enhancement.memory_b3_armour_capacity_bonus)
+		if enabled.deferred.active:
+			var scale: float = float(enhancement.deferred_percent_scale)
+			defence.deferred_fraction = maxf(0.0, (scale - maxf(1.0, ceilf(scale / (1.0 + float(enhancement.deferred_curve_coefficient) * level)))) / scale)
+	for mounted in weapons:
+		mounted.branch_factors = [1.0 + int(enabled.proficiency.a) * float(enhancement.proficiency_a_damage_bonus)]
+		if enabled.proficiency.b2:
+			mounted.interval *= float(enhancement.proficiency_b2_interval_multiplier)
+			mounted.remaining = 0.0 if int(mounted.kind) == 3 else mounted.interval
+		mounted.proficiency_pierce = enabled.proficiency.b3
+		mounted.pierce_resistance = float(enhancement.proficiency_b3_resistance)
+		mounted.repeat_probability = clampf(float(enhancement.repeat_probability) + int(enabled.repeat.a) * float(enhancement.repeat_a_probability), 0.0, 1.0) if enabled.repeat.active else 0.0
+		mounted.repeat_multiplier = 1.0 + float(enhancement.repeat_growth) * level
+		mounted.chain_count = int(enhancement.repeat_b1_targets) if enabled.repeat.b1 else 0
+		mounted.secondary_probability = float(enhancement.repeat_b3_probability) if enabled.repeat.b3 else 0.0
+		mounted.critical_rate = (float(enhancement.base_critical_rate) if enabled.critical.active else 0.0) + int(enabled.critical.a) * float(enhancement.critical_a_probability)
+		mounted.critical_multiplier = float(enhancement.base_critical_multiplier) + (float(enhancement.critical_growth) * level if enabled.critical.active else 0.0)
 	for key in ["reactive_volley_window", "reactive_stack_seconds", "reactive_per_stack"]:
 		descriptor[key] = rules[key]
 	descriptor.reactive_stack_limit = int(rules.reactive_stack_limit)
@@ -172,9 +212,6 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 				if not base.ok:
 					return base
 				base = api.apply("mul", [base.value, resources.value])
-				if not base.ok:
-					return base
-				base = api.apply("ceil", [base.value])
 				if not base.ok:
 					return base
 				var text = api.apply("to_display", [base.value])

@@ -2,6 +2,22 @@ extends RefCounted
 ## These functions mutate the session's ledger only after Amount operations succeed.
 ## Death sampling and damage belong to the native kernel.
 
+static func payment(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictionary:
+	var next: Dictionary = wallet.duplicate(true)
+	var zero = amount_api.apply("zero", [])
+	for resource in costs:
+		var balance: Dictionary = wallet.get(resource, zero.value)
+		var compared = amount_api.apply("compare", [balance, costs[resource]])
+		if not compared.ok:
+			return compared
+		if compared.scalar < 0:
+			return {"ok": false, "reason": "InsufficientResources"}
+		var remaining = amount_api.apply("sub_nonnegative", [balance, costs[resource]])
+		if not remaining.ok:
+			return remaining
+		next[resource] = remaining.value
+	return {"ok": true, "wallet": next}
+
 static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array, now: float, rules: Dictionary, amount_api) -> Dictionary:
 	# Native emits monotonically increasing IDs through one synchronous result stream.
 	# Keep only its registration frontier, plus the still-unclaimed drops themselves.
@@ -33,7 +49,7 @@ static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array,
 	cursor.registered_through = next_frontier
 	return {"ok": true}
 
-static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array, id: String, automatic: bool, auto_reduce: float, wall: float, game: float, amount_api) -> Dictionary:
+static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array, id: String, automatic: bool, auto_reduce: float, wall: float, game: float, amount_api, income_factors: Dictionary = {}) -> Dictionary:
 	if not pending.has(id):
 		return {"ok": false, "reason": "NoChange"}
 	var row: Dictionary = pending[id]
@@ -60,6 +76,11 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 			return result
 		base = result.value
 	if resource == "jewel":
+		if income_factors.has("condensation"):
+			result = amount_api.apply("mul", [quantity, income_factors.condensation])
+			if not result.ok:
+				return result
+			quantity = result.value
 		# Ordinary fragments have no resource auto-collection loss.
 		var factor = amount_api.apply("from_decimal", [str(row.get("jewelRatio", 1.0))])
 		if not factor.ok:
@@ -82,6 +103,17 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 		if not result.ok:
 			return result
 		quantity = result.value
+	var effect: String = "iron" if resource == "1" else "uranium" if resource == "2" else "jewel" if resource == "jewel" else ""
+	if income_factors.has(effect):
+		result = amount_api.apply("mul", [quantity, income_factors[effect]])
+		if not result.ok:
+			return result
+		quantity = result.value
+		if resource != "jewel":
+			result = amount_api.apply("ceil", [quantity])
+			if not result.ok:
+				return result
+			quantity = result.value
 	var zero = amount_api.apply("zero", [])
 	result = amount_api.apply("add", [wallet.get(resource, zero.value), quantity])
 	if not result.ok:
@@ -95,7 +127,7 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 	pending.erase(id)
 	return {"ok": true, "amount": quantity, "resource": resource}
 
-static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false) -> Dictionary:
+static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false, income_factors: Dictionary = {}) -> Dictionary:
 	# Stable birth order; collection never depends on Dictionary iteration order.
 	var ids: Array = pending.keys()
 	ids.sort_custom(func(a, b):
@@ -106,7 +138,7 @@ static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array,
 		return int(left.uid) < int(right.uid))
 	for id in ids:
 		if force or (not pending[id].get("moving", false) and float(pending[id].auto_at) <= game):
-			var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api)
+			var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api, income_factors)
 			if not result.ok:
 				return result
 	return {"ok": true}
@@ -135,7 +167,7 @@ static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resourc
 	return {"ok": true}
 
 static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples: Array,
-		target_y: float, auto_reduce: float, wall: float, game: float, amount_api) -> Dictionary:
+		target_y: float, auto_reduce: float, wall: float, game: float, amount_api, income_factors: Dictionary = {}) -> Dictionary:
 	var ids: Array = pending.keys()
 	ids.sort_custom(func(a, b): return int(pending[a].uid) < int(pending[b].uid))
 	for key in ids:
@@ -145,7 +177,7 @@ static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples
 		row.y = minf(target_y, float(row.origin_y) + float(row.speed) * maxf(0.0, game - float(row.born_at)))
 		if float(row.y) + 1e-9 >= target_y:
 			row.y = target_y
-			var result = collect_drop(pending, wallet, samples, str(key), true, auto_reduce, wall, game, amount_api)
+			var result = collect_drop(pending, wallet, samples, str(key), true, auto_reduce, wall, game, amount_api, income_factors)
 			if not result.ok:
 				return result
 	return {"ok": true}

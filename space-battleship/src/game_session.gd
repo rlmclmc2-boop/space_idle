@@ -1,5 +1,9 @@
 extends RefCounted
 const CombatSetup = preload("res://src/combat_setup.gd")
+const Equipment = preload("res://src/systems/equipment.gd")
+const Enhancement = preload("res://src/systems/enhancement.gd")
+const Reactor = preload("res://src/systems/reactor.gd")
+const Research = preload("res://src/systems/research.gd")
 const Economy = preload("res://src/systems/economy.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const STEP: float = 1.0 / 60.0
@@ -13,6 +17,18 @@ var rules: Dictionary = {}
 var geometry: Dictionary = {}
 var evolution: Dictionary = {}
 var enhancement: Dictionary = {}
+var enhancement_progress: Dictionary = Enhancement.initial()
+var reactor_progress: Dictionary = {}
+var research_progress: Dictionary = Research.initial()
+var research_definitions: Dictionary = {}
+var equipped_drones: Array = []
+var legendary_definitions: Dictionary = {}
+var legendary_constants: Dictionary = {}
+var legendary_ranges: Dictionary = {}
+var drone_limits: Dictionary = {}
+var combat_config_dirty: bool = false
+var damage_statistics: Dictionary = {}
+var income_factors: Dictionary = {}
 var motion: Dictionary = {}
 var equipment_definitions: Dictionary = {}
 var enemy_weapon_definitions: Dictionary = {}
@@ -72,6 +88,27 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		evolution[str(row.key)] = row.value
 	for row in configuration.enhance_config.enhance_config:
 		enhancement[str(row.id)] = row.value
+	for row in configuration.hyperspace_config["\u4f20\u8bf4\u5b9a\u4e49"]:
+		legendary_definitions[str(row.effect_id)] = row
+	for row in configuration.hyperspace_config["\u4f20\u8bf4\u968f\u673a\u53c2\u6570"]:
+		if not legendary_ranges.has(str(row.effect_id)):
+			legendary_ranges[str(row.effect_id)] = {}
+		legendary_ranges[str(row.effect_id)][str(row.parameter)] = {"minimum": row.minimum, "maximum": row.maximum}
+	var legacy_bounds: Dictionary = {}
+	for row in configuration.hyperspace_config["\u56fa\u5b9a\u89c4\u5219_\u517c\u5bb9\u8bf4\u660e"]:
+		legacy_bounds[str(row.key)] = row.value
+	var old_key: String = "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/"
+	if legacy_bounds.has(old_key + "0") and legacy_bounds.has(old_key + "1"):
+		legendary_ranges.drone_master.maximum_reduction.compatibility_minimum = legacy_bounds[old_key + "0"]
+		legendary_ranges.drone_master.maximum_reduction.compatibility_maximum = legacy_bounds[old_key + "1"]
+	for row in configuration.hyperspace_config["\u4f20\u8bf4\u5e38\u91cf"]:
+		if not legendary_constants.has(str(row.effect_id)):
+			legendary_constants[str(row.effect_id)] = {}
+		legendary_constants[str(row.effect_id)][str(row.constant_path)] = row.value
+	for row in configuration.hyperspace_config["\u57fa\u7840\u53c2\u6570"]:
+		drone_limits[str(row.key)] = row.value
+	for row in configuration.ai_tech_tree.ai_tech_tree:
+		research_definitions[str(row.id)] = row
 	for row in configuration.weapon_motion.weapon_motion:
 		motion[str(row.id)] = row.value
 	for row in configuration.equipment.equipment:
@@ -94,12 +131,18 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		return _fail("InitialShipUnavailable")
 	var art_data = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
 	player_art = art_data.ships[selected_ship]
-	for key in [selected_ship, "enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"]:
+	var model_keys: Array = ship_definitions.keys()
+	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
+	for key in model_keys:
 		var art: Dictionary = art_data.ships[key]
 		var image := Image.load_from_file(str(art.texture))
 		if image == null or image.is_empty():
 			return _fail("MissingHullAsset:" + str(key))
-		models[key] = {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()), "art": art}
+		var logical_image := Image.load_from_file(str(art.get("geometry_texture", art.texture)))
+		if logical_image == null or logical_image.is_empty():
+			return _fail("MissingGeometryAsset:" + str(key))
+		models[key] = {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()), "art": art,
+			"geometry_height": float(logical_image.get_height())}
 	var geometry_image := Image.load_from_file(str(player_art.get("geometry_texture", player_art.texture)))
 	if geometry_image == null or geometry_image.is_empty():
 		return _fail("MissingGeometryAsset")
@@ -124,16 +167,20 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		slots.append({"id": "defence:" + str(index), "category": "defence", "index": index,
 			"equipment_id": starting_defences[index] if index < starting_defences.size() else "",
 			"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
+	research_progress.ratio = float(rules.research_default_ratio)
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
-	var setup = CombatSetup.build_player(slots, equipment_definitions, evolution, amount_api,
-		player_art, player_dimensions, geometry, rules, float(parameters.dmgReduce), motion, enhancement, seed_value)
+	reactor_progress = Reactor.initial(parameters)
+	var setup = _growth_setup(slots, enhancement_progress, reactor_progress, research_progress)
 	if not setup.ok:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
 	for row in setup.descriptor.weapons:
 		player_muzzles.append(row.muzzle)
+	reactor_progress = setup.reactor_state
+	income_factors = setup.income_factors
 	if not kernel.initialize(setup.descriptor):
 		return _fail("NativeInitializationFailed")
+	kernel.set_damage_stats_enabled(true)
 	return {"ok": true}
 
 func unlocked(kind: String, target: String) -> bool:
@@ -155,6 +202,7 @@ func start_sortie(stage: int) -> Dictionary:
 	var zero = amount_api.apply("zero", [])
 	if not hp.ok or amount_api.apply("compare", [hp.value, zero.value]).scalar <= 0:
 		return {"ok": false, "reason": "NoArmour"}
+	_clear_switch_locks()
 	kernel.clear_encounter("sortie")
 	kernel.finish_retreat()
 	_set_stage(stage, 0.0)
@@ -196,10 +244,19 @@ func _step(dt: float) -> void:
 	game_time += dt
 	if not _advance_timed_resources(dt):
 		return
+	var researched = Research.advance(research_progress, wallet, research_definitions, _research_gates(), dt, rules, amount_api)
+	if not researched.ok:
+		_fail(str(researched.get("error", researched.get("reason", "ResearchFailed"))))
+		return
+	research_progress = researched.state
+	wallet = researched.wallet
+	combat_config_dirty = combat_config_dirty or researched.completed
 	var settled = Economy.collect_due(drops, wallet, income_samples,
-		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
+		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, false, income_factors)
 	if not settled.ok:
 		_fail(str(settled.get("error", "CollectionFailed")))
+		return
+	if not _refresh_growth():
 		return
 	match str(campaign.state):
 		"travel":
@@ -274,6 +331,20 @@ func _advance_kernel(dt: float) -> bool:
 		_fail(reason if not reason.is_empty() else "NativeAdvanceRejected")
 		return false
 	var result: Dictionary = kernel.take_results()
+	for source in kernel.take_damage_stats():
+		var key: String = str(source.source)
+		var previous: Dictionary = damage_statistics.get(key, {"shield": amount_api.apply("zero", []).value, "health": amount_api.apply("zero", []).value})
+		for field in ["shield", "health"]:
+			var value = amount_api.apply("from_decimal", [str(source[field])])
+			if not value.ok:
+				_fail(str(value.error))
+				return false
+			var total = amount_api.apply("add", [previous[field], value.value])
+			if not total.ok:
+				_fail(str(total.error))
+				return false
+			previous[field] = total.value
+		damage_statistics[key] = previous
 	last_events.append_array(result.events)
 	var registered = Economy.register_drops(drops, drop_cursor, result.drops, game_time, rules, amount_api)
 	if not registered.ok:
@@ -283,20 +354,17 @@ func _advance_kernel(dt: float) -> bool:
 		_fail(str(result.error))
 		return false
 	if result.player_dead and campaign.state != "retreat":
-		retreat_from = _global_position()
-		retreat_to = maxf(0.0, retreat_from - float(parameters.backRange))
-		retreat_elapsed = 0.0
-		if int(guard.death_option) == 0:
-			guard.enabled = false
-		kernel.begin_retreat()
-		campaign.state = "retreat"
+		_begin_death_retreat()
 	elif result.wave_cleared:
+		_clear_switch_locks()
 		kernel.finish_wave(bool(result.final_cleared))
 		if result.final_cleared:
 			var settled = Economy.collect_due(drops, wallet, income_samples,
-				float(parameters.autoCollectReduce), wall_time, game_time, amount_api, true)
+				float(parameters.autoCollectReduce), wall_time, game_time, amount_api, true, income_factors)
 			if not settled.ok:
 				_fail(str(settled.get("error", "FinalCollectionFailed")))
+				return false
+			if not _refresh_growth():
 				return false
 			campaign.cleared_stages[int(campaign.stage)] = true
 			campaign.state = "waiting"
@@ -368,8 +436,11 @@ func _sync_geometry() -> void:
 		_fail("InvalidPlayerGeometry")
 
 func collect_drop(id: String) -> Dictionary:
-	return Economy.collect_drop(drops, wallet, income_samples, id, false,
-		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
+	var result = Economy.collect_drop(drops, wallet, income_samples, id, false,
+		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, income_factors)
+	if result.ok and not _refresh_growth():
+		return {"ok": false, "reason": last_error}
+	return result
 
 func set_guard(enabled: bool, death_option: int = 0) -> Dictionary:
 	if death_option < 0 or death_option > 2:
@@ -465,8 +536,375 @@ func _advance_timed_resources(dt: float) -> bool:
 				return false
 			timed_resources.elapsed = remainder
 	var moved = Economy.advance_timed_drops(drops, wallet, income_samples, float(geometry.player_y),
-		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
+		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, income_factors)
 	if not moved.ok:
 		_fail(str(moved.get("error", "TimedResourceCollectionFailed")))
 		return false
 	return true
+
+func _reactor_modules() -> Array:
+	var enabled: Array = []
+	if unlocked("feature", "reactor"):
+		for module in str(parameters.reactorModules).split(","):
+			if module != "condensation" or unlocked("reactor_module", module):
+				enabled.append(module)
+	return enabled
+
+func _research_gates() -> Dictionary:
+	var gates: Dictionary = {}
+	for key in research_definitions:
+		var row: Dictionary = research_definitions[key]
+		gates[key] = (row.legacy_unlock == null or unlocked("hightech", str(row.legacy_unlock))) and (row.unlock == null or unlocked("feature", "jewels"))
+	return gates
+
+func _growth_setup(next_slots: Array, next_enhancement: Dictionary, next_reactor: Dictionary, next_research: Dictionary, next_ship: String = "", contributions = null) -> Dictionary:
+	var ship_key: String = selected_ship if next_ship.is_empty() else next_ship
+	var ship: Dictionary = ship_definitions[ship_key]
+	var art: Dictionary = models[ship_key].art
+	var dimensions: Vector2 = models[ship_key].size * float(art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + ship_key])
+	var enabled_slots: Array = []
+	for slot in next_slots:
+		if int(slot.index) < int(ship.para_1 if slot.category == "weapon" else ship.para_2):
+			enabled_slots.append(slot)
+	var source_drones: Array = equipped_drones if contributions == null else contributions
+	var next_drones: Array = source_drones.slice(0, int(ship.para_5))
+	var reactor = Reactor.evaluate(next_reactor, parameters, _reactor_modules(), amount_api)
+	if not reactor.ok:
+		return reactor
+	var ai_weapon = Research.factor(next_research, research_definitions, "weapon_damage", rules, amount_api)
+	var ai_defence = Research.factor(next_research, research_definitions, "equipment_durability", rules, amount_api)
+	for result in [ai_weapon, ai_defence]:
+		if not result.ok:
+			return result
+	var factors := {"ai_weapon": ai_weapon.value, "ai_defence": ai_defence.value,
+		"reactor_weapon": reactor.factors.weapons, "reactor_defence": reactor.factors.defence}
+	var effects: Dictionary = Enhancement.describe(next_enhancement, enhancement, unlocked("feature", "jewels"))
+	var drone_weapons: Array = []
+	for index in next_drones.size():
+		var contribution: Dictionary = next_drones[index]
+		var weapon_row: Dictionary = contribution.weapon.duplicate(true)
+		weapon_row.entry.id = "drone:" + str(contribution.id)
+		weapon_row.entry.drone_id = str(contribution.id)
+		weapon_row.entry.generation = int(contribution.generation)
+		weapon_row.slot = int(ship.para_1) + index
+		drone_weapons.append(weapon_row)
+	var setup = CombatSetup.build_player(enabled_slots, equipment_definitions, evolution, amount_api,
+		art, dimensions, geometry, rules, float(parameters.dmgReduce), motion, enhancement, effects, factors, drone_weapons, seed_value)
+	if not setup.ok:
+		return setup
+	setup.income_factors = {"condensation": reactor.factors.condensation}
+	for resource_effect in [["iron", "iron_income"], ["uranium", "uranium_income"], ["jewel", "fragment_income"]]:
+		var value = Research.factor(next_research, research_definitions, resource_effect[1], rules, amount_api)
+		if not value.ok:
+			return value
+		setup.income_factors[resource_effect[0]] = value.value
+	var iron_text = amount_api.apply("to_display", [reactor.factors.smelting])
+	if not iron_text.ok:
+		return iron_text
+	setup.descriptor.iron_drop_factor = iron_text.text
+	setup.reactor_state = next_reactor.duplicate(true)
+	setup.reactor_state.allocations = reactor.allocations
+	setup.descriptor.equipped_drones = next_drones.duplicate(true)
+	setup.descriptor.legendary_definitions = legendary_definitions
+	setup.descriptor.legendary_constants = legendary_constants
+	setup.descriptor.legendary_ranges = legendary_ranges
+	setup.descriptor.drone_limits = drone_limits
+	setup.descriptor.drone_capacity = int(ship.para_5)
+	setup.descriptor.rail_trail_width = float(motion.rail_trail_width)
+	setup.descriptor.higgs_minimum_width = float(rules.higgs_minimum_width)
+	setup.ship_key = ship_key
+	setup.player_art = art
+	setup.player_dimensions = dimensions
+	setup.equipped_drones = next_drones
+	return setup
+
+func _commit_growth(next_slots: Array, next_enhancement: Dictionary, next_reactor: Dictionary,
+		next_research: Dictionary, next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null) -> Dictionary:
+	var setup = _growth_setup(next_slots, next_enhancement, next_reactor, next_research, next_ship, contributions)
+	if not setup.ok:
+		return setup
+	if not kernel.can_set_player_configuration(setup.descriptor, change_kind):
+		return {"ok": false, "reason": "NativeConfigurationRejected"}
+	# No page callbacks or asynchronous work can interleave this commit.
+	if not kernel.set_player_configuration(setup.descriptor, change_kind):
+		return _fail("NativeConfigurationCommitFailed")
+	slots = next_slots
+	selected_ship = setup.ship_key
+	player_art = setup.player_art
+	player_dimensions = setup.player_dimensions
+	player_geometry_height = float(models[selected_ship].geometry_height)
+	equipped_drones = setup.equipped_drones
+	enhancement_progress = next_enhancement
+	reactor_progress = setup.reactor_state
+	income_factors = setup.income_factors
+	research_progress = next_research
+	wallet = next_wallet
+	player_muzzles = PackedVector2Array()
+	for row in setup.descriptor.weapons:
+		player_muzzles.append(row.muzzle)
+	_sync_geometry()
+	combat_config_dirty = false
+	var armour = amount_api.apply("from_decimal", [str(kernel.player_view().armour)])
+	if armour.ok and amount_api.apply("compare", [armour.value, amount_api.apply("zero", []).value]).scalar <= 0 and campaign.state not in ["menu", "retreat", "departing"]:
+		_begin_death_retreat()
+	return {"ok": true}
+
+func _refresh_growth() -> bool:
+	var refreshed = Research.refresh_income(research_progress, income_samples, wall_time, game_time, rules, amount_api)
+	if not refreshed.ok:
+		_fail(str(refreshed.get("error", "ResearchIncomeFailed")))
+		return false
+	combat_config_dirty = combat_config_dirty or refreshed.state.peaks != research_progress.peaks
+	research_progress = refreshed.state
+	if combat_config_dirty:
+		var changed = _commit_growth(slots, enhancement_progress, reactor_progress, research_progress, wallet, "growth")
+		if not changed.ok:
+			_fail(str(changed.get("error", changed.get("reason", "GrowthUpdateFailed"))))
+			return false
+	return true
+
+func buy_levels(slot_id: String, count: int) -> Dictionary:
+	var index: int = -1
+	for candidate in slots.size():
+		if slots[candidate].id == slot_id:
+			index = candidate
+	if index < 0:
+		return {"ok": false, "reason": "UnknownSlot"}
+	var slot: Dictionary = slots[index]
+	var row: Dictionary = equipment_definitions.laser if slot.category == "weapon" else equipment_definitions.armour
+	var quote = Equipment.quote_levels(row, int(slot.paid_level), count, evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached), amount_api)
+	if not quote.ok:
+		return quote
+	var paid = Economy.payment(wallet, quote.costs, amount_api)
+	if not paid.ok:
+		return paid
+	var next: Array = slots.duplicate(true)
+	next[index].paid_level = int(slot.paid_level) + count
+	return _commit_growth(next, enhancement_progress, reactor_progress, research_progress, paid.wallet, "upgrade")
+
+func buy_reactor(count: int = 1) -> Dictionary:
+	if not unlocked("feature", "reactor"):
+		return {"ok": false, "reason": "ReactorLocked"}
+	var quote = Reactor.quote(reactor_progress, count, parameters, amount_api)
+	if not quote.ok:
+		return quote
+	if int(reactor_progress.level) > 9223372036854775807 - count:
+		return {"ok": false, "reason": "ReactorLevelRangeExceeded"}
+	var paid = Economy.payment(wallet, quote.costs, amount_api)
+	if not paid.ok:
+		return paid
+	var next: Dictionary = reactor_progress.duplicate(true)
+	next.level = int(next.level) + count
+	return _commit_growth(slots, enhancement_progress, next, research_progress, paid.wallet, "growth")
+
+func buy_enhancement(count: int = 1) -> Dictionary:
+	if not unlocked("feature", "jewels"):
+		return {"ok": false, "reason": "EnhancementLocked"}
+	if count < 1 or int(enhancement_progress.level) > 9223372036854775807 - count:
+		return {"ok": false, "reason": "EnhancementLevelRangeExceeded"}
+	var quote = Enhancement.quote(enhancement_progress, count, enhancement, amount_api)
+	if not quote.ok:
+		return quote
+	var paid = Economy.payment(wallet, quote.costs, amount_api)
+	if not paid.ok:
+		var low: int = 0
+		var high: int = count
+		while low < high:
+			@warning_ignore("integer_division")
+			var middle: int = low + (high - low) / 2 + 1
+			var candidate = Enhancement.quote(enhancement_progress, middle, enhancement, amount_api)
+			if candidate.ok and Economy.payment(wallet, candidate.costs, amount_api).ok:
+				low = middle
+			else:
+				high = middle - 1
+		if low == 0:
+			return {"ok": false, "reason": "NoChange"}
+		count = low
+		quote = Enhancement.quote(enhancement_progress, count, enhancement, amount_api)
+		paid = Economy.payment(wallet, quote.costs, amount_api)
+	var next: Dictionary = enhancement_progress.duplicate(true)
+	next.level = int(next.level) + count
+	return _commit_growth(slots, next, reactor_progress, research_progress, paid.wallet, "growth")
+
+func set_enhancement_order(category: String, order: Array) -> Dictionary:
+	var changed = Enhancement.reorder(enhancement_progress, category, order)
+	if not changed.ok:
+		return changed
+	return _commit_growth(slots, changed.state, reactor_progress, research_progress, wallet, "selection")
+
+func set_enhancement_branch(effect: String, node: int, choice: String) -> Dictionary:
+	var changed = Enhancement.choose(enhancement_progress, effect, node, choice, enhancement, unlocked("feature", "jewels"))
+	if not changed.ok:
+		return changed
+	return _commit_growth(slots, changed.state, reactor_progress, research_progress, wallet, "selection")
+
+func allocate_reactor(module: String, quantity: Dictionary) -> Dictionary:
+	var changed = Reactor.allocate(reactor_progress, module, quantity, parameters, _reactor_modules(), amount_api)
+	if not changed.ok:
+		return changed
+	return _commit_growth(slots, enhancement_progress, changed.state, research_progress, wallet, "selection")
+
+func distribute_reactor() -> Dictionary:
+	var changed = Reactor.distribute(reactor_progress, parameters, _reactor_modules(), amount_api)
+	if not changed.ok:
+		return changed
+	return _commit_growth(slots, enhancement_progress, changed.state, research_progress, wallet, "selection")
+
+func select_research(id: String) -> Dictionary:
+	if not research_definitions.has(id) or not Research.available(research_definitions[id], research_progress.levels, _research_gates()):
+		return {"ok": false, "reason": "ResearchLocked"}
+	research_progress.current = id
+	return {"ok": true}
+
+func set_research_investment(resource: String, quantity: Dictionary) -> Dictionary:
+	if resource not in ["1", "2"]:
+		return {"ok": false, "reason": "InvalidResearchResource"}
+	var value = amount_api.apply("floor", [quantity])
+	if not value.ok:
+		return value
+	research_progress.investment[resource] = value.value
+	return {"ok": true}
+
+func set_research_automatic_investment(enabled: bool, ratio: float) -> Dictionary:
+	if not is_finite(ratio) or ratio < float(rules.research_minimum_ratio) or ratio > 1.0:
+		return {"ok": false, "reason": "InvalidResearchRatio"}
+	research_progress.auto_invest = enabled
+	research_progress.ratio = ratio
+	return {"ok": true}
+
+func equip_slot(slot_id: String, equipment_id: String) -> Dictionary:
+	var index: int = -1
+	for candidate in slots.size():
+		if slots[candidate].id == slot_id:
+			index = candidate
+	if index < 0:
+		return {"ok": false, "reason": "UnknownSlot"}
+	var slot: Dictionary = slots[index]
+	if equipment_id == str(slot.equipment_id):
+		return {"ok": false, "reason": "NoChange"}
+	if game_time < float(slot.switch_ready_at):
+		return {"ok": false, "reason": "EquipmentSwitchLocked"}
+	if not equipment_id.is_empty():
+		if not equipment_definitions.has(equipment_id) or not unlocked("equipment", equipment_id):
+			return {"ok": false, "reason": "EquipmentLocked"}
+		if (slot.category == "weapon" and not CombatSetup.KINDS.has(equipment_id)) or (slot.category == "defence" and equipment_id not in ["armour", "shield"]):
+			return {"ok": false, "reason": "EquipmentCategoryMismatch"}
+	if int(slot.generation) == 9223372036854775807:
+		return {"ok": false, "reason": "ModuleGenerationRangeExceeded"}
+	var next: Array = slots.duplicate(true)
+	next[index].equipment_id = equipment_id
+	next[index].generation = int(slot.generation) + 1
+	next[index].switch_ready_at = game_time + float(parameters.equipmentSwitchCooldownSeconds)
+	return _commit_growth(next, enhancement_progress, reactor_progress, research_progress, wallet, "refit")
+
+func quote_levels(slot_id: String, count: int) -> Dictionary:
+	for slot in slots:
+		if str(slot.id) == slot_id:
+			var row: Dictionary = equipment_definitions.laser if slot.category == "weapon" else equipment_definitions.armour
+			return Equipment.quote_levels(row, int(slot.paid_level), count, evolution, int(campaign.highest_reached) >= int(rules.hyperspace_unlock_reached), amount_api)
+	return {"ok": false, "reason": "UnknownSlot"}
+
+func buy_max_levels(slot_id: String) -> Dictionary:
+	var level: int = -1
+	for slot in slots:
+		if str(slot.id) == slot_id:
+			level = int(slot.paid_level)
+	if level < 0:
+		return {"ok": false, "reason": "UnknownSlot"}
+	var limit: int = 9223372036854775807 - level
+	if limit <= 0:
+		return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+	var low: int = 0
+	var high: int = 1
+	while high <= limit:
+		var quote = quote_levels(slot_id, high)
+		if not quote.ok or not Economy.payment(wallet, quote.costs, amount_api).ok:
+			break
+		low = high
+		if high == limit:
+			return {"ok": false, "reason": "EquipmentLevelRangeExceeded"}
+		high = limit if high > limit / 2 else high * 2
+	while low + 1 < high:
+		@warning_ignore("integer_division")
+		var middle: int = low + (high - low) / 2
+		var quote = quote_levels(slot_id, middle)
+		if quote.ok and Economy.payment(wallet, quote.costs, amount_api).ok:
+			low = middle
+		else:
+			high = middle
+	if low == 0:
+		return {"ok": false, "reason": "NoChange"}
+	return buy_levels(slot_id, low)
+
+func buy_all_levels(count: int) -> Dictionary:
+	var purchased: Array = []
+	var ship: Dictionary = ship_definitions[selected_ship]
+	for category in ["weapon", "defence"]:
+		for slot in slots:
+			if slot.category != category or int(slot.index) >= int(ship.para_1 if category == "weapon" else ship.para_2):
+				continue
+			var result = buy_levels(str(slot.id), count)
+			if result.ok:
+				purchased.append(str(slot.id))
+			elif result.get("reason", "") not in ["InsufficientResources", "EvolutionMaterialLocked"]:
+				return result
+	return {"ok": not purchased.is_empty(), "reason": "NoChange" if purchased.is_empty() else "", "slots": purchased}
+
+func _clear_switch_locks() -> void:
+	for slot in slots:
+		slot.switch_ready_at = 0.0
+
+func change_ship(ship_id: String) -> Dictionary:
+	if ship_id == selected_ship:
+		return {"ok": false, "reason": "NoChange"}
+	if not ship_definitions.has(ship_id) or not unlocked("ship", ship_id):
+		return {"ok": false, "reason": "ShipLocked"}
+	var current: Dictionary = ship_definitions[selected_ship]
+	var target: Dictionary = ship_definitions[ship_id]
+	var next: Array = slots.duplicate(true)
+	for category in ["weapon", "defence"]:
+		var old_count: int = int(current.para_1 if category == "weapon" else current.para_2)
+		var new_count: int = int(target.para_1 if category == "weapon" else target.para_2)
+		for index in maxi(old_count, new_count):
+			var id: String = category + ":" + str(index)
+			var found: bool = false
+			for slot in next:
+				if slot.id != id:
+					continue
+				found = true
+				if (index < old_count) != (index < new_count):
+					if int(slot.generation) == 9223372036854775807:
+						return {"ok": false, "reason": "ModuleGenerationRangeExceeded"}
+					slot.generation = int(slot.generation) + 1
+			if not found:
+				next.append({"id": id, "category": category, "index": index, "equipment_id": "",
+					"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
+	return _commit_growth(next, enhancement_progress, reactor_progress, research_progress, wallet, "refit", ship_id)
+
+func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
+	# These are assembled contributions from actual equipped entities, not a
+	# warehouse, item generator, reward path or second owner of drone progress.
+	if contributions.size() > int(ship_definitions[selected_ship].para_5):
+		return {"ok": false, "reason": "DroneCapacityExceeded"}
+	for contribution in contributions:
+		if not contribution is Dictionary or not contribution.get("id") is String or str(contribution.id).is_empty() or not contribution.has("generation") or not contribution.get("weapon") is Dictionary or not contribution.weapon.get("entry") is Dictionary:
+			return {"ok": false, "reason": "InvalidDroneContribution"}
+	return _commit_growth(slots, enhancement_progress, reactor_progress, research_progress, wallet, "refit", "", contributions)
+
+func equipment_label(id: String) -> String:
+	if id.is_empty():
+		return "空槽"
+	for row in configuration.unlock.unlock:
+		if row.type == "equipment" and str(row.target) == id:
+			return str(row.title)
+	return id
+
+func _begin_death_retreat() -> void:
+	retreat_from = _global_position()
+	retreat_to = maxf(0.0, retreat_from - float(parameters.backRange))
+	retreat_elapsed = 0.0
+	if int(guard.death_option) == 0:
+		guard.enabled = false
+	_clear_switch_locks()
+	kernel.begin_retreat()
+	campaign.state = "retreat"
