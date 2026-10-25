@@ -22,6 +22,7 @@ var parameters: Dictionary = {}
 var rules: Dictionary = {}
 var geometry: Dictionary = {}
 var equipment
+var economy
 var enhancement
 var reactor_system
 var research
@@ -72,13 +73,6 @@ var next_enemy_uid: int = 0
 var campaign: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
 	"point": 0, "points": [], "highest_reached": 1,
 	"cleared_stages": {}, "origin": 0.0, "speed": 0.0, "wait": 0.0}
-var wallet: Dictionary = {}
-var drops: Dictionary = {}
-var drop_cursor: Dictionary = {"registered_through": 0}
-var timed_resource_spec: PackedStringArray = []
-var timed_resources: Dictionary = {"elapsed": 0.0, "next_id": 0}
-var income_samples: Array = []
-var income_dirty: bool = false
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
 var wall_time: float = 0.0
@@ -112,7 +106,6 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	seed_value = combat_seed
 	for row in configuration.config.config:
 		parameters[str(row.name)] = row.para_1
-	timed_resource_spec = str(parameters.autoGenRes).replace("\uff0c", ",").split(",")
 	for row in configuration.game_rules.game_rules:
 		rules[str(row.id)] = row.value
 	for row in configuration.battle_geometry.battle_geometry:
@@ -189,6 +182,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	player_geometry_height = float(models[selected_ship].geometry_height)
 	player_dimensions = models[selected_ship].size * float(player_art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + selected_ship])
 	amount_api = ClassDB.instantiate("FoundationAmount")
+	economy = Economy.new(parameters, rules, amount_api)
 	equipment = Equipment.new(configuration.equipment.equipment, configuration.equipment_evolution.equipment_evolution,
 		configuration.unlock.unlock, parameters, rules, amount_api)
 	equipment.refresh_availability(unlocked, int(campaign.highest_reached))
@@ -286,17 +280,20 @@ func frame(real_dt: float, _focused: bool) -> void:
 
 func _step(dt: float) -> void:
 	game_time += dt
-	Economy.prune_income(income_samples, wall_time, game_time, research.income_window())
+	economy.prune_income(wall_time, game_time, research.income_window())
 	var people: Dictionary = Crew.step_assignments(crew_progress)
 	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
 		return
-	if not _advance_timed_resources(dt):
+	var advanced = economy.advance_timed(dt, campaign.state in ["travel", "combat", "waiting", "guard_wait", "retreat"], timed_resource_ratio,
+		Vector2(float(geometry.player_x), float(geometry.timed_drop_spawn_y)), float(geometry.player_y), wall_time, game_time, income_factors)
+	if not advanced.ok:
+		_fail(str(advanced.get("error", advanced.get("reason", "TimedResourceFailed"))))
 		return
-	var researched = research.advance(wallet, dt, research_speed, crew_factors.research_staffed)
+	var researched = research.advance(economy.budget(), dt, research_speed, crew_factors.research_staffed)
 	if not researched.ok:
 		_fail(str(researched.get("error", researched.get("reason", "ResearchFailed"))))
 		return
-	wallet = researched.wallet
+	economy.accept_budget(researched.wallet)
 	if researched.completed:
 		# Publish completion effects before collection; income-window/automatic
 		# investment refresh still happens once, after this step's collections.
@@ -307,13 +304,12 @@ func _step(dt: float) -> void:
 	if researched.has("continuation_error"):
 		_fail(str(researched.continuation_error))
 		return
-	var settled = Economy.collect_due(drops, wallet, income_samples,
-		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, false, income_factors)
+	var settled = economy.collect_due(wall_time, game_time, false, income_factors)
 	if not settled.ok:
 		_fail(str(settled.get("error", "CollectionFailed")))
 		return
-	income_dirty = income_dirty or settled.collected
-	if not _refresh_growth():
+
+	if not refresh_growth():
 		return
 	match str(campaign.state):
 		"travel":
@@ -403,7 +399,7 @@ func _advance_kernel(dt: float) -> bool:
 			previous[field] = total.value
 		damage_statistics[key] = previous
 	last_events.append_array(result.events)
-	var registered = Economy.register_drops(drops, drop_cursor, result.drops, game_time, rules, amount_api, income_factors.refinery)
+	var registered = economy.register_drops(result.drops, game_time, income_factors.refinery)
 	if not registered.ok:
 		_fail(str(registered.get("error", "DropRegistrationFailed")))
 		return false
@@ -416,13 +412,12 @@ func _advance_kernel(dt: float) -> bool:
 		equipment.clear_switch_locks()
 		kernel.finish_wave(bool(result.final_cleared))
 		if result.final_cleared:
-			var settled = Economy.collect_due(drops, wallet, income_samples,
-				float(parameters.autoCollectReduce), wall_time, game_time, amount_api, true, income_factors)
+			var settled = economy.collect_due(wall_time, game_time, true, income_factors)
 			if not settled.ok:
 				_fail(str(settled.get("error", "FinalCollectionFailed")))
 				return false
-			income_dirty = income_dirty or settled.collected
-			if not _refresh_growth():
+
+			if not refresh_growth():
 				return false
 			if not campaign.cleared_stages.has(int(campaign.stage)):
 				campaign.cleared_stages[int(campaign.stage)] = true
@@ -468,15 +463,6 @@ func _sync_geometry() -> void:
 	kernel.input_player_point(packet.player_point)
 	if not kernel.input_player_hull(packet.player_hull):
 		_fail("InvalidPlayerGeometry")
-
-func collect_drop(id: String) -> Dictionary:
-	var result = Economy.collect_drop(drops, wallet, income_samples, id, false,
-		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, income_factors)
-	if result.ok:
-		income_dirty = true
-		if not _refresh_growth():
-			return {"ok": false, "reason": last_error}
-	return result
 
 func set_guard(enabled: bool, death_option: int = 0) -> Dictionary:
 	if death_option < 0 or death_option > 2:
@@ -555,32 +541,13 @@ func _fail(reason: String) -> Dictionary:
 	pause_reasons.error = true
 	return {"ok": false, "reason": reason}
 
-func _advance_timed_resources(dt: float) -> bool:
-	if campaign.state in ["travel", "combat", "waiting", "guard_wait", "retreat"]:
-		timed_resources.elapsed = float(timed_resources.elapsed) + dt
-		var interval: float = float(timed_resource_spec[0])
-		while float(timed_resources.elapsed) + 1e-9 >= interval:
-			var stage: Dictionary = level_definitions[int(campaign.stage)]
-			var previous: Dictionary = level_definitions.get(int(campaign.stage) - 1, {})
-			var ratio = CombatSetup.ratio(stage, previous, "resRatio", int(campaign.point), campaign.points.size(), amount_api)
-			if not ratio.ok:
-				_fail(str(ratio.get("error", "TimedResourceRatioFailed")))
-				return false
-			var remainder: float = maxf(0.0, float(timed_resources.elapsed) - interval)
-			var spawned = Economy.spawn_timed_drop(drops, timed_resources, timed_resource_spec[1],
-				timed_resource_spec[2], float(timed_resource_spec[3]), ratio.value,
-				Vector2(float(geometry.player_x), float(geometry.timed_drop_spawn_y)), game_time - remainder, amount_api, income_factors.refinery)
-			if not spawned.ok:
-				_fail(str(spawned.get("error", spawned.get("reason", "TimedResourceSpawnFailed"))))
-				return false
-			timed_resources.elapsed = remainder
-	var moved = Economy.advance_timed_drops(drops, wallet, income_samples, float(geometry.player_y),
-		float(parameters.autoCollectReduce), wall_time, game_time, amount_api, income_factors)
-	if not moved.ok:
-		_fail(str(moved.get("error", "TimedResourceCollectionFailed")))
-		return false
-	income_dirty = income_dirty or moved.collected
-	return true
+func timed_resource_ratio() -> Dictionary:
+	var stage: Dictionary = level_definitions[int(campaign.stage)]
+	var previous: Dictionary = level_definitions.get(int(campaign.stage) - 1, {})
+	return CombatSetup.ratio(stage, previous, "resRatio", int(campaign.point), campaign.points.size(), amount_api)
+
+func economy_display_context() -> Dictionary:
+	return {"wall": wall_time, "game": game_time, "factors": income_factors}
 
 func reactor_inputs() -> Dictionary:
 	return {"available": unlocked("feature", "reactor"), "condensation": unlocked("reactor_module", "condensation"),
@@ -590,15 +557,8 @@ func _ship_mounts(ship: Dictionary) -> Dictionary:
 	return {"weapon": int(ship.para_1), "defence": int(ship.para_2)}
 
 func equipment_inputs() -> Dictionary:
-	return {"mounts": _ship_mounts(ship_definitions[selected_ship]), "balances": wallet,
+	return {"mounts": _ship_mounts(ship_definitions[selected_ship]), "balances": economy.budget(),
 		"game_time": game_time, "highest_reached": int(campaign.highest_reached)}
-
-func can_pay_budget(costs: Dictionary, balances: Dictionary) -> bool:
-	return Economy.can_pay(balances, costs, amount_api).ok
-
-func pay_budget(costs: Dictionary, balances: Dictionary) -> Dictionary:
-	if costs.is_empty(): return {"ok": true, "wallet": balances}
-	return Economy.payment(balances, costs, amount_api)
 
 func _growth_setup(next_slots = null, next_ship: String = "", contributions = null) -> Dictionary:
 	var ship_key: String = selected_ship if next_ship.is_empty() else next_ship
@@ -691,7 +651,7 @@ func publish_equipment_refit(next_slots,
 	income_factors = setup.income_factors
 	research_speed = setup.research_speed
 	galaxy_crew_experience = setup.galaxy_crew_experience
-	wallet = next_wallet
+	economy.accept_budget(next_wallet)
 	player_muzzles = {}
 	for row in setup.descriptor.weapons:
 		player_muzzles[str(row.entry.id)] = row.muzzle
@@ -700,7 +660,7 @@ func publish_equipment_refit(next_slots,
 	_retreat_if_dead()
 	return {"ok": true}
 
-func _refresh_growth() -> bool:
+func refresh_growth() -> bool:
 	var reactor_context: Dictionary = reactor_inputs()
 	if reactor_system.modules_changed(reactor_context):
 		var updated = reactor_system.refresh(reactor_context, publish_reactor)
@@ -710,24 +670,24 @@ func _refresh_growth() -> bool:
 	var automatic_due: bool = research.automatic_due(crew_factors.research_staffed)
 	var peaks: Dictionary = {}
 	var investment: Dictionary = {}
-	if income_dirty:
-		var query = Economy.income_rates(income_samples, wall_time, game_time, research.income_window(), "peak", amount_api)
+	if economy.income_changed():
+		var query = economy.income_rates(wall_time, game_time, research.income_window(), "peak")
 		if not query.ok:
 			_fail(str(query.get("error", "IncomeQueryFailed")))
 			return false
 		peaks = query.rates
 	if automatic_due:
-		var query = Economy.income_rates(income_samples, wall_time, game_time, research.income_window(), "investment", amount_api)
+		var query = economy.income_rates(wall_time, game_time, research.income_window(), "investment")
 		if not query.ok:
 			_fail(str(query.get("error", "IncomeQueryFailed")))
 			return false
 		investment = query.rates
-	var refreshed = research.refresh_income(peaks, investment, income_dirty, automatic_due)
+	var refreshed = research.refresh_income(peaks, investment, economy.income_changed(), automatic_due)
 	if not refreshed.ok:
 		_fail(str(refreshed.get("error", "ResearchIncomeFailed")))
 		return false
 	var factors_changed: bool = refreshed.factors_changed
-	income_dirty = false
+	economy.acknowledge_income()
 	if factors_changed:
 		var changed = _publish_research()
 		if not changed.ok:
@@ -740,18 +700,12 @@ func enhancement_inputs() -> Dictionary:
 	return {"bonus": int(world_factors.enhancement_levels), "available": unlocked("feature", "jewels"),
 		"armours": equipment.equipped_armours(_ship_mounts(ship_definitions[selected_ship]))}
 
-func check_costs(costs: Dictionary) -> Dictionary:
-	return Economy.can_pay(wallet, costs, amount_api)
-
-func can_pay_costs(costs: Dictionary) -> bool:
-	return Economy.can_pay(wallet, costs, amount_api).ok
-
 func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
-	var paid: Dictionary = {"ok": true, "wallet": wallet}
-	if not costs.is_empty(): paid = Economy.payment(wallet, costs, amount_api)
+	var paid: Dictionary = {"ok": true, "wallet": economy.budget()}
+	if not costs.is_empty(): paid = economy.payment(costs)
 	if not paid.ok: return paid
 	var result = _commit_values({"weapons": {}, "defences": {}}, kind, "", changed)
-	if result.ok: wallet = paid.wallet
+	if result.ok: economy.accept_budget(paid.wallet)
 	return result
 
 func change_ship(ship_id: String) -> Dictionary:
@@ -760,7 +714,7 @@ func change_ship(ship_id: String) -> Dictionary:
 	if not ship_definitions.has(ship_id) or not unlocked("ship", ship_id):
 		return {"ok": false, "reason": "ShipLocked"}
 	return equipment.resize_mounts(_ship_mounts(ship_definitions[selected_ship]), _ship_mounts(ship_definitions[ship_id]),
-		wallet, publish_equipment_refit.bind(ship_id))
+		economy.budget(), publish_equipment_refit.bind(ship_id))
 
 func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
 	# These are assembled contributions from actual equipped entities, not a
@@ -770,7 +724,7 @@ func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
 	for contribution in contributions:
 		if not contribution is Dictionary or not contribution.get("id") is String or str(contribution.id).is_empty() or not contribution.has("generation") or not contribution.get("weapon") is Dictionary or not contribution.weapon.get("entry") is Dictionary:
 			return {"ok": false, "reason": "InvalidDroneContribution"}
-	return publish_equipment_refit(null, wallet, "refit", "", contributions)
+	return publish_equipment_refit(null, economy.budget(), "refit", "", contributions)
 
 func _begin_death_retreat() -> void:
 	retreat_from = _global_position()
@@ -841,7 +795,7 @@ func publish_equipment_levels(next: Array, balances: Dictionary, changed: Array)
 	if not values.ok: return values
 	var result = _commit_values(values, "upgrade")
 	if result.ok:
-		wallet = balances
+		economy.accept_budget(balances)
 	return result
 
 func _publish_world_values(previous: Dictionary) -> Dictionary:
@@ -901,13 +855,13 @@ func _publish_research() -> Dictionary:
 	return {"ok": true}
 
 func publish_reactor(factors: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
-	var paid: Dictionary = {"ok": true, "wallet": wallet}
-	if not costs.is_empty(): paid = Economy.payment(wallet, costs, amount_api)
+	var paid: Dictionary = {"ok": true, "wallet": economy.budget()}
+	if not costs.is_empty(): paid = economy.payment(costs)
 	if not paid.ok: return paid
 	var updated = _publish_native_values(research_factors, factors, kind)
 	if not updated.ok: return updated
 	reactor_factors = factors
-	wallet = paid.wallet
+	economy.accept_budget(paid.wallet)
 	income_factors.condensation = factors.condensation
 	return {"ok": true}
 
@@ -1041,13 +995,13 @@ func _advance_crew_jobs(dt: float, ids: Array) -> bool:
 	for attempt in Crew.advance_jobs(crew_progress, ids, crew_jobs, dt):
 		if attempt.job == "equipment_upgrade":
 			if attempt.mode != "max":
-				equipment.buy_all_levels(int(attempt.mode), false, equipment_inputs(), can_pay_budget, pay_budget, publish_equipment_levels)
+				equipment.buy_all_levels(int(attempt.mode), false, equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
 			else:
-				equipment.buy_all_levels(1, true, equipment_inputs(), can_pay_budget, pay_budget, publish_equipment_levels)
+				equipment.buy_all_levels(1, true, equipment_inputs(), economy.affordable, economy.payment, publish_equipment_levels)
 		elif attempt.job == "jewel_auto":
-			enhancement.purchase(1, enhancement_inputs(), can_pay_costs, publish_enhancement)
+			enhancement.purchase(1, enhancement_inputs(), economy.affordable, publish_enhancement)
 		elif attempt.job == "reactor_upgrade":
-			reactor_system.purchase(1, true, reactor_inputs(), check_costs, publish_reactor)
+			reactor_system.purchase(1, true, reactor_inputs(), economy.can_pay, publish_reactor)
 		if not last_error.is_empty(): return false
 	return true
 
@@ -1077,7 +1031,7 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 		galaxy_factors = contributions
 		if contributions.growth_changed and not _commit_world({}, {}, contributions).ok: return false
 	if not result.payments.is_empty():
-		var production = Economy.income_rates(income_samples, wall_time, game_time, research.income_window(), "production", amount_api)
+		var production = economy.income_rates(wall_time, game_time, research.income_window(), "production")
 		if not production.ok:
 			_fail(str(production.get("error", "ProductionQueryFailed")))
 			return false
@@ -1087,7 +1041,7 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 				_fail(str(income.get("error", "GalaxyIncomeFailed")))
 				return false
 			for resource in income.amounts:
-				var credited = Economy.credit_yield(wallet, income_samples, str(resource), income.amounts[resource], wall_time, game_time, amount_api)
+				var credited = economy.credit_yield(str(resource), income.amounts[resource], wall_time, game_time)
 				if not credited.ok:
 					_fail(str(credited.get("error", "GalaxyCreditFailed")))
 					return false

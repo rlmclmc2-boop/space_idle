@@ -1,8 +1,82 @@
 extends RefCounted
-## These functions mutate the session's ledger only after Amount operations succeed.
-## Death sampling and damage belong to the native kernel.
+## Economy owns balances, drop ownership, timed production and income history.
+signal display_changed
 
-static func can_pay(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictionary:
+var _wallet: Dictionary = {}
+var _drops: Dictionary = {}
+var _markers: Dictionary = {}
+var _cursor: Dictionary = {"registered_through": 0}
+var _samples: Array = []
+var _generator: Dictionary = {"elapsed": 0.0, "next_id": 0}
+var _spec: PackedStringArray
+var _rules: Dictionary
+var _auto_reduce: float
+var _api
+var _income_dirty: bool = false
+var _balance_dirty: bool = true
+var _balance_text: String = ""
+
+func _init(parameters: Dictionary, rules: Dictionary, api) -> void:
+	_spec = str(parameters.autoGenRes).replace("\uff0c", ",").split(",")
+	_auto_reduce = float(parameters.autoCollectReduce)
+	_rules = {"fragment_drop_auto_seconds": rules.fragment_drop_auto_seconds, "ordinary_drop_auto_seconds": rules.ordinary_drop_auto_seconds}
+	_api = api
+
+# A budget is an opaque candidate ledger for synchronous cross-module transactions.
+func budget() -> Dictionary:
+	return _wallet
+
+func accept_budget(next: Dictionary) -> void:
+	if next == _wallet: return
+	_wallet = next
+	_balance_dirty = true
+	display_changed.emit()
+
+func affordable(costs: Dictionary, candidate = null) -> bool:
+	return can_pay(costs, candidate).ok
+
+func income_changed() -> bool:
+	return _income_dirty
+
+func acknowledge_income() -> void:
+	_income_dirty = false
+
+func drop_markers() -> Array:
+	return _markers.values()
+
+func balances_text() -> String:
+	if _balance_dirty:
+		var balances: PackedStringArray = []
+		for resource in _wallet:
+			var text = _api.apply("to_display", [_wallet[resource]])
+			balances.append(str(resource) + ": " + str(text.text))
+		_balance_text = "   ".join(balances)
+		_balance_dirty = false
+	return _balance_text
+
+func collect_at(point: Vector2, wall: float, game: float, factors: Dictionary) -> Dictionary:
+	for id in _markers:
+		var marker: Dictionary = _markers[id]
+		if point.distance_to(Vector2(float(marker.x), float(marker.y))) <= 18.0:
+			return collect_drop(str(id), false, wall, game, factors)
+	return {"ok": false, "reason": "NoChange"}
+
+func advance_timed(dt: float, active: bool, resource_ratio: Callable, origin: Vector2, target_y: float, wall: float, game: float, factors: Dictionary) -> Dictionary:
+	if active:
+		_generator.elapsed = float(_generator.elapsed) + dt
+		var interval: float = float(_spec[0])
+		while float(_generator.elapsed) + 1e-9 >= interval:
+			var ratio: Dictionary = resource_ratio.call()
+			if not ratio.ok: return ratio
+			var remainder: float = maxf(0.0, float(_generator.elapsed) - interval)
+			var spawned = _spawn_timed_drop(_spec[1], _spec[2], float(_spec[3]), ratio.value, origin, game - remainder, factors.refinery)
+			if not spawned.ok: return spawned
+			_generator.elapsed = remainder
+	return _advance_timed_drops(target_y, wall, game, factors)
+
+func can_pay(costs: Dictionary, candidate = null) -> Dictionary:
+	var wallet: Dictionary = _wallet if candidate == null else candidate
+	var amount_api = _api
 	var zero = amount_api.apply("zero", [])
 	for resource in costs:
 		var balance: Dictionary = wallet.get(resource, zero.value)
@@ -13,8 +87,11 @@ static func can_pay(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictio
 			return {"ok": false, "reason": "InsufficientResources"}
 	return {"ok": true}
 
-static func payment(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictionary:
-	var affordable = can_pay(wallet, costs, amount_api)
+func payment(costs: Dictionary, candidate = null) -> Dictionary:
+	var wallet: Dictionary = _wallet if candidate == null else candidate
+	if costs.is_empty(): return {"ok": true, "wallet": wallet}
+	var amount_api = _api
+	var affordable = can_pay(costs, candidate)
 	if not affordable.ok:
 		return affordable
 	var next: Dictionary = wallet.duplicate()
@@ -27,7 +104,11 @@ static func payment(wallet: Dictionary, costs: Dictionary, amount_api) -> Dictio
 		next[resource] = remaining.value
 	return {"ok": true, "wallet": next}
 
-static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array, now: float, rules: Dictionary, amount_api, refinery: Dictionary) -> Dictionary:
+func register_drops(rows: Array, now: float, refinery: Dictionary) -> Dictionary:
+	var pending: Dictionary = _drops
+	var cursor: Dictionary = _cursor
+	var rules: Dictionary = _rules
+	var amount_api = _api
 	# Native emits monotonically increasing IDs through one synchronous result stream.
 	# Keep only its registration frontier, plus the still-unclaimed drops themselves.
 	var registered_through: int = int(cursor.registered_through)
@@ -60,10 +141,17 @@ static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array,
 		next_frontier = maxi(next_frontier, id)
 	for id in captured:
 		pending[id] = captured[id]
+		_markers[id] = {"x": captured[id].x, "y": captured[id].y, "resource": str(captured[id].id)}
 	cursor.registered_through = next_frontier
+	if not captured.is_empty(): display_changed.emit()
 	return {"ok": true}
 
-static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array, id: String, automatic: bool, auto_reduce: float, wall: float, game: float, amount_api, income_factors: Dictionary = {}) -> Dictionary:
+func collect_drop(id: String, automatic: bool, wall: float, game: float, income_factors: Dictionary = {}) -> Dictionary:
+	var pending: Dictionary = _drops
+	var wallet: Dictionary = _wallet
+	var samples: Array = _samples
+	var auto_reduce: float = _auto_reduce
+	var amount_api = _api
 	if not pending.has(id):
 		return {"ok": false, "reason": "NoChange"}
 	var row: Dictionary = pending[id]
@@ -139,9 +227,14 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 	samples.append({"resource": resource, "actual": quantity, "production_base": base,
 		"wall": wall, "game": game, "source": row.income_source})
 	pending.erase(id)
+	_markers.erase(id)
+	_income_dirty = true
+	_balance_dirty = true
+	display_changed.emit()
 	return {"ok": true, "amount": quantity, "resource": resource}
 
-static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false, income_factors: Dictionary = {}) -> Dictionary:
+func collect_due(wall: float, game: float, force: bool = false, income_factors: Dictionary = {}) -> Dictionary:
+	var pending: Dictionary = _drops
 	# Stable birth order; collection never depends on Dictionary iteration order.
 	var collected: bool = false
 	var ids: Array = []
@@ -154,15 +247,16 @@ static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array,
 		if str(left.domain) != str(right.domain): return str(left.domain) < str(right.domain)
 		return int(left.uid) < int(right.uid))
 	for id in ids:
-		var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api, income_factors)
+		var result = collect_drop(id, true, wall, game, income_factors)
 		if not result.ok:
 			return result
 		collected = true
 	return {"ok": true, "collected": collected}
 
-static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resource: String,
-		base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2,
-		born_at: float, amount_api, refinery: Dictionary) -> Dictionary:
+func _spawn_timed_drop(resource: String, base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2, born_at: float, refinery: Dictionary) -> Dictionary:
+	var pending: Dictionary = _drops
+	var generator: Dictionary = _generator
+	var amount_api = _api
 	if int(generator.next_id) == 9223372036854775807:
 		return {"ok": false, "reason": "TimedDropIdRangeExceeded"}
 	var base = amount_api.apply("from_decimal", [base_text])
@@ -187,10 +281,12 @@ static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resourc
 		"x": origin.x, "y": origin.y, "origin_y": origin.y, "born_at": born_at,
 		"moving": true, "speed": speed}
 	generator.next_id = id
+	_markers[key] = {"x": origin.x, "y": origin.y, "resource": resource}
+	display_changed.emit()
 	return {"ok": true}
 
-static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples: Array,
-		target_y: float, auto_reduce: float, wall: float, game: float, amount_api, income_factors: Dictionary = {}) -> Dictionary:
+func _advance_timed_drops(target_y: float, wall: float, game: float, income_factors: Dictionary = {}) -> Dictionary:
+	var pending: Dictionary = _drops
 	var collected: bool = false
 	var ids: Array = pending.keys()
 	# Timed IDs are inserted monotonically; erasure preserves their insertion order.
@@ -198,20 +294,26 @@ static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples
 		var row: Dictionary = pending[key]
 		if not row.get("moving", false):
 			continue
+		var previous_y: float = float(row.y)
 		row.y = minf(target_y, float(row.origin_y) + float(row.speed) * maxf(0.0, game - float(row.born_at)))
+		_markers[key].y = row.y
+		if float(row.y) != previous_y: display_changed.emit()
 		if float(row.y) + 1e-9 >= target_y:
 			row.y = target_y
-			var result = collect_drop(pending, wallet, samples, str(key), true, auto_reduce, wall, game, amount_api, income_factors)
+			var result = collect_drop(str(key), true, wall, game, income_factors)
 			if not result.ok:
 				return result
 			collected = true
 	return {"ok": true, "collected": collected}
 
-static func prune_income(samples: Array, wall: float, game: float, window: float) -> void:
+func prune_income(wall: float, game: float, window: float) -> void:
+	var samples: Array = _samples
 	while not samples.is_empty() and float(samples[0].wall) <= wall - window and float(samples[0].game) <= game - window:
 		samples.pop_front()
 
-static func income_rates(samples: Array, wall: float, game: float, window: float, kind: String, api) -> Dictionary:
+func income_rates(wall: float, game: float, window: float, kind: String) -> Dictionary:
+	var samples: Array = _samples
+	var api = _api
 	if kind not in ["peak", "investment", "production"]:
 		return {"ok": false, "reason": "UnknownIncomeQuery"}
 	var zero: Dictionary = api.apply("zero", []).value
@@ -240,7 +342,10 @@ static func income_rates(samples: Array, wall: float, game: float, window: float
 		rates[resource] = rate.value
 	return {"ok": true, "rates": rates}
 
-static func credit_yield(wallet: Dictionary, samples: Array, resource: String, quantity: Dictionary, wall: float, game: float, api) -> Dictionary:
+func credit_yield(resource: String, quantity: Dictionary, wall: float, game: float) -> Dictionary:
+	var wallet: Dictionary = _wallet
+	var samples: Array = _samples
+	var api = _api
 	var zero: Dictionary = api.apply("zero", []).value
 	if api.apply("compare", [quantity, zero]).scalar <= 0:
 		return {"ok": true}
@@ -248,6 +353,8 @@ static func credit_yield(wallet: Dictionary, samples: Array, resource: String, q
 	if not total.ok:
 		return total
 	wallet[resource] = total.value
+	_balance_dirty = true
+	display_changed.emit()
 	samples.append({"resource": resource, "actual": quantity, "production_base": zero,
 		"wall": wall, "game": game, "source": "galaxy_yield"})
 	return {"ok": true}

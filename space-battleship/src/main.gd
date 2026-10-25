@@ -1,4 +1,5 @@
 extends Node2D
+const EconomyView = preload("res://src/ui/economy_view.gd")
 const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
 const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
@@ -48,6 +49,7 @@ func _ready() -> void:
 	if not result.ok:
 		startup_error = str(result.reason)
 	else:
+		add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 		_setup_growth_panel()
 
 func _process(dt: float) -> void:
@@ -71,12 +73,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		session.set_pause("user", not session.pause_reasons.has("user"))
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_G:
 		session.set_guard(not session.guard.enabled, int(session.guard.death_option))
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		for id in session.drops.keys():
-			var row: Dictionary = session.drops[id]
-			if event.position.distance_to(Vector2(float(row.x), float(row.y))) <= 18.0:
-				session.collect_drop(str(id))
-				break
 
 func _draw() -> void:
 	draw_rect(get_viewport_rect(), Color("071423"))
@@ -107,8 +103,6 @@ func _draw() -> void:
 		if hull.size() >= 3:
 			draw_colored_polygon(hull, Color("ce6978"))
 		draw_string(font, Vector2(float(actor.x) - 24, float(actor.y) + 35), str(actor.hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f1d9dc"))
-	for row in session.drops.values():
-		draw_circle(Vector2(float(row.x), float(row.y)), 5.0, Color("ffe195") if str(row.id) != "jewel" else Color("a2afff"))
 	var state: Dictionary = session.campaign
 	draw_string(font, Vector2(18, 28), "关卡 %s · %s · %.0f" % [state.stage, state.state, state.distance], HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("ecf5ff"))
 	var history: Dictionary = kernel.read_history()
@@ -123,11 +117,6 @@ func _draw() -> void:
 		statistics.append(str(source) + " " + str(text.text))
 	if not statistics.is_empty():
 		draw_string(font, Vector2(18, 825), "伤害 " + "  ".join(statistics), HORIZONTAL_ALIGNMENT_LEFT, 536, 12, Color("c1d5f0"))
-	var balances: PackedStringArray = []
-	for resource in session.wallet:
-		var text = session.amount_api.apply("to_display", [session.wallet[resource]])
-		balances.append(str(resource) + ": " + str(text.text))
-	draw_string(font, Vector2(18, 795), "   ".join(balances), HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffe195"))
 	draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
 	if not session.last_error.is_empty():
 		draw_string(font, Vector2(18, 850), session.last_error, HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
@@ -235,18 +224,18 @@ func _setup_growth_panel() -> void:
 			_refresh_ship_choices()
 			_refresh_world_pickers()
 			session.take_display_changes())
-	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.can_pay_budget,
-		session.pay_budget, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
+	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
+		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
 	session.ship_changed.connect(_refresh_ship_choices)
 	ship_picker = OptionButton.new()
 	box.add_child(ship_picker)
 	_command_button(box, "更换舰体", func(): return session.change_ship(str(ship_picker.get_item_metadata(ship_picker.selected))))
-	reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.check_costs, session.publish_reactor, _command_button)
+	reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.can_pay, session.publish_reactor, _command_button)
 	box.add_child(reactor_panel)
 	research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
 	box.add_child(EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
-		session.can_pay_costs, session.publish_enhancement, _command_button))
+		session.economy.affordable, session.publish_enhancement, _command_button))
 	_setup_world_controls(box)
 	_refresh_ship_choices()
 	_refresh_world_pickers()
