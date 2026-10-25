@@ -28,6 +28,7 @@ var _guard: Dictionary = {"enabled": false, "stage": 1, "point": 0, "distance": 
 
 func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary, run_state) -> void:
 	_run_state = run_state
+	_state.cleared_stages.make_read_only()
 	for row in configuration.level.level: _levels[int(row.id)] = row
 	for row in configuration.monGroup.monGroup: _groups[int(row.id)] = row
 	for row in configuration.ship.ship: _ships[str(row.name)] = row
@@ -308,7 +309,10 @@ func observe_battle(result: Dictionary, clear_locks: Callable, settle_collection
 		if result.final_cleared:
 			if not bool(settle_collection.call()): return false
 			if not _state.cleared_stages.has(int(_state.stage)):
-				_state.cleared_stages[int(_state.stage)] = true
+				var cleared: Dictionary = _state.cleared_stages.duplicate()
+				cleared[int(_state.stage)] = true
+				cleared.make_read_only()
+				_state.cleared_stages = cleared
 				progress_changed.emit()
 			_state.state = "waiting"
 			_state.wait = _guard_interval() if _guard_matches() else float(_rules.clear_wait_seconds)

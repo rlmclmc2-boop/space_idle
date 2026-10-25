@@ -19,19 +19,22 @@ var _balance_text: String = ""
 
 func _init(parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
 	_run_state = run_state
+	_wallet.make_read_only()
 	_spec = str(parameters.autoGenRes).replace("\uff0c", ",").split(",")
 	_auto_reduce = float(parameters.autoCollectReduce)
 	_rules = {"fragment_drop_auto_seconds": rules.fragment_drop_auto_seconds, "ordinary_drop_auto_seconds": rules.ordinary_drop_auto_seconds}
 	_api = api
 
-# A budget is an opaque candidate ledger for synchronous cross-module transactions.
+# A budget is a read-only snapshot; candidates duplicate its ledger and replace Amount values.
 func budget() -> Dictionary:
 	return _wallet
 
 func accept_budget(next: Dictionary) -> void:
 	if not _run_state.is_running(): return
 	if next == _wallet: return
-	_wallet = next
+	_wallet = next.duplicate()
+	for amount in _wallet.values(): amount.make_read_only()
+	_wallet.make_read_only()
 	_balance_dirty = true
 	display_changed.emit()
 
@@ -232,7 +235,11 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 	if not result.ok:
 		return result
 	# One completed collection: wallet, history and ownership change together.
+	wallet = wallet.duplicate()
+	result.value.make_read_only()
 	wallet[resource] = result.value
+	wallet.make_read_only()
+	_wallet = wallet
 	samples.append({"resource": resource, "actual": quantity, "production_base": base,
 		"wall": wall, "game": game, "source": row.income_source})
 	pending.erase(id)
@@ -364,7 +371,11 @@ func credit_yield(resource: String, quantity: Dictionary, wall: float, game: flo
 	var total = api.apply("add", [wallet.get(resource, zero), quantity])
 	if not total.ok:
 		return total
+	wallet = wallet.duplicate()
+	total.value.make_read_only()
 	wallet[resource] = total.value
+	wallet.make_read_only()
+	_wallet = wallet
 	_balance_dirty = true
 	display_changed.emit()
 	samples.append({"resource": resource, "actual": quantity, "production_base": zero,
