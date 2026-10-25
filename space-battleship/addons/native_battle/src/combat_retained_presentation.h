@@ -46,17 +46,16 @@ bool SpaceCombatPresentation::advance_retained() {
             }
             f.point=f.anchor_point;
         } else {
-            f.point=f.fixed?f.ray_origin+f.ray_step*double((logical-f.launch).dot(f.ray_direction)):display_point(logical);
-            if(f.chain)f.axis=(display_point(logical+m.direction)-display_point(logical)).normalized();
-            else if(f.fixed)f.axis=f.ray_step.normalized();
+            f.point=f.fixed?f.ray_origin+f.ray_step*double((logical-f.launch).dot(f.ray_direction)):logical;
+            if(f.fixed)f.axis=f.ray_step.normalized();
             else f.axis=m.direction.normalized();
         }
         if(missile) {
-            const double elapsed=std::max(0.0,m.age-f.motion_age);f.motion_age=m.age;Vector2 delta=display_point(logical)-display_point(f.trail[f.head]);
+            const double elapsed=std::max(0.0,m.age-f.motion_age);f.motion_age=m.age;Vector2 delta=logical-f.trail[f.head];
             double wanted=delta.length_squared()>0.001?double(delta.angle()):double(m.direction.angle());
             f.visual_angle=Math::lerp_angle(f.visual_angle,wanted,1.0-std::exp(-elapsed*16.0));
             if(!born&&elapsed>0){f.head=(f.head+1)%14;f.trail[f.head]=logical;f.samples=std::min(14,f.samples+1);}
-            if(f.samples>1){delta=display_point(f.trail[f.head])-display_point(f.trail[(f.head+13)%14]);if(delta.length_squared()>0.001)f.visual_angle=delta.angle();}
+            if(f.samples>1){delta=f.trail[f.head]-f.trail[(f.head+13)%14];if(delta.length_squared()>0.001)f.visual_angle=delta.angle();}
             f.axis=engine_from_angle(f.visual_angle);
         }
         if(f.beam||f.hostile||missile||f.render_kind<0)frame.background.push_back(id);

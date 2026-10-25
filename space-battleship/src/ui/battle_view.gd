@@ -23,7 +23,7 @@ func _process(_dt: float) -> void:
 			if int(event.kind) in [0, 1]:
 				native_display.record_contact(0 if event.get("hostile", false) else 1, event.position, event.direction,
 					float(event.clock), int(event.kind) == 0, bool(event.critical), int(event.type))
-		native_display.prune_contacts(float(kernel.presentation_clock()), false)
+		native_display.prune_contacts(float(kernel.presentation_clock()))
 	queue_redraw()
 
 func _draw() -> void:
@@ -35,7 +35,7 @@ func _draw() -> void:
 		var prepared = native_display.prepare_flights(Vector2.ZERO)
 		native_display.draw_flights(prepared, Vector2.ZERO)
 		_upload_beams()
-		native_display.draw_contacts(contact_layer.get_canvas_item(), float(kernel.presentation_clock()), true)
+		native_display.draw_contacts(float(kernel.presentation_clock()))
 	var player_hull: PackedVector2Array = _battle.player_hull()
 	if player_hull.size() >= 3:
 		draw_colored_polygon(player_hull, Color("66d9dc"))
@@ -61,7 +61,6 @@ func _setup_native_display() -> void:
 	var pulse := Image.load_from_file("res://assets/weapons/laser-pulse.png")
 	if pulse != null and not pulse.is_empty():
 		retained.set_shader_parameter("pulse_texture", ImageTexture.create_from_image(pulse))
-	native_display.configure_logical_coordinates(true)
 	native_display.configure_retained_gpu(retained)
 	contact_layer = Node2D.new()
 	contact_layer.z_index = 2
