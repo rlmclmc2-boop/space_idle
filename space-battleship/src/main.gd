@@ -1,4 +1,6 @@
 extends Node2D
+const FleetPanel = preload("res://src/ui/fleet_panel.gd")
+const CampaignView = preload("res://src/ui/campaign_view.gd")
 const CrewPanel = preload("res://src/ui/crew_panel.gd")
 const GalaxyPanel = preload("res://src/ui/galaxy_panel.gd")
 const PlanetPanel = preload("res://src/ui/planet_panel.gd")
@@ -19,7 +21,6 @@ var beam_material: ShaderMaterial
 var contact_layer: Node2D
 var growth_panel: PanelContainer
 var growth_status: Label
-var ship_picker: OptionButton
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -39,10 +40,11 @@ func _ready() -> void:
 	get_window().content_scale_size = Vector2i(int(session.geometry.view_width), int(session.geometry.view_height))
 	kernel = session.kernel
 	_setup_native_display()
-	result = session.start_sortie(1)
+	result = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if not result.ok:
 		startup_error = str(result.reason)
 	else:
+		add_child(CampaignView.new(session.campaign_system))
 		add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 		_setup_growth_panel()
 
@@ -63,8 +65,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		session.set_pause("user", not session.pause_reasons.has("user"))
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_G:
-		session.set_guard(not session.guard.enabled, int(session.guard.death_option))
 
 func _draw() -> void:
 	draw_rect(get_viewport_rect(), Color("071423"))
@@ -83,7 +83,7 @@ func _draw() -> void:
 		_upload_beams()
 		native_display.draw_contacts(contact_layer.get_canvas_item(), float(kernel.presentation_clock()), true)
 	var player_point := Vector2(float(session.geometry.player_x), float(session.geometry.player_y))
-	var player_hull: PackedVector2Array = Geometry.transform_hull(session.models[session.selected_ship].hull, player_point, session.player_dimensions, 0.0)
+	var player_hull: PackedVector2Array = Geometry.transform_hull(session.models[session.campaign_system.selected_ship()].hull, player_point, session.player_dimensions, 0.0)
 	if player_hull.size() >= 3:
 		draw_colored_polygon(player_hull, Color("66d9dc"))
 	var enemies: Array = kernel.enemy_views()
@@ -95,8 +95,6 @@ func _draw() -> void:
 		if hull.size() >= 3:
 			draw_colored_polygon(hull, Color("ce6978"))
 		draw_string(font, Vector2(float(actor.x) - 24, float(actor.y) + 35), str(actor.hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f1d9dc"))
-	var state: Dictionary = session.campaign
-	draw_string(font, Vector2(18, 28), "关卡 %s · %s · %.0f" % [state.stage, state.state, state.distance], HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("ecf5ff"))
 	var history: Dictionary = kernel.read_history()
 	draw_string(font, Vector2(18, 53), "攻击 %s   来袭 %s" % [history.attacks, history.incoming], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("a9c6db"))
 	var player: Dictionary = kernel.player_view()
@@ -174,7 +172,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(func():
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
-		var labels := {"NoChange": "没有变更", "InsufficientResources": "资源不足", "ShipLocked": "舰体尚未解锁", "NativeConfigurationRejected": "配装或属性不满足条件"}
+		var labels := {"NoChange": "没有变更", "InsufficientResources": "资源不足", "NativeConfigurationRejected": "配装或属性不满足条件"}
 		growth_status.text = "完成" if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
 		)
 	return button
@@ -200,16 +198,10 @@ func _setup_growth_panel() -> void:
 	scroll.add_child(box)
 	growth_status = Label.new()
 	box.add_child(growth_status)
-	open.pressed.connect(func():
-		growth_panel.visible = not growth_panel.visible
-		if growth_panel.visible: _refresh_ship_choices())
+	open.pressed.connect(func(): growth_panel.visible = not growth_panel.visible)
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
-	session.ship_changed.connect(_refresh_ship_choices)
-	session.progress_changed.connect(_refresh_ship_choices)
-	ship_picker = OptionButton.new()
-	box.add_child(ship_picker)
-	_command_button(box, "更换舰体", func(): return session.change_ship(str(ship_picker.get_item_metadata(ship_picker.selected))))
+	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
 	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.can_pay, session.publish_reactor, _command_button)
 	box.add_child(reactor_panel)
 	var research_panel = ResearchPanel.new(session.research, _command_button)
@@ -219,13 +211,3 @@ func _setup_growth_panel() -> void:
 	box.add_child(CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
 	box.add_child(GalaxyPanel.new(session.galaxy_system))
 	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_world, _command_button))
-	_refresh_ship_choices()
-
-func _refresh_ship_choices() -> void:
-	ship_picker.clear()
-	for key in session.ship_definitions:
-		var index: int = ship_picker.item_count
-		ship_picker.add_item(str(session.ship_definitions[key].des))
-		ship_picker.set_item_metadata(index, key)
-		ship_picker.set_item_disabled(index, not session.unlocked("ship", key))
-		if key == session.selected_ship: ship_picker.select(index)

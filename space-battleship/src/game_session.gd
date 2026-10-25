@@ -1,7 +1,6 @@
 extends RefCounted
 
-signal progress_changed
-signal ship_changed
+const Campaign = preload("res://src/systems/campaign.gd")
 const CombatSetup = preload("res://src/combat_setup.gd")
 const Equipment = preload("res://src/systems/equipment.gd")
 const Enhancement = preload("res://src/systems/enhancement.gd")
@@ -46,11 +45,6 @@ var drone_limits: Dictionary = {}
 var damage_statistics: Dictionary = {}
 var income_factors: Dictionary = {}
 var motion: Dictionary = {}
-var enemy_weapon_definitions: Dictionary = {}
-var enemy_definitions: Dictionary = {}
-var group_definitions: Dictionary = {}
-var level_definitions: Dictionary = {}
-var ship_definitions: Dictionary = {}
 var models: Dictionary = {}
 var player_art: Dictionary = {}
 var player_dimensions := Vector2.ZERO
@@ -58,23 +52,14 @@ var player_geometry_height: float = 0.0
 var player_muzzles: Dictionary = {}
 var enemy_hulls: Array = []
 var enemy_muzzles: Dictionary = {}
-var selected_ship: String = ""
 var seed_value: int = 1
-var next_enemy_uid: int = 0
-var campaign: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
-	"point": 0, "points": [], "highest_reached": 1,
-	"cleared_stages": {}, "origin": 0.0, "speed": 0.0, "wait": 0.0}
+var campaign_system
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
 var wall_time: float = 0.0
 var game_time: float = 0.0
-var departure_remaining: float = 0.0
 var last_error: String = ""
 var last_events: Array = []
-var retreat_from: float = 0.0
-var retreat_to: float = 0.0
-var retreat_elapsed: float = 0.0
-var guard: Dictionary = {"enabled": false, "stage": 1, "point": 0, "distance": 0.0, "death_option": 0}
 
 func initialize(path: String, combat_seed: int) -> Dictionary:
 	if kernel != null:
@@ -113,25 +98,12 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		drone_limits[str(row.key)] = row.value
 	for row in configuration.weapon_motion.weapon_motion:
 		motion[str(row.id)] = row.value
-	for row in configuration.enemy_weapon_base.enemy_weapon_base:
-		enemy_weapon_definitions[str(row.id)] = row
-	for row in configuration.mon.mon:
-		enemy_definitions[int(row.id)] = row
-	for row in configuration.monGroup.monGroup:
-		group_definitions[int(row.id)] = row
-	for row in configuration.level.level:
-		level_definitions[int(row.id)] = row
-	for row in configuration.ship.ship:
-		ship_definitions[str(row.name)] = row
-	for row in configuration.ship.ship:
-		if unlocked("ship", str(row.name)):
-			selected_ship = str(row.name)
-			break
-	if selected_ship.is_empty():
+	campaign_system = Campaign.new(configuration, parameters, rules)
+	if campaign_system.selected_ship().is_empty():
 		return _fail("InitialShipUnavailable")
 	var art_data = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
-	player_art = art_data.ships[selected_ship]
-	var model_keys: Array = ship_definitions.keys()
+	player_art = art_data.ships[campaign_system.selected_ship()]
+	var model_keys: Array = campaign_system.ship_keys()
 	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
 	for key in model_keys:
 		var art: Dictionary = art_data.ships[key]
@@ -144,27 +116,28 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 			return _fail("MissingGeometryAsset:" + str(key))
 		models[key] = {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()), "art": art,
 			"geometry_height": float(logical_image.get_height())}
-	player_geometry_height = float(models[selected_ship].geometry_height)
-	player_dimensions = models[selected_ship].size * float(player_art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + selected_ship])
+	player_geometry_height = float(models[campaign_system.selected_ship()].geometry_height)
+	player_dimensions = models[campaign_system.selected_ship()].size * float(player_art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + campaign_system.selected_ship()])
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	economy = Economy.new(parameters, rules, amount_api)
 	equipment = Equipment.new(configuration.equipment.equipment, configuration.equipment_evolution.equipment_evolution,
 		configuration.unlock.unlock, parameters, rules, amount_api)
-	equipment.refresh_availability(unlocked, int(campaign.highest_reached))
-	equipment.initialize_slots(str(parameters.startEquip), _ship_mounts(ship_definitions[selected_ship]))
+	equipment.refresh_availability(campaign_system.available, int(campaign_system.progress_facts().highest_reached))
+	equipment.initialize_slots(str(parameters.startEquip), campaign_system.ship_facts().mounts)
 	reactor_system = Reactor.new(parameters, amount_api)
 	enhancement = Enhancement.new(configuration.enhance_config.enhance_config, amount_api)
 	research = Research.new(configuration.ai_tech_tree.ai_tech_tree, rules, configuration.unlock.unlock, amount_api)
-	research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
+	research.refresh_progress(int(campaign_system.progress_facts().highest_reached), campaign_system.progress_facts().cleared_stages)
 	crew_system = Crew.new(configuration.crew.crew, configuration.crew_config.crew_config, configuration.crew_assignment.crew_assignment, amount_api)
-	crew_system.refresh_availability(unlocked)
+	crew_system.refresh_availability(campaign_system.available)
 	planet_system = Planet.new(configuration.planet.planet, configuration.planet_build.planet_build, configuration.planet_buff.planet_buff, amount_api)
-	planet_system.refresh_availability(unlocked)
+	planet_system.refresh_availability(campaign_system.available)
 	galaxy_system = Galaxy.new(configuration.galaxy.galaxy, configuration.galaxy_build.galaxy_build, configuration.galaxy_config.galaxy_config, amount_api)
 	var galaxies = galaxy_system.initialization_result()
 	if not galaxies.ok: return _fail(str(galaxies.reason))
-	galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
+	galaxy_system.refresh_availability(campaign_system.available("feature", "galaxy"), campaign_system.progress_facts().cleared_stages)
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
+	campaign_system.bind_native(kernel, amount_api)
 	planet_factors = planet_system.contributions()
 	crew_factors = crew_system.contributions()
 	galaxy_factors = galaxy_system.contributions()
@@ -185,35 +158,8 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	galaxy_crew_experience = setup.galaxy_crew_experience
 	if not kernel.initialize(setup.descriptor):
 		return _fail("NativeInitializationFailed")
+	campaign_system.progress_changed.connect(_publish_progress)
 	kernel.set_damage_stats_enabled(true)
-	return {"ok": true}
-
-func unlocked(kind: String, target: String) -> bool:
-	for row in configuration.unlock.unlock:
-		if str(row.type) != kind or str(row.target) != target:
-			continue
-		var gate: int = int(row.level)
-		if gate == 0:
-			return true
-		return int(campaign.highest_reached) > gate if row.mode == "reached" else campaign.cleared_stages.has(gate)
-	return false
-
-func start_sortie(stage: int) -> Dictionary:
-	if kernel == null or not last_error.is_empty():
-		return {"ok": false, "reason": "SessionUnavailable"}
-	if not level_definitions.has(stage) or stage > int(campaign.highest_reached):
-		return {"ok": false, "reason": "StageLocked"}
-	var hp = amount_api.apply("from_decimal", [str(kernel.player_view().max_armour)])
-	var zero = amount_api.apply("zero", [])
-	if not hp.ok or amount_api.apply("compare", [hp.value, zero.value]).scalar <= 0:
-		return {"ok": false, "reason": "NoArmour"}
-	equipment.clear_switch_locks()
-	kernel.clear_encounter("sortie")
-	kernel.finish_retreat()
-	_set_stage(stage, 0.0)
-	campaign.point = 0
-	departure_remaining = float(rules.departure_real_seconds)
-	campaign.state = "departing"
 	return {"ok": true}
 
 func set_pause(reason: String, held: bool) -> void:
@@ -229,18 +175,10 @@ func frame(real_dt: float, _focused: bool) -> void:
 	wall_time += real_dt
 	if not pause_reasons.is_empty():
 		return
-	var accepted: float = real_dt
-	if departure_remaining > 0:
-		var used: float = minf(departure_remaining, accepted)
-		departure_remaining -= used
-		accepted -= used
-		if departure_remaining <= 0:
-			_begin_travel()
-		else:
-			return
+	var accepted: float = campaign_system.consume_departure(real_dt)
 	pending_seconds += accepted
 	var steps: int = 0
-	while pending_seconds >= STEP and steps < FRAME_STEPS and departure_remaining <= 0 and pause_reasons.is_empty() and last_error.is_empty():
+	while pending_seconds >= STEP and steps < FRAME_STEPS and not campaign_system.departure_active() and pause_reasons.is_empty() and last_error.is_empty():
 		_step(STEP)
 		pending_seconds -= STEP
 		steps += 1
@@ -251,7 +189,7 @@ func _step(dt: float) -> void:
 	var people: Dictionary = crew_system.step_assignments()
 	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
 		return
-	var advanced = economy.advance_timed(dt, campaign.state in ["travel", "combat", "waiting", "guard_wait", "retreat"], timed_resource_ratio,
+	var advanced = economy.advance_timed(dt, campaign_system.resource_generation_active(), campaign_system.timed_resource_ratio,
 		Vector2(float(geometry.player_x), float(geometry.timed_drop_spawn_y)), float(geometry.player_y), wall_time, game_time, income_factors)
 	if not advanced.ok:
 		_fail(str(advanced.get("error", advanced.get("reason", "TimedResourceFailed"))))
@@ -278,70 +216,7 @@ func _step(dt: float) -> void:
 
 	if not refresh_growth():
 		return
-	match str(campaign.state):
-		"travel":
-			var target: float = _target_distance()
-			var time_to_point: float = maxf(0.0, target - float(campaign.distance)) / float(campaign.speed)
-			var travel_time: float = minf(dt, time_to_point)
-			campaign.distance = minf(target, float(campaign.distance) + float(campaign.speed) * travel_time)
-			if not _advance_kernel(travel_time):
-				return
-			if campaign.state == "retreat":
-				_advance_kernel(dt - travel_time)
-				return
-			if time_to_point <= dt:
-				_start_wave()
-				if last_error.is_empty():
-					_advance_kernel(dt - travel_time)
-		"combat":
-			_advance_kernel(dt)
-		"waiting":
-			if not _advance_kernel(dt):
-				return
-			campaign.wait = maxf(0.0, float(campaign.wait) - dt)
-			if campaign.state != "waiting":
-				return
-			if campaign.wait <= 0 and _guard_matches():
-				_start_wave()
-			elif campaign.wait <= 0:
-				var next: int = int(campaign.stage) + 1
-				if level_definitions.has(next):
-					_set_stage(next, 0.0)
-					campaign.point = 0
-					_begin_travel()
-				else:
-					campaign.state = "menu"
-		"guard_wait":
-			if not _advance_kernel(dt) or campaign.state != "guard_wait":
-				return
-			campaign.wait = maxf(0.0, float(campaign.wait) - dt)
-			if campaign.wait <= 0:
-				if _guard_matches():
-					_start_wave()
-				else:
-					campaign.point = int(campaign.point) + 1
-					_begin_travel()
-		"retreat":
-			_advance_kernel(dt)
-			retreat_elapsed += dt
-			var duration: float = clampf(float(rules.death_retreat_duration), 0.001, 3.0)
-			_place_global(lerpf(retreat_from, retreat_to, minf(1.0, retreat_elapsed / duration)))
-			if retreat_elapsed >= duration:
-				kernel.finish_retreat()
-				var point: int = int(campaign.point)
-				if guard.enabled and int(guard.death_option) == 2:
-					guard.stage = campaign.stage
-					guard.point = point
-					guard.distance = campaign.distance
-				var hp = amount_api.apply("from_decimal", [str(kernel.player_view().max_armour)])
-				var zero = amount_api.apply("zero", [])
-				if amount_api.apply("compare", [hp.value, zero.value]).scalar <= 0:
-					campaign.state = "menu"
-					campaign.reason = "NoArmour"
-				else:
-					_begin_travel()
-		_:
-			_advance_kernel(dt)
+	campaign_system.advance(dt, _advance_kernel, _start_wave)
 
 func _advance_kernel(dt: float) -> bool:
 	if dt <= 0:
@@ -373,59 +248,29 @@ func _advance_kernel(dt: float) -> bool:
 	if not str(result.error).is_empty():
 		_fail(str(result.error))
 		return false
-	if result.player_dead and campaign.state != "retreat":
-		_begin_death_retreat()
-	elif result.wave_cleared:
-		equipment.clear_switch_locks()
-		kernel.finish_wave(bool(result.final_cleared))
-		if result.final_cleared:
-			var settled = economy.collect_due(wall_time, game_time, true, income_factors)
-			if not settled.ok:
-				_fail(str(settled.get("error", "FinalCollectionFailed")))
-				return false
+	return campaign_system.observe_battle(result, equipment.clear_switch_locks, settle_final_collection)
 
-			if not refresh_growth():
-				return false
-			if not campaign.cleared_stages.has(int(campaign.stage)):
-				campaign.cleared_stages[int(campaign.stage)] = true
-				research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
-				equipment.refresh_availability(unlocked, int(campaign.highest_reached))
-				crew_system.refresh_availability(unlocked)
-				planet_system.refresh_availability(unlocked)
-				galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
-				progress_changed.emit()
-			campaign.state = "waiting"
-			campaign.wait = _guard_interval() if _guard_matches() else float(rules.clear_wait_seconds)
-		elif _guard_matches():
-			campaign.state = "guard_wait"
-			campaign.wait = _guard_interval()
-		else:
-			campaign.point = int(campaign.point) + 1
-			_begin_travel()
-	return true
+func settle_final_collection() -> bool:
+	var settled = economy.collect_due(wall_time, game_time, true, income_factors)
+	if not settled.ok:
+		_fail(str(settled.get("error", "FinalCollectionFailed")))
+		return false
+	return refresh_growth()
 
 func _start_wave() -> void:
-	var point: int = int(campaign.point)
-	var stage: Dictionary = level_definitions[int(campaign.stage)]
-	var previous_stage: Dictionary = level_definitions.get(int(campaign.stage) - 1, {})
-	var group: Dictionary = group_definitions[int(campaign.points[point].id)]
-	var jewel_rolls: int = int(rules.jewel_drop_rolls) if unlocked("feature", "jewels") else 0
-	var setup = CombatSetup.build_wave(group, stage, previous_stage, point, campaign.points.size(),
-		enemy_definitions, enemy_weapon_definitions, equipment.enemy_override, geometry, motion,
-		jewel_rolls, float(parameters.jewelDrop), next_enemy_uid, amount_api)
+	var setup = campaign_system.prepare_wave(equipment.enemy_override, geometry, motion)
 	if not setup.ok:
 		_fail(str(setup.get("error", setup.get("reason", "WaveAssemblyFailed"))))
 		return
 	if not kernel.start_wave(setup.wave):
 		_fail("NativeWaveRejected")
 		return
-	next_enemy_uid = int(setup.next_uid)
+	campaign_system.accept_wave(setup)
 	enemy_muzzles = setup.muzzles
-	campaign.state = "combat"
 	_sync_geometry()
 
 func _sync_geometry() -> void:
-	var packet = Geometry.battle_geometry(kernel.enemy_views(), models, selected_ship, player_art,
+	var packet = Geometry.battle_geometry(kernel.enemy_views(), models, campaign_system.selected_ship(), player_art,
 		player_dimensions, player_geometry_height, player_muzzles, enemy_muzzles, geometry, parameters)
 	enemy_hulls = packet.hulls
 	kernel.input_geometry(packet.points, packet.muzzles)
@@ -434,115 +279,33 @@ func _sync_geometry() -> void:
 	if not kernel.input_player_hull(packet.player_hull):
 		_fail("InvalidPlayerGeometry")
 
-func set_guard(enabled: bool, death_option: int = 0) -> Dictionary:
-	if death_option < 0 or death_option > 2:
-		return {"ok": false, "reason": "InvalidGuardPolicy"}
-	if enabled and campaign.points.is_empty():
-		return {"ok": false, "reason": "NoBattlePoint"}
-	var was_enabled: bool = guard.enabled
-	guard.enabled = enabled
-	guard.death_option = death_option
-	if enabled and not was_enabled:
-		guard.stage = campaign.stage
-		guard.point = campaign.point
-		guard.distance = campaign.distance
-	return {"ok": true}
-
-func _guard_matches() -> bool:
-	return guard.enabled and int(guard.stage) == int(campaign.stage) and int(guard.point) == int(campaign.point)
-
-func _guard_interval() -> float:
-	var point: int = int(campaign.point)
-	var previous: float = 0.0 if point == 0 else float(campaign.points[point - 1].position)
-	var gap: float = (float(campaign.points[point].position) - previous) * float(level_definitions[int(campaign.stage)].length)
-	return minf(float(rules.clear_wait_seconds), gap / float(ship_definitions[selected_ship].para_3))
-
-func _target_distance() -> float:
-	var point_distance: float = float(campaign.points[int(campaign.point)].position) * float(level_definitions[int(campaign.stage)].length)
-	if _guard_matches():
-		point_distance = maxf(point_distance, float(guard.distance))
-	# A retreat beyond the preceding terminal point must still fight that point.
-	return maxf(point_distance, float(campaign.distance))
-
-func _begin_travel() -> void:
-	var target: float = _target_distance()
-	campaign.origin = campaign.distance
-	campaign.speed = maxf(float(ship_definitions[selected_ship].para_3), (target - float(campaign.origin)) / float(rules.travel_max_seconds))
-	campaign.state = "travel"
-
-func _set_stage(stage: int, distance: float) -> void:
-	campaign.stage = stage
-	campaign.distance = distance
-	if stage > int(campaign.highest_reached):
-		campaign.highest_reached = stage
-		research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
-		equipment.refresh_availability(unlocked, int(campaign.highest_reached))
-		crew_system.refresh_availability(unlocked)
-		planet_system.refresh_availability(unlocked)
-		galaxy_system.refresh_availability(unlocked("feature", "galaxy"), campaign.cleared_stages)
-		progress_changed.emit()
-	var entries: PackedStringArray = str(level_definitions[stage].monGroup).replace("{", "").replace("}", "").replace("｛", "").replace("｝", "").replace("，", ",").split(",")
-	campaign.points = []
-	for entry in entries:
-		var fields: PackedStringArray = entry.split("|")
-		campaign.points.append({"id": int(fields[0]), "position": float(fields[1])})
-
-func _global_position() -> float:
-	var total: float = float(campaign.distance)
-	for stage in range(1, int(campaign.stage)):
-		total += float(level_definitions[stage].length)
-	return total
-
-func _place_global(position: float) -> void:
-	var stage: int = 1
-	while level_definitions.has(stage + 1) and position >= float(level_definitions[stage].length):
-		position -= float(level_definitions[stage].length)
-		stage += 1
-	if stage != int(campaign.stage):
-		_set_stage(stage, position)
-	else:
-		campaign.distance = position
-	# Stage, distance and the next battle point form one position update. Shared
-	# income may read this position during retreat, before retreat completes.
-	var point: int = 0
-	while point < campaign.points.size() - 1 and float(campaign.points[point].position) * float(level_definitions[int(campaign.stage)].length) < float(campaign.distance):
-		point += 1
-	campaign.point = point
-
 func _fail(reason: String) -> Dictionary:
 	last_error = reason
+	if campaign_system != null: campaign_system.halt()
 	pause_reasons.error = true
 	return {"ok": false, "reason": reason}
-
-func timed_resource_ratio() -> Dictionary:
-	var stage: Dictionary = level_definitions[int(campaign.stage)]
-	var previous: Dictionary = level_definitions.get(int(campaign.stage) - 1, {})
-	return CombatSetup.ratio(stage, previous, "resRatio", int(campaign.point), campaign.points.size(), amount_api)
 
 func economy_display_context() -> Dictionary:
 	return {"wall": wall_time, "game": game_time, "factors": income_factors}
 
 func reactor_inputs() -> Dictionary:
-	return {"available": unlocked("feature", "reactor"), "condensation": unlocked("reactor_module", "condensation"),
+	return {"available": campaign_system.available("feature", "reactor"), "condensation": campaign_system.available("reactor_module", "condensation"),
 		"capacity": world_factors.capacity, "free_charge": world_factors.free_charge}
 
-func _ship_mounts(ship: Dictionary) -> Dictionary:
-	return {"weapon": int(ship.para_1), "defence": int(ship.para_2)}
-
 func equipment_inputs() -> Dictionary:
-	return {"mounts": _ship_mounts(ship_definitions[selected_ship]), "balances": economy.budget(),
-		"game_time": game_time, "highest_reached": int(campaign.highest_reached)}
+	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
+		"game_time": game_time, "highest_reached": int(campaign_system.progress_facts().highest_reached)}
 
 func _growth_setup(next_slots = null, next_ship: String = "", contributions = null) -> Dictionary:
-	var ship_key: String = selected_ship if next_ship.is_empty() else next_ship
-	var ship: Dictionary = ship_definitions[ship_key]
+	var ship_key: String = campaign_system.selected_ship() if next_ship.is_empty() else next_ship
+	var ship: Dictionary = campaign_system.ship_facts(ship_key)
 	var art: Dictionary = models[ship_key].art
 	var dimensions: Vector2 = models[ship_key].size * float(art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + ship_key])
 	var world = world_factors
 	if not world.ok:
 		return world
 	var source_drones: Array = equipped_drones if contributions == null else contributions
-	var next_drones: Array = source_drones.slice(0, int(ship.para_5)).duplicate(true)
+	var next_drones: Array = source_drones.slice(0, int(ship.drone_capacity)).duplicate(true)
 	var reactor = reactor_system.prepare(reactor_inputs())
 	if not reactor.ok:
 		return reactor
@@ -550,7 +313,7 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	if not ai.ok: return ai
 	var factors := {"ai_weapon": ai["values"].weapon_damage, "ai_defence": ai["values"].equipment_durability,
 		"reactor_weapon": reactor.factors.weapons, "reactor_defence": reactor.factors.defence, "external": world.external}
-	var upgrades = enhancement.evaluate(int(world.enhancement_levels), unlocked("feature", "jewels"), equipment.equipped_armours(_ship_mounts(ship), next_slots))
+	var upgrades = enhancement.evaluate(int(world.enhancement_levels), campaign_system.available("feature", "jewels"), equipment.equipped_armours(ship.mounts, next_slots))
 	if not upgrades.ok: return upgrades
 	var drone_weapons: Array = []
 	for index in next_drones.size():
@@ -559,9 +322,9 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 		weapon_row.entry.id = "drone:" + str(contribution.id)
 		weapon_row.entry.drone_id = str(contribution.id)
 		weapon_row.entry.generation = int(contribution.generation)
-		weapon_row.slot = int(ship.para_1) + index
+		weapon_row.slot = int(ship.mounts.weapon) + index
 		drone_weapons.append(weapon_row)
-	var mounted = equipment.mounted_configuration(_ship_mounts(ship), next_slots, int(world.equipment_levels), ai["values"], reactor.factors,
+	var mounted = equipment.mounted_configuration(ship.mounts, next_slots, int(world.equipment_levels), ai["values"], reactor.factors,
 		art, dimensions, geometry, motion, world.external)
 	if not mounted.ok: return mounted
 	var setup = CombatSetup.build_player(mounted, geometry, rules, float(parameters.dmgReduce), motion, upgrades, factors, drone_weapons, seed_value)
@@ -586,7 +349,7 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 	setup.descriptor.legendary_constants = legendary_constants
 	setup.descriptor.legendary_ranges = legendary_ranges
 	setup.descriptor.drone_limits = drone_limits
-	setup.descriptor.drone_capacity = int(ship.para_5)
+	setup.descriptor.drone_capacity = int(ship.drone_capacity)
 	setup.descriptor.rail_trail_width = float(motion.rail_trail_width)
 	setup.descriptor.higgs_minimum_width = float(rules.higgs_minimum_width)
 	setup.descriptor.merge(equipment.damage_types())
@@ -598,7 +361,7 @@ func _growth_setup(next_slots = null, next_ship: String = "", contributions = nu
 
 func publish_equipment_refit(next_slots,
 		next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null) -> Dictionary:
-	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != selected_ship) or contributions != null
+	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
 	geometry_changed = geometry_changed or equipment.geometry_changed(next_slots)
 	var setup = _growth_setup(next_slots, next_ship, contributions)
 	if not setup.ok:
@@ -609,12 +372,10 @@ func publish_equipment_refit(next_slots,
 		if committed.fault:
 			return _fail(str(committed.reason))
 		return committed
-	var changed_ship: bool = selected_ship != setup.ship_key
-	selected_ship = setup.ship_key
-	if changed_ship: ship_changed.emit()
+	campaign_system.accept_ship(setup.ship_key)
 	player_art = setup.player_art
 	player_dimensions = setup.player_dimensions
-	player_geometry_height = float(models[selected_ship].geometry_height)
+	player_geometry_height = float(models[campaign_system.selected_ship()].geometry_height)
 	equipped_drones = setup.equipped_drones
 	reactor_system.accept(setup.reactor_update)
 	reactor_factors = setup.reactor_factors
@@ -630,7 +391,7 @@ func publish_equipment_refit(next_slots,
 		player_muzzles[str(row.entry.id)] = row.muzzle
 	if geometry_changed:
 		_sync_geometry()
-	_retreat_if_dead()
+	campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return {"ok": true}
 
 func refresh_growth() -> bool:
@@ -670,8 +431,8 @@ func refresh_growth() -> bool:
 
 # World/equipment availability and payment/native publication are the cross-module ports.
 func enhancement_inputs() -> Dictionary:
-	return {"bonus": int(world_factors.enhancement_levels), "available": unlocked("feature", "jewels"),
-		"armours": equipment.equipped_armours(_ship_mounts(ship_definitions[selected_ship]))}
+	return {"bonus": int(world_factors.enhancement_levels), "available": campaign_system.available("feature", "jewels"),
+		"armours": equipment.equipped_armours(campaign_system.ship_facts().mounts)}
 
 func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
 	var paid: Dictionary = {"ok": true, "wallet": economy.budget()}
@@ -681,33 +442,19 @@ func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -
 	if result.ok: economy.accept_budget(paid.wallet)
 	return result
 
-func change_ship(ship_id: String) -> Dictionary:
-	if ship_id == selected_ship:
-		return {"ok": false, "reason": "NoChange"}
-	if not ship_definitions.has(ship_id) or not unlocked("ship", ship_id):
-		return {"ok": false, "reason": "ShipLocked"}
-	return equipment.resize_mounts(_ship_mounts(ship_definitions[selected_ship]), _ship_mounts(ship_definitions[ship_id]),
+func commit_ship_refit(ship_id: String) -> Dictionary:
+	return equipment.resize_mounts(campaign_system.ship_facts().mounts, campaign_system.ship_facts(ship_id).mounts,
 		economy.budget(), publish_equipment_refit.bind(ship_id))
 
 func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
 	# These are assembled contributions from actual equipped entities, not a
 	# warehouse, item generator, reward path or second owner of drone progress.
-	if contributions.size() > int(ship_definitions[selected_ship].para_5):
+	if contributions.size() > int(campaign_system.ship_facts().drone_capacity):
 		return {"ok": false, "reason": "DroneCapacityExceeded"}
 	for contribution in contributions:
 		if not contribution is Dictionary or not contribution.get("id") is String or str(contribution.id).is_empty() or not contribution.has("generation") or not contribution.get("weapon") is Dictionary or not contribution.weapon.get("entry") is Dictionary:
 			return {"ok": false, "reason": "InvalidDroneContribution"}
 	return publish_equipment_refit(null, economy.budget(), "refit", "", contributions)
-
-func _begin_death_retreat() -> void:
-	retreat_from = _global_position()
-	retreat_to = maxf(0.0, retreat_from - float(parameters.backRange))
-	retreat_elapsed = 0.0
-	if int(guard.death_option) == 0:
-		guard.enabled = false
-	equipment.clear_switch_locks()
-	kernel.begin_retreat()
-	campaign.state = "retreat"
 
 func _world_contributions() -> Dictionary:
 	for result in [planet_factors, crew_factors, galaxy_factors]:
@@ -743,7 +490,7 @@ func _publish_native_values(ai: Dictionary, reactor: Dictionary, kind: String) -
 		iron = text.text
 	var values: Dictionary = {"weapons": {}, "defences": {}}
 	if weapons or defences:
-		values = equipment.values(_ship_mounts(ship_definitions[selected_ship]), int(world_factors.equipment_levels), ai, reactor, weapons, defences)
+		values = equipment.values(campaign_system.ship_facts().mounts, int(world_factors.equipment_levels), ai, reactor, weapons, defences)
 		if not values.ok: return values
 	for group in ["weapons", "defences"]:
 		for id in values[group].keys():
@@ -760,11 +507,11 @@ func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrade
 			var row: Dictionary = values[group][id].duplicate()
 			row.erase("external")
 			combat_values[group][id] = row
-	_retreat_if_dead()
+	campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return {"ok": true}
 
 func publish_equipment_levels(next: Array, balances: Dictionary, changed: Array) -> Dictionary:
-	var values = equipment.values(_ship_mounts(ship_definitions[selected_ship]), int(world_factors.equipment_levels), research_factors, reactor_factors, true, true, changed)
+	var values = equipment.values(campaign_system.ship_facts().mounts, int(world_factors.equipment_levels), research_factors, reactor_factors, true, true, changed)
 	if not values.ok: return values
 	var result = _commit_values(values, "upgrade")
 	if result.ok:
@@ -781,10 +528,10 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 	var defences: bool = levels or reactor.factors.defence != reactor_factors.defence
 	var values: Dictionary = {"weapons": {}, "defences": {}}
 	if weapons or defences:
-		values = equipment.values(_ship_mounts(ship_definitions[selected_ship]), int(world_factors.equipment_levels), research_factors, reactor.factors, weapons, defences)
+		values = equipment.values(campaign_system.ship_facts().mounts, int(world_factors.equipment_levels), research_factors, reactor.factors, weapons, defences)
 		if not values.ok: return values
 	if world_factors.external != previous.external:
-		equipment.apply_external(values, _ship_mounts(ship_definitions[selected_ship]), world_factors.external)
+		equipment.apply_external(values, campaign_system.ship_facts().mounts, world_factors.external)
 	if world_factors.external != previous.external:
 		for drone in equipped_drones:
 			var entry: Dictionary = drone.weapon.entry
@@ -794,7 +541,7 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 	var output: Dictionary = enhancement.published_output()
 	var upgrades: Dictionary = {}
 	if world_factors.enhancement_levels != previous.enhancement_levels:
-		output = enhancement.evaluate(int(world_factors.enhancement_levels), unlocked("feature", "jewels"), equipment.equipped_armours(_ship_mounts(ship_definitions[selected_ship])))
+		output = enhancement.evaluate(int(world_factors.enhancement_levels), campaign_system.available("feature", "jewels"), equipment.equipped_armours(campaign_system.ship_facts().mounts))
 		if not output.ok: return output
 		upgrades = enhancement.difference(output)
 	var iron: String = ""
@@ -809,11 +556,6 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 		reactor_factors = reactor.factors
 		income_factors.condensation = reactor.factors.condensation
 	return result
-
-func _retreat_if_dead() -> void:
-	var armour = amount_api.apply("from_decimal", [str(kernel.player_view().armour)])
-	if armour.ok and amount_api.apply("compare", [armour.value, amount_api.apply("zero", []).value]).scalar <= 0 and campaign.state not in ["menu", "retreat", "departing"]:
-		_begin_death_retreat()
 
 func _publish_research() -> Dictionary:
 	var result = research.contributions()
@@ -879,8 +621,17 @@ func coordinate_planet_cancel(id: String) -> Dictionary:
 	return cancelled
 
 func planet_experience_context() -> Dictionary:
-	return {"enabled": unlocked("feature", "crew_level"), "ratio": level_definitions[int(campaign.highest_reached)].planetExpRatio,
-		"factor": galaxy_crew_experience}
+	var context: Dictionary = campaign_system.planet_experience()
+	context.factor = galaxy_crew_experience
+	return context
+
+func _publish_progress() -> void:
+	var facts: Dictionary = campaign_system.progress_facts()
+	research.refresh_progress(int(facts.highest_reached), facts.cleared_stages)
+	equipment.refresh_availability(campaign_system.available, int(facts.highest_reached))
+	crew_system.refresh_availability(campaign_system.available)
+	planet_system.refresh_availability(campaign_system.available)
+	galaxy_system.refresh_availability(campaign_system.available("feature", "galaxy"), facts.cleared_stages)
 
 func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) -> bool:
 	var result = planet_system.advance(explorers, builders, dt, planet_experience_context)
