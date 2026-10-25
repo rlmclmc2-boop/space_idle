@@ -36,6 +36,8 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 	_ship_key = selected_ship
 	for row in configuration.battle_geometry.battle_geometry: _geometry[str(row.id)] = row.value
 	for row in configuration.weapon_motion.weapon_motion: _motion[str(row.id)] = row.value
+	_geometry.make_read_only()
+	_motion.make_read_only()
 	_configuration = CombatSetup.legendary_configuration(configuration.hyperspace_config)
 	_initial_result = _load_models(ship_keys)
 	_initial_result.make_read_only()
@@ -56,8 +58,22 @@ func _load_models(ship_keys: Array) -> Dictionary:
 		var logical_image := image if logical_path == str(art.texture) else Image.load_from_file(logical_path)
 		if logical_image == null or logical_image.is_empty():
 			return {"ok": false, "reason": "MissingGeometryAsset:" + str(key)}
-		_models[key] = {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()), "art": art,
+		var model := {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()),
 			"geometry_height": float(logical_image.get_height())}
+		if key in ship_keys:
+			var slot_map: Array = art.slot_map.duplicate()
+			slot_map.make_read_only()
+			var hardpoints: Array = []
+			for source in art.hardpoints:
+				var position: Array = source.pos.duplicate()
+				position.make_read_only()
+				var point := {"pos": position}
+				point.make_read_only()
+				hardpoints.append(point)
+			hardpoints.make_read_only()
+			model.art = {"display_scale": art.display_scale, "slot_map": slot_map, "hardpoints": hardpoints}
+			model.art.make_read_only()
+		_models[key] = model
 	return {"ok": true}
 
 func initialization_result() -> Dictionary:
@@ -76,10 +92,14 @@ func view_size() -> Vector2i:
 func mount_inputs(ship_key: String) -> Dictionary:
 	var art: Dictionary = _models[ship_key].art
 	var dimensions: Vector2 = _models[ship_key].size * float(art.display_scale) * float(_geometry.player_display_multiplier) * float(_parameters["playerVisualScale" + ship_key])
-	return {"art": art, "dimensions": dimensions, "geometry": _geometry, "motion": _motion}
+	var inputs := {"art": art, "dimensions": dimensions, "geometry": _geometry, "motion": _motion}
+	inputs.make_read_only()
+	return inputs
 
 func wave_inputs() -> Dictionary:
-	return {"geometry": _geometry, "motion": _motion}
+	var inputs := {"geometry": _geometry, "motion": _motion}
+	inputs.make_read_only()
+	return inputs
 
 func resource_positions() -> Dictionary:
 	return {"origin": Vector2(float(_geometry.player_x), float(_geometry.timed_drop_spawn_y)), "target_y": float(_geometry.player_y)}
