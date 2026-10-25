@@ -83,7 +83,8 @@ class SpaceCombatKernel : public RefCounted {
         int kind = 0, type = 0, slot = 0;
         bool hostile = false, endless = false, vacant = false, enabled = true, configured = true;
         Handle source;
-        double interval = 1;
+        double interval = 1, normal_interval = 1;
+        int normal_chain_count = 0;
         double remaining = 1;
         Amount base = 1;
         double factor = 1;
@@ -225,7 +226,11 @@ class SpaceCombatKernel : public RefCounted {
     };
     struct Effect {
         int kind = 0, type = 0;
-        bool player = false, critical = false, hostile = false;
+        bool player = false, critical = false, hostile = false, critical_bonus_applied = false, killed = false;
+        String source;
+        int64_t attack_id = 0;
+        Amount raw = 0, intercepted = 0, cover_absorbed = 0, memory_absorbed = 0;
+        Amount shield_loss = 0, armour_loss = 0, deferred_amount = 0;
         int64_t uid = 0;
         Amount amount = 0;
         Amount absorbed = 0;
@@ -386,7 +391,7 @@ class SpaceCombatKernel : public RefCounted {
             const StrangePacket &p = item.second;
             for (size_t i = 0; i < actors.size(); ++i)
                 if (actors[i].live) hit_enemy(handle(i), p.damage, p.type, {}, false, clock, -1, false, {},
-                                               p.stats_source.is_empty() ? p.source : p.stats_source);
+                                               p.stats_source.is_empty() ? p.source : p.stats_source, false, p.root);
         }
     }
     double ejection_gap = 0.12, launch_speed = 120, turn_rate = 4, ignition = 0.22, seek = 0.4,
@@ -978,7 +983,7 @@ class SpaceCombatKernel : public RefCounted {
     }
     void hit_enemy(Handle h, Amount raw, int type, const std::shared_ptr<Instance> &inst, bool trigger,
                    double at, int wi, bool chain_trigger = false, const std::shared_ptr<MissileContext> &context = {},
-                   const String &damage_source = String(), bool bypass_absorption = false) {
+                   const String &damage_source = String(), bool bypass_absorption = false, uint64_t source_attack_id = 0) {
         Actor *a = resolve(h);
         if (!a) {
             ++stale_rejections;
@@ -1009,9 +1014,22 @@ class SpaceCombatKernel : public RefCounted {
             } else ++a->guidance_reuses;
             raw *= found->second;
         }
+        String source = damage_source;
+        if (source.is_empty() && context) source = context->source;
+        if (source.is_empty() && inst && inst->attack && inst->attack->birth) {
+            const BirthConfig &birth = *inst->attack->birth;
+            source = birth.entry.has("drone_id") ? String("drone:") + String(birth.entry["drone_id"])
+                : String("module:") + String::num_int64(birth.slot);
+        }
+        if (source.is_empty()) source = "other";
+        const Amount attack_raw = raw;
         if (!bypass_absorption && black_absorbing()) {
             black_accumulated += raw;
-            Effect receipt; receipt.kind = 2; receipt.time = at; receipt.point = a->point; receipt.absorbed = raw; receipt.type = type;
+            Effect receipt; receipt.kind = 2; receipt.time = at; receipt.point = a->point; receipt.absorbed = raw; receipt.intercepted = raw; receipt.raw = raw; receipt.type = type;
+            receipt.uid = receipt.target_uid = a->uid; receipt.source = source;
+            receipt.attack_id = inst ? int64_t(inst->attack->id) : context ? int64_t(context->root) : int64_t(source_attack_id);
+            receipt.critical = inst && inst->attack->critical;
+            receipt.critical_bonus_applied = inst && inst->attack->critical_bonus_applied;
             feedback.push_back(receipt); ++hit_count;
             return;
         }
@@ -1035,8 +1053,8 @@ class SpaceCombatKernel : public RefCounted {
         Amount incoming = raw * (1 + a->interference);
         Amount absorbed = 0;
         Amount damage = 0;
-        const Amount hp_before = damage_stats_enabled ? a->hp : 0;
-        const Amount shield_before = damage_stats_enabled ? a->shield : 0;
+        const Amount hp_before = a->hp;
+        const Amount shield_before = a->shield;
         if (a->shield > 0) {
             double factor = type > 0 && type == a->shield_type ? 1 - effective_resistance : 1;
             absorbed = minimum(a->shield, maximum(1.0, incoming * factor));
@@ -1047,16 +1065,7 @@ class SpaceCombatKernel : public RefCounted {
             damage = maximum(1.0, ceil_number(incoming * (type > 0 && type == a->armour_type ? 1 - effective_resistance : 1)));
             a->hp = nonnegative(a->hp - damage);
         }
-        String source;
         if (damage_stats_enabled) {
-            source = damage_source;
-            if (source.is_empty() && context) source = context->source;
-            if (source.is_empty() && inst && inst->attack && inst->attack->birth) {
-                const BirthConfig &birth = *inst->attack->birth;
-                source = birth.entry.has("drone_id") ? String("drone:") + String(birth.entry["drone_id"])
-                    : String("module:") + String::num_int64(birth.slot);
-            }
-            if (source.is_empty()) source = "other";
             const Amount shield_loss = nonnegative(shield_before - a->shield);
             const Amount hp_loss = nonnegative(hp_before - a->hp);
             if (shield_loss > 0 || hp_loss > 0) {
@@ -1073,7 +1082,13 @@ class SpaceCombatKernel : public RefCounted {
         e.kind = 2;
         e.uid = a->uid;
         e.type = type;
-        e.amount = damage + absorbed;
+        e.shield_loss = nonnegative(shield_before - a->shield);
+        e.armour_loss = nonnegative(hp_before - a->hp);
+        e.amount = e.shield_loss + e.armour_loss;
+        e.raw = attack_raw; e.source = source; e.target_uid = a->uid;
+        e.attack_id = inst ? int64_t(inst->attack->id) : context ? int64_t(context->root) : int64_t(source_attack_id);
+        e.killed = hp_before > 0 && a->hp <= 0;
+        e.critical_bonus_applied = inst && inst->attack->critical_bonus_applied;
         e.time = at;
         e.critical = inst && inst->attack->critical;
         e.reactive_stacks = reactive_stacks;
@@ -1088,7 +1103,7 @@ class SpaceCombatKernel : public RefCounted {
                 p.order = ++strange_serial; p.root = inst->attack->id;
                 p.damage = raw * strange_multiplier; p.type = strange_type;
                 p.source = w.entry.has("drone_id") ? String("drone:") + String(w.entry["drone_id"]) : String("module:") + String::num_int64(w.slot);
-                if (damage_stats_enabled) p.stats_source = source;
+                p.stats_source = source;
                 strange_pending.emplace(strange_boundary_end + strange_delay, p);
             }
         }
@@ -1290,7 +1305,10 @@ class SpaceCombatKernel : public RefCounted {
             Weapon &w = weapons[endless]; w.endless = true; w.maximum += legend_value("endless_beam", "maximum_multiplier_bonus");
         }
         for (Weapon &w : weapons) if (!w.hostile && w.enabled && w.birth) {
-            auto updated = std::make_shared<BirthConfig>(*w.birth); updated->maximum = w.maximum; w.birth = updated;
+            auto updated = std::make_shared<BirthConfig>(*w.birth); updated->maximum = w.maximum;
+            w.interval = w.normal_interval / (1.0 + drone_scalar("attack_speed_bonus"));
+            w.chain_count = w.normal_chain_count + int(drone_scalar("chain_count_bonus"));
+            updated->interval = w.interval; updated->chain_count = w.chain_count; w.birth = updated;
         }
     }
     void configure_legends(Dictionary descriptor) {
@@ -1300,6 +1318,23 @@ class SpaceCombatKernel : public RefCounted {
         rail_trail_width = descriptor.get("rail_trail_width", 0.0); higgs_minimum_width = descriptor.get("higgs_minimum_width", 0.0);
         iron_drop_factor = read_amount(descriptor.get("iron_drop_factor", String("1")));
         select_legends();
+    }
+    // Contributions are resolved per entity; rebuild removes that entity's whole contribution.
+    // Existing Attacks retain their immutable birth values.
+    double drone_scalar(const char *field) const {
+        double total = 0;
+        for (int i = 0; i < equipped_drone_rows.size(); ++i) {
+            Dictionary row = equipped_drone_rows[i];
+            if (!disabled_drones.count(String(row.get("id", "")))) total += double(row.get(field, 0.0));
+        }
+        return total;
+    }
+    Amount drone_weapon(int kind) const {
+        const char *fields[] = {"laser_damage_bonus", "cannon_damage_bonus", "missile_damage_bonus", "long_laser_damage_bonus"};
+        return drone_global(false) * (1.0 + drone_scalar(fields[kind]));
+    }
+    Amount drone_defence(int layer) const {
+        return drone_global(true) * (1.0 + drone_scalar(layer == 0 ? "shield_capacity_bonus" : "armour_capacity_bonus"));
     }
     Amount drone_global(bool defence) const {
         Amount bonus;
@@ -1382,7 +1417,7 @@ class SpaceCombatKernel : public RefCounted {
             if (w.hostile || !w.enabled || w.vacant) continue;
             double original = std::clamp(w.crit_rate + (branch("critical", "b2") && clock < w.critical_until ? w.critical_stacks * enhancement_rule("critical_b2_probability") : 0.0), 0.0, 1.0);
             double probability = branch("critical", "b3") ? 1.0 : original;
-            chance = maximum(chance, minimum(1.0, probability + double(w.row.get("drone_critical_rate", 0.0))));
+            chance = maximum(chance, minimum(1.0, probability + drone_scalar("critical_rate_bonus")));
             sources.push_back(i);
         }
         const bool rolled = rng->randf() < minimum(chance, legend_value("dodge_counter", "maximum_dodge"));
@@ -1391,7 +1426,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!sources.empty()) {
             int wi = sources[size_t(rng->randi_range(0, int(sources.size()) - 1))]; const Weapon &w = weapons[wi];
             auto a = std::make_shared<Attack>(); a->id = ++attack_serial; a->birth = w.birth;
-            a->damage = evaluate_module_value(w.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, w.branch_factors, w.external_factors) * w.factor * drone_global(false) * (1.0 + legend_value("dodge_counter", "counter_damage_bonus"));
+            a->damage = evaluate_module_value(w.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, w.branch_factors, w.external_factors) * w.factor * drone_weapon(w.kind) * (1.0 + legend_value("dodge_counter", "counter_damage_bonus"));
             auto choices = targets(w.type, clock);
             if (!choices.empty()) launch(wi, choices.front(), a, 1, true);
         }
@@ -1440,25 +1475,25 @@ class SpaceCombatKernel : public RefCounted {
     void reconcile_defence() {
         const Amount before[2] = {layer_health(0), layer_health(1)};
         for (Defence &d : defences) {
-            d.maximum = evaluate_module_value(d.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, d.branch_factors, d.external_factors) * d.factor * drone_global(true);
+            d.maximum = evaluate_module_value(d.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, d.branch_factors, d.external_factors) * d.factor * drone_defence(d.layer);
             d.loss = minimum(d.loss, d.maximum);
             d.buffer = minimum(d.buffer, d.maximum * d.memory_cap);
         }
         // Capacity changes preserve absolute health; the module losses own it.
         set_layer_health(0, before[0]); set_layer_health(1, before[1]);
     }
-    Amount protection(Amount amount, Amount &absorbed, int type = 0) {
+    Amount protection(Amount amount, Amount &absorbed, Effect &receipt, int type = 0) {
         Amount rest = amount;
         for (Defence &d : defences) {
             if (rest <= 0)
                 break;
             Amount cover_paid = minimum(d.cover, rest);
-            d.cover -= cover_paid; rest -= cover_paid; absorbed += cover_paid;
+            d.cover -= cover_paid; rest -= cover_paid; absorbed += cover_paid; receipt.cover_absorbed += cover_paid;
             double factor = type > 0 && type == d.protection_type && defence_time < d.protection_until ? 1.0 - enhancement_rule("memory_b2_resistance") : 1.0;
             Amount paid = minimum(d.buffer, rest * factor);
             d.buffer -= paid;
             rest = factor > 0 ? nonnegative(rest - paid / factor) : Amount{};
-            absorbed += paid;
+            absorbed += paid; receipt.memory_absorbed += paid;
             if (paid > 0)
                 d.last_hit = defence_time;
         }
@@ -1476,15 +1511,14 @@ class SpaceCombatKernel : public RefCounted {
             defence_time_rows[int64_t(i)] = defence_time - defences[i].last_hit;
         }
     }
-    void incoming_effect(Amount loss, Amount absorbed, int type, double at, bool deferred = false) {
-        Effect e;
+    void incoming_effect(Effect e, double at) {
         e.kind = 2;
         e.player = true;
         e.point = player_point;
-        e.type = type;
-        e.amount = deferred ? ceil_number(loss) : loss;
-        e.absorbed = absorbed;
+        e.amount = e.shield_loss + e.armour_loss;
+        e.absorbed = e.intercepted + e.cover_absorbed + e.memory_absorbed;
         e.time = at;
+        e.killed = module_defence ? layer_health(1) <= 0 : player_hp <= 0;
         feedback.push_back(e);
         ++hit_count;
         publish_player();
@@ -1507,7 +1541,9 @@ class SpaceCombatKernel : public RefCounted {
     }
     void pay_debt(Amount amount, double at) {
         Amount absorbed = 0;
-        Amount rest = protection(amount, absorbed);
+        Effect receipt; receipt.raw = amount; receipt.source = "deferred";
+        const Amount before[2] = {layer_health(0), layer_health(1)};
+        Amount rest = protection(amount, absorbed, receipt);
         Amount loss = 0;
         for (int layer = 0; layer < 2 && rest > 0; ++layer) {
             reconcile_defence();
@@ -1526,7 +1562,11 @@ class SpaceCombatKernel : public RefCounted {
             rest = nonnegative(rest - taken);
         }
         if (loss > 0 || absorbed > 0)
-            incoming_effect(loss, absorbed, 0, at, true);
+            {
+                receipt.shield_loss = nonnegative(before[0] - layer_health(0));
+                receipt.armour_loss = nonnegative(before[1] - layer_health(1));
+                incoming_effect(receipt, at);
+            }
     }
     void recover(double dt, double begin_at) {
         if (!module_defence) return;
@@ -1592,18 +1632,20 @@ class SpaceCombatKernel : public RefCounted {
             publish_player();
         }
     }
-    void player_hit(Amount raw, int type, double at, int64_t source_uid = 0) {
+    void player_hit(Amount raw, int type, double at, int64_t source_uid = 0, uint64_t attack_id = 0) {
         if (final_cleared) return;
         if (!increment_history(incoming_counter)) return;
         last_incoming_at = at;
         if (module_defence) reconcile_defence();
-        if (black_absorbing() || dodge_incoming()) { incoming_effect(0, raw, type, at); return; }
+        Effect receipt; receipt.raw = raw; receipt.type = type; receipt.attack_id = int64_t(attack_id); receipt.source = String("enemy:") + String::num_int64(source_uid);
+        if (black_absorbing() || dodge_incoming()) { receipt.intercepted = raw; incoming_effect(receipt, at); return; }
         if (legend_active("drone_master")) raw *= 1.0 - minimum(1.0, legend_value("drone_master", "maximum_reduction") * highest_drone_quality() / legend_constant("drone_master", "quality_ratios/ultimate"));
         if (defence_time < memory_reduction_until) raw *= 1.0 - enhancement_rule("memory_b1_reduction");
         if (defence_time < deferred_reduction_until) raw *= 1.0 - enhancement_rule("deferred_b1_reduction");
         if (branch("deferred", "b2")) raw *= 1.0 - deferred_unforced_probability * enhancement_rule("deferred_b2_probability_conversion");
         if (branch("deferred", "b3")) raw *= 1.0 + (1.0 - deferred_unforced_probability) * enhancement_rule("deferred_b3_damage_scale");
         if (!module_defence) {
+            const Amount before_hp = player_hp;
             double factor = type == int(player_row.get("shield_type", 0)) ? 1 - resistance : 1;
             Amount absorbed = minimum(player_shield, maximum(1.0, raw * factor));
             player_shield -= absorbed;
@@ -1613,7 +1655,8 @@ class SpaceCombatKernel : public RefCounted {
                     ? ceil_number(left * (type == int(player_row.get("armour_type", 0)) ? 1 - resistance : 1))
                     : 0;
             player_hp = nonnegative(player_hp - damage);
-            incoming_effect(damage + absorbed, 0, type, at);
+            receipt.shield_loss = absorbed; receipt.armour_loss = nonnegative(before_hp - player_hp);
+            incoming_effect(receipt, at);
             return;
         }
         reconcile_defence();
@@ -1629,7 +1672,7 @@ class SpaceCombatKernel : public RefCounted {
                 d.protection_type = type; d.protection_until = defence_time + enhancement_rule("memory_b2_duration");
             }
         }
-        Amount rest = protection(raw, absorbed, type);
+        Amount rest = protection(raw, absorbed, receipt, type);
         const Amount before[2] = {layer_health(0), layer_health(1)};
         std::array<Amount, 2> payments{};
         std::array<bool, 2> deferred{};
@@ -1668,7 +1711,7 @@ class SpaceCombatKernel : public RefCounted {
                     delayed = nonnegative(taken - immediate);
                 }
                 deferred[layer] = deferred[layer] || delayed > 0;
-                queue_debt(layer, delayed);
+                queue_debt(layer, delayed); receipt.deferred_amount += delayed;
                 d.loss = minimum(d.maximum, d.loss + immediate);
                 payments[layer] += immediate;
                 spent += factor <= 0 ? weighted : taken / factor;
@@ -1685,7 +1728,8 @@ class SpaceCombatKernel : public RefCounted {
         }
         if (branch("adaptation", "b1") && source_uid != 0) for (Defence &d : defences)
             d.source_stacks[source_uid] = minimum(int(enhancement_rule("adaptation_b1_stacks")), d.source_stacks[source_uid] + 1);
-        incoming_effect(loss, absorbed, type, at);
+        receipt.shield_loss = nonnegative(before[0] - layer_health(0)); receipt.armour_loss = nonnegative(before[1] - layer_health(1));
+        incoming_effect(receipt, at);
     }
     void launch(int wi, Handle target, std::shared_ptr<const Attack> a, Amount multiplier,
                 bool repeated = false, bool distribute = true, double inherited_maximum = -1,
@@ -1772,7 +1816,7 @@ class SpaceCombatKernel : public RefCounted {
         double legendary = !w.hostile && w.kind == 0 ?
             (scatter && candidates.size() == 1 ? 1 + scatter_bonus : 1) * laser_charge_multiplier : 1;
         a->damage = (w.hostile ? w.base : evaluate_module_value(w.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, w.branch_factors, w.external_factors)) *
-                    w.factor * legendary * (w.hostile ? Amount(1) : drone_global(false));
+                    w.factor * legendary * (w.hostile ? Amount(1) : drone_weapon(w.kind));
         if (!w.hostile) {
             if (w.kind == 1 && legend_active("higgs_cannon")) {
                 a->higgs = true; a->higgs_width = maximum(higgs_minimum_width, rail_trail_width) * maximum(1.0, 1.0 + legend_value("higgs_cannon", "area_bonus"));
@@ -1788,12 +1832,12 @@ class SpaceCombatKernel : public RefCounted {
             if (branch("critical", "b1") && w.critical_attacks > 0) { a->damage *= 1.0 + enhancement_rule("critical_b1_damage_bonus"); --w.critical_attacks; }
             if (branch("critical", "b2")) a->damage *= 1.0 + w.critical_stacks * enhancement_rule("critical_b2_damage_bonus");
             double original = std::clamp(w.crit_rate + (branch("critical", "b2") ? w.critical_stacks * enhancement_rule("critical_b2_probability") : 0.0), 0.0, 1.0);
-            double drone = w.row.get("drone_critical_rate", 0.0);
+            double drone = drone_scalar("critical_rate_bonus");
             double probability = std::clamp((branch("critical", "b3") ? enhancement_rule("critical_b3_guaranteed_rate") : original) + drone, 0.0, 1.0);
             a->critical = rng->randf() < probability;
             a->critical_bonus_applied = a->critical;
             if (a->critical && branch("critical", "b3")) a->critical_bonus_applied = rng->randf() < original;
-            if (a->critical_bonus_applied) a->damage *= w.crit_multiplier;
+            if (a->critical_bonus_applied) a->damage *= w.crit_multiplier * (1.0 + drone_scalar("critical_damage_bonus"));
         }
         bool wild = !w.hostile && w.kind == 2 && wild_enabled && missile_attacks % (wild_period+1) == wild_period;
         if (!w.hostile && w.kind == 2) {
@@ -1809,7 +1853,7 @@ class SpaceCombatKernel : public RefCounted {
             }
         }
         a->secondary = !w.hostile && !wild && rng->randf() < w.secondary_probability;
-        a->repeats = !w.hostile && !wild && rng->randf() < w.repeat_probability;
+        a->repeats = !w.hostile && !wild && rng->randf() < std::clamp(w.repeat_probability + drone_scalar("repeat_probability_bonus"), 0.0, 1.0);
         if (w.hostile) {
             launch(wi, {}, a, 1);
             return;
@@ -1936,7 +1980,7 @@ class SpaceCombatKernel : public RefCounted {
         effect(6, f, f.aim, at);
         if (!f.hostile && f.instance->attack->critical) effect(9, f, f.aim, at);
         if (f.hostile)
-            player_hit(raw, f.type, at, f.source_uid);
+            player_hit(raw, f.type, at, f.source_uid, f.instance->attack->id);
         else
             hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, at, f.weapon, true);
         if (!final_cleared && f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
@@ -2059,7 +2103,7 @@ class SpaceCombatKernel : public RefCounted {
             m.y = aim.y;
             effect(1, f, aim, clock);
             if (f.hostile)
-                player_hit(f.damage, f.type, clock, f.source_uid);
+                player_hit(f.damage, f.type, clock, f.source_uid, f.instance->attack->id);
             else
                 hit_enemy(f.target, f.damage, f.type, f.instance, !f.chain && !f.repeated && !(f.context && f.context->derived), clock, f.weapon, !f.chain && !(f.context && f.context->wild), f.context);
             retire(id);
@@ -2278,7 +2322,7 @@ class SpaceCombatKernel : public RefCounted {
                 return false;
             w.source = handle(source + actor_offset);
         }
-        w.interval = v.get("interval", 1.0);
+        w.interval = v.get("interval", 1.0); w.normal_interval = w.interval;
         if (w.interval <= 0 || double(v.get("speed", 720.0)) <= 0 || read_amount(v.get("damage", 1.0)) < 0 ||
             int(v.get("salvo", 1)) < 1)
             return false;
@@ -2294,7 +2338,7 @@ class SpaceCombatKernel : public RefCounted {
         w.repeat_probability = v.get("repeat_probability", repeat_probability);
         w.repeat_multiplier = v.get("repeat_multiplier", repeat_multiplier);
         w.secondary_probability = v.get("secondary_probability", secondary_probability);
-        w.chain_count = v.get("chain_count", chain_count);
+        w.chain_count = v.get("chain_count", chain_count); w.normal_chain_count = w.chain_count;
         w.charge = v.get("charge", 0.0);
         w.ramp = v.get("ramp", 1.0);
         w.maximum = v.get("maximum", 1.0); w.normal_maximum = w.maximum;
@@ -2711,7 +2755,7 @@ class SpaceCombatKernel : public RefCounted {
                    (!bool(d.get("requires_drop_rules", false)) || drop_rules);
         if (module_defence) {
             for (Defence &defence : defences) {
-                defence.maximum = evaluate_module_value(defence.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, defence.branch_factors, defence.external_factors) * defence.factor;
+                defence.maximum = evaluate_module_value(defence.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, defence.branch_factors, defence.external_factors) * defence.factor * drone_defence(defence.layer);
                 defence.loss = 0;
             }
         }
@@ -2740,6 +2784,14 @@ class SpaceCombatKernel : public RefCounted {
             // the separate historical drone_master interval (a union, not an overlap).
             read_amount(row.get("global_weapon_bonus", String("0")));
             read_amount(row.get("global_defence_bonus", String("0")));
+            for (const char *field : {"laser_damage_bonus", "cannon_damage_bonus", "missile_damage_bonus", "long_laser_damage_bonus",
+                 "critical_damage_bonus", "critical_rate_bonus", "repeat_probability_bonus", "attack_speed_bonus",
+                 "chain_count_bonus", "shield_capacity_bonus", "armour_capacity_bonus"}) {
+                Variant value = row.get(field, 0.0);
+                if ((value.get_type() != Variant::INT && value.get_type() != Variant::FLOAT) || !finite(double(value)) || double(value) < 0) return false;
+            }
+            double chains = row.get("chain_count_bonus", 0.0);
+            if (chains != std::floor(chains) || chains > std::numeric_limits<int>::max()) return false;
             String effect = row.get("legendary_effect", "");
             if (!effect.is_empty()) {
                 Dictionary definitions = d.get("legendary_definitions", Dictionary()), all_ranges = d.get("legendary_ranges", Dictionary());
@@ -2757,6 +2809,15 @@ class SpaceCombatKernel : public RefCounted {
                 }
             }
             if (effect == "higgs_cannon") higgs = true;
+        }
+        double chains = 0, speed = 0;
+        for (int i = 0; i < drones.size(); ++i) { Dictionary row = drones[i]; chains += double(row.get("chain_count_bonus", 0.0)); speed += double(row.get("attack_speed_bonus", 0.0)); }
+        Array sources_for_bounds = d["weapons"];
+        for (int i = 0; i < sources_for_bounds.size(); ++i) {
+            Dictionary row = sources_for_bounds[i];
+            const double interval = double(row.get("interval", 1.0)) / (1.0 + speed);
+            if (!finite(speed) || chains + double(row.get("chain_count", 0)) > std::numeric_limits<int>::max() ||
+                interval <= 0 || clock + interval <= clock) return false;
         }
         if (legendary_count > int(limits.get("maximum_legendary", 0)) || ultimate_count > int(limits.get("maximum_ultimate", 0))) return false;
         if (higgs) {
@@ -2847,7 +2908,7 @@ class SpaceCombatKernel : public RefCounted {
         deferred_interval = d.get("deferred_interval", deferred_interval); deferred_duration = d.get("deferred_duration", deferred_duration); clear_probability = d.get("clear_probability", 0.0);
         configure_enhancement(d); configure_legends(d);
         for (Defence &value : defences) {
-            value.maximum = evaluate_module_value(value.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, value.branch_factors, value.external_factors) * value.factor * drone_global(true);
+            value.maximum = evaluate_module_value(value.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, value.branch_factors, value.external_factors) * value.factor * drone_defence(value.layer);
             value.loss = value.maximum;
             value.buffer = minimum(value.buffer, value.maximum * value.memory_cap);
         }
@@ -3335,6 +3396,14 @@ class SpaceCombatKernel : public RefCounted {
             d["critical"] = e.critical;
             d["amount"] = wire(e.amount);
             d["absorbed"] = wire(e.absorbed);
+            if (e.kind == 2) {
+                d["source"] = e.source; d["attack_id"] = e.attack_id;
+                d["raw"] = wire(e.raw); d["intercepted"] = wire(e.intercepted);
+                d["cover_absorbed"] = wire(e.cover_absorbed); d["memory_absorbed"] = wire(e.memory_absorbed);
+                d["shield_loss"] = wire(e.shield_loss); d["armour_loss"] = wire(e.armour_loss);
+                d["deferred"] = wire(e.deferred_amount); d["killed"] = e.killed;
+                d["critical_bonus_applied"] = e.critical_bonus_applied;
+            }
             d["clock"] = e.time;
             d["position"] = e.point;
             d["direction"] = e.direction;

@@ -567,7 +567,7 @@ func _growth_setup(next_slots: Array, next_enhancement: Dictionary, next_reactor
 		if int(slot.index) < int(ship.para_1 if slot.category == "weapon" else ship.para_2):
 			enabled_slots.append(slot)
 	var source_drones: Array = equipped_drones if contributions == null else contributions
-	var next_drones: Array = source_drones.slice(0, int(ship.para_5))
+	var next_drones: Array = source_drones.slice(0, int(ship.para_5)).duplicate(true)
 	var reactor = Reactor.evaluate(next_reactor, parameters, _reactor_modules(), amount_api)
 	if not reactor.ok:
 		return reactor
