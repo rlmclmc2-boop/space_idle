@@ -30,10 +30,7 @@ var crew_definitions: Dictionary = {}
 var crew_rules: Dictionary = {}
 var crew_jobs: Dictionary = {}
 var crew_progress: Dictionary = {}
-var planet_definitions: Dictionary = {}
-var planet_buildings: Dictionary = {}
-var planet_buffs: Array = []
-var planet_progress: Dictionary = {}
+var planet_system
 var galaxy_definitions: Dictionary = {}
 var galaxy_buildings: Dictionary = {}
 var galaxy_rules: Dictionary = {}
@@ -135,11 +132,6 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 		crew_rules[str(row.id)] = row.value
 	for row in configuration.crew_assignment.crew_assignment:
 		crew_jobs[str(row.id)] = row
-	for row in configuration.planet.planet:
-		planet_definitions[str(int(row.id))] = row
-	for row in configuration.planet_build.planet_build:
-		planet_buildings[str(row.id)] = row
-	planet_buffs = configuration.planet_buff.planet_buff
 	for row in configuration.galaxy.galaxy:
 		galaxy_definitions[str(row.key)] = row
 	for row in configuration.galaxy_build.galaxy_build:
@@ -192,13 +184,14 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	research = Research.new(configuration.ai_tech_tree.ai_tech_tree, rules, configuration.unlock.unlock, amount_api)
 	research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
 	crew_progress = Crew.initial(crew_definitions, amount_api)
-	planet_progress = Planet.initial(planet_definitions, planet_buildings)
+	planet_system = Planet.new(configuration.planet.planet, configuration.planet_build.planet_build, configuration.planet_buff.planet_buff, amount_api)
+	planet_system.refresh_availability(unlocked)
 	var galaxies = Galaxy.initial(galaxy_definitions)
 	if not galaxies.ok:
 		return _fail(str(galaxies.reason))
 	galaxy_progress = galaxies.regions
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
-	planet_factors = Planet.contributions(planet_progress, planet_buildings, planet_buffs, amount_api)
+	planet_factors = planet_system.contributions()
 	crew_factors = Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api)
 	galaxy_factors = Galaxy.contributions(galaxy_progress, galaxy_buildings, amount_api)
 	world_factors = _world_contributions()
@@ -423,6 +416,7 @@ func _advance_kernel(dt: float) -> bool:
 				campaign.cleared_stages[int(campaign.stage)] = true
 				research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
 				equipment.refresh_availability(unlocked, int(campaign.highest_reached))
+				planet_system.refresh_availability(unlocked)
 				_display_changed("unlocks")
 			campaign.state = "waiting"
 			campaign.wait = _guard_interval() if _guard_matches() else float(rules.clear_wait_seconds)
@@ -507,6 +501,7 @@ func _set_stage(stage: int, distance: float) -> void:
 		campaign.highest_reached = stage
 		research.refresh_progress(int(campaign.highest_reached), campaign.cleared_stages)
 		equipment.refresh_availability(unlocked, int(campaign.highest_reached))
+		planet_system.refresh_availability(unlocked)
 		_display_changed("unlocks")
 	var entries: PackedStringArray = str(level_definitions[stage].monGroup).replace("{", "").replace("}", "").replace("｛", "").replace("｝", "").replace("，", ",").split(",")
 	campaign.points = []
@@ -865,7 +860,7 @@ func publish_reactor(factors: Dictionary, costs: Dictionary, kind: String) -> Di
 	income_factors.condensation = factors.condensation
 	return {"ok": true}
 
-func _commit_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}) -> Dictionary:
+func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}) -> Dictionary:
 	if not planet.is_empty(): planet_factors = planet
 	if not crew.is_empty(): crew_factors = crew
 	if not galaxy.is_empty(): galaxy_factors = galaxy
@@ -885,9 +880,6 @@ func _commit_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 		return _fail(str(result.get("error", result.get("reason", "WorldGrowthUpdateFailed"))))
 	return result
 
-func planet_unlocked(id: String) -> bool:
-	return planet_definitions.has(id) and unlocked("planet", id) and (int(id) == 1 or Planet.buff(planet_progress, planet_buffs, "planet_unlock", "planet") >= int(id))
-
 func assign_crew(id: String, kind: String, target: String, mode: String = "1") -> Dictionary:
 	if not crew_progress.has(id) or not unlocked("crew", id):
 		return {"ok": false, "reason": "CrewLocked"}
@@ -898,17 +890,10 @@ func assign_crew(id: String, kind: String, target: String, mode: String = "1") -
 		if (target == "jewel_auto" and not unlocked("feature", "jewels")) or (target == "reactor_upgrade" and not unlocked("feature", "reactor")):
 			return {"ok": false, "reason": "CrewJobLocked"}
 		capacity = int(crew_jobs[target].maxCrew)
-	elif kind == "planet_explore":
-		if not planet_unlocked(target):
-			return {"ok": false, "reason": "PlanetLocked"}
-		capacity = 1
-	elif kind == "planet_build":
-		var parts: PackedStringArray = target.split(":")
-		if parts.size() != 2 or not planet_unlocked(parts[0]) or not planet_progress[parts[0]].buildings.has(parts[1]):
-			return {"ok": false, "reason": "PlanetBuildingUnavailable"}
-		if planet_progress[parts[0]].buildings[parts[1]].state != "building":
-			return {"ok": false, "reason": "PlanetBuildingUnavailable"}
-		capacity = int(planet_buildings[parts[1]].extra_crew)
+	elif kind in ["planet_explore", "planet_build"]:
+		var admitted = planet_system.assignment_capacity(kind, target)
+		if not admitted.ok: return admitted
+		capacity = int(admitted.capacity)
 	elif kind == "galaxy":
 		if not galaxy_unlocked(target):
 			return {"ok": false, "reason": "GalaxyUnavailable"}
@@ -924,60 +909,36 @@ func assign_crew(id: String, kind: String, target: String, mode: String = "1") -
 	if not changed.ok:
 		return changed
 	if old_kind == "planet_explore" and (kind != old_kind or target != old_target):
-		Planet.set_explorer(planet_progress[old_target], planet_definitions[old_target], false)
+		planet_system.set_explorer(old_target, false)
 	if kind == "planet_explore":
-		var started = Planet.set_explorer(planet_progress[target], planet_definitions[target], true)
+		var started = planet_system.set_explorer(target, true)
 		if not started.ok:
 			return _fail(str(started.reason))
 	_display_changed("crew", id)
-	if old_kind == "planet_explore": _display_changed("planets", old_target)
-	if kind == "planet_explore": _display_changed("planets", target)
-	return _commit_world({}, Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api, crew_factors, changed.jobs)) if not changed.jobs.is_empty() else {"ok": true}
+	return publish_world({}, Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api, crew_factors, changed.jobs)) if not changed.jobs.is_empty() else {"ok": true}
 
-func cancel_planet(id: String) -> Dictionary:
-	if not planet_progress.has(id):
-		return {"ok": false, "reason": "UnknownPlanet"}
-	_display_changed("planets", id)
-	Planet.cancel(planet_progress[id])
+func coordinate_planet_cancel(id: String) -> Dictionary:
+	var cancelled = planet_system.cancel(id)
+	if not cancelled.ok: return cancelled
 	for member in Crew.release(crew_progress, "planet_explore", id): _display_changed("crew", str(member))
-	return {"ok": true}
+	return cancelled
 
-func set_planet_automatic(id: String, enabled: bool) -> Dictionary:
-	if not planet_unlocked(id):
-		return {"ok": false, "reason": "PlanetLocked"}
-	return Planet.set_automatic(planet_progress[id], enabled)
-
-func claim_planet_build(id: String, building: String) -> Dictionary:
-	if not planet_unlocked(id):
-		return {"ok": false, "reason": "PlanetLocked"}
-	var result = Planet.claim_build(planet_progress[id], building)
-	if result.ok: _display_changed("buildings", id)
-	return _commit_world(Planet.contributions(planet_progress, planet_buildings, planet_buffs, amount_api, planet_factors, {id: [building]})) if result.ok else result
+func planet_experience_context() -> Dictionary:
+	return {"enabled": unlocked("feature", "crew_level"), "ratio": level_definitions[int(campaign.highest_reached)].planetExpRatio,
+		"factor": galaxy_crew_experience}
 
 func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) -> bool:
-	var result = Planet.advance(planet_progress, planet_definitions, planet_buildings,
-		explorers, builders, dt)
+	var result = planet_system.advance(explorers, builders, dt, planet_experience_context)
 	if not result.ok:
-		_fail(str(result.get("reason", "PlanetAdvanceFailed")))
+		_fail(str(result.get("error", result.get("reason", "PlanetAdvanceFailed"))))
 		return false
-	for id in result.progressed: _display_changed("planets", str(id))
 	var changed_jobs: Array = []
-	var changed_planets: Dictionary = {}
 	for completion in result.completed:
 		for target in completion.released:
 			for member in Crew.release(crew_progress, "planet_build", str(target)): _display_changed("crew", str(member))
-		var id: String = str(completion.planet)
-		changed_planets[id] = []
-		if completion.buildings_changed: _display_changed("buildings", id)
-		if completion.assignments_changed: _display_changed("construction", id)
-		if unlocked("feature", "crew_level"):
-			var recipients: Array = crew_progress.keys() if Planet.buff(planet_progress, planet_buffs, "crew_exp_share", "all", id) > 0 else [completion.explorer]
-			var level: int = int(campaign.highest_reached)
-			var experience = Planet.experience_reward(planet_definitions[id], level_definitions[level].planetExpRatio, galaxy_crew_experience, amount_api)
-			if not experience.ok:
-				_fail(str(experience.error))
-				return false
-			var awarded = Crew.add_experience(crew_progress, recipients, experience.value, crew_rules, amount_api)
+		if completion.award_experience:
+			var recipients: Array = crew_progress.keys() if completion.share_experience else [completion.explorer]
+			var awarded = Crew.add_experience(crew_progress, recipients, completion.experience, crew_rules, amount_api)
 			if not awarded.ok:
 				_fail(str(awarded.get("error", awarded.get("reason", "CrewExperienceFailed"))))
 				return false
@@ -986,8 +947,9 @@ func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) ->
 				if job not in changed_jobs: changed_jobs.append(job)
 		if not completion.again:
 			_display_changed("crew", str(completion.explorer))
-			Crew.release(crew_progress, "planet_explore", id)
-	if not result.completed.is_empty() and not _commit_world(Planet.contributions(planet_progress, planet_buildings, planet_buffs, amount_api, planet_factors, changed_planets), Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api, crew_factors, changed_jobs) if not changed_jobs.is_empty() else {}).ok:
+			Crew.release(crew_progress, "planet_explore", str(completion.planet))
+	if not result.completed.is_empty() and not publish_world(result.contributions,
+		Crew.contributions(crew_progress, crew_definitions, crew_jobs, crew_rules, amount_api, crew_factors, changed_jobs) if not changed_jobs.is_empty() else {}).ok:
 		return false
 	return true
 
@@ -1029,7 +991,7 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 			_fail(str(contributions.get("error", "GalaxyContributionFailed")))
 			return false
 		galaxy_factors = contributions
-		if contributions.growth_changed and not _commit_world({}, {}, contributions).ok: return false
+		if contributions.growth_changed and not publish_world({}, {}, contributions).ok: return false
 	if not result.payments.is_empty():
 		var production = economy.income_rates(wall_time, game_time, research.income_window(), "production")
 		if not production.ok:

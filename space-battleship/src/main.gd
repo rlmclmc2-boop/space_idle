@@ -1,4 +1,5 @@
 extends Node2D
+const PlanetPanel = preload("res://src/ui/planet_panel.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
 const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
@@ -20,8 +21,6 @@ var world_labels: Dictionary = {}
 var world_crew_picker: OptionButton
 var world_assignment_picker: OptionButton
 var world_mode_picker: OptionButton
-var world_planet_picker: OptionButton
-var world_building_picker: OptionButton
 var growth_status: Label
 var ship_picker: OptionButton
 var research_panel
@@ -250,7 +249,6 @@ func _refresh_ship_choices() -> void:
 		if key == session.selected_ship: ship_picker.select(index)
 
 const CREW_JOB_NAMES := {"equipment_upgrade": "装备升级", "hightech_scientists": "科研", "jewel_auto": "强化", "reactor_upgrade": "反应炉"}
-const PLANET_BUILD_STATES := {"locked": "未解锁", "building": "施工中", "ready": "待领取", "built": "已建成"}
 
 func _picker_value(picker: OptionButton, fallback = ""):
 	return fallback if picker == null or picker.selected < 0 else picker.get_item_metadata(picker.selected)
@@ -273,17 +271,9 @@ func _setup_world_controls(box: Control) -> void:
 		var assignment: Dictionary = _picker_value(world_assignment_picker, {"kind": "", "target": ""})
 		return session.assign_crew(str(_picker_value(world_crew_picker)), assignment.kind, assignment.target, str(_picker_value(world_mode_picker, "1"))))
 	_command_button(box, "撤回所选船员", func(): return session.assign_crew(str(_picker_value(world_crew_picker)), "", ""))
-	world_planet_picker = OptionButton.new()
-	world_planet_picker.item_selected.connect(func(_index): _refresh_world_buildings())
-	box.add_child(world_planet_picker)
-	var automatic := _row(box)
-	_command_button(automatic, "开启自动探索", func(): return session.set_planet_automatic(str(_picker_value(world_planet_picker)), true))
-	_command_button(automatic, "本次完成后停止", func(): return session.set_planet_automatic(str(_picker_value(world_planet_picker)), false))
-	_command_button(box, "立即取消探索", func(): return session.cancel_planet(str(_picker_value(world_planet_picker))))
-	world_building_picker = OptionButton.new()
-	box.add_child(world_building_picker)
-	var construction := _row(box)
-	_command_button(construction, "领取建筑", func(): return session.claim_planet_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker))))
+	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_world, _command_button))
+	session.planet_system.assignment_options_changed.connect(_refresh_construction_choices)
+	session.planet_system.availability_changed.connect(_refresh_world_assignments)
 	_command_button(box, "刷新世界列表", func():
 		_refresh_world_pickers()
 		return {"ok": true})
@@ -319,46 +309,19 @@ func _refresh_world_assignments() -> void:
 	world_assignment_picker.clear()
 	for job in CREW_JOB_NAMES:
 		_world_assignment(CREW_JOB_NAMES[job], "system_job", job, previous)
-	var planet: String = str(_picker_value(world_planet_picker))
-	world_planet_picker.clear()
-	for id in session.planet_definitions:
-		if not session.planet_unlocked(id): continue
-		var name: String = str(session.planet_definitions[id].name)
-		var index: int = world_planet_picker.item_count
-		world_planet_picker.add_item(name)
-		world_planet_picker.set_item_metadata(index, id)
-		if id == planet: world_planet_picker.select(index)
-		_world_assignment("探索 · " + name, "planet_explore", id, previous)
-		for key in session.planet_progress[id].buildings:
-			if session.planet_progress[id].buildings[key].state == "building" and int(session.planet_buildings[key].extra_crew) > 0:
-				_world_assignment("施工 · " + name + " · " + str(session.planet_buildings[key].name), "planet_build", str(id) + ":" + str(key), previous)
+	for option in session.planet_system.assignment_options():
+		_world_assignment(option.label, option.kind, option.target, previous)
 	for key in session.galaxy_progress:
 		if session.galaxy_unlocked(key):
 			_world_assignment("星系 · " + str(session.galaxy_definitions[key].name), "galaxy", key, previous)
-	_refresh_world_buildings()
 
 func _refresh_construction_choices(ids: Array) -> void:
 	var previous: Dictionary = _picker_value(world_assignment_picker, {})
 	for index in range(world_assignment_picker.item_count - 1, -1, -1):
 		var value: Dictionary = world_assignment_picker.get_item_metadata(index)
 		if value.kind == "planet_build" and str(value.target).get_slice(":", 0) in ids: world_assignment_picker.remove_item(index)
-	for id in ids:
-		for key in session.planet_progress[id].buildings:
-			if session.planet_progress[id].buildings[key].state == "building" and int(session.planet_buildings[key].extra_crew) > 0:
-				_world_assignment("施工 · " + str(session.planet_definitions[id].name) + " · " + str(session.planet_buildings[key].name), "planet_build", str(id) + ":" + str(key), previous)
-
-func _refresh_world_buildings() -> void:
-	var selected: String = str(_picker_value(world_building_picker))
-	world_building_picker.clear()
-	var id: String = str(_picker_value(world_planet_picker))
-	if not session.planet_progress.has(id): return
-	for key in session.planet_progress[id].buildings:
-		var progress: Dictionary = session.planet_progress[id].buildings[key]
-		var row: Dictionary = session.planet_buildings[key]
-		var index: int = world_building_picker.item_count
-		world_building_picker.add_item(str(row.name) + " · " + str(PLANET_BUILD_STATES[progress.state]) + " %d/%d" % [int(progress.work), int(row.build_explore)])
-		world_building_picker.set_item_metadata(index, key)
-		if key == selected: world_building_picker.select(index)
+	for option in session.planet_system.assignment_options(ids, true):
+		_world_assignment(option.label, option.kind, option.target, previous)
 
 func _status_label(kind: String, id: String, text: String) -> void:
 	var key: String = kind + ":" + id
@@ -370,7 +333,7 @@ func _status_label(kind: String, id: String, text: String) -> void:
 	world_labels[key].text = text
 
 func _refresh_world_status(changes: Dictionary = {}) -> void:
-	if changes.is_empty(): changes = {"crew": session.crew_progress, "planets": session.planet_progress, "galaxies": session.galaxy_progress}
+	if changes.is_empty(): changes = {"crew": session.crew_progress, "galaxies": session.galaxy_progress}
 	var show_levels: bool = session.unlocked("feature", "crew_level")
 	for id in changes.get("crew", {}):
 		if not session.unlocked("crew", id): continue
@@ -381,10 +344,6 @@ func _refresh_world_status(changes: Dictionary = {}) -> void:
 			var experience = session.amount_api.apply("to_display", [member.exp])
 			text = "%s Lv.%d · %s · 经验 %s" % [session.crew_definitions[id].name, int(member.level), job, experience.text]
 		_status_label("crew", str(id), text)
-	for id in changes.get("planets", {}):
-		if not session.planet_unlocked(id): continue
-		var progress: Dictionary = session.planet_progress[id]
-		_status_label("planet", str(id), "%s · 探索 %d · %s" % [session.planet_definitions[id].name, int(progress.exploration), "%.1f/%.1f 秒" % [float(progress.elapsed), float(progress.duration)] if progress.running else "待派遣"])
 	for key in changes.get("galaxies", {}):
 		if not session.galaxy_unlocked(key): continue
 		var region: Dictionary = session.galaxy_progress[key]
@@ -407,6 +366,4 @@ func _flush_display_changes() -> void:
 			var id: String = str(world_crew_picker.get_item_metadata(index))
 			if not changes.crew.has(id): continue
 			world_crew_picker.set_item_text(index, str(session.crew_definitions[id].name) + (" · Lv." + str(session.crew_progress[id].level) if session.unlocked("feature", "crew_level") else ""))
-	if changes.has("construction"): _refresh_construction_choices(changes.construction.keys())
-	if changes.get("buildings", {}).has(str(_picker_value(world_planet_picker))): _refresh_world_buildings()
 	_refresh_world_status(changes)
