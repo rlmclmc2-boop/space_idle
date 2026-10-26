@@ -25,6 +25,9 @@
 | Item | Current status | Evidence needed to close |
 |---|---|---|
 | C01 | Closed | Native manual values and before-contact timing in `_stage6_combat_oracle_probe.gd`. |
+| C02 | Closed | `_stage6_shield_timing_oracle_probe.gd` observes one enemy hit at 1.16: shield remains 700 through the 2-second delay and reaches 702.25 after another 0.02 seconds. A single 1.6-second advance settles three beam jumps at due times 1.00/1.25/1.50 for shield 30 and armour 315. |
+| C03 | Closed | The same native probe uses two 30-point shields with different resistance, recovery rates and delays plus 100 armour: a 160 raw hit consumes 30+30 shield then 70 armour; recovery totals 15/45 at separate deadlines. A 2.1 raw hit across two shields removes 3 total after one layer rounding. |
+| C05 | Partial | `_stage6_reactive_oracle_probe.gd` checks 0.15-second hits grouped by volley start (100,100,80,80), 0.17-second new volleys (100,80,60,40,40), and exact 2.20/2.21-second continuation/reset (80/100). Guided missile batch caching remains open. |
 | C07 | Closed | `_stage6_targeting_oracle_probe.gd` observes four native missile impacts on one target, alternating distribution on two targets, and no new attack count after the final target dies. |
 | C15 | Closed | `_stage6_combat_oracle_probe.gd` rejects first-slot unload without changing slots or native configuration commits, accepts first-slot shield, and unloads the second defence slot on a Cruiser. |
 | C08 | Closed | `_stage6_beam_oracle_probe.gd` checks ten 0.25-second due-time ticks in 0.37-second frames: damage grows from 100 at 1.00 to 300 at 3.00 and stays capped. Normal beam death resets charge and hits the next target at 2.25 for 100; endless beam retains charge and hits at 1.50 for 175. |
@@ -35,7 +38,7 @@
 | CR06 | Closed | A dormant native drone contribution adds 0.20 to the first-roll probability. Fixed seeds observe non-B3 u1=0.3053991 produce 230 at P=0.45, while B3 u2=0.4407568 still fails the original R=0.25 bonus roll and deals 100. |
 | CR07 | Closed | The same native probe checks CR05's failed bonus still writes B1/B2 marks; the next attack matches authored 50% and 10% bonuses. A forced derived repeat inherits the source attack without refreshing marks, while a 3-second interval lets the 2-second B2 mark expire before the next root. |
 | C06, C13 | Partial | C06: `_stage6_targeting_oracle_probe.gd` kills one of two targets mid-salvo and sees the orphaned missile avoid the surviving target; source change and same-time double hit remain open. C13: rebuild failure and return destination remain open. Existing probes cover shield-only sortie/depletion. |
-| C02-C05, C09-C11 | Open | Independent authored values and event order in real native fixtures, including multi-layer defences, reactive stacks, enhancement branches and legendary interactions. |
+| C04, C09-C11 | Open | Independent authored values and event order in real native fixtures, including memory/deferred timing, enhancement branches and legendary interactions. |
 | CR08 | Closed | `_stage6_snapshot_oracle_probe.gd` uses CR04/CR05 fixed seeds and changes drone probability after launch. Four missiles and a delayed repeat retain original critical/bonus flags and damage; the repeat applies only its authored multiplier. One native root count remains for both repeat impacts. |
 | Display-frame equivalence | Open | Same seed and fixed business steps with different draw-frame grouping; compare settlement, drops, IDs and state. |
 | Remaining performance matrix | Open | Maximum enabled slots/drones, burst/chain/beam, full warehouse and huge MAX with native allocation and GPU time. Existing long runs only cover a sustained 15-slot wave and ordinary GPU presentation. |
