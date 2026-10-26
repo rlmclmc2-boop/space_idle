@@ -180,6 +180,49 @@ func _run_probe() -> void:
 			printerr("module publication: ", mounted, " ", collection)
 			quit(1)
 			return
+		var module_receipt: Dictionary = {"round_id": own._round_id, "run_id": 999, "status": "CompletedPending",
+			"reward": {"drone": {}, "materials": {}, "ultimate_cores": 0, "hanging_rewards": {"resource_collector": 2}}}
+		own._receipts[999] = module_receipt
+		own._idle = module_receipt
+		var module_claim: Dictionary = session.claim_hyperspace(999)
+		var upgraded = session.amount_api.apply("to_display", [session._income_factors.resource_collection])
+		if not module_claim.ok or int(own.module_growth().resource_collector.level) <= 1 or float(upgraded.text) <= float(collection.text):
+			printerr("module reward publication: ", module_claim, " ", upgraded)
+			quit(1)
+			return
+		var preset_saved: Dictionary = session.save_hyperspace_preset("probe")
+		var removed: Dictionary = session.set_hyperspace_hangings(str(before_drone.id), [])
+		var preset_applied: Dictionary = session.apply_hyperspace_preset("probe")
+		if not preset_saved.ok or not removed.ok or not preset_applied.ok or own._warehouse[0].hangings != ["resource_collector"]:
+			printerr("preset transaction: ", preset_saved, " ", removed, " ", preset_applied)
+			quit(1)
+			return
+		if own.prepare_dismantle(str(before_drone.id)).get("reason") != "ProtectedDrone":
+			printerr("preset protection")
+			quit(1)
+			return
+		var filter_config: Dictionary = {"version": 2, "enabled": true, "mode": "all", "action": "keep_matches",
+			"conditions": [{"field": "weapon", "value": "laser"}]}
+		var filter_set: Dictionary = own.set_filter(filter_config)
+		var filter_import: Dictionary = own.import_filter(own.export_filter())
+		var filter_bad: Dictionary = own.import_filter("SPACE-FILTER-v2:bad")
+		if not filter_set.ok or not filter_import.ok or filter_bad.ok:
+			printerr("filter share: ", filter_set, " ", filter_import, " ", filter_bad)
+			quit(1)
+			return
+		var fixture: Dictionary = own._warehouse[0].duplicate(true)
+		fixture.origin_quality = "blue"
+		fixture.legendary = false
+		fixture.weapon = "laser"
+		fixture.affixes = [{"key": "damage_laser", "tier": 5, "value": 0.1, "locked": false}]
+		own._warehouse.append(fixture)
+		own._warehouse[-1].id = "guarantee-fixture"
+		var guaranteed: Dictionary = own.preview_forge("guarantee-fixture", "reroll_values", {"guaranteed": true})
+		if not guaranteed.ok or not session.amount_api.apply("from_decimal", [str(guaranteed.costs.antiproton)]).ok:
+			printerr("guaranteed Amount quote: ", guaranteed)
+			quit(1)
+			return
+		own._warehouse.pop_back()
 	print("manual entry and return accepted")
 	for target_level in [5, 8, 20, 220]:
 		for route in ["alpha", "beta", "gamma", "delta"]:

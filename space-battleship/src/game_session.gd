@@ -249,6 +249,14 @@ func claim_hyperspace(run_id: int) -> Dictionary:
 	if not claim.ok or claim.already_claimed: return claim
 	var credited: Dictionary = _hyperspace_credit(claim.reward)
 	if not credited.ok: return credited
+	var future_modules: Dictionary = hyperspace_system.future_module_contributions(claim.reward.hanging_rewards)
+	if future_modules != hyperspace_system.module_contributions():
+		var loadout: Dictionary = hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
+			int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source())
+		if not loadout.ok: return loadout
+		var published: Dictionary = publish_equipment_refit(credited.wallet, "refit", "", loadout.contributions, false,
+			func(): hyperspace_system.accept_claim(run_id), {}, future_modules)
+		return {"ok": true, "already_claimed": false, "reward": claim.reward} if published.ok else published
 	hyperspace_system.accept_claim(run_id)
 	var changed: bool = economy.accept_budget(credited.wallet, false)
 	if changed: economy.publish_budget_change()
@@ -260,6 +268,14 @@ func dismantle_hyperspace_drone(id: String) -> Dictionary:
 	if not prepared.ok: return prepared
 	var credited: Dictionary = _hyperspace_credit(prepared.reward)
 	if not credited.ok: return credited
+	var future_modules: Dictionary = hyperspace_system.future_module_contributions(prepared.reward.hanging_rewards)
+	if future_modules != hyperspace_system.module_contributions():
+		var loadout: Dictionary = hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
+			int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source())
+		if not loadout.ok: return loadout
+		var published: Dictionary = publish_equipment_refit(credited.wallet, "refit", "", loadout.contributions, false,
+			func(): hyperspace_system.accept_dismantle(id, prepared.reward), {}, future_modules)
+		return {"ok": true, "reward": prepared.reward} if published.ok else published
 	hyperspace_system.accept_dismantle(id, prepared.reward)
 	var changed: bool = economy.accept_budget(credited.wallet, false)
 	if changed: economy.publish_budget_change()
@@ -380,7 +396,7 @@ func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
 		"game_time": game_time}
 
-func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}) -> Dictionary:
+func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}, module_totals = null) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var ship_key: String = campaign_system.selected_ship() if next_ship.is_empty() else next_ship
 	var ship: Dictionary = campaign_system.ship_facts(ship_key)
@@ -392,7 +408,7 @@ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrid
 	if contributions != null:
 		drone_ids = []
 		for contribution in contributions: drone_ids.append(str(contribution.id))
-	var modules: Dictionary = hyperspace_system.module_contributions(drone_ids, hanging_overrides)
+	var modules: Dictionary = hyperspace_system.module_contributions(drone_ids, hanging_overrides) if module_totals == null else module_totals
 	var storage: Dictionary = _hyperspace_module_factor("extra_storage", modules)
 	if not storage.ok: return storage
 	var capacity: Dictionary = amount_api.apply("mul", [world.capacity, storage.value])
@@ -435,11 +451,11 @@ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrid
 	setup.reactor_factors = reactor.factors
 	return setup
 
-func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true, accept_drones: Callable = Callable(), hanging_overrides: Dictionary = {}) -> Dictionary:
+func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true, accept_drones: Callable = Callable(), hanging_overrides: Dictionary = {}, module_totals = null) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
 	geometry_changed = geometry_changed or equipment.geometry_changed()
-	var setup = _growth_setup(next_ship, contributions, hanging_overrides)
+	var setup = _growth_setup(next_ship, contributions, hanging_overrides, module_totals)
 	if not setup.ok:
 		reactor_system.discard_prepared()
 		enhancement.discard_output()

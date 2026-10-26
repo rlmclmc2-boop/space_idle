@@ -204,8 +204,12 @@ func _dismantle_reward(drone: Dictionary) -> Dictionary:
 		"ultimate_cores": 0, "hanging_rewards": hanging}
 
 func _credit_modules(drops: Dictionary) -> void:
+	_modules = _modules_after_credit(drops)
+
+func _modules_after_credit(drops: Dictionary) -> Dictionary:
+	var next: Dictionary = _modules.duplicate(true)
 	for key in drops:
-		var progress: Dictionary = _modules[key]
+		var progress: Dictionary = next[key]
 		var copies: int = int(drops[key])
 		if not progress.unlocked:
 			progress.unlocked = true
@@ -216,6 +220,7 @@ func _credit_modules(drops: Dictionary) -> void:
 			progress.exp -= needed
 			progress.level += 1
 			needed = float(_module_definitions[key].base_exp) * pow(1.0 + float(_module_definitions[key].exp_growth), int(progress.level))
+	return next
 
 func filter_configuration() -> Dictionary:
 	return _filter.duplicate(true)
@@ -261,6 +266,13 @@ func import_filter(value: String) -> Dictionary:
 	var decoded: String = Marshalls.base64_to_utf8(encoded)
 	if Marshalls.utf8_to_base64(decoded) != encoded: return {"ok": false, "reason": "InvalidFilterShare"}
 	var parsed = JSON.parse_string(decoded)
+	if parsed is Dictionary:
+		if parsed.get("version") is float and float(parsed.version) == floorf(float(parsed.version)): parsed.version = int(parsed.version)
+		if parsed.get("conditions") is Array:
+			for condition in parsed.conditions:
+				if not condition is Dictionary: continue
+				for field in ["value", "tier"]:
+					if condition.get(field) is float and float(condition[field]) == floorf(float(condition[field])): condition[field] = int(condition[field])
 	return set_filter(parsed) if parsed is Dictionary else {"ok": false, "reason": "InvalidFilterShare"}
 
 func _filter_matches(drone: Dictionary) -> bool:
@@ -292,18 +304,22 @@ func set_legend_collected(effect_id: String, collected: bool) -> Dictionary:
 	else: _legend_collection.erase(effect_id)
 	return {"ok": true}
 
-func module_contributions(ids = null, hanging_overrides: Dictionary = {}) -> Dictionary:
+func module_contributions(ids = null, hanging_overrides: Dictionary = {}, module_states = null) -> Dictionary:
 	var totals: Dictionary = {}
 	var active: Array = _equipped if ids == null else ids
+	var modules: Dictionary = _modules if module_states == null else module_states
 	for id in active:
 		var drone: Dictionary = _find_drone(str(id))
 		if drone.is_empty() or _sealed.has(str(id)): continue
 		var installed: Array = hanging_overrides.get(str(id), drone.hangings)
 		for module_id in installed:
-			var progress: Dictionary = _modules.get(str(module_id), {})
+			var progress: Dictionary = modules.get(str(module_id), {})
 			if not bool(progress.get("unlocked", false)): continue
 			totals[str(module_id)] = float(totals.get(str(module_id), 0.0)) + pow(1.0 + float(_module_definitions[str(module_id)].effect_growth), int(progress.level)) - 1.0
 	return totals
+
+func future_module_contributions(drops: Dictionary) -> Dictionary:
+	return module_contributions(null, {}, _modules_after_credit(drops))
 
 func prepare_hangings(id: String, module_ids: Array, highest_reached: int) -> Dictionary:
 	var drone: Dictionary = _find_drone(id)
@@ -431,6 +447,7 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}) -> Dict
 	var random := RandomNumberGenerator.new()
 	random.state = int(drone.forge_rng_state)
 	var multiplier: int = 1
+	var guarantee_points: Array = []
 	var affix_limit: int = _quality_row(candidate).get("affix_limit", 0)
 	var hanging_limit: int = maxi(int(_quality_row(candidate).get("hanging_limit", 0)), int(candidate.preserved_hanging_slots))
 	var unlocked: Array = []
@@ -474,13 +491,20 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}) -> Dict
 				candidate.affixes[slot].value = _quantized(range_row.minimum, range_row.maximum, random)
 		"reroll_values":
 			if unlocked.is_empty() and not candidate.legendary: return {"ok": false, "reason": "NoUnlockedAffix"}
+			var guaranteed: bool = bool(args.get("guaranteed", false))
 			for index in unlocked:
 				var affix: Dictionary = candidate.affixes[index]
 				var range_row: Dictionary = _affix_ranges[str(affix.key)][int(affix.tier)]
-				affix.value = _quantized(range_row.minimum, range_row.maximum, random)
+				if guaranteed:
+					affix.value = float(range_row.maximum)
+					guarantee_points.append(floori((float(range_row.maximum) - float(range_row.minimum)) / float(_parameters.value_precision) + 1e-7) + 1)
+				else: affix.value = _quantized(range_row.minimum, range_row.maximum, random)
 			if candidate.legendary:
 				for row in _legend_parameters.get(str(candidate.legendary_effect.effect_id), []):
-					candidate.legendary_effect.parameters[str(row.parameter)] = _quantized(row.minimum, row.maximum, random)
+					if guaranteed:
+						candidate.legendary_effect.parameters[str(row.parameter)] = float(row.maximum)
+						guarantee_points.append(floori((float(row.maximum) - float(row.minimum)) / float(_parameters.value_precision) + 1e-7) + 1)
+					else: candidate.legendary_effect.parameters[str(row.parameter)] = _quantized(row.minimum, row.maximum, random)
 		"enable_omen":
 			if candidate.omen: return {"ok": false, "reason": "OmenAlreadyEnabled"}
 			candidate.omen = true
@@ -520,7 +544,19 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}) -> Dict
 	var costs: Dictionary = {}
 	if _forge_costs.has(operation):
 		var row: Dictionary = _forge_costs[operation]
-		costs[str(row.resource)] = int(row.amount) * multiplier * (1 if str(row.resource) == "ultimate_cores" else int(_parameters.material_unit_scale))
+		if guarantee_points.is_empty():
+			costs[str(row.resource)] = int(row.amount) * multiplier * (1 if str(row.resource) == "ultimate_cores" else int(_parameters.material_unit_scale))
+		else:
+			var quantity: Dictionary = _api.apply("from_decimal", [str(int(row.amount) * int(_parameters.material_unit_scale) * int(_parameters.reroll_guarantee_multiplier))])
+			if not quantity.ok: return quantity
+			for points in guarantee_points:
+				var factor: Dictionary = _api.apply("from_decimal", [str(points)])
+				if not factor.ok: return factor
+				quantity = _api.apply("mul", [quantity.value, factor.value])
+				if not quantity.ok: return quantity
+			var exact: Dictionary = _api.apply("to_display", [quantity.value])
+			if not exact.ok: return exact
+			costs[str(row.resource)] = exact.text
 	elif operation == "modernize":
 		var weight: float = 0.0
 		for affix in candidate.affixes:
@@ -785,6 +821,7 @@ func accept_reforge(retained: Array) -> Dictionary:
 	_overflow = []
 	_equipped = []
 	_presets = []
+	_last_forge = {}
 	_filter = {"version": 2, "enabled": false, "mode": "all", "action": "keep_matches", "conditions": []}
 	_legend_seen = {}
 	_legend_collection = {}
