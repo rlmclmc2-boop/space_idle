@@ -47,7 +47,7 @@ var game_time: float = 0.0
 func _init() -> void:
 	_income_factors.make_read_only()
 
-func initialize(path: String, combat_seed: int) -> Dictionary:
+func initialize(path: String, combat_seed: int, native_state: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	if battle != null:
 		return {"ok": false, "reason": "AlreadyInitialized"}
@@ -99,7 +99,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	var setup = _growth_setup()
 	if not setup.ok:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
-	var initialized = battle.initialize_player()
+	var initialized = battle.initialize_player(native_state)
 	if not initialized.ok: return _fail(str(initialized.reason))
 	reactor_system.accept()
 	_reactor_factors = setup.reactor_factors

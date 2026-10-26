@@ -237,11 +237,29 @@ func _accept_player() -> void:
 	for row in setup.descriptor.weapons: _player_muzzles[str(row.entry.id)] = row.muzzle
 	_prepared_player = {}
 
-func initialize_player() -> Dictionary:
+func persistent_state() -> Dictionary:
+	if not _run_state.is_running() or _kernel == null: return _run_state.rejection()
+	return {"ok": true, "state": _kernel.persistent_state()}
+
+func initialize_player(native_state: Dictionary = {}) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
+	if not native_state.is_empty():
+		if not native_state.get("history_counts") is Dictionary or not native_state.get("next_ids") is Dictionary:
+			return {"ok": false, "reason": "InvalidNativeState"}
+		var history: Dictionary = native_state.history_counts
+		var ids: Dictionary = native_state.next_ids
+		for value in [history.get("attacks"), history.get("incoming"), ids.get("attack"), ids.get("drop"), native_state.get("rng_state")]:
+			if not value is String or not str(value).is_valid_int(): return {"ok": false, "reason": "InvalidNativeState"}
+		_prepared_player.descriptor.attack_counter = str(history.attacks).to_int()
+		_prepared_player.descriptor.incoming_counter = str(history.incoming).to_int()
+		_prepared_player.descriptor.projectile_serial = str(ids.attack).to_int()
+		_prepared_player.descriptor.drop_uid = str(ids.drop).to_int()
+		_prepared_player.descriptor.rng_state = str(native_state.rng_state).to_int()
 	if not _kernel.initialize(_prepared_player.descriptor):
 		_run_state.fail("NativeInitializationFailed")
 		return {"ok": false, "reason": "NativeInitializationFailed"}
+	if not native_state.is_empty() and not _kernel.restore_persistent_state(native_state):
+		return {"ok": false, "reason": "InvalidNativeState"}
 	_accept_player()
 	_player_hull = Geometry.transform_hull(_models[_ship_key].hull, Vector2(float(_geometry.player_x), float(_geometry.player_y)), _player_dimensions, 0.0)
 	_kernel.set_damage_stats_enabled(true)

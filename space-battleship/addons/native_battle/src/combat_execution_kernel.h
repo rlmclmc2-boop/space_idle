@@ -2079,6 +2079,8 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("take_results"), &SpaceCombatKernel::take_results);
         ClassDB::bind_method(D_METHOD("presentation_clock"), &SpaceCombatKernel::presentation_clock);
         ClassDB::bind_method(D_METHOD("read_history"), &SpaceCombatKernel::read_history);
+        ClassDB::bind_method(D_METHOD("persistent_state"), &SpaceCombatKernel::persistent_state);
+        ClassDB::bind_method(D_METHOD("restore_persistent_state", "state"), &SpaceCombatKernel::restore_persistent_state);
         ClassDB::bind_method(D_METHOD("clear_encounter", "reason"), &SpaceCombatKernel::clear_encounter);
         ClassDB::bind_method(D_METHOD("finish_retreat"), &SpaceCombatKernel::finish_retreat);
         ClassDB::bind_method(D_METHOD("begin_retreat"), &SpaceCombatKernel::begin_retreat);
@@ -2249,6 +2251,49 @@ class SpaceCombatKernel : public RefCounted {
     double presentation_clock() const { return clock; }
     Dictionary read_history() const {
         Dictionary out; out["attacks"] = int64_t(attack_counter); out["incoming"] = int64_t(incoming_counter); return out;
+    }
+    // No encounter objects cross the save boundary. Decimal strings preserve
+    // all counters through JSON without rounding them through a double.
+    Dictionary persistent_state() const {
+        Dictionary history, ids, out;
+        history["attacks"] = String::num_int64(attack_counter);
+        history["incoming"] = String::num_int64(incoming_counter);
+        ids["encounter"] = String::num_int64(int64_t(encounter_generation));
+        ids["attack"] = String::num_int64(int64_t(flight_serial));
+        ids["emitter"] = String::num_int64(int64_t(event_serial));
+        ids["drop"] = String::num_int64(drop_uid);
+        out["history_counts"] = history;
+        out["rng_state"] = String::num_int64(rng.is_valid() ? int64_t(rng->get_state()) : 0);
+        out["next_ids"] = ids;
+        return out;
+    }
+    bool restore_persistent_state(const Dictionary &state) {
+        if (!admitted || executing || !state.has("history_counts") || !state.has("rng_state") || !state.has("next_ids") ||
+            Variant(state["history_counts"]).get_type() != Variant::DICTIONARY ||
+            Variant(state["next_ids"]).get_type() != Variant::DICTIONARY ||
+            Variant(state["rng_state"]).get_type() != Variant::STRING) return false;
+        Dictionary history = state["history_counts"], ids = state["next_ids"];
+        auto signed_value = [](const Variant &value, int64_t &out, bool allow_negative = false) -> bool {
+            if (value.get_type() != Variant::STRING) return false;
+            String text = value;
+            if (text.is_empty() || !text.is_valid_int() || (!allow_negative && text.begins_with("-")) || text != String::num_int64(text.to_int())) return false;
+            out = text.to_int(); return true;
+        };
+        int64_t attacks, incoming, drop, encounter, attack, emitter, random_state;
+        if (!signed_value(history.get("attacks", Variant()), attacks) ||
+            !signed_value(history.get("incoming", Variant()), incoming) ||
+            !signed_value(ids.get("drop", Variant()), drop) ||
+            !signed_value(ids.get("encounter", Variant()), encounter) ||
+            !signed_value(ids.get("attack", Variant()), attack) ||
+            !signed_value(ids.get("emitter", Variant()), emitter) ||
+            !signed_value(state.get("rng_state", Variant()), random_state, true) ||
+            encounter < 1 || encounter >= INT32_MAX) return false;
+        attack_counter = attacks; incoming_counter = incoming;
+        encounter_generation = uint32_t(encounter);
+        flight_serial = uint64_t(attack); event_serial = uint64_t(emitter);
+        drop_uid = drop;
+        rng->set_state(uint64_t(random_state));
+        return true;
     }
     Dictionary take_results() {
         Dictionary out; Array events, drops;

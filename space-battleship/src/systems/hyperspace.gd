@@ -822,6 +822,9 @@ func accept_reforge(retained: Array) -> Dictionary:
 	_reforge_count += 1
 	_round_id += 1
 	_next_run = 1
+	_next_enemy_uid = 0
+	_energy = float(_parameters.energy_cap)
+	_late_supply_work = 0.0
 	_reward_rng.seed = _base_seed ^ 0x4859504552 ^ _round_id
 	_luck_rng.seed = _base_seed ^ 0x4c55434b ^ _round_id
 	_manual = {}
