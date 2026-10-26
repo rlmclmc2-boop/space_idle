@@ -129,6 +129,7 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 		if not hp.ok or not shield.ok:
 			return hp if not hp.ok else shield
 		var actor := row.duplicate(true)
+		actor.armourType = int(row.armourType)
 		actor.uid = next_uid
 		actor.slot = slot
 		actor.x = positions[slot].x
