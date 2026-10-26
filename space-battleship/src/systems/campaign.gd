@@ -21,6 +21,7 @@ var _retreat_to: float = 0.0
 var _retreat_elapsed: float = 0.0
 var _battle
 var _api
+var _progress_dirty: bool = false
 var _state: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
 	"point": 0, "points": [], "highest_reached": 1,
 	"cleared_stages": {}, "origin": 0.0, "speed": 0.0, "wait": 0.0}
@@ -108,11 +109,22 @@ func toggle_guard() -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	return set_guard(not _guard.enabled, int(_guard.death_option))
 
-func advance(dt: float, advance_native: Callable, start_wave: Callable) -> void:
-	if not _run_state.is_running(): return
+func advance(dt: float, advance_native: Callable, start_wave: Callable) -> bool:
+	if not _run_state.is_running(): return false
 	var before: Array = [_state.stage, _state.state, _state.distance]
 	_advance(dt, advance_native, start_wave)
-	if before != [_state.stage, _state.state, _state.distance]: status_changed.emit()
+	return before != [_state.stage, _state.state, _state.distance]
+
+func take_progress_changed() -> bool:
+	var changed: bool = _progress_dirty
+	_progress_dirty = false
+	return changed
+
+func publish_progress_change() -> void:
+	progress_changed.emit()
+
+func publish_status_change() -> void:
+	status_changed.emit()
 
 func prepare_wave(enemy_override: Callable, geometry: Dictionary, motion: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
@@ -199,7 +211,7 @@ func _set_stage(stage: int, distance: float) -> void:
 	_state.distance = distance
 	if stage > int(_state.highest_reached):
 		_state.highest_reached = stage
-		progress_changed.emit()
+		_progress_dirty = true
 	var entries: PackedStringArray = str(_levels[stage].monGroup).replace("{", "").replace("}", "").replace("｛", "").replace("｝", "").replace("，", ",").split(",")
 	_state.points = []
 	for entry in entries:
@@ -311,7 +323,7 @@ func observe_battle(result: Dictionary, clear_locks: Callable, settle_collection
 				cleared[int(_state.stage)] = true
 				cleared.make_read_only()
 				_state.cleared_stages = cleared
-				progress_changed.emit()
+				_progress_dirty = true
 			_state.state = "waiting"
 			_state.wait = _guard_interval() if _guard_matches() else float(_rules.clear_wait_seconds)
 		elif _guard_matches():

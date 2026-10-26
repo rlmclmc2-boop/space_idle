@@ -162,7 +162,7 @@ func register_drops(rows: Array, now: float, refinery: Dictionary) -> Dictionary
 	if not captured.is_empty(): display_changed.emit()
 	return {"ok": true}
 
-func collect_drop(id: String, automatic: bool, wall: float, game: float, income_factors: Dictionary = {}) -> Dictionary:
+func collect_drop(id: String, automatic: bool, wall: float, game: float, income_factors: Dictionary = {}, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var pending: Dictionary = _drops
 	var wallet: Dictionary = _wallet
@@ -250,10 +250,10 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 	_markers.erase(id)
 	_income_dirty = true
 	_balance_dirty = true
-	display_changed.emit()
+	if notify: display_changed.emit()
 	return {"ok": true, "amount": quantity, "resource": resource}
 
-func collect_due(wall: float, game: float, force: bool = false, income_factors: Dictionary = {}) -> Dictionary:
+func collect_due(wall: float, game: float, force: bool = false, income_factors: Dictionary = {}, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var pending: Dictionary = _drops
 	# Stable birth order; collection never depends on Dictionary iteration order.
@@ -268,10 +268,11 @@ func collect_due(wall: float, game: float, force: bool = false, income_factors: 
 		if str(left.domain) != str(right.domain): return str(left.domain) < str(right.domain)
 		return int(left.uid) < int(right.uid))
 	for id in ids:
-		var result = collect_drop(id, true, wall, game, income_factors)
+		var result = collect_drop(id, true, wall, game, income_factors, false)
 		if not result.ok:
 			return result
 		collected = true
+	if collected and notify: display_changed.emit()
 	return {"ok": true, "collected": collected}
 
 func _spawn_timed_drop(resource: String, base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2, born_at: float, factors: Dictionary) -> Dictionary:

@@ -49,19 +49,21 @@ func select(id: String) -> Dictionary:
 	return {"ok": true}
 
 # Research interprets its fields; generic progress availability has one authority.
-func refresh_progress(unlocked: Callable) -> void:
-	if not _run_state.is_running(): return
+func refresh_progress(unlocked: Callable, notify: bool = true) -> bool:
+	if not _run_state.is_running(): return false
 	var state: Dictionary = _state
 	var definitions: Dictionary = _definitions
 	var gates: Dictionary = {}
 	for key in definitions:
 		var row: Dictionary = definitions[key]
 		gates[key] = (row.legacy_unlock == null or bool(unlocked.call("hightech", str(row.legacy_unlock)))) and (row.unlock == null or bool(unlocked.call("feature", "jewels")))
-	if state.gates == gates and not state.available.is_empty(): return
+	if state.gates == gates and not state.available.is_empty(): return false
 	state.gates = gates
 	var previous: Dictionary = state.available.duplicate()
 	_refresh_available(state, definitions)
-	if state.available != previous: choices_changed.emit()
+	var changed: bool = state.available != previous
+	if changed and notify: choices_changed.emit()
+	return changed
 
 static func _refresh_available(state: Dictionary, definitions: Dictionary) -> void:
 	for id in definitions: state.available[id] = _available(definitions[id], state.levels, state.gates)

@@ -2,7 +2,6 @@ extends RefCounted
 var _run_state
 
 signal choices_changed
-signal transaction_accepted
 
 var _enabled: Array = []
 var _available: bool = false
@@ -27,8 +26,8 @@ func panel_options() -> Array:
 		options.append({"id": id, "name": str(labels.get(id, id)), "enabled": id in enabled})
 	return options
 
-func refresh_availability(unlocked: Callable) -> void:
-	if not _run_state.is_running(): return
+func refresh_availability(unlocked: Callable, notify: bool = true) -> bool:
+	if not _run_state.is_running(): return false
 	var available: bool = bool(unlocked.call("feature", "reactor"))
 	var enabled: Array = []
 	if available:
@@ -38,7 +37,12 @@ func refresh_availability(unlocked: Callable) -> void:
 		_available = available
 		enabled.make_read_only()
 		_enabled = enabled
-		choices_changed.emit()
+		if notify: choices_changed.emit()
+		return true
+	return false
+
+func publish_availability() -> void:
+	choices_changed.emit()
 
 func enabled_modules() -> Array:
 	return _enabled
@@ -64,13 +68,15 @@ func accept() -> void:
 	if not _run_state.is_running(): return
 	if not _prepared_state.is_empty(): _adopt(_prepared_state)
 
+func discard_prepared() -> void:
+	_prepared_state = {}
+
 func _submit(next: Dictionary, inputs: Dictionary, next_wallet, kind: String, publish: Callable) -> Dictionary:
 	var candidate = _evaluate(next, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
 	if not candidate.ok: return candidate
+	_prepared_state = candidate.state
 	var result: Dictionary = publish.call(candidate.factors, next_wallet, kind)
-	if result.ok:
-		_adopt(candidate.state)
-		transaction_accepted.emit()
+	if not result.ok: _prepared_state = {}
 	return result
 
 func purchase(count: int, automatic: bool, inputs: Dictionary, pay: Callable, publish: Callable) -> Dictionary:

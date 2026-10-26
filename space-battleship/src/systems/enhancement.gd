@@ -1,6 +1,5 @@
 extends RefCounted
 var _run_state
-signal transaction_accepted
 
 const WEAPON := ["proficiency", "repeat", "critical"]
 const DEFENCE := ["adaptation", "memory", "deferred"]
@@ -10,6 +9,7 @@ var _rules: Dictionary = {}
 var _api
 var _values: Dictionary = {}
 var _pending_output: Dictionary = {}
+var _pending_state: Dictionary = {}
 
 func _init(rows: Array, api, run_state) -> void:
 	_run_state = run_state
@@ -33,6 +33,9 @@ func accept_output() -> void:
 		_values = _pending_output
 		_pending_output = {}
 
+func discard_output() -> void:
+	_pending_output = {}
+
 func difference(output: Dictionary) -> Dictionary:
 	return _changes(_values, output)
 
@@ -41,13 +44,19 @@ func difference(output: Dictionary) -> Dictionary:
 func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: String, publish: Callable) -> Dictionary:
 	var output = _combat(next, int(inputs.bonus), _rules, bool(inputs.unlocked.call("feature", "jewels")), int(inputs.armours))
 	if not output.ok: return output
+	_pending_state = next
+	_pending_output = output
 	var committed: Dictionary = publish.call(_changes(_values, output), costs, kind)
-	if committed.ok:
-		_state = next
-		_values = output
+	if not committed.ok:
+		_pending_state = {}
 		_pending_output = {}
-		transaction_accepted.emit()
 	return committed
+
+func accept_prepared() -> void:
+	_state = _pending_state
+	_values = _pending_output
+	_pending_state = {}
+	_pending_output = {}
 
 func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

@@ -26,8 +26,8 @@ func _init(rows: Array, buildings: Array, rules: Array, api, run_state) -> void:
 func initialization_result() -> Dictionary:
 	return {"ok": _initial_error.is_empty(), "reason": _initial_error}
 
-func refresh_availability(unlocked: Callable, cleared_stages: Dictionary) -> void:
-	if not _run_state.is_running(): return
+func refresh_availability(unlocked: Callable, cleared_stages: Dictionary, notify: bool = true) -> bool:
+	if not _run_state.is_running(): return false
 	var enabled: bool = bool(unlocked.call("feature", "galaxy"))
 	var next: Dictionary = {}
 	for key in _regions:
@@ -36,7 +36,12 @@ func refresh_availability(unlocked: Callable, cleared_stages: Dictionary) -> voi
 		if next[key]: _regions[key].unlocked = true
 	if next != _available:
 		_available = next
-		availability_changed.emit()
+		if notify: availability_changed.emit()
+		return true
+	return false
+
+func publish_availability() -> void:
+	availability_changed.emit()
 
 func is_available(key: String) -> bool:
 	return _available.get(key, false)

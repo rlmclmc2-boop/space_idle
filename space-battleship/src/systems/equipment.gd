@@ -6,11 +6,11 @@ const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 signal slots_changed(ids: Array)
 signal loadout_changed
 signal options_changed
-signal transaction_accepted
 
 var _slots: Array = []
 var _pending_slots = null
 var _pending_level_slots: Array = []
+var _pending_notice: Dictionary = {}
 var _material_available: bool = false
 var _definitions: Dictionary = {}
 var _evolution: Dictionary = {}
@@ -33,15 +33,20 @@ func _init(rows: Array, evolution_rows: Array, unlocks: Array, parameters: Dicti
 	_material_gate = int(rules.hyperspace_unlock_reached)
 	_api = api
 
-func refresh_availability(unlocked: Callable, highest_reached: int) -> void:
-	if not _run_state.is_running(): return
+func refresh_availability(unlocked: Callable, highest_reached: int, notify: bool = true) -> bool:
+	if not _run_state.is_running(): return false
 	var next: Dictionary = {}
 	for key in _definitions: next[key] = bool(unlocked.call("equipment", key))
 	var material: bool = highest_reached >= _material_gate
 	if next != _available or material != _material_available:
 		_available = next
 		_material_available = material
-		options_changed.emit()
+		if notify: options_changed.emit()
+		return true
+	return false
+
+func publish_availability() -> void:
+	options_changed.emit()
 
 func initialize_slots(starts: String, mounts: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
@@ -114,27 +119,35 @@ func price_text(id: String) -> String:
 func _submit_levels(next: Array, balances: Dictionary, changed: Array, publish: Callable) -> Dictionary:
 	_pending_slots = next
 	_pending_level_slots = changed
+	var rows: Array = []
+	for slot in changed: rows.append(str(slot.id))
+	rows.make_read_only()
+	_pending_notice = {"kind": "levels", "ids": rows}
 	var result: Dictionary = publish.call(balances)
-	_pending_slots = null
-	_pending_level_slots = []
-	if result.ok:
-		_slots = next
-		transaction_accepted.emit()
-		var rows: Array = []
-		for slot in changed: rows.append(str(slot.id))
-		rows.make_read_only()
-		slots_changed.emit(rows)
+	if not result.ok: discard_prepared()
 	return result
 
 func _submit_refit(next: Array, balances: Dictionary, publish: Callable) -> Dictionary:
 	_pending_slots = next
+	_pending_notice = {"kind": "refit"}
 	var result: Dictionary = publish.call(balances, "refit")
-	_pending_slots = null
-	if result.ok:
-		_slots = next
-		transaction_accepted.emit()
-		loadout_changed.emit()
+	if not result.ok: discard_prepared()
 	return result
+
+func accept_prepared() -> Dictionary:
+	_slots = _pending_slots
+	var notice: Dictionary = _pending_notice
+	discard_prepared()
+	return notice
+
+func discard_prepared() -> void:
+	_pending_slots = null
+	_pending_level_slots = []
+	_pending_notice = {}
+
+func publish_accepted(notice: Dictionary) -> void:
+	if notice.kind == "levels": slots_changed.emit(notice.ids)
+	elif notice.kind == "refit": loadout_changed.emit()
 ## Static equipment arithmetic stops at charged_base. History stays in native.
 
 static func _growth(base, rate: float, effective_level: int, amount_api) -> Dictionary:

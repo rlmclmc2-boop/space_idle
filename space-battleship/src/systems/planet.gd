@@ -5,7 +5,6 @@ signal status_changed(ids: Array)
 signal buildings_changed(ids: Array)
 signal assignment_options_changed(ids: Array)
 signal availability_changed
-signal claim_accepted
 
 var _definitions: Dictionary = {}
 var _buildings: Dictionary = {}
@@ -14,6 +13,9 @@ var _state: Dictionary
 var _gates: Dictionary = {}
 var _available: Dictionary = {}
 var _factors: Dictionary = {}
+var _claim_state: Dictionary = {}
+var _claim_factors: Dictionary = {}
+var _claim_id: String = ""
 var _api
 
 func _init(rows: Array, buildings: Array, buffs: Array, api, run_state) -> void:
@@ -24,10 +26,13 @@ func _init(rows: Array, buildings: Array, buffs: Array, api, run_state) -> void:
 	_api = api
 	_state = _initial(_definitions, _buildings)
 
-func refresh_availability(unlocked: Callable) -> void:
-	if not _run_state.is_running(): return
+func refresh_availability(unlocked: Callable, notify: bool = true) -> bool:
+	if not _run_state.is_running(): return false
 	for id in _definitions: _gates[id] = bool(unlocked.call("planet", id))
-	_refresh_available()
+	return _refresh_available(notify)
+
+func publish_availability() -> void:
+	availability_changed.emit()
 
 func _refresh_available(notify: bool = true) -> bool:
 	var next: Dictionary = {}
@@ -84,15 +89,28 @@ func claim_build(id: String, building: String, publish: Callable) -> Dictionary:
 	if not claimed.ok: return claimed
 	var output = _contributions(candidate_state, _buildings, _buffs, _api, _factors, {id: [building]})
 	if not output.ok: return output
+	_claim_state = candidate_state
+	_claim_factors = output
+	_claim_id = id
 	var committed: Dictionary = publish.call(_published_contributions(output))
-	if not committed.ok: return committed
-	_state = candidate_state
-	_factors = output
-	var availability_changed_now: bool = _refresh_available(false)
-	claim_accepted.emit()
-	if availability_changed_now: availability_changed.emit()
-	buildings_changed.emit([id])
+	if not committed.ok:
+		_claim_state = {}
+		_claim_factors = {}
+		_claim_id = ""
 	return committed
+
+func accept_prepared_claim() -> Dictionary:
+	_state = _claim_state
+	_factors = _claim_factors
+	var notice := {"id": _claim_id, "availability_changed": _refresh_available(false)}
+	_claim_state = {}
+	_claim_factors = {}
+	_claim_id = ""
+	return notice
+
+func publish_claim(notice: Dictionary) -> void:
+	if notice.availability_changed: availability_changed.emit()
+	buildings_changed.emit([notice.id])
 
 func contributions(changes: Dictionary = {}) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

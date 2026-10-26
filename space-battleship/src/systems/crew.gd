@@ -23,15 +23,20 @@ func _init(rows: Array, rules: Array, jobs: Array, api, run_state) -> void:
 	_api = api
 	_members = _initial(_definitions, api)
 
-func refresh_availability(unlocked: Callable) -> void:
-	if not _run_state.is_running(): return
+func refresh_availability(unlocked: Callable, notify: bool = true) -> bool:
+	if not _run_state.is_running(): return false
 	var next: Dictionary = {}
 	for id in _definitions: next[id] = bool(unlocked.call("crew", id))
 	var features := {"levels": bool(unlocked.call("feature", "crew_level")), "jewels": bool(unlocked.call("feature", "jewels")), "reactor": bool(unlocked.call("feature", "reactor"))}
 	if next != _available or features != _features:
 		_available = next
 		_features = features
-		options_changed.emit()
+		if notify: options_changed.emit()
+		return true
+	return false
+
+func publish_availability() -> void:
+	options_changed.emit()
 
 func experience_enabled() -> bool:
 	return _features.levels
