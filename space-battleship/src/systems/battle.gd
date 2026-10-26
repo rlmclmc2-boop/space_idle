@@ -3,6 +3,7 @@ const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const CombatSetup = preload("res://src/combat_setup.gd")
 const Statistics = preload("res://src/systems/battle_statistics.gd")
 var _kernel
+var _presentation
 var _api
 var _run_state
 var _statistics
@@ -80,9 +81,35 @@ func _load_models(ship_keys: Array) -> Dictionary:
 func initialization_result() -> Dictionary:
 	return _initial_result
 
-# Native ownership is shared only with the campaign lifecycle and battle renderer.
-func native_owner():
-	return _kernel
+func defence_capacity_available() -> bool:
+	var player: Dictionary = _kernel.player_view()
+	var armour = _api.apply("from_decimal", [str(player.max_armour)])
+	var shield = _api.apply("from_decimal", [str(player.max_shield)])
+	if not armour.ok or not shield.ok: return false
+	var zero: Dictionary = _api.apply("zero", []).value
+	return _api.apply("compare", [armour.value, zero]).scalar > 0 or _api.apply("compare", [shield.value, zero]).scalar > 0
+
+func defence_depleted() -> bool:
+	var player: Dictionary = _kernel.player_view()
+	var armour = _api.apply("from_decimal", [str(player.armour)])
+	var shield = _api.apply("from_decimal", [str(player.shield)])
+	if not armour.ok or not shield.ok: return false
+	var zero: Dictionary = _api.apply("zero", []).value
+	return _api.apply("compare", [armour.value, zero]).scalar <= 0 and _api.apply("compare", [shield.value, zero]).scalar <= 0
+
+func reset_for_sortie() -> void:
+	_kernel.clear_encounter("sortie")
+	_kernel.finish_retreat()
+
+func recover_from_retreat() -> bool:
+	_kernel.finish_retreat()
+	return defence_capacity_available()
+
+func finish_wave(final: bool) -> void:
+	_kernel.finish_wave(final)
+
+func begin_death_retreat() -> void:
+	_kernel.begin_retreat()
 
 func statistics():
 	return _statistics
@@ -113,10 +140,48 @@ func draw_enemy_hull(canvas: CanvasItem, index: int, color: Color) -> void:
 	var hull: PackedVector2Array = _enemy_hulls[index]
 	if hull.size() >= 3: canvas.draw_colored_polygon(hull, color)
 
-func events() -> Array:
-	var snapshot: Array = _events.duplicate()
-	snapshot.make_read_only()
-	return snapshot
+func draw_enemy_overlays(canvas: CanvasItem, font: Font) -> void:
+	var enemies: Array = _kernel.enemy_views()
+	for index in enemies.size():
+		var actor: Dictionary = enemies[index]
+		if actor.get("dead", false): continue
+		draw_enemy_hull(canvas, index, Color("ce6978"))
+		canvas.draw_string(font, Vector2(float(actor.x) - 24, float(actor.y) + 35), str(actor.hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f1d9dc"))
+
+func hud_values() -> Dictionary:
+	var history: Dictionary = _kernel.read_history()
+	var player: Dictionary = _kernel.player_view()
+	return {"attacks": history.attacks, "incoming": history.incoming,
+		"armour": player.armour, "shield": player.shield}
+
+func configure_presentation(retained: ShaderMaterial, contact_meshes: Array, contact_canvas: RID,
+		contacts: ShaderMaterial, flight_canvas: RID, beams: Callable) -> void:
+	_presentation = ClassDB.instantiate("SpaceCombatPresentation")
+	_presentation.configure_retained_gpu(retained)
+	_presentation.configure_contact_gpu(contact_meshes, contact_canvas, contacts)
+	# The native surface keeps its zero-copy path, but only Battle supplies the kernel.
+	_presentation.configure_surface(_kernel, flight_canvas, beams)
+
+func release_presentation() -> void:
+	_presentation = null
+
+func advance_presentation() -> void:
+	_presentation.advance_visuals()
+	for event in _events:
+		if int(event.kind) in [0, 1]:
+			_presentation.record_contact(0 if event.get("hostile", false) else 1, event.position, event.direction,
+				float(event.clock), int(event.kind) == 0, bool(event.critical), int(event.type))
+	_presentation.prune_contacts(float(_kernel.presentation_clock()))
+
+func draw_presentation_flights() -> void:
+	var prepared = _presentation.prepare_flights(Vector2.ZERO)
+	_presentation.draw_flights(prepared, Vector2.ZERO)
+
+func draw_presentation_contacts() -> void:
+	_presentation.draw_contacts(float(_kernel.presentation_clock()))
+
+func presentation_clock() -> float:
+	return float(_kernel.presentation_clock())
 
 func presentation_active() -> bool:
 	return _run_state.is_running()

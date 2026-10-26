@@ -19,7 +19,7 @@ var _departure_remaining: float = 0.0
 var _retreat_from: float = 0.0
 var _retreat_to: float = 0.0
 var _retreat_elapsed: float = 0.0
-var _kernel
+var _battle
 var _api
 var _state: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
 	"point": 0, "points": [], "highest_reached": 1,
@@ -42,9 +42,9 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 			_selected_ship = str(row.name)
 			break
 
-func bind_native(kernel, api) -> void:
+func bind_battle(battle, api) -> void:
 	if not _run_state.is_running(): return
-	_kernel = kernel
+	_battle = battle
 	_api = api
 
 func selected_ship() -> String:
@@ -142,19 +142,14 @@ func available(kind: String, target: String) -> bool:
 
 func start_sortie(stage: int, clear_locks: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	if _kernel == null:
+	if _battle == null:
 		return {"ok": false, "reason": "SessionUnavailable"}
 	if not _levels.has(stage) or stage > int(_state.highest_reached):
 		return {"ok": false, "reason": "StageLocked"}
-	var player: Dictionary = _kernel.player_view()
-	var hp = _api.apply("from_decimal", [str(player.max_armour)])
-	var shield = _api.apply("from_decimal", [str(player.max_shield)])
-	var zero = _api.apply("zero", [])
-	if not hp.ok or not shield.ok or (_api.apply("compare", [hp.value, zero.value]).scalar <= 0 and _api.apply("compare", [shield.value, zero.value]).scalar <= 0):
+	if not _battle.defence_capacity_available():
 		return {"ok": false, "reason": "NoDefence"}
 	clear_locks.call()
-	_kernel.clear_encounter("sortie")
-	_kernel.finish_retreat()
+	_battle.reset_for_sortie()
 	_set_stage(stage, 0.0)
 	_state.point = 0
 	_departure_remaining = float(_rules.departure_real_seconds)
@@ -288,17 +283,13 @@ func _advance(dt: float, advance_native: Callable, start_wave: Callable) -> void
 			var duration: float = clampf(float(_rules.death_retreat_duration), 0.001, 3.0)
 			_place_global(lerpf(_retreat_from, _retreat_to, minf(1.0, _retreat_elapsed / duration)))
 			if _retreat_elapsed >= duration:
-				_kernel.finish_retreat()
+				var has_defence: bool = _battle.recover_from_retreat()
 				var point: int = int(_state.point)
 				if _guard.enabled and int(_guard.death_option) == 2:
 					_guard.stage = _state.stage
 					_guard.point = point
 					_guard.distance = _state.distance
-				var player: Dictionary = _kernel.player_view()
-				var hp = _api.apply("from_decimal", [str(player.max_armour)])
-				var shield = _api.apply("from_decimal", [str(player.max_shield)])
-				var zero = _api.apply("zero", [])
-				if _api.apply("compare", [hp.value, zero.value]).scalar <= 0 and _api.apply("compare", [shield.value, zero.value]).scalar <= 0:
+				if not has_defence:
 					_state.state = "menu"
 					_state.reason = "NoDefence"
 				else:
@@ -312,7 +303,7 @@ func observe_battle(result: Dictionary, clear_locks: Callable, settle_collection
 		_begin_death_retreat(clear_locks)
 	elif result.wave_cleared:
 		clear_locks.call()
-		_kernel.finish_wave(bool(result.final_cleared))
+		_battle.finish_wave(bool(result.final_cleared))
 		if result.final_cleared:
 			if not bool(settle_collection.call()): return false
 			if not _state.cleared_stages.has(int(_state.stage)):
@@ -338,15 +329,11 @@ func _begin_death_retreat(clear_locks: Callable) -> void:
 	if int(_guard.death_option) == 0:
 		_guard.enabled = false
 	clear_locks.call()
-	_kernel.begin_retreat()
+	_battle.begin_death_retreat()
 	_state.state = "retreat"
 	status_changed.emit()
 
 func retreat_if_dead(clear_locks: Callable) -> void:
 	if not _run_state.is_running(): return
-	var player: Dictionary = _kernel.player_view()
-	var armour = _api.apply("from_decimal", [str(player.armour)])
-	var shield = _api.apply("from_decimal", [str(player.shield)])
-	var zero = _api.apply("zero", [])
-	if armour.ok and shield.ok and _api.apply("compare", [armour.value, zero.value]).scalar <= 0 and _api.apply("compare", [shield.value, zero.value]).scalar <= 0 and _state.state not in ["menu", "retreat", "departing"]:
+	if _battle.defence_depleted() and _state.state not in ["menu", "retreat", "departing"]:
 		_begin_death_retreat(clear_locks)

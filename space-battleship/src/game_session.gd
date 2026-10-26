@@ -95,7 +95,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	var galaxies = galaxy_system.initialization_result()
 	if not galaxies.ok: return _fail(str(galaxies.reason))
 	galaxy_system.refresh_availability(campaign_system.available, campaign_system.progress_facts().cleared_stages)
-	campaign_system.bind_native(battle.native_owner(), amount_api)
+	campaign_system.bind_battle(battle, amount_api)
 	_planet_factors = planet_system.contributions()
 	_crew_factors = crew_system.contributions()
 	_galaxy_factors = galaxy_system.contributions()
