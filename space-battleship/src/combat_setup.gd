@@ -1,5 +1,4 @@
 extends RefCounted
-const Equipment = preload("res://src/systems/equipment.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const KINDS := {"laser": 0, "cannon": 1, "missile": 2, "longLaser": 3}
 
@@ -16,95 +15,40 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 		"charge": float(row.para3) if kind == 3 else 0.0,
 		"ramp": float(row.para1) if kind == 3 else 1.0,
 		"maximum": float(row.para2) if kind == 3 else 1.0,
-		"entry": {"key": key, "name": key, "slot": slot}, "row": row.duplicate(true),
+		"entry": {"key": key, "name": key, "slot": slot},
 		"branch_factors": [], "external_factors": []}
 
-static func build_player(slots: Array, equipment_definitions: Dictionary, evolution: Dictionary,
-		api, player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary, rules: Dictionary,
-		resistance: float, motion: Dictionary, enhancement: Dictionary, effects: Dictionary, factors: Dictionary, drone_weapons: Array, seed_value: int) -> Dictionary:
-	var one = api.apply("from_decimal", ["1"])
-	if not one.ok:
-		return one
-	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
+static func build_player(equipment_contribution: Dictionary, geometry: Dictionary, rules: Dictionary,
+		resistance: float, motion: Dictionary, upgrades: Dictionary, factors: Dictionary, drone_weapons: Array, seed_value: int) -> Dictionary:
+	var base_values: Dictionary = equipment_contribution["values"].duplicate()
+	for group in ["weapons", "defences"]: base_values[group] = base_values[group].duplicate()
 	var weapons: Array = []
 	var defences: Array = []
-	for slot in slots:
-		if str(slot.equipment_id).is_empty():
-			continue
-		var row: Dictionary = equipment_definitions[str(slot.equipment_id)]
-		var value = Equipment.charged_base(row, equipment_definitions.armour,
-			int(slot.paid_level), int(slot.extra_levels), evolution,
-			factors.ai_defence if slot.category == "defence" else factors.ai_weapon,
-			factors.reactor_defence if slot.category == "defence" else factors.reactor_weapon, api)
-		if not value.ok:
-			return value
-		var text = api.apply("to_display", [value.value])
-		if not text.ok:
-			return text
-		if row.name in ["armour", "shield"]:
-			defences.append({"entry": {"id": str(slot.id), "key": str(row.name), "generation": int(slot.generation)},
-				"layer": 0 if row.name == "shield" else 1, "type": int(row.dmgtype),
-				"base": text.text, "maximum": text.text, "factor": 1.0, "loss": "0", "buffer": "0",
-				"delay": float(row.para3) if row.name == "shield" else 0.0,
-				"rate": float(row.para2) if row.name == "shield" else 0.0,
-				"branch_factors": [], "external_factors": []})
-		else:
-			var row_weapon: Dictionary = weapon(row, str(row.name), str(text.text), int(slot.index), false, motion)
-			row_weapon.muzzle = Geometry.mount_position(player_art, int(slot.index), player_point, player_dimensions)
-			row_weapon.entry.id = str(slot.id)
-			row_weapon.entry.generation = int(slot.generation)
-			row_weapon.entry.paid_level = int(slot.paid_level)
-			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels)
-			weapons.append(row_weapon)
-	weapons.append_array(drone_weapons)
+	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
+	for drone in drone_weapons:
+		var external: Array = factors.external.duplicate()
+		external.append_array(drone.get("external_factors", []))
+		drone.external_factors = external
 	var descriptor := {"player": {"x": player_point.x, "y": player_point.y},
 		"enemies": [], "weapons": weapons, "defences": defences,
 		"requires_drop_rules": true, "drop_rules_compiled": true,
 		"resistance": resistance, "rng_state": seed_value,
 		"target_slot_center": float(geometry.target_slot_center), "battle_width": float(geometry.view_width), "battle_height": float(geometry.view_height),
-		"attack_counter": 0, "incoming_counter": 0, "counter_level": int(effects.level),
-		"counter_growth": float(enhancement.proficiency_growth) if effects.effects.proficiency.active else 0.0,
-		"defence_counter_growth": float(enhancement.adaptation_growth) if effects.effects.adaptation.active else 0.0,
-		"counter_log_base": float(enhancement.counter_log_base),
-		"counter_round_scale": float(enhancement.bonus_round_scale),
-		"jewel_probability": 0.0, "jewel_ratio": 1.0}
-	descriptor.enhancement_state = effects
-	descriptor.repeat_delay = float(enhancement.repeat_delay)
-	descriptor.memory_interval = float(enhancement.memory_interval)
-	descriptor.deferred_interval = float(enhancement.deferred_interval)
-	descriptor.deferred_duration = float(enhancement.deferred_duration)
-	var enabled: Dictionary = effects.effects
-	var level: int = int(effects.level)
-	descriptor.clear_probability = clampf(float(enhancement.deferred_clear_probability) + int(enabled.deferred.a) * float(enhancement.deferred_a_clear_probability), 0.0, 1.0) if enabled.deferred.active else 0.0
-	var shields: int = 0
-	var armours: int = 0
-	for defence in defences:
-		if int(defence.layer) == 0: shields += 1
-		else: armours += 1
-	for defence in defences:
-		defence.branch_factors = [1.0 + int(enabled.adaptation.a) * float(enhancement.adaptation_a_capacity_bonus)]
-		if enabled.memory.active:
-			var memory_factor: float = 1.0 + int(enabled.memory.a) * float(enhancement.memory_a_bonus)
-			defence.memory_heal = float(enhancement.memory_heal_fraction) * level * memory_factor
-			defence.memory_cap = float(enhancement.memory_buffer_fraction) * level * memory_factor
-			if enabled.memory.b3:
-				defence.memory_cap *= 1.0 + armours * float(enhancement.memory_b3_armour_capacity_bonus)
-		if enabled.deferred.active:
-			var scale: float = float(enhancement.deferred_percent_scale)
-			defence.deferred_fraction = maxf(0.0, (scale - maxf(1.0, ceilf(scale / (1.0 + float(enhancement.deferred_curve_coefficient) * level)))) / scale)
-	for mounted in weapons:
-		mounted.branch_factors = [1.0 + int(enabled.proficiency.a) * float(enhancement.proficiency_a_damage_bonus)]
-		if enabled.proficiency.b2:
-			mounted.interval *= float(enhancement.proficiency_b2_interval_multiplier)
-			mounted.remaining = 0.0 if int(mounted.kind) == 3 else mounted.interval
-		mounted.proficiency_pierce = enabled.proficiency.b3
-		mounted.pierce_resistance = float(enhancement.proficiency_b3_resistance)
-		mounted.repeat_probability = clampf(float(enhancement.repeat_probability) + int(enabled.repeat.a) * float(enhancement.repeat_a_probability), 0.0, 1.0) if enabled.repeat.active else 0.0
-		mounted.repeat_multiplier = 1.0 + float(enhancement.repeat_growth) * level
-		mounted.chain_count = int(enhancement.repeat_b1_targets) if enabled.repeat.b1 else 0
-		mounted.secondary_probability = float(enhancement.repeat_b3_probability) if enabled.repeat.b3 else 0.0
-		mounted.critical_rate = (float(enhancement.base_critical_rate) if enabled.critical.active else 0.0) + int(enabled.critical.a) * float(enhancement.critical_a_probability)
-		mounted.critical_multiplier = float(enhancement.base_critical_multiplier) + (float(enhancement.critical_growth) * level if enabled.critical.active else 0.0)
+		"attack_counter": 0, "incoming_counter": 0, "jewel_probability": 0.0, "jewel_ratio": 1.0}
+	descriptor.merge(upgrades.globals, true)
+	descriptor.enhancement_state = {"effects": upgrades.effects, "rules": upgrades.rules}
+	for source in equipment_contribution.defences:
+		var defence: Dictionary = source.duplicate()
+		defence.merge(upgrades.defence, true)
+		defences.append(defence)
+	for group in [equipment_contribution.weapons, drone_weapons]:
+		for source in group:
+			var mounted: Dictionary = source.duplicate()
+			mounted.base_interval = mounted.interval
+			mounted.merge(upgrades.weapon, true)
+			mounted.interval = float(mounted.base_interval) * float(upgrades.weapon.interval_multiplier)
+			if upgrades.initial_wait_from_interval: mounted.remaining = 0.0 if int(mounted.kind) == 3 else mounted.interval
+			weapons.append(mounted)
 	for key in ["reactive_volley_window", "reactive_stack_seconds", "reactive_per_stack"]:
 		descriptor[key] = rules[key]
 	descriptor.reactive_stack_limit = int(rules.reactive_stack_limit)
@@ -120,7 +64,7 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 		"hit_radius": "missile_hit_radius", "chain_speed": "chain_carrier_speed"}
 	for key in motion_keys:
 		descriptor[key] = motion[motion_keys[key]]
-	return {"ok": true, "descriptor": descriptor}
+	return {"ok": true, "descriptor": descriptor, "values": base_values}
 
 static func ratio(current: Dictionary, previous_stage: Dictionary, field: String, point: int, points: int, api) -> Dictionary:
 	var previous = 1 if int(current.id) == 1 else previous_stage[field]
@@ -143,7 +87,7 @@ static func ratio(current: Dictionary, previous_stage: Dictionary, field: String
 
 static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dictionary,
 		point_index: int, point_count: int, enemy_definitions: Dictionary, enemy_weapon_definitions: Dictionary,
-		equipment_definitions: Dictionary, geometry: Dictionary, motion: Dictionary,
+		weapon_overrides: Callable, geometry: Dictionary, motion: Dictionary,
 		jewel_rolls: int, jewel_probability: float, next_uid: int, api) -> Dictionary:
 	var slots: Array = JSON.parse_string(str(group.mon).replace("｛", "[").replace("｝", "]").replace("{", "[").replace("}", "]").replace("，", ","))
 	var positions: Dictionary = Geometry.formation_positions(slots, enemy_definitions, geometry, group.get("formation_positions"))
@@ -156,6 +100,7 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 			return result
 	var enemies: Array = []
 	var weapons: Array = []
+	var muzzles: Dictionary = {}
 	var tier: String = str(group.combatTier) if group.combatTier != null else "normal"
 	var leader: int = -1
 	for candidate in slots.size():
@@ -225,10 +170,9 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 			var exact_key: String = parts[0]
 			var key: String = exact_key.replace("_mon", "").replace("-mon", "")
 			var definition: Dictionary = enemy_weapon_definitions[key].duplicate(true)
-			if equipment_definitions.has(exact_key):
-				for field in equipment_definitions[exact_key]:
-					if equipment_definitions[exact_key][field] != null:
-						definition[field] = equipment_definitions[exact_key][field]
+			var overrides: Dictionary = weapon_overrides.call(exact_key)
+			for field in overrides:
+				if overrides[field] != null: definition[field] = overrides[field]
 			var damage = api.apply("from_decimal", [str(definition.dmg)])
 			var multiple = api.apply("from_decimal", [str(row.dmgMultiple)])
 			if not damage.ok or not multiple.ok:
@@ -248,6 +192,35 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 				row_weapon.source = source
 				row_weapon.muzzle = positions[slot]
 				weapons.append(row_weapon)
+				muzzles["enemy:" + str(actor.uid) + ":" + str(mount)] = positions[slot]
 				mount += 1
+	muzzles.make_read_only()
 	return {"ok": true, "wave": {"enemies": enemies, "weapons": weapons, "final": final,
-		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": jewel_probability}, "next_uid": next_uid}
+		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": jewel_probability}, "next_uid": next_uid, "muzzles": muzzles}
+
+static func legendary_configuration(source: Dictionary) -> Dictionary:
+	var legendary_definitions: Dictionary = {}
+	var legendary_constants: Dictionary = {}
+	var legendary_ranges: Dictionary = {}
+	var drone_limits: Dictionary = {}
+	for row in source["\u4f20\u8bf4\u5b9a\u4e49"]:
+		legendary_definitions[str(row.effect_id)] = row
+	for row in source["\u4f20\u8bf4\u968f\u673a\u53c2\u6570"]:
+		if not legendary_ranges.has(str(row.effect_id)):
+			legendary_ranges[str(row.effect_id)] = {}
+		legendary_ranges[str(row.effect_id)][str(row.parameter)] = {"minimum": row.minimum, "maximum": row.maximum}
+	var legacy_bounds: Dictionary = {}
+	for row in source["\u56fa\u5b9a\u89c4\u5219_\u517c\u5bb9\u8bf4\u660e"]:
+		legacy_bounds[str(row.key)] = row.value
+	var old_key: String = "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/"
+	if legacy_bounds.has(old_key + "0") and legacy_bounds.has(old_key + "1"):
+		legendary_ranges.drone_master.maximum_reduction.compatibility_minimum = legacy_bounds[old_key + "0"]
+		legendary_ranges.drone_master.maximum_reduction.compatibility_maximum = legacy_bounds[old_key + "1"]
+	for row in source["\u4f20\u8bf4\u5e38\u91cf"]:
+		if not legendary_constants.has(str(row.effect_id)):
+			legendary_constants[str(row.effect_id)] = {}
+		legendary_constants[str(row.effect_id)][str(row.constant_path)] = row.value
+	for row in source["\u57fa\u7840\u53c2\u6570"]:
+		drone_limits[str(row.key)] = row.value
+	return {"legendary_definitions": legendary_definitions, "legendary_constants": legendary_constants,
+		"legendary_ranges": legendary_ranges, "drone_limits": drone_limits}

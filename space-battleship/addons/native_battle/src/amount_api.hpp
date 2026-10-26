@@ -28,7 +28,7 @@ class FoundationAmount : public godot::RefCounted {
     }
     static Dictionary encode(const Value &v) {
         Dictionary d; d["m"] = String(v.mantissa_text().c_str());
-        d["e"] = String(std::to_string(v.exponent()).c_str()); return d;
+        d["e"] = String(std::to_string(v.exponent()).c_str()); d.make_read_only(); return d;
     }
     static Value decode(const Variant &v) {
         if (v.get_type() != Variant::DICTIONARY) throw std::domain_error("AmountEncoding");

@@ -26,7 +26,7 @@ var inlet_point := Vector2.ZERO
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if (mode in ["network","branch","footer_conduit"] or mode.begins_with("scene_") or mode in ["track","busbar","pipe_horizontal","pipe_vertical"]) and ratio <= 0.0:set_process(false)
+	_sync_processing()
 	if mode == "core":build_core_layers()
 	if mode == "network":route = ROUTES.main_route()
 	if not route.is_empty():
@@ -34,6 +34,12 @@ func _ready() -> void:
 		network_length = ROUTES.length_of(route)
 	if mode == "conduit":set_process(false)
 	if mode == "segments" or mode.begins_with("compact_"):set_process(false)
+
+func _sync_processing() -> void:
+	if mode == "conduit" or mode == "segments" or mode.begins_with("compact_"):
+		set_process(false)
+	elif mode in ["network", "branch", "footer_conduit", "track", "busbar", "pipe_horizontal", "pipe_vertical"] or mode.begins_with("scene_"):
+		set_process(ratio > 0.0 or (mode == "branch" and trunk_ratio > 0.0) or (mode == "track" and (hovered or click_flash > 0.0)))
 
 func build_core_layers() -> void:
 	var orb := ColorRect.new()
@@ -65,11 +71,13 @@ func _process(delta: float) -> void:
 		var travel := size.y if mode == "pipe_vertical" else size.x
 		phase = fmod(phase+delta*90.0,maxf(1.0,travel))
 		click_flash = maxf(0.0,click_flash-delta*3.0)
+		_sync_processing()
 		queue_redraw()
 
 func set_ratio(value: float) -> void:
 	if is_equal_approx(ratio,value):return
 	ratio = value
+	_sync_processing()
 	if mode == "network" and ratio<=0.0:
 		flow_distance=0.0
 		phase=0.0
@@ -80,11 +88,13 @@ func set_ratio(value: float) -> void:
 func set_trunk_ratio(value: float) -> void:
 	if is_equal_approx(trunk_ratio,value):return
 	trunk_ratio = value
+	_sync_processing()
 	queue_redraw()
 
 func set_hovered(value: bool) -> void:
 	if hovered == value:return
 	hovered = value
+	_sync_processing()
 	queue_redraw()
 
 func set_preview_ratio(value: float) -> void:
@@ -99,6 +109,7 @@ func set_available_ratio(value: float) -> void:
 
 func flash_click() -> void:
 	click_flash = 1.0
+	_sync_processing()
 	queue_redraw()
 
 func _draw() -> void:

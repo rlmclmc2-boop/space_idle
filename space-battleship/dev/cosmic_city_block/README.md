@@ -1,6 +1,6 @@
 # Cosmic city block — design prototype
 
-Review-only scene, not wired into the production galaxy renderer. Reuses the original level-3 habitat, alloy refinery and heavy-element refinery GLBs. No gameplay, blueprint, configuration workbook or save changes. Reference: `design/cosmic-city-reference@bcc0d8e`, `reference/cosmic-city-direction.png` (user-approved).
+Review-only scene, not wired into the production galaxy renderer. Reuses the original level-3 habitat, alloy refinery and heavy-element refinery GLBs. No gameplay, blueprint, configuration workbook or save changes.
 
 ## Interface proposal
 
@@ -13,10 +13,10 @@ Review-only scene, not wired into the production galaxy renderer. Reuses the ori
 
 ## Compatibility findings and limits
 
-The preview audits all 30 functional GLBs plus headquarters. The functional models are bottom-centered and fit the existing 14-unit footprint after scaling (maximum 13.644). None contains a pipe socket. Headquarters is an exception: unscaled Structure bottom is Y=0.09 and X/Z center is approximately `(0.4324,1.1950)`; its future adapter must offset the model before placing it on a wider hub deck. Do not use the old presumed origin as a service connection.
+The historical asset inspection covered all 30 functional GLBs plus headquarters. The functional models are bottom-centered and fit the existing 14-unit footprint after scaling (maximum 13.644). None contains a pipe socket. Headquarters is an exception: unscaled Structure bottom is Y=0.09 and X/Z center is approximately `(0.4324,1.1950)`; its future adapter must offset the model before placing it on a wider hub deck. Do not use the old presumed origin as a service connection.
 
 Only these three families are visually prototyped. No automatic conversion of all levels, hub platform, branches or normal-game picking is claimed. Geometry is kept inspectable for review; approved modules should be exported/merged before production rollout.
 
-## Preview
+## Retained files
 
-Use an isolated project and user directory per [TEST](../../docs/TEST.md), with the repository's `test/fixtures/galaxy_1_complete.json` placed at `res://../test/fixtures/`. Run Godot with `--script res://dev/cosmic_city_block/preview.gd`. It uses real `main.tscn` and the existing galaxy viewport, replaces only its presentation with this design scene, then exports full UI/overview/two connection close-ups and the 31-asset audit beside the isolated project. No player save is read or written.
+`block_sample.gd` retains the structural design sample. The old preview script, isolated fixture and test instructions were removed; there is no runnable preview entry in this directory. The current game starts at `src/main.tscn`, with retained city presentation in `scripts/galaxy_city_layout.gd`, `scripts/galaxy_city_structure.gd` and `scripts/galaxy_city_modules.gd`. That presentation is not connected to the current main scene. The findings above describe the historical sample, not a current integration or test result.

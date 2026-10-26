@@ -4,6 +4,6 @@
 
 Art direction/prompt: four portrait deep-space environments; cyan optical lens arrays, cracked ochre planet and sparse debris, steel magnetic accelerator spines, violet eclipsed star and tilted accretion disk. Detailed upper/outer scenery with a dark empty lower central combat lane; no ships, projectiles, text or UI.
 
-Consumer: `scripts/starfield.gdshader`, supplied by `scripts/battlefield.gd`. One quadrant covers the existing 572×960 battlefield fog quad; a 2.5% inset provides seam-safe overscan for ±0.8% slow UV motion. Runtime brightness is restrained for target readability. This replaces the route SDF scenery; no additional full-screen pass, GPU noise, screenshot readback or runtime asset generation.
+Retained shader: `scripts/starfield.gdshader`; the current `src/main.tscn` entry does not connect this background. One quadrant covers the existing 572×960 battlefield fog quad; a 2.5% inset provides seam-safe overscan for ±0.8% slow UV motion. Runtime brightness is restrained for target readability. This replaces the route SDF scenery; no additional full-screen pass, GPU noise, screenshot readback or runtime asset generation.
 
 Edit the source image with ImageGen if the composition needs changes. Keep quadrant order, dark combat lane and seam-safe margins. Production appearance and performance require parent validation.

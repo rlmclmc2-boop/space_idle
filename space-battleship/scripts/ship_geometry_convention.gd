@@ -101,3 +101,32 @@ static func approved_mount_position(fit:Dictionary,point:Array)->Vector3:
 	var mesh_size:Vector2=fit.mesh_size
 	var scale:float=fit.scale
 	return Vector3(fit.position)+Vector3(float(point[0])*mesh_size.x,0.08,float(point[1])*mesh_size.y)*scale
+
+static func battle_geometry(actors: Array, models: Dictionary, selected_ship: String, player_art: Dictionary,
+		player_dimensions: Vector2, player_geometry_height: float, player_muzzles: Dictionary, enemy_muzzles: Dictionary,
+		geometry: Dictionary, parameters: Dictionary) -> Dictionary:
+	var hulls: Array = []
+	var points := PackedVector2Array()
+	var stationary := PackedByteArray()
+	var variance_range: Array = JSON.parse_string(str(geometry.enemy_scale_variance))
+	for actor in actors:
+		var point := Vector2(float(actor.x), float(actor.y))
+		var model: Dictionary = models["enemy_" + str(int(actor.size))]
+		var random := RandomNumberGenerator.new()
+		random.seed = int(actor.uid) * 7919 + int(actor.slot) * 104729
+		random.randf()
+		random.randf_range(-1.0, 1.0)
+		var variance: float = random.randf_range(float(variance_range[0]), float(variance_range[1]))
+		var angle: float = deg_to_rad(random.randf_range(-float(geometry.enemy_rotation_variance), float(geometry.enemy_rotation_variance)))
+		var width: float = enemy_width(int(actor.size), bool(actor.wave_final),
+			int(actor.formation_count), float(player_art.display_scale) * float(geometry.player_display_multiplier),
+			player_geometry_height, float(parameters["enemyVisualScaleSize" + str(int(actor.size))]), variance, geometry)
+		var hull: PackedVector2Array = transform_hull(model.hull, point, Vector2(width, width * float(geometry.enemy_model_height_ratio)) * float(actor.hull_scale), angle)
+		hulls.append(hull)
+		points.append(point)
+		stationary.append(1)
+	var muzzles: Dictionary = player_muzzles.duplicate()
+	muzzles.merge(enemy_muzzles)
+	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
+	return {"hulls": hulls, "points": points, "muzzles": muzzles, "stationary": stationary,
+		"player_point": player_point, "player_hull": transform_hull(models[selected_ship].hull, player_point, player_dimensions, 0.0)}
