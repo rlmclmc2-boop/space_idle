@@ -39,7 +39,7 @@ func _ready() -> void:
 	if not result.ok:
 		startup_error = str(result.reason)
 	else:
-		add_child(BattleView.new(session.battle))
+		if DisplayServer.get_name() != "headless": add_child(BattleView.new(session.battle))
 		add_child(BattleStatisticsView.new(session.battle.statistics()))
 		_setup_shell_overlay()
 		add_child(CampaignView.new(session.campaign_system))

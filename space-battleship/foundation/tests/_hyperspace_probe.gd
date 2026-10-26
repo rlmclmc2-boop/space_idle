@@ -224,6 +224,74 @@ func _run_probe() -> void:
 			return
 		own._warehouse.pop_back()
 	print("manual entry and return accepted")
+	if not stored.is_empty():
+		own._warehouse[0].legendary = true
+		own._warehouse[0].legendary_effect = {"effect_id": "scatter_pulse", "parameters": {"single_target_bonus": 2.5}}
+		var legend_mounted: Dictionary = session.equip_hyperspace_drones([str(stored[0].id)])
+		if not legend_mounted.ok or str(session.battle._equipped_drones[0].legendary_effect) != "scatter_pulse":
+			printerr("native legend handoff: ", legend_mounted)
+			quit(1)
+			return
+		var dynamic = Hyperspace.new(data, api, RunState.new(), 23)
+		var dynamic_request: Dictionary = dynamic.prepare_manual("alpha", 8, {"stage": 8, "point": 0, "guard": false, "guard_point": 0})
+		dynamic.accept_manual(dynamic_request.receipt)
+		var dynamic_wave: Dictionary = dynamic.prepare_wave(8, override, geometry, motion, 0.0)
+		if not dynamic_wave.ok:
+			printerr("dynamic wave: ", dynamic_wave)
+			quit(1)
+			return
+		session.battle.reset_for_sortie()
+		var dynamic_started: Dictionary = session.battle.start_wave(dynamic_wave)
+		if not dynamic_started.ok:
+			printerr("dynamic native admission: ", dynamic_started)
+			quit(1)
+			return
+		for step in 600:
+			var moved: Dictionary = session.battle.advance(1.0 / 60.0)
+			if not moved.ok:
+				printerr("dynamic native advance: ", moved)
+				quit(1)
+				return
+			if moved.wave_cleared or moved.player_dead: break
+		if not session.battle.statistics()._totals.has("drone:" + str(stored[0].id)):
+			printerr("dynamic drone damage missing: ", session.battle.statistics()._totals.keys())
+			quit(1)
+			return
+		var source_id: String = "drone:" + str(stored[0].id)
+		var prior_damage: Dictionary = session.battle.statistics()._totals[source_id].duplicate(true)
+		session.battle.reset_for_sortie()
+		var removed_drone: Dictionary = session.equip_hyperspace_drones([])
+		if not removed_drone.ok or not session.battle.start_wave(dynamic_wave).ok:
+			printerr("dynamic drone removal: ", removed_drone)
+			quit(1)
+			return
+		for step in 600:
+			var moved: Dictionary = session.battle.advance(1.0 / 60.0)
+			if not moved.ok or moved.wave_cleared or moved.player_dead: break
+		if session.battle.statistics()._totals[source_id] != prior_damage:
+			printerr("removed drone still dealt damage")
+			quit(1)
+			return
+		session.battle.reset_for_sortie()
+		print("native drone dynamic damage accepted")
+	var huge_source: Dictionary = api.apply("from_decimal", ["1e30"])
+	var giant_wallet: Dictionary = session.economy.budget().duplicate()
+	giant_wallet.degenerate_matter = huge_source.value
+	session.economy.accept_budget(giant_wallet)
+	var old_target = giant_wallet.get("glueball", api.apply("zero", []).value)
+	var exchanged: Dictionary = session.exchange_hyperspace_materials("degenerate_matter", "glueball", 9000000000000000000)
+	var after_exchange: Dictionary = session.economy.budget()
+	if not exchanged.ok or int(api.apply("compare", [after_exchange.degenerate_matter, huge_source.value]).scalar) >= 0 or int(api.apply("compare", [after_exchange.glueball, old_target]).scalar) <= 0:
+		printerr("extreme Amount exchange: ", exchanged)
+		quit(1)
+		return
+	var unaffordable: Dictionary = api.apply("from_decimal", ["1e500"])
+	var refused: Dictionary = session.economy.payment({"degenerate_matter": unaffordable.value})
+	if refused.ok or session.economy.budget() != after_exchange:
+		printerr("extreme Amount rejection: ", refused)
+		quit(1)
+		return
+	print("extreme Amount exchange and rejection accepted")
 	for target_level in [5, 8, 20, 220]:
 		for route in ["alpha", "beta", "gamma", "delta"]:
 			var upper = Hyperspace.new(data, api, RunState.new(), 19)
