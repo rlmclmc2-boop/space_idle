@@ -263,7 +263,9 @@ static func load_candidate(path: String, directory: String, backup: bool = false
 
 static func import_candidate(path: String, directory: String, source_file: String) -> Dictionary:
 	var file: FileAccess = FileAccess.open(source_file, FileAccess.READ)
-	if file == null or file.get_length() > SaveFiles.MAX_BYTES:
+	if file == null: return {"ok": false, "reason": "InvalidImportFile"}
+	if file.get_length() > SaveFiles.MAX_BYTES:
+		file.close()
 		return {"ok": false, "reason": "InvalidImportFile"}
 	var parser := JSON.new()
 	var parse_result: Error = parser.parse(file.get_as_text())

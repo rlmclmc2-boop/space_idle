@@ -32,7 +32,10 @@ static func read_pointer(directory: String, pointer_file: String) -> Dictionary:
 	var pointer = parser.data
 	if not pointer is Dictionary or not pointer.get("file") in ["slot-0.json", "slot-1.json"] or not integer_text(pointer.get("generation")): return {"ok": false}
 	var stream := FileAccess.open(directory.path_join(pointer.file), FileAccess.READ)
-	if stream == null or stream.get_length() > MAX_BYTES: return {"ok": false}
+	if stream == null: return {"ok": false}
+	if stream.get_length() > MAX_BYTES:
+		stream.close()
+		return {"ok": false}
 	var raw := stream.get_as_text()
 	stream.close()
 	if raw.sha256_text() != pointer.get("checksum"): return {"ok": false}
