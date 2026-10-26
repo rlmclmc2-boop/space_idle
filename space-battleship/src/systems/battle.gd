@@ -204,6 +204,7 @@ func prepare_player(mounted: Dictionary, upgrades: Dictionary, factors: Dictiona
 		weapon.entry.drone_id = str(contribution.id)
 		weapon.entry.generation = int(contribution.generation)
 		weapon.slot = int(ship.mounts.weapon) + index
+		weapon.muzzle = Vector2(float(_geometry.player_x), float(_geometry.player_y))
 		drone_weapons.append(weapon)
 	var setup = CombatSetup.build_player(mounted, _geometry, _rules, float(_parameters.dmgReduce), _motion, upgrades, factors, drone_weapons, _seed)
 	if not setup.ok: return setup

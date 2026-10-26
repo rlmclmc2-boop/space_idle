@@ -11,6 +11,7 @@ const Economy = preload("res://src/systems/economy.gd")
 const Crew = preload("res://src/systems/crew.gd")
 const Planet = preload("res://src/systems/planet.gd")
 const Galaxy = preload("res://src/systems/galaxy.gd")
+const Hyperspace = preload("res://src/systems/hyperspace.gd")
 const STEP: float = 1.0 / 60.0
 const FRAME_STEPS: int = 64
 
@@ -25,6 +26,7 @@ var research
 var planet_system
 var crew_system
 var galaxy_system
+var hyperspace_system
 var _galaxy_crew_experience: Dictionary = {}
 var _research_speed: Dictionary = {}
 var _world_factors: Dictionary = {}
@@ -87,6 +89,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	var galaxies = galaxy_system.initialization_result()
 	if not galaxies.ok: return _fail(str(galaxies.reason))
 	galaxy_system.refresh_availability(campaign_system.available, campaign_system.progress_facts().cleared_stages)
+	hyperspace_system = Hyperspace.new(configuration, amount_api, run_state, combat_seed)
 	campaign_system.bind_battle(battle, amount_api)
 	_planet_factors = planet_system.contributions()
 	_crew_factors = crew_system.contributions()
@@ -134,6 +137,7 @@ func frame(real_dt: float, _focused: bool) -> void:
 func _step(dt: float) -> void:
 	if not run_state.is_running(): return
 	game_time += dt
+	hyperspace_system.advance_online(dt, campaign_system.progress_facts().cleared_stages.has(60))
 	economy.prune_income(wall_time, game_time, research.income_window())
 	var people: Dictionary = crew_system.step_assignments()
 	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
@@ -192,6 +196,7 @@ func _step(dt: float) -> void:
 func _advance_kernel(dt: float) -> bool:
 	if dt <= 0:
 		return true
+	if hyperspace_system.manual_active(): hyperspace_system.advance_manual(dt)
 	var result = battle.advance(dt)
 	if not result.ok:
 		_fail(str(result.get("error", result.get("reason", "NativeAdvanceRejected"))))
@@ -201,7 +206,134 @@ func _advance_kernel(dt: float) -> bool:
 		_fail(str(registered.get("error", "DropRegistrationFailed")))
 		return false
 	_battle_drops_changed = _battle_drops_changed or registered.registered
+	if hyperspace_system.manual_active():
+		if result.player_dead:
+			return _finish_hyperspace_manual(false)
+		if result.wave_cleared:
+			var final: bool = hyperspace_system.wave_cleared()
+			battle.finish_wave(final)
+			if final: return _finish_hyperspace_manual(true)
+			_start_hyperspace_wave()
+			return run_state.is_running()
+		return true
 	return campaign_system.observe_battle(result, equipment.clear_switch_locks, settle_final_collection)
+
+func start_hyperspace_manual(route: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var progress: Dictionary = campaign_system.progress_facts()
+	var target: Dictionary = campaign_system.hyperspace_return_target()
+	var prepared: Dictionary = hyperspace_system.prepare_manual(route, int(progress.highest_reached), target, float(_planet_factors.luck))
+	if not prepared.ok: return prepared
+	if not settle_final_collection(): return run_state.rejection()
+	equipment.clear_switch_locks()
+	battle.reset_for_sortie()
+	campaign_system.enter_hyperspace(false)
+	hyperspace_system.accept_manual(prepared.receipt)
+	_start_hyperspace_wave()
+	if not run_state.is_running(): return run_state.rejection()
+	if _final_collection_changed: economy.publish_budget_change()
+	campaign_system.publish_status_change()
+	return {"ok": true, "receipt": hyperspace_system.manual_receipt()}
+
+func exit_hyperspace_manual() -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	if not hyperspace_system.manual_active(): return {"ok": false, "reason": "NoManualChallenge"}
+	if not _finish_hyperspace_manual(false): return run_state.rejection()
+	if _final_collection_changed: economy.publish_budget_change()
+	campaign_system.publish_status_change()
+	return {"ok": true, "receipt": hyperspace_system.manual_receipt()}
+
+func claim_hyperspace(run_id: int) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var claim: Dictionary = hyperspace_system.prepare_claim(run_id)
+	if not claim.ok or claim.already_claimed: return claim
+	var credited: Dictionary = _hyperspace_credit(claim.reward)
+	if not credited.ok: return credited
+	hyperspace_system.accept_claim(run_id)
+	var changed: bool = economy.accept_budget(credited.wallet, false)
+	if changed: economy.publish_budget_change()
+	return {"ok": true, "already_claimed": false, "reward": claim.reward}
+
+func dismantle_hyperspace_drone(id: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var prepared: Dictionary = hyperspace_system.prepare_dismantle(id)
+	if not prepared.ok: return prepared
+	var credited: Dictionary = _hyperspace_credit(prepared.reward)
+	if not credited.ok: return credited
+	hyperspace_system.accept_dismantle(id, prepared.reward)
+	var changed: bool = economy.accept_budget(credited.wallet, false)
+	if changed: economy.publish_budget_change()
+	return {"ok": true, "reward": prepared.reward}
+
+func _hyperspace_credit(reward: Dictionary) -> Dictionary:
+	var next_wallet: Dictionary = economy.budget().duplicate()
+	var amounts: Dictionary = reward.materials.duplicate()
+	if int(reward.ultimate_cores) > 0: amounts.ultimate_core = int(reward.ultimate_cores)
+	for resource in amounts:
+		var quantity = amount_api.apply("from_decimal", [str(amounts[resource])])
+		if not quantity.ok: return quantity
+		var old = next_wallet.get(resource, amount_api.apply("zero", []).value)
+		var added = amount_api.apply("add", [old, quantity.value])
+		if not added.ok: return added
+		next_wallet[resource] = added.value
+	return {"ok": true, "wallet": next_wallet}
+
+func start_hyperspace_single(route: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().highest_reached)):
+		return {"ok": false, "reason": "HyperspaceLocked"}
+	var prepared: Dictionary = hyperspace_system.prepare_idle(route, false, "", 0, float(_planet_factors.luck))
+	if not prepared.ok: return prepared
+	hyperspace_system.accept_idle(prepared.receipt, false)
+	return {"ok": true, "receipt": hyperspace_system.online_status().idle}
+
+func start_hyperspace_auto(route: String, crew_id: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	if hyperspace_system.online_status().auto.enabled: return {"ok": false, "reason": "AutoRunning"}
+	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().highest_reached)):
+		return {"ok": false, "reason": "HyperspaceLocked"}
+	var crew: Dictionary = crew_system.hyperspace_candidate(crew_id)
+	if not crew.ok: return crew
+	var prepared: Dictionary = hyperspace_system.prepare_idle(route, true, crew_id, int(crew.level), float(_planet_factors.luck))
+	if not prepared.ok: return prepared
+	crew_system.reserve_hyperspace(crew_id, route, false)
+	hyperspace_system.accept_idle(prepared.receipt, true)
+	crew_system.publish_members([crew_id])
+	return {"ok": true, "receipt": hyperspace_system.online_status().idle}
+
+func stop_hyperspace_auto() -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var stopped: Dictionary = hyperspace_system.stop_auto()
+	if not stopped.ok: return stopped
+	var members: Array = crew_system.release_hyperspace(str(stopped.route), false)
+	crew_system.publish_members(members)
+	return {"ok": true}
+
+func _start_hyperspace_wave() -> void:
+	var latest_cleared: int = 1
+	for stage in campaign_system.progress_facts().cleared_stages:
+		latest_cleared = maxi(latest_cleared, int(stage))
+	var inputs: Dictionary = battle.wave_inputs()
+	var setup: Dictionary = hyperspace_system.prepare_wave(latest_cleared, equipment.enemy_override,
+		inputs.geometry, inputs.motion, campaign_system.jewel_drop_probability())
+	if not setup.ok:
+		_fail(str(setup.get("reason", "HyperspaceWaveAssemblyFailed")))
+		return
+	var started: Dictionary = battle.start_wave(setup)
+	if not started.ok:
+		_fail(str(started.get("reason", "HyperspaceNativeWaveRejected")))
+		return
+	hyperspace_system.accept_wave(setup)
+
+func _finish_hyperspace_manual(success: bool) -> bool:
+	if not settle_final_collection(): return false
+	var finished: Dictionary = hyperspace_system.finish_manual(success)
+	if not finished.ok:
+		_fail(str(finished.reason))
+		return false
+	battle.reset_for_sortie()
+	campaign_system.return_from_hyperspace(finished.receipt.return_target, false)
+	return true
 
 func settle_final_collection() -> bool:
 	var settled = economy.collect_due(wall_time, game_time, true, _income_factors, false)
@@ -234,13 +366,21 @@ func economy_display_context() -> Dictionary:
 	return context
 
 func reactor_inputs() -> Dictionary:
-	return {"capacity": _world_factors.capacity, "free_charge": _world_factors.free_charge}
+	var multiplier: Dictionary = _hyperspace_module_factor("extra_storage")
+	if not multiplier.ok: return multiplier
+	var capacity: Dictionary = amount_api.apply("mul", [_world_factors.capacity, multiplier.value])
+	if not capacity.ok: return capacity
+	return {"capacity": capacity.value, "free_charge": _world_factors.free_charge}
+
+func _hyperspace_module_factor(module_id: String, totals = null) -> Dictionary:
+	var active: Dictionary = hyperspace_system.module_contributions() if totals == null else totals
+	return amount_api.apply("from_decimal", [str(1.0 + float(active.get(module_id, 0.0)))])
 
 func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
 		"game_time": game_time}
 
-func _growth_setup(next_ship: String = "", contributions = null) -> Dictionary:
+func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var ship_key: String = campaign_system.selected_ship() if next_ship.is_empty() else next_ship
 	var ship: Dictionary = campaign_system.ship_facts(ship_key)
@@ -248,7 +388,16 @@ func _growth_setup(next_ship: String = "", contributions = null) -> Dictionary:
 	var world = _world_factors
 	if not world.ok:
 		return world
-	var reactor = reactor_system.prepare(reactor_inputs())
+	var drone_ids = null
+	if contributions != null:
+		drone_ids = []
+		for contribution in contributions: drone_ids.append(str(contribution.id))
+	var modules: Dictionary = hyperspace_system.module_contributions(drone_ids, hanging_overrides)
+	var storage: Dictionary = _hyperspace_module_factor("extra_storage", modules)
+	if not storage.ok: return storage
+	var capacity: Dictionary = amount_api.apply("mul", [world.capacity, storage.value])
+	if not capacity.ok: return capacity
+	var reactor = reactor_system.prepare({"capacity": capacity.value, "free_charge": world.free_charge})
 	if not reactor.ok:
 		return reactor
 	var ai = research.contributions()
@@ -264,27 +413,33 @@ func _growth_setup(next_ship: String = "", contributions = null) -> Dictionary:
 	if not setup.ok:
 		return setup
 	setup.ship_key = ship_key
-	# The resource-collector hanging has no owner in this stage. Keep its route
-	# distinct from Planet's refinery, which only affects ordinary drops.
-	var collector = amount_api.apply("from_decimal", ["1"])
+	var collector = _hyperspace_module_factor("resource_collector", modules)
 	if not collector.ok: return collector
 	setup.income_factors = {"condensation": reactor.factors.condensation, "refinery": world.refinery,
 		"resource_collection": collector.value, "crew_fragments": world.fragments, "galaxy_fragments": world.galaxy_fragments}
-	setup.research_speed = world.research
+	var algorithm: Dictionary = _hyperspace_module_factor("distributed_algorithm", modules)
+	if not algorithm.ok: return algorithm
+	var research_speed: Dictionary = amount_api.apply("mul", [world.research, algorithm.value])
+	if not research_speed.ok: return research_speed
+	setup.research_speed = research_speed.value
 	setup.galaxy_crew_experience = world.crew_experience
 	setup.income_factors.iron = ai["values"].iron_income
 	setup.income_factors.uranium = ai["values"].uranium_income
-	setup.income_factors.jewel = ai["values"].fragment_income
+	var refiner: Dictionary = _hyperspace_module_factor("gem_refiner", modules)
+	if not refiner.ok: return refiner
+	var jewel_income: Dictionary = amount_api.apply("mul", [ai["values"].fragment_income, refiner.value])
+	if not jewel_income.ok: return jewel_income
+	setup.income_factors.jewel = jewel_income.value
 	setup.income_factors.make_read_only()
 	setup.research_factors = ai["values"]
 	setup.reactor_factors = reactor.factors
 	return setup
 
-func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true) -> Dictionary:
+func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true, accept_drones: Callable = Callable(), hanging_overrides: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
 	geometry_changed = geometry_changed or equipment.geometry_changed()
-	var setup = _growth_setup(next_ship, contributions)
+	var setup = _growth_setup(next_ship, contributions, hanging_overrides)
 	if not setup.ok:
 		reactor_system.discard_prepared()
 		enhancement.discard_output()
@@ -300,6 +455,7 @@ func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_
 	var equipment_notice: Dictionary = {}
 	if accept_equipment:
 		equipment_notice = equipment.accept_prepared()
+	if accept_drones.is_valid(): accept_drones.call()
 	reactor_system.accept()
 	_reactor_factors = setup.reactor_factors
 	_research_factors = setup.research_factors
@@ -370,14 +526,124 @@ func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -
 
 func commit_ship_refit(ship_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
+	var ids: Array = hyperspace_system.equipped_ids().slice(0, int(campaign_system.ship_facts(ship_id).drone_capacity))
+	var prepared: Dictionary = hyperspace_system.prepare_loadout(ids, int(campaign_system.ship_facts(ship_id).drone_capacity), _hyperspace_weapon_source())
+	if not prepared.ok: return prepared
 	return equipment.resize_mounts(campaign_system.ship_facts().mounts, campaign_system.ship_facts(ship_id).mounts,
-		economy.budget(), publish_equipment_refit.bind(ship_id))
+		economy.budget(), func(balances, kind):
+			return publish_equipment_refit(balances, kind, ship_id, prepared.contributions, true,
+				func(): hyperspace_system.accept_loadout(prepared.ids)))
 
 func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var valid = battle.validate_drones(contributions, int(campaign_system.ship_facts().drone_capacity))
 	if not valid.ok: return valid
 	return publish_equipment_refit(economy.budget(), "refit", "", contributions, false)
+
+func equip_hyperspace_drones(ids: Array) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var prepared: Dictionary = hyperspace_system.prepare_loadout(ids, int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source())
+	if not prepared.ok: return prepared
+	return publish_equipment_refit(economy.budget(), "refit", "", prepared.contributions, false,
+		func(): hyperspace_system.accept_loadout(prepared.ids))
+
+func _hyperspace_weapon_source() -> Callable:
+	var motion: Dictionary = battle.wave_inputs().motion
+	return func(drone):
+		return equipment.drone_weapon_source(str(drone.weapon), hyperspace_system.weapon_level_bonus(drone),
+			int(_world_factors.equipment_levels), _research_factors, _reactor_factors, motion)
+
+func preview_hyperspace_forge(id: String, operation: String, args: Dictionary = {}) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	return hyperspace_system.preview_forge(id, operation, args)
+
+func forge(id: String, operation: String, args: Dictionary, operation_id: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	if operation_id.is_empty(): return {"ok": false, "reason": "OperationIdRequired"}
+	var fingerprint: String = JSON.stringify({"id": id, "operation": operation, "args": args}, "", true)
+	var repeated: Dictionary = hyperspace_system.forge_repeat(operation_id, fingerprint)
+	if not repeated.is_empty(): return repeated
+	var forecast: Dictionary = hyperspace_system.preview_forge(id, operation, args)
+	if not forecast.ok: return forecast
+	var costs: Dictionary = {}
+	for resource in forecast.costs:
+		var amount: Dictionary = amount_api.apply("from_decimal", [str(forecast.costs[resource])])
+		if not amount.ok: return amount
+		costs[resource] = amount.value
+	var paid: Dictionary = economy.payment(costs)
+	if not paid.ok: return paid
+	var result: Dictionary = {"ok": true, "drone": forecast.drone.duplicate(true), "costs": forecast.costs.duplicate(), "draws": forecast.draws}
+	if id in hyperspace_system.equipped_ids():
+		var prepared: Dictionary = hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
+			int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source(), {id: forecast.drone})
+		if not prepared.ok: return prepared
+		var committed: Dictionary = publish_equipment_refit(paid.wallet, "refit", "", prepared.contributions, false,
+			func(): hyperspace_system.accept_forge(id, forecast.drone, operation_id, fingerprint, result))
+		return result if committed.ok else committed
+	hyperspace_system.accept_forge(id, forecast.drone, operation_id, fingerprint, result)
+	if economy.accept_budget(paid.wallet, false): economy.publish_budget_change()
+	return result
+
+func save_hyperspace_preset(name: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	return hyperspace_system.save_preset(name)
+
+func apply_hyperspace_preset(name: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var prepared: Dictionary = hyperspace_system.prepare_preset(name, int(campaign_system.ship_facts().drone_capacity),
+		int(campaign_system.progress_facts().highest_reached), _hyperspace_weapon_source())
+	if not prepared.ok: return prepared
+	var hangings: Dictionary = {}
+	for entry in prepared.entries: hangings[str(entry.id)] = entry.hangings
+	return publish_equipment_refit(economy.budget(), "refit", "", prepared.contributions, false,
+		func(): hyperspace_system.accept_preset(prepared), hangings)
+
+func set_hyperspace_hangings(id: String, module_ids: Array) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var prepared: Dictionary = hyperspace_system.prepare_hangings(id, module_ids,
+		int(campaign_system.progress_facts().highest_reached))
+	if not prepared.ok: return prepared
+	if id in hyperspace_system.equipped_ids():
+		var loadout: Dictionary = hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
+			int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source())
+		if not loadout.ok: return loadout
+		return publish_equipment_refit(economy.budget(), "refit", "", loadout.contributions, false,
+			func(): hyperspace_system.accept_hangings(id, prepared.hangings), {id: prepared.hangings})
+	hyperspace_system.accept_hangings(id, prepared.hangings)
+	return {"ok": true}
+
+func exchange_hyperspace_materials(source: String, target: String, amount: int) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var materials: Array = hyperspace_system.material_ids()
+	if amount <= 0 or source == target or source not in materials or target not in materials:
+		return {"ok": false, "reason": "InvalidExchange"}
+	var received: Dictionary = amount_api.apply("from_decimal", [str(amount)])
+	if not received.ok: return received
+	var doubled: Dictionary = amount_api.apply("mul", [received.value, amount_api.apply("from_decimal", ["2"]).value])
+	if not doubled.ok: return doubled
+	var paid: Dictionary = economy.payment({source: doubled.value})
+	if not paid.ok: return paid
+	var old = paid.wallet.get(target, amount_api.apply("zero", []).value)
+	var credited: Dictionary = amount_api.apply("add", [old, received.value])
+	if not credited.ok: return credited
+	var wallet: Dictionary = paid.wallet.duplicate()
+	wallet[target] = credited.value
+	if economy.accept_budget(wallet, false): economy.publish_budget_change()
+	return {"ok": true}
+
+func reforge_hyperspace(ids: Array) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var prepared: Dictionary = hyperspace_system.prepare_reforge(ids)
+	if not prepared.ok: return prepared
+	return publish_equipment_refit(economy.budget(), "refit", "", [], false, func():
+		var accepted: Dictionary = hyperspace_system.accept_reforge(prepared.retained)
+		if not str(accepted.released_crew).is_empty():
+			var released: Array = crew_system.release_hyperspace(str(accepted.route), false)
+			crew_system.publish_members(released))
+
+func claim_reforged_drone(id: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	return hyperspace_system.release_sealed(id, campaign_system.progress_facts().cleared_stages)
 
 func _world_contributions() -> Dictionary:
 	for result in [_planet_factors, _crew_factors, _galaxy_factors]:
@@ -489,14 +755,18 @@ func _publish_research() -> Dictionary:
 	var result = research.contributions()
 	if not result.ok: return result
 	var values: Dictionary = result["values"]
+	var refiner: Dictionary = _hyperspace_module_factor("gem_refiner")
+	if not refiner.ok: return refiner
+	var jewel: Dictionary = amount_api.apply("mul", [values.fragment_income, refiner.value])
+	if not jewel.ok: return jewel
 	var updated = _publish_native_values(values, _reactor_factors, "growth")
 	if not updated.ok: return updated
 	_research_factors = values
-	if _income_factors.iron != values.iron_income or _income_factors.uranium != values.uranium_income or _income_factors.jewel != values.fragment_income:
+	if _income_factors.iron != values.iron_income or _income_factors.uranium != values.uranium_income or _income_factors.jewel != jewel.value:
 		var income: Dictionary = _income_factors.duplicate()
 		income.iron = values.iron_income
 		income.uranium = values.uranium_income
-		income.jewel = values.fragment_income
+		income.jewel = jewel.value
 		income.make_read_only()
 		_income_factors = income
 	return {"ok": true}
@@ -543,7 +813,11 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 		income.galaxy_fragments = world.galaxy_fragments
 		income.make_read_only()
 		_income_factors = income
-	_research_speed = world.research
+	var algorithm: Dictionary = _hyperspace_module_factor("distributed_algorithm")
+	if not algorithm.ok: return algorithm
+	var speed: Dictionary = amount_api.apply("mul", [world.research, algorithm.value])
+	if not speed.ok: return speed
+	_research_speed = speed.value
 	_galaxy_crew_experience = world.crew_experience
 	var result: Dictionary = {"ok": true}
 	if world.enhancement_levels != previous.enhancement_levels or world.external != previous.external or world.equipment_levels != previous.equipment_levels or world.capacity != previous.capacity or world.free_charge != previous.free_charge:

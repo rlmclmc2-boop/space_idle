@@ -121,7 +121,8 @@ func contributions(changes: Dictionary = {}) -> Dictionary:
 
 func _published_contributions(output: Dictionary) -> Dictionary:
 	var published := {"ok": true, "equipment": output.equipment, "refinery": output.refinery,
-		"equipment_levels": output.equipment_levels, "enhancement_levels": output.enhancement_levels, "free_charge": output.free_charge}
+		"equipment_levels": output.equipment_levels, "enhancement_levels": output.enhancement_levels,
+		"free_charge": output.free_charge, "luck": output.luck}
 	published.make_read_only()
 	return published
 
@@ -317,7 +318,8 @@ static func _contributions(state: Dictionary, buildings: Dictionary, rows: Array
 	if result.is_empty():
 		result = {"ok": true, "equipment": one, "refinery": one, "_sources": {"equipment": {}, "refinery": {}},
 			"equipment_levels": int(_buff(state, rows, "level_bonus", "equipment")),
-			"enhancement_levels": int(_buff(state, rows, "level_bonus", "enhancement")), "free_charge": _buff(state, rows, "free_charge", "all")}
+			"enhancement_levels": int(_buff(state, rows, "level_bonus", "enhancement")),
+			"free_charge": _buff(state, rows, "free_charge", "all"), "luck": _buff(state, rows, "luck", "all")}
 		for id in state:
 			changes[id] = []
 			for key in state[id].buildings:

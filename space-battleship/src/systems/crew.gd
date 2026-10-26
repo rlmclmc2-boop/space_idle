@@ -57,6 +57,18 @@ func contributions() -> Dictionary:
 func step_assignments() -> Dictionary:
 	return _step_assignments(_members)
 
+func hyperspace_candidate(id: String) -> Dictionary:
+	if not _members.has(id) or not _available.get(id, false): return {"ok": false, "reason": "CrewLocked"}
+	if not str(_members[id].kind).is_empty(): return {"ok": false, "reason": "CrewOccupied"}
+	return {"ok": true, "level": int(_members[id].level)}
+
+func reserve_hyperspace(id: String, route: String, notify: bool = true) -> void:
+	_assign(_members, id, "hyperspace", route, 1, str(_members[id].mode))
+	if notify: members_changed.emit([id])
+
+func release_hyperspace(route: String, notify: bool = true) -> Array:
+	return release("hyperspace", route, notify)
+
 func assign(id: String, kind: String, target: String, mode: String, target_admission: Callable, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not _members.has(id) or not _available.get(id, false): return {"ok": false, "reason": "CrewLocked"}

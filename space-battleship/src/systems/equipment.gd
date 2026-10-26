@@ -70,6 +70,26 @@ func enemy_override(id: String) -> Dictionary:
 func damage_types() -> Dictionary:
 	return {"strange_damage_type": int(_definitions.cannon.dmgtype), "wild_damage_type": int(_definitions.missile.dmgtype)}
 
+func drone_weapon_source(weapon_id: String, level_bonus: int, extra_levels: int,
+		ai: Dictionary, reactor: Dictionary, motion: Dictionary) -> Dictionary:
+	if not _definitions.has(weapon_id) or weapon_id not in ["laser", "missile", "cannon", "longLaser"]:
+		return {"ok": false, "reason": "UnknownDroneWeapon"}
+	var paid_level: int = 1
+	for slot in _slots:
+		if slot.category == "weapon" and slot.equipment_id == weapon_id:
+			paid_level = maxi(paid_level, int(slot.paid_level))
+	var slot: Dictionary = {"paid_level": paid_level, "extra_levels": level_bonus}
+	var row: Dictionary = _definitions[weapon_id]
+	var charged = _charged_base(row, _definitions.armour, slot, extra_levels, _evolution,
+		ai.weapon_damage, reactor.weapons, _api)
+	if not charged.ok: return charged
+	var text = _api.apply("to_display", [charged.value])
+	if not text.ok: return text
+	var weapon: Dictionary = BattleSchema.weapon(row, weapon_id, str(text.text), 0, false, motion)
+	weapon.entry.paid_level = paid_level
+	weapon.entry.effective_level = paid_level + level_bonus + extra_levels
+	return {"ok": true, "weapon": weapon}
+
 func _slots_for(mounts: Dictionary, candidate = null) -> Array:
 	var source: Array = _slots if candidate == null else candidate
 	return source.filter(func(slot): return int(slot.index) < int(mounts[slot.category]))

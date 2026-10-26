@@ -81,11 +81,33 @@ func publish_ship_change() -> void:
 func progress_facts() -> Dictionary:
 	return {"highest_reached": int(_state.highest_reached), "cleared_stages": _state.cleared_stages}
 
+func hyperspace_return_target() -> Dictionary:
+	return {"stage": int(_state.stage), "point": int(_state.point),
+		"guard": bool(_guard.enabled), "guard_point": int(_guard.point)}
+
+func enter_hyperspace(notify: bool = true) -> void:
+	_state.state = "hyperspace"
+	if notify: status_changed.emit()
+
+func return_from_hyperspace(target: Dictionary, notify: bool = true) -> void:
+	_set_stage(int(target.stage), 0.0)
+	_state.point = mini(int(target.point), _state.points.size() - 1)
+	_guard.enabled = bool(target.guard)
+	_guard.stage = int(target.stage)
+	_guard.point = int(target.guard_point)
+	_state.distance = float(_state.points[int(_state.point)].position) * float(_levels[int(_state.stage)].length)
+	_guard.distance = _state.distance
+	_begin_travel()
+	if notify: status_changed.emit()
+
 func resource_generation_active() -> bool:
 	return _state.state in ["travel", "combat", "waiting", "guard_wait", "retreat"]
 
 func planet_experience_ratio():
 	return _levels[int(_state.highest_reached)].planetExpRatio
+
+func jewel_drop_probability() -> float:
+	return float(_parameters.jewelDrop)
 
 func departure_active() -> bool:
 	return _departure_remaining > 0
@@ -247,6 +269,8 @@ func timed_resource_ratio() -> Dictionary:
 
 func _advance(dt: float, advance_native: Callable, start_wave: Callable) -> void:
 	match str(_state.state):
+		"hyperspace":
+			advance_native.call(dt)
 		"travel":
 			var target: float = _target_distance()
 			var time_to_point: float = maxf(0.0, target - float(_state.distance)) / float(_state.speed)

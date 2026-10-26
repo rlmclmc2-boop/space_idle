@@ -146,7 +146,7 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 		actor.shieldDelay = 0.0 if row.shieldDelay == null else float(row.shieldDelay)
 		actor.shieldRecovery = 0.0 if row.shieldRecovery == null else float(row.shieldRecovery)
 		actor.reactiveReduction = 0 if row.reactiveReduction == null else int(row.reactiveReduction)
-		actor.jewel_rolls = jewel_rolls
+		actor.jewel_rolls = int(group.get("jewel_rolls_by_slot", {}).get(slot, jewel_rolls))
 		actor.compiled_drops = []
 		var drops := RegEx.new()
 		drops.compile("[｛{]([^｝}]+)[｝}]")
