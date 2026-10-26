@@ -15,6 +15,7 @@ const Hyperspace = preload("res://src/systems/hyperspace.gd")
 const StateCodec = preload("res://foundation/host/state_codec.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
 const Notifications = preload("res://src/systems/notifications.gd")
+const Tutorial = preload("res://src/systems/tutorial.gd")
 const STEP: float = 1.0 / 60.0
 const FRAME_STEPS: int = 64
 
@@ -56,6 +57,7 @@ var _chrono_speed: int = 1
 var _chrono_costs: Dictionary = {}
 var save_files
 var notifications = Notifications.new()
+var tutorial = Tutorial.new()
 
 func _init() -> void:
 	_income_factors.make_read_only()
@@ -118,6 +120,10 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, s
 	if not saved.is_empty():
 		var restored: Dictionary = _restore_modules(saved)
 		if not restored.ok: return restored
+	equipment.loadout_changed.connect(func(): tutorial.record("equip"))
+	equipment.slots_changed.connect(func(_ids: Array): tutorial.record("upgrade"))
+	economy.drop_collected.connect(func(): tutorial.record("pickup"))
+	campaign_system.retreat_started.connect(func(): tutorial.record("retreat"))
 	_planet_factors = planet_system.contributions()
 	_crew_factors = crew_system.contributions()
 	_galaxy_factors = galaxy_system.contributions()
@@ -185,6 +191,10 @@ func _restore_modules(saved: Dictionary) -> Dictionary:
 			return {"ok": false, "reason": "InvalidNativeDropWatermark"}
 	var restored_notifications: Dictionary = notifications.restore_state(modules.get("notifications", {"entries": {}}))
 	if not restored_notifications.ok: return restored_notifications
+	var tutorial_state = modules.get("tutorial", {"completed": {}, "seen": {}})
+	if not tutorial_state is Dictionary: return {"ok": false, "reason": "InvalidTutorialState"}
+	var restored_tutorial: Dictionary = tutorial.restore_state(tutorial_state)
+	if not restored_tutorial.ok: return restored_tutorial
 	var times: Dictionary = saved.times
 	for key in ["wall", "game", "pending"]:
 		if not times.get(key) is float or not is_finite(times[key]) or times[key] < 0.0:
@@ -200,6 +210,13 @@ func _restore_modules(saved: Dictionary) -> Dictionary:
 	for key in reasons:
 		if not key is String or key.is_empty() or reasons[key] != true:
 			return {"ok": false, "reason": "InvalidPauseState"}
+	if reasons.has("tutorial") and tutorial.next_prompt().is_empty():
+		return {"ok": false, "reason": "InvalidPauseState"}
+	if reasons.has("unlock"):
+		var pending_unlock: bool = false
+		for notice in notifications.entries():
+			if notice.topic == "unlock" and not notice.seen: pending_unlock = true
+		if not pending_unlock: return {"ok": false, "reason": "InvalidPauseState"}
 	pause_reasons = reasons.duplicate()
 	reactor_system.refresh_availability(campaign_system.available, false)
 	research.refresh_progress(campaign_system.available, false)
@@ -223,7 +240,7 @@ func save_payload() -> Dictionary:
 			"reactor": reactor_system.save_state(), "research": research.save_state(),
 			"crew": crew_system.save_state(), "planet": planet_system.save_state(),
 			"galaxy": galaxy_system.save_state(), "hyperspace": hyperspace_system.save_state(),
-			"notifications": notifications.save_state()}}
+			"notifications": notifications.save_state(), "tutorial": tutorial.save_state()}}
 	var packed: Dictionary = StateCodec.pack(snapshot)
 	if not packed.ok: return packed
 	return {"ok": true, "payload": packed.value}
@@ -502,6 +519,7 @@ func _step(dt: float) -> void:
 	if progress_defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	if progress_changed: _notify_progress(progress_notices)
 	if progress_changed: _record_unlocks()
+	if progress_changed and not campaign_system.progress_facts().cleared_stages.is_empty(): tutorial.record("clear")
 	if progress_changed: campaign_system.publish_progress_change()
 	if status_changed: campaign_system.publish_status_change()
 	if collection_changed: economy.publish_budget_change()
@@ -1296,6 +1314,22 @@ func _notify_progress(notices: Dictionary) -> void:
 func _record_unlocks() -> void:
 	for id in campaign_system.available_unlock_ids():
 		notifications.record("unlock", str(id))
+
+func pending_guidance() -> Dictionary:
+	var event: String = tutorial.next_prompt()
+	if not event.is_empty(): return {"kind": "tutorial", "id": event}
+	for row in notifications.entries():
+		if row.topic == "unlock" and not row.seen:
+			return {"kind": "unlock", "id": str(row.key)}
+	return {}
+
+func dismiss_guidance(kind: String, id: String) -> Dictionary:
+	var pending: Dictionary = pending_guidance()
+	if pending.is_empty() or pending.kind != kind or pending.id != id:
+		return {"ok": false, "reason": "GuidanceMismatch"}
+	var result: Dictionary = tutorial.mark_seen(id) if kind == "tutorial" else notifications.mark_seen(id)
+	if result.ok: set_pause(kind, false)
+	return result
 
 func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) -> bool:
 	var result = planet_system.advance(explorers, builders, dt, planet_experience_context)

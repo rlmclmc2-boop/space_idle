@@ -24,6 +24,7 @@ var _affix_ranges: Dictionary = {}
 var _tiers: Array = []
 var _legends: Array = []
 var _legend_parameters: Dictionary = {}
+var _legacy_legend_ranges: Dictionary = {}
 var _planets: Array = []
 var _history: Dictionary = {}
 var _manual: Dictionary = {}
@@ -182,7 +183,43 @@ func _valid_drone(drone) -> bool:
 		return false
 	for module_id in drone.hangings:
 		if not module_id is String or not _module_definitions.has(module_id): return false
+	for affix in drone.affixes:
+		if not _valid_affix(affix): return false
+	if not drone.get("ultimate_affix", {}) is Dictionary: return false
+	if not drone.ultimate_affix.is_empty() and not _valid_affix(drone.ultimate_affix): return false
+	if not drone.get("legendary_effect", {}) is Dictionary: return false
+	if drone.legendary:
+		var effect: Dictionary = drone.legendary_effect
+		if not effect.get("effect_id") is String or not effect.get("parameters") is Dictionary:
+			return false
+		var definition: Dictionary = {}
+		for row in _legends:
+			if str(row.effect_id) == effect.effect_id: definition = row
+		if definition.is_empty() or not _weapon_matches(definition.weapon, str(drone.weapon)):
+			return false
+		var rules: Array = _legend_parameters.get(str(effect.effect_id), [])
+		if effect.parameters.size() != rules.size(): return false
+		for row in rules:
+			var key: String = str(row.parameter)
+			var value = effect.parameters.get(key)
+			if not (value is int or value is float) or not is_finite(float(value)):
+				return false
+			var current: bool = float(value) >= float(row.minimum) and float(value) <= float(row.maximum)
+			var historical: Dictionary = _legacy_legend_ranges.get(str(effect.effect_id) + ":" + key, {})
+			var old: bool = historical.has("minimum") and historical.has("maximum") and float(value) >= float(historical.minimum) and float(value) <= float(historical.maximum)
+			if not current and not old: return false
+	elif not drone.legendary_effect.is_empty(): return false
 	return true
+
+func _valid_affix(affix) -> bool:
+	if not affix is Dictionary or not affix.get("key") is String or not affix.get("tier") is int or not affix.get("locked") is bool:
+		return false
+	var key: String = str(affix.key)
+	if not _affixes.has(key) or not _affix_ranges.has(key) or not _affix_ranges[key].has(affix.tier): return false
+	var value = affix.get("value")
+	if not (value is int or value is float) or not is_finite(float(value)): return false
+	var bounds: Dictionary = _affix_ranges[key][affix.tier]
+	return float(value) >= float(bounds.minimum) and float(value) <= float(bounds.maximum)
 
 func _planet_key(value: String) -> String:
 	if value.ends_with(".0"):
@@ -220,6 +257,12 @@ func _init(configuration: Dictionary, api, run_state, seed_value: int = 1) -> vo
 		if not _legend_parameters.has(id): _legend_parameters[id] = []
 		_legend_parameters[id].append(row)
 	for id in _legend_parameters: _legend_parameters[id].sort_custom(func(a, b): return int(a.order) < int(b.order))
+	for row in configuration.hyperspace_config["\u56fa\u5b9a\u89c4\u5219_\u517c\u5bb9\u8bf4\u660e"]:
+		var parts: PackedStringArray = str(row.key).split("/")
+		if parts.size() == 6 and parts[1] == "legendary_effects" and parts[3] == "stored_parameter_ranges" and parts[5] in ["0", "1"]:
+			var key: String = parts[2] + ":" + parts[4]
+			if not _legacy_legend_ranges.has(key): _legacy_legend_ranges[key] = {}
+			_legacy_legend_ranges[key]["minimum" if parts[5] == "0" else "maximum"] = row.value
 	_planets = configuration.planet.planet.duplicate()
 	_planets.sort_custom(func(a, b): return int(a.reforgeStartLevel) < int(b.reforgeStartLevel))
 	for row in configuration.unlock.unlock:

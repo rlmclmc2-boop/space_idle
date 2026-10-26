@@ -93,6 +93,30 @@ func _run() -> void:
 		printerr("combat load: ", restored)
 		quit(1)
 		return
+	var retreated: bool = restored.session.campaign_system.observe_battle(
+		{"player_dead": true, "wave_cleared": false, "final_cleared": false},
+		restored.session.equipment.clear_switch_locks, restored.session.settle_final_collection)
+	if not retreated or restored.session.campaign_system.restore_checkpoint() != "retreat" or not restored.session.tutorial.completed("retreat"):
+		printerr("retreat transition did not record tutorial event")
+		quit(1)
+		return
+	var cleared_session: Dictionary = Session.load_candidate("res://generated/config.json", directory)
+	if not cleared_session.ok:
+		printerr("clear guidance fixture: ", cleared_session)
+		quit(1)
+		return
+	var cleared: bool = cleared_session.session.campaign_system.observe_battle(
+		{"player_dead": false, "wave_cleared": true, "final_cleared": true},
+		cleared_session.session.equipment.clear_switch_locks, cleared_session.session.settle_final_collection)
+	if not cleared or cleared_session.session.tutorial.completed("clear"):
+		printerr("clear guidance was emitted before settlement")
+		quit(1)
+		return
+	cleared_session.session._step(1.0 / 60.0)
+	if not cleared_session.session.run_state.is_running() or not cleared_session.session.tutorial.completed("clear"):
+		printerr("settled stage clear did not record tutorial event: ", cleared_session.session.run_state.reason())
+		quit(1)
+		return
 	var snapshot: Dictionary = original.save_payload()
 	var decoded: Dictionary = StateCodec.unpack(snapshot.payload)
 	var damaged: Dictionary = decoded.value
@@ -103,6 +127,43 @@ func _run() -> void:
 		printerr("semantic candidate rejection failed: ", attempted)
 		quit(1)
 		return
+	snapshot = original.save_payload()
+	decoded = StateCodec.unpack(snapshot.payload)
+	damaged = decoded.value
+	damaged.modules.tutorial.completed.unknown_event = true
+	rejected = Session.new()
+	attempted = rejected.initialize("res://generated/config.json", damaged.seed, damaged.native, damaged)
+	if attempted.ok or not original.run_state.is_running():
+		printerr("invalid tutorial candidate admitted: ", attempted)
+		quit(1)
+		return
+	snapshot = original.save_payload()
+	decoded = StateCodec.unpack(snapshot.payload)
+	damaged = decoded.value
+	damaged.pause_reasons.tutorial = true
+	rejected = Session.new()
+	attempted = rejected.initialize("res://generated/config.json", damaged.seed, damaged.native, damaged)
+	if attempted.ok or not original.run_state.is_running():
+		printerr("orphan tutorial pause admitted: ", attempted)
+		quit(1)
+		return
+	var candidate_drone: Dictionary = {"id": "space:1:fixture", "weapon": "laser", "planet_id": "1", "level": 1,
+		"legendary": true, "ultimate": false, "hangings": [], "affixes": [], "hanging_slots": 0,
+		"forge_revision": 0, "forge_rng_state": "1",
+		"legendary_effect": {"effect_id": "drone_master", "parameters": {"maximum_reduction": 0.55}},
+		"ultimate_affix": {}}
+	for value in [0.55, 0.85, 0.7]:
+		snapshot = original.save_payload()
+		decoded = StateCodec.unpack(snapshot.payload)
+		damaged = decoded.value
+		candidate_drone.legendary_effect.parameters.maximum_reduction = value
+		damaged.modules.hyperspace.warehouse.append(candidate_drone.duplicate(true))
+		rejected = Session.new()
+		attempted = rejected.initialize("res://generated/config.json", damaged.seed, damaged.native, damaged)
+		if attempted.ok != (value != 0.7) or not original.run_state.is_running():
+			printerr("legendary current/history validation: ", value, " ", attempted)
+			quit(1)
+			return
 	snapshot = original.save_payload()
 	decoded = StateCodec.unpack(snapshot.payload)
 	damaged = decoded.value

@@ -19,6 +19,10 @@ var session
 var startup_error: String = ""
 var _overlay: Node2D
 var _pause_button: Button
+var _guidance_panel: PanelContainer
+var _guidance_label: Label
+var _guidance_button: Button
+var _skip_tutorial: bool = false
 var growth_panel: PanelContainer
 var growth_status: Label
 var save_state_label: Label
@@ -43,6 +47,7 @@ func _ready() -> void:
 	var settings: Dictionary = PlayerSettings.load_interval()
 	if settings.ok:
 		_autosave_interval = float(settings.interval)
+		_skip_tutorial = bool(settings.auto_skip_tutorial)
 	else:
 		_settings_error = str(settings.reason)
 	session = Session.new()
@@ -57,6 +62,7 @@ func _ready() -> void:
 	else:
 		_next_autosave_wall = session.wall_time + _autosave_interval
 		_show_session()
+		_sync_guidance()
 
 func _show_session() -> void:
 	get_window().content_scale_size = session.battle.view_size()
@@ -66,6 +72,7 @@ func _show_session() -> void:
 	add_child(CampaignView.new(session.campaign_system))
 	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 	_setup_growth_panel()
+	_setup_guidance_panel()
 
 func _load_saved(directory: String, backup: bool = false) -> Dictionary:
 	var loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory, backup)
@@ -100,8 +107,12 @@ func _replace_session(replacement) -> Dictionary:
 	_next_autosave_wall = session.wall_time + _autosave_interval
 	_overlay = null
 	_pause_button = null
+	_guidance_panel = null
+	_guidance_label = null
+	_guidance_button = null
 	growth_panel = null
 	_show_session()
+	_sync_guidance()
 	var persisted: Dictionary = session.request_save()
 	return {"ok": true, "persistence_pending": persisted.ok,
 		"persistence_failed": not persisted.ok,
@@ -132,6 +143,7 @@ func _cancel_reforge() -> Dictionary:
 func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
+		_sync_guidance()
 		if _pause_button != null:
 			_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause"
 		if session.save_files != null: session.save_files.poll()
@@ -189,6 +201,58 @@ func _setup_shell_overlay() -> void:
 			_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause")
 	layer.add_child(_pause_button)
 
+func _setup_guidance_panel() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 11
+	add_child(layer)
+	_guidance_panel = PanelContainer.new()
+	_guidance_panel.position = Vector2(80, 265)
+	_guidance_panel.custom_minimum_size = Vector2(410, 110)
+	_guidance_panel.visible = false
+	layer.add_child(_guidance_panel)
+	var box := VBoxContainer.new()
+	_guidance_panel.add_child(box)
+	_guidance_label = Label.new()
+	_guidance_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_guidance_label.custom_minimum_size.x = 390
+	box.add_child(_guidance_label)
+	_guidance_button = Button.new()
+	_guidance_button.text = "继续游戏"
+	box.add_child(_guidance_button)
+	_guidance_button.pressed.connect(func():
+		var pending: Dictionary = session.pending_guidance()
+		if not pending.is_empty(): session.dismiss_guidance(str(pending.kind), str(pending.id))
+		_sync_guidance())
+
+func _sync_guidance() -> void:
+	if _guidance_panel == null: return
+	if not session.run_state.is_running():
+		_guidance_panel.visible = false
+		return
+	var pending: Dictionary = session.pending_guidance()
+	if pending.is_empty():
+		session.set_pause("tutorial", false)
+		session.set_pause("unlock", false)
+		_guidance_panel.visible = false
+		return
+	if _skip_tutorial:
+		while not pending.is_empty():
+			var dismissed: Dictionary = session.dismiss_guidance(str(pending.kind), str(pending.id))
+			if not dismissed.ok: break
+			pending = session.pending_guidance()
+		session.set_pause("tutorial", false)
+		session.set_pause("unlock", false)
+		_guidance_panel.visible = false
+		return
+	var kind: String = str(pending.kind)
+	session.set_pause("tutorial", kind == "tutorial")
+	session.set_pause("unlock", kind == "unlock")
+	var captions := {"equip": "首次换装已完成", "upgrade": "首次升级已完成",
+		"pickup": "首次拾取已完成", "retreat": "首次撤退已发生",
+		"clear": "通关奖励已入账"}
+	_guidance_label.text = str(captions.get(str(pending.id), "已解锁：" + str(pending.id)))
+	_guidance_panel.visible = true
+
 func _draw_shell(canvas: Node2D) -> void:
 	var font: Font = ThemeDB.fallback_font
 	canvas.draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
@@ -233,7 +297,7 @@ func _setup_growth_panel() -> void:
 	box.custom_minimum_size.x = 380
 	scroll.add_child(box)
 	var back := Button.new()
-	back.text = "Return to battle"
+	back.text = "返回战斗"
 	back.pressed.connect(func(): growth_panel.visible = false)
 	box.add_child(back)
 	growth_status = Label.new()
@@ -293,6 +357,18 @@ func _setup_growth_panel() -> void:
 			_next_autosave_wall = session.wall_time + value
 		else:
 			autosave.set_value_no_signal(_autosave_interval)
+			growth_status.text = str(saved.reason))
+	var skip_tutorial := CheckBox.new()
+	skip_tutorial.text = "自动跳过引导提示"
+	skip_tutorial.button_pressed = _skip_tutorial
+	box.add_child(skip_tutorial)
+	skip_tutorial.toggled.connect(func(enabled: bool):
+		var saved: Dictionary = PlayerSettings.save_auto_skip_tutorial(enabled)
+		if saved.ok:
+			_skip_tutorial = enabled
+			_sync_guidance()
+		else:
+			skip_tutorial.set_pressed_no_signal(_skip_tutorial)
 			growth_status.text = str(saved.reason))
 	_command_button(box, "Load primary", func() -> Dictionary:
 		return _load_saved(save_path.text))

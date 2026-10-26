@@ -15,6 +15,7 @@ import re
 import sys
 import tempfile
 from collections import Counter, defaultdict
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 import openpyxl
@@ -81,7 +82,7 @@ class Compiler:
                    str(record["_key"]), code, detail)
 
     def read(self) -> None:
-        if self.manifest.get("schemaVersion") != 1 or self.manifest.get("kind") not in ("production", "test"):
+        if self.manifest.get("schemaVersion") != 1 or self.manifest.get("kind") not in ("production", "test") or not isinstance(self.manifest.get("fullGame"), bool):
             raise ValueError("InvalidManifest")
         books = self.manifest.get("workbooks")
         if not isinstance(books, list) or not books:
@@ -94,8 +95,11 @@ class Compiler:
             self.error("manifest", "", 0, "", "", "InputSetMismatch",
                        f"missing={sorted(expected-actual)} extra={sorted(actual-expected)}")
             return
-        if self.manifest["kind"] == "test" and self.source == ROOT / "config_excel":
+        production_source = (ROOT / "config_excel").resolve()
+        if self.manifest["kind"] == "test" and self.source == production_source:
             raise ValueError("TestManifestUsesProductionInput")
+        if self.manifest["kind"] == "production" and self.source != production_source:
+            raise ValueError("ProductionManifestUsesTestInput")
         for book in books:
             self._read_book(book)
 
@@ -111,7 +115,7 @@ class Compiler:
             return
         schemas = {s["name"]: s for s in book["sheets"]}
         if set(formulas.sheetnames) != set(schemas):
-            self.error(name, "", 0, "", "", "", "SheetSetMismatch",
+            self.error(name, "", 0, "", "", "SheetSetMismatch",
                        f"expected={sorted(schemas)} actual={sorted(formulas.sheetnames)}")
         self.runtime[stem] = {}
         for sheet_name, schema in schemas.items():
@@ -256,6 +260,29 @@ class Compiler:
             for name in re.findall(r"([A-Za-z][A-Za-z0-9_-]*)\|", str(row.get("equipment", ""))):
                 if name not in equipment:
                     self.row_error("mon", "mon", row, "equipment", "MissingReference", f"equipment {name}")
+            drops = row.get("res")
+            if drops is not None:
+                expression = str(drops)
+                blocks = expression[1:-1].split(";") if expression.startswith("{") and expression.endswith("}") else []
+                if not blocks:
+                    self.row_error("mon", "mon", row, "res", "InvalidDropExpression", "expected {resource,amount,chance} blocks")
+                for block in blocks:
+                    fields = block.split(",")
+                    if len(fields) != 3:
+                        self.row_error("mon", "mon", row, "res", "InvalidDropExpression", "expected resource,amount,chance")
+                        continue
+                    resource, amount, chance = fields
+                    if resource not in resources:
+                        self.row_error("mon", "mon", row, "res", "MissingReference", f"resource {resource}")
+                    try:
+                        numeric_amount = Decimal(amount)
+                        numeric_chance = Decimal(chance)
+                        if not numeric_amount.is_finite() or numeric_amount < 0:
+                            raise ValueError("amount")
+                        if not numeric_chance.is_finite() or not 0 <= numeric_chance <= 1:
+                            raise ValueError("chance")
+                    except (ValueError, InvalidOperation) as exc:
+                        self.row_error("mon", "mon", row, "res", "EmbeddedDropRange", f"invalid {exc}")
         for row in self.table("monGroup", "monGroup"):
             members = str(row.get("mon", "")).strip("{} ").split(",")
             if len(members) not in (10, 15):
@@ -266,6 +293,21 @@ class Compiler:
         for row in self.table("level", "level"):
             if not valid_type(row.get("length"), "number") or row["length"] <= 0:
                 self.row_error("level", "level", row, "length", "StageLengthRange", "length must be positive")
+            for field in ("atkRatio", "lifeRatio", "resRatio", "jewelRatio", "entryAtkRatio", "entryLifeRatio"):
+                value = row.get(field)
+                if value is not None and (not valid_type(value, "number") or value <= 0):
+                    self.row_error("level", "level", row, field, "StageRatioRange", "stage ratio must be positive")
+            if row.get("planetExpRatio") is not None and (not valid_type(row["planetExpRatio"], "number") or row["planetExpRatio"] < 0):
+                self.row_error("level", "level", row, "planetExpRatio", "StageRatioRange", "planet experience ratio cannot be negative")
+            try:
+                reward_groups = json.loads(str(row.get("rewardReferenceGroups") or "[]"))
+                if not isinstance(reward_groups, list): raise ValueError("not an array")
+            except (ValueError, TypeError):
+                self.row_error("level", "level", row, "rewardReferenceGroups", "InvalidRewardGroups", "expected JSON array")
+                reward_groups = []
+            for group in reward_groups:
+                if str(group) not in groups:
+                    self.row_error("level", "level", row, "rewardReferenceGroups", "MissingReference", f"group {group}")
             text = str(row.get("monGroup", ""))
             matches = re.findall(r"(\d+)\|([0-9.]+)", text)
             if not matches or text.count("|") != len(matches):
@@ -278,7 +320,7 @@ class Compiler:
                 if not previous < pos <= 1:
                     self.row_error("level", "level", row, "monGroup", "StagePointOrder", f"position {position}")
                 previous = pos
-        if self.manifest["kind"] == "production" and self.table("level", "level"):
+        if self.manifest["fullGame"] and self.table("level", "level"):
             stages = sorted(int(row["id"]) for row in self.table("level", "level") if isinstance(row.get("id"), int))
             if stages != list(range(1, 221)):
                 self.error("level.xlsx", "level", 0, "A", "", "StageCoverage", "expected exactly stages 1..220")
@@ -329,7 +371,9 @@ class Compiler:
             if node in done:
                 return
             active.add(node)
-            for child in edges.get(node, ()): visit(child)
+            children = edges.get(node, ())
+            if isinstance(children, str): children = (children,)
+            for child in children: visit(child)
             active.remove(node)
             done.add(node)
 
@@ -340,6 +384,7 @@ class Compiler:
         affixes = self.ids("hyperspace_config", "词缀定义", "affix_id")
         legends = self.ids("hyperspace_config", "传说定义", "effect_id")
         enemies = self.ids("hyperspace_enemies", "敌人", "enemy_id")
+        enemy_sizes = {str(row["enemy_id"]): row["size"] for row in self.table("hyperspace_enemies", "敌人")}
         groups = self.ids("hyperspace_enemies", "编队", "group_id")
         rewards = self.ids("hyperspace_enemies", "奖励参考", "reference_id")
         resource_ids = self.ids("res", "res", "id")
@@ -360,13 +405,20 @@ class Compiler:
         for row in self.table("hyperspace_enemies", "武器安装"):
             self.reference("hyperspace_enemies", "武器安装", row, "enemy_id", enemies)
             self.reference("hyperspace_enemies", "武器安装", row, "weapon_id", weapons)
+        positions: dict[str, list[dict]] = defaultdict(list)
         for row in self.table("hyperspace_enemies", "编队槽位"):
             self.reference("hyperspace_enemies", "编队槽位", row, "group_id", groups)
             self.reference("hyperspace_enemies", "编队槽位", row, "enemy_id", enemies)
             if not isinstance(row.get("slot_index"), int) or not 0 <= row["slot_index"] < 15:
                 self.row_error("hyperspace_enemies", "编队槽位", row, "slot_index", "InvalidSlotIndex", "slot must be 0..14")
-            if not all(valid_type(row.get(axis), "number") for axis in ("x", "y")) or not 0 <= row["x"] <= 572 or not 0 <= row["y"] <= 960:
-                self.row_error("hyperspace_enemies", "编队槽位", row, "x", "FormationBounds", "slot must fit 572x960 battle field")
+            radius = 18 * enemy_sizes.get(str(row.get("enemy_id")), 1)
+            if not all(valid_type(row.get(axis), "number") for axis in ("x", "y")) or not radius <= row["x"] <= 572 - radius or not radius <= row["y"] <= 960 - radius:
+                self.row_error("hyperspace_enemies", "编队槽位", row, "x", "FormationBounds", "authored size envelope must fit 572x960 battle field")
+            for other in positions[str(row.get("group_id"))]:
+                other_radius = 18 * enemy_sizes.get(str(other.get("enemy_id")), 1)
+                if math.hypot(row["x"] - other["x"], row["y"] - other["y"]) < radius + other_radius:
+                    self.row_error("hyperspace_enemies", "编队槽位", row, "x", "FormationOverlap", "authored size envelopes overlap")
+            positions[str(row.get("group_id"))].append(row)
         slots_by_group: dict[str, set[str]] = defaultdict(set)
         for row in self.table("hyperspace_enemies", "编队槽位"):
             slots_by_group[str(row.get("group_id"))].add(str(row.get("slot_index")))
@@ -395,7 +447,7 @@ class Compiler:
         for (route, tier), orders in ordered_groups.items():
             if sorted(orders) != list(range(len(orders))):
                 self.error("hyperspace_enemies.xlsx", "路线编排", 0, "C", route, "RouteOrder", f"{tier}: order must start at zero and be contiguous")
-        if self.manifest["kind"] == "production" and routes:
+        if self.manifest["fullGame"] and routes:
             for route in routes:
                 for tier, count in (("normal", 4), ("elite", 4), ("boss", 1), ("ultimate", 1)):
                     if coverage[(route, tier)] != count:
@@ -445,12 +497,24 @@ class Compiler:
 
 def compile_config(manifest: Path, output: Path, report: Path | None = None,
                    source: Path | None = None) -> dict:
-    compiler = Compiler(manifest)
-    if source is not None:
-        compiler.source = source.resolve()
-    compiler.read()
-    if not compiler.errors:
-        compiler.validate_relations()
+    try:
+        compiler = Compiler(manifest)
+        if source is not None:
+            compiler.source = source.resolve()
+        compiler.read()
+        if not compiler.errors:
+            compiler.validate_relations()
+    except (ValueError, KeyError, OSError, TypeError) as exc:
+        detail = str(exc)
+        code = detail if detail in ("InvalidManifest", "TestManifestUsesProductionInput",
+                                    "ProductionManifestUsesTestInput") else "CompilerFailure"
+        result = {"ok": False, "errors": [{"workbook": "manifest", "sheet": "", "row": 0,
+                  "column": "", "key": "", "code": code, "detail": detail}],
+                  "sourceHash": "", "semanticHash": ""}
+        if report:
+            report.parent.mkdir(parents=True, exist_ok=True)
+            report.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return result
     result = {"ok": not compiler.errors, "errors": compiler.errors,
               "sourceHash": compiler.source_hash() if not compiler.errors else "",
               "semanticHash": compiler.semantic_hash() if not compiler.errors else ""}

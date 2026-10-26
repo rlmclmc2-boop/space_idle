@@ -8,9 +8,9 @@
 
 Run `python foundation/import_excel.py` from `space-battleship/`. The entry reads the 29 root workbooks in `config_excel/` using the checked-in `config_tools/production_manifest.json`; `published/` is outside this input set. It validates workbook and sheet inventory, headers, field types, required cells, primary keys, formula caches, selected cross-table references, stage and route coverage, numeric ranges, and typed rule keys. It writes `generated/config.json` only after validation and readback succeed. Failures leave the previous runtime JSON unchanged.
 
-The entry also writes `generated/config.validation.json` with source and output hashes on success or cell-specific errors on failure. `--source`, `--output`, `--manifest`, and `--report` override these paths. `run_game.ps1` invokes this same entry before launching Godot. The runtime shape remains `{workbook stem: {sheet name: [row objects]}}`, including explicit null-valued fields. These generated files are local artifacts and do not belong in Git.
+The entry also writes `generated/config.validation.json` with source and output hashes on success or cell-specific errors on failure. `--source`, `--output`, `--manifest`, and `--report` override these paths; an alternate source requires a test manifest. `run_game.ps1` invokes this same entry before launching Godot. The runtime shape remains `{workbook stem: {sheet name: [row objects]}}`, including explicit null-valued fields. These generated files are local artifacts and do not belong in Git.
 
-`python -m unittest -v test_publish.py` from `config_tools/` runs publication rejection probes on copies of the real consumer tables. The fixture manifest must be separate from production input; its schema must still describe the actual tables.
+`python -m unittest -v test_publish.py` from `config_tools/` runs publication rejection probes on copies of the real consumer tables with an independent `kind: test` manifest. The compiler rejects a test manifest pointed at production input and a production manifest pointed at test input.
 ## 原生构建
 
 Amount 值及绑定在 addons/native_battle/src/amount_value.hpp、amount_api.hpp，平台文件替换原语在 foundation_disk.hpp；与保留的 native/GPU 源码一起构建。

@@ -2,6 +2,7 @@ extends RefCounted
 var _run_state
 ## Economy owns balances, drop ownership, timed production and income history.
 signal display_changed
+signal drop_collected
 
 var _wallet: Dictionary = {}
 var _drops: Dictionary = {}
@@ -330,6 +331,7 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 	_income_dirty = true
 	_balance_dirty = true
 	if notify: display_changed.emit()
+	drop_collected.emit()
 	return {"ok": true, "amount": quantity, "resource": resource}
 
 func collect_due(wall: float, game: float, force: bool = false, income_factors: Dictionary = {}, notify: bool = true) -> Dictionary:

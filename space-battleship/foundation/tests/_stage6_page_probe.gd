@@ -3,6 +3,7 @@ extends SceneTree
 const NotificationsPanel = preload("res://src/ui/notifications_panel.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
 const PlayerSettings = preload("res://foundation/host/player_settings.gd")
+const Session = preload("res://src/game_session.gd")
 
 func _initialize() -> void:
 	var loaded = GDExtensionManager.load_extension(OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION"))
@@ -30,6 +31,13 @@ func _find_autosave(node: Node) -> SpinBox:
 	if node is SpinBox and node.suffix.begins_with(" seconds between saves"): return node
 	for child in node.get_children():
 		var found: SpinBox = _find_autosave(child)
+		if found != null: return found
+	return null
+
+func _find_guidance_skip(node: Node) -> CheckBox:
+	if node is CheckBox and node.text == "自动跳过引导提示": return node
+	for child in node.get_children():
+		var found: CheckBox = _find_guidance_skip(child)
 		if found != null: return found
 	return null
 
@@ -78,6 +86,30 @@ func _run() -> void:
 		printerr("saved autosave setting was not shown")
 		quit(1)
 		return
+	var guidance_button: Button = _find_button(main, "继续游戏")
+	var guidance_skip: CheckBox = _find_guidance_skip(main)
+	if guidance_button == null or guidance_skip == null:
+		printerr("guidance controls missing")
+		quit(1)
+		return
+	main._sync_guidance()
+	if not main.session.pause_reasons.has("unlock") or not main._guidance_panel.visible:
+		printerr("unlock guidance did not hold its pause reason")
+		quit(1)
+		return
+	main.session.set_pause("user", true)
+	guidance_button.pressed.emit()
+	if not main.session.pause_reasons.has("user"):
+		printerr("guidance release cleared user pause")
+		quit(1)
+		return
+	main.session.set_pause("user", false)
+	guidance_skip.button_pressed = true
+	for index in 10: main._sync_guidance()
+	if not PlayerSettings.load_interval().auto_skip_tutorial or main.session.pause_reasons.has("unlock") or main.session.notifications.unread("unlock") == 0:
+		printerr("guidance skip did not persist or release")
+		quit(1)
+		return
 	autosave_control.value = 25.0
 	if main._autosave_interval != 25.0 or PlayerSettings.load_interval().get("interval") != 25:
 		printerr("autosave setting did not persist outside gameplay save")
@@ -101,7 +133,7 @@ func _run() -> void:
 		return
 	main.session.set_pause("unlock", false)
 	main.growth_panel.visible = true
-	var back_button: Button = _find_button(main, "Return to battle")
+	var back_button: Button = _find_button(main, "返回战斗")
 	if back_button == null:
 		printerr("growth panel return control missing")
 		quit(1)
@@ -331,5 +363,86 @@ func _run() -> void:
 		printerr("failed replacement save retry: ", result, " ", main.save_state_label.text)
 		quit(1)
 		return
+	var gameplay = main.session
+	var weapon_slot: String = ""
+	for slot in gameplay.equipment.save_state().slots:
+		if slot.category == "weapon" and not str(slot.equipment_id).is_empty():
+			weapon_slot = str(slot.id)
+			break
+	if weapon_slot.is_empty():
+		printerr("no equipped weapon for tutorial probe")
+		quit(1)
+		return
+	var rejected_equip: Dictionary = gameplay.equipment.equip_slot(weapon_slot, "laser", gameplay.equipment_inputs(), gameplay.publish_equipment_refit)
+	if rejected_equip.ok or gameplay.tutorial.completed("equip"):
+		printerr("rejected equipment action advanced tutorial: ", rejected_equip)
+		quit(1)
+		return
+	var equipped: Dictionary = gameplay.equipment.equip_slot(weapon_slot, "", gameplay.equipment_inputs(), gameplay.publish_equipment_refit)
+	if not equipped.ok or not gameplay.tutorial.completed("equip"):
+		printerr("accepted equipment action missing from tutorial: ", equipped)
+		quit(1)
+		return
+	var quoted: Dictionary = gameplay.equipment.quote_slot(weapon_slot, 1)
+	if not quoted.ok:
+		printerr("tutorial upgrade quote failed: ", quoted)
+		quit(1)
+		return
+	var funded: Dictionary = gameplay.economy.budget().duplicate()
+	for resource in quoted.costs: funded[resource] = gameplay.amount_api.apply("from_decimal", ["1e40"]).value
+	gameplay.economy.accept_budget(funded)
+	var upgraded: Dictionary = gameplay.equipment.buy_levels(weapon_slot, 1, gameplay.equipment_inputs(),
+		func(costs, balances): return gameplay.economy.payment(costs, balances), gameplay.publish_equipment_levels)
+	if not upgraded.ok or not gameplay.tutorial.completed("upgrade"):
+		printerr("paid upgrade missing from tutorial: ", upgraded)
+		quit(1)
+		return
+	if gameplay.tutorial.completed("pickup"):
+		printerr("pickup tutorial advanced without income")
+		quit(1)
+		return
+	var timed: Dictionary = gameplay.economy.advance_timed(30.0, true,
+		func(): return gameplay.amount_api.apply("from_decimal", ["1"]),
+		Vector2(280, 10), 800.0, gameplay.wall_time, gameplay.game_time, gameplay._income_factors)
+	if not timed.ok:
+		printerr("timed pickup fixture failed: ", timed)
+		quit(1)
+		return
+	for marker in gameplay.economy.drop_markers():
+		var collected: Dictionary = gameplay.economy.collect_at(Vector2(float(marker.x), float(marker.y)),
+			gameplay.wall_time, gameplay.game_time, gameplay._income_factors)
+		if not collected.ok:
+			printerr("manual pickup failed: ", collected)
+			quit(1)
+			return
+		break
+	if not gameplay.tutorial.completed("pickup"):
+		printerr("credited pickup missing from tutorial")
+		quit(1)
+		return
+	main._skip_tutorial = false
+	main._sync_guidance()
+	if not gameplay.pause_reasons.has("tutorial") or not main._guidance_panel.visible:
+		printerr("completed tutorial event did not hold pause")
+		quit(1)
+		return
+	gameplay.set_pause("user", true)
+	guidance_button = _find_button(main, "继续游戏")
+	guidance_button.pressed.emit()
+	if not gameplay.pause_reasons.has("user"):
+		printerr("tutorial dismissal cleared user pause")
+		quit(1)
+		return
+	gameplay.set_pause("user", false)
+	main._skip_tutorial = true
+	main._sync_guidance()
+	result = gameplay.request_save()
+	if result.ok: result = gameplay.save_files.close(2000)
+	var tutorial_loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory)
+	if not result.ok or not tutorial_loaded.ok or not tutorial_loaded.session.tutorial.completed("equip") or not tutorial_loaded.session.tutorial.completed("upgrade") or not tutorial_loaded.session.tutorial.completed("pickup"):
+		printerr("tutorial progress did not persist: ", result, " ", tutorial_loaded)
+		quit(1)
+		return
+	tutorial_loaded.session.save_files.close(2000)
 	print("STAGE6_PAGE_PROBE_OK")
 	quit(0)

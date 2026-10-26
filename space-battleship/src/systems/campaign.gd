@@ -4,6 +4,7 @@ const CombatSetup = preload("res://src/combat_setup.gd")
 signal progress_changed
 signal ship_changed
 signal status_changed
+signal retreat_started
 
 var _levels: Dictionary = {}
 var _groups: Dictionary = {}
@@ -462,6 +463,7 @@ func _begin_death_retreat(clear_locks: Callable) -> void:
 	clear_locks.call()
 	_battle.begin_death_retreat()
 	_state.state = "retreat"
+	retreat_started.emit()
 	status_changed.emit()
 
 func retreat_if_dead(clear_locks: Callable) -> void:
