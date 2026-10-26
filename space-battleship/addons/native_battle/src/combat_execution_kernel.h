@@ -1278,9 +1278,9 @@ class SpaceCombatKernel : public RefCounted {
         if (amount <= 0)
             return;
         int portions = maximum(1, int(ceil_number(deferred_duration / deferred_interval)));
-        int64_t first =
-            maximum(deferred_tick + 1,
-                     int64_t(ceil_number((defence_time + deferred_interval - 1e-9) / deferred_interval)));
+        // deferred_tick names the last settled global tick. A hit between ticks
+        // begins paying at the next tick, including when it lands just before it.
+        int64_t first = deferred_tick + 1;
         Amount unit = amount / portions, remaining = amount;
         for (int i = 0; i < portions; ++i) {
             Amount part = i == portions - 1 ? remaining : minimum(unit, remaining);

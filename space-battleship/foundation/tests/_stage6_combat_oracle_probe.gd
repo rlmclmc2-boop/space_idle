@@ -132,6 +132,7 @@ func _run() -> void:
 	if not ready.ok:
 		_fail("C13 unarmed death fixture: " + str(ready))
 		return
+	shield_session.campaign_system.consume_departure(100.0)
 	shield_session._start_wave()
 	var retreat_count: int = 0
 	for step in 2400:
@@ -143,6 +144,21 @@ func _run() -> void:
 			break
 	if retreat_count != 1 or shield_session.battle._kernel.player_view().shield != "0e0":
 		_fail("C13 shield depletion did not begin one retreat: " + str(shield_session.campaign_system.restore_checkpoint()) + " " + str(shield_session.battle._kernel.player_view()))
+		return
+	var retreat_target: float = float(shield_session.campaign_system.save_state().retreat_to)
+	var retreat_finished: bool = false
+	for step in 300:
+		shield_session.frame(1.0 / 60.0, true)
+		if not shield_session.run_state.is_running():
+			_fail("C13 retreat advance stopped: " + shield_session.run_state.reason())
+			return
+		if shield_session.campaign_system.restore_checkpoint() != "retreat":
+			retreat_finished = true
+			break
+	if not retreat_finished or shield_session.campaign_system.restore_checkpoint() != "travel" or \
+			not is_equal_approx(shield_session.campaign_system._global_position(), retreat_target) or \
+			shield_session.battle.defence_depleted():
+		_fail("C13 retreat destination/recovery: " + str(shield_session.campaign_system.save_state()) + " " + str(shield_session.battle._kernel.player_view()))
 		return
 	var multi_slot = Session.new()
 	ready = multi_slot.initialize("res://generated/config.json", 29)
@@ -181,5 +197,5 @@ func _run() -> void:
 	if str(defence.armour) != "0e0" or float(defence.max_armour) <= 0.0 or float(defence.shield) <= 0.0 or multi_slot.battle.defence_depleted():
 		_fail("C14 current-zero armour incorrectly killed shielded player: " + str(defence))
 		return
-	print("STAGE6_COMBAT_ORACLE_OK C01 shield=30 armour=40 precontact=0; single death/drop=1; C13 shield-only sortie/depletion; C14 partial current-zero armour; C15 first/second-slot refit")
+	print("STAGE6_COMBAT_ORACLE_OK C01 shield=30 armour=40 precontact=0; single death/drop=1; C13 shield-only sortie/depletion/return; C14 partial current-zero armour; C15 first/second-slot refit")
 	quit()
