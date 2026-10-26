@@ -19,6 +19,9 @@ var _overlay: Node2D
 var growth_panel: PanelContainer
 var growth_status: Label
 var _pending_import: Dictionary = {}
+var _pending_reforge: Dictionary = {}
+var _autosave_interval: float = 0.0
+var _next_autosave_wall: float = 0.0
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -51,8 +54,8 @@ func _show_session() -> void:
 	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 	_setup_growth_panel()
 
-func _load_saved(directory: String) -> Dictionary:
-	var loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory)
+func _load_saved(directory: String, backup: bool = false) -> Dictionary:
+	var loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory, backup)
 	if not loaded.ok: return loaded
 	return _replace_session(loaded.session)
 
@@ -78,16 +81,45 @@ func _replace_session(replacement) -> Dictionary:
 		if not closed.ok: return closed
 	for child in get_children(): child.queue_free()
 	session = replacement
+	_pending_import = {}
+	_pending_reforge = {}
+	_next_autosave_wall = session.wall_time + _autosave_interval
 	_overlay = null
 	growth_panel = null
 	_show_session()
 	var persisted: Dictionary = session.request_save()
 	return {"ok": true, "persistence_pending": not persisted.ok}
 
+func _preview_reforge(directory: String, planet_id: String, ids_text: String) -> Dictionary:
+	_pending_reforge = {}
+	var ids: Array = []
+	for id in ids_text.split(",", false):
+		ids.append(id.strip_edges())
+	var preview: Dictionary = session.prepare_reforge(planet_id, ids, directory)
+	if not preview.ok: return preview
+	_pending_reforge = {"session": preview.session, "directory": directory,
+		"planet": planet_id, "ids": ids_text}
+	session.set_pause("reforge", true)
+	return {"ok": true, "message": preview.summary.message}
+
+func _confirm_reforge(directory: String, planet_id: String, ids_text: String) -> Dictionary:
+	if _pending_reforge.is_empty() or _pending_reforge.directory != directory or _pending_reforge.planet != planet_id or _pending_reforge.ids != ids_text:
+		return {"ok": false, "reason": "ReforgePreviewRequired"}
+	return _replace_session(_pending_reforge.session)
+
+func _cancel_reforge() -> Dictionary:
+	_pending_reforge = {}
+	session.set_pause("reforge", false)
+	return {"ok": true}
+
 func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
 		if session.save_files != null: session.save_files.poll()
+		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
+			_next_autosave_wall = session.wall_time + _autosave_interval
+			var saved: Dictionary = session.request_save()
+			if not saved.ok and growth_status != null: growth_status.text = str(saved.get("error", saved.get("reason", "SaveFailed")))
 	if _overlay != null: _overlay.queue_redraw()
 	queue_redraw()
 
@@ -125,6 +157,9 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(func():
 		if not session.run_state.is_running():
 			growth_status.text = session.run_state.reason()
+			return
+		if not _pending_reforge.is_empty() and text not in ["Confirm reforge", "Cancel reforge"]:
+			growth_status.text = "请先确认或取消重铸"
 			return
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
@@ -170,12 +205,32 @@ func _setup_growth_panel() -> void:
 	box.add_child(HyperspacePanel.new(session, _command_button))
 	var save_path := LineEdit.new()
 	save_path.placeholder_text = "Existing absolute save directory"
+	if session.save_files != null: save_path.text = session.save_files._directory
 	box.add_child(save_path)
+	var speed_options := OptionButton.new()
+	for option in session.chrono_speed_options():
+		speed_options.add_item("%sx · %s chrono/s" % [option.speed, option.cost], int(option.speed))
+		if int(option.speed) == session.current_chrono_speed(): speed_options.select(speed_options.item_count - 1)
+	speed_options.item_selected.connect(func(index: int):
+		session.set_chrono_speed(speed_options.get_item_id(index)))
+	box.add_child(speed_options)
 	_command_button(box, "Save", func() -> Dictionary:
 		var configured: Dictionary = session.configure_save_directory(save_path.text)
 		return session.request_save() if configured.ok else configured)
-	_command_button(box, "Load", func() -> Dictionary:
+	var autosave := SpinBox.new()
+	autosave.min_value = 0.0
+	autosave.max_value = 86400.0
+	autosave.step = 1.0
+	autosave.suffix = " seconds between saves (0 = off)"
+	autosave.value = _autosave_interval
+	box.add_child(autosave)
+	autosave.value_changed.connect(func(value: float):
+		_autosave_interval = value
+		_next_autosave_wall = session.wall_time + value)
+	_command_button(box, "Load primary", func() -> Dictionary:
 		return _load_saved(save_path.text))
+	_command_button(box, "Load backup", func() -> Dictionary:
+		return _load_saved(save_path.text, true))
 	var import_path := LineEdit.new()
 	import_path.placeholder_text = "Envelope JSON file to import"
 	box.add_child(import_path)
@@ -183,3 +238,14 @@ func _setup_growth_panel() -> void:
 		return _preview_import(save_path.text, import_path.text))
 	_command_button(box, "Confirm import", func() -> Dictionary:
 		return _apply_import(save_path.text, import_path.text))
+	var planet_id := LineEdit.new()
+	planet_id.placeholder_text = "Planet ID for reforge"
+	box.add_child(planet_id)
+	var retained_ids := LineEdit.new()
+	retained_ids.placeholder_text = "Drone IDs to retain, comma separated"
+	box.add_child(retained_ids)
+	_command_button(box, "Preview reforge", func() -> Dictionary:
+		return _preview_reforge(save_path.text, planet_id.text, retained_ids.text))
+	_command_button(box, "Confirm reforge", func() -> Dictionary:
+		return _confirm_reforge(save_path.text, planet_id.text, retained_ids.text))
+	_command_button(box, "Cancel reforge", _cancel_reforge)

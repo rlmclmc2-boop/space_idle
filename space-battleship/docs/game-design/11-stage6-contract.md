@@ -35,14 +35,14 @@
 
 ## 2026-10-26 续接交接（未达到合入门槛）
 
-本次把模块快照、`StateCodec`、`GameSession.save_payload/request_save/load_candidate/import_candidate` 和主场景保存、加载、导入预览接上。候选失败会保留当前会话；战斗 checkpoint 在新 native 核重开波次，Started 手动超空间按中断失败返回主线。离线微粒走当前 Excel 的 offlineMax/rate，按余额容量截断。探针已实跑：文件 A/B 探针、离港与战斗 checkpoint 往返、错误装备 ID 的候选拒绝、显式 Envelope 导入、12 小时微粒上限。此范围只是功能骨架，尚不能据此宣称第 6 阶段完成。
+本次把模块快照、`StateCodec`、`GameSession.save_payload/request_save/load_candidate/import_candidate` 和主场景保存、加载、导入预览接上。候选失败会保留当前会话；战斗 checkpoint 在新 native 核重开波次，Started 手动超空间按中断失败返回主线。离线微粒走当前 Excel 的 offlineMax/rate，按余额容量截断。整局重铸候选已接入 Planet 船坞门槛、保留无人机选择、保留/清零矩阵和确认替换。探针已实跑：文件 A/B 探针、离港与战斗 checkpoint 往返、错误装备 ID/非法 Amount/重复船员占用的候选拒绝、显式 Envelope 导入、12 小时微粒上限、空保留重铸往返、一架合成无人机封存及失败不改变原会话。此范围仍不能据此宣称第 6 阶段完成。
 
 ### 完整剩余清单
 
 1. **模块校验**：逐字段校验 Economy 待领掉落/收入样本、Research 进度与需求金额、Planet/Galaxy 进度与拓扑、Hyperspace 无人机/回执/随机流/容量/封存及 Campaign checkpoint；消除仅按容器类型接受的状态。验证 Amount 非法值、未知稳定 ID、重复回执、重复船员占用和跨模块引用的候选拒绝，无脚本异常或旧会话变更。
-2. **保存生命周期**：按完整业务方法和固定步记录 changeNumber/dirty，在设置指定的现实时间间隔自动保存；保存已付款待执行时间段及暂停原因/通知；载入后保持已入账与已领取凭据的一次性语义。核查 writer 失败、排队覆盖、关闭超时与登录补偿持久化回执，避免 UI 把内存已替换且落盘失败显示为完全成功。
+2. **保存生命周期**：按完整业务方法和固定步记录 changeNumber/dirty；继续核查设置指定的自动保存间隔、已付款待执行时间段及暂停原因/通知的所有分支；载入后保持已入账与已领取凭据的一次性语义。当前已接 Excel 速度/费用与部分余额耗尽的时间拆分，并探测了余数保存往返。还需核查 writer 失败、排队覆盖、关闭超时与登录补偿持久化回执，避免 UI 把内存已替换且落盘失败显示为完全成功。
 3. **checkpoint**：覆盖选关、航行、清关等待、驻守、撤退、手动超空间中断、在线 Started/CompletedPending、未领 DropId；实证新核满防御、无旧弹体/延期伤害，历史、随机和 actor ID 水位连续。
 4. **导入**：对导入源实行完整 Envelope/schema/hash/大小及备份策略；预览保留/覆盖摘要、拒绝原因和保存失败后的重试提示；实测旧会话回滚边界与离线微粒只发一次。当前界面只有绝对路径文本输入和摘要。
-5. **整局重铸**：由 Planet 验证开放且 shipyard built、未 conquered；用同一候选计算生成用户确认预览，按 03 §7 和 04 §7 复制/清零所有领域、保留选中无人机并封存、累计轮次和起点授予集，构造全新 GameSession；仅完整校验后替换并申请保存。现有 Hyperspace.prepare_reforge/accept_reforge 仍只是局部端口。
-6. **页面/入口**：完成保存目录选择、载入主备选择、导入文件选择及完整摘要、重铸预览确认、dirty/失败/未读提示、暂停/返回场景与页面重接；审查旧脚本/旧编辑器引用及不再使用的入口。
+5. **整局重铸复验**：用真实完成船坞的多轮状态核查 03 §7 与 04 §7 的每一项保留/清零、非空无人机封存与领取、累计轮次、起点授予集、岗位释放、旧回执失效及新关奖励；确认预览和替换来自同一候选。当前探针只有人为搭建的首星球船坞与一架合成无人机封存。
+6. **页面/入口**：完成保存目录选择、载入主备选择、导入文件选择及完整摘要、dirty/失败/未读提示、暂停/返回场景与页面重接。现有页面为绝对路径文本输入、导入和重铸预览确认、速度/自动保存间隔控件；`git grep` 核查 src/foundation/run_game.ps1 未见 `game.gd`、`level_editor`、`fleet_battle_runner`、`balance_sim` 引用，仍需游戏内点击烟测。
 7. **验收**：07 章 S01–S06、H06、U01 的正式 native/GameSession fixture 与页面烟测；前阶段延期的配置负例、C01–C12/CR01–CR09、GPU/逻辑一致性及性能记录。重建当前 native 并运行 Amount/C++ 检查、Godot check-only 和 diff 检查；现用 DLL/GDExtension 仅为本地测试产物，不入库。全部通过后才请审合 main。

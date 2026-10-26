@@ -21,6 +21,26 @@ var _api
 func save_state() -> Dictionary:
 	return {"planets": _state.duplicate(true)}
 
+func prepare_reforge(id: String) -> Dictionary:
+	if not _definitions.has(id) or not _available.get(id, false):
+		return {"ok": false, "reason": "PlanetLocked"}
+	var planet: Dictionary = _state[id]
+	if planet.conquered: return {"ok": false, "reason": "PlanetAlreadyConquered"}
+	var shipyard: bool = false
+	for key in planet.buildings:
+		if _buildings[key].type == "shipyard" and planet.buildings[key].state == "built":
+			shipyard = true
+	if not shipyard: return {"ok": false, "reason": "ShipyardRequired"}
+	return {"ok": true, "planet": id, "start": int(_definitions[id].reforgeStartLevel)}
+
+func accept_reforge(id: String) -> Dictionary:
+	var prepared: Dictionary = prepare_reforge(id)
+	if not prepared.ok: return prepared
+	_state[id].conquered = true
+	_factors = {}
+	_refresh_available(false)
+	return {"ok": true}
+
 func restore_state(state: Dictionary) -> Dictionary:
 	if not state.get("planets") is Dictionary or state.planets.size() != _definitions.size():
 		return {"ok": false, "reason": "InvalidPlanetState"}

@@ -67,6 +67,34 @@ func validate_assignments(target_admission: Callable, auto: Dictionary) -> Dicti
 		return {"ok": false, "reason": "InvalidHyperspaceCrew"}
 	return {"ok": true}
 
+func retain_reforge_assignments(target_admission: Callable) -> Dictionary:
+	var occupancy: Dictionary = {}
+	var released_planets: Array = []
+	for id in _members:
+		var member: Dictionary = _members[id]
+		var kind: String = str(member.kind)
+		var target: String = str(member.target)
+		if kind.is_empty(): continue
+		var capacity: int = 0
+		if _available.get(id, false):
+			if kind == "system_job" and _jobs.has(target) and _jobs[target].targetType != "galaxy":
+				capacity = int(_jobs[target].maxCrew)
+			elif kind in ["planet_explore", "planet_build", "galaxy"]:
+				var admitted: Dictionary = target_admission.call(kind, target)
+				if admitted.ok:
+					capacity = int(_jobs.galaxy_explore.maxCrew) if kind == "galaxy" else int(admitted.capacity)
+		var key: String = kind + ":" + target
+		if capacity > int(occupancy.get(key, 0)):
+			occupancy[key] = int(occupancy.get(key, 0)) + 1
+			continue
+		if kind == "planet_explore": released_planets.append(target)
+		member.kind = ""
+		member.target = ""
+		member.elapsed = 0.0
+	_factors = {}
+	_dirty_jobs = FACTOR_JOBS.keys()
+	return {"ok": true, "released_planets": released_planets}
+
 func _init(rows: Array, rules: Array, jobs: Array, api, run_state) -> void:
 	_run_state = run_state
 	for row in rows: _definitions[str(row.id)] = row

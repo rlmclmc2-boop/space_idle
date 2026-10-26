@@ -51,6 +51,8 @@ var _session_id: String = ""
 var _change_number: int = 0
 var _offline_max_hours: int = 0
 var _chrono_rate: String = "0"
+var _chrono_speed: int = 1
+var _chrono_costs: Dictionary = {}
 var save_files
 
 func _init() -> void:
@@ -75,6 +77,12 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, s
 		parameters[str(row.name)] = row.para_1
 	_offline_max_hours = int(parameters.offlineMax)
 	_chrono_rate = str(parameters.chronoParticlesPerSecond)
+	for entry in str(parameters.chronoSpeeds).split(","):
+		var columns: PackedStringArray = entry.split("|")
+		if columns.size() != 2: return _fail("InvalidChronoConfiguration")
+		_chrono_costs[int(columns[0])] = int(columns[1])
+	if not _chrono_costs.has(1) or int(_chrono_costs[1]) != 0:
+		return _fail("InvalidChronoConfiguration")
 	for row in configuration.game_rules.game_rules:
 		rules[str(row.id)] = row.value
 	campaign_system = Campaign.new(configuration, parameters, rules, run_state)
@@ -145,7 +153,7 @@ func _restore_modules(saved: Dictionary) -> Dictionary:
 	var modules: Dictionary = saved.modules
 	var campaign = campaign_system.restore_state(modules.get("campaign", {}))
 	if not campaign.ok: return campaign
-	equipment.refresh_availability(campaign_system.available, int(campaign_system.progress_facts().highest_reached), false)
+	equipment.refresh_availability(campaign_system.available, int(campaign_system.progress_facts().cycle_reached), false)
 	var ports: Array = [
 		[economy, "economy"], [equipment, "equipment"], [enhancement, "enhancement"],
 		[reactor_system, "reactor"], [research, "research"], [crew_system, "crew"],
@@ -161,10 +169,18 @@ func _restore_modules(saved: Dictionary) -> Dictionary:
 	for key in ["wall", "game", "pending"]:
 		if not times.get(key) is float or not is_finite(times[key]) or times[key] < 0.0:
 			return {"ok": false, "reason": "InvalidSessionClock"}
+	if not times.get("speed", 1) is int or not _chrono_costs.has(times.get("speed", 1)):
+		return {"ok": false, "reason": "InvalidChronoSpeed"}
 	wall_time = times.wall
 	game_time = times.game
 	pending_seconds = times.pending
-	pause_reasons = {}
+	_chrono_speed = times.get("speed", 1)
+	var reasons = saved.get("pause_reasons", {})
+	if not reasons is Dictionary: return {"ok": false, "reason": "InvalidPauseState"}
+	for key in reasons:
+		if not key is String or key.is_empty() or reasons[key] != true:
+			return {"ok": false, "reason": "InvalidPauseState"}
+	pause_reasons = reasons.duplicate()
 	reactor_system.refresh_availability(campaign_system.available, false)
 	research.refresh_progress(campaign_system.available, false)
 	crew_system.refresh_availability(campaign_system.available, false)
@@ -176,8 +192,12 @@ func save_payload() -> Dictionary:
 	if not run_state.is_running() or battle == null: return run_state.rejection()
 	var native: Dictionary = battle.persistent_state()
 	if not native.ok: return native
+	var reasons: Dictionary = pause_reasons.duplicate()
+	reasons.erase("reforge")
 	var snapshot: Dictionary = {"seed": _combat_seed, "native": native.state,
-		"times": {"wall": wall_time, "game": game_time, "pending": pending_seconds},
+		"times": {"wall": wall_time, "game": game_time, "pending": pending_seconds,
+			"speed": _chrono_speed},
+		"pause_reasons": reasons,
 		"modules": {"campaign": campaign_system.save_state(), "economy": economy.save_state(),
 			"equipment": equipment.save_state(), "enhancement": enhancement.save_state(),
 			"reactor": reactor_system.save_state(), "research": research.save_state(),
@@ -207,15 +227,11 @@ func request_save() -> Dictionary:
 	return save_files.request(snapshot.payload, str(_change_number), _session_id,
 		str(int(Time.get_unix_time_from_system())), config_hash)
 
-static func load_candidate(path: String, directory: String) -> Dictionary:
-	var failure: Dictionary = {"ok": false, "reason": "InvalidSaveStore"}
-	for pointer in ["active.json", "previous.json"]:
-		var stored: Dictionary = SaveFiles.read_pointer(directory, pointer)
-		if not stored.ok: continue
-		var built: Dictionary = _candidate_from_envelope(path, directory, stored.envelope)
-		if built.ok: return built
-		failure = built
-	return failure
+static func load_candidate(path: String, directory: String, backup: bool = false) -> Dictionary:
+	var pointer: String = "previous.json" if backup else "active.json"
+	var stored: Dictionary = SaveFiles.read_pointer(directory, pointer)
+	if not stored.ok: return {"ok": false, "reason": "InvalidBackup" if backup else "InvalidPrimarySave"}
+	return _candidate_from_envelope(path, directory, stored.envelope)
 
 static func import_candidate(path: String, directory: String, source_file: String) -> Dictionary:
 	var file: FileAccess = FileAccess.open(source_file, FileAccess.READ)
@@ -252,9 +268,70 @@ static func _candidate_from_envelope(path: String, directory: String, envelope: 
 	var configured: Dictionary = candidate.configure_save_directory(directory)
 	if not configured.ok: return configured
 	return {"ok": true, "session": candidate,
-		"summary": {"stage": candidate.campaign_system.progress_facts().highest_reached,
+		"summary": {"stage": candidate.campaign_system.progress_facts().cycle_reached,
 			"ship": candidate.campaign_system.selected_ship(),
 			"generation": envelope.generation, "savedUtc": envelope.savedUtc}}
+
+func prepare_reforge(planet_id: String, retained_ids: Array, directory: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var planet_offer: Dictionary = planet_system.prepare_reforge(planet_id)
+	if not planet_offer.ok: return planet_offer
+	var drones: Dictionary = hyperspace_system.prepare_reforge(retained_ids)
+	if not drones.ok: return drones
+	if not DirAccess.dir_exists_absolute(directory):
+		return {"ok": false, "reason": "SaveDirectoryRequired"}
+	var candidate = load("res://src/game_session.gd").new()
+	var ready: Dictionary = candidate.initialize(_configuration_path, _combat_seed)
+	if not ready.ok: return ready
+	ready = candidate.campaign_system.accept_reforge(campaign_system.save_state(), planet_offer.start)
+	if not ready.ok: return ready
+	var old_wallet: Dictionary = economy.budget()
+	var retained_wallet: Dictionary = {}
+	for resource in ["1", "2", "chrono"]:
+		if old_wallet.has(resource): retained_wallet[resource] = old_wallet[resource].duplicate(true)
+	candidate.economy.accept_budget(retained_wallet, false)
+	ready = candidate.crew_system.restore_state(crew_system.save_state())
+	if not ready.ok: return ready
+	ready = candidate.planet_system.restore_state(planet_system.save_state())
+	if not ready.ok: return ready
+	ready = candidate.galaxy_system.restore_state(galaxy_system.save_state())
+	if not ready.ok: return ready
+	ready = candidate.hyperspace_system.restore_state(hyperspace_system.save_state())
+	if not ready.ok: return ready
+	ready = candidate.hyperspace_system.accept_reforge(drones.retained)
+	if not ready.ok: return ready
+	candidate.equipment.refresh_availability(candidate.campaign_system.available, planet_offer.start, false)
+	candidate.reactor_system.refresh_availability(candidate.campaign_system.available, false)
+	candidate.research.refresh_progress(candidate.campaign_system.available, false)
+	candidate.crew_system.refresh_availability(candidate.campaign_system.available, false)
+	candidate.planet_system.refresh_availability(candidate.campaign_system.available, false)
+	candidate.galaxy_system.refresh_availability(candidate.campaign_system.available, candidate.campaign_system.progress_facts().cleared_stages, false)
+	ready = candidate.planet_system.accept_reforge(planet_id)
+	if not ready.ok: return ready
+	var occupations: Dictionary = candidate.crew_system.retain_reforge_assignments(candidate.assignment_admission)
+	for id in occupations.released_planets:
+		candidate.planet_system.set_explorer(id, false, false)
+	ready = candidate.crew_system.validate_assignments(candidate.assignment_admission, candidate.hyperspace_system.online_status().auto)
+	if not ready.ok: return ready
+	candidate._planet_factors = candidate.planet_system.contributions()
+	candidate._crew_factors = candidate.crew_system.contributions()
+	candidate._galaxy_factors = candidate.galaxy_system.contributions()
+	candidate._world_factors = {}
+	candidate._world_factors = candidate._world_contributions()
+	if not candidate._world_factors.ok: return candidate._world_factors
+	ready = candidate.publish_equipment_refit(candidate.economy.budget(), "refit", "", null, false)
+	if not ready.ok: return ready
+	ready = candidate.campaign_system.start_sortie(planet_offer.start, candidate.equipment.clear_switch_locks)
+	if not ready.ok: return ready
+	ready = candidate.configure_save_directory(directory)
+	if not ready.ok: return ready
+	return {"ok": true, "session": candidate,
+		"summary": {"planet": planet_id, "start": planet_offer.start,
+			"retained": retained_ids.duplicate(), "wallet": retained_wallet.duplicate(true),
+			"round": candidate.hyperspace_system.warehouse().reforge_count,
+			"reset": "普通配装、强化、反应炉、研究、强化碎片、专用材料、本轮超空间状态及战场",
+			"message": "重铸至关卡 %s（第 %s 轮），保留 %s 架无人机、铁/铀/微粒余额、船员、星球与星系进度；重置普通配装、强化、反应炉、研究、强化碎片、专用材料、本轮超空间状态及战场。确认后替换。" % [
+				planet_offer.start, candidate.hyperspace_system.warehouse().reforge_count, retained_ids.size()]}}
 
 func set_pause(reason: String, held: bool) -> void:
 	if not run_state.is_running(): return
@@ -263,7 +340,48 @@ func set_pause(reason: String, held: bool) -> void:
 	else:
 		pause_reasons.erase(reason)
 
-func frame(real_dt: float, _focused: bool) -> void:
+func set_chrono_speed(speed: int) -> Dictionary:
+	if not _chrono_costs.has(speed): return {"ok": false, "reason": "InvalidChronoSpeed"}
+	_chrono_speed = speed
+	return {"ok": true}
+
+func chrono_speed_options() -> Array:
+	var options: Array = []
+	for speed in _chrono_costs:
+		options.append({"speed": speed, "cost": _chrono_costs[speed]})
+	options.sort_custom(func(a, b): return a.speed < b.speed)
+	return options
+
+func current_chrono_speed() -> int:
+	return _chrono_speed
+
+func _accept_real_time(seconds: float, focused: bool) -> Dictionary:
+	var speed: int = _chrono_speed if focused else 1
+	var cost: int = int(_chrono_costs[speed])
+	if cost == 0: return {"ok": true, "accepted": seconds}
+	var rate: Dictionary = amount_api.apply("from_decimal", [str(cost)])
+	var requested: Dictionary = amount_api.apply("from_decimal", [str(seconds * cost)])
+	if not rate.ok or not requested.ok: return {"ok": false, "reason": "ChronoAmountFailed"}
+	var zero: Dictionary = amount_api.apply("zero", []).value
+	var balance: Dictionary = economy.budget().get("chrono", zero)
+	var compared: Dictionary = amount_api.apply("compare", [balance, requested.value])
+	if not compared.ok: return compared
+	var accelerated: float = seconds
+	var charged: Dictionary = requested.value
+	if compared.scalar < 0:
+		var duration: Dictionary = amount_api.apply("div", [balance, rate.value])
+		if not duration.ok: return duration
+		var one: Dictionary = amount_api.apply("from_decimal", ["1"]).value
+		var ratio: Dictionary = amount_api.apply("to_ratio", [duration.value, one])
+		if not ratio.ok: return ratio
+		accelerated = clampf(float(ratio.scalar), 0.0, seconds)
+		charged = balance
+	var paid: Dictionary = economy.payment({"chrono": charged})
+	if not paid.ok: return paid
+	economy.accept_budget(paid.wallet, false)
+	return {"ok": true, "accepted": accelerated * float(speed) + (seconds - accelerated)}
+
+func frame(real_dt: float, focused: bool) -> void:
 	if not run_state.is_running(): return
 	if battle != null: battle.begin_frame()
 	if battle == null or not is_finite(real_dt) or real_dt < 0:
@@ -271,8 +389,12 @@ func frame(real_dt: float, _focused: bool) -> void:
 	wall_time += real_dt
 	if not pause_reasons.is_empty():
 		return
-	var accepted: float = campaign_system.consume_departure(real_dt)
-	pending_seconds += accepted
+	var available: float = campaign_system.consume_departure(real_dt)
+	var accepted: Dictionary = _accept_real_time(available, focused)
+	if not accepted.ok:
+		_fail(str(accepted.get("error", accepted.get("reason", "ChronoAcceptanceFailed"))))
+		return
+	pending_seconds += accepted.accepted
 	var steps: int = 0
 	while pending_seconds >= STEP and steps < FRAME_STEPS and not campaign_system.departure_active() and pause_reasons.is_empty() and run_state.is_running():
 		pending_seconds -= STEP
@@ -388,7 +510,7 @@ func start_hyperspace_manual(route: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var progress: Dictionary = campaign_system.progress_facts()
 	var target: Dictionary = campaign_system.hyperspace_return_target()
-	var prepared: Dictionary = hyperspace_system.prepare_manual(route, int(progress.highest_reached), target, float(_planet_factors.luck))
+	var prepared: Dictionary = hyperspace_system.prepare_manual(route, int(progress.cycle_reached), target, float(_planet_factors.luck))
 	if not prepared.ok: return prepared
 	if not settle_final_collection(): return run_state.rejection()
 	equipment.clear_switch_locks()
@@ -462,7 +584,7 @@ func _hyperspace_credit(reward: Dictionary) -> Dictionary:
 
 func start_hyperspace_single(route: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().highest_reached)):
+	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().cycle_reached)):
 		return {"ok": false, "reason": "HyperspaceLocked"}
 	var prepared: Dictionary = hyperspace_system.prepare_idle(route, false, "", 0, float(_planet_factors.luck))
 	if not prepared.ok: return prepared
@@ -472,7 +594,7 @@ func start_hyperspace_single(route: String) -> Dictionary:
 func start_hyperspace_auto(route: String, crew_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	if hyperspace_system.online_status().auto.enabled: return {"ok": false, "reason": "AutoRunning"}
-	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().highest_reached)):
+	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().cycle_reached)):
 		return {"ok": false, "reason": "HyperspaceLocked"}
 	var crew: Dictionary = crew_system.hyperspace_candidate(crew_id)
 	if not crew.ok: return crew
@@ -756,7 +878,7 @@ func _prepare_drone_growth(ai: Dictionary, reactor: Dictionary, equipment_levels
 
 func preview_hyperspace_forge(id: String, operation: String, args: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	return hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().highest_reached))
+	return hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().cycle_reached))
 
 func forge(id: String, operation: String, args: Dictionary, operation_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
@@ -764,7 +886,7 @@ func forge(id: String, operation: String, args: Dictionary, operation_id: String
 	var fingerprint: String = JSON.stringify({"id": id, "operation": operation, "args": args}, "", true)
 	var repeated: Dictionary = hyperspace_system.forge_repeat(operation_id, fingerprint)
 	if not repeated.is_empty(): return repeated
-	var forecast: Dictionary = hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().highest_reached))
+	var forecast: Dictionary = hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().cycle_reached))
 	if not forecast.ok: return forecast
 	var costs: Dictionary = {}
 	for resource in forecast.costs:
@@ -796,7 +918,7 @@ func save_hyperspace_preset(name: String) -> Dictionary:
 func apply_hyperspace_preset(name: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var prepared: Dictionary = hyperspace_system.prepare_preset(name, int(campaign_system.ship_facts().drone_capacity),
-		int(campaign_system.progress_facts().highest_reached), _hyperspace_weapon_source())
+		int(campaign_system.progress_facts().cycle_reached), _hyperspace_weapon_source())
 	if not prepared.ok: return prepared
 	var hangings: Dictionary = {}
 	for entry in prepared.entries: hangings[str(entry.id)] = entry.hangings
@@ -806,7 +928,7 @@ func apply_hyperspace_preset(name: String) -> Dictionary:
 func set_hyperspace_hangings(id: String, module_ids: Array) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var prepared: Dictionary = hyperspace_system.prepare_hangings(id, module_ids,
-		int(campaign_system.progress_facts().highest_reached))
+		int(campaign_system.progress_facts().cycle_reached))
 	if not prepared.ok: return prepared
 	if id in hyperspace_system.equipped_ids():
 		var loadout: Dictionary = hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
@@ -1091,7 +1213,7 @@ func _publish_progress() -> Dictionary:
 	var facts: Dictionary = campaign_system.progress_facts()
 	var research_changed: bool = research.refresh_progress(campaign_system.available, false)
 	var reactor_changed: bool = reactor_system.refresh_availability(campaign_system.available, false)
-	var equipment_changed: bool = equipment.refresh_availability(campaign_system.available, int(facts.highest_reached), false)
+	var equipment_changed: bool = equipment.refresh_availability(campaign_system.available, int(facts.cycle_reached), false)
 	var crew_changed: bool = crew_system.refresh_availability(campaign_system.available, false)
 	var planet_changed: bool = planet_system.refresh_availability(campaign_system.available, false)
 	var galaxy_changed: bool = galaxy_system.refresh_availability(campaign_system.available, facts.cleared_stages, false)

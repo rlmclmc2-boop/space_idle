@@ -15,6 +15,8 @@ var _rules: Dictionary = {}
 var _parameters: Dictionary = {}
 var _selected_ship: String = ""
 var _next_enemy_uid: int = 0
+var _cycle_reached: int = 1
+var _grants: Dictionary = {}
 var _departure_remaining: float = 0.0
 var _retreat_from: float = 0.0
 var _retreat_to: float = 0.0
@@ -30,6 +32,7 @@ var _guard: Dictionary = {"enabled": false, "stage": 1, "point": 0, "distance": 
 func save_state() -> Dictionary:
 	return {"state": _state.duplicate(true), "guard": _guard.duplicate(true),
 		"selected_ship": _selected_ship, "next_enemy_uid": _next_enemy_uid,
+		"cycle_reached": _cycle_reached, "grants": _grants.duplicate(true),
 		"departure_remaining": _departure_remaining, "retreat_from": _retreat_from,
 		"retreat_to": _retreat_to, "retreat_elapsed": _retreat_elapsed}
 
@@ -50,8 +53,21 @@ func restore_state(saved: Dictionary) -> Dictionary:
 		if not saved.get(key) is float or not is_finite(saved[key]) or saved[key] < 0.0: return {"ok": false, "reason": "InvalidCampaignState"}
 	if not guard.get("enabled") is bool or not guard.get("death_option") is int or guard.death_option < 0 or guard.death_option > 2:
 		return {"ok": false, "reason": "InvalidCampaignGuard"}
+	var cycle: int = int(saved.get("cycle_reached", progress.highest_reached))
+	if cycle < 1 or cycle > progress.highest_reached or progress.stage > cycle or not _levels.has(cycle) or not saved.get("grants", {}) is Dictionary:
+		return {"ok": false, "reason": "InvalidCampaignGrants"}
+	var grants: Dictionary = saved.get("grants", {})
+	for key in grants:
+		if not key is String or grants[key] != true: return {"ok": false, "reason": "InvalidCampaignGrants"}
+		var known: bool = false
+		for row in _unlocks:
+			if key == str(row.type) + ":" + str(row.target): known = true
+		if not known: return {"ok": false, "reason": "UnknownCampaignGrant"}
 	_selected_ship = saved.selected_ship
 	_next_enemy_uid = saved.next_enemy_uid
+	_cycle_reached = cycle
+	_grants = grants.duplicate(true)
+	if not available("ship", _selected_ship): return {"ok": false, "reason": "ShipLocked"}
 	_departure_remaining = saved.departure_remaining
 	_retreat_from = saved.retreat_from
 	_retreat_to = saved.retreat_to
@@ -66,6 +82,31 @@ func restore_state(saved: Dictionary) -> Dictionary:
 
 func restore_checkpoint() -> String:
 	return str(_state.state)
+
+func accept_reforge(old_state: Dictionary, start: int) -> Dictionary:
+	if not _levels.has(start) or start < 1 or not old_state.get("state") is Dictionary:
+		return {"ok": false, "reason": "InvalidReforgeStart"}
+	var old_progress: Dictionary = old_state.state
+	var old_grants: Dictionary = old_state.get("grants", {})
+	var grants: Dictionary = {}
+	for row in _unlocks:
+		var kind: String = str(row.type)
+		var target: String = str(row.target)
+		var key: String = kind + ":" + target
+		if int(row.level) <= start or kind in ["crew", "planet"] or (kind == "feature" and target in ["crew_level", "galaxy"]) or (kind == "planet" and old_grants.has(key)):
+			grants[key] = true
+	var cleared: Dictionary = {}
+	for stage in range(1, start): cleared[stage] = true
+	_state = {"state": "menu", "stage": start, "distance": 0.0, "point": 0, "points": [],
+		"highest_reached": maxi(int(old_progress.highest_reached), start), "cleared_stages": cleared,
+		"origin": 0.0, "speed": 0.0, "wait": 0.0}
+	_cycle_reached = start
+	_grants = grants
+	_next_enemy_uid = 0
+	_guard = {"enabled": false, "stage": start, "point": 0, "distance": 0.0, "death_option": 0}
+	_set_stage(start, 0.0)
+	_progress_dirty = true
+	return {"ok": true}
 
 func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary, run_state) -> void:
 	_run_state = run_state
@@ -119,7 +160,8 @@ func publish_ship_change() -> void:
 	ship_changed.emit()
 
 func progress_facts() -> Dictionary:
-	return {"highest_reached": int(_state.highest_reached), "cleared_stages": _state.cleared_stages}
+	return {"highest_reached": int(_state.highest_reached), "cycle_reached": _cycle_reached,
+		"cleared_stages": _state.cleared_stages}
 
 func hyperspace_return_target() -> Dictionary:
 	return {"stage": int(_state.stage), "point": int(_state.point),
@@ -145,7 +187,7 @@ func resource_generation_active() -> bool:
 	return _state.state in ["travel", "combat", "waiting", "guard_wait", "retreat"]
 
 func planet_experience_ratio():
-	return _levels[int(_state.highest_reached)].planetExpRatio
+	return _levels[_cycle_reached].planetExpRatio
 
 func jewel_drop_probability() -> float:
 	return float(_parameters.jewelDrop)
@@ -206,20 +248,21 @@ func accept_wave(update: Dictionary) -> void:
 	status_changed.emit()
 
 func available(kind: String, target: String) -> bool:
+	if _grants.has(kind + ":" + target): return true
 	for row in _unlocks:
 		if str(row.type) != kind or str(row.target) != target:
 			continue
 		var gate: int = int(row.level)
 		if gate == 0:
 			return true
-		return int(_state.highest_reached) > gate if row.mode == "reached" else _state.cleared_stages.has(gate)
+		return _cycle_reached > gate if row.mode == "reached" else _state.cleared_stages.has(gate)
 	return false
 
 func start_sortie(stage: int, clear_locks: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if _battle == null:
 		return {"ok": false, "reason": "SessionUnavailable"}
-	if not _levels.has(stage) or stage > int(_state.highest_reached):
+	if not _levels.has(stage) or stage > _cycle_reached:
 		return {"ok": false, "reason": "StageLocked"}
 	if not _battle.defence_capacity_available():
 		return {"ok": false, "reason": "NoDefence"}
@@ -272,6 +315,7 @@ func _begin_travel() -> void:
 func _set_stage(stage: int, distance: float) -> void:
 	_state.stage = stage
 	_state.distance = distance
+	_cycle_reached = maxi(_cycle_reached, stage)
 	if stage > int(_state.highest_reached):
 		_state.highest_reached = stage
 		_progress_dirty = true
