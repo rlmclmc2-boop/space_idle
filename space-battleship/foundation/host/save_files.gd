@@ -4,6 +4,7 @@ extends RefCounted
 const MAX_BYTES: int = 32 * 1024 * 1024
 var _directory: String
 var _worker: Thread
+var _write_job: Callable = write_snapshot
 var _active_generation: String = ""
 var _pending: Dictionary = {}
 var _generation: int = 0
@@ -26,14 +27,17 @@ static func integer_text(value) -> bool:
 
 static func read_pointer(directory: String, pointer_file: String) -> Dictionary:
 	if not FileAccess.file_exists(directory.path_join(pointer_file)): return {"ok": false}
-	var pointer = JSON.parse_string(FileAccess.get_file_as_string(directory.path_join(pointer_file)))
+	var parser := JSON.new()
+	if parser.parse(FileAccess.get_file_as_string(directory.path_join(pointer_file))) != OK: return {"ok": false}
+	var pointer = parser.data
 	if not pointer is Dictionary or not pointer.get("file") in ["slot-0.json", "slot-1.json"] or not integer_text(pointer.get("generation")): return {"ok": false}
 	var stream := FileAccess.open(directory.path_join(pointer.file), FileAccess.READ)
 	if stream == null or stream.get_length() > MAX_BYTES: return {"ok": false}
 	var raw := stream.get_as_text()
 	stream.close()
 	if raw.sha256_text() != pointer.get("checksum"): return {"ok": false}
-	var envelope = JSON.parse_string(raw)
+	if parser.parse(raw) != OK: return {"ok": false}
+	var envelope = parser.data
 	if not envelope is Dictionary or envelope.get("formatVersion") != 1:
 		return {"ok": false}
 	for field in ["changeNumber", "generation", "savedUtc"]:
@@ -90,7 +94,7 @@ func poll() -> void:
 		_pending = {}
 		_worker = Thread.new()
 		_active_generation = captured.generation
-		var code := _worker.start(write_snapshot.bind(captured))
+		var code := _worker.start(_write_job.bind(captured))
 		if code != OK:
 			last_result = {"ok": false, "error": "WriterStart", "generation": captured.generation}
 			last_failure = last_result.duplicate()
@@ -113,11 +117,13 @@ func close(wait_milliseconds: int = 250) -> Dictionary:
 
 static func publish_file(directory: String, name: String, content: String, disk) -> bool:
 	var temporary := directory.path_join(name + ".tmp")
-	var stream := FileAccess.open(temporary, FileAccess.WRITE)
+	var stream = disk.open_stream(temporary) if disk.has_method("open_stream") else FileAccess.open(temporary, FileAccess.WRITE)
 	if stream == null: return false
 	stream.store_string(content)
 	stream.flush()
+	var flushed: bool = stream.get_error() == OK
 	stream.close()
+	if not flushed: return false
 	if FileAccess.get_file_as_string(temporary) != content: return false
 	return disk.replace(temporary, directory.path_join(name))
 

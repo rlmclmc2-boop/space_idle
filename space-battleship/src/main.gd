@@ -17,6 +17,7 @@ const Session = preload("res://src/game_session.gd")
 var session
 var startup_error: String = ""
 var _overlay: Node2D
+var _pause_button: Button
 var growth_panel: PanelContainer
 var growth_status: Label
 var save_state_label: Label
@@ -90,6 +91,7 @@ func _replace_session(replacement) -> Dictionary:
 	_seen_save_failure_generation = ""
 	_next_autosave_wall = session.wall_time + _autosave_interval
 	_overlay = null
+	_pause_button = null
 	growth_panel = null
 	_show_session()
 	var persisted: Dictionary = session.request_save()
@@ -122,6 +124,8 @@ func _cancel_reforge() -> Dictionary:
 func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
+		if _pause_button != null:
+			_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause"
 		if session.save_files != null: session.save_files.poll()
 		if session.save_files != null and not session.save_files.last_failure.is_empty():
 			var failure_generation: String = str(session.save_files.last_failure.get("generation", ""))
@@ -168,6 +172,14 @@ func _setup_shell_overlay() -> void:
 	_overlay = Node2D.new()
 	layer.add_child(_overlay)
 	_overlay.draw.connect(_draw_shell.bind(_overlay))
+	_pause_button = Button.new()
+	_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause"
+	_pause_button.position = Vector2(420, 18)
+	_pause_button.pressed.connect(func():
+		if session.run_state.is_running():
+			session.set_pause("user", not session.pause_reasons.has("user"))
+			_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause")
+	layer.add_child(_pause_button)
 
 func _draw_shell(canvas: Node2D) -> void:
 	var font: Font = ThemeDB.fallback_font

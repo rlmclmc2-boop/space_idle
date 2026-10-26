@@ -52,6 +52,23 @@ func _run() -> void:
 		printerr("main startup: ", main.startup_error)
 		quit(1)
 		return
+	var pause_button: Button = _find_button(main, "Pause")
+	if pause_button == null:
+		printerr("visible pause control missing")
+		quit(1)
+		return
+	pause_button.pressed.emit()
+	if not main.session.pause_reasons.has("user") or pause_button.text != "Continue":
+		printerr("pause button did not hold user pause")
+		quit(1)
+		return
+	main.session.set_pause("unlock", true)
+	pause_button.pressed.emit()
+	if main.session.pause_reasons.has("user") or not main.session.pause_reasons.has("unlock"):
+		printerr("continue button cleared another pause reason")
+		quit(1)
+		return
+	main.session.set_pause("unlock", false)
 	main.growth_panel.visible = true
 	var save_path: LineEdit = _find_line(main, "Existing absolute save directory")
 	if save_path == null:
@@ -123,6 +140,18 @@ func _run() -> void:
 	_find_button(main, "Preview import").pressed.emit()
 	if main.session != before_rejection or not main._pending_import.is_empty():
 		printerr("bad import changed current session")
+		quit(1)
+		return
+	var wrong_config: Dictionary = pointer.envelope.duplicate(true)
+	wrong_config.configHash = "0".repeat(64)
+	var wrong_config_path: String = directory.path_join("wrong-config-import.json")
+	var wrong_file: FileAccess = FileAccess.open(wrong_config_path, FileAccess.WRITE)
+	wrong_file.store_string(JSON.stringify(wrong_config))
+	wrong_file.close()
+	import_picker.file_selected.emit(wrong_config_path)
+	_find_button(main, "Preview import").pressed.emit()
+	if main.session != before_rejection or not main._pending_import.is_empty() or main.growth_status.text != "ConfigurationMismatch":
+		printerr("wrong config import changed current session: ", main.growth_status.text)
 		quit(1)
 		return
 	import_picker.file_selected.emit(directory.path_join(pointer.pointer.file))

@@ -21,6 +21,21 @@ class RejectDestination extends RefCounted:
 		if destination.ends_with(suffix): return false
 		return delegate.replace(source, destination)
 
+class FailedFlushStream extends RefCounted:
+	func store_string(_content: String) -> void: pass
+	func flush() -> void: pass
+	func get_error() -> Error: return ERR_FILE_CANT_WRITE
+	func close() -> void: pass
+
+class RejectFlush extends RefCounted:
+	func open_stream(_path: String): return FailedFlushStream.new()
+	func replace(_source: String, _destination: String) -> bool: return false
+
+class SlowWriter extends RefCounted:
+	func write(job: Dictionary) -> Dictionary:
+		OS.delay_msec(100)
+		return preload("res://foundation/host/save_files.gd").write_snapshot(job)
+
 func _initialize() -> void:
 	var loaded = GDExtensionManager.load_extension(OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION"))
 	if loaded != GDExtensionManager.LOAD_STATUS_OK and loaded != GDExtensionManager.LOAD_STATUS_ALREADY_LOADED:
@@ -114,6 +129,11 @@ func _run_probe() -> void:
 			printerr("publication fault changed committed save: ", fault, " ", failed)
 			quit(1)
 			return
+	var flush_failure: Dictionary = SaveFiles.write_snapshot(job, RejectFlush.new())
+	if flush_failure.ok or flush_failure.error != "BackupWrite" or files.load_latest().envelope.changeNumber != "2":
+		printerr("flush failure changed committed save: ", flush_failure)
+		quit(1)
+		return
 	# A directory at the temporary-file path makes the actual FileAccess.open fail.
 	var blocked_temp: String = directory.path_join("previous.json.tmp")
 	if FileAccess.file_exists(blocked_temp): DirAccess.remove_absolute(blocked_temp)
@@ -145,6 +165,14 @@ func _run_probe() -> void:
 		quit(1)
 		return
 	stream = FileAccess.open(active_path, FileAccess.WRITE)
+	stream.store_string("{broken")
+	stream.close()
+	recovered = files.load_latest()
+	if not recovered.ok or recovered.envelope.changeNumber != "2":
+		printerr("malformed pointer recovery: ", recovered)
+		quit(1)
+		return
+	stream = FileAccess.open(active_path, FileAccess.WRITE)
 	stream.store_string(active)
 	stream.close()
 	if files.request({}, "4", "test-session", "3", "invalid").ok:
@@ -169,6 +197,14 @@ func _run_probe() -> void:
 	var retry: Dictionary = files.request({"order": "retry"}, "8", "test-session", "8", hash)
 	if not retry.ok or not files.close(2000).ok or not files.last_failure.is_empty() or files.dirty("8") or files.load_latest().envelope.changeNumber != "8":
 		printerr("writer failure retry: ", retry, " ", files.last_result)
+		quit(1)
+		return
+	var slow := SlowWriter.new()
+	files._write_job = Callable(slow, "write")
+	var delayed: Dictionary = files.request({"order": "delayed"}, "9", "test-session", "9", hash)
+	var timed_out: Dictionary = files.close(0)
+	if not delayed.ok or timed_out.ok or timed_out.error != "WriterBusy" or not files.close(2000).ok or files.load_latest().envelope.changeNumber != "9":
+		printerr("writer close timeout or completion: ", delayed, " ", timed_out, " ", files.last_result)
 		quit(1)
 		return
 	print("SAVE_FILES_PROBE_OK")
