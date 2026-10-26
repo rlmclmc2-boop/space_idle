@@ -109,8 +109,9 @@ func _run() -> void:
 		return
 	shield_session.equipment.refresh_availability(shield_session.campaign_system.available, 8, false)
 	var before_slots: Array = shield_session.equipment.save_state().slots.duplicate(true)
+	var before_commits: int = shield_session.battle.configuration_commits
 	var rejected: Dictionary = shield_session.equipment.equip_slot("defence:0", "", shield_session.equipment_inputs(), shield_session.publish_equipment_refit)
-	if rejected.ok or rejected.reason != "FirstDefenceRequired" or shield_session.equipment.save_state().slots != before_slots:
+	if rejected.ok or rejected.reason != "FirstDefenceRequired" or shield_session.equipment.save_state().slots != before_slots or shield_session.battle.configuration_commits != before_commits:
 		_fail("C15 first defence empty refit mutated slots: " + str(rejected))
 		return
 	ready = shield_session.equipment.equip_slot("defence:0", "shield", shield_session.equipment_inputs(), shield_session.publish_equipment_refit)
@@ -143,5 +144,42 @@ func _run() -> void:
 	if retreat_count != 1 or shield_session.battle._kernel.player_view().shield != "0e0":
 		_fail("C13 shield depletion did not begin one retreat: " + str(shield_session.campaign_system.restore_checkpoint()) + " " + str(shield_session.battle._kernel.player_view()))
 		return
-	print("STAGE6_COMBAT_ORACLE_OK C01 shield=30 armour=40 precontact=0; single death/drop=1; C13 shield-only sortie/depletion; C15 first-slot refit")
+	var multi_slot = Session.new()
+	ready = multi_slot.initialize("res://generated/config.json", 29)
+	if ready.ok: ready = multi_slot.campaign_system.accept_reforge(multi_slot.campaign_system.save_state(), 21)
+	if not ready.ok:
+		_fail("C15 multi-slot progress: " + str(ready))
+		return
+	multi_slot.equipment.refresh_availability(multi_slot.campaign_system.available, 21, false)
+	ready = multi_slot.campaign_system.change_ship("Cruiser", multi_slot.commit_ship_refit)
+	if not ready.ok or int(multi_slot.campaign_system.ship_facts().mounts.defence) != 2:
+		_fail("C15 two-defence ship: " + str(ready))
+		return
+	ready = multi_slot.equipment.equip_slot("defence:1", "armour", multi_slot.equipment_inputs(), multi_slot.publish_equipment_refit)
+	if not ready.ok:
+		_fail("C15 second-slot equipment: " + str(ready))
+		return
+	multi_slot.equipment.clear_switch_locks()
+	ready = multi_slot.equipment.equip_slot("defence:1", "", multi_slot.equipment_inputs(), multi_slot.publish_equipment_refit)
+	var cleared: bool = false
+	for slot in multi_slot.equipment.save_state().slots:
+		if slot.id == "defence:1": cleared = str(slot.equipment_id).is_empty()
+	if not ready.ok or not cleared:
+		_fail("C15 second-slot unload: " + str(ready))
+		return
+	multi_slot.equipment.clear_switch_locks()
+	ready = multi_slot.equipment.equip_slot("defence:0", "shield", multi_slot.equipment_inputs(), multi_slot.publish_equipment_refit)
+	if ready.ok: ready = multi_slot.campaign_system.start_sortie(1, multi_slot.equipment.clear_switch_locks)
+	if not ready.ok:
+		_fail("C14 shield-only launch: " + str(ready))
+		return
+	ready = multi_slot.equipment.equip_slot("defence:1", "armour", multi_slot.equipment_inputs(), multi_slot.publish_equipment_refit)
+	if not ready.ok:
+		_fail("C14 refit armour to zero-current layer: " + str(ready))
+		return
+	var defence: Dictionary = multi_slot.battle._kernel.player_view()
+	if str(defence.armour) != "0e0" or float(defence.max_armour) <= 0.0 or float(defence.shield) <= 0.0 or multi_slot.battle.defence_depleted():
+		_fail("C14 current-zero armour incorrectly killed shielded player: " + str(defence))
+		return
+	print("STAGE6_COMBAT_ORACLE_OK C01 shield=30 armour=40 precontact=0; single death/drop=1; C13 shield-only sortie/depletion; C14 partial current-zero armour; C15 first/second-slot refit")
 	quit()

@@ -25,11 +25,14 @@
 | Item | Current status | Evidence needed to close |
 |---|---|---|
 | C01 | Closed | Native manual values and before-contact timing in `_stage6_combat_oracle_probe.gd`. |
+| C07 | Closed | `_stage6_targeting_oracle_probe.gd` observes four native missile impacts on one target, alternating distribution on two targets, and no new attack count after the final target dies. |
+| C15 | Closed | `_stage6_combat_oracle_probe.gd` rejects first-slot unload without changing slots or native configuration commits, accepts first-slot shield, and unloads the second defence slot on a Cruiser. |
+| C14 | Partial | The same native probe starts with shield current health and zero maximum armour, then equips an armour module at zero current health and positive maximum; neither state is treated as depleted. Expiring deferred payment remains open. |
 | CR01-CR05 | Closed | `_stage6_critical_oracle_probe.gd` compares fixed-seed native u1/u2, critical and bonus flags, and exact damage with independent expected values. |
 | CR09 | Closed | The same native probe checks B3 gates at E=29/30, 39/40 and 49/50 for critical in positions one through three, each with equipment paid levels 1 and 30. |
 | CR07 | Partial | The same native probe checks CR05's failed bonus still writes B1/B2 marks; the next native attack is about 1.65 times the equal-seed unmarked reference, matching authored 50% and 10% bonuses. Expiration and derived attacks remain open. |
-| C06, C07, C13, C15 | Partial | C06: orphan flight and source change; C07: four-missile distribution across one/two targets; C13: rebuild failure and return destination; C15: other defence slot. Existing probe covers only single death/drop, no-target, shield-only sortie/depletion and first-slot refit. |
-| C02-C05, C08-C12, C14 | Open | Independent authored values and event order in real native fixtures, including beam timing, multi-layer defences, reactive stacks, enhancement branches, cannon/Higgs and deferred depletion. |
+| C06, C13 | Partial | C06: `_stage6_targeting_oracle_probe.gd` kills one of two targets mid-salvo and sees the orphaned missile avoid the surviving target; source change and same-time double hit remain open. C13: rebuild failure and return destination remain open. Existing probes cover shield-only sortie/depletion. |
+| C02-C05, C08-C12 | Open | Independent authored values and event order in real native fixtures, including beam timing, multi-layer defences, reactive stacks, enhancement branches and cannon/Higgs. |
 | CR06, CR08 | Open | Fixed documented seeds and actual u1/u2 observations, critical/bonus flags, damage and snapshot inheritance from the native kernel. |
 | Display-frame equivalence | Open | Same seed and fixed business steps with different draw-frame grouping; compare settlement, drops, IDs and state. |
 | Remaining performance matrix | Open | Maximum enabled slots/drones, burst/chain/beam, full warehouse and huge MAX with native allocation and GPU time. Existing long runs only cover a sustained 15-slot wave and ordinary GPU presentation. |
