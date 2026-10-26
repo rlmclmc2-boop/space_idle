@@ -137,7 +137,7 @@ func frame(real_dt: float, _focused: bool) -> void:
 func _step(dt: float) -> void:
 	if not run_state.is_running(): return
 	game_time += dt
-	hyperspace_system.advance_online(dt, campaign_system.progress_facts().cleared_stages.has(60))
+	if not _advance_hyperspace_online(dt): return
 	economy.prune_income(wall_time, game_time, research.income_window())
 	var people: Dictionary = crew_system.step_assignments()
 	if not _advance_planets(dt, people.explorers, people.builders) or not _advance_galaxies(dt, people.galaxies) or not _advance_crew_jobs(dt, people.jobs):
@@ -192,6 +192,15 @@ func _step(dt: float) -> void:
 	if progress_changed: campaign_system.publish_progress_change()
 	if status_changed: campaign_system.publish_status_change()
 	if collection_changed: economy.publish_budget_change()
+
+func _advance_hyperspace_online(dt: float) -> bool:
+	hyperspace_system.advance_online(dt, campaign_system.progress_facts().cleared_stages.has(60))
+	var online: Dictionary = hyperspace_system.online_status()
+	if not online.auto.enabled or online.idle.get("status") != "CompletedPending": return true
+	var claimed: Dictionary = claim_hyperspace(int(online.idle.run_id))
+	if claimed.ok or claimed.get("reason") == "WarehouseFull": return true
+	_fail(str(claimed.get("reason", "AutoClaimFailed")))
+	return false
 
 func _advance_kernel(dt: float) -> bool:
 	if dt <= 0:
@@ -397,7 +406,8 @@ func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
 		"game_time": game_time}
 
-func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}, module_totals = null) -> Dictionary:
+func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}, module_totals = null,
+		drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var ship_key: String = campaign_system.selected_ship() if next_ship.is_empty() else next_ship
 	var ship: Dictionary = campaign_system.ship_facts(ship_key)
@@ -430,6 +440,11 @@ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrid
 		var refreshed: Dictionary = _prepare_drone_growth(ai["values"], reactor.factors, int(world.equipment_levels))
 		if not refreshed.ok: return refreshed
 		contributions = refreshed.contributions
+	elif refresh_contributions:
+		var refreshed: Dictionary = hyperspace_system.prepare_loadout(drone_ids, int(ship.drone_capacity),
+			_hyperspace_weapon_source(ai["values"], reactor.factors, int(world.equipment_levels)), drone_replacements)
+		if not refreshed.ok: return refreshed
+		contributions = refreshed.contributions
 	var setup = battle.prepare_player(mounted, upgrades, factors, reactor.factors, ship, ship_key, mount, contributions, equipment.damage_types())
 	if not setup.ok:
 		return setup
@@ -454,13 +469,14 @@ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrid
 	setup.income_factors.make_read_only()
 	setup.research_factors = ai["values"]
 	setup.reactor_factors = reactor.factors
+	setup.drone_contributions = contributions
 	return setup
 
-func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true, accept_drones: Callable = Callable(), hanging_overrides: Dictionary = {}, module_totals = null) -> Dictionary:
+func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true, accept_drones: Callable = Callable(), hanging_overrides: Dictionary = {}, module_totals = null, drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
 	geometry_changed = geometry_changed or equipment.geometry_changed()
-	var setup = _growth_setup(next_ship, contributions, hanging_overrides, module_totals)
+	var setup = _growth_setup(next_ship, contributions, hanging_overrides, module_totals, drone_replacements, refresh_contributions)
 	if not setup.ok:
 		reactor_system.discard_prepared()
 		enhancement.discard_output()
@@ -559,7 +575,7 @@ func set_equipped_drone_contributions(contributions: Array) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var valid = battle.validate_drones(contributions, int(campaign_system.ship_facts().drone_capacity))
 	if not valid.ok: return valid
-	return publish_equipment_refit(economy.budget(), "refit", "", contributions, false)
+	return publish_equipment_refit(economy.budget(), "refit", "", contributions, false, Callable(), {}, null, {}, false)
 
 func equip_hyperspace_drones(ids: Array) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
@@ -605,8 +621,12 @@ func forge(id: String, operation: String, args: Dictionary, operation_id: String
 		var prepared: Dictionary = hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
 			int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source(), {id: forecast.drone})
 		if not prepared.ok: return prepared
+		if battle.matches_drone_contributions(prepared.contributions):
+			hyperspace_system.accept_forge(id, forecast.drone, operation_id, fingerprint, result)
+			if economy.accept_budget(paid.wallet, false): economy.publish_budget_change()
+			return result
 		var committed: Dictionary = publish_equipment_refit(paid.wallet, "refit", "", prepared.contributions, false,
-			func(): hyperspace_system.accept_forge(id, forecast.drone, operation_id, fingerprint, result))
+			func(): hyperspace_system.accept_forge(id, forecast.drone, operation_id, fingerprint, result), {}, null, {id: forecast.drone})
 		return result if committed.ok else committed
 	hyperspace_system.accept_forge(id, forecast.drone, operation_id, fingerprint, result)
 	if economy.accept_budget(paid.wallet, false): economy.publish_budget_change()

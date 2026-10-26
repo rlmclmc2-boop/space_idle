@@ -24,6 +24,7 @@ var _enemy_hulls: Array = []
 var _equipped_drones: Array = []
 var _values: Dictionary = {}
 var _prepared_player: Dictionary = {}
+var configuration_commits: int = 0
 var _events: Array = []
 var _seed: int
 var _initial_result: Dictionary
@@ -252,6 +253,7 @@ func commit_player(kind: String, geometry_changed: bool) -> Dictionary:
 	if not result.ok:
 		if result.get("fault", false): _run_state.fail(str(result.reason))
 		return result
+	configuration_commits += 1
 	_accept_player()
 	if geometry_changed: return _sync_geometry()
 	return result
@@ -343,6 +345,9 @@ func append_drone_growth(values: Dictionary, contributions: Array, external_fact
 
 func accept_drone_growth(contributions: Array) -> void:
 	_equipped_drones = contributions.duplicate(true)
+
+func matches_drone_contributions(contributions: Array) -> bool:
+	return _equipped_drones == contributions
 
 func _sync_geometry() -> Dictionary:
 	var packet = Geometry.battle_geometry(_kernel.enemy_views(), _models, _ship_key, _player_art,

@@ -172,19 +172,22 @@ func _run_probe() -> void:
 		return
 	var auto_run_id: int = int(auto_started.receipt.run_id)
 	own = session.hyperspace_system
-	own.advance_online(float(auto_started.receipt.duration), false)
-	if own.online_status().idle.status != "CompletedPending":
-		printerr("session auto pending")
+	if not session._advance_hyperspace_online(float(auto_started.receipt.duration)) or own.online_status().idle.status != "Claimed":
+		printerr("session auto first claim: ", own.online_status())
 		quit(1)
 		return
-	var auto_claimed: Dictionary = session.claim_hyperspace(auto_run_id)
-	if not auto_claimed.ok or session.claim_hyperspace(auto_run_id).get("already_claimed") != true:
-		printerr("session auto claim: ", auto_claimed)
+	if session.claim_hyperspace(auto_run_id).get("already_claimed") != true:
+		printerr("session auto claim ledger")
 		quit(1)
 		return
-	own.advance_online(1.0 / 60.0, false)
+	session._advance_hyperspace_online(1.0 / 60.0)
 	if own.online_status().idle.status != "Started" or int(own.online_status().idle.run_id) == auto_run_id or session.crew_system._members[crew_id].kind != "hyperspace":
 		printerr("session auto continuation: ", own.online_status())
+		quit(1)
+		return
+	var second_run_id: int = int(own.online_status().idle.run_id)
+	if not session._advance_hyperspace_online(float(own.online_status().idle.duration)) or own.online_status().idle.status != "Claimed" or session.claim_hyperspace(second_run_id).get("already_claimed") != true:
+		printerr("session auto second claim: ", own.online_status())
 		quit(1)
 		return
 	var auto_stopped: Dictionary = session.stop_hyperspace_auto()
@@ -269,9 +272,10 @@ func _run_probe() -> void:
 			return
 		var credited: Dictionary = session._hyperspace_credit({"materials": {"zero_point_energy": 100}, "ultimate_cores": 0})
 		session.economy.accept_budget(credited.wallet)
+		var commits_before_omen: int = session.battle.configuration_commits
 		var forged: Dictionary = session.forge(str(before_drone.id), "enable_omen", {}, "probe-omen")
 		var repeat_forge: Dictionary = session.forge(str(before_drone.id), "enable_omen", {}, "probe-omen")
-		if not forged.ok or not repeat_forge.ok or not repeat_forge.drone.omen or not own.warehouse().main[0].omen or int(session.battle._equipped_drones[0].generation) != stable_generation:
+		if not forged.ok or not repeat_forge.ok or not repeat_forge.drone.omen or not own.warehouse().main[0].omen or int(session.battle._equipped_drones[0].generation) != stable_generation or session.battle.configuration_commits != commits_before_omen:
 			printerr("forge commit/retry: ", forged, " ", repeat_forge)
 			quit(1)
 			return
@@ -302,6 +306,28 @@ func _run_probe() -> void:
 		var preset_applied: Dictionary = session.apply_hyperspace_preset("probe")
 		if not preset_saved.ok or not removed.ok or not preset_applied.ok or own._warehouse[0].hangings != ["resource_collector"]:
 			printerr("preset transaction: ", preset_saved, " ", removed, " ", preset_applied)
+			quit(1)
+			return
+		own._modules.extra_storage = {"unlocked": true, "level": 1, "exp": 0.0}
+		session.campaign_system._state.highest_reached = 60
+		session.reactor_system._enabled = ["weapons"]
+		session.reactor_system._state.level = 10
+		session.reactor_system._state.allocations.weapons = api.apply("from_decimal", ["1e10"]).value
+		var storage_mounted: Dictionary = session.set_hyperspace_hangings(str(before_drone.id), ["extra_storage"])
+		var boosted_factor = session._reactor_factors.weapons
+		var boosted_damage: String = str(session.battle._equipped_drones[0].weapon.damage)
+		var storage_preset: Dictionary = session.save_hyperspace_preset("capacity")
+		var storage_removed: Dictionary = session.set_hyperspace_hangings(str(before_drone.id), [])
+		var reduced_factor = session._reactor_factors.weapons
+		var expected_source: Dictionary = session._hyperspace_weapon_source().call(own._warehouse[0])
+		if not storage_mounted.ok or not storage_preset.ok or not storage_removed.ok or not expected_source.ok or int(api.apply("compare", [boosted_factor, reduced_factor]).scalar) <= 0 or boosted_damage == str(session.battle._equipped_drones[0].weapon.damage) or str(session.battle._equipped_drones[0].weapon.damage) != str(expected_source.weapon.damage):
+			printerr("capacity shrink drone growth: ", storage_mounted, " ", storage_removed)
+			quit(1)
+			return
+		var storage_reapplied: Dictionary = session.apply_hyperspace_preset("capacity")
+		var reapplied_source: Dictionary = session._hyperspace_weapon_source().call(own._warehouse[0])
+		if not storage_reapplied.ok or own._warehouse[0].hangings != ["extra_storage"] or not reapplied_source.ok or str(session.battle._equipped_drones[0].weapon.damage) != str(reapplied_source.weapon.damage):
+			printerr("capacity preset drone growth: ", storage_reapplied)
 			quit(1)
 			return
 		if own.prepare_dismantle(str(before_drone.id)).get("reason") != "ProtectedDrone":
