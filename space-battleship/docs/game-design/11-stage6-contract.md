@@ -52,6 +52,29 @@ The C14 native `_stage6_deferred_oracle_probe.gd` exposes a previous off-by-one 
 
 ## Nonblocking follow-up
 
+## Fixed open scenarios after d02263ff
+
+The following are acceptance gaps, not nonblocking tuning. A passed subset must not close its whole row.
+
+| ID | Remaining concrete scenario and required evidence |
+|---|---|
+| C09-critical | Native A-node probability changes; existing CR01-CR09 cover the fixed-seed B interactions. |
+| C09-proficiency | B1 focus reset after target change and B2 initial-wait behavior; A damage, sustained B1, B2 interval and B3 resistance already pass. |
+| C09-repeat | A-node probability; B1 chain root identity across weapon types; B3 secondary-target identity and no-target behavior. Existing cannon chain and delayed repeat snapshot tests cover subsets. |
+| C09-adaptation | A capacity; B1 per-source stack growth/reset; B2 cover birth/expiry/recovery order; B3 matching resistance. |
+| C09-memory | A heal/buffer values; B1 proc reduction duration; B2 damage-type protection and lockout; B3 armour capacity and shield charge. Shared recovery/debt clocks already pass. |
+| C09-deferred | A clearing probability; B1 clearing/reduction duration; B2 probability conversion; B3 forced clearing and damage scaling. Payment scheduling and shared explosion clocks pass. |
+| C10 | Verify root/derived AttackId ownership for chain, repeat, secondary and recursive death explosion together; no duplicate kill/drop or recursive derived refresh. Higgs source attribution and cannon explosion clear are passed subsets. |
+| C11 | Native prism_tower, strange_matter, wild_missile, dodge_counter, drone_master and black_hole; black-hole/guidance overlap; rebuild with another legend and unload; timers/source selection across replacement and retreat. Scatter/laser-charge overlap and unload/reinstall, precise guidance caching, endless beam, Higgs and single-donor rebuild have passed fixtures. |
+| MAX-perf | `_stage6_huge_max_probe.gd` passes a real equipment MAX purchase with Amount 1e1000 balances: paid level 12598, next level rejected for insufficient resources. Measured work 5783.877 ms is an unresolved UI stall; correctness passing does not close performance. |
+| GPU/window | Maximum-mount GPU time and human tutorial/import/failure/notification/reforge acceptance. Window enumeration remains an environment limitation; repeated process launches are not acceptance. |
+
+`_stage6_full_warehouse_probe.gd` passes production capacities 200 main/10 overflow: blocked claim leaves full saved state unchanged, freeing one overflow slot permits claim, and duplicate claim adds no drone. Blocked-claim work measured 0.007 ms. This closes the claim-boundary subset, not full warehouse UI/GPU performance.
+
+### Drone capacity source conflict
+
+The design catalog itself records both values: section `hyperspace_config` hull capacity lists Heavy_Battleship=5, while section `ship` lists para_5=4. `Campaign.ship_facts` in `src/systems/campaign.gd` returns para_5; Session passes that result to equip/preview/preset/ship-change operations (`src/game_session.gd`), and `Battle.prepare_player` slices contributions and writes the native descriptor capacity from it (`src/systems/battle.gd`). The current hyperspace owner has no hull-capacity map; its loadout APIs receive capacity from Session. Thus runtime admits four drones and rejects the fifth with DroneCapacityExceeded, reducing the maximum-load fixture to four. Choosing four or five changes authored gameplay; neither table was edited. The duplicated design records require an explicit authority decision before replacing this consumer.
+
 `_stage6_legend_overlap_probe.gd` adds native C11 overlap/unload/reinstall coverage: scatter plus three-source laser charge yields 875 damage, removing charge yields 350, removing both yields 100, and reinstalling both yields 875. Other legendary pairs and rebuild/cooldown combinations remain open. The C14 explosion fixture now uses the existing player cannon, avoiding the earlier extra drone-configuration fixture path; its measured times and amounts are asserted directly rather than treating the old unexpected contact as a kernel failure.
 
 ### Native proficiency boundary follow-up
