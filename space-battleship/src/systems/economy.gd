@@ -82,7 +82,7 @@ func advance_timed(dt: float, active: bool, resource_ratio: Callable, origin: Ve
 			var ratio: Dictionary = resource_ratio.call()
 			if not ratio.ok: return ratio
 			var remainder: float = maxf(0.0, float(_generator.elapsed) - interval)
-			var spawned = _spawn_timed_drop(_spec[1], _spec[2], float(_spec[3]), ratio.value, origin, game - remainder, factors.refinery)
+			var spawned = _spawn_timed_drop(_spec[1], _spec[2], float(_spec[3]), ratio.value, origin, game - remainder, factors)
 			if not spawned.ok: return spawned
 			_generator.elapsed = remainder
 	return _advance_timed_drops(target_y, wall, game, factors)
@@ -176,7 +176,7 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 	var quantity: Dictionary = row.amount
 	var base: Dictionary = row.production_base
 	var result: Dictionary
-	if automatic and resource in ["1", "2"]:
+	if str(row.domain) != "timed" and automatic and resource in ["1", "2"]:
 		var loss_factor = amount_api.apply("from_decimal", [str(1.0 - auto_reduce)])
 		if not loss_factor.ok:
 			return loss_factor
@@ -194,7 +194,7 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 		if not result.ok:
 			return result
 		base = result.value
-	if resource == "jewel":
+	if str(row.domain) != "timed" and resource == "jewel":
 		for contribution in ["crew_fragments", "condensation", "galaxy_fragments"]:
 			if not income_factors.has(contribution):
 				continue
@@ -225,7 +225,7 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 			return result
 		quantity = result.value
 	var effect: String = "iron" if resource == "1" else "uranium" if resource == "2" else "jewel" if resource == "jewel" else ""
-	if income_factors.has(effect):
+	if str(row.domain) != "timed" and income_factors.has(effect):
 		result = amount_api.apply("mul", [quantity, income_factors[effect]])
 		if not result.ok:
 			return result
@@ -274,7 +274,7 @@ func collect_due(wall: float, game: float, force: bool = false, income_factors: 
 		collected = true
 	return {"ok": true, "collected": collected}
 
-func _spawn_timed_drop(resource: String, base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2, born_at: float, refinery: Dictionary) -> Dictionary:
+func _spawn_timed_drop(resource: String, base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2, born_at: float, factors: Dictionary) -> Dictionary:
 	var pending: Dictionary = _drops
 	var generator: Dictionary = _generator
 	var amount_api = _api
@@ -289,12 +289,22 @@ func _spawn_timed_drop(resource: String, base_text: String, speed: float, resour
 	base = amount_api.apply("ceil", [base.value])
 	if not base.ok:
 		return base
-	var quantity = amount_api.apply("mul", [base.value, refinery])
+	var quantity = amount_api.apply("mul", [base.value, factors.refinery])
 	if not quantity.ok:
 		return quantity
 	quantity = amount_api.apply("ceil", [quantity.value])
 	if not quantity.ok:
 		return quantity
+	# Timed drops own their credited quantity at birth. Collection only transfers it.
+	var effect: String = "iron" if resource == "1" else "uranium" if resource == "2" else "jewel" if resource == "jewel" else ""
+	if factors.has(effect):
+		quantity = amount_api.apply("mul", [quantity.value, factors[effect]])
+		if not quantity.ok:
+			return quantity
+		if resource != "jewel":
+			quantity = amount_api.apply("ceil", [quantity.value])
+			if not quantity.ok:
+				return quantity
 	var id: int = int(generator.next_id) + 1
 	var key: String = "timed:" + str(id)
 	pending[key] = {"domain": "timed", "uid": id, "id": resource,
