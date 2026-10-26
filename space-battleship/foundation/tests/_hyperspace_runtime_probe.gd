@@ -22,6 +22,7 @@ func _run_probe() -> void:
 		quit(1)
 		return
 	session.campaign_system._state.highest_reached = 8
+	session.campaign_system._cycle_reached = 8
 	var boosted_slots: Array = session.equipment._slots.duplicate(true)
 	for slot in boosted_slots: slot.paid_level = 100
 	session.equipment._pending_slots = boosted_slots

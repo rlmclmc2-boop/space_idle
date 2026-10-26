@@ -84,6 +84,12 @@ func _run() -> void:
 		quit(1)
 		return
 	main.session.set_chrono_speed(10)
+	main._save_status_elapsed = 1.0
+	main._process(0.0)
+	if main.save_state_label.text != "Unsaved changes":
+		printerr("business change missing from save status: ", main.save_state_label.text)
+		quit(1)
+		return
 	_find_button(main, "Save").pressed.emit()
 	result = main.session.save_files.close(2000)
 	if not result.ok or not SaveFiles.read_pointer(directory, "previous.json").ok:

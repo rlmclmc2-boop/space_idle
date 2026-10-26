@@ -84,6 +84,11 @@ func _run_probe() -> void:
 		printerr("first publication: ", first, " ", files.last_result)
 		quit(1)
 		return
+	var first_store: Dictionary = files.load_latest()
+	if not first_store.ok or files.dirty("1", first_store.envelope.payloadHash) or not files.dirty("1", "b".repeat(64)):
+		printerr("payload dirty tracking failed")
+		quit(1)
+		return
 	var second: Dictionary = files.request({"wallet": {"iron": {"m": "2", "e": "30"}}}, "2", "test-session", "2", hash)
 	if not second.ok or not files.close(2000).ok:
 		printerr("second publication: ", second, " ", files.last_result)

@@ -24,6 +24,7 @@ var _pending_import: Dictionary = {}
 var _pending_reforge: Dictionary = {}
 var _autosave_interval: float = 0.0
 var _next_autosave_wall: float = 0.0
+var _save_status_elapsed: float = 1.0
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -120,17 +121,18 @@ func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
 		if session.save_files != null: session.save_files.poll()
-		if save_state_label != null:
+		_save_status_elapsed += maxf(dt, 0.0)
+		if save_state_label != null and growth_panel != null and growth_panel.visible and _save_status_elapsed >= 1.0:
+			_save_status_elapsed = 0.0
 			if session.save_files == null:
 				save_state_label.text = "No save directory"
 			elif session.save_files.busy():
 				save_state_label.text = "Saving…"
 			elif not session.save_files.last_result.is_empty() and not session.save_files.last_result.ok:
 				save_state_label.text = "Save failed: " + str(session.save_files.last_result.get("error", "Unknown"))
-			elif session.save_files.dirty(str(session._change_number)):
-				save_state_label.text = "Snapshot not written"
 			else:
-				save_state_label.text = "Last save written"
+				var status: Dictionary = session.dirty_since_save()
+				save_state_label.text = "Save status unavailable" if not status.ok else "Unsaved changes" if status.dirty else "Last save written"
 		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
 			_next_autosave_wall = session.wall_time + _autosave_interval
 			var saved: Dictionary = session.request_save()
@@ -206,6 +208,7 @@ func _setup_growth_panel() -> void:
 	box.add_child(growth_status)
 	save_state_label = Label.new()
 	box.add_child(save_state_label)
+	_save_status_elapsed = 1.0
 	open.pressed.connect(func(): growth_panel.visible = not growth_panel.visible)
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))

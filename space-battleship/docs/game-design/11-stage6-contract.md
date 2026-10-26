@@ -64,3 +64,11 @@
 **目前余项：** S01 writer 完成顺序及 changeNumber/dirty 的每个业务步证明；S02 flush 与关闭超时、替换后异步失败的页面注入；S03 原生 DropId、研究/模组交叉引用与更广坏档矩阵；S04 导入源损坏/备份/覆盖失败及付费时间只结算一次；S05 行进/等待/撤退/导弹/未领掉落完整 checkpoint；S06 多轮跨日与系统时钟回拨；H06 native 十波真实战斗、跨轮多无人机容量和其他星球施工；U01 解锁与研究完成通知在实际玩法触发及桌面视觉检查；导出包资源与当前 native 重建、Amount/C++ 和前阶段配置/性能回归。完成这些正式验收前仍不合 main。
 
 补充 S06 探针：同一 `savedUtc=0` Envelope 分别走加载及文件导入，离线微粒均达到 12 小时上限；导入后的会话保存并重载，容量不重复增加；未来 `savedUtc` 的加载和文件导入均不发微粒。仍需多日真实存档与跨设备时钟回拨的成套验收。
+
+## 2026-10-26 S05、保存脏状态与回归复验
+
+在既有 Godot 4.7.2 / godot-cpp 507ed9d840c01a3c5b2a39af8bb4000bfac30bf5 / Clang 23.1.3 / 固定 API 上重新构建 native，构建成功；DLL 与 GDExtension 清单仅作仓库外测试产物。Amount C++ 测试通过。`_stage6_checkpoint_probe.gd` 用真实第 8 关战斗在受伤且仍有 14 枚飞行弹时保存，加载及导入都恢复完整防御和零旧弹，同时保留历史计数、攻击 ID 与 actor ID 水位；继续原战斗进入撤退后保存恢复也通过。第 1 关真实战斗产生待领取 DropId，旅行 checkpoint 加载与导入保持该 DropId，领取第二次被拒，保存再载入不会重现旧掉落，新出击的 DropId 严格递增。`SpaceCombatKernel.active_flight_count()` 是只读诊断端口，用于直接核验旧弹清空。
+
+`SaveFiles` 将成功写入的 payload hash 和 changeNumber 一同记录；`GameSession.dirty_since_save()` 比较当前完整存档 payload，使未调用保存请求的业务变化也能标脏。成长页可见时每秒刷新一次保存状态；页面探针验证速度变化显示未保存，保存完成显示成功。`SAVE_FILES_PROBE_OK`、`STAGE6_SESSION_PROBE_OK`、`STAGE6_PAGE_PROBE_OK`、`STAGE6_REFORGE_LIVE_PROBE_OK`、`STAGE6_CHECKPOINT_PROBE_OK` 均通过；Hyperspace 两项既有回归探针（40 波/高层 160 波、十战手动、自动两轮）通过。两项旧探针原先只设置最高到达关卡，未设置当前轮次水位，夹具已同步修正。Godot `--check-only`、主场景 headless 120 帧、Amount 测试通过。Godot 对受限系统日志目录和系统证书读取报错，但进程返回 0，未出现脚本错误。
+
+**仍须验收，当前不合 main：** 07 清单中 C01–C12 / CR01–CR09 的正式逐项 oracle、GPU 呈现与性能记录；S01/S02 的异步 writer 覆盖队列、flush/关闭超时及页面失败注入；S03/S04 的原始 Amount、跨域奖励和失败边界全量场景；S05 驻守、待机、手动十战等剩余 checkpoint 组合；S06 设备时钟回拨；H06 更长链路的真实探索、施工、领奖、手动十战到重铸；U01 导入文件选择器和完整页面视觉手验。现有探针覆盖明确列出的路径，不能替代上述正式矩阵。

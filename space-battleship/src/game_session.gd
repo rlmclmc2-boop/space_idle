@@ -233,6 +233,13 @@ func request_save() -> Dictionary:
 	return save_files.request(snapshot.payload, str(_change_number), _session_id,
 		str(int(Time.get_unix_time_from_system())), config_hash)
 
+func dirty_since_save() -> Dictionary:
+	if save_files == null: return {"ok": true, "dirty": true}
+	var snapshot: Dictionary = save_payload()
+	if not snapshot.ok: return snapshot
+	var hash: String = JSON.stringify(snapshot.payload).sha256_text()
+	return {"ok": true, "dirty": save_files.dirty(str(_change_number), hash)}
+
 static func load_candidate(path: String, directory: String, backup: bool = false) -> Dictionary:
 	var pointer: String = "previous.json" if backup else "active.json"
 	var stored: Dictionary = SaveFiles.read_pointer(directory, pointer)

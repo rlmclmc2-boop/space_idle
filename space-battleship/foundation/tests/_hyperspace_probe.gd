@@ -193,6 +193,7 @@ func _run_probe() -> void:
 		quit(1)
 		return
 	session.campaign_system._state.highest_reached = 8
+	session.campaign_system._cycle_reached = 8
 	var manual: Dictionary = session.start_hyperspace_manual("alpha")
 	if not manual.ok:
 		printerr("manual entry: ", manual)

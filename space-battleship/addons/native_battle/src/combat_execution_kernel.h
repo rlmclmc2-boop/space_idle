@@ -2080,6 +2080,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("presentation_clock"), &SpaceCombatKernel::presentation_clock);
         ClassDB::bind_method(D_METHOD("read_history"), &SpaceCombatKernel::read_history);
         ClassDB::bind_method(D_METHOD("persistent_state"), &SpaceCombatKernel::persistent_state);
+        ClassDB::bind_method(D_METHOD("active_flight_count"), &SpaceCombatKernel::active_flight_count);
         ClassDB::bind_method(D_METHOD("restore_persistent_state", "state"), &SpaceCombatKernel::restore_persistent_state);
         ClassDB::bind_method(D_METHOD("clear_encounter", "reason"), &SpaceCombatKernel::clear_encounter);
         ClassDB::bind_method(D_METHOD("finish_retreat"), &SpaceCombatKernel::finish_retreat);
@@ -2266,6 +2267,11 @@ class SpaceCombatKernel : public RefCounted {
         out["rng_state"] = String::num_int64(rng.is_valid() ? int64_t(rng->get_state()) : 0);
         out["next_ids"] = ids;
         return out;
+    }
+    int64_t active_flight_count() const {
+        int64_t count = 0;
+        for (size_t id : active) if (id < flights.size() && flights[id].live) ++count;
+        return count;
     }
     bool restore_persistent_state(const Dictionary &state) {
         if (!admitted || executing || !state.has("history_counts") || !state.has("rng_state") || !state.has("next_ids") ||

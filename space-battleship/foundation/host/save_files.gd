@@ -7,6 +7,7 @@ var _worker: Thread
 var _pending: Dictionary = {}
 var _generation: int = 0
 var saved_change: String = ""
+var saved_payload_hash: String = ""
 var last_result: Dictionary = {}
 
 func _init(directory: String) -> void:
@@ -16,6 +17,7 @@ func _init(directory: String) -> void:
 	if previous.ok:
 		_generation = str(previous.envelope.generation).to_int()
 		saved_change = previous.envelope.changeNumber
+		saved_payload_hash = previous.envelope.payloadHash
 
 static func integer_text(value) -> bool:
 	return value is String and value.is_valid_int() and value.to_int() >= 0 and str(value.to_int()) == value
@@ -65,7 +67,8 @@ func request(payload: Dictionary, change_number: String, session_id: String, utc
 	if JSON.stringify(envelope).to_utf8_buffer().size() > MAX_BYTES:
 		return {"ok": false, "error": "SaveTooLarge"}
 	_pending = {"directory": _directory, "envelope": JSON.stringify(envelope),
-		"generation": str(_generation), "change": change_number}
+		"generation": str(_generation), "change": change_number,
+		"payload_hash": envelope.payloadHash}
 	poll()
 	return {"ok": true, "generation": str(_generation)}
 
@@ -73,7 +76,9 @@ func poll() -> void:
 	if _worker != null and not _worker.is_alive():
 		last_result = _worker.wait_to_finish()
 		_worker = null
-		if last_result.ok: saved_change = last_result.change
+		if last_result.ok:
+			saved_change = last_result.change
+			saved_payload_hash = str(last_result.get("payload_hash", ""))
 	if _worker == null and not _pending.is_empty():
 		var captured := _pending.duplicate(true)
 		_pending = {}
@@ -86,8 +91,8 @@ func poll() -> void:
 func busy() -> bool:
 	return _worker != null or not _pending.is_empty()
 
-func dirty(current_change: String) -> bool:
-	return current_change != saved_change
+func dirty(current_change: String, current_payload_hash: String = "") -> bool:
+	return current_change != saved_change or (not current_payload_hash.is_empty() and current_payload_hash != saved_payload_hash)
 
 func close(wait_milliseconds: int = 250) -> Dictionary:
 	var deadline: int = Time.get_ticks_msec() + clampi(wait_milliseconds, 0, 2000)
@@ -127,4 +132,5 @@ static func write_snapshot(job: Dictionary, disk_override = null) -> Dictionary:
 	DirAccess.remove_absolute(directory.path_join(probe_name))
 	if not verified.ok: return {"ok": false, "error": "DataVerify"}
 	if not publish_file(directory, "active.json", JSON.stringify(pointer), disk): return {"ok": false, "error": "ManifestWrite"}
-	return {"ok": true, "generation": job.generation, "change": job.change}
+	return {"ok": true, "generation": job.generation, "change": job.change,
+		"payload_hash": str(job.get("payload_hash", ""))}

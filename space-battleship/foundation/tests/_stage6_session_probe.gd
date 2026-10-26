@@ -36,6 +36,7 @@ func _run() -> void:
 		printerr("missing disposable directory")
 		quit(1)
 		return
+	DirAccess.make_dir_recursive_absolute(directory)
 	var original = Session.new()
 	var ready: Dictionary = original.initialize("res://generated/config.json", 101)
 	if not ready.ok:
@@ -58,6 +59,10 @@ func _run() -> void:
 		printerr("close: ", ready)
 		quit(1)
 		return
+	if original.dirty_since_save().get("dirty", true):
+		printerr("newly saved session reported dirty")
+		quit(1)
+		return
 	var restored: Dictionary = Session.load_candidate("res://generated/config.json", directory)
 	if not restored.ok:
 		printerr("load: ", restored)
@@ -69,6 +74,10 @@ func _run() -> void:
 		return
 	restored.session.save_files.close(2000)
 	original._start_wave()
+	if not original.dirty_since_save().get("dirty", false):
+		printerr("business change not detected as dirty")
+		quit(1)
+		return
 	if not original.run_state.is_running():
 		printerr("wave start failed: ", original.run_state.reason())
 		quit(1)
