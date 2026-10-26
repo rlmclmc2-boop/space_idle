@@ -186,6 +186,11 @@ func draw_presentation_contacts() -> void:
 func presentation_clock() -> float:
 	return float(_kernel.presentation_clock())
 
+func consume_damage_receipts() -> Array:
+	var receipts: Array = _events.filter(func(event): return int(event.kind) == 8)
+	_events = _events.filter(func(event): return int(event.kind) != 8)
+	return receipts
+
 func presentation_active() -> bool:
 	return _run_state.is_running()
 

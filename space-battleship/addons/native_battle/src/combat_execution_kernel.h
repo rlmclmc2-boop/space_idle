@@ -214,10 +214,12 @@ class SpaceCombatKernel : public RefCounted {
         bool critical = false, hostile = false;
         double time = 0;
         Vector2 point, direction;
+        Amount damage = 0;
         Dictionary drop;
     };
     // Optional observation. Combat never reads this ledger.
     bool damage_stats_enabled = false;
+    int damage_receipts_emitted = 0;
     std::map<String, std::array<Amount, 2>> damage_stats;
     std::vector<Actor> actors;
     std::vector<Weapon> weapons;
@@ -813,6 +815,14 @@ class SpaceCombatKernel : public RefCounted {
                 auto &sum = damage_stats[source];
                 sum[0] += shield_loss;
                 sum[1] += hp_loss;
+                if (damage_receipts_emitted < 64) {
+                    Effect receipt;
+                    receipt.kind = 8; receipt.type = type; receipt.time = at;
+                    receipt.point = a->point; receipt.damage = shield_loss + hp_loss;
+                    receipt.critical = inst && inst->attack && inst->attack->critical;
+                    feedback.push_back(receipt);
+                    ++damage_receipts_emitted;
+                }
             }
         }
         if (a->hp != hp_before) { a->view["hp"] = wire(a->hp); actor_view_changes.insert(h.index); }
@@ -1434,6 +1444,13 @@ class SpaceCombatKernel : public RefCounted {
             Amount paid = minimum(before[layer], deferred[layer] ? payments[layer] : ceil_number(payments[layer]));
             set_layer_health(layer, before[layer] - paid);
             loss += before[layer] - layer_health(layer);
+        }
+        if (loss > 0 && damage_receipts_emitted < 64) {
+            Effect receipt;
+            receipt.kind = 8; receipt.type = type; receipt.hostile = true;
+            receipt.time = clock; receipt.point = player_point; receipt.damage = loss;
+            feedback.push_back(receipt);
+            ++damage_receipts_emitted;
         }
         if (branch("adaptation", "b1") && source_uid != 0) for (Defence &d : defences)
             d.source_stacks[source_uid] = minimum(int(enhancement_rule("adaptation_b1_stacks")), d.source_stacks[source_uid] + 1);
@@ -2311,6 +2328,7 @@ class SpaceCombatKernel : public RefCounted {
                 contact["kind"] = e.kind; contact["type"] = e.type;
                 contact["hostile"] = e.hostile; contact["critical"] = e.critical;
                 contact["clock"] = e.time; contact["position"] = e.point; contact["direction"] = e.direction;
+                if (e.kind == 8) contact["damage"] = wire(e.damage);
                 events.push_back(contact);
             }
         }
@@ -2684,6 +2702,7 @@ class SpaceCombatKernel : public RefCounted {
     bool advance(double seconds) {
         try {
         if (!can_advance(seconds)) return false;
+        damage_receipts_emitted = 0;
         if (retreating) { clock += seconds; return true; }
         double end = clock + seconds;
         // A newly installed beam/root can be due at the current clock.

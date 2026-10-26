@@ -1,9 +1,12 @@
 extends Node2D
+signal damage_received
 var _battle
 var beam_rows: Array = []
 var beam_instances: MultiMeshInstance2D
 var beam_material: ShaderMaterial
 var contact_layer: Node2D
+var damage_mode: String = "all"
+var damage_labels: Array = []
 
 func _init(battle) -> void:
 	_battle = battle
@@ -18,6 +21,16 @@ func _exit_tree() -> void:
 func _process(_dt: float) -> void:
 	if not _battle.presentation_active(): return
 	_battle.advance_presentation()
+	var receipts: Array = _battle.consume_damage_receipts()
+	if not receipts.is_empty(): damage_received.emit()
+	for receipt in receipts:
+		if damage_mode == "off" or damage_mode == "critical" and not receipt.critical: continue
+		if damage_labels.size() >= 48: break
+		damage_labels.append({"text": str(receipt.damage), "position": receipt.position,
+			"expires": _battle.presentation_clock() + 0.8, "critical": receipt.critical,
+			"hostile": receipt.hostile})
+	var now: float = _battle.presentation_clock()
+	damage_labels = damage_labels.filter(func(label): return label.expires > now)
 	contact_layer.queue_redraw()
 	queue_redraw()
 
@@ -30,6 +43,11 @@ func _draw() -> void:
 	_upload_beams()
 	_battle.draw_player_hull(self, Color("66d9dc"))
 	_battle.draw_enemy_overlays(self, font)
+	for label in damage_labels:
+		var colour := Color("ff8a85") if label.hostile else Color("ffe78f") if label.critical else Color("e6f7f0")
+		var lift: float = (label.expires - _battle.presentation_clock()) * 22.0
+		draw_string(font, label.position - Vector2(55, 15 + lift), label.text,
+			HORIZONTAL_ALIGNMENT_CENTER, 110, 16, colour)
 	var hud: Dictionary = _battle.hud_values()
 	draw_string(font, Vector2(18, 53), "攻击 %s   来袭 %s" % [hud.attacks, hud.incoming], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("a9c6db"))
 	draw_string(font, Vector2(18, 765), "装甲 %s   护盾 %s" % [hud.armour, hud.shield], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8ede6"))

@@ -28,7 +28,20 @@ var growth_status: Label
 var save_state_label: Label
 var _pending_import: Dictionary = {}
 var _pending_reforge: Dictionary = {}
+var _pending_new_game: Dictionary = {}
 var _autosave_interval: float = 0.0
+var _music_enabled: bool = true
+var _effects_enabled: bool = true
+var _damage_mode: String = "all"
+var _preferred_page: String = "battle"
+var _music_player: AudioStreamPlayer
+var _effects_player: AudioStreamPlayer
+var _next_effect_ms: int = 0
+var _music_toggle: CheckBox
+var _effects_toggle: CheckBox
+var _damage_option: OptionButton
+var _skip_toggle: CheckBox
+var _autosave_spin: SpinBox
 var _settings_error: String = ""
 var _next_autosave_wall: float = 0.0
 var _save_status_elapsed: float = 1.0
@@ -46,8 +59,7 @@ func _ready() -> void:
 			return
 	var settings: Dictionary = PlayerSettings.load_interval()
 	if settings.ok:
-		_autosave_interval = float(settings.interval)
-		_skip_tutorial = bool(settings.auto_skip_tutorial)
+		_apply_settings(settings)
 	else:
 		_settings_error = str(settings.reason)
 	session = Session.new()
@@ -66,13 +78,66 @@ func _ready() -> void:
 
 func _show_session() -> void:
 	get_window().content_scale_size = session.battle.view_size()
-	if DisplayServer.get_name() != "headless": add_child(BattleView.new(session.battle))
+	if DisplayServer.get_name() != "headless":
+		var battle_view = BattleView.new(session.battle)
+		battle_view.damage_mode = _damage_mode
+		battle_view.damage_received.connect(_play_effect)
+		add_child(battle_view)
 	add_child(BattleStatisticsView.new(session.battle.statistics()))
 	_setup_shell_overlay()
 	add_child(CampaignView.new(session.campaign_system))
 	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 	_setup_growth_panel()
 	_setup_guidance_panel()
+	_setup_audio()
+
+func _apply_settings(settings: Dictionary) -> void:
+	_autosave_interval = float(settings.interval)
+	_skip_tutorial = bool(settings.auto_skip_tutorial)
+	_music_enabled = bool(settings.music_enabled)
+	_effects_enabled = bool(settings.effects_enabled)
+	_damage_mode = str(settings.damage_mode)
+	_preferred_page = str(settings.page)
+	_next_autosave_wall = session.wall_time + _autosave_interval if session != null else 0.0
+	if _music_player != null: _music_player.stream_paused = not _music_enabled
+	if _music_toggle != null: _music_toggle.set_pressed_no_signal(_music_enabled)
+	if _effects_toggle != null: _effects_toggle.set_pressed_no_signal(_effects_enabled)
+	if _skip_toggle != null: _skip_toggle.set_pressed_no_signal(_skip_tutorial)
+	if _autosave_spin != null: _autosave_spin.set_value_no_signal(_autosave_interval)
+	if _damage_option != null: _damage_option.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
+	for child in get_children():
+		if child.get_script() == BattleView: child.damage_mode = _damage_mode
+	if growth_panel != null: growth_panel.visible = _preferred_page == "growth"
+
+func _setup_audio() -> void:
+	_music_player = AudioStreamPlayer.new()
+	_music_player.stream = load("res://assets/audio/bgm/deep_space_idle_01.ogg")
+	if _music_player.stream is AudioStreamOggVorbis: _music_player.stream.loop = true
+	_music_player.volume_db = -16.0
+	add_child(_music_player)
+	_music_player.play()
+	_music_player.stream_paused = not _music_enabled
+	_effects_player = AudioStreamPlayer.new()
+	_effects_player.volume_db = -13.0
+	var tone := AudioStreamWAV.new()
+	tone.mix_rate = 22050
+	tone.format = AudioStreamWAV.FORMAT_16_BITS
+	var samples := PackedByteArray()
+	for i in 2205:
+		var envelope: float = 1.0 - float(i) / 2205.0
+		var amplitude: int = int(sin(float(i) * TAU * 660.0 / 22050.0) * envelope * 4500.0)
+		samples.append(amplitude & 255)
+		samples.append((amplitude >> 8) & 255)
+	tone.data = samples
+	_effects_player.stream = tone
+	add_child(_effects_player)
+
+func _play_effect() -> void:
+	if not _effects_enabled or _effects_player == null: return
+	var now: int = Time.get_ticks_msec()
+	if now < _next_effect_ms: return
+	_next_effect_ms = now + 120
+	_effects_player.play()
 
 func _load_saved(directory: String, backup: bool = false) -> Dictionary:
 	var loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory, backup)
@@ -103,6 +168,7 @@ func _replace_session(replacement) -> Dictionary:
 	session = replacement
 	_pending_import = {}
 	_pending_reforge = {}
+	_pending_new_game = {}
 	_seen_save_failure_generation = ""
 	_next_autosave_wall = session.wall_time + _autosave_interval
 	_overlay = null
@@ -111,12 +177,48 @@ func _replace_session(replacement) -> Dictionary:
 	_guidance_label = null
 	_guidance_button = null
 	growth_panel = null
+	_music_player = null
+	_effects_player = null
+	_next_effect_ms = 0
+	_music_toggle = null
+	_effects_toggle = null
+	_damage_option = null
+	_skip_toggle = null
+	_autosave_spin = null
 	_show_session()
 	_sync_guidance()
 	var persisted: Dictionary = session.request_save()
 	return {"ok": true, "persistence_pending": persisted.ok,
 		"persistence_failed": not persisted.ok,
 		"persistence_error": str(persisted.get("error", persisted.get("reason", "SaveFailed")))}
+
+func _preview_new_game(directory: String, clear_settings: bool) -> Dictionary:
+	_pending_new_game = {}
+	if not DirAccess.dir_exists_absolute(directory):
+		return {"ok": false, "reason": "SaveDirectoryRequired"}
+	var candidate = Session.new()
+	var created: Dictionary = candidate.initialize("res://generated/config.json", Time.get_ticks_usec())
+	if not created.ok: return created
+	created = candidate.campaign_system.start_sortie(1, candidate.equipment.clear_switch_locks)
+	if not created.ok: return created
+	created = candidate.configure_save_directory(directory)
+	if not created.ok: return created
+	_pending_new_game = {"session": candidate, "directory": directory, "clear_settings": clear_settings}
+	return {"ok": true, "message": "New game ready. Confirm to replace the current save; settings %s." % ["reset" if clear_settings else "kept"]}
+
+func _confirm_new_game(directory: String, clear_settings: bool) -> Dictionary:
+	if _pending_new_game.is_empty() or _pending_new_game.directory != directory or _pending_new_game.clear_settings != clear_settings:
+		return {"ok": false, "reason": "NewGamePreviewRequired"}
+	var switched: Dictionary = _replace_session(_pending_new_game.session)
+	if not switched.ok: return switched
+	if clear_settings:
+		var cleared: Dictionary = PlayerSettings.reset()
+		if not cleared.ok:
+			switched.settings_failed = true
+			switched.settings_error = str(cleared.reason)
+		else:
+			_apply_settings(PlayerSettings.defaults())
+	return switched
 
 func _preview_reforge(directory: String, planet_id: String, ids_text: String) -> Dictionary:
 	_pending_reforge = {}
@@ -271,11 +373,22 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 			growth_status.text = "请先确认或取消重铸"
 			return
 		var result: Dictionary = action.call()
+		if result.get("settings_failed", false):
+			growth_status.text = "Settings reset failed: " + str(result.get("settings_error", "Unknown"))
+			return
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
 		growth_status.text = "会话已切换，保存失败：" + str(result.get("persistence_error", "Unknown")) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
 		)
 	return button
+
+func _set_page(page: String) -> void:
+	var saved: Dictionary = PlayerSettings.save_change("page", page)
+	if saved.ok:
+		_preferred_page = page
+		growth_panel.visible = page == "growth"
+	elif growth_status != null:
+		growth_status.text = str(saved.reason)
 
 func _setup_growth_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -288,7 +401,7 @@ func _setup_growth_panel() -> void:
 	growth_panel = PanelContainer.new()
 	growth_panel.position = Vector2(12, 122)
 	growth_panel.size = Vector2(410, 615)
-	growth_panel.visible = false
+	growth_panel.visible = _preferred_page == "growth"
 	layer.add_child(growth_panel)
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(400, 600)
@@ -298,7 +411,7 @@ func _setup_growth_panel() -> void:
 	scroll.add_child(box)
 	var back := Button.new()
 	back.text = "返回战斗"
-	back.pressed.connect(func(): growth_panel.visible = false)
+	back.pressed.connect(func(): _set_page("battle"))
 	box.add_child(back)
 	growth_status = Label.new()
 	if not _settings_error.is_empty(): growth_status.text = _settings_error
@@ -306,7 +419,7 @@ func _setup_growth_panel() -> void:
 	save_state_label = Label.new()
 	box.add_child(save_state_label)
 	_save_status_elapsed = 1.0
-	open.pressed.connect(func(): growth_panel.visible = not growth_panel.visible)
+	open.pressed.connect(func(): _set_page("battle" if growth_panel.visible else "growth"))
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
@@ -349,6 +462,7 @@ func _setup_growth_panel() -> void:
 	autosave.step = 1.0
 	autosave.suffix = " seconds between saves (0 = off)"
 	autosave.value = _autosave_interval
+	_autosave_spin = autosave
 	box.add_child(autosave)
 	autosave.value_changed.connect(func(value: float):
 		var saved: Dictionary = PlayerSettings.save_interval(int(value))
@@ -361,6 +475,7 @@ func _setup_growth_panel() -> void:
 	var skip_tutorial := CheckBox.new()
 	skip_tutorial.text = "自动跳过引导提示"
 	skip_tutorial.button_pressed = _skip_tutorial
+	_skip_toggle = skip_tutorial
 	box.add_child(skip_tutorial)
 	skip_tutorial.toggled.connect(func(enabled: bool):
 		var saved: Dictionary = PlayerSettings.save_auto_skip_tutorial(enabled)
@@ -370,6 +485,52 @@ func _setup_growth_panel() -> void:
 		else:
 			skip_tutorial.set_pressed_no_signal(_skip_tutorial)
 			growth_status.text = str(saved.reason))
+	var music := CheckBox.new()
+	music.text = "Music"
+	music.button_pressed = _music_enabled
+	_music_toggle = music
+	box.add_child(music)
+	music.toggled.connect(func(enabled: bool):
+		var saved: Dictionary = PlayerSettings.save_change("music_enabled", enabled)
+		if saved.ok:
+			_music_enabled = enabled
+			if _music_player != null: _music_player.stream_paused = not enabled
+		else:
+			music.set_pressed_no_signal(_music_enabled)
+			growth_status.text = str(saved.reason))
+	var effects := CheckBox.new()
+	effects.text = "Sound effects"
+	effects.button_pressed = _effects_enabled
+	_effects_toggle = effects
+	box.add_child(effects)
+	effects.toggled.connect(func(enabled: bool):
+		var saved: Dictionary = PlayerSettings.save_change("effects_enabled", enabled)
+		if saved.ok: _effects_enabled = enabled
+		else:
+			effects.set_pressed_no_signal(_effects_enabled)
+			growth_status.text = str(saved.reason))
+	var damage_mode := OptionButton.new()
+	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("Damage numbers: " + mode)
+	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
+	_damage_option = damage_mode
+	box.add_child(damage_mode)
+	damage_mode.item_selected.connect(func(index: int):
+		var chosen: String = PlayerSettings.DAMAGE_MODES[index]
+		var saved: Dictionary = PlayerSettings.save_change("damage_mode", chosen)
+		if saved.ok:
+			_damage_mode = chosen
+			for child in get_children():
+				if child.get_script() == BattleView: child.damage_mode = chosen
+		else:
+			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
+			growth_status.text = str(saved.reason))
+	var clear_settings := CheckBox.new()
+	clear_settings.text = "Clear player settings with new game"
+	box.add_child(clear_settings)
+	_command_button(box, "Preview new game", func() -> Dictionary:
+		return _preview_new_game(save_path.text, clear_settings.button_pressed))
+	_command_button(box, "Confirm new game", func() -> Dictionary:
+		return _confirm_new_game(save_path.text, clear_settings.button_pressed))
 	_command_button(box, "Load primary", func() -> Dictionary:
 		return _load_saved(save_path.text))
 	_command_button(box, "Load backup", func() -> Dictionary:
