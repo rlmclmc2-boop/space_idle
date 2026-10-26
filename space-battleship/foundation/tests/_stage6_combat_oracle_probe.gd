@@ -101,5 +101,47 @@ func _run() -> void:
 	if int(session.battle._kernel.read_history().attacks) != attacks_after_death:
 		_fail("attacks continued without a target")
 		return
-	print("STAGE6_COMBAT_ORACLE_OK C01 shield=30 armour=40 precontact=0; single death/drop=1")
+	var shield_session = Session.new()
+	var ready: Dictionary = shield_session.initialize("res://generated/config.json", 23)
+	if ready.ok: ready = shield_session.campaign_system.accept_reforge(shield_session.campaign_system.save_state(), 8)
+	if not ready.ok:
+		_fail("C13/C15 shield fixture: " + str(ready))
+		return
+	shield_session.equipment.refresh_availability(shield_session.campaign_system.available, 8, false)
+	var before_slots: Array = shield_session.equipment.save_state().slots.duplicate(true)
+	var rejected: Dictionary = shield_session.equipment.equip_slot("defence:0", "", shield_session.equipment_inputs(), shield_session.publish_equipment_refit)
+	if rejected.ok or rejected.reason != "FirstDefenceRequired" or shield_session.equipment.save_state().slots != before_slots:
+		_fail("C15 first defence empty refit mutated slots: " + str(rejected))
+		return
+	ready = shield_session.equipment.equip_slot("defence:0", "shield", shield_session.equipment_inputs(), shield_session.publish_equipment_refit)
+	if not ready.ok:
+		_fail("C15 unlocked shield refit: " + str(ready))
+		return
+	ready = shield_session.campaign_system.start_sortie(8, shield_session.equipment.clear_switch_locks)
+	if not ready.ok or not shield_session.battle.defence_capacity_available() or shield_session.battle.defence_depleted():
+		_fail("C13 shield-only sortie rejected: " + str(ready))
+		return
+	var player: Dictionary = shield_session.battle._kernel.player_view()
+	if str(player.max_armour) != "0e0" or str(player.armour) != "0e0" or float(player.shield) <= 0.0:
+		_fail("C13 shield-only native defence: " + str(player))
+		return
+	var weapon: Dictionary = shield_session.battle._values.weapons["weapon:0"].duplicate()
+	weapon.base = "0e0"
+	ready = shield_session.battle._kernel.set_player_values({"weapon:0": weapon}, {}, "growth", "")
+	if not ready.ok:
+		_fail("C13 unarmed death fixture: " + str(ready))
+		return
+	shield_session._start_wave()
+	var retreat_count: int = 0
+	for step in 2400:
+		if not shield_session._advance_kernel(0.05):
+			_fail("C13 shield-only combat stopped: " + str(shield_session.run_state.reason()))
+			return
+		if shield_session.campaign_system.restore_checkpoint() == "retreat":
+			retreat_count += 1
+			break
+	if retreat_count != 1 or shield_session.battle._kernel.player_view().shield != "0e0":
+		_fail("C13 shield depletion did not begin one retreat: " + str(shield_session.campaign_system.restore_checkpoint()) + " " + str(shield_session.battle._kernel.player_view()))
+		return
+	print("STAGE6_COMBAT_ORACLE_OK C01 shield=30 armour=40 precontact=0; single death/drop=1; C13 shield-only sortie/depletion; C15 first-slot refit")
 	quit()

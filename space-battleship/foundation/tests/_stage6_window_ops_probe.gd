@@ -48,6 +48,7 @@ func _run() -> void:
 	if prefix.is_empty():
 		_fail("screenshot prefix required")
 		return
+	OS.set_environment("SPACE_IDLE_SETTINGS_PATH", prefix + "-settings.json")
 	var main = load("res://src/main.tscn").instantiate()
 	root.add_child(main)
 	if not main.startup_error.is_empty() or not main._guidance_panel.visible or not main.session.pause_reasons.has("unlock"):

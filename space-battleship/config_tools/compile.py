@@ -26,6 +26,13 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = Path(__file__).with_name("production_manifest.json")
 DEFAULT_OUTPUT = ROOT / "generated" / "config.json"
 
+# This file is also read by GameSession before native systems are created.
+HYPERSPACE_CONTRACT = json.loads(Path(__file__).with_name("hyperspace_parameter_contract.json").read_text(encoding="utf-8"))
+HYPERSPACE_INT_KEYS = frozenset(HYPERSPACE_CONTRACT["intKeys"])
+HYPERSPACE_POSITIVE_KEYS = frozenset(HYPERSPACE_CONTRACT["positiveKeys"])
+HYPERSPACE_NONNEGATIVE_KEYS = frozenset(HYPERSPACE_CONTRACT["nonnegativeKeys"])
+HYPERSPACE_PROBABILITY_KEYS = frozenset(HYPERSPACE_CONTRACT["probabilityKeys"])
+
 
 def stable_id(value: object) -> str | None:
     if isinstance(value, bool) or value is None:
@@ -380,16 +387,48 @@ class Compiler:
         for node in edges: visit(node)
 
     def _validate_hyperspace(self) -> None:
-        for row in self.table("hyperspace_config", "基础参数"):
-            key, value = row.get("key"), row.get("value")
-            if key in ("material_reward_level_step", "value_precision") and (
-                not valid_type(value, "number") or value <= 0
-            ):
+        parameter_rows = self.table("hyperspace_config", "基础参数")
+        parameters = {str(row.get("key")): row.get("value") for row in parameter_rows}
+        hyperspace_book = next(book for book in self.manifest["workbooks"] if book["file"] == "hyperspace_config.xlsx")
+        parameter_schema = next(sheet for sheet in hyperspace_book["sheets"] if sheet["name"] == "基础参数")
+        expected_keys = set(parameter_schema["allowedKeys"])
+        missing_keys = expected_keys - set(parameters)
+        if missing_keys:
+            self.error("hyperspace_config.xlsx", "基础参数", 0, "A", ",".join(sorted(missing_keys)),
+                       "MissingHyperspaceParameter", "registered parameter row is missing")
+        contracted_keys = HYPERSPACE_INT_KEYS | HYPERSPACE_POSITIVE_KEYS | HYPERSPACE_NONNEGATIVE_KEYS | HYPERSPACE_PROBABILITY_KEYS | {"amplification_rate"}
+        if contracted_keys != expected_keys:
+            self.error("hyperspace_config.xlsx", "基础参数", 0, "", "", "ParameterContractMismatch",
+                       f"missing={sorted(expected_keys-contracted_keys)} extra={sorted(contracted_keys-expected_keys)}")
+        for row in parameter_rows:
+            key, value = str(row.get("key")), row.get("value")
+            if key not in expected_keys:
+                continue  # UnknownRuleKey is reported by the generic sheet reader.
+            expected_type = "int" if key in HYPERSPACE_INT_KEYS else "float"
+            if row.get("data_type") != expected_type or not valid_type(value, "int" if expected_type == "int" else "number"):
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceParameterType", f"{key} must use {expected_type}")
+                continue
+            if abs(value) >= HYPERSPACE_CONTRACT["magnitudeExclusive"]:
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceParameterMagnitude", f"{key} exceeds the runtime number boundary")
+            if key in HYPERSPACE_POSITIVE_KEYS and value <= 0:
                 self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspacePositiveParameter", f"{key} must be positive")
-            if key == "ultimate_core_probability" and (
-                not valid_type(value, "number") or not 0 <= value <= 1
-            ):
-                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceProbabilityRange", "probability must be between zero and one")
+            elif key in HYPERSPACE_NONNEGATIVE_KEYS and value < 0:
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceNonnegativeParameter", f"{key} cannot be negative")
+            elif key in HYPERSPACE_PROBABILITY_KEYS and not 0 <= value <= 1:
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceProbabilityRange", f"{key} must be within zero and one")
+            elif key == "amplification_rate" and value <= -1:
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceAmplificationRange", "1 + amplification_rate must be positive")
+            if key in HYPERSPACE_CONTRACT["hardCaps"] and (value > HYPERSPACE_CONTRACT["hardCaps"][key] or key == "maximum_ultimate" and value != 1):
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceHardCap", f"{key} exceeds its gameplay cap")
+        for child, parent in HYPERSPACE_CONTRACT["capacityRelations"]:
+            if valid_type(parameters.get(child), "number") and valid_type(parameters.get(parent), "number") and parameters[child] > parameters[parent]:
+                row = next(row for row in parameter_rows if row.get("key") == child)
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceCapacityRelation", f"{child} exceeds {parent}")
+        stage_ids = self.ids("level", "level", "id")
+        for key in HYPERSPACE_CONTRACT["stageReferences"]:
+            if valid_type(parameters.get(key), "int") and str(parameters[key]) not in stage_ids:
+                row = next(row for row in parameter_rows if row.get("key") == key)
+                self.row_error("hyperspace_config", "基础参数", row, "value", "MissingReference", f"{key} is not an authored stage")
         routes = self.ids("hyperspace_config", "路线", "route_id")
         affixes = self.ids("hyperspace_config", "词缀定义", "affix_id")
         legends = self.ids("hyperspace_config", "传说定义", "effect_id")

@@ -16,6 +16,7 @@ const StateCodec = preload("res://foundation/host/state_codec.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
 const Notifications = preload("res://src/systems/notifications.gd")
 const Tutorial = preload("res://src/systems/tutorial.gd")
+const HyperspaceConfigContract = preload("res://foundation/host/hyperspace_config_contract.gd")
 const STEP: float = 1.0 / 60.0
 const FRAME_STEPS: int = 64
 
@@ -74,6 +75,8 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, s
 	if not parsed is Dictionary:
 		return _fail("ConfigurationReadFailed")
 	var configuration: Dictionary = parsed
+	var parameter_check: Dictionary = HyperspaceConfigContract.validate(configuration)
+	if not parameter_check.ok: return _fail(str(parameter_check.reason))
 	_configuration_path = path
 	_configuration_hash = configuration_text.sha256_text()
 	_combat_seed = combat_seed

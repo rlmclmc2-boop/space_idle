@@ -12,7 +12,9 @@ from pathlib import Path
 
 import openpyxl
 
-from compile import DEFAULT_MANIFEST, ROOT, compile_config
+from compile import (DEFAULT_MANIFEST, ROOT, HYPERSPACE_NONNEGATIVE_KEYS,
+                     HYPERSPACE_POSITIVE_KEYS, HYPERSPACE_PROBABILITY_KEYS,
+                     compile_config)
 
 
 class PublicationTest(unittest.TestCase):
@@ -61,6 +63,31 @@ class PublicationTest(unittest.TestCase):
         worksheet.cell(row, column).value = value
         workbook.save(path)
         workbook.close()
+
+    def change_hyperspace_parameters(self, values: dict[str, object], field: str = "value") -> None:
+        path = self.source / "hyperspace_config.xlsx"
+        workbook = openpyxl.load_workbook(path)
+        sheet = workbook["基础参数"]
+        columns = {cell.value: index for index, cell in enumerate(sheet[1], 1)}
+        found = set()
+        for row in range(4, sheet.max_row + 1):
+            key = sheet.cell(row, columns["key"]).value
+            if key in values:
+                sheet.cell(row, columns[field]).value = values[key]
+                found.add(key)
+        self.assertEqual(found, set(values))
+        workbook.save(path)
+        workbook.close()
+
+    def reject_hyperspace_parameters(self, expected: dict[str, str]) -> None:
+        result = compile_config(self.manifest, self.output, self.report, self.source)
+        self.assertFalse(result["ok"])
+        actual = {(error["key"], error["code"]) for error in result["errors"]
+                  if error["workbook"] == "hyperspace_config.xlsx" and error["sheet"] == "基础参数"}
+        for key, code in expected.items():
+            self.assertIn((key, code), actual)
+        self.assertEqual(self.output.read_bytes(), self.original)
+        self.assertEqual(json.loads(self.report.read_text(encoding="utf-8")), result)
 
     def reject(self, expected: str) -> None:
         result = compile_config(self.manifest, self.output, self.report, self.source)
@@ -131,6 +158,60 @@ class PublicationTest(unittest.TestCase):
     def test_hyperspace_probability_over_one_rejected(self) -> None:
         self.change_field("hyperspace_config.xlsx", "基础参数", "value", 43, 1.5)
         self.reject("HyperspaceProbabilityRange")
+
+    def test_every_positive_hyperspace_parameter_rejected_at_zero(self) -> None:
+        fixed = {"overflow_capacity", "completion_budget", "maximum_filter_conditions",
+                 "maximum_filter_string_length", "maximum_forecast_attempts"}
+        keys = HYPERSPACE_POSITIVE_KEYS - fixed
+        self.change_hyperspace_parameters({key: 0 for key in keys})
+        self.reject_hyperspace_parameters({key: "HyperspacePositiveParameter" for key in keys})
+
+    def test_every_probability_and_nonnegative_parameter_rejected(self) -> None:
+        changes = {key: 1.5 for key in HYPERSPACE_PROBABILITY_KEYS}
+        changes.update({key: -1 for key in HYPERSPACE_NONNEGATIVE_KEYS})
+        self.change_hyperspace_parameters(changes)
+        expected = {key: "HyperspaceProbabilityRange" for key in HYPERSPACE_PROBABILITY_KEYS}
+        expected.update({key: "HyperspaceNonnegativeParameter" for key in HYPERSPACE_NONNEGATIVE_KEYS})
+        self.reject_hyperspace_parameters(expected)
+
+    def test_hyperspace_cross_field_and_magnitude_rejected(self) -> None:
+        changes = {"maximum_equipped": 1, "ticket": 300000, "initial_retention_capacity": 201,
+                   "retention_capacity_gain": 11, "unlock_stage": 221,
+                   "amplification_rate": -1, "modernization_base_coefficient": 9e15}
+        self.change_hyperspace_parameters(changes)
+        self.reject_hyperspace_parameters({
+            "maximum_legendary": "HyperspaceCapacityRelation", "ticket": "HyperspaceCapacityRelation",
+            "initial_retention_capacity": "HyperspaceCapacityRelation",
+            "retention_capacity_gain": "HyperspaceCapacityRelation", "unlock_stage": "MissingReference",
+            "amplification_rate": "HyperspaceAmplificationRange",
+            "modernization_base_coefficient": "HyperspaceParameterMagnitude"})
+
+    def test_hyperspace_declared_type_is_fixed(self) -> None:
+        self.change_hyperspace_parameters({"modernization_level_step": "float"}, field="data_type")
+        self.reject_hyperspace_parameters({"modernization_level_step": "HyperspaceParameterType"})
+
+    def test_hyperspace_runtime_divisors_and_probabilities_rejected_together(self) -> None:
+        self.change_hyperspace_parameters({
+            "late_supply_ramp_seconds": 0, "modernization_level_step": 0,
+            "modernization_cost_base": 0, "affix_initial_probability": 1.5,
+            "hanging_initial_probability": -0.1,
+        })
+        self.reject_hyperspace_parameters({
+            "late_supply_ramp_seconds": "HyperspacePositiveParameter",
+            "modernization_level_step": "HyperspacePositiveParameter",
+            "modernization_cost_base": "HyperspacePositiveParameter",
+            "affix_initial_probability": "HyperspaceProbabilityRange",
+            "hanging_initial_probability": "HyperspaceProbabilityRange",
+        })
+
+    def test_missing_hyperspace_parameter_rejected(self) -> None:
+        path = self.source / "hyperspace_config.xlsx"
+        workbook = openpyxl.load_workbook(path)
+        sheet = workbook["基础参数"]
+        sheet.delete_rows(40)
+        workbook.save(path)
+        workbook.close()
+        self.reject("MissingHyperspaceParameter")
 
     def test_stage_point_order_and_bounds_rejected(self) -> None:
         # Preserve existing formula caches while changing the literal C4 cell.

@@ -41,12 +41,39 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(frozen_directory)
 	var copied_config: String = frozen_directory.path_join("config.json")
 	var initial_config: String = FileAccess.get_file_as_string("res://generated/config.json")
+	var invalid_config: Dictionary = JSON.parse_string(initial_config)
+	for row in invalid_config.hyperspace_config["基础参数"]:
+		if row.key == "late_supply_ramp_seconds": row.value = 0
+	var invalid_path: String = frozen_directory.path_join("invalid-config.json")
+	var invalid_file: FileAccess = FileAccess.open(invalid_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_config))
+	invalid_file.close()
+	var rejected_config = Session.new()
+	var invalid_ready: Dictionary = rejected_config.initialize(invalid_path, 100)
+	if invalid_ready.ok or invalid_ready.reason != "InvalidHyperspaceParameter":
+		printerr("startup admitted invalid hyperspace parameter: ", invalid_ready)
+		quit(1)
+		return
+	for row in invalid_config.hyperspace_config["基础参数"]:
+		if row.key == "late_supply_ramp_seconds": row.value = 600
+		if row.key == "maximum_equipped": row.value = 1
+	invalid_file = FileAccess.open(invalid_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_config))
+	invalid_file.close()
+	rejected_config = Session.new()
+	invalid_ready = rejected_config.initialize(invalid_path, 100)
+	if invalid_ready.ok or invalid_ready.reason != "InvalidHyperspaceParameter":
+		printerr("startup admitted invalid hyperspace relation: ", invalid_ready)
+		quit(1)
+		return
 	var copied_file: FileAccess = FileAccess.open(copied_config, FileAccess.WRITE)
 	copied_file.store_string(initial_config)
 	copied_file.close()
 	var frozen = Session.new()
-	if not frozen.initialize(copied_config, 100).ok or not frozen.configure_save_directory(frozen_directory).ok:
-		printerr("frozen config fixture failed")
+	var frozen_ready: Dictionary = frozen.initialize(copied_config, 100)
+	if frozen_ready.ok: frozen_ready = frozen.configure_save_directory(frozen_directory)
+	if not frozen_ready.ok:
+		printerr("frozen config fixture failed: ", frozen_ready)
 		quit(1)
 		return
 	copied_file = FileAccess.open(copied_config, FileAccess.WRITE)
@@ -81,6 +108,17 @@ func _run() -> void:
 		return
 	if original.dirty_since_save().get("dirty", true):
 		printerr("newly saved session reported dirty")
+		quit(1)
+		return
+	var invalid_envelope: Dictionary = SaveFiles.read_pointer(directory, "active.json").envelope.duplicate(true)
+	invalid_envelope.configHash = FileAccess.get_file_as_string(invalid_path).sha256_text()
+	var invalid_import_path: String = frozen_directory.path_join("invalid-import.json")
+	invalid_file = FileAccess.open(invalid_import_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_envelope))
+	invalid_file.close()
+	var invalid_import: Dictionary = Session.import_candidate(invalid_path, directory, invalid_import_path)
+	if invalid_import.ok or invalid_import.reason != "InvalidHyperspaceParameter" or not original.run_state.is_running():
+		printerr("invalid hyperspace import changed live session: ", invalid_import)
 		quit(1)
 		return
 	var restored: Dictionary = Session.load_candidate("res://generated/config.json", directory)
