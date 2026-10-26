@@ -3,6 +3,7 @@ extends SceneTree
 const Session = preload("res://src/game_session.gd")
 const StateCodec = preload("res://foundation/host/state_codec.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
+const Notifications = preload("res://src/systems/notifications.gd")
 
 func _initialize() -> void:
 	var extension: String = OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION")
@@ -14,6 +15,22 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
+	var notices = Notifications.new()
+	notices.record("unlock", "ship:starter")
+	notices.record("research", "laser:1")
+	notices.mark_seen("unlock:ship:starter")
+	var archive: Array = notices.entries()
+	if archive.size() != 2 or notices.unread() != 2:
+		printerr("archive display cleared unread")
+		quit(1)
+		return
+	notices.mark_read("unlock:ship:starter")
+	var restored_notices = Notifications.new()
+	var notice_ready: Dictionary = restored_notices.restore_state(notices.save_state())
+	if not notice_ready.ok or restored_notices.unread() != 1 or restored_notices.unread("research") != 1:
+		printerr("notice topic read state failed")
+		quit(1)
+		return
 	var directory: String = OS.get_environment("SPACE_IDLE_SAVE_TEST_DIR")
 	if directory.is_empty():
 		printerr("missing disposable directory")

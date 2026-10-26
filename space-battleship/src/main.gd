@@ -12,6 +12,7 @@ const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
 const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
+const NotificationsPanel = preload("res://src/ui/notifications_panel.gd")
 const Session = preload("res://src/game_session.gd")
 var session
 var startup_error: String = ""
@@ -203,6 +204,7 @@ func _setup_growth_panel() -> void:
 	box.add_child(GalaxyPanel.new(session.galaxy_system))
 	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button))
 	box.add_child(HyperspacePanel.new(session, _command_button))
+	box.add_child(NotificationsPanel.new(session.notifications))
 	var save_path := LineEdit.new()
 	save_path.placeholder_text = "Existing absolute save directory"
 	if session.save_files != null: save_path.text = session.save_files._directory

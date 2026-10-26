@@ -56,10 +56,11 @@ func panel_model() -> Dictionary:
 		options.append({"id": key, "name": str(_definitions[key].name)})
 	return {"options": options, "ratio": _state.ratio, "minimum_ratio": _rules.research_minimum_ratio}
 
-func _finish_advance(next: Dictionary, wallet: Dictionary, completed: bool, continuation_error = null) -> Dictionary:
+func _finish_advance(next: Dictionary, wallet: Dictionary, completed: bool, continuation_error = null, completed_id: String = "") -> Dictionary:
 	var changed: bool = _state.available != next.available
 	_state = next
 	var result := {"ok": true, "wallet": wallet, "completed": completed, "choices_changed": changed}
+	if completed: result.completed_id = completed_id
 	if continuation_error != null: result.continuation_error = continuation_error
 	return result
 
@@ -386,8 +387,8 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 			if continue_research:
 				var selected = _select_shortest(next, definitions, api)
 				if not selected.ok:
-					return _finish_advance(next, balances, true, selected.get("error", selected.get("reason", "ResearchContinuationFailed")))
-			return _finish_advance(next, balances, true)
+					return _finish_advance(next, balances, true, selected.get("error", selected.get("reason", "ResearchContinuationFailed")), key)
+			return _finish_advance(next, balances, true, null, key)
 		remaining = maxf(0.0, remaining - piece)
 	next.work[key] = progress
 	return _finish_advance(next, balances, false)

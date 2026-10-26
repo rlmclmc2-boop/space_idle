@@ -14,6 +14,7 @@ const Galaxy = preload("res://src/systems/galaxy.gd")
 const Hyperspace = preload("res://src/systems/hyperspace.gd")
 const StateCodec = preload("res://foundation/host/state_codec.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
+const Notifications = preload("res://src/systems/notifications.gd")
 const STEP: float = 1.0 / 60.0
 const FRAME_STEPS: int = 64
 
@@ -54,6 +55,7 @@ var _chrono_rate: String = "0"
 var _chrono_speed: int = 1
 var _chrono_costs: Dictionary = {}
 var save_files
+var notifications = Notifications.new()
 
 func _init() -> void:
 	_income_factors.make_read_only()
@@ -145,6 +147,7 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, s
 				campaign_system.return_from_hyperspace(interrupted.receipt.return_target, false)
 			else:
 				return {"ok": false, "reason": "InvalidHyperspaceCheckpoint"}
+	_record_unlocks()
 	return {"ok": true}
 
 func _restore_modules(saved: Dictionary) -> Dictionary:
@@ -165,6 +168,8 @@ func _restore_modules(saved: Dictionary) -> Dictionary:
 		else:
 			result = port[0].restore_state(modules.get(port[1], {}))
 		if not result.ok: return result
+	var restored_notifications: Dictionary = notifications.restore_state(modules.get("notifications", {"entries": {}}))
+	if not restored_notifications.ok: return restored_notifications
 	var times: Dictionary = saved.times
 	for key in ["wall", "game", "pending"]:
 		if not times.get(key) is float or not is_finite(times[key]) or times[key] < 0.0:
@@ -202,7 +207,8 @@ func save_payload() -> Dictionary:
 			"equipment": equipment.save_state(), "enhancement": enhancement.save_state(),
 			"reactor": reactor_system.save_state(), "research": research.save_state(),
 			"crew": crew_system.save_state(), "planet": planet_system.save_state(),
-			"galaxy": galaxy_system.save_state(), "hyperspace": hyperspace_system.save_state()}}
+			"galaxy": galaxy_system.save_state(), "hyperspace": hyperspace_system.save_state(),
+			"notifications": notifications.save_state()}}
 	var packed: Dictionary = StateCodec.pack(snapshot)
 	if not packed.ok: return packed
 	return {"ok": true, "payload": packed.value}
@@ -300,6 +306,12 @@ func prepare_reforge(planet_id: String, retained_ids: Array, directory: String) 
 	if not ready.ok: return ready
 	ready = candidate.hyperspace_system.accept_reforge(drones.retained)
 	if not ready.ok: return ready
+	var retained_notices: Dictionary = {"entries": {}}
+	for row in notifications.entries():
+		if row.topic == "unlock":
+			retained_notices.entries[row.key] = {"topic": row.topic, "id": row.id,
+				"seen": row.seen, "read": row.read}
+	candidate.notifications.restore_state(retained_notices)
 	candidate.equipment.refresh_availability(candidate.campaign_system.available, planet_offer.start, false)
 	candidate.reactor_system.refresh_availability(candidate.campaign_system.available, false)
 	candidate.research.refresh_progress(candidate.campaign_system.available, false)
@@ -323,6 +335,7 @@ func prepare_reforge(planet_id: String, retained_ids: Array, directory: String) 
 	if not ready.ok: return ready
 	ready = candidate.campaign_system.start_sortie(planet_offer.start, candidate.equipment.clear_switch_locks)
 	if not ready.ok: return ready
+	candidate._record_unlocks()
 	ready = candidate.configure_save_directory(directory)
 	if not ready.ok: return ready
 	return {"ok": true, "session": candidate,
@@ -422,6 +435,7 @@ func _step(dt: float) -> void:
 		return
 	var research_budget_changed: bool = economy.accept_budget(researched.wallet, false)
 	if researched.completed:
+		notifications.record("research", str(researched.completed_id) + ":" + str(research.save_state().levels.get(researched.completed_id, 0)))
 		# Publish completion effects before collection; income-window/automatic
 		# investment refresh still happens once, after this step's collections.
 		var changed = _publish_research()
@@ -457,6 +471,7 @@ func _step(dt: float) -> void:
 	# All owners and dependent caches have accepted before any listener runs.
 	if progress_defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	if progress_changed: _notify_progress(progress_notices)
+	if progress_changed: _record_unlocks()
 	if progress_changed: campaign_system.publish_progress_change()
 	if status_changed: campaign_system.publish_status_change()
 	if collection_changed: economy.publish_budget_change()
@@ -544,8 +559,10 @@ func claim_hyperspace(run_id: int) -> Dictionary:
 		if not loadout.ok: return loadout
 		var published: Dictionary = publish_equipment_refit(credited.wallet, "refit", "", loadout.contributions, false,
 			func(): hyperspace_system.accept_claim(run_id), {}, future_modules)
+		if published.ok: notifications.record("hyperspace", str(hyperspace_system.save_state().round_id) + ":" + str(run_id))
 		return {"ok": true, "already_claimed": false, "reward": claim.reward} if published.ok else published
 	hyperspace_system.accept_claim(run_id)
+	notifications.record("hyperspace", str(hyperspace_system.save_state().round_id) + ":" + str(run_id))
 	var changed: bool = economy.accept_budget(credited.wallet, false)
 	if changed: economy.publish_budget_change()
 	return {"ok": true, "already_claimed": false, "reward": claim.reward}
@@ -636,6 +653,7 @@ func _finish_hyperspace_manual(success: bool) -> bool:
 	if not finished.ok:
 		_fail(str(finished.reason))
 		return false
+	if success: notifications.record("hyperspace", str(finished.receipt.round_id) + ":" + str(finished.receipt.run_id))
 	battle.reset_for_sortie()
 	campaign_system.return_from_hyperspace(finished.receipt.return_target, false)
 	return true
@@ -1244,6 +1262,10 @@ func _notify_progress(notices: Dictionary) -> void:
 	if notices.crew: crew_system.publish_availability()
 	if notices.planet: planet_system.publish_availability()
 	if notices.galaxy: galaxy_system.publish_availability()
+
+func _record_unlocks() -> void:
+	for id in campaign_system.available_unlock_ids():
+		notifications.record("unlock", str(id))
 
 func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) -> bool:
 	var result = planet_system.advance(explorers, builders, dt, planet_experience_context)

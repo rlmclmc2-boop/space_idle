@@ -45,4 +45,4 @@
 4. **导入**：对导入源实行完整 Envelope/schema/hash/大小及备份策略；预览保留/覆盖摘要、拒绝原因和保存失败后的重试提示；实测旧会话回滚边界与离线微粒只发一次。当前界面只有绝对路径文本输入和摘要。
 5. **整局重铸复验**：用真实完成船坞的多轮状态核查 03 §7 与 04 §7 的每一项保留/清零、非空无人机封存与领取、累计轮次、起点授予集、岗位释放、旧回执失效及新关奖励；确认预览和替换来自同一候选。当前探针只有人为搭建的首星球船坞与一架合成无人机封存。
 6. **页面/入口**：完成保存目录选择、载入主备选择、导入文件选择及完整摘要、dirty/失败/未读提示、暂停/返回场景与页面重接。现有页面为绝对路径文本输入、导入和重铸预览确认、速度/自动保存间隔控件；`git grep` 核查 src/foundation/run_game.ps1 未见 `game.gd`、`level_editor`、`fleet_battle_runner`、`balance_sim` 引用，仍需游戏内点击烟测。
-7. **验收**：07 章 S01–S06、H06、U01 的正式 native/GameSession fixture 与页面烟测；前阶段延期的配置负例、C01–C12/CR01–CR09、GPU/逻辑一致性及性能记录。重建当前 native 并运行 Amount/C++ 检查、Godot check-only 和 diff 检查；现用 DLL/GDExtension 仅为本地测试产物，不入库。全部通过后才请审合 main。
+7. **验收**：07 章 S01–S06、H06、U01 的完整正式 native/GameSession fixture 与页面点击烟测；本次只覆盖各场景的一部分，并为 U01 验证了 seen/read 独立与打开档案不清未读。前阶段延期的配置负例、C01–C12/CR01–CR09、GPU/逻辑一致性及性能记录仍须完成。重建当前 native 并运行 Amount/C++ 检查、Godot check-only 和 diff 检查；现用 DLL/GDExtension 仅为本地测试产物，不入库。全部通过后才请审合 main。

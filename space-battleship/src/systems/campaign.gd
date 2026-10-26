@@ -258,6 +258,16 @@ func available(kind: String, target: String) -> bool:
 		return _cycle_reached > gate if row.mode == "reached" else _state.cleared_stages.has(gate)
 	return false
 
+func available_unlock_ids() -> Array:
+	var ids: Array = []
+	for row in _unlocks:
+		var kind: String = str(row.type)
+		var target: String = str(row.target)
+		if available(kind, target):
+			var key: String = kind + ":" + target
+			if key not in ids: ids.append(key)
+	return ids
+
 func start_sortie(stage: int, clear_locks: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if _battle == null:
