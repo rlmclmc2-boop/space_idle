@@ -126,4 +126,4 @@ func _setup_growth_panel() -> void:
 		session.economy.affordable, session.publish_enhancement, _command_button))
 	box.add_child(CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
 	box.add_child(GalaxyPanel.new(session.galaxy_system))
-	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_world, _command_button))
+	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button))

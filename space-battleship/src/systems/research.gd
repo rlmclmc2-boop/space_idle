@@ -28,10 +28,12 @@ func panel_model() -> Dictionary:
 func _finish_advance(next: Dictionary, wallet: Dictionary, completed: bool, continuation_error = null) -> Dictionary:
 	var changed: bool = _state.available != next.available
 	_state = next
-	if changed: choices_changed.emit()
-	var result := {"ok": true, "wallet": wallet, "completed": completed}
+	var result := {"ok": true, "wallet": wallet, "completed": completed, "choices_changed": changed}
 	if continuation_error != null: result.continuation_error = continuation_error
 	return result
+
+func publish_choices_changed() -> void:
+	choices_changed.emit()
 
 static func _initial(rules: Dictionary) -> Dictionary:
 	return {"levels": {}, "work": {}, "current": "", "investment": {},

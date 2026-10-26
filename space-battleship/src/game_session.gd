@@ -39,6 +39,7 @@ var _pending_enhancement_wallet = null
 var _pending_reactor_wallet = null
 var _pending_enhancement_retreat: bool = false
 var _pending_reactor_retreat: bool = false
+var _pending_planet_claim_retreat: bool = false
 var campaign_system
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
@@ -87,6 +88,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	crew_system = Crew.new(configuration.crew.crew, configuration.crew_config.crew_config, configuration.crew_assignment.crew_assignment, amount_api, run_state)
 	crew_system.refresh_availability(campaign_system.available)
 	planet_system = Planet.new(configuration.planet.planet, configuration.planet_build.planet_build, configuration.planet_buff.planet_buff, amount_api, run_state)
+	planet_system.claim_accepted.connect(_accept_planet_claim)
 	planet_system.refresh_availability(campaign_system.available)
 	galaxy_system = Galaxy.new(configuration.galaxy.galaxy, configuration.galaxy_build.galaxy_build, configuration.galaxy_config.galaxy_config, amount_api, run_state)
 	var galaxies = galaxy_system.initialization_result()
@@ -154,7 +156,7 @@ func _step(dt: float) -> void:
 	if not researched.ok:
 		_fail(str(researched.get("error", researched.get("reason", "ResearchFailed"))))
 		return
-	economy.accept_budget(researched.wallet)
+	var research_budget_changed: bool = economy.accept_budget(researched.wallet, false)
 	if researched.completed:
 		# Publish completion effects before collection; income-window/automatic
 		# investment refresh still happens once, after this step's collections.
@@ -162,6 +164,8 @@ func _step(dt: float) -> void:
 		if not changed.ok:
 			_fail(str(changed.get("error", changed.get("reason", "ResearchGrowthUpdateFailed"))))
 			return
+	if researched.choices_changed: research.publish_choices_changed()
+	if research_budget_changed: economy.publish_budget_change()
 	if researched.has("continuation_error"):
 		_fail(str(researched.continuation_error))
 		return
@@ -423,7 +427,7 @@ func publish_equipment_levels(balances: Dictionary) -> Dictionary:
 	if result.ok: _pending_equipment_commit = {"wallet": balances, "retreat": result.defence_changed}
 	return result
 
-func _publish_world_values(previous: Dictionary) -> Dictionary:
+func _publish_world_values(previous: Dictionary, retreat_after_commit: bool = true) -> Dictionary:
 	var reactor: Dictionary = {"ok": true, "factors": _reactor_factors}
 	var reactor_prepared: bool = _world_factors.capacity != previous.capacity or _world_factors.free_charge != previous.free_charge
 	if reactor_prepared:
@@ -462,7 +466,7 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 			income.condensation = reactor.factors.condensation
 			income.make_read_only()
 			_income_factors = income
-		if result.defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
+		if result.defence_changed and retreat_after_commit: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return result
 
 func _publish_research() -> Dictionary:
@@ -504,7 +508,7 @@ func _accept_reactor_commit() -> void:
 	if retreat: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	if budget_changed: economy.publish_budget_change()
 
-func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}) -> Dictionary:
+func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}, retreat_after_commit: bool = true) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	if not planet.is_empty(): _planet_factors = planet
 	if not crew.is_empty(): _crew_factors = crew
@@ -524,10 +528,20 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 	_galaxy_crew_experience = world.crew_experience
 	var result: Dictionary = {"ok": true}
 	if world.enhancement_levels != previous.enhancement_levels or world.external != previous.external or world.equipment_levels != previous.equipment_levels or world.capacity != previous.capacity or world.free_charge != previous.free_charge:
-		result = _publish_world_values(previous)
+		result = _publish_world_values(previous, retreat_after_commit)
 	if not result.ok and run_state.is_running():
 		return _fail(str(result.get("error", result.get("reason", "WorldGrowthUpdateFailed"))))
 	return result
+
+func publish_planet_claim(planet: Dictionary) -> Dictionary:
+	var result: Dictionary = publish_world(planet, {}, {}, false)
+	if result.ok: _pending_planet_claim_retreat = result.get("defence_changed", false)
+	return result
+
+func _accept_planet_claim() -> void:
+	var retreat: bool = _pending_planet_claim_retreat
+	_pending_planet_claim_retreat = false
+	if retreat: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 
 func assignment_admission(kind: String, target: String) -> Dictionary:
 	if kind in ["planet_explore", "planet_build"]: return planet_system.assignment_capacity(kind, target)
@@ -535,20 +549,30 @@ func assignment_admission(kind: String, target: String) -> Dictionary:
 
 func coordinate_assignment(id: String, kind: String, target: String, mode: String = "1") -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	var changed = crew_system.assign(id, kind, target, mode, assignment_admission)
+	var changed = crew_system.assign(id, kind, target, mode, assignment_admission, false)
 	if not changed.ok: return changed
+	var planet_status: Array = []
 	if changed.old_kind == "planet_explore" and (kind != changed.old_kind or target != changed.old_target):
-		planet_system.set_explorer(str(changed.old_target), false)
+		var stopped = planet_system.set_explorer(str(changed.old_target), false, false)
+		if not stopped.ok: return _fail(str(stopped.reason))
+		planet_status.append(str(changed.old_target))
 	if kind == "planet_explore":
-		var started = planet_system.set_explorer(target, true)
+		var started = planet_system.set_explorer(target, true, false)
 		if not started.ok: return _fail(str(started.reason))
-	return publish_world({}, crew_system.contributions()) if changed.effects_changed else {"ok": true}
+		if target not in planet_status: planet_status.append(target)
+	var result: Dictionary = publish_world({}, crew_system.contributions()) if changed.effects_changed else {"ok": true}
+	if not result.ok: return result
+	crew_system.publish_members([id])
+	planet_system.publish_status(planet_status)
+	return result
 
 func coordinate_planet_cancel(id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	var cancelled = planet_system.cancel(id)
+	var cancelled = planet_system.cancel(id, false)
 	if not cancelled.ok: return cancelled
-	crew_system.release("planet_explore", id)
+	var released: Array = crew_system.release("planet_explore", id, false)
+	crew_system.publish_members(released)
+	planet_system.publish_status([id])
 	return cancelled
 
 func planet_experience_context() -> Dictionary:
@@ -570,20 +594,27 @@ func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) ->
 		_fail(str(result.get("error", result.get("reason", "PlanetAdvanceFailed"))))
 		return false
 	var crew_changed: bool = false
+	var crew_notifications: Array = []
 	for completion in result.completed:
 		for target in completion.released:
-			crew_system.release("planet_build", str(target))
+			for member in crew_system.release("planet_build", str(target), false):
+				if member not in crew_notifications: crew_notifications.append(member)
 		if completion.award_experience:
-			var awarded = crew_system.award_exploration(str(completion.explorer), bool(completion.share_experience), completion.experience)
+			var awarded = crew_system.award_exploration(str(completion.explorer), bool(completion.share_experience), completion.experience, false)
 			if not awarded.ok:
 				_fail(str(awarded.get("error", awarded.get("reason", "CrewExperienceFailed"))))
 				return false
+			for member in awarded.members:
+				if member not in crew_notifications: crew_notifications.append(member)
 			crew_changed = crew_changed or awarded.effects_changed
 		if not completion.again:
-			crew_system.release("planet_explore", str(completion.planet))
+			for member in crew_system.release("planet_explore", str(completion.planet), false):
+				if member not in crew_notifications: crew_notifications.append(member)
 	if not result.completed.is_empty() and not publish_world(result.contributions,
 		crew_system.contributions() if crew_changed else {}).ok:
 		return false
+	crew_system.publish_members(crew_notifications)
+	planet_system.publish_advance(result)
 	return true
 
 func _advance_crew_jobs(dt: float, ids: Array) -> bool:
@@ -607,6 +638,7 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 			return false
 		_galaxy_factors = contributions
 		if contributions.growth_changed and not publish_world({}, {}, contributions).ok: return false
+	var credits_changed: bool = false
 	if not result.payments.is_empty():
 		var production = economy.income_rates(wall_time, game_time, research.income_window(), "production")
 		if not production.ok:
@@ -618,8 +650,11 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 				_fail(str(income.get("error", "GalaxyIncomeFailed")))
 				return false
 			for resource in income.amounts:
-				var credited = economy.credit_yield(str(resource), income.amounts[resource], wall_time, game_time)
+				var credited = economy.credit_yield(str(resource), income.amounts[resource], wall_time, game_time, false)
 				if not credited.ok:
 					_fail(str(credited.get("error", "GalaxyCreditFailed")))
 					return false
+				credits_changed = credits_changed or credited.credited
+	if credits_changed: economy.publish_budget_change()
+	galaxy_system.publish_status(result.displayed)
 	return true

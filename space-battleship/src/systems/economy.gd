@@ -369,14 +369,14 @@ func income_rates(wall: float, game: float, window: float, kind: String) -> Dict
 		rates[resource] = rate.value
 	return {"ok": true, "rates": rates}
 
-func credit_yield(resource: String, quantity: Dictionary, wall: float, game: float) -> Dictionary:
+func credit_yield(resource: String, quantity: Dictionary, wall: float, game: float, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var wallet: Dictionary = _wallet
 	var samples: Array = _samples
 	var api = _api
 	var zero: Dictionary = api.apply("zero", []).value
 	if api.apply("compare", [quantity, zero]).scalar <= 0:
-		return {"ok": true}
+		return {"ok": true, "credited": false}
 	var total = api.apply("add", [wallet.get(resource, zero), quantity])
 	if not total.ok:
 		return total
@@ -387,5 +387,5 @@ func credit_yield(resource: String, quantity: Dictionary, wall: float, game: flo
 	_balance_dirty = true
 	samples.append({"resource": resource, "actual": quantity, "production_base": zero,
 		"wall": wall, "game": game, "source": "galaxy_yield"})
-	display_changed.emit()
-	return {"ok": true}
+	if notify: display_changed.emit()
+	return {"ok": true, "credited": true}

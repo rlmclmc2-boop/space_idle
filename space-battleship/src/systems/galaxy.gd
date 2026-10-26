@@ -58,13 +58,14 @@ func advance(counts: Dictionary, dt: float) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _advance(_regions, _definitions, _buildings, counts, _available, dt, float(_rules.income_interval))
 	if not result.ok: return result
-	if not result.displayed.is_empty(): status_changed.emit(result.displayed)
 	if not result.changes.is_empty():
 		result.contributions = contributions(result.changes)
 		if not result.contributions.ok: return result.contributions
 	result.erase("changes")
-	result.erase("displayed")
 	return result
+
+func publish_status(keys: Array) -> void:
+	if not keys.is_empty(): status_changed.emit(keys)
 
 func income(region: String, production_rates: Dictionary, seconds: float) -> Dictionary:
 	return _income(_factors, region, production_rates, seconds, _api)

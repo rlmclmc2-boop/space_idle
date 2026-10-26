@@ -52,7 +52,7 @@ func contributions() -> Dictionary:
 func step_assignments() -> Dictionary:
 	return _step_assignments(_members)
 
-func assign(id: String, kind: String, target: String, mode: String, target_admission: Callable) -> Dictionary:
+func assign(id: String, kind: String, target: String, mode: String, target_admission: Callable, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not _members.has(id) or not _available.get(id, false): return {"ok": false, "reason": "CrewLocked"}
 	var capacity: int = 0
@@ -72,23 +72,26 @@ func assign(id: String, kind: String, target: String, mode: String, target_admis
 	var changed = _assign(_members, id, kind, target if not kind.is_empty() else "", capacity, selected_mode)
 	if not changed.ok: return changed
 	_mark_jobs(changed.jobs)
-	members_changed.emit([id])
+	if notify: members_changed.emit([id])
 	return {"ok": true, "old_kind": old_kind, "old_target": old_target, "effects_changed": not changed.jobs.is_empty()}
 
-func release(kind: String, target: String) -> Array:
+func release(kind: String, target: String, notify: bool = true) -> Array:
 	if not _run_state.is_running(): return []
 	var ids = _release(_members, kind, target)
-	if not ids.is_empty(): members_changed.emit(ids)
+	if notify and not ids.is_empty(): members_changed.emit(ids)
 	return ids
 
-func award_exploration(explorer: String, share: bool, amount: Dictionary) -> Dictionary:
+func award_exploration(explorer: String, share: bool, amount: Dictionary, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var result = _add_experience(_members, _members.keys() if share else [explorer], amount, _rules, _api)
 	if result.ok:
 		_mark_jobs(result.jobs)
-		if not result.members.is_empty(): members_changed.emit(result.members)
+		if notify and not result.members.is_empty(): members_changed.emit(result.members)
 		result.effects_changed = not result.jobs.is_empty()
 	return result
+
+func publish_members(ids: Array) -> void:
+	if not ids.is_empty(): members_changed.emit(ids)
 
 func advance_jobs(ids: Array, dt: float) -> Array:
 	if not _run_state.is_running(): return []
