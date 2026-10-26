@@ -64,6 +64,35 @@ func initialize_slots(starts: String, mounts: Dictionary) -> Dictionary:
 				"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
 	return {"ok": true}
 
+func save_state() -> Dictionary:
+	return {"slots": _slots.duplicate(true)}
+
+func restore_state(state: Dictionary, mounts: Dictionary) -> Dictionary:
+	if not state.get("slots") is Array: return {"ok": false, "reason": "InvalidEquipmentState"}
+	if state.slots.size() != int(mounts.weapon) + int(mounts.defence):
+		return {"ok": false, "reason": "InvalidEquipmentMounts"}
+	var seen: Dictionary = {}
+	var first_defence: bool = false
+	for slot in state.slots:
+		if not slot is Dictionary or str(slot.get("category", "")) not in ["weapon", "defence"]:
+			return {"ok": false, "reason": "InvalidEquipmentSlot"}
+		var category: String = str(slot.category)
+		var index: int = int(slot.get("index", -1))
+		var id: String = category + ":" + str(index)
+		if index < 0 or index >= int(mounts[category]) or str(slot.get("id", "")) != id or seen.has(id) or not slot.get("paid_level") is int or int(slot.paid_level) < 1 or not slot.get("generation") is int or int(slot.generation) < 1 or not slot.get("extra_levels") is int or int(slot.extra_levels) < 0 or not slot.get("switch_ready_at") is float or not is_finite(slot.switch_ready_at):
+			return {"ok": false, "reason": "InvalidEquipmentSlot"}
+		var equipment_id: String = str(slot.get("equipment_id", ""))
+		if not equipment_id.is_empty() and (not _definitions.has(equipment_id) or not _available.get(equipment_id, false)):
+			return {"ok": false, "reason": "UnknownEquipment"}
+		if category == "defence" and index == 0: first_defence = not equipment_id.is_empty()
+		seen[id] = true
+	if not first_defence: return {"ok": false, "reason": "FirstDefenceRequired"}
+	_slots = state.slots.duplicate(true)
+	_pending_slots = null
+	_pending_level_slots = []
+	_pending_notice = {}
+	return {"ok": true}
+
 func enemy_override(id: String) -> Dictionary:
 	return _definitions.get(id, {})
 

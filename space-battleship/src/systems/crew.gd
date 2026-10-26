@@ -15,6 +15,58 @@ var _factors: Dictionary = {}
 var _dirty_jobs: Array = []
 var _api
 
+func save_state() -> Dictionary:
+	return {"members": _members.duplicate(true)}
+
+func restore_state(state: Dictionary) -> Dictionary:
+	if not state.get("members") is Dictionary or state.members.size() != _definitions.size():
+		return {"ok": false, "reason": "InvalidCrewState"}
+	var zero: Dictionary = _api.apply("zero", []).value
+	for id in state.members:
+		if not id is String or not _definitions.has(id) or not state.members[id] is Dictionary:
+			return {"ok": false, "reason": "UnknownCrewId"}
+		var member: Dictionary = state.members[id]
+		if not member.get("level") is int or member.level < 0 or not member.get("exp") is Dictionary or not member.get("kind") is String or not member.get("target") is String or not member.get("mode") in ["1", "10", "max"] or not member.get("elapsed") is float or not is_finite(member.elapsed) or member.elapsed < 0.0:
+			return {"ok": false, "reason": "InvalidCrewState"}
+		var comparison: Dictionary = _api.apply("compare", [member.exp, zero])
+		if not comparison.get("ok", false) or int(comparison.scalar) < 0:
+			return {"ok": false, "reason": "InvalidCrewExperience"}
+	_members = state.members.duplicate(true)
+	_factors = {}
+	_dirty_jobs = FACTOR_JOBS.keys()
+	return {"ok": true}
+
+func validate_assignments(target_admission: Callable, auto: Dictionary) -> Dictionary:
+	var occupancy: Dictionary = {}
+	for id in _members:
+		var member: Dictionary = _members[id]
+		var kind: String = str(member.kind)
+		var target: String = str(member.target)
+		if kind.is_empty():
+			if not target.is_empty(): return {"ok": false, "reason": "InvalidCrewTarget"}
+			continue
+		if not _available.get(id, false): return {"ok": false, "reason": "CrewLocked"}
+		var capacity: int = 0
+		if kind == "system_job":
+			if not _jobs.has(target) or _jobs[target].targetType == "galaxy": return {"ok": false, "reason": "UnknownCrewJob"}
+			capacity = int(_jobs[target].maxCrew)
+		elif kind == "hyperspace":
+			if not auto.get("enabled", false) or auto.get("crew_id", "") != id or auto.get("route", "") != target:
+				return {"ok": false, "reason": "InvalidHyperspaceCrew"}
+			capacity = 1
+		elif kind in ["planet_explore", "planet_build", "galaxy"]:
+			var admitted: Dictionary = target_admission.call(kind, target)
+			if not admitted.ok: return admitted
+			capacity = int(_jobs.galaxy_explore.maxCrew) if kind == "galaxy" else int(admitted.capacity)
+		else:
+			return {"ok": false, "reason": "InvalidCrewAssignment"}
+		var key: String = kind + ":" + target
+		occupancy[key] = int(occupancy.get(key, 0)) + 1
+		if occupancy[key] > capacity: return {"ok": false, "reason": "CrewCapacityExceeded"}
+	if auto.get("enabled", false) and occupancy.get("hyperspace:" + str(auto.get("route", "")), 0) != 1:
+		return {"ok": false, "reason": "InvalidHyperspaceCrew"}
+	return {"ok": true}
+
 func _init(rows: Array, rules: Array, jobs: Array, api, run_state) -> void:
 	_run_state = run_state
 	for row in rows: _definitions[str(row.id)] = row

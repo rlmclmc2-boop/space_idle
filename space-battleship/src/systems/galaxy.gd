@@ -13,6 +13,27 @@ var _factors: Dictionary = {}
 var _initial_error: String = ""
 var _api
 
+func save_state() -> Dictionary:
+	return {"regions": _regions.duplicate(true)}
+
+func restore_state(state: Dictionary) -> Dictionary:
+	if not state.get("regions") is Dictionary or state.regions.size() != _definitions.size():
+		return {"ok": false, "reason": "InvalidGalaxyState"}
+	var blueprint: Dictionary = _initial(_definitions).regions
+	for key in state.regions:
+		if not key is String or not blueprint.has(key) or not state.regions[key] is Dictionary:
+			return {"ok": false, "reason": "UnknownGalaxy"}
+		var region: Dictionary = state.regions[key]
+		if not region.get("nodes") is Dictionary or region.nodes.keys() != blueprint[key].nodes.keys() or not region.get("unlocked") is bool or not region.get("phase") is String or not region.get("rng_state") is int:
+			return {"ok": false, "reason": "InvalidGalaxyState"}
+		for id in region.nodes:
+			var node = region.nodes[id]
+			if not node is Dictionary or not node.get("parent_id") is int or node.parent_id != blueprint[key].nodes[id].parent_id or not node.get("depth") is int or node.depth != blueprint[key].nodes[id].depth or not node.get("explored") is bool or not node.get("state") is String or not node.get("building") is String or (not node.building.is_empty() and not _buildings.has(node.building)):
+				return {"ok": false, "reason": "InvalidGalaxyNode"}
+	_regions = state.regions.duplicate(true)
+	_factors = {}
+	return {"ok": true}
+
 func _init(rows: Array, buildings: Array, rules: Array, api, run_state) -> void:
 	_run_state = run_state
 	for row in rows: _definitions[str(row.key)] = row

@@ -27,6 +27,46 @@ var _state: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
 	"cleared_stages": {}, "origin": 0.0, "speed": 0.0, "wait": 0.0}
 var _guard: Dictionary = {"enabled": false, "stage": 1, "point": 0, "distance": 0.0, "death_option": 0}
 
+func save_state() -> Dictionary:
+	return {"state": _state.duplicate(true), "guard": _guard.duplicate(true),
+		"selected_ship": _selected_ship, "next_enemy_uid": _next_enemy_uid,
+		"departure_remaining": _departure_remaining, "retreat_from": _retreat_from,
+		"retreat_to": _retreat_to, "retreat_elapsed": _retreat_elapsed}
+
+func restore_state(saved: Dictionary) -> Dictionary:
+	if not saved.get("state") is Dictionary or not saved.get("guard") is Dictionary or not saved.get("selected_ship") is String or not _ships.has(saved.selected_ship) or not saved.get("next_enemy_uid") is int or saved.next_enemy_uid < 0:
+		return {"ok": false, "reason": "InvalidCampaignState"}
+	var progress: Dictionary = saved.state
+	var guard: Dictionary = saved.guard
+	if not progress.get("stage") is int or not _levels.has(progress.stage) or not progress.get("highest_reached") is int or not _levels.has(progress.highest_reached) or progress.stage > progress.highest_reached or not progress.get("cleared_stages") is Dictionary or not progress.get("state") in ["menu", "departing", "travel", "combat", "waiting", "guard_wait", "retreat", "hyperspace"]:
+		return {"ok": false, "reason": "InvalidCampaignProgress"}
+	for stage in progress.cleared_stages:
+		if not stage is int or not _levels.has(stage): return {"ok": false, "reason": "InvalidCampaignProgress"}
+	for key in ["distance", "origin", "speed", "wait"]:
+		if not progress.get(key) is float or not is_finite(progress[key]): return {"ok": false, "reason": "InvalidCampaignProgress"}
+	if not progress.get("point") is int or not progress.get("points") is Array or progress.point < 0:
+		return {"ok": false, "reason": "InvalidCampaignProgress"}
+	for key in ["departure_remaining", "retreat_from", "retreat_to", "retreat_elapsed"]:
+		if not saved.get(key) is float or not is_finite(saved[key]) or saved[key] < 0.0: return {"ok": false, "reason": "InvalidCampaignState"}
+	if not guard.get("enabled") is bool or not guard.get("death_option") is int or guard.death_option < 0 or guard.death_option > 2:
+		return {"ok": false, "reason": "InvalidCampaignGuard"}
+	_selected_ship = saved.selected_ship
+	_next_enemy_uid = saved.next_enemy_uid
+	_departure_remaining = saved.departure_remaining
+	_retreat_from = saved.retreat_from
+	_retreat_to = saved.retreat_to
+	_retreat_elapsed = saved.retreat_elapsed
+	_state = progress.duplicate(true)
+	_set_stage(progress.stage, progress.distance)
+	if _state.points != progress.points or progress.point >= _state.points.size():
+		return {"ok": false, "reason": "InvalidCampaignCheckpoint"}
+	_guard = guard.duplicate(true)
+	_progress_dirty = true
+	return {"ok": true}
+
+func restore_checkpoint() -> String:
+	return str(_state.state)
+
 func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary, run_state) -> void:
 	_run_state = run_state
 	_state.cleared_stages.make_read_only()

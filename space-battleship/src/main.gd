@@ -18,6 +18,7 @@ var startup_error: String = ""
 var _overlay: Node2D
 var growth_panel: PanelContainer
 var growth_status: Label
+var _pending_import: Dictionary = {}
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -39,16 +40,54 @@ func _ready() -> void:
 	if not result.ok:
 		startup_error = str(result.reason)
 	else:
-		if DisplayServer.get_name() != "headless": add_child(BattleView.new(session.battle))
-		add_child(BattleStatisticsView.new(session.battle.statistics()))
-		_setup_shell_overlay()
-		add_child(CampaignView.new(session.campaign_system))
-		add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
-		_setup_growth_panel()
+		_show_session()
+
+func _show_session() -> void:
+	get_window().content_scale_size = session.battle.view_size()
+	if DisplayServer.get_name() != "headless": add_child(BattleView.new(session.battle))
+	add_child(BattleStatisticsView.new(session.battle.statistics()))
+	_setup_shell_overlay()
+	add_child(CampaignView.new(session.campaign_system))
+	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
+	_setup_growth_panel()
+
+func _load_saved(directory: String) -> Dictionary:
+	var loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory)
+	if not loaded.ok: return loaded
+	return _replace_session(loaded.session)
+
+func _preview_import(directory: String, source_file: String) -> Dictionary:
+	_pending_import = {}
+	if not DirAccess.dir_exists_absolute(directory): return {"ok": false, "reason": "SaveDirectoryRequired"}
+	var preview: Dictionary = Session.import_candidate("res://generated/config.json", directory, source_file)
+	if not preview.ok: return preview
+	_pending_import = {"directory": directory, "source": source_file, "session": preview.session}
+	return {"ok": true, "message": "关卡 %s，舰船 %s，代次 %s；确认后导入" % [
+		preview.summary.stage, preview.summary.ship, preview.summary.generation]}
+
+func _apply_import(directory: String, source_file: String) -> Dictionary:
+	if _pending_import.is_empty() or _pending_import.directory != directory or _pending_import.source != source_file:
+		return {"ok": false, "reason": "ImportPreviewRequired"}
+	var replacement = _pending_import.session
+	_pending_import = {}
+	return _replace_session(replacement)
+
+func _replace_session(replacement) -> Dictionary:
+	if session.save_files != null:
+		var closed: Dictionary = session.save_files.close()
+		if not closed.ok: return closed
+	for child in get_children(): child.queue_free()
+	session = replacement
+	_overlay = null
+	growth_panel = null
+	_show_session()
+	var persisted: Dictionary = session.request_save()
+	return {"ok": true, "persistence_pending": not persisted.ok}
 
 func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
+		if session.save_files != null: session.save_files.poll()
 	if _overlay != null: _overlay.queue_redraw()
 	queue_redraw()
 
@@ -90,7 +129,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
-		growth_status.text = "完成" if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
+		growth_status.text = "已加载，保存待重试" if result.get("persistence_pending", false) else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
 		)
 	return button
 
@@ -129,3 +168,18 @@ func _setup_growth_panel() -> void:
 	box.add_child(GalaxyPanel.new(session.galaxy_system))
 	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button))
 	box.add_child(HyperspacePanel.new(session, _command_button))
+	var save_path := LineEdit.new()
+	save_path.placeholder_text = "Existing absolute save directory"
+	box.add_child(save_path)
+	_command_button(box, "Save", func() -> Dictionary:
+		var configured: Dictionary = session.configure_save_directory(save_path.text)
+		return session.request_save() if configured.ok else configured)
+	_command_button(box, "Load", func() -> Dictionary:
+		return _load_saved(save_path.text))
+	var import_path := LineEdit.new()
+	import_path.placeholder_text = "Envelope JSON file to import"
+	box.add_child(import_path)
+	_command_button(box, "Preview import", func() -> Dictionary:
+		return _preview_import(save_path.text, import_path.text))
+	_command_button(box, "Confirm import", func() -> Dictionary:
+		return _apply_import(save_path.text, import_path.text))

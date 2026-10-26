@@ -10,6 +10,27 @@ var _prepared_state: Dictionary = {}
 var _parameters: Dictionary = {}
 var _api
 
+func save_state() -> Dictionary:
+	var state: Dictionary = _state.duplicate(true)
+	state.erase("_capacity")
+	state.erase("_enabled")
+	return state
+
+func restore_state(state: Dictionary) -> Dictionary:
+	if not state.get("level") is int or int(state.level) < int(_parameters.reactorInitialLevel) or not state.get("free_charge") is float or not is_finite(state.free_charge) or state.free_charge < 0.0 or not state.get("allocations") is Dictionary:
+		return {"ok": false, "reason": "InvalidReactorState"}
+	var valid: PackedStringArray = str(_parameters.reactorModules).split(",")
+	var zero: Dictionary = _api.apply("zero", []).value
+	for module in state.allocations:
+		if not module is String or module not in valid or not state.allocations[module] is Dictionary:
+			return {"ok": false, "reason": "InvalidReactorAllocation"}
+		var comparison: Dictionary = _api.apply("compare", [state.allocations[module], zero])
+		if not comparison.get("ok", false) or int(comparison.scalar) < 0:
+			return {"ok": false, "reason": "InvalidReactorAllocation"}
+	_state = state.duplicate(true)
+	_prepared_state = {}
+	return {"ok": true}
+
 func _init(parameters: Dictionary, api, run_state) -> void:
 	_run_state = run_state
 	_enabled.make_read_only()

@@ -8,6 +8,37 @@ var _definitions: Dictionary = {}
 var _rules: Dictionary = {}
 var _api
 
+func save_state() -> Dictionary:
+	var state: Dictionary = _state.duplicate(true)
+	state.erase("contributions")
+	state.erase("gates")
+	state.erase("available")
+	return state
+
+func restore_state(state: Dictionary) -> Dictionary:
+	var initial: Dictionary = _initial(_rules)
+	for key in ["levels", "work", "investment", "peaks", "required_work"]:
+		if not state.get(key) is Dictionary: return {"ok": false, "reason": "InvalidResearchState"}
+		for id in state[key]:
+			if not id is String or (key not in ["investment", "peaks"] and not _definitions.has(id)):
+				return {"ok": false, "reason": "UnknownResearchId"}
+			if key == "levels":
+				if not state[key][id] is int or state[key][id] < 0: return {"ok": false, "reason": "InvalidResearchLevel"}
+			else:
+				var value = state[key][id]
+				if not value is Dictionary: return {"ok": false, "reason": "InvalidResearchAmount"}
+				var checked: Dictionary = _api.apply("compare", [value, _api.apply("zero", []).value])
+				if not checked.get("ok", false) or checked.scalar < 0: return {"ok": false, "reason": "InvalidResearchAmount"}
+	for key in ["auto_invest", "ratio", "refresh_elapsed", "current"]:
+		if not state.has(key) or typeof(state[key]) != typeof(initial[key]):
+			return {"ok": false, "reason": "InvalidResearchState"}
+	if not is_finite(state.ratio) or not is_finite(state.refresh_elapsed) or state.ratio < 0.0 or state.refresh_elapsed < 0.0 or (not state.current.is_empty() and not _definitions.has(state.current)):
+		return {"ok": false, "reason": "InvalidResearchState"}
+	_state = _initial(_rules)
+	for key in ["levels", "work", "current", "investment", "auto_invest", "ratio", "refresh_elapsed", "peaks", "required_work"]:
+		_state[key] = state[key].duplicate(true) if state[key] is Dictionary or state[key] is Array else state[key]
+	return {"ok": true}
+
 func _init(rows: Array, rules: Dictionary, api, run_state) -> void:
 	_run_state = run_state
 	for row in rows: _definitions[str(row.id)] = row

@@ -1,6 +1,7 @@
 extends SceneTree
 
 const SaveFiles = preload("res://foundation/host/save_files.gd")
+const StateCodec = preload("res://foundation/host/state_codec.gd")
 
 class RejectManifest extends RefCounted:
 	var delegate
@@ -19,6 +20,14 @@ func _initialize() -> void:
 	call_deferred("_run_probe")
 
 func _run_probe() -> void:
+	var typed: Dictionary = {7: {"id": 9223372036854775807, "amount": {"m": "9", "e": "500"},
+		"position": Vector2(1.25, 3.5), "labels": PackedStringArray(["a", "b"])}}
+	var packed: Dictionary = StateCodec.pack(typed)
+	var decoded: Dictionary = StateCodec.unpack(JSON.parse_string(JSON.stringify(packed.value))) if packed.ok else packed
+	if not packed.ok or not decoded.ok or decoded.value != typed:
+		printerr("state codec roundtrip: ", packed, " ", decoded)
+		quit(1)
+		return
 	var session = preload("res://src/game_session.gd").new()
 	var initialized: Dictionary = session.initialize("res://generated/config.json", 29)
 	if not initialized.ok:

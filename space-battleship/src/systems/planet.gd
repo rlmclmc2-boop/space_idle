@@ -18,6 +18,32 @@ var _claim_factors: Dictionary = {}
 var _claim_id: String = ""
 var _api
 
+func save_state() -> Dictionary:
+	return {"planets": _state.duplicate(true)}
+
+func restore_state(state: Dictionary) -> Dictionary:
+	if not state.get("planets") is Dictionary or state.planets.size() != _definitions.size():
+		return {"ok": false, "reason": "InvalidPlanetState"}
+	var blueprint: Dictionary = _initial(_definitions, _buildings)
+	for id in state.planets:
+		if not id is String or not blueprint.has(id) or not state.planets[id] is Dictionary:
+			return {"ok": false, "reason": "UnknownPlanet"}
+		var planet: Dictionary = state.planets[id]
+		if not planet.get("exploration") is int or planet.exploration < 0 or not planet.get("running") is bool or not planet.get("automatic") is bool or not planet.get("conquered") is bool or not planet.get("duration") is float or not planet.get("elapsed") is float or not is_finite(planet.duration) or not is_finite(planet.elapsed) or planet.duration < 0.0 or planet.elapsed < 0.0 or not planet.get("buildings") is Dictionary:
+			return {"ok": false, "reason": "InvalidPlanetState"}
+		if planet.buildings.keys() != blueprint[id].buildings.keys():
+			return {"ok": false, "reason": "InvalidPlanetBuildings"}
+		for key in planet.buildings:
+			var building = planet.buildings[key]
+			if not building is Dictionary or not building.get("state") in ["locked", "building", "ready", "built"] or not building.get("work") is int or building.work < 0:
+				return {"ok": false, "reason": "InvalidPlanetBuildings"}
+	_state = state.planets.duplicate(true)
+	_factors = {}
+	_claim_state = {}
+	_claim_factors = {}
+	_claim_id = ""
+	return {"ok": true}
+
 func _init(rows: Array, buildings: Array, buffs: Array, api, run_state) -> void:
 	_run_state = run_state
 	for row in rows: _definitions[str(int(row.id))] = row

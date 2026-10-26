@@ -55,6 +55,73 @@ var _reforge_count: int = 0
 var _unlocked_drones: Dictionary = {}
 var _planet_claim_levels: Dictionary = {}
 
+func save_state() -> Dictionary:
+	return {"history": _history.duplicate(true), "manual": _manual.duplicate(true),
+		"idle": _idle.duplicate(true), "auto": _auto.duplicate(true),
+		"warehouse": _warehouse.duplicate(true), "overflow": _overflow.duplicate(true),
+		"equipped": _equipped.duplicate(true), "favorites": _favorites.duplicate(true),
+		"sealed": _sealed.duplicate(true), "presets": _presets.duplicate(true),
+		"receipts": _receipts.duplicate(true), "filter": _filter.duplicate(true),
+		"modules": _modules.duplicate(true), "last_forge": _last_forge.duplicate(true),
+		"legend_seen": _legend_seen.duplicate(true), "legend_collection": _legend_collection.duplicate(true),
+		"energy": _energy, "late_supply_work": _late_supply_work,
+		"reward_rng_state": _reward_rng.state, "luck_rng_state": _luck_rng.state,
+		"round_id": _round_id, "next_run": _next_run, "next_enemy_uid": _next_enemy_uid,
+		"base_seed": _base_seed, "reforge_count": _reforge_count, "unlocked_drones": _unlocked_drones.duplicate(true)}
+
+func restore_state(state: Dictionary) -> Dictionary:
+	for key in ["history", "manual", "idle", "auto", "sealed", "receipts", "filter", "modules",
+		"last_forge", "legend_seen", "legend_collection", "unlocked_drones"]:
+		if not state.get(key) is Dictionary: return {"ok": false, "reason": "InvalidHyperspaceState"}
+	for key in ["warehouse", "overflow", "equipped", "favorites", "presets"]:
+		if not state.get(key) is Array: return {"ok": false, "reason": "InvalidHyperspaceState"}
+	for key in ["round_id", "next_run", "next_enemy_uid", "base_seed", "reforge_count", "reward_rng_state", "luck_rng_state"]:
+		if not state.get(key) is int: return {"ok": false, "reason": "InvalidHyperspaceState"}
+	if state.round_id < 1 or state.next_run < 1 or state.next_enemy_uid < 0 or state.reforge_count < 0 or state.base_seed != _base_seed:
+		return {"ok": false, "reason": "InvalidHyperspaceSequence"}
+	for key in ["energy", "late_supply_work"]:
+		if not state.get(key) is float or not is_finite(state[key]) or state[key] < 0.0:
+			return {"ok": false, "reason": "InvalidHyperspaceTimer"}
+	for route in state.history:
+		if not route is String or not _routes.has(route): return {"ok": false, "reason": "UnknownHyperspaceRoute"}
+	if not state.auto.get("route", "") is String or (not state.auto.route.is_empty() and not _routes.has(state.auto.route)):
+		return {"ok": false, "reason": "UnknownHyperspaceRoute"}
+	if state.modules.keys() != _modules.keys(): return {"ok": false, "reason": "InvalidHyperspaceModules"}
+	var ids: Dictionary = {}
+	for list in [state.warehouse, state.overflow]:
+		for drone in list:
+			if not drone is Dictionary or not drone.get("id") is String or ids.has(drone.id):
+				return {"ok": false, "reason": "InvalidHyperspaceDrone"}
+			ids[drone.id] = true
+	for id in state.equipped + state.favorites:
+		if not id is String or not ids.has(id): return {"ok": false, "reason": "UnknownHyperspaceDrone"}
+	_history = state.history.duplicate(true)
+	_manual = state.manual.duplicate(true)
+	_idle = state.idle.duplicate(true)
+	_auto = state.auto.duplicate(true)
+	_warehouse = state.warehouse.duplicate(true)
+	_overflow = state.overflow.duplicate(true)
+	_equipped = state.equipped.duplicate(true)
+	_favorites = state.favorites.duplicate(true)
+	_sealed = state.sealed.duplicate(true)
+	_presets = state.presets.duplicate(true)
+	_receipts = state.receipts.duplicate(true)
+	_filter = state.filter.duplicate(true)
+	_modules = state.modules.duplicate(true)
+	_last_forge = state.last_forge.duplicate(true)
+	_legend_seen = state.legend_seen.duplicate(true)
+	_legend_collection = state.legend_collection.duplicate(true)
+	_energy = state.energy
+	_late_supply_work = state.late_supply_work
+	_reward_rng.state = state.reward_rng_state
+	_luck_rng.state = state.luck_rng_state
+	_round_id = state.round_id
+	_next_run = state.next_run
+	_next_enemy_uid = state.next_enemy_uid
+	_reforge_count = state.reforge_count
+	_unlocked_drones = state.unlocked_drones.duplicate(true)
+	return {"ok": true}
+
 func _init(configuration: Dictionary, api, run_state, seed_value: int = 1) -> void:
 	_run_state = run_state
 	_api = api

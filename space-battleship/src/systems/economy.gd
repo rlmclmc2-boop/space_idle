@@ -29,6 +29,72 @@ func _init(parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
 func budget() -> Dictionary:
 	return _wallet
 
+func credit_offline(seconds: int, maximum_hours: int, rate_text: String) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	if seconds < 0 or maximum_hours < 0: return {"ok": false, "reason": "InvalidOfflineInterval"}
+	var rate: Dictionary = _api.apply("from_decimal", [rate_text])
+	if not rate.ok: return rate
+	var duration: Dictionary = _api.apply("from_decimal", [str(mini(seconds, maximum_hours * 3600))])
+	var maximum: Dictionary = _api.apply("from_decimal", [str(maximum_hours * 3600)])
+	if not duration.ok or not maximum.ok: return {"ok": false, "reason": "InvalidOfflineInterval"}
+	var offered_raw: Dictionary = _api.apply("mul", [duration.value, rate.value])
+	var capacity_raw: Dictionary = _api.apply("mul", [maximum.value, rate.value])
+	if not offered_raw.ok or not capacity_raw.ok: return {"ok": false, "reason": "InvalidOfflineAmount"}
+	var offered: Dictionary = _api.apply("floor", [offered_raw.value])
+	var capacity: Dictionary = _api.apply("floor", [capacity_raw.value])
+	if not offered.ok or not capacity.ok: return {"ok": false, "reason": "InvalidOfflineAmount"}
+	var zero: Dictionary = _api.apply("zero", []).value
+	var current: Dictionary = _wallet.get("chrono", zero)
+	var room: Dictionary = zero
+	var capacity_check: Dictionary = _api.apply("compare", [current, capacity.value])
+	if not capacity_check.ok: return capacity_check
+	if capacity_check.scalar < 0:
+		var difference: Dictionary = _api.apply("sub_nonnegative", [capacity.value, current])
+		if not difference.ok: return difference
+		room = difference.value
+	var room_check: Dictionary = _api.apply("compare", [offered.value, room])
+	if not room_check.ok: return room_check
+	var quantity: Dictionary = offered.value if room_check.scalar <= 0 else room
+	var credited: Dictionary = credit_yield("chrono", quantity, 0.0, 0.0, false)
+	if credited.ok and credited.credited: display_changed.emit()
+	return credited
+
+func save_state() -> Dictionary:
+	return {"wallet": _wallet.duplicate(true), "drops": _drops.duplicate(true),
+		"cursor": _cursor.duplicate(true), "samples": _samples.duplicate(true),
+		"generator": _generator.duplicate(true)}
+
+func restore_state(state: Dictionary) -> Dictionary:
+	if not state.get("wallet") is Dictionary or not state.get("drops") is Dictionary or not state.get("cursor") is Dictionary or not state.get("samples") is Array or not state.get("generator") is Dictionary:
+		return {"ok": false, "reason": "InvalidEconomyState"}
+	if int(state.cursor.get("registered_through", -1)) < 0 or int(state.generator.get("next_id", -1)) < 0 or float(state.generator.get("elapsed", -1.0)) < 0.0:
+		return {"ok": false, "reason": "InvalidEconomyState"}
+	var zero: Dictionary = _api.apply("zero", []).value
+	for value in state.wallet.values():
+		if not value is Dictionary or not _api.apply("compare", [value, zero]).get("ok", false) or _api.apply("compare", [value, zero]).scalar < 0:
+			return {"ok": false, "reason": "InvalidWalletAmount"}
+	var markers: Dictionary = {}
+	for id in state.drops:
+		var row = state.drops[id]
+		if not id is String or not row is Dictionary or not str(id).begins_with("native:") and not str(id).begins_with("timed:"):
+			return {"ok": false, "reason": "InvalidPendingDrop"}
+		if not row.get("amount") is Dictionary or not row.get("production_base") is Dictionary or not _api.apply("compare", [row.amount, zero]).get("ok", false) or not _api.apply("compare", [row.production_base, zero]).get("ok", false):
+			return {"ok": false, "reason": "InvalidPendingDrop"}
+		if not is_finite(float(row.get("x", NAN))) or not is_finite(float(row.get("y", NAN))):
+			return {"ok": false, "reason": "InvalidPendingDrop"}
+		markers[id] = {"x": row.x, "y": row.y, "resource": str(row.get("id", ""))}
+		markers[id].make_read_only()
+	_wallet = state.wallet.duplicate(true)
+	_wallet.make_read_only()
+	_drops = state.drops.duplicate(true)
+	_markers = markers
+	_cursor = state.cursor.duplicate(true)
+	_samples = state.samples.duplicate(true)
+	_generator = state.generator.duplicate(true)
+	_income_dirty = true
+	_balance_dirty = true
+	return {"ok": true}
+
 func accept_budget(next: Dictionary, notify: bool = true) -> bool:
 	if not _run_state.is_running() or next == _wallet: return false
 	_wallet = next.duplicate()

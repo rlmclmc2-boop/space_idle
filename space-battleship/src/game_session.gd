@@ -12,6 +12,8 @@ const Crew = preload("res://src/systems/crew.gd")
 const Planet = preload("res://src/systems/planet.gd")
 const Galaxy = preload("res://src/systems/galaxy.gd")
 const Hyperspace = preload("res://src/systems/hyperspace.gd")
+const StateCodec = preload("res://foundation/host/state_codec.gd")
+const SaveFiles = preload("res://foundation/host/save_files.gd")
 const STEP: float = 1.0 / 60.0
 const FRAME_STEPS: int = 64
 
@@ -43,11 +45,18 @@ var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
 var wall_time: float = 0.0
 var game_time: float = 0.0
+var _configuration_path: String = ""
+var _combat_seed: int = 0
+var _session_id: String = ""
+var _change_number: int = 0
+var _offline_max_hours: int = 0
+var _chrono_rate: String = "0"
+var save_files
 
 func _init() -> void:
 	_income_factors.make_read_only()
 
-func initialize(path: String, combat_seed: int, native_state: Dictionary = {}) -> Dictionary:
+func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, saved: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	if battle != null:
 		return {"ok": false, "reason": "AlreadyInitialized"}
@@ -57,10 +66,15 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}) -
 	if not parsed is Dictionary:
 		return _fail("ConfigurationReadFailed")
 	var configuration: Dictionary = parsed
+	_configuration_path = path
+	_combat_seed = combat_seed
+	_session_id = str(Time.get_unix_time_from_system()) + ":" + str(combat_seed)
 	var parameters: Dictionary = {}
 	var rules: Dictionary = {}
 	for row in configuration.config.config:
 		parameters[str(row.name)] = row.para_1
+	_offline_max_hours = int(parameters.offlineMax)
+	_chrono_rate = str(parameters.chronoParticlesPerSecond)
 	for row in configuration.game_rules.game_rules:
 		rules[str(row.id)] = row.value
 	campaign_system = Campaign.new(configuration, parameters, rules, run_state)
@@ -91,6 +105,9 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}) -
 	galaxy_system.refresh_availability(campaign_system.available, campaign_system.progress_facts().cleared_stages)
 	hyperspace_system = Hyperspace.new(configuration, amount_api, run_state, combat_seed)
 	campaign_system.bind_battle(battle, amount_api)
+	if not saved.is_empty():
+		var restored: Dictionary = _restore_modules(saved)
+		if not restored.ok: return restored
 	_planet_factors = planet_system.contributions()
 	_crew_factors = crew_system.contributions()
 	_galaxy_factors = galaxy_system.contributions()
@@ -108,7 +125,136 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}) -
 	_income_factors = setup.income_factors
 	_research_speed = setup.research_speed
 	_galaxy_crew_experience = setup.galaxy_crew_experience
+	if not saved.is_empty():
+		var checkpoint: String = campaign_system.restore_checkpoint()
+		if checkpoint == "combat":
+			_start_wave()
+			if not run_state.is_running(): return run_state.rejection()
+		elif checkpoint == "hyperspace":
+			if hyperspace_system.manual_active():
+				var interrupted: Dictionary = hyperspace_system.finish_manual(false)
+				if not interrupted.ok: return interrupted
+				campaign_system.return_from_hyperspace(interrupted.receipt.return_target, false)
+			else:
+				return {"ok": false, "reason": "InvalidHyperspaceCheckpoint"}
 	return {"ok": true}
+
+func _restore_modules(saved: Dictionary) -> Dictionary:
+	if not saved.get("modules") is Dictionary or not saved.get("times") is Dictionary:
+		return {"ok": false, "reason": "InvalidSessionState"}
+	var modules: Dictionary = saved.modules
+	var campaign = campaign_system.restore_state(modules.get("campaign", {}))
+	if not campaign.ok: return campaign
+	equipment.refresh_availability(campaign_system.available, int(campaign_system.progress_facts().highest_reached), false)
+	var ports: Array = [
+		[economy, "economy"], [equipment, "equipment"], [enhancement, "enhancement"],
+		[reactor_system, "reactor"], [research, "research"], [crew_system, "crew"],
+		[planet_system, "planet"], [galaxy_system, "galaxy"], [hyperspace_system, "hyperspace"]]
+	for port in ports:
+		var result: Dictionary
+		if port[1] == "equipment":
+			result = port[0].restore_state(modules.get(port[1], {}), campaign_system.ship_facts().mounts)
+		else:
+			result = port[0].restore_state(modules.get(port[1], {}))
+		if not result.ok: return result
+	var times: Dictionary = saved.times
+	for key in ["wall", "game", "pending"]:
+		if not times.get(key) is float or not is_finite(times[key]) or times[key] < 0.0:
+			return {"ok": false, "reason": "InvalidSessionClock"}
+	wall_time = times.wall
+	game_time = times.game
+	pending_seconds = times.pending
+	pause_reasons = {}
+	reactor_system.refresh_availability(campaign_system.available, false)
+	research.refresh_progress(campaign_system.available, false)
+	crew_system.refresh_availability(campaign_system.available, false)
+	planet_system.refresh_availability(campaign_system.available, false)
+	galaxy_system.refresh_availability(campaign_system.available, campaign_system.progress_facts().cleared_stages, false)
+	return crew_system.validate_assignments(assignment_admission, hyperspace_system.online_status().auto)
+
+func save_payload() -> Dictionary:
+	if not run_state.is_running() or battle == null: return run_state.rejection()
+	var native: Dictionary = battle.persistent_state()
+	if not native.ok: return native
+	var snapshot: Dictionary = {"seed": _combat_seed, "native": native.state,
+		"times": {"wall": wall_time, "game": game_time, "pending": pending_seconds},
+		"modules": {"campaign": campaign_system.save_state(), "economy": economy.save_state(),
+			"equipment": equipment.save_state(), "enhancement": enhancement.save_state(),
+			"reactor": reactor_system.save_state(), "research": research.save_state(),
+			"crew": crew_system.save_state(), "planet": planet_system.save_state(),
+			"galaxy": galaxy_system.save_state(), "hyperspace": hyperspace_system.save_state()}}
+	var packed: Dictionary = StateCodec.pack(snapshot)
+	if not packed.ok: return packed
+	return {"ok": true, "payload": packed.value}
+
+func configure_save_directory(directory: String) -> Dictionary:
+	if directory.is_empty() or not DirAccess.dir_exists_absolute(directory):
+		return {"ok": false, "reason": "SaveDirectoryRequired"}
+	if save_files != null:
+		if save_files._directory == directory: return {"ok": true}
+		var closed: Dictionary = save_files.close()
+		if not closed.ok: return closed
+	save_files = SaveFiles.new(directory)
+	return {"ok": true}
+
+func request_save() -> Dictionary:
+	if save_files == null: return {"ok": false, "reason": "SaveDirectoryRequired"}
+	var snapshot: Dictionary = save_payload()
+	if not snapshot.ok: return snapshot
+	if _change_number == 9223372036854775807: return {"ok": false, "reason": "ChangeNumberRange"}
+	_change_number += 1
+	var config_hash: String = FileAccess.get_file_as_string(_configuration_path).sha256_text()
+	return save_files.request(snapshot.payload, str(_change_number), _session_id,
+		str(int(Time.get_unix_time_from_system())), config_hash)
+
+static func load_candidate(path: String, directory: String) -> Dictionary:
+	var failure: Dictionary = {"ok": false, "reason": "InvalidSaveStore"}
+	for pointer in ["active.json", "previous.json"]:
+		var stored: Dictionary = SaveFiles.read_pointer(directory, pointer)
+		if not stored.ok: continue
+		var built: Dictionary = _candidate_from_envelope(path, directory, stored.envelope)
+		if built.ok: return built
+		failure = built
+	return failure
+
+static func import_candidate(path: String, directory: String, source_file: String) -> Dictionary:
+	var file: FileAccess = FileAccess.open(source_file, FileAccess.READ)
+	if file == null or file.get_length() > SaveFiles.MAX_BYTES:
+		return {"ok": false, "reason": "InvalidImportFile"}
+	var envelope = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not envelope is Dictionary or envelope.get("formatVersion") != 1 or not envelope.get("payload") is Dictionary or not envelope.get("sessionId") is String or envelope.sessionId.is_empty():
+		return {"ok": false, "reason": "InvalidImportEnvelope"}
+	for field in ["changeNumber", "generation", "savedUtc"]:
+		if not SaveFiles.integer_text(envelope.get(field)):
+			return {"ok": false, "reason": "InvalidImportEnvelope"}
+	if JSON.stringify(envelope.payload).sha256_text() != envelope.get("payloadHash"):
+		return {"ok": false, "reason": "InvalidImportChecksum"}
+	return _candidate_from_envelope(path, directory, envelope)
+
+static func _candidate_from_envelope(path: String, directory: String, envelope: Dictionary) -> Dictionary:
+	if FileAccess.get_file_as_string(path).sha256_text() != envelope.configHash:
+		return {"ok": false, "reason": "ConfigurationMismatch"}
+	var decoded: Dictionary = StateCodec.unpack(envelope.payload)
+	if not decoded.ok or not decoded.value is Dictionary:
+		return {"ok": false, "reason": "InvalidSavePayload"}
+	var saved: Dictionary = decoded.value
+	if not saved.get("seed") is int or not saved.get("native") is Dictionary:
+		return {"ok": false, "reason": "InvalidSavePayload"}
+	var candidate = load("res://src/game_session.gd").new()
+	var ready: Dictionary = candidate.initialize(path, saved.seed, saved.native, saved)
+	if not ready.ok: return ready
+	candidate._session_id = envelope.sessionId
+	candidate._change_number = str(envelope.changeNumber).to_int()
+	var elapsed: int = maxi(0, int(Time.get_unix_time_from_system()) - str(envelope.savedUtc).to_int())
+	var offline: Dictionary = candidate.economy.credit_offline(elapsed, candidate._offline_max_hours, candidate._chrono_rate)
+	if not offline.ok: return offline
+	var configured: Dictionary = candidate.configure_save_directory(directory)
+	if not configured.ok: return configured
+	return {"ok": true, "session": candidate,
+		"summary": {"stage": candidate.campaign_system.progress_facts().highest_reached,
+			"ship": candidate.campaign_system.selected_ship(),
+			"generation": envelope.generation, "savedUtc": envelope.savedUtc}}
 
 func set_pause(reason: String, held: bool) -> void:
 	if not run_state.is_running(): return

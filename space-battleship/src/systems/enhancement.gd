@@ -11,6 +11,30 @@ var _values: Dictionary = {}
 var _pending_output: Dictionary = {}
 var _pending_state: Dictionary = {}
 
+func save_state() -> Dictionary:
+	return _state.duplicate(true)
+
+func restore_state(state: Dictionary) -> Dictionary:
+	var initial: Dictionary = _initial()
+	for key in initial:
+		if not state.has(key) or typeof(state[key]) != typeof(initial[key]):
+			return {"ok": false, "reason": "InvalidEnhancementState"}
+	if state.level < 0 or state.extra_levels < 0 or state.weapon_order.size() != WEAPON.size() or state.defence_order.size() != DEFENCE.size():
+		return {"ok": false, "reason": "InvalidEnhancementState"}
+	for group in [[state.weapon_order, WEAPON], [state.defence_order, DEFENCE]]:
+		for id in group[0]:
+			if not id is String or id not in group[1] or group[0].count(id) != 1:
+				return {"ok": false, "reason": "InvalidEnhancementOrder"}
+	for id in state.branches:
+		if not id is String or id not in WEAPON + DEFENCE or not state.branches[id] is Array or state.branches[id].size() != 3:
+			return {"ok": false, "reason": "InvalidEnhancementBranch"}
+		for choice in state.branches[id]:
+			if not choice in ["", "A", "B"]: return {"ok": false, "reason": "InvalidEnhancementBranch"}
+	_state = state.duplicate(true)
+	_pending_output = {}
+	_pending_state = {}
+	return {"ok": true}
+
 func _init(rows: Array, api, run_state) -> void:
 	_run_state = run_state
 	for row in rows: _rules[str(row.id)] = row.value
