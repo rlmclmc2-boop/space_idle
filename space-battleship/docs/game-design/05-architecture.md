@@ -1,20 +1,20 @@
 # 05 游戏对象与直接执行流程
 
-[回唯一入口](README.md)。游戏在主线程中顺序执行。`GameSession`保存玩家进度并调用具名系统函数；`SpaceCombatKernel`保存和推进实时战斗；页面读取完成后的状态并绘制。下文为目标实现，标为“现有”的名称指出可接续的源码，其余函数是本方案定义的新接口。
+[回唯一入口](README.md)。游戏在主线程中顺序执行。`GameSession`保存玩家进度并调用具名系统函数；Battle持有`SpaceCombatKernel`，由内核保存和推进实时战斗；页面通过Battle读取完成后的状态并绘制。下文为目标实现，标为“现有”的名称指出可接续的源码，其余函数是本方案定义的新接口。
 
 ## 1. 实际需要的对象
 
 | 对象 | 职责与存在原因 |
 |---|---|
-| GameSession | 一局游戏的入口，拥有下面的进度数据、时间余量和一个native核；按固定顺序调用各系统，避免各页面自行推进时间 |
+| GameSession | 一局游戏的入口，拥有下面的进度数据与时间余量，并持有Battle模块；按固定顺序调用各系统，避免各页面自行推进时间 |
 | ConfigBundle | 一次编译的只读Excel数据、索引、来源坐标；游戏和测试都直接查询它 |
 | 具名系统函数 | equipment/research/crew/planet/galaxy/hyperspace/economy各文件保存本系统公式和动作；直接接收session或所需数据，没有各自隐藏的玩家进度 |
 | SpaceCombatKernel | 现有C++核改造后的唯一战斗实现，管理双方防御、攻击出生、运动、接触、传说和波次；让大批弹体继续使用现有紧凑存储与快路径 |
 | combat_setup.gd | 把槽位与成长结果组装为native配置，计算逻辑舰体与炮口输入；只在实际变更时更新，不逐帧重编译装备 |
-| SpaceCombatPresentation及Godot页面 | 读取native表现数据和玩家进度；GPU绘制弹体/接触，页面提供按钮和文本；不结算命中 |
+| Battle与SpaceCombatPresentation及Godot页面 | Battle持有native核和原生表现器，提供出击、撤退、结波与展示所需的具名接口；页面提交画布、材质与绘制回调，GPU绘制弹体/接触并显示文本，不结算命中或直接访问内核 |
 | SaveFiles | 串行写保存文件、备份和导入校验；文件写入需要独立生命周期，业务动作不等待磁盘 |
 
-建议文件位置为`src/game_session.gd`、`src/state/`下的具名进度结构、`src/systems/{economy,equipment,enhancement,reactor,research,crew,planet,galaxy,hyperspace}.gd`、`src/combat_setup.gd`、`src/save_files.gd`和`src/ui/`页面。C++继续在`addons/native_battle/src/`；`config_tools/`是独立Excel编译命令，`tests/excel/`与`tests/run_cases.gd`是测试数据和运行入口。文件按真实职责拆分，无需为每个函数配一个接口类。
+建议文件位置为`src/game_session.gd`、`src/state/`下的具名进度结构、`src/systems/{battle,campaign,economy,equipment,enhancement,reactor,research,crew,planet,galaxy,hyperspace}.gd`、`src/combat_setup.gd`、`src/save_files.gd`和`src/ui/`页面。C++继续在`addons/native_battle/src/`；`config_tools/`是独立Excel编译命令，`tests/excel/`与`tests/run_cases.gd`是测试数据和运行入口。文件按真实职责拆分，无需为每个函数配一个接口类。
 
 系统函数可以直接调用另一个具名函数，例如探索完成调用`crew.add_experience`，购买调用`economy.can_pay/pay`。调用顺序在入口或完成函数中写明；函数不通过UI信号寻找下一步工作，也不创建异步业务任务。新玩法通常增加一个规则函数、配置列及测试场景，不增加一层调度基础设施。
 
@@ -34,10 +34,12 @@
 | session.notifications | 教程进度、解锁seen/read、研究完成和奖励未读；父级红点由子项计算 |
 | session.time | 接受但未执行的游戏时间段、固定步余数、暂停原因、离港现实等待、现实收入窗口时间；不是每个系统各自计算帧差 |
 | session.settings | 声音、数字显示、跳过教程、自动保存间隔、页面偏好；保存到独立设置文件 |
-| session.kernel内部 | 玩家实时盾/甲和模块损失/记忆保护/延期；敌人、武器冷却、攻击/弹体/光束、事件队列、暂态Buff、传说状态、攻击/来袭历史、战斗随机与ID分配 |
+| Battle所持native核内部 | 玩家实时盾/甲和模块损失/记忆保护/延期；敌人、武器冷却、攻击/弹体/光束、事件队列、暂态Buff、传说状态、攻击/来袭历史、战斗随机与ID分配 |
 | 表现对象 | 镜头、插值、shader参数、音效/粒子池、页面控件、纯显示统计；均不写上述状态 |
 
-native核从新档/读档到结束会话一直存在；没有敌人时仍可按航行规则恢复玩家、处理合法遗留弹体，不因为换波重新创建玩家防御。宿主读`player_view()`、`enemy_views()`等只读数据；显示副本不是战斗权威。保存需要计数和防御时从native一次读取。重铸明确重置native历史，新遭遇不重置跨战斗历史。
+native核由Battle从新档/读档持有到结束会话；没有敌人时仍可按航行规则恢复玩家、处理合法遗留弹体，不因为换波重新创建玩家防御。Battle读取`player_view()`、`enemy_views()`等只读数据并转换为出航容量、盾甲耗尽、战斗展示等语义；Campaign和页面不持有内核对象，也不调用内核方法。显示副本不是战斗权威。保存需要计数和防御时从native一次读取。重铸明确重置native历史，新遭遇不重置跨战斗历史。
+
+Campaign只依赖Battle的防御容量判断、出航重置、死亡撤退、恢复与结波接口；这些操作由Battle保持原native调用顺序。Battle持有原生表现器并把内核绑定到retained/GPU表面，页面只交付画布、材质和光束回调，并请求战斗展示。敌人绘制在Battle读取原生视图后直接完成；弹体仍走原生GPU路径，不逐帧拷贝全部几何或重建配置。更换native核时，适配集中在Battle。
 
 派生装备结果是`CombatConfig`：各武器/防御数值、当前有效强化/传说、来源ID、掉落倍率和几何引用。`build_combat_config(session)`只组装下面定义的静态输入；核用共享C++数值函数完成03的历史与动态层，UI读取核计算的模块明细。只保留一个`combat_config_dirty`标志及原因列表；相关操作结束或战斗前重算，清标志。不用领域版本号串联缓存。
 
@@ -184,7 +186,7 @@ write_persistent_state() / read_persistent_state(data)  # 历史/随机/ID，不
 
 由宿主的逻辑姿态函数提供碰撞包络/炮口/玩家点，沿用`input_ballistic_geometry`/`input_geometry`/`input_player_point`所需的紧凑数组；几何变化时更新，静态舰体保留接触缓存。表现炮口独立调用`input_presentation_muzzles`，只改变绘图。GPU只收到坐标、角度、颜色、年龄和归一化血条等有限float，绝不承载伤害Amount；大数文本由Amount格式化。命中来自C++中的即时炮/射线判定、飞行接触或光束跳；shader或动画回调不能请求扣血。
 
-沿用native retained数据访问，不逐帧把所有弹体序列化成Dictionary再让GDScript移动。页面所需的小型防御视图和结果列表可以转Godot值；接触反馈保留值拷贝，实体退役后仍可画火花。只有显示预算允许丢弃纯火花/文字，业务队列完整保留。
+沿用native retained数据访问，由Battle把核绑定到原生表现器，不逐帧把所有弹体序列化成Dictionary再让GDScript移动。页面所需的小型防御视图和结果列表可以转Godot值；接触反馈保留值拷贝，实体退役后仍可画火花。只有显示预算允许丢弃纯火花/文字，业务队列完整保留。
 
 ## 6. 页面连接与资源
 
