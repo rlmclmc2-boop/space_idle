@@ -23,7 +23,7 @@
 | 唯一所有者 | 字段及使用方式 |
 |---|---|
 | session.campaign | 最高到达、生涯最高、通关集合、永久授予、当前关/战点/距离、航行/战斗/撤退/等待状态、驻守策略和返回目的地；出击/通关触发equipment清锁 |
-| session.economy | Amount钱包、带来源的收入样本、原生生产窗口、宿主可拾取物及领取标志；native只生成掉落，不写余额 |
+| session.economy | Amount钱包、带来源的收入样本、原生生产窗口、宿主可拾取物及领取标志；定时物在生成时持有固定最终amount与productionBase，移动和领取不重新读取收入倍率；native只生成掉落，不写余额 |
 | session.equipment | 船型、全部保存槽位、付费等级/装备ID、switchReadyAt换装锁、启用范围；reactor子数据保存等级和模块分配 |
 | session.enhancement | 强化购买等级、排列、分支；全局攻击/来袭历史由native核保存，宿主读其计数，不存第二份可改计数 |
 | session.research | 科技等级/工作量/当前项、投入额和比例、下次刷新时刻、原生实际收入历史峰值 |
@@ -85,6 +85,8 @@ frame(real_dt, focused):
 ```
 
 `step_game(dt)`显式调用01共享顺序：记录手动超空间耗时→推进生产游戏钟→`hyperspace.advance_online`→`planet.advance`→`galaxy.advance`→`crew.advance_jobs`→`economy.spawn_timed_resources`→`research.advance`→`economy.collect_due_drops`→`research.refresh_auto_input`→刷新发生变化的CombatConfig→推进当前航程和`kernel.advance_combat`→取战斗结果→处理波结束/死亡→更新解锁通知。武器临时效果、恢复、接触、延期等全部只在advance_combat内部按到期时刻推进；共享阶段不递减这些字段。同刻顺序按01第3.2节；本步完成的科研/探索等只舍去自身完成后尾段，新任务下一步积累，其他阶段仍执行完整dt。
+
+`economy.spawn_timed_resources`读取生成时的战点倍率、资源采集挂设与对应研究收入因子，写入最终`amount`和独立`productionBase`。之后的`collect_due_drops`、手动领取、移动到玩家位置及终波强制领取对定时物只使用保存的数值；研究在本步生成之后完成也不能改写这批物，下次生成才使用新因子。此读取时点只属于定时物，普通敌人掉落仍按01的领取规则。
 
 星球完成直接增加探索度、推进施工、发经验；船员若升级则立即重算岗位效果和反应炉容量；后面的共享阶段读取新值。普通掉落入账更新原生窗口与AI峰值，战斗前刷新新属性。战斗结果取回后产生的新掉落本步不重新跑整个共享阶段：有立即强制领取条件就直接领取，其余留在宿主掉落列表等待手动或后续到期。强制领取导致的AI峰值改变在下一次native推进前同步。
 
