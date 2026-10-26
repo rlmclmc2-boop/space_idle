@@ -463,8 +463,8 @@ func frame(real_dt: float, focused: bool) -> void:
 		return
 	pending_seconds += accepted.accepted
 	var steps: int = 0
-	while pending_seconds >= STEP and steps < FRAME_STEPS and not campaign_system.departure_active() and pause_reasons.is_empty() and run_state.is_running():
-		pending_seconds -= STEP
+	while pending_seconds + 1e-9 >= STEP and steps < FRAME_STEPS and not campaign_system.departure_active() and pause_reasons.is_empty() and run_state.is_running():
+		pending_seconds = maxf(0.0, pending_seconds - STEP)
 		_step(STEP)
 		if not run_state.is_running(): return
 		steps += 1
