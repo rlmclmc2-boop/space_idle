@@ -301,17 +301,26 @@ static func _price(base, rate: float, target: int, api) -> Dictionary:
 		return value
 	return api.apply("ceil", [value.value])
 
-static func _quote_cost(base, rate: float, level: int, count: int, api) -> Dictionary:
+static func _search_price(base, rate: float, target: int, api, search_cache) -> Dictionary:
+	if search_cache == null: return _price(base, rate, target, api)
+	var key: Array = ["price", base, rate, target]
+	if search_cache.has(key): return search_cache[key]
+	var result: Dictionary = _price(base, rate, target, api)
+	if result.ok: search_cache[key] = result
+	return result
+
+static func _quote_cost(base, rate: float, level: int, count: int, api, search_cache = null) -> Dictionary:
 	if not is_finite(rate) or rate < 0 or level < 0 or count < 1 or level > 9223372036854775807 - count:
 		return {"ok": false, "reason": "InvalidPriceRange"}
 	var threshold: Dictionary = api.apply("from_decimal", ["1e15"]).value
 	var total: Dictionary = api.apply("zero", []).value
 	var at: int = level + 1
 	var last: int = level + count
+	var cache_key: Array = ["extreme", base, rate, level]
 	# The authored first level may lie above its following Q bucket. Handle it
 	# separately; all subsequent prices form monotone contiguous equal-price runs.
 	if at == 1:
-		var first = _price(base, rate, at, api)
+		var first = _search_price(base, rate, at, api, search_cache)
 		if not first.ok:
 			return first
 		total = first.value
@@ -319,7 +328,7 @@ static func _quote_cost(base, rate: float, level: int, count: int, api) -> Dicti
 			return {"ok": true, "value": total, "extreme": api.apply("compare", [total, threshold]).scalar >= 0}
 		at += 1
 	if rate == 0.0:
-		var unit = _price(base, rate, at, api)
+		var unit = _search_price(base, rate, at, api, search_cache)
 		if not unit.ok:
 			return unit
 		var terms = api.apply("from_decimal", [str(last - at + 1)])
@@ -330,18 +339,25 @@ static func _quote_cost(base, rate: float, level: int, count: int, api) -> Dicti
 		if not sum.ok:
 			return sum
 		return {"ok": true, "value": sum.value, "extreme": api.apply("compare", [sum.value, threshold]).scalar >= 0}
+	# A MAX search repeatedly quotes this same prefix. Once a complete equal-price
+	# run reaches the existing extreme boundary, larger counts use the same raw
+	# geometric policy and need not rebuild that ordinary prefix.
+	if search_cache != null and search_cache.has(cache_key) and count >= int(search_cache[cache_key]):
+		at = last + 1 if last < 9223372036854775807 else last
+		total = threshold
 	while at <= last and api.apply("compare", [total, threshold]).scalar < 0:
-		var unit = _price(base, rate, at, api)
+		var unit = _search_price(base, rate, at, api, search_cache)
 		if not unit.ok:
 			return unit
 		if api.apply("compare", [unit.value, threshold]).scalar >= 0:
+			if search_cache != null: search_cache[cache_key] = at - level
 			break
 		var low: int = at
 		var high: int = last
 		while low < high:
 			@warning_ignore("integer_division")
 			var middle: int = low + (high - low) / 2 + 1
-			var candidate = _price(base, rate, middle, api)
+			var candidate = _search_price(base, rate, middle, api, search_cache)
 			if not candidate.ok:
 				return candidate
 			if api.apply("compare", [candidate.value, unit.value]).scalar == 0:
@@ -357,6 +373,7 @@ static func _quote_cost(base, rate: float, level: int, count: int, api) -> Dicti
 			return sum
 		total = sum.value
 		if api.apply("compare", [total, threshold]).scalar >= 0:
+			if search_cache != null: search_cache[cache_key] = low - level
 			break
 		if low == last:
 			return {"ok": true, "value": total, "extreme": false}
@@ -387,7 +404,7 @@ static func _quote_cost(base, rate: float, level: int, count: int, api) -> Dicti
 	return quantity
 
 static func _quote_levels(row: Dictionary, level: int, count: int, evolution: Dictionary,
-		material_unlocked: bool, amount_api) -> Dictionary:
+		material_unlocked: bool, amount_api, search_cache = null) -> Dictionary:
 	if count < 1 or level > 9223372036854775807 - count:
 		return {"ok": false, "reason": "InvalidEquipmentLevel"}
 	var costs: Dictionary = {}
@@ -396,7 +413,7 @@ static func _quote_levels(row: Dictionary, level: int, count: int, evolution: Di
 	while row.has("res_" + str(column)):
 		var resource = row["res_" + str(column)]
 		if resource != null:
-			var cost = _quote_cost(row["cost_" + str(column)], float(row["costMulti_" + str(column)]), level, count, amount_api)
+			var cost = _quote_cost(row["cost_" + str(column)], float(row["costMulti_" + str(column)]), level, count, amount_api, search_cache)
 			if not cost.ok:
 				return cost
 			var key: String = str(int(resource))
@@ -440,8 +457,9 @@ static func _quote_affordable_levels(row: Dictionary, level: int, evolution: Dic
 	var accepted: Dictionary = {}
 	var low: int = 0
 	var high: int = 1
+	var search_cache: Dictionary = {}
 	while high <= limit:
-		var quote = _quote_levels(row, level, high, evolution, material_unlocked, api)
+		var quote = _quote_levels(row, level, high, evolution, material_unlocked, api, search_cache)
 		if not quote.ok or not bool(can_pay.call(quote.costs)):
 			break
 		low = high
@@ -452,7 +470,7 @@ static func _quote_affordable_levels(row: Dictionary, level: int, evolution: Dic
 	while low + 1 < high:
 		@warning_ignore("integer_division")
 		var middle: int = low + (high - low) / 2
-		var quote = _quote_levels(row, level, middle, evolution, material_unlocked, api)
+		var quote = _quote_levels(row, level, middle, evolution, material_unlocked, api, search_cache)
 		if quote.ok and bool(can_pay.call(quote.costs)):
 			low = middle
 			accepted = quote

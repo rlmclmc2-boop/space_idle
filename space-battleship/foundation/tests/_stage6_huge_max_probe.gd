@@ -27,7 +27,7 @@ func _run() -> void:
 	var level: int = int(session.equipment.save_state().slots[0].paid_level)
 	var extra: Dictionary = session.equipment.buy_levels("weapon:0", 1, session.equipment_inputs(),
 		session.economy.payment, session.publish_equipment_levels)
-	if not ready.ok or level < 1000 or extra.ok or not session.run_state.is_running():
+	if not ready.ok or level != 12598 or extra.ok or not session.run_state.is_running():
 		printerr("huge MAX transaction: ", ready, " level=", level, " extra=", extra)
 		quit(1)
 		return
