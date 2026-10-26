@@ -10,7 +10,7 @@ func _initialize() -> void:
 		return
 	call_deferred("_run")
 
-func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: int = 1, critical_choices: Array = []) -> Dictionary:
+func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: int = 1, critical_choices: Array = [], drone_bonus: float = 0.0, force_repeat: bool = false, interval_multiplier: float = 1.0) -> Dictionary:
 	var session = Session.new()
 	var ready: Dictionary = session.initialize("res://generated/config.json", seed)
 	if ready.ok and paid_level != 1:
@@ -18,6 +18,14 @@ func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: in
 		for slot in equipment_state.slots:
 			if slot.id == "weapon:0": slot.paid_level = paid_level
 		ready = session.equipment.restore_state(equipment_state, session.campaign_system.ship_facts().mounts)
+	if ready.ok and drone_bonus > 0.0:
+		var motion: Dictionary = session.battle.wave_inputs().motion
+		var donor: Dictionary = session.equipment.drone_weapon_source("laser", 0, 0, session._research_factors, session._reactor_factors, motion)
+		if not donor.ok: return donor
+		donor.weapon.interval = 1000000.0
+		donor.weapon.remaining = 1000000.0
+		ready = session.set_equipped_drone_contributions([{"id": "critical-probe", "generation": 1,
+			"quality": "white", "weapon": donor.weapon, "critical_rate_bonus": drone_bonus}])
 	if ready.ok: ready = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if not ready.ok: return ready
 	var state: Dictionary = session.enhancement.save_state()
@@ -30,7 +38,15 @@ func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: in
 	if not output.ok: return output
 	var value: Dictionary = session.battle._values.weapons["weapon:0"].duplicate()
 	value.base = "1e2"
-	ready = session.battle._kernel.set_player_values({"weapon:0": value}, {}, "growth", "", output)
+	var native_output: Dictionary = output
+	if force_repeat or interval_multiplier != 1.0:
+		var weapon_output: Dictionary = {}
+		for key in output.weapon: weapon_output[key] = output.weapon[key]
+		if force_repeat: weapon_output.repeat_probability = 1.0
+		if interval_multiplier != 1.0: weapon_output.interval_multiplier = interval_multiplier
+		native_output = {"globals": output.globals, "weapon": weapon_output,
+			"defence": output.defence, "effects": output.effects}
+	ready = session.battle._kernel.set_player_values({"weapon:0": value}, {}, "growth", "", native_output)
 	if not ready.ok: return ready
 	var inputs: Dictionary = session.battle.wave_inputs()
 	var setup: Dictionary = session.campaign_system.prepare_wave(session.equipment.enemy_override, inputs.geometry, inputs.motion)
@@ -160,6 +176,66 @@ func _run() -> void:
 		printerr("CR07 following attack did not read B1/B2 marks: ", second_mark, " expected~", second_expected)
 		quit(1)
 		return
+	var derived: Dictionary = _fixture(120828829812621612, 50, true, [], 1, ["B", "B", "B"], 0.0, true)
+	if not derived.ok:
+		printerr("CR07 derived fixture: ", derived)
+		quit(1)
+		return
+	var root_mark: Dictionary = _first_receipt(derived.session)
+	var repeated_mark: Dictionary = _first_receipt(derived.session)
+	var next_root_mark: Dictionary = _first_receipt(derived.session)
+	if not root_mark.ok or not repeated_mark.ok or not next_root_mark.ok:
+		printerr("CR07 derived receipts missing: ", root_mark, " ", repeated_mark, " ", next_root_mark)
+		quit(1)
+		return
+	if str(root_mark.receipt.damage) != "1e2" or not bool(repeated_mark.receipt.critical) or bool(repeated_mark.receipt.critical_bonus_applied) or absf(float(repeated_mark.receipt.damage) / (100.0 * float(derived.output.weapon.repeat_multiplier)) - 1.0) > 0.01:
+		printerr("CR07 derived inherited branch: ", repeated_mark)
+		quit(1)
+		return
+	if str(next_root_mark.receipt.damage) != str(second_mark.receipt.damage) or int(derived.session.battle._kernel.read_history().attacks) != 2:
+		printerr("CR07 derived hit refreshed B1/B2 marks: ", next_root_mark, " expected=", second_mark)
+		quit(1)
+		return
+	var slow_marked: Dictionary = _fixture(120828829812621612, 50, true, [], 1, ["B", "B", "B"], 0.0, false, 2.0)
+	var slow_reference: Dictionary = _fixture(120828829812621612, 50, true, [], 1, [], 0.0, false, 2.0)
+	if not slow_marked.ok or not slow_reference.ok:
+		printerr("CR07 expiry fixture: ", slow_marked, " ", slow_reference)
+		quit(1)
+		return
+	var slow_first: Dictionary = _first_receipt(slow_marked.session)
+	var slow_second: Dictionary = _first_receipt(slow_marked.session)
+	var baseline_first: Dictionary = _first_receipt(slow_reference.session)
+	var baseline_second: Dictionary = _first_receipt(slow_reference.session)
+	if not slow_first.ok or not slow_second.ok or not baseline_first.ok or not baseline_second.ok:
+		printerr("CR07 expiry receipts missing")
+		quit(1)
+		return
+	var expired_expected: float = float(baseline_second.receipt.damage) * 1.5
+	if absf(float(slow_second.receipt.damage) / expired_expected - 1.0) > 0.01:
+		printerr("CR07 expired B2 stack still affected next attack: ", slow_second, " expected~", expired_expected)
+		quit(1)
+		return
 	print("CR07 first=", first_mark.receipt.damage, " second=", second_mark.receipt.damage)
-	print("STAGE6_CRITICAL_ORACLE_OK CR01-CR05 CR07-partial CR09")
+	var drone_natural: Dictionary = _fixture(1014960426271799216, 1, false, [], 1, [], 0.2)
+	if not drone_natural.ok or drone_natural.u1 < 0.25 or drone_natural.u1 >= 0.45 or not is_equal_approx(float(drone_natural.output.weapon.critical_rate), 0.25):
+		printerr("CR06 non-B3 boundary fixture: ", drone_natural)
+		quit(1)
+		return
+	var natural_hit: Dictionary = _first_receipt(drone_natural.session)
+	if not natural_hit.ok or not bool(natural_hit.receipt.critical) or not bool(natural_hit.receipt.critical_bonus_applied) or str(natural_hit.receipt.damage) != "2.3e2":
+		printerr("CR06 drone probability did not raise natural roll to 0.45: ", natural_hit)
+		quit(1)
+		return
+	var drone_guaranteed: Dictionary = _fixture(1, 50, true, [], 1, [], 0.2)
+	if not drone_guaranteed.ok or drone_guaranteed.u2 < 0.25 or drone_guaranteed.u2 >= 0.45:
+		printerr("CR06 B3 boundary fixture: ", drone_guaranteed)
+		quit(1)
+		return
+	var guaranteed_hit: Dictionary = _first_receipt(drone_guaranteed.session)
+	if not guaranteed_hit.ok or not bool(guaranteed_hit.receipt.critical) or bool(guaranteed_hit.receipt.critical_bonus_applied) or str(guaranteed_hit.receipt.damage) != "1e2":
+		printerr("CR06 drone probability polluted original-rate bonus roll: ", guaranteed_hit)
+		quit(1)
+		return
+	print("CR06 natural u1=", drone_natural.u1, " B3 u2=", drone_guaranteed.u2)
+	print("STAGE6_CRITICAL_ORACLE_OK CR01-CR07 CR09")
 	quit()
