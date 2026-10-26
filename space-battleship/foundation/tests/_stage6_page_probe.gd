@@ -224,5 +224,41 @@ func _run() -> void:
 		printerr("reforge replacement save: ", result)
 		quit(1)
 		return
+	# Fail an actual background publication after a candidate has replaced the
+	# visible session. The last committed file stays readable and the page must
+	# make the failed persistence explicit until a successful retry.
+	var committed: Dictionary = SaveFiles.read_pointer(directory, "active.json")
+	var old_session = main.session
+	import_path = _find_line(main, "Envelope JSON file to import")
+	import_path.text = directory.path_join(committed.pointer.file)
+	_find_button(main, "Preview import").pressed.emit()
+	if main._pending_import.is_empty():
+		printerr("replacement failure fixture preview: ", main.growth_status.text)
+		quit(1)
+		return
+	var blocked_temp: String = directory.path_join("previous.json.tmp")
+	DirAccess.make_dir_absolute(blocked_temp)
+	_find_button(main, "Confirm import").pressed.emit()
+	if main.session == old_session or not main.session.run_state.is_running():
+		printerr("replacement did not yield a usable candidate")
+		quit(1)
+		return
+	result = main.session.save_files.close(2000)
+	main._save_status_elapsed = 1.0
+	main.growth_panel.visible = true
+	main._process(0.0)
+	if result.ok or not main.save_state_label.text.begins_with("Save failed:") or not main.growth_status.text.begins_with("保存失败：") or not SaveFiles.read_pointer(directory, "active.json").ok:
+		printerr("asynchronous replacement failure was hidden: ", result, " ", main.save_state_label.text, " ", main.growth_status.text)
+		quit(1)
+		return
+	DirAccess.remove_absolute(blocked_temp)
+	_find_button(main, "Save").pressed.emit()
+	result = main.session.save_files.close(2000)
+	main._save_status_elapsed = 1.0
+	main._process(0.0)
+	if not result.ok or not main.session.save_files.last_failure.is_empty() or main.save_state_label.text != "Last save written":
+		printerr("failed replacement save retry: ", result, " ", main.save_state_label.text)
+		quit(1)
+		return
 	print("STAGE6_PAGE_PROBE_OK")
 	quit(0)

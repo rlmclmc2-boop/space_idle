@@ -25,6 +25,7 @@ var _pending_reforge: Dictionary = {}
 var _autosave_interval: float = 0.0
 var _next_autosave_wall: float = 0.0
 var _save_status_elapsed: float = 1.0
+var _seen_save_failure_generation: String = ""
 
 func _ready() -> void:
 	if not ClassDB.class_exists("SpaceCombatKernel"):
@@ -86,6 +87,7 @@ func _replace_session(replacement) -> Dictionary:
 	session = replacement
 	_pending_import = {}
 	_pending_reforge = {}
+	_seen_save_failure_generation = ""
 	_next_autosave_wall = session.wall_time + _autosave_interval
 	_overlay = null
 	growth_panel = null
@@ -121,15 +123,21 @@ func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
 		if session.save_files != null: session.save_files.poll()
+		if session.save_files != null and not session.save_files.last_failure.is_empty():
+			var failure_generation: String = str(session.save_files.last_failure.get("generation", ""))
+			if failure_generation != _seen_save_failure_generation:
+				_seen_save_failure_generation = failure_generation
+				if growth_status != null:
+					growth_status.text = "保存失败：" + str(session.save_files.last_failure.get("error", "Unknown"))
 		_save_status_elapsed += maxf(dt, 0.0)
 		if save_state_label != null and growth_panel != null and growth_panel.visible and _save_status_elapsed >= 1.0:
 			_save_status_elapsed = 0.0
 			if session.save_files == null:
 				save_state_label.text = "No save directory"
+			elif not session.save_files.last_failure.is_empty():
+				save_state_label.text = "Save failed: " + str(session.save_files.last_failure.get("error", "Unknown"))
 			elif session.save_files.busy():
 				save_state_label.text = "Saving…"
-			elif not session.save_files.last_result.is_empty() and not session.save_files.last_result.ok:
-				save_state_label.text = "Save failed: " + str(session.save_files.last_result.get("error", "Unknown"))
 			else:
 				var status: Dictionary = session.dirty_since_save()
 				save_state_label.text = "Save status unavailable" if not status.ok else "Unsaved changes" if status.dirty else "Last save written"
@@ -159,13 +167,13 @@ func _setup_shell_overlay() -> void:
 	add_child(layer)
 	_overlay = Node2D.new()
 	layer.add_child(_overlay)
-	_overlay.draw.connect(_draw_shell)
+	_overlay.draw.connect(_draw_shell.bind(_overlay))
 
-func _draw_shell() -> void:
+func _draw_shell(canvas: Node2D) -> void:
 	var font: Font = ThemeDB.fallback_font
-	_overlay.draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
+	canvas.draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
 	if not session.run_state.is_running():
-		_overlay.draw_string(font, Vector2(18, 850), session.run_state.reason(), HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
+		canvas.draw_string(font, Vector2(18, 850), session.run_state.reason(), HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()

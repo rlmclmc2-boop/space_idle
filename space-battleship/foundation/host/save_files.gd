@@ -4,11 +4,13 @@ extends RefCounted
 const MAX_BYTES: int = 32 * 1024 * 1024
 var _directory: String
 var _worker: Thread
+var _active_generation: String = ""
 var _pending: Dictionary = {}
 var _generation: int = 0
 var saved_change: String = ""
 var saved_payload_hash: String = ""
 var last_result: Dictionary = {}
+var last_failure: Dictionary = {}
 
 func _init(directory: String) -> void:
 	_directory = directory
@@ -79,13 +81,19 @@ func poll() -> void:
 		if last_result.ok:
 			saved_change = last_result.change
 			saved_payload_hash = str(last_result.get("payload_hash", ""))
+			last_failure = {}
+		else:
+			last_result["generation"] = _active_generation
+			last_failure = last_result.duplicate()
 	if _worker == null and not _pending.is_empty():
 		var captured := _pending.duplicate(true)
 		_pending = {}
 		_worker = Thread.new()
+		_active_generation = captured.generation
 		var code := _worker.start(write_snapshot.bind(captured))
 		if code != OK:
-			last_result = {"ok": false, "error": "WriterStart"}
+			last_result = {"ok": false, "error": "WriterStart", "generation": captured.generation}
+			last_failure = last_result.duplicate()
 			_worker = null
 
 func busy() -> bool:

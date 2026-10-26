@@ -168,6 +168,21 @@ func _restore_modules(saved: Dictionary) -> Dictionary:
 		else:
 			result = port[0].restore_state(modules.get(port[1], {}))
 		if not result.ok: return result
+	# Native DropIds and the host registration frontier are one monotonic stream.
+	var saved_native = saved.get("native", {})
+	if not saved_native is Dictionary:
+		return {"ok": false, "reason": "InvalidNativeDropWatermark"}
+	var native_ids = saved_native.get("next_ids", {})
+	if not native_ids is Dictionary or not SaveFiles.integer_text(native_ids.get("drop")):
+		return {"ok": false, "reason": "InvalidNativeDropWatermark"}
+	var drop_watermark: int = str(native_ids.drop).to_int()
+	var economy_state: Dictionary = economy.save_state()
+	var registered: int = int(economy_state.cursor.registered_through)
+	if registered > drop_watermark:
+		return {"ok": false, "reason": "InvalidNativeDropWatermark"}
+	for key in economy_state.drops:
+		if str(key).begins_with("native:") and int(economy_state.drops[key].uid) > registered:
+			return {"ok": false, "reason": "InvalidNativeDropWatermark"}
 	var restored_notifications: Dictionary = notifications.restore_state(modules.get("notifications", {"entries": {}}))
 	if not restored_notifications.ok: return restored_notifications
 	var times: Dictionary = saved.times
@@ -250,8 +265,11 @@ static func import_candidate(path: String, directory: String, source_file: Strin
 	var file: FileAccess = FileAccess.open(source_file, FileAccess.READ)
 	if file == null or file.get_length() > SaveFiles.MAX_BYTES:
 		return {"ok": false, "reason": "InvalidImportFile"}
-	var envelope = JSON.parse_string(file.get_as_text())
+	var parser := JSON.new()
+	var parse_result: Error = parser.parse(file.get_as_text())
 	file.close()
+	if parse_result != OK: return {"ok": false, "reason": "InvalidImportEnvelope"}
+	var envelope = parser.data
 	if not envelope is Dictionary or envelope.get("formatVersion") != 1 or not envelope.get("payload") is Dictionary or not envelope.get("sessionId") is String or envelope.sessionId.is_empty():
 		return {"ok": false, "reason": "InvalidImportEnvelope"}
 	for field in ["changeNumber", "generation", "savedUtc"]:
@@ -275,7 +293,7 @@ static func _candidate_from_envelope(path: String, directory: String, envelope: 
 	if not ready.ok: return ready
 	candidate._session_id = envelope.sessionId
 	candidate._change_number = str(envelope.changeNumber).to_int()
-	var elapsed: int = maxi(0, int(Time.get_unix_time_from_system()) - str(envelope.savedUtc).to_int())
+	var elapsed: int = offline_elapsed(str(envelope.savedUtc).to_int(), int(Time.get_unix_time_from_system()))
 	var offline: Dictionary = candidate.economy.credit_offline(elapsed, candidate._offline_max_hours, candidate._chrono_rate)
 	if not offline.ok: return offline
 	var configured: Dictionary = candidate.configure_save_directory(directory)
@@ -284,6 +302,9 @@ static func _candidate_from_envelope(path: String, directory: String, envelope: 
 		"summary": {"stage": candidate.campaign_system.progress_facts().cycle_reached,
 			"ship": candidate.campaign_system.selected_ship(),
 			"generation": envelope.generation, "savedUtc": envelope.savedUtc}}
+
+static func offline_elapsed(saved_utc: int, current_utc: int) -> int:
+	return maxi(0, current_utc - saved_utc)
 
 func prepare_reforge(planet_id: String, retained_ids: Array, directory: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()

@@ -148,12 +148,13 @@ func _run() -> void:
 		printerr("invalid amount accepted: ", attempted)
 		quit(1)
 		return
-	for fault in ["economy_cursor", "economy_sample", "economy_drop", "planet_timer", "planet_work", "galaxy_node", "research_id", "hyperspace_receipt", "hyperspace_drone"]:
+	for fault in ["economy_cursor", "economy_cursor_watermark", "economy_sample", "economy_drop", "planet_timer", "planet_work", "galaxy_node", "research_id", "hyperspace_receipt", "hyperspace_drone"]:
 		snapshot = original.save_payload()
 		decoded = StateCodec.unpack(snapshot.payload)
 		damaged = decoded.value
 		match fault:
 			"economy_cursor": damaged.modules.economy.cursor.registered_through = "1"
+			"economy_cursor_watermark": damaged.modules.economy.cursor.registered_through = int(damaged.native.next_ids.drop) + 1
 			"economy_sample": damaged.modules.economy.samples.append({"resource": "1", "source": "enemy_drop", "wall": -1.0})
 			"economy_drop": damaged.modules.economy.drops["timed:1"] = {"id": "1", "amount": {"m": "-1", "e": "0"}}
 			"planet_timer": damaged.modules.planet.planets["1"].elapsed = 7.0
@@ -327,6 +328,12 @@ func _run() -> void:
 	var future_import: Dictionary = Session.import_candidate("res://generated/config.json", offline_directory, import_file)
 	if not future_import.ok or future_import.session.economy.budget().has("chrono"):
 		printerr("future clock import credit: ", future_import)
+		quit(1)
+		return
+	# The same persisted timestamp is tested against successive device-clock readings.
+	# A rollback grants nothing; a later crossing grants only the elapsed positive span.
+	if Session.offline_elapsed(100000, 99999) != 0 or Session.offline_elapsed(100000, 100000) != 0 or Session.offline_elapsed(100000, 100005) != 5:
+		printerr("offline clock rollback boundary")
 		quit(1)
 		return
 	var accelerated = Session.new()

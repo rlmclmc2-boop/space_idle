@@ -157,5 +157,19 @@ func _run_probe() -> void:
 		printerr("serial writer and latest change: ", queued_a, " ", queued_b, " ", files.last_result)
 		quit(1)
 		return
+	DirAccess.make_dir_absolute(blocked_temp)
+	var failed_a: Dictionary = files.request({"order": "failed-a"}, "6", "test-session", "6", hash)
+	var failed_b: Dictionary = files.request({"order": "failed-b"}, "7", "test-session", "7", hash)
+	var failed_close: Dictionary = files.close(2000)
+	if not failed_a.ok or not failed_b.ok or failed_close.ok or files.last_failure.get("generation") != failed_b.generation or files.load_latest().envelope.changeNumber != "5" or not files.dirty("7"):
+		printerr("queued writer failures lost committed state or failure: ", failed_a, " ", failed_b, " ", failed_close)
+		quit(1)
+		return
+	DirAccess.remove_absolute(blocked_temp)
+	var retry: Dictionary = files.request({"order": "retry"}, "8", "test-session", "8", hash)
+	if not retry.ok or not files.close(2000).ok or not files.last_failure.is_empty() or files.dirty("8") or files.load_latest().envelope.changeNumber != "8":
+		printerr("writer failure retry: ", retry, " ", files.last_result)
+		quit(1)
+		return
 	print("SAVE_FILES_PROBE_OK")
 	quit(0)
