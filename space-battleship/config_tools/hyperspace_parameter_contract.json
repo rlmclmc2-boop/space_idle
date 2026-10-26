@@ -79,6 +79,14 @@
     "maximum_legendary": 2,
     "maximum_ultimate": 1
   },
+  "fixedValues": {
+    "overflow_capacity": 10,
+    "completion_budget": 8,
+    "maximum_filter_conditions": 5,
+    "maximum_filter_string_length": 4096,
+    "maximum_forecast_attempts": 10000,
+    "maximum_ultimate": 1
+  },
   "capacityRelations": [
     [
       "maximum_legendary",
@@ -105,6 +113,10 @@
     "unlock_stage",
     "minimum_level",
     "late_supply_unlock_stage"
+  ],
+  "quantizedRangeSheets": [
+    "词缀区间",
+    "传说随机参数"
   ],
   "magnitudeExclusive": 9000000000000000
 }

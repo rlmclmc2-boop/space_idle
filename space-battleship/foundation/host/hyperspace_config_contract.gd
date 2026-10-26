@@ -40,6 +40,8 @@ static func validate(configuration: Dictionary) -> Dictionary:
 			return {"ok": false, "reason": "InvalidHyperspaceParameter", "key": key}
 		if contract.hardCaps.has(key) and (value > contract.hardCaps[key] or key == "maximum_ultimate" and value != 1):
 			return {"ok": false, "reason": "InvalidHyperspaceParameter", "key": key}
+		if contract.fixedValues.has(key) and value != contract.fixedValues[key]:
+			return {"ok": false, "reason": "FixedRuleChanged", "key": key}
 		values[key] = int(value) if integer else float(value)
 	if values.size() != allowed.size():
 		return {"ok": false, "reason": "InvalidHyperspaceParameters"}
@@ -52,4 +54,16 @@ static func validate(configuration: Dictionary) -> Dictionary:
 	for key in contract.stageReferences:
 		if not stage_ids.has(values[key]):
 			return {"ok": false, "reason": "InvalidHyperspaceParameter", "key": key}
+	var precision: float = values.value_precision
+	for sheet_name in contract.quantizedRangeSheets:
+		var ranges = hyperspace.get(sheet_name)
+		if not ranges is Array:
+			return {"ok": false, "reason": "InvalidHyperspaceRange", "key": sheet_name}
+		for range_row in ranges:
+			if not range_row is Dictionary or not (range_row.get("minimum") is int or range_row.get("minimum") is float) or not (range_row.get("maximum") is int or range_row.get("maximum") is float):
+				return {"ok": false, "reason": "InvalidHyperspaceRange", "key": sheet_name}
+			var low: float = float(range_row.minimum)
+			var high: float = float(range_row.maximum)
+			if not is_finite(low) or not is_finite(high) or low > high or not is_finite(low / precision) or not is_finite(high / precision) or ceili(low / precision - 1e-7) > floori(high / precision + 1e-7):
+				return {"ok": false, "reason": "QuantizedRangeEmpty", "key": sheet_name}
 	return {"ok": true}

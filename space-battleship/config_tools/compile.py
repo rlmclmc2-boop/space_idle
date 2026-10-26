@@ -34,6 +34,16 @@ HYPERSPACE_NONNEGATIVE_KEYS = frozenset(HYPERSPACE_CONTRACT["nonnegativeKeys"])
 HYPERSPACE_PROBABILITY_KEYS = frozenset(HYPERSPACE_CONTRACT["probabilityKeys"])
 
 
+def quantized_range_has_value(low: object, high: object, precision: object) -> bool:
+    """Match Hyperspace._quantized's lattice and its 1e-7 boundary tolerance."""
+    if not all(valid_type(value, "number") for value in (low, high, precision)) or precision <= 0 or low > high:
+        return False
+    lower, upper = low / precision - 1e-7, high / precision + 1e-7
+    if not math.isfinite(lower) or not math.isfinite(upper):
+        return False
+    return math.ceil(lower) <= math.floor(upper)
+
+
 def stable_id(value: object) -> str | None:
     if isinstance(value, bool) or value is None:
         return None
@@ -420,6 +430,8 @@ class Compiler:
                 self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceAmplificationRange", "1 + amplification_rate must be positive")
             if key in HYPERSPACE_CONTRACT["hardCaps"] and (value > HYPERSPACE_CONTRACT["hardCaps"][key] or key == "maximum_ultimate" and value != 1):
                 self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceHardCap", f"{key} exceeds its gameplay cap")
+            if key in HYPERSPACE_CONTRACT["fixedValues"] and value != HYPERSPACE_CONTRACT["fixedValues"][key]:
+                self.row_error("hyperspace_config", "基础参数", row, "value", "FixedRuleChanged", f"{key} is fixed by the gameplay contract")
         for child, parent in HYPERSPACE_CONTRACT["capacityRelations"]:
             if valid_type(parameters.get(child), "number") and valid_type(parameters.get(parent), "number") and parameters[child] > parameters[parent]:
                 row = next(row for row in parameter_rows if row.get("key") == child)
@@ -446,11 +458,15 @@ class Compiler:
             self.reference("hyperspace_config", "词缀区间", row, "affix_id", affixes)
             if valid_type(row.get("minimum"), "number") and valid_type(row.get("maximum"), "number") and row["minimum"] > row["maximum"]:
                 self.row_error("hyperspace_config", "词缀区间", row, "minimum", "RangeReversed", "minimum exceeds maximum")
+            if valid_type(row.get("minimum"), "number") and valid_type(row.get("maximum"), "number") and valid_type(parameters.get("value_precision"), "number") and parameters["value_precision"] > 0 and row["minimum"] <= row["maximum"] and not quantized_range_has_value(row["minimum"], row["maximum"], parameters["value_precision"]):
+                self.row_error("hyperspace_config", "词缀区间", row, "minimum", "QuantizedRangeEmpty", "no value lies on the configured precision lattice")
         for sheet in ("传说随机参数", "传说常量"):
             for row in self.table("hyperspace_config", sheet):
                 self.reference("hyperspace_config", sheet, row, "effect_id", legends)
                 if sheet == "传说随机参数" and valid_type(row.get("minimum"), "number") and valid_type(row.get("maximum"), "number") and row["minimum"] > row["maximum"]:
                     self.row_error("hyperspace_config", sheet, row, "minimum", "RangeReversed", "minimum exceeds maximum")
+                if sheet == "传说随机参数" and valid_type(row.get("minimum"), "number") and valid_type(row.get("maximum"), "number") and valid_type(parameters.get("value_precision"), "number") and parameters["value_precision"] > 0 and row["minimum"] <= row["maximum"] and not quantized_range_has_value(row["minimum"], row["maximum"], parameters["value_precision"]):
+                    self.row_error("hyperspace_config", sheet, row, "minimum", "QuantizedRangeEmpty", "no value lies on the configured precision lattice")
         for row in self.table("hyperspace_enemies", "武器安装"):
             self.reference("hyperspace_enemies", "武器安装", row, "enemy_id", enemies)
             self.reference("hyperspace_enemies", "武器安装", row, "weapon_id", weapons)

@@ -986,13 +986,6 @@
             "modernization_base_coefficient": "number",
             "material_unit_scale": "number",
             "ultimate_core_probability": "number"
-          },
-          "fixedValues": {
-            "overflow_capacity": 10,
-            "completion_budget": 8,
-            "maximum_filter_conditions": 5,
-            "maximum_filter_string_length": 4096,
-            "maximum_forecast_attempts": 10000
           }
         },
         {

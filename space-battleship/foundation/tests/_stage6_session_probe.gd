@@ -66,6 +66,36 @@ func _run() -> void:
 		printerr("startup admitted invalid hyperspace relation: ", invalid_ready)
 		quit(1)
 		return
+	invalid_config = JSON.parse_string(initial_config)
+	for row in invalid_config.hyperspace_config["基础参数"]:
+		if row.key == "overflow_capacity": row.value = 9
+	invalid_file = FileAccess.open(invalid_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_config))
+	invalid_file.close()
+	rejected_config = Session.new()
+	invalid_ready = rejected_config.initialize(invalid_path, 100)
+	if invalid_ready.ok or invalid_ready.reason != "FixedRuleChanged":
+		printerr("startup admitted changed fixed rule: ", invalid_ready)
+		quit(1)
+		return
+	invalid_config = JSON.parse_string(initial_config)
+	for row in invalid_config.hyperspace_config["基础参数"]:
+		if row.key == "value_precision": row.value = 1.0
+	invalid_file = FileAccess.open(invalid_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_config))
+	invalid_file.close()
+	rejected_config = Session.new()
+	invalid_ready = rejected_config.initialize(invalid_path, 100)
+	if invalid_ready.ok or invalid_ready.reason != "QuantizedRangeEmpty":
+		printerr("startup admitted empty quantized range: ", invalid_ready)
+		quit(1)
+		return
+	invalid_config = JSON.parse_string(initial_config)
+	for row in invalid_config.hyperspace_config["基础参数"]:
+		if row.key == "maximum_equipped": row.value = 1
+	invalid_file = FileAccess.open(invalid_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_config))
+	invalid_file.close()
 	var copied_file: FileAccess = FileAccess.open(copied_config, FileAccess.WRITE)
 	copied_file.store_string(initial_config)
 	copied_file.close()

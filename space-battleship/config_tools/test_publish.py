@@ -348,6 +348,28 @@ class PublicationTest(unittest.TestCase):
         self.change_field("hyperspace_config.xlsx", "固定规则_兼容说明", "value", 4, 12345)
         self.reject("FixedRuleChanged")
 
+    def test_quantized_affix_range_must_contain_a_lattice_value(self) -> None:
+        self.change_hyperspace_parameters({"value_precision": 1})
+        self.reject("QuantizedRangeEmpty")
+
+    def test_quantized_legendary_range_must_contain_a_lattice_value(self) -> None:
+        self.change_hyperspace_parameters({"value_precision": 1})
+        self.change_field("hyperspace_config.xlsx", "传说随机参数", "minimum", 4, 0.1)
+        self.change_field("hyperspace_config.xlsx", "传说随机参数", "maximum", 4, 0.2)
+        result = compile_config(self.manifest, self.output, self.report, self.source)
+        self.assertFalse(result["ok"])
+        self.assertIn(("传说随机参数", "QuantizedRangeEmpty"),
+                      {(error["sheet"], error["code"]) for error in result["errors"]})
+        self.assertEqual(self.output.read_bytes(), self.original)
+
+    def test_fixed_hyperspace_values_share_runtime_contract(self) -> None:
+        from compile import HYPERSPACE_CONTRACT
+        for key, fixed in HYPERSPACE_CONTRACT["fixedValues"].items():
+            with self.subTest(key=key):
+                self.change_hyperspace_parameters({key: fixed + 1})
+                self.reject_hyperspace_parameters({key: "FixedRuleChanged"})
+                self.change_hyperspace_parameters({key: fixed})
+
     def test_independent_test_manifest_uses_same_compiler(self) -> None:
         manifest = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
         manifest["kind"] = "test"

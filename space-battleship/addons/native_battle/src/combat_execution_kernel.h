@@ -211,7 +211,7 @@ class SpaceCombatKernel : public RefCounted {
     };
     struct Effect {
         int kind = 0, type = 0;
-        bool critical = false, hostile = false;
+        bool critical = false, critical_bonus_applied = false, hostile = false;
         double time = 0;
         Vector2 point, direction;
         Amount damage = 0;
@@ -589,6 +589,7 @@ class SpaceCombatKernel : public RefCounted {
         Effect e;
         e.kind = kind; e.type = f.type; e.hostile = f.hostile;
         e.critical = f.instance && f.instance->attack->critical;
+        e.critical_bonus_applied = f.instance && f.instance->attack->critical_bonus_applied;
         e.time = at; e.point = point;
         e.direction = f.lease.is_valid() ? f.lease->motion().direction : Vector2(0, -1);
         feedback.push_back(e);
@@ -820,6 +821,7 @@ class SpaceCombatKernel : public RefCounted {
                     receipt.kind = 8; receipt.type = type; receipt.time = at;
                     receipt.point = a->point; receipt.damage = shield_loss + hp_loss;
                     receipt.critical = inst && inst->attack && inst->attack->critical;
+                    receipt.critical_bonus_applied = inst && inst->attack && inst->attack->critical_bonus_applied;
                     feedback.push_back(receipt);
                     ++damage_receipts_emitted;
                 }
@@ -2340,6 +2342,7 @@ class SpaceCombatKernel : public RefCounted {
                 Dictionary contact;
                 contact["kind"] = e.kind; contact["type"] = e.type;
                 contact["hostile"] = e.hostile; contact["critical"] = e.critical;
+                contact["critical_bonus_applied"] = e.critical_bonus_applied;
                 contact["clock"] = e.time; contact["position"] = e.point; contact["direction"] = e.direction;
                 if (e.kind == 8) contact["damage"] = wire(e.damage);
                 events.push_back(contact);
