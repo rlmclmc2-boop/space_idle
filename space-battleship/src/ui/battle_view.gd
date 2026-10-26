@@ -36,18 +36,13 @@ func _draw() -> void:
 		var prepared = native_display.prepare_flights(Vector2.ZERO)
 		native_display.draw_flights(prepared, Vector2.ZERO)
 		_upload_beams()
-	var player_hull: PackedVector2Array = _battle.player_hull()
-	if player_hull.size() >= 3:
-		draw_colored_polygon(player_hull, Color("66d9dc"))
+	_battle.draw_player_hull(self, Color("66d9dc"))
 	var enemies: Array = kernel.enemy_views()
-	var hulls: Array = _battle.enemy_hulls()
 	for index in enemies.size():
 		var actor: Dictionary = enemies[index]
-		if actor.get("dead", false) or index >= hulls.size():
+		if actor.get("dead", false):
 			continue
-		var hull: PackedVector2Array = hulls[index]
-		if hull.size() >= 3:
-			draw_colored_polygon(hull, Color("ce6978"))
+		_battle.draw_enemy_hull(self, index, Color("ce6978"))
 		draw_string(font, Vector2(float(actor.x) - 24, float(actor.y) + 35), str(actor.hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f1d9dc"))
 	var history: Dictionary = kernel.read_history()
 	draw_string(font, Vector2(18, 53), "攻击 %s   来袭 %s" % [history.attacks, history.incoming], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("a9c6db"))

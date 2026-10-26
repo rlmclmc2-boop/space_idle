@@ -105,11 +105,13 @@ func wave_inputs() -> Dictionary:
 func resource_positions() -> Dictionary:
 	return {"origin": Vector2(float(_geometry.player_x), float(_geometry.timed_drop_spawn_y)), "target_y": float(_geometry.player_y)}
 
-func player_hull() -> PackedVector2Array:
-	return _player_hull
+func draw_player_hull(canvas: CanvasItem, color: Color) -> void:
+	if _player_hull.size() >= 3: canvas.draw_colored_polygon(_player_hull, color)
 
-func enemy_hulls() -> Array:
-	return _enemy_hulls
+func draw_enemy_hull(canvas: CanvasItem, index: int, color: Color) -> void:
+	if index < 0 or index >= _enemy_hulls.size(): return
+	var hull: PackedVector2Array = _enemy_hulls[index]
+	if hull.size() >= 3: canvas.draw_colored_polygon(hull, color)
 
 func events() -> Array:
 	var snapshot: Array = _events.duplicate()
