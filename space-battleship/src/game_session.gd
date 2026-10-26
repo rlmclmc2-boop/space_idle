@@ -194,6 +194,17 @@ func _step(dt: float) -> void:
 	if collection_changed: economy.publish_budget_change()
 
 func _advance_hyperspace_online(dt: float) -> bool:
+	var before: Dictionary = hyperspace_system.online_status()
+	if before.auto.enabled and before.idle.get("status") == "Claimed":
+		var crew: Dictionary = crew_system.hyperspace_assignee(str(before.auto.crew_id), str(before.auto.route))
+		if not crew.ok:
+			_fail(str(crew.reason))
+			return false
+		var next: Dictionary = hyperspace_system.prepare_auto_continuation(int(crew.level), float(_planet_factors.luck))
+		if next.ok: hyperspace_system.accept_idle(next.receipt, true)
+		elif next.get("reason") != "WarehouseFull":
+			_fail(str(next.get("reason", "AutoContinuationFailed")))
+			return false
 	hyperspace_system.advance_online(dt, campaign_system.progress_facts().cleared_stages.has(60))
 	var online: Dictionary = hyperspace_system.online_status()
 	if not online.auto.enabled or online.idle.get("status") != "CompletedPending": return true

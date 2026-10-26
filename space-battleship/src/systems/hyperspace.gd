@@ -28,7 +28,7 @@ var _planets: Array = []
 var _history: Dictionary = {}
 var _manual: Dictionary = {}
 var _idle: Dictionary = {}
-var _auto: Dictionary = {"enabled": false, "route": "", "crew_id": "", "level": 0, "luck": 0.0}
+var _auto: Dictionary = {"enabled": false, "route": "", "crew_id": ""}
 var _warehouse: Array = []
 var _overflow: Array = []
 var _equipped: Array = []
@@ -629,8 +629,13 @@ func accept_idle(receipt: Dictionary, automatic: bool) -> void:
 	_luck_rng.randi()
 	_next_run += 1
 	if automatic:
-		_auto = {"enabled": true, "route": str(receipt.route), "crew_id": str(receipt.crew_id),
-			"level": int(receipt.level), "luck": float(receipt.luck)}
+		_auto = {"enabled": true, "route": str(receipt.route), "crew_id": str(receipt.crew_id)}
+
+func prepare_auto_continuation(crew_level: int, permanent_luck: float) -> Dictionary:
+	if not _auto.enabled or _idle.get("status") != "Claimed": return {"ok": false, "reason": "AutoContinuationUnavailable"}
+	if _warehouse.size() >= _warehouse_capacity() and _overflow.size() >= int(_parameters.overflow_capacity):
+		return {"ok": false, "reason": "WarehouseFull"}
+	return prepare_idle(str(_auto.route), true, str(_auto.crew_id), crew_level, permanent_luck)
 
 func stop_auto() -> Dictionary:
 	if not _auto.enabled: return {"ok": false, "reason": "AutoNotRunning"}
@@ -656,12 +661,6 @@ func advance_online(dt: float, late_supply: bool) -> void:
 		if float(_idle.work) + 1e-9 >= float(_idle.duration):
 			_idle.reward = _generate_reward(_idle)
 			_idle.status = "CompletedPending"
-	elif _auto.enabled and _idle.get("status") not in ["CompletedPending", "Started"]:
-		# Completion and a new start never share the same fixed step.
-		if _warehouse.size() >= _warehouse_capacity() and _overflow.size() >= int(_parameters.overflow_capacity): return
-		var next: Dictionary = prepare_idle(str(_auto.route), true, str(_auto.crew_id), int(_idle.get("crew_level", 0)),
-			float(_auto.luck) - float(_idle.get("crew_level", 0)))
-		if next.ok: accept_idle(next.receipt, true)
 
 func prepare_manual(route: String, highest_reached: int, return_target: Dictionary, permanent_luck: float = 0.0) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
@@ -820,7 +819,7 @@ func accept_reforge(retained: Array) -> Dictionary:
 	_manual = {}
 	_idle = {}
 	_receipts = {}
-	_auto = {"enabled": false, "route": "", "crew_id": "", "level": 0, "luck": 0.0}
+	_auto = {"enabled": false, "route": "", "crew_id": ""}
 	_warehouse = retained.duplicate(true)
 	_overflow = []
 	_equipped = []

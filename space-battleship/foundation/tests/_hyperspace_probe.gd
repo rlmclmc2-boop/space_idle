@@ -99,8 +99,14 @@ func _run_probe() -> void:
 		quit(1)
 		return
 	system.accept_claim(int(auto.receipt.run_id))
+	var continued: Dictionary = system.prepare_auto_continuation(20, 0.0)
+	if not continued.ok:
+		printerr("auto continuation: ", continued)
+		quit(1)
+		return
+	system.accept_idle(continued.receipt, true)
 	system.advance_online(1.0 / 60.0, false)
-	if system.online_status().idle.status != "Started":
+	if system.online_status().idle.status != "Started" or absf(float(system.online_status().idle.work) - 1.0 / 60.0) > 1e-9:
 		printerr("auto next step")
 		quit(1)
 		return
@@ -165,12 +171,18 @@ func _run_probe() -> void:
 		return
 	var crew_id: String = str(session.crew_system._members.keys()[0])
 	session.crew_system._available[crew_id] = true
+	var route_level: int = int(own._history.alpha.cleared)
+	own._history.alpha.best[route_level] = 100.0
+	var first_planet: Dictionary = session._planet_factors.duplicate()
+	first_planet.luck = 2.5
+	session._planet_factors = first_planet
 	var auto_started: Dictionary = session.start_hyperspace_auto("alpha", crew_id)
 	if not auto_started.ok:
 		printerr("session auto start: ", auto_started)
 		quit(1)
 		return
 	var auto_run_id: int = int(auto_started.receipt.run_id)
+	var first_snapshot: Dictionary = auto_started.receipt.duplicate(true)
 	own = session.hyperspace_system
 	if not session._advance_hyperspace_online(float(auto_started.receipt.duration)) or own.online_status().idle.status != "Claimed":
 		printerr("session auto first claim: ", own.online_status())
@@ -180,8 +192,13 @@ func _run_probe() -> void:
 		printerr("session auto claim ledger")
 		quit(1)
 		return
+	session.crew_system._members[crew_id].level = 20
+	var next_planet: Dictionary = session._planet_factors.duplicate()
+	next_planet.luck = 4.5
+	session._planet_factors = next_planet
 	session._advance_hyperspace_online(1.0 / 60.0)
-	if own.online_status().idle.status != "Started" or int(own.online_status().idle.run_id) == auto_run_id or session.crew_system._members[crew_id].kind != "hyperspace":
+	var second_snapshot: Dictionary = own.online_status().idle
+	if second_snapshot.status != "Started" or int(second_snapshot.run_id) == auto_run_id or session.crew_system._members[crew_id].kind != "hyperspace" or absf(float(second_snapshot.work) - 1.0 / 60.0) > 1e-9 or absf(float(first_snapshot.duration) - 100.0) > 1e-9 or absf(float(second_snapshot.duration) - 50.0) > 1e-9 or absf(float(first_snapshot.luck) - 2.5) > 1e-9 or absf(float(second_snapshot.luck) - 24.5) > 1e-9 or int(own._receipts[auto_run_id].crew_level) != 0 or absf(float(own._receipts[auto_run_id].luck) - 2.5) > 1e-9:
 		printerr("session auto continuation: ", own.online_status())
 		quit(1)
 		return
