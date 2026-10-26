@@ -43,18 +43,21 @@ func refresh_availability(unlocked: Callable, highest_reached: int) -> void:
 		_material_available = material
 		options_changed.emit()
 
-func initialize_slots(starts: String, mounts: Dictionary) -> void:
-	if not _run_state.is_running(): return
+func initialize_slots(starts: String, mounts: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
 	var initial: Dictionary = {"weapon": [], "defence": []}
 	for candidate in starts.split(","):
 		if not _available.get(candidate, false): continue
 		if candidate in ["laser", "cannon", "missile", "longLaser"]: initial.weapon.append(candidate)
 		elif candidate in ["armour", "shield"]: initial.defence.append(candidate)
+	if int(mounts.defence) < 1 or initial.defence.is_empty():
+		return {"ok": false, "reason": "FirstDefenceRequired"}
 	for category in ["weapon", "defence"]:
 		for index in int(mounts[category]):
 			_slots.append({"id": category + ":" + str(index), "category": category, "index": index,
 				"equipment_id": initial[category][index] if index < initial[category].size() else "",
 				"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
+	return {"ok": true}
 
 func enemy_override(id: String) -> Dictionary:
 	return _definitions.get(id, {})
@@ -94,7 +97,7 @@ func panel_slots(mounts: Dictionary, ids: Array = []) -> Array:
 	return rows
 
 func panel_equipment(id: String) -> Array:
-	var options: Array = [{"id": "", "name": "卸下", "enabled": true}]
+	var options: Array = [] if id == "defence:0" else [{"id": "", "name": "卸下", "enabled": true}]
 	for key in (["laser", "missile", "cannon", "longLaser"] if id.begins_with("weapon:") else ["armour", "shield"]):
 		options.append({"id": key, "name": label(key), "enabled": _available.get(key, false)})
 	return options
@@ -432,6 +435,8 @@ func equip_slot(slot_id: String, equipment_id: String, inputs: Dictionary, publi
 	if index < 0:
 		return {"ok": false, "reason": "UnknownSlot"}
 	var slot: Dictionary = _slots[index]
+	if slot.category == "defence" and int(slot.index) == 0 and equipment_id.is_empty():
+		return {"ok": false, "reason": "FirstDefenceRequired"}
 	if equipment_id == str(slot.equipment_id):
 		return {"ok": false, "reason": "NoChange"}
 	if float(inputs.game_time) < float(slot.switch_ready_at):
@@ -500,6 +505,7 @@ func buy_all_levels(count: int, maximum: bool, inputs: Dictionary, can_pay: Call
 
 func resize_mounts(current: Dictionary, target: Dictionary, balances: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
+	if int(target.defence) < 1: return {"ok": false, "reason": "FirstDefenceRequired"}
 	var next: Array = _slots.duplicate(true)
 	for category in ["weapon", "defence"]:
 		var old_count: int = int(current[category])
