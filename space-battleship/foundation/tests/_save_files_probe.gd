@@ -106,5 +106,11 @@ func _run_probe() -> void:
 		printerr("invalid config hash admitted")
 		quit(1)
 		return
+	var queued_a: Dictionary = files.request({"order": "a"}, "4", "test-session", "4", hash)
+	var queued_b: Dictionary = files.request({"order": "b"}, "5", "test-session", "5", hash)
+	if not queued_a.ok or not queued_b.ok or not files.close(2000).ok or files.dirty("5") or files.load_latest().envelope.changeNumber != "5":
+		printerr("serial writer and latest change: ", queued_a, " ", queued_b, " ", files.last_result)
+		quit(1)
+		return
 	print("SAVE_FILES_PROBE_OK")
 	quit(0)
