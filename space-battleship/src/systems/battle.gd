@@ -54,11 +54,13 @@ func _load_models(ship_keys: Array) -> Dictionary:
 	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
 	for key in model_keys:
 		var art: Dictionary = art_data.ships[key]
-		var image := Image.load_from_file(str(art.texture))
+		var texture := load(str(art.texture)) as Texture2D
+		var image: Image = texture.get_image() if texture != null else null
 		if image == null or image.is_empty():
 			return {"ok": false, "reason": "MissingHullAsset:" + str(key)}
 		var logical_path: String = str(art.get("geometry_texture", art.texture))
-		var logical_image := image if logical_path == str(art.texture) else Image.load_from_file(logical_path)
+		var logical_texture := load(logical_path) as Texture2D if logical_path != str(art.texture) else texture
+		var logical_image: Image = image if logical_path == str(art.texture) else logical_texture.get_image() if logical_texture != null else null
 		if logical_image == null or logical_image.is_empty():
 			return {"ok": false, "reason": "MissingGeometryAsset:" + str(key)}
 		var model := {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()),

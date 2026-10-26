@@ -84,17 +84,50 @@ func restore_state(state: Dictionary) -> Dictionary:
 			return {"ok": false, "reason": "InvalidHyperspaceTimer"}
 	for route in state.history:
 		if not route is String or not _routes.has(route): return {"ok": false, "reason": "UnknownHyperspaceRoute"}
+		var progress = state.history[route]
+		if not progress is Dictionary or not progress.get("cleared") is int or progress.cleared < 0 or not progress.get("best") is Dictionary:
+			return {"ok": false, "reason": "InvalidHyperspaceHistory"}
+		for level in progress.best:
+			if not level is int or level < 1 or level > progress.cleared or not progress.best[level] is float or not is_finite(progress.best[level]) or progress.best[level] <= 0.0:
+				return {"ok": false, "reason": "InvalidHyperspaceHistory"}
 	if not state.auto.get("route", "") is String or (not state.auto.route.is_empty() and not _routes.has(state.auto.route)):
 		return {"ok": false, "reason": "UnknownHyperspaceRoute"}
+	if not state.auto.get("enabled") is bool or not state.auto.get("crew_id") is String or (state.auto.enabled and (state.auto.route.is_empty() or state.auto.crew_id.is_empty())):
+		return {"ok": false, "reason": "InvalidHyperspaceAuto"}
 	if state.modules.keys() != _modules.keys(): return {"ok": false, "reason": "InvalidHyperspaceModules"}
+	for key in state.modules:
+		var progress = state.modules[key]
+		if not progress is Dictionary or not progress.get("unlocked") is bool or not progress.get("level") is int or progress.level < 0 or not progress.get("exp") is float or not is_finite(progress.exp) or progress.exp < 0.0:
+			return {"ok": false, "reason": "InvalidHyperspaceModules"}
+	for receipt in [state.manual, state.idle]:
+		if receipt.is_empty(): continue
+		if not _valid_receipt(receipt, state.round_id, state.next_run) or not state.receipts.has(receipt.run_id) or state.receipts[receipt.run_id] != receipt:
+			return {"ok": false, "reason": "InvalidHyperspaceReceipt"}
+	for run_id in state.receipts:
+		if not run_id is int or not _valid_receipt(state.receipts[run_id], state.round_id, state.next_run) or state.receipts[run_id].run_id != run_id:
+			return {"ok": false, "reason": "InvalidHyperspaceReceipt"}
 	var ids: Dictionary = {}
 	for list in [state.warehouse, state.overflow]:
 		for drone in list:
-			if not drone is Dictionary or not drone.get("id") is String or ids.has(drone.id):
+			if not _valid_drone(drone) or ids.has(drone.id):
 				return {"ok": false, "reason": "InvalidHyperspaceDrone"}
 			ids[drone.id] = true
 	for id in state.equipped + state.favorites:
 		if not id is String or not ids.has(id): return {"ok": false, "reason": "UnknownHyperspaceDrone"}
+	for list in [state.equipped, state.favorites]:
+		var seen: Dictionary = {}
+		for id in list:
+			if seen.has(id): return {"ok": false, "reason": "DuplicateHyperspaceDrone"}
+			seen[id] = true
+	for id in state.sealed:
+		if not id is String or not ids.has(id) or not state.sealed[id] is int or state.sealed[id] < 0:
+			return {"ok": false, "reason": "InvalidHyperspaceSeal"}
+	for id in state.unlocked_drones:
+		if not id is String or not state.unlocked_drones[id] is bool or not state.unlocked_drones[id]:
+			return {"ok": false, "reason": "InvalidHyperspaceUnlock"}
+	var restored_capacity: int = int(_parameters.warehouse_capacity) + state.reforge_count * int(_parameters.reforge_capacity_gain)
+	if state.warehouse.size() > restored_capacity or state.overflow.size() > int(_parameters.overflow_capacity):
+		return {"ok": false, "reason": "InvalidHyperspaceCapacity"}
 	_history = state.history.duplicate(true)
 	_manual = state.manual.duplicate(true)
 	_idle = state.idle.duplicate(true)
@@ -121,6 +154,35 @@ func restore_state(state: Dictionary) -> Dictionary:
 	_reforge_count = state.reforge_count
 	_unlocked_drones = state.unlocked_drones.duplicate(true)
 	return {"ok": true}
+
+func _valid_receipt(receipt, round_id: int, next_run: int) -> bool:
+	if not receipt is Dictionary or not receipt.get("run_id") is int or receipt.run_id < 1 or receipt.run_id >= next_run or receipt.get("round_id") != round_id:
+		return false
+	if receipt.get("status") not in ["Started", "CompletedPending", "Claimed", "Failed"] or receipt.get("mode") not in ["manual", "auto", "single"] or not receipt.get("route") is String or not _routes.has(receipt.route):
+		return false
+	if not receipt.get("level") is int or receipt.level < 1 or not receipt.get("work") is float or not is_finite(receipt.work) or receipt.work < 0.0 or not receipt.get("return_target") is Dictionary or not receipt.get("reward") is Dictionary:
+		return false
+	if receipt.mode == "manual":
+		if not receipt.get("wave") is int or receipt.wave < 0 or receipt.wave > 10: return false
+	else:
+		if not receipt.get("duration") is float or not is_finite(receipt.duration) or receipt.duration <= 0.0 or receipt.work > receipt.duration: return false
+	if receipt.status in ["CompletedPending", "Claimed"]:
+		var reward: Dictionary = receipt.reward
+		if not reward.get("drone") is Dictionary or not reward.get("materials") is Dictionary or not reward.get("ultimate_cores") is int or reward.ultimate_cores < 0 or not reward.get("hanging_rewards") is Dictionary:
+			return false
+		if not reward.drone.is_empty() and not _valid_drone(reward.drone): return false
+	return true
+
+func _valid_drone(drone) -> bool:
+	if not drone is Dictionary or not drone.get("id") is String or drone.id.is_empty() or not drone.get("weapon") is String or not drone.get("planet_id") is String:
+		return false
+	if not _planet_claim_levels.has(drone.planet_id) or not drone.get("level") is int or drone.level < 1 or not drone.get("hangings") is Array or not drone.get("affixes") is Array:
+		return false
+	if not drone.get("legendary") is bool or not drone.get("ultimate") is bool or not drone.get("hanging_slots") is int or drone.hanging_slots < 0 or not drone.get("forge_revision") is int or drone.forge_revision < 0 or not drone.get("forge_rng_state") is String or not drone.forge_rng_state.is_valid_int():
+		return false
+	for module_id in drone.hangings:
+		if not module_id is String or not _module_definitions.has(module_id): return false
+	return true
 
 func _init(configuration: Dictionary, api, run_state, seed_value: int = 1) -> void:
 	_run_state = run_state

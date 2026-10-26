@@ -98,9 +98,12 @@ func _run() -> void:
 	decoded = StateCodec.unpack(snapshot.payload)
 	damaged = decoded.value
 	damaged.modules.campaign.state.state = "hyperspace"
-	damaged.modules.hyperspace.manual = {"status": "Started",
+	damaged.modules.hyperspace.next_run = 2
+	damaged.modules.hyperspace.manual = {"status": "Started", "round_id": 1, "run_id": 1,
+		"mode": "manual", "level": 1, "work": 0.0, "wave": 0, "reward": {},
 		"route": original.hyperspace_system.routes()[0].route,
 		"return_target": {"stage": 1, "point": 0, "guard": false, "guard_point": 0}}
+	damaged.modules.hyperspace.receipts[1] = damaged.modules.hyperspace.manual.duplicate(true)
 	var interrupted = Session.new()
 	attempted = interrupted.initialize("res://generated/config.json", damaged.seed, damaged.native, damaged)
 	if not attempted.ok or interrupted.campaign_system.restore_checkpoint() != "travel" or interrupted.hyperspace_system.manual_receipt().status != "Failed":
@@ -136,10 +139,35 @@ func _run() -> void:
 		printerr("invalid amount accepted: ", attempted)
 		quit(1)
 		return
+	for fault in ["economy_cursor", "economy_sample", "economy_drop", "planet_timer", "planet_work", "galaxy_node", "research_id", "hyperspace_receipt", "hyperspace_drone"]:
+		snapshot = original.save_payload()
+		decoded = StateCodec.unpack(snapshot.payload)
+		damaged = decoded.value
+		match fault:
+			"economy_cursor": damaged.modules.economy.cursor.registered_through = "1"
+			"economy_sample": damaged.modules.economy.samples.append({"resource": "1", "source": "enemy_drop", "wall": -1.0})
+			"economy_drop": damaged.modules.economy.drops["timed:1"] = {"id": "1", "amount": {"m": "-1", "e": "0"}}
+			"planet_timer": damaged.modules.planet.planets["1"].elapsed = 7.0
+			"planet_work": damaged.modules.planet.planets["1"].buildings.shipyard.work = 9223372036854775807
+			"galaxy_node":
+				var region: Dictionary = damaged.modules.galaxy.regions.values()[0]
+				region.nodes.values()[0].parent_id = 999
+			"research_id": damaged.modules.research.levels["missing-research-id"] = 1
+			"hyperspace_receipt": damaged.modules.hyperspace.receipts[1] = {"status": "CompletedPending"}
+			"hyperspace_drone": damaged.modules.hyperspace.warehouse.append({"id": "broken-drone"})
+		rejected = Session.new()
+		attempted = rejected.initialize("res://generated/config.json", damaged.seed, damaged.native, damaged)
+		if attempted.ok or not original.run_state.is_running():
+			printerr("invalid candidate accepted: ", fault, " ", attempted)
+			quit(1)
+			return
 	ready = original.campaign_system.accept_reforge(original.campaign_system.save_state(), 5)
 	original.planet_system.refresh_availability(original.campaign_system.available, false)
 	var planets: Dictionary = original.planet_system.save_state()
 	planets.planets["1"].buildings.shipyard.state = "built"
+	for row in original.planet_system.building_options("1"):
+		if row.id == "shipyard":
+			planets.planets["1"].buildings.shipyard.work = int(row.name.get_slice("/", 1))
 	ready = original.planet_system.restore_state(planets)
 	if not ready.ok:
 		printerr("reforge fixture: ", ready)
@@ -176,8 +204,11 @@ func _run() -> void:
 		quit(1)
 		return
 	var hyperspace: Dictionary = original.hyperspace_system.save_state()
-	hyperspace.receipts[99] = {"status": "CompletedPending", "round_id": 1,
-		"run_id": 99, "reward": {"drone": {}, "materials": {}, "ultimate_cores": 0}}
+	hyperspace.next_run = 100
+	hyperspace.receipts[99] = {"status": "Claimed", "round_id": 1, "run_id": 99,
+		"mode": "manual", "route": original.hyperspace_system.routes()[0].route,
+		"level": 1, "wave": 10, "work": 1.0, "return_target": {},
+		"reward": {"drone": {}, "materials": {}, "ultimate_cores": 0, "hanging_rewards": {}}}
 	hyperspace.warehouse.append({"id": "space:1:99", "origin_quality": "white",
 		"weapon": "laser", "level": 5, "planet_id": "1", "legendary": false,
 		"ultimate": false, "blue_source_bonus": false, "affixes": [], "hangings": [],
@@ -194,9 +225,39 @@ func _run() -> void:
 		printerr("retained drone reforge: ", retained_reforge)
 		quit(1)
 		return
+	if retained_reforge.session.hyperspace_system.prepare_claim(99).ok:
+		printerr("old round receipt remained claimable")
+		quit(1)
+		return
 	var blocked_seal: Dictionary = retained_reforge.session.hyperspace_system.release_sealed("space:1:99", [1, 2, 3, 4])
 	if blocked_seal.ok:
 		printerr("sealed drone released before gate")
+		quit(1)
+		return
+	var sealed_level: int = int(retained_reforge.session.hyperspace_system.warehouse().sealed["space:1:99"])
+	ready = retained_reforge.session.hyperspace_system.release_sealed("space:1:99", [sealed_level])
+	if not ready.ok or retained_reforge.session.hyperspace_system.warehouse().sealed.has("space:1:99"):
+		printerr("sealed drone did not release at claim gate")
+		quit(1)
+		return
+	var second_session = retained_reforge.session
+	if not second_session.planet_system.is_available("2"):
+		printerr("next planet did not open after conquest")
+		quit(1)
+		return
+	var second_planets: Dictionary = second_session.planet_system.save_state()
+	second_planets.planets["2"].buildings.shipyard_later.state = "built"
+	for row in second_session.planet_system.building_options("2"):
+		if row.id == "shipyard_later":
+			second_planets.planets["2"].buildings.shipyard_later.work = int(row.name.get_slice("/", 1))
+	ready = second_session.planet_system.restore_state(second_planets)
+	if not ready.ok:
+		printerr("second round shipyard fixture: ", ready)
+		quit(1)
+		return
+	var second_reforge: Dictionary = second_session.prepare_reforge("2", ["space:1:99"], directory)
+	if not second_reforge.ok or second_reforge.session.hyperspace_system.warehouse().reforge_count != 2 or second_reforge.session.hyperspace_system.warehouse().retention_capacity != retained_reforge.session.hyperspace_system.warehouse().retention_capacity + 10:
+		printerr("second round reforge: ", second_reforge)
 		quit(1)
 		return
 	ready = reforge.session.request_save()

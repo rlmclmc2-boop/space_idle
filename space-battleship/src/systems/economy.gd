@@ -67,7 +67,7 @@ func save_state() -> Dictionary:
 func restore_state(state: Dictionary) -> Dictionary:
 	if not state.get("wallet") is Dictionary or not state.get("drops") is Dictionary or not state.get("cursor") is Dictionary or not state.get("samples") is Array or not state.get("generator") is Dictionary:
 		return {"ok": false, "reason": "InvalidEconomyState"}
-	if int(state.cursor.get("registered_through", -1)) < 0 or int(state.generator.get("next_id", -1)) < 0 or float(state.generator.get("elapsed", -1.0)) < 0.0:
+	if not state.cursor.get("registered_through") is int or state.cursor.registered_through < 0 or not state.generator.get("next_id") is int or state.generator.next_id < 0 or not state.generator.get("elapsed") is float or not is_finite(state.generator.elapsed) or state.generator.elapsed < 0.0:
 		return {"ok": false, "reason": "InvalidEconomyState"}
 	var zero: Dictionary = _api.apply("zero", []).value
 	for value in state.wallet.values():
@@ -80,10 +80,23 @@ func restore_state(state: Dictionary) -> Dictionary:
 			return {"ok": false, "reason": "InvalidPendingDrop"}
 		if not row.get("amount") is Dictionary or not row.get("production_base") is Dictionary or not _api.apply("compare", [row.amount, zero]).get("ok", false) or not _api.apply("compare", [row.production_base, zero]).get("ok", false):
 			return {"ok": false, "reason": "InvalidPendingDrop"}
-		if not is_finite(float(row.get("x", NAN))) or not is_finite(float(row.get("y", NAN))):
+		if _api.apply("compare", [row.amount, zero]).scalar < 0 or _api.apply("compare", [row.production_base, zero]).scalar < 0 or not row.get("uid") is int or row.uid < 1 or id != str(row.get("domain", "")) + ":" + str(row.uid) or not row.get("id") is String or row.id.is_empty():
+			return {"ok": false, "reason": "InvalidPendingDrop"}
+		for field in ["x", "y", "born_at", "auto_at"] if row.domain == "native" else ["x", "y", "born_at", "origin_y", "speed"]:
+			if not row.get(field) is float or not is_finite(row[field]): return {"ok": false, "reason": "InvalidPendingDrop"}
+		if row.domain == "timed" and (row.uid > state.generator.next_id or row.speed < 0.0):
 			return {"ok": false, "reason": "InvalidPendingDrop"}
 		markers[id] = {"x": row.x, "y": row.y, "resource": str(row.get("id", ""))}
 		markers[id].make_read_only()
+	for sample in state.samples:
+		if not sample is Dictionary or not sample.get("resource") is String or sample.resource.is_empty() or sample.get("source") not in ["enemy_drop", "timed_drop", "fragment_drop", "galaxy_yield"]:
+			return {"ok": false, "reason": "InvalidIncomeSample"}
+		for field in ["wall", "game"]:
+			if not sample.get(field) is float or not is_finite(sample[field]) or sample[field] < 0.0: return {"ok": false, "reason": "InvalidIncomeSample"}
+		for field in ["actual", "production_base"]:
+			var value = sample.get(field)
+			if not value is Dictionary or not _api.apply("compare", [value, zero]).get("ok", false) or _api.apply("compare", [value, zero]).scalar < 0:
+				return {"ok": false, "reason": "InvalidIncomeSample"}
 	_wallet = state.wallet.duplicate(true)
 	_wallet.make_read_only()
 	_drops = state.drops.duplicate(true)

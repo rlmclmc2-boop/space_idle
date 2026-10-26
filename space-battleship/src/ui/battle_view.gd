@@ -40,9 +40,9 @@ func _draw_contacts() -> void:
 func _setup_native_display() -> void:
 	var retained := ShaderMaterial.new()
 	retained.shader = load("res://shaders/retained_flights.gdshader")
-	var pulse := Image.load_from_file("res://assets/weapons/laser-pulse.png")
-	if pulse != null and not pulse.is_empty():
-		retained.set_shader_parameter("pulse_texture", ImageTexture.create_from_image(pulse))
+	var pulse := load("res://assets/weapons/laser-pulse.png") as Texture2D
+	if pulse != null:
+		retained.set_shader_parameter("pulse_texture", pulse)
 	contact_layer = Node2D.new()
 	contact_layer.z_index = 2
 	contact_layer.draw.connect(_draw_contacts)

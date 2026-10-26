@@ -51,11 +51,16 @@ func restore_state(state: Dictionary) -> Dictionary:
 		var planet: Dictionary = state.planets[id]
 		if not planet.get("exploration") is int or planet.exploration < 0 or not planet.get("running") is bool or not planet.get("automatic") is bool or not planet.get("conquered") is bool or not planet.get("duration") is float or not planet.get("elapsed") is float or not is_finite(planet.duration) or not is_finite(planet.elapsed) or planet.duration < 0.0 or planet.elapsed < 0.0 or not planet.get("buildings") is Dictionary:
 			return {"ok": false, "reason": "InvalidPlanetState"}
+		if (planet.running and (planet.duration <= 0.0 or planet.elapsed > planet.duration)) or (not planet.running and (planet.duration != 0.0 or planet.elapsed != 0.0)):
+			return {"ok": false, "reason": "InvalidPlanetTimer"}
 		if planet.buildings.keys() != blueprint[id].buildings.keys():
 			return {"ok": false, "reason": "InvalidPlanetBuildings"}
 		for key in planet.buildings:
 			var building = planet.buildings[key]
 			if not building is Dictionary or not building.get("state") in ["locked", "building", "ready", "built"] or not building.get("work") is int or building.work < 0:
+				return {"ok": false, "reason": "InvalidPlanetBuildings"}
+			var definition: Dictionary = _buildings[key]
+			if building.work > int(definition.build_explore) or (building.state == "locked" and building.work != 0) or (building.state in ["ready", "built"] and building.work < int(definition.build_explore)):
 				return {"ok": false, "reason": "InvalidPlanetBuildings"}
 	_state = state.planets.duplicate(true)
 	_factors = {}

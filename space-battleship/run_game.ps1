@@ -20,6 +20,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Excel import failed.' }
 $previousExtension = $env:SPACE_IDLE_NATIVE_EXTENSION
 try {
     $env:SPACE_IDLE_NATIVE_EXTENSION = $extension
+    & $Godot --headless --editor --path $PSScriptRoot --import
+    if ($LASTEXITCODE -ne 0) { throw "Godot asset import failed with code $LASTEXITCODE" }
     & $Godot --path $PSScriptRoot
     if ($LASTEXITCODE -ne 0) { throw "Godot exited with code $LASTEXITCODE" }
 } finally {

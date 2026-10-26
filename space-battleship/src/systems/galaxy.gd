@@ -26,10 +26,36 @@ func restore_state(state: Dictionary) -> Dictionary:
 		var region: Dictionary = state.regions[key]
 		if not region.get("nodes") is Dictionary or region.nodes.keys() != blueprint[key].nodes.keys() or not region.get("unlocked") is bool or not region.get("phase") is String or not region.get("rng_state") is int:
 			return {"ok": false, "reason": "InvalidGalaxyState"}
+		if region.phase not in ["exploring", "developing", "complete"] or not region.get("active_node") is String or (not region.active_node.is_empty() and not region.nodes.has(region.active_node)) or not region.get("upgrades") is Array or not region.get("bag") is Array or not region.get("special_pending") is bool:
+			return {"ok": false, "reason": "InvalidGalaxyState"}
+		for counter in ["explored_count", "active_count", "total_levels", "bag_round"]:
+			if not region.get(counter) is int or region[counter] < 0: return {"ok": false, "reason": "InvalidGalaxyState"}
+		for timer in ["attempt_elapsed", "income_elapsed"]:
+			if not region.get(timer) is float or not is_finite(region[timer]) or region[timer] < 0.0: return {"ok": false, "reason": "InvalidGalaxyState"}
+		var upgrades_seen: Dictionary = {}
+		for id in region.upgrades:
+			if not id is String or not region.nodes.has(id) or upgrades_seen.has(id): return {"ok": false, "reason": "InvalidGalaxyUpgrade"}
+			upgrades_seen[id] = true
+		for id in region.bag:
+			if not id is String or not _buildings.has(id) or str(_buildings[id].galaxy_key) != key: return {"ok": false, "reason": "InvalidGalaxyBag"}
+		var explored: int = 0
+		var active: int = 0
+		var total_levels: int = 0
 		for id in region.nodes:
 			var node = region.nodes[id]
 			if not node is Dictionary or not node.get("parent_id") is int or node.parent_id != blueprint[key].nodes[id].parent_id or not node.get("depth") is int or node.depth != blueprint[key].nodes[id].depth or not node.get("explored") is bool or not node.get("state") is String or not node.get("building") is String or (not node.building.is_empty() and not _buildings.has(node.building)):
 				return {"ok": false, "reason": "InvalidGalaxyNode"}
+			if node.state not in ["empty", "exploring", "constructing", "active"] or not node.get("level") is int or node.level < 0 or not node.get("explore_remaining") is float or not node.get("construction_remaining") is float or not node.get("upgrade_remaining") is float:
+				return {"ok": false, "reason": "InvalidGalaxyNode"}
+			for timer in ["explore_remaining", "construction_remaining", "upgrade_remaining"]:
+				if not is_finite(node[timer]) or node[timer] < 0.0: return {"ok": false, "reason": "InvalidGalaxyNode"}
+			if node.state != "empty" and (node.building.is_empty() or str(_buildings[node.building].galaxy_key) != key): return {"ok": false, "reason": "InvalidGalaxyNode"}
+			if node.explored: explored += 1
+			if node.state == "active":
+				active += 1
+				total_levels += int(node.level)
+		if explored != region.explored_count or active != region.active_count or total_levels != region.total_levels:
+			return {"ok": false, "reason": "InvalidGalaxyCounters"}
 	_regions = state.regions.duplicate(true)
 	_factors = {}
 	return {"ok": true}
