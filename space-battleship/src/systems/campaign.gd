@@ -146,10 +146,12 @@ func start_sortie(stage: int, clear_locks: Callable) -> Dictionary:
 		return {"ok": false, "reason": "SessionUnavailable"}
 	if not _levels.has(stage) or stage > int(_state.highest_reached):
 		return {"ok": false, "reason": "StageLocked"}
-	var hp = _api.apply("from_decimal", [str(_kernel.player_view().max_armour)])
+	var player: Dictionary = _kernel.player_view()
+	var hp = _api.apply("from_decimal", [str(player.max_armour)])
+	var shield = _api.apply("from_decimal", [str(player.max_shield)])
 	var zero = _api.apply("zero", [])
-	if not hp.ok or _api.apply("compare", [hp.value, zero.value]).scalar <= 0:
-		return {"ok": false, "reason": "NoArmour"}
+	if not hp.ok or not shield.ok or (_api.apply("compare", [hp.value, zero.value]).scalar <= 0 and _api.apply("compare", [shield.value, zero.value]).scalar <= 0):
+		return {"ok": false, "reason": "NoDefence"}
 	clear_locks.call()
 	_kernel.clear_encounter("sortie")
 	_kernel.finish_retreat()
@@ -292,11 +294,13 @@ func _advance(dt: float, advance_native: Callable, start_wave: Callable) -> void
 					_guard.stage = _state.stage
 					_guard.point = point
 					_guard.distance = _state.distance
-				var hp = _api.apply("from_decimal", [str(_kernel.player_view().max_armour)])
+				var player: Dictionary = _kernel.player_view()
+				var hp = _api.apply("from_decimal", [str(player.max_armour)])
+				var shield = _api.apply("from_decimal", [str(player.max_shield)])
 				var zero = _api.apply("zero", [])
-				if _api.apply("compare", [hp.value, zero.value]).scalar <= 0:
+				if _api.apply("compare", [hp.value, zero.value]).scalar <= 0 and _api.apply("compare", [shield.value, zero.value]).scalar <= 0:
 					_state.state = "menu"
-					_state.reason = "NoArmour"
+					_state.reason = "NoDefence"
 				else:
 					_begin_travel()
 		_:
@@ -304,7 +308,7 @@ func _advance(dt: float, advance_native: Callable, start_wave: Callable) -> void
 
 func observe_battle(result: Dictionary, clear_locks: Callable, settle_collection: Callable) -> bool:
 	if not _run_state.is_running(): return false
-	if result.player_dead and _state.state != "retreat":
+	if result.player_dead and _state.state not in ["menu", "retreat", "departing"]:
 		_begin_death_retreat(clear_locks)
 	elif result.wave_cleared:
 		clear_locks.call()
@@ -340,6 +344,9 @@ func _begin_death_retreat(clear_locks: Callable) -> void:
 
 func retreat_if_dead(clear_locks: Callable) -> void:
 	if not _run_state.is_running(): return
-	var armour = _api.apply("from_decimal", [str(_kernel.player_view().armour)])
-	if armour.ok and _api.apply("compare", [armour.value, _api.apply("zero", []).value]).scalar <= 0 and _state.state not in ["menu", "retreat", "departing"]:
+	var player: Dictionary = _kernel.player_view()
+	var armour = _api.apply("from_decimal", [str(player.armour)])
+	var shield = _api.apply("from_decimal", [str(player.shield)])
+	var zero = _api.apply("zero", [])
+	if armour.ok and shield.ok and _api.apply("compare", [armour.value, zero.value]).scalar <= 0 and _api.apply("compare", [shield.value, zero.value]).scalar <= 0 and _state.state not in ["menu", "retreat", "departing"]:
 		_begin_death_retreat(clear_locks)

@@ -1112,7 +1112,7 @@ class SpaceCombatKernel : public RefCounted {
         reconcile_defence();
         for (Defence &d : defences) d.loss = 0;
         debts.clear(); publish_player();
-        return player_hp > 0;
+        return player_hp > 0 || player_shield > 0;
     }
     void restore_drone_contributions(bool schedule = true) {
         if (disabled_drones.empty() && rebuild_count == 0) return;
@@ -1249,7 +1249,7 @@ class SpaceCombatKernel : public RefCounted {
     void finish_player_hit() {
 
         publish_player();
-        if (player_hp <= 0)
+        if (player_hp <= 0 && player_shield <= 0)
             if (!try_rebuild()) cancel();
     }
     void queue_debt(int layer, Amount amount) {
@@ -2262,7 +2262,7 @@ class SpaceCombatKernel : public RefCounted {
         for (const Actor &a : actors) if (a.live) { cleared = false; break; }
         out["events"] = events; out["drops"] = drops;
         out["wave_cleared"] = cleared; out["final_cleared"] = cleared && final_cleared;
-        out["player_dead"] = player_hp <= 0; out["error"] = failure_reason;
+        out["player_dead"] = player_hp <= 0 && player_shield <= 0; out["error"] = failure_reason;
         if (cleared) wave_active = false;
         return out;
     }
