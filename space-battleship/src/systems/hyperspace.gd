@@ -356,6 +356,8 @@ func prepare_preset(name: String, capacity: int, highest_reached: int, weapon_so
 		var prepared: Dictionary = prepare_loadout(preset.drone_ids, capacity, weapon_source)
 		if not prepared.ok: return prepared
 		for entry in preset.entries:
+			var drone: Dictionary = _find_drone(str(entry.id))
+			if drone.ultimate and entry.hangings == drone.hangings: continue
 			var checked: Dictionary = prepare_hangings(str(entry.id), entry.hangings, highest_reached)
 			if not checked.ok: return checked
 		prepared.entries = preset.entries.duplicate(true)
@@ -363,7 +365,8 @@ func prepare_preset(name: String, capacity: int, highest_reached: int, weapon_so
 	return {"ok": false, "reason": "UnknownPreset"}
 
 func accept_preset(prepared: Dictionary) -> void:
-	for entry in prepared.entries: accept_hangings(str(entry.id), entry.hangings)
+	for entry in prepared.entries:
+		if _find_drone(str(entry.id)).hangings != entry.hangings: accept_hangings(str(entry.id), entry.hangings)
 	accept_loadout(prepared.ids)
 
 func equipped_ids() -> Array:
@@ -459,10 +462,13 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}, highest
 			candidate.affixes.append(_draw_affix_with(random, str(candidate.weapon)))
 		"replace_affix":
 			if unlocked.is_empty(): return {"ok": false, "reason": "NoUnlockedAffix"}
-			var slot: int = int(unlocked[random.randi_range(0, unlocked.size() - 1)])
+			var candidates: Array = unlocked
 			if candidate.omen:
+				var worst_tier: int = -1
 				for index in unlocked:
-					if int(candidate.affixes[index].tier) > int(candidate.affixes[slot].tier): slot = int(index)
+					worst_tier = maxi(worst_tier, int(candidate.affixes[index].tier))
+				candidates = unlocked.filter(func(index): return int(candidate.affixes[index].tier) == worst_tier)
+			var slot: int = int(candidates[random.randi_range(0, candidates.size() - 1)])
 			var target: String = str(args.get("target_affix", ""))
 			if not target.is_empty() and not _affixes.has(target): return {"ok": false, "reason": "UnknownAffix"}
 			var found: bool = false
@@ -566,8 +572,9 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}, highest
 		for affix in candidate.affixes:
 			for tier in _tiers:
 				if int(tier.tier) == int(affix.tier): weight += float(tier.modernization_weight)
-		var base: float = float(_parameters.modernization_cost_base) * (1.0 + float(int(candidate.level) - 5) / float(_parameters.modernization_level_step)) * (1.0 + weight) * (float(_parameters.modernization_legendary_multiplier) if candidate.legendary else 1.0)
-		costs[str(_routes[_route_for_weapon(str(candidate.weapon))].material)] = int(ceilf(base / 10.0)) * 10 * int(_parameters.material_unit_scale)
+		var cost_unit: float = float(_parameters.modernization_cost_base)
+		var base: float = cost_unit * (1.0 + float(int(candidate.level) - int(_parameters.material_reward_start_level)) / float(_parameters.modernization_level_step)) * (float(_parameters.modernization_base_coefficient) + weight) * (float(_parameters.modernization_legendary_multiplier) if candidate.legendary else 1.0)
+		costs[str(_routes[_route_for_weapon(str(candidate.weapon))].material)] = roundi(base / cost_unit) * int(_parameters.modernization_cost_base) * int(_parameters.material_unit_scale)
 	return {"ok": true, "drone": candidate, "costs": costs, "draws": multiplier}
 
 func accept_forge(id: String, candidate: Dictionary, operation_id: String, fingerprint: String, result: Dictionary) -> void:
@@ -646,7 +653,8 @@ func stop_auto() -> Dictionary:
 	_auto.enabled = false
 	return {"ok": true, "crew_id": crew_id, "route": route}
 
-func advance_online(dt: float, late_supply: bool) -> void:
+func advance_online(dt: float, cleared_stages: Dictionary) -> void:
+	var late_supply: bool = cleared_stages.has(int(_parameters.late_supply_unlock_stage))
 	if late_supply:
 		var before: float = _late_supply_work
 		_late_supply_work = minf(float(_parameters.late_supply_ramp_seconds), before + dt)
@@ -775,7 +783,7 @@ func prepare_claim(run_id: int) -> Dictionary:
 	var receipt: Dictionary = _receipts.get(run_id, {})
 	if int(receipt.get("run_id", -1)) != run_id or int(receipt.get("round_id", -1)) != _round_id:
 		return {"ok": false, "reason": "UnknownRun"}
-	if receipt.status == "Claimed": return {"ok": true, "already_claimed": true, "reward": receipt.reward}
+	if receipt.status == "Claimed": return {"ok": true, "already_claimed": true, "reward": receipt.reward.duplicate(true)}
 	if receipt.status != "CompletedPending": return {"ok": false, "reason": "RewardNotReady"}
 	var reward: Dictionary = receipt.reward
 	if not reward.drone.is_empty() and _warehouse.size() >= _warehouse_capacity() and _overflow.size() >= int(_parameters.overflow_capacity):
@@ -787,8 +795,8 @@ func accept_claim(run_id: int) -> void:
 	if int(receipt.get("run_id", -1)) != run_id or receipt.status != "CompletedPending": return
 	var drone: Dictionary = receipt.reward.drone
 	if not drone.is_empty():
-		if _warehouse.size() < _warehouse_capacity(): _warehouse.append(drone)
-		else: _overflow.append(drone)
+		if _warehouse.size() < _warehouse_capacity(): _warehouse.append(drone.duplicate(true))
+		else: _overflow.append(drone.duplicate(true))
 		_unlocked_drones[str(drone.id)] = true
 		if drone.legendary: _legend_seen[str(drone.legendary_effect.effect_id)] = true
 	_credit_modules(receipt.reward.hanging_rewards)

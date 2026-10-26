@@ -205,7 +205,7 @@ func _advance_hyperspace_online(dt: float) -> bool:
 		elif next.get("reason") != "WarehouseFull":
 			_fail(str(next.get("reason", "AutoContinuationFailed")))
 			return false
-	hyperspace_system.advance_online(dt, campaign_system.progress_facts().cleared_stages.has(60))
+	hyperspace_system.advance_online(dt, campaign_system.progress_facts().cleared_stages)
 	var online: Dictionary = hyperspace_system.online_status()
 	if not online.auto.enabled or online.idle.get("status") != "CompletedPending": return true
 	var claimed: Dictionary = claim_hyperspace(int(online.idle.run_id))

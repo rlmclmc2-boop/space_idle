@@ -80,6 +80,15 @@ func _run_probe() -> void:
 	session.campaign_system._state.cleared_stages = cleared_stages
 	session.campaign_system._state.highest_reached = 11
 	session.crew_system.refresh_availability(session.campaign_system.available)
+	var configured_unlock: int = int(session.hyperspace_system._parameters.late_supply_unlock_stage)
+	session.hyperspace_system._parameters.late_supply_unlock_stage = 10
+	session._advance_hyperspace_online(2.0)
+	if absf(session.hyperspace_system._late_supply_work - 2.0) > 1e-9:
+		printerr("runtime configured late supply gate")
+		quit(1)
+		return
+	session.hyperspace_system._parameters.late_supply_unlock_stage = configured_unlock
+	session.hyperspace_system._late_supply_work = 0.0
 	var crew_id: String = str(session.crew_system._members.keys()[0])
 	if not session.crew_system.hyperspace_candidate(crew_id).ok:
 		printerr("runtime crew unlock fixture")

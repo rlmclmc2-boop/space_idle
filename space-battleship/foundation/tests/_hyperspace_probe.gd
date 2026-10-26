@@ -16,6 +16,18 @@ func _run_probe() -> void:
 	var data = JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json"))
 	var api = ClassDB.instantiate("FoundationAmount")
 	var system = Hyperspace.new(data, api, RunState.new())
+	var supply = Hyperspace.new(data, api, RunState.new(), 31)
+	supply._parameters.late_supply_unlock_stage = 7
+	supply.advance_online(3.0, {60: true})
+	if supply._late_supply_work != 0.0:
+		printerr("late supply used literal stage")
+		quit(1)
+		return
+	supply.advance_online(2.0, {7: true})
+	if absf(supply._late_supply_work - 2.0) > 1e-9:
+		printerr("late supply configured stage")
+		quit(1)
+		return
 	var geometry: Dictionary = {}
 	var motion: Dictionary = {}
 	var equipment: Dictionary = {}
@@ -74,13 +86,45 @@ func _run_probe() -> void:
 			quit(1)
 			return
 		system.accept_claim(int(prepared.receipt.run_id))
+	var original_omen_drone: Dictionary = system._warehouse[0].duplicate(true)
+	var omen_id: String = str(original_omen_drone.id)
+	var omen_key: String = str(system._affixes.keys()[0])
+	var omen_rows: Array = [
+		{"key": omen_key, "tier": 3, "value": -999.0, "locked": false},
+		{"key": omen_key, "tier": 3, "value": -999.0, "locked": false},
+		{"key": omen_key, "tier": 1, "value": -999.0, "locked": false}]
+	var omen_choices: Dictionary = {0: 0, 1: 0}
+	for rng_state in 32:
+		var omen_rng := RandomNumberGenerator.new()
+		omen_rng.seed = rng_state + 1
+		system._warehouse[0].omen = true
+		system._warehouse[0].affixes = omen_rows.duplicate(true)
+		system._warehouse[0].forge_rng_state = str(omen_rng.state)
+		var omen_quote: Dictionary = system.preview_forge(omen_id, "replace_affix")
+		if not omen_quote.ok:
+			printerr("omen replacement preview: ", omen_quote)
+			quit(1)
+			return
+		var changed_index: int = -1
+		for index in 3:
+			if float(omen_quote.drone.affixes[index].value) != -999.0: changed_index = index
+		if changed_index not in [0, 1]:
+			printerr("omen selected non-worst affix: ", changed_index)
+			quit(1)
+			return
+		omen_choices[changed_index] = int(omen_choices[changed_index]) + 1
+	if int(omen_choices[0]) == 0 or int(omen_choices[1]) == 0:
+		printerr("omen tie was not randomized: ", omen_choices)
+		quit(1)
+		return
+	system._warehouse[0] = original_omen_drone
 	var single: Dictionary = system.prepare_idle("alpha", false, "", 0, 0.0)
 	if not single.ok or float(single.receipt.duration) != 10.0:
 		printerr("single: ", single)
 		quit(1)
 		return
 	system.accept_idle(single.receipt, false)
-	system.advance_online(10.0, false)
+	system.advance_online(10.0, {})
 	var single_claim: Dictionary = system.prepare_claim(int(single.receipt.run_id))
 	if not single_claim.ok:
 		printerr("single claim: ", single_claim)
@@ -93,19 +137,32 @@ func _run_probe() -> void:
 		quit(1)
 		return
 	system.accept_idle(auto.receipt, true)
-	system.advance_online(10.0, false)
+	system.advance_online(10.0, {})
 	if system.online_status().idle.status != "CompletedPending":
 		printerr("auto completion")
 		quit(1)
 		return
 	system.accept_claim(int(auto.receipt.run_id))
+	var claim_snapshot: Dictionary = system.prepare_claim(int(auto.receipt.run_id))
+	var original_drone_id: String = str(system._receipts[int(auto.receipt.run_id)].reward.drone.id)
+	claim_snapshot.reward.drone.id = "tampered-copy"
+	if str(system._receipts[int(auto.receipt.run_id)].reward.drone.id) != original_drone_id or str(system.warehouse().main[-1].id) != original_drone_id:
+		printerr("claim receipt/warehouse alias")
+		quit(1)
+		return
+	system._warehouse[-1].id = "tampered-entity"
+	if str(system._receipts[int(auto.receipt.run_id)].reward.drone.id) != original_drone_id:
+		printerr("warehouse entity/receipt alias")
+		quit(1)
+		return
+	system._warehouse[-1].id = original_drone_id
 	var continued: Dictionary = system.prepare_auto_continuation(20, 0.0)
 	if not continued.ok:
 		printerr("auto continuation: ", continued)
 		quit(1)
 		return
 	system.accept_idle(continued.receipt, true)
-	system.advance_online(1.0 / 60.0, false)
+	system.advance_online(1.0 / 60.0, {})
 	if system.online_status().idle.status != "Started" or absf(float(system.online_status().idle.work) - 1.0 / 60.0) > 1e-9:
 		printerr("auto next step")
 		quit(1)
@@ -230,6 +287,19 @@ func _run_probe() -> void:
 			printerr("modernization mainline cap/best record: ", modernization)
 			quit(1)
 			return
+		own._history[route].best[8] = 12.0
+		var original_cost_parameters: Dictionary = own._parameters.duplicate()
+		own._parameters.modernization_cost_base = 12
+		own._parameters.material_reward_start_level = 4
+		own._parameters.modernization_level_step = 2
+		own._parameters.modernization_base_coefficient = 1.4
+		var rounded_quote: Dictionary = session.preview_hyperspace_forge(str(before_drone.id), "modernize")
+		var material_id: String = str(own._routes[route].material)
+		if not rounded_quote.ok or int(rounded_quote.costs[material_id]) != 480:
+			printerr("modernization parameterized rounding: ", rounded_quote)
+			quit(1)
+			return
+		own._parameters = original_cost_parameters
 		var drone_source_id: String = "drone:" + str(before_drone.id)
 		var matching_slot: String = ""
 		for slot in session.equipment._slots:
@@ -345,6 +415,19 @@ func _run_probe() -> void:
 		var reapplied_source: Dictionary = session._hyperspace_weapon_source().call(own._warehouse[0])
 		if not storage_reapplied.ok or own._warehouse[0].hangings != ["extra_storage"] or not reapplied_source.ok or str(session.battle._equipped_drones[0].weapon.damage) != str(reapplied_source.weapon.damage):
 			printerr("capacity preset drone growth: ", storage_reapplied)
+			quit(1)
+			return
+		own._warehouse[0].ultimate = true
+		var ultimate_preset: Dictionary = session.save_hyperspace_preset("ultimate-unchanged")
+		var ultimate_applied: Dictionary = session.apply_hyperspace_preset("ultimate-unchanged")
+		if not ultimate_preset.ok or not ultimate_applied.ok or own._warehouse[0].hangings != ["extra_storage"]:
+			printerr("ultimate unchanged preset: ", ultimate_preset, " ", ultimate_applied)
+			quit(1)
+			return
+		own._warehouse[0].ultimate = false
+		var restored_quality: Dictionary = session.equip_hyperspace_drones([str(before_drone.id)])
+		if not restored_quality.ok:
+			printerr("ultimate preset fixture restore: ", restored_quality)
 			quit(1)
 			return
 		if own.prepare_dismantle(str(before_drone.id)).get("reason") != "ProtectedDrone":
