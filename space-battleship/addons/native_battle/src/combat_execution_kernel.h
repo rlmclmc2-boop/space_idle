@@ -1182,7 +1182,7 @@ class SpaceCombatKernel : public RefCounted {
             sources.push_back(i);
         }
         const bool rolled = rng->randf() < minimum(chance, legend_value("dodge_counter", "maximum_dodge"));
-        if (!rolled || clock < dodge_ready_at) return false;
+        if (!rolled || clock + 1e-9 < dodge_ready_at) return false;
         dodge_ready_at = clock + legend_constant("dodge_counter", "cooldown");
         if (!sources.empty()) {
             int wi = sources[size_t(rng->randi_range(0, int(sources.size()) - 1))]; const Weapon &w = weapons[wi];

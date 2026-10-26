@@ -10,8 +10,17 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 			session.equipment.refresh_availability(session.campaign_system.available, 21, false)
 			ready = session.campaign_system.change_ship("Cruiser", session.commit_ship_refit)
 		if ready.ok: ready = session.equipment.equip_slot("defence:1", "shield", session.equipment_inputs(), session.publish_equipment_refit)
+	if ready.ok and options.has("legend"):
+		var donor: Dictionary = session.equipment.drone_weapon_source("laser", 0, 0, session._research_factors, session._reactor_factors, session.battle.wave_inputs().motion)
+		if not donor.ok: return donor
+		donor.weapon.interval = 1000000.0
+		donor.weapon.remaining = 1000000.0
+		donor.weapon.damage = options.get("donor_damage", "0e0")
+		ready = session.set_equipped_drone_contributions([{"id": "defence-legend", "generation": 1,
+			"quality": options.get("quality", "white"), "weapon": donor.weapon,
+			"legendary_effect": options.legend, "legendary_parameters": options.parameters}])
 	if ready.ok: ready = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
-	if ready.ok: ready = session._growth_setup()
+	if ready.ok: ready = session._growth_setup("", session.battle._equipped_drones, {}, null, {}, false)
 	if not ready.ok: return ready
 	for row in session.battle._prepared_player.descriptor.defences:
 		row.base = "1e4"
@@ -63,6 +72,8 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 		other.source = 1
 		other.remaining = 0.75
 		other.type = other_type
+		other.remaining = options.get("other_remaining", other.remaining)
+		other.damage = options.get("other_damage", other.damage)
 		setup.wave.weapons.append(other)
 	ready = session.battle.start_wave(setup)
 	if not ready.ok: return ready
