@@ -176,13 +176,19 @@ func _valid_receipt(receipt, round_id: int, next_run: int) -> bool:
 func _valid_drone(drone) -> bool:
 	if not drone is Dictionary or not drone.get("id") is String or drone.id.is_empty() or not drone.get("weapon") is String or not drone.get("planet_id") is String:
 		return false
-	if not _planet_claim_levels.has(drone.planet_id) or not drone.get("level") is int or drone.level < 1 or not drone.get("hangings") is Array or not drone.get("affixes") is Array:
+	if not _planet_claim_levels.has(_planet_key(drone.planet_id)) or not drone.get("level") is int or drone.level < 1 or not drone.get("hangings") is Array or not drone.get("affixes") is Array:
 		return false
 	if not drone.get("legendary") is bool or not drone.get("ultimate") is bool or not drone.get("hanging_slots") is int or drone.hanging_slots < 0 or not drone.get("forge_revision") is int or drone.forge_revision < 0 or not drone.get("forge_rng_state") is String or not drone.forge_rng_state.is_valid_int():
 		return false
 	for module_id in drone.hangings:
 		if not module_id is String or not _module_definitions.has(module_id): return false
 	return true
+
+func _planet_key(value: String) -> String:
+	if value.ends_with(".0"):
+		var integer: String = value.trim_suffix(".0")
+		if integer.is_valid_int(): return integer
+	return value
 
 func _init(configuration: Dictionary, api, run_state, seed_value: int = 1) -> void:
 	_run_state = run_state
@@ -975,7 +981,7 @@ func accept_reforge(retained: Array) -> Dictionary:
 		var id: String = str(drone.id)
 		drone.hangings = []
 		if id in _favorites: next_favorites.append(id)
-		_sealed[id] = int(_planet_claim_levels.get(str(drone.planet_id), 0))
+		_sealed[id] = int(_planet_claim_levels.get(_planet_key(str(drone.planet_id)), 0))
 	_favorites = next_favorites
 	return {"ok": true, "released_crew": str(old_auto.get("crew_id", "")), "route": str(old_auto.get("route", ""))}
 
@@ -1004,9 +1010,9 @@ func _generate_reward(receipt: Dictionary) -> Dictionary:
 		draw -= float(row.weight)
 		quality = row
 		if draw < 0: break
-	var planet_id: String = str(_planets[0].id)
+	var planet_id: String = str(int(_planets[0].id))
 	for planet in _planets:
-		if int(receipt.level) >= int(planet.reforgeStartLevel): planet_id = str(planet.id)
+		if int(receipt.level) >= int(planet.reforgeStartLevel): planet_id = str(int(planet.id))
 	var drone: Dictionary = {"id": "space:%d:%d" % [_round_id, int(receipt.run_id)],
 		"origin_quality": str(quality.quality), "weapon": str(route.weapon), "level": int(receipt.level),
 		"planet_id": planet_id, "legendary": str(quality.quality) == "legendary", "ultimate": false,

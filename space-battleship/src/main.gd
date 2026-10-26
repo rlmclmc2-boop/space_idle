@@ -19,6 +19,7 @@ var startup_error: String = ""
 var _overlay: Node2D
 var growth_panel: PanelContainer
 var growth_status: Label
+var save_state_label: Label
 var _pending_import: Dictionary = {}
 var _pending_reforge: Dictionary = {}
 var _autosave_interval: float = 0.0
@@ -89,7 +90,9 @@ func _replace_session(replacement) -> Dictionary:
 	growth_panel = null
 	_show_session()
 	var persisted: Dictionary = session.request_save()
-	return {"ok": true, "persistence_pending": not persisted.ok}
+	return {"ok": true, "persistence_pending": persisted.ok,
+		"persistence_failed": not persisted.ok,
+		"persistence_error": str(persisted.get("error", persisted.get("reason", "SaveFailed")))}
 
 func _preview_reforge(directory: String, planet_id: String, ids_text: String) -> Dictionary:
 	_pending_reforge = {}
@@ -117,6 +120,17 @@ func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
 		if session.save_files != null: session.save_files.poll()
+		if save_state_label != null:
+			if session.save_files == null:
+				save_state_label.text = "No save directory"
+			elif session.save_files.busy():
+				save_state_label.text = "Saving…"
+			elif not session.save_files.last_result.is_empty() and not session.save_files.last_result.ok:
+				save_state_label.text = "Save failed: " + str(session.save_files.last_result.get("error", "Unknown"))
+			elif session.save_files.dirty(str(session._change_number)):
+				save_state_label.text = "Snapshot not written"
+			else:
+				save_state_label.text = "Last save written"
 		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
 			_next_autosave_wall = session.wall_time + _autosave_interval
 			var saved: Dictionary = session.request_save()
@@ -165,7 +179,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 		var result: Dictionary = action.call()
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
-		growth_status.text = "已加载，保存待重试" if result.get("persistence_pending", false) else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
+		growth_status.text = "会话已切换，保存失败：" + str(result.get("persistence_error", "Unknown")) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
 		)
 	return button
 
@@ -190,6 +204,8 @@ func _setup_growth_panel() -> void:
 	scroll.add_child(box)
 	growth_status = Label.new()
 	box.add_child(growth_status)
+	save_state_label = Label.new()
+	box.add_child(save_state_label)
 	open.pressed.connect(func(): growth_panel.visible = not growth_panel.visible)
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
@@ -209,6 +225,14 @@ func _setup_growth_panel() -> void:
 	save_path.placeholder_text = "Existing absolute save directory"
 	if session.save_files != null: save_path.text = session.save_files._directory
 	box.add_child(save_path)
+	var save_picker := FileDialog.new()
+	save_picker.access = FileDialog.ACCESS_FILESYSTEM
+	save_picker.file_mode = FileDialog.FILE_MODE_OPEN_DIR
+	save_picker.dir_selected.connect(func(path: String): save_path.text = path)
+	box.add_child(save_picker)
+	_command_button(box, "Choose save directory", func() -> Dictionary:
+		save_picker.popup_centered_ratio()
+		return {"ok": true, "message": "Choose an existing save directory"})
 	var speed_options := OptionButton.new()
 	for option in session.chrono_speed_options():
 		speed_options.add_item("%sx · %s chrono/s" % [option.speed, option.cost], int(option.speed))
@@ -236,6 +260,15 @@ func _setup_growth_panel() -> void:
 	var import_path := LineEdit.new()
 	import_path.placeholder_text = "Envelope JSON file to import"
 	box.add_child(import_path)
+	var import_picker := FileDialog.new()
+	import_picker.access = FileDialog.ACCESS_FILESYSTEM
+	import_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	import_picker.add_filter("*.json", "JSON save envelope")
+	import_picker.file_selected.connect(func(path: String): import_path.text = path)
+	box.add_child(import_picker)
+	_command_button(box, "Choose import file", func() -> Dictionary:
+		import_picker.popup_centered_ratio()
+		return {"ok": true, "message": "Choose an Envelope JSON file"})
 	_command_button(box, "Preview import", func() -> Dictionary:
 		return _preview_import(save_path.text, import_path.text))
 	_command_button(box, "Confirm import", func() -> Dictionary:

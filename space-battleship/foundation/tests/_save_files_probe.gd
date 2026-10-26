@@ -11,6 +11,16 @@ class RejectManifest extends RefCounted:
 		if destination.ends_with("active.json"): return false
 		return delegate.replace(source, destination)
 
+class RejectDestination extends RefCounted:
+	var delegate
+	var suffix: String
+	func _init(target: String) -> void:
+		delegate = ClassDB.instantiate("FoundationDisk")
+		suffix = target
+	func replace(source: String, destination: String) -> bool:
+		if destination.ends_with(suffix): return false
+		return delegate.replace(source, destination)
+
 func _initialize() -> void:
 	var loaded = GDExtensionManager.load_extension(OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION"))
 	if loaded != GDExtensionManager.LOAD_STATUS_OK and loaded != GDExtensionManager.LOAD_STATUS_ALREADY_LOADED:
@@ -88,6 +98,27 @@ func _run_probe() -> void:
 	var envelope: Dictionary = {"formatVersion": 1, "sessionId": "test-session", "changeNumber": "3",
 		"generation": "3", "savedUtc": "3", "configHash": hash,
 		"payloadHash": JSON.stringify(payload).sha256_text(), "payload": payload}
+	var job: Dictionary = {"directory": directory, "envelope": JSON.stringify(envelope),
+		"generation": "3", "change": "3"}
+	for fault in [{"file": "previous.json", "error": "BackupWrite"},
+		{"file": "slot-0.json", "error": "DataWrite"},
+		{"file": "probe-3.json", "error": "DataVerify"},
+		{"file": "active.json", "error": "ManifestWrite"}]:
+		var failed: Dictionary = SaveFiles.write_snapshot(job, RejectDestination.new(fault.file))
+		if failed.ok or failed.error != fault.error or files.load_latest().envelope.changeNumber != "2":
+			printerr("publication fault changed committed save: ", fault, " ", failed)
+			quit(1)
+			return
+	# A directory at the temporary-file path makes the actual FileAccess.open fail.
+	var blocked_temp: String = directory.path_join("previous.json.tmp")
+	if FileAccess.file_exists(blocked_temp): DirAccess.remove_absolute(blocked_temp)
+	DirAccess.make_dir_absolute(blocked_temp)
+	var open_failure: Dictionary = SaveFiles.write_snapshot(job)
+	DirAccess.remove_absolute(blocked_temp)
+	if open_failure.ok or open_failure.error != "BackupWrite" or files.load_latest().envelope.changeNumber != "2":
+		printerr("temporary write failure changed committed save: ", open_failure)
+		quit(1)
+		return
 	var rejected: Dictionary = SaveFiles.write_snapshot({"directory": directory, "envelope": JSON.stringify(envelope),
 		"generation": "3", "change": "3"}, RejectManifest.new())
 	if rejected.ok or rejected.error != "ManifestWrite" or files.load_latest().envelope.changeNumber != "2":
