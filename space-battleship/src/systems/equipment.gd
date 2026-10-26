@@ -6,6 +6,7 @@ const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 signal slots_changed(ids: Array)
 signal loadout_changed
 signal options_changed
+signal transaction_accepted
 
 var _slots: Array = []
 var _pending_slots = null
@@ -115,6 +116,7 @@ func _submit_levels(next: Array, balances: Dictionary, changed: Array, publish: 
 	_pending_level_slots = []
 	if result.ok:
 		_slots = next
+		transaction_accepted.emit()
 		var rows: Array = []
 		for slot in changed: rows.append(str(slot.id))
 		rows.make_read_only()
@@ -127,6 +129,7 @@ func _submit_refit(next: Array, balances: Dictionary, publish: Callable) -> Dict
 	_pending_slots = null
 	if result.ok:
 		_slots = next
+		transaction_accepted.emit()
 		loadout_changed.emit()
 	return result
 ## Static equipment arithmetic stops at charged_base. History stays in native.

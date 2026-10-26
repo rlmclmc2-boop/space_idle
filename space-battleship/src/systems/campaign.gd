@@ -68,10 +68,13 @@ func change_ship(id: String, refit: Callable) -> Dictionary:
 	if not _ships.has(id) or not available("ship", id): return {"ok": false, "reason": "ShipLocked"}
 	return refit.call(id)
 
-func accept_ship(id: String) -> void:
-	if not _run_state.is_running(): return
-	if id == _selected_ship: return
+func accept_ship(id: String, notify: bool = true) -> bool:
+	if not _run_state.is_running() or id == _selected_ship: return false
 	_selected_ship = id
+	if notify: ship_changed.emit()
+	return true
+
+func publish_ship_change() -> void:
 	ship_changed.emit()
 
 func progress_facts() -> Dictionary:

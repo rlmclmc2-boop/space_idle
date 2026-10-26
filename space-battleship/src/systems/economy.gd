@@ -29,12 +29,15 @@ func _init(parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
 func budget() -> Dictionary:
 	return _wallet
 
-func accept_budget(next: Dictionary) -> void:
-	if not _run_state.is_running(): return
-	if next == _wallet: return
+func accept_budget(next: Dictionary, notify: bool = true) -> bool:
+	if not _run_state.is_running() or next == _wallet: return false
 	_wallet = next.duplicate()
 	_wallet.make_read_only()
 	_balance_dirty = true
+	if notify: display_changed.emit()
+	return true
+
+func publish_budget_change() -> void:
 	display_changed.emit()
 
 func affordable(costs: Dictionary, candidate = null) -> bool:
