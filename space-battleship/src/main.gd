@@ -156,6 +156,14 @@ func _preview_import(directory: String, source_file: String) -> Dictionary:
 func _apply_import(directory: String, source_file: String) -> Dictionary:
 	if _pending_import.is_empty() or _pending_import.directory != directory or _pending_import.source != source_file:
 		return {"ok": false, "reason": "ImportPreviewRequired"}
+	# Publish a recoverable snapshot of the live session before replacing it.
+	# This also captures changes made since the preview was opened.
+	var configured: Dictionary = session.configure_save_directory(directory)
+	if not configured.ok: return configured
+	var backup: Dictionary = session.request_save()
+	if not backup.ok: return backup
+	var completed: Dictionary = session.save_files.close()
+	if not completed.ok: return completed
 	var replacement = _pending_import.session
 	_pending_import = {}
 	return _replace_session(replacement)

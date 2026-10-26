@@ -37,6 +37,26 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(directory)
+	var frozen_directory: String = directory.path_join("frozen-config")
+	DirAccess.make_dir_recursive_absolute(frozen_directory)
+	var copied_config: String = frozen_directory.path_join("config.json")
+	var initial_config: String = FileAccess.get_file_as_string("res://generated/config.json")
+	var copied_file: FileAccess = FileAccess.open(copied_config, FileAccess.WRITE)
+	copied_file.store_string(initial_config)
+	copied_file.close()
+	var frozen = Session.new()
+	if not frozen.initialize(copied_config, 100).ok or not frozen.configure_save_directory(frozen_directory).ok:
+		printerr("frozen config fixture failed")
+		quit(1)
+		return
+	copied_file = FileAccess.open(copied_config, FileAccess.WRITE)
+	copied_file.store_string("{}")
+	copied_file.close()
+	var frozen_save: Dictionary = frozen.request_save()
+	if not frozen_save.ok or not frozen.save_files.close(2000).ok or SaveFiles.read_pointer(frozen_directory, "active.json").envelope.configHash != initial_config.sha256_text():
+		printerr("save used modified disk config instead of initialized bytes: ", frozen_save)
+		quit(1)
+		return
 	var original = Session.new()
 	var ready: Dictionary = original.initialize("res://generated/config.json", 101)
 	if not ready.ok:
@@ -135,6 +155,16 @@ func _run() -> void:
 	attempted = rejected.initialize("res://generated/config.json", damaged.seed, damaged.native, damaged)
 	if attempted.ok or not original.run_state.is_running():
 		printerr("invalid tutorial candidate admitted: ", attempted)
+		quit(1)
+		return
+	snapshot = original.save_payload()
+	decoded = StateCodec.unpack(snapshot.payload)
+	damaged = decoded.value
+	damaged.modules.hyperspace.filter = {"version": 2, "enabled": true, "mode": "all", "action": "keep_matches", "conditions": []}
+	rejected = Session.new()
+	attempted = rejected.initialize("res://generated/config.json", damaged.seed, damaged.native, damaged)
+	if attempted.ok or attempted.reason != "InvalidFilter" or not original.run_state.is_running():
+		printerr("invalid restored hyperspace filter admitted: ", attempted)
 		quit(1)
 		return
 	snapshot = original.save_payload()

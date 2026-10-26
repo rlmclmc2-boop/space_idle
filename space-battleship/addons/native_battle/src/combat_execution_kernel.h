@@ -2098,6 +2098,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("read_history"), &SpaceCombatKernel::read_history);
         ClassDB::bind_method(D_METHOD("persistent_state"), &SpaceCombatKernel::persistent_state);
         ClassDB::bind_method(D_METHOD("active_flight_count"), &SpaceCombatKernel::active_flight_count);
+        ClassDB::bind_method(D_METHOD("workload_metrics"), &SpaceCombatKernel::workload_metrics);
         ClassDB::bind_method(D_METHOD("restore_persistent_state", "state"), &SpaceCombatKernel::restore_persistent_state);
         ClassDB::bind_method(D_METHOD("clear_encounter", "reason"), &SpaceCombatKernel::clear_encounter);
         ClassDB::bind_method(D_METHOD("finish_retreat"), &SpaceCombatKernel::finish_retreat);
@@ -2289,6 +2290,18 @@ class SpaceCombatKernel : public RefCounted {
         int64_t count = 0;
         for (size_t id : active) if (id < flights.size() && flights[id].live) ++count;
         return count;
+    }
+    Dictionary workload_metrics() const {
+        Dictionary metrics;
+        metrics["active_flights"] = active_flight_count();
+        metrics["flight_slots"] = int64_t(flights.size());
+        metrics["active_capacity"] = int64_t(active.capacity());
+        metrics["root_queue"] = int64_t(roots.size());
+        metrics["ejection_queue"] = int64_t(ejections.size());
+        metrics["repeat_queue"] = int64_t(repeats.size());
+        metrics["strange_queue"] = int64_t(strange_pending.size());
+        metrics["feedback_capacity"] = int64_t(feedback.capacity());
+        return metrics;
     }
     bool restore_persistent_state(const Dictionary &state) {
         if (!admitted || executing || !state.has("history_counts") || !state.has("rng_state") || !state.has("next_ids") ||

@@ -380,6 +380,16 @@ class Compiler:
         for node in edges: visit(node)
 
     def _validate_hyperspace(self) -> None:
+        for row in self.table("hyperspace_config", "基础参数"):
+            key, value = row.get("key"), row.get("value")
+            if key in ("material_reward_level_step", "value_precision") and (
+                not valid_type(value, "number") or value <= 0
+            ):
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspacePositiveParameter", f"{key} must be positive")
+            if key == "ultimate_core_probability" and (
+                not valid_type(value, "number") or not 0 <= value <= 1
+            ):
+                self.row_error("hyperspace_config", "基础参数", row, "value", "HyperspaceProbabilityRange", "probability must be between zero and one")
         routes = self.ids("hyperspace_config", "路线", "route_id")
         affixes = self.ids("hyperspace_config", "词缀定义", "affix_id")
         legends = self.ids("hyperspace_config", "传说定义", "effect_id")

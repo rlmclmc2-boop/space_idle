@@ -5,6 +5,10 @@ const SaveFiles = preload("res://foundation/host/save_files.gd")
 const PlayerSettings = preload("res://foundation/host/player_settings.gd")
 const Session = preload("res://src/game_session.gd")
 
+class RejectCandidateManifest extends RefCounted:
+	func write(job: Dictionary) -> Dictionary:
+		return {"ok": false, "error": "ManifestWrite"}
+
 func _initialize() -> void:
 	var loaded = GDExtensionManager.load_extension(OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION"))
 	if loaded != GDExtensionManager.LOAD_STATUS_OK and loaded != GDExtensionManager.LOAD_STATUS_ALREADY_LOADED:
@@ -238,6 +242,11 @@ func _run() -> void:
 		printerr("import preview button failed: ", main.growth_status.text)
 		quit(1)
 		return
+	main.session.set_chrono_speed(10)
+	if not main.session.dirty_since_save().dirty:
+		printerr("pre-import session fixture is not dirty")
+		quit(1)
+		return
 	_find_button(main, "Confirm import").pressed.emit()
 	if not main._pending_import.is_empty():
 		printerr("import confirmation button failed")
@@ -246,6 +255,15 @@ func _run() -> void:
 	result = main.session.save_files.close(2000)
 	if not result.ok:
 		printerr("import replacement save: ", result)
+		quit(1)
+		return
+	var pre_import: Dictionary = Session.load_candidate("res://generated/config.json", directory, true)
+	if not pre_import.ok or pre_import.session.current_chrono_speed() != 10:
+		printerr("pre-import unsaved session backup missing: ", pre_import)
+		quit(1)
+		return
+	if not pre_import.session.save_files.close(2000).ok:
+		printerr("pre-import backup candidate close failed")
 		quit(1)
 		return
 	await process_frame
@@ -342,6 +360,14 @@ func _run() -> void:
 	var blocked_temp: String = directory.path_join("previous.json.tmp")
 	DirAccess.make_dir_absolute(blocked_temp)
 	_find_button(main, "Confirm import").pressed.emit()
+	if main.session != old_session or main._pending_import.is_empty():
+		printerr("failed pre-import backup replaced live session")
+		quit(1)
+		return
+	DirAccess.remove_absolute(blocked_temp)
+	var reject_candidate := RejectCandidateManifest.new()
+	main._pending_import.session.save_files._write_job = Callable(reject_candidate, "write")
+	_find_button(main, "Confirm import").pressed.emit()
 	if main.session == old_session or not main.session.run_state.is_running():
 		printerr("replacement did not yield a usable candidate")
 		quit(1)
@@ -354,7 +380,7 @@ func _run() -> void:
 		printerr("asynchronous replacement failure was hidden: ", result, " ", main.save_state_label.text, " ", main.growth_status.text)
 		quit(1)
 		return
-	DirAccess.remove_absolute(blocked_temp)
+	main.session.save_files._write_job = SaveFiles.write_snapshot
 	_find_button(main, "Save").pressed.emit()
 	result = main.session.save_files.close(2000)
 	main._save_status_elapsed = 1.0

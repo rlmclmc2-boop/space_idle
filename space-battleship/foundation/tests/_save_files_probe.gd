@@ -207,5 +207,22 @@ func _run_probe() -> void:
 		printerr("writer close timeout or completion: ", delayed, " ", timed_out, " ", files.last_result)
 		quit(1)
 		return
+	var preview_writer = SaveFiles.new(directory)
+	var advanced: Dictionary = files.request({"order": "after-preview"}, "10", "test-session", "10", hash)
+	if not advanced.ok or not files.close(2000).ok:
+		printerr("advance after preview failed: ", advanced)
+		quit(1)
+		return
+	var from_preview: Dictionary = preview_writer.request({"order": "candidate"}, "11", "candidate-session", "11", hash)
+	if not from_preview.ok or str(from_preview.generation).to_int() <= str(advanced.generation).to_int() or not preview_writer.close(2000).ok:
+		printerr("candidate writer regressed generation: ", from_preview)
+		quit(1)
+		return
+	var stale: Dictionary = SaveFiles.write_snapshot({"directory": directory, "envelope": JSON.stringify(envelope),
+		"generation": advanced.generation, "change": "10"})
+	if stale.ok or stale.error != "StaleGeneration" or preview_writer.load_latest().envelope.changeNumber != "11":
+		printerr("stale queued job overwrote newer generation: ", stale)
+		quit(1)
+		return
 	print("SAVE_FILES_PROBE_OK")
 	quit(0)

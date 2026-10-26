@@ -129,6 +129,8 @@ func restore_state(state: Dictionary) -> Dictionary:
 	var restored_capacity: int = int(_parameters.warehouse_capacity) + state.reforge_count * int(_parameters.reforge_capacity_gain)
 	if state.warehouse.size() > restored_capacity or state.overflow.size() > int(_parameters.overflow_capacity):
 		return {"ok": false, "reason": "InvalidHyperspaceCapacity"}
+	var filter_result: Dictionary = set_filter(state.filter)
+	if not filter_result.ok: return filter_result
 	_history = state.history.duplicate(true)
 	_manual = state.manual.duplicate(true)
 	_idle = state.idle.duplicate(true)
@@ -140,7 +142,6 @@ func restore_state(state: Dictionary) -> Dictionary:
 	_sealed = state.sealed.duplicate(true)
 	_presets = state.presets.duplicate(true)
 	_receipts = state.receipts.duplicate(true)
-	_filter = state.filter.duplicate(true)
 	_modules = state.modules.duplicate(true)
 	_last_forge = state.last_forge.duplicate(true)
 	_legend_seen = state.legend_seen.duplicate(true)

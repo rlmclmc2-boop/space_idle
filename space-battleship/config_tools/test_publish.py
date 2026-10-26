@@ -120,6 +120,18 @@ class PublicationTest(unittest.TestCase):
         workbook.close()
         self.reject("UnknownRuleKey")
 
+    def test_hyperspace_zero_reward_level_step_rejected(self) -> None:
+        self.change_field("hyperspace_config.xlsx", "基础参数", "value", 27, 0)
+        self.reject("HyperspacePositiveParameter")
+
+    def test_hyperspace_zero_value_precision_rejected(self) -> None:
+        self.change_field("hyperspace_config.xlsx", "基础参数", "value", 23, 0)
+        self.reject("HyperspacePositiveParameter")
+
+    def test_hyperspace_probability_over_one_rejected(self) -> None:
+        self.change_field("hyperspace_config.xlsx", "基础参数", "value", 43, 1.5)
+        self.reject("HyperspaceProbabilityRange")
+
     def test_stage_point_order_and_bounds_rejected(self) -> None:
         # Preserve existing formula caches while changing the literal C4 cell.
         path = self.source / "level.xlsx"

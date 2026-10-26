@@ -48,6 +48,7 @@ var pending_seconds: float = 0.0
 var wall_time: float = 0.0
 var game_time: float = 0.0
 var _configuration_path: String = ""
+var _configuration_hash: String = ""
 var _combat_seed: int = 0
 var _session_id: String = ""
 var _change_number: int = 0
@@ -68,11 +69,13 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, s
 		return {"ok": false, "reason": "AlreadyInitialized"}
 	if not ClassDB.class_exists("SpaceCombatKernel") or not ClassDB.class_exists("FoundationAmount"):
 		return _fail("NativeExtensionRequired")
-	var parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var configuration_text: String = FileAccess.get_file_as_string(path)
+	var parsed = JSON.parse_string(configuration_text)
 	if not parsed is Dictionary:
 		return _fail("ConfigurationReadFailed")
 	var configuration: Dictionary = parsed
 	_configuration_path = path
+	_configuration_hash = configuration_text.sha256_text()
 	_combat_seed = combat_seed
 	_session_id = str(Time.get_unix_time_from_system()) + ":" + str(combat_seed)
 	var parameters: Dictionary = {}
@@ -261,9 +264,8 @@ func request_save() -> Dictionary:
 	if not snapshot.ok: return snapshot
 	if _change_number == 9223372036854775807: return {"ok": false, "reason": "ChangeNumberRange"}
 	_change_number += 1
-	var config_hash: String = FileAccess.get_file_as_string(_configuration_path).sha256_text()
 	return save_files.request(snapshot.payload, str(_change_number), _session_id,
-		str(int(Time.get_unix_time_from_system())), config_hash)
+		str(int(Time.get_unix_time_from_system())), _configuration_hash)
 
 func dirty_since_save() -> Dictionary:
 	if save_files == null: return {"ok": true, "dirty": true}
@@ -310,6 +312,8 @@ static func _candidate_from_envelope(path: String, directory: String, envelope: 
 	var candidate = load("res://src/game_session.gd").new()
 	var ready: Dictionary = candidate.initialize(path, saved.seed, saved.native, saved)
 	if not ready.ok: return ready
+	if candidate._configuration_hash != envelope.configHash:
+		return {"ok": false, "reason": "ConfigurationMismatch"}
 	candidate._session_id = envelope.sessionId
 	candidate._change_number = str(envelope.changeNumber).to_int()
 	var elapsed: int = offline_elapsed(str(envelope.savedUtc).to_int(), int(Time.get_unix_time_from_system()))

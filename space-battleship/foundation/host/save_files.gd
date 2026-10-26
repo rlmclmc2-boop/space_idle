@@ -61,10 +61,14 @@ func load_latest() -> Dictionary:
 	return read_store(_directory)
 
 func request(payload: Dictionary, change_number: String, session_id: String, utc: String, config_hash: String) -> Dictionary:
-	if not integer_text(change_number) or not integer_text(utc) or session_id.is_empty() or not config_hash.is_valid_hex_number() or config_hash.length() != 64 or _generation == 9223372036854775807:
+	if not integer_text(change_number) or not integer_text(utc) or session_id.is_empty() or not config_hash.is_valid_hex_number() or config_hash.length() != 64:
 		return {"ok": false, "error": "InvalidSaveRequest"}
 	var store := load_latest()
 	if not store.ok and store.error != "MissingSave": return store
+	if store.ok:
+		_generation = maxi(_generation, str(store.envelope.generation).to_int())
+	if _generation == 9223372036854775807:
+		return {"ok": false, "error": "GenerationRange"}
 	_generation += 1
 	# Capture and serialize before the worker starts; it never sees live payloads.
 	var payload_text := JSON.stringify(payload.duplicate(true))
@@ -135,6 +139,8 @@ static func write_snapshot(job: Dictionary, disk_override = null) -> Dictionary:
 	var disk = ClassDB.instantiate("FoundationDisk") if disk_override == null else disk_override
 	var old := read_store(directory)
 	if not old.ok and old.error != "MissingSave": return {"ok": false, "error": old.error}
+	if old.ok and str(old.envelope.generation).to_int() >= str(job.generation).to_int():
+		return {"ok": false, "error": "StaleGeneration"}
 	var filename := "slot-1.json" if old.ok and old.pointer.file == "slot-0.json" else "slot-0.json"
 	# Repoint the backup to the current validated slot before its former slot
 	# can be overwritten. Every failed step then leaves a valid recovery path.
