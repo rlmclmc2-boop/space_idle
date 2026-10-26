@@ -286,10 +286,38 @@ func _run() -> void:
 		printerr("offline load cap: ", late)
 		quit(1)
 		return
+	var offline_directory: String = directory.path_join("offline-import")
+	DirAccess.make_dir_recursive_absolute(offline_directory)
+	var import_file: String = offline_directory.path_join("source.json")
+	var stream: FileAccess = FileAccess.open(import_file, FileAccess.WRITE)
+	stream.store_string(JSON.stringify(envelope))
+	stream.close()
+	var imported_offline: Dictionary = Session.import_candidate("res://generated/config.json", offline_directory, import_file)
+	if not imported_offline.ok or imported_offline.session.amount_api.apply("compare", [
+		imported_offline.session.economy.budget().get("chrono", {}), cap.value]).scalar != 0:
+		printerr("offline import cap: ", imported_offline)
+		quit(1)
+		return
+	ready = imported_offline.session.request_save()
+	if ready.ok: ready = imported_offline.session.save_files.close(2000)
+	var reloaded_offline: Dictionary = Session.load_candidate("res://generated/config.json", offline_directory)
+	if not ready.ok or not reloaded_offline.ok or reloaded_offline.session.amount_api.apply("compare", [
+		reloaded_offline.session.economy.budget().get("chrono", {}), cap.value]).scalar != 0:
+		printerr("offline import replay: ", ready, " ", reloaded_offline)
+		quit(1)
+		return
 	envelope.savedUtc = str(int(Time.get_unix_time_from_system()) + 100)
 	var future: Dictionary = Session._candidate_from_envelope("res://generated/config.json", directory, envelope)
 	if not future.ok or future.session.economy.budget().has("chrono"):
 		printerr("future clock credit: ", future)
+		quit(1)
+		return
+	stream = FileAccess.open(import_file, FileAccess.WRITE)
+	stream.store_string(JSON.stringify(envelope))
+	stream.close()
+	var future_import: Dictionary = Session.import_candidate("res://generated/config.json", offline_directory, import_file)
+	if not future_import.ok or future_import.session.economy.budget().has("chrono"):
+		printerr("future clock import credit: ", future_import)
 		quit(1)
 		return
 	var accelerated = Session.new()
