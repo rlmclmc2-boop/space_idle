@@ -1554,7 +1554,7 @@ class SpaceCombatKernel : public RefCounted {
             if (branch("proficiency", "b1")) {
                 int64_t uid = actors[candidates.front().index].uid;
                 if (w.focus_uid != uid) { w.focus_uid = uid; w.focus_since = clock; }
-                double ticks = std::floor(maximum(0.0, clock - w.focus_since) / enhancement_rule("proficiency_b1_interval"));
+                double ticks = std::floor((maximum(0.0, clock - w.focus_since) + 1e-9) / enhancement_rule("proficiency_b1_interval"));
                 a->damage *= Amount(1.0 + enhancement_rule("proficiency_b1_growth")).power(ticks);
             }
             if (clock >= w.critical_until) w.critical_stacks = 0;

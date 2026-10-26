@@ -10,7 +10,7 @@ func _initialize() -> void:
 		return
 	call_deferred("_run")
 
-func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: int = 1, critical_choices: Array = [], drone_bonus: float = 0.0, force_repeat: bool = false, interval_multiplier: float = 1.0) -> Dictionary:
+func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: int = 1, critical_choices: Array = [], drone_bonus: float = 0.0, force_repeat: bool = false, interval_multiplier: float = 1.0, enemy_armour_type: int = 0) -> Dictionary:
 	var session = Session.new()
 	var ready: Dictionary = session.initialize("res://generated/config.json", seed)
 	if ready.ok and paid_level != 1:
@@ -56,7 +56,7 @@ func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: in
 	enemy.max_shield = "0e0"
 	enemy.hp = "1e4"
 	enemy.max_hp = "1e4"
-	enemy.armourType = 0
+	enemy.armourType = enemy_armour_type
 	setup.wave.weapons = []
 	ready = session.battle.start_wave(setup)
 	if not ready.ok: return ready

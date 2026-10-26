@@ -52,6 +52,10 @@ The C14 native `_stage6_deferred_oracle_probe.gd` exposes a previous off-by-one 
 
 ## Nonblocking follow-up
 
+### Native proficiency boundary follow-up
+
+`_stage6_proficiency_native_probe.gd` verifies authored proficiency A1/A2/A3 together, eight B1 focus hits, B2's 1.50 -> 1.05 second interval, and B3 resistance against matching armour. It exposed a native floating-point floor boundary: after three complete focus seconds the old kernel applied two growth ticks (144 damage instead of approximately 173). The kernel now uses the same time tolerance as scheduled boundaries. The new probe and the existing CR01-CR07/CR09 native oracle pass after incremental rebuilding in the existing build directory. Other C09 effects and C10/C11/C14 combination gaps above remain open.
+
 - Deep balance and playfeel tuning across the 0-10000 growth curve requires separate measured gameplay decisions.
 - `data/ui_text.json` mentions `level_editor.gd` as a help label; no active editor entry exists in `src`, `foundation` or `run_game.ps1`.
 - Local Godot log/certificate/cache warnings and `bin/` are environment or build outputs.
