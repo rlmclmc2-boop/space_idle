@@ -312,7 +312,8 @@ func start_hyperspace_auto(route: String, crew_id: String) -> Dictionary:
 	if not crew.ok: return crew
 	var prepared: Dictionary = hyperspace_system.prepare_idle(route, true, crew_id, int(crew.level), float(_planet_factors.luck))
 	if not prepared.ok: return prepared
-	crew_system.reserve_hyperspace(crew_id, route, false)
+	var reserved: Dictionary = crew_system.reserve_hyperspace(crew_id, route, false)
+	if not reserved.ok: return reserved
 	hyperspace_system.accept_idle(prepared.receipt, true)
 	crew_system.publish_members([crew_id])
 	return {"ok": true, "receipt": hyperspace_system.online_status().idle}

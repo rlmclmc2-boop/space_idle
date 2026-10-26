@@ -86,6 +86,7 @@ func hyperspace_return_target() -> Dictionary:
 		"guard": bool(_guard.enabled), "guard_point": int(_guard.point)}
 
 func enter_hyperspace(notify: bool = true) -> void:
+	_departure_remaining = 0.0
 	_state.state = "hyperspace"
 	if notify: status_changed.emit()
 

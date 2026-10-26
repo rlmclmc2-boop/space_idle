@@ -62,9 +62,11 @@ func hyperspace_candidate(id: String) -> Dictionary:
 	if not str(_members[id].kind).is_empty(): return {"ok": false, "reason": "CrewOccupied"}
 	return {"ok": true, "level": int(_members[id].level)}
 
-func reserve_hyperspace(id: String, route: String, notify: bool = true) -> void:
-	_assign(_members, id, "hyperspace", route, 1, str(_members[id].mode))
-	if notify: members_changed.emit([id])
+func reserve_hyperspace(id: String, route: String, notify: bool = true) -> Dictionary:
+	if not _members.has(id): return {"ok": false, "reason": "CrewLocked"}
+	var assigned: Dictionary = _assign(_members, id, "hyperspace", route, 1, str(_members[id].mode))
+	if assigned.ok and notify: members_changed.emit([id])
+	return assigned
 
 func release_hyperspace(route: String, notify: bool = true) -> Array:
 	return release("hyperspace", route, notify)
