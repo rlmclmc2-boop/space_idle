@@ -14,7 +14,7 @@ import openpyxl
 
 from compile import (DEFAULT_MANIFEST, ROOT, HYPERSPACE_NONNEGATIVE_KEYS,
                      HYPERSPACE_POSITIVE_KEYS, HYPERSPACE_PROBABILITY_KEYS,
-                     compile_config)
+                      compile_config, quantized_range_issue)
 
 
 class PublicationTest(unittest.TestCase):
@@ -369,6 +369,24 @@ class PublicationTest(unittest.TestCase):
                 self.change_hyperspace_parameters({key: fixed + 1})
                 self.reject_hyperspace_parameters({key: "FixedRuleChanged"})
                 self.change_hyperspace_parameters({key: fixed})
+
+    def test_quantized_sampling_indices_fit_signed_32_bit_bounds(self) -> None:
+        self.assertIsNone(quantized_range_issue(-2147483648, 2147483647, 1))
+        self.assertEqual(quantized_range_issue(-2147483649, 0, 1), "QuantizedIndexOutOfRange")
+        self.assertEqual(quantized_range_issue(0, 2147483648, 1), "QuantizedIndexOutOfRange")
+        self.assertEqual(quantized_range_issue(1.8, 2, 1e-10), "QuantizedIndexOutOfRange")
+
+    def test_unrepresentable_affix_index_rejects_publication(self) -> None:
+        self.change_hyperspace_parameters({"value_precision": 1e-10})
+        self.change_field("hyperspace_config.xlsx", "词缀区间", "minimum", 4, 1.8)
+        self.change_field("hyperspace_config.xlsx", "词缀区间", "maximum", 4, 2)
+        self.reject("QuantizedIndexOutOfRange")
+
+    def test_final_representable_affix_index_publishes(self) -> None:
+        self.change_field("hyperspace_config.xlsx", "词缀区间", "minimum", 4, 2147483.6469)
+        self.change_field("hyperspace_config.xlsx", "词缀区间", "maximum", 4, 2147483.6470001)
+        result = compile_config(self.manifest, self.output, self.report, self.source)
+        self.assertTrue(result["ok"], result["errors"][:3])
 
     def test_independent_test_manifest_uses_same_compiler(self) -> None:
         manifest = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))

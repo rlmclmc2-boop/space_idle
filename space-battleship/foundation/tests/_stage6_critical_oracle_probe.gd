@@ -10,15 +10,20 @@ func _initialize() -> void:
 		return
 	call_deferred("_run")
 
-func _fixture(seed: int, level: int, b3: bool) -> Dictionary:
+func _fixture(seed: int, level: int, b3: bool, order: Array = [], paid_level: int = 1, critical_choices: Array = []) -> Dictionary:
 	var session = Session.new()
 	var ready: Dictionary = session.initialize("res://generated/config.json", seed)
+	if ready.ok and paid_level != 1:
+		var equipment_state: Dictionary = session.equipment.save_state()
+		for slot in equipment_state.slots:
+			if slot.id == "weapon:0": slot.paid_level = paid_level
+		ready = session.equipment.restore_state(equipment_state, session.campaign_system.ship_facts().mounts)
 	if ready.ok: ready = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if not ready.ok: return ready
 	var state: Dictionary = session.enhancement.save_state()
 	state.level = level
-	state.weapon_order = ["critical", "proficiency", "repeat"]
-	if b3: state.branches = {"critical": ["", "", "B"]}
+	state.weapon_order = order if not order.is_empty() else ["critical", "proficiency", "repeat"]
+	if b3: state.branches = {"critical": critical_choices if not critical_choices.is_empty() else ["", "", "B"]}
 	ready = session.enhancement.restore_state(state)
 	if not ready.ok: return ready
 	var output: Dictionary = session.enhancement.evaluate(0, func(_kind, _key): return true, 1)
@@ -95,5 +100,66 @@ func _run() -> void:
 			return
 		print(expected.id, " seed=", expected.seed, " u1=", fixture.u1,
 			" u2=", fixture.u2 if expected.b3 else "unused", " damage=", first.receipt.damage)
-	print("STAGE6_CRITICAL_ORACLE_OK CR01-CR05")
+	var gate_reference: Dictionary = _fixture(1014960426271799216, 50, true)
+	if not gate_reference.ok:
+		printerr("CR09 gate reference: ", gate_reference)
+		quit(1)
+		return
+	var gate_rules: Dictionary = gate_reference.session.enhancement._rules
+	for position in 3:
+		var order: Array = ["proficiency", "repeat", "critical"]
+		order.remove_at(2)
+		order.insert(position, "critical")
+		var gate: int = int(gate_rules.branch_threshold_3) + int(gate_rules["branch_position_offset_" + str(position + 1)])
+		for level in [gate - 1, gate]:
+			for paid_level in [1, 30]:
+				var selected: Dictionary = _fixture(1014960426271799216, level, true, order, paid_level)
+				if not selected.ok:
+					printerr("CR09 fixture: ", selected)
+					quit(1)
+					return
+				var active: bool = level >= gate
+				if bool(selected.output.effects.critical.b3) != active:
+					printerr("CR09 branch gate position=", position, " level=", level, " paid=", paid_level)
+					quit(1)
+					return
+				var receipt: Dictionary = _first_receipt(selected.session)
+				if not receipt.ok or bool(receipt.receipt.critical) != active or bool(receipt.receipt.critical_bonus_applied) != active:
+					printerr("CR09 native gate position=", position, " level=", level, " paid=", paid_level, " receipt=", receipt)
+					quit(1)
+					return
+				print("CR09 position=", position + 1, " E=", level, " paid=", paid_level, " b3=", active)
+	var marked: Dictionary = _fixture(120828829812621612, 50, true, [], 1, ["B", "B", "B"])
+	if not marked.ok or not bool(marked.output.effects.critical.b1) or not bool(marked.output.effects.critical.b2):
+		printerr("CR07 branch fixture: ", marked)
+		quit(1)
+		return
+	var first_mark: Dictionary = _first_receipt(marked.session)
+	var second_mark: Dictionary = _first_receipt(marked.session)
+	if not first_mark.ok or not second_mark.ok:
+		printerr("CR07 missing attacks: ", first_mark, " ", second_mark)
+		quit(1)
+		return
+	if str(first_mark.receipt.damage) != "1e2" or not bool(first_mark.receipt.critical) or bool(first_mark.receipt.critical_bonus_applied):
+		printerr("CR07 first mark: ", first_mark)
+		quit(1)
+		return
+	var reference: Dictionary = _fixture(120828829812621612, 50, true)
+	if not reference.ok:
+		printerr("CR07 unmarked reference: ", reference)
+		quit(1)
+		return
+	var reference_first: Dictionary = _first_receipt(reference.session)
+	var reference_second: Dictionary = _first_receipt(reference.session)
+	if not reference_first.ok or not reference_second.ok or str(reference_first.receipt.damage) != str(first_mark.receipt.damage) or bool(reference_second.receipt.critical_bonus_applied) != bool(second_mark.receipt.critical_bonus_applied):
+		printerr("CR07 mismatched native reference: ", reference_first, " ", reference_second)
+		quit(1)
+		return
+	var second_expected: float = float(reference_second.receipt.damage) * 1.5 * 1.1
+	if not bool(second_mark.receipt.critical) or absf(float(second_mark.receipt.damage) / second_expected - 1.0) > 0.01:
+		printerr("CR07 following attack did not read B1/B2 marks: ", second_mark, " expected~", second_expected)
+		quit(1)
+		return
+	print("CR07 first=", first_mark.receipt.damage, " second=", second_mark.receipt.damage)
+	print("STAGE6_CRITICAL_ORACLE_OK CR01-CR05 CR07-partial CR09")
 	quit()

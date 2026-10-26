@@ -92,6 +92,32 @@ func _run() -> void:
 		return
 	invalid_config = JSON.parse_string(initial_config)
 	for row in invalid_config.hyperspace_config["基础参数"]:
+		if row.key == "value_precision": row.value = 1e-10
+	invalid_file = FileAccess.open(invalid_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_config))
+	invalid_file.close()
+	rejected_config = Session.new()
+	invalid_ready = rejected_config.initialize(invalid_path, 100)
+	if invalid_ready.ok or invalid_ready.reason != "QuantizedIndexOutOfRange":
+		printerr("startup admitted index beyond int32: ", invalid_ready)
+		quit(1)
+		return
+	invalid_config = JSON.parse_string(initial_config)
+	var boundary_affix: Dictionary = invalid_config.hyperspace_config["词缀区间"][0]
+	# A narrow interval contains the final int32 grid point despite float division rounding.
+	boundary_affix.minimum = 2147483.6469
+	boundary_affix.maximum = 2147483.6470001
+	invalid_file = FileAccess.open(invalid_path, FileAccess.WRITE)
+	invalid_file.store_string(JSON.stringify(invalid_config))
+	invalid_file.close()
+	var boundary_session = Session.new()
+	var boundary_ready: Dictionary = boundary_session.initialize(invalid_path, 100)
+	if not boundary_ready.ok:
+		printerr("startup rejected final valid int32 index: ", boundary_ready)
+		quit(1)
+		return
+	invalid_config = JSON.parse_string(initial_config)
+	for row in invalid_config.hyperspace_config["基础参数"]:
 		if row.key == "maximum_equipped": row.value = 1
 	invalid_file = FileAccess.open(invalid_path, FileAccess.WRITE)
 	invalid_file.store_string(JSON.stringify(invalid_config))

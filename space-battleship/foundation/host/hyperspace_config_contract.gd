@@ -64,6 +64,16 @@ static func validate(configuration: Dictionary) -> Dictionary:
 				return {"ok": false, "reason": "InvalidHyperspaceRange", "key": sheet_name}
 			var low: float = float(range_row.minimum)
 			var high: float = float(range_row.maximum)
-			if not is_finite(low) or not is_finite(high) or low > high or not is_finite(low / precision) or not is_finite(high / precision) or ceili(low / precision - 1e-7) > floori(high / precision + 1e-7):
+			if not is_finite(low) or not is_finite(high) or low > high:
+				return {"ok": false, "reason": "InvalidHyperspaceRange", "key": sheet_name}
+			var lower: float = low / precision - 1e-7
+			var upper: float = high / precision + 1e-7
+			if not is_finite(lower) or not is_finite(upper) or absf(lower) >= float(contract.magnitudeExclusive) or absf(upper) >= float(contract.magnitudeExclusive):
+				return {"ok": false, "reason": "QuantizedIndexOutOfRange", "key": sheet_name}
+			var first: int = ceili(lower)
+			var last: int = floori(upper)
+			if first > last:
 				return {"ok": false, "reason": "QuantizedRangeEmpty", "key": sheet_name}
+			if first < int(contract.quantizedIndexMinimum) or last > int(contract.quantizedIndexMaximum):
+				return {"ok": false, "reason": "QuantizedIndexOutOfRange", "key": sheet_name}
 	return {"ok": true}

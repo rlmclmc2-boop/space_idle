@@ -118,5 +118,7 @@
     "词缀区间",
     "传说随机参数"
   ],
+  "quantizedIndexMinimum": -2147483648,
+  "quantizedIndexMaximum": 2147483647,
   "magnitudeExclusive": 9000000000000000
 }
