@@ -112,6 +112,5 @@ void fragment() {
 	}
 	// Match both original stages: transparent 3D target accumulates premultiplied
 	// RGB; ShipComposite uses the default CanvasItem blend_mix afterwards.
-	result=clamp(result,vec4(0.0),vec4(1.0));
 	COLOR=vec4(result.rgb*result.a,result.a);
 }

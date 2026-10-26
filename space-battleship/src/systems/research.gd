@@ -220,12 +220,11 @@ func refresh_income(peak_rates: Dictionary, investment_rates: Dictionary, income
 		var effects: PackedStringArray = str(definitions.unification.effect).split(",")
 		for effect in ["weapon_damage", "equipment_durability", "iron_income", "uranium_income", "fragment_income"]:
 			if effect not in effects: continue
-			var before: Dictionary = {"ok": true, "value": state.contributions[effect]}
+			var before: Dictionary = state.contributions[effect]
 			var after = _factor(next, definitions, effect, rules, api)
-			for result in [before, after]:
-				if not result.ok: return result
+			if not after.ok: return after
 			next.contributions[effect] = after.value
-			var compared = api.apply("compare", [before.value, after.value])
+			var compared = api.apply("compare", [before, after.value])
 			if not compared.ok: return compared
 			if compared.scalar != 0:
 				factors_changed = true

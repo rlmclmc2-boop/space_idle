@@ -29,12 +29,13 @@
 
 ## 1. 覆盖总表
 
-项目`config_excel`根目录共 **26个工作簿、46个工作表**。此外仓库根有1个旧总表、`published`有3个发布副本；合计已核查30个xlsx文件。
+项目`config_excel`根目录现有 **29个工作簿、49个工作表**，其中`level_monGroup_generated.xlsx`为1个生成副本；其余28个为源工作簿、48个工作表。`published`另有3个发布副本；合计32个xlsx文件。记录数按各表第4行起的非空数据行统计。
 
 | 工作簿 | 工作表 | 有效记录数 | 类别 |
 |---|---|---|---|
 | ai_tech_tree.xlsx | ai_tech_tree | 8 | 正式内容 |
 | battle_design.xlsx | battle_design | 40 | 候选设计元数据；不自动进入主线 |
+| battle_geometry.xlsx | battle_geometry | 32 | 正式内容 |
 | config.xlsx | config | 38 | 正式内容 |
 | crew.xlsx | crew | 20 | 正式内容 |
 | crew_assignment.xlsx | crew_assignment | 5 | 正式内容 |
@@ -42,9 +43,11 @@
 | enemy_weapon_base.xlsx | enemy_weapon_base | 4 | 正式内容 |
 | enhance_config.xlsx | enhance_config | 68 | 正式内容 |
 | equipment.xlsx | equipment | 11 | 正式内容 |
+| equipment_evolution.xlsx | equipment_evolution | 8 | 正式内容 |
 | galaxy.xlsx | galaxy | 1 | 正式内容 |
 | galaxy_build.xlsx | galaxy_build | 6 | 正式内容 |
 | galaxy_config.xlsx | galaxy_config | 13 | 正式内容 |
+| game_rules.xlsx | game_rules | 19 | 正式内容 |
 | hightech.xlsx | hightech | 4 | 保留旧科研内容；不恢复旧功能 |
 | hyperspace_config.xlsx | 基础参数 | 40 | 正式内容 |
 | hyperspace_config.xlsx | 路线 | 4 | 正式内容 |
