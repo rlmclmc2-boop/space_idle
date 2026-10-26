@@ -2,6 +2,7 @@ extends RefCounted
 var _run_state
 
 signal choices_changed
+signal transaction_accepted
 
 var _enabled: Array = []
 var _available: bool = false
@@ -67,7 +68,9 @@ func _submit(next: Dictionary, inputs: Dictionary, next_wallet, kind: String, pu
 	var candidate = _evaluate(next, _parameters, enabled_modules(), _api, inputs.capacity, inputs.free_charge)
 	if not candidate.ok: return candidate
 	var result: Dictionary = publish.call(candidate.factors, next_wallet, kind)
-	if result.ok: _adopt(candidate.state)
+	if result.ok:
+		_adopt(candidate.state)
+		transaction_accepted.emit()
 	return result
 
 func purchase(count: int, automatic: bool, inputs: Dictionary, pay: Callable, publish: Callable) -> Dictionary:

@@ -385,7 +385,7 @@ func credit_yield(resource: String, quantity: Dictionary, wall: float, game: flo
 	wallet.make_read_only()
 	_wallet = wallet
 	_balance_dirty = true
-	display_changed.emit()
 	samples.append({"resource": resource, "actual": quantity, "production_base": zero,
 		"wall": wall, "game": game, "source": "galaxy_yield"})
+	display_changed.emit()
 	return {"ok": true}

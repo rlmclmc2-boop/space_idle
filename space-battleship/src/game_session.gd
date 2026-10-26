@@ -35,6 +35,10 @@ var _research_factors: Dictionary = {}
 var _reactor_factors: Dictionary = {}
 var _income_factors: Dictionary = {}
 var _pending_equipment_commit: Dictionary = {}
+var _pending_enhancement_wallet = null
+var _pending_reactor_wallet = null
+var _pending_enhancement_retreat: bool = false
+var _pending_reactor_retreat: bool = false
 var campaign_system
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
@@ -74,8 +78,10 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	equipment.refresh_availability(campaign_system.available, int(campaign_system.progress_facts().highest_reached))
 	equipment.initialize_slots(str(parameters.startEquip), campaign_system.ship_facts().mounts)
 	reactor_system = Reactor.new(parameters, amount_api, run_state)
+	reactor_system.transaction_accepted.connect(_accept_reactor_commit)
 	reactor_system.refresh_availability(campaign_system.available)
 	enhancement = Enhancement.new(configuration.enhance_config.enhance_config, amount_api, run_state)
+	enhancement.transaction_accepted.connect(_accept_enhancement_commit)
 	research = Research.new(configuration.ai_tech_tree.ai_tech_tree, rules, amount_api, run_state)
 	research.refresh_progress(campaign_system.available)
 	crew_system = Crew.new(configuration.crew.crew, configuration.crew_config.crew_config, configuration.crew_assignment.crew_assignment, amount_api, run_state)
@@ -332,9 +338,20 @@ func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -
 	var paid: Dictionary = {"ok": true, "wallet": economy.budget()}
 	if not costs.is_empty(): paid = economy.payment(costs)
 	if not paid.ok: return paid
-	var result = _commit_values({"weapons": {}, "defences": {}}, kind, "", changed)
-	if result.ok: economy.accept_budget(paid.wallet)
+	var result = _commit_values({"weapons": {}, "defences": {}}, kind, "", changed, false)
+	if result.ok:
+		_pending_enhancement_wallet = paid.wallet
+		_pending_enhancement_retreat = result.defence_changed
 	return result
+
+func _accept_enhancement_commit() -> void:
+	var wallet = _pending_enhancement_wallet
+	_pending_enhancement_wallet = null
+	var retreat: bool = _pending_enhancement_retreat
+	_pending_enhancement_retreat = false
+	var budget_changed: bool = wallet != null and economy.accept_budget(wallet, false)
+	if retreat: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
+	if budget_changed: economy.publish_budget_change()
 
 func commit_ship_refit(ship_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
@@ -376,7 +393,7 @@ func _world_contributions() -> Dictionary:
 	published.make_read_only()
 	return published
 
-func _publish_native_values(ai: Dictionary, reactor: Dictionary, kind: String) -> Dictionary:
+func _publish_native_values(ai: Dictionary, reactor: Dictionary, kind: String, retreat_after_commit: bool = true) -> Dictionary:
 	var weapons: bool = ai.weapon_damage != _research_factors.weapon_damage or reactor.weapons != _reactor_factors.weapons
 	var defences: bool = ai.equipment_durability != _research_factors.equipment_durability or reactor.defence != _reactor_factors.defence
 	var iron: String = ""
@@ -389,21 +406,21 @@ func _publish_native_values(ai: Dictionary, reactor: Dictionary, kind: String) -
 		values = equipment.values(campaign_system.ship_facts().mounts, int(_world_factors.equipment_levels), ai, reactor, weapons, defences)
 		if not values.ok: return values
 	battle.filter_values(values)
-	return _commit_values(values, kind, iron)
+	return _commit_values(values, kind, iron, {}, retreat_after_commit)
 
-func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrades: Dictionary = {}) -> Dictionary:
+func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrades: Dictionary = {}, retreat_after_commit: bool = true) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var committed: Dictionary = battle.commit_values(values, kind, iron, upgrades)
 	if not committed.ok: return _fail(str(committed.reason)) if committed.get("fault", false) else committed
-	if committed.defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
-	return {"ok": true}
+	if committed.defence_changed and retreat_after_commit: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
+	return {"ok": true, "defence_changed": committed.defence_changed}
 
 func publish_equipment_levels(balances: Dictionary) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var values = equipment.values(campaign_system.ship_facts().mounts, int(_world_factors.equipment_levels), _research_factors, _reactor_factors, true, true, true)
 	if not values.ok: return values
-	var result = _commit_values(values, "upgrade")
-	if result.ok: _pending_equipment_commit = {"wallet": balances}
+	var result = _commit_values(values, "upgrade", "", {}, false)
+	if result.ok: _pending_equipment_commit = {"wallet": balances, "retreat": result.defence_changed}
 	return result
 
 func _publish_world_values(previous: Dictionary) -> Dictionary:
@@ -435,7 +452,7 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 		var text = amount_api.apply("to_display", [reactor.factors.smelting])
 		if not text.ok: return text
 		iron = text.text
-	var result = _commit_values(values, "refit", iron, upgrades)
+	var result = _commit_values(values, "refit", iron, upgrades, false)
 	if result.ok and enhancement_prepared: enhancement.accept_output()
 	if result.ok:
 		if reactor_prepared: reactor_system.accept()
@@ -445,6 +462,7 @@ func _publish_world_values(previous: Dictionary) -> Dictionary:
 			income.condensation = reactor.factors.condensation
 			income.make_read_only()
 			_income_factors = income
+		if result.defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return result
 
 func _publish_research() -> Dictionary:
@@ -465,16 +483,26 @@ func _publish_research() -> Dictionary:
 
 func publish_reactor(factors: Dictionary, next_wallet, kind: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	var updated = _publish_native_values(_research_factors, factors, kind)
+	var updated = _publish_native_values(_research_factors, factors, kind, false)
 	if not updated.ok: return updated
 	_reactor_factors = factors
-	if next_wallet != null: economy.accept_budget(next_wallet)
 	if _income_factors.condensation != factors.condensation:
 		var income: Dictionary = _income_factors.duplicate()
 		income.condensation = factors.condensation
 		income.make_read_only()
 		_income_factors = income
+	_pending_reactor_wallet = next_wallet
+	_pending_reactor_retreat = updated.defence_changed
 	return {"ok": true}
+
+func _accept_reactor_commit() -> void:
+	var wallet = _pending_reactor_wallet
+	_pending_reactor_wallet = null
+	var retreat: bool = _pending_reactor_retreat
+	_pending_reactor_retreat = false
+	var budget_changed: bool = wallet != null and economy.accept_budget(wallet, false)
+	if retreat: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
+	if budget_changed: economy.publish_budget_change()
 
 func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()

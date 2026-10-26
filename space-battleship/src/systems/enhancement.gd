@@ -1,5 +1,6 @@
 extends RefCounted
 var _run_state
+signal transaction_accepted
 
 const WEAPON := ["proficiency", "repeat", "critical"]
 const DEFENCE := ["adaptation", "memory", "deferred"]
@@ -45,6 +46,7 @@ func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: Stri
 		_state = next
 		_values = output
 		_pending_output = {}
+		transaction_accepted.emit()
 	return committed
 
 func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
