@@ -17,7 +17,7 @@
 
 ### Final maximum OpenGL and full warehouse run
 
-`_stage6_max_gpu_window_probe.gd` reuses the real-window probe and the maximum native fixture. NVIDIA GeForce RTX2060, driver610.88, OpenGL3.3 Compatibility; 5 weapons,3 defence modules,4 drones,15 enemies, missiles/cannon/beams with chain/secondary, ten1/60 business steps per display frame. The real Main/BattleView and its shaders run; Main's automatic Session stepping is disabled to hold a controlled sustained wave. There is no second combat implementation. Player defence retains Amount1e1000; enemy health1e12 remains high enough for the run while allowing nonzero settled losses/labels. The initial1e1000 enemy-health fixture correctly failed its label assertion because ordinary damage fell below Amount precision; it is not counted as a successful performance run.
+`_stage6_max_gpu_window_probe.gd` reuses the real-window probe and the maximum native fixture. NVIDIA GeForce RTX2060, driver610.88, OpenGL3.3 Compatibility; 5 weapons,3 defence modules,4 drones,15 enemies, missiles/cannon/beams with chain/secondary, ten1/60 business steps per display frame. This is ten steps/frame, not proof of real10x:600 game seconds over74.548 wall seconds is actual8.048x. Main's automatic Session stepping is disabled in this controlled native run, so it does not measure Session time acceptance or backlog. The real BattleView/shaders run, with no second combat implementation. Player defence retains Amount1e1000; enemy health1e12 keeps the wave alive while allowing nonzero losses/labels. The initial1e1000 enemy-health fixture failed its label assertion because ordinary damage fell below Amount precision; it is not counted as successful.
 
 | Measurement | Battle visible | Full warehouse visible over battle |
 |---|---:|---:|
@@ -31,6 +31,32 @@
 | Draw calls /flights /damage labels peak | 77 /57 /48 | 173 /55 /48 |
 
 Total measured phases:3600 frames,74.548 seconds,600 controlled game seconds. Full warehouse assertion checks200 visible-list rows plus10 overflow entries. Its normal production panel refresh remains enabled. Both bounded screenshots were exported and inspected (Temp `space-idle-max-gpu-0.png` and `-1.png`). Wall times include the60fps cap, presentation scheduling and driver waits; they are not GPU-only work. Cold spikes are retained in the table rather than discarded. The log reports shader cache writes unavailable in user://, so no persistent shader-cache benefit is assumed. Additional25 one-second NVIDIA device samples measured3% average/peak utilization,946/6144MiB device memory and35.24W peak; these are whole-device values including other desktop clients, not process-exclusive attribution.
+
+### Targeted real-time budget clarification
+
+One targeted `_stage6_realtime_gpu_budget_probe.gd` run resolves the earlier fixed-steps/frame limitation. It uses the same renderer, maximum ship/15-enemy sustained wave and visible200+10 warehouse, but mounts four drones through the real Hyperspace loadout and uses owner armour level1000 for survivability. It feeds measured wall dt into actual `Session.frame(dt,true)` at requested chrono speed10 with a funded chrono wallet. Main's duplicate auto-step is disabled; normal production UI/render children remain active. After150 warmup frames, it compares two10-second phases. No production timing policy was changed.
+
+| Steady measurement | Cap60 /VSync enabled | Uncapped /VSync disabled |
+|---|---:|---:|
+| Display frames /wall seconds | 435 /10.010468 | 3923 /9.999934 |
+| Requested /processed game seconds | 100.104680 /100.116667 | 99.999340 /99.983333 |
+| Actual game-time multiplier | 10.001197x | 9.998399x |
+| Fixed1/60 steps /maximum per display frame | 6007 /19 | 5999 /6 |
+| Pending game seconds peak /end | 0.016590 /0.000310 | 0.016663 /0.016317 |
+| Time-bank error (game+pending delta-request) | 5.12e-11 sec | 1.34e-11 sec |
+| Wall p95 /p99 /max ms | 24.097 /29.571 /30.976 | 3.795 /4.543 /9.751 |
+| Wall busy >17 />33.3 />100 ms | 435 /0 /0 | 0 /0 /0 |
+| Session work p95 /p99 /max ms | 4.107 /4.391 /5.500 | 0.988 /1.273 /2.111 |
+| Session busy >17 />33.3 />100 ms | 0 /0 /0 | 0 /0 /0 |
+| Non-Session tail p95 ms | 20.861 | 2.875 |
+| Measured viewport CPU p95 ms | 0.896 | 0.822 |
+| GPU p95 /max ms | 0.935 /2.043 | 0.886 /2.156 |
+
+The non-Session tail is the interval from the previous Session call's end to the next process-frame signal; it includes child UI/render processing, waits, frame limiting, VSync and scheduling. It is not a pure sleep measurement, and separate percentiles must not be added. The controlled comparison shows that disabling the cap/VSync removes most of the22-24ms wall interval while both phases keep real10x with no growing bank; all residual pending stays below one1/60 step. The slight multiplier difference is retained fractional-step time, not dropped work. Per-frame logic never reaches Session's64-step budget.
+
+Cold/startup spikes remain separate: the previous cold-inclusive run observed wall247.537ms/GPU162.385ms peaks and two frames over100ms. They are not relabeled as steady logic stalls. The150-frame warmup of this targeted run is explicitly excluded from the steady table; shader-cache write failure remains an environment diagnostic. No additional long test was run to hide these spikes.
+
+Acceptance reading: Design07 performance section requires the listed scenarios, work/queue/backlog/GPU measurements and preservation of unexecuted time; it does not state an absolute17ms wall threshold or a universal60fps pass gate. The real10x/preserved-time and steady logic/GPU capacity requirements are met in this measured full-Session maximum-load scenario. The capped mode actually presents43.45fps here; this is not a claim of stable60fps. If a separate stable60fps product gate is introduced, current cap/VSync presentation must be reviewed against that gate. External window binding remains environment-blocked and is not changed by these measurements.
 
 `STAGE6_MAX_GPU_WINDOW_OK` and the final `STAGE6_WINDOW_OPS_OK` both exited0. The latter emitted an embedded-file-dialog focus warning in this non-enumerable window environment, yet its visible-state assertions and exported picker frame passed. Certificate/log/cache and shutdown ObjectDB warnings remain captured as environment diagnostics. Eight final PNG exports plus one151-byte settings file occupy well below1MiB; `.godot` remains186.7MiB and the reused Temp native build159.6MiB. No new repository/build clone or unbounded capture was created; these files remain local outputs.
 
