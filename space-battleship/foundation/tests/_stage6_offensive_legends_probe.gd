@@ -1,23 +1,34 @@
 extends "res://foundation/tests/_stage6_critical_oracle_probe.gd"
 
-func _legend_fixture(effect: String, weapon_name: String, parameters: Dictionary, targets: int, first_hp: String = "1e6") -> Dictionary:
+func _legend_fixture(effect: String, weapon_name: String, parameters: Dictionary, targets: int, first_hp: String = "1e6", options: Dictionary = {}) -> Dictionary:
 	var session = Session.new()
 	var ready: Dictionary = session.initialize("res://generated/config.json", 149)
-	if ready.ok: ready = session.campaign_system.accept_reforge(session.campaign_system.save_state(), 8)
+	var stage: int = 21 if options.get("second_beam", false) else 8
+	if ready.ok: ready = session.campaign_system.accept_reforge(session.campaign_system.save_state(), stage)
 	if not ready.ok: return ready
-	session.equipment.refresh_availability(session.campaign_system.available, 8, false)
+	session.equipment.refresh_availability(session.campaign_system.available, stage, false)
+	if options.get("second_beam", false):
+		ready = session.campaign_system.change_ship("Cruiser", session.commit_ship_refit)
+		if ready.ok: ready = session.equipment.equip_slot("weapon:1", "longLaser", session.equipment_inputs(), session.publish_equipment_refit)
+		if not ready.ok: return ready
 	ready = session.equipment.equip_slot("weapon:0", weapon_name, session.equipment_inputs(), session.publish_equipment_refit)
+	if ready.get("reason") == "NoChange": ready = {"ok": true}
 	if not ready.ok: return ready
 	var donor: Dictionary = session.equipment.drone_weapon_source(weapon_name, 0, 0, session._research_factors, session._reactor_factors, session.battle.wave_inputs().motion)
 	if not donor.ok: return donor
 	donor.weapon.interval = 1000000.0
 	donor.weapon.remaining = 1000000.0
-	ready = session.set_equipped_drone_contributions([{"id": "offensive-legend", "generation": 1, "quality": "white", "weapon": donor.weapon,
-		"legendary_effect": effect, "legendary_parameters": parameters}])
+	if not effect.is_empty():
+		ready = session.set_equipped_drone_contributions([{"id": "offensive-legend", "generation": 1, "quality": "white", "weapon": donor.weapon,
+			"legendary_effect": effect, "legendary_parameters": parameters}])
 	if ready.ok: ready = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	var value: Dictionary = session.battle._values.weapons["weapon:0"].duplicate()
 	value.base = "1e2"
 	if ready.ok: ready = session.battle._kernel.set_player_values({"weapon:0": value}, {}, "growth", "")
+	if ready.ok and options.get("second_beam", false):
+		var second: Dictionary = session.battle._values.weapons["weapon:1"].duplicate()
+		second.base = "1e2"
+		ready = session.battle._kernel.set_player_values({"weapon:1": second}, {}, "growth", "")
 	if not ready.ok: return ready
 	var inputs: Dictionary = session.battle.wave_inputs()
 	var setup: Dictionary = session.campaign_system.prepare_wave(session.equipment.enemy_override, inputs.geometry, inputs.motion)
@@ -29,28 +40,32 @@ func _legend_fixture(effect: String, weapon_name: String, parameters: Dictionary
 	enemy.max_shield = "0e0"
 	enemy.armourType = 0
 	enemy.y = 350.0
+	enemy.jewelExplosion = options.get("explosion", 0.0)
+	if options.get("guaranteed_drop", false): enemy.compiled_drops = [{"chance": 1.0, "amount": "1e0", "base": "1e0", "resource": 1}]
 	for index in range(1, targets):
 		var other: Dictionary = enemy.duplicate(true)
 		other.uid = index + 1
-		other.slot = index
+		other.slot = 7 + index if options.get("adjacent", false) else index
 		other.y = 350.0 - index * 35.0
-		other.hp = "1e6"
-		other.max_hp = "1e6"
+		other.hp = options.get("other_hp", "1e6")
+		other.max_hp = other.hp
 		setup.wave.enemies.append(other)
 	setup.wave.weapons = []
 	ready = session.battle.start_wave(setup)
-	return {"ok": ready.ok, "session": session}
+	return {"ok": ready.ok, "session": session, "setup": setup}
 
 func _advance_case(fixture: Dictionary, steps: int) -> Dictionary:
 	if not fixture.ok: return fixture
 	var hits: Array = []
+	var drops: Array = []
 	for index in steps:
 		fixture.session.battle.begin_frame()
 		var result: Dictionary = fixture.session.battle.advance(0.01)
 		if not result.ok: return result
+		for drop in result.drops: drops.append(drop)
 		for hit in fixture.session.battle.consume_damage_receipts():
 			if not hit.hostile: hits.append(hit)
-	return {"ok": true, "hits": hits, "history": fixture.session.battle._kernel.read_history(), "enemies": fixture.session.battle._kernel.enemy_views(), "totals": fixture.session.battle.statistics()._totals}
+	return {"ok": true, "hits": hits, "drops": drops, "history": fixture.session.battle._kernel.read_history(), "enemies": fixture.session.battle._kernel.enemy_views(), "totals": fixture.session.battle.statistics()._totals.duplicate(true)}
 
 func _run() -> void:
 	var prism: Dictionary = _advance_case(_legend_fixture("prism_tower", "longLaser", {"maximum_multiplier_bonus": 1.3}, 7), 500)

@@ -4,27 +4,35 @@ extends "res://foundation/tests/_stage6_critical_oracle_probe.gd"
 func _defence_case(choices: Array, second_source: bool = false, effect_name: String = "adaptation", other_type: int = 1, defence_overrides: Dictionary = {}, options: Dictionary = {}) -> Dictionary:
 	var session = Session.new()
 	var ready: Dictionary = session.initialize("res://generated/config.json", 139)
-	if ready.ok and options.get("shield", false):
+	if ready.ok and (options.get("shield", false) or options.get("large_ship", false)):
 		ready = session.campaign_system.accept_reforge(session.campaign_system.save_state(), 21)
 		if ready.ok:
 			session.equipment.refresh_availability(session.campaign_system.available, 21, false)
 			ready = session.campaign_system.change_ship("Cruiser", session.commit_ship_refit)
-		if ready.ok: ready = session.equipment.equip_slot("defence:1", "shield", session.equipment_inputs(), session.publish_equipment_refit)
+		if ready.ok and options.get("shield", false): ready = session.equipment.equip_slot("defence:1", "shield", session.equipment_inputs(), session.publish_equipment_refit)
+	if ready.ok and options.has("player_weapon"):
+		ready = session.equipment.equip_slot("weapon:0", options.player_weapon, session.equipment_inputs(), session.publish_equipment_refit)
 	if ready.ok and options.has("legend"):
-		var donor: Dictionary = session.equipment.drone_weapon_source("laser", 0, 0, session._research_factors, session._reactor_factors, session.battle.wave_inputs().motion)
+		var donor: Dictionary = session.equipment.drone_weapon_source(options.get("donor_weapon", "laser"), 0, 0, session._research_factors, session._reactor_factors, session.battle.wave_inputs().motion)
 		if not donor.ok: return donor
 		donor.weapon.interval = 1000000.0
 		donor.weapon.remaining = 1000000.0
 		donor.weapon.damage = options.get("donor_damage", "0e0")
-		ready = session.set_equipped_drone_contributions([{"id": "defence-legend", "generation": 1,
+		var legends: Array = [{"id": "defence-legend", "generation": 1,
 			"quality": options.get("quality", "white"), "weapon": donor.weapon,
-			"legendary_effect": options.legend, "legendary_parameters": options.parameters}])
+			"legendary_effect": options.legend, "legendary_parameters": options.parameters}]
+		if options.get("black_overlap", false):
+			legends.append({"id": "black-overlap", "generation": 1, "quality": "white", "weapon": donor.weapon,
+				"legendary_effect": "black_hole", "legendary_parameters": {"damage_multiplier": 1.3}})
+		if options.has("dummy_quality"):
+			legends.append({"id": "quality-donor", "generation": 1, "quality": options.dummy_quality, "weapon": donor.weapon})
+		ready = session.set_equipped_drone_contributions(legends)
 	if ready.ok: ready = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if ready.ok: ready = session._growth_setup("", session.battle._equipped_drones, {}, null, {}, false)
 	if not ready.ok: return ready
 	for row in session.battle._prepared_player.descriptor.defences:
 		row.base = "1e4"
-		row.type = 1
+		row.type = options.get("defence_type", 1)
 	ready = session.battle.commit_player("refit", false)
 	if not ready.ok: return ready
 	var state: Dictionary = session.enhancement.save_state()
@@ -56,6 +64,7 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 	if not setup.ok: return setup
 	setup.wave.enemies[0].hp = "1e6"
 	setup.wave.enemies[0].max_hp = "1e6"
+	if options.has("enemy_armour_type"): setup.wave.enemies[0].armourType = options.enemy_armour_type
 	var source: Dictionary = setup.wave.weapons[0]
 	source.damage = "1e2"
 	source.interval = 0.5
@@ -78,7 +87,7 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 	ready = session.battle.start_wave(setup)
 	if not ready.ok: return ready
 	var initial: Dictionary = session.battle._kernel.player_view()
-	if options.get("before_advance", false): return {"ok": true, "session": session, "initial": initial}
+	if options.get("before_advance", false): return {"ok": true, "session": session, "initial": initial, "setup": setup}
 	var hits: Array = []
 	var samples: Dictionary = {}
 	for step in 430:
@@ -88,7 +97,8 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 		for receipt in session.battle.consume_damage_receipts():
 			if receipt.hostile: hits.append([receipt.clock, receipt.damage])
 		if step in [219, 319, 419]: samples[step] = session.battle._kernel.player_view().armour
-	return {"ok": true, "initial": initial, "hits": hits, "samples": samples, "session": session}
+	return {"ok": true, "initial": initial, "hits": hits, "samples": samples, "session": session,
+		"weapon_values": {"weapon:0": weapon}, "upgrades": {"globals": globals, "defence": defence, "effects": output.effects}}
 
 func _run() -> void:
 	var plain: Dictionary = _defence_case(["", "", ""])
