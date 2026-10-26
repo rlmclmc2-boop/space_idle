@@ -330,13 +330,19 @@ func validate_drones(contributions: Array, capacity: int) -> Dictionary:
 			return {"ok": false, "reason": "InvalidDroneContribution"}
 	return {"ok": true}
 
-func apply_drone_external(values: Dictionary, external_factors: Array) -> void:
-	if not _run_state.is_running(): return
-	for drone in _equipped_drones:
-		var entry: Dictionary = drone.weapon.entry
+func append_drone_growth(values: Dictionary, contributions: Array, external_factors: Array) -> void:
+	for drone in contributions:
+		var weapon: Dictionary = drone.weapon
+		var entry: Dictionary = weapon.entry
 		var external: Array = external_factors.duplicate()
-		external.append_array(drone.weapon.get("external_factors", []))
-		values.weapons["drone:" + str(drone.id)] = {"key": entry.key, "generation": int(drone.generation), "external": external}
+		external.append_array(weapon.get("external_factors", []))
+		values.weapons["drone:" + str(drone.id)] = {"key": str(entry.key),
+			"generation": int(drone.generation), "base": str(weapon.damage),
+			"paid_level": int(entry.paid_level), "effective_level": int(entry.effective_level),
+			"external": external}
+
+func accept_drone_growth(contributions: Array) -> void:
+	_equipped_drones = contributions.duplicate(true)
 
 func _sync_geometry() -> Dictionary:
 	var packet = Geometry.battle_geometry(_kernel.enemy_views(), _models, _ship_key, _player_art,

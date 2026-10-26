@@ -43,6 +43,16 @@ func _run_probe() -> void:
 				printerr("wave: ", route, " ", wave, " ", setup)
 				quit(1)
 				return
+			if wave == 0 and not setup.wave.enemies.is_empty():
+				var actor: Dictionary = setup.wave.enemies[0]
+				var base_hp: Dictionary = api.apply("from_decimal", [str(actor.health)])
+				var layer_ratio: Dictionary = api.apply("from_decimal", [str(system._levels[int(system.manual_receipt().level)].lifeRatio)])
+				var expected_hp: Dictionary = api.apply("ceil", [api.apply("mul", [base_hp.value, layer_ratio.value]).value])
+				var actual_hp: Dictionary = api.apply("from_decimal", [str(actor.hp)])
+				if not expected_hp.ok or not actual_hp.ok or int(api.apply("compare", [expected_hp.value, actual_hp.value]).scalar) != 0:
+					printerr("hyperspace first-wave endpoint ratio: ", route, " ", actor.hp)
+					quit(1)
+					return
 			session.battle.reset_for_sortie()
 			var started: Dictionary = session.battle.start_wave(setup)
 			if not started.ok:
@@ -147,6 +157,41 @@ func _run_probe() -> void:
 		printerr("session claim: ", paid)
 		quit(1)
 		return
+	var core_before = session.economy.budget().get("ultimate_cores", api.apply("zero", []).value)
+	var core_credit: Dictionary = session._hyperspace_credit({"materials": {}, "ultimate_cores": 3})
+	if not core_credit.ok or int(api.apply("compare", [core_credit.wallet.ultimate_cores, core_before]).scalar) <= 0:
+		printerr("ultimate core credit key: ", core_credit)
+		quit(1)
+		return
+	var crew_id: String = str(session.crew_system._members.keys()[0])
+	session.crew_system._available[crew_id] = true
+	var auto_started: Dictionary = session.start_hyperspace_auto("alpha", crew_id)
+	if not auto_started.ok:
+		printerr("session auto start: ", auto_started)
+		quit(1)
+		return
+	var auto_run_id: int = int(auto_started.receipt.run_id)
+	own = session.hyperspace_system
+	own.advance_online(float(auto_started.receipt.duration), false)
+	if own.online_status().idle.status != "CompletedPending":
+		printerr("session auto pending")
+		quit(1)
+		return
+	var auto_claimed: Dictionary = session.claim_hyperspace(auto_run_id)
+	if not auto_claimed.ok or session.claim_hyperspace(auto_run_id).get("already_claimed") != true:
+		printerr("session auto claim: ", auto_claimed)
+		quit(1)
+		return
+	own.advance_online(1.0 / 60.0, false)
+	if own.online_status().idle.status != "Started" or int(own.online_status().idle.run_id) == auto_run_id or session.crew_system._members[crew_id].kind != "hyperspace":
+		printerr("session auto continuation: ", own.online_status())
+		quit(1)
+		return
+	var auto_stopped: Dictionary = session.stop_hyperspace_auto()
+	if not auto_stopped.ok:
+		printerr("session auto stop: ", auto_stopped)
+		quit(1)
+		return
 	var stored: Array = own.warehouse().main
 	if not stored.is_empty():
 		var outfitted: Dictionary = session.equip_hyperspace_drones([stored[0].id])
@@ -155,6 +200,68 @@ func _run_probe() -> void:
 			quit(1)
 			return
 		var before_drone: Dictionary = own.warehouse().main[0]
+		var stable_generation: int = int(session.battle._equipped_drones[0].generation)
+		var route: String = own._route_for_weapon(str(before_drone.weapon))
+		own._history[route].cleared = 9
+		own._history[route].best[3] = 12.0
+		own._history[route].best[9] = 11.0
+		var modernization: Dictionary = session.preview_hyperspace_forge(str(before_drone.id), "modernize")
+		if not modernization.ok or int(modernization.drone.level) != 3 or session.preview_hyperspace_forge(str(before_drone.id), "modernize", {"target_level": 9}).ok:
+			printerr("modernization mainline cap/best record: ", modernization)
+			quit(1)
+			return
+		var drone_source_id: String = "drone:" + str(before_drone.id)
+		var matching_slot: String = ""
+		for slot in session.equipment._slots:
+			if slot.category == "weapon" and slot.equipment_id == before_drone.weapon: matching_slot = str(slot.id)
+		if matching_slot.is_empty():
+			printerr("drone paid growth fixture missing mounted source: ", before_drone.weapon)
+			quit(1)
+			return
+		if not matching_slot.is_empty():
+			var old_paid: int = int(session.battle._equipped_drones[0].weapon.entry.paid_level)
+			var quote: Dictionary = session.equipment.quote_slot(matching_slot, 1)
+			if not quote.ok:
+				printerr("drone equipment quote: ", quote)
+				quit(1)
+				return
+			var funded: Dictionary = session.economy.budget().duplicate()
+			for resource in quote.costs: funded[resource] = api.apply("from_decimal", ["1e40"]).value
+			session.economy.accept_budget(funded)
+			var upgraded: Dictionary = session.equipment.buy_levels(matching_slot, 1, session.equipment_inputs(),
+				func(costs, balances): return session.economy.payment(costs, balances), session.publish_equipment_levels)
+			if not upgraded.ok or int(session.battle._equipped_drones[0].weapon.entry.paid_level) <= old_paid or not session.battle._values.weapons.has(drone_source_id):
+				printerr("drone paid growth: ", upgraded)
+				quit(1)
+				return
+		var boosted_ai: Dictionary = session._research_factors.duplicate()
+		boosted_ai.weapon_damage = api.apply("mul", [boosted_ai.weapon_damage, api.apply("from_decimal", ["2"]).value]).value
+		var old_damage: String = str(session.battle._equipped_drones[0].weapon.damage)
+		var research_growth: Dictionary = session._publish_native_values(boosted_ai, session._reactor_factors, "growth")
+		if not research_growth.ok or str(session.battle._equipped_drones[0].weapon.damage) == old_damage:
+			printerr("drone research growth: ", research_growth)
+			quit(1)
+			return
+		session._research_factors = boosted_ai
+		var boosted_reactor: Dictionary = session._reactor_factors.duplicate()
+		boosted_reactor.weapons = api.apply("mul", [boosted_reactor.weapons, api.apply("from_decimal", ["2"]).value]).value
+		old_damage = str(session.battle._equipped_drones[0].weapon.damage)
+		var reactor_growth: Dictionary = session._publish_native_values(boosted_ai, boosted_reactor, "growth")
+		if not reactor_growth.ok or str(session.battle._equipped_drones[0].weapon.damage) == old_damage:
+			printerr("drone reactor growth: ", reactor_growth)
+			quit(1)
+			return
+		session._reactor_factors = boosted_reactor
+		var previous_world: Dictionary = session._world_factors
+		var boosted_world: Dictionary = previous_world.duplicate()
+		boosted_world.equipment_levels = int(previous_world.equipment_levels) + 1
+		session._world_factors = boosted_world
+		old_damage = str(session.battle._equipped_drones[0].weapon.damage)
+		var world_growth: Dictionary = session._publish_world_values(previous_world)
+		if not world_growth.ok or str(session.battle._equipped_drones[0].weapon.damage) == old_damage or int(session.battle._equipped_drones[0].generation) != stable_generation:
+			printerr("drone world growth/generation: ", world_growth)
+			quit(1)
+			return
 		var forecast: Dictionary = session.preview_hyperspace_forge(str(before_drone.id), "enable_omen")
 		if not forecast.ok or own.warehouse().main[0].omen:
 			printerr("forge preview: ", forecast)
@@ -164,7 +271,7 @@ func _run_probe() -> void:
 		session.economy.accept_budget(credited.wallet)
 		var forged: Dictionary = session.forge(str(before_drone.id), "enable_omen", {}, "probe-omen")
 		var repeat_forge: Dictionary = session.forge(str(before_drone.id), "enable_omen", {}, "probe-omen")
-		if not forged.ok or not repeat_forge.ok or not repeat_forge.drone.omen or not own.warehouse().main[0].omen:
+		if not forged.ok or not repeat_forge.ok or not repeat_forge.drone.omen or not own.warehouse().main[0].omen or int(session.battle._equipped_drones[0].generation) != stable_generation:
 			printerr("forge commit/retry: ", forged, " ", repeat_forge)
 			quit(1)
 			return
@@ -274,15 +381,19 @@ func _run_probe() -> void:
 			return
 		session.battle.reset_for_sortie()
 		print("native drone dynamic damage accepted")
-	var huge_source: Dictionary = api.apply("from_decimal", ["1e30"])
+	var huge_source: Dictionary = api.apply("from_decimal", ["1e40"])
 	var giant_wallet: Dictionary = session.economy.budget().duplicate()
 	giant_wallet.degenerate_matter = huge_source.value
 	session.economy.accept_budget(giant_wallet)
 	var old_target = giant_wallet.get("glueball", api.apply("zero", []).value)
-	var exchanged: Dictionary = session.exchange_hyperspace_materials("degenerate_matter", "glueball", 9000000000000000000)
+	var exchanged: Dictionary = session.exchange_hyperspace_materials("degenerate_matter", "glueball", "1000000000000000000000000000000")
 	var after_exchange: Dictionary = session.economy.budget()
 	if not exchanged.ok or int(api.apply("compare", [after_exchange.degenerate_matter, huge_source.value]).scalar) >= 0 or int(api.apply("compare", [after_exchange.glueball, old_target]).scalar) <= 0:
 		printerr("extreme Amount exchange: ", exchanged)
+		quit(1)
+		return
+	if session.exchange_hyperspace_materials("degenerate_matter", "glueball", "1.5").ok or session.economy.budget() != after_exchange:
+		printerr("fractional Amount exchange admitted")
 		quit(1)
 		return
 	var unaffordable: Dictionary = api.apply("from_decimal", ["1e500"])

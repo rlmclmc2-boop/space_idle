@@ -397,7 +397,7 @@ func prepare_loadout(ids: Array, capacity: int, weapon_source: Callable, replace
 		if drone.legendary and str(drone.legendary_effect.get("effect_id", "")) == "higgs_cannon": higgs = true
 		var source: Dictionary = weapon_source.call(drone)
 		if not source.ok: return source
-		var stats: Dictionary = {"id": id, "generation": int(drone.forge_revision) + 1,
+		var stats: Dictionary = {"id": id, "generation": int(drone.get("weapon_generation", 1)),
 			"quality": "ultimate" if drone.ultimate else "legendary" if drone.legendary else str(drone.origin_quality),
 			"weapon": source.weapon}
 		if drone.legendary:
@@ -437,7 +437,7 @@ func _find_drone(id: String) -> Dictionary:
 		if str(drone.id) == id: return drone
 	return {}
 
-func preview_forge(id: String, operation: String, args: Dictionary = {}) -> Dictionary:
+func preview_forge(id: String, operation: String, args: Dictionary = {}, highest_reached: int = 0) -> Dictionary:
 	var drone: Dictionary = _find_drone(id)
 	if drone.is_empty() or _sealed.has(id): return {"ok": false, "reason": "DroneUnavailable"}
 	if drone.ultimate and operation not in ["restore_ultimate"]: return {"ok": false, "reason": "UltimateLocked"}
@@ -534,8 +534,12 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}) -> Dict
 			if not candidate.ultimate: return {"ok": false, "reason": "NotUltimate"}
 			candidate.ultimate = false
 		"modernize":
-			var target: int = int(args.get("target_level", 0))
-			if target <= int(candidate.level) or target > int(_history.get(_route_for_weapon(str(candidate.weapon)), {}).get("cleared", 0)):
+			var target: int = 0
+			var best: Dictionary = _history.get(_route_for_weapon(str(candidate.weapon)), {}).get("best", {})
+			for recorded_level in best:
+				var level: int = int(recorded_level)
+				if level <= highest_reached: target = maxi(target, level)
+			if target <= int(candidate.level) or (args.has("target_level") and int(args.target_level) != target):
 				return {"ok": false, "reason": "ModernizationLevelUnavailable"}
 			candidate.level = target
 		_: return {"ok": false, "reason": "UnknownForgeOperation"}
@@ -741,7 +745,7 @@ func prepare_wave(latest_cleared: int, enemy_override: Callable, geometry: Dicti
 	selected.resRatio = resource.resRatio
 	selected.jewelRatio = resource.jewelRatio
 	var built: Dictionary = CombatSetup.build_wave(descriptor, selected, selected, int(_manual.wave), 10,
-		definitions, _enemy_weapon_definitions, enemy_override, geometry, motion, 0, jewel_probability, _next_enemy_uid, _api)
+		definitions, _enemy_weapon_definitions, enemy_override, geometry, motion, 0, jewel_probability, _next_enemy_uid, _api, true)
 	if built.ok: built.group_id = group_id
 	return built
 
@@ -870,7 +874,7 @@ func _generate_reward(receipt: Dictionary) -> Dictionary:
 		"blue_source_bonus": str(quality.quality) == "blue", "affixes": [], "hangings": [],
 		"hanging_slots": _slot_count(int(quality.hanging_limit), float(_parameters.hanging_initial_probability)),
 		"preserved_hanging_slots": 0, "legendary_effect": {}, "ultimate_affix": {}, "omen": false,
-		"forge_revision": 0, "forge_rng_state": str(_reward_rng.state)}
+		"forge_revision": 0, "weapon_generation": 1, "forge_rng_state": str(_reward_rng.state)}
 	for index in _slot_count(int(quality.affix_limit), float(_parameters.affix_initial_probability)):
 		drone.affixes.append(_draw_affix(str(route.weapon)))
 	if drone.legendary: drone.legendary_effect = _draw_legend(str(route.weapon))

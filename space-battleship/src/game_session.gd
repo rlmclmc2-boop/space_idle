@@ -284,7 +284,7 @@ func dismantle_hyperspace_drone(id: String) -> Dictionary:
 func _hyperspace_credit(reward: Dictionary) -> Dictionary:
 	var next_wallet: Dictionary = economy.budget().duplicate()
 	var amounts: Dictionary = reward.materials.duplicate()
-	if int(reward.ultimate_cores) > 0: amounts.ultimate_core = int(reward.ultimate_cores)
+	if int(reward.ultimate_cores) > 0: amounts.ultimate_cores = int(reward.ultimate_cores)
 	for resource in amounts:
 		var quantity = amount_api.apply("from_decimal", [str(amounts[resource])])
 		if not quantity.ok: return quantity
@@ -426,6 +426,10 @@ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrid
 	var mounted = equipment.mounted_configuration(ship.mounts, int(world.equipment_levels), ai["values"], reactor.factors,
 		mount.art, mount.dimensions, mount.geometry, mount.motion, world.external)
 	if not mounted.ok: return mounted
+	if contributions == null:
+		var refreshed: Dictionary = _prepare_drone_growth(ai["values"], reactor.factors, int(world.equipment_levels))
+		if not refreshed.ok: return refreshed
+		contributions = refreshed.contributions
 	var setup = battle.prepare_player(mounted, upgrades, factors, reactor.factors, ship, ship_key, mount, contributions, equipment.damage_types())
 	if not setup.ok:
 		return setup
@@ -564,15 +568,22 @@ func equip_hyperspace_drones(ids: Array) -> Dictionary:
 	return publish_equipment_refit(economy.budget(), "refit", "", prepared.contributions, false,
 		func(): hyperspace_system.accept_loadout(prepared.ids))
 
-func _hyperspace_weapon_source() -> Callable:
+func _hyperspace_weapon_source(ai = null, reactor = null, equipment_levels: int = -1) -> Callable:
 	var motion: Dictionary = battle.wave_inputs().motion
+	var research_values: Dictionary = _research_factors if ai == null else ai
+	var reactor_values: Dictionary = _reactor_factors if reactor == null else reactor
+	var levels: int = int(_world_factors.equipment_levels) if equipment_levels < 0 else equipment_levels
 	return func(drone):
 		return equipment.drone_weapon_source(str(drone.weapon), hyperspace_system.weapon_level_bonus(drone),
-			int(_world_factors.equipment_levels), _research_factors, _reactor_factors, motion)
+			levels, research_values, reactor_values, motion)
+
+func _prepare_drone_growth(ai: Dictionary, reactor: Dictionary, equipment_levels: int) -> Dictionary:
+	return hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
+		int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source(ai, reactor, equipment_levels))
 
 func preview_hyperspace_forge(id: String, operation: String, args: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	return hyperspace_system.preview_forge(id, operation, args)
+	return hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().highest_reached))
 
 func forge(id: String, operation: String, args: Dictionary, operation_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
@@ -580,7 +591,7 @@ func forge(id: String, operation: String, args: Dictionary, operation_id: String
 	var fingerprint: String = JSON.stringify({"id": id, "operation": operation, "args": args}, "", true)
 	var repeated: Dictionary = hyperspace_system.forge_repeat(operation_id, fingerprint)
 	if not repeated.is_empty(): return repeated
-	var forecast: Dictionary = hyperspace_system.preview_forge(id, operation, args)
+	var forecast: Dictionary = hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().highest_reached))
 	if not forecast.ok: return forecast
 	var costs: Dictionary = {}
 	for resource in forecast.costs:
@@ -629,13 +640,22 @@ func set_hyperspace_hangings(id: String, module_ids: Array) -> Dictionary:
 	hyperspace_system.accept_hangings(id, prepared.hangings)
 	return {"ok": true}
 
-func exchange_hyperspace_materials(source: String, target: String, amount: int) -> Dictionary:
+func exchange_hyperspace_materials(source: String, target: String, amount: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var materials: Array = hyperspace_system.material_ids()
-	if amount <= 0 or source == target or source not in materials or target not in materials:
+	if source == target or source not in materials or target not in materials:
 		return {"ok": false, "reason": "InvalidExchange"}
-	var received: Dictionary = amount_api.apply("from_decimal", [str(amount)])
+	var received: Dictionary = amount_api.apply("from_decimal", [amount.strip_edges()])
 	if not received.ok: return received
+	var zero: Dictionary = amount_api.apply("zero", [])
+	if not zero.ok: return zero
+	var positive: Dictionary = amount_api.apply("compare", [received.value, zero.value])
+	if not positive.ok: return positive
+	var integer: Dictionary = amount_api.apply("floor", [received.value])
+	if not integer.ok: return integer
+	var integral: Dictionary = amount_api.apply("compare", [received.value, integer.value])
+	if not integral.ok: return integral
+	if int(positive.scalar) <= 0 or int(integral.scalar) != 0: return {"ok": false, "reason": "InvalidExchange"}
 	var doubled: Dictionary = amount_api.apply("mul", [received.value, amount_api.apply("from_decimal", ["2"]).value])
 	if not doubled.ok: return doubled
 	var paid: Dictionary = economy.payment({source: doubled.value})
@@ -690,12 +710,18 @@ func _publish_native_values(ai: Dictionary, reactor: Dictionary, kind: String, r
 		values = equipment.values(campaign_system.ship_facts().mounts, int(_world_factors.equipment_levels), ai, reactor, weapons, defences)
 		if not values.ok: return values
 	battle.filter_values(values)
-	return _commit_values(values, kind, iron, {}, retreat_after_commit)
+	var drones: Dictionary = _prepare_drone_growth(ai, reactor, int(_world_factors.equipment_levels))
+	if not drones.ok: return drones
+	return _commit_values(values, kind, iron, {}, retreat_after_commit, drones.contributions)
 
-func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrades: Dictionary = {}, retreat_after_commit: bool = true) -> Dictionary:
+func _commit_values(values: Dictionary, kind: String, iron: String = "", upgrades: Dictionary = {}, retreat_after_commit: bool = true, drone_contributions = null) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
+	if drone_contributions != null:
+		battle.append_drone_growth(values, drone_contributions, _world_factors.external)
+		battle.filter_values(values)
 	var committed: Dictionary = battle.commit_values(values, kind, iron, upgrades)
 	if not committed.ok: return _fail(str(committed.reason)) if committed.get("fault", false) else committed
+	if drone_contributions != null: battle.accept_drone_growth(drone_contributions)
 	if committed.defence_changed and retreat_after_commit: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	return {"ok": true, "defence_changed": committed.defence_changed}
 
@@ -703,7 +729,9 @@ func publish_equipment_levels(balances: Dictionary) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var values = equipment.values(campaign_system.ship_facts().mounts, int(_world_factors.equipment_levels), _research_factors, _reactor_factors, true, true, true)
 	if not values.ok: return values
-	var result = _commit_values(values, "upgrade", "", {}, false)
+	var drones: Dictionary = _prepare_drone_growth(_research_factors, _reactor_factors, int(_world_factors.equipment_levels))
+	if not drones.ok: return drones
+	var result = _commit_values(values, "upgrade", "", {}, false, drones.contributions)
 	if result.ok:
 		var notice: Dictionary = equipment.accept_prepared()
 		var budget_changed: bool = economy.accept_budget(balances, false)
@@ -727,8 +755,8 @@ func _publish_world_values(previous: Dictionary, retreat_after_commit: bool = tr
 		if not values.ok: return values
 	if _world_factors.external != previous.external:
 		equipment.apply_external(values, campaign_system.ship_facts().mounts, _world_factors.external)
-	if _world_factors.external != previous.external:
-		battle.apply_drone_external(values, _world_factors.external)
+	var drones: Dictionary = _prepare_drone_growth(_research_factors, reactor.factors, int(_world_factors.equipment_levels))
+	if not drones.ok: return drones
 	var output: Dictionary = enhancement.published_output()
 	var upgrades: Dictionary = {}
 	var enhancement_prepared: bool = _world_factors.enhancement_levels != previous.enhancement_levels
@@ -741,7 +769,7 @@ func _publish_world_values(previous: Dictionary, retreat_after_commit: bool = tr
 		var text = amount_api.apply("to_display", [reactor.factors.smelting])
 		if not text.ok: return text
 		iron = text.text
-	var result = _commit_values(values, "refit", iron, upgrades, false)
+	var result = _commit_values(values, "refit", iron, upgrades, false, drones.contributions)
 	if result.ok and enhancement_prepared: enhancement.accept_output()
 	if result.ok:
 		if reactor_prepared: reactor_system.accept()

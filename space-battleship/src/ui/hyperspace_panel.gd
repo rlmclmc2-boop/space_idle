@@ -113,9 +113,8 @@ func _ready() -> void:
 	exchange_amount.placeholder_text = "兑换目标数量"
 	add_child(exchange_amount)
 	_button("兑换材料 2:1", func():
-		if not exchange_amount.text.is_valid_int(): return {"ok": false, "reason": "InvalidExchange"}
 		return _session.exchange_hyperspace_materials(exchange_source.get_item_text(exchange_source.selected),
-			exchange_target.get_item_text(exchange_target.selected), int(exchange_amount.text)))
+			exchange_target.get_item_text(exchange_target.selected), exchange_amount.text))
 	_legend_option = OptionButton.new()
 	add_child(_legend_option)
 	_button("收藏所选传说", func(): return _set_legend(true))
@@ -206,9 +205,6 @@ func _forge(preview: bool) -> Dictionary:
 	var args: Dictionary = {}
 	if operation == "replace_affix" and not _forge_target.text.is_empty(): args.target_affix = _forge_target.text
 	if operation == "legendary" and not _forge_target.text.is_empty(): args.target_effect = _forge_target.text
-	if operation == "modernize":
-		if not _forge_target.text.is_valid_int(): return {"ok": false, "reason": "InvalidTargetLevel"}
-		args.target_level = int(_forge_target.text)
 	if operation == "reroll_values" and _forge_guaranteed.button_pressed: args.guaranteed = true
 	if preview:
 		var forecast: Dictionary = _session.preview_hyperspace_forge(str(ids[0]), operation, args)

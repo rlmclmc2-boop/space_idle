@@ -30,3 +30,12 @@
 五类挂设已分别接入资源、研究速度、反应炉容量、碎片与超空间材料端口；领奖/拆解引起的挂设升级也先计算候选，再和钱包及原生状态一起提交。数值重抽的保底费用以 Amount 计算。界面提供路线、凭据、仓库、收藏、过滤、预设、挂设与基本改造入口。
 
 阶段内超大数专项检查覆盖 9×10¹⁸ 目标量的 2:1 兑换、超出 64 位整数的扣款、1×10⁵⁰⁰ 的不足额拒付与钱包不变，以及保底改造报价经 Amount 解析。完整新会话重铸与长期保存/恢复属于第 6 阶段；第 5 阶段无已知剩余实现项。
+
+## Audit closure: growth and stable handoff
+
+- The drone record owns its identity and forge history. `weapon_generation` is the native weapon incarnation and remains stable while the same drone is equipped. Forge revisions, affix changes, omen changes, research, reactor, paid equipment levels, and world bonuses update native values without replacing that incarnation. A newly generated drone starts at generation 1; older records default to 1.
+- `Equipment.drone_weapon_source` reads staged slots during a paid level transaction. `GameSession` prepares drone contributions from candidate research, reactor, and world factors, sends `drone:<id>` rows through `Battle.commit_values`, and accepts the new cached contributions only after native success. The native row keeps the same `id`, weapon key, and generation, preserving due time and combat state while changing base damage and external factors. A configuration refit remains the boundary for add/remove/equip and legendary changes.
+- The material wallet and ultimate forge cost use the same `ultimate_cores` resource key. Claim remains keyed by `(round_id, run_id)`; a repeated claim yields the recorded result without a second credit. After an auto receipt reaches `CompletedPending`, a successful claim permits the next fixed step to start a fresh run using the reserved crew. Pending rewards block this transition.
+- Hyperspace waves use the selected layer's endpoint life, attack, and resource ratios for all ten waves. Only mainline combat uses entry-to-end interpolation.
+- Modernization computes its target from the current round's mainline highest reached stage and the route's actual best-time record keys. It picks the highest recorded layer at or below that stage, and requires it to exceed the drone's current level. Caller-supplied targets cannot bypass this choice.
+- Exchange accepts decimal text, converts through `FoundationAmount`, requires a positive integer amount, and performs the 2:1 debit and credit atomically. The UI passes text directly, so quantities above signed 64-bit range remain exact.

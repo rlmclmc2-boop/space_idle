@@ -75,7 +75,8 @@ func drone_weapon_source(weapon_id: String, level_bonus: int, extra_levels: int,
 	if not _definitions.has(weapon_id) or weapon_id not in ["laser", "missile", "cannon", "longLaser"]:
 		return {"ok": false, "reason": "UnknownDroneWeapon"}
 	var paid_level: int = 1
-	for slot in _slots:
+	var candidates: Array = _slots if _pending_slots == null else _pending_slots
+	for slot in candidates:
 		if slot.category == "weapon" and slot.equipment_id == weapon_id:
 			paid_level = maxi(paid_level, int(slot.paid_level))
 	var slot: Dictionary = {"paid_level": paid_level, "extra_levels": level_bonus}

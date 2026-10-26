@@ -66,7 +66,8 @@ static func build_player(equipment_contribution: Dictionary, geometry: Dictionar
 		descriptor[key] = motion[motion_keys[key]]
 	return {"ok": true, "descriptor": descriptor, "values": base_values}
 
-static func ratio(current: Dictionary, previous_stage: Dictionary, field: String, point: int, points: int, api) -> Dictionary:
+static func ratio(current: Dictionary, previous_stage: Dictionary, field: String, point: int, points: int, api, endpoint_only: bool = false) -> Dictionary:
+	if endpoint_only: return api.apply("from_decimal", [str(current[field])])
 	var previous = 1 if int(current.id) == 1 else previous_stage[field]
 	var entry_key: String = "entryAtkRatio" if field == "atkRatio" else "entryLifeRatio" if field == "lifeRatio" else ""
 	if not entry_key.is_empty() and current.get(entry_key) != null:
@@ -88,13 +89,13 @@ static func ratio(current: Dictionary, previous_stage: Dictionary, field: String
 static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dictionary,
 		point_index: int, point_count: int, enemy_definitions: Dictionary, enemy_weapon_definitions: Dictionary,
 		weapon_overrides: Callable, geometry: Dictionary, motion: Dictionary,
-		jewel_rolls: int, jewel_probability: float, next_uid: int, api) -> Dictionary:
+		jewel_rolls: int, jewel_probability: float, next_uid: int, api, endpoint_only: bool = false) -> Dictionary:
 	var slots: Array = JSON.parse_string(str(group.mon).replace("｛", "[").replace("｝", "]").replace("{", "[").replace("}", "]").replace("，", ","))
 	var positions: Dictionary = Geometry.formation_positions(slots, enemy_definitions, geometry, group.get("formation_positions"))
 	var final: bool = point_index == point_count - 1
-	var life = ratio(stage, previous_stage, "lifeRatio", point_index, point_count, api)
-	var attack = ratio(stage, previous_stage, "atkRatio", point_index, point_count, api)
-	var resources = ratio(stage, previous_stage, "resRatio", point_index, point_count, api)
+	var life = ratio(stage, previous_stage, "lifeRatio", point_index, point_count, api, endpoint_only)
+	var attack = ratio(stage, previous_stage, "atkRatio", point_index, point_count, api, endpoint_only)
+	var resources = ratio(stage, previous_stage, "resRatio", point_index, point_count, api, endpoint_only)
 	for result in [life, attack, resources]:
 		if not result.ok:
 			return result
