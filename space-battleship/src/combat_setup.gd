@@ -194,6 +194,7 @@ static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dic
 				weapons.append(row_weapon)
 				muzzles["enemy:" + str(actor.uid) + ":" + str(mount)] = positions[slot]
 				mount += 1
+	muzzles.make_read_only()
 	return {"ok": true, "wave": {"enemies": enemies, "weapons": weapons, "final": final,
 		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": jewel_probability}, "next_uid": next_uid, "muzzles": muzzles}
 

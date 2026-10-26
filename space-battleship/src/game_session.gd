@@ -93,7 +93,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	var setup = _growth_setup()
 	if not setup.ok:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
-	var initialized = battle.initialize_player(setup)
+	var initialized = battle.initialize_player()
 	if not initialized.ok: return _fail(str(initialized.reason))
 	reactor_system.accept()
 	reactor_factors = setup.reactor_factors
@@ -238,6 +238,7 @@ func _growth_setup(next_ship: String = "", contributions = null) -> Dictionary:
 	var setup = battle.prepare_player(mounted, upgrades, factors, reactor.factors, ship, ship_key, mount, contributions, equipment.damage_types())
 	if not setup.ok:
 		return setup
+	setup.ship_key = ship_key
 	setup.income_factors = {"condensation": reactor.factors.condensation, "refinery": world.refinery, "crew_fragments": world.fragments, "galaxy_fragments": world.galaxy_fragments}
 	setup.research_speed = world.research
 	setup.galaxy_crew_experience = world.crew_experience
@@ -257,7 +258,7 @@ func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_
 	if not setup.ok:
 		return setup
 	# No page callbacks or asynchronous work can interleave this commit.
-	var committed: Dictionary = battle.commit_player(setup, change_kind, geometry_changed)
+	var committed: Dictionary = battle.commit_player(change_kind, geometry_changed)
 	if not committed.ok:
 		if committed.get("fault", false):
 			return _fail(str(committed.reason))

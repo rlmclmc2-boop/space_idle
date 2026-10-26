@@ -22,6 +22,7 @@ var _enemy_muzzles: Dictionary = {}
 var _enemy_hulls: Array = []
 var _equipped_drones: Array = []
 var _values: Dictionary = {}
+var _prepared_player: Dictionary = {}
 var _events: Array = []
 var _seed: int
 var _initial_result: Dictionary
@@ -125,6 +126,7 @@ func begin_frame() -> void:
 func prepare_player(mounted: Dictionary, upgrades: Dictionary, factors: Dictionary, reactor: Dictionary,
 		ship: Dictionary, ship_key: String, mount: Dictionary, contributions, damage_types: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
+	_prepared_player = {}
 	var source: Array = _equipped_drones if contributions == null else contributions
 	var next_drones: Array = source.slice(0, int(ship.drone_capacity)).duplicate(true)
 	var drone_weapons: Array = []
@@ -151,9 +153,11 @@ func prepare_player(mounted: Dictionary, upgrades: Dictionary, factors: Dictiona
 	setup.player_art = mount.art
 	setup.player_dimensions = mount.dimensions
 	setup.equipped_drones = next_drones
-	return setup
+	_prepared_player = setup
+	return {"ok": true}
 
-func _accept_player(setup: Dictionary) -> void:
+func _accept_player() -> void:
+	var setup: Dictionary = _prepared_player
 	_ship_key = setup.ship_key
 	_player_art = setup.player_art
 	_player_dimensions = setup.player_dimensions
@@ -162,24 +166,25 @@ func _accept_player(setup: Dictionary) -> void:
 	_values = setup["values"]
 	_player_muzzles = {}
 	for row in setup.descriptor.weapons: _player_muzzles[str(row.entry.id)] = row.muzzle
+	_prepared_player = {}
 
-func initialize_player(setup: Dictionary) -> Dictionary:
+func initialize_player() -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	if not _kernel.initialize(setup.descriptor):
+	if not _kernel.initialize(_prepared_player.descriptor):
 		_run_state.fail("NativeInitializationFailed")
 		return {"ok": false, "reason": "NativeInitializationFailed"}
-	_accept_player(setup)
+	_accept_player()
 	_player_hull = Geometry.transform_hull(_models[_ship_key].hull, Vector2(float(_geometry.player_x), float(_geometry.player_y)), _player_dimensions, 0.0)
 	_kernel.set_damage_stats_enabled(true)
 	return {"ok": true}
 
-func commit_player(setup: Dictionary, kind: String, geometry_changed: bool) -> Dictionary:
+func commit_player(kind: String, geometry_changed: bool) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	var result: Dictionary = _kernel.set_player_configuration(setup.descriptor, kind)
+	var result: Dictionary = _kernel.set_player_configuration(_prepared_player.descriptor, kind)
 	if not result.ok:
 		if result.get("fault", false): _run_state.fail(str(result.reason))
 		return result
-	_accept_player(setup)
+	_accept_player()
 	if geometry_changed: return _sync_geometry()
 	return result
 
@@ -196,12 +201,29 @@ func commit_values(values: Dictionary, kind: String, iron: String, upgrades: Dic
 	if not result.ok:
 		if result.get("fault", false): _run_state.fail(str(result.reason))
 		return result
+	var next_values: Dictionary = _values
+	var values_changed: bool = false
 	for group in ["weapons", "defences"]:
+		var next_group: Dictionary = _values[group]
+		var group_changed: bool = false
 		for id in values[group]:
 			if not values[group][id].has("base"): continue
+			if not group_changed:
+				next_group = next_group.duplicate()
+				group_changed = true
 			var row: Dictionary = values[group][id].duplicate()
 			row.erase("external")
-			_values[group][id] = row
+			row.make_read_only()
+			next_group[id] = row
+		if group_changed:
+			if not values_changed:
+				next_values = _values.duplicate()
+				values_changed = true
+			next_group.make_read_only()
+			next_values[group] = next_group
+	if values_changed:
+		next_values.make_read_only()
+		_values = next_values
 	return result
 
 func advance(dt: float) -> Dictionary:
