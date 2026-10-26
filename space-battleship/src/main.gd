@@ -13,6 +13,7 @@ const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
 const NotificationsPanel = preload("res://src/ui/notifications_panel.gd")
+const PlayerSettings = preload("res://foundation/host/player_settings.gd")
 const Session = preload("res://src/game_session.gd")
 var session
 var startup_error: String = ""
@@ -24,6 +25,7 @@ var save_state_label: Label
 var _pending_import: Dictionary = {}
 var _pending_reforge: Dictionary = {}
 var _autosave_interval: float = 0.0
+var _settings_error: String = ""
 var _next_autosave_wall: float = 0.0
 var _save_status_elapsed: float = 1.0
 var _seen_save_failure_generation: String = ""
@@ -38,6 +40,11 @@ func _ready() -> void:
 		if loaded != GDExtensionManager.LOAD_STATUS_OK and loaded != GDExtensionManager.LOAD_STATUS_ALREADY_LOADED:
 			startup_error = "原生模块加载失败：" + extension
 			return
+	var settings: Dictionary = PlayerSettings.load_interval()
+	if settings.ok:
+		_autosave_interval = float(settings.interval)
+	else:
+		_settings_error = str(settings.reason)
 	session = Session.new()
 	var result = session.initialize("res://generated/config.json", Time.get_ticks_usec())
 	if not result.ok:
@@ -48,6 +55,7 @@ func _ready() -> void:
 	if not result.ok:
 		startup_error = str(result.reason)
 	else:
+		_next_autosave_wall = session.wall_time + _autosave_interval
 		_show_session()
 
 func _show_session() -> void:
@@ -225,6 +233,7 @@ func _setup_growth_panel() -> void:
 	box.custom_minimum_size.x = 380
 	scroll.add_child(box)
 	growth_status = Label.new()
+	if not _settings_error.is_empty(): growth_status.text = _settings_error
 	box.add_child(growth_status)
 	save_state_label = Label.new()
 	box.add_child(save_state_label)
@@ -274,8 +283,13 @@ func _setup_growth_panel() -> void:
 	autosave.value = _autosave_interval
 	box.add_child(autosave)
 	autosave.value_changed.connect(func(value: float):
-		_autosave_interval = value
-		_next_autosave_wall = session.wall_time + value)
+		var saved: Dictionary = PlayerSettings.save_interval(int(value))
+		if saved.ok:
+			_autosave_interval = value
+			_next_autosave_wall = session.wall_time + value
+		else:
+			autosave.set_value_no_signal(_autosave_interval)
+			growth_status.text = str(saved.reason))
 	_command_button(box, "Load primary", func() -> Dictionary:
 		return _load_saved(save_path.text))
 	_command_button(box, "Load backup", func() -> Dictionary:

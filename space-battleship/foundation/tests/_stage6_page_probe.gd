@@ -2,6 +2,7 @@ extends SceneTree
 
 const NotificationsPanel = preload("res://src/ui/notifications_panel.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
+const PlayerSettings = preload("res://foundation/host/player_settings.gd")
 
 func _initialize() -> void:
 	var loaded = GDExtensionManager.load_extension(OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION"))
@@ -22,6 +23,13 @@ func _find_line(node: Node, placeholder: String) -> LineEdit:
 	if node is LineEdit and node.placeholder_text == placeholder: return node
 	for child in node.get_children():
 		var found: LineEdit = _find_line(child, placeholder)
+		if found != null: return found
+	return null
+
+func _find_autosave(node: Node) -> SpinBox:
+	if node is SpinBox and node.suffix.begins_with(" seconds between saves"): return node
+	for child in node.get_children():
+		var found: SpinBox = _find_autosave(child)
 		if found != null: return found
 	return null
 
@@ -46,10 +54,33 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(directory)
+	OS.set_environment("SPACE_IDLE_SETTINGS_PATH", directory.path_join("player-settings.json"))
+	var invalid_settings: FileAccess = FileAccess.open(PlayerSettings._path(), FileAccess.WRITE)
+	invalid_settings.store_string('{"formatVersion":1,"autosaveInterval":-1}')
+	invalid_settings.close()
+	if PlayerSettings.load_interval().ok:
+		printerr("invalid autosave setting admitted")
+		quit(1)
+		return
+	if not PlayerSettings.save_interval(15).ok:
+		printerr("could not prepare separate player settings")
+		quit(1)
+		return
 	var main = load("res://src/main.tscn").instantiate()
 	root.add_child(main)
-	if main.session == null or not main.startup_error.is_empty():
-		printerr("main startup: ", main.startup_error)
+	if main.session == null or not main.startup_error.is_empty() or main._autosave_interval != 15.0:
+		printerr("main startup: ", main.startup_error, " interval=", main._autosave_interval,
+			" settings=", PlayerSettings.load_interval())
+		quit(1)
+		return
+	var autosave_control: SpinBox = _find_autosave(main)
+	if autosave_control == null or autosave_control.value != 15.0:
+		printerr("saved autosave setting was not shown")
+		quit(1)
+		return
+	autosave_control.value = 25.0
+	if main._autosave_interval != 25.0 or PlayerSettings.load_interval().get("interval") != 25:
+		printerr("autosave setting did not persist outside gameplay save")
 		quit(1)
 		return
 	var pause_button: Button = _find_button(main, "Pause")
