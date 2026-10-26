@@ -118,7 +118,7 @@ func payment(costs: Dictionary, candidate = null) -> Dictionary:
 		next[resource] = remaining.value
 	return {"ok": true, "wallet": next}
 
-func register_drops(rows: Array, now: float, refinery: Dictionary) -> Dictionary:
+func register_drops(rows: Array, now: float, refinery: Dictionary, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var pending: Dictionary = _drops
 	var cursor: Dictionary = _cursor
@@ -159,8 +159,8 @@ func register_drops(rows: Array, now: float, refinery: Dictionary) -> Dictionary
 		_markers[id] = {"x": captured[id].x, "y": captured[id].y, "resource": str(captured[id].id)}
 		_markers[id].make_read_only()
 	cursor.registered_through = next_frontier
-	if not captured.is_empty(): display_changed.emit()
-	return {"ok": true}
+	if not captured.is_empty() and notify: display_changed.emit()
+	return {"ok": true, "registered": not captured.is_empty()}
 
 func collect_drop(id: String, automatic: bool, wall: float, game: float, income_factors: Dictionary = {}, notify: bool = true) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

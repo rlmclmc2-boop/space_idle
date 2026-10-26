@@ -35,6 +35,7 @@ var _research_factors: Dictionary = {}
 var _reactor_factors: Dictionary = {}
 var _income_factors: Dictionary = {}
 var _final_collection_changed: bool = false
+var _battle_drops_changed: bool = false
 var campaign_system
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
@@ -170,11 +171,20 @@ func _step(dt: float) -> void:
 	var status_changed: bool = campaign_system.advance(dt, _advance_kernel, _start_wave)
 	if not run_state.is_running(): return
 	var progress_changed: bool = campaign_system.take_progress_changed()
-	if progress_changed and not _publish_progress(): return
+	var progress_notices: Dictionary = {}
+	var progress_defence_changed: bool = false
+	if progress_changed:
+		var prepared: Dictionary = _publish_progress()
+		if not prepared.ok: return
+		progress_notices = prepared.notices
+		progress_defence_changed = prepared.defence_changed
 	if _final_collection_changed and not refresh_growth(): return
-	var collection_changed: bool = _final_collection_changed
+	var collection_changed: bool = _final_collection_changed or _battle_drops_changed
 	_final_collection_changed = false
+	_battle_drops_changed = false
 	# All owners and dependent caches have accepted before any listener runs.
+	if progress_defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
+	if progress_changed: _notify_progress(progress_notices)
 	if progress_changed: campaign_system.publish_progress_change()
 	if status_changed: campaign_system.publish_status_change()
 	if collection_changed: economy.publish_budget_change()
@@ -186,10 +196,11 @@ func _advance_kernel(dt: float) -> bool:
 	if not result.ok:
 		_fail(str(result.get("error", result.get("reason", "NativeAdvanceRejected"))))
 		return false
-	var registered = economy.register_drops(result.drops, game_time, _income_factors.refinery)
+	var registered = economy.register_drops(result.drops, game_time, _income_factors.refinery, false)
 	if not registered.ok:
 		_fail(str(registered.get("error", "DropRegistrationFailed")))
 		return false
+	_battle_drops_changed = _battle_drops_changed or registered.registered
 	return campaign_system.observe_battle(result, equipment.clear_switch_locks, settle_final_collection)
 
 func settle_final_collection() -> bool:
@@ -215,7 +226,7 @@ func _start_wave() -> void:
 func _fail(reason: String) -> Dictionary:
 	run_state.fail(reason)
 	pause_reasons.error = true
-	return {"ok": false, "reason": reason}
+	return {"ok": false, "reason": reason, "fault": true}
 
 func economy_display_context() -> Dictionary:
 	var context := {"wall": wall_time, "game": game_time, "factors": _income_factors}
@@ -593,8 +604,8 @@ func coordinate_planet_cancel(id: String) -> Dictionary:
 func planet_experience_context() -> Dictionary:
 	return {"enabled": crew_system.experience_enabled(), "ratio": campaign_system.planet_experience_ratio(), "factor": _galaxy_crew_experience}
 
-func _publish_progress() -> bool:
-	if not run_state.is_running(): return false
+func _publish_progress() -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
 	var facts: Dictionary = campaign_system.progress_facts()
 	var research_changed: bool = research.refresh_progress(campaign_system.available, false)
 	var reactor_changed: bool = reactor_system.refresh_availability(campaign_system.available, false)
@@ -607,29 +618,28 @@ func _publish_progress() -> bool:
 	var galaxy_factors: Dictionary = galaxy_system.contributions()
 	for result in [planet_factors, crew_factors, galaxy_factors]:
 		if not result.ok:
-			_fail(str(result.get("error", result.get("reason", "ProgressContributionFailed"))))
-			return false
+			return _fail(str(result.get("error", result.get("reason", "ProgressContributionFailed"))))
 	var defence_changed: bool = false
 	if planet_factors != _planet_factors or crew_factors != _crew_factors or galaxy_factors != _galaxy_factors:
 		var published: Dictionary = publish_world(planet_factors, crew_factors, galaxy_factors, false)
 		if not published.ok:
-			if run_state.is_running(): _fail(str(published.get("reason", "ProgressGrowthFailed")))
-			return false
+			return _fail(str(published.get("reason", "ProgressGrowthFailed"))) if run_state.is_running() else published
 		defence_changed = published.get("defence_changed", false)
 	if reactor_system.modules_changed():
 		var updated: Dictionary = reactor_system.refresh(reactor_inputs(), publish_reactor.bind(false))
 		if not updated.ok:
-			if run_state.is_running(): _fail(str(updated.get("reason", "ProgressReactorFailed")))
-			return false
+			return _fail(str(updated.get("reason", "ProgressReactorFailed"))) if run_state.is_running() else updated
 		defence_changed = defence_changed or updated.get("defence_changed", false)
-	if defence_changed: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
-	if research_changed: research.publish_choices_changed()
-	if reactor_changed: reactor_system.publish_availability()
-	if equipment_changed: equipment.publish_availability()
-	if crew_changed: crew_system.publish_availability()
-	if planet_changed: planet_system.publish_availability()
-	if galaxy_changed: galaxy_system.publish_availability()
-	return true
+	return {"ok": true, "defence_changed": defence_changed, "notices": {"research": research_changed, "reactor": reactor_changed,
+		"equipment": equipment_changed, "crew": crew_changed, "planet": planet_changed, "galaxy": galaxy_changed}}
+
+func _notify_progress(notices: Dictionary) -> void:
+	if notices.research: research.publish_choices_changed()
+	if notices.reactor: reactor_system.publish_availability()
+	if notices.equipment: equipment.publish_availability()
+	if notices.crew: crew_system.publish_availability()
+	if notices.planet: planet_system.publish_availability()
+	if notices.galaxy: galaxy_system.publish_availability()
 
 func _advance_planets(dt: float, explorers: Dictionary, builders: Dictionary) -> bool:
 	var result = planet_system.advance(explorers, builders, dt, planet_experience_context)
