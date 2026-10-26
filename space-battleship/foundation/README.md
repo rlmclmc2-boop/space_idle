@@ -36,7 +36,7 @@ Amount 值及绑定在 addons/native_battle/src/amount_value.hpp、amount_api.hp
 powershell -ExecutionPolicy Bypass -File addons/native_battle/build_native.ps1
 ```
 
-该脚本使用其参数指定的构建及工具目录，要求固定的 godot-cpp 版本和 Godot API，输出 DLL。运行程序需要加载对应 GDExtension；最小入口通过构建产物中的 GDExtension 清单加载该 DLL。现有 native retained/GPU 表现读取同一个战斗核。
+Windows 构建前提供 `SPACE_IDLE_GODOT_CPP`（godot-cpp checkout）、`SPACE_IDLE_LLVM_MINGW`（llvm-mingw 安装根目录）及 `SPACE_IDLE_GODOT_API`（导出的 extension_api.json），也可分别用 `-GodotCpp`、`-LlvmMingw`、`-Api` 参数指定；Python 需安装 SCons，可用 `-Python` 或 `SPACE_IDLE_PYTHON` 指定。构建目录默认在用户 LocalAppData 下，可用 `-BuildRoot` 或 `SPACE_IDLE_BUILD_ROOT` 改到任意有写权限的盘。脚本校验 godot-cpp 10.0.0-stable 固定提交、Clang 23.1.3 x86_64 工具链及 Godot 4.7.2 单精度 API 哈希，输出 DLL 与 GDExtension 清单；依赖工具不随仓库交付。现有 native retained/GPU 表现读取同一个战斗核。
 
 ## 保存骨架
 
@@ -64,7 +64,7 @@ powershell -ExecutionPolicy Bypass -File addons/native_battle/build_native.ps1
 powershell -ExecutionPolicy Bypass -File run_game.ps1
 ```
 
-启动脚本先按原路线将 Excel 导入为 JSON，再运行正常 Godot 主场景；原生 DLL 与 GDExtension 清单仍生成在显式 D 盘构建目录。它是游戏启动入口，不是测试 runner。编译检查不会执行该启动脚本。
+启动前设置 `SPACE_IDLE_GODOT` 为 Godot 4.7.2 程序路径，或以 `-Godot` 参数传入；`run_game.ps1` 与构建脚本使用相同的 `BuildRoot` 默认值或覆盖值。启动脚本先按原路线将 Excel 导入为 JSON，再运行正常 Godot 主场景。它是游戏启动入口，不是测试 runner。编译检查不会执行该启动脚本。
 
 `GameSession` 协调共享步长、跨模块贡献和原生提交；玩法状态由对应模块持有。核只初始化一次，随后通过 `start_wave/finish_wave/begin_retreat/finish_retreat/advance/take_results` 推进；成长和换装调用 `set_player_configuration` 原位更新，提交入口校验一次。已飞出攻击持有出生快照，防具模块损伤是生命的唯一权威，合计盾甲仅供读取。
 
@@ -137,6 +137,6 @@ Crew 在每个固定步一次生成探索者、施工者、星系人数和岗位
 ### 本轮验证
 
 - Godot 4.7.2：`--headless --path . --script res://src/main.gd --check-only`，退出码 0，覆盖入口预加载依赖；不运行游戏。
-- `addons/native_battle/build_native.ps1`：原生编译/链接成功，产物留在既有 D: 构建目录。
+- `addons/native_battle/build_native.ps1`：原生编译/链接成功，产物留在本机所选构建目录。
 - 既有 `foundation/tests/amount_value_tests.cpp`：使用既有 clang++ 按 `-std=c++17 -O1 -static` 编译后执行，通过算术、编码范围和非法输入边界验证。
 - `git diff --check` 通过。未新建测试、未执行游戏测试、未更改 Excel/数值/存档；编辑器导入产生的未跟踪元数据已移除，缓存和 DLL 不提交。

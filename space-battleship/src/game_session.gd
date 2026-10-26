@@ -252,7 +252,12 @@ func _growth_setup(next_ship: String = "", contributions = null) -> Dictionary:
 	if not setup.ok:
 		return setup
 	setup.ship_key = ship_key
-	setup.income_factors = {"condensation": reactor.factors.condensation, "refinery": world.refinery, "crew_fragments": world.fragments, "galaxy_fragments": world.galaxy_fragments}
+	# The resource-collector hanging has no owner in this stage. Keep its route
+	# distinct from Planet's refinery, which only affects ordinary drops.
+	var collector = amount_api.apply("from_decimal", ["1"])
+	if not collector.ok: return collector
+	setup.income_factors = {"condensation": reactor.factors.condensation, "refinery": world.refinery,
+		"resource_collection": collector.value, "crew_fragments": world.fragments, "galaxy_fragments": world.galaxy_fragments}
 	setup.research_speed = world.research
 	setup.galaxy_crew_experience = world.crew_experience
 	setup.income_factors.iron = ai["values"].iron_income

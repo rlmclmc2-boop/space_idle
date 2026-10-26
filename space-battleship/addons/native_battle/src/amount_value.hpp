@@ -146,6 +146,15 @@ public:
         }
         return from_log(logarithm() * n);
     }
+    Amount power_integer(uint64_t n) const {
+        Amount result(1), factor = *this;
+        while (n != 0) {
+            if (n & 1) result *= factor;
+            n >>= 1;
+            if (n != 0) factor *= factor;
+        }
+        return result;
+    }
     Amount floor_value() const {
         if (!coefficient_ || power_ >= 15) return *this;
         if (power_ < 0) return {};

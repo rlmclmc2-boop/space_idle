@@ -1,13 +1,13 @@
 import os
 
-# Bindings, generated files, object files and DLLs belong to the explicit D drive
-# build directory. Invoke this copied SConstruct from that directory.
+# Bindings remain external; generated files, object files and DLLs belong to
+# the selected build directory. Invoke this copied SConstruct from there.
 binding = ARGUMENTS['bindings']
-env = SConscript(binding + '/SConstruct')
+env = SConscript(binding + '/SConstruct', variant_dir='godot-cpp', duplicate=0)
 for flag_group in ('CCFLAGS', 'CXXFLAGS'):
     env[flag_group] = [flag for flag in env.get(flag_group, []) if flag != '-fno-exceptions']
 
 env.Append(CCFLAGS=['-fexceptions', '-fno-fast-math', '-ffp-contract=off'])
-env.Append(CPPPATH=[binding + '/include', binding + '/gen/include', binding + '/gdextension'])
+env.Append(CPPPATH=[binding + '/include', 'godot-cpp/gen/include', binding + '/gdextension'])
 library = env.SharedLibrary('bin/space_native', Glob('src/*.cpp'))
 Default(library)

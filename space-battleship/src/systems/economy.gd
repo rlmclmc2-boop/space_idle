@@ -289,7 +289,7 @@ func _spawn_timed_drop(resource: String, base_text: String, speed: float, resour
 	base = amount_api.apply("ceil", [base.value])
 	if not base.ok:
 		return base
-	var quantity = amount_api.apply("mul", [base.value, factors.refinery])
+	var quantity = amount_api.apply("mul", [base.value, factors.resource_collection])
 	if not quantity.ok:
 		return quantity
 	quantity = amount_api.apply("ceil", [quantity.value])

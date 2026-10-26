@@ -119,12 +119,18 @@ class SpaceCombatKernel : public RefCounted {
         String source;
         bool derived = false, wild = false, wild_used = false;
         double blast = 0;
-        std::map<int64_t, double> factors;
+        bool guidance_enabled = false, guidance_limited = false;
+        int64_t guidance_limit = 0;
+        Amount guidance_multiplier = 1;
+        std::map<int64_t, Amount> factors;
     };
     struct Attack {
         Amount damage = 0;
         bool critical = false, critical_bonus_applied = false, secondary = false, repeats = false, higgs = false;
         double higgs_width = 0;
+        bool strange_enabled = false;
+        double strange_probability = 0, strange_delay = 0, strange_multiplier = 0;
+        int strange_kill_spawns = 0, strange_type = 0;
         std::shared_ptr<MissileContext> context;
         std::shared_ptr<const BirthConfig> birth;
     };
@@ -289,9 +295,14 @@ class SpaceCombatKernel : public RefCounted {
     double guidance_multiplier = 1, wild_multiplier = 1, wild_blast = 0;
     int64_t guidance_limit = 0, wild_period = 0, missile_attacks = 0;
     int wild_damage_type = 0;
-    std::shared_ptr<MissileContext> missile_context(const Weapon &w, bool derived) {
+    std::shared_ptr<MissileContext> missile_context(const Weapon &w, bool derived,
+                                                    const std::shared_ptr<MissileContext> &birth = {}) {
         auto c = std::make_shared<MissileContext>();
-        c->source = w.entry.has("drone_id") ? String("drone:") + String(w.entry["drone_id"]) : String("module:") + String::num_int64(w.slot);
+        c->source = birth ? birth->source : w.entry.has("drone_id") ? String("drone:") + String(w.entry["drone_id"]) : String("module:") + String::num_int64(w.slot);
+        c->guidance_enabled = birth ? birth->guidance_enabled : guidance_enabled;
+        c->guidance_limited = birth ? birth->guidance_limited : guidance_limited;
+        c->guidance_limit = birth ? birth->guidance_limit : guidance_limit;
+        c->guidance_multiplier = birth ? birth->guidance_multiplier : Amount(guidance_multiplier);
         c->derived = derived; return c;
     }
     struct StrangePacket {
@@ -648,7 +659,7 @@ class SpaceCombatKernel : public RefCounted {
         f.source_uid = w.hostile && w.source.index < actors.size() ? actors[w.source.index].uid : 0;
         f.source_slot = w.hostile && w.source.index < actors.size() ? actors[w.source.index].slot : w.slot;
         f.instance = inst;
-        if (!w.hostile && w.kind == 2) f.context = missile_ctx ? missile_ctx : (chain || repeated ? missile_context(w,true) : inst->attack->context);
+        if (!w.hostile && w.kind == 2) f.context = missile_ctx ? missile_ctx : (chain || repeated ? missile_context(w,true,inst->attack->context) : inst->attack->context);
         f.damage = inst->attack->damage * multiplier;
         f.repeated = repeated || inst->derived;
         f.chain = chain;
@@ -744,13 +755,13 @@ class SpaceCombatKernel : public RefCounted {
         }
         shield(*a, at);
         const Amount base_raw = raw;
-        if (guidance_enabled && context) {
+        if (context && context->guidance_enabled) {
             auto found = context->factors.find(a->uid);
             if (found == context->factors.end()) {
-                double factor = std::pow(guidance_multiplier,double(a->guidance_layers));
+                Amount factor = context->guidance_multiplier.power_integer(uint64_t(a->guidance_layers));
                 found = context->factors.emplace(a->uid,factor).first;
                 if (!context->derived) {
-                    a->guidance_layers = guidance_limited ? minimum(a->guidance_layers+1,guidance_limit) : a->guidance_layers+1;
+                    a->guidance_layers = context->guidance_limited ? minimum(a->guidance_layers+1,context->guidance_limit) : a->guidance_layers+1;
                 }
             }
             raw *= found->second;
@@ -808,14 +819,15 @@ class SpaceCombatKernel : public RefCounted {
         }
         if (a->hp != hp_before) { a->view["hp"] = wire(a->hp); actor_view_changes.insert(h.index); }
 
-        if (strange_enabled && trigger && inst && wi >= 0 && !weapons[wi].hostile && weapons[wi].kind == 1) {
-            int count = a->hp <= 0 ? strange_kill_spawns : (rng->randf() < strange_probability ? 1 : 0);
+        if (inst && inst->attack && inst->attack->strange_enabled && trigger) {
+            const Attack &birth = *inst->attack;
+            int count = a->hp <= 0 ? birth.strange_kill_spawns : (rng->randf() < birth.strange_probability ? 1 : 0);
             for (int i = 0; i < count; ++i) {
                 StrangePacket p;
                 p.order = next_contact_order();
-                p.damage = raw * strange_multiplier; p.type = strange_type;
-                p.source = source; p.source_slot = inst->attack->birth->slot;
-                strange_pending.emplace(std::make_tuple(at + strange_delay, p.source_slot, p.order), p);
+                p.damage = raw * birth.strange_multiplier; p.type = birth.strange_type;
+                p.source = source; p.source_slot = birth.birth->slot;
+                strange_pending.emplace(std::make_tuple(at + birth.strange_delay, p.source_slot, p.order), p);
             }
         }
         // Birth freezes base damage and blast fraction; impact uses the current missile damage type, as Game does.
@@ -1166,6 +1178,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!sources.empty()) {
             int wi = sources[size_t(rng->randi_range(0, int(sources.size()) - 1))]; const Weapon &w = weapons[wi];
             auto a = std::make_shared<Attack>(); a->birth = w.birth;
+            if (w.kind == 2) a->context = missile_context(w,true);
             a->damage = evaluate_module_value(w.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, w.branch_factors, w.external_factors) * w.factor * drone_weapon(w.kind) * (1.0 + legend_value("dodge_counter", "counter_damage_bonus"));
             auto choices = targets(w.type, clock);
             if (!choices.empty()) launch(wi, choices.front(), a, 1, true);
@@ -1444,7 +1457,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!shared_instance) inst->derived = repeated;
         if (w.kind == 2) {
             auto choices = targets(w.type, clock);
-            auto salvo_context = repeated ? missile_context(w,true) : a->context;
+            auto salvo_context = repeated ? missile_context(w,true,a->context) : a->context;
             for (int n = 0; n < w.salvo; ++n) {
                 Timed pending{clock + n * ejection_gap, ++event_serial, 1, wi, n,
                               w.hostile ? Handle{} : distribute && !choices.empty() ? choices[n % choices.size()] : target, a,
@@ -1504,6 +1517,12 @@ class SpaceCombatKernel : public RefCounted {
             return false;
         auto a = std::make_shared<Attack>();
         a->birth = w.birth;
+        a->strange_enabled = !w.hostile && w.kind == 1 && strange_enabled;
+        if (a->strange_enabled) {
+            a->strange_probability = strange_probability; a->strange_delay = strange_delay;
+            a->strange_multiplier = strange_multiplier; a->strange_kill_spawns = strange_kill_spawns;
+            a->strange_type = strange_type;
+        }
 
         if (!w.hostile && !increment_history(attack_counter)) return false;
         // Match weapon_multiplier grouping before multiplying the rounded base.

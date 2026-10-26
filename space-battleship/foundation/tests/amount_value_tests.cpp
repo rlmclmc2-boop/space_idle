@@ -11,6 +11,12 @@ int main() {
     equal(a("2e500").multiply(a("3e499")), "6e999");
     equal(a("6e999").divide(a("2e500")), "3e499");
     equal(a("1e500").power(2), "1e1000");
+    equal(a("1.5").power_integer(10), "57.6650390625");
+    const Amount guidance_2000 = a("1.5").power_integer(2000);
+    assert(guidance_2000 > a("1e308") && guidance_2000 < a("1e400"));
+    assert(a("1.5").power_integer(2001) == guidance_2000 * a("1.5"));
+    const Amount high_layer_hit = a("1200") * guidance_2000;
+    assert(high_layer_hit > a("1e308") && high_layer_hit < a("1e400"));
     equal(a("1").subtract(a("2")), "0");
     equal(a("1e500").subtract(a("9.9999999999999e499")), "1e486");
     equal(a("0.0001").floor_value(), "0");
