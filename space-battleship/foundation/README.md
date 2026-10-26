@@ -4,32 +4,13 @@
 
 当前保留 Excel 转 JSON、共享 C++ Amount/绑定和保存骨架，入口在 `src/main.tscn`，由 `src/game_session.gd` 驱动持续存在的 native 核。整体架构完成后再安排整体测试；本阶段只检查编译，并运行独立 Amount 的直接 C++ 正确性测试。
 
-## Excel 导入
+## Excel configuration publication
 
-在 space-battleship/ 运行：
+Run `python foundation/import_excel.py` from `space-battleship/`. The entry reads the 29 root workbooks in `config_excel/` using the checked-in `config_tools/production_manifest.json`; `published/` is outside this input set. It validates workbook and sheet inventory, headers, field types, required cells, primary keys, formula caches, selected cross-table references, stage and route coverage, numeric ranges, and typed rule keys. It writes `generated/config.json` only after validation and readback succeed. Failures leave the previous runtime JSON unchanged.
 
-```powershell
-python foundation/import_excel.py
-# 也可指定另一个 Excel 目录和输出位置：
-python foundation/import_excel.py --source <Excel目录> --output <输出JSON>
-```
+The entry also writes `generated/config.validation.json` with source and output hashes on success or cell-specific errors on failure. `--source`, `--output`, `--manifest`, and `--report` override these paths. `run_game.ps1` invokes this same entry before launching Godot. The runtime shape remains `{workbook stem: {sheet name: [row objects]}}`, including explicit null-valued fields. These generated files are local artifacts and do not belong in Git.
 
-默认读取 config_excel/ 根目录的 *.xlsx，不递归进入 published/ 等子目录。输出 generated/config.json，结构为 `{工作簿文件名: {工作表名: [数据行对象]}}`。表头来自第一行，第二、三行为说明，数据从第四行起。公式读取 Excel 已保存的缓存值，导入器不计算公式。
-
-没有逐字段 schema、逐表输入清单、主键/引用/规则检查。它只转换数据，不决定哪些候选或旧内容在游戏里启用。运行方直接读取生成 JSON，例如：
-
-```gdscript
-var text := FileAccess.get_file_as_string("res://generated/config.json")
-var config = JSON.parse_string(text)
-var equipment_rows: Array = config["equipment"]["equipment"]
-```
-
-`GameSession.initialize()` 直接读取该文件并调用普通组装函数，不经过配置包装层。文件名和工作表名原样作为两层键，不生成额外索引、哈希、元数据或发布指针。
-
-Excel 是配置输入权威。需要大数表示的字段应在 Excel 中以文本保存，避免 Excel 自身的数值精度损失；普通数值字段保持原样。导入器原样传递文本，不解析、计算、舍入大数，也不复制 Amount 范围规则或与另一套算法比对。Amount 是唯一数值语义实现；保存层只保管其表示，不重算金额。
-
-不存在 ConfigBundle 或查询包装。配置修改在对应 Excel 中进行，再重新导入；生成 JSON 只是运行产物，不作为测试或人工改值的入口。
-
+`python -m unittest -v test_publish.py` from `config_tools/` runs publication rejection probes on copies of the real consumer tables. The fixture manifest must be separate from production input; its schema must still describe the actual tables.
 ## 原生构建
 
 Amount 值及绑定在 addons/native_battle/src/amount_value.hpp、amount_api.hpp，平台文件替换原语在 foundation_disk.hpp；与保留的 native/GPU 源码一起构建。

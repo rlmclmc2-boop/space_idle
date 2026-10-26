@@ -232,6 +232,10 @@ func _setup_growth_panel() -> void:
 	var box := VBoxContainer.new()
 	box.custom_minimum_size.x = 380
 	scroll.add_child(box)
+	var back := Button.new()
+	back.text = "Return to battle"
+	back.pressed.connect(func(): growth_panel.visible = false)
+	box.add_child(back)
 	growth_status = Label.new()
 	if not _settings_error.is_empty(): growth_status.text = _settings_error
 	box.add_child(growth_status)

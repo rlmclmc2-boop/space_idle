@@ -101,6 +101,17 @@ func _run() -> void:
 		return
 	main.session.set_pause("unlock", false)
 	main.growth_panel.visible = true
+	var back_button: Button = _find_button(main, "Return to battle")
+	if back_button == null:
+		printerr("growth panel return control missing")
+		quit(1)
+		return
+	back_button.pressed.emit()
+	if main.growth_panel.visible:
+		printerr("return control did not close growth panel")
+		quit(1)
+		return
+	main.growth_panel.visible = true
 	var save_path: LineEdit = _find_line(main, "Existing absolute save directory")
 	if save_path == null:
 		printerr("save path control missing")
