@@ -648,20 +648,6 @@ func exchange_hyperspace_materials(source: String, target: String, amount: int) 
 	if economy.accept_budget(wallet, false): economy.publish_budget_change()
 	return {"ok": true}
 
-func reforge_hyperspace(ids: Array) -> Dictionary:
-	if not run_state.is_running(): return run_state.rejection()
-	var prepared: Dictionary = hyperspace_system.prepare_reforge(ids)
-	if not prepared.ok: return prepared
-	return publish_equipment_refit(economy.budget(), "refit", "", [], false, func():
-		var accepted: Dictionary = hyperspace_system.accept_reforge(prepared.retained)
-		if not str(accepted.released_crew).is_empty():
-			var released: Array = crew_system.release_hyperspace(str(accepted.route), false)
-			crew_system.publish_members(released))
-
-func claim_reforged_drone(id: String) -> Dictionary:
-	if not run_state.is_running(): return run_state.rejection()
-	return hyperspace_system.release_sealed(id, campaign_system.progress_facts().cleared_stages)
-
 func _world_contributions() -> Dictionary:
 	for result in [_planet_factors, _crew_factors, _galaxy_factors]:
 		if not result.ok: return result

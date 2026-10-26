@@ -19,7 +19,7 @@
 1. 手动入场：读取 Campaign 返回目的地与通关事实，Hyperspace 准备凭据；结算旧掉落、重置 Battle、Campaign 切状态、接受凭据并开始独立编队。每场成功由 Hyperspace 增加波次，十场后固化奖励；失败与退出返回记录的目的地。
 2. 挂机：Crew 校验空闲与等级；Hyperspace 准备任务后才占用船员。凭据在完成边界固化奖励。领奖先检查仓储和 Economy 的 Amount 加法，再接受凭据与余额。`(round_id, run_id)` 在本轮账本中索引，旧任务即使下一任务已开始也能幂等重试。
 3. 配装/改造：Hyperspace 准备实体及贡献，Battle/native 先验证整组，随后同一次 `publish_equipment_refit` 接受状态、钱包和通知。预览只用实体随机流的局部副本；相同改造操作 ID 与内容返回最近结果。
-4. 重铸候选由 Hyperspace 从现有实体推导，保留槽、星球封存门槛从配置计算；旧轮凭据无效。船员释放由 Session 在原生空配装提交后调用。
+4. 重铸候选由 Hyperspace 从现有实体推导，保留槽、星球封存门槛从配置计算；旧轮凭据无效。完整重铸必须按 `03-progression.md` 第 7 节构造并校验一份新的 GameSession，保留旧会话直到新会话完全可用。当前没有可触发的 Session 重铸入口。
 
 ## 当前验证与限制
 
