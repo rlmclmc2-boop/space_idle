@@ -24,5 +24,11 @@ func _run() -> void:
 			printerr("C09 deferred conversion expected ceil(100*(1-0.25*0.5)*0.5)=44: ", deferred.hits)
 			quit(1)
 			return
+	var renewed: Dictionary = _defence_case(["", "B", ""], true, "memory", 2,
+		{"memory_heal": 0.001, "memory_cap": 0.1}, {"interval": 2.5})
+	if not renewed.ok or renewed.hits.size() != 3 or str(renewed.hits[0][1]) != "8e1" or str(renewed.hits[1][1]) != "2e1" or str(renewed.hits[2][1]) != "1e2" or not is_equal_approx(float(renewed.hits[1][0]), 3.66):
+		printerr("C09 memory B2 reacquisition after 3.41 lockout expiry: ", renewed)
+		quit(1)
+		return
 	print("STAGE6_MEMORY_PROTECTION_NATIVE_OK C09 memory B2 same-type protection, different-type break and lockout; deferred B2 conversion gives 44")
 	quit()

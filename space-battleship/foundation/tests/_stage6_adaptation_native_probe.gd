@@ -1,9 +1,15 @@
 extends "res://foundation/tests/_stage6_critical_oracle_probe.gd"
 ## C09 native adaptation capacity, per-source reduction, covers and resistance.
 
-func _defence_case(choices: Array, second_source: bool = false, effect_name: String = "adaptation", other_type: int = 1, defence_overrides: Dictionary = {}) -> Dictionary:
+func _defence_case(choices: Array, second_source: bool = false, effect_name: String = "adaptation", other_type: int = 1, defence_overrides: Dictionary = {}, options: Dictionary = {}) -> Dictionary:
 	var session = Session.new()
 	var ready: Dictionary = session.initialize("res://generated/config.json", 139)
+	if ready.ok and options.get("shield", false):
+		ready = session.campaign_system.accept_reforge(session.campaign_system.save_state(), 21)
+		if ready.ok:
+			session.equipment.refresh_availability(session.campaign_system.available, 21, false)
+			ready = session.campaign_system.change_ship("Cruiser", session.commit_ship_refit)
+		if ready.ok: ready = session.equipment.equip_slot("defence:1", "shield", session.equipment_inputs(), session.publish_equipment_refit)
 	if ready.ok: ready = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if ready.ok: ready = session._growth_setup()
 	if not ready.ok: return ready
@@ -26,6 +32,10 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 	defence.memory_heal = 0.0
 	defence.memory_cap = 0.0
 	defence.deferred_fraction = 0.0
+	if options.get("authored_memory", false):
+		defence.memory_heal = output.defence.memory_heal
+		defence.memory_cap = output.defence.memory_cap
+	if options.get("authored_deferred", false): defence.deferred_fraction = output.defence.deferred_fraction
 	defence.merge(defence_overrides, true)
 	var weapon: Dictionary = session.battle._values.weapons["weapon:0"].duplicate()
 	weapon.base = "0e0"
@@ -41,6 +51,9 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 	source.damage = "1e2"
 	source.interval = 0.5
 	source.remaining = 0.5
+	source.damage = options.get("damage", source.damage)
+	source.interval = options.get("interval", source.interval)
+	source.remaining = options.get("remaining", source.remaining)
 	if second_source:
 		var enemy: Dictionary = setup.wave.enemies[0].duplicate(true)
 		enemy.uid = 2
@@ -54,6 +67,7 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 	ready = session.battle.start_wave(setup)
 	if not ready.ok: return ready
 	var initial: Dictionary = session.battle._kernel.player_view()
+	if options.get("before_advance", false): return {"ok": true, "session": session, "initial": initial}
 	var hits: Array = []
 	var samples: Dictionary = {}
 	for step in 430:
@@ -63,7 +77,7 @@ func _defence_case(choices: Array, second_source: bool = false, effect_name: Str
 		for receipt in session.battle.consume_damage_receipts():
 			if receipt.hostile: hits.append([receipt.clock, receipt.damage])
 		if step in [219, 319, 419]: samples[step] = session.battle._kernel.player_view().armour
-	return {"ok": true, "initial": initial, "hits": hits, "samples": samples}
+	return {"ok": true, "initial": initial, "hits": hits, "samples": samples, "session": session}
 
 func _run() -> void:
 	var plain: Dictionary = _defence_case(["", "", ""])
