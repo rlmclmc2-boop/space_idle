@@ -10,7 +10,7 @@
 - 单资源setter保留；非法精确字段只给该资源错误和未知目标，合法另一资源仍有可应用标记。持续0%仍InvalidResearchRatio；关闭合法自动设置不清投入或周期相位。原速度、周期投入和ratio准入抽成同一原求值供推进/预览复用，未另写UI曲线。
 - 原panel_model补research_id，过期预览请求返回ResearchSelectionChanged及当前公开ID，避免调用方偷读私有state。Session.research_preview_inputs经Economy公开收入/钱包提供脱离快照及单一聚合速度因子；不向UI返回组成作失效比较。所需工作量/完成效果只在脱离数据上计算，按等级/缓存值及已接纳peak等真实来源复用；可见时新读其余事实，无新全局revision层。
 
-## 定向验证
+## 初始候选3264858b的定向验证
 
 [探针](../../foundation/tests/_amount_preview_probe.gd)使用现行生产编译配置、真实模块和FoundationAmount；局部状态/钱包为显式测试装配，未复制或改平衡表。原始结果及源码/工具哈希见[清单](amount-preview-evidence/manifest.json)。
 
@@ -53,3 +53,12 @@ python -c 'from pathlib import Path; import os,subprocess; Path(os.environ["SPAC
 ```
 
 限制：本次没有完整游玩/真实UI工作点接入、完整保存/重铸、随机未来现金流、native故障注入或后续M1/G9几何验证；一次真实Session发布不是完整游戏验收。原179项生成文件修改与262项未跟踪元数据保留不提交，main审批暂停不重试。设计审查历史仍见[原核对](amount-safe-preview-contract.md)，不把本地探针冒称独立双审。
+
+
+## 双审修订：候选容量缓存纯度
+
+原候选`3264858bab136d504eefb938e7582035702ecd60`的旧prepare/refresh及单项allocate/distribute路径会让_capacity在接纳前写入真_state，新current读取因而可能把新容量与旧分配/效果组合。本修订只在_evaluate、_allocate、_distribute入口深拷贝所给状态，沿原公式/钳制/发布求值，接受时才_adopt；没有第二容量账本或签名掩盖。上方初始矩阵与原manifest保留为3264858b的历史证据，不替代本次修订验证。
+
+[新增探针](../../foundation/tests/_reactor_candidate_purity_probe.gd)对原3264858b复现10项断言失败，保留[原始失败日志](amount-preview-evidence/purity-before.txt)，未重新制造基点结果。修复后验证prepare/discard、refresh发布拒绝、allocate/distribute发布拒绝均保持完整真状态（含缓存）及current；prepare未接纳仍旧容量，accept后容量与免费效果一起更新；成功仍各一次发布、原allocate钳制145及均分67/67/66保持。新增探针[通过日志](amount-preview-evidence/purity-after.txt)退出0。
+
+同一配置和匹配DLL下，原Amount探针（含新整组及实际Session/native发布路径）[再次通过](amount-preview-evidence/amount-after-purity.txt)，[入口check-only](amount-preview-evidence/purity-check-only.txt)退出0；未跑无关全套。新增[固定源码/配置/原始字节清单](amount-preview-evidence/purity-manifest.json)区分原基点与修订源码。根证书提示仍存在，未阻止离线探针。仍为独立候选待双审，main继续暂停，原生成物保留。
