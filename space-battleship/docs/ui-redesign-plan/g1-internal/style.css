@@ -151,3 +151,5 @@ button.primary:hover:not(:disabled),button.active:hover{background:#38656c;color
 .field-bar.friendly.pending i{visibility:hidden}
 .full-theater.work-family .outfit-rig[data-weapon-count="5"]{height:490px}
 .batch-result-table article.batch-result-failed{background:#f0ddd2;border-left-color:#b1664d}.batch-result-table article.batch-result-failed>b{color:#984d38}.batch-result-table article.batch-result-skipped{background:#eee7d6;border-left-color:#b2945c}.batch-result-table article.batch-result-not-executed{background:#e6e6dc;border-left-color:#9caa9a}.batch-result-table article.batch-result-purchased{background:#e2ecdc;border-left-color:#6f9e80}
+.m2-single-receipt{padding:15px 17px;margin:18px 0;border:1px solid #b6c9af;border-radius:9px;background:#e4ecdc}.m2-single-receipt b{font-size:13px}.m2-single-receipt p{font-size:12px;line-height:1.8}.m2-single-receipt small{font-size:10px;line-height:1.8;color:#647d6c}
+.batch-receipt .batch-last-request{font-size:11px;color:#617c6b;margin:9px 0 14px}

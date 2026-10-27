@@ -43,12 +43,6 @@ const drones = {
   d2: {name:'猎隼·导弹', weapon:'导弹', quality:'稀有', level:18, affix:'暴击 +4%', icon:'missile.png'},
   d3: {name:'棱镜·光束', weapon:'长激光', quality:'史诗', level:20, affix:'射速 +6%', icon:'beam.png'}
 };
-const equipmentResponses={
-  '24.2 K':{ten:'36.0 K',one:'25.0 K',max:'34.2 K'},'25.0 K':{one:'25.8 K',max:'35.3 K'},'116.0 K':{ten:'148.0 K',one:'119.2 K',max:'129.0 K'},
-  '12.4 K':{ten:'24.2 K',one:'13.1 K',max:'16.3 K'},'13.1 K':{one:'13.8 K',max:'16.9 K'},'13.8 K':{one:'14.5 K',max:'17.6 K'},
-  '14.5 K':{one:'15.2 K',max:'18.3 K'},'16.3 K':{one:'16.9 K',max:'20.4 K'},'15.8 K':{one:'16.5 K',max:'19.6 K'},
-  '84.0 K':{ten:'116.0 K',one:'87.2 K',max:'96.0 K'},'87.2 K':{one:'90.4 K',max:'99.2 K'},'92.0 K':{one:'95.2 K',max:'104.0 K'},'96.0 K':{one:'99.2 K',max:'108.0 K'}
-};
 const studies = SceneModels.research;
 const jobs = {idle:'空闲', 'planet-build':'星球设施施工', 'planet-explore':'星球探索', galaxy:'第一星系建设', hyperspace:'超空间在线挂机保留', research:'AI科研续研岗位',equipment:'装备自动购级',enhancement:'强化自动购级',reactor:'反应炉自动购级'};
 const planetStatus = {building:['施工中','62%','后续施工完成后等待领取'],paused:['缺少施工人员','62%','施工次数已保留'],ready:['待领取','100%','领取后设施收益才生效'],owned:['已领取','100%','轨道船坞收益已计入当前Buff']};
@@ -146,26 +140,7 @@ function candidateType(){return EquipmentWorkbench.isWeapon(state.slot)?(state.f
 function slotIcon(){return 'cartoon_'+state.fitKeys[state.slot]+'.svg';}
 function comparisonCycle(){const current=equipmentCycles[state.fitKeys[state.slot]]||'无装备';return EquipmentWorkbench.isWeapon(state.slot)?'配置周期 '+current+(state.candidate?' → '+equipmentCycles[candidateType()]:'（保持）'):'防御类型 '+(equipmentNames[state.fitKeys[state.slot]]||'空槽')+(state.candidate?' → '+equipmentNames[candidateType()]:'（保持）');}
 function currentCooldown() {return state.cooldowns[state.slot]||0;}
-function equipmentQuote() {
-  const q=equipmentQuoteBase(),response=EquipmentResponseModels.evolutionQuoteCases[state.levels[state.slot]+':'+state.equipmentMode];
-  if(q.action==='equip-buy'&&response&&q.next!=='待取得新报价'){
-    q.price+=' + 简并物质'+response.material;
-    const balance=state.workshop?.materials.degenerate_matter||'210';q.canPay=response.admissionByBalance[balance];q.reason=q.canPay===false?'简并物质不足，本次完整数量保持，不能部分购级':q.canPay===undefined?'本预算尚无可支付响应':'';
-  }
-  return q;
-}
-function equipmentQuoteBase() {
-  if(state.slot>=5){const current=state.attributes[state.slot],candidate=state.candidate||state.equipment==='compare',weapon=EquipmentWorkbench.isWeapon(state.slot),key=candidateType();
-    if(candidate)return {label:'更换为'+equipmentNames[key],current,next:state.levels[state.slot]===1?(key==='shield'?'37.5':'50'):'待取得新报价',price:'0 · 更换不购级',action:'equip-apply'};
-    const known=state.levels[state.slot]===1&&state.equipmentMode==='one';return {label:'购买1级',current,next:known?(state.fitKeys[state.slot]?(state.fitKeys[state.slot]==='shield'?'48.75':'65'):'0'):'待取得新报价',price:known?'65 铁':'待报价',action:'equip-buy'};
-  }
-  const defence=!EquipmentWorkbench.isWeapon(state.slot), current=state.attributes[state.slot],response=equipmentResponses[current];
-  const candidate=state.candidate||state.equipment==='compare';
-  if(candidate) return {label:'更换为'+equipmentNames[candidateType()], current, next:defence?(candidateType()==='armour'?'92.0 K':'84.0 K'):(candidateType()==='cannon'?'15.8 K':'12.4 K'), price:'0 · 更换不购级', action:'equip-apply'};
-  if(state.equipmentMode==='ten') return {label:'购买10级',current,next:response?.ten||'待取得新报价',price:response?.ten?'5.80 M 铁':'待报价',action:'equip-buy'};
-  if(state.equipmentMode==='max') return {label:'本槽MAX · 4级',current,next:response?.max||'待取得新报价',price:'2.10 M 铁',action:'equip-buy'};
-  return {label:'购买1级',current,next:response?.one||'待取得新报价',price:'0.42 M 铁',action:'equip-buy'};
-}
+function equipmentQuote(){return EquipmentWorkbench.singleQuote(state);}
 function equipment() {return EquipmentWorkbench.render(state,control,asset,moduleHead);}
 
 function loadPlanetFixture(stage){
@@ -299,8 +274,8 @@ function dock() {
   if(state.collapsed) return '';
   if(state.module==='equipment'&&state.route!=='equipment')return '';
   if(state.module==='equipment') {
-    const q=equipmentQuote(), disabled=q.next==='待取得新报价'||q.canPay===false||q.canPay===undefined&&!!q.reason||(state.equipment==='poor'&&q.action==='equip-buy')||(q.action==='equip-apply'&&currentCooldown()>0);
-    return `<div class="dock-summary"><b>${EquipmentWorkbench.slot(state.slot).label} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}</b><span>${q.label} · ${q.current} → <strong>${q.next}</strong> · ${comparisonCycle()}</span><span>本次费用 <strong>${q.price}</strong></span></div><div class="dock-buttons">${control(q.action,currentCooldown()>0&&q.action==='equip-apply'?'冷却剩余'+currentCooldown()+'游戏秒':q.label,'primary',disabled)}${control('equip-compare',state.candidate?'查看购级':'更换候选')}</div>`;
+    const q=equipmentQuote(), disabled=!q.known||(q.action==='equip-buy'&&!q.canPay)||(q.action==='equip-apply'&&!q.canSwitch);
+    return `<div class="dock-summary"><b>${EquipmentWorkbench.slot(state.slot).label} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}</b><span>${q.label} · ${q.known?'':'上次读数 '}${q.current} → <strong>${q.next}</strong> · ${comparisonCycle()}</span><span>本次费用 <strong>${q.price}</strong></span></div><div class="dock-buttons">${control(q.action,currentCooldown()>0&&q.action==='equip-apply'?'冷却剩余'+currentCooldown()+'游戏秒':q.label,'primary',disabled)}${control('equip-compare',state.candidate?'查看购级':'更换候选')}</div>`;
   }
   if(state.module==='reactor') {
     const before=effectSnapshots[state.actual.join()],after=effectSnapshots[state.alloc.join()];
@@ -412,8 +387,8 @@ function action(a) {
   else if(a==='reactor-clear') {state.alloc=[0,0,0,0];state.reactorError='';state.reactorReceipt='';state.reactorIntent='clear';notify('清零草稿已准备，免费供能保留');}
   else if(a==='equip-compare') {state.candidate=!state.candidate;state.equipmentMode='one';if(state.equipment==='compare')state.equipment='normal';}
   else if(a==='equip-mode') {state.candidate=false;state.equipmentMode=state.equipmentMode==='max'?'one':'max';}
-  else if(a==='equip-apply') {state.attributes[state.slot]=equipmentQuote().next;state.fitKeys[state.slot]=candidateType();state.fits[state.slot]=equipmentNames[state.fitKeys[state.slot]];state.cooldowns[state.slot]=10;state.equipment='normal';state.candidate=false;window.BattleDesign?.set({equipmentLinked:true});notify('更换成功，当前槽位与比较保留；换装冷却10游戏秒');}
-  else if(a==='equip-buy') {const quote=equipmentQuote();if(quote.next==='待取得新报价'||quote.next===quote.current&&state.fitKeys[state.slot]){notify('当前状态尚无新报价，等级与属性保持');return;}state.attributes[state.slot]=quote.next;state.levels[state.slot]+=state.equipmentMode==='max'?4:state.equipmentMode==='ten'?10:1;window.BattleDesign?.set({equipmentLinked:true});notify('已购级，当前槽位和操作模式保持');}
+
+
   else if(a==='planet-claim') {const f=selectedFacility();if(f.state==='ready'){f.state='owned';state.planet='owned';notify(selectedPlanet().name+' / '+f.name+'已领取，收益生效');}}
   else if(a==='planet-crew'||a==='planet-explorer') {const p=selectedPlanet(),f=selectedFacility(),job=a==='planet-explorer'||!f.extraCrew?'planet-explore':'planet-build';const actual=Object.entries(state.crewMembers).find(([id,m])=>m.available&&m.job===job&&m.targetPlanet===p.id&&(job!=='planet-build'||m.targetFacility===f.id));if(actual){selectCrew(actual[0]);}else{const idle=Object.entries(state.crewMembers).find(([id,m])=>m.available&&m.job==='idle');if(idle)selectCrew(idle[0]);state.crewDraft=job;state.crewPlanet=p.id;state.crewFacility=f.id;notify('当前目标暂无人员；已定位空闲成员候选，尚未派遣');}goRoute('crew');return;}
   else if(a==='planet-auto') {const p=selectedPlanet();p.automatic=!p.automatic;notify(p.automatic?'自动探索已开启':'本次探索仍继续，完成后停止');}
@@ -557,7 +532,7 @@ for(const key of ['reactor','equipment','planet','galaxy']) $('#'+key+'-case').o
   if(key==='reactor') {state.actual=event.target.value==='idle'?[0,0,0,0]:[45,35,20,0];state.alloc=event.target.value==='draft'?[60,35,5,0]:event.target.value==='rejected'?[55,35,20,0]:[...state.actual];state.reactorError=event.target.value==='rejected'?'额度不足，实际供能保持原值。':'';}
   if(key==='galaxy'){const n=state.galaxyNodes[state.galaxyNode];n.state=event.target.value;n.progress=n.state==='complete'?100:n.state==='building'?62:n.state==='upgrading'?48:0;n.level=n.state==='upgrading'?2:n.state==='complete'?3:1;}
 
-  if(key==='equipment'){state.candidate=event.target.value==='compare';state.cooldowns=event.target.value==='cooldown'?{[state.slot]:10}:{};if(event.target.value==='cooldown')state.equipment='normal';}
+  if(key==='equipment'){if(event.target.value==='poor'){const d=EquipmentWorkbench.ensure(state);d.wallet=structuredClone(EquipmentResponseModels.poorWallet);if(state.workshop)state.workshop.materials.degenerate_matter=d.wallet.material;document.querySelector('#iron').textContent=d.wallet.iron;}state.candidate=event.target.value==='compare';state.cooldowns=event.target.value==='cooldown'?{[state.slot]:10}:{};if(event.target.value==='cooldown')state.equipment='normal';}
   render();
 };
 $('#guide-case').onchange=event=>{state.archive.guidePaused=event.target.value==='first';goRoute('archive/tutorial');};
