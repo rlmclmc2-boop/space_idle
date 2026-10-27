@@ -33,7 +33,7 @@
 | 槽事实 → 卡片/所选槽 | `id/category/index/equipment_id/paid_level/effective_level/dormant/switch_ready_at/cooldown_remaining`；槽、额外等级和当前mounts/game_time由原所有者提供；未知slot给原UnknownSlot | 空槽、休眠、未开放和冷却分别表达。冷却只约束换装，不给购级加新禁令；首防御槽规则不改。可复用候选字段，不能从panel_slots.label拆取。 |
 | 同口径比较 → 当前对象比较台 | `slot_id/candidate_id/upgrade_count/scope="charged_base"`，current、upgrade、candidate三行分别含装备身份、paid/effective等级、主值Amount规范文本、状态/原因；类型特性用有单位的具名字段（配置周期/齐射/充能或盾恢复/延迟），不返回拼接中文作数据 | current=现装当前付费级，upgrade=同装备本次**报价实际count**后，candidate=候选装备沿当前付费级，不暗中再购级；候选+购级组合不在最小范围。_charged_base复用原计算，作用于脱离slot，包含它实际提供的静态层，不含历史/分支/外部层；不调用会写_pending的prepare/values/mounted_configuration冒充查询。 |
 | 确定数量报价 → +1/+10固定区 | 直接复用现有`quote_slot(slot_id,n)`的`ok/reason/count/costs/extreme`；costs保留resource id→Amount，展示边界经既有Amount.to_display生成规范文本；可支付/原因复用Economy.can_pay和同批预算 | **不新增第二确定数量报价算法或新价格层。** 武器槽统一laser、防御统一armour曲线，跨进化材料、普通/极端边界沿原_quote_levels；+10单槽仍整批要求支付，不像强化自动缩为可购2级。余额不足不把完整报价改成2级。 |
-| MAX报价 → MAX固定区 | 如需公开，只在Equipment薄包装原_quote_affordable_levels，传同批预算的只读can_pay，输出同样count/costs/extreme及原reason | NoChange/进化材料/离散级数边界沿原搜索，不用log或显示缩写估级，不新增封顶。升级后比较按搜索结果count，不用1或用户请求数替代。 |
+| MAX报价 → MAX固定区 | 如需公开，只在Equipment薄包装原_quote_affordable_levels，传同批预算的只读can_pay，输出同样count/costs/extreme及原reason | 准确保留原搜索：候选报价失败或不可支付均作搜索边界，最终可购0统一返回NoChange；并不逐项透传被探测报价的错误，另有原离散级数极限返回EquipmentLevelRangeExceeded。不能借公开读取顺便改搜索/错误策略；不用log或显示缩写估级，不新增封顶。升级后比较按搜索结果count，不用1或用户请求数替代。 |
 | 当前战斗详情 → 装备详情的“当前实战” | 复用Battle.attribute_details中的entry稳定id及base/value或maximum、已有周期/连发等已接纳事实 | 与charged_base比较分栏并明确口径；不拿当前native最终值对比候选静态值，不扩成假想候选native历史乘数预览。当前盾甲余量不当作候选升级后最大值。 |
 
 比较准入与提交许可分开：候选锁定/类别、首槽卸空、冷却等只读原因复用equip_slot的原检查；如要显示最终无人机/Higgs组合许可，由原Session接纳链提取可复用纯准入，不调用真实提交来探测。本提案不承诺当前候选主值可计算就能提交，也不为休眠/空槽新增购级限制。静态主值未知时为null+原因，空槽有明确状态，不伪造当前战斗数值；不把所有普通拒绝新增成RunState故障。
@@ -44,7 +44,7 @@
 
 | 读取/消费者 | 最小字段与权威 | 明确不做 |
 |---|---|---|
-| 等级/效果事实 → 等级行/六卡/节点详情 | `paid/bonus/effective/available/reason`，实际weapon_order/defence_order；效果行`id/category/position/threshold/active`；节点`index/threshold/choice/open/function_active/reason`。由_effective_level/_describe与原规则投影，世界额外+原extra_levels计入bonus，不抬高购买费用 | 不从published_output的内部键在UI猜完整效果，不按位置/等级在UI复制门槛。保留选择与实际生效分别显示；repeat节点2的B不产生第二代功能，不把open误标为function_active。原_choose准入不借展示改变。 |
+| 等级/效果事实 → 等级行/六卡/节点详情 | `paid/bonus/effective/available/reason`，实际weapon_order/defence_order；效果行`id/category/position/threshold/active`；节点`index/threshold/choice/open/function_active/reason`。由_effective_level/_describe与原规则投影，世界额外+原extra_levels计入bonus，不抬高购买费用 | 不从published_output的内部键在UI猜完整效果，不按位置/等级在UI复制门槛。保留选择与实际生效分别显示；repeat节点2的B不产生第二代功能，不把open误标为function_active。repeat-B2旧选择可保存但功能不生效；原_choose准入不借展示改变，不能新增命令拒绝。 |
 | 买1/最多10报价 → 当前报价固定区 | 新具名只读报价复用`_quote_purchase(state,request_count,rules,api,can_pay)`，保留request_count、purchasable_count、costs、extreme及reason；只显示现有买1/最多10，不新增强化MAX | 请求10可能成交2；NoChange表示可成交0，不伪造10级费用或真实成功。第1级所需费用可沿_quote(state,1)给作不足提示，与实际可成交总费分开；等级/Amount故障保持错误，不伪装余额不足。 |
 | A/B可选规则说明 → 所选节点详情 | 无论未选、未开放或当前未生效，所选effect/node均返回A/B各自的稳定规则标识、静态参数/单位、门槛、当前选择及可选/功能生效原因；由Enhancement复用同一原规则投影，必要参数不得只在已生效分支上提供 | 这是选择前的规则说明，不是已接纳结果，也不是假想历史乘数或未来收益。UI可本地化规则文字，不按等级/节点自己补公式或猜参数；禁用第二代连发等规则同样保留可读原因，不伪装可用功能。 |
 | 当前已生效静态合成摘要 → 六效果卡主文本 | Enhancement在同一已接纳state与真实bonus/开放/armours上下文上复用_describe/_combat，生成具名summary参数及完整生效A/B规则片段。卡片不解析内部战斗字段，不只有裸旗标。具体截面如下表 | **不调用evaluate**取得查询结果：它会写_pending_output。不调用purchase/set_branch/move_forward来预览。规则片段/说明可前端本地化，业务参数、有效A计数/B状态与作用单位由所有者给出；不输出伪实时历史乘数或未来收益。 |
@@ -65,8 +65,8 @@
 - Amount成本/主值规范文本与本地化缩写分开；resource id和比较variant为身份，不靠“铁/碎片/伤害”字符串解析。报价失败保留原reason；枚举或Amount错误不伪造0。显示秒数、比例沿现有类型，不能先float化Amount再重建。
 - 预览只读，不调用支付接受、native提交或临时占用；_charged_base会写slot._charged，故仅给脱离slot。原MAX局部search_cache可复用，不写真槽/准备状态；新摘要缓存必须覆盖真实依赖，不搬旧bonus/open缓存键。返回脱离/只读截面，不返回可写所有者缓存。
 - 现有命令按提交时最新状态重新quote/准入。每次执行仅以该次quote支付；凡已发生成功接纳，回执均需最小附加实际count/逐资源spent（批量按slot）及提交边界，供“上次成交”显示，不能仅挂在ok=true分支；buy_all_levels即使最终ok=false返回后续failure，也须如实给出已提交槽及数量/支出、总支出，同时保留后续reason。未成功提交的候选数量/费用不得冒充已成交；提交后fault或结果不确定仍沿原政策标明边界，不虚构完整回滚。回执不是下一次报价，不靠通知后重读等级/钱包差反推，保持原部分成功语义。不得为保持旧预览费用而锁钱包/级数或重放旧候选。
-- 所选slot/candidate/request模式变化清对应报价；购级、换装、换舰、材料开放、预算或比较因子实际变化使对应读取失效，冷却沿真实游戏时间。装备先沿现有slots_changed/loadout_changed/options_changed和预算事实，不新增总线。强化如补具名presentation_changed，需在_state/_values、钱包/跨模块接纳完成后发布，监听读取同批最终事实；不能在通知后写回旧候选。前端保持未提交草稿和稳定对象，隐藏不停止领域推进。
+- 所选slot/candidate/request模式变化清对应报价；购级、换装、换舰、材料开放、预算或比较因子实际变化使对应读取失效，冷却沿真实游戏时间。装备先沿现有slots_changed/loadout_changed/options_changed和预算事实，不新增总线。强化可用最小具名通知或可见时重读，不建事件框架；若补presentation_changed，必须在Session钱包等本次整批接纳完成后发布，监听读取同批_state/_values与钱包最终事实，不能只在Enhancement.accept_prepared内部提前发信号。外部bonus/装甲变化经accept_output更新效果而不改变购买/分支state，也必须被通知或可见重读覆盖；不得只按_state变化失效。通知后不写回旧候选。前端保持未提交草稿和稳定对象，隐藏不停止领域推进。
 
 ## 实施前复审与证据范围
 
-本轮只做源码、候选范围、链接与差异核对，不运行游戏测试。若提案获准，必要验证为：n=1/10及MAX口径一致、材料跨阶/普通极端与离散边界；强化最多10部分数量/0与首级价；可写返回不污染槽缓存/准备态；未选/未开放A/B规则参数可读且与当前合成结果分开，改序/分支后A叠加和B语义完整、原存选择不丢；批量已成功接纳后返回failure仍有逐槽count/spent及提交边界；报价后状态变化确认取最新，成交/下一报价分离；同步通知不读到旧_values。动态历史/未来收益、UI品质和几何验收仍不包含。未批准前不实现这些端口。
+本轮只做源码、候选范围、链接与差异核对，不运行游戏测试。若提案获准，必要验证为：n=1/10及MAX口径一致、材料跨阶/普通极端与离散边界；强化最多10部分数量/0与首级价；可写返回不污染槽缓存/准备态；未选/未开放A/B规则参数可读且与当前合成结果分开，改序/分支后A叠加和B语义完整、原存选择不丢；批量已成功接纳后返回failure仍有逐槽count/spent及提交边界；报价后状态变化确认取最新，成交/下一报价分离；同步通知在Session整批接纳后不读到旧_values/钱包，外部bonus/装甲经accept_output变更也可见；MAX错误作边界/0为NoChange及repeat-B2保存但不生效的原语义保持。动态历史/未来收益、UI品质和几何验收仍不包含。未批准前不实现这些端口。
