@@ -29,3 +29,9 @@
 ## 复现入口
 
 复用`foundation/README.md`当前工具链及原Amount工作流的匹配DLL/同哈希配置。设置SPACE_IDLE_NATIVE_EXTENSION、SPACE_IDLE_GALAXY_PROBE_CONFIG，并将固定基线`cd4169cc:space-battleship/src/systems/hyperspace.gd`的Git原始字节放入临时.gd，设置SPACE_IDLE_READONLY_BASELINE指向它；使用Godot4.7.2 `--headless --path . --script res://foundation/tests/_readonly_preview_probe.gd`。入口检查为`--headless --path . --check-only --script res://src/main.gd`。临时基线不提交，原始日志与清单保留在本目录。main审批仍暂停，原生成元数据保留不提交。
+
+## 证据交付换行修订
+
+独立复查发现`641d46db`首次提交时Git将两份CRLF日志规范化为LF：探针Git对象327字节、check-only对象73字节，而原清单记录本地捕获的330/75字节。本地捕获哈希当时核对通过，不代表首次提交的Git对象字节匹配；本次明确纠正该交付边界。
+
+本次不重跑，仅在证据目录用精确文件名的`.gitattributes -text`保留两份原始捕获字节，重新纳入Git并回读对象；清单原sha256/bytes保持，表示原始stdout与本次Git对象均为330/75字节。历史首次Git对象的LF哈希另记previous_delivery，不把换行规范化后的旧对象称作原始字节；源码canonical_lf_sha256仍只表示源码LF规范化边界。运行实现和通过范围不变。

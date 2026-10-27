@@ -1,0 +1,3 @@
+# Preserve the two captured stdout files byte-for-byte.
+readonly-preview.txt -text
+readonly-check-only.txt -text

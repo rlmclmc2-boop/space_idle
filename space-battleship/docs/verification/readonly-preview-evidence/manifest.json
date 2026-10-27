@@ -32,5 +32,20 @@
   "configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
   "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
   "filter_baseline_case_count": 39,
-  "limitations": "Focused real Session/module probe and entry check only; test-owned history/personnel/planet fixtures; no UI, full gameplay, rewards/advance, save/restore acceptance, or geometry acceptance."
+  "limitations": "Focused real Session/module probe and entry check only; test-owned history/personnel/planet fixtures; no UI, full gameplay, rewards/advance, save/restore acceptance, or geometry acceptance.",
+  "evidence_byte_policy": "For the two named stdout files, sha256/bytes mean captured raw stdout and exact Git blob bytes; local -text attributes disable newline conversion. Source canonical_lf_sha256 remains a separate normalized-source boundary.",
+  "previous_delivery": {
+    "commit": "641d46dbde225247a054dad62f3e5168f00d6aa6",
+    "issue": "Git normalized these two raw CRLF stdout files to LF on initial add; the original manifest described captured/worktree bytes, not those initial Git blobs. No test rerun.",
+    "git_lf_blobs": {
+      "readonly-preview.txt": {
+        "bytes": 327,
+        "sha256": "dfd01f671eb9fedca2dfebc12200840fbc4ed3e60107e67e1892689bd799508a"
+      },
+      "readonly-check-only.txt": {
+        "bytes": 73,
+        "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e"
+      }
+    }
+  }
 }
