@@ -1049,7 +1049,7 @@
     },
     {
       "source_line": 306,
-      "destination": "space-battleship/docs/game-design/contracts/equipment.md",
+      "destination": "space-battleship/docs/game-design/14-ui-contracts.md",
       "source_sha256": "bffb2271574ea196669b9acd101f0d701a0c601e5ba37ef0c6ff64b16e919b1a",
       "rendered_sha256": "bffb2271574ea196669b9acd101f0d701a0c601e5ba37ef0c6ff64b16e919b1a"
     },
@@ -1074,9 +1074,9 @@
   ],
   "outputs": {
     "space-battleship/docs/game-design/14-ui-contracts.md": {
-      "bytes": 24352,
-      "lines": 167,
-      "sha256_lf": "409ed610fc80d8ba0085240e6b81c8996c2d28e67a9550909d5194b6477efeda"
+      "bytes": 24789,
+      "lines": 169,
+      "sha256_lf": "e88244b981d91708c64adfbabfcd4073bc11af90cdf03a90f4cc09807c0aeb62"
     },
     "space-battleship/docs/game-design/contracts/battle.md": {
       "bytes": 10081,
@@ -1084,9 +1084,9 @@
       "sha256_lf": "a40c67839f4ef74b078b5c7bc34d02840cc2265a4d80ac0a9bc74550fdad7a1d"
     },
     "space-battleship/docs/game-design/contracts/equipment.md": {
-      "bytes": 3957,
-      "lines": 28,
-      "sha256_lf": "f88ffd384bc56a185b14736cfcb155aeb57edcaf2bc647bdc1c7678a140a2c86"
+      "bytes": 3541,
+      "lines": 26,
+      "sha256_lf": "86db2a8f9c9f73f787f92fd0653376c6824a418f7a5ad1c327f3e901527ca2c7"
     },
     "space-battleship/docs/game-design/contracts/reactor.md": {
       "bytes": 5206,
@@ -1099,9 +1099,9 @@
       "sha256_lf": "54d9f43044a017d876ad9a319fcaa748fcc8f2271c8708381458a664342d7401"
     },
     "space-battleship/docs/game-design/contracts/enhancement.md": {
-      "bytes": 3518,
+      "bytes": 3539,
       "lines": 27,
-      "sha256_lf": "1d0c0dfaba7652240acbf4cd3b5a429434a98ab99a65a0a83d00dc39e848dc5a"
+      "sha256_lf": "2311773af97f0153dacc49f106ccb6b28dc073d37808549f2f4376b3cfb0913f"
     },
     "space-battleship/docs/game-design/contracts/crew.md": {
       "bytes": 4128,

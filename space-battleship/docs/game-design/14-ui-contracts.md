@@ -162,6 +162,8 @@
 
 设计`0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8`已双审通过；本分支运行候选待实现双审、未合main。仅本节读取与回执边界，未搬入b7bb旧缓存/提前通知；历史来源核对留在[提案](../verification/equipment-enhancement-readonly-contract-proposal.md)，固定源码及原始证据见[实现记录](../verification/equipment-enhancement-readonly-implementation.md)。
 
+静态比较止于成长/进化/科研/供能；当前实战值另复用Battle.attribute_details，不拿当前native最终值对比候选charged_base。switch_admission仅复用原单槽换装准入，不承诺最终无人机/Higgs组合许可，实际提交仍沿Session原链。查询只读已接纳事实；_charged_base仅给脱离slot，强化不调用会写_pending_output的evaluate，不设可写展示缓存或临时接纳。
+
 实际执行回执附在原命令结果`purchase_receipt`，不改变原ok/reason或部分成功政策。装备成功提交给`commit_status=accepted`、逐槽purchases[{slot_id,count,spent}]和逐资源合计spent；单槽/批量捕获本次执行quote，不靠钱包差/通知后重读反推。buy_all_levels即使返回后续failure、ok=false，已经成功发布的槽仍给accepted回执。无发布为not_submitted，普通发布拒绝为rejected且无确认成交；提交后fault为fault_unknown、spent=null，不声称回滚。强化购买同样给commit_status、实际count/spent。早期原准入/报价/支付拒绝可无回执，不表示曾提交；没有成功接纳的候选成本不得当实际支出。回执是上次成交，不是下一报价。
 
 报价/比较/选项不锁资源，确认按最新所有者状态重验。装备沿原slots_changed/loadout_changed/options_changed及预算事实刷新；强化采用可见时同步重读，覆盖purchase/改序/分支及外部bonus/armours经accept_output变动，不新增presentation_changed或事件框架。新增强化查询用独立只读输入，经Equipment.accepted_armours复用计数助手，只读已接纳槽；不随_pending_slots变化。原enhancement_inputs/equipped_armours供命令准备的候选语义保持，不要求查询调用方避开装备pending阶段。Session整批接纳结束再刷新；不在模块接纳中提前发信号。当前对象消失清旧详情，输入变化清对应旧报价，保留未提交UI草稿。
