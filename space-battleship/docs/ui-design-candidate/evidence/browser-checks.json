@@ -1,0 +1,491 @@
+{
+  "scope": "design HTML only; no game validation",
+  "checks": [
+    {
+      "check": "reactor-1440x960 whole frame",
+      "pass": true,
+      "detail": "{'width': 1440, 'body': 1440, 'broken': [], 'bodyHeight': 960, 'height': 960}"
+    },
+    {
+      "check": "reactor-1440x960 images",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 persistent battle",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 visible #pause",
+      "pass": true,
+      "detail": "{'x': 29, 'y': 870, 'width': 139.078125, 'height': 40}"
+    },
+    {
+      "check": "reactor-1440x960 visible #garrison",
+      "pass": true,
+      "detail": "{'x': 176.078125, 'y': 870, 'width': 139.09375, 'height': 40}"
+    },
+    {
+      "check": "reactor-1440x960 visible #battle-detail",
+      "pass": true,
+      "detail": "{'x': 323.171875, 'y': 870, 'width': 139.09375, 'height': 40}"
+    },
+    {
+      "check": "reactor-1440x960 invalid draft retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 unavailable condensation hidden",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 collapse preserves pause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 expand works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 modal opens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 modal focus trapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1440x960 modal closes and restores focus",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 whole frame",
+      "pass": true,
+      "detail": "{'width': 1024, 'body': 1024, 'broken': [], 'bodyHeight': 768, 'height': 768}"
+    },
+    {
+      "check": "reactor-1024x768 images",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 persistent battle",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 visible #pause",
+      "pass": true,
+      "detail": "{'x': 25, 'y': 670, 'width': 84.125, 'height': 52}"
+    },
+    {
+      "check": "reactor-1024x768 visible #garrison",
+      "pass": true,
+      "detail": "{'x': 117.125, 'y': 670, 'width': 84.140625, 'height': 52}"
+    },
+    {
+      "check": "reactor-1024x768 visible #battle-detail",
+      "pass": true,
+      "detail": "{'x': 209.265625, 'y': 670, 'width': 84.125, 'height': 52}"
+    },
+    {
+      "check": "reactor-1024x768 invalid draft retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 unavailable condensation hidden",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 collapse preserves pause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 expand works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 modal opens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 modal focus trapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-1024x768 modal closes and restores focus",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 whole frame",
+      "pass": true,
+      "detail": "{'width': 572, 'body': 572, 'broken': [], 'bodyHeight': 960, 'height': 960}"
+    },
+    {
+      "check": "reactor-572x960 images",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 persistent battle",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 visible #pause",
+      "pass": true,
+      "detail": "{'x': 17, 'y': 296, 'width': 89.296875, 'height': 32}"
+    },
+    {
+      "check": "reactor-572x960 visible #garrison",
+      "pass": true,
+      "detail": "{'x': 17, 'y': 333, 'width': 183.59375, 'height': 32}"
+    },
+    {
+      "check": "reactor-572x960 visible #battle-detail",
+      "pass": true,
+      "detail": "{'x': 111.296875, 'y': 296, 'width': 89.296875, 'height': 32}"
+    },
+    {
+      "check": "reactor-572x960 invalid draft retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 unavailable condensation hidden",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 collapse preserves pause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 expand works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 modal opens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 modal focus trapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "reactor-572x960 modal closes and restores focus",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 whole frame",
+      "pass": true,
+      "detail": "{'width': 390, 'body': 390, 'broken': [], 'bodyHeight': 844, 'height': 844}"
+    },
+    {
+      "check": "research-390x844 images",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 persistent battle",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 visible #pause",
+      "pass": true,
+      "detail": "{'x': 17, 'y': 261.1875, 'width': 48.984375, 'height': 32}"
+    },
+    {
+      "check": "research-390x844 visible #garrison",
+      "pass": true,
+      "detail": "{'x': 17, 'y': 298.1875, 'width': 102.96875, 'height': 32}"
+    },
+    {
+      "check": "research-390x844 visible #battle-detail",
+      "pass": true,
+      "detail": "{'x': 70.984375, 'y': 261.1875, 'width': 48.984375, 'height': 32}"
+    },
+    {
+      "check": "research-390x844 restore actual input",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 collapse preserves pause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 expand works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 modal opens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 modal focus trapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-390x844 modal closes and restores focus",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 whole frame",
+      "pass": true,
+      "detail": "{'width': 1440, 'body': 1440, 'broken': [], 'bodyHeight': 960, 'height': 960}"
+    },
+    {
+      "check": "research-1440x960 images",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 persistent battle",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 visible #pause",
+      "pass": true,
+      "detail": "{'x': 29, 'y': 870, 'width': 139.078125, 'height': 40}"
+    },
+    {
+      "check": "research-1440x960 visible #garrison",
+      "pass": true,
+      "detail": "{'x': 176.078125, 'y': 870, 'width': 139.09375, 'height': 40}"
+    },
+    {
+      "check": "research-1440x960 visible #battle-detail",
+      "pass": true,
+      "detail": "{'x': 323.171875, 'y': 870, 'width': 139.09375, 'height': 40}"
+    },
+    {
+      "check": "research-1440x960 restore actual input",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 collapse preserves pause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 expand works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 modal opens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 modal focus trapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-1440x960 modal closes and restores focus",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "equipment-1440x960 whole frame",
+      "pass": true,
+      "detail": "{'width': 1440, 'body': 1440, 'broken': [], 'bodyHeight': 960, 'height': 960}"
+    },
+    {
+      "check": "equipment-1440x960 images",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "equipment-1440x960 persistent battle",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "equipment-1440x960 visible #pause",
+      "pass": true,
+      "detail": "{'x': 29, 'y': 870, 'width': 139.078125, 'height': 40}"
+    },
+    {
+      "check": "equipment-1440x960 visible #garrison",
+      "pass": true,
+      "detail": "{'x': 176.078125, 'y': 870, 'width': 139.09375, 'height': 40}"
+    },
+    {
+      "check": "equipment-1440x960 visible #battle-detail",
+      "pass": true,
+      "detail": "{'x': 323.171875, 'y': 870, 'width': 139.09375, 'height': 40}"
+    },
+    {
+      "check": "equipment-1440x960 collapse preserves pause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "equipment-1440x960 expand works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "equipment-1440x960 modal opens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "equipment-1440x960 modal focus trapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "equipment-1440x960 modal closes and restores focus",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 whole frame",
+      "pass": true,
+      "detail": "{'width': 390, 'body': 390, 'broken': [], 'bodyHeight': 844, 'height': 844}"
+    },
+    {
+      "check": "research-half-390x844 images",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 persistent battle",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 visible #pause",
+      "pass": true,
+      "detail": "{'x': 17, 'y': 362.46875, 'width': 32.5, 'height': 32}"
+    },
+    {
+      "check": "research-half-390x844 visible #garrison",
+      "pass": true,
+      "detail": "{'x': 17, 'y': 399.46875, 'width': 70, 'height': 32}"
+    },
+    {
+      "check": "research-half-390x844 visible #battle-detail",
+      "pass": true,
+      "detail": "{'x': 54.5, 'y': 362.46875, 'width': 32.5, 'height': 32}"
+    },
+    {
+      "check": "research-half-390x844 restore actual input",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 collapse preserves pause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 expand works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 modal opens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 modal focus trapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "research-half-390x844 modal closes and restores focus",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation equipment",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation reactor",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation research",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation enhancement",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation crew",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation planet",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation galaxy",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "navigation hyperspace",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "javascript errors",
+      "pass": true,
+      "detail": "[]"
+    }
+  ],
+  "passed": 95,
+  "total": 95,
+  "followup": {
+    "change": "hide duplicate collapse at medium widths; avoid battle control wrapping",
+    "checks": [
+      "1024 unique collapse control visible",
+      "1024/572/390 no document horizontal overflow"
+    ],
+    "pass": true
+  },
+  "preview_sha256": "4431affb35a528ce49d78a463113ca10dc86a7e05dbfe2925962a2e1173ddf66"
+}
