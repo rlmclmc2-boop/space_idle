@@ -1,0 +1,174 @@
+{
+  "source_commit": "47225d44e4d7489fce3eccc4603a1fb175462b8a",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "full200 organize stays200; one free slot moves1 and leaves9 with reason",
+    "ordinary d1+d2 preset then both ultimate: current shared admission rejects atomically",
+    "physical lower views: per-drone hanging difference + confirm, legendary100/10 quote + confirm, actual100/10 receipt, named ultimate rejection + disabled apply"
+  ],
+  "limitations": [
+    "Docs-only finite response fixtures; not native game integration or complete M9/G2 approval",
+    "Reproduction uses local Chromium and preview server port8766"
+  ],
+  "images": [
+    {
+      "file": "scene-full200-organize-rejected-1440x900.png",
+      "family": "scene",
+      "case": "scene-full200-organize-rejected",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "7008c5e2fe7357b49c46a7df1a5700e5e3adc7a3447fcee601032a88b2783852"
+    },
+    {
+      "file": "scene-one-free-slot-partial-organize-1440x900.png",
+      "family": "scene",
+      "case": "scene-one-free-slot-partial-organize",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "c63a511dc72f49c63a76c236fc21eabd130735c26f22dcaa450804a89eb32ee0"
+    },
+    {
+      "file": "scene-two-ultimate-preset-atomic-rejection-1440x900.png",
+      "family": "scene",
+      "case": "scene-two-ultimate-preset-atomic-rejection",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "69cd05a193cde987b2a70d032d8e15419a3d182b94ed198a8e8cb4f66538a688"
+    },
+    {
+      "file": "scene-preset-hanging-and-confirm-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-preset-hanging-and-confirm-lower",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 99,
+        "inner": 0
+      },
+      "sha256": "15101acc7f53fca8d5df5c1f8f3d8fd0dd50884ab200442ef6ae1d9184328355"
+    },
+    {
+      "file": "scene-named-ultimate-rejection-and-disabled-button-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-named-ultimate-rejection-and-disabled-button-lower",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 269,
+        "inner": 0
+      },
+      "sha256": "54680d626e930812528835d3179e6b99f8e2927ba09362dcadf38b280cd5510a"
+    },
+    {
+      "file": "scene-legend100-10-quote-and-confirm-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-legend100-10-quote-and-confirm-lower",
+      "route": "hyperspace/protection",
+      "scroll": {
+        "outer": 137,
+        "inner": 0
+      },
+      "sha256": "7d1cfe85780affab7197a07dd46812cd995a3b274cfc227f3f6416fcc323d2ca"
+    },
+    {
+      "file": "scene-legend100-10-actual-receipt-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-legend100-10-actual-receipt-lower",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "36a9a4034597e0aae16fd75af170aa841ea89e2c410ae5abc2b92cfc7948c5b3"
+    },
+    {
+      "file": "work-full200-organize-rejected-1440x900.png",
+      "family": "work",
+      "case": "work-full200-organize-rejected",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "d84687b79ada9b41f446d49d4a2dfa2d536c3579e4790afad68ee72c74ac3de0"
+    },
+    {
+      "file": "work-one-free-slot-partial-organize-1440x900.png",
+      "family": "work",
+      "case": "work-one-free-slot-partial-organize",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "64a868cf5b928e945cb675aa07036a4c8724df3227f3ba7eef31ed93cf79e903"
+    },
+    {
+      "file": "work-two-ultimate-preset-atomic-rejection-1440x900.png",
+      "family": "work",
+      "case": "work-two-ultimate-preset-atomic-rejection",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 40
+      },
+      "sha256": "3887a56ee1387ba012ed49a51e07b9a070405d30255d9882e0046699d4040c7b"
+    },
+    {
+      "file": "work-preset-hanging-and-confirm-lower-1440x900.png",
+      "family": "work",
+      "case": "work-preset-hanging-and-confirm-lower",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 185
+      },
+      "sha256": "0739aa9913274eedd990229f9b4cdcdfb3c5b20e8d7f077363dc702608a0d665"
+    },
+    {
+      "file": "work-named-ultimate-rejection-and-disabled-button-lower-1440x900.png",
+      "family": "work",
+      "case": "work-named-ultimate-rejection-and-disabled-button-lower",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 0,
+        "inner": 328
+      },
+      "sha256": "368ff0ed23bc20bb19c06750432a6ef6de40df8775ccb25557ddaa9cc6fa3a19"
+    },
+    {
+      "file": "work-legend100-10-quote-and-confirm-lower-1440x900.png",
+      "family": "work",
+      "case": "work-legend100-10-quote-and-confirm-lower",
+      "route": "hyperspace/protection",
+      "scroll": {
+        "outer": 0,
+        "inner": 222
+      },
+      "sha256": "f3d5bcc6c1a5bec38d70a0479886aab1c8a799edb1910b18fd0d73260f2c1cca"
+    },
+    {
+      "file": "work-legend100-10-actual-receipt-lower-1440x900.png",
+      "family": "work",
+      "case": "work-legend100-10-actual-receipt-lower",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 77
+      },
+      "sha256": "e958d58bd88422f6e94a87be01e6ba07fef32abd7a30a68cd112899a1a6767a3"
+    }
+  ]
+}
