@@ -1,23 +1,21 @@
-# Amount候选完成后的接替交接
+# 后端/契约接替交接
 
-- 原工作区：`C:/Users/Administrator/Documents/Codex/2026-10-27/task-5/main-candidate`；项目cwd为其`space-battleship/`。后继复用原目录，不克隆、不新建工作区。
-- 当前分支：`feat/amount-safe-previews`；本交接前代码与验证固定版本：`7aabc373690bca1817bdfa96ef34b9118a0fca7f`，已普通推送并回读一致。当前交接提交只增加本文档，不变更代码。
-- 保留179项已跟踪生成文件修改、262项未跟踪.uid/.import；不清理、不纳入提交。最后核对剩余全部为这两类元数据。
-- main审批暂停，不重试合入或发布；候选仍待双审。不得把局部探针通过称为完整游戏验收。
-- 本线程已实际压缩，当前自然项已完成；未开始下一制作批次。
+- 原工作区：`C:/Users/Administrator/Documents/Codex/2026-10-27/task-5/main-candidate`；项目cwd为其`space-battleship/`。后继复用原目录与分支，不克隆、不新建工作区。
+- 分支：`feat/amount-safe-previews`；本次交接更新前HEAD为`7a3ba156f975d07014f6b59a548060729a982128`，已普通推送并回读一致。本交接提交仅更新本文，不变更运行实现或规范。
+- 保留179项已跟踪生成文件修改、262项未跟踪.uid/.import；不清理、不纳入提交。
+- main审批暂停，不重试合入或另路发布。以下通过均仅限已列定向证据，不等于完整游戏/UI/性能验收。
+- 本线程已实际压缩，当前自然项结束；未开始M9实现或其他新制作。
 
-## 已完成自然项
+## 当前入口与待复查项
 
-7aabc373在Reactor的_evaluate/_allocate/_distribute入口脱离状态后才写候选容量缓存，接受时才_adopt；不新增容量账本，不变更公式、钳制、均分或发布。原3264858b的10项失败原始日志、修复通过日志、原Amount/实际Session探针通过日志及入口check-only均见[清单](amount-preview-evidence/purity-manifest.json)，提交内源码/原始证据哈希已复核匹配。三个修复后检查退出0。详见[验证报告](amount-preview-implementation.md)。
+从[game-design唯一入口](../game-design/README.md)按需读取：[14共同边界与模块索引](../game-design/14-ui-contracts.md)，再到`docs/game-design/contracts/`对应分册。纯结构迁移固定`7a3ba156f975d07014f6b59a548060729a982128`，待复查；覆盖清单与链接检查见[迁移记录](ui-contract-split.md)，原规范语义/版本状态未升级。
 
-## 后续唯一需求入口及尚未裁定项
+M9最小只读提案固定`cad1ee17b1efbf39ee06d725b33182eefbb78699`，待复查、未实现：[提案](m9-readonly-contract-proposal.md)。兑换准备已补目标旧余额+received的Amount.add及原顺序/错误；can_pay=true不等于完整可兑换许可。保存宿主摘要仍为独立剩余项，不混入M9。后继先等复查结论与实施授权。
 
-共享几何提案只读需求入口为`space-battleship/docs/ui-redesign-plan/g1-internal/g2-battle-restoration.md`，固定前端版本`a3e05ea05418841821e2acfec6899b900d8d0b90`的“联合空间预算修订：两个条件提案，均待批准”节；可用git show读取。该入口是需求与条件方案，不是参数批准。后续仅做最小共享契约/权威来源提案，不先改真实几何、Excel、数值或规则，UI不得自行重排。
+## 已通过的实现范围
 
-尚未裁定的占位身份：33011配置只有组级combatTier=elite，CombatSetup将其写入每个actor；visual_rank对elite组全员返回elite，仅部分家族具分级贴图。配置没有逐舰占位等级字段，不能按是否有elite贴图认定等级。18格依赖所选模型display_span/缺省1的条件语义，60格依赖全员elite为2×2的条件语义；二者均未成为批准规则，格面积也不能代替矩形装箱。需先核权威映射，无映射则列明待裁定的两种语义及影响，不擅改每舰等级或新尺寸。
+- Amount预览纯度及入口浅拷贝尾项：`6f6f9fd2a6f9fb5b2ce829a86f02937552b5328c`，定向双审通过；[实现与证据](amount-preview-implementation.md)。
+- 超空间路线最佳/单次与自动预览、过滤导入预览、Planet自动状态：证据字节修订至`4c1de5074377278a474befb9bd618c0f19d27d65`，三项定向双审通过；[实现与证据](readonly-preview-implementation.md)。
+- M2/M5读取、实际成交回执及已接纳装甲读取边界：`ab6e887349cd4db1e0162471130686d2c2f30ca0`，定向双审通过；[实现与证据](equipment-enhancement-readonly-implementation.md)。保留原命令准备对pending装甲的候选语义；新查询仅读actual。不得称完整UI验收。
 
-已读路径供接替核对：src/combat_setup.gd::build_wave、scripts/enemy_visual_identity.gd::visual_rank、scripts/ship_geometry_convention.gd::formation_positions与battle_geometry；现阵型按数量排位，未消费占位等级。普通/精英/Boss占位要求见docs/game-design/art/modules/battle.md，实际尺寸与空白参数仍待批准。
-
-无人机现状：src/systems/battle.gd从装备稳定id生成drone:id及generation，但武器muzzle仍为玩家原点；_sync_geometry对drone直接沿用该值。scripts/hyperspace_drone_visual.gd已有按稳定身份取视图与socket/root变换辅助，尚需追完整接纳链。提案应区分阵型位置所有者、无人机稳定身份、单一canonical变换/socket与native出生一致性，不仅移动显示位置、不将身体中心当真炮口。上述仅查证线索，未完成接口方案或运行验收。
-
-本轮共享几何来源核对与最小待审方案见[定向提案](shared-geometry-source-proposal.md)；占位身份、真实参数及运动边界仍待裁定，不表示启动实施。Amount浅拷贝尾项及同探针证据见[实现报告末节](amount-preview-implementation.md#复查尾项入口浅拷贝)。
+共享几何仍仅[来源与最小提案](shared-geometry-source-proposal.md)，固定`0ec9572715a9555774e4ee56b891fff71c2725ff`。M1已定首领居中3×2不重开；逐舰占位来源冲突、成熟整体方案真实参数/运动边界待裁定，不实施真实几何、布点、Excel或新规则。
