@@ -45,3 +45,14 @@
 - 反应炉3张：`reactor-1440x960.png`、`reactor-1200x900.png`、`reactor-invalid-1440x960.png`。
 - 科研9张：`research-1440x960.png`、`research-terminal-1440x960.png`、`research-paused-1440x960.png`、`research-complete-1440x960.png`、`research-choice-1440x960.png`、`research-choice-1200x900.png`、`research-automatic-1440x960.png`、`research-automatic-applied-1440x960.png`、`research-partial-1440x960.png`。
 - 舰装7张：`equipment-1440x960.png`、`equipment-1920x1080.png`、`equipment-cooldown-1440x960.png`、`equipment-insufficient-1440x960.png`、`equipment-success-1440x960.png`、`equipment-receipt-1440x960.png`、`equipment-settled-1440x960.png`。
+
+
+## 小修复核与结构设计收尾（0d37500b）
+
+- 后续审核对象：`0d37500b5485c19872b8560a3e97406e60d88c77`，仍为同一设计候选分支；仅核对R03-01、完成态实际回执和技术注释边界，不重新扩大审核。
+- 静态查看本次差异；实际打开新增 `equipment-refit-success-1440x960.png` 与更新的 `equipment-success-1440x960.png`、`equipment-receipt-1440x960.png`、`equipment-settled-1440x960.png` 四张整屏。没有运行新复测，制作方12项检查只作为其交付记录。
+- 当前长激光正确显示“持续伤害14.2K/秒”；回执列舰炮→长激光、槽位19→19，以及换装前单次伤害12.6K/发、换装后持续伤害14.2K/秒。名称/量纲不再混用，回执不再以待展示说明代替实际样例。
+- 同槽位轨同步显示W1长激光；购级完成态仍给19→20和前后属性/已支付费用，旧候选报价与提交按钮没有恢复。通知收回后的已展开记录仍可见。
+- 完成面只保留当前装配、完成记录和“当前没有待确认操作”；读取下一次报价等技术说明移到场景外明确标记“审阅注（非产品文案）”的区域。该技术注释边界通过。
+- **R03-01关闭。更新最终结论：截至0d37500b，本阶段桌面宽屏整屏与反应炉/科研/舰装三个代表舱室的结构设计独立审核通过，原六项已闭环，无本次范围内遗留阻断。**
+- 这替代上文80d1afd4时“R03-01小修前不通过”的暂定结论；不扩大为最终美术/安装元数据、其他模块/全部操作链、真实业务接入或V0–V10实机验收通过，也不构成合入整个设计分支的授权。后续按原阶段边界交付，不重新打开已经关闭的六项清单。
