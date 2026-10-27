@@ -750,6 +750,16 @@ func economy_display_context() -> Dictionary:
 	context.make_read_only()
 	return context
 
+## Public preview inputs expose only an aggregate factor to the Research owner.
+func research_preview_inputs() -> Dictionary:
+	if research == null or economy == null or _research_speed.is_empty() or not _crew_factors.has("research_staffed"):
+		return {"ok": false, "reason": "SessionUnavailable"}
+	var rates: Dictionary = economy.income_rates(wall_time, game_time, research.income_window(), "investment")
+	if not rates.ok: return rates
+	return {"ok": true, "wallet": economy.budget().duplicate(true), "income_rates": rates.rates.duplicate(true),
+		"speed_factor": _research_speed.duplicate(true), "staffed": bool(_crew_factors.research_staffed),
+		"window_seconds": research.income_window(), "game_time": game_time}
+
 func reactor_inputs() -> Dictionary:
 	var multiplier: Dictionary = _hyperspace_module_factor("extra_storage")
 	if not multiplier.ok: return multiplier

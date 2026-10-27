@@ -1,6 +1,8 @@
 # Amount安全预览契约：固定来源与待审边界
 
-纯文档候选，分支`docs/amount-safe-preview-contract`；基底`372f8499b12b4efe88df22acff0554b147a3da38`。本次仅新增[14第9节](../game-design/14-ui-contracts.md#9-待审提案反应炉整组草稿与科研预算的amount安全预览)及入口；没有预览实现、游戏/配置变更或main发布。
+**本页保留077cd522设计阶段的静态核对；后续运行候选状态/证据见[实现记录](amount-preview-implementation.md)，不把设计通过当运行验收。**
+
+纯文档候选，分支`docs/amount-safe-preview-contract`；基底`372f8499b12b4efe88df22acff0554b147a3da38`。本次仅新增[14第9节](../game-design/14-ui-contracts.md#9-已审设计反应炉整组草稿与科研预算的amount安全预览)及入口；没有预览实现、游戏/配置变更或main发布。
 
 ## 请求与实际行为核对
 

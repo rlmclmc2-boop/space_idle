@@ -8,6 +8,8 @@ var _state: Dictionary
 var _definitions: Dictionary = {}
 var _rules: Dictionary = {}
 var _api
+var _budget_work_cache: Dictionary = {}
+var _budget_effect_cache: Dictionary = {}
 
 func save_state() -> Dictionary:
 	var state: Dictionary = _state.duplicate(true)
@@ -36,6 +38,8 @@ func restore_state(state: Dictionary) -> Dictionary:
 	if not is_finite(state.ratio) or not is_finite(state.refresh_elapsed) or state.ratio < 0.0 or state.refresh_elapsed < 0.0 or (not state.current.is_empty() and not _definitions.has(state.current)):
 		return {"ok": false, "reason": "InvalidResearchState"}
 	_state = _initial(_rules)
+	_budget_work_cache.clear()
+	_budget_effect_cache.clear()
 	for key in ["levels", "work", "current", "investment", "auto_invest", "ratio", "refresh_elapsed", "peaks", "required_work"]:
 		_state[key] = state[key].duplicate(true) if state[key] is Dictionary or state[key] is Array else state[key]
 	investment_changed.emit()
@@ -60,9 +64,242 @@ func panel_model() -> Dictionary:
 	for resource in ["1", "2"]:
 		var amount: Dictionary = _state.investment.get(resource, {"m": 0.0, "e": 0})
 		investment[resource] = "0" if str(amount.m) in ["0", "0.0"] else str(amount.m) + "e" + str(amount.e)
-	return {"options": options, "ratio": _state.ratio, "minimum_ratio": _rules.research_minimum_ratio,
+	return {"options": options, "research_id": str(_state.current), "ratio": _state.ratio, "minimum_ratio": _rules.research_minimum_ratio,
 		"auto_invest": _state.auto_invest, "investment": investment}
 
+## Session supplies detached public inputs; UI never reads private speed assembly.
+func budget_preview(request: Dictionary, inputs: Dictionary) -> Dictionary:
+	if not request.get("research_id") is String or request.research_id != str(_state.current):
+		return {"ok": false, "reason": "ResearchSelectionChanged", "research_id": str(_state.current)}
+	if not bool(inputs.get("ok", true)): return inputs.duplicate(true)
+	if not inputs.get("wallet") is Dictionary or not inputs.get("income_rates") is Dictionary or not inputs.get("speed_factor") is Dictionary or not inputs.get("staffed") is bool:
+		return {"ok": false, "reason": "InvalidResearchPreviewInputs"}
+	for resource in ["1", "2"]:
+		if not inputs.income_rates.get(resource) is Dictionary: return {"ok": false, "reason": "InvalidResearchPreviewInputs"}
+	var context: Dictionary = _budget_work_context()
+	var zero: Dictionary = _api.apply("zero", []).value
+	var current_rates: Dictionary = {}
+	for resource in ["1", "2"]: current_rates[resource] = _state.investment.get(resource, zero)
+	var current: Dictionary = _budget_view(current_rates, inputs, context)
+	if not current.ok: return current
+	var kind: String = str(request.get("kind", ""))
+	if kind not in ["once_ratio", "once_amounts", "following_sample"]: return {"ok": false, "reason": "InvalidResearchPreview"}
+	var targets: Dictionary = {}
+	var errors: Dictionary = {}
+	var reason: String = ""
+	var ratio: float = 0.0
+	if kind == "once_amounts":
+		var texts = request.get("amount_texts")
+		if not texts is Dictionary: return {"ok": false, "reason": "InvalidResearchPreview"}
+		for key in texts:
+			if key not in ["1", "2"]: return {"ok": false, "reason": "InvalidResearchResource", "resource": key}
+		for resource in ["1", "2"]:
+			if not texts.get(resource) is String:
+				errors[resource] = {"reason": "InvalidResearchAmount"}
+				continue
+			var quantity: Dictionary = _api.apply("from_decimal", [texts[resource]])
+			if quantity.ok: quantity = _api.apply("floor", [quantity.value])
+			if quantity.ok: targets[resource] = quantity.value
+			else: errors[resource] = {"reason": str(quantity.get("error", "InvalidResearchAmount")), "text": texts[resource]}
+		if not errors.is_empty(): reason = "InvalidResearchAmount"
+	else:
+		if not request.get("basis_points") is int or request.basis_points < 0 or request.basis_points > 10000:
+			return {"ok": false, "reason": "InvalidResearchRatio"}
+		ratio = float(request.basis_points) / 10000.0
+		if kind == "following_sample":
+			if not request.get("enabled") is bool: return {"ok": false, "reason": "InvalidResearchPreview"}
+			var admission: Dictionary = _automatic_ratio_admission(ratio, _rules)
+			if not admission.ok: reason = str(admission.reason)
+			elif not request.enabled: reason = "AutomaticDisabled"
+		if reason.is_empty():
+			var share: Dictionary = _api.apply("div", [_api.apply("from_decimal", [str(request.basis_points)]).value, _api.apply("from_decimal", ["10000"]).value])
+			if not share.ok: return share
+			for resource in ["1", "2"]:
+				var target: Dictionary = _income_rate_target(inputs.income_rates[resource], share.value, kind == "following_sample", _api)
+				if not target.ok: return target
+				targets[resource] = target.value
+	var compared = null
+	if targets.size() == 2 and errors.is_empty():
+		compared = _budget_view(targets, inputs, context)
+		if not compared.ok: return compared
+	var rows: Dictionary = {}
+	for resource in ["1", "2"]:
+		var row: Dictionary = current.resources[resource].duplicate(true)
+		row.current_rate = current.investment[resource]
+		row.net_current = row.net
+		row.stock_duration_current = row.stock_duration
+		row.erase("net")
+		row.erase("stock_duration")
+		for field in ["draft_rate", "following_sample_rate", "net_draft", "net_sample", "stock_duration_draft", "stock_duration_sample"]: row[field] = null
+		if targets.has(resource):
+			var resource_view: Dictionary = _budget_resource(resource, targets[resource], inputs)
+			if not resource_view.ok: return resource_view
+			var following: bool = kind == "following_sample"
+			row["following_sample_rate" if following else "draft_rate"] = _api.apply("to_display", [targets[resource]]).text
+			row["net_sample" if following else "net_draft"] = resource_view.net
+			row["stock_duration_sample" if following else "stock_duration_draft"] = resource_view.stock_duration
+		row.can_apply = kind != "following_sample" and targets.has(resource) and _run_state.is_running()
+		row.reason = str(errors.get(resource, {}).get("reason", ""))
+		rows[resource] = row
+	current.erase("resources")
+	current.merge(context.details)
+	current.automatic_enabled = _state.auto_invest
+	current.automatic_ratio = _state.ratio
+	current.minimum_ratio = _rules.research_minimum_ratio
+	var blocked: String = "AutomaticDisabled" if not _state.auto_invest else "ResearchStaffRequired" if not inputs.staffed else ""
+	var comparison = compared if compared != null else {"investment": null, "speed_now": null, "completion_estimate": null, "reason": reason, "field_errors": errors}
+	comparison.erase("resources")
+	if kind == "following_sample":
+		comparison.enabled = request.enabled
+		comparison.ratio = ratio
+	var applicable: bool = reason in ["", "AutomaticDisabled"] and _run_state.is_running()
+	return {"ok": true, "can_apply": applicable, "reason": reason if _run_state.is_running() else "SessionUnavailable",
+		"source": {"window_seconds": inputs.get("window_seconds", income_window()), "window_end_game": inputs.get("game_time")},
+		"current": current, "resources": rows, "field_errors": errors,
+		"immediate_draft": comparison if kind != "following_sample" else null,
+		"following_sample": comparison if kind == "following_sample" else null,
+		"completion_effects": _budget_completion_effects(),
+		"automatic_refresh": {"remaining_game_seconds": maxf(0.0, income_window() - float(_state.refresh_elapsed)),
+			"due": automatic_due(inputs.staffed), "reason": blocked}}
+
+func _budget_work_context() -> Dictionary:
+	var id: String = str(_state.current)
+	var zero: Dictionary = _api.apply("zero", []).value
+	var details := {"research_id": id, "level": null,
+		"work": null, "required": null, "remaining_work": null, "reason": "NoCurrentResearch"}
+	if id.is_empty() or not _definitions.has(id): return {"remaining": null, "details": details}
+	details.level = int(_state.levels.get(id, 0))
+	var work: Dictionary = _state.work.get(id, zero)
+	details.work = _api.apply("to_display", [work]).text
+	if int(details.level) == 9223372036854775807:
+		details.reason = "ResearchLevelRangeExceeded"
+		return {"remaining": null, "details": details}
+	var signature := {"id": id, "level": details.level, "saved": _state.required_work.get(id)}
+	if _budget_work_cache.get("signature") != signature:
+		var detached := {"levels": _state.levels, "required_work": _state.required_work.duplicate(true)}
+		_budget_work_cache = {"signature": signature, "required": _required_work(detached, _definitions[id], _api)}
+	var required: Dictionary = _budget_work_cache.required
+	if not required.ok:
+		details.reason = str(required.get("error", "ResearchWorkUnavailable"))
+		return {"remaining": null, "details": details}
+	var remaining: Dictionary = _api.apply("sub_nonnegative", [required.value, work])
+	if not remaining.ok:
+		details.reason = str(remaining.get("error", "ResearchWorkUnavailable"))
+		return {"remaining": null, "details": details}
+	details.required = _api.apply("to_display", [required.value]).text
+	details.remaining_work = _api.apply("to_display", [remaining.value]).text
+	details.reason = ""
+	return {"remaining": remaining.value, "details": details}
+
+func _budget_resource(resource: String, rate: Dictionary, inputs: Dictionary) -> Dictionary:
+	var zero: Dictionary = _api.apply("zero", []).value
+	var balance: Dictionary = inputs.wallet.get(resource, zero)
+	var income: Dictionary = inputs.income_rates[resource]
+	var compared: Dictionary = _api.apply("compare", [income, rate])
+	if not compared.ok: return compared
+	var checked_balance: Dictionary = _api.apply("compare", [balance, zero])
+	if not checked_balance.ok: return checked_balance
+	var direction: int = int(compared.scalar)
+	var net: Dictionary = _api.apply("sub_nonnegative", [income, rate] if direction >= 0 else [rate, income])
+	if not net.ok: return net
+	var stock := {"kind": "not_spending", "game_seconds": null}
+	if _api.apply("compare", [rate, zero]).scalar > 0:
+		var duration: Dictionary = _api.apply("div", [balance, rate])
+		if not duration.ok: return duration
+		stock = {"kind": "finite", "game_seconds": _api.apply("to_display", [duration.value]).text}
+	return {"ok": true, "income_rate": _api.apply("to_display", [income]).text, "balance": _api.apply("to_display", [balance]).text,
+		"net": {"direction": "surplus" if direction > 0 else "deficit" if direction < 0 else "balanced", "amount": _api.apply("to_display", [net.value]).text},
+		"stock_duration": stock}
+
+func _budget_view(rates: Dictionary, inputs: Dictionary, context: Dictionary) -> Dictionary:
+	var zero: Dictionary = _api.apply("zero", []).value
+	var paying: Dictionary = {}
+	var funded: Dictionary = {}
+	var investment: Dictionary = {}
+	var resources: Dictionary = {}
+	for resource in ["1", "2"]:
+		investment[resource] = _api.apply("to_display", [rates[resource]]).text
+		var row: Dictionary = _budget_resource(resource, rates[resource], inputs)
+		if not row.ok: return row
+		resources[resource] = row
+		if _api.apply("compare", [rates[resource], zero]).scalar > 0:
+			funded[resource] = rates[resource]
+			if _api.apply("compare", [inputs.wallet.get(resource, zero), zero]).scalar > 0: paying[resource] = rates[resource]
+	var result := {"ok": true, "investment": investment, "resources": resources,
+		"speed_now": null, "completion_estimate": null, "reason": str(context.details.reason)}
+	if str(_state.current).is_empty(): return result
+	var speed: Dictionary = _work_speed(_state, _rules, _api, inputs.speed_factor, paying)
+	if not speed.ok: return speed
+	result.speed_now = _api.apply("to_display", [speed.value]).text
+	if context.remaining == null: return result
+	var fully_funded: Dictionary = _work_speed(_state, _rules, _api, inputs.speed_factor, funded)
+	if not fully_funded.ok: return fully_funded
+	if _api.apply("compare", [fully_funded.value, zero]).scalar <= 0:
+		result.reason = "NoResearchSpeed"
+		return result
+	var duration: Dictionary = _api.apply("div", [context.remaining, fully_funded.value])
+	if not duration.ok:
+		result.reason = str(duration.get("error", "ResearchEstimateUnavailable"))
+		return result
+	var required_funding: Dictionary = {}
+	var enough: bool = true
+	for resource in ["1", "2"]:
+		var cost: Dictionary = _api.apply("mul", [rates[resource], duration.value])
+		if not cost.ok:
+			result.reason = str(cost.get("error", "ResearchEstimateUnavailable"))
+			return result
+		required_funding[resource] = _api.apply("to_display", [cost.value]).text
+		enough = enough and _api.apply("compare", [inputs.wallet.get(resource, zero), cost.value]).scalar >= 0
+	result.completion_estimate = {"condition": "FrozenInputsContinuouslyFunded", "funded_speed": _api.apply("to_display", [fully_funded.value]).text,
+		"game_seconds": _api.apply("to_display", [duration.value]).text, "assumed_paid_resources": funded.keys(),
+		"required_funding": required_funding, "current_wallet_sufficient": enough}
+	return result
+
+func _budget_completion_effects() -> Array:
+	var id: String = str(_state.current)
+	if id.is_empty() or not _definitions.has(id) or int(_state.levels.get(id, 0)) == 9223372036854775807: return []
+	var signature := {"id": id, "levels": _state.levels.duplicate(), "peaks": _state.peaks.duplicate(true)}
+	if _budget_effect_cache.get("signature") == signature: return _budget_effect_cache.rows.duplicate(true)
+	var next: Dictionary = _state.duplicate()
+	next.levels = _state.levels.duplicate()
+	next.levels[id] = int(next.levels.get(id, 0)) + 1
+	var rows: Array = []
+	for effect in str(_definitions[id].effect).split(","):
+		var before: Dictionary
+		var after: Dictionary
+		if effect == "ai_count":
+			var one: Dictionary = _api.apply("from_decimal", ["1"]).value
+			before = _api.apply("add", [_api.apply("from_decimal", [str(_state.levels.get("singularity", 0))]).value, one])
+			after = _api.apply("add", [_api.apply("from_decimal", [str(next.levels.get("singularity", 0))]).value, one])
+		else:
+			before = _factor(_state, _definitions, effect, _rules, _api)
+			after = _factor(next, _definitions, effect, _rules, _api)
+		rows.append({"id": effect, "current": _api.apply("to_display", [before.value]).text if before.ok else null,
+			"next": _api.apply("to_display", [after.value]).text if after.ok else null,
+			"reason": "" if before.ok and after.ok else "ResearchEffectUnavailable"})
+	_budget_effect_cache = {"signature": signature, "rows": rows}
+	return rows.duplicate(true)
+
+static func _automatic_ratio_admission(ratio: float, rules: Dictionary) -> Dictionary:
+	return {"ok": true} if is_finite(ratio) and ratio >= float(rules.research_minimum_ratio) and ratio <= 1.0 else {"ok": false, "reason": "InvalidResearchRatio"}
+
+static func _income_rate_target(rate: Dictionary, ratio: Dictionary, minimum_one: bool, api) -> Dictionary:
+	var target: Dictionary = api.apply("mul", [rate, ratio])
+	if not target.ok: return target
+	target = api.apply("floor", [target.value])
+	if not target.ok or not minimum_one: return target
+	return api.apply("max", [api.apply("from_decimal", ["1"]).value, target.value])
+
+static func _work_speed(state: Dictionary, rules: Dictionary, api, external: Dictionary, paying: Dictionary) -> Dictionary:
+	var speed: float = (float(int(state.levels.get("singularity", 0))) + float(rules.research_ai_divisor)) / float(rules.research_ai_divisor)
+	for resource in ["1", "2"]:
+		if not paying.has(resource): continue
+		var logarithm: Dictionary = api.apply("log10", [paying[resource]])
+		if not logarithm.ok: return logarithm
+		speed *= maxf(1.0, 1.0 + logarithm.scalar / float(rules.research_invest_log_divisor))
+	var value: Dictionary = api.apply("from_decimal", [str(speed)])
+	if not value.ok: return value
+	return api.apply("mul", [value.value, external])
 func _finish_advance(next: Dictionary, wallet: Dictionary, completed: bool, continuation_error = null, completed_id: String = "") -> Dictionary:
 	var changed: bool = _state.available != next.available
 	_state = next
@@ -132,8 +369,8 @@ func set_automatic(enabled: bool, ratio: float) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var state: Dictionary = _state
 	var rules: Dictionary = _rules
-	if not is_finite(ratio) or ratio < float(rules.research_minimum_ratio) or ratio > 1.0:
-		return {"ok": false, "reason": "InvalidResearchRatio"}
+	var admitted: Dictionary = _automatic_ratio_admission(ratio, rules)
+	if not admitted.ok: return admitted
 	state.auto_invest = enabled
 	state.ratio = ratio
 	investment_changed.emit()
@@ -244,15 +481,9 @@ func refresh_income(peak_rates: Dictionary, investment_rates: Dictionary, income
 	if automatic_due:
 		next.refresh_elapsed = fmod(float(next.refresh_elapsed), float(rules.research_income_window))
 		var ratio = api.apply("from_decimal", [str(next.ratio)])
-		var one = api.apply("from_decimal", ["1"])
 		for resource in ["1", "2"]:
-			var rate = api.apply("mul", [investment_rates[resource], ratio.value])
-			if not rate.ok:
-				return rate
-			rate = api.apply("floor", [rate.value])
-			rate = api.apply("max", [one.value, rate.value])
-			if not rate.ok:
-				return rate
+			var rate: Dictionary = _income_rate_target(investment_rates[resource], ratio.value, true, api)
+			if not rate.ok: return rate
 			next.investment[resource] = rate.value
 	var factors_changed: bool = false
 	# Only unification consumes peaks. Compare the actual factors used by Session,
@@ -325,7 +556,6 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 	var remaining: float = dt
 	while remaining > 0.0:
 		var piece: float = remaining
-		var speed: float = (float(int(next.levels.get("singularity", 0))) + float(rules.research_ai_divisor)) / float(rules.research_ai_divisor)
 		var paying: Dictionary = {}
 		var exhausted: Array = []
 		var full_dt = api.apply("from_decimal", [str(remaining)])
@@ -347,14 +577,9 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 					exhausted.clear()
 				if affordable == piece:
 					exhausted.append(resource)
-			var log_rate = api.apply("log10", [rate])
-			if not log_rate.ok:
-				return log_rate
-			speed *= maxf(1.0, 1.0 + log_rate.scalar / float(rules.research_invest_log_divisor))
 			paying[resource] = rate
 		var duration = api.apply("from_decimal", [str(piece)])
-		var speed_value = api.apply("from_decimal", [str(speed)])
-		speed_value = api.apply("mul", [speed_value.value, crew_speed])
+		var speed_value: Dictionary = _work_speed(next, rules, api, crew_speed, paying)
 		if not speed_value.ok:
 			return speed_value
 		var work = api.apply("mul", [speed_value.value, duration.value])
