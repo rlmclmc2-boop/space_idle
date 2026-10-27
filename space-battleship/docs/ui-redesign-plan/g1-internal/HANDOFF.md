@@ -107,3 +107,9 @@
 改造/图鉴源码`344a1bd4e51c08c2b18dfd6f1a2a965a866d63e5`、28张同版证据`6e803fea74099d68e0e6cb99ff9bc90f668744b1`已推送。接续修仓储/过滤四项：预设逐机挂设差异、详情真实位置、200密集浏览/持续所选/就近动作、过滤字符串与自身键。见`g2-hyperspace-restoration.md`末节与`evidence/g2-storage-filter-r2/manifest.json`。
 
 仍未实际压缩；当前main基线仍e93c2212，Galaxy恢复贡献与14§8三项只读仍只在已审候选、合main权限阻塞；前端未在UI补Galaxy账本，也不把候选标成main已有。下一未完成仍为超空间路线/任务/满仓回执/完整状态、M1完整战场与G9、五舰/批量与全动态装配及真实接口接线。
+
+### 仓储/过滤R2与改造当前事实关联补丁
+
+仓储/过滤源码`f1cf60faf86b41acc26b62e3158c1a2846dcc5a6`、14张同版证据`ac4f8a60237c45dba91d4c5cf9b435fa8e89e63b`已推送。后收到改造三条反例，随本关联自然点修究极事实贯穿、d3身份变化后的拆解新响应及chain_count合法阶级，见`g2-forge-restoration.md`末节；同版`evidence/g2-forge-current-facts/manifest.json`。
+
+仍未实际压缩，无执行环境阻塞；继续保留同一/workspace/space_idle工作区。路线/任务/仓满回执、M1/G9、五舰与批量仍开放，不把本关联补丁当完整超空间完成。
