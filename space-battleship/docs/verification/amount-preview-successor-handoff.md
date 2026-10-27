@@ -19,3 +19,5 @@
 已读路径供接替核对：src/combat_setup.gd::build_wave、scripts/enemy_visual_identity.gd::visual_rank、scripts/ship_geometry_convention.gd::formation_positions与battle_geometry；现阵型按数量排位，未消费占位等级。普通/精英/Boss占位要求见docs/game-design/art/modules/battle.md，实际尺寸与空白参数仍待批准。
 
 无人机现状：src/systems/battle.gd从装备稳定id生成drone:id及generation，但武器muzzle仍为玩家原点；_sync_geometry对drone直接沿用该值。scripts/hyperspace_drone_visual.gd已有按稳定身份取视图与socket/root变换辅助，尚需追完整接纳链。提案应区分阵型位置所有者、无人机稳定身份、单一canonical变换/socket与native出生一致性，不仅移动显示位置、不将身体中心当真炮口。上述仅查证线索，未完成接口方案或运行验收。
+
+本轮共享几何来源核对与最小待审方案见[定向提案](shared-geometry-source-proposal.md)；占位身份、真实参数及运动边界仍待裁定，不表示启动实施。Amount浅拷贝尾项及同探针证据见[实现报告末节](amount-preview-implementation.md#复查尾项入口浅拷贝)。
