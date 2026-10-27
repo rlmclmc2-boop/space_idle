@@ -102,3 +102,6 @@ button.primary:hover:not(:disabled),button.active:hover{background:#38656c;color
 .enhance-node-details[open] summary{margin-bottom:5px}
 .enhance-receipt{display:flex;align-items:center;gap:12px;background:#dfebdd;padding:10px 13px;border-left:3px solid #629887;font-size:12px;margin:12px 0}
 .enhance-receipt small{font-size:10px;color:#688274}
+
+.retained-drones{gap:12px 20px}.retained-drones label{display:inline-flex;align-items:center;gap:6px;white-space:normal;min-width:0}.retained-drones input[type=checkbox]{width:16px;height:16px;padding:0;margin:0;flex:0 0 16px;accent-color:#4b8e7b}
+.technical-details{font-size:10px;color:#73867a;margin:10px 0;line-height:1.8}.technical-details summary{cursor:pointer}.technical-details p{font-size:10px!important;margin:7px 0!important;overflow-wrap:anywhere}.danger-result p{font-size:12px;line-height:1.8}.danger-result button{font-size:12px}
