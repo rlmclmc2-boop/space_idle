@@ -15,11 +15,11 @@
     "parked layout experiment"
   ],
   "sha256": {
-    ".gitattributes": "b565512c9a7b471f6b59b062cc4e4a0979f681a27de3fa32f848769ede697143",
+    ".gitattributes": "65fab7009c980de31e7f55100d5cc4b41c200768e3c111412345de87109bf56e",
     "c1-capacity-followup.md": "84057f9a82822c3aff316eb5f25ea981e6434877b2e3293c76d763154d6fd0d6",
     "c4-readonly-review.md": "e8051a48bb0c45d5e35395646396e3f09ee9794216cc300974c4f3e4126bd0d1",
     "interface-candidate.md": "47ce4057903ae7becbd5edbd2cb73f5fbcc7967786f4ab29ca26a2d5fcf71e12",
-    "review.md": "9a09b5899441141aecbdcb353876fc8634ba71f1eb83259f6dd3c9eb28bfb449",
+    "review.md": "27afbeaebe76141c5d04d3439d87f5682675534889b297ffdc6254b4c3791bb4",
     "capacity/probe.gd": "5adbf36af58359b1976491d57cffa6187a985d9b3d7805478b1ebd62e91add7f",
     "capacity/probe.log": "00377264cb99a0a08aa37b02f2f1d3a9776d085a190466dbf4bb5ae8bf4928ce",
     "capacity/publication.validation.json": "ed70906a98b076dd1a18598559e159162c7fd840c8be55b361ac0c9bd072481c",
