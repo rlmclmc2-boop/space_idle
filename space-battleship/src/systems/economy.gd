@@ -18,6 +18,7 @@ var _api
 var _income_dirty: bool = false
 var _balance_dirty: bool = true
 var _balance_text: String = ""
+var _balance_rows: Array = []
 
 func _init(parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
 	_run_state = run_state
@@ -139,12 +140,19 @@ func drop_markers() -> Array:
 func balances_text() -> String:
 	if _balance_dirty:
 		var balances: PackedStringArray = []
+		_balance_rows = []
 		for resource in _wallet:
 			var text = _api.apply("to_display", [_wallet[resource]])
-			balances.append(PlayerText.resource(str(resource)) + "：" + PlayerText.number(str(text.text)))
+			var label: String = PlayerText.resource(str(resource)) + "：" + PlayerText.number(str(text.text))
+			balances.append(label)
+			_balance_rows.append({"id": str(resource), "text": label})
 		_balance_text = "   ".join(balances)
 		_balance_dirty = false
 	return _balance_text
+
+func balance_rows() -> Array:
+	balances_text()
+	return _balance_rows.duplicate(true)
 
 func collect_at(point: Vector2, wall: float, game: float, factors: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

@@ -30,7 +30,7 @@ func _run() -> void:
 		if texture.region.size.x <= 0 or texture.region.size.y <= 0 or texture.atlas == null:
 			_fail("turret opaque-region crop missing " + key)
 			return
-	var hud = Hud.new(battle)
+	var hud = Hud.new(battle, session.economy)
 	var model: Dictionary = hud.display_model()
 	if model.armour != "装甲  1,000 / 1,000" or model.shield != "护盾  0 / 0" or model.armour_fraction != 1.0 or model.shield_fraction != 0.0:
 		_fail("current/maximum defence labels or fractions " + str(model))
@@ -50,6 +50,32 @@ func _run() -> void:
 	if PlayerText.number("1e3") != "1,000" or PlayerText.number("3e0") != "3" or "6.5e1" in session.equipment.price_text("weapon:0"):
 		_fail("small-number display")
 		return
+	for resource in ["1", "2", "jewel", "chrono"]:
+		var quantity: Dictionary = session.amount_api.apply("from_decimal", ["8.8e300"]).value
+		if not session.economy.credit_yield(resource, quantity, 0.0, 0.0, false).ok:
+			_fail("multi-currency HUD fixture")
+			return
+	var font := FontVariation.new()
+	font.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
+	font.variation_opentype = {"wght": 450}
+	font.variation_embolden = 0.8
+	var cells: Array = hud.resource_layout()
+	if cells.size() != 4:
+		_fail("all four balances must be visible")
+		return
+	for index in cells.size():
+		var cell: Rect2 = cells[index].rect
+		if not Hud.RESOURCES_RECT.encloses(cell) or cell.intersects(Hud.DEFENCE_RECT) or cell.intersects(Hud.STATISTICS_RECT) or font.get_string_size(cells[index].text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x > cell.size.x:
+			_fail("resource text overlaps, clips or leaves its fixed region: " + str(cells[index]))
+			return
+		for previous in range(index):
+			if cell.intersects(cells[previous].rect):
+				_fail("resource cells overlap")
+				return
+	if Hud.DEFENCE_RECT.intersects(Hud.RESOURCES_RECT) or Hud.RESOURCES_RECT.intersects(Hud.STATISTICS_RECT):
+		_fail("HUD regions overlap")
+		return
+	print("STAGE6_HUD_FOUR_BALANCES_VISIBLE_NONOVERLAPPING_FONT_BOUNDS_OK")
 	print("STAGE6_HUD_READABLE_NAMES_BARS_GEOMETRY_PURITY_OK logical_height=", battle._hull_bounds(logical).size.y, " visual_height=", battle._hull_bounds(visual).size.y)
 	hud.free()
 	quit(0)

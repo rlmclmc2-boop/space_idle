@@ -118,16 +118,26 @@ func defence_depleted() -> bool:
 func reset_for_sortie() -> void:
 	_kernel.clear_encounter("sortie")
 	_kernel.finish_retreat()
+	_retire_enemy_presentation()
 
 func recover_from_retreat() -> bool:
 	_kernel.finish_retreat()
-	return defence_capacity_available()
+	return _retire_enemy_presentation().ok and defence_capacity_available()
 
 func finish_wave(final: bool) -> void:
 	_kernel.finish_wave(final)
 
 func begin_death_retreat() -> void:
 	_kernel.begin_retreat()
+	_retire_enemy_presentation()
+
+func _retire_enemy_presentation() -> Dictionary:
+	# These descriptors and feedback belong to the retired encounter. Rebuild
+	# player-only poses from the post-transition native owner before the next draw.
+	_enemy_visual_weapons = []
+	_enemy_muzzles = {}
+	_events = []
+	return _sync_geometry()
 
 func statistics():
 	return _statistics
@@ -369,6 +379,8 @@ func start_wave(setup: Dictionary) -> Dictionary:
 		_run_state.fail("NativeWaveRejected")
 		return {"ok": false, "reason": "NativeWaveRejected"}
 	_enemy_visual_weapons = setup.wave.weapons.duplicate(true)
+	for weapon in _enemy_visual_weapons:
+		weapon.source_uid = setup.wave.enemies[int(weapon.source)].uid
 	return _sync_geometry()
 
 func validate_drones(contributions: Array, capacity: int) -> Dictionary:
@@ -413,9 +425,11 @@ func _sync_geometry() -> Dictionary:
 		var pose: Dictionary = _weapon_pose(str(weapon.entry.key), weapon.muzzle, -PI * 0.5, 30.0)
 		_weapon_poses[id] = pose
 		_player_muzzles[id] = pose.muzzle
+	var actor_indices: Dictionary = {}
+	for index in actors.size(): actor_indices[int(actors[index].uid)] = index
 	for weapon in _enemy_visual_weapons:
-		var source: int = int(weapon.source)
-		if source >= actors.size(): continue
+		if not actor_indices.has(int(weapon.source_uid)): continue
+		var source: int = int(actor_indices[int(weapon.source_uid)])
 		var actor: Dictionary = actors[source]
 		var body: Dictionary = packet.poses[source]
 		var art: Dictionary = _models["enemy_" + str(int(actor.size))].art

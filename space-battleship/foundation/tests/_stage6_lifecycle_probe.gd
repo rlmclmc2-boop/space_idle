@@ -73,6 +73,8 @@ func _run() -> void:
 	view.free()
 	view = null
 	contact_canvas.free()
+	retained = null
+	contacts = null
 	for frame in 3: await process_frame
 	if battle_ref.get_ref() != null:
 		_fail("presentation or view retained retired Battle")

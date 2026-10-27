@@ -2,7 +2,6 @@ extends Node2D
 const PlayerText = preload("res://src/ui/player_text.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
 const BattleView = preload("res://src/ui/battle_view.gd")
-const BattleStatisticsView = preload("res://src/ui/battle_statistics_view.gd")
 const FleetPanel = preload("res://src/ui/fleet_panel.gd")
 const CampaignView = preload("res://src/ui/campaign_view.gd")
 const CrewPanel = preload("res://src/ui/crew_panel.gd")
@@ -127,6 +126,7 @@ func _close_game() -> void:
 		_startup_save_error = "退出保存失败，游戏仍在运行。请检查目录、重试保存后退出。"
 		session.set_pause("recovery", true)
 		return
+	_stop_audio()
 	get_tree().quit()
 
 func _has_save_files(directory: String) -> bool:
@@ -161,8 +161,7 @@ func _show_session() -> void:
 	var hud_layer := CanvasLayer.new()
 	hud_layer.layer = 8
 	add_child(hud_layer)
-	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle))
-	hud_layer.add_child(BattleStatisticsView.new(session.battle.statistics()))
+	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle, session.economy))
 	_setup_shell_overlay()
 	add_child(CampaignView.new(session.campaign_system))
 	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
@@ -212,6 +211,13 @@ func _setup_audio() -> void:
 	_effects_player.stream = tone
 	add_child(_effects_player)
 
+func _stop_audio() -> void:
+	# Release this interface's active playback before replacement or shutdown.
+	for player in [_music_player, _effects_player]:
+		if player != null:
+			player.stop()
+			player.stream = null
+
 func _play_effect() -> void:
 	if not _effects_enabled or _effects_player == null: return
 	var now: int = Time.get_ticks_msec()
@@ -252,6 +258,7 @@ func _replace_session(replacement) -> Dictionary:
 	if session.save_files != null:
 		var closed: Dictionary = session.save_files.close()
 		if not closed.ok: return closed
+	_stop_audio()
 	for child in get_children(): child.queue_free()
 	session = replacement
 	_startup_save_error = ""

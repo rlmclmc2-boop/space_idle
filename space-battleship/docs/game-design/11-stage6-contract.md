@@ -36,6 +36,14 @@ The current native binding uses`input_geometry` and`input_ballistic_geometry` wi
 
 Exit diagnostics were a real Session ownership cycle: Session owned modules whose4 tutorial lambdas captured Session. Capturing only the local Tutorial owner removes the back-reference without introducing a disposal framework. Before the correction,6 discarded sessions stayed alive with+26 ObjectDB objects each. `_stage6_lifecycle_probe.gd` verifies6 sessions and retained BattleView ownership release, all4 tutorial callbacks,8 real load/new-game replacements with stable warmed resource/object/node counts, then actual`main._close_game()`. The final integrated run exits0 without ObjectDB/resource/Texture RID diagnostics. Cloud-window play remains the parent acceptance step.
 
+## Follow-up to encounter and HUD review of01ab49
+
+The reviewed candidate retained enemy weapon descriptors/poses after native actor teardown. Battle now retires encounter-owned enemy descriptors, ports and pending visual feedback at sortie reset and retreat transitions, then rebuilds from the post-transition native owner. New wave descriptors retain source UID and resolve against current actors, including native slot/storage reuse. `_stage6_encounter_presentation_probe.gd` uses the real Session sortie command, native wave start, lethal-hit retreat and manual-hyperspace return, exercising Node2D drawing6 times with no stale enemy pose or actor-index error. The extended hyperspace runtime probe also verifies enemy presentation retirement after successful10-wave return and retains its single-reward assertions.
+
+The wallet was still drawn at y795 beneath the new defence card. BattleHud now owns all three fixed, disjoint regions: defence708–830, resource grid838–894 and statistics902–927; four currencies wrap into2 columns ×2 rows. Economy exposes cached display-row copies and its view retains only drop drawing/pickup. The former standalone statistics view is removed. `_stage6_hud_probe.gd` credits all4 currencies with extreme Amount values, measures each label using the production Chinese font, and checks cell containment, pairwise separation and no text overflow. Local follow-up remains headless; parent cloud-window verification is still required.
+
+The lifecycle probe now releases its own2 coroutine-local ShaderMaterials before closing the tree. A separate verbose run identified the remaining4 objects/2 resources as active Ogg playback and its stream, not materials. Main now stops its own music/effects players and clears their stream references before interface replacement and successful close. The final integrated replacement run keeps resources at86 and nodes at1031 through8 replacements and closes without ObjectDB/resource/Texture RID diagnostics; probe-local materials and production audio ownership are distinguished from the earlier Session cycle fix.
+
 ## Implemented and verified
 
 | Area | Evidence |

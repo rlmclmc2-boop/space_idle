@@ -72,6 +72,16 @@ func _run_probe() -> void:
 		printerr("manual completion/return: ", session.hyperspace_system.manual_receipt())
 		quit(1)
 		return
+	if not session.battle._enemy_visual_weapons.is_empty() or not session.battle._enemy_muzzles.is_empty() or not session.battle._kernel.enemy_views().is_empty():
+		printerr("completed challenge retained old encounter presentation")
+		quit(1)
+		return
+	for id in session.battle._weapon_poses:
+		if str(id).begins_with("enemy:"):
+			printerr("completed challenge retained enemy pose")
+			quit(1)
+			return
+	print("HYPERSPACE_SUCCESS_RETURN_PRESENTATION_RETIRED_OK")
 	var wallet_before: Dictionary = session.economy.budget().duplicate(true)
 	var drones_before: int = session.hyperspace_system.warehouse().main.size()
 	var claimed: Dictionary = session.claim_hyperspace(run_id)

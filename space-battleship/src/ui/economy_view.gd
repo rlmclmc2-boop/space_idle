@@ -19,7 +19,6 @@ func _unhandled_input(event: InputEvent) -> void:
 func _draw() -> void:
 	for marker in _economy.drop_markers():
 		draw_circle(Vector2(float(marker.x), float(marker.y)), 5.0, Color("ffe195") if str(marker.resource) != "jewel" else Color("a2afff"))
-	draw_string(ThemeDB.fallback_font, Vector2(18, 795), _economy.balances_text(), HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffe195"))
 
 static func describe_error(reason: String) -> String:
 	return str({"InsufficientResources": "资源不足"}.get(reason, ""))
