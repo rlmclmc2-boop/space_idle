@@ -1,0 +1,82 @@
+{
+  "source_commit": "20b21ba20d9e34528448da8ef1fb3057460c0a2f",
+  "kind": "Same-version internal presentation screenshots; no new test round and no game execution",
+  "viewport_css_px": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "full_page": false,
+  "source_sha256": {
+    "index.html": "f2e33f191f46632b58d5f9c3c89e9e09b75a3873c9f6296025db7591761d71f6",
+    "app.js": "696a80e03aa70ba2c4600588e0008de259c7e10259aff77b7ae08ab20d62f1ea",
+    "style.css": "ffd52de35e73b3dee723c555b2e991162017afb8853f0029d98c919e3076a218"
+  },
+  "images": [
+    {
+      "file": "scene-reactor-1440x900.png",
+      "family": "scene",
+      "module": "reactor",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "881e1376d73f352bcc55bcc81afa39468a3fb8ed3c2c2acea738e009f6a8d3e0"
+    },
+    {
+      "file": "scene-equipment-1440x900.png",
+      "family": "scene",
+      "module": "equipment",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "262b8675700f244db9d0227b2a1ba7a276910daac6e8a67e7946dff2cb81280a"
+    },
+    {
+      "file": "scene-planet-1440x900.png",
+      "family": "scene",
+      "module": "planet",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "e452b60d22006b2f052e43b73543b007571e8a26d76f8c5b6af9a5e4f463f7eb"
+    },
+    {
+      "file": "scene-galaxy-1440x900.png",
+      "family": "scene",
+      "module": "galaxy",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "32102e0162effad07661c041f1ac7ff74edf8e9e52f1a947a197eac3cc2e139b"
+    },
+    {
+      "file": "work-reactor-1440x900.png",
+      "family": "work",
+      "module": "reactor",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "e19befce7ea2d92c2433193bb9b2f6042ac7d564dee0a099590f62494e55b03e"
+    },
+    {
+      "file": "work-equipment-1440x900.png",
+      "family": "work",
+      "module": "equipment",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "68101917eabe6442e4d0fb5b9ca3acf6b7c38dc7b131ac8113abbe88a3150a1d"
+    },
+    {
+      "file": "work-planet-1440x900.png",
+      "family": "work",
+      "module": "planet",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "d29beb94b42c4764f3049f52a5c3810cd43159fe1ea1fa6f0eb88cf860f7566e"
+    },
+    {
+      "file": "work-galaxy-1440x900.png",
+      "family": "work",
+      "module": "galaxy",
+      "state": "default initial state",
+      "assembly_overlay": false,
+      "sha256": "bc7ff597094cfb819a33ac313bce3c197b34486b7767abbc02094695a1a0ccba"
+    }
+  ],
+  "browser": "151.0.7922.173"
+}
