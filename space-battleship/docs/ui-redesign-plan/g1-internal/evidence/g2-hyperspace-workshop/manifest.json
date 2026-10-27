@@ -1,0 +1,195 @@
+{
+  "source_commit": "4a4883baa71fa719a0d82e8cb7525d0a9ec73ee4",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "main overflow sealed, arrange and claim stage",
+    "stable module IDs from workbook; local hanging draft/apply/capacity/ultimate lock",
+    "equipped/favorite/preset/sealed independent protection",
+    "single dismantle covered fixture and growth pending",
+    "preset save/apply plus atomic failure",
+    "material target amount 2:1 and continuous balances, same resource and insufficient rejection"
+  ],
+  "images": [
+    {
+      "file": "scene-hanging-upper-1440x900.png",
+      "family": "scene",
+      "case": "scene-hanging-upper",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "83d991009bc4eff1896dc8e41c2b0a6cc5675a803d8601559dee2444a0c0a68b"
+    },
+    {
+      "file": "scene-hanging-1440x900.png",
+      "family": "scene",
+      "case": "scene-hanging",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 269,
+        "inner": 0
+      },
+      "sha256": "449934ee062332d262c338e3f46042804d64f3357c08caf97301a36e386deb2f"
+    },
+    {
+      "file": "scene-main-1440x900.png",
+      "family": "scene",
+      "case": "scene-main",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "2fdc4fd4c1839a73fdac1940747e0111164f54920765d9a021758e80617c0cbc"
+    },
+    {
+      "file": "scene-materials-continuous-1440x900.png",
+      "family": "scene",
+      "case": "scene-materials-continuous",
+      "route": "hyperspace/materials",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "74b61dde5033f6ce6fd0b27ef654b485d51605e5706b3557883309044246e0fb"
+    },
+    {
+      "file": "scene-presets-1440x900.png",
+      "family": "scene",
+      "case": "scene-presets",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 77,
+        "inner": 0
+      },
+      "sha256": "22650817c35e5d1b905aa554c3066a65ce3c05afd3e624250234e410a49d80b6"
+    },
+    {
+      "file": "scene-protection-1440x900.png",
+      "family": "scene",
+      "case": "scene-protection",
+      "route": "hyperspace/protection",
+      "scroll": {
+        "outer": 19,
+        "inner": 0
+      },
+      "sha256": "34b72daa3a09805801cbaa4d5d555f0fbf4c30548436060789c068d95b997eea"
+    },
+    {
+      "file": "scene-sealed-1440x900.png",
+      "family": "scene",
+      "case": "scene-sealed",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "7cd1b77bbde8939824fb4bc7f292baba709e8dd7ae1428388de1e3ab41c9ee2d"
+    },
+    {
+      "file": "scene-ultimate-locked-1440x900.png",
+      "family": "scene",
+      "case": "scene-ultimate-locked",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 269,
+        "inner": 0
+      },
+      "sha256": "c9da8602036b6be22eec57e0275490c151a218f2ea422b9a35d03e188bb5b56f"
+    },
+    {
+      "file": "work-hanging-upper-1440x900.png",
+      "family": "work",
+      "case": "work-hanging-upper",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "bbb0a372cb595d0f79c6153e15032a76b6ac333deb8046e88a22856db8dcffb1"
+    },
+    {
+      "file": "work-hanging-1440x900.png",
+      "family": "work",
+      "case": "work-hanging",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 0,
+        "inner": 328
+      },
+      "sha256": "23b9b8e6ffa765f5e27f9c05443ee56b634daabc9f6d3687281995695092b64f"
+    },
+    {
+      "file": "work-main-1440x900.png",
+      "family": "work",
+      "case": "work-main",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "f5129d96aaf7c0b9ad08798a7e82265dbfd2a31f56c6c31daa65b3f1b3bd074f"
+    },
+    {
+      "file": "work-materials-continuous-1440x900.png",
+      "family": "work",
+      "case": "work-materials-continuous",
+      "route": "hyperspace/materials",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "38ab6a493458b8a0c081aee43015fbf34e397b0a7b50874683ec6d7da36ac5f7"
+    },
+    {
+      "file": "work-presets-1440x900.png",
+      "family": "work",
+      "case": "work-presets",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 156
+      },
+      "sha256": "b4f76a1e65c02200491e6d058058c2d62a7d33b44e4ea1bd50cdc345cb34b0df"
+    },
+    {
+      "file": "work-protection-1440x900.png",
+      "family": "work",
+      "case": "work-protection",
+      "route": "hyperspace/protection",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "16f75d69c79d5758e82c6f0e1282515e34db88f80815f778306f633f72d2f4e9"
+    },
+    {
+      "file": "work-sealed-1440x900.png",
+      "family": "work",
+      "case": "work-sealed",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "1d7938e14aab8adc12f01bd0a24a6a996edd397bec1d20647233dbda04f4cfa4"
+    },
+    {
+      "file": "work-ultimate-locked-1440x900.png",
+      "family": "work",
+      "case": "work-ultimate-locked",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 0,
+        "inner": 328
+      },
+      "sha256": "e68c3cb0658e9ee574c9119af45411cff5cd96e0331d8feef35bc0c8c27a9b02"
+    }
+  ]
+}
