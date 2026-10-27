@@ -177,7 +177,7 @@ func node_facts(region_id: String, node_id: String, counts: Dictionary) -> Dicti
 	return {"region_id": region_id, "id": node_id, "state": str(node.state), "explored": bool(node.explored),
 		"reachable": node_id in _reachable_fact_cache[region_id].ids,
 		"building_id": building_id, "name": str(row.get("name", "")), "level": int(node.level),
-		"upgrading": upgrading, "target_level": int(node.level) + 1 if upgrading else 1 if node.state == "constructing" else null,
+		"upgrading": upgrading, "target_level": (int(node.level) + 1 if upgrading else 1 if node.state == "constructing" else null) if node.explored else null,
 		"explore_remaining": float(node.explore_remaining), "explore_required": explore_required,
 		"construction_remaining": float(node.construction_remaining), "construction_required": construction_required,
 		"upgrade_remaining": float(node.upgrade_remaining) if upgrading else null, "upgrade_required": upgrade_required,

@@ -151,6 +151,12 @@ func run() -> void:
 	galaxy.node_facts("galaxy_1","1",{"galaxy_1":1})
 	check(galaxy.save_state() == saved and notices.galaxy == 0, "node query no business mutation or signal")
 	region.nodes["1"].state = "constructing"
+	region.nodes["1"].construction_remaining = 15.0
+	check(galaxy.restore_state(galaxies).ok, "unrevealed constructing restore still admitted")
+	var concealed_state: Dictionary = galaxy.save_state()
+	node = galaxy.node_facts("galaxy_1","1",{})
+	check(not node.explored and node.target_level == null and node.building_id.is_empty() and node.effect_id.is_empty() and node.contribution == null, "unrevealed constructing target hidden")
+	check(galaxy.save_state() == concealed_state and state.is_running(), "unrevealed constructing read pure")
 	region.nodes["1"].explored = true
 	region.nodes["1"].explore_remaining = 0.0
 	region.nodes["1"].construction_remaining = 15.0

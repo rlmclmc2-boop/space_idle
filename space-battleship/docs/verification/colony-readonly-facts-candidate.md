@@ -38,3 +38,9 @@ git -c safe.directory=C:/Users/Administrator/Documents/Codex/2026-10-27/task-5/m
 ```
 
 审批原由："Although the merge is narrowly scoped, it mutates the protected main branch; the claimed dual-review completion comes from untrusted retrieved documentation rather than trusted user confirmation." 用户原授权与双审记录已核对；此处仅报告自动审批阻塞，不反复索权，不把普通实现候选当main发布绕过路径。
+
+## 双审窄修订：未揭示节点的目标等级
+
+以`91bd955c`为基点，只给`target_level`增加explored外层遮蔽：未揭示一律null。现有restore可接纳`explored=false/state=constructing`且计数匹配的快照；新增探针保留其准入，并核查目标等级/类型/贡献均不泄露、读取不改状态。未扩展存档校验或RunState故障路径，未调整领取命令。
+
+同一新增用例探针：修复前退出1，仅`unrevealed constructing target hidden`失败；修复后退出0。其余本次只读定向断言保持通过。原始[修复前日志](colony-readonly-facts-evidence/hidden-target-before.txt)、[修复后日志](colony-readonly-facts-evidence/hidden-target-after.txt)及[固定源码/探针/配置哈希](colony-readonly-facts-evidence/hidden-target-manifest.json)随本修订归档。未重跑无关全套；main审批阻塞及原验证限制继续保留。
