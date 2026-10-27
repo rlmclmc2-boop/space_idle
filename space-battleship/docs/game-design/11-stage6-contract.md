@@ -159,3 +159,16 @@ The dodge-counter oracle found another floating-point timer boundary: at3.16, ex
 - Deep balance and playfeel tuning across the 0-10000 growth curve requires separate measured gameplay decisions.
 - `data/ui_text.json` mentions `level_editor.gd` as a help label; no active editor entry exists in `src`, `foundation` or `run_game.ps1`.
 - Local Godot log/certificate/cache warnings and `bin/` are environment or build outputs.
+
+
+### Research investment UI and file persistence verification (2026-10-27)
+
+Baseline: `8f0ee5ab4694ec4a8d075ce6d5df0ea0c448826f`. The investment panel previously initialized both resource inputs to zero and the automatic checkbox to false, and did not observe automatic budget refreshes. The existing save format retains these fields; this conclusion is now verified through actual files, rather than inferred from `save_state`.
+
+The existing `_stage6_page_probe.gd` now sets automatic investment true, ratio 0.125, iron `1e400`, uranium `25`; presses the real Save control; waits for the writer; decodes the committed active envelope; loads that file through `Session.load_candidate`; exercises Load backup and Preview/Confirm import; and compares both restored business values and the rebuilt panel. All pass (`RESEARCH_DISK_FIELDS_OK`, `RESEARCH_FILE_LOAD_OK`, `RESEARCH_RESTORED_BACKUP_LOAD`, `RESEARCH_RESTORED_FILE_IMPORT`). A second actual file round trip verifies automatic false, ratio 0.123456 and both investments zero (`RESEARCH_DISABLED_ZERO_FILE_LOAD_OK`). No persistence schema or business rule change was needed.
+
+The research owner now exposes the actual investment settings and notifies the panel after restore, manual apply and automatic budget refresh. The panel follows actual values while idle, preserves unapplied edits during refresh, shows current effective values separately, retains invalid input for correction, and offers an explicit reset to current settings. The probe exercises live refresh (800/1600 income at 12.5% gives 100/200), draft preservation while backend settings change (25% gives 200/400), apply, invalid input and reset (`RESEARCH_LIVE_REFRESH_DRAFT_APPLY_OK`). The full existing page probe ends `STAGE6_PAGE_PROBE_OK`, exit 0. Headless shutdown still reports ObjectDB/resource cleanup warnings and the host certificate-store warning; these are not assertions of successful external human interaction.
+
+UI/help wording now distinguishes the staffed AI factory job's automatic research continuation from the automatic-investment checkbox's periodic budget refresh. Iron and uranium use one common ratio; applying a ratio does not immediately recompute investments. The staffing requirement and 60 game-second refresh remain unchanged. Old help text claiming independent ratios or immediate recomputation was corrected.
+
+External human play checks remain outstanding: research panel layout, mouse/keyboard editing and focus behavior, file dialogs and long-running play in an interactive cloud desktop. The parent thread will perform these checks after the authorized main integration. This file-based/headless verification does not claim that external manual acceptance has occurred.

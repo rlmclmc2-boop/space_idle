@@ -2,6 +2,7 @@ extends RefCounted
 var _run_state
 
 signal choices_changed
+signal investment_changed
 
 var _state: Dictionary
 var _definitions: Dictionary = {}
@@ -37,6 +38,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 	_state = _initial(_rules)
 	for key in ["levels", "work", "current", "investment", "auto_invest", "ratio", "refresh_elapsed", "peaks", "required_work"]:
 		_state[key] = state[key].duplicate(true) if state[key] is Dictionary or state[key] is Array else state[key]
+	investment_changed.emit()
 	return {"ok": true}
 
 func _init(rows: Array, rules: Dictionary, api, run_state) -> void:
@@ -54,7 +56,12 @@ func panel_model() -> Dictionary:
 	var options: Array = []
 	for key in _definitions:
 		options.append({"id": key, "name": str(_definitions[key].name)})
-	return {"options": options, "ratio": _state.ratio, "minimum_ratio": _rules.research_minimum_ratio}
+	var investment: Dictionary = {}
+	for resource in ["1", "2"]:
+		var amount: Dictionary = _state.investment.get(resource, {"m": 0.0, "e": 0})
+		investment[resource] = "0" if str(amount.m) in ["0", "0.0"] else str(amount.m) + "e" + str(amount.e)
+	return {"options": options, "ratio": _state.ratio, "minimum_ratio": _rules.research_minimum_ratio,
+		"auto_invest": _state.auto_invest, "investment": investment}
 
 func _finish_advance(next: Dictionary, wallet: Dictionary, completed: bool, continuation_error = null, completed_id: String = "") -> Dictionary:
 	var changed: bool = _state.available != next.available
@@ -118,6 +125,7 @@ func set_investment(resource: String, quantity: Dictionary) -> Dictionary:
 	var value = api.apply("floor", [quantity])
 	if not value.ok: return value
 	state.investment[resource] = value.value
+	investment_changed.emit()
 	return {"ok": true}
 
 func set_automatic(enabled: bool, ratio: float) -> Dictionary:
@@ -128,6 +136,7 @@ func set_automatic(enabled: bool, ratio: float) -> Dictionary:
 		return {"ok": false, "reason": "InvalidResearchRatio"}
 	state.auto_invest = enabled
 	state.ratio = ratio
+	investment_changed.emit()
 	return {"ok": true}
 
 func automatic_due(assigned: bool) -> bool:
@@ -261,6 +270,7 @@ func refresh_income(peak_rates: Dictionary, investment_rates: Dictionary, income
 			if compared.scalar != 0:
 				factors_changed = true
 	_state = next
+	if automatic_due: investment_changed.emit()
 	return {"ok": true, "factors_changed": factors_changed}
 
 static func _select_shortest(state: Dictionary, definitions: Dictionary, api) -> Dictionary:

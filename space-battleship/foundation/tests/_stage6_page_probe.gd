@@ -3,6 +3,8 @@ extends SceneTree
 const NotificationsPanel = preload("res://src/ui/notifications_panel.gd")
 const SaveFiles = preload("res://foundation/host/save_files.gd")
 const PlayerSettings = preload("res://foundation/host/player_settings.gd")
+const ResearchPanel = preload("res://src/ui/research_panel.gd")
+const StateCodec = preload("res://foundation/host/state_codec.gd")
 const Session = preload("res://src/game_session.gd")
 
 class RejectCandidateManifest extends RefCounted:
@@ -51,6 +53,27 @@ func _find_notifications(node: Node):
 		var found = _find_notifications(child)
 		if found != null: return found
 	return null
+
+func _find_research(node: Node):
+	if node.get_script() == ResearchPanel: return node
+	for child in node.get_children():
+		var found = _find_research(child)
+		if found != null: return found
+	return null
+
+func _research_matches(main, expected: Dictionary, stage: String) -> bool:
+	var state: Dictionary = main.session.research.save_state()
+	var panel = _find_research(main)
+	if panel == null: return false
+	panel._flush_pending()
+	var ok: bool = state.auto_invest == expected.auto_invest and state.ratio == expected.ratio and state.investment == expected.investment
+	ok = ok and panel.automatic_toggle.button_pressed == expected.auto_invest and is_equal_approx(panel.automatic_ratio.value / 100.0, expected.ratio)
+	for resource in ["1", "2"]:
+		var parsed: Dictionary = main.session.research._api.apply("from_decimal", [panel.investment_inputs[resource].text])
+		ok = ok and parsed.ok and main.session.research._api.apply("compare", [parsed.value, expected.investment[resource]]).scalar == 0
+	if not ok: printerr("research state/UI mismatch at ", stage, ": ", state)
+	else: print("RESEARCH_RESTORED_", stage, " auto=", state.auto_invest, " ratio=", state.ratio, " investment=", state.investment)
+	return ok
 
 func _find_dialog(node: Node, mode: int) -> FileDialog:
 	if node is FileDialog and node.file_mode == mode: return node
@@ -163,6 +186,11 @@ func _run() -> void:
 		printerr("save directory picker did not fill path")
 		quit(1)
 		return
+	if not main.session.research.set_automatic(true, 0.125).ok or not main.session.research.set_investment_text("1", "1e400").ok or not main.session.research.set_investment_text("2", "25").ok:
+		printerr("research save fixture failed")
+		quit(1)
+		return
+	var expected_research: Dictionary = main.session.research.save_state()
 	_find_button(main, "Save").pressed.emit()
 	if main.growth_status.text != "保存请求已排队":
 		printerr("save button claimed completion before writer: ", main.growth_status.text)
@@ -173,6 +201,19 @@ func _run() -> void:
 		printerr("save button: ", result)
 		quit(1)
 		return
+	var disk_research: Dictionary = StateCodec.unpack(SaveFiles.read_pointer(directory, "active.json").envelope.payload).value.modules.research
+	if disk_research.auto_invest != expected_research.auto_invest or disk_research.ratio != expected_research.ratio or disk_research.investment != expected_research.investment:
+		printerr("research fields lost in actual save file: ", disk_research)
+		quit(1)
+		return
+	print("RESEARCH_DISK_FIELDS_OK ", disk_research.investment, " auto=", disk_research.auto_invest, " ratio=", disk_research.ratio)
+	var loaded_research: Dictionary = Session.load_candidate("res://generated/config.json", directory, false)
+	if not loaded_research.ok or loaded_research.session.research.save_state().investment != expected_research.investment or not loaded_research.session.research.save_state().auto_invest or loaded_research.session.research.save_state().ratio != expected_research.ratio:
+		printerr("research file load failed")
+		quit(1)
+		return
+	loaded_research.session.save_files.close(2000)
+	print("RESEARCH_FILE_LOAD_OK")
 	main._process(0.0)
 	if main.save_state_label.text != "Last save written":
 		printerr("save status failed to show committed state: ", main.save_state_label.text)
@@ -194,6 +235,9 @@ func _run() -> void:
 	_find_button(main, "Load backup").pressed.emit()
 	if main.session.current_chrono_speed() != 1:
 		printerr("backup button did not restore prior session")
+		quit(1)
+		return
+	if not _research_matches(main, expected_research, "BACKUP_LOAD"):
 		quit(1)
 		return
 	result = main.session.save_files.close(2000)
@@ -267,6 +311,53 @@ func _run() -> void:
 		quit(1)
 		return
 	await process_frame
+	if not _research_matches(main, expected_research, "FILE_IMPORT"):
+		quit(1)
+		return
+	main.growth_panel.visible = true
+	var research_panel = _find_research(main)
+	var api = main.session.research._api
+	var rates := {"1": api.apply("from_decimal", ["800"]).value, "2": api.apply("from_decimal", ["1600"]).value}
+	if not main.session.research.refresh_income({}, rates, false, true).ok:
+		quit(1)
+		return
+	research_panel._flush_pending()
+	if research_panel.investment_inputs["1"].text != "1e2" or research_panel.investment_inputs["2"].text != "2e2":
+		printerr("idle research UI did not follow automatic refresh: ", research_panel.investment_inputs["1"].text)
+		quit(1)
+		return
+	research_panel.investment_inputs["1"].text = "12345"
+	research_panel.investment_inputs["1"].text_changed.emit("12345")
+	research_panel.automatic_toggle.button_pressed = false
+	research_panel.automatic_ratio.value = 50.0
+	main.session.research.set_automatic(true, 0.25)
+	main.session.research.refresh_income({}, rates, false, true)
+	research_panel._flush_pending()
+	if research_panel.investment_inputs["1"].text != "12345" or research_panel.automatic_toggle.button_pressed or research_panel.automatic_ratio.value != 50.0 or research_panel.investment_inputs["2"].text != "4e2" or "2e2" not in research_panel.investment_current["1"].text:
+		printerr("research refresh overwrote draft or hid actual rates")
+		quit(1)
+		return
+	_find_button(research_panel, "设置投入").pressed.emit()
+	_find_button(research_panel, "应用").pressed.emit()
+	research_panel._flush_pending()
+	if main.session.research.save_state().auto_invest or main.session.research.save_state().ratio != 0.5 or research_panel._drafts.has("1"):
+		printerr("research apply failed")
+		quit(1)
+		return
+	research_panel.investment_inputs["1"].text = "bad"
+	research_panel.investment_inputs["1"].text_changed.emit("bad")
+	_find_button(research_panel, "设置投入").pressed.emit()
+	research_panel._flush_pending()
+	if research_panel.investment_inputs["1"].text != "bad" or not research_panel._drafts.has("1"):
+		printerr("invalid research draft was discarded")
+		quit(1)
+		return
+	_find_button(research_panel, "还原当前投入设置").pressed.emit()
+	research_panel._flush_pending()
+	if research_panel._drafts.size() != 0 or research_panel.investment_inputs["1"].text == "bad":
+		quit(1)
+		return
+	print("RESEARCH_LIVE_REFRESH_DRAFT_APPLY_OK")
 	main.session.notifications.record("research", "page-probe")
 	var panel = _find_notifications(main)
 	if panel == null:
@@ -462,6 +553,9 @@ func _run() -> void:
 	gameplay.set_pause("user", false)
 	main._skip_tutorial = true
 	main._sync_guidance()
+	gameplay.research.set_automatic(false, 0.123456)
+	gameplay.research.set_investment_text("1", "0")
+	gameplay.research.set_investment_text("2", "0")
 	result = gameplay.request_save()
 	if result.ok: result = gameplay.save_files.close(2000)
 	var tutorial_loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory)
@@ -469,6 +563,12 @@ func _run() -> void:
 		printerr("tutorial progress did not persist: ", result, " ", tutorial_loaded)
 		quit(1)
 		return
+	var zero_state: Dictionary = tutorial_loaded.session.research.save_state()
+	if zero_state.auto_invest or zero_state.ratio != 0.123456 or zero_state.investment["1"].m != "0" or zero_state.investment["2"].m != "0":
+		printerr("disabled/zero investment lost on file load: ", zero_state)
+		quit(1)
+		return
 	tutorial_loaded.session.save_files.close(2000)
+	print("RESEARCH_DISABLED_ZERO_FILE_LOAD_OK ratio=", zero_state.ratio)
 	print("STAGE6_PAGE_PROBE_OK")
 	quit(0)
