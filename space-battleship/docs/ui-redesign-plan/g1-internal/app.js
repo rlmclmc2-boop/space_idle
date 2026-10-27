@@ -28,6 +28,7 @@ const state = {
   filter: {quality: '稀有以下', action: '保留'}, filterDraft: {quality: '稀有以下', action: '保留'},
   materialDraft: '100', materialReceipt: '', routeId:'pulse', manualTask:{status:'idle',route:'pulse',run:'manual-01',receipt:null}, onlineTask:{status:'idle',route:'missile',run:'online-01',receipt:null,mode:'single',crewId:null},
   dangerKind: 'reforge', dangerSource: '起源星', dangerPreview: null, dangerResult: null,
+  enhance:{paid:27,extra:3,effective:30,weapon:['proficiency','repeat','critical'],defence:['adaptation','memory','deferred'],branches:{proficiency:['A','B','A'],repeat:['A','B',''],critical:['B','',''],adaptation:['A','B',''],memory:['B','A',''],deferred:['B','','']},effect:'proficiency',node:0,choice:'',purchaseMode:'one',funds:false,feedback:'',quoteUsed:false},
   notice: '舰桥就绪'
 };
 const groups = {
@@ -193,6 +194,12 @@ function research() {
     (state.researchDrawer?`<div class="research-drawer"><div class="drawer-head"><div><h2>选择当前研究设备</h2><span>切换保留每项已完成工作量</span></div>${control('research-close','关闭')}</div><div class="study-grid">${state.researchUnlocked.map(id=>{const item=studies[id];return `<button data-study="${id}" class="study-option ${state.researchId===id?'selected':''}"><img src="${asset}ai_tech_factory/${item.image}" alt=""><b>${item.name}</b><span>Lv.${item.level} · ${item.progress}</span><small>${item.effect}</small></button>`;}).join('')}</div></div>`:'');
 }
 
+function enhancement(){
+ const e=state.enhance,models=EnhancementModels,q=models.quotes[e.purchaseMode];
+ const branchRoute=state.route.startsWith('enhancement/branch/'),effect=models.effects[e.effect],group=e.weapon.includes(e.effect)?e.weapon:e.defence,position=group.indexOf(e.effect),gates=models.positions[position];
+ const current=e.branches[e.effect][e.node],gate=gates.nodeGates[e.node],unlocked=e.effective>=gate,disabledB=e.effect==='repeat'&&e.node===1;
+ return moduleHead('全局强化','武器与防御共用有效等级，费用按购买等级',`<span class="pill">碎片 ${e.funds?(e.quoteUsed?e.balance:"64.0 B"):"2.1 K"}</span>`)+`<div class="enhancement-levels"><div><small>购买等级</small><b>${e.paid}</b></div><span>＋</span><div><small>世界额外</small><b>${e.extra}</b></div><span>＝</span><div class="effective"><small>有效等级</small><b>${e.effective}</b></div><div class="enhancement-buy"><div>${control('enhance-one','购买1级',e.purchaseMode==='one'?'active':'')}${control('enhance-ten','最多购买10级',e.purchaseMode==='ten'?'active':'')}</div><span>本次可购${q.count}级 · 合计 ${q.price}碎片</span>${control('enhance-buy','确认购级','primary',!e.funds||e.quoteUsed)}</div></div>${!e.funds?'<div class="enhance-inline-error">碎片不足；当前报价和等级保留。</div>':''}${e.feedback?`<div class="note">${e.feedback}</div>`:''}<div class="enhance-groups">${[['weapon','武器作用顺序'],['defence','防御作用顺序']].map(([key,title])=>`<section class="enhance-chain"><h3>${title}</h3>${e[key].map((id,i)=>{const m=models.effects[id],p=models.positions[i];return `<article class="enhance-effect"><div class="enhance-effect-identity"><span class="effect-symbol">${m.symbol}</span><div><small>顺位 ${i+1} · 有效等级${p.effectGate}开放</small><h2>${m.name}</h2></div>${control('enhance-move-'+id,'前移','quiet')}</div><p>${e.quoteUsed?({repeat:{31:"50%触发0.5秒后额外攻击；本级伤害 ×7.2",32:"50%触发0.5秒后额外攻击；本级伤害 ×7.4"},memory:{31:"每0.2秒修复最大值的31%；满后充能保护",32:"每0.2秒修复最大值的32%；满后充能保护"}})[id]?.[e.effective]||m.summary:m.summary}</p><div class="enhance-nodes">${p.nodeGates.map((g,j)=>`<button data-enhance-node="${id}:${j}" class="${e.effective>=g?'open':'locked'}"><small>节点${j+1} · E${g}</small><b>${e.branches[id][j]||'未选'}</b><span>${e.effective<g?(e.branches[id][j]?'保留选择 · 暂停生效':'未开放'):id==='repeat'&&j===1&&e.branches[id][j]==='B'?'B保留 · 功能不启用':e.branches[id][j]?'当前已生效':'可选择'}</span></button>`).join('')}</div></article>`;}).join('')}</section>`).join('')}</div>${branchRoute?`<div class="branch-sheet"><div class="drawer-head"><div><span class="eyebrow">${effect.name} / NODE ${e.node+1}</span><h2>节点${e.node+1} · 有效等级${gate}</h2><span>当前路径 ${e.branches[e.effect].map(x=>x||'—').join(' → ')} · 当前E${e.effective}</span></div>${control('back','返回强化')}</div>${!unlocked?'<div class="note warn">门槛未满足；原选择保留并暂不生效。</div>':''}<div class="branch-options">${['A','B'].map(c=>`<button data-enhance-choice="${c}" class="${e.choice===c?'selected':''}" ${!unlocked||c==='B'&&disabledB?'disabled':''}><b>路径 ${c} ${current===c?'· 当前选择':''}</b><p>${c==='A'?effect.a:effect.b[e.node]}</p>${c==='B'&&disabledB?'<small>现行规则禁用；已存选择不删除。</small>':''}</button>`).join('')}</div><div class="branch-confirm"><span>${e.choice?'候选 '+e.choice+' · 当前选择仍为 '+(current||'未选'):'选择后比较，再确认应用'}</span>${control('enhance-branch-apply','确认分支','primary',!unlocked||!e.choice||e.choice===current)}</div></div>`:''}`;
+}
 function crew() {
   const member=state.crewMembers[state.crewId], error=crewAdmission(), planetJob=state.crewDraft.startsWith('planet-');
   const available=Object.entries(state.crewMembers).filter(([id,m])=>m.available);
@@ -283,7 +290,7 @@ function render() {
   document.body.classList.toggle('collapsed',state.collapsed);
   document.querySelectorAll('[data-family]').forEach(button=>button.classList.toggle('active',button.dataset.family===state.family));
   $('#nav').innerHTML=nav(); $('#collapse').textContent=state.collapsed?'展开工作区':'收起工作区'; $('#pause').textContent=state.paused?'▶ 继续':'Ⅱ 暂停';
-  let body=state.module==='catalog'?catalog():({reactor,equipment,planet,galaxy,research,crew,hyperspace,settings}[state.module]||overview)();
+  let body=state.module==='catalog'?catalog():({reactor,equipment,planet,galaxy,research,crew,enhancement,hyperspace,settings}[state.module]||overview)();
   if(state.collapsed) body=`<div class="resting"><div class="rest-icon">◈</div><h1>远航仍在继续</h1><p>当前对象与草稿保持。</p>${control('expand','继续当前工作','primary')}</div>`;
   else if(state.family==='work'&&state.module!=='catalog') body=workWrapper(body);
   $('#work-content').innerHTML=body;
@@ -291,6 +298,7 @@ function render() {
   const actions=dock();
   if(actions) {const element=document.createElement('div');element.id='action-dock';element.innerHTML=actions;$('#workspace').append(element);}
   $('#notice').textContent=state.notice;
+  $('#fragments').textContent=state.enhance.funds?(state.enhance.quoteUsed?state.enhance.balance:'64.0 B'):'2.1 K';
   const scroll=state.scroll[state.route];
   if(scroll) {$('#work-content').scrollTop=scroll.outer; if($('.work-sheet')) $('.work-sheet').scrollTop=scroll.inner;}
   renderedRoute=state.route; renderedCollapsed=state.collapsed;
@@ -351,6 +359,10 @@ function action(a) {
   else if(a==='planet-cancel') {openDetail('立即取消 '+selectedPlanet().name+'探索','本次探索进度清零、自动探索关闭并释放探索人员；已完成施工次数及待领设施保留。'+control('planet-cancel-confirm','确认立即取消','danger'));return;}
   else if(a==='planet-cancel-confirm'){const p=selectedPlanet();for(const m of Object.values(state.crewMembers))if(m.job==='planet-explore'&&m.targetPlanet===p.id)m.job='idle';p.running=false;p.elapsed='0';p.duration='0';p.automatic=false;syncDemoCrewTargets();$('#inspect-detail').close();notify('本次探索已取消并释放探索人员；施工次数保留');}
   else if(a==='planet-buff') {state.dangerSource=selectedPlanet().name;goRoute('settings/danger/reforge');return;}
+  else if(a==='enhance-one'||a==='enhance-ten'){state.enhance.purchaseMode=a.endsWith('one')?'one':'ten';}
+  else if(a==='enhance-buy'){const e=state.enhance;if(e.funds&&!e.quoteUsed){const q=EnhancementModels.quotes[e.purchaseMode];e.paid=q.paid;e.effective=q.effective;e.quoteUsed=true;e.balance=q.balance;e.feedback='本次已购'+q.count+'级，合计'+q.price+'碎片；已保留实际顺位和分支。后续报价待提供方刷新。';}}
+  else if(a.startsWith('enhance-move-')){const e=state.enhance,id=a.slice(13),group=e.weapon.includes(id)?e.weapon:e.defence,i=group.indexOf(id),j=i===0?2:i-1;[group[i],group[j]]=[group[j],group[i]];e.feedback=EnhancementModels.effects[id].name+'已前移；顺位门槛已更新，暂不生效的选择仍保留。';}
+  else if(a==='enhance-branch-apply'){const e=state.enhance,g=e.weapon.includes(e.effect)?e.weapon:e.defence,gate=EnhancementModels.positions[g.indexOf(e.effect)].nodeGates[e.node];if(e.effective>=gate&&e.choice&&!(e.effect==='repeat'&&e.node===1&&e.choice==='B')){e.branches[e.effect][e.node]=e.choice;e.feedback=EnhancementModels.effects[e.effect].name+'节点'+(e.node+1)+'已选择'+e.choice+'。';goRoute('enhancement');return;}}
   else if(a==='galaxy-zoom-in'||a==='galaxy-zoom-out'){state.galaxyView.zoom=Math.max(.65,Math.min(2,state.galaxyView.zoom+(a.endsWith('in')?.15:-.15)));}
   else if(a==='galaxy-reset'){state.galaxyView={x:0,y:0,zoom:1.3};}
   else if(a==='galaxy-region'){openDetail('第一星系 · 区域一','区域内30设施槽。工程与升级自动调度；当前人员 '+crewCount('galaxy')+'/6。当前所看区域和节点保持。');return;}
@@ -413,7 +425,7 @@ function action(a) {
   render();
 }
 document.addEventListener('click',event=>{
-  const button=event.target.closest('[data-family],[data-module],[data-group],[data-slot],[data-action],[data-route],[data-context-route],[data-crew],[data-drone],[data-hyper-route],[data-study],[data-facility],[data-galaxy-node]');
+  const button=event.target.closest('[data-family],[data-module],[data-group],[data-slot],[data-action],[data-route],[data-context-route],[data-crew],[data-drone],[data-hyper-route],[data-study],[data-facility],[data-galaxy-node],[data-enhance-node],[data-enhance-choice]');
   if(!button) return;
   if(button.dataset.family) {rememberScroll();state.family=button.dataset.family;render();}
   else if(button.dataset.module) setModule(button.dataset.module);
@@ -424,6 +436,8 @@ document.addEventListener('click',event=>{
   else if(button.dataset.crew) {state.crewId=button.dataset.crew;const m=state.crewMembers[state.crewId];state.crewDraft=m.job==='hyperspace'?'idle':m.job;state.crewPlanet=m.targetPlanet;state.crewFacility=m.targetFacility;state.crewMode=m.mode;state.crewError='';render();}
   else if(button.dataset.drone) {state.droneId=button.dataset.drone;state.formationPreview=null;invalidateForge();state.dangerPreview=null;notify('已更换无人机对象，需要重新预览');render();}
   else if(button.dataset.hyperRoute) {state.routeId=button.dataset.hyperRoute;render();}
+  else if(button.dataset.enhanceNode){const [id,node]=button.dataset.enhanceNode.split(':');state.enhance.effect=id;state.enhance.node=Number(node);state.enhance.choice='';goRoute('enhancement/branch/'+id+'/'+node);}
+  else if(button.dataset.enhanceChoice){state.enhance.choice=button.dataset.enhanceChoice;render();}
   else if(button.dataset.galaxyNode){if(window.cityDragged){window.cityDragged=false;return;}state.galaxyNode=button.dataset.galaxyNode;render();}
   else if(button.dataset.facility){selectedPlanet().facilitySelection=button.dataset.facility;render();}
   else if(button.dataset.study) {state.researchId=button.dataset.study;state.researchDrawer=false;state.researchState='running';state.researchFeedback='已切换设备，原研究工作量保留。';render();}
@@ -464,6 +478,7 @@ for(const key of ['reactor','equipment','planet','galaxy']) $('#'+key+'-case').o
   render();
 };
 for(const kind of ['manual','online']) $('#'+kind+'-task-case').onchange=event=>{const key=kind==='manual'?'manualTask':'onlineTask';state[key]={...state[key],status:event.target.value,route:kind==='manual'?'pulse':'missile'};render();};
+$('#enhance-funds').onchange=event=>{state.enhance.funds=event.target.value==='enough';render();};
 $('#research-case').onchange=event=>{state.researchState=event.target.value;render();};
 $('#research-unlocks').onchange=event=>{state.researchUnlocked=event.target.value==='all'?Object.keys(studies):['equipment_finishing','uranium_extraction','weapon_accuracy','equipment_reinforcement','resource_refining','singularity'];if(!state.researchUnlocked.includes(state.researchId))state.researchId=state.researchUnlocked[0];render();};
 document.addEventListener('visibilitychange',()=>document.body.classList.toggle('page-hidden',document.hidden));

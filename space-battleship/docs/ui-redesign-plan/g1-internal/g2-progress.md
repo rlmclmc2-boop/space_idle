@@ -33,3 +33,7 @@ G1组织审已通过，两方向都进入G2；没有选定UI，不是完整候�
 人员、星球与星系已从范围卡扩成可操作对象场景；具体完成、端口缺口及Godot归属见[第二批还原记录](g2-colony-restoration.md)。不把该批计作全系统完成，强化与超空间/危险事务/档案等仍继续深化。
 
 第二批源码固定为`628ad931`，同版主尺寸与状态见[manifest](evidence/g2-batch2/manifest.json)：[A人员](evidence/g2-batch2/scene-crew-1440x900.png)、[B人员](evidence/g2-batch2/work-crew-1440x900.png)、[A星球](evidence/g2-batch2/scene-planet-1440x900.png)、[B星球](evidence/g2-batch2/work-planet-1440x900.png)、[A星系](evidence/g2-batch2/scene-galaxy-1440x900.png)、[B星系](evidence/g2-batch2/work-galaxy-1440x900.png)。反例状态：[缺施工人](evidence/g2-batch2/work-planet-missing-builder-1440x900.png)、[升级保留当前级](evidence/g2-batch2/work-galaxy-upgrading-1440x900.png)、[迷雾不泄露类型](evidence/g2-batch2/work-galaxy-fog-1440x900.png)。浏览器局部操作检查通过不代表完整G2或Godot游戏验收；完整经验反馈、自动完成、最终材质及全系统深化仍开放。
+
+## 第三批：强化专属工作点
+
+六效果、顺序、三节点完整A/B与路径/门槛已替换旧范围卡；具体实物边界、操作核对与展示端口见[强化还原记录](g2-enhancement-restoration.md)。该批仍未完成真实动态效果和连续报价接线，不作为V5通过。
