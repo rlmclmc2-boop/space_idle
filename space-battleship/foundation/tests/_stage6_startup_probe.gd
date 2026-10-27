@@ -58,6 +58,7 @@ func _run() -> void:
 	main.session.campaign_system.publish_progress_change()
 	main._process(0.0)
 	main.growth_panel.visible = true
+	main._tabs.current_tab = main._pages.growth.index
 	var panel = main._feature_panels.research
 	if not panel.visible or main._feature_panels.enhancement.visible or main._feature_panels.hyperspace.visible:
 		_fail("feature visibility did not follow real progress")
@@ -65,7 +66,7 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	# Check container geometry at the actual 572x960 game viewport.
-	if main.growth_panel.size.x > 410.1 or panel.size.x > main.growth_panel.size.x:
+	if main.growth_panel.size.x > 548.1 or panel.size.x > main.growth_panel.size.x:
 		_fail("growth/research horizontal overflow: " + str(main.growth_panel.size) + " / " + str(panel.size))
 		return
 	for child in panel.get_children():

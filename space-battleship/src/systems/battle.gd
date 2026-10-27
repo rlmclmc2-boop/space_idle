@@ -13,6 +13,9 @@ var _parameters: Dictionary
 var _rules: Dictionary
 var _configuration: Dictionary
 var _models: Dictionary = {}
+var _weapon_art: Dictionary = {}
+var _visual_weapons: Array = []
+var _enemy_visual_weapons: Array = []
 var _ship_key: String
 var _player_art: Dictionary
 var _player_dimensions: Vector2
@@ -50,6 +53,8 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 
 func _load_models(ship_keys: Array) -> Dictionary:
 	var art_data = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
+	for key in art_data.weapons:
+		_weapon_art[key] = load(str(art_data.weapons[key].rotating_sprite))
 	var model_keys: Array = ship_keys.duplicate()
 	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
 	for key in model_keys:
@@ -63,7 +68,7 @@ func _load_models(ship_keys: Array) -> Dictionary:
 		var logical_image: Image = image if logical_path == str(art.texture) else logical_texture.get_image() if logical_texture != null else null
 		if logical_image == null or logical_image.is_empty():
 			return {"ok": false, "reason": "MissingGeometryAsset:" + str(key)}
-		var model := {"hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()),
+		var model := {"texture": texture, "hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()),
 			"geometry_height": float(logical_image.get_height())}
 		if key in ship_keys:
 			var slot_map: Array = art.slot_map.duplicate()
@@ -136,12 +141,14 @@ func resource_positions() -> Dictionary:
 	return {"origin": Vector2(float(_geometry.player_x), float(_geometry.timed_drop_spawn_y)), "target_y": float(_geometry.player_y)}
 
 func draw_player_hull(canvas: CanvasItem, color: Color) -> void:
-	if _player_hull.size() >= 3: canvas.draw_colored_polygon(_player_hull, color)
+	if _player_hull.size() >= 3: _draw_hull_texture(canvas, _player_hull, _models[_ship_key], color)
 
 func draw_enemy_hull(canvas: CanvasItem, index: int, color: Color) -> void:
 	if index < 0 or index >= _enemy_hulls.size(): return
 	var hull: PackedVector2Array = _enemy_hulls[index]
-	if hull.size() >= 3: canvas.draw_colored_polygon(hull, color)
+	if hull.size() >= 3:
+		var actors: Array = _kernel.enemy_views()
+		_draw_hull_texture(canvas, hull, _models["enemy_" + str(int(actors[index].size))], color)
 
 func draw_enemy_overlays(canvas: CanvasItem, font: Font) -> void:
 	var enemies: Array = _kernel.enemy_views()
@@ -240,6 +247,7 @@ func _accept_player() -> void:
 	_player_geometry_height = float(_models[_ship_key].geometry_height)
 	_equipped_drones = setup.equipped_drones
 	_values = setup["values"]
+	_visual_weapons = setup.descriptor.weapons.duplicate(true)
 	_player_muzzles = {}
 	for row in setup.descriptor.weapons: _player_muzzles[str(row.entry.id)] = row.muzzle
 	_prepared_player = {}
@@ -347,6 +355,7 @@ func start_wave(setup: Dictionary) -> Dictionary:
 	if not _kernel.start_wave(setup.wave):
 		_run_state.fail("NativeWaveRejected")
 		return {"ok": false, "reason": "NativeWaveRejected"}
+	_enemy_visual_weapons = setup.wave.weapons.duplicate(true)
 	_enemy_muzzles = setup.muzzles
 	return _sync_geometry()
 
@@ -387,3 +396,54 @@ func _sync_geometry() -> Dictionary:
 		_run_state.fail("InvalidPlayerGeometry")
 		return {"ok": false, "fault": true, "reason": "InvalidPlayerGeometry"}
 	return {"ok": true}
+
+func _draw_hull_texture(canvas: CanvasItem, hull: PackedVector2Array, model: Dictionary, fallback: Color) -> void:
+	if model.get("texture") == null:
+		canvas.draw_colored_polygon(hull, fallback)
+		return
+	var uv := PackedVector2Array()
+	for point in model.hull: uv.append(point + Vector2(0.5, 0.5))
+	canvas.draw_polygon(hull, PackedColorArray([Color.WHITE]), uv, model.texture)
+
+func draw_weapon_art(canvas: CanvasItem) -> void:
+	var origin := Vector2(float(_geometry.player_x), float(_geometry.player_y))
+	var enemies: Array = _kernel.enemy_views()
+	var target: Vector2 = origin + Vector2.UP * 500.0
+	for enemy in enemies:
+		if not enemy.get("dead", false):
+			target = Vector2(float(enemy.x), float(enemy.y))
+			break
+	for weapon in _visual_weapons:
+		if weapon.entry.has("drone_id"): continue
+		var point: Vector2 = weapon.muzzle
+		_draw_turret(canvas, str(weapon.entry.key), point, (target - point).angle(), Color.WHITE)
+	for weapon in _enemy_visual_weapons:
+		var source: int = int(weapon.source)
+		if source >= enemies.size() or enemies[source].get("dead", false): continue
+		var point: Vector2 = weapon.muzzle
+		_draw_turret(canvas, str(weapon.entry.key), point, (origin - point).angle(), Color("efb2ac"))
+
+func _draw_turret(canvas: CanvasItem, key: String, point: Vector2, angle: float, tint: Color) -> void:
+	var texture: Texture2D = _weapon_art.get(key)
+	if texture == null: return
+	var dimensions := Vector2(28.0, 28.0) if key != "longLaser" else Vector2(34.0, 34.0)
+	canvas.draw_set_transform(point, angle + PI * 0.5)
+	canvas.draw_texture_rect(texture, Rect2(-dimensions * 0.5, dimensions), false, tint)
+	canvas.draw_set_transform(Vector2.ZERO)
+
+func enemy_intelligence() -> Array:
+	var rows: Array = []
+	for actor in _kernel.enemy_views():
+		if actor.get("dead", false): continue
+		rows.append({"name": str(actor.get("intelName", actor.get("des", "敌舰"))) if actor.get("intelName") != null else str(actor.get("des", "敌舰")),
+			"armour": str(actor.hp), "shield": str(actor.get("shield", "0")),
+			"armour_type": int(actor.get("armourType", 0)), "shield_type": int(actor.get("shieldType", 0)),
+			"mechanics": str(actor.get("intelMechanics", "")) if actor.get("intelMechanics") != null else "",
+			"tier": str(actor.get("combat_tier", "normal")), "texture": _models["enemy_" + str(int(actor.size))].texture})
+	return rows
+
+func equipment_details() -> Dictionary:
+	return _values.duplicate(true)
+
+func attribute_details() -> Dictionary:
+	return _kernel.attribute_details()

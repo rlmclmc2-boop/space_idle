@@ -2,6 +2,14 @@
 
 [Design entry](README.md) defines gameplay rules; [verification](07-verification.md) defines the acceptance matrix. This page records actual coverage. `bin/`, generated JSON, Godot import metadata, screenshots and local saves are test outputs.
 
+## Player-facing integration candidate
+
+The working branch `rewrite/stage6-finalization` now connects hull/turret art, opening/starfield scenery, six bridge pages, planet appearance, the galaxy map and traffic, enemy/tutorial archives, and native attribute details. Hyperspace has route/warehouse/forge/filter tabs with named selections, drone details, sealed release and overflow organization. Reforge uses planet/drone selections and the existing preview/confirm transaction. Gameplay, Excel values and save formats are unchanged.
+
+Targeted evidence: `_stage6_startup_probe.gd` passes initial on-disk save, localized names, hidden locked features, research wrapping, paused autosave, resume and corrupt-primary recovery. `_stage6_page_probe.gd` passes existing page/import/reforge/research interactions. `_stage6_window_ops_probe.gd` passes pause/guidance, bridge return, file picker, visible save error and notification actions against the new tabs. `_stage6_bridge_probe.gd` advances the production Session into combat (22.4 game seconds) and checks six pages plus four hyperspace subpages at572×960 with no horizontal overflow; its forced-visibility fixture verifies layout, not unlock progression. Independent focused probes verify30 map nodes with transport/explorer vessels, pause and snapshot isolation; native query purity, return-copy isolation and upgrade synchronization; and hyperspace filtering, storage browsing, gate rejection, release and organization.
+
+Local OpenGL captures were inspected before the later instruction to keep execution in the background; subsequent local verification is headless. These checks do not replace parent cloud play or the requested two independent reviews. Exit still reports retained Texture RID/ObjectDB resources, and the embedded file picker emits a focus diagnostic; these remain open diagnostics, not a claim of clean lifecycle behavior. Screenshots, temporary focused probes, generated data, native binaries and saves stay outside Git.
+
 ## Implemented and verified
 
 | Area | Evidence |

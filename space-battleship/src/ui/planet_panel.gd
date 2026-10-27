@@ -11,10 +11,16 @@ var world_planet_picker: OptionButton
 var world_building_picker: OptionButton
 var _status: VBoxContainer
 var _labels: Dictionary = {}
+var _visual
+var _visual_context: Callable
+var _visual_id: String = ""
+var _visual_degree: int = -1
+var _visual_refresh: float = 0.0
 
-func _init(planet, cancel: Callable, publish: Callable, command: Callable) -> void:
+func _init(planet, cancel: Callable, publish: Callable, command: Callable, visual_context: Callable = Callable()) -> void:
 	_host = command
 	_planet = planet
+	_visual_context = visual_context
 	var box: Control = self
 	_status = VBoxContainer.new()
 	box.add_child(_status)
@@ -96,9 +102,34 @@ static func describe_error(reason: String) -> String:
 
 func _ready() -> void:
 	process_priority = 1
+	if DisplayServer.get_name() != "headless":
+		_visual = preload("res://scripts/planet_visual.gd").new()
+		_visual.custom_minimum_size = Vector2(0, 300)
+		_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(_visual)
+		move_child(_visual, 0)
 
-func _process(_dt: float) -> void:
+func _process(dt: float) -> void:
 	_flush_pending()
+	if _visual == null or not is_visible_in_tree(): return
+	var context: Dictionary = _visual_context.call() if _visual_context.is_valid() else {}
+	_visual_refresh += dt
+	var id: String = str(_picker_value(world_planet_picker))
+	if id != _visual_id or _visual_refresh >= 0.2:
+		_visual_refresh = 0.0
+		var snapshot: Dictionary = _planet.visual_snapshot(id)
+		_visual.visible = not snapshot.is_empty()
+		if not snapshot.is_empty():
+			var degree: int = int(snapshot.exploration)
+			if id != _visual_id:
+				_visual.clear_transients()
+				_visual_degree = degree
+			_visual.configure(id, snapshot.row)
+			_visual.set_exploration(snapshot.running, degree, snapshot.elapsed)
+			if degree > _visual_degree and _visual.globe.material_ready: _visual.complete()
+			_visual_degree = degree
+		_visual_id = id
+	_visual.advance(dt * float(context.get("speed", 1.0)), bool(context.get("paused", false)))
 
 func _flush_pending() -> void:
 	if not is_visible_in_tree(): return

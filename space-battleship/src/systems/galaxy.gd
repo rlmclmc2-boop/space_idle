@@ -128,6 +128,12 @@ func assignment_options() -> Array:
 		if is_available(key): options.append({"label": "星系 · " + str(_definitions[key].name), "kind": "galaxy", "target": key})
 	return options
 
+## Detached view data; map animation never receives the live region dictionary.
+func visual_snapshot(key: String) -> Dictionary:
+	if not is_available(key): return {}
+	return {"region": _regions[key].duplicate(true), "definition": _definitions[key].duplicate(true),
+		"buildings": _buildings.duplicate(true), "settings": _rules.duplicate(true)}
+
 func status_rows(keys: Array = []) -> Array:
 	var rows: Array = []
 	for key in (_regions.keys() if keys.is_empty() else keys):

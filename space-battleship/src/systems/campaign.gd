@@ -471,3 +471,7 @@ func retreat_if_dead(clear_locks: Callable) -> void:
 	if not _run_state.is_running(): return
 	if _battle.defence_depleted() and _state.state not in ["menu", "retreat", "departing"]:
 		_begin_death_retreat(clear_locks)
+
+func scenery_facts() -> Dictionary:
+	return {"stage": int(_state.stage), "progress": clampf(float(_state.distance) / maxf(1.0, float(_levels[_state.stage].length)), 0.0, 1.0),
+		"state": str(_state.state)}

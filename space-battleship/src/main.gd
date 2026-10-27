@@ -23,6 +23,13 @@ var _player_text
 var _startup_save_error: String = ""
 var _startup_directory: String = ""
 var _feature_panels: Dictionary = {}
+var _pages: Dictionary = {}
+var _tabs: TabContainer
+var _selected_section: String = "ship"
+var _reforge_picker: OptionButton
+var _reforge_drones: ItemList
+var _reforge_planet_value: LineEdit
+var _reforge_drone_value: LineEdit
 var _visibility_pending: bool = true
 var _save_warning: Label
 var _overlay: Node2D
@@ -56,6 +63,12 @@ var _save_status_elapsed: float = 1.0
 var _seen_save_failure_generation: String = ""
 
 func _ready() -> void:
+	var readable_font := FontVariation.new()
+	readable_font.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
+	readable_font.variation_opentype = {"wght": 450}
+	readable_font.variation_embolden = 0.8
+	ThemeDB.fallback_font = readable_font
+	ThemeDB.get_default_theme().default_font = ThemeDB.fallback_font
 	if not ClassDB.class_exists("SpaceCombatKernel"):
 		var extension: String = OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION")
 		if extension.is_empty():
@@ -141,6 +154,7 @@ func _show_session() -> void:
 	session.campaign_system.progress_changed.connect(_queue_feature_visibility)
 	get_window().content_scale_size = session.battle.view_size()
 	if DisplayServer.get_name() != "headless":
+		add_child(load("res://src/ui/battle_scenery.gd").new(session))
 		var battle_view = BattleView.new(session.battle)
 		battle_view.damage_mode = _damage_mode
 		battle_view.damage_received.connect(_play_effect)
@@ -483,22 +497,18 @@ func _setup_growth_panel() -> void:
 	layer.layer = 10
 	add_child(layer)
 	var open := Button.new()
-	open.text = "成长与配装"
+	open.text = "舰桥 · 配装与发展"
 	open.position = Vector2(18, 80)
 	layer.add_child(open)
 	growth_panel = PanelContainer.new()
-	growth_panel.position = Vector2(12, 122)
-	growth_panel.size = Vector2(410, 615)
+	growth_panel.position = Vector2(12, 130)
+	growth_panel.size = Vector2(548, 760)
 	growth_panel.visible = _preferred_page == "growth"
 	layer.add_child(growth_panel)
-	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(400, 600)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	growth_panel.add_child(scroll)
-	var box := VBoxContainer.new()
-	box.custom_minimum_size.x = 380
-	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(box)
+	growth_panel.theme = load("res://src/ui/bridge_theme.gd").create()
+	var shell := VBoxContainer.new()
+	growth_panel.add_child(shell)
+	var box: VBoxContainer = shell
 	var back := Button.new()
 	back.text = "返回战斗"
 	back.pressed.connect(func(): _set_page("battle"))
@@ -512,9 +522,19 @@ func _setup_growth_panel() -> void:
 	box.add_child(save_state_label)
 	_save_status_elapsed = 1.0
 	open.pressed.connect(func(): _set_page("battle" if growth_panel.visible else "growth"))
+	_tabs = TabContainer.new()
+	_tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	shell.add_child(_tabs)
+	_pages.clear()
+	for page in [["ship", "舰船"], ["growth", "成长"], ["universe", "星图"], ["hyperspace", "超空间"], ["archive", "档案"], ["settings", "设置"]]:
+		_create_bridge_page(str(page[0]), str(page[1]))
+	box = _pages.ship.box
+	box.add_child(load("res://src/ui/campaign_panel.gd").new(session, _command_button))
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
+	box.add_child(load("res://src/ui/attributes_panel.gd").new(session))
+	box = _pages.growth.box
 	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor, _command_button)
 	box.add_child(reactor_panel)
 	_feature_panels["reactor"] = reactor_panel
@@ -523,11 +543,16 @@ func _setup_growth_panel() -> void:
 	_feature_panels["research"] = research_panel
 	_add_feature_panel(box, "enhancement", EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
 		session.economy.affordable, session.publish_enhancement, _command_button))
+	box = _pages.universe.box
 	_add_feature_panel(box, "crew", CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
-	_add_feature_panel(box, "galaxy", GalaxyPanel.new(session.galaxy_system))
-	_add_feature_panel(box, "planet", PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button))
+	_add_feature_panel(box, "galaxy", GalaxyPanel.new(session.galaxy_system, _world_visual_context))
+	_add_feature_panel(box, "planet", PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button, _world_visual_context))
+	box = _pages.hyperspace.box
 	_add_feature_panel(box, "hyperspace", HyperspacePanel.new(session, _command_button))
+	box = _pages.archive.box
+	box.add_child(load("res://src/ui/archive_panel.gd").new(session))
 	box.add_child(NotificationsPanel.new(session.notifications, _player_text))
+	box = _pages.settings.box
 	var save_path := LineEdit.new()
 	save_path.placeholder_text = "存档目录（完整路径）"
 	save_path.text = session.save_files._directory if session.save_files != null else _startup_directory
@@ -554,7 +579,12 @@ func _setup_growth_panel() -> void:
 	autosave.min_value = 0.0
 	autosave.max_value = 86400.0
 	autosave.step = 1.0
-	autosave.suffix = " 现实秒自动保存（0为关闭）"
+	var autosave_caption := Label.new()
+	autosave_caption.text = "自动保存间隔（现实时间，0为关闭）"
+	PlayerText.wrap(autosave_caption)
+	box.add_child(autosave_caption)
+	autosave.suffix = " 秒"
+	autosave.set_meta("autosave_interval", true)
 	autosave.value = _autosave_interval
 	_autosave_spin = autosave
 	box.add_child(autosave)
@@ -645,6 +675,7 @@ func _setup_growth_panel() -> void:
 		return _preview_import(save_path.text, import_path.text))
 	_command_button(box, "确认导入", func() -> Dictionary:
 		return _apply_import(save_path.text, import_path.text))
+	box = _pages.universe.box
 	var planet_id := LineEdit.new()
 	planet_id.placeholder_text = "重铸星球编号"
 	var reforge_box := VBoxContainer.new()
@@ -653,11 +684,16 @@ func _setup_growth_panel() -> void:
 	var retained_ids := LineEdit.new()
 	retained_ids.placeholder_text = "保留无人机编号（逗号分隔）"
 	reforge_box.add_child(retained_ids)
+	planet_id.hide()
+	retained_ids.hide()
+	_setup_reforge_selection(reforge_box, planet_id, retained_ids)
 	_command_button(reforge_box, "预览重铸", func() -> Dictionary:
 		return _preview_reforge(save_path.text, planet_id.text, retained_ids.text))
 	_command_button(reforge_box, "确认重铸", func() -> Dictionary:
 		return _confirm_reforge(save_path.text, planet_id.text, retained_ids.text))
 	_command_button(reforge_box, "取消重铸", _cancel_reforge)
+	_tabs.tab_changed.connect(_bridge_tab_changed)
+	_bridge_tab_changed(_tabs.current_tab)
 
 func _add_feature_panel(parent: Control, key: String, panel: Control) -> void:
 	_feature_panels[key] = panel
@@ -678,3 +714,70 @@ func _refresh_feature_visibility() -> void:
 		"galaxy": not session.galaxy_system.status_rows().is_empty(), "hyperspace": session.hyperspace_system.unlocked(highest),
 		"reforge": not session.planet_system.planet_options().is_empty()}
 	for key in _feature_panels: _feature_panels[key].visible = bool(visible_features[key])
+	if _tabs != null:
+		_tabs.set_tab_hidden(_pages.growth.index, not (visible_features.reactor or visible_features.research or visible_features.enhancement))
+		_tabs.set_tab_hidden(_pages.universe.index, not (visible_features.crew or visible_features.planet or visible_features.galaxy))
+		_tabs.set_tab_hidden(_pages.hyperspace.index, not visible_features.hyperspace)
+		if _tabs.is_tab_hidden(_tabs.current_tab): _tabs.current_tab = int(_pages.ship.index)
+
+func _create_bridge_page(key: String, title: String) -> void:
+	var scroll := ScrollContainer.new()
+	scroll.name = title
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_tabs.add_child(scroll)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(box)
+	_pages[key] = {"scroll": scroll, "box": box, "index": _tabs.get_tab_count() - 1}
+
+func _bridge_tab_changed(index: int) -> void:
+	if _reforge_picker != null and index == int(_pages.universe.index): _refresh_reforge_selection()
+	for key in _pages:
+		if int(_pages[key].index) == index: _selected_section = str(key)
+
+func _world_visual_context() -> Dictionary:
+	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(),
+		"galaxy_crew": session.crew_system.galaxy_assignments()}
+
+func _setup_reforge_selection(parent: Control, planet_value: LineEdit, drone_value: LineEdit) -> void:
+	_reforge_planet_value = planet_value
+	_reforge_drone_value = drone_value
+	var heading := Label.new()
+	heading.text = "重铸远征"
+	heading.add_theme_font_size_override("font_size", 20)
+	parent.add_child(heading)
+	var help := Label.new()
+	help.text = "选择已征服的星球，并选择本次保留的无人机。先预览损失与收益，确认后才执行重铸。"
+	PlayerText.wrap(help)
+	parent.add_child(help)
+	_reforge_picker = OptionButton.new()
+	parent.add_child(_reforge_picker)
+	_reforge_picker.item_selected.connect(func(index): _reforge_planet_value.text = str(_reforge_picker.get_item_metadata(index)))
+	_reforge_drones = ItemList.new()
+	_reforge_drones.select_mode = ItemList.SELECT_MULTI
+	_reforge_drones.custom_minimum_size.y = 120
+	parent.add_child(_reforge_drones)
+	_reforge_drones.multi_selected.connect(func(_index, _selected):
+		var selected := PackedStringArray()
+		for index in _reforge_drones.get_selected_items(): selected.append(str(_reforge_drones.get_item_metadata(index)))
+		_reforge_drone_value.text = ",".join(selected))
+	_refresh_reforge_selection()
+
+func _refresh_reforge_selection() -> void:
+	var previous: String = _reforge_planet_value.text
+	_reforge_picker.clear()
+	for option in session.planet_system.planet_options():
+		_reforge_picker.add_item(str(option.name))
+		var index: int = _reforge_picker.item_count - 1
+		_reforge_picker.set_item_metadata(index, option.id)
+		if str(option.id) == previous: _reforge_picker.select(index)
+	if _reforge_picker.selected >= 0: _reforge_planet_value.text = str(_reforge_picker.get_item_metadata(_reforge_picker.selected))
+	var selected: PackedStringArray = _reforge_drone_value.text.split(",", false)
+	_reforge_drones.clear()
+	var number: int = 0
+	for drone in session.hyperspace_system.warehouse().main:
+		number += 1
+		var names := {"laser": "脉冲激光", "cannon": "磁轨炮", "missile": "导弹", "longLaser": "长激光"}
+		_reforge_drones.add_item("无人机 %d · %s · Lv%d" % [number, names.get(str(drone.weapon), "武装"), int(drone.level)])
+		_reforge_drones.set_item_metadata(number - 1, drone.id)
+		if str(drone.id) in selected: _reforge_drones.select(number - 1, false)

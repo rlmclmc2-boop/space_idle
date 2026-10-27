@@ -24,6 +24,13 @@ func _find_notifications(node: Node):
 		if found != null: return found
 	return null
 
+func _find_line(node: Node, placeholder: String) -> LineEdit:
+	if node is LineEdit and node.placeholder_text == placeholder: return node
+	for child in node.get_children():
+		var found: LineEdit = _find_line(child, placeholder)
+		if found != null: return found
+	return null
+
 func _find_picker(node: Node) -> FileDialog:
 	if node is FileDialog and node.file_mode == FileDialog.FILE_MODE_OPEN_DIR: return node
 	for child in node.get_children():
@@ -83,6 +90,7 @@ func _run() -> void:
 	if not main.growth_panel.visible:
 		_fail("growth page did not open")
 		return
+	main._tabs.current_tab = main._pages.settings.index
 	if not await _capture(prefix, "growth"):
 		_fail("growth screenshot failed")
 		return
@@ -95,8 +103,10 @@ func _run() -> void:
 		_fail("picker screenshot failed")
 		return
 	picker.get_cancel_button().pressed.emit()
+	var save_path: LineEdit = _find_line(main, "存档目录（完整路径）")
+	save_path.text = ""
 	_find_button(main, "保存").pressed.emit()
-	if main.growth_status.text != "SaveDirectoryRequired":
+	if main.growth_status.text != "请选择可写的存档目录。":
 		_fail("save failure not visible: " + main.growth_status.text)
 		return
 	if not await _capture(prefix, "save-failure"):
@@ -112,7 +122,8 @@ func _run() -> void:
 	if main.session.notifications.unread() != unread:
 		_fail("opening archive marked a notification read")
 		return
-	var scroll: ScrollContainer = main.growth_panel.get_child(0)
+	main._tabs.current_tab = main._pages.archive.index
+	var scroll: ScrollContainer = main._pages.archive.scroll
 	scroll.scroll_vertical = int(notifications.position.y)
 	if not await _capture(prefix, "notifications"):
 		_fail("notification screenshot failed")
@@ -122,7 +133,7 @@ func _run() -> void:
 	if main.session.notifications.unread() != unread - 1:
 		_fail("read action did not clear one notification")
 		return
-	main.growth_panel.get_child(0).get_child(0).get_child(0).pressed.emit()
+	_find_button(main, "返回战斗").pressed.emit()
 	if main.growth_panel.visible or not await _capture(prefix, "battle"):
 		_fail("return to battle failed")
 		return

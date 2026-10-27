@@ -43,13 +43,14 @@ func _draw() -> void:
 	_upload_beams()
 	_battle.draw_player_hull(self, Color("66d9dc"))
 	_battle.draw_enemy_overlays(self, font)
+	_battle.draw_weapon_art(self)
 	for label in damage_labels:
 		var colour := Color("ff8a85") if label.hostile else Color("ffe78f") if label.critical else Color("e6f7f0")
 		var lift: float = (label.expires - _battle.presentation_clock()) * 22.0
 		draw_string(font, label.position - Vector2(55, 15 + lift), label.text,
 			HORIZONTAL_ALIGNMENT_CENTER, 110, 16, colour)
 	var hud: Dictionary = _battle.hud_values()
-	draw_string(font, Vector2(18, 53), "攻击 %s   来袭 %s" % [hud.attacks, hud.incoming], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("a9c6db"))
+	# Attack history is available in the intelligence archive, not the battle HUD.
 	draw_string(font, Vector2(18, 765), "装甲 %s   护盾 %s" % [hud.armour, hud.shield], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8ede6"))
 
 func _draw_contacts() -> void:

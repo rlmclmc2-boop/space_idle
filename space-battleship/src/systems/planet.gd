@@ -210,6 +210,19 @@ func publish_advance(result: Dictionary) -> void:
 	if not result.building_ids.is_empty(): buildings_changed.emit(result.building_ids)
 	if not result.assignment_ids.is_empty(): assignment_options_changed.emit(result.assignment_ids)
 
+## A detached presentation snapshot; callers cannot modify exploration or buildings.
+func visual_snapshot(id: String) -> Dictionary:
+	if not is_available(id): return {}
+	var row: Dictionary = _definitions[id].duplicate(true)
+	var progress: Dictionary = _state[id]
+	var facilities: Array = []
+	for key in progress.buildings:
+		if progress.buildings[key].state == "built":
+			facilities.append({"id": str(key), "type": str(_buildings[key].type), "owned": true})
+	row["visualFacilities"] = facilities
+	return {"row": row, "running": bool(progress.running), "exploration": int(progress.exploration),
+		"elapsed": float(progress.elapsed), "duration": float(progress.duration)}
+
 func planet_options() -> Array:
 	var rows: Array = []
 	for id in _definitions:

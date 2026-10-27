@@ -2116,6 +2116,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("input_player_hull", "hull"), &SpaceCombatKernel::input_player_hull);
         ClassDB::bind_method(D_METHOD("enemy_views"), &SpaceCombatKernel::enemy_views);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
+        ClassDB::bind_method(D_METHOD("attribute_details"), &SpaceCombatKernel::attribute_details);
         ClassDB::bind_method(D_METHOD("set_damage_stats_enabled", "enabled"), &SpaceCombatKernel::set_damage_stats_enabled);
         ClassDB::bind_method(D_METHOD("take_damage_stats"), &SpaceCombatKernel::take_damage_stats);
     }
@@ -2806,6 +2807,43 @@ class SpaceCombatKernel : public RefCounted {
     }
     Dictionary player_view() const {
         return player_row;
+    }
+    // Read the same committed modules and evaluator used by attack birth and defence settlement.
+    // This query never advances counters, RNG, effects or cooldowns.
+    Dictionary attribute_details() const {
+        Dictionary result; result["player"] = player_row;
+        Array attack_rows, defence_rows;
+        for (const Weapon &w : weapons) {
+            if (w.hostile || !w.configured || w.vacant || !w.enabled) continue;
+            Dictionary row; row["entry"] = w.entry.duplicate(true); row["type"] = w.type;
+            Amount value = evaluate_module_value(w.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, w.branch_factors, w.external_factors) * w.factor * drone_weapon(w.kind);
+            row["base"] = wire(w.base); row["value"] = wire(value);
+            row["multiplier"] = wire(w.base > 0 ? value / w.base : Amount(0));
+            row["interval"] = w.interval; row["salvo"] = w.salvo;
+            row["critical_rate"] = w.crit_rate; row["critical_multiplier"] = w.crit_multiplier;
+            row["critical_stacks"] = clock < w.critical_until ? w.critical_stacks : 0;
+            row["critical_attacks"] = w.critical_attacks;
+            row["critical_seconds"] = maximum(0.0, w.critical_until - clock);
+            row["focus_seconds"] = w.focus_uid >= 0 ? maximum(0.0, clock - w.focus_since) : 0.0;
+            row["chain_count"] = w.chain_count; row["repeat_probability"] = w.repeat_probability;
+            attack_rows.append(row);
+        }
+        for (const Defence &d : defences) {
+            Dictionary row; row["entry"] = d.entry.duplicate(true); row["type"] = d.type; row["layer"] = d.layer;
+            row["base"] = wire(d.base); row["maximum"] = wire(d.maximum);
+            row["current"] = wire(maximum(Amount(0), d.maximum - d.loss));
+            row["multiplier"] = wire(d.base > 0 ? d.maximum / d.base : Amount(0));
+            row["delay"] = d.delay; row["rate"] = d.rate;
+            row["buffer"] = wire(d.buffer); row["cover"] = wire(d.cover);
+            row["protection_seconds"] = maximum(0.0, d.protection_until - defence_time);
+            defence_rows.append(row);
+        }
+        Amount shield_debt = 0, armour_debt = 0;
+        for (const auto &debt : debts) { shield_debt += debt.second[0]; armour_debt += debt.second[1]; }
+        result["weapons"] = attack_rows; result["defences"] = defence_rows;
+        result["shield_debt"] = wire(shield_debt); result["armour_debt"] = wire(armour_debt);
+        result["laser_charge"] = laser_charge_multiplier;
+        return result;
     }
     Dictionary set_player_values(Dictionary weapon_values, Dictionary defence_values, String kind, String iron_factor, Dictionary upgrades) {
         Dictionary result; result["ok"] = false; result["fault"] = false; result["reason"] = "NativeConfigurationRejected";

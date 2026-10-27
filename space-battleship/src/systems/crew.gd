@@ -134,6 +134,15 @@ func contributions() -> Dictionary:
 		_dirty_jobs = []
 	return result
 
+## Presentation count only; no state or mutable member records escape.
+func galaxy_assignments() -> Dictionary:
+	var counts: Dictionary = {}
+	for member in _members.values():
+		if member.kind == "galaxy":
+			var key: String = str(member.target)
+			counts[key] = int(counts.get(key, 0)) + 1
+	return counts
+
 func step_assignments() -> Dictionary:
 	return _step_assignments(_members)
 

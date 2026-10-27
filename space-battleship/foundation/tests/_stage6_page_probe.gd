@@ -34,7 +34,7 @@ func _find_line(node: Node, placeholder: String) -> LineEdit:
 	return null
 
 func _find_autosave(node: Node) -> SpinBox:
-	if node is SpinBox and node.suffix.begins_with(" 现实秒自动保存"): return node
+	if node is SpinBox and node.get_meta("autosave_interval", false): return node
 	for child in node.get_children():
 		var found: SpinBox = _find_autosave(child)
 		if found != null: return found
@@ -317,6 +317,8 @@ func _run() -> void:
 		return
 	main.growth_panel.visible = true
 	main._feature_panels["research"].visible = true # Controlled research fixture below unlock gate.
+	main._tabs.set_tab_hidden(main._pages.growth.index, false)
+	main._tabs.current_tab = main._pages.growth.index
 	var research_panel = _find_research(main)
 	var api = main.session.research._api
 	var rates := {"1": api.apply("from_decimal", ["800"]).value, "2": api.apply("from_decimal", ["1600"]).value}

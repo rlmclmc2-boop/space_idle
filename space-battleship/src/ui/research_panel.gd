@@ -77,7 +77,7 @@ func _init(research, command: Callable) -> void:
 		_automatic_draft = false
 		refresh_investment()
 		return {"ok": true})
-	_caption(box, "AI 工厂岗位控制自动续研；自动投入开关仅控制预算刷新。")
+	_caption(box, "AI 工厂岗位控制自动续研；\n自动投入开关仅控制预算刷新。")
 	_caption(box, "岗位有人且启用自动投入时，每60游戏秒按近期收入与共同预算比例刷新铁、铀投入。")
 	_caption(box, "应用比例不立即重算；未应用的编辑保留，旁列当前值为实际生效设置。")
 	_research.investment_changed.connect(refresh_investment)

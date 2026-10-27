@@ -1169,3 +1169,15 @@ func _source_budget_blocks(reference: Dictionary, latest_cleared: int) -> Array:
 					drops.append({"resource_id": int(fields[0]), "amount": fields[1], "chance": float(fields[2])})
 			blocks.append(drops)
 	return blocks if blocks.size() == int(reference.reference_member_count) else []
+
+func player_catalog() -> Dictionary:
+	var qualities: Array = []
+	var legends: Array = []
+	var weapons: Array = []
+	for row in _qualities:
+		if str(row.quality) != "ultimate_core": qualities.append(str(row.quality))
+	if "ultimate" not in qualities: qualities.append("ultimate")
+	for row in _legends: legends.append(str(row.effect_id))
+	for row in _routes.values():
+		if str(row.weapon) not in weapons: weapons.append(str(row.weapon))
+	return {"weapons": weapons, "qualities": qualities, "affixes": _affixes.keys(), "legends": legends}
