@@ -47,7 +47,7 @@
 
 复用最新五舰静态图、装备图标，当前主体用Cruiser的768×768源图及assets/ui/ships/manifest.json的三个预览挂点(382.0767,225.4099)/(274.8447,452.3739)/(493.1042,452.3739)。源alpha框为(192,133)–(575,635)；透明画布不是体量。图像等比定位后以同一预览变换投影挂点；防御标签是UI槽位工作点，不伪装真实炮口。此图和这些点只作装备预览，不提交战斗几何。
 
-Godot分层为HangarStage背景/地台→舰体TextureRect→武器预览挂点与选中态→UI槽位工作点→当前对象比较台→固定报价操作区。选槽同时更新挂点选中、装备身份、当前/候选、级数/数量和费用；切场景保留slot_id。+1/+10/MAX先选择报价模式，再提交该模式的具名命令。换装后等级保留，冷却只绑定该槽；其他槽位能继续查看/操作。首防御槽无卸空入口。
+Godot分层为HangarStage背景/地台→舰体TextureRect→武器预览挂点与选中态→UI槽位工作点→当前对象比较台→固定报价操作区。选槽同时更新挂点选中、装备身份、当前/候选、级数/数量和费用；切场景保留slot_id。+1/+10/MAX先选择报价模式，再提交该模式的具名命令。换装后等级保留，冷却按config!A48:C48的equipmentSwitchCooldownSeconds=10个游戏秒，只绑定该槽；其他槽位能继续查看/操作。首防御槽无卸空入口。
 
 公开绑定：panel_slots/panel_equipment、quote_slot给确定数量报价；候选presentation_slots/equipment_comparison及总费/MAX数量仍按14的未合/待补状态核实。buy_levels/buy_max_levels/buy_all_levels/equip_slot沿现有注入支付/发布口；UI不复制成长或MAX搜索。固定区复用同一报价记录，不维护第二份手算数字。slots_changed/loadout_changed/options_changed使受影响对象失效并刷新，不刷新掉未提交候选；当前对象消失时清旧详情、阻止旧ID提交。
 

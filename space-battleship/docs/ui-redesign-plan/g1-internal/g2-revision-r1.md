@@ -33,3 +33,7 @@
 定向检查：A/B首步均分、清零、整组调配、第二项拒绝及重试；装备连续两次+10和第三次无报价；科研任意37%、0%、100%与即时/持续分离；比例输入拖动期间不替换slider节点。主尺寸1440×900物理客户区，未启动多尺寸主任务。JS语法与git diff空白检查；未运行Godot/游戏测试。
 
 同版整屏与操作记录见`evidence/g2-revision-r1/manifest.json`。截图只证明记录中场景，不替代全系统G2或G9。
+
+## R1后续具体纠正：换装冷却
+
+根线程核实`config_excel/config.xlsx`的config!A48:C48为equipmentSwitchCooldownSeconds=10，生产Equipment读取同一10游戏秒口径。此前演示18秒错误；本补丁统一换装回执、固定按钮、槽位警告及情境样例为10游戏秒。未改Excel、玩法或生产代码。原R1固定源码0ecd5300不含此补丁；局部同版证据见`evidence/g2-cooldown-r1/manifest.json`。浏览器不推进真实冷却时钟，不能把静态10样本当作真实到期验证。
