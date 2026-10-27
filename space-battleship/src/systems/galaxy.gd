@@ -332,6 +332,7 @@ static func _contributions(regions: Dictionary, buildings: Dictionary, api, prev
 	var one: Dictionary = api.apply("from_decimal", ["1"]).value
 	var zero: Dictionary = api.apply("zero", []).value
 	var affected: Dictionary = {}
+	var updates: Array = changes
 	if result.is_empty():
 		result = {"ok": true, "values": {}, "_sources": {}, "_regional": {}}
 		for effect in ["crew_exp", "equipment_value", "charge_max", "gem_fragment", "iron_auto_ratio", "uranium_auto_ratio"]:
@@ -341,7 +342,13 @@ static func _contributions(regions: Dictionary, buildings: Dictionary, api, prev
 				result._sources[effect][key] = {}
 				result._regional[effect][key] = zero
 			if effect not in ["iron_auto_ratio", "uranium_auto_ratio"]: result["values"][effect] = one
-	for change in changes:
+		# An empty ledger has no prior sources, including after restore/reforge.
+		updates = []
+		for key in regions:
+			for id in regions[key].nodes:
+				if regions[key].nodes[id].state == "active":
+					updates.append({"region": key, "node": id})
+	for change in updates:
 		var node: Dictionary = regions[change.region].nodes[change.node]
 		var row: Dictionary = buildings[node.building]
 		var effect: String = str(row.effect_type)
