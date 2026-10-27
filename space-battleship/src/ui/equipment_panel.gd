@@ -124,6 +124,9 @@ func _command(parent: Control, text: String, action: Callable):
 		if not result.get("ok", false) and not result.has("message"):
 			var message: String = str(ERRORS.get(reason, EconomyView.describe_error(reason)))
 			if not message.is_empty(): result.message = message
+		if result.get("ok",false):
+			for row in _equipment.panel_slots(_inputs.call().mounts):
+				if str(row.id)==_selected_slot():result.message=str(row.label)+" · 已生效"
 		return result)
 
 func _ready() -> void:

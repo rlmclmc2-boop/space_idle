@@ -56,7 +56,15 @@ func _refresh_choices()->void:
 func _command(parent:Control,title:String,action:Callable)->Button:
 	return _host_command.call(parent,title,func():
 		var result:Dictionary=action.call()
-		if not result.get("ok",false) and not result.has("message"):result.message=EconomyView.describe_error(str(result.get("reason","")))
+		if not result.get("ok",false) and not result.has("message"):
+			var explanation:String=EconomyView.describe_error(str(result.get("reason","")))
+			if not explanation.is_empty():result.message=explanation
+		elif result.get("ok",false):
+			var current:Dictionary=_reactor.presentation_model(_inputs.call())
+			result.message="核心 Lv.%d · 可分配 %s"%[current.get("level",0),current.get("remaining","—")]
+			if title in ["应用","增加","减少","清零"]:
+				for row in current.get("modules",[]):
+					if row.id==_selected():result.message="%s · 手动 %s · 有效 %s"%[row.name,row.allocation,row.effective]
 		_elapsed=1.0
 		return result)
 func _ready()->void:process_priority=1

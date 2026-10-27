@@ -29,6 +29,7 @@ var _stage_elapsed:float=0.0
 var _budget:PanelContainer
 var _budget_content:VBoxContainer
 var _readout:PanelContainer
+var _scene_actions:HBoxContainer
 
 func _init(research, command: Callable, context:Callable=Callable()) -> void:
 	_host_command = command
@@ -177,7 +178,7 @@ func _build_stage()->void:
 	_research_title=widgets.label(display,"AI 科技工厂",22)
 	_research_progress=ProgressBar.new();_research_progress.max_value=1;_research_progress.custom_minimum_size.y=8;_research_progress.show_percentage=false;display.add_child(_research_progress)
 	_research_detail=widgets.label(display,"选择当前研究设备",16)
-	var actions:=HBoxContainer.new();display.add_child(actions)
+	var actions:=HBoxContainer.new();_scene_actions=actions;_stage.add_child(actions)
 	_research_detail.max_lines_visible=3
 	var machines:=Button.new();machines.text="研究设备";actions.add_child(machines);machines.pressed.connect(func():_set_drawer(not _drawer.visible))
 	var terminal:=Button.new();terminal.text="投入终端";actions.add_child(terminal);terminal.pressed.connect(func():_budget.visible=not _budget.visible;_drawer.hide())
@@ -202,6 +203,7 @@ func _layout_scene()->void:
 		var top:float=_readout.position.y+_readout.size.y+10
 		panel.position=Vector2(14,top);panel.size=Vector2(minf(400,_stage.size.x-28),maxf(200,_stage.size.y-top-14))
 	_budget.position.x=_stage.size.x-_budget.size.x-14
+	_scene_actions.position=Vector2(14,_stage.size.y-54);_scene_actions.size=Vector2(300,40)
 func _set_drawer(open:bool)->void:
 	_drawer.visible=open
 	if open:_budget.hide()
