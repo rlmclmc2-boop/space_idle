@@ -17,6 +17,7 @@ var _claim_state: Dictionary = {}
 var _claim_factors: Dictionary = {}
 var _claim_id: String = ""
 var _api
+var _facility_fact_cache: Dictionary = {}
 
 func save_state() -> Dictionary:
 	return {"planets": _state.duplicate(true)}
@@ -63,6 +64,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 			if building.work > int(definition.build_explore) or (building.state == "locked" and building.work != 0) or (building.state in ["ready", "built"] and building.work < int(definition.build_explore)):
 				return {"ok": false, "reason": "InvalidPlanetBuildings"}
 	_state = state.planets.duplicate(true)
+	_facility_fact_cache.clear()
 	_factors = {}
 	_claim_state = {}
 	_claim_factors = {}
@@ -125,11 +127,21 @@ func publish_status(ids: Array) -> void:
 func set_automatic(id: String, enabled: bool) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not is_available(id): return {"ok": false, "reason": "PlanetLocked"}
-	return _set_automatic(_state[id], enabled)
+	var changed: bool = bool(_state[id].automatic) != enabled
+	var result: Dictionary = _set_automatic(_state[id], enabled)
+	if result.ok and changed: status_changed.emit([id])
+	return result
 
-func claim_build(id: String, building: String, publish: Callable) -> Dictionary:
+func _claim_admission(id: String, building: String) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not is_available(id): return {"ok": false, "reason": "PlanetLocked"}
+	if not _state[id].buildings.has(building) or _state[id].buildings[building].state != "ready":
+		return {"ok": false, "reason": "PlanetBuildingNotReady"}
+	return {"ok": true}
+
+func claim_build(id: String, building: String, publish: Callable) -> Dictionary:
+	var admitted: Dictionary = _claim_admission(id, building)
+	if not admitted.ok: return admitted
 	var candidate_state: Dictionary = _state.duplicate()
 	var candidate_progress: Dictionary = _state[id].duplicate()
 	candidate_progress.buildings = _state[id].buildings.duplicate()
@@ -152,6 +164,7 @@ func claim_build(id: String, building: String, publish: Callable) -> Dictionary:
 
 func accept_prepared_claim() -> Dictionary:
 	_state = _claim_state
+	_facility_fact_cache.erase(_claim_id)
 	_factors = _claim_factors
 	var notice := {"id": _claim_id, "availability_changed": _refresh_available(false)}
 	_claim_state = {}
@@ -189,6 +202,7 @@ func advance(explorers: Dictionary, builders: Dictionary, dt: float, experience_
 	var assignment_ids: Array = []
 	for completion in result.completed:
 		var id: String = str(completion.planet)
+		_facility_fact_cache.erase(id)
 		changes[id] = []
 		if completion.buildings_changed: building_ids.append(id)
 		if completion.assignments_changed: assignment_ids.append(id)
@@ -222,6 +236,40 @@ func visual_snapshot(id: String) -> Dictionary:
 	row["visualFacilities"] = facilities
 	return {"row": row, "running": bool(progress.running), "exploration": int(progress.exploration),
 		"elapsed": float(progress.elapsed), "duration": float(progress.duration)}
+
+## Personnel are frame-local inputs; only static facility facts are cached.
+func facility_facts(planet_id: String, explorers: Dictionary, builders: Dictionary) -> Array:
+	if not is_available(planet_id): return []
+	var progress: Dictionary = _state[planet_id]
+	if not _facility_fact_cache.has(planet_id):
+		var facts: Array = []
+		for key in progress.buildings:
+			var build: Dictionary = progress.buildings[key]
+			var row: Dictionary = _buildings[key]
+			var factor = null
+			if build.state == "built" and row.type in ["equipment", "refinery"]:
+				var source: Dictionary = _facility_source_factor(progress, row, _api)
+				if source.ok: factor = _api.apply("to_display", [source.value]).text
+			facts.append({"planet_id": planet_id, "id": str(key), "name": str(row.name), "type": str(row.type),
+				"state": str(build.state), "work": int(build.work), "required_work": int(row.build_explore),
+				"unlock_exploration": int(row.unlock_explore),
+				"work_fraction": clampf(float(build.work) / float(row.build_explore), 0.0, 1.0),
+				"extra_crew_required": int(row.extra_crew), "source_factor": factor})
+		_facility_fact_cache[planet_id] = facts
+	var rows: Array = _facility_fact_cache[planet_id].duplicate(true)
+	var explorers_present: int = explorers.get(planet_id, []).size()
+	for row in rows:
+		row.explorers_present = explorers_present
+		row.builders_present = builders.get(planet_id + ":" + str(row.id), []).size()
+		row.pause_reason = ""
+		if row.state == "building":
+			if not progress.running: row.pause_reason = "ExplorationNotRunning"
+			elif explorers_present == 0: row.pause_reason = "NoExplorer"
+			elif row.builders_present < row.extra_crew_required: row.pause_reason = "MissingBuilders"
+		var admission: Dictionary = _claim_admission(planet_id, str(row.id))
+		row.claim_allowed = admission.ok
+		row.claim_reason = str(admission.get("reason", ""))
+	return rows
 
 func planet_options() -> Array:
 	var rows: Array = []
@@ -374,6 +422,15 @@ static func _buff(state: Dictionary, rows: Array, kind: String, target: String, 
 			maximum = maxf(maximum, float(row.value))
 	return maxf((add if has_add else 1.0 if has_multiply else 0.0) * multiply, maximum)
 
+static func _facility_source_factor(progress: Dictionary, row: Dictionary, api) -> Dictionary:
+	var count = api.apply("from_decimal", [str(progress.exploration)])
+	var scale = api.apply("from_decimal", [str(row.config1)])
+	count = api.apply("mul", [count.value, scale.value])
+	if not count.ok: return count
+	var one: Dictionary = api.apply("from_decimal", ["1"]).value
+	count = api.apply("add", [one, count.value])
+	return api.apply("pow", [count.value, float(row.config2)])
+
 static func _contributions(state: Dictionary, buildings: Dictionary, rows: Array, api, previous: Dictionary = {}, changes: Dictionary = {}) -> Dictionary:
 	var result: Dictionary = previous.duplicate()
 	if not previous.is_empty(): result._sources = previous._sources.duplicate()
@@ -393,12 +450,7 @@ static func _contributions(state: Dictionary, buildings: Dictionary, rows: Array
 		for key in keys:
 			var row: Dictionary = buildings[key]
 			if row.type not in ["equipment", "refinery"] or state[id].buildings[key].state != "built": continue
-			var count = api.apply("from_decimal", [str(state[id].exploration)])
-			var scale = api.apply("from_decimal", [str(row.config1)])
-			count = api.apply("mul", [count.value, scale.value])
-			if not count.ok: return count
-			count = api.apply("add", [one, count.value])
-			var value = api.apply("pow", [count.value, float(row.config2)])
+			var value: Dictionary = _facility_source_factor(state[id], row, api)
 			if not value.ok: return value
 			var source: String = str(id) + ":" + str(key)
 			if value.value == result._sources[row.type][source]: continue

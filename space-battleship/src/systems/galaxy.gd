@@ -12,6 +12,9 @@ var _available: Dictionary = {}
 var _factors: Dictionary = {}
 var _initial_error: String = ""
 var _api
+var _explore_requirements: Dictionary = {}
+var _reachable_fact_cache: Dictionary = {}
+var _node_source_text_cache: Dictionary = {}
 
 func save_state() -> Dictionary:
 	return {"regions": _regions.duplicate(true)}
@@ -58,6 +61,8 @@ func restore_state(state: Dictionary) -> Dictionary:
 			return {"ok": false, "reason": "InvalidGalaxyCounters"}
 	_regions = state.regions.duplicate(true)
 	_factors = {}
+	_reachable_fact_cache.clear()
+	_node_source_text_cache.clear()
 	return {"ok": true}
 
 func _init(rows: Array, buildings: Array, rules: Array, api, run_state) -> void:
@@ -67,7 +72,11 @@ func _init(rows: Array, buildings: Array, rules: Array, api, run_state) -> void:
 	for row in rules: _rules[str(row.key)] = row.value
 	_api = api
 	var result = _initial(_definitions)
-	if result.ok: _regions = result.regions
+	if result.ok:
+		_regions = result.regions
+		for key in _regions:
+			_explore_requirements[key] = {}
+			for id in _regions[key].nodes: _explore_requirements[key][id] = float(_regions[key].nodes[id].explore_remaining)
 	else: _initial_error = str(result.reason)
 
 func initialization_result() -> Dictionary:
@@ -133,6 +142,47 @@ func visual_snapshot(key: String) -> Dictionary:
 	if not is_available(key): return {}
 	return {"region": _regions[key].duplicate(true), "definition": _definitions[key].duplicate(true),
 		"buildings": _buildings.duplicate(true), "settings": _rules.duplicate(true)}
+
+## Selected-node facts never initialize the business ledger or advance work.
+func node_facts(region_id: String, node_id: String, counts: Dictionary) -> Dictionary:
+	if not is_available(region_id) or not _regions[region_id].nodes.has(node_id): return {}
+	var region: Dictionary = _regions[region_id]
+	var node: Dictionary = region.nodes[node_id]
+	var definition: Dictionary = _definitions[region_id]
+	var signature: Array = [region.explored_count, region.active_count, region.active_node]
+	if not _reachable_fact_cache.has(region_id) or _reachable_fact_cache[region_id].signature != signature:
+		_reachable_fact_cache[region_id] = {"signature": signature, "ids": _reachable(region)}
+	var upgrading: bool = node_id in region.upgrades
+	var upgrade_required = _upgrade_work(definition, int(node.level) + 1) if upgrading else null
+	var explore_required: float = _explore_requirements[region_id][node_id]
+	var construction_required: float = float(definition.construction_time)
+	var fraction = null
+	if node.state == "exploring": fraction = clampf(1.0 - float(node.explore_remaining) / explore_required, 0.0, 1.0)
+	elif node.state == "constructing": fraction = clampf(1.0 - float(node.construction_remaining) / construction_required, 0.0, 1.0)
+	elif upgrading: fraction = clampf(1.0 - float(node.upgrade_remaining) / float(upgrade_required), 0.0, 1.0)
+	var building_id: String = str(node.building) if node.explored else ""
+	var row: Dictionary = _buildings.get(building_id, {})
+	var effect: String = str(row.get("effect_type", ""))
+	var contribution = null
+	if not building_id.is_empty():
+		if node.state != "active": contribution = "0e0"
+		elif not _factors.is_empty():
+			var source = _factors._sources.get(effect, {}).get(region_id, {}).get(node_id)
+			if source != null:
+				if not _node_source_text_cache.has(region_id): _node_source_text_cache[region_id] = {}
+				var texts: Dictionary = _node_source_text_cache[region_id]
+				if not texts.has(node_id) or texts[node_id].source != source:
+					texts[node_id] = {"source": source, "text": _api.apply("to_display", [source]).text}
+				contribution = texts[node_id].text
+	return {"region_id": region_id, "id": node_id, "state": str(node.state), "explored": bool(node.explored),
+		"reachable": node_id in _reachable_fact_cache[region_id].ids,
+		"building_id": building_id, "name": str(row.get("name", "")), "level": int(node.level),
+		"upgrading": upgrading, "target_level": int(node.level) + 1 if upgrading else 1 if node.state == "constructing" else null,
+		"explore_remaining": float(node.explore_remaining), "explore_required": explore_required,
+		"construction_remaining": float(node.construction_remaining), "construction_required": construction_required,
+		"upgrade_remaining": float(node.upgrade_remaining) if upgrading else null, "upgrade_required": upgrade_required,
+		"progress_fraction": fraction, "progress_block_reason": "NoGalaxyCrew" if fraction != null and int(counts.get(region_id, 0)) <= 0 else "",
+		"effect_id": effect, "contribution": contribution}
 
 func status_rows(keys: Array = []) -> Array:
 	var rows: Array = []
@@ -230,6 +280,9 @@ static func _draw(region: Dictionary, buildings: Dictionary, key: String, cycle:
 		region.special_pending = int(region.bag_round) % cycle == 0
 	return selected
 
+static func _upgrade_work(definition: Dictionary, target_level: int) -> float:
+	return float(definition["upgrade_cost_lv" + str(target_level)])
+
 static func _advance(regions: Dictionary, definitions: Dictionary, buildings: Dictionary, personnel: Dictionary, enabled: Dictionary, dt: float, income_interval: float) -> Dictionary:
 	var changes: Array = []
 	var displayed: Array = []
@@ -288,7 +341,9 @@ static func _advance(regions: Dictionary, definitions: Dictionary, buildings: Di
 			var power: float = (float(row.upgrade_power_base) + float(row.upgrade_power_per_crew) * count) / upgrading.size()
 			for id in upgrading:
 				var node: Dictionary = region.nodes[id]
-				node.upgrade_remaining = maxf(0.0, float(node.upgrade_remaining) - dt * power)
+				var previous_work: float = float(node.upgrade_remaining)
+				node.upgrade_remaining = maxf(0.0, previous_work - dt * power)
+				if float(node.upgrade_remaining) != previous_work: display_changed = true
 				if float(node.upgrade_remaining) <= 1e-9:
 					node.upgrade_remaining = 0.0
 					region.total_levels += 1
@@ -312,7 +367,7 @@ static func _advance(regions: Dictionary, definitions: Dictionary, buildings: Di
 				var index: int = random.randi_range(0, candidates.size() - 1)
 				var id: String = str(candidates[index])
 				candidates.remove_at(index)
-				region.nodes[id].upgrade_remaining = float(row["upgrade_cost_lv" + str(int(region.nodes[id].level) + 1)])
+				region.nodes[id].upgrade_remaining = _upgrade_work(row, int(region.nodes[id].level) + 1)
 				active_upgrades += 1
 				region.upgrades.append(id)
 				display_changed = true

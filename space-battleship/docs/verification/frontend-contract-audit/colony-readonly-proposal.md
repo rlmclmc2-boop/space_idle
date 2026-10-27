@@ -1,6 +1,6 @@
 # 三项只读事实提案：审查依据与剩余边界
 
-本页为verification记录，不是规范或实施授权。规范候选见[14第8节](../../game-design/14-ui-contracts.md#8-待审提案成员设施与选中节点的最小只读事实)。固定主线`e93c221239a10d377b2ca89dd395ebcfa99c9819`、前端`83112e84eca019b147b92c5c13879ef6cefb01aa`；前置核对报告为[4bbb2f5b](https://github.com/rlmclmc2-boop/space_idle/blob/4bbb2f5b915f6e137d60cfd6082d82c525dc40d7/space-battleship/docs/verification/frontend-contract-audit/83112e84.md)。只做文档提案，未改运行代码或重跑游戏验证。
+本页为verification记录，不是规范或实施授权。规范候选见[14第8节](../../game-design/14-ui-contracts.md#8-已审待实施成员设施与选中节点的最小只读事实)。固定主线`e93c221239a10d377b2ca89dd395ebcfa99c9819`、前端`83112e84eca019b147b92c5c13879ef6cefb01aa`；前置核对报告为[4bbb2f5b](https://github.com/rlmclmc2-boop/space_idle/blob/4bbb2f5b915f6e137d60cfd6082d82c525dc40d7/space-battleship/docs/verification/frontend-contract-audit/83112e84.md)。只做文档提案，未改运行代码或重跑游戏验证。
 
 ## 字段来源与最小性
 
