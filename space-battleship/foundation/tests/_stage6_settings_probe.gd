@@ -56,9 +56,9 @@ func _run() -> void:
 	if not main.startup_error.is_empty() or main._music_player == null or main._effects_player == null:
 		_fail("settings consumers missing: " + main.startup_error)
 		return
-	var music: Button = _find_button(main, "Music")
-	var effects: Button = _find_button(main, "Sound effects")
-	var save_path: LineEdit = _find_line(main, "Existing absolute save directory")
+	var music: Button = _find_button(main, "音乐")
+	var effects: Button = _find_button(main, "音效")
+	var save_path: LineEdit = _find_line(main, "存档目录（完整路径）")
 	if music == null or effects == null or save_path == null or main._damage_option == null:
 		_fail("settings UI missing")
 		return
@@ -78,7 +78,7 @@ func _run() -> void:
 	blocker.close()
 	OS.set_environment("SPACE_IDLE_SETTINGS_PATH", blocker_path.path_join("settings.json"))
 	music.button_pressed = true
-	if not main._music_player.stream_paused or main._music_enabled or music.button_pressed or main.growth_status.text != "SettingsWriteFailed":
+	if not main._music_player.stream_paused or main._music_enabled or music.button_pressed or main.growth_status.text != "个人设置未能写入文件，请检查目录权限。":
 		_fail("failed settings publication changed the live control")
 		return
 	OS.set_environment("SPACE_IDLE_SETTINGS_PATH", settings_path)
@@ -86,27 +86,27 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(first_dir)
 	save_path.text = first_dir
 	var before = main.session
-	_find_button(main, "Preview new game").pressed.emit()
+	_find_button(main, "预览新游戏").pressed.emit()
 	if main._pending_new_game.is_empty() or main.session != before:
 		_fail("new game preview changed active session")
 		return
-	_find_button(main, "Confirm new game").pressed.emit()
+	_find_button(main, "确认新游戏").pressed.emit()
 	if main.session == before or PlayerSettings.load_interval().damage_mode != "off":
 		_fail("new game did not preserve settings")
 		return
 	await process_frame
 	var second_dir: String = directory.path_join("clear")
 	DirAccess.make_dir_recursive_absolute(second_dir)
-	save_path = _find_line(main, "Existing absolute save directory")
+	save_path = _find_line(main, "存档目录（完整路径）")
 	save_path.text = second_dir
-	var clear: Button = _find_button(main, "Clear player settings with new game")
+	var clear: Button = _find_button(main, "新游戏同时重置个人设置")
 	clear.button_pressed = true
 	before = main.session
-	_find_button(main, "Preview new game").pressed.emit()
+	_find_button(main, "预览新游戏").pressed.emit()
 	if main._pending_new_game.is_empty() or main.session != before:
 		_fail("clear preview changed active session")
 		return
-	_find_button(main, "Confirm new game").pressed.emit()
+	_find_button(main, "确认新游戏").pressed.emit()
 	state = PlayerSettings.load_interval()
 	if main.session == before or not state.music_enabled or not state.effects_enabled or state.damage_mode != "all" or state.page != "battle" or main._music_player.stream_paused or main.growth_panel.visible:
 		_fail("explicit clear did not restore defaults: " + str(state))

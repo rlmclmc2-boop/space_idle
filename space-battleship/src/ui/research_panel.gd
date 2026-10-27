@@ -1,4 +1,5 @@
 extends VBoxContainer
+const PlayerText = preload("res://src/ui/player_text.gd")
 
 const ERRORS := {"ResearchLocked": "科研前置条件未满足"}
 var _host_command: Callable
@@ -39,7 +40,8 @@ func _init(research, command: Callable) -> void:
 		input.custom_minimum_size.x = 140
 		investment.add_child(input)
 		var current := Label.new()
-		investment.add_child(current)
+		PlayerText.wrap(current)
+		box.add_child(current)
 		investment_current[resource] = current
 		_command(investment, "设置投入", func():
 			var result: Dictionary = research.set_investment_text(resource, input.text)
@@ -68,6 +70,7 @@ func _init(research, command: Callable) -> void:
 		refresh_investment()
 		return result)
 	automatic_current = Label.new()
+	PlayerText.wrap(automatic_current)
 	box.add_child(automatic_current)
 	_command(box, "还原当前投入设置", func():
 		_drafts.clear()
@@ -113,6 +116,7 @@ func _row(parent: Control) -> HBoxContainer:
 func _caption(parent: Control, text: String) -> void:
 	var label := Label.new()
 	label.text = text
+	PlayerText.wrap(label)
 	parent.add_child(label)
 
 func _command(parent: Control, text: String, action: Callable):

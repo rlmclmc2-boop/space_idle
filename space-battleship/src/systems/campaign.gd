@@ -1,4 +1,5 @@
 extends RefCounted
+const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 const CombatSetup = preload("res://src/combat_setup.gd")
 signal progress_changed
@@ -209,7 +210,7 @@ func consume_departure(seconds: float) -> float:
 	return accepted
 
 func status_text() -> String:
-	return "关卡 %s · %s · %.0f" % [_state.stage, _state.state, _state.distance]
+	return "关卡 %s · %s · %.0f" % [_state.stage, PlayerText.state(str(_state.state)), _state.distance]
 
 func toggle_guard() -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

@@ -1,10 +1,13 @@
 extends VBoxContainer
+const PlayerText = preload("res://src/ui/player_text.gd")
 
+var _text
 var _notifications
 var _archive: VBoxContainer
 var _open: Button
 
-func _init(notifications) -> void:
+func _init(notifications, text = null) -> void:
+	_text = text if text != null else PlayerText.new()
 	_notifications = notifications
 	_open = Button.new()
 	add_child(_open)
@@ -24,7 +27,8 @@ func _refresh() -> void:
 		var line := HBoxContainer.new()
 		_archive.add_child(line)
 		var title := Label.new()
-		title.text = "%s · %s%s" % [row.topic, row.id, " · 未读" if not row.read else ""]
+		title.text = "%s · %s%s" % [PlayerText.TOPICS.get(row.topic, "通知"), _text.notification_text(row.topic, row.id), " · 未读" if not row.read else ""]
+		PlayerText.wrap(title)
 		line.add_child(title)
 		var seen := Button.new()
 		seen.text = "已见" if row.seen else "标记已见"

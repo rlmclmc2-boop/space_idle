@@ -34,7 +34,7 @@ func _find_line(node: Node, placeholder: String) -> LineEdit:
 	return null
 
 func _find_autosave(node: Node) -> SpinBox:
-	if node is SpinBox and node.suffix.begins_with(" seconds between saves"): return node
+	if node is SpinBox and node.suffix.begins_with(" 现实秒自动保存"): return node
 	for child in node.get_children():
 		var found: SpinBox = _find_autosave(child)
 		if found != null: return found
@@ -55,6 +55,7 @@ func _find_notifications(node: Node):
 	return null
 
 func _find_research(node: Node):
+	if node.is_queued_for_deletion(): return null
 	if node.get_script() == ResearchPanel: return node
 	for child in node.get_children():
 		var found = _find_research(child)
@@ -142,13 +143,13 @@ func _run() -> void:
 		printerr("autosave setting did not persist outside gameplay save")
 		quit(1)
 		return
-	var pause_button: Button = _find_button(main, "Pause")
+	var pause_button: Button = _find_button(main, "暂停")
 	if pause_button == null:
 		printerr("visible pause control missing")
 		quit(1)
 		return
 	pause_button.pressed.emit()
-	if not main.session.pause_reasons.has("user") or pause_button.text != "Continue":
+	if not main.session.pause_reasons.has("user") or pause_button.text != "继续":
 		printerr("pause button did not hold user pause")
 		quit(1)
 		return
@@ -171,13 +172,13 @@ func _run() -> void:
 		quit(1)
 		return
 	main.growth_panel.visible = true
-	var save_path: LineEdit = _find_line(main, "Existing absolute save directory")
+	var save_path: LineEdit = _find_line(main, "存档目录（完整路径）")
 	if save_path == null:
 		printerr("save path control missing")
 		quit(1)
 		return
 	var save_picker: FileDialog = _find_dialog(main, FileDialog.FILE_MODE_OPEN_DIR)
-	if save_picker == null or _find_button(main, "Choose save directory") == null:
+	if save_picker == null or _find_button(main, "选择存档目录") == null:
 		printerr("save directory picker missing")
 		quit(1)
 		return
@@ -191,7 +192,7 @@ func _run() -> void:
 		quit(1)
 		return
 	var expected_research: Dictionary = main.session.research.save_state()
-	_find_button(main, "Save").pressed.emit()
+	_find_button(main, "保存").pressed.emit()
 	if main.growth_status.text != "保存请求已排队":
 		printerr("save button claimed completion before writer: ", main.growth_status.text)
 		quit(1)
@@ -215,24 +216,24 @@ func _run() -> void:
 	loaded_research.session.save_files.close(2000)
 	print("RESEARCH_FILE_LOAD_OK")
 	main._process(0.0)
-	if main.save_state_label.text != "Last save written":
+	if main.save_state_label.text != "最近进度已写入文件":
 		printerr("save status failed to show committed state: ", main.save_state_label.text)
 		quit(1)
 		return
 	main.session.set_chrono_speed(10)
 	main._save_status_elapsed = 1.0
 	main._process(0.0)
-	if main.save_state_label.text != "Unsaved changes":
+	if main.save_state_label.text != "有未保存进度":
 		printerr("business change missing from save status: ", main.save_state_label.text)
 		quit(1)
 		return
-	_find_button(main, "Save").pressed.emit()
+	_find_button(main, "保存").pressed.emit()
 	result = main.session.save_files.close(2000)
 	if not result.ok or not SaveFiles.read_pointer(directory, "previous.json").ok:
 		printerr("second save button: ", result)
 		quit(1)
 		return
-	_find_button(main, "Load backup").pressed.emit()
+	_find_button(main, "加载备份").pressed.emit()
 	if main.session.current_chrono_speed() != 1:
 		printerr("backup button did not restore prior session")
 		quit(1)
@@ -247,9 +248,9 @@ func _run() -> void:
 		return
 	await process_frame
 	var pointer: Dictionary = SaveFiles.read_pointer(directory, "active.json")
-	var import_path: LineEdit = _find_line(main, "Envelope JSON file to import")
+	var import_path: LineEdit = _find_line(main, "要导入的存档文件")
 	var import_picker: FileDialog = _find_dialog(main, FileDialog.FILE_MODE_OPEN_FILE)
-	if import_path == null or import_picker == null or _find_button(main, "Choose import file") == null or not pointer.ok:
+	if import_path == null or import_picker == null or _find_button(main, "选择导入文件") == null or not pointer.ok:
 		printerr("import controls missing")
 		quit(1)
 		return
@@ -259,7 +260,7 @@ func _run() -> void:
 	broken.close()
 	var before_rejection = main.session
 	import_picker.file_selected.emit(broken_path)
-	_find_button(main, "Preview import").pressed.emit()
+	_find_button(main, "预览导入").pressed.emit()
 	if main.session != before_rejection or not main._pending_import.is_empty():
 		printerr("bad import changed current session")
 		quit(1)
@@ -271,8 +272,8 @@ func _run() -> void:
 	wrong_file.store_string(JSON.stringify(wrong_config))
 	wrong_file.close()
 	import_picker.file_selected.emit(wrong_config_path)
-	_find_button(main, "Preview import").pressed.emit()
-	if main.session != before_rejection or not main._pending_import.is_empty() or main.growth_status.text != "ConfigurationMismatch":
+	_find_button(main, "预览导入").pressed.emit()
+	if main.session != before_rejection or not main._pending_import.is_empty() or main.growth_status.text != "存档与当前游戏配置不一致。":
 		printerr("wrong config import changed current session: ", main.growth_status.text)
 		quit(1)
 		return
@@ -281,7 +282,7 @@ func _run() -> void:
 		printerr("import picker did not fill path")
 		quit(1)
 		return
-	_find_button(main, "Preview import").pressed.emit()
+	_find_button(main, "预览导入").pressed.emit()
 	if main._pending_import.is_empty():
 		printerr("import preview button failed: ", main.growth_status.text)
 		quit(1)
@@ -291,7 +292,7 @@ func _run() -> void:
 		printerr("pre-import session fixture is not dirty")
 		quit(1)
 		return
-	_find_button(main, "Confirm import").pressed.emit()
+	_find_button(main, "确认导入").pressed.emit()
 	if not main._pending_import.is_empty():
 		printerr("import confirmation button failed")
 		quit(1)
@@ -315,6 +316,7 @@ func _run() -> void:
 		quit(1)
 		return
 	main.growth_panel.visible = true
+	main._feature_panels["research"].visible = true # Controlled research fixture below unlock gate.
 	var research_panel = _find_research(main)
 	var api = main.session.research._api
 	var rates := {"1": api.apply("from_decimal", ["800"]).value, "2": api.apply("from_decimal", ["1600"]).value}
@@ -409,24 +411,24 @@ func _run() -> void:
 		printerr("reforge page shipyard claim failed: ", result)
 		quit(1)
 		return
-	var planet_id: LineEdit = _find_line(main, "Planet ID for reforge")
+	var planet_id: LineEdit = _find_line(main, "重铸星球编号")
 	if planet_id == null:
 		printerr("reforge page controls missing")
 		quit(1)
 		return
 	planet_id.text = "1"
-	_find_button(main, "Preview reforge").pressed.emit()
+	_find_button(main, "预览重铸").pressed.emit()
 	if main._pending_reforge.is_empty() or not main.session.pause_reasons.has("reforge"):
 		printerr("reforge preview button failed: ", main.growth_status.text)
 		quit(1)
 		return
-	_find_button(main, "Cancel reforge").pressed.emit()
+	_find_button(main, "取消重铸").pressed.emit()
 	if not main._pending_reforge.is_empty() or main.session.pause_reasons.has("reforge"):
 		printerr("reforge cancel button failed")
 		quit(1)
 		return
-	_find_button(main, "Preview reforge").pressed.emit()
-	_find_button(main, "Confirm reforge").pressed.emit()
+	_find_button(main, "预览重铸").pressed.emit()
+	_find_button(main, "确认重铸").pressed.emit()
 	if not main._pending_reforge.is_empty() or main.session.hyperspace_system.warehouse().reforge_count != 1 or not main.session.planet_system.save_state().planets["1"].conquered:
 		printerr("reforge confirm button failed: ", main.growth_status.text)
 		quit(1)
@@ -441,16 +443,16 @@ func _run() -> void:
 	# make the failed persistence explicit until a successful retry.
 	var committed: Dictionary = SaveFiles.read_pointer(directory, "active.json")
 	var old_session = main.session
-	import_path = _find_line(main, "Envelope JSON file to import")
+	import_path = _find_line(main, "要导入的存档文件")
 	import_path.text = directory.path_join(committed.pointer.file)
-	_find_button(main, "Preview import").pressed.emit()
+	_find_button(main, "预览导入").pressed.emit()
 	if main._pending_import.is_empty():
 		printerr("replacement failure fixture preview: ", main.growth_status.text)
 		quit(1)
 		return
 	var blocked_temp: String = directory.path_join("previous.json.tmp")
 	DirAccess.make_dir_absolute(blocked_temp)
-	_find_button(main, "Confirm import").pressed.emit()
+	_find_button(main, "确认导入").pressed.emit()
 	if main.session != old_session or main._pending_import.is_empty():
 		printerr("failed pre-import backup replaced live session")
 		quit(1)
@@ -458,7 +460,7 @@ func _run() -> void:
 	DirAccess.remove_absolute(blocked_temp)
 	var reject_candidate := RejectCandidateManifest.new()
 	main._pending_import.session.save_files._write_job = Callable(reject_candidate, "write")
-	_find_button(main, "Confirm import").pressed.emit()
+	_find_button(main, "确认导入").pressed.emit()
 	if main.session == old_session or not main.session.run_state.is_running():
 		printerr("replacement did not yield a usable candidate")
 		quit(1)
@@ -467,16 +469,16 @@ func _run() -> void:
 	main._save_status_elapsed = 1.0
 	main.growth_panel.visible = true
 	main._process(0.0)
-	if result.ok or not main.save_state_label.text.begins_with("Save failed:") or not main.growth_status.text.begins_with("保存失败：") or not SaveFiles.read_pointer(directory, "active.json").ok:
+	if result.ok or not main.save_state_label.text.begins_with("保存失败：") or not main.growth_status.text.begins_with("保存失败：") or not SaveFiles.read_pointer(directory, "active.json").ok:
 		printerr("asynchronous replacement failure was hidden: ", result, " ", main.save_state_label.text, " ", main.growth_status.text)
 		quit(1)
 		return
 	main.session.save_files._write_job = SaveFiles.write_snapshot
-	_find_button(main, "Save").pressed.emit()
+	_find_button(main, "保存").pressed.emit()
 	result = main.session.save_files.close(2000)
 	main._save_status_elapsed = 1.0
 	main._process(0.0)
-	if not result.ok or not main.session.save_files.last_failure.is_empty() or main.save_state_label.text != "Last save written":
+	if not result.ok or not main.session.save_files.last_failure.is_empty() or main.save_state_label.text != "最近进度已写入文件":
 		printerr("failed replacement save retry: ", result, " ", main.save_state_label.text)
 		quit(1)
 		return

@@ -1,4 +1,5 @@
 extends RefCounted
+const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 ## Economy owns balances, drop ownership, timed production and income history.
 signal display_changed
@@ -140,7 +141,7 @@ func balances_text() -> String:
 		var balances: PackedStringArray = []
 		for resource in _wallet:
 			var text = _api.apply("to_display", [_wallet[resource]])
-			balances.append(str(resource) + ": " + str(text.text))
+			balances.append(PlayerText.resource(str(resource)) + "：" + str(text.text))
 		_balance_text = "   ".join(balances)
 		_balance_dirty = false
 	return _balance_text

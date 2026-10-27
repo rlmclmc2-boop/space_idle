@@ -87,7 +87,7 @@ func _run() -> void:
 		_fail("growth screenshot failed")
 		return
 	var picker: FileDialog = _find_picker(main)
-	_find_button(main, "Choose save directory").pressed.emit()
+	_find_button(main, "选择存档目录").pressed.emit()
 	if picker == null or not picker.visible:
 		_fail("save picker did not open")
 		return
@@ -95,7 +95,7 @@ func _run() -> void:
 		_fail("picker screenshot failed")
 		return
 	picker.get_cancel_button().pressed.emit()
-	_find_button(main, "Save").pressed.emit()
+	_find_button(main, "保存").pressed.emit()
 	if main.growth_status.text != "SaveDirectoryRequired":
 		_fail("save failure not visible: " + main.growth_status.text)
 		return

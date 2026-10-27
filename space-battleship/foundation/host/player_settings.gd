@@ -10,7 +10,7 @@ static func _path() -> String:
 	return override if not override.is_empty() else ProjectSettings.globalize_path("user://settings.json")
 
 static func defaults() -> Dictionary:
-	return {"ok": true, "interval": 0, "auto_skip_tutorial": false,
+	return {"ok": true, "interval": 60, "save_directory": "", "auto_skip_tutorial": false,
 		"music_enabled": true, "effects_enabled": true, "damage_mode": "all", "page": "battle"}
 
 static func load_interval() -> Dictionary:
@@ -43,6 +43,10 @@ static func load_interval() -> Dictionary:
 		return {"ok": false, "reason": "InvalidSettings"}
 	result.damage_mode = mode
 	result.page = page
+	var directory = value.get("saveDirectory", "")
+	if not directory is String or (not directory.is_empty() and not directory.is_absolute_path()):
+		return {"ok": false, "reason": "InvalidSettings"}
+	result.save_directory = directory
 	return result
 
 static func save_interval(interval: int) -> Dictionary:
@@ -68,6 +72,9 @@ static func _publish(settings: Dictionary) -> Dictionary:
 	var interval = settings.get("interval")
 	var mode = settings.get("damage_mode")
 	var page = settings.get("page")
+	var save_directory = settings.get("save_directory", "")
+	if not save_directory is String or (not save_directory.is_empty() and not save_directory.is_absolute_path()):
+		return {"ok": false, "reason": "InvalidSettings"}
 	if not interval is int or interval < 0 or interval > MAX_INTERVAL or not mode is String or not DAMAGE_MODES.has(mode) or not page is String or not PAGES.has(page):
 		return {"ok": false, "reason": "InvalidSettings"}
 	for key in ["auto_skip_tutorial", "music_enabled", "effects_enabled"]:
@@ -79,7 +86,11 @@ static func _publish(settings: Dictionary) -> Dictionary:
 	var disk = ClassDB.instantiate("FoundationDisk")
 	var payload: String = JSON.stringify({"formatVersion": 1, "autosaveInterval": interval,
 		"autoSkipTutorial": settings.auto_skip_tutorial, "musicEnabled": settings.music_enabled,
-		"effectsEnabled": settings.effects_enabled, "damageMode": mode, "preferredPage": page})
+		"effectsEnabled": settings.effects_enabled, "damageMode": mode, "preferredPage": page, "saveDirectory": save_directory})
 	if not SaveFiles.publish_file(directory, path.get_file(), payload, disk):
 		return {"ok": false, "reason": "SettingsWriteFailed"}
 	return {"ok": true}
+
+static func save_directory(settings: Dictionary) -> String:
+	var chosen: String = str(settings.get("save_directory", ""))
+	return chosen if not chosen.is_empty() else _path().get_base_dir().path_join("saves")

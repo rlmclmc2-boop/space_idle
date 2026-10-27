@@ -1,4 +1,6 @@
 extends Node2D
+const PlayerText = preload("res://src/ui/player_text.gd")
+const SaveFiles = preload("res://foundation/host/save_files.gd")
 const BattleView = preload("res://src/ui/battle_view.gd")
 const BattleStatisticsView = preload("res://src/ui/battle_statistics_view.gd")
 const FleetPanel = preload("res://src/ui/fleet_panel.gd")
@@ -17,6 +19,12 @@ const PlayerSettings = preload("res://foundation/host/player_settings.gd")
 const Session = preload("res://src/game_session.gd")
 var session
 var startup_error: String = ""
+var _player_text
+var _startup_save_error: String = ""
+var _startup_directory: String = ""
+var _feature_panels: Dictionary = {}
+var _visibility_pending: bool = true
+var _save_warning: Label
 var _overlay: Node2D
 var _pause_button: Button
 var _guidance_panel: PanelContainer
@@ -29,7 +37,7 @@ var save_state_label: Label
 var _pending_import: Dictionary = {}
 var _pending_reforge: Dictionary = {}
 var _pending_new_game: Dictionary = {}
-var _autosave_interval: float = 0.0
+var _autosave_interval: float = 60.0
 var _music_enabled: bool = true
 var _effects_enabled: bool = true
 var _damage_mode: String = "all"
@@ -61,7 +69,7 @@ func _ready() -> void:
 	if settings.ok:
 		_apply_settings(settings)
 	else:
-		_settings_error = str(settings.reason)
+		_settings_error = PlayerText.error(str(settings.reason))
 	session = Session.new()
 	var result = session.initialize("res://generated/config.json", Time.get_ticks_usec())
 	if not result.ok:
@@ -71,12 +79,66 @@ func _ready() -> void:
 	result = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if not result.ok:
 		startup_error = str(result.reason)
+		return
+	_startup_directory = PlayerSettings.save_directory(settings if settings.ok else PlayerSettings.defaults())
+	if DirAccess.make_dir_recursive_absolute(_startup_directory) != OK:
+		_startup_save_error = "无法创建存档目录，请在成长页选择可写目录后保存。"
+		session.set_pause("recovery", true)
+	elif _has_save_files(_startup_directory):
+		var loaded: Dictionary = Session.load_candidate("res://generated/config.json", _startup_directory)
+		if loaded.ok:
+			session = loaded.session
+		else:
+			_startup_save_error = "主存档读取失败，已暂停。请在成长页加载备份、导入有效存档或明确确认新游戏。原文件未覆盖。"
+			session.set_pause("recovery", true)
 	else:
-		_next_autosave_wall = session.wall_time + _autosave_interval
-		_show_session()
-		_sync_guidance()
+		if _startup_save_error.is_empty():
+			result = session.configure_save_directory(_startup_directory)
+			if result.ok: result = session.request_save()
+			if not result.ok:
+				_startup_save_error = "初始存档未能写入，请检查成长页保存状态。"
+				session.set_pause("recovery", true)
+	_next_autosave_wall = session.wall_time + _autosave_interval
+	_show_session()
+	_sync_guidance()
+	get_tree().auto_accept_quit = false
+	get_window().close_requested.connect(_close_game)
+
+func _save_before_exit() -> Dictionary:
+	if session == null or session.save_files == null: return {"ok": true}
+	var saved: Dictionary = session.request_save()
+	return session.save_files.close(2000) if saved.ok else saved
+
+func _close_game() -> void:
+	var saved: Dictionary = _save_before_exit()
+	if not saved.ok:
+		_startup_save_error = "退出保存失败，游戏仍在运行。请检查目录、重试保存后退出。"
+		session.set_pause("recovery", true)
+		return
+	get_tree().quit()
+
+func _has_save_files(directory: String) -> bool:
+	for file in ["active.json", "previous.json", "slot-0.json", "slot-1.json"]:
+		if FileAccess.file_exists(directory.path_join(file)): return true
+	return false
+
+func _configure_save(directory: String) -> Dictionary:
+	if session.pause_reasons.has("recovery") and session.save_files == null and _has_save_files(directory):
+		return {"ok": false, "message": "请先恢复存档或确认新游戏，以免覆盖待恢复文件。"}
+	var configured: Dictionary = session.configure_save_directory(directory)
+	if not configured.ok: return configured
+	var saved: Dictionary = PlayerSettings.save_change("save_directory", directory)
+	if not saved.ok: return saved
+	_startup_save_error = ""
+	_startup_directory = directory
+	session.set_pause("recovery", false)
+	return configured
 
 func _show_session() -> void:
+	_player_text = PlayerText.new(JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json")))
+	_feature_panels.clear()
+	_visibility_pending = true
+	session.campaign_system.progress_changed.connect(_queue_feature_visibility)
 	get_window().content_scale_size = session.battle.view_size()
 	if DisplayServer.get_name() != "headless":
 		var battle_view = BattleView.new(session.battle)
@@ -88,6 +150,7 @@ func _show_session() -> void:
 	add_child(CampaignView.new(session.campaign_system))
 	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 	_setup_growth_panel()
+	_refresh_feature_visibility()
 	_setup_guidance_panel()
 	_setup_audio()
 
@@ -174,11 +237,16 @@ func _replace_session(replacement) -> Dictionary:
 		if not closed.ok: return closed
 	for child in get_children(): child.queue_free()
 	session = replacement
+	_startup_save_error = ""
+	_startup_directory = session.save_files._directory if session.save_files != null else _startup_directory
+	var directory_setting: Dictionary = PlayerSettings.save_change("save_directory", _startup_directory)
+	if not directory_setting.ok: _settings_error = "存档目录偏好保存失败，下次启动请手动选择此目录。"
 	_pending_import = {}
 	_pending_reforge = {}
 	_pending_new_game = {}
 	_seen_save_failure_generation = ""
 	_next_autosave_wall = session.wall_time + _autosave_interval
+	_feature_panels.clear()
 	_overlay = null
 	_pause_button = null
 	_guidance_panel = null
@@ -212,7 +280,7 @@ func _preview_new_game(directory: String, clear_settings: bool) -> Dictionary:
 	created = candidate.configure_save_directory(directory)
 	if not created.ok: return created
 	_pending_new_game = {"session": candidate, "directory": directory, "clear_settings": clear_settings}
-	return {"ok": true, "message": "New game ready. Confirm to replace the current save; settings %s." % ["reset" if clear_settings else "kept"]}
+	return {"ok": true, "message": "新游戏已准备好。确认后替换当前存档，个人设置将%s。" % ["重置" if clear_settings else "保留"]}
 
 func _confirm_new_game(directory: String, clear_settings: bool) -> Dictionary:
 	if _pending_new_game.is_empty() or _pending_new_game.directory != directory or _pending_new_game.clear_settings != clear_settings:
@@ -225,6 +293,7 @@ func _confirm_new_game(directory: String, clear_settings: bool) -> Dictionary:
 			switched.settings_failed = true
 			switched.settings_error = str(cleared.reason)
 		else:
+			PlayerSettings.save_change("save_directory", directory)
 			_apply_settings(PlayerSettings.defaults())
 	return switched
 
@@ -254,31 +323,36 @@ func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
 		_sync_guidance()
+		if _visibility_pending: _refresh_feature_visibility()
+		if _save_warning != null:
+			_save_warning.text = _startup_save_error
+			if session.save_files != null and not session.save_files.last_failure.is_empty(): _save_warning.text = "保存失败，请在成长页重试，当前进度尚未写入文件。"
+			_save_warning.visible = not _save_warning.text.is_empty()
 		if _pause_button != null:
-			_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause"
+			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
 		if session.save_files != null: session.save_files.poll()
 		if session.save_files != null and not session.save_files.last_failure.is_empty():
 			var failure_generation: String = str(session.save_files.last_failure.get("generation", ""))
 			if failure_generation != _seen_save_failure_generation:
 				_seen_save_failure_generation = failure_generation
 				if growth_status != null:
-					growth_status.text = "保存失败：" + str(session.save_files.last_failure.get("error", "Unknown"))
+					growth_status.text = "保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown")))
 		_save_status_elapsed += maxf(dt, 0.0)
 		if save_state_label != null and growth_panel != null and growth_panel.visible and _save_status_elapsed >= 1.0:
 			_save_status_elapsed = 0.0
 			if session.save_files == null:
-				save_state_label.text = "No save directory"
+				save_state_label.text = "尚未设置存档目录"
 			elif not session.save_files.last_failure.is_empty():
-				save_state_label.text = "Save failed: " + str(session.save_files.last_failure.get("error", "Unknown"))
+				save_state_label.text = "保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown")))
 			elif session.save_files.busy():
-				save_state_label.text = "Saving…"
+				save_state_label.text = "正在保存…"
 			else:
 				var status: Dictionary = session.dirty_since_save()
-				save_state_label.text = "Save status unavailable" if not status.ok else "Unsaved changes" if status.dirty else "Last save written"
+				save_state_label.text = "暂时无法读取保存状态" if not status.ok else "有未保存进度" if status.dirty else "最近进度已写入文件"
 		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
 			_next_autosave_wall = session.wall_time + _autosave_interval
 			var saved: Dictionary = session.request_save()
-			if not saved.ok and growth_status != null: growth_status.text = str(saved.get("error", saved.get("reason", "SaveFailed")))
+			if not saved.ok and growth_status != null: growth_status.text = PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed"))))
 	if _overlay != null: _overlay.queue_redraw()
 	queue_redraw()
 
@@ -303,13 +377,19 @@ func _setup_shell_overlay() -> void:
 	layer.add_child(_overlay)
 	_overlay.draw.connect(_draw_shell.bind(_overlay))
 	_pause_button = Button.new()
-	_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause"
+	_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
 	_pause_button.position = Vector2(420, 18)
 	_pause_button.pressed.connect(func():
 		if session.run_state.is_running():
 			session.set_pause("user", not session.pause_reasons.has("user"))
-			_pause_button.text = "Continue" if session.pause_reasons.has("user") else "Pause")
+			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停")
 	layer.add_child(_pause_button)
+	_save_warning = Label.new()
+	_save_warning.position = Vector2(18, 110)
+	_save_warning.size.x = 530
+	PlayerText.wrap(_save_warning)
+	_save_warning.modulate = Color("ffb4a6")
+	layer.add_child(_save_warning)
 
 func _setup_guidance_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -360,14 +440,14 @@ func _sync_guidance() -> void:
 	var captions := {"equip": "首次换装已完成", "upgrade": "首次升级已完成",
 		"pickup": "首次拾取已完成", "retreat": "首次撤退已发生",
 		"clear": "通关奖励已入账"}
-	_guidance_label.text = str(captions.get(str(pending.id), "已解锁：" + str(pending.id)))
+	_guidance_label.text = str(captions.get(str(pending.id), _player_text.notification_text("unlock", str(pending.id))))
 	_guidance_panel.visible = true
 
 func _draw_shell(canvas: Node2D) -> void:
 	var font: Font = ThemeDB.fallback_font
 	canvas.draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
 	if not session.run_state.is_running():
-		canvas.draw_string(font, Vector2(18, 850), session.run_state.reason(), HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
+		canvas.draw_string(font, Vector2(18, 850), "会话已暂停，请检查成长页提示。", HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
@@ -375,18 +455,18 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	parent.add_child(button)
 	button.pressed.connect(func():
 		if not session.run_state.is_running():
-			growth_status.text = session.run_state.reason()
+			growth_status.text = "当前会话已停止，请恢复有效存档。"
 			return
-		if not _pending_reforge.is_empty() and text not in ["Confirm reforge", "Cancel reforge"]:
+		if not _pending_reforge.is_empty() and text not in ["确认重铸", "取消重铸"]:
 			growth_status.text = "请先确认或取消重铸"
 			return
 		var result: Dictionary = action.call()
 		if result.get("settings_failed", false):
-			growth_status.text = "Settings reset failed: " + str(result.get("settings_error", "Unknown"))
+			growth_status.text = "个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown")))
 			return
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
-		growth_status.text = "会话已切换，保存失败：" + str(result.get("persistence_error", "Unknown")) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, reason)))
+		growth_status.text = "会话已切换，保存失败：" + PlayerText.error(str(result.get("persistence_error", "Unknown"))) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, PlayerText.error(reason))))
 		)
 	return button
 
@@ -396,7 +476,7 @@ func _set_page(page: String) -> void:
 		_preferred_page = page
 		growth_panel.visible = page == "growth"
 	elif growth_status != null:
-		growth_status.text = str(saved.reason)
+		growth_status.text = PlayerText.error(str(saved.reason))
 
 func _setup_growth_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -413,9 +493,11 @@ func _setup_growth_panel() -> void:
 	layer.add_child(growth_panel)
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(400, 600)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	growth_panel.add_child(scroll)
 	var box := VBoxContainer.new()
 	box.custom_minimum_size.x = 380
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(box)
 	var back := Button.new()
 	back.text = "返回战斗"
@@ -423,8 +505,10 @@ func _setup_growth_panel() -> void:
 	box.add_child(back)
 	growth_status = Label.new()
 	if not _settings_error.is_empty(): growth_status.text = _settings_error
+	PlayerText.wrap(growth_status)
 	box.add_child(growth_status)
 	save_state_label = Label.new()
+	PlayerText.wrap(save_state_label)
 	box.add_child(save_state_label)
 	_save_status_elapsed = 1.0
 	open.pressed.connect(func(): _set_page("battle" if growth_panel.visible else "growth"))
@@ -433,42 +517,44 @@ func _setup_growth_panel() -> void:
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
 	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor, _command_button)
 	box.add_child(reactor_panel)
+	_feature_panels["reactor"] = reactor_panel
 	var research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
-	box.add_child(EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
+	_feature_panels["research"] = research_panel
+	_add_feature_panel(box, "enhancement", EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
 		session.economy.affordable, session.publish_enhancement, _command_button))
-	box.add_child(CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
-	box.add_child(GalaxyPanel.new(session.galaxy_system))
-	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button))
-	box.add_child(HyperspacePanel.new(session, _command_button))
-	box.add_child(NotificationsPanel.new(session.notifications))
+	_add_feature_panel(box, "crew", CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
+	_add_feature_panel(box, "galaxy", GalaxyPanel.new(session.galaxy_system))
+	_add_feature_panel(box, "planet", PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button))
+	_add_feature_panel(box, "hyperspace", HyperspacePanel.new(session, _command_button))
+	box.add_child(NotificationsPanel.new(session.notifications, _player_text))
 	var save_path := LineEdit.new()
-	save_path.placeholder_text = "Existing absolute save directory"
-	if session.save_files != null: save_path.text = session.save_files._directory
+	save_path.placeholder_text = "存档目录（完整路径）"
+	save_path.text = session.save_files._directory if session.save_files != null else _startup_directory
 	box.add_child(save_path)
 	var save_picker := FileDialog.new()
 	save_picker.access = FileDialog.ACCESS_FILESYSTEM
 	save_picker.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	save_picker.dir_selected.connect(func(path: String): save_path.text = path)
 	box.add_child(save_picker)
-	_command_button(box, "Choose save directory", func() -> Dictionary:
+	_command_button(box, "选择存档目录", func() -> Dictionary:
 		save_picker.popup_centered_ratio()
-		return {"ok": true, "message": "Choose an existing save directory"})
+		return {"ok": true, "message": "请选择已有的存档目录"})
 	var speed_options := OptionButton.new()
 	for option in session.chrono_speed_options():
-		speed_options.add_item("%sx · %s chrono/s" % [option.speed, option.cost], int(option.speed))
+		speed_options.add_item("%s倍速 · 每秒消耗%s时空微粒" % [option.speed, option.cost], int(option.speed))
 		if int(option.speed) == session.current_chrono_speed(): speed_options.select(speed_options.item_count - 1)
 	speed_options.item_selected.connect(func(index: int):
 		session.set_chrono_speed(speed_options.get_item_id(index)))
 	box.add_child(speed_options)
-	_command_button(box, "Save", func() -> Dictionary:
-		var configured: Dictionary = session.configure_save_directory(save_path.text)
+	_command_button(box, "保存", func() -> Dictionary:
+		var configured: Dictionary = _configure_save(save_path.text)
 		return session.request_save() if configured.ok else configured)
 	var autosave := SpinBox.new()
 	autosave.min_value = 0.0
 	autosave.max_value = 86400.0
 	autosave.step = 1.0
-	autosave.suffix = " seconds between saves (0 = off)"
+	autosave.suffix = " 现实秒自动保存（0为关闭）"
 	autosave.value = _autosave_interval
 	_autosave_spin = autosave
 	box.add_child(autosave)
@@ -479,7 +565,7 @@ func _setup_growth_panel() -> void:
 			_next_autosave_wall = session.wall_time + value
 		else:
 			autosave.set_value_no_signal(_autosave_interval)
-			growth_status.text = str(saved.reason))
+			growth_status.text = PlayerText.error(str(saved.reason)))
 	var skip_tutorial := CheckBox.new()
 	skip_tutorial.text = "自动跳过引导提示"
 	skip_tutorial.button_pressed = _skip_tutorial
@@ -492,9 +578,9 @@ func _setup_growth_panel() -> void:
 			_sync_guidance()
 		else:
 			skip_tutorial.set_pressed_no_signal(_skip_tutorial)
-			growth_status.text = str(saved.reason))
+			growth_status.text = PlayerText.error(str(saved.reason)))
 	var music := CheckBox.new()
-	music.text = "Music"
+	music.text = "音乐"
 	music.button_pressed = _music_enabled
 	_music_toggle = music
 	box.add_child(music)
@@ -505,9 +591,9 @@ func _setup_growth_panel() -> void:
 			if _music_player != null: _music_player.stream_paused = not enabled
 		else:
 			music.set_pressed_no_signal(_music_enabled)
-			growth_status.text = str(saved.reason))
+			growth_status.text = PlayerText.error(str(saved.reason)))
 	var effects := CheckBox.new()
-	effects.text = "Sound effects"
+	effects.text = "音效"
 	effects.button_pressed = _effects_enabled
 	_effects_toggle = effects
 	box.add_child(effects)
@@ -516,9 +602,9 @@ func _setup_growth_panel() -> void:
 		if saved.ok: _effects_enabled = enabled
 		else:
 			effects.set_pressed_no_signal(_effects_enabled)
-			growth_status.text = str(saved.reason))
+			growth_status.text = PlayerText.error(str(saved.reason)))
 	var damage_mode := OptionButton.new()
-	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("Damage numbers: " + mode)
+	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
 	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 	_damage_option = damage_mode
 	box.add_child(damage_mode)
@@ -531,42 +617,64 @@ func _setup_growth_panel() -> void:
 				if child.get_script() == BattleView: child.damage_mode = chosen
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
-			growth_status.text = str(saved.reason))
+			growth_status.text = PlayerText.error(str(saved.reason)))
 	var clear_settings := CheckBox.new()
-	clear_settings.text = "Clear player settings with new game"
+	clear_settings.text = "新游戏同时重置个人设置"
 	box.add_child(clear_settings)
-	_command_button(box, "Preview new game", func() -> Dictionary:
+	_command_button(box, "预览新游戏", func() -> Dictionary:
 		return _preview_new_game(save_path.text, clear_settings.button_pressed))
-	_command_button(box, "Confirm new game", func() -> Dictionary:
+	_command_button(box, "确认新游戏", func() -> Dictionary:
 		return _confirm_new_game(save_path.text, clear_settings.button_pressed))
-	_command_button(box, "Load primary", func() -> Dictionary:
+	_command_button(box, "加载主存档", func() -> Dictionary:
 		return _load_saved(save_path.text))
-	_command_button(box, "Load backup", func() -> Dictionary:
+	_command_button(box, "加载备份", func() -> Dictionary:
 		return _load_saved(save_path.text, true))
 	var import_path := LineEdit.new()
-	import_path.placeholder_text = "Envelope JSON file to import"
+	import_path.placeholder_text = "要导入的存档文件"
 	box.add_child(import_path)
 	var import_picker := FileDialog.new()
 	import_picker.access = FileDialog.ACCESS_FILESYSTEM
 	import_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	import_picker.add_filter("*.json", "JSON save envelope")
+	import_picker.add_filter("*.json", "游戏存档")
 	import_picker.file_selected.connect(func(path: String): import_path.text = path)
 	box.add_child(import_picker)
-	_command_button(box, "Choose import file", func() -> Dictionary:
+	_command_button(box, "选择导入文件", func() -> Dictionary:
 		import_picker.popup_centered_ratio()
-		return {"ok": true, "message": "Choose an Envelope JSON file"})
-	_command_button(box, "Preview import", func() -> Dictionary:
+		return {"ok": true, "message": "请选择游戏存档文件"})
+	_command_button(box, "预览导入", func() -> Dictionary:
 		return _preview_import(save_path.text, import_path.text))
-	_command_button(box, "Confirm import", func() -> Dictionary:
+	_command_button(box, "确认导入", func() -> Dictionary:
 		return _apply_import(save_path.text, import_path.text))
 	var planet_id := LineEdit.new()
-	planet_id.placeholder_text = "Planet ID for reforge"
-	box.add_child(planet_id)
+	planet_id.placeholder_text = "重铸星球编号"
+	var reforge_box := VBoxContainer.new()
+	_add_feature_panel(box, "reforge", reforge_box)
+	reforge_box.add_child(planet_id)
 	var retained_ids := LineEdit.new()
-	retained_ids.placeholder_text = "Drone IDs to retain, comma separated"
-	box.add_child(retained_ids)
-	_command_button(box, "Preview reforge", func() -> Dictionary:
+	retained_ids.placeholder_text = "保留无人机编号（逗号分隔）"
+	reforge_box.add_child(retained_ids)
+	_command_button(reforge_box, "预览重铸", func() -> Dictionary:
 		return _preview_reforge(save_path.text, planet_id.text, retained_ids.text))
-	_command_button(box, "Confirm reforge", func() -> Dictionary:
+	_command_button(reforge_box, "确认重铸", func() -> Dictionary:
 		return _confirm_reforge(save_path.text, planet_id.text, retained_ids.text))
-	_command_button(box, "Cancel reforge", _cancel_reforge)
+	_command_button(reforge_box, "取消重铸", _cancel_reforge)
+
+func _add_feature_panel(parent: Control, key: String, panel: Control) -> void:
+	_feature_panels[key] = panel
+	parent.add_child(panel)
+
+func _queue_feature_visibility() -> void:
+	_visibility_pending = true
+
+func _refresh_feature_visibility() -> void:
+	_visibility_pending = false
+	var research_available: bool = false
+	for enabled in session.research.choices().values():
+		if enabled: research_available = true
+	var highest: int = int(session.campaign_system.progress_facts().highest_reached)
+	var visible_features := {"reactor": session.campaign_system.available("feature", "reactor"),
+		"research": research_available, "enhancement": session.campaign_system.available("feature", "jewels"),
+		"crew": not session.crew_system.member_options().is_empty(), "planet": not session.planet_system.planet_options().is_empty(),
+		"galaxy": not session.galaxy_system.status_rows().is_empty(), "hyperspace": session.hyperspace_system.unlocked(highest),
+		"reforge": not session.planet_system.planet_options().is_empty()}
+	for key in _feature_panels: _feature_panels[key].visible = bool(visible_features[key])
