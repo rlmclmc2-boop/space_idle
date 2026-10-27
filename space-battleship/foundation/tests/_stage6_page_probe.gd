@@ -265,6 +265,19 @@ func _run() -> void:
 		printerr("bad import changed current session")
 		quit(1)
 		return
+	for field in ["configHash", "payloadHash", "sessionId", "formatVersion", "changeNumber", "generation", "savedUtc", "payload"]:
+		var malformed: Dictionary = pointer.envelope.duplicate(true)
+		malformed.erase(field)
+		var malformed_path: String = directory.path_join("missing-" + field + ".json")
+		var malformed_file: FileAccess = FileAccess.open(malformed_path, FileAccess.WRITE)
+		malformed_file.store_string(JSON.stringify(malformed))
+		malformed_file.close()
+		var rejected: Dictionary = main._preview_import(directory, malformed_path)
+		if rejected.get("ok", true) or rejected.get("reason") != "InvalidImportEnvelope" or main.session != before_rejection or not main._pending_import.is_empty():
+			printerr("missing import envelope field did not reject cleanly: ", field, " ", rejected)
+			quit(1)
+			return
+	print("IMPORT_REQUIRED_ENVELOPE_FIELDS_REJECTED_LIVE_SESSION_PRESERVED")
 	var wrong_config: Dictionary = pointer.envelope.duplicate(true)
 	wrong_config.configHash = "0".repeat(64)
 	var wrong_config_path: String = directory.path_join("wrong-config-import.json")
@@ -337,7 +350,7 @@ func _run() -> void:
 	main.session.research.set_automatic(true, 0.25)
 	main.session.research.refresh_income({}, rates, false, true)
 	research_panel._flush_pending()
-	if research_panel.investment_inputs["1"].text != "12345" or research_panel.automatic_toggle.button_pressed or research_panel.automatic_ratio.value != 50.0 or research_panel.investment_inputs["2"].text != "4e2" or "2e2" not in research_panel.investment_current["1"].text:
+	if research_panel.investment_inputs["1"].text != "12345" or research_panel.automatic_toggle.button_pressed or research_panel.automatic_ratio.value != 50.0 or research_panel.investment_inputs["2"].text != "4e2" or "200" not in research_panel.investment_current["1"].text:
 		printerr("research refresh overwrote draft or hid actual rates")
 		quit(1)
 		return

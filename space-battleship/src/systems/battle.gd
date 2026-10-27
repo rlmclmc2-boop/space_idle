@@ -1,4 +1,5 @@
 extends RefCounted
+const PlayerText = preload("res://src/ui/player_text.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const CombatSetup = preload("res://src/combat_setup.gd")
 const Statistics = preload("res://src/systems/battle_statistics.gd")
@@ -54,7 +55,11 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 func _load_models(ship_keys: Array) -> Dictionary:
 	var art_data = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
 	for key in art_data.weapons:
-		_weapon_art[key] = load(str(art_data.weapons[key].rotating_sprite))
+		var source: Texture2D = load(str(art_data.weapons[key].rotating_sprite))
+		var crop := AtlasTexture.new()
+		crop.atlas = source
+		crop.region = Rect2(source.get_image().get_used_rect())
+		_weapon_art[key] = crop
 	var model_keys: Array = ship_keys.duplicate()
 	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
 	for key in model_keys:
@@ -140,29 +145,32 @@ func wave_inputs() -> Dictionary:
 func resource_positions() -> Dictionary:
 	return {"origin": Vector2(float(_geometry.player_x), float(_geometry.timed_drop_spawn_y)), "target_y": float(_geometry.player_y)}
 
-func draw_player_hull(canvas: CanvasItem, color: Color) -> void:
-	if _player_hull.size() >= 3: _draw_hull_texture(canvas, _player_hull, _models[_ship_key], color)
+func draw_player_hull(canvas: CanvasItem) -> void:
+	if _player_hull.size() >= 3: _draw_hull_texture(canvas, _display_hull(_player_hull, _player_origin(), 84.0), _models[_ship_key])
 
-func draw_enemy_hull(canvas: CanvasItem, index: int, color: Color) -> void:
+func draw_enemy_hull(canvas: CanvasItem, index: int) -> void:
 	if index < 0 or index >= _enemy_hulls.size(): return
 	var hull: PackedVector2Array = _enemy_hulls[index]
 	if hull.size() >= 3:
 		var actors: Array = _kernel.enemy_views()
-		_draw_hull_texture(canvas, hull, _models["enemy_" + str(int(actors[index].size))], color)
+		_draw_hull_texture(canvas, _display_hull(hull, Vector2(float(actors[index].x), float(actors[index].y)), 60.0), _models["enemy_" + str(int(actors[index].size))])
 
 func draw_enemy_overlays(canvas: CanvasItem, font: Font) -> void:
 	var enemies: Array = _kernel.enemy_views()
 	for index in enemies.size():
 		var actor: Dictionary = enemies[index]
 		if actor.get("dead", false): continue
-		draw_enemy_hull(canvas, index, Color("ce6978"))
-		canvas.draw_string(font, Vector2(float(actor.x) - 24, float(actor.y) + 35), str(actor.hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f1d9dc"))
+		draw_enemy_hull(canvas, index)
+		canvas.draw_string(font, Vector2(float(actor.x) - 40, float(actor.y) + maxf(46.0, _hull_bounds(_enemy_hulls[index]).size.y * 0.5 + 16.0)), PlayerText.number(str(actor.hp)), HORIZONTAL_ALIGNMENT_CENTER, 80, 14, Color("f1d9dc"))
 
 func hud_values() -> Dictionary:
 	var history: Dictionary = _kernel.read_history()
 	var player: Dictionary = _kernel.player_view()
 	return {"attacks": history.attacks, "incoming": history.incoming,
-		"armour": player.armour, "shield": player.shield}
+		"armour": player.armour, "shield": player.shield,
+		"max_armour": player.max_armour, "max_shield": player.max_shield,
+		"armour_fraction": _hud_fraction(str(player.armour), str(player.max_armour)),
+		"shield_fraction": _hud_fraction(str(player.shield), str(player.max_shield))}
 
 func configure_presentation(retained: ShaderMaterial, contact_meshes: Array, contact_canvas: RID,
 		contacts: ShaderMaterial, flight_canvas: RID, beams: Callable) -> void:
@@ -397,16 +405,14 @@ func _sync_geometry() -> Dictionary:
 		return {"ok": false, "fault": true, "reason": "InvalidPlayerGeometry"}
 	return {"ok": true}
 
-func _draw_hull_texture(canvas: CanvasItem, hull: PackedVector2Array, model: Dictionary, fallback: Color) -> void:
-	if model.get("texture") == null:
-		canvas.draw_colored_polygon(hull, fallback)
-		return
+func _draw_hull_texture(canvas: CanvasItem, hull: PackedVector2Array, model: Dictionary) -> void:
 	var uv := PackedVector2Array()
 	for point in model.hull: uv.append(point + Vector2(0.5, 0.5))
 	canvas.draw_polygon(hull, PackedColorArray([Color.WHITE]), uv, model.texture)
 
 func draw_weapon_art(canvas: CanvasItem) -> void:
-	var origin := Vector2(float(_geometry.player_x), float(_geometry.player_y))
+	var origin := _player_origin()
+	var player_scale: float = _display_scale(_player_hull, 84.0)
 	var enemies: Array = _kernel.enemy_views()
 	var target: Vector2 = origin + Vector2.UP * 500.0
 	for enemy in enemies:
@@ -415,18 +421,19 @@ func draw_weapon_art(canvas: CanvasItem) -> void:
 			break
 	for weapon in _visual_weapons:
 		if weapon.entry.has("drone_id"): continue
-		var point: Vector2 = weapon.muzzle
-		_draw_turret(canvas, str(weapon.entry.key), point, (target - point).angle(), Color.WHITE)
+		var point: Vector2 = origin + (Vector2(weapon.muzzle) - origin) * player_scale
+		_draw_turret(canvas, str(weapon.entry.key), point, (target - point).angle(), Color.WHITE, 30.0)
 	for weapon in _enemy_visual_weapons:
 		var source: int = int(weapon.source)
 		if source >= enemies.size() or enemies[source].get("dead", false): continue
-		var point: Vector2 = weapon.muzzle
-		_draw_turret(canvas, str(weapon.entry.key), point, (origin - point).angle(), Color("efb2ac"))
+		var enemy_origin := Vector2(float(enemies[source].x), float(enemies[source].y))
+		var point: Vector2 = enemy_origin + (Vector2(weapon.muzzle) - enemy_origin) * _display_scale(_enemy_hulls[source], 60.0)
+		_draw_turret(canvas, str(weapon.entry.key), point, (origin - point).angle(), Color("efb2ac"), 24.0)
 
-func _draw_turret(canvas: CanvasItem, key: String, point: Vector2, angle: float, tint: Color) -> void:
+func _draw_turret(canvas: CanvasItem, key: String, point: Vector2, angle: float, tint: Color, pixels: float) -> void:
 	var texture: Texture2D = _weapon_art.get(key)
 	if texture == null: return
-	var dimensions := Vector2(28.0, 28.0) if key != "longLaser" else Vector2(34.0, 34.0)
+	var dimensions: Vector2 = texture.get_size() * (pixels / maxf(texture.get_width(), texture.get_height()))
 	canvas.draw_set_transform(point, angle + PI * 0.5)
 	canvas.draw_texture_rect(texture, Rect2(-dimensions * 0.5, dimensions), false, tint)
 	canvas.draw_set_transform(Vector2.ZERO)
@@ -442,8 +449,33 @@ func enemy_intelligence() -> Array:
 			"tier": str(actor.get("combat_tier", "normal")), "texture": _models["enemy_" + str(int(actor.size))].texture})
 	return rows
 
-func equipment_details() -> Dictionary:
-	return _values.duplicate(true)
-
 func attribute_details() -> Dictionary:
 	return _kernel.attribute_details()
+
+# Drawing-only transforms. Native hulls, muzzles and movement inputs remain unchanged.
+func _player_origin() -> Vector2:
+	return Vector2(float(_geometry.player_x), float(_geometry.player_y))
+
+static func _hull_bounds(hull: PackedVector2Array) -> Rect2:
+	if hull.is_empty(): return Rect2()
+	var bounds := Rect2(hull[0], Vector2.ZERO)
+	for point in hull: bounds = bounds.expand(point)
+	return bounds
+
+static func _display_scale(hull: PackedVector2Array, minimum_height: float) -> float:
+	return maxf(1.0, minimum_height / maxf(1.0, _hull_bounds(hull).size.y))
+
+static func _display_hull(hull: PackedVector2Array, origin: Vector2, minimum_height: float) -> PackedVector2Array:
+	var scale: float = _display_scale(hull, minimum_height)
+	var display := PackedVector2Array()
+	for point in hull: display.append(origin + (point - origin) * scale)
+	return display
+
+func _hud_fraction(current: String, maximum: String) -> float:
+	var value: Dictionary = _api.apply("from_decimal", [current])
+	var capacity: Dictionary = _api.apply("from_decimal", [maximum])
+	if not value.ok or not capacity.ok: return 0.0
+	var zero: Dictionary = _api.apply("zero", []).value
+	if _api.apply("compare", [capacity.value, zero]).scalar <= 0: return 0.0
+	var ratio: Dictionary = _api.apply("to_ratio", [value.value, capacity.value])
+	return clampf(float(ratio.scalar), 0.0, 1.0) if ratio.ok else 0.0

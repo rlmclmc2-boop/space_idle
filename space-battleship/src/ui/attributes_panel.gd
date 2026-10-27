@@ -25,7 +25,7 @@ func _number(value) -> String:
 	var parsed: Dictionary = _session.amount_api.apply("from_decimal", [str(value)])
 	if not parsed.ok: return "—"
 	var display: Dictionary = _session.amount_api.apply("to_display", [parsed.value])
-	return str(display.text) if display.ok else "—"
+	return PlayerText.number(str(display.text)) if display.ok else "—"
 
 func _refresh() -> void:
 	var details: Dictionary = _session.battle.attribute_details()
@@ -47,12 +47,12 @@ func _refresh() -> void:
 		var name: String = "护盾" if int(row.layer) == 0 else "装甲"
 		rows.append("%s · %s\n成长基础 %s → 容量 %s（×%s） · 当前 %s" % [name, types.get(int(row.type), "特殊"), _number(row.base), _number(row.maximum), _number(row.multiplier), _number(row.current)])
 		if int(row.layer) == 0: rows.append("护盾恢复率 %.2f · 受击后延迟 %.2f 秒" % [row.rate, row.delay])
-		if str(row.buffer) != "0" or str(row.cover) != "0" or float(row.protection_seconds) > 0.0:
+		if _number(row.buffer) != "0" or _number(row.cover) != "0" or float(row.protection_seconds) > 0.0:
 			buffs.append("%s · 记忆缓冲 %s · 抵挡 %s · 属性防护剩余 %.1f 秒" % [name, _number(row.buffer), _number(row.cover), row.protection_seconds])
-	rows.append("当前攻击采用已生效成长和全局倍率；临时标记、目标属性、充能与本次暴击等在实际命中时结算。")
+	rows.append("面板显示当前已提交的攻击参数；在途攻击保留出生快照，目标承伤与持续光束按各自结算时序处理。")
 	_modules.text = "\n\n".join(rows)
 	if float(details.laser_charge) != 1.0: buffs.append("激光充能倍率 ×%.3f" % details.laser_charge)
-	if str(details.shield_debt) != "0" or str(details.armour_debt) != "0": buffs.append("待结算伤害 · 护盾 %s · 装甲 %s" % [_number(details.shield_debt), _number(details.armour_debt)])
+	if _number(details.shield_debt) != "0" or _number(details.armour_debt) != "0": buffs.append("待结算伤害 · 护盾 %s · 装甲 %s" % [_number(details.shield_debt), _number(details.armour_debt)])
 	_temporary.text = "\n".join(buffs) if not buffs.is_empty() else "当前没有已生效的临时标记或待结算伤害。"
 
 func _process(dt: float) -> void:

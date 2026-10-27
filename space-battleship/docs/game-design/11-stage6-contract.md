@@ -10,6 +10,22 @@ Targeted evidence: `_stage6_startup_probe.gd` passes initial on-disk save, local
 
 Local OpenGL captures were inspected before the later instruction to keep execution in the background; subsequent local verification is headless. These checks do not replace parent cloud play or the requested two independent reviews. Exit still reports retained Texture RID/ObjectDB resources, and the embedded file picker emits a focus diagnostic; these remain open diagnostics, not a claim of clean lifecycle behavior. Screenshots, temporary focused probes, generated data, native binaries and saves stay outside Git.
 
+## Follow-up to independent review of977e602
+
+The977e602 review failed on the following five items. This candidate corrects them; parent cloud play and independent re-review remain required. All follow-up verification below is headless, as requested.
+
+| Finding | Correction and targeted evidence |
+|---|---|
+| Import envelope missing`configHash` throws instead of rejecting | SaveFiles shares complete required-envelope validation with Session import/candidate admission. `_stage6_page_probe.gd` removes each of8 required fields and verifies rejection plus preservation of the live session. |
+| Both save pointers corrupt: confirmed new game cannot publish | Preview names a separate`new-game-<hash>` child store and states that original files are preserved. Confirmation writes and reads back the candidate before replacing the live game. `_stage6_startup_probe.gd` verifies a real failed candidate write preserves the live game, retry publishes, all4 original pointer/slot files remain byte-identical, and restart loads the new store. |
+| Finished`DataWrite` failure blocks directory migration | Explicit migration distinguishes a still-busy writer from its historical result. The startup probe creates a real slot-path collision, observes`DataWrite` with the writer drained, then migrates and successfully publishes to a writable directory. Existing close/import failure semantics remain. |
+| Forge confirmation can execute a different selection or repeat payment | `_stage6_forge_confirmation_probe.gd` checks operation/target/parameter/drone changes and external form changes invalidate the bound forecast; confirmation checks the source and forecast again. One preview owns one operation ID; repeated confirmation preserves wallet, drone and RNG, while a new preview can intentionally repeat the action. |
+| Mainline sortie can replace an active manual challenge and misattribute kills | Session's`start_campaign_sortie` rejects active manual mode; Campaign's direct entry also rejects its hyperspace state. `_hyperspace_runtime_probe.gd` checks both entries leave campaign, receipt and native state unchanged, then completes the real10-wave challenge and credits its reward once. |
+
+`_stage6_hud_probe.gd` verifies current/maximum shield and armour labels, safe fractional bars at zero and extreme capacities, friendly small numbers, and Chinese damage-source names. The initial player drawing is84 logical pixels high instead of about29.84; the existing collider and native muzzle/state inputs remain unchanged. Opaque-region turret crops use the authored textures. HUD queries and visual transforms leave native persistence and logical geometry unchanged. The archive now owns full damage breakdown; the battle summary stays bounded.
+
+Fixed guidance distinguishes timed drops from ordinary enemy drops, states attack-birth snapshots correctly, and requires an unconquered planet with a completed shipyard for reforge. Removed the unused equipment-detail query, write-only selected-section field and redundant hull-colour fallback. No new local real-window acceptance is claimed; existing exit resource diagnostics remain open.
+
 ## Implemented and verified
 
 | Area | Evidence |

@@ -1,4 +1,5 @@
 extends RefCounted
+const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 signal members_changed(ids: Array)
 signal options_changed
@@ -237,7 +238,7 @@ func status_rows(ids: Array = []) -> Array:
 		var text: String = "%s · %s" % [_definitions[id].name, job]
 		if _features.levels:
 			var experience = _api.apply("to_display", [member.exp])
-			text = "%s Lv.%d · %s · 经验 %s" % [_definitions[id].name, int(member.level), job, experience.text]
+			text = "%s Lv.%d · %s · 经验 %s" % [_definitions[id].name, int(member.level), job, PlayerText.number(str(experience.text))]
 		rows.append({"id": str(id), "text": text})
 	return rows
 

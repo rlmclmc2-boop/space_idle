@@ -272,6 +272,7 @@ func available_unlock_ids() -> Array:
 
 func start_sortie(stage: int, clear_locks: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
+	if _state.state == "hyperspace": return {"ok": false, "reason": "HyperspaceManualActive"}
 	if _battle == null:
 		return {"ok": false, "reason": "SessionUnavailable"}
 	if not _levels.has(stage) or stage > _cycle_reached:

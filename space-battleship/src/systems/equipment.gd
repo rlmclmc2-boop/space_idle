@@ -1,4 +1,5 @@
 extends RefCounted
+const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 const BattleSchema = preload("res://src/combat_setup.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
@@ -163,7 +164,7 @@ func price_text(id: String) -> String:
 	if quote.ok:
 		for resource in quote.costs:
 			var value = _api.apply("to_display", [quote.costs[resource]])
-			prices.append(("铁 " if resource == "1" else "铀 " if resource == "2" else "进化材料 ") + str(value.text))
+			prices.append(("铁 " if resource == "1" else "铀 " if resource == "2" else "进化材料 ") + PlayerText.number(str(value.text)))
 	return "下一级：" + "，".join(prices) if quote.ok else "进化材料未开放或无法报价"
 
 func _submit_levels(next: Array, balances: Dictionary, changed: Array, publish: Callable) -> Dictionary:

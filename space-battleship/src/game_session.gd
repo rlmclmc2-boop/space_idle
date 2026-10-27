@@ -257,7 +257,9 @@ func configure_save_directory(directory: String) -> Dictionary:
 	if save_files != null:
 		if save_files._directory == directory: return {"ok": true}
 		var closed: Dictionary = save_files.close()
-		if not closed.ok: return closed
+		# An explicit directory migration retries the current in-memory payload
+		# elsewhere. A drained writer's historical failure is not a live lock.
+		if save_files.busy(): return closed
 	save_files = SaveFiles.new(directory)
 	return {"ok": true}
 
@@ -294,16 +296,13 @@ static func import_candidate(path: String, directory: String, source_file: Strin
 	file.close()
 	if parse_result != OK: return {"ok": false, "reason": "InvalidImportEnvelope"}
 	var envelope = parser.data
-	if not envelope is Dictionary or envelope.get("formatVersion") != 1 or not envelope.get("payload") is Dictionary or not envelope.get("sessionId") is String or envelope.sessionId.is_empty():
-		return {"ok": false, "reason": "InvalidImportEnvelope"}
-	for field in ["changeNumber", "generation", "savedUtc"]:
-		if not SaveFiles.integer_text(envelope.get(field)):
-			return {"ok": false, "reason": "InvalidImportEnvelope"}
+	if not SaveFiles.valid_envelope_shape(envelope): return {"ok": false, "reason": "InvalidImportEnvelope"}
 	if JSON.stringify(envelope.payload).sha256_text() != envelope.get("payloadHash"):
 		return {"ok": false, "reason": "InvalidImportChecksum"}
 	return _candidate_from_envelope(path, directory, envelope)
 
 static func _candidate_from_envelope(path: String, directory: String, envelope: Dictionary) -> Dictionary:
+	if not SaveFiles.valid_envelope_shape(envelope): return {"ok": false, "reason": "InvalidImportEnvelope"}
 	if FileAccess.get_file_as_string(path).sha256_text() != envelope.configHash:
 		return {"ok": false, "reason": "ConfigurationMismatch"}
 	var decoded: Dictionary = StateCodec.unpack(envelope.payload)
@@ -575,6 +574,11 @@ func _advance_kernel(dt: float) -> bool:
 			return run_state.is_running()
 		return true
 	return campaign_system.observe_battle(result, equipment.clear_switch_locks, settle_final_collection)
+
+func start_campaign_sortie(stage: int) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	if hyperspace_system.manual_active(): return {"ok": false, "reason": "HyperspaceManualActive"}
+	return campaign_system.start_sortie(stage, equipment.clear_switch_locks)
 
 func start_hyperspace_manual(route: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()

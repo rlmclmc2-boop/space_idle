@@ -25,6 +25,17 @@ func _init(directory: String) -> void:
 static func integer_text(value) -> bool:
 	return value is String and value.is_valid_int() and value.to_int() >= 0 and str(value.to_int()) == value
 
+static func valid_envelope_shape(envelope) -> bool:
+	if not envelope is Dictionary or envelope.get("formatVersion") != 1 or not envelope.get("payload") is Dictionary:
+		return false
+	if not envelope.get("sessionId") is String or str(envelope.sessionId).is_empty(): return false
+	for field in ["changeNumber", "generation", "savedUtc"]:
+		if not integer_text(envelope.get(field)): return false
+	for field in ["configHash", "payloadHash"]:
+		var value = envelope.get(field)
+		if not value is String or value.length() != 64 or not value.is_valid_hex_number(): return false
+	return true
+
 static func read_pointer(directory: String, pointer_file: String) -> Dictionary:
 	if not FileAccess.file_exists(directory.path_join(pointer_file)): return {"ok": false}
 	var parser := JSON.new()
@@ -41,12 +52,7 @@ static func read_pointer(directory: String, pointer_file: String) -> Dictionary:
 	if raw.sha256_text() != pointer.get("checksum"): return {"ok": false}
 	if parser.parse(raw) != OK: return {"ok": false}
 	var envelope = parser.data
-	if not envelope is Dictionary or envelope.get("formatVersion") != 1:
-		return {"ok": false}
-	for field in ["changeNumber", "generation", "savedUtc"]:
-		if not integer_text(envelope.get(field)): return {"ok": false}
-	if envelope.generation != pointer.generation or not envelope.get("sessionId") is String or envelope.sessionId.is_empty() or not envelope.get("payload") is Dictionary: return {"ok": false}
-	if not envelope.get("configHash") is String or not str(envelope.configHash).is_valid_hex_number() or str(envelope.configHash).length() != 64: return {"ok": false}
+	if not valid_envelope_shape(envelope) or envelope.generation != pointer.generation: return {"ok": false}
 	if JSON.stringify(envelope.payload).sha256_text() != envelope.get("payloadHash"): return {"ok": false}
 	return {"ok": true, "envelope": envelope, "pointer": pointer}
 

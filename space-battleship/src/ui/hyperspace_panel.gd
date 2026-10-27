@@ -1,4 +1,5 @@
 extends VBoxContainer
+const PlayerText = preload("res://src/ui/player_text.gd")
 
 var _session
 var _command: Callable
@@ -29,6 +30,8 @@ var _filter_enabled: CheckBox
 var _legend_option: OptionButton
 var _forge_target: OptionButton
 var _forge_guaranteed: CheckBox
+var _forge_preview: Dictionary = {}
+var _forge_sequence: int = 0
 
 func _init(session, command: Callable) -> void:
 	_session = session
@@ -138,12 +141,16 @@ func _ready() -> void:
 	_note("先在仓库选择一架无人机。预览不会扣费；确认后按显示费用执行。锁定词缀受到保护。")
 	_operation = OptionButton.new()
 	for operation in OPERATIONS: _option(_operation, OPERATIONS[operation], operation)
-	_operation.item_selected.connect(func(_index): _refresh_targets())
+	_operation.item_selected.connect(func(_index):
+		_invalidate_forge_preview()
+		_refresh_targets())
 	_page.add_child(_operation)
 	_forge_target = OptionButton.new()
+	_forge_target.item_selected.connect(func(_index): _invalidate_forge_preview())
 	_page.add_child(_forge_target)
 	_forge_guaranteed = CheckBox.new()
 	_forge_guaranteed.text = "数值重抽时保底最大值"
+	_forge_guaranteed.toggled.connect(func(_pressed): _invalidate_forge_preview())
 	_page.add_child(_forge_guaranteed)
 	_forecast = _note("预览可查看确切费用与抽取次数。")
 	_button("预览所选改造", func(): return _forge(true))
@@ -302,19 +309,71 @@ func _import_filter(value: String) -> Dictionary:
 		_filter_action.select(0 if candidate.action == "keep_matches" else 1)
 	return result
 
-func _forge(preview: bool) -> Dictionary:
+func _forge_request() -> Dictionary:
 	var ids: Array = _selected_ids()
-	if ids.size() != 1: return {"ok": false, "reason": "SelectOneDrone"}
+	if ids.size() != 1: return {}
 	var operation: String = str(_value(_operation))
 	var args: Dictionary = {}
 	if operation == "replace_affix" and not str(_value(_forge_target)).is_empty(): args.target_affix = str(_value(_forge_target))
 	if operation == "legendary" and not str(_value(_forge_target)).is_empty(): args.target_effect = str(_value(_forge_target))
 	if operation == "reroll_values" and _forge_guaranteed.button_pressed: args.guaranteed = true
+	return {"id": str(ids[0]), "operation": operation, "args": args}
+
+func _forge_source(request: Dictionary) -> String:
+	if request.is_empty(): return ""
+	var state: Dictionary = _session.hyperspace_system.warehouse()
+	for drone in state.main + state.overflow:
+		if str(drone.id) == str(request.id):
+			return JSON.stringify({"drone": drone, "sealed": state.sealed.has(str(drone.id)),
+				"equipped": state.equipped, "round": state.reforge_count,
+				"stage": _session.campaign_system.progress_facts().cycle_reached}, "", true)
+	return ""
+
+func _invalidate_forge_preview() -> void:
+	_forge_preview = {}
+	if _forecast != null: _forecast.text = "选择或无人机状态已变化，请重新预览改造费用。"
+
+func _sync_forge_preview() -> void:
+	if _forge_preview.is_empty(): return
+	var request: Dictionary = _forge_request()
+	if JSON.stringify(request, "", true) != str(_forge_preview.fingerprint) or _forge_source(request) != str(_forge_preview.source):
+		_invalidate_forge_preview()
+
+func _forge(preview: bool) -> Dictionary:
+	var request: Dictionary = _forge_request()
+	if request.is_empty():
+		_invalidate_forge_preview()
+		return {"ok": false, "reason": "SelectOneDrone"}
 	if preview:
-		var forecast: Dictionary = _session.preview_hyperspace_forge(str(ids[0]), operation, args)
-		_forecast.text = "费用 %s · 抽数 %d" % [_cost_text(forecast.costs), int(forecast.draws)] if forecast.ok else "当前条件不满足，请检查无人机形态、收藏与材料。"
+		_invalidate_forge_preview()
+		var forecast: Dictionary = _session.preview_hyperspace_forge(request.id, request.operation, request.args)
+		if forecast.ok:
+			_forge_sequence += 1
+			_forge_preview = {"request": request.duplicate(true), "fingerprint": JSON.stringify(request, "", true),
+				"source": _forge_source(request), "forecast": JSON.stringify(forecast, "", true),
+				"operation_id": "forge-ui:%s:%s" % [get_instance_id(), _forge_sequence], "completed": false}
+			_forecast.text = "%s · 费用 %s · 抽数 %d。确认仅执行本次预览。" % [OPERATIONS.get(request.operation, "改造"), _cost_text(forecast.costs), int(forecast.draws)]
+		else: _forecast.text = "当前条件不满足，请检查无人机形态、收藏与材料。"
 		return forecast
-	return _session.forge(str(ids[0]), operation, args, str(Time.get_ticks_usec()))
+	_sync_forge_preview()
+	if _forge_preview.is_empty():
+		return {"ok": false, "reason": "ForgePreviewRequired", "message": "请先预览当前选择，再确认改造。"}
+	# A completed preview remains the same command, even if its callback fires again.
+	# Repeating an intentional modification requires a new explicit preview.
+	if _forge_preview.completed:
+		var repeated: Dictionary = _session.hyperspace_system.forge_repeat(_forge_preview.operation_id, _forge_preview.fingerprint)
+		return repeated if not repeated.is_empty() else _forge_preview.result.duplicate(true)
+	var current: Dictionary = _session.preview_hyperspace_forge(request.id, request.operation, request.args)
+	if not current.ok or JSON.stringify(current, "", true) != str(_forge_preview.forecast):
+		_invalidate_forge_preview()
+		return {"ok": false, "reason": "ForgePreviewChanged", "message": "改造条件或费用已变化，请重新预览。"}
+	var result: Dictionary = _session.forge(request.id, request.operation, request.args, _forge_preview.operation_id)
+	if result.ok:
+		_forge_preview.completed = true
+		_forge_preview.result = result.duplicate(true)
+		_forge_preview.source = _forge_source(request)
+		_forecast.text = "改造已完成；再次确认不会重复扣费。继续改造请重新预览。"
+	return result
 
 func _set_legend(collected: bool) -> Dictionary:
 	if _legend_option.item_count == 0: return {"ok": false, "reason": "LegendNotSeen"}
@@ -368,6 +427,7 @@ func _refresh() -> void:
 
 	_refresh_detail()
 	_refresh_targets()
+	_sync_forge_preview()
 	var crew_selected: String = str(_value(_crew_picker))
 	_crew_picker.clear()
 	for option in _session.crew_system.member_options():
@@ -378,6 +438,7 @@ func _refresh() -> void:
 		_filter_summary.text += "\n• " + str(FIELDS.get(condition.field, "条件")) + "：" + (str(condition.value) if condition.field == "minimum_level" else _name(condition.key) + " ≤ " + str(condition.tier) + " 阶" if condition.field == "affix" else _name(condition.value))
 
 func _refresh_detail() -> void:
+	_sync_forge_preview()
 	if _detail == null: return
 	var selected: Array = _selected_ids()
 	if selected.size() != 1:
@@ -397,7 +458,7 @@ func _refresh_detail() -> void:
 
 func _cost_text(costs: Dictionary) -> String:
 	var parts := PackedStringArray()
-	for key in costs: parts.append(_name(key) + " " + str(costs[key]))
+	for key in costs: parts.append(_name(key) + " " + PlayerText.number(str(costs[key])))
 	return "、".join(parts)
 
 func _status_name(value: String) -> String:

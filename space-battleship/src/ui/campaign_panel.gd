@@ -22,7 +22,7 @@ func _init(session, command: Callable) -> void:
 	_stage.value = int(session.campaign_system.scenery_facts().stage)
 	_stage.prefix = "关卡 "
 	add_child(_stage)
-	_command.call(self, "出击所选关卡", func(): return _session.campaign_system.start_sortie(int(_stage.value), _session.equipment.clear_switch_locks))
+	_command.call(self, "出击所选关卡", func(): return _session.start_campaign_sortie(int(_stage.value)))
 	_guard.text = "驻守当前战点"
 	_guard.button_pressed = bool(session.campaign_system.save_state().guard.enabled)
 	add_child(_guard)

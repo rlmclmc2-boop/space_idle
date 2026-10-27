@@ -3,12 +3,13 @@ const PlayerText = preload("res://src/ui/player_text.gd")
 const HELP := {
 	"equip": ["配装", "在舰船页选择槽位和装备，再确认换装。槽位等级保留；战斗中的换装受冷却约束。"],
 	"upgrade": ["升级", "在舰船页查看下一级费用，用+1、+10或MAX升级。资源不足时不会扣费。"],
-	"pickup": ["拾取", "点击战场中的资源光点领取，也可等待自动拾取。掉落生成后按既定金额结算。"],
+	"pickup": ["拾取", "点击战场中的资源光点领取，也可等待自动拾取。定时资源在生成时确定金额；普通敌舰掉落按领取时的对应收益与自动领取规则结算。"],
 	"retreat": ["撤退与驻守", "盾甲耗尽后自动撤退并恢复防御。舰船页可设置驻守和死亡后的目标策略。"],
 	"clear": ["通关", "最终战点清空后先结算奖励，再显示解锁提示。关闭提示只释放引导暂停。"]}
 var _session
 var _tutorial := VBoxContainer.new()
 var _intel := VBoxContainer.new()
+var _damage := VBoxContainer.new()
 var _elapsed: float = 0.0
 
 func _init(session) -> void:
@@ -19,6 +20,8 @@ func _ready() -> void:
 	add_child(_tutorial)
 	add_child(_heading("当前敌情"))
 	add_child(_intel)
+	add_child(_heading("伤害明细"))
+	add_child(_damage)
 	_refresh()
 
 func _heading(text: String) -> Label:
@@ -53,9 +56,18 @@ func _refresh() -> void:
 		var types := {0: "无", 1: "能量", 2: "物理"}
 		label.text = "%s · %s\n装甲 %s（%s） · 护盾 %s（%s）\n%s" % [enemy.name,
 			{"normal": "普通", "elite": "精英", "boss": "首领", "ultimate": "终极"}.get(enemy.tier, "敌舰"),
-			enemy.armour, types.get(enemy.armour_type, "特殊"), enemy.shield, types.get(enemy.shield_type, "特殊"), enemy.mechanics]
+			PlayerText.number(str(enemy.armour)), types.get(enemy.armour_type, "特殊"), PlayerText.number(str(enemy.shield)), types.get(enemy.shield_type, "特殊"), enemy.mechanics]
 		PlayerText.wrap(label)
 		row.add_child(label)
+
+	_clear(_damage)
+	var damage_rows: Array = _session.battle.statistics().display_rows()
+	if damage_rows.is_empty(): _damage.add_child(_heading("尚未造成伤害"))
+	for source in damage_rows:
+		var line := Label.new()
+		line.text = "%s · 总伤害 %s\n护盾 %s · 装甲 %s" % [source.name, source.total, source.shield, source.armour]
+		PlayerText.wrap(line)
+		_damage.add_child(line)
 
 func _process(dt: float) -> void:
 	if not is_visible_in_tree(): return

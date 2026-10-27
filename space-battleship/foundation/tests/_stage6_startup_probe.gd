@@ -128,5 +128,75 @@ func _run() -> void:
 		return
 	disabled.session.save_files.close(2000)
 	print("STARTUP_RESUME_CORRUPTION_RECOVERY_EXPLICIT_OFF_OK")
+	# An ended DataWrite failure must not prevent explicit migration to a
+	# writable store; reproduce with an actual destination directory collision.
+	var failed_store: String = directory.path_join("failed-store")
+	DirAccess.make_dir_recursive_absolute(failed_store.path_join("slot-0.json"))
+	if not disabled.session.configure_save_directory(failed_store).ok or not disabled.session.request_save().ok:
+		_fail("could not start real failed-writer fixture")
+		return
+	var failed: Dictionary = disabled.session.save_files.close(2000)
+	if failed.get("ok", true) or failed.get("error") != "DataWrite" or disabled.session.save_files.busy():
+		_fail("expected ended DataWrite failure: " + str(failed))
+		return
+	var migrated_store: String = directory.path_join("migrated-store")
+	DirAccess.make_dir_recursive_absolute(migrated_store)
+	if not disabled._configure_save(migrated_store).ok or disabled.session.save_files._directory != migrated_store or not disabled.session.request_save().ok or not disabled.session.save_files.close(2000).ok or not SaveFiles.read_pointer(migrated_store, "active.json").ok:
+		_fail("explicit directory migration was blocked by historical write failure")
+		return
+	print("REAL_DATA_WRITE_FAILURE_DIRECTORY_MIGRATION_OK")
+	disabled.queue_free()
+	await process_frame
+	# Both corrupt pointers and slot bytes must survive an explicit new game.
+	var original: Dictionary = {}
+	for filename in ["active.json", "previous.json", "slot-0.json", "slot-1.json"]:
+		var corrupt: FileAccess = FileAccess.open(store.path_join(filename), FileAccess.WRITE)
+		original[filename] = "recoverable original bytes " + filename
+		corrupt.store_string(original[filename])
+		corrupt.close()
+	PlayerSettings.save_change("save_directory", store)
+	var recovery = Main.instantiate()
+	root.add_child(recovery)
+	recovery.set_process(false)
+	var active_before = recovery.session
+	var preview: Dictionary = recovery._preview_new_game(store, true)
+	if not preview.ok or recovery.session != active_before or not preview.message.contains("原样保留"):
+		_fail("corrupt-store new-game preview failed: " + str(preview))
+		return
+	var target: String = recovery._pending_new_game.target_directory
+	# Fail the real first candidate write; it must not replace the live game.
+	DirAccess.make_dir_recursive_absolute(target.path_join("slot-0.json"))
+	var denied: Dictionary = recovery._confirm_new_game(store, true)
+	if denied.get("ok", true) or denied.get("error") != "DataWrite" or recovery.session != active_before:
+		_fail("failed candidate write replaced current game: " + str(denied))
+		return
+	if DirAccess.remove_absolute(target.path_join("slot-0.json")) != OK:
+		_fail("could not clear disposable write-collision fixture")
+		return
+	var confirmed: Dictionary = recovery._confirm_new_game(store, true)
+	if not confirmed.ok or recovery.session == active_before or recovery.session.save_files._directory != target or not recovery.session.save_files.close(2000).ok:
+		_fail("confirmed corrupt-store new game failed: " + str(confirmed))
+		return
+	var published: Dictionary = SaveFiles.read_pointer(target, "active.json")
+	if not published.ok or published.envelope.sessionId != recovery.session._session_id or PlayerSettings.load_interval().save_directory != target:
+		_fail("new game was not on disk in the configured recovery store")
+		return
+	for filename in original:
+		if FileAccess.get_file_as_string(store.path_join(filename)) != original[filename]:
+			_fail("new game modified original corrupt file: " + filename)
+			return
+	var recovered_id: String = recovery.session._session_id
+	recovery.queue_free()
+	await process_frame
+	var restarted = Main.instantiate()
+	root.add_child(restarted)
+	restarted.set_process(false)
+	if not restarted.startup_error.is_empty() or restarted.session._session_id != recovered_id or restarted.session.save_files._directory != target:
+		_fail("normal startup did not resume confirmed new game")
+		return
+	restarted.session.save_files.close(2000)
+	restarted.queue_free()
+	await process_frame
+	print("CORRUPT_STORE_NEW_GAME_PUBLISHED_ORIGINALS_PRESERVED_RESTART_OK")
 	print("STAGE6_STARTUP_PROBE_OK")
 	quit(0)

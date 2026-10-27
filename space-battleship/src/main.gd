@@ -25,7 +25,6 @@ var _startup_directory: String = ""
 var _feature_panels: Dictionary = {}
 var _pages: Dictionary = {}
 var _tabs: TabContainer
-var _selected_section: String = "ship"
 var _reforge_picker: OptionButton
 var _reforge_drones: ItemList
 var _reforge_planet_value: LineEdit
@@ -159,7 +158,11 @@ func _show_session() -> void:
 		battle_view.damage_mode = _damage_mode
 		battle_view.damage_received.connect(_play_effect)
 		add_child(battle_view)
-	add_child(BattleStatisticsView.new(session.battle.statistics()))
+	var hud_layer := CanvasLayer.new()
+	hud_layer.layer = 8
+	add_child(hud_layer)
+	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle))
+	hud_layer.add_child(BattleStatisticsView.new(session.battle.statistics()))
 	_setup_shell_overlay()
 	add_child(CampaignView.new(session.campaign_system))
 	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
@@ -291,15 +294,36 @@ func _preview_new_game(directory: String, clear_settings: bool) -> Dictionary:
 	if not created.ok: return created
 	created = candidate.campaign_system.start_sortie(1, candidate.equipment.clear_switch_locks)
 	if not created.ok: return created
-	created = candidate.configure_save_directory(directory)
-	if not created.ok: return created
-	_pending_new_game = {"session": candidate, "directory": directory, "clear_settings": clear_settings}
-	return {"ok": true, "message": "新游戏已准备好。确认后替换当前存档，个人设置将%s。" % ["重置" if clear_settings else "保留"]}
+	var stored: Dictionary = SaveFiles.read_store(directory)
+	var target: String = directory
+	if not stored.ok and stored.error == "InvalidSaveStore":
+		# Do not unlock or overwrite an invalid store. A separately named new
+		# store keeps every original pointer/slot available for later recovery.
+		target = directory.path_join("new-game-" + candidate._session_id.sha256_text().substr(0, 16))
+	_pending_new_game = {"session": candidate, "directory": directory, "target_directory": target, "clear_settings": clear_settings}
+	var recovery: String = "原目录中的损坏文件将原样保留，新存档将保存到 %s。" % target if target != directory else "确认后替换当前存档。"
+	return {"ok": true, "message": "新游戏已准备好。%s个人设置将%s。" % [recovery, "重置" if clear_settings else "保留"]}
 
 func _confirm_new_game(directory: String, clear_settings: bool) -> Dictionary:
 	if _pending_new_game.is_empty() or _pending_new_game.directory != directory or _pending_new_game.clear_settings != clear_settings:
 		return {"ok": false, "reason": "NewGamePreviewRequired"}
-	var switched: Dictionary = _replace_session(_pending_new_game.session)
+	# Finish the old writer before any new candidate can publish in its store.
+	if session.save_files != null:
+		var closed: Dictionary = session.save_files.close(2000)
+		if not closed.ok: return closed
+	var candidate = _pending_new_game.session
+	var target: String = _pending_new_game.target_directory
+	if DirAccess.make_dir_recursive_absolute(target) != OK: return {"ok": false, "reason": "SaveDirectoryRequired"}
+	var prepared: Dictionary = candidate.configure_save_directory(target)
+	if prepared.ok: prepared = candidate.request_save()
+	if not prepared.ok: return prepared
+	prepared = candidate.save_files.close(2000)
+	if not prepared.ok: return prepared
+	var verified: Dictionary = SaveFiles.read_pointer(target, "active.json")
+	if not verified.ok or verified.envelope.sessionId != candidate._session_id:
+		return {"ok": false, "reason": "NewGameSaveVerificationFailed"}
+	# Only a candidate already durably published may replace the live game.
+	var switched: Dictionary = _replace_session(candidate)
 	if not switched.ok: return switched
 	if clear_settings:
 		var cleared: Dictionary = PlayerSettings.reset()
@@ -307,7 +331,10 @@ func _confirm_new_game(directory: String, clear_settings: bool) -> Dictionary:
 			switched.settings_failed = true
 			switched.settings_error = str(cleared.reason)
 		else:
-			PlayerSettings.save_change("save_directory", directory)
+			var directory_saved: Dictionary = PlayerSettings.save_change("save_directory", _startup_directory)
+			if not directory_saved.ok:
+				switched.settings_failed = true
+				switched.settings_error = str(directory_saved.reason)
 			_apply_settings(PlayerSettings.defaults())
 	return switched
 
@@ -459,7 +486,7 @@ func _sync_guidance() -> void:
 
 func _draw_shell(canvas: Node2D) -> void:
 	var font: Font = ThemeDB.fallback_font
-	canvas.draw_string(font, Vector2(18, 920), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
+	canvas.draw_string(font, Vector2(18, 942), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
 	if not session.run_state.is_running():
 		canvas.draw_string(font, Vector2(18, 850), "会话已暂停，请检查成长页提示。", HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 
@@ -732,8 +759,6 @@ func _create_bridge_page(key: String, title: String) -> void:
 
 func _bridge_tab_changed(index: int) -> void:
 	if _reforge_picker != null and index == int(_pages.universe.index): _refresh_reforge_selection()
-	for key in _pages:
-		if int(_pages[key].index) == index: _selected_section = str(key)
 
 func _world_visual_context() -> Dictionary:
 	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(),
@@ -747,7 +772,7 @@ func _setup_reforge_selection(parent: Control, planet_value: LineEdit, drone_val
 	heading.add_theme_font_size_override("font_size", 20)
 	parent.add_child(heading)
 	var help := Label.new()
-	help.text = "选择已征服的星球，并选择本次保留的无人机。先预览损失与收益，确认后才执行重铸。"
+	help.text = "选择尚未征服且已建成造船厂的星球，并选择本次保留的无人机。先预览损失与收益，确认后才征服并重铸。"
 	PlayerText.wrap(help)
 	parent.add_child(help)
 	_reforge_picker = OptionButton.new()

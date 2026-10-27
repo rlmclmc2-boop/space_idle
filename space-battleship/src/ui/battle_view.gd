@@ -1,4 +1,5 @@
 extends Node2D
+const PlayerText = preload("res://src/ui/player_text.gd")
 signal damage_received
 var _battle
 var beam_rows: Array = []
@@ -26,7 +27,7 @@ func _process(_dt: float) -> void:
 	for receipt in receipts:
 		if damage_mode == "off" or damage_mode == "critical" and not receipt.critical: continue
 		if damage_labels.size() >= 48: break
-		damage_labels.append({"text": str(receipt.damage), "position": receipt.position,
+		damage_labels.append({"text": PlayerText.number(str(receipt.damage)), "position": receipt.position,
 			"expires": _battle.presentation_clock() + 0.8, "critical": receipt.critical,
 			"hostile": receipt.hostile})
 	var now: float = _battle.presentation_clock()
@@ -41,7 +42,7 @@ func _draw() -> void:
 		beam_instances.multimesh.visible_instance_count = 0
 	_battle.draw_presentation_flights()
 	_upload_beams()
-	_battle.draw_player_hull(self, Color("66d9dc"))
+	_battle.draw_player_hull(self)
 	_battle.draw_enemy_overlays(self, font)
 	_battle.draw_weapon_art(self)
 	for label in damage_labels:
@@ -49,9 +50,6 @@ func _draw() -> void:
 		var lift: float = (label.expires - _battle.presentation_clock()) * 22.0
 		draw_string(font, label.position - Vector2(55, 15 + lift), label.text,
 			HORIZONTAL_ALIGNMENT_CENTER, 110, 16, colour)
-	var hud: Dictionary = _battle.hud_values()
-	# Attack history is available in the intelligence archive, not the battle HUD.
-	draw_string(font, Vector2(18, 765), "装甲 %s   护盾 %s" % [hud.armour, hud.shield], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8ede6"))
 
 func _draw_contacts() -> void:
 	_battle.draw_presentation_contacts()

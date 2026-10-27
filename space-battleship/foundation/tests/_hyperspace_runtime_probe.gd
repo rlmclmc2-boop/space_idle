@@ -45,6 +45,16 @@ func _run_probe() -> void:
 		printerr("manual: ", manual)
 		quit(1)
 		return
+	var active_receipt: Dictionary = session.hyperspace_system.manual_receipt()
+	var active_campaign: Dictionary = session.campaign_system.save_state()
+	var active_native: Dictionary = session.battle.persistent_state().duplicate(true)
+	var conflict: Dictionary = session.start_campaign_sortie(1)
+	var direct_conflict: Dictionary = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
+	if conflict.ok or conflict.reason != "HyperspaceManualActive" or direct_conflict.ok or direct_conflict.reason != "HyperspaceManualActive" or session.campaign_system.save_state() != active_campaign or session.hyperspace_system.manual_receipt() != active_receipt or session.battle.persistent_state() != active_native:
+		printerr("mainline sortie crossed active hyperspace mode or changed state")
+		quit(1)
+		return
+	print("HYPERSPACE_MAINLINE_CONFLICT_REJECTED_WITHOUT_STATE_OR_REWARD_CHANGE")
 	var run_id: int = int(manual.receipt.run_id)
 	var completed: bool = false
 	for step in 30000:

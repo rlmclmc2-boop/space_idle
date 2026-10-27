@@ -93,7 +93,7 @@ func _refresh_investment() -> void:
 	var model: Dictionary = _research.panel_model()
 	for resource in investment_inputs:
 		var input: LineEdit = investment_inputs[resource]
-		investment_current[resource].text = "当前：" + str(model.investment[resource]) + "/秒"
+		investment_current[resource].text = "当前：" + PlayerText.number(str(model.investment[resource])) + "/秒"
 		if not _drafts.has(resource) and not input.has_focus(): input.text = model.investment[resource]
 	automatic_current.text = "当前自动投入：%s · 铁铀共同预算比例 %s%%" % ["开启" if model.auto_invest else "关闭", str(float(model.ratio) * 100.0)]
 	if not _automatic_draft and not automatic_ratio.get_line_edit().has_focus():
