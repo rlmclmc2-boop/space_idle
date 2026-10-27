@@ -6,12 +6,12 @@
 
 | 文件 | 拆分前 | 拆分后 |
 |---|---:|---:|
-| README.md | 4,362 字符 / 73 行 | 2,318 字符 / 32 行 |
+| README.md | 4,362 字符 / 73 行 | 2,428 字符 / 33 行 |
 | 09-config-catalog.md | 52,372 字符 / 1253 行 | 2,117 字符 / 38 行 |
 | 11-stage6-contract.md | 55,200 字符 / 314 行 | 1,172 字符 / 23 行 |
-| 13-art-interaction.md | 25,399 字符 / 336 行 | 6,848 字符 / 101 行 |
+| 13-art-interaction.md | 25,399 字符 / 336 行 | 7,447 字符 / 110 行 |
 
-原四入口文件合计 137,333 → 12,455 字符，减少 90.9%。这是入口体量，不是仓库总文档量；历史和参数迁出后仍可按需读取，不能把移动字数宣称为删除规则。 本轮完整Markdown总量约21.5万→23.3万字符（含新增审阅清单、接口契约和分片导语）；总量未缩小，收益是按任务减少默认载入，并显式删除重复/失效指导。
+原四入口文件合计 137,333 → 13,164 字符，减少 90.4%。这是入口体量，不是仓库总文档量；历史和参数迁出后仍可按需读取，不能把移动字数宣称为删除规则。 本轮完整Markdown总量约21.5万→23.4万字符（含新增审阅清单、接口契约和分片导语）；总量未缩小，收益是按任务减少默认载入，并显式删除重复/失效指导。
 
 ## 代表性任务的最小阅读
 
@@ -19,15 +19,15 @@
 
 | 任务 | 拆分前选读单位 | 拆分后最小选读单位 | 字符变化 |
 |---|---|---|---:|
-| 仅反应炉UI制作/视觉审查 | README.md＋13-art-interaction.md | README.md＋13-art-interaction.md＋art/modules/reactor.md＋S5来源节 | 29,761 → 12,423（减少 58.3%） |
-| 仅查询crew字段/表值来源 | README.md＋09-config-catalog.md | README.md＋09-config-catalog.md＋reference/config/crew.md | 56,734 → 5,911（减少 89.6%） |
-| 追溯背景/真实炮口专项 | README.md＋11-stage6-contract.md | README.md＋11-stage6-contract.md＋history/stage6-assets.md | 59,562 → 10,663（减少 82.1%） |
+| 仅反应炉UI制作/视觉审查 | README.md＋13-art-interaction.md | README.md＋13-art-interaction.md＋art/modules/reactor.md＋S5来源节 | 29,761 → 13,132（减少 55.9%） |
+| 仅查询crew字段/表值来源 | README.md＋09-config-catalog.md | README.md＋09-config-catalog.md＋reference/config/crew.md | 56,734 → 6,021（减少 89.4%） |
+| 追溯背景/真实炮口专项 | README.md＋11-stage6-contract.md | README.md＋11-stage6-contract.md＋history/stage6-assets.md | 59,562 → 10,773（减少 81.9%） |
 
 ## 迁移清单
 
 | 原位置 | 新位置/处理 | 保留内容与边界 |
 |---|---|---|
-| 13第1–2、5–6节 | 13保留 | 全局身份、美术/交互/对齐/信息层级、复用边界与双审证据；第3节变为按模块索引，补唯一现行导航原则 |
+| 13第1–2、5–6节 | 13保留 | 全局身份、整屏构图V0、美术/交互/对齐/信息层级、复用边界与双审证据；第3节变为按模块索引，补唯一现行导航原则 |
 | 13第3节 M1–M10/V1–V10 | `art/modules/{battle,equipment,reactor,research,enhancement,crew,planet,galaxy,hyperspace,persistence}.md` | 逐模块设计与可见验收，不再为单模块加载其他9页；M1只引用全局导航 |
 | 13第4、7、8节 | `art/sources.md`、`art/open-items.md`、`reference/ship-scale.md` | S1–S12来源、G/D待定、参数/计算全部保留；相对路径修复，原统计基线和未验收边界保留 |
 | 09第2/3节 | `reference/config/<工作簿>.md` 26页 | 每个工作簿的字段与小表值归一页；原配置704行Markdown表格及46行字段列表校对，无缺失 |
@@ -57,4 +57,4 @@
 
 ## 核对范围
 
-只核对文档迁移、表格行保留、引用/锚点、模块与V编号、阅读规模、Git差异和候选范围；无代码/Excel/存档/测试设施变更，不运行游戏测试。本候选须审核后才合main；UI制作、实机对齐/净空和品质验收均未因此完成。
+只核对文档迁移、表格行保留、引用/锚点、模块与V编号、阅读规模、Git差异和候选范围；无代码/Excel/存档/测试设施变更，不运行游戏测试。本候选须审核后才合main；整屏外框/全局UI仍未通过，新增2.0/V0整体审核，不由模块裁图或模块通过代替；UI制作、实机对齐/净空和品质验收均未因此完成。
