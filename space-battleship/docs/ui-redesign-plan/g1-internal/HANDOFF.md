@@ -83,3 +83,9 @@
 ### 第三批R2连续决策检查点
 
 首批R2源码`05c682f0a723ceacbeeae137bdeaa81b3d912113`与同版证据`1bfbb8c52ab41bc5c6a43ba9f3ae583cc774b2be`已推送。第三批补连发前移、节点1 A→B、继续购1级至E31及后续节点查看的完整匹配响应，见`g2-enhancement-restoration.md`末节；同版证据在`evidence/g2-enhance-r2/manifest.json`。本批不穷举组合，仍无真实领域绑定。
+
+### R2科研连续草稿同步补丁
+
+第三批R2源码`b538267e7dd1d2b7152802696ddee6aa34907b81`及同版证据`ddacc0d014993d5e6b0d0cda165e0366a2e1ccab`已推送。原上下文收到interrupted恢复后核实同目录/分支/该HEAD与干净树，**未实际发生上下文压缩**。超空间过滤仅只读核对五条件、all/any、v2分享格式与现有公开口，未开始新制作。
+
+按根线程新意见在自然停点优先修科研连续草稿同步/已选模式无副作用/切模式保留策略；同版证据`evidence/g2-budget-sync/manifest.json`，说明见`godot-restoration.md`末节。不重做已认可整体结构，下一再续超空间过滤/改造。
