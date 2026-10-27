@@ -59,7 +59,7 @@ class SpaceCombatKernel : public RefCounted {
         PackedVector2Array collision_hull;
         uint64_t geometry_revision = 0;
         bool stationary_geometry = false;
-        Dictionary view;
+        mutable Dictionary view; // Read-only projection cache, not actor lifecycle state.
         std::vector<DropRule> drops;
         int jewel_rolls = 0;
         double interference = 0, explosion = 0;
@@ -267,7 +267,8 @@ class SpaceCombatKernel : public RefCounted {
     std::shared_ptr<MotionArena> motion_arena = std::make_shared<MotionArena>();
     Ref<RandomNumberGenerator> rng;
     mutable Array actor_view_rows;
-    mutable std::set<size_t> actor_view_changes;
+    // Existing row invalidation also coalesces health fields: bit 1 = hp, bit 2 = shield.
+    mutable std::map<size_t, uint8_t> actor_view_changes;
     Dictionary player_row;
     Vector2 player_point;
     PackedVector2Array player_collision_hull;
@@ -563,17 +564,9 @@ class SpaceCombatKernel : public RefCounted {
     static double actor_fraction(const Amount &current, const Amount &capacity) {
         return capacity <= 0 ? 0.0 : current.ratio(capacity);
     }
-    void publish_actor_health(size_t index, bool armour_changed, bool shield_changed) {
-        Actor &a = actors[index];
-        if (armour_changed) {
-            a.view["hp"] = wire(a.hp);
-            a.view["armour_fraction"] = actor_fraction(a.hp, a.max_hp);
-        }
-        if (shield_changed) {
-            a.view["shield"] = wire(a.shield);
-            a.view["shield_fraction"] = actor_fraction(a.shield, a.max_shield);
-        }
-        if (armour_changed || shield_changed) actor_view_changes.insert(index);
+    void invalidate_actor_health(size_t index, bool armour_changed, bool shield_changed) {
+        const uint8_t fields = (armour_changed ? 1 : 0) | (shield_changed ? 2 : 0);
+        if (fields) actor_view_changes[index] |= fields;
     }
     void shield(Actor &a, double at) {
         if (!a.live || a.max_shield <= 0)
@@ -584,7 +577,7 @@ class SpaceCombatKernel : public RefCounted {
         if (elapsed > 0) {
             const Amount before = a.shield;
             a.shield = minimum(a.max_shield, a.shield + a.max_shield * a.recovery * elapsed);
-            if (a.shield != before) publish_actor_health(size_t(&a - actors.data()), false, true);
+            if (a.shield != before) invalidate_actor_health(size_t(&a - actors.data()), false, true);
         }
         a.shield_at = at;
     }
@@ -860,7 +853,7 @@ class SpaceCombatKernel : public RefCounted {
                 }
             }
         }
-        publish_actor_health(h.index, a->hp != hp_before, a->shield != shield_before);
+        invalidate_actor_health(h.index, a->hp != hp_before, a->shield != shield_before);
 
         if (inst && inst->attack && inst->attack->strange_enabled && trigger) {
             const Attack &birth = *inst->attack;
@@ -886,7 +879,7 @@ class SpaceCombatKernel : public RefCounted {
             a->guidance_layers = 0;
             a->live = false;
             a->view["dead"] = true;
-            actor_view_changes.insert(h.index);
+            actor_view_changes.try_emplace(h.index, 0);
             ++a->generation;
 
             for (Defence &defence : defences) defence.source_stacks.erase(a->uid);
@@ -2044,7 +2037,7 @@ class SpaceCombatKernel : public RefCounted {
             a.view["max_hp"] = wire(a.max_hp);
             a.view["max_shield"] = wire(a.max_shield);
             actors.push_back(a);
-            publish_actor_health(actors.size() - 1, true, true);
+            invalidate_actor_health(actors.size() - 1, true, true);
         }
         return true;
     }
@@ -2297,7 +2290,7 @@ class SpaceCombatKernel : public RefCounted {
         for (Defence &d : defences) d.source_stacks.clear();
         for (size_t i = 0; i < actors.size(); ++i) {
             Actor &a = actors[i]; a.live = false;
-            if (!bool(a.view.get("dead", false))) { a.view["dead"] = true; actor_view_changes.insert(i); }
+            if (!bool(a.view.get("dead", false))) { a.view["dead"] = true; actor_view_changes.try_emplace(i, 0); }
             ++a.generation;
         }
         debts.clear();
@@ -2862,8 +2855,20 @@ class SpaceCombatKernel : public RefCounted {
             if (actor_view_changes.size() == actors.size()) rows.set_typed(Variant::DICTIONARY, StringName(), Variant());
             else rows = actor_view_rows.duplicate();
             rows.resize(actors.size());
-            for (size_t i : actor_view_changes) {
-                Dictionary row = actors[i].view.duplicate(); row.make_read_only(); rows[i] = row;
+            for (const auto &change : actor_view_changes) {
+                const size_t i = change.first;
+                const Actor &a = actors[i];
+                // Multiple recoveries/hits between reads project the final accepted facts once.
+                // Amounts are already typed: no parsing, admission, fault handling or simulation.
+                if (change.second & 1) {
+                    a.view["hp"] = wire(a.hp);
+                    a.view["armour_fraction"] = actor_fraction(a.hp, a.max_hp);
+                }
+                if (change.second & 2) {
+                    a.view["shield"] = wire(a.shield);
+                    a.view["shield_fraction"] = actor_fraction(a.shield, a.max_shield);
+                }
+                Dictionary row = a.view.duplicate(); row.make_read_only(); rows[i] = row;
             }
             rows.make_read_only(); actor_view_rows = rows; actor_view_changes.clear();
         }
