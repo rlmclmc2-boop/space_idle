@@ -82,3 +82,23 @@ button.primary:hover:not(:disabled),button.active:hover{background:#38656c;color
 .unknown-site{display:grid;place-items:center;margin:35px 0;font-size:75px;color:#91a99a;border:1px dashed #aac0b1;height:130px;border-radius:12px}
 .work-family .city-room{height:350px;min-height:350px}
 .crew-person{flex-shrink:0}.crew-person .meter{margin:5px 0 0}
+
+/* Enhancement R1: current effective benefits lead; level provenance stays compact. */
+.enhancement-levels,.work-family .enhancement-levels{padding:10px 13px;gap:12px;align-items:center;margin-bottom:13px}
+.enhancement-levels>.enhance-level-strip{text-align:left;min-width:0;display:flex;align-items:flex-start;flex-direction:column;gap:5px}
+.enhance-level-strip b{font-size:20px;line-height:1.4;color:#32776c;font-weight:600}
+.enhance-level-strip span{font-size:11px;color:#638077}
+.enhance-level-strip button{font-size:10px;padding:0}
+.enhancement-buy{display:grid;grid-template-columns:auto auto;gap:8px 12px;align-items:center}
+.enhancement-buy>div{grid-column:1/-1;justify-content:flex-end}
+.enhancement-buy span{font-size:11px;white-space:normal;line-height:1.6}
+.enhancement-buy>button{font-size:11px;padding:6px 10px}
+.enhance-effect{padding:15px;margin-bottom:14px}
+.enhance-effect-identity h2{font-size:18px}
+.enhance-effect p.enhance-current{font-size:14px;line-height:1.9;color:#315e60;margin:14px 0 7px;min-height:0;font-weight:500}
+.enhance-active-branches{font-size:10px;line-height:1.8;color:#648378;padding:8px 10px;background:#e5ecdf;border-radius:5px}
+.enhance-node-details{margin-top:12px;font-size:11px;color:#637f73}
+.enhance-node-details summary{cursor:pointer;padding:7px 0}
+.enhance-node-details[open] summary{margin-bottom:5px}
+.enhance-receipt{display:flex;align-items:center;gap:12px;background:#dfebdd;padding:10px 13px;border-left:3px solid #629887;font-size:12px;margin:12px 0}
+.enhance-receipt small{font-size:10px;color:#688274}
