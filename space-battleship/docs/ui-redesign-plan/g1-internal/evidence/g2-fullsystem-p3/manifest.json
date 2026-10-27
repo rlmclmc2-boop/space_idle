@@ -1,0 +1,6992 @@
+{
+  "source_commit": "7c0eadd0662e066ac994a1d19723393ae38fd646",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "device_scale_factor": 1
+  },
+  "kind": "Docs-only browser response fixtures; full-system assembly and representative continuous operations, not runtime/design acceptance",
+  "operations": [
+    "scene: crew release/draft/accept/target/capacity",
+    "scene: planet default/auto/cancel/ready response/claim/reforge",
+    "scene: galaxy inner details/overview/fog/zoom/drag/view memory",
+    "scene: enhancement reorder/branch/modal keyboard/focus/accept/purchase/lower effects",
+    "scene: six persistence responses/retry/backup identity/import invalid-review-cancel-confirm/directory candidate-apply",
+    "scene: reforge unavailable/review/cancel-confirm; new review/cancel-confirm",
+    "scene: preferences/manual topic/guide pause isolation/intel/seen-read/statistics",
+    "scene: all root routes installed, independent theater projection, collapse/reopen stable",
+    "work: crew release/draft/accept/target/capacity",
+    "work: planet default/auto/cancel/ready response/claim/reforge",
+    "work: galaxy inner details/overview/fog/zoom/drag/view memory",
+    "work: enhancement reorder/branch/modal keyboard/focus/accept/purchase/lower effects",
+    "work: six persistence responses/retry/backup identity/import invalid-review-cancel-confirm/directory candidate-apply",
+    "work: reforge unavailable/review/cancel-confirm; new review/cancel-confirm",
+    "work: preferences/manual topic/guide pause isolation/intel/seen-read/statistics",
+    "work: all root routes installed, independent theater projection, collapse/reopen stable"
+  ],
+  "pageerrors": [],
+  "records": [
+    {
+      "file": "scene-crew-current.png",
+      "family": "scene",
+      "route": "crew",
+      "source": "default response: engineer building shipyard",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 701,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "5b471a7e7aa44aa9d062ed6acf728f0949517484ef479c5c5fc8ff8c7cee7b77"
+    },
+    {
+      "file": "scene-crew-draft.png",
+      "family": "scene",
+      "route": "crew",
+      "source": "continuous release → select galaxy; actual idle until accept",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 701,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "galaxy",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "de0a0935ea6de185884724407b692fcd81ba141115cf55c043f1caf49586593c"
+    },
+    {
+      "file": "scene-crew-target-galaxy.png",
+      "family": "scene",
+      "route": "galaxy",
+      "source": "same accepted crew → target; worker count2",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 622,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "galaxy",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "176d628156d034e780f6fdbefa562514469ddb5dea06dee7f73b18d8217a58b9"
+    },
+    {
+      "file": "scene-crew-capacity.png",
+      "family": "scene",
+      "route": "crew",
+      "source": "continuous select occupied research target, no release",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 701,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "research",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "cbb46cba197ba222dcdb420dbcccce55104aa46e81488fda1ef4eca5c56241a3"
+    },
+    {
+      "file": "scene-planet-current.png",
+      "family": "scene",
+      "route": "planet",
+      "source": "default response: exploration24/60, shipyard111/180",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "a2b7569e3f8596eedf4f49be6d8692fb0eb133c5d14588403c78e87059ed0ed6"
+    },
+    {
+      "file": "scene-planet-auto-stop.png",
+      "family": "scene",
+      "route": "planet",
+      "source": "automatic off retains active exploration",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "outerScroll": 59,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "d99f323838dd85da772fab0ef6faa953ff17fb370bccdcc5a1008937211081ad"
+    },
+    {
+      "file": "scene-planet-cancel-review.png",
+      "family": "scene",
+      "route": "planet",
+      "source": "native modal: cancellation review",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "outerScroll": 59,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 1,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "d7fb2ae77eceae36604243ccffc9859eac7ca1e754a3e6ac4187ee51adbc2859"
+    },
+    {
+      "file": "scene-planet-cancelled.png",
+      "family": "scene",
+      "route": "planet",
+      "source": "confirmed cancellation, construction work retained",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "outerScroll": 59,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "a3cb1b44c865f08d7d8c5f5f1f1142b5c9def896d67dbf88e5e1c1911a0e1fce"
+    },
+    {
+      "file": "scene-planet-ready.png",
+      "family": "scene",
+      "route": "planet",
+      "source": "explicit owner response fixture: ready180/180",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "outerScroll": 59,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "0553ec4bac2083af145ff718103af7b2351b5c4fe90425996c674be5bbb910b9"
+    },
+    {
+      "file": "scene-planet-claimed.png",
+      "family": "scene",
+      "route": "planet",
+      "source": "click claim → owned, reforge entry",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "outerScroll": 59,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "b23c9ff69449bf7244accf05c0a38816f3b06c636462856257720661e2f93df3"
+    },
+    {
+      "file": "scene-planet-reforge-entry.png",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "source": "same claimed shipyard → reforge target",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "9dc7e07a75fd46e5c6936d33940642fe2d76b6a50f30c9797819e62d90084b83"
+    },
+    {
+      "file": "scene-galaxy-current.png",
+      "family": "scene",
+      "route": "galaxy",
+      "source": "default response selected node9",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 622,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "d7c455a4a4686eec3dab903e0df859aff348594b836043bd5419072e5a62710d"
+    },
+    {
+      "file": "scene-galaxy-contribution.png",
+      "family": "scene",
+      "route": "galaxy",
+      "source": "same node, scroll its independent details",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 622,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "8ed580582a2089025e93acf382d1045873caea04f714c0ebe9114cab33f2de35"
+    },
+    {
+      "file": "scene-galaxy-fog.png",
+      "family": "scene",
+      "route": "galaxy",
+      "source": "explicit selection18 under overview: hidden identity",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 622,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "18",
+        "galaxyView": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.05
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "06f711bb59b098616fca348b3f80b930b0e53aa16072937161473d5d3391301f"
+    },
+    {
+      "file": "scene-galaxy-view-memory.png",
+      "family": "scene",
+      "route": "galaxy",
+      "source": "continuous overview → selected → zoom → drag → leave/reopen",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 622,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -102.52193347193351,
+          "y": 130.7460498960499,
+          "zoom": 1.6
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "f0b0a166111e3ef99f11271202bc1bfff56fae05041f4dc07830fa0cc434f0e7"
+    },
+    {
+      "file": "scene-enhancement-current.png",
+      "family": "scene",
+      "route": "enhancement",
+      "source": "default six effect responses",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1020,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "3157710e6e5ae238b3e072def2d2c3396152a617509e6b223956a55ceb0bed1f"
+    },
+    {
+      "file": "scene-enhancement-branch.png",
+      "family": "scene",
+      "route": "enhancement/branch/repeat/0",
+      "source": "continuous reorder → node review; modal stays in cabin",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1112,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 1,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "60afec37cedc25ed742359b129758765f836bb24e15e7b70c4e49e97b71e8b45"
+    },
+    {
+      "file": "scene-enhancement-choice.png",
+      "family": "scene",
+      "route": "enhancement/branch/repeat/0",
+      "source": "selected B remains draft, focus retained after render",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1112,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 1,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "18469b969f0baccffd6c59d92028e490314c6fea4d5f743f5572f3e9dc88a676"
+    },
+    {
+      "file": "scene-enhancement-accepted.png",
+      "family": "scene",
+      "route": "enhancement",
+      "source": "continuous accepted B with returned node focus",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1138,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "B",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "07ed2814d6c0a77bbdc502dd5cabbed183a9f28aad638fe496f6fae6ad859b10"
+    },
+    {
+      "file": "scene-enhancement-purchased.png",
+      "family": "scene",
+      "route": "enhancement",
+      "source": "explicit funded response → buy one E31, no reused quote",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1187,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 28,
+          "effective": 31,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "B",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "f98552b2e92c09f3df2b1ebfca89ef9a5bdd9bc1787d75449f91da2f456b3d5c"
+    },
+    {
+      "file": "scene-enhancement-lower.png",
+      "family": "scene",
+      "route": "enhancement",
+      "source": "all six effects remain reachable",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1187,
+        "outerScroll": 487,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 28,
+          "effective": 31,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "B",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "9e17100d45c5790125ac95628480c33e86312639e34e9e8a2bcf4eb32624a2ac"
+    },
+    {
+      "file": "scene-save-saved.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "explicit persistence response saved",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "81fbd759d6977dd94cc65acb6e580b5c5879d9da8cbf1b408b18a838bd879c07"
+    },
+    {
+      "file": "scene-save-dirty.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "explicit persistence response dirty",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "dirty",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "7d01349fc888e513c44e9cd9a2cc68bf5298d85a59a1a44a2074d363732fb1c6"
+    },
+    {
+      "file": "scene-save-queued.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "explicit persistence response queued",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "3811734816fb1fe406609a9881ee56d4641a82a056c0302b4044a35b6f710259"
+    },
+    {
+      "file": "scene-save-writing.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "explicit persistence response writing",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "writing",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "ddb5aa37bf4dc22b43ba9d3887a34d119894a8deb6cb4f141065ec1c22a1cf23"
+    },
+    {
+      "file": "scene-save-failed.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "explicit persistence response failed",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "failed",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "fb8180329108fb24b5cac3b5df46362b133257d885f90ed96b58f25dc70f533d"
+    },
+    {
+      "file": "scene-save-recovery.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "explicit persistence response recovery",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "recovery",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "a7aadfed6bb36e52d976334743861e57ba3784614d3e663e67f17d85e6a7895e"
+    },
+    {
+      "file": "scene-save-retry.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "recovery → queued, no persisted success",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 765,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "e0b5d8b31a9a741d245cf26214c942e9c5b708a1fb44981d9f29d7b4cc9d022a"
+    },
+    {
+      "file": "scene-backup-selected.png",
+      "family": "scene",
+      "route": "settings/danger/import",
+      "source": "backup entry renders backup02 after previous backup03, state/UI aligned",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "411db16947928e08f9a5c641c9d411adf57dbf42ec5d15ef35801e30e56c034c"
+    },
+    {
+      "file": "scene-import-invalid.png",
+      "family": "scene",
+      "route": "settings/danger/import",
+      "source": "invalid file response retains current session",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "cb2900c24cbc53616d986387a1985a249956e79ef0bd880d987e1f0ea49680f9"
+    },
+    {
+      "file": "scene-import-preview.png",
+      "family": "scene",
+      "route": "settings/danger/import",
+      "source": "valid backup03 review",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 766,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": "import",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "5a2f57869b40748f06e7d16e61e602db86fffccc02af93104c461a34bb9ae8c4"
+    },
+    {
+      "file": "scene-import-loaded-unsaved.png",
+      "family": "scene",
+      "route": "settings/danger/import",
+      "source": "cancel → preview → confirm; memory loaded, persistence failed",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "failed",
+        "dangerPreview": null,
+        "dangerResult": "import",
+        "paused": false
+      },
+      "sha256": "e12699fed297e336e62ce2073480cd23337ce113d660a7f119feb037015d4401"
+    },
+    {
+      "file": "scene-save-directory-candidate.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "picker choice is draft, current unchanged",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 765,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "failed",
+        "dangerPreview": null,
+        "dangerResult": "import",
+        "paused": false
+      },
+      "sha256": "ba7f372ad04012aad3f5471fcaacea955e82645c8604cd10be10fba9c85b8ce9"
+    },
+    {
+      "file": "scene-save-directory-applied.png",
+      "family": "scene",
+      "route": "settings/save",
+      "source": "explicit apply candidate → dirty",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 765,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "dirty",
+        "dangerPreview": null,
+        "dangerResult": "import",
+        "paused": false
+      },
+      "sha256": "591012fb1a1e1b6dc7f141653b20d206d620ec1431ba9a5cd99daf375c8ab67f"
+    },
+    {
+      "file": "scene-reforge-unavailable.png",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "source": "default shipyard not owned → unavailable",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "24a098dea17034f00ffbc9d258b4ee8dd1dc73f9e7a11ebdea0274eb029329be"
+    },
+    {
+      "file": "scene-reforge-preview.png",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "source": "explicit owned shipyard response; full loss/retention matrix",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1016,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": "reforge",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "85aff05bee75c6f757f0ca91741ceded6b23e86ba0bf4d887d558a0efbc6208a"
+    },
+    {
+      "file": "scene-reforge-preview-confirm.png",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "source": "same preview lower confirmation",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1016,
+        "outerScroll": 316,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": "reforge",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "f58d29c6f0677d789cc46d6d54ffa9d10bf59f063286ef4bd82ae6694cf1008d"
+    },
+    {
+      "file": "scene-reforge-result.png",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "source": "cancel → preview → confirm response, no file writes",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "reforge",
+        "paused": false
+      },
+      "sha256": "7a02a6fa496cc0273cfe72d295fe7334a7dbe554ffd98d188aa6d891e620a3be"
+    },
+    {
+      "file": "scene-new-preview.png",
+      "family": "scene",
+      "route": "settings/danger/new",
+      "source": "new directory and clear settings review",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 772,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": "new",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "cb81e3acd3fa48299ef492b2d3f16267e4e2ab400718409c0477d83ca3438048"
+    },
+    {
+      "file": "scene-new-result.png",
+      "family": "scene",
+      "route": "settings/danger/new",
+      "source": "cancel → preview → confirm response, queued first save",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "d39a2a9ffe2f058b123a523cc5b9a0571fb518e59603d0861bd8faa0e72f8ef0"
+    },
+    {
+      "file": "scene-preferences-changed.png",
+      "family": "scene",
+      "route": "settings/preferences",
+      "source": "toggle music/effects/damage, interval0 accepted",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "093a2fd7f4f4363527a4b808fb988913fbb770e3eea2ab37a0e9416f36515ab5"
+    },
+    {
+      "file": "scene-manual-selected.png",
+      "family": "scene",
+      "route": "archive/tutorial",
+      "source": "preferences → manual → clear topic",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "8896d1182d98a1de789f31cd4665a5c5912f5016782a84aae73cc69284702671"
+    },
+    {
+      "file": "scene-manual-guide-continued.png",
+      "family": "scene",
+      "route": "archive/tutorial",
+      "source": "guide continue preserves independent user pause",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": true
+      },
+      "sha256": "024daeb0ee50d362a7109d0542a17bfbd30093b45be8a1ea4cbe2f71138ac43b"
+    },
+    {
+      "file": "scene-intel-selected.png",
+      "family": "scene",
+      "route": "archive/intel",
+      "source": "current elite visual_key texture",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "1a7f4df55d1b01799ecda2ab948c44117344636b67c58b9c46076f86f0f9ba1e"
+    },
+    {
+      "file": "scene-notifications-seen.png",
+      "family": "scene",
+      "route": "archive/notifications",
+      "source": "seen only, unread remains2",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "02a81d0d207835af8d32e39ae36d2a90c8b5e14b1e6ea5879083201fbaee4230"
+    },
+    {
+      "file": "scene-notifications-read.png",
+      "family": "scene",
+      "route": "archive/notifications",
+      "source": "read one → unread1",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "20bd3988cf67619007aa2611202c36d32bbfa71c1a01279e10479f424d272a8a"
+    },
+    {
+      "file": "scene-statistics.png",
+      "family": "scene",
+      "route": "archive/statistics",
+      "source": "same source split shield/armour values",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "fe877e93dd42a534a6165734662f5be903ff0ce5ae2ce6c43664e699a07338ea"
+    },
+    {
+      "file": "scene-installed-equipment.png",
+      "family": "scene",
+      "route": "equipment",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "0110a6da4768f4c233e642841e15282c376fc2a2c6c3a0f692ec30e392418b6d"
+    },
+    {
+      "file": "scene-installed-reactor.png",
+      "family": "scene",
+      "route": "reactor",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 608,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "6858e8e198c1efa147d7dd0e86298bf7f19238261706cfb98d5a13d01b534f0f"
+    },
+    {
+      "file": "scene-installed-research.png",
+      "family": "scene",
+      "route": "research",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "b8619edbd24a26199fb3ee99d3826d83ed601ce7eed092c8f8e8bfd6dedb859e"
+    },
+    {
+      "file": "scene-installed-hyperspace-routes.png",
+      "family": "scene",
+      "route": "hyperspace/routes",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "5b7968194ad4b1cb22c8e933c7354b074d9009891c0f6078602c4957767767a8"
+    },
+    {
+      "file": "scene-installed-hyperspace-warehouse.png",
+      "family": "scene",
+      "route": "hyperspace/warehouse",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "b231587474e9bf61a60ade106b155b36b2ceaf65efbfa5472c1a70c8ef312749"
+    },
+    {
+      "file": "scene-installed-hyperspace-filter.png",
+      "family": "scene",
+      "route": "hyperspace/filter",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "5450917dd90a084685bd16105f4ce34c4d549c66aad50568d13b7ad3ff1921ea"
+    },
+    {
+      "file": "scene-installed-hyperspace-formation.png",
+      "family": "scene",
+      "route": "hyperspace/formation",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "321138db8875f89411cea97d7d4bcf8cf5c61e892ea7870f67882af72eb7c67f"
+    },
+    {
+      "file": "scene-installed-hyperspace-hanging.png",
+      "family": "scene",
+      "route": "hyperspace/hanging",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 901,
+        "outerScroll": 201,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "d6c49cbfb4dcb388c7cb831c2444967e216f8518d1398db4464fc744c682e0ca"
+    },
+    {
+      "file": "scene-installed-hyperspace-protection.png",
+      "family": "scene",
+      "route": "hyperspace/protection",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 745,
+        "outerScroll": 2,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "cc34bf0db151d54a72e3024ba1715505dcf02e451b3c98a54d6531b7dee8e85d"
+    },
+    {
+      "file": "scene-installed-hyperspace-presets.png",
+      "family": "scene",
+      "route": "hyperspace/presets",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "465ab753e27fb3c1eeae67b267666c16c316c6c7a5a4d055d105e09e85a492c0"
+    },
+    {
+      "file": "scene-installed-hyperspace-materials.png",
+      "family": "scene",
+      "route": "hyperspace/materials",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "1e16af93e3e308d70d0b9d560a1ba3abc7188ee8bbb725a01547fb693ec2c2f3"
+    },
+    {
+      "file": "scene-installed-hyperspace-forge.png",
+      "family": "scene",
+      "route": "hyperspace/forge",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 807,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "0f4c7bc44a72eccd815c60d1e1b1ed1814c7c02aa844211e1d066ffc94bea9ff"
+    },
+    {
+      "file": "scene-installed-hyperspace-legends.png",
+      "family": "scene",
+      "route": "hyperspace/legends",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 1224,
+        "outerScroll": 524,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "4114c3e35779cbcca56bd52bedf552b3e14aa9da20108ccd02ceb890b784eca3"
+    },
+    {
+      "file": "scene-forge-preview.png",
+      "family": "scene",
+      "route": "hyperspace/forge",
+      "source": "same default quote → review; no forge business recheck",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 815,
+        "outerScroll": 115,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "e0a4bbfb83945e8c2e9cbf0cb9f9dcdbbc500e1e629801f599fa4fac867f93ff"
+    },
+    {
+      "file": "scene-system-index.png",
+      "family": "scene",
+      "route": "catalog",
+      "source": "all module navigation",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "e22aca09b5e14aae0f6f601ee66f774325dc50e0cbb1f5b881d664bce68f4722"
+    },
+    {
+      "file": "work-crew-current.png",
+      "family": "work",
+      "route": "crew",
+      "source": "default response: engineer building shipyard",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 683,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "84bf9d0114c1842419d1c50e23d0c7f630c7842f547a69f0722076350d241e58"
+    },
+    {
+      "file": "work-crew-draft.png",
+      "family": "work",
+      "route": "crew",
+      "source": "continuous release → select galaxy; actual idle until accept",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 576,
+          "scrollHeight": 683,
+          "scroll": 90
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "galaxy",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "afe376050b4f6d8cc12f0c7114b46c95dad1a644c2a9fa353a88f376a01125d0"
+    },
+    {
+      "file": "work-crew-target-galaxy.png",
+      "family": "work",
+      "route": "galaxy",
+      "source": "same accepted crew → target; worker count2",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 476,
+          "scrollHeight": 524,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "galaxy",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "65e228aa22dbf6fd37cdbe4ff275b11625101c6b569f023e575501c4497261e2"
+    },
+    {
+      "file": "work-crew-capacity.png",
+      "family": "work",
+      "route": "crew",
+      "source": "continuous select occupied research target, no release",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 576,
+          "scrollHeight": 683,
+          "scroll": 90
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "research",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "5aaa4847843b6d2cbd42526dd0158a71a69e784b3d6c94b3fa04fabe2be18deb"
+    },
+    {
+      "file": "work-planet-current.png",
+      "family": "work",
+      "route": "planet",
+      "source": "default response: exploration24/60, shipyard111/180",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 586,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "7a871656f59fecb75ea2db596f04825e16e96895437de758e73a9cd7ee7acf78"
+    },
+    {
+      "file": "work-planet-auto-stop.png",
+      "family": "work",
+      "route": "planet",
+      "source": "automatic off retains active exploration",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 586,
+          "scroll": 93
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "0dc1765bbbe49c2dc2e7df7df8cd646eb542dc9c95872d1d574e2c30a460ebf8"
+    },
+    {
+      "file": "work-planet-cancel-review.png",
+      "family": "work",
+      "route": "planet",
+      "source": "native modal: cancellation review",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 586,
+          "scroll": 93
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 1,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "b3b5c7104d96e6fd21473d243cdcceb783b3219c9f4b2942dabfafa2e22b342d"
+    },
+    {
+      "file": "work-planet-cancelled.png",
+      "family": "work",
+      "route": "planet",
+      "source": "confirmed cancellation, construction work retained",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 476,
+          "scrollHeight": 586,
+          "scroll": 94
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "b55147046da25da1efc798f7f695e2510eb1e9515834051d24e373e5b6aa854f"
+    },
+    {
+      "file": "work-planet-ready.png",
+      "family": "work",
+      "route": "planet",
+      "source": "explicit owner response fixture: ready180/180",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 586,
+          "scroll": 93
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "56345b540cfed5d753ee94ac0575cc5a4ae64bf12d472265196d54847ca1438c"
+    },
+    {
+      "file": "work-planet-claimed.png",
+      "family": "work",
+      "route": "planet",
+      "source": "click claim → owned, reforge entry",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 476,
+          "scrollHeight": 586,
+          "scroll": 94
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "981a79d1b219c74d5801c23e73d9a0b2ba45eb65d5e13999e2b08a826fa72221"
+    },
+    {
+      "file": "work-planet-reforge-entry.png",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "source": "same claimed shipyard → reforge target",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "3f93d9156b9656b67fbb1f7fd2887428d8c1733ceaa5d34445cff46878ee874b"
+    },
+    {
+      "file": "work-galaxy-current.png",
+      "family": "work",
+      "route": "galaxy",
+      "source": "default response selected node9",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 524,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "893fc57ec3252810e951538639a070bb07cba0292c09213105ed20ae83f7136f"
+    },
+    {
+      "file": "work-galaxy-contribution.png",
+      "family": "work",
+      "route": "galaxy",
+      "source": "same node, scroll its independent details",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 524,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "537e9bfc967f72069cccea331365c3ef40962796513f8565bdb21385de4f4f88"
+    },
+    {
+      "file": "work-galaxy-fog.png",
+      "family": "work",
+      "route": "galaxy",
+      "source": "explicit selection18 under overview: hidden identity",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 524,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "18",
+        "galaxyView": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.05
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "06998a6124269faae7d68e3ce7b87c4b0b048c0af604c534fcd15c816506f9f6"
+    },
+    {
+      "file": "work-galaxy-view-memory.png",
+      "family": "work",
+      "route": "galaxy",
+      "source": "continuous overview → selected → zoom → drag → leave/reopen",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 524,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -99.71088840736732,
+          "y": 132.85433369447452,
+          "zoom": 1.6
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "8a87235d8263c099094ffc5d1e6e3265ae1dc8696688055c18c74cf3ee71300b"
+    },
+    {
+      "file": "work-enhancement-current.png",
+      "family": "work",
+      "route": "enhancement",
+      "source": "default six effect responses",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1002,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "c868e2c1b44a46906db0a5d077674297f46f5e26915b3386021beb5e0d018aa9"
+    },
+    {
+      "file": "work-enhancement-branch.png",
+      "family": "work",
+      "route": "enhancement/branch/repeat/0",
+      "source": "continuous reorder → node review; modal stays in cabin",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1094,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 1,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "7070ae0c4678b92969a268c3f9cdc5fca5dde7bd2c253dba8c62ee2cd50efb39"
+    },
+    {
+      "file": "work-enhancement-choice.png",
+      "family": "work",
+      "route": "enhancement/branch/repeat/0",
+      "source": "selected B remains draft, focus retained after render",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1094,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 1,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "f42ac72e9fdee2d72326e33afc322157fa29d8afb80f6d7dc1c7fea40d2cc802"
+    },
+    {
+      "file": "work-enhancement-accepted.png",
+      "family": "work",
+      "route": "enhancement",
+      "source": "continuous accepted B with returned node focus",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1120,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "B",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "3e118c675034ef7f8a9e92b308ed71be63b29702d2ce5e53770452e84a2857c2"
+    },
+    {
+      "file": "work-enhancement-purchased.png",
+      "family": "work",
+      "route": "enhancement",
+      "source": "explicit funded response → buy one E31, no reused quote",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1169,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 28,
+          "effective": 31,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "B",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "769d528d04a32f6b18d0a75f85e17f4a4e3bdfe176e0684286dd9a9f6654123c"
+    },
+    {
+      "file": "work-enhancement-lower.png",
+      "family": "work",
+      "route": "enhancement",
+      "source": "all six effects remain reachable",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1169,
+          "scroll": 576
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 28,
+          "effective": 31,
+          "weapon": [
+            "repeat",
+            "proficiency",
+            "critical"
+          ],
+          "repeat": [
+            "B",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "bfc560b8d7116e24160529eb920985df72d7ab92d84c6c46a0d526d16e1395da"
+    },
+    {
+      "file": "work-save-saved.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "explicit persistence response saved",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 664,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "31842473e1f7f1022ddec6d5eb3dc3abc9432da01a003098844e83f42c730b7f"
+    },
+    {
+      "file": "work-save-dirty.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "explicit persistence response dirty",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 664,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "dirty",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "fea0373ee507f28faaf0bb966b0ff3d492d34ba42ffdce704b34eb2578105a84"
+    },
+    {
+      "file": "work-save-queued.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "explicit persistence response queued",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 664,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "d830347410af4b685a1bbc2e062d29bc7359bd138417cdf01014bf04d299f1d2"
+    },
+    {
+      "file": "work-save-writing.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "explicit persistence response writing",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 664,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "writing",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "91e6f12790657c906ce8d258847198d8ed37ee60da50b8bfb4643f22bc557a8f"
+    },
+    {
+      "file": "work-save-failed.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "explicit persistence response failed",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 664,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "failed",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "39d19df3928b1db15d89e4cde6da4049f22e4cfc87a7f195bf3f0f4b62717817"
+    },
+    {
+      "file": "work-save-recovery.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "explicit persistence response recovery",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 664,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "recovery",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "c2063ffadf475b66dc2a5ae6e33c890652f7968385df716db751c3c3cf65f774"
+    },
+    {
+      "file": "work-save-retry.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "recovery → queued, no persisted success",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 734,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "5ebfd43a123916c5cc9a5069a374d7da87c3c044cc7285161fdd5c343f3d383c"
+    },
+    {
+      "file": "work-backup-selected.png",
+      "family": "work",
+      "route": "settings/danger/import",
+      "source": "backup entry renders backup02 after previous backup03, state/UI aligned",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "d9f7c23b5cf290fdd5fcc053e0d612733391d592b2eb05f82c8330fdcf1bf8bf"
+    },
+    {
+      "file": "work-import-invalid.png",
+      "family": "work",
+      "route": "settings/danger/import",
+      "source": "invalid file response retains current session",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "9d0b1a626914ea8b0fac9724a71593da114867f480511a9fd06461984530d724"
+    },
+    {
+      "file": "work-import-preview.png",
+      "family": "work",
+      "route": "settings/danger/import",
+      "source": "valid backup03 review",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 748,
+          "scroll": 155
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": "import",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "3a4855e051c7b648c135095b8d043997d9f41fa3bf2e4d16df885878124a73ce"
+    },
+    {
+      "file": "work-import-loaded-unsaved.png",
+      "family": "work",
+      "route": "settings/danger/import",
+      "source": "cancel → preview → confirm; memory loaded, persistence failed",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 612,
+          "scroll": 19
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "failed",
+        "dangerPreview": null,
+        "dangerResult": "import",
+        "paused": false
+      },
+      "sha256": "3ea4c391a712a0613d1d18dc4178f76df79f8ab222cb935ddf2ebd8a4db7fe44"
+    },
+    {
+      "file": "work-save-directory-candidate.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "picker choice is draft, current unchanged",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 734,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "failed",
+        "dangerPreview": null,
+        "dangerResult": "import",
+        "paused": false
+      },
+      "sha256": "242b6d162840e916a85ade2ed69d704d2b3a3ffca02da7a838ad10ecfed68f0e"
+    },
+    {
+      "file": "work-save-directory-applied.png",
+      "family": "work",
+      "route": "settings/save",
+      "source": "explicit apply candidate → dirty",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 734,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "dirty",
+        "dangerPreview": null,
+        "dangerResult": "import",
+        "paused": false
+      },
+      "sha256": "38f7dfdb47a67b76d08c741dace83ccfa0b069b37313cf1f3b80e8dfe3ed7524"
+    },
+    {
+      "file": "work-reforge-unavailable.png",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "source": "default shipyard not owned → unavailable",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 623,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "403f969bb3c1c0521c6bf53527eb86fef735c3cae09a8bcd13fd76a4a11c55b7"
+    },
+    {
+      "file": "work-reforge-preview.png",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "source": "explicit owned shipyard response; full loss/retention matrix",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1021,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": "reforge",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "93948c008ebc9d3257758a106bd5920a7859d1c42bda1ebdacb08c9912720b20"
+    },
+    {
+      "file": "work-reforge-preview-confirm.png",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "source": "same preview lower confirmation",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1021,
+          "scroll": 428
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": "reforge",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "cc01f2fb8c4b853ed0e3f24ed52303b59f78c25b0cbe5a1d2066cc182aaa9601"
+    },
+    {
+      "file": "work-reforge-result.png",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "source": "cancel → preview → confirm response, no file writes",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 661,
+          "scroll": 68
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "reforge",
+        "paused": false
+      },
+      "sha256": "4b832e76bf1157bee19b02ec48b72b2d6bfde59a91ec796ede66e009de2e8a50"
+    },
+    {
+      "file": "work-new-preview.png",
+      "family": "work",
+      "route": "settings/danger/new",
+      "source": "new directory and clear settings review",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 754,
+          "scroll": 161
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": "new",
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "b0bdac18899a04a99f54ea22b7fbbe01e9345d4a7b1046a2de693b8719e14bc0"
+    },
+    {
+      "file": "work-new-result.png",
+      "family": "work",
+      "route": "settings/danger/new",
+      "source": "cancel → preview → confirm response, queued first save",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 649,
+          "scroll": 56
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "05dd478debf0e306e29c54e63038c4b1a36961e799e6d5e5507ae836c56418fa"
+    },
+    {
+      "file": "work-preferences-changed.png",
+      "family": "work",
+      "route": "settings/preferences",
+      "source": "toggle music/effects/damage, interval0 accepted",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "f01d4be3f6ad2b240ed67948a5b0cc10ade532cbf41b079f086c266ee418fdea"
+    },
+    {
+      "file": "work-manual-selected.png",
+      "family": "work",
+      "route": "archive/tutorial",
+      "source": "preferences → manual → clear topic",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "d0e569ed0b3c5a3cce3341b69b2e302d29eb9f91d47a93516c53b6435b9314a2"
+    },
+    {
+      "file": "work-manual-guide-continued.png",
+      "family": "work",
+      "route": "archive/tutorial",
+      "source": "guide continue preserves independent user pause",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": true
+      },
+      "sha256": "2bc4c0730d8f8f51c22721c8c9a917b7f62cd570678f75def9ddc7816a6cf661"
+    },
+    {
+      "file": "work-intel-selected.png",
+      "family": "work",
+      "route": "archive/intel",
+      "source": "current elite visual_key texture",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "a04c2daa02b8b6d001877d466e8be1fb7ca3d03755aec64d5d6103ecb70fb38e"
+    },
+    {
+      "file": "work-notifications-seen.png",
+      "family": "work",
+      "route": "archive/notifications",
+      "source": "seen only, unread remains2",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "2bf3d05acf9ec10d9d37b7380c6679b8b262116e1ce38346259308361ed73073"
+    },
+    {
+      "file": "work-notifications-read.png",
+      "family": "work",
+      "route": "archive/notifications",
+      "source": "read one → unread1",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "cce10964b711469b796dc77b0771a8c28d299a04c0c8d5bb77183907475b04ab"
+    },
+    {
+      "file": "work-statistics.png",
+      "family": "work",
+      "route": "archive/statistics",
+      "source": "same source split shield/armour values",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "queued",
+        "dangerPreview": null,
+        "dangerResult": "new",
+        "paused": false
+      },
+      "sha256": "f60003a61cb4e641ab81af5d899f50b5a703428b784726854f81570c88304ba0"
+    },
+    {
+      "file": "work-installed-equipment.png",
+      "family": "work",
+      "route": "equipment",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 557,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "3a1ef312dd05c45fea11fe8936cbc2c9370f3e93bbcbe675a86bfed2ce3e35e5"
+    },
+    {
+      "file": "work-installed-reactor.png",
+      "family": "work",
+      "route": "reactor",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 552,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "8e2a75347a8c6a292deb10053d9625b74b313038d871366feb7ecb5796d268cf"
+    },
+    {
+      "file": "work-installed-research.png",
+      "family": "work",
+      "route": "research",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 675,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "f0b6f2f6adc1bfa0d8db93562f6c6036f1dba86d4ce1592d57829aec8d00c1d8"
+    },
+    {
+      "file": "work-installed-hyperspace-routes.png",
+      "family": "work",
+      "route": "hyperspace/routes",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "eb2986e81e3ab8cab774a5bd3f5e47e54b18bd888ac3a6219e7227a39cf9d18a"
+    },
+    {
+      "file": "work-installed-hyperspace-warehouse.png",
+      "family": "work",
+      "route": "hyperspace/warehouse",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 631,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "cc54301531f49cb1e6e6072ff744ae07c3b36e877da6f623f814fc294a5cffb8"
+    },
+    {
+      "file": "work-installed-hyperspace-filter.png",
+      "family": "work",
+      "route": "hyperspace/filter",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "01283acd171fb2a254b92438fc566ace4789f16979cbd9a66e67524adde631a3"
+    },
+    {
+      "file": "work-installed-hyperspace-formation.png",
+      "family": "work",
+      "route": "hyperspace/formation",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 618,
+          "scroll": 9
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "e3ffb70c4e992ae90b6f94d757b3c6819565d202d44bc2a5982342507c5ff8ec"
+    },
+    {
+      "file": "work-installed-hyperspace-hanging.png",
+      "family": "work",
+      "route": "hyperspace/hanging",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 863,
+          "scroll": 270
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "dc63db00698fd46b643294c5cf845d04f1522e6db41ce5d1c08bfcc87b733d6f"
+    },
+    {
+      "file": "work-installed-hyperspace-protection.png",
+      "family": "work",
+      "route": "hyperspace/protection",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 727,
+          "scroll": 134
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "a3475930bac1ad6ce3f8be805d5d3a9f8a4ad0da526c7745bb4d221381c78e52"
+    },
+    {
+      "file": "work-installed-hyperspace-presets.png",
+      "family": "work",
+      "route": "hyperspace/presets",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "c775c33bc31b7a530175e2b66f125f30522a5acc1119ea2481ef41661655885c"
+    },
+    {
+      "file": "work-installed-hyperspace-materials.png",
+      "family": "work",
+      "route": "hyperspace/materials",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "fdb6c6b00d8a51f2dd239417167a69bf3774782cd74613c4a73913247496391c"
+    },
+    {
+      "file": "work-installed-hyperspace-forge.png",
+      "family": "work",
+      "route": "hyperspace/forge",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 757,
+          "scroll": 0
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "ee9236e8509a648276203e925009d2942c2d5efd966063aaf9e7031f1ed84202"
+    },
+    {
+      "file": "work-installed-hyperspace-legends.png",
+      "family": "work",
+      "route": "hyperspace/legends",
+      "source": "same version assembled route and reachable main object/action",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 1200,
+          "scroll": 607
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "b2ec3ac6a418826accaab072599a0c6f3ec3b4043daa339b4d04e19fba70cc2d"
+    },
+    {
+      "file": "work-forge-preview.png",
+      "family": "work",
+      "route": "hyperspace/forge",
+      "source": "same default quote → review; no forge business recheck",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 789,
+          "scroll": 196
+        }
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "57c2c42716bc02500fce2eddbbd57b595ed7803b6981217de7682583e8ece751"
+    },
+    {
+      "file": "work-system-index.png",
+      "family": "work",
+      "route": "catalog",
+      "source": "all module navigation",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "outerScroll": 0,
+        "inner": null
+      },
+      "battle": {
+        "transform": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        },
+        "budget": "full"
+      },
+      "dialog": 0,
+      "state": {
+        "crewId": "navigator",
+        "crewDraft": "planet-build",
+        "planetId": "1",
+        "galaxyNode": "9",
+        "galaxyView": {
+          "x": -168,
+          "y": 82,
+          "zoom": 1.75
+        },
+        "enhancement": {
+          "paid": 27,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "repeat": [
+            "A",
+            "B",
+            ""
+          ]
+        },
+        "save": "saved",
+        "dangerPreview": null,
+        "dangerResult": null,
+        "paused": false
+      },
+      "sha256": "197ebcd0396612d6de9ae8aec502a2f09a278155d5c33cfceb54555a627fd741"
+    }
+  ],
+  "source_files": {
+    "index.html": "2ea9fef175364e761b7e5ac4e9c53c263088baa939b7fe028fb5233c4161b104",
+    "style.css": "ad15633b36b9e7c288761f89c20d581d912b440e4024d379ae707012807c76a6",
+    "app.js": "e32c2839ba7edfd75e1c4494075b0580b693e24e0daf5d4d45bb260e70797c7e",
+    "battle-budget-models.js": "dde091cf2b82c9619bb6a08f36de29c319a0f5a0ae332473939f3ad1ccf8beaa",
+    "battle-source-data.js": "3e3a900d958c77e57e198163c570b5d49648c7b0160c05212a34b38d886dc30d",
+    "battle-workbench.js": "9563d6d536d962fade2c1d80563498055f69416cf7fc693f93dadeeac21a1af1",
+    "budget-response-fixtures.js": "360acacde8d070ec9de10cef512e6d2f5cb937d5ca69fbf3dab98b617a2239c7",
+    "colony-models.js": "d0272153707c3188e84586abc202c3c429ba28652929ef4a891e446d0a27f85b",
+    "enhancement-models.js": "115a1e006fb29bd13d46f1a39889cc783feb248df39a0a37bd5af24f6c0883bc",
+    "filter-workbench.js": "89da132a0df2afe62f09bdf868666f9b5c67467f5c06932fe54c9b2c9ea1532a",
+    "forge-response-models.js": "0df92253ef16b7b396aa22a3869935be29c1176377a46db9d59e9e2077f863e3",
+    "forge-workbench.js": "6a79eb55baf624b354099589576a2f500794499f5a76f247967e5f014ee801a4",
+    "hyperspace-task-workbench.js": "09d09221d2587afd2d8285cf4f5cb702c9a5e788172e2421bff0a20aaf55fb96",
+    "hyperspace-workshop.js": "95bb47c41783d6bd6dec129ba27e504dd6209ec78cc8fafb964b0440001c7b62",
+    "maintenance-models.js": "26caea0cd3b10591bbc211cc3566a3aef773244da14435bbb4d5eccbbbabde9b",
+    "scene-models.js": "3d491e525c8a624506dc2b3950fbafcd4f6aff3cda8099627bff6ece7e6154fa"
+  },
+  "limitations": [
+    "Explicit browser response fixtures; no GameSession or real file/audio transactions.",
+    "P3 parameters and source roles remain unapproved; G2/G4/G9 and A/B selection remain open.",
+    "Full module assembly is not complete cross-ship/batch UI, arbitrary domain combinations, natural unlock progression or full-system acceptance.",
+    "Battle geometry source files unchanged from P3; prior 184 static results are not runtime dynamic proof."
+  ]
+}
