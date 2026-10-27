@@ -294,7 +294,7 @@ static func _capacity(state: Dictionary, parameters: Dictionary, api, capacity_f
 	return capacity
 
 static func _evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary, free_bonus: float) -> Dictionary:
-	state = state.duplicate(true)
+	state = state.duplicate()
 	if state.get("_distribute", false):
 		var distributed = _distribute(state, parameters, enabled, api, capacity_factor)
 		if not distributed.ok: return distributed
@@ -353,7 +353,7 @@ static func _evaluate(state: Dictionary, parameters: Dictionary, enabled: Array,
 	return {"ok": true, "state": next, "capacity": capacity.value, "remaining": remaining, "factors": factors}
 
 static func _allocate(state: Dictionary, module: String, requested: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
-	state = state.duplicate(true)
+	state = state.duplicate()
 	if module not in enabled:
 		return {"ok": false, "reason": "ReactorModuleLocked"}
 	var value = api.apply("floor", [requested])
@@ -378,7 +378,7 @@ static func _allocate(state: Dictionary, module: String, requested: Dictionary, 
 	return {"ok": true, "state": next}
 
 static func _distribute(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
-	state = state.duplicate(true)
+	state = state.duplicate()
 	if enabled.is_empty():
 		return {"ok": false, "reason": "ReactorModuleLocked"}
 	var current = _capacity(state, parameters, api, capacity_factor)

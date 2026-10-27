@@ -62,3 +62,11 @@ python -c 'from pathlib import Path; import os,subprocess; Path(os.environ["SPAC
 [新增探针](../../foundation/tests/_reactor_candidate_purity_probe.gd)对原3264858b复现10项断言失败，保留[原始失败日志](amount-preview-evidence/purity-before.txt)，未重新制造基点结果。修复后验证prepare/discard、refresh发布拒绝、allocate/distribute发布拒绝均保持完整真状态（含缓存）及current；prepare未接纳仍旧容量，accept后容量与免费效果一起更新；成功仍各一次发布、原allocate钳制145及均分67/67/66保持。新增探针[通过日志](amount-preview-evidence/purity-after.txt)退出0。
 
 同一配置和匹配DLL下，原Amount探针（含新整组及实际Session/native发布路径）[再次通过](amount-preview-evidence/amount-after-purity.txt)，[入口check-only](amount-preview-evidence/purity-check-only.txt)退出0；未跑无关全套。新增[固定源码/配置/原始字节清单](amount-preview-evidence/purity-manifest.json)区分原基点与修订源码。根证书提示仍存在，未阻止离线探针。仍为独立候选待双审，main继续暂停，原生成物保留。
+
+## 复查尾项：入口浅拷贝
+
+`7aabc373`固定双审已解除候选范围唯一正确性阻断；main审批仍暂停。本次仅将`_evaluate/_allocate/_distribute`入口的`duplicate(true)`改为`duplicate()`，其余复制边界不动，供独立复查。
+
+写点核对：`_capacity`缓存命中只读，未命中以新字典替换顶层`state._capacity`；`_evaluate`只擦除自身顶层`_distribute`，重新创建`allocations/factors/next_cache`，旧`_factors[module]`只读或复用；`_allocate`先创建新allocations再写module；`_distribute`先替换allocations为空字典再逐项写入。既有Amount调用返回计算结果，不写输入Amount。三个入口均先脱离顶层，故没有发现需要深拷贝的嵌套写点；`_adopt`仍只在接受时发生。公开快照/恢复/预览返回的深拷贝继续保留。
+
+同一配置和匹配DLL复用原纯度探针、原Amount探针（含实际Session/native发布）及入口check-only，三项均退出0，未另增探针或扩跑全套。[原始字节、固定源码及依赖哈希](amount-preview-evidence/shallow-manifest.json)与历史深拷贝修订证据分开保存。本次不声称完整游戏验收。
