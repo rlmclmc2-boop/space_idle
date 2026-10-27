@@ -20,35 +20,49 @@ var _facility_cards:=VBoxContainer.new()
 var _facilities:Dictionary={}
 var _assignment
 var _claim:Callable
+var _crew_provider
 var _exploration:=ProgressBar.new()
 var _exploration_text:=Label.new()
+var _scene:=Control.new()
+var _readout:=PanelContainer.new()
+var _inspector:=PanelContainer.new()
+var _operations:=PanelContainer.new()
+var _facility_dock:=HFlowContainer.new()
+var _facility_buttons:Dictionary={}
+var _selected_facility:String=""
 
 func _init(planet, cancel: Callable, publish: Callable, command: Callable, visual_context: Callable = Callable(), crew=null, coordinate:Callable=Callable()) -> void:
 	_host = command
 	_planet = planet
 	_visual_context = visual_context
 	_claim=publish
-	preload("res://src/ui/module_widgets.gd").heading(self,"行星探测与轨道设施","探索、施工、待领取与已生效设施分别显示")
-	_exploration.max_value=1;_exploration.show_percentage=false;add_child(_exploration)
-	_exploration_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;add_child(_exploration_text)
-	var box: Control = self
-	_status = VBoxContainer.new()
-	box.add_child(_status)
-	world_planet_picker = OptionButton.new()
-	world_planet_picker.item_selected.connect(func(_index): _queue_buildings([str(_picker_value(world_planet_picker))]))
-	box.add_child(world_planet_picker)
-	var automatic := _row(box)
-	_command(automatic, "开启自动探索", func(): return planet.set_automatic(str(_picker_value(world_planet_picker)), true))
-	_command(automatic, "本次完成后停止", func(): return planet.set_automatic(str(_picker_value(world_planet_picker)), false))
-	_command(box, "立即取消探索", func(): return cancel.call(str(_picker_value(world_planet_picker))))
-	world_building_picker = OptionButton.new()
-	box.add_child(world_building_picker)
-	var facilities:=ScrollContainer.new();facilities.custom_minimum_size.y=420;facilities.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;box.add_child(facilities)
+	_crew_provider=crew
+	if crew!=null:crew.members_changed.connect(_crew_changed)
+	size_flags_vertical=Control.SIZE_EXPAND_FILL
+	_scene.custom_minimum_size.y=480;_scene.size_flags_vertical=Control.SIZE_EXPAND_FILL;add_child(_scene);_scene.resized.connect(_layout_scene)
+	_scene.add_child(_readout)
+	var status:=VBoxContainer.new();_readout.add_child(status)
+	world_planet_picker=OptionButton.new();status.add_child(world_planet_picker)
+	world_planet_picker.item_selected.connect(func(_index):_selected_facility="";_inspector.hide();_queue_buildings([str(_picker_value(world_planet_picker))]))
+	_exploration.max_value=1;_exploration.show_percentage=false;status.add_child(_exploration)
+	_exploration_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;status.add_child(_exploration_text)
+	var control:=Button.new();control.text="探索指挥";status.add_child(control);control.pressed.connect(func():_operations.visible=not _operations.visible;_inspector.hide())
+	_status=VBoxContainer.new();add_child(_status);_status.hide()
+	world_building_picker=OptionButton.new();add_child(world_building_picker);world_building_picker.hide()
+	_scene.add_child(_facility_dock)
+	_scene.add_child(_inspector);_inspector.hide()
+	var detail:=VBoxContainer.new();_inspector.add_child(detail)
+	var close:=Button.new();close.text="关闭设施详情";detail.add_child(close);close.pressed.connect(func():_inspector.hide())
+	var facilities:=ScrollContainer.new();facilities.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;facilities.size_flags_vertical=Control.SIZE_EXPAND_FILL;detail.add_child(facilities)
 	_facility_cards.size_flags_horizontal=Control.SIZE_EXPAND_FILL;facilities.add_child(_facility_cards)
+	_scene.add_child(_operations);_operations.hide()
+	var box:=VBoxContainer.new();_operations.add_child(box)
+	var done:=Button.new();done.text="返回轨道视图";box.add_child(done);done.pressed.connect(func():_operations.hide())
+	_command(box,"开启自动探索",func():return planet.set_automatic(str(_picker_value(world_planet_picker)),true))
+	_command(box,"本次完成后停止",func():return planet.set_automatic(str(_picker_value(world_planet_picker)),false))
+	_command(box,"立即取消探索",func():return cancel.call(str(_picker_value(world_planet_picker))))
 	if crew!=null and coordinate.is_valid():
-		_assignment=preload("res://src/ui/assignment_controls.gd").new(crew,coordinate,command);add_child(_assignment)
-	var construction := _row(box)
-	_command(construction, "领取建筑", func(): return planet.claim_build(str(_picker_value(world_planet_picker)), str(_picker_value(world_building_picker)), publish))
+		_assignment=preload("res://src/ui/assignment_controls.gd").new(crew,coordinate,command);box.add_child(_assignment)
 	_planet.availability_changed.connect(refresh)
 	_planet.status_changed.connect(_queue_status)
 	_planet.buildings_changed.connect(_queue_buildings)
@@ -119,11 +133,19 @@ func _ready() -> void:
 	process_priority = 1
 	if DisplayServer.get_name() != "headless":
 		_visual = preload("res://scripts/planet_visual.gd").new()
-		_visual.custom_minimum_size = Vector2(0, 260)
-		_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(_visual)
-		move_child(world_planet_picker,2)
-		move_child(_visual,3)
+		_scene.add_child(_visual);_scene.move_child(_visual,0);_visual.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_visual.mouse_filter=Control.MOUSE_FILTER_STOP
+		_visual.facility_selected.connect(_select_facility)
+	_layout_scene()
+func _layout_scene()->void:
+	_readout.position=Vector2(14,14);_readout.size=Vector2(minf(360,_scene.size.x-28),140)
+	_facility_dock.position=Vector2(14,maxf(160,_scene.size.y-112));_facility_dock.size=Vector2(_scene.size.x-28,100)
+	for panel in [_inspector,_operations]:
+		panel.position=Vector2(maxf(14,_scene.size.x-354),168);panel.size=Vector2(minf(340,_scene.size.x-28),maxf(240,_scene.size.y-288))
+func _select_facility(id:String)->void:
+	_selected_facility=id;_inspector.show();_operations.hide()
+	if _visual!=null:_visual.select_facility(id)
+	_refresh_facilities()
 
 func _process(dt: float) -> void:
 	_flush_pending()
@@ -133,11 +155,10 @@ func _process(dt: float) -> void:
 	var id: String = str(_picker_value(world_planet_picker))
 	if id != _visual_id or _visual_refresh >= 0.2:
 		_visual_refresh = 0.0
-		_refresh_facilities()
 		var snapshot: Dictionary = _planet.visual_snapshot(id)
 		if not snapshot.is_empty():
 			_exploration.value=float(snapshot.elapsed)/maxf(0.0001,float(snapshot.duration))
-			_exploration_text.text="探索度 %d · %s · %.1f / %.1f秒"%[snapshot.exploration,"正在探索" if snapshot.running else "等待派遣或任务停止",snapshot.elapsed,snapshot.duration]
+			_exploration_text.text="探索度 %d · %s · %.1f / %.1f秒"%[snapshot.exploration,"已暂停" if snapshot.running and context.get("paused",false) else "正在探索" if snapshot.running else "未派遣探索人员" if _crew_provider!=null and _crew_provider.assignment_count("planet_explore",id)==0 else "探索已停止",snapshot.elapsed,snapshot.duration]
 		_visual.visible = not snapshot.is_empty()
 		if not snapshot.is_empty():
 			var degree: int = int(snapshot.exploration)
@@ -174,23 +195,36 @@ func _refresh_facilities()->void:
 	var active:Dictionary={}
 	for row in _planet.building_options(planet):
 		var key:String=planet+":"+str(row.id);active[key]=true
+		if not _facility_buttons.has(key):
+			var choose:=Button.new();choose.custom_minimum_size=Vector2(96,106);choose.tooltip_text=str(row.name);_facility_dock.add_child(choose)
+			var image:=TextureRect.new();image.texture=preload("res://src/ui/module_widgets.gd").visible_texture(preload("res://scripts/planet_art.gd").facility(str(row.type)));image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;image.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;image.position=Vector2(12,6);image.size=Vector2(72,52);image.mouse_filter=Control.MOUSE_FILTER_IGNORE;choose.add_child(image)
+			var caption:=Label.new();caption.position=Vector2(4,60);caption.size=Vector2(88,42);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.add_theme_font_size_override("font_size",14);caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;caption.mouse_filter=Control.MOUSE_FILTER_IGNORE;choose.add_child(caption);choose.set_meta("caption",caption)
+			choose.pressed.connect(func():_select_facility(str(row.id)))
+			_facility_buttons[key]=choose
 		if not _facilities.has(key):
 			var card=preload("res://src/ui/module_widgets.gd").plate(_facility_cards)
 			var line:=HBoxContainer.new();card.add_child(line)
-			var icons:Dictionary={"space_station":"station","auto_explore":"scout","refinery":"refinery","equipment":"equipment","shipyard":"shipyard"}
-			preload("res://src/ui/module_widgets.gd").image(line,"res://assets/planets/orbital/%s-v1.png"%str(icons.get(row.type,"station")),Vector2(90,90))
+			var icon:=TextureRect.new();icon.texture=preload("res://src/ui/module_widgets.gd").visible_texture(preload("res://scripts/planet_art.gd").facility(str(row.type)))
+			icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.custom_minimum_size=Vector2(76,64);line.add_child(icon)
 			var info=preload("res://src/ui/module_widgets.gd").label(line,"",18);info.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 			var bar:=ProgressBar.new();bar.max_value=1;bar.show_percentage=false;card.add_child(bar)
 			var claim:Button=_command(card,"领取设施",func():return _planet.claim_build(planet,str(row.id),_claim))
 			var staff:Button=_command(card,"选择施工派遣",func():
-				if _assignment!=null:_assignment.select_target(key)
+				if _assignment!=null:_assignment.select_target(key);_operations.show();_inspector.hide()
 				return {"ok":true,"message":"在船员派遣区选择成员并提交施工任务"})
 			_facilities[key]={"card":card.get_parent(),"info":info,"bar":bar,"claim":claim,"staff":staff}
+		_facility_buttons[key].get_meta("caption").text=str(row.name).split(" · ")[0]+"\n"+str({"locked":"未达门槛","building":"施工中","ready":"待领取","built":"已生效"}.get(row.state,""))
 		var view:Dictionary=_facilities[key]
 		view.info.text=str(row.name)+"\n探索门槛 %d · 额外施工人员 %d\n%s\n%s"%[row.unlock,row.extra_crew,row.description,"领取后生效" if row.state!="built" else "已领取并生效"]
+		var workers:int=_crew_provider.assignment_count("planet_build",key) if _crew_provider!=null else 0
+		view.info.text+="\n施工人员 %d/%d%s"%[workers,row.extra_crew," · 缺人暂停" if row.state=="building" and workers<int(row.extra_crew) else " · 随探索完成推进" if row.state=="building" else ""]
 		view.bar.value=float(row.work)/maxf(1,float(row.required))
 		view.claim.disabled=row.state!="ready"
 		view.claim.text="领取设施" if row.state=="ready" else "已领取" if row.state=="built" else "施工未完成" if row.state=="building" else "尚未达到探索门槛"
 		view.staff.visible=row.state=="building" and row.extra_crew>0 and _assignment!=null
-	for key in _facilities:_facilities[key].card.visible=active.has(key)
+	for key in _facilities:
+		_facilities[key].card.visible=active.has(key) and key==planet+":"+_selected_facility
+		_facility_buttons[key].visible=active.has(key)
 	if _assignment!=null:_assignment.set_targets(_planet.assignment_options([planet]))
+
+func _crew_changed(_ids:Array)->void:_queue_buildings([str(_picker_value(world_planet_picker))])

@@ -2,6 +2,9 @@ extends RefCounted
 var _run_state
 
 signal choices_changed
+signal presentation_changed
+var _presentation_cache:Dictionary={}
+var _presentation_inputs:Dictionary={}
 
 var _enabled: Array = []
 var _available: bool = false
@@ -28,6 +31,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 		if not comparison.get("ok", false) or int(comparison.scalar) < 0:
 			return {"ok": false, "reason": "InvalidReactorAllocation"}
 	_state = state.duplicate(true)
+	_presentation_cache={}
 	_prepared_state = {}
 	return {"ok": true}
 
@@ -58,6 +62,7 @@ func refresh_availability(unlocked: Callable, notify: bool = true) -> bool:
 		_available = available
 		enabled.make_read_only()
 		_enabled = enabled
+		_presentation_cache={};presentation_changed.emit()
 		if notify: choices_changed.emit()
 		return true
 	return false
@@ -82,7 +87,9 @@ func prepare(inputs: Dictionary) -> Dictionary:
 	return output
 
 func _adopt(next: Dictionary) -> void:
+	var changed:bool=next!=_state
 	_state = next
+	if changed:_presentation_cache={};presentation_changed.emit()
 	_prepared_state = {}
 
 func accept() -> void:
@@ -289,6 +296,8 @@ static func _purchase(state: Dictionary, count: int, automatic: bool, parameters
 	return {"ok": true, "state": next, "costs": quoted.costs}
 
 func presentation_model(inputs:Dictionary)->Dictionary:
+	if not _presentation_cache.is_empty() and _presentation_inputs==inputs:return _presentation_cache
+	_presentation_inputs=inputs.duplicate(true)
 	var checked:Dictionary=_evaluate(_state.duplicate(true),_parameters,enabled_modules(),_api,inputs.capacity,inputs.free_charge)
 	if not checked.ok:return {}
 	var rows:Array=[]
@@ -298,17 +307,19 @@ func presentation_model(inputs:Dictionary)->Dictionary:
 		var assigned:Dictionary=checked.state.allocations[option.id]
 		var cached:Dictionary=checked.state._factors.get(option.id,{})
 		var ratio:float=0.0
-		if float(checked.capacity.m)>0.0:ratio=clampf(float(assigned.m)/float(checked.capacity.m)*pow(10.0,clampf(float(assigned.e)-float(checked.capacity.e),-300,0)),0,1)
+		if float(checked.capacity.m)>0.0:ratio=clampf(float(_api.apply("to_ratio",[assigned,checked.capacity]).get("scalar",0.0)),0,1)
 		var effective:Dictionary=_api.apply("add",[assigned,cached.get("free",_api.apply("zero",[]).value)]).value
 		var load:float=0.0
-		if float(checked.capacity.m)>0:load=clampf(float(effective.m)/float(checked.capacity.m)*pow(10.0,clampf(float(effective.e)-float(checked.capacity.e),-300,0)),0,1)
+		if float(checked.capacity.m)>0:load=clampf(float(_api.apply("to_ratio",[effective,checked.capacity]).get("scalar",0.0)),0,1)
 		total_load+=load
 		rows.append({"effective":_api.apply("to_display",[effective]).text,"load":load,"id":option.id,"name":option.name,"enabled":option.enabled,"allocation":_api.apply("to_display",[assigned]).text,"free":_api.apply("to_display",[cached.get("free",_api.apply("zero",[]).value)]).text,"factor":_api.apply("to_display",[checked.factors[option.id]]).text,"ratio":ratio})
 	var quote:Dictionary=_purchase(_state.duplicate(true),1,false,_parameters,_api)
 	var prices:PackedStringArray=[]
 	if quote.ok:
 		for resource in quote.costs:prices.append(("铁 " if str(resource)=="1" else "铀 ")+str(_api.apply("to_display",[quote.costs[resource]]).text))
-	return {"load":clampf(total_load,0,1),"level":int(_state.level),"capacity":_api.apply("to_display",[checked.capacity]).text,"remaining":_api.apply("to_display",[checked.remaining]).text,"price":" · ".join(prices),"modules":rows}
+	_presentation_cache={"load":clampf(total_load,0,1),"level":int(_state.level),"capacity":_api.apply("to_display",[checked.capacity]).text,"remaining":_api.apply("to_display",[checked.remaining]).text,"price":" · ".join(prices),"modules":rows}
+
+	return _presentation_cache
 
 func adjust_allocation(module:String,direction:int,inputs:Dictionary,publish:Callable)->Dictionary:
 	if module not in enabled_modules():return {"ok":false,"reason":"ReactorModuleLocked"}

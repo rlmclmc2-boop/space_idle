@@ -3,7 +3,10 @@ extends Control
 signal module_selected(id:String)
 const Visual=preload("res://scripts/reactor_visual.gd")
 var model:Dictionary={}
-var selected:String="weapons"
+var editor:Control
+var core_controls:Control
+var selected:String=""
+var _layout_selection:String=""
 var _core
 var _phase:float=0.0
 var _running:bool=false
@@ -22,16 +25,41 @@ func _ready()->void:
 	for id in TEXTURES:
 		_devices[id]=load(TEXTURES[id])
 func set_model(value:Dictionary,running:bool,time:float)->void:
+	var layout_changed:bool=value!=model or selected!=_layout_selection
+	_layout_selection=selected
 	if value!=model or running and time!=_phase:
-		model=value;_phase=time;_update_height();queue_redraw()
+		model=value;_phase=time;queue_redraw()
+	if layout_changed:_update_height()
 	_running=running
 	if _core!=null:
 		_core.set_ratio(float(model.get("load",0.0)))
 		_core.set_process(running and is_visible_in_tree() and float(model.get("load",0.0))>0.0)
+func _editor_height()->float:
+	return editor.get_combined_minimum_size().y+16 if editor!=null else 180.0
 func _update_height()->void:
-	custom_minimum_size.y=maxf(590,(360 if size.x<700 else 18)+model.get("modules",[]).size()*176+16)
+	var modules:Array=model.get("modules",[])
+	var selected_index:int=-1
+	for i in modules.size():
+		if modules[i].id==selected:selected_index=i
+	custom_minimum_size.y=maxf(590,(340 if size.x<700 else 18)+modules.size()*176+(_editor_height() if selected_index>=0 else 0)+16)
+	if core_controls!=null:
+		core_controls.position=Vector2(265,180) if size.x<700 else Vector2(22,420)
+		core_controls.size=Vector2(235,180) if size.x<700 else Vector2(230,180)
+	if editor!=null:
+		editor.visible=selected_index>=0
+		if selected_index>=0:
+			var bay:Rect2=_bay(selected_index)
+			editor.position=bay.position+Vector2(12,152)
+			editor.size=Vector2(bay.size.x-24,_editor_height()-12)
+	queue_redraw()
 func _bay(index:int)->Rect2:
-	return Rect2(12,360+index*176,size.x-24,164) if size.x<700 else Rect2(316,18+index*176,size.x-328,164)
+	var y:float=(340 if size.x<700 else 18)+index*176
+	var height:float=164.0
+	for i in model.get("modules",[]).size():
+		if model.modules[i].id==selected:
+			if i<index:y+=_editor_height()
+			if i==index:height+=_editor_height()
+	return Rect2(12,y,size.x-24,height) if size.x<700 else Rect2(316,y,size.x-328,height)
 func _draw()->void:
 	var font:Font=ThemeDB.fallback_font
 	if _panel_style!=null:draw_style_box(_panel_style,Rect2(Vector2.ZERO,size))
@@ -61,12 +89,12 @@ func _draw()->void:
 		if row.enabled and row.load>0 and _running:
 			var pulse:float=fposmod(_phase*65.0,150.0)
 			draw_circle(Vector2(trunk,bay.position.y+12+pulse),3,Color("a1ffff"))
-	var summary:Vector2=Vector2(265,110) if size.x<700 else Vector2(25,380)
+	var summary:Vector2=Vector2(265,100) if size.x<700 else Vector2(25,335)
 	draw_string(font,summary,"总能源  %s"%model.capacity,HORIZONTAL_ALIGNMENT_LEFT,245,21,Color("c6e8ef"))
 	draw_string(font,summary+Vector2(0,37),"可分配  %s"%model.remaining,HORIZONTAL_ALIGNMENT_LEFT,245,21,Color("7bdfdc"))
-	draw_multiline_string(font,summary+Vector2(0,88),"选择设备舱查看供能\n\n手动分配占用能源池\n免费供能不占用分配池",HORIZONTAL_ALIGNMENT_LEFT,244,17,-1,Color("9fb7c4"))
+
 func _gui_input(event:InputEvent)->void:
 	if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
 		for i in model.get("modules",[]).size():
 			if _bay(i).has_point(event.position):
-				selected=model.modules[i].id;module_selected.emit(selected);queue_redraw();accept_event();return
+				selected=model.modules[i].id;module_selected.emit(selected);_update_height();accept_event();return

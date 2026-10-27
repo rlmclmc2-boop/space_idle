@@ -14,6 +14,7 @@ var _pending_construction: Dictionary = {}
 var _member_buttons:Dictionary={}
 var _member_bars:Dictionary={}
 var _portraits:Dictionary={}
+var _assignment_badges:Dictionary={}
 var _selection_summary:=Label.new()
 var world_status: VBoxContainer
 var world_labels: Dictionary = {}
@@ -27,14 +28,14 @@ func _init(crew, planet, galaxy, coordinate: Callable, command: Callable) -> voi
 	_galaxy = galaxy
 	_host = command
 	var box: Control = self
-	preload("res://src/ui/module_widgets.gd").heading(box,"船员指挥所","成员状态、岗位占用与派遣；选择成员后操作下方岗位")
-	_caption(box, "随进度逐步开放星球与星系。")
+	preload("res://src/ui/module_widgets.gd").heading(box,"船员指挥所","")
 	var roster:=ScrollContainer.new();roster.custom_minimum_size.y=400;roster.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;box.add_child(roster)
 	world_status = VBoxContainer.new();world_status.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	roster.add_child(world_status)
 	_selection_summary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;box.add_child(_selection_summary)
 	world_crew_picker = OptionButton.new()
 	box.add_child(world_crew_picker)
+	world_crew_picker.item_selected.connect(func(_index):_refresh_status())
 	world_assignment_picker = OptionButton.new()
 	box.add_child(world_assignment_picker)
 	world_mode_picker = OptionButton.new()
@@ -120,7 +121,8 @@ func _refresh_status(ids: Array = []) -> void:
 		if not world_labels.has(row.id):
 			var card=preload("res://src/ui/module_widgets.gd").plate(world_status)
 			var line:=HBoxContainer.new();card.add_child(line)
-			_portraits[row.id]=preload("res://src/ui/module_widgets.gd").image(line,row.portrait if ResourceLoader.exists(row.portrait) else "res://assets/ui/crew.svg",Vector2(72,72))
+			_portraits[row.id]=preload("res://src/ui/module_widgets.gd").image(line,_portrait_path(row),Vector2(72,72))
+			_assignment_badges[row.id]=preload("res://src/ui/module_widgets.gd").image(line,_badge_path(row),Vector2(28,28))
 			var label:=Label.new();label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;line.add_child(label)
 			var select:=Button.new();select.text="选择成员";select.toggle_mode=true;line.add_child(select)
 			select.pressed.connect(func():
@@ -129,13 +131,17 @@ func _refresh_status(ids: Array = []) -> void:
 			var bar:=ProgressBar.new();bar.max_value=1;bar.show_percentage=false;card.add_child(bar);_member_bars[row.id]=bar
 			_member_buttons[row.id]=select
 			world_labels[row.id]=label
+		_portraits[row.id].texture=preload("res://src/ui/module_widgets.gd").visible_texture(load(_portrait_path(row)))
+		_assignment_badges[row.id].texture=preload("res://src/ui/module_widgets.gd").visible_texture(load(_badge_path(row)))
+		_assignment_badges[row.id].visible=_portrait_path(row)!=_badge_path(row)
 		var destination:String=""
 		for job in _planet.assignment_options():
 			if str(job.target)==str(row.target):destination=str(job.label)
 		for job in _galaxy.assignment_options():
 			if str(job.target)==str(row.target):destination=str(job.label)
-		world_labels[row.id].text=str(row.text)+("\n"+destination if not destination.is_empty() else "")+"\n"+str(row.effect)+"\n升级所需经验 "+str(row.required)+" · 当前模式 "+str(row.mode)
+		world_labels[row.id].text=str(row.text)+("\n"+destination if not destination.is_empty() else "")+"\n"+str(row.effect)+("\n升级所需经验 "+str(row.required) if row.levels_enabled else "")+(" · 自动购级 "+str(row.mode) if row.kind=="system_job" and row.target=="equipment_upgrade" else "")
 		_member_bars[row.id].value=row.progress
+		_member_bars[row.id].visible=row.levels_enabled
 		if str(_picker_value(world_crew_picker))==str(row.id):_selection_summary.text="当前选择："+str(row.text)+"\n"+str(row.effect)
 		_member_buttons[row.id].set_pressed_no_signal(str(_picker_value(world_crew_picker))==str(row.id))
 
@@ -180,3 +186,14 @@ func _flush_pending() -> void:
 	elif not construction.is_empty(): _refresh_construction_choices(construction)
 	if member_options: _refresh_members()
 	elif not members.is_empty(): _refresh_member_rows(members)
+
+func _badge_path(row:Dictionary)->String:
+	var badge:String="crew"
+	if row.kind=="system_job":badge=str({"equipment_upgrade":"equipment","hightech_scientists":"research","reactor_upgrade":"reactor","jewel_auto":"enhancement"}.get(row.target,"crew"))
+	elif str(row.kind).begins_with("planet_"):badge="planet"
+	elif row.kind=="galaxy":badge="galaxy"
+	elif row.kind=="hyperspace":badge="hyperspace"
+	return "res://assets/ui/shell/"+badge+".svg"
+func _portrait_path(row:Dictionary)->String:
+	var configured:String=str(row.portrait)
+	return configured if not configured.is_empty() and configured!="res://assets/ui/crew.svg" and ResourceLoader.exists(configured) else _badge_path(row)

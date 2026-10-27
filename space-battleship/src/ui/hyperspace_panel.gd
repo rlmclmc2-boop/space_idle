@@ -1,4 +1,6 @@
 extends VBoxContainer
+const Appearance=preload("res://scripts/hyperspace_appearance.gd")
+const Widgets=preload("res://src/ui/module_widgets.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 
 var _session
@@ -32,9 +34,19 @@ var _forge_target: OptionButton
 var _forge_guaranteed: CheckBox
 var _forge_preview: Dictionary = {}
 var _forge_sequence: int = 0
+var _route_cards:Dictionary={}
+var _route_grid:=GridContainer.new()
+var _route_editor:=VBoxContainer.new()
+var _route_progress:=ProgressBar.new()
+var _materials:=Label.new()
+var _drone_icon:=TextureRect.new()
+var _forge_subject:=Label.new()
+var _preset_summary:=Label.new()
+var _loadout_preview:=Label.new()
 
 func _init(session, command: Callable) -> void:
 	_session = session
+	size_flags_vertical=Control.SIZE_EXPAND_FILL
 	_command = command
 
 const NAMES := {"laser": "脉冲激光", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光",
@@ -71,6 +83,9 @@ func _section(title: String) -> void:
 	_page.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_page)
 
+func _help(title:String,text:String)->void:
+	var button:=Button.new();button.text=title;_page.add_child(button)
+	var label:Label=_note(text);label.hide();button.pressed.connect(func():label.visible=not label.visible)
 func _note(text: String) -> Label:
 	var label := Label.new()
 	label.text = text
@@ -79,18 +94,35 @@ func _note(text: String) -> Label:
 	return label
 
 func _ready() -> void:
+	Widgets.heading(self,"超空间指挥台")
 	_catalog = _session.hyperspace_system.player_catalog()
 	_status = Label.new()
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_status)
 	_section_tabs = TabContainer.new()
+	_section_tabs.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	add_child(_section_tabs)
 	_section("路线")
-	_note("手动挑战刷新最高层与最佳时间；通关后可单次挂机，也可指派船员持续探索。")
+	_help("挑战与挂机说明","手动挑战刷新最高层与最佳时间；通关后可单次挂机，指派船员可持续探索。")
 	_route = OptionButton.new()
 	for route in _session.hyperspace_system.routes():
 		_option(_route, "%s · %s · 已通过 %d 层" % [_name(route.route), _name(route.weapon), route.cleared], route.route)
-	_page.add_child(_route)
+	add_child(_route);_route.hide()
+	_route_grid.columns=2;_page.add_child(_route_grid)
+	for route in _session.hyperspace_system.routes():
+		var card:VBoxContainer=Widgets.plate(_route_grid)
+		card.get_parent().size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		var icon:=TextureRect.new();icon.texture=Appearance.icon(str(route.weapon));icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.custom_minimum_size=Vector2(0,88);card.add_child(icon)
+		var info:Label=Widgets.label(card,"",18)
+		var choose:=Button.new();choose.text="查看路线";choose.toggle_mode=true;card.add_child(choose)
+		choose.pressed.connect(func():
+			for index in _route.item_count:
+				if _route.get_item_metadata(index)==route.route:_route.select(index)
+			_refresh_routes())
+		_route_cards[route.route]={"body":card,"info":info,"button":choose}
+	_page.add_child(_route_editor)
+	_page=_route_editor
+	_route_progress.max_value=1;_route_progress.show_percentage=false;_route_editor.add_child(_route_progress)
 	_button("开始手动挑战", func(): return _session.start_hyperspace_manual(_route_id()))
 	_button("退出手动挑战", _session.exit_hyperspace_manual)
 	_button("单次挂机", func(): return _session.start_hyperspace_single(_route_id()))
@@ -101,20 +133,25 @@ func _ready() -> void:
 	_button("领取手动奖励", func(): return _claim("manual"))
 	_button("领取挂机奖励", func(): return _claim("idle"))
 	_section("仓库")
-	_note("点击查看无人机。按住 Ctrl 多选组成编队；装备按钮应用整组选择，未选的原编队将卸下。")
+	_help("编队选择说明","Ctrl多选；应用时未选的原编队将卸下。单架详情、改造与拆解需要只选择一架。")
 	_warehouse_summary = _note("")
 	_warehouse_area = OptionButton.new()
 	for entry in [["主仓", "main"], ["溢出仓", "overflow"], ["封存无人机", "sealed"]]: _option(_warehouse_area, entry[0], entry[1])
 	_warehouse_area.item_selected.connect(func(_index): _refresh())
 	_page.add_child(_warehouse_area)
 	_warehouse = ItemList.new()
-	_warehouse.custom_minimum_size = Vector2(0, 170)
+	_warehouse.custom_minimum_size = Vector2(0, 250)
+	_warehouse.fixed_icon_size=Vector2i(64,64)
+	_warehouse.icon_mode=ItemList.ICON_MODE_LEFT
 	_warehouse.select_mode = ItemList.SELECT_MULTI
 	_warehouse.item_selected.connect(func(_index): _refresh_detail())
 	_warehouse.multi_selected.connect(func(_index, _selected): _refresh_detail())
 	_page.add_child(_warehouse)
-	_detail = _note("选择一架无人机查看词缀与挂设。")
-	_button("装备所选编队", func(): return _session.equip_hyperspace_drones(_selected_ids()))
+	var inspection:VBoxContainer=Widgets.plate(_page)
+	_drone_icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;_drone_icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;_drone_icon.custom_minimum_size=Vector2(0,110);inspection.add_child(_drone_icon)
+	_detail=Widgets.label(inspection,"选择一架无人机查看词缀与挂设。",17)
+	_loadout_preview.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_page.add_child(_loadout_preview)
+	_button("应用所选编队", func(): return _session.equip_hyperspace_drones(_selected_ids()))
 	_button("收藏所选无人机", func(): return _favorite(true))
 	_button("取消所选收藏", func(): return _favorite(false))
 	_button("拆解所选无人机", func():
@@ -137,8 +174,11 @@ func _ready() -> void:
 	_page.add_child(_preset_name)
 	_button("保存当前编队预设", func(): return _session.save_hyperspace_preset(_preset_name.text))
 	_button("应用同名预设", func(): return _session.apply_hyperspace_preset(_preset_name.text))
+	_preset_summary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_page.add_child(_preset_summary)
 	_section("改造")
-	_note("先在仓库选择一架无人机。预览不会扣费；确认后按显示费用执行。锁定词缀受到保护。")
+	_forge_subject.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_page.add_child(_forge_subject)
+	_materials.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_page.add_child(_materials)
+	_help("改造规则","预览不扣费；确认执行所显示的操作与费用。锁定词缀受保护。")
 	_operation = OptionButton.new()
 	for operation in OPERATIONS: _option(_operation, OPERATIONS[operation], operation)
 	_operation.item_selected.connect(func(_index):
@@ -152,7 +192,7 @@ func _ready() -> void:
 	_forge_guaranteed.text = "数值重抽时保底最大值"
 	_forge_guaranteed.toggled.connect(func(_pressed): _invalidate_forge_preview())
 	_page.add_child(_forge_guaranteed)
-	_forecast = _note("预览可查看确切费用与抽取次数。")
+	_forecast = _note("未预览当前改造")
 	_button("预览所选改造", func(): return _forge(true))
 	_button("确认所选改造", func(): return _forge(false))
 	_legend_option = OptionButton.new()
@@ -173,7 +213,7 @@ func _ready() -> void:
 	_page.add_child(exchange_amount)
 	_button("兑换材料 2:1", func(): return _session.exchange_hyperspace_materials(str(_value(exchange_source)), str(_value(exchange_target)), exchange_amount.text))
 	_section("过滤")
-	_note("过滤仅影响新奖励，最多五个条件。已装备、收藏、封存和预设引用的无人机受到保护。")
+	_help("过滤规则","只影响新奖励，最多五个条件；已装备、收藏、封存与预设引用受到保护。")
 	_filter_enabled = CheckBox.new()
 	_filter_enabled.text = "启用新奖励过滤"
 	_page.add_child(_filter_enabled)
@@ -207,6 +247,7 @@ func _ready() -> void:
 	_button("导出过滤规则", func():
 		filter_text.text = _session.hyperspace_system.export_filter()
 		return {"ok": true})
+	resized.connect(func():_route_grid.columns=2 if size.x>=700 else 1)
 	_sync_filter_controls()
 	_refresh_filter_values()
 	_refresh_targets()
@@ -351,8 +392,8 @@ func _forge(preview: bool) -> Dictionary:
 			_forge_sequence += 1
 			_forge_preview = {"request": request.duplicate(true), "fingerprint": JSON.stringify(request, "", true),
 				"source": _forge_source(request), "forecast": JSON.stringify(forecast, "", true),
-				"operation_id": "forge-ui:%s:%s" % [get_instance_id(), _forge_sequence], "completed": false}
-			_forecast.text = "%s · 费用 %s · 抽数 %d。确认仅执行本次预览。" % [OPERATIONS.get(request.operation, "改造"), _cost_text(forecast.costs), int(forecast.draws)]
+				"operation_id": "forge-ui:%s:%s" % [get_instance_id(), _forge_sequence], "completed": false,"before_text":_selected_description()}
+			_forecast.text = "原形态：\n%s\n候选操作：%s · 费用 %s · 抽数 %d\n锁定词缀受保护；随机结果尚未获得。确认仅执行本次预览。" % [_selected_description(),OPERATIONS.get(request.operation, "改造"), _cost_text(forecast.costs), int(forecast.draws)]
 		else: _forecast.text = "当前条件不满足，请检查无人机形态、收藏与材料。"
 		return forecast
 	_sync_forge_preview()
@@ -372,7 +413,7 @@ func _forge(preview: bool) -> Dictionary:
 		_forge_preview.completed = true
 		_forge_preview.result = result.duplicate(true)
 		_forge_preview.source = _forge_source(request)
-		_forecast.text = "改造已完成；再次确认不会重复扣费。继续改造请重新预览。"
+		_forecast.text = "改造前：\n"+str(_forge_preview.before_text)+"\n改造后：\n"+_selected_description()+"\n已完成本次改造；再次确认不会重复扣费。继续改造请重新预览。"
 	return result
 
 func _set_legend(collected: bool) -> Dictionary:
@@ -392,21 +433,30 @@ func _refresh() -> void:
 	_status.text = "手动 %s · 挂机 %s (%.1f/%.1f 秒) · 能源 %.0f" % [
 		_status_name(str(manual.get("status", ""))), _status_name(str(online.idle.get("status", ""))),
 		float(online.idle.get("work", 0.0)), float(online.idle.get("duration", 0.0)), float(online.energy)]
+	_refresh_routes()
+	_route_progress.value=clampf(float(online.idle.get("work",0.0))/maxf(0.001,float(online.idle.get("duration",1.0))),0,1)
 	var selected: Array = _selected_ids()
 	_warehouse.clear()
 	_ids.clear()
 	var state: Dictionary = _session.hyperspace_system.warehouse()
 	var area: String = str(_value(_warehouse_area, "main"))
-	_warehouse_summary.text = "主仓 %d 架 · 溢出 %d 架 · 封存 %d 架。溢出项整理入主仓后可装备。" % [state.main.size(), state.overflow.size(), state.sealed.size()]
+	_warehouse_summary.text = "主仓 %d 架 · 溢出 %d 架 · 封存 %d 架。" % [state.main.size(), state.overflow.size(), state.sealed.size()]
 	for drone in state.main + state.overflow:
 		var id: String = str(drone.id)
 		if area == "main" and drone not in state.main: continue
 		if area == "overflow" and drone not in state.overflow: continue
 		if area == "sealed" and not state.sealed.has(id): continue
 		_ids.append(id)
-		_warehouse.add_item("%s · %s · Lv%d%s%s" % [_name(drone.weapon), _name("ultimate" if drone.ultimate else "legendary" if drone.legendary else drone.origin_quality), int(drone.level), " · 已装备" if id in state.equipped else "", " ★" if id in state.favorites else ""])
+		_warehouse.add_item("%s · %s · Lv%d%s%s" % [_name(drone.weapon), _name("ultimate" if drone.ultimate else "legendary" if drone.legendary else drone.origin_quality), int(drone.level), " · 已装备" if id in state.equipped else "", " · 已收藏" if id in state.favorites else ""],Appearance.thumbnail(Appearance.project(drone)))
 		if state.sealed.has(id): _warehouse.set_item_text(_ids.size() - 1, _warehouse.get_item_text(_ids.size() - 1) + " · 封存至关卡 " + str(state.sealed[id]))
 		if id in selected: _warehouse.select(_ids.size() - 1, false)
+	var preset_names:PackedStringArray=[]
+	for preset in state.presets:preset_names.append(str(preset.name))
+	_preset_summary.text="已存编队："+("、".join(preset_names) if not preset_names.is_empty() else "暂无")
+	var balances:PackedStringArray=[]
+	var wallet:Dictionary=_session.economy.budget()
+	for id in _session.hyperspace_system.material_ids():balances.append(_name(id)+" "+str(_session.amount_api.apply("to_display",[wallet.get(id,_session.amount_api.apply("zero",[]).value)]).text))
+	_materials.text="当前材料："+" · ".join(balances)
 	var selected_modules: Array = []
 	for index in _modules.get_selected_items(): selected_modules.append(_module_ids[index])
 	_modules.clear()
@@ -433,28 +483,54 @@ func _refresh() -> void:
 	for option in _session.crew_system.member_options():
 		_option(_crew_picker, option.name, option.id)
 		if str(option.id) == crew_selected: _crew_picker.select(_crew_picker.item_count - 1)
-	_filter_summary.text = "当前规则：" + ("已启用" if _session.hyperspace_system.filter_configuration().enabled else "未启用")
+	var filter:Dictionary=_session.hyperspace_system.filter_configuration()
+	_filter_summary.text = "当前规则："+("已启用" if filter.enabled else "未启用")+" · "+("全部条件" if filter.mode=="all" else "任一条件")+" · "+("保留匹配" if filter.action=="keep_matches" else "拆解匹配")
 	for condition in _session.hyperspace_system.filter_configuration().conditions:
 		_filter_summary.text += "\n• " + str(FIELDS.get(condition.field, "条件")) + "：" + (str(condition.value) if condition.field == "minimum_level" else _name(condition.key) + " ≤ " + str(condition.tier) + " 阶" if condition.field == "affix" else _name(condition.value))
 
-func _refresh_detail() -> void:
+func _selected_description()->String:
+	var selected:Array=_selected_ids()
+	if selected.size()!=1:return "已选择 %d 架；单架详情、拆解与改造需要只选择一架。"%selected.size()
+	var state:Dictionary=_session.hyperspace_system.warehouse()
+	for drone in state.main+state.overflow:
+		if str(drone.id)!=str(selected[0]):continue
+		var flags:PackedStringArray=[]
+		if str(drone.id) in state.equipped:flags.append("已装备，受保护")
+		if str(drone.id) in state.favorites:flags.append("已收藏，受保护")
+		if drone in state.overflow:flags.append("溢出仓，整理后可装备")
+		if state.sealed.has(str(drone.id)):flags.append("封存至关卡 "+str(state.sealed[str(drone.id)]))
+		for preset in state.presets:
+			if str(drone.id) in preset.drone_ids:flags.append("预设「"+str(preset.name)+"」引用，受保护")
+		var text:String="%s · %s · Lv%d · 挂槽 %d\n%s"%[_name(drone.weapon),_name("ultimate" if drone.ultimate else "legendary" if drone.legendary else drone.origin_quality),drone.level,drone.hanging_slots," · ".join(flags)]
+		for affix in drone.affixes:text+="\n%s · %s阶 · %s%s"%[_name(affix.key),affix.tier,str(affix.value)," · 已锁定" if affix.locked else ""]
+		if drone.legendary:text+="\n传说："+_name(drone.legendary_effect.effect_id)
+		text+="\n已装挂设："+("、".join(drone.hangings.map(func(id):return _name(id))) if not drone.hangings.is_empty() else "无")
+		return text
+	return "对象已不存在，请重新选择。"
+func _refresh_detail()->void:
 	_sync_forge_preview()
-	if _detail == null: return
-	var selected: Array = _selected_ids()
-	if selected.size() != 1:
-		_detail.text = "已选择 %d 架；选择一架可查看明细。" % selected.size()
-		return
-	var state: Dictionary = _session.hyperspace_system.warehouse()
-	for drone in state.main + state.overflow:
-		if str(drone.id) != str(selected[0]): continue
-		_detail.text = "%s · 等级 %d · 挂槽 %d" % [_name(drone.weapon), drone.level, drone.hanging_slots]
-		for affix in drone.affixes:
-			_detail.text += "\n%s · %s 阶 · %s%s" % [_name(affix.key), affix.tier, str(affix.value), " · 已锁定" if affix.locked else ""]
-		if drone.legendary: _detail.text += "\n传说：" + _name(drone.legendary_effect.effect_id)
-		if not drone.hangings.is_empty():
-			_detail.text += "\n挂设：" + "、".join(drone.hangings.map(func(id): return _name(id)))
-		if state.sealed.has(str(drone.id)): _detail.text += "\n封存门槛：通关关卡 %s 后可领取。" % state.sealed[str(drone.id)]
-		_detail.text += "\n溢出仓库：%d 架；封存：%d 架。" % [state.overflow.size(), state.sealed.size()]
+	if _detail==null:return
+	_detail.text=_selected_description()
+	var state:Dictionary=_session.hyperspace_system.warehouse()
+	var selected:Array=_selected_ids()
+	var removed:PackedStringArray=[]
+	for id in state.equipped:
+		if id not in selected:removed.append(str(id))
+	_loadout_preview.text="本次编队 %d 架 · 卸下 %d 架%s"%[selected.size(),removed.size(),"\n卸下："+"、".join(removed) if not removed.is_empty() else ""]
+	_forge_subject.text="改造对象：\n"+_selected_description()
+	_drone_icon.texture=null
+	if selected.size()==1:
+		for drone in state.main+state.overflow:
+			if str(drone.id)==str(selected[0]):_drone_icon.texture=Appearance.thumbnail(Appearance.project(drone))
+func _refresh_routes()->void:
+	for route in _session.hyperspace_system.routes():
+		if not _route_cards.has(route.route):continue
+		var card:Dictionary=_route_cards[route.route]
+		var selected:bool=str(route.route)==_route_id()
+		card.info.text="%s · %s\n已通过 %d 层 · 下次挑战 %d 层\n最佳 %s"%[_name(route.route),_name(route.weapon),route.cleared,int(route.cleared)+1,"%.2f秒"%route.best if float(route.best)>0 else "暂无纪录"]
+		card.button.set_pressed_no_signal(selected)
+		card.button.text="当前路线" if selected else "查看路线"
+		if selected and _route_editor.get_parent()!=card.body:_route_editor.reparent(card.body)
 
 func _cost_text(costs: Dictionary) -> String:
 	var parts := PackedStringArray()

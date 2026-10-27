@@ -1428,3 +1428,6 @@ func equipment_presentation_inputs()->Dictionary:
 	inputs.ai=_research_factors.duplicate(true)
 	inputs.reactor=_reactor_factors.duplicate(true)
 	return inputs
+
+func research_presentation_inputs()->Dictionary:
+	return {"speed":_research_speed,"wallet":economy.budget()}

@@ -61,6 +61,7 @@ var _settings_error: String = ""
 var _next_autosave_wall: float = 0.0
 var _save_status_elapsed: float = 1.0
 var _seen_save_failure_generation: String = ""
+var _feedback_timer:Timer
 
 func _ready() -> void:
 	get_window().size_changed.connect(_sync_window_scale)
@@ -427,6 +428,7 @@ func _setup_shell_overlay() -> void:
 	_overlay.draw.connect(_draw_shell.bind(_overlay))
 	_pause_button = Button.new()
 	_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
+	_pause_button.tooltip_text="空格：暂停或继续；完整操作说明见舰桥档案"
 	_pause_button.position = Vector2(420, 18)
 	_pause_button.pressed.connect(func():
 		if session.run_state.is_running():
@@ -503,11 +505,11 @@ func _sync_guidance() -> void:
 		"pickup": "首次拾取已完成", "retreat": "首次撤退已发生",
 		"clear": "通关奖励已入账"}
 	_guidance_label.text = str(captions.get(str(pending.id), _player_text.notification_text("unlock", str(pending.id))))
+	if kind=="tutorial":_guidance_label.text+="\n空格暂停/继续 · G切换驻守 · 点击资源光点领取；之后可在飞行手册查看。"
 	_guidance_panel.visible = true
 
-func _draw_shell(canvas: Node2D) -> void:
-	var font: Font = ThemeDB.fallback_font
-	canvas.draw_string(font, Vector2(18, 942), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
+func _draw_shell(_canvas:Node2D)->void:
+	pass
 
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
@@ -521,7 +523,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 			growth_status.text = "请先确认或取消重铸"
 			return
 		var result: Dictionary = action.call()
-		growth_status.show()
+		growth_status.show();_feedback_timer.start()
 		if result.get("settings_failed", false):
 			growth_status.text = "个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown")))
 			return
@@ -563,7 +565,9 @@ func _setup_growth_panel() -> void:
 	growth_status = Label.new()
 	if not _settings_error.is_empty(): growth_status.text = _settings_error
 	PlayerText.wrap(growth_status)
-	box.add_child(growth_status)
+	layer.add_child(growth_status)
+	growth_status.add_theme_stylebox_override("normal",load("res://src/ui/bridge_theme.gd").create().get_stylebox("panel","PanelContainer"))
+	_feedback_timer=Timer.new();_feedback_timer.one_shot=true;_feedback_timer.wait_time=6;add_child(_feedback_timer);_feedback_timer.timeout.connect(func():growth_status.hide())
 	growth_status.visible=not growth_status.text.is_empty()
 	save_state_label = Label.new()
 	PlayerText.wrap(save_state_label)
@@ -576,14 +580,15 @@ func _setup_growth_panel() -> void:
 	_module_tabs.clear();_module_locations.clear()
 	for page in [["ship", "舰船"], ["growth", "成长"], ["universe", "星图"], ["hyperspace", "超空间"], ["archive", "档案"], ["settings", "设置"]]:
 		_create_bridge_page(str(page[0]), str(page[1]))
-	box = _module_page(_pages.ship.box,"配装与航行")
-	box.add_child(load("res://src/ui/campaign_panel.gd").new(session, _command_button))
+	box = _module_page(_pages.ship.box,"装备整备")
 	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_presentation_inputs, session.economy.affordable,
 		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
 	box = _module_page(_pages.ship.box,"舰体机库")
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button, session.battle.hull_presentation))
 	box = _module_page(_pages.ship.box,"当前战斗属性")
 	box.add_child(load("res://src/ui/attributes_panel.gd").new(session))
+	box = _module_page(_pages.ship.box,"航行与驻守")
+	box.add_child(load("res://src/ui/campaign_panel.gd").new(session, _command_button))
 	box = _module_page(_pages.growth.box,"反应炉","reactor")
 	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor, _command_button, _world_visual_context)
 	box.add_child(reactor_panel)
@@ -595,6 +600,7 @@ func _setup_growth_panel() -> void:
 	box = _module_page(_pages.growth.box,"强化回路","enhancement")
 	_add_feature_panel(box, "enhancement", EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
 		session.economy.affordable, session.publish_enhancement, _command_button))
+	session.economy.display_changed.connect(_feature_panels.enhancement.refresh_budget)
 	box = _module_page(_pages.universe.box,"船员","crew")
 	_add_feature_panel(box, "crew", CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
 	box = _module_page(_pages.universe.box,"星系","galaxy")
@@ -761,6 +767,8 @@ func _layout_bridge()->void:
 	var wide:bool=view.x>=1200
 	growth_panel.position=Vector2(588,28) if wide else Vector2(12,130)
 	growth_panel.size=Vector2(view.x-600,view.y-48) if wide else Vector2(view.x-24,view.y-200)
+	if growth_status!=null:
+		growth_status.position=growth_panel.position+Vector2(16,growth_panel.size.y-80);growth_status.size=Vector2(growth_panel.size.x-32,64)
 	for tabs in _module_tabs.values():tabs.custom_minimum_size.y=maxf(480,growth_panel.size.y-230)
 
 func _module_page(parent:VBoxContainer,title:String,feature:String="")->VBoxContainer:
@@ -769,7 +777,7 @@ func _module_page(parent:VBoxContainer,title:String,feature:String="")->VBoxCont
 		var tabs:=TabContainer.new();tabs.custom_minimum_size.y=580;tabs.size_flags_vertical=Control.SIZE_EXPAND_FILL;parent.add_child(tabs);_module_tabs[id]=tabs
 	var tabs:TabContainer=_module_tabs[id]
 	var scroll:=ScrollContainer.new();scroll.name=title;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;tabs.add_child(scroll)
-	var column:=VBoxContainer.new();column.size_flags_horizontal=Control.SIZE_EXPAND_FILL;scroll.add_child(column)
+	var column:=VBoxContainer.new();column.size_flags_horizontal=Control.SIZE_EXPAND_FILL;column.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.add_child(column)
 	if not feature.is_empty():_module_locations[feature]={"tabs":tabs,"index":tabs.get_tab_count()-1}
 	return column
 
@@ -820,7 +828,7 @@ func _bridge_tab_changed(index: int) -> void:
 	if _reforge_picker != null and index == int(_pages.universe.index): _refresh_reforge_selection()
 
 func _world_visual_context() -> Dictionary:
-	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(), "time":session.game_time,"research_staffed":bool(session.crew_system.contributions().get("research_staffed",false)),
+	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(), "research":session.research_presentation_inputs(),"time":session.game_time,"research_staffed":bool(session.crew_system.contributions().get("research_staffed",false)),
 		"galaxy_crew": session.crew_system.galaxy_assignments()}
 
 func _setup_reforge_selection(parent: Control, planet_value: LineEdit, drone_value: LineEdit) -> void:

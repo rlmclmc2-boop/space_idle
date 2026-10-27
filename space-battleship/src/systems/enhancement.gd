@@ -1,4 +1,8 @@
 extends RefCounted
+signal presentation_changed
+var _presentation_cache:Dictionary={}
+var _presentation_key:Dictionary={}
+var _presentation_costs:Dictionary={}
 var _run_state
 
 const WEAPON := ["proficiency", "repeat", "critical"]
@@ -77,7 +81,9 @@ func _submit(next: Dictionary, inputs: Dictionary, costs: Dictionary, kind: Stri
 	return committed
 
 func accept_prepared() -> void:
+	var changed:bool=_state!=_pending_state
 	_state = _pending_state
+	if changed:_presentation_cache={};presentation_changed.emit()
 	_values = _pending_output
 	_pending_state = {}
 	_pending_output = {}
@@ -254,6 +260,11 @@ static func _quote_purchase(state: Dictionary, count: int, rules: Dictionary, ap
 	return accepted
 
 func presentation_model(inputs:Dictionary,can_pay:Callable)->Dictionary:
+	var identity:Dictionary={"bonus":int(inputs.bonus),"open":bool(inputs.unlocked.call("feature","jewels"))}
+	if not _presentation_cache.is_empty() and identity==_presentation_key:
+		_presentation_cache.affordable=not _presentation_costs.is_empty() and bool(can_pay.call(_presentation_costs))
+		return _presentation_cache
+	_presentation_key=identity
 	var effective:Dictionary=_effective_level(_state,int(inputs.bonus))
 	if not effective.ok:return {}
 	var rows:Array=[]
@@ -269,4 +280,7 @@ func presentation_model(inputs:Dictionary,can_pay:Callable)->Dictionary:
 	var costs:PackedStringArray=[]
 	if quote.ok:
 		for resource in quote.costs:costs.append("强化碎片 "+str(_api.apply("to_display",[quote.costs[resource]]).text))
-	return {"paid":int(_state.level),"bonus":int(_state.extra_levels)+int(inputs.bonus),"level":int(effective.level),"price":" · ".join(costs),"affordable":quote.ok and bool(can_pay.call(quote.costs)),"effects":rows}
+	_presentation_costs=quote.costs if quote.ok else {}
+	_presentation_cache={"paid":int(_state.level),"bonus":int(_state.extra_levels)+int(inputs.bonus),"level":int(effective.level),"price":" · ".join(costs),"affordable":quote.ok and bool(can_pay.call(quote.costs)),"effects":rows}
+
+	return _presentation_cache

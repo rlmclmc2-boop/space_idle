@@ -303,7 +303,7 @@ func routes() -> Array:
 	var result: Array = []
 	for id in _routes:
 		result.append({"route": id, "weapon": _routes[id].weapon,
-			"cleared": int(_history.get(id, {}).get("cleared", 0))})
+			"cleared": int(_history.get(id, {}).get("cleared", 0)),"best":float(_history.get(id,{}).get("best",{}).get(int(_history.get(id,{}).get("cleared",0)),0.0))})
 	return result
 
 func material_ids() -> Array:

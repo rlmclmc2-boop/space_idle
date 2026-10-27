@@ -239,17 +239,17 @@ func status_rows(ids: Array = []) -> Array:
 		if _features.levels:
 			var experience = _api.apply("to_display", [member.exp])
 			text = "%s Lv.%d · %s · 经验 %s" % [_definitions[id].name, int(member.level), job, PlayerText.number(str(experience.text))]
-		var needed:Dictionary=_experience_cost(int(member.level),1,_rules,_api)
+		var needed:Dictionary=_experience_cost(int(member.level),1,_rules,_api) if _features.levels else {"ok":false}
 		var fraction:float=0.0
-		if needed.ok and float(needed.value.m)>0:fraction=clampf(float(member.exp.m)/float(needed.value.m)*pow(10.0,clampf(float(member.exp.e)-float(needed.value.e),-300,0)),0,1)
+		if needed.ok and float(needed.value.m)>0:fraction=clampf(float(_api.apply("to_ratio",[member.exp,needed.value]).get("scalar",0.0)),0,1)
 		var effect_text:String="基础效能 %s"%str(_definitions[id].basePower)
-		if member.kind=="system_job" and _jobs.has(member.target):
+		if _features.levels and member.kind=="system_job" and _jobs.has(member.target):
 			var effect:Dictionary=_job_factor(_members,_definitions,_jobs,str(member.target),_rules,_api)
 			var future:Dictionary=_members.duplicate(true)
 			future[id].level=int(member.level)+1
 			var next:Dictionary=_job_factor(future,_definitions,_jobs,str(member.target),_rules,_api)
 			if effect.ok and next.ok:effect_text="岗位效果 %s → 下一级 %s"%[str(_api.apply("to_display",[effect.value]).text),str(_api.apply("to_display",[next.value]).text)]
-		rows.append({"id": str(id), "text": text,"portrait":str(_definitions[id].icon),"description":str(_definitions[id].description),"kind":str(member.kind),"target":str(member.target),"mode":str(member.mode),"progress":fraction,"required":_api.apply("to_display",[needed.value]).text if needed.ok else "—","effect":effect_text})
+		rows.append({"id": str(id), "text": text,"portrait":str(_definitions[id].icon),"description":str(_definitions[id].description),"kind":str(member.kind),"target":str(member.target),"mode":str(member.mode),"levels_enabled":bool(_features.levels),"progress":fraction,"required":_api.apply("to_display",[needed.value]).text if needed.ok else "—","effect":effect_text})
 	return rows
 
 static func _initial(definitions: Dictionary, api) -> Dictionary:
@@ -446,3 +446,6 @@ static func _add_experience(members: Dictionary, recipients: Array, amount: Dict
 		member.level = int(member.level) + low
 		member.exp = balance.value
 	return {"ok": true, "jobs": changed_jobs, "members": changed_members}
+
+func assignment_count(kind:String,target:String)->int:
+	return _assigned(_members,kind,target).size()

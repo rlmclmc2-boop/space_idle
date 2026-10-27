@@ -1,4 +1,5 @@
 extends Control
+signal facility_selected(id:String)
 
 # Purely decorative. Facility entries come from a planet row's optional visualFacilities list.
 const OrbitModels := preload("res://scripts/orbital_facilities.gd")
@@ -432,3 +433,11 @@ func _draw_ambient(center: Vector2, radius: float) -> void:
 func _color(key: String, fallback: Color) -> Color:
 	var value := str(appearance.get(key, ""))
 	return Color(value) if Color.html_is_valid(value) else fallback
+
+func _gui_input(event:InputEvent)->void:
+	if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
+		for entry in facilities:
+			var kind:String=str(entry.type)
+			var point:Vector2=_facility_point(size*0.5,_orbit_radius(),kind,OrbitModels.angle_for(kind,phase))
+			if point.distance_to(event.position)<=42:
+				select_facility(str(entry.id));facility_selected.emit(str(entry.id));accept_event();return

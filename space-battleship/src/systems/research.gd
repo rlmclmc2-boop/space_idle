@@ -1,4 +1,7 @@
 extends RefCounted
+var _presentation_requirements:Dictionary={}
+var _presentation_effects:Dictionary={}
+var _presentation_speed:Dictionary={}
 var _run_state
 
 signal choices_changed
@@ -325,7 +328,6 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 	var remaining: float = dt
 	while remaining > 0.0:
 		var piece: float = remaining
-		var speed: float = (float(int(next.levels.get("singularity", 0))) + float(rules.research_ai_divisor)) / float(rules.research_ai_divisor)
 		var paying: Dictionary = {}
 		var exhausted: Array = []
 		var full_dt = api.apply("from_decimal", [str(remaining)])
@@ -347,14 +349,10 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 					exhausted.clear()
 				if affordable == piece:
 					exhausted.append(resource)
-			var log_rate = api.apply("log10", [rate])
-			if not log_rate.ok:
-				return log_rate
-			speed *= maxf(1.0, 1.0 + log_rate.scalar / float(rules.research_invest_log_divisor))
+
 			paying[resource] = rate
 		var duration = api.apply("from_decimal", [str(piece)])
-		var speed_value = api.apply("from_decimal", [str(speed)])
-		speed_value = api.apply("mul", [speed_value.value, crew_speed])
+		var speed_value = _work_speed(next,rules,api,balances,crew_speed)
 		if not speed_value.ok:
 			return speed_value
 		var work = api.apply("mul", [speed_value.value, duration.value])
@@ -403,19 +401,61 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 	next.work[key] = progress
 	return _finish_advance(next, balances, false)
 
-func presentation_model() -> Dictionary:
-	# Required-work caches are evaluated on a private copy; opening UI is read-only.
-	var state:Dictionary=_state.duplicate(true)
+func presentation_model(include_options:bool=true,context:Dictionary={})->Dictionary:
 	var rows:Array=[]
-	for key in _definitions:
+	var keys:Array=_definitions.keys() if include_options else ([_state.current] if not str(_state.current).is_empty() else [])
+	if keys.is_empty():
+		for key in _definitions:
+			if _state.available.get(key,false):keys=[key];break
+	for key in keys:
 		var definition:Dictionary=_definitions[key]
-		var required:Dictionary=_required_work(state,definition,_api)
-		var progress:Dictionary=state.work.get(key,_api.apply("zero",[]).value)
-		var fraction:float=0.0
-		if required.ok and float(required.value.m)>0.0:
-			fraction=clampf(float(progress.m)/float(required.value.m)*pow(10.0,clampf(float(progress.e)-float(required.value.e),-300,0)),0,1)
-		rows.append({"id":key,"name":str(definition.name),"level":int(state.levels.get(key,0)),"active":state.current==key,"available":bool(state.available.get(key,false)),"progress":fraction,"work":_api.apply("to_display",[progress]).text,"required":_api.apply("to_display",[required.value]).text if required.ok else "—"})
-	var budget:bool=false
-	for amount in state.investment.values():
-		if int(_api.apply("compare",[amount,_api.apply("zero",[]).value]).scalar)>0:budget=true
-	return {"current":str(state.current),"rows":rows,"has_investment":budget}
+		var level:int=int(_state.levels.get(key,0))
+		if not _presentation_requirements.has(key) or _presentation_requirements[key].level!=level:
+			var private:Dictionary={"levels":_state.levels,"required_work":{}}
+			var required:Dictionary=_required_work(private,definition,_api)
+			_presentation_requirements[key]={"level":level,"required":required}
+		var required:Dictionary=_presentation_requirements[key].required
+		var progress:Dictionary=_state.work.get(key,_api.apply("zero",[]).value)
+		var fraction:float=clampf(float(_api.apply("to_ratio",[progress,required.value]).get("scalar",0.0)),0,1) if required.ok else 0.0
+		rows.append({"id":key,"name":str(definition.name),"level":level,"active":_state.current==key,"available":bool(_state.available.get(key,false)),"progress":fraction,"work":_api.apply("to_display",[progress]).text,"required":_api.apply("to_display",[required.value]).text if required.ok else "—","effect":str(definition.description),"effect_summary":_effect_summary(key,level)})
+	var speed:Dictionary=_display_speed(context) if not str(_state.current).is_empty() else {"ok":true,"value":_api.apply("zero",[]).value}
+	var remaining:String="—"
+	if not str(_state.current).is_empty() and speed.ok:
+		var required:Dictionary=_presentation_requirements[_state.current].required
+		var deficit:Dictionary=_api.apply("sub_nonnegative",[required.value,_state.work.get(_state.current,_api.apply("zero",[]).value)])
+		var ratio:Dictionary=_api.apply("to_ratio",[deficit.value,speed.value])
+		if ratio.ok and is_finite(float(ratio.scalar)):remaining="%.1f秒"%float(ratio.scalar)
+	return {"current":str(_state.current),"rows":rows,"speed":_api.apply("to_display",[speed.value]).text if speed.ok else "—","remaining":remaining}
+
+static func _work_speed(state:Dictionary,rules:Dictionary,api,wallet:Dictionary,crew_speed:Dictionary)->Dictionary:
+	var speed:float=(float(int(state.levels.get("singularity",0)))+float(rules.research_ai_divisor))/float(rules.research_ai_divisor)
+	var zero:Dictionary=api.apply("zero",[]).value
+	for resource in ["1","2"]:
+		var rate:Dictionary=state.investment.get(resource,zero)
+		if api.apply("compare",[rate,zero]).scalar<=0 or api.apply("compare",[wallet.get(resource,zero),zero]).scalar<=0:continue
+		var logarithm:Dictionary=api.apply("log10",[rate])
+		if not logarithm.ok:return logarithm
+		speed*=maxf(1.0,1.0+logarithm.scalar/float(rules.research_invest_log_divisor))
+	var value:Dictionary=api.apply("from_decimal",[str(speed)])
+	return api.apply("mul",[value.value,crew_speed]) if value.ok else value
+
+func _effect_summary(key:String,level:int)->String:
+	var identity:Dictionary={"level":level,"peaks":_state.peaks if key=="unification" else {}}
+	if _presentation_effects.has(key) and _presentation_effects[key].identity==identity:return _presentation_effects[key].text
+	if key=="singularity":return "AI数量 %d"%level
+	var effect:String=str(_definitions[key].effect).split(",")[0]
+	var value:Dictionary=_factor({"levels":{key:level},"peaks":_state.peaks},_definitions,effect,_rules,_api)
+	var text:String="当前科研效果 ×"+str(_api.apply("to_display",[value.value]).text) if value.ok else "效果暂不可读"
+	_presentation_effects[key]={"identity":identity.duplicate(true),"text":text}
+	return text
+
+func _display_speed(context:Dictionary)->Dictionary:
+	var wallet:Dictionary=context.get("wallet",{})
+	var speed:Dictionary=context.get("speed",_api.apply("from_decimal",["1"]).value)
+	var rates:Dictionary={}
+	var zero:Dictionary=_api.apply("zero",[]).value
+	for id in ["1","2"]:
+		if _api.apply("compare",[wallet.get(id,zero),zero]).scalar>0:rates[id]=_state.investment.get(id,zero)
+	var identity:Dictionary={"level":_state.levels.get("singularity",0),"rates":rates,"speed":speed}
+	if _presentation_speed.get("identity",{})!=identity:_presentation_speed={"identity":identity.duplicate(true),"value":_work_speed(_state,_rules,_api,wallet,speed)}
+	return _presentation_speed.value

@@ -10,11 +10,13 @@ func _init(provider:Callable)->void:
 func _draw()->void:
 	var font:Font=ThemeDB.fallback_font
 	draw_rect(Rect2(Vector2.ZERO,size),Color("0b1b2b"))
-	draw_string(font,Vector2(16,25),"五档同尺度 · 统一 0.8×展示；数值为战场实际高度",HORIZONTAL_ALIGNMENT_LEFT,865,17,Color("cce8ec"))
+	draw_string(font,Vector2(16,25),"五档同尺度 · 统一 0.8×展示；可见主体中心对齐；数值为战场实际高度",HORIZONTAL_ALIGNMENT_LEFT,865,17,Color("cce8ec"))
 	for i in models.size():
 		var row:Dictionary=models[i]
 		var center:=Vector2(90+i*178,160)
 		var dimensions:Vector2=Vector2(row.dimensions)*0.8
-		draw_texture_rect(row.texture,Rect2(center-dimensions*0.5,dimensions),false)
+		var bounds:=Rect2(row.hull[0],Vector2.ZERO)
+		for vertex in row.hull:bounds=bounds.expand(vertex)
+		draw_texture_rect(row.texture,Rect2(center-bounds.get_center()*0.8-dimensions*0.5,dimensions),false)
 		draw_string(font,Vector2(i*178+12,305),NAMES[i],HORIZONTAL_ALIGNMENT_CENTER,160,18,Color("e0eff2"))
 		draw_string(font,Vector2(i*178+12,329),"%.1f"%row.height,HORIZONTAL_ALIGNMENT_CENTER,160,16,Color("87cbd0"))

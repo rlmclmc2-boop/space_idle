@@ -22,6 +22,7 @@ func _init(session) -> void:
 
 func _ready() -> void:
 	add_child(_heading("飞行手册"))
+	var controls:=Label.new();controls.text="空格：暂停/继续 · G：切换驻守 · 点击战场资源光点领取。输入框和弹层操作期间，先完成当前操作。";PlayerText.wrap(controls);add_child(controls)
 	add_child(_tutorial)
 	add_child(_heading("当前敌情"))
 	add_child(_intel)
