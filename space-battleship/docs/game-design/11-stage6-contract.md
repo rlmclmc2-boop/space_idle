@@ -15,6 +15,8 @@
 
 ## Measured runs
 
+**Current performance acceptance policy:** per user instruction, only uncapped (`Engine.max_fps=0`) and VSync-disabled results are used for performance acceptance. Capped/VSync-enabled records below are diagnostic comparisons only and must not be used to fail performance. External operator UI acceptance remains separately open.
+
 ### Final maximum OpenGL and full warehouse run
 
 `_stage6_max_gpu_window_probe.gd` reuses the real-window probe and the maximum native fixture. NVIDIA GeForce RTX2060, driver610.88, OpenGL3.3 Compatibility; 5 weapons,3 defence modules,4 drones,15 enemies, missiles/cannon/beams with chain/secondary, ten1/60 business steps per display frame. This is ten steps/frame, not proof of real10x:600 game seconds over74.548 wall seconds is actual8.048x. Main's automatic Session stepping is disabled in this controlled native run, so it does not measure Session time acceptance or backlog. The real BattleView/shaders run, with no second combat implementation. Player defence retains Amount1e1000; enemy health1e12 keeps the wave alive while allowing nonzero losses/labels. The initial1e1000 enemy-health fixture failed its label assertion because ordinary damage fell below Amount precision; it is not counted as successful.
@@ -36,7 +38,7 @@ Total measured phases:3600 frames,74.548 seconds,600 controlled game seconds. Fu
 
 One targeted `_stage6_realtime_gpu_budget_probe.gd` run resolves the earlier fixed-steps/frame limitation. It uses the same renderer, maximum ship/15-enemy sustained wave and visible200+10 warehouse, but mounts four drones through the real Hyperspace loadout and uses owner armour level1000 for survivability. It feeds measured wall dt into actual `Session.frame(dt,true)` at requested chrono speed10 with a funded chrono wallet. Main's duplicate auto-step is disabled; normal production UI/render children remain active. After150 warmup frames, it compares two10-second phases. No production timing policy was changed.
 
-| Steady measurement | Cap60 /VSync enabled | Uncapped /VSync disabled |
+| Steady measurement | Comparison only: cap60 /VSync enabled | Acceptance: uncapped /VSync disabled |
 |---|---:|---:|
 | Display frames /wall seconds | 435 /10.010468 | 3923 /9.999934 |
 | Requested /processed game seconds | 100.104680 /100.116667 | 99.999340 /99.983333 |
@@ -56,7 +58,7 @@ The non-Session tail is the interval from the previous Session call's end to the
 
 Cold/startup spikes remain separate: the previous cold-inclusive run observed wall247.537ms/GPU162.385ms peaks and two frames over100ms. They are not relabeled as steady logic stalls. The150-frame warmup of this targeted run is explicitly excluded from the steady table; shader-cache write failure remains an environment diagnostic. No additional long test was run to hide these spikes.
 
-Acceptance reading: Design07 performance section requires the listed scenarios, work/queue/backlog/GPU measurements and preservation of unexecuted time; it does not state an absolute17ms wall threshold or a universal60fps pass gate. The real10x/preserved-time and steady logic/GPU capacity requirements are met in this measured full-Session maximum-load scenario. The capped mode actually presents43.45fps here; this is not a claim of stable60fps. If a separate stable60fps product gate is introduced, current cap/VSync presentation must be reviewed against that gate. External window binding remains environment-blocked and is not changed by these measurements.
+Acceptance result uses only the uncapped/VSync-disabled phase:3923 frames in9.999934 seconds, wall p95/p99/max3.795/4.543/9.751ms, zero wall or Session-work frames above17/33.3/100ms, Session work p95/p99/max0.988/1.273/2.111ms, GPU p95/max0.886/2.156ms. Actual speed is9.998399x;5999 fixed steps advance99.983333 game seconds, with pending peak0.016663 and end0.016317 game seconds. The time bank retains the fractional step and differs from accepted time by only1.34e-11 seconds. This satisfies the recorded steady maximum-load/real10x/time-preservation performance requirements. The capped phase's43.45fps and longer wall interval are comparison data only, not a performance failure or an extra acceptance gate. Historical capped cold-start spikes likewise remain diagnostics, not uncapped pass/fail measurements. External window binding remains environment-blocked; operator acceptance is still unfinished and is not replaced by this performance result.
 
 `STAGE6_MAX_GPU_WINDOW_OK` and the final `STAGE6_WINDOW_OPS_OK` both exited0. The latter emitted an embedded-file-dialog focus warning in this non-enumerable window environment, yet its visible-state assertions and exported picker frame passed. Certificate/log/cache and shutdown ObjectDB warnings remain captured as environment diagnostics. Eight final PNG exports plus one151-byte settings file occupy well below1MiB; `.godot` remains186.7MiB and the reused Temp native build159.6MiB. No new repository/build clone or unbounded capture was created; these files remain local outputs.
 
