@@ -25,7 +25,6 @@ const state = {
   researchId:'equipment_finishing', researchBudget:'800000', researchDraft:'800000', researchUranium:'120000', researchUraniumDraft:'120000', researchAuto:false, researchRatio:'25', researchAutoDraft:false, researchRatioDraft:'25', researchState:'running', researchDrawer:false, researchUnlocked:['equipment_finishing','uranium_extraction','weapon_accuracy','equipment_reinforcement','resource_refining','singularity'], researchError:'', researchFeedback:'', researchIntent:25, researchMode:'once', researchCustom:false, researchModeRatios:{once:25,follow:25}, cooldowns:{},
   droneId: 'd2', droneSelection: ['d2'], equippedDrones: ['d1'], formationDraft: ['d2'], formationPreview: null,
   forgePreview: null, forgeResult: null, forgeOperation: 'reroll',
-  filter: {quality: '稀有以下', action: '保留'}, filterDraft: {quality: '稀有以下', action: '保留'},
   materialDraft: '100', materialReceipt: '', routeId:'pulse', manualTask:{status:'idle',route:'pulse',run:'manual-01',receipt:null}, onlineTask:{status:'idle',route:'missile',run:'online-01',receipt:null,mode:'single',crewId:null},
   dangerKind: 'reforge', dangerSource: '起源星', dangerPreview: null, dangerResult: null,
   enhance:{paid:27,extra:3,effective:30,weapon:['proficiency','repeat','critical'],defence:['adaptation','memory','deferred'],branches:{proficiency:['A','B','A'],repeat:['A','B',''],critical:['B','',''],adaptation:['A','B',''],memory:['B','A',''],deferred:['B','','']},effect:'proficiency',node:0,choice:'',purchaseMode:'one',funds:false,feedback:'',quoteUsed:false,receipt:null},
@@ -263,10 +262,10 @@ function hyperspace() {
   if(part==='drone') body=`${droneStrip()}<div class="drone-detail"><img src="${asset}hyperspace/icons/${d.icon}" alt=""><div><h2>${d.name}</h2><p>${d.quality} · Lv.${d.level} · ${d.weapon}</p><p>当前词缀 ${d.affix}</p><span class="pill">${state.equippedDrones.includes(state.droneId)?'当前已装备':'主仓可选'}</span></div></div><div class="secondary-actions">${control('drone-to-formation','进入无人机编队','primary')}${control('drone-to-forge','进入改造')}${control('drone-hanging','挂设与成长')}${control('drone-favorite','收藏 / 保护')}${control('back','返回仓库','quiet')}</div>`;
   if(part==='formation') body=`${droneStrip()}<div class="formation-stage"><div class="formation-mother"><img src="${asset}ui/ships/fleet_20261019/03-cruiser.png" alt="母舰预览"><span>巡洋舰 · 容量3</span></div><div class="formation-slots">${[0,1,2].map(i=>`<div class="formation-slot"><small>无人机位 ${i+1}</small><b>${state.formationDraft[i]?drones[state.formationDraft[i]].name:'空位'}</b></div>`).join('')}</div></div><div class="formation-compare"><div><small>当前编队</small><b>${droneNameList(state.equippedDrones)}</b></div><div><small>本次候选</small><b>${droneNameList(state.formationDraft)}</b></div></div>${state.formationPreview?`<div class="transaction-preview"><b>应用前装卸确认</b><p>将装备：${droneNameList(state.formationPreview.equip)}<br>将卸下：${droneNameList(state.formationPreview.remove)}</p>${control('formation-confirm','确认应用','primary')}${control('formation-cancel','取消')}</div>`:''}<div class="secondary-actions">${control('formation-set','将当前对象放入候选')}${control('formation-preview','查看本次装卸','primary')}${control('back','返回来处','quiet')}</div>`;
   if(part==='forge') body=`${droneStrip()}<div class="forge-layout"><div class="forge-original"><img src="${asset}hyperspace/icons/${d.icon}" alt=""><h2>${d.name}</h2><p>原词缀 ${d.affix}</p><span class="pill">${d.quality} / 已收藏保护独立</span></div><div class="forge-choice"><label>本次操作 <select id="forge-operation"><option value="reroll" ${state.forgeOperation==='reroll'?'selected':''}>重掷普通词缀</option><option value="refine" ${state.forgeOperation==='refine'?'selected':''}>精炼当前词缀</option></select></label><p>支付材料 20 · 保留装备身份与保护项</p>${state.forgePreview?`<div class="transaction-preview"><h3>${d.name} · 本次预览</h3><p>变化范围：攻击 +6%～12%<br>随机结果尚未取得；保护项不变。</p>${control('forge-confirm','确认支付并改造','primary')}${control('forge-cancel','取消预览')}</div>`:control('forge-preview','预览变化与代价','primary')}${state.forgeResult?`<div class="receipt"><b>实际结果 · ${drones[state.forgeResult.id].name}</b><p>${state.forgeResult.before} → ${state.forgeResult.after}<br>实际支付 材料20</p></div>`:''}</div></div><div class="secondary-actions">${control('back','返回来处','quiet')}</div>`;
-  if(part==='filter') body=`<div class="filter-editor"><h2>当前过滤规则</h2><div class="current-job">当前生效：${state.filter.quality} → ${state.filter.action}</div><div class="form-row"><label>匹配品质 <select id="filter-quality">${['稀有以下','普通','史诗以下'].map(v=>`<option ${state.filterDraft.quality===v?'selected':''}>${v}</option>`).join('')}</select></label><label>处理动作 <select id="filter-action">${['保留','拆解'].map(v=>`<option ${state.filterDraft.action===v?'selected':''}>${v}</option>`).join('')}</select></label></div><p>规则导入先审阅，非法输入不替换当前规则。</p><textarea id="filter-source" placeholder="粘贴规则文本">${escapeText(state.importFilterText||'')}</textarea><div class="secondary-actions">${control('filter-apply','应用规则','primary')}${control('filter-import','审阅导入')}${control('filter-export','导出当前规则')}${control('back','返回来处','quiet')}</div></div>`;
 
-  if(['receipt','manual','filter-import','filter-export'].includes(part)) body=hyperSubroute(part);
-  const workshop=HyperWorkshop.render(part,state,drones,control,asset);if(workshop!==null)body=workshop;
+
+  if(['receipt','manual'].includes(part)) body=hyperSubroute(part);
+  const workshop=HyperWorkshop.render(part,state,drones,control,asset);if(workshop!==null)body=workshop;const filter=FilterWorkbench.render(part,state,control);if(filter!==null)body=filter;
   return moduleHead('超空间 · '+(hyperTabs.find(row=>row[0]===part)?.[1]||{drone:'无人机详情',sealed:'仓储处理',hanging:'挂设成长',protection:'收藏保护',receipt:'本次回执',manual:'手动挑战','filter-import':'审阅规则导入','filter-export':'导出规则',presets:'编队预设'}[part]),`浏览 ${routeName()} · 当前无人机 ${d.name}`)+hyperNav()+body;
 }
 function hyperSubroute(part) {
@@ -274,8 +273,6 @@ function hyperSubroute(part) {
   if(part==='receipt') return taskReceipt(state.route.split('/')[2]==='online'?'online':'manual');
   if(part==='manual') {const task=state.manualTask;return `<div class="transaction-preview"><h2>${task.status==='running'?routeName(task.route):routeName()} · 手动挑战</h2><p>${task.status==='running'?'任务'+task.run+'进行中，不能用当前浏览路线替换任务对象。':'下一挑战19层 · 门票0 · 查看此页尚未开始。'}<br>在线任务 ${routeName(state.onlineTask.route)} / ${taskStatus(state.onlineTask)} 保持独立。</p>${control('manual-start','确认开始挑战','primary',task.status==='running'||task.status==='ready')}${control('receipt-manual','手动回执')}${control('back','返回来处')}</div>`;}
 
-  if(part==='filter-import') return `<div class="transaction-preview"><h2>规则导入审阅</h2><p>原规则：${state.filter.quality} → ${state.filter.action}</p><pre>${escapeText(state.importFilterText||'空规则：无法应用')}</pre>${control('filter-import-confirm','确认替换','primary',!state.importFilterValid)}${control('back','取消，保留原规则')}</div>`;
-  if(part==='filter-export') return `<div class="receipt"><h2>当前规则文本</h2><textarea readonly>${escapeText(JSON.stringify(state.filter))}</textarea>${control('back','返回规则')}</div>`;
   return '';
 }
 function settings() {
@@ -382,6 +379,7 @@ function syncDemoCrewTargets() {
 }
 function validAmountDraft(text) {return /^\d+$/.test(text.trim());}
 function action(a) {
+  if(state.module==='hyperspace'&&FilterWorkbench.handle(a,state,control,notify,goRoute)){render();return;}
   if(state.module==='hyperspace'&&HyperWorkshop.handle(a,state,drones,control,notify,goRoute)){render();return;}
   if(a.startsWith('reactor-amount-')&&a!=='reactor-amount-apply'){state.reactorEditIndex=Number(a.split('-')[2]);openDetail('设置设备分配目标',`当前手动值 ${state.actual[state.reactorEditIndex]}。<label>目标金额 <input id="reactor-amount-input" value="${state.alloc[state.reactorEditIndex]}"></label><button data-action="reactor-amount-apply" class="primary">保留为分配草稿</button>`);return;}
   else if(a==='reactor-amount-apply'){const value=$('#reactor-amount-input').value;if(validAmountDraft(value)&&Number(value)<=100){state.alloc[state.reactorEditIndex]=Number(value);$('#inspect-detail').close();state.reactorReceipt='';state.reactorIntent='custom';notify('设备目标已保留为草稿，尚未应用');}else{notify('当前演示容量100以内输入整数；实际分配不变');return;}}
@@ -463,11 +461,6 @@ function action(a) {
   else if(a==='warehouse-sealed') {goRoute('hyperspace/sealed');return;}
   else if(a==='drone-hanging') {goRoute('hyperspace/hanging');return;}
   else if(a==='drone-favorite') {goRoute('hyperspace/protection');return;}
-  else if(a==='filter-apply') {state.filter={...state.filterDraft};notify('过滤规则已应用，原仓库选择保持');}
-  else if(a==='filter-import') {state.importFilterText=$('#filter-source').value;try{const parsed=JSON.parse(state.importFilterText);state.importFilterValid=['稀有以下','普通','史诗以下'].includes(parsed.quality)&&['保留','拆解'].includes(parsed.action);state.importFilterCandidate=parsed;}catch{state.importFilterValid=false;}goRoute('hyperspace/filter-import');return;}
-  else if(a==='filter-import-confirm') {if(state.importFilterValid){state.filter={...state.importFilterCandidate};state.filterDraft={...state.filter};goRoute('hyperspace/filter');notify('导入规则已替换原规则');return;}}
-  else if(a==='filter-export') {goRoute('hyperspace/filter-export');return;}
-
   else if(a==='save-open') {goRoute('settings/save');return;}
   else if(a==='archive-tutorial'){goRoute('archive/tutorial');return;}
   else if(a==='tutorial-continue'){state.archive.guidePaused=false;notify('引导暂停已释放；其他暂停原因保持');}
@@ -530,7 +523,6 @@ document.addEventListener('input',event=>{
   if(event.target.id==='exchange-amount'){state.workshop.exchangeAmount=event.target.value;const area=document.querySelector('.exchange-bench');const oldFocus=event.target.selectionStart;const box=document.createElement('div');box.innerHTML=HyperWorkshop.render('materials',state,drones,control,asset);area.outerHTML=box.querySelector('.exchange-bench').outerHTML;const field=document.querySelector('#exchange-amount');field.focus();field.setSelectionRange(oldFocus,oldFocus);}
   if(event.target.id==='preset-name')state.workshop.presetName=event.target.value;
   if(event.target.id==='material-amount') state.materialDraft=event.target.value;
-  if(event.target.id==='filter-source') state.importFilterText=event.target.value;
   if(['research-budget','research-uranium'].includes(event.target.id)){const dirty=state.researchDraft!==state.researchBudget||state.researchUraniumDraft!==state.researchUranium;const flag=$('.investment-title small');if(flag)flag.textContent=dirty?'草稿未应用，当前生效值保持':'当前投入已生效';const context=$('[data-context-route="research"] span');if(context)context.textContent=summary('research');}
 });
 document.addEventListener('change',event=>{
@@ -548,8 +540,6 @@ document.addEventListener('change',event=>{
   if(id==='crew-facility'){state.crewFacility=value;render();}
   if(id==='crew-mode'){state.crewMode=value;render();}
   if(id==='forge-operation') {state.forgeOperation=value;invalidateForge();render();}
-  if(id==='filter-quality') state.filterDraft.quality=value;
-  if(id==='filter-action') state.filterDraft.action=value;
 });
 $('#collapse').onclick=()=>{rememberScroll();state.collapsed=!state.collapsed;render();};
 $('#pause').onclick=()=>{state.paused=!state.paused;notify(state.paused?'已暂停，界面仍可查看':'航程已恢复');render();};

@@ -38,3 +38,17 @@
 1440×900物理客户区，A/B定向浏览器核对分区/整理、门槛解封、挂设草稿/应用/容量/究极锁、独立保护、一次拆解与成长待刷新、预设保存/应用/整组拒绝、材料2:1与余额/同材料/不足；无pageerror，JS语法/diff空白通过。证据固定于`evidence/g2-hyperspace-workshop/manifest.json`，包含源码SHA与滚动状态；未运行游戏/Godot。
 
 下一批优先按根线程复审整合科研共用预算主控、反应炉固定区失败/继续、可选调配预设与>10^100金额显示证据。超空间仍待完整改造（含定向/预兆/究极/付费失败）、过滤all/any/五条件/规范分享串、传说图鉴、完整任务/满仓/重复凭据与真正战斗展示。不能以本批工作点替代这些内容或M9/G2验收。
+
+## 后续自然批：完整过滤工作台
+
+旧“品质以下/保留或拆解”二字段和裸JSON导入已替换。`filter-workbench.js`只保存UI草稿与受控响应；使用现行v2结构version/enabled/mode/action/conditions。五类条件：武器、品质、最低无人机层级、指定词缀且tier≤阈值、指定传说。支持最多5项、all/any、keep_matches/clear_matches、开关、增删、还原与确认。开启却无条件拒绝；1阶最强明确标注。关闭时当前摘要明确“全部新奖励保留”，不把未生效动作写成正在拆解。
+
+当前生效摘要与草稿并列，选择不先改当前。应用只影响未来新奖励，现有仓库/装备/收藏不变；不新增过滤现有仓库的“影响预览”或批量拆解。最小层级演示只接纳JS安全整数，超出样本表示尚无预览，不作为生产新上限；Godot继续按原int规则，禁止移植这项演示限制。
+
+分享：导出只取**当前生效**规则，使用`SPACE-FILTER-v2:`及规范base64 JSON，与现有export_filter口径一致；不混入未提交草稿。导入先显示当前→候选的可读比较，再确认替换；取消、非法编码/未知字段/未知ID/超过4096字符或编辑文本后，当前规则保持，旧确认立即失效。文本仅解析数据，不执行表达式。前端样本严格检查语法及已知选项，不承担生产最终验证。
+
+生产公开复用已核对：`player_catalog()`已提供weapons/qualities/affixes/legends，过滤选项无需再新增目录口；`filter_configuration/set_filter/export_filter/import_filter`已存在，确认仍走原所有者校验。**唯一最小只读缺口**为导入前审阅：现有import_filter会直接set_filter，不能拿它当只读预览再回滚。建议由原线程复用同一解析/校验做`preview_filter_import(text)`，输入有界分享串，输出ok/reason及规范candidate（五字段与稳定ID条件），不修改current；确认再调用原import_filter(text)。方法名仅为请求说明，不要求通用DTO/VM；UI像素和文案不进业务。
+
+选项只读核对配置词缀13项、传说12项，键名沿player_catalog，不从中文名/武器图标猜ID。Godot树：FilterPage → CurrentRuleSummary + DraftControls（开关/模式/动作/ConditionList/应用）；FilterImportPage → bounded TextEdit + decoded summary comparison +确认/取消；FilterExportPage →当前摘要+只读分享串。以ScrollContainer纵向滚动5行及下方动作，B保留原任务/编队/人员上下文，战场变换保持。
+
+局部检查A/B：五条件、all/any及动作、开启空条件/非法层级、草稿不冒充当前、应用不改现有store、导出当前、非法/有效v2导入、编辑来源使确认失效、未知字段/超长/非规范编码拒绝、还原。无pageerror，JS语法/diff空白通过，未运行游戏。1440×900同版整屏与滚动记录见`evidence/g2-hyperspace-filter/manifest.json`。本批关闭过滤设计占位，不证明真实导入API或M9/G2验收；下一仍为完整改造/传说图鉴、任务/仓满/回执与M1/G9等。

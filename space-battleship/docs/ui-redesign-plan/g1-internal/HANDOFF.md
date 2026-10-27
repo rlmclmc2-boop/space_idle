@@ -89,3 +89,9 @@
 第三批R2源码`b538267e7dd1d2b7152802696ddee6aa34907b81`及同版证据`ddacc0d014993d5e6b0d0cda165e0366a2e1ccab`已推送。原上下文收到interrupted恢复后核实同目录/分支/该HEAD与干净树，**未实际发生上下文压缩**。超空间过滤仅只读核对五条件、all/any、v2分享格式与现有公开口，未开始新制作。
 
 按根线程新意见在自然停点优先修科研连续草稿同步/已选模式无副作用/切模式保留策略；同版证据`evidence/g2-budget-sync/manifest.json`，说明见`godot-restoration.md`末节。不重做已认可整体结构，下一再续超空间过滤/改造。
+
+### 超空间过滤自然检查点
+
+科研同步源码`efc31c9f30c255581978397d1a9655a7de8176b6`与同版证据`cfb0ecfee978385ab7f7c60bef27e059851f25d1`已推送。之后继续过滤完整工作台：五条件/all-any/动作/当前草稿/v2分享审阅确认与非法保留，见`g2-hyperspace-restoration.md`末节，证据`evidence/g2-hyperspace-filter/manifest.json`。唯一新增只读请求是复用原导入解析校验形成preview_filter_import，现有import_filter会修改当前规则不能预先调用。
+
+仍未实际发生上下文压缩；下一自然项是完整改造/传说图鉴。保留原工作区/分支/单一制作上下文，继续不改运行/配置/保存，不增子线程。
