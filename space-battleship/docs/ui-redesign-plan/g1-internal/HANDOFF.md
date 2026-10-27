@@ -18,7 +18,7 @@
 
 所有目录相对本文件；截图manifest有精确源码哈希、物理1440×900、滚动及状态。每批都是显式浏览器响应样本，未接GameSession。新增星系PNG仅现有GLB的浏览器派生图，源哈希和渲染记录在`art/galaxy/render-sources.json`；不能替换运行GLB或复活旧PNG链。
 
-## 必须先整合的审查结论（尚未修）
+## 原首批审查结论（下方R1已修订，待复审）
 
 原线程以`d311a511`固定双审：首批已有专属场景，但深化尚未通过，不否决G1或其他模块。最新要求：
 
@@ -28,7 +28,7 @@
 4. 通用反应炉仍±5/原数，科研仍800000/120000手输；需真正可持续的比例/预算意图和负担/收益判断，不能只留固定示例。
 5. 原契约线程确认：按钮数不受命令数限制，可本地整组草稿一次确认、顺序命令并如实部分成功，不强造原子事务。科研现有set_automatic已支持共同近期收入比例、周期生效，非立即/钱包占比；即时比例分配需最小Amount预览/命令。先定直观交互与语义，列精确端口缺口给原线程，不让旧API冻结笨重交互。
 
-上列本线程仅收妥，**未开始修订、未新增验证轮**。后继先按此修，交固定SHA和局部修订证据；保留装备主体、科研舞台进展。
+原交出线程当时仅收妥；接替线程已完成R1局部修订，详见下节及`g2-revision-r1.md`。不等于G2通过。
 
 ## 本轮新增实际内容及剩余
 
@@ -45,3 +45,9 @@
 浏览器：Python Playwright +`/usr/bin/chromium`；localhost HTTP（file://被环境管理员策略阻止）。服务端口`127.0.0.1:8766`，根目录为项目，日志`/tmp/space-idle-design-preview.log`；预览`http://127.0.0.1:8766/docs/ui-redesign-plan/g1-internal/`。若服务失效，只重启同目录服务，不复制仓库。
 
 本次定向脚本（临时、非仓库游戏测试）：`/tmp/g2-colony-check.py`、`g2-batch2-check.py`、`g2-enhance-check.py`、`g2-enhance-purchase.py`、`g2-maintenance-check.py`、`g2-archive-check.py`；各批capture脚本同/tmp。均检查过所覆盖操作，无浏览器pageerror；未运行Godot或游戏测试。旧首批`/tmp/g2-inspect.py`使用已退的演示人物id`lin`，后继不得直接当新版脚本跑。第四批的静态/浏览器核对已完成，不需无理由重复全套。
+
+## 接替线程当前自然检查点 · R1
+
+仍复用`/workspace/space_idle/space-battleship`及原分支；接管核实83112e84、工作树干净。首批四项已完成局部修订，精确交互/提交语义/最小Amount端口见`g2-revision-r1.md`；还原资料已同步，证据将固定源码SHA记录在`evidence/g2-revision-r1/manifest.json`。A/B浏览器定向操作无pageerror，JS语法及diff空白通过；未运行游戏/Godot。
+
+下一顺序是第二批复审：迷雾身份统一隐藏、查看真实探索者、同目标NoChange保进度、星系缺人停工/恢复；然后地图焦点/标签/详情、B工具及人员长目标/经验条边界。必须保留星球主体和占用/候选分离；不先跨入其他新模块。本轮仍不以修订清单代替完整G2或画面验收。

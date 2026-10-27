@@ -17,12 +17,12 @@ const state = {
   groupLast: {combat: 'reactor', colony: 'planet', hyperspace: 'hyperspace/routes', maintenance: 'settings'},
   moduleLast: {}, trail: [], scroll: {}, collapsed: false, paused: false,
   reactor: 'running', equipment: 'normal', planet: 'building', galaxy: 'building',
-  alloc: [45,35,20,0], actual: [45,35,20,0], reactorError: '',
+  alloc: [45,35,20,0], actual: [45,35,20,0], reactorError: '', reactorReceipt: '', reactorFailAt: -1, reactorIntent: 'custom',
   slot:0, fitKeys:['laser','missile','longLaser','shield','armour'], levels: [24,18,18,18,18], fits: ['脉冲炮','舰载导弹','长激光','护盾发生器','装甲'],
   attributes:['12.4 K','12.4 K','12.4 K','84.0 K','84.0 K'], candidate: false, equipmentMode: 'one', planetAuto: true, planetId: '1', galaxyNode: '9', galaxyNodes:structuredClone(ColonyModels.galaxy.nodes), galaxyView:{x:0,y:0,zoom:1.3}, planets: structuredClone(ColonyModels.planets), crewPlanet:'1', crewFacility:'shipyard', crewMode:'1', crewError:'',
   crewId: 'navigator', crewDraft: 'planet-build',
   crewMembers: structuredClone(ColonyModels.crew),
-  researchId:'equipment_finishing', researchBudget:'800000', researchDraft:'800000', researchUranium:'120000', researchUraniumDraft:'120000', researchAuto:false, researchRatio:'25', researchAutoDraft:false, researchRatioDraft:'25', researchState:'running', researchDrawer:false, researchUnlocked:['equipment_finishing','uranium_extraction','weapon_accuracy','equipment_reinforcement','resource_refining','singularity'], researchError:'', researchFeedback:'', cooldowns:{},
+  researchId:'equipment_finishing', researchBudget:'800000', researchDraft:'800000', researchUranium:'120000', researchUraniumDraft:'120000', researchAuto:false, researchRatio:'25', researchAutoDraft:false, researchRatioDraft:'25', researchState:'running', researchDrawer:false, researchUnlocked:['equipment_finishing','uranium_extraction','weapon_accuracy','equipment_reinforcement','resource_refining','singularity'], researchError:'', researchFeedback:'', researchIntent:25, cooldowns:{},
   droneId: 'd2', droneSelection: ['d2'], equippedDrones: ['d1'], formationDraft: ['d2'], formationPreview: null,
   forgePreview: null, forgeResult: null, forgeOperation: 'reroll',
   filter: {quality: '稀有以下', action: '保留'}, filterDraft: {quality: '稀有以下', action: '保留'},
@@ -45,10 +45,10 @@ const drones = {
   d3: {name:'棱镜·光束', weapon:'长激光', quality:'史诗', level:20, affix:'射速 +6%', icon:'beam.png'}
 };
 const equipmentResponses={
-  '24.2 K':{one:'25.0 K',max:'34.2 K'},'25.0 K':{one:'25.8 K',max:'35.3 K'},'116.0 K':{one:'119.2 K',max:'129.0 K'},
-  '12.4 K':{one:'13.1 K',max:'16.3 K'},'13.1 K':{one:'13.8 K',max:'16.9 K'},'13.8 K':{one:'14.5 K',max:'17.6 K'},
+  '24.2 K':{ten:'36.0 K',one:'25.0 K',max:'34.2 K'},'25.0 K':{one:'25.8 K',max:'35.3 K'},'116.0 K':{ten:'148.0 K',one:'119.2 K',max:'129.0 K'},
+  '12.4 K':{ten:'24.2 K',one:'13.1 K',max:'16.3 K'},'13.1 K':{one:'13.8 K',max:'16.9 K'},'13.8 K':{one:'14.5 K',max:'17.6 K'},
   '14.5 K':{one:'15.2 K',max:'18.3 K'},'16.3 K':{one:'16.9 K',max:'20.4 K'},'15.8 K':{one:'16.5 K',max:'19.6 K'},
-  '84.0 K':{one:'87.2 K',max:'96.0 K'},'87.2 K':{one:'90.4 K',max:'99.2 K'},'92.0 K':{one:'95.2 K',max:'104.0 K'},'96.0 K':{one:'99.2 K',max:'108.0 K'}
+  '84.0 K':{ten:'116.0 K',one:'87.2 K',max:'96.0 K'},'87.2 K':{one:'90.4 K',max:'99.2 K'},'92.0 K':{one:'95.2 K',max:'104.0 K'},'96.0 K':{one:'99.2 K',max:'108.0 K'}
 };
 const studies = SceneModels.research;
 const jobs = {idle:'空闲', 'planet-build':'星球设施施工', 'planet-explore':'星球探索', galaxy:'第一星系建设', hyperspace:'超空间在线挂机保留', research:'AI科研续研岗位',equipment:'装备自动购级',enhancement:'强化自动购级',reactor:'反应炉自动购级'};
@@ -127,15 +127,16 @@ function reactor() {
   const ids=['weapons','defence','smelting','condensation'];
   const names=['武器增幅舱','防御发生舱','资源熔炼舱','碎片凝聚舱'];
   const free=state.reactor==='idle'?0:10, opened=state.reactor==='opened';
-  const before=state.reactor==='idle'?null:effectSnapshots[state.actual.join()], after=effectSnapshots[state.alloc.join()];
+  const before=effectSnapshots[state.actual.join()], after=effectSnapshots[state.alloc.join()];
   const keys=['attack','defence','income','income'];
   const machine=i=>{
     const art=SceneModels.reactor[ids[i]],powered=state.actual[i]+(i===0?free:0)>0;
-    return `<figure class="device-workpoint device-${ids[i]} ${powered?'powered':'unpowered'}" data-device="${i}" data-port-x="${art.power_in[0]}" data-port-y="${art.power_in[1]}"><figcaption><b>${names[i]}</b><small>${i===2?'敌掉铁基础量':i===3?'直接碎片':i===0?'武器普通值':'防御普通值'} ${before?.[keys[i]]||'×1.00'}${changed()?` → <strong>${after?.[keys[i]]||'待预览'}</strong>`:''}</small></figcaption><img src="${art.path}" alt="${names[i]}独立设备"><div class="machine-readout"><span>${powered?'供能中':'待机'}</span><b data-readout="manual_supply">${state.actual[i]}</b><small data-readout="free_supply">免费 ${i===0?free:0}</small><small data-readout="effective_supply">有效 ${state.actual[i]+(i===0?free:0)}</small></div><div class="machine-controls">${control('minus-'+i,'−')}${control('reactor-amount-'+i,(changed()?'草稿 ':'分配 ')+state.alloc[i],'quiet')}${control('plus-'+i,'+')}</div></figure>`;
+    return `<figure class="device-workpoint device-${ids[i]} ${powered?'powered':'unpowered'}" data-device="${i}" data-port-x="${art.power_in[0]}" data-port-y="${art.power_in[1]}"><figcaption><b>${names[i]}</b><small>${i===2?'敌掉铁基础量':i===3?'直接碎片':i===0?'武器普通值':'防御普通值'} ${before?.[keys[i]]||'待效果读数'}${changed()?` → <strong>${after?.[keys[i]]||'待预览'}</strong>`:''}</small></figcaption><img src="${art.path}" alt="${names[i]}独立设备"><div class="machine-readout"><span>${powered?'供能中':'待机'}</span><b data-readout="manual_supply">${state.actual[i]}</b><small data-readout="free_supply">免费 ${i===0?free:0}</small><small data-readout="effective_supply">有效 ${state.actual[i]+(i===0?free:0)}</small></div><div class="machine-controls"><label>${names[i].slice(0,2)}占手动容量 <b>${state.alloc[i]}%</b><input type="range" min="0" max="100" value="${state.alloc[i]}" data-reactor-share="${i}" aria-label="${names[i]}占手动容量比例"></label>${control('reactor-amount-'+i,'精确值','quiet')}</div></figure>`;
   };
   return moduleHead('反应炉机舱','核心 Lv.1 · 手动预算100 · 免费供能'+free,`<span class="pill ${changed()?'warn':''}">${changed()?'分配待应用':'当前已生效'}</span>`)+
     `<div class="allocation-task"><div><b>保持防御，优先武器供能</b><span>从熔炼暂调15单位到武器；核心容量不变。</span></div>${control('reactor-task','查看调配方案')}</div>`+
     `<div class="reactor-room"><div class="reactor-grid reactor-room-grid"><svg class="reactor-pipes ${!state.paused&&sum(state.actual)>0?'running':''}" aria-label="核心出口、主管、设备入口统一连接"></svg>${machine(0)}${machine(2)}<div class="reactor-core-assembly ${sum(state.actual)+free>0&&!state.paused?'running':''}"><img src="${SceneModels.reactor.core.path}" alt="反应炉独立核心"><div class="reactor-energy"></div><div class="core-instrument"><small>当前有效供能</small><b>${sum(state.actual)+free}</b></div></div>${machine(1)}${opened?machine(3):''}<span class="trunk-label">供能主管</span></div></div>`+
+    (state.reactorReceipt?`<div class="note">${state.reactorReceipt}</div>`:'')+
     (state.reactorError||sum(state.alloc)>100?`<div class="note bad">${state.reactorError||'草稿超过手动预算，当前实际供能不变。'}</div>`:'')+
     `<div class="secondary-actions">${control('reactor-equal','均分')}${control('reactor-clear','清零草稿')}${control('reactor-buy','核心升级 · 10 铀','quiet')}</div>`;
 }
@@ -157,7 +158,7 @@ function equipmentQuote() {
   const defence=state.slot>=3, current=state.attributes[state.slot],response=equipmentResponses[current];
   const candidate=state.candidate||state.equipment==='compare';
   if(candidate) return {label:'更换为'+equipmentNames[candidateType()], current, next:defence?(candidateType()==='armour'?'92.0 K':'84.0 K'):(candidateType()==='cannon'?'15.8 K':'12.4 K'), price:'1.8 M 铁 + 材料20', action:'equip-apply'};
-  if(state.equipmentMode==='ten') return {label:'购买10级',current,next:defence?'116.0 K':'24.2 K',price:'5.80 M 铁',action:'equip-buy'};
+  if(state.equipmentMode==='ten') return {label:'购买10级',current,next:response?.ten||'待取得新报价',price:response?.ten?'5.80 M 铁':'待报价',action:'equip-buy'};
   if(state.equipmentMode==='max') return {label:'本槽MAX · 4级',current,next:response?.max||'待取得新报价',price:'2.10 M 铁',action:'equip-buy'};
   return {label:'购买1级',current,next:response?.one||'待取得新报价',price:'0.42 M 铁',action:'equip-buy'};
 }
@@ -186,6 +187,16 @@ function galaxy() {
  const status=galaxyStatus[n.state][0];
  return moduleHead('第一星系 · 城市发展','区域一 · '+n.name,`<span class="pill">工程人员 ${crewCount('galaxy')} / 6</span>`)+`<div class="city-room"><div class="city-map" tabindex="0" aria-label="星系地图，可平移缩放"><svg viewBox="0 0 800 550"><defs><pattern id="city-grid" width="45" height="24" patternUnits="userSpaceOnUse"><path d="M0 12L22.5 0L45 12L22.5 24Z" fill="none" stroke="#b8c9bd" stroke-width=".5"/></pattern></defs><rect width="800" height="550" fill="url(#city-grid)"/><g id="city-transform" transform="translate(${view.x} ${view.y}) translate(400 270) scale(${view.zoom}) translate(-400 -270)">${ColonyModels.galaxy.links.map(([a,b])=>{const x=point(a),y=point(b);return `<path d="M${x.x} ${x.y}L${y.x} ${y.y}" stroke="#aabdb0" stroke-width="8"/><path d="M${x.x} ${x.y}L${y.x} ${y.y}" stroke="#e1e4d8" stroke-width="4"/>`;}).join('')}<image href="art/galaxy/galaxy_core.png" x="328" y="174" width="144" height="144"/><text x="400" y="310" text-anchor="middle" class="city-hub-label">总部</text>${Object.values(state.galaxyNodes).sort((a,b)=>galaxyPoint(a).y-galaxyPoint(b).y).map(x=>{const q=galaxyPoint(x);const src='art/galaxy/'+x.family+'-lv'+x.level+'.png';return `<g data-galaxy-node="${x.id}" class="city-node ${x.state} ${x.id===n.id?'selected':''}" transform="translate(${q.x} ${q.y})"><ellipse class="city-platform" cx="0" cy="0" rx="37" ry="17"/>${x.state==='fog'?'<text y="4" text-anchor="middle" class="fog-mark">?</text>':x.state==='planned'?'<path d="M-24 0L0 -12L24 0L0 12Z" fill="none" stroke="#85a59a" stroke-dasharray="3 3"/>':`<image href="${src}" x="-49" y="-70" width="98" height="98" ${x.state==='building'?'opacity=".65"':''}/>`}${x.state==='building'||x.state==='upgrading'?`<path d="M-31 -38L-31 -63L31 -63L31 -38M0 -63V-78" stroke="#d0a66a" fill="none" stroke-width="3"/><rect x="-27" y="18" width="54" height="3" fill="#c6cec1"/><rect x="-27" y="18" width="${54*x.progress/100}" height="3" fill="#4d9989"/>`:''}<text y="35" text-anchor="middle">${x.state==='fog'?'未探索':x.name.split(' ')[0]+' · '+(x.state==='planned'?'地基':'Lv.'+x.level)}</text></g>`;}).join('')}<image href="art/galaxy/transport_shuttle.png" x="386" y="326" width="40" height="40" class="city-shuttle"/></g></svg><div class="city-map-tools">${control('galaxy-zoom-out','−')}${control('galaxy-reset','归位')}${control('galaxy-zoom-in','＋')}</div></div><div class="city-console"><span class="eyebrow">SELECTED SITE / ${n.id}</span><h2>${n.state==='fog'?'未探索节点':n.name}</h2><span class="pill ${n.state==='complete'?'good':'warn'}">${status}</span>${n.state==='fog'?'<p>父节点达到可达条件后揭示。设施类型与效果保持隐藏。</p>':`<div class="city-object"><img src="art/galaxy/${n.family}-lv${n.level}.png" alt="${n.name}" style="opacity:${n.state==='planned'?'.35':'1'}"></div><div class="city-node-progress"><b>${n.progress}%</b><span>${n.state==='upgrading'?'当前Lv.'+n.level+'仍贡献，目标Lv.'+n.targetLevel:n.state==='complete'?'已生效 · 无需领取':n.state==='planned'?'已可达，等待自动工程调度':'建设中'}</span></div><div class="meter"><i style="width:${n.progress}%"></i></div><p>${galaxyEffect[n.family]}</p><small>${n.state==='upgrading'?'完成边界升一级并更新贡献。':n.state==='complete'?'当前级贡献已被接纳。':'当前设施尚不贡献收益。'}</small>`}</div></div><div class="secondary-actions">${control('galaxy-region','区域与发展汇总')}${control('galaxy-effects','当前节点效果明细')}</div>`;
 }
+// Mock Amount boundary: fixture income is canonical integer text; no research speed formula.
+const budgetIncome={iron:'3200000',uranium:'480000'};
+const budgetWallet={iron:'128600000',uranium:'8400000'};
+function budgetPreview(ratio){
+  return ['iron','uranium'].map(id=>{const rate=BigInt(budgetIncome[id])*BigInt(ratio)/100n;return {id,rate:String(rate),left:String(BigInt(budgetIncome[id])-rate),reserve:String(rate?BigInt(budgetWallet[id])/rate:0n)};});
+}
+function researchIntentPanel(){
+ const rows=budgetPreview(state.researchIntent);
+ return `<div class="budget-intent"><div><b>按近期收入安排投入</b><span>近60游戏秒平均收入 · 铁3.20 M / 秒 · 铀480 K / 秒</span></div><label>共同收入比例 <output>${state.researchIntent}%</output><input id="research-intent" type="range" min="0" max="100" step="1" value="${state.researchIntent}" aria-label="科研共同近期收入比例"></label><div class="budget-comparison">${rows.map((r,i)=>`<article><b>${i?'铀':'铁'}投入 / 游戏秒</b><strong>${i?state.researchUranium:state.researchBudget} → ${r.rate}</strong><span>收入结余 ${r.left} / 秒</span><span>${r.rate==='0'?'停用付费加速':'无后续收入时库存可付 '+r.reserve+' 秒'}</span></article>`).join('')}</div><p>本级完成：${({equipment_finishing:'武器与防御普通值 ×1.25',uranium_extraction:'原生铀收入 ×1.1',weapon_accuracy:'武器伤害 ×1.1',equipment_reinforcement:'防御普通容量 ×1.1',resource_refining:'原生铁收入 ×1.1',singularity:'AI数量 +1',fragment_condensation:'直接碎片收入 ×1.1',unification:'联合因子按完成时收入峰值更新'})[state.researchId]}。投入改变用时，完成收益保持。</p><p>当前研究速度 ${studies[state.researchId].speed} · 预计${studies[state.researchId].remaining}；目标速度与时间待预览。</p><div class="secondary-actions">${control('research-intent-now','生成即时投入草稿')}${control('research-intent-auto','保持此收入比例','primary')}</div><small>即时草稿按当前收入样本换算；持续预算每60游戏秒重算。0%即时草稿为0；持续预算开启时每种资源至少投入1 / 秒。</small></div>`;
+}
 function research() {
   const study=studies[state.researchId];
   const stopped=state.paused||state.researchState==='paused'||state.researchState==='completed';
@@ -193,7 +204,7 @@ function research() {
   const dirty=state.researchDraft!==state.researchBudget||state.researchUraniumDraft!==state.researchUranium;
   return moduleHead('AI科技工厂 · '+study.name,'Lv.'+study.level+' · '+study.effect,`<span class="pill ${stopped?'warn':'good'}">${status}</span>`)+
     `<div class="factory-room ${stopped?'stopped':'working'}"><img class="factory-background" src="${asset}ai_tech_factory/workshop-background-v2.png" alt="AI工厂场景"><img class="factory-machine" src="${asset}ai_tech_factory/${study.image}" alt="${study.name}设备"><img class="factory-probe" src="${asset}ai_tech_factory/inspection-probe-v2.png" alt="当前研究探针"><div class="research-device-status"><span class="eyebrow">CURRENT DEVICE</span><b>${study.name}</b><span>${state.researchState==='completed'?'100%':study.progress}</span><div class="meter"><i style="width:${state.researchState==='completed'?'100%':study.progress}"></i></div><small>工作量 ${state.researchState==='completed'?study.required:study.work} / ${study.required}</small><small>速度 ${study.speed}工作量 / 游戏秒</small><small>${state.researchState==='completed'?'已完成，等待选择下一研究':stopped?'暂停期间不推进':'预计剩余 '+study.remaining+'（游戏时间）'}</small></div><button data-action="research-select" class="factory-selector">选择研究设备</button></div>`+
-    `<div class="investment-console"><div class="investment-title"><div><h3>投入控制台</h3><small>${dirty?'草稿未应用，当前生效值保持':'当前投入已生效'}</small></div>${control('research-reset','还原当前值','quiet')}</div><div class="investment-row"><div class="investment-resource"><label>铁 / 游戏秒<input id="research-budget" value="${escapeText(state.researchDraft)}"></label><span>当前 <b>${escapeText(state.researchBudget)}</b></span>${control('research-apply-iron','应用铁投入','primary')}</div><div class="investment-resource"><label>铀 / 游戏秒<input id="research-uranium" value="${escapeText(state.researchUraniumDraft)}"></label><span>当前 <b>${escapeText(state.researchUranium)}</b></span>${control('research-apply-uranium','应用铀投入','primary')}</div></div>${state.researchError?`<div class="note bad">${state.researchError}</div>`:''}${state.researchFeedback?`<div class="research-feedback">${state.researchFeedback}</div>`:''}<div class="research-automation"><div><label><input type="checkbox" id="research-auto-toggle" ${state.researchAutoDraft?'checked':''}> 自动投入预算</label><label>比例 <input id="research-ratio" type="number" min="0" max="100" step="any" value="${state.researchRatioDraft}">%</label>${control('research-auto-apply','应用预算设置')}<small>当前${state.researchAuto?'开启':'关闭'} · ${state.researchRatio}% · 下个60游戏秒预算刷新点采用</small></div><div><b>岗位自动续研</b><span>${crewCount('research')?'已有人 · 完成后续研最短项目':'当前无人 · 完成后停下'}</span>${control('research-crew','查看科研岗位','quiet')}</div></div></div>`+
+    `<div class="investment-console">${researchIntentPanel()}<div class="investment-title"><div><h3>投入控制台</h3><small>${dirty?'草稿未应用，当前生效值保持':'当前投入已生效'}</small></div>${control('research-reset','还原当前值','quiet')}</div><div class="investment-row"><div class="investment-resource"><label>铁 / 游戏秒<input id="research-budget" value="${escapeText(state.researchDraft)}"></label><span>当前 <b>${escapeText(state.researchBudget)}</b></span>${control('research-apply-iron','应用铁投入','primary')}</div><div class="investment-resource"><label>铀 / 游戏秒<input id="research-uranium" value="${escapeText(state.researchUraniumDraft)}"></label><span>当前 <b>${escapeText(state.researchUranium)}</b></span>${control('research-apply-uranium','应用铀投入','primary')}</div></div>${state.researchError?`<div class="note bad">${state.researchError}</div>`:''}${state.researchFeedback?`<div class="research-feedback">${state.researchFeedback}</div>`:''}<div class="research-automation"><div><label><input type="checkbox" id="research-auto-toggle" ${state.researchAutoDraft?'checked':''}> 自动投入预算</label><label>比例 <input id="research-ratio" type="number" min="0" max="100" step="any" value="${state.researchRatioDraft}">%</label>${control('research-auto-apply','应用预算设置')}<small>当前${state.researchAuto?'开启':'关闭'} · ${state.researchRatio}% · 下个60游戏秒预算刷新点采用</small></div><div><b>岗位自动续研</b><span>${crewCount('research')?'已有人 · 完成后续研最短项目':'当前无人 · 完成后停下'}</span>${control('research-crew','查看科研岗位','quiet')}</div></div></div>`+
     (state.researchDrawer?`<div class="research-drawer"><div class="drawer-head"><div><h2>选择当前研究设备</h2><span>切换保留每项已完成工作量</span></div>${control('research-close','关闭')}</div><div class="study-grid">${state.researchUnlocked.map(id=>{const item=studies[id];return `<button data-study="${id}" class="study-option ${state.researchId===id?'selected':''}"><img src="${asset}ai_tech_factory/${item.image}" alt=""><b>${item.name}</b><span>Lv.${item.level} · ${item.progress}</span><small>${item.effect}</small></button>`;}).join('')}</div></div>`:'');
 }
 
@@ -285,9 +296,8 @@ function dock() {
     return `<div class="dock-summary"><b>${state.slot<3?'武器槽'+(state.slot+1):'防御槽'+(state.slot-2)} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}</b><span>${q.label} · ${q.current} → <strong>${q.next}</strong> · ${comparisonCycle()}</span><span>本次费用 <strong>${q.price}</strong></span></div><div class="dock-buttons">${control(q.action,currentCooldown()>0&&q.action==='equip-apply'?'冷却剩余18秒':q.label,'primary',disabled)}${control('equip-compare',state.candidate?'查看购级':'更换候选')}</div>`;
   }
   if(state.module==='reactor') {
-    const next=reactorNextCommand(),before=effectSnapshots[state.actual.join()],after=next?effectSnapshots[next.next.join()]:before;
-    const names=['武器','防御','熔炼','凝聚'];
-    return `<div class="dock-summary"><b>核心 Lv.1 · ${next?'本次仅调整'+names[next.index]:'当前分配已生效'}</b><span>${next?names[next.index]+' '+next.current+' → '+next.target:'手动 '+state.actual.slice(0,3).join('/')} · 免费10保持</span><span>本步：攻击 ${before?.attack||'—'} → ${after?.attack||'待预览'} / 熔炼 ${before?.income||'—'} → ${after?.income||'待预览'} · 费用0</span></div><div class="dock-buttons">${control('reactor-apply',next?'应用'+names[next.index]+next.target:'分配已生效','primary',!next||!after)}${control('reactor-reset','还原')}</div>`;
+    const before=effectSnapshots[state.actual.join()],after=effectSnapshots[state.alloc.join()];
+    return `<div class="dock-summary"><b>整组供能草稿 · ${sum(state.alloc)}/100 · 剩余${100-sum(state.alloc)}</b><span>手动 ${state.actual.join('/')} → ${state.alloc.join('/')} · 免费供能保持</span><span>攻击 ${before?.attack||'待读数'} → ${after?.attack||'待效果预览'} / 熔炼 ${before?.income||'待读数'} → ${after?.income||'待效果预览'} · 费用0</span></div><div class="dock-buttons">${control('reactor-apply','确认整组调配','primary',!changed()||sum(state.alloc)>100)}${control('reactor-reset','还原')}</div>`;
   }
 
   if(state.module==='planet') {const p=selectedPlanet(),f=selectedFacility();return `<div class="dock-summary"><b>${p.name} · ${f.name}</b><span>${facilityStatus(p,f)} · ${f.work}/${f.required}次</span><span>${f.state==='ready'?'领取后本设施收益生效':f.effectSummary}</span></div><div class="dock-buttons">${f.state==='ready'?control('planet-claim','领取此设施收益','primary'):control('planet-crew',f.extraCrew?'调整额外施工人员':'查看探索人员','primary',f.state==='locked'||f.state==='owned')}</div>`;}
@@ -352,18 +362,25 @@ function syncDemoCrewTargets() {
 }
 function validAmountDraft(text) {return /^\d+$/.test(text.trim());}
 function action(a) {
-  if(a.startsWith('plus-')||a.startsWith('minus-')) {const i=Number(a.split('-')[1]);state.alloc[i]=Math.max(0,state.alloc[i]+(a.startsWith('plus')?5:-5));state.reactorError='';notify('分配草稿已修改，当前实际供能保持');}
-  else if(a.startsWith('reactor-amount-')&&a!=='reactor-amount-apply'){state.reactorEditIndex=Number(a.split('-')[2]);openDetail('设置设备分配目标',`当前手动值 ${state.actual[state.reactorEditIndex]}。<label>目标金额 <input id="reactor-amount-input" value="${state.alloc[state.reactorEditIndex]}"></label><button data-action="reactor-amount-apply" class="primary">保留为分配草稿</button>`);return;}
-  else if(a==='reactor-amount-apply'){const value=$('#reactor-amount-input').value;if(validAmountDraft(value)&&Number(value)<=100){state.alloc[state.reactorEditIndex]=Number(value);$('#inspect-detail').close();notify('设备目标已保留为草稿，尚未应用');}else{notify('当前示例额度内无法接纳此目标，实际分配不变');return;}}
-  else if(a==='reactor-task') {state.alloc=[60,35,5,0];state.reactorError='';notify('调配方案已展开：武器增加15，防御保持，熔炼减少15');}
-  else if(a==='reactor-apply') {const next=reactorNextCommand();if(sum(state.alloc)>100)state.reactorError='超过手动预算，未应用，原供能保持。';else if(next&&effectSnapshots[next.next.join()]){state.actual=next.next;notify(changed()?'本设备已应用；其余分配意图尚未提交。':'全部分配意图已逐项应用，设备工作状态更新');}}
-  else if(a==='reactor-reset') {state.alloc=[...state.actual];state.reactorError='';}
-  else if(a==='reactor-equal') {state.alloc=state.reactor==='opened'?[25,25,25,25]:[34,33,33,0];notify('均分草稿已准备，效果预览尚未取得');}
-  else if(a==='reactor-clear') {state.alloc=[0,0,0,0];notify('清零草稿已准备，免费供能保留');}
+  if(a.startsWith('reactor-amount-')&&a!=='reactor-amount-apply'){state.reactorEditIndex=Number(a.split('-')[2]);openDetail('设置设备分配目标',`当前手动值 ${state.actual[state.reactorEditIndex]}。<label>目标金额 <input id="reactor-amount-input" value="${state.alloc[state.reactorEditIndex]}"></label><button data-action="reactor-amount-apply" class="primary">保留为分配草稿</button>`);return;}
+  else if(a==='reactor-amount-apply'){const value=$('#reactor-amount-input').value;if(validAmountDraft(value)&&Number(value)<=100){state.alloc[state.reactorEditIndex]=Number(value);$('#inspect-detail').close();state.reactorReceipt='';state.reactorIntent='custom';notify('设备目标已保留为草稿，尚未应用');}else{notify('当前演示容量100以内输入整数；实际分配不变');return;}}
+  else if(a==='reactor-task') {state.alloc=[60,35,5,0];state.reactorError='';state.reactorReceipt='';state.reactorIntent='custom';notify('调配方案已展开：武器增加15，防御保持，熔炼减少15');}
+  else if(a==='reactor-apply') {
+    state.reactorError='';state.reactorReceipt='';
+    if(sum(state.alloc)>100)state.reactorError='超过手动预算，未应用，原供能保持。';
+    else if(state.reactorIntent==='equal'){state.actual=[...state.alloc];state.reactorReceipt='均分命令已接纳：'+state.actual.join('/')+'；免费供能保持，效果读数已更新。';notify(state.reactorReceipt);}
+    else {const receipts=[];let next;while((next=reactorNextCommand())){
+      if(next.index===state.reactorFailAt){state.reactorError='演示领域拒绝：'+['武器','防御','熔炼','凝聚'][next.index]+'未接纳；已成功项保持，其余草稿可重试。';break;}
+      state.actual=next.next;receipts.push(['武器','防御','熔炼','凝聚'][next.index]+' '+next.current+'→'+next.target);
+    }state.reactorReceipt=(changed()?'部分接纳：':'调配已接纳：')+(receipts.join('；')||'无成功项')+'。'+(effectSnapshots[state.actual.join()]?'效果读数已更新。':'分配回执已返回，效果读数待取得。');notify(state.reactorReceipt);}
+  }
+  else if(a==='reactor-reset') {state.alloc=[...state.actual];state.reactorError='';state.reactorReceipt='';}
+  else if(a==='reactor-equal') {state.alloc=state.reactor==='opened'?[25,25,25,25]:[34,33,33,0];state.reactorError='';state.reactorReceipt='';state.reactorIntent='equal';notify('均分草稿已准备，确认后调用均分命令；免费供能保持');}
+  else if(a==='reactor-clear') {state.alloc=[0,0,0,0];state.reactorError='';state.reactorReceipt='';state.reactorIntent='clear';notify('清零草稿已准备，免费供能保留');}
   else if(a==='equip-compare') {state.candidate=!state.candidate;state.equipmentMode='one';if(state.equipment==='compare')state.equipment='normal';}
   else if(a==='equip-mode') {state.candidate=false;state.equipmentMode=state.equipmentMode==='max'?'one':'max';}
   else if(a==='equip-apply') {state.attributes[state.slot]=equipmentQuote().next;state.fitKeys[state.slot]=candidateType();state.fits[state.slot]=equipmentNames[state.fitKeys[state.slot]];state.cooldowns[state.slot]=18;state.equipment='normal';state.candidate=false;notify('更换成功，当前槽位与比较保留；换装冷却18秒');}
-  else if(a==='equip-buy') {state.attributes[state.slot]=equipmentQuote().next;state.levels[state.slot]+=state.equipmentMode==='max'?4:state.equipmentMode==='ten'?10:1;notify('已购级，当前槽位和操作模式保持');}
+  else if(a==='equip-buy') {const quote=equipmentQuote();if(quote.next==='待取得新报价'||quote.next===quote.current){notify('当前状态尚无新报价，等级与属性保持');return;}state.attributes[state.slot]=quote.next;state.levels[state.slot]+=state.equipmentMode==='max'?4:state.equipmentMode==='ten'?10:1;notify('已购级，当前槽位和操作模式保持');}
   else if(a==='planet-claim') {const f=selectedFacility();if(f.state==='ready'){f.state='owned';state.planet='owned';notify(selectedPlanet().name+' / '+f.name+'已领取，收益生效');}}
   else if(a==='planet-crew'||a==='planet-explorer') {const p=selectedPlanet(),f=selectedFacility();state.crewDraft=a==='planet-explorer'||!f.extraCrew?'planet-explore':'planet-build';state.crewPlanet=p.id;state.crewFacility=f.id;goRoute('crew');return;}
   else if(a==='planet-auto') {const p=selectedPlanet();p.automatic=!p.automatic;notify(p.automatic?'自动探索已开启':'本次探索仍继续，完成后停止');}
@@ -387,7 +404,9 @@ function action(a) {
   else if(a==='research-select') {state.researchDrawer=true;}
   else if(a==='research-close') {state.researchDrawer=false;}
   else if(a==='research-reset') {state.researchDraft=state.researchBudget;state.researchUraniumDraft=state.researchUranium;state.researchError='';state.researchFeedback='草稿已还原为当前生效值。';}
-  else if(a==='research-auto-apply') {state.researchAuto=state.researchAutoDraft;state.researchRatio=state.researchRatioDraft;state.researchFeedback='预算设置已生效，下一个60游戏秒刷新点采用；当前投入金额尚未重算。';}
+  else if(a==='research-intent-now') {const rows=budgetPreview(state.researchIntent);state.researchDraft=rows[0].rate;state.researchUraniumDraft=rows[1].rate;state.researchFeedback='即时预算草稿已生成，当前投入保持；铁和铀分别接纳，失败不撤销已成功资源。';}
+  else if(a==='research-intent-auto') {state.researchAuto=true;state.researchAutoDraft=true;state.researchRatio=String(state.researchIntent);state.researchRatioDraft=String(state.researchIntent);state.researchFeedback='持续收入比例已设置；下一60游戏秒刷新点才重算，当前投入保持。';}
+  else if(a==='research-auto-apply') {if(!Number.isFinite(Number(state.researchRatioDraft))||Number(state.researchRatioDraft)<0||Number(state.researchRatioDraft)>100){state.researchError='比例需在0–100%以内，当前预算设置保持。';render();return;}state.researchAuto=state.researchAutoDraft;state.researchRatio=state.researchRatioDraft;state.researchFeedback='预算设置已生效，下一个60游戏秒刷新点采用；当前投入金额尚未重算。';}
   else if(a==='research-crew') {state.crewDraft='research';goRoute('crew');return;}
   else if(a==='equip-one'||a==='equip-ten'||a==='equip-max-mode') {state.equipmentMode=a==='equip-one'?'one':a==='equip-ten'?'ten':'max';state.candidate=false;}
   else if(a==='hyper-manual') {goRoute('hyperspace/manual');return;}
@@ -468,6 +487,9 @@ document.addEventListener('click',event=>{
   else action(button.dataset.action);
 });
 document.addEventListener('input',event=>{
+  if(event.target.dataset.reactorShare!==undefined){state.alloc[Number(event.target.dataset.reactorShare)]=Number(event.target.value);state.reactorError='';state.reactorReceipt='';state.reactorIntent='custom';event.target.closest('label').querySelector('b').textContent=event.target.value+'%';$('#action-dock').innerHTML=dock();}
+  if(event.target.id==='research-intent'){state.researchIntent=Number(event.target.value);const box=document.createElement('div');box.innerHTML=researchIntentPanel();$('.budget-intent output').textContent=state.researchIntent+'%';$('.budget-comparison').innerHTML=box.querySelector('.budget-comparison').innerHTML;}
+
   if(event.target.id==='research-budget') state.researchDraft=event.target.value;
   if(event.target.id==='research-uranium')state.researchUraniumDraft=event.target.value;
   if(event.target.id==='research-ratio')state.researchRatioDraft=event.target.value;
@@ -479,6 +501,7 @@ document.addEventListener('input',event=>{
 });
 document.addEventListener('change',event=>{
   const id=event.target.id,value=event.target.value;
+  if(event.target.dataset.reactorShare!==undefined)render();
   if(id==='danger-planet'){state.planetId=value;state.dangerPreview=null;state.dangerResult=null;render();}
   if(event.target.dataset.retainDrone){const id=event.target.dataset.retainDrone;state.maintenance.retained=event.target.checked?[...state.maintenance.retained,id]:state.maintenance.retained.filter(x=>x!==id);state.dangerPreview=null;state.dangerResult=null;render();}
   if(id==='new-clear-settings'){state.maintenance.clearSettings=event.target.checked;state.dangerPreview=null;render();}
@@ -499,7 +522,7 @@ $('#scenario-open').onclick=()=>$('#scenario').showModal();
 $('#scenario-close').onclick=()=>$('#scenario').close();
 $('#assembly-toggle').onclick=()=>{document.body.classList.toggle('show-assembly');$('#assembly-toggle').classList.toggle('active',document.body.classList.contains('show-assembly'));};
 for(const key of ['reactor','equipment','planet','galaxy']) $('#'+key+'-case').onchange=event=>{
-  state[key]=event.target.value;
+  state[key]=event.target.value;if(key==='reactor'){state.reactorIntent='custom';state.reactorReceipt='';}
   if(key==='reactor') {state.actual=event.target.value==='idle'?[0,0,0,0]:[45,35,20,0];state.alloc=event.target.value==='draft'?[60,35,5,0]:event.target.value==='rejected'?[55,35,20,0]:[...state.actual];state.reactorError=event.target.value==='rejected'?'额度不足，实际供能保持原值。':'';}
   if(key==='galaxy'){const n=state.galaxyNodes[state.galaxyNode];n.state=event.target.value;n.progress=n.state==='complete'?100:n.state==='building'?62:n.state==='upgrading'?48:0;n.level=n.state==='upgrading'?2:n.state==='complete'?3:1;}
   if(key==='planet'){const p=selectedPlanet(),f=selectedFacility();f.state=event.target.value==='paused'?'building':event.target.value;f.work=f.state==='ready'||f.state==='owned'?f.required:111;if(event.target.value==='paused'){for(const m of Object.values(state.crewMembers))if(m.job==='planet-build'&&m.targetPlanet===p.id&&m.targetFacility===f.id)m.job='idle';}if(event.target.value==='building'){Object.assign(state.crewMembers.navigator,{job:'planet-build',targetPlanet:p.id,targetFacility:f.id});}if(f.state==='ready'||f.state==='owned'){p.exploration=Math.max(p.exploration,210);for(const m of Object.values(state.crewMembers))if(m.job==='planet-build'&&m.targetPlanet===p.id&&m.targetFacility===f.id)m.job='idle';}}

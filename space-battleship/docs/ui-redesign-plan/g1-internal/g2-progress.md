@@ -45,3 +45,7 @@ G1组织审已通过，两方向都进入G2；没有选定UI，不是完整候�
 设置/保存与档案已从通用范围卡扩成状态台、偏好控件、持续危险预览、手册/敌情/通知/统计子路由；[具体实物和还原边界](g2-maintenance-restoration.md)。真实文件/音频与完整事务运行证据仍缺；当前继续超空间与剩余主战场/装配设计，不记全系统完成。
 
 第四批源码`ca80f1ed`：[同版manifest](evidence/g2-batch4/manifest.json)。主尺寸对照：[A保存](evidence/g2-batch4/scene-settings-save-1440x900.png)/[B保存](evidence/g2-batch4/work-settings-save-1440x900.png)、[A偏好](evidence/g2-batch4/scene-settings-preferences-1440x900.png)/[B偏好](evidence/g2-batch4/work-settings-preferences-1440x900.png)、[A手册](evidence/g2-batch4/scene-archive-tutorial-1440x900.png)/[B手册](evidence/g2-batch4/work-archive-tutorial-1440x900.png)、[A敌情](evidence/g2-batch4/scene-archive-intel-1440x900.png)/[B敌情](evidence/g2-batch4/work-archive-intel-1440x900.png)、[A通知](evidence/g2-batch4/scene-archive-notifications-1440x900.png)/[B通知](evidence/g2-batch4/work-archive-notifications-1440x900.png)。关键状态：[失败持续入口](evidence/g2-batch4/work-save-failed-1440x900.png)、[重铸预览](evidence/g2-batch4/work-reforge-preview-1440x900.png)/[下段](evidence/g2-batch4/work-reforge-preview-lower-1440x900.png)、[导入内存/写盘区分](evidence/g2-batch4/work-import-memory-disk-separated-1440x900.png)、[首次引导继续](evidence/g2-batch4/work-first-guide-1440x900.png)。
+
+## 首批R1局部修订
+
+设备读数安全区、整组调配/均分语义、连续装备报价及任意科研收入比例意图已修；见[g2-revision-r1.md](g2-revision-r1.md)及对应同版证据。真实Amount比例/负担与科研目标速度预览仍需原契约线程补齐。G2尚未通过，后续顺序处理第二批审查问题。
