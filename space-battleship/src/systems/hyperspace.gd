@@ -619,6 +619,22 @@ func _find_drone(id: String) -> Dictionary:
 		if str(drone.id) == id: return drone
 	return {}
 
+func forge_display_limits(id:String) -> Dictionary:
+	# Read-only presentation of the same configured limits used by preview_forge.
+	var drone:Dictionary=_find_drone(id)
+	if drone.is_empty():return {}
+	var quality:Dictionary=_quality_row(drone)
+	var ranges:Array=[]
+	for affix in drone.affixes:
+		if affix.locked:continue
+		var row:Dictionary=_affix_ranges[str(affix.key)][int(affix.tier)]
+		ranges.append({"kind":"affix","key":str(affix.key),"tier":int(affix.tier),"minimum":row.minimum,"maximum":row.maximum})
+	if drone.legendary:
+		for row in _legend_parameters.get(str(drone.legendary_effect.effect_id),[]):
+			ranges.append({"kind":"legend","key":str(row.parameter),"minimum":row.minimum,"maximum":row.maximum})
+	return {"affix_limit":int(quality.get("affix_limit",0)),
+		"hanging_limit":maxi(int(quality.get("hanging_limit",0)),int(drone.preserved_hanging_slots)),"reroll_ranges":ranges}
+
 func preview_forge(id: String, operation: String, args: Dictionary = {}, highest_reached: int = 0) -> Dictionary:
 	var drone: Dictionary = _find_drone(id)
 	if drone.is_empty() or _sealed.has(id): return {"ok": false, "reason": "DroneUnavailable"}

@@ -62,6 +62,7 @@ var _next_autosave_wall: float = 0.0
 var _save_status_elapsed: float = 1.0
 var _seen_save_failure_generation: String = ""
 var _feedback_timer:Timer
+var _review_labels:Dictionary = {}
 
 func _ready() -> void:
 	get_window().size_changed.connect(_sync_window_scale)
@@ -152,6 +153,7 @@ func _configure_save(directory: String) -> Dictionary:
 
 func _show_session() -> void:
 	_player_text = PlayerText.new(JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json")))
+	_review_labels.clear()
 	_feature_panels.clear()
 	_visibility_pending = true
 	session.campaign_system.progress_changed.connect(_queue_feature_visibility)
@@ -236,13 +238,14 @@ func _load_saved(directory: String, backup: bool = false) -> Dictionary:
 	return _replace_session(loaded.session)
 
 func _preview_import(directory: String, source_file: String) -> Dictionary:
-	_pending_import = {}
+	_invalidate_review("import")
 	if not DirAccess.dir_exists_absolute(directory): return {"ok": false, "reason": "SaveDirectoryRequired"}
 	var preview: Dictionary = Session.import_candidate("res://generated/config.json", directory, source_file)
 	if not preview.ok: return preview
 	_pending_import = {"directory": directory, "source": source_file, "session": preview.session}
-	return {"ok": true, "message": "关卡 %s，舰船 %s，代次 %s；确认后导入" % [
-		preview.summary.stage, preview.summary.ship, preview.summary.generation]}
+	var message:String="关卡 %s，舰船 %s，代次 %s；确认后导入" % [preview.summary.stage, preview.summary.ship, preview.summary.generation]
+	_show_review("import",message)
+	return {"ok":true,"message":message}
 
 func _apply_import(directory: String, source_file: String) -> Dictionary:
 	if _pending_import.is_empty() or _pending_import.directory != directory or _pending_import.source != source_file:
@@ -298,7 +301,7 @@ func _replace_session(replacement) -> Dictionary:
 		"persistence_error": str(persisted.get("error", persisted.get("reason", "SaveFailed")))}
 
 func _preview_new_game(directory: String, clear_settings: bool) -> Dictionary:
-	_pending_new_game = {}
+	_invalidate_review("new_game")
 	if not DirAccess.dir_exists_absolute(directory):
 		return {"ok": false, "reason": "SaveDirectoryRequired"}
 	var candidate = Session.new()
@@ -314,7 +317,9 @@ func _preview_new_game(directory: String, clear_settings: bool) -> Dictionary:
 		target = directory.path_join("new-game-" + candidate._session_id.sha256_text().substr(0, 16))
 	_pending_new_game = {"session": candidate, "directory": directory, "target_directory": target, "clear_settings": clear_settings}
 	var recovery: String = "原目录中的损坏文件将原样保留，新存档将保存到 %s。" % target if target != directory else "确认后替换当前存档。"
-	return {"ok": true, "message": "新游戏已准备好。%s个人设置将%s。" % [recovery, "重置" if clear_settings else "保留"]}
+	var message:String="新游戏已准备好。%s个人设置将%s。" % [recovery, "重置" if clear_settings else "保留"]
+	_show_review("new_game",message)
+	return {"ok":true,"message":message}
 
 func _confirm_new_game(directory: String, clear_settings: bool) -> Dictionary:
 	if _pending_new_game.is_empty() or _pending_new_game.directory != directory or _pending_new_game.clear_settings != clear_settings:
@@ -351,7 +356,7 @@ func _confirm_new_game(directory: String, clear_settings: bool) -> Dictionary:
 	return switched
 
 func _preview_reforge(directory: String, planet_id: String, ids_text: String) -> Dictionary:
-	_pending_reforge = {}
+	_invalidate_review("reforge")
 	var ids: Array = []
 	for id in ids_text.split(",", false):
 		ids.append(id.strip_edges())
@@ -360,6 +365,7 @@ func _preview_reforge(directory: String, planet_id: String, ids_text: String) ->
 	_pending_reforge = {"session": preview.session, "directory": directory,
 		"planet": planet_id, "ids": ids_text}
 	session.set_pause("reforge", true)
+	_show_review("reforge",str(preview.summary.message))
 	return {"ok": true, "message": preview.summary.message}
 
 func _confirm_reforge(directory: String, planet_id: String, ids_text: String) -> Dictionary:
@@ -368,8 +374,7 @@ func _confirm_reforge(directory: String, planet_id: String, ids_text: String) ->
 	return _replace_session(_pending_reforge.session)
 
 func _cancel_reforge() -> Dictionary:
-	_pending_reforge = {}
-	session.set_pause("reforge", false)
+	_invalidate_review("reforge")
 	return {"ok": true}
 
 func _process(dt: float) -> void:
@@ -386,7 +391,7 @@ func _process(dt: float) -> void:
 			if failure_generation != _seen_save_failure_generation:
 				_seen_save_failure_generation = failure_generation
 				if growth_status != null:
-					growth_status.text = "保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown")))
+					_show_feedback("保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown"))))
 		_save_status_elapsed += maxf(dt, 0.0)
 		if save_state_label != null and growth_panel != null and growth_panel.visible and _save_status_elapsed >= 1.0:
 			_save_status_elapsed = 0.0
@@ -402,7 +407,7 @@ func _process(dt: float) -> void:
 		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
 			_next_autosave_wall = session.wall_time + _autosave_interval
 			var saved: Dictionary = session.request_save()
-			if not saved.ok and growth_status != null: growth_status.text = PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed"))))
+			if not saved.ok and growth_status != null: _show_feedback(PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed")))))
 	if _overlay != null: _overlay.queue_redraw()
 	queue_redraw()
 
@@ -511,25 +516,50 @@ func _sync_guidance() -> void:
 func _draw_shell(_canvas:Node2D)->void:
 	pass
 
+func _show_feedback(message:String) -> void:
+	if growth_status == null: return
+	growth_status.text = message
+	growth_status.show()
+	if _feedback_timer != null: _feedback_timer.start()
+
+func _review_label(parent:Control, kind:String) -> void:
+	var label:=Label.new()
+	PlayerText.wrap(label)
+	parent.add_child(label)
+	label.hide()
+	_review_labels[kind]=label
+
+func _show_review(kind:String, message:String) -> void:
+	if _review_labels.has(kind):
+		_review_labels[kind].text=message
+		_review_labels[kind].show()
+
+func _invalidate_review(kind:String) -> void:
+	if kind=="import": _pending_import={}
+	elif kind=="new_game": _pending_new_game={}
+	elif kind=="reforge":
+		_pending_reforge={}
+		session.set_pause("reforge",false)
+	if _review_labels.has(kind): _review_labels[kind].hide()
+
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	parent.add_child(button)
 	button.pressed.connect(func():
 		if not session.run_state.is_running():
-			growth_status.text = "当前会话已停止，请恢复有效存档。"
+			_show_feedback("当前会话已停止，请恢复有效存档。")
 			return
 		if not _pending_reforge.is_empty() and text not in ["确认重铸", "取消重铸"]:
-			growth_status.text = "请先确认或取消重铸"
+			_show_feedback("请先确认或取消重铸")
 			return
 		var result: Dictionary = action.call()
-		growth_status.show();_feedback_timer.start()
 		if result.get("settings_failed", false):
-			growth_status.text = "个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown")))
+			_show_feedback("个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown"))))
 			return
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
-		growth_status.text = "会话已切换，保存失败：" + PlayerText.error(str(result.get("persistence_error", "Unknown"))) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, PlayerText.error(reason))))
+		_show_feedback("会话已切换，保存失败：" + PlayerText.error(str(result.get("persistence_error", "Unknown"))) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, PlayerText.error(reason)))))
 		)
 	return button
 
@@ -539,7 +569,7 @@ func _set_page(page: String) -> void:
 		_preferred_page = page
 		growth_panel.visible = page == "growth"
 	elif growth_status != null:
-		growth_status.text = PlayerText.error(str(saved.reason))
+		_show_feedback(PlayerText.error(str(saved.reason)))
 
 func _setup_growth_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -563,7 +593,7 @@ func _setup_growth_panel() -> void:
 	back.pressed.connect(func(): _set_page("battle"))
 	box.add_child(back)
 	growth_status = Label.new()
-	if not _settings_error.is_empty(): growth_status.text = _settings_error
+	if not _settings_error.is_empty(): _show_feedback(_settings_error)
 	PlayerText.wrap(growth_status)
 	layer.add_child(growth_status)
 	growth_status.add_theme_stylebox_override("normal",load("res://src/ui/bridge_theme.gd").create().get_stylebox("panel","PanelContainer"))
@@ -621,7 +651,9 @@ func _setup_growth_panel() -> void:
 	var save_picker := FileDialog.new()
 	save_picker.access = FileDialog.ACCESS_FILESYSTEM
 	save_picker.file_mode = FileDialog.FILE_MODE_OPEN_DIR
-	save_picker.dir_selected.connect(func(path: String): save_path.text = path)
+	save_picker.dir_selected.connect(func(path: String):
+		for kind in ["import","new_game","reforge"]:_invalidate_review(kind)
+		save_path.text = path)
 	box.add_child(save_picker)
 	_command_button(box, "选择存档目录", func() -> Dictionary:
 		save_picker.popup_centered_ratio()
@@ -656,7 +688,7 @@ func _setup_growth_panel() -> void:
 			_next_autosave_wall = session.wall_time + value
 		else:
 			autosave.set_value_no_signal(_autosave_interval)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_show_feedback(PlayerText.error(str(saved.reason))))
 	var skip_tutorial := CheckBox.new()
 	skip_tutorial.text = "自动跳过引导提示"
 	skip_tutorial.button_pressed = _skip_tutorial
@@ -669,7 +701,7 @@ func _setup_growth_panel() -> void:
 			_sync_guidance()
 		else:
 			skip_tutorial.set_pressed_no_signal(_skip_tutorial)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_show_feedback(PlayerText.error(str(saved.reason))))
 	var music := CheckBox.new()
 	music.text = "音乐"
 	music.button_pressed = _music_enabled
@@ -682,7 +714,7 @@ func _setup_growth_panel() -> void:
 			if _music_player != null: _music_player.stream_paused = not enabled
 		else:
 			music.set_pressed_no_signal(_music_enabled)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_show_feedback(PlayerText.error(str(saved.reason))))
 	var effects := CheckBox.new()
 	effects.text = "音效"
 	effects.button_pressed = _effects_enabled
@@ -693,7 +725,7 @@ func _setup_growth_panel() -> void:
 		if saved.ok: _effects_enabled = enabled
 		else:
 			effects.set_pressed_no_signal(_effects_enabled)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_show_feedback(PlayerText.error(str(saved.reason))))
 	var damage_mode := OptionButton.new()
 	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
 	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
@@ -708,12 +740,15 @@ func _setup_growth_panel() -> void:
 				if child.get_script() == BattleView: child.damage_mode = chosen
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_show_feedback(PlayerText.error(str(saved.reason))))
 	var clear_settings := CheckBox.new()
 	clear_settings.text = "新游戏同时重置个人设置"
 	box.add_child(clear_settings)
 	_command_button(box, "预览新游戏", func() -> Dictionary:
 		return _preview_new_game(save_path.text, clear_settings.button_pressed))
+	_review_label(box,"new_game")
+	clear_settings.toggled.connect(func(_value):_invalidate_review("new_game"))
+	_command_button(box, "取消新游戏",func():_invalidate_review("new_game");return {"ok":true})
 	_command_button(box, "确认新游戏", func() -> Dictionary:
 		return _confirm_new_game(save_path.text, clear_settings.button_pressed))
 	_command_button(box, "加载主存档", func() -> Dictionary:
@@ -727,13 +762,18 @@ func _setup_growth_panel() -> void:
 	import_picker.access = FileDialog.ACCESS_FILESYSTEM
 	import_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	import_picker.add_filter("*.json", "游戏存档")
-	import_picker.file_selected.connect(func(path: String): import_path.text = path)
+	import_picker.file_selected.connect(func(path: String):_invalidate_review("import");import_path.text = path)
 	box.add_child(import_picker)
 	_command_button(box, "选择导入文件", func() -> Dictionary:
 		import_picker.popup_centered_ratio()
 		return {"ok": true, "message": "请选择游戏存档文件"})
 	_command_button(box, "预览导入", func() -> Dictionary:
 		return _preview_import(save_path.text, import_path.text))
+	_review_label(box,"import")
+	import_path.text_changed.connect(func(_value):_invalidate_review("import"))
+	save_path.text_changed.connect(func(_value):
+		for kind in ["import","new_game","reforge"]:_invalidate_review(kind))
+	_command_button(box,"取消导入",func():_invalidate_review("import");return {"ok":true})
 	_command_button(box, "确认导入", func() -> Dictionary:
 		return _apply_import(save_path.text, import_path.text))
 	box = _module_page(_pages.universe.box,"重铸远征","reforge")
@@ -750,6 +790,9 @@ func _setup_growth_panel() -> void:
 	_setup_reforge_selection(reforge_box, planet_id, retained_ids)
 	_command_button(reforge_box, "预览重铸", func() -> Dictionary:
 		return _preview_reforge(save_path.text, planet_id.text, retained_ids.text))
+	_review_label(reforge_box,"reforge")
+	planet_id.text_changed.connect(func(_value):_invalidate_review("reforge"))
+	retained_ids.text_changed.connect(func(_value):_invalidate_review("reforge"))
 	_command_button(reforge_box, "确认重铸", func() -> Dictionary:
 		return _confirm_reforge(save_path.text, planet_id.text, retained_ids.text))
 	_command_button(reforge_box, "取消重铸", _cancel_reforge)
@@ -844,12 +887,15 @@ func _setup_reforge_selection(parent: Control, planet_value: LineEdit, drone_val
 	parent.add_child(help)
 	_reforge_picker = OptionButton.new()
 	parent.add_child(_reforge_picker)
-	_reforge_picker.item_selected.connect(func(index): _reforge_planet_value.text = str(_reforge_picker.get_item_metadata(index)))
+	_reforge_picker.item_selected.connect(func(index):
+		_invalidate_review("reforge")
+		_reforge_planet_value.text = str(_reforge_picker.get_item_metadata(index)))
 	_reforge_drones = ItemList.new()
 	_reforge_drones.select_mode = ItemList.SELECT_MULTI
 	_reforge_drones.custom_minimum_size.y = 120
 	parent.add_child(_reforge_drones)
 	_reforge_drones.multi_selected.connect(func(_index, _selected):
+		_invalidate_review("reforge")
 		var selected := PackedStringArray()
 		for index in _reforge_drones.get_selected_items(): selected.append(str(_reforge_drones.get_item_metadata(index)))
 		_reforge_drone_value.text = ",".join(selected))

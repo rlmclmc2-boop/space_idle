@@ -27,7 +27,12 @@ func _init(galaxy, visual_context: Callable = Callable(), crew=null, coordinate:
 	size_flags_vertical=Control.SIZE_EXPAND_FILL
 	_galaxy.status_changed.connect(_queue_status)
 	_galaxy.availability_changed.connect(_queue_status)
+	if _crew_provider!=null:_crew_provider.members_changed.connect(_crew_changed)
 	_queue_status()
+
+func _crew_changed(_ids:Array) -> void:
+	# The visible inspector reads its own selected region; no domain broadcast.
+	_visual_refresh=1.0
 
 func _queue_status(keys: Array = []) -> void:
 	if keys.is_empty(): _pending_full = true
@@ -80,6 +85,10 @@ func _process(dt: float) -> void:
 	var context: Dictionary = _visual_context.call() if _visual_context.is_valid() else {}
 	_map.set_running(not bool(context.get("paused", false)))
 	_map.crew_count = int(context.get("galaxy_crew", {}).get(_map_key, 0))
+	_visual_refresh+=maxf(dt,0.0)
+	if _inspector.visible and _map.selected_slot>=0 and _visual_refresh>=0.25:
+		_visual_refresh=0.0
+		_show_slot(_map.selected_slot)
 
 func _flush_pending() -> void:
 	if not is_visible_in_tree(): return
@@ -139,4 +148,4 @@ func _show_slot(id: int) -> void:
 	if not node.explored:_detail.text+="\n剩余探索工作量 %.1f · %s"%[node.explore_remaining,"当前可达" if node.reachable else "等待前置区域探索"]
 	elif node.state=="constructing":_detail.text+="\n剩余施工工作量 %.1f"%node.construction_remaining
 	if node.upgrade_remaining>0:_detail.text+="\n升级剩余工程量 %.1f · 当前级效果继续生效"%node.upgrade_remaining
-	_detail.text+="\n星系人员 %d%s"%[_map.crew_count," · 缺人暂停" if _map.crew_count==0 and node.state in ["exploring","constructing"] else ""]
+	_detail.text+="\n星系人员 %d%s"%[_map.crew_count," · 缺人暂停" if _map.crew_count==0 and (node.state in ["exploring","constructing"] or node.upgrade_remaining>0) else ""]

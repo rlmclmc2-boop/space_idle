@@ -52,7 +52,7 @@ func _init(session, command: Callable) -> void:
 const NAMES := {"laser": "脉冲激光", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光",
 	"alpha": "阿尔法", "beta": "贝塔", "gamma": "伽马", "delta": "德尔塔",
 	"degenerate_matter": "简并物质", "glueball": "胶球", "antiproton": "反质子", "zero_point_energy": "零点能", "dark_matter": "暗物质", "strange_matter": "奇异物质", "antimatter": "反物质",
-	"white": "普通", "blue": "精良", "gold": "稀有", "legendary": "传说", "ultimate_core": "究极核心", "ultimate": "究极",
+	"white": "普通", "blue": "精良", "gold": "稀有", "legendary": "传说", "ultimate_core": "究极核心", "ultimate_cores": "究极核心", "ultimate": "究极",
 	"damage_laser": "激光伤害", "damage_missile": "导弹伤害", "damage_cannon": "舰炮伤害", "damage_longLaser": "长激光伤害",
 	"global_damage": "全局伤害", "global_critical_damage": "暴击伤害", "global_defence": "全局防御", "critical_chance": "暴击率",
 	"repeat_chance": "连发概率", "attack_speed": "攻击速度", "chain_count": "链式数量", "armour_capacity": "装甲容量", "shield_capacity": "护盾容量",
@@ -61,10 +61,27 @@ const NAMES := {"laser": "脉冲激光", "missile": "导弹", "cannon": "舰炮"
 	"drone_master": "无人机大师", "black_hole": "黑洞", "drone_rebuild": "无人机重建",
 	"resource_collector": "资源采集器", "distributed_algorithm": "分布式算法", "extra_storage": "扩展存储", "gem_refiner": "微粒精炼", "hyperspace_charge": "超空间充能"}
 const OPERATIONS := {"add_affix": "增加词缀", "replace_affix": "替换词缀", "add_hanging_slot": "增加挂槽", "lock_affix": "锁定词缀", "promote_affix": "词缀升阶", "reroll_values": "重抽数值", "enable_omen": "开启预兆", "disable_omen": "关闭预兆", "legendary": "升为传说", "modernize": "现代化", "ultimate": "究极化", "restore_ultimate": "还原究极"}
+const FORGE_ERRORS := {
+	"AffixCapacityExceeded":"当前品质的词缀槽已满，不能继续增加词缀。",
+	"HangingCapacityExceeded":"当前品质及已保留挂槽的容量已满，不能继续增加挂槽。",
+	"NoUnlockedAffix":"没有可修改的未锁定词缀；重抽传说参数需为传说形态。",
+	"NoPromotableAffix":"没有可升阶的未锁定词缀；1阶词缀已达最高阶。",
+	"UltimateLocked":"究极形态只允许还原究极；先还原后才能进行其他改造。",
+	"ModernizationLevelUnavailable":"对应武器路线没有高于当前无人机等级、且不超过本轮主线进度的通关纪录，无法现代化。",
+	"OmenAlreadyEnabled":"所选无人机已开启预兆。",
+	"AlreadyLegendary":"所选无人机已是传说形态。",
+	"AlreadyUltimate":"所选无人机已是究极形态。",
+	"NotUltimate":"所选无人机不是究极形态，无需还原。",
+	"LegendNotCollected":"指定传说效果尚未收集，不能用于定向改造。",
+	"ForecastLimit":"当前目标在允许的预演次数内未获得，请更换目标或选择随机结果。",
+	"UnknownAffix":"所选词缀已失效，请重新选择。"}
 const FIELDS := {"weapon": "武器类型", "quality": "品质", "minimum_level": "最低等级", "affix": "词缀强度", "legendary_effect": "传说效果"}
 
 func _name(id) -> String:
 	return str(NAMES.get(str(id), "未知类型"))
+
+func _parameter_name(key:String) -> String:
+	return str({"area_bonus":"范围增益", "counter_damage_bonus":"反击伤害增益", "damage_and_defence_bonus":"伤害与防御增益", "damage_bonus":"伤害增益", "maximum_bonus":"最大增益", "maximum_dodge":"最大闪避", "maximum_multiplier_bonus":"最大倍率增益", "maximum_reduction":"最大减免", "single_target_bonus":"单体伤害增益", "damage_multiplier":"伤害倍率", "damage_ratio":"伤害比例", "chance":"触发概率", "duration":"持续秒数", "cooldown":"冷却秒数", "count":"数量", "radius":"范围", "interval":"间隔秒数", "multiplier":"倍率"}.get(key,key))
 
 func _option(picker: OptionButton, title: String, value) -> void:
 	picker.add_item(title)
@@ -259,6 +276,7 @@ func _button(title: String, action: Callable) -> void:
 		if not result.get("ok", false):
 			var messages := {"DroneNotSealed": "所选无人机当前没有封存。", "ClaimStageLocked": "尚未通关封存门槛关卡，请先完成关卡后再领取。", "SelectOneDrone": "请先在仓库中选择一架无人机。", "WarehouseFull": "主仓和溢出仓均已满，请先拆解未保护的无人机再领取奖励。", "ProtectedDrone": "已装备、收藏、封存或被预设引用的无人机不可拆解。", "DroneUnavailable": "所选无人机不可用于此操作；溢出项需先整理入主仓，封存项需先领取。"}
 			if messages.has(str(result.get("reason", ""))): result.message = messages[str(result.reason)]
+			elif FORGE_ERRORS.has(str(result.get("reason",""))):result.message=FORGE_ERRORS[str(result.reason)]
 		_refresh()
 		return result)
 
@@ -380,6 +398,22 @@ func _sync_forge_preview() -> void:
 	if JSON.stringify(request, "", true) != str(_forge_preview.fingerprint) or _forge_source(request) != str(_forge_preview.source):
 		_invalidate_forge_preview()
 
+func _forge_limits_text(request:Dictionary, forecast:Dictionary) -> String:
+	var limits:Dictionary=_session.hyperspace_system.forge_display_limits(str(request.id))
+	if limits.is_empty():return "对象已失效，请重新选择。"
+	var text:String="词缀上限 %d · 挂槽上限 %d；锁定词缀不参与替换、升阶或重抽。"%[limits.affix_limit,limits.hanging_limit]
+	var operation:String=str(request.operation)
+	if operation=="reroll_values":
+		for row in limits.reroll_ranges:
+			text+="\n%s：%s～%s"%[_name(row.key)+"（%d阶）"%row.tier if row.kind=="affix" else _parameter_name(row.key),str(row.minimum),str(row.maximum)]
+		if bool(request.args.get("guaranteed",false)):text+="\n保底重抽：以上可重抽字段取各自上限；锁定词缀保持原值。"
+	elif operation=="modernize":text+="\n目标等级 %d；词缀与形态保留。"%int(forecast.drone.level)
+	elif operation in ["enable_omen","disable_omen"]:text+="\n预兆将%s；不在此操作中替换词缀。"%("开启" if operation=="enable_omen" else "关闭")
+	elif operation=="promote_affix":text+="\n随机选择未锁定且未达1阶的词缀；可能升一阶，也可能不变。"
+	elif operation=="restore_ultimate":text+="\n还原后额外究极词缀停止生效，已有词缀记录保留。"
+	elif operation=="ultimate":text+="\n究极形态会启用额外究极词缀，并限制其他改造；可通过还原解除。"
+	return text
+
 func _forge(preview: bool) -> Dictionary:
 	var request: Dictionary = _forge_request()
 	if request.is_empty():
@@ -393,8 +427,10 @@ func _forge(preview: bool) -> Dictionary:
 			_forge_preview = {"request": request.duplicate(true), "fingerprint": JSON.stringify(request, "", true),
 				"source": _forge_source(request), "forecast": JSON.stringify(forecast, "", true),
 				"operation_id": "forge-ui:%s:%s" % [get_instance_id(), _forge_sequence], "completed": false,"before_text":_selected_description()}
-			_forecast.text = "原形态：\n%s\n候选操作：%s · 费用 %s · 抽数 %d\n锁定词缀受保护；随机结果尚未获得。确认仅执行本次预览。" % [_selected_description(),OPERATIONS.get(request.operation, "改造"), _cost_text(forecast.costs), int(forecast.draws)]
-		else: _forecast.text = "当前条件不满足，请检查无人机形态、收藏与材料。"
+			_forecast.text = "原形态：\n%s\n候选操作：%s · 费用 %s · 抽数 %d\n%s\n随机结果尚未获得。确认仅执行本次预览。" % [_selected_description(),OPERATIONS.get(request.operation, "改造"), _cost_text(forecast.costs), int(forecast.draws),_forge_limits_text(request,forecast)]
+		else:
+			forecast.message=str(FORGE_ERRORS.get(str(forecast.get("reason","")),PlayerText.error(str(forecast.get("reason","")))))
+			_forecast.text=forecast.message
 		return forecast
 	_sync_forge_preview()
 	if _forge_preview.is_empty():
@@ -455,7 +491,7 @@ func _refresh() -> void:
 	_preset_summary.text="已存编队："+("、".join(preset_names) if not preset_names.is_empty() else "暂无")
 	var balances:PackedStringArray=[]
 	var wallet:Dictionary=_session.economy.budget()
-	for id in _session.hyperspace_system.material_ids():balances.append(_name(id)+" "+str(_session.amount_api.apply("to_display",[wallet.get(id,_session.amount_api.apply("zero",[]).value)]).text))
+	for id in _session.hyperspace_system.material_ids()+["ultimate_cores"]:balances.append(_name(id)+" "+str(_session.amount_api.apply("to_display",[wallet.get(id,_session.amount_api.apply("zero",[]).value)]).text))
 	_materials.text="当前材料："+" · ".join(balances)
 	var selected_modules: Array = []
 	for index in _modules.get_selected_items(): selected_modules.append(_module_ids[index])
@@ -503,7 +539,14 @@ func _selected_description()->String:
 			if str(drone.id) in preset.drone_ids:flags.append("预设「"+str(preset.name)+"」引用，受保护")
 		var text:String="%s · %s · Lv%d · 挂槽 %d\n%s"%[_name(drone.weapon),_name("ultimate" if drone.ultimate else "legendary" if drone.legendary else drone.origin_quality),drone.level,drone.hanging_slots," · ".join(flags)]
 		for affix in drone.affixes:text+="\n%s · %s阶 · %s%s"%[_name(affix.key),affix.tier,str(affix.value)," · 已锁定" if affix.locked else ""]
-		if drone.legendary:text+="\n传说："+_name(drone.legendary_effect.effect_id)
+		text+="\n预兆："+("已开启" if drone.get("omen",false) else "未开启")
+		if not drone.get("ultimate_affix",{}).is_empty():
+			var affix:Dictionary=drone.ultimate_affix
+			text+="\n究极词缀"+("（生效）" if drone.ultimate else "（已保留，未生效）")+"：%s · %s阶 · %s"%[_name(affix.key),affix.tier,str(affix.value)]
+		if drone.legendary:
+			text+="\n传说："+_name(drone.legendary_effect.effect_id)
+			for key in drone.legendary_effect.parameters:
+				text+="\n  %s：%s"%[_parameter_name(str(key)),str(drone.legendary_effect.parameters[key])]
 		text+="\n已装挂设："+("、".join(drone.hangings.map(func(id):return _name(id))) if not drone.hangings.is_empty() else "无")
 		return text
 	return "对象已不存在，请重新选择。"
@@ -514,9 +557,16 @@ func _refresh_detail()->void:
 	var state:Dictionary=_session.hyperspace_system.warehouse()
 	var selected:Array=_selected_ids()
 	var removed:PackedStringArray=[]
-	for id in state.equipped:
-		if id not in selected:removed.append(str(id))
-	_loadout_preview.text="本次编队 %d 架 · 卸下 %d 架%s"%[selected.size(),removed.size(),"\n卸下："+"、".join(removed) if not removed.is_empty() else ""]
+	var added:PackedStringArray=[]
+	var retained:PackedStringArray=[]
+	for drone in state.main+state.overflow:
+		var id:String=str(drone.id)
+		var description:String="%s · %s · Lv%d（%s）"%[_name(drone.weapon),_name("ultimate" if drone.ultimate else "legendary" if drone.legendary else drone.origin_quality),int(drone.level),id]
+		if id in state.equipped:
+			if id in selected:retained.append(description)
+			else:removed.append(description)
+		elif id in selected:added.append(description)
+	_loadout_preview.text="本次编队 %d 架\n装入：%s\n保留：%s\n卸下：%s"%[selected.size(),"、".join(added) if not added.is_empty() else "无","、".join(retained) if not retained.is_empty() else "无","、".join(removed) if not removed.is_empty() else "无"]
 	_forge_subject.text="改造对象：\n"+_selected_description()
 	_drone_icon.texture=null
 	if selected.size()==1:
