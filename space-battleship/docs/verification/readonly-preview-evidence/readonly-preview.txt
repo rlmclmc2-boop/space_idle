@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS: route best/latest idle preview purity and unchanged admission order; actual start revalidation/reservation; 39 baseline filter parse/error/normalization/confirm cases; detached candidates; Planet automatic and existing notices without cancellation

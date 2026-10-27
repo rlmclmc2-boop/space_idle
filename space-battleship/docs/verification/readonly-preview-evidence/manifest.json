@@ -1,0 +1,36 @@
+{
+  "branch": "feat/amount-safe-previews",
+  "before_commit": "cd4169ccbb9cf94b58e29ac6583ff682465a9df2",
+  "scope": "routes.best_time; shared Session idle preparation and read-only preview; shared filter validation/import preview; Planet automatic snapshot",
+  "evidence": {
+    "readonly-preview.txt": {
+      "sha256": "bb1c0e0e0c8725fcf4c71143065cc27665208a261d497160f4d06c38426a14c8",
+      "bytes": 330,
+      "exit_code": 0
+    },
+    "readonly-check-only.txt": {
+      "sha256": "83cf0b082206af2aa236c83064fbcfa76be1e00a4aa3558574b2f65965d9481c",
+      "bytes": 75,
+      "exit_code": 0
+    }
+  },
+  "sources": {
+    "src/game_session.gd": {
+      "canonical_lf_sha256": "1766a33859dded7897d3528c9e61eefee1e9961a0f67873fc0c06c3f9cad330a"
+    },
+    "src/systems/hyperspace.gd": {
+      "canonical_lf_sha256": "9e4a20b09e8e57cb2a28f23fcfa138301b1677dac7111120551e3d00e28aa9b8"
+    },
+    "src/systems/planet.gd": {
+      "canonical_lf_sha256": "ec3ecc23eddc59e7192a3484b0d976a2f1b6ef2157c3ebae1bdd1efc673c929a"
+    },
+    "foundation/tests/_readonly_preview_probe.gd": {
+      "canonical_lf_sha256": "4b319a26ef1a6746c1cda3ff888c6f79da4170b31f514a5481c005247f362c17"
+    }
+  },
+  "baseline_hyperspace_sha256": "304d605a4f6efa2b3bd2ea23c4e0f954a5828b41ed0370f978be5a4fa0a10653",
+  "configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
+  "filter_baseline_case_count": 39,
+  "limitations": "Focused real Session/module probe and entry check only; test-owned history/personnel/planet fixtures; no UI, full gameplay, rewards/advance, save/restore acceptance, or geometry acceptance."
+}

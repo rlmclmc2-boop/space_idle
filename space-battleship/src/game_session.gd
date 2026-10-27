@@ -661,23 +661,36 @@ func _hyperspace_credit(reward: Dictionary) -> Dictionary:
 		next_wallet[resource] = added.value
 	return {"ok": true, "wallet": next_wallet}
 
-func start_hyperspace_single(route: String) -> Dictionary:
+# Preview and commands share admission order; only commands reserve and accept.
+func _prepare_hyperspace_idle(route: String, automatic: bool, crew_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
+	if automatic and hyperspace_system.online_status().auto.enabled:
+		return {"ok": false, "reason": "AutoRunning"}
 	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().cycle_reached)):
 		return {"ok": false, "reason": "HyperspaceLocked"}
-	var prepared: Dictionary = hyperspace_system.prepare_idle(route, false, "", 0, float(_planet_factors.luck))
+	var crew_level: int = 0
+	if automatic:
+		var crew: Dictionary = crew_system.hyperspace_candidate(crew_id)
+		if not crew.ok: return crew
+		crew_level = int(crew.level)
+	return hyperspace_system.prepare_idle(route, automatic, crew_id, crew_level, float(_planet_factors.luck))
+
+func hyperspace_idle_preview(route: String, automatic: bool, crew_id: String = "") -> Dictionary:
+	var prepared: Dictionary = _prepare_hyperspace_idle(route, automatic, crew_id)
+	if not prepared.ok: return prepared
+	var receipt: Dictionary = prepared.receipt
+	return {"ok": true, "route": str(receipt.route), "level": int(receipt.level),
+		"automatic": automatic, "duration": float(receipt.duration),
+		"crew": {"id": str(receipt.crew_id), "level": int(receipt.crew_level), "luck": float(receipt.luck)} if automatic else null}
+
+func start_hyperspace_single(route: String) -> Dictionary:
+	var prepared: Dictionary = _prepare_hyperspace_idle(route, false, "")
 	if not prepared.ok: return prepared
 	hyperspace_system.accept_idle(prepared.receipt, false)
 	return {"ok": true, "receipt": hyperspace_system.online_status().idle}
 
 func start_hyperspace_auto(route: String, crew_id: String) -> Dictionary:
-	if not run_state.is_running(): return run_state.rejection()
-	if hyperspace_system.online_status().auto.enabled: return {"ok": false, "reason": "AutoRunning"}
-	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().cycle_reached)):
-		return {"ok": false, "reason": "HyperspaceLocked"}
-	var crew: Dictionary = crew_system.hyperspace_candidate(crew_id)
-	if not crew.ok: return crew
-	var prepared: Dictionary = hyperspace_system.prepare_idle(route, true, crew_id, int(crew.level), float(_planet_factors.luck))
+	var prepared: Dictionary = _prepare_hyperspace_idle(route, true, crew_id)
 	if not prepared.ok: return prepared
 	var reserved: Dictionary = crew_system.reserve_hyperspace(crew_id, route, false)
 	if not reserved.ok: return reserved

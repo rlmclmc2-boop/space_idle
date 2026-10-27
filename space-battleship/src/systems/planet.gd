@@ -234,7 +234,7 @@ func visual_snapshot(id: String) -> Dictionary:
 		if progress.buildings[key].state == "built":
 			facilities.append({"id": str(key), "type": str(_buildings[key].type), "owned": true})
 	row["visualFacilities"] = facilities
-	return {"row": row, "running": bool(progress.running), "exploration": int(progress.exploration),
+	return {"row": row, "running": bool(progress.running), "automatic": bool(progress.automatic), "exploration": int(progress.exploration),
 		"elapsed": float(progress.elapsed), "duration": float(progress.duration)}
 
 ## Personnel are frame-local inputs; only static facility facts are cached.

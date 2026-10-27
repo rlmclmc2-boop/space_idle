@@ -181,7 +181,7 @@
 | `claim_allowed/claim_reason` | bool/String；复用当前星球可用性、ready状态及原命令准入条件的只读判断；允许时reason为空 | 不执行_claim_build或预先接纳；仍须由claim_build按提交时事实判定，不增加统一错误/回滚政策。 |
 | `source_factor` | 已领取equipment/refinery设施的当前来源倍率Amount文本；其他类型或尚未领取为null | 沿已有设施贡献来源求值/缓存投影，仅是该设施当前来源倍率，不是装备或掉落的最终值。shipyard/auto_explore不伪造数值倍率；不承诺领取后预测或重铸许可。 |
 
-实际探索者与时钟继续按原人员事实及`Planet.visual_snapshot`消费，不复制探索时钟。现有`visual_snapshot`没有automatic字段；自动探索开关的当前设置只读输出仍是Planet所属的待补缺口，不能声称现有快照已覆盖。该输出只读现有设置，不把关闭自动与立即取消合并成新动作。
+实际探索者与时钟继续按原人员事实及`Planet.visual_snapshot`消费，不复制探索时钟。主线`visual_snapshot`没有automatic字段；本分支实现候选的最小增补见[第10节](#10-实现候选超空间只读预览与星球自动设置)，未合main。该输出只读现有设置，不把关闭自动与立即取消合并成新动作。
 
 ### 8.4 Galaxy：选中节点事实
 
@@ -274,3 +274,18 @@
 影响容量、免费量、开放模块、已接纳分配或科研钱包/窗口/项目/work/投入/周期/速度/效果的变化，由相应所有者管理预览失效或在可见时重读。对UI只给容量、开放设备、当前/目标业务读数及必要研究状态；不公开容量输入因子、人员/算法/peak等内部组成让UI比较。无需全局revision/fingerprint或容量快照锁；命令按当前事实校验所确认的金额，成功实际回执替换旧效果。
 
 现有choices_changed/investment_changed、Economy显示变化、Crew成员/选项及实际贡献提供方事实可使读模型失效；它们不能冒称已覆盖所有时钟/收入窗口/研究进度与容量变化。实施时只在所有者补必要覆盖或在可见显示帧重读时钟相关事实，隐藏停无用投影、重开取最新；不读私有账本，不新增Session全局通知层。静态定义、所需工程量与未变效果按其真实来源复用，不因滑杆拖动/窗口尺寸反复求幂。
+
+## 10. 实现候选：超空间只读预览与星球自动设置
+
+优先三项方向已双审通过；本分支运行候选待实现双审，未合main。基线`cd4169ccbb9cf94b58e29ac6583ff682465a9df2`，仅补现行规则下的读取，未实施同提案其余清单。固定源码/定向证据见[实现记录](../verification/readonly-preview-implementation.md)。
+
+| 出口与消费者 | 最小输出与语义 |
+|---|---|
+| Hyperspace `routes()` → M9路线行 | 保留route/weapon/cleared，加`best_time: float或null`，只指当前最高已过层有效最佳游戏秒；无记录为null，不把更低层最佳、在线10秒下限或现实倍速后的秒数替代它。 |
+| Session `hyperspace_idle_preview(route: String, automatic: bool, crew_id: String="")` → M9单次/自动确认 | 成功回`ok/route/level/automatic/duration`，duration是现行完整游戏时长；单次`crew=null`，自动`crew={id,level,luck}`取现行Session实际来源的开始快照。拒绝保留原reason，不输出伪造时长/人员目标；不返回receipt/run_id/RNG或奖励。输入不收客户端等级、幸运、容量。 |
+| Hyperspace `preview_filter_import(text: String)` → M9导入前审阅 | 成功回`ok=true/candidate`，candidate是脱离当前规则的规范v2五字段version/enabled/mode/action/conditions；枚举ID目录复用player_catalog的weapons/qualities/affixes/legends四类，minimum_level是数值条件。失败沿原`InvalidFilterShare/InvalidFilter`及规范化准入。 |
+| Planet `visual_snapshot(id)` → M7自动设置 | 在现有快照加`automatic: bool`，读取已接纳的继续探索设置；running/时钟独立。未知或未开放仍返回空快照。setter只在成功且设置实际改变后沿既有status_changed通知，不新增通知类别。 |
+
+Session预览与两个开始命令共用准备链，保留拒绝顺序：单次为RunState→开放→prepare_idle；自动为RunState→AutoRunning→开放→Crew准入→prepare_idle。prepare_idle继续负责UnknownRoute、在线任务占用、最佳时间和原时长等判断；预览不调用reserve/accept、不推进随机/任务/序列、不发通知。合法恢复/装配已校验保留一致性，不新造占用模拟器；预览不锁定资源，开始仍按最新状态重新准备，只有开始自动才保留船员。
+
+过滤命令与预览共用原解析/规范化及纯校验，set_filter直接输入仍保留原严格类型准入。预览不改当前规则，返回值可本地编辑而不污染所有者；确认仍调用import_filter原串并重新解析校验，不能提交客户端candidate绕过原准入。UI编辑分享串、切换来源、取消或成功后清对应旧确认；不为此添加全局revision、过滤影响扫描或仓库处理动作。Planet关闭自动仍只改变后续继续设置，不取消正在进行的探索。

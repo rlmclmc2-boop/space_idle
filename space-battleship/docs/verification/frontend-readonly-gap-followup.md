@@ -1,6 +1,6 @@
 # 前端剩余只读缺口：定向续核提案
 
-仅提案，未实现、未修改规则或配置。按[唯一入口](../game-design/README.md)读取14、04§1–2、03§5及对应还原资料；沿[既有四批审计](https://github.com/rlmclmc2-boop/space_idle/blob/4bbb2f5b915f6e137d60cfd6082d82c525dc40d7/space-battleship/docs/verification/frontend-contract-audit/83112e84.md)续核，避免重复申请已有端口。只列既定玩法下的必要展示，未定规则与共享几何另案排除。
+本页保留`cd4169cc`提案时点；优先三项方向已双审通过，后续实现候选及证据见[实现记录](readonly-preview-implementation.md)与[14§10](../game-design/14-ui-contracts.md#10-实现候选超空间只读预览与星球自动设置)，未合main。其余清单仍仅提案，不实施，未修改规则或配置。按[唯一入口](../game-design/README.md)读取14、04§1–2、03§5及对应还原资料；沿[既有四批审计](https://github.com/rlmclmc2-boop/space_idle/blob/4bbb2f5b915f6e137d60cfd6082d82c525dc40d7/space-battleship/docs/verification/frontend-contract-audit/83112e84.md)续核，避免重复申请已有端口。只列既定玩法下的必要展示，未定规则与共享几何另案排除。
 
 ## 固定版本与状态
 
@@ -21,7 +21,7 @@
 
 预览边界：Session自行取RunState、解锁/进度、Crew、永久幸运等来源；客户端只传route/automatic/crew_id，不自报等级/幸运/容量。只读组合不调用start/reserve/accept、publish、advance或随机抽样，不消耗run_id，不写保留/任务/凭据；不得调用prepare_auto_continuation代替新任务预览。保留原准入顺序与reason；拒绝时duration/crew目标未知，不伪造0时长或成功。开始时按最新真实来源重验，预览不是预留；进行中消费online_status已绑定任务，浏览路线变化不得改它。
 
-过滤预览不改变current；空串、格式/大小/版本/类型/自身键/条件错误沿同一校验返回原因，不能自动禁用或抹空旧规则。UI绑定原始分享串与candidate，编辑、取消或切换来源即清旧确认；确认对当前串重验，不信任客户端candidate。不增加全局revision或通用事务。五类目录已存在，无需再新增目录口。
+过滤预览不改变current；空串、格式/大小/版本/类型/自身键/条件错误沿同一校验返回原因，不能自动禁用或抹空旧规则。UI绑定原始分享串与candidate，编辑、取消或切换来源即清旧确认；确认对当前串重验，不信任客户端candidate。不增加全局revision或通用事务。四类枚举目录已存在，minimum_level是数值条件，无需再新增目录口。
 
 ## 其余前端：复用与必要缺口清单
 
@@ -30,7 +30,7 @@
 | 缺口/消费者 | 现有源 | 最小新增／无需新增 |
 |---|---|---|
 | M9仓库容量与保护、挂设工作台 | `warehouse()`已有main/overflow/equipped/favorites/sealed/presets（含逐机hangings）及retention_capacity；`module_growth/module_contributions/prepare_hangings`、舰型drone_capacity已有。 | 保护来源/引用预设名可由已有公开事实按稳定id关联，无需新账本。warehouse只补主仓实际capacity（复用_warehouse_capacity）及overflow_capacity；挂设进度需由Hyperspace最小补所需经验/显示进度/当前来源贡献与开放原因，复用现有定义/成长/贡献，不让UI按等级重算。 |
-| M9每机允许槽/改造范围、费用可支付 | 实体形态/当前词缀/锁定/forge_revision来自warehouse；Session.preview_hyperspace_forge复用原局部随机返回候选/costs/draws；Economy公开金额/支付查询。较早候选forge_display_limits已给限额及可重抽范围。 | 先审核并复用该候选只读截面，补实际hanging_slots与上限含义，不能把上限当已购槽。报价按既有Amount输出必要canonical/显示金额及不足原因；Session如需显示最终配装准入，复用确认已有prepare_loadout，不把操作预览ok当整组可提交。随机候选不作为已获得结果；不新造改造算法。 |
+| M9每机允许槽/改造范围、费用可支付 | 实体形态/当前词缀/锁定/forge_revision来自warehouse；Session.preview_hyperspace_forge复用原局部随机返回候选/costs/draws；Economy公开金额/支付查询。较早候选forge_display_limits已给限额及可重抽范围。 | 先审核并复用该候选只读截面，实际hanging_slots已在warehouse实体中公开，直接复用，并区分其与上限的含义，不能把上限当已购槽。报价按既有Amount输出必要canonical/显示金额及不足原因；Session如需显示最终配装准入，复用确认已有prepare_loadout，不把操作预览ok当整组可提交。随机候选不作为已获得结果；不新造改造算法。 |
 | M9编队/预设确认、连续兑换 | warehouse已给当前序列/预设entries；prepare_loadout/prepare_preset/prepare_hangings给原准入，Session持有真实容量/进度/武器来源；兑换现行amount是收到目标量。 | 本次装卸/挂设差异先用公开稳定id与entries比较；整组允许性如需预览，由Session薄包装原准备链，不能UI重跑准入。兑换仅在原Amount路径投影目标收到量/源支付量及不足，保持原单位；不新增付款账本。 |
 | M9拆解与通知 | prepare_dismantle复用_dismantle_reward；后者用本机forge_rng_state的局部RandomNumberGenerator，未推进真实流。现有查询无对象通知，页面每秒读取。 | 若展示拆解报价，包装现有只读结果，随机副本仍标待结算，不需新抽样器。命令完成先重读受影响仓储/实体/成长；进度可见时沿现行刷新，不以“每屏要通知”新造事件层。后续确有外部失效缺口才补所属对象最小通知。 |
 | M6/M7/M8人员、设施、选中节点 | 当前候选member_facts/facility_facts/node_facts已覆盖[14§8](../game-design/14-ui-contracts.md#8-已审待实施成员设施与选中节点的最小只读事实)的最小字段；Crew.step_assignments/galaxy_assignments给当前人员。main未包含这些新增。 | 沿已实现候选接线，不重开全量模型；当前设施来源倍率不是未来领取后最终收益，节点迷雾不泄露预生成类型/目标等级。其余未来贡献/完整岗位效果请求沿既有审计，未确定显示范围的不在本轮新增；Planet automatic仅按上表补。 |
