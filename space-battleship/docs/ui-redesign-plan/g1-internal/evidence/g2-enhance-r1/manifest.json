@@ -1,0 +1,151 @@
+{
+  "source_commit": "acd78117dcb5a5fac0b42511f837a1112343136f",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "default E30 active A repeat60% memory36% cap3.6",
+    "funded E32 active A repeat60% memory38.4% cap3.84",
+    "poor current purchasable0",
+    "partial2 paid40.26B separated last receipt and pending next quote",
+    "disabled B retained and changed order invalidates unmatched effect snapshot",
+    "compact level source and optional node details"
+  ],
+  "images": [
+    {
+      "file": "scene-changed-effect-awaiting-snapshot-1440x900.png",
+      "case": "scene-changed-effect-awaiting-snapshot",
+      "family": "scene",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 278,
+        "inner": 0
+      },
+      "sha256": "78367eb48f433d2f733d04827a46056528cf94d58988592a6e11348d61edaf2f"
+    },
+    {
+      "file": "scene-current-effects-lower-1440x900.png",
+      "case": "scene-current-effects-lower",
+      "family": "scene",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 21,
+        "inner": 0
+      },
+      "sha256": "bca7bbe84ab41390e267f373aac33636c484360cd047b4d5d7ed48766e3a76f8"
+    },
+    {
+      "file": "scene-current-effects-1440x900.png",
+      "case": "scene-current-effects",
+      "family": "scene",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "a3fd62e1272c24de366428d9b41a5b3f748cbad0ca3395c4e56a0540932fe159"
+    },
+    {
+      "file": "scene-inactive-choice-preserved-1440x900.png",
+      "case": "scene-inactive-choice-preserved",
+      "family": "scene",
+      "route": "enhancement/branch/repeat/1",
+      "scroll": {
+        "outer": 278,
+        "inner": 0
+      },
+      "sha256": "fabdf374065bba56afc4bf89e6a27a77b6a4c751a7f7779ef971b8438f7ac875"
+    },
+    {
+      "file": "scene-purchased-effects-lower-1440x900.png",
+      "case": "scene-purchased-effects-lower",
+      "family": "scene",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 86,
+        "inner": 0
+      },
+      "sha256": "4c98776d8c46409d4bbf0c3c3a1d4ba917eefece74c8f2bc955e7d99c9cce17d"
+    },
+    {
+      "file": "scene-receipt-pending-quote-1440x900.png",
+      "case": "scene-receipt-pending-quote",
+      "family": "scene",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 21,
+        "inner": 0
+      },
+      "sha256": "5d78cf12c2f2338228e676db8dabb51b0f165c2f6e02386d5c700cf5469f39b4"
+    },
+    {
+      "file": "work-changed-effect-awaiting-snapshot-1440x900.png",
+      "case": "work-changed-effect-awaiting-snapshot",
+      "family": "work",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 357
+      },
+      "sha256": "587054ba83c511b5a67481557797ad5aa581df534248a03ff3bd0cd424f6f713"
+    },
+    {
+      "file": "work-current-effects-lower-1440x900.png",
+      "case": "work-current-effects-lower",
+      "family": "work",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 106
+      },
+      "sha256": "ba4fba292a38bd0a2fbdbdcb1a7f22d92d3e86fa9fc3fe5637752dd64a5b14b4"
+    },
+    {
+      "file": "work-current-effects-1440x900.png",
+      "case": "work-current-effects",
+      "family": "work",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "ebfa852f3dbe53cbb113fe779fc6aa648a8abe03a1e90b675bc5d57bf8505f59"
+    },
+    {
+      "file": "work-inactive-choice-preserved-1440x900.png",
+      "case": "work-inactive-choice-preserved",
+      "family": "work",
+      "route": "enhancement/branch/repeat/1",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "8f3e4d6309bbbf3b68f2d05797f8fa20047b495f1f8538666008ff4ea2e58477"
+    },
+    {
+      "file": "work-purchased-effects-lower-1440x900.png",
+      "case": "work-purchased-effects-lower",
+      "family": "work",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 171
+      },
+      "sha256": "211e95f6cecc91a7143f0625e71e556f4c4f3233893835784cca38f82aa57cb9"
+    },
+    {
+      "file": "work-receipt-pending-quote-1440x900.png",
+      "case": "work-receipt-pending-quote",
+      "family": "work",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 106
+      },
+      "sha256": "60c435ac5439f3ef086115339f7a5a752b32b2006982657cbc4dd48a3e14f78e"
+    }
+  ]
+}
