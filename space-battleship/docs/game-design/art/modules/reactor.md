@@ -33,27 +33,29 @@ V3替换核对还须证明：同一组既有操作在替图前后引用同一功
 
 ### v1元数据结构与稳定身份
 
-这是待实现的资源消费协议，不是已存在的运行文件。首次接入时需一次实现协议消费端；此后相同版本替换资产只改资源记录/布局元数据，不更改布局计算规则或业务。采用JSON对象，`contract_version=1`；未知版本拒绝导入，新增不兼容语义需升版本。`status`仅为`draft`或`ready`：draft可对未定值填null，ready要求下表必填项完整、引用有效；null不作为运行默认值。
+这是制作/交付/导入期的资源记录约定，不是游戏运行时schema。版本、格式、引用及SHA核对仅用于这些阶段的人工或离线检查；不新增运行时schema、版本或哈希守卫，不要求启动或逐帧验证。前端按已接纳资源及现有布局关系装配，替换资产不改业务。记录采用JSON对象，`contract_version=1`；不兼容记录在交付/导入期说明并修订版本，不把未知版本处理加入游戏运行路径。`status`仅为`draft`或`ready`：draft可对未定值填null，ready要求下表必填项完整、引用有效；null不作为运行默认值。
 
 稳定模块ID仅为`weapons`、`defence`、`smelting`、`condensation`，共享层`module_id=null`；不能用中文名、图片顺序或文件名推断模块。资产ID为`reactor.shell`、`reactor.core_housing`、`reactor.trunk`、`reactor.device_bay`或`reactor.device.<module_id>`；对应布局槽ID在`layout.slot_id`显式绑定（设备使用`reactor.slot.<module_id>`），业务仍按module_id查询/提交。
 
 | 必填字段 | 类型与固定语义（ready） |
 |---|---|
 | `contract_version`, `status`, `asset_id`, `module_id`, `layer` | int、枚举string、唯一string、枚举string或共享层null、枚举string；layer为`shell/core_housing/trunk/device_bay/device`，与asset_id对应。 |
-| `resource.path`, `resource.sha256`, `resource.canvas_px`, `resource.visible_rect_px` | 项目`res://`资源路径string、64位十六进制string、`[int宽,int高]`、`[number x,y,w,h]`。画布宽高和rect宽高>0，rect在画布内；visible_rect是静态主体边界，不能代替效果包络。 |
-| `anchors.install`, `anchors.power_in`, `anchors.power_out`, `anchors.junctions` | install必填`[number x,y]`；设备必填power_in，核心环境/主管必填power_out；主管junctions按已配置模块ID映射到端口。端口对象固定为`{position_px:[x,y],outward:[dx,dy]}`，方向向量非零；不适用的端口显式null或空map，不用缺字段猜含义。 |
+| `resource.path`, `resource.sha256`, `resource.canvas_px`, `resource.visible_rect_px` | 项目`res://`资源路径string、64字符十六进制string（仅交付证据，不作运行时守卫）、`[int宽,int高]`、`[number x,y,w,h]`。画布宽高和rect宽高>0，rect在画布内；visible_rect是静态主体边界，不能代替效果包络。 |
+| `anchors.install`, `anchors.power_in`, `anchors.power_out`, `anchors.junctions`, `anchors.effects` | install必填`[number x,y]`；device必填power_in，承接供能的核心环境/主管提供power_out，主管junctions按模块ID映射端口。端口对象为`{position_px:[x,y],outward:[dx,dy]}`，方向非零。effects为效果ID→源坐标point的map。shell、device_bay等不适用供能的共享层在ready记录中也允许power_in/power_out为null、junctions为空map；无效果时effects为空map，不制造虚假管口/挂点。 |
 | `layout.canvas_logical_size`, `layout.slot_id`, `layout.install_rect_logical`, `layout.target_anchor_logical` | `[number宽,高]`、唯一string、`[x,y,w,h]`、`[x,y]`。定义模块页面逻辑画布、安装框及install应到达的点，均非源图像素或桌面物理像素。 |
 | `layout.rotation_deg`, `layout.scale_mode`, `layout.max_scale`, `layout.clip_rect_logical` | 有限number、固定`fit_visible`、正number、`[x,y,w,h]`或显式null（不裁切）。具体数值可待定；禁止隐藏的非等比拉伸/翻转。 |
 | `regions`, `effects` | 两个必填map。regions以语义区ID映射`{rect_logical:[x,y,w,h],binding:string,role:readout或control,hit_rect_logical:rect或null}`；effects以局部效果ID映射`{anchor_key:string,envelope_rect_px:rect,clip_rect_px:rect或null,binding:string}`。没有该层内容时用空map。 |
-| `import.color_space`, `import.alpha_mode`, `import.filter`, `import.repeat`, `import.mipmaps`, `import.compression`, `import.size_limit_px` | 枚举`srgb/linear`、枚举`straight/premultiplied`、枚举`nearest/linear`、bool、bool、项目支持的导入模式string、非负int（0为不限制）。参数须显式声明并记录实际导入结果，不能靠导入器默认值；取值待视觉/尺寸确认不影响字段格式已确定。 |
+| `import.source_import_path`, `import.settings_snapshot` | 现有Godot资源`.import`路径string、原始设置键→原始值的map（bool/int/number/string）。仅记录该文件真实设置，如`compress/mode`、`mipmaps/generate`、`process/fix_alpha_border`、`process/premult_alpha`、`process/size_limit`及SVG实际存在的`svg/scale`；不能用记录回写或覆盖导入设置，也不虚构独立色彩/过滤配置。现有Godot导入设置是唯一权威，记录过时应更新证据；过滤/repeat等现有消费端属性仍在其原位置维护。 |
 
 所有number必须有限，rect和point的数组长度固定，ID在作用域内唯一，资源、锚点及binding引用必须存在。控制区的`hit_rect_logical`必填有效rect；只读区可null，不能把透明边缘自动当点击区域。语义区键：共享控制区用`core_level/capacity/purchase/equalize`，设备区用`name/manual_supply/free_supply/effective_supply/effect_summary/clear/allocation_input/allocation_minus/allocation_plus`；不适用项不生成可见区域。binding是显示/操作语义键，消费端统一映射现有公开模型/命令，不在图片元数据中写公式或可执行代码。
+
+`effects.<效果ID>.anchor_key`只允许同一资产记录内的路径：`anchors.install`、`anchors.power_in.position_px`、`anchors.power_out.position_px`、`anchors.junctions.<模块ID>.position_px`或`anchors.effects.<效果ID>`。ready记录中目标必须为非null point；不支持跨资产引用、页面/regions路径或任意可执行字段路径。引用点、`effects.envelope_rect_px`与`effects.clip_rect_px`均属于同一资源的源画布坐标，rect为绝对源坐标，不是挂点相对偏移或页面坐标；统一经下式变换。页面逻辑裁切只使用layout.clip_rect_logical，不能混用单位。
 
 ### 坐标、锚点与转换约定
 
 源坐标以完整资源画布左上为(0,0)，x向右、y向下，单位为源像素；SVG按其声明画布映射为同一坐标。`install`为设备底座/安装定位点；`power_in/power_out/junctions.<module_id>`为语义供能端口。模块页面逻辑坐标同为左上原点、x右y下；正角度按该屏幕坐标顺时针，均匀缩放为正。所有锚点随主体共用变换，不能为管路/光流另估位置。
 
-源点q到页面点的关系固定为：`p_page = a + s × R(theta) × (q - m)`，m为anchors.install，a为layout.target_anchor_logical。先在安装坐标中减m、统一缩放/旋转，再平移到页面a。`fit_visible`选择不超过max_scale、且变换后visible_rect和必需效果包络完整落入install_rect的最大等比s；若无合法正s，拒绝该记录，不能静默截断设备。rect用四角变换后的外接框核对；最后由页面统一的窗口/缩放变换映到屏幕，点击坐标走其逆变换。导入器按size_limit缩小贴图时，元数据仍使用源画布坐标，贴图通过源画布归一化UV采样；不能把导入后宽高代入canvas_px再重复缩放锚点。端口outward只旋转并归一化，不平移；相接管口位置一致、向外方向相反，实体管与工作流使用同一组端口。允许的视觉连接容差随最终消费尺寸另定并记录。
+源点q到页面点的关系固定为：`p_page = a + s × R(theta) × (q - m)`，m为anchors.install，a为layout.target_anchor_logical。先在安装坐标中减m、统一缩放/旋转，再平移到页面a。`fit_visible`选择不超过max_scale、且变换后visible_rect和必需效果包络完整落入install_rect的最大等比s；若无合法正s，在制作/交付/导入核对中退回该记录，不能用静默截断设备作为验收通过，也不为此增设运行时守卫。rect用四角变换后的外接框核对；最后由页面统一的窗口/缩放变换映到屏幕，点击坐标走其逆变换。现有Godot导入设置按process/size_limit缩小贴图时，元数据仍使用源画布坐标，贴图通过源画布归一化UV采样；不能把导入后宽高代入canvas_px再重复缩放锚点。端口outward只旋转并归一化，不平移；相接管口位置一致、向外方向相反，实体管与工作流使用同一组端口。允许的视觉连接容差随最终消费尺寸另定并记录。
 
 纯转换算例（非美术尺寸）：m=(100,50)、q=(120,50)、a=(10,20)、s=0.5、theta=0，则页面点为(20,20)。这只证明坐标语义，不批准任何设备大小或安装位置。
 
@@ -69,7 +71,7 @@ V3替换核对还须证明：同一组既有操作在替图前后引用同一功
   "module_id": "weapons",
   "layer": "device",
   "resource": {"path": null, "sha256": null, "canvas_px": null, "visible_rect_px": null},
-  "anchors": {"install": null, "power_in": null, "power_out": null, "junctions": {}},
+  "anchors": {"install": null, "power_in": null, "power_out": null, "junctions": {}, "effects": {"work": null}},
   "layout": {
     "canvas_logical_size": null,
     "slot_id": "reactor.slot.weapons",
@@ -81,9 +83,9 @@ V3替换核对还须证明：同一组既有操作在替图前后引用同一功
     "clip_rect_logical": null
   },
   "regions": {},
-  "effects": {},
-  "import": {"color_space": null, "alpha_mode": null, "filter": null, "repeat": null, "mipmaps": null, "compression": null, "size_limit_px": null}
+  "effects": {"work": {"anchor_key": "anchors.effects.work", "envelope_rect_px": null, "clip_rect_px": null, "binding": "effective_supply"}},
+  "import": {"source_import_path": null, "settings_snapshot": {}}
 }
 ```
 
-转ready前填齐适用字段、语义区与端口，执行格式/引用核对，再按V3用真实画面检查供能连接、读数/点击区和工作效果；协议检查通过仍不等于美术或实际对齐通过。
+转ready前在制作/交付/导入期填齐适用字段、语义区与端口，核对格式/引用及交付SHA，并从现有Godot导入设置记录快照；不据此增加游戏运行时验证。再按V3用真实画面检查供能连接、读数/点击区和工作效果；协议检查通过仍不等于美术或实际对齐通过。
