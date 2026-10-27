@@ -69,3 +69,7 @@ G1组织审已通过，两方向都进入G2；没有选定UI，不是完整候�
 ## ready关联响应修订
 
 源码`ccb82aea9a1ae42be651bad5909c8b91f2f37fcf`：[10张同版A/B关联过程](evidence/g2-planet-ready-linked/README.md)、[来源与还原边界](g2-colony-restoration.md#p3-ready领取后的人员关联响应修订)。补完整Planet/Crew边界响应，ready时已释放、领取后仍空闲；旧4f8ef18c单改设施漏人员图保留作反例，不作为通过。未实施UI业务释放，整体品质队列未关闭。
+
+## M2有限响应匹配与单槽完整接纳R2
+
+源码`efc6fde422cea7a90698f536d39ffcaf9aafd1b1`：[40张同版A/B具名反例与操作](evidence/g2-equipment-response-r2/README.md)、[还原/候选版本/剩余](g2-equipment-restoration.md#有限响应匹配与单槽完整接纳-r2)。未知身份/付费级/输入不再套旧换装常量，NoChange绑定实际模式，单槽接纳完整钱包/材料/actual回执。仍是有限响应；backend ab6e887已实现/定向审过未合main，真实接线及整套品质未通过。

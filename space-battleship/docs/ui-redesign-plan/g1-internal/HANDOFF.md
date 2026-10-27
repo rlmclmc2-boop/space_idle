@@ -208,3 +208,15 @@ JS语法/diff空白、10图尺寸/source/hash、横向边界与R/T检查通过�
 ready源码`ccb82aea`/10图`77203a4480f48802a388e538707b81ceab642fea`已push。根线程随后指出后段AmountRangeExceeded逐槽行误标普通跳过，随本自然项修为已成交/普通跳过/失败/未执行四类文字和层次；不改变实际counts/spent、不报回滚。统一源码 **dbfdc2586238bbd96e5fa291505b8b1e39f5a3b7**，ready关联10图＋四类结果8图在 `evidence/g2-ready-batch-feedback/manifest.json`；source/hash/尺寸/JS/diff与A/B具名检查通过，pageerror空，未跑Godot/游戏。
 
 根线程M2复审认可五舰休眠/新槽、无人机卸回、批量已接纳/后续未执行和属性分层有限展示；新收到的关联修订将继续同一上下文：①旧5槽换装还套初始常量，须按完整身份/paidLevel等匹配明确响应，未知保持待刷新；②MAX NoChange响应须明确模式/条件，不能跨模式含混复用（当前并未证其他模式必可成交）；③单槽购级须完整接纳钱包/材料和actual回执，不能仅改等级/主值。不得写UI金额/升级公式，不新增任务/工作区/子智能体。整项仍待这三项及统一品质；环境无阻塞、尚未实际压缩。
+
+### M2有限响应三修 R2自然检查点
+
+此前ready/四类反馈源码`dbfdc2586238bbd96e5fa291505b8b1e39f5a3b7`、18图归档`f5617861`已push。根线程三项有限响应复查现已制作并定向核对，固定源码 **efc6fde422cea7a90698f536d39ffcaf9aafd1b1**；40张同版A/B原像素整屏、source/image hash、完整当前状态/钱包/材料/actual receipt、报价与scroll见 `evidence/g2-equipment-response-r2/manifest.json`，详情 `g2-equipment-restoration.md`末节。
+
+已删除旧paidLevel无关换装常量及UI直接加级/主值的命令路径。单槽按当前完整身份/装配/模式/预算/冷却及公开输入快照匹配显式有限quote+accept响应，未知比较/购级/换装均待刷新并保留实际，直接调用适配器也不能绕过；旧读数在待刷新时标为上次读数。单槽连续+1、跨20级材料、连续两次+10、MAX实际4、余额不足、免费换装/锁内购级、新空槽65铁均接纳槽、canonical钱包、共享材料和purchase_receipt；上次成交不当下次报价。共享初始材料240沿原仓储响应。MAX NoChange明确mode=max，切+1/+10无适用响应时只等待且历史回执标出原请求，不断言其他模式实际不能合法NoChange。
+
+A/B40工作点、Lv39/44及防具旧常量反例、模式切换、直接未知守卫、单槽数量/支出/钱包/材料、横向边界和R/T通过，pageerror空；88条可接纳有限响应的canonical钱包/材料与declared spent内部一致，消费者无Amount算法。JS语法、diff空白、全部source/image hash和1440×900通过；未跑Godot/游戏，不重开M9/全系统旧反例。
+
+只读最新实现固定 **ab6e887349cd4db1e0162471130686d2c2f30ca0 · 14§11**，按根线程确认为候选已实现/定向双审通过、未合main；equipment_slot_facts/equipment_comparison、原MAX与purchase_receipt边界已更新入还原资料。强化查询只读actual装甲的版本事实保留，不在此重做M5或造整组报价。
+
+环境无阻塞，仍同目录分支，未新建工作区/子任务/子智能体、未改运行/Excel/玩法/保存/main；**本执行上下文尚未实际压缩，可继续复用。** 根线程对三修与整体品质尚待复查；下一仍是既定整套层级/美术队列（B套框占高及星球星系主体、科研空间联系、船员/统计解释退出常态、盾/炮台/舰体/模块材质统一），保留反应炉设备—管路关系，危险损失和失败恢复说明不删。P3真实参数/逐舰来源、native无人机真炮口/动态AI/长光束/性能、真实接口/文件/任意组合与G2/G4/G9继续开放，A/B未选。
