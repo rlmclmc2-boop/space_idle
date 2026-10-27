@@ -559,14 +559,33 @@ class SpaceCombatKernel : public RefCounted {
     static double nonnegative(double a) {
         return maximum(0.0, a);
     }
+    // Same typed Amount ratio used by FoundationAmount.to_ratio; no text round-trip.
+    static double actor_fraction(const Amount &current, const Amount &capacity) {
+        return capacity <= 0 ? 0.0 : current.ratio(capacity);
+    }
+    void publish_actor_health(size_t index, bool armour_changed, bool shield_changed) {
+        Actor &a = actors[index];
+        if (armour_changed) {
+            a.view["hp"] = wire(a.hp);
+            a.view["armour_fraction"] = actor_fraction(a.hp, a.max_hp);
+        }
+        if (shield_changed) {
+            a.view["shield"] = wire(a.shield);
+            a.view["shield_fraction"] = actor_fraction(a.shield, a.max_shield);
+        }
+        if (armour_changed || shield_changed) actor_view_changes.insert(index);
+    }
     void shield(Actor &a, double at) {
         if (!a.live || a.max_shield <= 0)
             return;
         if (at <= a.shield_at) return; // Duplicate/boundary reads never rewind the ledger.
         double ready = a.hit_at + a.delay;
         double elapsed = nonnegative(at - ready) - nonnegative(a.shield_at - ready);
-        if (elapsed > 0)
+        if (elapsed > 0) {
+            const Amount before = a.shield;
             a.shield = minimum(a.max_shield, a.shield + a.max_shield * a.recovery * elapsed);
+            if (a.shield != before) publish_actor_health(size_t(&a - actors.data()), false, true);
+        }
         a.shield_at = at;
     }
     std::vector<Handle> ordered_targets(int type) const {
@@ -841,7 +860,7 @@ class SpaceCombatKernel : public RefCounted {
                 }
             }
         }
-        if (a->hp != hp_before) { a->view["hp"] = wire(a->hp); actor_view_changes.insert(h.index); }
+        publish_actor_health(h.index, a->hp != hp_before, a->shield != shield_before);
 
         if (inst && inst->attack && inst->attack->strange_enabled && trigger) {
             const Attack &birth = *inst->attack;
@@ -867,6 +886,7 @@ class SpaceCombatKernel : public RefCounted {
             a->guidance_layers = 0;
             a->live = false;
             a->view["dead"] = true;
+            actor_view_changes.insert(h.index);
             ++a->generation;
 
             for (Defence &defence : defences) defence.source_stacks.erase(a->uid);
@@ -2018,8 +2038,13 @@ class SpaceCombatKernel : public RefCounted {
                 a.drops.push_back({double(row["chance"]), read_amount(row["amount"]), read_amount(row["base"]),
                                    int(row["resource"])});
             }
+            // Freeze presentation birth identity; runtime generation still invalidates handles.
+            a.view["generation"] = int64_t(a.generation);
+            a.view["dead"] = !a.live;
+            a.view["max_hp"] = wire(a.max_hp);
+            a.view["max_shield"] = wire(a.max_shield);
             actors.push_back(a);
-            actor_view_changes.insert(actors.size() - 1);
+            publish_actor_health(actors.size() - 1, true, true);
         }
         return true;
     }

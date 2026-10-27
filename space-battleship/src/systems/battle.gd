@@ -33,6 +33,9 @@ var _player_hull: PackedVector2Array
 var _player_muzzles: Dictionary = {}
 var _enemy_muzzles: Dictionary = {}
 var _enemy_hulls: Array = []
+var _enemy_presentation_geometry: Array = []
+var _enemy_presentation_source: Array = []
+var _enemy_presentation_rows: Array = []
 var _equipped_drones: Array = []
 var _values: Dictionary = {}
 var _prepared_player: Dictionary = {}
@@ -173,6 +176,28 @@ func draw_enemy_overlays(canvas: CanvasItem, font: Font) -> void:
 		if actor.get("dead", false): continue
 		draw_enemy_hull(canvas, index)
 		canvas.draw_string(font, Vector2(float(actor.x) - 40, float(actor.y) + maxf(46.0, _hull_bounds(_enemy_hulls[index]).size.y * 0.5 + 16.0)), PlayerText.number(str(actor.hp)), HORIZONTAL_ALIGNMENT_CENTER, 80, 14, Color("f1d9dc"))
+
+# Read-only projection of accepted native facts and shared geometry. No Amount parsing,
+# simulation, event consumption, admission or fault policy belongs in this query.
+func enemy_presentation() -> Array:
+	var actors: Array = _kernel.enemy_views()
+	if is_same(actors, _enemy_presentation_source): return _enemy_presentation_rows
+	var rows: Array = []
+	for index in actors.size():
+		var actor: Dictionary = actors[index]
+		if index < _enemy_presentation_source.size() and is_same(actor, _enemy_presentation_source[index]):
+			rows.append(_enemy_presentation_rows[index])
+			continue
+		var row: Dictionary = _enemy_presentation_geometry[index].duplicate()
+		row.merge({"dead": bool(actor.dead), "armour": actor.hp, "max_armour": actor.max_hp,
+			"shield": actor.shield, "max_shield": actor.max_shield,
+			"armour_fraction": actor.armour_fraction, "shield_fraction": actor.shield_fraction})
+		row.make_read_only()
+		rows.append(row)
+	rows.make_read_only()
+	_enemy_presentation_source = actors
+	_enemy_presentation_rows = rows
+	return _enemy_presentation_rows
 
 func hud_values() -> Dictionary:
 	var history: Dictionary = _kernel.read_history()
@@ -408,6 +433,7 @@ func _sync_geometry() -> Dictionary:
 	var actors: Array = _kernel.enemy_views()
 	var packet = Geometry.battle_geometry(actors, _models, _ship_key, _player_art,
 		_player_dimensions, _player_geometry_height, _geometry, _parameters)
+	_cache_enemy_presentation_geometry(actors, packet)
 	_enemy_hulls = packet.hulls
 	_enemy_hulls.make_read_only()
 	_player_hull = packet.player_hull
@@ -456,6 +482,26 @@ func _sync_geometry() -> Dictionary:
 		_run_state.fail("InvalidPlayerGeometry")
 		return {"ok": false, "fault": true, "reason": "InvalidPlayerGeometry"}
 	return {"ok": true}
+
+func _cache_enemy_presentation_geometry(actors: Array, packet: Dictionary) -> void:
+	var geometry: Array = []
+	var changed: bool = actors.size() != _enemy_presentation_geometry.size()
+	for index in actors.size():
+		var actor: Dictionary = actors[index]
+		var id: String = str(actor.generation) + ":" + str(actor.uid)
+		var origin: Vector2 = packet.poses[index].origin
+		if index < _enemy_presentation_geometry.size() and _enemy_presentation_geometry[index].id == id and _enemy_presentation_geometry[index].origin == origin and _enemy_hulls[index] == packet.hulls[index]:
+			geometry.append(_enemy_presentation_geometry[index])
+			continue
+		var row: Dictionary = {"id": id, "visual_key": str(actor.visual_key),
+			"origin": origin, "body_bounds": _hull_bounds(packet.hulls[index])}
+		row.make_read_only()
+		geometry.append(row)
+		changed = true
+	if changed:
+		geometry.make_read_only()
+		_enemy_presentation_geometry = geometry
+		_enemy_presentation_source = []
 
 func _draw_hull_texture(canvas: CanvasItem, hull: PackedVector2Array, model: Dictionary) -> void:
 	var uv := PackedVector2Array()
