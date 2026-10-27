@@ -1,0 +1,1326 @@
+{
+  "identity": "HTML production capture and task replay; not game verification or design approval",
+  "source_sha256": {
+    "preview.html": "6993ed25e17814fc5a79c170c31d4545665eb1e9cdac5ce166b7575cced1e5e2",
+    "directions.css": "74b10b3437277c2be874299c771ab8d4eb20ad9a54c54bb4bdc19967da8b915f",
+    "directions.js": "80996d6d3a4be961617bc5c58d3d22a9f779e7eca62b67763ed8e702da5862b7"
+  },
+  "records": [
+    {
+      "direction": "a",
+      "window": [
+        1440,
+        960
+      ],
+      "states": [
+        {
+          "direction": "a",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 484.0546875,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 955.9453125,
+            "bottom": 872,
+            "left": 484.0546875
+          },
+          "work": null,
+          "state": "idle",
+          "fieldVisible": true
+        },
+        {
+          "direction": "a",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 181.6484375,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 653.5390625,
+            "bottom": 872,
+            "left": 181.6484375
+          },
+          "work": {
+            "x": 928,
+            "y": 84,
+            "width": 490,
+            "height": 788,
+            "top": 84,
+            "right": 1418,
+            "bottom": 872,
+            "left": 928
+          },
+          "state": "reactor",
+          "fieldVisible": true
+        },
+        {
+          "direction": "a",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 181.6484375,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 653.5390625,
+            "bottom": 872,
+            "left": 181.6484375
+          },
+          "work": {
+            "x": 928,
+            "y": 84,
+            "width": 490,
+            "height": 788,
+            "top": 84,
+            "right": 1418,
+            "bottom": 872,
+            "left": 928
+          },
+          "state": "fleet",
+          "fieldVisible": true
+        },
+        {
+          "direction": "a",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 181.6484375,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 653.5390625,
+            "bottom": 872,
+            "left": 181.6484375
+          },
+          "work": {
+            "x": 928,
+            "y": 84,
+            "width": 490,
+            "height": 788,
+            "top": 84,
+            "right": 1418,
+            "bottom": 872,
+            "left": 928
+          },
+          "state": "continuous",
+          "fieldVisible": true
+        },
+        {
+          "direction": "a",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 181.6484375,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 653.5390625,
+            "bottom": 872,
+            "left": 181.6484375
+          },
+          "work": {
+            "x": 928,
+            "y": 84,
+            "width": 490,
+            "height": 788,
+            "top": 84,
+            "right": 1418,
+            "bottom": 872,
+            "left": 928
+          },
+          "state": "failure-detail",
+          "fieldVisible": true
+        }
+      ],
+      "actions": [
+        {
+          "action": "W1购级1",
+          "center_css_px": [
+            1322.0,
+            354.0
+          ]
+        },
+        {
+          "action": "W1购级2",
+          "center_css_px": [
+            1322.0,
+            354.0
+          ]
+        },
+        {
+          "action": "选W2",
+          "center_css_px": [
+            1172.9921875,
+            201.5
+          ]
+        },
+        {
+          "action": "选导弹",
+          "center_css_px": [
+            1173.0,
+            486.0
+          ]
+        },
+        {
+          "action": "换装",
+          "center_css_px": [
+            1359.9921875,
+            577.5
+          ]
+        },
+        {
+          "action": "选W3",
+          "center_css_px": [
+            1324.6640625,
+            201.5
+          ]
+        },
+        {
+          "action": "W3购级",
+          "center_css_px": [
+            1322.0,
+            354.0
+          ]
+        },
+        {
+          "action": "回W1",
+          "center_css_px": [
+            1021.328125,
+            201.5
+          ]
+        }
+      ],
+      "js_errors": [],
+      "no_duplicate_defense_hud_in_idle": true,
+      "task3_result": {
+        "steps": 8,
+        "pointer_center_travel_css_px": 1573,
+        "final": {
+          "module": "fleet",
+          "slot": "W1",
+          "indices": {
+            "W1": 2,
+            "W2": 0,
+            "W3": 1
+          },
+          "types": {
+            "W1": "舰炮",
+            "W2": "导弹",
+            "W3": "舰炮"
+          },
+          "candidates": {
+            "W1": null,
+            "W2": "导弹",
+            "W3": null
+          },
+          "locks": {
+            "W2": true
+          },
+          "paused": false,
+          "failure": false,
+          "intent": null,
+          "feedback": "",
+          "feedbackKind": "neutral",
+          "log": [
+            {
+              "type": "open",
+              "detail": "reactor"
+            },
+            {
+              "type": "open",
+              "detail": "fleet"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "slot",
+              "detail": "W2"
+            },
+            {
+              "type": "candidate",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "refit",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "slot",
+              "detail": "W3"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W3"
+            },
+            {
+              "type": "slot",
+              "detail": "W1"
+            }
+          ],
+          "counts": {
+            "open": 2,
+            "close": 0,
+            "slot": 3,
+            "candidate": 1,
+            "upgrade": 3,
+            "refit": 1,
+            "deep": 0
+          }
+        },
+        "next_quote": "W1 21→22 / 铁3.5K",
+        "workplace_retained": true
+      },
+      "failure_other_slot_accessible": true,
+      "pause_preserved_when_closing_and_opening": true,
+      "image_loads": true,
+      "document_overflow": false
+    },
+    {
+      "direction": "b",
+      "window": [
+        1440,
+        960
+      ],
+      "states": [
+        {
+          "direction": "b",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 484.0546875,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 955.9453125,
+            "bottom": 872,
+            "left": 484.0546875
+          },
+          "work": null,
+          "state": "idle",
+          "fieldVisible": true
+        },
+        {
+          "direction": "b",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 490,
+            "top": 80,
+            "right": 1440,
+            "bottom": 570,
+            "left": 0
+          },
+          "arena": {
+            "x": 574.0234375,
+            "y": 80,
+            "width": 291.953125,
+            "height": 490,
+            "top": 80,
+            "right": 865.9765625,
+            "bottom": 570,
+            "left": 574.0234375
+          },
+          "work": {
+            "x": 130,
+            "y": 590,
+            "width": 1288,
+            "height": 350,
+            "top": 590,
+            "right": 1418,
+            "bottom": 940,
+            "left": 130
+          },
+          "state": "reactor",
+          "fieldVisible": true
+        },
+        {
+          "direction": "b",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 490,
+            "top": 80,
+            "right": 1440,
+            "bottom": 570,
+            "left": 0
+          },
+          "arena": {
+            "x": 574.0234375,
+            "y": 80,
+            "width": 291.953125,
+            "height": 490,
+            "top": 80,
+            "right": 865.9765625,
+            "bottom": 570,
+            "left": 574.0234375
+          },
+          "work": {
+            "x": 130,
+            "y": 590,
+            "width": 1288,
+            "height": 350,
+            "top": 590,
+            "right": 1418,
+            "bottom": 940,
+            "left": 130
+          },
+          "state": "fleet",
+          "fieldVisible": true
+        },
+        {
+          "direction": "b",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 490,
+            "top": 80,
+            "right": 1440,
+            "bottom": 570,
+            "left": 0
+          },
+          "arena": {
+            "x": 574.0234375,
+            "y": 80,
+            "width": 291.953125,
+            "height": 490,
+            "top": 80,
+            "right": 865.9765625,
+            "bottom": 570,
+            "left": 574.0234375
+          },
+          "work": {
+            "x": 130,
+            "y": 590,
+            "width": 1288,
+            "height": 350,
+            "top": 590,
+            "right": 1418,
+            "bottom": 940,
+            "left": 130
+          },
+          "state": "continuous",
+          "fieldVisible": true
+        },
+        {
+          "direction": "b",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 490,
+            "top": 80,
+            "right": 1440,
+            "bottom": 570,
+            "left": 0
+          },
+          "arena": {
+            "x": 574.0234375,
+            "y": 80,
+            "width": 291.953125,
+            "height": 490,
+            "top": 80,
+            "right": 865.9765625,
+            "bottom": 570,
+            "left": 574.0234375
+          },
+          "work": {
+            "x": 130,
+            "y": 590,
+            "width": 1288,
+            "height": 350,
+            "top": 590,
+            "right": 1418,
+            "bottom": 940,
+            "left": 130
+          },
+          "state": "failure-detail",
+          "fieldVisible": true
+        }
+      ],
+      "actions": [
+        {
+          "action": "W1购级1",
+          "center_css_px": [
+            536.65625,
+            794.0
+          ]
+        },
+        {
+          "action": "W1购级2",
+          "center_css_px": [
+            536.65625,
+            794.0
+          ]
+        },
+        {
+          "action": "选W2",
+          "center_css_px": [
+            295.828125,
+            752.5
+          ]
+        },
+        {
+          "action": "选导弹",
+          "center_css_px": [
+            1150.9609375,
+            730.0
+          ]
+        },
+        {
+          "action": "换装",
+          "center_css_px": [
+            1357.9921875,
+            815.5
+          ]
+        },
+        {
+          "action": "选W3",
+          "center_css_px": [
+            295.828125,
+            814.5
+          ]
+        },
+        {
+          "action": "W3购级",
+          "center_css_px": [
+            536.65625,
+            794.0
+          ]
+        },
+        {
+          "action": "回W1",
+          "center_css_px": [
+            295.828125,
+            690.5
+          ]
+        }
+      ],
+      "js_errors": [],
+      "no_duplicate_defense_hud_in_idle": true,
+      "task3_result": {
+        "steps": 8,
+        "pointer_center_travel_css_px": 2890,
+        "final": {
+          "module": "fleet",
+          "slot": "W1",
+          "indices": {
+            "W1": 2,
+            "W2": 0,
+            "W3": 1
+          },
+          "types": {
+            "W1": "舰炮",
+            "W2": "导弹",
+            "W3": "舰炮"
+          },
+          "candidates": {
+            "W1": null,
+            "W2": "导弹",
+            "W3": null
+          },
+          "locks": {
+            "W2": true
+          },
+          "paused": false,
+          "failure": false,
+          "intent": null,
+          "feedback": "",
+          "feedbackKind": "neutral",
+          "log": [
+            {
+              "type": "open",
+              "detail": "reactor"
+            },
+            {
+              "type": "open",
+              "detail": "fleet"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "slot",
+              "detail": "W2"
+            },
+            {
+              "type": "candidate",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "refit",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "slot",
+              "detail": "W3"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W3"
+            },
+            {
+              "type": "slot",
+              "detail": "W1"
+            }
+          ],
+          "counts": {
+            "open": 2,
+            "close": 0,
+            "slot": 3,
+            "candidate": 1,
+            "upgrade": 3,
+            "refit": 1,
+            "deep": 0
+          }
+        },
+        "next_quote": "W1 21→22 / 铁3.5K",
+        "workplace_retained": true
+      },
+      "failure_other_slot_accessible": true,
+      "pause_preserved_when_closing_and_opening": true,
+      "image_loads": true,
+      "document_overflow": false
+    },
+    {
+      "direction": "c",
+      "window": [
+        1440,
+        960
+      ],
+      "states": [
+        {
+          "direction": "c",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 484.0546875,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 955.9453125,
+            "bottom": 872,
+            "left": 484.0546875
+          },
+          "work": null,
+          "state": "idle",
+          "fieldVisible": true
+        },
+        {
+          "direction": "c",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 484.0546875,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 955.9453125,
+            "bottom": 872,
+            "left": 484.0546875
+          },
+          "work": {
+            "x": 145,
+            "y": 86,
+            "width": 1265,
+            "height": 850,
+            "top": 86,
+            "right": 1410,
+            "bottom": 936,
+            "left": 145
+          },
+          "state": "reactor",
+          "fieldVisible": false
+        },
+        {
+          "direction": "c",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 484.0546875,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 955.9453125,
+            "bottom": 872,
+            "left": 484.0546875
+          },
+          "work": {
+            "x": 145,
+            "y": 86,
+            "width": 1265,
+            "height": 850,
+            "top": 86,
+            "right": 1410,
+            "bottom": 936,
+            "left": 145
+          },
+          "state": "fleet",
+          "fieldVisible": false
+        },
+        {
+          "direction": "c",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 484.0546875,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 955.9453125,
+            "bottom": 872,
+            "left": 484.0546875
+          },
+          "work": {
+            "x": 145,
+            "y": 86,
+            "width": 1265,
+            "height": 850,
+            "top": 86,
+            "right": 1410,
+            "bottom": 936,
+            "left": 145
+          },
+          "state": "continuous",
+          "fieldVisible": false
+        },
+        {
+          "direction": "c",
+          "field": {
+            "x": 0,
+            "y": 80,
+            "width": 1440,
+            "height": 792,
+            "top": 80,
+            "right": 1440,
+            "bottom": 872,
+            "left": 0
+          },
+          "arena": {
+            "x": 484.0546875,
+            "y": 80,
+            "width": 471.890625,
+            "height": 792,
+            "top": 80,
+            "right": 955.9453125,
+            "bottom": 872,
+            "left": 484.0546875
+          },
+          "work": {
+            "x": 145,
+            "y": 86,
+            "width": 1265,
+            "height": 850,
+            "top": 86,
+            "right": 1410,
+            "bottom": 936,
+            "left": 145
+          },
+          "state": "failure-detail",
+          "fieldVisible": false
+        }
+      ],
+      "actions": [
+        {
+          "action": "W1购级1",
+          "center_css_px": [
+            1304.0,
+            364.0
+          ]
+        },
+        {
+          "action": "W1购级2",
+          "center_css_px": [
+            1304.0,
+            364.0
+          ]
+        },
+        {
+          "action": "选W2",
+          "center_css_px": [
+            1100.8984375,
+            211.5
+          ]
+        },
+        {
+          "action": "选导弹",
+          "center_css_px": [
+            1100.890625,
+            496.0
+          ]
+        },
+        {
+          "action": "换装",
+          "center_css_px": [
+            1341.9921875,
+            587.5
+          ]
+        },
+        {
+          "action": "选W3",
+          "center_css_px": [
+            1288.6328125,
+            211.5
+          ]
+        },
+        {
+          "action": "W3购级",
+          "center_css_px": [
+            1304.0,
+            364.0
+          ]
+        },
+        {
+          "action": "回W1",
+          "center_css_px": [
+            913.1640625,
+            211.5
+          ]
+        }
+      ],
+      "js_errors": [],
+      "no_duplicate_defense_hud_in_idle": true,
+      "task3_result": {
+        "steps": 8,
+        "pointer_center_travel_css_px": 1749,
+        "final": {
+          "module": "fleet",
+          "slot": "W1",
+          "indices": {
+            "W1": 2,
+            "W2": 0,
+            "W3": 1
+          },
+          "types": {
+            "W1": "舰炮",
+            "W2": "导弹",
+            "W3": "舰炮"
+          },
+          "candidates": {
+            "W1": null,
+            "W2": "导弹",
+            "W3": null
+          },
+          "locks": {
+            "W2": true
+          },
+          "paused": false,
+          "failure": false,
+          "intent": null,
+          "feedback": "",
+          "feedbackKind": "neutral",
+          "log": [
+            {
+              "type": "open",
+              "detail": "reactor"
+            },
+            {
+              "type": "open",
+              "detail": "fleet"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "slot",
+              "detail": "W2"
+            },
+            {
+              "type": "candidate",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "refit",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "slot",
+              "detail": "W3"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W3"
+            },
+            {
+              "type": "slot",
+              "detail": "W1"
+            }
+          ],
+          "counts": {
+            "open": 2,
+            "close": 0,
+            "slot": 3,
+            "candidate": 1,
+            "upgrade": 3,
+            "refit": 1,
+            "deep": 0
+          }
+        },
+        "next_quote": "W1 21→22 / 铁3.5K",
+        "workplace_retained": true
+      },
+      "failure_other_slot_accessible": true,
+      "pause_preserved_when_closing_and_opening": true,
+      "image_loads": true,
+      "document_overflow": false
+    },
+    {
+      "direction": "d",
+      "window": [
+        1440,
+        960
+      ],
+      "states": [
+        {
+          "direction": "d",
+          "field": {
+            "x": 604.796875,
+            "y": 87,
+            "width": 835.203125,
+            "height": 851,
+            "top": 87,
+            "right": 1440,
+            "bottom": 938,
+            "left": 604.796875
+          },
+          "arena": {
+            "x": 768.8671875,
+            "y": 87,
+            "width": 507.046875,
+            "height": 851,
+            "top": 87,
+            "right": 1275.9140625,
+            "bottom": 938,
+            "left": 768.8671875
+          },
+          "work": null,
+          "state": "idle",
+          "fieldVisible": true
+        },
+        {
+          "direction": "d",
+          "field": {
+            "x": 806.390625,
+            "y": 87,
+            "width": 633.609375,
+            "height": 851,
+            "top": 87,
+            "right": 1440,
+            "bottom": 938,
+            "left": 806.390625
+          },
+          "arena": {
+            "x": 869.6640625,
+            "y": 87,
+            "width": 507.046875,
+            "height": 851,
+            "top": 87,
+            "right": 1376.7109375,
+            "bottom": 938,
+            "left": 869.6640625
+          },
+          "work": {
+            "x": 112,
+            "y": 86,
+            "width": 676.40625,
+            "height": 852,
+            "top": 86,
+            "right": 788.40625,
+            "bottom": 938,
+            "left": 112
+          },
+          "state": "reactor",
+          "fieldVisible": true
+        },
+        {
+          "direction": "d",
+          "field": {
+            "x": 806.390625,
+            "y": 87,
+            "width": 633.609375,
+            "height": 851,
+            "top": 87,
+            "right": 1440,
+            "bottom": 938,
+            "left": 806.390625
+          },
+          "arena": {
+            "x": 869.6640625,
+            "y": 87,
+            "width": 507.046875,
+            "height": 851,
+            "top": 87,
+            "right": 1376.7109375,
+            "bottom": 938,
+            "left": 869.6640625
+          },
+          "work": {
+            "x": 112,
+            "y": 86,
+            "width": 676.40625,
+            "height": 852,
+            "top": 86,
+            "right": 788.40625,
+            "bottom": 938,
+            "left": 112
+          },
+          "state": "fleet",
+          "fieldVisible": true
+        },
+        {
+          "direction": "d",
+          "field": {
+            "x": 806.390625,
+            "y": 87,
+            "width": 633.609375,
+            "height": 851,
+            "top": 87,
+            "right": 1440,
+            "bottom": 938,
+            "left": 806.390625
+          },
+          "arena": {
+            "x": 869.6640625,
+            "y": 87,
+            "width": 507.046875,
+            "height": 851,
+            "top": 87,
+            "right": 1376.7109375,
+            "bottom": 938,
+            "left": 869.6640625
+          },
+          "work": {
+            "x": 112,
+            "y": 86,
+            "width": 676.40625,
+            "height": 852,
+            "top": 86,
+            "right": 788.40625,
+            "bottom": 938,
+            "left": 112
+          },
+          "state": "continuous",
+          "fieldVisible": true
+        },
+        {
+          "direction": "d",
+          "field": {
+            "x": 806.390625,
+            "y": 87,
+            "width": 633.609375,
+            "height": 851,
+            "top": 87,
+            "right": 1440,
+            "bottom": 938,
+            "left": 806.390625
+          },
+          "arena": {
+            "x": 869.6640625,
+            "y": 87,
+            "width": 507.046875,
+            "height": 851,
+            "top": 87,
+            "right": 1376.7109375,
+            "bottom": 938,
+            "left": 869.6640625
+          },
+          "work": {
+            "x": 112,
+            "y": 86,
+            "width": 676.40625,
+            "height": 852,
+            "top": 86,
+            "right": 788.40625,
+            "bottom": 938,
+            "left": 112
+          },
+          "state": "failure-detail",
+          "fieldVisible": true
+        }
+      ],
+      "actions": [
+        {
+          "action": "W1购级1",
+          "center_css_px": [
+            692.40625,
+            356.0
+          ]
+        },
+        {
+          "action": "W1购级2",
+          "center_css_px": [
+            692.40625,
+            356.0
+          ]
+        },
+        {
+          "action": "选W2",
+          "center_css_px": [
+            450.203125,
+            203.5
+          ]
+        },
+        {
+          "action": "选导弹",
+          "center_css_px": [
+            450.203125,
+            490.0
+          ]
+        },
+        {
+          "action": "换装",
+          "center_css_px": [
+            730.3984375,
+            583.5
+          ]
+        },
+        {
+          "action": "选W3",
+          "center_css_px": [
+            664.0078125,
+            203.5
+          ]
+        },
+        {
+          "action": "W3购级",
+          "center_css_px": [
+            692.40625,
+            356.0
+          ]
+        },
+        {
+          "action": "回W1",
+          "center_css_px": [
+            236.3984375,
+            203.5
+          ]
+        }
+      ],
+      "js_errors": [],
+      "no_duplicate_defense_hud_in_idle": true,
+      "task3_result": {
+        "steps": 8,
+        "pointer_center_travel_css_px": 1890,
+        "final": {
+          "module": "fleet",
+          "slot": "W1",
+          "indices": {
+            "W1": 2,
+            "W2": 0,
+            "W3": 1
+          },
+          "types": {
+            "W1": "舰炮",
+            "W2": "导弹",
+            "W3": "舰炮"
+          },
+          "candidates": {
+            "W1": null,
+            "W2": "导弹",
+            "W3": null
+          },
+          "locks": {
+            "W2": true
+          },
+          "paused": false,
+          "failure": false,
+          "intent": null,
+          "feedback": "",
+          "feedbackKind": "neutral",
+          "log": [
+            {
+              "type": "open",
+              "detail": "reactor"
+            },
+            {
+              "type": "open",
+              "detail": "fleet"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W1"
+            },
+            {
+              "type": "slot",
+              "detail": "W2"
+            },
+            {
+              "type": "candidate",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "refit",
+              "detail": {
+                "slot": "W2",
+                "type": "导弹"
+              }
+            },
+            {
+              "type": "slot",
+              "detail": "W3"
+            },
+            {
+              "type": "upgrade",
+              "detail": "W3"
+            },
+            {
+              "type": "slot",
+              "detail": "W1"
+            }
+          ],
+          "counts": {
+            "open": 2,
+            "close": 0,
+            "slot": 3,
+            "candidate": 1,
+            "upgrade": 3,
+            "refit": 1,
+            "deep": 0
+          }
+        },
+        "next_quote": "W1 21→22 / 铁3.5K",
+        "workplace_retained": true
+      },
+      "failure_other_slot_accessible": true,
+      "pause_preserved_when_closing_and_opening": true,
+      "image_loads": true,
+      "document_overflow": false
+    }
+  ]
+}
