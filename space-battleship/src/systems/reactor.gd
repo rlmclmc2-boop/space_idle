@@ -287,3 +287,41 @@ static func _purchase(state: Dictionary, count: int, automatic: bool, parameters
 	next.level = int(next.level) + count
 	if automatic: next._distribute = true
 	return {"ok": true, "state": next, "costs": quoted.costs}
+
+func presentation_model(inputs:Dictionary)->Dictionary:
+	var checked:Dictionary=_evaluate(_state.duplicate(true),_parameters,enabled_modules(),_api,inputs.capacity,inputs.free_charge)
+	if not checked.ok:return {}
+	var rows:Array=[]
+	var total_load:float=0.0
+	for option in panel_options():
+		if option.id=="condensation" and not option.enabled:continue
+		var assigned:Dictionary=checked.state.allocations[option.id]
+		var cached:Dictionary=checked.state._factors.get(option.id,{})
+		var ratio:float=0.0
+		if float(checked.capacity.m)>0.0:ratio=clampf(float(assigned.m)/float(checked.capacity.m)*pow(10.0,clampf(float(assigned.e)-float(checked.capacity.e),-300,0)),0,1)
+		var effective:Dictionary=_api.apply("add",[assigned,cached.get("free",_api.apply("zero",[]).value)]).value
+		var load:float=0.0
+		if float(checked.capacity.m)>0:load=clampf(float(effective.m)/float(checked.capacity.m)*pow(10.0,clampf(float(effective.e)-float(checked.capacity.e),-300,0)),0,1)
+		total_load+=load
+		rows.append({"effective":_api.apply("to_display",[effective]).text,"load":load,"id":option.id,"name":option.name,"enabled":option.enabled,"allocation":_api.apply("to_display",[assigned]).text,"free":_api.apply("to_display",[cached.get("free",_api.apply("zero",[]).value)]).text,"factor":_api.apply("to_display",[checked.factors[option.id]]).text,"ratio":ratio})
+	var quote:Dictionary=_purchase(_state.duplicate(true),1,false,_parameters,_api)
+	var prices:PackedStringArray=[]
+	if quote.ok:
+		for resource in quote.costs:prices.append(("铁 " if str(resource)=="1" else "铀 ")+str(_api.apply("to_display",[quote.costs[resource]]).text))
+	return {"load":clampf(total_load,0,1),"level":int(_state.level),"capacity":_api.apply("to_display",[checked.capacity]).text,"remaining":_api.apply("to_display",[checked.remaining]).text,"price":" · ".join(prices),"modules":rows}
+
+func adjust_allocation(module:String,direction:int,inputs:Dictionary,publish:Callable)->Dictionary:
+	if module not in enabled_modules():return {"ok":false,"reason":"ReactorModuleLocked"}
+	var current:Dictionary=_state.allocations.get(module,_api.apply("zero",[]).value)
+	var step:Dictionary=_api.apply("from_decimal",[str(_parameters.reactorAllocationStep)]).value
+	var changed:Dictionary=_api.apply("add" if direction>0 else "sub_nonnegative",[current,step])
+	if not changed.ok:return changed
+	return allocate_text(module,str(changed.value.m)+"e"+str(changed.value.e),inputs,publish)
+func allocation_preview(ratio:float,inputs:Dictionary)->String:
+	var capacity:Dictionary=_capacity(_state.duplicate(true),_parameters,_api,inputs.capacity)
+	if not capacity.ok:return "0"
+	var factor:Dictionary=_api.apply("from_decimal",[str(clampf(ratio,0,1))])
+	var amount:Dictionary=_api.apply("mul",[capacity.value,factor.value])
+	if not amount.ok:return "0"
+	amount=_api.apply("floor",[amount.value])
+	return str(amount.value.m)+"e"+str(amount.value.e) if amount.ok else "0"

@@ -252,3 +252,21 @@ static func _quote_purchase(state: Dictionary, count: int, rules: Dictionary, ap
 	if low == 0:
 		return {"ok": false, "reason": "NoChange"}
 	return accepted
+
+func presentation_model(inputs:Dictionary,can_pay:Callable)->Dictionary:
+	var effective:Dictionary=_effective_level(_state,int(inputs.bonus))
+	if not effective.ok:return {}
+	var rows:Array=[]
+	for order in [_state.weapon_order,_state.defence_order]:
+		for position in order.size():
+			var key:String=order[position]
+			var nodes:Array=[]
+			for node in 3:
+				var threshold:int=int(_rules["branch_threshold_"+str(node+1)])+int(_rules["branch_position_offset_"+str(position+1)])
+				nodes.append({"level":threshold,"enabled":bool(inputs.unlocked.call("feature","jewels")) and int(effective.level)>=threshold,"choice":_state.branches.get(key,["","",""])[node]})
+			rows.append({"id":key,"category":"weapon" if key in WEAPON else "defence","active":bool(inputs.unlocked.call("feature","jewels")) and int(effective.level)>=int(_rules["threshold_"+str(position+1)]),"position":position+1,"nodes":nodes})
+	var quote:Dictionary=_quote_purchase(_state,1,_rules,_api,func(_costs):return true)
+	var costs:PackedStringArray=[]
+	if quote.ok:
+		for resource in quote.costs:costs.append("强化碎片 "+str(_api.apply("to_display",[quote.costs[resource]]).text))
+	return {"paid":int(_state.level),"bonus":int(_state.extra_levels)+int(inputs.bonus),"level":int(effective.level),"price":" · ".join(costs),"affordable":quote.ok and bool(can_pay.call(quote.costs)),"effects":rows}

@@ -247,7 +247,7 @@ func building_options(id: String) -> Array:
 	for key in _state[id].buildings:
 		var progress: Dictionary = _state[id].buildings[key]
 		var row: Dictionary = _buildings[key]
-		options.append({"id": key, "name": str(row.name) + " · " + str(names[progress.state]) + " %d/%d" % [int(progress.work), int(row.build_explore)]})
+		options.append({"id": key, "name": str(row.name) + " · " + str(names[progress.state]) + " %d/%d" % [int(progress.work), int(row.build_explore)],"state":str(progress.state),"work":int(progress.work),"required":int(row.build_explore),"type":str(row.type),"extra_crew":int(row.extra_crew),"description":str(row.des),"unlock":int(row.unlock_explore)})
 	return options
 
 func status_rows(ids: Array = []) -> Array:

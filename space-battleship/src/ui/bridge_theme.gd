@@ -31,4 +31,17 @@ static func create() -> Theme:
 	theme.set_stylebox("panel", "TabContainer", StyleBoxEmpty.new())
 	theme.set_constant("separation", "VBoxContainer", 10)
 	theme.set_constant("separation", "HBoxContainer", 8)
+	for type in ["TabContainer", "TabBar"]:
+		for key in ["tab_selected", "tab_unselected", "tab_hovered", "tab_focus"]:
+			var tab := StyleBoxFlat.new()
+			tab.bg_color = Color("e9eadf") if key == "tab_selected" else Color("244455") if key == "tab_hovered" else Color("102736")
+			tab.border_color = Color("75c6c8") if key in ["tab_selected", "tab_focus"] else Color("315467")
+			tab.set_border_width_all(1)
+			tab.corner_radius_top_left=6;tab.corner_radius_top_right=6
+			tab.content_margin_left=12;tab.content_margin_right=12
+			tab.content_margin_top=7;tab.content_margin_bottom=7
+			theme.set_stylebox(key,type,tab)
+		theme.set_color("font_selected_color",type,Color("193d50"))
+		theme.set_color("font_unselected_color",type,Color("b2cbd6"))
+		theme.set_color("font_hovered_color",type,Color("e2eff5"))
 	return theme

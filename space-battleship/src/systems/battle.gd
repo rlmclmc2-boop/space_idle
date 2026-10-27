@@ -526,3 +526,9 @@ func _hud_fraction(current: String, maximum: String) -> float:
 	if _api.apply("compare", [capacity.value, zero]).scalar <= 0: return 0.0
 	var ratio: Dictionary = _api.apply("to_ratio", [value.value, capacity.value])
 	return clampf(float(ratio.scalar), 0.0, 1.0) if ratio.ok else 0.0
+
+func hull_presentation(key:String)->Dictionary:
+	if not _models.has(key):return {}
+	var inputs:Dictionary=mount_inputs(key)
+	var hull:PackedVector2Array=Geometry.transform_hull(_models[key].hull,Vector2.ZERO,inputs.dimensions,0.0)
+	return {"texture":_models[key].texture,"dimensions":inputs.dimensions,"hull":hull,"height":_hull_bounds(hull).size.y,"art":inputs.art.duplicate(true)}

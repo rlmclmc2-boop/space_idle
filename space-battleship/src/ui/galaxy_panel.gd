@@ -10,10 +10,16 @@ var _map_key: String = ""
 var _visual_context: Callable
 var _detail := Label.new()
 var _visual_refresh: float = 0.0
+var _assignment
+var _crew_provider
+var _coordinate:Callable
+var _host:Callable
 
-func _init(galaxy, visual_context: Callable = Callable()) -> void:
+func _init(galaxy, visual_context: Callable = Callable(), crew=null, coordinate:Callable=Callable(), command:Callable=Callable()) -> void:
 	_galaxy = galaxy
 	_visual_context = visual_context
+	_crew_provider=crew;_coordinate=coordinate;_host=command
+	preload("res://src/ui/module_widgets.gd").heading(self,"星系建设图","探索星域、建设设施，查看当前收益")
 	_galaxy.status_changed.connect(_queue_status)
 	_galaxy.availability_changed.connect(_queue_status)
 	_queue_status()
@@ -40,9 +46,14 @@ func _ready() -> void:
 	_picker.item_selected.connect(func(_index): _select_map())
 	if DisplayServer.get_name() != "headless":
 		_map = preload("res://scripts/galaxy_map.gd").new()
-		_map.custom_minimum_size = Vector2(0, 420)
+		_map.custom_minimum_size = Vector2(0, 560)
 		_map.slot_selected.connect(_show_slot)
 		add_child(_map)
+	var reset:=Button.new();reset.text="地图归中 · 重置缩放";add_child(reset)
+	reset.pressed.connect(func():
+		if _map!=null:_map.zoom=1.0;_map.pan=Vector2.ZERO;_map.layout())
+	if _crew_provider!=null and _coordinate.is_valid():
+		_assignment=preload("res://src/ui/assignment_controls.gd").new(_crew_provider,_coordinate,_host);add_child(_assignment)
 	_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_detail)
 	var help := Label.new()
@@ -91,6 +102,11 @@ func _select_map() -> void:
 	var snapshot: Dictionary = _galaxy.visual_snapshot(key)
 	if snapshot.is_empty(): return
 	_map_key = key
+	if _assignment!=null:
+		var jobs:Array=[]
+		for job in _galaxy.assignment_options():
+			if str(job.target)==key:jobs.append(job)
+		_assignment.set_targets(jobs)
 	var settings: Dictionary = {}
 	for setting in snapshot.settings: settings[setting] = {"value": snapshot.settings[setting]}
 	_map.configure(settings)
@@ -106,9 +122,11 @@ func _sync_map() -> void:
 	if _map.selected_slot >= 0: _show_slot(_map.selected_slot)
 
 func _show_slot(id: int) -> void:
-	if _map == null or _map.region == null or not _map.region.nodes.has(str(id)): return
-	var slot: Dictionary = _map.region.nodes[str(id)]
-	var status: String = str({"empty": "未探索", "exploring": "探索中", "constructing": "施工中", "active": "运行中"}.get(slot.state, "建设中"))
-	var name: String = str(_map.buildings.get(str(slot.building), {}).get("name", "未知区域"))
-	_detail.text = "%s · %s · 等级 %d" % [name, status, int(slot.level)]
-	if float(slot.upgrade_remaining) > 0.0: _detail.text += " · 升级剩余 %.1f" % float(slot.upgrade_remaining)
+	var node:Dictionary=_galaxy.node_presentation(_map_key,id)
+	if node.is_empty():_detail.text="请选择地图节点";return
+	var status:String=str({"empty":"未探索","exploring":"探索中","constructing":"施工中","active":"运行中"}.get(node.state,"建设中"))
+	_detail.text="%s · %s · 等级 %d\n%s +%s"%[node.name,status,node.level,node.effect,node.bonus]
+	if not node.explored:_detail.text+="\n剩余探索工作量 %.1f · %s"%[node.explore_remaining,"当前可达" if node.reachable else "等待前置区域探索"]
+	elif node.state=="constructing":_detail.text+="\n剩余施工工作量 %.1f"%node.construction_remaining
+	if node.upgrade_remaining>0:_detail.text+="\n升级剩余 %.1f秒，当前等级效果继续生效"%node.upgrade_remaining
+	_detail.text+="\n施工与升级自动完成并生效；可在下方调整船员。"

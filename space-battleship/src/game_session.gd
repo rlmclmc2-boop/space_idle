@@ -1421,3 +1421,10 @@ func _advance_galaxies(dt: float, counts: Dictionary) -> bool:
 	if credits_changed: economy.publish_budget_change()
 	galaxy_system.publish_status(result.displayed)
 	return true
+
+func equipment_presentation_inputs()->Dictionary:
+	var inputs:Dictionary=equipment_inputs()
+	inputs.extra_bonus=int(_world_factors.equipment_levels)
+	inputs.ai=_research_factors.duplicate(true)
+	inputs.reactor=_reactor_factors.duplicate(true)
+	return inputs

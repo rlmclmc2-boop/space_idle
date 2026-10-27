@@ -402,3 +402,20 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 		remaining = maxf(0.0, remaining - piece)
 	next.work[key] = progress
 	return _finish_advance(next, balances, false)
+
+func presentation_model() -> Dictionary:
+	# Required-work caches are evaluated on a private copy; opening UI is read-only.
+	var state:Dictionary=_state.duplicate(true)
+	var rows:Array=[]
+	for key in _definitions:
+		var definition:Dictionary=_definitions[key]
+		var required:Dictionary=_required_work(state,definition,_api)
+		var progress:Dictionary=state.work.get(key,_api.apply("zero",[]).value)
+		var fraction:float=0.0
+		if required.ok and float(required.value.m)>0.0:
+			fraction=clampf(float(progress.m)/float(required.value.m)*pow(10.0,clampf(float(progress.e)-float(required.value.e),-300,0)),0,1)
+		rows.append({"id":key,"name":str(definition.name),"level":int(state.levels.get(key,0)),"active":state.current==key,"available":bool(state.available.get(key,false)),"progress":fraction,"work":_api.apply("to_display",[progress]).text,"required":_api.apply("to_display",[required.value]).text if required.ok else "—"})
+	var budget:bool=false
+	for amount in state.investment.values():
+		if int(_api.apply("compare",[amount,_api.apply("zero",[]).value]).scalar)>0:budget=true
+	return {"current":str(state.current),"rows":rows,"has_investment":budget}

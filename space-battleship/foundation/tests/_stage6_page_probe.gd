@@ -333,6 +333,10 @@ func _run() -> void:
 	main._tabs.set_tab_hidden(main._pages.growth.index, false)
 	main._tabs.current_tab = main._pages.growth.index
 	var research_panel = _find_research(main)
+	# The dedicated module is now a real nested page, not a vertically stacked form.
+	var research_page:Dictionary=main._module_locations.research
+	research_page.tabs.set_tab_hidden(research_page.index,false)
+	research_page.tabs.current_tab=research_page.index
 	var api = main.session.research._api
 	var rates := {"1": api.apply("from_decimal", ["800"]).value, "2": api.apply("from_decimal", ["1600"]).value}
 	if not main.session.research.refresh_income({}, rates, false, true).ok:

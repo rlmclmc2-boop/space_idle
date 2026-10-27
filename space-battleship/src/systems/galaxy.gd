@@ -390,3 +390,12 @@ static func _income(contributions: Dictionary, region: String, production_rates:
 		if not quantity.ok: return quantity
 		amounts[pair[0]] = quantity.value
 	return {"ok": true, "amounts": amounts}
+
+func node_presentation(key:String,id:int)->Dictionary:
+	if not is_available(key) or not _regions[key].nodes.has(str(id)):return {}
+	var node:Dictionary=_regions[key].nodes[str(id)]
+	var row:Dictionary=_buildings.get(str(node.building),{})
+	var labels:Dictionary={"crew_exp":"船员经验","equipment_value":"装备效果","charge_max":"反应炉容量","gem_fragment":"强化碎片","iron_auto_ratio":"铁自动产出比例","uranium_auto_ratio":"铀自动产出比例"}
+	var effect:String=str(row.get("effect_type",""))
+	var bonus:Dictionary=_factors.get("_sources",{}).get(effect,{}).get(key,{}).get(str(id),_api.apply("zero",[]).value)
+	return {"name":str(row.get("name","设施")) if node.explored else "未探索区域","level":int(node.level),"state":str(node.state),"explored":bool(node.explored),"effect":str(labels.get(effect,"设施效果")) if node.explored else "探索后显示设施效果","bonus":_api.apply("to_display",[bonus]).text,"explore_remaining":float(node.explore_remaining),"construction_remaining":float(node.construction_remaining),"upgrade_remaining":float(node.upgrade_remaining),"reachable":str(id) in _reachable(_regions[key])}

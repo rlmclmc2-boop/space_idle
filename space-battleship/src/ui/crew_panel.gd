@@ -11,6 +11,10 @@ var _pending_full: bool = false
 var _pending_targets: bool = false
 var _pending_members: Dictionary = {}
 var _pending_construction: Dictionary = {}
+var _member_buttons:Dictionary={}
+var _member_bars:Dictionary={}
+var _portraits:Dictionary={}
+var _selection_summary:=Label.new()
 var world_status: VBoxContainer
 var world_labels: Dictionary = {}
 var world_crew_picker: OptionButton
@@ -23,10 +27,12 @@ func _init(crew, planet, galaxy, coordinate: Callable, command: Callable) -> voi
 	_galaxy = galaxy
 	_host = command
 	var box: Control = self
-	_caption(box, "船员与星球")
+	preload("res://src/ui/module_widgets.gd").heading(box,"船员指挥所","成员状态、岗位占用与派遣；选择成员后操作下方岗位")
 	_caption(box, "随进度逐步开放星球与星系。")
-	world_status = VBoxContainer.new()
-	box.add_child(world_status)
+	var roster:=ScrollContainer.new();roster.custom_minimum_size.y=400;roster.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;box.add_child(roster)
+	world_status = VBoxContainer.new();world_status.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	roster.add_child(world_status)
+	_selection_summary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;box.add_child(_selection_summary)
 	world_crew_picker = OptionButton.new()
 	box.add_child(world_crew_picker)
 	world_assignment_picker = OptionButton.new()
@@ -112,11 +118,26 @@ func _refresh_construction_choices(ids: Array) -> void:
 func _refresh_status(ids: Array = []) -> void:
 	for row in _crew.status_rows(ids):
 		if not world_labels.has(row.id):
-			var label := Label.new()
-			label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			world_status.add_child(label)
-			world_labels[row.id] = label
-		world_labels[row.id].text = row.text
+			var card=preload("res://src/ui/module_widgets.gd").plate(world_status)
+			var line:=HBoxContainer.new();card.add_child(line)
+			_portraits[row.id]=preload("res://src/ui/module_widgets.gd").image(line,row.portrait if ResourceLoader.exists(row.portrait) else "res://assets/ui/crew.svg",Vector2(72,72))
+			var label:=Label.new();label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;line.add_child(label)
+			var select:=Button.new();select.text="选择成员";select.toggle_mode=true;line.add_child(select)
+			select.pressed.connect(func():
+				for i in world_crew_picker.item_count:
+					if str(world_crew_picker.get_item_metadata(i))==str(row.id):world_crew_picker.select(i);_refresh_status())
+			var bar:=ProgressBar.new();bar.max_value=1;bar.show_percentage=false;card.add_child(bar);_member_bars[row.id]=bar
+			_member_buttons[row.id]=select
+			world_labels[row.id]=label
+		var destination:String=""
+		for job in _planet.assignment_options():
+			if str(job.target)==str(row.target):destination=str(job.label)
+		for job in _galaxy.assignment_options():
+			if str(job.target)==str(row.target):destination=str(job.label)
+		world_labels[row.id].text=str(row.text)+("\n"+destination if not destination.is_empty() else "")+"\n"+str(row.effect)+"\n升级所需经验 "+str(row.required)+" · 当前模式 "+str(row.mode)
+		_member_bars[row.id].value=row.progress
+		if str(_picker_value(world_crew_picker))==str(row.id):_selection_summary.text="当前选择："+str(row.text)+"\n"+str(row.effect)
+		_member_buttons[row.id].set_pressed_no_signal(str(_picker_value(world_crew_picker))==str(row.id))
 
 func _caption(parent: Control, text: String) -> void:
 	var label := Label.new()

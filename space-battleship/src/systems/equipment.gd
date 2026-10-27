@@ -680,3 +680,36 @@ func apply_external(values: Dictionary, mounts: Dictionary, external: Array) -> 
 		var row: Dictionary = values[group].get(str(slot.id), {"key": str(slot.equipment_id), "generation": int(slot.generation)})
 		row.external = external.duplicate()
 		values[group][str(slot.id)] = row
+
+func presentation_slots(inputs:Dictionary)->Array:
+	var rows:Array=[]
+	for slot in _slots_for(inputs.mounts):
+		var row:Dictionary=_slot_option(slot)
+		row.key=str(slot.equipment_id);row.level=int(slot.paid_level)
+		row.cooldown=maxf(0.0,float(slot.switch_ready_at)-float(inputs.game_time))
+		row.price=price_text(str(slot.id))
+		rows.append(row)
+	return rows
+func equipment_comparison(slot_id:String,candidate:String,inputs:Dictionary)->String:
+	var installed:String=""
+	var selected:Dictionary={}
+	for slot in _slots_for(inputs.mounts):
+		if str(slot.id)==slot_id:installed=str(slot.equipment_id);selected=slot.duplicate(true);break
+	var lines:PackedStringArray=[]
+	for key in [installed,candidate]:
+		if not _definitions.has(key):lines.append("空槽");continue
+		var row:Dictionary=_definitions[key]
+		if key in ["armour","shield"]:
+			lines.append("%s · 属性%s%s"%[label(key),"能量" if int(row.dmgtype)==1 else "物理" if int(row.dmgtype)==2 else "通用"," · 恢复 %.2f / 延迟 %.2f秒"%[float(row.para2),float(row.para3)] if key=="shield" else ""])
+		else:
+			lines.append("%s · 1级伤害 %s · 间隔 %s秒%s"%[label(key),str(row.dmg),str(row.cd)," · 齐射 %s"%str(row.para1) if key=="missile" else " · 充能 %s秒"%str(row.para3) if key=="longLaser" else ""])
+	if not selected.is_empty() and inputs.has("ai"):
+		var values:PackedStringArray=[]
+		for variant in [[installed,0],[installed,1],[candidate,0]]:
+			var key:String=variant[0]
+			if not _definitions.has(key):values.append("空槽");continue
+			var slot:Dictionary=selected.duplicate(true);slot.paid_level+=int(variant[1]);slot.erase("_charged")
+			var value:Dictionary=_charged_base(_definitions[key],_definitions.armour,slot,int(inputs.extra_bonus),_evolution,inputs.ai.equipment_durability if slot.category=="defence" else inputs.ai.weapon_damage,inputs.reactor.defence if slot.category=="defence" else inputs.reactor.weapons,_api)
+			values.append(str(_api.apply("to_display",[value.value]).text) if value.ok else "无法预览")
+		lines.append("基础值（含成长、科研及供能）：当前 %s → 升级1级 %s；换装候选 %s"%[values[0],values[1],values[2]])
+	return "当前："+lines[0]+"\n候选："+lines[1]+("\n"+lines[2] if lines.size()>2 else "")+"\n最终强化与战斗暂态见当前战斗属性；换装保留槽位等级。"
