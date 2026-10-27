@@ -7,10 +7,12 @@
 | 归属/候选 | 当前来源（e93c2212） | 本次只读收敛与不做事项 |
 |---|---|---|
 | Crew.member_facts | `crew.gd` 107–123 可用性/经验功能、150–193在线保留/占用、220–243格式化选项、251–272临时人员视图、354–437经验费用和扣除余量 | 从真实成员记录及原经验求值投影，不读中文name/text；默认跟随可用名册，显式已知锁定成员只给身份和锁定原因。头像由前端按id/type映射；下一解锁对象/数值门槛与单人未来岗位效果不在本批。目标人数/容量继续原人员视图及准入，不在成员行复制另一套占用账本。 |
-| Planet.facility_facts | `planet.gd` 101–107目标准入、130–190领取/贡献接纳、214–258已有视觉/选项、267–355初始化/探索完成推进、377–415贡献来源；`Crew.step_assignments`与Planet.advance已有explorers/builders输入 | 原视觉快照已包含running/exploration/elapsed/duration，不复制时钟。work是探索完成次数，不能用施工秒数替代。人员只经原快照临时注入；领取提示抽取现有只读准入条件，不调用会改state的_claim_build。仅输出当前来源倍率，不做领取后/全战斗收益预测。 |
+| Planet.facility_facts | `planet.gd` 101–107目标准入、130–190领取/贡献接纳、214–258已有视觉/选项、267–355初始化/探索完成推进、377–415贡献来源；`Crew.step_assignments`与Planet.advance已有explorers/builders输入 | 原视觉快照已包含running/exploration/elapsed/duration，不复制时钟；没有automatic字段，自动开关设置的只读输出仍待补，不能按现有快照已齐处理。work是探索完成次数，不能用施工秒数替代。人员只经原快照临时注入；领取提示抽取现有只读准入条件，不调用会改state的_claim_build。仅输出当前来源倍率，不做领取后/全战斗收益预测。 |
 | Galaxy.node_facts | `galaxy.gd` 132–146已有地图快照；150–190蓝图/节点准确初始探索配额；193–207可达性；233–324当前阶段/升级集合/推进；326–378来源贡献；`Crew.galaxy_assignments`与Galaxy.advance的counts输入 | 保留地图/父连接快照和区域人数。state在升级时仍是active，故另投影upgrading事实。construction按dt推进是游戏秒；explore按探索功率、upgrade按共享升级功率扣工程量，后两者不是ETA。初始化末节点配额保留原剩余量口径；可提取原只读求值复用，不能为查询重生成蓝图/RNG或加保存字段。 |
 
-人员上下文是现有公开只读临时视图的选定字段，由装配处注册具名查询callable后即读即传。不是新的通用DTO/VM，也不允许UI自报人员供业务判断；查询不保存上下文，真实派遣/推进仍只走原入口。这使三个所有者可分别实现，不先新增Crew人数协议或Session全局路由。
+人员上下文是现有公开只读临时视图的选定字段，由装配处注册具名查询callable，在当前Session的可见显示帧同步新读并即读即传；不复用固定步开头缓存的people。不是新的通用DTO/VM，也不允许UI自报人员供业务判断；查询不保存上下文，真实派遣/推进仍只走原入口。这使三个所有者可分别实现，不先新增Crew人数协议或Session全局路由。
+
+Galaxy来源贡献实施前置修复候选为`fix/galaxy-contribution-ledger-rebuild@29be6f541a4ff06e84959338e43879f310015202`，独立于本提案，尚未合入main；提案的只读查询不能代替该业务账本重建。候选证据位于该提交的`docs/verification/galaxy-contribution-ledger-rebuild.md`，不把修复经过写入正式规范。
 
 ## 需要补齐的现有失效覆盖（实施时再改代码）
 

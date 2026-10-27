@@ -143,7 +143,7 @@
 
 ## 8. 待审提案：成员、设施与选中节点的最小只读事实
 
-**状态：文档候选，未实现、待双审；不作为主线已有方法。** 本节只约定当前成员、当前设施和当前节点事实。审查依据与未覆盖项另见[核对记录](../verification/frontend-contract-audit/colony-readonly-proposal.md)。比例/预算意图、整组原子调配、动态战斗效果和未来效果预测不在本节范围。
+**状态：文档候选，方向双审认可；本次澄清待复核，尚未实现，不作为主线已有方法。** 本节只约定当前成员、当前设施和当前节点事实。审查依据与未覆盖项另见[核对记录](../verification/frontend-contract-audit/colony-readonly-proposal.md)。比例/预算意图、整组原子调配、动态战斗效果和未来效果预测不在本节范围。
 
 ### 8.1 共同读取与身份边界
 
@@ -169,7 +169,7 @@
 
 ### 8.3 Planet：设施事实
 
-拟增`Planet.facility_facts(planet_id: String, explorers: Dictionary, builders: Dictionary) -> Array`。未知或未开放星球返回空数组；可用星球仅返回其实际适用设施，包含locked/building/ready/built。explorers/builders是装配处从当下`Crew.step_assignments()`转交的同名只读临时视图：按星球键与现有施工目标键映射成员id数组，形状与现有Planet推进输入一致。视图不得自报人数，Planet不留存这些人员视图或另建占用账本。
+拟增`Planet.facility_facts(planet_id: String, explorers: Dictionary, builders: Dictionary) -> Array`。未知或未开放星球返回空数组；可用星球仅返回其实际适用设施，包含locked/building/ready/built。explorers/builders由装配处在当前Session的可见显示帧同步新读`Crew.step_assignments()`并即读即传，不复用固定步开头缓存的people；它们是同名只读临时视图：按星球键与现有施工目标键映射成员id数组，形状与现有Planet推进输入一致。视图不得自报人数，Planet不留存这些人员视图或另建占用账本。
 
 | 必需字段 | 类型、单位与来源 | 消费边界 |
 |---|---|---|
@@ -181,11 +181,11 @@
 | `claim_allowed/claim_reason` | bool/String；复用当前星球可用性、ready状态及原命令准入条件的只读判断；允许时reason为空 | 不执行_claim_build或预先接纳；仍须由claim_build按提交时事实判定，不增加统一错误/回滚政策。 |
 | `source_factor` | 已领取equipment/refinery设施的当前来源倍率Amount文本；其他类型或尚未领取为null | 沿已有设施贡献来源求值/缓存投影，仅是该设施当前来源倍率，不是装备或掉落的最终值。shipyard/auto_explore不伪造数值倍率；不承诺领取后预测或重铸许可。 |
 
-自动探索设置、实际探索者与时钟继续按原所有者和人员事实消费，本次不复制探索时钟，也不把关闭自动与立即取消合并成新动作。
+实际探索者与时钟继续按原人员事实及`Planet.visual_snapshot`消费，不复制探索时钟。现有`visual_snapshot`没有automatic字段；自动探索开关的当前设置只读输出仍是Planet所属的待补缺口，不能声称现有快照已覆盖。该输出只读现有设置，不把关闭自动与立即取消合并成新动作。
 
 ### 8.4 Galaxy：选中节点事实
 
-拟增`Galaxy.node_facts(region_id: String, node_id: String, counts: Dictionary) -> Dictionary`。未知/不可用区域或不存在节点返回空字典。counts仅转交当前`Crew.galaxy_assignments()`的区域人数映射，与现有Galaxy推进输入一致，不由视图按人物图标计数或写回。地图形状/连接与人员总数继续消费原接口，本方法只补选中节点的语义截面。
+拟增`Galaxy.node_facts(region_id: String, node_id: String, counts: Dictionary) -> Dictionary`。未知/不可用区域或不存在节点返回空字典。counts由装配处在当前Session的可见显示帧同步新读`Crew.galaxy_assignments()`并即读即传，不复用固定步开头缓存的people；它仅转交该区域人数映射，与现有Galaxy推进输入一致，不由视图按人物图标计数或写回。地图形状/连接与人员总数继续消费原接口，本方法只补选中节点的语义截面。
 
 | 必需字段 | 类型、单位与来源 | 消费边界 |
 |---|---|---|
