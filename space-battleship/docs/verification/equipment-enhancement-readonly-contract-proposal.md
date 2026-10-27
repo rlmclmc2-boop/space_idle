@@ -1,6 +1,6 @@
 # 装备与强化：结构化比较、报价和效果摘要最小待审规范
 
-仅提案，未实现接口/玩法/UI。承接[cd4169清单](frontend-readonly-gap-followup.md)，按[唯一入口](../game-design/README.md)定向核对14§2–5、03§1/1.1–1.4、06§3、02§5–6及M2/M5；未定历史动态乘数、未来收益及首槽换型死亡裁定均排除。main仍暂停。
+本页保留`0a3a5eb1`设计核对时点，最小规范已双审通过；后续运行候选、限制与证据见[实现记录](equipment-enhancement-readonly-implementation.md)及[14§11](../game-design/14-ui-contracts.md#11-实现候选装备比较强化摘要与成交回执)，未合main。历史提案不充当实机验收。承接[cd4169清单](frontend-readonly-gap-followup.md)，按[唯一入口](../game-design/README.md)定向核对14§2–5、03§1/1.1–1.4、06§3、02§5–6及M2/M5；未定历史动态乘数、未来收益及首槽换型死亡裁定均排除。main仍暂停。
 
 ## 固定来源与具体消费者
 

@@ -289,3 +289,24 @@
 Session预览与两个开始命令共用准备链，保留拒绝顺序：单次为RunState→开放→prepare_idle；自动为RunState→AutoRunning→开放→Crew准入→prepare_idle。prepare_idle继续负责UnknownRoute、在线任务占用、最佳时间和原时长等判断；预览不调用reserve/accept、不推进随机/任务/序列、不发通知。合法恢复/装配已校验保留一致性，不新造占用模拟器；预览不锁定资源，开始仍按最新状态重新准备，只有开始自动才保留船员。
 
 过滤命令与预览共用原解析/规范化及纯校验，set_filter直接输入仍保留原严格类型准入。预览不改当前规则，返回值可本地编辑而不污染所有者；确认仍调用import_filter原串并重新解析校验，不能提交客户端candidate绕过原准入。UI编辑分享串、切换来源、取消或成功后清对应旧确认；不为此添加全局revision、过滤影响扫描或仓库处理动作。Planet关闭自动仍只改变后续继续设置，不取消正在进行的探索。
+
+## 11. 实现候选：装备比较、强化摘要与成交回执
+
+设计`0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8`已双审通过；本分支运行候选待实现双审、未合main。仅本节读取与回执边界，未搬入b7bb旧缓存/提前通知；历史来源核对留在[提案](../verification/equipment-enhancement-readonly-contract-proposal.md)，固定源码及原始证据见[实现记录](../verification/equipment-enhancement-readonly-implementation.md)。
+
+| 入口/消费者 | 最小读取契约 |
+|---|---|
+| Session `equipment_slot_facts()` → M2槽卡 | Equipment.slot_facts按已接纳全部保留槽给id/category/index/equipment_id、paid/effective_level、dormant、switch_ready_at/cooldown_remaining。空槽与休眠独立，未知有效等级为null。冷却只作用换装，不给购级加新禁令。 |
+| Session `equipment_comparison(slot_id,candidate_id,count=1,maximum=false)` → M2比较台/固定报价区 | 薄装配实际世界/AI/反应炉及预算，Equipment.slot_comparison只读输出`scope=charged_base`、current/upgrade/candidate、quote、affordable/payment_reason、switch_admission、dormant。current为现装，upgrade按本次quote实际count，candidate沿当前付费级；不组合候选换装+购级。行给装备/等级、主值规范Amount文本或null、status/reason及有单位配置特性；不输出拼接中文当数据。 |
+| Equipment `quote_slot(slot_id,n)` / `quote_max_levels(slot_id,inputs,can_pay)` → M2数量/费用 | 确定数量复用原_quote_levels；MAX薄包装原_quote_affordable_levels。保留count/costs/extreme与原reason，costs为resource id→原Amount。单槽+10完整报价不缩成可购2；MAX候选报价错误/不可支付作搜索边界，0统一NoChange，原离散极限保持。不新增整组预览，不把独立MAX相加成批量总价。 |
+| Session `enhancement_presentation()` → M5等级行/六卡 | Enhancement.presentation_model在真实bonus/开放/armours上纯调用_effective_level/_describe/_combat，输出scope=enhancement_static、paid/bonus/effective、available/reason、两组实际顺位及effects。行给id/category/position/threshold/active/reason，节点index/threshold/choice/open/function_active/reason，summary含合成A/B静态参数与生效规则。不是native临时/历史乘数或未来收益。 |
+| Session `enhancement_branch_details(effect,node)` → M5选择前详情 | Enhancement.branch_details对所选节点0–2给门槛/选择/open、A/B options；无论未选/未开放均给稳定rule_id及必要parameters（value/unit）。command_allowed沿原_choose，function_available/function_reason独立；repeat-B2旧选择可保存且原命令可接纳，但功能不生效。不把选项规则冒充当前合成结果。 |
+| Session `enhancement_purchase_preview(count)` → M5买1/最多10固定区 | Enhancement.purchase_preview复用原_quote_purchase，保留ok/reason、request_count、purchasable_count、costs/extreme与first_level_costs。最多10可能实际2；NoChange给可购0，其他错误的数量未知，不伪造0。首级所需与实际可成交总费分开，不新增强化MAX。 |
+
+静态比较止于成长/进化/科研/供能；当前实战值另复用Battle.attribute_details，不拿当前native最终值对比候选charged_base。switch_admission仅复用原单槽换装准入，不承诺最终无人机/Higgs组合许可，实际提交仍沿Session原链。查询只读已接纳事实；_charged_base仅给脱离slot，强化不调用会写_pending_output的evaluate，不设可写展示缓存或临时接纳。
+
+强化summary给完整已生效A/B静态投影：熟练/适应静态合成因子及规则、连发含A的概率/伤害/延迟/额外目标、暴击原始率和B3效果触发率分开、记忆含A及当前装甲B3的恢复/上限、延期未强制清除概率和B2/B3随机/强制清除及来袭倍率分开。生效规则及节点选项均用稳定rule_id、参数和game_seconds/count/ratio单位供前端本地化，不让UI补公式；每盾充能等只给既有规则参数，不伪造未提供的累计实值。未定历史动态乘数、未来收益继续排除。
+
+实际执行回执附在原命令结果`purchase_receipt`，不改变原ok/reason或部分成功政策。装备成功提交给`commit_status=accepted`、逐槽purchases[{slot_id,count,spent}]和逐资源合计spent；单槽/批量捕获本次执行quote，不靠钱包差/通知后重读反推。buy_all_levels即使返回后续failure、ok=false，已经成功发布的槽仍给accepted回执。无发布为not_submitted，普通发布拒绝为rejected且无确认成交；提交后fault为fault_unknown、spent=null，不声称回滚。强化购买同样给commit_status、实际count/spent。早期原准入/报价/支付拒绝可无回执，不表示曾提交；没有成功接纳的候选成本不得当实际支出。回执是上次成交，不是下一报价。
+
+报价/比较/选项不锁资源，确认按最新所有者状态重验。装备沿原slots_changed/loadout_changed/options_changed及预算事实刷新；强化采用可见时同步重读，覆盖purchase/改序/分支及外部bonus/armours经accept_output变动，不新增presentation_changed或事件框架。Session整批接纳结束再刷新；不在模块接纳中提前发信号。当前对象消失清旧详情，输入变化清对应旧报价，保留未提交UI草稿。

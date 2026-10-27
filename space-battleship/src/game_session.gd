@@ -788,6 +788,17 @@ func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
 		"game_time": game_time}
 
+func equipment_slot_facts() -> Array:
+	return equipment.slot_facts(campaign_system.ship_facts().mounts, game_time, int(_world_factors.equipment_levels))
+
+func equipment_comparison(slot_id: String, candidate_id: String, count: int = 1, maximum: bool = false) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var inputs: Dictionary = equipment_inputs()
+	inputs.extra_bonus = int(_world_factors.equipment_levels)
+	inputs.ai = _research_factors
+	inputs.reactor = _reactor_factors
+	return equipment.slot_comparison(slot_id, candidate_id, count, inputs, economy.can_pay, maximum)
+
 func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}, module_totals = null,
 		drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
@@ -929,6 +940,16 @@ func refresh_growth() -> bool:
 func enhancement_inputs() -> Dictionary:
 	return {"bonus": int(_world_factors.enhancement_levels), "unlocked": campaign_system.available,
 		"armours": equipment.equipped_armours(campaign_system.ship_facts().mounts)}
+
+# Read on visible refresh; no module signal can precede Session acceptance.
+func enhancement_presentation() -> Dictionary:
+	return enhancement.presentation_model(enhancement_inputs())
+
+func enhancement_branch_details(effect: String, node: int) -> Dictionary:
+	return enhancement.branch_details(effect, node, enhancement_inputs())
+
+func enhancement_purchase_preview(count: int) -> Dictionary:
+	return enhancement.purchase_preview(count, enhancement_inputs(), economy.affordable)
 
 func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()

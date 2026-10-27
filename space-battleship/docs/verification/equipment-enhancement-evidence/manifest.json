@@ -1,0 +1,77 @@
+{
+  "branch": "feat/amount-safe-previews",
+  "before_commit": "0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8",
+  "scope": "M2 slot facts/charged comparison/MAX read and execution receipt; M5 static summary/A-B rule choices/at-most quote/execution receipt; visible reread only",
+  "evidence": {
+    "equipment-enhancement-probe.txt": {
+      "sha256": "ce074c8c87d67b600579c85c30aca5143df5f43730f2ef95ef19e5039c84f332",
+      "bytes": 362,
+      "exit_code": 0
+    },
+    "equipment-enhancement-check.txt": {
+      "sha256": "83cf0b082206af2aa236c83064fbcfa76be1e00a4aa3558574b2f65965d9481c",
+      "bytes": 75,
+      "exit_code": 0
+    }
+  },
+  "sources": {
+    "src/game_session.gd": {
+      "canonical_lf_sha256": "4efb23a776927970ea1b341858329203ba86e916ebfb0ae2990c6b85a1b1a914"
+    },
+    "src/systems/equipment.gd": {
+      "canonical_lf_sha256": "f16991cb16dc5f03bf478b8382aa7af3508f734074ae363fd3a09c5eeb043d8f"
+    },
+    "src/systems/enhancement.gd": {
+      "canonical_lf_sha256": "7e1f052a484147f347b44e3570a17d5b061355219e2773dde87a273cd35a4920"
+    },
+    "foundation/tests/_equipment_enhancement_readonly_probe.gd": {
+      "canonical_lf_sha256": "00f26377fcc8b1d4104eceb6d699f694a6573a416aaf557dd27ef2bd53d3b332"
+    }
+  },
+  "baselines": {
+    "equipment": {
+      "git_path": "space-battleship/src/systems/equipment.gd",
+      "sha256": "1aec13d56f50b000fd33b392fae45490fb75449c091bb6727ca0279f83937f91",
+      "bytes": 31663
+    },
+    "enhancement": {
+      "git_path": "space-battleship/src/systems/enhancement.gd",
+      "sha256": "0582dbbf24b23a2cd8635f988ac208bc246840d38a0b56da6fa202840f74b501",
+      "bytes": 13270
+    }
+  },
+  "unchanged_helpers": {
+    "equipment._charged_base": {
+      "canonical_lf_sha256": "92de8e1720338486a90ef2b33fdeba351810b844e78b12a71edbc9fcd880c50f"
+    },
+    "equipment._quote_levels": {
+      "canonical_lf_sha256": "2e8da9d2eec22eea5b1487431ed8643d7c496e489b2fe624933f9628dba52103"
+    },
+    "equipment._quote_affordable_levels": {
+      "canonical_lf_sha256": "df03fb36537fd9354a0d409ae436f00b79fe8134aef9e4ca0059f2bbe892e6cf"
+    },
+    "enhancement._effective_level": {
+      "canonical_lf_sha256": "3e15d95ead2542063cea44f44053e367ca8ee3be6a375d6c6bca76dec16d6b49"
+    },
+    "enhancement._describe": {
+      "canonical_lf_sha256": "dfe89ee18cab1237f7dd4ce40d691af9641b876ebc627de377f9eb0d0ad4a790"
+    },
+    "enhancement._combat": {
+      "canonical_lf_sha256": "7e37c207d83dd03f2a4c10e51f9b2c3cf40ca1c80eaffa1f95def6347d31b347"
+    },
+    "enhancement._choose": {
+      "canonical_lf_sha256": "4aa9a0d2ea25bf978bc14a9824f92acf3fe20c2a2d3127675d1a36afed8538fa"
+    },
+    "enhancement._quote": {
+      "canonical_lf_sha256": "30fed507c62000ecc34f3c5538f74cdab6f99b3b7c3102a885933d091c22af2c"
+    },
+    "enhancement._quote_purchase": {
+      "canonical_lf_sha256": "af4ba7ff1c18adce3b1631b148ad2c7b17968ee9a1be856fe767272fd677579d"
+    }
+  },
+  "configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
+  "native_source_tree": "a990ed73bdb2c63471ebed15dd9ddbe500d22ce8",
+  "evidence_byte_policy": "Two named stdout files use local -text attributes; sha256 and bytes must match captured raw bytes and exact Git blob. Source hashes are explicitly canonical LF.",
+  "limitations": "Focused module/baseline tests and one actual Session/native equipment publication, plus entry check; explicit test wallets/slots/levels/branches; no complete gameplay/UI, hypothetical native history/future values, full batch UI, native fault injection, or geometry acceptance."
+}
