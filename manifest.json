@@ -1,0 +1,33 @@
+{
+  "status": "unapproved_functional_and_interface_candidate",
+  "code_commit": "50ed7cdaf98243a36fadb1be30dbfc7b4022e6a4",
+  "code_branch": "rewrite/ui-review-followup",
+  "source_review": "50cda29b14fc51f58edb5693213e3e400cb1e9fa",
+  "frontend_layout_out_of_current_scope": true,
+  "desktop_input_validation": false,
+  "natural_unlock_evidence": false,
+  "screenshots": "actual Godot GPU framebuffer at 1560x1000 and 572x960; controlled fixtures",
+  "excluded": [
+    "save files",
+    "credentials",
+    "import cache",
+    "DLL",
+    "parked layout experiment"
+  ],
+  "sha256": {
+    "interface-candidate.md": "b7485e0400b16f65c08352fc136786337aef4a8704d0c1c4a613ffbbfbb07201",
+    "review.md": "7ebf5bb5d1a6c3f4c61d427c2db16c4ce07fbf751309ff58f8b2b5d9c1861dce",
+    "functional/1560-hyperspace-forge-materials.png": "4dbac77daf5bc487d4f81830fb45634279a945dae95a3c44cf127e0c2ae89d5c",
+    "functional/1560-hyperspace-forge-subject.png": "2eb3838e2e57a70238d08d5c4f60555ec3ac68d86a7744cbfe36ef2f9b17736f",
+    "functional/1560-hyperspace-loadout.png": "bd86922bd517fb55cb113da836d648c53e8a8c459aa1a1b7494e1fdfaf06025f",
+    "functional/1560-new-game-persistent-preview.png": "f33ee93ffd838b3661c1b0075c6126305bf95ff2e301f1ee0167d62743389140",
+    "functional/572-hyperspace-forge-materials.png": "94bce5d35e92c8e0bcf5ee5b307b2c902c87533d2d7a1f03ccc0793f646c6ec9",
+    "functional/572-hyperspace-forge-subject.png": "8da67a3df49d0ec8267f264c1a2305bca3e2c056a0c381d1ac814cdf070e8b10",
+    "functional/572-hyperspace-loadout.png": "7a34614cc075db0dbb2e3c5bef516de0b249e1ad2c0ef436ba65b2eef481f2c3",
+    "functional/572-new-game-persistent-preview.png": "b1cac3e8a3fda0fa88a746278cf03666920d95c9a5cae931953b650a149621d9",
+    "functional/capture.gd": "d43cf6dc343c8f7e524ca1d8813731ee91edd85b26c1c73711bb1f34ca5f7bb5",
+    "functional/capture.log": "59b3133863e4a624a15411ed364cc4a39ac4da8598b75bd0cf6d16c96a6281ff",
+    "functional/regression.gd": "61888218ceca10d636fa6b21d1ddd243cd122c71012ba1c2cb5ebf73f8af7d48",
+    "functional/regression.log": "b7c8f713505f0281e2c901f09825e488cb7e76b7d713a485b114a51fa9180323"
+  }
+}
