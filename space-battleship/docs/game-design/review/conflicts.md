@@ -1,20 +1,24 @@
-# 待用户裁定的明显矛盾与覆盖缺口
+# 已裁定修正、待定问题与覆盖缺口
 
-[唯一入口](../README.md)。核对来源为拆分前 `main@7a85481`；下列原文按该提交保留，可用 `git show 7a85481:space-battleship/docs/game-design/<原路径>` 回读。C1/C4保留双边原文待用户裁定；C2/C3/C5依据已有权威校正文案，不再作为重选规则的问题。本轮不改数值或实现，不以归档视为已解决。涉及某项时只读取该项及双边来源；无关任务可继续。
+[唯一入口](../README.md)。核对来源为拆分前 `main@7a85481`；下列原文按该提交保留，可用 `git show 7a85481:space-battleship/docs/game-design/<原路径>` 回读。C1已按用户裁定修正消费来源，双边原文保留作来源记录；C4仍待裁定；C2/C3/C5依据已有权威校正文案，不再作为重选规则的问题。除C1已裁定修正外，本页其余整理不改数值或实现，不以归档视为已解决。涉及某项时只读取该项及双边来源；无关任务可继续。
 
-## C1 无人机舰型容量：设计表与实际消费来源不一致（待裁定）
+## C1 无人机舰型容量：原实现误读占地字段（已裁定并修正）
 
 - 原文A：[03第1节](../03-progression.md#1-舰体槽位与升级)船型表，无人机容量按五舰列 `1、2、3、4、5`；[超空间快照](../reference/config/hyperspace_config.md)“舰型容量”同列该值。
 - 原文B：[ship快照](../reference/config/ship.md)的 `para_5` 五舰为 `1、1、2、2、4`；[历史来源审计](../history/stage6-combat-audit.md#drone-capacity-source-conflict)原文：“`Campaign.ship_facts` returns para_5; Session passes that result to equip/preview/preset/ship-change operations”。
 - 影响：驱逐、巡洋、战列、重型战列的可装备总数，以及换舰截断/预设/原生贡献。全局 `maximum_equipped=5` 与舰型更小上限可以并存，不是此矛盾。
-- 待裁定：哪张舰型表应成为唯一权威，是否调整设计表/未消费表/实现；本轮均未改。
+- 归因：正确的舰型容量权威表原已存在；这是实现消费字段错误，不是两个权威规则冲突。
+- 用户裁定：五舰无人机容量依次为 `1、2、3、4、5`。现行权威是[超空间配置工作簿](../../../config_excel/hyperspace_config.xlsx)的“舰型容量”表（`hull_id/capacity`）；该表原值已符合裁定，未修改工作簿。
+- 实现同步：`Campaign.ship_facts().drone_capacity` 改为消费上述舰型容量表；配装、预设、成长/改造刷新、换舰截断与原生配装校验继续使用该公开事实。合法数量须同时满足舰型容量和独立的全局 `maximum_equipped`，不把全局最大值当成每舰容量。
+- 字段区分：[舰型工作簿](../../../config_excel/ship.xlsx)的 `para_5` 是“战舰占地”，`para_6` 是“同种武器上限”，均不作为无人机容量且未修改。上述历史快照及原文B保留原样，不再据旧消费关系定义当前规则。
 
 ## C4 parent身份与保存水位：书面要求和已记录实现差异（待裁定）
 
 - 原文A：[02第7节](../02-combat.md#7-衍生攻击和传说连接)：“派生攻击带父AttackId与类型。”[06第5节](../06-data.md#5-新存档格式与生命周期)规定 `next_ids:{encounter,actor,attack,emitter,drop}`。
 - 原文B：[原11身份审计](../history/stage6-combat-audit.md#c10-identity-contract-audit)：“strange packets and counters do not retain a full parent attack relationship, and `next_ids.attack` is a carrier watermark.”原文亦明确“does not waive the design requirement”。
 - 影响：派生溯源、ID语义、checkpoint兼容与审计观察口径；行为矩阵通过不证明完整表示契约等价。
-- 待裁定：继续实现完整关系、修订书面要求或保留明确例外；不把历史“nonblocking”改成自动豁免，也不新增测试ID/保存字段。
+- 概念区分：直接父攻击身份表示一次派生的直接来源；完整祖先历史是可沿多代追溯的记录，二者不等同。触发许可决定特定来源能否触发某个效果及其次数，不由是否存父对象自动决定。保存水位是ID序号的持久状态，不等于将运行期父链写入存档。
+- 当前状态：C4仅作只读专项审核，直接父身份的最小必要范围、是否需要完整祖先历史、各类触发许可及保存水位语义分别待核；不将所有派生一刀切处理。本次不改战斗实现或保存格式，不把历史“nonblocking”改成自动豁免，也不新增测试ID/保存字段。文档拆分候选通过双审不代表全规范语义已核清。
 
 ## 已按现行权威校正文案（无需重新裁定）
 
