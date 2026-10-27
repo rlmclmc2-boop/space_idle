@@ -65,3 +65,7 @@ G1组织审已通过，两方向都进入G2；没有选定UI，不是完整候�
 ## M2跨舰、全槽与属性工作点
 
 源码`915976b20b57c5ab77af6b15fa25fcff777240a4`：[三工作点/连续响应/接口与Godot还原/未完成](g2-equipment-restoration.md)、[58张同版A/B整屏](evidence/g2-equipment-complete/README.md)。原三简略弹窗已替换；批量保留原动作和实际回执，不编造整组预报价。仍为有限浏览器响应，无真实GameSession、任意组合或G2/G4/G9通过。
+
+## ready关联响应修订
+
+源码`ccb82aea9a1ae42be651bad5909c8b91f2f37fcf`：[10张同版A/B关联过程](evidence/g2-planet-ready-linked/README.md)、[来源与还原边界](g2-colony-restoration.md#p3-ready领取后的人员关联响应修订)。补完整Planet/Crew边界响应，ready时已释放、领取后仍空闲；旧4f8ef18c单改设施漏人员图保留作反例，不作为通过。未实施UI业务释放，整体品质队列未关闭。
