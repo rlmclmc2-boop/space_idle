@@ -16,7 +16,19 @@
         384,
         384
       ],
-      "ortho_scale": 44.0
+      "ortho_scale": 44.0,
+      "visible_rect_px": [
+        97,
+        138,
+        218,
+        127
+      ],
+      "browser_viewbox_px": [
+        93,
+        134,
+        226,
+        135
+      ]
     },
     {
       "key": "colony_ring",
@@ -29,7 +41,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        116,
+        148,
+        152,
+        105
+      ],
+      "browser_viewbox_px": [
+        112,
+        144,
+        160,
+        113
+      ]
     },
     {
       "key": "colony_ring",
@@ -42,7 +66,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        113,
+        149,
+        157,
+        108
+      ],
+      "browser_viewbox_px": [
+        109,
+        145,
+        165,
+        116
+      ]
     },
     {
       "key": "colony_ring",
@@ -55,7 +91,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        111,
+        150,
+        162,
+        111
+      ],
+      "browser_viewbox_px": [
+        107,
+        146,
+        170,
+        119
+      ]
     },
     {
       "key": "colony_ring",
@@ -68,7 +116,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        108,
+        143,
+        168,
+        122
+      ],
+      "browser_viewbox_px": [
+        104,
+        139,
+        176,
+        130
+      ]
     },
     {
       "key": "colony_ring",
@@ -81,7 +141,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        105,
+        144,
+        174,
+        125
+      ],
+      "browser_viewbox_px": [
+        101,
+        140,
+        182,
+        133
+      ]
     },
     {
       "key": "orbital_shipyard",
@@ -94,7 +166,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        91,
+        121,
+        201,
+        151
+      ],
+      "browser_viewbox_px": [
+        87,
+        117,
+        209,
+        159
+      ]
     },
     {
       "key": "orbital_shipyard",
@@ -107,7 +191,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        87,
+        121,
+        210,
+        155
+      ],
+      "browser_viewbox_px": [
+        83,
+        117,
+        218,
+        163
+      ]
     },
     {
       "key": "orbital_shipyard",
@@ -120,7 +216,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        83,
+        121,
+        218,
+        159
+      ],
+      "browser_viewbox_px": [
+        79,
+        117,
+        226,
+        167
+      ]
     },
     {
       "key": "orbital_shipyard",
@@ -133,7 +241,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        78,
+        120,
+        228,
+        164
+      ],
+      "browser_viewbox_px": [
+        74,
+        116,
+        236,
+        172
+      ]
     },
     {
       "key": "orbital_shipyard",
@@ -146,7 +266,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        74,
+        114,
+        236,
+        174
+      ],
+      "browser_viewbox_px": [
+        70,
+        110,
+        244,
+        182
+      ]
     },
     {
       "key": "stellar_energy_array",
@@ -159,7 +291,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        126,
+        154,
+        147,
+        90
+      ],
+      "browser_viewbox_px": [
+        122,
+        150,
+        155,
+        98
+      ]
     },
     {
       "key": "stellar_energy_array",
@@ -172,7 +316,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        123,
+        153,
+        153,
+        94
+      ],
+      "browser_viewbox_px": [
+        119,
+        149,
+        161,
+        102
+      ]
     },
     {
       "key": "stellar_energy_array",
@@ -185,7 +341,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        106,
+        154,
+        172,
+        102
+      ],
+      "browser_viewbox_px": [
+        102,
+        150,
+        180,
+        110
+      ]
     },
     {
       "key": "stellar_energy_array",
@@ -198,7 +366,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        103,
+        153,
+        178,
+        107
+      ],
+      "browser_viewbox_px": [
+        99,
+        149,
+        186,
+        115
+      ]
     },
     {
       "key": "stellar_energy_array",
@@ -211,7 +391,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        99,
+        152,
+        186,
+        114
+      ],
+      "browser_viewbox_px": [
+        95,
+        148,
+        194,
+        122
+      ]
     },
     {
       "key": "interstellar_refinery",
@@ -224,7 +416,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        130,
+        142,
+        129,
+        105
+      ],
+      "browser_viewbox_px": [
+        126,
+        138,
+        137,
+        113
+      ]
     },
     {
       "key": "interstellar_refinery",
@@ -237,7 +441,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        125,
+        142,
+        138,
+        107
+      ],
+      "browser_viewbox_px": [
+        121,
+        138,
+        146,
+        115
+      ]
     },
     {
       "key": "interstellar_refinery",
@@ -250,7 +466,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        119,
+        137,
+        148,
+        115
+      ],
+      "browser_viewbox_px": [
+        115,
+        133,
+        156,
+        123
+      ]
     },
     {
       "key": "interstellar_refinery",
@@ -263,7 +491,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        114,
+        137,
+        157,
+        117
+      ],
+      "browser_viewbox_px": [
+        110,
+        133,
+        165,
+        125
+      ]
     },
     {
       "key": "interstellar_refinery",
@@ -276,7 +516,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        106,
+        135,
+        169,
+        122
+      ],
+      "browser_viewbox_px": [
+        102,
+        131,
+        177,
+        130
+      ]
     },
     {
       "key": "crystal_refinery",
@@ -289,7 +541,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        130,
+        147,
+        130,
+        102
+      ],
+      "browser_viewbox_px": [
+        126,
+        143,
+        138,
+        110
+      ]
     },
     {
       "key": "crystal_refinery",
@@ -302,7 +566,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        125,
+        147,
+        134,
+        106
+      ],
+      "browser_viewbox_px": [
+        121,
+        143,
+        142,
+        114
+      ]
     },
     {
       "key": "crystal_refinery",
@@ -315,7 +591,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        120,
+        148,
+        144,
+        110
+      ],
+      "browser_viewbox_px": [
+        116,
+        144,
+        152,
+        118
+      ]
     },
     {
       "key": "crystal_refinery",
@@ -328,7 +616,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        116,
+        148,
+        152,
+        114
+      ],
+      "browser_viewbox_px": [
+        112,
+        144,
+        160,
+        122
+      ]
     },
     {
       "key": "crystal_refinery",
@@ -341,7 +641,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        111,
+        148,
+        161,
+        117
+      ],
+      "browser_viewbox_px": [
+        107,
+        144,
+        169,
+        125
+      ]
     },
     {
       "key": "heavy_element_refinery",
@@ -354,7 +666,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        124,
+        151,
+        134,
+        103
+      ],
+      "browser_viewbox_px": [
+        120,
+        147,
+        142,
+        111
+      ]
     },
     {
       "key": "heavy_element_refinery",
@@ -367,7 +691,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        122,
+        151,
+        140,
+        107
+      ],
+      "browser_viewbox_px": [
+        118,
+        147,
+        148,
+        115
+      ]
     },
     {
       "key": "heavy_element_refinery",
@@ -380,7 +716,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        118,
+        149,
+        148,
+        112
+      ],
+      "browser_viewbox_px": [
+        114,
+        145,
+        156,
+        120
+      ]
     },
     {
       "key": "heavy_element_refinery",
@@ -393,7 +741,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        114,
+        146,
+        156,
+        118
+      ],
+      "browser_viewbox_px": [
+        110,
+        142,
+        164,
+        126
+      ]
     },
     {
       "key": "heavy_element_refinery",
@@ -406,7 +766,19 @@
         384,
         384
       ],
-      "ortho_scale": 20.0
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        109,
+        143,
+        166,
+        125
+      ],
+      "browser_viewbox_px": [
+        105,
+        139,
+        174,
+        133
+      ]
     },
     {
       "key": "transport_shuttle",
@@ -419,7 +791,19 @@
         384,
         384
       ],
-      "ortho_scale": 6.0
+      "ortho_scale": 6.0,
+      "visible_rect_px": [
+        133,
+        171,
+        93,
+        66
+      ],
+      "browser_viewbox_px": [
+        129,
+        167,
+        101,
+        74
+      ]
     }
   ]
 }

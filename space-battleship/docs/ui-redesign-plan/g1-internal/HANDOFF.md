@@ -51,3 +51,9 @@
 仍复用`/workspace/space_idle/space-battleship`及原分支；接管核实83112e84、工作树干净。首批四项已完成局部修订，精确交互/提交语义/最小Amount端口见`g2-revision-r1.md`；还原资料已同步，证据将固定源码SHA记录在`evidence/g2-revision-r1/manifest.json`。A/B浏览器定向操作无pageerror，JS语法及diff空白通过；未运行游戏/Godot。
 
 下一顺序是第二批复审：迷雾身份统一隐藏、查看真实探索者、同目标NoChange保进度、星系缺人停工/恢复；然后地图焦点/标签/详情、B工具及人员长目标/经验条边界。必须保留星球主体和占用/候选分离；不先跨入其他新模块。本轮仍不以修订清单代替完整G2或画面验收。
+
+### 固定补丁与当前顺序更新
+
+首批R1源码`0ecd5300621e8608b94bca5d45083db7ea8c1e56`，同版证据`9a843bbc03f5fb640e12d4fb8f339c01ab1d828f`。之后按根线程核实的config!A48:C48把换装冷却纠正为10游戏秒：源码`502e9d2094ebcde09feca14910f4f228e7624f09`，同版局部证据`c6277acab60a41c9b264f187e8044386460d86a4`，均已推送。旧18秒样本错误，不能继续据此还原。
+
+第二批复审局部修订已成实物，见`g2-colony-restoration.md`末节；同版证据固定在`evidence/g2-colony-r1/manifest.json`。接下来第三批强化复审，不新建工作区/子线程。本批仍不关闭全系统G2。
