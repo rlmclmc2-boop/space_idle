@@ -60,3 +60,5 @@
 同版证据在`evidence/g2-planet-ready-linked/manifest.json`：A/B的building关联起点→完整ready响应→人员名册实际空闲→回星球领取→人员仍空闲，共10张1440×900原像素整屏。旧`4f8ef18c`该两张ready/claimed图保留作反例，不作为关联状态通过；新证据不重复覆盖此前已关闭的其他殖民/M9用例。临时全模块采集脚本也已改用同一完整情境入口，避免再次只写设施字段。
 
 Godot继续由Planet/Session/Crew原所有者在完成时释放、在同一已接纳边界发出/读取对应公开快照，表现只消费实际人员与设施状态。不新增前端业务、后端端口或玩法。A/B上述连续检查、横向边界、R/T和JS语法/diff通过，无pageerror；未运行Godot/游戏，不代表自然长期推进或整套UI验收。其余整体品质队列、接口接线和G2/G4/G9仍开放。
+
+本自然项随后收到批量逐槽结果颜色/标签复查，已一并修正，并用`evidence/g2-ready-batch-feedback/manifest.json`提供同版ready关联与批量四类反馈；此前`g2-planet-ready-linked`保留其固定源记录。没有修改ready规则或把人员释放挪到UI。

@@ -40,3 +40,7 @@ Godot消费既有`Battle.attribute_details`（native的weapons/defences均有ent
 本批同版原像素1440×900 A/B整屏及source/image hash、路线/scroll/当前与候选/槽/回执/战场炮口组状态见`evidence/g2-equipment-complete/manifest.json`。定向检查五舰比较/锁定、三机换小舰卸回两机、后部休眠和回大舰保留、2/4/5武器槽装配、新槽换装和canonical炮口身份；连续批量+1/+10/MAX/NoChange、共享材料、后段已提交后错误及不能重放；静态/native/临时信息与失效；A/B纵向到达、无横溢出、R/T切换/开合稳定。JS语法和diff空白另查，未跑Godot/游戏，不重开M9旧反例。
 
 仍缺真实GameSession/候选只读与回执接线、任意舰型/任意预算/任意组合连续响应、原生换舰准入/geometry/native接纳链实机一致性、DPI/性能与声音。UI工作点取代原简略弹窗，不据此批准整套品质。B摘要占高/科研割裂/舰体炮台盾材质等整体意见仍在根线程队列；星球ready释放施工者完整关联响应排在本装备自然项之后，当前未跨入制作。P3参数/逐舰来源/G9仍未批准，A/B未选，未合main。
+
+### 批量回执四类展示复查
+
+根线程复查发现后段`AmountRangeExceeded`虽有总失败条，原逐槽行仍因count=0被画成“跳过”绿底，容易被当作普通资源不足。现明确区分已成交、普通跳过、失败、前序失败后的未执行；失败行有“失败”文字及失败底/边，普通跳过、未执行和已成交各有自己的文字与层次。已接纳两槽的数量、费用和总支出不变，不报回滚。定向证据随ready关联自然项合为`evidence/g2-ready-batch-feedback/manifest.json`，不重开其余M2/M9已闭合流程。

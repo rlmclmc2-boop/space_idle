@@ -150,3 +150,4 @@ button.primary:hover:not(:disabled),button.active:hover{background:#38656c;color
 .equipment-weapon-slots .rig-slot{flex:0 0 auto}.full-theater .outfit-rig[data-weapon-count="4"]{height:390px}.full-theater .outfit-rig[data-weapon-count="5"]{height:455px}
 .field-bar.friendly.pending i{visibility:hidden}
 .full-theater.work-family .outfit-rig[data-weapon-count="5"]{height:490px}
+.batch-result-table article.batch-result-failed{background:#f0ddd2;border-left-color:#b1664d}.batch-result-table article.batch-result-failed>b{color:#984d38}.batch-result-table article.batch-result-skipped{background:#eee7d6;border-left-color:#b2945c}.batch-result-table article.batch-result-not-executed{background:#e6e6dc;border-left-color:#9caa9a}.batch-result-table article.batch-result-purchased{background:#e2ecdc;border-left-color:#6f9e80}
