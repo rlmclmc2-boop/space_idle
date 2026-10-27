@@ -1,0 +1,152 @@
+{
+  "source_commit": "db81d5cda2a1f69bdf1d66c6db299ca5855c0a64",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "explicit lost and retained drone names from same preview",
+    "retention edit invalidates preview",
+    "fixed B save card settings/save",
+    "result type/source identity and immediate DOM invalidation",
+    "loaded but unsaved player language and technical details collapsed",
+    "persistent save failure and queue separate",
+    "normal and elite enemy visual_key mapped to actual enemy textures"
+  ],
+  "images": [
+    {
+      "file": "scene-enemy-elite-1440x900.png",
+      "case": "scene-enemy-elite",
+      "family": "scene",
+      "route": "archive/intel",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "5d87d4c299bde0d068d95e6730c2798f0e5a965e24aea3d4f5972843fe40cef6"
+    },
+    {
+      "file": "scene-enemy-normal-1440x900.png",
+      "case": "scene-enemy-normal",
+      "family": "scene",
+      "route": "archive/intel",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "aa558973b6a663b1450284adf8bb6e3affa228f8052653c947bacadf6622d907"
+    },
+    {
+      "file": "scene-import-loaded-unsaved-1440x900.png",
+      "case": "scene-import-loaded-unsaved",
+      "family": "scene",
+      "route": "settings/danger/import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "08975c49717e2aedf550ab99305f7a4f89f9ec77124966c6450e41b64383c81f"
+    },
+    {
+      "file": "scene-reforge-losses-lower-1440x900.png",
+      "case": "scene-reforge-losses-lower",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "scroll": {
+        "outer": 328,
+        "inner": 0
+      },
+      "sha256": "63dbe57e37cf53d4ca402a58c6fb32567d81ac86e7e188ba3ce90b03b832defd"
+    },
+    {
+      "file": "scene-reforge-losses-1440x900.png",
+      "case": "scene-reforge-losses",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "9c4cbcbdfef85adda74955b1914226913bbe068d7015dd7affd1272f2a63102e"
+    },
+    {
+      "file": "scene-save-failure-1440x900.png",
+      "case": "scene-save-failure",
+      "family": "scene",
+      "route": "settings/save",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "04ce4249d9706ab0a56a37622ecce7921f76da04a797efa6e7e8896f64f6d443"
+    },
+    {
+      "file": "work-enemy-elite-1440x900.png",
+      "case": "work-enemy-elite",
+      "family": "work",
+      "route": "archive/intel",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "ae07b810f86c03a596ca64c714973119ffcda07ce9d7eefae6d35285d41ae59e"
+    },
+    {
+      "file": "work-enemy-normal-1440x900.png",
+      "case": "work-enemy-normal",
+      "family": "work",
+      "route": "archive/intel",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "8a2a775295740d6ff31c37549ebccff254ecc6b1ae73c29aef88313d9bf33463"
+    },
+    {
+      "file": "work-import-loaded-unsaved-1440x900.png",
+      "case": "work-import-loaded-unsaved",
+      "family": "work",
+      "route": "settings/danger/import",
+      "scroll": {
+        "outer": 0,
+        "inner": 21
+      },
+      "sha256": "1877ce72469a886dbb8245ef38de8db8069e433bff8bdd4d497613796f0c98a2"
+    },
+    {
+      "file": "work-reforge-losses-lower-1440x900.png",
+      "case": "work-reforge-losses-lower",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "scroll": {
+        "outer": 0,
+        "inner": 407
+      },
+      "sha256": "b946cb2fe008c36a42a5cbba5b69f6f9b0098ec6daf8f33df235a1bac51cb496"
+    },
+    {
+      "file": "work-reforge-losses-1440x900.png",
+      "case": "work-reforge-losses",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "98bc1f7dcc110b9553d1f48ffcd30c31ac8f7b7a6bd8131d20ecd47eeb8cebf9"
+    },
+    {
+      "file": "work-save-failure-1440x900.png",
+      "case": "work-save-failure",
+      "family": "work",
+      "route": "settings/save",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "acfa37df465a36e063858523b321cd015fb618f0275e1cc42025cc07dd89d6af"
+    }
+  ]
+}
