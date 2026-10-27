@@ -95,3 +95,9 @@
 科研同步源码`efc31c9f30c255581978397d1a9655a7de8176b6`与同版证据`cfb0ecfee978385ab7f7c60bef27e059851f25d1`已推送。之后继续过滤完整工作台：五条件/all-any/动作/当前草稿/v2分享审阅确认与非法保留，见`g2-hyperspace-restoration.md`末节，证据`evidence/g2-hyperspace-filter/manifest.json`。唯一新增只读请求是复用原导入解析校验形成preview_filter_import，现有import_filter会修改当前规则不能预先调用。
 
 仍未实际发生上下文压缩；下一自然项是完整改造/传说图鉴。保留原工作区/分支/单一制作上下文，继续不改运行/配置/保存，不增子线程。
+
+### 改造/图鉴自然检查点
+
+过滤源码`ba177beb73795d8be9785cb498bb7aaddf4fbfd7`、12张同版证据`bc5c6f84ffa42da63eef18b0219a4b9413b0a6e3`已推送。随后改造/图鉴具名12操作、受控连续报价/结果、锁定/保底/定向/付费未提升/究极还原/参数与已见主动收藏等已成实物，见`g2-forge-restoration.md`及同版`evidence/g2-hyperspace-forge/manifest.json`。B科研摘要轻量遗漏随本批同步。
+
+下一条根线程复审已按序排好：仓储预设必须逐机显示挂设差异；封存/溢出详情不能误标主仓；200容量要密集浏览、持续选中汇总和就近批量动作；过滤校验枚举必须字符串且查自身键，拒绝toString/数组等。当前改造固定后再修，未新增子任务/工作区，仍未实际压缩。
