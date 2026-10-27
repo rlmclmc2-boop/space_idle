@@ -1665,13 +1665,18 @@ class SpaceCombatKernel : public RefCounted {
                 if (!retain_endless_target(f, clock - dt, true)) { retire(id); continue; }
                 if (f.await_target) continue;
             }
-            Vector2 muzzle = muzzle_port(weapons[f.weapon], false, f.port_index);
-            f.launch_screen_point = muzzle_port(weapons[f.weapon], true, f.port_index);
+            const Weapon &attachment = weapons[f.weapon];
+            Actor *target = resolve(f.target);
+            Vector2 muzzle = muzzle_port(attachment, false, f.port_index);
+            f.launch_screen_point = muzzle_port(attachment, true, f.port_index);
+            // Each live beam owns its target. Host geometry may still describe a
+            // different target until the current native advance returns.
+            if (!f.hostile && target && !attachment.art_local_ports.is_empty())
+                muzzle = f.launch_screen_point = aimed_port(attachment, target->point, f.port_index);
             Motion &motion = f.lease->motion();
             motion.x = muzzle.x;
             motion.y = muzzle.y;
             f.launch_point = muzzle;
-            Actor *target = resolve(f.target);
             f.aim = f.hostile ? player_point : target ? target->point : f.aim;
             motion.direction = unit(f.aim - muzzle);
             if (f.born_step < step_serial)
@@ -2662,12 +2667,15 @@ class SpaceCombatKernel : public RefCounted {
     }
     // Atomic, O(weapon slots), reusable across arbitrary art/configuration edits.
     // Empty rows select the existing numerical display fallback.
+    static Vector2 aimed_port(const Weapon &w, Vector2 target, int index) {
+        const double rotation = engine_angle(target - w.art_pivot) + 3.14159265358979323846 * 0.5;
+        return w.art_pivot + engine_rotated(w.art_local_ports[maximum(0, index) % w.art_local_ports.size()], rotation);
+    }
     static void aim_muzzles(Weapon &w, Vector2 target) {
         if (w.art_local_ports.is_empty()) return;
-        const double rotation = engine_angle(target - w.art_pivot) + 3.14159265358979323846 * 0.5;
         w.muzzle_ports.resize(w.art_local_ports.size());
         for (int i = 0; i < w.art_local_ports.size(); ++i)
-            w.muzzle_ports.set(i, w.art_pivot + engine_rotated(w.art_local_ports[i], rotation));
+            w.muzzle_ports.set(i, aimed_port(w, target, i));
         w.screen_muzzle_ports = w.muzzle_ports;
         w.muzzle = w.screen_muzzle = w.muzzle_ports[0];
     }

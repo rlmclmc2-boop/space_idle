@@ -2,6 +2,16 @@
 
 [Design entry](README.md) defines gameplay rules; [verification](07-verification.md) defines the acceptance matrix. This page records actual coverage. `bin/`, generated JSON, Godot import metadata, screenshots and local saves are test outputs.
 
+## 活跃持续光束端口边界修复（551846a7之后）
+
+独立复审提出的边界已实证：551846a7只在出生的局部Weapon副本上按真实目标投影，`advance_beam_clocks`随后从共享Weapon的旧世界口重写活beam坐标。一个宿主advance内新beam出生后继续走native段、或endless在目标死亡后重绑时，宿主尚未返回同步，端口会恢复为旧目标口。新增 `_stage6_beam_active_port_probe.gd` 修前626次活beam检查中13次不一致；例如native时间1.85的普通新beam已指向uid2，但数值/屏幕口仍为 `(285.5907,493.7633)`，正确为 `(296.4883,495.9655)`。endless的2秒大步进、native连续段及审核指定的1.11→1.48秒跨死亡步进也覆盖其中。
+
+修复每段光束时按该flight自己的真实绑定目标，从批准锚点/局部端口计算数值和屏幕坐标；出生与存续复用同一 `aimed_port` 函数。没有附着元数据的显式几何输入仍保持既有世界端口，不更新伤害、冷却、充能、目标排序或endless继承规则。一个武器的不同活beam不会借用另一个beam的目标。
+
+专项覆盖普通/endless各4种推进：0.01秒宿主步进、2秒宿主大步进、绕过宿主同步的0.37秒native连续段、第二目标x360的审核精确1.11→1.48秒场景。它在每个观察帧复查所有活beam，包含已见serial，核对数值/屏幕口及宿主返回后的可见pose端口，并断言endless同serial换目标。修后8例全部通过，626次检查零不一致。既有beam oracle、四类原生目标/出生口专项、五船型/敌炮几何专项均通过，采用实际等待进程退出的方式确认Godot退出码0。旧夹具类型不匹配回退及Windows证书诊断仍明确记录。
+
+本次native重新构建并逐字节核对7个输入，DLL SHA256 `7fd331dda524e2d60d53dbddbd63c8efbbc14c8f8204bf7725b2b988fbe84dfd`。diff-check通过，待后续独立复审，未合main。父线程另已报告551846a7的74.76秒真实窗口连续录像覆盖第二关三次撤退/再航行，完整星球/空间站背景恢复、原灰蓝整片跳变消失；这是背景专项云端对照通过，不扩大为其他玩法/性能或全游戏品质通过。
+
 ## 背景闪动与真实炮台方向修复（4452e7c4之后）
 
 本增量针对父线程云端连续录像和独立审核发现的两项问题，仍待复审与云端修后复核，暂不合 main；不扩大为整体品质完成。
