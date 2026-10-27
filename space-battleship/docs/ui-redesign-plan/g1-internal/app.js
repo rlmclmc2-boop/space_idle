@@ -110,7 +110,7 @@ function summary(route) {
 }
 function workWrapper(body) {
   const g=groups[state.group];
-  return `<div class="context-strip">${g.cards.map(([route,title])=>`<button class="context-object ${state.route===route||(!route.includes('/')&&state.module===route)?'active':''}" data-context-route="${route}"><b>${title}</b><span>${summary(route)}</span></button>`).join('')}</div><section class="work-sheet">${body}</section>`;
+  return `<div class="context-strip">${g.cards.map(([route,title])=>`<button class="context-object ${state.route===route||(!route.includes('/')&&state.module===route&&!(route==='settings'&&state.route.includes('/danger/')))?'active':''}" data-context-route="${route}"><b>${title}</b><span>${summary(route)}</span></button>`).join('')}</div><section class="work-sheet">${body}</section>`;
 }
 function reactor() {
   const names=['武器系统','防御系统','资源熔炼','碎片凝聚'];
