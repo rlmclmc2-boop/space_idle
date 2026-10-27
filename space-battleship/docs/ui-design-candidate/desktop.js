@@ -60,21 +60,29 @@ function researchView(){
   </div><p class="scene-note">固定样例：效果、工作量和预计时间不是配置正确性证明。当前研究与候选分离；自动投入设置和岗位续研分别显示，铁/铀通过既有单资源端口独立应用。</p>`;
 }
 const slotData={W1:{name:'武器槽01',type:'舰炮',value:'12.6K',next:'14.2K',property:'单次伤害'},W2:{name:'武器槽02',type:'脉冲',value:'8.4K',next:'9.5K',property:'单次伤害'},W3:{name:'武器槽03',type:'导弹',value:'6.2K',next:'7.0K',property:'单次伤害'},D1:{name:'防御槽01',type:'复合装甲',value:'8.0K',next:'9.1K',property:'最大容量'},D2:{name:'防御槽02',type:'护盾',value:'12.0K',next:'13.6K',property:'最大容量'}};
+function equipmentMetric(type,value){
+  // Fixed display fixtures only; production consumes the module's comparison fields.
+  if(type==='长激光')return {name:'持续伤害',text:value+'/秒'};
+  if(type==='护盾')return {name:'最大护盾容量',text:value};
+  if(type==='复合装甲')return {name:'最大装甲容量',text:value};
+  return {name:'单次伤害',text:value+'/发'};
+}
 function equipmentView(){
   const slot=slotData[state.slot],mode=state.equipment,success=mode==='success',replace=state.candidate==='replace';
   const candidate=replace?(state.slot.startsWith('D')?'护盾':'长激光'):slot.type;
   const currentType=success&&replace?candidate:slot.type;
   const currentLevel=success&&!replace?'20':'19';
+  const beforeMetric=equipmentMetric(slot.type,slot.value),afterMetric=equipmentMetric(replace?candidate:slot.type,slot.next);
   const comparison=`<label class="small" for="candidate">候选操作</label><select id="candidate"><option value="upgrade" ${replace?'':'selected'}>购级 · 当前装备升1级</option><option value="replace" ${replace?'selected':''}>换装 · ${state.slot.startsWith('D')?'护盾':'长激光'}候选</option></select><p class="selection-line">预览目标：${state.slot} · ${replace?'换装':'购级1级'}</p>
     <table class="compare-table"><thead><tr><th>属性</th><th>当前</th><th>候选</th></tr></thead><tbody><tr><td>装备</td><td>${currentType}</td><td>${candidate}</td></tr><tr><td>槽位等级</td><td>19</td><td>${replace?'19':'20'}</td></tr><tr><td>${replace&&!state.slot.startsWith('D')?'主属性（异口径）':slot.property}</td><td>${replace&&!state.slot.startsWith('D')?'单次 ':''}${slot.value}</td><td>${replace&&!state.slot.startsWith('D')?'持续 ':''}${slot.next}${replace&&!state.slot.startsWith('D')?'/秒':''}</td></tr><tr><td>冷却</td><td>1.2秒</td><td>${replace?'2.0秒':'1.2秒'}</td></tr></tbody></table>
     <div class="quote"><strong>本次费用</strong><p>${replace?'换装报价等待真实端口接入':'铁2.4K · 简并物质10'}</p><p class="small ${mode==='insufficient'?'':'muted'}">${mode==='insufficient'?'缺少简并物质4；当前拥有6':'余额与合法性由业务返回'}</p></div>
     <button class="commit primary" id="equipment-commit" ${mode==='cooldown'?'disabled':''}>${mode==='cooldown'?'换装冷却中 · 2.6秒':replace?'确认换装（示例）':'购买1级（示例）'}</button>
     ${statusBlock(mode==='insufficient'?'error':mode==='cooldown'?'warning':'neutral',mode==='insufficient'?'未提交：缺少简并物质4，选择与草稿保持。':mode==='cooldown'?'冷却中：剩余2.6秒，选择与候选保持。':'预览就绪 · 尚未提交。','equipment-feedback')}`;
-  const completed=`<section class="completed-transaction" data-transaction="closed"><h3>本次预览已结束</h3><p class="small muted">当前${slot.property}：${slot.next}${replace&&!state.slot.startsWith('D')?'/秒':''}</p>${state.equipmentNotice?statusBlock('success',replace?'已完成换装（示例），槽位等级保留。':'已完成购级（示例）：Lv.19 → 20。','equipment-feedback'):''}<details class="receipt-record"><summary>已完成回执 · ${state.slot}</summary><p>${replace?`${slot.type} → ${candidate}；等级19保持`:'等级19 → 20'}</p><p>${replace?'替换前后属性口径分别记录':`${slot.property} ${slot.value} → ${slot.next}`}</p><p>${replace?'换装结果为固定样例':'本次已支付：铁2.4K · 简并物质10'}</p></details><div class="next-preview-status"><strong>没有可提交的下一次预览</strong><p>下一次目标与报价须重新读取后再开放操作。</p></div></section>`;
+  const completed=`<section class="completed-transaction" data-transaction="closed"><h3>本次操作已完成</h3><p class="small muted">当前${afterMetric.name}：${afterMetric.text}</p>${state.equipmentNotice?statusBlock('success',replace?'已完成换装，槽位等级保留。':'已完成购级：Lv.19 → 20。','equipment-feedback'):''}<details class="receipt-record"><summary>已完成回执 · ${state.slot}</summary><p>装备：${slot.type} → ${replace?candidate:slot.type}</p><p>槽位等级：19 → ${replace?'19':'20'}</p><p>${replace?'换装前':'升级前'}：${beforeMetric.name} ${beforeMetric.text}</p><p>${replace?'换装后':'升级后'}：${afterMetric.name} ${afterMetric.text}</p>${replace?'':'<p>本次已支付：铁2.4K · 简并物质10</p>'}</details><div class="next-preview-status"><strong>当前没有待确认操作</strong></div></section>`;
   return `<div class="dock"><div class="dock-floor"></div><div class="dock-identity"><h2>巡洋舰 · 当前舰</h2><p>当前启用 · 示例3武器 / 2防御</p></div>
     <div class="ship-wrap"><img alt="巡洋舰当前预览" src="../../assets/ui/ships/fleet_20261019/03-cruiser.png">${[['W1',49.75,29.35],['W2',35.79,58.90],['W3',64.21,58.90]].map(([id,x,y])=>`<button class="hardpoint ${state.slot===id?'active':''}" data-slot="${id}" style="left:${x}%;top:${y}%" aria-label="选择${id}武器槽">${id}</button>`).join('')}</div>
-    <div class="slot-rail"><div class="actions"><b>武器</b>${['W1','W2','W3'].map(id=>`<button class="${state.slot===id?'active':''}" data-slot="${id}">${id} ${slotData[id].type}</button>`).join('')}</div><div class="actions defence-rail"><b>防御</b>${['D1','D2'].map(id=>`<button class="${state.slot===id?'active':''}" data-slot="${id}">${id} ${slotData[id].type}</button>`).join('')}</div><p>当前舰的启用槽位</p><button class="compact" id="choose-hull">选择舰体</button></div>
-    <section class="comparison"><h2>${state.slot} · ${slot.name}</h2><p class="identity">当前装配 ${currentType} · Lv.${currentLevel}</p>${success?completed:comparison}</section></div><p class="scene-note">固定样例：完成回执与可提交预览分开；成功后旧报价/按钮撤回。下一次操作必须重新读取目标、费用与合法性，本稿不生成下一笔报价。</p>`;
+    <div class="slot-rail"><div class="actions"><b>武器</b>${['W1','W2','W3'].map(id=>`<button class="${state.slot===id?'active':''}" data-slot="${id}">${id} ${success&&replace&&id===state.slot?candidate:slotData[id].type}</button>`).join('')}</div><div class="actions defence-rail"><b>防御</b>${['D1','D2'].map(id=>`<button class="${state.slot===id?'active':''}" data-slot="${id}">${id} ${success&&replace&&id===state.slot?candidate:slotData[id].type}</button>`).join('')}</div><p>当前舰的启用槽位</p><button class="compact" id="choose-hull">选择舰体</button></div>
+    <section class="comparison"><h2>${state.slot} · ${slot.name}</h2><p class="identity">当前装配 ${currentType} · Lv.${currentLevel}</p>${success?completed:comparison}</section></div><p class="scene-note">审阅注（非产品文案）：全页为固定样例。完成后撤回旧预览；真实接入须重新读取下一次目标、报价与合法性，本稿不生成下一笔报价。</p>`;
 }
 function completeEquipment(){
   const notice={};state.equipment='success';state.equipmentNotice=notice;render();
