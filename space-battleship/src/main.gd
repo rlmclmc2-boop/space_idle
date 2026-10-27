@@ -372,10 +372,7 @@ func _process(dt: float) -> void:
 		session.frame(dt, DisplayServer.window_is_focused())
 		_sync_guidance()
 		if _visibility_pending: _refresh_feature_visibility()
-		if _save_warning != null:
-			_save_warning.text = _startup_save_error
-			if session.save_files != null and not session.save_files.last_failure.is_empty(): _save_warning.text = "保存失败，请在成长页重试，当前进度尚未写入文件。"
-			_save_warning.visible = not _save_warning.text.is_empty()
+		_refresh_save_warning()
 		if _pause_button != null:
 			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
 		if session.save_files != null: session.save_files.poll()
@@ -433,11 +430,24 @@ func _setup_shell_overlay() -> void:
 			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停")
 	layer.add_child(_pause_button)
 	_save_warning = Label.new()
-	_save_warning.position = Vector2(18, 110)
-	_save_warning.size.x = 530
-	PlayerText.wrap(_save_warning)
+	_save_warning.position = Vector2(18, 54)
+	_save_warning.size = Vector2(530, 24)
+	_save_warning.clip_text = true
+	_save_warning.max_lines_visible = 1
+	_save_warning.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_save_warning.add_theme_font_size_override("font_size", 14)
 	_save_warning.modulate = Color("ffb4a6")
 	layer.add_child(_save_warning)
+
+func _refresh_save_warning() -> void:
+	if _save_warning == null: return
+	var failed_save: bool = session.save_files != null and not session.save_files.last_failure.is_empty()
+	if not session.run_state.is_running():
+		_save_warning.text = "会话已停止；保存未完成。请在舰桥设置中恢复有效存档。" if failed_save or not _startup_save_error.is_empty() else "会话已停止，请在舰桥查看提示并恢复有效存档。"
+	else:
+		_save_warning.text = "保存失败，请在舰桥设置中重试，当前进度尚未写入文件。" if failed_save else _startup_save_error
+	_save_warning.tooltip_text = _save_warning.text
+	_save_warning.visible = not _save_warning.text.is_empty()
 
 func _setup_guidance_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -494,8 +504,6 @@ func _sync_guidance() -> void:
 func _draw_shell(canvas: Node2D) -> void:
 	var font: Font = ThemeDB.fallback_font
 	canvas.draw_string(font, Vector2(18, 942), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
-	if not session.run_state.is_running():
-		canvas.draw_string(font, Vector2(18, 850), "会话已暂停，请检查成长页提示。", HORIZONTAL_ALIGNMENT_LEFT, 536, 14, Color("ffb4a6"))
 
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()

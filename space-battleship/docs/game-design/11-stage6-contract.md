@@ -2,17 +2,30 @@
 
 [Design entry](README.md) defines gameplay rules; [verification](07-verification.md) defines the acceptance matrix. This page records actual coverage. `bin/`, generated JSON, Godot import metadata, screenshots and local saves are test outputs.
 
-## Player-facing integration candidate
+## 当前验收状态（29dc6f86及本轮停止提示布局候选）
+
+当前唯一待复核的产品问题是本轮停止提示布局：停止/保存错误已统一到原有顶部单行警告栏y54–78，移除原y850绘字；`_stage6_warning_layout_probe.gd`通过正常、保存错误、停止及组合状态的实际字体/控件区域互斥检查。等待父线程对此增量复核，未合main。
+
+| 已完成验收 | 证据及范围 |
+|---|---|
+| 独立审核 | 截至29dc6f86，先前保存恢复、改造预览/重复确认、跨模式奖励、共享几何/炮口、遭遇切换越界、四余额HUD及生命周期阻断均逐项复核通过。包含6次遭遇绘制、超空间10波、6会话释放、8次替换稳定与正常退出无泄漏。 |
+| 父线程云端真实键鼠 | 新档首关战斗/通关；页签；科研编辑与保存/加载；目录选择；29dc6f战斗再出击清除敌舰/炮台、返回离港且保留余额；首波铁13与后续铁29可见且不被防御遮挡；正常退出无泄漏。 |
+| 后期页面 | 星球、星系地图等使用后期可用性夹具实测，不能记作自然打到60关。 |
+| 测量边界 | 最新资产版Windows性能和实际音效未在云端验证。下方旧本机GPU/倍速测量仅属于其历史构建，不代表最新资产版或全面跨平台保证。 |
+
+下文为有版本范围的实现与测量历史，不是当前待办；其中当时未完成的项目，以本节最新状态为准。独立复核本轮小修后，再按既定要求处理main合并。
+
+## 历史：977e602玩家页面集成候选
 
 The working branch `rewrite/stage6-finalization` now connects hull/turret art, opening/starfield scenery, six bridge pages, planet appearance, the galaxy map and traffic, enemy/tutorial archives, and native attribute details. Hyperspace has route/warehouse/forge/filter tabs with named selections, drone details, sealed release and overflow organization. Reforge uses planet/drone selections and the existing preview/confirm transaction. Gameplay, Excel values and save formats are unchanged.
 
 Targeted evidence: `_stage6_startup_probe.gd` passes initial on-disk save, localized names, hidden locked features, research wrapping, paused autosave, resume and corrupt-primary recovery. `_stage6_page_probe.gd` passes existing page/import/reforge/research interactions. `_stage6_window_ops_probe.gd` passes pause/guidance, bridge return, file picker, visible save error and notification actions against the new tabs. `_stage6_bridge_probe.gd` advances the production Session into combat (22.4 game seconds) and checks six pages plus four hyperspace subpages at572×960 with no horizontal overflow; its forced-visibility fixture verifies layout, not unlock progression. Independent focused probes verify30 map nodes with transport/explorer vessels, pause and snapshot isolation; native query purity, return-copy isolation and upgrade synchronization; and hyperspace filtering, storage browsing, gate rejection, release and organization.
 
-Local OpenGL captures were inspected before the later instruction to keep execution in the background; subsequent local verification is headless. These checks do not replace parent cloud play or the requested two independent reviews. That candidate reported retained Texture RID/ObjectDB resources; the later lifecycle correction below identifies and fixes the game-owned cycle. The embedded file-picker focus diagnostic remains separate from ownership. Screenshots, temporary focused probes, generated data, native binaries and saves stay outside Git.
+Local OpenGL captures were inspected before the later instruction to keep execution in the background; subsequent local verification is headless. At977e602 these checks preceded parent cloud play and the requested independent reviews; subsequent outcomes are recorded in the current ledger. That candidate reported retained Texture RID/ObjectDB resources; the later lifecycle correction below identifies and fixes the game-owned cycle. The embedded file-picker focus diagnostic remains separate from ownership. Screenshots, temporary focused probes, generated data, native binaries and saves stay outside Git.
 
-## Follow-up to independent review of977e602
+## 历史：911ab0d修复977e602审核问题
 
-The977e602 review failed on the following five items. This candidate corrects them; parent cloud play and independent re-review remain required. All follow-up verification below is headless, as requested.
+The977e602 review failed on the following five items. The911ab0d increment corrected them; the later independent review closed these items, as recorded above. All follow-up verification below is headless, as requested.
 
 | Finding | Correction and targeted evidence |
 |---|---|
@@ -26,7 +39,7 @@ The977e602 review failed on the following five items. This candidate corrects th
 
 Fixed guidance distinguishes timed drops from ordinary enemy drops, states attack-birth snapshots correctly, and requires an unconquered planet with a completed shipyard for reforge. Removed the unused equipment-detail query, write-only selected-section field and redundant hull-colour fallback. No new local real-window acceptance is claimed; the game-owned exit resource cycle is corrected below.
 
-## Shared geometry and session lifetime correction
+## 历史：01ab49共享几何及会话生命周期修复
 
 Player alpha height now equals the existing resource`static_height × player_display_multiplier × playerVisualScale*`; initial Frigate height is97.825 logical pixels. Enemy configured width/height are normalized against the same alpha hull bounds. The resulting vertices are consumed unchanged by drawing and native collision. Turret cropping, authored port coordinates and fixed forward mount pose produce one source-keyed world port for both numeric and screen births. There is no independent84/60-pixel draw enlargement. Damage, cooldown, root timing and other combat formulae are unchanged; corrected envelope dimensions necessarily determine their actual contact positions/times.
 
@@ -34,17 +47,17 @@ The current native binding uses`input_geometry` and`input_ballistic_geometry` wi
 
 `_stage6_geometry_contract_probe.gd` verifies all5 authored player size paths, player/enemy rendered hull equality to actual native hulls, visible/numeric/screen muzzle equality, real retained pulse and hostile-cannon births, and an independently calculated ray/polygon contact: no damage0.0005 seconds before3.315833435, damage after the next0.001 seconds. Existing combat and cannon oracles still pass their damage, timing, single-drop and survival assertions. `_stage6_hud_probe.gd` now checks the shared97.825-pixel size instead of the rejected separate enlargement.
 
-Exit diagnostics were a real Session ownership cycle: Session owned modules whose4 tutorial lambdas captured Session. Capturing only the local Tutorial owner removes the back-reference without introducing a disposal framework. Before the correction,6 discarded sessions stayed alive with+26 ObjectDB objects each. `_stage6_lifecycle_probe.gd` verifies6 sessions and retained BattleView ownership release, all4 tutorial callbacks,8 real load/new-game replacements with stable warmed resource/object/node counts, then actual`main._close_game()`. The final integrated run exits0 without ObjectDB/resource/Texture RID diagnostics. Cloud-window play remains the parent acceptance step.
+Exit diagnostics were a real Session ownership cycle: Session owned modules whose4 tutorial lambdas captured Session. Capturing only the local Tutorial owner removes the back-reference without introducing a disposal framework. Before the correction,6 discarded sessions stayed alive with+26 ObjectDB objects each. `_stage6_lifecycle_probe.gd` verifies6 sessions and retained BattleView ownership release, all4 tutorial callbacks,8 real load/new-game replacements with stable warmed resource/object/node counts, then actual`main._close_game()`. The final integrated run exits0 without ObjectDB/resource/Texture RID diagnostics. Later parent cloud play and independent checks are recorded in the current ledger.
 
-## Follow-up to encounter and HUD review of01ab49
+## 历史：29dc6f修复遭遇切换及资源HUD
 
 The reviewed candidate retained enemy weapon descriptors/poses after native actor teardown. Battle now retires encounter-owned enemy descriptors, ports and pending visual feedback at sortie reset and retreat transitions, then rebuilds from the post-transition native owner. New wave descriptors retain source UID and resolve against current actors, including native slot/storage reuse. `_stage6_encounter_presentation_probe.gd` uses the real Session sortie command, native wave start, lethal-hit retreat and manual-hyperspace return, exercising Node2D drawing6 times with no stale enemy pose or actor-index error. The extended hyperspace runtime probe also verifies enemy presentation retirement after successful10-wave return and retains its single-reward assertions.
 
-The wallet was still drawn at y795 beneath the new defence card. BattleHud now owns all three fixed, disjoint regions: defence708–830, resource grid838–894 and statistics902–927; four currencies wrap into2 columns ×2 rows. Economy exposes cached display-row copies and its view retains only drop drawing/pickup. The former standalone statistics view is removed. `_stage6_hud_probe.gd` credits all4 currencies with extreme Amount values, measures each label using the production Chinese font, and checks cell containment, pairwise separation and no text overflow. Local follow-up remains headless; parent cloud-window verification is still required.
+The wallet was still drawn at y795 beneath the new defence card. BattleHud now owns all three fixed, disjoint regions: defence708–830, resource grid838–894 and statistics902–927; four currencies wrap into2 columns ×2 rows. Economy exposes cached display-row copies and its view retains only drop drawing/pickup. The former standalone statistics view is removed. `_stage6_hud_probe.gd` credits all4 currencies with extreme Amount values, measures each label using the production Chinese font, and checks cell containment, pairwise separation and no text overflow. Local follow-up was headless; parent cloud play later verified wallet visibility and repeat-sortie behavior in29dc6f86.
 
 The lifecycle probe now releases its own2 coroutine-local ShaderMaterials before closing the tree. A separate verbose run identified the remaining4 objects/2 resources as active Ogg playback and its stream, not materials. Main now stops its own music/effects players and clears their stream references before interface replacement and successful close. The final integrated replacement run keeps resources at86 and nodes at1031 through8 replacements and closes without ObjectDB/resource/Texture RID diagnostics; probe-local materials and production audio ownership are distinguished from the earlier Session cycle fix.
 
-## Implemented and verified
+## 历史功能覆盖（977e602之前的阶段记录）
 
 | Area | Evidence |
 |---|---|
@@ -55,9 +68,9 @@ The lifecycle probe now releases its own2 coroutine-local ShaderMaterials before
 | Player pages and controls | `_stage6_settings_probe.gd`, `_stage6_page_probe.gd`, `_stage6_window_ops_probe.gd`: separate settings, new-game keep/reset, guidance pause, notifications, save and import, growth/return and file picker. The real-window probe isolates player settings. |
 | Native battle presentation | Receipts carry settled Amount damage into bounded labels. C01 manual oracle, single death/drop and no-target assertions run against the same native kernel as the game. |
 
-## Measured runs
+## 历史测量（977e602之前的本机构建）
 
-**Current performance acceptance policy:** per user instruction, only uncapped (`Engine.max_fps=0`) and VSync-disabled results are used for performance acceptance. Capped/VSync-enabled records below are diagnostic comparisons only and must not be used to fail performance. External operator UI acceptance remains separately open.
+**Current performance acceptance policy:** per user instruction, only uncapped (`Engine.max_fps=0`) and VSync-disabled results are used for performance acceptance. Capped/VSync-enabled records below are diagnostic comparisons only and must not be used to fail performance. These are historical measurements; current cloud input coverage and latest-build measurement limits are recorded above.
 
 ### Final maximum OpenGL and full warehouse run
 
@@ -100,7 +113,7 @@ The non-Session tail is the interval from the previous Session call's end to the
 
 Cold/startup spikes remain separate: the previous cold-inclusive run observed wall247.537ms/GPU162.385ms peaks and two frames over100ms. They are not relabeled as steady logic stalls. The150-frame warmup of this targeted run is explicitly excluded from the steady table; shader-cache write failure remains an environment diagnostic. No additional long test was run to hide these spikes.
 
-Acceptance result uses only the uncapped/VSync-disabled phase:3923 frames in9.999934 seconds, wall p95/p99/max3.795/4.543/9.751ms, zero wall or Session-work frames above17/33.3/100ms, Session work p95/p99/max0.988/1.273/2.111ms, GPU p95/max0.886/2.156ms. Actual speed is9.998399x;5999 fixed steps advance99.983333 game seconds, with pending peak0.016663 and end0.016317 game seconds. The time bank retains the fractional step and differs from accepted time by only1.34e-11 seconds. This satisfies the recorded steady maximum-load/real10x/time-preservation performance requirements. The capped phase's43.45fps and longer wall interval are comparison data only, not a performance failure or an extra acceptance gate. Historical capped cold-start spikes likewise remain diagnostics, not uncapped pass/fail measurements. External window binding remains environment-blocked; operator acceptance is still unfinished and is not replaced by this performance result.
+Acceptance result uses only the uncapped/VSync-disabled phase:3923 frames in9.999934 seconds, wall p95/p99/max3.795/4.543/9.751ms, zero wall or Session-work frames above17/33.3/100ms, Session work p95/p99/max0.988/1.273/2.111ms, GPU p95/max0.886/2.156ms. Actual speed is9.998399x;5999 fixed steps advance99.983333 game seconds, with pending peak0.016663 and end0.016317 game seconds. The time bank retains the fractional step and differs from accepted time by only1.34e-11 seconds. This satisfies the recorded steady maximum-load/real10x/time-preservation performance requirements. The capped phase's43.45fps and longer wall interval are comparison data only, not a performance failure or an extra acceptance gate. Historical capped cold-start spikes likewise remain diagnostics, not uncapped pass/fail measurements. This historical run did not supply operator acceptance; the later cloud keyboard/mouse coverage is recorded in the current ledger.
 
 `STAGE6_MAX_GPU_WINDOW_OK` and the final `STAGE6_WINDOW_OPS_OK` both exited0. The latter emitted an embedded-file-dialog focus warning in this non-enumerable window environment, yet its visible-state assertions and exported picker frame passed. Certificate/log/cache and shutdown ObjectDB warnings remain captured as environment diagnostics. Eight final PNG exports plus one151-byte settings file occupy well below1MiB; `.godot` remains186.7MiB and the reused Temp native build159.6MiB. No new repository/build clone or unbounded capture was created; these files remain local outputs.
 
@@ -110,7 +123,7 @@ Acceptance result uses only the uncapped/VSync-disabled phase:3923 frames in9.99
 - Sustained native 15-slot wave at 10x: 3,600 frames / 600 game seconds; average work 0.462 ms, peak 1.235 ms, zero frames over 17 ms, average 18.88 and peak 23 flights, peak 16 queued effects, 25 flight slots, 32 active and feedback capacities, 73.15 MiB static memory. This holds one wave alive; it does not measure full campaign progress.
 - After the deferred-tick correction, a 600-frame native 15-slot wave at 10x measured 0.408 ms average, 0.811 ms peak, zero frames over 17 ms, peak 23 flights and 73.16 MiB static. The 600-frame production group measured 1.139 ms average, 7.641 ms peak, zero frames over 17 ms, peak 22 flights and 0.0167 s pending game time. These are headless CPU measurements on the local machine, not the remaining maximum-load GPU matrix.
 
-## Fixed remaining acceptance list before main review
+## 历史战斗功能列表（977e602之前的记录）
 
 | Item | Current status | Evidence needed to close |
 |---|---|---|
@@ -133,13 +146,13 @@ Acceptance result uses only the uncapped/VSync-disabled phase:3923 frames in9.99
 | CR08 | Closed | `_stage6_snapshot_oracle_probe.gd` uses CR04/CR05 fixed seeds and changes drone probability after launch. Four missiles and a delayed repeat retain original critical/bonus flags and damage; the repeat applies only its authored multiplier. One native root count remains for both repeat impacts. |
 | Display-frame equivalence | Closed for native battle and tested GameSession path | `_stage6_frame_equivalence_probe.gd` runs the same seed and 1,000 fixed 0.01-second business steps with one versus four business steps per presentation frame. Full native persistent state, history, enemy views, 11 settled receipts and two drop entries match exactly. `_stage6_session_frame_equivalence_probe.gd` compares 600 business steps in 1/4-step display frames through the production campaign path; campaign, economy, research, crew, native state, history and notifications match. Its initial failure exposed an accumulated floating-point pending-step boundary, now clamped in `GameSession.frame`. The fixture covers one combat/retreat path, not every economy/save operation. |
 | Performance matrix | Recorded CPU/GPU/warehouse/MAX scenarios complete | Maximum native CPU fixture: 5 weapons/3 defences/4 drones/15 enemies, mixed missile/cannon/beam and chain/secondary, 600 display frames/100 game seconds at10x; average0.767ms, peak1.438ms, peak56 flights/44 queued effects/61 flight slots/64 active capacity, 73.30MiB static. The final two-phase OpenGL run below adds maximum rendering and visible full warehouse; huge MAX correctness/112ms operation and warehouse claim boundaries are recorded separately. No automatic17ms threshold is imposed on all wall-clock measurements. |
-| Operator visual acceptance | Open | Human review of tutorial, import, failure, notification and reforge interactions in a live window. Scripted real-window actions and inspected screenshots cover the first four paths. |
+| Operator visual acceptance | Before977e602 the local window could not be bound, so only scripted OpenGL actions/screenshots were available. Subsequent cloud keyboard/mouse verification in29dc6f86 is listed in the current ledger. |
 
 ### Deferred payment correction
 
 The C14 native `_stage6_deferred_oracle_probe.gd` exposes a previous off-by-one global tick: a hit at clock 1.16 with a 0.2-second payment interval first paid at 1.40. The corrected kernel schedules the first payment at 1.20 and the next at 1.40; the probe checks the 75 -> 72.5 -> 70 shield progression across both boundaries. C14 remains partial because the distinct zero-current, positive-capacity and same-time shield/explosion cases still need a full combined fixture.
 
-## Nonblocking follow-up
+## 历史非阻断审计记录（977e602之前）
 
 ### C10 identity contract audit
 
@@ -155,19 +168,19 @@ The earlier entry treating absent numeric root/parent receipt fields as an imple
 
 Strong Attack references and generation/ordinal ownership support the current sharing, deduplication and trigger semantics; queued owners keep birth objects alive until their work finishes. Typed derived routes and source snapshots support current damage/statistics consumers. This is not complete representational equivalence to the written identity contract: strange packets and counters do not retain a full parent attack relationship, and `next_ids.attack` is a carrier watermark. Parent incremental review reports no new P1/P2 and classifies these as nonblocking contract differences. Preserve the design requirement and this evidence; do not silently waive it, change save shape, or expand production solely to expose test IDs.
 
-### Final remaining gates after the functional combat matrix
+### 当时的阶段验收状态（已由当前台账取代）
 
-| Gate | Actual status and evidence still required |
+| Historical gate | Recorded status at that time |
 |---|---|
 | Maximum-load GPU presentation | Completed as measured below: real NVIDIA/OpenGL renderer, maximum native combat and full Warehouse ItemList visible; exported frames inspected. This is controlled native stepping with production BattleView/UI, not a claim of another full campaign/economy endurance run. |
-| Operator visual acceptance | Environment-limited/open. During the live NVIDIA run, two current `cua.listWindows()` results contained the other desktop apps but no Godot window. Process metadata for this run reported MainWindowHandle0. No exact returned window could be bound, so external click/key acceptance was stopped. `_stage6_window_ops_probe.gd` was rerun on OpenGL and passed its scripted signal paths; its screenshots were exported and picker rendering inspected. This supports guidance/pause, growth/return, directory picker, visible save failure and notifications, but does not claim external input acceptance for final import/reforge/human review. |
+| Operator visual acceptance | Before977e602 the local window could not be bound, so only scripted OpenGL actions/screenshots were available. Subsequent cloud keyboard/mouse verification in29dc6f86 is listed in the current ledger. |
 | Main review and merge | Pending parent review as requested; working branch is pushed/read back and main remains unchanged. This is a delivery gate, not a newly discovered code failure. |
 
-C01-C15's listed functional matrix, fixed-seed critical cases, native and tested Session frame equivalence, full-warehouse claims and huge-MAX correctness are closed by their recorded probes. MAX112ms is accepted as an extreme one-off command measurement per user direction. Global drone limit5 and current ship capacity4 are compatible; the unused duplicate per-hull table is a nonblocking configuration-authority cleanup. Local Godot log/certificate/leak warnings are recorded test-environment outputs, not newly classified gameplay failures. No new runtime test is needed for this source/documentation audit.
+C01-C15's listed functional matrix, fixed-seed critical cases, native and tested Session frame equivalence, full-warehouse claims and huge-MAX correctness are closed by their recorded probes. MAX112ms is accepted as an extreme one-off command measurement per user direction. Global drone limit5 and current ship capacity4 are compatible; the unused duplicate per-hull table is a nonblocking configuration-authority cleanup. The early exit-leak diagnostics were later identified as game-owned Session tutorial cycles and audio playback ownership, then fixed in01ab49/29dc6f; they are not unresolved environment-only warnings. No new runtime test is needed for this source/documentation audit.
 
-## Current fixed acceptance ledger
+## 历史功能验收明细（977e602之前）
 
-The following are acceptance gaps, not nonblocking tuning. A passed subset must not close its whole row.
+This was the earlier functional coverage ledger. Its closed scenarios remain evidence; it does not reopen gaps resolved by the subsequent independent review and cloud checks recorded above.
 
 | ID | Remaining concrete scenario and required evidence |
 |---|---|
@@ -209,11 +222,11 @@ Baseline: `8f0ee5ab4694ec4a8d075ce6d5df0ea0c448826f`. The investment panel previ
 
 The existing `_stage6_page_probe.gd` now sets automatic investment true, ratio 0.125, iron `1e400`, uranium `25`; presses the real Save control; waits for the writer; decodes the committed active envelope; loads that file through `Session.load_candidate`; exercises Load backup and Preview/Confirm import; and compares both restored business values and the rebuilt panel. All pass (`RESEARCH_DISK_FIELDS_OK`, `RESEARCH_FILE_LOAD_OK`, `RESEARCH_RESTORED_BACKUP_LOAD`, `RESEARCH_RESTORED_FILE_IMPORT`). A second actual file round trip verifies automatic false, ratio 0.123456 and both investments zero (`RESEARCH_DISABLED_ZERO_FILE_LOAD_OK`). No persistence schema or business rule change was needed.
 
-The research owner now exposes the actual investment settings and notifies the panel after restore, manual apply and automatic budget refresh. The panel follows actual values while idle, preserves unapplied edits during refresh, shows current effective values separately, retains invalid input for correction, and offers an explicit reset to current settings. The probe exercises live refresh (800/1600 income at 12.5% gives 100/200), draft preservation while backend settings change (25% gives 200/400), apply, invalid input and reset (`RESEARCH_LIVE_REFRESH_DRAFT_APPLY_OK`). The full existing page probe ends `STAGE6_PAGE_PROBE_OK`, exit 0. Headless shutdown still reports ObjectDB/resource cleanup warnings and the host certificate-store warning; these are not assertions of successful external human interaction.
+The research owner now exposes the actual investment settings and notifies the panel after restore, manual apply and automatic budget refresh. The panel follows actual values while idle, preserves unapplied edits during refresh, shows current effective values separately, retains invalid input for correction, and offers an explicit reset to current settings. The probe exercises live refresh (800/1600 income at 12.5% gives 100/200), draft preservation while backend settings change (25% gives 200/400), apply, invalid input and reset (`RESEARCH_LIVE_REFRESH_DRAFT_APPLY_OK`). The full existing page probe ends `STAGE6_PAGE_PROBE_OK`, exit 0. This historical run reported shutdown cleanup/certificate diagnostics; later lifecycle fixes and cloud verification supersede that incomplete acceptance state.
 
 UI/help wording now distinguishes the staffed AI factory job's automatic research continuation from the automatic-investment checkbox's periodic budget refresh. Iron and uranium use one common ratio; applying a ratio does not immediately recompute investments. The staffing requirement and 60 game-second refresh remain unchanged. Old help text claiming independent ratios or immediate recomputation was corrected.
 
-External human play checks remain outstanding: research panel layout, mouse/keyboard editing and focus behavior, file dialogs and long-running play in an interactive cloud desktop. The parent thread will perform these checks after the authorized main integration. This file-based/headless verification does not claim that external manual acceptance has occurred.
+At this early research increment, external play had not yet occurred. Later parent cloud checks verified research editing, file dialogs and persistence before main integration; their actual scope and remaining measurement limits are listed in the current ledger.
 
 
 ### Player-facing startup repair increment (2026-10-27)
@@ -222,6 +235,6 @@ Follow-up to cloud play on `411cfa9`: unlock prompts and archives now resolve co
 
 Normal startup now creates a default save directory beside the independent settings file (`user://saves` without a settings-path override), writes an initial snapshot, and resumes the valid primary save on later starts. The default autosave interval is 60 real seconds; an explicit saved interval of zero stays off. Chosen save directories persist in backward-compatible optional `saveDirectory` settings. Window close requests take a final snapshot with a bounded 2000 ms writer wait; failure leaves the game open with a visible warning. A damaged primary or orphaned save slot pauses recovery without configuring an overwriting writer; backup/import/new-game actions remain explicit.
 
-Validation: existing `STAGE6_PAGE_PROBE_OK` and `STAGE6_SETTINGS_PROBE_OK`, plus `STAGE6_STARTUP_PROBE_OK`, all exit 0. The startup probe reads the actual initial file, checks fresh locked panels and Chinese prompts/resources, publishes a real progress update, measures wrapped research layout at the 572x960 viewport (growth 410x615, research 402x473), verifies paused wall-clock autosave and normal resumption of the same session, corrupts the primary pointer and confirms no overwrite, explicitly recovers the backup, and preserves disabled autosave. Host certificate and shutdown cleanup warnings remain. These are scripted checks; the parent cloud desktop performs human acceptance.
+Validation: existing `STAGE6_PAGE_PROBE_OK` and `STAGE6_SETTINGS_PROBE_OK`, plus `STAGE6_STARTUP_PROBE_OK`, all exit 0. The startup probe reads the actual initial file, checks fresh locked panels and Chinese prompts/resources, publishes a real progress update, measures wrapped research layout at the 572x960 viewport (growth 410x615, research 402x473), verifies paused wall-clock autosave and normal resumption of the same session, corrupts the primary pointer and confirms no overwrite, explicitly recovers the backup, and preserves disabled autosave. This historical startup run reported certificate/cleanup diagnostics. Later lifecycle fixes and parent cloud checks are recorded above.
 
-Presentation audit: 05 architecture section 6 requires reuse of static assets, baked hulls, shaders, particle/audio assets, planet appearances and galaxy traffic. Baseline Battle loads hull images but uses them only for normalized outlines (`battle.gd` model loading); `draw_player_hull`/`draw_enemy_hull` draw solid polygons, while Main draws a solid background. BattleView connects retained native projectiles, contact shaders and beams, but does not instantiate existing ship/background presentation resources. This is incomplete asset integration, not a Linux fallback and not a design allowing final placeholder art. The next authorized increment must connect these assets and complete the page/navigation presentation, including enemy intelligence and tutorial archives; this startup increment alone is not full-game acceptance.
+Historical presentation audit at14e5218: 05 architecture section6 requires reuse of static assets, baked hulls, shaders, particle/audio assets, planet appearances and galaxy traffic. Baseline Battle loads hull images but uses them only for normalized outlines (`battle.gd` model loading); `draw_player_hull`/`draw_enemy_hull` draw solid polygons, while Main draws a solid background. BattleView connects retained native projectiles, contact shaders and beams, but does not instantiate existing ship/background presentation resources. This is incomplete asset integration, not a Linux fallback and not a design allowing final placeholder art. The later977e602 integration connected these assets/pages, and the subsequent increments and review results are recorded above; this early startup increment was not full-game acceptance.
