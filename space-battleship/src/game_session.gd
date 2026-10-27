@@ -941,15 +941,19 @@ func enhancement_inputs() -> Dictionary:
 	return {"bonus": int(_world_factors.enhancement_levels), "unlocked": campaign_system.available,
 		"armours": equipment.equipped_armours(campaign_system.ship_facts().mounts)}
 
+func _enhancement_read_inputs() -> Dictionary:
+	return {"bonus": int(_world_factors.enhancement_levels), "unlocked": campaign_system.available,
+		"armours": equipment.accepted_armours(campaign_system.ship_facts().mounts)}
+
 # Read on visible refresh; no module signal can precede Session acceptance.
 func enhancement_presentation() -> Dictionary:
-	return enhancement.presentation_model(enhancement_inputs())
+	return enhancement.presentation_model(_enhancement_read_inputs())
 
 func enhancement_branch_details(effect: String, node: int) -> Dictionary:
-	return enhancement.branch_details(effect, node, enhancement_inputs())
+	return enhancement.branch_details(effect, node, _enhancement_read_inputs())
 
 func enhancement_purchase_preview(count: int) -> Dictionary:
-	return enhancement.purchase_preview(count, enhancement_inputs(), economy.affordable)
+	return enhancement.purchase_preview(count, _enhancement_read_inputs(), economy.affordable)
 
 func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()

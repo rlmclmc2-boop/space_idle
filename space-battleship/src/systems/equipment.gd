@@ -134,6 +134,10 @@ func geometry_changed() -> bool:
 func equipped_armours(mounts: Dictionary) -> int:
 	return _armour_count(_slots_for(mounts, _pending_slots))
 
+# Read projections must not follow a command's pending loadout.
+func accepted_armours(mounts: Dictionary) -> int:
+	return _armour_count(_slots_for(mounts))
+
 func clear_switch_locks() -> void:
 	if not _run_state.is_running(): return
 	for slot in _slots: slot.switch_ready_at = 0.0

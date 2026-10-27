@@ -195,6 +195,46 @@ func run() -> void:
 	quota.jewel = amount("400")
 	var new_purchase: Dictionary = quote_owner.purchase(1, context, predicate, func(_v, _c, _k): quote_owner.accept_prepared(); return {"ok": true})
 	check(new_purchase.ok and new_purchase.purchase_receipt.count == 1 and equal(new_purchase.purchase_receipt.spent.jewel, amount("400")) and quote_owner._state.level == 3, "enhancement confirmation requotes current level and budget")
+	# Explicit prepare/accept/discard boundary fixture; not a normal-play trigger claim.
+	var boundary = Session.new()
+	boundary.equipment = equipment_fixture(Equipment)
+	boundary.enhancement = enhancement_fixture(Enhancement)
+	boundary.campaign_system = host.campaign_system
+	boundary.economy = host.economy
+	boundary._world_factors = {"equipment_levels": 0, "enhancement_levels": 0}
+	boundary._research_factors = host._research_factors; boundary._reactor_factors = host._reactor_factors
+	var grants: Dictionary = host.campaign_system._grants
+	host.campaign_system._grants = grants.duplicate(); host.campaign_system._grants["feature:jewels"] = true
+	var boundary_state: Dictionary = boundary.enhancement.save_state(); boundary_state.level = 60
+	boundary_state.branches = {"memory": ["A", "B", "B"]}
+	boundary.enhancement.restore_state(boundary_state)
+	var actual: Dictionary = boundary.enhancement_presentation()
+	var actual_details: Dictionary = boundary.enhancement_branch_details("memory", 2)
+	var actual_preview: Dictionary = boundary.enhancement_purchase_preview(1)
+	var actual_slots: Array = boundary.equipment_slot_facts()
+	check(boundary._enhancement_read_inputs().armours == 1 and is_equal_approx(effect(actual, "memory").summary.buffer_fraction, 10.08), "accepted armour source before preparation")
+	var discarded: Dictionary = boundary.equipment.equip_slot("defence:0", "shield", boundary.equipment_inputs(), func(_wallet, _kind):
+		var candidate_slots: Array = boundary.equipment._pending_slots.duplicate(true)
+		check(boundary.enhancement_inputs().armours == 0, "original command inputs still read pending candidate")
+		check(boundary._enhancement_read_inputs().armours == 1 and boundary.enhancement_presentation() == actual, "pending shield never leaks into new effect read")
+		check(boundary.enhancement_branch_details("memory", 2) == actual_details and boundary.enhancement_purchase_preview(1) == actual_preview, "all new enhancement Session queries use read inputs")
+		check(boundary.equipment_slot_facts() == actual_slots and boundary.equipment_comparison("defence:0", "shield").current.equipment_id == "armour", "new equipment reads stay on accepted slots too")
+		check(boundary.equipment._pending_slots == candidate_slots, "new queries preserve pending candidate")
+		return {"ok": false, "reason": "FixtureDiscard"})
+	check(not discarded.ok and boundary.equipment._pending_slots == null and boundary.enhancement_presentation() == actual and boundary.equipment_slot_facts() == actual_slots, "discard leaves accepted read facts intact")
+	var accepted: Dictionary = boundary.equipment.equip_slot("defence:0", "shield", boundary.equipment_inputs(), func(_wallet, _kind):
+		check(boundary.enhancement_presentation() == actual, "read stays actual until accept")
+		boundary.equipment.accept_prepared()
+		return {"ok": true})
+	var next_actual: Dictionary = boundary.enhancement_presentation()
+	check(accepted.ok and boundary._enhancement_read_inputs().armours == 0 and is_equal_approx(effect(next_actual, "memory").summary.buffer_fraction, 7.2), "accept updates new armour-dependent read")
+	for fact in boundary.equipment_slot_facts():
+		if fact.id == "defence:0": boundary.game_time = float(fact.switch_ready_at)
+	var discarded_after: Dictionary = boundary.equipment.equip_slot("defence:0", "armour", boundary.equipment_inputs(), func(_wallet, _kind):
+		check(boundary.enhancement_inputs().armours == 1 and boundary._enhancement_read_inputs().armours == 0 and boundary.enhancement_presentation() == next_actual, "reverse pending change keeps latest accepted read")
+		return {"ok": false, "reason": "FixtureDiscard"})
+	check(not discarded_after.ok and boundary.enhancement_presentation() == next_actual, "discard after acceptance cannot pollute or rewind read")
+	host.campaign_system._grants = grants
 	# Actual Session publication also returns the execution receipt; callbacks see final state.
 	check(host.economy.credit_yield("1", amount("100000"), 0.0, 0.0).ok, "native host budget fixture")
 	var real_quote: Dictionary = host.equipment.quote_slot("weapon:0", 1)
@@ -204,6 +244,6 @@ func run() -> void:
 	var real: Dictionary = host.equipment.buy_levels("weapon:0", 1, host.equipment_inputs(), host.economy.payment, host.publish_equipment_levels)
 	check(real.ok and real.purchase_receipt.commit_status == "accepted" and real.purchase_receipt.spent == real_quote.costs and observed.calls == 1 and observed.level == 2, "actual Session/native accepted quote and listener sees final facts")
 	host.equipment.slots_changed.disconnect(observer)
-	if failures.is_empty(): print("PASS: equipment fixed/MAX/evolution/extreme original quotes, charged comparisons and purity; partial-failure/unknown/reentrant receipts; enhancement static A/B rules and composed summaries, original at-most quantity and receipts, accept_output reread; actual Session/native publication")
+	if failures.is_empty(): print("PASS: equipment fixed/MAX/evolution/extreme original quotes, charged comparisons and purity; partial-failure/unknown/reentrant receipts; enhancement static A/B rules and composed summaries, original at-most quantity and receipts, accept_output and pending/accept/discard actual reread; actual Session/native publication")
 	else: printerr("FAIL: ", failures)
 	quit(0 if failures.is_empty() else 1)

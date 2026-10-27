@@ -34,3 +34,11 @@
 沿foundation/README.md及既有Amount验证工作流的同哈希配置/DLL，设置SPACE_IDLE_NATIVE_EXTENSION、SPACE_IDLE_GALAXY_PROBE_CONFIG；将基线`0a3a5eb1`的src/systems/equipment.gd、enhancement.gd原始Git字节放入临时.gd，分别设置SPACE_IDLE_EQUIPMENT_BASELINE/SPACE_IDLE_ENHANCEMENT_BASELINE。Godot4.7.2执行`--headless --path . --script res://foundation/tests/_equipment_enhancement_readonly_probe.gd`；入口检查用`--headless --path . --check-only --script res://src/main.gd`。临时原版/编译产物不提交。
 
 未实现新UI；可见刷新频率/交互连续性、全部五舰/装备/强化分支组合实机、完整批量UI、性能、真实native故障注入及完整游戏验收仍未覆盖。当前战斗值继续Battle.attribute_details，候选比较不预测native历史/临时层；每盾累计充能实值等未提供部分不伪造。未改Excel、玩法参数、原生源码、保存格式或共享几何。main审批仍暂停，原生成元数据不纳入提交。
+
+## 复查修订：已接纳装甲输入
+
+`5236e4d2`的新Session强化查询原先复用命令enhancement_inputs，而Equipment.equipped_armours优先读_pending_slots；因此显式构造装备准备窗口时会将已接纳强化state与候选装甲数混用。本修订不声称正常游玩已触发该窗口。
+
+新增Equipment.accepted_armours复用_armour_count/_slots_for，只从已接纳_slots计数；三个新Session强化读取改用独立_enhancement_read_inputs。原equipped_armours和enhancement_inputs命令候选语义逐段保持。新增装备查询的slot_facts/slot_comparison/quote_slot/quote_max_levels直接读_slots，未发现同类pending回退；未增加事务层或第二份装甲账本。
+
+同一探针追加真实equip_slot→发布回调内查询的边界装配：准备盾候选时，旧命令输入为候选0装甲，新只读仍1装甲且记忆上限10.08；branch/购买预览与装备事实/比较保持旧actual，读取不改候选；拒绝后discard不污染。随后accept盾装配，新只读更新为0装甲/上限7.2；再准备装甲候选并discard，新只读仍维持最新actual。测试仅是明确的准备/接受/丢弃边界装配，不是正常游玩或跨模块native原子性验收。最终同版本日志/源码哈希随同一清单更新，旧日志保留于原Git提交历史。

@@ -4,8 +4,8 @@
   "scope": "M2 slot facts/charged comparison/MAX read and execution receipt; M5 static summary/A-B rule choices/at-most quote/execution receipt; visible reread only",
   "evidence": {
     "equipment-enhancement-probe.txt": {
-      "sha256": "ce074c8c87d67b600579c85c30aca5143df5f43730f2ef95ef19e5039c84f332",
-      "bytes": 362,
+      "sha256": "35cb93151e7074214a8fd7e5c27a61a796ad010172c522d5627aaededb22f367",
+      "bytes": 396,
       "exit_code": 0
     },
     "equipment-enhancement-check.txt": {
@@ -16,16 +16,16 @@
   },
   "sources": {
     "src/game_session.gd": {
-      "canonical_lf_sha256": "4efb23a776927970ea1b341858329203ba86e916ebfb0ae2990c6b85a1b1a914"
+      "canonical_lf_sha256": "284d3c4ac044d3ac84f05dd0b85ccb40b06a4d83ee7ae8d41ed30a5417ff4e57"
     },
     "src/systems/equipment.gd": {
-      "canonical_lf_sha256": "f16991cb16dc5f03bf478b8382aa7af3508f734074ae363fd3a09c5eeb043d8f"
+      "canonical_lf_sha256": "83ef445f9454a2c99555320b91452f06b82935c1f6cc0f04c99d8d5e3d155ca8"
     },
     "src/systems/enhancement.gd": {
       "canonical_lf_sha256": "7e1f052a484147f347b44e3570a17d5b061355219e2773dde87a273cd35a4920"
     },
     "foundation/tests/_equipment_enhancement_readonly_probe.gd": {
-      "canonical_lf_sha256": "00f26377fcc8b1d4104eceb6d699f694a6573a416aaf557dd27ef2bd53d3b332"
+      "canonical_lf_sha256": "bc0e461277bf5c0c9adcc25c31807217ba70f8a9766daa73835acb0f90eec3bb"
     }
   },
   "baselines": {
@@ -73,5 +73,17 @@
   "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
   "native_source_tree": "a990ed73bdb2c63471ebed15dd9ddbe500d22ce8",
   "evidence_byte_policy": "Two named stdout files use local -text attributes; sha256 and bytes must match captured raw bytes and exact Git blob. Source hashes are explicitly canonical LF.",
-  "limitations": "Focused module/baseline tests and one actual Session/native equipment publication, plus entry check; explicit test wallets/slots/levels/branches; no complete gameplay/UI, hypothetical native history/future values, full batch UI, native fault injection, or geometry acceptance."
+  "limitations": "Focused module/baseline tests and one actual Session/native equipment publication, plus entry check; explicit test wallets/slots/levels/branches; no complete gameplay/UI, hypothetical native history/future values, full batch UI, native fault injection, or geometry acceptance.",
+  "read_boundary_revision": {
+    "before_commit": "5236e4d2c4fe8ee1d4f6046329743e8e22816417",
+    "change": "New Session enhancement read inputs use accepted_armours; command candidate inputs retained; same probe extended with prepare/accept/discard boundary fixture. No normal-play trigger claim.",
+    "unchanged_command_inputs": {
+      "src/systems/equipment.gd::equipped_armours": {
+        "canonical_lf_sha256": "8b31d70bd2573db0d5929603f7d3d029903f931a124c1d3475167d97a0e00075"
+      },
+      "src/game_session.gd::enhancement_inputs": {
+        "canonical_lf_sha256": "46236ce20b48e977f1ab1e88227210a1cfd7114ddbced5ef9bb50a18a22d17b1"
+      }
+    }
+  }
 }
