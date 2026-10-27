@@ -1,6 +1,6 @@
 # UI 连接契约候选：先连接，后布局
 
-依据唯一入口 `space-battleship/docs/game-design/README.md`；只读核对当前实现。这里是交接证据，不覆盖文档线程的拆分成果。功能基线为 `50ed7cdaf98243a36fadb1be30dbfc7b4022e6a4`；`480bcce9` 的布局试验已冻结，不是本线程当前接口方案。下表“现有”均对应源文件公开端口；“缺口/建议”尚未自动授权实施。
+依据唯一入口 `space-battleship/docs/game-design/README.md`；只读核对当前实现。这里是交接证据，不覆盖文档线程的拆分成果。功能基线为 `50ed7cdaf98243a36fadb1be30dbfc7b4022e6a4`，C1消费链更新为 `b7bb3de3`；`480bcce9` 的布局试验已冻结，不是本线程当前接口方案。下表“现有”均对应源文件公开端口；“缺口/建议”尚未自动授权实施。
 
 ## 已定边界
 
@@ -14,7 +14,7 @@
 
 | 模块 / 前端文件 | 现有状态读取 | 现有操作 / 结果入口 | 变化通知 / 刷新 | 前端本地状态与缺口 |
 |---|---|---|---|---|
-| 战斗/航程：battle_view、battle_hud、campaign_view、economy_view | Battle 的 `hud_values/statistics/attribute_details/presentation_clock/consume_damage_receipts`；Campaign `status_text/progress_facts`；Economy `balance_rows/drop_markers/budget` | 现有 native 表现绑定与绘制；`toggle_guard`、`session.set_pause`、`collect_at` 后调用注入的 refresh_growth | Campaign status/progress，Economy display_changed；实时表现按 native 帧消费 | 展示变换、伤害数字、HUD 展开属前端。拾取须将屏幕点逆变换回逻辑战场；不能改命中几何。此坐标适配属于纯前端接入责任；功能分支未更改战场显示变换。 |
+| 战斗/航程：battle_view、battle_hud、campaign_view、economy_view | Battle 的 `hud_values/statistics/attribute_details/presentation_clock`；Campaign `status_text/progress_facts`；Economy `balance_rows/drop_markers/budget` | 现有 native 表现绑定与绘制；`consume_damage_receipts()` 是 BattleView 单一消费的破坏性提取表现事件流，非只读查询；`toggle_guard`、`session.set_pause`、`collect_at` 后调用注入的 refresh_growth | Campaign status/progress，Economy display_changed；实时表现按 native 帧消费 | 展示变换、伤害数字、HUD 展开属前端。拾取须将屏幕点逆变换回逻辑战场；不能改命中几何。此坐标适配属于纯前端接入责任；功能分支未更改战场显示变换。 |
 | 舰体：fleet_panel | Campaign `ship_options/ship_facts`，注入 `battle.hull_presentation` | `change_ship` + `session.commit_ship_refit`，返回原结果 | ship_changed、progress_changed | 候选舰与预览属前端。缺口：开放门槛没有完整结构化展示字段；建议补在现有 ship_options 行，由后端返回条件，不让 UI 读 Excel 重建解锁。 |
 | 装备：equipment_panel | `presentation_slots/panel_slots/panel_equipment/equipment_comparison/price_text`，注入 equipment_presentation_inputs 和 affordable | `buy_levels/buy_max_levels/buy_all_levels/equip_slot`，注入 payment、publish_equipment_levels、publish_equipment_refit | slots_changed(ids)、loadout_changed、options_changed | 当前槽、候选、唯一编辑器和冷却行缓存属前端。缺口：批量/MAX 的本次总价/数量预览；若补端口须复用系统现有报价求值，不能前端乘价或复制 MAX 算法。 |
 | 反应炉：reactor_panel | `panel_options/presentation_model`，注入 reactor_inputs；allocation_preview 输出候选金额 | `purchase/distribute/adjust_allocation/allocate_text`，注入 payment、publish_reactor | choices_changed、presentation_changed | 选中设备、分配草稿、开合属前端。手动/免费/有效/最终增益由同一 presentation_model 提供。资产锚点契约等待文档候选；本轮不改 reactor_stage 或设备。 |
@@ -57,3 +57,11 @@
 ## 前端引用与当前分工
 
 本文件是双方共用的单一接口候选，引用时固定本证据分支的提交SHA。前端线程据此安排纯前端结构、模块主题与资产槽位；本线程不继续并行设计布局。涉及新增状态字段或命令端口的缺口先回到对应模块确认最小交换数据，不把前端资产坐标加入后端领域对象。原文档拆分仍由原线程维护，后续正式收录由父线程统一把关。
+
+## 伤害表现事件的单一消费约定（审核修正）
+
+`Battle.consume_damage_receipts()` 会从 `_events` 提取 kind=8 并将其移除（battle.gd:215–218），不是快照或可重复读取 getter。当前唯一调用者是 BattleView._process（battle_view.gd:25）；由它一次消费、生成伤害数字并发出既有 damage_received 音效信号。HUD、统计、其他页面和调试观察者不得再次调用它，以免先取走/吞掉表现事件；这些读取者使用 hud_values/statistics/attribute_details 等独立查询。若未来确需复用同批表现信息，由单一消费方在消费后提供局部副本，不各自 drain，不新增业务事件链。本轮仅修正契约，未改事件消费实现。
+
+## C1 已裁定的容量来源
+
+`hyperspace_config.xlsx` 的“舰型容量”表（hull_id/capacity）本来就是五舰1、2、3、4、5；Campaign.ship_facts现已消费该表。Session配装、成长刷新、预设、改造后配装与换舰，以及Battle/native admission继续消费 ship_facts.drone_capacity。`maximum_equipped=5` 是另一个全局硬上限，合法数量需同时满足两者；ship.xlsx.para_5是战舰占地，para_6是同种武器上限，二者未修改、不能拿来替代无人机容量。

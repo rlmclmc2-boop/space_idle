@@ -29,3 +29,9 @@ A8整体框架/返回战斗/右侧空黑、反应炉白舱和锚点、其他模�
 分工最终调整前曾做结构试验 `rewrite/ui-frame-structure@480bcce93e68c9c11afd769ead2399819afcd7ad`。该分支现冻结，仅留历史探索，不是本线程当前布局交付；不应与前端线程方案并行推广或自动合入。活动工作区已切回功能分支。
 
 没有自动审批拒绝、待批准推送或不确定写入；当前外部依赖是前端/文档线程提供后续正式接口与资产契约反馈。
+
+## 后续C1/C4与事件流审核修正
+
+C1见 [c1-capacity-followup.md](c1-capacity-followup.md)，代码更新b7bb3de3。C4仅只读审查，见 [c4-readonly-review.md](c4-readonly-review.md)，未改战斗递归或存档。共用接口文件已将consume_damage_receipts从只读查询移出，标明BattleView单一破坏性消费，避免吞表现事件。
+
+哈希口径修正：旧manifest的6个文本哈希取自Windows CRLF工作区，而Git按LF保存，导致文本校验不一致；PNG原哈希一致。本次所有交付文本规范为LF并用.gitattributes固定，manifest.sha256以实际Git文件字节为口径，不含manifest自身。仅修正文档/封存口径，未为哈希变更复测或重拍PNG。
