@@ -113,3 +113,11 @@
 仓储/过滤源码`f1cf60faf86b41acc26b62e3158c1a2846dcc5a6`、14张同版证据`ac4f8a60237c45dba91d4c5cf9b435fa8e89e63b`已推送。后收到改造三条反例，随本关联自然点修究极事实贯穿、d3身份变化后的拆解新响应及chain_count合法阶级，见`g2-forge-restoration.md`末节；同版`evidence/g2-forge-current-facts/manifest.json`。
 
 仍未实际压缩，无执行环境阻塞；继续保留同一/workspace/space_idle工作区。路线/任务/仓满回执、M1/G9、五舰与批量仍开放，不把本关联补丁当完整超空间完成。
+
+### 路线/任务/满仓回执与M9关联自然批次：压缩后交接
+
+前一关联补丁源码`dd2210e97a49cd33b4d5ee6faf353bfddd0d5ea6`、12张同版证据`5e2873567c31eaa744c520485afaf605011303cd`已推送。本批路线/手动/单次/自动与独立凭据、满仓保留同奖、过滤冻结和旧轮次拒绝已形成A/B操作实物；另修满200整理准入、预设当前整组品质限制并补根线程指定四组下段截面。详见`g2-hyperspace-tasks-restoration.md`；同版清单为`evidence/g2-hyperspace-tasks/manifest.json`及`evidence/g2-m9-associated/manifest.json`。
+
+**本执行上下文已实际发生首次压缩。** 仅完成此手头自然项的源码/证据提交及push后交接，不接下一批。目录仍`/workspace/space_idle/space-battleship`，分支仍`design/g1-internal-organizations`，未新建工作区/任务/子智能体；无执行环境阻塞。后继先按清单固定SHA读取，不重做已关闭的科研草稿/第二第四批原反例。
+
+当前剩余是上一节规则边界和本批资料「验证与未完成」，完整G2/G9仍未通过；主线仍e93c2212，候选契约不等于main已有。任何后续审查意见由根线程继续传递，本批不得自称整轮成熟。

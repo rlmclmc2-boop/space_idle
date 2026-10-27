@@ -68,7 +68,7 @@ const changed = () => state.alloc.some((v,i)=>v!==state.actual[i]);
 const crewCount = (job,planetId=null,facilityId=null) => Object.values(state.crewMembers).filter(m=>m.available&&m.job===job&&(!planetId||m.targetPlanet===planetId)&&(!facilityId||m.targetFacility===facilityId)).length;
 const selectedPlanet=()=>state.planets.find(p=>p.id===state.planetId);
 const selectedFacility=()=>selectedPlanet().facilities[selectedPlanet().facilitySelection];
-function memberJob(m){if(m.job.startsWith('planet-')){const p=state.planets.find(p=>p.id===m.targetPlanet);return p.name+' / '+(m.job==='planet-build'?p.facilities[m.targetFacility].name+'施工':'探索');}return jobs[m.job];}
+function memberJob(m){if(m.job==='hyperspace')return '在线自动挂机 · '+(m.targetRoute?routeName(m.targetRoute):'目标待读取');if(m.job.startsWith('planet-')){const p=state.planets.find(p=>p.id===m.targetPlanet);return p.name+' / '+(m.job==='planet-build'?p.facilities[m.targetFacility].name+'施工':'探索');}return jobs[m.job];}
 function crewAdmission(){const m=state.crewMembers[state.crewId];if(m.job==='hyperspace')return '该成员被在线任务保留，请从任务入口停止或领取后再派遣。';if(state.crewDraft==='planet-build'){const p=state.planets.find(p=>p.id===state.crewPlanet),f=p.facilities[state.crewFacility];if(f.state!=='building')return '所选设施当前不在施工。';if(!f.extraCrew)return '此设施不需额外施工人员，由探索完成推进。';if(Object.entries(state.crewMembers).filter(([id,x])=>id!==state.crewId&&x.job==='planet-build'&&x.targetPlanet===p.id&&x.targetFacility===f.id).length>=f.extraCrew)return '所选设施额外施工岗位已满。';}else if(state.crewDraft!=='idle'){const cap=state.crewDraft==='galaxy'?6:1;const others=Object.entries(state.crewMembers).filter(([id,x])=>id!==state.crewId&&x.job===state.crewDraft&&(x.job!=='planet-explore'||x.targetPlanet===state.crewPlanet)).length;if(others>=cap)return '所选目标人数已达容量 '+cap+'。';}return '';}
 
 let renderedRoute=null, renderedCollapsed=false;
@@ -108,7 +108,7 @@ function summary(route) {
   if(route==='equipment') return `${state.slot<3?'武器'+(state.slot+1):'防御'+(state.slot-2)} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}${state.candidate?' / 有候选':''}`;
   if(route==='reactor') return `${sum(state.actual)}/100${changed()?' · 草稿'+sum(state.alloc):' · 已生效'}`;
   if(route==='research') return `${studies[state.researchId].name} · 铁${amountDisplay(state.researchBudget)}/秒${state.researchDraft!==state.researchBudget||state.researchUraniumDraft!==state.researchUranium?' / 有草稿':''}`;
-  if(route==='crew') {if(state.group==='hyperspace'){const task=state.onlineTask;return task.crewId?state.crewMembers[task.crewId].name+' · '+routeName(task.route)+' / '+taskStatus(task):'当前在线任务无保留船员';}const m=state.crewMembers[state.crewId];return `${m.name} · ${memberJob(m)}`;}
+  if(route==='crew') {if(state.group==='hyperspace'){const task=state.onlineTask,held=state.hyperspaceTaskDesk?state.hyperspaceTaskDesk.autoEnabled&&state.hyperspaceTaskDesk.autoCrew:task.crewId;return held?state.crewMembers[held].name+' · '+routeName(task.route)+' / '+taskStatus(task):'当前在线任务无保留船员';}const m=state.crewMembers[state.crewId];return `${m.name} · ${memberJob(m)}`;}
   if(route==='planet') return `${selectedPlanet().name} · ${selectedFacility().name} / ${facilityStatus(selectedPlanet(),selectedFacility())}`;
   if(route==='galaxy'){const n=state.galaxyNodes[state.galaxyNode];return `${galaxyName(n)} · ${galaxyWorkStatus(n)}`;}
   if(route==='hyperspace/routes') return `手动·${routeName(state.manualTask.route)} ${taskStatus(state.manualTask)} / 挂机·${routeName(state.onlineTask.route)} ${taskStatus(state.onlineTask)}`;
@@ -235,46 +235,30 @@ function crew() {
   return moduleHead('船员名册 · '+available.length+'人可用','人物身份与当前岗位分别显示',`<span class="pill">${member.name} · Lv.${member.level}</span>`)+
     `<div class="crew-room"><div class="crew-roster">${available.map(([id,m])=>`<button data-crew="${id}" class="crew-person ${state.crewId===id?'selected':''}"><span class="job-badge">${m.job==='idle'?'◇':m.job==='planet-build'?'⚒':m.job==='planet-explore'?'◎':'◈'}</span><span><b>${m.name}</b><small>Lv.${m.level} · ${memberJob(m)}</small></span><div class="meter"><i style="width:${m.experienceRatio*100}%"></i></div></button>`).join('')}<div class="crew-next">下位船员：${Object.values(state.crewMembers).find(m=>!m.available)?.name} · 通关45关开放</div></div><div class="person-console"><div class="person-heading"><span class="job-badge large">${member.job==='idle'?'◇':'◈'}</span><div><span class="eyebrow">CREW / CURRENT ASSIGNMENT</span><h2>${member.name}</h2><span>Lv.${member.level} · 经验 ${member.experience} / ${member.experienceRequired}</span></div></div><div class="meter"><i style="width:${member.experienceRatio*100}%"></i></div><div class="current-job"><small>当前实际占用</small><b>${memberJob(member)}</b><span>${({research:'科研速度 ×1.6；完成后自动续研最短项目',equipment:'装备属性 ×1.331；每秒尝试全部启用槽位正常付费购级',reactor:'反应炉总能源 ×1.9；每秒尝试购级并均分',enhancement:'直接碎片 ×1.3；每秒尝试购1级全局强化',idle:'当前无岗位占用'})[member.job]||'当前任务按探索或工程完成提供经验；不计为系统岗位等级加成'}</span>${member.job==='planet-build'?'<span>本次探索完成时检查施工人员，达到次数后释放施工占用。</span>':member.job==='research'?'<span>完成后续研最短项目；当前研究设备保持。</span>':''}</div><div class="dispatch-draft"><h3>派遣候选</h3><label>岗位<select id="crew-target">${Object.entries(jobs).filter(([id])=>id!=='hyperspace').map(([id,name])=>`<option value="${id}" ${id===state.crewDraft?'selected':''}>${name}</option>`).join('')}</select></label>${planetJob?`<label>星球<select id="crew-planet">${state.planets.filter(p=>p.available).map(p=>`<option value="${p.id}" ${p.id===target.id?'selected':''}>${p.name}</option>`).join('')}</select></label>${state.crewDraft==='planet-build'?`<label>施工设施<select id="crew-facility">${Object.values(target.facilities).map(f=>`<option value="${f.id}" ${f.id===state.crewFacility?'selected':''}>${f.name} · 额外人员${f.extraCrew}</option>`).join('')}</select></label>`:''}`:''}${state.crewDraft==='equipment'?`<label>自动购级模式<select id="crew-mode">${['1','10','MAX'].map(v=>`<option ${v===state.crewMode?'selected':''}>${v}</option>`).join('')}</select></label>`:''}<div class="note ${error?'warn':''}">${error||'确认后切换目标；当前实际占用保持至接纳成功。'}</div>${state.crewError?`<div class="note bad">${state.crewError}</div>`:''}<div class="secondary-actions">${control('crew-apply','确认派遣','primary',!!error)}${control('crew-release','释放当前占用','',member.job==='idle'||member.job==='hyperspace')}${control('crew-target','查看候选目标')}${control('back','返回来处','quiet')}</div></div></div></div>`;
 }
-function routeName(id=state.routeId) {return {pulse:'脉冲路线',missile:'导弹路线',rail:'舰炮路线',beam:'长激光路线'}[id];}
-function taskStatus(task){return {idle:'待命',running:'进行中',ready:'待领取',claimed:'已领取'}[task.status];}
+function routeName(id=state.routeId) {return HyperspaceTasks.names(id);}
+function taskStatus(task){return {idle:'待命',running:'进行中',ready:'待领取',claimed:'已领取',failed:'未完成'}[task.status];}
 const hyperTabs=[['routes','路线任务'],['warehouse','仓库'],['formation','无人机编队'],['forge','改造'],['filter','过滤'],['materials','材料']];
 function hyperNav() {return `<div class="subnav">${hyperTabs.map(([id,name])=>`<button data-route="hyperspace/${id}" class="${state.route==='hyperspace/'+id?'active':''}">${name}</button>`).join('')}</div>`;}
 function droneStrip() {
   return `<div class="drone-strip"><span>当前对象</span>${Object.entries(drones).filter(([id])=>!state.workshop||state.workshop.store[id]).map(([id,d])=>`<button data-drone="${id}" class="${state.droneId===id?'active':''}">${d.name}</button>`).join('')}</div>`;
 }
 function droneNameList(ids) {return ids.length?ids.map(id=>drones[id].name).join(' / '):'无';}
-function taskPanel(kind) {
-  const task=kind==='manual'?state.manualTask:state.onlineTask;
-  const label=kind==='manual'?'手动挑战':'在线挂机';
-  return `<article class="task-panel"><div><span class="eyebrow">${kind==='manual'?'MANUAL RUN':'ONLINE RUN'}</span><h2>${label}</h2><span class="pill ${task.status==='ready'?'warn':''}">${taskStatus(task)}</span></div><p><b>${routeName(task.route)}</b> · 第${kind==='manual'?'19':'18'}层<br>任务 ${task.run}<br>${kind==='online'?'模式 '+(task.mode==='auto'?'自动挂机':'单次挂机')+' · '+(task.crewId?state.crewMembers[task.crewId].name:'无保留船员'):'挑战胜利后才有成功回执'}</p><div class="secondary-actions">${kind==='manual'?control('hyper-manual',task.status==='running'?'查看当前挑战':'查看挑战条件','primary'):control('online-start',task.status==='running'?'单次进行中':'开始单次挂机','primary',task.status==='running'||task.status==='ready')}${control('receipt-'+kind,'查看本任务回执')}${task.status==='ready'?control('claim-'+kind,'领取此回执'):''}${kind==='online'?control('online-auto',task.status==='running'&&task.mode==='auto'?'停止自动挂机':'开始自动挂机','',task.status==='running'&&task.mode!=='auto'):''}</div></article>`;
-}
-function taskReceipt(kind) {
-  const task=kind==='manual'?state.manualTask:state.onlineTask;
-  return `<div class="receipt"><span class="eyebrow">${kind==='manual'?'MANUAL RECEIPT':'ONLINE RECEIPT'}</span><h2>${kind==='manual'?'手动':'在线'} · ${routeName(task.route)} · ${task.run}</h2><p>任务状态：${taskStatus(task)}<br>对象与回执在任务开始时绑定，当前浏览路线不会替换它。<br>${task.status==='ready'?'奖励已在完成时固化，领取不重新抽取。':task.status==='claimed'?'本回执已领取，不可重复入账。':'尚无可领取奖励。'}</p>${control('claim-'+kind,'领取此回执','primary',task.status!=='ready')}${control('back','返回来处')}</div>`;
-}
 
 function hyperspace() {
   HyperWorkshop.ensure(state,drones);
   const part=state.route.split('/')[1]||'routes', d=drones[state.droneId];
   let body='';
-  if(part==='routes') body=`<div class="route-grid">${Object.entries({pulse:'脉冲',missile:'导弹',rail:'舰炮',beam:'长激光'}).map(([id,name])=>`<button class="route-card ${state.routeId===id?'selected':''}" data-hyper-route="${id}"><img src="${asset}hyperspace/icons/${id}.png" alt=""><b>${name}路线</b><span>已通过18 · 下一挑战19</span></button>`).join('')}</div><div class="browse-route">正在浏览 ${routeName()} · 能源240 · 三种模式门票均为0</div><div class="task-panels">${taskPanel('manual')}${taskPanel('online')}</div>`;
+
   if(part==='warehouse') body=`<div class="warehouse-heading"><span>主仓 3 / 40</span><span>溢出0 · 封存0</span><span>已选 ${state.droneSelection.length}</span></div><div class="drone-grid">${Object.entries(drones).map(([id,item])=>`<article class="drone-card ${state.droneId===id?'selected':''}"><img src="${asset}hyperspace/icons/${item.icon}" alt=""><h3>${item.name}</h3><p>${item.quality} · Lv.${item.level}<br>${item.affix}</p><span class="pill">${state.equippedDrones.includes(id)?'已装备':'主仓'}</span><div>${control('drone-pick-'+id,state.droneSelection.includes(id)?'取消选中':'选中')}${control('drone-detail-'+id,'详情')}</div></article>`).join('')}</div><div class="secondary-actions">${control('warehouse-formation','以所选无人机编队','primary',!state.droneSelection.length)}${control('warehouse-forge','改造所选对象','',state.droneSelection.length!==1)}${control('warehouse-filter','过滤规则')}${control('warehouse-sealed','封存 / 整理')}</div>`;
   if(part==='drone'){const location=state.workshop.store[state.droneId],available=!!location,main=location==='main',sealed=location==='sealed';body=`${droneStrip()}<div class="drone-detail">${HyperWorkshop.art(d,asset)}<div><h2>${d.name}</h2><p>${d.quality} · 层级${d.level} · ${d.weapon}</p><p>当前词缀 ${d.affix}</p><span class="pill ${main?'good':'warn'}">${!available?'已不在仓库':sealed?'封存 · 达到第'+state.workshop.claimAt[state.droneId]+'关后领取解封':location==='overflow'?'溢出 · 整理至主仓后才可装备':state.equippedDrones.includes(state.droneId)?'主仓 · 当前已装备':'主仓 · 可选择装备'}</span></div></div><div class="secondary-actions">${control('drone-to-formation','进入编队','primary',!main)}${control('drone-to-forge','进入改造','',!available||sealed)}${control('drone-hanging','挂设成长','',!available||sealed)}${control('drone-favorite','收藏保护','',!available)}${control('back','返回仓库','quiet')}</div>`;}
 
-  if(part==='formation') body=`${droneStrip()}<div class="formation-stage"><div class="formation-mother"><img src="${asset}ui/ships/fleet_20261019/03-cruiser.png" alt="母舰预览"><span>巡洋舰 · 容量3</span></div><div class="formation-slots">${[0,1,2].map(i=>`<div class="formation-slot"><small>无人机位 ${i+1}</small><b>${state.formationDraft[i]?drones[state.formationDraft[i]].name:'空位'}</b></div>`).join('')}</div></div><div class="formation-compare"><div><small>当前编队</small><b>${droneNameList(state.equippedDrones)}</b></div><div><small>本次候选</small><b>${droneNameList(state.formationDraft)}</b></div></div>${state.formationPreview?`<div class="transaction-preview"><b>应用前装卸确认</b><p>将装备：${droneNameList(state.formationPreview.equip)}<br>将卸下：${droneNameList(state.formationPreview.remove)}</p>${control('formation-confirm','确认应用','primary')}${control('formation-cancel','取消')}</div>`:''}<div class="secondary-actions">${control('formation-set','将当前对象放入候选')}${control('formation-preview','查看本次装卸','primary')}${control('back','返回来处','quiet')}</div>`;
+  if(part==='formation') body=`${droneStrip()}<div class="formation-stage"><div class="formation-mother"><img src="${asset}ui/ships/fleet_20261019/03-cruiser.png" alt="母舰预览"><span>巡洋舰 · 容量3</span></div><div class="formation-slots">${[0,1,2].map(i=>`<div class="formation-slot"><small>无人机位 ${i+1}</small><b>${state.formationDraft[i]?drones[state.formationDraft[i]].name:'空位'}</b></div>`).join('')}</div></div><div class="formation-compare"><div><small>当前编队</small><b>${droneNameList(state.equippedDrones)}</b></div><div><small>本次候选</small><b>${droneNameList(state.formationDraft)}</b></div></div>${state.formationError?`<div class="note warn">${escapeText(state.formationError)}</div>`:''}${state.formationPreview?`<div class="transaction-preview"><b>应用前装卸确认</b><p>将装备：${droneNameList(state.formationPreview.equip)}<br>将卸下：${droneNameList(state.formationPreview.remove)}</p>${control('formation-confirm','确认应用','primary')}${control('formation-cancel','取消')}</div>`:''}<div class="secondary-actions">${control('formation-set','将当前对象放入候选')}${control('formation-preview','查看本次装卸','primary')}${control('back','返回来处','quiet')}</div>`;
 
 
 
-  if(['receipt','manual'].includes(part)) body=hyperSubroute(part);
-  const workshop=HyperWorkshop.render(part,state,drones,control,asset);if(workshop!==null)body=workshop;const filter=FilterWorkbench.render(part,state,control);if(filter!==null)body=filter;const forge=ForgeWorkbench.render(part,state,drones,control,asset);if(forge!==null)body=forge;
+
+  const workshop=HyperWorkshop.render(part,state,drones,control,asset);if(workshop!==null)body=workshop;const filter=FilterWorkbench.render(part,state,control);if(filter!==null)body=filter;const forge=ForgeWorkbench.render(part,state,drones,control,asset);if(forge!==null)body=forge;const task=HyperspaceTasks.render(part,state,drones,control,asset);if(task!==null)body=task;
   return moduleHead('超空间 · '+(hyperTabs.find(row=>row[0]===part)?.[1]||{drone:'无人机详情',sealed:'仓储处理',hanging:'挂设成长',protection:'收藏保护',receipt:'本次回执',manual:'手动挑战','filter-import':'审阅规则导入','filter-export':'导出规则',presets:'编队预设',legends:'传说图鉴'}[part]),`浏览 ${routeName()} · 当前无人机 ${d.name}`)+hyperNav()+body;
-}
-function hyperSubroute(part) {
-  const d=drones[state.droneId];
-  if(part==='receipt') return taskReceipt(state.route.split('/')[2]==='online'?'online':'manual');
-  if(part==='manual') {const task=state.manualTask;return `<div class="transaction-preview"><h2>${task.status==='running'?routeName(task.route):routeName()} · 手动挑战</h2><p>${task.status==='running'?'任务'+task.run+'进行中，不能用当前浏览路线替换任务对象。':'下一挑战19层 · 门票0 · 查看此页尚未开始。'}<br>在线任务 ${routeName(state.onlineTask.route)} / ${taskStatus(state.onlineTask)} 保持独立。</p>${control('manual-start','确认开始挑战','primary',task.status==='running'||task.status==='ready')}${control('receipt-manual','手动回执')}${control('back','返回来处')}</div>`;}
-
-  return '';
 }
 function settings() {
   if(state.route.includes('/danger/')) return danger();
@@ -380,6 +364,7 @@ function syncDemoCrewTargets() {
 }
 function validAmountDraft(text) {return /^\d+$/.test(text.trim());}
 function action(a) {
+  if(state.module==='hyperspace'&&HyperspaceTasks.handle(a,state,drones,control,notify,goRoute)){render();return;}
   if(state.module==='hyperspace'&&ForgeWorkbench.handle(a,state,drones,control,notify,goRoute)){render();return;}
   if(state.module==='hyperspace'&&FilterWorkbench.handle(a,state,control,notify,goRoute)){render();return;}
   if(state.module==='hyperspace'&&HyperWorkshop.handle(a,state,drones,control,notify,goRoute)){render();return;}
@@ -424,7 +409,7 @@ function action(a) {
     state.crewError='';if(unchanged){notify('岗位与目标未变化；当前占用与任务进度保持');}
     else {Object.assign(m,{job:state.crewDraft,targetPlanet:state.crewPlanet,targetFacility:state.crewFacility,mode:state.crewMode});if(m.job==='planet-explore'){const p=state.planets.find(p=>p.id===m.targetPlanet);p.running=true;p.elapsed='0';p.duration=p.id==='1'?'60':'26';}syncDemoCrewTargets();notify('派遣已接纳，人物与对应目标人数同步');}
   }}
-  else if(a==='crew-release') {if(state.onlineTask.crewId===state.crewId&&['running','ready'].includes(state.onlineTask.status)){openDetail('当前成员被任务保留','先停止自动任务或解决待领回执，再释放当前人员。');return;}state.crewMembers[state.crewId].job='idle';syncDemoCrewTargets();notify('当前成员已释放，目标人数与缺人暂停状态更新');}
+  else if(a==='crew-release') {if((state.hyperspaceTaskDesk?.autoEnabled&&state.hyperspaceTaskDesk.autoCrew===state.crewId)||(state.onlineTask.crewId===state.crewId&&['running','ready'].includes(state.onlineTask.status))){openDetail('当前成员被任务保留','先停止自动任务或解决待领回执，再释放当前人员。');return;}state.crewMembers[state.crewId].job='idle';syncDemoCrewTargets();notify('当前成员已释放，目标人数与缺人暂停状态更新');}
   else if(a==='crew-target') {if(state.crewDraft.startsWith('planet-')){state.planetId=state.crewPlanet;selectedPlanet().facilitySelection=state.crewFacility;}goRoute(state.crewDraft==='galaxy'?'galaxy':state.crewDraft==='idle'?'crew':state.crewDraft.startsWith('planet-')?'planet':state.crewDraft);return;}
   else if(a==='research-apply-iron'||a==='research-apply-uranium') {const iron=a==='research-apply-iron';const draft=iron?state.researchDraft:state.researchUraniumDraft;if(!validAmountDraft(draft)){state.researchError=(iron?'铁':'铀')+'投入需为非负整数金额；当前生效值保持，草稿可继续修正。';}else{if(iron)state.researchBudget=state.researchDraft;else state.researchUranium=state.researchUraniumDraft;state.researchError='';state.researchFeedback=(iron?'铁':'铀')+'投入已应用，另一资源与研究工作量保持。';notify('本资源投入已应用');}}
 
@@ -438,21 +423,13 @@ function action(a) {
   else if(a==='research-auto-apply') {if(!Number.isFinite(Number(state.researchRatioDraft))||Number(state.researchRatioDraft)<0||Number(state.researchRatioDraft)>100){state.researchError='比例需在0–100%以内，当前预算设置保持。';render();return;}state.researchAuto=state.researchAutoDraft;state.researchRatio=state.researchRatioDraft;state.researchFeedback='预算设置已生效，下一个60游戏秒刷新点采用；当前投入金额尚未重算。';}
   else if(a==='research-crew') {state.crewDraft='research';goRoute('crew');return;}
   else if(a==='equip-one'||a==='equip-ten'||a==='equip-max-mode') {state.equipmentMode=a==='equip-one'?'one':a==='equip-ten'?'ten':'max';state.candidate=false;}
-  else if(a==='hyper-manual') {goRoute('hyperspace/manual');return;}
-  else if(a==='manual-start') {if(!['running','ready'].includes(state.manualTask.status)){state.manualTask={status:'running',route:state.routeId,run:'manual-02',receipt:null};notify('手动挑战已开始，在线任务保持');}goRoute('hyperspace/routes');return;}
-  else if(a==='online-start') {if(!['running','ready'].includes(state.onlineTask.status)){state.onlineTask={status:'running',route:state.routeId,run:'online-02',receipt:null,mode:'single',crewId:null};notify('单次挂机已开始，手动挑战保持');}}
-  else if(a==='online-auto') {const task=state.onlineTask;if(task.status==='running'&&task.mode==='auto'){if(task.crewId&&state.crewMembers[task.crewId]?.job==='hyperspace')state.crewMembers[task.crewId].job='idle';state.onlineTask={...task,status:'idle',crewId:null};syncDemoCrewTargets();notify('自动任务已停止，Started任务不生成奖励');}else if(task.status==='ready'){goRoute('hyperspace/receipt/online');return;}else{const candidates=Object.entries(state.crewMembers).filter(([id,m])=>m.available&&m.job==='idle');openDetail('开始自动挂机 · '+routeName(),`<label>选择空闲船员<select id="online-crew">${candidates.map(([id,m])=>`<option value="${id}">${m.name} · Lv.${m.level}</option>`).join('')}</select></label><p>确认开始后，由在线任务接纳并保留该成员；普通派遣入口不能建立此占用。</p>${control('online-auto-confirm','确认开始并保留人员','primary',!candidates.length)}`);return;}}
-  else if(a==='online-auto-confirm'){const id=$('#online-crew')?.value,m=state.crewMembers[id];if(!m||!m.available||m.job!=='idle'){notify('所选成员已不可用，任务未开始');return;}state.onlineTask={status:'running',route:state.routeId,run:'online-auto-demo-02',receipt:null,mode:'auto',crewId:id};m.job='hyperspace';$('#inspect-detail').close();notify('演示任务已接纳，路线与保留人员绑定本任务');}
-  else if(a==='receipt-manual'||a==='receipt-online') {goRoute('hyperspace/receipt/'+a.split('-')[1]);return;}
-  else if(a==='claim-manual'||a==='claim-online') {const key=a==='claim-manual'?'manualTask':'onlineTask';if(state[key].status==='ready'){state[key]={...state[key],status:'claimed'};notify((key==='manualTask'?'手动':'在线')+'回执已领取；另一任务保持');goRoute('hyperspace/warehouse');return;}}
-
   else if(a.startsWith('drone-pick-')) {const id=a.slice(11);state.droneId=id;state.droneSelection=state.droneSelection.includes(id)?state.droneSelection.filter(x=>x!==id):[...state.droneSelection,id];invalidateForge();}
   else if(a.startsWith('drone-detail-')) {state.droneId=a.slice(13);invalidateForge();goRoute('hyperspace/drone');return;}
-  else if(a==='warehouse-formation') {state.formationDraft=[...state.droneSelection];state.formationPreview=null;goRoute('hyperspace/formation');return;}
+  else if(a==='warehouse-formation') {state.formationDraft=[...state.droneSelection];state.formationPreview=null;state.formationError='';goRoute('hyperspace/formation');return;}
   else if(a==='warehouse-forge') {state.droneId=state.droneSelection[0];invalidateForge();goRoute('hyperspace/forge');return;}
-  else if(a==='drone-to-formation') {state.formationDraft=[state.droneId];state.formationPreview=null;goRoute('hyperspace/formation');return;}
+  else if(a==='drone-to-formation') {state.formationDraft=[state.droneId];state.formationPreview=null;state.formationError='';goRoute('hyperspace/formation');return;}
   else if(a==='drone-to-forge') {invalidateForge();goRoute('hyperspace/forge');return;}
-  else if(a==='formation-set') {state.formationDraft=[state.droneId];state.formationPreview=null;}
+  else if(a==='formation-set') {state.formationDraft=[state.droneId];state.formationPreview=null;state.formationError='';}
   else if(a==='formation-preview') {state.formationPreview={equip:state.formationDraft.filter(id=>!state.equippedDrones.includes(id)),remove:state.equippedDrones.filter(id=>!state.formationDraft.includes(id))};}
   else if(a==='formation-confirm') {if(state.formationPreview){state.equippedDrones=[...state.formationDraft];state.formationPreview=null;notify('无人机编队已应用，普通舰体装备未改变');}}
   else if(a==='formation-cancel') {state.formationPreview=null;}
@@ -495,7 +472,7 @@ document.addEventListener('click',event=>{
   else if(button.dataset.group) switchGroup(button.dataset.group);
   else if(button.dataset.slot!==undefined) {state.slot=Number(button.dataset.slot);state.candidate=false;render();}
   else if(button.dataset.route) goRoute(button.dataset.route);
-  else if(button.dataset.contextRoute) {const target=button.dataset.contextRoute;if(target==='crew'&&state.group==='hyperspace'&&state.onlineTask.crewId){state.crewId=state.onlineTask.crewId;state.crewDraft=state.crewMembers[state.crewId].job;}goRoute(target.includes('/')?target:(state.moduleLast[target]||target));}
+  else if(button.dataset.contextRoute) {const target=button.dataset.contextRoute;if(target==='crew'&&state.group==='hyperspace'&&(state.hyperspaceTaskDesk?state.hyperspaceTaskDesk.autoEnabled:state.onlineTask.crewId)){state.crewId=state.onlineTask.crewId;state.crewDraft=state.crewMembers[state.crewId].job;}goRoute(target.includes('/')?target:(state.moduleLast[target]||target));}
   else if(button.dataset.crew) {selectCrew(button.dataset.crew);render();}
   else if(button.dataset.drone) {state.droneId=button.dataset.drone;state.formationPreview=null;invalidateForge();state.dangerPreview=null;notify('已更换无人机对象，需要重新预览');render();}
   else if(button.dataset.hyperRoute) {state.routeId=button.dataset.hyperRoute;render();}
@@ -553,7 +530,6 @@ for(const key of ['reactor','equipment','planet','galaxy']) $('#'+key+'-case').o
   if(key==='equipment'){state.candidate=event.target.value==='compare';state.cooldowns=event.target.value==='cooldown'?{[state.slot]:10}:{};if(event.target.value==='cooldown')state.equipment='normal';}
   render();
 };
-for(const kind of ['manual','online']) $('#'+kind+'-task-case').onchange=event=>{const key=kind==='manual'?'manualTask':'onlineTask';state[key]={...state[key],status:event.target.value,route:kind==='manual'?'pulse':'missile'};render();};
 $('#guide-case').onchange=event=>{state.archive.guidePaused=event.target.value==='first';goRoute('archive/tutorial');};
 $('#save-case').onchange=event=>{state.maintenance.save=event.target.value;state.maintenance.feedback='';render();};
 $('#enhance-funds').onchange=event=>{state.enhance.funds=event.target.value==='enough';render();};
