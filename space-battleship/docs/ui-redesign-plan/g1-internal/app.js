@@ -105,7 +105,7 @@ function nav() {
   return Object.entries(groups).map(([id,g])=>`<button data-group="${id}" class="${state.group===id?'active':''}">${g.name}</button>`).join('')+control('catalog','全系统索引');
 }
 function summary(route) {
-  if(route==='equipment') return `${state.slot<3?'武器'+(state.slot+1):'防御'+(state.slot-2)} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}${state.candidate?' / 有候选':''}`;
+  if(route==='equipment') {EquipmentWorkbench.ensure(state);return EquipmentWorkbench.ship(state).name+' · '+EquipmentWorkbench.slot(state.slot).label+' / '+state.fits[state.slot]+' Lv.'+state.levels[state.slot]+(state.candidate?' / 有候选':'');}
   if(route==='reactor') return `${sum(state.actual)}/100${changed()?' · 草稿'+sum(state.alloc):' · 已生效'}`;
   if(route==='research') return `${studies[state.researchId].name} · 铁${amountDisplay(state.researchBudget)}/秒${state.researchDraft!==state.researchBudget||state.researchUraniumDraft!==state.researchUranium?' / 有草稿':''}`;
   if(route==='crew') {if(state.group==='hyperspace'){const task=state.onlineTask,held=state.hyperspaceTaskDesk?state.hyperspaceTaskDesk.autoEnabled&&state.hyperspaceTaskDesk.autoCrew:task.crewId;return held?state.crewMembers[held].name+' · '+routeName(task.route)+' / '+taskStatus(task):'当前在线任务无保留船员';}const m=state.crewMembers[state.crewId];return `${m.name} · ${memberJob(m)}`;}
@@ -142,28 +142,31 @@ function reactor() {
 
 const equipmentNames={laser:'脉冲炮',missile:'舰载导弹',longLaser:'长激光',cannon:'舰炮',shield:'护盾发生器',armour:'装甲'};
 const equipmentCycles={laser:'0.8秒',missile:'1.2秒',longLaser:'持续光束',cannon:'1.4秒'};
-function candidateType(){return state.slot<3?(state.fitKeys[state.slot]==='cannon'?'laser':'cannon'):(state.fitKeys[state.slot]==='shield'?'armour':'shield');}
+function candidateType(){return EquipmentWorkbench.isWeapon(state.slot)?(state.fitKeys[state.slot]==='cannon'?'laser':'cannon'):(state.fitKeys[state.slot]==='shield'?'armour':'shield');}
 function slotIcon(){return 'cartoon_'+state.fitKeys[state.slot]+'.svg';}
-function comparisonCycle(){const current=equipmentCycles[state.fitKeys[state.slot]];return state.slot<3?'攻击周期 '+current+(state.candidate?' → '+equipmentCycles[candidateType()]:'（保持）'):'防御类型 '+equipmentNames[state.fitKeys[state.slot]]+(state.candidate?' → '+equipmentNames[candidateType()]:'（保持）');}
+function comparisonCycle(){const current=equipmentCycles[state.fitKeys[state.slot]]||'无装备';return EquipmentWorkbench.isWeapon(state.slot)?'配置周期 '+current+(state.candidate?' → '+equipmentCycles[candidateType()]:'（保持）'):'防御类型 '+(equipmentNames[state.fitKeys[state.slot]]||'空槽')+(state.candidate?' → '+equipmentNames[candidateType()]:'（保持）');}
 function currentCooldown() {return state.cooldowns[state.slot]||0;}
 function equipmentQuote() {
-  const defence=state.slot>=3, current=state.attributes[state.slot],response=equipmentResponses[current];
+  const q=equipmentQuoteBase(),response=EquipmentResponseModels.evolutionQuoteCases[state.levels[state.slot]+':'+state.equipmentMode];
+  if(q.action==='equip-buy'&&response&&q.next!=='待取得新报价'){
+    q.price+=' + 简并物质'+response.material;
+    const balance=state.workshop?.materials.degenerate_matter||'210';q.canPay=response.admissionByBalance[balance];q.reason=q.canPay===false?'简并物质不足，本次完整数量保持，不能部分购级':q.canPay===undefined?'本预算尚无可支付响应':'';
+  }
+  return q;
+}
+function equipmentQuoteBase() {
+  if(state.slot>=5){const current=state.attributes[state.slot],candidate=state.candidate||state.equipment==='compare',weapon=EquipmentWorkbench.isWeapon(state.slot),key=candidateType();
+    if(candidate)return {label:'更换为'+equipmentNames[key],current,next:state.levels[state.slot]===1?(key==='shield'?'37.5':'50'):'待取得新报价',price:'0 · 更换不购级',action:'equip-apply'};
+    const known=state.levels[state.slot]===1&&state.equipmentMode==='one';return {label:'购买1级',current,next:known?(state.fitKeys[state.slot]?(state.fitKeys[state.slot]==='shield'?'48.75':'65'):'0'):'待取得新报价',price:known?'65 铁':'待报价',action:'equip-buy'};
+  }
+  const defence=!EquipmentWorkbench.isWeapon(state.slot), current=state.attributes[state.slot],response=equipmentResponses[current];
   const candidate=state.candidate||state.equipment==='compare';
-  if(candidate) return {label:'更换为'+equipmentNames[candidateType()], current, next:defence?(candidateType()==='armour'?'92.0 K':'84.0 K'):(candidateType()==='cannon'?'15.8 K':'12.4 K'), price:'1.8 M 铁 + 材料20', action:'equip-apply'};
+  if(candidate) return {label:'更换为'+equipmentNames[candidateType()], current, next:defence?(candidateType()==='armour'?'92.0 K':'84.0 K'):(candidateType()==='cannon'?'15.8 K':'12.4 K'), price:'0 · 更换不购级', action:'equip-apply'};
   if(state.equipmentMode==='ten') return {label:'购买10级',current,next:response?.ten||'待取得新报价',price:response?.ten?'5.80 M 铁':'待报价',action:'equip-buy'};
   if(state.equipmentMode==='max') return {label:'本槽MAX · 4级',current,next:response?.max||'待取得新报价',price:'2.10 M 铁',action:'equip-buy'};
   return {label:'购买1级',current,next:response?.one||'待取得新报价',price:'0.42 M 铁',action:'equip-buy'};
 }
-function equipment() {
-  const q=equipmentQuote();
-  const mounts=SceneModels.previewMounts;
-  const point=(i)=>{const p=mounts[i];return {x:50+(p[0]-384)/768*100,y:50+(p[1]-384)/768*100};};
-  return moduleHead('巡洋舰 · 装配台','3个武器槽 / 2个防御槽',`<span class="pill">${state.fits[state.slot]} · Lv.${state.levels[state.slot]}</span>`)+
-    `<div class="outfit-room"><div class="outfit-rig"><div class="rig-floor"></div><div class="rig-ship"><img src="${asset}ui/ships/fleet_20261019/03-cruiser.png" alt="巡洋舰完整静态预览">${mounts.map((p,i)=>{const a=point(i);return `<button class="mount-dot ${state.slot===i?'selected':''}" data-slot="${i}" style="left:${a.x}%;top:${a.y}%" aria-label="选择武器槽${i+1}">${i+1}</button>`;}).join('')}</div><div class="rig-weapon-labels">${[0,1,2].map(i=>`<button data-slot="${i}" class="rig-slot ${state.slot===i?'selected':''}"><small>武器 ${i+1}</small><b>${state.fits[i]}</b><span>Lv.${state.levels[i]}</span></button>`).join('')}</div><div class="rig-defence-labels">${[3,4].map(i=>`<button data-slot="${i}" class="rig-slot ${state.slot===i?'selected':''}"><small>${i===3?'首防御 · 必装':'防御 2'}</small><b>${state.fits[i]}</b><span>Lv.${state.levels[i]}</span></button>`).join('')}</div></div><div class="outfit-console"><span class="eyebrow">${state.slot<3?'WEAPON '+(state.slot+1):'DEFENCE '+(state.slot-2)}</span><h2>${state.fits[state.slot]}</h2><div class="equipment-object-icon"><img src="${asset}ui/equipment/${slotIcon()}" alt=""></div><div class="compare-cols"><div><small>当前${state.slot<3?'普通攻击基值':'容量'}</small><b>${q.current}</b></div><div><small>${q.label}</small><b>${q.next}</b></div></div><div class="comparison-cadence">${comparisonCycle()}</div><div class="compare-price">本次费用<b>${q.price}</b></div><div class="purchase-modes">${control('equip-one','+1',state.equipmentMode==='one'&&!state.candidate?'active':'')}${control('equip-ten','+10',state.equipmentMode==='ten'&&!state.candidate?'active':'')}${control('equip-max-mode','MAX',state.equipmentMode==='max'&&!state.candidate?'active':'')}</div><p class="sub">${state.slot===3?'首防御槽不可卸空，可换合法防御类型。':state.candidate?'候选未生效；确认后再更新当前装配。':'槽位等级在更换装备后保留。'}</p></div></div>`+
-    (currentCooldown()?`<div class="note warn">武器/防御槽${state.slot<3?state.slot+1:state.slot-2}换装冷却剩余${currentCooldown()}游戏秒，其他槽位分别判断。</div>`:'')+
-    (state.equipment==='poor'?`<div class="note bad">铁不足，本次需要${q.price}。所选槽位保持。</div>`:'')+
-    `<div class="secondary-actions">${control('hull','比较五舰')}${control('equip-all','全部槽位批量预览')}${control('attributes','属性与贡献明细','quiet')}</div>`;
-}
+function equipment() {return EquipmentWorkbench.render(state,control,asset,moduleHead);}
 
 function facilityStatus(p,f){if(f.state==='building'){if(!p.running)return '缺少进行中的探索';if(f.extraCrew&&crewCount('planet-build',p.id,f.id)<f.extraCrew)return '缺少额外施工人员';return '施工中';}return {locked:'未达探索门槛',ready:'待领取',owned:'已领取 · 收益生效'}[f.state];}
 function planet() {
@@ -286,9 +289,10 @@ function catalog() {
 }
 function dock() {
   if(state.collapsed) return '';
+  if(state.module==='equipment'&&state.route!=='equipment')return '';
   if(state.module==='equipment') {
-    const q=equipmentQuote(), disabled=q.next==='待取得新报价'||state.equipment==='poor'||(q.action==='equip-apply'&&currentCooldown()>0);
-    return `<div class="dock-summary"><b>${state.slot<3?'武器槽'+(state.slot+1):'防御槽'+(state.slot-2)} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}</b><span>${q.label} · ${q.current} → <strong>${q.next}</strong> · ${comparisonCycle()}</span><span>本次费用 <strong>${q.price}</strong></span></div><div class="dock-buttons">${control(q.action,currentCooldown()>0&&q.action==='equip-apply'?'冷却剩余'+currentCooldown()+'游戏秒':q.label,'primary',disabled)}${control('equip-compare',state.candidate?'查看购级':'更换候选')}</div>`;
+    const q=equipmentQuote(), disabled=q.next==='待取得新报价'||q.canPay===false||q.canPay===undefined&&!!q.reason||(state.equipment==='poor'&&q.action==='equip-buy')||(q.action==='equip-apply'&&currentCooldown()>0);
+    return `<div class="dock-summary"><b>${EquipmentWorkbench.slot(state.slot).label} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}</b><span>${q.label} · ${q.current} → <strong>${q.next}</strong> · ${comparisonCycle()}</span><span>本次费用 <strong>${q.price}</strong></span></div><div class="dock-buttons">${control(q.action,currentCooldown()>0&&q.action==='equip-apply'?'冷却剩余'+currentCooldown()+'游戏秒':q.label,'primary',disabled)}${control('equip-compare',state.candidate?'查看购级':'更换候选')}</div>`;
   }
   if(state.module==='reactor') {
     const before=effectSnapshots[state.actual.join()],after=effectSnapshots[state.alloc.join()];
@@ -380,6 +384,7 @@ function syncDemoCrewTargets() {
 }
 function validAmountDraft(text) {return /^\d+$/.test(text.trim());}
 function action(a) {
+  if(state.module==='equipment'&&EquipmentWorkbench.handle(a,state,{go:goRoute,notify})){render();return;}
   if(state.module==='hyperspace'&&HyperspaceTasks.handle(a,state,drones,control,notify,goRoute)){render();return;}
   if(state.module==='hyperspace'&&ForgeWorkbench.handle(a,state,drones,control,notify,goRoute)){render();return;}
   if(state.module==='hyperspace'&&FilterWorkbench.handle(a,state,control,notify,goRoute)){render();return;}
@@ -399,8 +404,8 @@ function action(a) {
   else if(a==='reactor-clear') {state.alloc=[0,0,0,0];state.reactorError='';state.reactorReceipt='';state.reactorIntent='clear';notify('清零草稿已准备，免费供能保留');}
   else if(a==='equip-compare') {state.candidate=!state.candidate;state.equipmentMode='one';if(state.equipment==='compare')state.equipment='normal';}
   else if(a==='equip-mode') {state.candidate=false;state.equipmentMode=state.equipmentMode==='max'?'one':'max';}
-  else if(a==='equip-apply') {state.attributes[state.slot]=equipmentQuote().next;state.fitKeys[state.slot]=candidateType();state.fits[state.slot]=equipmentNames[state.fitKeys[state.slot]];state.cooldowns[state.slot]=10;state.equipment='normal';state.candidate=false;notify('更换成功，当前槽位与比较保留；换装冷却10游戏秒');}
-  else if(a==='equip-buy') {const quote=equipmentQuote();if(quote.next==='待取得新报价'||quote.next===quote.current){notify('当前状态尚无新报价，等级与属性保持');return;}state.attributes[state.slot]=quote.next;state.levels[state.slot]+=state.equipmentMode==='max'?4:state.equipmentMode==='ten'?10:1;notify('已购级，当前槽位和操作模式保持');}
+  else if(a==='equip-apply') {state.attributes[state.slot]=equipmentQuote().next;state.fitKeys[state.slot]=candidateType();state.fits[state.slot]=equipmentNames[state.fitKeys[state.slot]];state.cooldowns[state.slot]=10;state.equipment='normal';state.candidate=false;window.BattleDesign?.set({equipmentLinked:true});notify('更换成功，当前槽位与比较保留；换装冷却10游戏秒');}
+  else if(a==='equip-buy') {const quote=equipmentQuote();if(quote.next==='待取得新报价'||quote.next===quote.current&&state.fitKeys[state.slot]){notify('当前状态尚无新报价，等级与属性保持');return;}state.attributes[state.slot]=quote.next;state.levels[state.slot]+=state.equipmentMode==='max'?4:state.equipmentMode==='ten'?10:1;window.BattleDesign?.set({equipmentLinked:true});notify('已购级，当前槽位和操作模式保持');}
   else if(a==='planet-claim') {const f=selectedFacility();if(f.state==='ready'){f.state='owned';state.planet='owned';notify(selectedPlanet().name+' / '+f.name+'已领取，收益生效');}}
   else if(a==='planet-crew'||a==='planet-explorer') {const p=selectedPlanet(),f=selectedFacility(),job=a==='planet-explorer'||!f.extraCrew?'planet-explore':'planet-build';const actual=Object.entries(state.crewMembers).find(([id,m])=>m.available&&m.job===job&&m.targetPlanet===p.id&&(job!=='planet-build'||m.targetFacility===f.id));if(actual){selectCrew(actual[0]);}else{const idle=Object.entries(state.crewMembers).find(([id,m])=>m.available&&m.job==='idle');if(idle)selectCrew(idle[0]);state.crewDraft=job;state.crewPlanet=p.id;state.crewFacility=f.id;notify('当前目标暂无人员；已定位空闲成员候选，尚未派遣');}goRoute('crew');return;}
   else if(a==='planet-auto') {const p=selectedPlanet();p.automatic=!p.automatic;notify(p.automatic?'自动探索已开启':'本次探索仍继续，完成后停止');}
@@ -473,7 +478,7 @@ function action(a) {
   else if(a==='expand') {state.collapsed=false;}
   else if(a==='close-detail') {$('#inspect-detail')?.close();return;}
   else {
-    const details={hull:['舰体选择','当前巡洋舰。候选舰体的槽位、开放条件和影响在确认前比较。'],attributes:['属性明细','当前基础值、最终效果、盾甲容量与临时状态分别查看。'], 'equip-all':['全部槽位批量预览','本次范围：3武器槽与2防御槽。逐槽成交、数量和费用需在本预览内确认，当前未提交。'], 'reactor-buy':['核心购级报价','核心 Lv.1 → Lv.2，本次费用10铀。新容量与分配结果由反应炉公开报价/实际模型提供，不由前端增长公式计算。'], 'galaxy-effects':['外环平台效果','当前Lv.2效果与目标Lv.3完成后的效果分别显示；升级完成自动接纳。'], 'galaxy-pan':['地图视角','当前区域一、外环平台仍选中；返回后视角保持。'], 'planet-detail':['轨道船坞','当前设施门槛、施工次数、实际人员与待领取状态。'], 'planet-other':['星球选择','当前起源星。切球只改变所看对象，不取消其探索或施工。']};
+    const details={'reactor-buy':['核心购级报价','核心 Lv.1 → Lv.2，本次费用10铀。新容量与分配结果由反应炉公开报价/实际模型提供，不由前端增长公式计算。'], 'galaxy-effects':['外环平台效果','当前Lv.2效果与目标Lv.3完成后的效果分别显示；升级完成自动接纳。'], 'galaxy-pan':['地图视角','当前区域一、外环平台仍选中；返回后视角保持。'], 'planet-detail':['轨道船坞','当前设施门槛、施工次数、实际人员与待领取状态。'], 'planet-other':['星球选择','当前起源星。切球只改变所看对象，不取消其探索或施工。']};
     const [title,text]=details[a]||['当前对象详情','已进入所选对象的详情，返回后对象与草稿保持。'];openDetail(title,text);return;
   }
   render();
@@ -524,6 +529,8 @@ document.addEventListener('change',event=>{
   if(id==='new-clear-settings'){state.maintenance.clearSettings=event.target.checked;state.dangerPreview=null;render();}
   if(id.startsWith('pref-')){const m=state.maintenance;if(id==='pref-music')m.music=event.target.checked;if(id==='pref-effects')m.effects=event.target.checked;if(id==='pref-skip')m.skip=event.target.checked;if(id==='pref-damage')m.damage=value;if(id==='pref-interval'){if(/^\d+$/.test(value)&&Number(value)<=86400)m.interval=value;else m.feedback='自动保存间隔需为0–86400现实秒；原值保持。';}render();}
   if(id==='research-auto-toggle')state.researchAutoDraft=event.target.checked;
+  if(id==='m2-batch-case'){const d=EquipmentWorkbench.ensure(state);d.batchContext=value;d.receipt=null;d.feedback='';if(['limited','failure'].includes(value)){HyperWorkshop.ensure(state,drones);state.workshop.materials.degenerate_matter='10';d.wallet=structuredClone(EquipmentResponseModels.wallet);d.mode=value==='failure'?'ten':'one';document.querySelector('#iron').textContent=d.wallet.iron;}render();}
+  if(id==='m2-ships-case'){EquipmentWorkbench.ensure(state).unlocked=value==='all';render();}
   if(id==='planet-select'){state.planetId=value;state.planet=selectedFacility().state;notify('已切换所看星球，各星球任务保持');render();}
   if(id==='crew-target') {state.crewDraft=value;state.crewError='';render();}
   if(id==='crew-planet'){state.crewPlanet=value;state.crewFacility=state.planets.find(p=>p.id===value).facilitySelection;render();}
