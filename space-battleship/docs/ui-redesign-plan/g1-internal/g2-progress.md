@@ -61,3 +61,7 @@ G1组织审已通过，两方向都进入G2；没有选定UI，不是完整候�
 ## P3 全模块装配与连续工作点
 
 源码`7c0eadd0662e066ac994a1d19723393ae38fd646`：补船员/星球/星系/强化/保存危险事务/档案及所有已有根模块、超空间子路由的统一P3装配，修强化模态越舱与底层快捷键、B星球下缘裁切、备份来源渲染滞后。见[实物/连续过程/Godot增补/未完成](g2-fullsystem-p3-assembly.md)和[同版整屏manifest](evidence/g2-fullsystem-p3/manifest.json)。装备真正跨舰/全槽批量仍简略详情；整套品质、真实参数、G9、运行接线均未通过，不以全模块有图宣称全系统完成。
+
+## M2跨舰、全槽与属性工作点
+
+源码`915976b20b57c5ab77af6b15fa25fcff777240a4`：[三工作点/连续响应/接口与Godot还原/未完成](g2-equipment-restoration.md)、[58张同版A/B整屏](evidence/g2-equipment-complete/README.md)。原三简略弹窗已替换；批量保留原动作和实际回执，不编造整组预报价。仍为有限浏览器响应，无真实GameSession、任意组合或G2/G4/G9通过。
