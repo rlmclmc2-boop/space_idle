@@ -93,6 +93,7 @@ class SpaceCombatKernel : public RefCounted {
                secondary_probability = 0;
         int chain_count = 0;
         Vector2 muzzle, screen_muzzle;
+        PackedVector2Array muzzle_ports, screen_muzzle_ports;
         Dictionary entry;
         std::vector<Amount> branch_factors, external_factors;
         int64_t beam = -1, focus_uid = -1;
@@ -164,6 +165,8 @@ class SpaceCombatKernel : public RefCounted {
         bool await_target = false;
         bool fixed_ray = false;
         Vector2 ray_origin, ray_step, launch_point;
+        Vector2 launch_screen_point;
+        int port_index = 0, launch_ordinal = 0;
         uint64_t contact_revision = 0;
         double contact_distance = -1;
         Ref<SpaceMotionLease> lease;
@@ -686,7 +689,11 @@ class SpaceCombatKernel : public RefCounted {
         m.generation = lease->generation;
         m.kind = chain ? 2 : w.kind == 2 ? 1 : 0;
         f.lease = lease;
-        Vector2 from = chain ? origin : w.muzzle;
+        const int ordinal = launch_ordinal >= 0 ? launch_ordinal : int(f.serial % 2);
+        f.launch_ordinal = ordinal;
+        f.port_index = chain ? -1 : (w.muzzle_ports.is_empty() ? 0 : ordinal % w.muzzle_ports.size());
+        Vector2 from = chain ? origin : muzzle_port(w, false, f.port_index);
+        f.launch_screen_point = chain ? origin : muzzle_port(w, true, f.port_index);
         Actor *t = resolve(target);
         f.target_lost = !w.hostile && !t;
         Vector2 aim = w.hostile ? player_point
@@ -699,7 +706,6 @@ class SpaceCombatKernel : public RefCounted {
         f.aim = aim;
         if (m.kind == 1) {
             m.speed = launch_speed;
-            int ordinal = launch_ordinal >= 0 ? launch_ordinal : int(f.serial % 2);
             double departure = (ordinal % 2 ? 1 : -1) * missile_departure_angle * 3.14159265358979323846 / 180.0;
             Vector2 trial = axis(angle(m.direction) + departure);
             if ((!w.hostile && trial.y >= missile_launch_forward_y) || (w.hostile && trial.y <= -missile_launch_forward_y) ||
@@ -710,8 +716,8 @@ class SpaceCombatKernel : public RefCounted {
         }
         f.launch_point = from;
         if (!w.hostile && m.kind == 0 && t && t->collision_hull.size() >= 3) {
-            f.fixed_ray = true; f.ray_origin = w.screen_muzzle;
-            f.ray_step = (t->screen_point - w.screen_muzzle) / maximum(0.001, distance(from, aim));
+            f.fixed_ray = true; f.ray_origin = f.launch_screen_point;
+            f.ray_step = (t->screen_point - f.launch_screen_point) / maximum(0.001, distance(from, aim));
             if (!f.beam && t->stationary_geometry) refresh_ray_contact(f, *t);
         }
         if (f.beam) {
@@ -1494,7 +1500,7 @@ class SpaceCombatKernel : public RefCounted {
                 weapons[wi].beam = id;
         } else if (w.kind == 1 && !w.hostile) {
             if (a->higgs && !repeated) {
-                Vector2 origin = w.muzzle, direction = unit(f.aim - origin);
+                Vector2 origin = f.launch_point, direction = unit(f.aim - origin);
                 double reach = std::numeric_limits<double>::infinity();
                 if (direction.x > 1e-9) reach = minimum(reach, (battle_width - double(origin.x)) / direction.x);
                 else if (direction.x < -1e-9) reach = minimum(reach, -double(origin.x) / direction.x);
@@ -1651,7 +1657,8 @@ class SpaceCombatKernel : public RefCounted {
                 if (!retain_endless_target(f, clock - dt, true)) { retire(id); continue; }
                 if (f.await_target) continue;
             }
-            Vector2 muzzle = weapons[f.weapon].muzzle;
+            Vector2 muzzle = muzzle_port(weapons[f.weapon], false, f.port_index);
+            f.launch_screen_point = muzzle_port(weapons[f.weapon], true, f.port_index);
             Motion &motion = f.lease->motion();
             motion.x = muzzle.x;
             motion.y = muzzle.y;
@@ -1968,7 +1975,8 @@ class SpaceCombatKernel : public RefCounted {
             a.generation = encounter_generation;
             a.uid = v["uid"];
             // Only current geometry and HUD consumers receive a persistent row.
-            for (const char *key : {"uid", "slot", "x", "y", "size", "wave_final", "formation_count", "hull_scale", "hp", "dead"})
+            for (const char *key : {"uid", "slot", "x", "y", "size", "wave_final", "formation_count", "hull_scale", "hp", "dead",
+                                    "visual_key", "archetype_id", "combat_tier", "encounter_leader", "armourType", "shieldType", "intelName", "des", "intelMechanics"})
                 if (v.has(key)) a.view[key] = v[key];
             a.hp = read_amount(v["hp"]);
             a.live = a.hp > 0;
@@ -2591,6 +2599,7 @@ class SpaceCombatKernel : public RefCounted {
                 replacement.critical_stacks = weapons[match].critical_stacks; replacement.critical_until = weapons[match].critical_until; replacement.critical_attacks = weapons[match].critical_attacks;
                 replacement.beam = weapons[match].beam;
                 replacement.muzzle = weapons[match].muzzle; replacement.screen_muzzle = weapons[match].screen_muzzle;
+                replacement.muzzle_ports = weapons[match].muzzle_ports; replacement.screen_muzzle_ports = weapons[match].screen_muzzle_ports;
                 weapons[match] = replacement; // Existing roots keep their due time; Attacks keep immutable birth snapshots.
             } else {
                 int index = 0;
@@ -2642,16 +2651,28 @@ class SpaceCombatKernel : public RefCounted {
     }
     // Atomic, O(weapon slots), reusable across arbitrary art/configuration edits.
     // Empty rows select the existing numerical display fallback.
+    static Vector2 muzzle_port(const Weapon &w, bool screen, int index) {
+        const PackedVector2Array &ports = screen ? w.screen_muzzle_ports : w.muzzle_ports;
+        if (ports.is_empty()) return screen ? w.screen_muzzle : w.muzzle;
+        return ports[maximum(0, index) % ports.size()];
+    }
     void apply_muzzles(Dictionary rows, bool screen) {
         for (Weapon &w : weapons) {
             if (w.vacant || (!w.hostile && !w.configured)) continue;
             String key = w.hostile && w.source.index < actors.size()
                 ? String("enemy:") + String::num_int64(actors[w.source.index].uid) + ":" + String::num_int64(w.slot)
                 : String(w.entry.get("id", ""));
-            if (!rows.has(key) || Variant(rows[key]).get_type() != Variant::VECTOR2) continue;
-            Vector2 point = rows[key];
-            if (!point.is_finite()) continue;
-            if (screen) w.screen_muzzle = point; else w.muzzle = point;
+            if (!rows.has(key)) continue;
+            PackedVector2Array ports;
+            if (Variant(rows[key]).get_type() == Variant::VECTOR2) ports.push_back(Vector2(rows[key]));
+            else if (Variant(rows[key]).get_type() == Variant::PACKED_VECTOR2_ARRAY) ports = rows[key];
+            else continue;
+            if (ports.is_empty()) continue;
+            bool valid = true;
+            for (int i = 0; i < ports.size(); ++i) if (!ports[i].is_finite()) { valid = false; break; }
+            if (!valid) continue;
+            if (screen) { w.screen_muzzle_ports = ports; w.screen_muzzle = ports[0]; }
+            else { w.muzzle_ports = ports; w.muzzle = ports[0]; }
         }
     }
     void input_ballistic_geometry(Array hulls, PackedVector2Array points, Dictionary muzzles, PackedByteArray stationary = PackedByteArray()) {
@@ -2819,6 +2840,7 @@ class SpaceCombatKernel : public RefCounted {
             const Actor &a = actors[i]; Dictionary row;
             row["index"] = int64_t(i); row["uid"] = a.uid; row["generation"] = int64_t(a.generation);
             row["slot"] = a.slot; row["live"] = a.live;
+            row["visual_key"] = a.view.get("visual_key", "");
             row["point"] = a.point; row["screen_point"] = a.screen_point; row["logical"] = a.logical;
             row["collision_hull"] = a.collision_hull.duplicate();
             row["geometry_revision"] = int64_t(a.geometry_revision); row["stationary"] = a.stationary_geometry;
@@ -2830,6 +2852,10 @@ class SpaceCombatKernel : public RefCounted {
             String id = w.hostile ? String("enemy:") + String::num_int64(uid) + ":" + String::num_int64(w.slot)
                 : String(w.entry.get("id", ""));
             Dictionary row; row["numeric"] = w.muzzle; row["screen"] = w.screen_muzzle;
+            PackedVector2Array numeric = w.muzzle_ports, screen = w.screen_muzzle_ports;
+            if (numeric.is_empty()) numeric.push_back(w.muzzle);
+            if (screen.is_empty()) screen.push_back(w.screen_muzzle);
+            row["numeric_ports"] = numeric.duplicate(); row["screen_ports"] = screen.duplicate();
             row["hostile"] = w.hostile; row["slot"] = w.slot; row["source_uid"] = uid;
             row["enabled"] = w.enabled; row["configured"] = w.configured;
             muzzle_rows[id] = row;
@@ -2846,6 +2872,8 @@ class SpaceCombatKernel : public RefCounted {
             row["kind"] = view.kind; row["hostile"] = view.hostile; row["beam"] = view.beam;
             row["launch_point"] = view.launch; row["ray_origin"] = view.ray_origin; row["ray_step"] = view.ray_step;
             row["fixed"] = view.fixed; row["age"] = view.age;
+            row["port_index"] = f.port_index; row["launch_ordinal"] = f.launch_ordinal;
+            row["launch_screen_point"] = f.launch_screen_point;
             row["position"] = position(f.lease->motion());
             row["direction"] = f.lease->motion().direction; row["speed"] = f.lease->motion().speed;
             flight_rows.append(row);

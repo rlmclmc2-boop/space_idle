@@ -11,6 +11,11 @@ var _tutorial := VBoxContainer.new()
 var _intel := VBoxContainer.new()
 var _damage := VBoxContainer.new()
 var _elapsed: float = 0.0
+var _tutorial_lines: Dictionary = {}
+var _intel_rows: Dictionary = {}
+var _damage_rows: Dictionary = {}
+var _empty_intel: Label
+var _empty_damage: Label
 
 func _init(session) -> void:
 	_session = session
@@ -22,6 +27,15 @@ func _ready() -> void:
 	add_child(_intel)
 	add_child(_heading("伤害明细"))
 	add_child(_damage)
+	for key in HELP:
+		var line := Label.new()
+		PlayerText.wrap(line)
+		_tutorial.add_child(line)
+		_tutorial_lines[key] = line
+	_empty_intel = _heading("当前没有交战敌舰")
+	_intel.add_child(_empty_intel)
+	_empty_damage = _heading("尚未造成伤害")
+	_damage.add_child(_empty_damage)
 	_refresh()
 
 func _heading(text: String) -> Label:
@@ -30,44 +44,60 @@ func _heading(text: String) -> Label:
 	label.add_theme_font_size_override("font_size", 20)
 	return label
 
-func _clear(box: Control) -> void:
-	for child in box.get_children(): box.remove_child(child); child.queue_free()
+func _set_text(label: Label, text: String) -> void:
+	if label.text != text: label.text = text
 
 func _refresh() -> void:
-	_clear(_tutorial)
 	for key in HELP:
-		var line := Label.new()
-		line.text = "%s · %s\n%s" % [HELP[key][0], "已实践" if _session.tutorial.completed(key) else "操作指引", HELP[key][1]]
-		PlayerText.wrap(line)
-		_tutorial.add_child(line)
-	_clear(_intel)
+		_set_text(_tutorial_lines[key], "%s · %s\n%s" % [HELP[key][0], "已实践" if _session.tutorial.completed(key) else "操作指引", HELP[key][1]])
 	var enemies: Array = _session.battle.enemy_intelligence()
-	if enemies.is_empty(): _intel.add_child(_heading("当前没有交战敌舰"))
-	for enemy in enemies:
-		var row := HBoxContainer.new()
-		_intel.add_child(row)
-		var preview := TextureRect.new()
-		preview.texture = enemy.texture
-		preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		preview.custom_minimum_size = Vector2(64, 80)
-		row.add_child(preview)
-		var label := Label.new()
+	_empty_intel.visible = enemies.is_empty()
+	var active: Dictionary = {}
+	for index in enemies.size():
+		var enemy: Dictionary = enemies[index]
+		var id: int = int(enemy.uid)
+		active[id] = true
+		if not _intel_rows.has(id):
+			var row := HBoxContainer.new()
+			_intel.add_child(row)
+			var preview := TextureRect.new()
+			preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			preview.custom_minimum_size = Vector2(64, 80)
+			row.add_child(preview)
+			var label := Label.new()
+			PlayerText.wrap(label)
+			row.add_child(label)
+			_intel_rows[id] = {"row": row, "preview": preview, "label": label}
+		var view: Dictionary = _intel_rows[id]
+		if view.row.get_index() != index + 1: _intel.move_child(view.row, index + 1)
+		if view.preview.texture != enemy.texture: view.preview.texture = enemy.texture
 		var types := {0: "无", 1: "能量", 2: "物理"}
-		label.text = "%s · %s\n装甲 %s（%s） · 护盾 %s（%s）\n%s" % [enemy.name,
+		_set_text(view.label, "%s · %s\n装甲 %s（%s） · 护盾 %s（%s）\n%s" % [enemy.name,
 			{"normal": "普通", "elite": "精英", "boss": "首领", "ultimate": "终极"}.get(enemy.tier, "敌舰"),
-			PlayerText.number(str(enemy.armour)), types.get(enemy.armour_type, "特殊"), PlayerText.number(str(enemy.shield)), types.get(enemy.shield_type, "特殊"), enemy.mechanics]
-		PlayerText.wrap(label)
-		row.add_child(label)
-
-	_clear(_damage)
+			PlayerText.number(str(enemy.armour)), types.get(enemy.armour_type, "特殊"), PlayerText.number(str(enemy.shield)), types.get(enemy.shield_type, "特殊"), enemy.mechanics])
+	for id in _intel_rows.keys():
+		if active.has(id): continue
+		var row: Control = _intel_rows[id].row
+		_intel.remove_child(row)
+		row.queue_free()
+		_intel_rows.erase(id)
 	var damage_rows: Array = _session.battle.statistics().display_rows()
-	if damage_rows.is_empty(): _damage.add_child(_heading("尚未造成伤害"))
-	for source in damage_rows:
-		var line := Label.new()
-		line.text = "%s · 总伤害 %s\n护盾 %s · 装甲 %s" % [source.name, source.total, source.shield, source.armour]
-		PlayerText.wrap(line)
-		_damage.add_child(line)
+	_empty_damage.visible = damage_rows.is_empty()
+	for index in damage_rows.size():
+		if not _damage_rows.has(index):
+			var line := Label.new()
+			PlayerText.wrap(line)
+			_damage.add_child(line)
+			_damage_rows[index] = line
+		var source: Dictionary = damage_rows[index]
+		_set_text(_damage_rows[index], "%s · 总伤害 %s\n护盾 %s · 装甲 %s" % [source.name, source.total, source.shield, source.armour])
+	for index in _damage_rows.keys():
+		if index < damage_rows.size(): continue
+		var line: Label = _damage_rows[index]
+		_damage.remove_child(line)
+		line.queue_free()
+		_damage_rows.erase(index)
 
 func _process(dt: float) -> void:
 	if not is_visible_in_tree(): return

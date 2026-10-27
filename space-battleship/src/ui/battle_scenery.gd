@@ -3,6 +3,10 @@ extends Node2D
 var _session
 var _material := ShaderMaterial.new()
 var _last_stage: int = -1
+var _last_progress: float = -1.0
+var _last_game_time: float = -1.0
+var _last_streak: float = -1.0
+var _last_hyperspace: float = -1.0
 var _stars := MeshInstance2D.new()
 var _surface := Polygon2D.new()
 
@@ -53,8 +57,20 @@ func _process(_dt: float) -> void:
 			_material.set_shader_parameter("opening_texture", texture)
 			var height: float = float(texture.get_height())
 			_material.set_shader_parameter("opening_sample", Vector3(2.0 / height, 960.0 / height, maxf(0.0, height - 964.0) / height))
-	_material.set_shader_parameter("opening_progress", facts.progress)
-	_material.set_shader_parameter("flight_time", _session.game_time)
-	_material.set_shader_parameter("travel", float(facts.progress) * 4000.0)
-	_material.set_shader_parameter("streak", 0.7 if facts.state in ["travel", "departing"] else 0.0)
-	_material.set_shader_parameter("hyperspace", 1.0 if facts.state == "hyperspace" else 0.0)
+	var progress: float = float(facts.progress)
+	if progress != _last_progress:
+		_last_progress = progress
+		_material.set_shader_parameter("opening_progress", progress)
+		_material.set_shader_parameter("travel", progress * 4000.0)
+	var game_time: float = float(_session.game_time)
+	if game_time != _last_game_time:
+		_last_game_time = game_time
+		_material.set_shader_parameter("flight_time", game_time)
+	var streak: float = 0.7 if facts.state in ["travel", "departing"] else 0.0
+	if streak != _last_streak:
+		_last_streak = streak
+		_material.set_shader_parameter("streak", streak)
+	var hyperspace: float = 1.0 if facts.state == "hyperspace" else 0.0
+	if hyperspace != _last_hyperspace:
+		_last_hyperspace = hyperspace
+		_material.set_shader_parameter("hyperspace", hyperspace)

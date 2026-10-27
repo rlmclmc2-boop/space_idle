@@ -2,7 +2,43 @@
 
 [Design entry](README.md) defines gameplay rules; [verification](07-verification.md) defines the acceptance matrix. This page records actual coverage. `bin/`, generated JSON, Godot import metadata, screenshots and local saves are test outputs.
 
-## 当前最终验收结论（7e2c7d2a双审通过）
+## 当前资产恢复候选（2026-10-27）
+
+基线 `4128ae4958050ea9b400700b0f72e4b96f4cd323`，分支 `rewrite/stage6-finalization`。本轮是用户指出敌我模型不对后的资产恢复与刷新修复候选，待父线程安排双审，暂不合 main。下面的历史最终验收不覆盖本候选，也不代表本轮整体游戏品质完成。
+
+### 资产依据及显示约定
+
+- 五种玩家静态船体来自 `9d485149` 的 `assets/ships/fleet_20261019/player/`；八种敌方原型来自 `c45f46c4` 的 `assets/ships/enemy/fleet_20261019/`；精英/BOSS 与旋转炮台来自 `24f0751d` 的 `assets/ships/enemy/elite_boss_20261020/` 和 `assets/weapons/integrated_ranked_20261020/`。原始图、提取报告、哈希仍保存在 `art_sources/fleet-20261019/` 与 `art_sources/enemy-fleet-20261019/`。
+- 炮台像素/锚点/每个发射口来自 `97990c6e` 的 `assets/weapons/fleet_20261019/manifest.json`，最终炮台缩放来自 `2943101f`。玩家船首向上，全局1.7倍与各船型尺寸由 `config_excel/battle_geometry.xlsx` 提供；不再引用旧几何图。敌舰源图向上，在战场旋转180度，保持等比，普通型适配90.4×79.333盒，分级型按各条目 `display_size`。
+- 一个 `visual_key` 同时驱动显示、碰撞、挂载和情报缩略图。已标注原型按原型/装甲类型匹配；精英采用精英变体，boss/ultimate仅领舰采用BOSS变体。无原型旧行使用本轮授权的兼容映射：装甲类型2时尺寸1为scout、其余为sentry；其他类型尺寸1/2/3/4/5/6为swarm/interceptor/reactive/anchor/command/command，尺寸3且有盾改为shielded。此映射不是对旧数据历史原型的推断；不修改敌方数值或编组。
+- 静态炮台围绕批准锚点旋转，显示与 native 数值/屏幕发射坐标使用同一组端口。导弹两个真实出口均保留，按发射序号选择；未增加发射次数或改变伤害规则。当前首目标变化时才重新同步瞄准几何。
+
+### 删除与刷新范围
+
+[精确删除清单](12-asset-recovery-deletions.txt)与本轮278个跟踪路径删除完全一致，基线Git历史可恢复：旧20261018整舰图、旧通用/开场/toon敌舰、body_bakes、flat_parts、旧玩家及UI图、旧武器图、`dev/toon_ship`预览工程及不再使用的渲染器依赖闭包。现用舰队、共享特效/retained着色器、WeaponDrone预览、星系资源及原始美术依据保留。运行代码/场景/数据的 `res://` 引用扫描未发现指向删除项的残留。
+
+档案页按敌舰UID复用情报行，教程与伤害行更新文本而非定时销毁重建；只在UID离场时移除对应行。背景只在值改变时上传shader参数；游戏时钟推进仍会更新实际动画。战斗连续运动与retained GPU绘制仍需刷新，不以停止动画隐藏问题。视频约1:30的灰蓝闪动尚未定位，本轮不能宣称已消除所有可见闪动。
+
+### 本线程实际验证
+
+后台headless Godot `4.7.2.stable.official.ed1daf0bf`；使用现有 `space-idle-stage6-build/native-stable` DLL，全部7个C++/头文件与工作区逐字节相同，DLL SHA256为 `03a4e98920fd6bbfe80aa4e5b6d641022f6fdbca49e7058d06018778d3b16676`。本线程未重新编译DLL，未频繁置前窗口。
+
+| 检查 | 实际结果及边界 |
+|---|---|
+| 入口 `src/main.gd --check-only` | 退出0，预加载语法通过。 |
+| `_stage6_approved_player_asset_probe.gd` | 退出0；五船型/四炮台/三朝向共180姿态，像素哈希、可见船体挂载、比例与炮口投影通过，最大误差0.00006824像素。 |
+| `_stage6_enemy_asset_mapping_probe.gd` | 退出0；8原型×4阶级×2领舰标记共64例，显示/碰撞/情报同键、等比与朝向通过，并检查无原型兼容入口。 |
+| `_stage6_approved_weapon_birth_probe.gd` | 退出0；真实Session换装导弹，两个可见口均产生native数值/屏幕出生，端口数组一致。 |
+| `_stage6_geometry_contract_probe.gd` | 退出0；五船型共享几何、实际脉冲口、敌炮出生及可见船体接触通过，夹具接触时间2.970769秒。 |
+| `_stage6_hud_probe.gd` | 退出0；四余额、文字/防御条无重叠及查询纯度通过，玩家逻辑/显示高度同为133.041992。 |
+| `_stage6_archive_refresh_probe.gd` | 退出0；120次内容不变刷新零新增行、身份与高度稳定、native状态不变；HP变化复用原行、遭遇更换移除旧UID。不限帧/关闭vsync的headless夹具均值108.59微秒；多探针并行运行，此数不是可见窗口GPU性能。 |
+| `_stage6_cannon_oracle_probe.gd` / `_stage6_beam_oracle_probe.gd` | 均退出0；普通/敌方/Higgs/连锁炮，以及持续光束周期、断连重充和endless保留充能通过。旧夹具将scout原型改为不匹配的装甲类型，触发兼容回退告警；各数值断言通过。 |
+| Excel发布 | 同一正式编译器重新发布到临时目录，校验通过且产物与专项使用的 `generated/config.json` 逐字节相同。语义哈希 `6b18941c69d6e647ed85cdcbbcd0584b2914dcd14d020c38351eda34082fb27c`。工作簿实际值变化仅为玩家全局尺寸1.25→1.7，另更新说明。 |
+| 文件级检查 | 278项删除清单精确匹配；现用船体路径存在，炮台SHA256及导弹双端口通过；资产依据5个提交均在Git中；`git diff --check`通过。 |
+
+八个运行探针均报告Windows根证书库读取诊断，但检查标记与退出码均通过，未将该环境诊断当作游戏验收。尺寸配置已变化，旧存档可能因configHash不匹配被拒绝；本轮未迁移、重写或自动舍弃任何用户存档。最新候选的真实窗口连续游玩、约1:30闪动定位、实际音效和不限帧可见窗口/GPU性能仍待验证；这些headless专项不能替代它们。
+
+## 历史最终验收结论（7e2c7d2a双审通过）
 
 7e2c7d2a已通过父线程云端真实窗口验收及独立Astra高审核：顶部停止/保存失败提示、四种余额、防御与统计互不遮挡；实际`_process`与布局探针通过，未发现新阻断。此前审核阻断均已闭环，已确认范围准予正常合入main。此次仅同步验收记录，不新增功能或测试。
 

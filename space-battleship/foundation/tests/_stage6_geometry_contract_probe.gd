@@ -38,8 +38,10 @@ func _run() -> void:
 		if not _check(details.actors[index].collision_hull == battle._enemy_hulls[index], "visible enemy differs from native hull"): return
 	for id in battle._weapon_poses:
 		var pose: Dictionary = battle._weapon_poses[id]
-		var drawn_port: Vector2 = pose.pivot + Vector2(pose.local_port).rotated(pose.angle)
-		if not _check(drawn_port.distance_to(details.muzzles[id].numeric) < 0.0001 and drawn_port.distance_to(details.muzzles[id].screen) < 0.0001, "render/numeric/screen port " + id): return
+		if not _check(pose.ports.size() == details.muzzles[id].numeric_ports.size(), "all authored ports preserved " + id): return
+		for port in pose.ports.size():
+			var drawn_port: Vector2 = pose.pivot + Vector2(pose.local_ports[port]).rotated(pose.angle)
+			if not _check(drawn_port.distance_to(details.muzzles[id].numeric_ports[port]) < 0.0001 and drawn_port.distance_to(details.muzzles[id].screen_ports[port]) < 0.0001, "render/numeric/screen port " + id): return
 	var born: bool = false
 	for step in 2000:
 		if not _check(battle.advance(0.001).ok, "pulse advance"): return

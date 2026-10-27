@@ -1,27 +1,11 @@
-# 舰船素材
+# Current approved fleet assets
 
-本目录保存已接入运行时的舰船透明 PNG。统一画布为 887×1774，源图单舰俯视、舰首朝上；敌舰在战场中旋转 180°，朝向我方。敌舰 `size` 映射与缩放见 [视觉入口](../../docs/ARCHITECTURE.md)，素材槽位和生成约束见 [美术规范](../../docs/ART_GUIDELINES.md)。
+The runtime uses five static player hulls in `fleet_20261019/player/` (approved commit `9d485149`), eight archetype hulls in `enemy/fleet_20261019/` (`c45f46c4`), and elite/BOSS variants in `enemy/elite_boss_20261020/` (`24f0751d`). The source sheets, hashes and extraction reports remain in `art_sources/fleet-20261019/` and `art_sources/enemy-fleet-20261019/`.
 
-本批素材以旧图为参考，使用内置 `image_gen` 编辑为透明、无武器的纵向舰体，保留各舰配色、发动机和装甲特征。挂点与贴图归一化比例 `display_scale` 见 [视觉配置](../../data/ship_weapon_visuals.json)；可调的我方 5 型、敌方 6 档显示倍率见 [config.xlsx](../../config_excel/config.xlsx)。战场和换舰预览共用我方倍率；玩法 `size` 不变。
+Player bows face up. The approved global multiplier is1.7; per-ship factors remain in Excel. Source alpha and existing mount metadata define the shared rendered/collision geometry. Enemy source bows face up and rotate180° in battle, with uniform fitting to the approved ordinary90.4×79.333 box or each ranked entry's authored display_size.
 
-## 当前贴图
+Static weapon art and complete pivot/emission geometry come from `assets/weapons/fleet_20261019/manifest.json` (`97990c6e`, final scale `2943101f`). Ranked rotating housings use `assets/weapons/integrated_ranked_20261020/` and `data.enemy_rotating_art`. Missile art has two real ports; neither is dropped by the native adapter.
 
-以下 11 张 PNG 均为 887×1774、带透明通道，供历史战场使用；当前入口 `src/main.gd` 读取同源 alpha 轮廓绘制逻辑凸包。文件名中的 `slot` 仅是历史命名，不代表烘焙武器数；运行时选敌舰贴图依据 `size`。
+Enemy archetype/armour identity and encounter tier select one visual_key. Rendering, collision, mounts and intel thumbnails consume that same key. The newly authorized untyped compatibility mapping is recorded in the design/acceptance notes rather than presented as an older approval.
 
-| 阵营 | 运行时对应 | 贴图 |
-|---|---|---|
-| 我方 | `Frigate` | [player-scout-3slot.png](player/player-scout-3slot.png) |
-| 我方 | `Destroyer` | [player-interceptor-4slot.png](player/player-interceptor-4slot.png) |
-| 我方 | `Cruiser` | [player-cruiser-5slot.png](player/player-cruiser-5slot.png) |
-| 我方 | `Battleship` | [player-battleship-6slot.png](player/player-battleship-6slot.png) |
-| 我方 | `Heavy_Battleship` | [player-dreadnought-8slot.png](player/player-dreadnought-8slot.png) |
-| 敌方 | `size = 1` | [enemy-scout-1slot.png](enemy/enemy-scout-1slot.png) |
-| 敌方 | `size = 2` | [enemy-medium-1slot.png](enemy/enemy-medium-1slot.png) |
-| 敌方 | `size = 3` | [enemy-medium-2slot.png](enemy/enemy-medium-2slot.png) |
-| 敌方 | `size = 4` | [enemy-large-4slot.png](enemy/enemy-large-4slot.png) |
-| 敌方 | `size = 5` | [enemy-large-6slot.png](enemy/enemy-large-6slot.png) |
-| 敌方 | `size = 6` | [enemy-super-8slot.png](enemy/enemy-super-8slot.png) |
-
-## Approved fleet 13 (2026-10-18)
-
-The live first-generation player and opening enemy hull textures are in `approved_fleet_20261018/player/` and `approved_fleet_20261018/enemy/`. The authority is the approved fleet source commit `art/approved-fleet-reference-20261018@96332dd117c7661a6439fb546af35b5d8dd668fe` (`test/evidence/fleet-reference-20261018/`). Thirteen separately generated true-alpha source PNGs were transferred there as Base64; no sheet crop is used. `docs/tasks/fleet-13-20261018/normalize_fleet.gd` centers each source hull without changing aspect ratio on the existing 887x1774 canvas. The same sources make five square UI previews. That task records source/output bounds and the asset prompt. `data/ship_weapon_visuals.json` is the battle consumer; weapon slot and hardpoint identities remain intact.
+Superseded models and their retired renderer dependency closure are removed from this checkout after reference migration. They remain recoverable from Git at baseline `4128ae49`. The exact deletion list is `docs/game-design/12-asset-recovery-deletions.txt`. Shared effects, retained shaders, the WeaponDrone preview, galaxy assets and current source art are preserved.

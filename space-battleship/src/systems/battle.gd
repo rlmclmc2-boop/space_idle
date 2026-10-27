@@ -1,5 +1,7 @@
 extends RefCounted
 const PlayerText = preload("res://src/ui/player_text.gd")
+const ApprovedWeapon = preload("res://scripts/approved_weapon_art.gd")
+const EnemyIdentity = preload("res://scripts/enemy_visual_identity.gd")
 const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 const CombatSetup = preload("res://src/combat_setup.gd")
 const Statistics = preload("res://src/systems/battle_statistics.gd")
@@ -14,8 +16,12 @@ var _parameters: Dictionary
 var _rules: Dictionary
 var _configuration: Dictionary
 var _models: Dictionary = {}
+var _enemy_identity = EnemyIdentity.new()
+var _visual_catalog: Dictionary = {}
 var _weapon_art: Dictionary = {}
-var _weapon_art_meta: Dictionary = {}
+var _weapon_manifest: Dictionary = {}
+var _ranked_weapon_meta: Dictionary = {}
+var _aim_uid: int = -1
 var _weapon_poses: Dictionary = {}
 var _visual_weapons: Array = []
 var _enemy_visual_weapons: Array = []
@@ -56,44 +62,32 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 
 func _load_models(ship_keys: Array) -> Dictionary:
 	var art_data = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
-	for key in art_data.weapons:
-		var source: Texture2D = load(str(art_data.weapons[key].rotating_sprite))
-		var crop := AtlasTexture.new()
-		crop.atlas = source
-		crop.region = Rect2(source.get_image().get_used_rect())
-		_weapon_art[key] = crop
-		var port: Array = art_data.weapons[key].muzzle[0]
-		_weapon_art_meta[key] = {"source_size": source.get_size(), "crop": crop.region,
-			"port": Vector2(float(port[0]), float(port[1]))}
+	var approved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ApprovedWeapon.MANIFEST_PATH))
+	_weapon_manifest = approved.weapons
+	for key in _weapon_manifest: _weapon_art[key] = load(str(_weapon_manifest[key].texture))
+	_ranked_weapon_meta = art_data.enemy_rotating_art
+	_weapon_art["ranked"] = load(str(_ranked_weapon_meta.texture))
 	var model_keys: Array = ship_keys.duplicate()
-	model_keys.append_array(["enemy_1", "enemy_2", "enemy_3", "enemy_4", "enemy_5", "enemy_6"])
+	for archetype in EnemyIdentity.ARCHETYPES:
+		var base: String = str(EnemyIdentity.ARCHETYPES[archetype][0])
+		model_keys.append(base)
+		if archetype in EnemyIdentity.RANKED_ARCHETYPES:
+			model_keys.append(base + "_elite")
+			model_keys.append(base + "_boss")
+	_visual_catalog = {"ships": {}}
+
 	for key in model_keys:
 		var art: Dictionary = art_data.ships[key]
 		var texture := load(str(art.texture)) as Texture2D
 		var image: Image = texture.get_image() if texture != null else null
 		if image == null or image.is_empty():
 			return {"ok": false, "reason": "MissingHullAsset:" + str(key)}
-		var logical_path: String = str(art.get("geometry_texture", art.texture))
-		var logical_texture := load(logical_path) as Texture2D if logical_path != str(art.texture) else texture
-		var logical_image: Image = image if logical_path == str(art.texture) else logical_texture.get_image() if logical_texture != null else null
-		if logical_image == null or logical_image.is_empty():
-			return {"ok": false, "reason": "MissingGeometryAsset:" + str(key)}
 		var model := {"texture": texture, "hull": Geometry.normalized_hull(image), "size": Vector2(image.get_size()),
-			"geometry_height": float(logical_image.get_height())}
-		var slot_map: Array = art.slot_map.duplicate()
-		slot_map.make_read_only()
-		var hardpoints: Array = []
-		for source in art.hardpoints:
-			var position: Array = source.pos.duplicate()
-			position.make_read_only()
-			var point := {"pos": position}
-			point.make_read_only()
-			hardpoints.append(point)
-		hardpoints.make_read_only()
-		model.art = {"display_scale": float(art.get("display_scale", 1.0)), "slot_map": slot_map,
-			"hardpoints": hardpoints, "static_height": float(art.get("static_height", 0.0))}
+			"geometry_height": float(art.get("formation_reference_height", image.get_height()))}
+		model.art = art.duplicate(true)
 		model.art.make_read_only()
 		_models[key] = model
+		_visual_catalog.ships[key] = {"asset_ready": true}
 	return {"ok": true}
 
 func initialization_result() -> Dictionary:
@@ -170,7 +164,7 @@ func draw_enemy_hull(canvas: CanvasItem, index: int) -> void:
 	var hull: PackedVector2Array = _enemy_hulls[index]
 	if hull.size() >= 3:
 		var actors: Array = _kernel.enemy_views()
-		_draw_hull_texture(canvas, hull, _models["enemy_" + str(int(actors[index].size))])
+		_draw_hull_texture(canvas, hull, _models[str(actors[index].get("visual_key", EnemyIdentity.legacy_key(actors[index])))])
 
 func draw_enemy_overlays(canvas: CanvasItem, font: Font) -> void:
 	var enemies: Array = _kernel.enemy_views()
@@ -354,6 +348,7 @@ func commit_values(values: Dictionary, kind: String, iron: String, upgrades: Dic
 
 func advance(dt: float) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
+	if _first_target_uid() != _aim_uid and not _sync_geometry().ok: return _run_state.rejection()
 	if not _kernel.advance(dt):
 		var reason: String = str(_kernel.take_results().get("error", ""))
 		if reason.is_empty(): reason = "NativeAdvanceRejected"
@@ -375,6 +370,7 @@ func advance(dt: float) -> Dictionary:
 
 func start_wave(setup: Dictionary) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
+	for actor in setup.wave.enemies: actor.visual_key = _enemy_identity.resolve(actor, _visual_catalog)
 	if not _kernel.start_wave(setup.wave):
 		_run_state.fail("NativeWaveRejected")
 		return {"ok": false, "reason": "NativeWaveRejected"}
@@ -417,14 +413,23 @@ func _sync_geometry() -> Dictionary:
 	_weapon_poses = {}
 	_player_muzzles = {}
 	_enemy_muzzles = {}
+	var target := Vector2(float(_geometry.player_x), float(_geometry.player_y) - 500.0)
+	_aim_uid = -1
+	for actor in actors:
+		if not actor.get("dead", false):
+			_aim_uid = int(actor.uid)
+			target = Vector2(float(actor.x), float(actor.y))
+			break
+	var rendered_height: float = _hull_bounds(_player_hull).size.y
 	for weapon in _visual_weapons:
 		var id: String = str(weapon.entry.id)
 		if weapon.entry.has("drone_id"):
 			_player_muzzles[id] = weapon.muzzle
 			continue
-		var pose: Dictionary = _weapon_pose(str(weapon.entry.key), weapon.muzzle, -PI * 0.5, 30.0)
+		var key: String = str(weapon.entry.key)
+		var pose: Dictionary = ApprovedWeapon.player_pose(key, _weapon_manifest[key], _weapon_art[key].get_size(), weapon.muzzle, (target - Vector2(weapon.muzzle)).angle(), rendered_height, _player_art)
 		_weapon_poses[id] = pose
-		_player_muzzles[id] = pose.muzzle
+		_player_muzzles[id] = pose.ports
 	var actor_indices: Dictionary = {}
 	for index in actors.size(): actor_indices[int(actors[index].uid)] = index
 	for weapon in _enemy_visual_weapons:
@@ -432,13 +437,14 @@ func _sync_geometry() -> Dictionary:
 		var source: int = int(actor_indices[int(weapon.source_uid)])
 		var actor: Dictionary = actors[source]
 		var body: Dictionary = packet.poses[source]
-		var art: Dictionary = _models["enemy_" + str(int(actor.size))].art
+		var model: Dictionary = _models[str(actor.get("visual_key", EnemyIdentity.legacy_key(actor)))]
+		var art: Dictionary = model.art
 		var pivot: Vector2 = Geometry.mount_position(art, int(weapon.slot) % art.slot_map.size(), body.origin, body.dimensions, body.angle)
-		var pose: Dictionary = _weapon_pose(str(weapon.entry.key), pivot, PI * 0.5 + float(body.angle), 24.0)
+		var pose: Dictionary = _enemy_weapon_pose(weapon, body, model, pivot, source)
 		var id: String = "enemy:" + str(actor.uid) + ":" + str(int(weapon.slot))
 		pose.source = source
 		_weapon_poses[id] = pose
-		_enemy_muzzles[id] = pose.muzzle
+		_enemy_muzzles[id] = pose.ports
 	var muzzles: Dictionary = _player_muzzles.duplicate()
 	muzzles.merge(_enemy_muzzles)
 	# The same source-keyed ports feed numerical and retained/screen births.
@@ -455,14 +461,36 @@ func _draw_hull_texture(canvas: CanvasItem, hull: PackedVector2Array, model: Dic
 	for point in model.hull: uv.append(point + Vector2(0.5, 0.5))
 	canvas.draw_polygon(hull, PackedColorArray([Color.WHITE]), uv, model.texture)
 
-func _weapon_pose(key: String, pivot: Vector2, angle: float, pixels: float) -> Dictionary:
-	var texture: Texture2D = _weapon_art[key]
-	var scale: float = pixels / maxf(texture.get_width(), texture.get_height())
-	var dimensions: Vector2 = texture.get_size() * scale
-	var meta: Dictionary = _weapon_art_meta[key]
-	var local_port: Vector2 = ((meta.port + Vector2(0.5, 0.5)) * meta.source_size - meta.crop.position - meta.crop.size * 0.5) * scale
-	return {"key": key, "pivot": pivot, "angle": angle, "dimensions": dimensions,
-		"muzzle": pivot + local_port.rotated(angle), "local_port": local_port}
+func _first_target_uid() -> int:
+	for actor in _kernel.enemy_views():
+		if not actor.get("dead", false): return int(actor.uid)
+	return -1
+
+func _enemy_weapon_pose(weapon: Dictionary, body: Dictionary, model: Dictionary, pivot: Vector2, source: int) -> Dictionary:
+	var key: String = str(weapon.entry.key)
+	var player := Vector2(float(_geometry.player_x), float(_geometry.player_y))
+	var forward: float = (player - pivot).angle()
+	var slot: int = int(weapon.slot)
+	var mounts: Array = model.art.get("rotating_mounts", [])
+	if slot < mounts.size() and ((key == "cannon" and int(weapon.type) == 2) or (key in ["laser", "longLaser"] and int(weapon.type) == 1)):
+		var mount: Dictionary = mounts[slot]
+		var centre := Vector2(float(mount.centre_px[0]), float(mount.centre_px[1]))
+		pivot = body.origin + ((centre / model.size - Vector2(0.5, 0.5)) * body.dimensions).rotated(body.angle)
+		forward = (player - pivot).angle()
+		var scale: float = float(mount.housing_width_uv) * body.dimensions.x / float(_ranked_weapon_meta.housing_width_px)
+		var anchor := Vector2(float(_ranked_weapon_meta.pivot_px[0]), float(_ranked_weapon_meta.pivot_px[1]))
+		var tip := Vector2(float(_ranked_weapon_meta.muzzle_px[0]), float(_ranked_weapon_meta.muzzle_px[1]))
+		var local: Vector2 = (tip - anchor) * scale
+		var rotation: float = forward - PI * 0.5
+		var ports := PackedVector2Array([pivot + local.rotated(rotation)])
+		return {"key": "ranked", "pivot": pivot, "angle": rotation, "rect": Rect2(-anchor * scale, _weapon_art.ranked.get_size() * scale),
+			"ports": ports, "local_ports": PackedVector2Array([local]), "muzzle": ports[0]}
+	var hardpoint: Dictionary = model.art.hardpoints[int(model.art.slot_map[slot % model.art.slot_map.size()])]
+	var size_class: float = float({"small": 0.7, "medium": 0.9, "large": 1.1}.get(str(hardpoint.get("visual_size_class", "small")), 0.7))
+	var module_width: float = _hull_bounds(_enemy_hulls[source]).size.x * 0.42 * size_class
+	var row: Dictionary = _weapon_manifest[key]
+	var pixels_per_unit: float = module_width * float(row.pixels_per_model[0]) / (_weapon_art[key].get_width() * float(row.visual_scale))
+	return ApprovedWeapon.pose(key, row, _weapon_art[key].get_size(), pivot, forward, pixels_per_unit, 1.0)
 
 func draw_weapon_art(canvas: CanvasItem) -> void:
 	var actors: Array = _kernel.enemy_views()
@@ -470,18 +498,18 @@ func draw_weapon_art(canvas: CanvasItem) -> void:
 		var pose: Dictionary = _weapon_poses[id]
 		if pose.has("source") and actors[int(pose.source)].get("dead", false): continue
 		canvas.draw_set_transform(pose.pivot, float(pose.angle))
-		canvas.draw_texture_rect(_weapon_art[pose.key], Rect2(-pose.dimensions * 0.5, pose.dimensions), false)
+		canvas.draw_texture_rect(_weapon_art[pose.key], pose.rect, false)
 	canvas.draw_set_transform(Vector2.ZERO)
 
 func enemy_intelligence() -> Array:
 	var rows: Array = []
 	for actor in _kernel.enemy_views():
 		if actor.get("dead", false): continue
-		rows.append({"name": str(actor.get("intelName", actor.get("des", "敌舰"))) if actor.get("intelName") != null else str(actor.get("des", "敌舰")),
+		rows.append({"uid": int(actor.uid), "visual_key": str(actor.get("visual_key", EnemyIdentity.legacy_key(actor))), "name": str(actor.get("intelName", actor.get("des", "敌舰"))) if actor.get("intelName") != null else str(actor.get("des", "敌舰")),
 			"armour": str(actor.hp), "shield": str(actor.get("shield", "0")),
 			"armour_type": int(actor.get("armourType", 0)), "shield_type": int(actor.get("shieldType", 0)),
 			"mechanics": str(actor.get("intelMechanics", "")) if actor.get("intelMechanics") != null else "",
-			"tier": str(actor.get("combat_tier", "normal")), "texture": _models["enemy_" + str(int(actor.size))].texture})
+			"tier": str(actor.get("combat_tier", "normal")), "texture": _models[str(actor.get("visual_key", EnemyIdentity.legacy_key(actor)))].texture})
 	return rows
 
 func attribute_details() -> Dictionary:

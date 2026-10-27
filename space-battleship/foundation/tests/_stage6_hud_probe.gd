@@ -26,9 +26,9 @@ func _run() -> void:
 		_fail("shared configured geometry did not match authored hull height")
 		return
 	for key in battle._weapon_art:
-		var texture: AtlasTexture = battle._weapon_art[key]
-		if texture.region.size.x <= 0 or texture.region.size.y <= 0 or texture.atlas == null:
-			_fail("turret opaque-region crop missing " + key)
+		var texture: Texture2D = battle._weapon_art[key]
+		if texture.get_width() <= 0 or texture.get_height() <= 0 or not "fleet_20261019" in texture.resource_path and key != "ranked":
+			_fail("approved turret texture missing " + key)
 			return
 	var hud = Hud.new(battle, session.economy)
 	var model: Dictionary = hud.display_model()

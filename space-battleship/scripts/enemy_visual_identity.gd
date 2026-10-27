@@ -20,9 +20,26 @@ static func visual_rank(enemy:Dictionary)->String:
 	return "elite" if tier=="elite" else ""
 
 
+# Newly authorized compatibility mapping, not a historical archetype claim.
+# Physical/neutral legacy size 1/2/3/4/5/6 uses swarm/interceptor/reactive/
+# anchor/command/command. Energy armour uses scout at size1 and sentry otherwise.
+static func legacy_key(enemy: Dictionary) -> String:
+	var size: int = clampi(int(enemy.get("size", 1)), 1, 6)
+	var archetype: String
+	if int(enemy.get("armourType", 0)) == 2:
+		archetype = "scout" if size == 1 else "sentry"
+	else:
+		archetype = str({1: "swarm", 2: "interceptor", 3: "reactive", 4: "anchor", 5: "command", 6: "command"}[size])
+		if size == 3 and float(enemy.get("shield", 0)) > 0.0: archetype = "shielded"
+	var key: String = str(ARCHETYPES[archetype][0])
+	var rank: String = visual_rank(enemy)
+	if archetype in RANKED_ARCHETYPES and not rank.is_empty(): key += "_" + rank
+	return key
+
 func resolve(enemy:Dictionary,config:Dictionary)->String:
-	var fallback="enemy_"+str(clampi(int(enemy.get("size",1)),1,6))
-	var archetype=str(enemy.get("archetype_id",""))
+	var fallback: String = legacy_key(enemy)
+	var value = enemy.get("archetype_id")
+	var archetype: String = str(value) if value is String else ""
 	if archetype.is_empty():return fallback
 	var binding:Array=ARCHETYPES.get(archetype,[])
 	var reason="unknown_archetype"

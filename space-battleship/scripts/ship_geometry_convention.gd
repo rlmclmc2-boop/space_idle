@@ -1,4 +1,5 @@
 extends RefCounted
+const EnemyIdentity = preload("res://scripts/enemy_visual_identity.gd")
 ## Session assembly supplies data; these calculations do not read scenes or UI.
 
 static func formation_positions(slots: Array, definitions: Dictionary, rules: Dictionary, explicit = null) -> Dictionary:
@@ -112,7 +113,8 @@ static func battle_geometry(actors: Array, models: Dictionary, selected_ship: St
 	var variance_range: Array = JSON.parse_string(str(geometry.enemy_scale_variance))
 	for actor in actors:
 		var point := Vector2(float(actor.x), float(actor.y))
-		var model: Dictionary = models["enemy_" + str(int(actor.size))]
+		var key: String = str(actor.get("visual_key", EnemyIdentity.legacy_key(actor)))
+		var model: Dictionary = models[key]
 		var random := RandomNumberGenerator.new()
 		random.seed = int(actor.uid) * 7919 + int(actor.slot) * 104729
 		random.randf()
@@ -125,6 +127,13 @@ static func battle_geometry(actors: Array, models: Dictionary, selected_ship: St
 		var bounds := Rect2(model.hull[0], Vector2.ZERO)
 		for vertex in model.hull: bounds = bounds.expand(vertex)
 		var dimensions: Vector2 = Vector2(width / bounds.size.x, width * float(geometry.enemy_model_height_ratio) / bounds.size.y) * float(actor.hull_scale)
+		if key.begins_with("enemy_opening_"):
+			angle += PI
+			var available: Array = model.art.get("display_size", [90.4, 79.3333333333])
+			var opaque: Vector2 = bounds.size * model.size
+			var rotated := Vector2(opaque.x * absf(cos(angle)) + opaque.y * absf(sin(angle)), opaque.x * absf(sin(angle)) + opaque.y * absf(cos(angle)))
+			var fit: float = minf(float(available[0]) / rotated.x, float(available[1]) / rotated.y)
+			dimensions = model.size * fit
 		var hull: PackedVector2Array = transform_hull(model.hull, point, dimensions, angle)
 		poses.append({"origin": point, "dimensions": dimensions, "angle": angle})
 		hulls.append(hull)
