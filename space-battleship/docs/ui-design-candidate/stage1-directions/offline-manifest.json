@@ -1,0 +1,159 @@
+{
+  "identity": "offline HTML/SVG spatial and operation references only",
+  "files": [
+    {
+      "path": "preview.html",
+      "bytes": 3522,
+      "sha256": "1fe739445cea61610cae4251072ebf81ab7ef01098a07d88ece326fb0228e986",
+      "source": "docs/ui-design-candidate/stage1-directions/preview.html",
+      "source_sha256": "7185dfa1bbaa9b12e1df6141052449800186f3693d2bba476edafc4fbf237912"
+    },
+    {
+      "path": "directions.js",
+      "bytes": 13409,
+      "sha256": "d115a5dcdb47a508ed002836de45c0114737572d0d7f99babb25f52082442690",
+      "source": "docs/ui-design-candidate/stage1-directions/directions.js",
+      "source_sha256": "dc87f199bfee1dbff6d10614a43ecf8846f4de9833536dc5d830e22119dc8123"
+    },
+    {
+      "path": "directions.css",
+      "bytes": 459259,
+      "sha256": "5632e59cfef8f835b0bda21d74a615610770fa3992fa7b2084e7610cd7dc13db",
+      "source": "docs/ui-design-candidate/stage1-directions/directions.css",
+      "source_sha256": "215ecba1af57b26644ffb154fd9d729d00d48779f91cb6aef6796d60098df784"
+    },
+    {
+      "path": "overview.svg",
+      "bytes": 2395,
+      "sha256": "ccf5795da97930e85e6a222dbbc6c2a52ba975984e0088c23def8a0664d15222",
+      "source": "docs/ui-design-candidate/stage1-directions/overview.svg",
+      "source_sha256": "ccf5795da97930e85e6a222dbbc6c2a52ba975984e0088c23def8a0664d15222"
+    },
+    {
+      "path": "index.html",
+      "bytes": 3080,
+      "sha256": "1272fed4c49b346eec0f8ab02813db98abd34bb8f7efa1acb83dd40cccc9c42a"
+    },
+    {
+      "path": "assets/backgrounds/opening/stage_01.png",
+      "bytes": 944497,
+      "sha256": "5a15a1df4f666a3b36cd27947baec86639475a9c2433e9cd4f77d37b8803912b",
+      "source": "assets/backgrounds/opening/stage_01.png",
+      "source_sha256": "5a15a1df4f666a3b36cd27947baec86639475a9c2433e9cd4f77d37b8803912b"
+    },
+    {
+      "path": "assets/ships/enemy/fleet_20261019/scout.png",
+      "bytes": 596745,
+      "sha256": "acb4f1bbe3011a38c323444ac0d2141d9c35b615a830137a51d2602aa136eaea",
+      "source": "assets/ships/enemy/fleet_20261019/scout.png",
+      "source_sha256": "acb4f1bbe3011a38c323444ac0d2141d9c35b615a830137a51d2602aa136eaea"
+    },
+    {
+      "path": "assets/ships/enemy/fleet_20261019/anchor.png",
+      "bytes": 363819,
+      "sha256": "c0537907af243c46c6d342530b869f069d4f653c93b2c77255d4079cb592a8fb",
+      "source": "assets/ships/enemy/fleet_20261019/anchor.png",
+      "source_sha256": "c0537907af243c46c6d342530b869f069d4f653c93b2c77255d4079cb592a8fb"
+    },
+    {
+      "path": "assets/ships/fleet_20261019/player/03-cruiser.png",
+      "bytes": 258421,
+      "sha256": "1b1bddf839c762a3234dbd61da26d490f50396405bf2b07e409877c66242f363",
+      "source": "assets/ships/fleet_20261019/player/03-cruiser.png",
+      "source_sha256": "1b1bddf839c762a3234dbd61da26d490f50396405bf2b07e409877c66242f363"
+    },
+    {
+      "path": "assets/ui/ships/fleet_20261019/03-cruiser.png",
+      "bytes": 257785,
+      "sha256": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304",
+      "source": "assets/ui/ships/fleet_20261019/03-cruiser.png",
+      "source_sha256": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304"
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/cannon.png",
+      "bytes": 312928,
+      "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a",
+      "source": "assets/weapons/fleet_20261019/cannon.png",
+      "source_sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/missile.png",
+      "bytes": 369876,
+      "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72",
+      "source": "assets/weapons/fleet_20261019/missile.png",
+      "source_sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/longLaser.png",
+      "bytes": 345211,
+      "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3",
+      "source": "assets/weapons/fleet_20261019/longLaser.png",
+      "source_sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+    },
+    {
+      "path": "assets/ai_tech_factory/workshop-background-v2.png",
+      "bytes": 1959205,
+      "sha256": "eedab623d337c9ae529ace5ad2f8a81da355fad5debe4099b826ddb12a002eaa",
+      "source": "assets/ai_tech_factory/workshop-background-v2.png",
+      "source_sha256": "eedab623d337c9ae529ace5ad2f8a81da355fad5debe4099b826ddb12a002eaa"
+    },
+    {
+      "path": "assets/ai_tech_factory/weapon-accuracy-v2.png",
+      "bytes": 1398697,
+      "sha256": "b4d7bfd2482bfeb661a7c46d86b064202bbbbe027af99161bbbd7b33bb514c2b",
+      "source": "assets/ai_tech_factory/weapon-accuracy-v2.png",
+      "source_sha256": "b4d7bfd2482bfeb661a7c46d86b064202bbbbe027af99161bbbd7b33bb514c2b"
+    },
+    {
+      "path": "assets/ui/planet-globe.png",
+      "bytes": 2590830,
+      "sha256": "17467e0396822e6b3569b5f07be38a5acccb0e44fbb2caee696bba43a913ca44",
+      "source": "assets/ui/planet-globe.png",
+      "source_sha256": "17467e0396822e6b3569b5f07be38a5acccb0e44fbb2caee696bba43a913ca44"
+    },
+    {
+      "path": "licenses/NotoSansSC-OFL.txt",
+      "bytes": 4388,
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9",
+      "source": "assets/fonts/OFL.txt",
+      "source_sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+    },
+    {
+      "path": "licenses/NotoSansSymbols2-OFL.txt",
+      "bytes": 4383,
+      "sha256": "b118dd41337806a5d4797052c77caf3bd096aed783e5eb21b4d11154351e1ac0",
+      "source": "assets/fonts/NotoSansSymbols2-OFL.txt",
+      "source_sha256": "b118dd41337806a5d4797052c77caf3bd096aed783e5eb21b4d11154351e1ac0"
+    },
+    {
+      "path": "README.txt",
+      "bytes": 306,
+      "sha256": "c0caa9fa33446dfb53e39c1924e53cad04e9820ecead46f4d457a3f606322d4e"
+    }
+  ],
+  "embedded_font_subsets": [
+    {
+      "source": "assets/fonts/NotoSansSC.ttf",
+      "source_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+      "embedding": "data:font/woff in directions.css",
+      "subset_family": "SpaceIdleReferenceSC",
+      "subset_sha256": "52981d6cd3643afd5280ce5ebc87164cafd00170007d3a82262c0c3724b10ed7",
+      "subset_bytes": 319952
+    },
+    {
+      "source": "assets/fonts/NotoSansSymbols2-Regular.ttf",
+      "source_sha256": "7d5fb73b7ca67a6798101741f5d280a3d016a56a197afcd4199dbb57b4b82a21",
+      "embedding": "data:font/woff in directions.css",
+      "subset_family": "SpaceIdleReferenceSymbols",
+      "subset_sha256": "22cb043226cde457216872194ffb4efc3001c5b936607ff862c7eb5c5b2c2da5",
+      "subset_bytes": 13320
+    }
+  ],
+  "excluded": [
+    "game implementation",
+    "saves",
+    "credentials",
+    "evidence screenshots",
+    "archived world experiment"
+  ]
+}

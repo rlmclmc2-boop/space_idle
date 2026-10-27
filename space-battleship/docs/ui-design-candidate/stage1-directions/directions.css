@@ -17,3 +17,5 @@
 
 .combat-monitor{z-index:7}
 .combat-monitor{display:none}.layout-c.open .combat-monitor{display:flex}
+
+.layout-a .upgrade-area{flex-wrap:wrap}.layout-a .upgrade-area .operation-feedback{flex:1 0 100%;margin:3px 0 0;min-height:22px}.intent-effect{display:block;margin-top:5px;font-size:11px;color:#b7d6c4}.intent-amounts{font-size:11px;line-height:1.7;color:#acc9b9;margin-top:8px}.intent-amounts summary{cursor:pointer}.intent-amounts p{margin:7px 0}.layout-b .intent-row{margin:6px 0}.layout-b .intent-effect{font-size:10px;margin-top:3px}.layout-b .intent-amounts{max-height:65px;overflow:auto}.layout-c .intent-current strong{font-size:22px}

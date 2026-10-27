@@ -1,9 +1,9 @@
 {
   "identity": "HTML production capture and task replay; not game verification or design approval",
   "source_sha256": {
-    "preview.html": "6993ed25e17814fc5a79c170c31d4545665eb1e9cdac5ce166b7575cced1e5e2",
-    "directions.css": "74b10b3437277c2be874299c771ab8d4eb20ad9a54c54bb4bdc19967da8b915f",
-    "directions.js": "80996d6d3a4be961617bc5c58d3d22a9f779e7eca62b67763ed8e702da5862b7"
+    "preview.html": "7185dfa1bbaa9b12e1df6141052449800186f3693d2bba476edafc4fbf237912",
+    "directions.css": "215ecba1af57b26644ffb154fd9d729d00d48779f91cb6aef6796d60098df784",
+    "directions.js": "dc87f199bfee1dbff6d10614a43ecf8846f4de9833536dc5d830e22119dc8123"
   },
   "records": [
     {
@@ -206,14 +206,14 @@
           "action": "选导弹",
           "center_css_px": [
             1173.0,
-            486.0
+            526.0
           ]
         },
         {
           "action": "换装",
           "center_css_px": [
             1359.9921875,
-            577.5
+            617.5
           ]
         },
         {
@@ -242,7 +242,7 @@
       "no_duplicate_defense_hud_in_idle": true,
       "task3_result": {
         "steps": 8,
-        "pointer_center_travel_css_px": 1573,
+        "pointer_center_travel_css_px": 1653,
         "final": {
           "module": "fleet",
           "slot": "W1",

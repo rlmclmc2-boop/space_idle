@@ -1,0 +1,82 @@
+{
+  "identity": "Production checks of requested small fixes and offline reference, not visual approval",
+  "offline_file_url": false,
+  "file_url_blocker": "Chromium net::ERR_BLOCKED_BY_ADMINISTRATOR for file:///tmp/stage1-offline-check/index.html; double-click result not verified",
+  "resource_loading": "offline context; requests fulfilled exclusively from extracted ZIP via local Playwright route",
+  "zip_sha256": "dc36436076035dbd9b7fbde85f363fb4bd970537a1e6c526f374a8947bca700a",
+  "network_offline": true,
+  "records": [
+    {
+      "direction": "a",
+      "eight_click_task_completed": true,
+      "pulse_hit": "飞行接触",
+      "images_loaded": true,
+      "fonts": [
+        {
+          "family": "noto",
+          "status": "loaded"
+        },
+        {
+          "family": "reference_symbols",
+          "status": "loaded"
+        }
+      ],
+      "failure_feedback_visible_with_details": true,
+      "feedback_button_vertical_gap_px": 18,
+      "amounts_on_demand": true
+    },
+    {
+      "direction": "b",
+      "eight_click_task_completed": true,
+      "pulse_hit": "飞行接触",
+      "images_loaded": true,
+      "fonts": [
+        {
+          "family": "noto",
+          "status": "loaded"
+        },
+        {
+          "family": "reference_symbols",
+          "status": "loaded"
+        }
+      ],
+      "amounts_on_demand": true
+    },
+    {
+      "direction": "c",
+      "eight_click_task_completed": true,
+      "pulse_hit": "飞行接触",
+      "images_loaded": true,
+      "fonts": [
+        {
+          "family": "noto",
+          "status": "loaded"
+        },
+        {
+          "family": "reference_symbols",
+          "status": "loaded"
+        }
+      ],
+      "amounts_on_demand": true
+    },
+    {
+      "direction": "d",
+      "eight_click_task_completed": true,
+      "pulse_hit": "飞行接触",
+      "images_loaded": true,
+      "fonts": [
+        {
+          "family": "noto",
+          "status": "loaded"
+        },
+        {
+          "family": "reference_symbols",
+          "status": "loaded"
+        }
+      ],
+      "battle_center_shift_css_px": 100.8,
+      "amounts_on_demand": true
+    }
+  ],
+  "js_errors": []
+}
