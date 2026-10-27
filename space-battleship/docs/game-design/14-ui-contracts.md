@@ -207,3 +207,79 @@
 - Galaxy沿`status_changed(region_keys)/availability_changed`使选中节点事实失效；施工与升级余量实际变化均须覆盖所在区域，不能只通知升级完成。视图直接订阅Crew成员/选项变化并重读当前选中区域的人数与节点，不全图重建或扩大原人数接口。
 - 三项均在可见显示帧合并失效读取；隐藏视图停止无用投影，业务照常推进，重开读最新完整事实。Amount文本、经验门槛、静态设施/节点定义与未变快照只随对应事实变化重建；不因窗口尺寸或显示帧反复求幂/求值。
 - 每项可单独评审/实现；依赖的人员输入复用已有只读视图，不增加相互持有的模块对象或新业务协调。未选定的比例/预算、整组原子提交、未来效果/动态战斗效果继续待定，不能以本节授权运行实现或整批G2验收。
+## 9. 待审提案：反应炉整组草稿与科研预算的Amount安全预览
+
+**状态：纯文档候选，未实现、待双审，不作为主线已有方法。** 只补当前已定工作点需要的只读换算/比较；玩法及接纳仍按[03第2–3节](03-progression.md#2-反应炉)和本页第5节。固定请求、源码核对及持续0%的差异见[审查记录](../verification/amount-safe-preview-contract.md)。本节不实施新写命令；9.5另列必要模块入口的待审归属选择，不引入通用事务层、保存字段、随机现金流预测或未选UI。
+
+### 9.1 单位与共同读取边界
+
+- 比例输入为整数基点`0..10000`，10000表示100%。Amount金额、容量、速率、工程量、倍率及任意时长以原规范文本输出；业务复用原Amount求值。比例先在Amount域除10000，再乘基准并floor，不能先把大额转float/Number/BigInt或用控件位置重算。有限float只用于基点控件/进度条，不重建数量。
+- 预览只读已接纳状态与同一次同步新读的来源；不调用命令、prepare/accept、推进、扣款、抽样或保存，不制造RunState故障。可提取原纯求值或在脱离所有者的候选上求值，不借读取填写可保存的业务字段。返回行及嵌套数据均脱离所有者或递归只读。
+- 结果分开`current`（已接纳）、`target`（本草稿条件下）、`source`（必要来源事实）；`can_apply/reason`只说明本次检查，不承诺下一次提交必成。未知值用null及具体原因，不补0/×1。Amount短文本由提供方格式化，canonical全文保留用于精确提交；UI不从短文本还原值。
+- 净收入不向非负Amount塞负数：用`direction=surplus/deficit/balanced`与非负`amount`文本表示差额。持续时间用Amount的`div`求游戏秒，可供提供方格式化；`to_ratio`被限制在[0,1]，仅能作显示比例或既有有界分段系数，不能作为秒数。
+
+### 9.2 Reactor：整组分配预览
+
+拟增`Reactor.allocation_plan_preview(draft: Dictionary, inputs: Dictionary) -> Dictionary`。inputs为现有`Session.reactor_inputs()`的当下值。draft仅有三个具名读取分支，不是通用命令容器：
+
+| draft | 精确含义 |
+|---|---|
+| `kind="shares", shares_bp={module_id: int}` | 每项占**总手动容量C**，不是剩余容量、有效量或含免费量的比例；键必须恰为当前开放设备，全部显式给出，允许0。每项`floor(C×bp/10000)`，未分配部分保留。 |
+| `kind="amounts", amount_texts={module_id: String}` | 同一整组草稿的精确金额入口，仍须给全体开放设备；按原金额解析及floor生成整数目标，不在UI求和/钳制。 |
+| `kind="equal"` | 沿既有distribute的纯求值：只含开放设备，整数商均分、余数按配置顺序；沿原Amount对极大个位余数的可表示性口径。 |
+
+未知/锁定ID、缺项、非整数/越界基点、基点合计>10000或目标Amount合计>C均返回具名拒绝；不静默补旧值、归一化、重排或替玩家钳到预算。超额检查以Amount实际求值结果再核一次。请求0%/清零时合法目标为0，免费量仍按原规则存在。
+
+最小成功输出：`source`给容量输入因子、免费输入、开放ID/配置顺序及已接纳手动分配；`current/target`各给`capacity/allocated/remaining`，设备行给`id/manual/free/effective/factor`的Amount文本。C来自原_capacity；free不占手动容量，effective及factor复用原_evaluate，不能把免费比例当最终伤害比例。target表示整组目标均接纳后的同快照比较，不冒充逐命令中间状态或完整战斗收益。比例条可另给有限显示比例，C为0时比例为0，不产生NaN。
+
+**可复用的顺序提交路径（不是唯一归属裁定）：** 均分确认后只调一次distribute；自定义/清零确认一次，按配置稳定顺序**先减后增**逐项allocate_text，跳过实际已一致项。每项使用最新inputs并读取实际接纳结果；首个拒绝停止，成功项保持，保留拒绝/未提交项草稿。重试只处理重新读取后的差异，不伪回滚、不重放已成项；来源变化先使整组比较失效并刷新，再继续，不把同一次确认宣传为原子提交。
+
+### 9.3 Research：单工作点预算预览
+
+拟增`Research.budget_preview(request: Dictionary, inputs: Dictionary) -> Dictionary`。request带当前`research_id`和以下一种意图；ID须与当前已接纳研究一致，查询不选择/续选项目。inputs由装配在当前Session显示帧即读即传：Economy当前钱包、`income_rates(..., research.income_window(), "investment")`的收入率及游戏时钟/窗口终点、原研究外部速度因子（含人员/算法）和实际科研岗位事实。不读取UI钱包、墙钟peak或production_base冒充投入收入。
+
+| request | 本次只读目标及既有写入口 |
+|---|---|
+| `kind="once_ratio", basis_points` | 铁/铀共同近期收入比例。每资源`floor(income_rate×bp/10000)`，0%为0，低收入取整到0也保留0；生成两个金额草稿，不改已生效投入。 |
+| `kind="once_amounts", amount_texts={"1": String,"2": String}` | 精确编辑或已生成而保留的本次金额草稿，沿set_investment_text的解析/floor口径；单字段非法给该资源原因，保留文本，相关目标估算未知，不伪造0。 |
+| `kind="following_sample", enabled: bool, basis_points` | 给出目标开关/比例及原自动准入。enabled=true时仅展示按**本次收入样本**计算的周期目标`max(1,floor(income_rate×ratio))`；enabled=false只预览关闭设置，周期目标null并标AutomaticDisabled。设置仍调用既有set_automatic，不直接改金额；样本不是已生效或锁定下一周期的投入。 |
+
+收入窗口沿现行规则（当前60游戏秒）：合格已入账actual样本除完整窗口长度，含investment口径接受的galaxy_yield；不是只除已有采样时长、钱包占比或未来收入预测。**可复用的分别接纳路径：** 本次金额分别set_investment_text接纳；一项成功不因另一项失败回滚。成功后重读current及比较，未应用资源草稿保留。共同预算是否应另有模块内具名入口见9.5，不因现有setter可用便冻结最佳分工。
+
+**持续0%不改现行准入。** set_automatic仍检查原minimum_ratio（关闭时也检查ratio）；当前配置下0%不能提交，following_sample须给`can_apply=false/reason=InvalidResearchRatio`，不能输出“合法下一周期至少1”冒充已支持。若另获准放宽下限，才另审其0%下max(1,...)语义；本提案不改配置。关闭持续跟随使用已接纳的合法ratio调用set_automatic(false,ratio)，仅关自动，不清当前投入。本次0%及手动0投入继续合法。
+
+最小输出如下，均以本次快照为条件，不是新业务状态。科研将比较目标分为`immediate_draft`与`following_sample`两个互斥块，后者另含目标enabled/ratio；不得把following_sample的金额放入“应用后立即生效投入”：
+
+| 字段 | 口径 |
+|---|---|
+| `current.research_id/level/work/required/remaining_work` | 原已接纳项目/等级及Amount工程量；剩余为原所需量减已做量。复用原求值，不因读查询修改存档required_work。无当前项目时相关值null并给原因，不自动选最短。 |
+| `current.investment/automatic_enabled/automatic_ratio/minimum_ratio` | 已生效的每游戏秒投入及原自动设置；与目标、局部模式和比例草稿分别显示。 |
+| `resources[1/2].income_rate/balance/current_rate/draft_rate/following_sample_rate/net_current/net_draft/net_sample` | 收入、钱包、当前/本次草稿/持续样本每游戏秒投入及有方向的净收支。仅本请求对应的比较块有值，其余null；合法目标为canonical整数Amount。持续关闭或无合法目标时样本金额null，当前投入始终保留。 |
+| `resources[1/2].stock_duration_current/stock_duration_draft/stock_duration_sample` | **假设此后无收入且无其他支出**，钱包/每秒投入所得游戏秒，不是按净收入计算的破产预测或研究完成时间。率为0标not_spending且时长null；余额为0且率>0时为有限0秒；不伪造无穷float。 |
+| `current/immediate_draft/following_sample.speed_now` | 本次快照瞬时工作量/游戏秒，按当下余额和投入是否可支付复用原AI/人员/算法与投入求值；没钱失去对应付费因子，基础研究仍继续。率1的因子仍可能为1，不把有扣费一律标成有增速。暂停上下文单列，不改此游戏时钟口径。 |
+| `current/immediate_draft/following_sample.completion_estimate` | 条件明确的估算：冻结本次等级/速率/外部因子，假设正投入资源持续足额可付至本级完成，复用原速度与所需量求Amount游戏秒；同时给假设、各资源所需资金、当前余额能否覆盖。不能当实际ETA；资金不覆盖时仍明确条件未满足，不预测后续随机入账。不可求时null及原因。 |
+| `completion_effects` | 当前选中科技完成本级的原效果id及当前→下一级值/摘要，沿原Research效果求值和本次peak事实；不是投入本身的收益、整套战斗最终值或未来随机倍率。 |
+| `automatic_refresh` | 沿原refresh_elapsed/automatic_due给距原刷新边界的非负游戏秒、是否已到期及自动关闭/无实际岗位等阻断事实。设置不重置原周期；可能已经到期、等待岗位或下一固定步，不承诺开启后一定再等60秒。 |
+
+速度/估时须抽取原科研求值或对脱离所有者的数据求值；不在UI重写log/支付积分，不用调用advance来推进真状态，不将短缺一概当停工。库存独撑时长与有条件完成估时分别命名/展示，不以一个“remaining”同时指两者。输入/工作/支付条件一变，旧估算失效；不承诺未来项目、收入或实际现实完成时刻。
+
+### 9.4 草稿、来源变化与失效
+
+本次/持续是前端局部工作模式，分别记忆比例草稿，共用一个可见控件；点击已选模式/切模式不提交、不覆盖两个本次金额草稿或已生效设置。持续模式只更新自己的比例及样本预计值。主动拖动本次比例才重生成金额；被动来源刷新或切模式保留已生成/精确编辑的canonical金额，按once_amounts重取比较。Reactor保留比例或精确金额意图，来源变后重取目标/实际比较，不保留旧容量的效果结论。
+
+Reactor容量因子、免费量、开放模块、已接纳分配变化；Research钱包、income窗口/游戏时钟、当前项目/等级/work、投入、自动设置/刷新相位、人员/算法/peak等实际影响变化，均使对应预览失效。source只回显这些实际必要事实供当前比较核对，不引入全局revision/fingerprint/锁定事务。每次命令仍从新状态验证；正常成功的实际回执优先于旧预览。
+
+现有choices_changed/investment_changed、Economy显示变化、Crew成员/选项及实际贡献提供方事实可使读模型失效；它们不能冒称已覆盖所有时钟/收入窗口/研究进度与容量变化。实施时只在所有者补必要覆盖或在可见显示帧重读时钟相关事实，隐藏停无用投影、重开取最新；不读私有账本，不新增Session全局通知层。静态定义、所需工程量与未变效果按其真实来源复用，不因滑杆拖动/窗口尺寸反复求幂。
+
+### 9.5 待双审权衡：整组意图的命令归属
+
+前端R1/R2已证明逐命令路径能表达操作意图，并未形成“不得新增必要模块入口”的用户限制。预览的Amount/单位与来源边界可先独立审；以下方案尚未选定，不能据本节直接实现或改动已有命令语义。
+
+| 归属方案 | 所有者及可复用部分 | 复杂度、可见行为与风险 |
+|---|---|---|
+| Reactor现有逐设备路径 | UI保存整组草稿，排序先减后增，逐次allocate_text并重读实际；均分仍一次distribute | 运行改动最少，符合当前前端部分成功说明；UI却必须知道如何避免余额钳制、识别后续差异、首拒停止并处理每次发布。期间可出现中间分配/效果，publish_reactor原有防御/退却后果照常发生，不能由UI屏蔽。应评估这是否让整组调配业务反向落到UI。 |
+| Reactor模块内具名整组入口（如apply_allocation_plan） | Reactor接收同一完整比例/金额意图及当下inputs，复用原解析/_capacity/分配/_evaluate与一次既有publish；普通拒绝不接纳候选，成功只accept一次 | 把整组预算、开放、取整及最终效果保持在所有者，UI不再排序或模拟中间业务，多次发布降为一次。需新增一个领域入口及对应接纳/错误验证，明确预览失效时不静默换目标；与当前逐命令的部分成功/中间效果不同，前端整组确认说明也须一致。沿原fault停机边界，不声称可回滚native故障，不建立跨模块事务框架。 |
+| Research现有逐资源路径 | 比例换算/预览归Research；两个资源按钮各调set_investment_text，持续设置仍set_automatic | 符合R2分别应用/保留草稿，单资源编辑不需批量入口；共同预算的两项若分步应用，可能暂为新铁/旧铀，拒绝后各自保留真实结果，UI需说明。可复用不等于共同意图的最佳归属已定。 |
+| Research模块内共同金额入口（如apply_investment_draft） | 只在确有“一次应用两资源”的动作时接收完整canonical金额，复用原解析/floor，先验证两项后由Research一次接纳/通知；单资源按钮继续原setter | Research没有本次即时钱包扣款或native发布，两项本地候选接纳可很小，不需通用事务。它可消除共同意图的混合中间设置；但若UI仍仅提供逐资源按钮，新增入口未必有实际消费者。不得把金额意图偷换成命令时重新按收入算比例，亦不因新入口替换旧单资源命令或持续规则。 |
+
+双审须选择本次整组/共同意图的实际边界，并核对：所有权与UI认知负担、发布次数/中间状态、正常拒绝及既有fault、是否需要调整现有部分成功说明、具体动作是否有消费者。选择模块具名入口不等于扩成任意命令列表、全局回滚、跨模块批次或新玩法；选择顺序路径也须给出业务顺序留在UI的充分理由。当前保留两案，未先改接口实现。
