@@ -37,3 +37,5 @@ G1组织审已通过，两方向都进入G2；没有选定UI，不是完整候�
 ## 第三批：强化专属工作点
 
 六效果、顺序、三节点完整A/B与路径/门槛已替换旧范围卡；具体实物边界、操作核对与展示端口见[强化还原记录](g2-enhancement-restoration.md)。该批仍未完成真实动态效果和连续报价接线，不作为V5通过。
+
+强化源码固定为`95502e15`，同版[manifest](evidence/g2-batch3/manifest.json)：[A首屏](evidence/g2-batch3/scene-enhancement-1440x900.png)、[A下段](evidence/g2-batch3/scene-enhancement-lower-1440x900.png)、[B首屏](evidence/g2-batch3/work-enhancement-1440x900.png)、[B下段](evidence/g2-batch3/work-enhancement-lower-1440x900.png)、[未开放分支](evidence/g2-batch3/work-branch-locked-1440x900.png)、[候选未应用](evidence/g2-batch3/work-branch-candidate-1440x900.png)、[最多10实际成交2](evidence/g2-batch3/work-partial-purchase-1440x900.png)。仅浏览器设计证据。
