@@ -219,7 +219,8 @@ function research() {
 }
 
 const enhancementFixtureBranches=JSON.stringify({proficiency:['A','B','A'],repeat:['A','B',''],critical:['B','',''],adaptation:['A','B',''],memory:['B','A',''],deferred:['B','','']});
-function enhancementSnapshot(){const e=state.enhance;return e.weapon.join()==='proficiency,repeat,critical'&&e.defence.join()==='adaptation,memory,deferred'&&JSON.stringify(e.branches)===enhancementFixtureBranches?EnhancementModels.combatSnapshots[e.effective]:null;}
+function enhancementSnapshot(){const e=state.enhance,signature=JSON.stringify(e.branches);if(e.weapon.join()==='proficiency,repeat,critical'&&e.defence.join()==='adaptation,memory,deferred'&&signature===enhancementFixtureBranches)return EnhancementModels.combatSnapshots[e.effective];const response=EnhancementModels.responseCases.find(r=>r.weapon.join()===e.weapon.join()&&r.defence.join()===e.defence.join()&&JSON.stringify(r.branches)===signature);return response?.snapshots[e.effective]||null;}
+
 function enhancementBalance(){const e=state.enhance;return e.quoteUsed?e.balance:e.funds?'64.0 B':'2.1 K';}
 function enhancementQuoteView(){const e=state.enhance,q=EnhancementModels.quotes[e.purchaseMode];return e.quoteUsed?'当前报价待刷新':!e.funds?'当前可成交0级 · 余额不足 · 首级需13.42 B碎片':`当前可成交${q.count}级 · 合计 ${q.price}碎片`;}
 function enhancement(){

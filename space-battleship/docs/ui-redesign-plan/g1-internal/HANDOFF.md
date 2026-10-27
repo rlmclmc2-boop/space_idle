@@ -79,3 +79,7 @@
 ### 首批R2自然检查点
 
 超空间仓储批次源码`4a4883baa71fa719a0d82e8cb7525d0a9ec73ee4`、16张同版证据`5c812c682b647af186a5222cc172941bdfb9e157`已推送。随后按新意见合并科研共用预算台/折叠精确金额、固定区部分失败与继续、可选预设及>10^100预格式化Amount样本，见`godot-restoration.md`末节与`evidence/g2-budget-r2/manifest.json`。下一顺序为第三批至少一条改序与一条改分支后新效果响应，并能继续操作；不穷举、不前端重算公式。第二/第四批原反例根线程已在模拟覆盖内关闭，无故不重做；完整G2/实机仍未通过。
+
+### 第三批R2连续决策检查点
+
+首批R2源码`05c682f0a723ceacbeeae137bdeaa81b3d912113`与同版证据`1bfbb8c52ab41bc5c6a43ba9f3ae583cc774b2be`已推送。第三批补连发前移、节点1 A→B、继续购1级至E31及后续节点查看的完整匹配响应，见`g2-enhancement-restoration.md`末节；同版证据在`evidence/g2-enhance-r2/manifest.json`。本批不穷举组合，仍无真实领域绑定。
