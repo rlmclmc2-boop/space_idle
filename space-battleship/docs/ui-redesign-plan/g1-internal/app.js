@@ -346,8 +346,10 @@ function renderPipes() {
 
 function fitBattle() {
   const host=$('#field-host'),s=Math.min(host.clientWidth/572,host.clientHeight/960);
-  $('#world').style.transform=`scale(${s})`;
-  $('#geometry').textContent=`${innerWidth} × ${innerHeight} · 战场 ${Math.round(572*s)} × ${Math.round(960*s)} · s ${s.toFixed(3)}`;
+  if(window.BattleDesign)window.BattleDesign.fit();
+  else if($('#world'))$('#world').style.transform=`scale(${s})`;
+  const battleMetrics=window.BattleDesign?.stats();
+  $('#geometry').textContent=battleMetrics?`${innerWidth} × ${innerHeight} · 安全框636 × 1060u · s ${battleMetrics.scale.toFixed(4)}`:`${innerWidth} × ${innerHeight} · 战场 ${Math.round(572*s)} × ${Math.round(960*s)} · s ${s.toFixed(3)}`;
   renderPipes();
 }
 function openDetail(title,text) {

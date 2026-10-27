@@ -4,6 +4,8 @@
 
 从space-battleship目录运行 `python -m http.server 8765 --bind 127.0.0.1`，打开 `/docs/ui-redesign-plan/g1-internal/` 的[index.html](index.html)。无CDN、构建或游戏进程依赖。普通页面显示工作对象/代价/结果；“情境检查”是内部检查层，说明模拟范围和可切换状态。全部领域数据、效果、报价与结果为演示快照，未接后端；效果快照不按JS公式推算真实增益。
 
+本轮M1/G9五档动态装配实物与精确边界见[g2-battle-restoration.md](g2-battle-restoration.md)：现行战斗舰图/全槽炮台/多炮口、盾双条、33011拥挤反例及无人机候选安装预算已替换早期静态代位；下文G1的0.690投影、旧占位描述和待办保留为历史，本批当前投影为0.624528，完整G9仍未通过。
+
 本轮首批G2实物见[g2-progress.md](g2-progress.md)，首批Godot还原资料见[godot-restoration.md](godot-restoration.md)。以下组织与G1历史回应继续保留；组织通过不表示完整候选、最终差异品质或游戏验收通过。
 
 ## 两方向的工作结构
