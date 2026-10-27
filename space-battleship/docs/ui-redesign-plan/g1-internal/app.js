@@ -29,6 +29,8 @@ const state = {
   materialDraft: '100', materialReceipt: '', routeId:'pulse', manualTask:{status:'idle',route:'pulse',run:'manual-01',receipt:null}, onlineTask:{status:'idle',route:'missile',run:'online-01',receipt:null,mode:'single',crewId:null},
   dangerKind: 'reforge', dangerSource: '起源星', dangerPreview: null, dangerResult: null,
   enhance:{paid:27,extra:3,effective:30,weapon:['proficiency','repeat','critical'],defence:['adaptation','memory','deferred'],branches:{proficiency:['A','B','A'],repeat:['A','B',''],critical:['B','',''],adaptation:['A','B',''],memory:['B','A',''],deferred:['B','','']},effect:'proficiency',node:0,choice:'',purchaseMode:'one',funds:false,feedback:'',quoteUsed:false},
+  maintenance:{save:'saved',directory:'D:/SpaceIdle/save',directoryDraft:'D:/SpaceIdle/save',music:true,effects:true,damage:'all',interval:'60',skip:false,feedback:'',dangerError:'',importSource:'backup-02.json',newDirectory:'D:/SpaceIdle/new-voyage',clearSettings:false,retained:['d2'],previewSerial:0},
+  archive:{tab:'tutorial',tutorial:'equip',completed:['equip','pickup'],guidePaused:false,enemy:'enemy-demo-1',notifications:[{key:'unlock:crew_06',title:'船员开放 · 无限大',seen:false,read:false},{key:'research:equipment_finishing',title:'精密制造研究完成',seen:false,read:false}],intel:[{id:'enemy-demo-1',name:'护卫舰',tier:'普通',image:'01-frigate.png',armour:'12.0 K',shield:'0',mechanics:'当前护盾已耗尽；装甲仍可承伤。'},{id:'enemy-demo-2',name:'驱逐舰',tier:'精英',image:'02-destroyer.png',armour:'28.0 K',shield:'16.0 K',mechanics:'护盾与装甲分别承伤；护盾耗尽后余伤进入装甲。'}]},
   notice: '舰桥就绪'
 };
 const groups = {
@@ -113,7 +115,8 @@ function summary(route) {
   if(route==='hyperspace/routes') return `手动·${routeName(state.manualTask.route)} ${taskStatus(state.manualTask)} / 挂机·${routeName(state.onlineTask.route)} ${taskStatus(state.onlineTask)}`;
   if(route==='hyperspace/formation') return `${state.equippedDrones.map(id=>drones[id].name).join(' / ')}${state.formationDraft.join()!==state.equippedDrones.join()?' · 有候选':''}`;
   if(route==='settings/danger/reforge') return state.dangerPreview?'预览待确认':state.dangerResult?'最近结果可查':'重铸 / 导入 / 新游戏';
-  if(route==='settings') return '最近进度已写入';
+  if(route==='archive') return ({tutorial:'飞行手册',intel:'当前敌情',notifications:'通知档案',statistics:'伤害明细'})[state.archive.tab]+' · 未读'+state.archive.notifications.filter(n=>!n.read).length;
+  if(route==='settings') return MaintenanceModels.saveStates[state.maintenance.save].title;
   return '敌情 / 通知 / 教程';
 }
 function workWrapper(body) {
@@ -249,21 +252,28 @@ function hyperSubroute(part) {
 }
 function settings() {
   if(state.route.includes('/danger/')) return danger();
-  if(state.route==='settings/save') return moduleHead('保存与恢复','目录与实际写盘状态')+`<div class="detail-route"><h2>最近进度已写入</h2><label>目录 <input value="D:/SpaceIdle/save" aria-label="保存目录"></label><p>未保存进度：无 · 最近写入 14:32</p><div class="secondary-actions">${control('save-retry','请求保存','primary')}${control('save-backup','备份与恢复')}${control('danger-import','导入存档')}${control('back','返回维护')}</div></div>`;
-  return moduleHead('航行维护','保存、音画设置与危险事务')+`<div class="system-objects"><article class="object-card"><h3>保存与恢复</h3><p>最近写入完成 · 当前无未保存进度</p>${control('save-open','打开目录与保存状态')}</article><article class="object-card"><h3>音画设置</h3><p>音乐开启 · 音效开启 · 伤害数字全部</p>${control('settings-audio','声音与显示')}</article><article class="object-card"><h3>重铸</h3><p>选择星球与保留无人机，先审阅收益与损失。</p>${control('danger-reforge','进入重铸预览')}</article><article class="object-card"><h3>导入 / 新游戏</h3><p>来源、清除与保留先确认；取消不改变当前航程。</p>${control('danger-import','导入')}${control('danger-new','新游戏')}</article></div>`;
+  const m=state.maintenance,save=MaintenanceModels.saveStates[m.save];
+  const tabs=`<div class="subnav">${[['save','保存与恢复'],['preferences','音画与自动保存'],['danger/reforge','重铸'],['danger/import','导入'],['danger/new','新游戏']].map(([id,name])=>`<button data-route="settings/${id}" class="${state.route==='settings/'+id?'active':''}">${name}</button>`).join('')}</div>`;
+  if(state.route==='settings/preferences')return moduleHead('音画与自动保存','当前个人设置与可修改值')+tabs+`<div class="preferences-grid"><section><h2>声音与表现</h2><label><input id="pref-music" type="checkbox" ${m.music?'checked':''}>音乐 ${m.music?'开启':'关闭'}</label><label><input id="pref-effects" type="checkbox" ${m.effects?'checked':''}>音效 ${m.effects?'开启':'关闭'}</label><label>伤害数字<select id="pref-damage">${[['all','全部'],['critical','仅暴击'],['off','关闭']].map(([v,t])=>`<option value="${v}" ${m.damage===v?'selected':''}>${t}</option>`).join('')}</select></label></section><section><h2>保存与引导</h2><label>自动保存间隔<input id="pref-interval" type="number" min="0" max="86400" value="${m.interval}">现实秒</label><small>0为关闭；暂停不阻止保存，不推进游戏时间。</small><label><input id="pref-skip" type="checkbox" ${m.skip?'checked':''}>自动跳过引导提示</label>${control('archive-tutorial','主动回看飞行手册','quiet')}</section></div><div class="note">${m.feedback||'当前设置已显示；修改失败时保留原值并显示原因。'}</div>`;
+  return moduleHead('保存与恢复','当前目录与实际持久化状态')+tabs+`<div class="save-dashboard ${m.save}"><span class="eyebrow">PERSISTENCE / CURRENT STORE</span><h2>${save.title}</h2><p>${save.description}</p><div class="save-timeline"><span>请求${['queued','writing','saved'].includes(m.save)?' ●':' ○'}</span><i></i><span>写盘${['writing','saved'].includes(m.save)?' ●':' ○'}</span><i></i><span>已持久化${m.save==='saved'?' ●':' ○'}</span></div><label>当前目录 <b>${escapeText(m.directory)}</b></label><label>候选目录 <input id="save-directory" value="${escapeText(m.directoryDraft)}"></label><div class="secondary-actions">${control('save-directory-apply','使用候选目录')}${control('save-picker','选择目录')}${control('save-retry','请求保存','primary',['queued','writing'].includes(m.save))}${control('save-backup','有效备份 / 恢复')}${control('danger-import','导入存档')}</div>${m.feedback?`<div class="note">${escapeText(m.feedback)}</div>`:''}</div><div class="maintenance-summary"><article><h3>个人设置</h3><p>音乐${m.music?'开启':'关闭'} · 音效${m.effects?'开启':'关闭'} · 自动保存${m.interval}现实秒</p>${control('settings-audio','声音与显示')}</article><article><h3>危险事务</h3><p>重铸、导入、新游戏分别预览当前对象。</p>${control('danger-reforge','重铸')}${control('danger-new','新游戏')}</article></div>`;
 }
 function danger() {
-  const kind=state.route.split('/')[2]||'reforge';
-  state.dangerKind=kind;
-  const title={reforge:'重铸',import:'导入存档',new:'新游戏'}[kind];
-  const preview=state.dangerPreview?.kind===kind?state.dangerPreview:null;
-  return moduleHead(title,'当前航程不会因查看或取消而改变')+
-    `<div class="danger-route"><div class="transaction-source"><h2>本次${title}对象</h2><label>${kind==='reforge'?'星球':'来源 / 目标目录'} <input id="danger-source" value="${escapeText(state.dangerSource)}"></label>${kind==='reforge'?`<p>保留无人机：${droneNameList([state.droneId])}</p>`:''}${control('danger-preview','生成本次预览','primary')}</div>${preview?`<div class="transaction-preview"><span class="eyebrow">REVIEW BEFORE APPLY</span><h2>${title} · ${escapeText(preview.source)}</h2><div class="loss-grid"><div><b>清除 / 替换</b><p>${kind==='reforge'?'本轮星球探索与建设进度':kind==='import'?'当前会话替换为所选来源':'当前航程进度重置'}</p></div><div><b>收益 / 保留</b><p>${kind==='reforge'?'本次永久收益摘要；保留'+droneNameList([preview.droneId]):kind==='import'?'使用已审阅来源的会话摘要':'建立新航程；设置按本次选择保留'}</p></div></div>${control('danger-confirm','确认本次'+title,'primary')}${control('danger-cancel','取消预览')}</div>`:'<div class="empty-preview">尚无有效预览。修改来源或保留对象后需要重新预览。</div>'}${state.dangerResult?`<div class="receipt"><b>${escapeText(state.dangerResult)}</b></div>`:''}<div class="secondary-actions">${control('back','返回原工作点','quiet')}</div></div>`;
+ const kind=state.route.split('/')[2]||'reforge',m=state.maintenance;state.dangerKind=kind;
+ const title={reforge:'重铸',import:'导入存档',new:'新游戏'}[kind],preview=state.dangerPreview?.kind===kind?state.dangerPreview:null;
+ const source=kind==='reforge'?selectedPlanet().name:kind==='import'?m.importSource:m.newDirectory;state.dangerSource=source;
+ const allowed=kind!=='reforge'||Object.values(selectedPlanet().facilities).some(f=>f.type==='shipyard'&&f.state==='owned');
+ const matrix=MaintenanceModels.reforge;
+ return moduleHead(title,'选择、预览、确认与实际结果分开')+`<div class="danger-route"><div class="transaction-source"><h2>本次${title}对象</h2>${kind==='reforge'?`<label>星球<select id="danger-planet">${state.planets.filter(p=>p.available).map(p=>`<option value="${p.id}" ${p.id===state.planetId?'selected':''}>${p.name}</option>`).join('')}</select></label><p>保留无人机（候选）</p><div class="retained-drones">${Object.entries(drones).map(([id,d])=>`<label><input type="checkbox" data-retain-drone="${id}" ${m.retained.includes(id)?'checked':''}>${d.name}</label>`).join('')}</div>${allowed?'':'<div class="note warn">所选星球船坞尚未领取，当前不能重铸；可先查看重置范围。</div>'}`:kind==='import'?`<label>来源文件<input id="import-source" value="${escapeText(m.importSource)}"></label><p>候选校验通过后才能替换当前会话；不兼容文件原样保留。</p>`:`<label>新档目录<input id="new-directory" value="${escapeText(m.newDirectory)}"></label><label><input id="new-clear-settings" type="checkbox" ${m.clearSettings?'checked':''}>同时重置个人设置</label><p>建立独立新航程，原有效档或损坏文件不会因查看而覆盖。</p>`}${m.dangerError?`<div class="note bad">${escapeText(m.dangerError)}</div>`:''}${control('danger-preview','生成本次预览','primary',!allowed)}</div>${preview?`<div class="transaction-preview"><span class="eyebrow">REVIEW / ${preview.id}</span><h2>${title} · ${escapeText(preview.source)}</h2><div class="loss-grid"><div><b>清除 / 替换</b><ul>${(kind==='reforge'?matrix.clear:kind==='import'?['当前内存会话替换为此候选会话','当前临时战斗重建；手动Started任务按中断处理']:['当前航程切换至新档初始进度',preview.clearSettings?'个人设置重置':'个人设置保留']).map(t=>`<li>${t}</li>`).join('')}</ul></div><div><b>保留 / 收益</b><ul>${(kind==='reforge'?[...matrix.keep,...(selectedPlanet().id==='1'?matrix.gain:['本星球标记征服：装备有效等级+15、免费充能+10%、强化有效等级+1、幸运+100','保留无人机封存至所属星球门槛；仓库/保留容量各+10','新起点第'+({'2':10,'3':15,'4':20,'5':25,'6':30})[selectedPlanet().id]+'关；建立全新战场']), '指定保留：'+droneNameList(preview.retained)]:kind==='import'?['候选摘要：第40关 · '+preview.source,'在线剩余任务与待领回执按来源恢复','内存替换与写盘结果分别报告']:['目标目录：'+preview.source,'原文件保留；新航程单独持久化']).map(t=>`<li>${escapeText(t)}</li>`).join('')}</ul></div></div>${control('danger-confirm','确认本次'+title,'primary')}${control('danger-cancel','取消预览')}</div>`:'<div class="empty-preview">修改对象、来源或保留选择后需重新预览。</div>'}${state.dangerResult?`<div class="receipt"><b>${escapeText(state.dangerResult)}</b></div>`:''}<div class="secondary-actions">${control('back','返回原工作点','quiet')}</div></div>`;
 }
-function overview() {
-  const name=modules.find(row=>row[0]===state.module)?.[1]||'工作对象';
-  const content=state.module==='enhancement'?[['武器效果与顺位','连发 → 穿透 → 连锁'],['防御效果','当前有效效果与已选分支'],['分支节点','先比较A/B实际效果和门槛'],['购级','购买1级 / 最多10级']]:[['敌方情报','按敌方身份查看已知情报'],['通知','当前未读2条'],['教程回看','选择已经学习的操作'],['航程记录','资源明细与战斗统计']];
-  return moduleHead(name,state.module==='enhancement'?'有效效果、顺位与分支':'情报、通知与主动查阅')+`<div class="system-objects">${content.map(([title,text],i)=>`<article class="object-card"><h3>${title}</h3><p>${text}</p>${control('detail-'+i,'展开详情')}</article>`).join('')}</div>`;
+function archive(){
+ const a=state.archive,tab=state.route.split('/')[1]||a.tab;a.tab=tab;
+ const tabs=[['tutorial','飞行手册'],['intel','当前敌情'],['notifications','通知档案'],['statistics','伤害明细']];
+ let body='';
+ if(tab==='tutorial'){const help=MaintenanceModels.tutorials[a.tutorial];body=`<div class="archive-split"><div class="archive-index">${Object.entries(MaintenanceModels.tutorials).map(([id,t])=>`<button data-tutorial="${id}" class="${id===a.tutorial?'active':''}"><b>${t[0]}</b><span>${a.completed.includes(id)?'已实践':'可回看'}</span></button>`).join('')}</div><article class="archive-paper"><span class="eyebrow">FLIGHT MANUAL / ${a.tutorial.toUpperCase()}</span><h2>${help[0]}</h2><div class="manual-diagram">${({equip:['选中槽位','比较候选','确认换装'],upgrade:['选择数量','查看总费用','购级结果'],pickup:['资源出现','点击或等待','实际入账'],retreat:['防御耗尽','撤退航行','恢复后出击'],clear:['终波清空','结算奖励','查看解锁']})[a.tutorial].map((x,i)=>(i?'<i>→</i>':'')+'<span>'+x+'</span>').join('')}</div><p>${help[1]}</p><div class="secondary-actions">${control('tutorial-target','前往对应工作点','primary')}${a.guidePaused?control('tutorial-continue','继续航行'):''}</div><small>${a.guidePaused?'当前为首次引导暂停；继续仅释放引导暂停。':'主动回看不暂停航程，也不会重置已完成记录。'}</small></article></div>`;}
+ if(tab==='intel'){const n=a.intel.find(x=>x.id===a.enemy);body=`<div class="archive-split"><div class="archive-index">${a.intel.map(n=>`<button data-intel="${n.id}" class="${a.enemy===n.id?'active':''}">${n.name}<span>${n.tier}</span></button>`).join('')}</div><article class="intel-paper"><img src="${asset}ui/ships/fleet_20261019/${n.image}" alt="${n.name}当前视觉来源"><div><span class="eyebrow">CURRENT ENEMY</span><h2>${n.name}</h2><span class="pill">${n.tier}</span><dl><dt>装甲</dt><dd>${n.armour}</dd><dt>护盾</dt><dd>${n.shield}</dd></dl><p>${n.mechanics}</p></div></article></div>`;}
+ if(tab==='notifications')body=`<div class="notification-header"><h2>未读 ${a.notifications.filter(n=>!n.read).length}</h2><span>已见与已读分别保留</span></div><div class="notification-list">${a.notifications.map(n=>`<article><div><small>${n.key.split(':')[0]==='unlock'?'开放':'科研'}</small><h3>${n.title}</h3><span>${n.seen?'已见':'未见'} · ${n.read?'已读':'未读'}</span></div><div><button data-notification-seen="${n.key}" ${n.seen?'disabled':''}>${n.seen?'已见':'标记已见'}</button><button data-notification-read="${n.key}" ${n.read?'disabled':''}>${n.read?'已读':'阅读此条'}</button></div></article>`).join('')}</div>`;
+ if(tab==='statistics')body=`<div class="statistics-paper"><h2>伤害明细</h2><p>同一统计来源，按护盾与装甲分列。</p><table><thead><tr><th>来源</th><th>总伤害</th><th>护盾</th><th>装甲</th></tr></thead><tbody><tr><td>武器1 · 脉冲</td><td>128.0 K</td><td>44.0 K</td><td>84.0 K</td></tr><tr><td>武器2 · 导弹</td><td>94.0 K</td><td>32.0 K</td><td>62.0 K</td></tr></tbody></table><small>按实际来源累计，数值不随档案页面开关重置。</small></div>`;
+ return moduleHead('航行档案','教程、当前敌情与通知主动查阅')+`<div class="subnav">${tabs.map(([id,name])=>`<button data-route="archive/${id}" class="${tab===id?'active':''}">${name}</button>`).join('')}</div>`+body;
 }
 function catalog() {
   return moduleHead('全系统工作对象','返回所选对象的上次工作位置')+`<div class="system-objects">${modules.map(([id,name,en])=>`<button class="object-card" data-module="${id}" style="text-align:left;white-space:normal;min-height:80px"><span class="eyebrow">${en}</span><h3>${name}</h3></button>`).join('')}</div>`;
@@ -290,7 +300,7 @@ function render() {
   document.body.classList.toggle('collapsed',state.collapsed);
   document.querySelectorAll('[data-family]').forEach(button=>button.classList.toggle('active',button.dataset.family===state.family));
   $('#nav').innerHTML=nav(); $('#collapse').textContent=state.collapsed?'展开工作区':'收起工作区'; $('#pause').textContent=state.paused?'▶ 继续':'Ⅱ 暂停';
-  let body=state.module==='catalog'?catalog():({reactor,equipment,planet,galaxy,research,crew,enhancement,hyperspace,settings}[state.module]||overview)();
+  let body=state.module==='catalog'?catalog():({reactor,equipment,planet,galaxy,research,crew,enhancement,hyperspace,settings,archive}[state.module]||catalog)();
   if(state.collapsed) body=`<div class="resting"><div class="rest-icon">◈</div><h1>远航仍在继续</h1><p>当前对象与草稿保持。</p>${control('expand','继续当前工作','primary')}</div>`;
   else if(state.family==='work'&&state.module!=='catalog') body=workWrapper(body);
   $('#work-content').innerHTML=body;
@@ -298,6 +308,7 @@ function render() {
   const actions=dock();
   if(actions) {const element=document.createElement('div');element.id='action-dock';element.innerHTML=actions;$('#workspace').append(element);}
   $('#notice').textContent=state.notice;
+  $('#save-alert')?.remove();if(['failed','recovery'].includes(state.maintenance.save)){const alert=document.createElement('button');alert.id='save-alert';alert.dataset.action='save-open';alert.textContent=MaintenanceModels.saveStates[state.maintenance.save].title+' · 查看与恢复';$('#battle').append(alert);}
   $('#fragments').textContent=state.enhance.funds?(state.enhance.quoteUsed?state.enhance.balance:'64.0 B'):'2.1 K';
   const scroll=state.scroll[state.route];
   if(scroll) {$('#work-content').scrollTop=scroll.outer; if($('.work-sheet')) $('.work-sheet').scrollTop=scroll.inner;}
@@ -410,9 +421,18 @@ function action(a) {
   else if(a==='filter-export') {goRoute('hyperspace/filter-export');return;}
   else if(a==='materials-exchange') {state.materialReceipt='实际支付100源材料，收到20目标材料；余额140 / 80。';notify('材料兑换完成');}
   else if(a==='save-open') {goRoute('settings/save');return;}
-  else if(a.startsWith('danger-')&&['reforge','import','new'].includes(a.slice(7))) {const kind=a.slice(7);state.dangerKind=kind;state.dangerSource=kind==='reforge'?'起源星':kind==='import'?'backup-02.json':'D:/SpaceIdle/save';state.dangerPreview=null;state.dangerResult=null;goRoute('settings/danger/'+kind);return;}
-  else if(a==='danger-preview') {state.dangerPreview={kind:state.dangerKind,source:state.dangerSource,droneId:state.droneId};state.dangerResult=null;}
-  else if(a==='danger-confirm') {const preview=state.dangerPreview;if(preview&&preview.kind===state.dangerKind&&preview.source===state.dangerSource&&preview.droneId===state.droneId){state.dangerResult=`${{reforge:'重铸',import:'导入',new:'新游戏'}[preview.kind]}已完成：${preview.source}；实际结果摘要保留。`;state.dangerPreview=null;notify('本次操作完成，重复确认已关闭');}}
+  else if(a==='archive-tutorial'){goRoute('archive/tutorial');return;}
+  else if(a==='tutorial-continue'){state.archive.guidePaused=false;notify('引导暂停已释放；其他暂停原因保持');}
+  else if(a==='tutorial-target'){goRoute({equip:'equipment',upgrade:'equipment',pickup:'archive/statistics',retreat:'equipment',clear:'archive/notifications'}[state.archive.tutorial]);return;}
+  else if(a==='settings-audio'){goRoute('settings/preferences');return;}
+  else if(a==='save-directory-apply'){const m=state.maintenance;if(!m.directoryDraft.trim()){m.feedback='候选目录为空，当前目录保持。';}else{m.directory=m.directoryDraft;m.feedback='演示目录已切换，当前进度仍需请求保存。';m.save='dirty';}}
+  else if(a==='save-picker'){openDetail('选择保存目录',`<label>目录<select id="directory-choice"><option>D:/SpaceIdle/save</option><option>D:/SpaceIdle/backup</option></select></label><p>选取后写入候选目录；应用后才切换当前目录。</p>${control('save-picker-use','选取此目录','primary')}`);return;}
+  else if(a==='save-picker-use'){state.maintenance.directoryDraft=$('#directory-choice').value;$('#inspect-detail').close();notify('候选目录已选取，当前目录保持');}
+  else if(a==='save-retry'){state.maintenance.save='queued';state.maintenance.feedback='保存请求已排队；收到持久完成状态之前不显示已保存。';}
+  else if(a==='save-backup'){goRoute('settings/danger/import');state.maintenance.importSource='backup-02.json';state.dangerPreview=null;return;}
+  else if(a.startsWith('danger-')&&['reforge','import','new'].includes(a.slice(7))) {const kind=a.slice(7);state.dangerKind=kind;state.dangerPreview=null;state.dangerResult=null;goRoute('settings/danger/'+kind);return;}
+  else if(a==='danger-preview') {const m=state.maintenance;state.dangerSource=state.dangerKind==='reforge'?selectedPlanet().name:state.dangerKind==='import'?m.importSource:m.newDirectory;m.dangerError='';if(state.dangerKind==='import'&&!['backup-02.json','backup-03.json'].includes(m.importSource)){state.dangerPreview=null;m.dangerError='候选校验未通过：当前演示仅提供backup-02.json与backup-03.json有效响应；原文件与当前会话保持。';render();return;}if(state.dangerKind==='new'&&!m.newDirectory.trim()){m.dangerError='目标目录为空，当前航程保持。';render();return;}state.dangerPreview={id:'preview-'+(++m.previewSerial),kind:state.dangerKind,source:state.dangerSource,planetId:state.planetId,retained:[...m.retained],clearSettings:m.clearSettings};state.dangerResult=null;}
+  else if(a==='danger-confirm') {const p=state.dangerPreview,m=state.maintenance;if(p&&p.kind===state.dangerKind&&p.source===state.dangerSource&&p.planetId===state.planetId&&p.retained.join()===m.retained.join()&&p.clearSettings===m.clearSettings){state.dangerResult=p.kind==='import'?'演示结果：候选已替换内存会话，持久化待重试；原有效文件保留。':p.kind==='reforge'?'演示结果：'+p.source+'重铸会话已接纳；星球探索、建筑与星系进度保留。':'演示结果：新航程已建立至'+p.source+'，等待首次持久化；原文件保留。';m.save=p.kind==='import'?'failed':'queued';m.feedback=p.kind==='import'?'候选已替换内存会话，写盘失败待重试；旧有效文件保留。':'新会话已接纳；持久化请求排队，等待完成。';state.dangerPreview=null;notify('本次演示结果已保留，旧预览不能重复提交');}}
   else if(a==='danger-cancel') {state.dangerPreview=null;notify('已取消预览，当前航程不变');}
   else if(a==='back') {back();return;}
   else if(a==='catalog') {goRoute('catalog');return;}
@@ -425,7 +445,7 @@ function action(a) {
   render();
 }
 document.addEventListener('click',event=>{
-  const button=event.target.closest('[data-family],[data-module],[data-group],[data-slot],[data-action],[data-route],[data-context-route],[data-crew],[data-drone],[data-hyper-route],[data-study],[data-facility],[data-galaxy-node],[data-enhance-node],[data-enhance-choice]');
+  const button=event.target.closest('[data-family],[data-module],[data-group],[data-slot],[data-action],[data-route],[data-context-route],[data-crew],[data-drone],[data-hyper-route],[data-study],[data-facility],[data-galaxy-node],[data-enhance-node],[data-enhance-choice],[data-tutorial],[data-intel],[data-notification-seen],[data-notification-read]');
   if(!button) return;
   if(button.dataset.family) {rememberScroll();state.family=button.dataset.family;render();}
   else if(button.dataset.module) setModule(button.dataset.module);
@@ -436,6 +456,10 @@ document.addEventListener('click',event=>{
   else if(button.dataset.crew) {state.crewId=button.dataset.crew;const m=state.crewMembers[state.crewId];state.crewDraft=m.job==='hyperspace'?'idle':m.job;state.crewPlanet=m.targetPlanet;state.crewFacility=m.targetFacility;state.crewMode=m.mode;state.crewError='';render();}
   else if(button.dataset.drone) {state.droneId=button.dataset.drone;state.formationPreview=null;invalidateForge();state.dangerPreview=null;notify('已更换无人机对象，需要重新预览');render();}
   else if(button.dataset.hyperRoute) {state.routeId=button.dataset.hyperRoute;render();}
+  else if(button.dataset.tutorial){state.archive.tutorial=button.dataset.tutorial;render();}
+  else if(button.dataset.intel){state.archive.enemy=button.dataset.intel;render();}
+  else if(button.dataset.notificationSeen){state.archive.notifications.find(n=>n.key===button.dataset.notificationSeen).seen=true;render();}
+  else if(button.dataset.notificationRead){state.archive.notifications.find(n=>n.key===button.dataset.notificationRead).read=true;render();}
   else if(button.dataset.enhanceNode){const [id,node]=button.dataset.enhanceNode.split(':');state.enhance.effect=id;state.enhance.node=Number(node);state.enhance.choice='';goRoute('enhancement/branch/'+id+'/'+node);}
   else if(button.dataset.enhanceChoice){state.enhance.choice=button.dataset.enhanceChoice;render();}
   else if(button.dataset.galaxyNode){if(window.cityDragged){window.cityDragged=false;return;}state.galaxyNode=button.dataset.galaxyNode;render();}
@@ -448,12 +472,17 @@ document.addEventListener('input',event=>{
   if(event.target.id==='research-uranium')state.researchUraniumDraft=event.target.value;
   if(event.target.id==='research-ratio')state.researchRatioDraft=event.target.value;
   if(event.target.id==='danger-source') {state.dangerSource=event.target.value;state.dangerPreview=null;state.dangerResult=null;const preview=$('.transaction-preview');if(preview)preview.remove();notify('来源已改变，旧预览失效');}
+  if(['save-directory','import-source','new-directory'].includes(event.target.id)){const key={'save-directory':'directoryDraft','import-source':'importSource','new-directory':'newDirectory'}[event.target.id];state.maintenance[key]=event.target.value;state.dangerPreview=null;state.dangerResult=null;document.querySelector('.transaction-preview')?.remove();}
   if(event.target.id==='material-amount') state.materialDraft=event.target.value;
   if(event.target.id==='filter-source') state.importFilterText=event.target.value;
   if(['research-budget','research-uranium'].includes(event.target.id)){const dirty=state.researchDraft!==state.researchBudget||state.researchUraniumDraft!==state.researchUranium;const flag=$('.investment-title small');if(flag)flag.textContent=dirty?'草稿未应用，当前生效值保持':'当前投入已生效';const context=$('[data-context-route="research"] span');if(context)context.textContent=summary('research');}
 });
 document.addEventListener('change',event=>{
   const id=event.target.id,value=event.target.value;
+  if(id==='danger-planet'){state.planetId=value;state.dangerPreview=null;state.dangerResult=null;render();}
+  if(event.target.dataset.retainDrone){const id=event.target.dataset.retainDrone;state.maintenance.retained=event.target.checked?[...state.maintenance.retained,id]:state.maintenance.retained.filter(x=>x!==id);state.dangerPreview=null;state.dangerResult=null;render();}
+  if(id==='new-clear-settings'){state.maintenance.clearSettings=event.target.checked;state.dangerPreview=null;render();}
+  if(id.startsWith('pref-')){const m=state.maintenance;if(id==='pref-music')m.music=event.target.checked;if(id==='pref-effects')m.effects=event.target.checked;if(id==='pref-skip')m.skip=event.target.checked;if(id==='pref-damage')m.damage=value;if(id==='pref-interval'){if(/^\d+$/.test(value)&&Number(value)<=86400)m.interval=value;else m.feedback='自动保存间隔需为0–86400现实秒；原值保持。';}render();}
   if(id==='research-auto-toggle')state.researchAutoDraft=event.target.checked;
   if(id==='planet-select'){state.planetId=value;state.planet=selectedFacility().state;notify('已切换所看星球，各星球任务保持');render();}
   if(id==='crew-target') {state.crewDraft=value;state.crewError='';render();}
@@ -478,6 +507,8 @@ for(const key of ['reactor','equipment','planet','galaxy']) $('#'+key+'-case').o
   render();
 };
 for(const kind of ['manual','online']) $('#'+kind+'-task-case').onchange=event=>{const key=kind==='manual'?'manualTask':'onlineTask';state[key]={...state[key],status:event.target.value,route:kind==='manual'?'pulse':'missile'};render();};
+$('#guide-case').onchange=event=>{state.archive.guidePaused=event.target.value==='first';goRoute('archive/tutorial');};
+$('#save-case').onchange=event=>{state.maintenance.save=event.target.value;state.maintenance.feedback='';render();};
 $('#enhance-funds').onchange=event=>{state.enhance.funds=event.target.value==='enough';render();};
 $('#research-case').onchange=event=>{state.researchState=event.target.value;render();};
 $('#research-unlocks').onchange=event=>{state.researchUnlocked=event.target.value==='all'?Object.keys(studies):['equipment_finishing','uranium_extraction','weapon_accuracy','equipment_reinforcement','resource_refining','singularity'];if(!state.researchUnlocked.includes(state.researchId))state.researchId=state.researchUnlocked[0];render();};
