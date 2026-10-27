@@ -1,0 +1,737 @@
+{
+  "status": "unapproved_review_candidate",
+  "code_commit": "260b593d8a8086532d330fa8be3ede6dc24d1113",
+  "runtime_code_commit": "0689f736baa6247b25491aff52a3388b709e2ef5",
+  "accepted_design_commit": "7a85481b75f323af75d53427312afd0ae0f45d70",
+  "documentation_sync_only_after_runtime_commit": true,
+  "evidence_branch": "evidence/ui-restoration-260b593d",
+  "renderer": "Godot 4.7.2, compatibility/OpenGL, actual GPU framebuffer",
+  "desktop_input_validation": false,
+  "source_asset_git_blobs": {
+    "assets/backgrounds/opening/stage_01.png": "d617f66984f6237e5ddac59b7d50dfc74353e79b",
+    "assets/backgrounds/opening/stage_02.png": "d87e8616e40040b8e56f8076ae7e8a4cb024f5ba",
+    "assets/ai_tech_factory/workshop-background-v2.png": "c267c45e85ea2cb0f450ce812cc7b3e6d21e1d40",
+    "assets/planets/orbital/models/auto_explore-icon.png": "4b8ebf961ea3c034e55e53aaa93615e8e6993f5b",
+    "assets/planets/orbital/models/refinery-icon.png": "14abc695aa2812c1d7b61ed0ecb55c6a181f194d",
+    "assets/planets/orbital/models/equipment-icon.png": "f30b2d7f0c838b000f789869f5febac4d6f0f074",
+    "assets/planets/orbital/models/shipyard-icon.png": "2e36a86d0eaa3abba768ac67c9e2ac4e776f3414",
+    "assets/ui/reactor/toon-console.svg": "348bcc6c6729f42d057979b868a60a25e240410e",
+    "assets/ui/reactor/toon-weapons.svg": "953d0d617913b8a335bd4b775f0b143516ccdd64",
+    "assets/hyperspace/icons/pulse.png": "25b9bd8f25127d947d308a0f9c244646d7e73245",
+    "assets/hyperspace/icons/missile.png": "ea34513155dcd5e6d06954e15fc1c813352125eb",
+    "assets/hyperspace/icons/rail.png": "1e664b105a6aeb33a5e52368dd024fb0734635e9",
+    "assets/hyperspace/icons/beam.png": "1dea470076edb3e8d55d90e856aebcab1208d9ac",
+    "assets/fonts/NotoSansSC.ttf": "fb0637bafbcd804fe32152370a1225990745b4bc"
+  },
+  "screenshots": [
+    {
+      "file": "ui-r2-1560-battle-opening-normal-start.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "battle-opening-normal-start",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-ship-0.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "ship-0",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-ship-1.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "ship-1",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-reactor.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "reactor",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-reactor-bottom.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "reactor-bottom",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-reactor-device-controls.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "reactor-device-controls",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-research.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-research-drawer.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-drawer",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-research-terminal.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-terminal",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-research-selected-machine.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-selected-machine",
+      "input_kind": "programmatic_button_callback",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-research-invalid-input.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-invalid-input",
+      "input_kind": "programmatic_button_callback",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-enhancement.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "enhancement",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-enhancement-bottom.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "enhancement-bottom",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-crew.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "crew",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-crew-bottom.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "crew-bottom",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-planet.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "planet",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-planet-facility-detail.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "planet-facility-detail",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-galaxy.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "galaxy",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-galaxy-node-detail.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "galaxy-node-detail",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-hyperspace-0.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-0",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-hyperspace-1.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-1",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-hyperspace-2.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-2",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-hyperspace-3.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-3",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-hyperspace-detail.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-detail",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-1560-equipment-upgrade-success.png",
+      "window": {
+        "width": 1560,
+        "height": 1000
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "equipment-upgrade-success",
+      "input_kind": "programmatic_button_callback",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-battle-opening-normal-start.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "battle-opening-normal-start",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-ship-0.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "ship-0",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-ship-1.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "ship-1",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-reactor.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "reactor",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-reactor-bottom.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "reactor-bottom",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-reactor-device-controls.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "reactor-device-controls",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-research.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-research-drawer.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-drawer",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-research-terminal.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-terminal",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-research-selected-machine.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-selected-machine",
+      "input_kind": "programmatic_button_callback",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-research-invalid-input.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "research-invalid-input",
+      "input_kind": "programmatic_button_callback",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-enhancement.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "enhancement",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-enhancement-bottom.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "enhancement-bottom",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-crew.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "crew",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-crew-bottom.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "crew-bottom",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-planet.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "planet",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-planet-facility-detail.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "planet-facility-detail",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-galaxy.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "galaxy",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-galaxy-node-detail.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "galaxy-node-detail",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-hyperspace-0.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-0",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-hyperspace-1.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-1",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-hyperspace-2.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-2",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-hyperspace-3.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-3",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-hyperspace-detail.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "hyperspace-detail",
+      "input_kind": "gpu_framebuffer_and_controlled_scene_selection",
+      "natural_unlock_evidence": false
+    },
+    {
+      "file": "ui-r2-572-equipment-upgrade-success.png",
+      "window": {
+        "width": 572,
+        "height": 960
+      },
+      "battle_logical_size": [
+        572,
+        960
+      ],
+      "case": "equipment-upgrade-success",
+      "input_kind": "programmatic_button_callback",
+      "natural_unlock_evidence": false
+    }
+  ],
+  "fixture_provenance": [
+    "UI settings and startup persistence use TEMP-based test paths (not user:// settings); the retained test save directory derives from the TEMP settings parent. No settings or save files are included.",
+    "Campaign accept_reforge(...,61) and _publish_progress are controlled unlock fixtures; they do not prove natural progression.",
+    "Hyperspace drones are generated in memory at level10; callback cases inject 1e12 iron through the existing test session economy.",
+    "Main process is disabled for stable scene capture; child UI/rendering continues. User pause is explicit.",
+    "Numeric regression uses a fresh Session seed871."
+  ],
+  "alignment_implementation": "Static UI images cache source/visible bounds on first use, center visible subjects in layout frames, and retain independent click regions. Fleet common-scale preview uses existing hull bounds; world model roots and damage geometry are unchanged.",
+  "acceptance": "V1-V10 and G9 remain open for scene quality and real interaction review. Callback assertions are supporting implementation evidence only."
+}

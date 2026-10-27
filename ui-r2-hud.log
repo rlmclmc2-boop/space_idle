@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+STAGE6_HUD_FOUR_BALANCES_VISIBLE_NONOVERLAPPING_FONT_BOUNDS_OK
+STAGE6_HUD_READABLE_NAMES_BARS_GEOMETRY_PURITY_OK logical_height=133.0419921875 visual_height=133.0419921875

@@ -1,0 +1,19 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+EVIDENCE_CODE_COMMIT 260b593d8a8086532d330fa8be3ede6dc24d1113
+RESEARCH_CURRENT_READOUT 等待选择研究 · 工作量 0 / 60 · 0.0%
+速度 0工作量/秒 · 剩余 —
+AI数量 0
+RESEARCH_BUTTON_CALLBACK_SELECTION_OK weapon_accuracy
+INVALID_INVESTMENT_DRAFT_RETAINED_ACTUAL_SETTINGS_UNCHANGED
+SLOT_CARD_BUTTON_CALLBACK_SINGLE_LEVEL_OK 1 -> 2
+RESEARCH_CURRENT_READOUT 已暂停 · 工作量 0 / 60 · 0.0%
+速度 0工作量/秒 · 剩余 1.0秒
+当前科研效果 ×1e0
+RESEARCH_BUTTON_CALLBACK_SELECTION_OK equipment_reinforcement
+INVALID_INVESTMENT_DRAFT_RETAINED_ACTUAL_SETTINGS_UNCHANGED
+SLOT_CARD_BUTTON_CALLBACK_SINGLE_LEVEL_OK 2 -> 3
+FOCUSED_SCENE_READOUT_CAPTURE_OK
