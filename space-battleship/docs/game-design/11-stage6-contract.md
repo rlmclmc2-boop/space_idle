@@ -2,6 +2,16 @@
 
 [Design entry](README.md) defines gameplay rules; [verification](07-verification.md) defines the acceptance matrix. This page records actual coverage. `bin/`, generated JSON, Godot import metadata, screenshots and local saves are test outputs.
 
+## 当前专项复审结论（de1a96ae，2026-10-27）
+
+父线程确认 `de1a96ae8b43cd5d650972ee861efe7b65abd9df` 独立针对性复审通过，并在Linux Godot4.6.3用同一 `_stage6_beam_active_port_probe.gd` 复跑，626次活beam检查零失败、实际进程退出码0。结合本机Windows Godot4.7.2的8例/626次检查及已有命中回归，当前已关闭本轮发现的持续光束跨目标死亡、大步进与endless重绑端口阻断。
+
+父线程已完成 `551846a7` 的74.76秒连续真实窗口画面对照：关卡2覆盖三次撤退/再航行，完整星球/空间站纹理恢复，原灰蓝整片闪烁消失。此项背景专项云端验收通过，原始原因与像素/连续帧对照仍保留在下文。
+
+以上复审与云端结果只覆盖本轮资产、背景采样及炮台/光束一致性问题。整体UI品质尚未通过，不扩展为全游戏品质、所有玩法、实际音效或不限帧GPU性能通过。
+
+**当前不合main。** 尺寸配置指纹变化导致旧存档configHash不匹配，父线程已向用户询问是否补兼容，答复仍待确认。本轮未新增迁移、未重写或自动舍弃旧存档；用户答复前保持此边界。此段为当前结论，后文各增量当时的“待复审”文字作为历史状态保留。本次只更新验收记录，无代码、配置或存档行为变更，按文档修改范围仅做diff-check，不重复运行游戏测试。
+
 ## 活跃持续光束端口边界修复（551846a7之后）
 
 独立复审提出的边界已实证：551846a7只在出生的局部Weapon副本上按真实目标投影，`advance_beam_clocks`随后从共享Weapon的旧世界口重写活beam坐标。一个宿主advance内新beam出生后继续走native段、或endless在目标死亡后重绑时，宿主尚未返回同步，端口会恢复为旧目标口。新增 `_stage6_beam_active_port_probe.gd` 修前626次活beam检查中13次不一致；例如native时间1.85的普通新beam已指向uid2，但数值/屏幕口仍为 `(285.5907,493.7633)`，正确为 `(296.4883,495.9655)`。endless的2秒大步进、native连续段及审核指定的1.11→1.48秒跨死亡步进也覆盖其中。
