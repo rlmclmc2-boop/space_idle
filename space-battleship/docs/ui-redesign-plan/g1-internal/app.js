@@ -19,9 +19,9 @@ const state = {
   reactor: 'running', equipment: 'normal', planet: 'building', galaxy: 'building',
   alloc: [45,35,20,0], actual: [45,35,20,0], reactorError: '',
   slot:0, fitKeys:['laser','missile','longLaser','shield','armour'], levels: [24,18,18,18,18], fits: ['脉冲炮','舰载导弹','长激光','护盾发生器','装甲'],
-  attributes:['12.4 K','12.4 K','12.4 K','84.0 K','84.0 K'], candidate: false, equipmentMode: 'one', planetAuto: true, planetId: 'origin', galaxyNode: 'outer',
-  crewId: 'lin', crewDraft: 'planet-build',
-  crewMembers: {lin: {name: '林夏', job: 'planet-build'}, zhou: {name: '周砚', job: 'galaxy'}, he: {name: '何宁', job: 'idle'}},
+  attributes:['12.4 K','12.4 K','12.4 K','84.0 K','84.0 K'], candidate: false, equipmentMode: 'one', planetAuto: true, planetId: '1', galaxyNode: '9', galaxyNodes:structuredClone(ColonyModels.galaxy.nodes), galaxyView:{x:0,y:0,zoom:1.3}, planets: structuredClone(ColonyModels.planets), crewPlanet:'1', crewFacility:'shipyard', crewMode:'1', crewError:'',
+  crewId: 'navigator', crewDraft: 'planet-build',
+  crewMembers: structuredClone(ColonyModels.crew),
   researchId:'equipment_finishing', researchBudget:'800000', researchDraft:'800000', researchUranium:'120000', researchUraniumDraft:'120000', researchAuto:false, researchRatio:'25', researchAutoDraft:false, researchRatioDraft:'25', researchState:'running', researchDrawer:false, researchUnlocked:['equipment_finishing','uranium_extraction','weapon_accuracy','equipment_reinforcement','resource_refining','singularity'], researchError:'', researchFeedback:'', cooldowns:{},
   droneId: 'd2', droneSelection: ['d2'], equippedDrones: ['d1'], formationDraft: ['d2'], formationPreview: null,
   forgePreview: null, forgeResult: null, forgeOperation: 'reroll',
@@ -48,7 +48,7 @@ const equipmentResponses={
   '84.0 K':{one:'87.2 K',max:'96.0 K'},'87.2 K':{one:'90.4 K',max:'99.2 K'},'92.0 K':{one:'95.2 K',max:'104.0 K'},'96.0 K':{one:'99.2 K',max:'108.0 K'}
 };
 const studies = SceneModels.research;
-const jobs = {idle:'空闲', 'planet-build':'起源星·轨道船坞施工', 'planet-explore':'起源星探索', galaxy:'曙光星系建设', hyperspace:'超空间在线挂机', research:'AI科研续研岗位'};
+const jobs = {idle:'空闲', 'planet-build':'星球设施施工', 'planet-explore':'星球探索', galaxy:'第一星系建设', hyperspace:'超空间在线挂机保留', research:'AI科研续研岗位',equipment:'装备自动购级',enhancement:'强化自动购级',reactor:'反应炉自动购级'};
 const planetStatus = {building:['施工中','62%','后续施工完成后等待领取'],paused:['缺少施工人员','62%','施工次数已保留'],ready:['待领取','100%','领取后设施收益才生效'],owned:['已领取','100%','轨道船坞收益已计入当前Buff']};
 const galaxyStatus = {building:['建设中','62%','工程推进取决于当前人员'],fog:['未探索','0%','父节点尚未探索完成'],planned:['规划地基','0%','探索可达后进入工程'],upgrading:['升级中 · Lv.2仍生效','48%','升级完成后自动更新收益'],complete:['已建成 Lv.3','100%','收益已生效，无需领取']};
 const effectSnapshots = {
@@ -63,7 +63,12 @@ const effectSnapshots = {
 const control = (action,label,cls='',disabled=false) => `<button data-action="${action}" class="${cls}" ${disabled?'disabled':''}>${label}</button>`;
 const sum = values => values.reduce((a,b)=>a+b,0);
 const changed = () => state.alloc.some((v,i)=>v!==state.actual[i]);
-const crewCount = job => Object.values(state.crewMembers).filter(member=>member.job===job).length;
+const crewCount = (job,planetId=null,facilityId=null) => Object.values(state.crewMembers).filter(m=>m.available&&m.job===job&&(!planetId||m.targetPlanet===planetId)&&(!facilityId||m.targetFacility===facilityId)).length;
+const selectedPlanet=()=>state.planets.find(p=>p.id===state.planetId);
+const selectedFacility=()=>selectedPlanet().facilities[selectedPlanet().facilitySelection];
+function memberJob(m){if(m.job.startsWith('planet-')){const p=state.planets.find(p=>p.id===m.targetPlanet);return p.name+' / '+(m.job==='planet-build'?p.facilities[m.targetFacility].name+'施工':'探索');}return jobs[m.job];}
+function crewAdmission(){const m=state.crewMembers[state.crewId];if(m.job==='hyperspace')return '该成员被在线任务保留，请从任务入口停止或领取后再派遣。';if(state.crewDraft==='planet-build'){const p=state.planets.find(p=>p.id===state.crewPlanet),f=p.facilities[state.crewFacility];if(f.state!=='building')return '所选设施当前不在施工。';if(!f.extraCrew)return '此设施不需额外施工人员，由探索完成推进。';if(Object.entries(state.crewMembers).filter(([id,x])=>id!==state.crewId&&x.job==='planet-build'&&x.targetPlanet===p.id&&x.targetFacility===f.id).length>=f.extraCrew)return '所选设施额外施工岗位已满。';}else if(state.crewDraft!=='idle'){const cap=state.crewDraft==='galaxy'?6:1;const others=Object.entries(state.crewMembers).filter(([id,x])=>id!==state.crewId&&x.job===state.crewDraft&&(x.job!=='planet-explore'||x.targetPlanet===state.crewPlanet)).length;if(others>=cap)return '所选目标人数已达容量 '+cap+'。';}return '';}
+
 let renderedRoute=null, renderedCollapsed=false;
 const escapeText = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function notify(text) { state.notice=text; $('#notice').textContent=text; }
@@ -101,9 +106,9 @@ function summary(route) {
   if(route==='equipment') return `${state.slot<3?'武器'+(state.slot+1):'防御'+(state.slot-2)} · ${state.fits[state.slot]} Lv.${state.levels[state.slot]}${state.candidate?' / 有候选':''}`;
   if(route==='reactor') return `${sum(state.actual)}/100${changed()?' · 草稿'+sum(state.alloc):' · 已生效'}`;
   if(route==='research') return `${studies[state.researchId].name} · 铁${state.researchBudget}/秒${state.researchDraft!==state.researchBudget||state.researchUraniumDraft!==state.researchUranium?' / 有草稿':''}`;
-  if(route==='crew') {if(state.group==='hyperspace'){const task=state.onlineTask;return task.crewId?state.crewMembers[task.crewId].name+' · '+routeName(task.route)+' / '+taskStatus(task):'当前在线任务无保留船员';}const m=state.crewMembers[state.crewId];return `${m.name} · ${jobs[m.job]}`;}
-  if(route==='planet') return `轨道船坞 · ${planetStatus[state.planet][0]}`;
-  if(route==='galaxy') return `外环平台 · ${galaxyStatus[state.galaxy][0]}`;
+  if(route==='crew') {if(state.group==='hyperspace'){const task=state.onlineTask;return task.crewId?state.crewMembers[task.crewId].name+' · '+routeName(task.route)+' / '+taskStatus(task):'当前在线任务无保留船员';}const m=state.crewMembers[state.crewId];return `${m.name} · ${memberJob(m)}`;}
+  if(route==='planet') return `${selectedPlanet().name} · ${selectedFacility().name} / ${facilityStatus(selectedPlanet(),selectedFacility())}`;
+  if(route==='galaxy'){const n=state.galaxyNodes[state.galaxyNode];return `${n.name} · ${galaxyStatus[n.state][0]}`;}
   if(route==='hyperspace/routes') return `手动·${routeName(state.manualTask.route)} ${taskStatus(state.manualTask)} / 挂机·${routeName(state.onlineTask.route)} ${taskStatus(state.onlineTask)}`;
   if(route==='hyperspace/formation') return `${state.equippedDrones.map(id=>drones[id].name).join(' / ')}${state.formationDraft.join()!==state.equippedDrones.join()?' · 有候选':''}`;
   if(route==='settings/danger/reforge') return state.dangerPreview?'预览待确认':state.dangerResult?'最近结果可查':'重铸 / 导入 / 新游戏';
@@ -163,17 +168,19 @@ function equipment() {
     `<div class="secondary-actions">${control('hull','比较五舰')}${control('equip-all','全部槽位批量预览')}${control('attributes','属性与贡献明细','quiet')}</div>`;
 }
 
+function facilityStatus(p,f){if(f.state==='building'){if(!p.running)return '缺少进行中的探索';if(f.extraCrew&&crewCount('planet-build',p.id,f.id)<f.extraCrew)return '缺少额外施工人员';return '施工中';}return {locked:'未达探索门槛',ready:'待领取',owned:'已领取 · 收益生效'}[f.state];}
 function planet() {
-  const [status,pct,desc]=planetStatus[state.planet], count=state.planet==='paused'?0:crewCount('planet-build');
-  return moduleHead('起源星 · 轨道发展','探索度84% · 当前设施：轨道船坞',`<span class="pill">${state.planetAuto?'自动探索':'本次完成后停止'}</span>`)+
-    `<div class="planet-layout"><div class="planet-view"><div class="orbit"></div><div class="planet-ball"><img src="${asset}planets/toon/origin-surface.svg" alt="起源星"></div><button class="facility-chip" data-action="planet-detail">轨道船坞 · ${status}</button></div><div class="planet-state"><span class="eyebrow">ORBITAL DOCK</span><h2>轨道船坞</h2><span class="pill ${state.planet==='paused'?'warn':'good'}">${status}</span><div class="progress-num">${pct}</div><div class="meter"><i style="width:${pct}"></i></div><div class="sub">施工人员 ${count} / 2<br>${desc}</div><div class="people"><i class="${count===0?'empty':''}"></i><i class="empty"></i></div></div></div>`+
-    `<div class="secondary-actions">${control('planet-auto',state.planetAuto?'本次完成后停止':'开启自动探索')}${control('planet-cancel','立即取消探索','danger')}${control('planet-other','其他星球')}${control('planet-buff','累计Buff / 重铸')}</div>`;
+  const p=selectedPlanet(),f=selectedFacility(),pct=Math.round(f.work/f.required*100),status=facilityStatus(p,f);
+  return moduleHead(p.name,'探索度 '+p.exploration+' · 当前设施：'+f.name,`<select id="planet-select" aria-label="选择星球">${state.planets.filter(p=>p.available).map(p=>`<option value="${p.id}" ${p.id===state.planetId?'selected':''}>${p.name}</option>`).join('')}</select>`)+
+    `<div class="orbital-room"><div class="orbital-stage ${p.running?'exploring':'stopped'} ${p.stellar?'stellar':''}"><div class="orbital-ellipse"></div><div class="planet-globe" style="--planet-size:${Math.min(p.radiusScale,1.22)*230}px;--atmosphere:#${p.atmosphere}"><img src="${p.surface.replace('res://assets/',asset)}" alt="${p.name}">${p.cloudOpacity?`<img class="cloud-layer" style="opacity:${p.cloudOpacity}" src="${p.cloud.replace('res://assets/',asset)}" alt="独立云层">`:''}</div>${p.running?`<img class="orbital-scout" src="${asset}planets/orbital/scout-v1.png" alt="正在探索的探索机">`:''}${Object.values(p.facilities).map((x,i)=>`<button data-facility="${x.id}" class="orbit-facility orbit-position-${i} ${x.state} ${x.id===f.id?'selected':''}"><img src="${x.icon.replace('assets/',asset)}" alt=""><b>${x.name}</b><small>${facilityStatus(p,x)}</small></button>`).join('')}<div class="exploration-readout"><b>${p.running?'本次探索 '+p.elapsed+' / '+p.duration+' 游戏秒':'探索已停止'}</b><span>探索人员 ${crewCount('planet-explore',p.id)} / 1 · ${p.automatic?'完成后继续':'本次完成后停止'}</span></div></div><div class="facility-console"><span class="eyebrow">ORBITAL DEVELOPMENT</span><h2>${f.name}</h2><span class="pill ${status==='施工中'||f.state==='owned'?'good':'warn'}">${status}</span><div class="facility-work"><b>${f.work} <small>/ ${f.required}次</small></b><div class="meter"><i style="width:${pct}%"></i></div></div><dl><dt>探索门槛</dt><dd>${f.threshold} / 当前${p.exploration}</dd><dt>额外施工人员</dt><dd>${crewCount('planet-build',p.id,f.id)} / ${f.extraCrew}</dd><dt>${f.state==='owned'?'当前收益':'领取后收益'}</dt><dd>${f.effectSummary}</dd></dl><p class="sub">${f.state==='building'?'探索完成一次，已处于施工且人员满足的设施推进一次。':f.state==='ready'?'施工已完成；领取前不计入收益。':f.state==='locked'?'达到门槛后才进入施工，跨门槛那次不提前施工。':'本设施收益已计入当前星球。'}</p>${control('planet-explorer','查看探索人员','quiet')}</div></div><div class="secondary-actions">${control('planet-auto',p.automatic?'本次完成后停止':'开启自动探索','',!p.running)}${control('planet-cancel','立即取消探索','danger',!p.running)}${control('planet-buff','累计Buff / 重铸')}</div>`;
 }
+const galaxyPoint=n=>({x:400+(n.x-n.z)*2.3,y:270+(n.x+n.z)*1.1});
+const galaxyEffect={colony_ring:'船员经验贡献',orbital_shipyard:'装备普通属性贡献',stellar_energy_array:'反应炉容量贡献',interstellar_refinery:'铁自动收入比例',crystal_refinery:'直接碎片贡献',heavy_element_refinery:'铀自动收入比例'};
 function galaxy() {
-  const [status,pct,desc]=galaxyStatus[state.galaxy];
-  return moduleHead('曙光星系 · 外环平台','所选设施与地图对象对应',`<span class="pill">人员 ${crewCount('galaxy')}</span>`)+
-    `<div class="map-layout"><div class="galaxy-map"><svg viewBox="0 0 440 350" role="img" aria-label="星系节点结构"><path d="M220 182L105 97M220 182L347 93M220 182L110 285M220 182L345 272" fill="none" stroke="#a5b7a3" stroke-width="10"/><path d="M220 182L347 93" fill="none" stroke="#5b9f96" stroke-width="3" stroke-dasharray="4 5"/><g class="facility-shape"><path d="M190 160L220 140L250 160V201L220 218L190 201Z"/><path d="M85 82L105 69L126 82V112L105 126L85 112Z"/><path d="M90 270L110 257L130 270V298L110 310L90 298Z"/><path d="M327 258L347 244L368 258V286L347 299L327 286Z"/></g><path data-action="galaxy-node" class="facility-shape selected ${state.galaxy==='fog'?'fog':''}" d="M321 74L347 57L374 74V113L347 131L321 113Z"/><text x="199" y="187" fill="#3c6666" font-size="13">总部</text><text x="300" y="155" fill="#3c7775" font-size="12">外环平台</text></svg><div class="map-caption">区域一 / 外环平台</div></div><div class="planet-state"><span class="eyebrow">OUTER PLATFORM</span><h2>外环平台</h2><span class="pill good">${status}</span><div class="progress-num">${pct}</div><div class="meter"><i style="width:${pct}"></i></div><div class="sub">${desc}<br>${state.galaxy==='upgrading'?'当前Lv.2，升级目标Lv.3':'当前对象：外环平台'}</div></div></div>`+
-    `<div class="secondary-actions">${control('galaxy-pan','地图视角')}${control('galaxy-region','其他区域')}</div>`;
+ const n=state.galaxyNodes[state.galaxyNode],view=state.galaxyView;
+ const point=id=>id==='hub'?{x:400,y:270}:galaxyPoint(state.galaxyNodes[id]);
+ const status=galaxyStatus[n.state][0];
+ return moduleHead('第一星系 · 城市发展','区域一 · '+n.name,`<span class="pill">工程人员 ${crewCount('galaxy')} / 6</span>`)+`<div class="city-room"><div class="city-map" tabindex="0" aria-label="星系地图，可平移缩放"><svg viewBox="0 0 800 550"><defs><pattern id="city-grid" width="45" height="24" patternUnits="userSpaceOnUse"><path d="M0 12L22.5 0L45 12L22.5 24Z" fill="none" stroke="#b8c9bd" stroke-width=".5"/></pattern></defs><rect width="800" height="550" fill="url(#city-grid)"/><g id="city-transform" transform="translate(${view.x} ${view.y}) translate(400 270) scale(${view.zoom}) translate(-400 -270)">${ColonyModels.galaxy.links.map(([a,b])=>{const x=point(a),y=point(b);return `<path d="M${x.x} ${x.y}L${y.x} ${y.y}" stroke="#aabdb0" stroke-width="8"/><path d="M${x.x} ${x.y}L${y.x} ${y.y}" stroke="#e1e4d8" stroke-width="4"/>`;}).join('')}<image href="art/galaxy/galaxy_core.png" x="328" y="174" width="144" height="144"/><text x="400" y="310" text-anchor="middle" class="city-hub-label">总部</text>${Object.values(state.galaxyNodes).sort((a,b)=>galaxyPoint(a).y-galaxyPoint(b).y).map(x=>{const q=galaxyPoint(x);const src='art/galaxy/'+x.family+'-lv'+x.level+'.png';return `<g data-galaxy-node="${x.id}" class="city-node ${x.state} ${x.id===n.id?'selected':''}" transform="translate(${q.x} ${q.y})"><ellipse class="city-platform" cx="0" cy="0" rx="37" ry="17"/>${x.state==='fog'?'<text y="4" text-anchor="middle" class="fog-mark">?</text>':x.state==='planned'?'<path d="M-24 0L0 -12L24 0L0 12Z" fill="none" stroke="#85a59a" stroke-dasharray="3 3"/>':`<image href="${src}" x="-49" y="-70" width="98" height="98" ${x.state==='building'?'opacity=".65"':''}/>`}${x.state==='building'||x.state==='upgrading'?`<path d="M-31 -38L-31 -63L31 -63L31 -38M0 -63V-78" stroke="#d0a66a" fill="none" stroke-width="3"/><rect x="-27" y="18" width="54" height="3" fill="#c6cec1"/><rect x="-27" y="18" width="${54*x.progress/100}" height="3" fill="#4d9989"/>`:''}<text y="35" text-anchor="middle">${x.state==='fog'?'未探索':x.name.split(' ')[0]+' · '+(x.state==='planned'?'地基':'Lv.'+x.level)}</text></g>`;}).join('')}<image href="art/galaxy/transport_shuttle.png" x="386" y="326" width="40" height="40" class="city-shuttle"/></g></svg><div class="city-map-tools">${control('galaxy-zoom-out','−')}${control('galaxy-reset','归位')}${control('galaxy-zoom-in','＋')}</div></div><div class="city-console"><span class="eyebrow">SELECTED SITE / ${n.id}</span><h2>${n.state==='fog'?'未探索节点':n.name}</h2><span class="pill ${n.state==='complete'?'good':'warn'}">${status}</span>${n.state==='fog'?'<p>父节点达到可达条件后揭示。设施类型与效果保持隐藏。</p>':`<div class="city-object"><img src="art/galaxy/${n.family}-lv${n.level}.png" alt="${n.name}" style="opacity:${n.state==='planned'?'.35':'1'}"></div><div class="city-node-progress"><b>${n.progress}%</b><span>${n.state==='upgrading'?'当前Lv.'+n.level+'仍贡献，目标Lv.'+n.targetLevel:n.state==='complete'?'已生效 · 无需领取':n.state==='planned'?'已可达，等待自动工程调度':'建设中'}</span></div><div class="meter"><i style="width:${n.progress}%"></i></div><p>${galaxyEffect[n.family]}</p><small>${n.state==='upgrading'?'完成边界升一级并更新贡献。':n.state==='complete'?'当前级贡献已被接纳。':'当前设施尚不贡献收益。'}</small>`}</div></div><div class="secondary-actions">${control('galaxy-region','区域与发展汇总')}${control('galaxy-effects','当前节点效果明细')}</div>`;
 }
 function research() {
   const study=studies[state.researchId];
@@ -187,9 +194,11 @@ function research() {
 }
 
 function crew() {
-  const member=state.crewMembers[state.crewId];
-  return moduleHead('成员与当前任务','选择目标不会先释放当前占用')+
-    `<div class="crew-layout"><div class="crew-roster">${Object.entries(state.crewMembers).map(([id,m])=>`<button data-crew="${id}" class="crew-card ${state.crewId===id?'selected':''}"><b>${m.name}</b><small>${jobs[m.job]}</small></button>`).join('')}</div><div class="crew-detail"><span class="eyebrow">CREW MEMBER</span><h2>${member.name}</h2><div class="current-job">当前任务 <b>${jobs[member.job]}</b></div><label>派遣候选 <select id="crew-target">${Object.entries(jobs).map(([id,name])=>`<option value="${id}" ${id===state.crewDraft?'selected':''}>${name}</option>`).join('')}</select></label><div class="note">${state.crewDraft===member.job?'候选与当前任务相同。':'确认后才切换岗位；当前任务仍保持。'}</div><div class="secondary-actions">${control('crew-apply','确认派遣','primary',state.crewDraft===member.job)}${control('crew-release','释放当前占用')}${control('crew-target','查看目标')}${control('back','返回来处','quiet')}</div></div></div>`;
+  const member=state.crewMembers[state.crewId], error=crewAdmission(), planetJob=state.crewDraft.startsWith('planet-');
+  const available=Object.entries(state.crewMembers).filter(([id,m])=>m.available);
+  const target=state.planets.find(p=>p.id===state.crewPlanet);
+  return moduleHead('船员名册 · '+available.length+'人可用','人物身份与当前岗位分别显示',`<span class="pill">${member.name} · Lv.${member.level}</span>`)+
+    `<div class="crew-room"><div class="crew-roster">${available.map(([id,m])=>`<button data-crew="${id}" class="crew-person ${state.crewId===id?'selected':''}"><span class="job-badge">${m.job==='idle'?'◇':m.job==='planet-build'?'⚒':m.job==='planet-explore'?'◎':'◈'}</span><span><b>${m.name}</b><small>Lv.${m.level} · ${memberJob(m)}</small></span><div class="meter"><i style="width:${m.experienceRatio*100}%"></i></div></button>`).join('')}<div class="crew-next">下位船员：${Object.values(state.crewMembers).find(m=>!m.available)?.name} · 通关45关开放</div></div><div class="person-console"><div class="person-heading"><span class="job-badge large">${member.job==='idle'?'◇':'◈'}</span><div><span class="eyebrow">CREW / CURRENT ASSIGNMENT</span><h2>${member.name}</h2><span>Lv.${member.level} · 经验 ${member.experience} / ${member.experienceRequired}</span></div></div><div class="meter"><i style="width:${member.experienceRatio*100}%"></i></div><div class="current-job"><small>当前实际占用</small><b>${memberJob(member)}</b><span>${({research:'科研速度 ×1.6；完成后自动续研最短项目',equipment:'装备属性 ×1.331；每秒尝试全部启用槽位正常付费购级',reactor:'反应炉总能源 ×1.9；每秒尝试购级并均分',enhancement:'直接碎片 ×1.3；每秒尝试购1级全局强化',idle:'当前无岗位占用'})[member.job]||'当前任务按探索或工程完成提供经验；不计为系统岗位等级加成'}</span>${member.job==='planet-build'?'<span>本次探索完成时检查施工人员，达到次数后释放施工占用。</span>':member.job==='research'?'<span>完成后续研最短项目；当前研究设备保持。</span>':''}</div><div class="dispatch-draft"><h3>派遣候选</h3><label>岗位<select id="crew-target">${Object.entries(jobs).filter(([id])=>id!=='hyperspace').map(([id,name])=>`<option value="${id}" ${id===state.crewDraft?'selected':''}>${name}</option>`).join('')}</select></label>${planetJob?`<label>星球<select id="crew-planet">${state.planets.filter(p=>p.available).map(p=>`<option value="${p.id}" ${p.id===target.id?'selected':''}>${p.name}</option>`).join('')}</select></label>${state.crewDraft==='planet-build'?`<label>施工设施<select id="crew-facility">${Object.values(target.facilities).map(f=>`<option value="${f.id}" ${f.id===state.crewFacility?'selected':''}>${f.name} · 额外人员${f.extraCrew}</option>`).join('')}</select></label>`:''}`:''}${state.crewDraft==='equipment'?`<label>自动购级模式<select id="crew-mode">${['1','10','MAX'].map(v=>`<option ${v===state.crewMode?'selected':''}>${v}</option>`).join('')}</select></label>`:''}<div class="note ${error?'warn':''}">${error||'确认后切换目标；当前实际占用保持至接纳成功。'}</div>${state.crewError?`<div class="note bad">${state.crewError}</div>`:''}<div class="secondary-actions">${control('crew-apply','确认派遣','primary',!!error)}${control('crew-release','释放当前占用','',member.job==='idle'||member.job==='hyperspace')}${control('crew-target','查看候选目标')}${control('back','返回来处','quiet')}</div></div></div></div>`;
 }
 function routeName(id=state.routeId) {return {pulse:'脉冲路线',missile:'导弹路线',rail:'舰炮路线',beam:'长激光路线'}[id];}
 function taskStatus(task){return {idle:'待命',running:'进行中',ready:'待领取',claimed:'已领取'}[task.status];}
@@ -264,8 +273,8 @@ function dock() {
     return `<div class="dock-summary"><b>核心 Lv.1 · ${next?'本次仅调整'+names[next.index]:'当前分配已生效'}</b><span>${next?names[next.index]+' '+next.current+' → '+next.target:'手动 '+state.actual.slice(0,3).join('/')} · 免费10保持</span><span>本步：攻击 ${before?.attack||'—'} → ${after?.attack||'待预览'} / 熔炼 ${before?.income||'—'} → ${after?.income||'待预览'} · 费用0</span></div><div class="dock-buttons">${control('reactor-apply',next?'应用'+names[next.index]+next.target:'分配已生效','primary',!next||!after)}${control('reactor-reset','还原')}</div>`;
   }
 
-  if(state.module==='planet') return `<div class="dock-summary"><b>起源星 · 轨道船坞</b><span>${planetStatus[state.planet][0]} · ${planetStatus[state.planet][1]} · 施工${crewCount('planet-build')}/2</span><span>${state.planet==='ready'?'本次领取：设施收益计入累计Buff':'当前施工与探索分开，未领收益不生效'}</span></div><div class="dock-buttons">${state.planet==='ready'?control('planet-claim','领取设施收益','primary'):control('planet-crew','调整施工人员','primary')}</div>`;
-  if(state.module==='galaxy') return `<div class="dock-summary"><b>曙光星系 · 外环平台</b><span>${galaxyStatus[state.galaxy][0]} · ${galaxyStatus[state.galaxy][1]}</span><span>人员${crewCount('galaxy')} · 完成自动生效</span></div><div class="dock-buttons">${control('galaxy-crew','调整星系人员','primary')}${control('galaxy-effects','当前 / 升级效果')}</div>`;
+  if(state.module==='planet') {const p=selectedPlanet(),f=selectedFacility();return `<div class="dock-summary"><b>${p.name} · ${f.name}</b><span>${facilityStatus(p,f)} · ${f.work}/${f.required}次</span><span>${f.state==='ready'?'领取后本设施收益生效':f.effectSummary}</span></div><div class="dock-buttons">${f.state==='ready'?control('planet-claim','领取此设施收益','primary'):control('planet-crew',f.extraCrew?'调整额外施工人员':'查看探索人员','primary',f.state==='locked'||f.state==='owned')}</div>`;}
+  if(state.module==='galaxy'){const n=state.galaxyNodes[state.galaxyNode];return `<div class="dock-summary"><b>第一星系 · ${n.state==='fog'?'未探索节点':n.name}</b><span>${galaxyStatus[n.state][0]} · ${n.progress}%</span><span>工程人员 ${crewCount('galaxy')}/6 · 完成自动生效</span></div><div class="dock-buttons">${control('galaxy-crew','调整星系人员','primary')}</div>`;}
   return '';
 }
 function render() {
@@ -319,8 +328,8 @@ function openDetail(title,text) {
 }
 function invalidateForge() {state.forgePreview=null;state.forgeResult=null;}
 function syncDemoCrewTargets() {
-  if(crewCount('planet-build')===0&&state.planet==='building') state.planet='paused';
-  if(crewCount('planet-build')>0&&state.planet==='paused') state.planet='building';
+  for(const p of state.planets){if(!crewCount('planet-explore',p.id)){p.running=false;p.automatic=false;p.elapsed='0';p.duration='0';}}
+  const p=selectedPlanet(),f=selectedFacility();state.planet=f.state==='building'?(facilityStatus(p,f)==='施工中'?'building':'paused'):f.state;
 }
 function validAmountDraft(text) {return /^\d+$/.test(text.trim());}
 function action(a) {
@@ -336,15 +345,20 @@ function action(a) {
   else if(a==='equip-mode') {state.candidate=false;state.equipmentMode=state.equipmentMode==='max'?'one':'max';}
   else if(a==='equip-apply') {state.attributes[state.slot]=equipmentQuote().next;state.fitKeys[state.slot]=candidateType();state.fits[state.slot]=equipmentNames[state.fitKeys[state.slot]];state.cooldowns[state.slot]=18;state.equipment='normal';state.candidate=false;notify('更换成功，当前槽位与比较保留；换装冷却18秒');}
   else if(a==='equip-buy') {state.attributes[state.slot]=equipmentQuote().next;state.levels[state.slot]+=state.equipmentMode==='max'?4:state.equipmentMode==='ten'?10:1;notify('已购级，当前槽位和操作模式保持');}
-  else if(a==='planet-claim') {state.planet='owned';notify('轨道船坞已领取，累计Buff更新');}
-  else if(a==='planet-crew') {state.crewDraft='planet-build';goRoute('crew');return;}
-  else if(a==='planet-auto') {state.planetAuto=!state.planetAuto;notify(state.planetAuto?'自动探索已开启':'本次探索完成后停止');}
-  else if(a==='planet-cancel') {openDetail('立即取消探索','取消当前探索与关闭自动不同。当前施工与待领设施保持原状态。');return;}
-  else if(a==='planet-buff') {goRoute('settings/danger/reforge');return;}
+  else if(a==='planet-claim') {const f=selectedFacility();if(f.state==='ready'){f.state='owned';state.planet='owned';notify(selectedPlanet().name+' / '+f.name+'已领取，收益生效');}}
+  else if(a==='planet-crew'||a==='planet-explorer') {const p=selectedPlanet(),f=selectedFacility();state.crewDraft=a==='planet-explorer'||!f.extraCrew?'planet-explore':'planet-build';state.crewPlanet=p.id;state.crewFacility=f.id;goRoute('crew');return;}
+  else if(a==='planet-auto') {const p=selectedPlanet();p.automatic=!p.automatic;notify(p.automatic?'自动探索已开启':'本次探索仍继续，完成后停止');}
+  else if(a==='planet-cancel') {openDetail('立即取消 '+selectedPlanet().name+'探索','本次探索进度清零、自动探索关闭并释放探索人员；已完成施工次数及待领设施保留。'+control('planet-cancel-confirm','确认立即取消','danger'));return;}
+  else if(a==='planet-cancel-confirm'){const p=selectedPlanet();for(const m of Object.values(state.crewMembers))if(m.job==='planet-explore'&&m.targetPlanet===p.id)m.job='idle';p.running=false;p.elapsed='0';p.duration='0';p.automatic=false;syncDemoCrewTargets();$('#inspect-detail').close();notify('本次探索已取消并释放探索人员；施工次数保留');}
+  else if(a==='planet-buff') {state.dangerSource=selectedPlanet().name;goRoute('settings/danger/reforge');return;}
+  else if(a==='galaxy-zoom-in'||a==='galaxy-zoom-out'){state.galaxyView.zoom=Math.max(.65,Math.min(2,state.galaxyView.zoom+(a.endsWith('in')?.15:-.15)));}
+  else if(a==='galaxy-reset'){state.galaxyView={x:0,y:0,zoom:1.3};}
+  else if(a==='galaxy-region'){openDetail('第一星系 · 区域一','区域内30设施槽。工程与升级自动调度；当前人员 '+crewCount('galaxy')+'/6。当前所看区域和节点保持。');return;}
+  else if(a==='galaxy-effects'){const n=state.galaxyNodes[state.galaxyNode];openDetail(n.state==='fog'?'未探索节点':n.name,n.state==='fog'?'类型与效果尚未揭示。':galaxyEffect[n.family]+'；当前 '+(n.state==='complete'||n.state==='upgrading'?'Lv.'+n.level+'贡献生效':'尚未生效')+'。具体当前/完成后因子由星系展示模型提供，本画面不按美术等级重新推导收益。');return;}
   else if(a==='galaxy-crew') {state.crewDraft='galaxy';goRoute('crew');return;}
-  else if(a==='crew-apply') {state.crewMembers[state.crewId].job=state.crewDraft;syncDemoCrewTargets();notify('派遣已生效，人物与目标人数同步');}
+  else if(a==='crew-apply') {const reason=crewAdmission();if(reason){state.crewError=reason;}else{const m=state.crewMembers[state.crewId];Object.assign(m,{job:state.crewDraft,targetPlanet:state.crewPlanet,targetFacility:state.crewFacility,mode:state.crewMode});state.crewError='';if(m.job==='planet-explore'){const p=state.planets.find(p=>p.id===m.targetPlanet);p.running=true;p.elapsed='0';p.duration=p.id==='1'?'60':'26';}syncDemoCrewTargets();notify('派遣已接纳，人物与对应目标人数同步');}}
   else if(a==='crew-release') {if(state.onlineTask.crewId===state.crewId&&['running','ready'].includes(state.onlineTask.status)){openDetail('当前成员被任务保留','先停止自动任务或解决待领回执，再释放当前人员。');return;}state.crewMembers[state.crewId].job='idle';syncDemoCrewTargets();notify('当前成员已释放，目标人数与缺人暂停状态更新');}
-  else if(a==='crew-target') {goRoute(state.crewDraft==='galaxy'?'galaxy':state.crewDraft==='hyperspace'?'hyperspace/routes':'planet');return;}
+  else if(a==='crew-target') {if(state.crewDraft.startsWith('planet-')){state.planetId=state.crewPlanet;selectedPlanet().facilitySelection=state.crewFacility;}goRoute(state.crewDraft==='galaxy'?'galaxy':state.crewDraft==='idle'?'crew':state.crewDraft.startsWith('planet-')?'planet':state.crewDraft);return;}
   else if(a==='research-apply-iron'||a==='research-apply-uranium') {const iron=a==='research-apply-iron';const draft=iron?state.researchDraft:state.researchUraniumDraft;if(!validAmountDraft(draft)){state.researchError=(iron?'铁':'铀')+'投入需为非负整数金额；当前生效值保持，草稿可继续修正。';}else{if(iron)state.researchBudget=state.researchDraft;else state.researchUranium=state.researchUraniumDraft;state.researchError='';state.researchFeedback=(iron?'铁':'铀')+'投入已应用，另一资源与研究工作量保持。';notify('本资源投入已应用');}}
 
   else if(a==='research-select') {state.researchDrawer=true;}
@@ -356,7 +370,8 @@ function action(a) {
   else if(a==='hyper-manual') {goRoute('hyperspace/manual');return;}
   else if(a==='manual-start') {if(!['running','ready'].includes(state.manualTask.status)){state.manualTask={status:'running',route:state.routeId,run:'manual-02',receipt:null};notify('手动挑战已开始，在线任务保持');}goRoute('hyperspace/routes');return;}
   else if(a==='online-start') {if(!['running','ready'].includes(state.onlineTask.status)){state.onlineTask={status:'running',route:state.routeId,run:'online-02',receipt:null,mode:'single',crewId:null};notify('单次挂机已开始，手动挑战保持');}}
-  else if(a==='online-auto') {const task=state.onlineTask;if(task.status==='running'&&task.mode==='auto'){if(task.crewId&&state.crewMembers[task.crewId]?.job==='hyperspace')state.crewMembers[task.crewId].job='idle';state.onlineTask={...task,status:'idle',crewId:null};syncDemoCrewTargets();notify('自动任务已停止，Started任务不生成奖励');}else if(task.status==='ready'){goRoute('hyperspace/receipt/online');return;}else{const crewId=Object.keys(state.crewMembers).find(id=>state.crewMembers[id].job==='hyperspace');if(!crewId){state.crewDraft='hyperspace';goRoute('crew');notify('请选择并派驻在线挂机人员，当前任务尚未开始');return;}state.onlineTask={status:'running',route:state.routeId,run:'online-auto-02',receipt:null,mode:'auto',crewId};notify('自动挂机已开始，路线与人员快照绑定本任务');}}
+  else if(a==='online-auto') {const task=state.onlineTask;if(task.status==='running'&&task.mode==='auto'){if(task.crewId&&state.crewMembers[task.crewId]?.job==='hyperspace')state.crewMembers[task.crewId].job='idle';state.onlineTask={...task,status:'idle',crewId:null};syncDemoCrewTargets();notify('自动任务已停止，Started任务不生成奖励');}else if(task.status==='ready'){goRoute('hyperspace/receipt/online');return;}else{const candidates=Object.entries(state.crewMembers).filter(([id,m])=>m.available&&m.job==='idle');openDetail('开始自动挂机 · '+routeName(),`<label>选择空闲船员<select id="online-crew">${candidates.map(([id,m])=>`<option value="${id}">${m.name} · Lv.${m.level}</option>`).join('')}</select></label><p>确认开始后，由在线任务接纳并保留该成员；普通派遣入口不能建立此占用。</p>${control('online-auto-confirm','确认开始并保留人员','primary',!candidates.length)}`);return;}}
+  else if(a==='online-auto-confirm'){const id=$('#online-crew')?.value,m=state.crewMembers[id];if(!m||!m.available||m.job!=='idle'){notify('所选成员已不可用，任务未开始');return;}state.onlineTask={status:'running',route:state.routeId,run:'online-auto-demo-02',receipt:null,mode:'auto',crewId:id};m.job='hyperspace';$('#inspect-detail').close();notify('演示任务已接纳，路线与保留人员绑定本任务');}
   else if(a==='receipt-manual'||a==='receipt-online') {goRoute('hyperspace/receipt/'+a.split('-')[1]);return;}
   else if(a==='claim-manual'||a==='claim-online') {const key=a==='claim-manual'?'manualTask':'onlineTask';if(state[key].status==='ready'){state[key]={...state[key],status:'claimed'};notify((key==='manualTask'?'手动':'在线')+'回执已领取；另一任务保持');goRoute('hyperspace/warehouse');return;}}
 
@@ -398,7 +413,7 @@ function action(a) {
   render();
 }
 document.addEventListener('click',event=>{
-  const button=event.target.closest('[data-family],[data-module],[data-group],[data-slot],[data-action],[data-route],[data-context-route],[data-crew],[data-drone],[data-hyper-route],[data-study]');
+  const button=event.target.closest('[data-family],[data-module],[data-group],[data-slot],[data-action],[data-route],[data-context-route],[data-crew],[data-drone],[data-hyper-route],[data-study],[data-facility],[data-galaxy-node]');
   if(!button) return;
   if(button.dataset.family) {rememberScroll();state.family=button.dataset.family;render();}
   else if(button.dataset.module) setModule(button.dataset.module);
@@ -406,9 +421,11 @@ document.addEventListener('click',event=>{
   else if(button.dataset.slot!==undefined) {state.slot=Number(button.dataset.slot);state.candidate=false;render();}
   else if(button.dataset.route) goRoute(button.dataset.route);
   else if(button.dataset.contextRoute) {const target=button.dataset.contextRoute;if(target==='crew'&&state.group==='hyperspace'&&state.onlineTask.crewId){state.crewId=state.onlineTask.crewId;state.crewDraft=state.crewMembers[state.crewId].job;}goRoute(target.includes('/')?target:(state.moduleLast[target]||target));}
-  else if(button.dataset.crew) {state.crewId=button.dataset.crew;state.crewDraft=state.crewMembers[state.crewId].job;render();}
+  else if(button.dataset.crew) {state.crewId=button.dataset.crew;const m=state.crewMembers[state.crewId];state.crewDraft=m.job==='hyperspace'?'idle':m.job;state.crewPlanet=m.targetPlanet;state.crewFacility=m.targetFacility;state.crewMode=m.mode;state.crewError='';render();}
   else if(button.dataset.drone) {state.droneId=button.dataset.drone;state.formationPreview=null;invalidateForge();state.dangerPreview=null;notify('已更换无人机对象，需要重新预览');render();}
   else if(button.dataset.hyperRoute) {state.routeId=button.dataset.hyperRoute;render();}
+  else if(button.dataset.galaxyNode){if(window.cityDragged){window.cityDragged=false;return;}state.galaxyNode=button.dataset.galaxyNode;render();}
+  else if(button.dataset.facility){selectedPlanet().facilitySelection=button.dataset.facility;render();}
   else if(button.dataset.study) {state.researchId=button.dataset.study;state.researchDrawer=false;state.researchState='running';state.researchFeedback='已切换设备，原研究工作量保留。';render();}
   else action(button.dataset.action);
 });
@@ -424,7 +441,11 @@ document.addEventListener('input',event=>{
 document.addEventListener('change',event=>{
   const id=event.target.id,value=event.target.value;
   if(id==='research-auto-toggle')state.researchAutoDraft=event.target.checked;
-  if(id==='crew-target') {state.crewDraft=value;render();}
+  if(id==='planet-select'){state.planetId=value;state.planet=selectedFacility().state;notify('已切换所看星球，各星球任务保持');render();}
+  if(id==='crew-target') {state.crewDraft=value;state.crewError='';render();}
+  if(id==='crew-planet'){state.crewPlanet=value;state.crewFacility=state.planets.find(p=>p.id===value).facilitySelection;render();}
+  if(id==='crew-facility'){state.crewFacility=value;render();}
+  if(id==='crew-mode'){state.crewMode=value;render();}
   if(id==='forge-operation') {state.forgeOperation=value;invalidateForge();render();}
   if(id==='filter-quality') state.filterDraft.quality=value;
   if(id==='filter-action') state.filterDraft.action=value;
@@ -437,6 +458,8 @@ $('#assembly-toggle').onclick=()=>{document.body.classList.toggle('show-assembly
 for(const key of ['reactor','equipment','planet','galaxy']) $('#'+key+'-case').onchange=event=>{
   state[key]=event.target.value;
   if(key==='reactor') {state.actual=event.target.value==='idle'?[0,0,0,0]:[45,35,20,0];state.alloc=event.target.value==='draft'?[60,35,5,0]:event.target.value==='rejected'?[55,35,20,0]:[...state.actual];state.reactorError=event.target.value==='rejected'?'额度不足，实际供能保持原值。':'';}
+  if(key==='galaxy'){const n=state.galaxyNodes[state.galaxyNode];n.state=event.target.value;n.progress=n.state==='complete'?100:n.state==='building'?62:n.state==='upgrading'?48:0;n.level=n.state==='upgrading'?2:n.state==='complete'?3:1;}
+  if(key==='planet'){const p=selectedPlanet(),f=selectedFacility();f.state=event.target.value==='paused'?'building':event.target.value;f.work=f.state==='ready'||f.state==='owned'?f.required:111;if(event.target.value==='paused'){for(const m of Object.values(state.crewMembers))if(m.job==='planet-build'&&m.targetPlanet===p.id&&m.targetFacility===f.id)m.job='idle';}if(event.target.value==='building'){Object.assign(state.crewMembers.navigator,{job:'planet-build',targetPlanet:p.id,targetFacility:f.id});}if(f.state==='ready'||f.state==='owned'){p.exploration=Math.max(p.exploration,210);for(const m of Object.values(state.crewMembers))if(m.job==='planet-build'&&m.targetPlanet===p.id&&m.targetFacility===f.id)m.job='idle';}}
   if(key==='equipment'){state.candidate=event.target.value==='compare';state.cooldowns=event.target.value==='cooldown'?{[state.slot]:18}:{};if(event.target.value==='cooldown')state.equipment='normal';}
   render();
 };
@@ -447,3 +470,9 @@ document.addEventListener('visibilitychange',()=>document.body.classList.toggle(
 window.addEventListener('resize',fitBattle);
 window.G1={state,render,setModule,setRoute:goRoute,fitBattle,summary};
 render();
+
+let cityDrag=null;
+document.addEventListener('pointerdown',e=>{const map=e.target.closest('.city-map');if(!map||e.target.closest('button'))return;cityDrag={id:e.pointerId,x:e.clientX,y:e.clientY,origin:{...state.galaxyView},moved:false,map};window.cityDragged=false;});
+document.addEventListener('pointermove',e=>{if(!cityDrag||e.pointerId!==cityDrag.id)return;const d=cityDrag,dx=e.clientX-d.x,dy=e.clientY-d.y;if(Math.hypot(dx,dy)>6)d.moved=true;if(!d.moved)return;window.cityDragged=true;const scale=800/d.map.getBoundingClientRect().width;state.galaxyView.x=d.origin.x+dx*scale;state.galaxyView.y=d.origin.y+dy*scale;const v=state.galaxyView;$('#city-transform')?.setAttribute('transform',`translate(${v.x} ${v.y}) translate(400 270) scale(${v.zoom}) translate(-400 -270)`);});
+document.addEventListener('pointerup',()=>{cityDrag=null;});
+document.addEventListener('wheel',e=>{if(!e.target.closest('.city-map'))return;e.preventDefault();state.galaxyView.zoom=Math.max(.65,Math.min(2,state.galaxyView.zoom+(e.deltaY<0?.1:-.1)));render();},{passive:false});
