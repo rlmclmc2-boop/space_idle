@@ -75,3 +75,21 @@
 4. 精确前端区域与遮罩一旦确定，把上表世界框经同一个S×T投影来检查预算；不按三种物理客户区分别制造三份战场几何。当前不能仅凭所有东西“缩得进去”冻结G9所需的完整装配占位。保持单一damage receipt消费者、后台Session推进、真实炮口与命中几何。
 
 可直接推进的是根画布与局部显示/输入边界设计。完整盾外缘/双条/无人机装配、合法朝向精化、具体编队净空与三样本实机验收仍待证；真实逻辑重叠若被证实，应另提几何/布局问题供审，不能借纯前端适配授权改后端。未知DPI行为列为待验证风险，不冒称已发现输入错位缺陷。
+
+## 6. 追加：可达敌阵的占位归属及三项装配边界
+
+**占位判断：是现行M1空间设计尚未落实的缺口，涉及共享逻辑几何的处理归属；不是仅修旧措辞，也尚无证据表明两份同时有效的玩法规则互相矛盾。** M1仍要求精英2×2/首领居中3×2且包含完整装配；格的实际尺寸、间距与最大预算尚待定。`display_span`虽存在于资产元数据，当前算法不消费它来排位，不能把它当成已执行的领域占位约束。`mon.size`只参与当前排序/视觉兼容映射，不能直接替代阶级占位身份；monGroup旧表头的“10格”亦不能覆盖现行15成员链。
+
+可达性沿当前 `level.xlsx → Campaign._levels/_set_stage/prepare_wave → monGroup → CombatSetup.build_wave → formation_positions` 核实，未使用另一本`level_monGroup_generated.xlsx`的历史路线。220个关卡行引用1970个不同主线组。第2关第6点的**33011**确实有14艇加锚舰：锚舰271019（slot14、anchor、elite，资产display_span=[2,2]）排在(286,110)，同排四艇位于x=58/172/400/514，后两排y=270/350。没有为锚舰跨列/跨排预留位置。同排中心间隔114，按第1节保守舰体半宽100.887与45.330得框间隔下界约-32.217；整组炮台保守顶边-5.032。**这些可达样本使“正净空尚未证明”有具体依据，但仍不证明真实轮廓相交/裁切。** 原第2节1010等全表极值见证未由现行关卡引用；不能拿它们作可达失败证据，33011是相应可达取证入口。
+
+首领另核：异空间beta路线的boss首组**7036**直接配置首领(286,190)、护航(166,350)/(406,350)；ultimate首组**7037**首领(286,210)、护航位置相同，二者确被路线编排引用。首领已居中，不能泛称“所有首领排错”；3×2完整留白与净空则没有自动打包/校验保证。不得为了套主线5×3排列覆盖这些显式坐标。
+
+最小归属：前端可先规定显示区域、遮罩和完整装配留白；**不能仅把某艘敌舰贴图挪开**。actor位置进入内核目标点、轮廓、炮口和飞行计算，重排会改变射程/路径/接触时机。若精化后需改变队形，先给具体可达组、阶级占位映射、格单位和净空方案，再由领域配置/共享Geometry生成唯一位置，Battle同时供计算与绘制消费；这是另审的几何/配置变更，不是本轮纯UI补丁。保持当前位置时，前端仍须报告该空间约束未落实，不能靠缩小整场或删掉M1条款放行。
+
+| 未接线项 | 可由前端补装配的部分 | 确需最小接口/共享链补充的部分 |
+| --- | --- | --- |
+| 无人机 | `Hyperspace.equipped_ids/warehouse`已有装备身份、品质/武器等事实，可用于资产选择、最大五架的前端留白、预览及展示局部状态；无需把美术参数写入Hyperspace业务规则。 | 现行真实无人机发射点集中在母舰(286,520)。若要独立机体且真炮口一致，缺按drone:id/generation关联的装配锚点/端口事实及Battle共享几何接线；不能画出独立炮口却保留中心出生并称一致。先定前端资产锚点/发射口契约，再以既有geometry/muzzle链承接，改真实出生点须另审；不是增加一个纯UI查询即可完成。 |
+| 护盾外缘 | 轮廓形状、偏移、材质、动画、包住舰体/炮台的展示包络归前端；只作视觉外缘不应更改碰撞或减伤规则。玩家启用/强度可消费现有hud_values盾量与比例。 | 敌舰当前enemy_views的缓存view未输出实时shield、max_shield/max_hp；Battle.enemy_intelligence的shield缺省0不能冒充真实盾状态。需由Battle暴露最小只读展示事实（稳定uid、锚点/轮廓或绘制入口、存活与真实盾状态），不能让前端读取私有kernel或从贴图/事件倒推。 |
+| 盾甲双条 | 位置/宽高/间距/颜色/文字和随世界锚点投影归前端。玩家当前值/上限/比例已有hud_values，不需新规则或第二份账本；单条归零不能自行标死。 | 敌双条需当前/上限或由Amount安全计算的比例；核心Actor已有hp/max_hp/shield/max_shield，现有公开敌视图仅维护hp/dead等，缺完整显示出口。最小补充是核心→Battle的只读显示字段与实际变化失效，再由Battle提供展示/绘制端口；沿现有actor变化集合更新盾受击/恢复，不建全模块广播、不在读取时推进战斗、不使用全存档快照补UI。 |
+
+接口依据：[Campaign现行读取链](https://github.com/rlmclmc2-boop/space_idle/blob/317548d73deab55ba75dfa92d4cc2feadb86781e/space-battleship/src/systems/campaign.gd#L114-L123)、[编队几何进入actor/武器](https://github.com/rlmclmc2-boop/space_idle/blob/317548d73deab55ba75dfa92d4cc2feadb86781e/space-battleship/src/combat_setup.gd#L89-L201)、[核心Actor安装/视图字段](https://github.com/rlmclmc2-boop/space_idle/blob/317548d73deab55ba75dfa92d4cc2feadb86781e/space-battleship/addons/native_battle/src/combat_execution_kernel.h#L1984-L2022)、[enemy_views只读缓存](https://github.com/rlmclmc2-boop/space_idle/blob/317548d73deab55ba75dfa92d4cc2feadb86781e/space-battleship/addons/native_battle/src/combat_execution_kernel.h#L2834-L2845)、[Battle.enemy_intelligence](https://github.com/rlmclmc2-boop/space_idle/blob/317548d73deab55ba75dfa92d4cc2feadb86781e/space-battleship/src/systems/battle.gd#L500-L508)。本追加只作现有消费链判断，未实现接口、未改变阵型或启动测试。
