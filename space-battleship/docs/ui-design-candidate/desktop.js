@@ -1,12 +1,13 @@
 const $ = s => document.querySelector(s);
 const modules = [['equipment','舰装','SHIP / DOCK'],['reactor','反应炉','POWER / ENGINE ROOM'],['research','科研','AI / WORKSHOP'],['enhancement','强化','EFFECT / SEQUENCE'],['crew','船员','CREW / ASSIGNMENT'],['planet','星球','PLANET / ORBIT'],['galaxy','星系','GALAXY / CITY'],['hyperspace','超空间','ROUTE / DRONE']];
+function escapeAttr(value){return String(value).replaceAll("&","&amp;").replace(/"/g,"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;");}
 const query = new URLSearchParams(location.search);
 let active = modules.some(m => m[0] === query.get('module')) ? query.get('module') : 'reactor';
 let paused = false, guarded = false, previousFocus;
-const state = {reactor:'running',research:'running',equipment:'compare',slot:'W1',candidate:'upgrade',investmentOpen:false,selectedResearch:false,ironDraft:"120",uraniumDraft:"2"};
+const state = {reactor:'running',research:'running',equipment:'compare',slot:'W1',candidate:'upgrade',investmentOpen:false,selectedResearch:false,ironDraft:"120",uraniumDraft:"2",terminalMode:null,manualActual:{iron:"100",uranium:"2"},investMessages:{iron:{type:"neutral",text:"草稿120，尚未应用。"},uranium:{type:"neutral",text:"与当前设置一致。"}},autoActual:{enabled:false,ratio:"20"},autoDraft:{enabled:false,ratio:"20"},autoMessage:{type:"neutral",text:"与当前设置一致。"},equipmentNotice:true};
 const scenarios = {
   reactor:[['running','有免费量 / 工作中'],['invalid','单设备非法草稿'],['stopped','单设备零有效供能']],
-  research:[['running','工作中'],['paused','暂停'],['complete','完成'],['choice','选择其他研究']],
+  research:[['running','工作中'],['paused','暂停'],['complete','完成'],['choice','选择其他研究'],['automatic','自动投入草稿'],['partial','单资源分别回执']],
   equipment:[['compare','当前 / 候选比较'],['cooldown','换装冷却'],['insufficient','费用不足'],['success','成功回执']]
 };
 function openDialog(title,body){previousFocus=document.activeElement;$('#dialog-title').textContent=title;$('#dialog-body').innerHTML=body;$('#dialog').hidden=false;$('#close-dialog').focus();}
@@ -38,33 +39,50 @@ function reactorView(){
     }).join('')}
   </div><p class="scene-note">待审：核心/三种设备等量级布置，共用安装平面与连续管路。造型只是结构占位；管口和效果包络仍需正式元数据核对。未开放碎片凝聚整套隐藏。</p>`;
 }
+function statusBlock(type,text,id=''){
+  const symbol={neutral:'○',success:'✓',error:'!',warning:'◷'}[type]||'○';
+  return `<p ${id?`id="${id}"`:''} class="feedback ${type}" aria-live="polite"><b class="feedback-symbol" aria-hidden="true">${symbol}</b><span>${text}</span></p>`;
+}
 function researchView(){
   const mode=state.research;const complete=mode==='complete',halt=mode==='paused'||paused,choice=mode==='choice';
-  return `<div class="lab">
+  const actual=state.manualActual,auto=state.autoActual;
+  return `<div class="lab ${choice?'choosing':''}">
     <img class="lab-background" alt="工厂背景" src="../../assets/ai_tech_factory/workshop-background-v2.png">
     <img class="lab-machine" alt="当前研究设备试装" src="../../assets/ai_tech_factory/weapon-accuracy-v2.png">
     ${!complete?'<img class="lab-probe" alt="独立探针" src="../../assets/ai_tech_factory/inspection-probe-v2.png">':''}
-    <div class="lab-identity"><span class="tag">${complete?'本次研究已完成':halt?'已暂停':'研究中'}</span><h2 style="margin-top:9px">武器精准 · Lv.${complete?'13':'12'}</h2><p>当前生效效果 +${complete?'30':'24'}%</p><p class="small">${complete?'本次提升 +6%':'下一等级效果 +30% · 提升6%'}</p></div>
+    <div class="lab-identity"><span class="tag">${complete?'本次研究已完成':halt?'已暂停':'当前实际研究'}</span><h2 style="margin-top:9px">武器精准 · Lv.${complete?'13':'12'}</h2><p>当前生效效果 +${complete?'30':'24'}%</p><p class="small">${complete?'本次提升 +6%':'下一等级效果 +30% · 提升6%'}</p></div>
     <div class="lab-work"><div class="split"><b>${complete?'100% · 完成':halt?'62% · 暂停':'62% · 研究中'}</b><span class="small">${complete?'100K / 100K':'62K / 100K'} 工作量</span></div><div class="progress"><i style="width:${complete?'100':'62'}%"></i></div><p>${complete?'等级与效果已更新；示例未自动续研':halt?'工作量保持 · 恢复后预计38秒':'速度1.24K/秒 · 预计剩余38秒'}</p></div>
-    <div class="lab-terminal"><h3>工厂终端</h3><p>当前投入：铁100/秒 · 铀2/秒</p><p>自动投入：关闭<br>续研岗位：1人 · 开启</p><div class="actions"><button id="investment-toggle">${state.investmentOpen?'收起投入':'调整投入'}</button><button id="research-choose">选择研究</button></div>
-      ${state.investmentOpen?`<div class="terminal-fields"><label for="iron">铁 / 秒 · 草稿</label><input id="iron" value="${state.ironDraft}"><label for="uranium">铀 / 秒 · 草稿</label><input id="uranium" value="${state.uraniumDraft}"><div class="actions"><button id="reset-investment">还原</button><button class="primary" id="apply-investment">应用</button></div><p class="feedback" id="investment-feedback">未应用，当前设置保持。</p></div>`:''}
-    </div>
-    ${choice?`<aside class="research-selector"><h3>已开放研究</h3><p>实际研究仍为武器精准。候选预览不改变舞台。</p><button class="${state.selectedResearch?'':'selected'}" data-research="current">武器精准 · 当前<br><span class="small">Lv.12 · 已完成62%</span></button><button class="${state.selectedResearch?'selected':''}" data-research="candidate">一体化 · 候选<br><span class="small">Lv.3 · 已完成18%</span></button>${state.selectedResearch?'<p>候选效果摘要与保留工作量在此审阅。提交后才更换当前设备。</p><button class="primary" id="confirm-research">确认切换（示例）</button>':''}<button id="close-research">取消选择</button></aside>`:''}
-  </div><p class="scene-note">待审：当前设备是观看主体，投入仅在右侧局部终端按需展开。状态/效果/工作量均为排版样本，不证明研究ID与数值组合合法。暂停、完成和选择可由底部审阅场景切换。</p>`;
+    ${!choice?`<div class="lab-terminal"><h3>工厂终端</h3><p class="actual-investment">当前有效投入：铁${actual.iron}/秒 · 铀${actual.uranium}/秒</p><p>自动投入：${auto.enabled?'开启':'关闭'} · 共同预算 ${auto.ratio}%</p><p class="crew-status">续研岗位：1人 · 开启</p><div class="actions"><button id="investment-toggle">${state.terminalMode==='manual'?'收起手动':'手动投入'}</button><button id="automatic-toggle">${state.terminalMode==='automatic'?'收起自动':'自动设置'}</button><button id="research-choose">选择研究</button></div>
+      ${state.terminalMode==='manual'?`<div class="terminal-fields"><h4>逐资源投入</h4>${[['iron','铁'],['uranium','铀']].map(([id,name])=>`<section class="resource-editor" data-resource="${id}"><label for="${id}">${name} / 游戏秒 · 当前 <strong>${actual[id]}</strong></label><div class="resource-input"><input id="${id}" value="${escapeAttr(state[id+'Draft'])}" aria-label="${name}投入草稿"><button data-invest-apply="${id}">应用${name}</button><button data-invest-reset="${id}" class="compact">还原</button></div>${statusBlock(state.investMessages[id].type,state.investMessages[id].text,'investment-feedback-'+id)}</section>`).join('')}</div>`:''}
+      ${state.terminalMode==='automatic'?`<div class="terminal-fields automatic-editor"><h4>自动投入设置</h4><p>当前设置：${auto.enabled?'开启':'关闭'} · ${auto.ratio}%</p><label class="checkbox-label"><input id="auto-enabled" type="checkbox" ${state.autoDraft.enabled?'checked':''}>草稿：开启自动投入</label><label for="auto-ratio">铁、铀共同预算比例 · 草稿%</label><div class="resource-input"><input id="auto-ratio" value="${escapeAttr(state.autoDraft.ratio)}" inputmode="decimal"><button id="apply-automatic">应用设置</button><button id="reset-automatic" class="compact">还原</button></div>${statusBlock(state.autoMessage.type,state.autoMessage.text,'automatic-feedback')}<p class="budget-timing">岗位有人且自动投入开启时，每60游戏秒按近期收入与共同预算比例刷新铁、铀投入。应用开关/比例不立即重算当前有效投入。</p></div>`:''}
+    </div>`:''}
+    ${choice?`<aside class="research-selector"><h3>切换研究</h3><p class="small muted">当前仍在研究武器精准，62K / 100K。</p><div class="research-options"><button class="${state.selectedResearch?'':'selected'}" data-research="current">武器精准 · 当前<br><span class="small">Lv.12 · 已完成62%</span></button><button class="${state.selectedResearch?'selected':''}" data-research="candidate">一体化 · 候选<br><span class="small">Lv.3 · 已完成18%</span></button></div>${state.selectedResearch?`<section class="candidate-facts"><h4>候选 · 一体化 Lv.3 → 4</h4><dl><div><dt>当前生效效果</dt><dd>联合增益 ×1.10</dd></div><div><dt>下一等级效果</dt><dd>联合增益 ×1.15</dd></div><div><dt>已保留工作量</dt><dd>18K / 100K · 18%</dd></div><div><dt>切换后预计余时</dt><dd>66秒（示例）</dd></div></dl><p>切换后从18K继续；武器精准的62K保留。任一时刻仅推进当前研究。</p><button class="primary" id="confirm-research">确认切换（示例）</button></section>`:'<p>当前项目将继续研究；选择候选可查看效果和已保留工作量。</p>'}<button id="close-research">取消选择</button></aside>`:''}
+  </div><p class="scene-note">固定样例：效果、工作量和预计时间不是配置正确性证明。当前研究与候选分离；自动投入设置和岗位续研分别显示，铁/铀通过既有单资源端口独立应用。</p>`;
 }
 const slotData={W1:{name:'武器槽01',type:'舰炮',value:'12.6K',next:'14.2K',property:'单次伤害'},W2:{name:'武器槽02',type:'脉冲',value:'8.4K',next:'9.5K',property:'单次伤害'},W3:{name:'武器槽03',type:'导弹',value:'6.2K',next:'7.0K',property:'单次伤害'},D1:{name:'防御槽01',type:'复合装甲',value:'8.0K',next:'9.1K',property:'最大容量'},D2:{name:'防御槽02',type:'护盾',value:'12.0K',next:'13.6K',property:'最大容量'}};
 function equipmentView(){
   const slot=slotData[state.slot],mode=state.equipment,success=mode==='success',replace=state.candidate==='replace';
   const candidate=replace?(state.slot.startsWith('D')?'护盾':'长激光'):slot.type;
   const currentType=success&&replace?candidate:slot.type;
+  const currentLevel=success&&!replace?'20':'19';
+  const comparison=`<label class="small" for="candidate">候选操作</label><select id="candidate"><option value="upgrade" ${replace?'':'selected'}>购级 · 当前装备升1级</option><option value="replace" ${replace?'selected':''}>换装 · ${state.slot.startsWith('D')?'护盾':'长激光'}候选</option></select><p class="selection-line">预览目标：${state.slot} · ${replace?'换装':'购级1级'}</p>
+    <table class="compare-table"><thead><tr><th>属性</th><th>当前</th><th>候选</th></tr></thead><tbody><tr><td>装备</td><td>${currentType}</td><td>${candidate}</td></tr><tr><td>槽位等级</td><td>19</td><td>${replace?'19':'20'}</td></tr><tr><td>${replace&&!state.slot.startsWith('D')?'主属性（异口径）':slot.property}</td><td>${replace&&!state.slot.startsWith('D')?'单次 ':''}${slot.value}</td><td>${replace&&!state.slot.startsWith('D')?'持续 ':''}${slot.next}${replace&&!state.slot.startsWith('D')?'/秒':''}</td></tr><tr><td>冷却</td><td>1.2秒</td><td>${replace?'2.0秒':'1.2秒'}</td></tr></tbody></table>
+    <div class="quote"><strong>本次费用</strong><p>${replace?'换装报价等待真实端口接入':'铁2.4K · 简并物质10'}</p><p class="small ${mode==='insufficient'?'':'muted'}">${mode==='insufficient'?'缺少简并物质4；当前拥有6':'余额与合法性由业务返回'}</p></div>
+    <button class="commit primary" id="equipment-commit" ${mode==='cooldown'?'disabled':''}>${mode==='cooldown'?'换装冷却中 · 2.6秒':replace?'确认换装（示例）':'购买1级（示例）'}</button>
+    ${statusBlock(mode==='insufficient'?'error':mode==='cooldown'?'warning':'neutral',mode==='insufficient'?'未提交：缺少简并物质4，选择与草稿保持。':mode==='cooldown'?'冷却中：剩余2.6秒，选择与候选保持。':'预览就绪 · 尚未提交。','equipment-feedback')}`;
+  const completed=`<section class="completed-transaction" data-transaction="closed"><h3>本次预览已结束</h3><p class="small muted">当前${slot.property}：${slot.next}${replace&&!state.slot.startsWith('D')?'/秒':''}</p>${state.equipmentNotice?statusBlock('success',replace?'已完成换装（示例），槽位等级保留。':'已完成购级（示例）：Lv.19 → 20。','equipment-feedback'):''}<details class="receipt-record"><summary>已完成回执 · ${state.slot}</summary><p>${replace?`${slot.type} → ${candidate}；等级19保持`:'等级19 → 20'}</p><p>${replace?'替换前后属性口径分别记录':`${slot.property} ${slot.value} → ${slot.next}`}</p><p>${replace?'换装结果为固定样例':'本次已支付：铁2.4K · 简并物质10'}</p></details><div class="next-preview-status"><strong>没有可提交的下一次预览</strong><p>下一次目标与报价须重新读取后再开放操作。</p></div></section>`;
   return `<div class="dock"><div class="dock-floor"></div><div class="dock-identity"><h2>巡洋舰 · 当前舰</h2><p>当前启用 · 示例3武器 / 2防御</p></div>
     <div class="ship-wrap"><img alt="巡洋舰当前预览" src="../../assets/ui/ships/fleet_20261019/03-cruiser.png">${[['W1',49.75,29.35],['W2',35.79,58.90],['W3',64.21,58.90]].map(([id,x,y])=>`<button class="hardpoint ${state.slot===id?'active':''}" data-slot="${id}" style="left:${x}%;top:${y}%" aria-label="选择${id}武器槽">${id}</button>`).join('')}</div>
     <div class="slot-rail"><div class="actions"><b>武器</b>${['W1','W2','W3'].map(id=>`<button class="${state.slot===id?'active':''}" data-slot="${id}">${id} ${slotData[id].type}</button>`).join('')}</div><div class="actions defence-rail"><b>防御</b>${['D1','D2'].map(id=>`<button class="${state.slot===id?'active':''}" data-slot="${id}">${id} ${slotData[id].type}</button>`).join('')}</div><p>当前舰的启用槽位</p><button class="compact" id="choose-hull">选择舰体</button></div>
-    <section class="comparison"><h2>${state.slot} · ${slot.name}</h2><p class="identity">当前装配 ${currentType} · Lv.${success&&!replace?'20':'19'}</p><label class="small" for="candidate">候选操作</label><select id="candidate"><option value="upgrade" ${replace?'':'selected'}>购级 · 当前装备升1级</option><option value="replace" ${replace?'selected':''}>换装 · ${state.slot.startsWith('D')?'护盾':'长激光'}候选</option></select><p class="selection-line">预览目标：${state.slot} · ${replace?'换装':'购级1级'}</p>
-      <table class="compare-table"><thead><tr><th>属性</th><th>当前</th><th>候选</th></tr></thead><tbody><tr><td>装备</td><td>${currentType}</td><td>${candidate}</td></tr><tr><td>槽位等级</td><td>${success&&!replace?'20':'19'}</td><td>${replace?'19':'20'}</td></tr><tr><td>${replace&&!state.slot.startsWith('D')?'主属性（异口径）':slot.property}</td><td>${replace&&!state.slot.startsWith('D')?'单次 ':''}${success?slot.next:slot.value}</td><td>${replace&&!state.slot.startsWith('D')?'持续 ':''}${slot.next}${replace&&!state.slot.startsWith('D')?'/秒':''}</td></tr><tr><td>冷却</td><td>1.2秒</td><td>${replace?'2.0秒':'1.2秒'}</td></tr></tbody></table>
-      <div class="quote"><strong>本次费用</strong><p>${replace?'按业务换装报价展示':'铁2.4K · 简并物质10'}</p><p class="small ${mode==='insufficient'?'':'muted'}">${mode==='insufficient'?'缺少简并物质4；当前拥有6':'余额与合法性由业务返回'}</p></div>
-      <button class="commit primary" id="equipment-commit" ${mode==='cooldown'?'disabled':''}>${mode==='cooldown'?'换装冷却中 · 2.6秒':replace?'确认换装（示例）':'购买1级（示例）'}</button><p class="feedback" id="equipment-feedback" aria-live="polite">${success?(replace?'演示成功回执：已换装所选候选；槽位等级保留，显示固定样例。':'演示成功回执：Lv.19→20，已扣示例费用。当前展示已重新读取固定样例。'):mode==='cooldown'?'保留所选槽位与候选；冷却结束后才可提交。':mode==='insufficient'?'费用不足，现装与草稿保持。':'预览已就绪，尚未提交。'}</p>
-    </section></div><p class="scene-note">待审：船体挂点、槽位轨与比较台联动，同一ID负责选择和提交。挂点来自现manifest；本稿未装配真实炮台，也不推断战斗碰撞。比较/费用/冷却/回执均为固定示例。</p>`;
+    <section class="comparison"><h2>${state.slot} · ${slot.name}</h2><p class="identity">当前装配 ${currentType} · Lv.${currentLevel}</p>${success?completed:comparison}</section></div><p class="scene-note">固定样例：完成回执与可提交预览分开；成功后旧报价/按钮撤回。下一次操作必须重新读取目标、费用与合法性，本稿不生成下一笔报价。</p>`;
+}
+function completeEquipment(){
+  const notice={};state.equipment='success';state.equipmentNotice=notice;render();
+  setTimeout(()=>{if(state.equipment==='success'&&state.equipmentNotice===notice){state.equipmentNotice=false;if(active==='equipment')$('#equipment-feedback')?.remove();}},4500);
+}
+function transientResearchMessage(container,key,message){
+  container[key]=message;
+  setTimeout(()=>{if(container[key]===message){container[key]={type:'neutral',text:'已同步。'};if(active==='research'&&$('#investment-feedback-'+key))$('#investment-feedback-'+key).outerHTML=statusBlock('neutral','已同步。','investment-feedback-'+key);}},4500);
 }
 function render(){
   const m=modules.find(m=>m[0]===active);
@@ -83,19 +101,53 @@ function bind(){
   document.querySelectorAll('[data-clear]').forEach(b=>b.onclick=()=>{const id=b.dataset.clear;$(`#feedback-${id}`).textContent=`目标${id}：示例将调用allocate_text(id,"0")；本稿未提交，实际值保持。`;});
   document.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>{state.slot=b.dataset.slot;state.equipment='compare';render();});
   $('#candidate')?.addEventListener('change',e=>{state.candidate=e.target.value;state.equipment='compare';render();});
-  $('#equipment-commit')?.addEventListener('click',()=>{if(state.equipment==='insufficient'){$('#equipment-feedback').textContent='示例拒绝：缺少简并物质4。选择与候选保持。';return;}state.equipment='success';render();});
+  $('#equipment-commit')?.addEventListener('click',()=>{if(state.equipment==='insufficient'){$('#equipment-feedback').textContent='示例拒绝：缺少简并物质4。选择与候选保持。';return;}completeEquipment();});
   $('#choose-hull')?.addEventListener('click',()=>openDialog('舰体候选入口','<p>当前舰保持巡洋舰；候选应显示开放门槛、槽位启用变化和现有报价。确认前不改变当前舰。本轮尚无完整换舰细稿。</p>'));
-  $('#investment-toggle')?.addEventListener('click',()=>{state.investmentOpen=!state.investmentOpen;render();});
-  $('#iron')?.addEventListener('input',e=>state.ironDraft=e.target.value);
-  $('#uranium')?.addEventListener('input',e=>state.uraniumDraft=e.target.value);
-  $('#reset-investment')?.addEventListener('click',()=>{state.ironDraft='100';state.uraniumDraft='2';$('#iron').value='100';$('#uranium').value='2';$('#investment-feedback').textContent='已还原至当前设置。';});
-  $('#apply-investment')?.addEventListener('click',()=>{$('#investment-feedback').textContent=/^\d+$/.test($('#iron').value)&&/^\d+$/.test($('#uranium').value)?'示例待业务校验；实际设置保持。':'示例拒绝：请输入合法金额；草稿保留。';});
+  $('#investment-toggle')?.addEventListener('click',()=>{state.terminalMode=state.terminalMode==='manual'?null:'manual';render();});
+  $('#automatic-toggle')?.addEventListener('click',()=>{state.terminalMode=state.terminalMode==='automatic'?null:'automatic';render();});
+  for(const id of ['iron','uranium']){
+    $('#'+id)?.addEventListener('input',e=>{state[id+'Draft']=e.target.value;state.investMessages[id]={type:'neutral',text:'草稿已编辑，尚未应用。'};$('#investment-feedback-'+id).outerHTML=statusBlock('neutral',state.investMessages[id].text,'investment-feedback-'+id);});
+  }
+  document.querySelectorAll('[data-invest-apply]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.investApply,name=id==='iron'?'铁':'铀',text=state[id+'Draft'];
+    if(!/^\d+$/.test(text)){state.investMessages[id]={type:'error',text:`${name}未应用：请输入非负整数；当前${state.manualActual[id]}保持。`};}
+    else{state.manualActual[id]=text;transientResearchMessage(state.investMessages,id,{type:'success',text:`${name}已应用（示例），当前${text}/秒。`});}
+    render();
+  });
+  document.querySelectorAll('[data-invest-reset]').forEach(b=>b.onclick=()=>{const id=b.dataset.investReset;state[id+'Draft']=state.manualActual[id];state.investMessages[id]={type:'neutral',text:'已还原至本资源当前值。'};render();});
+  $('#auto-enabled')?.addEventListener('change',e=>{state.autoDraft.enabled=e.target.checked;state.autoMessage={type:'neutral',text:'开关草稿未应用。'};$('#automatic-feedback').outerHTML=statusBlock('neutral',state.autoMessage.text,'automatic-feedback');});
+  $('#auto-ratio')?.addEventListener('input',e=>{state.autoDraft.ratio=e.target.value;state.autoMessage={type:'neutral',text:'比例草稿未应用；当前有效投入保持。'};$('#automatic-feedback').outerHTML=statusBlock('neutral',state.autoMessage.text,'automatic-feedback');});
+  $('#apply-automatic')?.addEventListener('click',()=>{
+    const raw=state.autoDraft.ratio;
+    if(!/^\d+(\.\d+)?$/.test(raw)||Number(raw)>100){state.autoMessage={type:'error',text:'设置未应用：请使用模块允许的比例；草稿保留。'};}
+    else{state.autoActual={...state.autoDraft};const message={type:'success',text:'自动设置已应用（示例）；当前有效投入未立即重算。'};state.autoMessage=message;setTimeout(()=>{if(state.autoMessage===message){state.autoMessage={type:'neutral',text:'设置已同步，等待实际预算刷新。'};if(active==='research'&&$('#automatic-feedback'))$('#automatic-feedback').outerHTML=statusBlock('neutral',state.autoMessage.text,'automatic-feedback');}},4500);}
+    render();
+  });
+  $('#reset-automatic')?.addEventListener('click',()=>{state.autoDraft={...state.autoActual};state.autoMessage={type:'neutral',text:'已还原至当前自动设置。'};render();});
   $('#research-choose')?.addEventListener('click',()=>{state.research='choice';render();});
   document.querySelectorAll('[data-research]').forEach(b=>b.onclick=()=>{state.selectedResearch=b.dataset.research==='candidate';render();});
   $('#close-research')?.addEventListener('click',()=>{state.research='running';state.selectedResearch=false;render();});
   $('#confirm-research')?.addEventListener('click',()=>openDialog('切换研究的提交边界','<p>正式接入由现有Research.select处理，成功回执后才用新的active研究更新设备。此稿保留原舞台，不用候选预览假装已生效。</p>'));
 }
-$('#scenario').onchange=e=>{state[active]=e.target.value;if(active==='equipment')state.candidate=e.target.value==='cooldown'?'replace':'upgrade';if(active==='research'){paused=e.target.value==='paused';$('#pause').textContent=paused?'恢复':'暂停';$('#battle-state').textContent=paused?'已暂停 · 2 / 3 波':'交战中 · 2 / 3 波';}render();};
+$('#scenario').onchange=e=>{
+  state[active]=e.target.value;
+  if(active==='equipment'){
+    state.candidate=e.target.value==='cooldown'?'replace':'upgrade';
+    if(e.target.value==='success'){completeEquipment();return;}
+  }
+  if(active==='research'){
+    paused=e.target.value==='paused';
+    $('#pause').textContent=paused?'恢复':'暂停';$('#battle-state').textContent=paused?'已暂停 · 2 / 3 波':'交战中 · 2 / 3 波';
+    if(e.target.value==='choice'){state.selectedResearch=true;state.terminalMode=null;}
+    if(e.target.value==='automatic'){state.terminalMode='automatic';state.autoDraft={enabled:true,ratio:'30'};state.autoMessage={type:'neutral',text:'草稿开启 / 30%，尚未应用。'};}
+    if(e.target.value==='partial'){
+      state.terminalMode='manual';state.manualActual={iron:'120',uranium:'2'};state.ironDraft='120';state.uraniumDraft='abc';
+      transientResearchMessage(state.investMessages,'iron',{type:'success',text:'铁已应用（示例），当前120/秒。'});
+      state.investMessages.uranium={type:'error',text:'铀未应用：请输入非负整数；当前2保持。'};
+    }
+  }
+  render();
+};
 $('#collapse').onclick=()=>{$('#app').classList.toggle('collapsed');};
 $('#pause').onclick=()=>{paused=!paused;$('#pause').textContent=paused?'恢复':'暂停';$('#battle-state').textContent=paused?'已暂停 · 2 / 3 波':'交战中 · 2 / 3 波';if(active==='research')render();};
 $('#guard').onclick=()=>{guarded=!guarded;$('#guard').textContent='驻守：'+(guarded?'开启':'关闭');};
