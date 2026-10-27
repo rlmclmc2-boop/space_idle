@@ -1,0 +1,9 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+CONDENSATION_LOCKED_DEVICE_AND_CHOICE_HIDDEN
+CONDENSATION_UNLOCKED_DEVICE_AND_CHOICE_RESTORED
+RESEARCH_PREREQUISITES_HIDDEN count=3
+GALAXY_UNEXPLORED_NODE_DETAIL_OK
+BASE_RESEARCH_WITHOUT_STAFF_OR_INVESTMENT_RUNNING READONLY_PRESENTATION_OK

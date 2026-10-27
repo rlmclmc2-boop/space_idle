@@ -1,0 +1,98 @@
+{
+  "acceptance": "G9 remains open: enemy shields/bars, all ranked dense formations and future expansion need complete envelopes plus real-window review; these facts do not approve a multiplier",
+  "alpha_threshold": 0.0,
+  "baseline": "64ff8539",
+  "candidates": [
+    {
+      "gameplay_impact": "none",
+      "id": "A",
+      "layout": "current 572x960 combat coordinates; independent desktop workspace",
+      "limitation": "UI separation does not improve the 170-unit enemy/player center gap"
+    },
+    {
+      "gameplay_impact": "any player_y/formation-row/projectile-boundary change requires explicit approval; no value selected or implemented",
+      "id": "B",
+      "layout": "reserve complete assembly envelopes and a separately approved inter-fleet gap before selecting scale ratios"
+    }
+  ],
+  "facts": [
+    {
+      "center_separation": 170,
+      "envelope_bottom_at_current_player_y": 586.52099609375,
+      "envelope_top_at_current_player_y": 453.47900390625,
+      "front_enemy_center_y": 350,
+      "full_turret_sweep_height": 133.0419921875,
+      "full_turret_sweep_width": 98.1239929199219,
+      "hud_clearance": 121.47900390625,
+      "hud_top": 708,
+      "hull_height": 133.0419921875,
+      "hull_width": 98.1239929199219,
+      "opaque_area_alpha_gt_zero": 8180.67082523838,
+      "shield_visual_envelope": "No in-world player shield shell is currently rendered; shield bar is separate. Future shield radius remains unapproved.",
+      "ship": "Frigate"
+    },
+    {
+      "center_separation": 170,
+      "envelope_bottom_at_current_player_y": 595.734985351563,
+      "envelope_top_at_current_player_y": 444.265014648438,
+      "front_enemy_center_y": 350,
+      "full_turret_sweep_height": 151.470001220703,
+      "full_turret_sweep_width": 126.697402954102,
+      "hud_clearance": 112.265014648438,
+      "hud_top": 708,
+      "hull_height": 151.470001220703,
+      "hull_width": 107.338012695313,
+      "opaque_area_alpha_gt_zero": 11624.6757033765,
+      "shield_visual_envelope": "No in-world player shield shell is currently rendered; shield bar is separate. Future shield radius remains unapproved.",
+      "ship": "Destroyer"
+    },
+    {
+      "center_separation": 170,
+      "envelope_bottom_at_current_player_y": 626.895935058594,
+      "envelope_top_at_current_player_y": 403.996154785156,
+      "front_enemy_center_y": 350,
+      "full_turret_sweep_height": 222.899780273438,
+      "full_turret_sweep_width": 189.575454711914,
+      "hud_clearance": 81.1040649414063,
+      "hud_top": 708,
+      "hull_height": 213.7919921875,
+      "hull_width": 162.792007446289,
+      "opaque_area_alpha_gt_zero": 28229.7994924603,
+      "shield_visual_envelope": "No in-world player shield shell is currently rendered; shield bar is separate. Future shield radius remains unapproved.",
+      "ship": "Cruiser"
+    },
+    {
+      "center_separation": 170,
+      "envelope_bottom_at_current_player_y": 641.108032226563,
+      "envelope_top_at_current_player_y": 398.891998291016,
+      "front_enemy_center_y": 350,
+      "full_turret_sweep_height": 242.216003417969,
+      "full_turret_sweep_width": 220.325332641602,
+      "hud_clearance": 66.8919677734375,
+      "hud_top": 708,
+      "hull_height": 242.216003417969,
+      "hull_width": 212.602005004883,
+      "opaque_area_alpha_gt_zero": 40719.3307071866,
+      "shield_visual_envelope": "No in-world player shield shell is currently rendered; shield bar is separate. Future shield radius remains unapproved.",
+      "ship": "Battleship"
+    },
+    {
+      "center_separation": 170,
+      "envelope_bottom_at_current_player_y": 665.89404296875,
+      "envelope_top_at_current_player_y": 374.105987548828,
+      "front_enemy_center_y": 350,
+      "full_turret_sweep_height": 291.788024902344,
+      "full_turret_sweep_width": 264.950805664063,
+      "hud_clearance": 42.10595703125,
+      "hud_top": 708,
+      "hull_height": 291.788024902344,
+      "hull_width": 247.995986938477,
+      "opaque_area_alpha_gt_zero": 50660.8101799814,
+      "shield_visual_envelope": "No in-world player shield shell is currently rendered; shield bar is separate. Future shield radius remains unapproved.",
+      "ship": "Heavy_Battleship"
+    }
+  ],
+  "position_changes_applied": false,
+  "scale_changes_applied": false,
+  "turret_angles": "all four legal weapon arts at every mount, full 360-degree 1-degree sweep; conservative union, not simultaneous installation"
+}
