@@ -6,9 +6,9 @@
 
 人工可调整内容只能来自Excel。运行时使用编译的不可变ConfigBundle，不实时打开Excel、不从工作目录猜选哪份JSON、不在游戏里启动配置编辑器。版本库中的JSON只是生成物，手动修改会被完整重编译比较发现。
 
-仓库根`太空战舰.xlsx`经核查是旧总表（8个sheet，同名表均与main正式拆分表不同），只是split工具的历史外部输入，不在新编译manifest；详见09第6节。根`config_excel`为正式输入集合，显式manifest列出每个工作簿、sheet、主键、字段、schema版本、归类。`published/`与`level_monGroup_generated.xlsx`是发布/生成副本，`battle_design.xlsx`是设计候选元数据；不得因目录里存在就自动覆盖正式level/mon/monGroup。工具读取任何生成表必须显示其来源类别。精确基线清单见09。
+仓库根`太空战舰.xlsx`经核查是旧总表（8个sheet，同名表均与main正式拆分表不同），只是split工具的历史外部输入，不在新编译manifest；详见[旧总表/副本历史核对](history/config-fingerprints.md#6-仓库根旧总表与发布副本核对)。根`config_excel`为正式输入集合，显式manifest列出每个工作簿、sheet、主键、字段、schema版本、归类。`published/`与`level_monGroup_generated.xlsx`是发布/生成副本，`battle_design.xlsx`是设计候选元数据；不得因目录里存在就自动覆盖正式level/mon/monGroup。工具读取任何生成表必须显示其来源类别。原覆盖快照及逐表字段来源见[09索引](09-config-catalog.md)，当前输入清单以正式manifest为准。
 
-停用配置保留内容：旧hightech四项、scientistCost/hightechLimit/techPointGet等不再激活旧科研；未消费字段登记“保留但无运行消费者”；资产外观配置仍可消费。已删除的成长项不从历史版本、默认字典或“补齐schema”恢复。现存equipment_evolution.json所定义的装备进化保留并迁入Excel，具体字段见09；它不授权恢复其他已删除成长项目。
+停用配置保留内容：旧hightech四项、scientistCost/hightechLimit/techPointGet等不再激活旧科研；未消费字段登记“保留但无运行消费者”；资产外观配置仍可消费。已删除的成长项不从历史版本、默认字典或“补齐schema”恢复。现存equipment_evolution.json所定义的装备进化保留并迁入Excel，具体规则见[03成长](03-progression.md#11-属性成长与装备进化)及本节迁移表；字段来源按[09索引](09-config-catalog.md)定位；它不授权恢复其他已删除成长项目。
 
 ### 1.1 编译流水线
 
@@ -42,7 +42,7 @@
 
 ## 2. 应配置的硬编码迁移表
 
-下表定义迁移目标与语义，不是此次实际新增Excel。迁移保留内容并应用已确定规则；09第0节列出与main快照不同的目标字段值，本次不改xlsx。
+下表保留设计迁移目标与语义，不表示本轮新增Excel或各目标表尚未实施。规则/值以01–04对应正文和当前正式Excel为准，字段来源从[09索引](09-config-catalog.md)按表查阅；[旧09目标映射](history/config-migration-targets.md)仅作历史来源，不能作为当前编译前自动应用的指令。本次不改xlsx。
 
 | 目标表 | 从实现抽出的内容 | 初值/约束 |
 |---|---|---|

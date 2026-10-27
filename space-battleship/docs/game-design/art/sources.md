@@ -44,9 +44,13 @@
 
 ### S9
 
+[历史整屏来源：Git 573e9312](https://github.com/rlmclmc2-boop/space_idle/commit/573e9312)，`after/planet-1-start.png`，父审已查看，表示星球探索起始整体界面；仅作表现参照，不批准旧布局、数值或状态。
+
 **星球**。[球体/参数](../../../assets/planets/README.md)、[卡通底图](../../../assets/planets/toon/README.md)、[轨道资产](../../../assets/planets/orbital/README.md)、[模型与图标](../../../assets/planets/orbital/models/README.md)。历史 `scripts/planet_panel.gd::ensure_card_content/_show_facility/_refresh_facility_dialog` 提供导航、设施详情和反馈；当前 `src/ui/planet_panel.gd` 已接 `scripts/planet_visual.gd`，不能登记成“待重建球体”。
 
 ### S10
+
+[历史整屏来源：Git 72b0fa22](https://github.com/rlmclmc2-boop/space_idle/commit/72b0fa22)，`galaxy-city-ui.png`，父审已查看，表示已建成城市场景；仅作表现参照，不批准旧布局、数值或状态。新旧对照须匹配建设阶段，不能用旧满城对比新空底座直接判定资产退化。
 
 **星系**。[现行 GLB 与模型契约](../../../assets/galaxy/v3/README.md)、`manifest.json`；历史 `scripts/galaxy_panel.gd::refresh_detail` 与 `galaxy_map.gd::pick/_gui_input/refresh`；当前 `src/ui/galaxy_panel.gd` 已接保留的 map。 [建筑 PNG v3](../../../assets/galaxy/buildings/v3/README.md) 明确为退役参考，不用它替换当前模型。
 
