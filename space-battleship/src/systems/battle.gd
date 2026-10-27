@@ -21,7 +21,7 @@ var _visual_catalog: Dictionary = {}
 var _weapon_art: Dictionary = {}
 var _weapon_manifest: Dictionary = {}
 var _ranked_weapon_meta: Dictionary = {}
-var _aim_uid: int = -1
+var _aim_targets: Dictionary = {}
 var _weapon_poses: Dictionary = {}
 var _visual_weapons: Array = []
 var _enemy_visual_weapons: Array = []
@@ -348,7 +348,7 @@ func commit_values(values: Dictionary, kind: String, iron: String, upgrades: Dic
 
 func advance(dt: float) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
-	if _first_target_uid() != _aim_uid and not _sync_geometry().ok: return _run_state.rejection()
+	if _kernel.weapon_aims() != _aim_targets and not _sync_geometry().ok: return _run_state.rejection()
 	if not _kernel.advance(dt):
 		var reason: String = str(_kernel.take_results().get("error", ""))
 		if reason.is_empty(): reason = "NativeAdvanceRejected"
@@ -365,6 +365,7 @@ func advance(dt: float) -> Dictionary:
 		return recorded
 	for event in result.events: event.make_read_only()
 	_events.append_array(result.events)
+	if _kernel.weapon_aims() != _aim_targets and not _sync_geometry().ok: return _run_state.rejection()
 	result.ok = true
 	return result
 
@@ -413,13 +414,10 @@ func _sync_geometry() -> Dictionary:
 	_weapon_poses = {}
 	_player_muzzles = {}
 	_enemy_muzzles = {}
-	var target := Vector2(float(_geometry.player_x), float(_geometry.player_y) - 500.0)
-	_aim_uid = -1
-	for actor in actors:
-		if not actor.get("dead", false):
-			_aim_uid = int(actor.uid)
-			target = Vector2(float(actor.x), float(actor.y))
-			break
+	# Query the native target ordering after publishing this wave's actual points.
+	_kernel.input_geometry(packet.points, {})
+	_aim_targets = _kernel.weapon_aims()
+	var mounts: Dictionary = {}
 	var rendered_height: float = _hull_bounds(_player_hull).size.y
 	for weapon in _visual_weapons:
 		var id: String = str(weapon.entry.id)
@@ -427,7 +425,9 @@ func _sync_geometry() -> Dictionary:
 			_player_muzzles[id] = weapon.muzzle
 			continue
 		var key: String = str(weapon.entry.key)
+		var target: Vector2 = _aim_targets.get(id, {}).get("point", Vector2(weapon.muzzle) + Vector2.UP)
 		var pose: Dictionary = ApprovedWeapon.player_pose(key, _weapon_manifest[key], _weapon_art[key].get_size(), weapon.muzzle, (target - Vector2(weapon.muzzle)).angle(), rendered_height, _player_art)
+		mounts[id] = {"pivot": pose.pivot, "local_ports": pose.local_ports}
 		_weapon_poses[id] = pose
 		_player_muzzles[id] = pose.ports
 	var actor_indices: Dictionary = {}
@@ -450,6 +450,7 @@ func _sync_geometry() -> Dictionary:
 	# The same source-keyed ports feed numerical and retained/screen births.
 	_kernel.input_geometry(packet.points, muzzles)
 	_kernel.input_ballistic_geometry(packet.hulls, packet.points, muzzles, packet.stationary)
+	_kernel.input_weapon_mounts(mounts)
 	_kernel.input_player_point(packet.player_point)
 	if not _kernel.input_player_hull(packet.player_hull):
 		_run_state.fail("InvalidPlayerGeometry")
@@ -460,11 +461,6 @@ func _draw_hull_texture(canvas: CanvasItem, hull: PackedVector2Array, model: Dic
 	var uv := PackedVector2Array()
 	for point in model.hull: uv.append(point + Vector2(0.5, 0.5))
 	canvas.draw_polygon(hull, PackedColorArray([Color.WHITE]), uv, model.texture)
-
-func _first_target_uid() -> int:
-	for actor in _kernel.enemy_views():
-		if not actor.get("dead", false): return int(actor.uid)
-	return -1
 
 func _enemy_weapon_pose(weapon: Dictionary, body: Dictionary, model: Dictionary, pivot: Vector2, source: int) -> Dictionary:
 	var key: String = str(weapon.entry.key)

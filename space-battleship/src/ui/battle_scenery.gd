@@ -8,7 +8,7 @@ var _last_game_time: float = -1.0
 var _last_streak: float = -1.0
 var _last_hyperspace: float = -1.0
 var _stars := MeshInstance2D.new()
-var _surface := Polygon2D.new()
+var _surface := MeshInstance2D.new()
 
 func _init(session) -> void:
 	_session = session
@@ -18,9 +18,16 @@ func _ready() -> void:
 	_material.shader = preload("res://scripts/starfield.gdshader")
 	_material.set_shader_parameter("route_atlas", load("res://assets/backgrounds/hyperspace/routes_atlas.png"))
 	var view := Vector2(_session.battle.view_size())
-	_surface.polygon = PackedVector2Array([Vector2.ZERO, Vector2(view.x, 0), view, Vector2(0, view.y)])
-	_surface.uv = PackedVector2Array([Vector2.ZERO, Vector2.RIGHT, Vector2.ONE, Vector2.DOWN])
-	_surface.vertex_colors = PackedColorArray([Color(1, 0, 0, 0), Color(1, 0, 0, 0), Color(1, 0, 0, 0), Color(1, 0, 0, 0)])
+	# Polygon2D without a bound texture supplies zero UVs to the shader.
+	# An explicit mesh preserves normalized UVs for the custom samplers.
+	var surface_mesh := ArrayMesh.new()
+	var surface_arrays: Array = []
+	surface_arrays.resize(Mesh.ARRAY_MAX)
+	surface_arrays[Mesh.ARRAY_VERTEX] = PackedVector3Array([Vector3.ZERO, Vector3(view.x, 0, 0), Vector3(view.x, view.y, 0), Vector3.ZERO, Vector3(view.x, view.y, 0), Vector3(0, view.y, 0)])
+	surface_arrays[Mesh.ARRAY_TEX_UV] = PackedVector2Array([Vector2.ZERO, Vector2.RIGHT, Vector2.ONE, Vector2.ZERO, Vector2.ONE, Vector2.DOWN])
+	surface_arrays[Mesh.ARRAY_COLOR] = PackedColorArray([Color(1, 0, 0, 0), Color(1, 0, 0, 0), Color(1, 0, 0, 0), Color(1, 0, 0, 0), Color(1, 0, 0, 0), Color(1, 0, 0, 0)])
+	surface_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_arrays)
+	_surface.mesh = surface_mesh
 	_surface.material = _material
 	add_child(_surface)
 	var mesh := ArrayMesh.new()

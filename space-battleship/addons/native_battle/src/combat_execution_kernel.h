@@ -94,6 +94,7 @@ class SpaceCombatKernel : public RefCounted {
         int chain_count = 0;
         Vector2 muzzle, screen_muzzle;
         PackedVector2Array muzzle_ports, screen_muzzle_ports;
+        Vector2 art_pivot; PackedVector2Array art_local_ports; Handle art_target;
         Dictionary entry;
         std::vector<Amount> branch_factors, external_factors;
         int64_t beam = -1, focus_uid = -1;
@@ -568,11 +569,10 @@ class SpaceCombatKernel : public RefCounted {
             a.shield = minimum(a.max_shield, a.shield + a.max_shield * a.recovery * elapsed);
         a.shield_at = at;
     }
-    std::vector<Handle> targets(int type, double at) {
+    std::vector<Handle> ordered_targets(int type) const {
         std::vector<Handle> result;
         for (size_t i = 0; i < actors.size(); ++i)
             if (actors[i].live) {
-                shield(actors[i], at);
                 result.push_back(handle(i));
             }
         std::sort(result.begin(), result.end(), [&](Handle x, Handle y) {
@@ -587,6 +587,10 @@ class SpaceCombatKernel : public RefCounted {
             return ac == bc ? a.slot < b.slot : ac < bc;
         });
         return result;
+    }
+    std::vector<Handle> targets(int type, double at) {
+        for (Actor &a : actors) if (a.live) shield(a, at);
+        return ordered_targets(type);
     }
     void effect(int kind, const Flight &f, Vector2 point, double at) {
         Effect e;
@@ -641,6 +645,10 @@ class SpaceCombatKernel : public RefCounted {
     size_t birth(int wi, Handle target, std::shared_ptr<Instance> inst, Amount multiplier,
                  bool repeated = false, bool chain = false, Vector2 origin = Vector2(), std::shared_ptr<MissileContext> missile_ctx = {}, int launch_ordinal = -1) {
         Weapon w = committed_weapon(wi, inst->attack->birth);
+        if (!chain && !w.hostile) if (const Actor *a = resolve(target)) {
+            aim_muzzles(w, a->point);
+            weapons[wi].art_target = target;
+        }
         size_t id;
         if (free_flights.empty()) {
             id = flights.size();
@@ -2126,6 +2134,8 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("attribute_details"), &SpaceCombatKernel::attribute_details);
         ClassDB::bind_method(D_METHOD("geometry_details"), &SpaceCombatKernel::geometry_details);
+        ClassDB::bind_method(D_METHOD("weapon_aims"), &SpaceCombatKernel::weapon_aims);
+        ClassDB::bind_method(D_METHOD("input_weapon_mounts", "mounts"), &SpaceCombatKernel::input_weapon_mounts);
         ClassDB::bind_method(D_METHOD("set_damage_stats_enabled", "enabled"), &SpaceCombatKernel::set_damage_stats_enabled);
         ClassDB::bind_method(D_METHOD("take_damage_stats"), &SpaceCombatKernel::take_damage_stats);
     }
@@ -2600,6 +2610,7 @@ class SpaceCombatKernel : public RefCounted {
                 replacement.beam = weapons[match].beam;
                 replacement.muzzle = weapons[match].muzzle; replacement.screen_muzzle = weapons[match].screen_muzzle;
                 replacement.muzzle_ports = weapons[match].muzzle_ports; replacement.screen_muzzle_ports = weapons[match].screen_muzzle_ports;
+                replacement.art_pivot = weapons[match].art_pivot; replacement.art_local_ports = weapons[match].art_local_ports;
                 weapons[match] = replacement; // Existing roots keep their due time; Attacks keep immutable birth snapshots.
             } else {
                 int index = 0;
@@ -2651,6 +2662,39 @@ class SpaceCombatKernel : public RefCounted {
     }
     // Atomic, O(weapon slots), reusable across arbitrary art/configuration edits.
     // Empty rows select the existing numerical display fallback.
+    static void aim_muzzles(Weapon &w, Vector2 target) {
+        if (w.art_local_ports.is_empty()) return;
+        const double rotation = engine_angle(target - w.art_pivot) + 3.14159265358979323846 * 0.5;
+        w.muzzle_ports.resize(w.art_local_ports.size());
+        for (int i = 0; i < w.art_local_ports.size(); ++i)
+            w.muzzle_ports.set(i, w.art_pivot + engine_rotated(w.art_local_ports[i], rotation));
+        w.screen_muzzle_ports = w.muzzle_ports;
+        w.muzzle = w.screen_muzzle = w.muzzle_ports[0];
+    }
+    void input_weapon_mounts(Dictionary rows) {
+        for (Weapon &w : weapons) {
+            if (w.hostile || w.vacant || !w.configured) continue;
+            String id = w.entry.get("id", "");
+            if (!rows.has(id)) continue;
+            Dictionary row = rows[id];
+            w.art_pivot = row["pivot"]; w.art_local_ports = row["local_ports"];
+        }
+    }
+    Dictionary weapon_aims() const {
+        Dictionary rows;
+        for (const Weapon &w : weapons) {
+            if (w.hostile || w.vacant || !w.configured) continue;
+            const Actor *target = nullptr;
+            if (w.kind == 3 && w.beam >= 0 && flights[w.beam].live && !flights[w.beam].await_target)
+                target = resolve(flights[w.beam].target);
+            if (!target) target = resolve(w.art_target);
+            if (!target) { auto candidates = ordered_targets(w.type); if (!candidates.empty()) target = &actors[candidates.front().index]; }
+            if (!target) continue;
+            Dictionary row; row["uid"] = target->uid; row["point"] = target->point;
+            rows[w.entry.get("id", "")] = row;
+        }
+        return rows;
+    }
     static Vector2 muzzle_port(const Weapon &w, bool screen, int index) {
         const PackedVector2Array &ports = screen ? w.screen_muzzle_ports : w.muzzle_ports;
         if (ports.is_empty()) return screen ? w.screen_muzzle : w.muzzle;
@@ -2671,6 +2715,7 @@ class SpaceCombatKernel : public RefCounted {
             bool valid = true;
             for (int i = 0; i < ports.size(); ++i) if (!ports[i].is_finite()) { valid = false; break; }
             if (!valid) continue;
+            w.art_local_ports.clear(); // An explicit geometry override replaces art attachment metadata.
             if (screen) { w.screen_muzzle_ports = ports; w.screen_muzzle = ports[0]; }
             else { w.muzzle_ports = ports; w.muzzle = ports[0]; }
         }
@@ -2874,6 +2919,7 @@ class SpaceCombatKernel : public RefCounted {
             row["fixed"] = view.fixed; row["age"] = view.age;
             row["port_index"] = f.port_index; row["launch_ordinal"] = f.launch_ordinal;
             row["launch_screen_point"] = f.launch_screen_point;
+            row["target_uid"] = f.target.index < actors.size() ? actors[f.target.index].uid : int64_t(-1);
             row["position"] = position(f.lease->motion());
             row["direction"] = f.lease->motion().direction; row["speed"] = f.lease->motion().speed;
             flight_rows.append(row);
