@@ -1,0 +1,149 @@
+{
+  "source_commit": "dd2210e97a49cd33b4d5ee6faf353bfddd0d5ea6",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "current entity ultimate, not ID: d1 blocks changed hanging and preset atomically",
+    "restored d6 accepts second hanging",
+    "d3 golden50/5 preview invalidated after legendary; new100/10 quote and actual ledger",
+    "directed chain_count uses existing T2 value1 response, never absent T5"
+  ],
+  "images": [
+    {
+      "file": "scene-chain-count-legal-tier-response-1440x900.png",
+      "family": "scene",
+      "case": "scene-chain-count-legal-tier-response",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 127,
+        "inner": 0
+      },
+      "sha256": "07dd2030ba9e04a27c7c4016b6624d8a27ecd1f43e07eb8b7cd50e105a1c8035"
+    },
+    {
+      "file": "scene-d1-ultimate-hanging-rejected-1440x900.png",
+      "family": "scene",
+      "case": "scene-d1-ultimate-hanging-rejected",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 269,
+        "inner": 0
+      },
+      "sha256": "8018eaa4831d7a0fd014976033e88de1886e6d8ae7f76773c73113d46cff44b2"
+    },
+    {
+      "file": "scene-d1-ultimate-preset-rejected-1440x900.png",
+      "family": "scene",
+      "case": "scene-d1-ultimate-preset-rejected",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "1f3c3d169de7b9e7f47105e69f90ba33d73d825d37a380f3e296346cb8485c91"
+    },
+    {
+      "file": "scene-d3-legend-dismantle-actual-1440x900.png",
+      "family": "scene",
+      "case": "scene-d3-legend-dismantle-actual",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 30,
+        "inner": 0
+      },
+      "sha256": "6456f5ebf9d41ade95f4272116d8029040a3d94e4295cc68ce6abf6b919cf3b5"
+    },
+    {
+      "file": "scene-d3-legend-new-dismantle-quote-1440x900.png",
+      "family": "scene",
+      "case": "scene-d3-legend-new-dismantle-quote",
+      "route": "hyperspace/protection",
+      "scroll": {
+        "outer": 30,
+        "inner": 0
+      },
+      "sha256": "3ddff2c9758abc7aee173609c4a5d17ac0bf3f7bc4b206f76f2f90b54b936d76"
+    },
+    {
+      "file": "scene-d6-restored-hanging-accepted-1440x900.png",
+      "family": "scene",
+      "case": "scene-d6-restored-hanging-accepted",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 247,
+        "inner": 0
+      },
+      "sha256": "cf28ac1acc726da875f087d3b58c7ac48756e874d97bc9558d2a655ad6215394"
+    },
+    {
+      "file": "work-chain-count-legal-tier-response-1440x900.png",
+      "family": "work",
+      "case": "work-chain-count-legal-tier-response",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 198
+      },
+      "sha256": "2fe6ca4e972d1108ae86d1705287df25b7dce64be99189d79e371dcb7a493ac2"
+    },
+    {
+      "file": "work-d1-ultimate-hanging-rejected-1440x900.png",
+      "family": "work",
+      "case": "work-d1-ultimate-hanging-rejected",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 0,
+        "inner": 328
+      },
+      "sha256": "2f9f745f4b410d9029e872f2fd8135234f316d4ea2d625c784f43b647c1e4f11"
+    },
+    {
+      "file": "work-d1-ultimate-preset-rejected-1440x900.png",
+      "family": "work",
+      "case": "work-d1-ultimate-preset-rejected",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 21
+      },
+      "sha256": "2c15ab6339779716a5085e13932e0e1e8288cdadf43068230efcab47bfd8caea"
+    },
+    {
+      "file": "work-d3-legend-dismantle-actual-1440x900.png",
+      "family": "work",
+      "case": "work-d3-legend-dismantle-actual",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "d7812ee94ad650aec968dd23a99c79beaab6cdaf3c9c1c417f7911ac5a4b5edf"
+    },
+    {
+      "file": "work-d3-legend-new-dismantle-quote-1440x900.png",
+      "family": "work",
+      "case": "work-d3-legend-new-dismantle-quote",
+      "route": "hyperspace/protection",
+      "scroll": {
+        "outer": 0,
+        "inner": 115
+      },
+      "sha256": "95b5a8af0d9c58a9051b0f10a269307cb5a5a61dc6f7cd03ff89be107451e94d"
+    },
+    {
+      "file": "work-d6-restored-hanging-accepted-1440x900.png",
+      "family": "work",
+      "case": "work-d6-restored-hanging-accepted",
+      "route": "hyperspace/hanging",
+      "scroll": {
+        "outer": 0,
+        "inner": 328
+      },
+      "sha256": "73e31bf8b9af07c6067cbb468e7fb6e10cc7b74d2edf7773ac5c046fdb138ae8"
+    }
+  ]
+}
