@@ -126,10 +126,13 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, s
 	if not saved.is_empty():
 		var restored: Dictionary = _restore_modules(saved)
 		if not restored.ok: return restored
-	equipment.loadout_changed.connect(func(): tutorial.record("equip"))
-	equipment.slots_changed.connect(func(_ids: Array): tutorial.record("upgrade"))
-	economy.drop_collected.connect(func(): tutorial.record("pickup"))
-	campaign_system.retreat_started.connect(func(): tutorial.record("retreat"))
+	# Signals retain their lambda captures. Keep only the tutorial owner here;
+	# capturing this Session would cycle through its owned modules forever.
+	var tutorial_owner = tutorial
+	equipment.loadout_changed.connect(func(): tutorial_owner.record("equip"))
+	equipment.slots_changed.connect(func(_ids: Array): tutorial_owner.record("upgrade"))
+	economy.drop_collected.connect(func(): tutorial_owner.record("pickup"))
+	campaign_system.retreat_started.connect(func(): tutorial_owner.record("retreat"))
 	_planet_factors = planet_system.contributions()
 	_crew_factors = crew_system.contributions()
 	_galaxy_factors = galaxy_system.contributions()

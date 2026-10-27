@@ -103,9 +103,10 @@ static func approved_mount_position(fit:Dictionary,point:Array)->Vector3:
 	return Vector3(fit.position)+Vector3(float(point[0])*mesh_size.x,0.08,float(point[1])*mesh_size.y)*scale
 
 static func battle_geometry(actors: Array, models: Dictionary, selected_ship: String, player_art: Dictionary,
-		player_dimensions: Vector2, player_geometry_height: float, player_muzzles: Dictionary, enemy_muzzles: Dictionary,
+		player_dimensions: Vector2, player_geometry_height: float,
 		geometry: Dictionary, parameters: Dictionary) -> Dictionary:
 	var hulls: Array = []
+	var poses: Array = []
 	var points := PackedVector2Array()
 	var stationary := PackedByteArray()
 	var variance_range: Array = JSON.parse_string(str(geometry.enemy_scale_variance))
@@ -121,12 +122,14 @@ static func battle_geometry(actors: Array, models: Dictionary, selected_ship: St
 		var width: float = enemy_width(int(actor.size), bool(actor.wave_final),
 			int(actor.formation_count), float(player_art.display_scale) * float(geometry.player_display_multiplier),
 			player_geometry_height, float(parameters["enemyVisualScaleSize" + str(int(actor.size))]), variance, geometry)
-		var hull: PackedVector2Array = transform_hull(model.hull, point, Vector2(width, width * float(geometry.enemy_model_height_ratio)) * float(actor.hull_scale), angle)
+		var bounds := Rect2(model.hull[0], Vector2.ZERO)
+		for vertex in model.hull: bounds = bounds.expand(vertex)
+		var dimensions: Vector2 = Vector2(width / bounds.size.x, width * float(geometry.enemy_model_height_ratio) / bounds.size.y) * float(actor.hull_scale)
+		var hull: PackedVector2Array = transform_hull(model.hull, point, dimensions, angle)
+		poses.append({"origin": point, "dimensions": dimensions, "angle": angle})
 		hulls.append(hull)
 		points.append(point)
 		stationary.append(1)
-	var muzzles: Dictionary = player_muzzles.duplicate()
-	muzzles.merge(enemy_muzzles)
 	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
-	return {"hulls": hulls, "points": points, "muzzles": muzzles, "stationary": stationary,
+	return {"hulls": hulls, "poses": poses, "points": points, "stationary": stationary,
 		"player_point": player_point, "player_hull": transform_hull(models[selected_ship].hull, player_point, player_dimensions, 0.0)}

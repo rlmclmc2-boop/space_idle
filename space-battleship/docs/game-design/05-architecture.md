@@ -199,7 +199,7 @@ write_persistent_state() / read_persistent_state(data)  # 历史/随机/ID，不
 
 `Battle.attribute_details()`直接查询native已提交的武器、防具、当前倍率及临时标记；查询不推进时间、随机或计数，不在UI复写战斗公式。Planet/Galaxy的`visual_snapshot`与Crew的`galaxy_assignments`仅提供表现副本；旧星球/星系纯表现资源消费这些副本，暂停与倍速来自Session。
 
-战场HUD从native读取当前/最大盾甲，以Amount安全比例绘制条形显示；数字与来源名在表现边界格式化，金额及存档仍保留原精度。舰体最低可读高度与炮台透明边缘裁切只用于绘制，不回写逻辑轮廓、炮口或伤害输入。完整伤害明细位于档案。
+战场HUD从native读取当前/最大盾甲，以Amount安全比例绘制条形显示；数字与来源名在表现边界格式化，金额及存档仍保留原精度。舰体尺寸统一取资源`static_height`、`player_display_multiplier`及对应`playerVisualScale*`；敌舰配置宽高作用于实际alpha凸包包络。相同顶点供绘制和原生命中使用，不再独立放大贴图。炮台固定向前的挂点、裁切和资源`muzzle`坐标生成唯一世界炮口，同时提交数值与表现输入；炮台绘制消费同一姿态。现有VisualScale字段在此契约下控制统一尺寸，保留历史列名，不另设显示尺度。完整伤害明细位于档案。
 
 ## 现行模块交接契约
 

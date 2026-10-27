@@ -2117,6 +2117,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("enemy_views"), &SpaceCombatKernel::enemy_views);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("attribute_details"), &SpaceCombatKernel::attribute_details);
+        ClassDB::bind_method(D_METHOD("geometry_details"), &SpaceCombatKernel::geometry_details);
         ClassDB::bind_method(D_METHOD("set_damage_stats_enabled", "enabled"), &SpaceCombatKernel::set_damage_stats_enabled);
         ClassDB::bind_method(D_METHOD("take_damage_stats"), &SpaceCombatKernel::take_damage_stats);
     }
@@ -2807,6 +2808,50 @@ class SpaceCombatKernel : public RefCounted {
     }
     Dictionary player_view() const {
         return player_row;
+    }
+    // Detached diagnostics from the actual collision inputs and active motion leases.
+    // No simulation, presentation, target selection, RNG or lifecycle work runs here.
+    Dictionary geometry_details() const {
+        Dictionary result; result["player_collision_hull"] = player_collision_hull.duplicate();
+        result["player_point"] = player_point;
+        Array actor_rows, flight_rows; Dictionary muzzle_rows;
+        for (size_t i = 0; i < actors.size(); ++i) {
+            const Actor &a = actors[i]; Dictionary row;
+            row["index"] = int64_t(i); row["uid"] = a.uid; row["generation"] = int64_t(a.generation);
+            row["slot"] = a.slot; row["live"] = a.live;
+            row["point"] = a.point; row["screen_point"] = a.screen_point; row["logical"] = a.logical;
+            row["collision_hull"] = a.collision_hull.duplicate();
+            row["geometry_revision"] = int64_t(a.geometry_revision); row["stationary"] = a.stationary_geometry;
+            actor_rows.append(row);
+        }
+        for (const Weapon &w : weapons) {
+            if (w.vacant || (!w.hostile && !w.configured)) continue;
+            const int64_t uid = w.hostile && w.source.index < actors.size() ? actors[w.source.index].uid : 0;
+            String id = w.hostile ? String("enemy:") + String::num_int64(uid) + ":" + String::num_int64(w.slot)
+                : String(w.entry.get("id", ""));
+            Dictionary row; row["numeric"] = w.muzzle; row["screen"] = w.screen_muzzle;
+            row["hostile"] = w.hostile; row["slot"] = w.slot; row["source_uid"] = uid;
+            row["enabled"] = w.enabled; row["configured"] = w.configured;
+            muzzle_rows[id] = row;
+        }
+        for (size_t id : active) {
+            PresentationFlight view;
+            if (!presentation_read(id, view)) continue;
+            const Flight &f = flights[id]; const BirthConfig &birth = *f.instance->attack->birth;
+            Dictionary row; row["serial"] = int64_t(f.serial); row["generation"] = int64_t(f.generation);
+            row["source_id"] = f.hostile ? String("enemy:") + String::num_int64(f.source_uid) + ":" + String::num_int64(birth.slot)
+                : String(birth.entry.get("id", ""));
+            row["source_uid"] = f.source_uid; row["weapon_slot"] = birth.slot;
+            row["source_generation"] = int64_t(f.source.generation);
+            row["kind"] = view.kind; row["hostile"] = view.hostile; row["beam"] = view.beam;
+            row["launch_point"] = view.launch; row["ray_origin"] = view.ray_origin; row["ray_step"] = view.ray_step;
+            row["fixed"] = view.fixed; row["age"] = view.age;
+            row["position"] = position(f.lease->motion());
+            row["direction"] = f.lease->motion().direction; row["speed"] = f.lease->motion().speed;
+            flight_rows.append(row);
+        }
+        result["actors"] = actor_rows; result["muzzles"] = muzzle_rows; result["flights"] = flight_rows;
+        return result;
     }
     // Read the same committed modules and evaluator used by attack birth and defence settlement.
     // This query never advances counters, RNG, effects or cooldowns.

@@ -20,9 +20,10 @@ func _run() -> void:
 	var native_before: Dictionary = battle.persistent_state().duplicate(true)
 	var logical: PackedVector2Array = battle._player_hull.duplicate()
 	var muzzles: Dictionary = battle._player_muzzles.duplicate(true)
-	var visual: PackedVector2Array = battle._display_hull(logical, battle._player_origin(), 84.0)
-	if battle._hull_bounds(visual).size.y < 83.99 or battle._player_hull != logical or battle._player_muzzles != muzzles or battle.persistent_state() != native_before:
-		_fail("visual readability transform changed logical/native geometry")
+	var visual: PackedVector2Array = logical
+	var expected_height: float = float(battle._player_art.static_height) * float(battle._geometry.player_display_multiplier) * float(battle._parameters["playerVisualScale" + battle._ship_key])
+	if absf(battle._hull_bounds(visual).size.y - expected_height) > 0.001 or battle._player_hull != logical or battle._player_muzzles != muzzles or battle.persistent_state() != native_before:
+		_fail("shared configured geometry did not match authored hull height")
 		return
 	for key in battle._weapon_art:
 		var texture: AtlasTexture = battle._weapon_art[key]
