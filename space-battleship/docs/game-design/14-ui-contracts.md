@@ -140,3 +140,70 @@
 玩家继续使用`hud_values`，敌舰使用上述具名入口；Battle是前端接触战斗所有者的边界，native仅供Battle内部读取。现有绘制、统计、敌情端口不因“唯一边界”改成一个全能模型。`consume_damage_receipts`仍由BattleView单一消费，新查询不能drain事件；读接口不支付、不保存、不改时钟/随机/目标。
 
 盾外缘形状、完整包络、双条偏移/间距/字号归前端资源与布局；`origin/body_bounds`只提供双条/外缘的世界粗定位，不传窗口像素或固定UI安装框，也不承诺仅靠矩形实现贴轮廓。若具体前端设计需要贴轮廓数据，先明确该设计的最小缺口再另行评审，不在本契约提前增加通用轮廓或包络接口。前端使用统一的世界到界面映射，只投影一次。无人机真实炮口、敌阵坐标或任何共享碰撞几何变更，须分别提案，不能随本接口落实。
+
+## 8. 待审提案：成员、设施与选中节点的最小只读事实
+
+**状态：文档候选，方向双审认可；本次澄清待复核，尚未实现，不作为主线已有方法。** 本节只约定当前成员、当前设施和当前节点事实。审查依据与未覆盖项另见[核对记录](../verification/frontend-contract-audit/colony-readonly-proposal.md)。比例/预算意图、整组原子调配、动态战斗效果和未来效果预测不在本节范围。
+
+### 8.1 共同读取与身份边界
+
+- 方法仅投影已接纳事实和必要的只读缓存；不调用推进、派遣、领取、接纳、支付、RNG或保存，不借读取新增RunState故障/重复领域校验职责。候选或命令完成后才可见的字段不得提前冒充实际值。
+- 对外数组、行及嵌套数组/字典均为脱离所有者的快照或递归只读值。Amount以既有规范文本输出，显示比例为有限float且仅用于绘制；不经float重建Amount、经验门槛、贡献或费用。没有适用值用下文约定的null/空字段，不以0伪装未知。
+- Crew成员id沿用配置String；设施身份是`(planet_id, id)`，planet_id沿用主线的规范十进制String、id沿用实际设施定义键；节点身份是`(region_id, id)`，id为当前公开region.nodes的String键。不得使用显示名、列表位置或演示中的1–30编号替换实际键，也不新增跨模块通用ID编码。
+- 会话替换/恢复或模型重建后，装配处清除旧选择绑定与缓存；不存在/不可见对象从当前结果消失时，前端清除旧详情并停止向旧对象发命令。本节不增加保存字段或承诺跨会话展示缓存连续。
+- 保留`Planet.visual_snapshot`的星体/探索时钟、`Galaxy.visual_snapshot`的地图/父连接、`Crew.galaxy_assignments`的区域人数及现有准入接口。位置、头像映射、模型family、设施屏幕锚点、控件草稿和视角属于前端资源/本地状态，不进入本节输出。
+
+### 8.2 Crew：成员事实
+
+拟增`Crew.member_facts(ids: Array = []) -> Array`。空ids按现有成员选项顺序返回当前可用成员；显式ids只查询这些配置成员，未知id不生成行。显式查询已知未开放成员时，只返回`id/name/available=false/reason="CrewLocked"`，不伪造其可用人物状态。该接口不负责选出“下一个解锁成员”或新增开放门槛算法。
+
+| 必需字段（可用成员行） | 类型、单位与来源 | 消费边界 |
+|---|---|---|
+| `id/name/available/reason` | String/String/bool/String；成员配置身份、原可用性缓存；可用行reason为空 | 名称是纯配置名，不从member_options的格式化名称拆等级。available不是任意目标派遣已获准。 |
+| `level/experience_enabled` | int/bool；实际等级及既有`experience_enabled()`事实 | 等级不加1或套演示等级；经验功能未开放不展示虚构进度。 |
+| `experience/experience_required/experience_fraction` | 经验点数的Amount文本；下一等级所需Amount文本或null；有限[0,1]或null | experience为已扣除已升等级费用后的实际余量；required复用现有单级经验求值，fraction由Crew经Amount生成。功能未开放或现有等级范围已无下一等级时，required/fraction为null，不新增等级上限规则。 |
+| `kind/target/mode` | String/String/String；现有唯一占用记录 | kind沿用空闲空串、system_job、planet_explore、planet_build、galaxy、hyperspace；target保持现行含义，mode沿用1/10/max。展示不拆中文岗位串，不将一份成员复制为多个占用。 |
+| `reservation_reason` | String；无保留为空，在线任务保留沿用`HyperspaceCrewReserved` | 只提示普通派遣/释放受限；停止/领取仍走对应在线任务入口，目标合法性与容量仍由既有准入和命令确认。 |
+
+成员事实不承诺按单人等级计算岗位的聚合增益、未来岗位收益或动态战斗乘数。已有成员/岗位选项与派遣命令保持原入口。
+
+### 8.3 Planet：设施事实
+
+拟增`Planet.facility_facts(planet_id: String, explorers: Dictionary, builders: Dictionary) -> Array`。未知或未开放星球返回空数组；可用星球仅返回其实际适用设施，包含locked/building/ready/built。explorers/builders由装配处在当前Session的可见显示帧同步新读`Crew.step_assignments()`并即读即传，不复用固定步开头缓存的people；它们是同名只读临时视图：按星球键与现有施工目标键映射成员id数组，形状与现有Planet推进输入一致。视图不得自报人数，Planet不留存这些人员视图或另建占用账本。
+
+| 必需字段 | 类型、单位与来源 | 消费边界 |
+|---|---|---|
+| `planet_id/id/name/type/state` | String；现有星球、设施定义及真实状态枚举 | built表示已领取，不输出另一个owned领域状态；设施资产由实际id/type关联，不按四个演示槽位补不存在设施。 |
+| `work/required_work/unlock_exploration` | int；已累计的探索完成次数/所需次数/开放所需探索次数 | 复用设施work、build_explore、unlock_explore；不是游戏秒或未来完成时间。跨门槛的那次探索是否计入施工仍服从现有推进规则。 |
+| `work_fraction` | 有限[0,1]float；由Planet根据现有有效计数生成 | 只供条形显示，不由条长回写工程量；不重新解释施工规则。 |
+| `extra_crew_required/builders_present/explorers_present` | int；配置额外施工人数及临时人员视图中该实际目标人数 | 额外人数为0不表示无需探索；字段不是派遣许可，继续用现有assignment_capacity及Session协调命令。 |
+| `pause_reason` | String；仅building行按既有推进前提投影：`ExplorationNotRunning`、`NoExplorer`、`MissingBuilders`或空串，按此顺序取首项 | 仅为设施不能随探索完成而推进的原因；其他状态为空。全局暂停/倍速沿原上下文，不混入设施状态或自建暂停。 |
+| `claim_allowed/claim_reason` | bool/String；复用当前星球可用性、ready状态及原命令准入条件的只读判断；允许时reason为空 | 不执行_claim_build或预先接纳；仍须由claim_build按提交时事实判定，不增加统一错误/回滚政策。 |
+| `source_factor` | 已领取equipment/refinery设施的当前来源倍率Amount文本；其他类型或尚未领取为null | 沿已有设施贡献来源求值/缓存投影，仅是该设施当前来源倍率，不是装备或掉落的最终值。shipyard/auto_explore不伪造数值倍率；不承诺领取后预测或重铸许可。 |
+
+实际探索者与时钟继续按原人员事实及`Planet.visual_snapshot`消费，不复制探索时钟。现有`visual_snapshot`没有automatic字段；自动探索开关的当前设置只读输出仍是Planet所属的待补缺口，不能声称现有快照已覆盖。该输出只读现有设置，不把关闭自动与立即取消合并成新动作。
+
+### 8.4 Galaxy：选中节点事实
+
+拟增`Galaxy.node_facts(region_id: String, node_id: String, counts: Dictionary) -> Dictionary`。未知/不可用区域或不存在节点返回空字典。counts由装配处在当前Session的可见显示帧同步新读`Crew.galaxy_assignments()`并即读即传，不复用固定步开头缓存的people；它仅转交该区域人数映射，与现有Galaxy推进输入一致，不由视图按人物图标计数或写回。地图形状/连接与人员总数继续消费原接口，本方法只补选中节点的语义截面。
+
+| 必需字段 | 类型、单位与来源 | 消费边界 |
+|---|---|---|
+| `region_id/id/state/explored/reachable` | String/String/String/bool/bool；实际键、empty/exploring/constructing/active状态、揭示事实及既有可达性求值 | reachable不表示可选中即能启动工程，也不要求前端重生成蓝图或推导可达性。 |
+| `building_id/name/level/upgrading/target_level` | String/String/int/bool/int或null；已揭示设施身份、当前等级、现有升级集合成员资格及正在施工/升级的实际目标等级 | 未explored时building_id/name为空、target_level为null，不泄露已抽取但未揭示的类型；level保持实际值。正在施工目标为1，正在升级为当前+1，否则target_level为null，不将演示目标等级当新升级命令。 |
+| `explore_remaining/explore_required` | float；探索工程量 | required复用初始化分配给该节点的准确工程量，含既有末节点余量口径；不重新生成蓝图/RNG。 |
+| `construction_remaining/construction_required` | float；在现有施工前提满足时消耗的游戏秒 | required沿用现有construction_time；无人/全局暂停时不推导现实倒计时。 |
+| `upgrade_remaining/upgrade_required` | float或null；升级工程量，非资源费用、非直接剩余秒数 | 未在升级集合中时均为null；required复用本次已启动升级对应等级的既有工作量求值，不重新选升级目标。 |
+| `progress_fraction` | 有限[0,1]float或null；当前exploring/constructing/upgrading阶段的已完成比例 | 无进行中阶段时为null；所需量与比例由Galaxy沿原初始化/阶段启动求值生成，不由UI把工程量除人数计算ETA。 |
+| `progress_block_reason` | String；进行中阶段且该区域无实际人员时为`NoGalaxyCrew`，否则为空 | 全局暂停仍用原上下文；不添加领域暂停状态或新的工作循环。 |
+| `effect_id/contribution` | 已揭示设施的原effect_type/String；本节点当前已生效来源贡献的Amount文本或null | 未揭示时effect_id为空、contribution为null；已揭示但未建成的当前贡献为合法0。值是原来源账本中的无量纲增量，不是全局/区域合计或最终倍率，不能由UI加1、套等级/收益公式或据此声称未来效果。 |
+
+当前来源贡献沿原贡献求值/缓存读取；不在该查询中推进、完成或领取工程，不从私有来源账本向UI透传整本数据。本节不增加节点操作、未来贡献预览或真实炮口/碰撞几何接口。
+
+### 8.5 失效通知与独立落地边界
+
+- Crew沿`members_changed(ids)`使对应成员事实失效，沿`options_changed`更新可用成员/功能状态；经验变化、真实占用/在线保留与释放须在原接纳完成后覆盖对应id。查询不得发这些信号。
+- Planet沿`status_changed(ids)/buildings_changed(ids)/assignment_options_changed(ids)/availability_changed`使对应星球事实失效；automatic-only变化若影响既有展示，也须沿原status_changed覆盖，不能靠重建全页面补缺失通知。设施视图直接订阅Crew成员/选项变化，只重读当前可见星球并注入最新人员事实，不新增Session全局通知路由。
+- Galaxy沿`status_changed(region_keys)/availability_changed`使选中节点事实失效；施工与升级余量实际变化均须覆盖所在区域，不能只通知升级完成。视图直接订阅Crew成员/选项变化并重读当前选中区域的人数与节点，不全图重建或扩大原人数接口。
+- 三项均在可见显示帧合并失效读取；隐藏视图停止无用投影，业务照常推进，重开读最新完整事实。Amount文本、经验门槛、静态设施/节点定义与未变快照只随对应事实变化重建；不因窗口尺寸或显示帧反复求幂/求值。
+- 每项可单独评审/实现；依赖的人员输入复用已有只读视图，不增加相互持有的模块对象或新业务协调。未选定的比例/预算、整组原子提交、未来效果/动态战斗效果继续待定，不能以本节授权运行实现或整批G2验收。
