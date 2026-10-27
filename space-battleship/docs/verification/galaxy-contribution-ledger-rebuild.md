@@ -30,3 +30,5 @@ $env:SPACE_IDLE_NATIVE_EXTENSION = 'D:/CodexBuild/space_idle/native-stable/space
 Godot `4.7.2.stable.official.ed1daf0bf`；上述探针退出0。相同探针对基点的单文件源码退出1，失败于恢复四种倍率、growth_changed、区域收入、首次部分 changes 和再次恢复；修复版消除这些失败。原生 DLL SHA256：`CE6761C5DBD96F7262FFB5418FD2794AFE52B6BF9A3164DB5EA528D8B790DD75`；配置输出 SHA256：`308B8F8089750DB99E0190526F2F1FDE91EE2950C5229567D295860B04D077DE`。
 
 `--headless --path . --script res://src/main.gd --check-only` 退出0；候选文件 `git diff --check` 通过。探针启动有系统根证书读取提示，离线配置/Amount检查完成。未执行完整 Session 保存/恢复/重铸事务、完整游戏验收或跨星系场景；这些不能由本局部探针声称通过。未改 Session、存档或只读展示端口。原有179项生成文件修改与262项未跟踪元数据全部保留，未提交。
+
+原始日志后补归档（未重跑）：[基点失败](galaxy-contribution-ledger-evidence/baseline-engine.txt)、[修复通过](galaxy-contribution-ledger-evidence/final-probe.txt)，以及[哈希与源码关联清单](galaxy-contribution-ledger-evidence/manifest.json)。日志按原字节保存；清单关联固定Git源码、执行探针及配置哈希，并区分工具退出码与引擎日志本身所含证据。此前探针草稿错误/中断尝试的日志已被覆盖，未补造。
