@@ -27,3 +27,5 @@ document.addEventListener('keydown',e=>{const b=e.target.closest('[data-slot]');
 $('#collapse').onclick=()=>{state.collapsed=!state.collapsed;render()};$('#pause').onclick=()=>{state.paused=!state.paused;notify(state.paused?'模拟暂停 · 布局/详情仍可操作':'模拟恢复');render()};$('#scenario-open').onclick=()=>$('#scenario').showModal();$('#scenario-close').onclick=()=>$('#scenario').close();
 for(const key of ['reactor','equipment','planet','galaxy'])$('#'+key+'-case').onchange=e=>{state[key]=e.target.value;if(key==='reactor'){state.actual=e.target.value==='idle'?[0,0,0,0]:[45,35,20,0];state.alloc=e.target.value==='draft'?[40,40,20,0]:e.target.value==='rejected'?[55,35,20,0]:[...state.actual]}if(key==='equipment')state.candidate=e.target.value==='compare';notify('情境切换 · '+key+' / '+e.target.value);render()};
 window.addEventListener('resize',fitBattle);window.G1={state,render,setModule,fitBattle};render();
+
+$('#assembly-toggle').onclick=()=>{document.body.classList.toggle('show-assembly');$('#assembly-toggle').classList.toggle('active',document.body.classList.contains('show-assembly'));notify('装配层为候选留白示意 · 未定完整包络，不改真实炮口或拾取')};
