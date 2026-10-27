@@ -63,6 +63,16 @@ var _save_status_elapsed: float = 1.0
 var _seen_save_failure_generation: String = ""
 var _feedback_timer:Timer
 var _review_labels:Dictionary = {}
+var _battle_root:Node2D
+var _ambience:Node2D
+var _battle_scenery:Node2D
+var _compact_battle_status:Label
+var _battle_readouts:Array=[]
+var _bridge_toggle:Button
+var _shell_bar:PanelContainer
+var _shell_balance:Label
+var _navigation:GridContainer
+var _navigation_buttons:Dictionary={}
 
 func _ready() -> void:
 	get_window().size_changed.connect(_sync_window_scale)
@@ -158,19 +168,28 @@ func _show_session() -> void:
 	_visibility_pending = true
 	session.campaign_system.progress_changed.connect(_queue_feature_visibility)
 	_sync_window_scale()
+	_battle_root=Node2D.new()
 	if DisplayServer.get_name() != "headless":
-		add_child(load("res://src/ui/battle_scenery.gd").new(session))
+		_ambience=load("res://src/ui/battle_scenery.gd").new(session)
+		_ambience.modulate=Color(0.48,0.56,0.65,1)
+		add_child(_ambience)
+	add_child(_battle_root)
+	if DisplayServer.get_name() != "headless":
+		_battle_scenery=load("res://src/ui/battle_scenery.gd").new(session)
+		_battle_root.add_child(_battle_scenery)
 		var battle_view = BattleView.new(session.battle)
 		battle_view.damage_mode = _damage_mode
 		battle_view.damage_received.connect(_play_effect)
-		add_child(battle_view)
-	var hud_layer := CanvasLayer.new()
-	hud_layer.layer = 8
-	add_child(hud_layer)
+		_battle_root.add_child(battle_view)
+	var hud_layer := Node2D.new()
+	_battle_root.add_child(hud_layer)
+	_battle_readouts=[hud_layer]
 	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle, session.economy))
 	_setup_shell_overlay()
-	add_child(CampaignView.new(session.campaign_system))
-	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
+	var campaign_view=CampaignView.new(session.campaign_system)
+	_battle_root.add_child(campaign_view)
+	_battle_readouts.append(campaign_view)
+	_battle_root.add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 	_setup_growth_panel()
 	_prepare_module_controls(growth_panel)
 	_refresh_feature_visibility()
@@ -191,9 +210,11 @@ func _apply_settings(settings: Dictionary) -> void:
 	if _skip_toggle != null: _skip_toggle.set_pressed_no_signal(_skip_tutorial)
 	if _autosave_spin != null: _autosave_spin.set_value_no_signal(_autosave_interval)
 	if _damage_option != null: _damage_option.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
-	for child in get_children():
+	for child in _battle_root.get_children() if _battle_root!=null else []:
 		if child.get_script() == BattleView: child.damage_mode = _damage_mode
-	if growth_panel != null: growth_panel.visible = _preferred_page == "growth"
+	if growth_panel != null:
+		growth_panel.visible = _preferred_page == "growth"
+		_layout_bridge()
 
 func _setup_audio() -> void:
 	_music_player = AudioStreamPlayer.new()
@@ -381,6 +402,9 @@ func _process(dt: float) -> void:
 	if session != null and startup_error.is_empty():
 		session.frame(dt, DisplayServer.window_is_focused())
 		_sync_guidance()
+		if _compact_battle_status!=null and _compact_battle_status.visible:
+			var defence:Dictionary=session.battle.hud_values()
+			_compact_battle_status.text="%s\n装甲 %s\n护盾 %s"%[session.campaign_system.status_text(),PlayerText.number(str(defence.armour)),PlayerText.number(str(defence.shield))]
 		if _visibility_pending: _refresh_feature_visibility()
 		_refresh_save_warning()
 		if _pause_button != null:
@@ -431,15 +455,27 @@ func _setup_shell_overlay() -> void:
 	_overlay = Node2D.new()
 	layer.add_child(_overlay)
 	_overlay.draw.connect(_draw_shell.bind(_overlay))
+	_shell_bar=PanelContainer.new();_shell_bar.theme=load("res://src/ui/bridge_theme.gd").create()
+	_shell_bar.position=Vector2(8,6);_shell_bar.size=Vector2(get_viewport_rect().size.x-16,54);layer.add_child(_shell_bar)
+	var title:=Label.new();title.text="太空战舰";title.position=Vector2(20,20);layer.add_child(title)
+	_shell_balance=Label.new();_shell_balance.position=Vector2(170,20);layer.add_child(_shell_balance)
+	session.economy.display_changed.connect(_refresh_shell_balance);_refresh_shell_balance()
 	_pause_button = Button.new()
 	_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
 	_pause_button.tooltip_text="空格：暂停或继续；完整操作说明见舰桥档案"
-	_pause_button.position = Vector2(420, 18)
+	_pause_button.theme=load("res://src/ui/bridge_theme.gd").create()
+	_pause_button.position = Vector2(420, 10)
 	_pause_button.pressed.connect(func():
 		if session.run_state.is_running():
 			session.set_pause("user", not session.pause_reasons.has("user"))
 			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停")
 	layer.add_child(_pause_button)
+	_compact_battle_status=Label.new()
+	_compact_battle_status.position=Vector2(18,64)
+	_compact_battle_status.size=Vector2(176,120)
+	_compact_battle_status.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	_compact_battle_status.add_theme_font_size_override("font_size",15)
+	layer.add_child(_compact_battle_status)
 	_save_warning = Label.new()
 	_save_warning.position = Vector2(18, 54)
 	_save_warning.size = Vector2(530, 24)
@@ -568,6 +604,7 @@ func _set_page(page: String) -> void:
 	if saved.ok:
 		_preferred_page = page
 		growth_panel.visible = page == "growth"
+		_layout_bridge()
 	elif growth_status != null:
 		_show_feedback(PlayerText.error(str(saved.reason)))
 
@@ -576,8 +613,10 @@ func _setup_growth_panel() -> void:
 	layer.layer = 10
 	add_child(layer)
 	var open := Button.new()
-	open.text = "舰桥 · 配装与发展"
-	open.position = Vector2(18, 80)
+	_bridge_toggle=open
+	open.theme=load("res://src/ui/bridge_theme.gd").create()
+	open.text = "舰桥"
+	open.position = Vector2(18, 10)
 	layer.add_child(open)
 	growth_panel = PanelContainer.new()
 	growth_panel.position = Vector2(12, 130)
@@ -588,10 +627,10 @@ func _setup_growth_panel() -> void:
 	var shell := VBoxContainer.new()
 	growth_panel.add_child(shell)
 	var box: VBoxContainer = shell
-	var back := Button.new()
-	back.text = "返回战斗"
-	back.pressed.connect(func(): _set_page("battle"))
-	box.add_child(back)
+	var header:=HBoxContainer.new();box.add_child(header)
+	var title:=Label.new();title.text="舰桥";title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title)
+	var back:=Button.new();back.text="收起面板";header.add_child(back)
+	back.pressed.connect(func():_set_page("battle"))
 	growth_status = Label.new()
 	if not _settings_error.is_empty(): _show_feedback(_settings_error)
 	PlayerText.wrap(growth_status)
@@ -604,6 +643,7 @@ func _setup_growth_panel() -> void:
 	_save_status_elapsed = 1.0
 	open.pressed.connect(func(): _set_page("battle" if growth_panel.visible else "growth"))
 	_tabs = TabContainer.new()
+	_tabs.tabs_visible=false
 	_tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	shell.add_child(_tabs)
 	_pages.clear()
@@ -736,7 +776,7 @@ func _setup_growth_panel() -> void:
 		var saved: Dictionary = PlayerSettings.save_change("damage_mode", chosen)
 		if saved.ok:
 			_damage_mode = chosen
-			for child in get_children():
+			for child in _battle_root.get_children():
 				if child.get_script() == BattleView: child.damage_mode = chosen
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
@@ -796,7 +836,9 @@ func _setup_growth_panel() -> void:
 	_command_button(reforge_box, "确认重铸", func() -> Dictionary:
 		return _confirm_reforge(save_path.text, planet_id.text, retained_ids.text))
 	_command_button(reforge_box, "取消重铸", _cancel_reforge)
+	_build_navigation(layer)
 	_tabs.tab_changed.connect(_bridge_tab_changed)
+	_tabs.tab_changed.connect(func(_index):_sync_navigation())
 	_bridge_tab_changed(_tabs.current_tab)
 	_layout_bridge()
 	if not get_viewport().size_changed.is_connected(_layout_bridge):get_viewport().size_changed.connect(_layout_bridge)
@@ -804,15 +846,72 @@ func _setup_growth_panel() -> void:
 func _sync_window_scale()->void:
 	get_window().content_scale_size = Vector2i(maxi(572,get_window().size.x),maxi(960,get_window().size.y))
 
+func _refresh_shell_balance()->void:
+	if _shell_balance==null:return
+	var wallet:Dictionary=session.economy.budget()
+	var parts:PackedStringArray=[]
+	for id in ["1","2"]:
+		var value:Dictionary=wallet.get(id,session.amount_api.apply("zero",[]).value)
+		var exact:String=str(session.amount_api.apply("to_display",[value]).text)
+		parts.append(PlayerText.resource(id)+"  "+PlayerText.number(exact))
+	_shell_balance.text="    ".join(parts)
+
+func _build_navigation(layer:CanvasLayer)->void:
+	_navigation_buttons.clear()
+	_navigation=GridContainer.new();_navigation.theme=load("res://src/ui/bridge_theme.gd").create();layer.add_child(_navigation)
+	for page in [["ship","舰船","ship"],["growth","成长","reactor"],["universe","星图","galaxy"],["hyperspace","超空间","chrono"],["archive","档案","crew"],["settings","设置",""]]:
+		var key:String=page[0]
+		var button:=Button.new();button.toggle_mode=true;button.custom_minimum_size=Vector2(82,58);_navigation.add_child(button)
+		var content:=VBoxContainer.new();content.mouse_filter=Control.MOUSE_FILTER_IGNORE;button.add_child(content);content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);content.offset_top=5;content.offset_bottom=-5
+		if not str(page[2]).is_empty():
+			var icon:=TextureRect.new();icon.texture=preload("res://src/ui/module_widgets.gd").visible_texture(load("res://assets/ui/shell/"+str(page[2])+".svg"));icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.custom_minimum_size.y=22;icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;content.add_child(icon)
+		var caption:=Label.new();caption.text=page[1];caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.mouse_filter=Control.MOUSE_FILTER_IGNORE;content.add_child(caption)
+		button.pressed.connect(func():_tabs.current_tab=int(_pages[key].index);_set_page("growth");_sync_navigation())
+		_navigation_buttons[key]=button
+	_sync_navigation()
+
+func _sync_navigation()->void:
+	for key in _navigation_buttons:
+		_navigation_buttons[key].set_pressed_no_signal(_tabs.current_tab==int(_pages[key].index))
+		_navigation_buttons[key].visible=not _tabs.is_tab_hidden(int(_pages[key].index))
+
 func _layout_bridge()->void:
 	if growth_panel==null:return
 	var view:Vector2=get_viewport_rect().size
 	var wide:bool=view.x>=1200
-	growth_panel.position=Vector2(588,28) if wide else Vector2(12,130)
-	growth_panel.size=Vector2(view.x-600,view.y-48) if wide else Vector2(view.x-24,view.y-200)
+	var opened:bool=growth_panel.visible
+	# Candidate display rectangles only. Logical combat geometry is unchanged.
+	var compact:bool=opened and not wide
+	var available_height:float=view.y-80 if not compact else 260.0
+	var factor:float=minf(1.0,available_height/960.0)
+	if _battle_root!=null:
+		_battle_root.scale=Vector2.ONE*factor
+		_battle_root.position=Vector2(12 if wide and opened else (view.x-572*factor)*0.5,68)
+	if _compact_battle_status!=null:
+		_compact_battle_status.visible=compact
+		_compact_battle_status.position=Vector2(18,80)
+	for readout in _battle_readouts:readout.visible=not compact
+	if _battle_scenery!=null:_battle_scenery.visible=opened and wide
+	if _ambience!=null:
+		_ambience.modulate=Color.WHITE
+		var cover:float=maxf(view.x/572.0,view.y/960.0)
+		_ambience.scale=Vector2.ONE*cover
+		_ambience.position=(view-Vector2(572,960)*cover)*0.5
+	growth_panel.position=Vector2(684,68) if wide else Vector2(12,404)
+	growth_panel.size=Vector2(view.x-696,view.y-80) if wide else Vector2(view.x-24,view.y-416)
+	if _navigation!=null:
+		_navigation.visible=opened;_navigation.columns=1 if wide else 6
+		_navigation.position=Vector2(588,68) if wide else Vector2(12,336)
+		_navigation.size=Vector2(84,500) if wide else Vector2(view.x-24,58)
+	if _shell_bar!=null:_shell_bar.size.x=view.x-16
+	if _bridge_toggle!=null:
+		_bridge_toggle.text="舰桥";_bridge_toggle.position=Vector2(view.x-186,14)
+	if _pause_button!=null:_pause_button.position=Vector2(view.x-80,14)
+	if _shell_balance!=null:_shell_balance.position.x=170 if wide else 120
 	if growth_status!=null:
-		growth_status.position=growth_panel.position+Vector2(16,growth_panel.size.y-80);growth_status.size=Vector2(growth_panel.size.x-32,64)
-	for tabs in _module_tabs.values():tabs.custom_minimum_size.y=maxf(480,growth_panel.size.y-230)
+		growth_status.position=Vector2(growth_panel.position.x+16,view.y-94) if opened else Vector2(maxf(12,(view.x-548)*0.5),view.y-94)
+		growth_status.size=Vector2(minf(548,view.x-32),76)
+	for tabs in _module_tabs.values():tabs.custom_minimum_size.y=maxf(300,growth_panel.size.y-150)
 
 func _module_page(parent:VBoxContainer,title:String,feature:String="")->VBoxContainer:
 	var id:int=parent.get_instance_id()
@@ -855,6 +954,8 @@ func _refresh_feature_visibility() -> void:
 		_tabs.set_tab_hidden(_pages.universe.index, not (visible_features.crew or visible_features.planet or visible_features.galaxy))
 		_tabs.set_tab_hidden(_pages.hyperspace.index, not visible_features.hyperspace)
 		if _tabs.is_tab_hidden(_tabs.current_tab): _tabs.current_tab = int(_pages.ship.index)
+
+	_sync_navigation()
 
 func _create_bridge_page(key: String, title: String) -> void:
 	var scroll := ScrollContainer.new()

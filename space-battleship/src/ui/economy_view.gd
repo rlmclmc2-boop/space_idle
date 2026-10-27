@@ -13,7 +13,7 @@ func _init(economy, context: Callable, after_income: Callable) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var context: Dictionary = _context.call()
-		var result: Dictionary = _economy.collect_at(event.position, float(context.wall), float(context.game), context.factors)
+		var result: Dictionary = _economy.collect_at(get_local_mouse_position(), float(context.wall), float(context.game), context.factors)
 		if result.ok: _after_income.call()
 
 func _draw() -> void:

@@ -51,7 +51,7 @@ func _init(research, command: Callable, context:Callable=Callable()) -> void:
 		_caption(investment, "铁/秒" if resource == "1" else "铀/秒")
 		var input := LineEdit.new()
 		investment_inputs[resource] = input
-		input.text_changed.connect(func(_text): _drafts[resource] = true)
+		input.text_changed.connect(func(_text): _drafts[resource] = true;refresh_investment())
 		input.focus_exited.connect(refresh_investment)
 		input.custom_minimum_size.x = 140
 		investment.add_child(input)
@@ -67,12 +67,12 @@ func _init(research, command: Callable, context:Callable=Callable()) -> void:
 	var automatic := _row(box)
 	var toggle := CheckBox.new()
 	automatic_toggle = toggle
-	toggle.toggled.connect(func(_value): _automatic_draft = true)
+	toggle.toggled.connect(func(_value): _automatic_draft = true;refresh_investment())
 	toggle.text = "自动投入"
 	automatic.add_child(toggle)
 	var ratio := SpinBox.new()
 	automatic_ratio = ratio
-	ratio.value_changed.connect(func(_value): _automatic_draft = true)
+	ratio.value_changed.connect(func(_value): _automatic_draft = true;refresh_investment())
 	ratio.min_value = float(model.minimum_ratio) * 100.0
 	ratio.max_value = 100.0
 	ratio.step = 0.0
@@ -108,9 +108,10 @@ func _refresh_investment() -> void:
 	var model: Dictionary = _research.panel_model()
 	for resource in investment_inputs:
 		var input: LineEdit = investment_inputs[resource]
-		investment_current[resource].text = "当前：" + PlayerText.number(str(model.investment[resource])) + "/秒"
+		investment_current[resource].text = "当前：" + PlayerText.number(str(model.investment[resource])) + "/秒"+(" · 编辑中，未应用" if _drafts.has(resource) else "")
 		if not _drafts.has(resource) and not input.has_focus(): input.text = model.investment[resource]
 	automatic_current.text = "当前自动投入：%s · 铁铀共同预算比例 %s%%" % ["开启" if model.auto_invest else "关闭", str(float(model.ratio) * 100.0)]
+	if _automatic_draft:automatic_current.text+=" · 编辑中，未应用"
 	if not _automatic_draft and not automatic_ratio.get_line_edit().has_focus():
 		automatic_toggle.set_pressed_no_signal(model.auto_invest)
 		automatic_ratio.set_value_no_signal(float(model.ratio) * 100.0)
@@ -197,13 +198,23 @@ func _build_stage()->void:
 	_drawer.hide()
 func _layout_scene()->void:
 	if _readout==null:return
-	_readout.position=Vector2(14,14);_readout.size=Vector2(minf(420,_stage.size.x-28),0)
+	var narrow:bool=_stage.size.x<600
+	# The narrow scene keeps the machine clear; its terminal follows below the viewing area.
+	_stage.custom_minimum_size.y=560 if narrow else 480
+	if narrow:
+		_art.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		_art.position=Vector2.ZERO;_art.size=Vector2(_stage.size.x,300)
+		_readout.position=Vector2(14,310);_readout.size=Vector2(_stage.size.x-28,0)
+	else:
+		_art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_readout.position=Vector2(14,14);_readout.size=Vector2(minf(420,_stage.size.x-28),0)
 	for panel in [_drawer,_budget]:
 		panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
-		var top:float=_readout.position.y+_readout.size.y+10
+		var top:float=14 if narrow else _readout.position.y+_readout.size.y+10
 		panel.position=Vector2(14,top);panel.size=Vector2(minf(400,_stage.size.x-28),maxf(200,_stage.size.y-top-14))
 	_budget.position.x=_stage.size.x-_budget.size.x-14
-	_scene_actions.position=Vector2(14,_stage.size.y-54);_scene_actions.size=Vector2(300,40)
+	_scene_actions.position=Vector2(14,maxf(_readout.position.y+_readout.size.y+10,_stage.size.y-54));_scene_actions.size=Vector2(300,40)
+
 func _set_drawer(open:bool)->void:
 	_drawer.visible=open
 	if open:_budget.hide()
@@ -242,8 +253,8 @@ func _refresh_stage()->void:
 		_research_title.text="%s · Lv.%d%s"%[active.name,active.level," · 待选择" if not active.active else ""]
 		_research_progress.value=active.progress
 		_research_detail.text="%s · 工作量 %s / %s · %.1f%%"%["正在研究" if active.active and advancing else "已暂停" if active.active and paused else "等待选择研究",PlayerText.number(str(active.work)),PlayerText.number(str(active.required)),float(active.progress)*100.0]
-		_research_detail.text+="\n速度 %s工作量/秒 · 剩余 %s"%["0" if paused else model.speed,model.remaining]
-		_research_detail.text+="\n"+active.effect_summary
+		_research_detail.text+="\n速度 %s工作量/秒 · %s %s"%["0" if paused else model.speed,"恢复后预计" if paused and active.active else "预计剩余",model.remaining]
+		_research_detail.text+="\n"+active.effect_summary+" · 岗位续研"+("已就绪" if bool(context.get("research_staffed",false)) else "无人员")
 		_research_title.tooltip_text=active.effect
 		_art.set_display(_art_key(active.id),active.level,active.active and advancing,active.progress)
 	_art.set_obscured(_drawer.visible or paused)
