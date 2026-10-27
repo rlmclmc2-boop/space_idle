@@ -10,6 +10,7 @@ signal retreat_started
 var _levels: Dictionary = {}
 var _groups: Dictionary = {}
 var _ships: Dictionary = {}
+var _ship_drone_capacities: Dictionary = {}
 var _enemies: Dictionary = {}
 var _enemy_weapons: Dictionary = {}
 var _unlocks: Array
@@ -116,6 +117,8 @@ func _init(configuration: Dictionary, parameters: Dictionary, rules: Dictionary,
 	for row in configuration.level.level: _levels[int(row.id)] = row
 	for row in configuration.monGroup.monGroup: _groups[int(row.id)] = row
 	for row in configuration.ship.ship: _ships[str(row.name)] = row
+	for row in configuration.hyperspace_config["舰型容量"]:
+		_ship_drone_capacities[str(row.hull_id)] = int(row.capacity)
 	for row in configuration.mon.mon: _enemies[int(row.id)] = row
 	for row in configuration.enemy_weapon_base.enemy_weapon_base: _enemy_weapons[str(row.id)] = row
 	_unlocks = configuration.unlock.unlock
@@ -139,7 +142,7 @@ func ship_keys() -> Array:
 
 func ship_facts(id: String = "") -> Dictionary:
 	var row: Dictionary = _ships[_selected_ship if id.is_empty() else id]
-	return {"mounts": {"weapon": int(row.para_1), "defence": int(row.para_2)}, "drone_capacity": int(row.para_5)}
+	return {"mounts": {"weapon": int(row.para_1), "defence": int(row.para_2)}, "drone_capacity": int(_ship_drone_capacities[str(row.name)])}
 
 func ship_options() -> Array:
 	var options: Array = []
