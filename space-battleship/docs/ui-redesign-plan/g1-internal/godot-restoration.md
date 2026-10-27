@@ -1,0 +1,68 @@
+# G2 首批 Godot 还原资料：反应炉 / 装配台 / AI工厂
+
+本资料随当前设计分支，不合入游戏运行代码。主设计为1440×900物理客户区；A/B复用组件/资产与高效动作，以外层场景优先或关联作业组织区别。G1组织审已通过；首批G2实物不等于全系统G2完成、最终差异品质或游戏验收通过。
+
+## 1. 根画布、挂载与生命周期
+
+沿[G0](../g0-frontend-constraints.md)将根UI虚拟画布与572×960逻辑战场分离，不只改物理窗口、保留keep窄内容带。以下为场景职责与接入点，不增设业务VM、DTO、消息总线或新玩法循环。
+
+| 场景/节点职责 | 挂载与本地状态 | 读取/操作边界 |
+|---|---|---|
+| UI根Control与现main装配处 | 布局UI画布U、导航、A/B工作区与全局反馈。A直接模块；B一行关联对象+当前工作场景。保存每作业/模块的最后子路由、对象ID、未提交草稿、焦点/滚动；不写领域或存档。 | main初始化与会话替换两处content_scale_size解绑Battle.view_size。Session.frame继续在原入口；替换Session后清旧展示缓存/绑定，重读新模型。 |
+| 战场展示父CanvasItem | 同viewport共享T；BattleView、原生flight/contact RID、beam子节点、EconomyView同树；背景扩展另列。模块开合默认不变T；resize更新前端局部布局。 | 保留世界、炮口、内核与真实拾取半径。引擎已完成viewport转换后，只一次make_input_local等匹配节点逆变换；不重复DPI/stretch。BattleView仍唯一drain伤害回执。 |
+| HUD与确认/输入覆盖层 | 用U坐标放盾甲/资源、面板、输入和模态；美术节点mouse_filter=IGNORE，Button/输入/弹层消费自身事件，取消与返回明确。 | 输入焦点/模态不漏空格、G或拾取；不新增自动暂停。状态来自原公开事实，不能把单条盾甲0判死亡。 |
+| 模块工作场景与固定操作区 | 反应炉/装配台的主体可滚动，固定区保留当前对象、关键比较和本次费用。科研在工厂附近的投入台成组显示草稿/当前/应用；长自动设置可滚动，不脱离输入上下文。 | 每个控件动作仍具名、逐所属模块直调/注入callable。结果返回前不播放成功；切对象使旧报价/预览失效，已成交部分显示真实结果，不伪回滚。 |
+
+逻辑投影区不自动裁切完整视觉安全区；最大炮台、盾、双条/文字、五无人机及效果仍按M1/G9取证，不在本批冻结贴边遮罩。14第7节enemy_presentation为已审待实施契约：敌行id不解析/不用下标代替，body_bounds只作粗定位，Amount文本/比例由Battle提供；运行接口仍未实现。本批未改变这层。
+
+## 2. 反应炉的可替换设备装配
+
+本批独立绘制[核心及四类SVG设备](art/reactor/)，每图512×512、透明、无烘焙文字/数值/控件/运行效果。不是旧未认可设备图的自动批准；造型、材质与最终品质仍待候选评审。源边界及哈希见[source-bounds.json](art/reactor/source-bounds.json)，主尺寸A/B默认与凝聚开放状态见[M3 v1安装记录](art/reactor/install-records.json)。记录status=draft：未启动Godot导入，source_import_path与settings_snapshot未伪造，不宣称ready或已验收。
+
+| 文件 / 稳定身份 | 源安装锚点 | 实体端口 / 效果锚点 | Godot装配 |
+|---|---|---|---|
+| core.svg / reactor.core_housing | (256,434) | 出口(256,464)，向下；核心效果(257,248) | TextureRect等比按可见边界和效果包络装入核心框；局部能源层独立，不在图内写负载。 |
+| weapons.svg / reactor.device.weapons | (256,434) | 入口(448,336)，向右 | 独立武器增幅舱；实际手动/免费/有效量与当前→目标效果叠在同设备的工作点。 |
+| defence.svg / reactor.device.defence | (256,434) | 入口(64,336)，向左 | 防御发生舱；场景中位置与武器舱不同，但同一ID绑定领域事实。 |
+| smelting.svg / reactor.device.smelting | (256,434) | 入口(448,336)，向右 | 熔炼舱明确作用敌掉铁基础量，不表现为自动消耗玩家库存。 |
+| condensation.svg / reactor.device.condensation | (256,434) | 入口(64,336)，向左 | 条件未满足不创建美术/控件/支路占位；开放后按独立槽记录装入。 |
+
+每一源点q统一用 `p=a+sR(q-m)`：m=源安装点，a=记录中的target_anchor_logical，s受max_scale及完整安装/效果框限制。实体入口、主管支路与流动效果共用投影后的端点；不另目测流光路径。记录中的regions为场景局部坐标，名称/效果/手动/免费/有效量为读数，分配输入/加减为真实点击区。点击输入打开该设备的目标草稿；按钮不承担数字求解。控件文字与设备图分层，换图只改资源记录与安装参数。
+
+导入制作规格按现行SVG/PNG UI预设为参照：compress/mode=0、mipmaps/generate=false、process/fix_alpha_border=true、premult_alpha=false、size_limit=0；SVG scale=1。参照文件为assets/ui/equipment/cartoon_laser.svg.import与assets/ai_tech_factory/equipment-precision-v2.png.import。新资源仍须实际导入后记录自身.import，不复制其uid/ctex路径；消费节点使用线性过滤、关闭repeat、等比适配，不改既有资产的权威导入设置。
+
+主尺寸首批：A机舱360高、B320高；SVG设备实际宽136/123，核心180/156。这些是本候选的主尺寸数据，不是旧画布复活。视觉效果包络单列；SVG源alpha>0边界来自Chromium512栅格，仅为源记录，不等同Godot轮廓/导入结果。
+
+**领域绑定与调配顺序：** `panel_options`提供开放/身份，手动/免费/有效/factor等需14列出的候选presentation_model（未合主线）；allocation_preview/adjust_allocation亦不能当成现成主线。单设备目标用已有allocate_text(module_id, canonical_text, inputs, publish)，购级用purchase，均分用distribute。图中草稿是前端意图，不传一套“UI布局协议”或新批量事务。
+
+具体任务从熔炼20下调到5，再把武器45提高到60，防御35保持。先确认并提交熔炼，读取实际接纳后，再确认武器；固定区比较的是**本次单设备命令**。第二步拒绝时已成功的第一步不伪回滚；草稿/实际并列，可还原剩余意图。演示使用固定效果响应快照，生产中不由前端计算容量、增益、费用、钳制或多设备付款。均分/清零/任意大金额所需全部效果输出仍须原线程核实，不能用演示数值闭合真实接入。
+
+装备/工厂的源文件哈希、源边界、统一缩放/偏移、安装锚点、裁切及probe运动包络另见[scene-installation.json](art/scene-installation.json)。A/B记录均以同一主尺寸实物为依据，源像素与场景逻辑坐标不混用。
+
+## 3. 舰体装配台
+
+复用最新五舰静态图、装备图标，当前主体用Cruiser的768×768源图及assets/ui/ships/manifest.json的三个预览挂点(382.0767,225.4099)/(274.8447,452.3739)/(493.1042,452.3739)。源alpha框为(192,133)–(575,635)；透明画布不是体量。图像等比定位后以同一预览变换投影挂点；防御标签是UI槽位工作点，不伪装真实炮口。此图和这些点只作装备预览，不提交战斗几何。
+
+Godot分层为HangarStage背景/地台→舰体TextureRect→武器预览挂点与选中态→UI槽位工作点→当前对象比较台→固定报价操作区。选槽同时更新挂点选中、装备身份、当前/候选、级数/数量和费用；切场景保留slot_id。+1/+10/MAX先选择报价模式，再提交该模式的具名命令。换装后等级保留，冷却只绑定该槽；其他槽位能继续查看/操作。首防御槽无卸空入口。
+
+公开绑定：panel_slots/panel_equipment、quote_slot给确定数量报价；候选presentation_slots/equipment_comparison及总费/MAX数量仍按14的未合/待补状态核实。buy_levels/buy_max_levels/buy_all_levels/equip_slot沿现有注入支付/发布口；UI不复制成长或MAX搜索。固定区复用同一报价记录，不维护第二份手算数字。slots_changed/loadout_changed/options_changed使受影响对象失效并刷新，不刷新掉未提交候选；当前对象消失时清旧详情、阻止旧ID提交。
+
+本批完成装配台主体和连续槽位/报价模式；五舰选择、完整空槽/休眠/锁定/批量部分成交仍待G2后续补齐，不能以大舰图代替全部M2状态。
+
+## 4. AI工厂舞台与投入台
+
+直接复用AI首代background、八设备与独立probe，按稳定研究ID映射scene-models.js的image字段。background为1697×927，按舞台整体等比cover；机器TextureRect等比contain，不能整台各轴拉伸。当前machine约300×274(A)/272×249(B)，底座位于平台；probe为82×75(A)/76×69(B)的独立层，在当前设备上方小范围巡检。实际源尺寸/可见边界应随资产版本记录，不拿历史1284×701画布当冻结尺寸。
+
+层级：FactoryBackground→CurrentMachine→Probe/实际运行效果→设备名称/等级/工作量/速度/剩余状态→投入台→研究选择覆盖抽屉。覆盖抽屉只列已开放项和对应设备；前置不满足项完全不出现。选研究更新name/ID/image和当前进度，其他研究工作量仍由Research保留，不因UI切换重置。不虚构十级换代。
+
+投入台铁/铀分开：每资源各自的当前值只读、草稿编辑、应用按钮；还原只改本地草稿。每次只调既有set_investment_text对应资源，不新建铁铀原子批量应用。更新实际预算、切研究或切作业不覆盖草稿。非法输入/领域拒绝留在原字段，实际值保持。自动投入开关/比例与当前设置分别显示，应用不立即重算金额，下一60游戏秒刷新点采用；岗位自动续研独立读取Crew事实，有人不等于当前预算自动开启。缺钱失去投入加速时基础研究可继续，不能一律画成停工。
+
+绑定Research.panel_model/choices、select/set_investment_text(resource_id,text)/set_automatic；完整工作/速度/剩余/效果需要候选presentation_model及上下文（14未合主线）。暂停/倍速使用已存在的纯表现上下文，不在场景推进工作量或收入。资金不足的具体显示原因/自动续研状态输出若不足，交原线程最小增补，前端不重算科研速度或支付片段。
+
+运行效果参数：核心呼吸4游戏秒、管流5游戏秒、probe轨迹6游戏秒、横移35/纵移7 UI逻辑单位，位置以安装锚点为基准。Godot消费已有game_time/presentation clock或注入的只读表现上下文，暂停停止、隐藏/覆盖停绘、重开读最新状态，倍速与现行时钟一致。HTML的CSS动画只展示空间/状态意图，不证明真实时钟已接通；精确亮度/材质可继续品质提升，触发/对象/停止规则已定。
+
+## 5. 两项联动修正与剩余边界
+
+crew-release现在与确认派遣一样更新演示目标人数与星球缺人暂停；生产实现读取Crew和Planet各自公开变化/状态，不能由前端创造业务暂停。超空间手动与在线分别持有route/run/status/receipt；查看别的路线不覆盖任务。Stopped自动Started不生成成功回执，CompletedPending不丢奖励；手动/在线领取只改对应凭据。当前回执仍为演示，真实任务/随机/领取仍归Session/Hyperspace。
+
+剩余完整交付：M5/M6/M7/M8/M9/M10全部场景/状态与关键事务、全五舰及完整批量/资产安装、原契约线程未合/待补数据、无人机真炮口/盾双条/完整G9包络与实际运行。后续每份方向同等补齐；本资料只关闭首批明确的设计/装配记录，不宣布完整前端或实机通过。
