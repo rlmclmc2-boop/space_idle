@@ -73,3 +73,7 @@ G1组织审已通过，两方向都进入G2；没有选定UI，不是完整候�
 ## M2有限响应匹配与单槽完整接纳R2
 
 源码`efc6fde422cea7a90698f536d39ffcaf9aafd1b1`：[40张同版A/B具名反例与操作](evidence/g2-equipment-response-r2/README.md)、[还原/候选版本/剩余](g2-equipment-restoration.md#有限响应匹配与单槽完整接纳-r2)。未知身份/付费级/输入不再套旧换装常量，NoChange绑定实际模式，单槽接纳完整钱包/材料/actual回执。仍是有限响应；backend ab6e887已实现/定向审过未合main，真实接线及整套品质未通过。
+
+## P3整体品质R1代表工作点
+
+源码`57ae32c3dd18d59ac19a7c953fe10b2d14b1d766`：[变化/迁移规则/还原与未成熟](g2-quality-r1.md)、[基线660前18图与固定后22图](evidence/g2-quality-r1/README.md)。B外框减层、科研空间整合、星球/星系主景释放、教学主动查阅；既有操作及有限响应保护保持。整套品质/其余内部模块/真实持续提供者仍未完成，G2/G4/G9与A/B未选。实际压缩后仅收完此自然项，交接停止；详见HANDOFF末节。

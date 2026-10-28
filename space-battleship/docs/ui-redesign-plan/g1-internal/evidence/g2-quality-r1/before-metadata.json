@@ -1,0 +1,765 @@
+{
+  "source_commit": "660eddd3cbfcd5611b8325d100245fc41b37c6c3",
+  "phase": "before",
+  "viewport": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "capture_css_animations": "disabled by Playwright screenshot option",
+  "pageerrors": [],
+  "records": [
+    {
+      "file": "before/scene-research-current.png",
+      "family": "scene",
+      "route": "research",
+      "checkpoint": "research-current",
+      "response_source": "default current research equipment_finishing, work36.72K/54K",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [
+        {
+          "class": "factory-room working",
+          "box": {
+            "x": 33,
+            "y": 283.59375,
+            "w": 319.046875,
+            "h": 460
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "1c6a1c7009b3b87fdfee1e8d34514068ea1fc156c3396801b5c717cb0fa9cce4"
+    },
+    {
+      "file": "before/scene-research-draft.png",
+      "family": "scene",
+      "route": "research",
+      "checkpoint": "research-draft",
+      "response_source": "same object, once37% two-resource draft unsubmitted",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [
+        {
+          "class": "factory-room working",
+          "box": {
+            "x": 33,
+            "y": 283.59375,
+            "w": 319.046875,
+            "h": 460
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 37,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "32f47e3a79e306130475f7bf3f73ac17b95ea01522c07b794b3203ca26368c8d"
+    },
+    {
+      "file": "before/scene-planet-building.png",
+      "family": "scene",
+      "route": "planet",
+      "checkpoint": "planet-building",
+      "response_source": "same planet1, shipyard111/180, navigator builder",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [
+        {
+          "class": "orbital-room",
+          "box": {
+            "x": 33,
+            "y": 283.59375,
+            "w": 742,
+            "h": 467
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "39634e7f7e7daa8958d9cba0911aad66991f4df379d27ef1805b322fd6a78b52"
+    },
+    {
+      "file": "before/scene-planet-ready.png",
+      "family": "scene",
+      "route": "planet",
+      "checkpoint": "planet-ready",
+      "response_source": "complete owner response ready180/180 and actual builder idle",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 659,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [
+        {
+          "class": "orbital-room",
+          "box": {
+            "x": 33,
+            "y": 283.59375,
+            "w": 742,
+            "h": 467
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "ready",
+        "crew": "idle",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "d64a000091b8e0563bc79c767d600f976b07966e1a30f9c47b021cc4057bf202"
+    },
+    {
+      "file": "before/scene-galaxy-building.png",
+      "family": "scene",
+      "route": "galaxy",
+      "checkpoint": "galaxy-building",
+      "response_source": "same selected node9 building62%, one worker",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 622,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [
+        {
+          "class": "city-room",
+          "box": {
+            "x": 33,
+            "y": 283.59375,
+            "w": 742,
+            "h": 430
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "7efc15449cedc73ede78a6591296269e60d7f23f3b1e7cb70e031566986d5770"
+    },
+    {
+      "file": "before/scene-galaxy-fog.png",
+      "family": "scene",
+      "route": "galaxy",
+      "checkpoint": "galaxy-fog",
+      "response_source": "same unknown node18, identity hidden",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 622,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [
+        {
+          "class": "city-room",
+          "box": {
+            "x": 33,
+            "y": 283.59375,
+            "w": 742,
+            "h": 430
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "18",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "c2b2d3a595586f5ca4e332e49717cff886bf9859b19b48b92218667e6b2d0523"
+    },
+    {
+      "file": "before/scene-crew-current.png",
+      "family": "scene",
+      "route": "crew",
+      "checkpoint": "crew-current",
+      "response_source": "same selected navigator, actual planet-build and candidate",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 701,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "9ad2d862a9ee3a95e762291e57c17e7f039fa58801bde3ab2f76dca317998415"
+    },
+    {
+      "file": "before/scene-statistics.png",
+      "family": "scene",
+      "route": "archive/statistics",
+      "checkpoint": "statistics",
+      "response_source": "same two-source split native statistics sample",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "aae6b2c5906fd8c4225ccc98d0330ca3aaaf74dc4dd3d0e4612cd89d4b4132e5"
+    },
+    {
+      "file": "before/scene-reactor-current.png",
+      "family": "scene",
+      "route": "reactor",
+      "checkpoint": "reactor-current",
+      "response_source": "same existing device/pipes relationship, actual45/35/20/0",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 608,
+        "scroll": 0,
+        "inner": null
+      },
+      "scene": [
+        {
+          "class": "reactor-room",
+          "box": {
+            "x": 33,
+            "y": 313.59375,
+            "w": 742,
+            "h": 386
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "adead5f4f04bb61b8c042044d3d9267b49cfd5886810c9e93119e329b3443755"
+    },
+    {
+      "file": "before/work-research-current.png",
+      "family": "work",
+      "route": "research",
+      "checkpoint": "research-current",
+      "response_source": "default current research equipment_finishing, work36.72K/54K",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 675,
+          "scroll": 0
+        }
+      },
+      "scene": [
+        {
+          "class": "factory-room working",
+          "box": {
+            "x": 48,
+            "y": 358.09375,
+            "w": 306.15625,
+            "h": 460
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "d7d0d76c9d9e7ed7393a4158ca0d09a8adfc60f85a70bd070c1d4846cf81b7d9"
+    },
+    {
+      "file": "before/work-research-draft.png",
+      "family": "work",
+      "route": "research",
+      "checkpoint": "research-draft",
+      "response_source": "same object, once37% two-resource draft unsubmitted",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 675,
+          "scroll": 0
+        }
+      },
+      "scene": [
+        {
+          "class": "factory-room working",
+          "box": {
+            "x": 48,
+            "y": 358.09375,
+            "w": 306.15625,
+            "h": 460
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 37,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "42697427cbc875deed237cc7587fa217f4b0811f285f738dfa671a144b75dec6"
+    },
+    {
+      "file": "before/work-planet-building.png",
+      "family": "work",
+      "route": "planet",
+      "checkpoint": "planet-building",
+      "response_source": "same planet1, shipyard111/180, navigator builder",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 586,
+          "scroll": 0
+        }
+      },
+      "scene": [
+        {
+          "class": "orbital-room",
+          "box": {
+            "x": 48,
+            "y": 358.09375,
+            "w": 712,
+            "h": 412
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "53349997f18518f848aee4a1bc144f3dd6230ef3467c142aace7f51c76308733"
+    },
+    {
+      "file": "before/work-planet-ready.png",
+      "family": "work",
+      "route": "planet",
+      "checkpoint": "planet-ready",
+      "response_source": "complete owner response ready180/180 and actual builder idle",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 586,
+          "scroll": 0
+        }
+      },
+      "scene": [
+        {
+          "class": "orbital-room",
+          "box": {
+            "x": 48,
+            "y": 358.09375,
+            "w": 712,
+            "h": 412
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "ready",
+        "crew": "idle",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "c74486bf3a532679b11278ef9fced850a5b8a9b36d570eb358e34c917d1cef40"
+    },
+    {
+      "file": "before/work-galaxy-building.png",
+      "family": "work",
+      "route": "galaxy",
+      "checkpoint": "galaxy-building",
+      "response_source": "same selected node9 building62%, one worker",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 524,
+          "scroll": 0
+        }
+      },
+      "scene": [
+        {
+          "class": "city-room",
+          "box": {
+            "x": 48,
+            "y": 358.09375,
+            "w": 712,
+            "h": 350
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "883f1f65a1665a29ab71f9fb2a7bd6baf6335964987710dd63c16e72ff4c5d34"
+    },
+    {
+      "file": "before/work-galaxy-fog.png",
+      "family": "work",
+      "route": "galaxy",
+      "checkpoint": "galaxy-fog",
+      "response_source": "same unknown node18, identity hidden",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 524,
+          "scroll": 0
+        }
+      },
+      "scene": [
+        {
+          "class": "city-room",
+          "box": {
+            "x": 48,
+            "y": 358.09375,
+            "w": 712,
+            "h": 350
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "18",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "60c03e378f238fc34e61a6b60ad481bb54223e884b6d4faab9df638b5fcdb1e5"
+    },
+    {
+      "file": "before/work-crew-current.png",
+      "family": "work",
+      "route": "crew",
+      "checkpoint": "crew-current",
+      "response_source": "same selected navigator, actual planet-build and candidate",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 683,
+          "scroll": 0
+        }
+      },
+      "scene": [],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "04dbf3af74039281da911e6e9e245157307ef48a9966f6d96f2c848c5a93244e"
+    },
+    {
+      "file": "before/work-statistics.png",
+      "family": "work",
+      "route": "archive/statistics",
+      "checkpoint": "statistics",
+      "response_source": "same two-source split native statistics sample",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 700,
+        "scrollHeight": 700,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 593,
+          "scrollHeight": 593,
+          "scroll": 0
+        }
+      },
+      "scene": [],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "d689d6aad9c41e1128eed6f5e9910ccff9ee7a76843127b486d074e1bbb98218"
+    },
+    {
+      "file": "before/work-reactor-current.png",
+      "family": "work",
+      "route": "reactor",
+      "checkpoint": "reactor-current",
+      "response_source": "same existing device/pipes relationship, actual45/35/20/0",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "height": 600,
+        "scrollHeight": 600,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "height": 493,
+          "scrollHeight": 552,
+          "scroll": 0
+        }
+      },
+      "scene": [
+        {
+          "class": "reactor-room",
+          "box": {
+            "x": 48,
+            "y": 386.09375,
+            "w": 712,
+            "h": 350
+          }
+        }
+      ],
+      "state": {
+        "research": "equipment_finishing",
+        "intent": 25,
+        "mode": "once",
+        "planet": "building",
+        "crew": "planet-build",
+        "node": "9",
+        "paused": false,
+        "battle": {
+          "s": 0.9375,
+          "x": 47.375,
+          "y": 0
+        }
+      },
+      "sha256": "7b27292f99cd6547fd3037de05186b1d2d6537a4173c3e1af2b40d5e24f5b796"
+    }
+  ]
+}
