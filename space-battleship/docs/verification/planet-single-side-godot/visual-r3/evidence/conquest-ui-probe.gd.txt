@@ -1,0 +1,113 @@
+extends SceneTree
+var game
+var panel
+var session
+var old_planet
+const OUT := "/tmp/planet-conquest-ui"
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func expect(condition: bool, label: String) -> void:
+	if not condition:
+		push_error("CONQUEST_UI_FAIL " + label)
+		quit(1)
+	assert(condition, label)
+	print("CONQUEST_UI_OK ", label)
+
+func fixture(target) -> void:
+	var config: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json"))
+	var campaign: Dictionary = target.campaign_system.save_state()
+	for row in config.unlock.unlock: campaign.grants[str(row.type)+":"+str(row.target)] = true
+	expect(target.campaign_system.restore_state(campaign).ok, "campaign grants")
+	target.planet_system.refresh_availability(target.campaign_system.available)
+	var saved: Dictionary = target.planet_system.save_state()
+	saved.planets["1"].conquered = true
+	expect(target.planet_system.restore_state(saved).ok, "planet fixture")
+	target.planet_system.refresh_availability(target.campaign_system.available)
+
+func screenshot(name: String) -> void:
+	if game._guidance_panel != null: game._guidance_panel.hide()
+	await create_timer(1.0).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT.path_join(name + ".png"))
+
+func run() -> void:
+	DirAccess.make_dir_recursive_absolute(OUT)
+	expect(GDExtensionManager.load_extension("/tmp/planet-native-472/planet.gdextension") == GDExtensionManager.LOAD_STATUS_OK, "native")
+	game = load("res://src/main.gd").new()
+	root.add_child(game)
+	root.position = Vector2i.ZERO
+	root.grab_focus()
+	await process_frame
+	expect(game.startup_error.is_empty(), "startup")
+	game.set_process(false)
+	game._skip_tutorial = true
+	session = game.session
+	fixture(session)
+	game._refresh_feature_visibility()
+	game._select_left_module("planet")
+	panel = game.planet_scene
+	panel.select_planet("1")
+	panel._toggle_section("exploration")
+	panel._conquest_open = true
+	panel._rebuild_drawer()
+	expect(panel._conquest_error.is_empty(), "initial facts success")
+	expect(panel._conquest_planet.conquered and panel._conquest_planet.shared_experience, "planet 1 marker and share")
+	expect(panel._conquest_rewards.size() == 4, "four cumulative source rows")
+	expect(panel._conquest_rewards[0].value == 35, "initial equipment source")
+	await screenshot("01-current-planet1")
+	var saved: Dictionary = session.planet_system.save_state()
+	saved.planets["2"].conquered = true
+	expect(session.planet_system.restore_state(saved).ok, "second conquest restore")
+	session.planet_system.refresh_availability(session.campaign_system.available)
+	await process_frame
+	await process_frame
+	expect(panel._conquest_rewards[0].value == 50, "deferred cumulative refresh")
+	panel.select_planet("2")
+	expect(panel._conquest_planet.conquered and panel._conquest_planet.shared_experience, "selected planet 2 facts")
+	await screenshot("02-planet2-cumulative")
+	panel._conquest_open = false
+	panel._rebuild_drawer()
+	saved = session.planet_system.save_state()
+	saved.planets["2"].conquered = false
+	expect(session.planet_system.restore_state(saved).ok, "hidden conquest restore")
+	await process_frame
+	expect(panel._conquest_cumulative_dirty and panel._conquest_planet_dirty, "hidden dirty flags")
+	expect(panel._conquest_rewards[0].value == 50, "hidden cache stable")
+	panel._conquest_open = true
+	panel._rebuild_drawer()
+	expect(panel._conquest_rewards[0].value == 35 and not panel._conquest_planet.conquered, "reopen consumes invalidation")
+	old_planet = session.planet_system
+	var old_callback: Callable = panel._on_conquest_changed.bind(old_planet)
+	var replacement = load("res://src/game_session.gd").new()
+	expect(replacement.initialize("res://generated/config.json", 73421).ok, "replacement initialized")
+	expect(replacement.campaign_system.start_sortie(1, replacement.equipment.clear_switch_locks).ok, "replacement sortie")
+	fixture(replacement)
+	var changed: Dictionary = game._replace_session(replacement)
+	expect(changed.ok, "actual host session replacement")
+	await process_frame
+	await process_frame
+	var new_panel = game.planet_scene
+	expect(new_panel != panel and new_panel._planet == replacement.planet_system, "new panel binds replacement planet")
+	expect(not old_planet.conquest_changed.is_connected(old_callback), "old planet signal disconnected")
+	game._select_left_module("planet")
+	new_panel.select_planet("1")
+	new_panel._toggle_section("exploration")
+	new_panel._conquest_open = true
+	new_panel._rebuild_drawer()
+	expect(new_panel._conquest_rewards[0].value == 35, "new session initial source read")
+	saved = old_planet.save_state()
+	saved.planets["2"].conquered = true
+	expect(old_planet.restore_state(saved).ok, "old planet emits after replacement")
+	await process_frame
+	await process_frame
+	expect(new_panel._conquest_rewards[0].value == 35 and not new_panel._conquest_cumulative_dirty, "old owner cannot pollute new page")
+	await screenshot("03-after-session-replacement")
+	if session.save_files != null: session.save_files.close(2000)
+	if replacement.save_files != null: replacement.save_files.close(2000)
+	game.queue_free()
+	await process_frame
+	print("CONQUEST_UI_COMPLETE")
+	quit()

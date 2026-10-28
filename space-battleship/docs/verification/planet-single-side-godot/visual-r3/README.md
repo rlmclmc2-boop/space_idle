@@ -22,7 +22,7 @@
 
 1. 修采样：递归遍历 MeshInstance3D，排除接触阴影；以实际表面累计相位≥1.05圈停止，墙钟仅作安全上限。可把视频采样降至约2Hz并用高质量JPEG减少写盘开销，关键帧仍保存原始PNG；记录采样负担，不设置引擎帧帽或强推时钟。
 2. 在最终源码重跑真实4.7.2，检查完整表面转入/转出、轨道站前后关系、侦察船抵达及稳定绕转和控制净空。实际图/视频决定可见结果，数值仅辅助。然后交原独审判断球面/建筑品质，不以本检查点当验收。
-3. 累计征服详情仅有 [消费计划](conquest-consumer-plan.md)，等待原接口组固定实现候选，不私读/自算。
+3. 累计征服详情已按固定所有者候选完成 [只读消费与同版验证](conquest-consumer-plan.md)；本条原检查点计划已执行，不私读/自算。
 
 引擎 `/tmp/planet-godot472/Godot_v4.7.2-stable_linux.x86_64`；native `/tmp/planet-native-472/planet.gdextension`；构建/API `/tmp/planet-native-472/`；Xorg `DISPLAY=:91`。每次独立夹具使用单独 `XDG_DATA_HOME/XDG_CACHE_HOME/XDG_CONFIG_HOME`。驱动经 `--path /workspace/space_idle/space-battleship --script /tmp/planet-r3-motion-driver.gd` 启动；生成配置在项目 `generated/config.json`（不交Git）。系统默认 godot 是4.6.3，不可当最终引擎。OS鼠标辅助 `/tmp/planet-os-input.py`。当前仅独立临时保存目录，不含个人存档。
 

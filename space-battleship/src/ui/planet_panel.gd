@@ -1,7 +1,7 @@
 extends Control
 signal reforge_requested(planet_id: String)
 ## One selected planet owns all visible task/facility/crew content.
-const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewTargetOccupied": "该岗位人数已满", "CrewLocked": "船员尚未开放", "HyperspaceCrewReserved": "船员仍被超空间任务占用"}
+const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球尚未开放", "PlanetConquestSourceUnavailable": "征服来源暂不可用", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewTargetOccupied": "该岗位人数已满", "CrewLocked": "船员尚未开放", "HyperspaceCrewReserved": "船员仍被超空间任务占用"}
 const STATES := {"locked": "未达门槛", "building": "施工中", "ready": "待领取", "built": "已领取"}
 const PAUSES := {"ExplorationNotRunning": "探索未运行，施工暂停", "NoExplorer": "缺少探索者，施工暂停", "MissingBuilders": "缺少额外施工人员，施工暂停"}
 var _host: Callable
@@ -24,6 +24,12 @@ var _crew_views: Dictionary = {"explorers": {}, "builders": {}}
 var _last_degree := -1
 var _context: Dictionary = {}
 var _detail_signature: Dictionary = {}
+var _conquest_open := false
+var _conquest_planet_dirty := true
+var _conquest_cumulative_dirty := true
+var _conquest_planet: Dictionary = {}
+var _conquest_rewards: Array = []
+var _conquest_error := ""
 var world_planet_picker := OptionButton.new()
 var world_building_picker: OptionButton
 var _task_button := Button.new()
@@ -64,6 +70,7 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable, visua
 	_planet.availability_changed.connect(_queue_options)
 	_planet.status_changed.connect(_queue_planets)
 	_planet.buildings_changed.connect(_queue_planets)
+	_planet.conquest_changed.connect(_on_conquest_changed.bind(_planet))
 	if _crew != null:
 		_crew.members_changed.connect(func(_ids): _queue_crew_options())
 		_crew.options_changed.connect(_queue_crew_options)
@@ -107,7 +114,13 @@ func _ready() -> void:
 	resized.connect(_layout)
 	_layout()
 	_refresh_options()
+	_read_conquest_if_needed()
 	refresh()
+
+func _exit_tree() -> void:
+	var callback := _on_conquest_changed.bind(_planet)
+	if _planet != null and _planet.conquest_changed.is_connected(callback):
+		_planet.conquest_changed.disconnect(callback)
 
 func _theme() -> Theme:
 	var result := preload("res://src/ui/bridge_theme.gd").create()
@@ -205,6 +218,31 @@ func _queue_crew_options() -> void:
 	_crew_options_dirty = true
 	_dirty = true
 
+func _on_conquest_changed(ids: PackedStringArray, cumulative: bool, source) -> void:
+	if source != _planet or is_queued_for_deletion(): return
+	if _selected_id in ids: _conquest_planet_dirty = true
+	if cumulative: _conquest_cumulative_dirty = true
+
+func _read_conquest_if_needed() -> void:
+	if not _conquest_planet_dirty and not _conquest_cumulative_dirty: return
+	if _selected_id.is_empty():
+		_conquest_error = "PlanetLocked"
+		_conquest_planet_dirty = false
+		_conquest_cumulative_dirty = false
+		return
+	var facts: Dictionary = _planet.conquest_facts(_selected_id)
+	if not facts.get("ok", false):
+		_conquest_error = str(facts.get("reason", "PlanetConquestSourceUnavailable"))
+		_conquest_planet_dirty = false
+		_conquest_cumulative_dirty = false
+		return
+	_conquest_error = ""
+	if _conquest_planet_dirty:
+		_conquest_planet = {"conquered": facts.conquered, "shared_experience": facts.shared_experience}
+	if _conquest_cumulative_dirty: _conquest_rewards = facts.rewards.duplicate(true)
+	_conquest_planet_dirty = false
+	_conquest_cumulative_dirty = false
+
 func selected_planet_id() -> String:
 	return _selected_id
 
@@ -216,6 +254,8 @@ func select_planet(id: String) -> void:
 	_snapshot = {}
 	_facts = []
 	_detail_signature = {}
+	_conquest_planet_dirty = true
+	_conquest_cumulative_dirty = true
 	_feedback.text = ""
 	_last_degree = -1
 	if _visual != null: _visual.clear_transients()
@@ -232,6 +272,8 @@ func _refresh_options() -> void:
 	for option in options: ids.append(str(option.id))
 	if not _selected_id in ids:
 		_selected_id = str(ids[0]) if not ids.is_empty() else ""
+		_conquest_planet_dirty = true
+		_conquest_cumulative_dirty = true
 		_selected_facility = ""
 		_assignment_target = ""
 		_last_degree = -1
@@ -260,6 +302,9 @@ func _process(dt: float) -> void:
 			_options_dirty = false
 			_refresh_options()
 		_read_selected()
+	if _open_section == "exploration" and _conquest_open and (_conquest_planet_dirty or _conquest_cumulative_dirty):
+		_read_conquest_if_needed()
+		_rebuild_drawer()
 	if _visual != null: _visual.advance(dt * float(_context.get("speed", 1.0)), bool(_context.get("paused", false)))
 	# Pause context may change without a planet signal; it only changes text.
 	_update_task()
@@ -335,8 +380,27 @@ func _rebuild_drawer() -> void:
 	else:
 		_detail_text = _caption(_drawer_body, "")
 		_auto_button = _action(_drawer_body, "开启自动探索", func(): return _planet.set_automatic(_selected_id, true))
+		var conquest_button := Button.new()
+		conquest_button.text = "征服奖励 · 收起" if _conquest_open else "征服奖励 · 展开"
+		_drawer_body.add_child(conquest_button)
+		conquest_button.pressed.connect(func():
+			_conquest_open = not _conquest_open
+			_rebuild_drawer())
+		if _conquest_open: _build_conquest_detail()
 		_update_task()
 	_layout()
+
+func _build_conquest_detail() -> void:
+	_read_conquest_if_needed()
+	if not _conquest_error.is_empty():
+		_caption(_drawer_body, "征服详情暂不可用：" + describe_error(_conquest_error))
+		return
+	_caption(_drawer_body, "本星球：%s · 探索经验共享：%s" % ["已征服" if _conquest_planet.get("conquered", false) else "未征服", "开启" if _conquest_planet.get("shared_experience", false) else "未开启"])
+	_caption(_drawer_body, "已征服星球累计奖励")
+	var names := {"level_bonus:equipment": "装备有效等级加成", "level_bonus:enhancement": "强化额外等级", "free_charge:all": "免费充能比例", "luck:all": "幸运加成"}
+	for row in _conquest_rewards:
+		var key: String = str(row.kind) + ":" + str(row.target)
+		_caption(_drawer_body, str(names.get(key, key)) + "：" + str(row.display_text))
 
 func _build_facility_detail() -> void:
 	world_building_picker = OptionButton.new()
