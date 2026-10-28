@@ -15,6 +15,6 @@
     900
   ],
   "allowed_usage": "Only declared pure environment, peripheral or top transition zones; no machines, controls, numbers, working state or hit geometry; current preview uses it behind unchanged M3 source plate.",
-  "review_status": "Continuity candidate only; not gap/thick-frame-quality closure",
+  "review_status": "REJECTED by user: replacing fixed sidebands with empty metal framing/material is not accepted; do not use as new reactor design basis",
   "revision": "Original-review finishing correction: remove wide sidewalls/vertical frames; continuous low-contrast installation material and sparse shallow crossing seams"
 }

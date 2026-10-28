@@ -20,6 +20,7 @@ var save_label: Label
 var snapshots: Array = []
 var output_dir := ""
 var interactive := false
+var drawing_bounds := true
 
 func _initialize() -> void:
 	call_deferred("_build")
@@ -106,6 +107,8 @@ func _button(parent: Node, text: String, rect: Rect2, selected: bool = false) ->
 func _build() -> void:
 	for argument in OS.get_cmdline_user_args():
 		if argument == "--interactive": interactive = true
+		if argument == "--legacy-preview": drawing_bounds = false
+		if argument == "--drawing-bounds": drawing_bounds = true
 		if argument.begins_with("--output="): output_dir = argument.trim_prefix("--output=")
 	if output_dir.is_empty(): output_dir = ProjectSettings.globalize_path(BASE + "godot/evidence")
 	DirAccess.make_dir_recursive_absolute(output_dir)
@@ -140,7 +143,12 @@ func _build() -> void:
 	_build_more()
 	_build_folded()
 	_build_detail()
-	if not interactive: _capture_design_states()
+	if drawing_bounds:
+		body.hide()
+		_build_drawing_bounds()
+		if not interactive: _capture_drawing_bounds()
+	elif not interactive:
+		_capture_design_states()
 
 func _build_module_placement() -> void:
 	body = Control.new()
@@ -297,12 +305,14 @@ func _build_folded() -> void:
 	folded.hide()
 
 func _toggle_more() -> void:
+	if drawing_bounds: return
 	menu.visible=not menu.visible
 	detail.hide()
 	collapse_button.text="恢复反应炉工作区" if folded.visible else "收起工作区"
 	popup_blocker.visible=menu.visible
 
 func _restore() -> void:
+	if drawing_bounds: return
 	menu.hide()
 	detail.hide()
 	popup_blocker.hide()
@@ -314,6 +324,7 @@ func _restore() -> void:
 	nav_buttons[1].grab_focus()
 
 func _collapse() -> void:
+	if drawing_bounds: return
 	popup_blocker.hide()
 	menu.hide()
 	detail.hide()
@@ -335,6 +346,7 @@ func _build_detail() -> void:
 	detail.hide()
 
 func _show_detail(title: String, rows: Array) -> void:
+	if drawing_bounds: return
 	for child in detail.get_children():child.queue_free()
 	_label(detail,title,Rect2(16,10,744,30),18)
 	var y:=52.0
@@ -413,4 +425,43 @@ func _capture_design_states() -> void:
 	file.store_string(JSON.stringify(report,"\t")+"\n")
 	file.close()
 	print("H2_DESIGN_REPORT ",JSON.stringify(report))
+	quit()
+
+func _build_drawing_bounds() -> void:
+	var frame := Control.new()
+	frame.position=Vector2(0,65)
+	frame.size=Vector2(808,835)
+	frame.z_index=3
+	host.add_child(frame)
+	_surface(frame,Rect2(0,0,808,835),Color("102b36"))
+	var safe := Panel.new()
+	safe.position=Vector2(16,16)
+	safe.size=Vector2(776,803)
+	safe.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var border := _box(Color.TRANSPARENT,Color("83cfcb"),0)
+	safe.add_theme_stylebox_override("panel",border)
+	frame.add_child(safe)
+	_label(frame,"反应炉新稿 · 内容画布808×835",Rect2(32,36,744,42),24)
+	_label(frame,"内容本地原点(0,0) = 宿主(0,65)",Rect2(32,92,744,30),18)
+	_label(frame,"内侧细线：16px安全留白，不是要画出的边框",Rect2(32,136,744,30),16,Color("a9ccca"))
+	_label(frame,"原组在整片宽画布内重新组织核心、四路短接与直接操作",Rect2(32,218,744,38),18)
+	_label(frame,"不保留固定97px侧带，不再给旧纵图补框或贴材质",Rect2(32,270,744,38),18)
+	_label(frame,"中央核心＋四向关系及视觉要素保留，内部位置由原组设计",Rect2(32,320,744,38),16)
+	_label(frame,"可用安全区：内容(16,16)起，776×803",Rect2(32,410,744,32),18)
+	_label(frame,"设备读控：每路176×112预算，18/16px字，非卡片外框",Rect2(32,462,744,32),16)
+	_label(frame,"滑杆：可见132×18 / 命中132×32；主按钮151×44",Rect2(32,508,744,32),16)
+	_label(frame,"主控空间：776×144等价预算，可融合核心，不强制底栏",Rect2(32,554,744,32),16)
+	_label(frame,"导出：808×835 或 2×1616×1670，无烘焙文字",Rect2(32,638,744,32),18)
+	_label(frame,"此图是作图边界与量尺，不是反应炉内部新稿",Rect2(32,728,744,32),16,Color("a9ccca"))
+	_label(frame,"右侧战场位置、比例及全局公共UI预算保持",Rect2(32,770,744,28),16,Color("a9ccca"))
+
+func _capture_drawing_bounds() -> void:
+	await process_frame
+	for i in NAV.size(): nav_buttons[i].size=Vector2(int(NAV[i][1]),30)
+	await _save_state("reactor-drawing-bounds")
+	var record := {"kind":"reactor-content-v1 fixed drawing range, not new reactor artwork", "engine":Engine.get_version_info(),"canvas":[1440,900],"module_root":[0,0,808,900],"host_shared_chrome":[0,0,808,65],"content_root":[0,65,808,835],"content_safe_local":[16,16,776,803],"content_to_host_translation":[0,65],"battle_container":[808,0,632,900],"battle_projection_origin":[855.875,0],"battle_projection_scale":0.9375,"old_reactor_image_hidden":not body.visible,"no_session":true,"captures":snapshots}
+	var file := FileAccess.open(output_dir+"/reactor-drawing-bounds-record.json",FileAccess.WRITE)
+	file.store_string(JSON.stringify(record,"\t")+"\n")
+	file.close()
+	print("REACTOR_DRAWING_V1 ",JSON.stringify(record))
 	quit()

@@ -1,0 +1,135 @@
+{
+  "spec": "reactor-content-v1",
+  "purpose": "fixed drawing/install range only; no business state or implementation approval",
+  "host_canvas": [
+    1440,
+    900
+  ],
+  "module_outer_root": [
+    0,
+    0,
+    808,
+    900
+  ],
+  "host_top_chrome": [
+    0,
+    0,
+    808,
+    65
+  ],
+  "content_root_host_rect": [
+    0,
+    65,
+    808,
+    835
+  ],
+  "content_canvas_1x": [
+    808,
+    835
+  ],
+  "recommended_art_canvas_2x": [
+    1616,
+    1670
+  ],
+  "content_safe_rect": [
+    16,
+    16,
+    776,
+    803
+  ],
+  "content_to_host": {
+    "scale": 1,
+    "translation": [
+      0,
+      65
+    ]
+  },
+  "source_2x_to_content": {
+    "scale": 0.5,
+    "translation": [
+      0,
+      0
+    ]
+  },
+  "context_slot_host_rect": [
+    12,
+    3,
+    96,
+    26
+  ],
+  "battle_container": [
+    808,
+    0,
+    632,
+    900
+  ],
+  "battle_logical_canvas": [
+    572,
+    960
+  ],
+  "battle_projection": {
+    "scale": 0.9375,
+    "origin": [
+      855.875,
+      0
+    ],
+    "display_size": [
+      536.25,
+      900
+    ]
+  },
+  "old_portrait_transform_required": false,
+  "fixed_side_band_rects": null,
+  "scene_visible_envelope_width_target": [
+    720,
+    760
+  ],
+  "control_budgets": {
+    "device_read_control_each": [
+      176,
+      112
+    ],
+    "slider_visual": [
+      132,
+      18
+    ],
+    "slider_hit": [
+      132,
+      32
+    ],
+    "primary_purchase_button": [
+      151,
+      44
+    ],
+    "other_master_button_each": [
+      72,
+      40
+    ],
+    "cost_read_area": [
+      200,
+      48
+    ],
+    "capacity_read_area": [
+      320,
+      48
+    ],
+    "feedback_read_area": [
+      320,
+      48
+    ],
+    "font_effect": 18,
+    "font_reading_and_action": 16,
+    "minimum_action_gap": 8
+  },
+  "budgets_are": "fixed drawing allowances, not measured usability minima, not visible card frames, not mandated component positions",
+  "module_owner": "reactor original team",
+  "host_owner": "shared host thread",
+  "stable_ids": [
+    "weapons",
+    "defence",
+    "smelting",
+    "condensation"
+  ],
+  "source_owner_note": "0e0c02f75c6a45075c6de0ced3cfefbad870d2a4",
+  "status": "ready for original reactor team new drawings; new visual review remains required"
+}

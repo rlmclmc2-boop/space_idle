@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+H2_DESIGN_CAPTURE reactor-drawing-bounds (1440, 900) write=0
+REACTOR_DRAWING_V1 {"battle_container":[808,0,632,900],"battle_projection_origin":[855.875,0],"battle_projection_scale":0.9375,"canvas":[1440,900],"captures":[{"battle_logical_size":[572,960],"battle_projection_origin":[855.875,0],"battle_projection_scale":0.9375,"header_rect":"[P: (0.0, 0.0), S: (808.0, 65.0)]","module_placement_only":true,"module_rect":"[P: (0.0, 0.0), S: (808.0, 900.0)]","name":"reactor-drawing-bounds","no_session":true,"pixel_size":[1440,900],"viewport_visible_rect":"[P: (0.0, 0.0), S: (1440.0, 900.0)]","window_size":"(1440, 900)","write_error":0}],"content_root":[0,65,808,835],"content_safe_local":[16,16,776,803],"content_to_host_translation":[0,65],"engine":{"build":"official","hash":"ed1daf0bf001b61586d9930840f2f1394092c079","hex":263938,"major":4,"minor":7,"patch":2,"status":"stable","string":"4.7.2-stable (official)","timestamp":0},"host_shared_chrome":[0,0,808,65],"kind":"reactor-content-v1 fixed drawing range, not new reactor artwork","module_root":[0,0,808,900],"no_session":true,"old_reactor_image_hidden":true}

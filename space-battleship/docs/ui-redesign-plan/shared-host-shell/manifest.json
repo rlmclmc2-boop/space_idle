@@ -15,9 +15,9 @@
   },
   "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
-  "scope": "All three owner installation notes received. H2 retains808/632 and0.9375. Candidate minimum collaboration is fixed: shared96px context control, separate existing global chrome, retain20/25px top transition bands, four direct view-only coordination ports. Godot preview shows context/backdrop candidates without producer implementation or business integration. Shared environment art replaces grid; edge quality not approved. Native font/geometry budgets retained. No main/src changes or main merge.",
+  "scope": "Current delivery fixes reactor new-art range only: root808x900, shared top65px, content808x835 at(0,65), safe776x803. Original reactor team recomposes core+four short connections and effective display envelope; old portrait0.6 and sideband fill are withdrawn. Battle projection and passed UI contracts retained. Default Godot preview is drawing-bounds only; old module art hidden. No Session/native/main/src change or runtime approval.",
   "implementation_changed": false,
-  "review_status": "ac8a4d54 installation roles/four view ports passed limited double review; original-review finishing caption/background candidate updated; nav/money and1784f7e6 narrow fixes retained; no integration approval",
+  "review_status": "old7fcefeb9 reactor/backdrop rejected; fixed drawing/install range V1 delivered to original reactor team; no auth/publication blocker; awaiting original-team new visual draft within this range",
   "module_direction_status": {
     "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
     "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
@@ -77,9 +77,9 @@
     }
   ],
   "remaining_evidence": [
-    "Root/original review of concrete H2 context/backdrop and minimum view collaboration proposal",
-    "User whole-host design confirmation before actual integration",
-    "Later authorized real Session/native/control-chain V0 verification"
+    "Original reactor team new four/three-device visual draft and installation metadata within fixed V1 range",
+    "Overall screen pairing and original/root visual review, then user image confirmation",
+    "Only then authorized actual integration and V0 verification"
   ],
   "h2_source_files": [
     "host-preview.html",
@@ -90,7 +90,7 @@
     "references/source.json",
     "module-installation.md"
   ],
-  "primary_deliverable": "godot/README.md",
+  "primary_deliverable": "reactor-drawing-v1/README.md",
   "html_exploration_states": [
     {
       "path": "evidence/h2-normal-1440x900.png",
@@ -183,5 +183,6 @@
     "background": "Continuous low-contrast installation surface, sparse crossing seams, no wide vertical sidewall/frame; quality still pending original visual judgment",
     "retained": "Module subject/projection, nav/money geometry and typography, business ownership",
     "approval": "No65px freeze, Session/native/V0 or runtime integration approval"
-  }
+  },
+  "drawing_spec": "reactor-drawing-v1/layout.json"
 }

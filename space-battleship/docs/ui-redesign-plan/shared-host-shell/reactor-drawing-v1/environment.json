@@ -1,0 +1,13 @@
+{
+  "kind": "fixed production drawing range; no module art or business integration",
+  "engine_pin": "Godot4.7.2 official ed1daf0bf; source environment godot/environment.json",
+  "script_sha256": "202bc99c3b13523dd38ef9136a7f6469847796bc26ccd2e2bb2478c9e594a2a4",
+  "spec_sha256": "c66a5154d8643fda39e4d4aaaf47f9e443d1d5fcbad580b4d80ff3a02ac34c8e",
+  "drawing_bounds_png_sha256": "c6550804e2030d2fe36adb506f59b2067452775dee0d48d6d641879eaa477595",
+  "frame_record": "../godot/evidence/reactor-drawing-bounds-record.json",
+  "rejected_reactor_image_hidden": true,
+  "battle_projection_unchanged": true,
+  "producer_published_gate": "df0f4e25cf4ab9fe93d7009263512f5a91236fdf",
+  "old_portrait_transform_frozen": false,
+  "only_fixed_for": "current reactor new draft; not forcing equipment/planet reflow"
+}
