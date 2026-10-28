@@ -1,0 +1,76 @@
+{
+  "source_commit": "551a4f2b0262b9f8291bb6a13b024c32a37ea341",
+  "equipment_sha256": "0d4d043bb814f39fffeebab1fa376f139d66ecf9e979b04ae5cdaea8a1482c51",
+  "baseline": "5d414d4a43551efbe7c55b0b60de467877cc736a",
+  "h1_reference_document": "dfe43cbf03d5ae5e03f64a669f8b4466dc1d38be",
+  "h1_reference_code": "80e5463ff36f457b9e178315a5cf4b521b871068",
+  "viewport": [
+    1440,
+    900
+  ],
+  "equipment_size": [
+    808,
+    900
+  ],
+  "exclusive_events": [
+    {
+      "batch": true,
+      "exclusive": true,
+      "popup": false
+    },
+    {
+      "batch": true,
+      "exclusive": true,
+      "popup": true
+    },
+    {
+      "batch": true,
+      "exclusive": true,
+      "popup": false
+    },
+    {
+      "batch": false,
+      "exclusive": false,
+      "popup": false
+    }
+  ],
+  "failures": [],
+  "files": {
+    "01-local-port-chrome-enabled.png": {
+      "sha256": "5f72e4145e36f95e8a7e699178626c46c5996425a1f2ab0904277c76f99adee2",
+      "bytes": 1433690
+    },
+    "02-local-batch-popup-exclusive.png": {
+      "sha256": "a12c28e8951f2245cf992d09de124e770edffcf0e213d7f9f7a1423e1052399e",
+      "bytes": 878535
+    },
+    "README.md": {
+      "sha256": "c52f0aef1377c2b0d630bfe66865cc6523998eab5c76228474f1eb487cc0d48b",
+      "bytes": 7370
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "94618168c87d0ab428c9aaa8d7804a4cdef6cafcc71800af55d49937ee725a3c",
+      "bytes": 8059
+    },
+    "capture.log.txt": {
+      "sha256": "8fa26090c84b4286597496248ad6fff84e8b6ea7346d7392e404fef856612043",
+      "bytes": 417
+    },
+    "check.log.txt": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    "h1-reference.json": {
+      "sha256": "5df84490152778b7de197f34ae2b0c200e7476b807a9c39e46ffba60654307f2",
+      "bytes": 1073
+    },
+    "observations.json": {
+      "sha256": "993fdb96593dadaaed50620f4e2245eaf430a8efda9652422a99dbc21d5a17d1",
+      "bytes": 2833
+    },
+    "preserved-boundaries.json": {
+      "sha256": "efe317222ae0c9f75276b3f4414acad6233140904811e4e2097d9532c81cceb4",
+      "bytes": 4818
+    }
+  }
+}

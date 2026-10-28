@@ -1,0 +1,149 @@
+{
+  "baseline": "5d414d4a43551efbe7c55b0b60de467877cc736a",
+  "source_commit": "551a4f2b0262b9f8291bb6a13b024c32a37ea341",
+  "functions": [
+    {
+      "function": "_init",
+      "identical": true,
+      "sha256": "2316bedfd3f17e4023b2706b8de38f57045e77f71a29b198cd53476f505763b1"
+    },
+    {
+      "function": "_setup_materials",
+      "identical": true,
+      "sha256": "6aab5b9994229c28245d5c392aabaa28402bc4be7b62898c1c7d1abae2d386c7"
+    },
+    {
+      "function": "_layout_workbench",
+      "identical": true,
+      "sha256": "3dba30fe49643b5176aa635ded4bfb5396c688d227de05f4dda328065b6fd4f1"
+    },
+    {
+      "function": "_render_costs",
+      "identical": true,
+      "sha256": "172301949e72ea4b2ca75505d2cc4ffcb2ddef12bff324079c85624abb0a835e"
+    },
+    {
+      "function": "_refresh_choices",
+      "identical": true,
+      "sha256": "5712524110556f95f91b045eefd0be293b0b3219122e45334e60f6f2b673c293"
+    },
+    {
+      "function": "_refresh_comparison",
+      "identical": true,
+      "sha256": "34cbab86b26658244db0de6030fa681db3ff4ccc2c3f844b50c7582fde1322bf"
+    },
+    {
+      "function": "_draw",
+      "identical": true,
+      "sha256": "931b9d78457a940f7831d5052d17a2f6ab0df9319b3994f77d73c5b1381f454a"
+    },
+    {
+      "function": "_buy",
+      "identical": true,
+      "sha256": "9f5b0461fd60298bf3f0aeffd8b74079ef4335e4b0b97eaad2f4b42bc0c29b00"
+    },
+    {
+      "function": "_buy_all",
+      "identical": true,
+      "sha256": "2062c0599afe5ac90cbdb9758b200caf949ecec1a9ef4c67a52514e8aa6e6fd1"
+    },
+    {
+      "function": "_equip",
+      "identical": true,
+      "sha256": "2b948c5cc0427a25242a2b8d3e6f808d638cc146ac6428d464e4fa357a91abbc"
+    },
+    {
+      "function": "_receipt_text",
+      "identical": true,
+      "sha256": "9be49d67982786b802c91a62e1b9611a8aef242439e82067e7e85cbba128e09d"
+    },
+    {
+      "function": "_receipt_summary",
+      "identical": true,
+      "sha256": "665747d21b1774f705272f95dc49b54800157c67685c9ea4addcd9f03dcd29ae"
+    },
+    {
+      "function": "_accept_result",
+      "identical": true,
+      "sha256": "a9e59c6ef0c367e45ffb1ad5d7cea397f392cca874cbd287220be9ab098574eb"
+    },
+    {
+      "function": "_process",
+      "identical": true,
+      "sha256": "9b40979a282c5aef9b07fc5251a9ae6be1a1c7cf211a3e1ca29d1c8066c8c16c"
+    },
+    {
+      "function": "_economy_display_changed",
+      "identical": true,
+      "sha256": "b82a5fdb4bb80b6813f7cab225d164d2ffb7725f0642f143b7385bbdb436d750"
+    },
+    {
+      "function": "_refresh_batch",
+      "identical": true,
+      "sha256": "2bc70bb87c399e02b192e6d2dd3b91575a8f6467c969e6fe4c9c2fb52c38e3f7"
+    },
+    {
+      "function": "select_slot",
+      "identical": true,
+      "sha256": "cfbcc7d1fcd9ea0a2e1844327a2bd8d886342c2452c24674648368a7192bef3e"
+    },
+    {
+      "function": "_select_candidate",
+      "identical": true,
+      "sha256": "a3a4c46fb635d49524bd1ad5876b87f54c92af3423cb916c96aef7dad332158e"
+    }
+  ],
+  "files": [
+    {
+      "path": "src/main.gd",
+      "identical": true,
+      "sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91"
+    },
+    {
+      "path": "src/game_session.gd",
+      "identical": true,
+      "sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad"
+    },
+    {
+      "path": "src/systems/equipment.gd",
+      "identical": true,
+      "sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26"
+    },
+    {
+      "path": "src/systems/battle.gd",
+      "identical": true,
+      "sha256": "10875d02d77f676d61bc1f463ef6336f6eeaee8a682322c9513194b252f35bde"
+    },
+    {
+      "path": "src/ui/battle_view.gd",
+      "identical": true,
+      "sha256": "86d9ae1b655c0340187048d6a5f2c1b3c52ecc3a2e5852571d35f31bbc6b764e"
+    },
+    {
+      "path": "src/ui/economy_view.gd",
+      "identical": true,
+      "sha256": "a3d17d7344324f81a725e1a8076240b24e2ea45d8e9fadef792f0b91f85e6999"
+    },
+    {
+      "path": "scripts/ship_geometry_convention.gd",
+      "identical": true,
+      "sha256": "db3c10121283085165d7e1df0cb349dce7a7c11c42ca4fb47e551c72a9a47292"
+    }
+  ],
+  "changed_functions": [
+    "_build: retain two global chrome label references only",
+    "_open_batch/_close_batch: emit exclusive changes; close native dropdown when closing batch",
+    "_build_batch: publish dropdown visibility changes"
+  ],
+  "new_ports": [
+    "signal exclusive_ui_changed",
+    "set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void",
+    "has_exclusive_ui() -> bool",
+    "prepare_host_hide(force: bool = false) -> bool"
+  ],
+  "new_ownership_helpers": [
+    "_release_host_context",
+    "_exit_tree"
+  ],
+  "limits": "Current-main module port lifecycle only; no H1 host checkout/install, shortcut/route integration, full visual/transaction/parking/protection rerun"
+}

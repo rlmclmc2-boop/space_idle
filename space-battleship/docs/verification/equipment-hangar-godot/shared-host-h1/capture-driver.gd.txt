@@ -1,0 +1,83 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/shared-host-h1"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+var exclusive_events:Array=[]
+func mark(label:String)->void:
+    records.append({"action":label,"selected":panel._selected,"candidate":panel._candidate,"quantity":panel._quantity,"maximum":panel._maximum,"size":panel.size,"minimum":panel.custom_minimum_size,"workbench":panel._workbench.get_rect(),"has_exclusive_ui":panel.has_exclusive_ui(),"batch":panel._batch.visible,"popup":panel._batch_quantity.get_popup().visible,"focus":str(root.gui_get_focus_owner().get_path()) if root.gui_get_focus_owner()!=null else "","context_text":panel._context_caption.text if is_instance_valid(panel._context_caption) else "","wallet_visible":panel._wallet.visible})
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"normal existing main/native startup")
+    host.set_pause("user",true);await flush()
+    panel.exclusive_ui_changed.connect(func():exclusive_events.append({"exclusive":panel.has_exclusive_ui(),"batch":panel._batch.visible,"popup":panel._batch_quantity.get_popup().visible}))
+    var before:Dictionary=snapshot();var layout:Dictionary=panel._workbench_layout.duplicate(true);var node_id:int=panel.get_instance_id()
+    for item in panel._shared_chrome:check(item.visible,"standalone local chrome starts visible")
+    check(panel._wallet.visible,"standalone wallet starts visible")
+    var context:=Control.new();context.position=Vector2(12,3);context.size=Vector2(96,26);context.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.add_child(context)
+    var sentinel:=Control.new();sentinel.name="HostOwnedSentinel";sentinel.mouse_filter=Control.MOUSE_FILTER_IGNORE;context.add_child(sentinel)
+    panel.set_shared_host(true,context);await flush()
+    for item in panel._shared_chrome:check(not item.visible,"H1 port hides only duplicated local chrome")
+    check(not panel._wallet.visible and panel._title.visible,"H1 hides local wallet and preserves ship title")
+    check(panel.size==Vector2(808,900) and panel.custom_minimum_size==Vector2(808,900) and panel._workbench_layout==layout,"H1 port preserves 808x900 and state workbench")
+    check(panel._context_caption.text=="装备" and panel._context_caption.get_parent()==context,"view creates caption in host-owned slot")
+    var caption:Label=panel._context_caption;panel.set_shared_host(true,context);await flush()
+    check(not is_instance_valid(caption) and context.get_child_count()==2 and is_instance_valid(sentinel),"repeated registration replaces only view-owned caption")
+    mark("shared chrome enabled using a diagnostic 96x26 host slot; existing main unchanged")
+    await screenshot("01-local-port-chrome-enabled")
+    await click(panel.get_node("BatchOpen"))
+    check(panel.has_exclusive_ui() and panel._batch.visible and panel._batch_frame.visible and panel._batch_blocker.visible,"real batch click activates complete local exclusive UI")
+    check(not panel.prepare_host_hide() and panel._batch.visible,"ordinary host hide refused while batch is open")
+    await click(panel._batch_quantity)
+    check(panel._batch_quantity.get_popup().visible and panel.has_exclusive_ui(),"real OptionButton popup remains exclusive")
+    check(not panel.prepare_host_hide(false),"ordinary hide refuses native popup")
+    mark("real batch and OptionButton popup refuse ordinary route hide")
+    await screenshot("02-local-batch-popup-exclusive")
+    check(panel.prepare_host_hide(true),"force release accepted")
+    await flush()
+    check(not panel.has_exclusive_ui() and not panel._batch.visible and not panel._batch_frame.visible and not panel._batch_blocker.visible and not panel._batch_quantity.get_popup().visible,"forced release closes popup, batch, frame and blocker")
+    var focus:Control=root.gui_get_focus_owner()
+    check(focus==null or not panel.is_ancestor_of(focus),"forced release leaves no equipment focus")
+    panel._quantity_buttons[1].grab_focus();check(root.gui_get_focus_owner()==panel._quantity_buttons[1],"ordinary equipment button obtains actual focus")
+    check(panel.prepare_host_hide() and root.gui_get_focus_owner()==null,"ordinary hide releases owned control focus when not exclusive")
+    panel.hide();await flush();panel.show();await flush()
+    check(panel.get_instance_id()==node_id and panel._selected==before.selected_slot and panel._candidate==before.candidate and panel._quantity==before.quantity and panel._maximum==before.maximum,"hide/show retains instance and selection/quantity state")
+    check(snapshot().slots==before.slots and snapshot().wallet==before.wallet,"chrome/exclusive lifecycle does not buy/refit")
+    mark("forced release and ordinary hide/show preserve instance and owner state")
+    panel.set_shared_host(false,null);await flush()
+    for item in panel._shared_chrome:check(item.visible,"standalone chrome restored")
+    check(panel._wallet.visible and context.get_child_count()==1 and is_instance_valid(sentinel),"detach restores wallet and removes only view-owned context child")
+    check(exclusive_events.any(func(row):return row.exclusive) and exclusive_events.any(func(row):return not row.exclusive),"exclusive signal reports both active and released states")
+    mark("standalone chrome restored and context ownership retained")
+    var f:=FileAccess.open(destination.path_join("observations.json"),FileAccess.WRITE)
+    f.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_INTEGRATED_SOURCE"),"equipment_sha256":FileAccess.get_sha256("res://src/ui/equipment_panel.gd"),"records":records,"exclusive_events":exclusive_events,"failures":failures,"scope":"Actual current main/native plus module H1 port calls in one lifecycle; host slot is diagnostic Control only. H1 main/shared_host were read via Git and were not installed. No full integration/shortcut/protection suite."},"  "));f.close()
+    print("EQUIPMENT_H1_PORTS_COMPLETE failures=",failures.size()," records=",records.size());app._close_game()

@@ -1,0 +1,28 @@
+{
+  "h1_document_commit": "dfe43cbf03d5ae5e03f64a669f8b4466dc1d38be",
+  "h1_code_commit": "80e5463ff36f457b9e178315a5cf4b521b871068",
+  "fetched_branch": "design/shared-host-shell",
+  "fetch_head": "dfe43cbf03d5ae5e03f64a669f8b4466dc1d38be",
+  "files": [
+    {
+      "commit": "dfe43cbf03d5ae5e03f64a669f8b4466dc1d38be",
+      "path": "docs/ui-redesign-plan/shared-host-shell/runtime-h1/README.md",
+      "sha256": "9a28662740683b4784feecf2ec54d0f2fcb0bb0680997b9450c8f67535c0300e"
+    },
+    {
+      "commit": "80e5463ff36f457b9e178315a5cf4b521b871068",
+      "path": "src/ui/equipment_panel.gd",
+      "sha256": "67cccaed88a596a883c6c547900d15826b56d18e3848702f4ca638ef635de28e"
+    },
+    {
+      "commit": "80e5463ff36f457b9e178315a5cf4b521b871068",
+      "path": "src/main.gd",
+      "sha256": "340df425add95fd2b3541f019db2fa3a8ca7031bf2fd34a96bf0dd216439ec78"
+    },
+    {
+      "commit": "80e5463ff36f457b9e178315a5cf4b521b871068",
+      "path": "src/ui/shared_host.gd",
+      "sha256": "edbd2c01beb297b2945cc2ad7b598dc2e9ed9383805228c200c02e623b679e57"
+    }
+  ]
+}

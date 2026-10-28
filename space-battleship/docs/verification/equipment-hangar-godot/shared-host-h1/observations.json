@@ -1,0 +1,94 @@
+{
+  "equipment_sha256": "0d4d043bb814f39fffeebab1fa376f139d66ecf9e979b04ae5cdaea8a1482c51",
+  "exclusive_events": [
+    {
+      "batch": true,
+      "exclusive": true,
+      "popup": false
+    },
+    {
+      "batch": true,
+      "exclusive": true,
+      "popup": true
+    },
+    {
+      "batch": true,
+      "exclusive": true,
+      "popup": false
+    },
+    {
+      "batch": false,
+      "exclusive": false,
+      "popup": false
+    }
+  ],
+  "failures": [],
+  "records": [
+    {
+      "action": "shared chrome enabled using a diagnostic 96x26 host slot; existing main unchanged",
+      "batch": false,
+      "candidate": "laser",
+      "context_text": "装备",
+      "focus": "",
+      "has_exclusive_ui": false,
+      "maximum": false,
+      "minimum": "(808.0, 900.0)",
+      "popup": false,
+      "quantity": 1,
+      "selected": "weapon:0",
+      "size": "(808.0, 900.0)",
+      "wallet_visible": false,
+      "workbench": "[P: (16.0, 678.0), S: (776.0, 218.0)]"
+    },
+    {
+      "action": "real batch and OptionButton popup refuse ordinary route hide",
+      "batch": true,
+      "candidate": "laser",
+      "context_text": "装备",
+      "focus": "/root/SpaceIdle/@CanvasLayer@18/@Control@81/@PanelContainer@56/@MarginContainer@57/@VBoxContainer@58/@OptionButton@70",
+      "has_exclusive_ui": true,
+      "maximum": false,
+      "minimum": "(808.0, 900.0)",
+      "popup": true,
+      "quantity": 1,
+      "selected": "weapon:0",
+      "size": "(808.0, 900.0)",
+      "wallet_visible": false,
+      "workbench": "[P: (16.0, 678.0), S: (776.0, 218.0)]"
+    },
+    {
+      "action": "forced release and ordinary hide/show preserve instance and owner state",
+      "batch": false,
+      "candidate": "laser",
+      "context_text": "装备",
+      "focus": "",
+      "has_exclusive_ui": false,
+      "maximum": false,
+      "minimum": "(808.0, 900.0)",
+      "popup": false,
+      "quantity": 1,
+      "selected": "weapon:0",
+      "size": "(808.0, 900.0)",
+      "wallet_visible": false,
+      "workbench": "[P: (16.0, 678.0), S: (776.0, 218.0)]"
+    },
+    {
+      "action": "standalone chrome restored and context ownership retained",
+      "batch": false,
+      "candidate": "laser",
+      "context_text": "",
+      "focus": "",
+      "has_exclusive_ui": false,
+      "maximum": false,
+      "minimum": "(808.0, 900.0)",
+      "popup": false,
+      "quantity": 1,
+      "selected": "weapon:0",
+      "size": "(808.0, 900.0)",
+      "wallet_visible": true,
+      "workbench": "[P: (16.0, 678.0), S: (776.0, 218.0)]"
+    }
+  ],
+  "scope": "Actual current main/native plus module H1 port calls in one lifecycle; host slot is diagnostic Control only. H1 main/shared_host were read via Git and were not installed. No full integration/shortcut/protection suite.",
+  "source_commit": "551a4f2b0262b9f8291bb6a13b024c32a37ea341"
+}
