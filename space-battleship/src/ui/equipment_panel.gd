@@ -23,9 +23,13 @@ var _slot_groups: Dictionary = {}
 var _slot_backdrops: Dictionary = {}
 var _icon_textures: Dictionary = {}
 var _icon_centres: Dictionary = {}
-var _locked_icon_material: ShaderMaterial
 var _current_icon_geometry: Dictionary = {}
 var _workbench: Panel
+var _workbench_divider: ColorRect
+var _upgrade_data: Panel
+var _icon_bezel: Panel
+var _transaction_rail: Panel
+var _workbench_layout: Dictionary = {}
 var _candidate_row: Control
 var _comparison_group: Control
 var _period_caption: Label
@@ -79,7 +83,6 @@ var _payment_state: Label
 var _level_label: Label
 var _compare_headers: Array = []
 var _compare_values: Array = []
-var _compare_periods: Array = []
 var _compare_row_label: Label
 var _batch_total: Label
 var _batch_secondary: Label
@@ -114,7 +117,7 @@ func _init(session) -> void:
         var factor:float=height/visible.size.y
         # The pad's front docking line is authored in the hangar source; each hull uses its visible aft anchor.
         var dock_source:=Vector2(594,730)
-        var dock_target:=Vector2(dock_source.x*808.0/1188.0,85.0+dock_source.y*535.0/845.0)
+        var dock_target:=Vector2(dock_source.x*808.0/1188.0,85.0+dock_source.y*600.0/845.0)
         var aft:=Vector2(visible.get_center().x,visible.end.y)
         _preview_rects[key]=Rect2(dock_target-aft*factor,Vector2(768,768)*factor)
         _preview_reference[key].dock_source=dock_source
@@ -162,11 +165,6 @@ func _init(session) -> void:
         _comparison_dirty = true)
 
 func _setup_materials() -> void:
-    # Locked candidates retain only their alpha shape; RGB detail never reaches the canvas.
-    var silhouette:=Shader.new()
-    silhouette.code="shader_type canvas_item; render_mode unshaded; void fragment(){ COLOR=vec4(0.047058824,0.145098039,0.188235294,texture(TEXTURE,UV).a); }"
-    _locked_icon_material=ShaderMaterial.new()
-    _locked_icon_material.shader=silhouette
     _font_regular = FontVariation.new()
     _font_regular.base_font = load("res://assets/fonts/NotoSansSC.ttf")
     _font_regular.variation_opentype = {2003265652:400.0}
@@ -353,10 +351,12 @@ func _build_workbench() -> void:
     _upgrade_section_title=_workbench_label("装备升级",Rect2(14,42,426,24),16)
     _comparison_title=_workbench_label("装备选择",Rect2(464,42,174,24),16)
     _switch_state=_workbench_label("",Rect2(638,46,122,18),12,Color("946338"));_switch_state.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-    var divider:=ColorRect.new();divider.position=Vector2(450,48);divider.size=Vector2(1,222);divider.color=Color("b5c3b8");divider.mouse_filter=Control.MOUSE_FILTER_IGNORE;_workbench.add_child(divider)
-    var data:=Panel.new();data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(343,64);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    _workbench_divider=ColorRect.new();_workbench_divider.position=Vector2(450,48);_workbench_divider.size=Vector2(1,110);_workbench_divider.color=Color("b5c3b8");_workbench_divider.mouse_filter=Control.MOUSE_FILTER_IGNORE;_workbench.add_child(_workbench_divider)
+    _transaction_rail=Panel.new();_transaction_rail.name="PurchaseRail";_transaction_rail.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    _transaction_rail.add_theme_stylebox_override("panel",_style(Color("dde3d5"),Color("b5c3b8"),1));_workbench.add_child(_transaction_rail)
+    _upgrade_data=Panel.new();var data:Panel=_upgrade_data;data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(343,64);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var glass:=_style(Color("e1e9dc"),Color("b0c0b4"),1);glass.set_corner_radius_all(4);data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
-    var icon_frame:=Panel.new();icon_frame.name="CurrentIconBezel";icon_frame.position=Vector2(20,88);icon_frame.size=Vector2(66,61);icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    _icon_bezel=Panel.new();var icon_frame:Panel=_icon_bezel;icon_frame.name="CurrentIconBezel";icon_frame.position=Vector2(20,88);icon_frame.size=Vector2(66,61);icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var bezel:=_style(Color("eeecda"),Color("a6b9aa"),1);bezel.set_corner_radius_all(4);icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
     _large_icon=_icon("laser",Rect2(27,95,52,47),_workbench)
     _current_caption=_workbench_label("当前攻击力",Rect2(114,91,140,18),12,Color("617c78"))
@@ -379,20 +379,42 @@ func _build_workbench() -> void:
         header_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;header_label.add_theme_font_override("font",_font_strong);_compare_headers.append(header_label)
         var value:=_workbench_label("—",Rect2(52+column*124,18,118,25),17,INK if column==0 else TEAL,_comparison_group)
         value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.add_theme_font_override("font",_font_strong);_compare_values.append(value)
-        var period:=_workbench_label("—",Rect2(52+column*124,43,118,18),12,Color("617c78"),_comparison_group)
-        period.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;_compare_periods.append(period)
     _compare_row_label=_workbench_label("攻击力",Rect2(0,18,48,25),12,Color("617c78"),_comparison_group)
     _period_caption=_workbench_label("周期",Rect2(0,43,48,18),12,Color("617c78"),_comparison_group)
     _install=_workbench_button("安装",Rect2(508,240,244,36),_equip);_install.name="Install"
+
+func _layout_workbench(different: bool, defence: bool, resource_count: int) -> void:
+    var rows:int=maxi(1,resource_count)
+    var signature:Array=[different,defence,rows]
+    if _workbench_layout.get("signature",[])==signature:return
+    # Same-item browsing uses a shared purchase rail across both columns. A real alternative
+    # uses the two decision columns and their two distinct actions. No hidden rows reserve space.
+    var extra:float=maxi(0,rows-1)*26.0
+    var height:float=264.0+maxf(0.0,extra-26.0) if different else 218.0+extra
+    var data_y:float=(85.0 if rows>1 else 99.0) if different else 91.0
+    var action_y:float=height-48.0
+    _workbench.position.y=896.0-height;_workbench.size.y=height
+    _workbench_divider.size.y=height-64.0 if different else 110.0
+    _upgrade_data.position.y=data_y
+    _icon_bezel.position.y=data_y+3.0
+    _candidate_row.position.y=70.0
+    _comparison_group.position.y=166.0;_comparison_group.size.y=43.0
+    _install.position=Vector2(508,action_y);_install.size=Vector2(244,36)
+    for index in _quantity_buttons.size():_quantity_buttons[index].position=Vector2(18+index*65,action_y)
+    _purchase.position=Vector2(226 if different else 542,action_y)
+    _purchase.size=Vector2(218,36)
+    _transaction_rail.position=Vector2(12,action_y-6.0 if different else 164.0)
+    _transaction_rail.size=Vector2(752,42.0 if different else height-176.0)
+    _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":data_y,"action_y":action_y,"height":height,"fee_y":action_y-36.0-extra if different else 175.0}
 
 func _place_current_icon(key: String) -> void:
     _large_icon.texture=_icon_textures.get(key)
     if _large_icon.texture==null:
         _current_icon_geometry={}
         return
-    # The accepted icon bezel/optical inset translates with the whole shared workbench; no icon fit is changed.
-    var safe:=Rect2(27,95,52,47)
-    var centre:=Vector2(53,120)
+    var shift:float=float(_workbench_layout.get("data_y",85.0))-85.0
+    var safe:=Rect2(27,95+shift,52,47)
+    var centre:=Vector2(53,120+shift)
     var mass:Vector2=_icon_centres[key]
     var source:Vector2=_large_icon.texture.get_size()
     var before:Vector2=source*mass
@@ -400,43 +422,41 @@ func _place_current_icon(key: String) -> void:
     var factor:float=minf(minf((centre.x-safe.position.x)/before.x,(safe.end.x-centre.x)/after.x),minf((centre.y-safe.position.y)/before.y,(safe.end.y-centre.y)/after.y))
     _large_icon.size=source*factor
     _large_icon.position=centre-before*factor
-    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,89),Vector2(64,59)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+117,"optical_mass_offset_y":3}
+    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,89+shift),Vector2(64,59)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+117+shift,"optical_mass_offset_y":3}
 
 func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
     for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
     _purchase.tooltip_text=""
-    _cost.text="本次费用"
-    var first_row_y:float=204-maxi(0,keys.size()-1)*26
-    _cost.position=Vector2(22,first_row_y);_cost.size=Vector2(90,25)
+    var different:bool=_workbench_layout.different
     var single:bool=keys.size()<=1
-    # Payment feedback shares the single resource line; more resources grow only their actual rows.
-    _payment_state.position=Vector2(278,204) if single else Vector2(22,204)
-    _payment_state.size=Vector2(160,25) if single else Vector2(100,31)
+    var first_row_y:float=_workbench_layout.fee_y
+    _cost.text="本次费用"
+    _cost.position=Vector2(22 if different else 226,first_row_y);_cost.size=Vector2(90 if different else 70,25)
+    _payment_state.position=Vector2(278,first_row_y) if different and single else Vector2(22,first_row_y+26) if different else Vector2(446,first_row_y) if single else Vector2(18,172)
+    _payment_state.size=Vector2(160,25) if different and single else Vector2(100,25) if different else Vector2(88,25) if single else Vector2(190,25)
     _payment_state.text="" if affordable else _reason(reason)
-    # Both operation surfaces share this fixed baseline; only actual fee rows grow upward.
-    for button in _quantity_buttons:button.position.y=240
-    _purchase.position.y=240
     for index in keys.size():
         var id: String=str(keys[index])
         if not _cost_cells.has(id):
-            var name:=_workbench_label("",Rect2(127,204,102,25),13,Color("5f7876"))
-            var amount:=_workbench_label("",Rect2(230,201,208,27),17,INK)
+            var name:=_workbench_label("",Rect2(0,0,102,25),13,Color("5f7876"))
+            var amount:=_workbench_label("",Rect2(0,0,208,27),17,INK)
             amount.add_theme_font_override("font",_font_strong)
             amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
             _cost_cells[id]={"name":name,"amount":amount}
         var cell: Dictionary=_cost_cells[id]
-        cell.name.position=Vector2(114,204) if single else Vector2(127,first_row_y+index*26)
-        cell.name.size=Vector2(36,25) if single else Vector2(102,25)
-        cell.amount.position=Vector2(150,201) if single else Vector2(230,first_row_y-3+index*26)
-        cell.amount.size=Vector2(112,27) if single else Vector2(208,27)
+        var row_y:float=first_row_y+index*26
+        cell.name.position=Vector2(114 if single else 127,row_y) if different else Vector2(300,row_y)
+        cell.name.size=Vector2(36 if single else 102,25) if different else Vector2(36 if single else 86,25)
+        cell.amount.position=Vector2(150 if single else 230,row_y-3) if different else Vector2(336 if single else 386,row_y-3)
+        cell.amount.size=Vector2(112 if single else 208,27) if different else Vector2(100 if single else 142,27)
         cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
         var formatted: Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
         cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
         cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"))
         cell.name.show();cell.amount.show()
     if not quote.get("ok",false):
-        _payment_state.position=Vector2(127,204);_payment_state.size=Vector2(311,31)
+        _payment_state.position=Vector2(114 if different else 300,first_row_y);_payment_state.size=Vector2(324 if different else 228,25)
         _payment_state.text=_reason(str(quote.get("reason",quote.get("error","Unknown"))))
     elif not affordable:
         _purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
@@ -501,6 +521,8 @@ func _selected_fact() -> Dictionary:
     return {}
 
 func select_slot(id: String) -> void:
+    if id!=_selected:
+        _feedback.text="";_feedback.tooltip_text=""
     _selected = id
     _selection_open = true
     var fact: Dictionary = _selected_fact()
@@ -508,6 +530,8 @@ func select_slot(id: String) -> void:
     _dirty = true
 
 func _select_candidate(id: String) -> void:
+    if id!=_candidate:
+        _feedback.text="";_feedback.tooltip_text=""
     _candidate = id
     _dirty = true
 
@@ -556,6 +580,9 @@ func _refresh_comparison() -> void:
     if scope!=_defence_scope:
         _defence_scope=scope
         _title.add_theme_color_override("font_color",Color("b9e6d7") if scope else CREAM)
+    var quote: Dictionary = comparison.quote
+    var different:bool=not _candidate.is_empty() and _candidate!=str(fact.equipment_id)
+    _layout_workbench(different,scope,quote.get("costs",{}).size() if quote.get("ok",false) else 0)
     _place_current_icon(str(fact.equipment_id))
     _current_title.text = "%s · %s" % [_slot_name(_selected),NAMES.get(str(fact.equipment_id),"装备")]
     _level_label.text = "Lv."+str(fact.paid_level)
@@ -565,6 +592,7 @@ func _refresh_comparison() -> void:
     _next_value.tooltip_text=str(comparison.upgrade.primary) if comparison.upgrade is Dictionary and comparison.upgrade.get("primary")!=null else _value(comparison.upgrade)
     var long_values: bool = _font_strong.get_string_size(_next_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>148 or _font_strong.get_string_size(_current_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>140
     _upgrade_arrow.visible=not long_values
+    _upgrade_arrow.position.y=105.0
     # The single workspace owns the primary inset; captions keep their measured padding and full numeric width.
     _current_caption.position=Vector2(114,94 if long_values else 91)
     _upgrade_caption.position=Vector2(114,124) if long_values else Vector2(290,91)
@@ -574,7 +602,8 @@ func _refresh_comparison() -> void:
     _next_value.position=Vector2(216,111) if long_values else Vector2(290,109)
     _current_value.size=Vector2(222 if long_values else 140,38)
     _next_value.size=Vector2(222 if long_values else 148,38)
-    var quote: Dictionary = comparison.quote
+    var shift:float=float(_workbench_layout.data_y)-85.0
+    for control in [_current_caption,_upgrade_caption,_current_value,_next_value,_upgrade_arrow]:control.position.y+=shift
     _render_costs(quote,comparison.affordable,str(comparison.payment_reason))
     _cost.tooltip_text = _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
     _purchase.text = "购买%s级" % str(quote.count) if quote.get("ok", false) else "购买"
@@ -587,16 +616,15 @@ func _refresh_comparison() -> void:
     _install.text = "安装" + str(NAMES.get(_candidate, "装备")) if not _candidate.is_empty() else "选择装备"
     _install.disabled = _candidate.is_empty() or not comparison.switch_admission.ok
     _install.tooltip_text = "" if comparison.switch_admission.ok else _reason(str(comparison.switch_admission.reason))
-    var different:bool=not _candidate.is_empty() and _candidate!=str(fact.equipment_id)
     _comparison_group.visible=_selection_open and different
     _install.visible=_selection_open and different
     _comparison_title.text = "装备选择"
     _compare_row_label.text=primary
     for column in 2:
         var row = comparison.current if column==0 else comparison.candidate
-        _compare_headers[column].text=("现装 · " if column==0 else "所选 · ")+str(NAMES.get(str(row.equipment_id),"空槽"))
+        _compare_headers[column].text=("现装 · " if column==0 else "所选 · ")+(_interval(row) if fact.category=="weapon" else str(NAMES.get(str(row.equipment_id),"空槽")))
         _compare_values[column].text=_value(row)
-        _compare_periods[column].text=_interval(row) if fact.category=="weapon" else ""
+    _period_caption.position=Vector2(0,0)
     _period_caption.visible=fact.category=="weapon"
     if _candidate.is_empty():
         _install.text="选择装备"
@@ -684,12 +712,16 @@ func _refresh_choices(fact: Dictionary) -> void:
         _choice_presentations[id]=signature;presentation_counts.candidates_updated+=1
         var item: Dictionary=_choices[id]
         item.button.position=Vector2(column*76,0)
-        item.button.visible=_selection_open;item.button.disabled=not option.enabled
+        # Keep the catalog column even while its whole control is hidden. Unlocking never compacts the row.
+        item.button.visible=_selection_open and option.enabled;item.button.disabled=not option.enabled
+        item.button.mouse_filter=Control.MOUSE_FILTER_STOP if option.enabled else Control.MOUSE_FILTER_IGNORE
+        item.button.focus_mode=Control.FOCUS_ALL if option.enabled else Control.FOCUS_NONE
+        item.button.tooltip_text=""
         item.caption.text=str(NAMES.get(id,option.name))
-        item.status.text="已装备" if str(fact.equipment_id)==id else "未解锁" if not option.enabled else "待安装" if _candidate==id else ""
+        item.status.text="已装备" if str(fact.equipment_id)==id else "待安装" if _candidate==id else ""
         item.caption.modulate=Color.WHITE if option.enabled else Color("b1beb9")
         item.icon.modulate=Color.WHITE
-        item.icon.material=null if option.enabled else _locked_icon_material
+        item.icon.material=null
         item.status.add_theme_color_override("font_color",Color("c6dfd5") if option.enabled else Color("d6bb8a"))
         _button_tint(item.button,_candidate==id)
         column+=1
@@ -840,8 +872,8 @@ func _slot_label_position(row: Dictionary) -> Vector2:
 func _draw() -> void:
     presentation_counts.scene_draws+=1
     draw_rect(Rect2(0,0,808,900),CREAM)
-    draw_texture_rect_region(_background,Rect2(0,85,808,535),Rect2(0,0,1188,845))
-    draw_rect(Rect2(0,620,808,280),Color("203b49"))
+    draw_texture_rect_region(_background,Rect2(0,85,808,600),Rect2(0,0,1188,845))
+    draw_rect(Rect2(0,685,808,215),Color("203b49"))
     if _ship.is_empty() or not _catalog.has(_ship):return
     draw_texture_rect(_hull_textures[_ship],_ship_rect(),false)
     for row in _facts:
