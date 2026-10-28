@@ -24,6 +24,15 @@
   "independent_review_complete": false,
   "files": [
     {
+      "path": "drafts/planet-before-review.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "5c855447002aa5939377a78bf8d702c959dce53498075ea4bf43159f3efd5fbb",
+      "bytes": 1916326
+    },
+    {
       "path": "drafts/planet-first.png",
       "size": [
         1586,
@@ -38,8 +47,8 @@
         1586,
         992
       ],
-      "sha256": "5c855447002aa5939377a78bf8d702c959dce53498075ea4bf43159f3efd5fbb",
-      "bytes": 1916326
+      "sha256": "8c4793385dd45917a313769b1105722d65b1f87531ffa73d56374326f8df1e28",
+      "bytes": 1857178
     },
     {
       "path": "references/historical-planet-1-start.png",
@@ -59,5 +68,14 @@
       "sha256": "3ebf829b839694e366d475f619a46c20266372f5a32dfc01ab0c6ce272b4c146",
       "bytes": 921773
     }
-  ]
+  ],
+  "independent_scene_direction_reviewed": true,
+  "review_revision": {
+    "shipyard_fraction_expected": "38/180 ≈ 21.11%",
+    "shipyard_fraction_rendered": "approximately 21%, raster concept only",
+    "review_labels_removed": true,
+    "global_status": "交战中",
+    "contract_status": "facility_facts and automatic implemented in 09af963c, limited review passed per parent confirmation, not merged into main",
+    "battlefield_role": "contextual reference only; no new ship/shield design authorization"
+  }
 }

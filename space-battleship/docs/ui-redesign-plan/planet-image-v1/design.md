@@ -36,12 +36,16 @@
 
 ## 接入与实现门槛
 
-契约定向引用[09af963c星球分册](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/docs/game-design/contracts/planet.md)和[共同身份/接纳边界](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/docs/game-design/14-ui-contracts.md)。main已有planet_options/status_rows/building_options/visual_snapshot及set_automatic/claim_build、注入取消/贡献发布口。自动设置automatic为候选增补，不能冒称main已有。facility_facts为§8.3已审待实施读取，施工详细事实、pause_reason及source_factor不得靠前端读取私账或重算规则补齐。派遣沿Crew和Session现有协调链；人员人数使用当帧新读公开事实，不由图中演示值构成新账本。
+契约定向引用[09af963c星球分册](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/docs/game-design/contracts/planet.md)和[共同身份/接纳边界](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/docs/game-design/14-ui-contracts.md)。main已有planet_options/status_rows/building_options/visual_snapshot及set_automatic/claim_build、注入取消/贡献发布口。
+
+**09af963c的facility_facts及automatic均为候选已实现、限定审通过、未合main。** 已核对该固定提交的[planet.gd:228–272](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/src/systems/planet.gd#L228)：visual_snapshot输出automatic；facility_facts输出实际设施状态、施工计数/门槛、当帧人员人数、pause_reason、领取准入及source_factor。09af963c包含91bd955c/372f8499的设施事实实现与窄修订，以及641d46db/4c1de507的自动设置读取与原始证据交付修订；祖先关系与源码均已核对。限定审通过状态采用父线程本轮确认，旧分册“已审待实施”及实现记录中的“待双审”为历史标记，不能据此将已有候选出口误记为未实施，也不能反向宣称main或完整UI已通过。
+
+施工详细事实、pause_reason及source_factor应消费候选公开出口，不得由前端读取私账或重算规则补齐。派遣沿Crew和Session现有协调链；人员人数使用当帧新读公开事实，不由图中演示值构成新账本。只读实现及定向证据见[设施事实记录](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/docs/verification/colony-readonly-facts-candidate.md)和[自动设置记录](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/docs/verification/readonly-preview-implementation.md)，不扩大其测试范围。
 
 运行实现前仍需用户确认图稿、结构比例复核及相应只读出口可用性核对。金额/倍率使用Amount文本，不把图中的短数恢复为业务值。图像生成文字是构图标注，正式UI必须用动态文本与真实状态驱动，不能把整张图作为背景烘焙文字上线。
 
 ## 本次自查与独立审查入口
 
-已查看历史实机原图、风格原图、空间站/工坊/精炼厂/船坞模型图标和探索机；修订两轮后纠正设施身份、施工数和停止语义。无代码或规则变更，故未运行游戏测试。
+已查看历史实机原图、风格原图、空间站/工坊/精炼厂/船坞模型图标和探索机；前两轮纠正设施身份、施工数和停止语义。独审实际看图后认可整区场景方向，第三轮按其意见集中将船坞38/180的进度条改为约21%、去掉右侧P3等评审标签、统一全局与战场的“交战中”状态。探索机68%的独立进度条保留；未要求另设计右侧舰船或护盾，右侧继续只作战场背景参照。接口状态同步依据固定源码修正。本轮图像只用imagegen修改，无代码或规则变更，故未运行游戏测试。
 
 待审重点：整片场景是否达到用户所指的模块空间；808px目标下信息/操作净空；球体、设施和探索机的主次；浅暖/深青比例；实际字体和动态对比；原图中部分汉字笔画/精炼厂标签的生成误差。**原图分区偏宽约28目标像素，精确比例未达标。** 战场仅为背景参照，不能宣称原样像素保真或战斗尺度通过。缺人、失败、领取后、详情和重铸确认还没有图像/运行证据；V0/V7不得记通过。独立审核由父线程另配，本线程未新开子任务。

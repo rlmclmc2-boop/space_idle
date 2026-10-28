@@ -12,6 +12,6 @@
 | 球体 | main e93c2212：assets/planets/toon/origin-surface.svg、origin-clouds.svg；scripts/rotating_planet.gd、rotating_planet.gdshader、planet_visual.gd | 现有矢量纹理与着色器，保留独立云层和星体差异；未制作新SVG |
 | 设施 | main e93c2212：assets/planets/orbital/models/{auto_explore,refinery,equipment,shipyard}-icon.png及相应.glb；说明见[模型README](../../../assets/planets/orbital/models/README.md) | 已查看四图标，修订回现有双横罐和压床轮廓；未修改模型 |
 | 探索机 | main e93c2212：assets/planets/orbital/scout-v1.png；[来源README](../../../assets/planets/orbital/README.md) | 原ImageGen资产，象牙/海军蓝船体、青色引擎；仅参照 |
-| 接口候选 | [feat/amount-safe-previews@09af963c](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/docs/game-design/contracts/planet.md) | 区分main已有、automatic候选、facility_facts待实施 |
+| 接口候选 | [feat/amount-safe-previews@09af963c源码](https://github.com/rlmclmc2-boop/space_idle/blob/09af963c/space-battleship/src/systems/planet.gd#L228)；91bd955c/372f8499及641d46db/4c1de507均在其祖先中 | facility_facts与automatic候选已实现，父线程确认限定审通过，未合main；不沿用旧文档的待实施/待双审标记，不扩大为UI验收 |
 
-图稿产物来自本线程两次成功的image_gen.imagegen；首次请求因超过5张参照图被参数校验拒绝，未生成图像，随后按工具上限调整为5张。没有授权拒绝或绕过。两次成功请求与原始文件SHA-256见provenance.json。图中的设施是模型身份参照下的生成表达，不声称与原GLB逐像素一致。原始探索/设施图标无需复制，固定main基线可恢复。
+图稿产物来自本线程三次成功的image_gen.imagegen；首次请求因超过5张参照图被参数校验拒绝，未生成图像，随后按工具上限调整为5张。第三次仅按独审意见集中修正进度条、评审标签与状态。没有授权拒绝或绕过。成功请求见generation-requests.json，原始文件SHA-256见provenance.json。图中的设施是模型身份参照下的生成表达，不声称与原GLB逐像素一致。原始探索/设施图标无需复制，固定main基线可恢复。
