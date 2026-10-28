@@ -1,7 +1,7 @@
 # 后端/契约接替交接
 
 - 原工作区：`C:/Users/Administrator/Documents/Codex/2026-10-27/task-5/main-candidate`；项目cwd为其`space-battleship/`。后继复用原目录与分支，不克隆、不新建工作区。
-- 分支：`feat/amount-safe-previews`；本次M9实施前HEAD为`09af963cf6f66146e019cecd08353426ab6d6abb`，已普通推送并回读一致；当前M9运行候选见下文及其证据清单。
+- 分支：`feat/amount-safe-previews`；本次M9实施前HEAD为`09af963cf6f66146e019cecd08353426ab6d6abb`，已普通推送并回读一致；当前M9本地运行候选见下文及其证据清单；发布已阻塞并停止，不重试或换路上传。
 - 保留179项已跟踪生成文件修改、262项未跟踪.uid/.import；不清理、不纳入提交。
 - main审批暂停，不重试合入或另路发布。以下通过均仅限已列定向证据，不等于完整游戏/UI/性能验收。
 - 前任后端线程已实际压缩并接替；本接替线程截至本次交付尚未实际压缩，未另开任务或工作区。
@@ -10,7 +10,9 @@
 
 从[game-design唯一入口](../game-design/README.md)按需读取：[14共同边界与模块索引](../game-design/14-ui-contracts.md)，再到`docs/game-design/contracts/`对应分册。纯结构迁移及归属修正固定`09af963cf6f66146e019cecd08353426ab6d6abb`，已最终双审通过；覆盖清单与链接检查见[迁移记录](ui-contract-split.md)，原规范语义/版本状态未升级。
 
-M9最小只读设计`cad1ee17b1efbf39ee06d725b33182eefbb78699`已双审通过，并获准实施。[当前运行候选及定向证据](m9-readonly-implementation.md)已覆盖原提案最小截面，待运行定向双审、未合main；规范写入超空间分册第12节。兑换共用完整准备包括候选扣源及目标Amount.add，普通装备新读只取actual；原命令pending语义保持。保存宿主摘要仍为独立剩余项。
+M9最小只读设计`cad1ee17b1efbf39ee06d725b33182eefbb78699`已双审通过，并获准实施。本地实现固定`c987d46d1a72b286f132a21205735caa5676b42c`；[运行候选及定向证据](m9-readonly-implementation.md)已覆盖原提案最小截面，待运行定向双审、未合main；规范写入超空间分册第12节。兑换共用完整准备包括候选扣源及目标Amount.add，普通装备新读只取actual；原命令pending语义保持。保存宿主摘要的[本地最小待审提案](m10-persistence-readonly-proposal.md)已完成只读核对，未实施、未外发。
+
+M9普通push两次均被自动审批拒绝、未执行；远端仍为`09af963cf6f66146e019cecd08353426ab6d6abb`，不含M9实现。保持本地提交；后续发布由父线程集中说明并等待用户对具体集合批准，当前线程不继续请求或尝试。
 
 ## 此前已通过的实现范围
 

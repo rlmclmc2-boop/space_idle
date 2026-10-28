@@ -1,0 +1,48 @@
+{
+  "source_commit": "c987d46d1a72b286f132a21205735caa5676b42c",
+  "comparison_main_snapshot": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "frontend_request_commit": "a3e05ea05418841821e2acfec6899b900d8d0b90",
+  "scope": "read-only M10 host summary/persistence-result proposal; no execution or file transactions",
+  "source_blobs": {
+    "src/main.gd": {
+      "git_blob": "f3f66e378235b368f093156d5a286726735afd30",
+      "sha256": "ba9d563549853e402caf86a04cc200beb64d86bbb9257e75a876bcfa2dce270e",
+      "bytes": 39744
+    },
+    "src/game_session.gd": {
+      "git_blob": "3a8a01f7a776deca2d37c0469b7167b82d70216b",
+      "sha256": "de56e2010aa1433c263b79c235b190aebfcdcb332dae231d09b5546ba44649ac",
+      "bytes": 84195
+    },
+    "foundation/host/save_files.gd": {
+      "git_blob": "36a868a56f5678bc2a89e5108f7537988907ee47",
+      "sha256": "d96f6813894de44dae6de05965d25d33c48c353ba9b340215c7567ab56655b25",
+      "bytes": 8506
+    },
+    "src/systems/battle.gd": {
+      "git_blob": "b97d0291c833f548dcede3b0702a4ab52d7962f4",
+      "sha256": "10875d02d77f676d61bc1f463ef6336f6eeaee8a682322c9513194b252f35bde",
+      "bytes": 27697
+    },
+    "src/systems/hyperspace.gd": {
+      "git_blob": "c9969f0d8c4bce0c20beb7b5828332f863fb8c58",
+      "sha256": "31f7298680956ec4057458c5c95f7d93eba7e43645b5d278d61d7fdf79b23c48",
+      "bytes": 68490
+    },
+    "src/systems/planet.gd": {
+      "git_blob": "5f6ffa34591a21eef72c160a935db6685ee930ae",
+      "sha256": "ec3ecc23eddc59e7192a3484b0d976a2f1b6ef2157c3ebae1bdd1efc673c929a",
+      "bytes": 23303
+    }
+  },
+  "same_as_main_methods": {
+    "save_payload": "129df02613f19db9490ed6b0b7bbcb7e3c64a1fbeb30563ed10f972bf6ed25ea",
+    "configure_save_directory": "43a2ce478b704e39ef4bd148bd41f698e0134e9730af5c5e737c8898eb75cf05",
+    "request_save": "afdf269bca0f455100651b1a77fa9a7dfd40b1303ca119643811a215895585e5",
+    "dirty_since_save": "17f69200193d4edeff8fa014ff6552596bbb7ff6a37f155b30bee79190a70273",
+    "load_candidate": "b74ab1d884ab03b5c114de31ff12ea7123c617b73cff0b014009175e16dd1e74",
+    "import_candidate": "4fa25ecb6a908aaf55b70a38d1bc00b915bc0dd6a991ec7589541574d1b22026",
+    "_candidate_from_envelope": "b7eea5440c042e3cdd50e828fc49be321471e98ec91c7632dfe6a37646e98aac",
+    "prepare_reforge": "05cbc7e5b9af0d24c04f13ff3c62fe5824f38fa80fb582b523f775bed5d05549"
+  }
+}
