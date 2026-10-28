@@ -8,7 +8,7 @@
   {
     "operation": "crew_availability",
     "result": {
-      "changed": false,
+      "changed": true,
       "ok": true
     }
   },
@@ -45,11 +45,12 @@
   {
     "operation": "publish_real_fixture_contributions",
     "result": {
+      "defence_changed": true,
       "ok": true
     }
   },
   {
-    "cloud_phase": 0.0214737057685852,
+    "cloud_phase": 0.0214239042252302,
     "drawer": "",
     "facilities": [
       {
@@ -126,7 +127,7 @@
       }
     ],
     "facility_entry_pressed": false,
-    "game_time": 358.566666666669,
+    "game_time": 0.0,
     "image": "01-default-planet1",
     "pause_reasons": {},
     "selected_facility": "",
@@ -166,13 +167,13 @@
       },
       "running": true
     },
-    "surface_phase": 0.0176496226340532,
+    "surface_phase": 0.0176086891442537,
     "visible_task": "探索中 · 本次 40%",
     "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
-    "visual_clock": 3.21088722222222
+    "visual_clock": 3.20277777777778
   },
   {
-    "cloud_phase": 0.0235842298716307,
+    "cloud_phase": 0.023715291172266,
     "drawer": "facilities",
     "facilities": [
       {
@@ -249,7 +250,7 @@
       }
     ],
     "facility_entry_pressed": true,
-    "game_time": 358.566666666669,
+    "game_time": 0.0,
     "image": "02-facilities-planet1-ready",
     "pause_reasons": {},
     "selected_facility": "refinery",
@@ -289,13 +290,13 @@
       },
       "running": true
     },
-    "surface_phase": 0.0193843003362417,
+    "surface_phase": 0.0194920226931572,
     "visible_task": "探索中 · 本次 40%",
     "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
-    "visual_clock": 3.5
+    "visual_clock": 3.51666666666667
   },
   {
-    "cloud_phase": 0.0274775624275208,
+    "cloud_phase": 0.0274869594722986,
     "drawer": "facilities",
     "facilities": [
       {
@@ -372,7 +373,7 @@
       }
     ],
     "facility_entry_pressed": true,
-    "game_time": 358.566666666669,
+    "game_time": 0.0,
     "image": "native-planet-popup",
     "pause_reasons": {},
     "selected_facility": "refinery",
@@ -412,7 +413,7 @@
       },
       "running": true
     },
-    "surface_phase": 0.0225843004882336,
+    "surface_phase": 0.0225920230150223,
     "visible_task": "探索中 · 本次 40%",
     "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
     "visual_clock": 4.03333333333333
@@ -427,7 +428,7 @@
     "window_id": 0
   },
   {
-    "cloud_phase": 0.0426272973418236,
+    "cloud_phase": 0.0430291555821896,
     "drawer": "facilities",
     "facilities": [
       {
@@ -504,7 +505,7 @@
       }
     ],
     "facility_entry_pressed": true,
-    "game_time": 358.566666666669,
+    "game_time": 0.0,
     "image": "03-same-drawer-planet2-building",
     "pause_reasons": {},
     "selected_facility": "refinery",
@@ -534,10 +535,10 @@
       },
       "running": true
     },
-    "surface_phase": 0.034704077988863,
+    "surface_phase": 0.0350257754325867,
     "visible_task": "探索中 · 本次 18%",
     "visible_task_clock": "探索度 22 · 本次 8.0 / 43.9 秒\n自动探索：关闭",
-    "visual_clock": 6.32259844444444
+    "visual_clock": 6.33895836363637
   },
   {
     "method": "XTest OS mouse",
@@ -549,7 +550,7 @@
     "window_id": 0
   },
   {
-    "cloud_phase": 0.0478306151926517,
+    "cloud_phase": 0.0476657114923,
     "drawer": "facilities",
     "facilities": [
       {
@@ -626,7 +627,7 @@
       }
     ],
     "facility_entry_pressed": true,
-    "game_time": 358.566666666669,
+    "game_time": 0.0,
     "image": "04-switch-back-planet1-ready",
     "pause_reasons": {},
     "selected_facility": "refinery",
@@ -666,13 +667,13 @@
       },
       "running": true
     },
-    "surface_phase": 0.0389160066843033,
+    "surface_phase": 0.0387840494513512,
     "visible_task": "探索中 · 本次 40%",
     "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
-    "visual_clock": 7.02458566666667
+    "visual_clock": 6.96533811111111
   },
   {
-    "cloud_phase": 0.050814475864172,
+    "cloud_phase": 0.0504166968166828,
     "drawer": "facilities",
     "facilities": [
       {
@@ -749,7 +750,7 @@
       }
     ],
     "facility_entry_pressed": true,
-    "game_time": 358.566666666669,
+    "game_time": 0.0,
     "image": "05-planet1-claimed",
     "pause_reasons": {},
     "selected_facility": "refinery",
@@ -794,13 +795,13 @@
       },
       "running": true
     },
-    "surface_phase": 0.0413684919476509,
+    "surface_phase": 0.0410451292991638,
     "visible_task": "探索中 · 本次 40%",
     "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
-    "visual_clock": 7.43333333333333
+    "visual_clock": 7.34218466666667
   },
   {
-    "cloud_phase": 0.0555594749748707,
+    "cloud_phase": 0.054675031453371,
     "drawer": "crew",
     "facilities": [
       {
@@ -877,7 +878,7 @@
       }
     ],
     "facility_entry_pressed": false,
-    "game_time": 359.216666666668,
+    "game_time": 0.0,
     "image": "native-crew-popup",
     "pause_reasons": {},
     "selected_facility": "refinery",
@@ -922,10 +923,10 @@
       },
       "running": false
     },
-    "surface_phase": 0.0452684909105301,
+    "surface_phase": 0.0445451289415359,
     "visible_task": "探索 · 未派遣",
     "visible_task_clock": "探索度 240 · 探索未运行",
-    "visual_clock": 8.08333333333333
+    "visual_clock": 7.925518
   },
   {
     "method": "XTest OS mouse",

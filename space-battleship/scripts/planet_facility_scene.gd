@@ -346,6 +346,23 @@ func _position_surface_illustration(kind: String, model: Node3D, normal: Vector3
 	body.position = Vector3(0, height, 0).lerp(screen_up * height, edge) + screen_right * inward
 	body.scale.x = width
 	if kind == "equipment":
+		# The screen-space correction above moves the bay inward while its flat
+		# billboard still sits at the tangent's old Z. On the near hemisphere the
+		# sphere depth mask then cuts the bay away. Place this camera-facing card
+		# just ahead of the sphere at its innermost visible corner, easing in only
+		# after the anchor has crossed the horizon. The original terrain root and
+		# its contact shadow remain on the ellipsoid.
+		var center := model.transform * body.position
+		var half_width := body.texture.get_width() * body.pixel_size * width * model.transform.basis.get_scale().x * 0.5
+		var half_height := body.texture.get_height() * body.pixel_size * model.transform.basis.get_scale().y * 0.5
+		var closest_x := clampf(0.0, center.x - half_width, center.x + half_width)
+		var closest_y := clampf(0.0, center.y - half_height, center.y + half_height)
+		var radius := _radius * _occluder.scale.x
+		var vertical_radius := _radius * _occluder.scale.y
+		var front := radius * sqrt(maxf(0.0, 1.0 - pow(closest_x / radius, 2.0) - pow(closest_y / vertical_radius, 2.0)))
+		var arrival := smoothstep(0.02, 0.38, normal.z)
+		var forward := maxf(0.0, front + 0.05 - center.z) * arrival
+		body.position += model.transform.basis.inverse() * Vector3(0.0, 0.0, forward)
 		_workshop_carriage_sprite.scale.x = width
 		_workshop_arm_sprite.scale.x = width
 	else:

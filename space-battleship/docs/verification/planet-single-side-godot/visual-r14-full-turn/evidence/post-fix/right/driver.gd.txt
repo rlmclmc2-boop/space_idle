@@ -3,7 +3,7 @@ var game
 var session
 var panel
 var operations: Array = []
-const OUT := "/tmp/planet-r14-horizon-art-fix-r3-right"
+const OUT := "/tmp/planet-r14-depth-fix-r4-right"
 func _initialize() -> void:
 	call_deferred("run")
 func record(name: String, result: Dictionary) -> void:
@@ -207,7 +207,7 @@ func capture_motion() -> void:
 		if delta < -0.5: delta += 1.0
 		turns += delta
 		previous_phase = current
-		if turns < 0.60:
+		if turns < 0.68:
 			await create_timer(0.45).timeout
 			continue
 		var model_data := {}
@@ -239,7 +239,7 @@ func capture_motion() -> void:
 		var image := root.get_texture().get_image()
 		var image_name := "motion-frames/frame_%04d.jpg" % frame_count
 		image.save_jpg(OUT.path_join(image_name), 0.92)
-		var key_due := frame_count == 0 or frame_count % 8 == 0 or horizon_crossing or turns >= 0.78
+		var key_due := frame_count == 0 or frame_count % 4 == 0 or horizon_crossing or turns >= 0.78
 		if key_due:
 			image.save_png(OUT.path_join("motion-frames/key_%04d.png" % frame_count))
 			key_count += 1
@@ -253,7 +253,7 @@ func capture_motion() -> void:
 		frame_count += 1
 		await create_timer(0.45).timeout
 	timeline.close()
-	var summary := {"duration_wall_seconds": last_seconds, "frames": frame_count + 1, "surface_turns": turns, "full_cycle_complete": false, "key_png_frames": key_count, "capture_wall_seconds": float(capture_usecs) / 1000000.0, "station_shipyard_conservative_min_rect_gap_px": minimum_gap, "station_shipyard_min_gap_frame": minimum_gap_frame, "capture_method": "Godot 4.7.2 actual main framebuffer, local right 0.60–0.78 surface turns; 0.45s minimum sample interval; no engine frame cap"}
+	var summary := {"duration_wall_seconds": last_seconds, "frames": frame_count + 1, "surface_turns": turns, "full_cycle_complete": false, "key_png_frames": key_count, "capture_wall_seconds": float(capture_usecs) / 1000000.0, "station_shipyard_conservative_min_rect_gap_px": minimum_gap, "station_shipyard_min_gap_frame": minimum_gap_frame, "capture_method": "Godot 4.7.2 actual main framebuffer, local right 0.68–0.78 surface turns; 0.45s minimum sample interval; no engine frame cap"}
 	var file := FileAccess.open(OUT.path_join("motion-summary.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(summary, "  "))
 	file.close()
