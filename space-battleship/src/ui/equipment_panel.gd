@@ -1,6 +1,10 @@
 extends Control
 ## Equipment owns all prices, admission and receipts; this scene owns only presentation.
 signal command_finished(result: Dictionary)
+signal exclusive_ui_changed
+var _shared_chrome: Array = []
+var _context_slot: Control
+var _context_caption: Label
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"laser": "脉冲炮", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光", "shield": "护盾", "armour": "装甲", "": "空槽"}
 const INK := Color("203f50")
@@ -300,9 +304,9 @@ func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
     return image
 
 func _build() -> void:
-    _label("远航舰桥",Rect2(24,10,160,34),23)
+    _shared_chrome.append(_label("远航舰桥",Rect2(24,10,160,34),23))
     _wallet=_label("",Rect2(204,16,590,30),15)
-    _label("战力维护  /  装配",Rect2(24,52,380,28),14,Color("57777a"))
+    _shared_chrome.append(_label("战力维护  /  装配",Rect2(24,52,380,28),14,Color("57777a")))
     _title=_label("装配",Rect2(35,104,236,30),18,CREAM)
     _title.add_theme_color_override("font_shadow_color",Color("173542"))
     _title.add_theme_constant_override("shadow_offset_x",1)
@@ -472,11 +476,14 @@ func _open_batch() -> void:
     _batch_frame.show()
     _batch.show()
     _refresh_batch()
+    exclusive_ui_changed.emit()
 
 func _close_batch() -> void:
+    _batch_quantity.get_popup().hide()
     _batch.hide()
     _batch_frame.hide()
     _batch_blocker.hide()
+    exclusive_ui_changed.emit()
 
 func _build_batch() -> void:
     _batch_blocker=ColorRect.new();_batch_blocker.size=Vector2(808,900)
@@ -494,6 +501,7 @@ func _build_batch() -> void:
     heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",24);heading.add_theme_color_override("font_color",CREAM)
     stack.add_child(heading)
     _batch_quantity=OptionButton.new()
+    _batch_quantity.get_popup().visibility_changed.connect(func():exclusive_ui_changed.emit())
     for caption in ["每槽 +1","每槽 +10","逐槽 MAX"]:_batch_quantity.add_item(caption)
     _batch_quantity.custom_minimum_size.y=40
     _batch_quantity.add_theme_font_override("font",_font_strong);_batch_quantity.add_theme_font_size_override("font_size",17)
@@ -959,3 +967,38 @@ func _locator_badge_rect(row: Dictionary, target: Rect2) -> Rect2:
         if not blocked:return badge
     # Never paint a clipped fragment if a future unverified layout has no free candidate.
     return Rect2()
+
+
+## H1 chrome/exclusive ports: the host owns routing, shared input gates and the context slot.
+func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
+    for item in _shared_chrome:item.visible=not enabled
+    _wallet.visible=not enabled
+    _release_host_context()
+    _context_slot=context_slot
+    if enabled and is_instance_valid(context_slot):
+        _context_caption=Label.new()
+        _context_caption.text="装备"
+        _context_caption.size=Vector2(96,26)
+        _context_caption.clip_text=true
+        _context_caption.mouse_filter=Control.MOUSE_FILTER_IGNORE
+        context_slot.add_child(_context_caption)
+
+func has_exclusive_ui() -> bool:
+    return _batch.visible or _batch_quantity.get_popup().visible
+
+func prepare_host_hide(force: bool = false) -> bool:
+    if has_exclusive_ui() and not force:return false
+    if force:_close_batch()
+    var focus:Control=get_viewport().gui_get_focus_owner()
+    if focus!=null and (focus==self or is_ancestor_of(focus)):focus.release_focus()
+    return true
+
+func _release_host_context() -> void:
+    if is_instance_valid(_context_caption):
+        _context_caption.hide()
+        _context_caption.queue_free()
+    _context_caption=null
+    _context_slot=null
+
+func _exit_tree() -> void:
+    _release_host_context()
