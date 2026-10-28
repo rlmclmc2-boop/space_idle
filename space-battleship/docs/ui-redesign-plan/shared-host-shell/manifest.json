@@ -10,16 +10,56 @@
       992
     ],
     "tool": "image_gen",
-    "source_output": "exec-9c20d8bc-4fa0-4a89-b0ef-f7f0ba05f4ec.png"
+    "source_output": "exec-9c20d8bc-4fa0-4a89-b0ef-f7f0ba05f4ec.png",
+    "status": "H1-blocked-and-withdrawn; historical-only; not-H2-design-or-installation-reference"
   },
   "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
-  "scope": "Shared host only. Existing reactor presentation is a placement reference with current visual quality rejected; 59dd464d internal direction remains valid. Original teams own internal design and polish. Generated image is not a pixel-accurate installation map. regions.svg and README coordinates are the geometry proposal.",
+  "scope": "Shared host only. H1 geometry 656/768, 624x788 safe area, and 0.8541667 battle projection are withdrawn. H2 preserves existing 808x900 module roots, 632x900 battle container, 0.9375 projection at (855.875,0); proposes consolidating left existing top 65px. regions.svg is a geometry argument, not runtime evidence. H2 matching visual/state images and per-module header/readability evidence remain incomplete. No requirement for module teams to adapt to H1 dimensions.",
   "implementation_changed": false,
-  "review_status": "pending-root-original-review-and-user-confirmation",
+  "review_status": "H1-proportion-change-blocked-by-root; accepted-and-withdrawn; H2-minimal-analysis-pending-review; no-implementation-authorization",
   "module_direction_status": {
     "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
     "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
     "host": "Shared host ownership and boundary unchanged; no takeover of module internal design."
+  },
+  "proposal_revision": "H2-minimal-preserve-808-632",
+  "geometry": {
+    "canvas": [
+      1440,
+      900
+    ],
+    "module_root": [
+      0,
+      0,
+      808,
+      900
+    ],
+    "left_shared_header_proposal": [
+      0,
+      0,
+      808,
+      65
+    ],
+    "battle_container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "battle_logical_size": [
+      572,
+      960
+    ],
+    "battle_projection_scale": 0.9375,
+    "battle_projection_origin": [
+      855.875,
+      0
+    ],
+    "battle_projection_size": [
+      536.25,
+      900
+    ],
+    "uniform_new_content_safe_rect": null
   }
 }
