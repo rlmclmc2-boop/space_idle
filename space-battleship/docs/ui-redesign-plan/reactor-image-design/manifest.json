@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "shared_structure_judgment_cross_review_approved_single_image_validation_has_unresolved_visual_failures_pending_review",
+  "status": "industrial_shared_rack_rejected_new_monocoque_structure_image_pending_independent_review_and_user_confirmation",
   "target_client_logical_px": [
     1440,
     900
@@ -49,6 +49,22 @@
         992
       ],
       "sha256": "4935cf6977a455e45e311c66fe25657bb49cf8fb80d243bb40fef3f78e5154fc"
+    },
+    {
+      "path": "reactor-monocoque-r1-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "f8ecdc2d21d54e5c9cc3fb932a5c7473673baef80b97a638ff2d3954128f7e50"
+    },
+    {
+      "path": "reactor-monocoque-r2-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "df1a5c93371b9bbe08d030b2c17e1a914dd9144f78b03eee3f83f71e2ac5ca52"
     },
     {
       "path": "reactor-r1-raw.png",
@@ -101,8 +117,8 @@
   ],
   "pixel_processing": "none: generator outputs copied unchanged",
   "runtime_evidence": false,
-  "geometry_issue": "Latest spacecraft revision divider remains near native x921 / width1586, equivalent logical x836; target x808. Existing image-generation residual, not accepted as exact region compliance.",
-  "review_image": "reactor-shared-working-r1-raw.png",
+  "geometry_issue": "R2 native divider near x950 / width1586 (~59.9%), equivalent logical x863; target x808. Module hardware does not cross generated divider but exact808/632 compliance still fails.",
+  "review_image": "reactor-monocoque-r2-raw.png",
   "interaction_display": "All four directly adjustable sliders; only selected condensation device expands precise entry, clear draft and detail; unchanged values not duplicated; whole-plan confirm inactive.",
   "comparison_images": [
     "reactor-four-fixed-raw.png",
@@ -115,14 +131,18 @@
     "Static images do not prove scrolling coupling alignment, input hit areas or natural unlock flow."
   ],
   "selected_layout": "fixed_four_continuous_bays",
-  "revision_scope": "One image validation of shared power spine/interlocked equipment/operating ledges; no closed cabinet compartments; no implementation.",
+  "revision_scope": "New visual base, few broad continuous lightweight spacecraft composite surfaces supporting core and four installed modules; embedded energy windows and intrinsic operating ledges. Not an edit of24b industrial rack.",
   "rejected_image": "reactor-four-fixed-pipe-frame-r1-raw.png",
   "structure_review": "shared-power-structure-review.md",
   "latest_visual_findings": [
-    "Closed niche grid removed; device installation ends visibly overlap common structure.",
-    "Industrial exposed thick pipe/collars and dense frame detail reintroduced; thin shared spacecraft support goal not fully met.",
-    "Separate white readout plaques remain next to devices.",
-    "Some operating hardware crosses target module boundary; geometry compliance not established.",
-    "Slider thumb positions do not match displayed40/30/20/10 percentages."
+    "Self-check: no closed cabinet niches or shelves, no exposed thick distribution pipe/collars/cables.",
+    "Few broad composite surfaces continuously support core and4 equipment; short dark readouts/direct slider ledges attach to structure.",
+    "Initial R1 invented navigation/resource identities and new battle fighter; R2 corrected these using fixed d74 original header/right reference.",
+    "Right restored battle context remains image-generated reference, not a new battlefield design or runtime evidence.",
+    "Exact screen region width still fails; slider positions need independent checking and eventual state binding."
+  ],
+  "rejected_images": [
+    "reactor-four-fixed-pipe-frame-r1-raw.png",
+    "reactor-shared-working-r1-raw.png"
   ]
 }

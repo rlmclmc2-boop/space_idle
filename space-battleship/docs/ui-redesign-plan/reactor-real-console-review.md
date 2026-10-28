@@ -1,6 +1,6 @@
 # 反应堆真实界面：来源与改造判断（待独立审查）
 
-最新状态：固定四路同屏及`b351c4d3`小模组身份保留，用户否定`fb2e2ece`展览柜感；[共享供能结构判断](reactor-image-design/shared-power-structure-review.md)已获根线程/原独审同意并授权一次image验证。[单次原图与实际检查](reactor-image-design/README.md)已交付，有工业管架/独立牌面/边界/滑杆比例未通过项，待再审。不重开滚动选择、不自动增加图轮、不实施UI。
+最新状态：根线程/原独审否定`24b746f3`工业管架方向，保留共同安装与滑杆附属安装座两点，授权更换视觉基底；[连续轻型舰载主体R2与自查](reactor-image-design/README.md)以少量大曲面承托核心/四设备，通道收入结构，已固定原图待审。未沿24b减线细修；精确分区仍失败，未记完整通过。不重开滚动选择、不实施UI。
 
 入口：[游戏设计](../game-design/README.md) → 13 → [M3/V3](../game-design/art/modules/reactor.md)、[S5](../game-design/art/sources.md#s5)。本次仅交来源与改造判断；不是方案获批、游戏实现或V3通过。共用美术规范由装备组维护，本组等待引用，不修改该规范。遵循仓库 token-opt/doc-compact 指引定向读取。
 
