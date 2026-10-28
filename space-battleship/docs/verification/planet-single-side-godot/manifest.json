@@ -1,0 +1,228 @@
+{
+  "kind": "real-godot-main-scene-with-explicit-state-fixtures",
+  "runtime_source_commit": "39b5dba3ffcff2bd862b329a3961baa137089ef6",
+  "shared_host_commit": "170849dd",
+  "approved_image_commit": "e78af05f",
+  "interface_candidate": "09af963c",
+  "client": [
+    1440,
+    900
+  ],
+  "planet_control": [
+    808,
+    900
+  ],
+  "natural_progression_verified": false,
+  "native_popup_input_verified": false,
+  "button_viewport_mouse_events": true,
+  "popup_selection_method": "OptionButton.select + item_selected; no native popup route pass",
+  "visual_acceptance": "pending original independent review and user",
+  "benchmark_executed": false,
+  "visible_mesh_sphere_B_implemented": false,
+  "ui_implementation": true,
+  "merged_main": false,
+  "native_validation_build": {
+    "platform": "linux.x86_64",
+    "shipping_windows_build": false,
+    "godot": "4.6.3.stable.official.7d41c59c4",
+    "godot_cpp_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+    "api_sha256": "c7a3f647d9a6d6e7f3361d8a88ffc7486a708b59262ab2f0ceae54a3d87df74d",
+    "library_sha256": "dbb32786f39dd165012d28b4bf800785b6e83ce8cf5bf0a2cdf3d375ba026344",
+    "source_sha256": {
+      "amount_api.hpp": "479b310852a81463ad8bce361075da99534f5d172b646aa070c2e798c715b4ff",
+      "amount_value.hpp": "b17594755bd8175130e381131aa9e7cf5c9a5a5446b997dfa38e204811613867",
+      "combat_execution_kernel.h": "f531d51fa00b740210af861ca530d32aeda193b933bd902a8ba8b6c907155d04",
+      "combat_presentation.h": "54ed37820f4902058a8e380dfdd615bf1b7d75b9355b575cf7d7d97a5519f780",
+      "combat_retained_presentation.h": "88e4e3b6ca052d8a7080e5d3131cfe63af8b98c721446ab1b689c1ed6643c439",
+      "foundation_disk.hpp": "79975eeaf90a84774de93e6936af52a1b165ff00cd6d53f00c6dcbc75c7906e5",
+      "space_native.cpp": "23b3c0da6d0cec700e733408288ed6eb5ddf87ec9762bf873b893365b0bf9f09",
+      "space_native.os": "c512e8f21ca7c7ca080e1de8a0de4252b17631962598c86bf49d5e44b93f7a04"
+    },
+    "validation_relink": "SCons use_static_cpp=no; local only"
+  },
+  "source_sha256": {
+    "src/main.gd": "2238056f004cda741f092e769a6974972f70039ebdc0d9f99ac8e3696d64e21f",
+    "src/ui/planet_panel.gd": "923df57aabed0cecb173c70bae952b9f69ca6f3c601372a3b533f8c336f4c241",
+    "scripts/planet_visual.gd": "44f36d8b8f7c4251463e10e9bf74d6a799bb7b69bb59e488735dc97770ac3d61",
+    "scripts/planet_facility_scene.gd": "40c6dc2d0271ff3944e481009dc915b92dff0eb7e6a7dbe93ed133901560363a",
+    "src/systems/planet.gd": "ec3ecc23eddc59e7192a3484b0d976a2f1b6ef2157c3ebae1bdd1efc673c929a",
+    "src/systems/crew.gd": "3681568b1d05aaf40fc979f038117d135ace4e7b7415964226c9d37328408d77",
+    "scripts/rotating_planet.gd": "d766dfe3b762cc85f4f7305594bfeb1e8664c4480413c0901165e92f53cc1354",
+    "scripts/rotating_planet.gdshader": "0b4f6a3c293310caefb75b25bde722be9e4716a82939c403ac06b9f773741dda",
+    "art_sources/planet_facilities_v2/build.py": "1fdab4e06d6f34224a9787d2ec4498954f6a9a068467c97145a8d1bc5dd179b8",
+    "assets/planets/facilities_v2/auto_explore.glb": "6ace5a71b22d216d34eff3f5dabe39056c6a0e113b0c67cb874290a08abc8959",
+    "assets/planets/facilities_v2/equipment.glb": "9057998bfc056719884ba1db0b48ef6fa9853d8cd6d44c2a8777ebdd96610249",
+    "assets/planets/facilities_v2/refinery.glb": "5e19c3e317db5fa5b6a2c14f3fbfc2f221d1adc9c439799379388d2e9ef70b80",
+    "assets/planets/facilities_v2/shipyard.glb": "aeccbff439cd7060083fe2ba5aff31b09ad3e0e11e92cb98917f171443bf7a51"
+  },
+  "files": [
+    {
+      "path": "evidence/01-default-planet1.png",
+      "bytes": 824159,
+      "sha256": "063b22a0730d2e4093ce5bbb4f01c741ed07d0cf326aac1a9baeb91370346fe4",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/02-facilities-planet1-ready.png",
+      "bytes": 803004,
+      "sha256": "fdd0f28cc887f51c2fd670631e1c887c4a221deaa0e5444b31e0367e47eced4e",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/03-same-drawer-planet2-building.png",
+      "bytes": 834048,
+      "sha256": "6752c42d7f7eb830f36bccc6e54a1b64c35ac22c7022232fd5972149b09a6025",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/04-switch-back-planet1-ready.png",
+      "bytes": 797065,
+      "sha256": "295d18739435ecee09346b394ca650927af2d5e947f457df2d7216e04e828ea4",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/05-planet1-claimed.png",
+      "bytes": 802355,
+      "sha256": "e1f02998ded237d9259cdfd27a232fecabb57662292f9230977f13f957916c11",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/06-stop-after-current.png",
+      "bytes": 803063,
+      "sha256": "743cdbef099b1aae51c24757c84e22f2bdaa73993f08930e39bb17fc82d83a6b",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/07-cancelled.png",
+      "bytes": 789732,
+      "sha256": "9ff6e3b3676c737b47fbd447eb0b86d90b6ef55ffaec4ad3829ee4f49dc62e00",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/08-crew-section.png",
+      "bytes": 761510,
+      "sha256": "909403c8bdab1c0e198e75148f13cb9340b29d04a3b0527b6392507a6a9fe2f2",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/09-exploration-section.png",
+      "bytes": 794155,
+      "sha256": "d0f731b12629f4293f76d0ce486677365d63f0be352718f5d7fa178ab88ae1fd",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/10-motion-t0-all-built.png",
+      "bytes": 823954,
+      "sha256": "7f5aebae8365e3c72a8f77fb34ae1dd9854d8b9421215f59790216df9928eb61",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/11-motion-t4-all-built.png",
+      "bytes": 777683,
+      "sha256": "71092b18fb910a63edf77ef3dd9f8bdf52dc6cc08e0e4d9fa44880199826bf72",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/12-motion-t8-all-built.png",
+      "bytes": 756445,
+      "sha256": "74e56ef1369df27470dcdaacc58e3803318d0db2e2519cc9f4d818e0fbdc1976",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/13-existing-reforge-context.png",
+      "bytes": 686443,
+      "sha256": "fd68013e1300eb4dc5a36630093adefb3a0c618590fc4b079074e7dc164030b6",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/14-missing-builder.png",
+      "bytes": 763471,
+      "sha256": "9f69a225c4a552ea0543e0aa9c4e5438845871f000b588481f6d4588a371b61b",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/15-builder-assigned.png",
+      "bytes": 765146,
+      "sha256": "c7700ae6166d92fab6c4808defca3c874d4726f42fb7fe27ee5e587d3a42e05e",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/driver.gd.txt",
+      "bytes": 9870,
+      "sha256": "0f58a609755b8944cec2bb1451e0a575211945d3eae035494e21ef7b9f0a38b6"
+    },
+    {
+      "path": "evidence/operations.json",
+      "bytes": 52976,
+      "sha256": "ab20d1a795c3690991b9d2568f5781db4e9db9d5e7d212112dac867308784d30"
+    },
+    {
+      "path": "evidence/runtime.log",
+      "bytes": 842,
+      "sha256": "d9aab549965116f95b4cf8aea677af5b00d4184510e4823363e7c439f80f1533"
+    },
+    {
+      "path": "evidence/script-check.log",
+      "bytes": 73,
+      "sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+    },
+    {
+      "path": "evidence/xorg.conf.txt",
+      "bytes": 564,
+      "sha256": "1e69d7249853aa8ed73d0b76266634c1518a3edcc3ce72a91b7c6ad1684b60ed"
+    }
+  ],
+  "remaining": [
+    "native popup mouse/keyboard route",
+    "full motion/arrival envelope",
+    "all bodies and long-run states",
+    "cumulative conquest Buff structured detail outlet",
+    "Windows4.7.2 and user GPU",
+    "independent visual quality and integration review"
+  ]
+}
