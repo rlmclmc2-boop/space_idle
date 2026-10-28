@@ -3,10 +3,10 @@ extends Control
 signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const DEVICE_MOUNTS := {
-	"weapons": preload("res://assets/ui/reactor/ship-hub-r4/weapons-control-lip.png"),
-	"defence": preload("res://assets/ui/reactor/ship-hub-r4/defence-control-lip.png"),
-	"smelting": preload("res://assets/ui/reactor/ship-hub-r4/smelting-control-lip.png"),
-	"condensation": preload("res://assets/ui/reactor/ship-hub-r4/condensation-control-lip.png"),
+	"weapons": preload("res://assets/ui/reactor/ship-hub-r4/weapons-control-3d.png"),
+	"defence": preload("res://assets/ui/reactor/ship-hub-r4/defence-control-3d.png"),
+	"smelting": preload("res://assets/ui/reactor/ship-hub-r4/smelting-control-3d.png"),
+	"condensation": preload("res://assets/ui/reactor/ship-hub-r4/condensation-control-3d.png"),
 }
 const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/central-console-front.png")
 const EconomyView = preload("res://src/ui/economy_view.gd")
@@ -158,7 +158,7 @@ func _build() -> void:
 	console.size = Vector2(500, 151)
 	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(console)
-	_level = _label(Vector2(184, 762), 90, 18)
+	_level = _label(Vector2(242, 762), 80, 18)
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var offset := Vector2(0, 65)
@@ -212,7 +212,7 @@ func _build() -> void:
 		add_child(slider)
 		_rows[id] = {"effect":effect, "supply":supply, "effective":effective, "slider":slider, "mount":mount}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(278,762),336,16)
+	_budget = _label(Vector2(325,762),290,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
 	_cost = _label(Vector2(184, 789), 430, 16)
 	_purchase = _button("升级",Rect2(181,815,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
@@ -426,7 +426,7 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 			if str(old.id) == id: current = old; break
 		var a: String = str(current.get("factor","—"))
 		var b: String = str(row.factor)
-		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
+		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		_rows[id].effect.tooltip_text = "增益 " + a + " → " + b
 		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
 		var supply_text: String = "手动 " + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")

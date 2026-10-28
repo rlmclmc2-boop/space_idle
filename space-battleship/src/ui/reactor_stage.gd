@@ -21,10 +21,10 @@ const ROUTES := {
 	"condensation": [Vector2(514, 429), Vector2(602, 477)],
 }
 const OPERATING := {
-	"weapons": {"mount":Vector2(6, 211), "effect":Vector2(35, 265), "supply":Vector2(35, 296), "effective":Vector2(35, 319), "slider":Vector2(44, 224), "width":180.0, "track":154.0},
-	"defence": {"mount":Vector2(586, 211), "effect":Vector2(615, 265), "supply":Vector2(615, 296), "effective":Vector2(615, 319), "slider":Vector2(624, 224), "width":180.0, "track":154.0},
-	"smelting": {"mount":Vector2(6, 545), "effect":Vector2(35, 599), "supply":Vector2(35, 630), "effective":Vector2(35, 653), "slider":Vector2(44, 558), "width":180.0, "track":154.0},
-	"condensation": {"mount":Vector2(586, 545), "effect":Vector2(615, 599), "supply":Vector2(615, 630), "effective":Vector2(615, 653), "slider":Vector2(624, 558), "width":180.0, "track":154.0},
+	"weapons": {"mount":Vector2(6, 211), "effect":Vector2(35, 265), "supply":Vector2(35, 289), "effective":Vector2(35, 311), "slider":Vector2(44, 234), "width":180.0, "track":154.0},
+	"defence": {"mount":Vector2(586, 211), "effect":Vector2(615, 265), "supply":Vector2(615, 289), "effective":Vector2(615, 311), "slider":Vector2(624, 234), "width":180.0, "track":154.0},
+	"smelting": {"mount":Vector2(6, 545), "effect":Vector2(39, 599), "supply":Vector2(39, 623), "effective":Vector2(39, 645), "slider":Vector2(44, 568), "width":176.0, "track":154.0},
+	"condensation": {"mount":Vector2(586, 545), "effect":Vector2(615, 599), "supply":Vector2(615, 623), "effective":Vector2(615, 645), "slider":Vector2(624, 568), "width":180.0, "track":154.0},
 }
 var _enabled: Array = []
 var _loads: Dictionary = {}
