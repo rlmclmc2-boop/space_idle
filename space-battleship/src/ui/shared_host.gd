@@ -198,8 +198,28 @@ func show_route(id: String, is_collapsed: bool = false) -> void:
 	_restore_button.text = "恢复%s" % _titles[id]
 	if not collapsed: _collapsed_background.texture = null
 
-func set_collapsed_background(image: Image) -> void:
-	_collapsed_background.texture = ImageTexture.create_from_image(image)
+func set_collapsed_background(image: Image) -> bool:
+	if image == null or image.is_empty(): return false
+	var logical_size := Vector2i(_collapsed_area.size.round())
+	if logical_size.x <= 0 or logical_size.y <= 0: return false
+	# Canvas-to-embedder includes canvas_items stretch; global-with-canvas alone
+	# still uses logical coordinates in a root Window. The image uses physical pixels.
+	var to_pixels := _collapsed_area.get_viewport_transform() * _collapsed_area.get_global_transform()
+	var projected: Rect2 = to_pixels * Rect2(Vector2.ZERO, _collapsed_area.size)
+	var begin := Vector2i(projected.position.floor())
+	var end := Vector2i(projected.end.ceil())
+	var requested := Rect2i(begin, end - begin)
+	if not requested.has_area(): return false
+	var clipped := requested.intersection(Rect2i(Vector2i.ZERO, image.get_size()))
+	if not clipped.has_area(): return false
+	# Preserve the requested rectangle when clipped, padding the unavailable part
+	# rather than stretching the intersection across the whole module.
+	var snapshot := Image.create(requested.size.x, requested.size.y, false, image.get_format())
+	snapshot.fill(Color("071423"))
+	snapshot.blit_rect(image, clipped, clipped.position - requested.position)
+	snapshot.resize(logical_size.x, logical_size.y, Image.INTERPOLATE_BILINEAR)
+	_collapsed_background.texture = ImageTexture.create_from_image(snapshot)
+	return true
 
 func set_availability(values: Dictionary) -> void:
 	_availability = values

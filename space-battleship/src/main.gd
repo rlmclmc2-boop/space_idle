@@ -264,7 +264,7 @@ func _collapse_module() -> void:
 	_collapse_pending = false
 	if host != _host or id != _left_module or not current.is_visible_in_tree(): return
 	var image := get_viewport().get_texture().get_image()
-	_host.set_collapsed_background(image.get_region(Rect2i(0, 65, 808, 835)))
+	if not _host.set_collapsed_background(image): return
 	_host.show_route(_left_module, true)
 
 func _release_route_focus(view: Control) -> void:
