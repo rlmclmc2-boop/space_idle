@@ -1,0 +1,302 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var observed: Dictionary = {"equipment_slots":0,"loadout":0,"wallet":0,"ship":0,"statistics":0,"node_added":0,"node_removed":0,"battle_draw":0,"equipment_draw":0}
+var perf_records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/evidence"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func record(action: String, before: Dictionary) -> void:
+    records.append({"action": action, "before": before, "after": snapshot(), "actual_result": panel.last_result.duplicate(true)})
+func assert_purchase(before: Dictionary, label: String) -> void:
+    var result: Dictionary = panel.last_result
+    check(result.get("purchase_receipt", {}).get("commit_status") == "accepted", label + " native accepted receipt")
+    var after: Dictionary = snapshot()
+    var spent: Dictionary = result.get("purchase_receipt", {}).get("spent", {})
+    for resource in spent:
+        var expected: Dictionary = host.amount_api.apply("sub_nonnegative", [before.wallet[resource], spent[resource]])
+        check(expected.ok and host.amount_api.apply("compare", [expected.value, after.wallet[resource]]).scalar == 0, label + " exact wallet minus actual spent " + resource)
+    for purchase in result.get("purchase_receipt", {}).get("purchases", []):
+        var old_level: int = -1
+        var new_level: int = -1
+        for row in before.slots:
+            if row.id == purchase.slot_id: old_level = row.paid_level
+        for row in after.slots:
+            if row.id == purchase.slot_id: new_level = row.paid_level
+        check(new_level - old_level == int(purchase.count), label + " actual count " + purchase.slot_id)
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func nodes_of(node: Node, nodes: Dictionary, styles: Dictionary, texts: Dictionary) -> void:
+    nodes[str(node.get_instance_id())] = str(node.get_path())
+    if node is Button:
+        styles[str(node.get_instance_id())] = node.get_theme_stylebox("normal").get_instance_id()
+    if node is Label: texts[str(node.get_instance_id())] = node.text
+    for child in node.get_children(): nodes_of(child, nodes, styles, texts)
+func perf_snapshot() -> Dictionary:
+    var nodes: Dictionary = {}; var styles: Dictionary = {}; var texts: Dictionary = {}
+    nodes_of(app, nodes, styles, texts)
+    var resources: Dictionary = {}
+    for key in host.battle._models: resources[key] = host.battle._models[key].texture.get_instance_id()
+    return {"nodes":nodes,"styles":styles,"texts":texts,"observed":observed.duplicate(),"configuration_commits":host.battle.configuration_commits,
+        "kernel_id":host.battle._kernel.get_instance_id(),"presentation_id":host.battle._presentation.get_instance_id(),"statistics_id":host.battle._statistics.get_instance_id(),
+        "hull_resources":resources,"weapons":host.battle._values.duplicate(true),"enemies":host.battle._kernel.enemy_views(),"workload":host.battle._kernel.workload_metrics(),"persistent":host.battle._kernel.persistent_state(),"frames":Engine.get_frames_drawn(),"equipment_counters":panel.get("presentation_counts").duplicate(true) if panel.get("presentation_counts") != null else null}
+func perf_record(label: String, before: Dictionary) -> void:
+    var after: Dictionary = perf_snapshot()
+    var added: Array = []; var removed: Array = []; var styles: Array = [];var texts: Array = []
+    for key in after.nodes:
+        if not before.nodes.has(key): added.append(after.nodes[key])
+    for key in before.nodes:
+        if not after.nodes.has(key): removed.append(before.nodes[key])
+    for key in after.styles:
+        if before.styles.has(key) and before.styles[key] != after.styles[key]: styles.append(after.nodes[key])
+    for key in after.texts:
+        if before.texts.has(key) and before.texts[key] != after.texts[key]: texts.append(after.nodes[key])
+    var delta: Dictionary = {}
+    for key in observed: delta[key] = after.observed[key] - before.observed[key]
+    var differences: Dictionary = {"weapons":[],"defences":[]}
+    var ui_delta: Dictionary = {}
+    if before.equipment_counters != null:
+        for key in after.equipment_counters: ui_delta[key] = after.equipment_counters[key] - before.equipment_counters[key]
+    for group in differences:
+        for key in after.weapons[group]:
+            if after.weapons[group][key] != before.weapons[group].get(key): differences[group].append(key)
+    var stable: bool = before.kernel_id == after.kernel_id and before.presentation_id == after.presentation_id and before.statistics_id == after.statistics_id and before.hull_resources == after.hull_resources
+    perf_records.append({"action":label,"before":before,"after":after,"observed_delta":delta,"added_nodes":added,"removed_nodes":removed,"replaced_button_styles":styles,"changed_label_texts":texts,"changed_battle_values":differences,"equipment_counter_delta":ui_delta,"battle_objects_and_resources_same":stable,"same_enemy_array_identity":is_same(before.enemies,after.enemies),"configuration_commit_delta":after.configuration_commits-before.configuration_commits,"result":panel.last_result.duplicate(true)})
+    check(stable,"stable battle/resources "+label)
+    check(before.enemies == after.enemies,"unrelated enemies unchanged "+label)
+    for key in ["active_flights","flight_slots","active_capacity","feedback_capacity"]:
+        check(before.workload[key] == after.workload[key],"flight pool retained "+key+" "+label)
+    if label != "actual_refit_cannon": check(before.workload == after.workload,"queues retained "+label)
+    check(after.configuration_commits-before.configuration_commits == (1 if label=="actual_refit_cannon" else 0), "configuration commit scope "+label)
+    if label != "actual_refit_cannon":
+        check(before.persistent == after.persistent,"encounter/flight serial and history retained "+label)
+    else:
+        check(before.persistent.history_counts == after.persistent.history_counts and before.persistent.next_ids.attack == after.persistent.next_ids.attack and before.persistent.next_ids.encounter == after.persistent.next_ids.encounter, "refit retains in-flight attack/encounter identity")
+func perf_click(label: String, control: Control) -> void:
+    var before: Dictionary = perf_snapshot()
+    await click(control)
+    perf_record(label,before)
+var runtime_signals: int = 0
+var non_wallet_signals: int = 0
+var actual_wallet_signals: int = 0
+var notified_budget: Dictionary = {}
+func watch_economy() -> void:
+    runtime_signals += 1
+    var next: Dictionary = host.economy.budget()
+    if next == notified_budget: non_wallet_signals += 1
+    else: actual_wallet_signals += 1
+    notified_budget = next
+func find_button(node: Node, text: String):
+    if node is Button and node.text == text: return node
+    for child in node.get_children():
+        var found = find_button(child,text)
+        if found != null: return found
+    return null
+func click_at(point: Vector2) -> void:
+    var event := InputEventMouseButton.new()
+    event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=true
+    Input.parse_input_event(event);await process_frame
+    event=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=false
+    Input.parse_input_event(event);await flush()
+func runtime_measure(label: String, seconds: float) -> Dictionary:
+    var first: Dictionary = perf_snapshot()
+    var budget: Dictionary = host.economy.budget()
+    var markers: Array = host.economy.drop_markers()
+    var game: float = host.game_time
+    var signals_before: Array = [runtime_signals,non_wallet_signals,actual_wallet_signals]
+    await create_timer(seconds).timeout
+    await flush()
+    var last: Dictionary = perf_snapshot()
+    var delta: Dictionary = {}
+    for key in last.equipment_counters: delta[key]=last.equipment_counters[key]-first.equipment_counters.get(key,0)
+    return {"label":label,"pause_reasons":host.pause_reasons.duplicate(),"game_time_before":game,"game_time_after":host.game_time,"signals":runtime_signals-signals_before[0],"non_wallet_signals":non_wallet_signals-signals_before[1],"wallet_signals":actual_wallet_signals-signals_before[2],"wallet_unchanged":budget==host.economy.budget(),"markers_before":markers,"markers_after":host.economy.drop_markers(),"ui_delta":delta,"before":first,"after":last}
+func review_screen(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png("res://docs/verification/equipment-hangar-godot/clean-pass/regression/"+name+".png")
+func edge_pickup(x: float, name: String) -> Dictionary:
+    var state: Dictionary = host.economy.save_state()
+    var keys: Array = state.drops.keys().filter(func(key):return str(key).begins_with("timed:"))
+    if keys.is_empty():
+        state.generator.elapsed=29.9
+        check(host.economy.restore_state(state).ok,"next timed drop setup validates")
+        var start: int = Time.get_ticks_msec()
+        while keys.is_empty() and Time.get_ticks_msec()-start<5000:
+            await create_timer(0.1).timeout
+            state=host.economy.save_state()
+            keys=state.drops.keys().filter(func(key):return str(key).begins_with("timed:"))
+    check(not keys.is_empty(),"actual generator owns edge pickup")
+    if keys.is_empty():return {}
+    var key: String = str(keys[0])
+    state.drops[key].x=x
+    state.drops[key].origin_y=140.0
+    state.drops[key].y=140.0
+    state.drops[key].born_at=host.game_time
+    check(host.economy.restore_state(state).ok,"edge-position controlled save validates")
+    host.economy.publish_budget_change()
+    await flush()
+    var surface: SubViewportContainer = app._battle_viewport.get_parent()
+    var before: Dictionary = host.economy.budget()
+    if x<100:
+        await click_at(Vector2(830,140))
+        check(host.economy.save_state().drops.has(key) and host.economy.budget()==before,"gutter click is outside logical battle input")
+    var row: Dictionary = host.economy.save_state().drops[key]
+    var point: Vector2 = surface.get_global_transform()*Vector2(row.x,row.y)
+    await review_screen(name+"-before")
+    var counters: Dictionary = panel.presentation_counts.duplicate(true)
+    await click_at(point)
+    var after: Dictionary = host.economy.budget()
+    var expected: Dictionary = host.amount_api.apply("add",[before.get(str(row.id),host.amount_api.apply("zero",[]).value),row.amount])
+    check(not host.economy.save_state().drops.has(key),"actual shared-transform pickup removes "+name)
+    check(host.amount_api.apply("compare",[expected.value,after[str(row.id)]]).scalar==0,"actual pickup credits owned amount "+name)
+    check(panel.last_comparison==host.equipment_comparison(panel._selected,panel._candidate,panel._quantity,panel._maximum),"pickup refreshes actual quote "+name)
+    await review_screen(name+"-after")
+    return {"scope":"actual generated owned timed amount; only x/y relocated through validated controlled save for edge coverage", "drop_id":key,"row_before":row,"root_input_point":[point.x,point.y],"wallet_before":before,"wallet_after":after,"removed":not host.economy.save_state().drops.has(key),"counters_before":counters,"counters_after":panel.presentation_counts.duplicate(true),"game_time":host.game_time,"pause_reasons":host.pause_reasons.duplicate()}
+
+func run() -> void:
+    app = load("res://src/main.tscn").instantiate();root.add_child(app);host = app.session;panel = app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running() and not host.pause_reasons.has("recovery"),"real startup without recovery pause")
+    if not failures.is_empty():app._close_game();return
+    host.set_pause("user",true)
+    var campaign: Dictionary = host.campaign_system.save_state()
+    campaign.state.highest_reached=100;campaign.cycle_reached=100;campaign.state.state="menu";campaign.departure_remaining=0.0;campaign.state.speed=0.0;campaign.state.cleared_stages={}
+    for level in range(1,100): campaign.state.cleared_stages[level]=true
+    check(host.campaign_system.restore_state(campaign).ok,"validated controlled campaign")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    check(host.campaign_system.change_ship("Cruiser",host.commit_ship_refit).ok,"real cruiser refit")
+    for pair in [["weapon:0","missile"],["weapon:1","missile"],["weapon:2","longLaser"],["defence:0","shield"],["defence:1","armour"]]:
+        check(host.equipment.equip_slot(pair[0],pair[1],host.equipment_inputs(),host.publish_equipment_refit).ok,"setup equip "+pair[0])
+    var setup: Dictionary = host.equipment.save_state()
+    for slot in setup.slots:
+        slot.paid_level=80 if slot.category=="defence" else 1
+        slot.switch_ready_at=0.0
+    check(host.equipment.restore_state(setup,host.campaign_system.ship_facts().mounts).ok,"validated controlled equipment")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"native setup sync")
+    wallet("2000000","2000")
+    check(host.start_campaign_sortie(5).ok,"actual stage5 sortie")
+
+    var saved: Dictionary = host.economy.save_state()
+    saved.generator.elapsed=29.9
+    check(host.economy.restore_state(saved).ok,"timed generator elapsed save validates")
+    host.economy.publish_budget_change()
+    await flush()
+    await click(panel._slot_buttons["weapon:0"].button)
+    await click(panel._quantity_buttons[2])
+    await click(panel._choices.cannon.button)
+    notified_budget=host.economy.budget()
+    host.economy.display_changed.connect(watch_economy)
+    host.economy.display_changed.connect(func():observed.wallet+=1)
+    host.equipment.slots_changed.connect(func(_ids):observed.equipment_slots+=1)
+    host.equipment.loadout_changed.connect(func():observed.loadout+=1)
+    host.campaign_system.ship_changed.connect(func():observed.ship+=1)
+    host.battle._statistics.changed.connect(func():observed.statistics+=1)
+    node_added.connect(func(_node):observed.node_added+=1)
+    node_removed.connect(func(_node):observed.node_removed+=1)
+    panel.draw.connect(func():observed.equipment_draw+=1)
+    for child in app._battle_viewport.get_children():
+        if child.get_script()==app.BattleView:child.draw.connect(func():observed.battle_draw+=1)
+    host.set_pause("user",false)
+    var warm: int = Time.get_ticks_msec()
+    while host.economy.drop_markers().is_empty() and Time.get_ticks_msec()-warm<15000: await create_timer(0.1).timeout
+    await flush()
+    var moving: Dictionary = await runtime_measure("unpaused timed-drop movement with MAX selected",1.5)
+    check(moving.game_time_after>moving.game_time_before and moving.non_wallet_signals>0,"actual unpaused timed movement")
+    var battle_warm: int = Time.get_ticks_msec()
+    while (host.battle._kernel.enemy_views().is_empty() or host.battle._kernel.active_flight_count()==0) and Time.get_ticks_msec()-battle_warm<20000: await create_timer(0.1).timeout
+    await flush()
+    var active_moving: Dictionary = await runtime_measure("unpaused live enemies and flights plus timed movement",1.5)
+    check(not active_moving.before.enemies.is_empty() and active_moving.before.workload.active_flights>0,"live encounter really present in runtime window")
+    check(active_moving.wallet_unchanged and active_moving.wallet_signals==0,"live movement window wallet unchanged")
+    check(active_moving.ui_delta.comparison_reads==0 and active_moving.ui_delta.slot_fact_reads==0 and active_moving.ui_delta.equipment_option_reads==0 and active_moving.ui_delta.maximum_reads==0,"live movement avoids unrelated equipment reads")
+
+    check(moving.wallet_unchanged and moving.wallet_signals==0,"moving window has no wallet dependency changes")
+    check(moving.ui_delta.comparison_reads==0 and moving.ui_delta.slot_fact_reads==0 and moving.ui_delta.equipment_option_reads==0 and moving.ui_delta.maximum_reads==0,"drop-only notification skips slots/options/comparison/MAX")
+    var edge_left: Dictionary = await edge_pickup(32.0,"edge-left")
+    var edge_right: Dictionary = await edge_pickup(540.0,"edge-right")
+    host.set_pause("user",true)
+    await flush()
+    var ui_before: Dictionary = panel.last_comparison.duplicate(true)
+    var weapon_counts_before: Dictionary = panel.presentation_counts.duplicate(true)
+    var wallet_before: Dictionary = host.economy.budget()
+    await click(find_button(app,"舰桥面板"))
+    var tabs: TabBar = app._tabs.get_tab_bar()
+    await click_at(tabs.global_position+tabs.get_tab_rect(1).get_center())
+    var reactor = app._feature_panels.reactor
+    for index in reactor.module_picker.item_count:
+        if str(reactor.module_picker.get_item_metadata(index))=="weapons":reactor.module_picker.select(index)
+    reactor.allocation_input.text="80"
+    await click(find_button(reactor,"分配"))
+    await click(find_button(app,"关闭面板"))
+    var expected: Dictionary = host.equipment_comparison(panel._selected,panel._candidate,panel._quantity,panel._maximum)
+    var reactor_check: Dictionary = {"counters_before":weapon_counts_before,"counters_after":panel.presentation_counts.duplicate(true),"before":ui_before,"ui_after":panel.last_comparison.duplicate(true),"owner_after":expected,"matches_owner":panel.last_comparison==expected,"wallet_unchanged":wallet_before==host.economy.budget(),"reactor_state":host.reactor_system.save_state(),"growth_status":app.growth_status.text}
+    check(reactor_check.wallet_unchanged,"free reactor allocation does not pay")
+    check(reactor_check.matches_owner,"free weapon allocation refreshes current/upgrade/candidate without extra equipment click")
+    check(reactor_check.counters_after.comparison_dependency_changes-reactor_check.counters_before.comparison_dependency_changes==1,"one targeted weapon factor notice")
+    for field in ["current","upgrade","candidate"]:check(reactor_check.ui_after[field].primary!=reactor_check.before[field].primary,"weapon "+field+" actually changed")
+    await review_screen("free-weapons-return")
+    await click(panel._slot_buttons["defence:0"].button)
+    await click(panel._quantity_buttons[0])
+    var defence_before: Dictionary = panel.last_comparison.duplicate(true)
+    var defence_counts_before: Dictionary = panel.presentation_counts.duplicate(true)
+    await click(find_button(app,"舰桥面板"))
+    for index in reactor.module_picker.item_count:
+        if str(reactor.module_picker.get_item_metadata(index))=="defence":reactor.module_picker.select(index)
+    reactor.allocation_input.text="20"
+    await click(find_button(reactor,"分配"))
+    await click(find_button(app,"关闭面板"))
+    var defence_owner: Dictionary = host.equipment_comparison(panel._selected,panel._candidate,panel._quantity,panel._maximum)
+    var defence_check: Dictionary = {"counters_before":defence_counts_before,"counters_after":panel.presentation_counts.duplicate(true),"before":defence_before,"ui_after":panel.last_comparison.duplicate(true),"owner_after":defence_owner,"wallet_unchanged":wallet_before==host.economy.budget(),"matches_owner":panel.last_comparison==defence_owner}
+    check(defence_check.wallet_unchanged and defence_check.matches_owner,"free defence allocation refreshes comparison")
+    check(defence_check.counters_after.comparison_dependency_changes-defence_check.counters_before.comparison_dependency_changes==1,"one targeted defence factor notice")
+    for field in ["current","upgrade","candidate"]:check(defence_check.ui_after[field].primary!=defence_check.before[field].primary,"defence "+field+" actually changed")
+    await review_screen("free-defence-return")
+    var old_result: Dictionary = panel._last_batch_result
+    var old_balance: String = panel._batch_balance
+    panel._last_batch_result={"ok":false,"fault":true,"reason":"NativeConfigurationRejected","purchase_receipt":{"commit_status":"fault_unknown","purchases":[],"spent":null}}
+    panel._batch_balance="presentation boundary sentinel"
+    panel._open_batch();panel._refresh_batch(true)
+    var unknown: String = panel._batch_results.text
+    check(not unknown.contains("等级保持") and not unknown.contains("成交后余额") and not unknown.contains("sentinel"),"unknown result never claims hold or confirmed balance")
+    await review_screen("batch-unknown")
+    var outcome: Dictionary = {"scope":"presentation-only actual Control boundary probe; no native fault or financial execution fabricated","text":unknown,"contains_hold":unknown.contains("等级保持"),"contains_post_commit_balance":unknown.contains("成交后余额")}
+    var branch_results: Array = []
+    for sample in [{"ok":false,"reason":"NativeConfigurationRejected","purchase_receipt":{"commit_status":"rejected","purchases":[],"spent":{}}},{"ok":false,"reason":"NoChange","purchase_receipt":{"commit_status":"not_submitted","purchases":[],"spent":{}}},{"ok":true,"purchase_receipt":{"commit_status":"accepted","purchases":[],"spent":{}}}]:
+        panel._last_batch_result=sample;panel._refresh_batch(true)
+        branch_results.append({"input":sample,"text":panel._batch_results.text})
+        check(not panel._batch_results.text.contains("等级保持") and not panel._batch_results.text.contains("成交后余额"),"no unreported purchases inferred from empty list")
+    panel._last_batch_result=old_result;panel._batch_balance=old_balance;panel._close_batch()
+    var surface: SubViewportContainer = app._battle_viewport.get_parent()
+    check(surface.scale==Vector2(0.9375,0.9375),"uniform battle scale")
+    check(surface.get_global_rect()==Rect2(855.875,0,536.25,900),"centred projection inside632 area")
+    var hashes: Dictionary = {}
+    for path in ["res://src/main.gd","res://src/game_session.gd","res://src/systems/equipment.gd","res://src/ui/equipment_panel.gd"]:hashes[path]=FileAccess.get_sha256(path)
+    var output: Dictionary = {"source_hashes":hashes,"source":OS.get_environment("SPACE_IDLE_REVIEW_SOURCE"),"observers_attached":true,"engine":Engine.get_version_info(),"moving":moving,"active_moving":active_moving,"reactor_free_allocation":reactor_check,"unknown_receipt_boundary":outcome,"other_receipt_boundaries":branch_results,"defence_free_allocation":defence_check,"edge_pickups":[edge_left,edge_right],"projection":{"scale":[surface.scale.x,surface.scale.y],"rect":surface.get_global_rect(),"logical_size":app._battle_viewport.size,"region":Rect2(808,0,632,900)},"failures":failures}
+    var file := FileAccess.open("res://docs/verification/equipment-hangar-godot/clean-pass/regression/"+OS.get_environment("SPACE_IDLE_REVIEW_OUTPUT"),FileAccess.WRITE)
+    file.store_string(JSON.stringify(output,"  "));file.close()
+    print("REVIEW_RUNTIME_COMPLETE failures=",failures.size()," moving_signals=",moving.signals," comparisons=",moving.ui_delta.comparison_reads," reactor_matches=",reactor_check.matches_owner)
+    app._close_game()

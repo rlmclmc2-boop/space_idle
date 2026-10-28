@@ -1,0 +1,266 @@
+{
+  "fixed_source_commit": "318f5f342e8d44006e530f7f9501b517a3aab359",
+  "source_binding": {
+    "res://assets/ui/equipment/hangar/hangar-console.png": {
+      "runtime_sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "matches_fixed_git_object": true
+    },
+    "res://generated/config.json": {
+      "runtime_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "scope": "local generated config, not submitted"
+    },
+    "res://project.godot": {
+      "runtime_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "matches_fixed_git_object": true
+    },
+    "res://src/game_session.gd": {
+      "runtime_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "matches_fixed_git_object": true
+    },
+    "res://src/main.gd": {
+      "runtime_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "matches_fixed_git_object": true
+    },
+    "res://src/systems/equipment.gd": {
+      "runtime_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "matches_fixed_git_object": true
+    },
+    "res://src/ui/equipment_panel.gd": {
+      "runtime_sha256": "9dd29c5d3cd6ce9444e07984e607db7beb068140afc12ce80c6ebda07c39410c",
+      "matches_fixed_git_object": true
+    }
+  },
+  "asset_binding": {
+    "assets/ui/equipment/hangar/terminal-clean.svg": "6bcad4f3b558971dd6d1426723db77b3c44905541bf421997a39681ae54d8f73",
+    "assets/ui/equipment/hangar/support-arm.png": "a6a7e7894f6c7b1c7946c7a65deb1f7f3ce35ee5e4d3b326f62fadbc09531e03",
+    "assets/fonts/NotoSansSC.ttf": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+  },
+  "operations_records": 19,
+  "operations_failures": [],
+  "regression_failures": [],
+  "images": {
+    "candidate": 36,
+    "regression": 7,
+    "pixels": [
+      1440,
+      900
+    ],
+    "processing": "Raw Godot root viewport PNGs, no crop/resize/compositing"
+  },
+  "files": {
+    "candidate/01-starter.png": {
+      "sha256": "128e1b0d080cdab497f2565a4b5ad1e84880b378872a0fa5a11c6067d02e7505",
+      "bytes": 1576828
+    },
+    "candidate/02-starter-slot-selection.png": {
+      "sha256": "5d7994270cc3f01959e3a355f7ab45a897e71cebb8224e318fafa84dbcf9becc",
+      "bytes": 1576752
+    },
+    "candidate/03-cruiser-cannon-comparison.png": {
+      "sha256": "94c3abde47cdb48bd75e3ded4fc5e338735e6b855ab3c3402eba0ab3b27b82f1",
+      "bytes": 1562107
+    },
+    "candidate/04-single-plus1-material.png": {
+      "sha256": "92d770fc473eda764ab3dbac3d299e6d852e76cf7bbfe649d270547256f1941d",
+      "bytes": 1568852
+    },
+    "candidate/05-plus10-quote.png": {
+      "sha256": "8304fefdf8acb42e0e55b14f658c2cae33b08a160e6fddaaa23b49b9bfeace13",
+      "bytes": 1568628
+    },
+    "candidate/06-single-plus10.png": {
+      "sha256": "62c0710456939365e88a3ac02950e009e8c99539d023e308a430f148df1c4ace",
+      "bytes": 1569207
+    },
+    "candidate/07-max-quote.png": {
+      "sha256": "7d80cc5cfaaa6dac5531e2f2e678c62cc849922495102e59ba7614b43aa53481",
+      "bytes": 1568467
+    },
+    "candidate/08-single-max.png": {
+      "sha256": "db27c9b1e8de8e50e3ad0f6d91ef3410cb15e0cef86d4d6ef7719d78aabb2ec2",
+      "bytes": 1567466
+    },
+    "candidate/09-switch-cooldown.png": {
+      "sha256": "a8d8f88f7b466fad8a15d6bde7b4325fc72744bc3995e4c4b0b167e1ad155533",
+      "bytes": 1561275
+    },
+    "candidate/10-switch-ready.png": {
+      "sha256": "7673572d4452f76cf07fed82ea024d102016e6a18113d59a71a86c7080a9acd7",
+      "bytes": 1561334
+    },
+    "candidate/11-batch-open.png": {
+      "sha256": "555c2f71c6c5d2253a6b5d54ec90968b47f00cc8522d775d6ea2b5fcfb6519ac",
+      "bytes": 997470
+    },
+    "candidate/12-batch-partial-result.png": {
+      "sha256": "b71e1e572c627665c404e57aefa3368e3b72190f204df4cd5f04480895bd0e02",
+      "bytes": 1014952
+    },
+    "candidate/13-batch-result-retained.png": {
+      "sha256": "5a03258b718fb432761d42cbba036206c693dfb065075f123bae58dd47d5a4ae",
+      "bytes": 1015259
+    },
+    "candidate/14-defence-selection.png": {
+      "sha256": "25a99193bdb7c0a53d8452193bccef6f63aef320692835dc87fef2b06f740e85",
+      "bytes": 1564734
+    },
+    "candidate/15-final-cruiser.png": {
+      "sha256": "6c8fcff575ad75ccdc64a54aa68a02847e77679a965505fe0bc8d3e70f20560f",
+      "bytes": 1571255
+    },
+    "candidate/16-defence-candidate.png": {
+      "sha256": "173b21af4ef0b4db7e5f29f5613809171a4b553783fdc22391124f9220249db7",
+      "bytes": 1566176
+    },
+    "candidate/17-defence-quote-0.png": {
+      "sha256": "5281bf24ab49f234b2be36e972228dec7727e28499a8f65bff0c297ab607f4e1",
+      "bytes": 1566189
+    },
+    "candidate/17-defence-quote-1.png": {
+      "sha256": "a949d363b99da371545192308bf3a518ebbda33fc9edf058fa3b81533583860c",
+      "bytes": 1566977
+    },
+    "candidate/17-defence-quote-2.png": {
+      "sha256": "8d8dca2d914b567e095a9bffc5f1c3f96c2da4fd8980421e35bffd9c3bd1d8e5",
+      "bytes": 1570451
+    },
+    "candidate/18-defence-purchased-0.png": {
+      "sha256": "f918717621b4dc64b176ddf74fd6815e5e0ae489f50f21eb7383d6366bcb370b",
+      "bytes": 1567308
+    },
+    "candidate/18-defence-purchased-1.png": {
+      "sha256": "70910549df08773e0d8fa0b34b0e797c70ebcd66dbcb79a473be5f607bea18f2",
+      "bytes": 1568764
+    },
+    "candidate/18-defence-purchased-2.png": {
+      "sha256": "13f75c6897945b392b17719c32ac353d364460945be1b7939aed255bde77fbe7",
+      "bytes": 1566401
+    },
+    "candidate/19-long-max-multi-resource.png": {
+      "sha256": "1f07d2445b2cfff1e3dde3293703fd3ae69bd2fdba1c069b21a456c7e1c538cc",
+      "bytes": 1578021
+    },
+    "candidate/20-insufficient-resources.png": {
+      "sha256": "49be4f9e41cee101a5bda7ab57bd93d3cbf97311295de21acb7260542c25efcf",
+      "bytes": 1567771
+    },
+    "candidate/21-candidate-normal.png": {
+      "sha256": "94c3abde47cdb48bd75e3ded4fc5e338735e6b855ab3c3402eba0ab3b27b82f1",
+      "bytes": 1562107
+    },
+    "candidate/21-quantity-normal.png": {
+      "sha256": "94c3abde47cdb48bd75e3ded4fc5e338735e6b855ab3c3402eba0ab3b27b82f1",
+      "bytes": 1562107
+    },
+    "candidate/21-slot-normal.png": {
+      "sha256": "94c3abde47cdb48bd75e3ded4fc5e338735e6b855ab3c3402eba0ab3b27b82f1",
+      "bytes": 1562107
+    },
+    "candidate/22-candidate-hover.png": {
+      "sha256": "0f0d8b8bccd518331896904fefbe5351f23a42b70783a9e40766a186405c2ed5",
+      "bytes": 1562108
+    },
+    "candidate/22-quantity-hover.png": {
+      "sha256": "0b62d255b27edf5ff03e5ab635651f2063d81b589e601bb4115e658446e7fb5d",
+      "bytes": 1562125
+    },
+    "candidate/22-slot-hover.png": {
+      "sha256": "504a11a6e433f4cedf352cffd5ba1e137e8797c82014cddeeed99eca16e10db0",
+      "bytes": 1562003
+    },
+    "candidate/23-candidate-pressed.png": {
+      "sha256": "569027804a9dc149b951651f6d9365823fb81cb6bbb2d5496ed588bf8153055d",
+      "bytes": 1562210
+    },
+    "candidate/23-quantity-pressed.png": {
+      "sha256": "980b79e31ac472648ce29c04f60ac73b0807f311bf139ab9fb4de76171365c00",
+      "bytes": 1562166
+    },
+    "candidate/23-slot-pressed.png": {
+      "sha256": "a514791ccb72d7ccc8454e18543ecd25802482dcbb4c2474bd190f57e8d99f2b",
+      "bytes": 1562083
+    },
+    "candidate/24-candidate-focus.png": {
+      "sha256": "40d9f81cdde2dab3be164dcc4154bec0f08b8a93dcb1ecf39c3d886528e4ead1",
+      "bytes": 1562104
+    },
+    "candidate/24-quantity-focus.png": {
+      "sha256": "356c65fdca40bee6c39283589226dd75ee02c272f761c8c9e4b930ffe79a72a0",
+      "bytes": 1562099
+    },
+    "candidate/24-slot-focus.png": {
+      "sha256": "a877723b153948488f933e942e2a332d61452f8a145e7525e8f824b9c48594b3",
+      "bytes": 1560097
+    },
+    "candidate/font-actual.json": {
+      "sha256": "a91567a0bc8960efdfac414c937f87768c0f06f1f423b482aa89825c57e84e38",
+      "bytes": 224
+    },
+    "candidate/operations.json": {
+      "sha256": "bb7d59f9421c9506528bfa3173f480ee6eb08895fd69b5aa10f1a52c9b0a7b3c",
+      "bytes": 122375
+    },
+    "regression/batch-unknown.png": {
+      "sha256": "c8ace5a5f305767552a48c592af3d006d616e70ffbbf75df81df4c72c156c67f",
+      "bytes": 609822
+    },
+    "regression/edge-left-after.png": {
+      "sha256": "f4461ca6f64697c4e21508ca0543233f6bc6e5436e8ece812d4fd4b4fd591cb2",
+      "bytes": 1175209
+    },
+    "regression/edge-left-before.png": {
+      "sha256": "298d7fd5b3a5c94e175108a69664d57057cdcba8f45ddd6b67776e4928b1095e",
+      "bytes": 1175527
+    },
+    "regression/edge-right-after.png": {
+      "sha256": "dc06ef7f4d585484ece93489ebb372792459780e2e0e21beff29d9933527e0f9",
+      "bytes": 1180974
+    },
+    "regression/edge-right-before.png": {
+      "sha256": "86959ef86e507e08dc36abb90e2ff0a2625e9af4f873cdd54faa5a557e61b22d",
+      "bytes": 1179500
+    },
+    "regression/free-defence-return.png": {
+      "sha256": "766b90932efad41248f8d979f0a704b5ff92ec38840337d5045b24c7bc7aac66",
+      "bytes": 1180701
+    },
+    "regression/free-weapons-return.png": {
+      "sha256": "e755954fc1945f2698a07d8be35c4c402753303ca23a7bf6d3fd5cc4452d89c4",
+      "bytes": 1182204
+    },
+    "regression/runtime.json": {
+      "sha256": "647f1254c9cb67fce55ab073799344fedefa8490f4a1498fe5aeb88e0c9e20aa",
+      "bytes": 473425
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "8afa62b00c1100ce0e8da6e21cdb1e4c2ccc3b0bcbf2aef3094304fa87343383",
+      "bytes": 20940
+    },
+    "regression-driver.gd.txt": {
+      "sha256": "7327551b1783c95bb096ebe6b2838dbb7be32a1af76cc7dc28a4b63f4618dc5c",
+      "bytes": 24609
+    },
+    "candidate.log.txt": {
+      "sha256": "a381cf26cd5305aa9fa6ffd1725e6c92d939aee741ba5dca804bb520b066d7ad",
+      "bytes": 417
+    },
+    "regression.log.txt": {
+      "sha256": "e1d2427f1735f1dbad3fd78df21dadc63dc8c449b1533dd2a527183e947c4069",
+      "bytes": 456
+    },
+    "README.md": {
+      "sha256": "df28539de8c65aca983610fe9607ae2ecad97f8cd166ff5404f39c845da77f78",
+      "bytes": 8225
+    },
+    "before-null-tooltip-fix/operations.json": {
+      "sha256": "2a49b2156a6c72be009a38bef7a1c42afc9da986344570ab49bfe2e305a1f0e4",
+      "bytes": 122384
+    },
+    "before-null-tooltip-fix/runtime.log.txt": {
+      "sha256": "be25992aa46277ee8a36d5778b4ccb6d05b6dfe609819d21d71f6d106da238ad",
+      "bytes": 3960
+    }
+  },
+  "failure_scope": "before-null-tooltip-fix is invalid debugging evidence, not bound to the fixed runtime. Its file hash was read after an on-disk fix while the old loaded script still ran; no success inference. All intermediate screenshots preserved locally.",
+  "local_excluded": "preview/, pre-status-size-fix/, most before-null-tooltip-fix images, old visual-pass WIP and all unrelated .import/.uid/saves/caches remain local and preserved."
+}
