@@ -1,0 +1,100 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/workbench-state-reflow"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func capture_state(name:String)->void:
+    await flush()
+    var frame:Rect2=panel._workbench.get_global_rect()
+    for control in [panel._purchase,panel._cost,panel._current_value,panel._next_value,panel._candidate_row,panel._feedback]:check(frame.encloses(control.get_global_rect()),name+" visible control inside shared workbench")
+    var candidates:Dictionary={}
+    for id in panel._choices:
+        var item:Dictionary=panel._choices[id]
+        candidates[id]={"visible":item.button.is_visible_in_tree(),"rect":item.button.get_global_rect(),"disabled":item.button.disabled,"mouse_filter":item.button.mouse_filter,"focus_mode":item.button.focus_mode}
+    records.append({"action":name,"frame":frame,"layout":panel._workbench_layout.duplicate(true),"candidates":candidates,"primary_surface":panel._upgrade_data.get_global_rect(),"transaction_rail":panel._transaction_rail.get_global_rect(),"purchase":panel._purchase.get_global_rect(),"comparison":panel._comparison_group.get_global_rect(),"state":snapshot()})
+    await screenshot(name)
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"normal main/native startup")
+    host.set_pause("user",true);await flush()
+    var positions:Dictionary={}
+    for id in ["missile","cannon","longLaser"]:
+        var button:Button=panel._choices[id].button;positions[id]=button.position
+        check(not button.is_visible_in_tree() and button.disabled and button.focus_mode==Control.FOCUS_NONE and button.mouse_filter==Control.MOUSE_FILTER_IGNORE,"locked item completely hidden and noninteractive "+id)
+    var locked_before:Dictionary=snapshot()
+    await click(panel._choices.cannon.button)
+    check(panel._candidate==locked_before.candidate and host.equipment_slot_facts()==locked_before.slots,"actual click on reserved blank cannon position has no effect")
+    await capture_state("01-fresh-same-single-blank-locked")
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=2;c.cycle_reached=2;c.state.state="menu";c.state.cleared_stages={1:true}
+    check(host.campaign_system.restore_state(c).ok,"controlled cleared1")
+    host.equipment.refresh_availability(host.campaign_system.available,2);await flush()
+    check(panel._choices.missile.button.is_visible_in_tree() and panel._choices.missile.button.position==positions.missile,"missile appears in its original reserved position")
+    check(not panel._choices.cannon.button.is_visible_in_tree() and not panel._choices.longLaser.button.is_visible_in_tree(),"other locked spaces remain completely blank")
+    var before:Dictionary=snapshot()
+    var reject:Dictionary=host.equipment.equip_slot("weapon:0","cannon",host.equipment_inputs(),host.publish_equipment_refit)
+    check(not reject.ok and reject.reason=="EquipmentLocked" and host.equipment_slot_facts()==before.slots,"owner still rejects hidden locked cannon")
+    await click(panel._choices.missile.button)
+    check(panel._candidate=="missile" and host.equipment_slot_facts()==before.slots,"real missile click previews only")
+    await capture_state("02-partial-different-single")
+    c.state.highest_reached=100;c.cycle_reached=100;c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled full preview progress")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    var e:Dictionary=host.equipment.save_state()
+    for slot in e.slots:
+        if slot.id=="weapon:0":slot.paid_level=19;slot.switch_ready_at=0.0
+    check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled level19")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"controlled native preview sync")
+    wallet("1234567890123456789012345678901234567890","9999999999999999999999");panel._dirty=true;await flush()
+    await click(panel._quantity_buttons[2]);await capture_state("03-long-max-different-multi")
+    await click(panel._choices.laser.button);await capture_state("04-long-max-same-multi")
+    var counts:Dictionary=panel.presentation_counts.duplicate();host.economy.display_changed.emit();await flush()
+    for key in ["refreshes","comparison_reads","slot_fact_reads","equipment_option_reads","scene_redraw_requests"]:check(panel.presentation_counts[key]==counts[key],"same-budget signal avoids unrelated work "+key)
+    await click(panel._quantity_buttons[0]);var before_purchase:Dictionary=snapshot();await click(panel._purchase)
+    var receipt:Dictionary=panel.last_result.get("purchase_receipt",{})
+    for resource in receipt.get("spent",{}):
+        var expected:Dictionary=host.amount_api.apply("sub_nonnegative",[before_purchase.wallet[resource],receipt.spent[resource]])
+        check(host.amount_api.apply("compare",[expected.value,host.economy.budget()[resource]]).scalar==0,"actual moved purchase exact wallet minus receipt "+str(resource))
+    check(host.equipment_slot_facts()[0].paid_level==before_purchase.slots[0].paid_level+1,"moved purchase changes one real level")
+    check(panel.last_result.get("purchase_receipt",{}).get("commit_status")=="accepted","moved shared purchase button accepts actual GUI click")
+    await capture_state("05-same-multi-real-purchase")
+    check(host.campaign_system.change_ship("Heavy_Battleship",host.commit_ship_refit).ok,"real heavy refit")
+    panel._dirty=true;await flush();await click(panel._slot_buttons["defence:0"].button)
+    before=snapshot();var commits:int=host.battle.configuration_commits
+    check(panel._feedback.text.is_empty(),"switching to a different real slot clears stale operation feedback")
+    await capture_state("06-heavy-defence-same-single")
+    await click(panel._choices.shield.button);await capture_state("07-heavy-defence-different-single")
+    check(host.battle.configuration_commits==commits and host.economy.budget()==before.wallet,"defence browsing has no native/payment change")
+    check(not panel._component_rect(panel._selected_fact()).has_area(),"defence remains logical slot without physical patch")
+    var f:=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    f.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_INTEGRATED_SOURCE"),"equipment_sha256":FileAccess.get_sha256("res://src/ui/equipment_panel.gd"),"records":records,"failures":failures,"scope":"Seven representative layout states, public same-budget signal and actual moved purchase control. Controlled progress/wallet/level. No full protection suite or gameplay change."},"  "));f.close()
+    print("WORKBENCH_REFLOW_COMPLETE failures=",failures.size()," records=",records.size());app._close_game()

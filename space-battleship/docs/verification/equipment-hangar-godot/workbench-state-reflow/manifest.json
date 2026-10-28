@@ -1,0 +1,158 @@
+{
+  "source_commit": "a1fa3a7adbcc11e12496d9b83b1e9c131d3edc0e",
+  "equipment_sha256": "c6ec07dbb5dc9e95718879c48599612842a1bc7c2e612a6e47c452c7233cd2ab",
+  "engine": "Godot4.7.2 ed1daf0bf; Linux OpenGL llvmpipe Compatibility",
+  "viewport": [
+    1440,
+    900
+  ],
+  "equipment_local": [
+    808,
+    900
+  ],
+  "fixed_source_capture": true,
+  "operations": 7,
+  "failures": [],
+  "crops": [
+    {
+      "source": "01-fresh-same-single-blank-locked.png",
+      "crop": "crop-01-fresh-same-single-blank-locked.png",
+      "box": [
+        8,
+        670,
+        800,
+        900
+      ],
+      "method": "lossless pixel crop only; no resize/repaint/composite"
+    },
+    {
+      "source": "02-partial-different-single.png",
+      "crop": "crop-02-partial-different-single.png",
+      "box": [
+        8,
+        624,
+        800,
+        900
+      ],
+      "method": "lossless pixel crop only; no resize/repaint/composite"
+    },
+    {
+      "source": "03-long-max-different-multi.png",
+      "crop": "crop-03-long-max-different-multi.png",
+      "box": [
+        8,
+        624,
+        800,
+        900
+      ],
+      "method": "lossless pixel crop only; no resize/repaint/composite"
+    },
+    {
+      "source": "04-long-max-same-multi.png",
+      "crop": "crop-04-long-max-same-multi.png",
+      "box": [
+        8,
+        644,
+        800,
+        900
+      ],
+      "method": "lossless pixel crop only; no resize/repaint/composite"
+    },
+    {
+      "source": "06-heavy-defence-same-single.png",
+      "crop": "crop-06-heavy-defence-same-single.png",
+      "box": [
+        8,
+        670,
+        800,
+        900
+      ],
+      "method": "lossless pixel crop only; no resize/repaint/composite"
+    },
+    {
+      "source": "07-heavy-defence-different-single.png",
+      "crop": "crop-07-heavy-defence-different-single.png",
+      "box": [
+        8,
+        624,
+        800,
+        900
+      ],
+      "method": "lossless pixel crop only; no resize/repaint/composite"
+    }
+  ],
+  "files": {
+    "01-fresh-same-single-blank-locked.png": {
+      "sha256": "27024f5e0dee33eb82df6c561dafa5b39ed875a40a8f3ec1db0930f83548f501",
+      "bytes": 1440646
+    },
+    "02-partial-different-single.png": {
+      "sha256": "065eaa05e7ed0cb301d92d955b777b045a9afb9ae81fcaeb5fd59c19278e59ef",
+      "bytes": 1383268
+    },
+    "03-long-max-different-multi.png": {
+      "sha256": "b2bb987be247d659444aa838a153bb5a045dd48d5a608881e5eb31434698bd64",
+      "bytes": 1409407
+    },
+    "04-long-max-same-multi.png": {
+      "sha256": "3221e8863010d0ad5cc14581bda0e71e168dc7fb46330b066599bef23690577a",
+      "bytes": 1429682
+    },
+    "05-same-multi-real-purchase.png": {
+      "sha256": "aa9896899324ed85a0d901bddcad71a02ed3ae4ce55e13f7f80c69d77239f99f",
+      "bytes": 1468256
+    },
+    "06-heavy-defence-same-single.png": {
+      "sha256": "58002bdad3b1c95a76deda3130913e9b48b7bc301d5275767c52dbdfa9310e68",
+      "bytes": 1473872
+    },
+    "07-heavy-defence-different-single.png": {
+      "sha256": "4d04ce2a32d2e1159456145e957c32208e342e6453b44ff8032e1668867cadec",
+      "bytes": 1411443
+    },
+    "README.md": {
+      "sha256": "f5f201ab8d87cea354301cf5110c2142c13ee7e34ccfb7f20aec28d159053628",
+      "bytes": 8216
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "8198cd98a50bff7ec73c1d54d537fbd640bf78fddf23808f65f03788d862e1a1",
+      "bytes": 8880
+    },
+    "capture.log.txt": {
+      "sha256": "6760bfcbb3c3a33e2195248e24216ee82483aa54db976398b0869394e9557c81",
+      "bytes": 415
+    },
+    "crop-01-fresh-same-single-blank-locked.png": {
+      "sha256": "5d65f034c47f5224704d5537e79d825e27a9a563736d874688eb30f656fe20db",
+      "bytes": 47665
+    },
+    "crop-02-partial-different-single.png": {
+      "sha256": "eec57ec89a90f492b1876ac76dc1defb31d72c40594510fb989957d6f466bb5b",
+      "bytes": 63034
+    },
+    "crop-03-long-max-different-multi.png": {
+      "sha256": "af344fc3b10df1d0c126d639c5dc03e38b2ccbb4b9fac2964e4436f7b069b661",
+      "bytes": 74338
+    },
+    "crop-04-long-max-same-multi.png": {
+      "sha256": "9e2310c0fffdb9a44756a8873502e78e203feab36f478b67ab33540faea61d2e",
+      "bytes": 63869
+    },
+    "crop-06-heavy-defence-same-single.png": {
+      "sha256": "9c3cb45a46933405894dd6f501c6fe71f097c7281f4dbe363766a8d8d2e73639",
+      "bytes": 44746
+    },
+    "crop-07-heavy-defence-different-single.png": {
+      "sha256": "2a658c46566a52826f9b8b019de4fa9a647c3c89871829c1e3dbe96505eb566e",
+      "bytes": 55175
+    },
+    "operations.json": {
+      "sha256": "222ce975703ade60a989e29b32cdfb43216f3e85d165a190098232046c5d19e5",
+      "bytes": 36275
+    },
+    "preserved-boundaries.json": {
+      "sha256": "851752d031b13588d27aba9e1bd69e713090dfef38fcf6a03a9d867f90d14834",
+      "bytes": 3718
+    }
+  }
+}
