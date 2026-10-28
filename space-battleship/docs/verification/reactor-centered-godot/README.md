@@ -1,5 +1,13 @@
 # 中央反应堆 Godot 实施检查点（尚未完整交付）
 
+## 视觉修订候选（待根线程与原独审复核）
+
+在`2d6625a3`的真实流程上，已将四方位设备安装到同一舰载承托面：暖白/深青的浅层机壳和埋入式短主管替换纯底漂浮装配。四设备底板原件为`/workspace/generated_images/exec-c067f060-c42f-4f4b-b977-6355e88f2e62.png`，三设备封闭右下支路原件为`exec-c9d19e58-760b-475d-8b69-495f44825858.png`；分别复制为`assets/ui/reactor/centered-v1/mounting-plate.png`和`mounting-plate-three.png`，未后处理原图。两图均1024×1536。前者SHA256为`d5a31243657887cb8d1de9ae08a5c5f1bdc28794d5f3c1191f8f7c6267138228`，后者为`25407fd991c8b7773319cb8f36ee28fd7777cc9f50a96054817abeb7e1b51724`。
+
+同一真实Godot4.7.2/native Session流程的[三设备整屏](evidence/reactor-visual-r13-three-active.png)、[四设备运行帧A](evidence/reactor-visual-r13-four-active-t0.png)、[帧B](evidence/reactor-visual-r13-four-active-t1.png)和[日志](evidence/reactor-visual-r13.log.txt)用于复核安装面、封闭支路、四个插座、控制面和体积核心。局部工作shader随已接纳负载与真实游戏时钟更新；三/四设备截图仍为公开Campaign接口临时开放，不是自然进度证据。这是视觉候选及实屏材料，不在此宣称V3视觉通过。
+
+另以[真实鼠标驱动](evidence/reactor-mouse-driver.gd.txt)向真实主Viewport派发鼠标移动、按下和松开：在[草稿整屏](evidence/reactor-mouse-preview.png)中拖武器滑杆使shares从2267到0且预览可确认；鼠标点击确认后得到[接纳整屏](evidence/reactor-mouse-applied.png)；通过公开经济API临时注入预算后，鼠标点击购级，等级2→3并得到[购级整屏](evidence/reactor-mouse-purchased.png)。[运行日志](evidence/reactor-mouse-run.log.txt)记录这些结果。该预算不是自然收入。鼠标流程只证明这三个控件在本版的命中和业务触发，不能替代其余控件或视觉独审。
+
 用户已认可中央核心＋四向短接，授权真实实现。规范入口为[游戏设计 README](../../game-design/README.md)，本轮决定见[M3/V3](../../game-design/art/modules/reactor.md)。当前在`/workspace/space_idle`的`implement/reactor-centered-godot`分支实施；未合main。此前`bd38d881`压缩交接中的“宿主未固定”“新素材未编译”等状态已由下列提交和验证取代。
 
 ## 当前固定状态（2026-10-28）

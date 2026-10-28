@@ -2,6 +2,8 @@ extends Control
 ## Local scene geometry only. Powers are already-adopted owner presentation values.
 const ATLAS = preload("res://assets/ui/reactor/centered-v1/static-bodies.png")
 const SUPPORTS = preload("res://assets/ui/reactor/centered-v1/supports.png")
+const MOUNTING_PLATE = preload("res://assets/ui/reactor/centered-v1/mounting-plate.png")
+const MOUNTING_PLATE_THREE = preload("res://assets/ui/reactor/centered-v1/mounting-plate-three.png")
 const FIELD = preload("res://assets/ui/reactor/centered-v1/working_fields.gdshader")
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const CORE_CENTRE := Vector2(404, 440)
@@ -15,15 +17,14 @@ const SOURCE_PORTS := {
 	"defence":{"core":Vector2(440,100),"input":Vector2(1166,388),"outward":Vector2(1,-1),"gap":104.0},
 	"smelting":{"core":Vector2(104,420),"input":Vector2(424,596),"outward":Vector2(-1,1),"gap":32.0},
 	"condensation":{"core":Vector2(440,420),"input":Vector2(651,632),"outward":Vector2(1,1),"gap":32.0}}
-const INSERTION_SOURCE_PX := 16.0
 const SUPPORT_REGIONS := {"weapons":Rect2(525,136,486,302),"defence":Rect2(1037,150,464,283),"smelting":Rect2(23,607,479,281),"condensation":Rect2(527,597,480,308)}
 const SUPPORT_ORIGINS := {"weapons":Vector2(10,250),"defence":Vector2(520,238),"smelting":Vector2(12,643),"condensation":Vector2(510,632)}
 const SUPPORT_SCALES := {"weapons":0.53,"defence":0.56,"smelting":0.55,"condensation":0.57}
 const OPERATING_ANCHORS := {
-	"weapons":{"effect":Vector2(593,259),"supply":Vector2(594,301),"slider":Vector2(592,365),"width":188.0,"track":124.0},
-	"defence":{"effect":Vector2(1100,277),"supply":Vector2(1100,315),"slider":Vector2(1141,371),"width":212.0,"track":132.0},
-	"smelting":{"effect":Vector2(125,730),"supply":Vector2(125,773),"slider":Vector2(156,839),"width":178.0,"track":130.0},
-	"condensation":{"effect":Vector2(617,733),"supply":Vector2(617,771),"slider":Vector2(619,843),"width":174.0,"track":150.0}}
+	"weapons":{"effect":Vector2(40,315),"supply":Vector2(40,339),"slider":Vector2(48,371),"width":178.0,"track":136.0},
+	"defence":{"effect":Vector2(555,314),"supply":Vector2(555,338),"slider":Vector2(583,368),"width":183.0,"track":135.0},
+	"smelting":{"effect":Vector2(68,711),"supply":Vector2(68,735),"slider":Vector2(82,769),"width":168.0,"track":125.0},
+	"condensation":{"effect":Vector2(560,711),"supply":Vector2(560,735),"slider":Vector2(578,769),"width":171.0,"track":145.0}}
 const EFFECTS := {"core": Rect2(-89, -87, 180, 180), "weapons": Rect2(-37, -40, 68, 68), "defence": Rect2(-33, -30, 76, 68), "smelting": Rect2(-29, -57, 64, 90), "condensation": Rect2(-28, -49, 56, 84)}
 var _enabled: Array = []
 var _loads: Dictionary = {}
@@ -70,11 +71,9 @@ func _init() -> void:
 		_connections[id] = field
 
 func control_layout(id: String) -> Dictionary:
-	var layout: Dictionary = OPERATING_ANCHORS[id].duplicate()
-	for key in ["effect","supply","slider"]:
-		layout[key] = SUPPORT_ORIGINS[id]+(layout[key]-SUPPORT_REGIONS[id].position)*float(SUPPORT_SCALES[id])
-	layout.slider.y += 6.0
-	return layout
+	# Page-space points follow the visible horizontal screen and inset track,
+	# rather than scaling source-atlas points across different perspectives.
+	return OPERATING_ANCHORS[id].duplicate()
 
 func _scale(id: String) -> float:
 	return float(BODY_WIDTH[id]) / float(REGIONS[id].size.x)
@@ -138,41 +137,44 @@ func reset_clock() -> void:
 
 func _draw() -> void:
 	diagnostics.draws += 1
-	draw_rect(Rect2(0, 0, 808, 900), Color("102c38"))
+	draw_texture_rect(MOUNTING_PLATE if "condensation" in _enabled else MOUNTING_PLATE_THREE, Rect2(0, 54, 808, 900), false)
 	draw_rect(Rect2(0, 0, 808, 65), Color("efeede"))
-	# An open technical mounting surface, never four cabinet cells.
-	for x in [18.0, 790.0]: draw_line(Vector2(x, 83), Vector2(x, 797), Color("244c57"), 1, true)
 	for id in _enabled:
 		var source: Rect2 = SUPPORT_REGIONS[id]
 		draw_texture_rect_region(SUPPORTS,Rect2(SUPPORT_ORIGINS[id],source.size*float(SUPPORT_SCALES[id])),source)
+		var console: Dictionary = OPERATING_ANCHORS[id]
+		var face := Rect2(console.effect-Vector2(5,1),Vector2(float(console.width)+7.0,49.0))
+		draw_rect(face,Color("123843",0.93))
+		draw_rect(face,Color("57989b",0.75),false,1.0)
 	draw_texture_rect_region(SUPPORTS,Rect2(158,797,491,100),Rect2(1031,747,491,100))
+	# Each short terminal sleeve follows its own artwork socket and enters
+	# behind the device lip; the shared plate carries the longer buried run.
 	for id in _enabled:
-		_draw_coupling(str(id))
+		var input: Vector2 = _ports(str(id))[1]
+		var toward_core: Vector2 = -_normal(str(id))
+		draw_line(input-toward_core*11.0,input+toward_core*37.0,Color("082b36"),24.0,true)
+		draw_line(input-toward_core*11.0,input+toward_core*37.0,Color("d9ddca"),19.0,true)
+		draw_line(input-toward_core*11.0,input+toward_core*37.0,Color("176b79"),13.0,true)
+		draw_line(input-toward_core*11.0,input+toward_core*37.0,Color("61d0cd"),5.0,true)
 	for id in ["core"] + _enabled:
 		var body_size: Vector2 = REGIONS[id].size * _scale(id)
 		var target: Rect2 = Rect2(_centre(id) - body_size * 0.5, body_size)
 		draw_texture_rect_region(ATLAS, target, REGIONS[id])
 	for id in _enabled:
+		var input: Vector2 = _ports(str(id))[1]
+		draw_circle(input,9.0,Color("102e39"))
+		draw_arc(input,9.0,0.0,TAU,24,Color("dbe3ce"),2.5,true)
+		draw_circle(input,4.5,Color("59d7d3"))
+	# A locked branch remains a sealed part of the shared manifold.
+	for id in IDS:
+		if id not in _enabled:
+			_draw_closed_port(id)
+	for id in _enabled:
 		if str(id) == _selected: draw_arc(_centre(id), 113, -0.18, 0.18, 12, Color("81c9bf"), 3, true)
 
-func _draw_coupling(id: String) -> void:
-	var ends: Array = _ports(id)
-	var normal: Vector2 = _normal(id)
-	var angle: float = normal.angle()
-	var span: float = ends[0].distance_to(ends[1])
-	var material_scale: float = 0.135
-	# Repeat the straight window at uniform scale, never squash a complete
-	# three-dimensional sleeve to fit the two different socket gaps.
-	var start: float = 13.0
-	var finish: float = span-16.0
-	var offset: float = start
-	while offset < finish:
-		var piece: float = minf(14.04,finish-offset)
-		draw_set_transform(ends[0]+normal*offset,angle,Vector2.ONE*material_scale)
-		draw_texture_rect_region(SUPPORTS,Rect2(0,-44,piece/material_scale,88),Rect2(209,280,piece/material_scale,88))
-		offset += piece
-	draw_set_transform(ends[0]-normal*6.0,angle,Vector2.ONE*material_scale)
-	draw_texture_rect_region(SUPPORTS,Rect2(-38,-95,180,185),Rect2(30,226,180,185))
-	draw_set_transform(ends[1]+normal*INSERTION_SOURCE_PX*_scale(id),angle,Vector2.ONE*material_scale)
-	draw_texture_rect_region(SUPPORTS,Rect2(-172,-95,194,185),Rect2(310,226,194,185))
-	draw_set_transform(Vector2.ZERO)
+func _draw_closed_port(id: String) -> void:
+	var port: Vector2 = _core_port(id)
+	draw_circle(port, 16.0, Color("102d38"))
+	draw_arc(port, 15.0, 0.0, TAU, 32, Color("e3dfc8"), 5.0, true)
+	draw_arc(port, 9.0, 0.0, TAU, 32, Color("2e6871"), 2.0, true)
+	draw_circle(port, 4.0, Color("183d48"))

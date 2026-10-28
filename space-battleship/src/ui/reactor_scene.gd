@@ -130,14 +130,13 @@ func _build() -> void:
 		var layout: Dictionary = _stage.control_layout(id)
 		var effect := _label(layout.effect,float(layout.width),16)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply,float(layout.width),12)
-		supply.size.y = 38
-		supply.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var supply := _label(layout.supply,float(layout.width),11)
+		supply.size.y = 24
 		supply.add_theme_color_override("font_color", Color("a5c3bf"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
 		slider.position = layout.slider
-		slider.size = Vector2(float(layout.track),26)
+		slider.size = Vector2(float(layout.track),18)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -156,8 +155,8 @@ func _build() -> void:
 		gradient.add_point(0.72, Color("64b9af"))
 		var grabber := GradientTexture2D.new()
 		grabber.gradient = gradient
-		grabber.width = 28
-		grabber.height = 28
+		grabber.width = 18
+		grabber.height = 18
 		grabber.fill = GradientTexture2D.FILL_RADIAL
 		grabber.fill_from = Vector2(0.5,0.5)
 		grabber.fill_to = Vector2(0.5,1.0)
@@ -260,10 +259,9 @@ func _show_current_readings() -> void:
 		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(str(row.factor))
 		_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		var manual_text: String = str(row.manual)
-		var ratio_text: String = str(roundi(float(row.ratio) * 100.0)) + "%"
-		_rows[id].supply.text = "手动 " + PlayerText.number(manual_text) + " (" + ratio_text + ")"
-		if row.has_free: _rows[id].supply.text += " + 免费 " + PlayerText.number(str(row.free))
-		_rows[id].supply.text += "\n有效 " + PlayerText.number(str(row.effective))
+		_rows[id].supply.text = "手" + PlayerText.number(manual_text)
+		if row.has_free: _rows[id].supply.text += "+免" + PlayerText.number(str(row.free))
+		_rows[id].supply.text += "  效" + PlayerText.number(str(row.effective))
 		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 	_level.text = "等级 " + str(_model.level)
@@ -386,10 +384,10 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
 		_rows[id].effect.tooltip_text = "增益 " + a + " → " + b
 		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
-		var supply_text: String = "手动 " + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
-		if row.has_free: supply_text += " + 免费 " + PlayerText.number(str(row.free))
+		var supply_text: String = "手" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
+		if row.has_free: supply_text += "+免" + PlayerText.number(str(row.free))
 		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = supply_text + "\n有效 " + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
+		_rows[id].supply.text = supply_text + "  效" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		_rows[id].supply.tooltip_text = "手动 " + str(current.get("manual","—")) + " → " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + a + " → " + b
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 		if _kind == "equal" or (_kind == "shares" and not fresh_shares):
