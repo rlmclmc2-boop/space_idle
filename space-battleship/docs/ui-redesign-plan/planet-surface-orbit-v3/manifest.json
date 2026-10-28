@@ -1,0 +1,93 @@
+{
+  "kind": "planet_image_candidate_P3_surface_orbit_independent_controls",
+  "base_main": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "previous_image_candidate": "4c7e3832d59004d7c7d414b8f9bd94ac79124df8",
+  "shared_visual_spec_commit": "bf359c0d9073e064f71028958a21a649b3951875",
+  "contract_candidate": "09af963c",
+  "confirmed_by_user": [
+    "space_station_orbits",
+    "resource_refinery_on_surface",
+    "buildings_visual_and_status_only",
+    "actions_in_stable_independent_control_area"
+  ],
+  "placement_suggestions_unconfirmed": [
+    "workshop_on_surface",
+    "shipyard_fixed_near_orbit"
+  ],
+  "normative_module_file": "../../game-design/art/modules/planet.md",
+  "tool": "image_gen.imagegen",
+  "successful_generations": 2,
+  "independent_image_review": "pending",
+  "user_image_confirmation": "pending",
+  "ui_implementation": false,
+  "renderer_route_selected": false,
+  "benchmark_executed": false,
+  "target_client_size": [
+    1440,
+    900
+  ],
+  "target_module_size": [
+    808,
+    900
+  ],
+  "targets_are_provisional": true,
+  "main_native_size": [
+    1586,
+    992
+  ],
+  "main_divider_x_approx": 1002,
+  "main_module_width_mapped_to_1440": 909.7604035308954,
+  "main_target_width_difference_approx": 101.76040353089536,
+  "exact_geometry_passed": false,
+  "storyboard_native_size": [
+    2057,
+    764
+  ],
+  "storyboard_content": "same-scene design illustration of scene and control console; global masthead omitted",
+  "storyboard_times_game_seconds": [
+    0,
+    4,
+    8
+  ],
+  "storyboard_assumptions": {
+    "paused": false,
+    "speed": 1,
+    "explorer_remains_assigned": true,
+    "extra_builder_remains_assigned": true,
+    "task_seconds": 60,
+    "initial_elapsed_seconds": 40.8,
+    "task_percent_approx": [
+      68,
+      75,
+      81
+    ],
+    "exploration_degree": 68,
+    "shipyard_work": 38,
+    "shipyard_required_work": 180,
+    "extra_builder_count": 1
+  },
+  "temporal_evidence_status": "generated design illustration, not runtime or exact phase-derived rendering",
+  "ground_attachment_status": "approximate generated pose/contact/landmark continuity; partial-occlusion and foreshortening need independent review and runtime verification",
+  "image_postprocessing": "none; original generated PNG bytes copied unchanged",
+  "official_technical_docs_checked_on": "2026-10-28",
+  "files": [
+    {
+      "path": "main.png",
+      "size": [
+        1586,
+        992
+      ],
+      "bytes": 1910032,
+      "sha256": "8ecf0ffc9fb742d6a92e63efcaac631527f9c28bdc31e3bbad2dccae472012f5"
+    },
+    {
+      "path": "temporal-storyboard.png",
+      "size": [
+        2057,
+        764
+      ],
+      "bytes": 1854248,
+      "sha256": "2e41325705bbf59db0811ae6aea43bf0b31cea196c863a9f994f0319dcb4b5f0"
+    }
+  ]
+}
