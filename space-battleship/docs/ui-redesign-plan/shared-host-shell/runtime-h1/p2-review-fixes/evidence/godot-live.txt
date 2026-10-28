@@ -1,0 +1,49 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+P2_HOST preview_lifecycle new_game_real_preview_detached true
+P2_HOST preview_lifecycle new_game_explicit_cancel true
+P2_HOST preview_lifecycle new_game_old_confirmation_rejected true
+P2_HOST preview_lifecycle new_game_leave_discards true
+P2_HOST preview_lifecycle new_game_leave_shortcuts true
+P2_HOST preview_lifecycle new_game_leave_pointer true
+P2_HOST preview_lifecycle new_game_collapse_discards true
+P2_HOST preview_lifecycle new_game_restore_without_replacement true
+P2_HOST preview_lifecycle import_real_preview_detached true
+P2_HOST preview_lifecycle import_explicit_cancel true
+P2_HOST preview_lifecycle import_old_confirmation_rejected true
+P2_HOST preview_lifecycle import_leave_discards true
+P2_HOST preview_lifecycle import_leave_shortcuts true
+P2_HOST preview_lifecycle import_leave_pointer true
+P2_HOST preview_lifecycle import_collapse_discards true
+P2_HOST preview_lifecycle import_restore_without_replacement true
+P2_HOST focus_gate button_gate true
+P2_HOST focus_gate button_blocks_space_g true
+P2_HOST focus_gate button_first_click_exits_focus true
+P2_HOST focus_gate button_next_click_reaches_battle true
+P2_HOST focus_gate button_shortcuts_restored true
+P2_HOST focus_gate line_edit_gate true
+P2_HOST focus_gate line_edit_blocks_space_g true
+P2_HOST focus_gate line_edit_first_click_exits_focus true
+P2_HOST focus_gate line_edit_next_click_reaches_battle true
+P2_HOST focus_gate line_edit_shortcuts_restored true
+P2_HOST focus_gate item_list_gate true
+P2_HOST focus_gate item_list_blocks_space_g true
+P2_HOST focus_gate item_list_first_click_exits_focus true
+P2_HOST focus_gate item_list_next_click_reaches_battle true
+P2_HOST focus_gate item_list_shortcuts_restored true
+P2_HOST focus_gate slider_gate true
+P2_HOST focus_gate slider_blocks_space_g true
+P2_HOST focus_gate slider_first_click_exits_focus true
+P2_HOST focus_gate slider_next_click_reaches_battle true
+P2_HOST focus_gate slider_shortcuts_restored true
+P2_HOST focus_gate modal_not_dismissed_by_battle true
+P2_HOST collapse_state equipment_clear_state true
+P2_HOST collapse_state equipment_static_only true
+P2_HOST collapse_state equipment_explicit_restore true
+P2_HOST collapse_state planet_clear_state true
+P2_HOST collapse_state planet_static_only true
+P2_HOST collapse_state planet_explicit_restore true
+P2_HOST_COMPLETE true

@@ -1,5 +1,7 @@
 # 共享宿主当前交付
 
+当前审核候选：[三项P2修复](runtime-h1/p2-review-fixes/README.md)，代码`c49ea0a7`；43项按问题分组的必要操作通过，待原审复核，未合main。原背景窄修和模块内部文件保持。
+
 当前最新：[公共顶部下旧标题底板窄修](runtime-h1/chrome-strip-fix/README.md)，代码`ecc9fecc`，附装备/星球同版整屏；下文8a660076保留为主体接入基线。
 
 最新运行组合：[装备551a4f2b＋星球R6 b185d5ab的共享宿主](runtime-h1/planet-r6-integration/README.md)，代码`8a660076`，星球旧VBox已替换为808×900独立根。装备33项、星球23项分别记录其代码范围；未合main，不替代模块视觉审。

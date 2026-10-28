@@ -1,0 +1,74 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "window": [
+    1440,
+    900
+  ],
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "code_commit": "c49ea0a7af6e86a25611e045e2311867b1772ed6",
+  "baseline": "72c113aa",
+  "checks": {
+    "collapse_state": 6,
+    "focus_gate": 21,
+    "preview_lifecycle": 16
+  },
+  "scope": "Three root-forwarded Astra P2 findings, same original host task. No new QA task/project; temporary observation only.",
+  "fixture": "Prior explicit campaign unlock/built planet fixture copied into isolated /tmp/p2-live save; real import/new-game candidates, no confirmation or Session replacement. No production config/native/model changes.",
+  "input": "Preview/cancel through existing connected UI button signals and mouse; real Control.grab_focus for four UI types, Input key/mouse events through production views; actual More->collapse and local restore mouse path.",
+  "focus_behavior": "Buttons/LineEdit/ItemList/HSlider hold keyboard focus => gate global Space/G; standard focused control GUI behavior remains owned by that control. Nonmodal battlefield first press releases UI focus and is consumed; next press reaches original logical viewport. SubViewportContainer focus itself means gameplay, not UI; real child buttons remain UI.",
+  "unchanged_transaction_bodies": [
+    "_preview_import",
+    "_apply_import",
+    "_preview_new_game",
+    "_confirm_new_game",
+    "_replace_session",
+    "_preview_reforge",
+    "_confirm_reforge",
+    "_cancel_reforge"
+  ],
+  "unchanged_sources_sha256": {
+    "src/game_session.gd": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+    "foundation/host/save_files.gd": "d96f6813894de44dae6de05965d25d33c48c353ba9b340215c7567ab56655b25",
+    "src/ui/campaign_view.gd": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb",
+    "src/ui/equipment_panel.gd": "b4085904da613577452648fbdb7bf3c283f316b0c7a4dc3f5f13899e17cb7b50",
+    "src/ui/planet_panel.gd": "65b049706d2048618916f557797c9a290cd7c9e1d481edfd388afda051615ae5",
+    "scripts/planet_visual.gd": "448312860cc17a5d0d518d52b170157fc9868784fb4e902f9382fe3f3f8c835b",
+    "scripts/planet_facility_scene.gd": "8d96c5a7e9556a7047823fae475cbbdad91518b06ed53668ff0272c64fee0540",
+    "src/systems/planet.gd": "91a0eb5a5271d692f70a1be2fca72ff8d0ce6025d70e8da0583834258daa99c2"
+  },
+  "changed_sources_sha256": {
+    "src/main.gd": "f69b1c167cd04666505256b950a76897d0bb0ac264814fd89e0c07a2d5d173de",
+    "src/ui/shared_host.gd": "bd0b3b21dcfba9469ba07afd7ae1ab8adfedcc857901cb9bf61aed34432fe34d"
+  },
+  "evidence_sha256": {
+    "godot-check.txt": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "godot-live.txt": "227335b3b4292b61f4e35123c7d0fa0faf59022dba1863c642194691e12820e0",
+    "observations.json": "aff1deb1395dd9870d78910b315f63b2483a6447380c9baa51482fd469b9dad9",
+    "preview_lifecycle/new_game-cancel-control.png": "65adefc234dcd2730bca22a27df5bc28e844c57ee571dffac4124401e15cffa1",
+    "preview_lifecycle/import-cancel-control.png": "55d093c22d5bccb758020102a35302b9faf22d6ce56802546aa2cea08b1edced",
+    "collapse_state/planet-restored.png": "2b865ffa180d352ad993d6093eecc3c16ffac5ac363af2fcd64dca5844fca5c9",
+    "collapse_state/equipment-restored.png": "9d18c75c8a38ec4a9e59c06fd98f928b40d316a0aaa541267c5d0ab44fb1c35c",
+    "collapse_state/equipment-collapsed.png": "a02eecb7537c7e5def5f5dd93c45578e9f870d3fe4e3b2ff6191faa176aad0e5",
+    "collapse_state/planet-collapsed.png": "190d0b9215f6afdd66a587fdb3dd8200a6ebe44bcb3141ad1fcfdc5066974751"
+  }
+}

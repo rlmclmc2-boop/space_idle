@@ -1,0 +1,255 @@
+{
+	"all_ok": true,
+	"fixture": "Prior explicit-unlock/built planet isolated /tmp save. Real new-game and import previews, no confirmation/Session replacement. No source/config or model edits.",
+	"groups": {
+		"collapse_state": [
+			{
+				"detail": null,
+				"id": "equipment_clear_state",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "equipment_static_only",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "equipment_explicit_restore",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "planet_clear_state",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "planet_static_only",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "planet_explicit_restore",
+				"ok": true
+			}
+		],
+		"focus_gate": [
+			{
+				"detail": {
+					"no_popup": true,
+					"type": "Button"
+				},
+				"id": "button_gate",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "button_blocks_space_g",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "button_first_click_exits_focus",
+				"ok": true
+			},
+			{
+				"detail": {
+					"gate": false,
+					"root_focus": "@SubViewportContainer@3:<SubViewportContainer#64625837530>"
+				},
+				"id": "button_next_click_reaches_battle",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "button_shortcuts_restored",
+				"ok": true
+			},
+			{
+				"detail": {
+					"no_popup": true,
+					"type": "LineEdit"
+				},
+				"id": "line_edit_gate",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "line_edit_blocks_space_g",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "line_edit_first_click_exits_focus",
+				"ok": true
+			},
+			{
+				"detail": {
+					"gate": false,
+					"root_focus": "@SubViewportContainer@3:<SubViewportContainer#64625837530>"
+				},
+				"id": "line_edit_next_click_reaches_battle",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "line_edit_shortcuts_restored",
+				"ok": true
+			},
+			{
+				"detail": {
+					"no_popup": true,
+					"type": "ItemList"
+				},
+				"id": "item_list_gate",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "item_list_blocks_space_g",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "item_list_first_click_exits_focus",
+				"ok": true
+			},
+			{
+				"detail": {
+					"gate": false,
+					"root_focus": "@SubViewportContainer@3:<SubViewportContainer#64625837530>"
+				},
+				"id": "item_list_next_click_reaches_battle",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "item_list_shortcuts_restored",
+				"ok": true
+			},
+			{
+				"detail": {
+					"no_popup": true,
+					"type": "HSlider"
+				},
+				"id": "slider_gate",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "slider_blocks_space_g",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "slider_first_click_exits_focus",
+				"ok": true
+			},
+			{
+				"detail": {
+					"gate": false,
+					"root_focus": "@SubViewportContainer@3:<SubViewportContainer#64625837530>"
+				},
+				"id": "slider_next_click_reaches_battle",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "slider_shortcuts_restored",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "modal_not_dismissed_by_battle",
+				"ok": true
+			}
+		],
+		"preview_lifecycle": [
+			{
+				"detail": {
+					"store_unchanged": true
+				},
+				"id": "new_game_real_preview_detached",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "new_game_explicit_cancel",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "new_game_old_confirmation_rejected",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "new_game_leave_discards",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "new_game_leave_shortcuts",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "new_game_leave_pointer",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "new_game_collapse_discards",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "new_game_restore_without_replacement",
+				"ok": true
+			},
+			{
+				"detail": {
+					"store_unchanged": true
+				},
+				"id": "import_real_preview_detached",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "import_explicit_cancel",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "import_old_confirmation_rejected",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "import_leave_discards",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "import_leave_shortcuts",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "import_leave_pointer",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "import_collapse_discards",
+				"ok": true
+			},
+			{
+				"detail": null,
+				"id": "import_restore_without_replacement",
+				"ok": true
+			}
+		]
+	}
+}
