@@ -9,14 +9,15 @@
 | `51e704c8` | 基于装备宿主`94040a18`，在真实main挂载左808×900装备/反应堆切换、右632等比战场；接真实Session的开放、暂停与game_time，以及经济变化通知。 | Godot4.7.2入口编译、native真Session启动和Xorg:99整屏已检查；正常新局反应堆未开放，整屏截图不算反应堆验收。 |
 | `6f45bed5` | 反应堆Control、四向装配层、独立工作shader、新透明支座与导入设置；四滑杆、均分、整组预览/确认、还原和购级绑定。 | Godot编译和受控夹具装配渲染通过；夹具不证明真实领域数据、自然开放、最终接头质量或动态性能。 |
 | `4c26b2e4` | 共享左模块注册点改为`_register_left_module(layer,id,title,scene,unlock_kind,unlock_target)`；按现行开放配置，反应堆使用`feature:reactor`，星球首入口使用`planet:1`。 | Godot4.7.2入口编译与`git diff --check`通过；星球页面由其所属任务独立提供。 |
+| `170849dd` | 按`3d14ded8`方案适配消费者：当前模型与购级报价分读、局部变化通知、显式running与paused、未知禁用、被动shares草稿保留已生成canonical金额。 | 入口编译和受控夹具只证明脚本可运行；所有者接口实现尚未固定，字段与真实操作需接入后核对。 |
 
-三提交均已推送至`origin/implement/reactor-centered-godot`。本组修改了`src/main.gd`的最小挂载，未重写装备Control、玩法后端计算或native源码。新资产原件为`/workspace/generated_images/exec-eb6483c5-434b-49b2-8739-96feb6601fc6.png`，已按原图复制为`assets/ui/reactor/centered-v1/supports.png`。导入产生的大量其他未追踪`.import/.uid`未整批入Git。
+上述提交均已推送至`origin/implement/reactor-centered-godot`。本组修改了`src/main.gd`的最小挂载，未重写装备Control、玩法后端计算或native源码。新资产原件为`/workspace/generated_images/exec-eb6483c5-434b-49b2-8739-96feb6601fc6.png`，已按原图复制为`assets/ui/reactor/centered-v1/supports.png`。导入产生的大量其他未追踪`.import/.uid`未整批入Git。
 
 ## 接口依赖与验收边界
 
-固定`09af963c`已有`allocation_plan_preview`和`apply_allocation_plan`，但Reactor实现仍缺少本Control需要的只读`presentation_model(inputs)`及`presentation_changed`。接口草案提交`3d14ded8`待审、尚非实现；该对象当前在本工作区及已抓取的origin引用中不可取，草案字段待其可读取后核对。前端缺出口时显示“供能状态暂不可用”，不读取`_state/_parameters/_factors`、不解析Amount，也不伪造游戏数据。
+固定`09af963c`已有`allocation_plan_preview`和`apply_allocation_plan`，但Reactor实现仍缺少本Control需要的只读`presentation_model()`、`purchase_preview(can_pay)`及`presentation_changed`；Economy仍缺局部`budget_changed`。接口方案`3d14ded8`已通过定向审核并按SHA直接获取阅读，所有者实现尚未固定。前端缺出口时显示“供能状态暂不可用”，不读取`_state/_parameters/_factors`、不解析Amount，也不伪造游戏数据。
 
-本Control通过`bind_presentation(reader, context)`接只读展示与`{game_time,paused}`。当前消费者需要等级、容量/剩余、购级报价、开放设备ID及手动占比/数量、免费量、有效量、最终增益和实际有效负载；字段名可在最小宿主适配。整组确认提交预览中的全套canonical金额目标；均分确认调用一次`distribute`。普通拒绝应零写入、保留完整草稿；开放集合变化使旧预览失效。所有者提供有限显示比例，前端不重做均分Amount计算。
+本Control通过`bind_presentation(reader, context)`接只读展示与`{game_time,paused,running}`，另通过`bind_purchase_quote(reader)`只读+1报价。消费者需要等级、容量/剩余、购级报价、开放设备ID及手动占比/数量、免费量、有效量、最终增益和实际有效负载；已按方案分开场景与报价失效。整组确认提交预览中的全套canonical金额目标；均分确认调用一次`distribute`。普通拒绝应零写入、保留完整草稿；开放集合变化使旧预览失效。所有者提供有限显示比例，前端不重做均分Amount计算。
 
 反应堆在真实游戏中的四设备全开/凝聚隐藏、零负载与免费量、成功/拒绝、购级、暂停/隐藏/重开，及各局部动态性能，均**尚未验收**。用户标注的[上方接头原图](../../ui-redesign-plan/reactor-image-design/references/user-marked-upper-connections.png)已实际查看；四路实体连接、轴向插入、遮挡与流光共用端口仍须在同版真实游戏正常画面、暂停画面及上两路近景中核对，不能仅凭线碰到边或夹具可见判通过。
 
