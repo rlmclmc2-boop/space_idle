@@ -2,7 +2,7 @@
 
 本轮在已认可的 [`87f0a518` 整舰能源中枢](../ship-hub-r3/README.md)上只收敛美术表现。中央球形核心仍主导画面，四个接口仍嵌入舰体舱室，短接入核，粗管继续穿过壁/地延伸至整舰；前缘只有一处主控。四路身份为武器双轨耦合、防御六角场调节、冶炼热交换栅、凝聚晶格滤波，不恢复独立小机器或功能卡片。
 
-实际对照的项目参考为[正式战舰图](../../../../../assets/ships/fleet_20261019/player/04-battleship.png)、[R5 装配台整屏](../../../g1-internal/evidence/g2-quality-r5/after/work-equipment.png)及现行星系建筑模型预览[能源阵列](../../../g1-internal/art/galaxy/stellar_energy_array-lv5.png)、[冶炼设施](../../../g1-internal/art/galaxy/interstellar_refinery-lv5.png)。对照其大块象牙装甲、海军蓝结构、清晰圆润轮廓及少量青/琥珀工作色后，本稿去掉 R3 的密集灯带、镜面高光、碎机械线及强电弧，将核心改为层次较安静的青色能量体，四端口只留识别功能所需的光。每个端口下方保留一处嵌入式直接滑杆视觉位置，主控与结构同材质。
+项目匹配的准确参考为[正式战舰图](../../../../../assets/ships/fleet_20261019/player/04-battleship.png)，以及用户认可的 R5 建筑四图（`1776fbde`）：[refinery.png](https://github.com/rlmclmc2-boop/space_idle/blob/1776fbde/space-battleship/docs/verification/planet-single-side-godot/visual-r5/designs/refinery.png)、[shipyard.png](https://github.com/rlmclmc2-boop/space_idle/blob/1776fbde/space-battleship/docs/verification/planet-single-side-godot/visual-r5/designs/shipyard.png)、[station.png](https://github.com/rlmclmc2-boop/space_idle/blob/1776fbde/space-battleship/docs/verification/planet-single-side-godot/visual-r5/designs/station.png)、[workshop.png](https://github.com/rlmclmc2-boop/space_idle/blob/1776fbde/space-battleship/docs/verification/planet-single-side-godot/visual-r5/designs/workshop.png)。本稿去掉 R3 的密集灯带、镜面高光、碎机械线及强电弧，将核心改为层次较安静的青色能量体，四端口只留识别功能所需的光；每个端口下方保留一处嵌入式直接滑杆视觉位置。**R4 仍是待选的克制化候选：其表面较光滑、软渐变较多，描边与装甲分面不如正式舰图/R5 建筑清楚，不称已完全匹配项目美术。**先等待用户对当前候选的选择，不据此另启作图。
 
 | 状态 | ImageGen 原图 | 1440×900 固定宿主配合图 |
 |---|---|---|
