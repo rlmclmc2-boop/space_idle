@@ -2,7 +2,6 @@ extends Control
 ## Whole reactor scene. Domain amounts, effects and acceptance stay with Reactor.
 signal command_finished(result: Dictionary)
 signal exclusive_ui_changed
-var _shared_title: Label
 var _shared_context: Label
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
@@ -33,6 +32,7 @@ var _quote_dirty: bool = true
 var _running: bool = false
 var _message_until: int = 0
 var _budget: Label
+var _cost: Label
 var _notice: Label
 var _level: Label
 var _purchase: Button
@@ -53,16 +53,17 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	theme = Theme.new()
 	theme.default_font = preload("res://assets/fonts/NotoSansSC-Regular.tres")
 	var surface := SubViewportContainer.new()
-	surface.size = size
+	surface.position = Vector2(0, 65)
+	surface.size = Vector2(808, 835)
 	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(surface)
 	_stage_viewport = SubViewport.new()
-	_stage_viewport.size = Vector2i(808,900)
+	_stage_viewport.size = Vector2i(808,835)
 	_stage_viewport.disable_3d = true
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	surface.add_child(_stage_viewport)
 	_stage = Stage.new()
-	_stage.size = size
+	_stage.size = Vector2(808, 835)
 	_stage_viewport.add_child(_stage)
 	_build()
 
@@ -103,7 +104,7 @@ func _label(point: Vector2, width: float, font_size: int = 16) -> Label:
 	add_child(label)
 	return label
 
-func _button(text: String, rect: Rect2, action: Callable) -> Button:
+func _button(text: String, rect: Rect2, action: Callable, primary: bool = false) -> Button:
 	var button := Button.new()
 	button.text = text
 	button.position = rect.position
@@ -112,35 +113,49 @@ func _button(text: String, rect: Rect2, action: Callable) -> Button:
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxFlat.new()
 		box.bg_color = Color("245963") if state in ["hover","pressed"] else Color("173e4b")
-		if state == "disabled": box.bg_color = Color("344b50")
-		box.border_color = Color("89bfb6") if state == "focus" else Color("58767a")
+		if primary: box.bg_color = Color("fff2d7") if state != "disabled" else Color("465e60")
+		if state == "disabled" and not primary: box.bg_color = Color("163945", 0.55)
+		box.border_color = Color("89bfb6") if state == "focus" else Color("58767a", 0.8)
+		if primary: box.border_color = Color("d4b373")
 		box.set_border_width_all(1)
 		box.set_corner_radius_all(7)
 		button.add_theme_stylebox_override(state, box)
-	button.add_theme_color_override("font_color", Color("e9eee0"))
+	button.add_theme_color_override("font_color", Color("173d4a") if primary else Color("e9eee0"))
 	button.add_theme_color_override("font_disabled_color", Color("849a9c"))
 	button.pressed.connect(action)
 	add_child(button)
 	return button
 
+func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
+	var panel := Panel.new()
+	panel.position = rect.position
+	panel.size = rect.size
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(0.05, 0.16, 0.22, opacity)
+	box.border_color = Color(0.62, 0.77, 0.75, 0.55)
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(10)
+	panel.add_theme_stylebox_override("panel", box)
+	add_child(panel)
+	return panel
+
 func _build() -> void:
-	var title := _label(Vector2(26,18), 170, 23)
-	_shared_title = title
-	title.text = "反应炉"
-	title.add_theme_color_override("font_color", Color("203f50"))
-	_level = _label(Vector2(612,23), 170)
-	_level.add_theme_color_override("font_color", Color("315662"))
+	_panel(Rect2(16, 752, 776, 132), 0.94)
+	_level = _label(Vector2(30, 761), 124, 16)
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
-		var effect := _label(layout.effect,float(layout.width),16)
+		var offset := Vector2(0, 65)
+		var readout := _panel(Rect2(layout.effect + offset - Vector2(8, 6), Vector2(float(layout.width) + 10, 58)), 0.82)
+		var effect := _label(layout.effect + offset,float(layout.width),17)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply,float(layout.width),11)
+		var supply := _label(layout.supply + offset,float(layout.width),16)
 		supply.size.y = 24
-		supply.add_theme_color_override("font_color", Color("a5c3bf"))
+		supply.add_theme_color_override("font_color", Color("c1dfd9"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
-		slider.position = layout.slider
-		slider.size = Vector2(float(layout.track),18)
+		slider.position = layout.slider + offset
+		slider.size = Vector2(float(layout.track),32)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -169,17 +184,17 @@ func _build() -> void:
 		slider.value_changed.connect(_slide.bind(id))
 		slider.focus_entered.connect(func(): _selected = id; _update_stage())
 		add_child(slider)
-		_rows[id] = {"effect":effect, "supply":supply, "slider":slider}
+		_rows[id] = {"effect":effect, "supply":supply, "slider":slider, "readout":readout}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(194,816),430,13)
+	_budget = _label(Vector2(159,761),620,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_purchase = _button("升级",Rect2(194,842,142,29),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)))
-	_equal = _button("均分",Rect2(344,842,62,29),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认调配",Rect2(414,842,118,29),func(): _command(_submit))
-	_restore = _button("还原",Rect2(540,842,76,29),_reset)
-	_notice = _label(Vector2(278,91),252,14)
-	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_notice.size.y = 68
+	_cost = _label(Vector2(30, 797), 220, 16)
+	_purchase = _button("升级",Rect2(256,788,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(416,790,72,40),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(496,790,72,40),func(): _command(_submit))
+	_restore = _button("还原",Rect2(576,790,72,40),_reset)
+	_notice = _label(Vector2(30,836),740,16)
+	_notice.size.y = 42
 	_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_notice.clip_text = false
 	for button in [_purchase,_equal,_apply,_restore]: button.disabled = true
@@ -265,12 +280,12 @@ func _show_current_readings() -> void:
 		var manual_text: String = str(row.manual)
 		_rows[id].supply.text = "手" + PlayerText.number(manual_text)
 		if row.has_free: _rows[id].supply.text += "+免" + PlayerText.number(str(row.free))
-		_rows[id].supply.text += "  效" + PlayerText.number(str(row.effective))
+		_rows[id].supply.text += " · 效" + PlayerText.number(str(row.effective))
 		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 	_level.text = "等级 " + str(_model.level)
-	if _shared_context != null: _shared_context.text = "反应炉%s级" % str(_model.level)
-	_budget.text = "可调容量 " + PlayerText.number(str(_model.capacity)) + "     剩余 " + PlayerText.number(str(_model.remaining))
+	if is_instance_valid(_shared_context): _shared_context.text = "反应炉%s级" % str(_model.level)
+	_budget.text = "容量 " + PlayerText.number(str(_model.capacity)) + "   已配 " + PlayerText.number(str(_model.allocated)) + "   剩余 " + PlayerText.number(str(_model.remaining))
 	_budget.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
 
 func _valid_model(model: Dictionary) -> bool:
@@ -294,8 +309,9 @@ func _unknown(message: String) -> void:
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
 	_budget.text = "供能状态未知"
+	_cost.text = "费用 —"
 	_level.text = "等级 —"
-	if _shared_context != null: _shared_context.text = "反应炉"
+	if is_instance_valid(_shared_context): _shared_context.text = "反应炉"
 	_notice.text = message
 	_stage.clear_snapshot()
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
@@ -305,7 +321,7 @@ func _refresh_quote() -> void:
 	_quote_dirty = false
 	if not _read_quote.is_valid():
 		_quote = {}
-		_purchase.text = "升级 · —"
+		_cost.text = "费用 —"
 		_update_buttons()
 		return
 	presentation_counts.quote_reads += 1
@@ -313,7 +329,7 @@ func _refresh_quote() -> void:
 	if quote.get("ok") != true or not quote.has("costs") or not quote.costs is Dictionary or not quote.has("can_purchase") or not quote.can_purchase is bool:
 		_quote = {}
 		_quote_cost_ids.clear()
-		_purchase.text = "升级 · —"
+		_cost.text = "费用 —"
 		_purchase.tooltip_text = str(quote.get("reason", "报价暂不可用"))
 		_update_buttons()
 		return
@@ -323,11 +339,12 @@ func _refresh_quote() -> void:
 	for id in _quote_cost_ids:
 		if not quote.costs[id] is String:
 			_quote = {}
-			_purchase.text = "升级 · —"
+			_cost.text = "费用 —"
 			_update_buttons()
 			return
 		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
-	_purchase.text = "升级 · " + " + ".join(labels)
+	_cost.text = "费用 " + " + ".join(labels)
+	_cost.tooltip_text = " + ".join(labels)
 	var reason: String = str(quote.get("reason", ""))
 	var exact_costs: Array = []
 	for id in _quote_cost_ids: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
@@ -378,7 +395,7 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		for row in _preview.target.modules: _canonical[str(row.id)] = str(row.manual)
 	_notice.text = "调配草稿"
 	_message_until = 0
-	_budget.text = "草稿分配 " + PlayerText.number(str(_preview.target.allocated)) + "     剩余 " + PlayerText.number(str(_preview.target.remaining))
+	_budget.text = "容量 " + PlayerText.number(str(_preview.target.capacity)) + "   草稿 " + PlayerText.number(str(_preview.target.allocated)) + "   剩余 " + PlayerText.number(str(_preview.target.remaining))
 	_budget.tooltip_text = "草稿容量 " + str(_preview.target.capacity) + " / 已分配 " + str(_preview.target.allocated) + " / 剩余 " + str(_preview.target.remaining)
 	for row in _preview.target.modules:
 		var id: String = str(row.id)
@@ -393,7 +410,7 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		var supply_text: String = "手" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		if row.has_free: supply_text += "+免" + PlayerText.number(str(row.free))
 		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = supply_text + "  效" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
+		_rows[id].supply.text = supply_text + " · 效" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		_rows[id].supply.tooltip_text = "手动 " + str(current.get("manual","—")) + " → " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + a + " → " + b
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 		if _kind == "equal" or (_kind == "shares" and not fresh_shares):
@@ -451,17 +468,16 @@ func _update_stage() -> void:
 	_stage.show_snapshot(_ids,loads,_selected)
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
-## Current legacy scene remains 808×900 until its owner supplies the new 808×835 art.
+## R4 already owns only y65..900; its local operating readouts remain unchanged.
+## The host owns the context slot and public navigation; this view owns its caption.
 func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
-	_shared_title.visible = not enabled
-	_level.visible = not enabled
-	if _shared_context != null: _shared_context.queue_free()
-	_shared_context = null
-	if enabled and context_slot != null:
+	_release_host_context()
+	if enabled and is_instance_valid(context_slot):
 		_shared_context = Label.new()
 		_shared_context.text = "反应炉"
 		_shared_context.size = Vector2(96, 26)
 		_shared_context.clip_text = true
+		_shared_context.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		context_slot.add_child(_shared_context)
 		_dirty = true
 
@@ -470,5 +486,14 @@ func has_exclusive_ui() -> bool:
 
 func prepare_host_hide(_force: bool = false) -> bool:
 	var focus := get_viewport().gui_get_focus_owner()
-	if focus != null and is_ancestor_of(focus): focus.release_focus()
+	if focus != null and (focus == self or is_ancestor_of(focus)): focus.release_focus()
 	return true
+
+func _release_host_context() -> void:
+	if is_instance_valid(_shared_context):
+		_shared_context.hide()
+		_shared_context.queue_free()
+	_shared_context = null
+
+func _exit_tree() -> void:
+	_release_host_context()
