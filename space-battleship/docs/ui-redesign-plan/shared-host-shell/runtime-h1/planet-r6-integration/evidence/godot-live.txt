@@ -1,0 +1,28 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+PLANET_HOST_OBSERVATION startup true
+PLANET_HOST_OBSERVATION direct_route true
+PLANET_HOST_OBSERVATION natural_locked true
+PLANET_HOST_OBSERVATION natural_locked_rejects_navigation true
+PLANET_HOST_OBSERVATION temporary_campaign_grants true
+PLANET_HOST_OBSERVATION temporary_built_facilities true
+PLANET_HOST_OBSERVATION planet_navigation true
+PLANET_HOST_OBSERVATION canvas_and_chrome true
+PLANET_HOST_OBSERVATION projection_unchanged true
+PLANET_HOST_OBSERVATION owner_animation_continues true
+PLANET_HOST_OBSERVATION normal_pointer true
+PLANET_HOST_OBSERVATION planet_popup_exclusive true
+PLANET_HOST_OBSERVATION popup_blocks_switch_space_g true
+PLANET_HOST_OBSERVATION popup_blocks_battle_pointer true
+PLANET_HOST_OBSERVATION local_drawer_operable true
+PLANET_HOST_OBSERVATION hidden_visual_stops true
+PLANET_HOST_OBSERVATION module_state_retained true
+PLANET_HOST_OBSERVATION collapse true
+PLANET_HOST_OBSERVATION restore true
+PLANET_HOST_OBSERVATION pointer_restored true
+PLANET_HOST_OBSERVATION normal_shortcuts_retained true
+PLANET_HOST_OBSERVATION reforge_navigation_only true
+PLANET_HOST_OBSERVATION force_hide_cleanup true

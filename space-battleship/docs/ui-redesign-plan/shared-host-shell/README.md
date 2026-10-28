@@ -1,5 +1,7 @@
 # 共享宿主当前交付
 
+最新运行组合：[装备551a4f2b＋星球R6 b185d5ab的共享宿主](runtime-h1/planet-r6-integration/README.md)，代码`8a660076`，星球旧VBox已替换为808×900独立根。装备33项、星球23项分别记录其代码范围；未合main，不替代模块视觉审。
+
 [公共宿主真实业务接入候选 H1](runtime-h1/README.md)：首轮代码80e已实现统一入口、真实资源栏和现有视图路由；当前[原装备候选×H1实际组合](runtime-h1/equipment-owner-integration/README.md)代码`07a36823`保留原组551a4f2b，33项必要组合观察通过。未合main、未宣称V0/新美术品质通过。
 
 [反应炉新稿作图范围V1](reactor-drawing-v1/README.md)仍是反应炉原组唯一制作尺寸入口，新稿内部由原组负责。

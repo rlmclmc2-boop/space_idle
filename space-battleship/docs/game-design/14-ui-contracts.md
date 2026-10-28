@@ -263,3 +263,9 @@
 沿6.4登记同一808×900视图及context_slot，隐藏重复chrome；保留原组状态工作台、未解锁纯空位和回执显示。共享main仅收窄Window兜底：同时`unfocusable`与`mouse_passthrough`的被动tooltip不产生独占，PopupMenu/FileDialog仍阻断。33项必要组合观察含真实鼠标投影/批量前后投递、原生下拉、Space/G正反对照、实际tooltip与视图状态保留，均通过。
 
 其余模块未因本次接入升级实现状态，星球新场景仍待原组固定Git交接，反应炉仍待新稿。没有新增领域查询/命令/Amount计算；上述结果不等于购买玩法、Session导入重铸全链、V0或Windows通过。
+
+### 6.6 星球R6独立根与H1的实际组合（候选，未合main）
+
+`design/shared-host-shell@8a660076`以原组`b185d5ab`替换星球旧VBox占位，直接登记同一808×900场景，注入原Planet/Crew/协调callable及视觉上下文，保留原组四个最小端口；所有原组面板/领域依赖/贴图/模型/动画文件逐字节保留。现有装备551a4f2b同时保留。具体24文件身份及运行证据见[星球R6×H1交接](../ui-redesign-plan/shared-host-shell/runtime-h1/planet-r6-integration/README.md)。
+
+征服事实/通知和非有限来源校验沿原组Planet文件，不新增宿主领域计算；reforge_requested只导航并预选星球，不触发预览/确认/取消。23项必要接入观察通过，包含自然锁定与明确临时开放/已建设施夹具下的直接路由、原生菜单门禁、Space/G、战场鼠标、状态保留和短时原动画持续；不证明自然建设、全周期视觉、成功重铸全链或V0。根端仍独立审原R6连续视频，不能以宿主通过替代美术/动画视觉通过。

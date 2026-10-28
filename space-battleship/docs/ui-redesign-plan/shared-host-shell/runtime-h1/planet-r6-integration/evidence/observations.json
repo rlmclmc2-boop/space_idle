@@ -1,0 +1,141 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": "",
+			"id": "startup",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "direct_route",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "natural_locked",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "natural_locked_rejects_navigation",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "temporary_campaign_grants",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "temporary_built_facilities",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "planet_navigation",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "canvas_and_chrome",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "projection_unchanged",
+			"ok": true
+		},
+		{
+			"detail": {
+				"parts": [
+					"auto_explore/HabitatRingSpin",
+					"auto_explore/SolarHingeLeft",
+					"auto_explore/SolarHingeRight",
+					"refinery/IntakeWheelLeft",
+					"refinery/IntakeWheelRight",
+					"refinery/CoolingShutters",
+					"equipment/GantrySlide",
+					"equipment/ToolArmSweep",
+					"shipyard/CraneSlide",
+					"shipyard/DockCollarSpin"
+				],
+				"surface_after": 0.0135266724973917,
+				"surface_before": 0.00747093604877591
+			},
+			"id": "owner_animation_continues",
+			"ok": true
+		},
+		{
+			"detail": [
+				{
+					"button": 1,
+					"position": "(285.9999, 480.0)"
+				}
+			],
+			"id": "normal_pointer",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "planet_popup_exclusive",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "popup_blocks_switch_space_g",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "popup_blocks_battle_pointer",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "local_drawer_operable",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "hidden_visual_stops",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "module_state_retained",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "collapse",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "restore",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "pointer_restored",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "normal_shortcuts_retained",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "reforge_navigation_only",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "force_hide_cleanup",
+			"ok": true
+		}
+	],
+	"fixture": "Temporary campaign grants and built planet-1 facilities via public owner restore ports; isolated temp save; not natural unlock/build evidence."
+}

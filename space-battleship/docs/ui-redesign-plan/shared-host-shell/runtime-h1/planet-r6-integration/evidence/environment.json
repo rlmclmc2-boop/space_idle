@@ -1,0 +1,76 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary": "/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "godot_cpp_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+  "api_sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "window": [
+    1440,
+    900
+  ],
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "code_commit": "8a66007633e2c976ca4527506df34a00020eeca8",
+  "host_previous": "4de12312",
+  "planet_source_commit": "b185d5ab4e12c3eee9991a329973697f5f793c47",
+  "equipment_source_commit": "551a4f2b0262b9f8291bb6a13b024c32a37ea341",
+  "equipment_source_byte_identical": true,
+  "planet_owner_files_byte_identical": 24,
+  "planet_owner_sources_sha256": {
+    "space-battleship/art_sources/planet_facilities_v5/auto_explore.blend": "7ec3c8308d6ef7ae2dbdabee9752ab2eeddf60a2858aabd3f8fc715b5670c04c",
+    "space-battleship/art_sources/planet_facilities_v5/build.py": "7943dcce8a136b40b7172c5b8426216851352ae319526a967a09e338de597378",
+    "space-battleship/art_sources/planet_facilities_v5/equipment.blend": "906623034f33623708c4e5ab632b70298f089e2497d708b71d0350df66f3e01c",
+    "space-battleship/art_sources/planet_facilities_v5/refinery.blend": "61994ff91112486ce87f6af71572aca833134f07554e832214ae0b52c3a80193",
+    "space-battleship/art_sources/planet_facilities_v5/shipyard.blend": "db461ae4aed5571e7763451af62b42590e54fe4cdd6e22f8d7a5873c59b6cb7d",
+    "space-battleship/assets/planets/facilities_v5/README.md": "225bfb6505596ca20f7237f3e2f3ba0e09ddfff5d43f1c041a705da0a886e2d4",
+    "space-battleship/assets/planets/facilities_v5/auto_explore.glb": "87ffbbc15b311bd3a8d6a1f04d9e15a6851c4d613aca4b17512214058b87203a",
+    "space-battleship/assets/planets/facilities_v5/equipment.glb": "9329cf6821226963a5a593085c452770e24ece1d9bb22bfbc7b9fcae888c1391",
+    "space-battleship/assets/planets/facilities_v5/model-stats.json": "ce3a7ac9a6a98f31e2750c99476bc13fe7ec67cfebd61cb4d7b232dd291ea89c",
+    "space-battleship/assets/planets/facilities_v5/refinery.glb": "04bfa304ff1895c044c901d4ffe4d58c188e0096507b57cfe1a46028a1d1ec3d",
+    "space-battleship/assets/planets/facilities_v5/shipyard.glb": "08c144a1bd7cef09d77cc70741a4f384f5c4b54db8db8a4b59f20509f81d746f",
+    "space-battleship/assets/planets/painted-v4/README.md": "6d7eb32b5a0ab75a72485fba2f192574fe206a006db1554b9811f91869d5b1b9",
+    "space-battleship/assets/planets/painted-v4/cloud-density.png": "a36620a68c3495ac909ab0feb57a8621aa20178811b6f5d733a894e966c5e007",
+    "space-battleship/assets/planets/painted-v4/cloud-density.png.import": "feadda5cba2ab21d822a1fc3a74d2c01b0bd385e9e1fc63294ded62945417a2d",
+    "space-battleship/assets/planets/painted-v4/imagegen-requests.json": "bcd29f97f1f42593775f6cc2ed9166ffe87be0527b1ac085284f14fb25ee844e",
+    "space-battleship/assets/planets/painted-v4/surface.png": "6a2ad781fb7fdc936d468bd72a8ec111a91f2db4bf34f756c838c9b6c69685c1",
+    "space-battleship/assets/planets/painted-v4/surface.png.import": "f605f4147f322005d8ffbffd45283cdd6d8581171c8af8e3b7f5851315d02173",
+    "space-battleship/scripts/planet_contact_shadow.gdshader": "b70f47e407d325c446090f060abf78b72eae066576b8813a1514491b8f6bdb6d",
+    "space-battleship/scripts/planet_facility_scene.gd": "8d96c5a7e9556a7047823fae475cbbdad91518b06ed53668ff0272c64fee0540",
+    "space-battleship/scripts/planet_visual.gd": "fc139237b88d4819262ce24694f464f36fb1c9673e51c180e58505ec282bb4e3",
+    "space-battleship/scripts/rotating_planet.gd": "71e88874dbf54d024c864f04e34e71209c8848bb7f3f13a54a4f0b50ca3e53be",
+    "space-battleship/scripts/rotating_planet.gdshader": "5f0fa0435a75238035198e4e79815910966ef541e2121532da022796f7931ed8",
+    "space-battleship/src/systems/planet.gd": "91a0eb5a5271d692f70a1be2fca72ff8d0ce6025d70e8da0583834258daa99c2",
+    "space-battleship/src/ui/planet_panel.gd": "31ba20fbab0bb0fc5e5267da0041ed859c90f13083724cfb0bd84b9fe7c9bd71"
+  },
+  "main_sha256": "ba84b113f5065ca6e1f588e792c52283c6d15d3ca530ece664a871847142084b",
+  "fixture": "First checks use fresh natural locked GameSession. Then temporary Campaign grants and planet-1 built facilities via public restore_state and refresh_availability; isolated /tmp save/settings only. No config/source edits, wallet injection or forced clock. Not natural unlock/build evidence.",
+  "scope": "Original host task; no separate QA task/project; normal real Session/native and visual time. Animation sampled briefly to confirm host keeps original moving models active; original R6 full-orbit video/visual review remain separate.",
+  "evidence_sha256": {
+    "planet-motion-later.png": "36dde2319f4ac9cc78a27a4638cb0c66338cd286132e2178e109554e93451f0a",
+    "planet-native-popup.png": "3379afa4de7272cd0ba2ef38aefa1e7cda1b4034b7cb90c6a5580d53b75ec81c",
+    "godot-check.txt": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "godot-live.txt": "c46a237b039531bf02d6587e90a03c4d2041c41ca1a2f7c636190d8b48fd7627",
+    "reforge-navigation.png": "1d06181976d82bd77c7e35816aa37dccbaf8f22d1349735e49d004bb5e42a764",
+    "observations.json": "20f9b63eb2e66f029cf8d1d394a63459a7d5154fbda3dc8c4b5c9a70a25fed44",
+    "planet-full.png": "d36cae966d95aa032548cc0a7e8f6bd56e1f1f0b4384554c18733c3fcb4a5df2",
+    "planet-facilities.png": "5b02f829890c285614d0fe536404754b9eb0e9e763f444a367080262ddbf1e0e"
+  }
+}
