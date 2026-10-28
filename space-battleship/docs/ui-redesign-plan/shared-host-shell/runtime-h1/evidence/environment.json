@@ -1,0 +1,57 @@
+{
+  "code_commit": "80e5463ff36f457b9e178315a5cf4b521b871068",
+  "baseline": "implement/reactor-centered-godot@e77b572b91006f40853af18ba7f7ddb06a894b98",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary": "/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "godot_cpp_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+  "api_sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "audio": "Dummy for UI observation; audio behavior not assessed",
+  "test_data": "normal real GameSession/native; isolated temporary settings/save; production Excel unchanged; no forced unlocks or balances",
+  "observation_driver": "temporary same-task SceneTree loads production src/main.gd; drives connected Button signals and Input.parse_input_event; not a separate test project or committed runner",
+  "sources_sha256": {
+    "src/main.gd": "340df425add95fd2b3541f019db2fa3a8ca7031bf2fd34a96bf0dd216439ec78",
+    "src/ui/shared_host.gd": "edbd2c01beb297b2945cc2ad7b598dc2e9ed9383805228c200c02e623b679e57",
+    "src/ui/equipment_panel.gd": "67cccaed88a596a883c6c547900d15826b56d18e3848702f4ca638ef635de28e",
+    "src/ui/reactor_scene.gd": "3cd24aa8ade478e3b70dc00ac5d0ec78e6750f548ebbc183a7f846589f915cec",
+    "src/ui/campaign_view.gd": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb"
+  },
+  "window": [
+    1440,
+    900
+  ],
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "evidence_sha256": {
+    "balances.png": "2f7262b6a0f295b6e1034f1a8ed5788f5558f93d172682204f12701f2593874b",
+    "settings.png": "f33ada9c541518415d73cbbd59b4225b0da0165d367b1c3573b09b351a696dac",
+    "godot-live.log": "a202e95c5e40a444430615439b95b380f296a99ea2ecdd7f9372f6db1df33389",
+    "equipment-batch.png": "422ae2c1403a139a9a67423890d2c20694373154db152fa7b8851e5f95d6b900",
+    "collapsed.png": "eea2bcbd517caea5b3caa35fc2807db4b392ce58f967973b09acfd9bbb787bbc",
+    "observations.json": "4fd5ffaafb6c43383396d7af3495bc5bfe8107bb369d0e36e6deb31d785f333d",
+    "notifications.png": "377856a254b25433167d4adc9c589dfa4f0460fd46380d2756d615d81dfb4267",
+    "godot-check.log": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+    "more.png": "d4b557f521f823a2ffe15f4eb7de3f0061e00b1e6e7ca0e82b34a9e3930c64b9",
+    "equipment.png": "6f5e56f873a005a34e589546fdf2af17ce68cc743c23bbcce892b4df2b42cb59"
+  },
+  "shared_host_glyph_cmap_missing": [],
+  "verification_scope": "23 checks passed; final parser and diff checks passed; forced availability-loss Window cleanup is source-reviewed, not triggered by this initial locked save"
+}

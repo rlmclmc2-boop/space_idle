@@ -1,0 +1,161 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"details": "",
+			"id": "startup",
+			"ok": true
+		},
+		{
+			"details": [
+				"equipment",
+				"reactor",
+				"ship",
+				"campaign",
+				"attributes",
+				"research",
+				"enhancement",
+				"crew",
+				"galaxy",
+				"planet",
+				"hyperspace",
+				"archive",
+				"notifications",
+				"settings",
+				"reforge"
+			],
+			"id": "routes",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "equipment_active",
+			"ok": true
+		},
+		{
+			"details": "(855.875, 0.0)",
+			"id": "projection",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "more_blocks_input",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "settings_route",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "text_focus_blocks_space_g",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "focus_released_on_switch",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "notifications_route",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "view_instance_retained",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "batch_blocks_switch_space_g",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "collapse",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "restore",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_reactor",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_research",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_enhancement",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_crew",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_planet",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_galaxy",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_hyperspace",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_reforge",
+			"ok": true
+		},
+		{
+			"details": {
+				"guard_after": true,
+				"guard_before": false,
+				"pause_after": true,
+				"pause_before": false
+			},
+			"id": "normal_space_g_still_work",
+			"ok": true
+		},
+		{
+			"details": [
+				{
+					"id": "chrono",
+					"text": "时空微粒：363"
+				},
+				{
+					"id": "1",
+					"text": "铁：21"
+				}
+			],
+			"id": "wallet_uses_economy_text",
+			"ok": true
+		}
+	],
+	"godot": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	}
+}

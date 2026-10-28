@@ -1,3 +1,11 @@
+# 共享宿主当前交付
+
+[公共宿主真实业务接入候选 H1](runtime-h1/README.md)：代码`80e5463f`已实现统一入口、真实资源栏和现有视图路由；原任务必要运行观察23项通过，未合main、未宣称V0/新美术品质通过。用户已要求继续授权公共UI接入，候选不再只停留设计文稿。
+
+[反应炉新稿作图范围V1](reactor-drawing-v1/README.md)仍是反应炉原组唯一制作尺寸入口，新稿内部由原组负责。
+
+---
+
 # 共享宿主：当前反应炉新稿范围交接
 
 **当前固定入口：[反应炉新稿作图/导入范围V1](reactor-drawing-v1/README.md)** · [纯前端尺寸数据](reactor-drawing-v1/layout.json) · [808×835作图模板](reactor-drawing-v1/content-template.svg) · [Godot整屏范围图](godot/evidence/reactor-drawing-bounds-1440x900.png)

@@ -82,6 +82,8 @@
 
 ### 6.1 共享宿主的最小呈现交接（设计期）
 
+**后续运行状态更新：** 用户已要求继续授权的公共UI与业务接入；下述原设计记录的“未实现/不改代码”仅指当时状态。当前候选的具体已实现端口和未覆盖范围见6.4，不升级为主线事实。
+
 本节与[13§2.4](13-art-interaction.md#24-共享宿主与模块安装约定设计期)共同供各模块引用。整体线程负责所有模块的共享交接和顶部入口；本节不声明新增生命周期方法已实现，不改第2–5节领域契约。区域数字和图稿是待确认候选，确认前不改运行代码。H1重分区已被根审阻断并撤回，本节不授权656宽适配或统一新安全内区；宿主先核已有模块画布和顶部边界，比例改变须另交净收益/可读性证据。
 
 | 时点 / 所属 | 最小交接与行为 |
@@ -242,3 +244,14 @@
 实际执行回执附在原命令结果`purchase_receipt`，不改变原ok/reason或部分成功政策。装备成功提交给`commit_status=accepted`、逐槽purchases[{slot_id,count,spent}]和逐资源合计spent；单槽/批量捕获本次执行quote，不靠钱包差/通知后重读反推。buy_all_levels即使返回后续failure、ok=false，已经成功发布的槽仍给accepted回执。无发布为not_submitted，普通发布拒绝为rejected且无确认成交；提交后fault为fault_unknown、spent=null，不声称回滚。强化购买同样给commit_status、实际count/spent。早期原准入/报价/支付拒绝可无回执，不表示曾提交；没有成功接纳的候选成本不得当实际支出。回执是上次成交，不是下一报价。
 
 报价/比较/选项不锁资源，确认按最新所有者状态重验。装备沿原slots_changed/loadout_changed/options_changed及预算事实刷新；强化采用可见时同步重读，覆盖purchase/改序/分支及外部bonus/armours经accept_output变动，不新增presentation_changed或事件框架。新增强化查询用独立只读输入，经Equipment.accepted_armours复用计数助手，只读已接纳槽；不随_pending_slots变化。原enhancement_inputs/equipped_armours供命令准备的候选语义保持，不要求查询调用方避开装备pending阶段。Session整批接纳结束再刷新；不在模块接纳中提前发信号。当前对象消失清旧详情，输入变化清对应旧报价，保留未提交UI草稿。
+
+### 6.4 共享宿主运行接入候选 H1（已实现，待原审、未合main）
+
+代码`design/shared-host-shell@80e5463f`，来源、真实整屏、环境和23项必要运行观察统一见[运行候选H1](../ui-redesign-plan/shared-host-shell/runtime-h1/README.md)。该候选依据用户后续“继续已授权顶部入口、通用UI、区域契约/真实业务接入”的指令推进，未接管各原组内部设计。
+
+- `shared_host.gd::register_route(id,title,view)`只登记Control/上下文，不解释领域数据；main构建现有模块实例及原callable。8主入口与7更多入口，公开可用性仍按6.1逐项判定，不统一改为Campaign.available。原舰桥页签由现有视图的独立滚动路由替代。
+- 装备、当前反应炉视图实现`set_shared_host(enabled: bool, context_slot: Control, backdrop: Texture2D = null)`、`has_exclusive_ui() -> bool`、`exclusive_ui_changed`、`prepare_host_hide(force: bool = false) -> bool`。仅分离全局chrome、上下文和输入生命周期；backdrop本候选不使用。其余当前旧VBox面板由宿主保留实例，内部原生Window由宿主UI树检测；原组新独立全幅场景尚待替换，不假定已经具备端口。
+- 视图激活只显隐；焦点撤离，模态未结束拒绝普通切换，实际释放时才force清理。装备批量仍模块自有，公共阻断只作用于顶部和右战场。Space/G共用只读门禁，不改暂停、驻守或拾取逻辑。
+- 余额使用Economy已格式化文本，反应炉对象＋等级来自其原presentation_model；无新增领域计算/DTO/广播中心。钱包迁出逻辑HUD，盾甲/航程/统计与投影不动；去掉旧常驻教学文案，快捷键保留。
+
+23项结果仅限当前代码的共享宿主接入。未覆盖已解锁模块全操作、保存/导入/重铸替换全链、新模块美术接入或V0；其准确边界以上述候选记录为准。6.3的反应炉808×835新内容范围继续有效，当前旧反应炉兼容场景不证明旧图获批。
