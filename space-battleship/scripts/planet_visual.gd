@@ -51,6 +51,9 @@ var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)
 var background_layer := Control.new()
 var scene_sky := GradientTexture2D.new()
+# Only the owned static environment extends into retired local chrome.
+var background_top_extension := 0.0
+var background_top_slice: Texture2D
 var orbit_back_layer := Control.new()
 var configured_appearance: Dictionary = {}
 var appearance_initialized := false
@@ -95,6 +98,7 @@ func _ready() -> void:
 
 func _layout_globe() -> void:
 	orbit_geometry.clear()
+	background_top_slice = null
 	if architecture != null:
 		architecture.position = Vector2.ZERO
 		architecture.scene_center = _scene_center()
@@ -300,6 +304,15 @@ func _draw_background() -> void:
 	if icon_mode:return
 	# Static field, separate from the owner-driven sphere and orbital motion.
 	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, size), false)
+	if background_top_extension > 0.0:
+		# Adjacent reflected top slice; no overlay, rescale, or offset of the original field.
+		if background_top_slice == null:
+			var top := scene_sky.get_image().get_region(Rect2i(0, 0, scene_sky.width,
+				ceili(float(scene_sky.height) * background_top_extension / size.y)))
+			top.flip_y()
+			background_top_slice = ImageTexture.create_from_image(top)
+		background_layer.draw_texture_rect(background_top_slice,
+			Rect2(0, -background_top_extension, size.x, background_top_extension), false)
 	var stars := RandomNumberGenerator.new()
 	stars.seed = 178
 	for index in 100:

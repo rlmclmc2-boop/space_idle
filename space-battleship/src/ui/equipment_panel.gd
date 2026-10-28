@@ -5,6 +5,8 @@ signal exclusive_ui_changed
 var _shared_chrome: Array = []
 var _context_slot: Control
 var _context_caption: Label
+var _shared_host_enabled := false
+var _shared_hangar_top: Texture2D
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"laser": "脉冲炮", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光", "shield": "护盾", "armour": "装甲", "": "空槽"}
 const INK := Color("203f50")
@@ -890,7 +892,15 @@ func _slot_label_position(row: Dictionary) -> Vector2:
 
 func _draw() -> void:
     presentation_counts.scene_draws+=1
-    draw_rect(Rect2(0,0,808,900),CREAM)
+    if not _shared_host_enabled:draw_rect(Rect2(0,0,808,900),CREAM)
+    if _shared_host_enabled:
+        # Continue the owned hangar into the retired chrome strip. Mirror only its
+        # first 20px; the authored scene below y85 and every subject anchor stay fixed.
+        if _shared_hangar_top==null:
+            var top:Image=_background.get_image().get_region(Rect2i(0,0,1188,ceili(20.0*845.0/600.0)))
+            top.flip_y()
+            _shared_hangar_top=ImageTexture.create_from_image(top)
+        draw_texture_rect(_shared_hangar_top,Rect2(0,65,808,20),false)
     draw_texture_rect_region(_background,Rect2(0,85,808,600),Rect2(0,0,1188,845))
     draw_rect(Rect2(0,685,808,215),Color("203b49"))
     if _ship.is_empty() or not _catalog.has(_ship):return
@@ -971,6 +981,8 @@ func _locator_badge_rect(row: Dictionary, target: Rect2) -> Rect2:
 
 ## H1 chrome/exclusive ports: the host owns routing, shared input gates and the context slot.
 func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
+    _shared_host_enabled=enabled
+    queue_redraw()
     for item in _shared_chrome:item.visible=not enabled
     _wallet.visible=not enabled
     _release_host_context()

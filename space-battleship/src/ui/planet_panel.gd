@@ -174,6 +174,8 @@ func _layout() -> void:
 	if _visual == null: return
 	_visual.position = Vector2(0, 90)
 	_visual.size = Vector2(size.x, maxf(500, size.y - 90))
+	_visual.background_top_extension = 25.0 if _shared_host_enabled else 0.0
+	_visual.background_layer.queue_redraw()
 	_task_button.position = Vector2(258, 112)
 	_task_button.size = Vector2(226, 44)
 	_crew_button.position = Vector2(148, 112)
@@ -204,14 +206,17 @@ func _layout() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	draw_rect(Rect2(0, 65 if _shared_host_enabled else 0, size.x, 25 if _shared_host_enabled else 90), Color("f0eddf"))
 	if not _shared_host_enabled:
+		draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
 		draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
 		draw_string(get_theme_default_font(), Vector2(24, 74), "星球探索", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("40676b"))
 
 ## The host owns global chrome. This view keeps its 808x900 interior geometry.
 func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
 	_shared_host_enabled = enabled
+	if _visual != null:
+		_visual.background_top_extension = 25.0 if enabled else 0.0
+		_visual.background_layer.queue_redraw()
 	_wallet.visible = not enabled
 	if _context_slot != null:
 		for child in _context_slot.get_children(): child.queue_free()
