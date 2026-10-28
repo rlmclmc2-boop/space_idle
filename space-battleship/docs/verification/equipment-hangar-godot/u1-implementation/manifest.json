@@ -1,0 +1,717 @@
+{
+  "runtime_source_commit": "526121392422d459d6b9aa7a1252e36d85b0b4ed",
+  "previous_runtime_baseline": "5b4f72331038622ce739578fcdf3823a0a0b4716",
+  "runtime_changed_paths": [
+    "src/ui/equipment_panel.gd"
+  ],
+  "window": [
+    1440,
+    900
+  ],
+  "equipment": [
+    808,
+    900
+  ],
+  "engine": {
+    "path": "/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64",
+    "sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e"
+  },
+  "native": {
+    "path": "/tmp/space-idle-native472/bin/libspace_native.so",
+    "sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+    "scope": "Existing original native library; no native source/build change"
+  },
+  "verified_captured_source_hashes": [
+    {
+      "record": "candidate/operations.json",
+      "path": "assets/ui/equipment/hangar/hangar-console.png",
+      "captured_sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "fixed_git_sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "assets/ui/equipment/hangar/upgrade-console.svg",
+      "captured_sha256": "88f6ccb9f1039ab2861e29627ee31a54e9461e37fba689c78857a4ea3fd05599",
+      "fixed_git_sha256": "88f6ccb9f1039ab2861e29627ee31a54e9461e37fba689c78857a4ea3fd05599"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "assets/ui/ships/manifest.json",
+      "captured_sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "fixed_git_sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "docs/game-design/art/modules/equipment.md",
+      "captured_sha256": "bc14f36ca718fc26aa3d7e5322d7334647d03bb5cba3d9ecde43d87d06a4a6ca",
+      "fixed_git_sha256": "bc14f36ca718fc26aa3d7e5322d7334647d03bb5cba3d9ecde43d87d06a4a6ca"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "generated/config.json",
+      "captured_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "fixed_git_sha256": null
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "project.godot",
+      "captured_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "fixed_git_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "src/game_session.gd",
+      "captured_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "fixed_git_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "src/main.gd",
+      "captured_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "fixed_git_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "src/systems/equipment.gd",
+      "captured_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "fixed_git_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26"
+    },
+    {
+      "record": "candidate/operations.json",
+      "path": "src/ui/equipment_panel.gd",
+      "captured_sha256": "617c07b3e0e8755cc0f9e219c47729b663b920ac88b8c13cd6dba80d357ee7a9",
+      "fixed_git_sha256": "617c07b3e0e8755cc0f9e219c47729b663b920ac88b8c13cd6dba80d357ee7a9"
+    },
+    {
+      "record": "regression/runtime.json",
+      "path": "src/game_session.gd",
+      "captured_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "fixed_git_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad"
+    },
+    {
+      "record": "regression/runtime.json",
+      "path": "src/main.gd",
+      "captured_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "fixed_git_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91"
+    },
+    {
+      "record": "regression/runtime.json",
+      "path": "src/systems/equipment.gd",
+      "captured_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "fixed_git_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26"
+    },
+    {
+      "record": "regression/runtime.json",
+      "path": "src/ui/equipment_panel.gd",
+      "captured_sha256": "617c07b3e0e8755cc0f9e219c47729b663b920ac88b8c13cd6dba80d357ee7a9",
+      "fixed_git_sha256": "617c07b3e0e8755cc0f9e219c47729b663b920ac88b8c13cd6dba80d357ee7a9"
+    }
+  ],
+  "formal_assets_and_sources": [
+    {
+      "path": "src/ui/equipment_panel.gd",
+      "sha256": "617c07b3e0e8755cc0f9e219c47729b663b920ac88b8c13cd6dba80d357ee7a9"
+    },
+    {
+      "path": "src/main.gd",
+      "sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91"
+    },
+    {
+      "path": "src/game_session.gd",
+      "sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad"
+    },
+    {
+      "path": "src/systems/equipment.gd",
+      "sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26"
+    },
+    {
+      "path": "assets/ui/ships/fleet_20261019/01-frigate.png",
+      "sha256": "a3982ea4c5f401c73ae9d1da2ed286231677c0a09f8f3f8c1e65b8f43049411c"
+    },
+    {
+      "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+      "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+    },
+    {
+      "path": "assets/ui/ships/manifest.json",
+      "sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab"
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/manifest.json",
+      "sha256": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    {
+      "path": "assets/fonts/NotoSansSC.ttf",
+      "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+    }
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "735dc0b626944e983bd8306a29aec578ccb23d47678408297ca270008c75551c",
+      "bytes": 7416
+    },
+    {
+      "path": "candidate/01-starter.png",
+      "sha256": "13267f08b51a3e8772a87b45d81538a6a6dad6dee9ca3f63638dcb98721621f9",
+      "bytes": 1519022,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/02-starter-slot-selection.png",
+      "sha256": "11a239289be264c1f22b1e7332693f5f005492b0a237f0eeae2db62d90d73aa4",
+      "bytes": 1519654,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/03-cruiser-cannon-comparison.png",
+      "sha256": "6959b52a4c2dba6877005d12fcf6b26713d92c78dc9f04e2a7c6b7a46d152984",
+      "bytes": 1540283,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/04-single-plus1-material.png",
+      "sha256": "ed136732919409845c4d9376776d487425f5c72e2a63838c4c054769fbfc70aa",
+      "bytes": 1547301,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/05-plus10-quote.png",
+      "sha256": "463f9f844486a5d8a846c264859856ce1bf1147f2b93b8b7e427eaf79fa1c60a",
+      "bytes": 1547092,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/06-single-plus10.png",
+      "sha256": "6cfb92a3bfbc86c3ce6a6e5761838b90df0862cbcc27ef8e747f5e872d109ed8",
+      "bytes": 1549022,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/07-max-quote.png",
+      "sha256": "05d5cb92d0c9ced1381e25cd255e8fae056aea96904bc15a20ae30aba0fb7794",
+      "bytes": 1547813,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/08-single-max.png",
+      "sha256": "1cf7cf4c0f02d86a406d5fc82fc811e8c82fb37388e4e6762bb76f245e9ae12a",
+      "bytes": 1544974,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/09-switch-cooldown.png",
+      "sha256": "ce9ce16a932e9b41bf4489397388174029effbacaa17f8906ac009c13c07260a",
+      "bytes": 1539835,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/10-switch-ready.png",
+      "sha256": "7c609e04b7fe3815231f789b0e18010ceb90055dc7c9beadc667a18d8e744113",
+      "bytes": 1539579,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/11-batch-open.png",
+      "sha256": "d46209fb2748dc9dbb52f51ffe11846e77d499eaea9ca31773536fc4ce904967",
+      "bytes": 988054,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/12-batch-partial-result.png",
+      "sha256": "1f070b48e8d0577d9792cbdbd3126414ddb46c8351661b04ef8ad8a11ffee2a6",
+      "bytes": 1005870,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/13-batch-result-retained.png",
+      "sha256": "1e53b1fdc4720d6e2ea8eceede219861a107c99a8faf9b86360b38247251115c",
+      "bytes": 1005714,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/14-defence-selection.png",
+      "sha256": "a2f1ff611bd156339059ec312df19f64418017e44b1839df100ffbf8cc6c6359",
+      "bytes": 1538639,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/15-final-cruiser.png",
+      "sha256": "86dc2b016b69f32d8599fc59449efeab209b5d81018be64e2a77e01bd548a737",
+      "bytes": 1549469,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/16-defence-candidate.png",
+      "sha256": "c9eeed6ddc2fe2d0dd49720399103606193b693bda68e353caf25ef2bc3b3a1c",
+      "bytes": 1539418,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/17-defence-quote-0.png",
+      "sha256": "6ab1373e222cd6290b951d9550fb5a4a32a8cc2981eb3bbe050af1896641ddb2",
+      "bytes": 1539421,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/17-defence-quote-1.png",
+      "sha256": "b5fbe3c5e3bf63510f4f679b287105f049da0773745320eaba7d78554eefcbc6",
+      "bytes": 1541929,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/17-defence-quote-2.png",
+      "sha256": "af94cfbd18f0b7268533d9fa914664881629a552948d1f82752a4dc9a1fb4384",
+      "bytes": 1545990,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/18-defence-purchased-0.png",
+      "sha256": "bed86210c8fa787d4d0debec15778d7bff3f395d008fb7842744a4242b7e19ee",
+      "bytes": 1542325,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/18-defence-purchased-1.png",
+      "sha256": "3d1efdadd82f59334dbb4b22b39e518c24565346d79c93be7b3ba33f8ebb0d0a",
+      "bytes": 1543593,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/18-defence-purchased-2.png",
+      "sha256": "7b86576936b78fd995875cbf3f50ed5af38964ccea274e66f3be431dd3e224ce",
+      "bytes": 1539513,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/19-long-max-multi-resource.png",
+      "sha256": "7de0691ca0206f262fd3d188537f163690c037bdbfaeeec0ce5d61048b021cee",
+      "bytes": 1557072,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/20-insufficient-resources.png",
+      "sha256": "c57527a87b2e58b9624f04bc3aea07ab57767091f4f8ff80777079b2e90d86a3",
+      "bytes": 1546327,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/21-candidate-normal.png",
+      "sha256": "6959b52a4c2dba6877005d12fcf6b26713d92c78dc9f04e2a7c6b7a46d152984",
+      "bytes": 1540283,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/21-quantity-normal.png",
+      "sha256": "6959b52a4c2dba6877005d12fcf6b26713d92c78dc9f04e2a7c6b7a46d152984",
+      "bytes": 1540283,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/21-slot-normal.png",
+      "sha256": "6959b52a4c2dba6877005d12fcf6b26713d92c78dc9f04e2a7c6b7a46d152984",
+      "bytes": 1540283,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/22-candidate-hover.png",
+      "sha256": "4f96aa2536862712459ba182f33ed2b0b6c76af946da1fd67a325e9720cbb957",
+      "bytes": 1540245,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/22-quantity-hover.png",
+      "sha256": "c02a8db44aff2996a298f53eefd63967f7dd34a9604281f34726ebb66e2c7103",
+      "bytes": 1540330,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/22-slot-hover.png",
+      "sha256": "6cc552a1fce9c78f780d6908fda0f4f0720a7536cdff6ac9af4828d2e1acb4e2",
+      "bytes": 1540928,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/23-candidate-pressed.png",
+      "sha256": "ed82692b5ceb5abf65269c5933c0a567b472af4afdafc857e90fa55dd9130e1c",
+      "bytes": 1540297,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/23-quantity-pressed.png",
+      "sha256": "a67d4423456cf35451052e8af37fe75ead1eb512aa90ce45940e94a739ee19f8",
+      "bytes": 1540407,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/23-slot-pressed.png",
+      "sha256": "d64c305589e62327622449d11f15a0bc20b9b341ca4404468f1645f162ab6422",
+      "bytes": 1538446,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/24-candidate-focus.png",
+      "sha256": "0ddce889ab4256b23db8f9a513efb0e40f2f5c159b19a0dd8318e5487c1b3bfc",
+      "bytes": 1540256,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/24-quantity-focus.png",
+      "sha256": "2c7003d6dffb0581bcbb86c5fca13204d5f83926387b6244274380169065f135",
+      "bytes": 1540356,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/24-slot-focus.png",
+      "sha256": "9262036b94698cccdf536900a9d54f77a2dc177f26b29c1b984b73637aacc179",
+      "bytes": 1538261,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/25-partial-unlock-frigate.png",
+      "sha256": "501ce9848835e3bac244a2d6d0a8ee6b777d35dfef965ae0c2b647f46f694602",
+      "bytes": 1519649,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/26-heavy-new-empty-slots.png",
+      "sha256": "31389b21ebb1b4c3f5d6c682373916cecd807e9d54c23a474d3ca19dadc60b10",
+      "bytes": 1543748,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/27-heavy-direct-empty-install.png",
+      "sha256": "9d12279ccb705dba7d11c0374d491d1c9d96f97c46c9710ee2eaffc94e6ad3a5",
+      "bytes": 1554700,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/28-heavy-all-equipped.png",
+      "sha256": "1b15855d1b15c6c979d735629d1d1f83c539e980c822d8c2adde75275eac0f46",
+      "bytes": 1563008,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/29-heavy-third-defence-selected.png",
+      "sha256": "76c20c280c1f65e52cd0137b82a12f7547f8d50a968c7190141a3552618dcaaf",
+      "bytes": 1563274,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/30-destroyer-paired-mounts.png",
+      "sha256": "8efb371a87e48921235b48d4209ffc14e4d399b10054d9c07c964544264b3d93",
+      "bytes": 1536809,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/31-frigate-full-equipment-dormant-slots.png",
+      "sha256": "8fc9e1374132d3c96897064be7b6bcd0eaeb51cb1de36e00bed8331d0bc256bc",
+      "bytes": 1533885,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-defence-0.png",
+      "sha256": "63a9d438dc3c74df76e86992f888132e147bce9a50b53cc6e8df43dd5eeb57ce",
+      "bytes": 1561940,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-defence-1.png",
+      "sha256": "2dfdb33662bb95b6da52a68fc12c77a7f4bd73cd1389b5394a31a335d6ad5199",
+      "bytes": 1558478,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-defence-2.png",
+      "sha256": "76c20c280c1f65e52cd0137b82a12f7547f8d50a968c7190141a3552618dcaaf",
+      "bytes": 1563274,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-weapon-0.png",
+      "sha256": "85822182b282ac82a2b472e3fb82f16940f00c261682c700e4de22f54fbf96b0",
+      "bytes": 1569557,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-weapon-1.png",
+      "sha256": "7e16f409fbea3503595cbac2d8920a3ed4a55f4c31c6d9c406254197e3ee9849",
+      "bytes": 1569592,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-weapon-2.png",
+      "sha256": "b916623b9780ae634b017063945716bb80c9011e32e2f55a2467af1b23831078",
+      "bytes": 1568051,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-weapon-3.png",
+      "sha256": "b4df88d92aed571fe9f675dc0e101683ec2bcfc911fd8791c60f51da82c7ea24",
+      "bytes": 1563321,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/32-heavy-weapon-4.png",
+      "sha256": "a41cf5e16a66c9bc9e5fa080c3f4520f573662254277dcf80d55bf08e9448c4b",
+      "bytes": 1567096,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "candidate/font-actual.json",
+      "sha256": "a53d9a301ac25dfd373f05da6e5f01a1f4795e181a736982573ef4dad7e665fb",
+      "bytes": 224
+    },
+    {
+      "path": "candidate/operations.json",
+      "sha256": "9d34323c228696c3d23af7699252e50826b11befaa0ceaf409d9292fd2423e17",
+      "bytes": 222674
+    },
+    {
+      "path": "candidate-driver.gd.txt",
+      "sha256": "44aa02eba3cf6e4281f23478e8fdb86a7052f29b787c0163b244bea7069e23d6",
+      "bytes": 27639
+    },
+    {
+      "path": "candidate.log.txt",
+      "sha256": "951be660ea1b1d35ceb601ea68d6708a82501df5e0b373a1d5942d30ceedeb0b",
+      "bytes": 417
+    },
+    {
+      "path": "check.log.txt",
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    {
+      "path": "regression/batch-unknown.png",
+      "sha256": "00aef5080bd39b2c3b8e7b3ed789450a7126278b28f5a7e2fbd0960ea7acc142",
+      "bytes": 599884,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "regression/edge-left-after.png",
+      "sha256": "036d7007c6e12d7642b9813f1b6d2654e073390d67de723cd11b6e063ca10df9",
+      "bytes": 1156940,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "regression/edge-left-before.png",
+      "sha256": "ee30c9109ddf5495c86cd2f976bdcbe88b27d46e13c2127b4cfd27ccaf8a1a71",
+      "bytes": 1156908,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "regression/edge-right-after.png",
+      "sha256": "d71d570ab44fc475825b3cefe490659629e4331c7f78c36931eb42db07aca8bf",
+      "bytes": 1162191,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "regression/edge-right-before.png",
+      "sha256": "855aa7e8c507382358f0787a77605edf13a76e986c40e16c94692e7c48e7d364",
+      "bytes": 1160748,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "regression/free-defence-return.png",
+      "sha256": "c024fe65f8a27c9d887b0a72009a2821eb951389fa6bf13b5c0cb651d07ab0b7",
+      "bytes": 1158729,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "regression/free-weapons-return.png",
+      "sha256": "6097f0462145aa9a50d4d8f55eb9dac2c9d4f0ee78a7f0894159e8f2c21a697d",
+      "bytes": 1163320,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "regression/runtime.json",
+      "sha256": "ef49936cf0431d64a226a94dce6fe99796625c87821c9098b1b1829ff5db5730",
+      "bytes": 470709
+    },
+    {
+      "path": "regression-driver.gd.txt",
+      "sha256": "5174f96b70b26f78a24b0a0099e9190f21a52aea79de185f9e98125432d5df02",
+      "bytes": 24623
+    },
+    {
+      "path": "regression.log.txt",
+      "sha256": "e373957aa5edd025376a16b6fd4334ac869ddba0559e5f0b3e758cefe38cea1e",
+      "bytes": 456
+    }
+  ]
+}

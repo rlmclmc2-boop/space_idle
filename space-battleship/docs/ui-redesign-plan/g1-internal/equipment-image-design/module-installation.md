@@ -1,5 +1,7 @@
 # 装备最小安装说明：冻结实现现状与H2边界
 
+**后续内部候选说明：** 下文是本安装说明编写时对5b4f7233的固定快照。此后按用户已认可武器/明确实施授权，仅equipment_panel内部推进到 `526121392422d459d6b9aa7a1252e36d85b0b4ed`，同版证据见[U1内部交接](../../../verification/equipment-hangar-godot/u1-implementation/README.md)。808×900根、顶部品牌/钱包/副标题/局部舰名/批量入口及根内批量矩形、CanvasLayer/焦点缺口均未改变；旧终端表不再描述新索引，底部按钮规格以新交接为准。没有接入H2或同意65px，不把本快照误当新候选全部位置已确认。
+
 本说明由装备组按共享宿主固定 `cfaa96352d0023115d078109c2b5ceec6b8931cc` 的 [module-installation.md](https://github.com/rlmclmc2-boop/space_idle/blob/cfaa96352d0023115d078109c2b5ceec6b8931cc/space-battleship/docs/ui-redesign-plan/shared-host-shell/module-installation.md) 六项请求交回，仅确认现状与缺证，不批准65px重排或实施。原目录 `/workspace/space_idle`、原分支 `implement/equipment-hangar-godot`；本说明前HEAD `8ffb9db36f923e61a40809e107cac60c5dfcb599`，运行源码仍逐字节冻结于 `5b4f72331038622ce739578fcdf3823a0a0b4716`。已正常fetch共享分支并只读指定固定文件，无切分支/合入/新工作区。唯一规范仍为 [game-design入口](../../../game-design/README.md)及其M2，不另建玩法或通用安装协议。
 
 ## 内容根、画布和真实顶部占用

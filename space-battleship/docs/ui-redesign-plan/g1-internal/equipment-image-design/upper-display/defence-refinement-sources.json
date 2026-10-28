@@ -1,0 +1,52 @@
+{
+  "records": [
+    {
+      "state": "shield",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-b6161213-5bd5-4e40-b3bd-fb3e9254ceb7.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-shield-v2.png",
+      "sha256": "9a62c771a5b05dcc98e28d3f36c798f5ddd1cc3122f839c923b2be8ed36cc823",
+      "dimensions": [
+        1585,
+        992
+      ],
+      "prompt_file": "defence-shield-v2-prompt.txt",
+      "prompt_sha256": "4b85db4c177372f85d416b47210c8a349396dc43c2291b674931f010cf4312b6",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-shield-v1.png",
+          "sha256": "a9eea305e932350551024d5edf69aad0c60f2b5b705adc32862c94174c762412"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        }
+      ],
+      "inspection": "Actually viewed via view_image. Unedited raw PNG. Shield still retains forbidden proxy badges; armour removes them. Pending original review; not implemented."
+    },
+    {
+      "state": "armour",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-07a4f180-f650-4081-a97a-3d3e436968a5.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-armour-v2.png",
+      "sha256": "9b75cbfdb971a22c0df47aa04e325e4916fdec62a02af3af9a8a6c2730960c49",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "defence-armour-v2-prompt.txt",
+      "prompt_sha256": "91575d3882e0f916cf1f2d74955a3b93dcb24498c75936f6f05b168bd426c33f",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-armour-v1.png",
+          "sha256": "a60ac108a3a4b7b20f4361ee2a301a97a8827c67f7bfebeaa8ee3fb758268057"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        }
+      ],
+      "inspection": "Actually viewed via view_image. Unedited raw PNG. Shield still retains forbidden proxy badges; armour removes them. Pending original review; not implemented."
+    }
+  ]
+}
