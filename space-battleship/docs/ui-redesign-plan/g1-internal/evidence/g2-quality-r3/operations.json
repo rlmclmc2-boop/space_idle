@@ -18143,5 +18143,31 @@
       },
       "sha256": "ba9f696223e40e97e1883158db6de8570d27958822717262d57a5e68dc113eeb"
     }
-  ]
+  ],
+  "base_commit": "5fee3a6aa9ed988c5d375273e8bfe68636308008",
+  "committed_source_files_sha256": {
+    "budget-response-fixtures.js": "360acacde8d070ec9de10cef512e6d2f5cb937d5ca69fbf3dab98b617a2239c7",
+    "style.css": "9b5f9c1368c9e437599b8f9beabdd210517bfa2e9d1fc0d07f64b6c259c8e9d0",
+    "equipment-workbench.js": "cf2478af35652c5726bc779e06e522eb8832fc47cb0bcf2418dfd1fdead82255",
+    "battle-source-data.js": "3e3a900d958c77e57e198163c570b5d49648c7b0160c05212a34b38d886dc30d",
+    "hyperspace-workshop.js": "95bb47c41783d6bd6dec129ba27e504dd6209ec78cc8fafb964b0440001c7b62",
+    "quality-pass.css": "7f6b8a91980b973b9519b1804c6b4a9c84442d53152f295121f671829cf0af9c",
+    "index.html": "924288aa4540d73ee38528dd5888d3020a94a5786bb4baff0c235c23cd5ebf8c",
+    "colony-models.js": "6afb376d22d86ef04e7b535e39c65f8ac0529171c8d202991795d95e6d4189a3",
+    "quality-modules.css": "f8bcdc648beed456974d959c3bb557ee575c3369967e2c9325a2e7ca2b093122",
+    "equipment-response-models.js": "791dae6d4b452512fe6580d555e1f3ee7ee097ebc5c0d22381c297554d1a85be",
+    "forge-workbench.js": "390a20253aa7d4f676d709babaa920a9e60b9c2116766ec0cf776007c5317d15",
+    "battle-workbench.js": "5cbffbad80a2432aa1b7017369bb73ef9fb390825af73860e5069f7c9d87b6f6",
+    "scene-models.js": "3d491e525c8a624506dc2b3950fbafcd4f6aff3cda8099627bff6ece7e6154fa",
+    "hyperspace-task-workbench.js": "b6969ca6d726cccb19defb17ec48df1ff092d86670eb36e6980884118132c860",
+    "app.js": "bc07d5b90ae4eb0648b03c917335d74b6dfba9c2af5e7a0abc307cae3258036d",
+    "enhancement-models.js": "115a1e006fb29bd13d46f1a39889cc783feb248df39a0a37bd5af24f6c0883bc",
+    "maintenance-models.js": "26caea0cd3b10591bbc211cc3566a3aef773244da14435bbb4d5eccbbbabde9b",
+    "quality-scenes.css": "2dbfff3fce17df6c89ccbb6392678cf0ba1c78094c5ccc8217975eef4d208a98",
+    "forge-response-models.js": "0df92253ef16b7b396aa22a3869935be29c1176377a46db9d59e9e2077f863e3",
+    "battle-budget-models.js": "dde091cf2b82c9619bb6a08f36de29c319a0f5a0ae332473939f3ad1ccf8beaa",
+    "filter-workbench.js": "89da132a0df2afe62f09bdf868666f9b5c67467f5c06932fe54c9b2c9ea1532a"
+  },
+  "attribution_index_added_after_capture": true,
+  "attribution_index_note": "These are hashes of the fixed committed source objects, indexed after capture. Original capture_head_commit remains; this correction is not a new run or a claim hashes were originally recorded by that capture script."
 }

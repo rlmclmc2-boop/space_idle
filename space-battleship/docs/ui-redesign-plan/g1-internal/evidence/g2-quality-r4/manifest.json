@@ -21809,5 +21809,11 @@
     "Only representative material inputs checked; no new geometry parameter/G9 exhaustive work",
     "Finite browser response for vitals/pickup/pressure hulls, not Equipment/native/economy acceptance",
     "No runtime/config/Excel/game/save/main changes; P3 and full UI remain pending"
-  ]
+  ],
+  "operations_source_index": {
+    "base_commit": "449fd843d4b21cbdf9d1c5f186ffa9e172e06532",
+    "source_commit": "90d9f3a25516baf67d9508f0d8bf2d86a3c8d63f",
+    "hashes": "operations.json#committed_source_files_sha256",
+    "added_after_capture": true
+  }
 }

@@ -1,0 +1,29 @@
+{
+  "capture_head_commit": "0aec2d937b06370b5ec4abddf3f5f7a4ea180ae3",
+  "source_commit": "560a2dcfea9dc46567125e386d499c3e7fc433a8",
+  "captured_source_files_sha256": {
+    "docs/ui-redesign-plan/g1-internal/app.js": "3ec6bf079a61cadb074ef6e3ba9dbcebe56d4b0f95bab82ef257c7dd2def7256",
+    "docs/ui-redesign-plan/g1-internal/battle-budget-models.js": "dde091cf2b82c9619bb6a08f36de29c319a0f5a0ae332473939f3ad1ccf8beaa",
+    "docs/ui-redesign-plan/g1-internal/battle-source-data.js": "3e3a900d958c77e57e198163c570b5d49648c7b0160c05212a34b38d886dc30d",
+    "docs/ui-redesign-plan/g1-internal/battle-workbench.js": "79f32d73d13c898f8db462dc4714e25fe437940a07ce138f02910517b0d8a511",
+    "docs/ui-redesign-plan/g1-internal/budget-response-fixtures.js": "360acacde8d070ec9de10cef512e6d2f5cb937d5ca69fbf3dab98b617a2239c7",
+    "docs/ui-redesign-plan/g1-internal/colony-models.js": "6afb376d22d86ef04e7b535e39c65f8ac0529171c8d202991795d95e6d4189a3",
+    "docs/ui-redesign-plan/g1-internal/enhancement-models.js": "115a1e006fb29bd13d46f1a39889cc783feb248df39a0a37bd5af24f6c0883bc",
+    "docs/ui-redesign-plan/g1-internal/equipment-response-models.js": "791dae6d4b452512fe6580d555e1f3ee7ee097ebc5c0d22381c297554d1a85be",
+    "docs/ui-redesign-plan/g1-internal/equipment-workbench.js": "37b1de2206fc23fac7cbd23807f1faeed9206cdad50d521f0ef1abe548594c84",
+    "docs/ui-redesign-plan/g1-internal/filter-workbench.js": "89da132a0df2afe62f09bdf868666f9b5c67467f5c06932fe54c9b2c9ea1532a",
+    "docs/ui-redesign-plan/g1-internal/forge-response-models.js": "0df92253ef16b7b396aa22a3869935be29c1176377a46db9d59e9e2077f863e3",
+    "docs/ui-redesign-plan/g1-internal/forge-workbench.js": "88600ed0c529125bb66b8c1caffb0a2a61a313f06d4acef3f37f80ad8987f932",
+    "docs/ui-redesign-plan/g1-internal/hyperspace-task-workbench.js": "8f278b399ae5f915ddd1eee2c9a01ec783a2f66428e5a980ad520508bb544f10",
+    "docs/ui-redesign-plan/g1-internal/hyperspace-workshop.js": "95bb47c41783d6bd6dec129ba27e504dd6209ec78cc8fafb964b0440001c7b62",
+    "docs/ui-redesign-plan/g1-internal/index.html": "924288aa4540d73ee38528dd5888d3020a94a5786bb4baff0c235c23cd5ebf8c",
+    "docs/ui-redesign-plan/g1-internal/maintenance-models.js": "26caea0cd3b10591bbc211cc3566a3aef773244da14435bbb4d5eccbbbabde9b",
+    "docs/ui-redesign-plan/g1-internal/quality-modules.css": "db2c81ca6a9af87976f3c2d0cf9a03cb178ca126d50c01e191c280b6169c5b1d",
+    "docs/ui-redesign-plan/g1-internal/quality-pass.css": "7f6b8a91980b973b9519b1804c6b4a9c84442d53152f295121f671829cf0af9c",
+    "docs/ui-redesign-plan/g1-internal/quality-scenes.css": "2dbfff3fce17df6c89ccbb6392678cf0ba1c78094c5ccc8217975eef4d208a98",
+    "docs/ui-redesign-plan/g1-internal/scene-models.js": "3d491e525c8a624506dc2b3950fbafcd4f6aff3cda8099627bff6ece7e6154fa",
+    "docs/ui-redesign-plan/g1-internal/style.css": "9b5f9c1368c9e437599b8f9beabdd210517bfa2e9d1fc0d07f64b6c259c8e9d0"
+  },
+  "source_note": "Captured working-tree file hashes byte-verified against source_commit after capture. capture_head_commit remains the original HEAD; no claim it was already the later source commit.",
+  "base_commit": "0aec2d937b06370b5ec4abddf3f5f7a4ea180ae3"
+}
