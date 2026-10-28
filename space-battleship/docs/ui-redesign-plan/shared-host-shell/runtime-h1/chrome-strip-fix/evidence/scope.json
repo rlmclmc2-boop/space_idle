@@ -1,0 +1,41 @@
+{
+  "baseline": "52d379f4",
+  "changed_functions": {
+    "space-battleship/src/ui/equipment_panel.gd": [
+      "_draw",
+      "set_shared_host"
+    ],
+    "space-battleship/src/ui/planet_panel.gd": [
+      "_draw",
+      "_layout",
+      "set_shared_host"
+    ],
+    "space-battleship/scripts/planet_visual.gd": [
+      "_draw_background",
+      "_layout_globe"
+    ]
+  },
+  "unchanged_sources_sha256": {
+    "space-battleship/src/main.gd": "ba84b113f5065ca6e1f588e792c52283c6d15d3ca530ece664a871847142084b",
+    "space-battleship/src/ui/shared_host.gd": "edbd2c01beb297b2945cc2ad7b598dc2e9ed9383805228c200c02e623b679e57",
+    "space-battleship/src/ui/campaign_view.gd": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb",
+    "space-battleship/src/systems/planet.gd": "91a0eb5a5271d692f70a1be2fca72ff8d0ce6025d70e8da0583834258daa99c2",
+    "space-battleship/scripts/planet_facility_scene.gd": "8d96c5a7e9556a7047823fae475cbbdad91518b06ed53668ff0272c64fee0540",
+    "space-battleship/scripts/rotating_planet.gd": "71e88874dbf54d024c864f04e34e71209c8848bb7f3f13a54a4f0b50ca3e53be",
+    "space-battleship/scripts/rotating_planet.gdshader": "5f0fa0435a75238035198e4e79815910966ef541e2121532da022796f7931ed8"
+  },
+  "unchanged_planet_model_texture_files": [
+    "space-battleship/assets/planets/facilities_v5/README.md",
+    "space-battleship/assets/planets/facilities_v5/auto_explore.glb",
+    "space-battleship/assets/planets/facilities_v5/equipment.glb",
+    "space-battleship/assets/planets/facilities_v5/model-stats.json",
+    "space-battleship/assets/planets/facilities_v5/refinery.glb",
+    "space-battleship/assets/planets/facilities_v5/shipyard.glb",
+    "space-battleship/assets/planets/painted-v4/README.md",
+    "space-battleship/assets/planets/painted-v4/cloud-density.png",
+    "space-battleship/assets/planets/painted-v4/cloud-density.png.import",
+    "space-battleship/assets/planets/painted-v4/imagegen-requests.json",
+    "space-battleship/assets/planets/painted-v4/surface.png",
+    "space-battleship/assets/planets/painted-v4/surface.png.import"
+  ]
+}

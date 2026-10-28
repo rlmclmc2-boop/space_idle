@@ -1,0 +1,12 @@
+{
+	"battle_origin": "(855.875, 0.0)",
+	"battle_scale": "(0.9375, 0.9375)",
+	"equipment_root": "[P: (0.0, 0.0), S: (808.0, 900.0)]",
+	"equipment_ship": "[P: (211.0527, 337.1917), S: (386.3977, 386.3977)]",
+	"equipment_workbench": "[P: (16.0, 678.0), S: (776.0, 218.0)]",
+	"planet_background_extension": 25.0,
+	"planet_drawer": "[P: (22.0, 278.0), S: (276.0, 79.0)]",
+	"planet_root": "[P: (0.0, 0.0), S: (808.0, 900.0)]",
+	"planet_task": "[P: (258.0, 112.0), S: (226.0, 44.0)]",
+	"planet_visual": "[P: (0.0, 90.0), S: (808.0, 810.0)]"
+}

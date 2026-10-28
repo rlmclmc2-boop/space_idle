@@ -1,0 +1,45 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "window": [
+    1440,
+    900
+  ],
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "code_commit": "ecc9fecca30aa06e1b920954e89c92250f58f939",
+  "baseline": "52d379f4",
+  "scope": "Only retired local title backgrounds under existing shared chrome; no gate/gameplay/full-chain rerun; source checks confirm unchanged gate/domain/model/texture paths.",
+  "fixture": "Same isolated /tmp save previously marked with temporary Campaign grants and built planet-1 facilities. No new fixture source/config edits. Not natural unlock or visual approval.",
+  "changed_sources_sha256": {
+    "src/ui/equipment_panel.gd": "b4085904da613577452648fbdb7bf3c283f316b0c7a4dc3f5f13899e17cb7b50",
+    "src/ui/planet_panel.gd": "65b049706d2048618916f557797c9a290cd7c9e1d481edfd388afda051615ae5",
+    "scripts/planet_visual.gd": "448312860cc17a5d0d518d52b170157fc9868784fb4e902f9382fe3f3f8c835b"
+  },
+  "evidence_sha256": {
+    "geometry.json": "6433bf0f7404e9f6c30e8ebc3a63291f9863cb9770873373af7f9e43ef4768f5",
+    "scope.json": "6b695549ebc5c05fede2e4b83b3aa972864a529b4cb1320765deff1e6b3440c1",
+    "godot-check.txt": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "planet-shared.png": "932c62cb8c457a67ea06ade887ec4edbed08a542c75a5c64539e2a3a2a60c743",
+    "godot-live.txt": "991bc8b66603156c44ee1619bedc92318c85fa0b09683916a211024c60aab980",
+    "equipment-shared.png": "4e48e14347c2f6b983974733ffd75ca9e1c6c3dc6281609ea90e3f2d63f11c0d"
+  }
+}
