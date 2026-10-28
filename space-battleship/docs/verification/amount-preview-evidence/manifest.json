@@ -1,0 +1,76 @@
+{
+  "branch": "feat/amount-safe-previews",
+  "approved_design": "077cd522e514fde6a715ea6d02397e50263f2509",
+  "sources": {
+    "src/systems/reactor.gd": {
+      "canonical_lf_sha256": "3471aba0f8594b9533d5c3ec96445ed9770f7d6f0b4415cc4ec8dd7045468db0",
+      "git_blob": "3869e4d0c581d6bac9e8ef03409e193cef6a6bda"
+    },
+    "src/systems/research.gd": {
+      "canonical_lf_sha256": "a0e291babc2c6776ba9a412cc29674929b4b696780896a56cfb33d61161516f9",
+      "git_blob": "600fcc339fb45310f69608847b322be15ef18e48"
+    },
+    "src/game_session.gd": {
+      "canonical_lf_sha256": "2419737f31191d09378227de91553e5dedf7e8f58b739e5d881a458fe3f103de",
+      "git_blob": "0b37370baa347ffcc97759f00374d8879eab337c"
+    },
+    "foundation/tests/_amount_preview_probe.gd": {
+      "canonical_lf_sha256": "ae2a6c2cd411459fca94e290eff084170ed9ab40a02fd277fcc433cbdc30cf35",
+      "git_blob": "9f3cf5bb2e39b5dcf4455b261da0a5b3628d7584"
+    }
+  },
+  "evidence": {
+    "final-probe.txt": {
+      "sha256": "cafef9e7abab7432e60408464691dc0e6631d75e2436ede90bf1eaa341dde43a",
+      "original_file": "amount-preview-delivery.log",
+      "bytes": 415
+    },
+    "check-only.txt": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "original_file": "amount-preview-final-check.log",
+      "bytes": 73
+    },
+    "stale-native-initialization.txt": {
+      "sha256": "5c0dbea59a9394a0c254b9d2b5476d977d1f5b88a12896f3f32b29240315458e",
+      "original_file": "amount-preview-native.log",
+      "bytes": 1225
+    },
+    "native-build-tail.txt": {
+      "sha256": "dbd767d36192bbe67c14d87ef188397c612b948f39676088931dfa499659485a",
+      "kind": "last 12 original lines, byte-preserving excerpt",
+      "full_log_sha256": "fee4bad68ce80fd1c515e64f869ed1804416a0ffd27279ad7afe6d930147f5ee",
+      "full_log_path": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\galaxy-ledger-rebuild\\amount-native-build.log"
+    }
+  },
+  "final_probe_exit": 0,
+  "check_only_exit": 0,
+  "native_build_exit": 0,
+  "baseline_research": {
+    "commit": "077cd522e514fde6a715ea6d02397e50263f2509",
+    "path": "space-battleship/src/systems/research.gd",
+    "sha256": "56c124239a8a9d9fbfdc945300eb4fdf5f144e9320cebc9d245333521ce2a26c"
+  },
+  "configuration": {
+    "ok": true,
+    "errors": [],
+    "sourceHash": "3726dc29b176425c13428b4c5c8c3da73256d044425ac223955bb1de337310d2",
+    "semanticHash": "6b18941c69d6e647ed85cdcbbcd0584b2914dcd14d020c38351eda34082fb27c",
+    "outputHash": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de"
+  },
+  "native": {
+    "src_git_tree": "a990ed73bdb2c63471ebed15dd9ddbe500d22ce8",
+    "built_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
+    "old_dll_sha256": "ce6761c5dbd96f7262ffb5418fd2794afe52b6bf9a3164db5ea528d8b790dd75",
+    "godot": "4.7.2.stable.official.ed1daf0bf",
+    "godot_cpp": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+    "clang": "23.1.3",
+    "api_sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986"
+  },
+  "notes": [
+    "Final engine logs are original bytes. Exit codes are the tool execution records, not embedded engine attestations.",
+    "Stale-native initialization was interrupted after missing weapon_aims; it is not a completed test result. The intermediate probe source was not separately retained, so no fixed source hash is claimed for that failed attempt.",
+    "Final probe compares the pinned original Research source to the candidate under the same rebuilt native Amount implementation.",
+    "Production config was reused without edits/republication; its unchanged output SHA256 was rechecked.",
+    "No full gameplay/UI/save/reforge/native-fault-injection or subsequent geometry acceptance is claimed."
+  ]
+}

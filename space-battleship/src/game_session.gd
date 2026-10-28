@@ -661,23 +661,36 @@ func _hyperspace_credit(reward: Dictionary) -> Dictionary:
 		next_wallet[resource] = added.value
 	return {"ok": true, "wallet": next_wallet}
 
-func start_hyperspace_single(route: String) -> Dictionary:
+# Preview and commands share admission order; only commands reserve and accept.
+func _prepare_hyperspace_idle(route: String, automatic: bool, crew_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
+	if automatic and hyperspace_system.online_status().auto.enabled:
+		return {"ok": false, "reason": "AutoRunning"}
 	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().cycle_reached)):
 		return {"ok": false, "reason": "HyperspaceLocked"}
-	var prepared: Dictionary = hyperspace_system.prepare_idle(route, false, "", 0, float(_planet_factors.luck))
+	var crew_level: int = 0
+	if automatic:
+		var crew: Dictionary = crew_system.hyperspace_candidate(crew_id)
+		if not crew.ok: return crew
+		crew_level = int(crew.level)
+	return hyperspace_system.prepare_idle(route, automatic, crew_id, crew_level, float(_planet_factors.luck))
+
+func hyperspace_idle_preview(route: String, automatic: bool, crew_id: String = "") -> Dictionary:
+	var prepared: Dictionary = _prepare_hyperspace_idle(route, automatic, crew_id)
+	if not prepared.ok: return prepared
+	var receipt: Dictionary = prepared.receipt
+	return {"ok": true, "route": str(receipt.route), "level": int(receipt.level),
+		"automatic": automatic, "duration": float(receipt.duration),
+		"crew": {"id": str(receipt.crew_id), "level": int(receipt.crew_level), "luck": float(receipt.luck)} if automatic else null}
+
+func start_hyperspace_single(route: String) -> Dictionary:
+	var prepared: Dictionary = _prepare_hyperspace_idle(route, false, "")
 	if not prepared.ok: return prepared
 	hyperspace_system.accept_idle(prepared.receipt, false)
 	return {"ok": true, "receipt": hyperspace_system.online_status().idle}
 
 func start_hyperspace_auto(route: String, crew_id: String) -> Dictionary:
-	if not run_state.is_running(): return run_state.rejection()
-	if hyperspace_system.online_status().auto.enabled: return {"ok": false, "reason": "AutoRunning"}
-	if not hyperspace_system.unlocked(int(campaign_system.progress_facts().cycle_reached)):
-		return {"ok": false, "reason": "HyperspaceLocked"}
-	var crew: Dictionary = crew_system.hyperspace_candidate(crew_id)
-	if not crew.ok: return crew
-	var prepared: Dictionary = hyperspace_system.prepare_idle(route, true, crew_id, int(crew.level), float(_planet_factors.luck))
+	var prepared: Dictionary = _prepare_hyperspace_idle(route, true, crew_id)
 	if not prepared.ok: return prepared
 	var reserved: Dictionary = crew_system.reserve_hyperspace(crew_id, route, false)
 	if not reserved.ok: return reserved
@@ -750,6 +763,16 @@ func economy_display_context() -> Dictionary:
 	context.make_read_only()
 	return context
 
+## Public preview inputs expose only an aggregate factor to the Research owner.
+func research_preview_inputs() -> Dictionary:
+	if research == null or economy == null or _research_speed.is_empty() or not _crew_factors.has("research_staffed"):
+		return {"ok": false, "reason": "SessionUnavailable"}
+	var rates: Dictionary = economy.income_rates(wall_time, game_time, research.income_window(), "investment")
+	if not rates.ok: return rates
+	return {"ok": true, "wallet": economy.budget().duplicate(true), "income_rates": rates.rates.duplicate(true),
+		"speed_factor": _research_speed.duplicate(true), "staffed": bool(_crew_factors.research_staffed),
+		"window_seconds": research.income_window(), "game_time": game_time}
+
 func reactor_inputs() -> Dictionary:
 	var multiplier: Dictionary = _hyperspace_module_factor("extra_storage")
 	if not multiplier.ok: return multiplier
@@ -764,6 +787,17 @@ func _hyperspace_module_factor(module_id: String, totals = null) -> Dictionary:
 func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
 		"game_time": game_time}
+
+func equipment_slot_facts() -> Array:
+	return equipment.slot_facts(campaign_system.ship_facts().mounts, game_time, int(_world_factors.equipment_levels))
+
+func equipment_comparison(slot_id: String, candidate_id: String, count: int = 1, maximum: bool = false) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var inputs: Dictionary = equipment_inputs()
+	inputs.extra_bonus = int(_world_factors.equipment_levels)
+	inputs.ai = _research_factors
+	inputs.reactor = _reactor_factors
+	return equipment.slot_comparison(slot_id, candidate_id, count, inputs, economy.can_pay, maximum)
 
 func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}, module_totals = null,
 		drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
@@ -906,6 +940,20 @@ func refresh_growth() -> bool:
 func enhancement_inputs() -> Dictionary:
 	return {"bonus": int(_world_factors.enhancement_levels), "unlocked": campaign_system.available,
 		"armours": equipment.equipped_armours(campaign_system.ship_facts().mounts)}
+
+func _enhancement_read_inputs() -> Dictionary:
+	return {"bonus": int(_world_factors.enhancement_levels), "unlocked": campaign_system.available,
+		"armours": equipment.accepted_armours(campaign_system.ship_facts().mounts)}
+
+# Read on visible refresh; no module signal can precede Session acceptance.
+func enhancement_presentation() -> Dictionary:
+	return enhancement.presentation_model(_enhancement_read_inputs())
+
+func enhancement_branch_details(effect: String, node: int) -> Dictionary:
+	return enhancement.branch_details(effect, node, _enhancement_read_inputs())
+
+func enhancement_purchase_preview(count: int) -> Dictionary:
+	return enhancement.purchase_preview(count, _enhancement_read_inputs(), economy.affordable)
 
 func publish_enhancement(changed: Dictionary, costs: Dictionary, kind: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
