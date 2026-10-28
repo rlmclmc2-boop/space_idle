@@ -30,6 +30,7 @@ var _quote_dirty: bool = true
 var _running: bool = false
 var _message_until: int = 0
 var _budget: Label
+var _cost: Label
 var _notice: Label
 var _level: Label
 var _purchase: Button
@@ -50,16 +51,17 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	theme = Theme.new()
 	theme.default_font = preload("res://assets/fonts/NotoSansSC-Regular.tres")
 	var surface := SubViewportContainer.new()
-	surface.size = size
+	surface.position = Vector2(0, 65)
+	surface.size = Vector2(808, 835)
 	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(surface)
 	_stage_viewport = SubViewport.new()
-	_stage_viewport.size = Vector2i(808,900)
+	_stage_viewport.size = Vector2i(808,835)
 	_stage_viewport.disable_3d = true
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	surface.add_child(_stage_viewport)
 	_stage = Stage.new()
-	_stage.size = size
+	_stage.size = Vector2(808, 835)
 	_stage_viewport.add_child(_stage)
 	_build()
 
@@ -122,23 +124,36 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	add_child(button)
 	return button
 
+func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
+	var panel := Panel.new()
+	panel.position = rect.position
+	panel.size = rect.size
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(0.05, 0.16, 0.22, opacity)
+	box.border_color = Color(0.62, 0.77, 0.75, 0.55)
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(10)
+	panel.add_theme_stylebox_override("panel", box)
+	add_child(panel)
+	return panel
+
 func _build() -> void:
-	var title := _label(Vector2(26,18), 170, 23)
-	title.text = "反应炉"
-	title.add_theme_color_override("font_color", Color("203f50"))
-	_level = _label(Vector2(612,23), 170)
-	_level.add_theme_color_override("font_color", Color("315662"))
+	_panel(Rect2(16, 752, 776, 132), 0.94)
+	_level = _label(Vector2(30, 761), 124, 16)
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
-		var effect := _label(layout.effect,float(layout.width),18)
+		var offset := Vector2(0, 65)
+		var readout := _panel(Rect2(layout.effect + offset - Vector2(8, 6), Vector2(float(layout.width) + 10, 58)), 0.82)
+		var effect := _label(layout.effect + offset,float(layout.width),17)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply,float(layout.width),16)
+		var supply := _label(layout.supply + offset,float(layout.width),16)
 		supply.size.y = 24
 		supply.add_theme_color_override("font_color", Color("c1dfd9"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
-		slider.position = layout.slider
-		slider.size = Vector2(float(layout.track),18)
+		slider.position = layout.slider + offset
+		slider.size = Vector2(float(layout.track),32)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -167,17 +182,17 @@ func _build() -> void:
 		slider.value_changed.connect(_slide.bind(id))
 		slider.focus_entered.connect(func(): _selected = id; _update_stage())
 		add_child(slider)
-		_rows[id] = {"effect":effect, "supply":supply, "slider":slider}
+		_rows[id] = {"effect":effect, "supply":supply, "slider":slider, "readout":readout}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(45,833),340,16)
+	_budget = _label(Vector2(159,761),620,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_purchase = _button("升级",Rect2(400,828,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(559,833,62,36),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认",Rect2(629,833,66,36),func(): _command(_submit))
-	_restore = _button("还原",Rect2(702,833,53,36),_reset)
-	_notice = _label(Vector2(278,91),252,14)
-	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_notice.size.y = 68
+	_cost = _label(Vector2(30, 797), 220, 16)
+	_purchase = _button("升级",Rect2(256,788,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(416,790,72,40),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(496,790,72,40),func(): _command(_submit))
+	_restore = _button("还原",Rect2(576,790,72,40),_reset)
+	_notice = _label(Vector2(30,836),740,16)
+	_notice.size.y = 42
 	_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_notice.clip_text = false
 	for button in [_purchase,_equal,_apply,_restore]: button.disabled = true
@@ -291,6 +306,7 @@ func _unknown(message: String) -> void:
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
 	_budget.text = "供能状态未知"
+	_cost.text = "费用 —"
 	_level.text = "等级 —"
 	_notice.text = message
 	_stage.clear_snapshot()
@@ -301,7 +317,7 @@ func _refresh_quote() -> void:
 	_quote_dirty = false
 	if not _read_quote.is_valid():
 		_quote = {}
-		_purchase.text = "升级 · —"
+		_cost.text = "费用 —"
 		_update_buttons()
 		return
 	presentation_counts.quote_reads += 1
@@ -309,7 +325,7 @@ func _refresh_quote() -> void:
 	if quote.get("ok") != true or not quote.has("costs") or not quote.costs is Dictionary or not quote.has("can_purchase") or not quote.can_purchase is bool:
 		_quote = {}
 		_quote_cost_ids.clear()
-		_purchase.text = "升级 · —"
+		_cost.text = "费用 —"
 		_purchase.tooltip_text = str(quote.get("reason", "报价暂不可用"))
 		_update_buttons()
 		return
@@ -319,11 +335,12 @@ func _refresh_quote() -> void:
 	for id in _quote_cost_ids:
 		if not quote.costs[id] is String:
 			_quote = {}
-			_purchase.text = "升级 · —"
+			_cost.text = "费用 —"
 			_update_buttons()
 			return
 		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
-	_purchase.text = "升级 · " + " + ".join(labels)
+	_cost.text = "费用 " + " + ".join(labels)
+	_cost.tooltip_text = " + ".join(labels)
 	var reason: String = str(quote.get("reason", ""))
 	var exact_costs: Array = []
 	for id in _quote_cost_ids: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))

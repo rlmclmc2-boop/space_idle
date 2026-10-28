@@ -1,0 +1,101 @@
+extends SceneTree
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func _frames(count: int) -> void:
+	for i in count: await process_frame
+	await RenderingServer.frame_post_draw
+
+func _shot(tag: String) -> void:
+	root.get_texture().get_image().save_png("/tmp/space-idle-native472/reactor-hub-r4-" + tag + ".png")
+
+func _dismiss_guidance(game: Node2D) -> void:
+	var session = game.session
+	var pending: Dictionary = session.pending_guidance()
+	var attempts: int = 0
+	while not pending.is_empty() and attempts < 20:
+		var dismissed: Dictionary = session.dismiss_guidance(str(pending.kind), str(pending.id))
+		assert(dismissed.ok)
+		pending = session.pending_guidance()
+		attempts += 1
+	game._sync_guidance()
+	print("GUIDANCE ",attempts," pending=",pending," pauses=",session.pause_reasons)
+
+func _open(game: Node2D, extra: bool = false) -> void:
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	if extra: saved.grants["reactor_module:condensation"] = true
+	var restored: Dictionary = session.campaign_system.restore_state(saved)
+	assert(restored.ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	var refreshed: Dictionary = session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor)
+	assert(refreshed.ok)
+	_dismiss_guidance(game)
+	game._select_left_module("reactor")
+
+func _clip_frame(index: int) -> void:
+	var image = root.get_texture().get_image().get_region(Rect2i(0, 0, 808, 900))
+	image.save_png("/tmp/reactor-hub-r4-frames/%03d.png" % index)
+
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	root.content_scale_size = Vector2i(1440,900)
+	var game: Node2D = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await _frames(28)
+	_open(game,false)
+	await _frames(8)
+	_shot("three-zero")
+	_open(game,true)
+	await _frames(8)
+	var scene = game.reactor_scene
+	print("STATE0 ",game.session.game_time," run=",game.session.run_state.is_running()," paused=",game.session.pause_reasons," departure=",game.session.campaign_system.departure_active())
+	_shot("four-zero")
+	scene._equal.pressed.emit()
+	await _frames(2)
+	assert(scene._preview.get("ok",false))
+	scene._apply.pressed.emit()
+	await _frames(8)
+	assert(scene.last_result.get("ok",false))
+	var reading: Dictionary = game.session.reactor_system.presentation_model()
+	assert(reading.ok and reading.modules.size() == 4)
+	for row in reading.modules: assert(row.load > 0.0)
+	_dismiss_guidance(game)
+	for i in 40:
+		game.session._step(1.0/60.0)
+		if not game.session.pending_guidance().is_empty(): _dismiss_guidance(game)
+		await _frames(1)
+	print("STATE1 ",game.session.game_time," run=",game.session.run_state.is_running()," paused=",game.session.pause_reasons," departure=",game.session.campaign_system.departure_active())
+	_shot("four-active-a")
+	var before: int = scene._stage.diagnostics.field_updates
+	for i in 35:
+		game.session._step(1.0/60.0)
+		if not game.session.pending_guidance().is_empty(): _dismiss_guidance(game)
+		await _frames(1)
+	_shot("four-active-b")
+	print("ACTIVE four=",reading.modules.size()," field_updates=",scene._stage.diagnostics.field_updates-before," phase=",scene._stage._phase)
+	var clip_before: int = scene._stage.diagnostics.field_updates
+	for i in 12:
+		game.session._step(1.0/60.0)
+		if not game.session.pending_guidance().is_empty(): _dismiss_guidance(game)
+		await _frames(1)
+		_clip_frame(i)
+	print("CLIP_RUNNING phase=",scene._stage._phase," updates=",scene._stage.diagnostics.field_updates-clip_before)
+	game.session.set_pause("user",true)
+	var pause_phase: float = scene._stage._phase
+	var pause_updates: int = scene._stage.diagnostics.field_updates
+	for i in 8:
+		await _frames(1)
+		_clip_frame(12+i)
+	print("CLIP_PAUSED phase=",pause_phase,"->",scene._stage._phase," updates=",scene._stage.diagnostics.field_updates-pause_updates)
+	assert(scene._stage._phase == pause_phase and scene._stage.diagnostics.field_updates == pause_updates)
+	game.session.set_pause("user",false)
+	for i in 12:
+		game.session._step(1.0/60.0)
+		if not game.session.pending_guidance().is_empty(): _dismiss_guidance(game)
+		await _frames(1)
+		_clip_frame(20+i)
+	print("CLIP_RESUMED phase=",pause_phase,"->",scene._stage._phase," updates=",scene._stage.diagnostics.field_updates-pause_updates)
+	quit()
