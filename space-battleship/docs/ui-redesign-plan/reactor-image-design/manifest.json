@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "focused_revision_pending_independent_review_and_user_confirmation",
+  "status": "R5_overall_approved_by_user_four_device_layout_pending_independent_review_and_user_choice",
   "target_client_logical_px": [
     1440,
     900
@@ -18,6 +18,22 @@
     900
   ],
   "images": [
+    {
+      "path": "reactor-four-fixed-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "2a1ef929d86e4375284b1bc8ede69eb8e41ee5136626b38a2faa0ba2423c828c"
+    },
+    {
+      "path": "reactor-four-scroll-bottom-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "4935cf6977a455e45e311c66fe25657bb49cf8fb80d243bb40fef3f78e5154fc"
+    },
     {
       "path": "reactor-r1-raw.png",
       "native_size_px": [
@@ -63,5 +79,15 @@
   "runtime_evidence": false,
   "geometry_issue": "R5 divider remains near native x921 / width1586, equivalent logical x836; target x808. Explicitly not accepted as exact region compliance; stop repetitive image generation for this one issue.",
   "review_image": "reactor-r5-raw.png",
-  "interaction_display": "All three directly adjustable sliders; only selected weapons device expands precise entry and detail; unchanged values not duplicated; whole-plan confirm inactive."
+  "interaction_display": "All three directly adjustable sliders; only selected weapons device expands precise entry and detail; unchanged values not duplicated; whole-plan confirm inactive.",
+  "comparison_images": [
+    "reactor-four-fixed-raw.png",
+    "reactor-four-scroll-bottom-raw.png"
+  ],
+  "recommended_layout": "fixed_four_continuous_bays",
+  "comparison_limits": [
+    "Native output remains1586x992 with divider near58.1% instead of target56.11%.",
+    "Scrolling image incorrectly omitted shared top navigation; generation defect, not intended design.",
+    "Static images do not prove scrolling coupling alignment, input hit areas or natural unlock flow."
+  ]
 }

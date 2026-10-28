@@ -1,5 +1,7 @@
 # 反应堆真实界面：来源与改造判断（待独立审查）
 
+最新状态：用户已认可R5整机效果，但要求补齐四设备完整状态的布局选择；最新[固定四位/滚动评估](reactor-image-design/four-device-evaluation.md)优先推荐固定四位，覆盖本页早期三设备优先与滚动备选的安装判断。最终布局未确认，仍只交image图稿，不实施UI。
+
 入口：[游戏设计](../game-design/README.md) → 13 → [M3/V3](../game-design/art/modules/reactor.md)、[S5](../game-design/art/sources.md#s5)。本次仅交来源与改造判断；不是方案获批、游戏实现或V3通过。共用美术规范由装备组维护，本组等待引用，不修改该规范。遵循仓库 token-opt/doc-compact 指引定向读取。
 
 ## 实际查看的固定证据
