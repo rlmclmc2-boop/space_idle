@@ -792,7 +792,25 @@ func _draw_selected_locator() -> void:
             var sign:Vector2=Vector2(1 if corner.x==target.position.x else -1,1 if corner.y==target.position.y else -1)
             draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),Color("173542"),5,true)
             draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),accent,2,true)
-    var badge:Rect2=Rect2(Vector2(target.end.x-29,target.end.y+3),Vector2(32,22))
-    if row.category=="defence" and int(row.index)==2:badge.position=target.position+Vector2(-30,14)
+    var badge:Rect2=_locator_badge_rect(row,target)
+    if not badge.has_area():return
     draw_style_box(_locator_badge_style,badge)
     draw_string(_font_strong,badge.position+Vector2(3,16),("武" if row.category=="weapon" else "防")+str(int(row.index)+1),HORIZONTAL_ALIGNMENT_LEFT,-1,12,CREAM)
+
+func _locator_badge_rect(row: Dictionary, target: Rect2) -> Rect2:
+    var centre:Vector2=target.get_center()
+    var positions:Array=[Vector2(target.end.x-29,target.end.y+3),Vector2(target.end.x+5,centre.y-11),Vector2(target.position.x-37,centre.y-11),Vector2(centre.x-16,target.position.y-25),Vector2(target.position.x,target.end.y+3),Vector2(centre.x-16,target.end.y+3),Vector2(target.end.x+5,target.position.y),Vector2(target.position.x-37,target.end.y-22)]
+    if row.category=="defence" and int(row.index)==2:positions.push_front(target.position+Vector2(-30,14))
+    for position in positions:
+        var badge:Rect2=Rect2(position,Vector2(32,22))
+        if not Rect2(16,90,776,470).encloses(badge):continue
+        var blocked:bool=false
+        for id in _slot_buttons:
+            if badge.intersects(_slot_buttons[id].button.get_rect().grow(4)):blocked=true;break
+        if blocked:continue
+        for other in _facts:
+            if other.dormant or other.id==row.id:continue
+            if badge.intersects(_component_rect(other).grow(2)):blocked=true;break
+        if not blocked:return badge
+    # Never paint a clipped fragment if a future unverified layout has no free candidate.
+    return Rect2()
