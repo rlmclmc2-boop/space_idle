@@ -1,14 +1,16 @@
 # 中央反应堆 Godot 实施检查点（尚未完整交付）
 
-## 统一锚点视觉修订（仍待根审与原独审）
+## 统一锚点视觉修订（整体视觉已退回）
 
-`167c3154`的整屏被退回：1024×1536底板曾非等比拉至808×900，前景设备又独立等比定位，产生两套错位壳和开放圆盖。新候选使用一张完整1024×1536底板承载圆座、四条短主管及同投影的四台空白控制台；三设备版本在同一源图位置封闭右下支路并去掉该控制台。Godot仅用统一`scale=0.6`、`origin=(96.8,20)`布置源图的机械部分；五个工作层、导管流动层及文字/滑杆均由同一源图座标转换。左右剩余97px为深青侧留白。未改变已接入的Reactor/Economy计算和局部失效。
+`167c3154`的整屏被退回：1024×1536底板曾非等比拉至808×900，前景设备又独立等比定位，产生两套错位壳和开放圆盖。新候选使用一张完整1024×1536底板承载圆座、四条短主管及同投影的四台空白控制台；三设备版本在同一源图位置封闭右下支路并去掉该控制台。Godot仅用统一`scale=0.6`、`origin=(96.8,20)`布置源图的机械部分；五个工作层、导管流动层及文字/滑杆均由同一源图座标转换。左右剩余97px为深青侧留白。未改变已接入的Reactor/Economy计算和局部失效。`e77b572b`的同源锚点改善了机械接合，但用户已退回整体观感：厚壳、巨框和贴边布局让结构压过核心及设备工作效果，不能据几何改善宣称V3画面通过。
 
 四设备原图`/workspace/generated_images/exec-cfdbee3f-f2ae-44e6-8c51-2f18cf97754a.png`对应`assets/ui/reactor/centered-v1/mounting-plate-r2.png`，SHA256为`4fe7153eb3b0fcc5739d40d6fc3c4f03f3f61c0ca5965fd60ef41e235fcb189d`；三设备原图`exec-7f4487d6-284a-4310-9bfb-b46a145b1cc3.png`对应`mounting-plate-three-r2.png`，SHA256为`95655914c16dfce3d0d6b9e9c150360965475d362aa243a771d32d6be1b489b0`。两张均是原生不透明图，无后处理或游戏文字。[三设备整屏](evidence/reactor-visual-r16-three-active.png)、[四设备运行帧A](evidence/reactor-visual-r16-four-active-t0.png)、[帧B](evidence/reactor-visual-r16-four-active-t1.png)及[真实Session日志](evidence/reactor-visual-r16.log.txt)是最新视觉候选证据；开放仍经公开Campaign接口临时授予。
 
 最新控件位置再由[同Session真实鼠标驱动](evidence/reactor-mouse-r16-driver.gd.txt)核对，日志记录拖动2267→0、鼠标确认成功、临时注入预算后购级2→3；[草稿](evidence/reactor-mouse-preview-r16.png)、[确认](evidence/reactor-mouse-applied-r16.png)、[购级](evidence/reactor-mouse-purchased-r16.png)为对应整屏。该鼠标检查不代表全控件或视觉独审通过。
 
-另以独立临时存档、没有开放键注入的[自然第一关驱动](evidence/reactor-natural-stage1-driver.gd.txt)运行真实Godot/native战斗，[日志](evidence/reactor-natural-stage1.log.txt)记录初始`available=false/cleared_stages={}`到真实结算后`available=true/cleared_stages={1:true}`；[反应堆整屏](evidence/reactor-natural-stage1.png)是同一Session的开放页。这只证明第一关自然开放。凝聚第15关自然开放、星球征服后的非零免费量UI、硬件性能仍未通过本候选验证；Mesa llvmpipe帧时不可外推至目标硬件。
+另以独立临时存档、没有开放键注入的[第一关进度驱动](evidence/reactor-natural-stage1-driver.gd.txt)运行真实Godot/native战斗，[日志](evidence/reactor-natural-stage1.log.txt)记录初始`available=false/cleared_stages={}`到真实结算后`available=true/cleared_stages={1:true}`；[反应堆整屏](evidence/reactor-natural-stage1.png)是同一Session的开放页，外观属`167c3154`的r13版本，并非上方`e77b572b`的r16候选。驱动调用`session._step(1/60)`加速推进游戏时间，战斗与结算仍依真实规则；这证明第一关规则开放路径，不代表人工等待的自然时长或r16全零实屏。凝聚第15关自然开放、星球征服后的非零免费量UI、硬件性能仍未通过本候选验证；Mesa llvmpipe帧时不可外推至目标硬件。
+
+非零免费量的领域路径已沿[现有星球重铸探针](../../../foundation/tests/_stage6_reforge_live_probe.gd)的门槛夹具定向核对：[驱动](evidence/reactor-free-after-reforge-driver.gd.txt)用Campaign公开`accept_reforge`先打开第5关门槛，再以真实人员派遣、星球探索/船坞建造及公开`claim_build`完成第一星球重铸准入，调用`Session.prepare_reforge("1")`得到征服后的候选Session。[日志](evidence/reactor-free-after-reforge.log.txt)记录`reactor_inputs().free_charge`从0.0到0.1，`Reactor.presentation_model()`三设备均`has_free=true`，每台`free=10`、`effective=10`、`load=0.1`。该驱动沿既有探针使用内部时间推进缩短等待，门槛也由夹具设置；它证明合法重铸候选的公开输入/展示出口，不是自然通关至重铸或完整主界面免费量显示证据。
 
 ## 视觉修订候选（待根线程与原独审复核）
 
@@ -29,10 +31,12 @@
 | `4c26b2e4` | 共享左模块注册点改为`_register_left_module(layer,id,title,scene,unlock_kind,unlock_target)`；按现行开放配置，反应堆使用`feature:reactor`，星球首入口使用`planet:1`。 | Godot4.7.2入口编译与`git diff --check`通过；星球页面由其所属任务独立提供。 |
 | `170849dd` | 按`3d14ded8`方案适配消费者：当前模型与购级报价分读、局部变化通知、显式running与paused、未知禁用、被动shares草稿保留已生成canonical金额。 | 当时仅完成受控夹具；下述`3d763099`和真实Session流程已取代该阶段性限制。 |
 | `e5cbbb33` | 顶栏唯一模块导航移至x410/498/586，按钮80宽、间距8；末项止于x666。 | 装备副标题布局框止于x404，留6px；现有“舰桥面板”按钮始于x678，留12px。星球页尚未合入本分支，第三按钮只完成坐标净空，未作三页实屏验收。 |
-| `3d763099` | 定向接入已审核的所有者展示出口`26832431`，不引入其分支其他变更。 | 字段和信号已由真实Session流程核对；自然游戏开放仍待验收。 |
+| `3d763099` | 定向接入已审核的所有者展示出口`26832431`，不引入其分支其他变更。 | 字段和信号已由真实Session流程核对；第一关自然开放已由本页新证据补验，第15关凝聚自然开放仍待验收。 |
 | `65ab683e` | 同值整组确认后从已持有的当前快照退出草稿显示态，避免依赖净变化通知；优化大数显示与购级标签。 | 真实同值确认显示和模型读取计数已核；不增加领域全读。 |
 
 上述提交均已推送至`origin/implement/reactor-centered-godot`。本组修改了`src/main.gd`的最小挂载，未重写装备Control、玩法后端计算或native源码。新资产原件为`/workspace/generated_images/exec-eb6483c5-434b-49b2-8739-96feb6601fc6.png`，已按原图复制为`assets/ui/reactor/centered-v1/supports.png`。导入产生的大量其他未追踪`.import/.uid`未整批入Git。
+
+**共享宿主移交整体界面线程：** 本组`src/main.gd`当前固定在上述`51e704c8`的左模块挂载、`4c26b2e4`的`_register_left_module(layer,id,title,scene,unlock_kind,unlock_target)`开放接口，以及`e5cbbb33`的导航坐标；没有待交接的`main.gd`或全局规范未提交改动。现行桌面尺寸假设为1440×900，其中左808×900、右战场632×900。导航x410/498/586、各宽80的局部净空曾通过，但旧“舰桥面板”样式与导航不统一，顶部标签压近设备，左右留纯色空带；这些是整体界面线程的待决冲突，不是M3本组继续修改的范围。整体线程可从本分支固定提交读取挂载接口，反应堆内部Control及真实业务绑定仍由本组维护。
 
 ## 接口依赖与验收边界
 
@@ -40,7 +44,7 @@
 
 本Control通过`bind_presentation(reader, context)`接只读展示与`{game_time,paused,running}`，另通过`bind_purchase_quote(reader)`只读+1报价。消费者需要等级、容量/剩余、购级报价、开放设备ID及手动占比/数量、免费量、有效量、最终增益和实际有效负载；已按方案分开场景与报价失效。整组确认提交预览中的全套canonical金额目标；均分确认调用一次`distribute`。普通拒绝应零写入、保留完整草稿；开放集合变化使旧预览失效。所有者提供有限显示比例，前端不重做均分Amount计算。
 
-已在Godot4.7.2、Xorg:99和真实native Session的同一进程中运行[真实流程驱动](evidence/live-flow-driver.gd.txt)，输出[日志](evidence/live-flow-r8.log.txt)及[整屏截图组](evidence/reactor-flow-four-active-t0.png)。该驱动通过公开Campaign存取与Reactor刷新临时授予`feature:reactor`和`reactor_module:condensation`，并通过公开经济API注入购级预算；这明确**不是自然进度开放或自然收入的证据**。真实Session的领域展示出口、整组预览/接纳和拒绝均为实际调用，截图未使用夹具模型。正常新局的自然开放、非零免费量仍待实测。
+已在Godot4.7.2、Xorg:99和真实native Session的同一进程中运行[真实流程驱动](evidence/live-flow-driver.gd.txt)，输出[日志](evidence/live-flow-r8.log.txt)及[整屏截图组](evidence/reactor-flow-four-active-t0.png)。该驱动通过公开Campaign存取与Reactor刷新临时授予`feature:reactor`和`reactor_module:condensation`，并通过公开经济API注入购级预算；这组截图**不是自然进度开放或自然收入的证据**。真实Session的领域展示出口、整组预览/接纳和拒绝均为实际调用，截图未使用夹具模型。第一关自然开放已由本页新证据单独验证；第15关凝聚自然开放与非零免费量UI仍待实测。
 
 | 真实流程 | 证据与结果 |
 |---|---|
