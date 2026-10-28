@@ -141,8 +141,8 @@
       "bytes": 1384248
     },
     "README.md": {
-      "sha256": "1297cab3f97ad4a63d8861477b0f287b54420457a7990af4a793f2ce47c05c7b",
-      "bytes": 11225
+      "sha256": "bed354f72d208af50d0c975e6832454c81cca1eede183b0ac825b39c1178628a",
+      "bytes": 11583
     },
     "button-paint-original-cec3.json": {
       "sha256": "000df899e8f4da23a7c1db891454958c2ed142ddee0db90b96e116eb221bd14d",
@@ -264,5 +264,15 @@
       "sha256": "2067c525a2e51e081aaf43fcabd7f2779aa4d0e5bea36165ab6ed4baf7b0fea4",
       "bytes": 5739
     }
+  },
+  "purchase_evidence_scope": {
+    "supported": [
+      "three accepted +1 purchases",
+      "Lv19 -> Lv20 -> Lv21 -> Lv22",
+      "actual purchase_receipt.spent receipts",
+      "continuous feedback and stable workbench layout"
+    ],
+    "wallet_observation": "All three purchases retain the preceding long-MAX huge wallet; before/after encoded wallet values are identical in operations.json.",
+    "deduction_limit": "The driver compares against the same Amount.sub_nonnegative result. This does not establish an observable exact wallet deduction in this batch; original driver, operations and logs remain unchanged."
   }
 }

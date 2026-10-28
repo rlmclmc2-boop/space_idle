@@ -60,7 +60,7 @@
 
 ## 实际交易、反馈频率与保护边界
 
-[最终驱动](capture-driver.gd.txt)、[操作记录](operations.json)、[最终日志](capture.log.txt)及[解析检查](check.log.txt)：进程exit0，`EQUIPMENT_OPTICAL_LAYOUT_COMPLETE failures=0 records=7`，另有同进程按需记录整屏。3笔真实快速+1均accepted，Lv19→20→21→22，实际花费依次1,600铁/10材料、1,900铁、2,300铁；每笔按原spent逐资源用Amount精确核钱包差值。三笔期间工作台矩形相同、标题只显示对象/Lv，短反馈层原位更新并在3秒后消退，历史中可回看三笔原明细。这里模拟频繁回执到达，不宣称新增或验证自动升级系统。
+[最终驱动](capture-driver.gd.txt)、[操作记录](operations.json)、[最终日志](capture.log.txt)及[解析检查](check.log.txt)：进程exit0，`EQUIPMENT_OPTICAL_LAYOUT_COMPLETE failures=0 records=7`，另有同进程按需记录整屏。3笔真实快速+1均accepted，Lv19→20→21→22；真实purchase_receipt.spent回执依次为1,600铁/10简并物质、1,900铁、2,300铁。本批三笔购买沿用前一长MAX状态的巨额钱包，operations中三笔before/after钱包编码均完全相同。驱动使用同一Amount.sub_nonnegative计算期望值后比对，因此该检查不能证明可观察的精确扣减；原驱动中的“actual frequent spent remains exact”检查名和0失败日志原样保留，但不作为本批精确扣费正常的结论。三笔期间工作台矩形相同、标题只显示对象/Lv，短反馈层原位更新并在3秒后消退，历史中可回看三笔原明细。这里模拟频繁回执到达，不宣称新增或验证自动升级系统。
 
 按需记录是本模块自有Popup，has_exclusive_ui/force hide同时覆盖；实际打开与强制关闭已检查。历史最多8条字符串，不增Owner状态/存档字段。既有command_finished、last_result、故障/成交解释及批量处理保持；_process仅增加UI短反馈计时，不推进10游戏秒冷却或Session时间。
 
