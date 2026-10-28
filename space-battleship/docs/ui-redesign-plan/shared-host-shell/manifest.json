@@ -15,9 +15,9 @@
   },
   "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
-  "scope": "Shared host only. H1 geometry remains withdrawn. H2 preserves existing 808x900 module roots, 632x900 battle container and 0.9375 projection at (855.875,0). Schematic states now cover ordinary, more and collapsed/restore with named existing content mappings. Per-module public availability sources, popup/focus/Space-G gates and battle/HUD ownership are recorded in canonical 14 section 6.1. Schematic states are not game-quality or runtime evidence. Matching visual-quality images, real text/amount readability and module minimum-readable-installation confirmations remain incomplete. No requirement to adapt to H1 dimensions.",
+  "scope": "H2 retains 808/632 and original battle mapping. Added exact 1440x900 static design assembly scenes and 808x65 real-size browser font/layout evidence. These are design artifacts, not Godot/game evidence. Existing canonical assets are consumed without pixel edits; static module labels and battle pose do not prove business state, native geometry or shader behavior. Reactor local-level placement remains a proposed owner coordination change, not an approved relocation. No implementation or main merge.",
   "implementation_changed": false,
-  "review_status": "H1-repartition-withdrawn; H2 root/original-review blockers documented and revised; pending reviewer acceptance; no-implementation-authorization",
+  "review_status": "500b1c1b-region-principles-and-contract-boundaries-passed-limited-double-review; no-visual-or-implementation-authorization; H2-static-fullscreen-and-type-evidence-added; owner-installation-notes-pending",
   "module_direction_status": {
     "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
     "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
@@ -77,10 +77,45 @@
     }
   ],
   "remaining_evidence": [
-    "H2 matching art-quality full-screen proposal",
-    "Real-size font and long-amount readability",
-    "Existing header boundaries and minimum readable installation confirmations from each module",
-    "Reviewer acceptance of input gating and HUD ownership proposals",
-    "User design confirmation before implementation"
+    "Owner Git-written current header safe zones and current minimum readable installation statements",
+    "Resolve reactor local level and planet 90px header without forcing 65px reflow",
+    "Visual review of H2 static assembly and extreme-value presentation strategy",
+    "User whole-host design confirmation before implementation",
+    "Authorized later Godot actual font/input/runtime V0 verification"
+  ],
+  "h2_quality_states": [
+    {
+      "path": "evidence/h2-normal-1440x900.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "e6e9215d414b573c2dafd48ae8053c21d797e5731e1ef28b55f5aaa00ec27801"
+    },
+    {
+      "path": "evidence/h2-more-1440x900.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "a43601288c6a883196f9df2cde0c7cf748eb90f7d1727f17d833572ca7617b28"
+    },
+    {
+      "path": "evidence/h2-collapsed-1440x900.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "523fe61012c924fcb418fc30d860bec3dc8df71e356cc9da2ee75bb55856fb02"
+    }
+  ],
+  "h2_source_files": [
+    "host-preview.html",
+    "typography.html",
+    "render-design.py",
+    "evidence/README.md",
+    "evidence/header-type-metrics.json",
+    "references/source.json",
+    "module-installation.md"
   ]
 }

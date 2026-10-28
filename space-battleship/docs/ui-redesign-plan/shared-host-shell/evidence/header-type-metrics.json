@@ -1,0 +1,648 @@
+{
+  "ink": {
+    "ascent": 14,
+    "descent": 2,
+    "total": 16,
+    "resourceLineHeight": 24,
+    "navLineHeight": 22
+  },
+  "kind": "design-font-layout-only",
+  "font": "NotoSansSC.ttf",
+  "fontWeight": 450,
+  "fontSize": 16,
+  "devicePixelRatio": 1,
+  "viewport": [
+    1440,
+    1400
+  ],
+  "cases": [
+    {
+      "id": "normal",
+      "bar": {
+        "width": 808,
+        "height": 65
+      },
+      "money": [
+        {
+          "text": "铁：45",
+          "cell": 159,
+          "available": 152,
+          "natural": 50.03125,
+          "overflow": false,
+          "display": "铁：45"
+        },
+        {
+          "text": "铀：1,976",
+          "cell": 159,
+          "available": 152,
+          "natural": 72.640625,
+          "overflow": false,
+          "display": "铀：1,976"
+        },
+        {
+          "text": "时空微粒：8,147",
+          "cell": 207,
+          "available": 200,
+          "natural": 120.640625,
+          "overflow": false,
+          "display": "时空微粒：8,147"
+        }
+      ],
+      "nav": [
+        {
+          "name": "装备",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "反应炉",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "科研",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "强化",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "船员",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星球",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星系",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "超空间",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "更多",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "id": "large",
+      "bar": {
+        "width": 808,
+        "height": 65
+      },
+      "money": [
+        {
+          "text": "铁：1.235×10^123",
+          "cell": 159,
+          "available": 152,
+          "natural": 142.703125,
+          "overflow": false,
+          "display": "铁：1.235×10^123"
+        },
+        {
+          "text": "铀：9.999×10^999",
+          "cell": 159,
+          "available": 152,
+          "natural": 142.703125,
+          "overflow": false,
+          "display": "铀：9.999×10^999"
+        },
+        {
+          "text": "时空微粒：1.235×10^123",
+          "cell": 207,
+          "available": 200,
+          "natural": 190.703125,
+          "overflow": false,
+          "display": "时空微粒：1.235×10^123"
+        }
+      ],
+      "nav": [
+        {
+          "name": "装备",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "反应炉",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "科研",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "强化",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "船员",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星球",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星系",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "超空间",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "更多",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "id": "extreme",
+      "bar": {
+        "width": 808,
+        "height": 65
+      },
+      "money": [
+        {
+          "text": "铁：1.234567890123456789×10^123456789012345678901234567890",
+          "cell": 159,
+          "available": 152,
+          "natural": 521.03125,
+          "overflow": true,
+          "display": "铁：完整值 ▸"
+        },
+        {
+          "text": "铀：9.999×10^12345678901234567890",
+          "cell": 159,
+          "available": 152,
+          "natural": 295.828125,
+          "overflow": true,
+          "display": "铀：完整值 ▸"
+        },
+        {
+          "text": "时空微粒：1.235×10^12345678901234567890",
+          "cell": 207,
+          "available": 200,
+          "natural": 343.828125,
+          "overflow": true,
+          "display": "微粒：完整值 ▸"
+        }
+      ],
+      "nav": [
+        {
+          "name": "装备",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "反应炉",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "科研",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "强化",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "船员",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星球",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星系",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "超空间",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "更多",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "id": "failure",
+      "bar": {
+        "width": 808,
+        "height": 65
+      },
+      "money": [
+        {
+          "text": "铁：45",
+          "cell": 159,
+          "available": 152,
+          "natural": 50.03125,
+          "overflow": false,
+          "display": "铁：45"
+        },
+        {
+          "text": "铀：1,976",
+          "cell": 159,
+          "available": 152,
+          "natural": 72.640625,
+          "overflow": false,
+          "display": "铀：1,976"
+        },
+        {
+          "text": "时空微粒：8,147",
+          "cell": 207,
+          "available": 200,
+          "natural": 120.640625,
+          "overflow": false,
+          "display": "时空微粒：8,147"
+        }
+      ],
+      "nav": [
+        {
+          "name": "装备",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "反应炉",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "科研",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "强化",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "船员",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星球",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星系",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "超空间",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "更多",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "id": "focus",
+      "bar": {
+        "width": 808,
+        "height": 65
+      },
+      "money": [
+        {
+          "text": "铁：45",
+          "cell": 159,
+          "available": 152,
+          "natural": 50.03125,
+          "overflow": false,
+          "display": "铁：45"
+        },
+        {
+          "text": "铀：1,976",
+          "cell": 159,
+          "available": 152,
+          "natural": 72.640625,
+          "overflow": false,
+          "display": "铀：1,976"
+        },
+        {
+          "text": "时空微粒：8,147",
+          "cell": 207,
+          "available": 200,
+          "natural": 120.640625,
+          "overflow": false,
+          "display": "时空微粒：8,147"
+        }
+      ],
+      "nav": [
+        {
+          "name": "装备",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "反应炉",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "科研",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "强化",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "船员",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星球",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "星系",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        },
+        {
+          "name": "超空间",
+          "width": 96,
+          "height": 30,
+          "textWidth": 48.015625,
+          "fontSize": "16px",
+          "scrollWidth": 94,
+          "clientWidth": 94,
+          "overflow": false
+        },
+        {
+          "name": "更多",
+          "width": 80,
+          "height": 30,
+          "textWidth": 32.015625,
+          "fontSize": "16px",
+          "scrollWidth": 78,
+          "clientWidth": 78,
+          "overflow": false
+        }
+      ]
+    }
+  ],
+  "font_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+  "browser": "151.0.7922.173",
+  "font_loaded": true
+}

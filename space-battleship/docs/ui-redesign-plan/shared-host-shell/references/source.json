@@ -1,0 +1,8 @@
+{
+  "source_commit": "4e1c4c2b523998aa1471ed5dd154b6bebc80bd5b",
+  "source_path": "space-battleship/assets/ui/reactor/centered-v1/mounting-plate-quality-four.png",
+  "copy_path": "reactor-quality-four.png",
+  "sha256": "ee93532dd38ee02c17204be1af14df71861723bbe8f3bf2075ebfe9c40fcc7c3",
+  "pixel_edit": false,
+  "scope": "Unmodified module-owner candidate asset used as static host design placement reference; not a runtime integration or module-quality acceptance."
+}

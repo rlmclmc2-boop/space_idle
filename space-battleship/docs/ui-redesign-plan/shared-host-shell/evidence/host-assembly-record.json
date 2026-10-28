@@ -1,0 +1,101 @@
+[
+  {
+    "kind": "host-design-assembly-no-game-session",
+    "state": "normal",
+    "canvas": [
+      1440,
+      900
+    ],
+    "module": [
+      0,
+      0,
+      808,
+      900
+    ],
+    "header": [
+      0,
+      0,
+      808,
+      65
+    ],
+    "battleContainer": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "battleProjection": [
+      855.875,
+      0,
+      536.25,
+      900
+    ],
+    "note": "Assets and static labels are design references; no domain model or commands; local reactor level placement is a pending owner coordination proposal."
+  },
+  {
+    "kind": "host-design-assembly-no-game-session",
+    "state": "more",
+    "canvas": [
+      1440,
+      900
+    ],
+    "module": [
+      0,
+      0,
+      808,
+      900
+    ],
+    "header": [
+      0,
+      0,
+      808,
+      65
+    ],
+    "battleContainer": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "battleProjection": [
+      855.875,
+      0,
+      536.25,
+      900
+    ],
+    "note": "Assets and static labels are design references; no domain model or commands; local reactor level placement is a pending owner coordination proposal."
+  },
+  {
+    "kind": "host-design-assembly-no-game-session",
+    "state": "collapsed",
+    "canvas": [
+      1440,
+      900
+    ],
+    "module": [
+      0,
+      0,
+      808,
+      900
+    ],
+    "header": [
+      0,
+      0,
+      808,
+      65
+    ],
+    "battleContainer": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "battleProjection": [
+      855.875,
+      0,
+      536.25,
+      900
+    ],
+    "note": "Assets and static labels are design references; no domain model or commands; local reactor level placement is a pending owner coordination proposal."
+  }
+]
