@@ -16,13 +16,13 @@
     "workshop_on_surface",
     "shipyard_fixed_near_orbit"
   ],
-  "independent_image_review": "pending",
+  "independent_image_review": "compact drawer revision pending; default direction accepted",
   "user_image_confirmation": "pending",
   "ui_implementation": false,
   "renderer_route_selected": false,
   "benchmark_executed": false,
   "tool": "image_gen.imagegen",
-  "successful_generations": 2,
+  "successful_generations": 3,
   "target_client_size": [
     1440,
     900
@@ -42,17 +42,17 @@
   "exact_geometry_passed": false,
   "drawer_observed_native_bounds_approx": [
     738,
-    136,
+    135,
     998,
-    514
+    416
   ],
   "drawer_observed_native_size_approx": [
     260,
-    378
+    281
   ],
   "drawer_mapped_to_1440_scale_approx": [
     236.0655737704918,
-    343.20302648171497
+    255.13240857503152
   ],
   "drawer_proposed_work_size_range": {
     "width": [
@@ -97,13 +97,40 @@
       "sha256": "95bc6e14e494afed8edff68cb7d4014fd6bac4ea8e2c8572a2144add63eb5314"
     },
     {
-      "path": "facility-drawer.png",
+      "path": "drafts/facility-drawer-before-compact.png",
       "bytes": 1887072,
       "size": [
         1586,
         992
       ],
       "sha256": "a3f5c7e6beb41d1e0a2f730807ae18ac81a62624edbd7c5be788aed96401461b"
+    },
+    {
+      "path": "facility-drawer.png",
+      "bytes": 1878300,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "d1ee34721f79e7ee76de6dac87939649466961a95facb2a7d111f4bb48781db1"
     }
-  ]
+  ],
+  "default_direction_review": "accepted direction by parent and independent reviewer; no pixel/runtime approval implied",
+  "default_original_frozen_at": "0cf4be88c5cb506ce367ff29c22e8e5b304d464b",
+  "generations_in_this_revision": 1,
+  "drawer_previous_native_bounds_approx": [
+    738,
+    136,
+    998,
+    514
+  ],
+  "drawer_previous_native_size_approx": [
+    260,
+    378
+  ],
+  "drawer_budget_note": "height reduced into proposed mapped height range; mapped width remains above original proposal and 808 target requires layout/reflow without global font scaling",
+  "drawer_overlap_policy": "moderate temporary overlap allowed; no claim of zero scene/trajectory coverage",
+  "claim_effect_text": "领取后生效：铁、铀原生掉落加成",
+  "claim_effect_source": "docs/game-design/03-progression.md §5; qualitative rule only, no numeric forecast",
+  "secondary_controls": "更多 · 加成与重铸, condition details on demand"
 }
