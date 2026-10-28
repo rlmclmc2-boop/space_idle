@@ -132,7 +132,7 @@ func _build() -> void:
 		var layout: Dictionary = _stage.control_layout(id)
 		var effect := _label(layout.effect,float(layout.width),18)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply,float(layout.width),14)
+		var supply := _label(layout.supply,float(layout.width),16)
 		supply.size.y = 24
 		supply.add_theme_color_override("font_color", Color("c1dfd9"))
 		var slider := HSlider.new()
@@ -169,12 +169,12 @@ func _build() -> void:
 		add_child(slider)
 		_rows[id] = {"effect":effect, "supply":supply, "slider":slider}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(45,833),365,16)
+	_budget = _label(Vector2(45,833),340,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_purchase = _button("升级",Rect2(427,828,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(586,833,62,36),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认",Rect2(656,833,66,36),func(): _command(_submit))
-	_restore = _button("还原",Rect2(729,833,53,36),_reset)
+	_purchase = _button("升级",Rect2(400,828,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(559,833,62,36),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(629,833,66,36),func(): _command(_submit))
+	_restore = _button("还原",Rect2(702,833,53,36),_reset)
 	_notice = _label(Vector2(278,91),252,14)
 	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_notice.size.y = 68
@@ -263,7 +263,7 @@ func _show_current_readings() -> void:
 		var manual_text: String = str(row.manual)
 		_rows[id].supply.text = "手" + PlayerText.number(manual_text)
 		if row.has_free: _rows[id].supply.text += "+免" + PlayerText.number(str(row.free))
-		_rows[id].supply.text += "  效" + PlayerText.number(str(row.effective))
+		_rows[id].supply.text += " · 效" + PlayerText.number(str(row.effective))
 		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 	_level.text = "等级 " + str(_model.level)
@@ -389,7 +389,7 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		var supply_text: String = "手" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		if row.has_free: supply_text += "+免" + PlayerText.number(str(row.free))
 		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = supply_text + "  效" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
+		_rows[id].supply.text = supply_text + " · 效" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		_rows[id].supply.tooltip_text = "手动 " + str(current.get("manual","—")) + " → " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + a + " → " + b
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 		if _kind == "equal" or (_kind == "shares" and not fresh_shares):

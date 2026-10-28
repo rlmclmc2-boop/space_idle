@@ -4,9 +4,11 @@
 
 ## 真实Godot内部品质打磨（新候选，待视觉复核）
 
-在不改`src/main.gd`、Reactor/Economy计算或正确同源锚点的范围内，`src/ui/reactor_stage.gd`接入两张新原生无字三/四设备安装图（来源和SHA见[资产记录](../../assets/ui/reactor/centered-v1/README.md)）：空孔变为武器放大器、盾面、炼铁腔与条件开放后的凝聚晶体，中央玻璃球有可见体积；卸掉旧四块厚矩形控制台和底部长壳。`working_fields.gdshader`的核心层只叠运动亮丝，不再以不透明色团遮住玻璃球；零负载时局部内腔压暗。四设备短读数与滑杆转到较浅的深青托架，下沿按容量/已配/剩余、象牙色购级和次级操作分区。侧部是程序绘制的结构纹理，机器本体仍以同一0.6比例投影，没有拉伸补宽。
+最新局部打磨把四块完整半透明读数板收为与设备下缘短接的52px读数带，滑杆改在独立细轨上；下两条滑杆底至主控顶约20px，主控右端按钮距其底板右缘13px，增益18px、供能16px。`idle_light_filter.gdshader`只在每台内腔局部采样并压低青/琥珀发射像素，零负载不再以硬圆涂暗整台机械；玻璃/金属纹理仍保留，实际已接纳负载使工作光恢复。`working_fields.gdshader`增强了盾场扫描、武器旋叶及凝聚环轨等独立运动。最新[三设备零负载](evidence/reactor-quality-r10-three-zero.png)、[四设备零负载](evidence/reactor-quality-r10-four-zero.png)、[四设备运行A](evidence/reactor-quality-r10-four-active-a.png)、[运行B](evidence/reactor-quality-r10-four-active-b.png)来自同一真实Godot/native Session的[局部驱动](evidence/reactor-quality-r10-driver.gd.txt)和[日志](evidence/reactor-quality-r10.log.txt)；驱动通过公开Campaign接口临时开放，真实整组均分确认后用`session._step(1/60)`加速游戏时间，并处理实际出现的引导暂停。日志显示四设备`load>0`且35可见帧有315次局部工作更新；未重新跑下方已通过的完整业务流程。两帧局部像素核对均见核心及四设备变化，但像素变化只支持动态存在，不替代审美判断。此版仍待视觉复核；右侧宿主/顶部导航及97px侧部结构与共享界面协调见[安装交接](module-installation.md)。
 
-[三设备零负载整屏](evidence/reactor-quality-r4-three-zero.png)、[三设备已接纳负载](evidence/reactor-quality-r4-three-active.png)、[四设备运行帧A](evidence/reactor-quality-r4-four-active-t0.png)、[帧B](evidence/reactor-quality-r4-four-active-t1.png)由同一Godot4.7.2/Xorg:99/native Session的[驱动](evidence/reactor-quality-r4-driver.gd.txt)和[日志](evidence/reactor-quality-r4.log.txt)固定。夹具仍通过Campaign公开接口临时授予反应堆/凝聚开放，四设备均分确认及购级预算按原驱动执行；不是凝聚自然开放或自然收入证据。日志记录四设备`load>0`、可见35帧局部更新315次、隐藏35帧局部更新0次，场景入口`--check-only`通过。Mesa llvmpipe帧时不证明目标硬件性能。静态原图仍保留识别光，零负载遮罩只使内腔变暗；两侧结构带、局部托架密度、顶端与共享导航的整屏关系仍须根线程/独审及用户核对，**本候选未宣称V3视觉通过**。
+在不改`src/main.gd`、Reactor/Economy计算或正确同源锚点的范围内，`src/ui/reactor_stage.gd`接入两张新原生无字三/四设备安装图（来源和SHA见[资产记录](../../assets/ui/reactor/centered-v1/README.md)）：空孔变为武器放大器、盾面、炼铁腔与条件开放后的凝聚晶体，中央玻璃球有可见体积；卸掉旧四块厚矩形控制台和底部长壳。`working_fields.gdshader`的核心层只叠运动亮丝，不再以不透明色团遮住玻璃球；下沿按容量/已配/剩余、象牙色购级和次级操作分区。侧部是程序绘制的结构纹理，机器本体仍以同一0.6比例投影，没有拉伸补宽。
+
+r4初轮的[三设备零负载整屏](evidence/reactor-quality-r4-three-zero.png)、[三设备已接纳负载](evidence/reactor-quality-r4-three-active.png)、[四设备运行帧A](evidence/reactor-quality-r4-four-active-t0.png)、[帧B](evidence/reactor-quality-r4-four-active-t1.png)由同一Godot4.7.2/Xorg:99/native Session的[驱动](evidence/reactor-quality-r4-driver.gd.txt)和[日志](evidence/reactor-quality-r4.log.txt)固定。夹具仍通过Campaign公开接口临时授予反应堆/凝聚开放，四设备均分确认及购级预算按原驱动执行；不是凝聚自然开放或自然收入证据。日志记录四设备`load>0`、可见35帧局部更新315次、隐藏35帧局部更新0次，场景入口`--check-only`通过。Mesa llvmpipe帧时不证明目标硬件性能。r4零负载曾用整圆遮罩压暗内腔，已被上述局部滤光取代。两侧结构带与顶端共享导航的整屏关系仍须整体线程协调，**本候选未宣称V3视觉通过**。
 
 ## 内部比例修正概念（待审，未接入Godot）
 

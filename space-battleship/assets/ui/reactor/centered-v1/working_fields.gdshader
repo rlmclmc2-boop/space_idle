@@ -44,19 +44,21 @@ void fragment() {
 		alpha *= 1.0 - smoothstep(0.88,1.0,r);
 	} else if (kind == 1) {
 		float focus = exp(-dot(p,p)*8.0);
-		float blades = pow(0.5+0.5*cos(a*3.0-phase*2.0),8.0);
-		glow = band(r-0.63,0.09)*(0.45+0.55*blades) + focus*(0.55+0.25*sin(phase*2.0));
+		float blades = pow(0.5+0.5*cos(a*3.0-phase*1.35),8.0);
+		glow = band(r-0.63,0.09)*(0.45+0.55*blades) + focus*(0.55+0.25*sin(phase*1.3));
 		teal = vec3(0.13,0.67,0.75)+vec3(0.31,0.30,0.19)*focus;
 		alpha = glow * (0.4+0.6*power) * (1.0-smoothstep(0.85,1.0,r));
 	} else if (kind == 2) {
 		vec2 q = p * vec2(6.0, 4.0);
+		q += vec2(phase * 0.42, -phase * 0.18);
 		q.x += mod(floor(q.y), 2.0)*0.5;
 		vec2 f = abs(fract(q)-0.5);
 		float grid = band(max(f.x*0.86+f.y*0.5,f.y)-0.39,0.025);
 		float shield = 1.0-smoothstep(0.56,0.78,max(abs(p.x)*0.72+abs(p.y)*0.42,abs(p.y)));
-		glow = (0.20+grid*0.38+band(r-0.70,0.04)*0.24)*shield;
-		teal = vec3(0.10,0.48,0.69);
-		alpha = glow*(0.45+0.55*power)*(0.88+0.12*sin(phase*0.9));
+		float sweep = exp(-pow(p.y - 0.55*sin(phase*1.25), 2.0)*100.0);
+		glow = (0.12+grid*0.48+sweep*0.30+band(r-0.70,0.04)*0.20)*shield;
+		teal = vec3(0.16,0.69,0.84);
+		alpha = glow*(0.35+0.65*power);
 	} else if (kind == 3) {
 		teal = vec3(0.91,0.60,0.24);
 		float molten = 1.0-smoothstep(-0.15,0.38,p.y+0.12*sin(p.x*5.0+phase));
@@ -68,8 +70,10 @@ void fragment() {
 		float diamond = abs(p.x)*1.8+abs(p.y);
 		float crystal = 1.0-smoothstep(0.44,0.74,diamond);
 		glow = crystal*(0.18+0.22*max(0.0,sin(p.y*6.0-phase)))+band(diamond-0.70-0.035*sin(phase),0.08)*0.55;
+		float orbit = band(r-0.66,0.045)*pow(max(0.0,cos(a*2.0-phase*1.3)),10.0);
+		glow += orbit*0.60;
 		for(int i=0;i<3;i++) {
-			float t = fract(phase*0.15 + float(i)/3.0);
+			float t = fract(phase*0.35 + float(i)/3.0);
 			vec2 packet = vec2(sin(float(i)*2.1)*0.55, -0.8)*(1.0-t);
 			glow += exp(-dot(p-packet,p-packet)*220.0)*sin(t*3.14159)*0.45;
 		}
