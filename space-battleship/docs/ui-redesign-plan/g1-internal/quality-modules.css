@@ -1,0 +1,100 @@
+/* Quality promotion R2. Module structures; no battle/P3 geometry or domain rules. */
+.quality-pass #workspace:is([data-view="equipment"],[data-view="enhancement"],[data-view="hyperspace"],[data-view="settings"],[data-view="archive"]) .pagehead .eyebrow{display:none}
+.quality-pass .subnav{background:transparent;gap:6px}
+/* M2 — one docking bay, with a readable inspector bolted to the same floor. */
+.quality-pass.full-theater .outfit-room{grid-template-columns:minmax(0,1fr) 248px;gap:0;min-height:350px;border:1px solid #9eb2ac;border-radius:13px;background:linear-gradient(130deg,#d6e0d8,#b5c6c0);box-shadow:inset 0 1px #fff9,0 4px 0 #314f5c22;overflow:hidden}
+.quality-pass.full-theater .outfit-rig{height:350px;border:0;border-radius:0;background:radial-gradient(ellipse at 50% 60%,#e9f0df66,transparent 65%)}
+.quality-pass.full-theater .outfit-rig[data-weapon-count="4"]{height:410px}
+.quality-pass.full-theater .outfit-rig[data-weapon-count="5"]{height:465px}
+.quality-pass.full-theater .rig-ship{top:50%;width:390px;height:390px}
+.quality-pass .rig-floor{border-color:#70978c88;background:radial-gradient(ellipse,#c5dfce55,transparent 70%);bottom:22px}
+.quality-pass .outfit-console{border:0;border-left:1px solid #91aaa3;border-bottom:7px solid #304f5d;border-radius:0;background:linear-gradient(125deg,#f7f2e6f5,#e2e8d9f5);padding:16px 16px 10px;min-width:0;box-shadow:-5px 0 14px #284b5320}
+.quality-pass .equipment-inspector-identity{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.quality-pass .equipment-inspector-identity small{font-size:11px;color:#657f78}
+.quality-pass .equipment-inspector-identity h2{font-size:20px;margin:5px 0;line-height:1.4}
+.quality-pass .equipment-object-icon{height:58px;width:58px;flex-shrink:0;margin:0;display:grid;place-items:center;background:#e0e8db;border-radius:10px;border-bottom:3px solid #749b92}
+.quality-pass .equipment-object-icon img{width:53px;height:53px;object-fit:contain}
+.quality-pass .outfit-console .compare-cols{gap:10px;margin:15px 0 7px}
+.quality-pass .outfit-console .compare-cols b{font-size:20px;line-height:1.8}
+.quality-pass .outfit-console .compare-cols small{font-size:11px;line-height:1.6}
+.quality-pass .equipment-scope{font-size:11px;margin-bottom:8px}.quality-pass .equipment-scope summary{cursor:pointer}
+.quality-pass .outfit-console .comparison-cadence{font-size:11px;line-height:1.7;margin:8px 0}
+.quality-pass .outfit-console .compare-price{font-size:12px;margin:12px 0 9px;padding-top:10px;border-color:#b5c4b5}
+.quality-pass .outfit-console .compare-price b{font-size:16px}
+.quality-pass .outfit-console .purchase-modes{margin:8px 0;gap:6px}
+.quality-pass .outfit-console .purchase-modes button{font-size:12px;padding:7px 11px}
+.quality-pass .outfit-console p.sub{font-size:11px;line-height:1.7;margin:9px 0 0}
+.quality-pass.full-theater .rig-weapon-labels{left:9px;top:22px;gap:8px}
+.quality-pass.full-theater .rig-defence-labels{right:9px;top:92px;gap:8px}
+.quality-pass .rig-slot{background:#f7f2e6ec;border-color:#a5b9ad;border-radius:7px;box-shadow:0 3px #627f7830}
+.quality-pass .rig-slot.selected{background:#e5f0e3;border-color:#548f87;box-shadow:inset 3px 0 #548f87,0 3px #627f7830}
+.quality-pass .hull-picker{gap:0;border-bottom:1px solid #b8c6b7}.quality-pass .hull-picker button{border:0;border-radius:0;background:transparent;border-bottom:3px solid transparent;box-shadow:none}
+.quality-pass .hull-picker button.selected{border-bottom-color:#4c8b81;background:#dce8dc}
+.quality-pass .hull-comparison{gap:0;border:1px solid #a9bcb1;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#c4d9cb,#e7ecdf)}
+.quality-pass .hull-comparison article{border:0;background:transparent;border-radius:0;padding:15px}.quality-pass .hull-comparison article+article{border-left:1px solid #aabdb1;background:#f4efdd55}
+.quality-pass .hull-comparison img,.quality-pass.work-family .hull-comparison img{height:215px}
+.quality-pass .hull-impact{border:0;border-top:1px solid #afc0b1;border-radius:0;background:transparent;padding:15px 0}
+.quality-pass :is(.batch-budget,.attribute-vitals){background:#e2e9dc;border-color:#a6bbb0;border-bottom:4px solid #3c5b64}
+.quality-pass .attribute-modules article{background:linear-gradient(#f5f1e5,#e8ecdf);border:0;border-left:3px solid #6e9d91;border-radius:0}
+/* M5 — actual effect order is a continuous pair of rails, not six unrelated tiles. */
+.quality-pass .enhancement-levels{border:0;border-bottom:5px solid #355663;border-radius:10px 10px 5px 5px;background:linear-gradient(125deg,#e4eadc,#d4e2d7);padding:16px 18px;gap:12px}
+.quality-pass .enhancement-levels>.enhance-level-strip{position:relative;padding-left:55px}
+.quality-pass .enhancement-emblem{position:absolute;left:0;top:4px;width:40px;height:40px;object-fit:contain}
+.quality-pass .enhance-level-strip b{font-size:24px}.quality-pass .enhance-level-strip span{font-size:12px}
+.quality-pass .enhancement-buy{gap:8px}.quality-pass .enhancement-buy button{font-size:12px;padding:7px 11px}
+.quality-pass .enhance-groups{gap:24px;margin-top:20px}
+.quality-pass .enhance-chain{position:relative;padding-left:21px;min-width:0}
+.quality-pass .enhance-chain:before{content:'';position:absolute;left:5px;top:39px;bottom:24px;width:5px;background:#a7beb2;border-left:1px solid #7c9c92;border-right:1px solid #dfebde}
+.quality-pass .enhance-chain>h3{font-size:14px;margin:0 0 10px;padding:0 0 12px;border-color:#9eb7a8}
+.quality-pass .enhance-effect{position:relative;margin:0;padding:17px 0 18px 12px;border:0;border-top:1px solid #b7c6b4;border-radius:0;background:transparent}
+.quality-pass .enhance-effect:before{content:attr(data-order);position:absolute;left:-26px;top:27px;width:22px;height:22px;display:grid;place-items:center;background:#365c66;color:#f4efdf;border:2px solid #b4cbb9;border-radius:50%;font-size:11px;z-index:1}
+.quality-pass .effect-symbol{width:39px;height:39px;border-radius:10px;background:#e9efdf;border-color:#8faf9f;border-bottom:3px solid #5c8883;transform:none}
+.quality-pass .enhance-effect-identity h2{font-size:20px}.quality-pass .enhance-effect-identity small{font-size:11px}
+.quality-pass .enhance-effect p.enhance-current{font-size:14px;line-height:1.85;margin:12px 0 10px;min-height:0}
+.quality-pass .enhance-active-branches{background:transparent;border-left:2px solid #98b9a4;border-radius:0;font-size:11px;padding:2px 0 2px 9px}
+.quality-pass .enhance-node-details{margin-top:10px;font-size:12px}.quality-pass .enhance-nodes button{background:#eef0df;border-color:#a8bca9;padding:9px 3px}
+/* M9 — route identity and its two independent task desks share a station. */
+.quality-pass .route-station{border:1px solid #a8bdb0;border-radius:13px;overflow:hidden;background:linear-gradient(135deg,#d4e0d9,#edf0e1 65%);box-shadow:inset 0 1px #fff9,0 4px #45685b22;padding:20px}
+.quality-pass .route-station-identity{display:flex;align-items:center;gap:26px;min-height:152px;padding:0 16px 18px}
+.quality-pass .route-station-identity>svg{width:112px;height:140px;overflow:visible;filter:drop-shadow(0 8px 4px #244a552e);flex-shrink:0}
+.quality-pass .route-station-identity small{font-size:12px;color:#66847a}.quality-pass .route-station-identity h2{font-size:27px;margin:7px 0 10px}
+.quality-pass .route-station-identity span{font-size:13px}.quality-pass .route-station-identity p{font-size:12px;line-height:1.8;margin:10px 0 0;color:#587b70}
+.quality-pass .route-station .route-browser{gap:0;padding:0;border-bottom:1px solid #a9beae}
+.quality-pass .route-station .route-card{border:0;border-radius:0;background:transparent;box-shadow:none;min-width:0;border-bottom:3px solid transparent;padding:11px 7px}
+.quality-pass .route-station .route-card.selected{background:#eaf0e1;border-bottom-color:#4e8b81}.quality-pass .route-card b{font-size:12px}
+.quality-pass .route-station .route-task-columns{gap:0;margin-top:0;background:#f4f0e3;border-radius:0 0 8px 8px;border-bottom:6px solid #375864}
+.quality-pass .route-station .route-task-panel{border:0;border-radius:0;background:transparent;padding:18px 17px;min-width:0}
+.quality-pass .route-station .route-task-panel+.route-task-panel{border-left:1px solid #bdcbbb}.quality-pass .route-task-panel h2{font-size:19px}
+.quality-pass .route-station .hyperspace-energy{margin:14px 0 0;border:0;border-radius:0;background:transparent;padding:6px 0}
+.quality-pass .warehouse-heading{font-size:12px;padding:9px 0;color:#506d65}
+.quality-pass .inventory-selection-toolbar{background:linear-gradient(125deg,#dae8dc,#e9ecdb);border-color:#9cb7a7;border-bottom:4px solid #385a63;border-radius:8px 8px 0 0}
+.quality-pass .inventory-row{background:#f5f1e3}.quality-pass .inventory-row.selected{background:#dce9dc}
+.quality-pass .inventory-row>svg{filter:drop-shadow(0 2px 1px #294b5333)}
+.quality-pass .forge-bench{gap:0;border:1px solid #a5baad;border-radius:13px;overflow:hidden;background:radial-gradient(ellipse at 20% 25%,#c0d7cc,#e7ebdc 70%)}
+.quality-pass .forge-source-model{border:0;border-radius:0;background:transparent;padding:20px}
+.quality-pass .forge-source-model>svg{height:215px;filter:drop-shadow(0 8px 4px #2a4f5844)}
+.quality-pass .forge-operation-console{background:linear-gradient(125deg,#f6f1e4,#e6eada);border:0;border-left:1px solid #a9bdae;border-bottom:7px solid #365765;border-radius:0;padding:20px}
+.quality-pass .forge-quote-card{border:0;border-top:1px solid #a9bfae;border-bottom:1px solid #a9bfae;border-radius:0;background:transparent;padding:18px 0}
+.quality-pass .hanging-workshop{gap:0;border:1px solid #aabeb0;border-radius:12px;overflow:hidden;background:#d9e4d9}
+.quality-pass .drone-service-rig{border:0;border-radius:0;background:transparent}.quality-pass .hanging-console{border:0;border-radius:0;border-left:1px solid #a9bdae;background:#f0efdf}
+/* M10 — actual persistence is the focus. Recovery facts stay in this first view. */
+.quality-pass .save-dashboard,.quality-pass.work-family .save-dashboard{padding:24px;border:1px solid #a5baaf;border-bottom:7px solid #385b66;border-radius:12px;background:linear-gradient(130deg,#e0e9dd,#f0f0e0)}
+.quality-pass .save-current{display:grid;grid-template-columns:72px minmax(0,1fr);gap:20px;align-items:start}
+.quality-pass .save-state-mark{width:66px;height:66px;display:grid;place-items:center;border:2px solid #91b4a7;border-bottom:6px solid #446a70;border-radius:18px;background:#f7f1e3;color:#518e7e;font-size:35px}
+.quality-pass .save-current small{font-size:12px;color:#638178}.quality-pass .save-current h2,.quality-pass.work-family .save-current h2{font-size:26px;margin:5px 0 10px}.quality-pass .save-current p{margin:0;line-height:1.9;font-size:13px}
+.quality-pass .save-timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;list-style:none;padding:0;margin:24px 0;border-top:2px solid #b2c4b6}
+.quality-pass .save-timeline li{display:flex;align-items:center;gap:8px;padding:13px 0 0;color:#859188;font-size:12px}.quality-pass .save-timeline b{display:grid;place-items:center;border:1px solid #b1c3b3;border-radius:50%;width:23px;height:23px;background:#f3f0df;font-weight:500}
+.quality-pass .save-timeline li.reached{color:#3d766b}.quality-pass .save-timeline li.reached b{background:#476d70;border-color:#476d70;color:#f4efdf}
+.quality-pass .save-primary-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 21px}.quality-pass .save-primary-actions button{font-size:13px;padding:10px 13px}
+.quality-pass .save-location{display:flex;gap:16px;align-items:baseline;overflow-wrap:anywhere;border-top:1px solid #bdcbbb;padding-top:16px}.quality-pass .save-location small{font-size:12px;color:#638178}.quality-pass .save-location b{font-size:13px;font-weight:500}
+.quality-pass .save-directory-editor{margin-top:14px;font-size:12px}.quality-pass .save-directory-editor summary{cursor:pointer}.quality-pass .save-directory-editor[open]{padding:12px;background:#f4f0df;border:1px solid #b3c2af;border-radius:6px}
+.quality-pass .save-dashboard .technical-details{margin:13px 0 0}.quality-pass .save-dashboard:is(.failed,.recovery){background:linear-gradient(130deg,#f0dfc5,#f7efdf);border-color:#c2a373;border-bottom-color:#886a49}
+.quality-pass .save-dashboard:is(.failed,.recovery) .save-state-mark{color:#97662d;border-color:#c3a57a;border-bottom-color:#886a49}
+.quality-pass .maintenance-summary{gap:25px;margin-top:24px}.quality-pass .maintenance-summary article{border-color:#aebfae}
+.quality-pass .preferences-grid{gap:0;border:1px solid #b0c1b0;border-radius:12px;overflow:hidden;background:#e7eddf}.quality-pass .preferences-grid section{border:0;border-radius:0;background:transparent}.quality-pass .preferences-grid section+section{border-left:1px solid #b0c1b0}
+.quality-pass .archive-split{gap:22px}.quality-pass .archive-index{border-right:1px solid #b5c5b3;padding-right:14px;gap:0}.quality-pass .archive-index button{padding:14px 9px;border:0;border-radius:0;border-bottom:1px solid #c3ceba;background:transparent;box-shadow:none;white-space:normal;line-height:1.6}.quality-pass .archive-index button.active{color:#2d5661;background:#dfe9dd;border-left:3px solid #538d80}
+.quality-pass .archive-paper,.quality-pass.work-family .archive-paper{padding:14px 0;border:0;border-radius:0;background:transparent}.quality-pass .archive-paper h2{font-size:28px}.quality-pass .manual-diagram{gap:9px;flex-wrap:wrap;padding:22px 0}.quality-pass .manual-diagram span{border:0;border-bottom:4px solid #507c7b;border-radius:5px;background:#e2e9d9;padding:16px 13px}
+.quality-pass .intel-paper{grid-template-columns:44% 1fr;gap:12px;padding:22px 18px;border-color:#9eb8ab;border-bottom:6px solid #385b66;background:radial-gradient(ellipse at 24% 40%,#bfd4cd,#e4ebdc 70%);min-width:0;min-height:390px}.quality-pass .intel-paper>img{height:320px;filter:drop-shadow(0 8px 5px #24465144)}.quality-pass .intel-paper h2{font-size:26px}.quality-pass .intel-paper p{font-size:13px;line-height:1.9}
+.quality-pass .notification-list article{border:0;border-top:1px solid #b1c2af;border-left:3px solid #6c9c88;border-radius:0;background:#f1efdf;padding:20px}
+.quality-pass #workspace:is([data-view="equipment"],[data-view="settings"],[data-view="hyperspace"]) .pagehead h1{display:inline;margin-right:14px}
+.quality-pass #workspace:is([data-view="equipment"],[data-view="settings"],[data-view="hyperspace"]) .pagehead .sub{display:inline;line-height:1.8}

@@ -107,3 +107,6 @@
 .quality-pass .research-workbench{min-height:576px;padding-top:34px;padding-bottom:0}
 .quality-pass .research-workbench .investment-console,.quality-pass.work-family .research-workbench .investment-console{padding-bottom:7px}
 .quality-pass .research-workbench .research-device-status,.quality-pass.work-family .research-workbench .research-device-status{padding-bottom:7px}
+/* Ready keeps its own amber signal, including while the facility is selected. */
+.quality-pass .orbit-facility.ready{border:2px solid #b98a44;box-shadow:0 4px 0 #ba97584d,0 0 0 2px #e7c58c45}
+.quality-pass .orbit-facility.ready.selected{border-color:#a9772f;box-shadow:0 4px 0 #ba975866,0 0 0 3px #d4ab6459}
