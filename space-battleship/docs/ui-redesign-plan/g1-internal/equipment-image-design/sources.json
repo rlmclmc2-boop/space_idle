@@ -104,5 +104,96 @@
   ],
   "actual_final_divider_estimate_px": 929,
   "target_divider_at_raw_width_px": 889.3611111111111,
-  "note": "Original tool PNGs copied byte-for-byte. No resize/crop/vector redraw. Divider remains a known mismatch after two imagegen edits."
+  "note": "Original tool PNGs copied byte-for-byte. No resize/crop/vector redraw. Divider remains a known mismatch after two imagegen edits.",
+  "revision_04": {
+    "base_commit": "59a82558f6388a4d2699b15a5e63d99dd20a9e5e",
+    "executor": "/root/equipment_image_revision_replacement",
+    "tool": "image_gen__imagegen",
+    "successful_generation_calls": 1,
+    "validation_note": "Initial request with six references was rejected before generation: referenced_image_paths must contain at most 5 paths. Retried with base image and four weapon PNGs; navigation screenshot was viewed separately, not passed to successful call.",
+    "references": [
+      {
+        "file": "docs/ui-redesign-plan/g1-internal/equipment-image-design/equipment-design-03.png",
+        "sha256": "afd56b507ed9bb2948bb8c3a35b1aeeb73d5f9c880eb0a481d1ddb7368c1b49f",
+        "bytes": 2349884,
+        "pixels": [
+          1585,
+          992
+        ]
+      },
+      {
+        "file": "assets/weapons/fleet_20261019/laser.png",
+        "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936",
+        "bytes": 342379,
+        "pixels": [
+          541,
+          620
+        ]
+      },
+      {
+        "file": "assets/weapons/fleet_20261019/missile.png",
+        "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72",
+        "bytes": 369876,
+        "pixels": [
+          546,
+          585
+        ]
+      },
+      {
+        "file": "assets/weapons/fleet_20261019/cannon.png",
+        "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a",
+        "bytes": 312928,
+        "pixels": [
+          501,
+          682
+        ]
+      },
+      {
+        "file": "assets/weapons/fleet_20261019/longLaser.png",
+        "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3",
+        "bytes": 345211,
+        "pixels": [
+          518,
+          683
+        ]
+      }
+    ],
+    "separately_viewed_navigation_reference": {
+      "file": "docs/ui-redesign-plan/g1-internal/evidence/g2-quality-r5/after/work-equipment.png",
+      "sha256": "3ebf829b839694e366d475f619a46c20266372f5a32dfc01ab0c6ce272b4c146",
+      "bytes": 921773,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    "weapon_manifest": {
+      "file": "assets/weapons/fleet_20261019/manifest.json",
+      "sha256": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "prompt": "imagegen-edit-04.txt",
+    "original_output": "/workspace/generated_images/exec-013b385b-6424-4448-bd6e-08de5e2d6b04.png",
+    "output": {
+      "file": "docs/ui-redesign-plan/g1-internal/equipment-image-design/equipment-design-04.png",
+      "sha256": "8b4f75a775a90a89b185f484eabcd8bc0675f781497c1828c592e3e722071f5e",
+      "bytes": 2239384,
+      "pixels": [
+        1585,
+        992
+      ]
+    },
+    "actual_divider_estimate_px": 929,
+    "left_ratio_estimate": 0.5861198738170347,
+    "target_divider_at_raw_width_px": 889.3611111111111,
+    "status": "Pending independent and user review; known reference fidelity and geometry deviations remain.",
+    "known_deviations": [
+      "Selection shelf missile thumbnail still depicts pointed rockets rather than the reference six-aperture pod.",
+      "Some small slot thumbnails retain prior stylization; long-laser thumbnail does not reproduce the segmented source as faithfully as the mounted model.",
+      "Mounted models remain generated reinterpretations rather than canonical source asset compositing; central pulse has extra cyan detail.",
+      "Divider remains about x929/1585 (58.6%), target 56.11%.",
+      "Header extends farther right than the equipment/battle divider; shared navigation labels are corrected but exact placement remains unapproved.",
+      "Title reduced moderately, not to exact requested half size; scene density and final hierarchy await review."
+    ],
+    "context_compacted": false
+  }
 }
