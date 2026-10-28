@@ -1,0 +1,300 @@
+{
+  "fixed_source_commit": "7a7d5d3e3a6446745200c0f69a83f16dcf496e6e",
+  "source_binding": {
+    "res://assets/ui/equipment/hangar/hangar-console.png": {
+      "runtime_sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "matches_fixed_git_object": true
+    },
+    "res://assets/ui/equipment/hangar/upgrade-console.svg": {
+      "runtime_sha256": "88f6ccb9f1039ab2861e29627ee31a54e9461e37fba689c78857a4ea3fd05599",
+      "matches_fixed_git_object": true
+    },
+    "res://assets/ui/ships/manifest.json": {
+      "runtime_sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "matches_fixed_git_object": true
+    },
+    "res://docs/game-design/art/modules/equipment.md": {
+      "runtime_sha256": "bed2c48f803f218827e6476343e8b774371b3cd37e2d3ad5dfa75c48fa707823",
+      "matches_fixed_git_object": true
+    },
+    "res://generated/config.json": {
+      "runtime_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "scope": "local generated config, not submitted"
+    },
+    "res://project.godot": {
+      "runtime_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "matches_fixed_git_object": true
+    },
+    "res://src/game_session.gd": {
+      "runtime_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "matches_fixed_git_object": true
+    },
+    "res://src/main.gd": {
+      "runtime_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "matches_fixed_git_object": true
+    },
+    "res://src/systems/equipment.gd": {
+      "runtime_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "matches_fixed_git_object": true
+    },
+    "res://src/ui/equipment_panel.gd": {
+      "runtime_sha256": "8da8d60ffcdc80de991ea22dada1a5bd2fae02cf2fb076b3541cf3161706f1d5",
+      "matches_fixed_git_object": true
+    }
+  },
+  "operations_records": 35,
+  "operations_failures": [],
+  "regression_failures": [],
+  "images": {
+    "candidate": 43,
+    "regression": 7,
+    "pixels": [
+      1440,
+      900
+    ],
+    "processing": "Raw Godot root viewport PNGs; no resize/crop/compositing"
+  },
+  "tested_hulls": [
+    "Frigate",
+    "Destroyer",
+    "Cruiser",
+    "Heavy_Battleship"
+  ],
+  "untested_hull_branch": "Battleship four paired mounts; no full-V2 claim",
+  "setup_scope": "Actual new session first; explicit controlled campaign/equipment/economy restore and real refit for partial/full progress; not naturally earned progression or personal data. All trades use original owners.",
+  "files": {
+    "candidate/01-starter.png": {
+      "sha256": "62f2c67c047a959a12b8fccb2afc9059752b7ac2216297fe45a2ff2bbde68949",
+      "bytes": 1502716
+    },
+    "candidate/02-starter-slot-selection.png": {
+      "sha256": "a5d9b2b96a45deeb3c5e238b72209bdfe636e7c9dadac727b725a9754ab20740",
+      "bytes": 1502658
+    },
+    "candidate/03-cruiser-cannon-comparison.png": {
+      "sha256": "3d8323e82553434ec1378fa06caac3d7f039c07a94683df10530c2f848254ba6",
+      "bytes": 1488219
+    },
+    "candidate/04-single-plus1-material.png": {
+      "sha256": "983442ad8eb635000bc06e3790c7d426a8a5ae8cc5bfa9e9bc662dd6408f5dbd",
+      "bytes": 1494779
+    },
+    "candidate/05-plus10-quote.png": {
+      "sha256": "5e6412c95b8014ff55e1114852ac4ec4455bf2deeabe77fa5d5a15dfc19ecc32",
+      "bytes": 1494676
+    },
+    "candidate/06-single-plus10.png": {
+      "sha256": "9e92dcbf215dfbf6f268c29bd848fb0117539c62f8e3a1ab266c962b561ff9e3",
+      "bytes": 1496080
+    },
+    "candidate/07-max-quote.png": {
+      "sha256": "d31427478d5c9114ae18b9bbdcc9e66715b797690c58723ea19acd118a942288",
+      "bytes": 1494967
+    },
+    "candidate/08-single-max.png": {
+      "sha256": "b12652a001813ec36a4f96bda2d60b589b7ac10e09bebb37db2776f7d489242c",
+      "bytes": 1492932
+    },
+    "candidate/09-switch-cooldown.png": {
+      "sha256": "cb810d3d69626a3d266f8b967f76d99de1a42a5e7048eea9e33534002ec0db4f",
+      "bytes": 1485861
+    },
+    "candidate/10-switch-ready.png": {
+      "sha256": "925fef11e73226af75aae1789db959153d999372ee30cbf987e106f29342d2eb",
+      "bytes": 1485929
+    },
+    "candidate/11-batch-open.png": {
+      "sha256": "82d8a01b9cbc739547c899c68d2a8e9c29789e39605e5fc23aa5cb1780e280ae",
+      "bytes": 987298
+    },
+    "candidate/12-batch-partial-result.png": {
+      "sha256": "d21603f7bc1336a07fef745965adc5ea37b5fd3893d6dfe57bbdc8aa6289372b",
+      "bytes": 1004633
+    },
+    "candidate/13-batch-result-retained.png": {
+      "sha256": "fef8dbf57e66988f153db3e44ef65ef638cc770e760b65e80856e21a9f882eca",
+      "bytes": 1004536
+    },
+    "candidate/14-defence-selection.png": {
+      "sha256": "d0d4e86b589d223e48c3ed0d85873853094410787926e4ae40e973cb9477156f",
+      "bytes": 1490611
+    },
+    "candidate/15-final-cruiser.png": {
+      "sha256": "e23c16fba3ccbc6965f52feb7b3a20ff58c8dcfe388c0832022e77859110711d",
+      "bytes": 1497238
+    },
+    "candidate/16-defence-candidate.png": {
+      "sha256": "48435f67f7be5aa1b53b4cb3d8d937641426b1c13fd4227a0669d2941e4323c9",
+      "bytes": 1491689
+    },
+    "candidate/17-defence-quote-0.png": {
+      "sha256": "91939708d64967a6c79b9db80ea5735c18d3a34bb67b16dadd6853ae3189c8da",
+      "bytes": 1491684
+    },
+    "candidate/17-defence-quote-1.png": {
+      "sha256": "3ae7de486814d2d8936d317ddc09ed7a423498f57f3f97140c613b54a0b9473b",
+      "bytes": 1494170
+    },
+    "candidate/17-defence-quote-2.png": {
+      "sha256": "5550382b6f3254cb1b756643c4aabee82281eb69e69915f26e44ebeedfcc5083",
+      "bytes": 1498156
+    },
+    "candidate/18-defence-purchased-0.png": {
+      "sha256": "4436f7e86ce44eb9c8cd1e8c9c4f9ce43e89951cda734e8c5c7bcd0bc4ac1686",
+      "bytes": 1494470
+    },
+    "candidate/18-defence-purchased-1.png": {
+      "sha256": "a50b9c4a2c712809141c06c89175bb395f43f8313f27139897bc9251f959d792",
+      "bytes": 1495736
+    },
+    "candidate/18-defence-purchased-2.png": {
+      "sha256": "c489bc1dc2c03cd6997b4c4942a290d401a6b25e3fa6a3e537b6ece3ed73969c",
+      "bytes": 1491758
+    },
+    "candidate/19-long-max-multi-resource.png": {
+      "sha256": "68e0ad26616f886708aab055780936adbc6aa352d2db6ef65cc8686b17ce14b8",
+      "bytes": 1505348
+    },
+    "candidate/20-insufficient-resources.png": {
+      "sha256": "42d20b8c92326f165aa717b999aa07752424b6d3e2a78b23bddc1adb6b94ed32",
+      "bytes": 1494638
+    },
+    "candidate/21-candidate-normal.png": {
+      "sha256": "3d8323e82553434ec1378fa06caac3d7f039c07a94683df10530c2f848254ba6",
+      "bytes": 1488219
+    },
+    "candidate/21-quantity-normal.png": {
+      "sha256": "3d8323e82553434ec1378fa06caac3d7f039c07a94683df10530c2f848254ba6",
+      "bytes": 1488219
+    },
+    "candidate/21-slot-normal.png": {
+      "sha256": "3d8323e82553434ec1378fa06caac3d7f039c07a94683df10530c2f848254ba6",
+      "bytes": 1488219
+    },
+    "candidate/22-candidate-hover.png": {
+      "sha256": "b124b27cc152278dccbf4321219fd7055cdf063fb1135794954b133829d98b62",
+      "bytes": 1488215
+    },
+    "candidate/22-quantity-hover.png": {
+      "sha256": "f93a633348cb485873d87b74936498b28d81e990f25ae13a3e3f253311b34e1c",
+      "bytes": 1488241
+    },
+    "candidate/22-slot-hover.png": {
+      "sha256": "ca175140c170ea3db8ac83e7687014517a7323d58564e4a484da3ff9aed90226",
+      "bytes": 1488156
+    },
+    "candidate/23-candidate-pressed.png": {
+      "sha256": "d10c2738781dfd730ac7a69b18bd15d12a9aef5d617ae23998faba48810abf6b",
+      "bytes": 1488140
+    },
+    "candidate/23-quantity-pressed.png": {
+      "sha256": "a2c62d4d8f620f56e9c5e87e38a830c05a73ccd77c0e80bec0eb35500d21fc3e",
+      "bytes": 1488317
+    },
+    "candidate/23-slot-pressed.png": {
+      "sha256": "9c50a16a3e52b5a89f2a91f001628b534763fc709717aa1327c7141a81a8e27c",
+      "bytes": 1488211
+    },
+    "candidate/24-candidate-focus.png": {
+      "sha256": "4f76753c84934d857e51f3233636a13d1fce038d261096df3df7ff62078728f0",
+      "bytes": 1488206
+    },
+    "candidate/24-quantity-focus.png": {
+      "sha256": "9e7df7b3e41786b4ebd6b12b0a2fd9d3db739ef9dabb6752f09fe4673e52fa31",
+      "bytes": 1488205
+    },
+    "candidate/24-slot-focus.png": {
+      "sha256": "da6c2bf0ad397721418ce3badfd0c72b32bc3f426e3b13f50c0b2ccf79feba14",
+      "bytes": 1486607
+    },
+    "candidate/25-partial-unlock-frigate.png": {
+      "sha256": "4a69db5a855cacc93db6f3246d54f6ad37fa18236b079f36c8e2cecb0159b25d",
+      "bytes": 1502691
+    },
+    "candidate/26-heavy-new-empty-slots.png": {
+      "sha256": "25cb5a4c9ab6394876deb3cb7721311bd3e9d4022859a2e275da9a8743c2ac39",
+      "bytes": 1431121
+    },
+    "candidate/27-heavy-direct-empty-install.png": {
+      "sha256": "85c8741659644ff9776dd68c9eb77750ed728f16b834c4871ac1456777c20080",
+      "bytes": 1442032
+    },
+    "candidate/28-heavy-all-equipped.png": {
+      "sha256": "66e3810c13ee044391c1385828b4c69db106bf0ae7ae4d4b8fe9ae4a9b0c9248",
+      "bytes": 1455785
+    },
+    "candidate/29-heavy-third-defence-selected.png": {
+      "sha256": "7b713f812a37b72f5d97a02eef33972e1e2bea5ea9a7f1c471912a92b08e4744",
+      "bytes": 1450180
+    },
+    "candidate/30-destroyer-paired-mounts.png": {
+      "sha256": "759b794104027e66496fbe42bc936c4f559d37fdbc0b37f5d6aeb00d14c5d5ab",
+      "bytes": 1504964
+    },
+    "candidate/31-frigate-full-equipment-dormant-slots.png": {
+      "sha256": "bb2491c14afb8493c69d5f3034fb74ae8abb1ef06006fb8ccd68ace7e152df9a",
+      "bytes": 1517742
+    },
+    "candidate/font-actual.json": {
+      "sha256": "1b257c6169b380a887169e708bd838611b50006b19335eb1e28ebcb519396161",
+      "bytes": 224
+    },
+    "candidate/operations.json": {
+      "sha256": "bb7c50bfa91fe5f0af380f09dbfee5b14fc9a336156247d8a2f9acf06a5ef0fd",
+      "bytes": 222691
+    },
+    "regression/batch-unknown.png": {
+      "sha256": "49953a1065881885e3b0fb6819e6f6c5d6e6ec960e7b057fd4800d7f6220f73b",
+      "bytes": 596942
+    },
+    "regression/edge-left-after.png": {
+      "sha256": "0a3425fc3a28aa5cda500ebb83abef9cdb84d71f4b8b930667262d0623858176",
+      "bytes": 1098641
+    },
+    "regression/edge-left-before.png": {
+      "sha256": "b3b1f8bc46debb1904b9d6773a14778dd98660da1915be9cc43cdcdfc171d3b3",
+      "bytes": 1098292
+    },
+    "regression/edge-right-after.png": {
+      "sha256": "f0ea23d4445a52d427fe7dffe137e6be3b333c6616b280610fbb940679066d03",
+      "bytes": 1103715
+    },
+    "regression/edge-right-before.png": {
+      "sha256": "81847c55cbb3c72d05d7f70fd6e9a68f961cdc3df4372e16537ad0daf9973c5c",
+      "bytes": 1103468
+    },
+    "regression/free-defence-return.png": {
+      "sha256": "f900340278c932c7b0cc3e9dcb210bcced2a98165e554edd338e31b58bc73880",
+      "bytes": 1105177
+    },
+    "regression/free-weapons-return.png": {
+      "sha256": "9f22583946876793959522163bd7d3d995e5be13c7f8292f1a1e9246680ffc58",
+      "bytes": 1105070
+    },
+    "regression/runtime.json": {
+      "sha256": "010fdf21fbc9aea2eeb48f291bf897c5164c18487dcffc174e4faf652a56432d",
+      "bytes": 472944
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "31f979d65e27e38dae1e7ba307fc3b8f9028b00df80e815ff693970ef498ac24",
+      "bytes": 27568
+    },
+    "regression-driver.gd.txt": {
+      "sha256": "1c55efca08bbcfd3b536724a1a48b558dc62b05625258e3df9ee125bd87841c6",
+      "bytes": 24617
+    },
+    "candidate.log.txt": {
+      "sha256": "951be660ea1b1d35ceb601ea68d6708a82501df5e0b373a1d5942d30ceedeb0b",
+      "bytes": 417
+    },
+    "regression.log.txt": {
+      "sha256": "0ee35f131486d0ae4b72766ec65a447bf7c86ba4816166e44dafcb4a89a7c884",
+      "bytes": 456
+    },
+    "README.md": {
+      "sha256": "55aea008e4ed79faa7024aa0ab50e4594f3f7052fbaad4535286b480c8b42869",
+      "bytes": 7725
+    }
+  },
+  "local_preserved": "preview/ plus every earlier WIP/failure directory and all unrelated .import/.uid/cache/settings/saves; excluded from staging."
+}
