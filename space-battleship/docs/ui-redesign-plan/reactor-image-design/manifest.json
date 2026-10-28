@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "two_references_received_via_git_and_independently_viewed_connection_adaptation_judgment_pending_cross_review",
+  "status": "reference_judgment_cross_review_approved_single_compact_junction_image_validation_pending_review_with_unresolved_connections",
   "target_client_logical_px": [
     1440,
     900
@@ -18,6 +18,14 @@
     900
   ],
   "images": [
+    {
+      "path": "reactor-compact-junction-r1-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "668ff30b893187070d6bfad045cc432669c358ff014ebb5c918b02e0abac72ec"
+    },
     {
       "path": "reactor-four-fixed-pipe-frame-r1-raw.png",
       "native_size_px": [
@@ -117,8 +125,8 @@
   ],
   "pixel_processing": "none: generator outputs copied unchanged",
   "runtime_evidence": false,
-  "geometry_issue": "R2 native divider near x950 / width1586 (~59.9%), equivalent logical x863; target x808. Module hardware does not cross generated divider but exact808/632 compliance still fails.",
-  "review_image": null,
+  "geometry_issue": "Junction R1 generated divider near x921 / width1586 (~58.1%), equivalent logical x836; target x808; exact region compliance still fails.",
+  "review_image": "reactor-compact-junction-r1-raw.png",
   "interaction_display": "All four directly adjustable sliders; only selected condensation device expands precise entry, clear draft and detail; unchanged values not duplicated; whole-plan confirm inactive.",
   "comparison_images": [
     "reactor-four-fixed-raw.png",
@@ -131,15 +139,15 @@
     "Static images do not prove scrolling coupling alignment, input hit areas or natural unlock flow."
   ],
   "selected_layout": "fixed_four_continuous_bays",
-  "revision_scope": "New visual base, few broad continuous lightweight spacecraft composite surfaces supporting core and four installed modules; embedded energy windows and intrinsic operating ledges. Not an edit of24b industrial rack.",
+  "revision_scope": "Preserve accepted core and4 module bodies; test compact common distribution junction and4 short functional docking/control interfaces. Reference images used for relations only.",
   "rejected_image": "reactor-four-fixed-pipe-frame-r1-raw.png",
   "structure_review": "shared-power-structure-review.md",
   "latest_visual_findings": [
-    "Self-check: no closed cabinet niches or shelves, no exposed thick distribution pipe/collars/cables.",
-    "Few broad composite surfaces continuously support core and4 equipment; short dark readouts/direct slider ledges attach to structure.",
-    "Initial R1 invented navigation/resource identities and new battle fighter; R2 corrected these using fixed d74 original header/right reference.",
-    "Right restored battle context remains image-generated reference, not a new battlefield design or runtime evidence.",
-    "Exact screen region width still fails; slider positions need independent checking and eventual state binding."
+    "Recognizable common functional junction adjacent to core, accepted core/four small modules preserved.",
+    "Upper/lower outputs remain elongated vertical pipe/service sections;4 directly seated short common interfaces not fully achieved.",
+    "Repeated framed readout zones and horizontal separation remain; display-cabinet/industrial-rack risk not closed.",
+    "All4 subjects/direct sliders/core master controls visible; draft labels missing on per-device controls, current-vs-draft clarity incomplete.",
+    "Native divider still exceeds target; slider knob proportions only approximate and do not prove input geometry."
   ],
   "rejected_images": [
     "reactor-four-fixed-pipe-frame-r1-raw.png",
