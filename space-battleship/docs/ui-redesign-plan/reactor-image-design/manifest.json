@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "draft_pending_independent_review_and_user_confirmation",
+  "status": "focused_revision_pending_independent_review_and_user_confirmation",
   "target_client_logical_px": [
     1440,
     900
@@ -41,9 +41,27 @@
         992
       ],
       "sha256": "eaca162d8ed8123191892a9d9de5e17a6277e7035e12042ad6ba8ea6ed441c7b"
+    },
+    {
+      "path": "reactor-r4-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "71c7efc381cecf35339f0cd2427781f5421f200052999c5decbcb52e7ced4b4c"
+    },
+    {
+      "path": "reactor-r5-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "214a317d36049e9005d300af41e9bb08e51d544dc54f9502ed7dccdc2060b07a"
     }
   ],
   "pixel_processing": "none: generator outputs copied unchanged",
   "runtime_evidence": false,
-  "geometry_issue": "R3 observed divider near native x921 / width1586, equivalent target logical x836; target is x808. Not accepted as exact region compliance."
+  "geometry_issue": "R5 divider remains near native x921 / width1586, equivalent logical x836; target x808. Explicitly not accepted as exact region compliance; stop repetitive image generation for this one issue.",
+  "review_image": "reactor-r5-raw.png",
+  "interaction_display": "All three directly adjustable sliders; only selected weapons device expands precise entry and detail; unchanged values not duplicated; whole-plan confirm inactive."
 }
