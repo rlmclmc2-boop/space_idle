@@ -1,0 +1,74 @@
+{
+  "baseline": "e9fb3a63cf54b88b6f88e0d18a501353bb068637",
+  "current": "8cd81a3f930f28bd362b8e14e5cf60d50c32b41b",
+  "unchanged_functions": [
+    {
+      "function": "_economy_display_changed",
+      "sha256": "0976ee4885d03766cef07770a9d504ff6effa154c85f69e0c723fc5ae65ba004",
+      "identical": true
+    },
+    {
+      "function": "_refresh_batch",
+      "sha256": "fc3fa8d724a9538f7fe3dffeb0ecc89f96c7df8e3368993e956eac7f3dcb6388",
+      "identical": true
+    },
+    {
+      "function": "_accept_result",
+      "sha256": "83a9f579f13c32f41ce09ccabc39cccf8e21eb407d28943c797a35a5e2c3e0ae",
+      "identical": true
+    },
+    {
+      "function": "_refresh_cooldown",
+      "sha256": "837407ab557c40c3a4c760c2ae189ac2fd378dc8585d8affa8384fb2f205850b",
+      "identical": true
+    },
+    {
+      "function": "_process",
+      "sha256": "ada61c0f92ac30241e8935c1d36f78f0cd57f3f113d6f9d08cc990338bb6b125",
+      "identical": true
+    },
+    {
+      "function": "_buy",
+      "sha256": "a1de8f4d1106e79eb14286d77beeadcb558b238a3196ccd9b672dd1996c95cca",
+      "identical": true
+    },
+    {
+      "function": "_equip",
+      "sha256": "a5a27d765e63348048aa89dac15612b917d6d46f823a16e96d10d2e407d1695d",
+      "identical": true
+    },
+    {
+      "function": "_buy_all",
+      "sha256": "d7cdde97f3237e857b07c9813986d6390411cb374dd9f25818ae76b2c7432796",
+      "identical": true
+    },
+    {
+      "function": "_selected_fact",
+      "sha256": "99fb5849d60fa6c4df026fad4a54fd076272bc960a1b73cf17958c1b09db6c38",
+      "identical": true
+    },
+    {
+      "function": "_select_candidate",
+      "sha256": "4e0a32858229102fd054db35b126e01bb1376bf03b77f72071fe877c6ce13759",
+      "identical": true
+    },
+    {
+      "function": "select_slot",
+      "sha256": "1a31a2c14752081cd2432a66e0ad7614692331af8d6affe92bba81e80d647e7e",
+      "identical": true
+    },
+    {
+      "function": "_refresh",
+      "sha256": "ed6a4cebb77f796ca3ad349c7b98bc0f8b91b2f926d7eb1e2c65e3b126ff73db",
+      "identical": true
+    },
+    {
+      "function": "_slot_label_position",
+      "sha256": "70101037ce6d231b60854ecbf2bbded4919a23663cb82c723804081c04b27aaf",
+      "identical": true
+    }
+  ],
+  "admission_source": "Exact existing option.enabled→button.disabled assignment retained; selection/equip command functions identical; actual fresh/cleared1 interactions separately recorded",
+  "comparison": "Same owner comparison call/quantity/MAX inputs; changes are visual layout only",
+  "scope": "Static preservation evidence; no new full protection regression suite claimed"
+}

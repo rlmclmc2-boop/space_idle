@@ -1,0 +1,189 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/integrated-presentation"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func ink(control: Label) -> Rect2:
+    var view:=SubViewport.new();view.size=Vector2i(control.size.ceil())+Vector2i(8,8);view.transparent_bg=true;view.render_target_update_mode=SubViewport.UPDATE_ALWAYS
+    root.add_child(view)
+    var copy:Label=control.duplicate();copy.position=Vector2(4,4);view.add_child(copy)
+    await flush()
+    var bound:Rect2=Rect2(view.get_texture().get_image().get_used_rect())
+    view.queue_free()
+    return Rect2(control.global_position+bound.position-Vector2(4,4),bound.size)
+func labels(label: String) -> void:
+    var surface:=Rect2(116,699,343,64)
+    var measured:Dictionary={}
+    for name in ["_current_caption","_upgrade_caption","_current_value","_next_value"]:
+        var control:Label=panel.get(name)
+        var bounds:Rect2=await ink(control)
+        check(surface.encloses(bounds),label+" real rendered ink inside material "+name)
+        measured[name]={"layout":control.get_global_rect(),"ink":bounds,"top_inset":bounds.position.y-surface.position.y,"bottom_inset":surface.end.y-bounds.end.y,"font_size":control.get_theme_font_size("font_size")}
+    if panel._upgrade_arrow.visible:
+        check(measured._current_value.ink.position.y-measured._current_caption.ink.end.y>=4,label+" caption/value ink vertical separation")
+        check(measured._next_value.ink.position.y-measured._upgrade_caption.ink.end.y>=4,label+" upgrade caption/value ink vertical separation")
+    else:
+        check(measured._next_value.ink.position.y-measured._current_value.ink.end.y>=4,label+" long numeric rows retain clear ink gap")
+    check(panel._current_value.get_theme_font_size("font_size")==27 and panel._next_value.get_theme_font_size("font_size")==27,label+" primary font unchanged")
+    check(panel._purchase.position.y==panel._install.position.y and panel._purchase.size.y==panel._install.size.y,label+" both action baselines/spec equal")
+    check(panel._current_title.position.y==panel._comparison_title.position.y,label+" both title baselines equal")
+    records.append({"action":label,"primary_surface":surface,"labels":measured,"current_icon":panel._current_icon_geometry.duplicate(true),"left_action":panel._purchase.get_rect(),"right_action":panel._install.get_rect(),"state":snapshot()})
+func monochrome_ramp(colors:Array) -> bool:
+    # Antialiased/253-alpha source pixels blend the one silhouette RGB with its disabled backing.
+    var foreground:=Vector3(12,37,48)
+    var background:=Vector3(49,67,74)
+    var direction:Vector3=background-foreground
+    for html in colors:
+        var color:=Color.from_string("#"+str(html),Color.MAGENTA)
+        var rgb:=Vector3(color.r,color.g,color.b)*255.0
+        var t:float=clampf((rgb-foreground).dot(direction)/direction.length_squared(),0,1)
+        var distance:Vector3=(rgb-(foreground+direction*t)).abs()
+        if maxf(distance.x,maxf(distance.y,distance.z))>2:return false
+    return true
+func candidate_pixels(id: String) -> Dictionary:
+    var item:Dictionary=panel._choices[id]
+    var atlas:AtlasTexture=item.icon.texture
+    var picture:Image=atlas.atlas.get_image().get_region(Rect2i(atlas.region))
+    var rect:Rect2=item.icon.get_global_rect()
+    var factor:float=minf(rect.size.x/picture.get_width(),rect.size.y/picture.get_height())
+    var origin:Vector2=rect.get_center()-Vector2(picture.get_size())*factor*0.5
+    var viewport_image:Image=root.get_texture().get_image()
+    var colors:Dictionary={};var sampled:int=0
+    for y in range(ceili(origin.y),floori(origin.y+picture.get_height()*factor)):
+        for x in range(ceili(origin.x),floori(origin.x+picture.get_width()*factor)):
+            var source:Vector2i=Vector2i((Vector2(x+0.5,y+0.5)-origin)/factor)
+            var opaque:bool=true
+            for offset in [Vector2i.ZERO,Vector2i(-4,-4),Vector2i(4,4),Vector2i(-4,4),Vector2i(4,-4)]:
+                var point:Vector2i=source+offset
+                if point.x<0 or point.y<0 or point.x>=picture.get_width() or point.y>=picture.get_height() or picture.get_pixelv(point).a<0.98:opaque=false;break
+            if opaque:
+                sampled+=1;colors[viewport_image.get_pixel(x,y).to_html(false)]=true
+    return {"id":id,"disabled":item.button.disabled,"material_is_silhouette":item.icon.material==panel._locked_icon_material,"sampled_opaque_pixels":sampled,"opaque_rgb_colors":colors.keys(),"state_text":item.status.text}
+func locked_state(label: String) -> void:
+    await flush()
+    var items:Array=[]
+    for id in ["laser","missile","cannon","longLaser"]:
+        var row:Dictionary=candidate_pixels(id)
+        check(row.sampled_opaque_pixels>20,label+" actual candidate pixels sampled "+id)
+        if row.disabled:
+            check(row.material_is_silhouette and monochrome_ramp(row.opaque_rgb_colors),label+" locked pixels contain no internal RGB detail "+id)
+        else:
+            check(not row.material_is_silhouette and row.opaque_rgb_colors.size()>10,label+" unlocked official color detail retained "+id)
+        items.append(row)
+    records.append({"action":label,"candidates":items,"state":snapshot()})
+func ship_record(label: String) -> void:
+    var bounds:Rect2=Rect2(panel._hull_visible_bounds[panel._ship])
+    var draw:Rect2=panel._ship_rect()
+    var factor:float=draw.size.x/768.0
+    var visible:=Rect2(draw.position+bounds.position*factor,bounds.size*factor)
+    var envelope:Rect2=visible
+    for row in host.equipment_slot_facts():
+        if row.dormant or str(row.equipment_id).is_empty():continue
+        envelope=envelope.merge(panel._component_rect(row))
+        if row.category=="weapon":
+            var point:Array=panel._catalog[panel._ship].mounts[int(row.index)]
+            var expected:Vector2=draw.position+Vector2(point[0],point[1])*factor
+            check(expected.distance_to(panel._mount_position(row))<0.001,label+" official source mount follows assembly "+str(row.id))
+    var selected:Dictionary=panel._selected_fact()
+    if not selected.is_empty():
+        var badge:Rect2=panel._locator_badge_rect(selected,panel._component_rect(selected).grow(5))
+        if badge.has_area():envelope=envelope.merge(badge)
+    var safe:=Rect2(224,158,560,446)
+    check(safe.encloses(envelope),label+" whole current assembly has hangar clearance")
+    check(visible.get_center().distance_to(Vector2(404,387))<0.01,label+" same preview camera centre")
+    records.append({"action":label,"ship":panel._ship,"visible_hull":visible,"assembly_envelope":envelope,"safe":safe,"source_reference":panel._preview_reference[panel._ship],"canvas_rect":draw,"same_assembly_zoom":panel._preview_zooms[panel._ship],"state":snapshot()})
+func run() -> void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running() and not host.pause_reasons.has("recovery"),"real normal main/native startup")
+    if not failures.is_empty():quit(1);return
+    host.set_pause("user",true);await flush()
+    await labels("fresh normal values, shared workbench")
+    await locked_state("fresh game only pulse unlocked")
+    var before:Dictionary=snapshot()
+    await click(panel._choices.cannon.button)
+    check(panel._candidate==before.candidate and host.equipment_slot_facts()==before.slots,"disabled cannon click cannot select or install")
+    await screenshot("01-fresh-silhouette-normal")
+    var partial:Dictionary=host.campaign_system.save_state()
+    partial.state.highest_reached=2;partial.cycle_reached=2;partial.state.state="menu";partial.state.cleared_stages={1:true}
+    check(host.campaign_system.restore_state(partial).ok,"controlled cleared1 validates")
+    host.equipment.refresh_availability(host.campaign_system.available,2);await flush()
+    check(not panel._choices.missile.button.disabled and panel._choices.cannon.button.disabled and panel._choices.longLaser.button.disabled,"cleared1 opens missile only, other candidates remain locked")
+    await locked_state("cleared1 only missile newly opens")
+    before=snapshot();await click(panel._choices.longLaser.button)
+    check(panel._candidate==before.candidate and host.equipment_slot_facts()==before.slots,"disabled longLaser click cannot select or install")
+    var rejected:Dictionary=host.equipment.equip_slot("weapon:0","cannon",host.equipment_inputs(),host.publish_equipment_refit)
+    check(not rejected.ok and rejected.reason=="EquipmentLocked" and host.equipment_slot_facts()==before.slots,"owner still rejects locked installation")
+    records.append({"action":"locked actual owner rejection", "result":rejected,"state":snapshot()})
+    await click(panel._choices.missile.button)
+    check(panel._candidate=="missile" and host.equipment_slot_facts()[0].equipment_id=="laser" and not panel._install.disabled,"unlocked missile previews without install")
+    await screenshot("02-cleared1-missile-color-others-silhouette")
+    await click(panel._install)
+    check(panel.last_result.ok and host.equipment_slot_facts()[0].equipment_id=="missile","same actual direct install path accepts unlocked missile")
+    records.append({"action":"actual direct missile installation", "result":panel.last_result.duplicate(true),"state":snapshot()})
+    var c:Dictionary=host.campaign_system.save_state()
+    c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.departure_remaining=0.0;c.state.speed=0.0;c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled full preview progress validates")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    var e:Dictionary=host.equipment.save_state()
+    for slot in e.slots:
+        if slot.id=="weapon:0":slot.equipment_id="laser";slot.paid_level=19;slot.switch_ready_at=0.0
+    check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled preview levels/types validate")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"controlled preview state publishes to native")
+    wallet("1234567890123456789012345678901234567890","9999999999999999999999")
+    panel._dirty=true;await flush();await click(panel._quantity_buttons[2])
+    await labels("long MAX values retain full width and material insets")
+    check(panel.last_comparison==host.equipment_comparison(panel._selected,panel._candidate,panel._quantity,panel._maximum),"long quote matches unchanged owner")
+    await screenshot("03-long-values-shared-material")
+    await click(panel._quantity_buttons[0])
+    var last_height:float=0
+    for ship in ["Frigate","Destroyer","Cruiser","Battleship","Heavy_Battleship"]:
+        if host.campaign_system.selected_ship()!=ship:check(host.campaign_system.change_ship(ship,host.commit_ship_refit).ok,"actual preview ship change "+ship)
+        # Formal all-slot assembly for one camera comparison, not a natural unlock claim.
+        e=host.equipment.save_state()
+        for slot in e.slots:slot.switch_ready_at=0.0
+        check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled cooldown preparation "+ship)
+        for row in host.equipment_slot_facts():
+            if row.dormant:continue
+            var desired:String=(["laser","missile","longLaser","cannon","laser"][int(row.index)] if row.category=="weapon" else ["shield","armour","shield"][int(row.index)])
+            if str(row.equipment_id)!=desired:check(host.equipment.equip_slot(str(row.id),desired,host.equipment_inputs(),host.publish_equipment_refit).ok,"actual owner prepares formal preview slot "+str(row.id))
+        panel._dirty=true;await flush();await click(panel._slot_buttons["weapon:0"].button)
+        ship_record("same-camera five-tier preview "+ship)
+        check(float(panel._preview_reference[ship].preview_height)>last_height,"five-tier visible height increases "+ship)
+        last_height=panel._preview_reference[ship].preview_height
+        await screenshot("04-scale-"+ship)
+    var hashes:Dictionary={}
+    for path in ["res://src/ui/equipment_panel.gd","res://src/main.gd","res://src/game_session.gd","res://src/systems/battle.gd","res://src/systems/equipment.gd","res://assets/ui/equipment/hangar/upgrade-console.svg","res://assets/ui/ships/manifest.json"]:hashes[path]=FileAccess.get_sha256(path)
+    var f=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    f.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_INTEGRATED_SOURCE"),"engine":Engine.get_version_info(),"records":records,"failures":failures,"source_hashes":hashes,"preview_reference":panel._preview_reference,"root_pixels":root.size,"scope":"Targeted fresh/cleared1 locking, rendered label ink, shared lower materials and five ship types in one fixed preview camera. Controlled progress/wallet/types for later cases; no battle scaling changes."},"  "));f.close()
+    print("INTEGRATED_EQUIPMENT_COMPLETE failures=",failures.size()," records=",records.size())
+    app._close_game()

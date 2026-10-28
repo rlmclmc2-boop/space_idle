@@ -1,0 +1,242 @@
+{
+  "runtime_source_commit": "8cd81a3f930f28bd362b8e14e5cf60d50c32b41b",
+  "baseline": "e9fb3a63cf54b88b6f88e0d18a501353bb068637",
+  "window": [
+    1440,
+    900
+  ],
+  "equipment": [
+    808,
+    900
+  ],
+  "runtime_changed_paths": [
+    "src/ui/equipment_panel.gd"
+  ],
+  "captured_source_hashes": {
+    "res://assets/ui/equipment/hangar/upgrade-console.svg": "a31cad4dc3f1246226897ffa0d1fccd3855ac23d134e248c0d4f6b057dd1b83c",
+    "res://assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+    "res://src/game_session.gd": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+    "res://src/main.gd": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+    "res://src/systems/battle.gd": "10875d02d77f676d61bc1f463ef6336f6eeaee8a682322c9513194b252f35bde",
+    "res://src/systems/equipment.gd": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+    "res://src/ui/equipment_panel.gd": "eda21f461c480cb75b6bba008ebd49e8c2f70505590e1791746bfa573debec84"
+  },
+  "local_configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "formal_asset_hashes": [
+    {
+      "path": "assets/ui/ships/fleet_20261019/01-frigate.png",
+      "sha256": "a3982ea4c5f401c73ae9d1da2ed286231677c0a09f8f3f8c1e65b8f43049411c",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ui/ships/fleet_20261019/02-destroyer.png",
+      "sha256": "a17656a0c9919216196378cfe937314ef30f361931f61f8a5209b4b5e5ad0e60",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ui/ships/fleet_20261019/03-cruiser.png",
+      "sha256": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ui/ships/fleet_20261019/04-battleship.png",
+      "sha256": "2c83c7ecb13310daae95a4a18cfbc91a64c22ba9c99b15449e72615ccf3bdf72",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+      "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ships/fleet_20261019/player/01-frigate.png",
+      "sha256": "0aac6f2efd909f273551d37ae40d5e03e4611c1bedc1659aee9ed411a339d61a",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ships/fleet_20261019/player/02-destroyer.png",
+      "sha256": "760297cb7a2fdc3e4dcfb18dbfc7e4d527789797180d55e493786bd0e59a44ba",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ships/fleet_20261019/player/03-cruiser.png",
+      "sha256": "1b1bddf839c762a3234dbd61da26d490f50396405bf2b07e409877c66242f363",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ships/fleet_20261019/player/04-battleship.png",
+      "sha256": "f1bbf09e0ac1ccac6b9a43f63e25875fbb01a4ab6933c442074eb2b048c2f7c8",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/ships/fleet_20261019/player/05-heavy-battleship.png",
+      "sha256": "4dc7511feba6dd6912215039a6112aefd0b2236898103b638b799677e49160ee",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/cannon.png",
+      "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/laser.png",
+      "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/longLaser.png",
+      "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/missile.png",
+      "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "assets/weapons/fleet_20261019/pulse-bolt.png",
+      "sha256": "93eda61b1bf03049126658875dbd7a60c21df9d35a7a773164e638457096cc49",
+      "unchanged_from_baseline": true
+    }
+  ],
+  "files": [
+    {
+      "path": "01-fresh-silhouette-normal.png",
+      "sha256": "0fe56485ab923b8bc91d3a92854370cc9d1f59fa11ffe09bb5960c17957f68b0",
+      "bytes": 1467508,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "02-cleared1-missile-color-others-silhouette.png",
+      "sha256": "72bcabeea23e99234d41a238bb5fdd380900b63467cb32078feb3a2f839285e9",
+      "bytes": 1470420,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "03-long-values-shared-material.png",
+      "sha256": "f02090f3f587f9f1687c3c4be04a51146f1004bc9770c1c70dafe8e6cf1f539f",
+      "bytes": 1493167,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "04-scale-Battleship.png",
+      "sha256": "d628ac09d5c59fbd0982a09c0a486a80e5074d6e6f8a990b05ba9cc32b3c8ccc",
+      "bytes": 1525540,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "04-scale-Cruiser.png",
+      "sha256": "65a08b8aba74d3badde6a8b94f4f96e7ea2c3f7c6db2842e35e612f4dcfa315c",
+      "bytes": 1509288,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "04-scale-Destroyer.png",
+      "sha256": "72a581e406a5f01ea5f01383b13b35328780c6ef7cf4d5568108a4e2cd250073",
+      "bytes": 1491451,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "04-scale-Frigate.png",
+      "sha256": "1b1c4fc6b18fabc274b6997a8c90a6c28c492b89794feaff31abd0c6b0ea1c4a",
+      "bytes": 1486888,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "04-scale-Heavy_Battleship.png",
+      "sha256": "6c37e1ded9550afb32be8711714bc25f6a852d6a5670270c408a6544d091cee5",
+      "bytes": 1546279,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "README.md",
+      "sha256": "4c1a289789ff5d2db7a81d6245e4ed36c82e15c64df88c44b0ac3abbd1e3b120",
+      "bytes": 8525
+    },
+    {
+      "path": "capture-driver.gd.txt",
+      "sha256": "d903e14f886ca2b20e110d58c4dcdc3b8ed3ef8c054e6d9562de2af5e0f157f7",
+      "bytes": 15074
+    },
+    {
+      "path": "capture.log.txt",
+      "sha256": "1becf414f094c19a5c3d593e56d0213918bc6c631cd8acb13deb8f29d6344102",
+      "bytes": 420
+    },
+    {
+      "path": "check.log.txt",
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    {
+      "path": "diagnostics/invalid-preview-v2-operations.json",
+      "sha256": "12d7befca728d5d84870b2ebc36a1a86bc449df1883ffccebcf02f012cda05d3",
+      "bytes": 79403,
+      "scope": "Invalid pre-fix sampling diagnostics only, not passing evidence"
+    },
+    {
+      "path": "diagnostics/invalid-preview-v2.log.txt",
+      "sha256": "64e18658bc9ac3592e31a37edba14aaec8cf0e2fc6e554b41aedbccb6cc4c314",
+      "bytes": 607,
+      "scope": "Invalid pre-fix sampling diagnostics only, not passing evidence"
+    },
+    {
+      "path": "diagnostics/invalid-preview.log.txt",
+      "sha256": "bca3d697368952dabe4a927e68fda7bd2e5d5ebb0b05588f786ee3101843f4d9",
+      "bytes": 1304,
+      "scope": "Invalid pre-fix sampling diagnostics only, not passing evidence"
+    },
+    {
+      "path": "operations.json",
+      "sha256": "fc847468c81314c3a9a6076b80a2659d768766d8abd80e7db70393be891516d7",
+      "bytes": 79234
+    },
+    {
+      "path": "preserved-boundaries.json",
+      "sha256": "476c5dc4f923da361a513319f7317fcc36c0a962f8ebd1ff35abbb02b6ae0c22",
+      "bytes": 2557
+    }
+  ],
+  "scope": "8 raw images actually viewed;11 targeted records0failures. Invalid pre-fix diagnostics explicitly excluded from positive evidence. Preview scale is display-only, not approved battle dimensions.",
+  "scale_reference_source_hashes": [
+    {
+      "path": "data/ship_weapon_visuals.json",
+      "sha256": "cb6b0c31760f4061d8c8bbad13676c8f6315418ebf02d65fba0cdbd37d91f509",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "config_excel/config.xlsx",
+      "sha256": "b7ef041db8912c64f9c52a7fb0698dd63ac0e5dbc89ab31f0d552fafd6e9b192",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "config_excel/battle_geometry.xlsx",
+      "sha256": "04bc0201e3bb9e65e24b248f11444153558bf64acdbf63fa5b1b4dc6a4d29696",
+      "unchanged_from_baseline": true
+    }
+  ]
+}

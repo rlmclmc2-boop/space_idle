@@ -1,5 +1,7 @@
 # 左台图标与费用区两项窄修：原双审限定闭合
 
+后续用户明确要求左右作为整体统一并协调舰船/操作区比例。本文c227/121a的通过仅指图标余量/视觉中心、费用信息按行疏密，**不表示左右整体协调或左壳独缩方案通过**。新整合已取消左壳单独缩短、保留两项改善并同高同材质，见[8cd同版候选](../integrated-presentation/README.md)；原始图片/操作/日志继续保持。
+
 固定运行源码 **c22735c3d9519789eda7c5b89a5367693a49c881**，证据提交 **121a13cdba15a171fef47afaf2dcc05d23d97681**；原目录 `/workspace/space_idle`、原分支 `implement/equipment-hangar-godot`，未合main。基线为526运行/30a证据，本轮只接用户再次标注的两项：主图标填框/视觉中心、单资源费用空大。根线程现回报原双审已通过，图标留白/视觉中心及单/多资源疏密可按本批限定闭合；这是原审结论同步，不是执行者自判或由检查0失败推导。上方U1及已审操作/四保护不重开；不扩大为防御、整个下方流程、宿主或整体通过，防御新整舰反馈仍未确认、不实施，旧设计队列保留。
 
 优先对照三张同版真实图：[默认新局单资源](01-fresh-single-resource.png)、[舰炮小框及单资源](02-cannon-single-resource.png)、[长MAX多资源](05-long-max-multi-resource.png)。均为实际Godot4.7.2正常main/Session/native根视口1440×900原像素，未裁切、缩放或拼贴；三张均已实际view_image查看。其余[跨材料双资源报价](03-two-resource-quote.png)、[实际购买后回单资源](04-after-two-resource-purchase.png)、[不足恢复提示](06-insufficient-after-preview.png)保留同版功能来源。本轮没有ImageGen新图或SVG样稿。

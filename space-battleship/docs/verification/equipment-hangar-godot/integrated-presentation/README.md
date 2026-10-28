@@ -1,0 +1,59 @@
+# 装备整合候选：剪影、标签、双台及五档预览
+
+固定运行源码 **8cd81a3f930f28bd362b8e14e5cf60d50c32b41b**，原目录 `/workspace/space_idle`、原分支 `implement/equipment-hangar-godot`，未合main。本轮并入用户后续明确的四项要求，不另起方向：锁定武器alpha剪影、主值标签内收、下方左右统一并共同收紧、五档同机位体量递进。相对e9fb上一交付仅 `src/ui/equipment_panel.gd`有运行差异；未改main/业务/config/native/正式PNG或manifest。仍交原双审，不自判整体协调或新尺度通过；防御v4/甲v2仍待确认，新整舰反馈未实装。
+
+前轮c227/121a原双审闭合仅覆盖图标余量/视觉中心与费用信息按行疏密，**不代表左右整体协调、单缩左台外壳或五档比例通过**。本轮保留已闭合图标的实际留白与光学标定，只随公共工作区整体平移；费用仍单/多资源紧凑行，不恢复独立空大费用框。
+
+## 同版图入口
+
+以下8张均为实际Godot4.7.2正常main/Session/native，根视口1440×900、左808×900，原像素PNG，未裁切/缩放/拼贴；8张均已实际view_image查看。
+
+| 场景 | 原始同版图 |
+|---|---|
+| 默认新局：脉冲彩色，其余剪影；普通标签/双台 | [01-fresh-silhouette-normal.png](01-fresh-silhouette-normal.png) |
+| cleared1：导弹彩色可预览，舰炮/长激光仍锁定剪影 | [02-cleared1-missile-color-others-silhouette.png](02-cleared1-missile-color-others-silhouette.png) |
+| 长值/MAX：完整主值、双资源、共同操作基线 | [03-long-values-shared-material.png](03-long-values-shared-material.png) |
+| Frigate，同机位约145.905px可见高 | [04-scale-Frigate.png](04-scale-Frigate.png) |
+| Destroyer，同机位约166.115px可见高 | [04-scale-Destroyer.png](04-scale-Destroyer.png) |
+| Cruiser，同机位约234.463px可见高 | [04-scale-Cruiser.png](04-scale-Cruiser.png) |
+| Battleship，同机位约265.635px可见高 | [04-scale-Battleship.png](04-scale-Battleship.png) |
+| Heavy，同机位320px可见高与当前完整配装 | [04-scale-Heavy_Battleship.png](04-scale-Heavy_Battleship.png) |
+
+新局为独立/tmp设置/存档默认状态，无recovery；cleared1进度、后续全开放/钱包/等级及五档合法配装通过明确受控restore和真实所有者equip/refit准备，**不冒充自然赚取/开放过程**，不含个人存档。右战场随真实换舰改变当前舰，非修改战场尺度或素材。
+
+## 具体呈现及测量
+
+**剪影。** 所有者的option.enabled仍唯一决定禁用/开放。初始化缓存一个纯色CanvasItem材质，只取正式图的alpha，完全丢弃其RGB；锁定候选不再暗化完整彩色图，解锁即撤材质恢复同一正式缩略图。正式原图未改，材质不在刷新时重建。真实窗口像素取样中，新局导弹/舰炮各为1种内部RGB；长激光有6种，仅为同色剪影与背景的边缘alpha混色，没有内部彩色造型。脉冲保留386种RGB；cleared1导弹恢复473种RGB，舰炮/长激光仍锁。所有采样/材质与真实准入状态在operations.json，不以代码存在代替实图。
+
+**标签。** 本轮主值面为装备本地(116,699,343,64)，未缩27px主值及长值222px可用宽。诊断只在外部采证驱动中复制实际Label到透明SubViewport，以同字体/字号/当前文本真实栅格得到字形alpha边界，再映回主值面；该诊断不进入运行UI、不改变输入。
+
+| 实际渲染字形 | 面内上/下余量 | 其他净空 |
+|---|---|---|
+| 普通两标签 | 9px /42px | 与对应主值字形各15px上下间隔 |
+| 普通两主值 | 37px /8px | 27px字号保持 |
+| 长值当前/升级后标签 | 12/39px、42/9px | 两行标签分离 |
+| 长值当前/升级后数字 | 9/30px、38/6px | 数字行间4px字形净空，宽222px/27px字号保持 |
+
+这比只检查Control坐标多了一层实际材质内字形测量；长值和单/双资源在同版图中没有挤压、裁切或缩字号。
+
+**统一工作区。** 机库图像区域延至y620；下方外部共同区域由原330px收为280px（y620..900），两台面均y650..882、同232px高。两台共用原SVG同一干净材质切片的象牙面/深蓝标题梁、1px轮廓、浅绿数据面；右台体文/比较读数相应改为深蓝/青色。原PNG/SVG源文件未改，仅运行显示变换；不是新SVG样稿。
+
+两标题同y654、18px；数量/购买/安装同y840..876，字号16px、同类native材质及状态规则；候选70px卡改用28px图标，名称13px/状态12px保持。单资源只占y804附近紧凑末行，双资源从y778向上按26px增行，不足紧邻费用/动作；**不再单缩左壳或移动一侧动作基线**。左右原功能分工、浏览/安装/购级/批量流程保持，未删能力。
+
+**五档尺度。** 读取既有公开只读 `Battle.mount_inputs` 及其正式alpha源，还原参考高，再以最大320px统一归一；UI PNG实际alpha反推画布变换，各舰可见中心固定(404,387)。正式UI manifest点、炮PNG锚点与可见框用同一装配倍率，未改Battle参数或native挂点。320是本次展示候选，不是新战斗尺度批准；代码中的350只换算旧炮图显示标定，已不再逐舰fit。
+
+来源、换算和五档值见[尺度参考8.7](../../../game-design/reference/ship-scale.md#87-装备机库预览的展示层候选与战斗尺度分离)。实测五个指定当前静态配装（含当前选中徽标）包络均在(224,158,560,446)内；未以外接框当可见面积或宣称任意装备/全朝向扫掠均已覆盖。原防御代理仅随原装配变换，仍是旧UI代理，不是新物理挂点或新整舰反馈。
+
+## 操作结果、误报及保留边界
+
+[capture.log.txt](capture.log.txt)：`INTEGRATED_EQUIPMENT_COMPLETE failures=0 records=11`；[operations.json](operations.json)包含11条记录、真实渲染像素/字形、只读参考及包络、GUI事件及所有者结果。新局禁用舰炮点击不改候选/现装；cleared1只导弹开放，长激光禁用点击无效；真实所有者拒绝锁定舰炮安装（EquipmentLocked），随后导弹仅浏览不安装，再经原按钮真实直接安装成功。长MAX报价仍与原所有者完全一致。本轮不扩支付链或重跑全组合/全保护。
+
+两个未固定源码的预览采样有诊断误报，原日志及第二次预览记录保存在[diagnostics](diagnostics/)并明确**无效为通过证据**：第一次误以alpha≥.999定义内部不透明，正式PNG主体多为253/255，导致空采样与11项误报；第二次未显式裁Atlas.region、又把抗锯齿背景混色算作内部细节，产生2项误报。不是游戏故障或新增玩法失败，也没有把这些预览图混作固定源码通过图。
+
+最终驱动明确从Atlas.region取源alpha≥.98并检查周围样本，用实际窗口RGB核对只有单色/背景的alpha混色；解锁图独立检查其正式彩色细节保留。最终固定源码的8张图/11记录已单独重采到本目录，原始日志不改为成功、失败记录不删除；[capture-driver.gd.txt](capture-driver.gd.txt)为最终实际执行文本。纯色材质源码与实际原像素画面共同支持剪影结论，不以阈值调宽掩盖彩色图。
+
+[preserved-boundaries.json](preserved-boundaries.json)按固定Git对象核对已过命令、禁用候选选择、经济预算失效、批量/未知回执、冷却及进程门控函数保持；main/业务/配置/正式资产不变，右战场投影/拾取仍是原代码。原526/30a及c227/121a证据保留，只支持其当时限定范围；本轮没有重复全链、四保护计数/拾取实验或新native构建，不把静态保持扩大成一套新运行通过。
+
+GDScript4.7.2检查见[check.log.txt](check.log.txt)。[manifest.json](manifest.json)绑定固定源码/正式资源/本地生成配置hash及所有交付文件，逐项回读Git；不提交缓存、凭据、个人存档或生成配置。
+
+**待审/宿主边界：** 剪影、标签、左右整体协调与五档展示比例均交原审，不自判通过；防御v4/甲v2仍待用户/原审，不实装新反馈。808×900根未改；共享顶部/65px冲突、全局导航/CanvasLayer跨层模态焦点缺口仍由整体组解决，本轮没有接入H2或改main。最小安装尺寸、Windows/DPI、全部合法配装/朝向、长期性能未扩大覆盖。当前无游戏/图像任务、无阻塞；执行者未实际上下文压缩，普通Git推送，不合main。

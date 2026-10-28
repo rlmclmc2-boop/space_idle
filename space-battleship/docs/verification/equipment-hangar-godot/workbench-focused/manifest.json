@@ -73,8 +73,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "31527263f6203fc1b0ef22f62d9672a87dc5a2dfd0fc9f123d9720b6a67fad92",
-      "bytes": 5922
+      "sha256": "7f005f6fae3ad4d3149ddb81f9c9c14276b910450ad514d5ebce93af902709e0",
+      "bytes": 6332
     },
     {
       "path": "capture-driver.gd.txt",
@@ -115,7 +115,8 @@
       "defence feedback",
       "whole lower workflow",
       "shared host",
-      "overall visual approval"
+      "overall visual approval",
+      "left/right overall coordination and five-tier preview scale"
     ],
     "runtime_images_records_unchanged": true
   }
