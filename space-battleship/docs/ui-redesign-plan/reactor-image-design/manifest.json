@@ -1,0 +1,49 @@
+{
+  "generator": "image_gen.imagegen",
+  "status": "draft_pending_independent_review_and_user_confirmation",
+  "target_client_logical_px": [
+    1440,
+    900
+  ],
+  "target_module_rect_logical_px": [
+    0,
+    0,
+    808,
+    900
+  ],
+  "target_battle_rect_logical_px": [
+    808,
+    0,
+    632,
+    900
+  ],
+  "images": [
+    {
+      "path": "reactor-r1-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "57bf1befb44c16d318644d377f3acb0dc011dc15114d4f6cafe67fdc85d891b8"
+    },
+    {
+      "path": "reactor-r2-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "03761f57227de0276c6f74921afe7b345b6b8e93afd16ce3a8a982b27cd19246"
+    },
+    {
+      "path": "reactor-r3-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "eaca162d8ed8123191892a9d9de5e17a6277e7035e12042ad6ba8ea6ed441c7b"
+    }
+  ],
+  "pixel_processing": "none: generator outputs copied unchanged",
+  "runtime_evidence": false,
+  "geometry_issue": "R3 observed divider near native x921 / width1586, equivalent target logical x836; target is x808. Not accepted as exact region compliance."
+}
