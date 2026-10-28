@@ -223,8 +223,10 @@ func _register_left_module(layer: CanvasLayer, id: String, title: String, scene:
 	_left_modules[id] = {"scene": scene, "unlock_kind": unlock_kind, "unlock_target": unlock_target}
 	var button := Button.new()
 	button.text = title
-	button.position = Vector2(442 + 96 * _left_buttons.size(), 52)
-	button.size = Vector2(88, 30)
+	# Keep all three host modules inside the top-bar gap: the equipment
+	# subtitle ends at x404, while the existing bridge button starts at x678.
+	button.position = Vector2(410 + 88 * _left_buttons.size(), 52)
+	button.size = Vector2(80, 30)
 	button.theme = load("res://src/ui/bridge_theme.gd").create()
 	button.toggle_mode = true
 	button.pressed.connect(_select_left_module.bind(id))
