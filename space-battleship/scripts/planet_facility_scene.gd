@@ -386,9 +386,9 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		else:
 			if kind == "shipyard":
 				# Confirmed independent service berth outside the station orbit.
-				# A rearward depth gap keeps 3D equipment clear, while its lower-right
-				# screen footprint is outside the station's full projected envelope.
-				model.position = Vector3(_radius * 1.09, -_radius * 0.88, -_radius * 0.33)
+				# Keep the berth below the surface workshop's lower-right horizon
+				# passage as well as outside the station's projected orbit.
+				model.position = Vector3(_radius * 1.09, -_radius * 1.24, -_radius * 0.33)
 			else:
 				var path: Dictionary = preload("res://scripts/orbital_facilities.gd").path_for(kind)
 				var a := float(path.phase) + clock * float(path.speed)
