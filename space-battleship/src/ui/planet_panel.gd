@@ -16,6 +16,8 @@ var _selected_id := ""
 var _selected_facility := ""
 var _open_section := ""
 var _dirty := true
+var _options_dirty := true
+var _crew_options_dirty := true
 var _snapshot: Dictionary = {}
 var _facts: Array = []
 var _crew_views: Dictionary = {"explorers": {}, "builders": {}}
@@ -59,12 +61,12 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable, visua
 	custom_minimum_size = Vector2(760, 740)
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	clip_contents = true
-	_planet.availability_changed.connect(refresh)
-	_planet.status_changed.connect(func(_ids): refresh())
-	_planet.buildings_changed.connect(func(_ids): refresh())
+	_planet.availability_changed.connect(_queue_options)
+	_planet.status_changed.connect(_queue_planets)
+	_planet.buildings_changed.connect(_queue_planets)
 	if _crew != null:
-		_crew.members_changed.connect(func(_ids): refresh())
-		_crew.options_changed.connect(refresh)
+		_crew.members_changed.connect(func(_ids): _queue_crew_options())
+		_crew.options_changed.connect(_queue_crew_options)
 
 func _ready() -> void:
 	process_priority = 1
@@ -184,6 +186,17 @@ func _draw() -> void:
 func refresh() -> void:
 	_dirty = true
 
+func _queue_options() -> void:
+	_options_dirty = true
+	_dirty = true
+
+func _queue_planets(ids: Array) -> void:
+	if ids.is_empty() or _selected_id in ids: _dirty = true
+
+func _queue_crew_options() -> void:
+	_crew_options_dirty = true
+	_dirty = true
+
 func selected_planet_id() -> String:
 	return _selected_id
 
@@ -233,9 +246,11 @@ func _process(dt: float) -> void:
 	var balances: PackedStringArray = []
 	for row in _context.get("balances", []).slice(0, 3): balances.append(str(row.text))
 	_wallet.text = "   ".join(balances)
-	if _dirty:
+	if _dirty or _options_dirty:
 		_dirty = false
-		_refresh_options()
+		if _options_dirty:
+			_options_dirty = false
+			_refresh_options()
 		_read_selected()
 	if _visual != null: _visual.advance(dt * float(_context.get("speed", 1.0)), bool(_context.get("paused", false)))
 	# Pause context may change without a planet signal; it only changes text.
@@ -260,9 +275,10 @@ func _read_selected() -> void:
 	_facility_button.text = "设施 · %d待领" % ready if ready else "设施"
 	_crew_button.text = "人员 %d" % _crew_views.explorers.get(_selected_id, []).size()
 	var signature := {"id": _selected_id, "facts": _facts, "crew": _crew_views}
-	if signature != _detail_signature:
+	if signature != _detail_signature or (_crew_options_dirty and _open_section == "crew"):
 		_detail_signature = signature.duplicate(true)
 		_rebuild_drawer()
+	_crew_options_dirty = false
 	_update_task()
 
 func _update_task() -> void:
