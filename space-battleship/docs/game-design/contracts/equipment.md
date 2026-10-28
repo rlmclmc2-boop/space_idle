@@ -24,3 +24,7 @@
 | Session `equipment_slot_facts()` → M2槽卡 | Equipment.slot_facts按已接纳全部保留槽给id/category/index/equipment_id、paid/effective_level、dormant、switch_ready_at/cooldown_remaining。空槽与休眠独立，未知有效等级为null。冷却只作用换装，不给购级加新禁令。 |
 | Session `equipment_comparison(slot_id,candidate_id,count=1,maximum=false)` → M2比较台/固定报价区 | 薄装配实际世界/AI/反应炉及预算，Equipment.slot_comparison只读输出`scope=charged_base`、current/upgrade/candidate、quote、affordable/payment_reason、switch_admission、dormant。current为现装，upgrade按本次quote实际count，candidate沿当前付费级；不组合候选换装+购级。行给装备/等级、主值规范Amount文本或null、status/reason及有单位配置特性；不输出拼接中文当数据。 |
 | Equipment `quote_slot(slot_id,n)` / `quote_max_levels(slot_id,inputs,can_pay)` → M2数量/费用 | 确定数量复用原_quote_levels；MAX薄包装原_quote_affordable_levels。保留count/costs/extreme与原reason，costs为resource id→原Amount。单槽+10完整报价不缩成可购2；MAX候选报价错误/不可支付作搜索边界，0统一NoChange，原离散极限保持。不新增整组预览，不把独立MAX相加成批量总价。 |
+
+### 装备Godot候选的比较失效通知
+
+本实现分支增加Equipment自有`comparison_changed`，只使装备charged_base比较/报价读模型失效，不是Session全局刷新。Session仅在已接纳的世界装备额外等级、武器/防御科研倍率或武器/防御供能倍率确实改变后，调用`queue_comparison_changed`；通知在deferred边界合并，保证发布事务及相关所有者接纳返回后再通知。现有槽位/装配/选项/舰型通知保持；钱包消费者按已接纳只读budget依赖变化判断，Economy单纯掉落位置的display_changed不使装备报价失效。具体候选源码、真实验证范围见[装备实施修订记录](../../verification/equipment-hangar-godot/review-fixes/README.md)，不改变本页历史主线/候选版本身份。

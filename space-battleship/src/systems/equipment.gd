@@ -7,6 +7,8 @@ const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 signal slots_changed(ids: Array)
 signal loadout_changed
 signal options_changed
+signal comparison_changed
+var _comparison_notice_pending: bool = false
 
 var _slots: Array = []
 var _pending_slots = null
@@ -252,6 +254,16 @@ func _purchase_result(result: Dictionary, purchases: Array, status: String) -> D
 					total[resource] = summed.value
 	output.purchase_receipt = receipt
 	return output
+
+# Coalesce at the deferred boundary, after the publishing transaction has returned.
+func queue_comparison_changed() -> void:
+	if _comparison_notice_pending: return
+	_comparison_notice_pending = true
+	call_deferred("_publish_comparison_changed")
+
+func _publish_comparison_changed() -> void:
+	_comparison_notice_pending = false
+	comparison_changed.emit()
 
 func price_text(id: String) -> String:
 	var quote = quote_slot(id, 1)

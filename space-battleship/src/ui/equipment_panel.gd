@@ -13,6 +13,8 @@ var _candidate: String = ""
 var _quantity: int = 1
 var _maximum: bool = false
 var _dirty: bool = true
+var _comparison_dirty: bool = false
+var _wallet_dependency: Dictionary = {}
 var _clock: float = 0.0
 var _ship: String = ""
 var _facts: Array = []
@@ -23,7 +25,7 @@ var _choice_presentations: Dictionary = {}
 var _quantity_presentations: Dictionary = {}
 var _scene_picture: Array = []
 # Bounded presentation-only diagnostics; no state or rules come from these counts.
-var presentation_counts := {"refreshes":0,"comparison_reads":0,"slot_fact_reads":0,"cooldown_fact_reads":0,"slots_updated":0,"slot_styles_updated":0,"candidates_updated":0,"quantity_styles_updated":0,"scene_redraw_requests":0,"scene_draws":0}
+var presentation_counts := {"refreshes":0,"comparison_reads":0,"slot_fact_reads":0,"cooldown_fact_reads":0,"slots_updated":0,"slot_styles_updated":0,"candidates_updated":0,"quantity_styles_updated":0,"scene_redraw_requests":0,"scene_draws":0,"economy_signals":0,"economy_same_budget":0,"balance_dependency_changes":0,"comparison_dependency_changes":0,"wallet_refreshes":0,"equipment_option_reads":0,"maximum_reads":0}
 var _choices: Dictionary = {}
 var _quantity_buttons: Array = []
 var _catalog: Dictionary
@@ -76,7 +78,23 @@ func _init(session) -> void:
     _session.equipment.loadout_changed.connect(func(): _dirty = true)
     _session.equipment.options_changed.connect(func(): _dirty = true)
     _session.campaign_system.ship_changed.connect(func(): _dirty = true)
-    _session.economy.display_changed.connect(func(): _dirty = true)
+    _wallet_dependency = _session.economy.budget()
+    _session.economy.display_changed.connect(_economy_display_changed)
+    _session.equipment.comparison_changed.connect(func():
+        presentation_counts.comparison_dependency_changes += 1
+        _comparison_dirty = true)
+
+func _economy_display_changed() -> void:
+    presentation_counts.economy_signals += 1
+    var budget: Dictionary = _session.economy.budget()
+    # Economy also notifies marker motion. Its accepted budget is immutable.
+    if is_same(budget, _wallet_dependency) or budget == _wallet_dependency:
+        _wallet_dependency = budget
+        presentation_counts.economy_same_budget += 1
+        return
+    _wallet_dependency = budget
+    presentation_counts.balance_dependency_changes += 1
+    _comparison_dirty = true
 
 func _ready() -> void:
     process_priority = 1
@@ -263,12 +281,28 @@ func _refresh() -> void:
     _ship = str(_session.campaign_system.selected_ship())
     for option in _session.campaign_system.ship_options():
         if option.selected: _title.text = "装配 · " + str(option.name)
-    _wallet.text = _cost_text(_session.economy.budget()).replace(" / ", "   ")
     _summary.text = "%d个武器槽 · %d个防御槽" % [int(_session.equipment_inputs().mounts.weapon), int(_session.equipment_inputs().mounts.defence)]
     var dormant_count: int = _facts.size() - active.size()
     if dormant_count > 0: _summary.text += " · %d个未启用槽位" % dormant_count
     _refresh_slots(active)
     _refresh_choices(fact)
+    _refresh_comparison()
+    var scene_picture: Array = [_ship, active.map(func(row): return [row.id,row.category,row.index,row.equipment_id])]
+    if scene_picture != _scene_picture:
+        _scene_picture = scene_picture
+        presentation_counts.scene_redraw_requests += 1
+        queue_redraw()
+
+func _refresh_comparison() -> void:
+    _comparison_dirty = false
+    var fact: Dictionary = _selected_fact()
+    if fact.is_empty():
+        _dirty = true
+        return
+    _wallet_dependency = _session.economy.budget()
+    presentation_counts.wallet_refreshes += 1
+    _wallet.text = _cost_text(_wallet_dependency).replace(" / ", "   ")
+    if _maximum: presentation_counts.maximum_reads += 1
     presentation_counts.comparison_reads += 1
     last_comparison = _session.equipment_comparison(_selected, _candidate, _quantity, _maximum)
     if not last_comparison.get("ok", false):
@@ -306,11 +340,6 @@ func _refresh() -> void:
             _quantity_presentations[index] = selected
             presentation_counts.quantity_styles_updated += 1
             _quantity_buttons[index].add_theme_stylebox_override("normal", _style(Color("b8ded4") if selected else CREAM, TEAL if selected else Color("9aafac"), 2 if selected else 1))
-    var scene_picture: Array = [_ship, active.map(func(row): return [row.id,row.category,row.index,row.equipment_id])]
-    if scene_picture != _scene_picture:
-        _scene_picture = scene_picture
-        presentation_counts.scene_redraw_requests += 1
-        queue_redraw()
 
 func _refresh_slots(active: Array) -> void:
     var live: Array = []
@@ -351,6 +380,7 @@ func _refresh_slots(active: Array) -> void:
             _slot_selections.erase(id)
 
 func _refresh_choices(fact: Dictionary) -> void:
+    presentation_counts.equipment_option_reads += 1
     var options: Array = _session.equipment.panel_equipment(_selected)
     var live: Array = []
     var column: int = 0
@@ -423,7 +453,8 @@ func _buy_all() -> void:
     var mode: int = _batch_quantity.selected
     var result: Dictionary = _session.equipment.buy_all_levels(10 if mode == 1 else 1, mode == 2, _session.equipment_inputs(), _session.economy.affordable, _session.economy.payment, _session.publish_equipment_levels)
     _last_batch_result = result.duplicate(true)
-    _batch_balance = _cost_text(_session.economy.budget()).replace(" / ", "   ")
+    var status: String = str(result.get("purchase_receipt", {}).get("commit_status", ""))
+    _batch_balance = "" if status == "fault_unknown" or result.get("fault", false) else _cost_text(_session.economy.budget()).replace(" / ", "   ")
     _accept_result(result)
     _refresh_batch(true)
 
@@ -449,16 +480,34 @@ func _accept_result(result: Dictionary) -> void:
     command_finished.emit(last_result)
 
 func _refresh_batch(after: bool = false) -> void:
-    if after or not _last_batch_result.is_empty():
-        var purchased: Array = []
-        for item in _last_batch_result.get("purchase_receipt", {}).get("purchases", []): purchased.append(str(item.slot_id))
-        var details: String = "最近一次成交\n" + _receipt_text(_last_batch_result)
-        for row in _facts:
-            if not row.dormant and str(row.id) not in purchased: details += "\n" + _slot_name(str(row.id)) + " · 未成交，等级保持"
-        _batch_results.text = details + "\n\n成交后余额：" + _batch_balance
+    var result: Dictionary = _last_batch_result
+    var receipt: Dictionary = result.get("purchase_receipt", {})
+    var status: String = str(receipt.get("commit_status", ""))
+    var unknown: bool = status == "fault_unknown" or (result.get("fault", false) and status != "accepted")
+    if after or not result.is_empty():
+        if unknown:
+            _batch_results.text = "最近一次升级\n提交结果未知，会话已停止。\n本次等级变化与扣款未确认。"
+        elif status == "accepted" and not receipt.get("purchases", []).is_empty():
+            var purchased: Array = []
+            for item in receipt.purchases: purchased.append(str(item.slot_id))
+            var details: String = ("最近一次成交" if result.get("ok", false) else "已确认部分成交") + "\n" + _receipt_text(result)
+            if result.get("fault", false):
+                _batch_results.text = details + "\n其余槽位与后续扣款状态未知。"
+            else:
+                for row in _facts:
+                    if not row.dormant and str(row.id) not in purchased: details += "\n" + _slot_name(str(row.id)) + " · 未成交，等级保持"
+                _batch_results.text = details + "\n\n成交后余额：" + _batch_balance
+        elif status == "accepted":
+            _batch_results.text = "已接纳，成交明细未返回。\n扣款与槽位变化待核对。"
+        elif status == "rejected":
+            _batch_results.text = "本次提交被拒绝\n" + _reason(str(result.get("reason", result.get("error", "Unknown")))) + "\n未确认成交。"
+        elif status == "not_submitted" or (status.is_empty() and not result.get("ok", false)):
+            _batch_results.text = "本次未执行升级\n" + _reason(str(result.get("reason", result.get("error", "Unknown"))))
+        else:
+            _batch_results.text = "成交明细未返回。\n本次扣款与槽位变化待核对。"
     else:
         _batch_results.text = "\n".join(_facts.filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [_slot_name(str(row.id)), NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
-    _batch_submit.disabled = not _session.run_state.is_running()
+    _batch_submit.disabled = unknown or (status == "accepted" and receipt.get("purchases", []).is_empty()) or not _session.run_state.is_running()
 
 func _process(dt: float) -> void:
     if not is_visible_in_tree(): return
@@ -467,6 +516,8 @@ func _process(dt: float) -> void:
     if _dirty:
         _clock = 0.0
         _refresh()
+    elif _comparison_dirty:
+        _refresh_comparison()
     elif cooldown and _clock >= 0.1:
         _clock = 0.0
         _refresh_cooldown()

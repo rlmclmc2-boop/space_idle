@@ -157,9 +157,12 @@ func _show_session() -> void:
 	# Preserve the battle's authored logical coordinates inside the fixed right surface.
 	# The viewport container transforms input together with its existing presentation.
 	var battle_surface := SubViewportContainer.new()
-	battle_surface.position = Vector2(808, 0)
-	battle_surface.size = Vector2(session.battle.view_size())
-	battle_surface.scale = Vector2(632.0, 900.0) / Vector2(session.battle.view_size())
+	var logical_size := Vector2(session.battle.view_size())
+	var surface_size := Vector2(632, 900)
+	var projection_scale: float = minf(surface_size.x / logical_size.x, surface_size.y / logical_size.y)
+	battle_surface.position = Vector2(808, 0) + (surface_size - logical_size * projection_scale) * 0.5
+	battle_surface.size = logical_size
+	battle_surface.scale = Vector2.ONE * projection_scale
 	add_child(battle_surface)
 	_battle_viewport = SubViewport.new()
 	_battle_viewport.size = session.battle.view_size()
