@@ -178,23 +178,27 @@ func _position_workshop_arm(model: Node3D) -> void:
 	# making the arm vanish behind opaque pixels during its vertical stroke.
 	var gantry := _parts["equipment"]["GantrySlide"] as Node3D
 	var pivot := _parts["equipment"]["ToolArmSweep"] as Node3D
-	var camera_front := (model.transform.basis.inverse() * Vector3(0, 0, 1)).normalized()
-	var stroke := Vector3(0, pivot.position.y - _workshop_arm_base_y, 0)
-	var screen_stroke := stroke - camera_front * stroke.dot(camera_front)
-	var origin := Vector3(gantry.position.x, 1.38, 0) + camera_front * 0.25
+	# Sprite3D billboards face the camera. Its source image's X/Y axes are
+	# therefore camera right/up, not the model's tilted ground-tangent axes.
+	var camera_to_model := model.transform.basis.inverse()
+	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
+	var screen_up := (camera_to_model * Vector3.UP).normalized()
+	var camera_front := (camera_to_model * Vector3.BACK).normalized()
+	var origin := Vector3(0, 1.38, 0) + screen_right * gantry.position.x + camera_front * 0.25
 	var pixel_size := _workshop_arm_sprite.pixel_size
-	var carriage_center := origin + Vector3.UP * (WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y) * pixel_size * 0.5
-	var tool_center := origin + Vector3.DOWN * WORKSHOP_ARM_SPLIT_Y * pixel_size * 0.5 + screen_stroke
+	var carriage_center := origin + screen_up * (WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y) * pixel_size * 0.5
+	# The pivot still owns the game-clock cycle. Map its full stroke to a
+	# downward extension, keeping the tool below the rail at every phase.
+	var extension := (_workshop_arm_base_y + 0.35 - pivot.position.y) * 0.5
+	var tool_center := origin - screen_up * (WORKSHOP_ARM_SPLIT_Y * pixel_size * 0.5 + extension)
 	_workshop_carriage_sprite.position = carriage_center - gantry.position
 	_workshop_arm_sprite.position = pivot.transform.basis.inverse() * (tool_center - gantry.position - pivot.position)
 	# The telescoping section occupies only the opening below the fixed rail
 	# carriage; the tool art covers its lower end and the carriage covers its top.
-	var downward := maxf(0.0, -screen_stroke.y)
-	_workshop_link.visible = downward > 0.01
+	_workshop_link.visible = extension > 0.01
 	if _workshop_link.visible:
-		var joint := origin + Vector3(-0.10, (WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size, 0)
-		_workshop_link.position = joint + screen_stroke * 0.5
-		_workshop_link.scale = Vector3(1, downward + 0.10, 1)
+		var joint := origin - screen_right * 0.10 + screen_up * ((WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size)
+		_workshop_link.transform = Transform3D(Basis(screen_right, screen_up, camera_front).scaled(Vector3(1, extension + 0.10, 1)), joint - screen_up * extension * 0.5)
 
 func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
