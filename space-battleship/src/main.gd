@@ -818,6 +818,7 @@ func _setup_growth_panel() -> void:
 	planet_id.placeholder_text = "重铸星球编号"
 	var reforge_box := VBoxContainer.new()
 	_add_feature_panel(box, "reforge", reforge_box)
+	box.move_child(reforge_box, 0)
 	reforge_box.add_child(planet_id)
 	var retained_ids := LineEdit.new()
 	retained_ids.placeholder_text = "保留无人机编号（逗号分隔）"
@@ -882,7 +883,8 @@ func _open_planet_reforge(id: String) -> void:
 			_reforge_planet_value.text = id
 	_tabs.current_tab = int(_pages.universe.index)
 	_set_page("growth")
-	_pages.universe.scroll.call_deferred("ensure_control_visible", _reforge_picker)
+	_pages.universe.scroll.set_deferred("scroll_vertical", 0)
+	_reforge_picker.call_deferred("grab_focus")
 
 func _planet_visual_context() -> Dictionary:
 	var context: Dictionary = _world_visual_context()

@@ -43,6 +43,10 @@ var phase := 0.0
 var completion_age := 10.0
 var last_degree = 0
 var draw_calls := 0
+
+func _scene_center() -> Vector2:
+	return size * Vector2(0.57, 0.5) if not icon_mode else size * 0.5
+
 var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)
 var background_layer := Control.new()
@@ -93,8 +97,9 @@ func _layout_globe() -> void:
 	orbit_geometry.clear()
 	if architecture != null:
 		architecture.position = Vector2.ZERO
+		architecture.scene_center = _scene_center()
 		architecture.size = size
-	globe.fit_sphere(size * 0.5, minf(size.x, size.y) * 0.43 / maxf(1.0, globe.extent) if icon_mode else _body_radius())
+	globe.fit_sphere(_scene_center(), minf(size.x, size.y) * 0.43 / maxf(1.0, globe.extent) if icon_mode else _body_radius())
 	background_layer.queue_redraw()
 	orbit_back_layer.queue_redraw()
 	queue_redraw()
@@ -175,9 +180,9 @@ func configure(id: String, row: Dictionary) -> void:
 		globe.cloud_map = _map_texture("cloudTexture", PlanetSphere.CLOUDS)
 		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.006))
 		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0073))
-		globe.glow_strength = clampf(float(appearance.get("glowStrength", 0.30)), 0.0, 1.0)
+		globe.glow_strength = clampf(float(appearance.get("glowStrength", 0.62)), 0.0, 1.0)
 		globe.shadow_strength = clampf(float(appearance.get("shadowStrength", 0.86)), 0.0, 1.0)
-		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
+		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.88)), 0.0, 1.0)
 		globe.atmosphere_color = _color("atmosphereColor", Color("5ac8f0"))
 		globe.configure_visual(appearance)
 		if architecture != null: architecture.configure_shape(appearance)
@@ -215,7 +220,7 @@ func set_exploration(is_active: bool, degree, elapsed: float = 0.0) -> void:
 	last_degree = degree
 	if active != is_active:
 		if active and not is_active and is_visible_in_tree():
-			var center := size * 0.5
+			var center := _scene_center()
 			var radius := _orbit_radius()
 			departure_point = _scout_position(exploration_age, center, radius)
 			departure_direction = (_scout_position(exploration_age + 0.01, center, radius) - departure_point).normalized()
@@ -304,7 +309,7 @@ func _draw_background() -> void:
 
 func _draw_back_orbits() -> void:
 	if icon_mode:return
-	var center := size * 0.5
+	var center := _scene_center()
 	var radius := _orbit_radius()
 	for ring in ([1] if active else []):
 		_orbit(center, radius * (1.42 + ring * 0.26), 0.37 + ring * 0.04, ring, false, orbit_back_layer)
@@ -316,7 +321,7 @@ func _draw_back_orbits() -> void:
 func _draw() -> void:
 	if icon_mode:return
 	draw_calls += 1
-	var center := size * 0.5
+	var center := _scene_center()
 	var radius := _orbit_radius()
 	var atmosphere := _color("atmosphereColor", Color("5ac8f0"))
 	if active:_draw_scans(center, _body_radius(), atmosphere)
@@ -330,7 +335,7 @@ func _draw() -> void:
 
 func _orbit(center: Vector2, horizontal: float, vertical_ratio: float, ring: int, front: bool, canvas: CanvasItem = null) -> void:
 	if canvas == null:canvas = self
-	horizontal = minf(horizontal, size.x * 0.5 - 48.0)
+	horizontal = minf(horizontal, minf(center.x, size.x - center.x) - 48.0)
 	var begin := 0.0 if front else PI
 	var geometry_key := ring * 2 + int(front)
 	if not orbit_geometry.has(geometry_key):
@@ -350,7 +355,7 @@ func _orbit(center: Vector2, horizontal: float, vertical_ratio: float, ring: int
 
 func _facility_point(center: Vector2, radius: float, kind: String, angle: float) -> Vector2:
 	var path := OrbitModels.path_for(kind)
-	var extent := minf(radius * float(path.radius), size.x * 0.5 - 44.0)
+	var extent := minf(radius * float(path.radius), minf(center.x, size.x - center.x) - 44.0)
 	return center + Vector2(cos(angle) * extent, sin(angle) * extent * float(path.ratio)).rotated(float(path.tilt))
 
 func _draw_facility_paths(center: Vector2, radius: float, front: bool, canvas: CanvasItem) -> void:
@@ -396,13 +401,13 @@ func _arrival_strength() -> float:
 func _scout_position(age: float, center: Vector2, radius: float) -> Vector2:
 	if age >= ENTRY_DURATION:
 		var angle := (age - ENTRY_DURATION) * 0.48
-		return center + Vector2(cos(angle) * radius * 1.65, sin(angle) * radius * 0.68)
+		return center + Vector2(cos(angle) * minf(radius * 1.65, minf(center.x, size.x - center.x) - 24.0), sin(angle) * radius * 0.68)
 	var t := clampf(age / ENTRY_DURATION, 0.0, 1.0)
 	# Accelerate on approach, brake into the original ellipse with matching tangent speed.
 	var end_slope := 0.68 * 0.48 * ENTRY_DURATION / 1.5
 	var u := (0.24 + end_slope - 2.0) * t * t * t + (3.0 - 0.48 - end_slope) * t * t + 0.24 * t
 	var start := Vector2(size.x + 16.0, center.y - radius * 1.2)
-	var end := center + Vector2(radius * 1.65, 0.0)
+	var end := center + Vector2(minf(radius * 1.65, minf(center.x, size.x - center.x) - 24.0), 0.0)
 	return start.bezier_interpolate(start + Vector2(-radius * 0.55, radius * 0.18), end - Vector2(0.0, radius * 0.5), end, u)
 
 func _scout_in_front() -> bool:

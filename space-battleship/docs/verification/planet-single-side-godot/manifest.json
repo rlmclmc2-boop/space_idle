@@ -16,7 +16,7 @@
   "native_popup_input_verified": false,
   "button_viewport_mouse_events": true,
   "popup_selection_method": "OptionButton.select + item_selected; no native popup route pass",
-  "visual_acceptance": "pending original independent review and user",
+  "visual_acceptance": "rejected by root review; historical logic evidence only; see visual-r2",
   "benchmark_executed": false,
   "visible_mesh_sphere_B_implemented": false,
   "ui_implementation": true,

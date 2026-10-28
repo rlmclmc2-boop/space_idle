@@ -1,0 +1,25 @@
+{
+  "tool": "image_gen.imagegen",
+  "reference_commit": "e78af05f",
+  "reference": "docs/ui-redesign-plan/planet-single-side-v5/default-watch.png",
+  "requests": [
+    {
+      "kind": "surface",
+      "prompt": "Create ONE production-ready unlit equirectangular albedo texture map for the rotating planet in the attached approved game image. This is a flat panoramic 2:1 UV texture, NOT a globe illustration, not a screenshot. Preserve the approved image's sophisticated softly faceted world: nuanced teal and turquoise deep oceans, layered pale warm sand coastlines, sage and olive land biomes, many interlocking large and small organic polygon landforms, fine shallow coastal shelves, raised-looking but UNLIT terrain color variation, tiny cream archipelagos. No heavy outlines, no dark coast strokes, no flat vector cartoon continents. Broad visually readable continents with softly faceted internal color patches and many intermediate values. The map has several large islands/continents including one centered at 45% x 70% y and one at 36% x 36% y; both should be land for future buildings. All four edges are seamless, left/right edges continuous teal ocean; top and bottom use muted pale polar biomes without a hard horizontal boundary. NO clouds, NO atmosphere, NO directional lighting, NO baked spherical lighting, NO cast shadows, NO buildings, no text, no labels, no UI, no borders. Cover the entire canvas, flat even exposure. This image will be projected and lit by an actual shader. Wide 2048x1024 composition. Premium painted 3D game albedo, harmonious low saturation warm ivory, sage and layered dark-cyan oceans.",
+      "transparent_background": false,
+      "output": "surface.png"
+    },
+    {
+      "kind": "clouds",
+      "prompt": "Create ONE production-ready equirectangular grayscale CLOUD DENSITY texture for the independent rotating cloud layer of the planet in attached approved game image. A flat seamless 2:1 panoramic UV map, NOT a globe. Entire canvas opaque black background (zero density), and white to soft gray natural cloud densities. Delicate irregular swirling weather fronts, many small broken cumulus patches with softly faceted edges, some long wispy hooked bands, varied sparse and dense regions, broad open gaps. Rich nuanced intermediate gray values, cloud cells have softly billowing details readable at 500px globe scale. The reference's attractive layered clouds, not flat icon swashes. NO land, NO water color, NO blue, NO globe edge, no lighting or shadows, no atmosphere, no horizon, no continents, no UI, no text or frames. Seamless left to right; gently quieter poles. Full canvas UV data. Wide 2048x1024.",
+      "transparent_background": false,
+      "output": "cloud-density.png"
+    },
+    {
+      "kind": "buildings",
+      "prompt": "Art direction sheet for four premium coherent sci-fi planet buildings that will be rebuilt as actual 3D meshes. Full-image reference is the approved game style but its tiny placeholder buildings MUST be upgraded in quality. Show four separate building designs on a neutral muted dark teal background in one clean 2x2 contact sheet, identical orthographic three-quarter camera and upper-left key light, generous separation. No text or UI. High craft rounded hard-surface geometry with visible layered armour plates, recessed structural seams, inset cyan glass, warm ivory ceramic, dark teal load-bearing structure, brushed copper process pipes, restrained amber lamps, fine panel bevel highlights, clear material separation, subtle contact shadows, convincing scale cues. Top left ORBITAL STATION: substantial rounded central habitat module and open ring linked by load-bearing spokes, segmented docking collars, bilateral layered blue solar wings with inset cells and metal booms, antennas. Top right GROUND REFINERY: compact industrial complex with two horizontal capsule processing tanks, distinct ivory protective shell sections, copper manifolds and elbows, dark navy central pump/heat exchange hall, service access, hard foundation feet that physically seat on ground. Bottom left GROUND WORKSHOP: asymmetric enclosed assembly hall with stepped ivory roof panels, side service annex, inset glass bay, gantry with articulated tool head, ribbed doors, industrial ventilation. Bottom right ORBITAL SHIPYARD: an elegant open U-shaped drydock with long layered ivory support arms, deep teal skeletal truss underneath, amber navigation markers and cyan docking rails, structural ring frames around an empty berth. All components joined logically, clear readable silhouettes at 90-130 pixels, not generic toy cubes, not primitive low-poly block sets, not busy noise, no giant monochrome plates. Polished 3D render in the approved warm ivory/deep teal understated game aesthetic.",
+      "transparent_background": false,
+      "output": "../../../art_sources/planet_facilities_v3/imagegen-reference.png"
+    }
+  ]
+}

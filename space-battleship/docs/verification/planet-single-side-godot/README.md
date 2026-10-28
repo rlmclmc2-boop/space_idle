@@ -1,4 +1,6 @@
-# 星球集中式方案：Godot 接入候选
+# 星球集中式方案：首轮接入历史（视觉未通过）
+
+**根审结论：35d27587 的球面、建筑品质及展开占位不通过。** 本页保留原业务证据；当前修订见 [视觉 R2](visual-r2/README.md)，不以本页宣布正式交付。
 
 已将用户批准的 [e78af05f 图稿](../../ui-redesign-plan/planet-single-side-v5/README.md)接入真实 Godot 主场景，并按用户后续要求重做设施建筑。当前交付供原独审和用户检查，未合 main，未记 V0/V7 或建筑品质验收通过。唯一规范入口仍为[游戏设计 README](../../game-design/README.md)，本模块要求见 [M7](../../game-design/art/modules/planet.md)。
 

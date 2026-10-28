@@ -132,6 +132,20 @@ func _theme() -> Theme:
 	panel.set_corner_radius_all(10)
 	panel.set_content_margin_all(14)
 	result.set_stylebox("panel", "PanelContainer", panel)
+	var popup := StyleBoxFlat.new()
+	popup.bg_color = Color("143746")
+	popup.border_color = Color("80b9b2")
+	popup.set_border_width_all(1)
+	popup.set_corner_radius_all(7)
+	popup.set_content_margin_all(6)
+	result.set_stylebox("panel", "PopupMenu", popup)
+	var hovered := StyleBoxFlat.new()
+	hovered.bg_color = Color("2a6069")
+	hovered.set_corner_radius_all(4)
+	result.set_stylebox("hover", "PopupMenu", hovered)
+	result.set_font_size("font_size", "PopupMenu", 17)
+	for key in ["font_color", "font_hover_color", "font_accelerator_color"]:
+		result.set_color(key, "PopupMenu", Color("f0eddf"))
 	for state in ["background", "fill"]:
 		var bar := StyleBoxFlat.new()
 		bar.bg_color = Color("4faaa5") if state == "fill" else Color("243d50")
@@ -143,11 +157,11 @@ func _layout() -> void:
 	if _visual == null: return
 	_visual.position = Vector2(0, 90)
 	_visual.size = Vector2(size.x, maxf(500, size.y - 90))
-	_task_button.position = Vector2(22, 112)
+	_task_button.position = Vector2(258, 112)
 	_task_button.size = Vector2(226, 44)
-	_crew_button.position = Vector2(258, 112)
+	_crew_button.position = Vector2(148, 112)
 	_crew_button.size = Vector2(100, 44)
-	_facility_button.position = Vector2(368, 112)
+	_facility_button.position = Vector2(22, 112)
 	_facility_button.size = Vector2(116, 44)
 	world_planet_picker.position = Vector2(494, 112)
 	world_planet_picker.size = Vector2(176, 44)
@@ -155,17 +169,16 @@ func _layout() -> void:
 	_stop_button.size = Vector2(190, 42)
 	_cancel_button.position = Vector2(222, 168)
 	_cancel_button.size = Vector2(190, 42)
-	_progress.position = Vector2(22, 158)
+	_progress.position = Vector2(258, 158)
 	_progress.size = Vector2(226, 4)
 	_task_line.position = Vector2(22, 216)
 	_task_line.size = Vector2(340, 48)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
 	_feedback.position = Vector2(22, size.y - 80)
 	_feedback.size = Vector2(500, 70)
-	var source: Control = _facility_button if _open_section == "facilities" else _crew_button if _open_section == "crew" else _task_button
-	# Parent and child share an x anchor; the active entry remains visible.
-	_drawer.position = Vector2(minf(source.position.x, size.x - 350), 268)
-	_drawer.size.x = 328
+	# Shared left drawer belongs to the three scoped entry tabs; facility aligns above it.
+	_drawer.position = Vector2(22, 278)
+	_drawer.size.x = 276
 	_drawer.size.y = 0
 	_wallet.position = Vector2(200, 14)
 	_wallet.size = Vector2(580, 30)
@@ -177,11 +190,6 @@ func _draw() -> void:
 	draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
 	draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
 	draw_string(get_theme_default_font(), Vector2(24, 74), "星球探索", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("40676b"))
-	if _open_section != "facilities" or not _drawer.visible: return
-	var source: Control = _facility_button if _open_section == "facilities" else _crew_button if _open_section == "crew" else _task_button
-	var x := source.position.x + source.size.x * 0.5
-	draw_line(Vector2(x, 156), Vector2(x, 268), Color("80b9b2"), 2.0, true)
-	draw_circle(Vector2(x, 264), 4.0, Color("80b9b2"))
 
 func refresh() -> void:
 	_dirty = true
@@ -276,7 +284,9 @@ func _read_selected() -> void:
 	var personnel: int = _crew_views.explorers.get(_selected_id, []).size()
 	for fact in _facts: personnel += int(fact.builders_present)
 	_crew_button.text = "人员 %d" % personnel
-	var signature := {"id": _selected_id, "facts": _facts, "crew": _crew_views}
+	var local_people := {"explorers": _crew_views.explorers.get(_selected_id, []), "builders": {}}
+	for fact in _facts: local_people.builders[fact.id] = _crew_views.builders.get(_selected_id + ":" + str(fact.id), [])
+	var signature := {"id": _selected_id, "facts": _facts, "crew": local_people}
 	if signature != _detail_signature or (_crew_options_dirty and _open_section == "crew"):
 		_detail_signature = signature.duplicate(true)
 		_rebuild_drawer()
@@ -298,7 +308,7 @@ func _update_task() -> void:
 		_auto_button.visible = not _snapshot.get("automatic", false)
 		_auto_button.disabled = _snapshot.is_empty()
 	if _open_section == "exploration" and is_instance_valid(_detail_text):
-		_detail_text.text = "%s\n探索度 %d\n%s\n探索者 %d / 1" % [_snapshot.get("row", {}).get("name", "无星球"), _snapshot.get("exploration", 0), _task_line.text, _crew_views.explorers.get(_selected_id, []).size()]
+		_detail_text.text = "%s\n%s\n探索者 %d / 1" % [_snapshot.get("row", {}).get("name", "无星球"), _task_line.text, _crew_views.explorers.get(_selected_id, []).size()]
 
 func _toggle_section(section: String) -> void:
 	_open_section = "" if _open_section == section else section
@@ -319,7 +329,7 @@ func _rebuild_drawer() -> void:
 	_clear_body()
 	if _open_section.is_empty(): return
 	_drawer_title.text = str({"facilities": "设施管理", "crew": "人员派遣", "exploration": "探索任务"}[_open_section])
-	_caption(_drawer_body, str(_snapshot.get("row", {}).get("name", "无已开放星球")))
+	if _open_section != "exploration": _caption(_drawer_body, str(_snapshot.get("row", {}).get("name", "无已开放星球")))
 	if _open_section == "facilities": _build_facility_detail()
 	elif _open_section == "crew": _build_crew_detail()
 	else:
@@ -362,8 +372,8 @@ func _build_facility_detail() -> void:
 			_caption(_drawer_body, "额外施工人员 %d / %d" % [fact.builders_present, fact.extra_crew_required])
 			if not str(fact.pause_reason).is_empty(): _caption(_drawer_body, PAUSES[fact.pause_reason])
 		elif fact.state == "locked": _caption(_drawer_body, "探索度 %d 开放 · 当前 %d" % [fact.unlock_exploration, _snapshot.exploration])
-		var effect: String = {"refinery": "铁、铀原生掉落加成", "equipment": "普通装备属性加成", "auto_explore": "允许开启自动探索", "shipyard": "允许本星球首次征服 / 重铸"}.get(fact.type, "")
-		_caption(_drawer_body, ("领取后生效：" if fact.state != "built" else "已生效：") + effect)
+		var effect: String = {"refinery": "铁、铀原生掉落加成", "equipment": "普通装备属性加成", "auto_explore": "允许开启自动探索", "shipyard": "允许首次征服 / 重铸"}.get(fact.type, "")
+		_caption(_drawer_body, ("领取后生效：\n" if fact.state != "built" else "已生效：\n") + effect)
 		if fact.source_factor != null: _caption(_drawer_body, "本设施当前因子 ×" + preload("res://src/ui/player_text.gd").number(str(fact.source_factor)))
 		if fact.type == "shipyard" and fact.state == "built":
 			_reforge_button = Button.new()
@@ -420,7 +430,7 @@ func _caption(parent: Node, text: String) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.custom_minimum_size.x = 280
+	label.custom_minimum_size.x = 226
 	parent.add_child(label)
 	return label
 

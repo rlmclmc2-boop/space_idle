@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "auto_explore",
+    "triangles": 22036,
+    "objects": 2
+  },
+  {
+    "kind": "refinery",
+    "triangles": 16100,
+    "objects": 1
+  },
+  {
+    "kind": "equipment",
+    "triangles": 9104,
+    "objects": 2
+  },
+  {
+    "kind": "shipyard",
+    "triangles": 19808,
+    "objects": 2
+  }
+]

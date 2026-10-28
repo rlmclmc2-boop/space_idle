@@ -50,14 +50,18 @@ void fragment() {
         terrain *= 1.0 - cloud_shadow * cloud_opacity * 0.18;
         float illumination = dot(normal, light);
         float day = smoothstep(-0.20, 0.80, illumination);
-        // Broad, softly joined cel bands preserve spherical depth at window scale.
-        float cel_day = 0.38 + smoothstep(-0.10, 0.10, illumination) * 0.30
-            + smoothstep(0.48, 0.62, illumination) * 0.30;
-        vec3 lit_terrain = mix(terrain, vec3(0.94, 0.93, 0.86), clouds * cloud_opacity);
-        vec3 night_tint = vec3(0.22, 0.40, 0.52);
-        rgb = lit_terrain * mix(vec3(1.0), mix(night_tint, vec3(cel_day), day), shadow_strength);
-        rgb += vec3(0.93, 0.94, 0.81) * pow(max(0.0, illumination), 12.0) * 0.08;
-        rgb += atmosphere_color.rgb * pow(1.0 - normal.z, 3.5) * glow_strength * (0.2 + 0.8 * day);
+        // Smooth spherical lighting preserves the new albedo's fine faceted relief.
+        float diffuse = 0.28 + 0.72 * smoothstep(-0.18, 0.85, illumination);
+        vec3 lit_terrain = terrain;
+        vec3 night_tint = vec3(0.20, 0.38, 0.52);
+        rgb = lit_terrain * mix(vec3(1.0), mix(night_tint * 0.52, vec3(diffuse), day), shadow_strength);
+        float cloud_density = smoothstep(0.05, 0.78, clouds) * cloud_opacity;
+        float cloud_relief = clamp(0.82 + (clouds - cloud_shadow) * 2.8, 0.56, 1.12);
+        vec3 cloud_lit = vec3(0.95, 0.97, 0.94) * cloud_relief * (0.35 + 0.65 * day);
+        rgb = mix(rgb, cloud_lit, cloud_density);
+        float fresnel = pow(1.0 - normal.z, 3.0);
+        rgb += atmosphere_color.rgb * fresnel * glow_strength * (0.3 + 0.7 * day);
+        rgb += vec3(0.94, 0.98, 0.91) * pow(max(0.0, illumination), 16.0) * 0.055;
         if (emission > 0.0) {
             // Both detail layers belong to the same turning surface. Integer longitude
             // repeats keep a full rotation seamless even with fractional detail scale.
@@ -74,9 +78,8 @@ void fragment() {
             rgb *= 0.58 + 0.42 * pow(normal.z, 0.8);
             rgb += atmosphere_color.rgb * pow(1.0 - normal.z, 5.0) * glow_strength * 0.25;
         }
-        // The contour belongs to the sphere: it does not spin with the map.
-        float contour = smoothstep(0.965, 0.993, r) * (1.0 - min(1.0, emission));
-        rgb = mix(rgb, vec3(0.12, 0.24, 0.31), contour * 0.75);
+        // Atmosphere replaces the former black cartoon contour.
+        rgb = mix(rgb, atmosphere_color.rgb * 1.12, smoothstep(0.982, 1.0, r) * 0.42 * (1.0 - min(1.0, emission)));
         // Completion lights only the body, leaving its corona and orbital space unchanged.
         float spot = 1.0 - smoothstep(0.0, 0.28, distance(p, completion_spot));
         rgb = mix(rgb, max(rgb, vec3(0.90, 0.97, 1.0)), completion_flash * spot);

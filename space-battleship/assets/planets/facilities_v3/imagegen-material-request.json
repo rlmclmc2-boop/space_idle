@@ -1,0 +1,8 @@
+{
+  "tool": "image_gen.imagegen",
+  "prompt": "Create a production PBR BASE COLOR material atlas for the 3D buildings in the attached reference. One square image, exactly 2 by 2 equal quadrants with hard boundaries at 50% width and 50% height, no margins, no labels or text. Each quadrant is an unlit flat texture tile, not a perspective render, no objects or shadows. TOP LEFT: warm ivory ceramic spacecraft armour, broad softly varied off-white panels, a small number of deep teal recessed seam channels and subtle machined edging, a few restrained copper fasteners; large material breaks readable at small game scale. TOP RIGHT: deep low-saturation teal navy structural metal panels, inset seams, several broad ribbed industrial strips, restrained brushed surface variation. BOTTOM LEFT: rich blue photovoltaic solar-cell surface, large clear cobalt and desaturated blue rectangular cells, fine pale metallic grid lines with a restrained copper bus. BOTTOM RIGHT: aged satin copper industrial pipe/jacket material with broad copper strip sections and restrained dark seams. Palette matches refined warm ivory/deep teal/copper/blue building reference. Premium painterly 3D hard-surface material, clean construction, restrained wear, subtle material value variation. No directional lights or baked specular glare, no perspective, no scene, no blueprint lines, no UI. Material texture atlas only. Very readable broad paneling, not dense noise.",
+  "referenced_image": "art_sources/planet_facilities_v3/imagegen-reference.png",
+  "transparent_background": false,
+  "output": "material-atlas.png",
+  "post_processing": "none; original generated PNG bytes copied unchanged"
+}
