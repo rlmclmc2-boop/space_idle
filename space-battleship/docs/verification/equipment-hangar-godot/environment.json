@@ -1,0 +1,77 @@
+{
+  "executor": "/root/equipment_image_revision_replacement",
+  "compacted": false,
+  "platform": "Linux x86_64 local validation, not Windows shipping build",
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "godot_url": "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip",
+  "checksums_url": "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/SHA512-SUMS.txt",
+  "godot_zip_sha512": "9aa00f7a605200940bce3027a567b782f49bd8e940dd06ae9e987bd65aee1b1467edd56ed84fcdcbdd44354bf613bdbb4e5d2913e925850368e150c59ed54c65",
+  "official_sha512_verified": true,
+  "godot_cpp_directory": "/tmp/space-idle-godot-cpp",
+  "godot_cpp_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+  "build_python_dependencies": "/tmp/space-idle-python-deps",
+  "build_target": "linux arch=x86_64 target=template_release custom_api_file=/tmp/space-idle-native472/extension_api.json build_profile=/tmp/space-idle-native-linux/profile.json -j 4",
+  "local_linux_link_fix": [
+    "-Wl,-Bsymbolic",
+    "-Wl,--exclude-libs,ALL"
+  ],
+  "runtime_display": ":99 Xorg dummy 1440x900, OpenGL compatibility Mesa llvmpipe; no max-fps flag",
+  "native_sources": {
+    "amount_api.hpp": "479b310852a81463ad8bce361075da99534f5d172b646aa070c2e798c715b4ff",
+    "amount_value.hpp": "b17594755bd8175130e381131aa9e7cf5c9a5a5446b997dfa38e204811613867",
+    "combat_execution_kernel.h": "f531d51fa00b740210af861ca530d32aeda193b933bd902a8ba8b6c907155d04",
+    "combat_presentation.h": "54ed37820f4902058a8e380dfdd615bf1b7d75b9355b575cf7d7d97a5519f780",
+    "combat_retained_presentation.h": "88e4e3b6ca052d8a7080e5d3131cfe63af8b98c721446ab1b689c1ed6643c439",
+    "foundation_disk.hpp": "79975eeaf90a84774de93e6936af52a1b165ff00cd6d53f00c6dcbc75c7906e5",
+    "space_native.cpp": "23b3c0da6d0cec700e733408288ed6eb5ddf87ec9762bf873b893365b0bf9f09"
+  },
+  "files": {
+    "/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64": {
+      "sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+      "bytes": 146414384
+    },
+    "/tmp/Godot_v4.7.2-stable_linux.x86_64.zip": {
+      "sha256": "cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4",
+      "bytes": 77860424
+    },
+    "/tmp/space-idle-native472/extension_api.json": {
+      "sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986",
+      "bytes": 6965057
+    },
+    "/tmp/space-idle-native472/bin/libspace_native.so": {
+      "sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+      "bytes": 2724616
+    },
+    "/tmp/space-idle-native472/space_native.gdextension": {
+      "sha256": "68436ed8bc41e2344fd3dbc405962c338d70bf1e69942494530e8a634a31bb4c",
+      "bytes": 239
+    },
+    "/tmp/space-idle-native472/SConstruct": {
+      "sha256": "e0cc35005afbe191ce4e06adbf600d1e67b8d8072a2c9d31dc09abb7fc73d48e",
+      "bytes": 733
+    },
+    "generated/config.json": {
+      "sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "bytes": 6896381
+    },
+    "generated/config.validation.json": {
+      "sha256": "ed70906a98b076dd1a18598559e159162c7fd840c8be55b361ac0c9bd072481c",
+      "bytes": 287
+    }
+  },
+  "api_matches_production_build_pin": true,
+  "shipping_windows_build_script_modified": false,
+  "config_publication": "PYTHONPATH=/tmp/space-idle-python-deps python foundation/import_excel.py; production config unchanged and local generated files excluded from Git",
+  "local_generated_import_metadata": {
+    "archive": "/tmp/space-idle-runtime472/import-metadata-d2bb4cb9.tar.gz",
+    "sha256": "9abb759dab1fc0c15a9e094efd5f9ec6ca9e9679cfbcebe83d2c24c506928ad6",
+    "files": 1242,
+    "restore_from_project_directory": "tar -xzf /tmp/space-idle-runtime472/import-metadata-d2bb4cb9.tar.gz",
+    "note": "Local editor-generated metadata cache only, excluded from Git. Official --editor --import regenerates it; archive permits quick same-workspace reuse."
+  },
+  "compiler_version": "g++ (Debian 14.2.0-19) 14.2.0",
+  "binding_profile": {
+    "file": "/tmp/space-idle-native-linux/profile.json",
+    "sha256": "539a94f89a9cff25e45c669295d6c53aee5a5551e9f068fa2a73fd8571837868"
+  }
+}

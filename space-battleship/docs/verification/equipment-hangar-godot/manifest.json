@@ -1,0 +1,453 @@
+{
+  "implementation_source_commit": "d2bb4cb9baf7cbb2033b4afbf7839213fcbf1fa4",
+  "base_implementation_commit": "7a4c3cf22f0419c1b8dac141f5cde00afca541bc",
+  "reviewed_backend_commit": "09af963cf6f66146e019cecd08353426ab6d6abb",
+  "dependency_merge_commit": "6f0da7fd23a5b86b20613d4e4b56920a612b4d7d",
+  "design_commit": "07312fcb9fc8d2d47bce771c9f7886670b8be5c9",
+  "capture_head_commit": "d2bb4cb9baf7cbb2033b4afbf7839213fcbf1fa4",
+  "source_binding": "Runtime SHA256 in operations.json equals worktree bytes and the fixed Git objects. Evidence-only files were untracked during capture.",
+  "screenshots": "Actual Godot root viewport Image.save_png; 1440x900 raw pixels, no image editing/crop/resize/compositing. Before screenshots from ImageMagick window capture at original display size.",
+  "source_files": [
+    {
+      "file": "project.godot",
+      "sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "bytes": 325
+    },
+    {
+      "file": "src/main.gd",
+      "sha256": "5c37d27877d9449ae3255d6a155407711772e1066b859a40079b7b793dcdc74d",
+      "bytes": 40699
+    },
+    {
+      "file": "src/ui/equipment_panel.gd",
+      "sha256": "5ca0e65deb0e5543c644305b4613d7ddfa34b0c3adffa6f962c9960837941d36",
+      "bytes": 27774
+    },
+    {
+      "file": "assets/ui/equipment/hangar/hangar-console.png",
+      "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "bytes": 2185569
+    },
+    {
+      "file": "assets/ui/ships/manifest.json",
+      "sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "bytes": 2946
+    },
+    {
+      "file": "assets/weapons/fleet_20261019/manifest.json",
+      "sha256": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c",
+      "bytes": 2980
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "evidence/01-starter.png",
+      "sha256": "ed5a26cc1624892d6f93afdae2e44d66a930ff98c02e2c5ab8c45a9be3c28989",
+      "bytes": 1677042,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/01-starter.png.import",
+      "sha256": "8047a751cae3fc25e142a41e5d600761af3d5ea8ba679fa13744cbd01d5dae0f",
+      "bytes": 983
+    },
+    {
+      "file": "evidence/02-starter-slot-selection.png",
+      "sha256": "8e9e7f7bdd5a201ddf64d8ec7f62d05d4aba5e054389b2d8de9a273312b0dce2",
+      "bytes": 1676268,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/02-starter-slot-selection.png.import",
+      "sha256": "ab7a9c7768b5163791b11591af5f94bee8965c5c5d675fa93a6a52f9ab6acf36",
+      "bytes": 1029
+    },
+    {
+      "file": "evidence/03-cruiser-cannon-comparison.png",
+      "sha256": "0452f7a956f8105b61a789c8eb12b2dba8371827d62daa42aa7f91c125cef119",
+      "bytes": 1673333,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/03-cruiser-cannon-comparison.png.import",
+      "sha256": "4dab428cd407e23323965673c3229bac731198d0c3b7dfb5a337bebd947d0593",
+      "bytes": 1038
+    },
+    {
+      "file": "evidence/04-single-plus1-material.png",
+      "sha256": "f1cb50e9f2a440fd7451ff8ddd7647f3a082ec76ac088163e5b72294ad04da1e",
+      "bytes": 1680901,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/04-single-plus1-material.png.import",
+      "sha256": "91adc836bc5d6e49a2b93e69bf380c986935750abe63e4ecc57c14e4dd988f19",
+      "bytes": 1025
+    },
+    {
+      "file": "evidence/05-plus10-quote.png",
+      "sha256": "e3af3fb3f53614ad3f7c57a7241f999f5001312c8d27d3325f2b52c1d641b10d",
+      "bytes": 1680625,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/05-plus10-quote.png.import",
+      "sha256": "93eb994a083c5d36b4c639e515189dce0f7f2632f91bc1bf8726848d8a178d9f",
+      "bytes": 999
+    },
+    {
+      "file": "evidence/06-single-plus10.png",
+      "sha256": "9bcf973ebbb7f29189cc88854861f8648ed6051dd78d90517e62cf05bce07e6b",
+      "bytes": 1680552,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/06-single-plus10.png.import",
+      "sha256": "a3cd6721608c36d1052cc6798c2ac66669dfbf0457110e0d061ddd23ae4ad986",
+      "bytes": 1002
+    },
+    {
+      "file": "evidence/07-max-quote.png",
+      "sha256": "6445ec027e6705b811433f05f4002c5cd6438c76c53fb5aebe2ea6299fd47163",
+      "bytes": 1680004,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/07-max-quote.png.import",
+      "sha256": "acdc6fb93ae256001beea11d378d996d9bcc5f6e69d0eb80d7ef9bbc210bb8cb",
+      "bytes": 990
+    },
+    {
+      "file": "evidence/08-single-max.png",
+      "sha256": "629818b3fcfb2c074e0295cc8582a40173d2be3e54726b2f179e5c0ee6472dbb",
+      "bytes": 1678928,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/08-single-max.png.import",
+      "sha256": "f48b46ba0bf653bd0c971cb0cb3a22a914f039a9aec0d1c21b9a558b1f6bcee2",
+      "bytes": 993
+    },
+    {
+      "file": "evidence/09-switch-cooldown.png",
+      "sha256": "ff5ce077b3f71be58fbd34fb34b69620a2d33e1b6fad511789ff17a03f6fe417",
+      "bytes": 1669285,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/09-switch-cooldown.png.import",
+      "sha256": "535fdd167d10d8cf73460227d1793e2201ed09f035935510814e154e643122e1",
+      "bytes": 1007
+    },
+    {
+      "file": "evidence/10-switch-ready.png",
+      "sha256": "32666486a0f466ed0e09751238e3fbb775fe4120291904391c74c0dd8fb46ca1",
+      "bytes": 1670468,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/10-switch-ready.png.import",
+      "sha256": "dd45ad8e407e37887d8e133ac0f03440f7431b94c7ee390736fbaa4395bafd22",
+      "bytes": 999
+    },
+    {
+      "file": "evidence/11-batch-open.png",
+      "sha256": "26e05659db5ce2a0467e7d6b49b78a4741b890192738e962fd4dbe31526dc792",
+      "bytes": 1168261,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/11-batch-open.png.import",
+      "sha256": "6c94a5ab8617607a4baa80f33d4d34632ac5a0c67f435df802b6ac82397b1ae5",
+      "bytes": 993
+    },
+    {
+      "file": "evidence/12-batch-partial-result.png",
+      "sha256": "6efc64b5fcee5eb72a55d9437be3707e9c19191405e7dd5b06de77c3cddeec6f",
+      "bytes": 1196029,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/12-batch-partial-result.png.import",
+      "sha256": "d0ba778b97e815e8a5e36de5f62700adcf15327fc536d301f058270181ad4002",
+      "bytes": 1023
+    },
+    {
+      "file": "evidence/13-batch-result-retained.png",
+      "sha256": "35c5cf44eff8a40329203ac5fa02879bdfa34597303b61094462d89333b3f1bf",
+      "bytes": 1197820,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/13-batch-result-retained.png.import",
+      "sha256": "e4300f8e03bb732bb087857a573144dafad4d53e2a2ecc273fffa925af9a1e89",
+      "bytes": 1026
+    },
+    {
+      "file": "evidence/14-defence-selection.png",
+      "sha256": "777f67293f50a4f3c4320ddc420a3c351f435d3188b16dd934e7e9a1338d2c7a",
+      "bytes": 1665672,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/14-defence-selection.png.import",
+      "sha256": "cc4ef5a2641deb8b2843892c471ede960d5305b1a20bdaa3a6b75d8e27304971",
+      "bytes": 1014
+    },
+    {
+      "file": "evidence/15-final-cruiser.png",
+      "sha256": "99b830970a6da479758a56c462eb54a86e56fc2b19620b7d0f79138c85c182d9",
+      "bytes": 1680442,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/15-final-cruiser.png.import",
+      "sha256": "459c8705f5f40d1e06758387b532884906ddbdf23d148d4ddda81804a11f6b6b",
+      "bytes": 1002
+    },
+    {
+      "file": "evidence/before-equipment.png",
+      "sha256": "d82d9780ede7218f4f09fbc5ba41e9b0dd956bcca8f762993597ce05ee8b1739",
+      "bytes": 237574,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/before-main.log",
+      "sha256": "052211730d2e6bad1bb27d0ba1621ed54bb0ef792b898c4c8600ed8b3be20a67",
+      "bytes": 368
+    },
+    {
+      "file": "evidence/before-main.png",
+      "sha256": "27ccd57780f226789ce05a980c8bd5bc7d6deb3da52982871d102549fa131fff",
+      "bytes": 481121,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/before-modal-input-fix-14-defence-selection.png",
+      "sha256": "e0f5020eaaef6f99522f1b4ef1e7cb92bce6a5efc578b70bbd3482e829f91e5f",
+      "bytes": 1190387,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/before-modal-input-fix-14-defence-selection.png.import",
+      "sha256": "fa07ed6616bd8ceda81fdfb17a270a0b5feb21ee672ebbd741751e69cfdaa22e",
+      "bytes": 1083
+    },
+    {
+      "file": "evidence/before-modal-input-fix-15-final-cruiser.png",
+      "sha256": "26d55b10cda7dd252a501cd57a73656287fa3ee36674ef1dbfd6cb51a302d86d",
+      "bytes": 1197859,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/before-modal-input-fix-15-final-cruiser.png.import",
+      "sha256": "f3df1902e23ac71057c1aac5eae2b22e3ba7a6b19563e704aa64fb77b87ee832",
+      "bytes": 1070
+    },
+    {
+      "file": "evidence/before-modal-input-fix-capture.log",
+      "sha256": "73c5ae6b978cd00cfdcc6f76063fcc852d2aa7e452bd432f3fecc96f851172ec",
+      "bytes": 416
+    },
+    {
+      "file": "evidence/before-modal-input-fix-operations.json",
+      "sha256": "80da0b6ed44eac966f7775b2d865f6747c1f3d808d3fa7dd868666637e3044a9",
+      "bytes": 75852
+    },
+    {
+      "file": "evidence/capture-driver.gd.txt",
+      "sha256": "1e4012c8fb9ac26e2078d3db73c1a9f9c23a8e9be7f88d5a260757fabf6d6e4b",
+      "bytes": 13438
+    },
+    {
+      "file": "evidence/capture-final.log",
+      "sha256": "73c5ae6b978cd00cfdcc6f76063fcc852d2aa7e452bd432f3fecc96f851172ec",
+      "bytes": 416
+    },
+    {
+      "file": "evidence/check-only.log",
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    {
+      "file": "evidence/linux-SConstruct.txt",
+      "sha256": "e0cc35005afbe191ce4e06adbf600d1e67b8d8072a2c9d31dc09abb7fc73d48e",
+      "bytes": 733
+    },
+    {
+      "file": "evidence/linux-extension.gdextension.txt",
+      "sha256": "68436ed8bc41e2344fd3dbc405962c338d70bf1e69942494530e8a634a31bb4c",
+      "bytes": 239
+    },
+    {
+      "file": "evidence/native-binding-profile.json",
+      "sha256": "539a94f89a9cff25e45c669295d6c53aee5a5551e9f068fa2a73fd8571837868",
+      "bytes": 151
+    },
+    {
+      "file": "evidence/native-build.log",
+      "sha256": "3b13ad7d5285b07b44921b9c7aa895a0374fab57acda7619468bba812b3f8e0d",
+      "bytes": 5330
+    },
+    {
+      "file": "evidence/native-initial-crash.log",
+      "sha256": "ded5727d3a0e3860cf32b6cbaca19bc54fd3dbe8b236c07aa83939d79c2398db",
+      "bytes": 4844
+    },
+    {
+      "file": "evidence/native-relink.log",
+      "sha256": "1157500dbb6201d02021a275d3fb4a43a845cc14e0f501d5463e375e46a0e2d1",
+      "bytes": 421
+    },
+    {
+      "file": "evidence/operations.json",
+      "sha256": "28e4eaf21bc9e761b3c0277ce7c1e2da28409ef89bd22cf194e948f9e698c425",
+      "bytes": 76569
+    },
+    {
+      "file": "evidence/performance-after.json",
+      "sha256": "9f1b6b18178b58f1b0d333b8284c61176438fe600a40221c102a521dfb2e9eaf",
+      "bytes": 2436212
+    },
+    {
+      "file": "evidence/performance-after.log",
+      "sha256": "a7405a53f24311faf8e70c1c7a2a8c7d99b26a36c0c476f228cfefd52e698475",
+      "bytes": 412
+    },
+    {
+      "file": "evidence/performance-before.json",
+      "sha256": "223cd41f44b163950c2fd63021e6faafb9c147c8a1dff7d6f5be319e9ec781de",
+      "bytes": 2430946
+    },
+    {
+      "file": "evidence/performance-before.log",
+      "sha256": "217cfa12caed758bb6efd5cf232df23088ee68b85073421aa8cf06ebe36271b3",
+      "bytes": 483
+    },
+    {
+      "file": "evidence/performance-driver.gd.txt",
+      "sha256": "c1b543e5d67b794b534fc3d704d8b1c36369308128948511a1f774ad265353fb",
+      "bytes": 12753
+    },
+    {
+      "file": "evidence/pilot-09-switch-cooldown.png",
+      "sha256": "dc1f2d9ead4f469e37483a400b4055e14b73f677c2293d539278944b3073d145",
+      "bytes": 1664768,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/pilot-09-switch-cooldown.png.import",
+      "sha256": "cbdc5921b42a4ed572d9f57c05ebc31c721d8bb4552628935aaba94df140a775",
+      "bytes": 1025
+    },
+    {
+      "file": "evidence/pilot-10-switch-ready.png",
+      "sha256": "dc1f2d9ead4f469e37483a400b4055e14b73f677c2293d539278944b3073d145",
+      "bytes": 1664768,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/pilot-10-switch-ready.png.import",
+      "sha256": "cfe78def380e322112550c9e69a6c9b57c5af215a1dfea13fb55953c62c38ee7",
+      "bytes": 1016
+    },
+    {
+      "file": "evidence/pilot-12-batch-partial-result.png",
+      "sha256": "f2842990113eef92adf713a554adfbcdd7d76fb3c3abdacc9dc8ae2f36dc18ba",
+      "bytes": 1241143,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "evidence/pilot-12-batch-partial-result.png.import",
+      "sha256": "95a4ef9c0de0e0bec84c4d0f72840f88b02133cb3a7f05bf218abad46baa98fb",
+      "bytes": 1041
+    },
+    {
+      "file": "evidence/pilot-capture.log",
+      "sha256": "5a51aca2f6575d2abc110f30ace8710691ccf8379aedc4d33b8f5484857ae298",
+      "bytes": 515
+    },
+    {
+      "file": "evidence/pilot-operations.json",
+      "sha256": "c96d62a0be0471f0687cf98dec39ba4d47e80eb406b163e82b31503bf349bc09",
+      "bytes": 74981
+    },
+    {
+      "file": "evidence/xorg.conf.txt",
+      "sha256": "319615b38b18922e5845e3df3345bffcb53526a6cd28651838b38cc18442af9b",
+      "bytes": 587
+    }
+  ],
+  "operation_failures": [],
+  "performance_after_failures": [],
+  "baseline_performance_known_harness_failure": "Original assertion required refit emitter identity to remain unchanged. Actual necessary new source schedules emitter14→15; raw before record preserved, not rewritten.",
+  "context_compacted": false,
+  "executor": "/root/equipment_image_revision_replacement",
+  "status": "Candidate for original independent review, not self-accepted."
+}
