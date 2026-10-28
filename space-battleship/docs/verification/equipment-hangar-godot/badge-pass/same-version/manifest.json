@@ -1,0 +1,73 @@
+{
+  "runtime_source_commit": "5b4f72331038622ce739578fcdf3823a0a0b4716",
+  "startup_head": "6cebf6d8ed4a68012cb4a59a0cd390f32a4386da",
+  "source_binding": {
+    "res://assets/fonts/NotoSansSC.ttf": {
+      "runtime_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+      "matches_fixed_git_object": true
+    },
+    "res://assets/ui/equipment/hangar/upgrade-console.svg": {
+      "runtime_sha256": "88f6ccb9f1039ab2861e29627ee31a54e9461e37fba689c78857a4ea3fd05599",
+      "matches_fixed_git_object": true
+    },
+    "res://assets/ui/ships/manifest.json": {
+      "runtime_sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "matches_fixed_git_object": true
+    },
+    "res://assets/weapons/fleet_20261019/manifest.json": {
+      "runtime_sha256": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c",
+      "matches_fixed_git_object": true
+    },
+    "res://generated/config.json": {
+      "runtime_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "scope": "existing local generated config; excluded from Git"
+    },
+    "res://project.godot": {
+      "runtime_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "matches_fixed_git_object": true
+    },
+    "res://src/game_session.gd": {
+      "runtime_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "matches_fixed_git_object": true
+    },
+    "res://src/main.gd": {
+      "runtime_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "matches_fixed_git_object": true
+    },
+    "res://src/systems/equipment.gd": {
+      "runtime_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "matches_fixed_git_object": true
+    },
+    "res://src/ui/equipment_panel.gd": {
+      "runtime_sha256": "656bd05a055cfdee2b8d33031f45c44be0d561f0faf565cbdc00cbc4b4f262a0",
+      "matches_fixed_git_object": true
+    }
+  },
+  "scope": "Exactly two requested same-source screenshots, no code change or full regression rerun",
+  "files": {
+    "01-new-session-frigate.png": {
+      "sha256": "7790a010351871fc9698d213d0dadef9d3caf1f2379454db63f8c7d1cbe98534",
+      "bytes": 1504961
+    },
+    "02-cruiser-comparison.png": {
+      "sha256": "ba0af703347d7e867e579b53d71d34f92a352d89ee5ae5fb0fbe259cdc3bf1af",
+      "bytes": 1487985
+    },
+    "README.md": {
+      "sha256": "9a46a66e3f8928006a57451e4889acbd024734927df57a929011938f0535e198",
+      "bytes": 2000
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "a81d25e83b3b41522ba7a4b5fdc2d7c88d800b12497e3363be95c32d5ecdf182",
+      "bytes": 6225
+    },
+    "capture.log.txt": {
+      "sha256": "50595f206e0c6b0926e3322254af7da4c2539b678024634f47659e884fa67159",
+      "bytes": 418
+    },
+    "screens.json": {
+      "sha256": "a11e925d93ff3683b038e17517fb65c9b8381e31c8759269f4a63d1f1e0bd648",
+      "bytes": 16328
+    }
+  }
+}

@@ -1,0 +1,83 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/badge-pass/same-version"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func run() -> void:
+    app = load("res://src/main.tscn").instantiate()
+    root.add_child(app)
+    host = app.session
+    check(app.startup_error.is_empty() and host != null and host.run_state.is_running() and not host.pause_reasons.has("recovery"), "real main/session/native startup")
+    if not failures.is_empty(): quit(1); return
+    panel = app.equipment_scene
+    host.set_pause("user", true)
+    await flush()
+    await screenshot("01-new-session-frigate")
+    await click(panel._slot_buttons["weapon:0"].button)
+    check(panel._selection_open, "direct slot click opens equipment choices")
+    records.append({"action":"initial actual main", "state": snapshot()})
+    # An explicitly controlled review save state; none of these facts are produced by UI.
+    var campaign: Dictionary = host.campaign_system.save_state()
+    campaign.state.highest_reached = 100
+    campaign.cycle_reached = 100
+    campaign.state.state = "menu"
+    campaign.departure_remaining = 0.0
+    campaign.state.speed = 0.0
+    campaign.state.cleared_stages = {}
+    for level in range(1, 100): campaign.state.cleared_stages[level] = true
+    var restored: Dictionary = host.campaign_system.restore_state(campaign)
+    check(restored.ok, "controlled campaign state validates")
+    host.equipment.refresh_availability(host.campaign_system.available, 100)
+    var changed: Dictionary = host.campaign_system.change_ship("Cruiser", host.commit_ship_refit)
+    check(changed.ok, "real change_ship/native accepts controlled unlocked cruiser")
+    for pair in [["weapon:1","missile"],["weapon:2","longLaser"],["defence:0","shield"],["defence:1","armour"]]:
+        var equipped: Dictionary = host.equipment.equip_slot(pair[0], pair[1], host.equipment_inputs(), host.publish_equipment_refit)
+        check(equipped.ok, "real controlled setup equip " + pair[0])
+    var equipment: Dictionary = host.equipment.save_state()
+    for slot in equipment.slots:
+        slot.paid_level = 19 if slot.id == "weapon:0" else 18
+        slot.switch_ready_at = 0.0
+    check(host.equipment.restore_state(equipment, host.campaign_system.ship_facts().mounts).ok, "controlled paid-level save state validates")
+    check(host.publish_equipment_refit(host.economy.budget(), "refit", "", null, false).ok, "controlled restored slots publish to actual native")
+    wallet("2000000", "2000")
+    panel._dirty = true
+    await flush()
+    await click(panel._slot_buttons["weapon:0"].button)
+    await click(panel._choices.cannon.button)
+    check(panel.last_comparison.current.equipment_id == "laser" and panel.last_comparison.candidate.equipment_id == "cannon", "same basis current/candidate comparison")
+    check(host.equipment_slot_facts()[0].equipment_id == "laser", "browsing candidate leaves actual pulse installed")
+    records.append({"action":"controlled review save setup, not earned gameplay progress", "campaign":campaign,"equipment":equipment,"state":snapshot()})
+    await screenshot("02-cruiser-comparison")
+    var hashes:Dictionary={}
+    for path in ["res://project.godot","res://src/main.gd","res://src/game_session.gd","res://src/systems/equipment.gd","res://src/ui/equipment_panel.gd","res://assets/fonts/NotoSansSC.ttf","res://assets/ui/equipment/hangar/upgrade-console.svg","res://assets/ui/ships/manifest.json","res://assets/weapons/fleet_20261019/manifest.json","res://generated/config.json"]:hashes[path]=FileAccess.get_sha256(path)
+    var output:Dictionary={"runtime_source_commit":"5b4f72331038622ce739578fcdf3823a0a0b4716","startup_head":OS.get_environment("SPACE_IDLE_EVIDENCE_HEAD"),"source_hashes":hashes,"engine":Engine.get_version_info(),"root_pixels":root.size,"records":records,"setup_checks_failed":failures,"scope":"Only two requested same-source screenshots, no upgrade/batch/full correctness suite execution. Actual normal main/Session/native; initial Frigate fresh default, Cruiser controlled state identical to established preview."}
+    var f=FileAccess.open(destination.path_join("screens.json"),FileAccess.WRITE);f.store_string(JSON.stringify(output,"  "));f.close();print("SAME_VERSION_SCREENS_COMPLETE failures=",failures.size()," images=2");app._close_game()
