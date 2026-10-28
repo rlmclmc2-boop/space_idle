@@ -22,7 +22,7 @@
   "renderer_route_selected": false,
   "benchmark_executed": false,
   "tool": "image_gen.imagegen",
-  "successful_generations": 3,
+  "successful_generations": 5,
   "target_client_size": [
     1440,
     900
@@ -42,7 +42,7 @@
   "common_operation_cluster_native_bounds_approx": [
     28,
     133,
-    522,
+    640,
     253
   ],
   "open_drawer_native_bounds_approx": [
@@ -83,12 +83,30 @@
   "files": [
     {
       "path": "default-watch.png",
+      "bytes": 1835150,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "c245df669600edacadff01cc7b79dff0b00105590b14c78af3a0d2d59c082409"
+    },
+    {
+      "path": "drafts/default-before-planet-selector.png",
       "bytes": 1888577,
       "size": [
         1586,
         992
       ],
       "sha256": "078f49a7654643bdbe4738a030810f6c429fe8d3f922e7401589a3be6f9299d8"
+    },
+    {
+      "path": "drafts/left-drawer-before-planet-selector.png",
+      "bytes": 1821713,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "ac8306c4d4612d1177a5ff519ff90ba6be25ad9072c57933096c67f812c4188a"
     },
     {
       "path": "drafts/left-drawer-initial.png",
@@ -101,12 +119,32 @@
     },
     {
       "path": "left-drawer.png",
-      "bytes": 1821713,
+      "bytes": 1816258,
       "size": [
         1586,
         992
       ],
-      "sha256": "ac8306c4d4612d1177a5ff519ff90ba6be25ad9072c57933096c67f812c4188a"
+      "sha256": "cbe19526be92766db3709dc77d4858ba5282faa9cc05272b4af001a322f5dda9"
     }
-  ]
+  ],
+  "previous_fixed_candidate": "7f03468be2ffa0d2ebaad9e31cac14794a5b8462",
+  "direction_review": "parent and independent reviewer allow P5 concentration direction to continue; current selector revision pending review",
+  "generations_in_this_selector_revision": 2,
+  "planet_selector_default_native_bounds_approx": [
+    526,
+    145,
+    640,
+    191
+  ],
+  "planet_selector_open_native_bounds_approx": [
+    528,
+    148,
+    636,
+    191
+  ],
+  "planet_selector_same_logical_slot": true,
+  "planet_selector_pixel_exact_alignment": false,
+  "right_planet_navigation_controls_present": false,
+  "right_title_identity_only": true,
+  "selector_revision_scope": "add compact left selector in both states; remove two right title arrows; no intended scene/typography/subject-size change"
 }
