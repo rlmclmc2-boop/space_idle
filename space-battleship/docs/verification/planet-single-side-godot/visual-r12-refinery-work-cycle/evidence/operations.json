@@ -1,0 +1,1108 @@
+[
+  {
+    "operation": "synthetic_campaign_grants",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "crew_availability",
+    "result": {
+      "changed": false,
+      "ok": true
+    }
+  },
+  {
+    "operation": "synthetic_planet_state",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "assign_explorer_1",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "automatic_1",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "assign_explorer_2",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "synthetic_elapsed",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "publish_real_fixture_contributions",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "cloud_phase": 0.0222390256822109,
+    "drawer": "",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": false,
+    "game_time": 238.516666666748,
+    "image": "01-default-planet1",
+    "pause_reasons": {},
+    "selected_facility": "",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0182786565274,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 3.25201266666667
+  },
+  {
+    "cloud_phase": 0.0236843340098858,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 238.516666666748,
+    "image": "02-facilities-planet1-ready",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0194665808230639,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 3.45
+  },
+  {
+    "cloud_phase": 0.027577668428421,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 238.516666666748,
+    "image": "native-planet-popup",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0226665809750557,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 3.98333333333333
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(582.0, 208.5)",
+    "native_popup": "planet",
+    "position": "(494, 156)",
+    "row": 1,
+    "size": "(176, 70)",
+    "window_id": 0
+  },
+  {
+    "cloud_phase": 0.0432885624468327,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "building",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 2,
+        "work_fraction": 0.4
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 10,
+        "source_factor": null,
+        "state": "locked",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 0,
+        "work_fraction": 0.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard_later",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 10,
+        "source_factor": null,
+        "state": "locked",
+        "type": "shipyard",
+        "unlock_exploration": 150,
+        "work": 0,
+        "work_fraction": 0.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 238.516666666748,
+    "image": "03-same-drawer-planet2-building",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "2",
+    "snapshot": {
+      "automatic": false,
+      "duration": 43.9024390243902,
+      "elapsed": 8.0,
+      "exploration": 22,
+      "row": {
+        "baseExp": 150.0,
+        "baseTime": 60.0,
+        "id": 2.0,
+        "minTime": 5.0,
+        "name": "气态巨星-T587e",
+        "reforgeStartLevel": 10.0,
+        "tags": null,
+        "unlockId": "planet/2",
+        "visual": "{\"surfaceTexture\":\"res://assets/planets/t587e_surface.png\",\"cloudTexture\":\"res://assets/planets/t587e_surface.png\",\"radiusScale\":1.05,\"axisRatio\":0.93,\"surfaceSpeed\":0.006,\"cloudSpeed\":0.0075,\"cloudOpacity\":0.12,\"shadowStrength\":0.53,\"glowStrength\":0.38,\"atmosphereColor\":\"e8d3a2\",\"coronaWidth\":0.035}",
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0352352894842625,
+    "visible_task": "探索中 · 本次 18%",
+    "visible_task_clock": "探索度 22 · 本次 8.0 / 43.9 秒\n自动探索：关闭",
+    "visual_clock": 6.29478633333333
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(582.0, 173.5)",
+    "native_popup": "planet",
+    "position": "(494, 156)",
+    "row": 0,
+    "size": "(176, 70)",
+    "window_id": 0
+  },
+  {
+    "cloud_phase": 0.0482473596930504,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 238.516666666748,
+    "image": "04-switch-back-planet1-ready",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0392560176551342,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 6.96490666666667
+  },
+  {
+    "cloud_phase": 0.050699308514595,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": "1.53467924926028e0",
+        "state": "built",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 238.516666666748,
+    "image": "05-planet1-claimed",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "refinery",
+            "owned": true,
+            "type": "refinery"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0412713140249252,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 7.30079
+  },
+  {
+    "cloud_phase": 0.0556818768382072,
+    "drawer": "crew",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": "1.53467924926028e0",
+        "state": "built",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": false,
+    "game_time": 239.200000000082,
+    "image": "native-crew-popup",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": false,
+      "duration": 0.0,
+      "elapsed": 0.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "refinery",
+            "owned": true,
+            "type": "refinery"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": false
+    },
+    "surface_phase": 0.045366570353508,
+    "visible_task": "探索 · 未派遣",
+    "visible_task_clock": "探索度 240 · 探索未运行",
+    "visual_clock": 7.98333333333333
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(160.0, 322.8)",
+    "native_popup": "crew",
+    "position": "(36, 308)",
+    "row": 0,
+    "size": "(248, 592)",
+    "window_id": 0
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(160.0, 525.5)",
+    "native_popup": "assignment",
+    "position": "(36, 505)",
+    "row": 0,
+    "size": "(248, 41)",
+    "window_id": 0
+  },
+  {
+    "arm_position": "(0.0, 2.207063, -0.1)",
+    "arm_rotation": "(0.0, 0.226473, 0.0)",
+    "frame": 0,
+    "gantry_position": "(-0.206767, 0.0, 0.0)",
+    "surface_phase": 0.861047089099884,
+    "wall_ms": 135396
+  },
+  {
+    "arm_position": "(0.0, 2.21618, -0.1)",
+    "arm_rotation": "(0.0, 0.232986, 0.0)",
+    "frame": 1,
+    "gantry_position": "(-0.281012, 0.0, 0.0)",
+    "surface_phase": 0.867513954639435,
+    "wall_ms": 136364
+  },
+  {
+    "arm_position": "(0.0, 2.036951, -0.1)",
+    "arm_rotation": "(0.0, 0.104965, 0.0)",
+    "frame": 2,
+    "gantry_position": "(-0.299233, 0.0, 0.0)",
+    "surface_phase": 0.873645484447479,
+    "wall_ms": 137387
+  },
+  {
+    "arm_position": "(0.0, 1.78029, -0.1)",
+    "arm_rotation": "(0.0, -0.078364, 0.0)",
+    "frame": 3,
+    "gantry_position": "(-0.264317, 0.0, 0.0)",
+    "surface_phase": 0.879662334918976,
+    "wall_ms": 138392
+  },
+  {
+    "arm_position": "(0.0, 1.582409, -0.1)",
+    "arm_rotation": "(0.0, -0.219708, 0.0)",
+    "frame": 4,
+    "gantry_position": "(-0.182873, 0.0, 0.0)",
+    "surface_phase": 0.885699033737183,
+    "wall_ms": 139402
+  },
+  {
+    "arm_position": "(0.0, 1.551147, -0.1)",
+    "arm_rotation": "(0.0, -0.242038, 0.0)",
+    "frame": 5,
+    "gantry_position": "(-0.069934, 0.0, 0.0)",
+    "surface_phase": 0.891702771186829,
+    "wall_ms": 140398
+  },
+  {
+    "arm_position": "(0.0, 1.706611, -0.1)",
+    "arm_rotation": "(0.0, -0.130992, 0.0)",
+    "frame": 6,
+    "gantry_position": "(0.057781, 0.0, 0.0)",
+    "surface_phase": 0.897832751274109,
+    "wall_ms": 141419
+  },
+  {
+    "arm_position": "(0.0, 1.966423, -0.1)",
+    "arm_rotation": "(0.0, 0.054588, 0.0)",
+    "frame": 7,
+    "gantry_position": "(0.175754, 0.0, 0.0)",
+    "surface_phase": 0.904005765914917,
+    "wall_ms": 142449
+  },
+  {
+    "arm_position": "(0.0, 2.178887, -0.1)",
+    "arm_rotation": "(0.0, 0.206348, 0.0)",
+    "frame": 8,
+    "gantry_position": "(0.259681, 0.0, 0.0)",
+    "surface_phase": 0.910011947154999,
+    "wall_ms": 143452
+  },
+  {
+    "arm_position": "(0.0, 2.2359, -0.1)",
+    "arm_rotation": "(0.0, 0.247071, 0.0)",
+    "frame": 9,
+    "gantry_position": "(0.29842, 0.0, 0.0)",
+    "surface_phase": 0.916036903858185,
+    "wall_ms": 144448
+  },
+  {
+    "arm_position": "(0.0, 2.102213, -0.1)",
+    "arm_rotation": "(0.0, 0.151581, 0.0)",
+    "frame": 10,
+    "gantry_position": "(0.284166, 0.0, 0.0)",
+    "surface_phase": 0.922165989875793,
+    "wall_ms": 145611
+  },
+  {
+    "arm_position": "(0.0, 1.845067, -0.1)",
+    "arm_rotation": "(0.0, -0.032095, 0.0)",
+    "frame": 11,
+    "gantry_position": "(0.21678, 0.0, 0.0)",
+    "surface_phase": 0.928407192230225,
+    "wall_ms": 146553
+  },
+  {
+    "arm_position": "(0.0, 1.616897, -0.1)",
+    "arm_rotation": "(0.0, -0.195074, 0.0)",
+    "frame": 12,
+    "gantry_position": "(0.110822, 0.0, 0.0)",
+    "surface_phase": 0.934538424015045,
+    "wall_ms": 147576
+  },
+  {
+    "arm_position": "(0.0, 1.54182, -0.1)",
+    "arm_rotation": "(0.0, -0.2487, 0.0)",
+    "frame": 13,
+    "gantry_position": "(-0.01713, 0.0, 0.0)",
+    "surface_phase": 0.940759837627411,
+    "wall_ms": 148626
+  },
+  {
+    "arm_position": "(0.0, 1.660304, -0.1)",
+    "arm_rotation": "(0.0, -0.164068, 0.0)",
+    "frame": 14,
+    "gantry_position": "(-0.138203, 0.0, 0.0)",
+    "surface_phase": 0.946783185005188,
+    "wall_ms": 149615
+  },
+  {
+    "arm_position": "(0.0, 1.911584, -0.1)",
+    "arm_rotation": "(0.0, 0.015417, 0.0)",
+    "frame": 15,
+    "gantry_position": "(-0.237623, 0.0, 0.0)",
+    "surface_phase": 0.953003883361816,
+    "wall_ms": 150660
+  },
+  {
+    "arm_position": "(0.0, 2.138036, -0.1)",
+    "arm_rotation": "(0.0, 0.177168, 0.0)",
+    "frame": 16,
+    "gantry_position": "(-0.290667, 0.0, 0.0)",
+    "surface_phase": 0.958811283111572,
+    "wall_ms": 151662
+  },
+  {
+    "arm_position": "(0.0, 2.23993, -0.1)",
+    "arm_rotation": "(0.0, 0.24995, 0.0)",
+    "frame": 17,
+    "gantry_position": "(-0.294036, 0.0, 0.0)",
+    "surface_phase": 0.965237021446228,
+    "wall_ms": 152707
+  },
+  {
+    "arm_position": "(0.0, 2.140835, -0.1)",
+    "arm_rotation": "(0.0, 0.179168, 0.0)",
+    "frame": 18,
+    "gantry_position": "(-0.244043, 0.0, 0.0)",
+    "surface_phase": 0.971250891685486,
+    "wall_ms": 153695
+  },
+  {
+    "arm_position": "(0.0, 1.896146, -0.1)",
+    "arm_rotation": "(0.0, 0.00439, 0.0)",
+    "frame": 19,
+    "gantry_position": "(-0.147104, 0.0, 0.0)",
+    "surface_phase": 0.977502524852753,
+    "wall_ms": 154890
+  }
+]
