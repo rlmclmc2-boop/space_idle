@@ -1,0 +1,71 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": "",
+			"id": "main_startup",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "existing_shared_route",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "owner_fixture_accepted",
+			"ok": true
+		},
+		{
+			"detail": {
+				"available": true,
+				"panel_visible": true,
+				"route": "planet"
+			},
+			"id": "planet_808x900_and_chrome",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "battle_projection",
+			"ok": true
+		},
+		{
+			"detail": [
+				"Facility",
+				"IllustratedWorkshopBody",
+				"TelescopingToolLink",
+				"@MeshInstance3D@7534",
+				"IllustratedRefineryBody",
+				"ConveyorOreMarker0",
+				"ConveyorOreMarker1",
+				"ConveyorOreMarker2",
+				"@MeshInstance3D@7533",
+				"IllustratedShipyardBody"
+			],
+			"id": "three_owner_illustrations",
+			"ok": true
+		},
+		{
+			"detail": {
+				"crane_t0": 0.346293330192566,
+				"crane_t1": 0.489049285650253,
+				"surface_t0": 0.00887829437851906,
+				"surface_t1": 0.0210631247609854
+			},
+			"id": "owner_cycle_continues",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "host_switch_preserves_scene",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "host_return",
+			"ok": true
+		}
+	],
+	"fixture": "Temporary public owner restore grants and built planet-1 facilities. Not natural unlock/build evidence."
+}

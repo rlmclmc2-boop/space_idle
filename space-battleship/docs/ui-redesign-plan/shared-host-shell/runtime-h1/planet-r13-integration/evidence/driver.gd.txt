@@ -1,0 +1,102 @@
+extends SceneTree
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-h1/planet-r13-integration/evidence/"
+var game
+var panel
+var rows := []
+
+func _initialize() -> void:
+	call_deferred("observe")
+
+func check(id: String, ok: bool, detail = null) -> void:
+	rows.append({"id": id, "ok": ok, "detail": detail})
+	print("PLANET_R13_HOST ", id, " ", ok)
+
+func settle() -> void:
+	for i in 8: await process_frame
+
+func click(point: Vector2) -> void:
+	var move := InputEventMouseMotion.new()
+	move.position = point
+	move.global_position = point
+	Input.parse_input_event(move)
+	await settle()
+	var event := InputEventMouseButton.new()
+	event.position = point
+	event.global_position = point
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = true
+	Input.parse_input_event(event)
+	await settle()
+	event = event.duplicate()
+	event.pressed = false
+	Input.parse_input_event(event)
+	await settle()
+
+func shot(name: String) -> void:
+	await settle()
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT + name + ".png")
+
+func observe() -> void:
+	game = load("res://src/main.gd").new()
+	root.add_child(game)
+	await settle()
+	check("main_startup", game.startup_error.is_empty(), game.startup_error)
+	if not game.startup_error.is_empty(): quit(1); return
+	panel = game.planet_scene
+	check("existing_shared_route", game._host.routes.planet == panel and game._host.routes.size() == 15)
+	var cfg: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json"))
+	var campaign: Dictionary = game.session.campaign_system.save_state()
+	for row in cfg.unlock.unlock: campaign.grants[str(row.type) + ":" + str(row.target)] = true
+	var admission: Dictionary = game.session.campaign_system.restore_state(campaign)
+	game.session.crew_system.refresh_availability(game.session.campaign_system.available)
+	game.session.planet_system.refresh_availability(game.session.campaign_system.available)
+	var state: Dictionary = game.session.planet_system.save_state()
+	var first: Dictionary = state.planets["1"]
+	first.exploration = 240
+	for id in first.buildings:
+		for row in cfg.planet_build.planet_build:
+			if str(row.id) == id:
+				first.buildings[id].state = "built"
+				first.buildings[id].work = int(row.build_explore)
+	var restored: Dictionary = game.session.planet_system.restore_state(state)
+	check("owner_fixture_accepted", admission.ok and restored.ok)
+	game.session.planet_system.refresh_availability(game.session.campaign_system.available)
+	game._queue_feature_visibility()
+	await settle()
+	game._skip_tutorial = true
+	game._sync_guidance()
+	await settle()
+	print("PLANET_R13_ROUTE ", game._route_available.planet, " ", game._host._buttons.planet.disabled, " ", game._guidance_panel.visible)
+	await click(game._host._buttons.planet.get_global_rect().get_center())
+	await create_timer(1.0).timeout
+	check("planet_808x900_and_chrome", game._left_module == "planet" and panel.visible and panel.size == Vector2(808,900) and panel._shared_host_enabled and not panel._wallet.visible, {"route": game._left_module, "available": game._route_available.planet, "panel_visible": panel.visible})
+	if game._left_module != "planet": game._close_game(); quit(1); return
+	check("battle_projection", game._battle_viewport.get_parent().position == Vector2(855.875,0) and game._battle_viewport.get_parent().scale == Vector2(.9375,.9375))
+	var architecture = panel._visual.architecture
+	var children := {}
+	for kind in ["equipment", "refinery", "shipyard"]:
+		var model: Node3D = architecture._models[kind]
+		for child in model.get_children(): children[child.name] = true
+	check("three_owner_illustrations", children.has("IllustratedWorkshopBody") and children.has("IllustratedRefineryBody") and children.has("IllustratedShipyardBody"), children.keys())
+	await shot("planet-r13-t0")
+	var p0: float = architecture._parts["shipyard"]["CraneSlide"].position.x
+	var phase0: float = panel._visual.globe.phases.x
+	await create_timer(2.0).timeout
+	var p1: float = architecture._parts["shipyard"]["CraneSlide"].position.x
+	check("owner_cycle_continues", p0 != p1 and panel._visual.globe.phases.x != phase0, {"crane_t0": p0, "crane_t1": p1, "surface_t0": phase0, "surface_t1": panel._visual.globe.phases.x})
+	await shot("planet-r13-t2")
+	game._host.route_requested.emit("equipment")
+	await settle()
+	check("host_switch_preserves_scene", game._left_module == "equipment" and game.planet_scene == panel)
+	game._host.route_requested.emit("planet")
+	await settle()
+	check("host_return", game._left_module == "planet" and panel.visible)
+	await shot("planet-r13-return")
+	var good := true
+	for row in rows: good = good and row.ok
+	var f := FileAccess.open(OUT + "observations.json", FileAccess.WRITE)
+	f.store_string(JSON.stringify({"all_ok": good, "checks": rows, "fixture": "Temporary public owner restore grants and built planet-1 facilities. Not natural unlock/build evidence."}, "\t"))
+	f.close()
+	game._close_game()
+	quit(0 if good else 1)

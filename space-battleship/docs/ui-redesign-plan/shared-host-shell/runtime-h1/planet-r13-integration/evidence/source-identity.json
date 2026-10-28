@@ -1,0 +1,57 @@
+{
+  "source_commit": "f4e6280db55cf72de5ec4b7bd52e530735d969b8",
+  "files": {
+    "scripts/planet_facility_scene.gd": {
+      "sha256": "72c68e21042a74546b7fa78190989480fbcb9fc2edd4e79e0600a3e892fc81f8",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/workshop-body.png": {
+      "sha256": "a69f4e43a24086faf8c3f9144b1d9b8463e797bfb889533f122ef2ed57f8c4ce",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/refinery-shutter-right.png": {
+      "sha256": "4dbb49809b9ba9fe61b5012527d38daebe1a45722c64dad6299656ab04781667",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/shipyard-berth-ring.png": {
+      "sha256": "79112b0f05b272c3472e921a3627c6744736a8cc156337f5842a24e111e5ae2b",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/refinery-shutter-left.png": {
+      "sha256": "8eeb8b8eb2a548cd3256ce7cc5e47575bcbefb9b68e0586d462c46554d16d63e",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/shipyard-crane.png": {
+      "sha256": "336c711850a458707530fe583717d49ebfd2c9960da22fb7a7acec2dbe040352",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/refinery-body.png": {
+      "sha256": "1dd56717f41a75f7a4388f0e1692d9e0b7eb83b61c9b42d97b4b8a894c703cf6",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/workshop-arm.png": {
+      "sha256": "a532ab1f13bdef7fa325118091454698fd371d3d69ac8e10d8f87633bc7a306f",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/shipyard-body.png": {
+      "sha256": "3ed334d4088d035e0020defaebec21308f5ef9ed65544e0679b0bafe238d9e07",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/illustrated/workshop-composite-reference.png": {
+      "sha256": "186fc203346ca148ffeb4f43aec7283d0b9168fb265148aec646da2934c1119d",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/equipment.glb": {
+      "sha256": "3ac6286f7abc87280ed85a7384fd56f429b52bd36aea2ef51a16601c0e2808d0",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/refinery.glb": {
+      "sha256": "32f4a0c8626a42e5881b6fc799ad993a11fe17f998f7079ac94aff5c6d6dbad8",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/shipyard.glb": {
+      "sha256": "22b4c886094c0c17b05e9180c5e147184c0d8dbc1a02b0a570868c9ddddeb258",
+      "source_equal": true
+    }
+  }
+}
