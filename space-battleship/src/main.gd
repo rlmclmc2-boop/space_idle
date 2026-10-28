@@ -260,7 +260,9 @@ func _module_exclusive(view: Control) -> bool:
 
 func _visible_window(node: Node) -> bool:
 	for child in node.get_children(true):
-		if child is Window and child.visible: return true
+		# Godot's text tooltip is a passive, unfocusable, mouse-passthrough Window.
+		# Native menus/dialogs remain exclusive; do not gate gameplay or navigation on a tooltip.
+		if child is Window and child.visible and not (child.unfocusable and child.mouse_passthrough): return true
 		if _visible_window(child): return true
 	return false
 
