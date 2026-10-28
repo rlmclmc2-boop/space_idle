@@ -6,7 +6,7 @@
 
 ### 接替后的已验证进度
 
-- 最小共享宿主已单独固定并推送为`51e704c8`（`implement/reactor-centered-godot`）：左808×900的装备/反应炉注册与切换、右632等比战场、真实Session时钟和暂停接入。新增`_register_left_module(layer,id,title,scene,feature)`供后续独立模块在同一左侧导航挂载；此提交只含`src/main.gd`，未合main。
+- 最小共享宿主已单独固定并推送为`51e704c8`（`implement/reactor-centered-godot`）：左808×900的装备/反应炉注册与切换、右632等比战场、真实Session时钟和暂停接入。后续根据现行开放配置，注册点修正为`_register_left_module(layer,id,title,scene,unlock_kind,unlock_target)`，星球首入口使用`planet:1`；仍由同一左侧导航挂载，不改各模块领域。未合main。
 - 当前Godot4.7.2入口`--check-only`、`git diff --check`和提交后native真Session headless启动30帧均退出0。Xorg:99真实游戏窗口画面已见左装备、右战场，截图暂留`/tmp/space-idle-native472/reactor-new-host-screen2.png`；正常新局反应炉尚未开放，这张图不证明反应炉运行验收。
 - 新支座/实体短接版夹具重新渲染，无脚本或shader错误；四路能看见源端口投影与机械插入，读数调整为手动/免费/有效的区别显示。此图仅用于装配检查，依然不作真实展示、动态性能或最终品质证据。
 - 固定只读`presentation_model`及其变化通知仍未接入，真实反应炉开放/四设备/隐藏/成功拒绝/购级/暂停等完整证据仍待它交付。其余WIP和导入缓存均原位保留。

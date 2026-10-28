@@ -216,14 +216,14 @@ func _setup_reactor_scene(layer: CanvasLayer) -> void:
 	_left_modules.clear()
 	_left_buttons.clear()
 	_register_left_module(layer, "equipment", "装备", equipment_scene)
-	_register_left_module(layer, "reactor", "反应炉", reactor_scene, "reactor")
+	_register_left_module(layer, "reactor", "反应炉", reactor_scene, "feature", "reactor")
 	_refresh_left_module()
 
-## Add a full-size left Control and its one navigation entry. A feature key is
-## optional; the host owns availability and keeps the scene's data binding local.
-func _register_left_module(layer: CanvasLayer, id: String, title: String, scene: Control, feature: String = "") -> void:
+## Add a full-size left Control and its one navigation entry. The optional
+## campaign grant is a kind/target pair; scene data binding stays local.
+func _register_left_module(layer: CanvasLayer, id: String, title: String, scene: Control, unlock_kind: String = "", unlock_target: String = "") -> void:
 	if id in _left_modules: return
-	_left_modules[id] = {"scene": scene, "feature": feature}
+	_left_modules[id] = {"scene": scene, "unlock_kind": unlock_kind, "unlock_target": unlock_target}
 	var button := Button.new()
 	button.text = title
 	button.position = Vector2(442 + 96 * _left_buttons.size(), 52)
@@ -258,8 +258,8 @@ func _refresh_left_module() -> void:
 		_left_buttons[id].set_pressed_no_signal(_left_module == id)
 
 func _left_module_available(id: String) -> bool:
-	var feature: String = str(_left_modules[id].feature)
-	return feature.is_empty() or session.campaign_system.available("feature", feature)
+	var kind: String = str(_left_modules[id].unlock_kind)
+	return kind.is_empty() or session.campaign_system.available(kind, str(_left_modules[id].unlock_target))
 
 func _apply_settings(settings: Dictionary) -> void:
 	_autosave_interval = float(settings.interval)
