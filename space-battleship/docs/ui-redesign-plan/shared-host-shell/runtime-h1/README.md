@@ -1,6 +1,6 @@
 # 共享宿主运行接入候选 H1
 
-当前组合：[反应炉R4接入](reactor-r4-integration/README.md)，代码`db94845a`，原组ae0508ee内容已挂入当前公共宿主，16项必要接入观察通过；原模块视觉审核独立进行，不合main。
+当前组合：[反应炉R4接入](reactor-r4-integration/README.md)，代码`db94845a`，原组ae0508ee内容已挂入当前公共宿主，16项必要接入观察通过；原布局Astra已亲看五图并核接口，共享接入范围无新增P1/P2。模块浮框/滑杆/底部覆层仍归原组，不扩大为整屏美术通过，不合main。
 
 既有记录：[装备接入](equipment-owner-integration/README.md) · [星球R6接入](planet-r6-integration/README.md) · [旧标题底板退出](chrome-strip-fix/README.md) · [三项P2](p2-review-fixes/README.md) · [画布裁取回归](collapse-canvas-fix/README.md)。原Astra已限定关闭三项P2及后续裁取，无新增P1/P2；本次原实现保持，不扩展全窗口/DPI/自然流程/V0。
 
