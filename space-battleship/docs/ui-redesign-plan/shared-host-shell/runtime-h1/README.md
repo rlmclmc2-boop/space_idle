@@ -1,14 +1,10 @@
 # 共享宿主运行接入候选 H1
 
-**当前尺寸窄修：** [收起快照画布变换](collapse-canvas-fix/README.md)，代码`ef409d5c`；仅补1152×720同宽高比窗口与边界证据，6项通过，原Astra已亲看四图并核代码，裁取P2限定关闭；本轮三项P2及后续裁取回归闭合，无新增P1/P2。预览与焦点实现保持，不扩展全窗口/DPI/自然流程/V0。
+当前组合：[反应炉R4接入](reactor-r4-integration/README.md)，代码`db94845a`，原组ae0508ee内容已挂入当前公共宿主，16项必要接入观察通过；原模块视觉审核独立进行，不合main。
 
-**当前原审修复：** [三项P2修复候选](p2-review-fixes/README.md)，代码`c49ea0a7`，分别处理预览取消/退出、活动UI焦点与战场撤焦、明确收起与静态环境。三组43项必要操作记录通过，待原Astra复核，不合main。
+既有记录：[装备接入](equipment-owner-integration/README.md) · [星球R6接入](planet-r6-integration/README.md) · [旧标题底板退出](chrome-strip-fix/README.md) · [三项P2](p2-review-fixes/README.md) · [画布裁取回归](collapse-canvas-fix/README.md)。原Astra已限定关闭三项P2及后续裁取，无新增P1/P2；本次原实现保持，不扩展全窗口/DPI/自然流程/V0。
 
-**当前窄修：** [旧本地标题底板退出](chrome-strip-fix/README.md)，代码`ecc9fecc`。仅去除公共65px下的装备/星球浅色残留，由各自原环境背景接续；主体坐标、门禁、战场、模型不动，附同版两张实际整屏。
-
-**当前组合更新：** [星球R6独立场景接入](planet-r6-integration/README.md)，代码`8a660076`直接挂载原组b185d5ab，23项必要接入观察通过；装备仍为原组551a4f2b。模型/动画视觉审查保持独立，未合main。
-
-**后续实际组合：** [原装备候选×H1接入](equipment-owner-integration/README.md)，运行`07a36823`，保留原组551a4f2b源码，33项必要组合观察通过；下文80e是首轮宿主基线记录。未合main、不升级V0。
+## 以下为首轮80e基线记录（后续组合以上方固定入口为准）
 
 代码：`design/shared-host-shell@80e5463ff36f457b9e178315a5cf4b521b871068`。用户经根线程明确要求继续已授权顶部入口、通用UI、区域契约和真实业务接入；本候选据此推进。未合main，待原根审/独审；不声明整屏视觉、Session全系统或V0通过。反应炉新图仍由原组按[808×835作图范围V1](../reactor-drawing-v1/README.md)制作，未用被否决的侧框背板顶替。
 

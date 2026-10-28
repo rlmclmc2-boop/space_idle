@@ -1,20 +1,14 @@
 # 共享宿主当前交付
 
-当前最新：[收起快照画布变换窄修](runtime-h1/collapse-canvas-fix/README.md)，代码`ef409d5c`；原Astra已关闭本轮三项P2及后续裁取回归，无新增P1/P2；限定于已有代码/证据，不扩展全窗口/DPI/自然流程/V0。保持候选，等待新反应堆/星球的必要接入，不合main。
+当前组合：[反应炉R4 × 已修复共享宿主](runtime-h1/reactor-r4-integration/README.md)，代码`db94845a`。原组ae0508ee的808×835内容进入现有公共顶部与路由，16项必要接入观察通过；模块视觉仍原Astra审核，不合main。
 
-当前审核候选：[三项P2修复](runtime-h1/p2-review-fixes/README.md)，代码`c49ea0a7`；43项按问题分组的必要操作通过，待原审复核，未合main。原背景窄修和模块内部文件保持。
+装备551a4f2b与星球R6 b185d5ab的原内部版本保留，继续携带已审标题背景退出差异。原Astra已限定关闭公共宿主三项P2及后续画布裁取回归，本次main/shared_host未动；不扩大自然流程、全窗口/DPI、V0或整屏美术通过。
 
-当前最新：[公共顶部下旧标题底板窄修](runtime-h1/chrome-strip-fix/README.md)，代码`ecc9fecc`，附装备/星球同版整屏；下文8a660076保留为主体接入基线。
-
-最新运行组合：[装备551a4f2b＋星球R6 b185d5ab的共享宿主](runtime-h1/planet-r6-integration/README.md)，代码`8a660076`，星球旧VBox已替换为808×900独立根。装备33项、星球23项分别记录其代码范围；未合main，不替代模块视觉审。
-
-[公共宿主真实业务接入候选 H1](runtime-h1/README.md)：首轮代码80e已实现统一入口、真实资源栏和现有视图路由；当前[原装备候选×H1实际组合](runtime-h1/equipment-owner-integration/README.md)代码`07a36823`保留原组551a4f2b，33项必要组合观察通过。未合main、未宣称V0/新美术品质通过。
-
-[反应炉新稿作图范围V1](reactor-drawing-v1/README.md)仍是反应炉原组唯一制作尺寸入口，新稿内部由原组负责。
+[统一运行/历史证据入口](runtime-h1/README.md) · [反应炉固定作图范围V1](reactor-drawing-v1/README.md)。下方保留尺寸与历史设计追溯，不再作为当前“等待新稿”状态。
 
 ---
 
-# 共享宿主：当前反应炉新稿范围交接
+# 共享宿主：反应炉作图范围交接记录
 
 **当前固定入口：[反应炉新稿作图/导入范围V1](reactor-drawing-v1/README.md)** · [纯前端尺寸数据](reactor-drawing-v1/layout.json) · [808×835作图模板](reactor-drawing-v1/content-template.svg) · [Godot整屏范围图](godot/evidence/reactor-drawing-bounds-1440x900.png)
 

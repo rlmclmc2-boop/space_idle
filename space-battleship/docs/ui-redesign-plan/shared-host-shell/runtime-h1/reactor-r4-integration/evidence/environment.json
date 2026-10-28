@@ -1,0 +1,74 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "window": [
+    1440,
+    900
+  ],
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "code_commit": "db94845ab79eda10a318b7cfa3524aefe5730d5e",
+  "baseline": "47a910a0",
+  "reactor_owner_commit": "ae0508ee8cb29f3af03d81fb9edd83cf8eb3d9ce",
+  "byte_identical_r4_files_sha256": {
+    "space-battleship/assets/ui/reactor/ship-hub-r4/README.md": "1c18e7e97d51fcfbd7be30c927e887ac19de519949fb223cc98eb4c325675671",
+    "space-battleship/assets/ui/reactor/ship-hub-r4/background-four.png": "3fc653ca784734304f01c8c2ba08bdfe8f27de7655dc6f68671c5ad72c831db9",
+    "space-battleship/assets/ui/reactor/ship-hub-r4/background-three.png": "17f7f0f24e6d1775e0976c69e4910a62e6316fcbaea81f7616f816ddc9cd781d",
+    "space-battleship/assets/ui/reactor/ship-hub-r4/core-work.png": "eb016b27234fc2920fa1e5a4192da6c77a6b7c8a8bd7a16ab79f9891f73834e7",
+    "space-battleship/assets/ui/reactor/ship-hub-r4/core_work.gdshader": "621eb2dabe98d9f02e385fb0b230914f45ab5fa3ddddb5ad49cbfec750a1257a",
+    "space-battleship/assets/ui/reactor/ship-hub-r4/hub_work.gdshader": "6e1edbf123849e93f92240b8edef0890242c4a679ce8aa636e9b3a30cbe87fd5",
+    "space-battleship/src/ui/reactor_stage.gd": "4fe9cd0e84d7f0af1b831865d641bacb1e649db93ab9c52c84f9787134aa3c8c"
+  },
+  "reactor_scene_owner_methods_modified": [
+    "_show_current_readings",
+    "_unknown"
+  ],
+  "reactor_scene_added_methods": [
+    "_exit_tree",
+    "_release_host_context",
+    "has_exclusive_ui",
+    "prepare_host_hide",
+    "set_shared_host"
+  ],
+  "unchanged_baseline_sources_sha256": {
+    "src/main.gd": "cc3be76c9186debb542fa5200cdbd9071fe67c11ee227b49bd1863271c240a4d",
+    "src/ui/shared_host.gd": "4ab563267c2e7bb593ed4d7a162aebf46a2315a744cf2bd2ab71b586c9b39d71",
+    "src/ui/campaign_view.gd": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb",
+    "src/ui/equipment_panel.gd": "b4085904da613577452648fbdb7bf3c283f316b0c7a4dc3f5f13899e17cb7b50",
+    "src/ui/planet_panel.gd": "65b049706d2048618916f557797c9a290cd7c9e1d481edfd388afda051615ae5",
+    "src/game_session.gd": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+    "src/systems/reactor.gd": "0ed064d7f40cf2ac42e27b55b825ff60fe06e7f808ee586bbbd2ab771e6a1d8b",
+    "src/systems/economy.gd": "becf89543f685ef9512e1c5a918dd9a9f776d2730fbb2fb51552bf2b59a6817f"
+  },
+  "scene_sha256": "7e887f15940f9616e5a2c7cbc4cc3b955af4aab52f269d8b826a592e4a809f47",
+  "fixture": "Isolated copy of prior explicit-unlock/built planet /tmp save. Public Campaign restore and Reactor availability refresh for reactor/condensation. No wallet injection, purchase or forced clock; one equal/confirm per three/four state solely verifies shared-host original command binding.",
+  "scope": "Same original host task; 1440x900 actual main/Session/native. Necessary presentation/command/clock/route/focus/hide/collapse integration checks, not module full-chain or visual approval.",
+  "evidence_sha256": {
+    "four-active.png": "92ff046709347b77f6adfffcc03c70d1401358f05107b50ec8e264775e407f22",
+    "four-collapsed.png": "0a58a5c7f2742fffc36de999a2f51697e7473078dcd74a8fb9506c3d03b7d667",
+    "godot-check.txt": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "godot-live.txt": "43eff79e1bab7e32fe189308ef6cad1e2f89bd947088f2251febf780e099588f",
+    "four-restored.png": "d9dd9efc83c4492097d435f8ab20dca3d84fcf39a9132af167ccd882f27194b9",
+    "three-before-command.png": "5895ebe57d17542aafe9a5771e5154bd8a0a17996a9e6ebe0b07f2f57b0f4a47",
+    "observations.json": "eb2cb350c7cef0fdc4673e409c9123de01558d7353584bc79dd1dd268391eb81",
+    "three-active.png": "5dcb8e17af7d9cf24739824fa7c4e985362fcaeaa3c1efabbe4cfd056a2b244c"
+  }
+}

@@ -1,0 +1,22 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+REACTOR_R4_HOST root_and_content_geometry true
+REACTOR_R4_HOST three_device_direct_route true
+REACTOR_R4_HOST shared_caption_and_local_readout true
+REACTOR_R4_HOST battle_projection_unchanged true
+REACTOR_R4_HOST original_preview_bound true
+REACTOR_R4_HOST original_apply_bound true
+REACTOR_R4_HOST new_slider_uses_shared_focus_gate true
+REACTOR_R4_HOST battle_focus_exit_and_pointer_restored true
+REACTOR_R4_HOST hidden_r4_work_stops true
+REACTOR_R4_HOST route_reuses_r4_draft true
+REACTOR_R4_HOST four_device_direct_route true
+REACTOR_R4_HOST four_apply_and_work_bound true
+REACTOR_R4_HOST host_clock_drives_r4_work true
+REACTOR_R4_HOST r4_collapse_static_with_restore true
+REACTOR_R4_HOST r4_restore_same_instance true
+REACTOR_R4_HOST wallet_still_uses_owner_text true
+REACTOR_R4_HOST_COMPLETE true
