@@ -123,7 +123,7 @@ func _theme() -> Theme:
 			style.set_corner_radius_all(8)
 			style.set_content_margin_all(8)
 			result.set_stylebox(state, type, style)
-		for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_disabled_color"]:
+		for state in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color", "font_disabled_color"]:
 			result.set_color(state, type, Color("243d50"))
 	var panel := StyleBoxFlat.new()
 	panel.bg_color = Color("f0eddf")
@@ -273,7 +273,9 @@ func _read_selected() -> void:
 	for fact in _facts:
 		if fact.state == "ready": ready += 1
 	_facility_button.text = "设施 · %d待领" % ready if ready else "设施"
-	_crew_button.text = "人员 %d" % _crew_views.explorers.get(_selected_id, []).size()
+	var personnel: int = _crew_views.explorers.get(_selected_id, []).size()
+	for fact in _facts: personnel += int(fact.builders_present)
+	_crew_button.text = "人员 %d" % personnel
 	var signature := {"id": _selected_id, "facts": _facts, "crew": _crew_views}
 	if signature != _detail_signature or (_crew_options_dirty and _open_section == "crew"):
 		_detail_signature = signature.duplicate(true)
