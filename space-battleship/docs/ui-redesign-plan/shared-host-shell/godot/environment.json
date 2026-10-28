@@ -1,0 +1,56 @@
+{
+  "kind": "Godot design preview only; not gameplay integration",
+  "source_environment_record": "space-battleship/docs/verification/equipment-hangar-godot/environment.json@15885107",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "official_release_url": "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip",
+  "checksum_url": "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/SHA512-SUMS.txt",
+  "official_zip_sha512": "9aa00f7a605200940bce3027a567b782f49bd8e940dd06ae9e987bd65aee1b1467edd56ed84fcdcbdd44354bf613bdbb4e5d2913e925850368e150c59ed54c65",
+  "official_sha512_and_previous_record_match": true,
+  "executable_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "font_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+  "preview_script_sha256": "b96f5bd41e1f8c446aed880963b79e1a0407427cd98f8a1a9f725777540d77d3",
+  "display": "Xorg :99, dummy, 1440x900, X11, scale 1, Mesa llvmpipe",
+  "windowed_client": [
+    1440,
+    900
+  ],
+  "no_frame_cap_added": true,
+  "no_session_or_native": true,
+  "no_business_state_or_save_access": true,
+  "html_status": "exploration-only, excluded from user primary deliverable and Godot font/quality proof",
+  "module_installation_confirmations": "coordinated by root; pending; 65px not frozen",
+  "captures": [
+    {
+      "path": "evidence/collapsed-1440x900.png",
+      "sha256": "2a4dc07de7b7e46f8c49e5535d3684a8ca7d8fb5b9be0cf895185494623d34b1"
+    },
+    {
+      "path": "evidence/extreme-values-1440x900.png",
+      "sha256": "8dd2d30e9952dc11a62c7992e5ab1408ef881bbf322db8caab5c8c58b2ed9575"
+    },
+    {
+      "path": "evidence/large-values-1440x900.png",
+      "sha256": "2992dbd71a30327e03a20e90d5c6c5bb87649570aed336943629d1cc003c1c2a"
+    },
+    {
+      "path": "evidence/more-1440x900.png",
+      "sha256": "ce367a8dd1e1a7b1e54c6ecec5124a33ceb0eecbafd4f727eb2b67567ff2298b"
+    },
+    {
+      "path": "evidence/normal-1440x900.png",
+      "sha256": "55c714956202577880274e17c810f6679b8323144598d797714c0656a89472d1"
+    },
+    {
+      "path": "evidence/normal-x11-client-1440x900.png",
+      "sha256": "eedfe7101f32ecf01d83835411a571b57ae6152dcd37216fec46cdb1f9ba5827"
+    },
+    {
+      "path": "evidence/restored-1440x900.png",
+      "sha256": "224d3e2041dcae8452a509d5e0d5c0fd840370b5a51b48b90517e0e5ef15a7b7"
+    },
+    {
+      "path": "evidence/save-failure-1440x900.png",
+      "sha256": "bb454baf14d273c2dd93b933f58c3554419aff741ce00cc50cc080eb9a135c67"
+    }
+  ]
+}

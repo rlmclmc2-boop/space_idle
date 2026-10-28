@@ -15,9 +15,9 @@
   },
   "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
-  "scope": "H2 retains 808/632 and original battle mapping. Added exact 1440x900 static design assembly scenes and 808x65 real-size browser font/layout evidence. These are design artifacts, not Godot/game evidence. Existing canonical assets are consumed without pixel edits; static module labels and battle pose do not prove business state, native geometry or shader behavior. Reactor local-level placement remains a proposed owner coordination change, not an approved relocation. No implementation or main merge.",
+  "scope": "Primary deliverable is Godot4.7.2 Control/font/SubViewport design preview in actual 1440x900 window. Preserves 808/632 and 0.9375 projection. No Session/native/config/save or main/src modifications. Module internal artwork and static values are explicit placement references, not internal redesign or live gameplay. HTML stays exploration-only and is excluded from user primary deliverable and game font/quality proof. 65px header remains unconfirmed with owners; no implementation approval upgrade.",
   "implementation_changed": false,
-  "review_status": "500b1c1b-region-principles-and-contract-boundaries-passed-limited-double-review; no-visual-or-implementation-authorization; H2-static-fullscreen-and-type-evidence-added; owner-installation-notes-pending",
+  "review_status": "limited-region-contract-acceptance-retained; Godot4.7.2 real-window design preview added; visual/owner-installation/user-confirmation pending; no runtime integration approval",
   "module_direction_status": {
     "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
     "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
@@ -77,13 +77,23 @@
     }
   ],
   "remaining_evidence": [
-    "Owner Git-written current header safe zones and current minimum readable installation statements",
-    "Resolve reactor local level and planet 90px header without forcing 65px reflow",
-    "Visual review of H2 static assembly and extreme-value presentation strategy",
-    "User whole-host design confirmation before implementation",
-    "Authorized later Godot actual font/input/runtime V0 verification"
+    "Reactor/planet owner Git notes coordinated by root; equipment note received at9fc8e8df",
+    "Resolve local level, 90px header and module popup/input ownership without forcing 65px reflow",
+    "Visual review of Godot H2 preview and extreme-value strategy",
+    "User whole-host design confirmation before runtime integration approval",
+    "Later authorized actual Session/native operation V0 verification"
   ],
-  "h2_quality_states": [
+  "h2_source_files": [
+    "host-preview.html",
+    "typography.html",
+    "render-design.py",
+    "evidence/README.md",
+    "evidence/header-type-metrics.json",
+    "references/source.json",
+    "module-installation.md"
+  ],
+  "primary_deliverable": "godot/README.md",
+  "html_exploration_states": [
     {
       "path": "evidence/h2-normal-1440x900.png",
       "size": [
@@ -109,13 +119,51 @@
       "sha256": "523fe61012c924fcb418fc30d860bec3dc8df71e356cc9da2ee75bb55856fb02"
     }
   ],
-  "h2_source_files": [
-    "host-preview.html",
-    "typography.html",
-    "render-design.py",
-    "evidence/README.md",
-    "evidence/header-type-metrics.json",
-    "references/source.json",
-    "module-installation.md"
-  ]
+  "godot_quality_states": [
+    {
+      "path": "godot/evidence/collapsed-1440x900.png",
+      "sha256": "2a4dc07de7b7e46f8c49e5535d3684a8ca7d8fb5b9be0cf895185494623d34b1"
+    },
+    {
+      "path": "godot/evidence/extreme-values-1440x900.png",
+      "sha256": "8dd2d30e9952dc11a62c7992e5ab1408ef881bbf322db8caab5c8c58b2ed9575"
+    },
+    {
+      "path": "godot/evidence/large-values-1440x900.png",
+      "sha256": "2992dbd71a30327e03a20e90d5c6c5bb87649570aed336943629d1cc003c1c2a"
+    },
+    {
+      "path": "godot/evidence/more-1440x900.png",
+      "sha256": "ce367a8dd1e1a7b1e54c6ecec5124a33ceb0eecbafd4f727eb2b67567ff2298b"
+    },
+    {
+      "path": "godot/evidence/normal-1440x900.png",
+      "sha256": "55c714956202577880274e17c810f6679b8323144598d797714c0656a89472d1"
+    },
+    {
+      "path": "godot/evidence/normal-x11-client-1440x900.png",
+      "sha256": "eedfe7101f32ecf01d83835411a571b57ae6152dcd37216fec46cdb1f9ba5827"
+    },
+    {
+      "path": "godot/evidence/restored-1440x900.png",
+      "sha256": "224d3e2041dcae8452a509d5e0d5c0fd840370b5a51b48b90517e0e5ef15a7b7"
+    },
+    {
+      "path": "godot/evidence/save-failure-1440x900.png",
+      "sha256": "bb454baf14d273c2dd93b933f58c3554419aff741ce00cc50cc080eb9a135c67"
+    }
+  ],
+  "module_installation_notes": {
+    "equipment": {
+      "commit": "9fc8e8df4d2df74abf5357c28ecfaea9e458367c",
+      "path": "space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/module-installation.md",
+      "status": "received; current 808x900 only; no 65px approval; chrome toggle/input notification/focus remain gaps"
+    },
+    "reactor": {
+      "status": "pending root-coordinated owner note"
+    },
+    "planet": {
+      "status": "pending root-coordinated owner note"
+    }
+  }
 }

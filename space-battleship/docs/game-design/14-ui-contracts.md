@@ -134,6 +134,8 @@
 | 保存/会话故障提示 | main原`_save_warning`，提案移左顶部共享状态位；短明确警示可点开完整说明 | 只迁通用提示；原poll/完成/失败事实不变，长故障信息不能静默省略。 |
 | 属性详情、敌情/分来源统计、通知档案 | 左侧更多内的`attributes_panel`、`archive_panel`、`notifications_panel` | 原左侧只读内容重新挂到具名入口；不是把BattleHUD搬出逻辑视口，也不新增伤害消费。 |
 
+装备组已交[9fc8e8df最小安装说明](https://github.com/rlmclmc2-boop/space_idle/blob/9fc8e8df4d2df74abf5357c28ecfaea9e458367c/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/module-installation.md)：仅确认原808×900现状，不批准65px。原品牌/钱包/全局副标题可分离，但尚无安装开关；局部舰名、全部装备升级、费用/比较、底反馈必须保留。批量遮挡在CanvasLayer9的z19..21，不能拦住Layer10导航；后续UI占用交接须让宿主门控顶部入口、Space/G及战场输入，而不是把一个更高层全屏遮罩盖住批量控件。模块保留批量内容/回执/报价和本层遮挡，宿主只统筹跨层输入；该通知与焦点处理尚未实现。其余原组书面确认由根线程协调，不从当前设计预览推导全部可装入。
+
 更多菜单到实际内容根的唯一映射及普通/更多/收起状态示意见[共享宿主方案](../ui-redesign-plan/shared-host-shell/README.md#入口到现有内容的映射)。此前H1生成图的HUD范围不符合本表，已撤回，不能据图扩展实际HUD。
 
 模块组每次Git交接列：固定commit、内容根路径、所属公开绑定、13要求的安装说明、实际订阅/释放责任和同版整屏证据；注明自然状态/临时开放/预算注入。宿主线程核边界与公共入口，原组继续负责内部品质和业务绑定。截图、布局分析和文档不证明运行、动态或V0通过；待用户确认设计后实施，仍不合main。
