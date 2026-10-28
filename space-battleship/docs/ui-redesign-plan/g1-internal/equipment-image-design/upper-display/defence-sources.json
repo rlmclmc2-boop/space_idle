@@ -1,0 +1,61 @@
+{
+  "base_commit": "9fc8e8df4d2df74abf5357c28ecfaea9e458367c",
+  "records": [
+    {
+      "state": "shield",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-5b253481-9164-4aa8-8828-3eebf4188a0f.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-shield-v1.png",
+      "sha256": "a9eea305e932350551024d5edf69aad0c60f2b5b705adc32862c94174c762412",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "defence-shield-v1-prompt.txt",
+      "prompt_sha256": "18e8e7b1c2e938e29418147953347a4bff2e1bbe17ffa889a16c4adbb5480710",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u1-heavy-v2.png",
+          "sha256": "5e60e61e74af879e8e9da4aa4ac875dbd3421df07d36fb15e0aade7c61fec36d"
+        },
+        {
+          "path": "docs/verification/equipment-hangar-godot/badge-pass/evidence/selected-defence-0.png",
+          "sha256": "2c3ba20cddcffc38bc6ab7e14b1504ca8b545bb0bc82f54797e79bf05d3de1b4"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        }
+      ],
+      "inspection": "Actually viewed via view_image. Unedited original PNG. Whole-hull selection concept only; residual defence badges/contour weight deviations require review."
+    },
+    {
+      "state": "armour",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-ed6ebdec-cec5-4da0-b235-477a7749f2fa.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-armour-v1.png",
+      "sha256": "a60ac108a3a4b7b20f4361ee2a301a97a8827c67f7bfebeaa8ee3fb758268057",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "defence-armour-v1-prompt.txt",
+      "prompt_sha256": "2129be41e2f7a8365d062b13d050c3be8bfa3a02d3123a3b551e519a7f50f03f",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u1-heavy-v2.png",
+          "sha256": "5e60e61e74af879e8e9da4aa4ac875dbd3421df07d36fb15e0aade7c61fec36d"
+        },
+        {
+          "path": "docs/verification/equipment-hangar-godot/badge-pass/evidence/selected-defence-1.png",
+          "sha256": "d83b9d240cd04361bb1854721a043440cddf96978bcbb85ea0c31a1ad8712ec7"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        }
+      ],
+      "inspection": "Actually viewed via view_image. Unedited original PNG. Whole-hull selection concept only; residual defence badges/contour weight deviations require review."
+    }
+  ]
+}
