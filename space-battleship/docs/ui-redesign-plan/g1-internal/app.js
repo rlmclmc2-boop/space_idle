@@ -409,7 +409,7 @@ function action(a) {
   else if(a==='enhance-level-source'){const e=state.enhance;openDetail('强化等级来源',`购买等级G${e.paid}，费用只按购买等级报价；世界永久额外等级B${e.extra}；当前有效等级E${e.effective}用于效果与门槛。`);return;}
   else if(a==='enhance-one'||a==='enhance-ten'){state.enhance.purchaseMode=a.endsWith('one')?'one':'ten';}
   else if(a==='enhance-buy'){const e=state.enhance;if(e.funds&&!e.quoteUsed){const q=EnhancementModels.quotes[e.purchaseMode];e.receipt={count:q.count,price:q.price,before:e.paid,after:q.paid};e.paid=q.paid;e.effective=q.effective;e.quoteUsed=true;e.balance=q.balance;e.feedback='成交已记录；顺位与分支保持，等待新报价。';}}
-  else if(a.startsWith('enhance-view-')){state.enhance.effect=a.slice(13);state.enhanceOpen=[...new Set([...(state.enhanceOpen||[]),state.enhance.effect])];}
+  else if(a.startsWith('enhance-view-')){state.enhance.effect=a.slice(13);}
   else if(a.startsWith('enhance-move-')){const e=state.enhance,id=a.slice(13),group=e.weapon.includes(id)?e.weapon:e.defence,i=group.indexOf(id),j=i===0?2:i-1;[group[i],group[j]]=[group[j],group[i]];e.effect=id;e.feedback=EnhancementModels.effects[id].name+'已前移；顺位门槛已更新，暂不生效的选择仍保留。';}
   else if(a==='enhance-branch-apply'){const e=state.enhance,g=e.weapon.includes(e.effect)?e.weapon:e.defence,gate=EnhancementModels.positions[g.indexOf(e.effect)].nodeGates[e.node];if(e.effective>=gate&&e.choice&&!(e.effect==='repeat'&&e.node===1&&e.choice==='B')){e.branches[e.effect][e.node]=e.choice;e.feedback=EnhancementModels.effects[e.effect].name+'节点'+(e.node+1)+'已选择'+e.choice+'。';goRoute('enhancement');return;}}
   else if(a==='galaxy-zoom-in'||a==='galaxy-zoom-out'){state.galaxyView.zoom=Math.max(.65,Math.min(2,state.galaxyView.zoom+(a.endsWith('in')?.15:-.15)));}
