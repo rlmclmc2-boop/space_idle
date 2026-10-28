@@ -17,6 +17,13 @@ var _clock: float = 0.0
 var _ship: String = ""
 var _facts: Array = []
 var _slot_buttons: Dictionary = {}
+var _slot_presentations: Dictionary = {}
+var _slot_selections: Dictionary = {}
+var _choice_presentations: Dictionary = {}
+var _quantity_presentations: Dictionary = {}
+var _scene_picture: Array = []
+# Bounded presentation-only diagnostics; no state or rules come from these counts.
+var presentation_counts := {"refreshes":0,"comparison_reads":0,"slot_fact_reads":0,"cooldown_fact_reads":0,"slots_updated":0,"slot_styles_updated":0,"candidates_updated":0,"quantity_styles_updated":0,"scene_redraw_requests":0,"scene_draws":0}
 var _choices: Dictionary = {}
 var _quantity_buttons: Array = []
 var _catalog: Dictionary
@@ -244,6 +251,8 @@ func _select_candidate(id: String) -> void:
 
 func _refresh() -> void:
     _dirty = false
+    presentation_counts.refreshes += 1
+    presentation_counts.slot_fact_reads += 1
     _facts = _session.equipment_slot_facts()
     var active: Array = _facts.filter(func(row): return not row.dormant)
     if _selected_fact().is_empty() or _selected_fact().get("dormant", false):
@@ -254,14 +263,13 @@ func _refresh() -> void:
     _ship = str(_session.campaign_system.selected_ship())
     for option in _session.campaign_system.ship_options():
         if option.selected: _title.text = "装配 · " + str(option.name)
-    var wallets := PackedStringArray()
-    for row in _session.economy.balance_rows(): wallets.append(str(row.text))
     _wallet.text = _cost_text(_session.economy.budget()).replace(" / ", "   ")
     _summary.text = "%d个武器槽 · %d个防御槽" % [int(_session.equipment_inputs().mounts.weapon), int(_session.equipment_inputs().mounts.defence)]
     var dormant_count: int = _facts.size() - active.size()
     if dormant_count > 0: _summary.text += " · %d个未启用槽位" % dormant_count
     _refresh_slots(active)
     _refresh_choices(fact)
+    presentation_counts.comparison_reads += 1
     last_comparison = _session.equipment_comparison(_selected, _candidate, _quantity, _maximum)
     if not last_comparison.get("ok", false):
         _cost.text = PlayerText.error(str(last_comparison.get("reason", "Unknown")))
@@ -294,14 +302,25 @@ func _refresh() -> void:
     _comparison_title.text = "换装比较" if _selection_open else "选择槽位查看装备"
     for index in 3:
         var selected: bool = (index == 2 and _maximum) or (not _maximum and index == (1 if _quantity == 10 else 0))
-        _quantity_buttons[index].add_theme_stylebox_override("normal", _style(Color("b8ded4") if selected else CREAM, TEAL if selected else Color("9aafac"), 2 if selected else 1))
-    queue_redraw()
+        if _quantity_presentations.get(index) != selected:
+            _quantity_presentations[index] = selected
+            presentation_counts.quantity_styles_updated += 1
+            _quantity_buttons[index].add_theme_stylebox_override("normal", _style(Color("b8ded4") if selected else CREAM, TEAL if selected else Color("9aafac"), 2 if selected else 1))
+    var scene_picture: Array = [_ship, active.map(func(row): return [row.id,row.category,row.index,row.equipment_id])]
+    if scene_picture != _scene_picture:
+        _scene_picture = scene_picture
+        presentation_counts.scene_redraw_requests += 1
+        queue_redraw()
 
 func _refresh_slots(active: Array) -> void:
     var live: Array = []
     for row in active:
         var id: String = str(row.id)
         live.append(id)
+        var signature: Array = [row.category,row.index,row.equipment_id,row.paid_level,id==_selected]
+        if _slot_presentations.get(id) == signature: continue
+        _slot_presentations[id] = signature
+        presentation_counts.slots_updated += 1
         if not _slot_buttons.has(id):
             var button := _button("", Rect2(0,0,178,66), select_slot.bind(id))
             button.name = "Slot_" + id.replace(":", "_")
@@ -319,12 +338,17 @@ func _refresh_slots(active: Array) -> void:
         button.position = _slot_label_position(row)
         _slot_buttons[id].caption.text = "%s%d · %s\nLv.%s" % ["武器" if row.category == "weapon" else "防御", int(row.index) + 1, NAMES.get(str(row.equipment_id), "装备"), str(row.paid_level)]
         button.add_theme_font_size_override("font_size", 13)
-        button.add_theme_stylebox_override("normal", _style(CREAM, Color("d5a652") if id == _selected else Color("9bb3ab"), 2 if id == _selected else 1))
+        if _slot_selections.get(id) != (id == _selected):
+            _slot_selections[id] = id == _selected
+            presentation_counts.slot_styles_updated += 1
+            button.add_theme_stylebox_override("normal", _style(CREAM, Color("d5a652") if id == _selected else Color("9bb3ab"), 2 if id == _selected else 1))
         _slot_buttons[id].icon.texture = _textures.get(str(row.equipment_id))
     for id in _slot_buttons.keys():
         if id not in live:
             _slot_buttons[id].button.queue_free()
             _slot_buttons.erase(id)
+            _slot_presentations.erase(id)
+            _slot_selections.erase(id)
 
 func _refresh_choices(fact: Dictionary) -> void:
     var options: Array = _session.equipment.panel_equipment(_selected)
@@ -347,6 +371,12 @@ func _refresh_choices(fact: Dictionary) -> void:
             caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
             button.add_child(caption)
             _choices[id] = {"button": button, "icon": icon, "caption": caption}
+        var signature: Array = [option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
+        if _choice_presentations.get(id) == signature:
+            column += 1
+            continue
+        _choice_presentations[id] = signature
+        presentation_counts.candidates_updated += 1
         var control: Button = _choices[id].button
         control.position = Vector2(505 + column * 69, 666)
         control.visible = _selection_open
@@ -361,6 +391,7 @@ func _refresh_choices(fact: Dictionary) -> void:
         if id not in live:
             _choices[id].button.queue_free()
             _choices.erase(id)
+            _choice_presentations.erase(id)
 
 func _value(row) -> String:
     if row == null: return "—"
@@ -433,9 +464,28 @@ func _process(dt: float) -> void:
     if not is_visible_in_tree(): return
     _clock += dt
     var cooldown: bool = _facts.any(func(row): return float(row.cooldown_remaining) > 0)
-    if _dirty or (cooldown and _clock >= 0.1):
+    if _dirty:
         _clock = 0.0
         _refresh()
+    elif cooldown and _clock >= 0.1:
+        _clock = 0.0
+        _refresh_cooldown()
+
+func _refresh_cooldown() -> void:
+    var previous: Dictionary = _selected_fact()
+    presentation_counts.cooldown_fact_reads += 1
+    _facts = _session.equipment_slot_facts()
+    var fact: Dictionary = _selected_fact()
+    if fact.is_empty() or previous.is_empty():
+        _dirty = true
+        return
+    if float(previous.cooldown_remaining) > 0 and float(fact.cooldown_remaining) <= 0:
+        # Admission is always re-read from the owner when the deadline is crossed.
+        _dirty = true
+        return
+    _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining) > 0 else "换装就绪"
+    if last_comparison.get("quote", {}).get("ok", false) and not last_comparison.get("affordable", false):
+        _switch_state.text += " · " + _reason(str(last_comparison.payment_reason))
 
 func _ship_rect() -> Rect2:
     var side: float = 768.0 * 350.0 / float(_catalog[_ship].height)
@@ -454,6 +504,7 @@ func _slot_label_position(row: Dictionary) -> Vector2:
     return positions[mini(int(row.index), positions.size()-1)]
 
 func _draw() -> void:
+    presentation_counts.scene_draws += 1
     draw_rect(Rect2(0,0,808,900), CREAM)
     draw_texture_rect(_background, Rect2(0,85,808,815), false)
     draw_line(Vector2(0,84), Vector2(808,84), Color("8aaba8"), 1)
