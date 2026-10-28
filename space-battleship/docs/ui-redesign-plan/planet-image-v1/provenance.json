@@ -1,0 +1,63 @@
+{
+  "base_commit": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "shared_style_commit": "bf359c0d9073e064f71028958a21a649b3951875",
+  "contract_commit": "09af963cf6f66146e019cecd08353426ab6d6abb",
+  "tool": "image_gen.imagegen",
+  "generation_requests": "generation-requests.json",
+  "target_client_size": [
+    1440,
+    900
+  ],
+  "target_module_size": [
+    808,
+    900
+  ],
+  "actual_candidate_size": [
+    1586,
+    992
+  ],
+  "actual_divider_x_approx": 921,
+  "actual_module_width_mapped_to_target": 836.2168978562422,
+  "exact_geometry_passed": false,
+  "ui_implemented": false,
+  "user_confirmed": false,
+  "independent_review_complete": false,
+  "files": [
+    {
+      "path": "drafts/planet-first.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "d0ba8062ae52c8593ddccc67c63167d07db697883c977e984c0b8b97463d31f8",
+      "bytes": 1945482
+    },
+    {
+      "path": "planet-full-window.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "5c855447002aa5939377a78bf8d702c959dce53498075ea4bf43159f3efd5fbb",
+      "bytes": 1916326
+    },
+    {
+      "path": "references/historical-planet-1-start.png",
+      "size": [
+        1372,
+        883
+      ],
+      "sha256": "60a67bfaf18c7fc2c294e1394e335f9d8e72baf3532ce8b4c3edbe1b39f9b583",
+      "bytes": 243941
+    },
+    {
+      "path": "references/style-equipment.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "3ebf829b839694e366d475f619a46c20266372f5a32dfc01ab0c6ce272b4c146",
+      "bytes": 921773
+    }
+  ]
+}
