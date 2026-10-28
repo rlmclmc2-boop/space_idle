@@ -428,7 +428,7 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     _workbench.position.y=896.0-height;_workbench.size.y=height
     _workbench_divider.size.y=162.0+extra if different else 110.0
     _upgrade_data.position=Vector2(100,70)
-    _icon_bezel.position=Vector2(20,81)
+    _icon_bezel.position=Vector2(20,70);_icon_bezel.size=Vector2(66,80)
     _candidate_row.position=Vector2(460,70)
     _comparison_group.position=Vector2(460,166);_comparison_group.size.y=43
     _install.position=Vector2(492,action_y);_install.size=Vector2(258,36)
@@ -472,7 +472,7 @@ func _place_current_icon(key: String) -> void:
     var factor:float=minf(minf((centre.x-safe.position.x)/before.x,(safe.end.x-centre.x)/after.x),minf((centre.y-safe.position.y)/before.y,(safe.end.y-centre.y)/after.y))
     _large_icon.size=source*factor
     _large_icon.position=centre-before*factor
-    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,89+shift),Vector2(64,59)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+_workbench_layout.data_y+40,"optical_mass_offset_y":3}
+    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,_workbench_layout.data_y+1),Vector2(64,78)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+_workbench_layout.data_y+40,"optical_mass_offset_y":3}
 
 func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
