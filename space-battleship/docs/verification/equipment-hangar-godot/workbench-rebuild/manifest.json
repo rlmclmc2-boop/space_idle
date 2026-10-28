@@ -1,0 +1,241 @@
+{
+  "source_commit": "4f18eee875a046f220b5c3cf755b7c409fb9f2b5",
+  "equipment_sha256": "12d453d9ced6fbefced788af9253fe16d92e0c883b7c5bd7811efb28b2e742cc",
+  "preview_source_marker_original": "workbench-rebuild-preview",
+  "preview_binding": "Original precommit files retained without rewriting. Their equipment source hash exactly equals the committed Git blob; supporting source hashes are checked below. No rerun of original 15 operations.",
+  "preview_hash_binding": {
+    "res://assets/ui/equipment/hangar/upgrade-console.svg": {
+      "sha256": "a31cad4dc3f1246226897ffa0d1fccd3855ac23d134e248c0d4f6b057dd1b83c",
+      "matches_current": true
+    },
+    "res://assets/ui/ships/manifest.json": {
+      "sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "matches_current": true
+    },
+    "res://src/game_session.gd": {
+      "sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "matches_current": true
+    },
+    "res://src/main.gd": {
+      "sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "matches_current": true
+    },
+    "res://src/systems/battle.gd": {
+      "sha256": "10875d02d77f676d61bc1f463ef6336f6eeaee8a682322c9513194b252f35bde",
+      "matches_current": true
+    },
+    "res://src/systems/equipment.gd": {
+      "sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "matches_current": true
+    },
+    "res://src/ui/equipment_panel.gd": {
+      "sha256": "12d453d9ced6fbefced788af9253fe16d92e0c883b7c5bd7811efb28b2e742cc",
+      "matches_current": true
+    }
+  },
+  "crops": [
+    {
+      "source": "01-fresh-silhouette-normal.png",
+      "crop": "crop-same-workbench.png",
+      "box": [
+        8,
+        600,
+        800,
+        900
+      ],
+      "method": "Pillow lossless pixel crop only; no resize, repaint, composite or annotation"
+    },
+    {
+      "source": "02-cleared1-missile-color-others-silhouette.png",
+      "crop": "crop-different-workbench.png",
+      "box": [
+        8,
+        600,
+        800,
+        900
+      ],
+      "method": "Pillow lossless pixel crop only; no resize, repaint, composite or annotation"
+    },
+    {
+      "source": "03-long-values-shared-material.png",
+      "crop": "crop-long-max-workbench.png",
+      "box": [
+        8,
+        600,
+        800,
+        900
+      ],
+      "method": "Pillow lossless pixel crop only; no resize, repaint, composite or annotation"
+    },
+    {
+      "source": "02b-after-install-feedback-inside-workbench.png",
+      "crop": "crop-install-receipt.png",
+      "box": [
+        8,
+        600,
+        800,
+        655
+      ],
+      "method": "Pillow lossless pixel crop only; no resize, repaint, composite or annotation"
+    },
+    {
+      "source": "04-scale-Frigate.png",
+      "crop": "crop-frigate-dock.png",
+      "box": [
+        230,
+        350,
+        610,
+        610
+      ],
+      "method": "Pillow lossless pixel crop only; no resize, repaint, composite or annotation"
+    },
+    {
+      "source": "04-scale-Heavy_Battleship.png",
+      "crop": "crop-heavy-dock.png",
+      "box": [
+        230,
+        200,
+        610,
+        610
+      ],
+      "method": "Pillow lossless pixel crop only; no resize, repaint, composite or annotation"
+    },
+    {
+      "source": "05-defence-2.png",
+      "crop": "crop-defence-slot-and-hull.png",
+      "box": [
+        16,
+        220,
+        560,
+        610
+      ],
+      "method": "Pillow lossless pixel crop only; no resize, repaint, composite or annotation"
+    }
+  ],
+  "files": {
+    "01-fresh-silhouette-normal.png": {
+      "sha256": "9cbc76dddf32a20dc6909499998b38022a9b4e8aaec23ef769d2d2270577c35b",
+      "bytes": 1360249
+    },
+    "02-cleared1-missile-color-others-silhouette.png": {
+      "sha256": "0a4f988c148e1bfa91bcf33d4487739bf097cfb4b6b4b125b80fdb15dabb18c3",
+      "bytes": 1374682
+    },
+    "02b-after-install-feedback-inside-workbench.png": {
+      "sha256": "79d01d06205071b88534990a5eed48d36a2e8c195d9e442c8bb8024bc14f30eb",
+      "bytes": 1364135
+    },
+    "03-long-values-shared-material.png": {
+      "sha256": "92cd9b0fbfbde0b21a6bf22649f6980f6a6fb079c657436e3650f22ed1fde0a5",
+      "bytes": 1397532
+    },
+    "04-scale-Battleship.png": {
+      "sha256": "4888d02b6199af214da5a9d2984aa9af5b940bded20dad6ea05bcba22cc9c161",
+      "bytes": 1415789
+    },
+    "04-scale-Cruiser.png": {
+      "sha256": "0949f53a7ede54e675d08c9f9f0ec5a9c7ff8087c9967ae65cd8eca97aa40a9a",
+      "bytes": 1399371
+    },
+    "04-scale-Destroyer.png": {
+      "sha256": "35bfd990414202b369ca63d1f582daf3e2854bf7bc2807055a290b33861a63c3",
+      "bytes": 1383679
+    },
+    "04-scale-Frigate.png": {
+      "sha256": "9ff92ec387b7d7079b07bdee638f285557c25178644687941e29a7a837b82669",
+      "bytes": 1380610
+    },
+    "04-scale-Heavy_Battleship.png": {
+      "sha256": "8b8468039e342b6960b141577d8ae5898161b3731fb76b6a449a3c4ea1cfc87e",
+      "bytes": 1434866
+    },
+    "05-defence-0.png": {
+      "sha256": "f7f57b4dcd3c5b9d85598964359782334aea96a402f6b052b1253cf006b1d150",
+      "bytes": 1417501
+    },
+    "05-defence-1.png": {
+      "sha256": "5ea1f7ca433f8b83115fbbd876a17d592720b2a8b7579bb2d6aae4563af1bc79",
+      "bytes": 1417423
+    },
+    "05-defence-2.png": {
+      "sha256": "eaa76dc97890b4e549c82ce4c0d4ec3b0494709f73e67538fd1de1064c2be36c",
+      "bytes": 1420019
+    },
+    "06-fixed-source-actual-purchase.png": {
+      "sha256": "01534a75bee2529bfe3d418ad9b05d296b71320f3db54862aafd5dc6de78499a",
+      "bytes": 1366109
+    },
+    "README.md": {
+      "sha256": "4cd1e8c601f94493c571fedd8d30c46a223e1eef6f45e6689adb79ebe862cf63",
+      "bytes": 7548
+    },
+    "check.log.txt": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    "crop-defence-slot-and-hull.png": {
+      "sha256": "78f482b21830fa18a6d5e067c23b608dedd8abf59b21ae59589da6c3d0a80aa7",
+      "bytes": 387336
+    },
+    "crop-different-workbench.png": {
+      "sha256": "43393d890c71dbef3bd9384feec9687bbeb6bad1b992c91b08788774957e4bec",
+      "bytes": 70884
+    },
+    "crop-frigate-dock.png": {
+      "sha256": "44711a96bd53d559c047acda6587d6ff99c25e31ded7e656ab29e99adfa1766a",
+      "bytes": 187774
+    },
+    "crop-heavy-dock.png": {
+      "sha256": "738554d1f8eaf6ee52b1bd1c3ec43b2ab7a85531c2cdd280f51cbf28572843bd",
+      "bytes": 302452
+    },
+    "crop-install-receipt.png": {
+      "sha256": "ae83a0255c6f10b24b673b40c8a20a8040e1eb9d5dc7ba389d47ed86df8bb6ff",
+      "bytes": 22914
+    },
+    "crop-long-max-workbench.png": {
+      "sha256": "68e49a43b4f867fd68328d09bc4e846622c6292bb6698b1d1ef3886f6538efca",
+      "bytes": 79985
+    },
+    "crop-same-workbench.png": {
+      "sha256": "f2b75ef1cae5f123a089f1c3dacbc824b6f604645ab1e0acef4e953399571d4b",
+      "bytes": 57294
+    },
+    "focused-capture-driver.gd.txt": {
+      "sha256": "322b17a354231067ea1c175152e6d59771b8d0e8262a6b95cbcdba88973a30c0",
+      "bytes": 5332
+    },
+    "focused-operations.json": {
+      "sha256": "240b06b76ad415c24722f3f68c733060377c774063c7bfadc87bc11564acbc4e",
+      "bytes": 25918
+    },
+    "focused.log.txt": {
+      "sha256": "2acb318c98a90b38051c16cfd9284cb9420c7f569f4bfffdd428ba57a34ae712",
+      "bytes": 4111
+    },
+    "original-handoff.md": {
+      "sha256": "158cff70cdd4c211da8f4c2db09e2328765a5405c27ac8734e0e382506c5c86a",
+      "bytes": 3505
+    },
+    "preserved-boundaries.json": {
+      "sha256": "afe0d66fff32436ce5f04122e6ac54c07e50b7f811491069b966ed08cede4352",
+      "bytes": 3245
+    },
+    "preview-capture-driver.gd.txt": {
+      "sha256": "c073f125d283fed757fc5ee72292acc95ab656b2427fe61839ca03080e0b6f30",
+      "bytes": 18177
+    },
+    "preview-operations-original.json": {
+      "sha256": "570923fc08df6bd0670647e7e524493ab707eab40e652f4ed98cf3e01d9bbdd6",
+      "bytes": 134871
+    },
+    "preview.log.txt": {
+      "sha256": "1e3d502a9f94d0c43a5b30153bb742884cc6b07ce70573c495b95959eac92d7d",
+      "bytes": 420
+    },
+    "runtime-draft.patch.txt": {
+      "sha256": "91b7b322d315ca663fc000eb13540117128e6b3499a68ac7042d3826a345b63c",
+      "bytes": 32960
+    }
+  }
+}

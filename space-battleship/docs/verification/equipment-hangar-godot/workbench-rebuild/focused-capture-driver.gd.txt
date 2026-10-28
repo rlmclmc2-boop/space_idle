@@ -1,0 +1,56 @@
+extends SceneTree
+var app
+var host
+var panel
+var failures:Array=[]
+var records:Array=[]
+var destination:String="/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/workbench-rebuild"
+func _initialize()->void:call_deferred("run")
+func check(value:bool,label:String)->void:
+    if not value:failures.append(label);printerr("FAIL: ",label)
+func flush()->void:
+    for i in 4:await process_frame
+    await RenderingServer.frame_post_draw
+func click(control:Control)->void:
+    var point:Vector2=control.get_global_rect().get_center()
+    for pressed in [true,false]:
+        var event:=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=pressed;Input.parse_input_event(event);await process_frame
+    await flush()
+func snapshot()->Dictionary:
+    return {"counts":panel.presentation_counts.duplicate(),"wallet":host.economy.budget().duplicate(true),"slots":host.equipment_slot_facts(),"commits":host.battle.configuration_commits,"comparison":panel.last_comparison.duplicate(true)}
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"normal main/native startup")
+    host.set_pause("user",true);await flush()
+    var before:Dictionary=snapshot()
+    host.economy.display_changed.emit();await flush()
+    var after:Dictionary=snapshot()
+    for key in ["refreshes","comparison_reads","slot_fact_reads","equipment_option_reads","scene_redraw_requests","candidates_updated"]:check(before.counts[key]==after.counts[key],"same-budget economy notification leaves "+key+" unchanged")
+    check(before.wallet==after.wallet and before.slots==after.slots and before.commits==after.commits,"same-budget notification leaves owner/native unchanged")
+    records.append({"action":"same-budget public economy notification, paused real main","before":before,"after":after})
+    var state:Dictionary=host.economy.save_state();state.wallet={"1":host.amount_api.apply("from_decimal",["1000"]).value}
+    check(host.economy.restore_state(state).ok,"controlled budget restore")
+    before=snapshot();host.economy.publish_budget_change();await flush();after=snapshot()
+    check(after.counts.comparison_reads==before.counts.comparison_reads+1,"changed budget refreshes one comparison")
+    for key in ["refreshes","slot_fact_reads","equipment_option_reads","scene_redraw_requests"]:check(before.counts[key]==after.counts[key],"changed budget avoids full scene work "+key)
+    check(not panel._purchase.disabled,"actual new workbench purchase enabled")
+    records.append({"action":"controlled budget public notification refreshes only comparison","before":before,"after":after})
+    before=snapshot();await click(panel._purchase);after=snapshot()
+    var receipt:Dictionary=panel.last_result.get("purchase_receipt",{})
+    check(receipt.get("commit_status")=="accepted","new workbench actual GUI purchase accepted")
+    check(after.slots[0].paid_level==before.slots[0].paid_level+1,"actual purchase changes selected slot one level")
+    var expected:Dictionary=host.amount_api.apply("sub_nonnegative",[before.wallet["1"],receipt.spent["1"]])
+    check(host.amount_api.apply("compare",[expected.value,after.wallet["1"]]).scalar==0,"exact wallet minus accepted receipt")
+    check(panel._workbench.get_global_rect().encloses(panel._feedback.get_global_rect()),"actual purchase receipt stays in workbench")
+    check(not panel._comparison_group.visible and not panel._install.visible,"same equipment has no redundant compare/install after purchase")
+    records.append({"action":"actual GUI plus1 purchase in fixed source workbench","before":before,"after":after,"result":panel.last_result.duplicate(true),"feedback":panel._feedback.text,"tooltip":panel._feedback.tooltip_text})
+    root.get_texture().get_image().save_png(destination.path_join("06-fixed-source-actual-purchase.png"))
+    before=snapshot();host.equipment.comparison_changed.emit();await flush();after=snapshot()
+    check(after.counts.comparison_reads==before.counts.comparison_reads+1,"public comparison dependency refreshes one comparison")
+    for key in ["refreshes","slot_fact_reads","equipment_option_reads","scene_redraw_requests"]:check(before.counts[key]==after.counts[key],"comparison notice avoids unrelated work "+key)
+    check(after.commits==before.commits and after.wallet==before.wallet and after.slots==before.slots,"comparison notification cannot buy/refit")
+    records.append({"action":"public comparison dependency notice","before":before,"after":after})
+    var file:=FileAccess.open(destination.path_join("focused-operations.json"),FileAccess.WRITE)
+    file.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_INTEGRATED_SOURCE"),"equipment_sha256":FileAccess.get_sha256("res://src/ui/equipment_panel.gd"),"scope":"Four targeted workbench/notification operations only; controlled wallet, paused fresh normal main/native. Notification probes do not re-prove provider dependency correctness or full protection chains.","records":records,"failures":failures},"  "));file.close()
+    print("WORKBENCH_FOCUSED_COMPLETE failures=",failures.size()," records=",records.size())
+    app._close_game()

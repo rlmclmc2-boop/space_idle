@@ -1,0 +1,941 @@
+{
+  "equipment_sha256": "12d453d9ced6fbefced788af9253fe16d92e0c883b7c5bd7811efb28b2e742cc",
+  "failures": [],
+  "records": [
+    {
+      "action": "same-budget public economy notification, paused real main",
+      "after": {
+        "commits": 0,
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 0,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 0,
+          "comparison_reads": 1,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 1,
+          "economy_signals": 1,
+          "equipment_option_reads": 1,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 1,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 1,
+          "slot_styles_updated": 2,
+          "slots_updated": 2,
+          "wallet_refreshes": 1
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {}
+      },
+      "before": {
+        "commits": 0,
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 0,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 0,
+          "comparison_reads": 1,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 0,
+          "economy_signals": 0,
+          "equipment_option_reads": 1,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 1,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 1,
+          "slot_styles_updated": 2,
+          "slots_updated": 2,
+          "wallet_refreshes": 1
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {}
+      }
+    },
+    {
+      "action": "controlled budget public notification refreshes only comparison",
+      "after": {
+        "commits": 0,
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 1,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 0,
+          "comparison_reads": 2,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 1,
+          "economy_signals": 2,
+          "equipment_option_reads": 1,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 1,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 1,
+          "slot_styles_updated": 2,
+          "slots_updated": 2,
+          "wallet_refreshes": 2
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "before": {
+        "commits": 0,
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 0,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 0,
+          "comparison_reads": 1,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 1,
+          "economy_signals": 1,
+          "equipment_option_reads": 1,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 1,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 1,
+          "slot_styles_updated": 2,
+          "slots_updated": 2,
+          "wallet_refreshes": 1
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      }
+    },
+    {
+      "action": "actual GUI plus1 purchase in fixed source workbench",
+      "after": {
+        "commits": 0,
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "7.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "paid_level": 3,
+            "primary": "5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 2,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 0,
+          "comparison_reads": 3,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 1,
+          "economy_signals": 3,
+          "equipment_option_reads": 2,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 2,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 2,
+          "slot_styles_updated": 2,
+          "slots_updated": 3,
+          "wallet_refreshes": 3
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 2,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "2",
+            "m": "9.35"
+          }
+        }
+      },
+      "before": {
+        "commits": 0,
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 1,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 0,
+          "comparison_reads": 2,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 1,
+          "economy_signals": 2,
+          "equipment_option_reads": 1,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 1,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 1,
+          "slot_styles_updated": 2,
+          "slots_updated": 2,
+          "wallet_refreshes": 2
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "feedback": "武器1  +1级 · 65 铁 · 实际花费：65 铁",
+      "result": {
+        "defence_changed": false,
+        "ok": true,
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "count": 1,
+              "slot_id": "weapon:0",
+              "spent": {
+                "1": {
+                  "e": "1",
+                  "m": "6.5"
+                }
+              }
+            }
+          ],
+          "spent": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          }
+        }
+      },
+      "tooltip": "武器1  +1级 · 65 铁\n实际花费：65 铁"
+    },
+    {
+      "action": "public comparison dependency notice",
+      "after": {
+        "commits": 0,
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "7.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "paid_level": 3,
+            "primary": "5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 2,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 1,
+          "comparison_reads": 4,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 1,
+          "economy_signals": 3,
+          "equipment_option_reads": 2,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 2,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 2,
+          "slot_styles_updated": 2,
+          "slots_updated": 3,
+          "wallet_refreshes": 4
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 2,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "2",
+            "m": "9.35"
+          }
+        }
+      },
+      "before": {
+        "commits": 0,
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "7.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "paid_level": 3,
+            "primary": "5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "counts": {
+          "balance_dependency_changes": 2,
+          "candidates_updated": 4,
+          "comparison_dependency_changes": 0,
+          "comparison_reads": 3,
+          "cooldown_fact_reads": 0,
+          "economy_same_budget": 1,
+          "economy_signals": 3,
+          "equipment_option_reads": 2,
+          "maximum_reads": 0,
+          "quantity_styles_updated": 3,
+          "refreshes": 2,
+          "scene_draws": 1,
+          "scene_redraw_requests": 1,
+          "slot_fact_reads": 2,
+          "slot_styles_updated": 2,
+          "slots_updated": 3,
+          "wallet_refreshes": 3
+        },
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 2,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "2",
+            "m": "9.35"
+          }
+        }
+      }
+    }
+  ],
+  "scope": "Four targeted workbench/notification operations only; controlled wallet, paused fresh normal main/native. Notification probes do not re-prove provider dependency correctness or full protection chains.",
+  "source_commit": "4f18eee875a046f220b5c3cf755b7c409fb9f2b5"
+}

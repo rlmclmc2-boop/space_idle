@@ -1,0 +1,4918 @@
+{
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "preview_reference": {
+    "Battleship": {
+      "aft_source": "(383.5, 646.0)",
+      "canvas_scale": 0.506937117651966,
+      "dock_source": "(594.0, 730.0)",
+      "dock_target": "(404.0, 547.1893)",
+      "height": 242.216014993602,
+      "preview_height": 265.63504964963,
+      "source": "res://assets/ships/fleet_20261019/player/04-battleship.png"
+    },
+    "Cruiser": {
+      "aft_source": "(383.5, 635.0)",
+      "canvas_scale": 0.467057413756521,
+      "dock_source": "(594.0, 730.0)",
+      "dock_target": "(404.0, 547.1893)",
+      "height": 213.792006787636,
+      "preview_height": 234.462821705774,
+      "source": "res://assets/ships/fleet_20261019/player/03-cruiser.png"
+    },
+    "Destroyer": {
+      "aft_source": "(383.5, 578.0)",
+      "canvas_scale": 0.427031150925656,
+      "dock_source": "(594.0, 730.0)",
+      "dock_target": "(404.0, 547.1893)",
+      "height": 151.470003280814,
+      "preview_height": 166.11511771008,
+      "source": "res://assets/ships/fleet_20261019/player/02-destroyer.png"
+    },
+    "Frigate": {
+      "aft_source": "(383.5, 529.0)",
+      "canvas_scale": 0.503121943279156,
+      "dock_source": "(594.0, 730.0)",
+      "dock_target": "(404.0, 547.1893)",
+      "height": 133.041990400435,
+      "preview_height": 145.905363550955,
+      "source": "res://assets/ships/fleet_20261019/player/01-frigate.png"
+    },
+    "Heavy_Battleship": {
+      "aft_source": "(383.5, 677.0)",
+      "canvas_scale": 0.545144804088586,
+      "dock_source": "(594.0, 730.0)",
+      "dock_target": "(404.0, 547.1893)",
+      "height": 291.788018562258,
+      "preview_height": 320.0,
+      "source": "res://assets/ships/fleet_20261019/player/05-heavy-battleship.png"
+    }
+  },
+  "records": [
+    {
+      "action": "fresh normal values, shared workbench",
+      "current_icon": {
+        "alpha_centre_normalized": "(0.498746, 0.561856)",
+        "displayed_alpha_centre": "(69.0, 730.0)",
+        "frame_inner": "[P: (37.0, 699.0), S: (64.0, 59.0)]",
+        "key": "laser",
+        "optical_mass_offset_y": 3,
+        "primary_surface_centre_y": 727.0,
+        "safe": "[P: (43.0, 705.0), S: (52.0, 47.0)]",
+        "visible_rect": "[P: (49.78966, 705.0), S: (38.51724, 44.49536)]"
+      },
+      "labels": {
+        "_current_caption": {
+          "bottom_inset": 42.0,
+          "font_size": 12,
+          "ink": "[P: (131.0, 704.0), S: (58.0, 13.0)]",
+          "layout": "[P: (130.0, 701.0), S: (140.0, 18.0)]",
+          "top_inset": 9.0
+        },
+        "_current_value": {
+          "bottom_inset": 8.0,
+          "font_size": 27,
+          "ink": "[P: (130.0, 732.0), S: (46.0, 19.0)]",
+          "layout": "[P: (130.0, 719.0), S: (140.0, 40.0)]",
+          "top_inset": 37.0
+        },
+        "_next_value": {
+          "bottom_inset": 8.0,
+          "font_size": 27,
+          "ink": "[P: (306.0, 732.0), S: (46.0, 19.0)]",
+          "layout": "[P: (306.0, 719.0), S: (148.0, 40.0)]",
+          "top_inset": 37.0
+        },
+        "_upgrade_caption": {
+          "bottom_inset": 42.0,
+          "font_size": 12,
+          "ink": "[P: (306.0, 704.0), S: (36.0, 13.0)]",
+          "layout": "[P: (306.0, 701.0), S: (146.0, 18.0)]",
+          "top_inset": 9.0
+        }
+      },
+      "left_action": "[P: (226.0, 240.0), S: (218.0, 36.0)]",
+      "primary_surface": "[P: (116.0, 695.0), S: (343.0, 64.0)]",
+      "right_action": "[P: (508.0, 240.0), S: (244.0, 36.0)]",
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {},
+        "wallet_text": []
+      }
+    },
+    {
+      "action": "fresh game only pulse unlocked",
+      "candidates": [
+        {
+          "disabled": false,
+          "id": "laser",
+          "material_is_silhouette": false,
+          "opaque_rgb_colors": [
+            "275d94",
+            "224f84",
+            "194a80",
+            "024879",
+            "0074b0",
+            "01a7dd",
+            "2ff4fe",
+            "1a497c",
+            "244762",
+            "020f1b",
+            "04a0f8",
+            "01dcfc",
+            "00d1fc",
+            "03a4fb",
+            "000b0c",
+            "000203",
+            "7e7c77",
+            "09203a",
+            "010406",
+            "00e6fe",
+            "01fcfd",
+            "00fbfd",
+            "00cefe",
+            "00343e",
+            "020403",
+            "fbf8f2",
+            "876245",
+            "194a7a",
+            "000709",
+            "01d3f8",
+            "00d3f4",
+            "012a35",
+            "19588f",
+            "f2dab3",
+            "020200",
+            "fad4aa",
+            "fcf6e8",
+            "b1a084",
+            "0b3963",
+            "3576b2",
+            "156191",
+            "001b36",
+            "f7ecd4",
+            "fcf1dd",
+            "896647",
+            "020202",
+            "fbd8ac",
+            "fadcb5",
+            "593f27",
+            "fdfdfc",
+            "f8f7f5",
+            "fbf0df",
+            "fbeed8",
+            "e4b686",
+            "9b7a58",
+            "cea475",
+            "030403",
+            "f7d7b1",
+            "fbdbb5",
+            "0f0905",
+            "050503",
+            "d2a779",
+            "d2a776",
+            "010201",
+            "c8996a",
+            "d5ab7e",
+            "cca072",
+            "a6a3a3",
+            "030200",
+            "fbddb7",
+            "fcdeb8",
+            "0b0805",
+            "133c68",
+            "0d345c",
+            "052a4b",
+            "011b33",
+            "d8a778",
+            "d6ab7e",
+            "ae8759",
+            "0c0702",
+            "050504",
+            "726d6a",
+            "fbf1de",
+            "000100",
+            "090701",
+            "f8d3aa",
+            "0a0805",
+            "1f497c",
+            "0b365f",
+            "03294c",
+            "011932",
+            "ca9866",
+            "d0a575",
+            "030100",
+            "020301",
+            "fcddb6",
+            "060504",
+            "faf1df",
+            "fcf2e0",
+            "020508",
+            "011931",
+            "f2c898",
+            "0e0804",
+            "2a5586",
+            "0c3761",
+            "022849",
+            "001c36",
+            "ab794f",
+            "b68556",
+            "011d37",
+            "030301",
+            "fcd9af",
+            "f4d9b5",
+            "faefdc",
+            "fcecd2",
+            "020100",
+            "011223",
+            "06203c",
+            "020201",
+            "1a4571",
+            "103a64",
+            "042c4e",
+            "845a36",
+            "01162d",
+            "00152a",
+            "eec793",
+            "f9d4ab",
+            "f8d5aa",
+            "fbedd7",
+            "fcefd9",
+            "f9d7ad",
+            "021120",
+            "153d65",
+            "000202",
+            "184471",
+            "062a4a",
+            "021f3b",
+            "00152b",
+            "001528",
+            "01172c",
+            "040301",
+            "fad8af",
+            "f6d2a7",
+            "f6d0a5",
+            "686562",
+            "2c1f14",
+            "c39769",
+            "d2a372",
+            "e2b68b",
+            "060403",
+            "021e38",
+            "fdf5e4",
+            "fbefda",
+            "fcebd0",
+            "f8f4ec",
+            "021a33",
+            "011529",
+            "bc8e60",
+            "d5a877",
+            "ba8858",
+            "c39466",
+            "e4bc91",
+            "f7f7f7",
+            "faf7f1",
+            "12161b",
+            "0f3b68",
+            "133f6b",
+            "120b05",
+            "020505",
+            "fdf3e0",
+            "fdf1de",
+            "fef0db",
+            "fdf1db",
+            "fceed6",
+            "010100",
+            "010812",
+            "bc9060",
+            "102132",
+            "093b68",
+            "093663",
+            "fef2de",
+            "fbefd4",
+            "031832",
+            "27f7fb",
+            "15406d",
+            "070503",
+            "060605",
+            "0d365e",
+            "f9eed5",
+            "fbeedb",
+            "fdefd9",
+            "fdf0d8",
+            "fbf0da",
+            "07233e",
+            "513820",
+            "0c2139",
+            "0b3d70",
+            "06f0f6",
+            "0f3961",
+            "fceaca",
+            "060706",
+            "fcf6ed",
+            "012241",
+            "03294d",
+            "8cf5fa",
+            "1e4b7a",
+            "091d31",
+            "103d68",
+            "f4f7fb",
+            "25262a",
+            "fcedd6",
+            "fef0da",
+            "010202",
+            "ebc59f",
+            "07294a",
+            "03223f",
+            "071c2f",
+            "094074",
+            "2cfcfd",
+            "103c6c",
+            "020101",
+            "fcefd8",
+            "040606",
+            "000101",
+            "fef1dd",
+            "fcf1e0",
+            "072744",
+            "02233c",
+            "f1fdfe",
+            "184678",
+            "031b32",
+            "fbf2e6",
+            "fcfaf4",
+            "fef1db",
+            "fdedd7",
+            "fceed7",
+            "eabd8c",
+            "fcddb2",
+            "022039",
+            "051628",
+            "0d3a65",
+            "94f9fb",
+            "0d4277",
+            "fbeed9",
+            "050606",
+            "faf6ec",
+            "fceed8",
+            "fcf0da",
+            "07243f",
+            "0d3b66",
+            "194271",
+            "174474",
+            "020507",
+            "000910",
+            "f9ebd6",
+            "fbf7ed",
+            "1d140c",
+            "01bada",
+            "01bcde",
+            "fcfbf8",
+            "e7ba8b",
+            "e9bc8c",
+            "001222",
+            "02111e",
+            "0e3e6b",
+            "0f4578",
+            "13447a",
+            "fbedd5",
+            "f9f1e6",
+            "faf8f2",
+            "fcf0dc",
+            "184067",
+            "09335b",
+            "001b32",
+            "010611",
+            "000911",
+            "031b34",
+            "f6f1ea",
+            "fcf8f0",
+            "fef1dc",
+            "fdefda",
+            "fcf0db",
+            "e8b887",
+            "e7bc8e",
+            "021e36",
+            "000201",
+            "01284d",
+            "011f3f",
+            "fbeed7",
+            "a6a298",
+            "fcf3e2",
+            "f9f5e5",
+            "140f09",
+            "042646",
+            "001c38",
+            "011c36",
+            "0c3258",
+            "f8f0e4",
+            "fcf1dc",
+            "f5d1ab",
+            "f0c597",
+            "0a3054",
+            "010305",
+            "01274e",
+            "002140",
+            "011a36",
+            "cf9f6c",
+            "feefd8",
+            "a29d8e",
+            "fbf7e7",
+            "fcfbfa",
+            "feefda",
+            "20160f",
+            "011326",
+            "032038",
+            "062847",
+            "fbfaef",
+            "19120a",
+            "2a2016",
+            "1c150d",
+            "17100a",
+            "f9d7b1",
+            "f0c497",
+            "092b4d",
+            "000307",
+            "032547",
+            "021121",
+            "eac4a0",
+            "fdeed8",
+            "adaaa1",
+            "f8e8d0",
+            "fcefda",
+            "d3aa7c",
+            "d6ac80",
+            "011222",
+            "02182e",
+            "03192e",
+            "f7d5af",
+            "c59566",
+            "0f3c68",
+            "1a497d",
+            "1a4674",
+            "0b2e53",
+            "cea276",
+            "d8aa7c",
+            "021527",
+            "01060c",
+            "021c32",
+            "03121f",
+            "d9af83",
+            "dcb287",
+            "feedd5",
+            "fcecd3",
+            "fdedd3",
+            "fcf1de",
+            "fceeda",
+            "d2a678",
+            "d5a97c",
+            "b78556",
+            "01101f",
+            "0d2d4d",
+            "041626",
+            "f6d2a9",
+            "120c06",
+            "0e3c6b",
+            "083663",
+            "032d55",
+            "011a37",
+            "c08f5f",
+            "dcae80",
+            "032949",
+            "010f1e",
+            "d3a36f",
+            "d7ac80",
+            "d8ae83",
+            "fdedd4",
+            "feecd1",
+            "f5d5af",
+            "d0a473",
+            "d4aa7d",
+            "060704",
+            "1c3551",
+            "020404",
+            "11365c",
+            "143a60",
+            "f7d0a6",
+            "110c06",
+            "174577",
+            "184475",
+            "174371",
+            "001b39",
+            "b8885a",
+            "d3a473",
+            "072b4d",
+            "000102",
+            "0f2842",
+            "0a0906",
+            "d7ae83",
+            "d1a77a",
+            "d1a679",
+            "cea171",
+            "af7f52",
+            "10243d",
+            "f5f2ea",
+            "fcf1df",
+            "61432a",
+            "19436f",
+            "11385b",
+            "040605",
+            "0e0904",
+            "023058",
+            "001e3d",
+            "012649",
+            "032648",
+            "a67243",
+            "05294a",
+            "0a3154",
+            "fddcb0",
+            "fcedd4",
+            "848277",
+            "041b32",
+            "bd8c5a",
+            "c39461",
+            "f5d2aa",
+            "fcf2dd",
+            "f8e6ca",
+            "05223d",
+            "0b3155",
+            "000305",
+            "012447",
+            "042f59",
+            "032a4c",
+            "012446",
+            "011b34",
+            "010c15",
+            "fbedd8",
+            "deb489",
+            "08090b",
+            "f2ca9f",
+            "efc69d",
+            "b18057",
+            "01060e",
+            "02284d",
+            "002242",
+            "011f3c",
+            "031523",
+            "fcecd6",
+            "d6aa80",
+            "e0b88d",
+            "020303",
+            "bfa17c",
+            "090b0b",
+            "46392d",
+            "fcf3df",
+            "b68a5e",
+            "153b61",
+            "153e66",
+            "032847",
+            "022545",
+            "002241",
+            "00060c",
+            "052441",
+            "07233f",
+            "e1bc91",
+            "dfb78f",
+            "020302",
+            "302924",
+            "080804",
+            "e3b98b",
+            "e5bb8e",
+            "b98556",
+            "4577a8",
+            "1b4674",
+            "143b64",
+            "082f53",
+            "092d50",
+            "113b61",
+            "153a61",
+            "072443",
+            "e3b98d",
+            "ddb58a",
+            "dfb587",
+            "f2c18c",
+            "b48353",
+            "0b2f53",
+            "032b51",
+            "052f56",
+            "062d52",
+            "042b52",
+            "042e54",
+            "042a4e",
+            "042747",
+            "d9a976",
+            "7b6346",
+            "03284a",
+            "032b4f",
+            "011220"
+          ],
+          "sampled_opaque_pixels": 551,
+          "state_text": "已装备"
+        },
+        {
+          "disabled": true,
+          "id": "missile",
+          "material_is_silhouette": true,
+          "opaque_rgb_colors": [
+            "0c2530",
+            "0d2530"
+          ],
+          "sampled_opaque_pixels": 705,
+          "state_text": "未解锁"
+        },
+        {
+          "disabled": true,
+          "id": "cannon",
+          "material_is_silhouette": true,
+          "opaque_rgb_colors": [
+            "0c2530"
+          ],
+          "sampled_opaque_pixels": 436,
+          "state_text": "未解锁"
+        },
+        {
+          "disabled": true,
+          "id": "longLaser",
+          "material_is_silhouette": true,
+          "opaque_rgb_colors": [
+            "0c2530",
+            "0d2530"
+          ],
+          "sampled_opaque_pixels": 442,
+          "state_text": "未解锁"
+        }
+      ],
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {},
+        "wallet_text": []
+      }
+    },
+    {
+      "action": "cleared1 only missile newly opens",
+      "candidates": [
+        {
+          "disabled": false,
+          "id": "laser",
+          "material_is_silhouette": false,
+          "opaque_rgb_colors": [
+            "275d94",
+            "224f84",
+            "194a80",
+            "024879",
+            "0074b0",
+            "01a7dd",
+            "2ff4fe",
+            "1a497c",
+            "244762",
+            "020f1b",
+            "04a0f8",
+            "01dcfc",
+            "00d1fc",
+            "03a4fb",
+            "000b0c",
+            "000203",
+            "7e7c77",
+            "09203a",
+            "010406",
+            "00e6fe",
+            "01fcfd",
+            "00fbfd",
+            "00cefe",
+            "00343e",
+            "020403",
+            "fbf8f2",
+            "876245",
+            "194a7a",
+            "000709",
+            "01d3f8",
+            "00d3f4",
+            "012a35",
+            "19588f",
+            "f2dab3",
+            "020200",
+            "fad4aa",
+            "fcf6e8",
+            "b1a084",
+            "0b3963",
+            "3576b2",
+            "156191",
+            "001b36",
+            "f7ecd4",
+            "fcf1dd",
+            "896647",
+            "020202",
+            "fbd8ac",
+            "fadcb5",
+            "593f27",
+            "fdfdfc",
+            "f8f7f5",
+            "fbf0df",
+            "fbeed8",
+            "e4b686",
+            "9b7a58",
+            "cea475",
+            "030403",
+            "f7d7b1",
+            "fbdbb5",
+            "0f0905",
+            "050503",
+            "d2a779",
+            "d2a776",
+            "010201",
+            "c8996a",
+            "d5ab7e",
+            "cca072",
+            "a6a3a3",
+            "030200",
+            "fbddb7",
+            "fcdeb8",
+            "0b0805",
+            "133c68",
+            "0d345c",
+            "052a4b",
+            "011b33",
+            "d8a778",
+            "d6ab7e",
+            "ae8759",
+            "0c0702",
+            "050504",
+            "726d6a",
+            "fbf1de",
+            "000100",
+            "090701",
+            "f8d3aa",
+            "0a0805",
+            "1f497c",
+            "0b365f",
+            "03294c",
+            "011932",
+            "ca9866",
+            "d0a575",
+            "030100",
+            "020301",
+            "fcddb6",
+            "060504",
+            "faf1df",
+            "fcf2e0",
+            "020508",
+            "011931",
+            "f2c898",
+            "0e0804",
+            "2a5586",
+            "0c3761",
+            "022849",
+            "001c36",
+            "ab794f",
+            "b68556",
+            "011d37",
+            "030301",
+            "fcd9af",
+            "f4d9b5",
+            "faefdc",
+            "fcecd2",
+            "020100",
+            "011223",
+            "06203c",
+            "020201",
+            "1a4571",
+            "103a64",
+            "042c4e",
+            "845a36",
+            "01162d",
+            "00152a",
+            "eec793",
+            "f9d4ab",
+            "f8d5aa",
+            "fbedd7",
+            "fcefd9",
+            "f9d7ad",
+            "021120",
+            "153d65",
+            "000202",
+            "184471",
+            "062a4a",
+            "021f3b",
+            "00152b",
+            "001528",
+            "01172c",
+            "040301",
+            "fad8af",
+            "f6d2a7",
+            "f6d0a5",
+            "686562",
+            "2c1f14",
+            "c39769",
+            "d2a372",
+            "e2b68b",
+            "060403",
+            "021e38",
+            "fdf5e4",
+            "fbefda",
+            "fcebd0",
+            "f8f4ec",
+            "021a33",
+            "011529",
+            "bc8e60",
+            "d5a877",
+            "ba8858",
+            "c39466",
+            "e4bc91",
+            "f7f7f7",
+            "faf7f1",
+            "12161b",
+            "0f3b68",
+            "133f6b",
+            "120b05",
+            "020505",
+            "fdf3e0",
+            "fdf1de",
+            "fef0db",
+            "fdf1db",
+            "fceed6",
+            "010100",
+            "010812",
+            "bc9060",
+            "102132",
+            "093b68",
+            "093663",
+            "fef2de",
+            "fbefd4",
+            "031832",
+            "27f7fb",
+            "15406d",
+            "070503",
+            "060605",
+            "0d365e",
+            "f9eed5",
+            "fbeedb",
+            "fdefd9",
+            "fdf0d8",
+            "fbf0da",
+            "07233e",
+            "513820",
+            "0c2139",
+            "0b3d70",
+            "06f0f6",
+            "0f3961",
+            "fceaca",
+            "060706",
+            "fcf6ed",
+            "012241",
+            "03294d",
+            "8cf5fa",
+            "1e4b7a",
+            "091d31",
+            "103d68",
+            "f4f7fb",
+            "25262a",
+            "fcedd6",
+            "fef0da",
+            "010202",
+            "ebc59f",
+            "07294a",
+            "03223f",
+            "071c2f",
+            "094074",
+            "2cfcfd",
+            "103c6c",
+            "020101",
+            "fcefd8",
+            "040606",
+            "000101",
+            "fef1dd",
+            "fcf1e0",
+            "072744",
+            "02233c",
+            "f1fdfe",
+            "184678",
+            "031b32",
+            "fbf2e6",
+            "fcfaf4",
+            "fef1db",
+            "fdedd7",
+            "fceed7",
+            "eabd8c",
+            "fcddb2",
+            "022039",
+            "051628",
+            "0d3a65",
+            "94f9fb",
+            "0d4277",
+            "fbeed9",
+            "050606",
+            "faf6ec",
+            "fceed8",
+            "fcf0da",
+            "07243f",
+            "0d3b66",
+            "194271",
+            "174474",
+            "020507",
+            "000910",
+            "f9ebd6",
+            "fbf7ed",
+            "1d140c",
+            "01bada",
+            "01bcde",
+            "fcfbf8",
+            "e7ba8b",
+            "e9bc8c",
+            "001222",
+            "02111e",
+            "0e3e6b",
+            "0f4578",
+            "13447a",
+            "fbedd5",
+            "f9f1e6",
+            "faf8f2",
+            "fcf0dc",
+            "184067",
+            "09335b",
+            "001b32",
+            "010611",
+            "000911",
+            "031b34",
+            "f6f1ea",
+            "fcf8f0",
+            "fef1dc",
+            "fdefda",
+            "fcf0db",
+            "e8b887",
+            "e7bc8e",
+            "021e36",
+            "000201",
+            "01284d",
+            "011f3f",
+            "fbeed7",
+            "a6a298",
+            "fcf3e2",
+            "f9f5e5",
+            "140f09",
+            "042646",
+            "001c38",
+            "011c36",
+            "0c3258",
+            "f8f0e4",
+            "fcf1dc",
+            "f5d1ab",
+            "f0c597",
+            "0a3054",
+            "010305",
+            "01274e",
+            "002140",
+            "011a36",
+            "cf9f6c",
+            "feefd8",
+            "a29d8e",
+            "fbf7e7",
+            "fcfbfa",
+            "feefda",
+            "20160f",
+            "011326",
+            "032038",
+            "062847",
+            "fbfaef",
+            "19120a",
+            "2a2016",
+            "1c150d",
+            "17100a",
+            "f9d7b1",
+            "f0c497",
+            "092b4d",
+            "000307",
+            "032547",
+            "021121",
+            "eac4a0",
+            "fdeed8",
+            "adaaa1",
+            "f8e8d0",
+            "fcefda",
+            "d3aa7c",
+            "d6ac80",
+            "011222",
+            "02182e",
+            "03192e",
+            "f7d5af",
+            "c59566",
+            "0f3c68",
+            "1a497d",
+            "1a4674",
+            "0b2e53",
+            "cea276",
+            "d8aa7c",
+            "021527",
+            "01060c",
+            "021c32",
+            "03121f",
+            "d9af83",
+            "dcb287",
+            "feedd5",
+            "fcecd3",
+            "fdedd3",
+            "fcf1de",
+            "fceeda",
+            "d2a678",
+            "d5a97c",
+            "b78556",
+            "01101f",
+            "0d2d4d",
+            "041626",
+            "f6d2a9",
+            "120c06",
+            "0e3c6b",
+            "083663",
+            "032d55",
+            "011a37",
+            "c08f5f",
+            "dcae80",
+            "032949",
+            "010f1e",
+            "d3a36f",
+            "d7ac80",
+            "d8ae83",
+            "fdedd4",
+            "feecd1",
+            "f5d5af",
+            "d0a473",
+            "d4aa7d",
+            "060704",
+            "1c3551",
+            "020404",
+            "11365c",
+            "143a60",
+            "f7d0a6",
+            "110c06",
+            "174577",
+            "184475",
+            "174371",
+            "001b39",
+            "b8885a",
+            "d3a473",
+            "072b4d",
+            "000102",
+            "0f2842",
+            "0a0906",
+            "d7ae83",
+            "d1a77a",
+            "d1a679",
+            "cea171",
+            "af7f52",
+            "10243d",
+            "f5f2ea",
+            "fcf1df",
+            "61432a",
+            "19436f",
+            "11385b",
+            "040605",
+            "0e0904",
+            "023058",
+            "001e3d",
+            "012649",
+            "032648",
+            "a67243",
+            "05294a",
+            "0a3154",
+            "fddcb0",
+            "fcedd4",
+            "848277",
+            "041b32",
+            "bd8c5a",
+            "c39461",
+            "f5d2aa",
+            "fcf2dd",
+            "f8e6ca",
+            "05223d",
+            "0b3155",
+            "000305",
+            "012447",
+            "042f59",
+            "032a4c",
+            "012446",
+            "011b34",
+            "010c15",
+            "fbedd8",
+            "deb489",
+            "08090b",
+            "f2ca9f",
+            "efc69d",
+            "b18057",
+            "01060e",
+            "02284d",
+            "002242",
+            "011f3c",
+            "031523",
+            "fcecd6",
+            "d6aa80",
+            "e0b88d",
+            "020303",
+            "bfa17c",
+            "090b0b",
+            "46392d",
+            "fcf3df",
+            "b68a5e",
+            "153b61",
+            "153e66",
+            "032847",
+            "022545",
+            "002241",
+            "00060c",
+            "052441",
+            "07233f",
+            "e1bc91",
+            "dfb78f",
+            "020302",
+            "302924",
+            "080804",
+            "e3b98b",
+            "e5bb8e",
+            "b98556",
+            "4577a8",
+            "1b4674",
+            "143b64",
+            "082f53",
+            "092d50",
+            "113b61",
+            "153a61",
+            "072443",
+            "e3b98d",
+            "ddb58a",
+            "dfb587",
+            "f2c18c",
+            "b48353",
+            "0b2f53",
+            "032b51",
+            "052f56",
+            "062d52",
+            "042b52",
+            "042e54",
+            "042a4e",
+            "042747",
+            "d9a976",
+            "7b6346",
+            "03284a",
+            "032b4f",
+            "011220"
+          ],
+          "sampled_opaque_pixels": 551,
+          "state_text": "已装备"
+        },
+        {
+          "disabled": false,
+          "id": "missile",
+          "material_is_silhouette": false,
+          "opaque_rgb_colors": [
+            "e2dfdc",
+            "e0ded9",
+            "d0d0ce",
+            "dad9d3",
+            "dedfdb",
+            "e7e8e4",
+            "dbdcd8",
+            "d3d2ce",
+            "fdfdfc",
+            "cba98a",
+            "c1a07e",
+            "c2a07d",
+            "d9ba99",
+            "fcf5ea",
+            "faead1",
+            "fbf6eb",
+            "faf8f7",
+            "cda880",
+            "cda884",
+            "d8b38b",
+            "ccac8c",
+            "fcedd1",
+            "fef7e9",
+            "825838",
+            "020a13",
+            "091c30",
+            "071627",
+            "061322",
+            "050403",
+            "fae8cb",
+            "f9f5e7",
+            "000000",
+            "061626",
+            "061523",
+            "05101c",
+            "03111d",
+            "956840",
+            "fdf0d9",
+            "201610",
+            "f9ecd7",
+            "06192d",
+            "010102",
+            "eaf1f8",
+            "27446d",
+            "010203",
+            "0c233c",
+            "f9fdfd",
+            "cf9b6a",
+            "f3e5ce",
+            "fcf7ea",
+            "132b42",
+            "d1def0",
+            "2e4970",
+            "000203",
+            "0a1f37",
+            "fbf3e5",
+            "8a6c4f",
+            "67615b",
+            "1f150f",
+            "fbefda",
+            "051629",
+            "233f60",
+            "097b8a",
+            "05f1f5",
+            "031b33",
+            "071b2d",
+            "f9f5ed",
+            "daad7f",
+            "e2dcce",
+            "eae6df",
+            "fcecd2",
+            "f9ecd8",
+            "020915",
+            "1b3a62",
+            "13fafb",
+            "032830",
+            "021121",
+            "05182c",
+            "fcf0dc",
+            "af885d",
+            "3d3832",
+            "fbf0dd",
+            "eab889",
+            "fbeed9",
+            "051f36",
+            "000001",
+            "06223f",
+            "011b35",
+            "00050c",
+            "092641",
+            "f9f6f1",
+            "d5a777",
+            "241610",
+            "fcf9f1",
+            "fcf0d9",
+            "fdf1db",
+            "edcfa8",
+            "120d0a",
+            "fce8cb",
+            "f9ecd2",
+            "091f33",
+            "020914",
+            "092543",
+            "011d37",
+            "02172c",
+            "fdedd6",
+            "d0a16f",
+            "faebd5",
+            "fcf1e0",
+            "040301",
+            "fbebd1",
+            "041423",
+            "0b2743",
+            "f9f9f8",
+            "cd9d6d",
+            "3b2718",
+            "6383a1",
+            "082543",
+            "092949",
+            "071a2d",
+            "090603",
+            "fbe4c5",
+            "faefda",
+            "0a243e",
+            "000102",
+            "021c35",
+            "fdefdc",
+            "785c42",
+            "fbe8cc",
+            "f5ebdb",
+            "080708",
+            "fbecd5",
+            "011326",
+            "c6d6ec",
+            "1e446f",
+            "020304",
+            "051f3b",
+            "f9f7f3",
+            "c69668",
+            "010407",
+            "245281",
+            "194372",
+            "19426d",
+            "14446d",
+            "010101",
+            "fbe2c3",
+            "f8ead3",
+            "061e36",
+            "030305",
+            "aac1e0",
+            "223d65",
+            "031e36",
+            "030302",
+            "f3efe8",
+            "f5ede0",
+            "070606",
+            "fbedd7",
+            "04182b",
+            "1f446d",
+            "045d6d",
+            "0195a3",
+            "02162d",
+            "071c31",
+            "f7f0e2",
+            "be8d5e",
+            "020e1b",
+            "2d6194",
+            "16426f",
+            "18426f",
+            "1b436f",
+            "040e1a",
+            "fce9ce",
+            "f6ecd9",
+            "000308",
+            "1a3d67",
+            "06e8f3",
+            "010206",
+            "01162a",
+            "03182b",
+            "f8ecd8",
+            "020302",
+            "f4eadc",
+            "f6ecdd",
+            "060606",
+            "fbecd6",
+            "021427",
+            "000101",
+            "082541",
+            "011a33",
+            "000407",
+            "021933",
+            "f8f5f1",
+            "c18e5f",
+            "031021",
+            "2a5e91",
+            "173f6d",
+            "143d67",
+            "030a11",
+            "f5dcbc",
+            "f5ede2",
+            "07243d",
+            "00050d",
+            "08223f",
+            "001c34",
+            "021a2f",
+            "010202",
+            "f4e9d7",
+            "fbeed8",
+            "fcfaea",
+            "fbf0dc",
+            "021222",
+            "000104",
+            "082846",
+            "f9f7f5",
+            "0c0704",
+            "020d1b",
+            "284a6a",
+            "194771",
+            "26577f",
+            "03080c",
+            "030507",
+            "413b35",
+            "f6e9d2",
+            "04182d",
+            "000202",
+            "010100",
+            "021e37",
+            "fdecd5",
+            "eccda9",
+            "fbe8ca",
+            "fcf0da",
+            "fdefd9",
+            "011226",
+            "030303",
+            "91a9cb",
+            "1e4972",
+            "072644",
+            "f9f3eb",
+            "bd8c5a",
+            "010814",
+            "245383",
+            "1a4473",
+            "1b4370",
+            "184774",
+            "000004",
+            "f8ddba",
+            "f4e9d6",
+            "05203b",
+            "040507",
+            "92b0d2",
+            "28426a",
+            "011428",
+            "fdeeda",
+            "d2a97c",
+            "fcefd8",
+            "dca879",
+            "fbeed6",
+            "01121f",
+            "153a5e",
+            "024c61",
+            "00aeb9",
+            "001327",
+            "04111e",
+            "f9f7f1",
+            "b78758",
+            "011022",
+            "27588c",
+            "184372",
+            "1a4370",
+            "f8dfbd",
+            "f5e7d1",
+            "000206",
+            "153c66",
+            "03dee5",
+            "000204",
+            "01182d",
+            "02182d",
+            "fde9ce",
+            "e2b988",
+            "fbefdc",
+            "0a0804",
+            "c4956b",
+            "f9f3e4",
+            "021322",
+            "02213c",
+            "011c33",
+            "000105",
+            "031325",
+            "faf3e2",
+            "b18354",
+            "020e1c",
+            "558ec1",
+            "326598",
+            "29588b",
+            "245e98",
+            "000916",
+            "fbdab2",
+            "ddd4ba",
+            "041523",
+            "000911",
+            "011c37",
+            "011b34",
+            "031427",
+            "fcecd4",
+            "d1a97c",
+            "080604",
+            "c19062",
+            "fdedd4",
+            "16120c",
+            "000306",
+            "040000",
+            "fcf3e1",
+            "18110c",
+            "020b16",
+            "33669b",
+            "1a4371",
+            "19416d",
+            "215282",
+            "040403",
+            "050100",
+            "000103",
+            "010408",
+            "79726c",
+            "fcebcf",
+            "342313",
+            "c19162",
+            "ddb58c",
+            "fcf3e3",
+            "fbefd8",
+            "fdf0db",
+            "fcedd7",
+            "fdeed4",
+            "b2885f",
+            "020202",
+            "01070d",
+            "4f8aaf",
+            "193f63",
+            "194572",
+            "05294a",
+            "000611",
+            "cea178",
+            "fbf3dd",
+            "fcefd7",
+            "fcefda",
+            "fcecd3",
+            "fceed6",
+            "d5ac82",
+            "46301f",
+            "060504",
+            "deb489",
+            "9e7f5e",
+            "d2a679",
+            "d5ac83",
+            "d6ad82",
+            "b18356",
+            "030509",
+            "041c33",
+            "000814",
+            "f5f5f8",
+            "fcf1de",
+            "faf1de",
+            "eabb89",
+            "163a5f",
+            "050301",
+            "d2a375",
+            "d5ab7e",
+            "d4a87a",
+            "d4ab80",
+            "d8ae85",
+            "9e7b58",
+            "d4a97c",
+            "090907",
+            "cda57a",
+            "d6a879",
+            "d6ad80",
+            "d7ad81",
+            "d5a97e",
+            "bd9165",
+            "021324",
+            "163f69",
+            "011328",
+            "fcfbf9",
+            "fcf0db",
+            "ca9465",
+            "010e1a",
+            "1c4877",
+            "02172a",
+            "d09f73",
+            "d9af82",
+            "d4aa80",
+            "d6ac80",
+            "ba8b5e",
+            "7c5d3e",
+            "daaa79",
+            "d1a67b",
+            "daab78",
+            "e1b689",
+            "090704",
+            "714d29",
+            "010304",
+            "1d426a",
+            "040404",
+            "fafbf9",
+            "fceed9",
+            "b88352",
+            "030202",
+            "072748",
+            "021525",
+            "a98559",
+            "070503",
+            "d5aa7a",
+            "cda276",
+            "d2a97e",
+            "be9166",
+            "070706",
+            "b6936e",
+            "010810",
+            "020f20",
+            "01060d",
+            "011120",
+            "fcf8ef",
+            "77553c",
+            "c89a6a",
+            "c7996b",
+            "fbf0d9",
+            "060e16",
+            "041528",
+            "000a13",
+            "010c1a",
+            "010911",
+            "a88361",
+            "0b0906",
+            "060505",
+            "fdeed9",
+            "f5d4ae",
+            "010609",
+            "061e33",
+            "0d243c",
+            "051c33",
+            "00050b",
+            "f9f6ea",
+            "fcf7ee",
+            "fdf1dc",
+            "fdf1da",
+            "e7bf97",
+            "403123",
+            "02192e",
+            "092744",
+            "0c3255",
+            "021b34",
+            "030101",
+            "efc99d",
+            "f7d3aa",
+            "060706",
+            "262320",
+            "784923",
+            "fcedd4",
+            "031527",
+            "0a2f54",
+            "092440",
+            "29507c",
+            "fafafa",
+            "fcf4e9",
+            "fdf6e2",
+            "ab7b4d",
+            "a5794d",
+            "fcedd5",
+            "e3ba8e",
+            "4b3627",
+            "0c2b49",
+            "11375c",
+            "011d39",
+            "05213d",
+            "060402",
+            "f7d4ab",
+            "d8b58c",
+            "010201",
+            "3a3734",
+            "0a0a0d",
+            "fcf1df",
+            "15100b",
+            "0f2f4f",
+            "0a2943",
+            "315e94",
+            "f9f8f6",
+            "fbf6e6",
+            "605a54",
+            "000508",
+            "01050b",
+            "f3f1f1",
+            "e8c198",
+            "443121",
+            "10345a",
+            "02203f",
+            "000307",
+            "052644",
+            "f7d09d",
+            "f8d2a8",
+            "020101",
+            "030403",
+            "090908",
+            "050505",
+            "f5f0e8",
+            "e0b384",
+            "153659",
+            "0d2c4b",
+            "06213d",
+            "f9f9f9",
+            "fcfaf3",
+            "f9f2e4",
+            "fcefd9",
+            "e7be91",
+            "4c3522",
+            "000d1e",
+            "010812",
+            "082a4c",
+            "092a49",
+            "f7e4c9",
+            "f8d2a9",
+            "363330",
+            "040504",
+            "e8bf97",
+            "020a15",
+            "1b406a",
+            "07213c",
+            "021b35",
+            "f9f0e2",
+            "fdefda",
+            "fdefd8",
+            "ecc59d",
+            "2c2117",
+            "05223f",
+            "0c3259",
+            "020100",
+            "fcebd4",
+            "f7d0a4",
+            "f4cda2",
+            "f9ead6",
+            "d6a979",
+            "be8f5f",
+            "030405",
+            "10365d",
+            "031c35",
+            "ddac7f",
+            "fbecd2",
+            "0b0603",
+            "030301",
+            "2d1f11",
+            "e9be93",
+            "050302",
+            "011930",
+            "062746",
+            "c29465",
+            "d6ae86",
+            "fad5a6",
+            "cc9d6f",
+            "f4f1ea",
+            "fdf6e9",
+            "031d36",
+            "bb956d",
+            "b98a5e",
+            "346399",
+            "174476",
+            "133e6b",
+            "011a31",
+            "e3b98d",
+            "030100",
+            "021d37",
+            "090503",
+            "fcddb8",
+            "fbe4c4",
+            "ebc197",
+            "efcaa3",
+            "f7e2c9",
+            "fdf2dd",
+            "b17e52",
+            "040302",
+            "bd8c5c",
+            "093760",
+            "55fcfc",
+            "67f5f5",
+            "022647",
+            "e4b88d",
+            "f9dbb3",
+            "fcdebc",
+            "fbe3c4",
+            "e2b78c",
+            "dfb182",
+            "7a6248",
+            "0c0203",
+            "a17248",
+            "031d38",
+            "0d3b68",
+            "012647",
+            "022749",
+            "011526",
+            "f4e2ca",
+            "fde3c0",
+            "f6cfa1",
+            "040202",
+            "e4bc93",
+            "e2b88a",
+            "9e6b40",
+            "1d416c",
+            "0d355b",
+            "062a4b",
+            "0a2d4f",
+            "e5c39d",
+            "e0b484",
+            "dfb588",
+            "d7ae7f",
+            "9c6c40",
+            "0b2d4f",
+            "093056",
+            "06315b",
+            "042c53",
+            "042f58",
+            "083259",
+            "052f57",
+            "012240"
+          ],
+          "sampled_opaque_pixels": 705,
+          "state_text": ""
+        },
+        {
+          "disabled": true,
+          "id": "cannon",
+          "material_is_silhouette": true,
+          "opaque_rgb_colors": [
+            "0c2530"
+          ],
+          "sampled_opaque_pixels": 436,
+          "state_text": "未解锁"
+        },
+        {
+          "disabled": true,
+          "id": "longLaser",
+          "material_is_silhouette": true,
+          "opaque_rgb_colors": [
+            "0c2530",
+            "0d2530"
+          ],
+          "sampled_opaque_pixels": 442,
+          "state_text": "未解锁"
+        }
+      ],
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {},
+        "wallet_text": []
+      }
+    },
+    {
+      "action": "locked actual owner rejection",
+      "result": {
+        "ok": false,
+        "reason": "EquipmentLocked"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {},
+        "wallet_text": []
+      }
+    },
+    {
+      "action": "actual direct missile installation",
+      "result": {
+        "ok": true
+      },
+      "state": {
+        "candidate": "missile",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "paid_level": 1,
+            "primary": "1.7e2",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "missile",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "paid_level": 1,
+            "primary": "1.7e2",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "missile",
+            "paid_level": 2,
+            "primary": "2e2",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {},
+        "wallet_text": []
+      }
+    },
+    {
+      "action": "long MAX values retain full width and material insets",
+      "current_icon": {
+        "alpha_centre_normalized": "(0.498746, 0.561856)",
+        "displayed_alpha_centre": "(69.0, 730.0)",
+        "frame_inner": "[P: (37.0, 699.0), S: (64.0, 59.0)]",
+        "key": "laser",
+        "optical_mass_offset_y": 3,
+        "primary_surface_centre_y": 727.0,
+        "safe": "[P: (43.0, 705.0), S: (52.0, 47.0)]",
+        "visible_rect": "[P: (49.78966, 705.0), S: (38.51724, 44.49536)]"
+      },
+      "labels": {
+        "_current_caption": {
+          "bottom_inset": 39.0,
+          "font_size": 12,
+          "ink": "[P: (131.0, 707.0), S: (58.0, 13.0)]",
+          "layout": "[P: (130.0, 704.0), S: (102.0, 18.0)]",
+          "top_inset": 12.0
+        },
+        "_current_value": {
+          "bottom_inset": 30.0,
+          "font_size": 27,
+          "ink": "[P: (233.0, 704.0), S: (69.0, 25.0)]",
+          "layout": "[P: (232.0, 691.0), S: (222.0, 40.0)]",
+          "top_inset": 9.0
+        },
+        "_next_value": {
+          "bottom_inset": 6.0,
+          "font_size": 27,
+          "ink": "[P: (234.0, 733.0), S: (174.0, 20.0)]",
+          "layout": "[P: (232.0, 721.0), S: (222.0, 40.0)]",
+          "top_inset": 38.0
+        },
+        "_upgrade_caption": {
+          "bottom_inset": 9.0,
+          "font_size": 12,
+          "ink": "[P: (130.0, 737.0), S: (36.0, 13.0)]",
+          "layout": "[P: (130.0, 734.0), S: (102.0, 18.0)]",
+          "top_inset": 42.0
+        }
+      },
+      "left_action": "[P: (226.0, 240.0), S: (218.0, 36.0)]",
+      "primary_surface": "[P: (116.0, 695.0), S: (343.0, 64.0)]",
+      "right_action": "[P: (508.0, 240.0), S: (244.0, 36.0)]",
+      "state": {
+        "candidate": "missile",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "missile",
+            "paid_level": 19,
+            "primary": "4.5e3",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "missile",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "39",
+                "m": "1.14513563292685"
+              },
+              "degenerate_matter": {
+                "e": "3",
+                "m": "2.76"
+              }
+            },
+            "count": 444,
+            "extreme": true,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": true
+          },
+          "upgrade": {
+            "effective_level": 463,
+            "equipment_id": "laser",
+            "paid_level": 463,
+            "primary": "1.55622014967727e43",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 444
+        },
+        "game_time": 0.0,
+        "maximum": true,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      }
+    },
+    {
+      "action": "same-camera five-tier preview Frigate",
+      "assembly_envelope": "[P: (349.9144, 401.284), S: (108.1712, 145.9054)]",
+      "canvas_rect": "[P: (211.0527, 281.0378), S: (386.3977, 386.3977)]",
+      "safe": "[P: (224.0, 158.0), S: (560.0, 446.0)]",
+      "same_assembly_zoom": 0.410595805422346,
+      "ship": "Frigate",
+      "source_reference": {
+        "aft_source": "(383.5, 529.0)",
+        "canvas_scale": 0.503121943279156,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 547.1893)",
+        "height": 133.041990400435,
+        "preview_height": 145.905363550955,
+        "source": "res://assets/ships/fleet_20261019/player/01-frigate.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "0e0",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      },
+      "visible_hull": "[P: (349.9144, 401.284), S: (108.1712, 145.9054)]"
+    },
+    {
+      "action": "same-camera five-tier preview Destroyer",
+      "assembly_envelope": "[P: (344.8562, 381.0742), S: (118.2876, 166.1151)]",
+      "canvas_rect": "[P: (240.2336, 300.3653), S: (327.9599, 327.9599)]",
+      "safe": "[P: (224.0, 158.0), S: (560.0, 446.0)]",
+      "same_assembly_zoom": 0.469259651396193,
+      "ship": "Destroyer",
+      "source_reference": {
+        "aft_source": "(383.5, 578.0)",
+        "canvas_scale": 0.427031150925656,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 547.1893)",
+        "height": 151.470003280814,
+        "preview_height": 166.11511771008,
+        "source": "res://assets/ships/fleet_20261019/player/02-destroyer.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "0e0",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      },
+      "visible_hull": "[P: (344.8562, 381.0742), S: (118.2876, 166.1151)]"
+    },
+    {
+      "action": "same-camera five-tier preview Cruiser",
+      "assembly_envelope": "[P: (314.5585, 312.7265), S: (178.883, 234.4628)]",
+      "canvas_rect": "[P: (224.8835, 250.6079), S: (358.7001, 358.7001)]",
+      "safe": "[P: (224.0, 158.0), S: (560.0, 446.0)]",
+      "same_assembly_zoom": 0.66403754355858,
+      "ship": "Cruiser",
+      "source_reference": {
+        "aft_source": "(383.5, 635.0)",
+        "canvas_scale": 0.467057413756521,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 547.1893)",
+        "height": 213.792006787636,
+        "preview_height": 234.462821705774,
+        "source": "res://assets/ships/fleet_20261019/player/03-cruiser.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      },
+      "visible_hull": "[P: (314.5585, 312.7265), S: (178.883, 234.4628)]"
+    },
+    {
+      "action": "same-camera five-tier preview Battleship",
+      "assembly_envelope": "[P: (287.151, 281.5543), S: (233.698, 265.635)]",
+      "canvas_rect": "[P: (209.5896, 219.7079), S: (389.3277, 389.3277)]",
+      "safe": "[P: (224.0, 158.0), S: (560.0, 446.0)]",
+      "same_assembly_zoom": 0.754032752713182,
+      "ship": "Battleship",
+      "source_reference": {
+        "aft_source": "(383.5, 646.0)",
+        "canvas_scale": 0.506937117651966,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 547.1893)",
+        "height": 242.216014993602,
+        "preview_height": 265.63504964963,
+        "source": "res://assets/ships/fleet_20261019/player/04-battleship.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      },
+      "visible_hull": "[P: (287.151, 281.5543), S: (233.698, 265.6351)]"
+    },
+    {
+      "action": "same-camera five-tier preview Heavy_Battleship",
+      "assembly_envelope": "[P: (267.9864, 227.1893), S: (272.0273, 320.0)]",
+      "canvas_rect": "[P: (194.937, 178.1263), S: (418.6712, 418.6712)]",
+      "safe": "[P: (224.0, 158.0), S: (560.0, 446.0)]",
+      "same_assembly_zoom": 0.907413151618399,
+      "ship": "Heavy_Battleship",
+      "source_reference": {
+        "aft_source": "(383.5, 677.0)",
+        "canvas_scale": 0.545144804088586,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 547.1893)",
+        "height": 291.788018562258,
+        "preview_height": 320.0,
+        "source": "res://assets/ships/fleet_20261019/player/05-heavy-battleship.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "1.5e3",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      },
+      "visible_hull": "[P: (267.9864, 227.1893), S: (272.0273, 320.0)]"
+    },
+    {
+      "action": "logical defence selection without patches",
+      "object_title": "防御1 · 护盾",
+      "slot": "defence:0",
+      "state": {
+        "candidate": "shield",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "shield",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "shield",
+            "paid_level": 2,
+            "primary": "9e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "1.5e3",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      }
+    },
+    {
+      "action": "logical defence selection without patches",
+      "object_title": "防御2 · 装甲",
+      "slot": "defence:1",
+      "state": {
+        "candidate": "armour",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "paid_level": 1,
+            "primary": "1e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "armour",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "paid_level": 1,
+            "primary": "1e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:1",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "armour",
+            "paid_level": 2,
+            "primary": "1.2e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "1.5e3",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:1",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      }
+    },
+    {
+      "action": "logical defence selection without patches",
+      "object_title": "防御3 · 护盾",
+      "slot": "defence:2",
+      "state": {
+        "candidate": "shield",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "shield",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:2",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "shield",
+            "paid_level": 2,
+            "primary": "9e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "1.5e3",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:2",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：1.235×10^39"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1×10^22"
+          }
+        ]
+      }
+    },
+    {
+      "action": "actual workbench control/material tree",
+      "candidate_frames": [
+        {
+          "card": "[P: (480.0, 684.0), S: (68.0, 88.0)]",
+          "top_margin": 8.0,
+          "visible_art": "[P: (500.2857, 692.0), S: (27.42857, 32.0)]"
+        },
+        {
+          "card": "[P: (556.0, 684.0), S: (68.0, 88.0)]",
+          "top_margin": 8.0,
+          "visible_art": "[P: (576.9091, 692.0), S: (26.18182, 32.0)]"
+        }
+      ],
+      "controls": [
+        {
+          "class": "Control",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83",
+          "rect": "[P: (0.0, 0.0), S: (808.0, 900.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Label@19",
+          "rect": "[P: (24.0, 10.0), S: (160.0, 34.0)]",
+          "text": "远航舰桥",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Label@20",
+          "rect": "[P: (204.0, 16.0), S: (590.0, 30.0)]",
+          "text": "1.235×10^39 铁   1,000 铀   1×10^22 简并物质",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Label@21",
+          "rect": "[P: (24.0, 52.0), S: (380.0, 28.0)]",
+          "text": "战力维护  /  装配",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Label@22",
+          "rect": "[P: (35.0, 104.0), S: (236.0, 30.0)]",
+          "text": "装配 · 白鲸无畏舰",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/BatchOpen",
+          "rect": "[P: (614.0, 96.0), S: (174.0, 49.0)]",
+          "visible": true
+        },
+        {
+          "class": "Panel",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Panel@24",
+          "rect": "[P: (24.0, 164.0), S: (184.0, 195.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Label@25",
+          "rect": "[P: (30.0, 170.0), S: (178.0, 25.0)]",
+          "text": "武器 · 启用 5",
+          "visible": true
+        },
+        {
+          "class": "Panel",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Panel@26",
+          "rect": "[P: (24.0, 366.0), S: (184.0, 133.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Label@27",
+          "rect": "[P: (30.0, 372.0), S: (178.0, 25.0)]",
+          "text": "防御 · 启用 3",
+          "visible": true
+        },
+        {
+          "class": "Panel",
+          "clip": true,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench",
+          "rect": "[P: (16.0, 610.0), S: (776.0, 286.0)]",
+          "visible": true
+        },
+        {
+          "class": "Panel",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/ObjectHeader",
+          "rect": "[P: (16.0, 610.0), S: (776.0, 36.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@28",
+          "rect": "[P: (30.0, 614.0), S: (380.0, 28.0)]",
+          "text": "防御3 · 护盾",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@29",
+          "rect": "[P: (418.0, 617.0), S: (78.0, 24.0)]",
+          "text": "Lv.1",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@30",
+          "rect": "[P: (514.0, 617.0), S: (262.0, 24.0)]",
+          "text": "换装完成",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@31",
+          "rect": "[P: (30.0, 652.0), S: (426.0, 24.0)]",
+          "text": "装备升级",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@32",
+          "rect": "[P: (480.0, 652.0), S: (174.0, 24.0)]",
+          "text": "装备选择",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@33",
+          "rect": "[P: (654.0, 656.0), S: (122.0, 24.0)]",
+          "text": "换装冷却 10.0秒",
+          "visible": true
+        },
+        {
+          "class": "ColorRect",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@ColorRect@34",
+          "rect": "[P: (466.0, 658.0), S: (1.0, 222.0)]",
+          "visible": true
+        },
+        {
+          "class": "Panel",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/UpgradeValues",
+          "rect": "[P: (116.0, 695.0), S: (343.0, 64.0)]",
+          "visible": true
+        },
+        {
+          "class": "Panel",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CurrentIconBezel",
+          "rect": "[P: (36.0, 698.0), S: (66.0, 61.0)]",
+          "visible": true
+        },
+        {
+          "atlas_source": "res://assets/ui/equipment/cartoon_shield.svg",
+          "class": "TextureRect",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@TextureRect@35",
+          "rect": "[P: (52.03631, 710.5323), S: (33.92814, 41.46774)]",
+          "region": "[P: (19.0, 9.0), S: (90.0, 110.0)]",
+          "texture": "",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@36",
+          "rect": "[P: (130.0, 701.0), S: (140.0, 18.0)]",
+          "text": "当前容量",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@37",
+          "rect": "[P: (306.0, 701.0), S: (146.0, 18.0)]",
+          "text": "升级后",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@38",
+          "rect": "[P: (130.0, 719.0), S: (140.0, 40.0)]",
+          "text": "750",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@39",
+          "rect": "[P: (273.0, 715.0), S: (32.0, 34.0)]",
+          "text": "→",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@40",
+          "rect": "[P: (306.0, 719.0), S: (148.0, 40.0)]",
+          "text": "900",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@41",
+          "rect": "[P: (38.0, 814.0), S: (90.0, 25.0)]",
+          "text": "本次费用",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@42",
+          "rect": "[P: (294.0, 814.0), S: (160.0, 25.0)]",
+          "text": "",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/Quantity0",
+          "rect": "[P: (34.0, 850.0), S: (59.0, 36.0)]",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/Quantity1",
+          "rect": "[P: (99.0, 850.0), S: (59.0, 36.0)]",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/Quantity2",
+          "rect": "[P: (164.0, 850.0), S: (59.0, 36.0)]",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/Purchase",
+          "rect": "[P: (242.0, 850.0), S: (218.0, 36.0)]",
+          "visible": true
+        },
+        {
+          "class": "Control",
+          "clip": true,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices",
+          "rect": "[P: (480.0, 684.0), S: (296.0, 88.0)]",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_armour",
+          "rect": "[P: (480.0, 684.0), S: (68.0, 88.0)]",
+          "visible": true
+        },
+        {
+          "atlas_source": "res://assets/ui/equipment/cartoon_armour.svg",
+          "class": "TextureRect",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_armour/@TextureRect@1038",
+          "rect": "[P: (496.0, 692.0), S: (36.0, 32.0)]",
+          "region": "[P: (19.0, 12.0), S: (90.0, 105.0)]",
+          "texture": "",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_armour/@Label@1039",
+          "rect": "[P: (483.0, 726.0), S: (62.0, 20.0)]",
+          "text": "装甲",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_armour/@Label@1040",
+          "rect": "[P: (483.0, 746.0), S: (62.0, 18.0)]",
+          "text": "",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_shield",
+          "rect": "[P: (556.0, 684.0), S: (68.0, 88.0)]",
+          "visible": true
+        },
+        {
+          "atlas_source": "res://assets/ui/equipment/cartoon_shield.svg",
+          "class": "TextureRect",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_shield/@TextureRect@1042",
+          "rect": "[P: (572.0, 692.0), S: (36.0, 32.0)]",
+          "region": "[P: (19.0, 9.0), S: (90.0, 110.0)]",
+          "texture": "",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_shield/@Label@1043",
+          "rect": "[P: (559.0, 726.0), S: (62.0, 20.0)]",
+          "text": "护盾",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/CandidateChoices/Candidate_shield/@Label@1044",
+          "rect": "[P: (559.0, 746.0), S: (62.0, 18.0)]",
+          "text": "已装备",
+          "visible": true
+        },
+        {
+          "class": "Control",
+          "clip": true,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison",
+          "rect": "[P: (480.0, 780.0), S: (296.0, 64.0)]",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@47",
+          "rect": "[P: (532.0, 780.0), S: (118.0, 24.0)]",
+          "text": "现装 · 护盾",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@48",
+          "rect": "[P: (532.0, 798.0), S: (118.0, 25.0)]",
+          "text": "750",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@49",
+          "rect": "[P: (532.0, 823.0), S: (118.0, 24.0)]",
+          "text": "",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@50",
+          "rect": "[P: (656.0, 780.0), S: (118.0, 24.0)]",
+          "text": "所选 · 护盾",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@51",
+          "rect": "[P: (656.0, 798.0), S: (118.0, 25.0)]",
+          "text": "750",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@52",
+          "rect": "[P: (656.0, 823.0), S: (118.0, 24.0)]",
+          "text": "",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@53",
+          "rect": "[P: (480.0, 798.0), S: (49.0, 25.0)]",
+          "text": "容量",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/DifferentCandidateComparison/@Label@54",
+          "rect": "[P: (480.0, 823.0), S: (48.0, 24.0)]",
+          "text": "周期",
+          "visible": false
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/Install",
+          "rect": "[P: (524.0, 850.0), S: (244.0, 36.0)]",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@108",
+          "rect": "[P: (130.0, 814.0), S: (36.0, 25.0)]",
+          "text": "铁",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@109",
+          "rect": "[P: (166.0, 811.0), S: (112.0, 27.0)]",
+          "text": "65",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@1007",
+          "rect": "[P: (143.0, 814.0), S: (102.0, 25.0)]",
+          "text": "简并物质",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/EquipmentWorkbench/@Label@1008",
+          "rect": "[P: (246.0, 811.0), S: (208.0, 27.0)]",
+          "text": "10",
+          "visible": false
+        },
+        {
+          "class": "ColorRect",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@ColorRect@56",
+          "rect": "[P: (0.0, 0.0), S: (808.0, 900.0)]",
+          "visible": false
+        },
+        {
+          "class": "Panel",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@Panel@57",
+          "rect": "[P: (90.0, 180.0), S: (628.0, 590.0)]",
+          "visible": false
+        },
+        {
+          "class": "PanelContainer",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58",
+          "rect": "[P: (90.0, 180.0), S: (628.0, 590.0)]",
+          "visible": false
+        },
+        {
+          "class": "MarginContainer",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59",
+          "rect": "[P: (90.0, 180.0), S: (614.0, 265.0)]",
+          "visible": false
+        },
+        {
+          "class": "VBoxContainer",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60",
+          "rect": "[P: (90.0, 180.0), S: (554.0, 205.0)]",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@Label@61",
+          "rect": "[P: (90.0, 180.0), S: (144.0, 35.0)]",
+          "text": "全部装备升级",
+          "visible": false
+        },
+        {
+          "class": "OptionButton",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@OptionButton@72",
+          "rect": "[P: (90.0, 180.0), S: (112.0, 40.0)]",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@Label@73",
+          "rect": "[P: (90.0, 180.0), S: (1.0, 30.0)]",
+          "text": "",
+          "visible": false
+        },
+        {
+          "class": "ScrollContainer",
+          "clip": true,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@ScrollContainer@76",
+          "rect": "[P: (90.0, 180.0), S: (0.0, 0.0)]",
+          "visible": false
+        },
+        {
+          "class": "VBoxContainer",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@ScrollContainer@76/@VBoxContainer@77",
+          "rect": "[P: (90.0, 180.0), S: (554.0, 59.0)]",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@ScrollContainer@76/@VBoxContainer@77/@Label@78",
+          "rect": "[P: (90.0, 180.0), S: (548.0, 24.0)]",
+          "text": "",
+          "visible": false
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@ScrollContainer@76/@VBoxContainer@77/@Label@79",
+          "rect": "[P: (90.0, 180.0), S: (1.0, 20.0)]",
+          "text": "",
+          "visible": false
+        },
+        {
+          "class": "HBoxContainer",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@HBoxContainer@80",
+          "rect": "[P: (90.0, 180.0), S: (554.0, 44.0)]",
+          "visible": false
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@HBoxContainer@80/@Button@81",
+          "rect": "[P: (90.0, 180.0), S: (270.0, 44.0)]",
+          "visible": false
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/@PanelContainer@58/@MarginContainer@59/@VBoxContainer@60/@HBoxContainer@80/@Button@82",
+          "rect": "[P: (90.0, 180.0), S: (270.0, 44.0)]",
+          "visible": false
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_0",
+          "rect": "[P: (26.0, 202.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_0/@Label@85",
+          "rect": "[P: (36.0, 202.0), S: (24.0, 30.0)]",
+          "text": "1",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_0/@Label@86",
+          "rect": "[P: (64.0, 202.0), S: (77.0, 30.0)]",
+          "text": "脉冲炮",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_0/@Label@87",
+          "rect": "[P: (141.0, 202.0), S: (57.0, 30.0)]",
+          "text": "Lv.19",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_0",
+          "rect": "[P: (26.0, 404.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_0/@Label@89",
+          "rect": "[P: (36.0, 404.0), S: (24.0, 30.0)]",
+          "text": "1",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_0/@Label@90",
+          "rect": "[P: (64.0, 404.0), S: (77.0, 30.0)]",
+          "text": "护盾",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_0/@Label@91",
+          "rect": "[P: (141.0, 404.0), S: (57.0, 30.0)]",
+          "text": "Lv.1",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_1",
+          "rect": "[P: (26.0, 233.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_1/@Label@1014",
+          "rect": "[P: (36.0, 233.0), S: (24.0, 30.0)]",
+          "text": "2",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_1/@Label@1015",
+          "rect": "[P: (64.0, 233.0), S: (77.0, 30.0)]",
+          "text": "导弹",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_1/@Label@1016",
+          "rect": "[P: (141.0, 233.0), S: (57.0, 30.0)]",
+          "text": "Lv.1",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_2",
+          "rect": "[P: (26.0, 264.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_2/@Label@1018",
+          "rect": "[P: (36.0, 264.0), S: (24.0, 30.0)]",
+          "text": "3",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_2/@Label@1019",
+          "rect": "[P: (64.0, 264.0), S: (77.0, 30.0)]",
+          "text": "长激光",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_2/@Label@1020",
+          "rect": "[P: (141.0, 264.0), S: (57.0, 30.0)]",
+          "text": "Lv.1",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_1",
+          "rect": "[P: (26.0, 435.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_1/@Label@1022",
+          "rect": "[P: (36.0, 435.0), S: (24.0, 30.0)]",
+          "text": "2",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_1/@Label@1023",
+          "rect": "[P: (64.0, 435.0), S: (77.0, 30.0)]",
+          "text": "装甲",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_1/@Label@1024",
+          "rect": "[P: (141.0, 435.0), S: (57.0, 30.0)]",
+          "text": "Lv.1",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_3",
+          "rect": "[P: (26.0, 295.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_3/@Label@1026",
+          "rect": "[P: (36.0, 295.0), S: (24.0, 30.0)]",
+          "text": "4",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_3/@Label@1027",
+          "rect": "[P: (64.0, 295.0), S: (77.0, 30.0)]",
+          "text": "舰炮",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_3/@Label@1028",
+          "rect": "[P: (141.0, 295.0), S: (57.0, 30.0)]",
+          "text": "Lv.1",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_4",
+          "rect": "[P: (26.0, 326.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_4/@Label@1030",
+          "rect": "[P: (36.0, 326.0), S: (24.0, 30.0)]",
+          "text": "5",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_4/@Label@1031",
+          "rect": "[P: (64.0, 326.0), S: (77.0, 30.0)]",
+          "text": "脉冲炮",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_weapon_4/@Label@1032",
+          "rect": "[P: (141.0, 326.0), S: (57.0, 30.0)]",
+          "text": "Lv.1",
+          "visible": true
+        },
+        {
+          "class": "Button",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_2",
+          "rect": "[P: (26.0, 466.0), S: (180.0, 30.0)]",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_2/@Label@1034",
+          "rect": "[P: (36.0, 466.0), S: (24.0, 30.0)]",
+          "text": "3",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_2/@Label@1035",
+          "rect": "[P: (64.0, 466.0), S: (77.0, 30.0)]",
+          "text": "护盾",
+          "visible": true
+        },
+        {
+          "class": "Label",
+          "clip": false,
+          "path": "/root/SpaceIdle/@CanvasLayer@18/@Control@83/Slot_defence_2/@Label@1036",
+          "rect": "[P: (141.0, 466.0), S: (57.0, 30.0)]",
+          "text": "Lv.1",
+          "visible": true
+        }
+      ],
+      "paint_sources": {
+        "hangar_source": "assets/ui/equipment/hangar/hangar-console.png only source y0..845, no original lower-shell region",
+        "workspace": "one native Panel filled ivory with its own header/data material, no SVG strips/old lower picture"
+      },
+      "workbench": "[P: (16.0, 610.0), S: (776.0, 286.0)]"
+    }
+  ],
+  "root_pixels": "(1440, 900)",
+  "scope": "Targeted fresh/cleared1 locking, rendered label ink, shared lower materials and five ship types in one fixed preview camera. Controlled progress/wallet/types for later cases; no battle scaling changes.",
+  "source_commit": "workbench-rebuild-preview",
+  "source_hashes": {
+    "res://assets/ui/equipment/hangar/upgrade-console.svg": "a31cad4dc3f1246226897ffa0d1fccd3855ac23d134e248c0d4f6b057dd1b83c",
+    "res://assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+    "res://src/game_session.gd": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+    "res://src/main.gd": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+    "res://src/systems/battle.gd": "10875d02d77f676d61bc1f463ef6336f6eeaee8a682322c9513194b252f35bde",
+    "res://src/systems/equipment.gd": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+    "res://src/ui/equipment_panel.gd": "12d453d9ced6fbefced788af9253fe16d92e0c883b7c5bd7811efb28b2e742cc"
+  }
+}
