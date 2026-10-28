@@ -127,19 +127,26 @@ for kind in ['auto_explore','refinery','equipment','shipyard']:
   tube('Press spindle',(.5,-.2,1.44),(.5,-.2,1.02),.07,navy,motion)
 
  else:
-  # Slender open drydock: repeated ribs and narrow rails, not solid U arms.
+  # Open drydock with readable load-bearing sills and four berth frames.
   for sign in [-1,1]:
-   box('Slender docking rail',(sign*1.48,0,-.25),(.14,3.85,.16),mid,root,.035)
+   box('Load-bearing docking sill',(sign*1.48,0,-.25),(.24,3.85,.25),mid,root,.055)
+   box('Warm sill crown',(sign*1.48,0,-.08),(.14,3.77,.075),ivory,root,.025)
+   box('Outer shear web',(sign*1.55,0,.30),(.14,3.22,.48),navy,root,.055)
+   box('Upper longitudinal girder',(sign*1.35,0,.93),(.14,3.10,.13),ivory,root,.04)
    box('Inner cyan guidance line',(sign*1.39,0,-.18),(.035,3.5,.035),cyan,root,.009)
+   for y in [-.95,.85]:
+    box('Inward berth support',(sign*1.00,y,.72),(.55,.50,.13),mid,root,.04)
+    box('Berth contact pad',(sign*.88,y,.81),(.24,.36,.06),ivory,root,.025)
    for y in [-1.45,-.55,.35,1.25]:
     points=[(sign*1.48,y,-.25),(sign*1.48,y,.73),(sign*1.12,y,1.10)]
-    for i in range(2):tube('Open dock rib',points[i],points[i+1],.055,ivory,root)
-    cyl('Rib heel',(sign*1.48,y,-.23),.095,.18,ivory,root)
+    for i in range(2):tube('Open dock load frame',points[i],points[i+1],.10,ivory,root)
+    cyl('Frame heel',(sign*1.48,y,-.23),.145,.23,ivory,root)
+    cyl('Berth joint',(sign*1.12,y,1.10),.14,.21,mid,root)
     box('Amber berth marker',(sign*1.43,y,.5),(.04,.09,.05),amber,root,.008)
    cyl('Dockside service capsule',(sign*1.88,.95,.12),.23,.85,ivory,root,(math.pi/2,0,0),24)
-   tube('Pod support',(sign*1.48,.95,-.15),(sign*1.88,.95,.12),.045,mid,root)
-   for y in [-1.45,-.55,.35]:tube('Low diagonal brace',(sign*1.48,y,-.33),(sign*1.48,y+.9,-.13),.022,copper,root)
-  for y in [-1.45,-.55,.35,1.25]:tube('Crown spanning rib',(-1.12,y,1.10),(1.12,y,1.10),.045,ivory,root)
+   tube('Pod support',(sign*1.48,.95,-.15),(sign*1.88,.95,.12),.07,mid,root)
+   for y in [-1.45,-.55,.35]:tube('Low diagonal brace',(sign*1.48,y,-.33),(sign*1.48,y+.9,-.13),.045,copper,root)
+  for y in [-1.45,-.55,.35,1.25]:tube('Crown spanning berth beam',(-1.12,y,1.10),(1.12,y,1.10),.085,ivory,root)
   box('Compact rear control pod',(0,1.7,.65),(1.12,.56,.42),ivory,root,.13)
   box('Control glazing',(0,1.40,.68),(.84,.035,.17),cyan,root,.022)
   tube('Rear bridge support',(-1.48,1.25,.73),(0,1.7,.44),.045,mid,root)

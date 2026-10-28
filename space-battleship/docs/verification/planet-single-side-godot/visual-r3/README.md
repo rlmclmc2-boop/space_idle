@@ -1,4 +1,12 @@
-# 星球 R3 视觉修订：保全检查点，未验收
+# 星球 R3 视觉修订：完整周期候选，待独审
+
+## 最终船坞与完整周期实机候选
+
+依独审对前三张图的反馈，只加强船坞的开放承重结构：两侧暗色剪力腹板、暖色纵梁、泊位接触垫与框架节点；球面、稀疏云和其余三座建筑保留。Blender 4.3.2 源与 GLB 同版重导出，之后用官方 Godot `4.7.2.stable.official.ed1daf0bf` 重新导入并运行。最终实机原图见 [默认](evidence/final-01-default-planet1.png)、[设施展开](evidence/final-02-facilities-planet1-ready.png)、[领取后船坞](evidence/final-05-planet1-claimed.png)。这些是最终几何的图，替代下文检查点的前三张作为视觉复审输入；不自行宣布品质通过。
+
+最终同版运行用实际球面累计相位达到 **1.05009685 圈**停止，墙钟178.968秒、361个帧样本，驱动正常退出。轨迹覆盖地表设施背面转入转出、轨道站 `z=-3.07…+3.07` 的前后运动、侦察船从年龄0抵达到174.87并出现前后两种绘制层。递归遍历 GLB 内的 `MeshInstance3D`，排除接触阴影；四类建筑在首帧均有非空屏幕 AABB，整段保守 AABB 与上方操作控件相交记录为0。AABB 是辅助数值，实际遮挡和画面质量仍由原图与视频独审。
+
+交付 [完整轨道视频](evidence/final-full-surface-orbit.mp4)（1440×900、2fps、361帧、按采样序编码）、[逐帧原始轨迹](evidence/final-motion-poses.jsonl)、[摘要](evidence/final-motion-summary.json)、[驱动](evidence/final-motion-driver.gd.txt)、[运行日志](evidence/final-motion-runtime.txt)、[操作记录](evidence/final-operations.json)及 `final-key_*.png` 11张未经加工的关键原始 PNG、[终点原始 JPEG](evidence/final-frame-end-1p05.jpg)。[SHA256清单](evidence/final-sha256.json)核对归档字节。其余361张原始JPEG在本执行环境 `/tmp/planet-r3-motion-final2/motion-frames/`，未进Git。视频按每帧0.5秒播放，**播放时长180.5秒不是引擎实际经过时间**；实际墙钟与相位逐行见轨迹。JPEG/PNG帧读取编码合计13.489秒墙钟；没有设置引擎帧帽、强推时钟，也不由采样推断用户CPU/GPU性能。当前仍待原独审R3视觉判断。
 
 本次实际发生上下文压缩，依父线程要求保全原工作区供替换执行者继续。R2 `a91f65b4` 的真实下拉、设施父子层级、补人后施工增长、重铸可见落点、4.7.2环境分项已认可；其球面和建筑视觉被否定。R3 保留这些业务/交互代码，不重写契约。
 
