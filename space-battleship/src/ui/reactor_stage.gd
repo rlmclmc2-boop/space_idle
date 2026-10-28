@@ -73,6 +73,7 @@ func control_layout(id: String) -> Dictionary:
 	var layout: Dictionary = OPERATING_ANCHORS[id].duplicate()
 	for key in ["effect","supply","slider"]:
 		layout[key] = SUPPORT_ORIGINS[id]+(layout[key]-SUPPORT_REGIONS[id].position)*float(SUPPORT_SCALES[id])
+	layout.slider.y += 6.0
 	return layout
 
 func _scale(id: String) -> float:

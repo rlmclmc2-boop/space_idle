@@ -129,8 +129,9 @@ func _build() -> void:
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var effect := _label(layout.effect,float(layout.width),16)
+		effect.mouse_filter = Control.MOUSE_FILTER_PASS
 		var supply := _label(layout.supply,float(layout.width),12)
-		supply.size.y = 42
+		supply.size.y = 38
 		supply.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		supply.add_theme_color_override("font_color", Color("a5c3bf"))
 		var slider := HSlider.new()
@@ -140,6 +141,7 @@ func _build() -> void:
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		slider.tooltip_text = "拖动调整手动分配；实际供能在确认整组后变化"
 		for style in ["slider","grabber_area","grabber_area_highlight"]:
 			var box := StyleBoxFlat.new()
 			box.bg_color = Color("5db3aa") if style != "slider" else Color("244e58")
@@ -167,6 +169,7 @@ func _build() -> void:
 		_rows[id] = {"effect":effect, "supply":supply, "slider":slider}
 		for control in _rows[id].values(): control.visible = false
 	_budget = _label(Vector2(194,807),430,14)
+	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
 	_purchase = _button("升级",Rect2(194,842,142,29),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)))
 	_equal = _button("均分",Rect2(344,842,62,29),func(): _kind = "equal"; _preview_draft())
 	_apply = _button("确认调配",Rect2(414,842,118,29),func(): _command(_submit))
@@ -240,24 +243,32 @@ func _refresh() -> void:
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = id in _ids
 		if id not in _ids: _shares.erase(id)
-	for row in model.get("modules",[]):
+	_show_current_readings()
+	if _kind != "none": _preview_draft(false)
+	_update_buttons()
+	_update_stage()
+
+func _show_current_readings() -> void:
+	if _model.is_empty(): return
+	for row in _model.modules:
 		var id: String = str(row.id)
 		if id not in _ids: continue
 		if _kind == "none":
 			_shares[id] = int(roundf(float(row.ratio)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
-		_rows[id].slider.editable = _running and bool(model.can_allocate)
-		_rows[id].effect.text = NAMES[id] + " ×" + str(row.factor)
+		_rows[id].slider.editable = _running and bool(_model.can_allocate)
+		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(str(row.factor))
+		_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		var manual_text: String = str(row.manual)
 		var ratio_text: String = str(roundi(float(row.ratio) * 100.0)) + "%"
-		_rows[id].supply.text = "手动 " + manual_text + " (" + ratio_text + ")"
-		if row.has_free: _rows[id].supply.text += " + 免费 " + str(row.free)
-		_rows[id].supply.text += "\n有效 " + str(row.effective)
-	_level.text = "等级 " + str(model.level)
-	_budget.text = "可调容量 " + str(model.capacity) + "     剩余 " + str(model.remaining)
-	if _kind != "none": _preview_draft(false)
-	_update_buttons()
-	_update_stage()
+		_rows[id].supply.text = "手动 " + PlayerText.number(manual_text) + " (" + ratio_text + ")"
+		if row.has_free: _rows[id].supply.text += " + 免费 " + PlayerText.number(str(row.free))
+		_rows[id].supply.text += "\n有效 " + PlayerText.number(str(row.effective))
+		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
+		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
+	_level.text = "等级 " + str(_model.level)
+	_budget.text = "可调容量 " + PlayerText.number(str(_model.capacity)) + "     剩余 " + PlayerText.number(str(_model.remaining))
+	_budget.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
 
 func _valid_model(model: Dictionary) -> bool:
 	if model.get("ok") != true: return false
@@ -311,10 +322,12 @@ func _refresh_quote() -> void:
 			_purchase.text = "升级 · —"
 			_update_buttons()
 			return
-		labels.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
+		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
 	_purchase.text = "升级 · " + " + ".join(labels)
 	var reason: String = str(quote.get("reason", ""))
-	_purchase.tooltip_text = "" if reason.is_empty() else str(ERRORS.get(reason, PlayerText.error(reason)))
+	var exact_costs: Array = []
+	for id in _quote_cost_ids: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
+	_purchase.tooltip_text = " + ".join(exact_costs) + (" · " + str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "")
 	_update_buttons()
 
 func _slide(value: float,id: String) -> void:
@@ -361,7 +374,8 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		for row in _preview.target.modules: _canonical[str(row.id)] = str(row.manual)
 	_notice.text = "调配草稿"
 	_message_until = 0
-	_budget.text = "草稿分配 " + str(_preview.target.allocated) + "     剩余 " + str(_preview.target.remaining)
+	_budget.text = "草稿分配 " + PlayerText.number(str(_preview.target.allocated)) + "     剩余 " + PlayerText.number(str(_preview.target.remaining))
+	_budget.tooltip_text = "草稿容量 " + str(_preview.target.capacity) + " / 已分配 " + str(_preview.target.allocated) + " / 剩余 " + str(_preview.target.remaining)
 	for row in _preview.target.modules:
 		var id: String = str(row.id)
 		var current: Dictionary = {}
@@ -369,12 +383,15 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 			if str(old.id) == id: current = old; break
 		var a: String = str(current.get("factor","—"))
 		var b: String = str(row.factor)
-		_rows[id].effect.text = NAMES[id] + " ×" + a + (" → " + b if a != b else "")
+		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
+		_rows[id].effect.tooltip_text = "增益 " + a + " → " + b
 		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
-		var supply_text: String = "手动 " + a + (" → " + b if a != b else "")
-		if row.has_free: supply_text += " + 免费 " + str(row.free)
+		var supply_text: String = "手动 " + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
+		if row.has_free: supply_text += " + 免费 " + PlayerText.number(str(row.free))
 		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = supply_text + "\n有效 " + a + (" → " + b if a != b else "")
+		_rows[id].supply.text = supply_text + "\n有效 " + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
+		_rows[id].supply.tooltip_text = "手动 " + str(current.get("manual","—")) + " → " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + a + " → " + b
+		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 		if _kind == "equal" or (_kind == "shares" and not fresh_shares):
 			_shares[id] = int(roundf(clampf(float(row.ratio),0.0,1.0)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
@@ -410,6 +427,7 @@ func _command(action: Callable) -> void:
 		_canonical = {}
 		_notice.text = "供能已更新"
 		_message_until = Time.get_ticks_msec() + 1800
+		_show_current_readings()
 		_update_buttons()
 	else: _error(last_result)
 	command_finished.emit(last_result)
