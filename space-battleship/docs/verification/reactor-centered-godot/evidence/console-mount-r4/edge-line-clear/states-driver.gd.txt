@@ -1,0 +1,87 @@
+extends SceneTree
+func _initialize() -> void:
+	call_deferred("run")
+func frames(n: int) -> void:
+	for i in n: await process_frame
+	await RenderingServer.frame_post_draw
+func mouse(point: Vector2, pressed: bool) -> void:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = pressed
+	event.position = point
+	event.global_position = point
+	root.push_input(event, false)
+func move(point: Vector2) -> void:
+	var event := InputEventMouseMotion.new()
+	event.position = point
+	event.global_position = point
+	root.push_input(event, false)
+func dismiss(game: Node2D) -> void:
+	var pending: Dictionary = game.session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(game.session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = game.session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	root.content_scale_size = Vector2i(1440,900)
+	var game: Node2D = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(24)
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+	game._select_left_module("reactor")
+	await frames(8)
+	var scene = game.reactor_scene
+	root.get_texture().get_image().save_png("/tmp/reactor-mount-r4c-disabled.png")
+	var amount: Dictionary = session.amount_api.apply("from_decimal",["1000"])
+	assert(amount.ok)
+	assert(session.economy.credit_yield("2",amount.value,session.wall_time,session.game_time).ok)
+	await frames(5)
+	print("CANDIDATE purchase enabled=", not scene._purchase.disabled)
+	scene._purchase.grab_focus()
+	await frames(2)
+	root.get_texture().get_image().save_png("/tmp/reactor-mount-r4c-focus.png")
+	move(Vector2(369,833))
+	mouse(Vector2(369,833),true)
+	mouse(Vector2(369,833),false)
+	await frames(3)
+	print("CANDIDATE equal=",scene._preview.get("ok")," apply enabled=",not scene._apply.disabled)
+	move(Vector2(453,833))
+	mouse(Vector2(453,833),true)
+	mouse(Vector2(453,833),false)
+	await frames(8)
+	print("CANDIDATE active=",scene.last_result.get("ok")," load=",session.reactor_system.presentation_model().load)
+	dismiss(game)
+	move(Vector2(800, 440))
+	await frames(4)
+	root.get_texture().get_image().save_png("/tmp/reactor-mount-r4c-active.png")
+	move(Vector2(276,833))
+	await frames(3)
+	dismiss(game)
+	await frames(2)
+	root.get_texture().get_image().save_png("/tmp/reactor-mount-r4c-hover.png")
+	mouse(Vector2(276,833),true)
+	await frames(2)
+	dismiss(game)
+	await frames(1)
+	root.get_texture().get_image().save_png("/tmp/reactor-mount-r4c-pressed.png")
+	mouse(Vector2(276,833),false)
+	await frames(6)
+	print("CANDIDATE purchased=",scene.last_result.get("ok")," level=",session.reactor_system.presentation_model().level)
+	root.get_texture().get_image().save_png("/tmp/reactor-mount-r4c-purchased.png")
+	quit()
