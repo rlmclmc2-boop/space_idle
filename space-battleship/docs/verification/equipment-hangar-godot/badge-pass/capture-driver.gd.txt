@@ -1,0 +1,53 @@
+extends SceneTree
+var app
+var host
+var panel
+var failures:Array=[]
+var rows:Array=[]
+var destination:String="res://docs/verification/equipment-hangar-godot/badge-pass/evidence"
+func _initialize():call_deferred("run")
+func check(value:bool,message:String):
+    if not value:failures.append(message);printerr("FAIL ",message)
+func flush():
+    for i in 4:await process_frame
+    await RenderingServer.frame_post_draw
+func click(control:Control):
+    var point:Vector2=control.get_global_rect().get_center()
+    for pressed in [true,false]:
+        var event:=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=pressed;Input.parse_input_event(event);await process_frame
+    await flush()
+func run():
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running() and not host.pause_reasons.has("recovery"),"actual fresh startup")
+    if not failures.is_empty():app._close_game();return
+    host.set_pause("user",true)
+    var campaign:Dictionary=host.campaign_system.save_state()
+    campaign.state.highest_reached=100;campaign.cycle_reached=100;campaign.state.state="menu";campaign.state.cleared_stages={}
+    for level in range(1,100):campaign.state.cleared_stages[level]=true
+    check(host.campaign_system.restore_state(campaign).ok,"controlled progress restore validates")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    check(host.campaign_system.change_ship("Heavy_Battleship",host.commit_ship_refit).ok,"actual Heavy refit")
+    for pair in [["weapon:1","missile"],["weapon:2","longLaser"],["weapon:3","cannon"],["weapon:4","laser"],["defence:0","shield"],["defence:1","armour"],["defence:2","shield"]]:
+        check(host.equipment.equip_slot(pair[0],pair[1],host.equipment_inputs(),host.publish_equipment_refit).ok,"real setup equip "+pair[0])
+    await flush()
+    for fact in host.equipment_slot_facts():
+        if fact.dormant:continue
+        await click(panel._slot_buttons[fact.id].button)
+        check(panel._selected==fact.id and panel.last_comparison.current.equipment_id==fact.equipment_id,"real GUI selection "+fact.id)
+        var target:Rect2=panel._component_rect(fact).grow(5)
+        var badge:Rect2=panel._locator_badge_rect(fact,target)
+        check(badge.has_area() and badge.size==Vector2(32,22),"whole badge visible "+fact.id)
+        var terminals:Dictionary={}
+        for id in panel._slot_buttons:
+            var rect:Rect2=panel._slot_buttons[id].button.get_rect()
+            terminals[id]=rect
+            check(not badge.intersects(rect.grow(4)),"badge avoids terminal +4px "+fact.id+" / "+id)
+        for other in host.equipment_slot_facts():
+            if other.dormant or other.id==fact.id:continue
+            check(not badge.intersects(panel._component_rect(other).grow(2)),"badge avoids other component "+fact.id+" / "+other.id)
+        var text:String=("武" if fact.category=="weapon" else "防")+str(int(fact.index)+1)
+        check(panel._font_strong.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+6<=badge.size.x,"whole text fits badge "+fact.id)
+        rows.append({"slot_id":fact.id,"badge_text":text,"badge_rect":badge,"component_rect":target,"terminals":terminals,"comparison":panel.last_comparison.duplicate(true)})
+        root.get_texture().get_image().save_png(destination.path_join("selected-"+str(fact.id).replace(":","-")+".png"))
+    var output:Dictionary={"source_commit":OS.get_environment("SPACE_IDLE_EVIDENCE_SOURCE_COMMIT"),"source_sha256":FileAccess.get_sha256("res://src/ui/equipment_panel.gd"),"engine":Engine.get_version_info(),"pixels":root.size,"scope":"Only selected badge avoidance; actual main/native/owners, controlled progress and real equip setup; actual GUI selection. No trade/correctness suite rerun.","rows":rows,"failures":failures}
+    var f=FileAccess.open(destination.path_join("badge-operations.json"),FileAccess.WRITE);f.store_string(JSON.stringify(output,"  "));f.close();print("BADGE_CAPTURE_COMPLETE failures=",failures.size()," rows=",rows.size());app._close_game()

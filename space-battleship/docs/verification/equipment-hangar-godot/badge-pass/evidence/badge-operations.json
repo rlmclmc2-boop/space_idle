@@ -1,0 +1,645 @@
+{
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "pixels": "(1440, 900)",
+  "rows": [
+    {
+      "badge_rect": "[P: (412.4344, 311.7117), S: (32.0, 22.0)]",
+      "badge_text": "武1",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "laser",
+          "paid_level": 1,
+          "primary": "3.5e2",
+          "properties": {
+            "damage_type": 1,
+            "interval_seconds": 1.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "laser",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "laser",
+          "paid_level": 1,
+          "primary": "3.5e2",
+          "properties": {
+            "damage_type": 1,
+            "interval_seconds": 1.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "weapon:0",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "laser",
+          "paid_level": 2,
+          "primary": "4.2e2",
+          "properties": {
+            "damage_type": 1,
+            "interval_seconds": 1.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (365.2645, 222.2717), S: (76.17, 86.43999)]",
+      "slot_id": "weapon:0",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    },
+    {
+      "badge_rect": "[P: (350.0, 482.0), S: (32.0, 22.0)]",
+      "badge_text": "防1",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "shield",
+          "paid_level": 1,
+          "primary": "7.5e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "shield",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "shield",
+          "paid_level": 1,
+          "primary": "7.5e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "defence:0",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "shield",
+          "paid_level": 2,
+          "primary": "9e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (327.0, 427.0), S: (52.0, 52.0)]",
+      "slot_id": "defence:0",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    },
+    {
+      "badge_rect": "[P: (349.8652, 330.3192), S: (32.0, 22.0)]",
+      "badge_text": "武2",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "missile",
+          "paid_level": 1,
+          "primary": "1.7e2",
+          "properties": {
+            "damage_type": 2,
+            "interval_seconds": 2.4,
+            "salvo_count": 4
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "missile",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "missile",
+          "paid_level": 1,
+          "primary": "1.7e2",
+          "properties": {
+            "damage_type": 2,
+            "interval_seconds": 2.4,
+            "salvo_count": 4
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "weapon:1",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "missile",
+          "paid_level": 2,
+          "primary": "2e2",
+          "properties": {
+            "damage_type": 2,
+            "interval_seconds": 2.4,
+            "salvo_count": 4
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (268.0452, 300.3742), S: (76.82, 81.89)]",
+      "slot_id": "weapon:1",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    },
+    {
+      "badge_rect": "[P: (419.1739, 318.9242), S: (32.0, 22.0)]",
+      "badge_text": "武3",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "longLaser",
+          "paid_level": 1,
+          "primary": "3.5e1",
+          "properties": {
+            "charge_seconds": 1.0,
+            "damage_type": 1,
+            "interval_seconds": 0.25
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "longLaser",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "longLaser",
+          "paid_level": 1,
+          "primary": "3.5e1",
+          "properties": {
+            "charge_seconds": 1.0,
+            "damage_type": 1,
+            "interval_seconds": 0.25
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "weapon:2",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "longLaser",
+          "paid_level": 2,
+          "primary": "4.5e1",
+          "properties": {
+            "charge_seconds": 1.0,
+            "damage_type": 1,
+            "interval_seconds": 0.25
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (456.1739, 272.8442), S: (87.75999, 114.16)]",
+      "slot_id": "weapon:2",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    },
+    {
+      "badge_rect": "[P: (319.7352, 481.427), S: (32.0, 22.0)]",
+      "badge_text": "武4",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "cannon",
+          "paid_level": 1,
+          "primary": "1.2e3",
+          "properties": {
+            "damage_type": 2,
+            "interval_seconds": 3.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "cannon",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "cannon",
+          "paid_level": 1,
+          "primary": "1.2e3",
+          "properties": {
+            "damage_type": 2,
+            "interval_seconds": 3.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "weapon:3",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "cannon",
+          "paid_level": 2,
+          "primary": "1.4e3",
+          "properties": {
+            "damage_type": 2,
+            "interval_seconds": 3.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (263.6952, 364.427), S: (85.04, 114.0)]",
+      "slot_id": "weapon:3",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    },
+    {
+      "badge_rect": "[P: (484.3088, 475.007), S: (32.0, 22.0)]",
+      "badge_text": "武5",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "laser",
+          "paid_level": 1,
+          "primary": "3.5e2",
+          "properties": {
+            "damage_type": 1,
+            "interval_seconds": 1.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "laser",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "laser",
+          "paid_level": 1,
+          "primary": "3.5e2",
+          "properties": {
+            "damage_type": 1,
+            "interval_seconds": 1.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "weapon:4",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "laser",
+          "paid_level": 2,
+          "primary": "4.2e2",
+          "properties": {
+            "damage_type": 1,
+            "interval_seconds": 1.5
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (462.2238, 385.567), S: (76.17, 86.43999)]",
+      "slot_id": "weapon:4",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    },
+    {
+      "badge_rect": "[P: (450.0, 482.0), S: (32.0, 22.0)]",
+      "badge_text": "防2",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "paid_level": 1,
+          "primary": "1e3",
+          "properties": {
+            "damage_type": 2
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "armour",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "paid_level": 1,
+          "primary": "1e3",
+          "properties": {
+            "damage_type": 2
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "defence:1",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "armour",
+          "paid_level": 2,
+          "primary": "1.2e3",
+          "properties": {
+            "damage_type": 2
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (427.0, 427.0), S: (52.0, 52.0)]",
+      "slot_id": "defence:1",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    },
+    {
+      "badge_rect": "[P: (439.0, 231.0), S: (32.0, 22.0)]",
+      "badge_text": "防3",
+      "comparison": {
+        "affordable": false,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "shield",
+          "paid_level": 1,
+          "primary": "7.5e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "shield",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "shield",
+          "paid_level": 1,
+          "primary": "7.5e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "InsufficientResources",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "defence:2",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "shield",
+          "paid_level": 2,
+          "primary": "9e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "component_rect": "[P: (469.0, 217.0), S: (52.0, 52.0)]",
+      "slot_id": "defence:2",
+      "terminals": {
+        "defence:0": "[P: (66.0, 440.0), S: (220.0, 82.0)]",
+        "defence:1": "[P: (522.0, 440.0), S: (220.0, 82.0)]",
+        "defence:2": "[P: (536.0, 164.0), S: (220.0, 82.0)]",
+        "weapon:0": "[P: (294.0, 129.0), S: (220.0, 82.0)]",
+        "weapon:1": "[P: (52.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:2": "[P: (536.0, 260.0), S: (220.0, 82.0)]",
+        "weapon:3": "[P: (52.0, 350.0), S: (220.0, 82.0)]",
+        "weapon:4": "[P: (536.0, 350.0), S: (220.0, 82.0)]"
+      }
+    }
+  ],
+  "scope": "Only selected badge avoidance; actual main/native/owners, controlled progress and real equip setup; actual GUI selection. No trade/correctness suite rerun.",
+  "source_commit": "5b4f72331038622ce739578fcdf3823a0a0b4716",
+  "source_sha256": "656bd05a055cfdee2b8d33031f45c44be0d561f0faf565cbdc00cbc4b4f262a0"
+}

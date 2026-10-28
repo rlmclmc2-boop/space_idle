@@ -1,0 +1,57 @@
+{
+  "fixed_source_commit": "5b4f72331038622ce739578fcdf3823a0a0b4716",
+  "runtime_source_sha256": "656bd05a055cfdee2b8d33031f45c44be0d561f0faf565cbdc00cbc4b4f262a0",
+  "matches_fixed_git_object": true,
+  "scope": "Only selected badge avoidance; eight real GUI selections; no unrelated regression rerun.",
+  "failures": [],
+  "files": {
+    "evidence/badge-operations.json": {
+      "sha256": "975e0cfac3acc4125335b93dbe3042ce8fdf756acc2923dcb0239c5309798332",
+      "bytes": 19025
+    },
+    "evidence/selected-defence-0.png": {
+      "sha256": "2c3ba20cddcffc38bc6ab7e14b1504ca8b545bb0bc82f54797e79bf05d3de1b4",
+      "bytes": 1438066
+    },
+    "evidence/selected-defence-1.png": {
+      "sha256": "d83b9d240cd04361bb1854721a043440cddf96978bcbb85ea0c31a1ad8712ec7",
+      "bytes": 1437525
+    },
+    "evidence/selected-defence-2.png": {
+      "sha256": "4ccf4ec7d19f64315697cb0d2329b6f03364656c323583773abaf5f204c7ea14",
+      "bytes": 1435979
+    },
+    "evidence/selected-weapon-0.png": {
+      "sha256": "9dd597b6798c3b2982a6f766220d03140543ad3f12ff46d15507563cc3bfd924",
+      "bytes": 1438168
+    },
+    "evidence/selected-weapon-1.png": {
+      "sha256": "d3bb407d21fce69aac244a44c4d569ff90a2e4741f72f37faee76c8062d4a2c9",
+      "bytes": 1441103
+    },
+    "evidence/selected-weapon-2.png": {
+      "sha256": "8f2bbdd3cee4e61283171186ff733067a8bb9b1c792938dc5ce0a178cc502398",
+      "bytes": 1441492
+    },
+    "evidence/selected-weapon-3.png": {
+      "sha256": "436911edb90f58458d86570a2b9c9bc2f068dc0eaeb0cba34ecf2a5d2e1d1b0c",
+      "bytes": 1441326
+    },
+    "evidence/selected-weapon-4.png": {
+      "sha256": "dfa9fe119c8483c2aafb5b89ae31c44aa104ef7e26676102448083b4e5757970",
+      "bytes": 1443418
+    },
+    "README.md": {
+      "sha256": "677ab7d4fbd46b2bd2dd032631b54004b9bf1e335e273fd815cd6e7e7d81de48",
+      "bytes": 2710
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "431630f411573c93ecdde4e63dc5c75c07374e9e03057527b992152974165dda",
+      "bytes": 4201
+    },
+    "capture.log.txt": {
+      "sha256": "2b4c5e8ed3a54445c878f384b282d4547f8b9988fb21e8e72178f990cd0877ed",
+      "bytes": 409
+    }
+  }
+}
