@@ -68,3 +68,56 @@ R1/R2把“持续0%至少1”写成现有行为，与当前setter的准入不符
 双审须选择本次整组/共同意图的实际边界，并核对：所有权与UI认知负担、发布次数/中间状态、正常拒绝及既有fault、是否需要调整现有部分成功说明、具体动作是否有消费者。选择模块具名入口不等于扩成任意命令列表、全局回滚、跨模块批次或新玩法；选择顺序路径也须给出业务顺序留在UI的充分理由。当前保留两案，未先改接口实现。
 
 以上“待选择/两案”的措辞仅属于0d72b88d历史；本次选择已见上节。
+
+## 反应炉真实场景最小展示与局部通知提案（待审，未实施）
+
+本节是现有提案的定向续项，不回写前文077cd522阶段历史。接口/字段与比例的唯一候选正文在[反应炉分册9.2.1](../game-design/contracts/reactor.md#921-待审增补真实展示与局部变化通知)；本节记录来源、实现落点和必要复核。待根线程及反应炉原独审核通过后才实施，main继续暂停。取代本轮聊天中“现有信号+限频全量重读兜底”的初稿，不把旧轮询说成已审方案。
+
+### 固定来源与已确认缺口
+
+- 已审业务基线`09af963cf6f66146e019cecd08353426ab6d6abb`：Reactor已有allocation_plan_preview/apply_allocation_plan、_accepted_plan_readings/_plan_readings、_purchase/_quote及choices_changed；没有实际presentation_model/presentation_changed。反应炉原代码只接纳自己的候选，Scene不能读其私账。当前工作分支HEAD`5267f5f2`的相关Reactor/Economy主体沿此基线；M9新增不作为本项设计依赖。
+- 实际消费者固定[8b78c8a的检查点](https://github.com/rlmclmc2-boop/space_idle/blob/8b78c8a84c62f3fd97df805c539bdcc8f950b69f/space-battleship/docs/verification/reactor-centered-godot/README.md)及同提交[src/ui/reactor_scene.gd](https://github.com/rlmclmc2-boop/space_idle/blob/8b78c8a84c62f3fd97df805c539bdcc8f950b69f/space-battleship/src/ui/reactor_scene.gd)，消费者Git blob为`20e31e3fe29224aee4efabf051f142ff5b34635d`。它已有bind_presentation(reader,context)、_dirty与当前模型驱动stage，但购级按钮从model.purchase_quote读取，预算变化若走_refresh会连带整场景和草稿重预览；被动_refresh还会按shares重新生成金额。这两处须做最小适配，不能拿夹具证明已接真实状态。
+- 等级与当前供能/免费/效果已有实际源；_plan_readings只缺有限ratio/load/has_free。+1原_purchase已复用_quote并核level范围；新报价不调用purchase/payment。_evaluate中free=C×(state.free_charge+free_bonus)，是合法零容量、免费独立显示和饱和比例定义的来源，不新增公式或增长规则。
+
+### 最小实现落点：先审后做
+
+1. **当前展示**：新增Reactor.presentation_model()，从已接纳_state._capacity/_factors/_enabled构造最小脱离结果；不接收新capacity/free inputs来假装actual。_plan_readings增补比例助手，current/target及提交actual共用；按原AmountAPI比较/加法/to_ratio/to_display，不经float重建数量、不重新_evaluate实际状态。纯读不改_state/_prepared_state、随机、通知标记或RunState。
+2. **报价分离**：新增Reactor.purchase_preview(can_pay)，固定+1，复用原_purchase(_state的脱离数据,1,false)及原范围/费用。成本与显示文本只按实际level及会话固定配置失效，可作脱离的模块内小缓存；预算变化只调用can_pay重验该原成本，不重新求幂/重新_quote。返回的缓存嵌套数据不能污染所有者；该展示缓存不进入save、候选接纳或价格真相，实际purchase始终重验。
+3. **Reactor局部合并**：_adopt、成功restore_state、真正refresh_availability变化只标记deferred检查。比较的是最终公开实际事实（level、已接纳C/模块顺序/assigned/free/value及可用准入/读取就绪），不是全状态、输入因子、prepared或字符串显示。Amount只在合法源上用compare判等，表示差异不算实际变化。相同发布、prepare/discard/失败、同帧净回原状态均零通知。多个接纳合成一条changes；发送前更新基准并清queued，发送后不覆盖新重入状态。没有Session全局事件/全域revision/轮询兜底。
+4. **真实预算变化**：Economy新增局部budget_changed(resource_ids)，在下面列出的真实_wallet写入完成点安排deferred比较；notify=false仅维持旧display_changed静默语义，不漏掉新预算事实。payment及验资不写余额；掉落移动/登记和收入窗口变化不得触发该新信号。临时持有首次写入前只读钱包、最终按已接纳_wallet核净差，资源列表脱离后发出，不复制第二份业务余额。
+5. **宿主/消费者**：保留原owner/inputs/payment/publish注入。把presentation reader和quote reader分开绑定（可增加Scene.bind_purchase_quote(reader)），Scene增加独立quote dirty；原choices_changed→整场景invalidate连接改由新的presentation_changed承担，旧面板不变；presentation_changed仅使对应事实失效，level/availability才使+1成本/准入失效；budget_changed仅在实际+1成本resource IDs相交时使可支付性失效。quote dirty只刷新按钮/提示，不执行整场景_refresh、_preview_draft或stage快照上传。_command/command_finished不再成功后无条件invalidate，只处理消息、确认结果和清草稿；成功但实际未变可用已有actual model更新局部控件，不另读提供方。真正变化的标记由局部信号给出，不同步全读；与同帧deferred标记合并后下个可见帧各消费一次。隐藏停所有投影，重开一次新读；stage动画只用实际模型和宿主时钟，草稿不驱动负载。宿主context除game_time/paused外显式给running=公共RunState.is_running()，仅停机禁止业务交互，用户暂停仍沿原准入；不新增RunState广播或每帧模型读。沿既有金额草稿失效语义修正被动shares重算，不改均分或确认命令。
+
+### 外部接纳/刷新路径清单（09af963c固定源码）
+
+Reactor._adopt是正常接纳汇点；restore_state为重建例外，refresh_availability为开放准入事实。不得仅在UI命令成功回调通知而漏掉下列外部路径；也不在任一accept内部同步emit。deferred必须等本轮同步调用栈结束，包含外层世界/星球/船员/钱包及原通知交接完成后才读最终事实。
+
+| 真实路径 | 现有准备/接纳落点 | 本提案如何覆盖 |
+|---|---|---|
+| purchase、allocate_text、distribute、refresh | Reactor._submit→Session.publish_reactor→reactor.accept→_adopt；Session继续更新_reactor_factors/收入/预算与必要退却 | _adopt仅排队，待完整publish/外层调用返回后比最终事实；失败只清prepared，不通知。原业务返回/旧choices顺序保持。 |
+| 新整组金额提交 | apply_allocation_plan→publish_reactor→accept/_adopt，原方法成功后choices_changed | 同一deferred队列；不因为已有choices再重复立即读取。普通拒绝/无净变不发presentation_changed。 |
+| 换舰/换装、无人机/挂设及其他配装成长发布 | _growth_setup→reactor.prepare；publish_equipment_refit在native成功、相关模块接纳后reactor.accept，再接纳预算/船型等 | _adopt涵盖；_growth_setup仅prepare、native拒绝/discard不触发。新信号不改变现有同步回调见到整批已接纳事实的边界。 |
+| 外部世界容量/免费量变化 | publish_world→_publish_world_values按来源变化prepare，native值成功后reactor.accept；星球publish_planet_claim等外层还会接纳/发原模块通知 | 同一deferred排队，不在_publish_world_values内同步发送；外层普通失败丢候选/恢复来源，不靠通知伪造回滚。真正已接纳状态才参与最终比较。 |
+| 进度开放/凝聚解锁 | 进度同步块refresh_availability(...,false)；modules_changed时refresh(...,publish_reactor.bind(false))；随后_notify_progress.publish_availability | 开放准入改变仅排队，接纳后的模块/效果与本轮最终准入共同比较。cache尚不匹配开放集时不可伪装已就绪快照。原choices不代替新实际状态通知。 |
+| refresh_growth及自动岗位触发 | modules_changed→reactor.refresh→publish_reactor；购级自动路径也走purchase/_submit | 不新建旁路通知，同样由_adopt覆盖；自动路径实际不变不广播。 |
+| 初始/恢复/重铸候选 | initialize的_growth_setup→battle.initialize_player→reactor.accept；_restore_modules→restore_state+refresh_availability(false)；prepare_reforge重建候选后publish_equipment_refit | 每个Reactor实例独立队列，未绑定候选不影响当前页面；换Session断旧连接/绑定新实例并一次初读。restore后缺_capacity/_enabled时保持未知，直到真实接纳，不调用prepare补缓存。 |
+
+### Economy钱包写入与无关事件排除（09af963c固定源码）
+
+| 钱包写入点 | 实际来源与时机 | +1可支付性的失效边界 |
+|---|---|---|
+| accept_budget(next,notify) | 原校验后接纳候选预算；Session付款/科研消耗/装备或反应炉购买、奖励/兑换等均经此口。notify=false在同步批次内使用 | 仅真余额净差，deferred到原批次完成；相同预算或本轮净回原值不触发。不要只监听publish_budget_change，避免漏掉静默接纳。 |
+| collect_drop | 原Amount入账后，钱包、收入样本、掉落/标记删除完成为同一领取 | 新信号按真实资源净差；未领取的登记/掉落移动只有display_changed，不进入本信号。零增量或Amount精度使最终余额未变时不触发报价。 |
+| credit_yield | 原quantity>0及Amount.add成功后接纳钱包，再更新样本；离线credit_offline也复用此口 | 最终该资源余额确变才通知；非+1成本资源不触发反应炉报价，收入历史本身不触发。 |
+| restore_state | 完整校验后更换钱包及其他Economy状态 | 当前实例仅净变资源；会话替换另由宿主一次初读/重绑。恢复失败不得排队成功事件。 |
+
+上述是当前四类_wallet赋值路径，不把notify flag、_balance_dirty、display_changed、drop_collected或整个save hash当作余额变化证据。用原Amount.compare把缺键和0视为同余额，不把只改表示的字典差异计为变化。只有临时通知基准，不新增持久化账本/事件回放。消费方预算回调只交集原报价公开costs.keys，不读取Reactor._parameters猜资源。
+
+### 审核后必要验证（本次未执行）
+
+- 原current/target/actual文本、费用、均分、免费量/效果及确认结果与09af相同；展示读取前后_state/prepared/save不变，返回深改无污染。
+- 合法C>0/A=0/F>0仍有真实负载；合法C=0按原公式F=0且E=0，比例0/效果1；缺缓存为未知，C=0/F>0不作合法夹具。极大Amount、有效量超过C时to_ratio有限饱和，canonical文本不被截断。
+- 明确的prepare/discard/发布拒绝窗口零新通知；成功_adopt外部所有路径合并，监听者读到本轮完整事实；同帧多改一次、A→B→A零次、相同结果发布零次，回调重入不被旧快照覆盖。
+- Economy四类真写入逐项核验，notify=false不漏、同预算/零增量/Amount表示差异/本轮净回原值不通知。仅移动/生成/登记掉落、收入窗口/显示刷新零报价失效；不相关资源真变也零反应炉报价更新。
+- 预算只变时，场景model/preview/stage更新次数不增加，原成本_quote计算次数不增加，仅相关+1可支付性重验；实际level变化才重算价。隐藏期零投影，重开各初读一次；动画时钟不读取模型/报价；凝聚集合变更失效旧预览，未知禁用，来源变化保留canonical金额。
+
+本次只固定两份设计文档及检查本地链接/diff，不运行游戏或测试、不改源码/配置/native/保存/主线，不把审核计划写成已通过。原M10文稿WIP保持字节不变，不纳入本提案提交；本线程尚未实际压缩。
