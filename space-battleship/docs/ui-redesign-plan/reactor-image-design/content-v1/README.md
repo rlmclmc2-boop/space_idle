@@ -1,5 +1,7 @@
 # 反应炉新内容画布 image 候选 V1（待用户确认）
 
+**背景后续修订：** 用户认可本版前景，浅色分割板背景退回；[背景 R1 四/三设备与整屏配合图](background-r1/README.md)为最新待审整体观感候选。本页其余图保留为前景基线及历史配合。
+
 作图范围来自整体组固定的 [`reactor-drawing-v1`](https://github.com/rlmclmc2-boop/space_idle/blob/4f4d63d57ddc215453993cce739eaa3eecfc4198/space-battleship/docs/ui-redesign-plan/shared-host-shell/reactor-drawing-v1/README.md)：模块内容本地808×835，安装到宿主(0,65)，常驻安全内区(16,16,776,803)。保留`59dd464d`中央玻璃核心、武器左上/防御右上/炼铁左下/凝聚右下和各自四条短接。重新在整幅内容宽度内组织较轻的象牙装甲、深青结构与工作体；没有沿用旧1024×1536纵板、97px两侧结构带或厚重工业框。**这是供用户选择的新图，不是已获批实现，也不是Godot截图。旧稿实机打磨继续暂停。**
 
 | 状态 | 原始 imagegen 图 | 固定宿主配合图 |
