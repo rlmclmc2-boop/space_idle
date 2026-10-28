@@ -1,0 +1,20 @@
+{
+  "tool": "image_gen.imagegen",
+  "reference_commit": "e78af05f",
+  "reference_image": "docs/ui-redesign-plan/planet-single-side-v5/default-watch.png",
+  "requests": [
+    {
+      "kind": "surface",
+      "prompt": "Revise the provided FLAT unwrapped planet albedo map to match the approved planet scene reference more closely. Output ONLY a flat seamless 2:1 equirectangular texture, no sphere. Prioritize LARGE continent and ocean shapes, clear restful seas, a handful of coherent warm pale-sage land masses. Reduce surface spatial frequency substantially: continent interiors use 10-25 broad soft polygon facets per continent, large muted cream coastal plains, broad sage/olive biome areas, only a few mountain regions. Seas have 3-5 broad quiet teal depth values, not tiny mottled ripples. No dark outlines. No gritty textures, thousands of islands, confetti coastline, white speckles, clouds, shadows, directional lighting, atmosphere, UI or labels. Keep island land around normalized UV (0.432,0.70) and (0.346,0.36) for buildings. Warm ivory land, sage and teal low saturation palette from the approved scene; planetary form and large geography remain primary. Smooth matching left/right ocean seams. Full rectangular 2048x1024 albedo data map.",
+      "transparent_background": false,
+      "output": "surface.png"
+    },
+    {
+      "kind": "clouds",
+      "prompt": "Create a much QUIETER and SPARSER flat 2:1 grayscale equirectangular cloud density texture for the approved planet scene. Black background = zero cloud density. White/gray clouds occupy ONLY ABOUT 15 PERCENT of the entire image, with at least 75-80 percent completely open black gaps. Just TWO broad gently curving weather fronts and 10-16 small soft connected cloud banks distributed among large open spaces. Clouds are clean broad softly faceted cumulus masses, modest soft feathered edges, minimal internal texture. Do NOT make the image full of scattered white dust, tiny speckles, high contrast lace, fractal wisps or hundreds of storm cells. No hurricanes, no detailed satellite-map noise. Few quiet pale gray wisps may bridge a bank but mostly empty. This is a flat seamless grayscale density UV map, NOT a globe, no continents, no color, no lighting or shadows, no UI, labels or frames. Ensure left/right continuity and very quiet poles. The ocean and continents must dominate the eventual globe; this is an understated separate cloud layer. 2048x1024 wide composition.",
+      "transparent_background": false,
+      "output": "cloud-density.png"
+    }
+  ],
+  "post_processing": "none; raw generated PNGs copied unchanged"
+}

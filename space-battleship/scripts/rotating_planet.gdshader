@@ -55,9 +55,9 @@ void fragment() {
         vec3 lit_terrain = terrain;
         vec3 night_tint = vec3(0.20, 0.38, 0.52);
         rgb = lit_terrain * mix(vec3(1.0), mix(night_tint * 0.52, vec3(diffuse), day), shadow_strength);
-        float cloud_density = smoothstep(0.05, 0.78, clouds) * cloud_opacity;
-        float cloud_relief = clamp(0.82 + (clouds - cloud_shadow) * 2.8, 0.56, 1.12);
-        vec3 cloud_lit = vec3(0.95, 0.97, 0.94) * cloud_relief * (0.35 + 0.65 * day);
+        float cloud_density = pow(smoothstep(0.24, 0.84, clouds), 1.35) * cloud_opacity;
+        float cloud_relief = clamp(0.94 + (clouds - cloud_shadow) * 0.8, 0.84, 1.04);
+        vec3 cloud_lit = vec3(0.95, 0.97, 0.94) * cloud_relief * (0.15 + 0.85 * day);
         rgb = mix(rgb, cloud_lit, cloud_density);
         float fresnel = pow(1.0 - normal.z, 3.0);
         rgb += atmosphere_color.rgb * fresnel * glow_strength * (0.3 + 0.7 * day);

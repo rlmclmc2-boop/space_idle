@@ -1,8 +1,8 @@
 extends ColorRect
 ## Reusable sphere with unlit equirectangular maps. Speeds are turns/second.
 ## Owner supplies time: no TIME uniform, hidden/paused views freeze exactly.
-const SURFACE := preload("res://assets/planets/painted-v3/surface.png")
-const CLOUDS := preload("res://assets/planets/painted-v3/cloud-density.png")
+const SURFACE := preload("res://assets/planets/painted-v4/surface.png")
+const CLOUDS := preload("res://assets/planets/painted-v4/cloud-density.png")
 @export var surface_map: Texture2D = SURFACE
 @export var cloud_map: Texture2D = CLOUDS
 @export var surface_speed := 0.006
