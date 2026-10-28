@@ -32,6 +32,7 @@ var pending_row:Dictionary={}
 var prepare_after_frame:=0
 var loading:=Label.new()
 var facility_renderer: Node
+var architecture: Control
 var icon_mode := false
 var planet_id := ""
 var appearance: Dictionary = {}
@@ -63,6 +64,9 @@ func _ready() -> void:
 		layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.show_behind_parent = true
 		add_child(layer)
+	architecture = preload("res://scripts/planet_facility_scene.gd").new()
+	architecture.show_behind_parent = true
+	add_child(architecture)
 	background_layer.draw.connect(_draw_background)
 	orbit_back_layer.draw.connect(_draw_back_orbits)
 	loading.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -80,6 +84,9 @@ func _ready() -> void:
 
 func _layout_globe() -> void:
 	orbit_geometry.clear()
+	if architecture != null:
+		architecture.position = Vector2.ZERO
+		architecture.size = size
 	globe.fit_sphere(size * 0.5, minf(size.x, size.y) * 0.43 / maxf(1.0, globe.extent) if icon_mode else _body_radius())
 	background_layer.queue_redraw()
 	orbit_back_layer.queue_redraw()
@@ -178,6 +185,7 @@ func configure(id: String, row: Dictionary) -> void:
 		facility_renderer.configure(next)
 		facility_renderer.update_pose(phase)
 	if facilities != next:
+		if architecture != null: architecture.configure(next)
 		facilities = next
 		orbit_back_layer.queue_redraw()
 		queue_redraw()
@@ -247,6 +255,7 @@ func advance(dt: float, paused: bool) -> void:
 	globe.advance(step)
 	frame_accumulator = 0.0
 	phase += step
+	if architecture != null: architecture.update_pose(phase, globe.phases.x, _body_radius())
 	if is_instance_valid(facility_renderer):facility_renderer.update_pose(phase)
 	if active:exploration_age += step
 	if completion_age < 3.2:
@@ -320,6 +329,7 @@ func _facility_point(center: Vector2, radius: float, kind: String, angle: float)
 func _draw_facility_paths(center: Vector2, radius: float, front: bool, canvas: CanvasItem) -> void:
 	for entry in facilities:
 		var kind := str(entry.get("type", ""))
+		if kind in ["refinery", "equipment"]: continue
 		var path := OrbitModels.path_for(kind)
 		# Stationary docks have no misleading orbital track.
 		if float(path.speed) == 0.0:continue
@@ -333,6 +343,7 @@ func _draw_facility_paths(center: Vector2, radius: float, front: bool, canvas: C
 		canvas.draw_polyline(orbit_geometry[key], Color(0.52, 0.72, 0.82, (0.17 if front else 0.055) * (1.65 if chosen else 1.0)), 1.0, true)
 
 func _draw_facilities(center: Vector2, radius: float, front: bool, canvas: CanvasItem = null) -> void:
+	if architecture != null: return
 	if canvas == null:canvas = self
 	for entry in facilities:
 		var kind := str(entry.get("type", ""))
