@@ -766,6 +766,8 @@ func _component_rect(row: Dictionary) -> Rect2:
 func _draw_selected_locator() -> void:
     var row:Dictionary=_selected_fact()
     if row.is_empty() or row.dormant:return
+    # An open empty slot has no visible weapon PNG to locate. Its index and workbench remain selectable.
+    if row.category=="weapon" and not _weapon_visible_bounds.has(str(row.equipment_id)):return
     var card:Rect2=Rect2(_slot_label_position(row),Vector2(180,30))
     var target:Rect2=_component_rect(row).grow(5)
     var centre:Vector2=target.get_center()
