@@ -16,7 +16,7 @@
 
 [普通装备整屏](evidence/equipment.png) · [更多入口](evidence/more.png) · [设置](evidence/settings.png) · [通知](evidence/notifications.png) · [装备批量](evidence/equipment-batch.png) · [收起](evidence/collapsed.png) · [真实余额详情](evidence/balances.png)
 
-固定Godot4.7.2、生产Excel及真实native/GameSession，在本原任务内进行必要运行观察。临时驱动加载正式main场景、触发已连接按钮信号和真实Input事件；未建立独立测试工程、未提交测试runner。结果见[23项观察记录](evidence/observations.json)、[实际运行日志](evidence/godot-live.log)、[解析检查](evidence/godot-check.log)、[环境/代码/图片哈希](evidence/environment.json)。
+固定Godot4.7.2、生产Excel及真实native/GameSession，在本原任务内进行必要运行观察。临时驱动加载正式main场景、触发已连接按钮信号和真实Input事件；未建立独立测试工程、未提交测试runner。结果见[23项观察记录](evidence/observations.json)、[实际运行日志](evidence/godot-live.txt)、[解析检查](evidence/godot-check.txt)、[环境/代码/图片哈希](evidence/environment.json)。
 
 23项均通过：启动、15路由、唯一活动视图、原投影、更多门禁、设置/通知切换、输入焦点与释放、实例保持、批量阻断切换及Space/G、收起恢复、8个未开放入口拒绝、正常Space/G正向对照、真实钱包文本对应。实际余额含经济模块返回的非零时空微粒，没有注入余额或解锁。字体cmap另核shared_host全部非ASCII文字符号，无缺字。原生构建成功；Linux绑定和API哈希与原固定环境一致。运行日志只有Xorg驱动不支持VSync警告，无脚本/资源错误。
 
