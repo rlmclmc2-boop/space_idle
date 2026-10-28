@@ -4,6 +4,20 @@ uniform int kind = 0;
 uniform float phase = 0.0;
 uniform float power : hint_range(0.0, 1.0) = 0.0;
 float band(float d, float width) { return 1.0 - smoothstep(width, width + 0.035, abs(d)); }
+float field_hash(vec3 p) {
+	vec3 q = fract(p * vec3(0.1057,0.1113,0.0973));
+	q += dot(q,q.zxy+vec3(17.9,33.1,29.7));
+	return fract(q.x*q.y+q.z);
+}
+float field_noise(vec3 p) {
+	vec3 i = floor(p);
+	vec3 f = fract(p);
+	f = f*f*(3.0-2.0*f);
+	return mix(mix(mix(field_hash(i),field_hash(i+vec3(1,0,0)),f.x),
+		mix(field_hash(i+vec3(0,1,0)),field_hash(i+vec3(1,1,0)),f.x),f.y),
+		mix(mix(field_hash(i+vec3(0,0,1)),field_hash(i+vec3(1,0,1)),f.x),
+		mix(field_hash(i+vec3(0,1,1)),field_hash(i+vec3(1,1,1)),f.x),f.y),f.z);
+}
 void fragment() {
 	vec2 p = UV * 2.0 - 1.0;
 	float r = length(p);
@@ -13,15 +27,23 @@ void fragment() {
 	float glow = 0.0;
 	if (kind == 0) {
 		float z = sqrt(max(0.0, 1.0 - r*r));
-		float strand_wave = sin(p.x*10.0+p.y*3.0+sin(p.y*8.0-phase*0.8)+2.0*sin(p.y*4.0+phase*0.3)+phase*0.65);
-		float vein_wave = sin(p.y*11.0-p.x*4.0+sin(p.x*7.0+phase*0.6)+2.0*cos(p.x*5.0-phase*0.3));
-		float strands = 1.0-smoothstep(0.035,max(0.12,fwidth(strand_wave)*1.3),abs(strand_wave));
-		float veins = 1.0-smoothstep(0.035,max(0.11,fwidth(vein_wave)*1.3),abs(vein_wave));
+		vec3 normal = vec3(p,z);
+		float turn = phase*0.12;
+		vec3 q = vec3(p.x*cos(turn)+z*sin(turn),p.y,z*cos(turn)-p.x*sin(turn));
+		float cloud = field_noise(q*3.6+vec3(phase*0.07,0.0,phase*0.04));
+		float detail = field_noise(q*8.0-vec3(0.0,phase*0.11,phase*0.05));
+		float inner = field_noise(vec3(p*2.4,z*0.6)+vec3(0.0,phase*0.08,phase*0.09));
+		float density = cloud+detail*0.28-0.60;
+		float thickness = max(0.024,fwidth(density)*1.5);
+		float strands = 1.0-smoothstep(thickness*0.2,thickness,abs(density));
+		float veins = pow(max(0.0,1.0-abs(inner-0.49)*8.0),3.0);
 		float edge = 1.0 - smoothstep(0.94, 1.0, r);
-		glow = (strands*0.84 + veins*0.54 + pow(1.0-z, 3.0)*0.45) * power;
-		teal = mix(vec3(0.018,0.10,0.14), teal, 0.12 + glow);
-		teal += vec3(0.35,0.64,0.59)*pow(max(0.0,strands+veins-1.0),2.0)*power*0.4;
-		teal += vec3(0.15,0.48,0.40)*exp(-dot(p,p)*16.0)*power;
+		float light = max(0.0,dot(normal,normalize(vec3(-0.45,-0.6,0.75))));
+		glow = (strands*(0.35+z*0.65)+veins*0.24+pow(1.0-z,3.0)*0.4)*power;
+		teal = vec3(0.012,0.065,0.095)+vec3(0.025,0.12,0.13)*light;
+		teal += vec3(0.12,0.63,0.62)*glow;
+		teal += vec3(0.32,0.68,0.60)*pow(strands,4.0)*power*0.45;
+		teal += vec3(0.12,0.42,0.36)*exp(-dot(p,p)*14.0)*veins*power;
 		alpha = edge * (0.82 + glow*0.15);
 	} else if (kind == 1) {
 		glow = band(r-0.62,0.025)*(0.4+0.6*pow(0.5+0.5*cos(a*3.0-phase*2.0),8.0));
