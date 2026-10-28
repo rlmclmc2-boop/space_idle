@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "fixed_four_layout_selected_by_user_spacecraft_material_revision_pending_independent_review_and_user_confirmation",
+  "status": "fixed_four_layout_selected_pipe_and_frame_only_revision_pending_independent_review_and_user_confirmation",
   "target_client_logical_px": [
     1440,
     900
@@ -18,6 +18,14 @@
     900
   ],
   "images": [
+    {
+      "path": "reactor-four-fixed-pipe-frame-r1-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "72b6bf16192812a019a400ab65c5c24bd2ce26dfdea663c247e0a6866ca1952b"
+    },
     {
       "path": "reactor-four-fixed-raw.png",
       "native_size_px": [
@@ -86,7 +94,7 @@
   "pixel_processing": "none: generator outputs copied unchanged",
   "runtime_evidence": false,
   "geometry_issue": "Latest spacecraft revision divider remains near native x921 / width1586, equivalent logical x836; target x808. Existing image-generation residual, not accepted as exact region compliance.",
-  "review_image": "reactor-four-fixed-space-r1-raw.png",
+  "review_image": "reactor-four-fixed-pipe-frame-r1-raw.png",
   "interaction_display": "All four directly adjustable sliders; only selected condensation device expands precise entry, clear draft and detail; unchanged values not duplicated; whole-plan confirm inactive.",
   "comparison_images": [
     "reactor-four-fixed-raw.png",
@@ -99,5 +107,5 @@
     "Static images do not prove scrolling coupling alignment, input hit areas or natural unlock flow."
   ],
   "selected_layout": "fixed_four_continuous_bays",
-  "revision_scope": "Spacecraft shell and equipment shape/material refinement only; retain layout, connections and control locations; no UI implementation."
+  "revision_scope": "Preserve b351c4d3 core body and four small device bodies; change exposed pipes/collars and layered framing into embedded channels and continuous ship skin only; positions and operations retained."
 }
