@@ -1,0 +1,110 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/workbench-focused"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func inspect(label: String) -> void:
+    var icon:Dictionary=panel._current_icon_geometry.duplicate(true)
+    var bounds:Rect2=icon.visible_rect
+    var frame:Rect2=icon.frame_inner
+    var margins:Dictionary={"left":bounds.position.x-frame.position.x,"right":frame.end.x-bounds.end.x,"top":bounds.position.y-frame.position.y,"bottom":frame.end.y-bounds.end.y}
+    check(icon.safe.encloses(bounds.grow(-0.001)),label+" icon visible contour inside padding")
+    check(absf(icon.displayed_alpha_centre.y-690)<0.001,label+" actual alpha mass reference")
+    var costs:Array=[]
+    for key in panel._cost_cells:
+        var cell:Dictionary=panel._cost_cells[key]
+        if cell.amount.visible:
+            check(cell.amount.get_minimum_size().x<=cell.amount.size.x,label+" visible amount fits "+key)
+            costs.append({"id":key,"name":cell.name.text,"amount":cell.amount.text,"name_rect":cell.name.get_rect(),"amount_rect":cell.amount.get_rect()})
+    check(panel.last_comparison==host.equipment_comparison(panel._selected,panel._candidate,panel._quantity,panel._maximum),label+" unchanged owner quote")
+    records.append({"action":label,"icon":icon,"actual_visible_margins":margins,"cost_cells":costs,"feedback":{"text":panel._payment_state.text,"rect":panel._payment_state.get_rect()},"purchase_rect":panel._purchase.get_rect(),"state":snapshot()})
+func purchase(before:Dictionary,label:String) -> void:
+    await click(panel._purchase)
+    var result:Dictionary=panel.last_result
+    check(result.get("purchase_receipt",{}).get("commit_status")=="accepted",label+" accepted actual native receipt")
+    var receipt:Dictionary=result.purchase_receipt
+    for key in receipt.spent:
+        var expected:Dictionary=host.amount_api.apply("sub_nonnegative",[before.wallet[key],receipt.spent[key]])
+        check(expected.ok and host.amount_api.apply("compare",[expected.value,host.economy.budget()[key]]).scalar==0,label+" exact wallet minus spent "+key)
+    for item in receipt.purchases:
+        var old=before.slots.filter(func(row):return row.id==item.slot_id)[0]
+        var current=host.equipment_slot_facts().filter(func(row):return row.id==item.slot_id)[0]
+        check(current.paid_level-old.paid_level==item.count,label+" actual levels match receipt")
+    records.append({"action":label,"before":before,"result":result.duplicate(true),"after":snapshot()})
+func run() -> void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running() and not host.pause_reasons.has("recovery"),"real main/native startup")
+    if not failures.is_empty():quit(1);return
+    host.set_pause("user",true)
+    await flush()
+    inspect("fresh Frigate pulse, one iron cost and insufficient funds")
+    check(panel.last_comparison.quote.costs.size()==1 and panel._purchase.position.y==770,"single resource compresses action row")
+    await screenshot("01-fresh-single-resource")
+    var c:Dictionary=host.campaign_system.save_state()
+    c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.departure_remaining=0.0;c.state.speed=0.0;c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled progress validates")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    check(host.equipment.equip_slot("weapon:0","cannon",host.equipment_inputs(),host.publish_equipment_refit).ok,"actual owner installs cannon")
+    await flush()
+    inspect("cannon visible contour in same small frame, one resource")
+    await screenshot("02-cannon-single-resource")
+    wallet("2000000","2000")
+    await click(panel._quantity_buttons[0])
+    var before:Dictionary=snapshot()
+    await purchase(before,"single iron +1 purchase")
+    var e:Dictionary=host.equipment.save_state()
+    for slot in e.slots:
+        if slot.id=="weapon:0":slot.paid_level=19;slot.switch_ready_at=0.0
+    check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled level19 validates")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"controlled level publishes to native")
+    panel._dirty=true;await flush()
+    inspect("two resource +1 quote across material boundary")
+    check(panel.last_comparison.quote.costs.size()==2 and panel._purchase.position.y==796,"two resources add one real row")
+    await screenshot("03-two-resource-quote")
+    before=snapshot();await purchase(before,"two resource +1 purchase")
+    inspect("after multi-resource purchase returns to single resource quote")
+    await screenshot("04-after-two-resource-purchase")
+    wallet("1234567890123456789012345678901234567890","9999999999999999999999")
+    await click(panel._quantity_buttons[2])
+    inspect("long MAX multiple resources, full primary values and costs")
+    check(panel.last_comparison.quote.costs.size()==2,"real MAX multi-resource quote")
+    await screenshot("05-long-max-multi-resource")
+    wallet("0","0");await click(panel._quantity_buttons[0])
+    inspect("insufficient funds remains next to single resource and purchase")
+    await screenshot("06-insufficient-after-preview")
+    var hashes:Dictionary={}
+    for path in ["res://src/ui/equipment_panel.gd","res://assets/ui/equipment/hangar/upgrade-console.svg","res://src/main.gd","res://src/game_session.gd","res://src/systems/equipment.gd"]:hashes[path]=FileAccess.get_sha256(path)
+    var f=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    f.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_FOCUSED_SOURCE"),"engine":Engine.get_version_info(),"root_pixels":root.size,"records":records,"source_hashes":hashes,"failures":failures,"scope":"Targeted real new-session/single/multiple resource and icon inset checks only; subsequent wallet/progress/levels controlled, not earned gameplay."},"  "));f.close()
+    print("FOCUSED_WORKBENCH_COMPLETE failures=",failures.size()," records=",records.size())
+    app._close_game()

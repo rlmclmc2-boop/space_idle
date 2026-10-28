@@ -1,5 +1,7 @@
 # 装备机库静态背景
 
+最新局部费用/图标窄修：下文来源与旧布局记录保留为历史。当前 `c22735c3` 只删原 `upgrade-console.svg`四条固定费用横分隔；左台按真实资源行数局部收缩42/16px，标题/主值/小框及右台保持。主图标按可见alpha区域与光学重心留内边距，正式PNG/manifest不改；背景PNG保持原始字节，仅运行时分段显示。具体位置、同版实图和待原审边界见[定向交接](../../../../docs/verification/equipment-hangar-godot/workbench-focused/README.md)，当前源hash追加于sources.json，不把历史台身252px或旧支承用途当作现行全部布局。
+
 图04确认后授权的Godot装备实施素材。`hangar-console.png`仅包含空机库、停泊台和留白实体操作台，不含舰船、炮台、文字、按钮或数值。工具原PNG完整复制，提示词、输入与输出hash见`sources.json`；原输出保留在其记录路径。
 
 Godot在左808×900模块内，将此图作为(0,85,808,815)的背景显示；这是材质显示变换，不是舰体/挂点/战斗几何。正式舰体仍消费`assets/ui/ships/manifest.json`，四种武器消费`assets/weapons/fleet_20261019/manifest.json`及PNG，防御图标沿用既有SVG。本图不提供canonical武器身份、控制、报价或业务。

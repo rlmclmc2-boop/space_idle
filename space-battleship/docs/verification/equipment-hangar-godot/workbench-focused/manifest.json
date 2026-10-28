@@ -1,0 +1,106 @@
+{
+  "runtime_source_commit": "c22735c3d9519789eda7c5b89a5367693a49c881",
+  "baseline_runtime": "526121392422d459d6b9aa7a1252e36d85b0b4ed",
+  "window": [
+    1440,
+    900
+  ],
+  "runtime_changed_paths": [
+    "src/ui/equipment_panel.gd",
+    "assets/ui/equipment/hangar/upgrade-console.svg"
+  ],
+  "captured_source_hashes": {
+    "res://assets/ui/equipment/hangar/upgrade-console.svg": "a31cad4dc3f1246226897ffa0d1fccd3855ac23d134e248c0d4f6b057dd1b83c",
+    "res://src/game_session.gd": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+    "res://src/main.gd": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+    "res://src/systems/equipment.gd": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+    "res://src/ui/equipment_panel.gd": "d815aac6efccb4c91c2706c09e1148ee55140e942acb351fc727d3f2f36f4060"
+  },
+  "files": [
+    {
+      "path": "01-fresh-single-resource.png",
+      "sha256": "fa61abc16a84de5b9af00ae78c92076eb4038d763d5f6dd5f6355d3bb6467517",
+      "bytes": 1530351,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "02-cannon-single-resource.png",
+      "sha256": "27e9a7b28bf54431a590b1b12d7dd0c1cd848395c92ff223b0d6971a4d4c23a5",
+      "bytes": 1531954,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "03-two-resource-quote.png",
+      "sha256": "018ea95eb7b46b0ebf57ab7e2a90dcb3c95b0a1e66e6b8f8c456981bcba7c6e8",
+      "bytes": 1543938,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "04-after-two-resource-purchase.png",
+      "sha256": "0e3ba75115bc20a17b7e2a1bbc8baaa2c4dd32685014a2194b47266ecc8c54af",
+      "bytes": 1553783,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "05-long-max-multi-resource.png",
+      "sha256": "d700146ad7171d6dec44c168d256830d0dafeb466c49dfe13534939b0df2a4f3",
+      "bytes": 1553704,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "06-insufficient-after-preview.png",
+      "sha256": "a381f5f64d4c3838b42c8e0369331701bea28b1004f5df2de642f2cc3b12cac4",
+      "bytes": 1551016,
+      "dimensions": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "README.md",
+      "sha256": "62abf12eba387c1aebe024b579904226b8298f89694605ce5c04b1aede8ea172",
+      "bytes": 5575
+    },
+    {
+      "path": "capture-driver.gd.txt",
+      "sha256": "fb636b827b673cda2d9095f8dd7ecb088aabf68a3792bf7c00ade1666cae1c2b",
+      "bytes": 8163
+    },
+    {
+      "path": "capture.log.txt",
+      "sha256": "77641de2fe3ba46795078a4f84d573d900ef863d11f37b786889bd300e28518f",
+      "bytes": 416
+    },
+    {
+      "path": "check.log.txt",
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    {
+      "path": "operations.json",
+      "sha256": "1806717f5d5a381d66a4edb26bd5fb5320868d53f468d24407db4126b4c68231",
+      "bytes": 42611
+    },
+    {
+      "path": "preserved-boundaries.json",
+      "sha256": "6aa062254269f6517e604d3f3846739a91b0f5c78e718c744efae1c5ceb98aed",
+      "bytes": 1987
+    }
+  ],
+  "scope": "Only icon visible inset/visual centre and compact actual cost rows.8 targeted records,0 failures. Full operation/protection suite not repeated. Six raw PNGs actually viewed."
+}

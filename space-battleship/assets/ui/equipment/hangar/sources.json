@@ -109,5 +109,14 @@
     ],
     "scope": "Only the existing left workbench interior; object beam, value inset, resource ledger and action sill. Ship name now letters directly on the original hangar beam; no title plaque.",
     "formal_assets": "All hull and weapon PNGs/manifests unchanged. Defence attachment markers are separate UI presentation points, not weapon-manifest geometry."
+  },
+  "workbench_compact_revision": {
+    "runtime_source_commit": "c22735c3d9519789eda7c5b89a5367693a49c881",
+    "asset": "upgrade-console.svg",
+    "sha256": "a31cad4dc3f1246226897ffa0d1fccd3855ac23d134e248c0d4f6b057dd1b83c",
+    "source": "Narrow authored edit of the existing UI SVG: removed the four fixed fee separators only; no new ImageGen calls or formal identity change.",
+    "display": "Current left workbench locally contracts42px for one resource or16px for two, preserving title/primary/icon coordinates; right comparison and808x900 root unchanged.",
+    "icon": "One initialization-only32x32 alpha sample per official icon; main icon contained inside true bezel with optical calibration; formal textures and mount anchors intact.",
+    "evidence": "docs/verification/equipment-hangar-godot/workbench-focused/README.md"
   }
 }

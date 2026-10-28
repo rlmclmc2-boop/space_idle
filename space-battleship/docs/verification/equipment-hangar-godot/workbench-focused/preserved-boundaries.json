@@ -1,0 +1,58 @@
+{
+  "baseline": "526121392422d459d6b9aa7a1252e36d85b0b4ed",
+  "current": "c22735c3d9519789eda7c5b89a5367693a49c881",
+  "unchanged_functions": [
+    {
+      "function": "_economy_display_changed",
+      "sha256": "0976ee4885d03766cef07770a9d504ff6effa154c85f69e0c723fc5ae65ba004",
+      "identical": true
+    },
+    {
+      "function": "_refresh_batch",
+      "sha256": "fc3fa8d724a9538f7fe3dffeb0ecc89f96c7df8e3368993e956eac7f3dcb6388",
+      "identical": true
+    },
+    {
+      "function": "_accept_result",
+      "sha256": "83a9f579f13c32f41ce09ccabc39cccf8e21eb407d28943c797a35a5e2c3e0ae",
+      "identical": true
+    },
+    {
+      "function": "_refresh_cooldown",
+      "sha256": "837407ab557c40c3a4c760c2ae189ac2fd378dc8585d8affa8384fb2f205850b",
+      "identical": true
+    },
+    {
+      "function": "_buy",
+      "sha256": "a1de8f4d1106e79eb14286d77beeadcb558b238a3196ccd9b672dd1996c95cca",
+      "identical": true
+    },
+    {
+      "function": "_equip",
+      "sha256": "a5a27d765e63348048aa89dac15612b917d6d46f823a16e96d10d2e407d1695d",
+      "identical": true
+    },
+    {
+      "function": "_buy_all",
+      "sha256": "d7cdde97f3237e857b07c9813986d6390411cb374dd9f25818ae76b2c7432796",
+      "identical": true
+    },
+    {
+      "function": "_refresh",
+      "sha256": "ed6a4cebb77f796ca3ad349c7b98bc0f8b91b2f926d7eb1e2c65e3b126ff73db",
+      "identical": true
+    },
+    {
+      "function": "_draw_selected_locator",
+      "sha256": "799762593aa865bfd40f7bdc4d8039ab805f3e8f15357341e49e1c6d3896352c",
+      "identical": true
+    },
+    {
+      "function": "_slot_label_position",
+      "sha256": "70101037ce6d231b60854ecbf2bbded4919a23663cb82c723804081c04b27aaf",
+      "identical": true
+    }
+  ],
+  "comparison_difference": "Only main icon placement call changed; owner comparison/quote/invalidation and other code identical",
+  "scope": "Static preservation evidence; prior full runtime protection evidence stays at526/30a, not rerun or claimed as a new full suite"
+}
