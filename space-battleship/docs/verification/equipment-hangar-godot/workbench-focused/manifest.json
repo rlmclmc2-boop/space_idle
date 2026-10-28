@@ -73,8 +73,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "62abf12eba387c1aebe024b579904226b8298f89694605ce5c04b1aede8ea172",
-      "bytes": 5575
+      "sha256": "31527263f6203fc1b0ef22f62d9672a87dc5a2dfd0fc9f123d9720b6a67fad92",
+      "bytes": 5922
     },
     {
       "path": "capture-driver.gd.txt",
@@ -102,5 +102,21 @@
       "bytes": 1987
     }
   ],
-  "scope": "Only icon visible inset/visual centre and compact actual cost rows.8 targeted records,0 failures. Full operation/protection suite not repeated. Six raw PNGs actually viewed."
+  "scope": "Only icon visible inset/visual centre and compact actual cost rows.8 targeted records,0 failures. Full operation/protection suite not repeated. Six raw PNGs actually viewed.",
+  "limited_review_status": {
+    "source": "Root thread relay of original dual review",
+    "runtime": "c22735c3d9519789eda7c5b89a5367693a49c881",
+    "evidence": "121a13cdba15a171fef47afaf2dcc05d23d97681",
+    "closed": [
+      "icon visible inset and optical centre",
+      "single/multiple resource cost density"
+    ],
+    "excluded": [
+      "defence feedback",
+      "whole lower workflow",
+      "shared host",
+      "overall visual approval"
+    ],
+    "runtime_images_records_unchanged": true
+  }
 }

@@ -1,0 +1,58 @@
+{
+  "base_commit": "121a13cdba15a171fef47afaf2dcc05d23d97681",
+  "runtime_unchanged": "c22735c3d9519789eda7c5b89a5367693a49c881",
+  "records": [
+    {
+      "name": "defence-shield-v3",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-70cdcb1e-3aae-43b1-821b-f9779f4c8f82.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-shield-v3.png",
+      "sha256": "4f992c521ff5872505e760ce8fa833ab333dca2628b3bd79c3a942ea46ac52a6",
+      "dimensions": [
+        1585,
+        992
+      ],
+      "prompt_file": "defence-shield-v3-prompt.txt",
+      "prompt_sha256": "7cd967f2d5e9eadcf55de6fc2ded1e049c01824460256c2fa73ecebf9ce53942",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-shield-v2.png",
+          "sha256": "9a62c771a5b05dcc98e28d3f36c798f5ddd1cc3122f839c923b2be8ed36cc823"
+        },
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-armour-v2.png",
+          "sha256": "9b75cbfdb971a22c0df47aa04e325e4916fdec62a02af3af9a8a6c2730960c49"
+        }
+      ],
+      "inspection": "Actually viewed; residual smaller hull-joint badges remain. Process WIP only.",
+      "processing": "Unedited tool original PNG, no crop/resize/composite/programmatic drawing"
+    },
+    {
+      "name": "defence-shield-v4",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-a845247b-29fd-4752-9581-e72f7eb7ed71.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-shield-v4.png",
+      "sha256": "5a810b9d911a3d2715d6f0cfcba3f1c6f936897e45bd6c7006c254d9efd87705",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "defence-shield-v4-prompt.txt",
+      "prompt_sha256": "f2fc2bf0753a15324d2b389df2975db963b3276302b710fdccaadc1713221ec9",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-armour-v2.png",
+          "sha256": "9b75cbfdb971a22c0df47aa04e325e4916fdec62a02af3af9a8a6c2730960c49"
+        }
+      ],
+      "inspection": "Actually viewed; joint proxy badges removed. Whole-hull UI focus and D1 selection only. Lower primary1200→1500 and armour-equipped state are generator errors, not real facts or proposed lower changes. Pending original review/user confirmation.",
+      "processing": "Unedited tool original PNG, no crop/resize/composite/programmatic drawing"
+    }
+  ],
+  "retained_armour": {
+    "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/defence-armour-v2.png",
+    "sha256": "9b75cbfdb971a22c0df47aa04e325e4916fdec62a02af3af9a8a6c2730960c49",
+    "regenerated": false,
+    "inspection": "Re-viewed original armour v2; preserve as comparison, pending review"
+  }
+}
