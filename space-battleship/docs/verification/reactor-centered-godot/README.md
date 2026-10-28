@@ -2,6 +2,12 @@
 
 **当前交付状态：Godot实机视觉不合格，退回打磨。** `59dd464d`原设计仍有效，用户指出的是设计稿与实物品质差距过大，并未要求重新选择设计方向或审批设计稿。`e77b572b`/r16仅作业务、鼠标交互和同源锚点几何的历史验证记录，不是当前可交付画面。保留已验证Reactor/Economy接口和绑定，继续授权反应堆内部真实Godot品质提升。共享外框及导航归整体界面线程。
 
+## 真实Godot内部品质打磨（新候选，待视觉复核）
+
+在不改`src/main.gd`、Reactor/Economy计算或正确同源锚点的范围内，`src/ui/reactor_stage.gd`接入两张新原生无字三/四设备安装图（来源和SHA见[资产记录](../../assets/ui/reactor/centered-v1/README.md)）：空孔变为武器放大器、盾面、炼铁腔与条件开放后的凝聚晶体，中央玻璃球有可见体积；卸掉旧四块厚矩形控制台和底部长壳。`working_fields.gdshader`的核心层只叠运动亮丝，不再以不透明色团遮住玻璃球；零负载时局部内腔压暗。四设备短读数与滑杆转到较浅的深青托架，下沿按容量/已配/剩余、象牙色购级和次级操作分区。侧部是程序绘制的结构纹理，机器本体仍以同一0.6比例投影，没有拉伸补宽。
+
+[三设备零负载整屏](evidence/reactor-quality-r4-three-zero.png)、[三设备已接纳负载](evidence/reactor-quality-r4-three-active.png)、[四设备运行帧A](evidence/reactor-quality-r4-four-active-t0.png)、[帧B](evidence/reactor-quality-r4-four-active-t1.png)由同一Godot4.7.2/Xorg:99/native Session的[驱动](evidence/reactor-quality-r4-driver.gd.txt)和[日志](evidence/reactor-quality-r4.log.txt)固定。夹具仍通过Campaign公开接口临时授予反应堆/凝聚开放，四设备均分确认及购级预算按原驱动执行；不是凝聚自然开放或自然收入证据。日志记录四设备`load>0`、可见35帧局部更新315次、隐藏35帧局部更新0次，场景入口`--check-only`通过。Mesa llvmpipe帧时不证明目标硬件性能。静态原图仍保留识别光，零负载遮罩只使内腔变暗；两侧结构带、局部托架密度、顶端与共享导航的整屏关系仍须根线程/独审及用户核对，**本候选未宣称V3视觉通过**。
+
 ## 内部比例修正概念（待审，未接入Godot）
 
 按`59dd464d`认可的材质/光照/对比/排版品质及用户对`r16`的退回意见，先制作[左模块内部概念图](evidence/reactor-interior-concept-r17.png)：原生1189×1323，宽高比对应808×900模块；原件为`/workspace/generated_images/exec-2d4da60e-46d4-4359-bf0b-3e2ca9e288b1.png`，SHA256 `4148d6f808e265e6aecbf2d7cdc1d145a99994294eb144dd04bf815be834cb65`，Git副本未裁切/拼贴/后加字。图中核心有立体涡流，四设备可辨工作体、四短接及四滑杆同屏，底部读数与主控重新分区；设备壳与控制托架仍偏密，滑杆拇指的图示比例、中文字及真实操作净空须复核。它**只是内部比例及局部素材参考，不替代`59dd464d`有效设计，也不是完整整屏、可直接复用的Godot贴图或V3通过证据**；背景与设备等比尺寸不同，不能靠拉伸整张机器图补边。早两次内部生成图仍有厚框/大矩形或越过左侧约808宽的构图问题，未列候选。可继续局部效果核对并直接打磨既有Godot实机，不等待重新确认设计方向。

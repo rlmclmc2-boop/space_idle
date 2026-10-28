@@ -1,8 +1,7 @@
 extends Control
 ## Local scene geometry only. Powers are already-adopted owner presentation values.
-const SUPPORTS = preload("res://assets/ui/reactor/centered-v1/supports.png")
-const MOUNTING_PLATE = preload("res://assets/ui/reactor/centered-v1/mounting-plate-r2.png")
-const MOUNTING_PLATE_THREE = preload("res://assets/ui/reactor/centered-v1/mounting-plate-three-r2.png")
+const MOUNTING_PLATE = preload("res://assets/ui/reactor/centered-v1/mounting-plate-quality-four.png")
+const MOUNTING_PLATE_THREE = preload("res://assets/ui/reactor/centered-v1/mounting-plate-quality-three.png")
 const FIELD = preload("res://assets/ui/reactor/centered-v1/working_fields.gdshader")
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const PLATE_SCALE := 0.6
@@ -75,7 +74,7 @@ func show_snapshot(ids: Array, loads: Dictionary, selected: String) -> void:
 	_loads = loads.duplicate()
 	_selected = selected
 	for id in _fields:
-		_fields[id].visible = id == "core" or (id in _enabled and float(_loads.get(id,0.0)) > 0.0)
+		_fields[id].visible = (id == "core" or id in _enabled) and float(_loads.get(id,0.0)) > 0.0
 		_fields[id].material.set_shader_parameter("power", clampf(float(_loads.get(id, 0.0)), 0.0, 1.0))
 	for id in _connections:
 		_connections[id].visible = id in _enabled and float(_loads.get(id,0.0)) > 0.0
@@ -112,16 +111,48 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 func reset_clock() -> void:
 	_clock = -1.0
 
+func _draw_side_surface(left: bool) -> void:
+	var start_x: float = 0.0 if left else PLATE_ORIGIN.x + 1024.0 * PLATE_SCALE
+	var width: float = PLATE_ORIGIN.x
+	draw_rect(Rect2(start_x, 65, width, 835), Color("0c3540"))
+	for offset in [13.0, 34.0, 61.0, 82.0]:
+		var x: float = start_x + offset
+		draw_line(Vector2(x, 65), Vector2(x, 900), Color("25616c", 0.47), 1.0, true)
+	for y in [217.0, 456.0, 711.0]:
+		draw_line(Vector2(start_x + 9, y), Vector2(start_x + width - 9, y), Color("144a55", 0.9), 2.0, true)
+		draw_line(Vector2(start_x + 25, y + 3), Vector2(start_x + width - 25, y + 3), Color("6fb8b1", 0.35), 1.0, true)
+	for y in [148.0, 366.0, 619.0, 776.0]:
+		draw_rect(Rect2(start_x + 45, y, 7, 23), Color("083742"))
+		draw_line(Vector2(start_x + 48, y + 4), Vector2(start_x + 48, y + 19), Color("31aeb5", 0.7), 2.0, true)
+
 func _draw() -> void:
 	diagnostics.draws += 1
-	draw_rect(Rect2(0,0,808,900),Color("102c38"))
 	var plate: Texture2D = MOUNTING_PLATE if "condensation" in _enabled else MOUNTING_PLATE_THREE
-	# Stations, consoles and buried conduits share one undistorted transform.
+	# Only the peripheral surface fills the module; machinery retains one undistorted transform.
+	_draw_side_surface(true)
+	_draw_side_surface(false)
 	draw_texture_rect(plate, Rect2(PLATE_ORIGIN,Vector2(1024,1536)*PLATE_SCALE), false)
-	for x in [PLATE_ORIGIN.x,PLATE_ORIGIN.x+1024*PLATE_SCALE]:
-		draw_line(Vector2(x,66),Vector2(x,797),Color("34717a"),2.0,true)
+	# The static artwork identifies each part; unpowered glass is subdued so
+	# its illustrated highlights do not read as a running device.
+	for id in ["core"] + _enabled:
+		if float(_loads.get(id, 0.0)) <= 0.0:
+			draw_circle(_centre(id), 105.0 if id == "core" else 48.0, Color("05232d", 0.57), true, -1.0, true)
 	draw_rect(Rect2(0, 0, 808, 65), Color("efeede"))
-	draw_texture_rect_region(SUPPORTS,Rect2(158,797,491,100),Rect2(1031,747,491,100))
-	# All housings and couplings are now one source image and one transform.
+	for id in _enabled:
+		var layout: Dictionary = control_layout(str(id))
+		var top_left: Vector2 = layout.effect - Vector2(12, 5)
+		var width: float = 166.0
+		var height: float = 78.0
+		var shelf := PackedVector2Array([
+			top_left + Vector2(0, 9), top_left + Vector2(9, 0),
+			top_left + Vector2(width - 9, 0), top_left + Vector2(width, 9),
+			top_left + Vector2(width, height - 9), top_left + Vector2(width - 9, height),
+			top_left + Vector2(9, height), top_left + Vector2(0, height - 9)])
+		draw_colored_polygon(shelf, Color("082f3a", 0.90))
+		draw_line(top_left + Vector2(11, 1), top_left + Vector2(width - 11, 1), Color("7ac5ba", 0.75), 1.0, true)
+	# Quiet master-control surface keeps hierarchy below the operating machinery.
+	draw_rect(Rect2(24, 809, 760, 77), Color("092d38", 0.88))
+	draw_line(Vector2(36, 810), Vector2(772, 810), Color("56a5a7", 0.7), 1.0, true)
+	draw_line(Vector2(409, 822), Vector2(409, 870), Color("6b9694", 0.42), 1.0, true)
 	for id in _enabled:
 		if str(id) == _selected: draw_arc(_centre(id), 113, -0.18, 0.18, 12, Color("81c9bf"), 3, true)

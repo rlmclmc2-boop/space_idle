@@ -100,7 +100,7 @@ func _label(point: Vector2, width: float, font_size: int = 16) -> Label:
 	add_child(label)
 	return label
 
-func _button(text: String, rect: Rect2, action: Callable) -> Button:
+func _button(text: String, rect: Rect2, action: Callable, primary: bool = false) -> Button:
 	var button := Button.new()
 	button.text = text
 	button.position = rect.position
@@ -109,12 +109,14 @@ func _button(text: String, rect: Rect2, action: Callable) -> Button:
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxFlat.new()
 		box.bg_color = Color("245963") if state in ["hover","pressed"] else Color("173e4b")
-		if state == "disabled": box.bg_color = Color("344b50")
-		box.border_color = Color("89bfb6") if state == "focus" else Color("58767a")
+		if primary: box.bg_color = Color("fff2d7") if state != "disabled" else Color("465e60")
+		if state == "disabled" and not primary: box.bg_color = Color("163945", 0.55)
+		box.border_color = Color("89bfb6") if state == "focus" else Color("58767a", 0.8)
+		if primary: box.border_color = Color("d4b373")
 		box.set_border_width_all(1)
 		box.set_corner_radius_all(7)
 		button.add_theme_stylebox_override(state, box)
-	button.add_theme_color_override("font_color", Color("e9eee0"))
+	button.add_theme_color_override("font_color", Color("173d4a") if primary else Color("e9eee0"))
 	button.add_theme_color_override("font_disabled_color", Color("849a9c"))
 	button.pressed.connect(action)
 	add_child(button)
@@ -128,11 +130,11 @@ func _build() -> void:
 	_level.add_theme_color_override("font_color", Color("315662"))
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
-		var effect := _label(layout.effect,float(layout.width),16)
+		var effect := _label(layout.effect,float(layout.width),18)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply,float(layout.width),11)
+		var supply := _label(layout.supply,float(layout.width),14)
 		supply.size.y = 24
-		supply.add_theme_color_override("font_color", Color("a5c3bf"))
+		supply.add_theme_color_override("font_color", Color("c1dfd9"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
 		slider.position = layout.slider
@@ -167,12 +169,12 @@ func _build() -> void:
 		add_child(slider)
 		_rows[id] = {"effect":effect, "supply":supply, "slider":slider}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(194,816),430,13)
+	_budget = _label(Vector2(45,833),365,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_purchase = _button("升级",Rect2(194,842,142,29),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)))
-	_equal = _button("均分",Rect2(344,842,62,29),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认调配",Rect2(414,842,118,29),func(): _command(_submit))
-	_restore = _button("还原",Rect2(540,842,76,29),_reset)
+	_purchase = _button("升级",Rect2(427,828,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(586,833,62,36),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(656,833,66,36),func(): _command(_submit))
+	_restore = _button("还原",Rect2(729,833,53,36),_reset)
 	_notice = _label(Vector2(278,91),252,14)
 	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_notice.size.y = 68
@@ -265,7 +267,7 @@ func _show_current_readings() -> void:
 		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 	_level.text = "等级 " + str(_model.level)
-	_budget.text = "可调容量 " + PlayerText.number(str(_model.capacity)) + "     剩余 " + PlayerText.number(str(_model.remaining))
+	_budget.text = "容量 " + PlayerText.number(str(_model.capacity)) + "   已配 " + PlayerText.number(str(_model.allocated)) + "   剩余 " + PlayerText.number(str(_model.remaining))
 	_budget.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
 
 func _valid_model(model: Dictionary) -> bool:
@@ -372,7 +374,7 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		for row in _preview.target.modules: _canonical[str(row.id)] = str(row.manual)
 	_notice.text = "调配草稿"
 	_message_until = 0
-	_budget.text = "草稿分配 " + PlayerText.number(str(_preview.target.allocated)) + "     剩余 " + PlayerText.number(str(_preview.target.remaining))
+	_budget.text = "容量 " + PlayerText.number(str(_preview.target.capacity)) + "   草稿 " + PlayerText.number(str(_preview.target.allocated)) + "   剩余 " + PlayerText.number(str(_preview.target.remaining))
 	_budget.tooltip_text = "草稿容量 " + str(_preview.target.capacity) + " / 已分配 " + str(_preview.target.allocated) + " / 剩余 " + str(_preview.target.remaining)
 	for row in _preview.target.modules:
 		var id: String = str(row.id)

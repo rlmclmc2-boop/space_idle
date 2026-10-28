@@ -37,11 +37,11 @@ void fragment() {
 		float rim = pow(1.0-z, 2.5);
 		float spiral = sin(a * 2.0 + r * 11.0 - phase * 0.65 + cloud * 1.5);
 		float ribbon = pow(max(0.0, spiral), 8.0) * smoothstep(0.12,0.4,r) * (1.0-smoothstep(0.74,0.98,r));
-		teal = vec3(0.012,0.09,0.13) + vec3(0.025,0.23,0.28) * luminous_gas;
-		teal += vec3(0.035,0.43,0.46) * (0.32 + 0.68 * luminous_gas) * power;
-		teal += vec3(0.22,0.79,0.76) * (centre * 0.50 + specular * 0.55 + ribbon * 0.22) * power;
-		teal += vec3(0.17,0.70,0.67) * rim * power;
-		alpha = 1.0 - smoothstep(0.965,1.0,r);
+		// The illustrated glass sphere carries the volume and shadows. Add only
+		// moving light on top so the shader cannot flatten it into a teal disc.
+		teal = vec3(0.23,0.88,0.89) + vec3(0.35,0.11,0.03) * luminous_gas;
+		alpha = (ribbon * 0.43 + centre * 0.16 + specular * 0.12 + rim * 0.09) * power;
+		alpha *= 1.0 - smoothstep(0.88,1.0,r);
 	} else if (kind == 1) {
 		float focus = exp(-dot(p,p)*8.0);
 		float blades = pow(0.5+0.5*cos(a*3.0-phase*2.0),8.0);
