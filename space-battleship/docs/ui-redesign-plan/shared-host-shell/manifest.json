@@ -14,7 +14,12 @@
   },
   "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
-  "scope": "Shared host only. Module equipment is a placement reference from rejected visual candidate; original teams own internal redesign. Generated image is not a pixel-accurate installation map. regions.svg and README coordinates are the geometry proposal.",
+  "scope": "Shared host only. Existing reactor presentation is a placement reference with current visual quality rejected; 59dd464d internal direction remains valid. Original teams own internal design and polish. Generated image is not a pixel-accurate installation map. regions.svg and README coordinates are the geometry proposal.",
   "implementation_changed": false,
-  "review_status": "pending-root-original-review-and-user-confirmation"
+  "review_status": "pending-root-original-review-and-user-confirmation",
+  "module_direction_status": {
+    "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
+    "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
+    "host": "Shared host ownership and boundary unchanged; no takeover of module internal design."
+  }
 }
