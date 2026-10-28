@@ -42,8 +42,8 @@
     },
     {
       "file": "README.md",
-      "sha256": "dc6c55a39f47b4fc15d67ceb0e5a2d44df37872035ac5e2482fa0b05a5ec91df",
-      "bytes": 6968
+      "sha256": "dc5c30ef93faa353b60c853396ac0c67e9393f0727f2700ad3bc9507dc37776d",
+      "bytes": 8253
     },
     {
       "file": "baseline-source-replay.py.txt",
@@ -340,5 +340,27 @@
     "operations": []
   },
   "unknown_case_scope": "Presentation boundary input only. No actual native fatal or financial action is fabricated. Known partial receipts use real owner/native commands separately.",
-  "status": "Candidate awaiting original independent review, not self-accepted."
+  "status": "Original independent review confirmed the four named blockers and corresponding original regressions; waiting for user acceptance. Runtime source/assets/config/evidence frozen; no overall game, long-term performance, all-combinations/poses or cross-platform approval.",
+  "review_status": {
+    "authority": "Original independent review confirmation relayed by root thread",
+    "reviewed_evidence_commit": "12c3f87ae67be66f908a29d2462e0786b827968a",
+    "reviewed_source_commit": "94040a18b6616af78fa52c07986331d2e943d4f3",
+    "accepted_scope": [
+      "unknown submission outcome presentation",
+      "running economy notification dependency filtering",
+      "free weapon/defence power allocation comparison invalidation",
+      "uniform battle projection and actual edge pickup"
+    ],
+    "original_operation_regressions": "maintained",
+    "user_acceptance": "pending; actual Godot image delivered by root",
+    "frozen": true,
+    "not_covered": [
+      "long-term performance",
+      "all combinations and poses",
+      "cross-platform Windows/DPI",
+      "other pages",
+      "formal release",
+      "overall game acceptance"
+    ]
+  }
 }
