@@ -1,0 +1,108 @@
+{
+  "source_commit": "bf359c0d9073e064f71028958a21a649b3951875",
+  "tool": "image_gen.imagegen (callable image_gen__imagegen)",
+  "status": "generated design for independent review; not accepted layout or game screenshot",
+  "target": {
+    "client": [
+      1440,
+      900
+    ],
+    "equipment": [
+      808,
+      900
+    ],
+    "battle": [
+      632,
+      900
+    ]
+  },
+  "references": [
+    {
+      "file": "docs/ui-redesign-plan/g1-internal/evidence/g2-quality-r5/after/work-equipment.png",
+      "sha256": "3ebf829b839694e366d475f619a46c20266372f5a32dfc01ab0c6ce272b4c146",
+      "bytes": 921773,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "assets/ui/ships/fleet_20261019/03-cruiser.png",
+      "sha256": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304",
+      "bytes": 257785,
+      "pixels": [
+        768,
+        768
+      ]
+    },
+    {
+      "file": "assets/weapons/fleet_20261019/laser.png",
+      "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936",
+      "bytes": 342379,
+      "pixels": [
+        541,
+        620
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "file": "draft-01.png",
+      "original_output": "/workspace/generated_images/exec-72953a43-3e7d-4a26-b476-f4ebe74878e0.png",
+      "sha256": "7d7ed32a578d8c16bed32010395667267b7cad85e0b45414e536222e679ecac7",
+      "bytes": 2034949,
+      "pixels": [
+        1586,
+        992
+      ]
+    },
+    {
+      "file": "draft-02.png",
+      "original_output": "/workspace/generated_images/exec-bf26ae25-49e4-4ca9-9767-63eefb423584.png",
+      "sha256": "230cf8401ac463daecde4c819ef942d62840fd8364da0335d02e67944fb121cc",
+      "bytes": 2406041,
+      "pixels": [
+        1586,
+        992
+      ]
+    },
+    {
+      "file": "equipment-design-03.png",
+      "original_output": "/workspace/generated_images/exec-09075969-8d44-4ef1-aa09-558c45c0a556.png",
+      "sha256": "afd56b507ed9bb2948bb8c3a35b1aeeb73d5f9c880eb0a481d1ddb7368c1b49f",
+      "bytes": 2349884,
+      "pixels": [
+        1585,
+        992
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "prompt": "imagegen-prompt-01.txt",
+      "references": [
+        "docs/ui-redesign-plan/g1-internal/evidence/g2-quality-r5/after/work-equipment.png",
+        "assets/ui/ships/fleet_20261019/03-cruiser.png",
+        "assets/weapons/fleet_20261019/laser.png"
+      ],
+      "output": "draft-01.png"
+    },
+    {
+      "prompt": "imagegen-edit-02.txt",
+      "references": [
+        "draft-01.png"
+      ],
+      "output": "draft-02.png"
+    },
+    {
+      "prompt": "imagegen-edit-03.txt",
+      "references": [
+        "draft-02.png"
+      ],
+      "output": "equipment-design-03.png"
+    }
+  ],
+  "actual_final_divider_estimate_px": 929,
+  "target_divider_at_raw_width_px": 889.3611111111111,
+  "note": "Original tool PNGs copied byte-for-byte. No resize/crop/vector redraw. Divider remains a known mismatch after two imagegen edits."
+}
