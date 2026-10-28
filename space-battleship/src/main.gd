@@ -10,7 +10,7 @@ const PlanetPanel = preload("res://src/ui/planet_panel.gd")
 const HyperspacePanel = preload("res://src/ui/hyperspace_panel.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
-const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
+const ReactorScene = preload("res://src/ui/reactor_scene.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
 const NotificationsPanel = preload("res://src/ui/notifications_panel.gd")
@@ -25,6 +25,11 @@ var _feature_panels: Dictionary = {}
 var _pages: Dictionary = {}
 var _tabs: TabContainer
 var equipment_scene: Control
+var reactor_scene: Control
+var _left_module: String = "equipment"
+var _left_buttons: Dictionary = {}
+var _left_modules: Dictionary = {}
+var _reactor_wallet_dependency: Dictionary = {}
 var _battle_viewport: SubViewport
 var _reforge_picker: OptionButton
 var _reforge_drones: ItemList
@@ -186,10 +191,75 @@ func _show_session() -> void:
 	add_child(equipment_layer)
 	equipment_scene = EquipmentPanel.new(session)
 	equipment_layer.add_child(equipment_scene)
+	_setup_reactor_scene(equipment_layer)
 	_setup_growth_panel()
 	_refresh_feature_visibility()
 	_setup_guidance_panel()
 	_setup_audio()
+
+func _setup_reactor_scene(layer: CanvasLayer) -> void:
+	reactor_scene = ReactorScene.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor)
+	layer.add_child(reactor_scene)
+	reactor_scene.bind_presentation(_reactor_scene_presentation, func():
+		return {"game_time": session.game_time, "paused": not session.pause_reasons.is_empty() or not session.run_state.is_running()})
+	reactor_scene.command_finished.connect(func(result: Dictionary):
+		if growth_status != null:
+			growth_status.text = str(result.get("message", "完成")) if result.get("ok", false) else PlayerText.error(str(result.get("reason", "Unknown"))))
+	if session.reactor_system.has_signal("presentation_changed"):
+		session.reactor_system.connect("presentation_changed", reactor_scene.invalidate)
+	_reactor_wallet_dependency = session.economy.budget()
+	session.economy.display_changed.connect(func():
+		var budget: Dictionary = session.economy.budget()
+		if not is_same(budget, _reactor_wallet_dependency) and budget != _reactor_wallet_dependency:
+			reactor_scene.invalidate()
+		_reactor_wallet_dependency = budget)
+	_left_modules.clear()
+	_left_buttons.clear()
+	_register_left_module(layer, "equipment", "装备", equipment_scene)
+	_register_left_module(layer, "reactor", "反应炉", reactor_scene, "reactor")
+	_refresh_left_module()
+
+## Add a full-size left Control and its one navigation entry. A feature key is
+## optional; the host owns availability and keeps the scene's data binding local.
+func _register_left_module(layer: CanvasLayer, id: String, title: String, scene: Control, feature: String = "") -> void:
+	if id in _left_modules: return
+	_left_modules[id] = {"scene": scene, "feature": feature}
+	var button := Button.new()
+	button.text = title
+	button.position = Vector2(442 + 96 * _left_buttons.size(), 52)
+	button.size = Vector2(88, 30)
+	button.theme = load("res://src/ui/bridge_theme.gd").create()
+	button.toggle_mode = true
+	button.pressed.connect(_select_left_module.bind(id))
+	layer.add_child(button)
+	_left_buttons[id] = button
+	_refresh_left_module()
+
+func _reactor_scene_presentation() -> Dictionary:
+	# The fixed interface owner supplies the read-only outlet; never substitute
+	# private Reactor caches or frontend Amount calculations for a missing port.
+	if not session.reactor_system.has_method("presentation_model"):
+		return {"ok": false, "reason": "ReactorSnapshotUnavailable", "message": "供能状态暂不可用"}
+	return session.reactor_system.presentation_model(session.reactor_inputs())
+
+func _select_left_module(module: String) -> void:
+	_left_module = module
+	if growth_panel != null: growth_panel.hide()
+	_refresh_left_module()
+
+func _refresh_left_module() -> void:
+	if session == null or _left_modules.is_empty(): return
+	var active_available: bool = _left_module in _left_modules and _left_module_available(_left_module)
+	if not active_available: _left_module = "equipment"
+	for id in _left_modules:
+		var available: bool = _left_module_available(id)
+		_left_modules[id].scene.visible = available and _left_module == id
+		_left_buttons[id].visible = available
+		_left_buttons[id].set_pressed_no_signal(_left_module == id)
+
+func _left_module_available(id: String) -> bool:
+	var feature: String = str(_left_modules[id].feature)
+	return feature.is_empty() or session.campaign_system.available("feature", feature)
 
 func _apply_settings(settings: Dictionary) -> void:
 	_autosave_interval = float(settings.interval)
@@ -597,9 +667,6 @@ func _setup_growth_panel() -> void:
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
 	box.add_child(load("res://src/ui/attributes_panel.gd").new(session))
 	box = _pages.growth.box
-	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor, _command_button)
-	box.add_child(reactor_panel)
-	_feature_panels["reactor"] = reactor_panel
 	var research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
 	_feature_panels["research"] = research_panel
@@ -776,8 +843,9 @@ func _refresh_feature_visibility() -> void:
 		"galaxy": not session.galaxy_system.status_rows().is_empty(), "hyperspace": session.hyperspace_system.unlocked(highest),
 		"reforge": not session.planet_system.planet_options().is_empty()}
 	for key in _feature_panels: _feature_panels[key].visible = bool(visible_features[key])
+	_refresh_left_module()
 	if _tabs != null:
-		_tabs.set_tab_hidden(_pages.growth.index, not (visible_features.reactor or visible_features.research or visible_features.enhancement))
+		_tabs.set_tab_hidden(_pages.growth.index, not (visible_features.research or visible_features.enhancement))
 		_tabs.set_tab_hidden(_pages.universe.index, not (visible_features.crew or visible_features.planet or visible_features.galaxy))
 		_tabs.set_tab_hidden(_pages.hyperspace.index, not visible_features.hyperspace)
 		if _tabs.is_tab_hidden(_tabs.current_tab): _tabs.current_tab = int(_pages.ship.index)
