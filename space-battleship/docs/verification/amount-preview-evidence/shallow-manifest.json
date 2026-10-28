@@ -1,0 +1,42 @@
+{
+  "branch": "feat/amount-safe-previews",
+  "before_commit": "24279e19d4826a4e3d42fa03d5374bf15c48cfb1",
+  "change": "Shallow-copy state at the three existing evaluation entries; only top-level capacity cache is replaced; allocations and factor cache are rebuilt.",
+  "evidence": {
+    "purity-shallow.txt": {
+      "sha256": "5c5bfe75e8806d06aa5ba4641ceaa229f7a7faa9d9ee83c0ad3476888b843791",
+      "bytes": 274,
+      "exit_code": 0
+    },
+    "amount-shallow.txt": {
+      "sha256": "1f4f164357e72736bc66ef3a08467c7e6f6039155cb06754ebfd49f014e5441f",
+      "bytes": 295,
+      "exit_code": 0
+    },
+    "shallow-check-only.txt": {
+      "sha256": "83cf0b082206af2aa236c83064fbcfa76be1e00a4aa3558574b2f65965d9481c",
+      "bytes": 75,
+      "exit_code": 0
+    }
+  },
+  "sources": {
+    "src/systems/reactor.gd": {
+      "canonical_lf_sha256": "d3d11ed1400dc4af12dc128b4d89a7e19a9d70447410db14a17a08e87869ec95"
+    },
+    "src/systems/research.gd": {
+      "canonical_lf_sha256": "a0e291babc2c6776ba9a412cc29674929b4b696780896a56cfb33d61161516f9"
+    },
+    "src/game_session.gd": {
+      "canonical_lf_sha256": "2419737f31191d09378227de91553e5dedf7e8f58b739e5d881a458fe3f103de"
+    },
+    "foundation/tests/_reactor_candidate_purity_probe.gd": {
+      "canonical_lf_sha256": "0f97316c7978fa9f58fc3862904f24cf07b4f9a2f5d33033735fff46bf495007"
+    },
+    "foundation/tests/_amount_preview_probe.gd": {
+      "canonical_lf_sha256": "ae2a6c2cd411459fca94e290eff084170ed9ab40a02fd277fcc433cbdc30cf35"
+    }
+  },
+  "configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
+  "limitations": "Same focused purity/Amount probes and entry check; no full gameplay or geometry acceptance; historical manifests unchanged."
+}

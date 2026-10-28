@@ -1,0 +1,106 @@
+{
+  "source_commit": "05c682f0a723ceacbeeae137bdeaa81b3d912113",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "one shared research ratio, once/follow modes and optional precision",
+    "separate iron/uranium acceptance and recurring current/draft delayed settings",
+    "provider compact strings for canonical 1e120 and 3e130; no Number conversion",
+    "fixed reactor failure target/reason/accepted/remaining and retry",
+    "optional allocation preset not fixed player objective"
+  ],
+  "images": [
+    {
+      "file": "scene-amount-over-1e100-1440x900.png",
+      "family": "scene",
+      "case": "scene-amount-over-1e100",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "e67d3d0e8759a453e009405b103fa76ac2b69ddd61ed3c27faa8ef4c6668f469"
+    },
+    {
+      "file": "scene-follow-draft-current-1440x900.png",
+      "family": "scene",
+      "case": "scene-follow-draft-current",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "00dec48af0f6957c11c582fc9989d2834407ef7750adb728a09167b24eb9cff4"
+    },
+    {
+      "file": "scene-reactor-fixed-failure-1440x900.png",
+      "family": "scene",
+      "case": "scene-reactor-fixed-failure",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "dc9278d9d1acf14bd1811b498a7d75b1f81dd34f7b3d3626374bd6e603f91474"
+    },
+    {
+      "file": "scene-shared-once-1440x900.png",
+      "family": "scene",
+      "case": "scene-shared-once",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "6d21e7b54fc37ff5452c5dd5b6d0200dc9b2daa2d10a5319a92c101cc8fd70ef"
+    },
+    {
+      "file": "work-amount-over-1e100-1440x900.png",
+      "family": "work",
+      "case": "work-amount-over-1e100",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "4bfc007f5b290c09a96920221b7b6640aeb7cf04a22e1a11ee6d91c4e29df490"
+    },
+    {
+      "file": "work-follow-draft-current-1440x900.png",
+      "family": "work",
+      "case": "work-follow-draft-current",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "815904184ded7a92c4f819333aba52f64114cdb5c7d9f88275c87f4b168381cf"
+    },
+    {
+      "file": "work-reactor-fixed-failure-1440x900.png",
+      "family": "work",
+      "case": "work-reactor-fixed-failure",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "6e2f410baa6d2761929541aa50b8989d4067bddacf623548af28296fd6f923a9"
+    },
+    {
+      "file": "work-shared-once-1440x900.png",
+      "family": "work",
+      "case": "work-shared-once",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "813df3d5a8a52d6b88864620a8cbe2832a26628126270847f40a0f608c88ef35"
+    }
+  ]
+}

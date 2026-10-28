@@ -1,0 +1,26 @@
+Section "ServerFlags"
+ Option "AutoAddDevices" "false"
+ Option "DontVTSwitch" "true"
+EndSection
+Section "Device"
+ Identifier "SpaceIdleDummy"
+ Driver "dummy"
+ VideoRam 256000
+EndSection
+Section "Monitor"
+ Identifier "SpaceIdleMonitor"
+ HorizSync 5.0 - 1000.0
+ VertRefresh 5.0 - 200.0
+ Modeline "1440x900" 106.47 1440 1520 1672 1904 900 901 904 932 -HSync +Vsync
+EndSection
+Section "Screen"
+ Identifier "SpaceIdleScreen"
+ Device "SpaceIdleDummy"
+ Monitor "SpaceIdleMonitor"
+ DefaultDepth 24
+ SubSection "Display"
+  Depth 24
+  Modes "1440x900"
+  Virtual 1440 900
+ EndSubSection
+EndSection

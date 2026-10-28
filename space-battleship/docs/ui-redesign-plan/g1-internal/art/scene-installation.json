@@ -1,0 +1,892 @@
+{
+  "kind": "G2 design installation, not a Godot import/result",
+  "primary_physical_client": [
+    1440,
+    900
+  ],
+  "coordinate_system": "local scene logical pixels, x right/y down; existing SVG/PNG source pixels separately identified",
+  "variants": [
+    {
+      "family": "scene",
+      "module": "equipment",
+      "canvas_logical_size": [
+        872.890625,
+        393
+      ],
+      "resources": [
+        {
+          "selector": ".rig-ship>img",
+          "resource": "res://assets/ui/ships/fleet_20261019/03-cruiser.png",
+          "source_canvas_px": [
+            768,
+            768
+          ],
+          "source_anchor_px": [
+            384,
+            384
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.5989583333333334,
+            "offset": [
+              64.9375,
+              -56.03125
+            ]
+          },
+          "target_anchor_logical": [
+            294.9375,
+            173.96875
+          ],
+          "frame_logical": [
+            64.9375,
+            -56.03125,
+            460,
+            460
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            589.890625,
+            355
+          ],
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        },
+        {
+          "selector": ".equipment-object-icon img",
+          "resource": "res://assets/ui/equipment/cartoon_laser.svg",
+          "source_canvas_px": [
+            128.0,
+            128.0
+          ],
+          "source_anchor_px": [
+            64.0,
+            64.0
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.515625,
+            "offset": [
+              707.390625,
+              76.0
+            ]
+          },
+          "target_anchor_logical": [
+            740.390625,
+            109.0
+          ],
+          "frame_logical": [
+            707.390625,
+            76,
+            66,
+            66
+          ],
+          "clip_rect_logical": null,
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        }
+      ],
+      "controls": [
+        {
+          "action": null,
+          "slot": "0",
+          "rect": [
+            282.78125,
+            67.96875,
+            22,
+            22
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "1",
+          "rect": [
+            218.546875,
+            203.90625,
+            22,
+            22
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "2",
+          "rect": [
+            349.28125,
+            203.90625,
+            22,
+            22
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "0",
+          "rect": [
+            13,
+            33,
+            105,
+            73
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "1",
+          "rect": [
+            13,
+            121,
+            105,
+            73
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "2",
+          "rect": [
+            13,
+            209,
+            105,
+            73
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "3",
+          "rect": [
+            471.890625,
+            105,
+            105,
+            73
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "4",
+          "rect": [
+            471.890625,
+            193,
+            105,
+            73
+          ],
+          "role": "control"
+        },
+        {
+          "action": "equip-one",
+          "slot": null,
+          "rect": [
+            626.890625,
+            317,
+            38.21875,
+            28
+          ],
+          "role": "control"
+        },
+        {
+          "action": "equip-ten",
+          "slot": null,
+          "rect": [
+            670.109375,
+            317,
+            44.328125,
+            28
+          ],
+          "role": "control"
+        },
+        {
+          "action": "equip-max-mode",
+          "slot": null,
+          "rect": [
+            719.4375,
+            317,
+            47.953125,
+            28
+          ],
+          "role": "control"
+        }
+      ],
+      "status_region_logical": null,
+      "pending": "All production scene/port connections and Godot import settings remain to be implemented after selection."
+    },
+    {
+      "family": "scene",
+      "module": "research",
+      "canvas_logical_size": [
+        872.890625,
+        340
+      ],
+      "resources": [
+        {
+          "selector": ".factory-background",
+          "resource": "res://assets/ai_tech_factory/workshop-background-v2.png",
+          "source_canvas_px": [
+            1697,
+            927
+          ],
+          "source_anchor_px": [
+            848.5,
+            463.5
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.5131942398350029,
+            "offset": [
+              1.0000000000000568,
+              -81.63863619622859
+            ]
+          },
+          "target_anchor_logical": [
+            436.4453125,
+            156.22689396729524
+          ],
+          "frame_logical": [
+            1,
+            1,
+            870.890625,
+            338
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            872.890625,
+            340
+          ],
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        },
+        {
+          "selector": ".factory-machine",
+          "resource": "res://assets/ai_tech_factory/equipment-precision-v2.png",
+          "source_canvas_px": [
+            1312,
+            1199
+          ],
+          "source_anchor_px": [
+            656.0,
+            1121.065
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.2285237698081735,
+            "offset": [
+              251.69778200583818,
+              29.0
+            ]
+          },
+          "target_anchor_logical": [
+            401.609375,
+            285.19
+          ],
+          "frame_logical": [
+            251.609375,
+            29,
+            300,
+            274
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            872.890625,
+            340
+          ],
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        },
+        {
+          "selector": ".factory-probe",
+          "resource": "res://assets/ai_tech_factory/inspection-probe-v2.png",
+          "source_canvas_px": [
+            1312,
+            1199
+          ],
+          "source_anchor_px": [
+            656.0,
+            599.5
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.0625,
+            "offset": [
+              366.765625,
+              19.03125
+            ]
+          },
+          "target_anchor_logical": [
+            407.765625,
+            56.5
+          ],
+          "frame_logical": [
+            366.765625,
+            19,
+            82,
+            75
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            872.890625,
+            340
+          ],
+          "animation_envelope_logical": [
+            366.765625,
+            19,
+            117,
+            82
+          ],
+          "effect_clock": "existing game-time context; CSS is design demonstration only"
+        }
+      ],
+      "controls": [
+        {
+          "action": "research-select",
+          "slot": null,
+          "rect": [
+            19,
+            287,
+            100.015625,
+            35
+          ],
+          "role": "control"
+        }
+      ],
+      "status_region_logical": [
+        660.890625,
+        19,
+        195,
+        211
+      ],
+      "pending": "All production scene/port connections and Godot import settings remain to be implemented after selection."
+    },
+    {
+      "family": "work",
+      "module": "equipment",
+      "canvas_logical_size": [
+        846.890625,
+        383
+      ],
+      "resources": [
+        {
+          "selector": ".rig-ship>img",
+          "resource": "res://assets/ui/ships/fleet_20261019/03-cruiser.png",
+          "source_canvas_px": [
+            768,
+            768
+          ],
+          "source_anchor_px": [
+            384,
+            384
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.5989583333333334,
+            "offset": [
+              64.9375,
+              -63.390625
+            ]
+          },
+          "target_anchor_logical": [
+            294.9375,
+            166.609375
+          ],
+          "frame_logical": [
+            64.9375,
+            -63.390625,
+            460,
+            460
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            589.890625,
+            340
+          ],
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        },
+        {
+          "selector": ".equipment-object-icon img",
+          "resource": "res://assets/ui/equipment/cartoon_laser.svg",
+          "source_canvas_px": [
+            128.0,
+            128.0
+          ],
+          "source_anchor_px": [
+            64.0,
+            64.0
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.515625,
+            "offset": [
+              691.390625,
+              71.0
+            ]
+          },
+          "target_anchor_logical": [
+            724.390625,
+            104.0
+          ],
+          "frame_logical": [
+            691.390625,
+            71,
+            66,
+            66
+          ],
+          "clip_rect_logical": null,
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        }
+      ],
+      "controls": [
+        {
+          "action": null,
+          "slot": "0",
+          "rect": [
+            282.78125,
+            60.609375,
+            22,
+            22
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "1",
+          "rect": [
+            218.546875,
+            196.546875,
+            22,
+            22
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "2",
+          "rect": [
+            349.28125,
+            196.546875,
+            22,
+            22
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "0",
+          "rect": [
+            9,
+            33,
+            96,
+            71
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "1",
+          "rect": [
+            9,
+            116,
+            96,
+            71
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "2",
+          "rect": [
+            9,
+            199,
+            96,
+            71
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "3",
+          "rect": [
+            484.890625,
+            105,
+            96,
+            71
+          ],
+          "role": "control"
+        },
+        {
+          "action": null,
+          "slot": "4",
+          "rect": [
+            484.890625,
+            188,
+            96,
+            71
+          ],
+          "role": "control"
+        },
+        {
+          "action": "equip-one",
+          "slot": null,
+          "rect": [
+            615.890625,
+            312,
+            38.21875,
+            28
+          ],
+          "role": "control"
+        },
+        {
+          "action": "equip-ten",
+          "slot": null,
+          "rect": [
+            659.109375,
+            312,
+            44.328125,
+            28
+          ],
+          "role": "control"
+        },
+        {
+          "action": "equip-max-mode",
+          "slot": null,
+          "rect": [
+            708.4375,
+            312,
+            47.953125,
+            28
+          ],
+          "role": "control"
+        }
+      ],
+      "status_region_logical": null,
+      "pending": "All production scene/port connections and Godot import settings remain to be implemented after selection."
+    },
+    {
+      "family": "work",
+      "module": "research",
+      "canvas_logical_size": [
+        846.890625,
+        305
+      ],
+      "resources": [
+        {
+          "selector": ".factory-background",
+          "resource": "res://assets/ai_tech_factory/workshop-background-v2.png",
+          "source_canvas_px": [
+            1697,
+            927
+          ],
+          "source_anchor_px": [
+            848.5,
+            463.5
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.4978730848556276,
+            "offset": [
+              1.0,
+              -94.11700979670006
+            ]
+          },
+          "target_anchor_logical": [
+            423.4453125,
+            136.6471650338833
+          ],
+          "frame_logical": [
+            1,
+            1,
+            844.890625,
+            303
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            846.890625,
+            305
+          ],
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        },
+        {
+          "selector": ".factory-machine",
+          "resource": "res://assets/ai_tech_factory/equipment-precision-v2.png",
+          "source_canvas_px": [
+            1312,
+            1199
+          ],
+          "source_anchor_px": [
+            656.0,
+            1121.065
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.2073170731707317,
+            "offset": [
+              236.75,
+              26.213414634146346
+            ]
+          },
+          "target_anchor_logical": [
+            372.75,
+            258.6293292682927
+          ],
+          "frame_logical": [
+            236.75,
+            26,
+            272,
+            249
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            846.890625,
+            305
+          ],
+          "animation_envelope_logical": null,
+          "effect_clock": null
+        },
+        {
+          "selector": ".factory-probe",
+          "resource": "res://assets/ai_tech_factory/inspection-probe-v2.png",
+          "source_canvas_px": [
+            1312,
+            1199
+          ],
+          "source_anchor_px": [
+            656.0,
+            599.5
+          ],
+          "source_to_scene": {
+            "uniform_scale": 0.057547956630525435,
+            "offset": [
+              330.74854045037534,
+              19.0
+            ]
+          },
+          "target_anchor_logical": [
+            368.5,
+            53.5
+          ],
+          "frame_logical": [
+            330.5,
+            19,
+            76,
+            69
+          ],
+          "clip_rect_logical": [
+            0,
+            0,
+            846.890625,
+            305
+          ],
+          "animation_envelope_logical": [
+            330.5,
+            19,
+            111,
+            76
+          ],
+          "effect_clock": "existing game-time context; CSS is design demonstration only"
+        }
+      ],
+      "controls": [
+        {
+          "action": "research-select",
+          "slot": null,
+          "rect": [
+            19,
+            252,
+            100.015625,
+            35
+          ],
+          "role": "control"
+        }
+      ],
+      "status_region_logical": [
+        646.890625,
+        15,
+        185,
+        205
+      ],
+      "pending": "All production scene/port connections and Godot import settings remain to be implemented after selection."
+    }
+  ],
+  "source_assets": {
+    "assets/ui/ships/fleet_20261019/03-cruiser.png": {
+      "path": "res://assets/ui/ships/fleet_20261019/03-cruiser.png",
+      "sha256": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304",
+      "canvas_px": [
+        768,
+        768
+      ],
+      "visible_rect_px": [
+        192,
+        133,
+        383,
+        502
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ui/equipment/cartoon_laser.svg": {
+      "path": "res://assets/ui/equipment/cartoon_laser.svg",
+      "sha256": "f42ba395ee6a664e142fa127beafc93622a2f5406aca52daca3eace7422bec5f",
+      "canvas_px": [
+        128.0,
+        128.0
+      ],
+      "visible_rect_px": [
+        21,
+        9,
+        86,
+        101
+      ],
+      "bounds_method": "SVG rasterized at native viewBox dimensions in Chromium, alpha>0 pixel-cell bbox; not a Godot import result"
+    },
+    "assets/ai_tech_factory/workshop-background-v2.png": {
+      "path": "res://assets/ai_tech_factory/workshop-background-v2.png",
+      "sha256": "eedab623d337c9ae529ace5ad2f8a81da355fad5debe4099b826ddb12a002eaa",
+      "canvas_px": [
+        1697,
+        927
+      ],
+      "visible_rect_px": [
+        0,
+        0,
+        1697,
+        927
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/equipment-precision-v2.png": {
+      "path": "res://assets/ai_tech_factory/equipment-precision-v2.png",
+      "sha256": "3d3b94c973ac26fd7d47cefddc653320e8fcacaf7657adb72a40ab07649a1388",
+      "canvas_px": [
+        1312,
+        1199
+      ],
+      "visible_rect_px": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/inspection-probe-v2.png": {
+      "path": "res://assets/ai_tech_factory/inspection-probe-v2.png",
+      "sha256": "368e4f669c517980d1eac83f0fa7bf57f8f61a236025441f24fc4ff35de184c9",
+      "canvas_px": [
+        1312,
+        1199
+      ],
+      "visible_rect_px": [
+        0,
+        9,
+        1282,
+        1190
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/ai-singularity-v2.png": {
+      "path": "res://assets/ai_tech_factory/ai-singularity-v2.png",
+      "sha256": "05ab3979f8bc0bb731638281aa33e14f4fe284e1d73ff4080b6fc268271367a3",
+      "canvas_px": [
+        1320,
+        1191
+      ],
+      "visible_rect_px": [
+        109,
+        31,
+        1129,
+        1136
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/equipment-reinforcement-v2.png": {
+      "path": "res://assets/ai_tech_factory/equipment-reinforcement-v2.png",
+      "sha256": "9a2de293e5356a4e226a98b4901073b133a4d443b83a0890dc35aaf95e73d27e",
+      "canvas_px": [
+        1312,
+        1199
+      ],
+      "visible_rect_px": [
+        0,
+        0,
+        1292,
+        1189
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/fragment-condensation-v2.png": {
+      "path": "res://assets/ai_tech_factory/fragment-condensation-v2.png",
+      "sha256": "fdd2dc3fa2873d97d90ef8267340f11c34db9207b42f629d1ac90c42a1e75975",
+      "canvas_px": [
+        1374,
+        1145
+      ],
+      "visible_rect_px": [
+        0,
+        0,
+        1357,
+        1145
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/joint-integration-v2.png": {
+      "path": "res://assets/ai_tech_factory/joint-integration-v2.png",
+      "sha256": "a34ba3d06ac52a0e0eaa0511436b39ab485522fae954eef6c6d06913896cd77d",
+      "canvas_px": [
+        1536,
+        1024
+      ],
+      "visible_rect_px": [
+        0,
+        11,
+        1514,
+        1013
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/resource-refining-v2.png": {
+      "path": "res://assets/ai_tech_factory/resource-refining-v2.png",
+      "sha256": "63dbd29996f3998a47d1b8bf4fc740234576f83a237071e752b9f8063829aefd",
+      "canvas_px": [
+        1312,
+        1199
+      ],
+      "visible_rect_px": [
+        0,
+        12,
+        1277,
+        1187
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/uranium-extraction-v2.png": {
+      "path": "res://assets/ai_tech_factory/uranium-extraction-v2.png",
+      "sha256": "6bc929a02ff5a4c3d0c3d3ff682f6706856e3a1c2562c66dcdb031bbc22ed486",
+      "canvas_px": [
+        1335,
+        1178
+      ],
+      "visible_rect_px": [
+        0,
+        10,
+        1334,
+        1168
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    },
+    "assets/ai_tech_factory/weapon-accuracy-v2.png": {
+      "path": "res://assets/ai_tech_factory/weapon-accuracy-v2.png",
+      "sha256": "b4d7bfd2482bfeb661a7c46d86b064202bbbbe027af99161bbbd7b33bb514c2b",
+      "canvas_px": [
+        1312,
+        1199
+      ],
+      "visible_rect_px": [
+        0,
+        31,
+        1292,
+        1137
+      ],
+      "bounds_method": "source alpha>0 pixel-cell bbox; source fact, not Godot visible mesh/quality acceptance"
+    }
+  }
+}

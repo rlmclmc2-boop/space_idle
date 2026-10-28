@@ -1,0 +1,83 @@
+{
+  "source_commit": "efc31c9f30c255581978397d1a9655a7de8176b6",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "expanded precision->ratio37 synchronizes input/card/state and no slider recreation",
+    "submit iron1184000 then uranium177600 from same canonical drafts",
+    "already-selected mode no-op, including open precision view",
+    "custom900000/30000 survives follow61 and return once37; current applied values unchanged"
+  ],
+  "images": [
+    {
+      "file": "scene-expanded-ratio-synchronized-1440x900.png",
+      "family": "scene",
+      "case": "scene-expanded-ratio-synchronized",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "b2b6dbccfe736fc49bffe00d6b7129c85428e31df233f320f14178a165f8091a"
+    },
+    {
+      "file": "scene-mode-roundtrip-preserves-custom-1440x900.png",
+      "family": "scene",
+      "case": "scene-mode-roundtrip-preserves-custom",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "9d1a6f86db04a54e85d0890b4d2001a4c8f70a95e9195354644541928ce7765c"
+    },
+    {
+      "file": "scene-submitted-same-drafts-1440x900.png",
+      "family": "scene",
+      "case": "scene-submitted-same-drafts",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "406d3e9de7a5cac893be7944b9548cb63f318760bcbafc42ee57fff023cf6179"
+    },
+    {
+      "file": "work-expanded-ratio-synchronized-1440x900.png",
+      "family": "work",
+      "case": "work-expanded-ratio-synchronized",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "0000b7dbeb3dbc09515f2acc095c3ea7fe44181626e54d82b7465e2c9313d557"
+    },
+    {
+      "file": "work-mode-roundtrip-preserves-custom-1440x900.png",
+      "family": "work",
+      "case": "work-mode-roundtrip-preserves-custom",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "648a95e7e212ea66541adfe785ed1be7f00458484f6aa8fee79c481659bf28a0"
+    },
+    {
+      "file": "work-submitted-same-drafts-1440x900.png",
+      "family": "work",
+      "case": "work-submitted-same-drafts",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "0b4c8429d95be63d1234ba89887d75af5d43b5ce62eb7ca69f7874852702d379"
+    }
+  ]
+}

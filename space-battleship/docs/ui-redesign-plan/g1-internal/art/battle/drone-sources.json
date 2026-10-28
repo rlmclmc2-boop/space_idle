@@ -1,0 +1,103 @@
+{
+  "kind": "Design-only top-down base GLB derivatives; ornaments/ultimate and Godot toon shading not replicated; not runtime assets",
+  "projection": "orthographic top view, 2.6 model units across 256px, native GLB import axes",
+  "blender": "4.3.2",
+  "entries": [
+    {
+      "family": "pulse",
+      "source": "assets/hyperspace/models/pulse.glb",
+      "sha256": "533e3a9188dc32e5fa587cd494f65d069ec5bfd7641737c85a8462a36590df21",
+      "bounds_blender": [
+        [
+          -0.8209388256072998,
+          -0.8631832003593445,
+          0.0
+        ],
+        [
+          0.8209388256072998,
+          0.9216559529304504,
+          0.45100000500679016
+        ]
+      ],
+      "preview": "pulse-top.png",
+      "preview_sha256": "24333d504f06672fbe456c46dc01e8ec6136fae25157572e14a5f5612a1cc665",
+      "canvas": [
+        256,
+        256
+      ],
+      "ortho": 2.6
+    },
+    {
+      "family": "missile",
+      "source": "assets/hyperspace/models/missile.glb",
+      "sha256": "f032cb9d9680d573fb207025d6f5d8bda7139ee2eb88c6d409affd7d1d878bee",
+      "bounds_blender": [
+        [
+          -0.7599999904632568,
+          -0.8631832003593445,
+          0.0
+        ],
+        [
+          0.7599999904632568,
+          0.9300000071525574,
+          0.45100000500679016
+        ]
+      ],
+      "preview": "missile-top.png",
+      "preview_sha256": "cc08dbb3f5e8e2759906b7f8261d82521be2bf17e0086ea9c928edc5ef3a9974",
+      "canvas": [
+        256,
+        256
+      ],
+      "ortho": 2.6
+    },
+    {
+      "family": "rail",
+      "source": "assets/hyperspace/models/rail.glb",
+      "sha256": "fea0ffe26ca7bfda6d3bab1ce145b1fb0a8f672d21ed7ea4227a414a265fe88e",
+      "bounds_blender": [
+        [
+          -0.6361324787139893,
+          -0.8631832003593445,
+          0.0
+        ],
+        [
+          0.6361324787139893,
+          1.5350000858306885,
+          0.45100000500679016
+        ]
+      ],
+      "preview": "rail-top.png",
+      "preview_sha256": "63f779b349281786e1202302f6533963895adf200b12e79506c78017ec73e3d8",
+      "canvas": [
+        256,
+        256
+      ],
+      "ortho": 2.6
+    },
+    {
+      "family": "beam",
+      "source": "assets/hyperspace/models/beam.glb",
+      "sha256": "5b203c643ba54a6f2ab0c98cb46991ec89fdc92a27f061458c23d3c84fca976d",
+      "bounds_blender": [
+        [
+          -0.6600000262260437,
+          -0.8631832003593445,
+          0.0
+        ],
+        [
+          0.6600000262260437,
+          1.2861324548721313,
+          0.45100000500679016
+        ]
+      ],
+      "preview": "beam-top.png",
+      "preview_sha256": "07c14d694256374d99d65292e3f4a576df54bb0a6bc88c165a8c1a6e67f0d0cf",
+      "canvas": [
+        256,
+        256
+      ],
+      "ortho": 2.6
+    }
+  ]
+}

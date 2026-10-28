@@ -24,6 +24,8 @@ var _startup_directory: String = ""
 var _feature_panels: Dictionary = {}
 var _pages: Dictionary = {}
 var _tabs: TabContainer
+var equipment_scene: Control
+var _battle_viewport: SubViewport
 var _reforge_picker: OptionButton
 var _reforge_drones: ItemList
 var _reforge_planet_value: LineEdit
@@ -86,7 +88,7 @@ func _ready() -> void:
 	if not result.ok:
 		startup_error = str(result.reason)
 		return
-	get_window().content_scale_size = session.battle.view_size()
+	get_window().content_scale_size = Vector2i(1440, 900)
 	result = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
 	if not result.ok:
 		startup_error = str(result.reason)
@@ -151,20 +153,39 @@ func _show_session() -> void:
 	_feature_panels.clear()
 	_visibility_pending = true
 	session.campaign_system.progress_changed.connect(_queue_feature_visibility)
-	get_window().content_scale_size = session.battle.view_size()
+	get_window().content_scale_size = Vector2i(1440, 900)
+	# Preserve the battle's authored logical coordinates inside the fixed right surface.
+	# The viewport container transforms input together with its existing presentation.
+	var battle_surface := SubViewportContainer.new()
+	var logical_size := Vector2(session.battle.view_size())
+	var surface_size := Vector2(632, 900)
+	var projection_scale: float = minf(surface_size.x / logical_size.x, surface_size.y / logical_size.y)
+	battle_surface.position = Vector2(808, 0) + (surface_size - logical_size * projection_scale) * 0.5
+	battle_surface.size = logical_size
+	battle_surface.scale = Vector2.ONE * projection_scale
+	add_child(battle_surface)
+	_battle_viewport = SubViewport.new()
+	_battle_viewport.size = session.battle.view_size()
+	_battle_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	battle_surface.add_child(_battle_viewport)
 	if DisplayServer.get_name() != "headless":
-		add_child(load("res://src/ui/battle_scenery.gd").new(session))
+		_battle_viewport.add_child(load("res://src/ui/battle_scenery.gd").new(session))
 		var battle_view = BattleView.new(session.battle)
 		battle_view.damage_mode = _damage_mode
 		battle_view.damage_received.connect(_play_effect)
-		add_child(battle_view)
+		_battle_viewport.add_child(battle_view)
 	var hud_layer := CanvasLayer.new()
 	hud_layer.layer = 8
-	add_child(hud_layer)
+	_battle_viewport.add_child(hud_layer)
 	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle, session.economy))
 	_setup_shell_overlay()
-	add_child(CampaignView.new(session.campaign_system))
-	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
+	_battle_viewport.add_child(CampaignView.new(session.campaign_system))
+	_battle_viewport.add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
+	var equipment_layer := CanvasLayer.new()
+	equipment_layer.layer = 9
+	add_child(equipment_layer)
+	equipment_scene = EquipmentPanel.new(session)
+	equipment_layer.add_child(equipment_scene)
 	_setup_growth_panel()
 	_refresh_feature_visibility()
 	_setup_guidance_panel()
@@ -184,7 +205,7 @@ func _apply_settings(settings: Dictionary) -> void:
 	if _skip_toggle != null: _skip_toggle.set_pressed_no_signal(_skip_tutorial)
 	if _autosave_spin != null: _autosave_spin.set_value_no_signal(_autosave_interval)
 	if _damage_option != null: _damage_option.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
-	for child in get_children():
+	for child in (_battle_viewport.get_children() if _battle_viewport != null else get_children()):
 		if child.get_script() == BattleView: child.damage_mode = _damage_mode
 	if growth_panel != null: growth_panel.visible = _preferred_page == "growth"
 
@@ -417,7 +438,7 @@ func _draw() -> void:
 func _setup_shell_overlay() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = 9
-	add_child(layer)
+	_battle_viewport.add_child(layer)
 	_overlay = Node2D.new()
 	layer.add_child(_overlay)
 	_overlay.draw.connect(_draw_shell.bind(_overlay))
@@ -539,8 +560,8 @@ func _setup_growth_panel() -> void:
 	layer.layer = 10
 	add_child(layer)
 	var open := Button.new()
-	open.text = "舰桥 · 配装与发展"
-	open.position = Vector2(18, 80)
+	open.text = "舰桥面板"
+	open.position = Vector2(678, 48)
 	layer.add_child(open)
 	growth_panel = PanelContainer.new()
 	growth_panel.position = Vector2(12, 130)
@@ -552,7 +573,7 @@ func _setup_growth_panel() -> void:
 	growth_panel.add_child(shell)
 	var box: VBoxContainer = shell
 	var back := Button.new()
-	back.text = "返回战斗"
+	back.text = "关闭面板"
 	back.pressed.connect(func(): _set_page("battle"))
 	box.add_child(back)
 	growth_status = Label.new()
@@ -572,8 +593,7 @@ func _setup_growth_panel() -> void:
 		_create_bridge_page(str(page[0]), str(page[1]))
 	box = _pages.ship.box
 	box.add_child(load("res://src/ui/campaign_panel.gd").new(session, _command_button))
-	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
-		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
+	# Equipment has one scene and one command surface in the hangar at left.
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
 	box.add_child(load("res://src/ui/attributes_panel.gd").new(session))
 	box = _pages.growth.box
@@ -685,7 +705,7 @@ func _setup_growth_panel() -> void:
 		var saved: Dictionary = PlayerSettings.save_change("damage_mode", chosen)
 		if saved.ok:
 			_damage_mode = chosen
-			for child in get_children():
+			for child in (_battle_viewport.get_children() if _battle_viewport != null else get_children()):
 				if child.get_script() == BattleView: child.damage_mode = chosen
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))

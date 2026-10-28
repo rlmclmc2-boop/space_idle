@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS: Reactor Amount plans/one publish/no clipping/current snapshot; Research ratios/durations/funded estimates/purity/caches; baseline advance/refresh equivalence; public Session input/window expiry/native publication

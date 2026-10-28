@@ -1,0 +1,160 @@
+{
+  "checks": [
+    {
+      "file": "scene-current.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        1042,
+        90,
+        1207,
+        823
+      ]
+    },
+    {
+      "file": "scene-families.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        826,
+        15,
+        1307,
+        823
+      ]
+    },
+    {
+      "file": "scene-ranked.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        892,
+        71,
+        1371,
+        823
+      ]
+    },
+    {
+      "file": "scene-dense.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        879,
+        91,
+        1370,
+        823
+      ]
+    },
+    {
+      "file": "scene-heavy.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        892,
+        71,
+        1371,
+        852
+      ]
+    },
+    {
+      "file": "scene-shield-empty.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        934,
+        58,
+        1307,
+        124
+      ]
+    },
+    {
+      "file": "scene-armour-empty.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        934,
+        58,
+        1307,
+        823
+      ]
+    },
+    {
+      "file": "work-current.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        1042,
+        90,
+        1207,
+        823
+      ]
+    },
+    {
+      "file": "work-families.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        934,
+        58,
+        1307,
+        823
+      ]
+    },
+    {
+      "file": "work-ranked.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        892,
+        71,
+        1371,
+        823
+      ]
+    },
+    {
+      "file": "work-dense.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        879,
+        91,
+        1370,
+        823
+      ]
+    },
+    {
+      "file": "work-heavy.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        892,
+        71,
+        1371,
+        852
+      ]
+    },
+    {
+      "file": "work-shield-empty.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        934,
+        58,
+        1307,
+        124
+      ]
+    },
+    {
+      "file": "work-armour-empty.png",
+      "state_geometry_muzzles_projection_equal": true,
+      "left_808px_identical": true,
+      "changed_pixel_bounds": [
+        826,
+        15,
+        1307,
+        823
+      ]
+    }
+  ],
+  "source_assets_changed": false,
+  "geometry_note": "Exact equality is for listed representative samples; no G9 exhaustive/performance/runtime proof."
+}

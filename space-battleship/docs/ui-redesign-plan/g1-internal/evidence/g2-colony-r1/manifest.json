@@ -1,0 +1,79 @@
+{
+  "source_commit": "97dadc659c8b428c18eca020ea211a9fdde82e5b",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "actual explorer read-only identity",
+    "same explorer/build assignment preserves progress",
+    "fog identity hidden from title/context/detail/dock",
+    "last galaxy worker release/recovery preserve 62%",
+    "one persistent label, selected focus plus overview",
+    "B tools within visible panel, long text and meters within actual card"
+  ],
+  "images": [
+    {
+      "file": "scene-explorer-nochange-1440x900.png",
+      "family": "scene",
+      "case": "scene-explorer-nochange",
+      "sha256": "e1bd03fe26379c42193f63aec2d6b8f94f1bb7403f80061ca17962c8f0af4fe1"
+    },
+    {
+      "file": "scene-galaxy-focus-1440x900.png",
+      "family": "scene",
+      "case": "scene-galaxy-focus",
+      "sha256": "012ff9dd8c526b6d3f3608862c75a877e64956df1bad5db76df660f5bbe51094"
+    },
+    {
+      "file": "scene-galaxy-fog-1440x900.png",
+      "family": "scene",
+      "case": "scene-galaxy-fog",
+      "sha256": "9f97b91ce5edb9285019d72db5eed79eab84b84a48e80ac05fd4eac46a15cc8b"
+    },
+    {
+      "file": "scene-galaxy-recovered-1440x900.png",
+      "family": "scene",
+      "case": "scene-galaxy-recovered",
+      "sha256": "081e3d5ab38f8e944855a9c1df8e81d8cde9df4f8323ce6180905338e59b0f41"
+    },
+    {
+      "file": "scene-galaxy-stopped-1440x900.png",
+      "family": "scene",
+      "case": "scene-galaxy-stopped",
+      "sha256": "62320728f1225bc97f39884eacdd680d3241a4c4a42707588a0fe2fc5ef96f1e"
+    },
+    {
+      "file": "work-explorer-nochange-1440x900.png",
+      "family": "work",
+      "case": "work-explorer-nochange",
+      "sha256": "2b27d322ba941c14ff567fdddb5feb32636266931be163c411330c8cdb95767d"
+    },
+    {
+      "file": "work-galaxy-focus-1440x900.png",
+      "family": "work",
+      "case": "work-galaxy-focus",
+      "sha256": "edeaf0381993cdf836945d45ae8f6213467c788ceaffa0458703fcb2d59372d0"
+    },
+    {
+      "file": "work-galaxy-fog-1440x900.png",
+      "family": "work",
+      "case": "work-galaxy-fog",
+      "sha256": "8237d3a91b0213907ded8de69e347db7adaaea1736dbea66bd8303d42a107938"
+    },
+    {
+      "file": "work-galaxy-recovered-1440x900.png",
+      "family": "work",
+      "case": "work-galaxy-recovered",
+      "sha256": "d901985ad49ef57852661205af2a4037577712abef34cc6305c50e3d0d3563fc"
+    },
+    {
+      "file": "work-galaxy-stopped-1440x900.png",
+      "family": "work",
+      "case": "work-galaxy-stopped",
+      "sha256": "f6d712bf51cef0a55b9880a152f2f75a9c975020ba85b84e697ded38994feb8a"
+    }
+  ]
+}

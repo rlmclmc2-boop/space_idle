@@ -1,0 +1,2596 @@
+{
+  "kind": "Static packing of current referenced configuration and browser conditional design bounds only; neither occupancy interpretation nor sizes approved",
+  "packs": {
+    "art": {
+      "count": 2010,
+      "overflowGroups": []
+    },
+    "tier": {
+      "count": 2010,
+      "overflowGroups": []
+    }
+  },
+  "pageerrors": [],
+  "cases": [
+    {
+      "budget": "art",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        454.78319999999997,
+        337.2496,
+        585.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 117.83581970910485,
+      "playerDroneClearance": 110.78320000000008,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "art",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        243.06480000000002,
+        459.412,
+        328.9352,
+        580.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        459.412,
+        336.67962848892256,
+        580.588
+      ],
+      "shield": [
+        223.32037151107744,
+        447.412,
+        348.67962848892256,
+        592.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 110.46044206560032,
+      "playerDroneClearance": 103.41200000000003,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "art",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        220.8832,
+        434.4832,
+        351.1168,
+        605.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        427.1960611216338,
+        361.9942249647662,
+        605.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        415.1960611216338,
+        373.9942249647662,
+        617.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 78.24669584203536,
+      "playerDroneClearance": 78.48320000000001,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "art",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        200.9592,
+        423.1136,
+        371.0408,
+        616.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        423.1136,
+        375.19186392238913,
+        616.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        411.1136,
+        387.19186392238913,
+        628.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 74.15455082692964,
+      "playerDroneClearance": 67.11360000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "art",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        186.8016,
+        403.2848,
+        385.1984,
+        636.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        403.2848,
+        391.7908811592087,
+        636.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        391.2848,
+        403.7908811592087,
+        648.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 54.33619735260939,
+      "playerDroneClearance": 47.28480000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "art",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        454.78319999999997,
+        337.2496,
+        585.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 117.62162502068443,
+      "playerDroneClearance": 110.78320000000008,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "art",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        243.06480000000002,
+        459.412,
+        328.9352,
+        580.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        459.412,
+        336.67962848892256,
+        580.588
+      ],
+      "shield": [
+        223.32037151107744,
+        447.412,
+        348.67962848892256,
+        592.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 110.24624737717991,
+      "playerDroneClearance": 103.41200000000003,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "art",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        220.8832,
+        434.4832,
+        351.1168,
+        605.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        427.1960611216338,
+        361.9942249647662,
+        605.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        415.1960611216338,
+        373.9942249647662,
+        617.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 78.03250115361496,
+      "playerDroneClearance": 78.48320000000001,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "art",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        200.9592,
+        423.1136,
+        371.0408,
+        616.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        423.1136,
+        375.19186392238913,
+        616.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        411.1136,
+        387.19186392238913,
+        628.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 73.94035613850922,
+      "playerDroneClearance": 67.11360000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "art",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        186.8016,
+        403.2848,
+        385.1984,
+        636.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        403.2848,
+        391.7908811592087,
+        636.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        391.2848,
+        403.7908811592087,
+        648.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 54.12200266418897,
+      "playerDroneClearance": 47.28480000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "art",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        454.78319999999997,
+        337.2496,
+        585.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 117.83581970910485,
+      "playerDroneClearance": 110.78320000000008,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "art",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        243.06480000000002,
+        459.412,
+        328.9352,
+        580.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        459.412,
+        336.67962848892256,
+        580.588
+      ],
+      "shield": [
+        223.32037151107744,
+        447.412,
+        348.67962848892256,
+        592.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 110.46044206560032,
+      "playerDroneClearance": 103.41200000000003,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "art",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        220.8832,
+        434.4832,
+        351.1168,
+        605.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        427.1960611216338,
+        361.9942249647662,
+        605.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        415.1960611216338,
+        373.9942249647662,
+        617.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 78.24669584203536,
+      "playerDroneClearance": 78.48320000000001,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "art",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        200.9592,
+        423.1136,
+        371.0408,
+        616.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        423.1136,
+        375.19186392238913,
+        616.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        411.1136,
+        387.19186392238913,
+        628.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 74.15455082692964,
+      "playerDroneClearance": 67.11360000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "art",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        186.8016,
+        403.2848,
+        385.1984,
+        636.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        403.2848,
+        391.7908811592087,
+        636.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        391.2848,
+        403.7908811592087,
+        648.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 54.33619735260939,
+      "playerDroneClearance": 47.28480000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "art",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        454.78319999999997,
+        337.2496,
+        585.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 214.28204525696358,
+      "playerDroneClearance": 110.78320000000008,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "art",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        243.06480000000002,
+        459.412,
+        328.9352,
+        580.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        459.412,
+        336.67962848892256,
+        580.588
+      ],
+      "shield": [
+        223.32037151107744,
+        447.412,
+        348.67962848892256,
+        592.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 206.90666761345904,
+      "playerDroneClearance": 103.41200000000003,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "art",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        220.8832,
+        434.4832,
+        351.1168,
+        605.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        427.1960611216338,
+        361.9942249647662,
+        605.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        415.1960611216338,
+        373.9942249647662,
+        617.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 174.69292138989408,
+      "playerDroneClearance": 78.48320000000001,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "art",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        200.9592,
+        423.1136,
+        371.0408,
+        616.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        423.1136,
+        375.19186392238913,
+        616.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        411.1136,
+        387.19186392238913,
+        628.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 170.60077637478835,
+      "playerDroneClearance": 67.11360000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "art",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        186.8016,
+        403.2848,
+        385.1984,
+        636.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        403.2848,
+        391.7908811592087,
+        636.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        391.2848,
+        403.7908811592087,
+        648.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 150.7824229004681,
+      "playerDroneClearance": 47.28480000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "art",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        454.78319999999997,
+        337.2496,
+        585.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 217.20759896062452,
+      "playerDroneClearance": 110.78320000000008,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "art",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        243.06480000000002,
+        459.412,
+        328.9352,
+        580.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        459.412,
+        336.67962848892256,
+        580.588
+      ],
+      "shield": [
+        223.32037151107744,
+        447.412,
+        348.67962848892256,
+        592.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 209.83222131712,
+      "playerDroneClearance": 103.41200000000003,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "art",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        220.8832,
+        434.4832,
+        351.1168,
+        605.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        427.1960611216338,
+        361.9942249647662,
+        605.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        415.1960611216338,
+        373.9942249647662,
+        617.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 177.61847509355505,
+      "playerDroneClearance": 78.48320000000001,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "art",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        200.9592,
+        423.1136,
+        371.0408,
+        616.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        423.1136,
+        375.19186392238913,
+        616.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        411.1136,
+        387.19186392238913,
+        628.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 173.52633007844932,
+      "playerDroneClearance": 67.11360000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "art",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        186.8016,
+        403.2848,
+        385.1984,
+        636.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        403.2848,
+        391.7908811592087,
+        636.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        391.2848,
+        403.7908811592087,
+        648.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 153.70797660412907,
+      "playerDroneClearance": 47.28480000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "art",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        466.78319999999997,
+        325.2496,
+        573.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        454.78319999999997,
+        337.2496,
+        585.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 217.20759896062452,
+      "playerDroneClearance": 110.78320000000008,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "art",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        243.06480000000002,
+        459.412,
+        328.9352,
+        580.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        459.412,
+        336.67962848892256,
+        580.588
+      ],
+      "shield": [
+        223.32037151107744,
+        447.412,
+        348.67962848892256,
+        592.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 209.83222131712,
+      "playerDroneClearance": 103.41200000000003,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "art",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        220.8832,
+        434.4832,
+        351.1168,
+        605.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        427.1960611216338,
+        361.9942249647662,
+        605.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        415.1960611216338,
+        373.9942249647662,
+        617.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 177.61847509355505,
+      "playerDroneClearance": 78.48320000000001,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "art",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        200.9592,
+        423.1136,
+        371.0408,
+        616.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        423.1136,
+        375.19186392238913,
+        616.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        411.1136,
+        387.19186392238913,
+        628.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 173.52633007844932,
+      "playerDroneClearance": 67.11360000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "art",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        520
+      ],
+      "scale": 0.6567460317460317,
+      "body": [
+        186.8016,
+        403.2848,
+        385.1984,
+        636.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        403.2848,
+        391.7908811592087,
+        636.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        391.2848,
+        403.7908811592087,
+        648.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 153.70797660412907,
+      "playerDroneClearance": 47.28480000000002,
+      "droneCircleSeparation": 25.753850041795403,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "tier",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        644.7832,
+        337.2496,
+        775.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 433.57204163907994,
+      "playerDroneClearance": 82.78320000000008,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "tier",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        243.06480000000002,
+        649.412,
+        328.9352,
+        770.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        649.412,
+        336.67962848892256,
+        770.588
+      ],
+      "shield": [
+        223.32037151107744,
+        637.412,
+        348.67962848892256,
+        782.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 426.1943981345482,
+      "playerDroneClearance": 75.41200000000003,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "tier",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        220.8832,
+        624.4832,
+        351.1168,
+        795.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        617.1960611216339,
+        361.9942249647662,
+        795.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        605.1960611216339,
+        373.9942249647662,
+        807.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 393.9919812161192,
+      "playerDroneClearance": 50.48320000000001,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "tier",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        200.9592,
+        613.1136,
+        371.0408,
+        806.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        613.1136,
+        375.19186392238913,
+        806.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        601.1136,
+        387.19186392238913,
+        818.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 389.90436792306787,
+      "playerDroneClearance": 39.11360000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "tier",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        186.8016,
+        593.2848,
+        385.1984,
+        826.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        593.2848,
+        391.7908811592087,
+        826.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        581.2848,
+        403.7908811592087,
+        838.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 370.0644887689893,
+      "playerDroneClearance": 19.28480000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30081"
+    },
+    {
+      "budget": "tier",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        644.7832,
+        337.2496,
+        775.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 120.87781904989949,
+      "playerDroneClearance": 82.78320000000008,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "tier",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        243.06480000000002,
+        649.412,
+        328.9352,
+        770.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        649.412,
+        336.67962848892256,
+        770.588
+      ],
+      "shield": [
+        223.32037151107744,
+        637.412,
+        348.67962848892256,
+        782.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 113.50017554536777,
+      "playerDroneClearance": 75.41200000000003,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "tier",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        220.8832,
+        624.4832,
+        351.1168,
+        795.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        617.1960611216339,
+        361.9942249647662,
+        795.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        605.1960611216339,
+        373.9942249647662,
+        807.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 81.29775862693877,
+      "playerDroneClearance": 50.48320000000001,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "tier",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        200.9592,
+        613.1136,
+        371.0408,
+        806.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        613.1136,
+        375.19186392238913,
+        806.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        601.1136,
+        387.19186392238913,
+        818.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 77.21014533388741,
+      "playerDroneClearance": 39.11360000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "tier",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        186.8016,
+        593.2848,
+        385.1984,
+        826.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        593.2848,
+        391.7908811592087,
+        826.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        581.2848,
+        403.7908811592087,
+        838.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 57.37026617980886,
+      "playerDroneClearance": 19.28480000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "30086"
+    },
+    {
+      "budget": "tier",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        644.7832,
+        337.2496,
+        775.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 126.7110109595525,
+      "playerDroneClearance": 82.78320000000008,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "tier",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        243.06480000000002,
+        649.412,
+        328.9352,
+        770.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        649.412,
+        336.67962848892256,
+        770.588
+      ],
+      "shield": [
+        223.32037151107744,
+        637.412,
+        348.67962848892256,
+        782.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 119.33336745502078,
+      "playerDroneClearance": 75.41200000000003,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "tier",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        220.8832,
+        624.4832,
+        351.1168,
+        795.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        617.1960611216339,
+        361.9942249647662,
+        795.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        605.1960611216339,
+        373.9942249647662,
+        807.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 87.13095053659177,
+      "playerDroneClearance": 50.48320000000001,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "tier",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        200.9592,
+        613.1136,
+        371.0408,
+        806.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        613.1136,
+        375.19186392238913,
+        806.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        601.1136,
+        387.19186392238913,
+        818.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 83.04333724354042,
+      "playerDroneClearance": 39.11360000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "tier",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        186.8016,
+        593.2848,
+        385.1984,
+        826.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        593.2848,
+        391.7908811592087,
+        826.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        581.2848,
+        403.7908811592087,
+        838.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 15,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 63.20345808946187,
+      "playerDroneClearance": 19.28480000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "33011"
+    },
+    {
+      "budget": "tier",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        644.7832,
+        337.2496,
+        775.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 277.943233905197,
+      "playerDroneClearance": 82.78320000000008,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "tier",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        243.06480000000002,
+        649.412,
+        328.9352,
+        770.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        649.412,
+        336.67962848892256,
+        770.588
+      ],
+      "shield": [
+        223.32037151107744,
+        637.412,
+        348.67962848892256,
+        782.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 270.5655904006653,
+      "playerDroneClearance": 75.41200000000003,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "tier",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        220.8832,
+        624.4832,
+        351.1168,
+        795.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        617.1960611216339,
+        361.9942249647662,
+        795.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        605.1960611216339,
+        373.9942249647662,
+        807.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 238.3631734822363,
+      "playerDroneClearance": 50.48320000000001,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "tier",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        200.9592,
+        613.1136,
+        371.0408,
+        806.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        613.1136,
+        375.19186392238913,
+        806.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        601.1136,
+        387.19186392238913,
+        818.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 234.27556018918494,
+      "playerDroneClearance": 39.11360000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "tier",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        186.8016,
+        593.2848,
+        385.1984,
+        826.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        593.2848,
+        391.7908811592087,
+        826.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        581.2848,
+        403.7908811592087,
+        838.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 8,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 214.4356810351064,
+      "playerDroneClearance": 19.28480000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7018"
+    },
+    {
+      "budget": "tier",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        644.7832,
+        337.2496,
+        775.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 436.55321368041473,
+      "playerDroneClearance": 82.78320000000008,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "tier",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        243.06480000000002,
+        649.412,
+        328.9352,
+        770.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        649.412,
+        336.67962848892256,
+        770.588
+      ],
+      "shield": [
+        223.32037151107744,
+        637.412,
+        348.67962848892256,
+        782.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 429.175570175883,
+      "playerDroneClearance": 75.41200000000003,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "tier",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        220.8832,
+        624.4832,
+        351.1168,
+        795.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        617.1960611216339,
+        361.9942249647662,
+        795.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        605.1960611216339,
+        373.9942249647662,
+        807.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 396.973153257454,
+      "playerDroneClearance": 50.48320000000001,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "tier",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        200.9592,
+        613.1136,
+        371.0408,
+        806.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        613.1136,
+        375.19186392238913,
+        806.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        601.1136,
+        387.19186392238913,
+        818.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 392.88553996440265,
+      "playerDroneClearance": 39.11360000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "tier",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        186.8016,
+        593.2848,
+        385.1984,
+        826.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        593.2848,
+        391.7908811592087,
+        826.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        581.2848,
+        403.7908811592087,
+        838.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 373.0456608103241,
+      "playerDroneClearance": 19.28480000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7036"
+    },
+    {
+      "budget": "tier",
+      "ship": "Frigate",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "sweep": [
+        246.75039999999998,
+        656.7832,
+        325.2496,
+        763.2167999999999
+      ],
+      "shield": [
+        234.75039999999998,
+        644.7832,
+        337.2496,
+        775.2167999999999
+      ],
+      "visible_area": 5235.630167040001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 436.55321368041473,
+      "playerDroneClearance": 82.78320000000008,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "tier",
+      "ship": "Destroyer",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        243.06480000000002,
+        649.412,
+        328.9352,
+        770.588
+      ],
+      "sweep": [
+        235.32037151107744,
+        649.412,
+        336.67962848892256,
+        770.588
+      ],
+      "shield": [
+        223.32037151107744,
+        637.412,
+        348.67962848892256,
+        782.588
+      ],
+      "visible_area": 7439.791828480001,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 429.175570175883,
+      "playerDroneClearance": 75.41200000000003,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "tier",
+      "ship": "Cruiser",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        220.8832,
+        624.4832,
+        351.1168,
+        795.5168
+      ],
+      "sweep": [
+        210.33214892323383,
+        617.1960611216339,
+        361.9942249647662,
+        795.5168
+      ],
+      "shield": [
+        198.33214892323383,
+        605.1960611216339,
+        373.9942249647662,
+        807.5168
+      ],
+      "visible_area": 18067.070361600006,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 396.973153257454,
+      "playerDroneClearance": 50.48320000000001,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "tier",
+      "ship": "Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        200.9592,
+        613.1136,
+        371.0408,
+        806.8864
+      ],
+      "sweep": [
+        198.9297530504109,
+        613.1136,
+        375.19186392238913,
+        806.8864
+      ],
+      "shield": [
+        186.9297530504109,
+        601.1136,
+        387.19186392238913,
+        818.8864
+      ],
+      "visible_area": 26060.369786880005,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 392.88553996440265,
+      "playerDroneClearance": 39.11360000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7037"
+    },
+    {
+      "budget": "tier",
+      "ship": "Heavy_Battleship",
+      "playerOrigin": [
+        286,
+        710
+      ],
+      "scale": 0.6268939393939394,
+      "body": [
+        186.8016,
+        593.2848,
+        385.1984,
+        826.7152
+      ],
+      "sweep": [
+        179.82838586159127,
+        593.2848,
+        391.7908811592087,
+        826.7152
+      ],
+      "shield": [
+        167.82838586159127,
+        581.2848,
+        403.7908811592087,
+        838.7152
+      ],
+      "visible_area": 32422.91684351999,
+      "enemyCount": 3,
+      "conservativeEnemyPairs": [],
+      "labelPairs": [],
+      "labelBodies": [],
+      "fireCorridor": 373.0456608103241,
+      "playerDroneClearance": 19.28480000000002,
+      "droneCircleSeparation": 8,
+      "frameClippedLabels": [],
+      "visualBounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "group": "7037"
+    }
+  ]
+}

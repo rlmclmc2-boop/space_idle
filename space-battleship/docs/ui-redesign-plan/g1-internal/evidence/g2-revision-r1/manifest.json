@@ -1,0 +1,147 @@
+{
+  "source_commit": "0ecd5300621e8608b94bca5d45083db7ea8c1e56",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "images": [
+    {
+      "file": "scene-reactor-plan-1440x900.png",
+      "case": "reactor-plan",
+      "family": "scene",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "11a6afef57c069f65d135778e3df7cb015a6f2f8a1ec66d67eb552042339ac5d"
+    },
+    {
+      "file": "scene-reactor-opened-1440x900.png",
+      "case": "reactor-opened",
+      "family": "scene",
+      "route": "reactor",
+      "scroll": {
+        "outer": 68,
+        "inner": 0
+      },
+      "sha256": "33bf49ad0a6cc2bb7e23b145ab8fee248093c54d29051d633306afda3ff7a238"
+    },
+    {
+      "file": "scene-reactor-partial-1440x900.png",
+      "case": "reactor-partial",
+      "family": "scene",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "c4657279d625ce8ce13e8543af9e918990c3f6a61db6809ef1c6b3bc29ede75f"
+    },
+    {
+      "file": "scene-reactor-arbitrary-1440x900.png",
+      "case": "reactor-arbitrary",
+      "family": "scene",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "644641647756b6be4f0de6a835c699eb4ac5f08af0d7ad4e085d325e6f04ac51"
+    },
+    {
+      "file": "scene-equipment-exhausted-1440x900.png",
+      "case": "equipment-exhausted",
+      "family": "scene",
+      "route": "equipment",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "f6efe5fa3b79c57ec05bc81df0be4ac486c6a64ccbcb2afeaf2c5efeed6f5e51"
+    },
+    {
+      "file": "scene-research-budget-1440x900.png",
+      "case": "research-budget",
+      "family": "scene",
+      "route": "research",
+      "scroll": {
+        "outer": 427,
+        "inner": 0
+      },
+      "sha256": "35f5e8ae67d8436cc21fd7f64c7e689962e99699c514bb7f883789df8f6baf69"
+    },
+    {
+      "file": "work-reactor-plan-1440x900.png",
+      "case": "reactor-plan",
+      "family": "work",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 36
+      },
+      "sha256": "77e23ac45584a63263fd4698f9a5eadac19718061e630f0d14eaf9cbecbafa74"
+    },
+    {
+      "file": "work-reactor-opened-1440x900.png",
+      "case": "reactor-opened",
+      "family": "work",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 103
+      },
+      "sha256": "96f12c39616bfec84118204e5b8a3f01c06f639e6493812a9b378e082239f98e"
+    },
+    {
+      "file": "work-reactor-partial-1440x900.png",
+      "case": "reactor-partial",
+      "family": "work",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 36
+      },
+      "sha256": "7086633e55b4250a580d977516e0f05be3fe35433bea9dfda49a20d1e046f6ab"
+    },
+    {
+      "file": "work-reactor-arbitrary-1440x900.png",
+      "case": "reactor-arbitrary",
+      "family": "work",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 36
+      },
+      "sha256": "79c8b4add1c1e98f95b72f4f933a61fa8d4e33b66c204fceb6b5c7b05c064662"
+    },
+    {
+      "file": "work-equipment-exhausted-1440x900.png",
+      "case": "equipment-exhausted",
+      "family": "work",
+      "route": "equipment",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "2c78a53ba873acedd5491abcaf553b9f6dbc982b6f1432ecb102dfef5a977066"
+    },
+    {
+      "file": "work-research-budget-1440x900.png",
+      "case": "research-budget",
+      "family": "work",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 440
+      },
+      "sha256": "436ad1cc7969963d0f181745b4c80ef0307e7ab272bd2495cf01094840b774c3"
+    }
+  ],
+  "checks": [
+    "A/B equal first confirmation; clear; custom sequential full/partial/retry; no effect snapshot does not block allocation; two +10 consistent and no third quote; 37/0/100% research intent; actual versus draft and recurring next cycle; slider keeps input node while dragging"
+  ],
+  "pageerrors": [],
+  "browser": "151.0.7922.173"
+}

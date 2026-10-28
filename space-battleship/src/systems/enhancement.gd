@@ -82,6 +82,117 @@ func accept_prepared() -> void:
 	_pending_state = {}
 	_pending_output = {}
 
+# Pure projections of accepted state; evaluate() owns pending combat output.
+func _rule_description(effect: String, node: int, choice: String) -> Dictionary:
+	var prefix: String = effect + ("_a_" if choice == "A" else "_b" + str(node + 1) + "_")
+	var parameters: Dictionary = {}
+	for key in _rules:
+		if not str(key).begins_with(prefix): continue
+		var unit: String = "game_seconds" if str(key).ends_with("interval") or str(key).ends_with("duration") or str(key).ends_with("lockout") else "count" if str(key).ends_with("attacks") or str(key).ends_with("stacks") or str(key).ends_with("targets") or str(key).ends_with("repeats") else "ratio"
+		parameters[str(key)] = {"value": _rules[key], "unit": unit}
+	return {"rule_id": effect + ":" + ("A" if choice == "A" else "B" + str(node + 1)),
+		"parameters": parameters, "function_available": not (effect == "repeat" and node == 1 and choice == "B")}
+
+func branch_details(effect: String, node: int, inputs: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	if effect not in WEAPON + DEFENCE or node < 0 or node > 2: return {"ok": false, "reason": "InvalidEnhancementBranch"}
+	var effective: Dictionary = _effective_level(_state, int(inputs.bonus))
+	if not effective.ok: return effective
+	var order: Array = _state.weapon_order if effect in WEAPON else _state.defence_order
+	var threshold: int = int(_rules["branch_threshold_" + str(node + 1)]) + int(_rules["branch_position_offset_" + str(order.find(effect) + 1)])
+	var available: bool = bool(inputs.unlocked.call("feature", "jewels"))
+	var choices: Array = _state.branches.get(effect, ["", "", ""])
+	var options: Array = []
+	for choice in ["A", "B"]:
+		var option: Dictionary = _rule_description(effect, node, choice)
+		var admitted: Dictionary = _choose(_state, effect, node, choice, _rules, available, int(inputs.bonus))
+		option.choice = choice
+		option.command_allowed = admitted.ok
+		option.reason = str(admitted.get("reason", ""))
+		option.function_reason = "SecondGenerationDisabled" if not option.function_available else ""
+		options.append(option)
+	return {"ok": true, "effect_id": effect, "node": node, "threshold": threshold,
+		"open": available and int(effective.level) >= threshold, "choice": str(choices[node]), "options": options}
+
+func _effect_summary(key: String, enabled: Dictionary, output: Dictionary, level: int) -> Dictionary:
+	var effect: Dictionary = enabled[key]
+	var summary := {"active_a_count": int(effect.a), "active_b": [bool(effect.b1), bool(effect.b2), bool(effect.b3)]}
+	match key:
+		"proficiency":
+			summary.merge({"damage_multiplier": output.weapon.branch_factors[0], "interval_multiplier": output.weapon.interval_multiplier,
+				"pierce_active": effect.b3, "pierce_resistance": output.weapon.pierce_resistance if effect.b3 else null})
+		"repeat":
+			summary.merge({"probability": output.weapon.repeat_probability, "damage_multiplier": output.weapon.repeat_multiplier if effect.active else null,
+				"delay_seconds": output.globals.repeat_delay, "chain_count": output.weapon.chain_count, "secondary_probability": output.weapon.secondary_probability,
+				"second_generation_active": false})
+		"critical":
+			summary.merge({"raw_critical_rate": output.weapon.critical_rate, "critical_multiplier": output.weapon.critical_multiplier if effect.active else null,
+				"effect_trigger_rate": float(_rules.critical_b3_guaranteed_rate) if effect.b3 else output.weapon.critical_rate,
+				"bonus_uses_raw_rate": bool(effect.b3)})
+		"adaptation":
+			summary.capacity_multiplier = output.defence.branch_factors[0]
+		"memory":
+			summary.merge({"heal_fraction": output.defence.memory_heal, "interval_seconds": output.globals.memory_interval,
+				"buffer_fraction": output.defence.memory_cap, "per_shield_charge_bonus": float(_rules.memory_b3_shield_charge_bonus) if effect.b3 else 0.0})
+		"deferred":
+			var unforced: float = float(output.globals.clear_probability)
+			summary.merge({"fraction": output.defence.deferred_fraction, "duration_seconds": output.globals.deferred_duration,
+				"interval_seconds": output.globals.deferred_interval, "unforced_clear_probability": unforced,
+				"random_clear_enabled": effect.active and not effect.b2,
+				"forced_clear_probability": float(_rules.deferred_b3_forced_probability) if effect.b3 else null,
+				"incoming_multiplier": (1.0 - unforced * float(_rules.deferred_b2_probability_conversion) if effect.b2 else 1.0) * (1.0 + (1.0 - unforced) * float(_rules.deferred_b3_damage_scale) if effect.b3 else 1.0)})
+	var active_rules: Array = []
+	var choices: Array = _state.branches.get(key, ["", "", ""])
+	for node in 3:
+		var choice: String = str(choices[node])
+		if choice.is_empty(): continue
+		var order: Array = _state.weapon_order if key in WEAPON else _state.defence_order
+		var open: bool = effect.active and level >= int(_rules["branch_threshold_" + str(node + 1)]) + int(_rules["branch_position_offset_" + str(order.find(key) + 1)])
+		if not open or (key == "repeat" and node == 1 and choice == "B"): continue
+		var rule: Dictionary = _rule_description(key, node, choice)
+		rule.node = node
+		active_rules.append(rule)
+	summary.active_rules = active_rules
+	return summary
+
+func presentation_model(inputs: Dictionary) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	var effective: Dictionary = _effective_level(_state, int(inputs.bonus))
+	if not effective.ok: return effective
+	var available: bool = bool(inputs.unlocked.call("feature", "jewels"))
+	var description: Dictionary = _describe(_state, int(effective.level), _rules, available)
+	var output: Dictionary = _combat(_state, int(inputs.bonus), _rules, available, int(inputs.armours))
+	if not output.ok: return output
+	var effects: Array = []
+	for category in ["weapon", "defence"]:
+		var order: Array = _state[category + "_order"]
+		for position in order.size():
+			var key: String = str(order[position])
+			var nodes: Array = []
+			for node in 3:
+				var threshold: int = int(_rules["branch_threshold_" + str(node + 1)]) + int(_rules["branch_position_offset_" + str(position + 1)])
+				var choice: String = str(_state.branches.get(key, ["", "", ""])[node])
+				var open: bool = available and int(effective.level) >= threshold
+				var active: bool = bool(description.effects[key].active) and open and not choice.is_empty() and not (key == "repeat" and node == 1 and choice == "B")
+				nodes.append({"index": node, "threshold": threshold, "choice": choice, "open": open, "function_active": active,
+					"reason": "SecondGenerationDisabled" if key == "repeat" and node == 1 and choice == "B" else "EnhancementBranchLocked" if not open else ""})
+			effects.append({"id": key, "category": category, "position": position + 1, "threshold": int(_rules["threshold_" + str(position + 1)]),
+				"active": bool(description.effects[key].active), "reason": "EnhancementLocked" if not available else "EnhancementLevelLocked" if not description.effects[key].active else "", "nodes": nodes, "summary": _effect_summary(key, description.effects, output, int(effective.level))})
+	return {"ok": true, "scope": "enhancement_static", "paid": int(_state.level), "bonus": int(_state.extra_levels) + int(inputs.bonus),
+		"effective": int(effective.level), "available": available, "reason": "" if available else "EnhancementLocked",
+		"weapon_order": _state.weapon_order.duplicate(), "defence_order": _state.defence_order.duplicate(), "effects": effects}
+
+func purchase_preview(count: int, inputs: Dictionary, can_pay: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	if not bool(inputs.unlocked.call("feature", "jewels")): return {"ok": false, "reason": "EnhancementLocked"}
+	var quoted: Dictionary = _quote_purchase(_state, count, _rules, _api, can_pay)
+	var output: Dictionary = quoted.duplicate(true)
+	output.request_count = count
+	output.purchasable_count = int(quoted.count) if quoted.ok else 0 if quoted.get("reason") == "NoChange" else null
+	var first: Dictionary = _quote(_state, 1, _rules, _api)
+	output.first_level_costs = first.costs.duplicate(true) if first.ok else null
+	return output
+
 func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not bool(inputs.unlocked.call("feature", "jewels")): return {"ok": false, "reason": "EnhancementLocked"}
@@ -89,7 +200,14 @@ func purchase(count: int, inputs: Dictionary, can_pay: Callable, publish: Callab
 	if not quoted.ok: return quoted
 	var next: Dictionary = _state.duplicate(true)
 	next.level = int(next.level) + int(quoted.count)
-	return _submit(next, inputs, quoted.costs, "growth", publish)
+	var count_bought: int = int(quoted.count)
+	var spent: Dictionary = quoted.costs.duplicate(true)
+	var result: Dictionary = _submit(next, inputs, quoted.costs, "growth", publish)
+	var output: Dictionary = result.duplicate(true)
+	output.purchase_receipt = {"commit_status": "accepted" if result.ok else "fault_unknown" if result.get("fault", false) else "rejected",
+		"count": count_bought if result.ok else null if result.get("fault", false) else 0,
+		"spent": spent if result.ok else null if result.get("fault", false) else {}}
+	return output
 
 func set_order(category: String, order: Array, inputs: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()

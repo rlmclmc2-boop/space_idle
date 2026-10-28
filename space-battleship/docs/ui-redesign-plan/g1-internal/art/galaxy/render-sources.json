@@ -1,0 +1,809 @@
+{
+  "kind": "Browser-only static previews rendered from current authoritative GLB; Godot keeps original galaxy_map/GLB, not PNG substitution",
+  "source_manifest": "assets/galaxy/v3/manifest.json",
+  "blender": "4.3.2",
+  "engine": "Cycles CPU, 8 samples, no denoising",
+  "camera": "orthographic, fixed 20 functional / 44 headquarters",
+  "entries": [
+    {
+      "key": "galaxy_core",
+      "level": 0,
+      "source": "assets/galaxy/v3/core/galaxy_core.glb",
+      "source_sha256": "2fabff32f7b19e927521400ab69804c7f8b8b47c5f0c0bcd28fae358e9f5fb3a",
+      "preview": "galaxy_core.png",
+      "preview_sha256": "e475d449b09da9fb4b80b1fbd58901489be1ed4ea54b9ffee615bde3b6ac2979",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 44.0,
+      "visible_rect_px": [
+        97,
+        138,
+        218,
+        127
+      ],
+      "browser_viewbox_px": [
+        93,
+        134,
+        226,
+        135
+      ]
+    },
+    {
+      "key": "colony_ring",
+      "level": 1,
+      "source": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv1.glb",
+      "source_sha256": "365a796dee122cd77677f1b985569bdee8d44ac9fb24292191689ac24708cfb4",
+      "preview": "colony_ring-lv1.png",
+      "preview_sha256": "023206f9eb867e4580bd8376c41d12947037523f0e944d32cdc8c74388019450",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        116,
+        148,
+        152,
+        105
+      ],
+      "browser_viewbox_px": [
+        112,
+        144,
+        160,
+        113
+      ]
+    },
+    {
+      "key": "colony_ring",
+      "level": 2,
+      "source": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv2.glb",
+      "source_sha256": "6fc1949b4376a709996a12b559342ff43ed219cfe3e6dcfb65fe6f93628a6f15",
+      "preview": "colony_ring-lv2.png",
+      "preview_sha256": "febc17a66e764a084ee0d0af3d3f3bc1868a3f09bf270ae3fc61997b2683081e",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        113,
+        149,
+        157,
+        108
+      ],
+      "browser_viewbox_px": [
+        109,
+        145,
+        165,
+        116
+      ]
+    },
+    {
+      "key": "colony_ring",
+      "level": 3,
+      "source": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv3.glb",
+      "source_sha256": "7acf4b828fdfdad5f3d19fdec615bc7ba997b870c25d9f8a041909bc03ae36ee",
+      "preview": "colony_ring-lv3.png",
+      "preview_sha256": "bba4e41706d042f6320a671d4719e907d538af0aa97fc292d713c6acc88c1576",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        111,
+        150,
+        162,
+        111
+      ],
+      "browser_viewbox_px": [
+        107,
+        146,
+        170,
+        119
+      ]
+    },
+    {
+      "key": "colony_ring",
+      "level": 4,
+      "source": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv4.glb",
+      "source_sha256": "6c1cd816c8c8bdc03120b11be0d943dd6989c300b5ee59b40584c437138b321d",
+      "preview": "colony_ring-lv4.png",
+      "preview_sha256": "27435df07984aa1136de9fd0dd54a151fe94b8027018b4960d2c083bf5789bf3",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        108,
+        143,
+        168,
+        122
+      ],
+      "browser_viewbox_px": [
+        104,
+        139,
+        176,
+        130
+      ]
+    },
+    {
+      "key": "colony_ring",
+      "level": 5,
+      "source": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv5.glb",
+      "source_sha256": "84ca67ad81cfa2a1de3c539ceb08b6974bacb73b03abf0ccd9ccd11963473db4",
+      "preview": "colony_ring-lv5.png",
+      "preview_sha256": "e33b1d8b5dc207355a51f950873754b31e6a456327990d5fafcef475170fb40b",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        105,
+        144,
+        174,
+        125
+      ],
+      "browser_viewbox_px": [
+        101,
+        140,
+        182,
+        133
+      ]
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 1,
+      "source": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb",
+      "source_sha256": "6174e7ba1efb95331491c9c6b06d13b5c033db21b7f86bd1b8e160306b8a7a5c",
+      "preview": "orbital_shipyard-lv1.png",
+      "preview_sha256": "593c9ff9642fbda6363e9ce370f49e7874a19cd78a2b233326437d609005284d",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        91,
+        121,
+        201,
+        151
+      ],
+      "browser_viewbox_px": [
+        87,
+        117,
+        209,
+        159
+      ]
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 2,
+      "source": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv2.glb",
+      "source_sha256": "7819847ab73b8015adcd5f2ff0582829dc92daa800dcd1d9cf982e1146685c24",
+      "preview": "orbital_shipyard-lv2.png",
+      "preview_sha256": "412e28c6828a357c4212b3ed0b22016fd084dccdd6445d99699a09a80a850c06",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        87,
+        121,
+        210,
+        155
+      ],
+      "browser_viewbox_px": [
+        83,
+        117,
+        218,
+        163
+      ]
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 3,
+      "source": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv3.glb",
+      "source_sha256": "f6d47280a134c1652104a61a69d683caa2b9b4f5bea3fa72d2c2247447d0164a",
+      "preview": "orbital_shipyard-lv3.png",
+      "preview_sha256": "0ed41357f08ada3a5ef9705cc587315ec055630c762eb754dc068577fbfef4a6",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        83,
+        121,
+        218,
+        159
+      ],
+      "browser_viewbox_px": [
+        79,
+        117,
+        226,
+        167
+      ]
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 4,
+      "source": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv4.glb",
+      "source_sha256": "18bf7b279dd1f30e62a1fe330e3ac3168f3e95b39ffacd9a6e4cb07e24f21af3",
+      "preview": "orbital_shipyard-lv4.png",
+      "preview_sha256": "0a8db394d83fb9b24f814be65ba01d07b1151567b1e923288a72f5bb54905dc4",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        78,
+        120,
+        228,
+        164
+      ],
+      "browser_viewbox_px": [
+        74,
+        116,
+        236,
+        172
+      ]
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 5,
+      "source": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv5.glb",
+      "source_sha256": "f6467b061fbffecdc37c2986cc12d96e9f230209ece6c1a816f8d84dba6b4114",
+      "preview": "orbital_shipyard-lv5.png",
+      "preview_sha256": "9ca6299627d30ff8acd886f154eb44bdafdda0505dcea85bb55163a93d89281d",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        74,
+        114,
+        236,
+        174
+      ],
+      "browser_viewbox_px": [
+        70,
+        110,
+        244,
+        182
+      ]
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 1,
+      "source": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb",
+      "source_sha256": "0b629350e7441704b84d30286d043e487bf94a7669d0fc91dd3fa192cde65a62",
+      "preview": "stellar_energy_array-lv1.png",
+      "preview_sha256": "b6e29b29be186ae6e9c19f8751d6dba22972e85ec5735c7feae14398c1f1193b",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        126,
+        154,
+        147,
+        90
+      ],
+      "browser_viewbox_px": [
+        122,
+        150,
+        155,
+        98
+      ]
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 2,
+      "source": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv2.glb",
+      "source_sha256": "e9bd50e58ae3b830e62108d3c683bc150cffa06d18a123f745a60719b01c88f4",
+      "preview": "stellar_energy_array-lv2.png",
+      "preview_sha256": "288d2520322f4aed474623719df3056e2d02da7fd78b65b785d3765b84614ce9",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        123,
+        153,
+        153,
+        94
+      ],
+      "browser_viewbox_px": [
+        119,
+        149,
+        161,
+        102
+      ]
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 3,
+      "source": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv3.glb",
+      "source_sha256": "c5243079d5915655fbda8ed923aee56e43bc393b83f5f21aaa848df447c3e50b",
+      "preview": "stellar_energy_array-lv3.png",
+      "preview_sha256": "b5e2fe2be9603e78b8e5ce70b3fde70158ba3b324b898a36f25e7784ec531272",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        106,
+        154,
+        172,
+        102
+      ],
+      "browser_viewbox_px": [
+        102,
+        150,
+        180,
+        110
+      ]
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 4,
+      "source": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv4.glb",
+      "source_sha256": "64381842f7b613465a8de8dc19a056097d7f1a19d7d8cd44019cc8b6ef25b22a",
+      "preview": "stellar_energy_array-lv4.png",
+      "preview_sha256": "33cd36303b9ba36e50f3169fa38b44e02a4eef4b9cb49bbe747766dfb8786ca7",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        103,
+        153,
+        178,
+        107
+      ],
+      "browser_viewbox_px": [
+        99,
+        149,
+        186,
+        115
+      ]
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 5,
+      "source": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv5.glb",
+      "source_sha256": "8605c3a0eb959ba2f3cd2f0efb1580c27263179f2deddcfc517caab5398ab821",
+      "preview": "stellar_energy_array-lv5.png",
+      "preview_sha256": "c932d163dc226386dcf008a9303db14e6d9a03e139da89c1114e70b349547acd",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        99,
+        152,
+        186,
+        114
+      ],
+      "browser_viewbox_px": [
+        95,
+        148,
+        194,
+        122
+      ]
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 1,
+      "source": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb",
+      "source_sha256": "6fead112fa5adeddc69f117a3c806fbcb3b2e14ed1bd0611ec543336fb41e88a",
+      "preview": "interstellar_refinery-lv1.png",
+      "preview_sha256": "f2f6709794321bf5163bdef9d89f4b94b63103f26ce823b6f2e15a65bf8cb283",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        130,
+        142,
+        129,
+        105
+      ],
+      "browser_viewbox_px": [
+        126,
+        138,
+        137,
+        113
+      ]
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 2,
+      "source": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv2.glb",
+      "source_sha256": "1dcbffec37c885e6347dcd73c412338681abd49055f83c30b2f776e4691250d2",
+      "preview": "interstellar_refinery-lv2.png",
+      "preview_sha256": "9850a58c361ab90759533ea600cc138ff37a27ebc2c1761fe2b35a7e018bfdaa",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        125,
+        142,
+        138,
+        107
+      ],
+      "browser_viewbox_px": [
+        121,
+        138,
+        146,
+        115
+      ]
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 3,
+      "source": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv3.glb",
+      "source_sha256": "249b32d0bf2d61b4b82e33cf688fc6072e4ef432f3bac05397021710ccdab2a8",
+      "preview": "interstellar_refinery-lv3.png",
+      "preview_sha256": "bfba8e36cbe723e8d260bc2e2c7045e49f5d4cffd602e656c1f210dde15a6dae",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        119,
+        137,
+        148,
+        115
+      ],
+      "browser_viewbox_px": [
+        115,
+        133,
+        156,
+        123
+      ]
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 4,
+      "source": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv4.glb",
+      "source_sha256": "d94a27acd0debe7d2aac9dd300947a4e42c9cf9c674f32d9f7a202226653dbe4",
+      "preview": "interstellar_refinery-lv4.png",
+      "preview_sha256": "53d17b43e065e1a6619d81ba0aa2e747df87aa7972d803bd01d99e1eaf8d6fd9",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        114,
+        137,
+        157,
+        117
+      ],
+      "browser_viewbox_px": [
+        110,
+        133,
+        165,
+        125
+      ]
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 5,
+      "source": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv5.glb",
+      "source_sha256": "c1bf304a49229e357603dd24067b89585ad38741eec78d78a35930dabcef28b2",
+      "preview": "interstellar_refinery-lv5.png",
+      "preview_sha256": "ec311515515acced9c09f15a3e7644763238a844e930df0c9d30f0c92af2315a",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        106,
+        135,
+        169,
+        122
+      ],
+      "browser_viewbox_px": [
+        102,
+        131,
+        177,
+        130
+      ]
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 1,
+      "source": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb",
+      "source_sha256": "a29d5087ac96e1a2830814fb2f1ccf617d71e863747780df2368e937f6f5e0fb",
+      "preview": "crystal_refinery-lv1.png",
+      "preview_sha256": "7cc5b09e85c29eb6eab60ed272053d811971db94fad09354eb3b5f4d75dc9797",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        130,
+        147,
+        130,
+        102
+      ],
+      "browser_viewbox_px": [
+        126,
+        143,
+        138,
+        110
+      ]
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 2,
+      "source": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv2.glb",
+      "source_sha256": "f51705162e0860ed45c24b85c1ae1d605bba53c31a78a74eb572c0323b79789f",
+      "preview": "crystal_refinery-lv2.png",
+      "preview_sha256": "498bc7c76826d744fdde153b63466483780b083bad67c5f05479cf7c6a2575e4",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        125,
+        147,
+        134,
+        106
+      ],
+      "browser_viewbox_px": [
+        121,
+        143,
+        142,
+        114
+      ]
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 3,
+      "source": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv3.glb",
+      "source_sha256": "e61892ef42f686357f80d21222550946aae2771ffd651d58a3677a5e50426d97",
+      "preview": "crystal_refinery-lv3.png",
+      "preview_sha256": "613275c05dd4ad08b8c6ec34010dc1b913185ee13d56426f1dae55c4d25bce7d",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        120,
+        148,
+        144,
+        110
+      ],
+      "browser_viewbox_px": [
+        116,
+        144,
+        152,
+        118
+      ]
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 4,
+      "source": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv4.glb",
+      "source_sha256": "a4d938f37102acf9da3451ff04de8a518c2ef1d3ea8f5f1a1dd3f7917c577ec7",
+      "preview": "crystal_refinery-lv4.png",
+      "preview_sha256": "f10b57938ba17bc607657b0ed1cc31aeaaa24525e3109e1be9f49fc21e37c3f7",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        116,
+        148,
+        152,
+        114
+      ],
+      "browser_viewbox_px": [
+        112,
+        144,
+        160,
+        122
+      ]
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 5,
+      "source": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv5.glb",
+      "source_sha256": "7bb8e494a9de163bf3e27692b1b2aee6f94c5960754dc8e9fa0db9008a2018c2",
+      "preview": "crystal_refinery-lv5.png",
+      "preview_sha256": "3875bf36acf4348db78a6e276b1e83fe70995e59c2b84cc928b8d1fb531b219d",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        111,
+        148,
+        161,
+        117
+      ],
+      "browser_viewbox_px": [
+        107,
+        144,
+        169,
+        125
+      ]
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 1,
+      "source": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb",
+      "source_sha256": "17eafbf5af520d48ab1c6a680c157314a062cf2b4da0f3709c705b80576d8210",
+      "preview": "heavy_element_refinery-lv1.png",
+      "preview_sha256": "8541a3872a88e04902fddb1658b2ed05af413bbfba2d993624c5ad8cd5d4f250",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        124,
+        151,
+        134,
+        103
+      ],
+      "browser_viewbox_px": [
+        120,
+        147,
+        142,
+        111
+      ]
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 2,
+      "source": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv2.glb",
+      "source_sha256": "0269230216b47ed2cbf18767bc3e4e1c628ad85b239858a04d050faabeac9e9e",
+      "preview": "heavy_element_refinery-lv2.png",
+      "preview_sha256": "eeafb681102ef06b3ae8b3588625f0a2bac1f66c924c88181711afdb5458df26",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        122,
+        151,
+        140,
+        107
+      ],
+      "browser_viewbox_px": [
+        118,
+        147,
+        148,
+        115
+      ]
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 3,
+      "source": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv3.glb",
+      "source_sha256": "51465e91c8cce939cc0dc0d36ad1da157bc00a27108483f593fb183e2faccb82",
+      "preview": "heavy_element_refinery-lv3.png",
+      "preview_sha256": "d265c991bbc853bb2272a62575e3e8604fd71ba8421979068c63f03974c4231e",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        118,
+        149,
+        148,
+        112
+      ],
+      "browser_viewbox_px": [
+        114,
+        145,
+        156,
+        120
+      ]
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 4,
+      "source": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv4.glb",
+      "source_sha256": "af85bde31542fd6100a7196955c14f2a68e401d75e85b0b272b8bc6475119015",
+      "preview": "heavy_element_refinery-lv4.png",
+      "preview_sha256": "4537534f7a203d767771946bca82b8ea6c93aecbd90229b7fe6dc25e36ff11d7",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        114,
+        146,
+        156,
+        118
+      ],
+      "browser_viewbox_px": [
+        110,
+        142,
+        164,
+        126
+      ]
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 5,
+      "source": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv5.glb",
+      "source_sha256": "71e802d5c9d6ea555c3f4781cadd4c89d5b74da65cf40e157eec781a8be9f5d5",
+      "preview": "heavy_element_refinery-lv5.png",
+      "preview_sha256": "3ff94b8b8607561cad63c5c85dfe9e2db68dd7e41b10f3267ed5a938da7641e9",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 20.0,
+      "visible_rect_px": [
+        109,
+        143,
+        166,
+        125
+      ],
+      "browser_viewbox_px": [
+        105,
+        139,
+        174,
+        133
+      ]
+    },
+    {
+      "key": "transport_shuttle",
+      "level": 0,
+      "source": "assets/galaxy/v3/ships/transport_shuttle.glb",
+      "source_sha256": "3937e33cb4430fcfb006ce152cc6780528b14bf23d48a10499ed45a7292b2a6f",
+      "preview": "transport_shuttle.png",
+      "preview_sha256": "4b8f5f07326505a18bf006c085a88b72ac3efdeeff604c3a785ede4492ecf13e",
+      "canvas_px": [
+        384,
+        384
+      ],
+      "ortho_scale": 6.0,
+      "visible_rect_px": [
+        133,
+        171,
+        93,
+        66
+      ],
+      "browser_viewbox_px": [
+        129,
+        167,
+        101,
+        74
+      ]
+    }
+  ]
+}
