@@ -38,3 +38,29 @@
 所有者按提交时容量/开放集合一次校验完整映射与合计，不能容纳或集合变化即普通拒绝，不补项、不按设备钳制；复用原候选求值后仍须核对全部手动值等于确认金额。容量改变但仍能容纳、集合未变时保留确认金额并允许接纳，不引入容量快照锁。通过后形成一个所属模块候选，一次求值、接纳及既有发布；普通拒绝不写入任何本组目标，无逐设备部分成功，原fault仍按第5节停机，不声称可回滚native故障。
 
 成功后当前真实分配/免费/有效量及效果替换旧比较；不把旧预览的倍率当承诺。现有allocate_text仍供单设备动作，新整组确认不让UI管理先减后增、多次发布或差异重试。均分保持确认后**一次distribute**，明确按提交时状态均分；预览的容量/效果不锁住提交时容量，实际回执优先。
+
+<a id="921-待审增补真实展示与局部变化通知"></a>
+
+### 9.2.1 实现候选：真实展示与局部变化通知
+
+**状态：设计`3d14ded8`已根线程及原独审核限定通过；[运行实现候选](../../verification/reactor-presentation-implementation.md)待原双审、未合main，不代表UI或完整游戏验收。** 现有整组接口以已审`09af963cf6f66146e019cecd08353426ab6d6abb`为基线；本增补不改变它们或原购级/均分/发布语义。第3节b7bb展示候选不因本节转为已实现。固定消费者、接纳/钱包写入路径、验证计划见[本次定向提案](../../verification/amount-safe-preview-contract.md#反应炉真实场景最小展示与局部通知提案)。
+
+| 运行候选出口 | 最小职责与字段 |
+|---|---|
+| `Reactor.presentation_model()` | 仅读已接纳状态与容量/效果缓存，给ok、level、capacity/allocated/remaining规范Amount文本、can_allocate/reason、modules及core load；不带预算/购级报价，不把即时inputs或prepared预测为current。缺已接纳缓存给ReactorSnapshotUnavailable，不伪造0或factor=1。modules沿已接纳开放ID及顺序，给id/enabled、manual/free/effective/factor规范文本、has_free及有限ratio/load。当前准入开放集合与已接纳缓存不一致时明确不可用，不混成一个成功快照。 |
+| `Reactor.purchase_preview(can_pay: Callable)` | 仅当前消费者所需+1；复用原_purchase的脱离候选及_quote/等级范围判断，给原costs规范文本、can_purchase/reason。count固定1，不新增MAX；付款能力只用注入Economy.can_pay。金额/文本只按已接纳level和会话内固定配置重算/复用，预算变化只重读可支付性；确认仍原purchase重验和发布。显示cost_text/message由宿主/前端按资源ID与原原因本地化，不解析Amount或计算费用。 |
+| 原`allocation_plan_preview`及实际结果的current/target行 | 在共用_plan_readings中补同口径ratio/load/has_free；沿现行_amounts/shares/equal准备求值，不另写均分或效果算法。current仍已接纳，target仍脱离候选；命令及其canonical金额、拒绝顺序和回执原字段不变。 |
+| `Reactor.presentation_changed(changes: PackedStringArray)` | 仅该Reactor实例的局部deferred合并通知；变化类别限level/capacity/availability/allocation/free/effect/readiness。只标记失效，不携带或接纳候选。level/availability才影响+1报价/准入；当前/来源相关变化才重读场景与必要草稿比较。 |
+| `Economy.budget_changed(resource_ids: PackedStringArray)` | 仅真实已接纳余额的局部deferred变化提示；由Economy拥有，保留原display_changed语义。宿主仅把与+1 costs资源集合相交的事件标记为报价可支付性失效；不触发场景/草稿预览/效果/滑杆重建。 |
+
+**比例仅供绘制：** C为同一已接纳或target的总手动容量，A为该行manual，F为该行实际免费量，E为原Amount.add(A,F)。C>0时ratio=to_ratio(A,C)、模块load=to_ratio(E,C)、核心load=to_ratio(ΣE,C)，沿既有to_ratio在[0,1]饱和；核心/设备load不是输出速率、功率或额外玩法上限。has_free由Amount.compare(F,0)>0给出，不从文本或float猜测。免费供能不占手动容量，却参与effective/load及原效果求值。
+
+原_evaluate把F计算为C乘现行免费系数；因此合法且已求值的C=0必有F=A=E=0，ratio/load为0、效果沿原公式为1。C>0、A=0、F>0时load>0，不能因滑杆为0而停掉真实运行表现。E≥C时load饱和为1但E/factor全文仍保留；不能由饱和值反算金额。缺缓存或源错误是未知；C=0且F>0不是该公式的合法结果，不能拿这种夹具证明免费零容量规则或强行输出0。
+
+**通知与刷新边界：** Reactor在_adopt接纳、成功restore_state及开放事实变化时仅安排一次deferred检查；prepare、discard、预览、拒绝和读取不发信号。检查在同步业务调用栈结束后比较最终已接纳公开事实和本轮第一次变化前的事实，只在数值/ID顺序/准入确有净变化时发相应changes；不比较整份save、不求幂/报价，不暴露_prepared_state。A→B→A不广播；同帧多次成功接纳只合并最终净变化。记录比较基准并清queued标记后才emit，监听者重入产生下一次独立检查，不能在emit后写回旧候选/快照。它只使UI失效，不承担业务接纳；原choices_changed及旧面板行为保留；新Scene以presentation_changed驱动实际模型，不再把旧choices无条件连到整场景invalidate，避免原整组入口无净变时仍触发全读。
+
+Economy在真正钱包写入点安排独立deferred检查，包括notify=false的静默接纳；保留原display_changed/drop_collected及其通知顺序。比较第一次写入前与本轮最终钱包的数值，缺键视同零；用原Amount.compare排除仅表示差异、零增量和A→B→A，只报真正净变资源。该临时只读快照仅服务通知合并，不是第二预算账本。payment/can_pay、掉落登记/生成/移动、收入窗口裁剪和显示格式化均不使budget_changed发生。来源错误不伪造0、不借通知新增RunState.fail。
+
+UI只订阅本实例及相关预算资源；通知只置局部dirty，下一可见显示帧分别消费：presentation dirty读取模型/必要比较，quote dirty仅读+1报价可支付性。预算事件不调用全场景_refresh或_preview_draft，不用限频全量新读兜底，也不新增Session总线。隐藏期只积累相关标记，停止投影；重开/换Session初次读取一次并重绑旧连接。真实工作shader始终只消费current model的load，时钟推进不读取模型/报价/预览；宿主时钟context补显式running（取公共RunState.is_running），running=false禁用交互，paused仅控制动画；不能把用户暂停等同停机而改变原业务准入。
+
+被动容量/免费量/来源变化时，shares草稿须保留已生成canonical金额，沿原amounts分支重取比较；不得由刷新把旧基点重新换成新金额。只有新拖动才用shares生成新金额。equal确认仍一次原distribute并采用提交时状态；开放集合改变清旧预览，不补项。读取错误须禁用相关操作并呈现未知，不沿用消费者缺字段默认为0的绘制回退。
