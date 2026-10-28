@@ -53,8 +53,23 @@ var _batch_quantity: OptionButton
 var _batch_results: Label
 var _batch_scroll: ScrollContainer
 var _batch_submit: Button
-var _summary: Label
-var _selection_open: bool = false
+var _font_regular: FontVariation
+var _font_strong: FontVariation
+var _terminal_texture: Texture2D
+var _button_texture: AtlasTexture
+var _arm_parts: Array = []
+var _cost_cells: Dictionary = {}
+var _payment_state: Label
+var _level_label: Label
+var _compare_headers: Array = []
+var _compare_values: Array = []
+var _compare_periods: Array = []
+var _compare_row_label: Label
+var _batch_total: Label
+var _batch_secondary: Label
+var _batch_frame: NinePatchRect
+var _batch_close: Button
+var _selection_open: bool = true
 var _empty_choice: Button
 var last_result: Dictionary = {}
 var _last_batch_result: Dictionary = {}
@@ -73,6 +88,7 @@ func _init(session) -> void:
     _textures.shield = load("res://assets/ui/equipment/cartoon_shield.svg")
     _textures.armour = load("res://assets/ui/equipment/cartoon_armour.svg")
     _background = load("res://assets/ui/equipment/hangar/hangar-console.png")
+    _setup_materials()
     _build()
     _session.equipment.slots_changed.connect(func(_ids): _dirty = true)
     _session.equipment.loadout_changed.connect(func(): _dirty = true)
@@ -83,6 +99,49 @@ func _init(session) -> void:
     _session.equipment.comparison_changed.connect(func():
         presentation_counts.comparison_dependency_changes += 1
         _comparison_dirty = true)
+
+func _setup_materials() -> void:
+    _font_regular = FontVariation.new()
+    _font_regular.base_font = load("res://assets/fonts/NotoSansSC.ttf")
+    _font_regular.variation_opentype = {2003265652:400.0}
+    _font_strong = FontVariation.new()
+    _font_strong.base_font = _font_regular.base_font
+    _font_strong.variation_opentype = {2003265652:600.0}
+    theme = Theme.new()
+    theme.default_font = _font_regular
+    theme.default_font_size = 15
+    theme.set_font("font", "Button", _font_strong)
+    theme.set_color("font_color", "PopupMenu", CREAM)
+    theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
+    _terminal_texture = load("res://assets/ui/equipment/hangar/terminal-housing.png")
+    _button_texture = AtlasTexture.new()
+    _button_texture.atlas = _terminal_texture
+    _button_texture.region = Rect2(0,0,2059,640)
+    var arm: Texture2D = load("res://assets/ui/equipment/hangar/support-arm.png")
+    for region in [Rect2(0,160,450,400),Rect2(450,160,1272,400),Rect2(1722,160,450,400)]:
+        var part := AtlasTexture.new()
+        part.atlas=arm;part.region=region
+        _arm_parts.append(part)
+
+func _frame(parent: Control, rect: Rect2) -> NinePatchRect:
+    var frame := NinePatchRect.new()
+    frame.texture = _button_texture
+    frame.patch_margin_left=180;frame.patch_margin_right=180
+    frame.patch_margin_top=90;frame.patch_margin_bottom=90
+    frame.scale=Vector2(0.06,0.06)
+    frame.position=rect.position
+    frame.size=rect.size/0.06
+    frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    frame.show_behind_parent=true
+    parent.add_child(frame)
+    return frame
+
+func _button_tint(button: Button, chosen: bool) -> void:
+    if button.has_meta("material_chosen") and button.get_meta("material_chosen")==chosen:return
+    button.set_meta("material_chosen",chosen)
+    var face: NinePatchRect = button.get_meta("material")
+    face.modulate=Color("b5f0e1") if chosen else Color.WHITE
+    button.add_theme_color_override("font_color",Color("b9ffdf") if chosen else CREAM)
 
 func _economy_display_changed() -> void:
     presentation_counts.economy_signals += 1
@@ -102,12 +161,11 @@ func _ready() -> void:
 
 func _label(text: String, rect: Rect2, font_size: int = 16, color: Color = INK) -> Label:
     var label := Label.new()
-    label.text = text
-    label.position = rect.position
-    label.size = rect.size
-    label.add_theme_font_size_override("font_size", font_size)
-    label.add_theme_color_override("font_color", color)
-    label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    label.text=text;label.position=rect.position;label.size=rect.size
+    label.add_theme_font_size_override("font_size",font_size)
+    label.add_theme_font_override("font",_font_strong if font_size>=18 else _font_regular)
+    label.add_theme_color_override("font_color",color)
+    label.mouse_filter=Control.MOUSE_FILTER_IGNORE
     add_child(label)
     return label
 
@@ -125,20 +183,16 @@ func _style(fill: Color, edge: Color, width: int = 1) -> StyleBoxFlat:
 
 func _button(text: String, rect: Rect2, action: Callable, dark: bool = false) -> Button:
     var button := Button.new()
-    button.text = text
-    button.position = rect.position
-    button.size = rect.size
-    button.add_theme_font_size_override("font_size", 15)
-    button.add_theme_color_override("font_color", CREAM if dark else INK)
-    button.add_theme_color_override("font_hover_color", CREAM if dark else INK)
-    button.add_theme_color_override("font_pressed_color", CREAM if dark else INK)
-    button.add_theme_color_override("font_disabled_color", Color("859795"))
-    button.add_theme_stylebox_override("normal", _style(TEAL if dark else CREAM, Color("89aaa9")))
-    button.add_theme_stylebox_override("hover", _style(Color("277384") if dark else Color("e4eee5"), Color("75d4d0"), 2))
-    button.add_theme_stylebox_override("pressed", _style(Color("123e4c") if dark else Color("cce5dd"), Color("6ed1ca"), 2))
-    button.add_theme_stylebox_override("disabled", _style(Color("425c66") if dark else Color("e0e1d7"), Color("9ba9a2")))
-    button.add_theme_stylebox_override("focus", _style(Color(0,0,0,0), Color("d9ae5d"), 2))
+    button.text=text;button.position=rect.position;button.size=rect.size
+    button.add_theme_font_size_override("font_size",16)
+    button.add_theme_font_override("font",_font_strong)
+    for key in ["font_color","font_pressed_color"]:button.add_theme_color_override(key,CREAM)
+    button.add_theme_color_override("font_hover_color",Color("c4fff0"))
+    button.add_theme_color_override("font_disabled_color",Color("8da5ac"))
+    for state in ["normal","hover","pressed","disabled","focus"]:button.add_theme_stylebox_override(state,StyleBoxEmpty.new())
     add_child(button)
+    var frame := _frame(button,Rect2(Vector2.ZERO,rect.size))
+    button.set_meta("material",frame)
     button.pressed.connect(action)
     return button
 
@@ -154,101 +208,137 @@ func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
     return image
 
 func _build() -> void:
-    _label("远航舰桥", Rect2(22, 10, 160, 34), 24)
-    _wallet = _label("", Rect2(204, 15, 590, 30), 16)
-    _label("战力维护  /  装配", Rect2(24, 52, 380, 28), 15, TEAL)
-    _title = _label("装配", Rect2(24, 96, 480, 38), 23)
-    _title.add_theme_stylebox_override("normal", _style(Color("f3f0df", 0.93), Color(0,0,0,0)))
-    _button("全部装备升级", Rect2(622, 101, 166, 44), _open_batch, true).name = "BatchOpen"
-    _summary = _label("", Rect2(26, 559, 754, 24), 13, CREAM)
-    _summary.add_theme_stylebox_override("normal", _style(Color("183a49", 0.88), Color(0,0,0,0)))
-    _current_title = _label("现装升级", Rect2(32, 640, 435, 30), 19)
-    _large_icon = _icon("laser", Rect2(34, 680, 104, 114))
-    _current_caption = _label("当前攻击力", Rect2(155, 682, 120, 24), 14, TEAL)
-    _label("本次升级后", Rect2(324, 682, 126, 24), 14, TEAL)
-    _current_value = _label("—", Rect2(154, 711, 132, 42), 27)
-    _label("→", Rect2(281, 713, 42, 42), 28, TEAL)
-    _next_value = _label("—", Rect2(325, 711, 130, 42), 27)
-    _switch_state = _label("", Rect2(155, 763, 295, 30), 13, TEAL)
+    _label("远航舰桥",Rect2(24,10,160,34),23)
+    _wallet=_label("",Rect2(204,16,590,30),15)
+    _label("战力维护  /  装配",Rect2(24,52,380,28),14,Color("57777a"))
+    _title=_label("装配",Rect2(26,99,480,34),22)
+    _title.add_theme_stylebox_override("normal",_style(Color("f3f0df",0.90),Color(0,0,0,0),0))
+    _button("全部装备升级",Rect2(614,96,174,49),_open_batch,true).name="BatchOpen"
+    _current_title=_label("现装升级",Rect2(34,612,334,28),19)
+    _level_label=_label("",Rect2(380,617,78,22),13,Color("657c7b"))
+    _large_icon=_icon("laser",Rect2(42,649,64,64))
+    _current_caption=_label("当前攻击力",Rect2(130,648,140,22),12,Color("6b7d79"))
+    _label("升级后",Rect2(306,648,146,22),12,Color("557a78"))
+    _current_value=_label("—",Rect2(130,671,140,38),27)
+    _label("→",Rect2(273,675,32,32),23,Color("72938d"))
+    _next_value=_label("—",Rect2(306,671,148,38),27,TEAL)
+    _cost=_label("本次费用",Rect2(34,714,420,20),13,Color("647b75"))
+    _payment_state=_label("",Rect2(34,738,420,54),16,Color("a75a3d"))
+    _payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
     for index in 3:
-        var captions := ["+1", "+10", "MAX"]
-        var button := _button(captions[index], Rect2(32 + index * 56, 807, 50, 45), func(): _maximum = index == 2; _quantity = 10 if index == 1 else 1; _dirty = true)
-        button.name = "Quantity" + str(index)
+        var captions := ["+1","+10","MAX"]
+        var button := _button(captions[index],Rect2(32+index*67,801,62,41),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
+        button.name="Quantity"+str(index)
         _quantity_buttons.append(button)
-    _cost = _label("", Rect2(206, 789, 106, 68), 14)
-    _purchase = _button("购买1级", Rect2(318, 807, 133, 45), _buy, true)
-    _purchase.name = "Purchase"
-    _comparison_title = _label("点击槽位选择装备", Rect2(505, 639, 278, 28), 18, CREAM)
-    _empty_choice = _button("卸下", Rect2(726, 638, 54, 25), _select_candidate.bind(""))
-    _compare = _label("", Rect2(505, 757, 278, 66), 13, CREAM)
-    _install = _button("安装", Rect2(505, 833, 274, 33), _equip, true)
-    _install.name = "Install"
-    _feedback = _label("", Rect2(24, 875, 760, 24), 12, CREAM)
-    _feedback.clip_text = true
-    _feedback.tooltip_text = ""
+    _purchase=_button("购买1级",Rect2(246,797,218,47),_buy,true)
+    _purchase.name="Purchase"
+    _comparison_title=_label("装备选择",Rect2(508,612,210,27),18,CREAM)
+    _empty_choice=_button("卸下",Rect2(724,613,58,28),_select_candidate.bind(""))
+    _empty_choice.add_theme_font_size_override("font_size",12)
+    _compare=_label("",Rect2(508,735,268,62),13,CREAM)
+    _compare.hide()
+    for column in 2:
+        var header:=_label("",Rect2(565+column*105,737,100,22),12,Color("cbdad5") if column==0 else Color("91e4cf"))
+        header.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+        header.add_theme_font_override("font",_font_strong)
+        _compare_headers.append(header)
+        var value:=_label("—",Rect2(565+column*105,757,100,26),17,CREAM if column==0 else Color("a2f0d6"))
+        value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+        value.add_theme_font_override("font",_font_strong)
+        _compare_values.append(value)
+        var period:=_label("—",Rect2(565+column*105,783,100,22),13,Color("b6c9c6") if column==0 else Color("91caba"))
+        period.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+        _compare_periods.append(period)
+    _compare_row_label=_label("攻击力",Rect2(508,758,57,24),12,Color("a8bfbc"))
+    _label("周期",Rect2(508,783,57,22),12,Color("8faeab")).name="PeriodCaption"
+    _switch_state=_label("",Rect2(508,807,270,18),12,Color("f2cb83"))
+    _install=_button("安装",Rect2(505,829,277,36),_equip,true)
+    _install.name="Install"
+    _feedback=_label("",Rect2(25,875,757,24),12,Color("e5e7da"))
+    _feedback.clip_text=true
     _build_batch()
+
+func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
+    var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
+    for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
+    _payment_state.text=""
+    _cost.text="本次费用" if affordable or not quote.get("ok",false) else "本次费用 · "+_reason(reason)
+    for index in keys.size():
+        var id: String=str(keys[index])
+        if not _cost_cells.has(id):
+            var name:=_label("",Rect2(34,730,110,23),13,Color("5f7876"))
+            var amount:=_label("",Rect2(147,730,307,24),17,INK)
+            amount.add_theme_font_override("font",_font_strong)
+            amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+            _cost_cells[id]={"name":name,"amount":amount}
+        var cell: Dictionary=_cost_cells[id]
+        cell.name.position.y=736+index*20
+        cell.amount.position.y=734+index*20
+        cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
+        var formatted: Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
+        cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
+        cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"))
+        cell.name.show();cell.amount.show()
+    if not quote.get("ok",false):
+        _payment_state.text=_reason(str(quote.get("reason",quote.get("error","Unknown"))))
+    elif not affordable:
+        _purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
 
 func _open_batch() -> void:
     # Godot GUI picking uses scene order as well as the visual canvas order.
     move_child(_batch_blocker, get_child_count() - 1)
+    move_child(_batch_frame,get_child_count()-1)
     move_child(_batch, get_child_count() - 1)
     _batch_blocker.show()
+    _batch_frame.show()
     _batch.show()
     _refresh_batch()
 
 func _close_batch() -> void:
     _batch.hide()
+    _batch_frame.hide()
     _batch_blocker.hide()
 
 func _build_batch() -> void:
-    _batch_blocker = ColorRect.new()
-    _batch_blocker.size = Vector2(808,900)
-    _batch_blocker.color = Color(0.03,0.08,0.11,0.2)
-    _batch_blocker.z_index = 19
-    _batch_blocker.hide()
-    add_child(_batch_blocker)
-    _batch = PanelContainer.new()
-    _batch.z_index = 20
-    _batch.position = Vector2(90, 230)
-    _batch.size = Vector2(628, 530)
-    _batch.add_theme_stylebox_override("panel", _style(CREAM, TEAL, 2))
-    add_child(_batch)
-    var margin := MarginContainer.new()
-    for side in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + side, 22)
+    _batch_blocker=ColorRect.new();_batch_blocker.size=Vector2(808,900)
+    _batch_blocker.color=Color(0.03,0.08,0.11,0.30);_batch_blocker.z_index=19
+    add_child(_batch_blocker);_batch_blocker.hide()
+    _batch_frame=_frame(self,Rect2(90,180,628,590))
+    _batch_frame.show_behind_parent=false;_batch_frame.z_index=20;_batch_frame.hide()
+    _batch=PanelContainer.new();_batch.position=Vector2(90,180);_batch.size=Vector2(628,590);_batch.z_index=21
+    _batch.add_theme_stylebox_override("panel",StyleBoxEmpty.new());add_child(_batch)
+    var margin:=MarginContainer.new()
+    for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,30)
     _batch.add_child(margin)
-    var stack := VBoxContainer.new()
-    stack.add_theme_constant_override("separation", 16)
-    margin.add_child(stack)
-    var heading := Label.new()
-    heading.text = "全部装备升级"
-    heading.add_theme_font_size_override("font_size", 25)
-    heading.add_theme_color_override("font_color", INK)
+    var stack:=VBoxContainer.new();stack.add_theme_constant_override("separation",14);margin.add_child(stack)
+    var heading:=Label.new();heading.text="全部装备升级"
+    heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",24);heading.add_theme_color_override("font_color",CREAM)
     stack.add_child(heading)
-    _batch_quantity = OptionButton.new()
-    for caption in ["每槽 +1", "每槽 +10", "逐槽 MAX"]: _batch_quantity.add_item(caption)
-    _batch_quantity.add_theme_color_override("font_color", INK)
-    _batch_quantity.add_theme_font_size_override("font_size", 18)
-    _batch_quantity.add_theme_stylebox_override("normal", _style(Color("dbe9df"), Color("8da6a2")))
+    _batch_quantity=OptionButton.new()
+    for caption in ["每槽 +1","每槽 +10","逐槽 MAX"]:_batch_quantity.add_item(caption)
+    _batch_quantity.custom_minimum_size.y=40
+    _batch_quantity.add_theme_font_override("font",_font_strong);_batch_quantity.add_theme_font_size_override("font_size",17)
+    _batch_quantity.add_theme_color_override("font_color",CREAM)
+    for state in ["normal","hover","pressed","focus"]:
+        var inset:=StyleBoxEmpty.new();inset.content_margin_left=18;inset.content_margin_right=24;inset.content_margin_top=6;inset.content_margin_bottom=6
+        _batch_quantity.add_theme_stylebox_override(state,inset)
     stack.add_child(_batch_quantity)
-    _batch_scroll = ScrollContainer.new()
-    _batch_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    _frame(_batch_quantity,Rect2(0,0,568,40))
+    _batch_total=Label.new();_batch_total.add_theme_font_override("font",_font_strong)
+    _batch_total.add_theme_font_size_override("font_size",20);_batch_total.add_theme_color_override("font_color",Color("a8f0d6"))
+    _batch_total.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;stack.add_child(_batch_total)
+    _batch_scroll=ScrollContainer.new();_batch_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
     stack.add_child(_batch_scroll)
-    _batch_results = Label.new()
-    _batch_results.add_theme_font_size_override("font_size", 16)
-    _batch_results.add_theme_color_override("font_color", INK)
-    _batch_results.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    _batch_results.custom_minimum_size.x = 565
-    _batch_scroll.add_child(_batch_results)
-    var row := HBoxContainer.new()
-    stack.add_child(row)
-    _batch_submit = _button("执行升级", Rect2(0, 0, 270, 44), _buy_all, true)
-    remove_child(_batch_submit)
-    _batch_submit.custom_minimum_size = Vector2(270, 44)
-    row.add_child(_batch_submit)
-    var close := _button("关闭", Rect2(0, 0, 270, 44), _close_batch)
-    remove_child(close)
-    close.custom_minimum_size = Vector2(270, 44)
-    row.add_child(close)
+    var results:=VBoxContainer.new();results.custom_minimum_size.x=554;results.add_theme_constant_override("separation",15);_batch_scroll.add_child(results)
+    _batch_results=Label.new();_batch_results.add_theme_font_size_override("font_size",16);_batch_results.add_theme_color_override("font_color",CREAM)
+    _batch_results.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_batch_results.custom_minimum_size.x=548;results.add_child(_batch_results)
+    _batch_secondary=Label.new();_batch_secondary.add_theme_font_size_override("font_size",13);_batch_secondary.add_theme_color_override("font_color",Color("a3bcb9"))
+    _batch_secondary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;results.add_child(_batch_secondary)
+    var row:=HBoxContainer.new();row.add_theme_constant_override("separation",14);stack.add_child(row)
+    _batch_submit=_button("执行升级",Rect2(0,0,270,44),_buy_all,true)
+    remove_child(_batch_submit);_batch_submit.custom_minimum_size=Vector2(270,44);row.add_child(_batch_submit)
+    _batch_close=_button("关闭",Rect2(0,0,270,44),_close_batch)
+    remove_child(_batch_close);_batch_close.custom_minimum_size=Vector2(270,44);row.add_child(_batch_close)
     _batch.hide()
 
 func _selected_fact() -> Dictionary:
@@ -281,9 +371,6 @@ func _refresh() -> void:
     _ship = str(_session.campaign_system.selected_ship())
     for option in _session.campaign_system.ship_options():
         if option.selected: _title.text = "装配 · " + str(option.name)
-    _summary.text = "%d个武器槽 · %d个防御槽" % [int(_session.equipment_inputs().mounts.weapon), int(_session.equipment_inputs().mounts.defence)]
-    var dormant_count: int = _facts.size() - active.size()
-    if dormant_count > 0: _summary.text += " · %d个未启用槽位" % dormant_count
     _refresh_slots(active)
     _refresh_choices(fact)
     _refresh_comparison()
@@ -312,16 +399,17 @@ func _refresh_comparison() -> void:
         return
     var comparison: Dictionary = last_comparison
     _large_icon.texture = _textures.get(str(fact.equipment_id))
-    _current_title.text = "现装升级 · %s %s  Lv.%s" % [_slot_name(_selected), NAMES.get(str(fact.equipment_id), "装备"), str(fact.paid_level)]
+    _current_title.text = "%s · %s" % [_slot_name(_selected),NAMES.get(str(fact.equipment_id),"装备")]
+    _level_label.text = "Lv."+str(fact.paid_level)
     _current_value.text = _value(comparison.current)
     _next_value.text = _value(comparison.upgrade)
     var quote: Dictionary = comparison.quote
-    _cost.text = "本次费用\n" + _cost_text(quote.costs).replace(" / ", "\n") if quote.get("ok", false) else _reason(str(quote.get("reason", quote.get("error", "Unknown"))))
-    _cost.tooltip_text = _cost.text
+    _render_costs(quote,comparison.affordable,str(comparison.payment_reason))
+    _cost.tooltip_text = _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
     _purchase.text = "购买%s级" % str(quote.count) if quote.get("ok", false) else "购买"
     _purchase.disabled = not comparison.affordable
-    _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining) > 0 else "换装就绪"
-    if quote.get("ok", false) and not comparison.affordable: _switch_state.text += " · " + _reason(str(comparison.payment_reason))
+    _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
+
     var primary: String = "容量" if fact.category == "defence" else "攻击力"
     _current_caption.text = "当前" + primary
     _compare.text = "当前%s     所选%s\n%s  %s  /  %s" % [NAMES.get(str(fact.equipment_id), "空槽"), NAMES.get(_candidate, "空槽"), primary, _value(comparison.current), _value(comparison.candidate)]
@@ -331,97 +419,97 @@ func _refresh_comparison() -> void:
     _install.disabled = not comparison.switch_admission.ok
     _install.tooltip_text = "" if comparison.switch_admission.ok else _reason(str(comparison.switch_admission.reason))
     _empty_choice.visible = _selection_open and _selected != "defence:0"
-    _compare.visible = _selection_open
+    _compare.visible = false
     _install.visible = _selection_open
-    _comparison_title.text = "换装比较" if _selection_open else "选择槽位查看装备"
+    _comparison_title.text = "装备选择"
+    _compare_row_label.text=primary
+    for column in 2:
+        var row = comparison.current if column==0 else comparison.candidate
+        _compare_headers[column].text=("现装 · " if column==0 else "所选 · ")+str(NAMES.get(str(row.equipment_id),"空槽"))
+        _compare_values[column].text=_value(row)
+        _compare_periods[column].text=_interval(row) if fact.category=="weapon" else ""
+    get_node("PeriodCaption").visible=fact.category=="weapon"
+    if str(comparison.switch_admission.get("reason",""))=="NoChange":_install.text="已装备"
+    elif str(comparison.switch_admission.get("reason",""))=="EquipmentSwitchLocked":_install.text="换装冷却中"
+    elif str(comparison.switch_admission.get("reason",""))=="EquipmentLocked":_install.text="尚未解锁"
     for index in 3:
         var selected: bool = (index == 2 and _maximum) or (not _maximum and index == (1 if _quantity == 10 else 0))
         if _quantity_presentations.get(index) != selected:
             _quantity_presentations[index] = selected
             presentation_counts.quantity_styles_updated += 1
-            _quantity_buttons[index].add_theme_stylebox_override("normal", _style(Color("b8ded4") if selected else CREAM, TEAL if selected else Color("9aafac"), 2 if selected else 1))
+            _button_tint(_quantity_buttons[index],selected)
 
 func _refresh_slots(active: Array) -> void:
-    var live: Array = []
+    var live: Array=[]
     for row in active:
-        var id: String = str(row.id)
+        var id: String=str(row.id)
         live.append(id)
-        var signature: Array = [row.category,row.index,row.equipment_id,row.paid_level,id==_selected]
-        if _slot_presentations.get(id) == signature: continue
-        _slot_presentations[id] = signature
-        presentation_counts.slots_updated += 1
+        var signature: Array=[row.category,row.index,row.equipment_id,row.paid_level,id==_selected]
+        if _slot_presentations.get(id)==signature:continue
+        _slot_presentations[id]=signature
+        presentation_counts.slots_updated+=1
         if not _slot_buttons.has(id):
-            var button := _button("", Rect2(0,0,178,66), select_slot.bind(id))
-            button.name = "Slot_" + id.replace(":", "_")
-            button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-            var icon := _icon(str(row.equipment_id), Rect2(7,7,48,50), button)
-            var caption := Label.new()
-            caption.position = Vector2(59,8)
-            caption.size = Vector2(115,48)
-            caption.add_theme_font_size_override("font_size", 13)
-            caption.add_theme_color_override("font_color", INK)
-            caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-            button.add_child(caption)
-            _slot_buttons[id] = {"button": button, "icon": icon, "caption": caption}
-        var button: Button = _slot_buttons[id].button
-        button.position = _slot_label_position(row)
-        _slot_buttons[id].caption.text = "%s%d · %s\nLv.%s" % ["武器" if row.category == "weapon" else "防御", int(row.index) + 1, NAMES.get(str(row.equipment_id), "装备"), str(row.paid_level)]
-        button.add_theme_font_size_override("font_size", 13)
-        if _slot_selections.get(id) != (id == _selected):
-            _slot_selections[id] = id == _selected
-            presentation_counts.slot_styles_updated += 1
-            button.add_theme_stylebox_override("normal", _style(CREAM, Color("d5a652") if id == _selected else Color("9bb3ab"), 2 if id == _selected else 1))
-        _slot_buttons[id].icon.texture = _textures.get(str(row.equipment_id))
+            var button:=_button("",Rect2(0,0,220,82),select_slot.bind(id))
+            button.name="Slot_"+id.replace(":","_")
+            var old_frame: NinePatchRect=button.get_meta("material")
+            old_frame.queue_free()
+            var housing:=TextureRect.new()
+            housing.texture=_terminal_texture;housing.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+            housing.stretch_mode=TextureRect.STRETCH_SCALE;housing.size=Vector2(220,82)
+            housing.mouse_filter=Control.MOUSE_FILTER_IGNORE;housing.show_behind_parent=true
+            button.add_child(housing)
+            var icon:=_icon(str(row.equipment_id),Rect2(23,12,42,43),button)
+            var title:=_label("",Rect2(72,12,127,23),15,CREAM)
+            remove_child(title);button.add_child(title);title.add_theme_font_override("font",_font_strong)
+            var meta:=_label("",Rect2(72,37,127,21),12,Color("a6c6c3"))
+            remove_child(meta);button.add_child(meta)
+            var led:=ColorRect.new();led.position=Vector2(18,17);led.size=Vector2(3,32);led.mouse_filter=Control.MOUSE_FILTER_IGNORE
+            button.add_child(led)
+            _slot_buttons[id]={"button":button,"icon":icon,"caption":title,"meta":meta,"led":led,"housing":housing}
+        var item: Dictionary=_slot_buttons[id]
+        item.button.position=_slot_label_position(row)
+        item.caption.text=str(NAMES.get(str(row.equipment_id),"装备"))
+        item.meta.text="%s · Lv.%s" % [_slot_name(id),str(row.paid_level)]
+        item.icon.texture=_textures.get(str(row.equipment_id))
+        item.led.color=Color("f5cc84") if id==_selected else Color("3f777c")
+        item.housing.modulate=Color("fff1d0") if id==_selected else Color.WHITE
+        if _slot_selections.get(id)!=(id==_selected):presentation_counts.slot_styles_updated+=1;_slot_selections[id]=id==_selected
     for id in _slot_buttons.keys():
         if id not in live:
-            _slot_buttons[id].button.queue_free()
-            _slot_buttons.erase(id)
-            _slot_presentations.erase(id)
-            _slot_selections.erase(id)
+            _slot_buttons[id].button.queue_free();_slot_buttons.erase(id);_slot_presentations.erase(id);_slot_selections.erase(id)
 
 func _refresh_choices(fact: Dictionary) -> void:
-    presentation_counts.equipment_option_reads += 1
-    var options: Array = _session.equipment.panel_equipment(_selected)
-    var live: Array = []
-    var column: int = 0
+    presentation_counts.equipment_option_reads+=1
+    var options: Array=_session.equipment.panel_equipment(_selected)
+    var live: Array=[]
+    var column: int=0
     for option in options:
-        var id: String = str(option.id)
-        if id.is_empty(): continue
+        var id: String=str(option.id)
+        if id.is_empty():continue
         live.append(id)
         if not _choices.has(id):
-            var button := _button("", Rect2(0,0,63,88), _select_candidate.bind(id))
-            button.name = "Candidate_" + ("empty" if id.is_empty() else id)
-            var icon := _icon(id, Rect2(8,5,47,49), button)
-            var caption := Label.new()
-            caption.position = Vector2(1,56)
-            caption.size = Vector2(61,28)
-            caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-            caption.add_theme_font_size_override("font_size", 12)
-            caption.add_theme_color_override("font_color", INK)
-            caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-            button.add_child(caption)
-            _choices[id] = {"button": button, "icon": icon, "caption": caption}
-        var signature: Array = [option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
-        if _choice_presentations.get(id) == signature:
-            column += 1
-            continue
-        _choice_presentations[id] = signature
-        presentation_counts.candidates_updated += 1
-        var control: Button = _choices[id].button
-        control.position = Vector2(505 + column * 69, 666)
-        control.visible = _selection_open
-        control.disabled = not option.enabled
-        control.tooltip_text = str(option.name) + (" · 已装备" if str(fact.equipment_id) == id else "" if option.enabled else " · 未解锁")
-        _choices[id].caption.text = str(NAMES.get(id, option.name)) + ("\n已装备" if str(fact.equipment_id) == id else "" if option.enabled else "\n未解锁")
-        _choices[id].caption.position.y = 51
-        _choices[id].caption.size.y = 35
-        control.add_theme_stylebox_override("normal", _style(Color("bbdfd6") if str(fact.equipment_id) == id else CREAM, Color("58c6c8") if _candidate == id else Color("90a9a5"), 3 if _candidate == id else 1))
-        column += 1
+            var button:=_button("",Rect2(0,0,65,89),_select_candidate.bind(id))
+            button.name="Candidate_"+id
+            var icon:=_icon(id,Rect2(12,9,41,44),button)
+            var caption:=_label("",Rect2(3,53,59,21),13,CREAM)
+            remove_child(caption);button.add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+            caption.add_theme_font_override("font",_font_strong)
+            var status:=_label("",Rect2(3,72,59,16),10,Color("a2c6bf"))
+            remove_child(status);button.add_child(status);status.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+            _choices[id]={"button":button,"icon":icon,"caption":caption,"status":status}
+        var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
+        if _choice_presentations.get(id)==signature:column+=1;continue
+        _choice_presentations[id]=signature;presentation_counts.candidates_updated+=1
+        var item: Dictionary=_choices[id]
+        item.button.position=Vector2(505+column*70,644)
+        item.button.visible=_selection_open;item.button.disabled=not option.enabled
+        item.caption.text=str(NAMES.get(id,option.name))
+        item.status.text="已装备" if str(fact.equipment_id)==id else "未解锁" if not option.enabled else "待安装" if _candidate==id else ""
+        item.caption.modulate=Color.WHITE if option.enabled else Color("78908e")
+        _button_tint(item.button,_candidate==id)
+        column+=1
     for id in _choices.keys():
-        if id not in live:
-            _choices[id].button.queue_free()
-            _choices.erase(id)
-            _choice_presentations.erase(id)
+        if id not in live:_choices[id].button.queue_free();_choices.erase(id);_choice_presentations.erase(id)
 
 func _value(row) -> String:
     if row == null: return "—"
@@ -484,19 +572,26 @@ func _refresh_batch(after: bool = false) -> void:
     var receipt: Dictionary = result.get("purchase_receipt", {})
     var status: String = str(receipt.get("commit_status", ""))
     var unknown: bool = status == "fault_unknown" or (result.get("fault", false) and status != "accepted")
+    _batch_total.text=""
+    _batch_secondary.text=""
     if after or not result.is_empty():
         if unknown:
             _batch_results.text = "最近一次升级\n提交结果未知，会话已停止。\n本次等级变化与扣款未确认。"
         elif status == "accepted" and not receipt.get("purchases", []).is_empty():
             var purchased: Array = []
             for item in receipt.purchases: purchased.append(str(item.slot_id))
-            var details: String = ("最近一次成交" if result.get("ok", false) else "已确认部分成交") + "\n" + _receipt_text(result)
+            var detail_lines:=PackedStringArray()
+            for purchase in receipt.purchases:detail_lines.append("%s  +%d级    %s" % [_slot_name(str(purchase.slot_id)),int(purchase.count),_cost_text(purchase.spent)])
+            var details: String="\n".join(detail_lines)
+            _batch_total.text="实际总花费  "+_cost_text(receipt.spent) if receipt.get("spent") is Dictionary else "实际总花费未确认"
             if result.get("fault", false):
                 _batch_results.text = details + "\n其余槽位与后续扣款状态未知。"
             else:
+                var secondary:=PackedStringArray()
                 for row in _facts:
-                    if not row.dormant and str(row.id) not in purchased: details += "\n" + _slot_name(str(row.id)) + " · 未成交，等级保持"
-                _batch_results.text = details + "\n\n成交后余额：" + _batch_balance
+                    if not row.dormant and str(row.id) not in purchased:secondary.append(_slot_name(str(row.id))+" · 未成交，等级保持")
+                _batch_results.text=details
+                _batch_secondary.text="\n".join(secondary)+"\n\n成交后余额  "+_batch_balance
         elif status == "accepted":
             _batch_results.text = "已接纳，成交明细未返回。\n扣款与槽位变化待核对。"
         elif status == "rejected":
@@ -534,9 +629,8 @@ func _refresh_cooldown() -> void:
         # Admission is always re-read from the owner when the deadline is crossed.
         _dirty = true
         return
-    _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining) > 0 else "换装就绪"
-    if last_comparison.get("quote", {}).get("ok", false) and not last_comparison.get("affordable", false):
-        _switch_state.text += " · " + _reason(str(last_comparison.payment_reason))
+    _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
+
 
 func _ship_rect() -> Rect2:
     var side: float = 768.0 * 350.0 / float(_catalog[_ship].height)
@@ -550,31 +644,38 @@ func _mount_position(row: Dictionary) -> Vector2:
     return Vector2(353 if int(row.index) == 0 else 453, 453)
 
 func _slot_label_position(row: Dictionary) -> Vector2:
-    if row.category == "defence": return Vector2(95 if int(row.index) == 0 else 536, 462)
-    var positions := [Vector2(310,153), Vector2(95,275), Vector2(536,275), Vector2(95,366), Vector2(536,366)]
-    return positions[mini(int(row.index), positions.size()-1)]
+    if row.category=="defence":return Vector2(66 if int(row.index)==0 else 522,440)
+    var positions: Array=[Vector2(294,129),Vector2(52,260),Vector2(536,260),Vector2(52,350),Vector2(536,350)]
+    return positions[mini(int(row.index),positions.size()-1)]
 
 func _draw() -> void:
-    presentation_counts.scene_draws += 1
-    draw_rect(Rect2(0,0,808,900), CREAM)
-    draw_texture_rect(_background, Rect2(0,85,808,815), false)
-    draw_line(Vector2(0,84), Vector2(808,84), Color("8aaba8"), 1)
-    if _ship.is_empty() or not _catalog.has(_ship): return
-    draw_texture_rect(_hull_textures[_ship], _ship_rect(), false)
+    presentation_counts.scene_draws+=1
+    draw_rect(Rect2(0,0,808,900),CREAM)
+    draw_texture_rect_region(_background,Rect2(0,85,808,485),Rect2(0,0,1188,845))
+    draw_texture_rect_region(_background,Rect2(0,570,808,330),Rect2(0,845,1188,479))
+    if _ship.is_empty() or not _catalog.has(_ship):return
     for row in _facts:
-        if row.dormant: continue
-        var mount: Vector2 = _mount_position(row)
-        var label_rect := Rect2(_slot_label_position(row), Vector2(178,66))
-        var start: Vector2 = label_rect.get_center()
-        draw_line(start, mount, Color("e8f7ec", 0.95), 2, true)
-        draw_circle(mount, 5, Color("eaf9ee"))
-        var key: String = str(row.equipment_id)
-        if not _textures.has(key): continue
-        var tex: Texture2D = _textures[key]
-        if row.category == "weapon":
-            var meta: Dictionary = _weapon_meta[key]
-            var scale_factor: float = 0.16 if key == "longLaser" or key == "cannon" else 0.13
-            var anchor := Vector2(float(meta.anchor[0]), float(meta.anchor[1])) * scale_factor
-            draw_texture_rect(tex, Rect2(mount - anchor, Vector2(tex.get_size()) * scale_factor), false)
-        else:
-            draw_texture_rect(tex, Rect2(mount - Vector2(21,21), Vector2(42,42)), false)
+        if row.dormant:continue
+        var port: Vector2=_slot_label_position(row)+Vector2(110,77)
+        var mount: Vector2=_mount_position(row)
+        var length: float=port.distance_to(mount)
+        # The joint centres coincide with the housing socket and actual mount.
+        # Keep the rail thick enough to share the terminal's load-bearing material.
+        draw_set_transform(port,(mount-port).angle())
+        draw_texture_rect(_arm_parts[1],Rect2(10,-16,maxf(1,length-20),32),false)
+        draw_texture_rect(_arm_parts[0],Rect2(-16,-16,36,32),false)
+        draw_texture_rect(_arm_parts[2],Rect2(length-17,-16,36,32),false)
+        draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
+    draw_texture_rect(_hull_textures[_ship],_ship_rect(),false)
+    for row in _facts:
+        if row.dormant:continue
+        var mount: Vector2=_mount_position(row)
+        var key: String=str(row.equipment_id)
+        if not _textures.has(key):continue
+        var tex: Texture2D=_textures[key]
+        if row.category=="weapon":
+            var meta: Dictionary=_weapon_meta[key]
+            var factor: float=0.16 if key=="longLaser" or key=="cannon" else 0.13
+            var anchor:=Vector2(float(meta.anchor[0]),float(meta.anchor[1]))*factor
+            draw_texture_rect(tex,Rect2(mount-anchor,Vector2(tex.get_size())*factor),false)
+        else:draw_texture_rect(tex,Rect2(mount-Vector2(21,21),Vector2(42,42)),false)

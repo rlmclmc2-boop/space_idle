@@ -22,5 +22,58 @@
     ]
   },
   "processing": "Raw ImageGen PNG copied byte-for-byte; no crop/resize/compositing. Runtime texture display only: Rect2(0,85,808,815).",
-  "scope": "Static empty hangar and blank physical console surfaces only. All ships, weapons, labels, values and interactive controls are separate existing assets and real Godot controls."
+  "scope": "Static empty hangar and blank physical console surfaces only. All ships, weapons, labels, values and interactive controls are separate existing assets and real Godot controls.",
+  "runtime_layout_2026_10_28": {
+    "background_regions": [
+      {
+        "source": [
+          0,
+          0,
+          1188,
+          845
+        ],
+        "destination": [
+          0,
+          85,
+          808,
+          485
+        ]
+      },
+      {
+        "source": [
+          0,
+          845,
+          1188,
+          479
+        ],
+        "destination": [
+          0,
+          570,
+          808,
+          330
+        ]
+      }
+    ],
+    "reason": "Expand the real workbench while preserving the hangar above; presentation only."
+  },
+  "terminal_revision_assets": [
+    {
+      "file": "terminal-housing.png",
+      "sha256": "dc67618adc93258feb98cbb6adfb47a48f4048d17540a2d224e8082b22d748ef",
+      "prompt_file": "terminal-imagegen-prompt.txt",
+      "prompt_sha256": "275fb58ef58b58a9a68b8b44b437a20d895e90981ff28547ee71185f6be96e29",
+      "original_output": "/workspace/generated_images/exec-01fb4591-41e0-4de7-b5e1-96ba7f52868f.png",
+      "tool": "image_gen__imagegen",
+      "processing": "Raw original PNG copied byte-for-byte; runtime AtlasTexture / NinePatchRect only. No editing or numeric content."
+    },
+    {
+      "file": "support-arm.png",
+      "sha256": "a6a7e7894f6c7b1c7946c7a65deb1f7f3ce35ee5e4d3b326f62fadbc09531e03",
+      "prompt_file": "support-imagegen-prompt.txt",
+      "prompt_sha256": "e9c73ae3d0d04d7fc2130d028835b3011e1c5a7face69b11c5108981f4001f14",
+      "original_output": "/workspace/generated_images/exec-bcde0cd5-48f5-40d9-806c-ac74ad41ed2d.png",
+      "tool": "image_gen__imagegen",
+      "processing": "Raw original PNG copied byte-for-byte; runtime AtlasTexture / NinePatchRect only. No editing or numeric content."
+    }
+  ]
 }
