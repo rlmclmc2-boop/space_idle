@@ -1,8 +1,10 @@
 # 共享宿主当前交付
 
-当前组合：[反应炉R4 × 已修复共享宿主](runtime-h1/reactor-r4-integration/README.md)，代码`db94845a`。原组ae0508ee的808×835内容进入现有公共顶部与路由，16项必要接入观察通过；原布局Astra已亲看五图并核接口，共享接入范围无新增P1/P2。模块浮框/滑杆/底部覆层仍原组负责，不扩大为整屏美术通过，不合main。
+当前组合：[装备ce70修订与回执Popup × 已修共享宿主](runtime-h1/equipment-ce70-integration/README.md)，代码`c84c703f`，14项必要接入操作通过，原尺寸整屏已固定；原装备Astra仍审视觉，不合main。
 
-装备551a4f2b与星球R6 b185d5ab的原内部版本保留，继续携带已审标题背景退出差异。原Astra已限定关闭公共宿主三项P2及后续画布裁取回归，本次main/shared_host未动；不扩大自然流程、全窗口/DPI、V0或整屏美术通过。
+[反应炉R4接入](runtime-h1/reactor-r4-integration/README.md)的原限定共享结论保持，内部浮框/滑杆/底部覆层仍原组负责。
+
+装备现为ce70b594、星球仍为R6 b185d5ab，继续携带已审标题背景退出差异。原Astra已限定关闭公共宿主三项P2及后续画布裁取回归，本次main/shared_host未动；不扩大自然流程、全窗口/DPI、V0或整屏美术通过。
 
 [统一运行/历史证据入口](runtime-h1/README.md) · [反应炉固定作图范围V1](reactor-drawing-v1/README.md)。下方保留尺寸与历史设计追溯，不再作为当前“等待新稿”状态。
 

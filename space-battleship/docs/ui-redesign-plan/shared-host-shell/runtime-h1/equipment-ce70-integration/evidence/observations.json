@@ -1,0 +1,116 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": {
+				"history_button": "[P: (342.0, 844.0), S: (92.0, 36.0)]",
+				"workbench": "[P: (16.0, 636.0), S: (776.0, 260.0)]"
+			},
+			"id": "current_host_and_canvas",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "original_battle_projection",
+			"ok": true
+		},
+		{
+			"detail": {
+				"budget_fixture_injected": false,
+				"receipt": {
+					"commit_status": "accepted",
+					"purchases": [
+						{
+							"count": 1,
+							"slot_id": "weapon:0",
+							"spent": {
+								"1": {
+									"e": "1",
+									"m": "6.5"
+								}
+							}
+						}
+					],
+					"spent": {
+						"1": {
+							"e": "1",
+							"m": "6.5"
+						}
+					}
+				}
+			},
+			"id": "one_real_receipt",
+			"ok": true
+		},
+		{
+			"detail": {
+				"bounds": "[P: (104, 230), S: (600, 420)]",
+				"safe_area": "[P: (0, 65), S: (808, 835)]"
+			},
+			"id": "popup_inside_module_content",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "popup_is_real_exclusive_owner",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "popup_blocks_route_collapse_space_g",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "popup_battle_click_not_delivered",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "force_hide_closes_owned_popup",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "route_works_after_force_hide",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "popup_local_close_operable",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "focus_exit_and_battle_restored",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "shortcuts_restored",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "host_release_forces_popup_hidden",
+			"ok": true
+		},
+		{
+			"detail": [
+				true,
+				false,
+				true,
+				false,
+				false,
+				true,
+				false,
+				true,
+				false,
+				false
+			],
+			"id": "exclusive_notifications_available",
+			"ok": true
+		}
+	],
+	"fixture": "Isolated prior explicit-unlock/built-planet /tmp save, original real Session/native. One actual +1 purchase solely creates a genuine receipt for Popup integration; conditional public iron credit only if original quote unavailable, recorded per case. No config/native changes or full module rerun."
+}

@@ -1,0 +1,20 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+EQUIPMENT_CE70_HOST current_host_and_canvas true
+EQUIPMENT_CE70_HOST original_battle_projection true
+EQUIPMENT_CE70_HOST one_real_receipt true
+EQUIPMENT_CE70_HOST popup_inside_module_content true
+EQUIPMENT_CE70_HOST popup_is_real_exclusive_owner true
+EQUIPMENT_CE70_HOST popup_blocks_route_collapse_space_g true
+EQUIPMENT_CE70_HOST popup_battle_click_not_delivered true
+EQUIPMENT_CE70_HOST force_hide_closes_owned_popup true
+EQUIPMENT_CE70_HOST route_works_after_force_hide true
+EQUIPMENT_CE70_HOST popup_local_close_operable true
+EQUIPMENT_CE70_HOST focus_exit_and_battle_restored true
+EQUIPMENT_CE70_HOST shortcuts_restored true
+EQUIPMENT_CE70_HOST host_release_forces_popup_hidden true
+EQUIPMENT_CE70_HOST exclusive_notifications_available true
+EQUIPMENT_CE70_HOST_COMPLETE true

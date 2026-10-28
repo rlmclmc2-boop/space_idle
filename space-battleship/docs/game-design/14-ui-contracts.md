@@ -287,3 +287,9 @@
 reactor_scene只补四个最小共享视图端口、自有caption回收和同一presentation_model快照的共享对象/等级；原局部等级、预算、成本、控件与业务命令保持。绑定/报价/时钟/失效通知及command_finished仍原接线，main/shared_host与Reactor/Economy所有者未改，已关闭P2/裁取实现保持。
 
 本轮16项只证明实际共享接入，使用明确的临时开放夹具，无注资/购级/强推时钟。反应堆原Astra模块审核仍进行，不能据本组合宣布视觉/完整流程/V0或全窗口/DPI通过。
+
+### 6.9 装备ce70按需回执Popup与当前宿主组合（候选，未合main）
+
+`design/shared-host-shell@c84c703f`接入原组ce70b594内部修订与f76d328f交接，保留宿主已审背景退出差异。除_draw/set_shared_host的该差异，原组方法逐字节不变；main/shared_host及其他模块不动。固定来源、1440×900同版整屏及14项必要记录见[装备ce70共享接入](../ui-redesign-plan/shared-host-shell/runtime-h1/equipment-ce70-integration/README.md)。
+
+原组自持PopupPanel及回执字符串，打开时通过has_exclusive_ui阻普通离页/收起并由共同门禁阻Space/G和战场鼠标；force/宿主释放隐藏Popup而不丢回执。原尺寸实测(104,230)/600×420，完整落入模块内容区。只用一次真实+1生成原始回执，未注资；不扩大为模块多资源/长MAX/冷却/四保护全套或视觉通过。装备原Astra仍审，本组合待原布局审核，不合main。

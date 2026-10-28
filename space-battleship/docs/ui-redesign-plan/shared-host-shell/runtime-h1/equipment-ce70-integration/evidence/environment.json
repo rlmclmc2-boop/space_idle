@@ -1,0 +1,62 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "window": [
+    1440,
+    900
+  ],
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "code_commit": "c84c703fafe2ce8523480cf62908979bc876ae80",
+  "host_baseline": "21d0aaab",
+  "equipment_owner_commit": "ce70b594b6ffc111eb888d11562312526ebfc675",
+  "equipment_handoff_commit": "f76d328f88019f18c54737ae8c85bbf2bd2f67c3",
+  "owner_methods_changed": [
+    "_draw",
+    "set_shared_host"
+  ],
+  "owner_methods_preserved_count": 59,
+  "owner_scene_sha256": "06f7aeee65c0536f7ee246dd8da29a575f00d9039e355e4b13ae901c79560bf1",
+  "combined_scene_sha256": "39fa9634a11fd71c5a73d3a46c6778255ffb48e8d201a2624271f52281de624a",
+  "unchanged_baseline_sources_sha256": {
+    "src/main.gd": "cc3be76c9186debb542fa5200cdbd9071fe67c11ee227b49bd1863271c240a4d",
+    "src/ui/shared_host.gd": "4ab563267c2e7bb593ed4d7a162aebf46a2315a744cf2bd2ab71b586c9b39d71",
+    "src/ui/campaign_view.gd": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb",
+    "src/ui/reactor_scene.gd": "7e887f15940f9616e5a2c7cbc4cc3b955af4aab52f269d8b826a592e4a809f47",
+    "src/ui/reactor_stage.gd": "4fe9cd0e84d7f0af1b831865d641bacb1e649db93ab9c52c84f9787134aa3c8c",
+    "src/ui/planet_panel.gd": "65b049706d2048618916f557797c9a290cd7c9e1d481edfd388afda051615ae5",
+    "scripts/planet_visual.gd": "448312860cc17a5d0d518d52b170157fc9868784fb4e902f9382fe3f3f8c835b",
+    "src/game_session.gd": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+    "src/systems/equipment.gd": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+    "src/systems/economy.gd": "becf89543f685ef9512e1c5a918dd9a9f776d2730fbb2fb51552bf2b59a6817f"
+  },
+  "scope": "Same original shared-host integration task, 1440x900. One real +1 purchase creates original receipt; no iron injection occurred. Popup input ownership, native close, force hide and host release tested. No module optical/full resource/MAX/cooldown/protection matrix rerun.",
+  "fixture": "Isolated copy of prior explicit-unlock/built-planet /tmp save, actual main/Session/native. Real original purchase spent 65 iron, no production config/native changes.",
+  "evidence_sha256": {
+    "normal-current-host.png": "9e4e3db65652e9a6beeba23e592dd7d28a866cbda2f628c89fb6babe98e077e9",
+    "godot-check.txt": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "godot-live.txt": "45db59326664df19fda94fe0bb8ac08f44ea47d054ea8416ac1fcabfc68b3ebb",
+    "observations.json": "113a75e7794f0b40974463afd4f5a35c56110b882bead10c72939a14515a0040",
+    "receipt-popup-current-host.png": "ee61af36b03db54f2f4d5053595b9fc673287113c545c7d113c435244d66c0e0",
+    "purchase-feedback-current-host.png": "5a08d3117916482423e32401d2eca80abbf358357caeaf8bfb8da21b31005028",
+    "closed-current-host.png": "507ca3343fedbd91f7004d22c00f812ec0fd2b25b9374c78898d98f10956fe7e"
+  }
+}
