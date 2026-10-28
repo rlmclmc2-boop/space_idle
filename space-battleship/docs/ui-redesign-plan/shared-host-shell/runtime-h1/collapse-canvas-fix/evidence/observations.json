@@ -1,0 +1,46 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": {
+				"capture_pixels": "(1152, 720)",
+				"logical_area": "[P: (0.0, 0.0), S: (808.0, 835.0)]",
+				"projected_pixels": "[P: (0.0, 52.0), S: (646.4, 668.0)]",
+				"to_pixels": "[X: (0.8, 0.0), Y: (0.0, 0.8), O: (0.0, 52.0)]",
+				"viewport_visible": "[P: (0.0, 0.0), S: (1440.0, 900.0)]",
+				"window": "(1152, 720)"
+			},
+			"id": "actual_resized_window",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "empty_frame_does_not_hide_content",
+			"ok": true
+		},
+		{
+			"detail": {
+				"partial_pixels": "(320, 240)",
+				"result": "(808, 835)"
+			},
+			"id": "clipped_frame_padded_then_normalized",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "actual_scaled_collapse",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "snapshot_stays_static",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "actual_scaled_restore",
+			"ok": true
+		}
+	],
+	"scope": "One actual 1152x720 (same 16:10 aspect) window. Empty/partial Image guard probes are local crop-boundary checks, not additional window/DPI configurations. Original task only; no preview/focus/full-chain rerun."
+}

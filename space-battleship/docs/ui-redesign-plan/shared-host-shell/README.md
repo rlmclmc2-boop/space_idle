@@ -1,5 +1,7 @@
 # 共享宿主当前交付
 
+当前最新：[收起快照画布变换窄修](runtime-h1/collapse-canvas-fix/README.md)，代码`ef409d5c`；原审已关闭预览/焦点两项，本次仅补1152×720窗口的收起/恢复，待原审复核。
+
 当前审核候选：[三项P2修复](runtime-h1/p2-review-fixes/README.md)，代码`c49ea0a7`；43项按问题分组的必要操作通过，待原审复核，未合main。原背景窄修和模块内部文件保持。
 
 当前最新：[公共顶部下旧标题底板窄修](runtime-h1/chrome-strip-fix/README.md)，代码`ecc9fecc`，附装备/星球同版整屏；下文8a660076保留为主体接入基线。

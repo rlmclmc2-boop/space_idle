@@ -1,0 +1,77 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "code_commit": "ef409d5ca5216b9895cc45e6bd42e5d0bc2927bd",
+  "baseline": "cf31afd8",
+  "actual_window": [
+    1152,
+    720
+  ],
+  "logical_window": [
+    1440,
+    900
+  ],
+  "actual_image": [
+    1152,
+    720
+  ],
+  "projected_content_pixels": [
+    0,
+    52,
+    646.4,
+    668
+  ],
+  "enclosing_pixel_rect": [
+    0,
+    52,
+    647,
+    668
+  ],
+  "normalized_snapshot": [
+    808,
+    835
+  ],
+  "closed_preview_focus_functions_unchanged": [
+    "_ui_blocks_battle",
+    "_battle_focus_exit",
+    "_discard_settings_previews",
+    "_cancel_import_preview",
+    "_cancel_new_game_preview",
+    "_select_left_module"
+  ],
+  "source_sha256": {
+    "src/main.gd": "cc3be76c9186debb542fa5200cdbd9071fe67c11ee227b49bd1863271c240a4d",
+    "src/ui/shared_host.gd": "4ab563267c2e7bb593ed4d7a162aebf46a2315a744cf2bd2ab71b586c9b39d71"
+  },
+  "scope": "Only actual canvas-to-pixel collapse capture and crop boundaries. One 1152x720 same-aspect window, not a multi-window/DPI matrix. Prior preview/focus closures preserved, not rerun.",
+  "fixture": "Same original task /tmp isolated real Session/native and prior explicit campaign grants/built planet fixture; no new gameplay fixture or config edits. Collapse/restore driven through connected host button signals; actual window resized and renderer captured.",
+  "evidence_sha256": {
+    "equipment-before-1152x720.png": "51e1901681ce5310b6998919c739b16bd7d6c106587bfe04dc6fd3f114a59449",
+    "normalized-snapshot-808x835.png": "bc6a7c574933ad452602e261dcf0e95f6e1badb16bc8a640acf656f1dff593e5",
+    "equipment-collapsed-1152x720.png": "081b9d210e56c77ffbbfc22a0cfac4e45556c1d2230c3b726aa8f2ca9d448f13",
+    "godot-check.txt": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "godot-live.txt": "347d6520bcb07ee3f78a2923acc6fd3b9473861883b0bfdc34d3bc75bc0c0d02",
+    "observations.json": "4a0729802a2d3985b82044917b8e4a891cb4ab648874ebdd1290ad4a2f92780c",
+    "equipment-restored-1152x720.png": "a9a2008f904289c4b08b2d19a7ad1bc0629aaa7c67405b0b20d6563c5cc823e6"
+  }
+}
