@@ -39,6 +39,8 @@ var _current_title: Label
 var _current_caption: Label
 var _current_value: Label
 var _next_value: Label
+var _upgrade_caption: Label
+var _upgrade_arrow: Label
 var _cost: Label
 var _purchase: Button
 var _install: Button
@@ -56,7 +58,6 @@ var _batch_submit: Button
 var _font_regular: FontVariation
 var _font_strong: FontVariation
 var _terminal_texture: Texture2D
-var _button_texture: AtlasTexture
 var _arm_parts: Array = []
 var _cost_cells: Dictionary = {}
 var _payment_state: Label
@@ -67,7 +68,7 @@ var _compare_periods: Array = []
 var _compare_row_label: Label
 var _batch_total: Label
 var _batch_secondary: Label
-var _batch_frame: NinePatchRect
+var _batch_frame: Panel
 var _batch_close: Button
 var _selection_open: bool = true
 var _empty_choice: Button
@@ -113,35 +114,59 @@ func _setup_materials() -> void:
     theme.set_font("font", "Button", _font_strong)
     theme.set_color("font_color", "PopupMenu", CREAM)
     theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
-    _terminal_texture = load("res://assets/ui/equipment/hangar/terminal-housing.png")
-    _button_texture = AtlasTexture.new()
-    _button_texture.atlas = _terminal_texture
-    _button_texture.region = Rect2(0,0,2059,640)
+    _terminal_texture = load("res://assets/ui/equipment/hangar/terminal-clean.svg")
     var arm: Texture2D = load("res://assets/ui/equipment/hangar/support-arm.png")
     for region in [Rect2(0,160,450,400),Rect2(450,160,1272,400),Rect2(1722,160,450,400)]:
         var part := AtlasTexture.new()
         part.atlas=arm;part.region=region
         _arm_parts.append(part)
 
-func _frame(parent: Control, rect: Rect2) -> NinePatchRect:
-    var frame := NinePatchRect.new()
-    frame.texture = _button_texture
-    frame.patch_margin_left=180;frame.patch_margin_right=180
-    frame.patch_margin_top=90;frame.patch_margin_bottom=90
-    frame.scale=Vector2(0.06,0.06)
-    frame.position=rect.position
-    frame.size=rect.size/0.06
+func _frame(parent: Control, rect: Rect2) -> Panel:
+    var frame := Panel.new()
+    frame.position=rect.position;frame.size=rect.size
+    var material := _style(Color("234d5c"),Color("dcdcc8"),3)
+    material.set_corner_radius_all(10)
+    material.shadow_color=Color("102c3a",0.6);material.shadow_size=3;material.shadow_offset=Vector2(0,3)
+    frame.add_theme_stylebox_override("panel",material)
     frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     frame.show_behind_parent=true
     parent.add_child(frame)
     return frame
 
+func _prepare_button_material(button: Button, form: String) -> void:
+    # Each native interaction state is built once. Selection only swaps cached styles.
+    var variants: Array=[]
+    for selected in [false,true]:
+        var states: Dictionary={}
+        for state in ["normal","hover","pressed","disabled","focus"]:
+            var fill:=Color("234b5b") if form!="candidate" else Color("214959")
+            var edge:=Color("9baea9") if form!="candidate" else Color("dedfce")
+            if selected:fill=Color("306958");edge=Color("9bd9be")
+            if state=="hover":fill=Color("3c6e76");edge=Color("d4f3e4")
+            elif state=="pressed":fill=Color("122f3d");edge=Color("7bb6b1")
+            elif state=="disabled":fill=Color("31434a");edge=Color("62747a")
+            var material:=_style(fill,edge,2 if form=="candidate" else 1)
+            material.set_corner_radius_all(5 if form=="candidate" else 6)
+            material.border_width_top=2
+            material.border_width_bottom=3 if state!="pressed" else 1
+            material.shadow_color=Color("102b38",0.45);material.shadow_size=1;material.shadow_offset=Vector2(0,2 if state!="pressed" else 0)
+            if form=="slot":
+                material.bg_color=Color(0,0,0,0) if state=="normal" else Color(0.65,0.95,0.86,0.16) if state=="hover" else Color(0.02,0.09,0.13,0.35) if state=="pressed" else Color(0.15,0.20,0.22,0.5)
+                material.set_border_width_all(0);material.shadow_size=0
+                material.expand_margin_left=-15;material.expand_margin_right=-15;material.expand_margin_top=-12;material.expand_margin_bottom=-26
+            if state=="focus":
+                material.bg_color=Color(0,0,0,0);material.border_color=Color("b3ead8");material.set_border_width_all(2);material.shadow_size=0
+            states[state]=material
+        variants.append(states)
+    button.set_meta("material_variants",variants)
+    _button_tint(button,false)
+
 func _button_tint(button: Button, chosen: bool) -> void:
     if button.has_meta("material_chosen") and button.get_meta("material_chosen")==chosen:return
     button.set_meta("material_chosen",chosen)
-    var face: NinePatchRect = button.get_meta("material")
-    face.modulate=Color("b5f0e1") if chosen else Color.WHITE
-    button.add_theme_color_override("font_color",Color("b9ffdf") if chosen else CREAM)
+    var states: Dictionary=button.get_meta("material_variants")[1 if chosen else 0]
+    for state in states:button.add_theme_stylebox_override(state,states[state])
+    button.add_theme_color_override("font_color",Color("c0f4df") if chosen else CREAM)
 
 func _economy_display_changed() -> void:
     presentation_counts.economy_signals += 1
@@ -181,7 +206,7 @@ func _style(fill: Color, edge: Color, width: int = 1) -> StyleBoxFlat:
     style.content_margin_bottom = 5
     return style
 
-func _button(text: String, rect: Rect2, action: Callable, dark: bool = false) -> Button:
+func _button(text: String, rect: Rect2, action: Callable, dark: bool = false, form: String = "button") -> Button:
     var button := Button.new()
     button.text=text;button.position=rect.position;button.size=rect.size
     button.add_theme_font_size_override("font_size",16)
@@ -189,10 +214,8 @@ func _button(text: String, rect: Rect2, action: Callable, dark: bool = false) ->
     for key in ["font_color","font_pressed_color"]:button.add_theme_color_override(key,CREAM)
     button.add_theme_color_override("font_hover_color",Color("c4fff0"))
     button.add_theme_color_override("font_disabled_color",Color("8da5ac"))
-    for state in ["normal","hover","pressed","disabled","focus"]:button.add_theme_stylebox_override(state,StyleBoxEmpty.new())
+    _prepare_button_material(button,form)
     add_child(button)
-    var frame := _frame(button,Rect2(Vector2.ZERO,rect.size))
-    button.set_meta("material",frame)
     button.pressed.connect(action)
     return button
 
@@ -218,10 +241,13 @@ func _build() -> void:
     _level_label=_label("",Rect2(380,617,78,22),13,Color("657c7b"))
     _large_icon=_icon("laser",Rect2(42,649,64,64))
     _current_caption=_label("当前攻击力",Rect2(130,648,140,22),12,Color("6b7d79"))
-    _label("升级后",Rect2(306,648,146,22),12,Color("557a78"))
+    _upgrade_caption=_label("升级后",Rect2(306,648,146,22),12,Color("557a78"))
     _current_value=_label("—",Rect2(130,671,140,38),27)
-    _label("→",Rect2(273,675,32,32),23,Color("72938d"))
+    _upgrade_arrow=_label("→",Rect2(273,675,32,32),23,Color("72938d"))
     _next_value=_label("—",Rect2(306,671,148,38),27,TEAL)
+    for value in [_current_value,_next_value]:
+        value.mouse_filter=Control.MOUSE_FILTER_PASS
+        value.clip_text=true
     _cost=_label("本次费用",Rect2(34,714,420,20),13,Color("647b75"))
     _payment_state=_label("",Rect2(34,738,420,54),16,Color("a75a3d"))
     _payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
@@ -319,11 +345,8 @@ func _build_batch() -> void:
     _batch_quantity.custom_minimum_size.y=40
     _batch_quantity.add_theme_font_override("font",_font_strong);_batch_quantity.add_theme_font_size_override("font_size",17)
     _batch_quantity.add_theme_color_override("font_color",CREAM)
-    for state in ["normal","hover","pressed","focus"]:
-        var inset:=StyleBoxEmpty.new();inset.content_margin_left=18;inset.content_margin_right=24;inset.content_margin_top=6;inset.content_margin_bottom=6
-        _batch_quantity.add_theme_stylebox_override(state,inset)
+    _prepare_button_material(_batch_quantity,"button")
     stack.add_child(_batch_quantity)
-    _frame(_batch_quantity,Rect2(0,0,568,40))
     _batch_total=Label.new();_batch_total.add_theme_font_override("font",_font_strong)
     _batch_total.add_theme_font_size_override("font_size",20);_batch_total.add_theme_color_override("font_color",Color("a8f0d6"))
     _batch_total.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;stack.add_child(_batch_total)
@@ -403,6 +426,16 @@ func _refresh_comparison() -> void:
     _level_label.text = "Lv."+str(fact.paid_level)
     _current_value.text = _value(comparison.current)
     _next_value.text = _value(comparison.upgrade)
+    _current_value.tooltip_text=str(comparison.current.get("primary","—")) if comparison.current is Dictionary else "—"
+    _next_value.tooltip_text=str(comparison.upgrade.get("primary","—")) if comparison.upgrade is Dictionary else "—"
+    var long_values: bool = _font_strong.get_string_size(_next_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>148 or _font_strong.get_string_size(_current_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>140
+    _upgrade_arrow.visible=not long_values
+    _current_caption.position=Vector2(130,647 if long_values else 648)
+    _upgrade_caption.position=Vector2(130,680) if long_values else Vector2(306,648)
+    _current_value.position=Vector2(232,640) if long_values else Vector2(130,671)
+    _next_value.position=Vector2(232,673) if long_values else Vector2(306,671)
+    _current_value.size=Vector2(222 if long_values else 140,38)
+    _next_value.size=Vector2(222 if long_values else 148,38)
     var quote: Dictionary = comparison.quote
     _render_costs(quote,comparison.affordable,str(comparison.payment_reason))
     _cost.tooltip_text = _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
@@ -449,10 +482,8 @@ func _refresh_slots(active: Array) -> void:
         _slot_presentations[id]=signature
         presentation_counts.slots_updated+=1
         if not _slot_buttons.has(id):
-            var button:=_button("",Rect2(0,0,220,82),select_slot.bind(id))
+            var button:=_button("",Rect2(0,0,220,82),select_slot.bind(id),false,"slot")
             button.name="Slot_"+id.replace(":","_")
-            var old_frame: NinePatchRect=button.get_meta("material")
-            old_frame.queue_free()
             var housing:=TextureRect.new()
             housing.texture=_terminal_texture;housing.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
             housing.stretch_mode=TextureRect.STRETCH_SCALE;housing.size=Vector2(220,82)
@@ -488,14 +519,15 @@ func _refresh_choices(fact: Dictionary) -> void:
         if id.is_empty():continue
         live.append(id)
         if not _choices.has(id):
-            var button:=_button("",Rect2(0,0,65,89),_select_candidate.bind(id))
+            var button:=_button("",Rect2(0,0,65,89),_select_candidate.bind(id),false,"candidate")
             button.name="Candidate_"+id
-            var icon:=_icon(id,Rect2(12,9,41,44),button)
-            var caption:=_label("",Rect2(3,53,59,21),13,CREAM)
+            var icon:=_icon(id,Rect2(12,7,41,40),button)
+            var caption:=_label("",Rect2(3,48,59,20),13,CREAM)
             remove_child(caption);button.add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             caption.add_theme_font_override("font",_font_strong)
-            var status:=_label("",Rect2(3,72,59,16),10,Color("a2c6bf"))
+            var status:=_label("",Rect2(3,68,59,17),11,Color("c6dfd5"))
             remove_child(status);button.add_child(status);status.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+            status.add_theme_font_override("font",_font_strong)
             _choices[id]={"button":button,"icon":icon,"caption":caption,"status":status}
         var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
         if _choice_presentations.get(id)==signature:column+=1;continue
@@ -505,7 +537,9 @@ func _refresh_choices(fact: Dictionary) -> void:
         item.button.visible=_selection_open;item.button.disabled=not option.enabled
         item.caption.text=str(NAMES.get(id,option.name))
         item.status.text="已装备" if str(fact.equipment_id)==id else "未解锁" if not option.enabled else "待安装" if _candidate==id else ""
-        item.caption.modulate=Color.WHITE if option.enabled else Color("78908e")
+        item.caption.modulate=Color.WHITE if option.enabled else Color("b1beb9")
+        item.icon.modulate=Color.WHITE if option.enabled else Color("718a8b")
+        item.status.add_theme_color_override("font_color",Color("c6dfd5") if option.enabled else Color("d6bb8a"))
         _button_tint(item.button,_candidate==id)
         column+=1
     for id in _choices.keys():
@@ -656,7 +690,7 @@ func _draw() -> void:
     if _ship.is_empty() or not _catalog.has(_ship):return
     for row in _facts:
         if row.dormant:continue
-        var port: Vector2=_slot_label_position(row)+Vector2(110,77)
+        var port: Vector2=_slot_label_position(row)+Vector2(110,73)
         var mount: Vector2=_mount_position(row)
         var length: float=port.distance_to(mount)
         # The joint centres coincide with the housing socket and actual mount.

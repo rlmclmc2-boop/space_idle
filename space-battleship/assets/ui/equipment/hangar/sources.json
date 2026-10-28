@@ -75,5 +75,26 @@
       "tool": "image_gen__imagegen",
       "processing": "Raw original PNG copied byte-for-byte; runtime AtlasTexture / NinePatchRect only. No editing or numeric content."
     }
-  ]
+  ],
+  "clean_terminal_revision_2026_10_28": {
+    "runtime_slot_asset": "terminal-clean.svg",
+    "sha256": "6bcad4f3b558971dd6d1426723db77b3c44905541bf421997a39681ae54d8f73",
+    "source": "New authored SVG geometry/gradients, palette follows existing ivory/navy/teal hangar. Not a cleaned or programmatically edited PNG.",
+    "socket_center": [
+      110,
+      73
+    ],
+    "runtime_size": [
+      220,
+      82
+    ],
+    "ordinary_buttons": "Independent native StyleBoxFlat states, initialized once per Control; no image atlas.",
+    "vertical_candidates": "Independent native material and 11px semibold state line y68..85 inside 89px card; no wide-shell distortion.",
+    "unused_imagegen_cleanup_attempt": {
+      "output": "/workspace/generated_images/exec-fde96a48-102b-4432-bd1a-986f0416593e.png",
+      "sha256": "51084a3e6d16afd0c412dcd00aa86008a9d6c6c63d3e467fdbb47e63dc68c6ed",
+      "decision": "Inspected original output; residual detached white specks remain above the outline. Not loaded or submitted as production art. Original is preserved."
+    },
+    "old_png_usage": "terminal-housing.png kept for provenance only; no longer loaded. support-arm.png unchanged and still used."
+  }
 }
