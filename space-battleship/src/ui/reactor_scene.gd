@@ -12,6 +12,7 @@ var _publish: Callable
 var _read: Callable
 var _clock: Callable
 var _stage: Control
+var _stage_viewport: SubViewport
 var _rows: Dictionary = {}
 var _ids: Array = []
 var _model: Dictionary = {}
@@ -41,9 +42,18 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	clip_contents = true
 	theme = Theme.new()
 	theme.default_font = preload("res://assets/fonts/NotoSansSC-Regular.tres")
+	var surface := SubViewportContainer.new()
+	surface.size = size
+	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(surface)
+	_stage_viewport = SubViewport.new()
+	_stage_viewport.size = Vector2i(808,900)
+	_stage_viewport.disable_3d = true
+	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	surface.add_child(_stage_viewport)
 	_stage = Stage.new()
 	_stage.size = size
-	add_child(_stage)
+	_stage_viewport.add_child(_stage)
 	_build()
 	if _owner != null: _owner.choices_changed.connect(invalidate)
 
@@ -95,15 +105,16 @@ func _build() -> void:
 	_level = _label(Vector2(612,23), 170)
 	_level.add_theme_color_override("font_color", Color("315662"))
 	for id in Stage.IDS:
-		var x: float = 38.0 if id in ["weapons","smelting"] else 552.0
-		var y: float = 321.0 if id in ["weapons","defence"] else 713.0
-		var effect := _label(Vector2(x,y), 218, 19)
-		var supply := _label(Vector2(x,y+27), 218, 14)
+		var layout: Dictionary = _stage.control_layout(id)
+		var effect := _label(layout.effect,float(layout.width),16)
+		var supply := _label(layout.supply,float(layout.width),12)
+		supply.size.y = 42
+		supply.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		supply.add_theme_color_override("font_color", Color("a5c3bf"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
-		slider.position = Vector2(x,y+58)
-		slider.size = Vector2(218,30)
+		slider.position = layout.slider
+		slider.size = Vector2(float(layout.track),26)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -133,11 +144,11 @@ func _build() -> void:
 		add_child(slider)
 		_rows[id] = {"effect":effect, "supply":supply, "slider":slider}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(28,815),754,17)
-	_purchase = _button("升级",Rect2(28,850,210,38),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)))
-	_equal = _button("均分",Rect2(250,850,112,38),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认调配",Rect2(374,850,176,38),func(): _command(_submit))
-	_restore = _button("还原",Rect2(562,850,96,38),_reset)
+	_budget = _label(Vector2(194,807),430,14)
+	_purchase = _button("升级",Rect2(194,842,142,29),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)))
+	_equal = _button("均分",Rect2(344,842,62,29),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认调配",Rect2(414,842,118,29),func(): _command(_submit))
+	_restore = _button("还原",Rect2(540,842,76,29),_reset)
 	_notice = _label(Vector2(278,91),252,14)
 	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_notice.size.y = 68
@@ -149,6 +160,7 @@ func _ready() -> void:
 	visibility_changed.connect(func():
 		set_process(is_visible_in_tree())
 		_stage.reset_clock()
+		_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE if is_visible_in_tree() else SubViewport.UPDATE_DISABLED
 		if is_visible_in_tree(): invalidate())
 	set_process(is_visible_in_tree())
 
@@ -158,7 +170,8 @@ func _process(_dt: float) -> void:
 	if _dirty: _refresh()
 	if _clock.is_valid():
 		var context: Dictionary = _clock.call()
-		_stage.advance_visual_clock(float(context.get("game_time",0.0)),bool(context.get("paused",true)))
+		if _stage.advance_visual_clock(float(context.get("game_time",0.0)),bool(context.get("paused",true))):
+			_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	if _message_until > 0 and Time.get_ticks_msec() >= _message_until:
 		_message_until = 0
 		_notice.text = ""
@@ -196,8 +209,11 @@ func _refresh() -> void:
 			_rows[id].slider.set_value_no_signal(_shares[id])
 		_rows[id].slider.editable = model.get("can_allocate",true)
 		_rows[id].effect.text = NAMES[id] + " ×" + str(row.get("factor","—"))
-		_rows[id].supply.text = "有效 " + str(row.get("effective","—"))
-		if row.get("has_free",false): _rows[id].supply.text += "  免费 +" + str(row.get("free",""))
+		var manual_text: String = str(row.get("allocation", "—"))
+		var ratio_text: String = str(roundi(float(row.get("ratio", 0.0)) * 100.0)) + "%"
+		_rows[id].supply.text = "手动 " + manual_text + " (" + ratio_text + ")"
+		if row.get("has_free",false): _rows[id].supply.text += " + 免费 " + str(row.get("free","—"))
+		_rows[id].supply.text += "\n有效 " + str(row.get("effective","—"))
 	_level.text = "等级 " + str(model.get("level","—"))
 	_budget.text = "可调容量 " + str(model.get("capacity","—")) + "     剩余 " + str(model.get("remaining","—"))
 	var quote: Dictionary = model.get("purchase_quote",{})
@@ -243,8 +259,11 @@ func _preview_draft() -> void:
 		var a: String = str(current.get("factor","—"))
 		var b: String = str(row.factor)
 		_rows[id].effect.text = NAMES[id] + " ×" + a + (" → " + b if a != b else "")
+		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
+		var supply_text: String = "手动 " + a + (" → " + b if a != b else "")
+		if row.get("has_free",false): supply_text += " + 免费 " + str(row.get("free","—"))
 		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = "有效 " + a + (" → " + b if a != b else "")
+		_rows[id].supply.text = supply_text + "\n有效 " + a + (" → " + b if a != b else "")
 		if _kind == "equal" and row.has("ratio"):
 			_shares[id] = int(roundf(clampf(float(row.ratio),0.0,1.0)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
@@ -278,3 +297,4 @@ func _update_stage() -> void:
 	var loads := {"core":float(_model.get("load",0.0))}
 	for row in _model.get("modules",[]): loads[str(row.id)] = float(row.get("load",0.0))
 	_stage.show_snapshot(_ids,loads,_selected)
+	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
