@@ -1,0 +1,3 @@
+# Captured stdout is byte-exact evidence.
+m9-readonly-probe.txt -text
+m9-entry-check.txt -text

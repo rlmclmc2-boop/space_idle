@@ -102,10 +102,18 @@ func damage_types() -> Dictionary:
 
 func drone_weapon_source(weapon_id: String, level_bonus: int, extra_levels: int,
 		ai: Dictionary, reactor: Dictionary, motion: Dictionary) -> Dictionary:
+	return _drone_weapon_source(_slots if _pending_slots == null else _pending_slots,
+		weapon_id, level_bonus, extra_levels, ai, reactor, motion)
+
+func accepted_drone_weapon_source(weapon_id: String, level_bonus: int, extra_levels: int,
+		ai: Dictionary, reactor: Dictionary, motion: Dictionary) -> Dictionary:
+	return _drone_weapon_source(_slots, weapon_id, level_bonus, extra_levels, ai, reactor, motion)
+
+func _drone_weapon_source(candidates: Array, weapon_id: String, level_bonus: int, extra_levels: int,
+		ai: Dictionary, reactor: Dictionary, motion: Dictionary) -> Dictionary:
 	if not _definitions.has(weapon_id) or weapon_id not in ["laser", "missile", "cannon", "longLaser"]:
 		return {"ok": false, "reason": "UnknownDroneWeapon"}
 	var paid_level: int = 1
-	var candidates: Array = _slots if _pending_slots == null else _pending_slots
 	for slot in candidates:
 		if slot.category == "weapon" and slot.equipment_id == weapon_id:
 			paid_level = maxi(paid_level, int(slot.paid_level))

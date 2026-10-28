@@ -991,12 +991,15 @@ func equip_hyperspace_drones(ids: Array) -> Dictionary:
 	return publish_equipment_refit(economy.budget(), "refit", "", prepared.contributions, false,
 		func(): hyperspace_system.accept_loadout(prepared.ids))
 
-func _hyperspace_weapon_source(ai = null, reactor = null, equipment_levels: int = -1) -> Callable:
+func _hyperspace_weapon_source(ai = null, reactor = null, equipment_levels: int = -1, accepted: bool = false) -> Callable:
 	var motion: Dictionary = battle.wave_inputs().motion
 	var research_values: Dictionary = _research_factors if ai == null else ai
 	var reactor_values: Dictionary = _reactor_factors if reactor == null else reactor
 	var levels: int = int(_world_factors.equipment_levels) if equipment_levels < 0 else equipment_levels
 	return func(drone):
+		if accepted:
+			return equipment.accepted_drone_weapon_source(str(drone.weapon), hyperspace_system.weapon_level_bonus(drone),
+				levels, research_values, reactor_values, motion)
 		return equipment.drone_weapon_source(str(drone.weapon), hyperspace_system.weapon_level_bonus(drone),
 			levels, research_values, reactor_values, motion)
 
@@ -1004,9 +1007,71 @@ func _prepare_drone_growth(ai: Dictionary, reactor: Dictionary, equipment_levels
 	return hyperspace_system.prepare_loadout(hyperspace_system.equipped_ids(),
 		int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source(ai, reactor, equipment_levels))
 
+func hyperspace_module_details() -> Dictionary:
+	return hyperspace_system.module_details(int(campaign_system.progress_facts().cycle_reached))
+
+func hyperspace_hangings_preview(id: String, module_ids: Array) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var prepared: Dictionary = hyperspace_system.prepare_hangings(id, module_ids,
+		int(campaign_system.progress_facts().cycle_reached))
+	if not prepared.ok: return prepared
+	var ids: Array = []
+	for value in prepared.hangings: ids.append(str(value))
+	return {"ok": true, "id": str(prepared.id), "hangings": ids, "admission_scope": "hyperspace_prepare"}
+
+func _hyperspace_loadout_view(prepared: Dictionary) -> Dictionary:
+	if not prepared.ok: return {"ok": false, "reason": prepared.reason, "admission_scope": "hyperspace_prepare"}
+	var ids: Array = []
+	for value in prepared.ids: ids.append(str(value))
+	var result: Dictionary = {"ok": true, "ids": ids, "admission_scope": "hyperspace_prepare"}
+	if prepared.has("entries"): result.entries = prepared.entries.duplicate(true)
+	return result
+
+func hyperspace_loadout_preview(ids: Array) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	return _hyperspace_loadout_view(hyperspace_system.prepare_loadout(ids,
+		int(campaign_system.ship_facts().drone_capacity), _hyperspace_weapon_source(null, null, -1, true)))
+
+func hyperspace_preset_preview(name: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	return _hyperspace_loadout_view(hyperspace_system.prepare_preset(name,
+		int(campaign_system.ship_facts().drone_capacity), int(campaign_system.progress_facts().cycle_reached),
+		_hyperspace_weapon_source(null, null, -1, true)))
+
+func hyperspace_dismantle_preview(id: String) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	return hyperspace_system.dismantle_preview(id)
+
+func _hyperspace_forge_costs(forecast: Dictionary) -> Dictionary:
+	var costs: Dictionary = {}
+	for resource in forecast.costs:
+		var amount: Dictionary = amount_api.apply("from_decimal", [str(forecast.costs[resource])])
+		if not amount.ok: return amount
+		costs[resource] = amount.value
+	return {"ok": true, "costs": costs}
+
 func preview_hyperspace_forge(id: String, operation: String, args: Dictionary = {}) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
-	return hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().cycle_reached))
+	var forecast: Dictionary = hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().cycle_reached))
+	if not forecast.ok: return forecast
+	var converted: Dictionary = _hyperspace_forge_costs(forecast)
+	if not converted.ok: return converted
+	var payable: Dictionary = economy.can_pay(converted.costs)
+	var amounts: Dictionary = {}
+	for resource in converted.costs:
+		var text: Dictionary = amount_api.apply("to_display", [converted.costs[resource]])
+		if not text.ok: return text
+		amounts[resource] = text.text
+	forecast.source = {"id": id, "forge_revision": int(forecast.drone.forge_revision) - 1}
+	forecast.cost_amounts = amounts
+	forecast.can_pay = payable.ok
+	forecast.payment_reason = payable.get("reason", "")
+	forecast.loadout_admission = null
+	if id in hyperspace_system.equipped_ids() and payable.ok:
+		forecast.loadout_admission = _hyperspace_loadout_view(hyperspace_system.prepare_loadout(
+			hyperspace_system.equipped_ids(), int(campaign_system.ship_facts().drone_capacity),
+			_hyperspace_weapon_source(null, null, -1, true), {id: forecast.drone}))
+	return forecast
 
 func forge(id: String, operation: String, args: Dictionary, operation_id: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
@@ -1016,11 +1081,9 @@ func forge(id: String, operation: String, args: Dictionary, operation_id: String
 	if not repeated.is_empty(): return repeated
 	var forecast: Dictionary = hyperspace_system.preview_forge(id, operation, args, int(campaign_system.progress_facts().cycle_reached))
 	if not forecast.ok: return forecast
-	var costs: Dictionary = {}
-	for resource in forecast.costs:
-		var amount: Dictionary = amount_api.apply("from_decimal", [str(forecast.costs[resource])])
-		if not amount.ok: return amount
-		costs[resource] = amount.value
+	var converted: Dictionary = _hyperspace_forge_costs(forecast)
+	if not converted.ok: return converted
+	var costs: Dictionary = converted.costs
 	var paid: Dictionary = economy.payment(costs)
 	if not paid.ok: return paid
 	var result: Dictionary = {"ok": true, "drone": forecast.drone.duplicate(true), "costs": forecast.costs.duplicate(), "draws": forecast.draws}
@@ -1067,7 +1130,7 @@ func set_hyperspace_hangings(id: String, module_ids: Array) -> Dictionary:
 	hyperspace_system.accept_hangings(id, prepared.hangings)
 	return {"ok": true}
 
-func exchange_hyperspace_materials(source: String, target: String, amount: String) -> Dictionary:
+func _prepare_hyperspace_exchange(source: String, target: String, amount: String) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
 	var materials: Array = hyperspace_system.material_ids()
 	if source == target or source not in materials or target not in materials:
@@ -1092,7 +1155,21 @@ func exchange_hyperspace_materials(source: String, target: String, amount: Strin
 	if not credited.ok: return credited
 	var wallet: Dictionary = paid.wallet.duplicate()
 	wallet[target] = credited.value
-	if economy.accept_budget(wallet, false): economy.publish_budget_change()
+	return {"ok": true, "wallet": wallet, "payment": doubled.value, "received": received.value}
+
+func hyperspace_exchange_preview(source: String, target: String, amount: String) -> Dictionary:
+	var prepared: Dictionary = _prepare_hyperspace_exchange(source, target, amount)
+	if not prepared.ok: return prepared
+	var payment: Dictionary = amount_api.apply("to_display", [prepared.payment])
+	if not payment.ok: return payment
+	var received: Dictionary = amount_api.apply("to_display", [prepared.received])
+	if not received.ok: return received
+	return {"ok": true, "source": source, "target": target, "payment": payment.text, "received": received.text}
+
+func exchange_hyperspace_materials(source: String, target: String, amount: String) -> Dictionary:
+	var prepared: Dictionary = _prepare_hyperspace_exchange(source, target, amount)
+	if not prepared.ok: return prepared
+	if economy.accept_budget(prepared.wallet, false): economy.publish_budget_change()
 	return {"ok": true}
 
 func _world_contributions() -> Dictionary:

@@ -93,9 +93,11 @@
 
 正文移至[战斗/航程/拾取分册](contracts/battle.md#73-隔离amount与绑定边界)。
 
-## 8. 已审待实施：成员、设施与选中节点的最小只读事实
+<a id="8-已审待实施成员设施与选中节点的最小只读事实"></a>
 
-**状态：已审待实施；不作为主线已有方法。** 本节只约定当前成员、当前设施和当前节点事实。审查依据与未覆盖项另见[核对记录](../verification/frontend-contract-audit/colony-readonly-proposal.md)。比例/预算意图、整组原子调配、动态战斗效果和未来效果预测不在本节范围。
+## 8. 实现候选：成员、设施与选中节点的最小只读事实
+
+**状态：候选实现`372f8499`已定向双审、未合main；不作为主线已有方法或完整游戏验收。** 本节只约定当前成员、当前设施和当前节点事实。审查依据与未覆盖项另见[核对记录](../verification/frontend-contract-audit/colony-readonly-proposal.md)。比例/预算意图、整组原子调配、动态战斗效果和未来效果预测不在本节范围。
 
 ### 8.1 共同读取与身份边界
 
@@ -123,7 +125,7 @@
 - 每项可单独评审/实现；依赖的人员输入复用已有只读视图，不增加相互持有的模块对象或新业务协调。未选定的比例/预算、整组原子提交、未来效果/动态战斗效果继续待定，不能以本节授权运行实现或整批G2验收。
 ## 9. 已审设计：反应炉整组草稿与科研预算的Amount安全预览
 
-**状态：设计已审；[运行实现候选](../verification/amount-preview-implementation.md)未合主线、待双审，不作为主线已有方法。** 只补当前已定工作点需要的只读换算/比较；玩法及接纳仍按[03第2–3节](03-progression.md#2-反应炉)和本页第5节。固定请求、源码核对及持续0%的差异见[审查记录](../verification/amount-safe-preview-contract.md)。本节选定Reactor最小具名整组金额入口及Research原单资源入口的归属；不引入通用事务层、保存字段、随机现金流预测或未选UI。
+**状态：设计已审；[候选实现`6f6f9fd2`](../verification/amount-preview-implementation.md)已定向双审、未合main，不作为主线已有方法或完整游戏验收。** 只补当前已定工作点需要的只读换算/比较；玩法及接纳仍按[03第2–3节](03-progression.md#2-反应炉)和本页第5节。固定请求、源码核对及持续0%的差异见[审查记录](../verification/amount-safe-preview-contract.md)。本节选定Reactor最小具名整组金额入口及Research原单资源入口的归属；不引入通用事务层、保存字段、随机现金流预测或未选UI。
 
 ### 9.1 单位与共同读取边界
 
@@ -152,7 +154,7 @@
 
 模块正文见[超空间分册](contracts/hyperspace.md#10-实现候选超空间只读预览与星球自动设置)与[星球分册](contracts/planet.md#10-实现候选超空间只读预览与星球自动设置)。
 
-优先三项方向已双审通过；本分支运行候选待实现双审，未合main。基线`cd4169ccbb9cf94b58e29ac6583ff682465a9df2`，仅补现行规则下的读取，未实施同提案其余清单。固定源码/定向证据见[实现记录](../verification/readonly-preview-implementation.md)。
+优先三项候选实现`4c1de507`已定向双审、未合main，不代表完整游戏验收。基线`cd4169ccbb9cf94b58e29ac6583ff682465a9df2`，仅补现行规则下的读取，未实施同提案其余清单。固定源码/定向证据见[实现记录](../verification/readonly-preview-implementation.md)。
 
 过滤命令与预览共用原解析/规范化及纯校验，set_filter直接输入仍保留原严格类型准入。预览不改当前规则，返回值可本地编辑而不污染所有者；确认仍调用import_filter原串并重新解析校验，不能提交客户端candidate绕过原准入。UI编辑分享串、切换来源、取消或成功后清对应旧确认；不为此添加全局revision、过滤影响扫描或仓库处理动作。Planet关闭自动仍只改变后续继续设置，不取消正在进行的探索。
 
@@ -160,7 +162,7 @@
 
 模块正文见[装备分册](contracts/equipment.md#11-实现候选装备比较强化摘要与成交回执)与[强化分册](contracts/enhancement.md#11-实现候选装备比较强化摘要与成交回执)。
 
-设计`0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8`已双审通过；本分支运行候选待实现双审、未合main。仅本节读取与回执边界，未搬入b7bb旧缓存/提前通知；历史来源核对留在[提案](../verification/equipment-enhancement-readonly-contract-proposal.md)，固定源码及原始证据见[实现记录](../verification/equipment-enhancement-readonly-implementation.md)。
+设计`0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8`已双审通过；候选实现`ab6e8873`已定向双审、未合main，不代表完整游戏验收。仅本节读取与回执边界，未搬入b7bb旧缓存/提前通知；历史来源核对留在[提案](../verification/equipment-enhancement-readonly-contract-proposal.md)，固定源码及原始证据见[实现记录](../verification/equipment-enhancement-readonly-implementation.md)。
 
 静态比较止于成长/进化/科研/供能；当前实战值另复用Battle.attribute_details，不拿当前native最终值对比候选charged_base。switch_admission仅复用原单槽换装准入，不承诺最终无人机/Higgs组合许可，实际提交仍沿Session原链。查询只读已接纳事实；_charged_base仅给脱离slot，强化不调用会写_pending_output的evaluate，不设可写展示缓存或临时接纳。
 

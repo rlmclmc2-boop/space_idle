@@ -324,6 +324,7 @@ func warehouse() -> Dictionary:
 	return {"main": _warehouse.duplicate(true), "overflow": _overflow.duplicate(true),
 		"equipped": _equipped.duplicate(), "favorites": _favorites.duplicate(),
 		"sealed": _sealed.duplicate(), "presets": _presets.duplicate(true),
+		"main_capacity": _warehouse_capacity(), "overflow_capacity": int(_parameters.overflow_capacity),
 		"reforge_count": _reforge_count, "retention_capacity": int(_parameters.initial_retention_capacity) + _reforge_count * int(_parameters.retention_capacity_gain)}
 
 func _warehouse_capacity() -> int:
@@ -397,11 +398,11 @@ func _modules_after_credit(drops: Dictionary) -> Dictionary:
 			progress.unlocked = true
 			copies -= 1
 		progress.exp += copies * float(_module_definitions[key].base_exp)
-		var needed: float = float(_module_definitions[key].base_exp) * pow(1.0 + float(_module_definitions[key].exp_growth), int(progress.level))
+		var needed: float = _module_required_exp(str(key), int(progress.level))
 		while progress.exp >= needed:
 			progress.exp -= needed
 			progress.level += 1
-			needed = float(_module_definitions[key].base_exp) * pow(1.0 + float(_module_definitions[key].exp_growth), int(progress.level))
+			needed = _module_required_exp(str(key), int(progress.level))
 	return next
 
 func filter_configuration() -> Dictionary:
@@ -490,6 +491,70 @@ func _filter_matches(drone: Dictionary) -> bool:
 func module_growth() -> Dictionary:
 	return _modules.duplicate(true)
 
+func _module_required_exp(id: String, level: int) -> float:
+	return float(_module_definitions[id].base_exp) * pow(1.0 + float(_module_definitions[id].exp_growth), level)
+
+func _module_effect_factor(id: String, level: int) -> float:
+	return pow(1.0 + float(_module_definitions[id].effect_growth), level)
+
+# Growth keeps its existing float domain; nonfinite display values are unknown.
+func module_details(highest_reached: int) -> Dictionary:
+	var rows: Array = []
+	var totals: Dictionary = module_contributions()
+	for id in _modules:
+		var progress: Dictionary = _modules[id]
+		var needed: float = _module_required_exp(str(id), int(progress.level))
+		var bonus: float = _module_effect_factor(str(id), int(progress.level)) - 1.0
+		var valid: bool = is_finite(needed) and needed > 0.0
+		var available: bool = progress.unlocked and highest_reached >= int(_module_definitions[id].unlock_stage)
+		rows.append({"id": str(id), "unlocked": progress.unlocked, "level": progress.level,
+			"exp": progress.exp, "required_exp": needed if valid else null,
+			"progress_ratio": clampf(float(progress.exp) / needed, 0.0, 1.0) if valid else null,
+			"growth_reason": "" if valid else "RequiredExperienceUnavailable",
+			"per_copy_bonus": bonus if is_finite(bonus) else null,
+			"per_copy_reason": "" if is_finite(bonus) else "ContributionUnavailable",
+			"aggregate_contribution": totals.get(id, 0.0) if is_finite(float(totals.get(id, 0.0))) else null,
+			"aggregate_reason": "" if is_finite(float(totals.get(id, 0.0))) else "ContributionUnavailable",
+			"unlock_stage": int(_module_definitions[id].unlock_stage), "available": available,
+			"reason": "" if available else "HangingUnavailable"})
+	return {"ok": true, "rows": rows}
+
+func dismantle_preview(id: String) -> Dictionary:
+	var prepared: Dictionary = prepare_dismantle(id)
+	if not prepared.ok: return prepared
+	var copies: int = 0
+	for count in prepared.reward.hanging_rewards.values(): copies += int(count)
+	return {"ok": true, "id": id, "removed_ids": [id],
+		"materials": prepared.reward.materials.duplicate(true), "ultimate_cores": prepared.reward.ultimate_cores,
+		"hanging_copies": copies, "hanging_kinds": "pending_settlement"}
+
+# Ranges describe raw stored values, including protected rows; no random result is awarded.
+func forge_display_limits(id: String) -> Dictionary:
+	var drone: Dictionary = _find_drone(id)
+	if drone.is_empty(): return {"ok": false, "reason": "DroneUnavailable"}
+	var blocked: String = "DroneUnavailable" if _sealed.has(id) else "UltimateLocked" if drone.ultimate else ""
+	var rows: Array = []
+	for index in drone.affixes.size():
+		var affix: Dictionary = drone.affixes[index]
+		var interval: Dictionary = _affix_ranges[str(affix.key)][int(affix.tier)]
+		var reason: String = blocked if not blocked.is_empty() else "AffixLocked" if affix.locked else ""
+		rows.append({"id": id, "forge_revision": int(drone.forge_revision), "kind": "affix",
+			"index": index, "key": str(affix.key), "tier": int(affix.tier), "current": affix.value,
+			"minimum": interval.minimum, "maximum": interval.maximum, "locked": bool(affix.locked),
+			"modifiable": reason.is_empty(), "reason": reason})
+	if drone.legendary:
+		for row in _legend_parameters.get(str(drone.legendary_effect.effect_id), []):
+			rows.append({"id": id, "forge_revision": int(drone.forge_revision), "kind": "legendary",
+				"effect_id": str(drone.legendary_effect.effect_id), "parameter": str(row.parameter),
+				"current": drone.legendary_effect.parameters[str(row.parameter)],
+				"minimum": row.minimum, "maximum": row.maximum, "locked": not blocked.is_empty(),
+				"modifiable": blocked.is_empty(), "reason": blocked})
+	return {"ok": true, "id": id, "forge_revision": int(drone.forge_revision),
+		"affix_limit": int(_quality_row(drone).get("affix_limit", 0)),
+		"hanging_limit": maxi(int(_quality_row(drone).get("hanging_limit", 0)), int(drone.preserved_hanging_slots)),
+		"hanging_slots": int(drone.hanging_slots), "preserved_hanging_slots": int(drone.preserved_hanging_slots),
+		"modifiable": blocked.is_empty(), "reason": blocked, "reroll_ranges": rows}
+
 func legend_collection() -> Dictionary:
 	return {"seen": _legend_seen.duplicate(), "collection": _legend_collection.duplicate()}
 
@@ -510,7 +575,7 @@ func module_contributions(ids = null, hanging_overrides: Dictionary = {}, module
 		for module_id in installed:
 			var progress: Dictionary = modules.get(str(module_id), {})
 			if not bool(progress.get("unlocked", false)): continue
-			totals[str(module_id)] = float(totals.get(str(module_id), 0.0)) + pow(1.0 + float(_module_definitions[str(module_id)].effect_growth), int(progress.level)) - 1.0
+			totals[str(module_id)] = float(totals.get(str(module_id), 0.0)) + _module_effect_factor(str(module_id), int(progress.level)) - 1.0
 	return totals
 
 func future_module_contributions(drops: Dictionary) -> Dictionary:

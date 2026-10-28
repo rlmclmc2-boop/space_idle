@@ -24,9 +24,9 @@
 
 跨模块影响判定：规则只变所属模块时不扩读所有模块；变更公开金额/费用、人员占用、进度开放、贡献、保存格式或 native 几何契约时，读取对应提供方/消费者小节及05现行契约。阅读范围、未决冲突和验收证据按实际改动列明。
 
-预算预览/分配草稿按需读[反应炉](contracts/reactor.md#92-reactor整组分配预览)、[科研](contracts/research.md#93-research单工作点预算预览)及[共同Amount/失效边界](14-ui-contracts.md#9-已审设计反应炉整组草稿与科研预算的amount安全预览)；设计已审，运行候选待双审、未合主线。
+预算预览/分配草稿按需读[反应炉](contracts/reactor.md#92-reactor整组分配预览)、[科研](contracts/research.md#93-research单工作点预算预览)及[共同Amount/失效边界](14-ui-contracts.md#9-已审设计反应炉整组草稿与科研预算的amount安全预览)；候选实现`6f6f9fd2`已定向双审、未合main，不代表完整游戏验收。
 
-结构化比较按需读[装备](contracts/equipment.md#11-实现候选装备比较强化摘要与成交回执)、[强化](contracts/enhancement.md#11-实现候选装备比较强化摘要与成交回执)；[共同成交回执/刷新边界及版本状态](14-ui-contracts.md#11-实现候选装备比较强化摘要与成交回执)仍集中维护；设计已审，运行候选未合main。
+结构化比较按需读[装备](contracts/equipment.md#11-实现候选装备比较强化摘要与成交回执)、[强化](contracts/enhancement.md#11-实现候选装备比较强化摘要与成交回执)；[共同成交回执/刷新边界及版本状态](14-ui-contracts.md#11-实现候选装备比较强化摘要与成交回执)仍集中维护；候选实现`ab6e8873`已定向双审、未合main，不代表完整游戏验收。
 
 ## 权威位置与按需索引
 
