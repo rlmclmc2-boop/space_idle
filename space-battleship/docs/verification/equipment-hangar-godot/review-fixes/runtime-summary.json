@@ -1,0 +1,256 @@
+{
+  "baseline_source": "63a455419e7a481297392fbbb357523645903673",
+  "after_source": "94040a18b6616af78fa52c07986331d2e943d4f3",
+  "observation": "Actual unpaused active battle windows; do not expect identical damage or flight counts while real simulation advances.",
+  "before": {
+    "game_seconds": 1.7499999999999898,
+    "economy_signals": 105,
+    "non_wallet_signals": 105,
+    "wallet_signals": 0,
+    "wallet_unchanged": true,
+    "ui_delta": {
+      "candidates_updated": 0,
+      "comparison_reads": 28,
+      "cooldown_fact_reads": 0,
+      "quantity_styles_updated": 0,
+      "refreshes": 28,
+      "scene_draws": 0,
+      "scene_redraw_requests": 0,
+      "slot_fact_reads": 28,
+      "slot_styles_updated": 0,
+      "slots_updated": 0
+    },
+    "observer_delta": {
+      "battle_draw": 28,
+      "equipment_draw": 0,
+      "equipment_slots": 0,
+      "loadout": 0,
+      "node_added": 0,
+      "node_removed": 0,
+      "ship": 0,
+      "statistics": 4,
+      "wallet": 105
+    },
+    "configuration_commit_delta": 0,
+    "battle_objects_same": true,
+    "enemy_id_generation_before": [
+      [
+        1,
+        3,
+        false
+      ],
+      [
+        2,
+        3,
+        false
+      ],
+      [
+        3,
+        3,
+        false
+      ]
+    ],
+    "enemy_id_generation_after": [
+      [
+        1,
+        3,
+        false
+      ],
+      [
+        2,
+        3,
+        false
+      ],
+      [
+        3,
+        3,
+        false
+      ]
+    ],
+    "native_pool_before": {
+      "active_capacity": 1,
+      "active_flights": 1,
+      "ejection_queue": 0,
+      "feedback_capacity": 1,
+      "flight_slots": 1,
+      "repeat_queue": 0,
+      "root_queue": 5,
+      "strange_queue": 0
+    },
+    "native_pool_after": {
+      "active_capacity": 8,
+      "active_flights": 3,
+      "ejection_queue": 0,
+      "feedback_capacity": 4,
+      "flight_slots": 6,
+      "repeat_queue": 0,
+      "root_queue": 5,
+      "strange_queue": 0
+    },
+    "encounter_before": "3",
+    "encounter_after": "3"
+  },
+  "after": {
+    "game_seconds": 1.5999999999999899,
+    "economy_signals": 96,
+    "non_wallet_signals": 96,
+    "wallet_signals": 0,
+    "wallet_unchanged": true,
+    "ui_delta": {
+      "balance_dependency_changes": 0,
+      "candidates_updated": 0,
+      "comparison_dependency_changes": 0,
+      "comparison_reads": 0,
+      "cooldown_fact_reads": 0,
+      "economy_same_budget": 96,
+      "economy_signals": 96,
+      "equipment_option_reads": 0,
+      "maximum_reads": 0,
+      "quantity_styles_updated": 0,
+      "refreshes": 0,
+      "scene_draws": 0,
+      "scene_redraw_requests": 0,
+      "slot_fact_reads": 0,
+      "slot_styles_updated": 0,
+      "slots_updated": 0,
+      "wallet_refreshes": 0
+    },
+    "observer_delta": {
+      "battle_draw": 57,
+      "equipment_draw": 0,
+      "equipment_slots": 0,
+      "loadout": 0,
+      "node_added": 0,
+      "node_removed": 0,
+      "ship": 0,
+      "statistics": 3,
+      "wallet": 96
+    },
+    "configuration_commit_delta": 0,
+    "battle_objects_same": true,
+    "enemy_id_generation_before": [
+      [
+        1,
+        3,
+        false
+      ],
+      [
+        2,
+        3,
+        false
+      ],
+      [
+        3,
+        3,
+        false
+      ]
+    ],
+    "enemy_id_generation_after": [
+      [
+        1,
+        3,
+        false
+      ],
+      [
+        2,
+        3,
+        false
+      ],
+      [
+        3,
+        3,
+        false
+      ]
+    ],
+    "native_pool_before": {
+      "active_capacity": 1,
+      "active_flights": 1,
+      "ejection_queue": 0,
+      "feedback_capacity": 1,
+      "flight_slots": 1,
+      "repeat_queue": 0,
+      "root_queue": 5,
+      "strange_queue": 0
+    },
+    "native_pool_after": {
+      "active_capacity": 8,
+      "active_flights": 4,
+      "ejection_queue": 0,
+      "feedback_capacity": 4,
+      "flight_slots": 6,
+      "repeat_queue": 0,
+      "root_queue": 5,
+      "strange_queue": 0
+    },
+    "encounter_before": "3",
+    "encounter_after": "3"
+  },
+  "free_factor_changes": {
+    "reactor_free_allocation": {
+      "wallet_unchanged": true,
+      "matches_owner": true,
+      "ui_delta": {
+        "balance_dependency_changes": 0,
+        "candidates_updated": 0,
+        "comparison_dependency_changes": 1,
+        "comparison_reads": 1,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 0,
+        "equipment_option_reads": 0,
+        "maximum_reads": 1,
+        "quantity_styles_updated": 0,
+        "refreshes": 0,
+        "scene_draws": 0,
+        "scene_redraw_requests": 0,
+        "slot_fact_reads": 0,
+        "slot_styles_updated": 0,
+        "slots_updated": 0,
+        "wallet_refreshes": 1
+      },
+      "primary_before": {
+        "current": "1.7e2",
+        "upgrade": "2.64e6",
+        "candidate": "1.2e3"
+      },
+      "primary_after": {
+        "current": "2.27e2",
+        "upgrade": "3.519177e6",
+        "candidate": "1.6e3"
+      }
+    },
+    "defence_free_allocation": {
+      "wallet_unchanged": true,
+      "matches_owner": true,
+      "ui_delta": {
+        "balance_dependency_changes": 0,
+        "candidates_updated": 0,
+        "comparison_dependency_changes": 1,
+        "comparison_reads": 1,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 0,
+        "equipment_option_reads": 0,
+        "maximum_reads": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 0,
+        "scene_draws": 0,
+        "scene_redraw_requests": 0,
+        "slot_fact_reads": 0,
+        "slot_styles_updated": 0,
+        "slots_updated": 0,
+        "wallet_refreshes": 1
+      },
+      "primary_before": {
+        "current": "7.29e9",
+        "upgrade": "8.91e9",
+        "candidate": "7.29e9"
+      },
+      "primary_after": {
+        "current": "8.090850637e9",
+        "upgrade": "9.888817445e9",
+        "candidate": "8.090850637e9"
+      }
+    }
+  }
+}

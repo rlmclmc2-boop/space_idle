@@ -1,0 +1,11 @@
+{
+  "source_commit": "94040a18b6616af78fa52c07986331d2e943d4f3",
+  "environment": "../environment.json",
+  "godot": "/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64",
+  "native_extension": "/tmp/space-idle-native472/space_native.gdextension",
+  "local_import_metadata_archive": "/tmp/space-idle-runtime472/import-metadata-94040a18.tar.gz",
+  "metadata_sha256": "5b32784f47f5d2ca258f1b9da587f398611d0e2abde0651426594072dd97a828",
+  "metadata_files": 1242,
+  "restore_from_project_directory": "tar -xzf /tmp/space-idle-runtime472/import-metadata-94040a18.tar.gz",
+  "note": "Optional local generated import metadata cache; not an authority or Git deliverable. Standard --editor --import remains the startup route."
+}

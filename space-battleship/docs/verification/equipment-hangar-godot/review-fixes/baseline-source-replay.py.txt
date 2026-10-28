@@ -1,0 +1,14 @@
+from pathlib import Path
+import os,subprocess
+root=Path('/workspace/space_idle/space-battleship')
+paths=['src/main.gd','src/game_session.gd','src/systems/equipment.gd','src/ui/equipment_panel.gd']
+current={p:(root/p).read_bytes() for p in paths}
+try:
+ for p in paths:(root/p).write_bytes(subprocess.check_output(['git','show','63a45541:space-battleship/'+p],cwd=root))
+ env=os.environ.copy();env.update({'DISPLAY':':99','XDG_DATA_HOME':'/tmp/space-idle-runtime472/data','XDG_CONFIG_HOME':'/tmp/space-idle-runtime472/config','XDG_CACHE_HOME':'/tmp/space-idle-runtime472/cache','SPACE_IDLE_NATIVE_EXTENSION':'/tmp/space-idle-native472/space_native.gdextension','SPACE_IDLE_SETTINGS_PATH':'/tmp/space-idle-runtime472/settings-review-active-before.json','SPACE_IDLE_REVIEW_OUTPUT':'runtime-active-before.json','SPACE_IDLE_REVIEW_SOURCE':'63a455419e7a481297392fbbb357523645903673'})
+ with open('/tmp/space-idle-runtime472/review-active-before.log','w') as log:
+  result=subprocess.run(['/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64','--path','.','--resolution','1440x900','--position','0,0','--audio-driver','Dummy','--script','/tmp/space-idle-runtime-review-active-before.gd'],cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT)
+ print('baseline active process exit',result.returncode)
+finally:
+ for p,data in current.items():(root/p).write_bytes(data)
+ print('Restored all four current implementation files byte-for-byte')

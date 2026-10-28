@@ -1,0 +1,344 @@
+{
+  "source_commit": "94040a18b6616af78fa52c07986331d2e943d4f3",
+  "baseline_source": "63a455419e7a481297392fbbb357523645903673",
+  "capture_head_commit": "94040a18b6616af78fa52c07986331d2e943d4f3",
+  "executor": "/root/equipment_image_revision_replacement",
+  "compacted": false,
+  "runtime_binding": "runtime-active-after.json and operations/operations.json runtime SHA256 equals fixed Git objects. Source files stayed fixed during both captures.",
+  "baseline_binding": "baseline-source-replay.py.txt writes the four runtime source Git objects from63a into the original workspace, runs one process, and restores current bytes in finally; HEAD is not mislabeled as baseline source.",
+  "environment_reused": "../environment.json; same official Godot4.7.2, pinned API/native/config, no native source or geometry changes",
+  "source_files": [
+    {
+      "file": "src/main.gd",
+      "sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91"
+    },
+    {
+      "file": "src/game_session.gd",
+      "sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad"
+    },
+    {
+      "file": "src/systems/equipment.gd",
+      "sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26"
+    },
+    {
+      "file": "src/ui/equipment_panel.gd",
+      "sha256": "ba6a0db28d2f08601fd2ae043483bf4acad3649532949279ecaa9e4eb778bcc9"
+    },
+    {
+      "file": "docs/game-design/contracts/equipment.md",
+      "sha256": "ad72926a4cd4005756c8a36075e62e2918a77b28cedb909e900db97739ef9d3f"
+    }
+  ],
+  "artifacts": [
+    {
+      "file": ".gitattributes",
+      "sha256": "0ded296e877d1b2a383ec19feee9b1536073a064a02e90a23f4a62d84bdef214",
+      "bytes": 18
+    },
+    {
+      "file": ".gitignore",
+      "sha256": "e027cf8ebf80d6dcdacced8a4dbd1c440e2436fb1868ec851db4061cb67bb787",
+      "bytes": 7
+    },
+    {
+      "file": "README.md",
+      "sha256": "dc6c55a39f47b4fc15d67ceb0e5a2d44df37872035ac5e2482fa0b05a5ec91df",
+      "bytes": 6968
+    },
+    {
+      "file": "baseline-source-replay.py.txt",
+      "sha256": "968a85bb8234eb9f32594de1914870d3d40f61356b18cb8b2000ac078e693b76",
+      "bytes": 1435
+    },
+    {
+      "file": "batch-unknown.png",
+      "sha256": "02fafc89df8aca952419d45d2d5e53d0830235167a2fb214fd722c4311f9ca6d",
+      "bytes": 701523,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "check-only.log",
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    {
+      "file": "edge-left-after.png",
+      "sha256": "66cf0e8738da78e7bbb08173723c8a1c7b7eba426b26681ffa8b7c3c30013434",
+      "bytes": 1214440,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "edge-left-before.png",
+      "sha256": "847d5a674ad9e308e6919bddc6a5660abace7e3b11569f88eacd84c8e3de0c49",
+      "bytes": 1214509,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "edge-right-after.png",
+      "sha256": "35f7de30598ea848de2bf81a318333a6c01495fbf62e6dbfc5983060f1ad2a16",
+      "bytes": 1218092,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "edge-right-before.png",
+      "sha256": "78dfa2a9c8fd8b6f3873319e119a125079ed619cc80c14de371d75ffbea1984e",
+      "bytes": 1218844,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "free-defence-return.png",
+      "sha256": "b000d01493f8bfe7d6f7a9f3833ec297548f409a42f9d2952407b3fd17ef6d14",
+      "bytes": 1206519,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "free-weapons-return.png",
+      "sha256": "24937298699c55fdd210931dde1640b2d251f580ca123013745abc93eba08b61",
+      "bytes": 1219132,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "local-environment.json",
+      "sha256": "66cda50a80d0421f6b12a38f88143cda58ce06089d0a2d9f304569ac7f8b76b0",
+      "bytes": 725
+    },
+    {
+      "file": "operations/01-starter.png",
+      "sha256": "93d7c0716084d8766ade3854d0c785d7ac1ba1a43ed390ab0669cb02bbba593d",
+      "bytes": 1607714,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/02-starter-slot-selection.png",
+      "sha256": "a855ba1c723b671e0e79738280cbddb12f64789acafb14f6575d04c2f11f79b5",
+      "bytes": 1607134,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/03-cruiser-cannon-comparison.png",
+      "sha256": "f07fd7475d385aa599094738b4df636d2a44c53d618eae4307802cde47c37310",
+      "bytes": 1600835,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/04-single-plus1-material.png",
+      "sha256": "0f75d5a608aa98940575577ff1d2013781b61da0b8085f3638d52dfdcd81f37e",
+      "bytes": 1608430,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/05-plus10-quote.png",
+      "sha256": "5c756b68c3e19f1eb7f2928782e7c96dfdf903f0f3ec4825498da52b8057d68d",
+      "bytes": 1608362,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/06-single-plus10.png",
+      "sha256": "2fd2c662cbfa023e86cd7beccd5921ebb7943a10c7af6869c49675057a0a8fa9",
+      "bytes": 1608002,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/07-max-quote.png",
+      "sha256": "df552be4025e20739d522b0a1db665c226d8e25de52173f21c22902bd11ec881",
+      "bytes": 1607428,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/08-single-max.png",
+      "sha256": "a44ba4eee1dbf500d1c00fd3dc95b4b595da4f59e8467e37b84a1711bc3aed5c",
+      "bytes": 1606131,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/09-switch-cooldown.png",
+      "sha256": "5445be6053c6877e3741f5ab0efffadde3a8fbedbc7a9e69e7b49fa9494d15b2",
+      "bytes": 1596564,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/10-switch-ready.png",
+      "sha256": "783a6dae8da0da29768dc4d6aef888a27cfb7b51b888235a5f742a571fa547ed",
+      "bytes": 1597594,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/11-batch-open.png",
+      "sha256": "29fe529128d67ae9dff25a1b644fbcffa679a445e19a3a97d2209b1ec97c79ce",
+      "bytes": 1096310,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/12-batch-partial-result.png",
+      "sha256": "c9acdd34033f44d76e703d34ce545d227838a6f345d9202a4444ca9dafdf1027",
+      "bytes": 1123836,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/13-batch-result-retained.png",
+      "sha256": "cc26994ef4b99b16787d81c69f4085e7f2a56d06309b5b8973a9d8d6c80dc47a",
+      "bytes": 1125478,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/14-defence-selection.png",
+      "sha256": "ebcf94368644e02426d598523d643e99c62493cab04bcb3d35de320da340a69a",
+      "bytes": 1593089,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/15-final-cruiser.png",
+      "sha256": "2852af6d842c6c0faf777cb42cb33a4b620292b7fc8ee242c09663e7bdb80ba8",
+      "bytes": 1607756,
+      "pixels": [
+        1440,
+        900
+      ]
+    },
+    {
+      "file": "operations/operations.json",
+      "sha256": "6fa21877c726b249ec9e568ba9b39a48b2732a08e05a28c5140e849a134bd0ac",
+      "bytes": 76779
+    },
+    {
+      "file": "operations-driver.gd.txt",
+      "sha256": "a199dafea43e178b6ae9882f8f99970dbd74b4620aae55ae6431314eb06fd53f",
+      "bytes": 13631
+    },
+    {
+      "file": "operations.log",
+      "sha256": "73c5ae6b978cd00cfdcc6f76063fcc852d2aa7e452bd432f3fecc96f851172ec",
+      "bytes": 416
+    },
+    {
+      "file": "runtime-active-after-defence-nochange.json",
+      "sha256": "478b79215ebf702f5de75d95dd787524068640e27ea15214ae60d513c7524ef5",
+      "bytes": 450296
+    },
+    {
+      "file": "runtime-active-after-driver.gd.txt",
+      "sha256": "00632873defca2593efe084befcb35285ac7ebf3f5f312049cf973eab639db74",
+      "bytes": 24469
+    },
+    {
+      "file": "runtime-active-after.json",
+      "sha256": "5b7e62794278ca45c35c4a5d0e56233ea1531940d3e84dd4adb4a73b71453f13",
+      "bytes": 450335
+    },
+    {
+      "file": "runtime-active-after.log",
+      "sha256": "e1d2427f1735f1dbad3fd78df21dadc63dc8c449b1533dd2a527183e947c4069",
+      "bytes": 456
+    },
+    {
+      "file": "runtime-active-before-driver.gd.txt",
+      "sha256": "fdf9105a1d27d33560276d7db2e3a069d96bfa5a41dbe47a3e1ebedebe2775f5",
+      "bytes": 16669
+    },
+    {
+      "file": "runtime-active-before.json",
+      "sha256": "562242ac167465b7ee84dd58c86d6994cf140d0d2bfb7cb3272d9e4d06d09f97",
+      "bytes": 435781
+    },
+    {
+      "file": "runtime-active-before.log",
+      "sha256": "3b455e253b28ad50276243be8f3a3926679ed93df331ea3fe87bd5592e0930b5",
+      "bytes": 459
+    },
+    {
+      "file": "runtime-after.json",
+      "sha256": "416e8566f0b199e784047d4a0b4b77aadeac56eb8fb7b09bb153d383b36aea04",
+      "bytes": 230192
+    },
+    {
+      "file": "runtime-before-driver.gd.txt",
+      "sha256": "23849108d6b5afbbb89a59b49d4dcd359a738c1c4137796a3a9af2f59c46014b",
+      "bytes": 15391
+    },
+    {
+      "file": "runtime-before.json",
+      "sha256": "50f3ea2bd746966b638e7a528fb002d650cd8878250f7b7dea038adfc5d377a2",
+      "bytes": 219070
+    },
+    {
+      "file": "runtime-before.log",
+      "sha256": "df55479a480d19b8f21555b6512f6b8bcec9c5b3699cbb114a62e6c144f3633c",
+      "bytes": 459
+    },
+    {
+      "file": "runtime-summary.json",
+      "sha256": "35c7e3bf29a987a9fe59089a4bad0066afebea97aadcb6f777a475cdd7da7ec7",
+      "bytes": 5910
+    }
+  ],
+  "failures": {
+    "active_before": [],
+    "active_after": [],
+    "operations": []
+  },
+  "unknown_case_scope": "Presentation boundary input only. No actual native fatal or financial action is fabricated. Known partial receipts use real owner/native commands separately.",
+  "status": "Candidate awaiting original independent review, not self-accepted."
+}

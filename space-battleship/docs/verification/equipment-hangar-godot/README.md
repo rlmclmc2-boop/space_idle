@@ -1,5 +1,7 @@
 # 装备机库：Godot 实施候选
 
+**当前原独审四项修订入口：[review-fixes/README.md](review-fixes/README.md)**，固定源码94040a18b6616af78fa52c07986331d2e943d4f3，含未知回执、运行期依赖、无支付供能刷新与等比拾取。本页下方保留首批d2bb实施及原始证据，不把历史截图冒称本次同版。
+
 用户确认图04并授权实施后，在原工作区 `/workspace/space_idle`、项目 `space-battleship` 制作。实现分支 `implement/equipment-hangar-godot`，原设计分支继续固定图稿 `07312fcb9fc8d2d47bce771c9f7886670b8be5c9`。依赖 `09af963cf6f66146e019cecd08353426ab6d6abb` 普通合入，无冲突；其祖先包含装备 `5236e4d2`、`ab6e8873`。没有合 main、强推、新工作区、worktree 或子执行者。
 
 固定运行源码 **d2bb4cb9baf7cbb2033b4afbf7839213fcbf1fa4**；机库基础实现为其前版 `7a4c3cf2`。当前仅供原独审，不自行宣称装备或整套游戏通过。
