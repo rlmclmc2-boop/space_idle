@@ -8542,7 +8542,7 @@
     },
     {
       "family": "scene",
-      "action": "select critical locked node",
+      "action": "select critical effect only",
       "source": "existing DOM control with finite owner responses",
       "before": {
         "route": "enhancement",
@@ -8783,7 +8783,9 @@
           "x": 47.375,
           "y": 0
         }
-      }
+      },
+      "original_action_label": "select critical locked node",
+      "scope_correction": "This recorded step only switches the viewed effect. No locked-node route transition is recorded here; it cannot prove locked-node interaction."
     },
     {
       "family": "scene",
@@ -18762,7 +18764,7 @@
     },
     {
       "family": "work",
-      "action": "select critical locked node",
+      "action": "select critical effect only",
       "source": "existing DOM control with finite owner responses",
       "before": {
         "route": "enhancement",
@@ -19003,7 +19005,9 @@
           "x": 47.375,
           "y": 0
         }
-      }
+      },
+      "original_action_label": "select critical locked node",
+      "scope_correction": "This recorded step only switches the viewed effect. No locked-node route transition is recorded here; it cannot prove locked-node interaction."
     },
     {
       "family": "work",
@@ -23895,5 +23899,12 @@
   "capture_head_commit": "0aec2d937b06370b5ec4abddf3f5f7a4ea180ae3",
   "base_commit": "0aec2d937b06370b5ec4abddf3f5f7a4ea180ae3",
   "source_commit": "560a2dcfea9dc46567125e386d499c3e7fc433a8",
-  "source_note": "Source identity bound after capture by exact committed-file hash; original capture HEAD kept separately."
+  "source_note": "Source identity bound after capture by exact committed-file hash; original capture HEAD kept separately.",
+  "review_label_corrections": {
+    "steps_1_based": [
+      25,
+      56
+    ],
+    "change": "Action labels and claimed scope corrected after review; before/after state, source attribution and original images unchanged. No independent rerun or locked-node evidence added."
+  }
 }

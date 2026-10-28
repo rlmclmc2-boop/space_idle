@@ -1,6 +1,6 @@
 # 品质推广 R2：装配、强化、超空间与保存档案
 
-> 当前审查范围见[统一索引](README.md#quality-review-status)。ready琥珀退化及R2/R3 source/capture澄清已具名关闭；装配/顺序/保存有实质改善，尾项R5正在最后复查。正文保留当批边界，不表示整套通过。
+> 当前审查范围见[统一索引](README.md#quality-review-status)。ready琥珀退化及R2/R3 source/capture澄清已具名关闭；装配/顺序/保存有实质改善，尾项R5五结构目标已具名关闭，两小尾项修订待最终汇总。正文保留当批边界，不表示整套通过。
 
 本批承接品质R1，把相同的层级与材质原则推广到M2/M5/M9/M10。基线 `e474f9f963c8cba63c346bcfb7a0d2829d19c127`；固定源码、逐文件SHA256、同状态整屏对照、连续步骤与实际回执见[证据索引](evidence/g2-quality-r2/README.md)和manifest。两方向仍分别是A机舱现场与B关联作业，未选择方案；仅docs演示，不等于全系统完整运行、整套品质或G2/G4/G9通过。
 

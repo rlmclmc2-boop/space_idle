@@ -17,3 +17,5 @@
 [唯一装备导航](operations/work-equipment-one-navigation.png)、[提前的开始动作](operations/work-route-actions-reached.png) → [实际进行中](operations/work-route-current-running.png)；[究极事实与未覆盖范围](operations/work-forge-ultimate-scope.png) → [改造审阅/取消](operations/work-forge-current-review.png)；[当前防御效果](operations/work-enhancement-selected-defence.png) → [前移与当前新顺位](operations/work-enhancement-order-selected-result.png) → [节点草稿审阅](operations/work-enhancement-branch-review.png) → [原owner分支接纳](operations/work-enhancement-actual-branch.png)；[写入中](operations/work-save-writing-state.png)、[失败恢复](operations/work-save-failed-state.png)。
 
 四家族GLB/派生图source hash沿既有drone-sources，未新增资产；基础机体并未覆盖饰件/究极结构/toon/canonical。JS语法/diff空白、横界/R/T和源图hash通过，pageerror空；未运行Godot/游戏，不重开已闭合有限响应/ready/批量反例。R2/R3/R4/R5与整体品质仍待统一审查，A/B/G2/G4/G9/P3参数和真实持续提供者/native/文件/离线等开放。
+
+当前根线程结论：五结构目标具名关闭，两小尾项修订见[折叠保持与记录范围](fold-state-fix/README.md)。原第25/56步只记录切effect，不作为锁定节点交互证据；原PNG/状态/来源保留，未独立复测。

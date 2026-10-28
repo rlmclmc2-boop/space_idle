@@ -6,7 +6,7 @@
 
 统一演示为[index.html](index.html)，顶部切换 **A · 机舱现场** 与 **B · 作业编排**。A按模块进入现场；B按关联作业保留当前对象与路径；两者覆盖下表同一整套模块，并共享稳定战场，不能把一个代表场景当某方向完整交付。
 
-当前演示源码固定在 **560a2dcfea9dc46567125e386d499c3e7fc433a8**；原像素/动作归档与来源索引在 **78ae32d5f41d6cb3b4d61bdf29014451c01ba755**。随后本次只整理文档索引/交接，不改变该演示或资产。分支`design/g1-internal-organizations`，沿用`/workspace/space_idle/space-battleship`，未选UI未合main。
+当前演示源码为 **87ac154bbf553a39e75b224eb275e8b4496b6410**：在R5原源码`560a2dcfea9dc46567125e386d499c3e7fc433a8`上仅修复按效果折叠保持。[两小尾项来源/同流程记录](evidence/g2-quality-r5/fold-state-fix/README.md)分列新source与拍摄HEAD；原五结构原像素/动作归档仍为`78ae32d5f41d6cb3b4d61bdf29014451c01ba755`。除这一行授权UI修复外，仅改记录范围与索引，不改其他UI或资产。分支`design/g1-internal-organizations`，沿用`/workspace/space_idle/space-battleship`，未选UI未合main。
 
 现环境HTTP入口为 `http://127.0.0.1:8766/docs/ui-redesign-plan/g1-internal/`。若需重启，在项目目录运行 `python -m http.server 8766 --bind 127.0.0.1`，复用同目录；无需克隆、构建或游戏进程。顶部“情境检查”和战况内部检查器是明确演示响应/压力样本入口，不是自然开放或真实结算证明。
 
@@ -33,15 +33,15 @@
 
 ## R1–R5具名审查状态
 
-以下只记录根线程转交的固定双审具名结论；“关闭”仅针对该反例/目标，不扩为整批、全部动态/组合或真实运行通过。R5当前等待最后定向复查，收到反馈前不自发改演示或扩新品质批次。
+以下只记录根线程转交的固定双审具名结论；“关闭”仅针对该反例/目标，不扩为整批、全部动态/组合或真实运行通过。R5五结构目标已具名关闭；本次仅修根线程指定的折叠保持及记录范围两尾项，最终结论待汇总，不扩其他UI或批次。
 
 | 批次/资料 | 当前已获结论 | 仍开放或已转后续 |
 |---|---|---|
 | [R1场景层级](g2-quality-r1.md) / [同版对照](evidence/g2-quality-r1/README.md) | 有真实改善，可继续P3；B减重及船员规则折叠保留 | R1原科研预算遮挡/设施关联目标已由R3具名收口；ready视觉退化由R2关闭。不能再将这些列为当前初审待办；整套品质仍开放 |
-| [R2模块推广](g2-quality-r2.md) / [同版对照](evidence/g2-quality-r2/README.md) | ready选中/未选中琥珀退化关闭；装配舱、强化顺序、保存主动作有实质改善；R2/R3 source/capture澄清关闭 | 装备重复导航、路线徽标占高、改造基础机体身份、强化长表主次、保存步骤教学已形成R5候选，最后复查未结论 |
+| [R2模块推广](g2-quality-r2.md) / [同版对照](evidence/g2-quality-r2/README.md) | ready选中/未选中琥珀退化关闭；装配舱、强化顺序、保存主动作有实质改善；R2/R3 source/capture澄清关闭 | 这些尾项的R5五结构目标已具名关闭；两小尾项按下行记录修订，整体仍不通过 |
 | [R3科研/星系/星球](g2-quality-r3.md) / [同版对照](evidence/g2-quality-r3/README.md) | 科研常态/预算分层、星系同一地图对象关联、星球轨道底座结构反例关闭 | 不重开已解决布局；真实动态场景、持续提供者及整体观感仍不由此通过 |
 | [R4战场材质](g2-quality-r4.md) / [同版对照](evidence/g2-quality-r4/README.md) | 圆润轻薄盾与敌炮台压白材质代表稿可继续，未见新几何/功能退化 | 不是M1完整、全姿态/全部编队/动态材质或G9批准；P3参数及几何权威仍未批准 |
-| [R5统一收敛](g2-quality-r5.md) / [同版对照](evidence/g2-quality-r5/README.md) | 源码/原像素/逐步动作与source/base/hash已固定，进入最后定向复查 | 等根线程反馈再处理UI；尚无R5具名通过结论，不新增有限样本代替持续接线 |
+| [R5统一收敛](g2-quality-r5.md) / [同版对照](evidence/g2-quality-r5/README.md) | 装备唯一导航、路线占高、改造基础机体身份/范围、强化主次、保存状态轨五结构目标均具名关闭 | [两小尾项](evidence/g2-quality-r5/fold-state-fix/README.md)：保留各效果折叠状态；第25/56步按真实effect选择修正范围，未证明锁定节点交互。制作方已固定修订，最终结论待汇总；整套仍不通过 |
 
 此前M2完整身份/paidLevel/模式/预算匹配、未知保持、单槽钱包/材料/actual回执、MAX NoChange模式范围，以及ready完整人员响应/批量已成交—跳过—失败—未执行四类反馈均已定向关闭；保留保护，不作为新复测队列。其范围始终是有限响应，不是任意连续操作交付。
 
@@ -51,7 +51,8 @@
 | R2 | `2cb2a5f2a74eef872bfe7f92edeb612cedcaf9e7` | `5fee3a6aa9ed988c5d375273e8bfe68636308008` |
 | R3 | `0aa504d085aeaaa4ab7352babe9614fccfe0d36a` | `449fd843d4b21cbdf9d1c5f186ffa9e172e06532` |
 | R4 | `90d9f3a25516baf67d9508f0d8bf2d86a3c8d63f` | `0aec2d937b06370b5ec4abddf3f5f7a4ea180ae3` |
-| R5 | `560a2dcfea9dc46567125e386d499c3e7fc433a8` | `78ae32d5f41d6cb3b4d61bdf29014451c01ba755` |
+| R5原五结构 | `560a2dcfea9dc46567125e386d499c3e7fc433a8` | `78ae32d5f41d6cb3b4d61bdf29014451c01ba755` |
+| R5两小尾项 | `87ac154bbf553a39e75b224eb275e8b4496b6410` | [source/base/hash与同流程](evidence/g2-quality-r5/fold-state-fix/manifest.json) |
 
 R2/R3/R4的后补来源澄清及base/source/hash索引汇入`78ae32d5`，不改原PNG/动作，不伪造拍摄时HEAD或声称独立重跑。各证据入口的manifest关联源码/图hash，operations是制作方逐步记录；[R5 capture-source](evidence/g2-quality-r5/capture-source.json)与[采集归属工具](tools/capture-source-context.py)将拍摄HEAD、工作树字节与固定source分开，固定后核对Git对象再绑定。制作者浏览器证据不是独立审运行，也不是Godot/游戏/文件验收。
 
@@ -73,6 +74,6 @@ R2/R3/R4的后补来源澄清及base/source/hash索引汇入`78ae32d5`，不改�
 
 1. **持续提供者与真实接线。** 现浏览器以有限owner响应工作，未覆盖组合继续待刷新。后续必须由现所有者查询→命令接纳→actual/钱包/材料→关联刷新接入GameSession/Godot/native，不能补UI业务引擎或增加样本数量冒充持续操作。真实文件/备份/导入/离线、长期推进、动态AI/长光束、音效及DPI/输入/性能仍未交付。
 2. **共享几何与参数。** P3真实尺度、逐舰占位权威、统一布点与无人机稳定身份/canonical根/native炮口仍待对应批准/接纳；已有只读接口或材质改善不授予改参数/运行权限。后端已审候选不能标为main已有。
-3. **方向选择与整体门槛。** A/B未选，G2/G4/G9及整套品质未通过。先等R5定向结论及统一复审；不重开已关闭的具名布局/有限响应，不自发扩新品质批次，不以局部关闭外推完整游戏通过。
+3. **方向选择与整体门槛。** A/B未选，G2/G4/G9及整套品质未通过。先等R5两尾项最终汇总及统一复审；不重开已关闭的具名布局/有限响应，不自发扩新品质批次，不以局部关闭外推完整游戏通过。
 
-当前交接与后续根线程结论从[HANDOFF.md顶部](HANDOFF.md)读取；其下旧流水、固定批次文档和Git历史保留当时边界，不能用旧“仍待初审”覆盖本页具名结论。本次只整理索引/交接，未运行游戏或新增证据采集。
+当前交接与后续根线程结论从[HANDOFF.md顶部](HANDOFF.md)读取；其下旧流水、固定批次文档和Git历史保留当时边界，不能用旧“仍待初审”覆盖本页具名结论。本次仅处理已送达的两小尾项及索引，补充当前同流程折叠保持记录；未新增锁定节点证据、独立复测或游戏运行。

@@ -47586,5 +47586,14 @@
     "GLB-derived base identity only; ornaments/ultimate structures/Godot toon/canonical/native muzzles not covered",
     "Explicit finite owner responses; no game/native/file execution or complete continuous provider",
     "No runtime/config/Excel/game/save/main changes; P3 and full UI acceptance pending"
-  ]
+  ],
+  "review_tail_correction": {
+    "source_commit": "87ac154bbf553a39e75b224eb275e8b4496b6410",
+    "record": "fold-state-fix/manifest.json",
+    "original_operations_steps_1_based": [
+      25,
+      56
+    ],
+    "note": "Original records only show effect selection; labels/scope corrected, no locked-node proof or independent rerun."
+  }
 }
