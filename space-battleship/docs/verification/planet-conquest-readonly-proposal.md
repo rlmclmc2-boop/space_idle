@@ -26,7 +26,7 @@
 | Planet.accept_reforge | prepare_reforge校验成功后把_state[id].conquered置true、清_factors并刷新开放 | 仅此真实标记写入前捕获通知基准；原准入失败零事件，不能在prepare_reforge预览阶段发新通知。 |
 | Planet.restore_state | 完整校验后整体替换_state，清设施/贡献与领取候选缓存；可能改变任意征服标记 | 成功赋值前捕获基准，最终按标记及共用四项值核净差；恢复相同征服集合但探索/建筑不同不发征服通知。 |
 | Session.initialize/_restore_modules | 在新实例恢复并调用contributions，随后完成growth/native初始化；UI由宿主Ready后绑定 | UI只绑定正式当前Session；首次读原纯源即可，不制造新缓存账本或把旧_factors缺失伪装为无奖励。 |
-| Session.prepare_reforge | 新候选恢复旧Planet→accept_reforge→重新contributions/世界贡献→native配装与新起点完成；宿主再_replace_session | 候选自己的通知不转发到旧页面；原会话未替换时旧累计/标记保持原值。完成后新Session初读/重绑。新口只表达已接纳征服来源，不声称native最终战斗/全事务验收。 |
+| Session.prepare_reforge | 新候选恢复旧Planet→accept_reforge→重新contributions/世界贡献→native配装与新起点完成；宿主再_replace_session | 候选实例restore_state/accept_reforge同样可排队并按净差发信号；候选自己的通知不转发到当前页面、不改旧会话；原会话未替换时旧累计/标记保持原值。完成后新Session初读/重绑。新口只表达已接纳征服来源，不声称native最终战斗/全事务验收。 |
 | claim_build/accept_prepared_claim、advance、set_automatic、人员调整 | 改设施/探索/时钟或人员，不写conquered；领取候选另存_claim_state/_claim_factors | 保留原模块通知，不使本摘要失效；读口不读领取候选或用contributions填缓存。 |
 
 通知比较只在真实征服来源写入处进行，最多持有本批瞬时基准；getter始终由已接纳_state+原纯助手给事实，通知快照不成为奖励权威。未知/未开放对象沿原准入拒绝；非有限源值/读错误明确未知，不填0。合法没有征服奖励的0与未共享false沿原值。不能返回未征服星球未来奖励或把已知零值解释为“数据缺失”。

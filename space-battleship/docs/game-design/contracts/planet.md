@@ -58,6 +58,6 @@ rewards只含下列四个已生效累计征服**来源**，每行给稳定`kind/
 
 planet_unlock仍复用is_available/planet_options的实际开放结果（同时含原征服链与关卡门槛）；不新增解锁阈值口，不由UI根据Buff推断可达。设施收益继续facility_facts.source_factor，不混入累计征服区。UI不调用save_state/prepare_reforge/contributions来凑显示，不从名称或display_text反算业务值。
 
-候选新增局部`Planet.conquest_changed(changed_planet_ids: PackedStringArray, cumulative_changed: bool)`。仅成功accept_reforge及restore_state的征服事实可能使其失效；赋值前保存首次征服标记/四项来源基准，deferred按原纯助手比较最终净变化，同批合并。标记相同且四项来源相同不发，A→B→A不发，读取/拒绝/候选计算不发；发送前清队列/更新基准，重入不被旧快照覆盖。基准仅为瞬时通知比较，不是持久奖励账本。
+候选新增局部`Planet.conquest_changed(changed_planet_ids: PackedStringArray, cumulative_changed: bool)`。仅成功accept_reforge及restore_state的征服事实可能使其失效；赋值前保存首次征服标记/四项来源基准，deferred按原纯助手比较最终净变化，同批合并。标记相同且四项来源相同不发，A→B→A不发，读取/拒绝及prepare_reforge只读预览不发；候选Planet实例若执行restore_state/accept_reforge，同样可排队并按净差发信号，但事件不传当前页面、不改旧会话；发送前清队列/更新基准，重入不被旧快照覆盖。基准仅为瞬时通知比较，不是持久奖励账本。
 
 当前星球的标记/共享经验仅在自身ID改变时重读，累计区仅在cumulative_changed=true时重读；普通探索计时、人员、自动开关和设施领取不刷新此摘要。初次绑定、切球及换Session重绑时读一次，隐藏只积累相关dirty、停止投影，重开仅消费相关失效；不轮询、不全页面重建、不增Session全局广播。原status/buildings/availability通知保持各自职责。候选恢复/重铸的Planet实例不绑定当前页面；原事务完整成功替换后才重绑，不把本口或其通知当作native全链已完成的凭据。

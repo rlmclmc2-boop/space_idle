@@ -7,7 +7,7 @@
 - `Planet.conquest_facts(planet_id: String) -> Dictionary`成功给`ok/planet_id/conquered/shared_experience/rewards`。未知或实际未开放返回`ok=false/reason=PlanetLocked`；参与源值缺失、非数值或非有限及最终非有限返回`PlanetConquestSourceUnavailable`，不写RunState。校验先于原_buff、int转换及共享经验布尔判断；包括原max可能掩盖的非有限输入。
 - rewards每行给`kind/target/value/unit/display_text`：`level_bonus/equipment`与`level_bonus/enhancement`为原int等级、unit=levels；`free_charge/all`为原float比例、unit=ratio且提供方显示百分比；`luck/all`为原float幸运值、unit=luck。仅全体已接纳征服的累计来源，不含未来奖励、设施收益、最终全局效果或逐球奖励。合法无征服仍是已知0/false。
 - `_conquest_bonuses`共用于原贡献初始化及新读口，四次求值顺序、原_buff遍历/叠加和原int/float不变。读口不调用贡献初始化，不触碰_factors、设施缓存、领取候选、通知队列或状态；新字典与嵌套行脱离所有者。
-- `Planet.conquest_changed(changed_planet_ids: PackedStringArray, cumulative_changed: bool)`仅成功accept_reforge与restore_state真实赋值前捕获首基准，deferred比较本批最终标记和四项来源；同值及A→B→A零事件，发信号前清空旧批基准，重入独立排队。标记变化可独立于累计变化；拒绝、读取、候选预览、普通探索/人员/设施行为不新增征服事件。
+- `Planet.conquest_changed(changed_planet_ids: PackedStringArray, cumulative_changed: bool)`仅成功accept_reforge与restore_state真实赋值前捕获首基准，deferred比较本批最终标记和四项来源；同值及A→B→A零事件，发信号前清空旧批基准，重入独立排队。标记变化可独立于累计变化；拒绝、读取、prepare_reforge只读预览、普通探索/人员/设施行为不新增征服事件。候选Planet实例执行restore_state/accept_reforge同样可排队并按净差发信号；保证的是候选事件不传当前页面、不改旧会话，而非候选对象绝不发信号。
 - 原`availability_changed/is_available/planet_options`继续决定选择有效性，新信号不替代开放刷新。restore后的原Session刷新顺序不变。信号和deferred回调均属于Planet实例，无Session全局路由。消费者仅绑定正式当前Session，换Session必须断开旧实例连接或以实例身份过滤旧回调，再初读新实例；不将候选实例通知转发旧页面。本候选不改消费者UI，实际隐藏/重开和换Session页面接线仍由星球组验证。
 
 ## 定向证据
