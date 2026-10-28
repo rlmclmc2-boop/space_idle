@@ -15,9 +15,9 @@
   },
   "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
-  "scope": "Shared host only. H1 geometry 656/768, 624x788 safe area, and 0.8541667 battle projection are withdrawn. H2 preserves existing 808x900 module roots, 632x900 battle container, 0.9375 projection at (855.875,0); proposes consolidating left existing top 65px. regions.svg is a geometry argument, not runtime evidence. H2 matching visual/state images and per-module header/readability evidence remain incomplete. No requirement for module teams to adapt to H1 dimensions.",
+  "scope": "Shared host only. H1 geometry remains withdrawn. H2 preserves existing 808x900 module roots, 632x900 battle container and 0.9375 projection at (855.875,0). Schematic states now cover ordinary, more and collapsed/restore with named existing content mappings. Per-module public availability sources, popup/focus/Space-G gates and battle/HUD ownership are recorded in canonical 14 section 6.1. Schematic states are not game-quality or runtime evidence. Matching visual-quality images, real text/amount readability and module minimum-readable-installation confirmations remain incomplete. No requirement to adapt to H1 dimensions.",
   "implementation_changed": false,
-  "review_status": "H1-proportion-change-blocked-by-root; accepted-and-withdrawn; H2-minimal-analysis-pending-review; no-implementation-authorization",
+  "review_status": "H1-repartition-withdrawn; H2 root/original-review blockers documented and revised; pending reviewer acceptance; no-implementation-authorization",
   "module_direction_status": {
     "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
     "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
@@ -61,5 +61,26 @@
       900
     ],
     "uniform_new_content_safe_rect": null
-  }
+  },
+  "state_diagrams": [
+    {
+      "path": "regions.svg",
+      "state": "ordinary-region-schematic"
+    },
+    {
+      "path": "state-more.svg",
+      "state": "more-menu-open-schematic"
+    },
+    {
+      "path": "state-collapsed.svg",
+      "state": "work-area-collapsed-schematic"
+    }
+  ],
+  "remaining_evidence": [
+    "H2 matching art-quality full-screen proposal",
+    "Real-size font and long-amount readability",
+    "Existing header boundaries and minimum readable installation confirmations from each module",
+    "Reviewer acceptance of input gating and HUD ownership proposals",
+    "User design confirmation before implementation"
+  ]
 }
