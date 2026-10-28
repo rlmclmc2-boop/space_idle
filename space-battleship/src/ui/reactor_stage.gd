@@ -105,6 +105,14 @@ func show_snapshot(ids: Array, loads: Dictionary, selected: String) -> void:
 		_connections[id].material.set_shader_parameter("power", clampf(float(_loads.get(id, 0.0)), 0.0, 1.0))
 	queue_redraw()
 
+func clear_snapshot() -> void:
+	_enabled.clear()
+	_loads.clear()
+	_selected = ""
+	for field in _fields.values(): field.visible = false
+	for field in _connections.values(): field.visible = false
+	queue_redraw()
+
 func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	if not is_visible_in_tree():
 		_clock = -1.0

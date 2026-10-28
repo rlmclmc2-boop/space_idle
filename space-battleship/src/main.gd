@@ -29,7 +29,6 @@ var reactor_scene: Control
 var _left_module: String = "equipment"
 var _left_buttons: Dictionary = {}
 var _left_modules: Dictionary = {}
-var _reactor_wallet_dependency: Dictionary = {}
 var _battle_viewport: SubViewport
 var _reforge_picker: OptionButton
 var _reforge_drones: ItemList
@@ -201,18 +200,16 @@ func _setup_reactor_scene(layer: CanvasLayer) -> void:
 	reactor_scene = ReactorScene.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor)
 	layer.add_child(reactor_scene)
 	reactor_scene.bind_presentation(_reactor_scene_presentation, func():
-		return {"game_time": session.game_time, "paused": not session.pause_reasons.is_empty() or not session.run_state.is_running()})
+		return {"game_time": session.game_time, "paused": not session.pause_reasons.is_empty() or not session.run_state.is_running(),
+			"running": session.run_state.is_running()})
+	reactor_scene.bind_purchase_quote(_reactor_scene_quote)
 	reactor_scene.command_finished.connect(func(result: Dictionary):
 		if growth_status != null:
 			growth_status.text = str(result.get("message", "完成")) if result.get("ok", false) else PlayerText.error(str(result.get("reason", "Unknown"))))
 	if session.reactor_system.has_signal("presentation_changed"):
-		session.reactor_system.connect("presentation_changed", reactor_scene.invalidate)
-	_reactor_wallet_dependency = session.economy.budget()
-	session.economy.display_changed.connect(func():
-		var budget: Dictionary = session.economy.budget()
-		if not is_same(budget, _reactor_wallet_dependency) and budget != _reactor_wallet_dependency:
-			reactor_scene.invalidate()
-		_reactor_wallet_dependency = budget)
+		session.reactor_system.connect("presentation_changed", reactor_scene.invalidate_presentation)
+	if session.economy.has_signal("budget_changed"):
+		session.economy.connect("budget_changed", reactor_scene.invalidate_budget)
 	_left_modules.clear()
 	_left_buttons.clear()
 	_register_left_module(layer, "equipment", "装备", equipment_scene)
@@ -240,7 +237,12 @@ func _reactor_scene_presentation() -> Dictionary:
 	# private Reactor caches or frontend Amount calculations for a missing port.
 	if not session.reactor_system.has_method("presentation_model"):
 		return {"ok": false, "reason": "ReactorSnapshotUnavailable", "message": "供能状态暂不可用"}
-	return session.reactor_system.presentation_model(session.reactor_inputs())
+	return session.reactor_system.presentation_model()
+
+func _reactor_scene_quote() -> Dictionary:
+	if not session.reactor_system.has_method("purchase_preview"):
+		return {"ok": false, "reason": "ReactorQuoteUnavailable"}
+	return session.reactor_system.purchase_preview(session.economy.can_pay)
 
 func _select_left_module(module: String) -> void:
 	_left_module = module

@@ -3,6 +3,7 @@ extends Control
 signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
+const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
 const ERRORS := {"ReactorPlanOverCapacity":"草稿超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
 var _owner
@@ -10,6 +11,7 @@ var _inputs: Callable
 var _pay: Callable
 var _publish: Callable
 var _read: Callable
+var _read_quote: Callable
 var _clock: Callable
 var _stage: Control
 var _stage_viewport: SubViewport
@@ -18,9 +20,14 @@ var _ids: Array = []
 var _model: Dictionary = {}
 var _shares: Dictionary = {}
 var _preview: Dictionary = {}
+var _canonical: Dictionary = {}
+var _quote: Dictionary = {}
+var _quote_cost_ids: Array = []
 var _kind: String = "none"
 var _selected: String = ""
 var _dirty: bool = true
+var _quote_dirty: bool = true
+var _running: bool = false
 var _message_until: int = 0
 var _budget: Label
 var _notice: Label
@@ -30,7 +37,7 @@ var _apply: Button
 var _equal: Button
 var _restore: Button
 var last_result: Dictionary = {}
-var presentation_counts := {"model_reads":0, "preview_reads":0, "commands":0, "visible_frames":0}
+var presentation_counts := {"model_reads":0, "quote_reads":0, "preview_reads":0, "commands":0, "visible_frames":0}
 
 func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Callable(), publish: Callable = Callable()) -> void:
 	_owner = owner
@@ -55,7 +62,6 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	_stage.size = size
 	_stage_viewport.add_child(_stage)
 	_build()
-	if _owner != null: _owner.choices_changed.connect(invalidate)
 
 ## Reader is the owner's read-only presentation; context is host display time.
 func bind_presentation(reader: Callable, context: Callable) -> void:
@@ -63,8 +69,24 @@ func bind_presentation(reader: Callable, context: Callable) -> void:
 	_clock = context
 	invalidate()
 
+func bind_purchase_quote(reader: Callable) -> void:
+	_read_quote = reader
+	_quote_dirty = true
+
 func invalidate() -> void:
 	_dirty = true
+	_quote_dirty = true
+
+func invalidate_presentation(changes: PackedStringArray) -> void:
+	_dirty = true
+	if "level" in changes or "availability" in changes:
+		_quote_dirty = true
+
+func invalidate_budget(resource_ids: PackedStringArray) -> void:
+	for id in resource_ids:
+		if id in _quote_cost_ids:
+			_quote_dirty = true
+			return
 
 func _label(point: Vector2, width: float, font_size: int = 16) -> Label:
 	var label := Label.new()
@@ -168,33 +190,50 @@ func _process(_dt: float) -> void:
 	if not is_visible_in_tree(): return
 	presentation_counts.visible_frames += 1
 	if _dirty: _refresh()
+	if _quote_dirty: _refresh_quote()
 	if _clock.is_valid():
 		var context: Dictionary = _clock.call()
-		if _stage.advance_visual_clock(float(context.get("game_time",0.0)),bool(context.get("paused",true))):
+		if not context.has("running") or not context.has("paused") or not context.has("game_time"):
+			_set_running(false)
+			return
+		_set_running(bool(context.running))
+		if _stage.advance_visual_clock(float(context.game_time),bool(context.paused)):
 			_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	if _message_until > 0 and Time.get_ticks_msec() >= _message_until:
 		_message_until = 0
 		_notice.text = ""
 
+func _set_running(running: bool) -> void:
+	if _running == running: return
+	_running = running
+	_update_buttons()
+	for id in _rows:
+		_rows[id].slider.editable = running and bool(_model.get("can_allocate", false))
+
+func _update_buttons() -> void:
+	_purchase.disabled = not _running or _model.is_empty() or not bool(_quote.get("can_purchase", false))
+	_equal.disabled = not _running or _ids.is_empty() or not bool(_model.get("can_allocate", false))
+	_apply.disabled = not _running or _kind == "none" or not bool(_preview.get("ok", false)) or not bool(_preview.get("can_apply", false))
+	_restore.disabled = _kind == "none"
+
 func _refresh() -> void:
 	_dirty = false
 	if not _read.is_valid():
-		_notice.text = "供能状态暂不可用"
+		_unknown("供能状态暂不可用")
 		return
 	presentation_counts.model_reads += 1
 	var model: Dictionary = _read.call()
-	if not model.get("ok",true):
-		_apply.disabled = true
-		_purchase.disabled = true
-		_equal.disabled = true
-		_error(model)
+	if not _valid_model(model):
+		_unknown(str(model.get("message", "供能状态暂不可用")))
 		return
+	if _kind == "none" and _message_until == 0: _notice.text = ""
 	var ids: Array = []
 	for row in model.get("modules",[]):
 		if row.get("enabled",true): ids.append(str(row.id))
 	if ids != _ids:
 		_kind = "none"
 		_preview = {}
+		_canonical = {}
 		if _selected not in ids: _selected = ""
 	_ids = ids
 	_model = model
@@ -205,49 +244,121 @@ func _refresh() -> void:
 		var id: String = str(row.id)
 		if id not in _ids: continue
 		if _kind == "none":
-			_shares[id] = int(roundf(clampf(float(row.get("ratio",0.0)),0.0,1.0)*10000.0))
+			_shares[id] = int(roundf(float(row.ratio)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
-		_rows[id].slider.editable = model.get("can_allocate",true)
-		_rows[id].effect.text = NAMES[id] + " ×" + str(row.get("factor","—"))
-		var manual_text: String = str(row.get("allocation", "—"))
-		var ratio_text: String = str(roundi(float(row.get("ratio", 0.0)) * 100.0)) + "%"
+		_rows[id].slider.editable = _running and bool(model.can_allocate)
+		_rows[id].effect.text = NAMES[id] + " ×" + str(row.factor)
+		var manual_text: String = str(row.manual)
+		var ratio_text: String = str(roundi(float(row.ratio) * 100.0)) + "%"
 		_rows[id].supply.text = "手动 " + manual_text + " (" + ratio_text + ")"
-		if row.get("has_free",false): _rows[id].supply.text += " + 免费 " + str(row.get("free","—"))
-		_rows[id].supply.text += "\n有效 " + str(row.get("effective","—"))
-	_level.text = "等级 " + str(model.get("level","—"))
-	_budget.text = "可调容量 " + str(model.get("capacity","—")) + "     剩余 " + str(model.get("remaining","—"))
-	var quote: Dictionary = model.get("purchase_quote",{})
-	_purchase.text = "升级 · " + str(quote.get("cost_text","—"))
-	_purchase.disabled = not quote.get("can_purchase",false)
-	_purchase.tooltip_text = str(quote.get("message",""))
-	_equal.disabled = _ids.is_empty() or not model.get("can_allocate",true)
-	_restore.disabled = _kind == "none"
-	if _kind != "none": _preview_draft()
-	else: _apply.disabled = true
+		if row.has_free: _rows[id].supply.text += " + 免费 " + str(row.free)
+		_rows[id].supply.text += "\n有效 " + str(row.effective)
+	_level.text = "等级 " + str(model.level)
+	_budget.text = "可调容量 " + str(model.capacity) + "     剩余 " + str(model.remaining)
+	if _kind != "none": _preview_draft(false)
+	_update_buttons()
 	_update_stage()
 
+func _valid_model(model: Dictionary) -> bool:
+	if model.get("ok") != true: return false
+	for key in ["level","capacity","allocated","remaining","load","can_allocate","modules"]:
+		if not model.has(key): return false
+	if not model.level is int or not model.capacity is String or not model.allocated is String or not model.remaining is String or not model.can_allocate is bool: return false
+	if not model.modules is Array or not model.load is float or not is_finite(model.load) or model.load < 0.0 or model.load > 1.0: return false
+	for row in model.modules:
+		if not row is Dictionary: return false
+		for key in ["id","enabled","manual","free","effective","factor","has_free","ratio","load"]:
+			if not row.has(key): return false
+		if not row.enabled is bool or not row.has_free is bool or not row.manual is String or not row.free is String or not row.effective is String or not row.factor is String: return false
+		if not row.ratio is float or not row.load is float or not is_finite(row.ratio) or not is_finite(row.load) or row.ratio < 0.0 or row.ratio > 1.0 or row.load < 0.0 or row.load > 1.0: return false
+		if not NAMES.has(str(row.id)): return false
+	return true
+
+func _unknown(message: String) -> void:
+	_model = {}
+	_preview = {}
+	for id in _rows:
+		for control in _rows[id].values(): control.visible = false
+	_budget.text = "供能状态未知"
+	_level.text = "等级 —"
+	_notice.text = message
+	_stage.clear_snapshot()
+	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	_update_buttons()
+
+func _refresh_quote() -> void:
+	_quote_dirty = false
+	if not _read_quote.is_valid():
+		_quote = {}
+		_purchase.text = "升级 · —"
+		_update_buttons()
+		return
+	presentation_counts.quote_reads += 1
+	var quote: Dictionary = _read_quote.call()
+	if quote.get("ok") != true or not quote.has("costs") or not quote.costs is Dictionary or not quote.has("can_purchase"):
+		_quote = {}
+		_quote_cost_ids.clear()
+		_purchase.text = "升级 · —"
+		_purchase.tooltip_text = str(quote.get("reason", "报价暂不可用"))
+		_update_buttons()
+		return
+	_quote = quote
+	_quote_cost_ids = quote.costs.keys()
+	var labels: Array = []
+	for id in _quote_cost_ids:
+		if not quote.costs[id] is String:
+			_quote = {}
+			_purchase.text = "升级 · —"
+			_update_buttons()
+			return
+		labels.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
+	_purchase.text = "升级 · " + " + ".join(labels)
+	var reason: String = str(quote.get("reason", ""))
+	_purchase.tooltip_text = "" if reason.is_empty() else str(ERRORS.get(reason, PlayerText.error(reason)))
+	_update_buttons()
+
 func _slide(value: float,id: String) -> void:
-	if id not in _ids: return
+	if id not in _ids or not _running: return
 	_selected = id
 	_shares[id] = int(value)
 	_kind = "shares"
-	_preview_draft()
+	_preview_draft(true)
 	_update_stage()
 
 func _reset() -> void:
 	_kind = "none"
 	_preview = {}
+	_canonical = {}
 	_notice.text = ""
-	invalidate()
+	_dirty = true
 
-func _preview_draft() -> void:
+func _preview_draft(fresh_shares: bool = false) -> void:
+	if _kind == "shares" and not fresh_shares and _canonical.is_empty():
+		_update_buttons()
+		return
 	presentation_counts.preview_reads += 1
 	var draft := {"kind":_kind}
-	if _kind == "shares": draft.shares_bp = _shares.duplicate()
+	if _kind == "shares":
+		if fresh_shares:
+			draft.shares_bp = _shares.duplicate()
+		else:
+			draft = {"kind":"amounts", "amount_texts":_canonical.duplicate()}
 	_preview = _owner.allocation_plan_preview(draft,_inputs.call())
-	_restore.disabled = false
-	_apply.disabled = not _preview.get("ok",false) or not _preview.get("can_apply",true)
-	if not _preview.get("ok",false): _error(_preview); return
+	if not _preview.get("ok",false):
+		if fresh_shares: _canonical.clear()
+		_update_buttons()
+		_error(_preview)
+		return
+	if not _valid_preview(_preview):
+		_preview = {"ok":false,"reason":"ReactorSnapshotUnavailable"}
+		if fresh_shares: _canonical.clear()
+		_update_buttons()
+		_error(_preview)
+		return
+	_update_buttons()
+	if fresh_shares:
+		_canonical.clear()
+		for row in _preview.target.modules: _canonical[str(row.id)] = str(row.manual)
 	_notice.text = "调配草稿"
 	_message_until = 0
 	_budget.text = "草稿分配 " + str(_preview.target.allocated) + "     剩余 " + str(_preview.target.remaining)
@@ -261,12 +372,27 @@ func _preview_draft() -> void:
 		_rows[id].effect.text = NAMES[id] + " ×" + a + (" → " + b if a != b else "")
 		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
 		var supply_text: String = "手动 " + a + (" → " + b if a != b else "")
-		if row.get("has_free",false): supply_text += " + 免费 " + str(row.get("free","—"))
+		if row.has_free: supply_text += " + 免费 " + str(row.free)
 		a = str(current.get("effective","—")); b = str(row.effective)
 		_rows[id].supply.text = supply_text + "\n有效 " + a + (" → " + b if a != b else "")
 		if _kind == "equal" and row.has("ratio"):
 			_shares[id] = int(roundf(clampf(float(row.ratio),0.0,1.0)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
+
+func _valid_preview(preview: Dictionary) -> bool:
+	for side in ["current", "target"]:
+		if not preview.has(side) or not preview[side] is Dictionary: return false
+		var reading: Dictionary = preview[side]
+		for key in ["capacity","allocated","remaining","modules"]:
+			if not reading.has(key): return false
+		if not reading.capacity is String or not reading.allocated is String or not reading.remaining is String or not reading.modules is Array: return false
+		for row in reading.modules:
+			if not row is Dictionary: return false
+			for key in ["id","manual","free","effective","factor","ratio","load","has_free"]:
+				if not row.has(key): return false
+			if not row.manual is String or not row.free is String or not row.effective is String or not row.factor is String or not row.has_free is bool: return false
+			if not row.ratio is float or not row.load is float or not is_finite(row.ratio) or not is_finite(row.load): return false
+	return true
 
 func _submit() -> Dictionary:
 	if _apply.disabled or not _preview.get("ok",false): return {"ok":false,"reason":"InvalidReactorPlan"}
@@ -281,9 +407,10 @@ func _command(action: Callable) -> void:
 	if last_result.get("ok",false):
 		_kind = "none"
 		_preview = {}
+		_canonical = {}
 		_notice.text = "供能已更新"
 		_message_until = Time.get_ticks_msec() + 1800
-		invalidate()
+		_update_buttons()
 	else: _error(last_result)
 	command_finished.emit(last_result)
 
@@ -294,7 +421,10 @@ func _error(result: Dictionary) -> void:
 	_message_until = 0
 
 func _update_stage() -> void:
-	var loads := {"core":float(_model.get("load",0.0))}
-	for row in _model.get("modules",[]): loads[str(row.id)] = float(row.get("load",0.0))
+	if _model.is_empty():
+		_stage.clear_snapshot()
+		return
+	var loads := {"core":float(_model.load)}
+	for row in _model.modules: loads[str(row.id)] = float(row.load)
 	_stage.show_snapshot(_ids,loads,_selected)
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
