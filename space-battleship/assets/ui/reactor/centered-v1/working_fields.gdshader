@@ -66,7 +66,8 @@ void fragment() {
 	} else if (kind == 4) {
 		teal = vec3(0.28,0.65,0.88);
 		float diamond = abs(p.x)*1.8+abs(p.y);
-		glow = band(diamond-0.70-0.035*sin(phase),0.08)*0.55;
+		float crystal = 1.0-smoothstep(0.44,0.74,diamond);
+		glow = crystal*(0.18+0.22*max(0.0,sin(p.y*6.0-phase)))+band(diamond-0.70-0.035*sin(phase),0.08)*0.55;
 		for(int i=0;i<3;i++) {
 			float t = fract(phase*0.15 + float(i)/3.0);
 			vec2 packet = vec2(sin(float(i)*2.1)*0.55, -0.8)*(1.0-t);

@@ -167,7 +167,7 @@ func _build() -> void:
 		add_child(slider)
 		_rows[id] = {"effect":effect, "supply":supply, "slider":slider}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(194,807),430,14)
+	_budget = _label(Vector2(194,816),430,13)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
 	_purchase = _button("升级",Rect2(194,842,142,29),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)))
 	_equal = _button("均分",Rect2(344,842,62,29),func(): _kind = "equal"; _preview_draft())

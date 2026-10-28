@@ -1,5 +1,15 @@
 # 中央反应堆 Godot 实施检查点（尚未完整交付）
 
+## 统一锚点视觉修订（仍待根审与原独审）
+
+`167c3154`的整屏被退回：1024×1536底板曾非等比拉至808×900，前景设备又独立等比定位，产生两套错位壳和开放圆盖。新候选使用一张完整1024×1536底板承载圆座、四条短主管及同投影的四台空白控制台；三设备版本在同一源图位置封闭右下支路并去掉该控制台。Godot仅用统一`scale=0.6`、`origin=(96.8,20)`布置源图的机械部分；五个工作层、导管流动层及文字/滑杆均由同一源图座标转换。左右剩余97px为深青侧留白。未改变已接入的Reactor/Economy计算和局部失效。
+
+四设备原图`/workspace/generated_images/exec-cfdbee3f-f2ae-44e6-8c51-2f18cf97754a.png`对应`assets/ui/reactor/centered-v1/mounting-plate-r2.png`，SHA256为`4fe7153eb3b0fcc5739d40d6fc3c4f03f3f61c0ca5965fd60ef41e235fcb189d`；三设备原图`exec-7f4487d6-284a-4310-9bfb-b46a145b1cc3.png`对应`mounting-plate-three-r2.png`，SHA256为`95655914c16dfce3d0d6b9e9c150360965475d362aa243a771d32d6be1b489b0`。两张均是原生不透明图，无后处理或游戏文字。[三设备整屏](evidence/reactor-visual-r16-three-active.png)、[四设备运行帧A](evidence/reactor-visual-r16-four-active-t0.png)、[帧B](evidence/reactor-visual-r16-four-active-t1.png)及[真实Session日志](evidence/reactor-visual-r16.log.txt)是最新视觉候选证据；开放仍经公开Campaign接口临时授予。
+
+最新控件位置再由[同Session真实鼠标驱动](evidence/reactor-mouse-r16-driver.gd.txt)核对，日志记录拖动2267→0、鼠标确认成功、临时注入预算后购级2→3；[草稿](evidence/reactor-mouse-preview-r16.png)、[确认](evidence/reactor-mouse-applied-r16.png)、[购级](evidence/reactor-mouse-purchased-r16.png)为对应整屏。该鼠标检查不代表全控件或视觉独审通过。
+
+另以独立临时存档、没有开放键注入的[自然第一关驱动](evidence/reactor-natural-stage1-driver.gd.txt)运行真实Godot/native战斗，[日志](evidence/reactor-natural-stage1.log.txt)记录初始`available=false/cleared_stages={}`到真实结算后`available=true/cleared_stages={1:true}`；[反应堆整屏](evidence/reactor-natural-stage1.png)是同一Session的开放页。这只证明第一关自然开放。凝聚第15关自然开放、星球征服后的非零免费量UI、硬件性能仍未通过本候选验证；Mesa llvmpipe帧时不可外推至目标硬件。
+
 ## 视觉修订候选（待根线程与原独审复核）
 
 在`2d6625a3`的真实流程上，已将四方位设备安装到同一舰载承托面：暖白/深青的浅层机壳和埋入式短主管替换纯底漂浮装配。四设备底板原件为`/workspace/generated_images/exec-c067f060-c42f-4f4b-b977-6355e88f2e62.png`，三设备封闭右下支路原件为`exec-c9d19e58-760b-475d-8b69-495f44825858.png`；分别复制为`assets/ui/reactor/centered-v1/mounting-plate.png`和`mounting-plate-three.png`，未后处理原图。两图均1024×1536。前者SHA256为`d5a31243657887cb8d1de9ae08a5c5f1bdc28794d5f3c1191f8f7c6267138228`，后者为`25407fd991c8b7773319cb8f36ee28fd7777cc9f50a96054817abeb7e1b51724`。
