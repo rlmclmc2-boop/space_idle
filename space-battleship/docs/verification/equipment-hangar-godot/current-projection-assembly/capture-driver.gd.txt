@@ -1,0 +1,104 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/current-projection-assembly"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+var preparation:Array=[]
+func assembly_record(label:String)->void:
+    await flush()
+    var draw:Rect2=panel._ship_rect();var used:Rect2=Rect2(panel._hull_visible_bounds[panel._ship]);var factor:float=draw.size.x/768.0
+    var hull:=Rect2(draw.position+used.position*factor,used.size*factor)
+    var envelope:Rect2=hull;var components:Array=[];var active_weapons:int=0;var active_defence:int=0
+    for row in host.equipment_slot_facts():
+        if row.dormant:continue
+        check(not str(row.equipment_id).is_empty(),label+" every actual active owner slot is installed "+str(row.id))
+        if row.category=="defence":
+            active_defence+=1;check(not panel._component_rect(row).has_area(),label+" defence remains logical without fake physical patch "+str(row.id));continue
+        active_weapons+=1
+        var rect:Rect2=panel._component_rect(row);envelope=envelope.merge(rect)
+        var point:Array=panel._catalog[panel._ship].mounts[int(row.index)]
+        var expected:Vector2=draw.position+Vector2(point[0],point[1])*factor
+        check(expected.distance_to(panel._mount_position(row))<0.001,label+" official manifest mount follows current assembly "+str(row.id))
+        components.append({"slot":row.id,"equipment_id":row.equipment_id,"visible_rect":rect,"mount":panel._mount_position(row),"texture":panel._weapon_meta[str(row.equipment_id)].texture,"source_png_anchor":panel._weapon_meta[str(row.equipment_id)].anchor,"factor":panel._weapon_factor(str(row.equipment_id))})
+    check(active_weapons==panel._catalog[panel._ship].mounts.size(),label+" actual active weapon count matches official hull")
+    var selected:Dictionary=panel._selected_fact();var target:Rect2=panel._component_rect(selected).grow(5);var badge:Rect2=panel._locator_badge_rect(selected,target)
+    check(badge.has_area(),label+" selected actual weapon has complete locator badge")
+    var marked:Rect2=envelope.merge(target.grow(2)).merge(badge)
+    var aft:Vector2=draw.position+panel._preview_reference[panel._ship].aft_source*factor
+    check(aft.distance_to(Vector2(404.0,85.0+730.0*600.0/845.0))<0.01,label+" visible aft aligns current fixed source pad line")
+    var panel_top:float=panel._workbench.position.y
+    check(marked.end.y<=panel_top-12.0,label+" actual marked assembly clears current workbench by at least12px")
+    check(marked.position.x>=224 and marked.end.x<=792 and marked.position.y>=150,label+" current marked assembly stays clear of side index and top controls")
+    for id in panel._slot_buttons:check(not marked.intersects(panel._slot_buttons[id].button.get_rect()),label+" marked hull/components do not collide with side index "+str(id))
+    if panel._ship=="Heavy_Battleship":check(active_weapons==5 and active_defence==3,label+" actual Heavy fully installed five weapons and three logical defence slots")
+    records.append({"action":label,"ship":panel._ship,"hull_visible":hull,"assembly_envelope":envelope,"marked_assembly_envelope":marked,"selection_target":target,"selection_badge":badge,"aft":aft,"source_reference":panel._preview_reference[panel._ship],"canvas_rect":draw,"components":components,"active_weapon_count":active_weapons,"active_defence_count":active_defence,"clearance":{"actual_workbench_top":panel_top,"visible_assembly_to_workbench":panel_top-envelope.end.y,"marked_assembly_to_workbench":panel_top-marked.end.y,"to_side_index_right_208":marked.position.x-208.0,"to_module_right_808":808.0-marked.end.x,"to_264px_alternative_workbench_top_632":632.0-marked.end.y},"state":snapshot()})
+    await screenshot(label)
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"normal current main/native startup")
+    host.set_pause("user",true);await flush()
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.departure_remaining=0.0;c.state.speed=0.0;c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled progress validates current official ship/equipment availability")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    wallet("100000","1000")
+    for ship in ["Destroyer","Cruiser","Battleship","Heavy_Battleship"]:
+        var change:Dictionary=host.campaign_system.change_ship(ship,host.commit_ship_refit)
+        check(change.ok,"real owner ship change "+ship)
+        preparation.append({"action":"actual ship change","ship":ship,"result":change,"configuration_commits":host.battle.configuration_commits})
+        var e:Dictionary=host.equipment.save_state()
+        for slot in e.slots:slot.switch_ready_at=0.0
+        check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled cooldown preparation only "+ship)
+        for row in host.equipment_slot_facts():
+            if row.dormant:continue
+            var desired:String=(["laser","missile","longLaser","cannon","laser"][int(row.index)] if row.category=="weapon" else ["shield","armour","shield"][int(row.index)])
+            if str(row.equipment_id)==desired:continue
+            var commits:int=host.battle.configuration_commits
+            var result:Dictionary=host.equipment.equip_slot(str(row.id),desired,host.equipment_inputs(),host.publish_equipment_refit)
+            check(result.ok,"real owner installs formal component "+ship+" "+str(row.id))
+            check(host.battle.configuration_commits==commits+1,"accepted actual slot install publishes native refit "+ship+" "+str(row.id))
+            preparation.append({"action":"actual owner equip_slot","ship":ship,"slot":row.id,"equipment_id":desired,"result":result,"configuration_commits_before":commits,"configuration_commits_after":host.battle.configuration_commits})
+        panel._dirty=true;await flush();await click(panel._slot_buttons["weapon:0"].button)
+        await assembly_record("0"+str(records.size()+1)+"-"+ship+"-formal-full-active-assembly")
+    var before:Dictionary=snapshot();var commits:int=host.battle.configuration_commits
+    await click(panel._slot_buttons["weapon:4"].button);await click(panel._choices.missile.button)
+    check(panel._selected=="weapon:4" and panel._candidate=="missile" and panel._comparison_group.visible,"actual fifth weapon selection and different candidate preview")
+    check(host.equipment_slot_facts()==before.slots and host.economy.budget()==before.wallet and host.battle.configuration_commits==commits,"outer weapon browsing preserves actual full assembly/native/wallet")
+    check(panel._workbench.position.y==632.0,"actual alternative preview exercises264px common workbench")
+    await assembly_record("05-Heavy-full-outer-weapon-locator-alternative")
+    var hashes:Dictionary={}
+    for path in ["res://src/ui/equipment_panel.gd","res://src/main.gd","res://src/game_session.gd","res://src/systems/equipment.gd","res://src/systems/battle.gd","res://assets/ui/ships/manifest.json","res://assets/weapons/fleet_20261019/manifest.json","res://assets/ui/equipment/hangar/hangar-console.png"]:hashes[path]=FileAccess.get_sha256(path)
+    for ship in ["Destroyer","Cruiser","Battleship","Heavy_Battleship"]:hashes[str(panel._catalog[ship].texture)]=FileAccess.get_sha256(str(panel._catalog[ship].texture))
+    for type in ["laser","missile","longLaser","cannon"]:hashes[str(panel._weapon_meta[type].texture)]=FileAccess.get_sha256(str(panel._weapon_meta[type].texture))
+    var f:=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    f.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_INTEGRATED_SOURCE"),"base_evidence_commit":"da317ba436a8fb4665b99d7d78cbf42e23f43bd3","equipment_sha256":FileAccess.get_sha256("res://src/ui/equipment_panel.gd"),"engine":Engine.get_version_info(),"root_pixels":root.size,"source_hashes":hashes,"preparation":preparation,"records":records,"failures":failures,"scope":"Only missing three middle hulls and representative actual Heavy full assembly on current fixed projection; outer fifth weapon additionally browsed with actual 264px decision workbench. Controlled progress/wallet/cooldown; all component identities installed through real Owner/native refit, no frontend mock filling. Not full combination/angle or protection suite."},"  "));f.close()
+    print("CURRENT_PROJECTION_ASSEMBLY_COMPLETE failures=",failures.size()," records=",records.size());app._close_game()

@@ -1,0 +1,136 @@
+{
+  "source_commit": "551a4f2b0262b9f8291bb6a13b024c32a37ea341",
+  "base_evidence_commit": "da317ba436a8fb4665b99d7d78cbf42e23f43bd3",
+  "equipment_sha256": "0d4d043bb814f39fffeebab1fa376f139d66ecf9e979b04ae5cdaea8a1482c51",
+  "viewport": "(1440, 900)",
+  "equipment_local": [
+    808,
+    900
+  ],
+  "captures": 5,
+  "preparation_records": 11,
+  "failures": [],
+  "crops": [
+    {
+      "source": "01-Destroyer-formal-full-active-assembly.png",
+      "crop": "crop-01-Destroyer-formal-full-active-assembly.png",
+      "box": [
+        224,
+        250,
+        584,
+        632
+      ],
+      "method": "same-camera lossless pixel crop; no resize/repaint/composite/annotation"
+    },
+    {
+      "source": "02-Cruiser-formal-full-active-assembly.png",
+      "crop": "crop-02-Cruiser-formal-full-active-assembly.png",
+      "box": [
+        224,
+        250,
+        584,
+        632
+      ],
+      "method": "same-camera lossless pixel crop; no resize/repaint/composite/annotation"
+    },
+    {
+      "source": "03-Battleship-formal-full-active-assembly.png",
+      "crop": "crop-03-Battleship-formal-full-active-assembly.png",
+      "box": [
+        224,
+        250,
+        584,
+        632
+      ],
+      "method": "same-camera lossless pixel crop; no resize/repaint/composite/annotation"
+    },
+    {
+      "source": "04-Heavy_Battleship-formal-full-active-assembly.png",
+      "crop": "crop-04-Heavy_Battleship-formal-full-active-assembly.png",
+      "box": [
+        224,
+        250,
+        584,
+        632
+      ],
+      "method": "same-camera lossless pixel crop; no resize/repaint/composite/annotation"
+    },
+    {
+      "source": "05-Heavy-full-outer-weapon-locator-alternative.png",
+      "crop": "crop-05-Heavy-full-outer-weapon-locator-alternative.png",
+      "box": [
+        224,
+        250,
+        584,
+        632
+      ],
+      "method": "same-camera lossless pixel crop; no resize/repaint/composite/annotation"
+    }
+  ],
+  "files": {
+    "01-Destroyer-formal-full-active-assembly.png": {
+      "sha256": "17c5ba6dfe710ceeb638a116822c7d80dfd918e289e7f71484dca40e39a8488d",
+      "bytes": 1461305
+    },
+    "02-Cruiser-formal-full-active-assembly.png": {
+      "sha256": "8fc15a39c6bad218c042c1088823e251fd2ebde2b061381b95f0485b20818439",
+      "bytes": 1477264
+    },
+    "03-Battleship-formal-full-active-assembly.png": {
+      "sha256": "776c5e00eb209a59589ca9e9d17cc94464c0ccdffc360528cafb8aa06443ac05",
+      "bytes": 1490554
+    },
+    "04-Heavy_Battleship-formal-full-active-assembly.png": {
+      "sha256": "7b7ff71f1b1aee6ee533502875d07cb883fcefdcede526eeb30f0f759839c409",
+      "bytes": 1509346
+    },
+    "05-Heavy-full-outer-weapon-locator-alternative.png": {
+      "sha256": "cfb0d1a83c8387049e1cf40c931bfbf96f9667533b7297a8da2d5f7132c9c5f9",
+      "bytes": 1451211
+    },
+    "README.md": {
+      "sha256": "6135a03162a7421379ca343b743ecbc7d7e353b71eb0939a118ca78fb15854a4",
+      "bytes": 7597
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "dfdfa86e24ec5a0cc11239b206907832ae480293d36f90043d1106bba822cfe9",
+      "bytes": 10629
+    },
+    "capture.log.txt": {
+      "sha256": "6b4b034d6045fabe6d10420c16cd62f03d7d8f8f52ac834b049f942d2f772c5b",
+      "bytes": 426
+    },
+    "crop-01-Destroyer-formal-full-active-assembly.png": {
+      "sha256": "0e5bbe84e3ef52c420d4e000b8227a960ee916ffeffb62812e989f78db7ca52e",
+      "bytes": 238154
+    },
+    "crop-02-Cruiser-formal-full-active-assembly.png": {
+      "sha256": "d2150ece9d31ff6a28247203951760712f98f4af73167d67ad8dd96d944dfe02",
+      "bytes": 247694
+    },
+    "crop-03-Battleship-formal-full-active-assembly.png": {
+      "sha256": "82f15f9a30d633ab00f666413c80c5718134783a2cd4e27a1e57e8fc0ac77aa0",
+      "bytes": 255237
+    },
+    "crop-04-Heavy_Battleship-formal-full-active-assembly.png": {
+      "sha256": "a2b533a0ad204fe9126ec6495801e396bfb854f88ff13ba9d167c659e0390f33",
+      "bytes": 265738
+    },
+    "crop-05-Heavy-full-outer-weapon-locator-alternative.png": {
+      "sha256": "410a43eda047279a92807767ec7a879e2289316c24e36559fccfd3b5fdd100cf",
+      "bytes": 266361
+    },
+    "measurements.json": {
+      "sha256": "5174b84175e4795f9f663060de215ff311c391d72b93581ca3add3d80b095c76",
+      "bytes": 4537
+    },
+    "operations.json": {
+      "sha256": "f7126a50fb373771b424b258e11b8ee7707825d044642a8fd2ccff4d423f5bf0",
+      "bytes": 43342
+    },
+    "source-and-assets.json": {
+      "sha256": "715309a1b44987eed65cd86d02052214c7d2b87a088d36f95286590a00c7b181",
+      "bytes": 5727
+    }
+  }
+}

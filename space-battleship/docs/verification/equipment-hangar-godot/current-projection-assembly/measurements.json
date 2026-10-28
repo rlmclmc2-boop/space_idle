@@ -1,0 +1,102 @@
+[
+  {
+    "action": "01-Destroyer-formal-full-active-assembly",
+    "ship": "Destroyer",
+    "hull_visible": "[P: (344.8562, 437.2281), S: (118.2876, 166.1151)]",
+    "assembly_envelope": "[P: (344.8562, 437.2281), S: (118.2876, 166.1151)]",
+    "marked_assembly_envelope": "[P: (344.8562, 437.2281), S: (118.2876, 166.1151)]",
+    "selection_target": "[P: (355.254, 465.2478), S: (41.05091, 45.87021)]",
+    "selection_badge": "[P: (367.3049, 514.118), S: (32.0, 22.0)]",
+    "aft": "(404.0, 603.3432)",
+    "active_weapon_count": 2,
+    "active_defence_count": 1,
+    "clearance": {
+      "actual_workbench_top": 678.0,
+      "marked_assembly_to_workbench": 74.6567993164062,
+      "to_264px_alternative_workbench_top_632": 28.6567993164062,
+      "to_module_right_808": 344.856170654297,
+      "to_side_index_right_208": 136.856201171875,
+      "visible_assembly_to_workbench": 74.6567993164062
+    }
+  },
+  {
+    "action": "02-Cruiser-formal-full-active-assembly",
+    "ship": "Cruiser",
+    "hull_visible": "[P: (314.5585, 368.8804), S: (178.883, 234.4628)]",
+    "assembly_envelope": "[P: (314.5585, 368.8804), S: (178.883, 234.4628)]",
+    "marked_assembly_envelope": "[P: (314.5585, 367.2308), S: (178.883, 236.1123)]",
+    "selection_target": "[P: (376.3224, 369.2308), S: (53.93936, 60.75903)]",
+    "selection_badge": "[P: (401.2617, 432.9898), S: (32.0, 22.0)]",
+    "aft": "(404.0, 603.3431)",
+    "active_weapon_count": 3,
+    "active_defence_count": 2,
+    "clearance": {
+      "actual_workbench_top": 678.0,
+      "marked_assembly_to_workbench": 74.6568603515625,
+      "to_264px_alternative_workbench_top_632": 28.6568603515625,
+      "to_module_right_808": 314.558532714844,
+      "to_side_index_right_208": 106.558502197266,
+      "visible_assembly_to_workbench": 74.6568603515625
+    }
+  },
+  {
+    "action": "03-Battleship-formal-full-active-assembly",
+    "ship": "Battleship",
+    "hull_visible": "[P: (287.151, 337.7082), S: (233.698, 265.6351)]",
+    "assembly_envelope": "[P: (287.151, 337.7082), S: (233.698, 265.6351)]",
+    "marked_assembly_envelope": "[P: (287.151, 337.7082), S: (233.698, 265.6351)]",
+    "selection_target": "[P: (311.6826, 346.7278), S: (59.89435, 67.63826)]",
+    "selection_badge": "[P: (342.5769, 417.3661), S: (32.0, 22.0)]",
+    "aft": "(404.0, 603.3432)",
+    "active_weapon_count": 4,
+    "active_defence_count": 2,
+    "clearance": {
+      "actual_workbench_top": 678.0,
+      "marked_assembly_to_workbench": 74.65673828125,
+      "to_264px_alternative_workbench_top_632": 28.65673828125,
+      "to_module_right_808": 287.151000976562,
+      "to_side_index_right_208": 79.1510009765625,
+      "visible_assembly_to_workbench": 74.65673828125
+    }
+  },
+  {
+    "action": "04-Heavy_Battleship-formal-full-active-assembly",
+    "ship": "Heavy_Battleship",
+    "hull_visible": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+    "assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+    "marked_assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+    "selection_target": "[P: (368.6605, 293.6763), S: (70.04353, 79.36266)]",
+    "selection_badge": "[P: (409.704, 376.0389), S: (32.0, 22.0)]",
+    "aft": "(404.0, 603.3432)",
+    "active_weapon_count": 5,
+    "active_defence_count": 3,
+    "clearance": {
+      "actual_workbench_top": 678.0,
+      "marked_assembly_to_workbench": 74.6567993164062,
+      "to_264px_alternative_workbench_top_632": 28.6567993164062,
+      "to_module_right_808": 267.986389160156,
+      "to_side_index_right_208": 59.9863586425781,
+      "visible_assembly_to_workbench": 74.6567993164062
+    }
+  },
+  {
+    "action": "05-Heavy-full-outer-weapon-locator-alternative",
+    "ship": "Heavy_Battleship",
+    "hull_visible": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+    "assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+    "marked_assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+    "selection_target": "[P: (456.6428, 441.8526), S: (70.04353, 79.36266)]",
+    "selection_badge": "[P: (497.6863, 524.2152), S: (32.0, 22.0)]",
+    "aft": "(404.0, 603.3432)",
+    "active_weapon_count": 5,
+    "active_defence_count": 3,
+    "clearance": {
+      "actual_workbench_top": 632.0,
+      "marked_assembly_to_workbench": 28.6567993164062,
+      "to_264px_alternative_workbench_top_632": 28.6567993164062,
+      "to_module_right_808": 267.986389160156,
+      "to_side_index_right_208": 59.9863586425781,
+      "visible_assembly_to_workbench": 28.6567993164062
+    }
+  }
+]

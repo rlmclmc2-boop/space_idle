@@ -1,0 +1,1424 @@
+{
+  "base_evidence_commit": "da317ba436a8fb4665b99d7d78cbf42e23f43bd3",
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "equipment_sha256": "0d4d043bb814f39fffeebab1fa376f139d66ecf9e979b04ae5cdaea8a1482c51",
+  "failures": [],
+  "preparation": [
+    {
+      "action": "actual ship change",
+      "configuration_commits": 1,
+      "result": {
+        "ok": true
+      },
+      "ship": "Destroyer"
+    },
+    {
+      "action": "actual owner equip_slot",
+      "configuration_commits_after": 2,
+      "configuration_commits_before": 1,
+      "equipment_id": "shield",
+      "result": {
+        "ok": true
+      },
+      "ship": "Destroyer",
+      "slot": "defence:0"
+    },
+    {
+      "action": "actual owner equip_slot",
+      "configuration_commits_after": 3,
+      "configuration_commits_before": 2,
+      "equipment_id": "missile",
+      "result": {
+        "ok": true
+      },
+      "ship": "Destroyer",
+      "slot": "weapon:1"
+    },
+    {
+      "action": "actual ship change",
+      "configuration_commits": 4,
+      "result": {
+        "ok": true
+      },
+      "ship": "Cruiser"
+    },
+    {
+      "action": "actual owner equip_slot",
+      "configuration_commits_after": 5,
+      "configuration_commits_before": 4,
+      "equipment_id": "longLaser",
+      "result": {
+        "ok": true
+      },
+      "ship": "Cruiser",
+      "slot": "weapon:2"
+    },
+    {
+      "action": "actual owner equip_slot",
+      "configuration_commits_after": 6,
+      "configuration_commits_before": 5,
+      "equipment_id": "armour",
+      "result": {
+        "ok": true
+      },
+      "ship": "Cruiser",
+      "slot": "defence:1"
+    },
+    {
+      "action": "actual ship change",
+      "configuration_commits": 7,
+      "result": {
+        "ok": true
+      },
+      "ship": "Battleship"
+    },
+    {
+      "action": "actual owner equip_slot",
+      "configuration_commits_after": 8,
+      "configuration_commits_before": 7,
+      "equipment_id": "cannon",
+      "result": {
+        "ok": true
+      },
+      "ship": "Battleship",
+      "slot": "weapon:3"
+    },
+    {
+      "action": "actual ship change",
+      "configuration_commits": 9,
+      "result": {
+        "ok": true
+      },
+      "ship": "Heavy_Battleship"
+    },
+    {
+      "action": "actual owner equip_slot",
+      "configuration_commits_after": 10,
+      "configuration_commits_before": 9,
+      "equipment_id": "laser",
+      "result": {
+        "ok": true
+      },
+      "ship": "Heavy_Battleship",
+      "slot": "weapon:4"
+    },
+    {
+      "action": "actual owner equip_slot",
+      "configuration_commits_after": 11,
+      "configuration_commits_before": 10,
+      "equipment_id": "shield",
+      "result": {
+        "ok": true
+      },
+      "ship": "Heavy_Battleship",
+      "slot": "defence:2"
+    }
+  ],
+  "records": [
+    {
+      "action": "01-Destroyer-formal-full-active-assembly",
+      "active_defence_count": 1,
+      "active_weapon_count": 2,
+      "aft": "(404.0, 603.3432)",
+      "assembly_envelope": "[P: (344.8562, 437.2281), S: (118.2876, 166.1151)]",
+      "canvas_rect": "[P: (240.2336, 356.5192), S: (327.9599, 327.9599)]",
+      "clearance": {
+        "actual_workbench_top": 678.0,
+        "marked_assembly_to_workbench": 74.6567993164062,
+        "to_264px_alternative_workbench_top_632": 28.6567993164062,
+        "to_module_right_808": 344.856170654297,
+        "to_side_index_right_208": 136.856201171875,
+        "visible_assembly_to_workbench": 74.6567993164062
+      },
+      "components": [
+        {
+          "equipment_id": "laser",
+          "factor": 0.0610037546815051,
+          "mount": "(375.81, 496.9675)",
+          "slot": "weapon:0",
+          "source_png_anchor": [
+            271.0,
+            454.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/laser.png",
+          "visible_rect": "[P: (360.254, 470.2478), S: (31.05091, 35.87021)]"
+        },
+        {
+          "equipment_id": "missile",
+          "factor": 0.0610037546815051,
+          "mount": "(432.19, 496.9675)",
+          "slot": "weapon:1",
+          "source_png_anchor": [
+            273.0,
+            411.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/missile.png",
+          "visible_rect": "[P: (416.5121, 472.871), S: (31.35593, 33.73508)]"
+        }
+      ],
+      "hull_visible": "[P: (344.8562, 437.2281), S: (118.2876, 166.1151)]",
+      "marked_assembly_envelope": "[P: (344.8562, 437.2281), S: (118.2876, 166.1151)]",
+      "selection_badge": "[P: (367.3049, 514.118), S: (32.0, 22.0)]",
+      "selection_target": "[P: (355.254, 465.2478), S: (41.05091, 45.87021)]",
+      "ship": "Destroyer",
+      "source_reference": {
+        "aft_source": "(383.5, 578.0)",
+        "canvas_scale": 0.427031150925656,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 603.3432)",
+        "height": 151.470003280814,
+        "preview_height": 166.11511771008,
+        "source": "res://assets/ships/fleet_20261019/player/02-destroyer.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "0e0",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      }
+    },
+    {
+      "action": "02-Cruiser-formal-full-active-assembly",
+      "active_defence_count": 2,
+      "active_weapon_count": 3,
+      "aft": "(404.0, 603.3431)",
+      "assembly_envelope": "[P: (314.5585, 368.8804), S: (178.883, 234.4628)]",
+      "canvas_rect": "[P: (224.8835, 306.7617), S: (358.7001, 358.7001)]",
+      "clearance": {
+        "actual_workbench_top": 678.0,
+        "marked_assembly_to_workbench": 74.6568603515625,
+        "to_264px_alternative_workbench_top_632": 28.6568603515625,
+        "to_module_right_808": 314.558532714844,
+        "to_side_index_right_208": 106.558502197266,
+        "visible_assembly_to_workbench": 74.6568603515625
+      },
+      "components": [
+        {
+          "equipment_id": "laser",
+          "factor": 0.0863248806626154,
+          "mount": "(403.3352, 412.0411)",
+          "slot": "weapon:0",
+          "source_png_anchor": [
+            271.0,
+            454.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/laser.png",
+          "visible_rect": "[P: (381.3224, 374.2308), S: (43.93936, 50.75903)]"
+        },
+        {
+          "equipment_id": "missile",
+          "factor": 0.0863248806626154,
+          "mount": "(353.2517, 518.0463)",
+          "slot": "weapon:1",
+          "source_png_anchor": [
+            273.0,
+            411.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/missile.png",
+          "visible_rect": "[P: (331.0662, 483.948), S: (44.37099, 47.73766)]"
+        },
+        {
+          "equipment_id": "longLaser",
+          "factor": 0.106246006969373,
+          "mount": "(455.1914, 518.0463)",
+          "slot": "weapon:2",
+          "source_png_anchor": [
+            261.0,
+            509.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/longLaser.png",
+          "visible_rect": "[P: (429.1612, 465.6671), S: (51.63556, 69.16615)]"
+        }
+      ],
+      "hull_visible": "[P: (314.5585, 368.8804), S: (178.883, 234.4628)]",
+      "marked_assembly_envelope": "[P: (314.5585, 367.2308), S: (178.883, 236.1123)]",
+      "selection_badge": "[P: (401.2617, 432.9898), S: (32.0, 22.0)]",
+      "selection_target": "[P: (376.3224, 369.2308), S: (53.93936, 60.75903)]",
+      "ship": "Cruiser",
+      "source_reference": {
+        "aft_source": "(383.5, 635.0)",
+        "canvas_scale": 0.467057413756521,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 603.3432)",
+        "height": 213.792006787636,
+        "preview_height": 234.462821705774,
+        "source": "res://assets/ships/fleet_20261019/player/03-cruiser.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      }
+    },
+    {
+      "action": "03-Battleship-formal-full-active-assembly",
+      "active_defence_count": 2,
+      "active_weapon_count": 4,
+      "aft": "(404.0, 603.3432)",
+      "assembly_envelope": "[P: (287.151, 337.7082), S: (233.698, 265.6351)]",
+      "canvas_rect": "[P: (209.5896, 275.8618), S: (389.3277, 389.3277)]",
+      "clearance": {
+        "actual_workbench_top": 678.0,
+        "marked_assembly_to_workbench": 74.65673828125,
+        "to_264px_alternative_workbench_top_632": 28.65673828125,
+        "to_module_right_808": 287.151000976562,
+        "to_side_index_right_208": 79.1510009765625,
+        "visible_assembly_to_workbench": 74.65673828125
+      },
+      "components": [
+        {
+          "equipment_id": "laser",
+          "factor": 0.0980242578527136,
+          "mount": "(341.6788, 394.6624)",
+          "slot": "weapon:0",
+          "source_png_anchor": [
+            271.0,
+            454.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/laser.png",
+          "visible_rect": "[P: (316.6826, 351.7278), S: (49.89435, 57.63826)]"
+        },
+        {
+          "equipment_id": "missile",
+          "factor": 0.0980242578527136,
+          "mount": "(469.2087, 394.6624)",
+          "slot": "weapon:1",
+          "source_png_anchor": [
+            273.0,
+            411.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/missile.png",
+          "visible_rect": "[P: (444.0165, 355.9429), S: (50.38447, 54.20741)]"
+        },
+        {
+          "equipment_id": "longLaser",
+          "factor": 0.120645240434109,
+          "mount": "(343.6039, 534.8052)",
+          "slot": "weapon:2",
+          "source_png_anchor": [
+            261.0,
+            509.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/longLaser.png",
+          "visible_rect": "[P: (314.0458, 475.3271), S: (58.63359, 78.54005)]"
+        },
+        {
+          "equipment_id": "cannon",
+          "factor": 0.120645240434109,
+          "mount": "(468.7273, 534.8052)",
+          "slot": "weapon:3",
+          "source_png_anchor": [
+            252.0,
+            504.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/cannon.png",
+          "visible_rect": "[P: (440.255, 475.9303), S: (56.58262, 78.4194)]"
+        }
+      ],
+      "hull_visible": "[P: (287.151, 337.7082), S: (233.698, 265.6351)]",
+      "marked_assembly_envelope": "[P: (287.151, 337.7082), S: (233.698, 265.6351)]",
+      "selection_badge": "[P: (342.5769, 417.3661), S: (32.0, 22.0)]",
+      "selection_target": "[P: (311.6826, 346.7278), S: (59.89435, 67.63826)]",
+      "ship": "Battleship",
+      "source_reference": {
+        "aft_source": "(383.5, 646.0)",
+        "canvas_scale": 0.506937117651966,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 603.3432)",
+        "height": 242.216014993602,
+        "preview_height": 265.63504964963,
+        "source": "res://assets/ships/fleet_20261019/player/04-battleship.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      }
+    },
+    {
+      "action": "04-Heavy_Battleship-formal-full-active-assembly",
+      "active_defence_count": 3,
+      "active_weapon_count": 5,
+      "aft": "(404.0, 603.3432)",
+      "assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+      "canvas_rect": "[P: (194.937, 234.2802), S: (418.6712, 418.6712)]",
+      "clearance": {
+        "actual_workbench_top": 678.0,
+        "marked_assembly_to_workbench": 74.6567993164062,
+        "to_264px_alternative_workbench_top_632": 28.6567993164062,
+        "to_module_right_808": 267.986389160156,
+        "to_side_index_right_208": 59.9863586425781,
+        "visible_assembly_to_workbench": 74.6567993164062
+      },
+      "components": [
+        {
+          "equipment_id": "laser",
+          "factor": 0.117963709710392,
+          "mount": "(403.7413, 350.3444)",
+          "slot": "weapon:0",
+          "source_png_anchor": [
+            271.0,
+            454.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/laser.png",
+          "visible_rect": "[P: (373.6605, 298.6763), S: (60.04353, 69.36266)]"
+        },
+        {
+          "equipment_id": "missile",
+          "factor": 0.117963709710392,
+          "mount": "(315.7591, 416.1432)",
+          "slot": "weapon:1",
+          "source_png_anchor": [
+            273.0,
+            411.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/missile.png",
+          "visible_rect": "[P: (285.4424, 369.5475), S: (60.63335, 65.23393)]"
+        },
+        {
+          "equipment_id": "longLaser",
+          "factor": 0.145186104258944,
+          "mount": "(491.7235, 416.1432)",
+          "slot": "weapon:2",
+          "source_png_anchor": [
+            261.0,
+            509.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/longLaser.png",
+          "visible_rect": "[P: (456.1529, 344.5664), S: (70.56045, 94.51616)]"
+        },
+        {
+          "equipment_id": "cannon",
+          "factor": 0.145186104258944,
+          "mount": "(315.7591, 498.5207)",
+          "slot": "weapon:3",
+          "source_png_anchor": [
+            252.0,
+            504.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/cannon.png",
+          "visible_rect": "[P: (281.4951, 427.6698), S: (68.09229, 94.37097)]"
+        },
+        {
+          "equipment_id": "laser",
+          "factor": 0.117963709710392,
+          "mount": "(491.7235, 498.5207)",
+          "slot": "weapon:4",
+          "source_png_anchor": [
+            271.0,
+            454.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/laser.png",
+          "visible_rect": "[P: (461.6428, 446.8526), S: (60.04353, 69.36266)]"
+        }
+      ],
+      "hull_visible": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+      "marked_assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+      "selection_badge": "[P: (409.704, 376.0389), S: (32.0, 22.0)]",
+      "selection_target": "[P: (368.6605, 293.6763), S: (70.04353, 79.36266)]",
+      "ship": "Heavy_Battleship",
+      "source_reference": {
+        "aft_source": "(383.5, 677.0)",
+        "canvas_scale": 0.545144804088586,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 603.3432)",
+        "height": 291.788018562258,
+        "preview_height": 320.0,
+        "source": "res://assets/ships/fleet_20261019/player/05-heavy-battleship.png"
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "1.5e3",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      }
+    },
+    {
+      "action": "05-Heavy-full-outer-weapon-locator-alternative",
+      "active_defence_count": 3,
+      "active_weapon_count": 5,
+      "aft": "(404.0, 603.3432)",
+      "assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+      "canvas_rect": "[P: (194.937, 234.2802), S: (418.6712, 418.6712)]",
+      "clearance": {
+        "actual_workbench_top": 632.0,
+        "marked_assembly_to_workbench": 28.6567993164062,
+        "to_264px_alternative_workbench_top_632": 28.6567993164062,
+        "to_module_right_808": 267.986389160156,
+        "to_side_index_right_208": 59.9863586425781,
+        "visible_assembly_to_workbench": 28.6567993164062
+      },
+      "components": [
+        {
+          "equipment_id": "laser",
+          "factor": 0.117963709710392,
+          "mount": "(403.7413, 350.3444)",
+          "slot": "weapon:0",
+          "source_png_anchor": [
+            271.0,
+            454.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/laser.png",
+          "visible_rect": "[P: (373.6605, 298.6763), S: (60.04353, 69.36266)]"
+        },
+        {
+          "equipment_id": "missile",
+          "factor": 0.117963709710392,
+          "mount": "(315.7591, 416.1432)",
+          "slot": "weapon:1",
+          "source_png_anchor": [
+            273.0,
+            411.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/missile.png",
+          "visible_rect": "[P: (285.4424, 369.5475), S: (60.63335, 65.23393)]"
+        },
+        {
+          "equipment_id": "longLaser",
+          "factor": 0.145186104258944,
+          "mount": "(491.7235, 416.1432)",
+          "slot": "weapon:2",
+          "source_png_anchor": [
+            261.0,
+            509.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/longLaser.png",
+          "visible_rect": "[P: (456.1529, 344.5664), S: (70.56045, 94.51616)]"
+        },
+        {
+          "equipment_id": "cannon",
+          "factor": 0.145186104258944,
+          "mount": "(315.7591, 498.5207)",
+          "slot": "weapon:3",
+          "source_png_anchor": [
+            252.0,
+            504.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/cannon.png",
+          "visible_rect": "[P: (281.4951, 427.6698), S: (68.09229, 94.37097)]"
+        },
+        {
+          "equipment_id": "laser",
+          "factor": 0.117963709710392,
+          "mount": "(491.7235, 498.5207)",
+          "slot": "weapon:4",
+          "source_png_anchor": [
+            271.0,
+            454.0
+          ],
+          "texture": "res://assets/weapons/fleet_20261019/laser.png",
+          "visible_rect": "[P: (461.6428, 446.8526), S: (60.04353, 69.36266)]"
+        }
+      ],
+      "hull_visible": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+      "marked_assembly_envelope": "[P: (267.9864, 283.3432), S: (272.0273, 320.0)]",
+      "selection_badge": "[P: (497.6863, 524.2152), S: (32.0, 22.0)]",
+      "selection_target": "[P: (456.6428, 441.8526), S: (70.04353, 79.36266)]",
+      "ship": "Heavy_Battleship",
+      "source_reference": {
+        "aft_source": "(383.5, 677.0)",
+        "canvas_scale": 0.545144804088586,
+        "dock_source": "(594.0, 730.0)",
+        "dock_target": "(404.0, 603.3432)",
+        "height": 291.788018562258,
+        "preview_height": 320.0,
+        "source": "res://assets/ships/fleet_20261019/player/05-heavy-battleship.png"
+      },
+      "state": {
+        "candidate": "missile",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "paid_level": 1,
+            "primary": "1.7e2",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "missile",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:4",
+          "switch_admission": {
+            "ok": false,
+            "reason": "EquipmentSwitchLocked"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "1.5e3",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:4",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      }
+    }
+  ],
+  "root_pixels": "(1440, 900)",
+  "scope": "Only missing three middle hulls and representative actual Heavy full assembly on current fixed projection; outer fifth weapon additionally browsed with actual 264px decision workbench. Controlled progress/wallet/cooldown; all component identities installed through real Owner/native refit, no frontend mock filling. Not full combination/angle or protection suite.",
+  "source_commit": "551a4f2b0262b9f8291bb6a13b024c32a37ea341",
+  "source_hashes": {
+    "res://assets/ui/equipment/hangar/hangar-console.png": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+    "res://assets/ui/ships/fleet_20261019/02-destroyer.png": "a17656a0c9919216196378cfe937314ef30f361931f61f8a5209b4b5e5ad0e60",
+    "res://assets/ui/ships/fleet_20261019/03-cruiser.png": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304",
+    "res://assets/ui/ships/fleet_20261019/04-battleship.png": "2c83c7ecb13310daae95a4a18cfbc91a64c22ba9c99b15449e72615ccf3bdf72",
+    "res://assets/ui/ships/fleet_20261019/05-heavy-battleship.png": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e",
+    "res://assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+    "res://assets/weapons/fleet_20261019/cannon.png": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a",
+    "res://assets/weapons/fleet_20261019/laser.png": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936",
+    "res://assets/weapons/fleet_20261019/longLaser.png": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3",
+    "res://assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c",
+    "res://assets/weapons/fleet_20261019/missile.png": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72",
+    "res://src/game_session.gd": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+    "res://src/main.gd": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+    "res://src/systems/battle.gd": "10875d02d77f676d61bc1f463ef6336f6eeaee8a682322c9513194b252f35bde",
+    "res://src/systems/equipment.gd": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+    "res://src/ui/equipment_panel.gd": "0d4d043bb814f39fffeebab1fa376f139d66ecf9e979b04ae5cdaea8a1482c51"
+  }
+}
