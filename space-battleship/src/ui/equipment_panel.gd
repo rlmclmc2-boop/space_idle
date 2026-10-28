@@ -31,9 +31,11 @@ var _quantity_buttons: Array = []
 var _catalog: Dictionary
 var _weapon_meta: Dictionary
 var _textures: Dictionary = {}
+var _weapon_visible_bounds: Dictionary = {}
 var _hull_textures: Dictionary = {}
 var _background: Texture2D
 var _upgrade_surface: Texture2D
+var _locator_badge_style: StyleBoxFlat
 var _title: Label
 var _wallet: Label
 var _current_title: Label
@@ -85,7 +87,9 @@ func _init(session) -> void:
     _catalog = JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/ships/manifest.json")).hulls
     _weapon_meta = JSON.parse_string(FileAccess.get_file_as_string("res://assets/weapons/fleet_20261019/manifest.json")).weapons
     for key in _catalog: _hull_textures[key] = load(str(_catalog[key].texture))
-    for key in _weapon_meta: _textures[key] = load(str(_weapon_meta[key].texture))
+    for key in _weapon_meta:
+        _textures[key] = load(str(_weapon_meta[key].texture))
+        _weapon_visible_bounds[key]=_textures[key].get_image().get_used_rect()
     _textures.shield = load("res://assets/ui/equipment/cartoon_shield.svg")
     _textures.armour = load("res://assets/ui/equipment/cartoon_armour.svg")
     _background = load("res://assets/ui/equipment/hangar/hangar-console.png")
@@ -115,6 +119,7 @@ func _setup_materials() -> void:
     theme.set_font("font", "Button", _font_strong)
     theme.set_color("font_color", "PopupMenu", CREAM)
     theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
+    _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
     _terminal_texture = load("res://assets/ui/equipment/hangar/terminal-clean.svg")
     var arm: Texture2D = load("res://assets/ui/equipment/hangar/support-arm.png")
     for region in [Rect2(0,160,450,400),Rect2(450,160,1272,400),Rect2(1722,160,450,400)]:
@@ -406,7 +411,7 @@ func _refresh() -> void:
     _refresh_slots(active)
     _refresh_choices(fact)
     _refresh_comparison()
-    var scene_picture: Array = [_ship, active.map(func(row): return [row.id,row.category,row.index,row.equipment_id])]
+    var scene_picture: Array = [_ship, _selected, active.map(func(row): return [row.id,row.category,row.index,row.equipment_id])]
     if scene_picture != _scene_picture:
         _scene_picture = scene_picture
         presentation_counts.scene_redraw_requests += 1
@@ -691,7 +696,7 @@ func _mount_position(row: Dictionary) -> Vector2:
         var mounts: Array = _catalog[_ship].mounts
         return rect.position + Vector2(float(mounts[int(row.index)][0]), float(mounts[int(row.index)][1])) / 768.0 * rect.size
     # Defence has no weapon-manifest geometry. These are distinct UI attachment markers.
-    return [Vector2(353,453),Vector2(453,453),Vector2(404,492)][mini(int(row.index),2)]
+    return [Vector2(353,453),Vector2(453,453),Vector2(495,243)][mini(int(row.index),2)]
 
 func _slot_label_position(row: Dictionary) -> Vector2:
     if row.category=="defence":return [Vector2(66,440),Vector2(522,440),Vector2(536,164)][mini(int(row.index),2)]
@@ -714,14 +719,12 @@ func _draw() -> void:
         if row.dormant:continue
         var port: Vector2=_slot_label_position(row)+Vector2(110,73)
         var mount: Vector2=_mount_position(row)
-        var length: float=port.distance_to(mount)
-        # The joint centres coincide with the housing socket and actual mount.
-        # Keep the rail thick enough to share the terminal's load-bearing material.
-        draw_set_transform(port,(mount-port).angle())
-        draw_texture_rect(_arm_parts[1],Rect2(10,-16,maxf(1,length-20),32),false)
-        draw_texture_rect(_arm_parts[0],Rect2(-16,-16,36,32),false)
-        draw_texture_rect(_arm_parts[2],Rect2(length-17,-16,36,32),false)
-        draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
+        if _ship=="Frigate" and row.category=="weapon":
+            # The service arm bypasses the bow, reaching the actual midship turret.
+            _draw_support(port,Vector2(555,port.y))
+            _draw_support(Vector2(555,port.y),Vector2(555,mount.y))
+            _draw_support(Vector2(555,mount.y),mount)
+        else:_draw_support(port,mount)
     draw_texture_rect(_hull_textures[_ship],_ship_rect(),false)
     for row in _facts:
         if row.dormant:continue
@@ -735,3 +738,61 @@ func _draw() -> void:
             var anchor:=Vector2(float(meta.anchor[0]),float(meta.anchor[1]))*factor
             draw_texture_rect(tex,Rect2(mount-anchor,Vector2(tex.get_size())*factor),false)
         else:draw_texture_rect(tex,Rect2(mount-Vector2(21,21),Vector2(42,42)),false)
+
+    _draw_selected_locator()
+
+func _draw_support(port: Vector2, mount: Vector2) -> void:
+    var length:float=port.distance_to(mount)
+    draw_set_transform(port,(mount-port).angle())
+    draw_texture_rect(_arm_parts[1],Rect2(10,-16,maxf(1,length-20),32),false)
+    draw_texture_rect(_arm_parts[0],Rect2(-16,-16,36,32),false)
+    draw_texture_rect(_arm_parts[2],Rect2(length-17,-16,36,32),false)
+    draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
+
+func _component_rect(row: Dictionary) -> Rect2:
+    var point:Vector2=_mount_position(row)
+    var key:String=str(row.equipment_id)
+    if row.category=="weapon" and _weapon_visible_bounds.has(key):
+        var factor:float=0.16 if key in ["longLaser","cannon"] else 0.13
+        var meta:Dictionary=_weapon_meta[key]
+        var bound:Rect2=Rect2(_weapon_visible_bounds[key])
+        return Rect2(point-Vector2(float(meta.anchor[0]),float(meta.anchor[1]))*factor+bound.position*factor,bound.size*factor)
+    return Rect2(point-Vector2(21,21),Vector2(42,42))
+
+func _draw_selected_locator() -> void:
+    var row:Dictionary=_selected_fact()
+    if row.is_empty() or row.dormant:return
+    var card:Rect2=Rect2(_slot_label_position(row),Vector2(220,82))
+    var target:Rect2=_component_rect(row).grow(5)
+    var centre:Vector2=target.get_center()
+    var direction:Vector2=centre-card.get_center()
+    var start:Vector2=card.get_center()
+    if absf(direction.x)>absf(direction.y):start.x=card.end.x if direction.x>0 else card.position.x
+    else:start.y=card.end.y if direction.y>0 else card.position.y
+    var ends:Array=[Vector2(target.position.x,centre.y),Vector2(target.end.x,centre.y),Vector2(centre.x,target.position.y),Vector2(centre.x,target.end.y)]
+    var end:Vector2=ends[0];var best:float=INF
+    for candidate in ends:
+        var hidden:bool=false
+        for id in _slot_buttons:
+            if _slot_buttons[id].button.get_rect().grow(2).has_point(candidate):hidden=true;break
+        if not hidden and start.distance_squared_to(candidate)<best:end=candidate;best=start.distance_squared_to(candidate)
+    var points:PackedVector2Array=PackedVector2Array([start,end])
+    if _ship=="Frigate" and row.category=="weapon":
+        start=card.get_center()+Vector2(0,41)
+        end=Vector2(target.end.x,centre.y)
+        points=PackedVector2Array([start,Vector2(555,start.y),Vector2(555,end.y),end])
+    var accent:Color=Color("ffdb91")
+    draw_polyline(points,Color("153341"),5,true)
+    if row.category=="defence":
+        for i in points.size()-1:draw_dashed_line(points[i],points[i+1],accent,2,5,true)
+        for edge in [PackedVector2Array([target.position,Vector2(target.end.x,target.position.y)]),PackedVector2Array([Vector2(target.end.x,target.position.y),target.end]),PackedVector2Array([target.end,Vector2(target.position.x,target.end.y)]),PackedVector2Array([Vector2(target.position.x,target.end.y),target.position])]:draw_dashed_line(edge[0],edge[1],accent,2,4,true)
+    else:
+        draw_polyline(points,accent,2,true)
+        for corner in [target.position,Vector2(target.end.x,target.position.y),target.end,Vector2(target.position.x,target.end.y)]:
+            var sign:Vector2=Vector2(1 if corner.x==target.position.x else -1,1 if corner.y==target.position.y else -1)
+            draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),Color("173542"),5,true)
+            draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),accent,2,true)
+    var badge:Rect2=Rect2(Vector2(target.end.x-29,target.end.y+3),Vector2(32,22))
+    if row.category=="defence" and int(row.index)==2:badge.position=target.position+Vector2(-30,14)
+    draw_style_box(_locator_badge_style,badge)
+    draw_string(_font_strong,badge.position+Vector2(3,16),("武" if row.category=="weapon" else "防")+str(int(row.index)+1),HORIZONTAL_ALIGNMENT_LEFT,-1,12,CREAM)
