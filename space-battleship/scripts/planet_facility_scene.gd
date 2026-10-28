@@ -30,6 +30,11 @@ var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
 var _workshop_arm_sprite: Sprite3D
+var _workshop_carriage_sprite: Sprite3D
+var _workshop_link: MeshInstance3D
+const WORKSHOP_ARM_SPLIT_Y := 428.0
+const WORKSHOP_ARM_IMAGE_HEIGHT := 1024.0
+const WORKSHOP_ARM_IMAGE_WIDTH := 1536.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -118,13 +123,48 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.double_sided = true
 	body.render_priority = 0
 	model.add_child(body)
+	# Both sprites sample the original illustration. Splitting at the shoulder
+	# keeps the ivory carriage on the gantry while the tool works below it.
+	var arm_texture := preload("res://assets/planets/facilities_v5/illustrated/workshop-arm.png")
+	var carriage_texture := AtlasTexture.new()
+	carriage_texture.atlas = arm_texture
+	carriage_texture.region = Rect2(0, 0, WORKSHOP_ARM_IMAGE_WIDTH, WORKSHOP_ARM_SPLIT_Y)
+	var tool_texture := AtlasTexture.new()
+	tool_texture.atlas = arm_texture
+	tool_texture.region = Rect2(0, WORKSHOP_ARM_SPLIT_Y, WORKSHOP_ARM_IMAGE_WIDTH, WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y)
+	var gantry := moving["GantrySlide"] as Node3D
+	var carriage := Sprite3D.new()
+	carriage.name = "IllustratedGantryCarriage"
+	carriage.texture = carriage_texture
+	carriage.pixel_size = body.pixel_size
+	carriage.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	carriage.shaded = false
+	carriage.double_sided = true
+	carriage.render_priority = 2
+	gantry.add_child(carriage)
+	_workshop_carriage_sprite = carriage
+	var link := MeshInstance3D.new()
+	link.name = "TelescopingToolLink"
+	var link_mesh := CylinderMesh.new()
+	link_mesh.top_radius = 0.075
+	link_mesh.bottom_radius = 0.075
+	link_mesh.height = 1.0
+	link.mesh = link_mesh
+	var link_material := StandardMaterial3D.new()
+	link_material.albedo_color = Color("102b48")
+	link_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	link_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	link_material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
+	link_material.render_priority = 0
+	link.material_override = link_material
+	model.add_child(link)
+	_workshop_link = link
 	var arm := Sprite3D.new()
 	arm.name = "IllustratedToolArm"
-	arm.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-arm.png")
+	arm.texture = tool_texture
 	arm.pixel_size = body.pixel_size
 	var arm_pivot := moving["ToolArmSweep"] as Node3D
 	_workshop_arm_base_y = arm_pivot.position.y
-	arm.position = body.position + Vector3(0, 0.01, 0) - arm_pivot.position
 	arm.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	arm.shaded = false
 	arm.double_sided = true
@@ -141,8 +181,20 @@ func _position_workshop_arm(model: Node3D) -> void:
 	var camera_front := (model.transform.basis.inverse() * Vector3(0, 0, 1)).normalized()
 	var stroke := Vector3(0, pivot.position.y - _workshop_arm_base_y, 0)
 	var screen_stroke := stroke - camera_front * stroke.dot(camera_front)
-	var target := Vector3(gantry.position.x, 1.38, 0) + screen_stroke + camera_front * 0.25
-	_workshop_arm_sprite.position = pivot.transform.basis.inverse() * (target - gantry.position - pivot.position)
+	var origin := Vector3(gantry.position.x, 1.38, 0) + camera_front * 0.25
+	var pixel_size := _workshop_arm_sprite.pixel_size
+	var carriage_center := origin + Vector3.UP * (WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y) * pixel_size * 0.5
+	var tool_center := origin + Vector3.DOWN * WORKSHOP_ARM_SPLIT_Y * pixel_size * 0.5 + screen_stroke
+	_workshop_carriage_sprite.position = carriage_center - gantry.position
+	_workshop_arm_sprite.position = pivot.transform.basis.inverse() * (tool_center - gantry.position - pivot.position)
+	# The telescoping section occupies only the opening below the fixed rail
+	# carriage; the tool art covers its lower end and the carriage covers its top.
+	var downward := maxf(0.0, -screen_stroke.y)
+	_workshop_link.visible = downward > 0.01
+	if _workshop_link.visible:
+		var joint := origin + Vector3(-0.10, (WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size, 0)
+		_workshop_link.position = joint + screen_stroke * 0.5
+		_workshop_link.scale = Vector3(1, downward + 0.10, 1)
 
 func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
