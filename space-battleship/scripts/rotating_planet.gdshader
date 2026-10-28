@@ -26,12 +26,11 @@ uniform float beam_length = 0.0;
 uniform float beam_width = 0.13;
 uniform float beam_speed = 1.6;
 uniform float magnetosphere = 0.0;
-// Crossfade a narrow overlap to close imperfect authored horizontal seams.
+// Both authored maps already meet at their horizontal edges. Let the sampler's
+// repeat mode interpolate those edge texels instead of remapping to an inland
+// column, which brings unrelated bright islands onto the longitude seam.
 vec4 map_sample(sampler2D map, vec2 uv) {
-    uv.x = fract(uv.x);
-    vec4 a = texture(map, vec2(uv.x * 0.96, uv.y));
-    vec4 b = texture(map, vec2(uv.x * 0.96 + 0.96, uv.y));
-    return mix(b, a, smoothstep(0.0, 0.04, uv.x));
+    return texture(map, uv);
 }
 void fragment() {
     vec2 screen_p = (UV * 2.0 - 1.0) * extent;

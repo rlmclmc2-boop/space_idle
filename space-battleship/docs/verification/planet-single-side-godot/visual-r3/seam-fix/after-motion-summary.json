@@ -1,0 +1,57 @@
+{
+  "capture_method": "real 4.7.2 main framebuffer; >=0.45s sampling interval; rendering not frame capped; JPEG quality 90 and selected original PNG",
+  "capture_wall_seconds": 14.659861,
+  "conservative_aabb_intersections": [],
+  "duration_wall_seconds": 107.487623,
+  "frames": 200,
+  "gameplay": "real Session processing; first explorer re-dispatched through OS mouse; automatic enabled through UI",
+  "jpeg_frames": 200,
+  "note": "Motion evidence is targeted to the R3 visible longitude seam at surface phase around 0.53; old full-cycle video remains an historical source, not seam acceptance evidence.",
+  "operator_regions": {
+    "cancel": [
+      222.0,
+      168.0,
+      190.0,
+      42.0
+    ],
+    "crew": [
+      148.0,
+      112.0,
+      100.0,
+      44.0
+    ],
+    "facilities": [
+      22.0,
+      112.0,
+      116.0,
+      44.0
+    ],
+    "planet": [
+      494.0,
+      112.0,
+      176.0,
+      44.0
+    ],
+    "stop": [
+      22.0,
+      168.0,
+      190.0,
+      42.0
+    ],
+    "task": [
+      258.0,
+      112.0,
+      226.0,
+      44.0
+    ],
+    "task_clock": [
+      22.0,
+      216.0,
+      340.0,
+      48.0
+    ]
+  },
+  "png_keyframes": 26,
+  "surface_turns": 0.581304475665092,
+  "target": "longitude seam crossing only; intentionally not a full-cycle replacement"
+}
