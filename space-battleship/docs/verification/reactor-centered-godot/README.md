@@ -1,8 +1,10 @@
 # 中央反应堆 Godot 实施检查点（尚未完整交付）
 
+**当前交付状态：视觉不合格，用户已退回重做。** `e77b572b`/r16仅作业务、鼠标交互和同源锚点几何的历史验证记录，不是当前可交付画面。保留已验证Reactor/Economy接口和绑定，重做内部整体视觉；新效果稿必须经用户明确确认，之后才允许落地Godot视觉代码。共享外框及导航归整体界面线程。
+
 ## 内部比例修正概念（待审，未接入Godot）
 
-按`59dd464d`认可的材质/光照/对比/排版品质及用户对`r16`的退回意见，先制作[左模块内部概念图](evidence/reactor-interior-concept-r17.png)：原生1189×1323，宽高比对应808×900模块；原件为`/workspace/generated_images/exec-2d4da60e-46d4-4359-bf0b-3e2ca9e288b1.png`，SHA256 `4148d6f808e265e6aecbf2d7cdc1d145a99994294eb144dd04bf815be834cb65`，Git副本未裁切/拼贴/后加字。图中核心有立体涡流，四设备可辨工作体、四短接及四滑杆同屏，底部读数与主控重新分区；设备壳与控制托架仍偏密，滑杆拇指的图示比例、中文字及真实操作净空须复核。它是**内部设计概念，不是完整整屏、可直接复用的Godot贴图或V3通过证据**；背景与设备等比尺寸不同，不能靠拉伸整张机器图补边。早两次内部生成图仍有厚框/大矩形或越过左侧约808宽的构图问题，未列候选。下步先由根线程和独审评内部主次/留白，再按既有分层/锚点接入，保留现有业务绑定。
+按`59dd464d`认可的材质/光照/对比/排版品质及用户对`r16`的退回意见，先制作[左模块内部概念图](evidence/reactor-interior-concept-r17.png)：原生1189×1323，宽高比对应808×900模块；原件为`/workspace/generated_images/exec-2d4da60e-46d4-4359-bf0b-3e2ca9e288b1.png`，SHA256 `4148d6f808e265e6aecbf2d7cdc1d145a99994294eb144dd04bf815be834cb65`，Git副本未裁切/拼贴/后加字。图中核心有立体涡流，四设备可辨工作体、四短接及四滑杆同屏，底部读数与主控重新分区；设备壳与控制托架仍偏密，滑杆拇指的图示比例、中文字及真实操作净空须复核。它**只是新方案待审图，不是完整整屏、可直接复用的Godot贴图或V3通过证据**；背景与设备等比尺寸不同，不能靠拉伸整张机器图补边。早两次内部生成图仍有厚框/大矩形或越过左侧约808宽的构图问题，未列候选。根线程和独审可先评内部主次/留白，但最终须由用户明确确认新效果稿，之后才可按既有分层/锚点落地代码；现阶段不实施新图。
 
 共享宿主、导航、资源栏、模块边界已移交整体界面线程`01a18207-893a-750e-9898-48786a8c40c7`（源线程`01a1746b-882a-7722-8c55-e9b8be8c2000`），本组仅以Git交接反应堆内部设计。`51e704c8`注册点、`4c26b2e4`的`kind/target`以及`e5cbbb33`的x410/498/586导航位置是现有实现/布局假设，左808×900与右632×900仍待整体界面协调；本轮没有再修改`src/main.gd`。
 
@@ -10,7 +12,7 @@
 
 `167c3154`的整屏被退回：1024×1536底板曾非等比拉至808×900，前景设备又独立等比定位，产生两套错位壳和开放圆盖。新候选使用一张完整1024×1536底板承载圆座、四条短主管及同投影的四台空白控制台；三设备版本在同一源图位置封闭右下支路并去掉该控制台。Godot仅用统一`scale=0.6`、`origin=(96.8,20)`布置源图的机械部分；五个工作层、导管流动层及文字/滑杆均由同一源图座标转换。左右剩余97px为深青侧留白。未改变已接入的Reactor/Economy计算和局部失效。`e77b572b`的同源锚点改善了机械接合，但用户已退回整体观感：厚壳、巨框和贴边布局让结构压过核心及设备工作效果，不能据几何改善宣称V3画面通过。
 
-四设备原图`/workspace/generated_images/exec-cfdbee3f-f2ae-44e6-8c51-2f18cf97754a.png`对应`assets/ui/reactor/centered-v1/mounting-plate-r2.png`，SHA256为`4fe7153eb3b0fcc5739d40d6fc3c4f03f3f61c0ca5965fd60ef41e235fcb189d`；三设备原图`exec-7f4487d6-284a-4310-9bfb-b46a145b1cc3.png`对应`mounting-plate-three-r2.png`，SHA256为`95655914c16dfce3d0d6b9e9c150360965475d362aa243a771d32d6be1b489b0`。两张均是原生不透明图，无后处理或游戏文字。[三设备整屏](evidence/reactor-visual-r16-three-active.png)、[四设备运行帧A](evidence/reactor-visual-r16-four-active-t0.png)、[帧B](evidence/reactor-visual-r16-four-active-t1.png)及[真实Session日志](evidence/reactor-visual-r16.log.txt)是最新视觉候选证据；开放仍经公开Campaign接口临时授予。
+四设备原图`/workspace/generated_images/exec-cfdbee3f-f2ae-44e6-8c51-2f18cf97754a.png`对应`assets/ui/reactor/centered-v1/mounting-plate-r2.png`，SHA256为`4fe7153eb3b0fcc5739d40d6fc3c4f03f3f61c0ca5965fd60ef41e235fcb189d`；三设备原图`exec-7f4487d6-284a-4310-9bfb-b46a145b1cc3.png`对应`mounting-plate-three-r2.png`，SHA256为`95655914c16dfce3d0d6b9e9c150360965475d362aa243a771d32d6be1b489b0`。两张均是原生不透明图，无后处理或游戏文字。[三设备整屏](evidence/reactor-visual-r16-three-active.png)、[四设备运行帧A](evidence/reactor-visual-r16-four-active-t0.png)、[帧B](evidence/reactor-visual-r16-four-active-t1.png)及[真实Session日志](evidence/reactor-visual-r16.log.txt)仅为已退回版本的历史业务/几何证据，不能作为当前视觉交付；开放仍经公开Campaign接口临时授予。
 
 最新控件位置再由[同Session真实鼠标驱动](evidence/reactor-mouse-r16-driver.gd.txt)核对，日志记录拖动2267→0、鼠标确认成功、临时注入预算后购级2→3；[草稿](evidence/reactor-mouse-preview-r16.png)、[确认](evidence/reactor-mouse-applied-r16.png)、[购级](evidence/reactor-mouse-purchased-r16.png)为对应整屏。该鼠标检查不代表全控件或视觉独审通过。
 
