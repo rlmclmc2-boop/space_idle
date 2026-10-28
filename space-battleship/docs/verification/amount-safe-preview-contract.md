@@ -69,9 +69,11 @@ R1/R2把“持续0%至少1”写成现有行为，与当前setter的准入不符
 
 以上“待选择/两案”的措辞仅属于0d72b88d历史；本次选择已见上节。
 
-## 反应炉真实场景最小展示与局部通知提案（待审，未实施）
+<a id="反应炉真实场景最小展示与局部通知提案待审未实施"></a>
 
-本节是现有提案的定向续项，不回写前文077cd522阶段历史。接口/字段与比例的唯一候选正文在[反应炉分册9.2.1](../game-design/contracts/reactor.md#921-待审增补真实展示与局部变化通知)；本节记录来源、实现落点和必要复核。待根线程及反应炉原独审核通过后才实施，main继续暂停。取代本轮聊天中“现有信号+限频全量重读兜底”的初稿，不把旧轮询说成已审方案。
+## 反应炉真实场景最小展示与局部通知提案
+
+本节是现有提案的定向续项，不回写前文077cd522阶段历史。设计`3d14ded8`已获根线程及反应炉原独审核限定通过；[运行实现候选与证据](reactor-presentation-implementation.md)待原双审、未合main。接口/字段与比例的唯一候选正文在[反应炉分册9.2.1](../game-design/contracts/reactor.md#921-实现候选真实展示与局部变化通知)；本节保留固定来源与已审实现方案，main继续暂停。取代本轮聊天中“现有信号+限频全量重读兜底”的初稿，不把旧轮询说成已审方案。
 
 ### 固定来源与已确认缺口
 
@@ -79,7 +81,7 @@ R1/R2把“持续0%至少1”写成现有行为，与当前setter的准入不符
 - 实际消费者固定[8b78c8a的检查点](https://github.com/rlmclmc2-boop/space_idle/blob/8b78c8a84c62f3fd97df805c539bdcc8f950b69f/space-battleship/docs/verification/reactor-centered-godot/README.md)及同提交[src/ui/reactor_scene.gd](https://github.com/rlmclmc2-boop/space_idle/blob/8b78c8a84c62f3fd97df805c539bdcc8f950b69f/space-battleship/src/ui/reactor_scene.gd)，消费者Git blob为`20e31e3fe29224aee4efabf051f142ff5b34635d`。它已有bind_presentation(reader,context)、_dirty与当前模型驱动stage，但购级按钮从model.purchase_quote读取，预算变化若走_refresh会连带整场景和草稿重预览；被动_refresh还会按shares重新生成金额。这两处须做最小适配，不能拿夹具证明已接真实状态。
 - 等级与当前供能/免费/效果已有实际源；_plan_readings只缺有限ratio/load/has_free。+1原_purchase已复用_quote并核level范围；新报价不调用purchase/payment。_evaluate中free=C×(state.free_charge+free_bonus)，是合法零容量、免费独立显示和饱和比例定义的来源，不新增公式或增长规则。
 
-### 最小实现落点：先审后做
+### 已审设计的最小实现落点
 
 1. **当前展示**：新增Reactor.presentation_model()，从已接纳_state._capacity/_factors/_enabled构造最小脱离结果；不接收新capacity/free inputs来假装actual。_plan_readings增补比例助手，current/target及提交actual共用；按原AmountAPI比较/加法/to_ratio/to_display，不经float重建数量、不重新_evaluate实际状态。纯读不改_state/_prepared_state、随机、通知标记或RunState。
 2. **报价分离**：新增Reactor.purchase_preview(can_pay)，固定+1，复用原_purchase(_state的脱离数据,1,false)及原范围/费用。成本与显示文本只按实际level及会话固定配置失效，可作脱离的模块内小缓存；预算变化只调用can_pay重验该原成本，不重新求幂/重新_quote。返回的缓存嵌套数据不能污染所有者；该展示缓存不进入save、候选接纳或价格真相，实际purchase始终重验。
@@ -112,7 +114,7 @@ Reactor._adopt是正常接纳汇点；restore_state为重建例外，refresh_ava
 
 上述是当前四类_wallet赋值路径，不把notify flag、_balance_dirty、display_changed、drop_collected或整个save hash当作余额变化证据。用原Amount.compare把缺键和0视为同余额，不把只改表示的字典差异计为变化。只有临时通知基准，不新增持久化账本/事件回放。消费方预算回调只交集原报价公开costs.keys，不读取Reactor._parameters猜资源。
 
-### 审核后必要验证（本次未执行）
+### 已审设计要求的验证矩阵
 
 - 原current/target/actual文本、费用、均分、免费量/效果及确认结果与09af相同；展示读取前后_state/prepared/save不变，返回深改无污染。
 - 合法C>0/A=0/F>0仍有真实负载；合法C=0按原公式F=0且E=0，比例0/效果1；缺缓存为未知，C=0/F>0不作合法夹具。极大Amount、有效量超过C时to_ratio有限饱和，canonical文本不被截断。
@@ -120,4 +122,4 @@ Reactor._adopt是正常接纳汇点；restore_state为重建例外，refresh_ava
 - Economy四类真写入逐项核验，notify=false不漏、同预算/零增量/Amount表示差异/本轮净回原值不通知。仅移动/生成/登记掉落、收入窗口/显示刷新零报价失效；不相关资源真变也零反应炉报价更新。
 - 预算只变时，场景model/preview/stage更新次数不增加，原成本_quote计算次数不增加，仅相关+1可支付性重验；实际level变化才重算价。隐藏期零投影，重开各初读一次；动画时钟不读取模型/报价；凝聚集合变更失效旧预览，未知禁用，来源变化保留canonical金额。
 
-本次只固定两份设计文档及检查本地链接/diff，不运行游戏或测试、不改源码/配置/native/保存/主线，不把审核计划写成已通过。原M10文稿WIP保持字节不变，不纳入本提案提交；本线程尚未实际压缩。
+`3d14ded8`提交时只固定两份设计文档，未实施或运行测试；该历史不改写。后续运行候选及定向覆盖以独立实现记录为准，不把本矩阵全部当作消费者UI验收。原M10文稿WIP继续保持字节不变、不纳入本项；不改配置/native/保存/主线。

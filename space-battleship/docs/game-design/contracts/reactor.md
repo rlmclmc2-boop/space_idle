@@ -39,11 +39,13 @@
 
 成功后当前真实分配/免费/有效量及效果替换旧比较；不把旧预览的倍率当承诺。现有allocate_text仍供单设备动作，新整组确认不让UI管理先减后增、多次发布或差异重试。均分保持确认后**一次distribute**，明确按提交时状态均分；预览的容量/效果不锁住提交时容量，实际回执优先。
 
-### 9.2.1 待审增补：真实展示与局部变化通知
+<a id="921-待审增补真实展示与局部变化通知"></a>
 
-**状态：仅设计候选，待根线程及反应炉原独审核；未实施、未合main。** 现有整组接口以已审`09af963cf6f66146e019cecd08353426ab6d6abb`为基线；本增补不改变它们或原购级/均分/发布语义。第3节b7bb展示候选不因本节转为已实现。固定消费者、接纳/钱包写入路径、验证计划见[本次定向提案](../../verification/amount-safe-preview-contract.md#反应炉真实场景最小展示与局部通知提案待审未实施)。
+### 9.2.1 实现候选：真实展示与局部变化通知
 
-| 待审出口 | 最小职责与字段 |
+**状态：设计`3d14ded8`已根线程及原独审核限定通过；[运行实现候选](../../verification/reactor-presentation-implementation.md)待原双审、未合main，不代表UI或完整游戏验收。** 现有整组接口以已审`09af963cf6f66146e019cecd08353426ab6d6abb`为基线；本增补不改变它们或原购级/均分/发布语义。第3节b7bb展示候选不因本节转为已实现。固定消费者、接纳/钱包写入路径、验证计划见[本次定向提案](../../verification/amount-safe-preview-contract.md#反应炉真实场景最小展示与局部通知提案)。
+
+| 运行候选出口 | 最小职责与字段 |
 |---|---|
 | `Reactor.presentation_model()` | 仅读已接纳状态与容量/效果缓存，给ok、level、capacity/allocated/remaining规范Amount文本、can_allocate/reason、modules及core load；不带预算/购级报价，不把即时inputs或prepared预测为current。缺已接纳缓存给ReactorSnapshotUnavailable，不伪造0或factor=1。modules沿已接纳开放ID及顺序，给id/enabled、manual/free/effective/factor规范文本、has_free及有限ratio/load。当前准入开放集合与已接纳缓存不一致时明确不可用，不混成一个成功快照。 |
 | `Reactor.purchase_preview(can_pay: Callable)` | 仅当前消费者所需+1；复用原_purchase的脱离候选及_quote/等级范围判断，给原costs规范文本、can_purchase/reason。count固定1，不新增MAX；付款能力只用注入Economy.can_pay。金额/文本只按已接纳level和会话内固定配置重算/复用，预算变化只重读可支付性；确认仍原purchase重验和发布。显示cost_text/message由宿主/前端按资源ID与原原因本地化，不解析Amount或计算费用。 |

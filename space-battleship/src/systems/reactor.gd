@@ -2,6 +2,7 @@ extends RefCounted
 var _run_state
 
 signal choices_changed
+signal presentation_changed(changes: PackedStringArray)
 
 var _enabled: Array = []
 var _available: bool = false
@@ -10,6 +11,11 @@ var _prepared_state: Dictionary = {}
 var _parameters: Dictionary = {}
 var _api
 var _plan_preview_cache: Dictionary = {}
+var _presentation_queued: bool = false
+var _presentation_before: Dictionary = {}
+var _purchase_preview_level: int = -1
+var _purchase_preview_costs: Dictionary = {}
+var _purchase_preview_texts: Dictionary = {}
 
 func save_state() -> Dictionary:
 	var state: Dictionary = _state.duplicate(true)
@@ -28,6 +34,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 		var comparison: Dictionary = _api.apply("compare", [state.allocations[module], zero])
 		if not comparison.get("ok", false) or int(comparison.scalar) < 0:
 			return {"ok": false, "reason": "InvalidReactorAllocation"}
+	_queue_presentation_change()
 	_state = state.duplicate(true)
 	_plan_preview_cache.clear()
 	_prepared_state = {}
@@ -57,6 +64,7 @@ func refresh_availability(unlocked: Callable, notify: bool = true) -> bool:
 		for module in str(_parameters.reactorModules).split(","):
 			if module != "condensation" or bool(unlocked.call("reactor_module", module)): enabled.append(module)
 	if available != _available or enabled != _enabled:
+		_queue_presentation_change()
 		_available = available
 		enabled.make_read_only()
 		_enabled = enabled
@@ -84,6 +92,7 @@ func prepare(inputs: Dictionary) -> Dictionary:
 	return output
 
 func _adopt(next: Dictionary) -> void:
+	_queue_presentation_change()
 	_state = next
 	_plan_preview_cache.clear()
 	_prepared_state = {}
@@ -240,20 +249,144 @@ func _accepted_plan_readings() -> Dictionary:
 	return _plan_readings({"capacity": _state._capacity.value, "remaining": remaining.value, "state": _state})
 
 func _plan_readings(evaluated: Dictionary) -> Dictionary:
-	var allocated: Dictionary = _api.apply("zero", [])
+	var zero: Dictionary = _api.apply("zero", [])
+	if not zero.ok: return zero
+	var capacity_check: Dictionary = _api.apply("compare", [evaluated.capacity, zero.value])
+	if not capacity_check.ok: return capacity_check
+	var empty_capacity: bool = int(capacity_check.scalar) == 0
+	var allocated: Dictionary = zero.value
+	var total_effective: Dictionary = zero.value
 	var rows: Array = []
 	for id in evaluated.state._enabled:
 		var cached: Dictionary = evaluated.state._factors[id]
-		allocated = _api.apply("add", [allocated.value, cached.assigned])
-		if not allocated.ok: return allocated
+		var added: Dictionary = _api.apply("add", [allocated, cached.assigned])
+		if not added.ok: return added
+		allocated = added.value
 		var effective: Dictionary = _api.apply("add", [cached.assigned, cached.free])
 		if not effective.ok: return effective
-		rows.append({"id": id, "manual": _api.apply("to_display", [cached.assigned]).text,
-			"free": _api.apply("to_display", [cached.free]).text, "effective": _api.apply("to_display", [effective.value]).text,
-			"factor": _api.apply("to_display", [cached.value]).text})
-	return {"ok": true, "capacity": _api.apply("to_display", [evaluated.capacity]).text,
-		"allocated": _api.apply("to_display", [allocated.value]).text, "remaining": _api.apply("to_display", [evaluated.remaining]).text,
-		"modules": rows}
+		added = _api.apply("add", [total_effective, effective.value])
+		if not added.ok: return added
+		total_effective = added.value
+		var free_check: Dictionary = _api.apply("compare", [cached.free, zero.value])
+		if not free_check.ok: return free_check
+		if empty_capacity:
+			var effective_check: Dictionary = _api.apply("compare", [effective.value, zero.value])
+			if not effective_check.ok: return effective_check
+			if int(effective_check.scalar) != 0: return {"ok": false, "reason": "ReactorSnapshotUnavailable"}
+		var ratio: Dictionary = _presentation_ratio(cached.assigned, evaluated.capacity, empty_capacity)
+		if not ratio.ok: return ratio
+		var load: Dictionary = _presentation_ratio(effective.value, evaluated.capacity, empty_capacity)
+		if not load.ok: return load
+		var row := {"id": id, "enabled": true, "ratio": ratio.scalar, "load": load.scalar,
+			"has_free": int(free_check.scalar) > 0}
+		var values := {"manual": cached.assigned, "free": cached.free, "effective": effective.value, "factor": cached.value}
+		for field in values:
+			var text: Dictionary = _api.apply("to_display", [values[field]])
+			if not text.ok: return text
+			row[field] = text.text
+		rows.append(row)
+	var core_load: Dictionary = _presentation_ratio(total_effective, evaluated.capacity, empty_capacity)
+	if not core_load.ok: return core_load
+	var result := {"ok": true, "modules": rows, "load": core_load.scalar}
+	var amounts := {"capacity": evaluated.capacity, "allocated": allocated, "remaining": evaluated.remaining}
+	for field in amounts:
+		var text: Dictionary = _api.apply("to_display", [amounts[field]])
+		if not text.ok: return text
+		result[field] = text.text
+	return result
+
+func _presentation_ratio(value: Dictionary, capacity: Dictionary, empty_capacity: bool) -> Dictionary:
+	if empty_capacity: return {"ok": true, "scalar": 0.0}
+	var result: Dictionary = _api.apply("to_ratio", [value, capacity])
+	if not result.ok: return result
+	if not is_finite(float(result.scalar)): return {"ok": false, "reason": "ReactorSnapshotUnavailable"}
+	return result
+
+# Current is accepted, never re-evaluated using newer inputs or a pending plan.
+func presentation_model() -> Dictionary:
+	if not _available: return {"ok": false, "reason": "ReactorLocked"}
+	if _state.get("_enabled", []) != _enabled: return {"ok": false, "reason": "ReactorSnapshotUnavailable"}
+	var actual: Dictionary = _accepted_plan_readings()
+	if not actual.ok: return actual
+	if actual.capacity == null: return {"ok": false, "reason": "ReactorSnapshotUnavailable"}
+	actual.level = int(_state.level)
+	actual.can_allocate = _run_state.is_running()
+	actual.reason = "" if actual.can_allocate else "SessionUnavailable"
+	return actual
+
+# Immutable per-level price; a budget-only refresh only reruns affordability.
+func purchase_preview(can_pay: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	if not _available: return {"ok": false, "reason": "ReactorLocked"}
+	if _purchase_preview_level != int(_state.level):
+		var changed: Dictionary = _purchase(_state.duplicate(true), 1, false, _parameters, _api)
+		if not changed.ok: return changed
+		var texts: Dictionary = {}
+		for resource in changed.costs:
+			var text: Dictionary = _api.apply("to_display", [changed.costs[resource]])
+			if not text.ok: return text
+			texts[resource] = text.text
+		_purchase_preview_costs = changed.costs.duplicate(true)
+		_purchase_preview_texts = texts
+		_purchase_preview_level = int(_state.level)
+	var affordable: Dictionary = can_pay.call(_purchase_preview_costs.duplicate(true))
+	return {"ok": true, "count": 1, "costs": _purchase_preview_texts.duplicate(true),
+		"can_purchase": bool(affordable.ok), "reason": affordable.get("reason", affordable.get("error", ""))}
+
+# Capture before replacing state: deferred delivery must not lose the first change.
+func _queue_presentation_change() -> void:
+	if _presentation_queued: return
+	_presentation_before = _presentation_facts()
+	_presentation_queued = true
+	call_deferred("_emit_presentation_change")
+
+func _presentation_facts() -> Dictionary:
+	var rows: Dictionary = {}
+	for id in _state.get("_enabled", []):
+		var cached: Dictionary = _state.get("_factors", {}).get(id, {})
+		rows[id] = {"assigned": cached.get("assigned", {}), "free": cached.get("free", {}), "value": cached.get("value", {})}
+	return {"level": _state.level, "available": _available, "enabled": _enabled.duplicate(),
+		"accepted_ids": _state.get("_enabled", []).duplicate(), "rows": rows.duplicate(true),
+		"capacity": _state.get("_capacity", {}).get("value", {}).duplicate(true),
+		"ready": _state.has("_capacity") and _state.has("_factors") and _state.has("_enabled") and _state._enabled == _enabled}
+
+func _amount_changed(before: Dictionary, after: Dictionary) -> Dictionary:
+	if before == after: return {"ok": true, "changed": false}
+	if before.is_empty() or after.is_empty(): return {"ok": true, "changed": true}
+	var comparison: Dictionary = _api.apply("compare", [before, after])
+	if not comparison.ok: return comparison
+	return {"ok": true, "changed": int(comparison.scalar) != 0}
+
+func _presentation_changes(before: Dictionary, after: Dictionary) -> Dictionary:
+	var changes := PackedStringArray()
+	if before.level != after.level: changes.append("level")
+	if before.available != after.available or before.enabled != after.enabled or before.accepted_ids != after.accepted_ids:
+		changes.append("availability")
+	if before.ready != after.ready: changes.append("readiness")
+	var capacity: Dictionary = _amount_changed(before.capacity, after.capacity)
+	if not capacity.ok: return capacity
+	if capacity.changed: changes.append("capacity")
+	var ids: Array = before.rows.keys()
+	for id in after.rows:
+		if id not in ids: ids.append(id)
+	var tags := {"assigned": "allocation", "free": "free", "value": "effect"}
+	for field in tags:
+		var tag: String = tags[field]
+		for id in ids:
+			var value: Dictionary = _amount_changed(before.rows.get(id, {}).get(field, {}), after.rows.get(id, {}).get(field, {}))
+			if not value.ok: return value
+			if value.changed:
+				changes.append(tag)
+				break
+	return {"ok": true, "changes": changes}
+
+func _emit_presentation_change() -> void:
+	var before: Dictionary = _presentation_before
+	_presentation_before = {}
+	_presentation_queued = false
+	var result: Dictionary = _presentation_changes(before, _presentation_facts())
+	if result.ok and not result.changes.is_empty(): presentation_changed.emit(result.changes)
+
 static func _initial(parameters: Dictionary) -> Dictionary:
 	return {"level": int(parameters.reactorInitialLevel), "allocations": {}, "free_charge": 0.0}
 
