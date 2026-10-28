@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="216" height="140" viewBox="0 0 216 140"><defs>
+<linearGradient id="armor" x2="0" y2="1"><stop stop-color="#fff2dd"/><stop offset=".24" stop-color="#e5ccb0"/><stop offset=".62" stop-color="#ae9e88"/><stop offset="1" stop-color="#6d6a66"/></linearGradient>
+<linearGradient id="blue" x2="0" y2="1"><stop stop-color="#31586b"/><stop offset=".4" stop-color="#16394d"/><stop offset="1" stop-color="#092331"/></linearGradient>
+<linearGradient id="glass" x2="0" y2="1"><stop stop-color="#183d51"/><stop offset=".45" stop-color="#0b2939"/><stop offset="1" stop-color="#061b28"/></linearGradient>
+<linearGradient id="lip" x2="0" y2="1"><stop stop-color="#86b2ba"/><stop offset="1" stop-color="#224b5a"/></linearGradient>
+<filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur stdDeviation="2.8"/></filter>
+</defs>
+ <path d="M0 16 L31 3 L183 0 L214 14 L216 42 L207 52 L204 122 L187 138 L19 137 L3 123 L6 52 L0 43 Z" fill="#061927" opacity=".55" filter="url(#shadow)" transform="translate(0 3)"/>
+ <path d="M0 16 L31 3 L183 0 L214 14 L216 42 L207 52 L204 122 L187 138 L19 137 L3 123 L6 52 L0 43 Z" fill="url(#armor)" stroke="#5b5e5b" stroke-width="1.5"/>
+ <path d="M17 13 L34 7 H180 L200 14 L204 38 L196 49 H19 L12 40 Z" fill="url(#blue)" stroke="#7c8e8b" stroke-width="1.2"/>
+ <path d="M22 17 L37 11 H177 L193 18 V38 L184 45 H28 L20 38 Z" fill="#061f2f" stroke="#091c29" stroke-width="1"/>
+ <path d="M30 20 H182 M31 43 H183" stroke="#d39861" stroke-opacity=".55" stroke-width="1.3"/>
+ <path d="M19 55 L200 54 L197 121 L184 129 L19 129 L13 119 L14 62 Z" fill="url(#glass)" stroke="#2d5663" stroke-width="2"/>
+ <path d="M28 60 H185 M28 82 H185 M28 105 H185" stroke="#d39861" stroke-opacity=".23" stroke-width="1"/>
+ <path d="M25 57 L38 53 H180 L192 57" fill="none" stroke="#acd1ce" stroke-opacity=".4" stroke-width="1.2"/>
+ <path d="M3 19 L25 12 L33 16 L13 31 L5 30 Z M207 16 L214 20 L213 38 L201 33 Z" fill="#123e50" stroke="#6f8a8c"/><path d="M9 69 L13 67 V111 L9 107 Z" fill="#af7041"/><path d="M18 123 H47 M168 123 H196" stroke="#bf8254" stroke-width="2"/><path d="M21 49 H196" stroke="#f3d6b5" stroke-width="2"/><circle cx="28" cy="132" r="2" fill="#435868"/><circle cx="188" cy="132" r="2" fill="#435868"/>
+ </svg>

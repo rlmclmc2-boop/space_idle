@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="151" viewBox="0 0 500 151">
+ <defs>
+  <linearGradient id="armor" x2="0" y2="1"><stop stop-color="#fff1dc"/><stop offset=".25" stop-color="#e4cdb0"/><stop offset=".7" stop-color="#a99b84"/><stop offset="1" stop-color="#68645f"/></linearGradient>
+  <linearGradient id="panel" x2="0" y2="1"><stop stop-color="#264b5d"/><stop offset=".35" stop-color="#113444"/><stop offset="1" stop-color="#071d2a"/></linearGradient>
+  <filter id="shadow"><feGaussianBlur stdDeviation="3"/></filter>
+ </defs>
+ <path d="M79 5 H421 L499 42 V127 L477 149 H23 L1 127 V42 Z" fill="#051622" opacity=".55" filter="url(#shadow)"/>
+ <path d="M80 0 H420 L497 40 V126 L476 148 H24 L3 126 V40 Z" fill="url(#armor)" stroke="#555654" stroke-width="2"/>
+ <path d="M83 9 H417 L483 45 V132 L468 143 H32 L17 132 V45 Z" fill="#143143" stroke="#9c9d8e" stroke-width="1.5"/>
+ <path d="M87 17 H413 L469 48 V132 L459 141 H41 L31 132 V48 Z" fill="url(#panel)" stroke="#74989b" stroke-width="1"/>
+ <path d="M84 11 H416 L472 42" fill="none" stroke="#ffebc9" stroke-opacity=".8" stroke-width="3"/>
+ <path d="M39 52 H461 M39 82 H461 M39 114 H461" stroke="#8daead" stroke-opacity=".2"/>
+ <path d="M31 140 L48 146 H452 L469 140" fill="none" stroke="#0d2838" stroke-width="5"/>
+ <path d="M50 145 H450" stroke="#8fc2bb" stroke-opacity=".6" stroke-width="1.5"/>
+ <path d="M21 45 L30 50 V130 L20 135 M479 45 L470 50 V130 L480 135" fill="#2e5c6b" stroke="#112d3b" stroke-width="1.3"/>
+ <circle cx="33" cy="39" r="3" fill="#5b7c80"/><circle cx="467" cy="39" r="3" fill="#5b7c80"/>
+</svg>

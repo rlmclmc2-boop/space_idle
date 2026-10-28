@@ -2,8 +2,13 @@ extends Control
 ## Whole reactor scene. Domain amounts, effects and acceptance stay with Reactor.
 signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
-const DEVICE_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/device-console-mount.png")
-const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/central-console-mount.png")
+const DEVICE_MOUNTS := {
+	"weapons": preload("res://assets/ui/reactor/ship-hub-r4/weapons-control-lip.png"),
+	"defence": preload("res://assets/ui/reactor/ship-hub-r4/defence-control-lip.png"),
+	"smelting": preload("res://assets/ui/reactor/ship-hub-r4/smelting-control-lip.png"),
+	"condensation": preload("res://assets/ui/reactor/ship-hub-r4/condensation-control-lip.png"),
+}
+const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/central-console-front.png")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
@@ -109,7 +114,7 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.text = text
 	button.position = rect.position
 	button.size = rect.size
-	button.add_theme_font_size_override("font_size", 14)
+	button.add_theme_font_size_override("font_size", 16)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxFlat.new()
 		box.bg_color = Color("245963") if state in ["hover","pressed"] else Color("173e4b")
@@ -149,28 +154,28 @@ func _build() -> void:
 	console.texture = CENTRAL_MOUNT
 	console.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	console.stretch_mode = TextureRect.STRETCH_SCALE
-	console.position = Vector2(199, 753)
-	console.size = Vector2(410, 132)
+	console.position = Vector2(154, 747)
+	console.size = Vector2(500, 151)
 	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(console)
-	_level = _label(Vector2(230, 765), 75, 14)
+	_level = _label(Vector2(184, 762), 90, 18)
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var offset := Vector2(0, 65)
 		var mount := TextureRect.new()
-		mount.texture = DEVICE_MOUNT
+		mount.texture = DEVICE_MOUNTS[id]
 		mount.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		mount.stretch_mode = TextureRect.STRETCH_SCALE
 		mount.position = layout.mount + offset
-		mount.size = Vector2(216, 110)
+		mount.size = Vector2(216, 140)
 		mount.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(mount)
-		var effect := _label(layout.effect + offset,float(layout.width),14)
+		var effect := _label(layout.effect + offset,float(layout.width),18)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply + offset,float(layout.width),13)
-		var effective := _label(layout.effective + offset,float(layout.width),13)
-		supply.size.y = 19
-		effective.size.y = 19
+		var supply := _label(layout.supply + offset,float(layout.width),16)
+		var effective := _label(layout.effective + offset,float(layout.width),16)
+		supply.size.y = 24
+		effective.size.y = 24
 		supply.add_theme_color_override("font_color", Color("c1dfd9"))
 		effective.add_theme_color_override("font_color", Color("e5d6b0"))
 		var slider := HSlider.new()
@@ -207,15 +212,15 @@ func _build() -> void:
 		add_child(slider)
 		_rows[id] = {"effect":effect, "supply":supply, "effective":effective, "slider":slider, "mount":mount}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(305,765),273,14)
+	_budget = _label(Vector2(278,762),336,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_cost = _label(Vector2(230, 790), 348, 14)
-	_purchase = _button("升级",Rect2(230,816,94,34),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(330,816,78,34),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认",Rect2(414,816,78,34),func(): _command(_submit))
-	_restore = _button("还原",Rect2(498,816,80,34),_reset)
-	_notice = _label(Vector2(230,854),348,13)
-	_notice.size.y = 20
+	_cost = _label(Vector2(184, 789), 430, 16)
+	_purchase = _button("升级",Rect2(181,815,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(342,817,74,40),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(424,817,74,40),func(): _command(_submit))
+	_restore = _button("还原",Rect2(506,817,74,40),_reset)
+	_notice = _label(Vector2(184,864),430,16)
+	_notice.size.y = 28
 	for button in [_purchase,_equal,_apply,_restore]: button.disabled = true
 
 func _ready() -> void:
