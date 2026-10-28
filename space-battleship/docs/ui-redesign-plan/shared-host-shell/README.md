@@ -1,5 +1,7 @@
 # 共享宿主当前交付
 
+最新接入：[星球 R14 附着修订共享组合](runtime-h1/planet-r14-integration/README.md)。原星球高审限定关闭近侧工坊切割；共享整屏与必要接入已固定，待原布局 Astra 审。已审公共壳、装备和反应堆保持，不合 main。
+
 新增接入：[反应堆厚体读控 R4 共享组合](runtime-h1/reactor-console-r4-integration/README.md)。原组最终下两路文字净空窄修已获原反应堆 Astra 认可；共享组合待原布局 Astra 审，公共壳与其他模块保持，不合 main。
 
 新增接入：[星球 R13 三设施共享组合](runtime-h1/planet-r13-integration/README.md)。R11 工坊已获原星球独审限定通过，R12/R13 内部视觉仍待原审；公共壳与已审顶部退出保持，现交原布局 Astra 审共享组合，不合 main。

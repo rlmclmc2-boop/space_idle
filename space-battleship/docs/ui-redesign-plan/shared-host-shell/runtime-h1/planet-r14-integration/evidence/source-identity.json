@@ -1,0 +1,13 @@
+{
+  "source_commit": "597adbdbdbb163d41278d2cc762e390013c4239c",
+  "files": {
+    "scripts/planet_facility_scene.gd": {
+      "sha256": "379b633a857f653cc2a1ea8380b2e1de108014928044d58d826fe60be7b1234e",
+      "source_equal": true
+    },
+    "assets/planets/facilities_v5/README.md": {
+      "sha256": "070daa6fbafd63f7b2bb92b37e47b67078429ab9d35fe5244072dbf1f6106fd3",
+      "source_equal": true
+    }
+  }
+}
