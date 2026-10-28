@@ -1,0 +1,169 @@
+{
+  "status": "proposal_only_no_main_only_implementation_or_merge_created",
+  "remote_default_branch": "refs/heads/main",
+  "remote_main": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "remote_master_exists": false,
+  "source_combination": "e6842cf5e2f08b1f74bf5f67b04d18f48c5a37b3",
+  "runtime_paths": [
+    {
+      "path": "src/ui/equipment_panel.gd",
+      "source_commit": "c84c703fafe2ce8523480cf62908979bc876ae80",
+      "selection": "whole_file_approved_equipment_plus_title_background_seam",
+      "source_blob": "614c866f783a099587598fb4cc99d09b54b9c311",
+      "main_blob": "7c666ca59183a48382361dd69fa6753b2b3c56b8",
+      "source_sha256": "39fa9634a11fd71c5a73d3a46c6778255ffb48e8d201a2624271f52281de624a"
+    },
+    {
+      "path": "src/systems/equipment.gd",
+      "source_commit": "94040a18b6616af78fa52c07986331d2e943d4f3",
+      "selection": "whole_equipment_owner_file_facts_comparison_receipts_notifications",
+      "source_blob": "c29b79a56cef3da2e9f923df7c277b3286df1c7c",
+      "main_blob": "2f37403d4860573fcbd685abf080cefa44b52647",
+      "source_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26"
+    },
+    {
+      "path": "src/game_session.gd",
+      "source_commit": "94040a18b6616af78fa52c07986331d2e943d4f3",
+      "selection": "only_four_equipment_methods_and_four_notification_sites_not_whole_file",
+      "source_blob": "ccfca9532cdf7f8b53fd08fc876ad44566c34320",
+      "main_blob": "b4f516e2005d5ed728e40fdcfc3f063489274948",
+      "source_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad"
+    },
+    {
+      "path": "src/systems/economy.gd",
+      "source_commit": "3d763099cef5cd80b681a6522a6f2d7cee816078",
+      "selection": "only_this_economy_file_not_reactor_or_the_whole_commit",
+      "source_blob": "637c13bc0537a9e71aaaeb80d9a25b29b121d64d",
+      "main_blob": "26e65198a84e35f2eea29b627397b16db9e95f97",
+      "source_sha256": "becf89543f685ef9512e1c5a918dd9a9f776d2730fbb2fb51552bf2b59a6817f"
+    },
+    {
+      "path": "src/ui/shared_host.gd",
+      "source_commit": "ef409d5ca5216b9895cc45e6bd42e5d0bc2927bd",
+      "selection": "whole_generic_host_file_no_reactor_planet_model_imports",
+      "source_blob": "1d75296a90f182ce106cd6b4d0ecd1fa83291476",
+      "main_blob": null,
+      "source_sha256": "4ab563267c2e7bb593ed4d7a162aebf46a2315a744cf2bd2ab71b586c9b39d71"
+    },
+    {
+      "path": "src/ui/campaign_view.gd",
+      "source_commit": "80e5463ff36f457b9e178315a5cf4b521b871068",
+      "selection": "whole_file_shared_ui_gate_only",
+      "source_blob": "2f03b6fb355b665a14fd8f3ff127c6cc3b092bca",
+      "main_blob": "195d561e6c7a83c976b059083f1d0acc301d9d49",
+      "source_sha256": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb"
+    },
+    {
+      "path": "project.godot",
+      "source_commit": "7a4c3cf22f0419c1b8dac141f5cde00afca541bc",
+      "selection": "only_viewport_width_1440_height_900_two_field_delta",
+      "source_blob": "1ed8ff4eadbf925770f197a4bb7c7e34770aab9d",
+      "main_blob": "cf7a9028c527d0aa93030b6a96b6797db21334f8",
+      "source_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9"
+    },
+    {
+      "path": "src/main.gd",
+      "source_commit": "ef409d5ca5216b9895cc45e6bd42e5d0bc2927bd",
+      "selection": "host_only_adapter_must_be_new_isolated_commit_keep_main_ReactorPanel_PlanetPanel",
+      "source_blob": "f36fb6a22c2fe399f39f404edc1bd24279107196",
+      "main_blob": "f3f66e378235b368f093156d5a286726735afd30",
+      "source_sha256": "cc3be76c9186debb542fa5200cdbd9071fe67c11ee227b49bd1863271c240a4d"
+    }
+  ],
+  "assets_and_provenance": [
+    {
+      "path": "assets/ui/equipment/hangar/README.md",
+      "source_commit": "c84c703fafe2ce8523480cf62908979bc876ae80",
+      "source_blob": "fc8d9f9104fcd46b00ad3329f8873d817f340316",
+      "main_blob": null
+    },
+    {
+      "path": "assets/ui/equipment/hangar/hangar-console.png",
+      "source_commit": "c84c703fafe2ce8523480cf62908979bc876ae80",
+      "source_blob": "047321127bfa81410928ba755643b26006709504",
+      "main_blob": null
+    },
+    {
+      "path": "assets/ui/equipment/hangar/hangar-console.png.import",
+      "source_commit": "c84c703fafe2ce8523480cf62908979bc876ae80",
+      "source_blob": "d340400a404450594e6a85c4fe85b84214317e21",
+      "main_blob": null
+    },
+    {
+      "path": "assets/ui/equipment/hangar/imagegen-prompt-01.txt",
+      "source_commit": "c84c703fafe2ce8523480cf62908979bc876ae80",
+      "source_blob": "a2727143e54298f3c20567dabc1673bb9a85f839",
+      "main_blob": null
+    },
+    {
+      "path": "assets/ui/equipment/hangar/sources.json",
+      "source_commit": "c84c703fafe2ce8523480cf62908979bc876ae80",
+      "source_blob": "4984800f83b6d038c3d1e3f99e6acedb26e9e042",
+      "main_blob": null
+    }
+  ],
+  "session_new_methods": [
+    "equipment_slot_facts",
+    "_equipment_comparison_dependencies",
+    "_notify_equipment_comparison",
+    "equipment_comparison"
+  ],
+  "session_notification_only_sites": [
+    "publish_equipment_refit",
+    "_publish_research",
+    "publish_reactor",
+    "publish_world"
+  ],
+  "session_existing_sites_body_equal_to_main_without_notification_lines": true,
+  "keep_main_blobs": {
+    "src/ui/reactor_panel.gd": "12c15bddbfd89e349c30a83f1b4612066b08e00c",
+    "src/ui/planet_panel.gd": "831768150eba1a5f4e629b7426210444008f79f3",
+    "src/systems/reactor.gd": "18e41ee368729ac10b4c6eabd5b8eda6ab220353",
+    "src/systems/planet.gd": "fd8f2d0ccf470d4260231eb3d5eafb24719109c1",
+    "src/systems/research.gd": "722a28eda13afa039cb4f4a51d5b9ea575534c5e",
+    "src/systems/enhancement.gd": "117cd6ab7bc226ff2db241880916b4dc0175a16c",
+    "src/systems/crew.gd": "308a8cf82d785eae48dce20a60f8f8aecddaa1a6",
+    "src/systems/galaxy.gd": "8638693afc1ac7b113166beb66c78b78abbc93c3",
+    "src/systems/hyperspace.gd": "cd58e3c04b739318d45e67ac8964ba3a0c421c5b",
+    "scripts/planet_visual.gd": "bd752f844bfcd72ec5635295a4bde52bc335b223",
+    "scripts/rotating_planet.gd": "a44030c4b215ec90b22a3f3b42ae2a21f8852135",
+    "scripts/rotating_planet.gdshader": "c2312d5ddd34da728fb32d09102b6c26d6941ebd"
+  },
+  "forbidden_new_paths": [
+    "src/ui/reactor_scene.gd",
+    "src/ui/reactor_stage.gd",
+    "assets/ui/reactor/ship-hub-r4/",
+    "scripts/planet_facility_scene.gd",
+    "scripts/planet_contact_shadow.gdshader",
+    "assets/planets/facilities_v5/",
+    "assets/planets/painted-v4/",
+    "art_sources/planet_facilities_v5/",
+    "foundation/tests/_*.gd"
+  ],
+  "other_preserved_families": [
+    "assets/ui/ships/",
+    "assets/weapons/",
+    "assets/fonts/",
+    "addons/native_battle/src/",
+    "config_excel/",
+    "foundation/host/save_files.gd",
+    "src/systems/battle.gd",
+    "scripts/ship_geometry_convention.gd"
+  ],
+  "actions_taken": [
+    "git status read",
+    "git ls-remote read",
+    "git fetch main",
+    "Git object/path/function diff read",
+    "write this proposal documentation on existing candidate branch"
+  ],
+  "actions_not_taken": [
+    "checkout main",
+    "create isolated implementation branch",
+    "cherry-pick",
+    "merge",
+    "push main",
+    "run game or independent test"
+  ],
+  "expected_future_preparation": "Only after root accepts this scope: create same-workspace main-only isolated commits, keep existing combined candidate fixed, original Astra reviews the adapter/dependency diff. This proposal has no final mergeable candidate hash."
+}
