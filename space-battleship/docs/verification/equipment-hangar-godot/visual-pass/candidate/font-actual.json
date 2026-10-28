@@ -1,0 +1,15 @@
+{
+  "axes": [
+    {
+      "coordinates": {
+        "2003265652": 600.0
+      },
+      "rid": "RID(1516123455490)"
+    }
+  ],
+  "class": "FontVariation",
+  "embolden": 0.0,
+  "variation_input": {
+    "2003265652": 600.0
+  }
+}

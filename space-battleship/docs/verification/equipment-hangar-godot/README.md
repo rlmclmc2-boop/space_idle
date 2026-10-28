@@ -1,5 +1,34 @@
 # 装备机库：Godot 实施候选
 
+## 2026-10-28 视觉修订固定候选（待原独审）
+
+固定源码 **946f71d9f285540948118db5572fa2976fa2a68d**；同版截图、实际操作、字体栅格、四项原关闭问题定向回归、首跑恢复暂停失败与补测说明统一见 [visual-pass/README.md](visual-pass/README.md)。真实操作14条/0失败，定向回归0失败；这不代替图04视觉与整体通过判断。原目录/实现分支，未合main，未改main/业务/配置/其他模块。接管者 `/root/equipment_visual_replacement` 未实际压缩；下方WIP交接只作历史，当前候选以本段及visual-pass为准。
+
+## 2026-10-28 视觉修订历史WIP交接（已接管）
+
+用户否定上一版视觉后恢复装备专属修订；下方“四项通过/冻结”是历史行为修订结论，不能当作本次视觉通过。执行者 `/root/equipment_image_revision_replacement` **现已实际上下文压缩**，按约定仅核已有进程和截图后交接停止。仍为原工作区、`implement/equipment-hangar-godot`，HEAD `b342b7896dd3796ffea571b22ae186b81f3948bc`；本轮未提交/推送，WIP保留原树，不能当可审成品。
+
+已修改的运行文件仅 `src/ui/equipment_panel.gd`（当前SHA256 `071a352cbe4f4d3cb8f167f99fe3b26f043426531b3b7a25ce0d8c38e169a05d`）。已实际挂载机壳/支承、扩展底台、删除槽数横条、拆分费用资源行、当前/所选两列比较、装备专属400/600数字轴Theme及批量结果主次。没有改 `main.gd`、业务、配置、正式舰体/武器或其他模块。共享宿主必要接入点：**无**；灰色“舰桥面板”仍属宿主，若统一其材质需另行协调。
+
+两张原始ImageGen静态PNG与各自提示词在 `assets/ui/equipment/hangar/`，未烘焙交互或数值：
+
+- `terminal-housing.png`：SHA256 `dc67618adc93258feb98cbb6adfb47a48f4048d17540a2d224e8082b22d748ef`，原工具输出 `/workspace/generated_images/exec-01fb4591-41e0-4de7-b5e1-96ba7f52868f.png`；提示词 `terminal-imagegen-prompt.txt`。
+- `support-arm.png`：SHA256 `a6a7e7894f6c7b1c7946c7a65deb1f7f3ce35ee5e4d3b326f62fadbc09531e03`，原工具输出 `/workspace/generated_images/exec-bcde0cd5-48f5-40d9-806c-ac74ad41ed2d.png`；提示词 `support-imagegen-prompt.txt`。
+
+两图均已实际查看，原PNG完整复制，运行使用Atlas区域。引用来源为现有机库台面与已批准图04。它们目前仅WIP资产，不代表用户认可。
+
+已有真实4.7.2运行结果（未为交接重跑）：
+
+- `visual-pass/before/`：旧布局15张原像素图、`operations.json`；已有进程完成 `EQUIPMENT_CAPTURE_COMPLETE failures=0 records=9`。此结果不外推新布局。
+- `visual-pass/wip/01-starter.png`、`02-starter-slot-selection.png`、`03-cruiser-cannon-comparison.png`：修后已有真实1440×900原像素预览，现已查看03；03 SHA256 `d8f23d3740b1eea0c4cf8981470391cbfa4393b2058526a65ecfd20acd2a3044`。预览日志 `/tmp/space-idle-runtime472/visual-preview.log` 已输出 `VISUAL_PREVIEW_READY` 并结束；交接核查无仍运行Godot进程，无需杀进程或重复启动。
+- `visual-pass/font-probe.json`：数字OpenType键 `2003265652` 的400/600坐标已读回；TextServer基础weight元数据均100，样本文字宽度198/201。不能将坐标配置直接冒称实际600字重已验收，仍需字体像素评价。WIP `font-actual.json`保留当前读回。
+
+明确未完成/未通过：03中“本次费用”标题与左图标叠压；支承偏细、斜接和端点接触仍需整理；机壳厚边、台面/控件融合、字体实重与名称/主值/费用层级仍需视觉审查。新布局MAX多资源/长金额、防御、冷却/拒绝与批量打开关闭/真实结果尚未运行。费用行目前逐键展示，超过3种资源的空间须核实，不能隐藏资源。旧临时操作驱动按批量子节点索引找关闭按钮，已不适合新树，应改为现有 `_batch_close` 引用后再运行。四项既有行为修订未有意改动，但本轮尚无足够回归证明保持，不能宣称通过。
+
+继续运行须由接管者自行决定，不自动重跑：沿 [environment.md](environment.md) 的既有DISPLAY/XDG/native环境，保留现有 `generated/config.json`（本轮未改，不需重新发布）；普通真实入口为该文档Godot命令。已有预览驱动 `/tmp/space-idle-visual-preview.gd`，使用 `SPACE_IDLE_SETTINGS_PATH=/tmp/space-idle-runtime472/settings-visual-preview.json`，其命令为同一Godot加 `--script /tmp/space-idle-visual-preview.gd`，会重写WIP截图，重跑前另设输出目录。完整旧驱动 `/tmp/space-idle-visual-before.gd`、布局编辑脚本 `/tmp/space-idle-visual-ui.py`、批量编辑脚本 `/tmp/space-idle-visual-batch.py`仍在临时目录。环境来源/版本/native链接记录沿原环境文档复用。
+
+现场另有1283个未跟踪 `.import/.uid` 本地导入元数据，系恢复/导入产生，未提交、未清理；交接不得全量add或清树。新图/提示词/证据亦未跟踪。没有审批拒绝或环境阻塞；停点原因是实际压缩及视觉/回归未完成。未合main、未强推。
+
 **当前原独审四项修订入口：[review-fixes/README.md](review-fixes/README.md)**，固定源码94040a18b6616af78fa52c07986331d2e943d4f3，未知回执、运行期依赖、无支付供能刷新与等比拾取四项已由原独审具名定向复核通过，相关原操作回归保持；真实图已交用户，等待用户验收，候选冻结。此结论不覆盖长期性能、全组合/全部姿态、跨平台或整体游戏。本页下方保留首批d2bb实施及原始证据，不把历史截图冒称本次同版。
 
 用户确认图04并授权实施后，在原工作区 `/workspace/space_idle`、项目 `space-battleship` 制作。实现分支 `implement/equipment-hangar-godot`，原设计分支继续固定图稿 `07312fcb9fc8d2d47bce771c9f7886670b8be5c9`。依赖 `09af963cf6f66146e019cecd08353426ab6d6abb` 普通合入，无冲突；其祖先包含装备 `5236e4d2`、`ab6e8873`。没有合 main、强推、新工作区、worktree 或子执行者。

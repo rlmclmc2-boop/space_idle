@@ -1,0 +1,233 @@
+{
+  "fixed_source_commit": "946f71d9f285540948118db5572fa2976fa2a68d",
+  "operations_source_label_note": "The operations runner started before the source commit and its source_commit environment label is empty. Runtime SHA256 values bind it byte-for-byte to the fixed Git objects below. No run or result was regenerated merely to change the label.",
+  "source_binding": {
+    "res://assets/ui/equipment/hangar/hangar-console.png": {
+      "runtime_sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "matches_fixed_source": true
+    },
+    "res://generated/config.json": {
+      "runtime_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "git_source": "local generated configuration, excluded"
+    },
+    "res://project.godot": {
+      "runtime_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "matches_fixed_source": true
+    },
+    "res://src/game_session.gd": {
+      "runtime_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "matches_fixed_source": true
+    },
+    "res://src/main.gd": {
+      "runtime_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "matches_fixed_source": true
+    },
+    "res://src/systems/equipment.gd": {
+      "runtime_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "matches_fixed_source": true
+    },
+    "res://src/ui/equipment_panel.gd": {
+      "runtime_sha256": "613f15e64a2cce5b3685438bd10ceb3eb77efe8ab93bb89026c4235dcc35c794",
+      "matches_fixed_source": true
+    }
+  },
+  "regression_source_label": "946f71d9f285540948118db5572fa2976fa2a68d",
+  "operations_failures": [],
+  "regression_failures": [],
+  "files": {
+    "candidate/01-starter.png": {
+      "sha256": "2d2f21eeeefabafe6245014b0956bfdcd8c88d9dffaf805a96fe23b54602da6d",
+      "bytes": 1700681
+    },
+    "candidate/02-starter-slot-selection.png": {
+      "sha256": "2d2f21eeeefabafe6245014b0956bfdcd8c88d9dffaf805a96fe23b54602da6d",
+      "bytes": 1700681
+    },
+    "candidate/03-cruiser-cannon-comparison.png": {
+      "sha256": "46156c86c2e6776d3077d748e0cd64a8b3d741fb28ea0bbb7642be545f4bba10",
+      "bytes": 1741058
+    },
+    "candidate/04-single-plus1-material.png": {
+      "sha256": "669b78eef78268969dacddbb0832879e6417e3724fc4d27fb313098115897c07",
+      "bytes": 1747899
+    },
+    "candidate/05-plus10-quote.png": {
+      "sha256": "5f3afd08afce3ea88d58eb49ea61b0aeb586c03c12b6339dc8eea6fbca30aa00",
+      "bytes": 1748041
+    },
+    "candidate/06-single-plus10.png": {
+      "sha256": "67ee2b667f7a5d2473b6f52e521e26389fe19d80cbe384faceffde7d0c58d256",
+      "bytes": 1748173
+    },
+    "candidate/07-max-quote.png": {
+      "sha256": "3bb4ab17d8d545ea30289bd56448cc8ca701e20be93979f011e51ca713157c07",
+      "bytes": 1747332
+    },
+    "candidate/08-single-max.png": {
+      "sha256": "e156bc7eaa774e317a585f1daf79ed5ef236aab3c271665088ff47ba01adb1cf",
+      "bytes": 1746901
+    },
+    "candidate/09-switch-cooldown.png": {
+      "sha256": "8c5255385d6fb98aedb4d90e1b882eccfd128b6d6a80e649db1c45f11410bd17",
+      "bytes": 1740813
+    },
+    "candidate/10-switch-ready.png": {
+      "sha256": "84ebcc370f26b85b44e000f3933db0518eeea49fd644ed71506e7e61275a51c8",
+      "bytes": 1740368
+    },
+    "candidate/11-batch-open.png": {
+      "sha256": "8429cc026be76b7e6ee9877448aaf2e8c7ed50fa51152ed0b4bede3fb6b105d7",
+      "bytes": 1468122
+    },
+    "candidate/12-batch-partial-result.png": {
+      "sha256": "ef7d6e4f7c21f5ac7c0d8dd038d3088cb390913c5eb74b0f6b90ae511b9711d4",
+      "bytes": 1482890
+    },
+    "candidate/13-batch-result-retained.png": {
+      "sha256": "fe22c7c16fa4c50dc39820014e1a3dbef6a20f72c70d68c77bea3e155908007d",
+      "bytes": 1482702
+    },
+    "candidate/14-defence-selection.png": {
+      "sha256": "8eec83345a7acb6a5c17372b2c308c5b9817b42bf399c83bd38626319621c21a",
+      "bytes": 1734683
+    },
+    "candidate/15-final-cruiser.png": {
+      "sha256": "1de728060250af7e98a7e3b52a5c98b07d005626ced1ba988bce9859fd7c5375",
+      "bytes": 1750265
+    },
+    "candidate/16-defence-candidate.png": {
+      "sha256": "0127eeef1eef707d4f5e2c1f9f9e5ecd1470158900146c81b6ea22c2772f173b",
+      "bytes": 1735448
+    },
+    "candidate/17-defence-quote-0.png": {
+      "sha256": "3257927918b84696a7f9e440666330da295f5df22a88d9eb68cce8fb2ca74edb",
+      "bytes": 1735455
+    },
+    "candidate/17-defence-quote-1.png": {
+      "sha256": "b17b16a4294539638367fbc953916d6e8eccc6ae883b3fe0ee548865f7520af0",
+      "bytes": 1736695
+    },
+    "candidate/17-defence-quote-2.png": {
+      "sha256": "a94a04a2224b3b7ae5c055a1f6c51e4c9675f4674ccb1c1ffc3f3eafb60ec661",
+      "bytes": 1739995
+    },
+    "candidate/18-defence-purchased-0.png": {
+      "sha256": "c25b4ee4db0a9a99e417208535ed71ae2f3f8d1b64203478f0e06bff0d26a786",
+      "bytes": 1736682
+    },
+    "candidate/18-defence-purchased-1.png": {
+      "sha256": "4e6be0340171d54577b9f7a53e46edfac8377e5636188e7ef81667ce858dd242",
+      "bytes": 1738147
+    },
+    "candidate/18-defence-purchased-2.png": {
+      "sha256": "7f1a3e34515a72ec06c84366ff7217a9e9c2d2b85e5ed1ce367224d34d697a9d",
+      "bytes": 1736021
+    },
+    "candidate/19-long-max-multi-resource.png": {
+      "sha256": "950b954dc6050f9797a0b19b6fbaaa927cbb3ced291869ad49c20fd3b83fbdb3",
+      "bytes": 1756525
+    },
+    "candidate/20-insufficient-resources.png": {
+      "sha256": "48300a0d5c5ba95d563641795a72da390dfd529758fead36b4d6c53f77395e4d",
+      "bytes": 1746782
+    },
+    "candidate/font-actual.json": {
+      "sha256": "7598206788765f3c0fa120c240c67613e464634c1c9fda633d81fb458bbc6e17",
+      "bytes": 224
+    },
+    "candidate/operations.json": {
+      "sha256": "c53951a4254364aae095c5f246f1dcd6308d5213c26892489e62188c13aef729",
+      "bytes": 118790
+    },
+    "regression/batch-unknown.png": {
+      "sha256": "63f23d032481a7e680568bb685860decd58b2963d4ca8f273f0a667a5cbb1057",
+      "bytes": 1089786
+    },
+    "regression/edge-left-after.png": {
+      "sha256": "3d984997500ece3208dbc63705d4a89494606fccafc4f5f044b890ae04b6b26a",
+      "bytes": 1356705
+    },
+    "regression/edge-left-before.png": {
+      "sha256": "b04b24ae88d9ba63600305d24b76c6ba9712ea6339df369422327cb29ba39df3",
+      "bytes": 1356283
+    },
+    "regression/edge-right-after.png": {
+      "sha256": "57eb2c04c7ac64c033f8a7380c03488022850cdb3f7866d08d8dbb76ce3adf60",
+      "bytes": 1362504
+    },
+    "regression/edge-right-before.png": {
+      "sha256": "6d1890dd090dc0ede52c736c5cd70ca1f1a0007046bc611badfe5c6d86027524",
+      "bytes": 1360451
+    },
+    "regression/free-defence-return.png": {
+      "sha256": "2f84f93b8014c813825c664000580a6f29c77727f4c9de0e3ea30baa44f27de1",
+      "bytes": 1353449
+    },
+    "regression/free-weapons-return.png": {
+      "sha256": "3c352fdb3ff5ce3ea1dd5086c464b5e79534f06cc01be433113b8eeb673da311",
+      "bytes": 1363535
+    },
+    "regression/runtime.json": {
+      "sha256": "8b12b6d7076e8c81f4c0a949748180c673314ed12ee75ef5bb85974fe7faba69",
+      "bytes": 479956
+    },
+    "regression-recovery-window/batch-unknown.png": {
+      "sha256": "3a358cd6436bfe7d6b2ff518c13aa0f592482384ec0a994bb4c7106db94bd6f3",
+      "bytes": 1052312
+    },
+    "regression-recovery-window/free-defence-return.png": {
+      "sha256": "3cfbfaadb240a24c2b11d228276719c32c162ce4ff726b4436dcf3c45edfc0d1",
+      "bytes": 1315946
+    },
+    "regression-recovery-window/free-weapons-return.png": {
+      "sha256": "80acceba6ca92180ac50f3f688c40940fa07497f231575d98de2ab23f2ee7e76",
+      "bytes": 1327602
+    },
+    "regression-recovery-window/runtime.json": {
+      "sha256": "156160722b9b7433eb535ebe3817250e779d08798feaeda60dc422da684fb505",
+      "bytes": 324081
+    },
+    "regression-recovery-window/runtime.log": {
+      "sha256": "15f4df2eb1367ae99c2359e4ce96447a3b104bcfe00331096ab5046415c1d71d",
+      "bytes": 943
+    },
+    "font-raster.png": {
+      "sha256": "8066ec7229d7a9a6a8ae5d63f944c5a45aa3d85c0485a40fb8f52acbd9ed8319",
+      "bytes": 25917
+    },
+    "font-raster.json": {
+      "sha256": "13d49cda1fbee799c9a85e654fc92db00fc8213b3c806e586b717466372d5355",
+      "bytes": 967
+    },
+    "font-raster.log": {
+      "sha256": "a928d24e621d223b636fe7bbb196a81dbf96189bf08300b5811b7f86de045d0b",
+      "bytes": 1065
+    },
+    "candidate.log": {
+      "sha256": "3a70161e62b1e1f6acc6906bb137da31f1b25ffa613bee4d78952a9fb8b1e6c0",
+      "bytes": 417
+    },
+    "regression.log": {
+      "sha256": "e1d2427f1735f1dbad3fd78df21dadc63dc8c449b1533dd2a527183e947c4069",
+      "bytes": 456
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "bd5bdf9917a9fdc26ced0bf9593ac21fa4128b051ebc91317ed5bf93391c1117",
+      "bytes": 16555
+    },
+    "regression-driver.gd.txt": {
+      "sha256": "2a3cb0348b0361765307a911bf4a738f3c8d1c5909ff7d47e0c8c0ddf25528dc",
+      "bytes": 24611
+    },
+    "font-raster-driver.gd.txt": {
+      "sha256": "c65a4dace6b4f32249069ade5fc80881609f7e7e890d8cfeff4987ac2b05efd9",
+      "bytes": 1994
+    },
+    "README.md": {
+      "sha256": "a9e65ea6eb05830127f514e342a574cc69996d971a776fc7e468c7ecf233d3fd",
+      "bytes": 7521
+    }
+  },
+  "image_scope": "All candidate/regression/recovery-window screenshots are raw 1440x900 Godot root viewport PNGs, not resized/cropped/composited. Font raster is an isolated real Godot sample, not the game UI.",
+  "excluded_local_evidence": "Earlier before/, wip/, refined-preview/ and font-probe.json remain preserved locally, outside this candidate commit; no cache/save/credential staged."
+}

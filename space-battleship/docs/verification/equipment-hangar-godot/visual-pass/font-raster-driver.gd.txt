@@ -1,0 +1,29 @@
+extends SceneTree
+var samples: Array=[]
+func _initialize():call_deferred("run")
+func run():
+    var base=load("res://assets/fonts/NotoSansSC.ttf")
+    var background=ColorRect.new();background.color=Color.BLACK;background.size=Vector2(900,260);root.add_child(background)
+    for index in 4:
+        var font=FontVariation.new();font.base_font=base
+        var weight=[100.0,400.0,600.0,450.0][index]
+        font.variation_opentype={2003265652:weight} if index<3 else {"wght":weight}
+        var label=Label.new();label.text="装备 攻击力 12.4 K";label.position=Vector2(10,10+index*60);label.size=Vector2(600,45)
+        label.add_theme_font_override("font",font);label.add_theme_font_size_override("font_size",24);label.add_theme_color_override("font_color",Color.WHITE);background.add_child(label)
+        var rid=font.get_rids()[0];var ts=TextServerManager.get_primary_interface()
+        samples.append({"axis_input":font.variation_opentype,"coordinates":ts.font_get_variation_coordinates(rid),"base_metadata_weight":ts.font_get_weight(rid),"width":font.get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,24).x})
+    for i in 5:await process_frame
+    await RenderingServer.frame_post_draw
+    var raster=root.get_texture().get_image()
+    for index in 4:
+        var ink:float=0;var lit:int=0;var opaque:int=0
+        for y in range(10+index*60,55+index*60):
+            for x in range(10,610):
+                var value:float=raster.get_pixel(x,y).r
+                ink+=value
+                if value>0.05:lit+=1
+                if value>0.9:opaque+=1
+        samples[index].raster_coverage=ink;samples[index].lit_pixels=lit;samples[index].opaque_pixels=opaque
+    raster.save_png("res://docs/verification/equipment-hangar-godot/visual-pass/font-raster.png")
+    var f=FileAccess.open("res://docs/verification/equipment-hangar-godot/visual-pass/font-raster.json",FileAccess.WRITE);f.store_string(JSON.stringify(samples,"  "));f.close()
+    print(JSON.stringify(samples));quit()

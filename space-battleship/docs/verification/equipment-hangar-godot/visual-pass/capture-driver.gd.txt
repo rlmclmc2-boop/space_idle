@@ -1,0 +1,240 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/visual-pass/candidate"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func record(action: String, before: Dictionary) -> void:
+    records.append({"action": action, "before": before, "after": snapshot(), "actual_result": panel.last_result.duplicate(true)})
+func assert_purchase(before: Dictionary, label: String) -> void:
+    var result: Dictionary = panel.last_result
+    check(result.get("purchase_receipt", {}).get("commit_status") == "accepted", label + " native accepted receipt")
+    var after: Dictionary = snapshot()
+    var spent: Dictionary = result.get("purchase_receipt", {}).get("spent", {})
+    for resource in spent:
+        var expected: Dictionary = host.amount_api.apply("sub_nonnegative", [before.wallet[resource], spent[resource]])
+        check(expected.ok and host.amount_api.apply("compare", [expected.value, after.wallet[resource]]).scalar == 0, label + " exact wallet minus actual spent " + resource)
+    for purchase in result.get("purchase_receipt", {}).get("purchases", []):
+        var old_level: int = -1
+        var new_level: int = -1
+        for row in before.slots:
+            if row.id == purchase.slot_id: old_level = row.paid_level
+        for row in after.slots:
+            if row.id == purchase.slot_id: new_level = row.paid_level
+        check(new_level - old_level == int(purchase.count), label + " actual count " + purchase.slot_id)
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func run() -> void:
+    app = load("res://src/main.tscn").instantiate()
+    root.add_child(app)
+    host = app.session
+    check(app.startup_error.is_empty() and host != null and host.run_state.is_running(), "real main/session/native startup")
+    if not failures.is_empty(): quit(1); return
+    panel = app.equipment_scene
+    host.set_pause("user", true)
+    await flush()
+    var font: Font = panel._current_title.get_theme_font("font")
+    var text_server = TextServerManager.get_primary_interface()
+    var axes: Array = []
+    for rid in font.get_rids():
+        axes.append({"rid":rid,"coordinates":text_server.call("font_get_variation_coordinates",rid) if text_server.has_method("font_get_variation_coordinates") else "method unavailable"})
+    var font_file := FileAccess.open(destination.path_join("font-actual.json"),FileAccess.WRITE)
+    font_file.store_string(JSON.stringify({"class":font.get_class(),"axes":axes,"embolden":font.get("variation_embolden"),"variation_input":font.get("variation_opentype")},"  "));font_file.close()
+    await screenshot("01-starter")
+    await click(panel._slot_buttons["weapon:0"].button)
+    check(panel._selection_open, "direct slot click opens equipment choices")
+    await screenshot("02-starter-slot-selection")
+    records.append({"action":"initial actual main", "state": snapshot()})
+    # An explicitly controlled review save state; none of these facts are produced by UI.
+    var campaign: Dictionary = host.campaign_system.save_state()
+    campaign.state.highest_reached = 100
+    campaign.cycle_reached = 100
+    campaign.state.state = "menu"
+    campaign.departure_remaining = 0.0
+    campaign.state.speed = 0.0
+    campaign.state.cleared_stages = {}
+    for level in range(1, 100): campaign.state.cleared_stages[level] = true
+    var restored: Dictionary = host.campaign_system.restore_state(campaign)
+    check(restored.ok, "controlled campaign state validates")
+    host.equipment.refresh_availability(host.campaign_system.available, 100)
+    var changed: Dictionary = host.campaign_system.change_ship("Cruiser", host.commit_ship_refit)
+    check(changed.ok, "real change_ship/native accepts controlled unlocked cruiser")
+    for pair in [["weapon:1","missile"],["weapon:2","longLaser"],["defence:0","shield"],["defence:1","armour"]]:
+        var equipped: Dictionary = host.equipment.equip_slot(pair[0], pair[1], host.equipment_inputs(), host.publish_equipment_refit)
+        check(equipped.ok, "real controlled setup equip " + pair[0])
+    var equipment: Dictionary = host.equipment.save_state()
+    for slot in equipment.slots:
+        slot.paid_level = 19 if slot.id == "weapon:0" else 18
+        slot.switch_ready_at = 0.0
+    check(host.equipment.restore_state(equipment, host.campaign_system.ship_facts().mounts).ok, "controlled paid-level save state validates")
+    check(host.publish_equipment_refit(host.economy.budget(), "refit", "", null, false).ok, "controlled restored slots publish to actual native")
+    wallet("2000000", "2000")
+    panel._dirty = true
+    await flush()
+    await click(panel._slot_buttons["weapon:0"].button)
+    await click(panel._choices.cannon.button)
+    check(panel.last_comparison.current.equipment_id == "laser" and panel.last_comparison.candidate.equipment_id == "cannon", "same basis current/candidate comparison")
+    check(host.equipment_slot_facts()[0].equipment_id == "laser", "browsing candidate leaves actual pulse installed")
+    records.append({"action":"controlled review save setup, not earned gameplay progress", "campaign":campaign,"equipment":equipment,"state":snapshot()})
+    await screenshot("03-cruiser-cannon-comparison")
+    var before: Dictionary = snapshot()
+    await click(panel._quantity_buttons[0])
+    await click(panel._purchase)
+    record("single +1 across evolution material boundary", before)
+    assert_purchase(before, "single +1")
+    await screenshot("04-single-plus1-material")
+    before = snapshot()
+    await click(panel._quantity_buttons[1])
+    var quote_ten: Dictionary = panel.last_comparison.quote.duplicate(true)
+    check(quote_ten.ok and quote_ten.count == 10, "exact +10 full quote")
+    await screenshot("05-plus10-quote")
+    await click(panel._purchase)
+    record("single +10", before)
+    assert_purchase(before, "single +10")
+    await screenshot("06-single-plus10")
+    before = snapshot()
+    await click(panel._quantity_buttons[2])
+    var max_quote: Dictionary = panel.last_comparison.quote.duplicate(true)
+    check(max_quote.ok and max_quote.count > 0, "real MAX preview count")
+    await screenshot("07-max-quote")
+    await click(panel._purchase)
+    record("single MAX", before)
+    assert_purchase(before, "single MAX")
+    check(panel.last_result.purchase_receipt.purchases[0].count == max_quote.count, "MAX quote and actual count agree")
+    await screenshot("08-single-max")
+    before = snapshot()
+    await click(panel._install)
+    record("direct install selected cannon", before)
+    check(panel.last_result.ok and host.equipment_slot_facts()[0].equipment_id == "cannon", "real equip commits cannon")
+    await click(panel._choices.laser.button)
+    check(panel._install.disabled and panel.last_comparison.switch_admission.reason == "EquipmentSwitchLocked", "actual switch cooldown disables install")
+    await screenshot("09-switch-cooldown")
+    # Verify the owner rejects a same-window repeat too; no UI state can bypass admission.
+    before = snapshot()
+    var rejected: Dictionary = host.equipment.equip_slot("weapon:0", "laser", host.equipment_inputs(), host.publish_equipment_refit)
+    records.append({"action":"owner repeat while actual cooldown active", "before":before,"actual_result":rejected,"after":snapshot()})
+    check(not rejected.ok and rejected.reason == "EquipmentSwitchLocked", "actual cooldown reject")
+    host.set_pause("user", false)
+    var wait_started: int = Time.get_ticks_msec()
+    while float(host.equipment_slot_facts()[0].cooldown_remaining) > 0.0 and Time.get_ticks_msec() - wait_started < 20000:
+        await create_timer(0.25).timeout
+    check(host.game_time >= float(before.slots[0].switch_ready_at), "actual game time reaches source switch deadline")
+    host.set_pause("user", true)
+    await flush()
+    check(not panel._install.disabled, "cooldown expires with actual game time")
+    await screenshot("10-switch-ready")
+    before = snapshot()
+    await click(panel._install)
+    record("install pulse after cooldown", before)
+    check(panel.last_result.ok and host.equipment_slot_facts()[0].equipment_id == "laser", "same slot switch succeeds after actual cooldown")
+    # Partial batch: exact budget from two real owner quotes, not a UI group preview.
+    var first: Dictionary = host.equipment.quote_slot("weapon:1", 1)
+    var second: Dictionary = host.equipment.quote_slot("weapon:2", 1)
+    var budget: Dictionary = host.amount_api.apply("add", [first.costs["1"], second.costs["1"]])
+    wallet("0", "2000")
+    var wallet_state: Dictionary = host.economy.save_state()
+    wallet_state.wallet["1"] = budget.value
+    check(host.economy.restore_state(wallet_state).ok, "partial batch budget validates")
+    host.economy.publish_budget_change()
+    await flush()
+    await click(panel.get_node("BatchOpen"))
+    await screenshot("11-batch-open")
+    before = snapshot()
+    await click(panel._batch_submit)
+    record("batch +1 real partial purchases", before)
+    assert_purchase(before, "batch partial")
+    var purchases: Array = panel.last_result.purchase_receipt.purchases
+    check(purchases.size() > 0 and purchases.size() < 5, "batch has actual partial purchases")
+    for old in before.slots:
+        if not purchases.any(func(row): return row.slot_id == old.id):
+            for current in host.equipment_slot_facts():
+                if current.id == old.id: check(current.paid_level == old.paid_level, "skipped slot unchanged " + old.id)
+    var selected_before_modal_click: String = panel._selected
+    await click(panel._slot_buttons["defence:0"].button)
+    check(panel._selected == selected_before_modal_click, "batch blocks clicks on underlying equipment controls")
+    await screenshot("12-batch-partial-result")
+    var retained: String = panel._batch_results.text
+    var close_button: Button = panel._batch_close
+    await click(close_button)
+    check(not panel._batch.visible and not panel._batch_blocker.visible, "batch close through real GUI input")
+    await click(panel._quantity_buttons[0])
+    await click(panel.get_node("BatchOpen"))
+    check(panel._batch_results.text == retained, "batch actual result persists across close/reopen and quantity choice")
+    await screenshot("13-batch-result-retained")
+    await click(close_button)
+    check(not panel._batch.visible and not panel._batch_blocker.visible, "batch close after reopening through real GUI input")
+    wallet("2000000", "2000")
+    await flush()
+    await click(panel._slot_buttons["defence:0"].button)
+    check(not panel._empty_choice.visible and not panel._choices.has(""), "first defence no empty install option")
+    await screenshot("14-defence-selection")
+    await click(panel._choices.armour.button)
+    check(panel.last_comparison.candidate.equipment_id == "armour" and not panel._empty_choice.visible, "defence current/candidate comparison without unload")
+    await screenshot("16-defence-candidate")
+    for mode in 3:
+        await click(panel._quantity_buttons[mode])
+        before = snapshot()
+        check(panel.last_comparison.quote.ok and panel.last_comparison.quote.count > 0, "defence quantity real quote " + str(mode))
+        await screenshot("17-defence-quote-"+str(mode))
+        await click(panel._purchase)
+        record("defence actual quantity mode " + str(mode), before)
+        assert_purchase(before,"defence mode "+str(mode))
+        await screenshot("18-defence-purchased-"+str(mode))
+    wallet("1234567890123456789012345678901234567890", "9999999999999999999999")
+    await click(panel._slot_buttons["weapon:0"].button)
+    await click(panel._quantity_buttons[2])
+    check(panel.last_comparison.quote.ok and panel.last_comparison.quote.costs.size() > 1, "actual long-amount MAX has complete multi-resource quote")
+    for resource in panel.last_comparison.quote.costs:
+        check(panel._cost_cells[resource].amount.visible and panel._cost_cells[resource].name.visible, "every actual quote resource visible " + str(resource))
+        check(panel._cost_cells[resource].amount.get_minimum_size().x <= panel._cost_cells[resource].amount.size.x, "long cost fits without reducing type " + str(resource))
+    records.append({"action":"owner MAX with controlled long Amount wallet; quote only", "state":snapshot()})
+    await screenshot("19-long-max-multi-resource")
+    wallet("0", "0")
+    await click(panel._quantity_buttons[0])
+    before = snapshot()
+    check(panel._purchase.disabled and not panel.last_comparison.affordable, "real insufficient balance disables purchase")
+    var insufficient:Dictionary = host.equipment.buy_levels(panel._selected,1,host.equipment_inputs(),host.economy.payment,host.publish_equipment_levels)
+    check(not insufficient.ok, "real owner insufficient purchase rejected")
+    records.append({"action":"actual insufficient owner rejection", "actual_result":insufficient, "before":before, "after":snapshot()})
+    await screenshot("20-insufficient-resources")
+    wallet("2000000", "2000")
+    await click(panel._quantity_buttons[0])
+    await click(panel._choices.cannon.button)
+    await screenshot("15-final-cruiser")
+    var battle_rect: Rect2 = app._battle_viewport.get_parent().get_global_rect()
+    check(panel.get_global_rect() == Rect2(0,0,808,900), "actual equipment mount rect")
+    check(battle_rect == Rect2(855.875,0,536.25,900), "actual uniformly projected battle rect")
+    check(app._battle_viewport.get_parent().scale == Vector2(0.9375,0.9375), "equal projection axes")
+    var hashes: Dictionary = {}
+    for path in ["res://project.godot","res://src/main.gd","res://src/game_session.gd","res://src/systems/equipment.gd","res://src/ui/equipment_panel.gd","res://assets/ui/equipment/hangar/hangar-console.png","res://generated/config.json"]: hashes[path] = FileAccess.get_sha256(path)
+    var output: Dictionary = {"source_commit":OS.get_environment("SPACE_IDLE_EVIDENCE_SOURCE_COMMIT"),"source_hashes":hashes,"actual_battle_surface":{"x":battle_rect.position.x,"y":battle_rect.position.y,"width":battle_rect.size.x,"height":battle_rect.size.y},"engine":Engine.get_version_info(),"input_method":"real InputEventMouseButton through viewport GUI, actual Control pressed handlers", "setup_scope":"controlled campaign/equipment/economy save-state restore plus actual native refit; not earned progress, not production fixture", "records":records,"failures":failures,"root_pixels":root.size,"equipment_rect":panel.get_global_rect(),"battle_domain":host.battle.view_size(),"battle_surface":Rect2(808,0,632,900)}
+    var file := FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    file.store_string(JSON.stringify(output,"  "));file.close()
+    print("EQUIPMENT_CAPTURE_COMPLETE failures=",failures.size()," records=",records.size())
+    app._close_game()

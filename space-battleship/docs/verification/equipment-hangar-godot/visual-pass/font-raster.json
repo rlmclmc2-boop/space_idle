@@ -1,0 +1,50 @@
+[
+  {
+    "axis_input": {
+      "2003265652": 100.0
+    },
+    "base_metadata_weight": 100,
+    "coordinates": {},
+    "lit_pixels": 978,
+    "opaque_pixels": 36,
+    "raster_coverage": 478.984326086007,
+    "width": 193.0
+  },
+  {
+    "axis_input": {
+      "2003265652": 400.0
+    },
+    "base_metadata_weight": 100,
+    "coordinates": {
+      "2003265652": 400.0
+    },
+    "lit_pixels": 1596,
+    "opaque_pixels": 673,
+    "raster_coverage": 1115.95295185735,
+    "width": 198.0
+  },
+  {
+    "axis_input": {
+      "2003265652": 600.0
+    },
+    "base_metadata_weight": 100,
+    "coordinates": {
+      "2003265652": 600.0
+    },
+    "lit_pixels": 1997,
+    "opaque_pixels": 1168,
+    "raster_coverage": 1531.76471639983,
+    "width": 201.0
+  },
+  {
+    "axis_input": {
+      "wght": 450.0
+    },
+    "base_metadata_weight": 100,
+    "coordinates": {},
+    "lit_pixels": 978,
+    "opaque_pixels": 36,
+    "raster_coverage": 478.984326086007,
+    "width": 193.0
+  }
+]
