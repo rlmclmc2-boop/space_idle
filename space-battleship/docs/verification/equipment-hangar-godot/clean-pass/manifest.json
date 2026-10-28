@@ -249,8 +249,8 @@
       "bytes": 456
     },
     "README.md": {
-      "sha256": "df28539de8c65aca983610fe9607ae2ecad97f8cd166ff5404f39c845da77f78",
-      "bytes": 8225
+      "sha256": "b323bfc763e3972a6d4d9f824dbaaf39c8c7e813846922d10aebe0da6efdc3c3",
+      "bytes": 9002
     },
     "before-null-tooltip-fix/operations.json": {
       "sha256": "2a49b2156a6c72be009a38bef7a1c42afc9da986344570ab49bfe2e305a1f0e4",
@@ -262,5 +262,6 @@
     }
   },
   "failure_scope": "before-null-tooltip-fix is invalid debugging evidence, not bound to the fixed runtime. Its file hash was read after an on-disk fix while the old loaded script still ran; no success inference. All intermediate screenshots preserved locally.",
-  "local_excluded": "preview/, pre-status-size-fix/, most before-null-tooltip-fix images, old visual-pass WIP and all unrelated .import/.uid/saves/caches remain local and preserved."
+  "local_excluded": "preview/, pre-status-size-fix/, most before-null-tooltip-fix images, old visual-pass WIP and all unrelated .import/.uid/saves/caches remain local and preserved.",
+  "status_document_update": "Only README review status/hash updated after evidence commit 9794f8cd04c095fd1d780d058a0dc1b78606f819; original runtime source, PNGs, JSON, drivers and logs unchanged."
 }
