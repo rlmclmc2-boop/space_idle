@@ -1,6 +1,6 @@
 # 收起快照：实际画布变换与截图像素修复
 
-代码`design/shared-host-shell@ef409d5ca5216b9895cc45e6bd42e5d0bc2927bd`，待原Astra复核，未合main。根端确认原预览生命周期、焦点门禁两项关闭；本次只处理其后指出的canvas_items拉伸下截图裁切P2，不重跑已关闭项或扩大DPI矩阵。
+代码`design/shared-host-shell@ef409d5ca5216b9895cc45e6bd42e5d0bc2927bd`，原Astra已限定复核通过，未合main。根端确认原预览生命周期、焦点门禁两项关闭；本次只处理其后指出的canvas_items拉伸下截图裁切P2，不重跑已关闭项或扩大DPI矩阵。
 
 ## 修正
 
@@ -18,4 +18,6 @@
 
 [解析检查](evidence/godot-check.txt)和[实际日志](evidence/godot-live.txt)通过，无脚本/资源错误，仅既有Xorg VSync警告；Git diff检查通过。[环境与哈希](evidence/environment.json)。预览/焦点已关闭函数体逐字节保持cf31afd8，模块、模型、贴图、保存/战斗业务均未改。本轮没有全链或全DPI通过结论。
 
-当前无权限/运行阻塞，交原Astra复核本尺寸裁切P2。
+根端转交原Astra结论：已亲看9f08fa0b的四张1152×720/归一图，并核ef409d5c变换裁取代码，原快照坐标P2关闭，无新增P1/P2。此前预览取消/离页清理与焦点门禁实现保持。
+
+本轮三项P2及后续裁取回归仅在所列代码/证据范围内闭合，不扩大全窗口/DPI、自然全流程或V0。保持组合候选，不合main、不追加无关验证；后续只接新反应堆/星球实现的必要交付。无权限/运行阻塞。

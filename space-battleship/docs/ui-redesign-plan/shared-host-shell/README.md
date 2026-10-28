@@ -1,6 +1,6 @@
 # 共享宿主当前交付
 
-当前最新：[收起快照画布变换窄修](runtime-h1/collapse-canvas-fix/README.md)，代码`ef409d5c`；原审已关闭预览/焦点两项，本次仅补1152×720窗口的收起/恢复，待原审复核。
+当前最新：[收起快照画布变换窄修](runtime-h1/collapse-canvas-fix/README.md)，代码`ef409d5c`；原Astra已关闭本轮三项P2及后续裁取回归，无新增P1/P2；限定于已有代码/证据，不扩展全窗口/DPI/自然流程/V0。保持候选，等待新反应堆/星球的必要接入，不合main。
 
 当前审核候选：[三项P2修复](runtime-h1/p2-review-fixes/README.md)，代码`c49ea0a7`；43项按问题分组的必要操作通过，待原审复核，未合main。原背景窄修和模块内部文件保持。
 
