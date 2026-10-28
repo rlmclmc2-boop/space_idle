@@ -1,0 +1,75 @@
+{
+  "source_commit": "5f1605ffd42bac5c45af3357073d36935f6888ce",
+  "equipment_sha256": "c53b19a8d7a747b6eeb8dfc2267c0d272f1bf335085be51e2ff8c8d070c50275",
+  "viewport": [
+    1440,
+    900
+  ],
+  "equipment_local": [
+    808,
+    900
+  ],
+  "scope": "Single actual purchase after-image and real hover; no layout changes",
+  "crops": [
+    {
+      "source": "01-actual-purchase-short-receipt.png",
+      "crop": "crop-complete-short-receipt.png",
+      "box": [
+        8,
+        670,
+        800,
+        724
+      ],
+      "method": "lossless pixel crop, no resize/repaint/composite"
+    },
+    {
+      "source": "02-actual-receipt-tooltip.png",
+      "crop": "crop-original-detail-tooltip.png",
+      "box": [
+        500,
+        675,
+        970,
+        770
+      ],
+      "method": "lossless pixel crop, no resize/repaint/composite"
+    }
+  ],
+  "files": {
+    "01-actual-purchase-short-receipt.png": {
+      "sha256": "e7d99874a64b50fa87a7ef664d8e0526ad153a5dce9873e663b6142d72a62994",
+      "bytes": 1463580
+    },
+    "02-actual-receipt-tooltip.png": {
+      "sha256": "4f1c560b5da1cded35db8d3d44f4c91d1e3f3f856dca4c036bc070a827bcb98a",
+      "bytes": 1473318
+    },
+    "README.md": {
+      "sha256": "54b0562a03f654774b782d6a82c7b531f5a0e2267c7c5c3e8ae19d5ec457f5fa",
+      "bytes": 3477
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "a5f8378f52f55b21cb911bb0e6abe776b50977c0b43bd6317a1da39fd4310b3c",
+      "bytes": 6297
+    },
+    "capture.log.txt": {
+      "sha256": "cacee2392bf3f1341b2f0ad0d775b7b7627359be8347e2b1fe27ddbc41394a21",
+      "bytes": 406
+    },
+    "crop-complete-short-receipt.png": {
+      "sha256": "8761908854395849659b2871e7456a9e805c15fcd6ae9f51ed3cd8f757c560dd",
+      "bytes": 20940
+    },
+    "crop-original-detail-tooltip.png": {
+      "sha256": "a83dbb6cb1d986ef6b8013960bb41a00bfc8d56f6e84023af688f8c7d38bad8c",
+      "bytes": 34448
+    },
+    "operations.json": {
+      "sha256": "54ab287ac549ca4bb6e2886d0925527b1ff39589b1c9bfd24fe995d69218d7cc",
+      "bytes": 7212
+    },
+    "preserved-boundaries.json": {
+      "sha256": "cc56bba0b05c02aee6740c77ce5dbf0e3ef2eac98b0e53c4f47a4a8030715750",
+      "bytes": 4047
+    }
+  }
+}

@@ -1,0 +1,73 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/workbench-receipt-summary"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func tooltip_labels(node:Node,found:Array)->void:
+    if node is Label and node.is_visible_in_tree() and node.text==panel._feedback.tooltip_text:found.append({"path":str(node.get_path()),"text":node.text})
+    for child in node.get_children():tooltip_labels(child,found)
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"normal main/native startup")
+    host.set_pause("user",true);await flush()
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled progress for two-resource purchase")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    var e:Dictionary=host.equipment.save_state()
+    for slot in e.slots:
+        if slot.id=="weapon:0":slot.paid_level=19;slot.switch_ready_at=0.0
+    check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled weapon19")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"controlled preview native sync")
+    wallet("100000","1000");panel._dirty=true;await flush()
+    var before:Dictionary=snapshot();await click(panel._purchase)
+    var after:Dictionary=snapshot();var receipt:Dictionary=panel.last_result.get("purchase_receipt",{})
+    check(receipt.get("commit_status")=="accepted","actual GUI purchase accepted")
+    check(receipt.purchases.size()==1 and int(receipt.purchases[0].count)==1 and after.slots[0].paid_level==20,"real receipt count and level remain one")
+    for resource in receipt.spent:
+        var expected:Dictionary=host.amount_api.apply("sub_nonnegative",[before.wallet[resource],receipt.spent[resource]])
+        check(host.amount_api.apply("compare",[expected.value,after.wallet[resource]]).scalar==0,"exact wallet minus original spent "+str(resource))
+    check(panel._feedback.text=="武器1 · 购级完成 +1级","complete short receipt includes object and accepted count")
+    var font:Font=panel._feedback.get_theme_font("font");var fontsize:int=panel._feedback.get_theme_font_size("font_size")
+    var text_width:float=font.get_string_size(panel._feedback.text,HORIZONTAL_ALIGNMENT_LEFT,-1,fontsize).x
+    check(fontsize==12 and text_width<panel._feedback.size.x,"short receipt fits actual font at unchanged size")
+    check(panel._feedback.horizontal_alignment==HORIZONTAL_ALIGNMENT_LEFT and panel._feedback.text_overrun_behavior==TextServer.OVERRUN_TRIM_ELLIPSIS,"long messages retain beginning and trailing ellipsis")
+    check(panel._feedback.tooltip_text==panel._receipt_text(panel.last_result) and panel._feedback.tooltip_text.contains("实际花费"),"original detailed receipt remains full tooltip")
+    await screenshot("01-actual-purchase-short-receipt")
+    var motion:=InputEventMouseMotion.new();motion.position=panel._feedback.get_global_rect().get_center();motion.global_position=motion.position;Input.warp_mouse(motion.position);Input.parse_input_event(motion)
+    await create_timer(1.2).timeout;await flush()
+    var tips:Array=[];tooltip_labels(root,tips)
+    check(not tips.is_empty(),"real hover displays original detailed tooltip")
+    await screenshot("02-actual-receipt-tooltip")
+    var f:=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    f.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_INTEGRATED_SOURCE"),"equipment_sha256":FileAccess.get_sha256("res://src/ui/equipment_panel.gd"),"before":before,"after":after,"actual_result":panel.last_result,"summary":panel._feedback.text,"summary_width":text_width,"label_width":panel._feedback.size.x,"font_size":fontsize,"tooltip":panel._feedback.tooltip_text,"visible_tooltips":tips,"failures":failures,"scope":"One real GUI plus1 purchase with two-resource receipt and actual hover; controlled progress/weapon level/wallet. No layout/protection suite rerun."},"  "));f.close()
+    print("WORKBENCH_RECEIPT_COMPLETE failures=",failures.size());app._close_game()
