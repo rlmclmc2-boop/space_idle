@@ -1,0 +1,373 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/locator-pass/candidate"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func pointer(point: Vector2) -> void:
+    var motion:=InputEventMouseMotion.new();motion.position=point;motion.global_position=point
+    Input.parse_input_event(motion);await flush()
+func material_states(button: Button, title: String) -> void:
+    var variants:Array=button.get_meta("material_variants")
+    var ids:Array=[]
+    for group in variants:
+        for style in group.values():ids.append(style.get_instance_id())
+    button.release_focus()
+    await pointer(Vector2(800,88))
+    var normal:int=button.get_draw_mode()
+    await screenshot("21-"+title+"-normal")
+    await pointer(button.get_global_rect().get_center())
+    var hover:int=button.get_draw_mode()
+    check(hover==BaseButton.DRAW_HOVER,"native material hover "+title)
+    await screenshot("22-"+title+"-hover")
+    var point:Vector2=button.get_global_rect().get_center()
+    var down:=InputEventMouseButton.new();down.position=point;down.global_position=point;down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true
+    Input.parse_input_event(down);await flush()
+    var pressed:int=button.get_draw_mode()
+    check(pressed==BaseButton.DRAW_HOVER_PRESSED or pressed==BaseButton.DRAW_PRESSED,"native material pressed "+title)
+    await screenshot("23-"+title+"-pressed")
+    var up:=InputEventMouseButton.new();up.position=point;up.global_position=point;up.button_index=MOUSE_BUTTON_LEFT;up.pressed=false
+    Input.parse_input_event(up);await flush()
+    await pointer(Vector2(800,88))
+    button.grab_focus();await flush()
+    check(button.has_focus(),"actual Control focus "+title)
+    await screenshot("24-"+title+"-focus")
+    var after_ids:Array=[]
+    for group in button.get_meta("material_variants"):
+        for style in group.values():after_ids.append(style.get_instance_id())
+    check(ids==after_ids,"interaction reuses initialized material resources "+title)
+    records.append({"action":"actual native Control interaction surfaces "+title,"normal_mode":normal,"hover_mode":hover,"pressed_mode":pressed,"focus":button.has_focus(),"focus_preparation":"Control.grab_focus() boundary; hover/press/release use real InputEvents", "material_ids_before":ids,"material_ids_after":after_ids})
+    button.release_focus()
+func has_unload(node: Node) -> bool:
+    if node is Button and node.text in ["卸下","卸下装备"]:return true
+    for child in node.get_children():
+        if has_unload(child):return true
+    return false
+func inspect_layout(label: String) -> void:
+    var facts:Array=host.equipment_slot_facts()
+    var rows:Array=[]
+    var rects:Array=[]
+    for fact in facts:
+        if fact.dormant:
+            check(not panel._slot_buttons.has(fact.id),label+" dormant slot has no active terminal "+fact.id)
+            continue
+        check(panel._slot_buttons.has(fact.id),label+" active slot has terminal "+fact.id)
+        var rect:Rect2=panel._slot_buttons[fact.id].button.get_global_rect()
+        for other in rects:check(not rect.intersects(other),label+" active terminal bounds do not overlap "+fact.id)
+        rects.append(rect)
+        var point:Vector2=panel._mount_position(fact)
+        var row:Dictionary={"fact":fact,"terminal_rect":rect,"ui_attachment_point":point}
+        if fact.category=="weapon":
+            var official:Array=panel._catalog[panel._ship].mounts[int(fact.index)]
+            var ship_rect:Rect2=panel._ship_rect()
+            var expected:Vector2=ship_rect.position+Vector2(float(official[0]),float(official[1]))/768.0*ship_rect.size
+            check(point.distance_to(expected)<0.001,label+" weapon attachment uses formal manifest "+fact.id)
+            row.formal_manifest_point=official
+            row.native_slot_present=host.battle._values.weapons.has(fact.id)
+            check(row.native_slot_present==(not str(fact.equipment_id).is_empty()),label+" actual native presence follows equipped/empty "+fact.id)
+        else:row.scope="Distinct defence UI marker only; not weapon-manifest geometry"
+        rows.append(row)
+    check(not has_unload(panel),label+" no active-unload action in this page")
+    check(not panel._title.get_global_rect().intersects(panel._slot_buttons["weapon:0"].button.get_global_rect()),label+" title clears first terminal")
+    check(panel._install.position.x>=524 and panel._install.position.x+panel._install.size.x<=768 and panel._install.position.y+panel._install.size.y<=848,label+" install inset")
+    records.append({"action":"layout / mount / owner consistency "+label,"ship":panel._ship,"ship_facts":host.campaign_system.ship_facts(),"slot_facts":facts,"terminals":rows,"title_rect":panel._title.get_global_rect(),"install_rect":panel._install.get_global_rect(),"install_shadow_extent_bottom":3,"right_inner_floor_visual_reference_y":868,"native_values":host.battle._values.duplicate(true),"equipment_options":host.equipment.panel_equipment(panel._selected),"state":snapshot()})
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func record(action: String, before: Dictionary) -> void:
+    records.append({"action": action, "before": before, "after": snapshot(), "actual_result": panel.last_result.duplicate(true)})
+func assert_purchase(before: Dictionary, label: String) -> void:
+    var result: Dictionary = panel.last_result
+    check(result.get("purchase_receipt", {}).get("commit_status") == "accepted", label + " native accepted receipt")
+    var after: Dictionary = snapshot()
+    var spent: Dictionary = result.get("purchase_receipt", {}).get("spent", {})
+    for resource in spent:
+        var expected: Dictionary = host.amount_api.apply("sub_nonnegative", [before.wallet[resource], spent[resource]])
+        check(expected.ok and host.amount_api.apply("compare", [expected.value, after.wallet[resource]]).scalar == 0, label + " exact wallet minus actual spent " + resource)
+    for purchase in result.get("purchase_receipt", {}).get("purchases", []):
+        var old_level: int = -1
+        var new_level: int = -1
+        for row in before.slots:
+            if row.id == purchase.slot_id: old_level = row.paid_level
+        for row in after.slots:
+            if row.id == purchase.slot_id: new_level = row.paid_level
+        check(new_level - old_level == int(purchase.count), label + " actual count " + purchase.slot_id)
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func run() -> void:
+    app = load("res://src/main.tscn").instantiate()
+    root.add_child(app)
+    host = app.session
+    check(app.startup_error.is_empty() and host != null and host.run_state.is_running() and not host.pause_reasons.has("recovery"), "real main/session/native startup without recovery pause")
+    if not failures.is_empty(): quit(1); return
+    panel = app.equipment_scene
+    host.set_pause("user", true)
+    await flush()
+    var font: Font = panel._current_title.get_theme_font("font")
+    var text_server = TextServerManager.get_primary_interface()
+    var axes: Array = []
+    for rid in font.get_rids():
+        axes.append({"rid":rid,"coordinates":text_server.call("font_get_variation_coordinates",rid) if text_server.has_method("font_get_variation_coordinates") else "method unavailable"})
+    var font_file := FileAccess.open(destination.path_join("font-actual.json"),FileAccess.WRITE)
+    font_file.store_string(JSON.stringify({"class":font.get_class(),"axes":axes,"embolden":font.get("variation_embolden"),"variation_input":font.get("variation_opentype")},"  "));font_file.close()
+    await screenshot("01-starter")
+    await click(panel._slot_buttons["weapon:0"].button)
+    check(panel._selection_open, "direct slot click opens equipment choices")
+    await screenshot("02-starter-slot-selection")
+    check(panel._choices.cannon.button.disabled and panel._choices.cannon.button.get_draw_mode()==BaseButton.DRAW_DISABLED,"real progress-gated candidate native disabled state")
+    check(panel._choices.cannon.status.position.y+panel._choices.cannon.status.size.y<=panel._choices.cannon.button.size.y-4,"actual candidate status box has 4px bottom clearance")
+    check(panel._choices.cannon.caption.position.y+panel._choices.cannon.caption.size.y<=panel._choices.cannon.status.position.y,"actual candidate title and status boxes do not overlap")
+    records.append({"action":"actual locked candidate at initial progress","status":panel._choices.cannon.status.text,"font_size":panel._choices.cannon.status.get_theme_font_size("font_size"),"status_rect":panel._choices.cannon.status.get_rect(),"card_size":panel._choices.cannon.button.size,"draw_mode":panel._choices.cannon.button.get_draw_mode()})
+    records.append({"action":"initial actual main", "state": snapshot()})
+    check(not has_unload(panel),"new session has no active-unload action")
+    await inspect_layout("actual new session Frigate")
+    var partial:Dictionary=host.campaign_system.save_state()
+    partial.state.highest_reached=2;partial.cycle_reached=2;partial.state.state="menu";partial.state.cleared_stages={1:true}
+    check(host.campaign_system.restore_state(partial).ok,"controlled cleared1 partial state validates")
+    host.equipment.refresh_availability(host.campaign_system.available,2)
+    await flush()
+    check(not panel._choices.missile.button.disabled and panel._choices.cannon.button.disabled and panel._choices.longLaser.button.disabled,"partial equipment unlock comes from actual owner")
+    check(panel._slot_buttons.size()==2 and host.campaign_system.selected_ship()=="Frigate","partial equipment unlock does not add ship slots")
+    await inspect_layout("controlled cleared1 partial unlock Frigate")
+    await screenshot("25-partial-unlock-frigate")
+    # An explicitly controlled review save state; none of these facts are produced by UI.
+    var campaign: Dictionary = host.campaign_system.save_state()
+    campaign.state.highest_reached = 100
+    campaign.cycle_reached = 100
+    campaign.state.state = "menu"
+    campaign.departure_remaining = 0.0
+    campaign.state.speed = 0.0
+    campaign.state.cleared_stages = {}
+    for level in range(1, 100): campaign.state.cleared_stages[level] = true
+    var restored: Dictionary = host.campaign_system.restore_state(campaign)
+    check(restored.ok, "controlled campaign state validates")
+    host.equipment.refresh_availability(host.campaign_system.available, 100)
+    var changed: Dictionary = host.campaign_system.change_ship("Cruiser", host.commit_ship_refit)
+    check(changed.ok, "real change_ship/native accepts controlled unlocked cruiser")
+    for pair in [["weapon:1","missile"],["weapon:2","longLaser"],["defence:0","shield"],["defence:1","armour"]]:
+        var equipped: Dictionary = host.equipment.equip_slot(pair[0], pair[1], host.equipment_inputs(), host.publish_equipment_refit)
+        check(equipped.ok, "real controlled setup equip " + pair[0])
+    var equipment: Dictionary = host.equipment.save_state()
+    for slot in equipment.slots:
+        slot.paid_level = 19 if slot.id == "weapon:0" else 18
+        slot.switch_ready_at = 0.0
+    check(host.equipment.restore_state(equipment, host.campaign_system.ship_facts().mounts).ok, "controlled paid-level save state validates")
+    check(host.publish_equipment_refit(host.economy.budget(), "refit", "", null, false).ok, "controlled restored slots publish to actual native")
+    wallet("2000000", "2000")
+    panel._dirty = true
+    await flush()
+    await click(panel._slot_buttons["weapon:0"].button)
+    await click(panel._choices.cannon.button)
+    check(panel.last_comparison.current.equipment_id == "laser" and panel.last_comparison.candidate.equipment_id == "cannon", "same basis current/candidate comparison")
+    check(host.equipment_slot_facts()[0].equipment_id == "laser", "browsing candidate leaves actual pulse installed")
+    records.append({"action":"controlled review save setup, not earned gameplay progress", "campaign":campaign,"equipment":equipment,"state":snapshot()})
+    await pointer(Vector2(800,88))
+    await screenshot("03-cruiser-cannon-comparison")
+    await inspect_layout("full equipment unlock Cruiser")
+    await material_states(panel._slot_buttons["weapon:0"].button,"slot")
+    await click(panel._choices.cannon.button)
+    await material_states(panel._choices.cannon.button,"candidate")
+    await material_states(panel._quantity_buttons[0],"quantity")
+    await pointer(Vector2(800,88))
+    var before: Dictionary = snapshot()
+    await click(panel._quantity_buttons[0])
+    await click(panel._purchase)
+    record("single +1 across evolution material boundary", before)
+    assert_purchase(before, "single +1")
+    await screenshot("04-single-plus1-material")
+    before = snapshot()
+    await click(panel._quantity_buttons[1])
+    var quote_ten: Dictionary = panel.last_comparison.quote.duplicate(true)
+    check(quote_ten.ok and quote_ten.count == 10, "exact +10 full quote")
+    await screenshot("05-plus10-quote")
+    await click(panel._purchase)
+    record("single +10", before)
+    assert_purchase(before, "single +10")
+    await screenshot("06-single-plus10")
+    before = snapshot()
+    await click(panel._quantity_buttons[2])
+    var max_quote: Dictionary = panel.last_comparison.quote.duplicate(true)
+    check(max_quote.ok and max_quote.count > 0, "real MAX preview count")
+    await screenshot("07-max-quote")
+    await click(panel._purchase)
+    record("single MAX", before)
+    assert_purchase(before, "single MAX")
+    check(panel.last_result.purchase_receipt.purchases[0].count == max_quote.count, "MAX quote and actual count agree")
+    await screenshot("08-single-max")
+    before = snapshot()
+    await click(panel._install)
+    record("direct install selected cannon", before)
+    check(panel.last_result.ok and host.equipment_slot_facts()[0].equipment_id == "cannon", "real equip commits cannon")
+    await click(panel._choices.laser.button)
+    check(panel._install.disabled and panel.last_comparison.switch_admission.reason == "EquipmentSwitchLocked", "actual switch cooldown disables install")
+    await screenshot("09-switch-cooldown")
+    # Verify the owner rejects a same-window repeat too; no UI state can bypass admission.
+    before = snapshot()
+    var rejected: Dictionary = host.equipment.equip_slot("weapon:0", "laser", host.equipment_inputs(), host.publish_equipment_refit)
+    records.append({"action":"owner repeat while actual cooldown active", "before":before,"actual_result":rejected,"after":snapshot()})
+    check(not rejected.ok and rejected.reason == "EquipmentSwitchLocked", "actual cooldown reject")
+    host.set_pause("user", false)
+    var wait_started: int = Time.get_ticks_msec()
+    while float(host.equipment_slot_facts()[0].cooldown_remaining) > 0.0 and Time.get_ticks_msec() - wait_started < 20000:
+        await create_timer(0.25).timeout
+    check(host.game_time >= float(before.slots[0].switch_ready_at), "actual game time reaches source switch deadline")
+    host.set_pause("user", true)
+    await flush()
+    check(not panel._install.disabled, "cooldown expires with actual game time")
+    await screenshot("10-switch-ready")
+    before = snapshot()
+    await click(panel._install)
+    record("install pulse after cooldown", before)
+    check(panel.last_result.ok and host.equipment_slot_facts()[0].equipment_id == "laser", "same slot switch succeeds after actual cooldown")
+    # Partial batch: exact budget from two real owner quotes, not a UI group preview.
+    var first: Dictionary = host.equipment.quote_slot("weapon:1", 1)
+    var second: Dictionary = host.equipment.quote_slot("weapon:2", 1)
+    var budget: Dictionary = host.amount_api.apply("add", [first.costs["1"], second.costs["1"]])
+    wallet("0", "2000")
+    var wallet_state: Dictionary = host.economy.save_state()
+    wallet_state.wallet["1"] = budget.value
+    check(host.economy.restore_state(wallet_state).ok, "partial batch budget validates")
+    host.economy.publish_budget_change()
+    await flush()
+    await click(panel.get_node("BatchOpen"))
+    await screenshot("11-batch-open")
+    before = snapshot()
+    await click(panel._batch_submit)
+    record("batch +1 real partial purchases", before)
+    assert_purchase(before, "batch partial")
+    var purchases: Array = panel.last_result.purchase_receipt.purchases
+    check(purchases.size() > 0 and purchases.size() < 5, "batch has actual partial purchases")
+    for old in before.slots:
+        if not purchases.any(func(row): return row.slot_id == old.id):
+            for current in host.equipment_slot_facts():
+                if current.id == old.id: check(current.paid_level == old.paid_level, "skipped slot unchanged " + old.id)
+    var selected_before_modal_click: String = panel._selected
+    await click(panel._slot_buttons["defence:0"].button)
+    check(panel._selected == selected_before_modal_click, "batch blocks clicks on underlying equipment controls")
+    await screenshot("12-batch-partial-result")
+    var retained: String = panel._batch_results.text
+    var close_button: Button = panel._batch_close
+    await click(close_button)
+    check(not panel._batch.visible and not panel._batch_blocker.visible, "batch close through real GUI input")
+    await click(panel._quantity_buttons[0])
+    await click(panel.get_node("BatchOpen"))
+    check(panel._batch_results.text == retained, "batch actual result persists across close/reopen and quantity choice")
+    await screenshot("13-batch-result-retained")
+    await click(close_button)
+    check(not panel._batch.visible and not panel._batch_blocker.visible, "batch close after reopening through real GUI input")
+    wallet("2000000", "2000")
+    await flush()
+    await click(panel._slot_buttons["defence:0"].button)
+    check(not panel._choices.has("") and not has_unload(panel), "first defence no empty install option")
+    await screenshot("14-defence-selection")
+    await click(panel._choices.armour.button)
+    check(panel.last_comparison.candidate.equipment_id == "armour" and not has_unload(panel), "defence current/candidate comparison without unload")
+    await screenshot("16-defence-candidate")
+    for mode in 3:
+        await click(panel._quantity_buttons[mode])
+        before = snapshot()
+        check(panel.last_comparison.quote.ok and panel.last_comparison.quote.count > 0, "defence quantity real quote " + str(mode))
+        await screenshot("17-defence-quote-"+str(mode))
+        await click(panel._purchase)
+        record("defence actual quantity mode " + str(mode), before)
+        assert_purchase(before,"defence mode "+str(mode))
+        await screenshot("18-defence-purchased-"+str(mode))
+    wallet("1234567890123456789012345678901234567890", "9999999999999999999999")
+    await click(panel._slot_buttons["weapon:0"].button)
+    await click(panel._quantity_buttons[2])
+    check(panel.last_comparison.quote.ok and panel.last_comparison.quote.costs.size() > 1, "actual long-amount MAX has complete multi-resource quote")
+    for resource in panel.last_comparison.quote.costs:
+        check(panel._cost_cells[resource].amount.visible and panel._cost_cells[resource].name.visible, "every actual quote resource visible " + str(resource))
+        check(panel._cost_cells[resource].amount.get_minimum_size().x <= panel._cost_cells[resource].amount.size.x, "long cost fits without reducing type " + str(resource))
+    records.append({"action":"owner MAX with controlled long Amount wallet; quote only", "state":snapshot()})
+    check(panel._next_value.position.x==232 and panel._next_value.size.x==222,"long MAX uses dedicated two-row layout")
+    var ink_width:float=panel._font_strong.get_string_size(panel._next_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x
+    check(panel._next_value.position.x+ink_width<=454,"long MAX ink keeps workbench separator clearance")
+    check(panel._next_value.position.y+panel._next_value.size.y<=panel._cost.position.y,"long MAX does not invade costs")
+    records.append({"action":"long MAX layout actual metrics","owner_full_primary":panel.last_comparison.upgrade.primary,"display":panel._next_value.text,"label_rect":panel._next_value.get_rect(),"font_size":27,"ink_width":ink_width,"ink_right":panel._next_value.position.x+ink_width,"content_right":454,"metal_separator_x":478,"tooltip":panel._next_value.tooltip_text,"cost_rect":panel._cost.get_rect()})
+    await pointer(Vector2(800,88))
+    await screenshot("19-long-max-multi-resource")
+    wallet("0", "0")
+    await click(panel._quantity_buttons[0])
+    before = snapshot()
+    check(panel._purchase.disabled and not panel.last_comparison.affordable, "real insufficient balance disables purchase")
+    var insufficient:Dictionary = host.equipment.buy_levels(panel._selected,1,host.equipment_inputs(),host.economy.payment,host.publish_equipment_levels)
+    check(not insufficient.ok, "real owner insufficient purchase rejected")
+    records.append({"action":"actual insufficient owner rejection", "actual_result":insufficient, "before":before, "after":snapshot()})
+    await screenshot("20-insufficient-resources")
+    wallet("2000000", "2000")
+    await click(panel._quantity_buttons[0])
+    await click(panel._choices.cannon.button)
+    await screenshot("15-final-cruiser")
+    # Additional scope is the requested real small/large hull and unlock distinction.
+    check(host.campaign_system.change_ship("Heavy_Battleship",host.commit_ship_refit).ok,"actual change to formal Heavy")
+    await flush()
+    await click(panel._slot_buttons["weapon:3"].button)
+    check(panel._selected_fact().equipment_id=="" and panel._install.text=="选择装备" and panel._install.disabled,"new ship slot is active empty, not equipment locked or installed")
+    await inspect_layout("full unlock Heavy new empty slots")
+    await screenshot("26-heavy-new-empty-slots")
+    before=snapshot()
+    await click(panel._choices.cannon.button)
+    await click(panel._install)
+    check(panel.last_result.ok and panel._selected_fact().equipment_id=="cannon","actual new empty Heavy slot directly installs cannon")
+    record("direct actual installation into new Heavy empty weapon slot",before)
+    await screenshot("27-heavy-direct-empty-install")
+    for pair in [["weapon:4","laser"],["defence:2","shield"]]:
+        check(host.equipment.equip_slot(pair[0],pair[1],host.equipment_inputs(),host.publish_equipment_refit).ok,"owner setup remaining Heavy slot "+pair[0])
+    await flush()
+    await inspect_layout("full unlock Heavy 5 weapons 3 defences")
+    await screenshot("28-heavy-all-equipped")
+    for fact in host.equipment_slot_facts():
+        if fact.dormant:continue
+        var locator_counts_before:Dictionary=panel.presentation_counts.duplicate(true)
+        await click(panel._slot_buttons[fact.id].button)
+        check(panel.presentation_counts.scene_redraw_requests-locator_counts_before.scene_redraw_requests==1,"selected target queues one merged scene redraw "+fact.id)
+        await screenshot("32-heavy-selected-"+str(fact.id).replace(":","-"))
+        check(panel._selected==fact.id and panel.last_comparison.current.equipment_id==fact.equipment_id,"real Heavy terminal selection maps owner "+fact.id)
+        records.append({"action":"real Heavy GUI slot selection","id":fact.id,"equipment_id":fact.equipment_id,"comparison":panel.last_comparison.duplicate(true),"terminal_point":panel._slot_buttons[fact.id].button.get_global_rect().get_center(),"attachment_point":panel._mount_position(fact),"visible_component_rect":panel._component_rect(fact),"locator_scene_redraw_delta":panel.presentation_counts.scene_redraw_requests-locator_counts_before.scene_redraw_requests})
+    await screenshot("29-heavy-third-defence-selected")
+    check(host.campaign_system.change_ship("Destroyer",host.commit_ship_refit).ok,"actual formal Destroyer refit")
+    await flush()
+    await click(panel._slot_buttons["weapon:1"].button)
+    await inspect_layout("full unlock Destroyer left-right pair")
+    check(panel._slot_buttons.size()==3,"Destroyer actual 2 weapon 1 defence active terminals")
+    await screenshot("30-destroyer-paired-mounts")
+    check(host.campaign_system.change_ship("Frigate",host.commit_ship_refit).ok,"actual formal Frigate refit after Heavy")
+    await flush()
+    await inspect_layout("full unlock Frigate with retained dormant slots")
+    check(panel._slot_buttons.size()==2 and host.equipment_slot_facts().filter(func(row):return row.dormant).size()==6,"small hull dormant slots are distinct from active empty slots")
+    await screenshot("31-frigate-full-equipment-dormant-slots")
+    var battle_rect: Rect2 = app._battle_viewport.get_parent().get_global_rect()
+    check(panel.get_global_rect() == Rect2(0,0,808,900), "actual equipment mount rect")
+    check(battle_rect == Rect2(855.875,0,536.25,900), "actual uniformly projected battle rect")
+    check(app._battle_viewport.get_parent().scale == Vector2(0.9375,0.9375), "equal projection axes")
+    var hashes: Dictionary = {}
+    for path in ["res://project.godot","res://src/main.gd","res://src/game_session.gd","res://src/systems/equipment.gd","res://src/ui/equipment_panel.gd","res://assets/ui/equipment/hangar/hangar-console.png","res://generated/config.json","res://assets/ui/equipment/hangar/upgrade-console.svg","res://assets/ui/ships/manifest.json","res://docs/game-design/art/modules/equipment.md"]: hashes[path] = FileAccess.get_sha256(path)
+    var output: Dictionary = {"source_commit":OS.get_environment("SPACE_IDLE_EVIDENCE_SOURCE_COMMIT"),"source_hashes":hashes,"actual_battle_surface":{"x":battle_rect.position.x,"y":battle_rect.position.y,"width":battle_rect.size.x,"height":battle_rect.size.y},"engine":Engine.get_version_info(),"input_method":"real InputEventMouseButton through viewport GUI, actual Control pressed handlers", "setup_scope":"controlled campaign/equipment/economy save-state restore plus actual native refit; not earned progress, not production fixture", "records":records,"failures":failures,"root_pixels":root.size,"equipment_rect":panel.get_global_rect(),"battle_domain":host.battle.view_size(),"battle_surface":Rect2(808,0,632,900)}
+    var file := FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    file.store_string(JSON.stringify(output,"  "));file.close()
+    print("EQUIPMENT_CAPTURE_COMPLETE failures=",failures.size()," records=",records.size())
+    app._close_game()

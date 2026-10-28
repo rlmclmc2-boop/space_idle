@@ -1,0 +1,325 @@
+{
+  "fixed_source_commit": "b93597a33cf45d164b46edf38b48928440521ad7",
+  "source_binding": {
+    "res://assets/ui/equipment/hangar/hangar-console.png": {
+      "runtime_sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "matches_fixed_git_object": true
+    },
+    "res://assets/ui/equipment/hangar/upgrade-console.svg": {
+      "runtime_sha256": "88f6ccb9f1039ab2861e29627ee31a54e9461e37fba689c78857a4ea3fd05599",
+      "matches_fixed_git_object": true
+    },
+    "res://assets/ui/ships/manifest.json": {
+      "runtime_sha256": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "matches_fixed_git_object": true
+    },
+    "res://docs/game-design/art/modules/equipment.md": {
+      "runtime_sha256": "bc99234b4bc3d040bac3c21be62737377624e6473083c05cf583c3ae5b281de4",
+      "matches_fixed_git_object": true
+    },
+    "res://generated/config.json": {
+      "runtime_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "scope": "local generated config, excluded"
+    },
+    "res://project.godot": {
+      "runtime_sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "matches_fixed_git_object": true
+    },
+    "res://src/game_session.gd": {
+      "runtime_sha256": "b8b43f0af6149696c6183c58dd33c4e6b8d11cae040f20c94bba4d9ecad739ad",
+      "matches_fixed_git_object": true
+    },
+    "res://src/main.gd": {
+      "runtime_sha256": "472b11df15de668a64d77a84260780c726abe7d8da875e63b66eb16207afea91",
+      "matches_fixed_git_object": true
+    },
+    "res://src/systems/equipment.gd": {
+      "runtime_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "matches_fixed_git_object": true
+    },
+    "res://src/ui/equipment_panel.gd": {
+      "runtime_sha256": "434533c04304eb5184409acebcc8e1a2d5c82c96550ca01504c9bea45dd3c2ed",
+      "matches_fixed_git_object": true
+    }
+  },
+  "operations_records": 35,
+  "operations_failures": [],
+  "regression_failures": [],
+  "images": {
+    "candidate": 51,
+    "regression": 7,
+    "pixels": [
+      1440,
+      900
+    ],
+    "processing": "Raw Godot viewport PNGs; no crop/resize/compositing"
+  },
+  "files": {
+    "candidate/01-starter.png": {
+      "sha256": "7790a010351871fc9698d213d0dadef9d3caf1f2379454db63f8c7d1cbe98534",
+      "bytes": 1504961
+    },
+    "candidate/02-starter-slot-selection.png": {
+      "sha256": "576f31f63484cf8f7050216efd91eed17b84cc5a2cdaf9017d3c4455547e1116",
+      "bytes": 1504914
+    },
+    "candidate/03-cruiser-cannon-comparison.png": {
+      "sha256": "ea0b208c4c83ea82e466121766c2f7cf939e2812854e4df7a5702b72117d8c28",
+      "bytes": 1488010
+    },
+    "candidate/04-single-plus1-material.png": {
+      "sha256": "f3aa515cbaf40305a003f242dc1d4d3b46ed84f234c02b1c16c710445b0b1300",
+      "bytes": 1494500
+    },
+    "candidate/05-plus10-quote.png": {
+      "sha256": "441957797d3013f47a539d3d473af11ae827e5d94c72e269b4ade3e1c58a7794",
+      "bytes": 1494409
+    },
+    "candidate/06-single-plus10.png": {
+      "sha256": "f2599de3e16a79f6c805c392ee43f96ff1a137b2fa5660490be10ad94b237094",
+      "bytes": 1495824
+    },
+    "candidate/07-max-quote.png": {
+      "sha256": "49ca7e99f198e5a75d4adc19453be4820d6b12e9bd15277105d97fab09e76837",
+      "bytes": 1494737
+    },
+    "candidate/08-single-max.png": {
+      "sha256": "4371c40a726d8a20afeec70b1849e0902e913eddb5eada35a951332c28e803b0",
+      "bytes": 1492649
+    },
+    "candidate/09-switch-cooldown.png": {
+      "sha256": "14318a67e6bbd21189b8bacc9ac5eca71777881c7d6c4b84136238e6052a19e3",
+      "bytes": 1486343
+    },
+    "candidate/10-switch-ready.png": {
+      "sha256": "f3865dc736d8436da5efacfcb6dc018127f989d42a0350623447b6c83a0b61ae",
+      "bytes": 1486358
+    },
+    "candidate/11-batch-open.png": {
+      "sha256": "5bc708059c022d4cf66b72a1f7fa969361f96a50d88cf24f3c525c7702535551",
+      "bytes": 987288
+    },
+    "candidate/12-batch-partial-result.png": {
+      "sha256": "85b4c4154f58d193779801f08c610d991345bcb96c99fa0af7c2ecf31fc2d6cb",
+      "bytes": 1004620
+    },
+    "candidate/13-batch-result-retained.png": {
+      "sha256": "fa8772c213582fa0083d078067dfbb00530c12ffe44ea614e4b1bd6dc9874e9e",
+      "bytes": 1004549
+    },
+    "candidate/14-defence-selection.png": {
+      "sha256": "59a451c36689a824b409ad7f5a3366083339f7e0f43eb4784c029a887db3bd50",
+      "bytes": 1490447
+    },
+    "candidate/15-final-cruiser.png": {
+      "sha256": "96e2eda35a3079535a1e3f9e34cb79cbe5aaa3f8475177156adb342179661682",
+      "bytes": 1496935
+    },
+    "candidate/16-defence-candidate.png": {
+      "sha256": "e9eb999c7885d93519a2c127c8a0751fc88d44be3f2c0800e53a56c7152c806b",
+      "bytes": 1491522
+    },
+    "candidate/17-defence-quote-0.png": {
+      "sha256": "0cee34bd4625e9016d984be9fb804eb55037d142585ed37049f2d30cfefda216",
+      "bytes": 1491516
+    },
+    "candidate/17-defence-quote-1.png": {
+      "sha256": "decafce1b567293773dbc2ab0a121ce6aa27e0380ac8dacfd2dae576dffa7965",
+      "bytes": 1494070
+    },
+    "candidate/17-defence-quote-2.png": {
+      "sha256": "eab8f5f4ba350986b2bd029d961af4d832b0b947b18404f2fa9f735a31bfcfb8",
+      "bytes": 1498054
+    },
+    "candidate/18-defence-purchased-0.png": {
+      "sha256": "ee3984bcdae10a5cbb852c9bed4db1c86c0ddb99e20d5a4bbd22fdd2fe13211c",
+      "bytes": 1494378
+    },
+    "candidate/18-defence-purchased-1.png": {
+      "sha256": "3aaa8f999822892be8e2e8e453b65ee679c1b25b0281ae4b1dbba0c1c8cebe56",
+      "bytes": 1495612
+    },
+    "candidate/18-defence-purchased-2.png": {
+      "sha256": "435b22b619af267eea5162fc422e8b3889f8a818bb4b5710fadeaff499ad9c61",
+      "bytes": 1491622
+    },
+    "candidate/19-long-max-multi-resource.png": {
+      "sha256": "ec0578205fcd7bb444dd591fe1aede34133931b33098a31f2009968a99704b7b",
+      "bytes": 1505030
+    },
+    "candidate/20-insufficient-resources.png": {
+      "sha256": "8166738de7abc88a1d8857056479f5ac0484d63367b2d7730657658997da10ac",
+      "bytes": 1494374
+    },
+    "candidate/21-candidate-normal.png": {
+      "sha256": "ea0b208c4c83ea82e466121766c2f7cf939e2812854e4df7a5702b72117d8c28",
+      "bytes": 1488010
+    },
+    "candidate/21-quantity-normal.png": {
+      "sha256": "ea0b208c4c83ea82e466121766c2f7cf939e2812854e4df7a5702b72117d8c28",
+      "bytes": 1488010
+    },
+    "candidate/21-slot-normal.png": {
+      "sha256": "ea0b208c4c83ea82e466121766c2f7cf939e2812854e4df7a5702b72117d8c28",
+      "bytes": 1488010
+    },
+    "candidate/22-candidate-hover.png": {
+      "sha256": "ba0af703347d7e867e579b53d71d34f92a352d89ee5ae5fb0fbe259cdc3bf1af",
+      "bytes": 1487985
+    },
+    "candidate/22-quantity-hover.png": {
+      "sha256": "566a882861f4a4aab52957f6cc5738cd69b1015a3abeb44302d479c380d402f9",
+      "bytes": 1488035
+    },
+    "candidate/22-slot-hover.png": {
+      "sha256": "1acb4d3d23285dab0d42367ebafea028e9dd3629252c3e49649638fdd514bb11",
+      "bytes": 1487918
+    },
+    "candidate/23-candidate-pressed.png": {
+      "sha256": "5be766baa4388256af829a94cfa9bd0d85dfe0272beddcc0b9ee02bfd332e997",
+      "bytes": 1487935
+    },
+    "candidate/23-quantity-pressed.png": {
+      "sha256": "f56fc6fb9169169624380aabe3d09968486cf7563a5952f51406da1994aa4a36",
+      "bytes": 1488090
+    },
+    "candidate/23-slot-pressed.png": {
+      "sha256": "75908fc0918ca26ae10fe28f8d45cacad4e8c9e74878f378ea18c07cc358388b",
+      "bytes": 1488002
+    },
+    "candidate/24-candidate-focus.png": {
+      "sha256": "674e117a28fda2472718c9fc79ac205dc89763891843e746e848c63e7614afc1",
+      "bytes": 1487998
+    },
+    "candidate/24-quantity-focus.png": {
+      "sha256": "6e3da486aad16fddd3472e1a6cc0a7218231f0133189e2bffbdf005707b6171c",
+      "bytes": 1488004
+    },
+    "candidate/24-slot-focus.png": {
+      "sha256": "f72be82e467dfc8a10f027b4732d7ccaf6df6ac1d3bfd63d62f075062e8f1d64",
+      "bytes": 1486399
+    },
+    "candidate/25-partial-unlock-frigate.png": {
+      "sha256": "6408a1967f1c26ef31751c270cb744dab960a1f94276607b7d9a11c5398c0508",
+      "bytes": 1504868
+    },
+    "candidate/26-heavy-new-empty-slots.png": {
+      "sha256": "0555bdffa8c857b8e577c31628ca614c7ededaba5a9b5072a4d81eefd21e7f17",
+      "bytes": 1431392
+    },
+    "candidate/27-heavy-direct-empty-install.png": {
+      "sha256": "37c68e1614201e538609523c745644ee4efada6413f5c9114bcccfa0d5b34c70",
+      "bytes": 1442583
+    },
+    "candidate/28-heavy-all-equipped.png": {
+      "sha256": "e2b78724e8dd97503500d60a415954ae78713a4420885f0f32b01f57d1b106ce",
+      "bytes": 1454556
+    },
+    "candidate/29-heavy-third-defence-selected.png": {
+      "sha256": "3bfd94d14107e2d1b02de9564b7cec113ab4e48ab462b00acaf8c93d912aeefa",
+      "bytes": 1449914
+    },
+    "candidate/30-destroyer-paired-mounts.png": {
+      "sha256": "d2e9257f1ef42e2fdc9897de4ac2cda3b29087cf3cd310c9bb765dccfbc9c9e1",
+      "bytes": 1504921
+    },
+    "candidate/31-frigate-full-equipment-dormant-slots.png": {
+      "sha256": "30602c35b6ae487393528dd25052fc411b3cd20e9e19dbd7605935635077bb80",
+      "bytes": 1520614
+    },
+    "candidate/32-heavy-selected-defence-0.png": {
+      "sha256": "8cf870c84758a984a26a2d709d4b8c445038f4e9bb4ae516b76774329f21e6ea",
+      "bytes": 1453595
+    },
+    "candidate/32-heavy-selected-defence-1.png": {
+      "sha256": "474c30fe867de4399f40cf354acb256267492b4f577f4b07630d81eeb7246f58",
+      "bytes": 1450541
+    },
+    "candidate/32-heavy-selected-defence-2.png": {
+      "sha256": "3bfd94d14107e2d1b02de9564b7cec113ab4e48ab462b00acaf8c93d912aeefa",
+      "bytes": 1449914
+    },
+    "candidate/32-heavy-selected-weapon-0.png": {
+      "sha256": "c3cdc820810ec13dbbc962dc98abb02850c82165d2144d6d354e769ce55d9bc4",
+      "bytes": 1455460
+    },
+    "candidate/32-heavy-selected-weapon-1.png": {
+      "sha256": "fdfe4734f72cf3d7a4624c74b6fce50e03d6b5c289b9623f16562325d999d70d",
+      "bytes": 1459126
+    },
+    "candidate/32-heavy-selected-weapon-2.png": {
+      "sha256": "82b4418f061bc2c59c898f69107d95c9e524fea3ba4aa7e3d4af90a38c777a9f",
+      "bytes": 1458758
+    },
+    "candidate/32-heavy-selected-weapon-3.png": {
+      "sha256": "dde697c0b92d4ea876489db1a4858a7056fc3b41cd7b496bda4bc81ca3886d04",
+      "bytes": 1454565
+    },
+    "candidate/32-heavy-selected-weapon-4.png": {
+      "sha256": "0b1ef75a291e2275da676a5d03ab77aec978bf53b811d0c0a17c118cd12b9666",
+      "bytes": 1457374
+    },
+    "candidate/font-actual.json": {
+      "sha256": "1b257c6169b380a887169e708bd838611b50006b19335eb1e28ebcb519396161",
+      "bytes": 224
+    },
+    "candidate/operations.json": {
+      "sha256": "7659e199bd1cbcddb88f4e8565453331f1a316c1ee6bba007ac50456a6858f42",
+      "bytes": 223627
+    },
+    "regression/batch-unknown.png": {
+      "sha256": "01802d750d749a80af01d13b2add58e3820b52025408ecd363613056c48f18e6",
+      "bytes": 597240
+    },
+    "regression/edge-left-after.png": {
+      "sha256": "d93410d6d5dacb1986bcc6dcd6049ad2173b83030bb9771733c3830210f4aa93",
+      "bytes": 1098109
+    },
+    "regression/edge-left-before.png": {
+      "sha256": "463562d54ababd261e5c4df7091c790ad8d136839447266b460d4a3a5b7daf8c",
+      "bytes": 1098479
+    },
+    "regression/edge-right-after.png": {
+      "sha256": "403f012ac5ff9229109b6e57dac2188f3ba4ab58df72a9bb335703fb30ad2496",
+      "bytes": 1103472
+    },
+    "regression/edge-right-before.png": {
+      "sha256": "9fc21243f10a54d708de47905bf4fad69408f46bce3e4a0e5452866fc0e9b51a",
+      "bytes": 1102239
+    },
+    "regression/free-defence-return.png": {
+      "sha256": "c760496933b29c6d6349ce8b8cfe1cb2a7d3bcabae231cd2f34a9a2c5fd2bcde",
+      "bytes": 1105236
+    },
+    "regression/free-weapons-return.png": {
+      "sha256": "41e76b6227fa7f02cfb1cae795bcbb3606c0cb6e865714fa6769f193ada64903",
+      "bytes": 1104842
+    },
+    "regression/runtime.json": {
+      "sha256": "2aa25293d99f95d68f96bc068221a213b4a4de0b22c20457862c3dcd1ee0c47a",
+      "bytes": 472944
+    },
+    "README.md": {
+      "sha256": "d7ba5ba13991ef2f2eceeb33dcdc10f5b6a9f3b629fbddf243d217e21139c71b",
+      "bytes": 5090
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "00cb770b220e2fa69749fbf49a4567eb8d1cfa194476bbb21feee6bf7b9fe4eb",
+      "bytes": 28072
+    },
+    "regression-driver.gd.txt": {
+      "sha256": "14fcb353fe012b400dbe2fb916ab384ab777c3bfa3a9c8db23953558b8e815f5",
+      "bytes": 24613
+    },
+    "candidate.log.txt": {
+      "sha256": "951be660ea1b1d35ceb601ea68d6708a82501df5e0b373a1d5942d30ceedeb0b",
+      "bytes": 417
+    },
+    "regression.log.txt": {
+      "sha256": "0ee35f131486d0ae4b72766ec65a447bf7c86ba4816166e44dafcb4a89a7c884",
+      "bytes": 456
+    }
+  },
+  "scope": "Visual correspondence through actual selection; defence is UI proxy, not native weapon geometry. See README for partial occlusion and untested boundaries.",
+  "local_preserved": "preview/ and every older evidence/failure/cache/import directory retained, not staged."
+}
