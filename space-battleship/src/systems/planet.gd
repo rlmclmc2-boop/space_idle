@@ -5,6 +5,7 @@ signal status_changed(ids: Array)
 signal buildings_changed(ids: Array)
 signal assignment_options_changed(ids: Array)
 signal availability_changed
+signal conquest_changed(changed_planet_ids: PackedStringArray, cumulative_changed: bool)
 
 var _definitions: Dictionary = {}
 var _buildings: Dictionary = {}
@@ -18,6 +19,8 @@ var _claim_factors: Dictionary = {}
 var _claim_id: String = ""
 var _api
 var _facility_fact_cache: Dictionary = {}
+var _conquest_queued: bool = false
+var _conquest_baseline: Dictionary = {}
 
 func save_state() -> Dictionary:
 	return {"planets": _state.duplicate(true)}
@@ -37,6 +40,7 @@ func prepare_reforge(id: String) -> Dictionary:
 func accept_reforge(id: String) -> Dictionary:
 	var prepared: Dictionary = prepare_reforge(id)
 	if not prepared.ok: return prepared
+	_queue_conquest_change()
 	_state[id].conquered = true
 	_factors = {}
 	_refresh_available(false)
@@ -63,6 +67,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 			var definition: Dictionary = _buildings[key]
 			if building.work > int(definition.build_explore) or (building.state == "locked" and building.work != 0) or (building.state in ["ready", "built"] and building.work < int(definition.build_explore)):
 				return {"ok": false, "reason": "InvalidPlanetBuildings"}
+	_queue_conquest_change()
 	_state = state.planets.duplicate(true)
 	_facility_fact_cache.clear()
 	_factors = {}
@@ -99,6 +104,48 @@ func _refresh_available(notify: bool = true) -> bool:
 
 func is_available(id: String) -> bool:
 	return _available.get(id, false)
+
+## Accepted conquest sources only; detached from contribution and claim caches.
+func conquest_facts(planet_id: String) -> Dictionary:
+	if not _definitions.has(planet_id) or not is_available(planet_id):
+		return {"ok": false, "reason": "PlanetLocked"}
+	var bonuses: Dictionary = _conquest_bonuses(_state, _buffs)
+	if not bonuses.ok: return bonuses
+	var shared: Dictionary = _checked_conquest_buff(_state, _buffs, "crew_exp_share", "all", planet_id)
+	if not shared.ok: return shared
+	var rewards: Array = []
+	for spec in [["level_bonus", "equipment", "equipment_levels", "levels"],
+		["level_bonus", "enhancement", "enhancement_levels", "levels"],
+		["free_charge", "all", "free_charge", "ratio"], ["luck", "all", "luck", "luck"]]:
+		var value = bonuses[spec[2]]
+		var text: String = (str(value * 100.0) + "%") if spec[3] == "ratio" else str(value)
+		rewards.append({"kind": spec[0], "target": spec[1], "value": value, "unit": spec[3], "display_text": text})
+	return {"ok": true, "planet_id": planet_id, "conquered": _state[planet_id].conquered,
+		"shared_experience": shared.value > 0.0, "rewards": rewards}
+
+func _conquest_snapshot() -> Dictionary:
+	var marks: Dictionary = {}
+	for id in _state: marks[id] = _state[id].conquered
+	return {"marks": marks, "bonuses": _conquest_bonuses(_state, _buffs)}
+
+func _queue_conquest_change() -> void:
+	if _conquest_queued: return
+	_conquest_baseline = _conquest_snapshot()
+	_conquest_queued = true
+	call_deferred("_flush_conquest_change")
+
+func _flush_conquest_change() -> void:
+	if not _conquest_queued: return
+	var before: Dictionary = _conquest_baseline
+	var after: Dictionary = _conquest_snapshot()
+	# Clear before emission: a reentrant write owns a fresh baseline and batch.
+	_conquest_baseline = {}
+	_conquest_queued = false
+	var ids := PackedStringArray()
+	for id in after.marks:
+		if before.marks.get(id) != after.marks[id]: ids.append(str(id))
+	var cumulative: bool = before.bonuses != after.bonuses
+	if not ids.is_empty() or cumulative: conquest_changed.emit(ids, cumulative)
 
 func assignment_capacity(kind: String, target: String) -> Dictionary:
 	if kind == "planet_explore":
@@ -422,6 +469,27 @@ static func _buff(state: Dictionary, rows: Array, kind: String, target: String, 
 			maximum = maxf(maximum, float(row.value))
 	return maxf((add if has_add else 1.0 if has_multiply else 0.0) * multiply, maximum)
 
+## Validate participating sources before _buff can mask a non-finite max operand.
+static func _checked_conquest_buff(state: Dictionary, rows: Array, kind: String, target: String, only_planet: String = "") -> Dictionary:
+	for row in rows:
+		var id: String = str(int(row.planet_id))
+		if not state.has(id) or not state[id].conquered or row.buff_type != kind or row.target != target or (not only_planet.is_empty() and id != only_planet): continue
+		if row.stack not in ["add", "mul", "max"]: continue
+		if not (row.get("value") is int or row.get("value") is float) or not is_finite(float(row.value)):
+			return {"ok": false, "reason": "PlanetConquestSourceUnavailable"}
+	var value: float = _buff(state, rows, kind, target, only_planet)
+	if not is_finite(value): return {"ok": false, "reason": "PlanetConquestSourceUnavailable"}
+	return {"ok": true, "value": value}
+
+static func _conquest_bonuses(state: Dictionary, rows: Array) -> Dictionary:
+	var result := {"ok": true}
+	for spec in [["level_bonus", "equipment", "equipment_levels"], ["level_bonus", "enhancement", "enhancement_levels"],
+		["free_charge", "all", "free_charge"], ["luck", "all", "luck"]]:
+		var source: Dictionary = _checked_conquest_buff(state, rows, spec[0], spec[1])
+		if not source.ok: return source
+		result[spec[2]] = int(source.value) if spec[0] == "level_bonus" else source.value
+	return result
+
 static func _facility_source_factor(progress: Dictionary, row: Dictionary, api) -> Dictionary:
 	var count = api.apply("from_decimal", [str(progress.exploration)])
 	var scale = api.apply("from_decimal", [str(row.config1)])
@@ -437,10 +505,10 @@ static func _contributions(state: Dictionary, buildings: Dictionary, rows: Array
 	var affected: Dictionary = {}
 	var one: Dictionary = api.apply("from_decimal", ["1"]).value
 	if result.is_empty():
-		result = {"ok": true, "equipment": one, "refinery": one, "_sources": {"equipment": {}, "refinery": {}},
-			"equipment_levels": int(_buff(state, rows, "level_bonus", "equipment")),
-			"enhancement_levels": int(_buff(state, rows, "level_bonus", "enhancement")),
-			"free_charge": _buff(state, rows, "free_charge", "all"), "luck": _buff(state, rows, "luck", "all")}
+		var bonuses: Dictionary = _conquest_bonuses(state, rows)
+		if not bonuses.ok: return bonuses
+		result = {"ok": true, "equipment": one, "refinery": one, "_sources": {"equipment": {}, "refinery": {}}}
+		for field in ["equipment_levels", "enhancement_levels", "free_charge", "luck"]: result[field] = bonuses[field]
 		for id in state:
 			changes[id] = []
 			for key in state[id].buildings:

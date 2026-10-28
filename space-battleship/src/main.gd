@@ -27,6 +27,7 @@ var _battle_input_shield: ColorRect
 var _route_available: Dictionary = {}
 var equipment_scene: Control
 var reactor_scene: Control
+var planet_scene: Control
 var _left_module: String = "equipment"
 var _battle_viewport: SubViewport
 var _reforge_picker: OptionButton
@@ -654,10 +655,17 @@ func _setup_growth_panel() -> void:
 	_host.collapse_requested.connect(_collapse_module)
 	_host.register_route("equipment", "装备", equipment_scene)
 	_host.register_route("reactor", "反应炉", reactor_scene)
+	planet_scene = PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim,
+		_command_button, _planet_visual_context, session.crew_system, session.coordinate_assignment)
+	planet_scene.position = Vector2.ZERO
+	planet_scene.size = Vector2(808, 900)
+	planet_scene.reforge_requested.connect(_open_planet_reforge)
+	layer.add_child(planet_scene)
+	_host.register_route("planet", "星球", planet_scene)
 	_pages.clear()
 	for spec in [["ship", "舰船"], ["campaign", "航程"], ["attributes", "属性"],
 		["research", "科研"], ["enhancement", "强化"], ["crew", "船员"], ["galaxy", "星系"],
-		["planet", "星球"], ["hyperspace", "超空间"], ["archive", "档案"],
+		["hyperspace", "超空间"], ["archive", "档案"],
 		["notifications", "通知"], ["settings", "设置"], ["reforge", "重铸"]]:
 		_create_bridge_page(layer, spec[0], spec[1])
 	growth_status = Label.new()
@@ -685,8 +693,6 @@ func _setup_growth_panel() -> void:
 	box.add_child(CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
 	box = _pages.galaxy.box
 	box.add_child(GalaxyPanel.new(session.galaxy_system, _world_visual_context))
-	box = _pages.planet.box
-	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button, _world_visual_context))
 	box = _pages.hyperspace.box
 	box.add_child(HyperspacePanel.new(session, _command_button))
 	box = _pages.archive.box
@@ -880,6 +886,22 @@ func _create_bridge_page(layer: CanvasLayer, key: String, title: String) -> void
 	box.add_child(feedback)
 	_pages[key] = {"scroll": scroll, "box": box, "feedback": feedback}
 	_host.register_route(key, title, scroll)
+
+func _open_planet_reforge(id: String) -> void:
+	# Navigate and preselect only; preview/confirm/cancel remain the existing transaction.
+	_select_left_module("reforge")
+	if _left_module != "reforge" or _host.collapsed: return
+	for index in _reforge_picker.item_count:
+		if str(_reforge_picker.get_item_metadata(index)) == id:
+			_reforge_picker.select(index)
+			_reforge_planet_value.text = id
+	_pages.reforge.scroll.set_deferred("scroll_vertical", 0)
+	_reforge_picker.call_deferred("grab_focus")
+
+func _planet_visual_context() -> Dictionary:
+	var context: Dictionary = _world_visual_context()
+	context.balances = session.economy.balance_rows()
+	return context
 
 func _world_visual_context() -> Dictionary:
 	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(),
