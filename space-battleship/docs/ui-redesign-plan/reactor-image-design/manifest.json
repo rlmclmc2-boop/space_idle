@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "industrial_shared_rack_rejected_new_monocoque_structure_image_pending_independent_review_and_user_confirmation",
+  "status": "monocoque_rejected_as_bedroom_or_hibernation_pod_generation_paused_web_reference_pixel_access_blocked_by_proxy403",
   "target_client_logical_px": [
     1440,
     900
@@ -118,7 +118,7 @@
   "pixel_processing": "none: generator outputs copied unchanged",
   "runtime_evidence": false,
   "geometry_issue": "R2 native divider near x950 / width1586 (~59.9%), equivalent logical x863; target x808. Module hardware does not cross generated divider but exact808/632 compliance still fails.",
-  "review_image": "reactor-monocoque-r2-raw.png",
+  "review_image": null,
   "interaction_display": "All four directly adjustable sliders; only selected condensation device expands precise entry, clear draft and detail; unchanged values not duplicated; whole-plan confirm inactive.",
   "comparison_images": [
     "reactor-four-fixed-raw.png",
@@ -143,6 +143,8 @@
   ],
   "rejected_images": [
     "reactor-four-fixed-pipe-frame-r1-raw.png",
-    "reactor-shared-working-r1-raw.png"
-  ]
+    "reactor-shared-working-r1-raw.png",
+    "reactor-monocoque-r2-raw.png"
+  ],
+  "reference_research": "web-reference-research.md"
 }
