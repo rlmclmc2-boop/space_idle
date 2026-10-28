@@ -1,0 +1,59 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_binary": "/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64",
+  "godot_binary_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "godot_cpp_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+  "api_sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "display": ":99 Xorg dummy 1440x900",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe 25.0.7",
+  "audio": "Dummy for UI observation; audio behavior not assessed",
+  "window": [
+    1440,
+    900
+  ],
+  "battle": {
+    "logical": [
+      572,
+      960
+    ],
+    "container": [
+      808,
+      0,
+      632,
+      900
+    ],
+    "projection_origin": [
+      855.875,
+      0
+    ],
+    "scale": 0.9375
+  },
+  "code_commit": "07a3682367e12103fc3dd5561b3b913f5b9f79dd",
+  "host_baseline": "dfe43cbf03d5ae5e03f64a669f8b4466dc1d38be",
+  "equipment_source_commit": "551a4f2b0262b9f8291bb6a13b024c32a37ea341",
+  "equipment_handoff_commit": "da317ba436a8fb4665b99d7d78cbf42e23f43bd3",
+  "equipment_source_byte_identical": true,
+  "equipment_source_sha256": "0d4d043bb814f39fffeebab1fa376f139d66ecf9e979b04ae5cdaea8a1482c51",
+  "source_sha256": {
+    "src/main.gd": "086578ee5dd261543ea58ba75e8d074611291f232779ceea09aac30ee7f57579",
+    "src/ui/equipment_panel.gd": "0d4d043bb814f39fffeebab1fa376f139d66ecf9e979b04ae5cdaea8a1482c51",
+    "src/ui/shared_host.gd": "edbd2c01beb297b2945cc2ad7b598dc2e9ed9383805228c200c02e623b679e57",
+    "src/ui/campaign_view.gd": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb"
+  },
+  "scope": "same original shared-host task; real production main/Session/native; temporary event observation only; no new test project, no game test runner committed",
+  "input": "actual Input mouse/key events for battle pointer, batch open/close and native dropdowns; connected host Button signals for route switches; ordinary native tooltip actually visible",
+  "data": "existing isolated temporary save/settings; production config/native unchanged; no forced unlock or injected wallet; no equipment purchase performed",
+  "evidence_sha256": {
+    "balances.png": "c92a105298ea14ee4a264515d1e3dcfe718bc86eaef933f4b575a62535e9ed7a",
+    "equipment-tooltip.png": "f33a47228f8673e13da2ca42179e7d9bcf77c0bf52fe3acfeaf58e7980dc48ca",
+    "godot-check.txt": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "equipment-batch.png": "2f74630b210c1c3593937fd989cbb463c6f43fe772e51e70be42a8133873c6c3",
+    "equipment-native-popup.png": "f7acdfd9d0fcf10bcec40049445f7024332742e56160b5a69b1845c8d6995ac6",
+    "collapsed.png": "bcaebde0d4e3f6fca3ee14f52e8509e2f8490b03948d44d7285202bbfe2a466c",
+    "godot-live.txt": "b89fa750fbc8cb4c46420b6e4dd8785c1ae9dc5c2340278e539c3a862591b52a",
+    "observations.json": "087235aec68401160f28299cf06d195d54920e808e1872fe25777808d1734e82",
+    "more.png": "c5219c43bf126c3a420cc616f6ba16f5c00b9d4610f85f4d61ed79ebba529067",
+    "equipment.png": "cf64a99da3f6adf2df5485526d7b45ce516e8dbdbfbd917b5cf379f6d485eee8"
+  }
+}

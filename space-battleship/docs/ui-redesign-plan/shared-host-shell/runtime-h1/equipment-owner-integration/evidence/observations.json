@@ -1,0 +1,257 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"details": "",
+			"id": "startup",
+			"ok": true
+		},
+		{
+			"details": [
+				"equipment",
+				"reactor",
+				"ship",
+				"campaign",
+				"attributes",
+				"research",
+				"enhancement",
+				"crew",
+				"galaxy",
+				"planet",
+				"hyperspace",
+				"archive",
+				"notifications",
+				"settings",
+				"reforge"
+			],
+			"id": "routes",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "equipment_active",
+			"ok": true
+		},
+		{
+			"details": "(855.875, 0.0)",
+			"id": "projection",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "owner_chrome_hidden",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "equipment_root_unchanged",
+			"ok": true
+		},
+		{
+			"details": [
+				{
+					"button": 1,
+					"position": "(285.9999, 480.0)"
+				}
+			],
+			"id": "battle_mouse_forwarded_normally",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "more_blocks_input",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "settings_route",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "text_focus_blocks_space_g",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "focus_released_on_switch",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "notifications_route",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "view_instance_retained",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "batch_blocks_battle_pointer",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "equipment_native_popup_blocks",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "batch_blocks_switch_space_g",
+			"ok": true
+		},
+		{
+			"details": [
+				true,
+				true,
+				true,
+				true,
+				true,
+				false
+			],
+			"id": "equipment_exclusive_lifecycle",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "battle_pointer_restored",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "equipment_instance_and_selection_retained",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "collapse",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "restore",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_reactor",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_research",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_enhancement",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_crew",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_planet",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_galaxy",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_hyperspace",
+			"ok": true
+		},
+		{
+			"details": null,
+			"id": "locked_route_reforge",
+			"ok": true
+		},
+		{
+			"details": {
+				"guard_after": true,
+				"guard_before": false,
+				"pause_after": true,
+				"pause_before": false
+			},
+			"id": "normal_space_g_still_work",
+			"ok": true
+		},
+		{
+			"details": [
+				{
+					"id": "chrono",
+					"text": "时空微粒：1,888"
+				},
+				{
+					"id": "1",
+					"text": "铁：79"
+				},
+				{
+					"id": "2",
+					"text": "铀：5"
+				}
+			],
+			"id": "wallet_uses_economy_text",
+			"ok": true
+		},
+		{
+			"details": {
+				"active": "settings",
+				"gated": true,
+				"nav_disabled": true,
+				"popup_visible": true,
+				"rect": "[P: (16.0, 249.0), S: (768.0, 40.0)]",
+				"windows": [
+					{
+						"class": "PopupMenu",
+						"mouse_passthrough": false,
+						"path": "/root/@Node2D@2/@CanvasLayer@136/设置/@MarginContainer@255/@VBoxContainer@256/@OptionButton@880/@PopupMenu@879",
+						"popup_window": true,
+						"unfocusable": false,
+						"visible": true
+					}
+				]
+			},
+			"id": "settings_native_popup_gates_host",
+			"ok": true
+		},
+		{
+			"details": {
+				"gated": false,
+				"nav_disabled": false,
+				"tooltip": "3.5e2",
+				"windows": [
+					{
+						"class": "PopupPanel",
+						"mouse_passthrough": true,
+						"path": "/root/@Node2D@2/@CanvasLayer@17/@Control@80/EquipmentWorkbench/@Label@37/@PopupPanel@1090",
+						"popup_window": false,
+						"unfocusable": true,
+						"visible": true
+					}
+				]
+			},
+			"id": "ordinary_tooltip_is_not_modal",
+			"ok": true
+		}
+	],
+	"godot": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	}
+}

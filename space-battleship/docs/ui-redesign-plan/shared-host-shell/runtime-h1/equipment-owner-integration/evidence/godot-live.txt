@@ -1,0 +1,38 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+HOST_OBSERVATION startup true
+HOST_OBSERVATION routes true
+HOST_OBSERVATION equipment_active true
+HOST_OBSERVATION projection true
+HOST_OBSERVATION owner_chrome_hidden true
+HOST_OBSERVATION equipment_root_unchanged true
+HOST_OBSERVATION battle_mouse_forwarded_normally true
+HOST_OBSERVATION more_blocks_input true
+HOST_OBSERVATION settings_route true
+HOST_OBSERVATION text_focus_blocks_space_g true
+HOST_OBSERVATION focus_released_on_switch true
+HOST_OBSERVATION notifications_route true
+HOST_OBSERVATION view_instance_retained true
+HOST_OBSERVATION batch_blocks_battle_pointer true
+HOST_OBSERVATION equipment_native_popup_blocks true
+HOST_OBSERVATION batch_blocks_switch_space_g true
+HOST_OBSERVATION equipment_exclusive_lifecycle true
+HOST_OBSERVATION battle_pointer_restored true
+HOST_OBSERVATION equipment_instance_and_selection_retained true
+HOST_OBSERVATION collapse true
+HOST_OBSERVATION restore true
+HOST_OBSERVATION locked_route_reactor true
+HOST_OBSERVATION locked_route_research true
+HOST_OBSERVATION locked_route_enhancement true
+HOST_OBSERVATION locked_route_crew true
+HOST_OBSERVATION locked_route_planet true
+HOST_OBSERVATION locked_route_galaxy true
+HOST_OBSERVATION locked_route_hyperspace true
+HOST_OBSERVATION locked_route_reforge true
+HOST_OBSERVATION normal_space_g_still_work true
+HOST_OBSERVATION wallet_uses_economy_text true
+HOST_OBSERVATION settings_native_popup_gates_host true
+HOST_OBSERVATION ordinary_tooltip_is_not_modal true

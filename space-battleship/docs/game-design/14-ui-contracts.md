@@ -255,3 +255,11 @@
 - 余额使用Economy已格式化文本，反应炉对象＋等级来自其原presentation_model；无新增领域计算/DTO/广播中心。钱包迁出逻辑HUD，盾甲/航程/统计与投影不动；去掉旧常驻教学文案，快捷键保留。
 
 23项结果仅限当前代码的共享宿主接入。未覆盖已解锁模块全操作、保存/导入/重铸替换全链、新模块美术接入或V0；其准确边界以上述候选记录为准。6.3的反应炉808×835新内容范围继续有效，当前旧反应炉兼容场景不证明旧图获批。
+
+### 6.5 原装备候选与H1的实际组合（候选，未合main）
+
+`design/shared-host-shell@07a36823`已在共享宿主中接入原组`551a4f2b`装备视图，端口来源为原组`da317ba4`交接；源码逐字节保留，未把80e旧装备实现覆盖回来。实际组合、输入记录和来源哈希见[装备×H1交接](../ui-redesign-plan/shared-host-shell/runtime-h1/equipment-owner-integration/README.md)。
+
+沿6.4登记同一808×900视图及context_slot，隐藏重复chrome；保留原组状态工作台、未解锁纯空位和回执显示。共享main仅收窄Window兜底：同时`unfocusable`与`mouse_passthrough`的被动tooltip不产生独占，PopupMenu/FileDialog仍阻断。33项必要组合观察含真实鼠标投影/批量前后投递、原生下拉、Space/G正反对照、实际tooltip与视图状态保留，均通过。
+
+其余模块未因本次接入升级实现状态，星球新场景仍待原组固定Git交接，反应炉仍待新稿。没有新增领域查询/命令/Amount计算；上述结果不等于购买玩法、Session导入重铸全链、V0或Windows通过。
