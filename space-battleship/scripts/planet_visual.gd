@@ -46,6 +46,7 @@ var draw_calls := 0
 var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)
 var background_layer := Control.new()
+var scene_sky := GradientTexture2D.new()
 var orbit_back_layer := Control.new()
 var configured_appearance: Dictionary = {}
 var appearance_initialized := false
@@ -60,6 +61,15 @@ var departure_front := true
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	var gradient := Gradient.new()
+	gradient.colors = PackedColorArray([Color("153a47"), Color("071e2c"), Color("051824")])
+	gradient.offsets = PackedFloat32Array([0.0, 0.65, 1.0])
+	scene_sky.gradient = gradient
+	scene_sky.width = 1024
+	scene_sky.height = 1024
+	scene_sky.fill = GradientTexture2D.FILL_RADIAL
+	scene_sky.fill_from = Vector2(0.4, 0.6)
+	scene_sky.fill_to = Vector2(1, 0)
 	for layer in [background_layer, orbit_back_layer, globe]:
 		layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.show_behind_parent = true
@@ -146,6 +156,11 @@ func _visual_value(value, fallback):
 	return value
 
 func configure(id: String, row: Dictionary) -> void:
+	if id != planet_id:
+		facilities = []
+		if architecture != null: architecture.configure([])
+		orbit_back_layer.queue_redraw()
+		queue_redraw()
 	planet_id = id
 	var appearance_source = row.get("visual", {})
 	appearance_source = _visual_value(appearance_source, {})
@@ -273,7 +288,13 @@ func advance(dt: float, paused: bool) -> void:
 func _draw_background() -> void:
 	if icon_mode:return
 	# Static field, separate from the owner-driven sphere and orbital motion.
-	background_layer.draw_texture_rect(BACKDROP, Rect2(Vector2.ZERO, size), false)
+	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, size), false)
+	var stars := RandomNumberGenerator.new()
+	stars.seed = 178
+	for index in 100:
+		var point := Vector2(stars.randf(), stars.randf()) * size
+		var radius := stars.randf_range(0.5, 1.3)
+		background_layer.draw_circle(point, radius, Color(0.65, 0.84, 0.86, stars.randf_range(0.18, 0.55)))
 
 func _draw_back_orbits() -> void:
 	if icon_mode:return

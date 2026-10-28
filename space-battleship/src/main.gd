@@ -26,6 +26,7 @@ var _pages: Dictionary = {}
 var _tabs: TabContainer
 var equipment_scene: Control
 var reactor_scene: Control
+var planet_scene: Control
 var _left_module: String = "equipment"
 var _left_buttons: Dictionary = {}
 var _left_modules: Dictionary = {}
@@ -213,21 +214,28 @@ func _setup_reactor_scene(layer: CanvasLayer) -> void:
 		if not is_same(budget, _reactor_wallet_dependency) and budget != _reactor_wallet_dependency:
 			reactor_scene.invalidate()
 		_reactor_wallet_dependency = budget)
+	planet_scene = PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim,
+		_command_button, _planet_visual_context, session.crew_system, session.coordinate_assignment)
+	planet_scene.position = Vector2.ZERO
+	planet_scene.size = Vector2(808, 900)
+	layer.add_child(planet_scene)
 	_left_modules.clear()
 	_left_buttons.clear()
 	_register_left_module(layer, "equipment", "装备", equipment_scene)
 	_register_left_module(layer, "reactor", "反应炉", reactor_scene, "reactor")
+	_register_left_module(layer, "planet", "星球", planet_scene, "", func():
+		return not session.planet_system.planet_options().is_empty())
 	_refresh_left_module()
 
 ## Add a full-size left Control and its one navigation entry. A feature key is
 ## optional; the host owns availability and keeps the scene's data binding local.
-func _register_left_module(layer: CanvasLayer, id: String, title: String, scene: Control, feature: String = "") -> void:
+func _register_left_module(layer: CanvasLayer, id: String, title: String, scene: Control, feature: String = "", availability: Callable = Callable()) -> void:
 	if id in _left_modules: return
-	_left_modules[id] = {"scene": scene, "feature": feature}
+	_left_modules[id] = {"scene": scene, "feature": feature, "availability": availability}
 	var button := Button.new()
 	button.text = title
-	button.position = Vector2(442 + 96 * _left_buttons.size(), 52)
-	button.size = Vector2(88, 30)
+	button.position = Vector2(410 + 88 * _left_buttons.size(), 52)
+	button.size = Vector2(80, 30)
 	button.theme = load("res://src/ui/bridge_theme.gd").create()
 	button.toggle_mode = true
 	button.pressed.connect(_select_left_module.bind(id))
@@ -258,6 +266,8 @@ func _refresh_left_module() -> void:
 		_left_buttons[id].set_pressed_no_signal(_left_module == id)
 
 func _left_module_available(id: String) -> bool:
+	var availability: Callable = _left_modules[id].availability
+	if availability.is_valid(): return bool(availability.call())
 	var feature: String = str(_left_modules[id].feature)
 	return feature.is_empty() or session.campaign_system.available("feature", feature)
 
@@ -675,7 +685,6 @@ func _setup_growth_panel() -> void:
 	box = _pages.universe.box
 	_add_feature_panel(box, "crew", CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
 	_add_feature_panel(box, "galaxy", GalaxyPanel.new(session.galaxy_system, _world_visual_context))
-	_add_feature_panel(box, "planet", PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button, _world_visual_context))
 	box = _pages.hyperspace.box
 	_add_feature_panel(box, "hyperspace", HyperspacePanel.new(session, _command_button))
 	box = _pages.archive.box
@@ -862,6 +871,11 @@ func _create_bridge_page(key: String, title: String) -> void:
 
 func _bridge_tab_changed(index: int) -> void:
 	if _reforge_picker != null and index == int(_pages.universe.index): _refresh_reforge_selection()
+
+func _planet_visual_context() -> Dictionary:
+	var context: Dictionary = _world_visual_context()
+	context.balances = session.economy.balance_rows()
+	return context
 
 func _world_visual_context() -> Dictionary:
 	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(),

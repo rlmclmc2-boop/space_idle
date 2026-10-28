@@ -31,6 +31,7 @@ var _cancel_button: Button
 var _auto_button: Button
 var _progress := ProgressBar.new()
 var _identity := Label.new()
+var _wallet := Label.new()
 var _task_line := Label.new()
 var _feedback := Label.new()
 var _drawer := PanelContainer.new()
@@ -79,7 +80,7 @@ func _ready() -> void:
 	world_planet_picker.item_selected.connect(func(index): select_planet(str(world_planet_picker.get_item_metadata(index))))
 	_stop_button = _action(self, "本次完成后停止", func(): return _planet.set_automatic(_selected_id, false))
 	_cancel_button = _action(self, "立即取消探索", func(): return _cancel.call(_selected_id))
-	for label in [_identity, _task_line, _feedback]:
+	for label in [_identity, _task_line, _feedback, _wallet]:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(label)
 	_identity.add_theme_font_size_override("font_size", 22)
@@ -137,43 +138,50 @@ func _theme() -> Theme:
 
 func _layout() -> void:
 	if _visual == null: return
-	_visual.position = Vector2(0, 110)
-	_visual.size = Vector2(size.x, maxf(500, size.y - 110))
-	_task_button.position = Vector2(22, 22)
+	_visual.position = Vector2(0, 90)
+	_visual.size = Vector2(size.x, maxf(500, size.y - 90))
+	_task_button.position = Vector2(22, 112)
 	_task_button.size = Vector2(226, 44)
-	_crew_button.position = Vector2(258, 22)
+	_crew_button.position = Vector2(258, 112)
 	_crew_button.size = Vector2(100, 44)
-	_facility_button.position = Vector2(368, 22)
+	_facility_button.position = Vector2(368, 112)
 	_facility_button.size = Vector2(116, 44)
-	world_planet_picker.position = Vector2(494, 22)
+	world_planet_picker.position = Vector2(494, 112)
 	world_planet_picker.size = Vector2(176, 44)
-	_stop_button.position = Vector2(22, 78)
+	_stop_button.position = Vector2(22, 168)
 	_stop_button.size = Vector2(190, 42)
-	_cancel_button.position = Vector2(222, 78)
+	_cancel_button.position = Vector2(222, 168)
 	_cancel_button.size = Vector2(190, 42)
-	_progress.position = Vector2(22, 68)
+	_progress.position = Vector2(22, 158)
 	_progress.size = Vector2(226, 4)
-	_task_line.position = Vector2(22, 126)
+	_task_line.position = Vector2(22, 216)
 	_task_line.size = Vector2(340, 48)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
-	_identity.position = Vector2(maxf(22, size.x - 270), 178)
+	_identity.position = Vector2(maxf(22, size.x - 270), 268)
 	_identity.size = Vector2(248, 60)
 	_identity.add_theme_color_override("font_color", Color("e0eee9"))
 	_feedback.position = Vector2(22, size.y - 80)
 	_feedback.size = Vector2(500, 70)
 	var source: Control = _facility_button if _open_section == "facilities" else _crew_button if _open_section == "crew" else _task_button
 	# Parent and child share an x anchor; the active entry remains visible.
-	_drawer.position = Vector2(minf(source.position.x, size.x - 350), 178)
+	_drawer.position = Vector2(minf(source.position.x, size.x - 350), 268)
 	_drawer.size.x = 328
 	_drawer.size.y = 0
+	_wallet.position = Vector2(200, 14)
+	_wallet.size = Vector2(580, 30)
+	_wallet.clip_text = true
+	_wallet.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	queue_redraw()
 
 func _draw() -> void:
+	draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
+	draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
+	draw_string(get_theme_default_font(), Vector2(24, 74), "星球探索", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("40676b"))
 	if _open_section != "facilities" or not _drawer.visible: return
 	var source: Control = _facility_button if _open_section == "facilities" else _crew_button if _open_section == "crew" else _task_button
 	var x := source.position.x + source.size.x * 0.5
-	draw_line(Vector2(x, 66), Vector2(x, 178), Color("80b9b2"), 2.0, true)
-	draw_circle(Vector2(x, 174), 4.0, Color("80b9b2"))
+	draw_line(Vector2(x, 156), Vector2(x, 268), Color("80b9b2"), 2.0, true)
+	draw_circle(Vector2(x, 264), 4.0, Color("80b9b2"))
 
 func refresh() -> void:
 	_dirty = true
@@ -221,6 +229,9 @@ func _refresh_options() -> void:
 func _process(dt: float) -> void:
 	if not is_visible_in_tree(): return
 	_context = _visual_context.call() if _visual_context.is_valid() else {}
+	var balances: PackedStringArray = []
+	for row in _context.get("balances", []).slice(0, 3): balances.append(str(row.text))
+	_wallet.text = "   ".join(balances)
 	if _dirty:
 		_dirty = false
 		_refresh_options()
@@ -309,6 +320,8 @@ func _build_facility_detail() -> void:
 	if not found:
 		_selected_facility = str(_facts[0].id) if not _facts.is_empty() else ""
 		for fact in _facts:
+			if fact.state == "building": _selected_facility = str(fact.id)
+		for fact in _facts:
 			if fact.state == "ready":
 				_selected_facility = str(fact.id)
 				break
@@ -351,7 +364,18 @@ func _build_crew_detail() -> void:
 		_member_picker.add_item(member.name)
 		_member_picker.set_item_metadata(_member_picker.item_count - 1, member.id)
 		if str(member.id) == _member_id: _member_picker.select(_member_picker.item_count - 1)
-	_member_picker.item_selected.connect(func(index): _member_id = str(_member_picker.get_item_metadata(index)))
+	_member_picker.item_selected.connect(func(index):
+		_member_id = str(_member_picker.get_item_metadata(index))
+		_rebuild_drawer())
+	var selected_member: String = str(_picker_value(_member_picker))
+	var member_facts: Array = _crew.member_facts([selected_member])
+	var assigned_here := false
+	if not member_facts.is_empty():
+		var fact: Dictionary = member_facts[0]
+		var occupation := str({"": "空闲", "planet_explore": "星球探索", "planet_build": "设施施工", "system_job": "岗位", "galaxy": "星系建设", "hyperspace": "超空间任务"}.get(fact.kind, fact.kind))
+		_caption(_drawer_body, "当前：%s%s" % [occupation, " · " + str(fact.target) if not str(fact.target).is_empty() else ""])
+		for option in _planet.assignment_options([_selected_id]):
+			if fact.kind == option.kind and fact.target == option.target: assigned_here = true
 	_assignment_picker = OptionButton.new()
 	_drawer_body.add_child(_assignment_picker)
 	for option in _planet.assignment_options([_selected_id]):
@@ -363,7 +387,9 @@ func _build_crew_detail() -> void:
 		var option: Dictionary = _picker_value(_assignment_picker, {})
 		if option.is_empty(): return {"ok": false, "reason": "PlanetBuildingUnavailable"}
 		return _coordinate.call(str(_picker_value(_member_picker)), str(option.kind), str(option.target)))
-	_action(_drawer_body, "撤回所选船员", func(): return _coordinate.call(str(_picker_value(_member_picker)), "", ""))
+	var release := _action(_drawer_body, "撤回本星球人员", func(): return _coordinate.call(str(_picker_value(_member_picker)), "", ""))
+	release.disabled = not assigned_here
+	if not assigned_here: release.tooltip_text = "所选船员当前未在本星球任职"
 
 func _picker_value(picker: OptionButton, fallback = ""):
 	return fallback if picker.selected < 0 else picker.get_item_metadata(picker.selected)
@@ -377,14 +403,17 @@ func _caption(parent: Node, text: String) -> Label:
 	return label
 
 func _action(parent: Control, text: String, action: Callable) -> Button:
+	var perform := func() -> Dictionary:
+		# Read IDs at activation; preserve the host's existing command admission.
+		var result: Dictionary = action.call()
+		_feedback.text = str(result.get("message", "完成")) if result.get("ok", false) else describe_error(str(result.get("reason", result.get("error", "操作失败"))))
+		refresh()
+		return result
+	if _host.is_valid(): return _host.call(parent, text, perform)
 	var button := Button.new()
 	button.text = text
 	parent.add_child(button)
-	button.pressed.connect(func():
-		# Always read the selected IDs at activation; no captured old planet/facility.
-		var result: Dictionary = action.call()
-		_feedback.text = str(result.get("message", "完成")) if result.get("ok", false) else describe_error(str(result.get("reason", result.get("error", "操作失败"))))
-		refresh())
+	button.pressed.connect(perform)
 	return button
 
 static func describe_error(reason: String) -> String:

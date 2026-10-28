@@ -32,12 +32,12 @@ func _ready() -> void:
 	environment.environment.background_mode = Environment.BG_CLEAR_COLOR
 	environment.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.environment.ambient_light_color = Color("91aeb6")
-	environment.environment.ambient_light_energy = 0.6
+	environment.environment.ambient_light_energy = 0.42
 	_world.add_child(environment)
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-35, -38, 0)
 	light.light_color = Color("fff0d8")
-	light.light_energy = 1.8
+	light.light_energy = 0.95
 	_world.add_child(light)
 	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
 	_camera.keep_aspect = Camera3D.KEEP_HEIGHT
@@ -113,10 +113,10 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float) -> void
 			model.transform = Transform3D(Basis(east, normal, north).scaled(Vector3.ONE * 0.24), normal * (_radius + 0.012))
 		else:
 			var path: Dictionary = preload("res://scripts/orbital_facilities.gd").path_for(kind)
-			var a := float(path.phase) + clock * float(path.speed)
+			var a := 0.65 if kind == "shipyard" else float(path.phase) + clock * float(path.speed)
 			var radial := _radius * float(path.radius)
 			var xy := Vector2(cos(a) * radial, -sin(a) * radial * float(path.ratio)).rotated(-float(path.tilt))
 			model.position = Vector3(xy.x, xy.y, sin(a) * radial * 0.7)
-			model.rotation = Vector3(0.3, -0.4 + clock * 0.04, 0.10)
+			model.rotation = Vector3(0.90, -0.25 + clock * 0.04, 0.10)
 			model.scale = Vector3.ONE * (0.28 if kind == "auto_explore" else 0.34)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
