@@ -1,0 +1,126 @@
+{
+  "base_commit": "9ba65fa029f8badbf9233e54571cd60e471a4967",
+  "frozen_runtime_commit": "5b4f72331038622ce739578fcdf3823a0a0b4716",
+  "target": [
+    1440,
+    900
+  ],
+  "module_target": [
+    808,
+    900
+  ],
+  "records": [
+    {
+      "name": "u1-heavy-v2",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-da93563a-4594-44eb-b5fe-5ad1b370ddfb.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u1-heavy-v2.png",
+      "sha256": "5e60e61e74af879e8e9da4aa4ac875dbd3421df07d36fb15e0aade7c61fec36d",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "u1-heavy-v2-prompt.txt",
+      "prompt_sha256": "5ef3e57fc1533b342a4d6bef8815e8b9ba16863e943a50bac5c1c9a946aa1869",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u1-heavy-v1.png",
+          "sha256": "81e0709ced4ed2fac36757d46f0ccf02770be6dc5cb8edee77dce0ab9dd0c50d"
+        },
+        {
+          "path": "docs/verification/equipment-hangar-godot/badge-pass/evidence/selected-weapon-0.png",
+          "sha256": "9dd597b6798c3b2982a6f766220d03140543ad3f12ff46d15507563cc3bfd924"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        }
+      ],
+      "inspection": "Actually viewed via view_image after generation. Unmodified raw PNG; no crop, scaling, composite, programmatic drawing. See README current refinement review boundaries."
+    },
+    {
+      "name": "u2-heavy-v2",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-c71059be-dde7-42d2-ab60-c06e309d851c.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u2-heavy-v2.png",
+      "sha256": "f31b1a23700b955d8c60bb9cbe76007a59b08978dbe5981c2e0757d02dfe7fab",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "u2-heavy-v2-prompt.txt",
+      "prompt_sha256": "46568cedc056424f04b4216b3d90c628650d83c51656aac04e0c53bfcf750bf6",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u2-heavy-v1.png",
+          "sha256": "385149bcad39661b3c74d5c3276bdced201612c3ad44fc70cedbf85f207b7b47"
+        },
+        {
+          "path": "docs/verification/equipment-hangar-godot/badge-pass/evidence/selected-weapon-0.png",
+          "sha256": "9dd597b6798c3b2982a6f766220d03140543ad3f12ff46d15507563cc3bfd924"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        }
+      ],
+      "inspection": "Actually viewed via view_image after generation. Unmodified raw PNG; no crop, scaling, composite, programmatic drawing. See README current refinement review boundaries."
+    },
+    {
+      "name": "u2-heavy-v3",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-e27d32ba-832f-45d1-9bf6-0adf9281cd17.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u2-heavy-v3.png",
+      "sha256": "5b4bfcf45cc98d39302dd2d6111c14ca7059a54a3851c564e70ad81651656c98",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "u2-heavy-v3-prompt.txt",
+      "prompt_sha256": "6425a3923873ffbcef48323c181f76d275abb146c3ef61a47d29e72dc8110173",
+      "references": [
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u2-heavy-v2.png",
+          "sha256": "f31b1a23700b955d8c60bb9cbe76007a59b08978dbe5981c2e0757d02dfe7fab"
+        },
+        {
+          "path": "docs/verification/equipment-hangar-godot/badge-pass/evidence/selected-weapon-0.png",
+          "sha256": "9dd597b6798c3b2982a6f766220d03140543ad3f12ff46d15507563cc3bfd924"
+        }
+      ],
+      "inspection": "Actually viewed via view_image after generation. Unmodified raw PNG; no crop, scaling, composite, programmatic drawing. See README current refinement review boundaries."
+    },
+    {
+      "name": "u1-frigate-v2",
+      "tool": "image_gen.imagegen",
+      "original_output": "/workspace/generated_images/exec-429f0fbc-77bd-465a-bd25-d2bba54f3436.png",
+      "saved_output": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u1-frigate-v2.png",
+      "sha256": "cd9fdb49999d34c35fe9571e11c0a7a367fce5d62fb9334ac630492c5d6ef659",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt_file": "u1-frigate-v2-prompt.txt",
+      "prompt_sha256": "0da78be771d5d530a23af7ae9717761957cfd9d2b8ec4841fdc18b9ea4067127",
+      "references": [
+        {
+          "path": "docs/verification/equipment-hangar-godot/badge-pass/same-version/01-new-session-frigate.png",
+          "sha256": "7790a010351871fc9698d213d0dadef9d3caf1f2379454db63f8c7d1cbe98534"
+        },
+        {
+          "path": "docs/ui-redesign-plan/g1-internal/equipment-image-design/upper-display/u1-heavy-v2.png",
+          "sha256": "5e60e61e74af879e8e9da4aa4ac875dbd3421df07d36fb15e0aade7c61fec36d"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/01-frigate.png",
+          "sha256": "a3982ea4c5f401c73ae9d1da2ed286231677c0a09f8f3f8c1e65b8f43049411c"
+        },
+        {
+          "path": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        }
+      ],
+      "inspection": "Actually viewed via view_image after generation. Unmodified raw PNG; no crop, scaling, composite, programmatic drawing. See README current refinement review boundaries."
+    }
+  ]
+}
