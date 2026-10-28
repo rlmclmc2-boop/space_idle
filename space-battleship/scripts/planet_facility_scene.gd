@@ -29,10 +29,12 @@ var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
+var _workshop_body_sprite: Sprite3D
 var _workshop_arm_sprite: Sprite3D
 var _workshop_carriage_sprite: Sprite3D
 var _workshop_link: MeshInstance3D
 var _refinery_shutter_sprites: Dictionary = {}
+var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
 var _shipyard_crane_sprite: Sprite3D
 var _shipyard_ring_sprite: Sprite3D
@@ -129,6 +131,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.double_sided = true
 	body.render_priority = 0
 	model.add_child(body)
+	_workshop_body_sprite = body
 	# Both sprites sample the original illustration. Splitting at the shoulder
 	# keeps the ivory carriage on the gantry while the tool works below it.
 	var arm_texture := preload("res://assets/planets/facilities_v5/illustrated/workshop-arm.png")
@@ -191,6 +194,7 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.shaded = false
 	body.double_sided = true
 	model.add_child(body)
+	_refinery_body_sprite = body
 	for side in ["Left", "Right"]:
 		var pivot := moving["IntakeWheel" + side] as Node3D
 		var shutter := Sprite3D.new()
@@ -224,21 +228,22 @@ func _position_refinery_work(model: Node3D, clock: float) -> void:
 	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
 	var screen_up := (camera_to_model * Vector3.UP).normalized()
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var base := Vector3(0, 1.50, 0) + camera_front * 0.25
+	var width := _refinery_body_sprite.scale.x
+	var base := _refinery_body_sprite.position + camera_front * 0.25
 	var opening := 0.5 + 0.5 * sin(clock * 0.70)
 	for side in ["Left", "Right"]:
 		var pivot := _parts["refinery"]["IntakeWheel" + side] as Node3D
 		var sign := -1.0 if side == "Left" else 1.0
-		var target := base + screen_up * (0.23 * opening) + screen_right * (sign * 0.10 * opening)
+		var target := base + screen_up * (0.23 * opening) + screen_right * (sign * 0.10 * opening * width)
 		(_refinery_shutter_sprites[side] as Sprite3D).position = pivot.transform.basis.inverse() * (target - pivot.position)
 	# Three small ore loads travel along the illustrated input belt into the
 	# furnace. This makes processing visible at the actual ~100px game scale.
-	var belt_start := base - screen_right * 0.96 - screen_up * 1.08
-	var belt_end := base - screen_right * 0.27 - screen_up * 0.25
+	var belt_start := base - screen_right * (0.96 * width) - screen_up * 1.08
+	var belt_end := base - screen_right * (0.27 * width) - screen_up * 0.25
 	for index in _refinery_feed_markers.size():
 		var travel := fposmod(clock * 0.20 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
-		marker.transform = Transform3D(Basis(screen_right, screen_up, camera_front), belt_start.lerp(belt_end, travel) + camera_front * 0.04)
+		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), belt_start.lerp(belt_end, travel) + camera_front * 0.04)
 
 func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	# The open two-level cantilever stays fixed; only the service crane travels
@@ -304,7 +309,8 @@ func _position_workshop_arm(model: Node3D) -> void:
 	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
 	var screen_up := (camera_to_model * Vector3.UP).normalized()
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var origin := Vector3(0, 1.38, 0) + screen_right * gantry.position.x + camera_front * 0.25
+	var width := _workshop_body_sprite.scale.x
+	var origin := _workshop_body_sprite.position + screen_right * (gantry.position.x * width) + camera_front * 0.25
 	var pixel_size := _workshop_arm_sprite.pixel_size
 	var carriage_center := origin + screen_up * (WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y) * pixel_size * 0.5
 	# The pivot still owns the game-clock cycle. Map its full stroke to a
@@ -317,12 +323,34 @@ func _position_workshop_arm(model: Node3D) -> void:
 	# carriage; the tool art covers its lower end and the carriage covers its top.
 	_workshop_link.visible = extension > 0.01
 	if _workshop_link.visible:
-		var joint := origin - screen_right * 0.10 + screen_up * ((WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size)
-		_workshop_link.transform = Transform3D(Basis(screen_right, screen_up, camera_front).scaled(Vector3(1, extension + 0.10, 1)), joint - screen_up * extension * 0.5)
+		var joint := origin - screen_right * (0.10 * width) + screen_up * ((WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size)
+		_workshop_link.transform = Transform3D(Basis(screen_right, screen_up, camera_front).scaled(Vector3(width, extension + 0.10, 1)), joint - screen_up * extension * 0.5)
 
 func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
 	for child in node.get_children(): _hide_imported_meshes(child)
+
+func _position_surface_illustration(kind: String, model: Node3D, normal: Vector3) -> void:
+	# At the horizon, a fixed camera-facing card puts the entire ground pad in
+	# space. Raise the same art plane from its terrain anchor in screen-up and
+	# shorten its width smoothly as the tangent turns edge-on. Keep the contact
+	# shadow and the named GLB pivots on their original surface tangent.
+	var edge := 1.0 - smoothstep(0.05, 1.05, absf(normal.z))
+	var width := lerpf(1.0, 0.50, edge)
+	var camera_to_model := model.transform.basis.inverse()
+	var screen_up := (camera_to_model * Vector3.UP).normalized()
+	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
+	var body := _workshop_body_sprite if kind == "equipment" else _refinery_body_sprite
+	var height := 1.38 if kind == "equipment" else 1.50
+	var inward := -signf(normal.x) * (1.2 * edge + edge * (1.0 - edge))
+	body.position = Vector3(0, height, 0).lerp(screen_up * height, edge) + screen_right * inward
+	body.scale.x = width
+	if kind == "equipment":
+		_workshop_carriage_sprite.scale.x = width
+		_workshop_arm_sprite.scale.x = width
+	else:
+		for shutter in _refinery_shutter_sprites.values():
+			(shutter as Sprite3D).scale.x = width
 
 func _transparent_materials(node: Node) -> void:
 	if node is MeshInstance3D:
@@ -383,6 +411,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 			# onto the true ellipsoid, so both pad and shadow follow the same terrain.
 			model.transform = Transform3D(Basis(east, normal, north).rotated(normal, 0.35 if kind == "refinery" else -0.20).scaled(Vector3.ONE * 0.35), Vector3(point.x, point.y * _axis_ratio, point.z) * (_radius * pulse) - normal * 0.055)
 			_contact_materials[kind].set_shader_parameter("body_axes", Vector3(_radius * pulse, _radius * _axis_ratio * pulse, _radius * pulse))
+			_position_surface_illustration(kind, model, normal)
 		else:
 			if kind == "shipyard":
 				# Confirmed independent service berth outside the station orbit.
