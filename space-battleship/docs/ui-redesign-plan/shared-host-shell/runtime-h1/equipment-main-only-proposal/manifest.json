@@ -1,5 +1,5 @@
 {
-  "status": "proposal_only_no_main_only_implementation_or_merge_created",
+  "status": "deferred_by_root_keep_reviewed_combination_no_dual_legacy_assembly",
   "remote_default_branch": "refs/heads/main",
   "remote_main": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
   "remote_master_exists": false,
@@ -165,5 +165,7 @@
     "push main",
     "run game or independent test"
   ],
-  "expected_future_preparation": "Only after root accepts this scope: create same-workspace main-only isolated commits, keep existing combined candidate fixed, original Astra reviews the adapter/dependency diff. This proposal has no final mergeable candidate hash."
+  "expected_future_preparation": "Deferred. This whitelist remains read-only analysis, not an instruction to implement isolated commits now. No final mergeable candidate was created.",
+  "conditional_merge_authorization_preserved": true,
+  "root_decision": "No immediate standalone release requirement; do not create a second legacy assembly solely to merge equipment early. Continue existing reactor/planet handoffs and reconsider when a complete mergeable scope exists."
 }
