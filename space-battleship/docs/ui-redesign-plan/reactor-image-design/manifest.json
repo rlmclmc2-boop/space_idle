@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "fixed_four_layout_selected_pipe_and_frame_only_revision_pending_independent_review_and_user_confirmation",
+  "status": "pipe_frame_image_rejected_as_display_cabinet_shared_working_structure_pending_cross_review_before_image_generation",
   "target_client_logical_px": [
     1440,
     900
@@ -94,7 +94,7 @@
   "pixel_processing": "none: generator outputs copied unchanged",
   "runtime_evidence": false,
   "geometry_issue": "Latest spacecraft revision divider remains near native x921 / width1586, equivalent logical x836; target x808. Existing image-generation residual, not accepted as exact region compliance.",
-  "review_image": "reactor-four-fixed-pipe-frame-r1-raw.png",
+  "review_image": null,
   "interaction_display": "All four directly adjustable sliders; only selected condensation device expands precise entry, clear draft and detail; unchanged values not duplicated; whole-plan confirm inactive.",
   "comparison_images": [
     "reactor-four-fixed-raw.png",
@@ -107,5 +107,7 @@
     "Static images do not prove scrolling coupling alignment, input hit areas or natural unlock flow."
   ],
   "selected_layout": "fixed_four_continuous_bays",
-  "revision_scope": "Preserve b351c4d3 core body and four small device bodies; change exposed pipes/collars and layered framing into embedded channels and continuous ship skin only; positions and operations retained."
+  "revision_scope": "Preserve b351c4d3 core body and four small device bodies; change exposed pipes/collars and layered framing into embedded channels and continuous ship skin only; positions and operations retained.",
+  "rejected_image": "reactor-four-fixed-pipe-frame-r1-raw.png",
+  "structure_review": "shared-power-structure-review.md"
 }
