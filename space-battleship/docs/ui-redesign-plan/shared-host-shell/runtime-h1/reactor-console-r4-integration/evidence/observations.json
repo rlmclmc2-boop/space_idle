@@ -1,0 +1,128 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": {
+				"main_reads": {
+					"commands": 2,
+					"model_reads": 7,
+					"preview_reads": 4,
+					"quote_reads": 4,
+					"visible_frames": 201
+				},
+				"stage": "(808.0, 835.0)",
+				"window": "(1440, 900)"
+			},
+			"id": "root_and_content_geometry",
+			"ok": true
+		},
+		{
+			"detail": [
+				"weapons",
+				"defence",
+				"smelting"
+			],
+			"id": "three_device_direct_route",
+			"ok": true
+		},
+		{
+			"detail": {
+				"local": "等级 1",
+				"shared": "反应炉1级"
+			},
+			"id": "shared_caption_and_local_readout",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "battle_projection_unchanged",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "original_preview_bound",
+			"ok": true
+		},
+		{
+			"detail": {
+				"load": 1.0,
+				"result": {
+					"defence_changed": true,
+					"ok": true
+				}
+			},
+			"id": "original_apply_bound",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "new_slider_uses_shared_focus_gate",
+			"ok": true
+		},
+		{
+			"detail": [
+				{
+					"button": 1,
+					"position": "(285.9999, 480.0)"
+				}
+			],
+			"id": "battle_focus_exit_and_pointer_restored",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "hidden_r4_work_stops",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "route_reuses_r4_draft",
+			"ok": true
+		},
+		{
+			"detail": [
+				"weapons",
+				"defence",
+				"smelting",
+				"condensation"
+			],
+			"id": "four_device_direct_route",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "four_apply_and_work_bound",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "host_clock_drives_r4_work",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "r4_collapse_static_with_restore",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "r4_restore_same_instance",
+			"ok": true
+		},
+		{
+			"detail": [
+				{
+					"id": "chrono",
+					"text": "时空微粒：3,432"
+				},
+				{
+					"id": "1",
+					"text": "铁：40"
+				}
+			],
+			"id": "wallet_still_uses_owner_text",
+			"ok": true
+		}
+	],
+	"fixture": "Temporary feature:reactor and condensation grants through public Campaign restore/owner refresh; fixture-triggered guidance dismissed with existing host guidance path. No wallet injection, purchase or forced clock. One equal/confirm per three/four state only to verify host command binding."
+}

@@ -1,5 +1,7 @@
 # 共享宿主当前交付
 
+新增接入：[反应堆厚体读控 R4 共享组合](runtime-h1/reactor-console-r4-integration/README.md)。原组最终下两路文字净空窄修已获原反应堆 Astra 认可；共享组合待原布局 Astra 审，公共壳与其他模块保持，不合 main。
+
 新增接入：[星球 R13 三设施共享组合](runtime-h1/planet-r13-integration/README.md)。R11 工坊已获原星球独审限定通过，R12/R13 内部视觉仍待原审；公共壳与已审顶部退出保持，现交原布局 Astra 审共享组合，不合 main。
 
 当前组合：[装备ce70修订与回执Popup × 已修共享宿主](runtime-h1/equipment-ce70-integration/README.md)，代码`c84c703f`，14项必要接入操作通过，原布局Astra已亲看四图并核源码/记录，当前1440×900共享组合与回执Popup限定通过、无新增P1/P2。内部视觉与未测项不升级，不合main。

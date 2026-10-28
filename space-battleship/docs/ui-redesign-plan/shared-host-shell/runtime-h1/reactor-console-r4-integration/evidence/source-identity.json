@@ -1,0 +1,49 @@
+{
+  "source_commit": "17710fc787431c569b930cf952fe5c8dd094f18f",
+  "files": {
+    "src/ui/reactor_stage.gd": {
+      "sha256": "694954ffbea0dcc312aae285b2b00d600129c4e506b4b142483d2308b8e80bb4",
+      "source_equal": true
+    },
+    "assets/ui/reactor/ship-hub-r4/central-console-front.png": {
+      "sha256": "c0f11550b7ea7990f5b36cbd7856ae4e0ef23fb4d1771a8cd02d67d5547e53ea",
+      "source_equal": true
+    },
+    "assets/ui/reactor/ship-hub-r4/central-console-front.svg": {
+      "sha256": "33141b43382e5ffd5f571e7b07d5dde4c0f23c31b2cb8526b1de3ee30ebe6b71",
+      "source_equal": true
+    },
+    "assets/ui/reactor/ship-hub-r4/weapons-control-3d.png": {
+      "sha256": "57295b9f4972f9881cea7c4f8cf1296efcaec1dfbf625b01d963716d183c51fa",
+      "source_equal": true
+    },
+    "assets/ui/reactor/ship-hub-r4/defence-control-3d.png": {
+      "sha256": "584525606afdef371f7078548d306e2a604e4f7a8833484fcbb8ad7bdcf8dd9b",
+      "source_equal": true
+    },
+    "assets/ui/reactor/ship-hub-r4/smelting-control-3d.png": {
+      "sha256": "e1d0261faa12a0e609432c50614df8853a0c6879e60cc527b41aa19239e00922",
+      "source_equal": true
+    },
+    "assets/ui/reactor/ship-hub-r4/condensation-control-3d.png": {
+      "sha256": "eacde67afdf9e0d132f4e1bcc7dcb42dff568525168ae64febd3ccc0a92b2042",
+      "source_equal": true
+    },
+    "art_sources/reactor-control-r4/smelting-source.png": {
+      "sha256": "4e1a5e337481c470a52c36793f65ba1494abf35d222ea2a8e69b57930da70dd7",
+      "source_equal": true
+    },
+    "art_sources/reactor-control-r4/condensation-source.png": {
+      "sha256": "9f6ff22fd934049273c5323af0aab14147a34438d9d0993934395d9ce5f6c2f0",
+      "source_equal": true
+    },
+    "art_sources/reactor-control-r4/weapons-source.png": {
+      "sha256": "9facc0c3968b763cd9eed46f0aef0747265b4b14aa04f003270cb1bed0558b9f",
+      "source_equal": true
+    },
+    "art_sources/reactor-control-r4/defence-source.png": {
+      "sha256": "f68a2837103ad565fbd478e120f1cf9ceb9ba5cc7fd1594ea54ffd869a2c232c",
+      "source_equal": true
+    }
+  }
+}

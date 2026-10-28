@@ -4,6 +4,13 @@ signal command_finished(result: Dictionary)
 signal exclusive_ui_changed
 var _shared_context: Label
 const Stage = preload("res://src/ui/reactor_stage.gd")
+const DEVICE_MOUNTS := {
+	"weapons": preload("res://assets/ui/reactor/ship-hub-r4/weapons-control-3d.png"),
+	"defence": preload("res://assets/ui/reactor/ship-hub-r4/defence-control-3d.png"),
+	"smelting": preload("res://assets/ui/reactor/ship-hub-r4/smelting-control-3d.png"),
+	"condensation": preload("res://assets/ui/reactor/ship-hub-r4/condensation-control-3d.png"),
+}
+const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/central-console-front.png")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
@@ -113,14 +120,18 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxFlat.new()
 		box.bg_color = Color("245963") if state in ["hover","pressed"] else Color("173e4b")
-		if primary: box.bg_color = Color("fff2d7") if state != "disabled" else Color("465e60")
+		if primary:
+			box.bg_color = Color("f2dbab") if state == "normal" else Color("f9e9c6") if state in ["hover","focus"] else Color("cda967") if state == "pressed" else Color("41545a")
 		if state == "disabled" and not primary: box.bg_color = Color("163945", 0.55)
 		box.border_color = Color("89bfb6") if state == "focus" else Color("58767a", 0.8)
-		if primary: box.border_color = Color("d4b373")
+		if primary: box.border_color = Color("ffe8b7") if state == "focus" else Color("a98551")
 		box.set_border_width_all(1)
 		box.set_corner_radius_all(7)
 		button.add_theme_stylebox_override(state, box)
 	button.add_theme_color_override("font_color", Color("173d4a") if primary else Color("e9eee0"))
+	button.add_theme_color_override("font_hover_color", Color("102d39") if primary else Color("ffffff"))
+	button.add_theme_color_override("font_pressed_color", Color("102d39") if primary else Color("ffffff"))
+	button.add_theme_color_override("font_focus_color", Color("102d39") if primary else Color("ffffff"))
 	button.add_theme_color_override("font_disabled_color", Color("849a9c"))
 	button.pressed.connect(action)
 	add_child(button)
@@ -141,17 +152,34 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	return panel
 
 func _build() -> void:
-	_panel(Rect2(16, 752, 776, 132), 0.94)
-	_level = _label(Vector2(30, 761), 124, 16)
+	var console := TextureRect.new()
+	console.texture = CENTRAL_MOUNT
+	console.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	console.stretch_mode = TextureRect.STRETCH_SCALE
+	console.position = Vector2(154, 747)
+	console.size = Vector2(500, 151)
+	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(console)
+	_level = _label(Vector2(242, 762), 80, 18)
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var offset := Vector2(0, 65)
-		var readout := _panel(Rect2(layout.effect + offset - Vector2(8, 6), Vector2(float(layout.width) + 10, 58)), 0.82)
-		var effect := _label(layout.effect + offset,float(layout.width),17)
+		var mount := TextureRect.new()
+		mount.texture = DEVICE_MOUNTS[id]
+		mount.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		mount.stretch_mode = TextureRect.STRETCH_SCALE
+		mount.position = layout.mount + offset
+		mount.size = Vector2(216, 140)
+		mount.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(mount)
+		var effect := _label(layout.effect + offset,float(layout.width),18)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
 		var supply := _label(layout.supply + offset,float(layout.width),16)
+		var effective := _label(layout.effective + offset,float(layout.width),16)
 		supply.size.y = 24
+		effective.size.y = 24
 		supply.add_theme_color_override("font_color", Color("c1dfd9"))
+		effective.add_theme_color_override("font_color", Color("e5d6b0"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
 		slider.position = layout.slider + offset
@@ -184,19 +212,17 @@ func _build() -> void:
 		slider.value_changed.connect(_slide.bind(id))
 		slider.focus_entered.connect(func(): _selected = id; _update_stage())
 		add_child(slider)
-		_rows[id] = {"effect":effect, "supply":supply, "slider":slider, "readout":readout}
+		_rows[id] = {"effect":effect, "supply":supply, "effective":effective, "slider":slider, "mount":mount}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(159,761),620,16)
+	_budget = _label(Vector2(325,762),290,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_cost = _label(Vector2(30, 797), 220, 16)
-	_purchase = _button("升级",Rect2(256,788,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(416,790,72,40),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认",Rect2(496,790,72,40),func(): _command(_submit))
-	_restore = _button("还原",Rect2(576,790,72,40),_reset)
-	_notice = _label(Vector2(30,836),740,16)
-	_notice.size.y = 42
-	_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_notice.clip_text = false
+	_cost = _label(Vector2(184, 789), 430, 16)
+	_purchase = _button("升级",Rect2(181,815,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(342,817,74,40),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(424,817,74,40),func(): _command(_submit))
+	_restore = _button("还原",Rect2(506,817,74,40),_reset)
+	_notice = _label(Vector2(184,864),430,16)
+	_notice.size.y = 28
 	for button in [_purchase,_equal,_apply,_restore]: button.disabled = true
 
 func _ready() -> void:
@@ -275,12 +301,12 @@ func _show_current_readings() -> void:
 			_shares[id] = int(roundf(float(row.ratio)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
 		_rows[id].slider.editable = _running and bool(_model.can_allocate)
-		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(str(row.factor))
+		_rows[id].effect.text = NAMES[id] + " 增益 ×" + PlayerText.number(str(row.factor))
 		_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		var manual_text: String = str(row.manual)
-		_rows[id].supply.text = "手" + PlayerText.number(manual_text)
-		if row.has_free: _rows[id].supply.text += "+免" + PlayerText.number(str(row.free))
-		_rows[id].supply.text += " · 效" + PlayerText.number(str(row.effective))
+		_rows[id].supply.text = "手动 " + PlayerText.number(manual_text)
+		if row.has_free: _rows[id].supply.text += " · 免费 " + PlayerText.number(str(row.free))
+		_rows[id].effective.text = "有效 " + PlayerText.number(str(row.effective))
 		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 	_level.text = "等级 " + str(_model.level)
@@ -404,13 +430,14 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 			if str(old.id) == id: current = old; break
 		var a: String = str(current.get("factor","—"))
 		var b: String = str(row.factor)
-		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
+		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		_rows[id].effect.tooltip_text = "增益 " + a + " → " + b
 		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
-		var supply_text: String = "手" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
-		if row.has_free: supply_text += "+免" + PlayerText.number(str(row.free))
+		var supply_text: String = "手动 " + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
+		if row.has_free: supply_text += " · 免费 " + PlayerText.number(str(row.free))
 		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = supply_text + " · 效" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
+		_rows[id].supply.text = supply_text
+		_rows[id].effective.text = "有效 " + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		_rows[id].supply.tooltip_text = "手动 " + str(current.get("manual","—")) + " → " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + a + " → " + b
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 		if _kind == "equal" or (_kind == "shares" and not fresh_shares):
@@ -468,8 +495,7 @@ func _update_stage() -> void:
 	_stage.show_snapshot(_ids,loads,_selected)
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
-## R4 already owns only y65..900; its local operating readouts remain unchanged.
-## The host owns the context slot and public navigation; this view owns its caption.
+## The host owns the context slot and navigation; this view owns its caption.
 func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
 	_release_host_context()
 	if enabled and is_instance_valid(context_slot):
