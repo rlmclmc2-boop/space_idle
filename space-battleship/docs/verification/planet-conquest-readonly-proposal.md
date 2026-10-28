@@ -1,6 +1,10 @@
 # 当前星球累计征服来源：最小只读提案
 
-仅设计文档，待根线程及同一原独审核，未实施或运行测试；main不动，原M10 WIP不夹带。唯一入口为[设计README](../game-design/README.md)，候选字段/单位及局部失效的唯一正文见[Planet分册第11节](../game-design/contracts/planet.md#11-待审设计当前星球征服事实与累计来源摘要)。玩法只按[03第5节](../game-design/03-progression.md#5-星球探索与建筑)及重铸第7节，不借展示改变规则。
+历史设计记录：`1865da2f`已获根审与原星球独审限定通过；当前实现候选与实际验证见[实现记录](planet-conquest-readonly-implementation.md)，实现仍待原双审、未合main。
+
+历史设计记录：`1865da2f`已获根审与原星球独审限定通过；当前实现候选与实际验证见[实现记录](planet-conquest-readonly-implementation.md)，实现仍待原双审、未合main。
+
+仅设计文档，待根线程及同一原独审核，未实施或运行测试；main不动，原M10 WIP不夹带。唯一入口为[设计README](../game-design/README.md)，候选字段/单位及局部失效的唯一正文见[Planet分册第11节](../game-design/contracts/planet.md#11-实现候选当前星球征服事实与累计来源摘要)。玩法只按[03第5节](../game-design/03-progression.md#5-星球探索与建筑)及重铸第7节，不借展示改变规则。
 
 ## 固定来源与复用
 
