@@ -42,23 +42,28 @@
 .quality-pass .enhancement-emblem{position:absolute;left:0;top:4px;width:40px;height:40px;object-fit:contain}
 .quality-pass .enhance-level-strip b{font-size:24px}.quality-pass .enhance-level-strip span{font-size:12px}
 .quality-pass .enhancement-buy{gap:8px}.quality-pass .enhancement-buy button{font-size:12px;padding:7px 11px}
-.quality-pass .enhance-groups{gap:24px;margin-top:20px}
-.quality-pass .enhance-chain{position:relative;padding-left:21px;min-width:0}
-.quality-pass .enhance-chain:before{content:'';position:absolute;left:5px;top:39px;bottom:24px;width:5px;background:#a7beb2;border-left:1px solid #7c9c92;border-right:1px solid #dfebde}
-.quality-pass .enhance-chain>h3{font-size:14px;margin:0 0 10px;padding:0 0 12px;border-color:#9eb7a8}
-.quality-pass .enhance-effect{position:relative;margin:0;padding:17px 0 18px 12px;border:0;border-top:1px solid #b7c6b4;border-radius:0;background:transparent}
-.quality-pass .enhance-effect:before{content:attr(data-order);position:absolute;left:-26px;top:27px;width:22px;height:22px;display:grid;place-items:center;background:#365c66;color:#f4efdf;border:2px solid #b4cbb9;border-radius:50%;font-size:11px;z-index:1}
-.quality-pass .effect-symbol{width:39px;height:39px;border-radius:10px;background:#e9efdf;border-color:#8faf9f;border-bottom:3px solid #5c8883;transform:none}
-.quality-pass .enhance-effect-identity h2{font-size:20px}.quality-pass .enhance-effect-identity small{font-size:11px}
-.quality-pass .enhance-effect p.enhance-current{font-size:14px;line-height:1.85;margin:12px 0 10px;min-height:0}
-.quality-pass .enhance-active-branches{background:transparent;border-left:2px solid #98b9a4;border-radius:0;font-size:11px;padding:2px 0 2px 9px}
-.quality-pass .enhance-node-details{margin-top:10px;font-size:12px}.quality-pass .enhance-nodes button{background:#eef0df;border-color:#a8bca9;padding:9px 3px}
+.quality-pass .enhance-layout{display:grid;grid-template-columns:43% minmax(0,1fr);gap:22px;margin-top:20px;align-items:start}
+.quality-pass .enhance-groups{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0}
+.quality-pass .enhance-chain{position:relative;padding-left:15px;min-width:0}
+.quality-pass .enhance-chain:before{content:'';position:absolute;left:3px;top:36px;bottom:20px;width:3px;background:#aac0b1}
+.quality-pass .enhance-chain>h3{font-size:12px;margin:0 0 10px;padding:0 0 10px;border-color:#a3bba9}
+.quality-pass .enhance-effect{position:relative;margin:0;padding:0 0 12px 8px;border:0;border-top:1px solid #bdc9b7;border-radius:0;background:transparent}
+.quality-pass .enhance-effect:before{content:attr(data-order);position:absolute;left:-21px;top:27px;width:19px;height:19px;display:grid;place-items:center;background:#3e636b;color:#f4efdf;border:2px solid #b8cdb8;border-radius:50%;font-size:10px;z-index:1}
+.quality-pass .enhance-select{width:100%;white-space:normal;display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:6px;padding:10px 5px;border:0;background:transparent;border-radius:6px;box-shadow:none;text-align:left}
+.quality-pass .enhance-select>b{font-size:16px;line-height:1.5}.quality-pass .enhance-select>small{font-size:11px;color:#6d8376}.quality-pass .enhance-path{font-size:11px;color:#5b8071}
+.quality-pass .enhance-select .effect-symbol{width:30px;height:30px;font-size:22px}
+.quality-pass .enhance-effect.selected .enhance-select{background:#dce8da;box-shadow:inset 3px 0 #5e9384}
+.quality-pass .enhance-effect>button.quiet{font-size:11px;padding:5px;margin-left:3px}
+.quality-pass .effect-symbol{border-radius:9px;background:#e6eedd;border-color:#94b2a0;border-bottom:3px solid #628a80;transform:none}
+.quality-pass .enhance-detail{min-width:0;border:1px solid #a9bfa9;border-bottom:6px solid #3e6068;border-radius:10px;background:linear-gradient(125deg,#f6f1e4,#e5ebdc);padding:20px}
+.quality-pass .enhance-detail-heading{display:flex;align-items:center;gap:12px}.quality-pass .enhance-detail-heading .effect-symbol{width:44px;height:44px;font-size:28px}.quality-pass .enhance-detail-heading h2{font-size:24px;margin:4px 0}.quality-pass .enhance-detail-heading small{font-size:11px;color:#6a8073}
+.quality-pass .enhance-detail p.enhance-current{font-size:15px;line-height:1.9;margin:18px 0 14px;color:#315e60}
+.quality-pass .enhance-active-branches{background:transparent;border-left:2px solid #99b7a2;border-radius:0;font-size:12px;padding:3px 0 3px 10px;line-height:1.9}
+.quality-pass .enhance-node-details{margin-top:19px;font-size:12px}.quality-pass .enhance-nodes button{background:#eef0df;border-color:#a8bca9;padding:10px 3px}.quality-pass .enhance-nodes small,.quality-pass .enhance-nodes span{font-size:10px;line-height:1.6}
 /* M9 — route identity and its two independent task desks share a station. */
 .quality-pass .route-station{border:1px solid #a8bdb0;border-radius:13px;overflow:hidden;background:linear-gradient(135deg,#d4e0d9,#edf0e1 65%);box-shadow:inset 0 1px #fff9,0 4px #45685b22;padding:20px}
-.quality-pass .route-station-identity{display:flex;align-items:center;gap:26px;min-height:152px;padding:0 16px 18px}
-.quality-pass .route-station-identity>svg{width:112px;height:140px;overflow:visible;filter:drop-shadow(0 8px 4px #244a552e);flex-shrink:0}
-.quality-pass .route-station-identity small{font-size:12px;color:#66847a}.quality-pass .route-station-identity h2{font-size:27px;margin:7px 0 10px}
-.quality-pass .route-station-identity span{font-size:13px}.quality-pass .route-station-identity p{font-size:12px;line-height:1.8;margin:10px 0 0;color:#587b70}
+.quality-pass .route-current-record{display:flex;align-items:baseline;gap:15px;padding:0 0 15px;flex-wrap:wrap}
+.quality-pass .route-current-record>b{font-size:19px}.quality-pass .route-current-record>span{font-size:12px;line-height:1.8;color:#577a6f}
 .quality-pass .route-station .route-browser{gap:0;padding:0;border-bottom:1px solid #a9beae}
 .quality-pass .route-station .route-card{border:0;border-radius:0;background:transparent;box-shadow:none;min-width:0;border-bottom:3px solid transparent;padding:11px 7px}
 .quality-pass .route-station .route-card.selected{background:#eaf0e1;border-bottom-color:#4e8b81}.quality-pass .route-card b{font-size:12px}
@@ -98,3 +103,11 @@
 .quality-pass .notification-list article{border:0;border-top:1px solid #b1c2af;border-left:3px solid #6c9c88;border-radius:0;background:#f1efdf;padding:20px}
 .quality-pass #workspace:is([data-view="equipment"],[data-view="settings"],[data-view="hyperspace"]) .pagehead h1{display:inline;margin-right:14px}
 .quality-pass #workspace:is([data-view="equipment"],[data-view="settings"],[data-view="hyperspace"]) .pagehead .sub{display:inline;line-height:1.8}
+
+.quality-pass .forge-base-preview{margin:8px 0 18px;text-align:center;width:100%}
+.quality-pass .forge-base-preview img{width:100%;height:225px;object-fit:contain;filter:drop-shadow(0 8px 4px #294c5538)}
+.quality-pass .forge-base-preview figcaption{font-size:11px;color:#658175;margin-top:6px}.quality-pass .forge-base-preview .technical-details{text-align:left}
+.quality-pass .save-timeline{margin:18px 0;border-top:1px solid #bdcbbb}.quality-pass .save-timeline li{gap:7px;padding-top:10px;font-size:11px}
+.quality-pass .save-timeline li>i{width:6px;height:6px;flex:none;border-radius:50%;background:#bdc7b6}.quality-pass .save-timeline li.reached>i{background:#52887b}
+
+.quality-pass .enhance-select .effect-symbol{grid-column:1;grid-row:1/3}.quality-pass .enhance-select>b,.quality-pass .enhance-select>small{grid-column:2}.quality-pass .enhance-select .enhance-path{grid-column:1/-1}.quality-pass .enhance-effect{padding-bottom:7px}
