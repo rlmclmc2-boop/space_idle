@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "single_center_core_four_surrounding_modules_composition_image_pending_independent_review_and_user_confirmation",
+  "status": "centered_design_approved_real_godot_independent_scene_in_progress_pending_readonly_and_shared_host_integration",
   "target_client_logical_px": [
     1440,
     900
@@ -186,5 +186,6 @@
       "independently_viewed": true
     }
   ],
-  "reference_access_blocker": "Resolved for these two images by Git handoff; external proxy403 unchanged; no repeated download needed."
+  "reference_access_blocker": "Resolved for these two images by Git handoff; external proxy403 unchanged; no repeated download needed.",
+  "implementation_checkpoint": "../../verification/reactor-centered-godot/README.md"
 }
