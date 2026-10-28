@@ -282,10 +282,10 @@ func _build() -> void:
     _payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
     for index in 3:
         var captions := ["+1","+10","MAX"]
-        var button := _button(captions[index],Rect2(34+index*65,810,59,38),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
+        var button := _button(captions[index],Rect2(34+index*65,812,59,36),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
         button.name="Quantity"+str(index)
         _quantity_buttons.append(button)
-    _purchase=_button("购买1级",Rect2(242,810,218,38),_buy,true)
+    _purchase=_button("购买1级",Rect2(242,812,218,36),_buy,true)
     _purchase.name="Purchase"
     _comparison_title=_label("装备选择",Rect2(508,608,260,27),18,CREAM)
     _compare=_label("",Rect2(508,735,268,62),13,CREAM)
@@ -307,9 +307,9 @@ func _build() -> void:
         _compare_periods.append(period)
     _compare_row_label=_label("攻击力",Rect2(508,749,57,25),12,Color("a8bfbc"))
     _label("周期",Rect2(508,774,57,19),12,Color("8faeab")).name="PeriodCaption"
-    _switch_state=_label("",Rect2(508,794,260,17),12,Color("f2cb83"))
+    _switch_state=_label("",Rect2(508,794,260,17),11,Color("f2cb83"))
     _switch_state.size=Vector2(260,17)
-    _install=_button("安装",Rect2(524,810,244,38),_equip,true)
+    _install=_button("安装",Rect2(524,812,244,36),_equip,true)
     _install.name="Install"
     _feedback=_label("",Rect2(25,875,757,24),12,Color("e5e7da"))
     _feedback.clip_text=true
@@ -565,16 +565,16 @@ func _refresh_choices(fact: Dictionary) -> void:
             var button:=_button("",Rect2(0,0,65,89),_select_candidate.bind(id),false,"candidate")
             button.name="Candidate_"+id
             var icon:=_icon(id,Rect2(12,7,41,40),button)
-            var caption:=_label("",Rect2(3,48,59,20),13,CREAM)
+            var caption:=_label("",Rect2(3,47,59,20),13,CREAM)
             remove_child(caption);button.add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             caption.add_theme_font_override("font",_font_strong)
             caption.size=Vector2(59,20)
-            var status:=_label("",Rect2(3,68,59,17),12,Color("c6dfd5"))
+            var status:=_label("",Rect2(3,67,59,18),12,Color("c6dfd5"))
             remove_child(status);button.add_child(status);status.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             status.add_theme_font_override("font",_font_strong)
             # Initial Label sizing used the default font before its override.
             # Reapply the actual slot after the status font's minimum is known.
-            status.size=Vector2(59,17)
+            status.size=Vector2(59,18)
             _choices[id]={"button":button,"icon":icon,"caption":caption,"status":status}
         var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
         if _choice_presentations.get(id)==signature:column+=1;continue
