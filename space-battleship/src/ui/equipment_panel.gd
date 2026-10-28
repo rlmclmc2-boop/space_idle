@@ -19,6 +19,9 @@ var _clock: float = 0.0
 var _ship: String = ""
 var _facts: Array = []
 var _slot_buttons: Dictionary = {}
+var _slot_groups: Dictionary = {}
+var _slot_backdrops: Dictionary = {}
+var _icon_textures: Dictionary = {}
 var _slot_presentations: Dictionary = {}
 var _slot_selections: Dictionary = {}
 var _choice_presentations: Dictionary = {}
@@ -60,8 +63,6 @@ var _batch_scroll: ScrollContainer
 var _batch_submit: Button
 var _font_regular: FontVariation
 var _font_strong: FontVariation
-var _terminal_texture: Texture2D
-var _arm_parts: Array = []
 var _cost_cells: Dictionary = {}
 var _payment_state: Label
 var _level_label: Label
@@ -92,6 +93,13 @@ func _init(session) -> void:
         _weapon_visible_bounds[key]=_textures[key].get_image().get_used_rect()
     _textures.shield = load("res://assets/ui/equipment/cartoon_shield.svg")
     _textures.armour = load("res://assets/ui/equipment/cartoon_armour.svg")
+    # Cache visible-only thumbnail regions once; formal scene textures and mount anchors stay intact.
+    for key in _textures:
+        var texture: Texture2D = _textures[key]
+        var thumbnail := AtlasTexture.new()
+        thumbnail.atlas = texture
+        thumbnail.region = texture.get_image().get_used_rect()
+        _icon_textures[key] = thumbnail
     _background = load("res://assets/ui/equipment/hangar/hangar-console.png")
     _upgrade_surface=load("res://assets/ui/equipment/hangar/upgrade-console.svg")
     _setup_materials()
@@ -120,12 +128,6 @@ func _setup_materials() -> void:
     theme.set_color("font_color", "PopupMenu", CREAM)
     theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
     _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
-    _terminal_texture = load("res://assets/ui/equipment/hangar/terminal-clean.svg")
-    var arm: Texture2D = load("res://assets/ui/equipment/hangar/support-arm.png")
-    for region in [Rect2(0,160,450,400),Rect2(450,160,1272,400),Rect2(1722,160,450,400)]:
-        var part := AtlasTexture.new()
-        part.atlas=arm;part.region=region
-        _arm_parts.append(part)
 
 func _frame(parent: Control, rect: Rect2) -> Panel:
     var frame := Panel.new()
@@ -160,6 +162,14 @@ func _prepare_button_material(button: Button, form: String) -> void:
                 material.bg_color=Color(0,0,0,0) if state=="normal" else Color(0.65,0.95,0.86,0.16) if state=="hover" else Color(0.02,0.09,0.13,0.35) if state=="pressed" else Color(0.15,0.20,0.22,0.5)
                 material.set_border_width_all(0);material.shadow_size=0
                 material.expand_margin_left=-15;material.expand_margin_right=-15;material.expand_margin_top=-12;material.expand_margin_bottom=-26
+            if form=="index":
+                material.bg_color=Color(0,0,0,0) if not selected else Color(0.12,0.39,0.41,0.88)
+                material.border_color=Color(0.47,0.77,0.75,0.18) if not selected else Color("97e2d4")
+                material.set_border_width_all(1 if selected else 0)
+                material.set_corner_radius_all(4)
+                material.shadow_size=0
+                if state=="hover":material.bg_color=Color(0.15,0.38,0.41,0.8)
+                elif state=="pressed":material.bg_color=Color("153c49")
             if state=="focus":
                 material.bg_color=Color(0,0,0,0);material.border_color=Color("b3ead8");material.set_border_width_all(2);material.shadow_size=0
             states[state]=material
@@ -227,7 +237,7 @@ func _button(text: String, rect: Rect2, action: Callable, dark: bool = false, fo
 
 func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
     var image := TextureRect.new()
-    image.texture = _textures.get(key)
+    image.texture = _icon_textures.get(key)
     image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
     image.position = rect.position
@@ -245,8 +255,19 @@ func _build() -> void:
     _title.add_theme_constant_override("shadow_offset_x",1)
     _title.add_theme_constant_override("shadow_offset_y",2)
     _button("全部装备升级",Rect2(614,96,174,49),_open_batch,true).name="BatchOpen"
+    for category in ["weapon","defence"]:
+        var backing:=Panel.new()
+        backing.position=Vector2(24,164);backing.size=Vector2(184,71)
+        backing.mouse_filter=Control.MOUSE_FILTER_IGNORE
+        var material:=_style(Color(0.06,0.16,0.21,0.78),Color(0,0,0,0),0)
+        material.set_corner_radius_all(4)
+        backing.add_theme_stylebox_override("panel",material)
+        add_child(backing);_slot_backdrops[category]=backing
+        _slot_groups[category]=_label("",Rect2(30,170,178,25),15,CREAM)
+        _slot_groups[category].add_theme_color_override("font_shadow_color",Color("173542"))
+        _slot_groups[category].add_theme_constant_override("shadow_offset_y",1)
     _current_title=_label("现装升级",Rect2(42,610,330,29),18,CREAM)
-    _level_label=_label("",Rect2(383,615,70,22),13,Color("aec5be"))
+    _level_label=_label("",Rect2(383,614,70,24),13,Color("aec5be"))
     _large_icon=_icon("laser",Rect2(42,656,64,64))
     _current_caption=_label("当前攻击力",Rect2(130,648,140,22),12,Color("6b7d79"))
     _upgrade_caption=_label("升级后",Rect2(306,648,146,22),12,Color("557a78"))
@@ -261,10 +282,10 @@ func _build() -> void:
     _payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
     for index in 3:
         var captions := ["+1","+10","MAX"]
-        var button := _button(captions[index],Rect2(34+index*65,810,59,37),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
+        var button := _button(captions[index],Rect2(34+index*65,810,59,38),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
         button.name="Quantity"+str(index)
         _quantity_buttons.append(button)
-    _purchase=_button("购买1级",Rect2(242,806,218,40),_buy,true)
+    _purchase=_button("购买1级",Rect2(242,810,218,38),_buy,true)
     _purchase.name="Purchase"
     _comparison_title=_label("装备选择",Rect2(508,608,260,27),18,CREAM)
     _compare=_label("",Rect2(508,735,268,62),13,CREAM)
@@ -286,9 +307,9 @@ func _build() -> void:
         _compare_periods.append(period)
     _compare_row_label=_label("攻击力",Rect2(508,749,57,25),12,Color("a8bfbc"))
     _label("周期",Rect2(508,774,57,19),12,Color("8faeab")).name="PeriodCaption"
-    _switch_state=_label("",Rect2(508,794,260,17),11,Color("f2cb83"))
+    _switch_state=_label("",Rect2(508,794,260,17),12,Color("f2cb83"))
     _switch_state.size=Vector2(260,17)
-    _install=_button("安装",Rect2(524,812,244,36),_equip,true)
+    _install=_button("安装",Rect2(524,810,244,38),_equip,true)
     _install.name="Install"
     _feedback=_label("",Rect2(25,875,757,24),12,Color("e5e7da"))
     _feedback.clip_text=true
@@ -435,7 +456,7 @@ func _refresh_comparison() -> void:
         _install.disabled = true
         return
     var comparison: Dictionary = last_comparison
-    _large_icon.texture = _textures.get(str(fact.equipment_id))
+    _large_icon.texture = _icon_textures.get(str(fact.equipment_id))
     _current_title.text = "%s · %s" % [_slot_name(_selected),NAMES.get(str(fact.equipment_id),"装备")]
     _level_label.text = "Lv."+str(fact.paid_level)
     _current_value.text = _value(comparison.current)
@@ -490,37 +511,43 @@ func _refresh_comparison() -> void:
 
 func _refresh_slots(active: Array) -> void:
     var live: Array=[]
+    var weapons: int=active.filter(func(row): return row.category=="weapon").size()
+    var defences: int=active.size()-weapons
+    for category in _slot_groups:
+        var count: int=weapons if category=="weapon" else defences
+        _slot_groups[category].text=("武器" if category=="weapon" else "防御")+" · 启用 "+str(count)
+        _slot_groups[category].position.y=170 if category=="weapon" else 217+weapons*31
+        _slot_groups[category].visible=count>0
+        _slot_backdrops[category].position.y=_slot_groups[category].position.y-6
+        _slot_backdrops[category].size.y=40+count*31
+        _slot_backdrops[category].visible=count>0
     for row in active:
         var id: String=str(row.id)
         live.append(id)
-        var signature: Array=[row.category,row.index,row.equipment_id,row.paid_level,id==_selected]
-        if _slot_presentations.get(id)==signature:continue
-        _slot_presentations[id]=signature
-        presentation_counts.slots_updated+=1
         if not _slot_buttons.has(id):
-            var button:=_button("",Rect2(0,0,220,82),select_slot.bind(id),false,"slot")
+            var button:=_button("",Rect2(0,0,180,30),select_slot.bind(id),false,"index")
             button.name="Slot_"+id.replace(":","_")
-            var housing:=TextureRect.new()
-            housing.texture=_terminal_texture;housing.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-            housing.stretch_mode=TextureRect.STRETCH_SCALE;housing.size=Vector2(220,82)
-            housing.mouse_filter=Control.MOUSE_FILTER_IGNORE;housing.show_behind_parent=true
-            button.add_child(housing)
-            var icon:=_icon(str(row.equipment_id),Rect2(23,12,42,43),button)
-            var title:=_label("",Rect2(72,12,127,23),15,CREAM)
-            remove_child(title);button.add_child(title);title.add_theme_font_override("font",_font_strong)
-            var meta:=_label("",Rect2(72,37,127,21),12,Color("a6c6c3"))
+            var number:=_label(str(int(row.index)+1),Rect2(10,0,24,30),14,Color("b4d7d1"))
+            remove_child(number);button.add_child(number)
+            var title:=_label("",Rect2(38,0,77,30),14,CREAM)
+            remove_child(title);button.add_child(title)
+            var meta:=_label("",Rect2(115,0,57,30),12,Color("b2cac5"))
+            meta.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
             remove_child(meta);button.add_child(meta)
-            var led:=ColorRect.new();led.position=Vector2(18,17);led.size=Vector2(3,32);led.mouse_filter=Control.MOUSE_FILTER_IGNORE
-            button.add_child(led)
-            _slot_buttons[id]={"button":button,"icon":icon,"caption":title,"meta":meta,"led":led,"housing":housing}
+            _slot_buttons[id]={"button":button,"caption":title,"meta":meta,"number":number}
         var item: Dictionary=_slot_buttons[id]
+        # Ship changes can move the defence group even when this slot's own facts are stable.
         item.button.position=_slot_label_position(row)
-        item.caption.text=str(NAMES.get(str(row.equipment_id),"装备"))
-        item.meta.text="%s · Lv.%s" % [_slot_name(id).replace("武器","武器槽").replace("防御","防御槽"),str(row.paid_level)]
-        item.icon.texture=_textures.get(str(row.equipment_id))
-        item.led.color=Color("f5cc84") if id==_selected else Color("3f777c")
-        item.housing.modulate=Color("fff1d0") if id==_selected else Color.WHITE
-        if _slot_selections.get(id)!=(id==_selected):presentation_counts.slot_styles_updated+=1;_slot_selections[id]=id==_selected
+        var signature: Array=[row.category,row.index,row.equipment_id,row.paid_level,id==_selected]
+        if _slot_presentations.get(id)!=signature:
+            _slot_presentations[id]=signature
+            presentation_counts.slots_updated+=1
+            item.caption.text=str(NAMES.get(str(row.equipment_id),"装备"))
+            item.meta.text="Lv."+str(row.paid_level) if not str(row.equipment_id).is_empty() else ""
+        if _slot_selections.get(id)!=(id==_selected):
+            presentation_counts.slot_styles_updated+=1
+            _slot_selections[id]=id==_selected
+            _button_tint(item.button,id==_selected)
     for id in _slot_buttons.keys():
         if id not in live:
             _slot_buttons[id].button.queue_free();_slot_buttons.erase(id);_slot_presentations.erase(id);_slot_selections.erase(id)
@@ -542,11 +569,11 @@ func _refresh_choices(fact: Dictionary) -> void:
             remove_child(caption);button.add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             caption.add_theme_font_override("font",_font_strong)
             caption.size=Vector2(59,20)
-            var status:=_label("",Rect2(3,68,59,17),11,Color("c6dfd5"))
+            var status:=_label("",Rect2(3,68,59,17),12,Color("c6dfd5"))
             remove_child(status);button.add_child(status);status.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             status.add_theme_font_override("font",_font_strong)
             # Initial Label sizing used the default font before its override.
-            # Reapply the actual slot after the 11px font's minimum is known.
+            # Reapply the actual slot after the status font's minimum is known.
             status.size=Vector2(59,17)
             _choices[id]={"button":button,"icon":icon,"caption":caption,"status":status}
         var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
@@ -699,13 +726,8 @@ func _mount_position(row: Dictionary) -> Vector2:
     return [Vector2(353,453),Vector2(453,453),Vector2(495,243)][mini(int(row.index),2)]
 
 func _slot_label_position(row: Dictionary) -> Vector2:
-    if row.category=="defence":return [Vector2(66,440),Vector2(522,440),Vector2(536,164)][mini(int(row.index),2)]
-    var count: int=_catalog[_ship].mounts.size()
-    if count==2 or count==4:
-        # Even mount layouts have a left/right pair rather than a centre bow mount.
-        return Vector2(52 if int(row.index)%2==0 else 536,(260 if count==2 else 215)+floori(float(row.index)/2.0)*135)
-    var positions: Array=[Vector2(294,129),Vector2(52,260),Vector2(536,260),Vector2(52,350),Vector2(536,350)]
-    return positions[mini(int(row.index),positions.size()-1)]
+    var weapons: int=_catalog[_ship].mounts.size()
+    return Vector2(26,202+int(row.index)*31 if row.category=="weapon" else 249+weapons*31+int(row.index)*31)
 
 func _draw() -> void:
     presentation_counts.scene_draws+=1
@@ -715,16 +737,6 @@ func _draw() -> void:
     # The ship name is lettered directly on the hangar beam, without a floating plaque.
     draw_texture_rect(_upgrade_surface,Rect2(24,606,452,252),false)
     if _ship.is_empty() or not _catalog.has(_ship):return
-    for row in _facts:
-        if row.dormant:continue
-        var port: Vector2=_slot_label_position(row)+Vector2(110,73)
-        var mount: Vector2=_mount_position(row)
-        if _ship=="Frigate" and row.category=="weapon":
-            # The service arm bypasses the bow, reaching the actual midship turret.
-            _draw_support(port,Vector2(555,port.y))
-            _draw_support(Vector2(555,port.y),Vector2(555,mount.y))
-            _draw_support(Vector2(555,mount.y),mount)
-        else:_draw_support(port,mount)
     draw_texture_rect(_hull_textures[_ship],_ship_rect(),false)
     for row in _facts:
         if row.dormant:continue
@@ -741,14 +753,6 @@ func _draw() -> void:
 
     _draw_selected_locator()
 
-func _draw_support(port: Vector2, mount: Vector2) -> void:
-    var length:float=port.distance_to(mount)
-    draw_set_transform(port,(mount-port).angle())
-    draw_texture_rect(_arm_parts[1],Rect2(10,-16,maxf(1,length-20),32),false)
-    draw_texture_rect(_arm_parts[0],Rect2(-16,-16,36,32),false)
-    draw_texture_rect(_arm_parts[2],Rect2(length-17,-16,36,32),false)
-    draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
-
 func _component_rect(row: Dictionary) -> Rect2:
     var point:Vector2=_mount_position(row)
     var key:String=str(row.equipment_id)
@@ -762,7 +766,7 @@ func _component_rect(row: Dictionary) -> Rect2:
 func _draw_selected_locator() -> void:
     var row:Dictionary=_selected_fact()
     if row.is_empty() or row.dormant:return
-    var card:Rect2=Rect2(_slot_label_position(row),Vector2(220,82))
+    var card:Rect2=Rect2(_slot_label_position(row),Vector2(180,30))
     var target:Rect2=_component_rect(row).grow(5)
     var centre:Vector2=target.get_center()
     var direction:Vector2=centre-card.get_center()
@@ -777,21 +781,17 @@ func _draw_selected_locator() -> void:
             if _slot_buttons[id].button.get_rect().grow(2).has_point(candidate):hidden=true;break
         if not hidden and start.distance_squared_to(candidate)<best:end=candidate;best=start.distance_squared_to(candidate)
     var points:PackedVector2Array=PackedVector2Array([start,end])
-    if _ship=="Frigate" and row.category=="weapon":
-        start=card.get_center()+Vector2(0,41)
-        end=Vector2(target.end.x,centre.y)
-        points=PackedVector2Array([start,Vector2(555,start.y),Vector2(555,end.y),end])
-    var accent:Color=Color("ffdb91")
-    draw_polyline(points,Color("153341"),5,true)
+    var accent:Color=Color("ffdb91") if row.category=="defence" else Color("91e2d4")
+    draw_polyline(points,Color("153341"),3.5,true)
     if row.category=="defence":
         for i in points.size()-1:draw_dashed_line(points[i],points[i+1],accent,2,5,true)
         for edge in [PackedVector2Array([target.position,Vector2(target.end.x,target.position.y)]),PackedVector2Array([Vector2(target.end.x,target.position.y),target.end]),PackedVector2Array([target.end,Vector2(target.position.x,target.end.y)]),PackedVector2Array([Vector2(target.position.x,target.end.y),target.position])]:draw_dashed_line(edge[0],edge[1],accent,2,4,true)
     else:
-        draw_polyline(points,accent,2,true)
+        draw_polyline(points,accent,1.5,true)
         for corner in [target.position,Vector2(target.end.x,target.position.y),target.end,Vector2(target.position.x,target.end.y)]:
             var sign:Vector2=Vector2(1 if corner.x==target.position.x else -1,1 if corner.y==target.position.y else -1)
-            draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),Color("173542"),5,true)
-            draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),accent,2,true)
+            draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),Color("173542"),3.5,true)
+            draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),accent,1.5,true)
     var badge:Rect2=_locator_badge_rect(row,target)
     if not badge.has_area():return
     draw_style_box(_locator_badge_style,badge)
