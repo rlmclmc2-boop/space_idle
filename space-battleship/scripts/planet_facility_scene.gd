@@ -29,6 +29,7 @@ var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
+var _workshop_arm_sprite: Sprite3D
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -115,6 +116,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	body.shaded = false
 	body.double_sided = true
+	body.render_priority = 0
 	model.add_child(body)
 	var arm := Sprite3D.new()
 	arm.name = "IllustratedToolArm"
@@ -126,7 +128,21 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	arm.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	arm.shaded = false
 	arm.double_sided = true
+	arm.render_priority = 1
 	arm_pivot.add_child(arm)
+	_workshop_arm_sprite = arm
+
+func _position_workshop_arm(model: Node3D) -> void:
+	# Keep the illustrated arm on a stable camera-facing layer. A direct child
+	# offset follows the tilted ground normal and crosses the body's depth plane,
+	# making the arm vanish behind opaque pixels during its vertical stroke.
+	var gantry := _parts["equipment"]["GantrySlide"] as Node3D
+	var pivot := _parts["equipment"]["ToolArmSweep"] as Node3D
+	var camera_front := (model.transform.basis.inverse() * Vector3(0, 0, 1)).normalized()
+	var stroke := Vector3(0, pivot.position.y - _workshop_arm_base_y, 0)
+	var screen_stroke := stroke - camera_front * stroke.dot(camera_front)
+	var target := Vector3(gantry.position.x, 1.38, 0) + screen_stroke + camera_front * 0.25
+	_workshop_arm_sprite.position = pivot.transform.basis.inverse() * (target - gantry.position - pivot.position)
 
 func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
@@ -205,6 +221,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 				model.position = Vector3(xy.x, xy.y, sin(a) * radial * sqrt(1.0 - float(path.ratio) * float(path.ratio)))
 			model.rotation = Vector3(0.90, -0.25 + (clock * 0.04 if kind == "auto_explore" else 0.0), 0.10)
 			model.scale = Vector3.ONE * (0.28 if kind == "auto_explore" else 0.34)
+		if kind == "equipment": _position_workshop_arm(model)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _animate_parts(kind: String, clock: float) -> void:
