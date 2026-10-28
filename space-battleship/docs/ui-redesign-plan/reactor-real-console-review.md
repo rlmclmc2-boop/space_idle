@@ -1,6 +1,6 @@
 # 反应堆真实界面：来源与改造判断（待独立审查）
 
-最新状态：用户否定`460ca44c`卧室/休眠舱感并要求联网参考；已暂停生成，定位原作者/正式作品入口，图片下载被网络代理403阻断，[取证状态与下一步](reactor-image-design/web-reference-research.md)如实记录。尚未实际查看外部原图，不以摘要或形容词定新稿。不重开滚动选择、不实施UI。
+最新状态：用户否定`460ca44c`卧室/休眠舱感并要求联网参考；已通过根线程`b75ea0b9`的Git交接实际查看两张原图，[独立观察与适配判断](reactor-image-design/web-reference-research.md)以共同分配总成/四短接口组织核心与小模组连接，不重做核心。查看阻塞解除，先交叉审判断，未生成新稿、不实施UI。
 
 入口：[游戏设计](../game-design/README.md) → 13 → [M3/V3](../game-design/art/modules/reactor.md)、[S5](../game-design/art/sources.md#s5)。本次仅交来源与改造判断；不是方案获批、游戏实现或V3通过。共用美术规范由装备组维护，本组等待引用，不修改该规范。遵循仓库 token-opt/doc-compact 指引定向读取。
 

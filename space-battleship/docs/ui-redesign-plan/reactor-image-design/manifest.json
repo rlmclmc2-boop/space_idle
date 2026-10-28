@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "monocoque_rejected_as_bedroom_or_hibernation_pod_generation_paused_web_reference_pixel_access_blocked_by_proxy403",
+  "status": "two_references_received_via_git_and_independently_viewed_connection_adaptation_judgment_pending_cross_review",
   "target_client_logical_px": [
     1440,
     900
@@ -146,5 +146,28 @@
     "reactor-shared-working-r1-raw.png",
     "reactor-monocoque-r2-raw.png"
   ],
-  "reference_research": "web-reference-research.md"
+  "reference_research": "web-reference-research.md",
+  "reference_images": [
+    {
+      "path": "references/mass-effect-core.jpg",
+      "native_size_px": [
+        1440,
+        810
+      ],
+      "sha256": "dec55846ac89253a708525a85b7c05c3452a2bf95f075923a1318c5ea39c5d8d",
+      "received_commit": "b75ea0b991c16578beb03bab2c6b4fe6db98ce94",
+      "independently_viewed": true
+    },
+    {
+      "path": "references/star-trek-warp-core.jpg",
+      "native_size_px": [
+        850,
+        628
+      ],
+      "sha256": "dfcdf5d3cd2c155bf928c618172f8c6988639633f4b7108b672664dbb9da993f",
+      "received_commit": "b75ea0b991c16578beb03bab2c6b4fe6db98ce94",
+      "independently_viewed": true
+    }
+  ],
+  "reference_access_blocker": "Resolved for these two images by Git handoff; external proxy403 unchanged; no repeated download needed."
 }
