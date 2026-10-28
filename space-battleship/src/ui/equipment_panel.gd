@@ -481,8 +481,10 @@ func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var different:bool=_workbench_layout.different
     var first_row_y:float=_workbench_layout.fee_y
     _cost.text="本次费用";_cost.position=Vector2(20,first_row_y);_cost.size=Vector2(84,22)
-    _payment_state.position=Vector2(20,first_row_y+keys.size()*22) if different else Vector2(20,190)
-    _payment_state.size=Vector2(180,22);_payment_state.text="" if affordable else _reason(reason)
+    _cost.visible=affordable;_payment_state.visible=not affordable
+    _payment_state.position=Vector2(20,first_row_y);_payment_state.size=Vector2(84,22)
+    _payment_state.text="" if affordable else _reason(reason);_payment_state.tooltip_text=_payment_state.text
+    _payment_state.autowrap_mode=TextServer.AUTOWRAP_OFF;_payment_state.clip_text=true;_payment_state.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;_payment_state.mouse_filter=Control.MOUSE_FILTER_PASS
     for index in keys.size():
         var id:String=str(keys[index])
         if not _cost_cells.has(id):
