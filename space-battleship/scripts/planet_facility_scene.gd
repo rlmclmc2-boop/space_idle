@@ -32,6 +32,8 @@ var _workshop_arm_base_y := 0.0
 var _workshop_arm_sprite: Sprite3D
 var _workshop_carriage_sprite: Sprite3D
 var _workshop_link: MeshInstance3D
+var _refinery_shutter_sprites: Dictionary = {}
+var _refinery_feed_markers: Array[MeshInstance3D] = []
 const WORKSHOP_ARM_SPLIT_Y := 428.0
 const WORKSHOP_ARM_IMAGE_HEIGHT := 1024.0
 const WORKSHOP_ARM_IMAGE_WIDTH := 1536.0
@@ -90,6 +92,7 @@ func _ready() -> void:
 			moving[part_name] = pivot
 		_parts[kind] = moving
 		if kind == "equipment": _install_workshop_illustration(model, moving)
+		if kind == "refinery": _install_refinery_illustration(model, moving)
 		if SURFACE_UV.has(kind):
 			var patch := MeshInstance3D.new()
 			var plane := PlaneMesh.new()
@@ -171,6 +174,68 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	arm.render_priority = 1
 	arm_pivot.add_child(arm)
 	_workshop_arm_sprite = arm
+
+func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
+	# The two ore hoppers, recessed furnace and feed belt are one fixed image;
+	# the two cooler shutters retain separate, clock-driven working layers.
+	_hide_imported_meshes(model)
+	var body := Sprite3D.new()
+	body.name = "IllustratedRefineryBody"
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-body.png")
+	body.pixel_size = 0.0032
+	body.position = Vector3(0, 1.50, 0)
+	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	body.shaded = false
+	body.double_sided = true
+	model.add_child(body)
+	for side in ["Left", "Right"]:
+		var pivot := moving["IntakeWheel" + side] as Node3D
+		var shutter := Sprite3D.new()
+		shutter.name = "IllustratedCoolerShutter" + side
+		shutter.texture = load("res://assets/planets/facilities_v5/illustrated/refinery-shutter-" + side.to_lower() + ".png")
+		shutter.pixel_size = body.pixel_size
+		shutter.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		shutter.shaded = false
+		shutter.double_sided = true
+		shutter.render_priority = 1
+		pivot.add_child(shutter)
+		_refinery_shutter_sprites[side] = shutter
+	var feed_material := StandardMaterial3D.new()
+	feed_material.albedo_color = Color("ffd079")
+	feed_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	feed_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	feed_material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
+	feed_material.render_priority = 2
+	for index in 3:
+		var marker := MeshInstance3D.new()
+		marker.name = "ConveyorOreMarker%d" % index
+		var quad := QuadMesh.new()
+		quad.size = Vector2(0.17, 0.11)
+		marker.mesh = quad
+		marker.material_override = feed_material
+		model.add_child(marker)
+		_refinery_feed_markers.append(marker)
+
+func _position_refinery_work(model: Node3D, clock: float) -> void:
+	var camera_to_model := model.transform.basis.inverse()
+	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
+	var screen_up := (camera_to_model * Vector3.UP).normalized()
+	var camera_front := (camera_to_model * Vector3.BACK).normalized()
+	var base := Vector3(0, 1.50, 0) + camera_front * 0.25
+	var opening := 0.5 + 0.5 * sin(clock * 0.70)
+	for side in ["Left", "Right"]:
+		var pivot := _parts["refinery"]["IntakeWheel" + side] as Node3D
+		var sign := -1.0 if side == "Left" else 1.0
+		var target := base + screen_up * (0.23 * opening) + screen_right * (sign * 0.10 * opening)
+		(_refinery_shutter_sprites[side] as Sprite3D).position = pivot.transform.basis.inverse() * (target - pivot.position)
+	# Three small ore loads travel along the illustrated input belt into the
+	# furnace. This makes processing visible at the actual ~100px game scale.
+	var belt_start := base - screen_right * 0.96 - screen_up * 1.08
+	var belt_end := base - screen_right * 0.27 - screen_up * 0.25
+	for index in _refinery_feed_markers.size():
+		var travel := fposmod(clock * 0.20 + float(index) / 3.0, 1.0)
+		var marker := _refinery_feed_markers[index]
+		marker.transform = Transform3D(Basis(screen_right, screen_up, camera_front), belt_start.lerp(belt_end, travel) + camera_front * 0.04)
 
 func _position_workshop_arm(model: Node3D) -> void:
 	# Keep the illustrated arm on a stable camera-facing layer. A direct child
@@ -278,6 +343,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 			model.rotation = Vector3(0.90, -0.25 + (clock * 0.04 if kind == "auto_explore" else 0.0), 0.10)
 			model.scale = Vector3.ONE * (0.28 if kind == "auto_explore" else 0.34)
 		if kind == "equipment": _position_workshop_arm(model)
+		if kind == "refinery": _position_refinery_work(model, clock)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _animate_parts(kind: String, clock: float) -> void:
