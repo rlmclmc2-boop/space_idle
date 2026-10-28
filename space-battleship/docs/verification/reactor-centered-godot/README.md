@@ -9,18 +9,32 @@
 | `51e704c8` | 基于装备宿主`94040a18`，在真实main挂载左808×900装备/反应堆切换、右632等比战场；接真实Session的开放、暂停与game_time，以及经济变化通知。 | Godot4.7.2入口编译、native真Session启动和Xorg:99整屏已检查；正常新局反应堆未开放，整屏截图不算反应堆验收。 |
 | `6f45bed5` | 反应堆Control、四向装配层、独立工作shader、新透明支座与导入设置；四滑杆、均分、整组预览/确认、还原和购级绑定。 | Godot编译和受控夹具装配渲染通过；夹具不证明真实领域数据、自然开放、最终接头质量或动态性能。 |
 | `4c26b2e4` | 共享左模块注册点改为`_register_left_module(layer,id,title,scene,unlock_kind,unlock_target)`；按现行开放配置，反应堆使用`feature:reactor`，星球首入口使用`planet:1`。 | Godot4.7.2入口编译与`git diff --check`通过；星球页面由其所属任务独立提供。 |
-| `170849dd` | 按`3d14ded8`方案适配消费者：当前模型与购级报价分读、局部变化通知、显式running与paused、未知禁用、被动shares草稿保留已生成canonical金额。 | 入口编译和受控夹具只证明脚本可运行；所有者接口实现尚未固定，字段与真实操作需接入后核对。 |
+| `170849dd` | 按`3d14ded8`方案适配消费者：当前模型与购级报价分读、局部变化通知、显式running与paused、未知禁用、被动shares草稿保留已生成canonical金额。 | 当时仅完成受控夹具；下述`3d763099`和真实Session流程已取代该阶段性限制。 |
 | `e5cbbb33` | 顶栏唯一模块导航移至x410/498/586，按钮80宽、间距8；末项止于x666。 | 装备副标题布局框止于x404，留6px；现有“舰桥面板”按钮始于x678，留12px。星球页尚未合入本分支，第三按钮只完成坐标净空，未作三页实屏验收。 |
+| `3d763099` | 定向接入已审核的所有者展示出口`26832431`，不引入其分支其他变更。 | 字段和信号已由真实Session流程核对；自然游戏开放仍待验收。 |
+| `65ab683e` | 同值整组确认后从已持有的当前快照退出草稿显示态，避免依赖净变化通知；优化大数显示与购级标签。 | 真实同值确认显示和模型读取计数已核；不增加领域全读。 |
 
 上述提交均已推送至`origin/implement/reactor-centered-godot`。本组修改了`src/main.gd`的最小挂载，未重写装备Control、玩法后端计算或native源码。新资产原件为`/workspace/generated_images/exec-eb6483c5-434b-49b2-8739-96feb6601fc6.png`，已按原图复制为`assets/ui/reactor/centered-v1/supports.png`。导入产生的大量其他未追踪`.import/.uid`未整批入Git。
 
 ## 接口依赖与验收边界
 
-固定`09af963c`已有`allocation_plan_preview`和`apply_allocation_plan`，但Reactor实现仍缺少本Control需要的只读`presentation_model()`、`purchase_preview(can_pay)`及`presentation_changed`；Economy仍缺局部`budget_changed`。接口方案`3d14ded8`已通过定向审核并按SHA直接获取阅读，所有者实现尚未固定。前端缺出口时显示“供能状态暂不可用”，不读取`_state/_parameters/_factors`、不解析Amount，也不伪造游戏数据。
+固定`09af963c`已有`allocation_plan_preview`和`apply_allocation_plan`。其后已将审核通过的所有者实现`26832431`定向引入本分支（本分支提交`3d763099`）：Reactor提供只读`presentation_model()`、`purchase_preview(can_pay)`及局部`presentation_changed`，Economy提供`budget_changed`。前端缺出口时显示“供能状态暂不可用”，不读取`_state/_parameters/_factors`、不解析Amount，也不伪造游戏数据。
 
 本Control通过`bind_presentation(reader, context)`接只读展示与`{game_time,paused,running}`，另通过`bind_purchase_quote(reader)`只读+1报价。消费者需要等级、容量/剩余、购级报价、开放设备ID及手动占比/数量、免费量、有效量、最终增益和实际有效负载；已按方案分开场景与报价失效。整组确认提交预览中的全套canonical金额目标；均分确认调用一次`distribute`。普通拒绝应零写入、保留完整草稿；开放集合变化使旧预览失效。所有者提供有限显示比例，前端不重做均分Amount计算。
 
-反应堆在真实游戏中的四设备全开/凝聚隐藏、零负载与免费量、成功/拒绝、购级、暂停/隐藏/重开，及各局部动态性能，均**尚未验收**。用户标注的[上方接头原图](../../ui-redesign-plan/reactor-image-design/references/user-marked-upper-connections.png)已实际查看；四路实体连接、轴向插入、遮挡与流光共用端口仍须在同版真实游戏正常画面、暂停画面及上两路近景中核对，不能仅凭线碰到边或夹具可见判通过。
+已在Godot4.7.2、Xorg:99和真实native Session的同一进程中运行[真实流程驱动](evidence/live-flow-driver.gd.txt)，输出[日志](evidence/live-flow-r8.log.txt)及[整屏截图组](evidence/reactor-flow-four-active-t0.png)。该驱动通过公开Campaign存取与Reactor刷新临时授予`feature:reactor`和`reactor_module:condensation`，并通过公开经济API注入购级预算；这明确**不是自然进度开放或自然收入的证据**。真实Session的领域展示出口、整组预览/接纳和拒绝均为实际调用，截图未使用夹具模型。正常新局的自然开放、非零免费量仍待实测。
+
+| 真实流程 | 证据与结果 |
+|---|---|
+| 初始三设备、零负载、凝聚隐藏 | [三设备整屏](evidence/reactor-flow-three-zero.png)，日志`INITIAL 3 load=0`。 |
+| 均分预览、一次整组确认 | [草稿预览](evidence/reactor-flow-equal-preview.png)→[实际三设备负载](evidence/reactor-flow-three-active.png)，接纳后`load=1`。草稿不驱动实体实际负载。 |
+| 同值确认无所有者净变化通知 | [同值草稿](evidence/reactor-flow-same-preview.png)→[确认后当前状态](evidence/reactor-flow-same-confirm.png)；模型读取`2→2`，底栏从“草稿分配”恢复为“可调容量”。 |
+| 超容量预览拒绝、保留草稿 | [拒绝画面](evidence/reactor-flow-over-capacity.png)，`ReactorPlanOverCapacity`且确认禁用，未对该超容量计划发起提交。所有者零写入断言由其定向测试覆盖。 |
+| 预算失效与购级 | [可购画面](evidence/reactor-flow-affordable.png)→[购级后](evidence/reactor-flow-purchased.png)；钱包变化只重取报价`1→2`，模型读取`3→3`，等级`1→2`。 |
+| 用户暂停、隐藏、重开 | [暂停画面](evidence/reactor-flow-paused.png)与[重开画面](evidence/reactor-flow-four-reopen.png)；暂停场更新`98→98`而滑杆仍可编辑，隐藏场更新`0/35帧`。 |
+| 四设备实际运行 | [四设备开放](evidence/reactor-flow-four-open.png)、[运行帧A](evidence/reactor-flow-four-active-t0.png)、[运行帧B](evidence/reactor-flow-four-active-t1.png)；四个实际`row.load`均大于零，核心与四模块使用各自工作动画。 |
+
+该llvmpipe环境下35个可见帧约1002ms、35个隐藏帧约1016ms；仅可证明隐藏时本Control的场更新计数为零，不据此声称整体帧耗降低或硬件性能通过。用户标注的[上方接头原图](../../ui-redesign-plan/reactor-image-design/references/user-marked-upper-connections.png)已实际查看。真实整屏能看见四路短接和设备插座，装配代码的接合路径、流光端口也共享坐标；上两路轴向插入和遮挡的近景品质仍待明确复核，不能仅凭线碰边、截图像素变化或夹具判最终通过。
 
 已有[旧夹具截图](evidence/visual-fixture-only.png)、[驱动记录](evidence/visual-fixture-driver.gd.txt)和[局部计数日志](evidence/visual-fixture-motion.txt)仅证明当时受控数据下的渲染和暂停/隐藏更新计数；根线程明确不将它们或像素变化当作最终动态品质证据。新支座夹具图暂留`/tmp/space-idle-native472/reactor-scene-fixture.png`，同样只用于装配检查。真实宿主装备/战场整屏截图暂留`/tmp/space-idle-native472/reactor-new-host-screen2.png`。
 
