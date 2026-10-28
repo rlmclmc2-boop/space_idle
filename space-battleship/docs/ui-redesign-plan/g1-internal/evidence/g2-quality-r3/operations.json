@@ -1,5 +1,7 @@
 {
-  "commit": "5fee3a6aa9ed988c5d375273e8bfe68636308008",
+  "source_commit": "0aa504d085aeaaa4ab7352babe9614fccfe0d36a",
+  "capture_head_commit": "5fee3a6aa9ed988c5d375273e8bfe68636308008",
+  "source_note": "Actual captured working-tree source bytes were committed as source_commit after capture. capture_head_commit is the then-current HEAD, not the captured after-source identity. This is evidence attribution only; no independent test rerun.",
   "viewport": [
     1440,
     900

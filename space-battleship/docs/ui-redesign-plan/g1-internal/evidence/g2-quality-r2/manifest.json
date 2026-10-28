@@ -74411,5 +74411,10 @@
     "Producer operation evidence, not independent reviewer execution",
     "All state/commands are existing finite browser owner responses; no actual file writes or native simulation",
     "A/B selection, whole quality and G2/G4/G9 pending; P3 parameters unapproved; no main/runtime/config/save changes"
-  ]
+  ],
+  "operations_source": {
+    "actual_source_commit": "2cb2a5f2a74eef872bfe7f92edeb612cedcaf9e7",
+    "capture_head_commit": "e474f9f963c8cba63c346bcfb7a0d2829d19c127",
+    "note": "Actual captured working-tree source bytes were committed as source_commit after capture. capture_head_commit is the then-current HEAD, not the captured after-source identity. This is evidence attribution only; no independent test rerun."
+  }
 }
