@@ -1,5 +1,7 @@
 # 星球 R7：R6 视觉退回后的三设施窄修候选
 
+R7 根审继续退回主造型；分层美术路线的首个工坊代表候选与原尺寸短周期见 [R8 工坊](../visual-r8-workshop/README.md)。本页图和视频仍是 R7 对照，不证明 R8 通过。
+
 对照 [R5 认可造型](../visual-r5/README.md)和 [R6 退回的实机图](../visual-r6/README.md)，本次只修改精炼厂、工坊、船坞的 Blender 几何及 GLB。工坊拆开封闭屋壳，留宽工作湾、粗龙门和伸入湾内的机械爪；船坞增加单侧高主脊的正面象牙护甲，两座不等长悬臂保持开放；精炼厂明确双矿斗、中央炉舱与前伸入料带，炉顶有大块琥珀窗口。仍用暖象牙、深蓝结构、少量青灯及大块明暗。可编辑来源在 `art_sources/planet_facilities_v5/build.py` 与三份 `.blend`；运行资产在 `assets/planets/facilities_v5/{refinery,equipment,shipyard}.glb`。
 
 实际画面由官方 Godot `4.7.2.stable.official.ed1daf0bf`、本地 native、Xorg `:91`、Mesa llvmpipe 的 `1440×900` 正式主场景生成。始源星夹具经真实 GameSession 放开并建好四设施以展示候选，正常游戏时钟、地表转动和战斗继续推进；没有引擎限帧或强推时钟。

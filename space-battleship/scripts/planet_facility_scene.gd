@@ -28,6 +28,7 @@ var _axis_ratio := 1.0
 var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
+var _workshop_arm_base_y := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -82,6 +83,7 @@ func _ready() -> void:
 			assert(pivot != null, "Missing facility work pivot: " + kind + "/" + part_name)
 			moving[part_name] = pivot
 		_parts[kind] = moving
+		if kind == "equipment": _install_workshop_illustration(model, moving)
 		if SURFACE_UV.has(kind):
 			var patch := MeshInstance3D.new()
 			var plane := PlaneMesh.new()
@@ -100,6 +102,35 @@ func _ready() -> void:
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
+
+func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
+	# The approved R5 silhouette is carried by two depth-tested, camera-facing
+	# art layers. The original GLB keeps its named animation pivots and anchor.
+	_hide_imported_meshes(model)
+	var body := Sprite3D.new()
+	body.name = "IllustratedWorkshopBody"
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-body.png")
+	body.pixel_size = 0.0031
+	body.position = Vector3(0, 1.38, 0)
+	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	body.shaded = false
+	body.double_sided = true
+	model.add_child(body)
+	var arm := Sprite3D.new()
+	arm.name = "IllustratedToolArm"
+	arm.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-arm.png")
+	arm.pixel_size = body.pixel_size
+	var arm_pivot := moving["ToolArmSweep"] as Node3D
+	_workshop_arm_base_y = arm_pivot.position.y
+	arm.position = body.position + Vector3(0, 0.01, 0) - arm_pivot.position
+	arm.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	arm.shaded = false
+	arm.double_sided = true
+	arm_pivot.add_child(arm)
+
+func _hide_imported_meshes(node: Node) -> void:
+	if node is MeshInstance3D: node.visible = false
+	for child in node.get_children(): _hide_imported_meshes(child)
 
 func _transparent_materials(node: Node) -> void:
 	if node is MeshInstance3D:
@@ -190,6 +221,7 @@ func _animate_parts(kind: String, clock: float) -> void:
 		"equipment":
 			(moving["GantrySlide"] as Node3D).position.x = sin(clock * 0.42) * 0.30
 			(moving["ToolArmSweep"] as Node3D).rotation.y = sin(clock * 0.75) * 0.25
+			(moving["ToolArmSweep"] as Node3D).position.y = _workshop_arm_base_y + sin(clock * 0.75) * 0.35
 		"shipyard":
 			(moving["CraneSlide"] as Node3D).position.x = sin(clock * 0.50) * 0.50
 			(moving["DockCollarSpin"] as Node3D).rotation.z = clock * 0.42
