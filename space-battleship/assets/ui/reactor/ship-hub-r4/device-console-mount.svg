@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="216" height="110" viewBox="0 0 216 110">
+ <defs>
+  <linearGradient id="shell" x2="0" y2="1"><stop stop-color="#fff0d7"/><stop offset=".32" stop-color="#d5bea0"/><stop offset=".72" stop-color="#9d927e"/><stop offset="1" stop-color="#625f5d"/></linearGradient>
+  <linearGradient id="face" x2="0" y2="1"><stop stop-color="#1c3c4c"/><stop offset=".55" stop-color="#0c2736"/><stop offset="1" stop-color="#071c2a"/></linearGradient>
+  <linearGradient id="rail" x2="0" y2="1"><stop stop-color="#87b1b7"/><stop offset="1" stop-color="#31596a"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>
+ </defs>
+ <path d="M5 7 L26 0 H192 L211 8 V99 L193 110 H22 L5 99 Z" fill="#04131d" opacity=".55" filter="url(#shadow)"/>
+ <path d="M2 5 L23 0 H193 L214 5 V98 L194 108 H22 L2 98 Z" fill="url(#shell)" stroke="#594f45" stroke-width="1.3"/>
+ <path d="M11 14 L29 7 H187 L205 14 V93 L188 100 H28 L11 93 Z" fill="url(#face)" stroke="#09202d" stroke-width="2"/>
+ <path d="M17 17 L30 12 H186 L199 17" fill="none" stroke="#91c0bd" stroke-opacity=".53" stroke-width="1.4"/>
+ <path d="M19 62 H197 M19 83 H197" stroke="#507787" stroke-opacity=".6" stroke-width="1"/>
+ <path d="M27 97 H189" stroke="url(#rail)" stroke-width="2" opacity=".8"/>
+ <path d="M2 19 L11 22 V83 L2 89 M214 19 L205 22 V83 L214 89" fill="#1d4d60" stroke="#0b2431" stroke-width="1.2"/>
+ <circle cx="19" cy="10" r="2" fill="#5c7a80"/><circle cx="197" cy="10" r="2" fill="#5c7a80"/>
+ <circle cx="18" cy="97" r="2" fill="#55717a"/><circle cx="198" cy="97" r="2" fill="#55717a"/>
+</svg>

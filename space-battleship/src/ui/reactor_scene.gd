@@ -2,6 +2,8 @@ extends Control
 ## Whole reactor scene. Domain amounts, effects and acceptance stay with Reactor.
 signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
+const DEVICE_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/device-console-mount.png")
+const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/central-console-mount.png")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
@@ -143,23 +145,34 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	return panel
 
 func _build() -> void:
-	var console := _panel(Rect2(238, 762, 333, 110), 0.97)
-	var console_style := StyleBoxFlat.new()
-	console_style.bg_color = Color("0b2432")
-	console_style.border_color = Color("b9a47f")
-	console_style.set_border_width_all(2)
-	console_style.set_corner_radius_all(13)
-	console.add_theme_stylebox_override("panel", console_style)
-	_level = _label(Vector2(252, 768), 65, 13)
+	var console := TextureRect.new()
+	console.texture = CENTRAL_MOUNT
+	console.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	console.stretch_mode = TextureRect.STRETCH_SCALE
+	console.position = Vector2(199, 753)
+	console.size = Vector2(410, 132)
+	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(console)
+	_level = _label(Vector2(230, 765), 75, 14)
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var offset := Vector2(0, 65)
-		var readout := _panel(Rect2(layout.effect + offset - Vector2(4, 3), Vector2(float(layout.width) + 7, 48)), 0.30)
-		var effect := _label(layout.effect + offset,float(layout.width),13)
+		var mount := TextureRect.new()
+		mount.texture = DEVICE_MOUNT
+		mount.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		mount.stretch_mode = TextureRect.STRETCH_SCALE
+		mount.position = layout.mount + offset
+		mount.size = Vector2(216, 110)
+		mount.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(mount)
+		var effect := _label(layout.effect + offset,float(layout.width),14)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply + offset,float(layout.width),12)
-		supply.size.y = 24
+		var supply := _label(layout.supply + offset,float(layout.width),13)
+		var effective := _label(layout.effective + offset,float(layout.width),13)
+		supply.size.y = 19
+		effective.size.y = 19
 		supply.add_theme_color_override("font_color", Color("c1dfd9"))
+		effective.add_theme_color_override("font_color", Color("e5d6b0"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
 		slider.position = layout.slider + offset
@@ -192,16 +205,16 @@ func _build() -> void:
 		slider.value_changed.connect(_slide.bind(id))
 		slider.focus_entered.connect(func(): _selected = id; _update_stage())
 		add_child(slider)
-		_rows[id] = {"effect":effect, "supply":supply, "slider":slider, "readout":readout}
+		_rows[id] = {"effect":effect, "supply":supply, "effective":effective, "slider":slider, "mount":mount}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(316,768),243,13)
+	_budget = _label(Vector2(305,765),273,14)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_cost = _label(Vector2(252, 790), 304, 13)
-	_purchase = _button("升级",Rect2(251,811,83,32),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(340,811,64,32),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认",Rect2(410,811,64,32),func(): _command(_submit))
-	_restore = _button("还原",Rect2(480,811,76,32),_reset)
-	_notice = _label(Vector2(252,847),303,12)
+	_cost = _label(Vector2(230, 790), 348, 14)
+	_purchase = _button("升级",Rect2(230,816,94,34),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(330,816,78,34),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(414,816,78,34),func(): _command(_submit))
+	_restore = _button("还原",Rect2(498,816,80,34),_reset)
+	_notice = _label(Vector2(230,854),348,13)
 	_notice.size.y = 20
 	for button in [_purchase,_equal,_apply,_restore]: button.disabled = true
 
@@ -281,12 +294,12 @@ func _show_current_readings() -> void:
 			_shares[id] = int(roundf(float(row.ratio)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
 		_rows[id].slider.editable = _running and bool(_model.can_allocate)
-		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(str(row.factor))
+		_rows[id].effect.text = NAMES[id] + " 增益 ×" + PlayerText.number(str(row.factor))
 		_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		var manual_text: String = str(row.manual)
-		_rows[id].supply.text = "手" + PlayerText.number(manual_text)
-		if row.has_free: _rows[id].supply.text += "+免" + PlayerText.number(str(row.free))
-		_rows[id].supply.text += " · 效" + PlayerText.number(str(row.effective))
+		_rows[id].supply.text = "手动 " + PlayerText.number(manual_text)
+		if row.has_free: _rows[id].supply.text += " · 免费 " + PlayerText.number(str(row.free))
+		_rows[id].effective.text = "有效 " + PlayerText.number(str(row.effective))
 		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 	_level.text = "等级 " + str(_model.level)
@@ -411,10 +424,11 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + (" → " + PlayerText.number(b) if a != b else "")
 		_rows[id].effect.tooltip_text = "增益 " + a + " → " + b
 		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
-		var supply_text: String = "手" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
-		if row.has_free: supply_text += "+免" + PlayerText.number(str(row.free))
+		var supply_text: String = "手动 " + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
+		if row.has_free: supply_text += " · 免费 " + PlayerText.number(str(row.free))
 		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = supply_text + " · 效" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
+		_rows[id].supply.text = supply_text
+		_rows[id].effective.text = "有效 " + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
 		_rows[id].supply.tooltip_text = "手动 " + str(current.get("manual","—")) + " → " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + a + " → " + b
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 		if _kind == "equal" or (_kind == "shares" and not fresh_shares):
