@@ -347,7 +347,9 @@ func _build_workbench() -> void:
     _current_title=_workbench_label("现装",Rect2(14,4,380,28),18,CREAM)
     _level_label=_workbench_label("",Rect2(402,7,78,22),13,Color("b8d3ca"))
     _feedback=_workbench_label("",Rect2(498,7,262,22),12,Color("d9eee2"))
-    _feedback.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;_feedback.clip_text=true
+    _feedback.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT;_feedback.clip_text=true
+    _feedback.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+    _feedback.mouse_filter=Control.MOUSE_FILTER_PASS
     _upgrade_section_title=_workbench_label("装备升级",Rect2(14,42,426,24),16)
     _comparison_title=_workbench_label("装备选择",Rect2(464,42,174,24),16)
     _switch_state=_workbench_label("",Rect2(638,46,122,18),12,Color("946338"));_switch_state.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
@@ -777,10 +779,19 @@ func _slot_name(id: String) -> String:
     var pieces := id.split(":")
     return ("武器" if pieces[0] == "weapon" else "防御") + str(int(pieces[1]) + 1) if pieces.size() == 2 else id
 
+func _receipt_summary(result: Dictionary) -> String:
+    var receipt:Dictionary=result.get("purchase_receipt",{})
+    if receipt.get("commit_status")=="fault_unknown":return "提交结果未知，会话已停止。"
+    var purchases:Array=receipt.get("purchases",[])
+    if receipt.get("commit_status")=="accepted" and not purchases.is_empty():
+        if purchases.size()==1:return "%s · 购级完成 +%d级" % [_slot_name(str(purchases[0].slot_id)),int(purchases[0].count)]
+        return "已完成%d个槽位购级" % purchases.size()
+    if not result.get("ok",false):return _reason(str(result.get("reason",result.get("error","Unknown"))))
+    return "没有变更" if receipt.has("purchases") else "换装完成"
+
 func _accept_result(result: Dictionary) -> void:
     last_result = result.duplicate(true)
-    _feedback.text = _receipt_text(result).replace("\n", " · ")
-    _feedback.tooltip_text = _feedback.text
+    _feedback.text = _receipt_summary(result)
     _feedback.tooltip_text = _receipt_text(result)
     _dirty = true
     command_finished.emit(last_result)
