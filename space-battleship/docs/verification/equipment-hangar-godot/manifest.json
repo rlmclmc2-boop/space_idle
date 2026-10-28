@@ -41,6 +41,11 @@
   ],
   "artifacts": [
     {
+      "file": "evidence/.gitignore",
+      "sha256": "e027cf8ebf80d6dcdacced8a4dbd1c440e2436fb1868ec851db4061cb67bb787",
+      "bytes": 7
+    },
+    {
       "file": "evidence/01-starter.png",
       "sha256": "ed5a26cc1624892d6f93afdae2e44d66a930ff98c02e2c5ab8c45a9be3c28989",
       "bytes": 1677042,
@@ -48,11 +53,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/01-starter.png.import",
-      "sha256": "8047a751cae3fc25e142a41e5d600761af3d5ea8ba679fa13744cbd01d5dae0f",
-      "bytes": 983
     },
     {
       "file": "evidence/02-starter-slot-selection.png",
@@ -64,11 +64,6 @@
       ]
     },
     {
-      "file": "evidence/02-starter-slot-selection.png.import",
-      "sha256": "ab7a9c7768b5163791b11591af5f94bee8965c5c5d675fa93a6a52f9ab6acf36",
-      "bytes": 1029
-    },
-    {
       "file": "evidence/03-cruiser-cannon-comparison.png",
       "sha256": "0452f7a956f8105b61a789c8eb12b2dba8371827d62daa42aa7f91c125cef119",
       "bytes": 1673333,
@@ -76,11 +71,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/03-cruiser-cannon-comparison.png.import",
-      "sha256": "4dab428cd407e23323965673c3229bac731198d0c3b7dfb5a337bebd947d0593",
-      "bytes": 1038
     },
     {
       "file": "evidence/04-single-plus1-material.png",
@@ -92,11 +82,6 @@
       ]
     },
     {
-      "file": "evidence/04-single-plus1-material.png.import",
-      "sha256": "91adc836bc5d6e49a2b93e69bf380c986935750abe63e4ecc57c14e4dd988f19",
-      "bytes": 1025
-    },
-    {
       "file": "evidence/05-plus10-quote.png",
       "sha256": "e3af3fb3f53614ad3f7c57a7241f999f5001312c8d27d3325f2b52c1d641b10d",
       "bytes": 1680625,
@@ -104,11 +89,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/05-plus10-quote.png.import",
-      "sha256": "93eb994a083c5d36b4c639e515189dce0f7f2632f91bc1bf8726848d8a178d9f",
-      "bytes": 999
     },
     {
       "file": "evidence/06-single-plus10.png",
@@ -120,11 +100,6 @@
       ]
     },
     {
-      "file": "evidence/06-single-plus10.png.import",
-      "sha256": "a3cd6721608c36d1052cc6798c2ac66669dfbf0457110e0d061ddd23ae4ad986",
-      "bytes": 1002
-    },
-    {
       "file": "evidence/07-max-quote.png",
       "sha256": "6445ec027e6705b811433f05f4002c5cd6438c76c53fb5aebe2ea6299fd47163",
       "bytes": 1680004,
@@ -132,11 +107,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/07-max-quote.png.import",
-      "sha256": "acdc6fb93ae256001beea11d378d996d9bcc5f6e69d0eb80d7ef9bbc210bb8cb",
-      "bytes": 990
     },
     {
       "file": "evidence/08-single-max.png",
@@ -148,11 +118,6 @@
       ]
     },
     {
-      "file": "evidence/08-single-max.png.import",
-      "sha256": "f48b46ba0bf653bd0c971cb0cb3a22a914f039a9aec0d1c21b9a558b1f6bcee2",
-      "bytes": 993
-    },
-    {
       "file": "evidence/09-switch-cooldown.png",
       "sha256": "ff5ce077b3f71be58fbd34fb34b69620a2d33e1b6fad511789ff17a03f6fe417",
       "bytes": 1669285,
@@ -160,11 +125,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/09-switch-cooldown.png.import",
-      "sha256": "535fdd167d10d8cf73460227d1793e2201ed09f035935510814e154e643122e1",
-      "bytes": 1007
     },
     {
       "file": "evidence/10-switch-ready.png",
@@ -176,11 +136,6 @@
       ]
     },
     {
-      "file": "evidence/10-switch-ready.png.import",
-      "sha256": "dd45ad8e407e37887d8e133ac0f03440f7431b94c7ee390736fbaa4395bafd22",
-      "bytes": 999
-    },
-    {
       "file": "evidence/11-batch-open.png",
       "sha256": "26e05659db5ce2a0467e7d6b49b78a4741b890192738e962fd4dbe31526dc792",
       "bytes": 1168261,
@@ -188,11 +143,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/11-batch-open.png.import",
-      "sha256": "6c94a5ab8617607a4baa80f33d4d34632ac5a0c67f435df802b6ac82397b1ae5",
-      "bytes": 993
     },
     {
       "file": "evidence/12-batch-partial-result.png",
@@ -204,11 +154,6 @@
       ]
     },
     {
-      "file": "evidence/12-batch-partial-result.png.import",
-      "sha256": "d0ba778b97e815e8a5e36de5f62700adcf15327fc536d301f058270181ad4002",
-      "bytes": 1023
-    },
-    {
       "file": "evidence/13-batch-result-retained.png",
       "sha256": "35c5cf44eff8a40329203ac5fa02879bdfa34597303b61094462d89333b3f1bf",
       "bytes": 1197820,
@@ -216,11 +161,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/13-batch-result-retained.png.import",
-      "sha256": "e4300f8e03bb732bb087857a573144dafad4d53e2a2ecc273fffa925af9a1e89",
-      "bytes": 1026
     },
     {
       "file": "evidence/14-defence-selection.png",
@@ -232,11 +172,6 @@
       ]
     },
     {
-      "file": "evidence/14-defence-selection.png.import",
-      "sha256": "cc4ef5a2641deb8b2843892c471ede960d5305b1a20bdaa3a6b75d8e27304971",
-      "bytes": 1014
-    },
-    {
       "file": "evidence/15-final-cruiser.png",
       "sha256": "99b830970a6da479758a56c462eb54a86e56fc2b19620b7d0f79138c85c182d9",
       "bytes": 1680442,
@@ -244,11 +179,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/15-final-cruiser.png.import",
-      "sha256": "459c8705f5f40d1e06758387b532884906ddbdf23d148d4ddda81804a11f6b6b",
-      "bytes": 1002
     },
     {
       "file": "evidence/before-equipment.png",
@@ -283,11 +213,6 @@
       ]
     },
     {
-      "file": "evidence/before-modal-input-fix-14-defence-selection.png.import",
-      "sha256": "fa07ed6616bd8ceda81fdfb17a270a0b5feb21ee672ebbd741751e69cfdaa22e",
-      "bytes": 1083
-    },
-    {
       "file": "evidence/before-modal-input-fix-15-final-cruiser.png",
       "sha256": "26d55b10cda7dd252a501cd57a73656287fa3ee36674ef1dbfd6cb51a302d86d",
       "bytes": 1197859,
@@ -295,11 +220,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/before-modal-input-fix-15-final-cruiser.png.import",
-      "sha256": "f3df1902e23ac71057c1aac5eae2b22e3ba7a6b19563e704aa64fb77b87ee832",
-      "bytes": 1070
     },
     {
       "file": "evidence/before-modal-input-fix-capture.log",
@@ -396,11 +316,6 @@
       ]
     },
     {
-      "file": "evidence/pilot-09-switch-cooldown.png.import",
-      "sha256": "cbdc5921b42a4ed572d9f57c05ebc31c721d8bb4552628935aaba94df140a775",
-      "bytes": 1025
-    },
-    {
       "file": "evidence/pilot-10-switch-ready.png",
       "sha256": "dc1f2d9ead4f469e37483a400b4055e14b73f677c2293d539278944b3073d145",
       "bytes": 1664768,
@@ -410,11 +325,6 @@
       ]
     },
     {
-      "file": "evidence/pilot-10-switch-ready.png.import",
-      "sha256": "cfe78def380e322112550c9e69a6c9b57c5af215a1dfea13fb55953c62c38ee7",
-      "bytes": 1016
-    },
-    {
       "file": "evidence/pilot-12-batch-partial-result.png",
       "sha256": "f2842990113eef92adf713a554adfbcdd7d76fb3c3abdacc9dc8ae2f36dc18ba",
       "bytes": 1241143,
@@ -422,11 +332,6 @@
         1440,
         900
       ]
-    },
-    {
-      "file": "evidence/pilot-12-batch-partial-result.png.import",
-      "sha256": "95a4ef9c0de0e0bec84c4d0f72840f88b02133cb3a7f05bf218abad46baa98fb",
-      "bytes": 1041
     },
     {
       "file": "evidence/pilot-capture.log",
@@ -449,5 +354,6 @@
   "baseline_performance_known_harness_failure": "Original assertion required refit emitter identity to remain unchanged. Actual necessary new source schedules emitter14→15; raw before record preserved, not rewritten.",
   "context_compacted": false,
   "executor": "/root/equipment_image_revision_replacement",
-  "status": "Candidate for original independent review, not self-accepted."
+  "status": "Candidate for original independent review, not self-accepted.",
+  "artifact_scope": "Raw screenshots, JSON, driver text and logs only; editor-generated .import/.uid sidecars excluded."
 }
