@@ -15,7 +15,7 @@ const OPERATING_SOURCE := {
 	"smelting":{"effect":Vector2(92,1173),"supply":Vector2(92,1208),"slider":Vector2(120,1243),"width":258.0,"track":220.0},
 	"condensation":{"effect":Vector2(712,1173),"supply":Vector2(712,1208),"slider":Vector2(739,1243),"width":258.0,"track":220.0}}
 const EFFECTS := {"core": Rect2(-89, -87, 180, 180), "weapons": Rect2(-46, -48, 92, 92), "defence": Rect2(-47, -47, 94, 94), "smelting": Rect2(-45, -55, 90, 104), "condensation": Rect2(-44, -54, 88, 104)}
-const FILTER_REGIONS := {"core":Rect2(-108,-108,216,216),"weapons":Rect2(-60,-58,180,116),"defence":Rect2(-67,-64,134,128),"smelting":Rect2(-70,-65,140,140),"condensation":Rect2(-67,-68,134,136)}
+const FILTER_REGIONS := {"core":Rect2(-128,-128,256,256),"weapons":Rect2(-60,-58,180,116),"defence":Rect2(-67,-64,134,128),"smelting":Rect2(-70,-65,140,140),"condensation":Rect2(-67,-68,134,136)}
 var _enabled: Array = []
 var _loads: Dictionary = {}
 var _fields: Dictionary = {}
