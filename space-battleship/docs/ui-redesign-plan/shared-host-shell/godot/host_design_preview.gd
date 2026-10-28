@@ -226,7 +226,7 @@ func _build_header() -> void:
 	_surface(header,Rect2(0,32,808,33),Color("102d3a"))
 	_surface(header,Rect2(0,31,808,1),Color("518b8d"))
 	_surface(header,Rect2(0,64,808,1),Color("5b9a9e"))
-	_label(header,"等级 2",Rect2(12,3,96,26))
+	_label(header,"反应炉2级",Rect2(12,3,96,26))
 	for item in [[116,160,"铁：45"],[284,160,"铀：1,976"],[452,208,"时空微粒：8,147"]]:
 		_surface(header,Rect2(int(item[0]),3,1,26),Color("486c74"))
 		var label:=_label(header,str(item[2]),Rect2(int(item[0])+7,3,int(item[1])-8,26),16,Color("f1e5bc"))
@@ -384,7 +384,7 @@ func _capture_design_states() -> void:
 	await _save_state("save-failure")
 	for child in detail.get_children():child.queue_free()
 	_label(detail,"活动上下文位 · 所有者交接示例（不是三模块接入）",Rect2(16,8,744,34),18)
-	var captions:=["远航舰桥","等级 2","星球探索"]
+	var captions:=["远航舰桥","反应炉2级","星球探索"]
 	var caption_names:=["装备默认","反应炉等级","星球身份"]
 	for i in 3:
 		_label(detail,caption_names[i],Rect2(16,58+i*48,112,26))
@@ -408,7 +408,7 @@ func _capture_design_states() -> void:
 		money_metrics.append({"text":large[i],"advance":measured,"available_width":money_labels[i].size.x,"fits_width":measured.x<=money_labels[i].size.x})
 	var ts:=TextServerManager.get_primary_interface()
 	var actual_axes: Dictionary=ts.call("font_get_variation_coordinates",font.get_rids()[0])
-	var report:={"kind":"Godot 4.7.2 design preview, not gameplay integration", "engine":Engine.get_version_info(),"display":DisplayServer.get_name(),"renderer":RenderingServer.get_current_rendering_method(),"video_adapter":RenderingServer.get_video_adapter_name(),"window_size":DisplayServer.window_get_size(),"window_position":DisplayServer.window_get_position(),"window_mode":DisplayServer.window_get_mode(),"screen_size":DisplayServer.screen_get_size(),"screen_scale":DisplayServer.screen_get_scale(),"font_variation_requested":font.variation_opentype,"font_variation_actual":actual_axes,"font_height_16":font.get_height(16),"font_ascent_16":font.get_ascent(16),"font_descent_16":font.get_descent(16),"nav":nav_metrics,"money":money_metrics,"context_captions":caption_metrics,"active_context":"等级 2","captures":snapshots,"state_values":"static design strings, not native wallets or live progress","no_game_session":true,"no_native_loaded":not ClassDB.class_exists("SpaceCombatKernel"),"module_internal_design":"owner source asset placement only; level placed in shared 96px context slot as minimum collaboration proposal; no producer implementation"}
+	var report:={"kind":"Godot 4.7.2 design preview, not gameplay integration", "engine":Engine.get_version_info(),"display":DisplayServer.get_name(),"renderer":RenderingServer.get_current_rendering_method(),"video_adapter":RenderingServer.get_video_adapter_name(),"window_size":DisplayServer.window_get_size(),"window_position":DisplayServer.window_get_position(),"window_mode":DisplayServer.window_get_mode(),"screen_size":DisplayServer.screen_get_size(),"screen_scale":DisplayServer.screen_get_scale(),"font_variation_requested":font.variation_opentype,"font_variation_actual":actual_axes,"font_height_16":font.get_height(16),"font_ascent_16":font.get_ascent(16),"font_descent_16":font.get_descent(16),"nav":nav_metrics,"money":money_metrics,"context_captions":caption_metrics,"active_context":"反应炉2级","captures":snapshots,"state_values":"static design strings, not native wallets or live progress","no_game_session":true,"no_native_loaded":not ClassDB.class_exists("SpaceCombatKernel"),"module_internal_design":"owner source asset placement only; level placed in shared 96px context slot as minimum collaboration proposal; no producer implementation"}
 	var file:=FileAccess.open(output_dir+"/godot-design-record.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(report,"\t")+"\n")
 	file.close()

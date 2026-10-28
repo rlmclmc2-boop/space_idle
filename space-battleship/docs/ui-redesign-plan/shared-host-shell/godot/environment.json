@@ -8,7 +8,7 @@
   "official_sha512_and_previous_record_match": true,
   "executable_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
   "font_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
-  "preview_script_sha256": "7c9baaf89393f7e69e1e3ab5b3cd981b126ba8b00c41b8fbf23b5767cea6e7d2",
+  "preview_script_sha256": "a750de2df32c25d184ccb75e22060978d24beb177a8c5b3012e7f37b666b003b",
   "display": "Xorg :99, dummy, 1440x900, X11, scale 1, Mesa llvmpipe",
   "windowed_client": [
     1440,
@@ -27,39 +27,39 @@
   "captures": [
     {
       "path": "evidence/collapsed-1440x900.png",
-      "sha256": "cc9284a642fb3d43e20e02befe8170a3a36504aa77529c90f8c9eec25f01f7bc"
+      "sha256": "e0bb5ff7150d378b197faa1d7c3d893b791b62c121573c84fe479d790e904c00"
     },
     {
       "path": "evidence/context-captions-1440x900.png",
-      "sha256": "eb2e74b7249737011387206ce4bf7da246cd6822f2fcb328fa6ff9d3988e5f88"
+      "sha256": "b7bd53f8719d32af2354867de1cf21dac831e0c00713ccb054b28d89a712e6a6"
     },
     {
       "path": "evidence/extreme-values-1440x900.png",
-      "sha256": "6661bc8e42020dd879d15f45692fae877576fc3bc599251d59b2101ba419d461"
+      "sha256": "9545aba166ee9f5ca45410d79d7059c27ce214528dd57cbfbff7291f5eb0ad1f"
     },
     {
       "path": "evidence/large-values-1440x900.png",
-      "sha256": "e62695cb94f4ae1d810cca33ef99220a926992eb4d87cd503e5226763b66d60c"
+      "sha256": "07c19810a4a7b216bfc73a566d43199dc30fd61575532b44a87a5a965e4aee9c"
     },
     {
       "path": "evidence/more-1440x900.png",
-      "sha256": "a8c2a7fa0de461e6e308f9f858336e3250edaedeaf60895b8cd8a7cc661a3091"
+      "sha256": "28ba3ddd68d1e04ec5a785b9955f225b13beb69256163686d5a72fc39dafa2a0"
     },
     {
       "path": "evidence/normal-1440x900.png",
-      "sha256": "f8296339aa95b7fd3f0b159c4e510c6d56cf44a27ddf9ca63c0aa55012329294"
+      "sha256": "f95a5eeaacb4727b64f6a21fd0ad500d26cf87e70ef046b276cfa0969ca61cd0"
     },
     {
       "path": "evidence/normal-x11-client-1440x900.png",
-      "sha256": "219b0679a5ce374e052162aed4698dd2a2b35de071b3c21c9827576dee39d99d"
+      "sha256": "21e5d826445ce111febe95fc2f815ebc40e8b40d8e41b752aed34b90335eda91"
     },
     {
       "path": "evidence/restored-1440x900.png",
-      "sha256": "33de23890af9b69e4ffff3752b103e20a49a2edd088d36673e734e9282016489"
+      "sha256": "890aa72e132d8aaccdedef1ca010ad6eb762e9d1ae0ec3a8d2373aa51f24d1a0"
     },
     {
       "path": "evidence/save-failure-1440x900.png",
-      "sha256": "a7c7a24be78278600038454f90fabcec8f10ed73901e6c3053b25b1822cc5f17"
+      "sha256": "9d48f19bc2f8570ad6f41363ff039ecb13a133cec0a14a48bf503f3450edf554"
     }
   ],
   "persistent_tutorial_line": "removed from current design preview; gameplay shortcuts preserved in actual integration",
@@ -70,5 +70,11 @@
     96,
     26
   ],
-  "shared_backdrop_source": "../references/backdrop-source.json"
+  "shared_backdrop_source": "../references/backdrop-source.json",
+  "active_context_text": "反应炉2级",
+  "active_context_advance_16": [
+    74,
+    24
+  ],
+  "finishing_scope": "Object+level caption and continuous pure environment only; nav/money/module geometry retained"
 }

@@ -1,5 +1,5 @@
 {
-	"active_context": "等级 2",
+	"active_context": "反应炉2级",
 	"captures": [
 		{
 			"battle_logical_size": [
@@ -197,13 +197,13 @@
 			"text": "远航舰桥"
 		},
 		{
-			"advance": "(45.0, 24.0)",
+			"advance": "(74.0, 24.0)",
 			"fits": true,
 			"slot_size": [
 				96,
 				26
 			],
-			"text": "等级 2"
+			"text": "反应炉2级"
 		},
 		{
 			"advance": "(64.0, 24.0)",

@@ -17,7 +17,7 @@
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
   "scope": "All three owner installation notes received. H2 retains808/632 and0.9375. Candidate minimum collaboration is fixed: shared96px context control, separate existing global chrome, retain20/25px top transition bands, four direct view-only coordination ports. Godot preview shows context/backdrop candidates without producer implementation or business integration. Shared environment art replaces grid; edge quality not approved. Native font/geometry budgets retained. No main/src changes or main merge.",
   "implementation_changed": false,
-  "review_status": "1784f7e6 glyph/tutorial narrow fix passed and closed; all3 owner notes received; H2 installation resolution/context/backdrop candidate ready for root/original review; no runtime integration approval",
+  "review_status": "ac8a4d54 installation roles/four view ports passed limited double review; original-review finishing caption/background candidate updated; nav/money and1784f7e6 narrow fixes retained; no integration approval",
   "module_direction_status": {
     "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
     "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
@@ -120,39 +120,39 @@
   "godot_quality_states": [
     {
       "path": "godot/evidence/collapsed-1440x900.png",
-      "sha256": "cc9284a642fb3d43e20e02befe8170a3a36504aa77529c90f8c9eec25f01f7bc"
+      "sha256": "e0bb5ff7150d378b197faa1d7c3d893b791b62c121573c84fe479d790e904c00"
     },
     {
       "path": "godot/evidence/context-captions-1440x900.png",
-      "sha256": "eb2e74b7249737011387206ce4bf7da246cd6822f2fcb328fa6ff9d3988e5f88"
+      "sha256": "b7bd53f8719d32af2354867de1cf21dac831e0c00713ccb054b28d89a712e6a6"
     },
     {
       "path": "godot/evidence/extreme-values-1440x900.png",
-      "sha256": "6661bc8e42020dd879d15f45692fae877576fc3bc599251d59b2101ba419d461"
+      "sha256": "9545aba166ee9f5ca45410d79d7059c27ce214528dd57cbfbff7291f5eb0ad1f"
     },
     {
       "path": "godot/evidence/large-values-1440x900.png",
-      "sha256": "e62695cb94f4ae1d810cca33ef99220a926992eb4d87cd503e5226763b66d60c"
+      "sha256": "07c19810a4a7b216bfc73a566d43199dc30fd61575532b44a87a5a965e4aee9c"
     },
     {
       "path": "godot/evidence/more-1440x900.png",
-      "sha256": "a8c2a7fa0de461e6e308f9f858336e3250edaedeaf60895b8cd8a7cc661a3091"
+      "sha256": "28ba3ddd68d1e04ec5a785b9955f225b13beb69256163686d5a72fc39dafa2a0"
     },
     {
       "path": "godot/evidence/normal-1440x900.png",
-      "sha256": "f8296339aa95b7fd3f0b159c4e510c6d56cf44a27ddf9ca63c0aa55012329294"
+      "sha256": "f95a5eeaacb4727b64f6a21fd0ad500d26cf87e70ef046b276cfa0969ca61cd0"
     },
     {
       "path": "godot/evidence/normal-x11-client-1440x900.png",
-      "sha256": "219b0679a5ce374e052162aed4698dd2a2b35de071b3c21c9827576dee39d99d"
+      "sha256": "21e5d826445ce111febe95fc2f815ebc40e8b40d8e41b752aed34b90335eda91"
     },
     {
       "path": "godot/evidence/restored-1440x900.png",
-      "sha256": "33de23890af9b69e4ffff3752b103e20a49a2edd088d36673e734e9282016489"
+      "sha256": "890aa72e132d8aaccdedef1ca010ad6eb762e9d1ae0ec3a8d2373aa51f24d1a0"
     },
     {
       "path": "godot/evidence/save-failure-1440x900.png",
-      "sha256": "a7c7a24be78278600038454f90fabcec8f10ed73901e6c3053b25b1822cc5f17"
+      "sha256": "9d48f19bc2f8570ad6f41363ff039ecb13a133cec0a14a48bf503f3450edf554"
     }
   ],
   "module_installation_notes": {
@@ -177,5 +177,11 @@
     "Replaced unsupported U+25B8 with source-font-supported Chinese text only; original extreme-state glyph check failed",
     "Peripheral grid and local level remain owner-confirmation placeholders; no claim giant gaps solved"
   ],
-  "installation_resolution": "installation-resolution.md"
+  "installation_resolution": "installation-resolution.md",
+  "finishing_corrections": {
+    "caption": "Owner-provided object+level form 反应炉2级; existing96x26 slot; native16px advance74x24; no new data/title",
+    "background": "Continuous low-contrast installation surface, sparse crossing seams, no wide vertical sidewall/frame; quality still pending original visual judgment",
+    "retained": "Module subject/projection, nav/money geometry and typography, business ownership",
+    "approval": "No65px freeze, Session/native/V0 or runtime integration approval"
+  }
 }
