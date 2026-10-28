@@ -236,10 +236,11 @@ func _read_conquest_if_needed() -> void:
 		_conquest_planet_dirty = false
 		_conquest_cumulative_dirty = false
 		return
+	var recovering := not _conquest_error.is_empty()
 	_conquest_error = ""
-	if _conquest_planet_dirty:
+	if recovering or _conquest_planet_dirty:
 		_conquest_planet = {"conquered": facts.conquered, "shared_experience": facts.shared_experience}
-	if _conquest_cumulative_dirty: _conquest_rewards = facts.rewards.duplicate(true)
+	if recovering or _conquest_cumulative_dirty: _conquest_rewards = facts.rewards.duplicate(true)
 	_conquest_planet_dirty = false
 	_conquest_cumulative_dirty = false
 
