@@ -336,6 +336,84 @@
         "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/laser.png": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936",
         "/workspace/space_idle/space-battleship/assets/ui/ships/fleet_20261019/01-frigate.png": "a3982ea4c5f401c73ae9d1da2ed286231677c0a09f8f3f8c1e65b8f43049411c"
       }
+    },
+    {
+      "direction": "B",
+      "state": "heavy-core-structure",
+      "version": 1,
+      "prompt_file": "docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-core-structure-prompt.txt",
+      "prompt_sha256": "993f3e241e3edb4a207227abe1b230c8bc777fd855d911dde61d88126ec764dc",
+      "references": [
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-early-v2.png",
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-heavy-v2.png",
+        "/workspace/space_idle/space-battleship/assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/laser.png",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/cannon.png"
+      ],
+      "reference_sha256": {
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-early-v2.png": "7b2a1029c350989aad32213b8627251f1cc5f957de6061d34b2c5e1d08a7d353",
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-heavy-v2.png": "aa2d1cb1900a305336d3f19d9faafbea216c8c20d8e29a4391b4014b6d5d4a44",
+        "/workspace/space_idle/space-battleship/assets/ui/ships/fleet_20261019/05-heavy-battleship.png": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/laser.png": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/cannon.png": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+      },
+      "original_output": "/workspace/generated_images/exec-55d8abe1-d060-40e7-8874-6f74fea76f38.png",
+      "saved": "docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-core-v1.png",
+      "pixels": [
+        1586,
+        992
+      ],
+      "sha256": "0603a0a8fade486efba6ce7fcc796b674e88c809665a79957c2d34a6de314710"
+    },
+    {
+      "direction": "C",
+      "state": "heavy-core-structure",
+      "version": 1,
+      "prompt_file": "docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/c-core-structure-prompt.txt",
+      "prompt_sha256": "f05bf0e5b939e6d6d0b005317f75209e128d47e867803ed3d0a568a7bfd8340a",
+      "references": [
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/c-heavy-v2.png",
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/c-early-v3.png",
+        "/workspace/space_idle/space-battleship/assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/laser.png",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/cannon.png"
+      ],
+      "reference_sha256": {
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/c-heavy-v2.png": "9127a806b023c91167b579a6de8880020e6f88c3b8a5235f14aeb1a3edce933f",
+        "/workspace/space_idle/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/c-early-v3.png": "5c4ae18e050c1445ed3e0041483bcd4f0da56533b07b01b8baf7e2e6f3e09a75",
+        "/workspace/space_idle/space-battleship/assets/ui/ships/fleet_20261019/05-heavy-battleship.png": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/laser.png": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936",
+        "/workspace/space_idle/space-battleship/assets/weapons/fleet_20261019/cannon.png": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+      },
+      "original_output": "/workspace/generated_images/exec-f7509e83-5213-4e5f-872c-dce3db2517ce.png",
+      "saved": "docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/c-core-v1.png",
+      "pixels": [
+        1586,
+        992
+      ],
+      "sha256": "4214edd6da113843047114a9cb918acaa3be12aed81b5fa614cfdadd6a5cdb65"
+    },
+    {
+      "direction": "B",
+      "state": "heavy-core-ship-correction",
+      "version": 2,
+      "prompt_file": "docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-core-ship-correction-prompt.txt",
+      "prompt_sha256": "20bf63311f3c7defe6a1104bf95e59c42245851a09cbfb47ffe25d387c683f98",
+      "references": [
+        "/workspace/generated_images/exec-55d8abe1-d060-40e7-8874-6f74fea76f38.png",
+        "/workspace/space_idle/space-battleship/assets/ui/ships/fleet_20261019/05-heavy-battleship.png"
+      ],
+      "reference_sha256": {
+        "/workspace/generated_images/exec-55d8abe1-d060-40e7-8874-6f74fea76f38.png": "0603a0a8fade486efba6ce7fcc796b674e88c809665a79957c2d34a6de314710",
+        "/workspace/space_idle/space-battleship/assets/ui/ships/fleet_20261019/05-heavy-battleship.png": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+      },
+      "original_output": "/workspace/generated_images/exec-8dba0841-e2fd-469a-ab21-70ada9801529.png",
+      "saved": "docs/ui-redesign-plan/g1-internal/equipment-image-design/directions/b-core-v2.png",
+      "pixels": [
+        1586,
+        992
+      ],
+      "sha256": "43edaab709b93fa4a07355781341b855f95d5cbdcb69ab74a2cd8f5f86abddac"
     }
   ],
   "scope": "Raw original imagegen outputs; no crop/resize/composite; UI mockups only, not runtime or canonical asset replacement",
@@ -353,7 +431,22 @@
     "A": "Whole organization too close to rejected ship-above/two-panels-below, illegal global-button replacement and defence identity errors; no more generation to fill a quota."
   },
   "generation_tool": "image_gen__imagegen",
-  "successful_calls": 11,
+  "successful_calls": 14,
   "geometry_measurement_note": "Read-only pixel inspection at top-header row y8: first dark pixel in40%-72%width, measuring visible header boundary, not an approved coordinate or a processed image.",
-  "implementation": "Frozen runtime5b4f7233 and screenshot commitd446d9a2 untouched; no gameplay tests or backend changes."
+  "implementation": "Frozen runtime5b4f7233 and screenshot commitd446d9a2 untouched; no gameplay tests or backend changes.",
+  "current_core_review": {
+    "B": "b-core-v2.png",
+    "C": "c-core-v1.png"
+  },
+  "previous_direction_review_preserved": {
+    "B": [
+      "b-heavy-v2.png",
+      "b-early-v2.png"
+    ],
+    "C": [
+      "c-heavy-v2.png",
+      "c-early-v3.png"
+    ]
+  },
+  "core_review_scope": "Only stable ship context/install adjacency for B and persistent service scene for C; not pixel/HUD/word-by-word repair. All raw originals preserved."
 }
