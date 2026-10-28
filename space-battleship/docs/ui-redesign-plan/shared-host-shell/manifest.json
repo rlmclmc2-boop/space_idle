@@ -1,0 +1,20 @@
+{
+  "kind": "design-proposal-not-runtime-evidence",
+  "source_commit": "158851077d77270f0a104dbeee3746adf746b578",
+  "runtime_code_baseline": "e77b572b91006f40853af18ba7f7ddb06a894b98",
+  "image": {
+    "path": "host-h1-topnav.png",
+    "sha256": "3a013445579d9cceac29a75382e520473f2e9a430e1e9ffad872c49a9b4167ee",
+    "size": [
+      1586,
+      992
+    ],
+    "tool": "image_gen",
+    "source_output": "exec-9c20d8bc-4fa0-4a89-b0ef-f7f0ba05f4ec.png"
+  },
+  "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
+  "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
+  "scope": "Shared host only. Module equipment is a placement reference from rejected visual candidate; original teams own internal redesign. Generated image is not a pixel-accurate installation map. regions.svg and README coordinates are the geometry proposal.",
+  "implementation_changed": false,
+  "review_status": "pending-root-original-review-and-user-confirmation"
+}

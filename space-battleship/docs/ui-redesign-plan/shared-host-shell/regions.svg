@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+<title>H1区域提案：1440×900；待确认；几何图不证明运行验收</title>
+<rect width="1440" height="900" fill="#102b3a"/>
+<g font-family="sans-serif" font-size="16" fill="#ecebdc">
+<rect width="1440" height="40" fill="#243d50"/>
+<text x="16" y="26">远航舰桥</text><text x="260" y="26">唯一全局钱包 · 实际余额</text><text x="1030" y="26">真实保存状态</text><text x="1310" y="26">用户暂停</text>
+<rect y="40" width="1440" height="40" fill="#193747" stroke="#83cfcb"/>
+<text x="16" y="66">装备　反应炉　科研　强化　船员　星球　星系　超空间　舰船　档案　设置</text><text x="1300" y="66">收起工作区</text>
+<rect x="0" y="80" width="656" height="820" fill="#234e59"/>
+<rect x="16" y="96" width="624" height="788" rx="4" fill="none" stroke="#83cfcb" stroke-dasharray="8 6"/>
+<text x="36" y="136" font-size="24">模块安全内区</text><text x="36" y="170">(16,96) · 624×788 · 提案</text>
+<text x="36" y="222">模块拥有：设备 / 控件 / 草稿 / 领域反馈</text>
+<text x="36" y="254">背景填满安装区域；主体及点击区留在虚线内</text>
+<text x="36" y="286">不盲裁旧画布；不非等比压缩</text>
+<text x="36" y="340">原模块组独立给出内部设计</text>
+<text x="36" y="372">宿主只交区域、背景、入口、生命周期</text>
+<text x="36" y="852">安装区域：(0,80) · 656×820</text>
+<rect x="656" y="80" width="16" height="820" fill="#ecebdc"/>
+<rect x="672" y="80" width="768" height="820" fill="#0a1e30"/>
+<rect x="811.708" y="80" width="488.584" height="820" fill="#163749"/>
+<text x="696" y="136" font-size="24">持续战场</text><text x="696" y="170">(672,80) · 768×820 · 提案</text>
+<text x="836" y="252">逻辑572×960</text><text x="836" y="284">等比820/960</text>
+<text x="836" y="316">完整表现与输入共用映射</text>
+<text x="836" y="420">切换 / 收起：位置和尺度不变</text>
+<text x="836" y="452">BattleView唯一消费表现事件</text>
+<text x="696" y="852">两侧是背景延展，逻辑战场不加宽</text>
+</g></svg>
