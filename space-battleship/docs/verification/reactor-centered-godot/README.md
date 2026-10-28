@@ -10,6 +10,7 @@
 | `6f45bed5` | 反应堆Control、四向装配层、独立工作shader、新透明支座与导入设置；四滑杆、均分、整组预览/确认、还原和购级绑定。 | Godot编译和受控夹具装配渲染通过；夹具不证明真实领域数据、自然开放、最终接头质量或动态性能。 |
 | `4c26b2e4` | 共享左模块注册点改为`_register_left_module(layer,id,title,scene,unlock_kind,unlock_target)`；按现行开放配置，反应堆使用`feature:reactor`，星球首入口使用`planet:1`。 | Godot4.7.2入口编译与`git diff --check`通过；星球页面由其所属任务独立提供。 |
 | `170849dd` | 按`3d14ded8`方案适配消费者：当前模型与购级报价分读、局部变化通知、显式running与paused、未知禁用、被动shares草稿保留已生成canonical金额。 | 入口编译和受控夹具只证明脚本可运行；所有者接口实现尚未固定，字段与真实操作需接入后核对。 |
+| `e5cbbb33` | 顶栏唯一模块导航移至x410/498/586，按钮80宽、间距8；末项止于x666。 | 装备副标题布局框止于x404，留6px；现有“舰桥面板”按钮始于x678，留12px。星球页尚未合入本分支，第三按钮只完成坐标净空，未作三页实屏验收。 |
 
 上述提交均已推送至`origin/implement/reactor-centered-godot`。本组修改了`src/main.gd`的最小挂载，未重写装备Control、玩法后端计算或native源码。新资产原件为`/workspace/generated_images/exec-eb6483c5-434b-49b2-8739-96feb6601fc6.png`，已按原图复制为`assets/ui/reactor/centered-v1/supports.png`。导入产生的大量其他未追踪`.import/.uid`未整批入Git。
 
@@ -22,6 +23,8 @@
 反应堆在真实游戏中的四设备全开/凝聚隐藏、零负载与免费量、成功/拒绝、购级、暂停/隐藏/重开，及各局部动态性能，均**尚未验收**。用户标注的[上方接头原图](../../ui-redesign-plan/reactor-image-design/references/user-marked-upper-connections.png)已实际查看；四路实体连接、轴向插入、遮挡与流光共用端口仍须在同版真实游戏正常画面、暂停画面及上两路近景中核对，不能仅凭线碰到边或夹具可见判通过。
 
 已有[旧夹具截图](evidence/visual-fixture-only.png)、[驱动记录](evidence/visual-fixture-driver.gd.txt)和[局部计数日志](evidence/visual-fixture-motion.txt)仅证明当时受控数据下的渲染和暂停/隐藏更新计数；根线程明确不将它们或像素变化当作最终动态品质证据。新支座夹具图暂留`/tmp/space-idle-native472/reactor-scene-fixture.png`，同样只用于装配检查。真实宿主装备/战场整屏截图暂留`/tmp/space-idle-native472/reactor-new-host-screen2.png`。
+
+顶栏改动后另留同一Godot进程、同一真实Session的[正常装备](evidence/nav-e5cbbb33-equipment.png)、[临时开放反应堆](evidence/nav-e5cbbb33-reactor-forced-grant.png)、[切回装备](evidence/nav-e5cbbb33-back-equipment.png)与[再切反应堆](evidence/nav-e5cbbb33-back-reactor.png)整屏截图；[驱动](evidence/nav-e5cbbb33-driver.gd.txt)和[日志](evidence/nav-e5cbbb33-log.txt)记录同一Session实例、真实native战场SubViewport持续`UPDATE_ALWAYS`、572×960且容器可见。反应堆页仅经Campaign公开`save_state/restore_state`临时授予开放键，未接展示出口，故这组图只核导航/战场连续性，不证明自然开放或反应堆业务。先前一次临时开放截屏出现右战场黑区；同Session分阶段复核及直接冷切/回切未复现，右战场各帧均可见。可确定黑区不是稳定的宿主切换结果；具体一次性采集/渲染时序原因尚不能从保留证据唯一确定，不将原黑图当通过证据或据此改战斗规则。
 
 ## 本执行环境
 
