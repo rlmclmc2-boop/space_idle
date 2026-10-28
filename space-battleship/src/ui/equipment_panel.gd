@@ -525,9 +525,13 @@ func _refresh_choices(fact: Dictionary) -> void:
             var caption:=_label("",Rect2(3,48,59,20),13,CREAM)
             remove_child(caption);button.add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             caption.add_theme_font_override("font",_font_strong)
+            caption.size=Vector2(59,20)
             var status:=_label("",Rect2(3,68,59,17),11,Color("c6dfd5"))
             remove_child(status);button.add_child(status);status.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             status.add_theme_font_override("font",_font_strong)
+            # Initial Label sizing used the default font before its override.
+            # Reapply the actual slot after the 11px font's minimum is known.
+            status.size=Vector2(59,17)
             _choices[id]={"button":button,"icon":icon,"caption":caption,"status":status}
         var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
         if _choice_presentations.get(id)==signature:column+=1;continue
