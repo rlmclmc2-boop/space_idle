@@ -295,7 +295,7 @@ func _refresh_quote() -> void:
 		return
 	presentation_counts.quote_reads += 1
 	var quote: Dictionary = _read_quote.call()
-	if quote.get("ok") != true or not quote.has("costs") or not quote.costs is Dictionary or not quote.has("can_purchase"):
+	if quote.get("ok") != true or not quote.has("costs") or not quote.costs is Dictionary or not quote.has("can_purchase") or not quote.can_purchase is bool:
 		_quote = {}
 		_quote_cost_ids.clear()
 		_purchase.text = "升级 · —"
@@ -375,7 +375,7 @@ func _preview_draft(fresh_shares: bool = false) -> void:
 		if row.has_free: supply_text += " + 免费 " + str(row.free)
 		a = str(current.get("effective","—")); b = str(row.effective)
 		_rows[id].supply.text = supply_text + "\n有效 " + a + (" → " + b if a != b else "")
-		if _kind == "equal" and row.has("ratio"):
+		if _kind == "equal" or (_kind == "shares" and not fresh_shares):
 			_shares[id] = int(roundf(clampf(float(row.ratio),0.0,1.0)*10000.0))
 			_rows[id].slider.set_value_no_signal(_shares[id])
 
