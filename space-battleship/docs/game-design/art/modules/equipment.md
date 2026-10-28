@@ -6,7 +6,7 @@
 
 ### 当前限定：保留U1方向，装备内部整合候选
 
-**最新状态（根转报唯一独立Astra高审核）：** 当前运行源码 `551a4f2b0262b9f8291bb6a13b024c32a37ea341`、端口证据da317；整台密度/未解锁纯空位/去贴片/短回执与完整tooltip/刷新/H1最小模块端口等限定项可闭合，无确认P1/P2，不重开。当前投影此前只小舰/非满装Heavy，已按原目标补[三个中档与Heavy真实满装同版证据](../../../verification/equipment-hangar-godot/current-projection-assembly/README.md)：5张真实整屏含武5实际定位/异物264px台、Owner安装/native提交/包络与净空，未改运行源码。停车构图与本批代表装配仍交原审，不以零失败或尾锚等式宣布整体视觉/V0/V2通过。原[状态重排](../../../verification/equipment-hangar-godot/workbench-state-reflow/README.md)、[短回执](../../../verification/equipment-hangar-godot/workbench-receipt-summary/README.md)、[H1端口及责任/缺口](../../../verification/equipment-hangar-godot/shared-host-h1/README.md)记录保留；宿主/main未合未改。
+**最新状态：用户退回本批视觉，已授权全部修正，当前待修。** 551a运行/43a证据保留为退回基线。当前继续统一左右内容起始/内距、数字与箭头真实视觉中心、名称/等级组、回执退出标题梁、按钮全状态描边/阴影外沿与操作区内距，以及真实多资源费用。既有业务四保护和U1武器基本方向保持，10游戏秒换装冷却不改。真实三资源单槽报价当前无生产来源：equipment各可装行res_2均null，Owner只从铁报价加进化简并物质，最多双资源；不得UI造第三种费用或改后端规则。修正与新图待根唯一审核，旧限定闭合不作新视觉放行。
 
 下方整体稿必须解决：原深蓝顶边露在新标题后；浅底盖原斜切框且左右嵌入不同；候选炮口/弹头顶卡上沿；现装/所选表头紧贴卡底；右栏上挤下散；同一装备仍重复名称/数值两遍；“换装完成”落在左下外框外。相同装备合理去重复，真正选择不同候选时保留必要比较，功能/业务规则不变，不新增常驻说明填空。代码/材质根因与原图见[退回基线交接](../../../verification/equipment-hangar-godot/integrated-presentation/README.md)。
 

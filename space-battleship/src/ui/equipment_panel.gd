@@ -34,6 +34,12 @@ var _upgrade_data: Panel
 var _icon_bezel: Panel
 var _transaction_rail: Panel
 var _workbench_layout: Dictionary = {}
+var _receipt_toast: Panel
+var _receipt_toast_remaining: float = 0.0
+var _receipt_history_button: Button
+var _receipt_history_popup: PopupPanel
+var _receipt_history_label: Label
+var _receipt_history: Array[String] = []
 var _candidate_row: Control
 var _comparison_group: Control
 var _period_caption: Label
@@ -348,19 +354,20 @@ func _build_workbench() -> void:
     var beam:=_style(Color("244b5b"),Color("244b5b"),0)
     beam.corner_radius_top_left=8;beam.corner_radius_top_right=8;beam.corner_radius_bottom_left=0;beam.corner_radius_bottom_right=0
     header.add_theme_stylebox_override("panel",beam);_workbench.add_child(header)
-    _current_title=_workbench_label("现装",Rect2(14,4,380,28),18,CREAM)
-    _level_label=_workbench_label("",Rect2(402,7,78,22),13,Color("b8d3ca"))
-    _feedback=_workbench_label("",Rect2(498,7,262,22),12,Color("d9eee2"))
-    _feedback.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT;_feedback.clip_text=true
-    _feedback.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
-    _feedback.mouse_filter=Control.MOUSE_FILTER_PASS
-    _upgrade_section_title=_workbench_label("装备升级",Rect2(14,42,426,24),16)
-    _comparison_title=_workbench_label("装备选择",Rect2(464,42,174,24),16)
+    _current_title=_workbench_label("现装",Rect2(20,4,250,28),18,CREAM)
+    _level_label=_workbench_label("",Rect2(190,7,150,22),13,Color("b8d3ca"))
+    _receipt_toast=Panel.new();_receipt_toast.name="ReceiptToast";_receipt_toast.position=Vector2(238,150);_receipt_toast.size=Vector2(340,32)
+    _receipt_toast.add_theme_stylebox_override("panel",_style(Color("244b5b"),Color("9bd9be"),1));_receipt_toast.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(_receipt_toast)
+    _feedback=_workbench_label("",Rect2(10,4,320,24),13,Color("d9eee2"),_receipt_toast)
+    _feedback.clip_text=true;_feedback.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;_feedback.mouse_filter=Control.MOUSE_FILTER_PASS
+    _receipt_toast.hide()
+    _upgrade_section_title=_workbench_label("装备升级",Rect2(20,42,400,24),16)
+    _comparison_title=_workbench_label("装备选择",Rect2(460,42,174,24),16)
     _switch_state=_workbench_label("",Rect2(638,46,122,18),12,Color("946338"));_switch_state.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-    _workbench_divider=ColorRect.new();_workbench_divider.position=Vector2(450,48);_workbench_divider.size=Vector2(1,110);_workbench_divider.color=Color("b5c3b8");_workbench_divider.mouse_filter=Control.MOUSE_FILTER_IGNORE;_workbench.add_child(_workbench_divider)
+    _workbench_divider=ColorRect.new();_workbench_divider.position=Vector2(440,48);_workbench_divider.size=Vector2(1,110);_workbench_divider.color=Color("b5c3b8");_workbench_divider.mouse_filter=Control.MOUSE_FILTER_IGNORE;_workbench.add_child(_workbench_divider)
     _transaction_rail=Panel.new();_transaction_rail.name="PurchaseRail";_transaction_rail.mouse_filter=Control.MOUSE_FILTER_IGNORE
     _transaction_rail.add_theme_stylebox_override("panel",_style(Color("dde3d5"),Color("b5c3b8"),1));_workbench.add_child(_transaction_rail)
-    _upgrade_data=Panel.new();var data:Panel=_upgrade_data;data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(343,64);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    _upgrade_data=Panel.new();var data:Panel=_upgrade_data;data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(320,80);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var glass:=_style(Color("e1e9dc"),Color("b0c0b4"),1);glass.set_corner_radius_all(4);data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
     _icon_bezel=Panel.new();var icon_frame:Panel=_icon_bezel;icon_frame.name="CurrentIconBezel";icon_frame.position=Vector2(20,88);icon_frame.size=Vector2(66,61);icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var bezel:=_style(Color("eeecda"),Color("a6b9aa"),1);bezel.set_corner_radius_all(4);icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
@@ -378,6 +385,7 @@ func _build_workbench() -> void:
         var button:=_workbench_button(captions[index],Rect2(18+index*65,240,59,36),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
         button.name="Quantity"+str(index);_quantity_buttons.append(button)
     _purchase=_workbench_button("购买1级",Rect2(226,240,218,36),_buy);_purchase.name="Purchase"
+    _purchase.clip_text=true;_purchase.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
     _candidate_row=Control.new();_candidate_row.name="CandidateChoices";_candidate_row.position=Vector2(464,74);_candidate_row.size=Vector2(296,88);_candidate_row.clip_contents=true;_candidate_row.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_candidate_row)
     _comparison_group=Control.new();_comparison_group.name="DifferentCandidateComparison";_comparison_group.position=Vector2(464,170);_comparison_group.size=Vector2(296,64);_comparison_group.clip_contents=true;_comparison_group.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_comparison_group)
     for column in 2:
@@ -387,38 +395,74 @@ func _build_workbench() -> void:
         value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.add_theme_font_override("font",_font_strong);_compare_values.append(value)
     _compare_row_label=_workbench_label("攻击力",Rect2(0,18,48,25),12,Color("617c78"),_comparison_group)
     _period_caption=_workbench_label("周期",Rect2(0,43,48,18),12,Color("617c78"),_comparison_group)
-    _install=_workbench_button("安装",Rect2(508,240,244,36),_equip);_install.name="Install"
+    _install=_workbench_button("安装",Rect2(484,220,266,36),_equip);_install.name="Install"
+    _receipt_history_button=_workbench_button("最近结果",Rect2(232,208,92,36),_show_receipt_history);_receipt_history_button.name="ReceiptHistory";_receipt_history_button.disabled=true
+    _build_receipt_history()
+
+func _text_ink_bounds(text:String, font:Font, font_size:int) -> Rect2:
+    var line:=TextLine.new();line.add_string(text,font,font_size)
+    var server:=TextServerManager.get_primary_interface()
+    var pen:float=0.0
+    var bounds:=Rect2()
+    for glyph in server.shaped_text_get_glyphs(line.get_rid()):
+        for repeat in int(glyph.repeat):
+            var rect:=Rect2(Vector2(pen,0)+Vector2(glyph.offset)+server.font_get_glyph_offset(glyph.font_rid,Vector2i(glyph.font_size,0),glyph.index),server.font_get_glyph_size(glyph.font_rid,Vector2i(glyph.font_size,0),glyph.index))
+            if rect.has_area():bounds=bounds.merge(rect) if bounds.has_area() else rect
+            pen+=float(glyph.advance)
+    return bounds
+
+func _place_ink_label(label:Label, centre:Vector2) -> void:
+    var font:Font=label.get_theme_font("font");var font_size:int=label.get_theme_font_size("font_size")
+    var ink:Rect2=_text_ink_bounds(label.text,font,font_size)
+    label.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT;label.vertical_alignment=VERTICAL_ALIGNMENT_TOP;label.clip_text=false
+    label.size=Vector2(ceilf(font.get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)+8,font.get_height(font_size))
+    label.position=(centre-ink.get_center()-Vector2(0,font.get_ascent(font_size))).round()
 
 func _layout_workbench(different: bool, defence: bool, resource_count: int) -> void:
     var rows:int=maxi(1,resource_count)
     var signature:Array=[different,defence,rows]
     if _workbench_layout.get("signature",[])==signature:return
-    # Same-item browsing uses a shared purchase rail across both columns. A real alternative
-    # uses the two decision columns and their two distinct actions. No hidden rows reserve space.
-    var extra:float=maxi(0,rows-1)*26.0
-    var height:float=264.0+maxf(0.0,extra-26.0) if different else 218.0+extra
-    var data_y:float=(85.0 if rows>1 else 99.0) if different else 91.0
-    var action_y:float=height-48.0
+    var extra:float=maxi(0,rows-2)*22.0 if different else 0.0
+    var height:float=272.0+extra if different else 260.0
+    var action_y:float=220.0+extra if different else 208.0
     _workbench.position.y=896.0-height;_workbench.size.y=height
-    _workbench_divider.size.y=height-64.0 if different else 110.0
-    _upgrade_data.position.y=data_y
-    _icon_bezel.position.y=data_y+3.0
-    _candidate_row.position.y=70.0
-    _comparison_group.position.y=166.0;_comparison_group.size.y=43.0
-    _install.position=Vector2(508,action_y);_install.size=Vector2(244,36)
-    for index in _quantity_buttons.size():_quantity_buttons[index].position=Vector2(18+index*65,action_y)
-    _purchase.position=Vector2(226 if different else 542,action_y)
-    _purchase.size=Vector2(218,36)
-    _transaction_rail.position=Vector2(12,action_y-6.0 if different else 164.0)
-    _transaction_rail.size=Vector2(752,42.0 if different else height-176.0)
-    _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":data_y,"action_y":action_y,"height":height,"fee_y":action_y-36.0-extra if different else 175.0}
+    _workbench_divider.size.y=162.0+extra if different else 110.0
+    _upgrade_data.position=Vector2(100,70)
+    _icon_bezel.position=Vector2(20,81)
+    _candidate_row.position=Vector2(460,70)
+    _comparison_group.position=Vector2(460,166);_comparison_group.size.y=43
+    _install.position=Vector2(492,action_y);_install.size=Vector2(258,36)
+    for index in _quantity_buttons.size():
+        _quantity_buttons[index].position=Vector2(26+index*63,action_y);_quantity_buttons[index].size=Vector2(55,36)
+    _purchase.position=Vector2(220 if different else 528,action_y);_purchase.size=Vector2(204 if different else 222,36)
+    _receipt_history_button.text="记录" if different else "最近结果"
+    _receipt_history_button.position=Vector2(432 if different else 326,action_y);_receipt_history_button.size=Vector2(48 if different else 92,36)
+    _transaction_rail.position=Vector2(16,action_y-8);_transaction_rail.size=Vector2(744,52)
+    _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
+
+func _layout_primary_values() -> void:
+    var long_values:bool=_text_ink_bounds(_current_value.text,_font_strong,27).size.x>124 or _text_ink_bounds(_next_value.text,_font_strong,27).size.x>124
+    var y:float=_workbench_layout.data_y
+    _upgrade_arrow.show()
+    _upgrade_arrow.text="↓" if long_values else "→";_upgrade_arrow.add_theme_font_size_override("font_size",16 if long_values else 23)
+    if long_values:
+        _place_ink_label(_current_caption,Vector2(151,y+17));_place_ink_label(_upgrade_caption,Vector2(151,y+63))
+        _place_ink_label(_current_value,Vector2(304,y+17));_place_ink_label(_next_value,Vector2(304,y+63))
+        var gap_centre_y:float=y+40+(_text_ink_bounds(_current_value.text,_font_strong,27).size.y-_text_ink_bounds(_next_value.text,_font_strong,27).size.y)*0.25
+        _place_ink_label(_upgrade_arrow,Vector2(304,gap_centre_y))
+    else:
+        _place_ink_label(_current_caption,Vector2(174,y+15));_place_ink_label(_upgrade_caption,Vector2(346,y+15))
+        _place_ink_label(_current_value,Vector2(174,y+55));_place_ink_label(_next_value,Vector2(346,y+55))
+        var gap_centre_x:float=260+(_text_ink_bounds(_current_value.text,_font_strong,27).size.x-_text_ink_bounds(_next_value.text,_font_strong,27).size.x)*0.25
+        _place_ink_label(_upgrade_arrow,Vector2(gap_centre_x,y+55))
+    _workbench_layout.long_values=long_values
 
 func _place_current_icon(key: String) -> void:
     _large_icon.texture=_icon_textures.get(key)
     if _large_icon.texture==null:
         _current_icon_geometry={}
         return
-    var shift:float=float(_workbench_layout.get("data_y",85.0))-85.0
+    var shift:float=float(_workbench_layout.get("data_y",70.0))-77.0
     var safe:=Rect2(27,95+shift,52,47)
     var centre:=Vector2(53,120+shift)
     var mass:Vector2=_icon_centres[key]
@@ -428,44 +472,59 @@ func _place_current_icon(key: String) -> void:
     var factor:float=minf(minf((centre.x-safe.position.x)/before.x,(safe.end.x-centre.x)/after.x),minf((centre.y-safe.position.y)/before.y,(safe.end.y-centre.y)/after.y))
     _large_icon.size=source*factor
     _large_icon.position=centre-before*factor
-    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,89+shift),Vector2(64,59)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+117+shift,"optical_mass_offset_y":3}
+    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,89+shift),Vector2(64,59)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+_workbench_layout.data_y+40,"optical_mass_offset_y":3}
 
 func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
     for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
     _purchase.tooltip_text=""
     var different:bool=_workbench_layout.different
-    var single:bool=keys.size()<=1
     var first_row_y:float=_workbench_layout.fee_y
-    _cost.text="本次费用"
-    _cost.position=Vector2(22 if different else 226,first_row_y);_cost.size=Vector2(90 if different else 70,25)
-    _payment_state.position=Vector2(278,first_row_y) if different and single else Vector2(22,first_row_y+26) if different else Vector2(446,first_row_y) if single else Vector2(18,172)
-    _payment_state.size=Vector2(160,25) if different and single else Vector2(100,25) if different else Vector2(88,25) if single else Vector2(190,25)
-    _payment_state.text="" if affordable else _reason(reason)
+    _cost.text="本次费用";_cost.position=Vector2(20,first_row_y);_cost.size=Vector2(84,22)
+    _payment_state.position=Vector2(20,first_row_y+keys.size()*22) if different else Vector2(20,190)
+    _payment_state.size=Vector2(180,22);_payment_state.text="" if affordable else _reason(reason)
     for index in keys.size():
-        var id: String=str(keys[index])
+        var id:String=str(keys[index])
         if not _cost_cells.has(id):
-            var name:=_workbench_label("",Rect2(0,0,102,25),13,Color("5f7876"))
-            var amount:=_workbench_label("",Rect2(0,0,208,27),17,INK)
-            amount.add_theme_font_override("font",_font_strong)
-            amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+            var name:=_workbench_label("",Rect2(0,0,90,22),13,Color("5f7876"))
+            var amount:=_workbench_label("",Rect2(0,0,220,26),17,INK)
+            amount.add_theme_font_override("font",_font_strong);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
             _cost_cells[id]={"name":name,"amount":amount}
-        var cell: Dictionary=_cost_cells[id]
-        var row_y:float=first_row_y+index*26
-        cell.name.position=Vector2(114 if single else 127,row_y) if different else Vector2(300,row_y)
-        cell.name.size=Vector2(36 if single else 102,25) if different else Vector2(36 if single else 86,25)
-        cell.amount.position=Vector2(150 if single else 230,row_y-3) if different else Vector2(336 if single else 386,row_y-3)
-        cell.amount.size=Vector2(112 if single else 208,27) if different else Vector2(100 if single else 142,27)
+        var cell:Dictionary=_cost_cells[id]
+        var width:float=308.0 if different or keys.size()==1 else (644.0-24.0*(keys.size()-1))/keys.size()
+        var x:float=112.0 if different else 112.0+index*(width+24.0)
+        var row_y:float=first_row_y+index*22 if different else first_row_y
+        cell.name.position=Vector2(x,row_y);cell.name.size=Vector2(78,22)
+        cell.amount.position=Vector2(x+82,row_y-3);cell.amount.size=Vector2(width-86,26)
         cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
-        var formatted: Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
+        var formatted:Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
         cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
-        cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"))
-        cell.name.show();cell.amount.show()
+        cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"));cell.name.show();cell.amount.show()
     if not quote.get("ok",false):
-        _payment_state.position=Vector2(114 if different else 300,first_row_y);_payment_state.size=Vector2(324 if different else 228,25)
+        _payment_state.position=Vector2(112,first_row_y);_payment_state.size=Vector2(308,22)
         _payment_state.text=_reason(str(quote.get("reason",quote.get("error","Unknown"))))
-    elif not affordable:
-        _purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
+    elif not affordable:_purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
+
+func _build_receipt_history() -> void:
+    _receipt_history_popup=PopupPanel.new();_receipt_history_popup.title="最近结果";add_child(_receipt_history_popup)
+    _receipt_history_popup.add_theme_stylebox_override("panel",_style(Color("173c4b"),Color("91b7aa"),1))
+    _receipt_history_popup.visibility_changed.connect(func():exclusive_ui_changed.emit())
+    var margin:=MarginContainer.new()
+    for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,20)
+    _receipt_history_popup.add_child(margin)
+    var box:=VBoxContainer.new();box.add_theme_constant_override("separation",12);margin.add_child(box)
+    var heading:=Label.new();heading.text="最近结果";heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",18);heading.add_theme_color_override("font_color",CREAM);box.add_child(heading)
+    var scroll:=ScrollContainer.new();scroll.custom_minimum_size=Vector2(540,280);box.add_child(scroll)
+    _receipt_history_label=Label.new();_receipt_history_label.custom_minimum_size.x=520;_receipt_history_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_receipt_history_label.add_theme_color_override("font_color",CREAM);scroll.add_child(_receipt_history_label)
+    var close:=_button("关闭",Rect2(0,0,540,36),_receipt_history_popup.hide);remove_child(close);box.add_child(close)
+
+func _show_receipt_history() -> void:
+    _receipt_history_label.text="\n\n".join(_receipt_history)
+    _receipt_history_popup.popup(Rect2i(104,230,600,420))
+
+func _hide_receipt_toast() -> void:
+    _receipt_toast_remaining=0.0;_receipt_toast.hide()
+
 
 func _open_batch() -> void:
     # Godot GUI picking uses scene order as well as the visual canvas order.
@@ -532,7 +591,7 @@ func _selected_fact() -> Dictionary:
 
 func select_slot(id: String) -> void:
     if id!=_selected:
-        _feedback.text="";_feedback.tooltip_text=""
+        _feedback.text="";_feedback.tooltip_text="";_hide_receipt_toast()
     _selected = id
     _selection_open = true
     var fact: Dictionary = _selected_fact()
@@ -541,7 +600,7 @@ func select_slot(id: String) -> void:
 
 func _select_candidate(id: String) -> void:
     if id!=_candidate:
-        _feedback.text="";_feedback.tooltip_text=""
+        _feedback.text="";_feedback.tooltip_text="";_hide_receipt_toast()
     _candidate = id
     _dirty = true
 
@@ -596,33 +655,25 @@ func _refresh_comparison() -> void:
     _place_current_icon(str(fact.equipment_id))
     _current_title.text = "%s · %s" % [_slot_name(_selected),NAMES.get(str(fact.equipment_id),"装备")]
     _level_label.text = "Lv."+str(fact.paid_level)
+    var title_ink:Rect2=_text_ink_bounds(_current_title.text,_current_title.get_theme_font("font"),18)
+    var level_ink:Rect2=_text_ink_bounds(_level_label.text,_level_label.get_theme_font("font"),13)
+    _place_ink_label(_current_title,Vector2(20+title_ink.size.x*0.5,18))
+    _place_ink_label(_level_label,Vector2(32+title_ink.size.x+level_ink.size.x*0.5,18))
     _current_value.text = _value(comparison.current)
     _next_value.text = _value(comparison.upgrade)
     _current_value.tooltip_text=str(comparison.current.primary) if comparison.current is Dictionary and comparison.current.get("primary")!=null else _value(comparison.current)
     _next_value.tooltip_text=str(comparison.upgrade.primary) if comparison.upgrade is Dictionary and comparison.upgrade.get("primary")!=null else _value(comparison.upgrade)
-    var long_values: bool = _font_strong.get_string_size(_next_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>148 or _font_strong.get_string_size(_current_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>140
-    _upgrade_arrow.visible=not long_values
-    _upgrade_arrow.position.y=105.0
-    # The single workspace owns the primary inset; captions keep their measured padding and full numeric width.
-    _current_caption.position=Vector2(114,94 if long_values else 91)
-    _upgrade_caption.position=Vector2(114,124) if long_values else Vector2(290,91)
-    _current_caption.size=Vector2(102 if long_values else 140,18)
-    _upgrade_caption.size=Vector2(102 if long_values else 146,18)
-    _current_value.position=Vector2(216,81) if long_values else Vector2(114,109)
-    _next_value.position=Vector2(216,111) if long_values else Vector2(290,109)
-    _current_value.size=Vector2(222 if long_values else 140,38)
-    _next_value.size=Vector2(222 if long_values else 148,38)
-    var shift:float=float(_workbench_layout.data_y)-85.0
-    for control in [_current_caption,_upgrade_caption,_current_value,_next_value,_upgrade_arrow]:control.position.y+=shift
     _render_costs(quote,comparison.affordable,str(comparison.payment_reason))
     _cost.tooltip_text = _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
     _purchase.text = "购买%s级" % str(quote.count) if quote.get("ok", false) else "购买"
+    if quote.get("ok",false):_purchase.tooltip_text=("" if comparison.affordable else _purchase.tooltip_text+"\n")+_purchase.text
     _purchase.disabled = not comparison.affordable
     _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
     _switch_state.visible=not _switch_state.text.is_empty()
 
     var primary: String = "容量" if fact.category == "defence" else "攻击力"
     _current_caption.text = "当前" + primary
+    _layout_primary_values()
     _install.text = "安装" + str(NAMES.get(_candidate, "装备")) if not _candidate.is_empty() else "选择装备"
     _install.disabled = _candidate.is_empty() or not comparison.switch_admission.ok
     _install.tooltip_text = "" if comparison.switch_admission.ok else _reason(str(comparison.switch_admission.reason))
@@ -801,6 +852,11 @@ func _accept_result(result: Dictionary) -> void:
     last_result = result.duplicate(true)
     _feedback.text = _receipt_summary(result)
     _feedback.tooltip_text = _receipt_text(result)
+    _receipt_history.push_front(_feedback.tooltip_text)
+    if _receipt_history.size()>8:_receipt_history.pop_back()
+    _receipt_history_button.disabled=false;_receipt_history_button.tooltip_text=_feedback.tooltip_text
+    if _receipt_history_popup.visible:_receipt_history_label.text="\n\n".join(_receipt_history)
+    _receipt_toast_remaining=3.0;_receipt_toast.show()
     _dirty = true
     command_finished.emit(last_result)
 
@@ -843,6 +899,9 @@ func _refresh_batch(after: bool = false) -> void:
 
 func _process(dt: float) -> void:
     if not is_visible_in_tree(): return
+    if _receipt_toast_remaining>0:
+        _receipt_toast_remaining=maxf(0.0,_receipt_toast_remaining-dt)
+        if _receipt_toast_remaining==0:_receipt_toast.hide()
     _clock += dt
     var cooldown: bool = _facts.any(func(row): return float(row.cooldown_remaining) > 0)
     if _dirty:
@@ -984,11 +1043,13 @@ func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D 
         context_slot.add_child(_context_caption)
 
 func has_exclusive_ui() -> bool:
-    return _batch.visible or _batch_quantity.get_popup().visible
+    return _batch.visible or _batch_quantity.get_popup().visible or _receipt_history_popup.visible
 
 func prepare_host_hide(force: bool = false) -> bool:
     if has_exclusive_ui() and not force:return false
-    if force:_close_batch()
+    if force:
+        _receipt_history_popup.hide();_close_batch()
+    _hide_receipt_toast()
     var focus:Control=get_viewport().gui_get_focus_owner()
     if focus!=null and (focus==self or is_ancestor_of(focus)):focus.release_focus()
     return true
