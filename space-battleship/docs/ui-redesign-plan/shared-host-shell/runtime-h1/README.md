@@ -1,6 +1,6 @@
 # 共享宿主运行接入候选 H1
 
-当前组合：[装备ce70修订与回执Popup](equipment-ce70-integration/README.md)，代码`c84c703f`，保留当前已修公共壳，14项必要接入操作通过；原装备Astra仍审视觉，不合main。
+当前组合：[装备ce70修订与回执Popup](equipment-ce70-integration/README.md)，代码`c84c703f`，保留当前已修公共壳，14项必要接入操作通过；原布局Astra已亲看四图并核源码/记录，当前1440×900共享组合及回执Popup接入无新增P1/P2，限定通过。内部视觉仍独立审查，不合main。
 
 [反应炉R4接入](reactor-r4-integration/README.md)仍为db94845a，原布局Astra已限定确认其共享接入无新增P1/P2；内部浮框/滑杆/底部覆层归原组，不扩大为整屏美术通过。
 
