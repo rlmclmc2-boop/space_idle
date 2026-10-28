@@ -1,7 +1,7 @@
 extends Control
 ## Display-only 3D architecture over the analytical surface. No building hit targets.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
-const SURFACE_UV := {"refinery": Vector2(0.49, 0.59), "equipment": Vector2(0.36, 0.36)}
+const SURFACE_UV := {"refinery": Vector2(0.45, 0.70), "equipment": Vector2(0.36, 0.36)}
 var _viewport := SubViewport.new()
 var _image := TextureRect.new()
 var _world := Node3D.new()

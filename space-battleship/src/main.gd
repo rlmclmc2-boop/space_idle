@@ -213,6 +213,7 @@ func _setup_reactor_scene(layer: CanvasLayer) -> void:
 		session.economy.connect("budget_changed", reactor_scene.invalidate_budget)
 	planet_scene = PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim,
 		_command_button, _planet_visual_context, session.crew_system, session.coordinate_assignment)
+	planet_scene.reforge_requested.connect(_open_planet_reforge)
 	planet_scene.position = Vector2.ZERO
 	planet_scene.size = Vector2(808, 900)
 	layer.add_child(planet_scene)
@@ -870,6 +871,18 @@ func _create_bridge_page(key: String, title: String) -> void:
 
 func _bridge_tab_changed(index: int) -> void:
 	if _reforge_picker != null and index == int(_pages.universe.index): _refresh_reforge_selection()
+
+func _open_planet_reforge(id: String) -> void:
+	# Navigate only; the existing preview/confirm/cancel transaction remains owner.
+	if not _pending_reforge.is_empty(): _cancel_reforge()
+	_refresh_reforge_selection()
+	for index in _reforge_picker.item_count:
+		if str(_reforge_picker.get_item_metadata(index)) == id:
+			_reforge_picker.select(index)
+			_reforge_planet_value.text = id
+	_tabs.current_tab = int(_pages.universe.index)
+	_set_page("growth")
+	_pages.universe.scroll.call_deferred("ensure_control_visible", _reforge_picker)
 
 func _planet_visual_context() -> Dictionary:
 	var context: Dictionary = _world_visual_context()

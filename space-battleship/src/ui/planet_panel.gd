@@ -1,4 +1,5 @@
 extends Control
+signal reforge_requested(planet_id: String)
 ## One selected planet owns all visible task/facility/crew content.
 const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球尚未开放", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewTargetOccupied": "该岗位人数已满", "CrewLocked": "船员尚未开放", "HyperspaceCrewReserved": "船员仍被超空间任务占用"}
 const STATES := {"locked": "未达门槛", "building": "施工中", "ready": "待领取", "built": "已领取"}
@@ -22,7 +23,7 @@ var _last_degree := -1
 var _context: Dictionary = {}
 var _detail_signature: Dictionary = {}
 var world_planet_picker := OptionButton.new()
-var world_building_picker := OptionButton.new()
+var world_building_picker: OptionButton
 var _task_button := Button.new()
 var _crew_button := Button.new()
 var _facility_button := Button.new()
@@ -34,15 +35,17 @@ var _identity := Label.new()
 var _wallet := Label.new()
 var _task_line := Label.new()
 var _feedback := Label.new()
+var _feedback_seconds := 0.0
 var _drawer := PanelContainer.new()
 var _drawer_box := VBoxContainer.new()
 var _drawer_title := Label.new()
 var _drawer_body := VBoxContainer.new()
-var _detail_text := Label.new()
-var _work_bar := ProgressBar.new()
+var _detail_text: Label
+var _work_bar: ProgressBar
 var _claim_button: Button
-var _member_picker := OptionButton.new()
-var _assignment_picker := OptionButton.new()
+var _reforge_button: Button
+var _member_picker: OptionButton
+var _assignment_picker: OptionButton
 var _member_id := ""
 var _assignment_target := ""
 
@@ -228,6 +231,9 @@ func _refresh_options() -> void:
 
 func _process(dt: float) -> void:
 	if not is_visible_in_tree(): return
+	if _feedback_seconds > 0:
+		_feedback_seconds = maxf(0, _feedback_seconds - dt)
+		if _feedback_seconds == 0: _feedback.text = ""
 	_context = _visual_context.call() if _visual_context.is_valid() else {}
 	var balances: PackedStringArray = []
 	for row in _context.get("balances", []).slice(0, 3): balances.append(str(row.text))
@@ -347,7 +353,12 @@ func _build_facility_detail() -> void:
 		elif fact.state == "locked": _caption(_drawer_body, "探索度 %d 开放 · 当前 %d" % [fact.unlock_exploration, _snapshot.exploration])
 		var effect: String = {"refinery": "铁、铀原生掉落加成", "equipment": "普通装备属性加成", "auto_explore": "允许开启自动探索", "shipyard": "允许本星球首次征服 / 重铸"}.get(fact.type, "")
 		_caption(_drawer_body, ("领取后生效：" if fact.state != "built" else "已生效：") + effect)
-		if fact.source_factor != null: _caption(_drawer_body, "本设施当前因子 ×" + str(fact.source_factor))
+		if fact.source_factor != null: _caption(_drawer_body, "本设施当前因子 ×" + preload("res://src/ui/player_text.gd").number(str(fact.source_factor)))
+		if fact.type == "shipyard" and fact.state == "built":
+			_reforge_button = Button.new()
+			_reforge_button.text = "前往征服 / 重铸预览"
+			_reforge_button.pressed.connect(func(): reforge_requested.emit(_selected_id))
+			_drawer_body.add_child(_reforge_button)
 		if fact.state == "ready":
 			_claim_button = _action(_drawer_body, "领取", func(): return _planet.claim_build(_selected_id, _selected_facility, _publish))
 			_claim_button.disabled = not fact.claim_allowed
@@ -407,6 +418,7 @@ func _action(parent: Control, text: String, action: Callable) -> Button:
 		# Read IDs at activation; preserve the host's existing command admission.
 		var result: Dictionary = action.call()
 		_feedback.text = str(result.get("message", "完成")) if result.get("ok", false) else describe_error(str(result.get("reason", result.get("error", "操作失败"))))
+		_feedback_seconds = 4.0
 		refresh()
 		return result
 	if _host.is_valid(): return _host.call(parent, text, perform)
