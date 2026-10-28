@@ -11,10 +11,6 @@
 <path d="M92 49H435V113H92Z" fill="url(#glass)"/>
 <path d="M93 50H434" stroke="#789a95" stroke-opacity=".55"/>
 <path d="M93 113H434" stroke="#fff9e7"/>
-<path d="M15 124H435" stroke="#adb9ac"/>
-<path d="M15 126H435" stroke="#fff9e5"/>
-<path d="M14 194H436" stroke="#b9c2b2"/>
-<path d="M14 196H436" stroke="#fff9e7"/>
 <path d="M16 52H74L80 58V108L73 116H16L10 109V59Z" fill="#bdc8bb"/>
 <path d="M17 53H72L77 59V106L71 112H17L13 107V60Z" fill="#ecebd9"/>
 <circle cx="429" cy="19" r="2" fill="#c9e3ca"/>

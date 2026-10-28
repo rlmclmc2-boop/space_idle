@@ -22,6 +22,9 @@ var _slot_buttons: Dictionary = {}
 var _slot_groups: Dictionary = {}
 var _slot_backdrops: Dictionary = {}
 var _icon_textures: Dictionary = {}
+var _icon_centres: Dictionary = {}
+var _current_icon_geometry: Dictionary = {}
+var _workbench_collapse: float = 42.0
 var _slot_presentations: Dictionary = {}
 var _slot_selections: Dictionary = {}
 var _choice_presentations: Dictionary = {}
@@ -98,8 +101,20 @@ func _init(session) -> void:
         var texture: Texture2D = _textures[key]
         var thumbnail := AtlasTexture.new()
         thumbnail.atlas = texture
-        thumbnail.region = texture.get_image().get_used_rect()
+        var pixels: Image = texture.get_image()
+        thumbnail.region = pixels.get_used_rect()
         _icon_textures[key] = thumbnail
+        # A small initialization-only alpha sample records optical mass, not the PNG canvas centre.
+        var sample: Image = pixels.get_region(Rect2i(thumbnail.region))
+        sample.resize(32,32,Image.INTERPOLATE_BILINEAR)
+        var weighted:=Vector2.ZERO
+        var mass:float=0.0
+        for y in 32:
+            for x in 32:
+                var alpha:float=sample.get_pixel(x,y).a
+                weighted+=Vector2(x+0.5,y+0.5)*alpha
+                mass+=alpha
+        _icon_centres[key]=weighted/(mass*32.0) if mass>0.0 else Vector2(0.5,0.5)
     _background = load("res://assets/ui/equipment/hangar/hangar-console.png")
     _upgrade_surface=load("res://assets/ui/equipment/hangar/upgrade-console.svg")
     _setup_materials()
@@ -315,32 +330,62 @@ func _build() -> void:
     _feedback.clip_text=true
     _build_batch()
 
+func _place_current_icon(key: String) -> void:
+    _large_icon.texture=_icon_textures.get(key)
+    if _large_icon.texture==null:
+        _current_icon_geometry={}
+        return
+    # SVG frame interior is (37,659)..(101,718). A 3px optical offset aligns the visible body with the primary-value surface.
+    var safe:=Rect2(43,665,52,47)
+    var centre:=Vector2(69,690)
+    var mass:Vector2=_icon_centres[key]
+    var source:Vector2=_large_icon.texture.get_size()
+    var before:Vector2=source*mass
+    var after:Vector2=source-before
+    var factor:float=minf(minf((centre.x-safe.position.x)/before.x,(safe.end.x-centre.x)/after.x),minf((centre.y-safe.position.y)/before.y,(safe.end.y-centre.y)/after.y))
+    _large_icon.size=source*factor
+    _large_icon.position=centre-before*factor
+    _current_icon_geometry={"key":key,"frame_inner":Rect2(37,659,64,59),"safe":safe,"visible_rect":_large_icon.get_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.position+_large_icon.size*mass,"primary_surface_centre_y":687,"optical_mass_offset_y":3}
+
 func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
     for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
-    _payment_state.text=""
     _purchase.tooltip_text=""
     _cost.text="本次费用"
-    _payment_state.position=Vector2(38,766);_payment_state.size=Vector2(104,31)
+    _cost.position=Vector2(38,734);_cost.size=Vector2(90,25)
+    var single:bool=keys.size()<=1
+    # Payment feedback shares the single resource line; more resources grow only their actual rows.
+    _payment_state.position=Vector2(294,734) if single else Vector2(38,758)
+    _payment_state.size=Vector2(160,25) if single else Vector2(100,31)
     _payment_state.text="" if affordable else _reason(reason)
+    var action_y:float=minf(812,770+maxi(0,keys.size()-1)*26)
+    for button in _quantity_buttons:button.position.y=action_y
+    _purchase.position.y=action_y
+    var collapse:float=812-action_y
+    if _workbench_collapse!=collapse:
+        _workbench_collapse=collapse
+        presentation_counts.scene_redraw_requests+=1
+        queue_redraw()
     for index in keys.size():
         var id: String=str(keys[index])
         if not _cost_cells.has(id):
-            var name:=_label("",Rect2(143,737,102,23),13,Color("5f7876"))
-            var amount:=_label("",Rect2(246,733,208,25),17,INK)
+            var name:=_label("",Rect2(143,734,102,25),13,Color("5f7876"))
+            var amount:=_label("",Rect2(246,731,208,27),17,INK)
             amount.add_theme_font_override("font",_font_strong)
             amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
             _cost_cells[id]={"name":name,"amount":amount}
         var cell: Dictionary=_cost_cells[id]
-        cell.name.position.y=737+index*24
-        cell.amount.position.y=733+index*24
+        cell.name.position=Vector2(130,734) if single else Vector2(143,734+index*26)
+        cell.name.size=Vector2(36,25) if single else Vector2(102,25)
+        cell.amount.position=Vector2(166,731) if single else Vector2(246,731+index*26)
+        cell.amount.size=Vector2(112,27) if single else Vector2(208,27)
         cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
         var formatted: Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
         cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
         cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"))
         cell.name.show();cell.amount.show()
     if not quote.get("ok",false):
-        _payment_state.size=Vector2(414,31)
+        _payment_state.position=Vector2(143,734);_payment_state.size=Vector2(311,31)
         _payment_state.text=_reason(str(quote.get("reason",quote.get("error","Unknown"))))
     elif not affordable:
         _purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
@@ -456,7 +501,7 @@ func _refresh_comparison() -> void:
         _install.disabled = true
         return
     var comparison: Dictionary = last_comparison
-    _large_icon.texture = _icon_textures.get(str(fact.equipment_id))
+    _place_current_icon(str(fact.equipment_id))
     _current_title.text = "%s · %s" % [_slot_name(_selected),NAMES.get(str(fact.equipment_id),"装备")]
     _level_label.text = "Lv."+str(fact.paid_level)
     _current_value.text = _value(comparison.current)
@@ -733,9 +778,20 @@ func _draw() -> void:
     presentation_counts.scene_draws+=1
     draw_rect(Rect2(0,0,808,900),CREAM)
     draw_texture_rect_region(_background,Rect2(0,85,808,485),Rect2(0,0,1188,845))
-    draw_texture_rect_region(_background,Rect2(0,570,808,330),Rect2(0,845,1188,479))
+    # Only the left upgrade console contracts with its real cost rows; the right comparison stays fixed.
+    var split:float=484.0
+    var source_split:float=1188.0*split/808.0
+    draw_texture_rect_region(_background,Rect2(split,570,808-split,330),Rect2(source_split,845,1188-source_split,479))
+    var scale_y:float=479.0/330.0
+    draw_texture_rect_region(_background,Rect2(0,570,split,42),Rect2(0,845,source_split,42*scale_y))
+    draw_texture_rect_region(_background,Rect2(0,612,split,256-_workbench_collapse),Rect2(0,845+42*scale_y,source_split,256*scale_y))
+    draw_texture_rect_region(_background,Rect2(0,868-_workbench_collapse,split,32),Rect2(0,845+298*scale_y,source_split,32*scale_y))
+    draw_texture_rect_region(_background,Rect2(0,900-_workbench_collapse,split,_workbench_collapse),Rect2(0,1304,source_split,20))
     # The ship name is lettered directly on the hangar beam, without a floating plaque.
-    draw_texture_rect(_upgrade_surface,Rect2(24,606,452,252),false)
+    # Preserve the title, primary-value surface and icon bezel at authored coordinates.
+    draw_texture_rect_region(_upgrade_surface,Rect2(24,606,452,120),Rect2(0,0,452,120))
+    draw_texture_rect_region(_upgrade_surface,Rect2(24,726,452,118-_workbench_collapse),Rect2(0,120,452,118))
+    draw_texture_rect_region(_upgrade_surface,Rect2(24,844-_workbench_collapse,452,14),Rect2(0,238,452,14))
     if _ship.is_empty() or not _catalog.has(_ship):return
     draw_texture_rect(_hull_textures[_ship],_ship_rect(),false)
     for row in _facts:
