@@ -74,9 +74,6 @@ func _ready() -> void:
 		layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.show_behind_parent = true
 		add_child(layer)
-	architecture = preload("res://scripts/planet_facility_scene.gd").new()
-	architecture.show_behind_parent = true
-	add_child(architecture)
 	background_layer.draw.connect(_draw_background)
 	orbit_back_layer.draw.connect(_draw_back_orbits)
 	loading.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -183,6 +180,7 @@ func configure(id: String, row: Dictionary) -> void:
 		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
 		globe.atmosphere_color = _color("atmosphereColor", Color("5ac8f0"))
 		globe.configure_visual(appearance)
+		if architecture != null: architecture.configure_shape(appearance)
 		globe.light_direction = Vector3(-0.65, -0.45, 0.62)
 		globe.apply_settings()
 		_layout_globe()
@@ -196,11 +194,19 @@ func configure(id: String, row: Dictionary) -> void:
 		var kind := str(entry.get("type", ""))
 		if not FACILITY_COLORS.has(kind) or not bool(entry.get("owned", false)):continue
 		next.append(entry)
+	if not icon_mode and architecture == null and not next.is_empty():
+		architecture = preload("res://scripts/planet_facility_scene.gd").new()
+		architecture.show_behind_parent = true
+		add_child(architecture)
+		architecture.configure_shape(appearance)
+		_layout_globe()
 	if is_instance_valid(facility_renderer):
 		facility_renderer.configure(next)
 		facility_renderer.update_pose(phase)
 	if facilities != next:
-		if architecture != null: architecture.configure(next)
+		if architecture != null:
+			architecture.configure(next)
+			architecture.update_pose(phase, globe.phases.x, _body_radius(), globe.visual_clock)
 		facilities = next
 		orbit_back_layer.queue_redraw()
 		queue_redraw()
@@ -270,7 +276,7 @@ func advance(dt: float, paused: bool) -> void:
 	globe.advance(step)
 	frame_accumulator = 0.0
 	phase += step
-	if architecture != null: architecture.update_pose(phase, globe.phases.x, _body_radius())
+	if architecture != null: architecture.update_pose(phase, globe.phases.x, _body_radius(), globe.visual_clock)
 	if is_instance_valid(facility_renderer):facility_renderer.update_pose(phase)
 	if active:exploration_age += step
 	if completion_age < 3.2:

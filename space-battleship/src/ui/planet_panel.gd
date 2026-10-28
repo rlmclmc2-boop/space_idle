@@ -31,7 +31,6 @@ var _stop_button: Button
 var _cancel_button: Button
 var _auto_button: Button
 var _progress := ProgressBar.new()
-var _identity := Label.new()
 var _wallet := Label.new()
 var _task_line := Label.new()
 var _feedback := Label.new()
@@ -83,10 +82,9 @@ func _ready() -> void:
 	world_planet_picker.item_selected.connect(func(index): select_planet(str(world_planet_picker.get_item_metadata(index))))
 	_stop_button = _action(self, "本次完成后停止", func(): return _planet.set_automatic(_selected_id, false))
 	_cancel_button = _action(self, "立即取消探索", func(): return _cancel.call(_selected_id))
-	for label in [_identity, _task_line, _feedback, _wallet]:
+	for label in [_task_line, _feedback, _wallet]:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(label)
-	_identity.add_theme_font_size_override("font_size", 22)
 	_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_feedback.add_theme_color_override("font_color", Color("ffd496"))
 	add_child(_progress)
@@ -160,9 +158,6 @@ func _layout() -> void:
 	_task_line.position = Vector2(22, 216)
 	_task_line.size = Vector2(340, 48)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
-	_identity.position = Vector2(maxf(22, size.x - 270), 268)
-	_identity.size = Vector2(248, 60)
-	_identity.add_theme_color_override("font_color", Color("e0eee9"))
 	_feedback.position = Vector2(22, size.y - 80)
 	_feedback.size = Vector2(500, 70)
 	var source: Control = _facility_button if _open_section == "facilities" else _crew_button if _open_section == "crew" else _task_button
@@ -252,7 +247,6 @@ func _read_selected() -> void:
 	_facts = _planet.facility_facts(_selected_id, _crew_views.explorers, _crew_views.builders)
 	if _snapshot.is_empty():
 		_visual.hide()
-		_identity.text = "尚无已开放星球"
 		_facts = []
 	else:
 		_visual.show()
@@ -260,7 +254,6 @@ func _read_selected() -> void:
 		_visual.set_exploration(_snapshot.running, _snapshot.exploration, _snapshot.elapsed)
 		if _last_degree >= 0 and int(_snapshot.exploration) > _last_degree: _visual.complete()
 		_last_degree = int(_snapshot.exploration)
-		_identity.text = "%s\n探索度 %d" % [_snapshot.row.name, _snapshot.exploration]
 	var ready := 0
 	for fact in _facts:
 		if fact.state == "ready": ready += 1
@@ -280,7 +273,7 @@ func _update_task() -> void:
 	var fraction: float = elapsed / duration if running and duration > 0 else 0.0
 	_progress.value = fraction * 100.0
 	_task_button.text = ("已暂停" if paused else "探索中") + " · 本次 %.0f%%" % (fraction * 100) if running else "探索 · 未派遣"
-	_task_line.text = "本次 %.1f / %.1f 秒\n自动探索：%s" % [elapsed, duration, "开启" if _snapshot.get("automatic", false) else "关闭"] if running else "探索未运行"
+	_task_line.text = "探索度 %d · 本次 %.1f / %.1f 秒\n自动探索：%s" % [int(_snapshot.get("exploration", 0)), elapsed, duration, "开启" if _snapshot.get("automatic", false) else "关闭"] if running else "探索度 %d · 探索未运行" % int(_snapshot.get("exploration", 0))
 	_stop_button.disabled = not running or not _snapshot.get("automatic", false)
 	_cancel_button.disabled = not running
 	if is_instance_valid(_auto_button):

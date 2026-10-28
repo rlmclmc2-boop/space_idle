@@ -14,6 +14,10 @@ var _clock := 0.0
 var _phase := 0.0
 var _body_pixels := 200.0
 var _last_size := Vector2.ZERO
+var _axis_ratio := 1.0
+var _pulse_strength := 0.0
+var _pulse_speed := 0.08
+var _surface_clock := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -74,10 +78,16 @@ func _transparent_materials(node: Node) -> void:
 			if original is StandardMaterial3D:
 				var material: StandardMaterial3D = original.duplicate()
 				material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
 				material.albedo_color.a = 0.999
 				material.render_priority = 0
 				node.set_surface_override_material(index, material)
 	for child in node.get_children(): _transparent_materials(child)
+
+func configure_shape(appearance: Dictionary) -> void:
+	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
+	_pulse_strength = clampf(float(appearance.get("pulseStrength", 0.0)), 0.0, 0.05)
+	_pulse_speed = maxf(0, float(appearance.get("pulseSpeed", 0.08)))
 
 func configure(entries: Array) -> void:
 	_owned = []
@@ -94,23 +104,27 @@ func _layout() -> void:
 	_camera.size = _radius * size.y / maxf(1, _body_pixels)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
-func update_pose(clock: float, surface_phase: float, body_pixels: float) -> void:
+func update_pose(clock: float, surface_phase: float, body_pixels: float, surface_clock: float = -1.0) -> void:
 	_clock = clock
 	_phase = surface_phase
 	_body_pixels = body_pixels
+	if surface_clock >= 0: _surface_clock = surface_clock
 	if not is_inside_tree(): return
 	if size != _last_size or not is_equal_approx(_camera.size, _radius * size.y / maxf(1, body_pixels)): _layout()
+	var pulse := 1.0 + _pulse_strength * sin(_surface_clock * TAU * _pulse_speed)
+	_occluder.scale = Vector3(pulse, _axis_ratio * pulse, pulse)
 	for kind in _owned:
 		var model: Node3D = _models[kind]
 		if SURFACE_UV.has(kind):
 			var uv: Vector2 = SURFACE_UV[kind]
 			var lon := (uv.x - 0.5 - surface_phase) * TAU
 			var lat := (uv.y - 0.5) * PI
-			var normal := Vector3(sin(lon) * cos(lat), -sin(lat), cos(lon) * cos(lat))
+			var point := Vector3(sin(lon) * cos(lat), -sin(lat), cos(lon) * cos(lat))
+			var normal := Vector3(point.x, point.y / _axis_ratio, point.z).normalized()
 			var east := Vector3(cos(lon), 0, -sin(lon)).normalized()
 			var north := east.cross(normal).normalized()
 			# Model Y is local up. Its foundation lies on the surface tangent.
-			model.transform = Transform3D(Basis(east, normal, north).scaled(Vector3.ONE * 0.24), normal * (_radius + 0.012))
+			model.transform = Transform3D(Basis(east, normal, north).scaled(Vector3.ONE * 0.24), Vector3(point.x, point.y * _axis_ratio, point.z) * (_radius * pulse) + normal * 0.012)
 		else:
 			var path: Dictionary = preload("res://scripts/orbital_facilities.gd").path_for(kind)
 			var a := 0.65 if kind == "shipyard" else float(path.phase) + clock * float(path.speed)
