@@ -9,6 +9,7 @@ var _state: Dictionary
 var _prepared_state: Dictionary = {}
 var _parameters: Dictionary = {}
 var _api
+var _plan_preview_cache: Dictionary = {}
 
 func save_state() -> Dictionary:
 	var state: Dictionary = _state.duplicate(true)
@@ -28,6 +29,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 		if not comparison.get("ok", false) or int(comparison.scalar) < 0:
 			return {"ok": false, "reason": "InvalidReactorAllocation"}
 	_state = state.duplicate(true)
+	_plan_preview_cache.clear()
 	_prepared_state = {}
 	return {"ok": true}
 
@@ -83,6 +85,7 @@ func prepare(inputs: Dictionary) -> Dictionary:
 
 func _adopt(next: Dictionary) -> void:
 	_state = next
+	_plan_preview_cache.clear()
 	_prepared_state = {}
 
 func accept() -> void:
@@ -127,6 +130,130 @@ func refresh(inputs: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	return _submit(_state, inputs, null, "growth", publish)
 
+## Amount plans are read on detached state; this cache never enters saved state.
+func allocation_plan_preview(draft: Dictionary, inputs: Dictionary) -> Dictionary:
+	if not _available: return {"ok": false, "reason": "ReactorLocked"}
+	var admitted: Dictionary = _plan_input_admission(inputs)
+	if not admitted.ok: return admitted
+	var signature := {"draft": draft.duplicate(true), "inputs": inputs.duplicate(true),
+		"running": _run_state.is_running(), "level": _state.level, "allocations": _state.allocations.duplicate(true), "free": _state.free_charge, "enabled": _enabled.duplicate()}
+	if _plan_preview_cache.get("signature") == signature: return _plan_preview_cache.result.duplicate(true)
+	var planned: Dictionary = _allocation_plan(draft, inputs, false)
+	if not planned.ok: return planned
+	var actual: Dictionary = _accepted_plan_readings()
+	if not actual.ok: return actual
+	var target: Dictionary = _plan_readings(planned)
+	if not target.ok: return target
+	var result := {"ok": true, "can_apply": _run_state.is_running(), "reason": "" if _run_state.is_running() else "SessionUnavailable",
+		"source": {"capacity": target.capacity, "enabled_ids": _enabled.duplicate()}, "current": actual, "target": target}
+	_plan_preview_cache = {"signature": signature, "result": result}
+	return result.duplicate(true)
+
+func apply_allocation_plan(amount_texts: Dictionary, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	if not _available: return {"ok": false, "reason": "ReactorLocked"}
+	var admitted: Dictionary = _plan_input_admission(inputs)
+	if not admitted.ok: return admitted
+	var planned: Dictionary = _allocation_plan({"kind": "amounts", "amount_texts": amount_texts}, inputs, true)
+	if not planned.ok: return planned
+	var actual: Dictionary = _plan_readings(planned)
+	if not actual.ok: return actual
+	_prepared_state = planned.state
+	var result: Dictionary = publish.call(planned.factors, null, "selection")
+	if not result.ok:
+		_prepared_state = {}
+		return result
+	var published: Dictionary = result.duplicate()
+	published.actual = actual
+	choices_changed.emit()
+	return published
+
+func _plan_input_admission(inputs: Dictionary) -> Dictionary:
+	if not bool(inputs.get("ok", true)): return inputs.duplicate(true)
+	if not inputs.get("capacity") is Dictionary or not (inputs.get("free_charge") is float or inputs.get("free_charge") is int):
+		return {"ok": false, "reason": "InvalidReactorInputs"}
+	if not is_finite(float(inputs.free_charge)): return {"ok": false, "reason": "InvalidReactorInputs"}
+	return {"ok": true}
+
+func _allocation_plan(draft: Dictionary, inputs: Dictionary, strict_integer: bool) -> Dictionary:
+	var next: Dictionary = _state.duplicate(true)
+	next.erase("_distribute")
+	var capacity: Dictionary = _capacity(next, _parameters, _api, inputs.capacity)
+	if not capacity.ok: return capacity
+	var kind: String = str(draft.get("kind", ""))
+	if kind == "equal":
+		var distributed: Dictionary = _distribute(next, _parameters, _enabled, _api, inputs.capacity)
+		if not distributed.ok: return distributed
+		next = distributed.state
+	else:
+		var mapping = draft.get("shares_bp" if kind == "shares" else "amount_texts")
+		if kind not in ["shares", "amounts"] or not mapping is Dictionary:
+			return {"ok": false, "reason": "InvalidReactorPlan"}
+		if mapping.size() != _enabled.size(): return {"ok": false, "reason": "ReactorModuleSetChanged"}
+		for id in mapping:
+			if id not in _enabled: return {"ok": false, "reason": "ReactorModuleSetChanged", "module": id}
+		var targets: Dictionary = {}
+		var total: Dictionary = _api.apply("zero", []).value
+		var total_bp: int = 0
+		for id in _enabled:
+			var quantity: Dictionary
+			if kind == "shares":
+				if not mapping[id] is int or mapping[id] < 0 or mapping[id] > 10000:
+					return {"ok": false, "reason": "InvalidReactorShare", "module": id}
+				total_bp += int(mapping[id])
+				if total_bp > 10000: return {"ok": false, "reason": "ReactorPlanOverCapacity"}
+				var ratio: Dictionary = _api.apply("div", [_api.apply("from_decimal", [str(mapping[id])]).value, _api.apply("from_decimal", ["10000"]).value])
+				if not ratio.ok: return ratio
+				quantity = _api.apply("mul", [capacity.value, ratio.value])
+			else:
+				if not mapping[id] is String: return {"ok": false, "reason": "InvalidReactorAmount", "module": id}
+				quantity = _api.apply("from_decimal", [mapping[id]])
+			if not quantity.ok: return {"ok": false, "reason": "InvalidReactorAmount", "module": id, "error": quantity.get("error", "")}
+			var rounded: Dictionary = _api.apply("floor", [quantity.value])
+			if not rounded.ok: return rounded
+			if strict_integer and _api.apply("compare", [rounded.value, quantity.value]).scalar != 0:
+				return {"ok": false, "reason": "InvalidReactorAmount", "module": id}
+			targets[id] = rounded.value
+			var added: Dictionary = _api.apply("add", [total, rounded.value])
+			if not added.ok: return added
+			total = added.value
+		if _api.apply("compare", [total, capacity.value]).scalar > 0: return {"ok": false, "reason": "ReactorPlanOverCapacity"}
+		next.allocations = targets
+	var result: Dictionary = _evaluate(next, _parameters, _enabled, _api, inputs.capacity, inputs.free_charge)
+	if not result.ok: return result
+	# _evaluate's legacy clipping is never allowed to change a confirmed plan.
+	for id in _enabled:
+		if _api.apply("compare", [next.allocations[id], result.state.allocations[id]]).scalar != 0:
+			return {"ok": false, "reason": "ReactorPlanOverCapacity"}
+	return result
+
+func _accepted_plan_readings() -> Dictionary:
+	if not _state.has("_capacity") or not _state.has("_factors") or not _state.has("_enabled"):
+		return {"ok": true, "capacity": null, "allocated": null, "remaining": null, "modules": [], "reason": "ReactorSnapshotUnavailable"}
+	var used: Dictionary = _api.apply("zero", []).value
+	for id in _state._enabled:
+		var total: Dictionary = _api.apply("add", [used, _state._factors[id].assigned])
+		if not total.ok: return total
+		used = total.value
+	var remaining: Dictionary = _api.apply("sub_nonnegative", [_state._capacity.value, used])
+	if not remaining.ok: return remaining
+	return _plan_readings({"capacity": _state._capacity.value, "remaining": remaining.value, "state": _state})
+
+func _plan_readings(evaluated: Dictionary) -> Dictionary:
+	var allocated: Dictionary = _api.apply("zero", [])
+	var rows: Array = []
+	for id in evaluated.state._enabled:
+		var cached: Dictionary = evaluated.state._factors[id]
+		allocated = _api.apply("add", [allocated.value, cached.assigned])
+		if not allocated.ok: return allocated
+		var effective: Dictionary = _api.apply("add", [cached.assigned, cached.free])
+		if not effective.ok: return effective
+		rows.append({"id": id, "manual": _api.apply("to_display", [cached.assigned]).text,
+			"free": _api.apply("to_display", [cached.free]).text, "effective": _api.apply("to_display", [effective.value]).text,
+			"factor": _api.apply("to_display", [cached.value]).text})
+	return {"ok": true, "capacity": _api.apply("to_display", [evaluated.capacity]).text,
+		"allocated": _api.apply("to_display", [allocated.value]).text, "remaining": _api.apply("to_display", [evaluated.remaining]).text,
+		"modules": rows}
 static func _initial(parameters: Dictionary) -> Dictionary:
 	return {"level": int(parameters.reactorInitialLevel), "allocations": {}, "free_charge": 0.0}
 
@@ -167,6 +294,7 @@ static func _capacity(state: Dictionary, parameters: Dictionary, api, capacity_f
 	return capacity
 
 static func _evaluate(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary, free_bonus: float) -> Dictionary:
+	state = state.duplicate()
 	if state.get("_distribute", false):
 		var distributed = _distribute(state, parameters, enabled, api, capacity_factor)
 		if not distributed.ok: return distributed
@@ -178,6 +306,7 @@ static func _evaluate(state: Dictionary, parameters: Dictionary, enabled: Array,
 	var one = api.apply("from_decimal", ["1"])
 	var scale = api.apply("from_decimal", [str(parameters.reactorPercentScale)])
 	var free = api.apply("from_decimal", [str(float(state.free_charge) + free_bonus)])
+	if not free.ok: return free
 	free = api.apply("mul", [free.value, capacity.value])
 	if not free.ok:
 		return free
@@ -224,6 +353,7 @@ static func _evaluate(state: Dictionary, parameters: Dictionary, enabled: Array,
 	return {"ok": true, "state": next, "capacity": capacity.value, "remaining": remaining, "factors": factors}
 
 static func _allocate(state: Dictionary, module: String, requested: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
+	state = state.duplicate()
 	if module not in enabled:
 		return {"ok": false, "reason": "ReactorModuleLocked"}
 	var value = api.apply("floor", [requested])
@@ -248,6 +378,7 @@ static func _allocate(state: Dictionary, module: String, requested: Dictionary, 
 	return {"ok": true, "state": next}
 
 static func _distribute(state: Dictionary, parameters: Dictionary, enabled: Array, api, capacity_factor: Dictionary) -> Dictionary:
+	state = state.duplicate()
 	if enabled.is_empty():
 		return {"ok": false, "reason": "ReactorModuleLocked"}
 	var current = _capacity(state, parameters, api, capacity_factor)

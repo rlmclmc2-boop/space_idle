@@ -15,6 +15,8 @@ var _features: Dictionary = {}
 var _factors: Dictionary = {}
 var _dirty_jobs: Array = []
 var _api
+var _member_fact_cache: Dictionary = {}
+var _member_requirement_cache: Dictionary = {}
 
 func save_state() -> Dictionary:
 	return {"members": _members.duplicate(true)}
@@ -33,6 +35,8 @@ func restore_state(state: Dictionary) -> Dictionary:
 		if not comparison.get("ok", false) or int(comparison.scalar) < 0:
 			return {"ok": false, "reason": "InvalidCrewExperience"}
 	_members = state.members.duplicate(true)
+	_member_fact_cache.clear()
+	_member_requirement_cache.clear()
 	_factors = {}
 	_dirty_jobs = FACTOR_JOBS.keys()
 	return {"ok": true}
@@ -216,6 +220,40 @@ func advance_jobs(ids: Array, dt: float) -> Array:
 		elif attempt.job == "jewel_auto": requests.append({"module": "enhancement", "count": 1})
 		elif attempt.job == "reactor_upgrade": requests.append({"module": "reactor", "count": 1, "automatic": true})
 	return requests
+
+## Detached facts; elapsed job clocks do not invalidate experience formatting.
+func member_facts(ids: Array = []) -> Array:
+	var rows: Array = []
+	for id in (_definitions.keys() if ids.is_empty() else ids):
+		if not _definitions.has(id): continue
+		if not _available.get(id, false):
+			if not ids.is_empty(): rows.append({"id": id, "name": str(_definitions[id].name), "available": false, "reason": "CrewLocked"})
+			continue
+		var member: Dictionary = _members[id]
+		var signature := {"level": member.level, "exp": member.exp, "kind": member.kind,
+			"target": member.target, "mode": member.mode, "enabled": experience_enabled()}
+		if not _member_fact_cache.has(id) or _member_fact_cache[id].signature != signature:
+			var required = null
+			var fraction = null
+			if experience_enabled() and int(member.level) < 9223372036854775807:
+				if not _member_requirement_cache.has(id) or _member_requirement_cache[id].level != member.level:
+					var cost: Dictionary = _experience_cost(int(member.level), 1, _rules, _api)
+					_member_requirement_cache[id] = {"level": member.level, "cost": cost,
+						"text": _api.apply("to_display", [cost.value]).text if cost.ok else null}
+				var cost: Dictionary = _member_requirement_cache[id].cost
+				if cost.ok:
+					required = _member_requirement_cache[id].text
+					var ratio: Dictionary = _api.apply("to_ratio", [member.exp, cost.value])
+					if ratio.ok and is_finite(float(ratio.scalar)): fraction = clampf(float(ratio.scalar), 0.0, 1.0)
+			var row := {"id": id, "name": str(_definitions[id].name), "available": true, "reason": "",
+				"level": int(member.level), "experience_enabled": experience_enabled(),
+				"experience": _api.apply("to_display", [member.exp]).text,
+				"experience_required": required, "experience_fraction": fraction,
+				"kind": str(member.kind), "target": str(member.target), "mode": str(member.mode),
+				"reservation_reason": "HyperspaceCrewReserved" if member.kind == "hyperspace" else ""}
+			_member_fact_cache[id] = {"signature": signature, "row": row}
+		rows.append(_member_fact_cache[id].row.duplicate(true))
+	return rows
 
 func member_options(ids: Array = []) -> Array:
 	var rows: Array = []

@@ -1,0 +1,330 @@
+{
+  "source_commit": "344a1bd4e51c08c2b18dfd6f1a2a965a866d63e5",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "12 operations, parameter/source preview invalidation and insufficient rejection",
+    "guaranteed maximum and canonical quote; modernized24to30",
+    "paid no-promotion then exactly1 tier promotion",
+    "add affix, directed replacement, lock, reroll preserves locked row",
+    "omen on/off; ultimate/restore preserves extra and blocks other edits",
+    "seen/collection and targeted legend with slots/affixes retained, parameter range and reroll result",
+    "claim d7 then add slot1to2, sealed rejection",
+    "same operation record replay no duplicate debit and conflict signature rejection",
+    "B research summary adds draft on slider update"
+  ],
+  "images": [
+    {
+      "file": "scene-added-hanging-slot-1440x900.png",
+      "family": "scene",
+      "case": "scene-added-hanging-slot",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 99,
+        "inner": 0
+      },
+      "sha256": "f52f6650b2f16452bb423b15c58217d82336aac14c743e01362aad08e2d97e50"
+    },
+    {
+      "file": "scene-directed-affix-replacement-1440x900.png",
+      "family": "scene",
+      "case": "scene-directed-affix-replacement",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 80,
+        "inner": 0
+      },
+      "sha256": "676a312dd8f6e18850d7e614cf1f449ff0cbec69ce5c651721c9730567db0e36"
+    },
+    {
+      "file": "scene-directed-legend-keeps-loadout-1440x900.png",
+      "family": "scene",
+      "case": "scene-directed-legend-keeps-loadout",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 101,
+        "inner": 0
+      },
+      "sha256": "d5fd7507af7f1bdaca8792de2a99aada4f4b3e3ef0aac664b34312e60343763d"
+    },
+    {
+      "file": "scene-directed-legend-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-directed-legend-lower",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 265,
+        "inner": 0
+      },
+      "sha256": "51576c0dcb930867c633eede9d5f94c8f3e16292f01e5e72b7f78b9a14bc51a0"
+    },
+    {
+      "file": "scene-guaranteed-maximum-1440x900.png",
+      "family": "scene",
+      "case": "scene-guaranteed-maximum",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 10,
+        "inner": 0
+      },
+      "sha256": "2fd8cab2ed8589305e07e08c697a215e18fa8ad897e632d61a003f38b84f9ac7"
+    },
+    {
+      "file": "scene-insufficient-preview-1440x900.png",
+      "family": "scene",
+      "case": "scene-insufficient-preview",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "58d618e12cf91180f79c84d865046df948433b5dc602572e6c63d1fe5ad711a9"
+    },
+    {
+      "file": "scene-legend-collection-1440x900.png",
+      "family": "scene",
+      "case": "scene-legend-collection",
+      "route": "hyperspace/legends",
+      "scroll": {
+        "outer": 80,
+        "inner": 0
+      },
+      "sha256": "f56b15c334909551f01376402fa334001a0eb88f25336ba3ed661cd6bccef28b"
+    },
+    {
+      "file": "scene-legend-parameter-reroll-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-legend-parameter-reroll-lower",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 265,
+        "inner": 0
+      },
+      "sha256": "ba830abc54fdb5cf06ef8ea5a9948da3ca7ee7617303dde844a1a54a7527c4cc"
+    },
+    {
+      "file": "scene-legend-parameter-reroll-1440x900.png",
+      "family": "scene",
+      "case": "scene-legend-parameter-reroll",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 265,
+        "inner": 0
+      },
+      "sha256": "ba830abc54fdb5cf06ef8ea5a9948da3ca7ee7617303dde844a1a54a7527c4cc"
+    },
+    {
+      "file": "scene-lock-and-new-quote-1440x900.png",
+      "family": "scene",
+      "case": "scene-lock-and-new-quote",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 80,
+        "inner": 0
+      },
+      "sha256": "29b12a8afa2c76ce5e792888e13cb99d79d8146b3ce3b003bca6845c8f93e5eb"
+    },
+    {
+      "file": "scene-modernized-1440x900.png",
+      "family": "scene",
+      "case": "scene-modernized",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 10,
+        "inner": 0
+      },
+      "sha256": "b9ab0eb37d594fdd84ea247833b5d67363d3c4bb78362b7d8dfaba68ae3616bc"
+    },
+    {
+      "file": "scene-paid-not-promoted-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-paid-not-promoted-lower",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 80,
+        "inner": 0
+      },
+      "sha256": "48c3c3900770a1df98d742e446cb4915b6339cd1f1d30b5da106c615813eb0de"
+    },
+    {
+      "file": "scene-paid-not-promoted-1440x900.png",
+      "family": "scene",
+      "case": "scene-paid-not-promoted",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 10,
+        "inner": 0
+      },
+      "sha256": "2b050563328e656be46eeaec453296c58e6cb0fa0e6915bb2269de7d7610f7df"
+    },
+    {
+      "file": "scene-restored-keeps-extra-1440x900.png",
+      "family": "scene",
+      "case": "scene-restored-keeps-extra",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 80,
+        "inner": 0
+      },
+      "sha256": "6c4a07eb3d00cbaad54a233019cebab20f3c824f0fce5290efb0c1cd3b1597f5"
+    },
+    {
+      "file": "work-added-hanging-slot-1440x900.png",
+      "family": "work",
+      "case": "work-added-hanging-slot",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 146
+      },
+      "sha256": "543944d586cf60b718d20ae9d5f72cd6da067331e045ed5d7b77ab7a688a91d4"
+    },
+    {
+      "file": "work-directed-affix-replacement-1440x900.png",
+      "family": "work",
+      "case": "work-directed-affix-replacement",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 154
+      },
+      "sha256": "f0a635925577879ed6977fdc2029e8ba20d98a92751c4589d6d952f35b8220ba"
+    },
+    {
+      "file": "work-directed-legend-keeps-loadout-1440x900.png",
+      "family": "work",
+      "case": "work-directed-legend-keeps-loadout",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 183
+      },
+      "sha256": "2a9f53e0dd5ff15ece70093c3219477d63600dfcf3eeda52196d41bd05d5c8ea"
+    },
+    {
+      "file": "work-directed-legend-lower-1440x900.png",
+      "family": "work",
+      "case": "work-directed-legend-lower",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 346
+      },
+      "sha256": "44d627218c34212915410bb4c9150044ec17d7a7963849d067c90babf720f69d"
+    },
+    {
+      "file": "work-guaranteed-maximum-1440x900.png",
+      "family": "work",
+      "case": "work-guaranteed-maximum",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 157
+      },
+      "sha256": "42f0b885a3284a1d3d7c37dc38e0d2a4c4a77b528350e5a1cfb1b4991e725a14"
+    },
+    {
+      "file": "work-insufficient-preview-1440x900.png",
+      "family": "work",
+      "case": "work-insufficient-preview",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 5
+      },
+      "sha256": "1d54a9dbedcd8ce158d37b2c50a713d7a839f4f2d698ea5bbb18ad6bccf4859a"
+    },
+    {
+      "file": "work-legend-collection-1440x900.png",
+      "family": "work",
+      "case": "work-legend-collection",
+      "route": "hyperspace/legends",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "e0ee9427ac39e18f8af95fcfce05626e9d997295af3da155146a9390eb3fdaeb"
+    },
+    {
+      "file": "work-legend-parameter-reroll-lower-1440x900.png",
+      "family": "work",
+      "case": "work-legend-parameter-reroll-lower",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 346
+      },
+      "sha256": "44ce2ccc623c7ef49497900a89a425db9e072823675df3195b4c2b4b90931ea4"
+    },
+    {
+      "file": "work-legend-parameter-reroll-1440x900.png",
+      "family": "work",
+      "case": "work-legend-parameter-reroll",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 346
+      },
+      "sha256": "44ce2ccc623c7ef49497900a89a425db9e072823675df3195b4c2b4b90931ea4"
+    },
+    {
+      "file": "work-lock-and-new-quote-1440x900.png",
+      "family": "work",
+      "case": "work-lock-and-new-quote",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 154
+      },
+      "sha256": "bf4333afbc0acc2ce4a3e9de75591e2978bbd7cc378cd2b876ae54b4d3da6ee8"
+    },
+    {
+      "file": "work-modernized-1440x900.png",
+      "family": "work",
+      "case": "work-modernized",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 154
+      },
+      "sha256": "5aa391ecb4e875726122233dcee39634ecfbd6843cfe34701d05fc1c7968b17c"
+    },
+    {
+      "file": "work-paid-not-promoted-lower-1440x900.png",
+      "family": "work",
+      "case": "work-paid-not-promoted-lower",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 162
+      },
+      "sha256": "f981f8240b04e979ff7c5eafd2acbe40cb9314f4279d14eec7711ad9fd6add64"
+    },
+    {
+      "file": "work-paid-not-promoted-1440x900.png",
+      "family": "work",
+      "case": "work-paid-not-promoted",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 154
+      },
+      "sha256": "b5dab0162c38e7152851770e5789bff2a5e1ced7e2206d94201bb0f45720e151"
+    },
+    {
+      "file": "work-restored-keeps-extra-1440x900.png",
+      "family": "work",
+      "case": "work-restored-keeps-extra",
+      "route": "hyperspace/forge",
+      "scroll": {
+        "outer": 0,
+        "inner": 154
+      },
+      "sha256": "cd4fd936cc89c0a648c32d31f5a8d3a6633449c6ca9a59ed451906a362c0902b"
+    }
+  ]
+}

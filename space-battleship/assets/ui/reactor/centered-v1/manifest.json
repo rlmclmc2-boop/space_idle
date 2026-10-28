@@ -1,0 +1,118 @@
+{
+  "contract_version": 1,
+  "status": "draft",
+  "source": "image_gen.imagegen, stopped static bodies with explicit inward sockets",
+  "source_output": "/workspace/generated_images/exec-d7a8735b-477d-4869-8c2d-fe69e45994b5.png",
+  "resource": {
+    "path": "res://assets/ui/reactor/centered-v1/static-bodies.png",
+    "canvas_px": [
+      1536,
+      1024
+    ],
+    "sha256": "d16dc5a5b76b044256eeb10dd287ef7aabb1f67d10e62929f3325692072739d3",
+    "alpha_range": [
+      0,
+      254
+    ]
+  },
+  "consumer": "src/ui/reactor_stage.gd REGIONS/SOURCE_PORTS/_centre/_ports",
+  "coordinates": "atlas pixels from full image top-left; page coordinates808x900; uniform scale only",
+  "port_status": "visible mouth coordinates recorded in SOURCE_PORTS; insertion depth16 source pixels; common face transforms for tube/flow; visual review pending",
+  "asset_regions": {
+    "core": {
+      "atlas_region_px": [
+        0,
+        0,
+        540,
+        512
+      ],
+      "visible_rect_px": [
+        30,
+        25,
+        486,
+        470
+      ],
+      "visible_bounds_method": "alpha>128, analysis only; original PNG unchanged",
+      "layer": "core_housing",
+      "module_id": null,
+      "anchors_and_layout": "consumer SOURCE_PORTS and uniform source-to-page transform; not backend fields",
+      "unverified": "pixel normal/occlusion/envelope and real-host operation pending"
+    },
+    "weapons": {
+      "atlas_region_px": [
+        546,
+        55,
+        478,
+        457
+      ],
+      "visible_rect_px": [
+        554,
+        81,
+        462,
+        416
+      ],
+      "visible_bounds_method": "alpha>128, analysis only; original PNG unchanged",
+      "layer": "device",
+      "module_id": "weapons",
+      "anchors_and_layout": "consumer SOURCE_PORTS and uniform source-to-page transform; not backend fields",
+      "unverified": "pixel normal/occlusion/envelope and real-host operation pending"
+    },
+    "defence": {
+      "atlas_region_px": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "visible_rect_px": [
+        1053,
+        39,
+        454,
+        468
+      ],
+      "visible_bounds_method": "alpha>128, analysis only; original PNG unchanged",
+      "layer": "device",
+      "module_id": "defence",
+      "anchors_and_layout": "consumer SOURCE_PORTS and uniform source-to-page transform; not backend fields",
+      "unverified": "pixel normal/occlusion/envelope and real-host operation pending"
+    },
+    "smelting": {
+      "atlas_region_px": [
+        0,
+        512,
+        536,
+        512
+      ],
+      "visible_rect_px": [
+        45,
+        527,
+        470,
+        447
+      ],
+      "visible_bounds_method": "alpha>128, analysis only; original PNG unchanged",
+      "layer": "device",
+      "module_id": "smelting",
+      "anchors_and_layout": "consumer SOURCE_PORTS and uniform source-to-page transform; not backend fields",
+      "unverified": "pixel normal/occlusion/envelope and real-host operation pending"
+    },
+    "condensation": {
+      "atlas_region_px": [
+        540,
+        512,
+        484,
+        512
+      ],
+      "visible_rect_px": [
+        554,
+        553,
+        450,
+        412
+      ],
+      "visible_bounds_method": "alpha>128, analysis only; original PNG unchanged",
+      "layer": "device",
+      "module_id": "condensation",
+      "anchors_and_layout": "consumer SOURCE_PORTS and uniform source-to-page transform; not backend fields",
+      "unverified": "pixel normal/occlusion/envelope and real-host operation pending"
+    }
+  }
+}

@@ -1,0 +1,527 @@
+{
+  "pageerrors": [],
+  "checks": [
+    {
+      "family": "scene",
+      "route": "equipment",
+      "visible_target": "[data-action=equip-compare]",
+      "target_bounds": {
+        "x": 702.984375,
+        "y": 795,
+        "width": 74.015625,
+        "height": 37
+      }
+    },
+    {
+      "family": "scene",
+      "route": "equipment/hulls",
+      "visible_target": "[data-action=m2-ship-confirm]",
+      "target_bounds": {
+        "x": 33,
+        "y": 776.5625,
+        "width": 136.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "scene",
+      "route": "equipment/batch",
+      "visible_target": "[data-action=m2-batch-execute]",
+      "target_bounds": {
+        "x": 653.3125,
+        "y": 765.984375,
+        "width": 102.6875,
+        "height": 38
+      }
+    },
+    {
+      "family": "scene",
+      "route": "equipment/attributes",
+      "visible_target": ".attribute-temporary",
+      "target_bounds": {
+        "x": 33,
+        "y": 512.25,
+        "width": 742,
+        "height": 332.5625
+      }
+    },
+    {
+      "family": "scene",
+      "route": "enhancement",
+      "visible_target": "[data-enhance-effect=deferred]",
+      "target_bounds": {
+        "x": 437,
+        "y": 589.96875,
+        "width": 338,
+        "height": 203.6875
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/routes",
+      "visible_target": "[data-action=task-single-start]",
+      "target_bounds": {
+        "x": 422,
+        "y": 720.46875,
+        "width": 58,
+        "height": 31
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/warehouse",
+      "visible_target": ".inventory-row:last-child",
+      "target_bounds": {
+        "x": 34,
+        "y": 691,
+        "width": 740,
+        "height": 66
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/hanging",
+      "visible_target": "[data-action=hanging-reset]",
+      "target_bounds": {
+        "x": 461.203125,
+        "y": 808.59375,
+        "width": 52.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/protection",
+      "visible_target": "[data-action=store-presets]",
+      "target_bounds": {
+        "x": 176.015625,
+        "y": 775.59375,
+        "width": 100.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/filter",
+      "visible_target": "[data-action=filter2-apply]",
+      "target_bounds": {
+        "x": 287.171875,
+        "y": 500,
+        "width": 94,
+        "height": 34
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/forge",
+      "visible_target": "[data-action=forge2-preview]",
+      "target_bounds": {
+        "x": 373.1875,
+        "y": 689.890625,
+        "width": 127,
+        "height": 34
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/formation",
+      "visible_target": "[data-action=formation-preview]",
+      "target_bounds": {
+        "x": 177.015625,
+        "y": 689,
+        "width": 100.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/materials",
+      "visible_target": "#exchange-amount",
+      "target_bounds": {
+        "x": 153.015625,
+        "y": 444.390625,
+        "width": 150,
+        "height": 39.59375
+      }
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/legends",
+      "visible_target": ".legend-catalog article:last-child",
+      "target_bounds": {
+        "x": 537.65625,
+        "y": 621.59375,
+        "width": 237.328125,
+        "height": 223
+      }
+    },
+    {
+      "family": "scene",
+      "route": "settings/preferences",
+      "visible_target": "#pref-interval",
+      "target_bounds": {
+        "x": 508.015625,
+        "y": 357,
+        "width": 100,
+        "height": 35
+      }
+    },
+    {
+      "family": "scene",
+      "route": "settings/save",
+      "visible_target": ".maintenance-summary",
+      "target_bounds": {
+        "x": 33,
+        "y": 708.6875,
+        "width": 742,
+        "height": 116
+      }
+    },
+    {
+      "family": "scene",
+      "route": "settings/danger/new",
+      "visible_target": "[data-action=danger-preview]",
+      "target_bounds": {
+        "x": 54,
+        "y": 432.765625,
+        "width": 126,
+        "height": 43.1875
+      }
+    },
+    {
+      "family": "scene",
+      "route": "archive/tutorial",
+      "visible_target": ".archive-paper",
+      "target_bounds": {
+        "x": 233.078125,
+        "y": 292,
+        "width": 541.921875,
+        "height": 350
+      }
+    },
+    {
+      "family": "scene",
+      "route": "archive/intel",
+      "visible_target": ".intel-paper",
+      "target_bounds": {
+        "x": 233.078125,
+        "y": 292,
+        "width": 541.921875,
+        "height": 390
+      }
+    },
+    {
+      "family": "scene",
+      "route": "archive/notifications",
+      "visible_target": ".notification-list article:last-child",
+      "target_bounds": {
+        "x": 33,
+        "y": 488,
+        "width": 742,
+        "height": 121
+      }
+    },
+    {
+      "family": "scene",
+      "route": "archive/statistics",
+      "visible_target": "table",
+      "target_bounds": {
+        "x": 33,
+        "y": 312,
+        "width": 742,
+        "height": 180
+      }
+    },
+    {
+      "family": "scene",
+      "save_status": "saved",
+      "text": "✓\n当前进度 · 保存状态\n最近进度已写入\n\n最近保存14:32 · 当前进度已保存"
+    },
+    {
+      "family": "scene",
+      "save_status": "dirty",
+      "text": "◷\n当前进度 · 保存状态\n有未保存进度\n\n最近保存14:32；此后的进度还未保存"
+    },
+    {
+      "family": "scene",
+      "save_status": "queued",
+      "text": "◷\n当前进度 · 保存状态\n保存已排队\n\n请求已接受；磁盘写入尚未完成"
+    },
+    {
+      "family": "scene",
+      "save_status": "writing",
+      "text": "◷\n当前进度 · 保存状态\n正在写入\n\n正在保存当前进度，旧有效存档仍保留"
+    },
+    {
+      "family": "scene",
+      "save_status": "failed",
+      "text": "!\n当前进度 · 保存状态\n保存失败 · 有未保存进度\n\n磁盘空间不足。旧有效文件保留，可重试或换目录。"
+    },
+    {
+      "family": "scene",
+      "save_status": "recovery",
+      "text": "!\n当前进度 · 保存状态\n恢复暂停\n\n主文件无效；等待选择有效备份。未创建新档或覆盖原文件。"
+    },
+    {
+      "family": "work",
+      "route": "equipment",
+      "visible_target": "[data-action=equip-compare]",
+      "target_bounds": {
+        "x": 702.984375,
+        "y": 795,
+        "width": 74.015625,
+        "height": 37
+      }
+    },
+    {
+      "family": "work",
+      "route": "equipment/hulls",
+      "visible_target": "[data-action=m2-ship-confirm]",
+      "target_bounds": {
+        "x": 31,
+        "y": 778.90625,
+        "width": 136.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "work",
+      "route": "equipment/batch",
+      "visible_target": "[data-action=m2-batch-execute]",
+      "target_bounds": {
+        "x": 655.3125,
+        "y": 809.328125,
+        "width": 102.6875,
+        "height": 38
+      }
+    },
+    {
+      "family": "work",
+      "route": "equipment/attributes",
+      "visible_target": ".attribute-temporary",
+      "target_bounds": {
+        "x": 31,
+        "y": 514.59375,
+        "width": 746,
+        "height": 332.5625
+      }
+    },
+    {
+      "family": "work",
+      "route": "enhancement",
+      "visible_target": "[data-enhance-effect=deferred]",
+      "target_bounds": {
+        "x": 437,
+        "y": 591.3125,
+        "width": 340,
+        "height": 203.6875
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/routes",
+      "visible_target": "[data-action=task-single-start]",
+      "target_bounds": {
+        "x": 422,
+        "y": 750.8125,
+        "width": 58,
+        "height": 31
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/warehouse",
+      "visible_target": ".inventory-row:last-child",
+      "target_bounds": {
+        "x": 32,
+        "y": 731.34375,
+        "width": 744,
+        "height": 66
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/hanging",
+      "visible_target": "[data-action=hanging-reset]",
+      "target_bounds": {
+        "x": 438.609375,
+        "y": 810.9375,
+        "width": 52.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/protection",
+      "visible_target": "[data-action=store-presets]",
+      "target_bounds": {
+        "x": 174.015625,
+        "y": 811.9375,
+        "width": 100.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/filter",
+      "visible_target": "[data-action=filter2-apply]",
+      "target_bounds": {
+        "x": 263.40625,
+        "y": 536.34375,
+        "width": 94,
+        "height": 34
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/forge",
+      "visible_target": "[data-action=forge2-preview]",
+      "target_bounds": {
+        "x": 372.90625,
+        "y": 730.234375,
+        "width": 127,
+        "height": 34
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/formation",
+      "visible_target": "[data-action=formation-preview]",
+      "target_bounds": {
+        "x": 175.015625,
+        "y": 729.34375,
+        "width": 100.015625,
+        "height": 35
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/materials",
+      "visible_target": "#exchange-amount",
+      "target_bounds": {
+        "x": 151.015625,
+        "y": 484.734375,
+        "width": 150,
+        "height": 39.59375
+      }
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/legends",
+      "visible_target": ".legend-catalog article:last-child",
+      "target_bounds": {
+        "x": 538.328125,
+        "y": 623.9375,
+        "width": 238.671875,
+        "height": 223
+      }
+    },
+    {
+      "family": "work",
+      "route": "settings/preferences",
+      "visible_target": "#pref-interval",
+      "target_bounds": {
+        "x": 508.015625,
+        "y": 397.34375,
+        "width": 100,
+        "height": 35
+      }
+    },
+    {
+      "family": "work",
+      "route": "settings/save",
+      "visible_target": ".maintenance-summary",
+      "target_bounds": {
+        "x": 31,
+        "y": 731.03125,
+        "width": 746,
+        "height": 116
+      }
+    },
+    {
+      "family": "work",
+      "route": "settings/danger/new",
+      "visible_target": "[data-action=danger-preview]",
+      "target_bounds": {
+        "x": 52,
+        "y": 473.109375,
+        "width": 126,
+        "height": 43.1875
+      }
+    },
+    {
+      "family": "work",
+      "route": "archive/tutorial",
+      "visible_target": ".archive-paper",
+      "target_bounds": {
+        "x": 232.03125,
+        "y": 330.34375,
+        "width": 544.96875,
+        "height": 350
+      }
+    },
+    {
+      "family": "work",
+      "route": "archive/intel",
+      "visible_target": ".intel-paper",
+      "target_bounds": {
+        "x": 232.03125,
+        "y": 330.34375,
+        "width": 544.96875,
+        "height": 390
+      }
+    },
+    {
+      "family": "work",
+      "route": "archive/notifications",
+      "visible_target": ".notification-list article:last-child",
+      "target_bounds": {
+        "x": 31,
+        "y": 526.34375,
+        "width": 746,
+        "height": 121
+      }
+    },
+    {
+      "family": "work",
+      "route": "archive/statistics",
+      "visible_target": "table",
+      "target_bounds": {
+        "x": 31,
+        "y": 350.34375,
+        "width": 746,
+        "height": 180
+      }
+    },
+    {
+      "family": "work",
+      "save_status": "saved",
+      "text": "✓\n当前进度 · 保存状态\n最近进度已写入\n\n最近保存14:32 · 当前进度已保存"
+    },
+    {
+      "family": "work",
+      "save_status": "dirty",
+      "text": "◷\n当前进度 · 保存状态\n有未保存进度\n\n最近保存14:32；此后的进度还未保存"
+    },
+    {
+      "family": "work",
+      "save_status": "queued",
+      "text": "◷\n当前进度 · 保存状态\n保存已排队\n\n请求已接受；磁盘写入尚未完成"
+    },
+    {
+      "family": "work",
+      "save_status": "writing",
+      "text": "◷\n当前进度 · 保存状态\n正在写入\n\n正在保存当前进度，旧有效存档仍保留"
+    },
+    {
+      "family": "work",
+      "save_status": "failed",
+      "text": "!\n当前进度 · 保存状态\n保存失败 · 有未保存进度\n\n磁盘空间不足。旧有效文件保留，可重试或换目录。"
+    },
+    {
+      "family": "work",
+      "save_status": "recovery",
+      "text": "!\n当前进度 · 保存状态\n恢复暂停\n\n主文件无效；等待选择有效备份。未创建新档或覆盖原文件。"
+    }
+  ]
+}

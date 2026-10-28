@@ -1,0 +1,26 @@
+{
+  "executor": "/root/equipment_image_revision_replacement",
+  "tool": "image_gen__imagegen",
+  "successful_calls": 1,
+  "reference": {
+    "file": "docs/ui-redesign-plan/g1-internal/equipment-image-design/equipment-design-04.png",
+    "design_commit": "07312fcb9fc8d2d47bce771c9f7886670b8be5c9",
+    "sha256": "8b4f75a775a90a89b185f484eabcd8bc0675f781497c1828c592e3e722071f5e"
+  },
+  "prompt": {
+    "file": "assets/ui/equipment/hangar/imagegen-prompt-01.txt",
+    "sha256": "e058ceafc115659183617859cdc2abf7527c7ee75803e3be87c869f779061580"
+  },
+  "original_output": "/workspace/generated_images/exec-7bc73cd5-1c10-4c58-a023-adbfad3b89cd.png",
+  "output": {
+    "file": "assets/ui/equipment/hangar/hangar-console.png",
+    "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+    "bytes": 2185569,
+    "pixels": [
+      1188,
+      1324
+    ]
+  },
+  "processing": "Raw ImageGen PNG copied byte-for-byte; no crop/resize/compositing. Runtime texture display only: Rect2(0,85,808,815).",
+  "scope": "Static empty hangar and blank physical console surfaces only. All ships, weapons, labels, values and interactive controls are separate existing assets and real Godot controls."
+}

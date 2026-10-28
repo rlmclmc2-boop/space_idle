@@ -1,0 +1,138 @@
+{
+  "source_commit": "5e597489766adad244ab5ba72b6161f1f258ab50",
+  "viewport_css_px": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "kind": "G2 batch1 browser design evidence, not full G2/Godot/game acceptance",
+  "source_sha256": {
+    "index.html": "2066e104549d3553b9d83c735929f279321d561446ca63a25639b3b94362d3b9",
+    "style.css": "a14fb10cac7dfd787174c5e596bfdc371fee082b7162e76b682432670e814bf6",
+    "app.js": "a7b211c99d0134ae1507adee050fb4538174c9807c75cef4e89d67bf540d7ff5",
+    "scene-models.js": "d92367a4863c440804ddb22f194e5a711496f5edf01b202486d15deaf3d66700"
+  },
+  "images": [
+    {
+      "file": "scene-reactor-1440x900.png",
+      "family": "scene",
+      "case": "reactor",
+      "description": "authored devices and shared ports; final plan shown, next ordinary command is smelting 20 -> 5",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "39c0ce8e5dcb6b259f2d248f7688af471c69fe695e073260a4c805eca6dcf8dd"
+    },
+    {
+      "file": "scene-equipment-1440x900.png",
+      "family": "scene",
+      "case": "equipment",
+      "description": "full static cruiser rig, three preview mounts/five slot workpoints, current/next quote",
+      "route": "equipment",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "8ab97379d47e394e3db4f5d97fb9b150e3ebc8fc88b5bc1d8a4962fcf69ab84a"
+    },
+    {
+      "file": "scene-research-1440x900.png",
+      "family": "scene",
+      "case": "research",
+      "description": "factory background/current machine/probe, separate iron and uranium current/draft/application",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "9f0d2e8c5dab1841ccdc96fd55bd29a7f7e119aa66a7c6cd0decb8315af4ff28"
+    },
+    {
+      "file": "work-reactor-1440x900.png",
+      "family": "work",
+      "case": "reactor",
+      "description": "authored devices and shared ports; final plan shown, next ordinary command is smelting 20 -> 5",
+      "route": "reactor",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "90246933002985a474ec5d1f97c2c90dde98f793588441aac6353a35a42a4de1"
+    },
+    {
+      "file": "work-equipment-1440x900.png",
+      "family": "work",
+      "case": "equipment",
+      "description": "full static cruiser rig, three preview mounts/five slot workpoints, current/next quote",
+      "route": "equipment",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "793fb581ef18719b897f916f5f5f09dccbf6594be4c1b0e92de45075a7bc70db"
+    },
+    {
+      "file": "work-research-1440x900.png",
+      "family": "work",
+      "case": "research",
+      "description": "factory background/current machine/probe, separate iron and uranium current/draft/application",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "6ef8c89a4464e1976c692e4c1ae4c12bedfecc9e809a40dbbde114ebd11fd358"
+    },
+    {
+      "file": "work-research-drawer-1440x900.png",
+      "family": "work",
+      "case": "research-drawer",
+      "description": "six available study devices; unmet fragment/unification hidden",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "b5c4a99c11425045e4900842b8232c21a403610ca9e3e2705ed82f16528ffe08"
+    },
+    {
+      "file": "work-research-error-1440x900.png",
+      "family": "work",
+      "case": "research-error",
+      "description": "invalid iron draft retained, current iron/uranium unchanged",
+      "route": "research",
+      "scroll": {
+        "outer": 0,
+        "inner": 15
+      },
+      "sha256": "e0c3389b768c2c16d908a4a9f73e88061d76d6f65badd2abb97d7308f280951b"
+    },
+    {
+      "file": "work-crew-release-1440x900.png",
+      "family": "work",
+      "case": "crew-release",
+      "description": "Lin released, orbital dock missing worker state synchronized in related summary",
+      "route": "crew",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "715032d34f3a9933f45f4b7b06a1971e56cfce7b776c770b5f57663815086961"
+    },
+    {
+      "file": "work-tasks-independent-1440x900.png",
+      "family": "work",
+      "case": "tasks-independent",
+      "description": "browsing beam while manual pulse receipt ready and online missile task running; task objects independent",
+      "route": "hyperspace/routes",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "2cd95d754a0ab573b59dcd5bc94b97ef419df88b709f131009bb63f9ff911c3c"
+    }
+  ],
+  "browser": "151.0.7922.173"
+}

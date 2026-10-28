@@ -1,0 +1,1401 @@
+{
+  "source_sha": "c33c3e4f3e4e6d59d69c88318a836f2cfc15be23",
+  "kind": "Browser design response evidence, current contract design remains unimplemented in main",
+  "viewport": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "screenshots": [
+    {
+      "file": "scene-group-rejected.png",
+      "sha256": "4f165944455ecccd4312c6fdee60092aa43fa35859695cb757a17e3d8fe60387",
+      "description": "Ordinary owner-style group rejection preserves every current allocation; full target remains",
+      "route": "reactor",
+      "response": {
+        "reactor": {
+          "current": [
+            45,
+            35,
+            20,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": null,
+          "error": "本组金额未接纳：武器目标校验拒绝；整组实际供能保持，草稿保留。"
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "800000",
+            "120000"
+          ],
+          "mode": "once",
+          "intent": 25,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "scene-group-accepted.png",
+      "sha256": "837ad271d2237260dbfbc012ba993488d2a350be56a54fbd4bdae89a76aec251",
+      "description": "One confirmed canonical amount mapping accepted; no UI decrement/increment sequence",
+      "route": "reactor",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "800000",
+            "120000"
+          ],
+          "mode": "once",
+          "intent": 25,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "scene-once-zero.png",
+      "sha256": "78fcbac18797a036e472f0a4ce0c452475c4a8627585420cba6f215a09e7b0c9",
+      "description": "Once 0% yields literal zero drafts; current amounts not changed by preview",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "once",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "scene-following-zero-rejected.png",
+      "sha256": "37d3501e8214b09a45c21c46408156cee17b1c0b2eb277c37d4f612574c1f7eb",
+      "description": "Following 0% rejected and button disabled under existing minimum_ratio .001",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "scene-following-minimum.png",
+      "sha256": "a474d061c38e47e353820bdeb97445ec3be40aa01e7aafd192294f7a58cfe351",
+      "description": "Following .1% accepted; current investments remain, sample 3200/480 is not immediate investment",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0.1,
+          "automatic": true,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "scene-following-close.png",
+      "sha256": "882fb3daf8cb97d86f7571e558cc8f360e6a24da75ac4c45586af02e01d1f076",
+      "description": "Close while draft ratio is zero uses accepted .1% and preserves both current investments",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "scene-task-priority.png",
+      "sha256": "94a5933fb65cc9426dc0df71cc44ff7843d745781a80f1a4dab0378ef86303d0",
+      "description": "Compact four-route selector and current manual/online task progress+controls before secondary energy",
+      "route": "hyperspace/routes",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "7.2",
+            "duration": null,
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "在线任务已开始。",
+          "rewardCase": "drone"
+        },
+        "filter": null
+      }
+    },
+    {
+      "file": "scene-current-blue-clear.png",
+      "sha256": "d1d9e62eba73311437e0b940a09bbba16759e8b5817ee243ad0a42f7a6b6664f",
+      "description": "Policy set using ordinary filter-page controls and applied before default-drone completion response",
+      "route": "hyperspace/filter",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "7.2",
+            "duration": null,
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "在线任务已开始。",
+          "rewardCase": "drone"
+        },
+        "filter": {
+          "version": 2,
+          "enabled": true,
+          "mode": "all",
+          "action": "clear_matches",
+          "conditions": [
+            {
+              "field": "quality",
+              "value": "blue"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "file": "scene-default-reward-filtered.png",
+      "sha256": "ee43c835b48f86caf32a9b1a291c64dbb857a5da89b2a44607f04204e0c752b0",
+      "description": "Default drone fixture obeys current blue-clear policy: fixed 70 material + 2 copies, no blue entity, concise receipt",
+      "route": "hyperspace/receipt/manual",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "ready",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "18.4",
+            "duration": null,
+            "progress": 100,
+            "wave": "10 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": {
+              "materials": {
+                "degenerate_matter": "70"
+              },
+              "cores": 0,
+              "hangingCopies": {
+                "resource_collector": 2
+              },
+              "drone": null,
+              "filterSnapshot": {
+                "version": 2,
+                "enabled": true,
+                "mode": "all",
+                "action": "clear_matches",
+                "conditions": [
+                  {
+                    "field": "quality",
+                    "value": "blue"
+                  }
+                ]
+              }
+            }
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "任务完成 · 奖励待领取。",
+          "rewardCase": "drone"
+        },
+        "filter": {
+          "version": 2,
+          "enabled": true,
+          "mode": "all",
+          "action": "clear_matches",
+          "conditions": [
+            {
+              "field": "quality",
+              "value": "blue"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "file": "scene-unsupported-filter-source.png",
+      "sha256": "3422c90b5ff1cc20d40f394f44815bf822858bee43b3dc9bcb86ac7296e345e0",
+      "description": "Explicit unsupported source rejects completion; running task and pending state remain, no generic frontend filter engine",
+      "route": "hyperspace/routes",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "ready",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "18.4",
+            "duration": null,
+            "progress": 100,
+            "wave": "10 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": {
+              "materials": {
+                "degenerate_matter": "70"
+              },
+              "cores": 0,
+              "hangingCopies": {
+                "resource_collector": 2
+              },
+              "drone": null,
+              "filterSnapshot": {
+                "version": 2,
+                "enabled": true,
+                "mode": "all",
+                "action": "clear_matches",
+                "conditions": [
+                  {
+                    "field": "quality",
+                    "value": "blue"
+                  }
+                ]
+              }
+            }
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "当前过滤设置未覆盖此完成响应；任务保留进行中，未生成或替换奖励。",
+          "rewardCase": "drone"
+        },
+        "filter": {
+          "version": 2,
+          "enabled": true,
+          "mode": "any",
+          "action": "clear_matches",
+          "conditions": [
+            {
+              "field": "quality",
+              "value": "blue"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "file": "work-group-rejected.png",
+      "sha256": "e30c8b9ccd88746f3a5b454938f20d2a43924aa1ec0011e1597ea44f6d4e99b4",
+      "description": "Ordinary owner-style group rejection preserves every current allocation; full target remains",
+      "route": "reactor",
+      "response": {
+        "reactor": {
+          "current": [
+            45,
+            35,
+            20,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": null,
+          "error": "本组金额未接纳：武器目标校验拒绝；整组实际供能保持，草稿保留。"
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "800000",
+            "120000"
+          ],
+          "mode": "once",
+          "intent": 25,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "work-group-accepted.png",
+      "sha256": "9d2d236f847c95d5d176dcdc55562c6404feb4b29ac4e837b57e665e7bf8e85b",
+      "description": "One confirmed canonical amount mapping accepted; no UI decrement/increment sequence",
+      "route": "reactor",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "800000",
+            "120000"
+          ],
+          "mode": "once",
+          "intent": 25,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "work-once-zero.png",
+      "sha256": "2660b2381894c25741caf264359710a1adf1b3dc7d8042708f225a23ddd5d44a",
+      "description": "Once 0% yields literal zero drafts; current amounts not changed by preview",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "once",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "work-following-zero-rejected.png",
+      "sha256": "57e78db669c2ea97aabe853b61a92bde0e5708c0de4ee7a89158ee033b299687",
+      "description": "Following 0% rejected and button disabled under existing minimum_ratio .001",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "25"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "work-following-minimum.png",
+      "sha256": "aab2062f6bb3b33303dc607b89289acec66c54e5641d3cd8e782a7c4e11eb2bc",
+      "description": "Following .1% accepted; current investments remain, sample 3200/480 is not immediate investment",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0.1,
+          "automatic": true,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "work-following-close.png",
+      "sha256": "bf1f0db6f68735fd2a1f3f9afa6ced5ddfaf8d2f8be232324a2715506447a48f",
+      "description": "Close while draft ratio is zero uses accepted .1% and preserves both current investments",
+      "route": "research",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": null,
+        "filter": null
+      }
+    },
+    {
+      "file": "work-task-priority.png",
+      "sha256": "91ac98aaa8ea1a479bd38096e000961f2d81a19908ddaa516b5252bc8fe17e67",
+      "description": "Compact four-route selector and current manual/online task progress+controls before secondary energy",
+      "route": "hyperspace/routes",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "7.2",
+            "duration": null,
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "在线任务已开始。",
+          "rewardCase": "drone"
+        },
+        "filter": null
+      }
+    },
+    {
+      "file": "work-current-blue-clear.png",
+      "sha256": "949e7c16eeb124f45ff1b1dedc9eb93cd333202077cac56f7311e5e32602ff3a",
+      "description": "Policy set using ordinary filter-page controls and applied before default-drone completion response",
+      "route": "hyperspace/filter",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "7.2",
+            "duration": null,
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "在线任务已开始。",
+          "rewardCase": "drone"
+        },
+        "filter": {
+          "version": 2,
+          "enabled": true,
+          "mode": "all",
+          "action": "clear_matches",
+          "conditions": [
+            {
+              "field": "quality",
+              "value": "blue"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "file": "work-default-reward-filtered.png",
+      "sha256": "5fea0b50aa9ce608f55d70997d65a3f37482da3405103a4dd53827d345583564",
+      "description": "Default drone fixture obeys current blue-clear policy: fixed 70 material + 2 copies, no blue entity, concise receipt",
+      "route": "hyperspace/receipt/manual",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "ready",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "18.4",
+            "duration": null,
+            "progress": 100,
+            "wave": "10 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": {
+              "materials": {
+                "degenerate_matter": "70"
+              },
+              "cores": 0,
+              "hangingCopies": {
+                "resource_collector": 2
+              },
+              "drone": null,
+              "filterSnapshot": {
+                "version": 2,
+                "enabled": true,
+                "mode": "all",
+                "action": "clear_matches",
+                "conditions": [
+                  {
+                    "field": "quality",
+                    "value": "blue"
+                  }
+                ]
+              }
+            }
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "任务完成 · 奖励待领取。",
+          "rewardCase": "drone"
+        },
+        "filter": {
+          "version": 2,
+          "enabled": true,
+          "mode": "all",
+          "action": "clear_matches",
+          "conditions": [
+            {
+              "field": "quality",
+              "value": "blue"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "file": "work-unsupported-filter-source.png",
+      "sha256": "67340099bceca8d94f45b8bf78afcd0a7bae714d13753b8144612df08ffa1707",
+      "description": "Explicit unsupported source rejects completion; running task and pending state remain, no generic frontend filter engine",
+      "route": "hyperspace/routes",
+      "response": {
+        "reactor": {
+          "current": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "draft": [
+            60,
+            35,
+            5,
+            0
+          ],
+          "lastPlan": {
+            "kind": "amounts",
+            "amount_texts": {
+              "weapons": "60",
+              "defence": "35",
+              "smelting": "5"
+            }
+          },
+          "error": ""
+        },
+        "research": {
+          "current": [
+            "800000",
+            "120000"
+          ],
+          "draft": [
+            "0",
+            "0"
+          ],
+          "mode": "follow",
+          "intent": 0,
+          "automatic": false,
+          "acceptedRatio": "0.1"
+        },
+        "tasks": {
+          "manual": {
+            "status": "ready",
+            "route": "alpha",
+            "run": "sample-run-1",
+            "round": "sample-round-1",
+            "kind": "manual",
+            "mode": "manual",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 19,
+            "work": "18.4",
+            "duration": null,
+            "progress": 100,
+            "wave": "10 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": {
+              "materials": {
+                "degenerate_matter": "70"
+              },
+              "cores": 0,
+              "hangingCopies": {
+                "resource_collector": 2
+              },
+              "drone": null,
+              "filterSnapshot": {
+                "version": 2,
+                "enabled": true,
+                "mode": "all",
+                "action": "clear_matches",
+                "conditions": [
+                  {
+                    "field": "quality",
+                    "value": "blue"
+                  }
+                ]
+              }
+            }
+          },
+          "online": {
+            "status": "running",
+            "route": "alpha",
+            "run": "sample-run-2",
+            "round": "sample-round-1",
+            "kind": "online",
+            "mode": "single",
+            "crewId": null,
+            "crewName": null,
+            "crewLevel": null,
+            "level": 18,
+            "work": "9",
+            "duration": "18",
+            "progress": 50,
+            "wave": "4 / 10",
+            "returnTarget": "第40关 · 驻守点3",
+            "reward": null
+          },
+          "feedback": "当前过滤设置未覆盖此完成响应；任务保留进行中，未生成或替换奖励。",
+          "rewardCase": "drone"
+        },
+        "filter": {
+          "version": 2,
+          "enabled": true,
+          "mode": "any",
+          "action": "clear_matches",
+          "conditions": [
+            {
+              "field": "quality",
+              "value": "blue"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "browser": "151.0.7922.173"
+}

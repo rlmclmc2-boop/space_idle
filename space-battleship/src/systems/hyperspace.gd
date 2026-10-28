@@ -302,8 +302,11 @@ func unlocked(highest_reached: int) -> bool:
 func routes() -> Array:
 	var result: Array = []
 	for id in _routes:
-		result.append({"route": id, "weapon": _routes[id].weapon,
-			"cleared": int(_history.get(id, {}).get("cleared", 0))})
+		var record: Dictionary = _history.get(id, {})
+		var cleared: int = int(record.get("cleared", 0))
+		var best = record.get("best", {}).get(cleared)
+		result.append({"route": id, "weapon": _routes[id].weapon, "cleared": cleared,
+			"best_time": float(best) if cleared > 0 and best != null and float(best) > 0.0 else null})
 	return result
 
 func material_ids() -> Array:
@@ -405,6 +408,12 @@ func filter_configuration() -> Dictionary:
 	return _filter.duplicate(true)
 
 func set_filter(candidate: Dictionary) -> Dictionary:
+	var checked: Dictionary = _validate_filter(candidate)
+	if not checked.ok: return checked
+	_filter = candidate.duplicate(true)
+	return {"ok": true}
+
+func _validate_filter(candidate: Dictionary) -> Dictionary:
 	if candidate.keys().size() != 5 or not candidate.has_all(["version", "enabled", "mode", "action", "conditions"]) or not candidate.version is int or candidate.version != 2:
 		return {"ok": false, "reason": "InvalidFilter"}
 	if not candidate.enabled is bool or candidate.mode not in ["all", "any"] or candidate.action not in ["keep_matches", "clear_matches"] or not candidate.conditions is Array:
@@ -428,13 +437,17 @@ func set_filter(candidate: Dictionary) -> Dictionary:
 					if str(row.effect_id) == str(condition.get("value", "")): known = true
 				if condition.keys().size() != 2 or not known: return {"ok": false, "reason": "InvalidFilter"}
 			_: return {"ok": false, "reason": "InvalidFilter"}
-	_filter = candidate.duplicate(true)
 	return {"ok": true}
 
 func export_filter() -> String:
 	return "SPACE-FILTER-v2:" + Marshalls.utf8_to_base64(JSON.stringify(_filter, "", true))
 
 func import_filter(value: String) -> Dictionary:
+	var preview: Dictionary = preview_filter_import(value)
+	if not preview.ok: return preview
+	return set_filter(preview.candidate)
+
+func preview_filter_import(value: String) -> Dictionary:
 	if value.length() > int(_parameters.maximum_filter_string_length) or not value.begins_with("SPACE-FILTER-v2:"):
 		return {"ok": false, "reason": "InvalidFilterShare"}
 	var encoded: String = value.trim_prefix("SPACE-FILTER-v2:")
@@ -452,7 +465,10 @@ func import_filter(value: String) -> Dictionary:
 				if not condition is Dictionary: continue
 				for field in ["value", "tier"]:
 					if condition.get(field) is float and float(condition[field]) == floorf(float(condition[field])): condition[field] = int(condition[field])
-	return set_filter(parsed) if parsed is Dictionary else {"ok": false, "reason": "InvalidFilterShare"}
+	if not parsed is Dictionary: return {"ok": false, "reason": "InvalidFilterShare"}
+	var checked: Dictionary = _validate_filter(parsed)
+	if not checked.ok: return checked
+	return {"ok": true, "candidate": parsed.duplicate(true)}
 
 func _filter_matches(drone: Dictionary) -> bool:
 	if not _filter.enabled: return true

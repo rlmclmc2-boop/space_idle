@@ -1,0 +1,43 @@
+extends SceneTree
+var panel
+var clock: float = 0.0
+var active: bool = true
+var model: Dictionary = {"ok":true,"level":1,"capacity":"100","remaining":"0","load":0.7,"can_allocate":true,"purchase_quote":{"cost_text":"10铀","can_purchase":false},"modules":[{"id":"weapons","enabled":true,"factor":"1.19","effective":"40","ratio":0.4,"load":0.7},{"id":"defence","enabled":true,"factor":"1.15","effective":"30","ratio":0.3,"load":0.6},{"id":"smelting","enabled":true,"factor":"1.11","effective":"20","ratio":0.2,"load":0.5},{"id":"condensation","enabled":true,"factor":"1.06","effective":"10","ratio":0.1,"load":0.4}]}
+func _initialize():
+ call_deferred("run")
+func _process(dt):
+ if active: clock += dt
+ return false
+func run():
+ root.size=Vector2i(808,900)
+ root.content_scale_size=Vector2i(808,900)
+ panel=load("res://src/ui/reactor_scene.gd").new()
+ panel.bind_presentation(func():return model,func():return {"game_time":clock,"paused":not active})
+ root.add_child(panel)
+ for i in 15: await process_frame
+ await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png("/tmp/space-idle-native472/reactor-scene-fixture.png")
+ var first=root.get_texture().get_image()
+ await create_timer(0.6).timeout
+ await RenderingServer.frame_post_draw
+ var second=root.get_texture().get_image()
+ var changes={}
+ for id in panel._stage._fields:
+  var rect:Rect2i=panel._stage._fields[id].get_global_rect()
+  var count=0
+  for y in range(rect.position.y,rect.end.y):
+   for x in range(rect.position.x,rect.end.x):
+    if first.get_pixel(x,y).is_equal_approx(second.get_pixel(x,y))==false:count+=1
+  changes[id]=count
+ print("FIELD_PIXEL_CHANGES ",JSON.stringify(changes))
+ active=false
+ for i in 3:await process_frame
+ var before=panel._stage.diagnostics.duplicate()
+ for i in 8:await process_frame
+ assert(panel._stage.diagnostics.field_updates==before.field_updates)
+ panel.hide()
+ var reads=panel.presentation_counts.duplicate()
+ for i in 8:await process_frame
+ assert(panel.presentation_counts==reads)
+ print("VISUAL_FIXTURE_ONLY paused fields and hidden scene checks passed; not gameplay evidence")
+ quit()

@@ -1,0 +1,140 @@
+{
+  "source_commit": "57ae32c3dd18d59ac19a7c953fe10b2d14b1d766",
+  "pageerrors": [],
+  "records": [
+    {
+      "family": "scene",
+      "route": "equipment",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "scene",
+      "route": "enhancement",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "scene",
+      "route": "hyperspace/warehouse",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "scene",
+      "route": "settings/save",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "scene",
+      "research_default_rects": [
+        {
+          "name": "research-device-status",
+          "bottom": 825.1875
+        },
+        {
+          "name": "investment-console",
+          "bottom": 823.375
+        }
+      ]
+    },
+    {
+      "family": "work",
+      "route": "equipment",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        },
+        {
+          "width": 746,
+          "scrollWidth": 746
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "work",
+      "route": "enhancement",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        },
+        {
+          "width": 746,
+          "scrollWidth": 746
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "work",
+      "route": "hyperspace/warehouse",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        },
+        {
+          "width": 746,
+          "scrollWidth": 746
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "work",
+      "route": "settings/save",
+      "layout": [
+        {
+          "width": 782,
+          "scrollWidth": 782
+        },
+        {
+          "width": 746,
+          "scrollWidth": 746
+        }
+      ],
+      "first_and_last_controls_reachable": true
+    },
+    {
+      "family": "work",
+      "research_default_rects": [
+        {
+          "name": "work-sheet",
+          "bottom": 847
+        },
+        {
+          "name": "research-device-status",
+          "bottom": 846.53125
+        },
+        {
+          "name": "investment-console",
+          "bottom": 844.71875
+        }
+      ]
+    }
+  ]
+}

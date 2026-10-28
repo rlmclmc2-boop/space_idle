@@ -1,0 +1,3 @@
+# Captured stdout is an exact-byte evidence artifact.
+equipment-enhancement-probe.txt -text
+equipment-enhancement-check.txt -text

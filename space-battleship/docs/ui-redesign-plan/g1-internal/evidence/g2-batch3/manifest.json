@@ -1,0 +1,459 @@
+{
+  "source_commit": "95502e1516544752707b144dece2463b4c252cdb",
+  "viewport": [
+    1440,
+    900
+  ],
+  "scope": "Controlled enhancement browser fixtures; no native/runtime test",
+  "files": [
+    {
+      "file": "scene-enhancement-1440x900.png",
+      "sha256": "f7b8d4d5edadbb605347a7de13366b45f81729d9623a6a2c375a7aec58171275",
+      "state": {
+        "family": "scene",
+        "route": "enhancement",
+        "enhancement": {
+          "paid": 27,
+          "extra": 3,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "defence": [
+            "adaptation",
+            "memory",
+            "deferred"
+          ],
+          "branches": {
+            "proficiency": [
+              "A",
+              "B",
+              "A"
+            ],
+            "repeat": [
+              "A",
+              "B",
+              ""
+            ],
+            "critical": [
+              "B",
+              "",
+              ""
+            ],
+            "adaptation": [
+              "A",
+              "B",
+              ""
+            ],
+            "memory": [
+              "B",
+              "A",
+              ""
+            ],
+            "deferred": [
+              "B",
+              "",
+              ""
+            ]
+          },
+          "effect": "proficiency",
+          "node": 0,
+          "choice": "",
+          "purchaseMode": "one",
+          "funds": false,
+          "feedback": "",
+          "quoteUsed": false
+        },
+        "scroll": 0
+      }
+    },
+    {
+      "file": "scene-enhancement-lower-1440x900.png",
+      "sha256": "f7745ed602579cb2cce839e0349939547b91ec9da54a7368957f1e3066fd43a1",
+      "state": {
+        "family": "scene",
+        "route": "enhancement",
+        "enhancement": {
+          "paid": 27,
+          "extra": 3,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "defence": [
+            "adaptation",
+            "memory",
+            "deferred"
+          ],
+          "branches": {
+            "proficiency": [
+              "A",
+              "B",
+              "A"
+            ],
+            "repeat": [
+              "A",
+              "B",
+              ""
+            ],
+            "critical": [
+              "B",
+              "",
+              ""
+            ],
+            "adaptation": [
+              "A",
+              "B",
+              ""
+            ],
+            "memory": [
+              "B",
+              "A",
+              ""
+            ],
+            "deferred": [
+              "B",
+              "",
+              ""
+            ]
+          },
+          "effect": "proficiency",
+          "node": 0,
+          "choice": "",
+          "purchaseMode": "one",
+          "funds": false,
+          "feedback": "",
+          "quoteUsed": false
+        },
+        "scroll": 323
+      }
+    },
+    {
+      "file": "work-enhancement-1440x900.png",
+      "sha256": "722f53cce144a31684d9c11123e7ddad02dcaed7a12c2ce26376391213bba331",
+      "state": {
+        "family": "work",
+        "route": "enhancement",
+        "enhancement": {
+          "paid": 27,
+          "extra": 3,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "defence": [
+            "adaptation",
+            "memory",
+            "deferred"
+          ],
+          "branches": {
+            "proficiency": [
+              "A",
+              "B",
+              "A"
+            ],
+            "repeat": [
+              "A",
+              "B",
+              ""
+            ],
+            "critical": [
+              "B",
+              "",
+              ""
+            ],
+            "adaptation": [
+              "A",
+              "B",
+              ""
+            ],
+            "memory": [
+              "B",
+              "A",
+              ""
+            ],
+            "deferred": [
+              "B",
+              "",
+              ""
+            ]
+          },
+          "effect": "proficiency",
+          "node": 0,
+          "choice": "",
+          "purchaseMode": "one",
+          "funds": false,
+          "feedback": "",
+          "quoteUsed": false
+        },
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-enhancement-lower-1440x900.png",
+      "sha256": "ef16979c55fe0424df186cfd5b14685f774e39af24b17b006b45e348e8c8563d",
+      "state": {
+        "family": "work",
+        "route": "enhancement",
+        "enhancement": {
+          "paid": 27,
+          "extra": 3,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "defence": [
+            "adaptation",
+            "memory",
+            "deferred"
+          ],
+          "branches": {
+            "proficiency": [
+              "A",
+              "B",
+              "A"
+            ],
+            "repeat": [
+              "A",
+              "B",
+              ""
+            ],
+            "critical": [
+              "B",
+              "",
+              ""
+            ],
+            "adaptation": [
+              "A",
+              "B",
+              ""
+            ],
+            "memory": [
+              "B",
+              "A",
+              ""
+            ],
+            "deferred": [
+              "B",
+              "",
+              ""
+            ]
+          },
+          "effect": "proficiency",
+          "node": 0,
+          "choice": "",
+          "purchaseMode": "one",
+          "funds": false,
+          "feedback": "",
+          "quoteUsed": false
+        },
+        "scroll": 402
+      }
+    },
+    {
+      "file": "work-branch-locked-1440x900.png",
+      "sha256": "5abe5f304f6d83fb7564dc224e277b8e76bd388dfe8c5507bef2f748f1f8e5cc",
+      "state": {
+        "family": "work",
+        "route": "enhancement/branch/critical/2",
+        "enhancement": {
+          "paid": 27,
+          "extra": 3,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "defence": [
+            "adaptation",
+            "memory",
+            "deferred"
+          ],
+          "branches": {
+            "proficiency": [
+              "A",
+              "B",
+              "A"
+            ],
+            "repeat": [
+              "A",
+              "B",
+              ""
+            ],
+            "critical": [
+              "B",
+              "",
+              ""
+            ],
+            "adaptation": [
+              "A",
+              "B",
+              ""
+            ],
+            "memory": [
+              "B",
+              "A",
+              ""
+            ],
+            "deferred": [
+              "B",
+              "",
+              ""
+            ]
+          },
+          "effect": "critical",
+          "node": 2,
+          "choice": "",
+          "purchaseMode": "one",
+          "funds": false,
+          "feedback": "",
+          "quoteUsed": false
+        },
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-branch-candidate-1440x900.png",
+      "sha256": "808671af7f2cc30b96fb99ffef96e0c41fbe4c08b25d68bca99c63502c7bd691",
+      "state": {
+        "family": "work",
+        "route": "enhancement/branch/proficiency/0",
+        "enhancement": {
+          "paid": 27,
+          "extra": 3,
+          "effective": 30,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "defence": [
+            "adaptation",
+            "memory",
+            "deferred"
+          ],
+          "branches": {
+            "proficiency": [
+              "A",
+              "B",
+              "A"
+            ],
+            "repeat": [
+              "A",
+              "B",
+              ""
+            ],
+            "critical": [
+              "B",
+              "",
+              ""
+            ],
+            "adaptation": [
+              "A",
+              "B",
+              ""
+            ],
+            "memory": [
+              "B",
+              "A",
+              ""
+            ],
+            "deferred": [
+              "B",
+              "",
+              ""
+            ]
+          },
+          "effect": "proficiency",
+          "node": 0,
+          "choice": "B",
+          "purchaseMode": "one",
+          "funds": false,
+          "feedback": "",
+          "quoteUsed": false
+        },
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-partial-purchase-1440x900.png",
+      "sha256": "7eaa32e7fc005fde7ead89e1e3dcd87ebf545e584578368e59678c1f5ace93e5",
+      "state": {
+        "family": "work",
+        "route": "enhancement",
+        "enhancement": {
+          "paid": 29,
+          "extra": 3,
+          "effective": 32,
+          "weapon": [
+            "proficiency",
+            "repeat",
+            "critical"
+          ],
+          "defence": [
+            "adaptation",
+            "memory",
+            "deferred"
+          ],
+          "branches": {
+            "proficiency": [
+              "B",
+              "B",
+              "A"
+            ],
+            "repeat": [
+              "A",
+              "B",
+              ""
+            ],
+            "critical": [
+              "B",
+              "",
+              ""
+            ],
+            "adaptation": [
+              "A",
+              "B",
+              ""
+            ],
+            "memory": [
+              "B",
+              "A",
+              ""
+            ],
+            "deferred": [
+              "B",
+              "",
+              ""
+            ]
+          },
+          "effect": "proficiency",
+          "node": 0,
+          "choice": "B",
+          "purchaseMode": "ten",
+          "funds": true,
+          "feedback": "本次已购2级，合计40.26 B碎片；已保留实际顺位和分支。后续报价待提供方刷新。",
+          "quoteUsed": true,
+          "balance": "23.74 B"
+        },
+        "scroll": 0
+      }
+    }
+  ],
+  "browser": "151.0.7922.173",
+  "source_hashes": {
+    "app.js": "d05aa7a003a678d17e6b48924b5c977605a9844cf83e768965dfb6ee7655ae95",
+    "style.css": "3654d1febe5e80878182f8da9403f35e85e1fd836d108c61e49d5cca59007b01",
+    "index.html": "710fe84c3c3d666ec8989eba0e467f01fe0c491a79d78e3de1866d2919bdf4d1",
+    "enhancement-models.js": "160721846dfba5186a5094ea4f7d230d7afabc8f58e651e61a4e85a702c91443"
+  }
+}

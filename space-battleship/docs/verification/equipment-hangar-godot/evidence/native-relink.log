@@ -1,0 +1,9 @@
+scons: Reading SConscript files ...
+WARNING: Unknown SCons variables were passed and will be ignored:
+    bindings=/tmp/space-idle-godot-cpp
+Building for architecture x86_64 on platform linux
+scons: done reading SConscript files.
+scons: Building targets ...
+scons: `godot-cpp/bin/libgodot-cpp.linux.template_release.x86_64.a' is up to date.
+Linking Shared Library bin/libspace_native.so ...
+scons: done building targets.
