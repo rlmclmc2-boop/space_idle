@@ -152,13 +152,9 @@ func _build_module_placement() -> void:
 	body.theme = theme
 	host.add_child(body)
 	_surface(body,Rect2(0,0,808,900),Color("0e3440"))
-	for x in range(24,808,24):
-		_surface(body,Rect2(x,65,1,835),Color("467d8130"))
-	for y in range(180,900,120):
-		_surface(body,Rect2(0,y,808,1),Color("467d8130"))
+	_picture(body,BASE+"references/shared-backdrop-h2.png",Rect2(0,0,808,900))
 	_picture(body,BASE + "references/reactor-quality-four.png",Rect2(96.8,20,614.4,921.6))
-	# Local level placement is a pending owner coordination proposal, not an approved move.
-	_label(body,"等级 2",Rect2(18,77,74,28))
+	# Local level is carried by the proposed shared context slot, not by a side gap.
 	for item in [[140.0,235.2,"武器","38"],[512.0,235.2,"盾甲","38"],[140.0,726.0,"铁产出","37"],[512.0,726.0,"碎片","37"]]:
 		var point := Vector2(float(item[0]),float(item[1]))
 		_surface(body,Rect2(point,Vector2(166,78)),Color("082f3ae6"))
@@ -230,7 +226,7 @@ func _build_header() -> void:
 	_surface(header,Rect2(0,32,808,33),Color("102d3a"))
 	_surface(header,Rect2(0,31,808,1),Color("518b8d"))
 	_surface(header,Rect2(0,64,808,1),Color("5b9a9e"))
-	_label(header,"远航舰桥",Rect2(12,3,96,26))
+	_label(header,"等级 2",Rect2(12,3,96,26))
 	for item in [[116,160,"铁：45"],[284,160,"铀：1,976"],[452,208,"时空微粒：8,147"]]:
 		_surface(header,Rect2(int(item[0]),3,1,26),Color("486c74"))
 		var label:=_label(header,str(item[2]),Rect2(int(item[0])+7,3,int(item[1])-8,26),16,Color("f1e5bc"))
@@ -289,8 +285,7 @@ func _build_folded() -> void:
 	folded.z_index=4
 	host.add_child(folded)
 	_surface(folded,Rect2(0,0,808,835),Color("103540"))
-	for x in range(24,808,92):_surface(folded,Rect2(x,24,1,787),Color("6bb0b018"))
-	for y in range(84,835,120):_surface(folded,Rect2(24,y,760,1),Color("6bb0b018"))
+	_picture(folded,BASE+"references/shared-backdrop-h2.png",Rect2(0,-65,808,900))
 	var title:=_label(folded,"反应炉工作区已收起",Rect2(104,320,600,46),26)
 	title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var text:=_label(folded,"原工作上下文已保留",Rect2(104,374,600,28),16,Color("a9c7c4"))
@@ -387,6 +382,23 @@ func _capture_design_states() -> void:
 	save_label.modulate=Color("ffce9f")
 	_show_detail("保存失败",["当前进度尚未写入文件。请在“更多→设置与保存”查看真实状态并重试。","此处为设计故障样例；实际原因由既有SaveFiles结果提供。"])
 	await _save_state("save-failure")
+	for child in detail.get_children():child.queue_free()
+	_label(detail,"活动上下文位 · 所有者交接示例（不是三模块接入）",Rect2(16,8,744,34),18)
+	var captions:=["远航舰桥","等级 2","星球探索"]
+	var caption_names:=["装备默认","反应炉等级","星球身份"]
+	for i in 3:
+		_label(detail,caption_names[i],Rect2(16,58+i*48,112,26))
+		_surface(detail,Rect2(132,58+i*48,96,26),Color("243f4e"))
+		_label(detail,captions[i],Rect2(132,58+i*48,96,26))
+		_label(detail,"96×26 / 16px · 原组提供文字，不挤主体",Rect2(248,58+i*48,490,26),14)
+	detail.size.y=220
+	save_label.text="已保存"
+	save_label.modulate=Color.WHITE
+	await _save_state("context-captions")
+	var caption_metrics:=[]
+	for caption in captions:
+		var advance:=font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,16)
+		caption_metrics.append({"text":caption,"advance":advance,"slot_size":[96,26],"fits":advance.x<=96 and advance.y<=26})
 	var nav_metrics:=[]
 	for button in nav_buttons:
 		nav_metrics.append({"text":button.text,"rect":button.get_rect(),"minimum_size":button.get_combined_minimum_size(),"font_size":button.get_theme_font_size("font_size"),"fits_width":button.get_combined_minimum_size().x<=button.size.x,"fits_height":button.get_combined_minimum_size().y<=button.size.y,"inside_65px_header":button.position.y>=32 and button.position.y+button.size.y<=65})
@@ -396,7 +408,7 @@ func _capture_design_states() -> void:
 		money_metrics.append({"text":large[i],"advance":measured,"available_width":money_labels[i].size.x,"fits_width":measured.x<=money_labels[i].size.x})
 	var ts:=TextServerManager.get_primary_interface()
 	var actual_axes: Dictionary=ts.call("font_get_variation_coordinates",font.get_rids()[0])
-	var report:={"kind":"Godot 4.7.2 design preview, not gameplay integration", "engine":Engine.get_version_info(),"display":DisplayServer.get_name(),"renderer":RenderingServer.get_current_rendering_method(),"video_adapter":RenderingServer.get_video_adapter_name(),"window_size":DisplayServer.window_get_size(),"window_position":DisplayServer.window_get_position(),"window_mode":DisplayServer.window_get_mode(),"screen_size":DisplayServer.screen_get_size(),"screen_scale":DisplayServer.screen_get_scale(),"font_variation_requested":font.variation_opentype,"font_variation_actual":actual_axes,"font_height_16":font.get_height(16),"font_ascent_16":font.get_ascent(16),"font_descent_16":font.get_descent(16),"nav":nav_metrics,"money":money_metrics,"captures":snapshots,"state_values":"static design strings, not native wallets or live progress","no_game_session":true,"no_native_loaded":not ClassDB.class_exists("SpaceCombatKernel"),"module_internal_design":"owner source asset placement only; local reactor level relocation pending owner confirmation"}
+	var report:={"kind":"Godot 4.7.2 design preview, not gameplay integration", "engine":Engine.get_version_info(),"display":DisplayServer.get_name(),"renderer":RenderingServer.get_current_rendering_method(),"video_adapter":RenderingServer.get_video_adapter_name(),"window_size":DisplayServer.window_get_size(),"window_position":DisplayServer.window_get_position(),"window_mode":DisplayServer.window_get_mode(),"screen_size":DisplayServer.screen_get_size(),"screen_scale":DisplayServer.screen_get_scale(),"font_variation_requested":font.variation_opentype,"font_variation_actual":actual_axes,"font_height_16":font.get_height(16),"font_ascent_16":font.get_ascent(16),"font_descent_16":font.get_descent(16),"nav":nav_metrics,"money":money_metrics,"context_captions":caption_metrics,"active_context":"等级 2","captures":snapshots,"state_values":"static design strings, not native wallets or live progress","no_game_session":true,"no_native_loaded":not ClassDB.class_exists("SpaceCombatKernel"),"module_internal_design":"owner source asset placement only; level placed in shared 96px context slot as minimum collaboration proposal; no producer implementation"}
 	var file:=FileAccess.open(output_dir+"/godot-design-record.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(report,"\t")+"\n")
 	file.close()

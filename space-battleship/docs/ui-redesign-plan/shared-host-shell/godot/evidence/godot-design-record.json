@@ -1,4 +1,5 @@
 {
+	"active_context": "等级 2",
 	"captures": [
 		{
 			"battle_logical_size": [
@@ -160,6 +161,58 @@
 			"viewport_visible_rect": "[P: (0.0, 0.0), S: (1440.0, 900.0)]",
 			"window_size": "(1440, 900)",
 			"write_error": 0
+		},
+		{
+			"battle_logical_size": [
+				572,
+				960
+			],
+			"battle_projection_origin": [
+				855.875,
+				0
+			],
+			"battle_projection_scale": 0.9375,
+			"header_rect": "[P: (0.0, 0.0), S: (808.0, 65.0)]",
+			"module_placement_only": true,
+			"module_rect": "[P: (0.0, 0.0), S: (808.0, 900.0)]",
+			"name": "context-captions",
+			"no_session": true,
+			"pixel_size": [
+				1440,
+				900
+			],
+			"viewport_visible_rect": "[P: (0.0, 0.0), S: (1440.0, 900.0)]",
+			"window_size": "(1440, 900)",
+			"write_error": 0
+		}
+	],
+	"context_captions": [
+		{
+			"advance": "(64.0, 24.0)",
+			"fits": true,
+			"slot_size": [
+				96,
+				26
+			],
+			"text": "远航舰桥"
+		},
+		{
+			"advance": "(45.0, 24.0)",
+			"fits": true,
+			"slot_size": [
+				96,
+				26
+			],
+			"text": "等级 2"
+		},
+		{
+			"advance": "(64.0, 24.0)",
+			"fits": true,
+			"slot_size": [
+				96,
+				26
+			],
+			"text": "星球探索"
 		}
 	],
 	"display": "X11",
@@ -184,7 +237,7 @@
 		"2003265652": 450.0
 	},
 	"kind": "Godot 4.7.2 design preview, not gameplay integration",
-	"module_internal_design": "owner source asset placement only; local reactor level relocation pending owner confirmation",
+	"module_internal_design": "owner source asset placement only; level placed in shared 96px context slot as minimum collaboration proposal; no producer implementation",
 	"money": [
 		{
 			"advance": "(143.0, 24.0)",

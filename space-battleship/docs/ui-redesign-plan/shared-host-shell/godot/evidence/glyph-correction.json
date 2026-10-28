@@ -12,5 +12,8 @@
   "system_fallback_enabled": false,
   "Godot_rerendered_state": "extreme-values-1440x900.png",
   "same_version_other_states_reason": "Remove previously rejected persistent tutorial line; no keyboard/collection/gameplay changes",
-  "source_font_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+  "source_font_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+  "narrow_fix_commit": "1784f7e6",
+  "original_double_review_status": "passed within design preview only; closed; not reopened by later installation context/backdrop proposal",
+  "later_candidate_changes": "Installation-resolution context slot and pure-environment backdrop are reviewed separately; font family/size, nav geometry and money geometry are retained"
 }

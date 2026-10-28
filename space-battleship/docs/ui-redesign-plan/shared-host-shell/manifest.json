@@ -15,9 +15,9 @@
   },
   "source_real_screen": "space-battleship/docs/verification/reactor-centered-godot/evidence/reactor-visual-r16-four-active-t0.png",
   "source_status": "visual-rejected; controlled-unlocks-and-budget; not-natural-progression",
-  "scope": "Primary deliverable is Godot4.7.2 Control/font/SubViewport design preview in actual 1440x900 window. Preserves 808/632 and 0.9375 projection. No Session/native/config/save or main/src modifications. Module internal artwork and static values are explicit placement references, not internal redesign or live gameplay. HTML stays exploration-only and is excluded from user primary deliverable and game font/quality proof. 65px header remains unconfirmed with owners; no implementation approval upgrade.",
+  "scope": "All three owner installation notes received. H2 retains808/632 and0.9375. Candidate minimum collaboration is fixed: shared96px context control, separate existing global chrome, retain20/25px top transition bands, four direct view-only coordination ports. Godot preview shows context/backdrop candidates without producer implementation or business integration. Shared environment art replaces grid; edge quality not approved. Native font/geometry budgets retained. No main/src changes or main merge.",
   "implementation_changed": false,
-  "review_status": "limited-region-contract-acceptance-retained; Godot4.7.2 real-window design preview added; visual/owner-installation/user-confirmation pending; no runtime integration approval",
+  "review_status": "1784f7e6 glyph/tutorial narrow fix passed and closed; all3 owner notes received; H2 installation resolution/context/backdrop candidate ready for root/original review; no runtime integration approval",
   "module_direction_status": {
     "equipment": "Ship subject and original overall direction retained; redesign upper slot display only; retain and polish lower operations; 25abaade full-page B/C withdrawn; 5b4f7233 code remains frozen.",
     "reactor": "59dd464d direction remains valid; original team improves in-game material, core/device effects and typography; no internal direction reselection.",
@@ -77,11 +77,9 @@
     }
   ],
   "remaining_evidence": [
-    "Reactor/planet owner Git notes coordinated by root; equipment note received at9fc8e8df",
-    "Resolve local level, 90px header and module popup/input ownership without forcing 65px reflow",
-    "Visual review of Godot H2 preview and extreme-value strategy",
-    "User whole-host design confirmation before runtime integration approval",
-    "Later authorized actual Session/native operation V0 verification"
+    "Root/original review of concrete H2 context/backdrop and minimum view collaboration proposal",
+    "User whole-host design confirmation before actual integration",
+    "Later authorized real Session/native/control-chain V0 verification"
   ],
   "h2_source_files": [
     "host-preview.html",
@@ -122,35 +120,39 @@
   "godot_quality_states": [
     {
       "path": "godot/evidence/collapsed-1440x900.png",
-      "sha256": "a58235ac4a296fe1c1db0c8e57810e2fa32307bd74a9144db9c303105584410a"
+      "sha256": "cc9284a642fb3d43e20e02befe8170a3a36504aa77529c90f8c9eec25f01f7bc"
+    },
+    {
+      "path": "godot/evidence/context-captions-1440x900.png",
+      "sha256": "eb2e74b7249737011387206ce4bf7da246cd6822f2fcb328fa6ff9d3988e5f88"
     },
     {
       "path": "godot/evidence/extreme-values-1440x900.png",
-      "sha256": "41a71630ac5662669fa78bbb0e0ef1d74e3fe16774ee2173f80178ee96306e3e"
+      "sha256": "6661bc8e42020dd879d15f45692fae877576fc3bc599251d59b2101ba419d461"
     },
     {
       "path": "godot/evidence/large-values-1440x900.png",
-      "sha256": "34b9937f8730cc09fcbe4f19f92bba407eaa61281abb688a29f9b0cc747c586e"
+      "sha256": "e62695cb94f4ae1d810cca33ef99220a926992eb4d87cd503e5226763b66d60c"
     },
     {
       "path": "godot/evidence/more-1440x900.png",
-      "sha256": "d20fe5ab4dbf05198872c53c5069f741eec7e40bde2ecbb0780cad8e1429c568"
+      "sha256": "a8c2a7fa0de461e6e308f9f858336e3250edaedeaf60895b8cd8a7cc661a3091"
     },
     {
       "path": "godot/evidence/normal-1440x900.png",
-      "sha256": "91752d9066cff92ef34cdcafdd5af214882e9dd501b0a1750538014e4f789747"
+      "sha256": "f8296339aa95b7fd3f0b159c4e510c6d56cf44a27ddf9ca63c0aa55012329294"
     },
     {
       "path": "godot/evidence/normal-x11-client-1440x900.png",
-      "sha256": "720f6e6a97cb3b2272c692843fc1c4f067a92a98f9721e34fd3d20010f22e8fd"
+      "sha256": "219b0679a5ce374e052162aed4698dd2a2b35de071b3c21c9827576dee39d99d"
     },
     {
       "path": "godot/evidence/restored-1440x900.png",
-      "sha256": "9c4e5cc3ae9f30c4c1e0ced5a9303efd8a1064c28db9016ec9a000e8c8ae73aa"
+      "sha256": "33de23890af9b69e4ffff3752b103e20a49a2edd088d36673e734e9282016489"
     },
     {
       "path": "godot/evidence/save-failure-1440x900.png",
-      "sha256": "e41e55cf4ea73c7989c7605bbe4d6d3c992b13d57158f5a16ba4d7958a86b476"
+      "sha256": "a7c7a24be78278600038454f90fabcec8f10ed73901e6c3053b25b1822cc5f17"
     }
   ],
   "module_installation_notes": {
@@ -160,15 +162,20 @@
       "status": "received; current 808x900 only; no 65px approval; chrome toggle/input notification/focus remain gaps"
     },
     "reactor": {
-      "status": "pending root-coordinated owner note"
+      "commit": "0e0c02f75c6a45075c6de0ced3cfefbad870d2a4",
+      "path": "space-battleship/docs/verification/reactor-centered-godot/module-installation.md",
+      "status": "received; current808x900 only; no65px approval"
     },
     "planet": {
-      "status": "pending root-coordinated owner note"
+      "commit": "2208b369ec6348c459b25d1421f02f696bacc734",
+      "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r3/module-installation.md",
+      "status": "received; current808x900/90px header only; no65px approval"
     }
   },
   "latest_narrow_corrections": [
     "Removed persistent old HUD tutorial text; actual Space/G/pickup functionality untouched",
     "Replaced unsupported U+25B8 with source-font-supported Chinese text only; original extreme-state glyph check failed",
     "Peripheral grid and local level remain owner-confirmation placeholders; no claim giant gaps solved"
-  ]
+  ],
+  "installation_resolution": "installation-resolution.md"
 }

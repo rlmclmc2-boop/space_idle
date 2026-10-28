@@ -1,0 +1,19 @@
+{
+  "kind": "shared-host pure-environment backdrop candidate",
+  "generator": "image_gen",
+  "original_output": "exec-45b0116b-45b4-478d-9526-126950932d9c.png",
+  "sha256": "be6ab4d435ea26baee64759509b5edf2ecf37cf834e8a9956875d676cd464f14",
+  "size": [
+    1189,
+    1323
+  ],
+  "pixel_edit": false,
+  "design_install_rect": [
+    0,
+    0,
+    808,
+    900
+  ],
+  "allowed_usage": "Only declared pure environment, peripheral or top transition zones; no machines, controls, numbers, working state or hit geometry; current preview uses it behind unchanged M3 source plate.",
+  "review_status": "visual candidate; no gap-quality approval or producer integration"
+}

@@ -30,7 +30,7 @@
 
 ## 确认记录
 
-装备原组书面说明已收到：[9fc8e8df4d2df74abf5357c28ecfaea9e458367c](https://github.com/rlmclmc2-boop/space_idle/blob/9fc8e8df4d2df74abf5357c28ecfaea9e458367c/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/module-installation.md)。只确认808×900现状与既有证据下1:1安装，不确认更小尺寸、65px或新宿主验收。反应炉/星球书面说明仍由根线程协调，待收，不据源码表替代。
+装备原组书面说明已收到：[9fc8e8df4d2df74abf5357c28ecfaea9e458367c](https://github.com/rlmclmc2-boop/space_idle/blob/9fc8e8df4d2df74abf5357c28ecfaea9e458367c/space-battleship/docs/ui-redesign-plan/g1-internal/equipment-image-design/module-installation.md)。只确认808×900现状与既有证据下1:1安装，不确认更小尺寸、65px或新宿主验收。反应炉[0e0c02f7说明](https://github.com/rlmclmc2-boop/space_idle/blob/0e0c02f7/space-battleship/docs/verification/reactor-centered-godot/module-installation.md)和星球[2208b369说明](https://github.com/rlmclmc2-boop/space_idle/blob/2208b369ec6348c459b25d1421f02f696bacc734/space-battleship/docs/verification/planet-single-side-godot/visual-r3/module-installation.md)也已收到。三组只确认808×900现状，不批准65px或更小可读安装。
 
 装备说明对应的宿主处理决定（设计期，未实施）：
 
@@ -39,4 +39,4 @@
 - 装备批量层是CanvasLayer9内z19..21，不能拦住更高CanvasLayer10导航。后续须补原组自有弹层/下拉/编辑状态的只读前端占用通知；宿主据此禁用顶部切换/收起，并在战场区域设置局部输入遮罩、让Space/G读取同一门控。不能用一个高层全屏遮罩盖住批量控件，也不要求本次把批量层重写为业务模态。
 - 批量内容、回执、报价仍由装备保留；宿主只处理跨层入口/焦点/输入归属。原组关闭动作仅隐藏，不清最近回执；继续保留该语义。原组未实现的焦点限制/恢复和切离收拢不能记成已有能力；待共同接入时补最小呈现处理。
 
-已知反应炉局部等级和星球90px带仍待原组书面说明及协作；65px不能先冻结为各组安装标准。H2 Godot字体成功只支持候选梁的尺寸，不证明模块顶部冲突已消除。
+三组书面边界已齐，不再以缺说明作为停点。[安装收口候选](installation-resolution.md)已给出活动上下文位、顶部背景过渡和四个最小前端协作端口：不缩/移根、不动主体/操作、只分离chrome与输入。65px仍待整套候选审查和用户确认，未进入模块实现。
