@@ -1,4 +1,6 @@
-# 星球 R3 视觉修订：完整周期候选，待独审
+# 星球 R3 视觉修订：星体与完整周期证据限定通过
+
+星球模块对整体组 H2 的当前安装尺寸、顶部占用与弹层交接见 [模块安装现状](module-installation.md)；该说明不改变运行布局。
 
 ## 最终船坞与完整周期实机候选
 
@@ -6,7 +8,9 @@
 
 最终同版运行用实际球面累计相位达到 **1.05009685 圈**停止，墙钟178.968秒、361个帧样本，驱动正常退出。轨迹覆盖地表设施背面转入转出、轨道站 `z=-3.07…+3.07` 的前后运动、侦察船从年龄0抵达到174.87并出现前后两种绘制层。递归遍历 GLB 内的 `MeshInstance3D`，排除接触阴影；四类建筑在首帧均有非空屏幕 AABB，整段保守 AABB 与上方操作控件相交记录为0。AABB 是辅助数值，实际遮挡和画面质量仍由原图与视频独审。
 
-交付 [完整轨道视频](evidence/final-full-surface-orbit.mp4)（1440×900、2fps、361帧、按采样序编码）、[逐帧原始轨迹](evidence/final-motion-poses.jsonl)、[摘要](evidence/final-motion-summary.json)、[驱动](evidence/final-motion-driver.gd.txt)、[运行日志](evidence/final-motion-runtime.txt)、[操作记录](evidence/final-operations.json)及 `final-key_*.png` 11张未经加工的关键原始 PNG、[终点原始 JPEG](evidence/final-frame-end-1p05.jpg)。[SHA256清单](evidence/final-sha256.json)核对归档字节。其余361张原始JPEG在本执行环境 `/tmp/planet-r3-motion-final2/motion-frames/`，未进Git。视频按每帧0.5秒播放，**播放时长180.5秒不是引擎实际经过时间**；实际墙钟与相位逐行见轨迹。JPEG/PNG帧读取编码合计13.489秒墙钟；没有设置引擎帧帽、强推时钟，也不由采样推断用户CPU/GPU性能。当前仍待原独审R3视觉判断。
+交付 [完整轨道视频](evidence/final-full-surface-orbit.mp4)（1440×900、2fps、361帧、按采样序编码）、[逐帧原始轨迹](evidence/final-motion-poses.jsonl)、[摘要](evidence/final-motion-summary.json)、[驱动](evidence/final-motion-driver.gd.txt)、[运行日志](evidence/final-motion-runtime.txt)、[操作记录](evidence/final-operations.json)及 `final-key_*.png` 11张未经加工的关键原始 PNG、[终点原始 JPEG](evidence/final-frame-end-1p05.jpg)。[SHA256清单](evidence/final-sha256.json)核对归档字节。其余361张原始JPEG在本执行环境 `/tmp/planet-r3-motion-final2/motion-frames/`，未进Git。视频按每帧0.5秒播放，**播放时长180.5秒不是引擎实际经过时间**；实际墙钟与相位逐行见轨迹。JPEG/PNG帧读取编码合计13.489秒墙钟；没有设置引擎帧帽、强推时钟，也不由采样推断用户CPU/GPU性能。原双审对 `4368ca57` 的星体/机位视觉及2fps完整周期证据作限定通过；不涵盖全星体、高帧性能、整 M7 或用户验收。后续累计 UI 修正没有重跑本完整周期，视觉原图/视频的固定源码版本仍为 `4368ca57`。
+
+[20秒短片](evidence/review-short-orbit-145-184.mp4)直接取同一 `4368ca57` 运行的原始JPEG第145–184帧按2fps编码，覆盖轨道站由背向前的深度切换；对应墙钟约73.52–92.66秒、累计球面相位0.426–0.539圈。短片只供快速查看该片段，完整周期仍以原361帧视频和轨迹为证，不把20秒播放时间当运行时长。
 
 本次实际发生上下文压缩，依父线程要求保全原工作区供替换执行者继续。R2 `a91f65b4` 的真实下拉、设施父子层级、补人后施工增长、重铸可见落点、4.7.2环境分项已认可；其球面和建筑视觉被否定。R3 保留这些业务/交互代码，不重写契约。
 
@@ -26,4 +30,4 @@
 
 引擎 `/tmp/planet-godot472/Godot_v4.7.2-stable_linux.x86_64`；native `/tmp/planet-native-472/planet.gdextension`；构建/API `/tmp/planet-native-472/`；Xorg `DISPLAY=:91`。每次独立夹具使用单独 `XDG_DATA_HOME/XDG_CACHE_HOME/XDG_CONFIG_HOME`。驱动经 `--path /workspace/space_idle/space-battleship --script /tmp/planet-r3-motion-driver.gd` 启动；生成配置在项目 `generated/config.json`（不交Git）。系统默认 godot 是4.6.3，不可当最终引擎。OS鼠标辅助 `/tmp/planet-os-input.py`。当前仅独立临时保存目录，不含个人存档。
 
-未发生拒绝/授权阻塞。尚未完成的是完整周期采样及最终视觉复审，非业务重写。未合 main。
+未发生拒绝/授权阻塞。以上“接续步骤”保留原检查点历史；完整周期采样已由 `4368ca57` 补齐并获限定视觉审查，未合 main。
