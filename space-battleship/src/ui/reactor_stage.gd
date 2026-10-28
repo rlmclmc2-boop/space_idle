@@ -17,14 +17,14 @@ const PORTS := {
 const ROUTES := {
 	"weapons": [Vector2(300, 274), Vector2(213, 209)],
 	"defence": [Vector2(510, 274), Vector2(603, 207)],
-	"smelting": [Vector2(300, 484), Vector2(215, 527)],
-	"condensation": [Vector2(510, 484), Vector2(603, 523)],
+	"smelting": [Vector2(294, 429), Vector2(216, 478)],
+	"condensation": [Vector2(514, 429), Vector2(602, 477)],
 }
 const OPERATING := {
-	"weapons": {"effect":Vector2(26, 291), "supply":Vector2(26, 318), "slider":Vector2(48, 218), "width":183.0},
-	"defence": {"effect":Vector2(594, 291), "supply":Vector2(594, 318), "slider":Vector2(628, 218), "width":188.0},
-	"smelting": {"effect":Vector2(26, 618), "supply":Vector2(26, 645), "slider":Vector2(48, 567), "width":183.0},
-	"condensation": {"effect":Vector2(594, 618), "supply":Vector2(594, 645), "slider":Vector2(628, 567), "width":188.0},
+	"weapons": {"effect":Vector2(82, 136), "supply":Vector2(82, 162), "slider":Vector2(73, 215), "width":108.0, "track":105.0},
+	"defence": {"effect":Vector2(650, 135), "supply":Vector2(650, 162), "slider":Vector2(645, 218), "width":86.0, "track":92.0},
+	"smelting": {"effect":Vector2(94, 472), "supply":Vector2(94, 498), "slider":Vector2(73, 557), "width":81.0, "track":102.0},
+	"condensation": {"effect":Vector2(652, 472), "supply":Vector2(652, 498), "slider":Vector2(646, 557), "width":86.0, "track":93.0},
 }
 var _enabled: Array = []
 var _loads: Dictionary = {}
@@ -81,7 +81,7 @@ func _add_core() -> void:
 
 func control_layout(id: String) -> Dictionary:
 	var row: Dictionary = OPERATING[id]
-	return {"effect":row.effect, "supply":row.supply, "slider":row.slider, "width":row.width, "track":132.0}
+	return row
 
 func show_snapshot(ids: Array, loads: Dictionary, _selected: String) -> void:
 	_enabled = ids.duplicate()

@@ -107,18 +107,22 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.text = text
 	button.position = rect.position
 	button.size = rect.size
-	button.add_theme_font_size_override("font_size", 16)
+	button.add_theme_font_size_override("font_size", 14)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxFlat.new()
 		box.bg_color = Color("245963") if state in ["hover","pressed"] else Color("173e4b")
-		if primary: box.bg_color = Color("fff2d7") if state != "disabled" else Color("465e60")
+		if primary:
+			box.bg_color = Color("f2dbab") if state == "normal" else Color("f9e9c6") if state in ["hover","focus"] else Color("cda967") if state == "pressed" else Color("41545a")
 		if state == "disabled" and not primary: box.bg_color = Color("163945", 0.55)
 		box.border_color = Color("89bfb6") if state == "focus" else Color("58767a", 0.8)
-		if primary: box.border_color = Color("d4b373")
+		if primary: box.border_color = Color("ffe8b7") if state == "focus" else Color("a98551")
 		box.set_border_width_all(1)
 		box.set_corner_radius_all(7)
 		button.add_theme_stylebox_override(state, box)
 	button.add_theme_color_override("font_color", Color("173d4a") if primary else Color("e9eee0"))
+	button.add_theme_color_override("font_hover_color", Color("102d39") if primary else Color("ffffff"))
+	button.add_theme_color_override("font_pressed_color", Color("102d39") if primary else Color("ffffff"))
+	button.add_theme_color_override("font_focus_color", Color("102d39") if primary else Color("ffffff"))
 	button.add_theme_color_override("font_disabled_color", Color("849a9c"))
 	button.pressed.connect(action)
 	add_child(button)
@@ -139,15 +143,21 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	return panel
 
 func _build() -> void:
-	_panel(Rect2(16, 752, 776, 132), 0.94)
-	_level = _label(Vector2(30, 761), 124, 16)
+	var console := _panel(Rect2(238, 762, 333, 110), 0.97)
+	var console_style := StyleBoxFlat.new()
+	console_style.bg_color = Color("0b2432")
+	console_style.border_color = Color("b9a47f")
+	console_style.set_border_width_all(2)
+	console_style.set_corner_radius_all(13)
+	console.add_theme_stylebox_override("panel", console_style)
+	_level = _label(Vector2(252, 768), 65, 13)
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var offset := Vector2(0, 65)
-		var readout := _panel(Rect2(layout.effect + offset - Vector2(8, 6), Vector2(float(layout.width) + 10, 58)), 0.82)
-		var effect := _label(layout.effect + offset,float(layout.width),17)
+		var readout := _panel(Rect2(layout.effect + offset - Vector2(4, 3), Vector2(float(layout.width) + 7, 48)), 0.30)
+		var effect := _label(layout.effect + offset,float(layout.width),13)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply + offset,float(layout.width),16)
+		var supply := _label(layout.supply + offset,float(layout.width),12)
 		supply.size.y = 24
 		supply.add_theme_color_override("font_color", Color("c1dfd9"))
 		var slider := HSlider.new()
@@ -184,17 +194,15 @@ func _build() -> void:
 		add_child(slider)
 		_rows[id] = {"effect":effect, "supply":supply, "slider":slider, "readout":readout}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(159,761),620,16)
+	_budget = _label(Vector2(316,768),243,13)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_cost = _label(Vector2(30, 797), 220, 16)
-	_purchase = _button("升级",Rect2(256,788,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(416,790,72,40),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认",Rect2(496,790,72,40),func(): _command(_submit))
-	_restore = _button("还原",Rect2(576,790,72,40),_reset)
-	_notice = _label(Vector2(30,836),740,16)
-	_notice.size.y = 42
-	_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_notice.clip_text = false
+	_cost = _label(Vector2(252, 790), 304, 13)
+	_purchase = _button("升级",Rect2(251,811,83,32),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
+	_equal = _button("均分",Rect2(340,811,64,32),func(): _kind = "equal"; _preview_draft())
+	_apply = _button("确认",Rect2(410,811,64,32),func(): _command(_submit))
+	_restore = _button("还原",Rect2(480,811,76,32),_reset)
+	_notice = _label(Vector2(252,847),303,12)
+	_notice.size.y = 20
 	for button in [_purchase,_equal,_apply,_restore]: button.disabled = true
 
 func _ready() -> void:
