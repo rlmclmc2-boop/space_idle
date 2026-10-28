@@ -25,6 +25,7 @@ var _pages: Dictionary = {}
 var _host: Control
 var _battle_input_shield: ColorRect
 var _route_available: Dictionary = {}
+var _collapse_pending := false
 var equipment_scene: Control
 var reactor_scene: Control
 var planet_scene: Control
@@ -234,6 +235,7 @@ func _select_left_module(id: String) -> void:
 	var current: Control = _host.routes[_left_module]
 	if current.has_method("prepare_host_hide") and not current.prepare_host_hide(): return
 	if _module_exclusive(current): return
+	if _left_module == "settings" and id != "settings": _discard_settings_previews()
 	_release_route_focus(current)
 	_left_module = id
 	_host.show_route(id)
@@ -245,11 +247,25 @@ func _select_left_module(id: String) -> void:
 	if id == "reforge": _refresh_reforge_selection()
 
 func _collapse_module() -> void:
-	if _ui_blocks_battle(false) or not _pending_reforge.is_empty(): return
+	if _collapse_pending or _ui_blocks_battle(false) or not _pending_reforge.is_empty(): return
 	var current: Control = _host.routes[_left_module]
 	if current.has_method("prepare_host_hide") and not current.prepare_host_hide(): return
+	if _host.collapsed:
+		_host.show_route(_left_module, false)
+		return
+	if _left_module == "settings": _discard_settings_previews()
 	_release_route_focus(current)
-	_host.show_route(_left_module, not _host.collapsed)
+	# Capture after More has actually disappeared from the rendered frame.
+	# The content stays hidden afterwards; this is a single static texture.
+	_collapse_pending = true
+	var host: Control = _host
+	var id: String = _left_module
+	await RenderingServer.frame_post_draw
+	_collapse_pending = false
+	if host != _host or id != _left_module or not current.is_visible_in_tree(): return
+	var image := get_viewport().get_texture().get_image()
+	_host.set_collapsed_background(image.get_region(Rect2i(0, 65, 808, 835)))
+	_host.show_route(_left_module, true)
 
 func _release_route_focus(view: Control) -> void:
 	var focus := get_viewport().gui_get_focus_owner()
@@ -270,12 +286,29 @@ func _visible_window(node: Node) -> bool:
 func _ui_blocks_battle(include_focus: bool = true) -> bool:
 	if _host == null: return false
 	if _host.has_exclusive_ui() or (_guidance_panel != null and _guidance_panel.visible): return true
-	if not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty(): return true
+	# Import/new-game previews are detached candidates, not modal input owners.
+	if not _pending_reforge.is_empty(): return true
 	if not _host.collapsed and _module_exclusive(_host.routes[_left_module]): return true
 	if include_focus:
-		var focus := get_viewport().gui_get_focus_owner()
-		if focus is LineEdit or focus is TextEdit: return true
+		for viewport in [get_viewport(), _battle_viewport]:
+			if viewport == null: continue
+			var focus: Control = viewport.gui_get_focus_owner()
+			# The container owns gameplay focus after a battlefield click;
+			# its focused child buttons still count as UI in the battle viewport.
+			if focus != null and focus.is_visible_in_tree() and focus != _battle_viewport.get_parent(): return true
 	return false
+
+func _battle_focus_exit(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton and event.pressed): return
+	# A real modal/transaction keeps ownership. With focus alone, the first
+	# battlefield press explicitly leaves UI focus and is not also a pickup.
+	if _ui_blocks_battle(false): return
+	for viewport in [get_viewport(), _battle_viewport]:
+		if viewport == null: continue
+		var focus: Control = viewport.gui_get_focus_owner()
+		if focus != null: focus.release_focus()
+	_battle_input_shield.hide()
+	_battle_input_shield.accept_event()
 
 func _prepare_host_release() -> void:
 	if _host == null: return
@@ -350,6 +383,20 @@ func _load_saved(directory: String, backup: bool = false) -> Dictionary:
 	var loaded: Dictionary = Session.load_candidate("res://generated/config.json", directory, backup)
 	if not loaded.ok: return loaded
 	return _replace_session(loaded.session)
+
+func _discard_settings_previews() -> void:
+	var had_preview: bool = not _pending_import.is_empty() or not _pending_new_game.is_empty()
+	_pending_import = {}
+	_pending_new_game = {}
+	if had_preview: _report_status("离开或收起设置，未确认的预览已取消。")
+
+func _cancel_import_preview() -> Dictionary:
+	_pending_import = {}
+	return {"ok": true, "message": "已取消导入预览，当前游戏未更改。"}
+
+func _cancel_new_game_preview() -> Dictionary:
+	_pending_new_game = {}
+	return {"ok": true, "message": "已取消新游戏预览，当前游戏未更改。"}
 
 func _preview_import(directory: String, source_file: String) -> Dictionary:
 	_pending_import = {}
@@ -650,6 +697,7 @@ func _setup_growth_panel() -> void:
 	_battle_input_shield.size = Vector2(632, 900)
 	_battle_input_shield.color = Color.TRANSPARENT
 	_battle_input_shield.mouse_filter = Control.MOUSE_FILTER_STOP
+	_battle_input_shield.gui_input.connect(_battle_focus_exit)
 	_host.add_child(_battle_input_shield)
 	_host.route_requested.connect(_select_left_module)
 	_host.collapse_requested.connect(_collapse_module)
@@ -700,6 +748,10 @@ func _setup_growth_panel() -> void:
 	box = _pages.notifications.box
 	box.add_child(NotificationsPanel.new(session.notifications, _player_text))
 	box = _pages.settings.box
+	var preview_hint := Label.new()
+	preview_hint.text = "预览不会改变当前游戏；离开或收起设置会取消未确认的预览。"
+	PlayerText.wrap(preview_hint)
+	box.add_child(preview_hint)
 	var save_path := LineEdit.new()
 	save_path.placeholder_text = "存档目录（完整路径）"
 	save_path.text = session.save_files._directory if session.save_files != null else _startup_directory
@@ -800,6 +852,7 @@ func _setup_growth_panel() -> void:
 	box.add_child(clear_settings)
 	_command_button(box, "预览新游戏", func() -> Dictionary:
 		return _preview_new_game(save_path.text, clear_settings.button_pressed))
+	_command_button(box, "取消新游戏预览", _cancel_new_game_preview)
 	_command_button(box, "确认新游戏", func() -> Dictionary:
 		return _confirm_new_game(save_path.text, clear_settings.button_pressed))
 	_command_button(box, "加载主存档", func() -> Dictionary:
@@ -820,6 +873,7 @@ func _setup_growth_panel() -> void:
 		return {"ok": true, "message": "请选择游戏存档文件"})
 	_command_button(box, "预览导入", func() -> Dictionary:
 		return _preview_import(save_path.text, import_path.text))
+	_command_button(box, "取消导入预览", _cancel_import_preview)
 	_command_button(box, "确认导入", func() -> Dictionary:
 		return _apply_import(save_path.text, import_path.text))
 	box = _pages.reforge.box

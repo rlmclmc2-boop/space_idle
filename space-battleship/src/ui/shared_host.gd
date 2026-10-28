@@ -9,6 +9,11 @@ const PRIMARY := [["equipment", "装备", 80], ["reactor", "反应炉", 96],
 const SECONDARY := [["ship", "舰船"], ["campaign", "航程"], ["attributes", "属性"],
 	["archive", "档案"], ["notifications", "通知"], ["settings", "设置"], ["reforge", "重铸"]]
 var routes: Dictionary = {}
+var _titles: Dictionary = {}
+var _collapsed_area: Control
+var _collapsed_background: TextureRect
+var _collapsed_label: Label
+var _restore_button: Button
 var contexts: Dictionary = {}
 var active: String = "equipment"
 var collapsed: bool = false
@@ -71,12 +76,14 @@ func _init(economy) -> void:
 		_buttons[id] = button
 		x += float(spec[2]) + 4
 	var more := _button("更多", Rect2(x, 34, 80, 30))
+	more.toggle_mode = true
 	_buttons.more = more
 	more.pressed.connect(func():
 		_more.position = Vector2i(576, 67)
 		_more.popup())
 	_more = PopupPanel.new()
 	add_child(_more)
+	_more.visibility_changed.connect(func(): _buttons.more.set_pressed_no_signal(_more.visible or not _buttons.has(active)))
 	var menu := VBoxContainer.new()
 	menu.custom_minimum_size.x = 218
 	_more.add_child(menu)
@@ -108,6 +115,40 @@ func _init(economy) -> void:
 	close.text = "关闭"
 	stack.add_child(close)
 	close.pressed.connect(_details.hide)
+	_collapsed_area = Control.new()
+	_collapsed_area.position = Vector2(0, 65)
+	_collapsed_area.size = Vector2(808, 835)
+	_collapsed_area.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(_collapsed_area)
+	_collapsed_background = TextureRect.new()
+	_collapsed_background.size = _collapsed_area.size
+	_collapsed_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_collapsed_area.add_child(_collapsed_background)
+	var dim := ColorRect.new()
+	dim.size = _collapsed_area.size
+	dim.color = Color(0.025, 0.07, 0.10, 0.62)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_collapsed_area.add_child(dim)
+	var card := PanelContainer.new()
+	card.position = Vector2(220, 315)
+	card.size = Vector2(368, 180)
+	_collapsed_area.add_child(card)
+	var content := VBoxContainer.new()
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	card.add_child(content)
+	_collapsed_label = Label.new()
+	_collapsed_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_collapsed_label.add_theme_font_size_override("font_size", 22)
+	content.add_child(_collapsed_label)
+	var caption := Label.new()
+	caption.text = "返回后查看最新状态"
+	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	content.add_child(caption)
+	_restore_button = Button.new()
+	_restore_button.custom_minimum_size.y = 42
+	_restore_button.pressed.connect(func(): collapse_requested.emit())
+	content.add_child(_restore_button)
+	_collapsed_area.hide()
 
 func _button(caption: String, rect: Rect2) -> Button:
 	var button := Button.new()
@@ -128,6 +169,7 @@ func _button(caption: String, rect: Rect2) -> Button:
 
 func register_route(id: String, title: String, view: Control) -> void:
 	routes[id] = view
+	_titles[id] = title
 	var slot := Control.new()
 	slot.size = Vector2(96, 26)
 	slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -149,8 +191,15 @@ func show_route(id: String, is_collapsed: bool = false) -> void:
 		routes[key].visible = key == id and not collapsed
 		contexts[key].visible = key == id
 	for key in _buttons:
-		_buttons[key].set_pressed_no_signal(key == id and not collapsed)
+		_buttons[key].set_pressed_no_signal(key == id or (key == "more" and not _buttons.has(id)))
 	_collapse.text = "恢复模块" if collapsed else "收起模块"
+	_collapsed_area.visible = collapsed
+	_collapsed_label.text = "%s已收起" % _titles[id]
+	_restore_button.text = "恢复%s" % _titles[id]
+	if not collapsed: _collapsed_background.texture = null
+
+func set_collapsed_background(image: Image) -> void:
+	_collapsed_background.texture = ImageTexture.create_from_image(image)
 
 func set_availability(values: Dictionary) -> void:
 	_availability = values
