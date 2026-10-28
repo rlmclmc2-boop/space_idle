@@ -7,7 +7,7 @@
 - `src/ui/reactor_scene.gd`：独立808×900真实Control，四路滑杆/整组预览确认、还原、均分与购级绑定；无精确数值输入/四块白卡。显示通过只读reader绑定，不读取领域私有缓存，不解析Amount或自算费用/倍率。
 - `src/ui/reactor_stage.gd`及`assets/ui/reactor/centered-v1`：分离透明静态主体、四设备可见输入口、源坐标端口投影和独立工作shader。暂停/隐藏控制显式模拟phase，草稿不驱动真实工作负载。
 - Godot4.7.2源码check-only通过；同API/Linux native构建完成，原e93主场景headless启动30帧无错误。它证明环境启动，不证明新反应堆已在共享宿主接入。
-- [可视化夹具截图](evidence/visual-fixture-only.png)是实际Godot渲染但使用明确的受控显示数据，**不是完整游戏/自然开放/真实领域接口证据**。[临时夹具驱动文本](evidence/visual-fixture-driver.gd.txt)与[日志](evidence/visual-fixture-motion.log)保留出处。0.6秒两帧差异：core10632、weapons606、defence1369、smelting1087、condensation362像素；暂停field_updates不增加，隐藏后场景计数不增加。这只支持局部shader/显隐时钟实现，不记为动态性能或全流程通过。
+- [可视化夹具截图](evidence/visual-fixture-only.png)是实际Godot渲染但使用明确的受控显示数据，**不是完整游戏/自然开放/真实领域接口证据**。[临时夹具驱动文本](evidence/visual-fixture-driver.gd.txt)与[日志](evidence/visual-fixture-motion.txt)保留出处。0.6秒两帧差异：core10632、weapons606、defence1369、smelting1087、condensation362像素；暂停field_updates不增加，隐藏后场景计数不增加。这只支持局部shader/显隐时钟实现，不记为动态性能或全流程通过。
 - 标记原图已从a8a214a4取回并实际查看。四路实体/流光共享源图端口投影，新的输入口朝内可见；最终正常/暂停/缩放/上两路近景接合仍未通过。
 
 ## 待根线程协调的最小接入点
