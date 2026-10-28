@@ -1,6 +1,6 @@
 {
   "generator": "image_gen.imagegen",
-  "status": "reference_judgment_cross_review_approved_single_compact_junction_image_validation_pending_review_with_unresolved_connections",
+  "status": "single_center_core_four_surrounding_modules_composition_image_pending_independent_review_and_user_confirmation",
   "target_client_logical_px": [
     1440,
     900
@@ -18,6 +18,14 @@
     900
   ],
   "images": [
+    {
+      "path": "reactor-centered-four-r1-raw.png",
+      "native_size_px": [
+        1586,
+        992
+      ],
+      "sha256": "00b802b25a2ceeaec492f3e4a4b5f22f28e5f91858b74aad920defb5d57de36e"
+    },
     {
       "path": "reactor-compact-junction-r1-raw.png",
       "native_size_px": [
@@ -125,8 +133,8 @@
   ],
   "pixel_processing": "none: generator outputs copied unchanged",
   "runtime_evidence": false,
-  "geometry_issue": "Junction R1 generated divider near x921 / width1586 (~58.1%), equivalent logical x836; target x808; exact region compliance still fails.",
-  "review_image": "reactor-compact-junction-r1-raw.png",
+  "geometry_issue": "Centered R1 divider still near native x921 / width1586 (~58.1%), equivalent logical x836 versus target x808; exact region compliance not passed.",
+  "review_image": "reactor-centered-four-r1-raw.png",
   "interaction_display": "All four directly adjustable sliders; only selected condensation device expands precise entry, clear draft and detail; unchanged values not duplicated; whole-plan confirm inactive.",
   "comparison_images": [
     "reactor-four-fixed-raw.png",
@@ -139,15 +147,16 @@
     "Static images do not prove scrolling coupling alignment, input hit areas or natural unlock flow."
   ],
   "selected_layout": "fixed_four_continuous_bays",
-  "revision_scope": "Preserve accepted core and4 module bodies; test compact common distribution junction and4 short functional docking/control interfaces. Reference images used for relations only.",
+  "revision_scope": "Authorized unique next composition: center core, weapons upper-left, defence upper-right, iron lower-left, condensation lower-right;4 short radial interfaces,4 horizontal direct sliders,1 master same screen. Stop old left-core/right-list repairs.",
   "rejected_image": "reactor-four-fixed-pipe-frame-r1-raw.png",
   "structure_review": "shared-power-structure-review.md",
   "latest_visual_findings": [
-    "Recognizable common functional junction adjacent to core, accepted core/four small modules preserved.",
-    "Upper/lower outputs remain elongated vertical pipe/service sections;4 directly seated short common interfaces not fully achieved.",
-    "Repeated framed readout zones and horizontal separation remain; display-cabinet/industrial-rack risk not closed.",
-    "All4 subjects/direct sliders/core master controls visible; draft labels missing on per-device controls, current-vs-draft clarity incomplete.",
-    "Native divider still exceeds target; slider knob proportions only approximate and do not prove input geometry."
+    "Core central; four module identities and required diagonal positions visible.",
+    "All4 short diagonal connections meet common core assembly, no vertical long distribution trunk.",
+    "4 horizontal directly available draft sliders and1 core master control strip same screen; selected condensation precise/clear/detail retained.",
+    "No room-scale monocoque enclosure or four closed cabinet niches; each device retains its own housing.",
+    "4 light operating surfaces still appear separately framed; integrated operating ownership/overall display feel requires holistic independent review.",
+    "Native output size and left/right split residual remain; no runtime or interaction validation."
   ],
   "rejected_images": [
     "reactor-four-fixed-pipe-frame-r1-raw.png",

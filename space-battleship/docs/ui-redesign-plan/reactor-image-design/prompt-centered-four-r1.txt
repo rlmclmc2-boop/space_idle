@@ -1,0 +1,36 @@
+ONE NEW COMPOSITION IMAGE for an operable spaceship reactor game UI. MANDATORY COMPOSITION CHANGE: LARGE CORE IN CENTER, FOUR MODULES SURROUND CORE at DIAGONAL CORNERS. DISCARD old layout of core on left and four rows on right entirely. The supplied reference is ONLY for the already-approved CORE/MODULE BODY DESIGNS and visual language, NOT its old arrangement, old vertical distribution pipe, cabinet framing or list column. You MUST rearrange positions, scale and mounting structures.
+
+FULL WINDOW target1440x9008:5. LEFT MODULE exactly808px56.111% width; RIGHT existing combat reference632px43.889%. Do not enlarge left module or let objects cross boundary. On1586-wide native canvas left limit is890px, NOT921/1030. Reference's wrong width does not authorize copying it. Keep top shared cream header/navigation/resources compact withinLEFT808, battle ordinary status and pause/驻守 in right region. Whole-window straight-on game UI, no cropped module-only concept painting.
+
+DETAILED LEFT MODULE PLACEMENT in logical808x900:
+- shared compact header/nav at y0..70.
+- CORE centered near(x404,y450), circular installed core body approx260–290 diameter. It is CENTRAL focal object, NOT left-aligned and NOT a room portal. Preserve accepted ivory containment ring/deep teal plasma sphere identity.
+- WEAPONS at UPPER LEFT around(x180,y215), DEFENCE UPPER RIGHT around(x628,y215).
+- IRON REFINEMENT LOWER LEFT around(x180,y675), FRAGMENT CONDENSATION LOWER RIGHT around(x628,y675).
+- Each device approx130–155px body, clearly recognizable substantive real machinery, not tiny icons. Installation ends face INWARD toward core and plug via a SHORT precision interface into same central assembly. Four short diagonal radial docking contacts, no vertical trunk. Use controlled overlap so all4 read as docked to central functional body.
+- Each module has compact horizontal operating ledge near OUTER SIDE of its own device/support: terse effect/current effective readout and a HORIZONTAL direct slider + minus/plus, not vertical/angled text. Suggested top ledges at y290..345, bottom at y745..800; left ledge inside x20..245, right ledge inside x565..790, nothing crosses edge or hides core. Labels and controls legible. These are intrinsic hardware ledges, no four independent white description cards, no central long form, no closed 2x2 cabinet grid.
+- Only selected LOWER RIGHT condenser ledge has advanced精确值/清零草稿/详情 in compact nearby positions, not extra per-module Apply.
+- ONE CORE MASTER CONSOLE as compact horizontal instrument strip within y820..890, all808wide max, belongs to same core assembly: level/budget and upgrade/equal-preview/whole-confirm/restore readable. Not independent page footer. All4 machines+all4 horizontal sliders+central core+ONE master same view, no scroll.
+These positions may adjust slightly for physical clearance but NEVER revert to four vertical rows at right or place core on left.
+
+ONE ASSEMBLY:
+Existing central core has a compact shared collar/junction around its own outer edge. Four clear short output docks point to four surrounding module installation ends. Core, docking collar and4 installed work modules form ONE functional power assembly. Only necessary contact geometry and small contained energy windows visible; energy travels inside structure. No long pipes, external hoses, giant distribution spine, clamps, cable forests, exposed cast engine blocks, thick rack. Do not add four separate little cores.
+Casing only supports energy/installation/contact function; no broad flowing S-shaped room walls, bedroom/hibernation capsule surround, floor/ceiling/furniture or giant architectural curved background. Quiet deep desaturated teal technical negative space around actual hardware. NO four closed recesses, shelves, pedestals or repeated cabinet borders. Ignoring text, read central source with4 genuinely connected consumers, not four displayed products.
+Style warm ivory composite shell/deep teal internal structure, clean illustrated futuristic spacecraft machinery, modest jade energy and restrained amber details. Few purposeful precise hardware shapes, controlled lighting, not extra neon as decoration.
+
+MODULE BODY identities retained from reference:
+weapons compact enclosed field-amplifier pod with recessed precision emitter bands, no exposed copper coil;
+defence layered field-emitter disk/curved capacitor;
+iron sealed transparent dark-teal matter chamber with small contained amber seed, no open furnace flame;
+fragment curved containment cradle holding small blue shard seed, no jewel gameplay.
+Do not re-invent core as vertical warp column or new huge sphere from another franchise.
+
+FUNCTIONAL READOUTS AND CONTROL:
+UPPER LEFT 武器×1.19,供能40; direct horizontal草稿40 slider thumb40% from left +minus/plus.
+UPPER RIGHT 防御×1.15,供能30; horizontal草稿30 slider30%.
+LOWER LEFT 铁产出×1.11,供能20; horizontal草稿20 slider20%.
+LOWER RIGHT 碎片×1.06,供能10; horizontal草稿10 slider10%; precise/clear/detail buttons only here.
+Actual current effects/供能 and editable草稿 must be distinguishable; no redundant unchanged actual-target duplicates, no zero free rows. All4 sliders directly operable, no mandatory Edit step.
+Core single console等级1 手动容量100 已分配100 剩余0 升级1级·10铀,均分预览,inactive整组确认,还原草稿. No per-device Apply, no heat/efficiency/return-energy mechanics, no new tabs or currencies.
+
+RIGHT arena original reference context only: planet upper right, small red enemy upper center, slender cyan beam to ivory cruiser lower area with drones/simple bars. Keep its full43.889% width, no reactor overlap, no new spaceship design or battlefield mechanics. Ordinary 第12星域·交战中; no review/P3/待批 jargon. Chinese labels sharp/readable; no design explanation or teaching text. No HTML/SVG/code, one new complete-window IMAGE. SELF-CHECK: CENTER CORE, weapons upper-left, defence upper-right, iron lower-left, fragments lower-right, four short docks, four horizontal sliders, one console. No old left-core/right-list arrangement.
