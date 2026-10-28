@@ -1,5 +1,9 @@
 # 装备机库：Godot 实施候选
 
+## 当前：旧布局实施冻结，转整体图稿方向比较
+
+用户已停止沿当前布局继续实施。运行源码5b4f72331038622ce739578fcdf3823a0a0b4716、补图d446d9a2b9674ad530c0ab712d7a51b5bd14ec4f及全部WIP保留；局部分项通过不等于整体视觉通过。本轮仅在现有图稿目录用ImageGen比较不同整体组织，B/C两组主图及工具/成熟度限制见 [directions交付](../../ui-redesign-plan/g1-internal/equipment-image-design/directions/README.md)，A淘汰且全部原版保留；要求已更新M2；用户确认前不改运行代码/共享宿主/业务/config、不合main。下文实施状态仅作历史，未恢复制作或运行测试。执行者未实际压缩。
+
 ## 2026-10-28 选中徽标避让窄修正（待原审）
 
 最终源码5b的 [同版新局Frigate/Cruiser补图](badge-pass/same-version/README.md)已齐，与6ce既有Heavy图组成大小舰交付；本次只取图/记录，未改代码或重跑整套测试。根审已确认武3/武5窄修可关闭，原独审收尾；未合main，之后等待用户视觉验收，不自行启动新批。
