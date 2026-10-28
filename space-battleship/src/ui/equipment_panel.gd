@@ -33,6 +33,7 @@ var _weapon_meta: Dictionary
 var _textures: Dictionary = {}
 var _hull_textures: Dictionary = {}
 var _background: Texture2D
+var _upgrade_surface: Texture2D
 var _title: Label
 var _wallet: Label
 var _current_title: Label
@@ -71,7 +72,6 @@ var _batch_secondary: Label
 var _batch_frame: Panel
 var _batch_close: Button
 var _selection_open: bool = true
-var _empty_choice: Button
 var last_result: Dictionary = {}
 var _last_batch_result: Dictionary = {}
 var _batch_balance: String = ""
@@ -89,6 +89,7 @@ func _init(session) -> void:
     _textures.shield = load("res://assets/ui/equipment/cartoon_shield.svg")
     _textures.armour = load("res://assets/ui/equipment/cartoon_armour.svg")
     _background = load("res://assets/ui/equipment/hangar/hangar-console.png")
+    _upgrade_surface=load("res://assets/ui/equipment/hangar/upgrade-console.svg")
     _setup_materials()
     _build()
     _session.equipment.slots_changed.connect(func(_ids): _dirty = true)
@@ -234,12 +235,14 @@ func _build() -> void:
     _label("远航舰桥",Rect2(24,10,160,34),23)
     _wallet=_label("",Rect2(204,16,590,30),15)
     _label("战力维护  /  装配",Rect2(24,52,380,28),14,Color("57777a"))
-    _title=_label("装配",Rect2(26,99,480,34),22)
-    _title.add_theme_stylebox_override("normal",_style(Color("f3f0df",0.90),Color(0,0,0,0),0))
+    _title=_label("装配",Rect2(35,104,236,30),18,CREAM)
+    _title.add_theme_color_override("font_shadow_color",Color("173542"))
+    _title.add_theme_constant_override("shadow_offset_x",1)
+    _title.add_theme_constant_override("shadow_offset_y",2)
     _button("全部装备升级",Rect2(614,96,174,49),_open_batch,true).name="BatchOpen"
-    _current_title=_label("现装升级",Rect2(34,612,334,28),19)
-    _level_label=_label("",Rect2(380,617,78,22),13,Color("657c7b"))
-    _large_icon=_icon("laser",Rect2(42,649,64,64))
+    _current_title=_label("现装升级",Rect2(42,610,330,29),18,CREAM)
+    _level_label=_label("",Rect2(383,615,70,22),13,Color("aec5be"))
+    _large_icon=_icon("laser",Rect2(42,656,64,64))
     _current_caption=_label("当前攻击力",Rect2(130,648,140,22),12,Color("6b7d79"))
     _upgrade_caption=_label("升级后",Rect2(306,648,146,22),12,Color("557a78"))
     _current_value=_label("—",Rect2(130,671,140,38),27)
@@ -248,37 +251,39 @@ func _build() -> void:
     for value in [_current_value,_next_value]:
         value.mouse_filter=Control.MOUSE_FILTER_PASS
         value.clip_text=true
-    _cost=_label("本次费用",Rect2(34,714,420,20),13,Color("647b75"))
-    _payment_state=_label("",Rect2(34,738,420,54),16,Color("a75a3d"))
+    _cost=_label("本次费用",Rect2(38,737,104,24),13,Color("647b75"))
+    _payment_state=_label("",Rect2(38,766,414,31),13,Color("a75a3d"))
     _payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
     for index in 3:
         var captions := ["+1","+10","MAX"]
-        var button := _button(captions[index],Rect2(32+index*67,801,62,41),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
+        var button := _button(captions[index],Rect2(34+index*65,810,59,37),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
         button.name="Quantity"+str(index)
         _quantity_buttons.append(button)
-    _purchase=_button("购买1级",Rect2(246,797,218,47),_buy,true)
+    _purchase=_button("购买1级",Rect2(242,806,218,40),_buy,true)
     _purchase.name="Purchase"
-    _comparison_title=_label("装备选择",Rect2(508,612,210,27),18,CREAM)
-    _empty_choice=_button("卸下",Rect2(724,613,58,28),_select_candidate.bind(""))
-    _empty_choice.add_theme_font_size_override("font_size",12)
+    _comparison_title=_label("装备选择",Rect2(508,608,260,27),18,CREAM)
     _compare=_label("",Rect2(508,735,268,62),13,CREAM)
     _compare.hide()
     for column in 2:
-        var header:=_label("",Rect2(565+column*105,737,100,22),12,Color("cbdad5") if column==0 else Color("91e4cf"))
+        var header:=_label("",Rect2(565+column*105,730,100,19),12,Color("cbdad5") if column==0 else Color("91e4cf"))
         header.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
         header.add_theme_font_override("font",_font_strong)
+        header.size=Vector2(100,19)
         _compare_headers.append(header)
-        var value:=_label("—",Rect2(565+column*105,757,100,26),17,CREAM if column==0 else Color("a2f0d6"))
+        var value:=_label("—",Rect2(565+column*105,749,100,25),17,CREAM if column==0 else Color("a2f0d6"))
         value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
         value.add_theme_font_override("font",_font_strong)
+        value.size=Vector2(100,25)
         _compare_values.append(value)
-        var period:=_label("—",Rect2(565+column*105,783,100,22),13,Color("b6c9c6") if column==0 else Color("91caba"))
+        var period:=_label("—",Rect2(565+column*105,774,100,19),12,Color("b6c9c6") if column==0 else Color("91caba"))
         period.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+        period.size=Vector2(100,19)
         _compare_periods.append(period)
-    _compare_row_label=_label("攻击力",Rect2(508,758,57,24),12,Color("a8bfbc"))
-    _label("周期",Rect2(508,783,57,22),12,Color("8faeab")).name="PeriodCaption"
-    _switch_state=_label("",Rect2(508,807,270,18),12,Color("f2cb83"))
-    _install=_button("安装",Rect2(505,829,277,36),_equip,true)
+    _compare_row_label=_label("攻击力",Rect2(508,749,57,25),12,Color("a8bfbc"))
+    _label("周期",Rect2(508,774,57,19),12,Color("8faeab")).name="PeriodCaption"
+    _switch_state=_label("",Rect2(508,794,260,17),11,Color("f2cb83"))
+    _switch_state.size=Vector2(260,17)
+    _install=_button("安装",Rect2(524,812,244,36),_equip,true)
     _install.name="Install"
     _feedback=_label("",Rect2(25,875,757,24),12,Color("e5e7da"))
     _feedback.clip_text=true
@@ -288,24 +293,28 @@ func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
     for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
     _payment_state.text=""
-    _cost.text="本次费用" if affordable or not quote.get("ok",false) else "本次费用 · "+_reason(reason)
+    _purchase.tooltip_text=""
+    _cost.text="本次费用"
+    _payment_state.position=Vector2(38,766);_payment_state.size=Vector2(104,31)
+    _payment_state.text="" if affordable else _reason(reason)
     for index in keys.size():
         var id: String=str(keys[index])
         if not _cost_cells.has(id):
-            var name:=_label("",Rect2(34,730,110,23),13,Color("5f7876"))
-            var amount:=_label("",Rect2(147,730,307,24),17,INK)
+            var name:=_label("",Rect2(143,737,102,23),13,Color("5f7876"))
+            var amount:=_label("",Rect2(246,733,208,25),17,INK)
             amount.add_theme_font_override("font",_font_strong)
             amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
             _cost_cells[id]={"name":name,"amount":amount}
         var cell: Dictionary=_cost_cells[id]
-        cell.name.position.y=736+index*20
-        cell.amount.position.y=734+index*20
+        cell.name.position.y=737+index*24
+        cell.amount.position.y=733+index*24
         cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
         var formatted: Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
         cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
         cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"))
         cell.name.show();cell.amount.show()
     if not quote.get("ok",false):
+        _payment_state.size=Vector2(414,31)
         _payment_state.text=_reason(str(quote.get("reason",quote.get("error","Unknown"))))
     elif not affordable:
         _purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
@@ -426,14 +435,14 @@ func _refresh_comparison() -> void:
     _level_label.text = "Lv."+str(fact.paid_level)
     _current_value.text = _value(comparison.current)
     _next_value.text = _value(comparison.upgrade)
-    _current_value.tooltip_text=str(comparison.current.get("primary","—")) if comparison.current is Dictionary else "—"
-    _next_value.tooltip_text=str(comparison.upgrade.get("primary","—")) if comparison.upgrade is Dictionary else "—"
+    _current_value.tooltip_text=str(comparison.current.primary) if comparison.current is Dictionary and comparison.current.get("primary")!=null else _value(comparison.current)
+    _next_value.tooltip_text=str(comparison.upgrade.primary) if comparison.upgrade is Dictionary and comparison.upgrade.get("primary")!=null else _value(comparison.upgrade)
     var long_values: bool = _font_strong.get_string_size(_next_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>148 or _font_strong.get_string_size(_current_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,27).x>140
     _upgrade_arrow.visible=not long_values
-    _current_caption.position=Vector2(130,647 if long_values else 648)
-    _upgrade_caption.position=Vector2(130,680) if long_values else Vector2(306,648)
-    _current_value.position=Vector2(232,640) if long_values else Vector2(130,671)
-    _next_value.position=Vector2(232,673) if long_values else Vector2(306,671)
+    _current_caption.position=Vector2(130,656 if long_values else 652)
+    _upgrade_caption.position=Vector2(130,687) if long_values else Vector2(306,652)
+    _current_value.position=Vector2(232,647) if long_values else Vector2(130,674)
+    _next_value.position=Vector2(232,678) if long_values else Vector2(306,674)
     _current_value.size=Vector2(222 if long_values else 140,38)
     _next_value.size=Vector2(222 if long_values else 148,38)
     var quote: Dictionary = comparison.quote
@@ -448,10 +457,9 @@ func _refresh_comparison() -> void:
     _compare.text = "当前%s     所选%s\n%s  %s  /  %s" % [NAMES.get(str(fact.equipment_id), "空槽"), NAMES.get(_candidate, "空槽"), primary, _value(comparison.current), _value(comparison.candidate)]
     if fact.category == "weapon":
         _compare.text += "\n攻击周期  %s  /  %s" % [_interval(comparison.current), _interval(comparison.candidate)]
-    _install.text = "安装" + str(NAMES.get(_candidate, "装备")) if not _candidate.is_empty() else "卸下装备"
-    _install.disabled = not comparison.switch_admission.ok
+    _install.text = "安装" + str(NAMES.get(_candidate, "装备")) if not _candidate.is_empty() else "选择装备"
+    _install.disabled = _candidate.is_empty() or not comparison.switch_admission.ok
     _install.tooltip_text = "" if comparison.switch_admission.ok else _reason(str(comparison.switch_admission.reason))
-    _empty_choice.visible = _selection_open and _selected != "defence:0"
     _compare.visible = false
     _install.visible = _selection_open
     _comparison_title.text = "装备选择"
@@ -462,7 +470,10 @@ func _refresh_comparison() -> void:
         _compare_values[column].text=_value(row)
         _compare_periods[column].text=_interval(row) if fact.category=="weapon" else ""
     get_node("PeriodCaption").visible=fact.category=="weapon"
-    if str(comparison.switch_admission.get("reason",""))=="NoChange":_install.text="已装备"
+    if _candidate.is_empty():
+        _install.text="选择装备"
+        _install.tooltip_text=""
+    elif str(comparison.switch_admission.get("reason",""))=="NoChange":_install.text="已装备"
     elif str(comparison.switch_admission.get("reason",""))=="EquipmentSwitchLocked":_install.text="换装冷却中"
     elif str(comparison.switch_admission.get("reason",""))=="EquipmentLocked":_install.text="尚未解锁"
     for index in 3:
@@ -500,7 +511,7 @@ func _refresh_slots(active: Array) -> void:
         var item: Dictionary=_slot_buttons[id]
         item.button.position=_slot_label_position(row)
         item.caption.text=str(NAMES.get(str(row.equipment_id),"装备"))
-        item.meta.text="%s · Lv.%s" % [_slot_name(id),str(row.paid_level)]
+        item.meta.text="%s · Lv.%s" % [_slot_name(id).replace("武器","武器槽").replace("防御","防御槽"),str(row.paid_level)]
         item.icon.texture=_textures.get(str(row.equipment_id))
         item.led.color=Color("f5cc84") if id==_selected else Color("3f777c")
         item.housing.modulate=Color("fff1d0") if id==_selected else Color.WHITE
@@ -537,7 +548,7 @@ func _refresh_choices(fact: Dictionary) -> void:
         if _choice_presentations.get(id)==signature:column+=1;continue
         _choice_presentations[id]=signature;presentation_counts.candidates_updated+=1
         var item: Dictionary=_choices[id]
-        item.button.position=Vector2(505+column*70,644)
+        item.button.position=Vector2(505+column*70,638)
         item.button.visible=_selection_open;item.button.disabled=not option.enabled
         item.caption.text=str(NAMES.get(id,option.name))
         item.status.text="已装备" if str(fact.equipment_id)==id else "未解锁" if not option.enabled else "待安装" if _candidate==id else ""
@@ -679,10 +690,15 @@ func _mount_position(row: Dictionary) -> Vector2:
     if row.category == "weapon":
         var mounts: Array = _catalog[_ship].mounts
         return rect.position + Vector2(float(mounts[int(row.index)][0]), float(mounts[int(row.index)][1])) / 768.0 * rect.size
-    return Vector2(353 if int(row.index) == 0 else 453, 453)
+    # Defence has no weapon-manifest geometry. These are distinct UI attachment markers.
+    return [Vector2(353,453),Vector2(453,453),Vector2(404,492)][mini(int(row.index),2)]
 
 func _slot_label_position(row: Dictionary) -> Vector2:
-    if row.category=="defence":return Vector2(66 if int(row.index)==0 else 522,440)
+    if row.category=="defence":return [Vector2(66,440),Vector2(522,440),Vector2(536,164)][mini(int(row.index),2)]
+    var count: int=_catalog[_ship].mounts.size()
+    if count==2 or count==4:
+        # Even mount layouts have a left/right pair rather than a centre bow mount.
+        return Vector2(52 if int(row.index)%2==0 else 536,(260 if count==2 else 215)+floori(float(row.index)/2.0)*135)
     var positions: Array=[Vector2(294,129),Vector2(52,260),Vector2(536,260),Vector2(52,350),Vector2(536,350)]
     return positions[mini(int(row.index),positions.size()-1)]
 
@@ -691,6 +707,8 @@ func _draw() -> void:
     draw_rect(Rect2(0,0,808,900),CREAM)
     draw_texture_rect_region(_background,Rect2(0,85,808,485),Rect2(0,0,1188,845))
     draw_texture_rect_region(_background,Rect2(0,570,808,330),Rect2(0,845,1188,479))
+    # The ship name is lettered directly on the hangar beam, without a floating plaque.
+    draw_texture_rect(_upgrade_surface,Rect2(24,606,452,252),false)
     if _ship.is_empty() or not _catalog.has(_ship):return
     for row in _facts:
         if row.dormant:continue

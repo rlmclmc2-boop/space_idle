@@ -96,5 +96,18 @@
       "decision": "Inspected original output; residual detached white specks remain above the outline. Not loaded or submitted as production art. Original is preserved."
     },
     "old_png_usage": "terminal-housing.png kept for provenance only; no longer loaded. support-arm.png unchanged and still used."
+  },
+  "workbench_revision_2026_10_28": {
+    "asset": "upgrade-console.svg",
+    "sha256": "88f6ccb9f1039ab2861e29627ee31a54e9461e37fba689c78857a4ea3fd05599",
+    "source": "New authored SVG geometry and gradients matching the existing hangar workbench; no baked labels, numbers or controls.",
+    "runtime_rect": [
+      24,
+      606,
+      452,
+      252
+    ],
+    "scope": "Only the existing left workbench interior; object beam, value inset, resource ledger and action sill. Ship name now letters directly on the original hangar beam; no title plaque.",
+    "formal_assets": "All hull and weapon PNGs/manifests unchanged. Defence attachment markers are separate UI presentation points, not weapon-manifest geometry."
   }
 }
