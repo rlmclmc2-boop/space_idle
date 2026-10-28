@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FAIL: actual unpaused timed movement
+FAIL: live encounter really present in runtime window
+FAIL: actual generator owns edge pickup
+FAIL: actual generator owns edge pickup
+FAIL: one targeted weapon factor notice
+FAIL: weapon current actually changed
+FAIL: weapon upgrade actually changed
+FAIL: weapon candidate actually changed
+FAIL: one targeted defence factor notice
+FAIL: defence current actually changed
+FAIL: defence upgrade actually changed
+FAIL: defence candidate actually changed
+REVIEW_RUNTIME_COMPLETE failures=12 moving_signals=0 comparisons=0 reactor_matches=true

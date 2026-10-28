@@ -187,10 +187,6 @@
       "sha256": "156160722b9b7433eb535ebe3817250e779d08798feaeda60dc422da684fb505",
       "bytes": 324081
     },
-    "regression-recovery-window/runtime.log": {
-      "sha256": "15f4df2eb1367ae99c2359e4ce96447a3b104bcfe00331096ab5046415c1d71d",
-      "bytes": 943
-    },
     "font-raster.png": {
       "sha256": "8066ec7229d7a9a6a8ae5d63f944c5a45aa3d85c0485a40fb8f52acbd9ed8319",
       "bytes": 25917
@@ -198,18 +194,6 @@
     "font-raster.json": {
       "sha256": "13d49cda1fbee799c9a85e654fc92db00fc8213b3c806e586b717466372d5355",
       "bytes": 967
-    },
-    "font-raster.log": {
-      "sha256": "a928d24e621d223b636fe7bbb196a81dbf96189bf08300b5811b7f86de045d0b",
-      "bytes": 1065
-    },
-    "candidate.log": {
-      "sha256": "3a70161e62b1e1f6acc6906bb137da31f1b25ffa613bee4d78952a9fb8b1e6c0",
-      "bytes": 417
-    },
-    "regression.log": {
-      "sha256": "e1d2427f1735f1dbad3fd78df21dadc63dc8c449b1533dd2a527183e947c4069",
-      "bytes": 456
     },
     "capture-driver.gd.txt": {
       "sha256": "bd5bdf9917a9fdc26ced0bf9593ac21fa4128b051ebc91317ed5bf93391c1117",
@@ -224,8 +208,24 @@
       "bytes": 1994
     },
     "README.md": {
-      "sha256": "a9e65ea6eb05830127f514e342a574cc69996d971a776fc7e468c7ecf233d3fd",
-      "bytes": 7521
+      "sha256": "5bdabfba5d5c76d1d611041608a493220575e13679d1ad7bf702edc20c28bb39",
+      "bytes": 7525
+    },
+    "regression-recovery-window/runtime.log.txt": {
+      "sha256": "15f4df2eb1367ae99c2359e4ce96447a3b104bcfe00331096ab5046415c1d71d",
+      "bytes": 943
+    },
+    "font-raster.log.txt": {
+      "sha256": "a928d24e621d223b636fe7bbb196a81dbf96189bf08300b5811b7f86de045d0b",
+      "bytes": 1065
+    },
+    "candidate.log.txt": {
+      "sha256": "3a70161e62b1e1f6acc6906bb137da31f1b25ffa613bee4d78952a9fb8b1e6c0",
+      "bytes": 417
+    },
+    "regression.log.txt": {
+      "sha256": "e1d2427f1735f1dbad3fd78df21dadc63dc8c449b1533dd2a527183e947c4069",
+      "bytes": 456
     }
   },
   "image_scope": "All candidate/regression/recovery-window screenshots are raw 1440x900 Godot root viewport PNGs, not resized/cropped/composited. Font raster is an isolated real Godot sample, not the game UI.",

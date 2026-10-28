@@ -24,7 +24,7 @@
 
 ## 四项原关闭修复的同版定向回归
 
-[原始runtime.json](regression/runtime.json)及[日志](regression.log) `failures=0`：
+[原始runtime.json](regression/runtime.json)及[日志](regression.log.txt) `failures=0`：
 
 - 未暂停真实活战斗game_time3.10→4.7167；97次经济通知钱包不变，槽位/选项/比较/MAX读取均0；仍70次battle draw、3次统计更新，节点增删0。不是冻结模拟；定时移动另一个1.60游戏秒窗口96通知亦0读取。
 - 免费武器80、防御20由原舰桥反应炉实际“分配”按钮执行，每项恰1条comparison依赖通知，current/upgrade/candidate实际改变并与所有者一致，无额外装备点击刺激刷新。[武器](regression/free-weapons-return.png)/[防御](regression/free-defence-return.png)。此为既有接口回归，无反应炉实现修改。
