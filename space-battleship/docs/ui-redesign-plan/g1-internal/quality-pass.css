@@ -1,0 +1,109 @@
+/* Quality R1: same P3 cabin, fewer container layers, object-led working spaces. */
+.quality-pass{--shell-ivory:#f5f0e3;--shell-paper:#edeadd;--structure:#2c4858;--shell-edge:#aebeb3;--energy:#70beb3;--amber:#c5a06a}
+.quality-pass button{box-shadow:inset 0 1px #fff8;transition:background-color .12s,border-color .12s}
+.quality-pass button.primary,.quality-pass button.active{box-shadow:inset 0 1px #9bb7ba44,0 2px 0 #18384824}
+.quality-pass #workspace{background:linear-gradient(135deg,#f5f1e6,#ecebdd);border-color:#b0beb1;box-shadow:0 3px 8px #213e4710}
+.quality-pass.full-theater #nav{padding:7px 8px;min-height:43px;background:#f4f1e6;border-bottom-color:#c1ccbe}
+.quality-pass.full-theater #work-content{padding:18px 20px}
+.quality-pass.full-theater.work-family #work-content{padding:12px 18px 16px;gap:0}
+.quality-pass .context-strip{display:flex;gap:0;margin:0 0 14px;border-bottom:1px solid #bdcbbb;flex-shrink:0;min-height:39px}
+.quality-pass .context-object{flex:1;min-width:0;display:flex;align-items:center;gap:9px;padding:7px 10px;border:0;border-radius:0;background:transparent;box-shadow:none;position:relative;text-align:left;white-space:nowrap;color:#3e5a63}
+.quality-pass .context-object+button{border-left:1px solid #ccd4c5}
+.quality-pass .context-object b{font-size:12px;flex-shrink:0;margin:0}
+.quality-pass .context-object span{font-size:11px;color:#6d8279;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;line-height:1.6}
+.quality-pass .context-object.active{background:#dfe8de;color:#274d59;box-shadow:inset 0 -3px #558d88}
+.quality-pass .context-object.active span{color:#52746e}
+.quality-pass.work-family .work-sheet{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.quality-pass.work-family .work-sheet .pagehead{margin:0 0 14px;gap:12px}
+.quality-pass.work-family .work-sheet .pagehead .eyebrow{display:none}
+.quality-pass.work-family .work-sheet .pagehead h1{font-size:23px;line-height:1.45;margin:0 0 4px}
+.quality-pass.work-family .work-sheet .pagehead .sub{font-size:12px;line-height:1.7}
+.quality-pass .pagehead .pill{white-space:nowrap}
+.quality-pass .current-job span:empty{display:none}
+/* One workshop space. The device is on the background's mounting disk; the budget is its foreground control console. */
+.quality-pass .research-workbench{position:relative;display:block;isolation:isolate;min-height:625px;padding:54px 14px 22px 48%;border:1px solid #9eafa8;border-radius:14px;overflow:hidden;background:linear-gradient(#c7d4cc,#879b99 75%,#c5cbc0);box-shadow:inset 0 1px #fff9,0 4px 0 #9cafa244}
+.quality-pass .research-workbench .factory-room,.quality-pass.work-family .research-workbench .factory-room{position:absolute;inset:0;height:auto;min-height:0;margin:0;border:0;border-radius:0;background:transparent;z-index:-1;overflow:hidden}
+.quality-pass .research-workbench .factory-background{top:0;left:-38%;width:140%;height:auto;min-height:0;max-width:none;object-fit:contain;object-position:initial;z-index:-2;opacity:.88}
+.quality-pass .research-workbench .factory-room:after{background:linear-gradient(0deg,#284b5944,transparent 42%),linear-gradient(90deg,transparent 40%,#24475422);z-index:-1}
+.quality-pass .research-workbench .factory-machine,.quality-pass.work-family .research-workbench .factory-machine{left:32%;top:95px;bottom:auto;width:330px;height:300px;filter:drop-shadow(0 9px 5px #203f4e55);z-index:1}
+.quality-pass .research-workbench .factory-probe,.quality-pass.work-family .research-workbench .factory-probe{left:27%;top:44px;width:75px;height:70px;z-index:2}
+.quality-pass .research-workbench .research-device-status,.quality-pass.work-family .research-workbench .research-device-status{left:18px;right:auto;top:435px;bottom:auto;width:calc(48% - 34px);padding:15px 17px;background:linear-gradient(#f5f1e6f5,#e8e8d8f5);border:1px solid #8da49f;border-bottom:5px solid #385a66;border-radius:9px;box-shadow:0 7px 12px #1b3b4840;z-index:3}
+.quality-pass .research-workbench .research-device-status>b{font-size:17px;margin:0 0 8px}
+.quality-pass .research-workbench .research-device-status>span:not(.eyebrow){font-size:22px;right:16px;top:12px}
+.quality-pass .research-workbench .research-device-status small{font-size:11px;line-height:1.8}
+.quality-pass .research-workbench .factory-selector{left:18px;bottom:auto;top:391px;background:#304f60;color:#f5efdf;border:1px solid #829e9a;border-radius:5px;font-size:12px;padding:8px 13px;z-index:4}
+.quality-pass .research-workbench .investment-console,.quality-pass.work-family .research-workbench .investment-console{position:relative;min-width:0;margin:0;padding:17px 18px 18px;background:linear-gradient(125deg,#f7f3e7,#e5e8d7);border:2px solid #9db0a5;border-bottom:8px solid #304e5d;border-radius:12px 12px 8px 8px;box-shadow:0 12px 20px #193c4a44,inset 0 1px #fff9}
+.quality-pass .research-workbench .investment-console:before{content:'';position:absolute;left:17px;right:17px;top:8px;height:3px;border-radius:3px;background:#90c5b3;box-shadow:0 0 6px #79d3c533}
+.quality-pass .research-workbench .budget-intent h3{font-size:16px;color:#2b4d5b}
+.quality-pass .research-workbench .budget-status{font-size:11px}
+.quality-pass .research-workbench .budget-modes{gap:6px;margin:12px 0}
+.quality-pass .research-workbench .budget-modes button{font-size:12px;padding:8px 9px}
+.quality-pass .research-workbench .budget-intent>label{font-size:12px;line-height:1.7;margin:13px 0}
+.quality-pass .research-workbench .budget-current-mode{font-size:11px;line-height:1.8}
+.quality-pass .research-workbench .budget-comparison{display:flex;flex-direction:column;gap:3px}
+.quality-pass .research-workbench .budget-comparison article{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 9px;padding:12px 0;border:0;border-top:1px solid #becbb6;border-radius:0;background:transparent}
+.quality-pass .research-workbench .budget-comparison article>b{font-size:12px;grid-column:1;grid-row:1}
+.quality-pass .research-workbench .budget-comparison article>strong{font-size:15px;grid-column:1;grid-row:2;line-height:1.6}
+.quality-pass .research-workbench .budget-comparison article>span{font-size:11px;grid-column:1/-1;line-height:1.6}
+.quality-pass .research-workbench .budget-comparison article>button{grid-column:2;grid-row:1/3;align-self:center;font-size:12px;padding:8px 9px;margin:0}
+.quality-pass .research-workbench .precise-investment{font-size:12px;margin:13px 0}
+.quality-pass .research-workbench .budget-benefit{font-size:12px;gap:7px;margin-top:13px}
+.quality-pass .research-workbench .budget-benefit small,.quality-pass .research-workbench .budget-crew{font-size:11px;line-height:1.8}
+.quality-pass .research-workbench .budget-crew button{font-size:11px;padding:3px 7px}
+/* Planet and city are rooms, not illustrations inside the second sheet frame. */
+.quality-pass .orbital-room,.quality-pass.work-family .orbital-room{grid-template-columns:62% 38%;height:auto;min-height:460px;border-color:#aebfb2;background:radial-gradient(ellipse at 30% 42%,#d7e4d9,#edf0e0 70%);box-shadow:inset 0 1px #fffc}
+.quality-pass .orbital-stage,.quality-pass.work-family .orbital-stage{min-height:460px}
+.quality-pass .planet-globe,.quality-pass.work-family .planet-globe{width:var(--planet-size);height:var(--planet-size)}
+.quality-pass .orbit-facility,.quality-pass.work-family .orbit-facility{width:106px;padding:6px;background:#f5f2e6e8;border-color:#bcc9b8;box-shadow:0 4px 0 #a6bdb255,0 7px 14px #34564818}
+.quality-pass .orbit-facility img,.quality-pass.work-family .orbit-facility img{width:68px;height:58px}
+.quality-pass .orbit-facility.selected{border-color:#4f9489;box-shadow:0 3px 0 #4f948955,0 0 0 2px #80b8a74d}
+.quality-pass .facility-console,.quality-pass.work-family .facility-console{padding:22px 17px;background:linear-gradient(125deg,#f6f2e4e8,#e8ebdada);border-left-color:#b6c8b9}
+.quality-pass .facility-console h2,.quality-pass.work-family .facility-console h2{font-size:22px;margin:8px 0 13px}
+.quality-pass .facility-work,.quality-pass.work-family .facility-work{margin:22px 0 18px}
+.quality-pass .facility-console dl,.quality-pass.work-family .facility-console dl{grid-template-columns:87px minmax(0,1fr);font-size:12px;gap:12px 6px}
+.quality-pass .facility-console .sub,.quality-pass.work-family .facility-console .sub{font-size:12px;line-height:1.8;margin:18px 0}
+.quality-pass .exploration-readout{font-size:13px;bottom:16px;gap:7px}.quality-pass .exploration-readout span{font-size:12px}
+.quality-pass .city-room,.quality-pass.work-family .city-room{grid-template-columns:68% 32%;height:480px;min-height:480px;background:#e0e8d9;border-color:#acbfb2;box-shadow:inset 0 1px #fffa}
+.quality-pass .city-console,.quality-pass.work-family .city-console{padding:18px 15px;background:linear-gradient(#f5f1e5,#e5e9d8)}
+.quality-pass .city-object,.quality-pass.work-family .city-object{height:105px;margin:14px 0}
+.quality-pass .city-console h2,.quality-pass.work-family .city-console h2{font-size:19px;line-height:1.5}
+.quality-pass .city-node-progress,.quality-pass.work-family .city-node-progress{margin:13px 0}
+.quality-pass .city-facts{grid-template-columns:64px minmax(0,1fr);font-size:12px;gap:10px 6px;line-height:1.7}
+.quality-pass .city-console>small{font-size:11px;line-height:1.7}
+.quality-pass .city-map-tools{background:#f2efdfed;border-color:#9eb9a9;box-shadow:0 4px 10px #2d544324}
+.quality-pass .city-map-tools button{font-size:12px;padding:7px 10px}
+.quality-pass .statistics-paper{min-height:0;padding:20px 0;background:transparent;border:0;border-radius:0}
+.quality-pass .statistics-paper table{margin:0;font-size:14px;background:#f6f2e5}
+.quality-pass .statistics-paper th{padding:16px 14px;background:#dfe7d8;color:#4b6d63;font-size:12px}
+.quality-pass .statistics-paper td{padding:22px 14px}
+.quality-pass #workspace[data-view="research"] .pagehead h1,.quality-pass #workspace[data-view="planet"] .pagehead h1,.quality-pass #workspace[data-view="galaxy"] .pagehead h1{display:inline;margin-right:14px}
+.quality-pass #workspace[data-view="research"] .pagehead .sub,.quality-pass #workspace[data-view="planet"] .pagehead .sub,.quality-pass #workspace[data-view="galaxy"] .pagehead .sub{display:inline;font-size:12px}
+.quality-pass .research-workbench .factory-machine,.quality-pass.work-family .research-workbench .factory-machine{left:30%;width:310px;height:300px}
+.quality-pass .research-workbench .budget-column-key{font-size:11px;color:#59776d;padding:7px 0 4px}
+.quality-pass .research-workbench .budget-resource-context{line-height:1.8}
+.quality-pass .research-workbench .research-device-status .budget-crew{font-size:11px;line-height:1.8;border-top:1px solid #c5cfbc;padding-top:7px;margin-top:7px}
+.quality-pass .orbital-room,.quality-pass.work-family .orbital-room{min-height:450px}
+.quality-pass .orbital-stage,.quality-pass.work-family .orbital-stage{min-height:450px}
+.quality-pass .city-room,.quality-pass.work-family .city-room{height:450px;min-height:450px}
+.quality-pass .facility-rules{font-size:11px;margin:18px 0 12px}
+.quality-pass .research-workbench{padding-top:36px}
+.quality-pass .research-workbench .budget-comparison article{padding:9px 0}
+.quality-pass .research-workbench .budget-intent>label{margin:10px 0}
+.quality-pass .research-workbench .budget-benefit{margin-top:10px;padding-top:10px}
+.quality-pass .research-workbench .research-device-status,.quality-pass.work-family .research-workbench .research-device-status{top:430px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 7px}
+.quality-pass .research-workbench .research-device-status>b{grid-column:1;grid-row:1;margin:0}
+.quality-pass .research-workbench .research-device-status>span:not(.eyebrow){position:static;grid-column:2;grid-row:1;margin:0}
+.quality-pass .research-workbench .research-device-status>.meter{grid-column:1/-1;margin:4px 0}
+.quality-pass .research-workbench .research-device-status>small:nth-of-type(1){grid-column:1/-1}
+.quality-pass .research-workbench .research-device-status>small:nth-of-type(2){grid-column:1}
+.quality-pass .research-workbench .research-device-status>small:nth-of-type(3){grid-column:2;max-width:115px;text-align:right}
+.quality-pass .research-workbench .research-device-status>.budget-crew{grid-column:1/-1;margin:2px 0 0;padding-top:6px}
+.quality-pass .research-workbench .factory-machine,.quality-pass.work-family .research-workbench .factory-machine{left:27.5%;width:300px;height:300px}
+.quality-pass .research-workbench .factory-probe,.quality-pass.work-family .research-workbench .factory-probe{left:24%}
+.quality-pass #nav button,.quality-pass #battle .field-bar,.quality-pass #battle #battle-pickup{box-shadow:none;transition:none}
+.quality-pass .research-workbench{min-height:600px}
+.quality-pass .research-workbench .factory-selector{top:20px}
+.quality-pass .research-workbench .research-device-status,.quality-pass.work-family .research-workbench .research-device-status{top:392px}
+.quality-pass .research-workbench{min-height:576px;padding-top:34px;padding-bottom:0}
+.quality-pass .research-workbench .investment-console,.quality-pass.work-family .research-workbench .investment-console{padding-bottom:7px}
+.quality-pass .research-workbench .research-device-status,.quality-pass.work-family .research-workbench .research-device-status{padding-bottom:7px}
