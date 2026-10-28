@@ -21,28 +21,24 @@ var startup_error: String = ""
 var _player_text
 var _startup_save_error: String = ""
 var _startup_directory: String = ""
-var _feature_panels: Dictionary = {}
 var _pages: Dictionary = {}
-var _tabs: TabContainer
+var _host: Control
+var _battle_input_shield: ColorRect
+var _route_available: Dictionary = {}
 var equipment_scene: Control
 var reactor_scene: Control
 var _left_module: String = "equipment"
-var _left_buttons: Dictionary = {}
-var _left_modules: Dictionary = {}
 var _battle_viewport: SubViewport
 var _reforge_picker: OptionButton
 var _reforge_drones: ItemList
 var _reforge_planet_value: LineEdit
 var _reforge_drone_value: LineEdit
 var _visibility_pending: bool = true
-var _save_warning: Label
-var _overlay: Node2D
 var _pause_button: Button
 var _guidance_panel: PanelContainer
 var _guidance_label: Label
 var _guidance_button: Button
 var _skip_tutorial: bool = false
-var growth_panel: PanelContainer
 var growth_status: Label
 var save_state_label: Label
 var _pending_import: Dictionary = {}
@@ -132,6 +128,7 @@ func _close_game() -> void:
 		_startup_save_error = "退出保存失败，游戏仍在运行。请检查目录、重试保存后退出。"
 		session.set_pause("recovery", true)
 		return
+	_prepare_host_release()
 	_stop_audio()
 	get_tree().quit()
 
@@ -154,9 +151,12 @@ func _configure_save(directory: String) -> Dictionary:
 
 func _show_session() -> void:
 	_player_text = PlayerText.new(JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json")))
-	_feature_panels.clear()
 	_visibility_pending = true
 	session.campaign_system.progress_changed.connect(_queue_feature_visibility)
+	session.research.choices_changed.connect(_queue_feature_visibility)
+	session.crew_system.options_changed.connect(_queue_feature_visibility)
+	session.planet_system.availability_changed.connect(_queue_feature_visibility)
+	session.galaxy_system.availability_changed.connect(_queue_feature_visibility)
 	get_window().content_scale_size = Vector2i(1440, 900)
 	# Preserve the battle's authored logical coordinates inside the fixed right surface.
 	# The viewport container transforms input together with its existing presentation.
@@ -168,6 +168,8 @@ func _show_session() -> void:
 	battle_surface.size = logical_size
 	battle_surface.scale = Vector2.ONE * projection_scale
 	add_child(battle_surface)
+	battle_surface.gui_input.connect(func(event: InputEvent):
+		if _ui_blocks_battle() and event is InputEventMouse: battle_surface.accept_event())
 	_battle_viewport = SubViewport.new()
 	_battle_viewport.size = session.battle.view_size()
 	_battle_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
@@ -181,9 +183,9 @@ func _show_session() -> void:
 	var hud_layer := CanvasLayer.new()
 	hud_layer.layer = 8
 	_battle_viewport.add_child(hud_layer)
-	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle, session.economy))
+	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle))
 	_setup_shell_overlay()
-	_battle_viewport.add_child(CampaignView.new(session.campaign_system))
+	_battle_viewport.add_child(CampaignView.new(session.campaign_system, _ui_blocks_battle))
 	_battle_viewport.add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
 	var equipment_layer := CanvasLayer.new()
 	equipment_layer.layer = 9
@@ -192,6 +194,8 @@ func _show_session() -> void:
 	equipment_layer.add_child(equipment_scene)
 	_setup_reactor_scene(equipment_layer)
 	_setup_growth_panel()
+	_host.show_route("ship" if _preferred_page == "growth" else "equipment")
+	_left_module = _host.active
 	_refresh_feature_visibility()
 	_setup_guidance_panel()
 	_setup_audio()
@@ -205,35 +209,11 @@ func _setup_reactor_scene(layer: CanvasLayer) -> void:
 	reactor_scene.bind_purchase_quote(_reactor_scene_quote)
 	reactor_scene.command_finished.connect(func(result: Dictionary):
 		if growth_status != null:
-			growth_status.text = str(result.get("message", "完成")) if result.get("ok", false) else PlayerText.error(str(result.get("reason", "Unknown"))))
+			_report_status(str(result.get("message", "完成")) if result.get("ok", false) else PlayerText.error(str(result.get("reason", "Unknown")))))
 	if session.reactor_system.has_signal("presentation_changed"):
 		session.reactor_system.connect("presentation_changed", reactor_scene.invalidate_presentation)
 	if session.economy.has_signal("budget_changed"):
 		session.economy.connect("budget_changed", reactor_scene.invalidate_budget)
-	_left_modules.clear()
-	_left_buttons.clear()
-	_register_left_module(layer, "equipment", "装备", equipment_scene)
-	_register_left_module(layer, "reactor", "反应炉", reactor_scene, "feature", "reactor")
-	_refresh_left_module()
-
-## Add a full-size left Control and its one navigation entry. The optional
-## campaign grant is a kind/target pair; scene data binding stays local.
-func _register_left_module(layer: CanvasLayer, id: String, title: String, scene: Control, unlock_kind: String = "", unlock_target: String = "") -> void:
-	if id in _left_modules: return
-	_left_modules[id] = {"scene": scene, "unlock_kind": unlock_kind, "unlock_target": unlock_target}
-	var button := Button.new()
-	button.text = title
-	# Keep all three host modules inside the top-bar gap: the equipment
-	# subtitle ends at x404, while the existing bridge button starts at x678.
-	button.position = Vector2(410 + 88 * _left_buttons.size(), 52)
-	button.size = Vector2(80, 30)
-	button.theme = load("res://src/ui/bridge_theme.gd").create()
-	button.toggle_mode = true
-	button.pressed.connect(_select_left_module.bind(id))
-	layer.add_child(button)
-	_left_buttons[id] = button
-	_refresh_left_module()
-
 func _reactor_scene_presentation() -> Dictionary:
 	# The fixed interface owner supplies the read-only outlet; never substitute
 	# private Reactor caches or frontend Amount calculations for a missing port.
@@ -246,24 +226,67 @@ func _reactor_scene_quote() -> Dictionary:
 		return {"ok": false, "reason": "ReactorQuoteUnavailable"}
 	return session.reactor_system.purchase_preview(session.economy.can_pay)
 
-func _select_left_module(module: String) -> void:
-	_left_module = module
-	if growth_panel != null: growth_panel.hide()
-	_refresh_left_module()
+func _select_left_module(id: String) -> void:
+	if not _route_available.get(id, true) or not _host.routes.has(id): return
+	if _host.has_exclusive_ui() or (_guidance_panel != null and _guidance_panel.visible): return
+	if not _pending_reforge.is_empty() and id != "reforge": return
+	var current: Control = _host.routes[_left_module]
+	if current.has_method("prepare_host_hide") and not current.prepare_host_hide(): return
+	if _module_exclusive(current): return
+	_release_route_focus(current)
+	_left_module = id
+	_host.show_route(id)
+	var page: String = "battle" if id in ["equipment", "reactor"] else "growth"
+	if page != _preferred_page:
+		var saved: Dictionary = PlayerSettings.save_change("page", page)
+		if saved.ok: _preferred_page = page
+		else: _report_status(PlayerText.error(str(saved.reason)))
+	if id == "reforge": _refresh_reforge_selection()
 
-func _refresh_left_module() -> void:
-	if session == null or _left_modules.is_empty(): return
-	var active_available: bool = _left_module in _left_modules and _left_module_available(_left_module)
-	if not active_available: _left_module = "equipment"
-	for id in _left_modules:
-		var available: bool = _left_module_available(id)
-		_left_modules[id].scene.visible = available and _left_module == id
-		_left_buttons[id].visible = available
-		_left_buttons[id].set_pressed_no_signal(_left_module == id)
+func _collapse_module() -> void:
+	if _ui_blocks_battle(false) or not _pending_reforge.is_empty(): return
+	var current: Control = _host.routes[_left_module]
+	if current.has_method("prepare_host_hide") and not current.prepare_host_hide(): return
+	_release_route_focus(current)
+	_host.show_route(_left_module, not _host.collapsed)
 
-func _left_module_available(id: String) -> bool:
-	var kind: String = str(_left_modules[id].unlock_kind)
-	return kind.is_empty() or session.campaign_system.available(kind, str(_left_modules[id].unlock_target))
+func _release_route_focus(view: Control) -> void:
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus != null and (focus == view or view.is_ancestor_of(focus)): focus.release_focus()
+
+func _module_exclusive(view: Control) -> bool:
+	if view.has_method("has_exclusive_ui") and view.has_exclusive_ui(): return true
+	return _visible_window(view)
+
+func _visible_window(node: Node) -> bool:
+	for child in node.get_children(true):
+		if child is Window and child.visible: return true
+		if _visible_window(child): return true
+	return false
+
+func _ui_blocks_battle(include_focus: bool = true) -> bool:
+	if _host == null: return false
+	if _host.has_exclusive_ui() or (_guidance_panel != null and _guidance_panel.visible): return true
+	if not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty(): return true
+	if not _host.collapsed and _module_exclusive(_host.routes[_left_module]): return true
+	if include_focus:
+		var focus := get_viewport().gui_get_focus_owner()
+		if focus is LineEdit or focus is TextEdit: return true
+	return false
+
+func _prepare_host_release() -> void:
+	if _host == null: return
+	for view in _host.routes.values():
+		if view.has_method("prepare_host_hide"): view.prepare_host_hide(true)
+		_hide_route_windows(view)
+		_release_route_focus(view)
+		view.hide()
+	_host.prepare_release()
+
+func _hide_route_windows(node: Node) -> void:
+	for child in node.get_children(true):
+		if child is Window: child.hide()
+		_hide_route_windows(child)
 
 func _apply_settings(settings: Dictionary) -> void:
 	_autosave_interval = float(settings.interval)
@@ -281,7 +304,7 @@ func _apply_settings(settings: Dictionary) -> void:
 	if _damage_option != null: _damage_option.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 	for child in (_battle_viewport.get_children() if _battle_viewport != null else get_children()):
 		if child.get_script() == BattleView: child.damage_mode = _damage_mode
-	if growth_panel != null: growth_panel.visible = _preferred_page == "growth"
+	if _host != null: _select_left_module("ship" if _preferred_page == "growth" else "equipment")
 
 func _setup_audio() -> void:
 	_music_player = AudioStreamPlayer.new()
@@ -353,6 +376,7 @@ func _replace_session(replacement) -> Dictionary:
 	if session.save_files != null:
 		var closed: Dictionary = session.save_files.close()
 		if not closed.ok: return closed
+	_prepare_host_release()
 	_stop_audio()
 	for child in get_children(): child.queue_free()
 	session = replacement
@@ -365,13 +389,11 @@ func _replace_session(replacement) -> Dictionary:
 	_pending_new_game = {}
 	_seen_save_failure_generation = ""
 	_next_autosave_wall = session.wall_time + _autosave_interval
-	_feature_panels.clear()
-	_overlay = null
 	_pause_button = null
 	_guidance_panel = null
 	_guidance_label = null
 	_guidance_button = null
-	growth_panel = null
+	_host = null
 	_music_player = null
 	_effects_player = null
 	_next_effect_ms = 0
@@ -468,6 +490,8 @@ func _process(dt: float) -> void:
 		_sync_guidance()
 		if _visibility_pending: _refresh_feature_visibility()
 		_refresh_save_warning()
+		_battle_input_shield.visible = _ui_blocks_battle()
+		_host.set_navigation_blocked((_guidance_panel != null and _guidance_panel.visible) or _module_exclusive(_host.routes[_left_module]) or not _pending_reforge.is_empty())
 		if _pause_button != null:
 			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
 		if session.save_files != null: session.save_files.poll()
@@ -476,9 +500,9 @@ func _process(dt: float) -> void:
 			if failure_generation != _seen_save_failure_generation:
 				_seen_save_failure_generation = failure_generation
 				if growth_status != null:
-					growth_status.text = "保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown")))
+					_report_status("保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown"))))
 		_save_status_elapsed += maxf(dt, 0.0)
-		if save_state_label != null and growth_panel != null and growth_panel.visible and _save_status_elapsed >= 1.0:
+		if save_state_label != null and save_state_label.is_visible_in_tree() and _save_status_elapsed >= 1.0:
 			_save_status_elapsed = 0.0
 			if session.save_files == null:
 				save_state_label.text = "尚未设置存档目录"
@@ -492,12 +516,11 @@ func _process(dt: float) -> void:
 		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
 			_next_autosave_wall = session.wall_time + _autosave_interval
 			var saved: Dictionary = session.request_save()
-			if not saved.ok and growth_status != null: growth_status.text = PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed"))))
-	if _overlay != null: _overlay.queue_redraw()
+			if not saved.ok and growth_status != null: _report_status(PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed")))))
 	queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if session == null or not startup_error.is_empty() or not session.run_state.is_running():
+	if session == null or not startup_error.is_empty() or not session.run_state.is_running() or _ui_blocks_battle():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		session.set_pause("user", not session.pause_reasons.has("user"))
@@ -513,9 +536,7 @@ func _setup_shell_overlay() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = 9
 	_battle_viewport.add_child(layer)
-	_overlay = Node2D.new()
-	layer.add_child(_overlay)
-	_overlay.draw.connect(_draw_shell.bind(_overlay))
+
 	_pause_button = Button.new()
 	_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
 	_pause_button.position = Vector2(420, 18)
@@ -524,25 +545,13 @@ func _setup_shell_overlay() -> void:
 			session.set_pause("user", not session.pause_reasons.has("user"))
 			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停")
 	layer.add_child(_pause_button)
-	_save_warning = Label.new()
-	_save_warning.position = Vector2(18, 54)
-	_save_warning.size = Vector2(530, 24)
-	_save_warning.clip_text = true
-	_save_warning.max_lines_visible = 1
-	_save_warning.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	_save_warning.add_theme_font_size_override("font_size", 14)
-	_save_warning.modulate = Color("ffb4a6")
-	layer.add_child(_save_warning)
-
 func _refresh_save_warning() -> void:
-	if _save_warning == null: return
+	if _host == null: return
 	var failed_save: bool = session.save_files != null and not session.save_files.last_failure.is_empty()
-	if not session.run_state.is_running():
-		_save_warning.text = "会话已停止；保存未完成。请在舰桥设置中恢复有效存档。" if failed_save or not _startup_save_error.is_empty() else "会话已停止，请在舰桥查看提示并恢复有效存档。"
-	else:
-		_save_warning.text = "保存失败，请在舰桥设置中重试，当前进度尚未写入文件。" if failed_save else _startup_save_error
-	_save_warning.tooltip_text = _save_warning.text
-	_save_warning.visible = not _save_warning.text.is_empty()
+	var message: String = _startup_save_error
+	if not session.run_state.is_running(): message = "会话已停止，请从更多→设置恢复有效存档。"
+	elif failed_save: message = "保存失败，请从更多→设置重试，当前进度尚未写入文件。"
+	_host.set_status(message)
 
 func _setup_guidance_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -596,9 +605,12 @@ func _sync_guidance() -> void:
 	_guidance_label.text = str(captions.get(str(pending.id), _player_text.notification_text("unlock", str(pending.id))))
 	_guidance_panel.visible = true
 
-func _draw_shell(canvas: Node2D) -> void:
-	var font: Font = ThemeDB.fallback_font
-	canvas.draw_string(font, Vector2(18, 942), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
+func _report_status(message: String) -> void:
+	if growth_status != null: growth_status.text = message
+	if _host != null: _host.show_feedback(message)
+	if _pages.has(_left_module) and _left_module != "settings":
+		_pages[_left_module].feedback.text = message
+		_pages[_left_module].feedback.visible = not message.is_empty()
 
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
@@ -606,84 +618,78 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	parent.add_child(button)
 	button.pressed.connect(func():
 		if not session.run_state.is_running():
-			growth_status.text = "当前会话已停止，请恢复有效存档。"
+			_report_status("当前会话已停止，请恢复有效存档。")
 			return
 		if not _pending_reforge.is_empty() and text not in ["确认重铸", "取消重铸"]:
-			growth_status.text = "请先确认或取消重铸"
+			_report_status("请先确认或取消重铸")
 			return
 		var result: Dictionary = action.call()
 		if result.get("settings_failed", false):
-			growth_status.text = "个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown")))
+			_report_status("个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown"))))
 			return
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
-		growth_status.text = "会话已切换，保存失败：" + PlayerText.error(str(result.get("persistence_error", "Unknown"))) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, PlayerText.error(reason))))
+		_report_status("会话已切换，保存失败：" + PlayerText.error(str(result.get("persistence_error", "Unknown"))) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, PlayerText.error(reason)))))
 		)
 	return button
 
-func _set_page(page: String) -> void:
-	var saved: Dictionary = PlayerSettings.save_change("page", page)
-	if saved.ok:
-		_preferred_page = page
-		growth_panel.visible = page == "growth"
-	elif growth_status != null:
-		growth_status.text = PlayerText.error(str(saved.reason))
-
 func _setup_growth_panel() -> void:
 	var layer := CanvasLayer.new()
-	layer.layer = 10
+	layer.layer = 9
 	add_child(layer)
-	var open := Button.new()
-	open.text = "舰桥面板"
-	open.position = Vector2(678, 48)
-	layer.add_child(open)
-	growth_panel = PanelContainer.new()
-	growth_panel.position = Vector2(12, 130)
-	growth_panel.size = Vector2(548, 760)
-	growth_panel.visible = _preferred_page == "growth"
-	layer.add_child(growth_panel)
-	growth_panel.theme = load("res://src/ui/bridge_theme.gd").create()
-	var shell := VBoxContainer.new()
-	growth_panel.add_child(shell)
-	var box: VBoxContainer = shell
-	var back := Button.new()
-	back.text = "关闭面板"
-	back.pressed.connect(func(): _set_page("battle"))
-	box.add_child(back)
+	var chrome := CanvasLayer.new()
+	chrome.layer = 10
+	add_child(chrome)
+	_host = preload("res://src/ui/shared_host.gd").new(session.economy)
+	chrome.add_child(_host)
+	_battle_input_shield = ColorRect.new()
+	_battle_input_shield.position = Vector2(808, 0)
+	_battle_input_shield.size = Vector2(632, 900)
+	_battle_input_shield.color = Color.TRANSPARENT
+	_battle_input_shield.mouse_filter = Control.MOUSE_FILTER_STOP
+	_host.add_child(_battle_input_shield)
+	_host.route_requested.connect(_select_left_module)
+	_host.collapse_requested.connect(_collapse_module)
+	_host.register_route("equipment", "装备", equipment_scene)
+	_host.register_route("reactor", "反应炉", reactor_scene)
+	_pages.clear()
+	for spec in [["ship", "舰船"], ["campaign", "航程"], ["attributes", "属性"],
+		["research", "科研"], ["enhancement", "强化"], ["crew", "船员"], ["galaxy", "星系"],
+		["planet", "星球"], ["hyperspace", "超空间"], ["archive", "档案"],
+		["notifications", "通知"], ["settings", "设置"], ["reforge", "重铸"]]:
+		_create_bridge_page(layer, spec[0], spec[1])
 	growth_status = Label.new()
 	if not _settings_error.is_empty(): growth_status.text = _settings_error
 	PlayerText.wrap(growth_status)
-	box.add_child(growth_status)
+	_pages.settings.box.add_child(growth_status)
 	save_state_label = Label.new()
 	PlayerText.wrap(save_state_label)
-	box.add_child(save_state_label)
+	_pages.settings.box.add_child(save_state_label)
 	_save_status_elapsed = 1.0
-	open.pressed.connect(func(): _set_page("battle" if growth_panel.visible else "growth"))
-	_tabs = TabContainer.new()
-	_tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	shell.add_child(_tabs)
-	_pages.clear()
-	for page in [["ship", "舰船"], ["growth", "成长"], ["universe", "星图"], ["hyperspace", "超空间"], ["archive", "档案"], ["settings", "设置"]]:
-		_create_bridge_page(str(page[0]), str(page[1]))
-	box = _pages.ship.box
+	var box: VBoxContainer
+	box = _pages.campaign.box
 	box.add_child(load("res://src/ui/campaign_panel.gd").new(session, _command_button))
-	# Equipment has one scene and one command surface in the hangar at left.
+	box = _pages.ship.box
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
+	box = _pages.attributes.box
 	box.add_child(load("res://src/ui/attributes_panel.gd").new(session))
-	box = _pages.growth.box
+	box = _pages.research.box
 	var research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
-	_feature_panels["research"] = research_panel
-	_add_feature_panel(box, "enhancement", EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
+	box = _pages.enhancement.box
+	box.add_child(EnhancementPanel.new(session.enhancement, session.enhancement_inputs,
 		session.economy.affordable, session.publish_enhancement, _command_button))
-	box = _pages.universe.box
-	_add_feature_panel(box, "crew", CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
-	_add_feature_panel(box, "galaxy", GalaxyPanel.new(session.galaxy_system, _world_visual_context))
-	_add_feature_panel(box, "planet", PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button, _world_visual_context))
+	box = _pages.crew.box
+	box.add_child(CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
+	box = _pages.galaxy.box
+	box.add_child(GalaxyPanel.new(session.galaxy_system, _world_visual_context))
+	box = _pages.planet.box
+	box.add_child(PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button, _world_visual_context))
 	box = _pages.hyperspace.box
-	_add_feature_panel(box, "hyperspace", HyperspacePanel.new(session, _command_button))
+	box.add_child(HyperspacePanel.new(session, _command_button))
 	box = _pages.archive.box
 	box.add_child(load("res://src/ui/archive_panel.gd").new(session))
+	box = _pages.notifications.box
 	box.add_child(NotificationsPanel.new(session.notifications, _player_text))
 	box = _pages.settings.box
 	var save_path := LineEdit.new()
@@ -728,7 +734,7 @@ func _setup_growth_panel() -> void:
 			_next_autosave_wall = session.wall_time + value
 		else:
 			autosave.set_value_no_signal(_autosave_interval)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_report_status(PlayerText.error(str(saved.reason))))
 	var skip_tutorial := CheckBox.new()
 	skip_tutorial.text = "自动跳过引导提示"
 	skip_tutorial.button_pressed = _skip_tutorial
@@ -741,7 +747,7 @@ func _setup_growth_panel() -> void:
 			_sync_guidance()
 		else:
 			skip_tutorial.set_pressed_no_signal(_skip_tutorial)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_report_status(PlayerText.error(str(saved.reason))))
 	var music := CheckBox.new()
 	music.text = "音乐"
 	music.button_pressed = _music_enabled
@@ -754,7 +760,7 @@ func _setup_growth_panel() -> void:
 			if _music_player != null: _music_player.stream_paused = not enabled
 		else:
 			music.set_pressed_no_signal(_music_enabled)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_report_status(PlayerText.error(str(saved.reason))))
 	var effects := CheckBox.new()
 	effects.text = "音效"
 	effects.button_pressed = _effects_enabled
@@ -765,7 +771,7 @@ func _setup_growth_panel() -> void:
 		if saved.ok: _effects_enabled = enabled
 		else:
 			effects.set_pressed_no_signal(_effects_enabled)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_report_status(PlayerText.error(str(saved.reason))))
 	var damage_mode := OptionButton.new()
 	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
 	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
@@ -780,7 +786,7 @@ func _setup_growth_panel() -> void:
 				if child.get_script() == BattleView: child.damage_mode = chosen
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_report_status(PlayerText.error(str(saved.reason))))
 	var clear_settings := CheckBox.new()
 	clear_settings.text = "新游戏同时重置个人设置"
 	box.add_child(clear_settings)
@@ -808,11 +814,11 @@ func _setup_growth_panel() -> void:
 		return _preview_import(save_path.text, import_path.text))
 	_command_button(box, "确认导入", func() -> Dictionary:
 		return _apply_import(save_path.text, import_path.text))
-	box = _pages.universe.box
+	box = _pages.reforge.box
 	var planet_id := LineEdit.new()
 	planet_id.placeholder_text = "重铸星球编号"
 	var reforge_box := VBoxContainer.new()
-	_add_feature_panel(box, "reforge", reforge_box)
+	box.add_child(reforge_box)
 	reforge_box.add_child(planet_id)
 	var retained_ids := LineEdit.new()
 	retained_ids.placeholder_text = "保留无人机编号（逗号分隔）"
@@ -825,12 +831,7 @@ func _setup_growth_panel() -> void:
 	_command_button(reforge_box, "确认重铸", func() -> Dictionary:
 		return _confirm_reforge(save_path.text, planet_id.text, retained_ids.text))
 	_command_button(reforge_box, "取消重铸", _cancel_reforge)
-	_tabs.tab_changed.connect(_bridge_tab_changed)
-	_bridge_tab_changed(_tabs.current_tab)
 
-func _add_feature_panel(parent: Control, key: String, panel: Control) -> void:
-	_feature_panels[key] = panel
-	parent.add_child(panel)
 
 func _queue_feature_visibility() -> void:
 	_visibility_pending = true
@@ -846,26 +847,37 @@ func _refresh_feature_visibility() -> void:
 		"crew": not session.crew_system.member_options().is_empty(), "planet": not session.planet_system.planet_options().is_empty(),
 		"galaxy": not session.galaxy_system.status_rows().is_empty(), "hyperspace": session.hyperspace_system.unlocked(highest),
 		"reforge": not session.planet_system.planet_options().is_empty()}
-	for key in _feature_panels: _feature_panels[key].visible = bool(visible_features[key])
-	_refresh_left_module()
-	if _tabs != null:
-		_tabs.set_tab_hidden(_pages.growth.index, not (visible_features.research or visible_features.enhancement))
-		_tabs.set_tab_hidden(_pages.universe.index, not (visible_features.crew or visible_features.planet or visible_features.galaxy))
-		_tabs.set_tab_hidden(_pages.hyperspace.index, not visible_features.hyperspace)
-		if _tabs.is_tab_hidden(_tabs.current_tab): _tabs.current_tab = int(_pages.ship.index)
+	_route_available = visible_features
+	_host.set_availability(visible_features)
+	if not visible_features.get(_left_module, true):
+		var current: Control = _host.routes[_left_module]
+		if current.has_method("prepare_host_hide"): current.prepare_host_hide(true)
+		_hide_route_windows(current)
+		_release_route_focus(current)
+		_left_module = "equipment"
+	_host.show_route(_left_module, _host.collapsed)
 
-func _create_bridge_page(key: String, title: String) -> void:
+func _create_bridge_page(layer: CanvasLayer, key: String, title: String) -> void:
 	var scroll := ScrollContainer.new()
 	scroll.name = title
+	scroll.position = Vector2(0, 65)
+	scroll.size = Vector2(808, 835)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_tabs.add_child(scroll)
+	scroll.theme = load("res://src/ui/bridge_theme.gd").create()
+	layer.add_child(scroll)
+	var margin := MarginContainer.new()
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for edge in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + edge, 16)
+	scroll.add_child(margin)
 	var box := VBoxContainer.new()
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(box)
-	_pages[key] = {"scroll": scroll, "box": box, "index": _tabs.get_tab_count() - 1}
-
-func _bridge_tab_changed(index: int) -> void:
-	if _reforge_picker != null and index == int(_pages.universe.index): _refresh_reforge_selection()
+	margin.add_child(box)
+	var feedback := Label.new()
+	PlayerText.wrap(feedback)
+	feedback.hide()
+	box.add_child(feedback)
+	_pages[key] = {"scroll": scroll, "box": box, "feedback": feedback}
+	_host.register_route(key, title, scroll)
 
 func _world_visual_context() -> Dictionary:
 	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(),

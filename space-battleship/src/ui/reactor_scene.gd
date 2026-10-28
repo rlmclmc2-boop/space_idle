@@ -1,6 +1,9 @@
 extends Control
 ## Whole reactor scene. Domain amounts, effects and acceptance stay with Reactor.
 signal command_finished(result: Dictionary)
+signal exclusive_ui_changed
+var _shared_title: Label
+var _shared_context: Label
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
@@ -122,6 +125,7 @@ func _button(text: String, rect: Rect2, action: Callable) -> Button:
 
 func _build() -> void:
 	var title := _label(Vector2(26,18), 170, 23)
+	_shared_title = title
 	title.text = "反应炉"
 	title.add_theme_color_override("font_color", Color("203f50"))
 	_level = _label(Vector2(612,23), 170)
@@ -265,6 +269,7 @@ func _show_current_readings() -> void:
 		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
 	_level.text = "等级 " + str(_model.level)
+	if _shared_context != null: _shared_context.text = "反应炉%s级" % str(_model.level)
 	_budget.text = "可调容量 " + PlayerText.number(str(_model.capacity)) + "     剩余 " + PlayerText.number(str(_model.remaining))
 	_budget.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
 
@@ -290,6 +295,7 @@ func _unknown(message: String) -> void:
 		for control in _rows[id].values(): control.visible = false
 	_budget.text = "供能状态未知"
 	_level.text = "等级 —"
+	if _shared_context != null: _shared_context.text = "反应炉"
 	_notice.text = message
 	_stage.clear_snapshot()
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
@@ -444,3 +450,25 @@ func _update_stage() -> void:
 	for row in _model.modules: loads[str(row.id)] = float(row.load)
 	_stage.show_snapshot(_ids,loads,_selected)
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+## Current legacy scene remains 808×900 until its owner supplies the new 808×835 art.
+func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
+	_shared_title.visible = not enabled
+	_level.visible = not enabled
+	if _shared_context != null: _shared_context.queue_free()
+	_shared_context = null
+	if enabled and context_slot != null:
+		_shared_context = Label.new()
+		_shared_context.text = "反应炉"
+		_shared_context.size = Vector2(96, 26)
+		_shared_context.clip_text = true
+		context_slot.add_child(_shared_context)
+		_dirty = true
+
+func has_exclusive_ui() -> bool:
+	return false
+
+func prepare_host_hide(_force: bool = false) -> bool:
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus != null and is_ancestor_of(focus): focus.release_focus()
+	return true

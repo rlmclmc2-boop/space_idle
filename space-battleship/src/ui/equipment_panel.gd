@@ -1,6 +1,9 @@
 extends Control
 ## Equipment owns all prices, admission and receipts; this scene owns only presentation.
 signal command_finished(result: Dictionary)
+signal exclusive_ui_changed
+var _shared_chrome: Array = []
+var _context_slot: Control
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"laser": "脉冲炮", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光", "shield": "护盾", "armour": "装甲", "": "空槽"}
 const INK := Color("203f50")
@@ -154,9 +157,9 @@ func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
     return image
 
 func _build() -> void:
-    _label("远航舰桥", Rect2(22, 10, 160, 34), 24)
+    _shared_chrome.append(_label("远航舰桥", Rect2(22, 10, 160, 34), 24))
     _wallet = _label("", Rect2(204, 15, 590, 30), 16)
-    _label("战力维护  /  装配", Rect2(24, 52, 380, 28), 15, TEAL)
+    _shared_chrome.append(_label("战力维护  /  装配", Rect2(24, 52, 380, 28), 15, TEAL))
     _title = _label("装配", Rect2(24, 96, 480, 38), 23)
     _title.add_theme_stylebox_override("normal", _style(Color("f3f0df", 0.93), Color(0,0,0,0)))
     _button("全部装备升级", Rect2(622, 101, 166, 44), _open_batch, true).name = "BatchOpen"
@@ -195,10 +198,12 @@ func _open_batch() -> void:
     _batch_blocker.show()
     _batch.show()
     _refresh_batch()
+    exclusive_ui_changed.emit()
 
 func _close_batch() -> void:
     _batch.hide()
     _batch_blocker.hide()
+    exclusive_ui_changed.emit()
 
 func _build_batch() -> void:
     _batch_blocker = ColorRect.new()
@@ -578,3 +583,28 @@ func _draw() -> void:
             draw_texture_rect(tex, Rect2(mount - anchor, Vector2(tex.get_size()) * scale_factor), false)
         else:
             draw_texture_rect(tex, Rect2(mount - Vector2(21,21), Vector2(42,42)), false)
+
+## Shared host hides only former global chrome; equipment layout and commands stay local.
+func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
+    for item in _shared_chrome: item.visible = not enabled
+    _wallet.visible = not enabled
+    if _context_slot != null:
+        for child in _context_slot.get_children(): child.queue_free()
+    _context_slot = context_slot
+    if enabled and context_slot != null:
+        var caption := Label.new()
+        caption.text = "装备"
+        caption.size = Vector2(96, 26)
+        context_slot.add_child(caption)
+
+func has_exclusive_ui() -> bool:
+    return _batch.visible or _batch_quantity.get_popup().visible
+
+func prepare_host_hide(force: bool = false) -> bool:
+    if has_exclusive_ui() and not force: return false
+    if force:
+        _batch_quantity.get_popup().hide()
+        _close_batch()
+    var focus := get_viewport().gui_get_focus_owner()
+    if focus != null and is_ancestor_of(focus): focus.release_focus()
+    return true
