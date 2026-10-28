@@ -1,0 +1,16 @@
+{
+  "scope": "Narrow glyph correction only; layout and accepted typography unchanged",
+  "old_codepoint": "U+25B8",
+  "old_glyph_in_primary_cmap": false,
+  "old_extreme_state_glyph_status": "missing glyph; not passed",
+  "replacement_texts": [
+    "铁：查看完整值",
+    "铀：查看完整值",
+    "微粒：查看完整值"
+  ],
+  "replacement_all_codepoints_in_same_font_cmap": true,
+  "system_fallback_enabled": false,
+  "Godot_rerendered_state": "extreme-values-1440x900.png",
+  "same_version_other_states_reason": "Remove previously rejected persistent tutorial line; no keyboard/collection/gameplay changes",
+  "source_font_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+}

@@ -220,7 +220,6 @@ func _build_battle_placement() -> void:
 	percent.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 	_surface(stage,Rect2(28,802,516,11),Color("1b3547"))
 	_label(stage,"累计伤害 1,040 · 主力 武器1",Rect2(20,902,532,25),14,Color("c1d5f0"))
-	_label(stage,"空格暂停 · G 驻守 · 点击掉落领取",Rect2(18,926,536,25),14,Color("91a9c0"))
 
 func _build_header() -> void:
 	header=Control.new()
@@ -379,7 +378,7 @@ func _capture_design_states() -> void:
 	save_label.text="待写入"
 	await _save_state("large-values")
 	var extreme:=["铁：1.234567890123456789×10^123456789012345678901234567890","铀：9.999×10^12345678901234567890","时空微粒：1.235×10^12345678901234567890"]
-	for i in 3:money_labels[i].text=["铁：完整值 ▸","铀：完整值 ▸","微粒：完整值 ▸"][i]
+	for i in 3:money_labels[i].text=["铁：查看完整值","铀：查看完整值","微粒：查看完整值"][i]
 	_show_detail("全部资源 · 完整公开显示文本",extreme+["强化碎片：1.235×10^123"])
 	await _save_state("extreme-values")
 	detail.hide()

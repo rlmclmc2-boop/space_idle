@@ -122,35 +122,35 @@
   "godot_quality_states": [
     {
       "path": "godot/evidence/collapsed-1440x900.png",
-      "sha256": "2a4dc07de7b7e46f8c49e5535d3684a8ca7d8fb5b9be0cf895185494623d34b1"
+      "sha256": "a58235ac4a296fe1c1db0c8e57810e2fa32307bd74a9144db9c303105584410a"
     },
     {
       "path": "godot/evidence/extreme-values-1440x900.png",
-      "sha256": "8dd2d30e9952dc11a62c7992e5ab1408ef881bbf322db8caab5c8c58b2ed9575"
+      "sha256": "41a71630ac5662669fa78bbb0e0ef1d74e3fe16774ee2173f80178ee96306e3e"
     },
     {
       "path": "godot/evidence/large-values-1440x900.png",
-      "sha256": "2992dbd71a30327e03a20e90d5c6c5bb87649570aed336943629d1cc003c1c2a"
+      "sha256": "34b9937f8730cc09fcbe4f19f92bba407eaa61281abb688a29f9b0cc747c586e"
     },
     {
       "path": "godot/evidence/more-1440x900.png",
-      "sha256": "ce367a8dd1e1a7b1e54c6ecec5124a33ceb0eecbafd4f727eb2b67567ff2298b"
+      "sha256": "d20fe5ab4dbf05198872c53c5069f741eec7e40bde2ecbb0780cad8e1429c568"
     },
     {
       "path": "godot/evidence/normal-1440x900.png",
-      "sha256": "55c714956202577880274e17c810f6679b8323144598d797714c0656a89472d1"
+      "sha256": "91752d9066cff92ef34cdcafdd5af214882e9dd501b0a1750538014e4f789747"
     },
     {
       "path": "godot/evidence/normal-x11-client-1440x900.png",
-      "sha256": "eedfe7101f32ecf01d83835411a571b57ae6152dcd37216fec46cdb1f9ba5827"
+      "sha256": "720f6e6a97cb3b2272c692843fc1c4f067a92a98f9721e34fd3d20010f22e8fd"
     },
     {
       "path": "godot/evidence/restored-1440x900.png",
-      "sha256": "224d3e2041dcae8452a509d5e0d5c0fd840370b5a51b48b90517e0e5ef15a7b7"
+      "sha256": "9c4e5cc3ae9f30c4c1e0ced5a9303efd8a1064c28db9016ec9a000e8c8ae73aa"
     },
     {
       "path": "godot/evidence/save-failure-1440x900.png",
-      "sha256": "bb454baf14d273c2dd93b933f58c3554419aff741ce00cc50cc080eb9a135c67"
+      "sha256": "e41e55cf4ea73c7989c7605bbe4d6d3c992b13d57158f5a16ba4d7958a86b476"
     }
   ],
   "module_installation_notes": {
@@ -165,5 +165,10 @@
     "planet": {
       "status": "pending root-coordinated owner note"
     }
-  }
+  },
+  "latest_narrow_corrections": [
+    "Removed persistent old HUD tutorial text; actual Space/G/pickup functionality untouched",
+    "Replaced unsupported U+25B8 with source-font-supported Chinese text only; original extreme-state glyph check failed",
+    "Peripheral grid and local level remain owner-confirmation placeholders; no claim giant gaps solved"
+  ]
 }
