@@ -204,8 +204,8 @@ func _layout() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	draw_rect(Rect2(0, 65 if _shared_host_enabled else 0, size.x, 25 if _shared_host_enabled else 90), Color("f0eddf"))
 	if not _shared_host_enabled:
+		draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
 		draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
 		draw_string(get_theme_default_font(), Vector2(24, 74), "星球探索", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("40676b"))
 

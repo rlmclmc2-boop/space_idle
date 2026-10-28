@@ -1,0 +1,2588 @@
+[
+  {
+    "operation": "synthetic_campaign_grants",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "crew_availability",
+    "result": {
+      "changed": false,
+      "ok": true
+    }
+  },
+  {
+    "operation": "synthetic_planet_state",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "assign_explorer_1",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "automatic_1",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "assign_explorer_2",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "synthetic_elapsed",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "operation": "publish_real_fixture_contributions",
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "cloud_phase": 0.0221068356186152,
+    "drawer": "",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": false,
+    "game_time": 478.549999999893,
+    "image": "01-default-planet1",
+    "pause_reasons": {},
+    "selected_facility": "",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0181699991226196,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 3.245
+  },
+  {
+    "cloud_phase": 0.0242369081825018,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 478.549999999893,
+    "image": "02-facilities-planet1-ready",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0199207440018654,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 3.53679066666666
+  },
+  {
+    "cloud_phase": 0.0278958175331354,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 478.549999999893,
+    "image": "native-planet-popup",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0229280665516853,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 4.038011
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(582.0, 208.5)",
+    "native_popup": "planet",
+    "position": "(494, 156)",
+    "row": 1,
+    "size": "(176, 70)",
+    "window_id": 0
+  },
+  {
+    "cloud_phase": 0.0434629879891872,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "building",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 2,
+        "work_fraction": 0.4
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 10,
+        "source_factor": null,
+        "state": "locked",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 0,
+        "work_fraction": 0.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard_later",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "2",
+        "required_work": 10,
+        "source_factor": null,
+        "state": "locked",
+        "type": "shipyard",
+        "unlock_exploration": 150,
+        "work": 0,
+        "work_fraction": 0.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 478.549999999893,
+    "image": "03-same-drawer-planet2-building",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "2",
+    "snapshot": {
+      "automatic": false,
+      "duration": 43.9024390243902,
+      "elapsed": 8.0,
+      "exploration": 22,
+      "row": {
+        "baseExp": 150.0,
+        "baseTime": 60.0,
+        "id": 2.0,
+        "minTime": 5.0,
+        "name": "气态巨星-T587e",
+        "reforgeStartLevel": 10.0,
+        "tags": null,
+        "unlockId": "planet/2",
+        "visual": "{\"surfaceTexture\":\"res://assets/planets/t587e_surface.png\",\"cloudTexture\":\"res://assets/planets/t587e_surface.png\",\"radiusScale\":1.05,\"axisRatio\":0.93,\"surfaceSpeed\":0.006,\"cloudSpeed\":0.0075,\"cloudOpacity\":0.12,\"shadowStrength\":0.53,\"glowStrength\":0.38,\"atmosphereColor\":\"e8d3a2\",\"coronaWidth\":0.035}",
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.035381805151701,
+    "visible_task": "探索中 · 本次 18%",
+    "visible_task_clock": "探索度 22 · 本次 8.0 / 43.9 秒\n自动探索：关闭",
+    "visual_clock": 6.35895666666666
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(582.0, 173.5)",
+    "native_popup": "planet",
+    "position": "(494, 156)",
+    "row": 0,
+    "size": "(176, 70)",
+    "window_id": 0
+  },
+  {
+    "cloud_phase": 0.0484432280063629,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": true,
+        "claim_reason": "",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": null,
+        "state": "ready",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 478.549999999893,
+    "image": "04-switch-back-planet1-ready",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0394191481173038,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 7.03184633333333
+  },
+  {
+    "cloud_phase": 0.0510158650577068,
+    "drawer": "facilities",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": "1.53467924926028e0",
+        "state": "built",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 1,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": true,
+    "game_time": 478.549999999893,
+    "image": "05-planet1-claimed",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": true,
+      "duration": 60.0,
+      "elapsed": 24.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "refinery",
+            "owned": true,
+            "type": "refinery"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": true
+    },
+    "surface_phase": 0.0415336415171623,
+    "visible_task": "探索中 · 本次 40%",
+    "visible_task_clock": "探索度 240 · 本次 24.0 / 60.0 秒\n自动探索：开启",
+    "visual_clock": 7.38426199999999
+  },
+  {
+    "cloud_phase": 0.05636290833354,
+    "drawer": "crew",
+    "facilities": [
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 0,
+        "id": "station",
+        "name": "空间站",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 1,
+        "source_factor": null,
+        "state": "built",
+        "type": "auto_explore",
+        "unlock_exploration": 1,
+        "work": 1,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 0,
+        "id": "refinery",
+        "name": "资源精炼厂",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 5,
+        "source_factor": "1.53467924926028e0",
+        "state": "built",
+        "type": "refinery",
+        "unlock_exploration": 20,
+        "work": 5,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 0,
+        "id": "workshop",
+        "name": "装备工坊",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 10,
+        "source_factor": "1.63151686261464e0",
+        "state": "built",
+        "type": "equipment",
+        "unlock_exploration": 50,
+        "work": 10,
+        "work_fraction": 1.0
+      },
+      {
+        "builders_present": 0,
+        "claim_allowed": false,
+        "claim_reason": "PlanetBuildingNotReady",
+        "explorers_present": 0,
+        "extra_crew_required": 1,
+        "id": "shipyard",
+        "name": "新式船坞",
+        "pause_reason": "",
+        "planet_id": "1",
+        "required_work": 180,
+        "source_factor": null,
+        "state": "built",
+        "type": "shipyard",
+        "unlock_exploration": 30,
+        "work": 180,
+        "work_fraction": 1.0
+      }
+    ],
+    "facility_entry_pressed": false,
+    "game_time": 479.283333333226,
+    "image": "native-crew-popup",
+    "pause_reasons": {},
+    "selected_facility": "refinery",
+    "selected_planet": "1",
+    "snapshot": {
+      "automatic": false,
+      "duration": 0.0,
+      "elapsed": 0.0,
+      "exploration": 240,
+      "row": {
+        "baseExp": 100.0,
+        "baseTime": 60.0,
+        "id": 1.0,
+        "minTime": 60.0,
+        "name": "始源星-E178b",
+        "reforgeStartLevel": 5.0,
+        "tags": null,
+        "unlockId": "planet/1",
+        "visual": null,
+        "visualFacilities": [
+          {
+            "id": "station",
+            "owned": true,
+            "type": "auto_explore"
+          },
+          {
+            "id": "refinery",
+            "owned": true,
+            "type": "refinery"
+          },
+          {
+            "id": "workshop",
+            "owned": true,
+            "type": "equipment"
+          },
+          {
+            "id": "shipyard",
+            "owned": true,
+            "type": "shipyard"
+          }
+        ]
+      },
+      "running": false
+    },
+    "surface_phase": 0.0459284707903862,
+    "visible_task": "探索 · 未派遣",
+    "visible_task_clock": "探索度 240 · 探索未运行",
+    "visual_clock": 8.11673333333333
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(160.0, 322.8)",
+    "native_popup": "crew",
+    "position": "(36, 308)",
+    "row": 0,
+    "size": "(248, 592)",
+    "window_id": 0
+  },
+  {
+    "method": "XTest OS mouse",
+    "mouse_point": "(160.0, 525.5)",
+    "native_popup": "assignment",
+    "position": "(36, 505)",
+    "row": 0,
+    "size": "(248, 41)",
+    "window_id": 0
+  },
+  {
+    "frame": 0,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.237746, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.246747, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.059753, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 230.8767)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -230.8767)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.053727, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 60.60513)"
+        ]
+      }
+    },
+    "surface_phase": 0.863010585308075,
+    "wall_ms": 135484
+  },
+  {
+    "frame": 1,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.273162, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.242308, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.098558, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 231.7518)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -231.7518)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.082524, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 60.83485)"
+        ]
+      }
+    },
+    "surface_phase": 0.866292178630829,
+    "wall_ms": 135961
+  },
+  {
+    "frame": 2,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.293221, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.202088, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.121894, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 232.564)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -232.564)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.203712, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 61.04806)"
+        ]
+      }
+    },
+    "surface_phase": 0.869338035583496,
+    "wall_ms": 136473
+  },
+  {
+    "frame": 3,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.299981, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.128783, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.129978, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 233.4178)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -233.4178)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.316888, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 61.27217)"
+        ]
+      }
+    },
+    "surface_phase": 0.872539639472961,
+    "wall_ms": 137006
+  },
+  {
+    "frame": 4,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.291918, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.036265, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.12035, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 234.2617)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -234.2617)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.406751, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 61.49369)"
+        ]
+      }
+    },
+    "surface_phase": 0.8757044672966,
+    "wall_ms": 137538
+  },
+  {
+    "frame": 5,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.270479, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.058902, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.09551, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 235.0797)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -235.0797)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.467055, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 61.70841)"
+        ]
+      }
+    },
+    "surface_phase": 0.878771841526031,
+    "wall_ms": 138062
+  },
+  {
+    "frame": 6,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.23358, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.15137, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.055394, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 235.9597)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -235.9597)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.497976, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 61.93942)"
+        ]
+      }
+    },
+    "surface_phase": 0.8820720911026,
+    "wall_ms": 138597
+  },
+  {
+    "frame": 7,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.185083, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.217691, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.007911, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 236.8267)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -236.8267)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.491841, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 62.167)"
+        ]
+      }
+    },
+    "surface_phase": 0.885323166847229,
+    "wall_ms": 139137
+  },
+  {
+    "frame": 8,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.126053, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.248722, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.041444, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 237.7075)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -237.7075)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.448875, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 62.39821)"
+        ]
+      }
+    },
+    "surface_phase": 0.888626098632812,
+    "wall_ms": 139687
+  },
+  {
+    "frame": 9,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.062119, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.238779, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.083706, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 238.5649)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -238.5649)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.374549, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 62.62328)"
+        ]
+      }
+    },
+    "surface_phase": 0.891841411590576,
+    "wall_ms": 140217
+  },
+  {
+    "frame": 10,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.004135, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.191562, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.114047, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 239.412)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -239.412)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.274843, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 62.84564)"
+        ]
+      }
+    },
+    "surface_phase": 0.895017921924591,
+    "wall_ms": 140747
+  },
+  {
+    "frame": 11,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.07216, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.111842, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.129085, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 240.2848)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -240.2848)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.152155, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 63.07477)"
+        ]
+      }
+    },
+    "surface_phase": 0.898291170597076,
+    "wall_ms": 141294
+  },
+  {
+    "frame": 12,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.132807, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.019648, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.126251, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 241.1065)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -241.1065)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.026213, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 63.29045)"
+        ]
+      }
+    },
+    "surface_phase": 0.901372253894806,
+    "wall_ms": 141829
+  },
+  {
+    "frame": 13,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.189114, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.078721, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.10632, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 241.9577)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -241.9577)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.105968, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 63.51389)"
+        ]
+      }
+    },
+    "surface_phase": 0.904564321041107,
+    "wall_ms": 142345
+  },
+  {
+    "frame": 14,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.236337, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.165301, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.071501, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 242.8155)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -242.8155)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.231605, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 63.73906)"
+        ]
+      }
+    },
+    "surface_phase": 0.907781004905701,
+    "wall_ms": 142886
+  },
+  {
+    "frame": 15,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.271885, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.225903, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.0263, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 243.681)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -243.681)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.341582, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 63.96626)"
+        ]
+      }
+    },
+    "surface_phase": 0.9110267162323,
+    "wall_ms": 143418
+  },
+  {
+    "frame": 16,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.29317, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.249745, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.021644, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 244.529)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -244.529)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.425288, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 64.18886)"
+        ]
+      }
+    },
+    "surface_phase": 0.914206743240356,
+    "wall_ms": 143947
+  },
+  {
+    "frame": 17,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.299996, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.235205, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.06596, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 245.363)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -245.363)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.478677, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 64.40778)"
+        ]
+      }
+    },
+    "surface_phase": 0.917334318161011,
+    "wall_ms": 144483
+  },
+  {
+    "frame": 18,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.291998, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.182928, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.102588, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 246.2253)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -246.2253)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.499861, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 64.63413)"
+        ]
+      }
+    },
+    "surface_phase": 0.920567989349365,
+    "wall_ms": 145007
+  },
+  {
+    "frame": 19,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.270225, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.104642, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.124257, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 247.0551)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -247.0551)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.486177, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 64.85195)"
+        ]
+      }
+    },
+    "surface_phase": 0.923679649829865,
+    "wall_ms": 145527
+  },
+  {
+    "frame": 20,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.235002, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.009093, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.129675, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 247.8988)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -247.8988)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.438948, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 65.07343)"
+        ]
+      }
+    },
+    "surface_phase": 0.926843702793121,
+    "wall_ms": 146231
+  },
+  {
+    "frame": 21,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.189304, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.086054, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.118019, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 248.726)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -248.726)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.363151, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 65.29059)"
+        ]
+      }
+    },
+    "surface_phase": 0.929946005344391,
+    "wall_ms": 146678
+  },
+  {
+    "frame": 22,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.134823, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.168288, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.091134, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 249.5518)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -249.5518)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.263424, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 65.50734)"
+        ]
+      }
+    },
+    "surface_phase": 0.933042466640472,
+    "wall_ms": 147185
+  },
+  {
+    "frame": 23,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.070235, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.22807, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.049887, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 250.4272)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -250.4272)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.138813, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 65.73714)"
+        ]
+      }
+    },
+    "surface_phase": 0.936325252056122,
+    "wall_ms": 147739
+  },
+  {
+    "frame": 24,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.003526, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.249945, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.002547, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 251.2826)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -251.2826)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.006996, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 65.96169)"
+        ]
+      }
+    },
+    "surface_phase": 0.939533174037933,
+    "wall_ms": 148288
+  },
+  {
+    "frame": 25,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.061539, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.233179, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.043883, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 252.1144)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -252.1144)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.121738, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 66.18004)"
+        ]
+      }
+    },
+    "surface_phase": 0.942652463912964,
+    "wall_ms": 148787
+  },
+  {
+    "frame": 26,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.121578, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.183753, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.083294, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 252.917)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -252.917)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.238282, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 66.39071)"
+        ]
+      }
+    },
+    "surface_phase": 0.945661902427673,
+    "wall_ms": 149291
+  },
+  {
+    "frame": 27,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.178582, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.104721, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.113576, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 253.7564)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -253.7564)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.344117, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 66.61105)"
+        ]
+      }
+    },
+    "surface_phase": 0.948809683322906,
+    "wall_ms": 149810
+  },
+  {
+    "frame": 28,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.225515, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.012934, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.128481, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 254.568)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -254.568)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.42413, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 66.8241)"
+        ]
+      }
+    },
+    "surface_phase": 0.951853334903717,
+    "wall_ms": 150321
+  },
+  {
+    "frame": 29,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.263222, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.083533, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.127055, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 255.4052)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -255.4052)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.478186, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 67.04388)"
+        ]
+      }
+    },
+    "surface_phase": 0.954992830753326,
+    "wall_ms": 150852
+  },
+  {
+    "frame": 30,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.288517, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.168299, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.108413, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 256.254)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -256.254)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.499756, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 67.26666)"
+        ]
+      }
+    },
+    "surface_phase": 0.958175599575043,
+    "wall_ms": 151372
+  },
+  {
+    "frame": 31,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.299533, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.226584, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.075176, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 257.0988)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -257.0988)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.486517, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 67.48843)"
+        ]
+      }
+    },
+    "surface_phase": 0.9613436460495,
+    "wall_ms": 151921
+  },
+  {
+    "frame": 32,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.295661, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.249868, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(-0.030875, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 257.9601)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -257.9601)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.43833, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 67.71453)"
+        ]
+      }
+    },
+    "surface_phase": 0.964573562145233,
+    "wall_ms": 152442
+  },
+  {
+    "frame": 33,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.277186, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.233593, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.016927, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 258.8067)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -258.8067)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.360181, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 67.93675)"
+        ]
+      }
+    },
+    "surface_phase": 0.967748284339905,
+    "wall_ms": 152971
+  },
+  {
+    "frame": 34,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.244481, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.179948, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.063088, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 259.6664)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -259.6664)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.255208, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 68.16242)"
+        ]
+      }
+    },
+    "surface_phase": 0.970972299575806,
+    "wall_ms": 153510
+  },
+  {
+    "frame": 35,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.201296, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.100995, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.099237, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 260.4933)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -260.4933)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.136852, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 68.3795)"
+        ]
+      }
+    },
+    "surface_phase": 0.97407341003418,
+    "wall_ms": 154033
+  },
+  {
+    "frame": 36,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.149093, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, 0.007792, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.122416, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 261.314)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -261.314)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(-0.01039, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 68.59492)"
+        ]
+      }
+    },
+    "surface_phase": 0.977150976657867,
+    "wall_ms": 154540
+  },
+  {
+    "frame": 37,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.088506, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.088728, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.129961, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 262.1545)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -262.1545)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.119764, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 68.81556)"
+        ]
+      }
+    },
+    "surface_phase": 0.98030287027359,
+    "wall_ms": 155066
+  },
+  {
+    "frame": 38,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(-0.024853, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.170318, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.120466, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 262.9794)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -262.9794)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.239565, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 69.0321)"
+        ]
+      }
+    },
+    "surface_phase": 0.983396410942078,
+    "wall_ms": 155584
+  },
+  {
+    "frame": 39,
+    "parts": {
+      "equipment": {
+        "GantrySlide": [
+          "(0.040647, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "ToolArmSweep": [
+          "(0.0, 1.89, -0.1)",
+          "(0.0, -0.227189, 0.0)"
+        ]
+      },
+      "refinery": {
+        "CoolingShutters": [
+          "(0.0, 1.1, -0.63)",
+          "(0.09511, 0.0, 0.0)"
+        ],
+        "IntakeWheelLeft": [
+          "(-0.76, 0.59, 0.7)",
+          "(0.0, 0.0, 263.8131)"
+        ],
+        "IntakeWheelRight": [
+          "(0.76, 0.59, 0.7)",
+          "(0.0, 0.0, -263.8131)"
+        ]
+      },
+      "shipyard": {
+        "CraneSlide": [
+          "(0.344531, 0.0, 0.0)",
+          "(0.0, 0.0, 0.0)"
+        ],
+        "DockCollarSpin": [
+          "(1.14, 1.18, -0.94)",
+          "(0.0, 0.0, 69.25095)"
+        ]
+      }
+    },
+    "surface_phase": 0.986522853374481,
+    "wall_ms": 156256
+  }
+]

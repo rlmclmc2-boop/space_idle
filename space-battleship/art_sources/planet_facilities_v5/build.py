@@ -103,62 +103,83 @@ for kind in ("auto_explore", "refinery", "equipment", "shipyard"):
             box("Visible blue field", (sign * 1.05, 0, 0.10), (0.93, 0.98, 0.025), solar, hinge, 0.01)
 
     elif kind == "refinery":
-        # Surface contact is four isolated pads, not a black rectangular plate.
+        # The furnace sits between two raised ore hoppers; the belt enters its mouth.
         for x in (-1.06, 1.06):
             for y in (-0.65, 0.65):
                 box("Conforming landing foot", (x, y, 0.12), (0.43, 0.44, 0.24), dark, root)
-        cyl("Low processing vessel", (0, 0, 0.78), 0.84, 1.20, cream, root)
-        cyl("Furnace crown", (0, 0, 1.39), 0.54, 0.15, dark, root)
-        cyl("Visible hot top", (0, 0, 1.49), 0.32, 0.04, amber, root)
-        box("Amber furnace opening", (0, -0.86, 0.89), (0.52, 0.06, 0.43), amber, root)
+        box("Wide navy furnace plinth", (0, 0.22, 0.48), (2.10, 1.60, 0.70), dark, root, 0.15)
+        box("Ivory furnace chamber", (0, 0.31, 0.94), (1.95, 1.51, 1.14), cream, root, 0.19)
+        box("Raised furnace shoulders left", (-0.74, 0.12, 1.55), (0.39, 1.18, 0.65), cream, root, 0.10)
+        box("Raised furnace shoulders right", (0.74, 0.12, 1.55), (0.39, 1.18, 0.65), cream, root, 0.10)
+        box("Dark furnace throat", (0, -0.49, 1.24), (0.82, 0.07, 0.80), dark, root, 0.08)
+        box("Amber furnace core", (0, -0.54, 1.26), (0.53, 0.035, 0.55), amber, root, 0.04)
+        box("Open furnace crown", (0, 0.10, 1.57), (0.78, 0.81, 0.11), dark, root, 0.04)
+        box("Hot furnace top", (0, 0.10, 1.65), (0.55, 0.57, 0.05), amber, root, 0.02)
         for sign in (-1, 1):
-            box("Broad navy ore hopper", (sign * 1.27, -0.08, 1.29),
-                (0.82, 0.89, 0.81), blue, root, 0.1)
-            box("Ore load rim", (sign * 1.27, -0.08, 1.72), (0.87, 0.93, 0.09), cream, root)
-            box("Visible dark ore mass", (sign * 1.27, -0.08, 1.78), (0.55, 0.55, 0.06), dark, root)
+            box("Raised navy ore hopper", (sign * 1.43, 0.54, 1.52),
+                (0.99, 1.02, 1.02), blue, root, 0.13)
+            box("Pale ore hopper rim", (sign * 1.43, 0.54, 2.07), (1.04, 1.08, 0.12), cream, root)
+            box("Visible dark ore fill", (sign * 1.43, 0.54, 2.15), (0.74, 0.78, 0.07), dark, root)
+            box("Hopper cyan status", (sign * 1.43, -0.01, 1.64), (0.38, 0.035, 0.12), cyan, root, 0.02)
             wheel = empty("IntakeWheelLeft" if sign < 0 else "IntakeWheelRight", root,
-                          (sign * 0.78, -0.47, 0.47))
+                          (sign * 0.76, -0.70, 0.59))
             cyl("Intake drive wheel", (0, 0, 0), 0.20, 0.13, dark, wheel,
                 (math.pi / 2, 0, 0), 16)
             for j in range(4):
                 a = j * math.pi / 2
                 box("Large wheel spoke", (0.12 * math.cos(a), 0, 0.12 * math.sin(a)),
                     (0.12, 0.04, 0.06), cyan, wheel, 0.01)
-        box("Wide input belt", (0, -1.05, 0.34), (0.56, 0.94, 0.21), dark, root)
+        box("Long navy input conveyor", (0, -1.35, 0.35), (0.71, 1.65, 0.26), dark, root, 0.04)
+        box("Conveyor ivory side left", (-0.43, -1.35, 0.49), (0.15, 1.65, 0.23), cream, root, 0.03)
+        box("Conveyor ivory side right", (0.43, -1.35, 0.49), (0.15, 1.65, 0.23), cream, root, 0.03)
         shutters = empty("CoolingShutters", root, (0, 0.63, 1.10))
         for x in (-0.35, 0.35):
             box("Broad cooler flap", (x, 0, 0), (0.45, 0.10, 0.42), cream, shutters)
 
     elif kind == "equipment":
-        # Wide warm bay, one gantry and a single readable working arm.
-        box("Low navy contact feet", (0, 0, 0.12), (2.55, 1.52, 0.24), dark, root)
-        box("Warm ivory workshop shell", (0, 0.36, 0.72), (2.85, 1.25, 1.28), cream, root, 0.17)
-        box("Broad navy roof band", (0, 0.36, 1.41), (2.48, 0.88, 0.13), blue, root, 0.08)
-        box("Amber work skylight", (0, 0.12, 1.49), (0.96, 0.40, 0.035), amber, root, 0.02)
-        box("Deep working aperture", (0, -0.30, 0.72), (1.82, 0.08, 0.76), dark, root)
-        box("Amber bay interior", (0, -0.36, 0.78), (1.48, 0.025, 0.55), amber, root, 0.02)
+        # Open floor and separated side shells keep the working bay visible from above.
+        box("Navy contact floor", (0, 0, 0.12), (3.02, 2.20, 0.24), dark, root, 0.07)
+        box("Broad exposed workshop deck", (0, -0.16, 0.27), (2.36, 1.65, 0.08), blue, root, 0.04)
+        box("Low warm rear work wall", (0, 0.92, 0.51), (2.88, 0.38, 0.42), cream, root, 0.08)
+        box("Amber lit work floor", (0, 0.32, 0.33), (1.45, 0.57, 0.04), amber, root, 0.02)
+        for sign in (-1, 1):
+            box("Ivory side machine housing", (sign * 1.30, -0.02, 0.71),
+                (0.62, 1.91, 0.92), cream, root, 0.13)
+            box("Navy side inner face", (sign * 0.94, -0.18, 0.65),
+                (0.08, 1.54, 0.62), dark, root, 0.02)
+        box("Navy forward work lip", (0, -1.10, 0.27), (2.58, 0.18, 0.19), dark, root)
         gantry = empty("GantrySlide", root)
         for x in (-1.02, 1.02):
-            box("Gantry upright", (x, -0.56, 1.12), (0.25, 0.24, 1.65), blue, gantry)
-        box("Single gantry beam", (0, -0.56, 1.91), (2.25, 0.25, 0.23), blue, gantry)
-        arm = empty("ToolArmSweep", gantry, (0, -0.70, 1.77))
-        box("Jointed tool arm", (0, 0, -0.38), (0.20, 0.22, 0.72), cream, arm)
-        box("Bright tool head", (0, -0.02, -0.78), (0.29, 0.30, 0.18), cyan, arm)
+            box("Tall navy gantry upright", (x, -0.48, 1.16), (0.35, 0.38, 1.72), blue, gantry, 0.07)
+            box("Ivory gantry foot", (x, -0.53, 0.45), (0.49, 0.52, 0.37), cream, gantry, 0.06)
+        box("Heavy navy overhead beam", (0, -0.48, 2.04), (2.42, 0.43, 0.38), dark, gantry, 0.07)
+        box("Broad beam blue face", (0, -0.72, 2.04), (2.06, 0.06, 0.21), blue, gantry, 0.02)
+        arm = empty("ToolArmSweep", gantry, (0, 0.10, 1.89))
+        box("Ivory tool shoulder", (0, -0.08, -0.15), (0.70, 0.59, 0.45), cream, arm, 0.07)
+        box("Forward navy articulated arm", (0, -0.55, -0.39), (0.45, 1.06, 0.33), blue, arm, 0.06)
+        box("Broad ivory working claw", (0, -1.04, -0.89), (0.82, 0.48, 0.72), cream, arm, 0.06)
+        box("Cyan work tip", (0, -1.29, -1.14), (0.47, 0.08, 0.21), cyan, arm, 0.02)
 
     else:
-        # An E-like open berth: one heavy keel, two jaws and one working carriage.
-        box("One heavy navy keel", (-1.19, 0, 0.57), (0.66, 2.65, 1.34), dark, root, 0.13)
-        box("Ivory keel armor", (-1.38, 0, 0.65), (0.19, 2.20, 1.20), cream, root)
-        for y in (-0.91, 0.91):
-            box("Open load-bearing jaw", (0.13, y, 0.39), (2.40, 0.43, 0.70), blue, root)
-            box("Ivory jaw face", (0.16, y, 0.78), (2.24, 0.34, 0.13), cream, root)
-            box("Cyan berth end", (1.34, y, 0.42), (0.09, 0.30, 0.13), cyan, root)
+        # One high armored spine carries two unequal, open cantilever berths.
+        box("Tall single navy service spine", (-1.24, 0, 1.02), (0.82, 2.76, 2.20), dark, root, 0.13)
+        box("Broad ivory spine armor", (-1.51, 0, 1.10), (0.35, 2.51, 2.04), cream, root, 0.09)
+        box("Ivory front spine silhouette", (-1.22, -1.48, 1.15), (0.75, 0.24, 2.27), cream, root, 0.08)
+        box("Deep navy front spine recess", (-1.22, -1.62, 1.21), (0.29, 0.035, 1.39), dark, root, 0.02)
+        box("Spine crown", (-1.18, 0, 2.18), (0.86, 0.75, 0.30), cream, root, 0.07)
+        box("Long lower navy berth", (0.21, -0.94, 0.45), (2.45, 0.56, 0.70), dark, root, 0.08)
+        box("Lower berth ivory armor", (0.20, -0.94, 0.79), (2.19, 0.44, 0.15), cream, root, 0.03)
+        box("Short raised upper cantilever", (-0.04, 0.94, 1.21), (1.96, 0.53, 0.59), blue, root, 0.07)
+        box("Upper cantilever ivory armor", (-0.10, 0.94, 1.53), (1.80, 0.42, 0.15), cream, root, 0.03)
+        box("Cyan lower berth end", (1.48, -0.94, 0.45), (0.11, 0.38, 0.20), cyan, root)
+        box("Cyan upper berth end", (0.96, 0.94, 1.19), (0.11, 0.35, 0.16), cyan, root)
         crane = empty("CraneSlide", root)
-        box("One broad moving crane", (0.10, 0, 1.12), (0.75, 0.30, 0.37), cream, crane)
-        box("Amber crane work head", (0.10, 0, 0.82), (0.27, 0.22, 0.26), amber, crane)
-        collar = empty("DockCollarSpin", root, (1.25, 0, 0.55))
-        torus("Round cyan berth collar", (0, 0, 0), 0.37, 0.12, cyan, collar)
-        box("Collar ivory guide", (0, 0, 0.43), (0.26, 0.16, 0.08), cream, collar)
+        box("Ivory moving crane carriage", (-0.12, 0.94, 1.87), (0.72, 0.69, 0.46), cream, crane, 0.07)
+        box("Navy crane boom", (0.53, 0.94, 1.94), (0.82, 0.20, 0.22), dark, crane, 0.04)
+        box("Amber crane work head", (0.94, 0.94, 1.60), (0.26, 0.25, 0.43), amber, crane)
+        collar = empty("DockCollarSpin", root, (1.14, 0.94, 1.18))
+        torus("Round cyan berth collar", (0, 0, 0), 0.45, 0.13, cyan, collar)
+        box("Collar ivory guide", (0, 0, 0.47), (0.29, 0.17, 0.10), cream, collar)
 
     bpy.context.view_layer.update()
     bpy.ops.wm.save_as_mainfile(filepath=str(ROOT / (kind + ".blend")), compress=True)
