@@ -1,0 +1,1925 @@
+{
+  "primary_ink": [
+    {
+      "state": "01-fresh-normal-same",
+      "orientation": "horizontal",
+      "visible_gap_before_after_px": [
+        52.0,
+        51.0
+      ],
+      "gap_difference_px": 1.0,
+      "current_ink": [
+        167.0,
+        752.0,
+        46.0,
+        19.0
+      ],
+      "arrow_ink": [
+        265.0,
+        755.0,
+        23.0,
+        12.0
+      ],
+      "upgrade_ink": [
+        339.0,
+        752.0,
+        46.0,
+        19.0
+      ],
+      "alpha_centres": {
+        "_current_value": "(191.4962, 761.4506)",
+        "_upgrade_arrow": "(278.2625, 761.1168)",
+        "_next_value": "(363.1277, 761.7529)"
+      },
+      "actual_resource_count": 1
+    },
+    {
+      "state": "02-double-normal-same",
+      "orientation": "horizontal",
+      "visible_gap_before_after_px": [
+        37.0,
+        38.0
+      ],
+      "gap_difference_px": 1.0,
+      "current_ink": [
+        156.0,
+        749.0,
+        69.0,
+        25.0
+      ],
+      "arrow_ink": [
+        262.0,
+        755.0,
+        23.0,
+        12.0
+      ],
+      "upgrade_ink": [
+        323.0,
+        749.0,
+        79.0,
+        24.0
+      ],
+      "alpha_centres": {
+        "_current_value": "(192.0493, 759.0135)",
+        "_upgrade_arrow": "(275.2625, 761.1168)",
+        "_next_value": "(366.5679, 760.0077)"
+      },
+      "actual_resource_count": 2
+    },
+    {
+      "state": "03-double-normal-different",
+      "orientation": "horizontal",
+      "visible_gap_before_after_px": [
+        37.0,
+        38.0
+      ],
+      "gap_difference_px": 1.0,
+      "current_ink": [
+        156.0,
+        737.0,
+        69.0,
+        25.0
+      ],
+      "arrow_ink": [
+        262.0,
+        743.0,
+        23.0,
+        12.0
+      ],
+      "upgrade_ink": [
+        323.0,
+        737.0,
+        79.0,
+        24.0
+      ],
+      "alpha_centres": {
+        "_current_value": "(192.0493, 747.0135)",
+        "_upgrade_arrow": "(275.2625, 749.1168)",
+        "_next_value": "(366.5679, 748.0077)"
+      },
+      "actual_resource_count": 2
+    },
+    {
+      "state": "04-double-long-different",
+      "orientation": "vertical",
+      "visible_gap_before_after_px": [
+        4.0,
+        4.0
+      ],
+      "gap_difference_px": 0.0,
+      "current_ink": [
+        286.0,
+        699.0,
+        69.0,
+        25.0
+      ],
+      "arrow_ink": [
+        316.0,
+        728.0,
+        8.0,
+        15.0
+      ],
+      "upgrade_ink": [
+        233.0,
+        747.0,
+        174.0,
+        20.0
+      ],
+      "alpha_centres": {
+        "_current_value": "(322.0493, 709.0135)",
+        "_upgrade_arrow": "(319.8394, 736.5884)",
+        "_next_value": "(320.9248, 757.5251)"
+      },
+      "actual_resource_count": 2
+    },
+    {
+      "state": "05-double-long-same",
+      "orientation": "vertical",
+      "visible_gap_before_after_px": [
+        4.0,
+        4.0
+      ],
+      "gap_difference_px": 0.0,
+      "current_ink": [
+        286.0,
+        711.0,
+        69.0,
+        25.0
+      ],
+      "arrow_ink": [
+        316.0,
+        740.0,
+        8.0,
+        15.0
+      ],
+      "upgrade_ink": [
+        233.0,
+        759.0,
+        174.0,
+        20.0
+      ],
+      "alpha_centres": {
+        "_current_value": "(322.0493, 721.0135)",
+        "_upgrade_arrow": "(319.8394, 748.5884)",
+        "_next_value": "(320.9248, 769.5251)"
+      },
+      "actual_resource_count": 2
+    },
+    {
+      "state": "06-purchase-transient-feedback",
+      "orientation": "horizontal",
+      "visible_gap_before_after_px": [
+        34.0,
+        35.0
+      ],
+      "gap_difference_px": 1.0,
+      "current_ink": [
+        150.0,
+        749.0,
+        80.0,
+        24.0
+      ],
+      "arrow_ink": [
+        264.0,
+        755.0,
+        23.0,
+        12.0
+      ],
+      "upgrade_ink": [
+        322.0,
+        749.0,
+        81.0,
+        24.0
+      ],
+      "alpha_centres": {
+        "_current_value": "(192.8846, 760.3046)",
+        "_upgrade_arrow": "(277.2625, 761.1168)",
+        "_next_value": "(365.7977, 760.1745)"
+      },
+      "actual_resource_count": 1
+    },
+    {
+      "state": "08-defence-aligned-content",
+      "orientation": "horizontal",
+      "visible_gap_before_after_px": [
+        41.0,
+        40.0
+      ],
+      "gap_difference_px": 1.0,
+      "current_ink": [
+        156.0,
+        749.0,
+        68.0,
+        25.0
+      ],
+      "arrow_ink": [
+        265.0,
+        755.0,
+        23.0,
+        12.0
+      ],
+      "upgrade_ink": [
+        328.0,
+        749.0,
+        68.0,
+        25.0
+      ],
+      "alpha_centres": {
+        "_current_value": "(192.4848, 759.3046)",
+        "_upgrade_arrow": "(278.2625, 761.1168)",
+        "_next_value": "(364.7896, 759.5372)"
+      },
+      "actual_resource_count": 1
+    }
+  ],
+  "native_button_paint_source_commit": "cec3b67f6bfcea73ee6fef38035b57dc62693199",
+  "operation_rail_global": [
+    32.0,
+    836.0,
+    744.0,
+    52.0
+  ],
+  "native_button_paint": [
+    {
+      "context": "same",
+      "button": "Quantity0",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9234100000000041,
+        -0.14580000000000837
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity0",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9163099999999957,
+        -0.1471000000000231
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity0",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        41.0,
+        843.0,
+        57.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        7.0,
+        678.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9206199999999995,
+        1.3559999999999945
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity0",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.922939999999997,
+        -0.1472999999999729
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity0",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9224700000000041,
+        -0.141399999999976
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity1",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6425000000000125,
+        -0.30370000000004893
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity1",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6351999999999975,
+        -0.30539999999996326
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity1",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        104.0,
+        843.0,
+        57.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        7.0,
+        615.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.646899999999988,
+        1.1982000000000426
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity1",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6444999999999936,
+        -0.30539999999996326
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity1",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6391000000000133,
+        -0.3007000000000062
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity2",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.2010999999999967,
+        -0.39189999999996417
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity2",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.2033999999999878,
+        -0.39210000000002765
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity2",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        167.0,
+        843.0,
+        57.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        7.0,
+        552.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.1990999999999872,
+        1.1076000000000477
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity2",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.198299999999989,
+        -0.39170000000001437
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Quantity2",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.1976999999999975,
+        -0.39170000000001437
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Purchase",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        543.0,
+        844.0,
+        224.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        511.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5589999999999691,
+        -0.5770999999999731
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Purchase",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        543.0,
+        844.0,
+        224.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        511.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5499999999999545,
+        -0.5733999999999924
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Purchase",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        543.0,
+        843.0,
+        224.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        511.0,
+        7.0,
+        9.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5538000000000238,
+        0.9238000000000284
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Purchase",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        543.0,
+        844.0,
+        224.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        511.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5606000000000222,
+        -0.5756999999999834
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Purchase",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        543.0,
+        844.0,
+        224.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        511.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5583000000000311,
+        -0.5719000000000278
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Install",
+      "state": "normal",
+      "source_visible": false,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6200000000000045,
+        -0.3341000000000349
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Install",
+      "state": "hover",
+      "source_visible": false,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.616200000000049,
+        -0.3346000000000231
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Install",
+      "state": "pressed",
+      "source_visible": false,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        507.0,
+        843.0,
+        260.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        7.0,
+        9.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6198000000000548,
+        1.1648000000000138
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Install",
+      "state": "focus",
+      "source_visible": false,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6163999999999987,
+        -0.3350000000000364
+      ]
+    },
+    {
+      "context": "same",
+      "button": "Install",
+      "state": "disabled",
+      "source_visible": false,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.619100000000003,
+        -0.3342000000000098
+      ]
+    },
+    {
+      "context": "same",
+      "button": "ReceiptHistory",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        341.0,
+        844.0,
+        94.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        309.0,
+        8.0,
+        341.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.20289999999999964,
+        -0.6163000000000238
+      ]
+    },
+    {
+      "context": "same",
+      "button": "ReceiptHistory",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        341.0,
+        844.0,
+        94.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        309.0,
+        8.0,
+        341.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.21319999999997208,
+        -0.6181000000000267
+      ]
+    },
+    {
+      "context": "same",
+      "button": "ReceiptHistory",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        341.0,
+        843.0,
+        94.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        309.0,
+        7.0,
+        341.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.20470000000000255,
+        0.8832999999999629
+      ]
+    },
+    {
+      "context": "same",
+      "button": "ReceiptHistory",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        341.0,
+        844.0,
+        94.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        309.0,
+        8.0,
+        341.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.20620000000002392,
+        -0.6160999999999603
+      ]
+    },
+    {
+      "context": "same",
+      "button": "ReceiptHistory",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        341.0,
+        844.0,
+        94.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        309.0,
+        8.0,
+        341.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.17399999999997817,
+        -0.6172000000000253
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity0",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9234100000000041,
+        -0.14580000000000837
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity0",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9163099999999957,
+        -0.1471000000000231
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity0",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        41.0,
+        843.0,
+        57.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        7.0,
+        678.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9206199999999995,
+        1.3559999999999945
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity0",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.922939999999997,
+        -0.1472999999999729
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity0",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        41.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        9.0,
+        8.0,
+        678.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9224700000000041,
+        -0.141399999999976
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity1",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6425000000000125,
+        -0.30370000000004893
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity1",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6351999999999975,
+        -0.30539999999996326
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity1",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        104.0,
+        843.0,
+        57.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        7.0,
+        615.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.646899999999988,
+        1.1982000000000426
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity1",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6444999999999936,
+        -0.30539999999996326
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity1",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        104.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        72.0,
+        8.0,
+        615.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -1.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        1.6391000000000133,
+        -0.3007000000000062
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity2",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.2010999999999967,
+        -0.39189999999996417
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity2",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.2033999999999878,
+        -0.39210000000002765
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity2",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        167.0,
+        843.0,
+        57.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        7.0,
+        552.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.1990999999999872,
+        1.1076000000000477
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity2",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.198299999999989,
+        -0.39170000000001437
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Quantity2",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        167.0,
+        844.0,
+        57.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        135.0,
+        8.0,
+        552.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -1.1976999999999975,
+        -0.39170000000001437
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Purchase",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        235.0,
+        844.0,
+        206.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        203.0,
+        8.0,
+        335.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5591000000000008,
+        -0.5770999999999731
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Purchase",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        235.0,
+        844.0,
+        206.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        203.0,
+        8.0,
+        335.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5500000000000114,
+        -0.5733999999999924
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Purchase",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        235.0,
+        843.0,
+        206.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        203.0,
+        7.0,
+        335.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5538999999999987,
+        0.9238000000000284
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Purchase",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        235.0,
+        844.0,
+        206.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        203.0,
+        8.0,
+        335.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5604999999999905,
+        -0.5756999999999834
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Purchase",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        235.0,
+        844.0,
+        206.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        203.0,
+        8.0,
+        335.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        -0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        -0.5582999999999743,
+        -0.5719000000000278
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Install",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.6142999999999574,
+        -0.8360999999999876
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Install",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.6087999999999738,
+        -0.838100000000054
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Install",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        507.0,
+        843.0,
+        260.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        7.0,
+        9.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.6151999999999589,
+        0.6638000000000375
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Install",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.5,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.614400000000046,
+        -0.8356999999999744
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "Install",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        507.0,
+        844.0,
+        260.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        475.0,
+        8.0,
+        9.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.6110999999999649,
+        -0.8379999999999654
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "ReceiptHistory",
+      "state": "normal",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": false,
+      "paint": [
+        447.0,
+        844.0,
+        50.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        415.0,
+        8.0,
+        279.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9859000000000151,
+        -0.6130000000000564
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "ReceiptHistory",
+      "state": "hover",
+      "source_visible": true,
+      "native_draw_mode": 2,
+      "native_focus": false,
+      "paint": [
+        447.0,
+        844.0,
+        50.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        415.0,
+        8.0,
+        279.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9823000000000093,
+        -0.6160999999999603
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "ReceiptHistory",
+      "state": "pressed",
+      "source_visible": true,
+      "native_draw_mode": 1,
+      "native_focus": true,
+      "paint": [
+        447.0,
+        843.0,
+        50.0,
+        38.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        415.0,
+        7.0,
+        279.0,
+        7.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        0.5
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9938000000000216,
+        0.8867000000000189
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "ReceiptHistory",
+      "state": "focus",
+      "source_visible": true,
+      "native_draw_mode": 0,
+      "native_focus": true,
+      "paint": [
+        447.0,
+        844.0,
+        50.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        415.0,
+        8.0,
+        279.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9895000000000209,
+        -0.6124999999999545
+      ]
+    },
+    {
+      "context": "alternative",
+      "button": "ReceiptHistory",
+      "state": "disabled",
+      "source_visible": true,
+      "native_draw_mode": 3,
+      "native_focus": false,
+      "paint": [
+        447.0,
+        844.0,
+        50.0,
+        39.0
+      ],
+      "inset_left_top_right_bottom_px": [
+        415.0,
+        8.0,
+        279.0,
+        5.0
+      ],
+      "glyph_bbox_centre_offset_from_paint_centre": [
+        0.0,
+        -1.0
+      ],
+      "glyph_alpha_mass_offset_from_paint_centre": [
+        0.9839000000000055,
+        -0.6036000000000286
+      ]
+    }
+  ],
+  "notes": "Native copied Buttons use identical original theme/style and actual event-driven draw modes in transparent SubViewports, with signals blocked to avoid commands. Alpha used rect includes border/shadow/focus; glyph differences are raster image minus same material with empty text. This diagnostic supplements actual full-screen viewing and is not a visual pass."
+}

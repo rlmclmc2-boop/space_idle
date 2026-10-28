@@ -1,0 +1,106 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/tmp/space-idle-equipment-optical"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func ink(label:Label)->Dictionary:
+    var view:=SubViewport.new();view.size=Vector2i(label.size.ceil())+Vector2i(16,16);view.transparent_bg=true;view.render_target_update_mode=SubViewport.UPDATE_ALWAYS;root.add_child(view)
+    var copy:Label=label.duplicate();copy.position=Vector2(8,8);copy.theme=panel.theme;view.add_child(copy);await flush()
+    var pixels:Image=view.get_texture().get_image();var used:Rect2i=pixels.get_used_rect();var mass:float=0;var weighted:=Vector2.ZERO
+    for y in pixels.get_height():
+        for x in pixels.get_width():
+            var a:float=pixels.get_pixel(x,y).a;mass+=a;weighted+=Vector2(x+0.5,y+0.5)*a
+    view.queue_free()
+    return {"ink":Rect2(label.global_position+Vector2(used.position)-Vector2(8,8),Vector2(used.size)),"mass_centre":label.global_position+weighted/maxf(mass,0.001)-Vector2(8,8),"layout":label.get_global_rect(),"text":label.text}
+func button_paint(button:Button,state:String)->Dictionary:
+    var view:=SubViewport.new();view.size=Vector2i(button.size.ceil())+Vector2i(24,24);view.transparent_bg=true;view.render_target_update_mode=SubViewport.UPDATE_ALWAYS;root.add_child(view)
+    var copy:Button=button.duplicate();copy.set_block_signals(true);copy.theme=panel.theme;copy.position=Vector2(12,12);copy.size=button.size;copy.disabled=state=="disabled";view.add_child(copy);await flush()
+    if state in ["hover","pressed"]:
+        var motion:=InputEventMouseMotion.new();motion.position=copy.get_rect().get_center();view.push_input(motion,true)
+    if state=="pressed":
+        var down:=InputEventMouseButton.new();down.position=copy.get_rect().get_center();down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true;view.push_input(down,true)
+    if state=="focus":copy.grab_focus()
+    await flush()
+    var image:Image=view.get_texture().get_image();var bounds:Rect2i=image.get_used_rect();var draw_mode:int=copy.get_draw_mode();var focus:bool=copy.has_focus()
+    copy.text="";copy.size=button.size;await flush();var background:Image=view.get_texture().get_image()
+    var glyph_bounds:=Rect2i();var mass:float=0;var weighted:=Vector2.ZERO
+    for y in image.get_height():
+        for x in image.get_width():
+            var a:Color=image.get_pixel(x,y);var b:Color=background.get_pixel(x,y);var w:float=maxf(absf(a.r-b.r),maxf(absf(a.g-b.g),absf(a.b-b.b)))
+            if w>0.02:
+                var r:=Rect2i(x,y,1,1);glyph_bounds=glyph_bounds.merge(r) if glyph_bounds.has_area() else r;mass+=w;weighted+=Vector2(x+0.5,y+0.5)*w
+    if button==panel._purchase:image.save_png(destination.path_join("button-purchase-"+state+".png"))
+    view.queue_free()
+    return {"state":state,"draw_mode":draw_mode,"has_focus":focus,"control":button.get_global_rect(),"paint":Rect2(button.global_position+Vector2(bounds.position)-Vector2(12,12),Vector2(bounds.size)),"glyph":Rect2(button.global_position+Vector2(glyph_bounds.position)-Vector2(12,12),Vector2(glyph_bounds.size)),"glyph_mass_centre":button.global_position+weighted/maxf(mass,0.001)-Vector2(12,12)}
+func capture(label:String)->void:
+    await flush();var inks:Dictionary={}
+    for name in ["_current_title","_level_label","_current_caption","_upgrade_caption","_current_value","_next_value","_upgrade_arrow"]:inks[name]=await ink(panel.get(name))
+    var surface:Rect2=panel._upgrade_data.get_global_rect()
+    for name in ["_current_caption","_upgrade_caption","_current_value","_next_value","_upgrade_arrow"]:check(surface.encloses(inks[name].ink),label+" actual text ink inside value material "+name)
+    var fees:Array=[]
+    for key in panel._cost_cells:
+        var cell:Dictionary=panel._cost_cells[key]
+        if cell.name.visible:fees.append({"resource":key,"name":await ink(cell.name),"amount":await ink(cell.amount)})
+    records.append({"action":label,"workbench":panel._workbench.get_rect(),"surface":surface,"inks":inks,"fees":fees,"comparison":panel._comparison_group.visible,"toast":panel._receipt_toast.visible,"history_count":panel._receipt_history.size(),"quote":panel.last_comparison.quote,"state":snapshot()})
+    await screenshot(label)
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"normal main/native startup");host.set_pause("user",true);await flush()
+    await capture("01-fresh-normal-same")
+    var paints:Array=[]
+    for button in panel._quantity_buttons+[panel._purchase,panel._install,panel._receipt_history_button]:
+        for state in ["normal","hover","pressed","focus","disabled"]:
+            var result:Dictionary=await button_paint(button,state);result["button"]=button.name;paints.append(result)
+            if button.visible:check(panel._transaction_rail.get_global_rect().encloses(result.paint),"actual style alpha inside operation rail "+str(button.name)+" "+state)
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled availability");host.equipment.refresh_availability(host.campaign_system.available,100)
+    var e:Dictionary=host.equipment.save_state()
+    for row in e.slots:
+        if row.id=="weapon:0":row.paid_level=19;row.switch_ready_at=0.0
+    check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled level19");check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"native sync")
+    wallet("100000","1000");panel._dirty=true;await flush();check(panel.last_comparison.quote.costs.size()==2,"real Owner double-resource plus1 quote")
+    await capture("02-double-normal-same")
+    await click(panel._choices.missile.button);await capture("03-double-normal-different")
+    wallet("1234567890123456789012345678901234567890","9999999999999999999999");await flush();await click(panel._quantity_buttons[2]);check(panel.last_comparison.quote.costs.size()==2,"real Owner long MAX double-resource quote")
+    await capture("04-double-long-different")
+    await click(panel._choices.laser.button);await capture("05-double-long-same")
+    await click(panel._quantity_buttons[0]);var before:Dictionary=snapshot();await click(panel._purchase)
+    check(panel.last_result.get("purchase_receipt",{}).get("commit_status")=="accepted","actual purchase accepted")
+    for key in panel.last_result.purchase_receipt.spent:
+        var expected:Dictionary=host.amount_api.apply("sub_nonnegative",[before.wallet[key],panel.last_result.purchase_receipt.spent[key]])
+        check(host.amount_api.apply("compare",[expected.value,host.economy.budget()[key]]).scalar==0,"actual spent remains exact "+str(key))
+    await capture("06-purchase-transient-feedback")
+    await create_timer(3.2).timeout;await flush();check(not panel._receipt_toast.visible,"receipt is transient and title remains clear");await click(panel._receipt_history_button)
+    check(panel._receipt_history_popup.visible and panel.has_exclusive_ui(),"actual receipt history is accessible and exclusive");await screenshot("07-on-demand-original-receipt-history");check(panel.prepare_host_hide(true) and not panel.has_exclusive_ui(),"force closes own history without changing Owner")
+    var f:=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE);f.store_string(JSON.stringify({"source_commit":OS.get_environment("SPACE_IDLE_INTEGRATED_SOURCE"),"equipment_sha256":FileAccess.get_sha256("res://src/ui/equipment_panel.gd"),"records":records,"button_paint":paints,"actual_result":panel.last_result,"failures":failures,"scope":"Current layout representative same/different normal/long Owner double-resource quotes, actual text/style-alpha measurements and receipt lifecycle. No real production triple-resource source exists; no fabricated third fee."},"  "));f.close()
+    print("EQUIPMENT_OPTICAL_LAYOUT_COMPLETE failures=",failures.size()," records=",records.size());app._close_game()

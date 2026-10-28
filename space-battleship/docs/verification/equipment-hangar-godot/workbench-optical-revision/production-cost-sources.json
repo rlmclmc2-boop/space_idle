@@ -1,0 +1,253 @@
+{
+  "production_workbook": "config_excel/equipment.xlsx",
+  "workbook_sha256": "eaff9aa523a003bc32183d10d9eaf2f131e1feef75307473424144c3c08b697d",
+  "generated_config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "owner_source": "src/systems/equipment.gd::_quote_levels",
+  "owner_sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+  "compiled_rows": [
+    {
+      "name": "armour",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "shield",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "laser",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "missile",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "cannon",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "laser_mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "missile-mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "cannon-mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "longLaser",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "longLaser-mon",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "laser-mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    }
+  ],
+  "workbook_rows": [
+    {
+      "name": "armour",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "shield",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "laser",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "missile",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "cannon",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "laser_mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "missile-mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "cannon-mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "longLaser",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "longLaser-mon",
+      "res_1": 1,
+      "cost_1": 50,
+      "costMulti_1": 0.2,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    },
+    {
+      "name": "laser-mon",
+      "res_1": null,
+      "cost_1": null,
+      "costMulti_1": null,
+      "res_2": null,
+      "cost_2": null,
+      "costMulti_2": null
+    }
+  ],
+  "evolution_table": {
+    "equipment_evolution": [
+      {
+        "key": "interval",
+        "value": 20
+      },
+      {
+        "key": "first_stat_multiplier",
+        "value": 1.6
+      },
+      {
+        "key": "later_stat_multiplier",
+        "value": 1.5
+      },
+      {
+        "key": "material_id",
+        "value": "degenerate_matter"
+      },
+      {
+        "key": "material_cost_per_tier",
+        "value": 10
+      },
+      {
+        "key": "visual_palette",
+        "value": "[\"53d9ff\", \"78b7ff\", \"a9a6ff\", \"d9a0ff\", \"ff9eca\", \"ffad91\", \"ffd278\", \"d8ed78\", \"94e8b4\", \"f7e6b0\"]"
+      },
+      {
+        "key": "visual_strength_start",
+        "value": 0.4
+      },
+      {
+        "key": "visual_strength_per_tier",
+        "value": 0.06
+      }
+    ]
+  },
+  "conclusion": "Production res_2 is null for all equipment rows. Actual usable rows quote only iron res_1=1; Owner may append degenerate_matter on evolution crossings. At most two distinct production upgrade resources exist, including batch aggregation. No real three-resource quote can be captured without new official data/rules. This task does not authorize changing config or inventing a fee.",
+  "triple_resource_status": "not executed: no production Owner source; not denied by a tool and not simulated",
+  "actual_double_cases": [
+    "02-double-normal-same",
+    "03-double-normal-different",
+    "04-double-long-different",
+    "05-double-long-same"
+  ]
+}

@@ -1,5 +1,7 @@
 # 装备对共享宿主H1的最小端口适配
 
+**最新用户状态：本批视觉放行已撤回，待修/待根唯一审核。** 此页旧源码、图与限定结论保留为历史事实，不作为当前视觉通过；后续[整体排版修正候选](../workbench-optical-revision/README.md)已内部实现，仍待审，真实三资源来源缺口另明示。既有业务保护/U1基本方向不重开。
+
 装备运行源码 `551a4f2b0262b9f8291bb6a13b024c32a37ea341`，原目录 `/workspace/space_idle`、原分支 `implement/equipment-hangar-godot`。对照 `design/shared-host-shell` 文档提交 `dfe43cbf03d5ae5e03f64a669f8b4466dc1d38be`、运行代码 `80e5463ff36f457b9e178315a5cf4b521b871068`，唯一规范入口为该固定Git对象的 `space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-h1/README.md`。
 
 已正常fetch候选分支，随后仅用git show读取固定文档及equipment/main/shared_host必要范围；无checkout、合入、新工作区，未把H1的旧装备实现覆盖回来。参考对象与文件SHA见[h1-reference.json](h1-reference.json)。当前装备分支的main没有安装H1，不能把下面模块端口检查称作两分支实际组合通过。
