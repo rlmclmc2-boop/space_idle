@@ -174,8 +174,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "4c1a289789ff5d2db7a81d6245e4ed36c82e15c64df88c44b0ac3abbd1e3b120",
-      "bytes": 8525
+      "sha256": "d31dd3363da52af120f24ad44f0bee4ce68eca0875863f01e34c367e16fbbe4f",
+      "bytes": 9655
     },
     {
       "path": "capture-driver.gd.txt",
@@ -238,5 +238,13 @@
       "sha256": "04bc0201e3bb9e65e24b248f11444153558bf64acdbf63fa5b1b4dc6a4d29696",
       "unchanged_from_baseline": true
     }
-  ]
+  ],
+  "current_user_review_status": {
+    "state": "returned_for_redesign",
+    "baseline_runtime": "8cd81a3f930f28bd362b8e14e5cf60d50c32b41b",
+    "baseline_evidence": "a54e0fcf8507556ca9a6cc58db75915cd74b827a",
+    "measurement_not_user_approval": true,
+    "lower_implementation_paused_until_design_confirmation": true,
+    "original_images_and_records_unchanged": true
+  }
 }
