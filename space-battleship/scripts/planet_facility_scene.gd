@@ -1,14 +1,21 @@
 extends Control
 ## Display-only 3D architecture over the analytical surface. No building hit targets.
-const MATERIAL_ATLAS := preload("res://assets/planets/facilities_v4/material-atlas.png")
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
-const SURFACE_UV := {"refinery": Vector2(0.49, 0.70), "equipment": Vector2(0.38, 0.28)}
+## Fixed terrain anchors; both facilities follow the surface phase, not cloud motion.
+const SURFACE_UV := {"refinery": Vector2(0.42, 0.34), "equipment": Vector2(0.44, 0.67)}
+const WORK_PARTS := {
+	"auto_explore": ["HabitatRingSpin", "SolarHingeLeft", "SolarHingeRight"],
+	"refinery": ["IntakeWheelLeft", "IntakeWheelRight", "CoolingShutters"],
+	"equipment": ["GantrySlide", "ToolArmSweep"],
+	"shipyard": ["CraneSlide", "DockCollarSpin"]
+}
 var scene_center := Vector2.ZERO
 var _viewport := SubViewport.new()
 var _image := TextureRect.new()
 var _world := Node3D.new()
 var _camera := Camera3D.new()
 var _models: Dictionary = {}
+var _parts: Dictionary = {}
 var _contact_materials: Dictionary = {}
 var _owned: Array = []
 var _occluder := MeshInstance3D.new()
@@ -66,9 +73,15 @@ func _ready() -> void:
 	_occluder.material_override = mask
 	_world.add_child(_occluder)
 	for kind in KINDS:
-		var model: Node3D = load("res://assets/planets/facilities_v4/" + kind + ".glb").instantiate()
+		var model: Node3D = load("res://assets/planets/facilities_v5/" + kind + ".glb").instantiate()
 		_world.add_child(model)
 		_models[kind] = model
+		var moving: Dictionary = {}
+		for part_name in WORK_PARTS[kind]:
+			var pivot := model.find_child(part_name, true, false) as Node3D
+			assert(pivot != null, "Missing facility work pivot: " + kind + "/" + part_name)
+			moving[part_name] = pivot
+		_parts[kind] = moving
 		if SURFACE_UV.has(kind):
 			var patch := MeshInstance3D.new()
 			var plane := PlaneMesh.new()
@@ -96,10 +109,6 @@ func _transparent_materials(node: Node) -> void:
 				var material: StandardMaterial3D = original.duplicate()
 				material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 				material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
-				var key: String = original.resource_name.to_lower()
-				if "photovoltaic" in key or "copper" in key:
-					material.albedo_texture = MATERIAL_ATLAS
-					material.albedo_color = Color.WHITE
 				material.albedo_color.a = 0.999
 				material.render_priority = 0
 				node.set_surface_override_material(index, material)
@@ -137,6 +146,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	_occluder.scale = Vector3(pulse, _axis_ratio * pulse, pulse)
 	for kind in _owned:
 		var model: Node3D = _models[kind]
+		_animate_parts(kind, clock)
 		if SURFACE_UV.has(kind):
 			var uv: Vector2 = SURFACE_UV[kind]
 			var lon := (uv.x - 0.5 - surface_phase) * TAU
@@ -146,14 +156,40 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 			var east := Vector3(cos(lon), 0, -sin(lon)).normalized()
 			var north := east.cross(normal).normalized()
 			# Model Y is local up. Its foundation lies on the surface tangent.
-			model.transform = Transform3D(Basis(east, normal, north).rotated(normal, 0.35 if kind == "refinery" else -0.20).scaled(Vector3.ONE * 0.30), Vector3(point.x, point.y * _axis_ratio, point.z) * (_radius * pulse) - normal * 0.008)
+			# Embed each broad contact pad into the tangent. The shadow is projected
+			# onto the true ellipsoid, so both pad and shadow follow the same terrain.
+			model.transform = Transform3D(Basis(east, normal, north).rotated(normal, 0.35 if kind == "refinery" else -0.20).scaled(Vector3.ONE * 0.35), Vector3(point.x, point.y * _axis_ratio, point.z) * (_radius * pulse) - normal * 0.055)
 			_contact_materials[kind].set_shader_parameter("body_axes", Vector3(_radius * pulse, _radius * _axis_ratio * pulse, _radius * pulse))
 		else:
-			var path: Dictionary = preload("res://scripts/orbital_facilities.gd").path_for(kind)
-			var a := 0.65 if kind == "shipyard" else float(path.phase) + clock * float(path.speed)
-			var radial := minf(_radius * float(path.radius), maxf(_radius * 1.10, (minf(scene_center.x, size.x - scene_center.x) - 82.0) * _radius / maxf(1, _body_pixels)))
-			var xy := Vector2(cos(a) * radial, -sin(a) * radial * float(path.ratio)).rotated(-float(path.tilt))
-			model.position = Vector3(xy.x, xy.y, sin(a) * radial * sqrt(1.0 - float(path.ratio) * float(path.ratio)))
-			model.rotation = Vector3(0.90, -0.25 + clock * 0.04, 0.10)
+			if kind == "shipyard":
+				# Confirmed independent service berth outside the station orbit.
+				# A rearward depth gap keeps 3D equipment clear, while its lower-right
+				# screen footprint is outside the station's full projected envelope.
+				model.position = Vector3(_radius * 1.09, -_radius * 0.88, -_radius * 0.33)
+			else:
+				var path: Dictionary = preload("res://scripts/orbital_facilities.gd").path_for(kind)
+				var a := float(path.phase) + clock * float(path.speed)
+				var radial := minf(_radius * float(path.radius), maxf(_radius * 1.10, (minf(scene_center.x, size.x - scene_center.x) - 82.0) * _radius / maxf(1, _body_pixels)))
+				var xy := Vector2(cos(a) * radial, -sin(a) * radial * float(path.ratio)).rotated(-float(path.tilt))
+				model.position = Vector3(xy.x, xy.y, sin(a) * radial * sqrt(1.0 - float(path.ratio) * float(path.ratio)))
+			model.rotation = Vector3(0.90, -0.25 + (clock * 0.04 if kind == "auto_explore" else 0.0), 0.10)
 			model.scale = Vector3.ONE * (0.28 if kind == "auto_explore" else 0.34)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+func _animate_parts(kind: String, clock: float) -> void:
+	var moving: Dictionary = _parts[kind]
+	match kind:
+		"auto_explore":
+			(moving["HabitatRingSpin"] as Node3D).rotation.y = clock * 0.28
+			(moving["SolarHingeLeft"] as Node3D).rotation.z = sin(clock * 0.32) * 0.15
+			(moving["SolarHingeRight"] as Node3D).rotation.z = -sin(clock * 0.32) * 0.15
+		"refinery":
+			(moving["IntakeWheelLeft"] as Node3D).rotation.z = clock * 1.6
+			(moving["IntakeWheelRight"] as Node3D).rotation.z = -clock * 1.6
+			(moving["CoolingShutters"] as Node3D).rotation.x = sin(clock * 0.70) * 0.13
+		"equipment":
+			(moving["GantrySlide"] as Node3D).position.x = sin(clock * 0.42) * 0.30
+			(moving["ToolArmSweep"] as Node3D).rotation.y = sin(clock * 0.75) * 0.25
+		"shipyard":
+			(moving["CraneSlide"] as Node3D).position.x = sin(clock * 0.50) * 0.50
+			(moving["DockCollarSpin"] as Node3D).rotation.z = clock * 0.42

@@ -1,0 +1,138 @@
+{
+  "samples": 355,
+  "station_shipyard_screen_aabb_overlap_frames": 0,
+  "station_shipyard_min_screen_aabb_gap_px": 42.73902845588136,
+  "station_shipyard_min_gap_frame": 174,
+  "station_shipyard_min_center_distance_world": 3.6354620942130254,
+  "station_shipyard_min_center_frame": 85,
+  "surface_anchor_radius_world": {
+    "refinery": {
+      "min": 2.944999797266829,
+      "max": 2.94500026666753
+    },
+    "equipment": {
+      "min": 2.9449998137478124,
+      "max": 2.9450002484882334
+    }
+  },
+  "surface_geographic_phase_invariance": {
+    "refinery": {
+      "min": 0.919999974875824,
+      "max": 0.9199999975789386
+    },
+    "equipment": {
+      "min": 0.9399999855248222,
+      "max": 0.9400000096192019
+    }
+  },
+  "moving_pivots": {
+    "auto_explore": {
+      "HabitatRingSpin": {
+        "position_x_min": 0.0,
+        "position_x_max": 0.0,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 2.82018399238586,
+        "rotation_y_max": 51.9020004272461,
+        "rotation_z_min": 0.0,
+        "rotation_z_max": 0.0
+      },
+      "SolarHingeLeft": {
+        "position_x_min": -1.46000003814697,
+        "position_x_max": -1.46000003814697,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": -0.149997979402542,
+        "rotation_z_max": 0.14999583363533
+      },
+      "SolarHingeRight": {
+        "position_x_min": 1.46000003814697,
+        "position_x_max": 1.46000003814697,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": -0.14999583363533,
+        "rotation_z_max": 0.149997979402542
+      }
+    },
+    "equipment": {
+      "GantrySlide": {
+        "position_x_min": -0.299999982118607,
+        "position_x_max": 0.299997240304947,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": 0.0,
+        "rotation_z_max": 0.0
+      },
+      "ToolArmSweep": {
+        "position_x_min": 0.0,
+        "position_x_max": 0.0,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": -0.249996975064278,
+        "rotation_y_max": 0.24998514354229,
+        "rotation_z_min": 0.0,
+        "rotation_z_max": 0.0
+      }
+    },
+    "refinery": {
+      "CoolingShutters": {
+        "position_x_min": 0.0,
+        "position_x_max": 0.0,
+        "rotation_x_min": -0.129996657371521,
+        "rotation_x_max": 0.129999965429306,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": 0.0,
+        "rotation_z_max": 0.0
+      },
+      "IntakeWheelLeft": {
+        "position_x_min": -0.779999971389771,
+        "position_x_max": -0.779999971389771,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": 16.1153373718262,
+        "rotation_z_max": 296.582855224609
+      },
+      "IntakeWheelRight": {
+        "position_x_min": 0.779999971389771,
+        "position_x_max": 0.779999971389771,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": -296.582855224609,
+        "rotation_z_max": -16.1153373718262
+      }
+    },
+    "shipyard": {
+      "CraneSlide": {
+        "position_x_min": -0.499996364116669,
+        "position_x_max": 0.499980360269547,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": 0.0,
+        "rotation_z_max": 0.0
+      },
+      "DockCollarSpin": {
+        "position_x_min": 1.25,
+        "position_x_max": 1.25,
+        "rotation_x_min": 0.0,
+        "rotation_x_max": 0.0,
+        "rotation_y_min": 0.0,
+        "rotation_y_max": 0.0,
+        "rotation_z_min": 4.23027563095093,
+        "rotation_z_max": 77.8530044555664
+      }
+    }
+  }
+}

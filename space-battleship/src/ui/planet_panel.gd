@@ -1,5 +1,6 @@
 extends Control
 signal reforge_requested(planet_id: String)
+signal exclusive_ui_changed
 ## One selected planet owns all visible task/facility/crew content.
 const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球尚未开放", "PlanetConquestSourceUnavailable": "征服来源暂不可用", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewTargetOccupied": "该岗位人数已满", "CrewLocked": "船员尚未开放", "HyperspaceCrewReserved": "船员仍被超空间任务占用"}
 const STATES := {"locked": "未达门槛", "building": "施工中", "ready": "待领取", "built": "已领取"}
@@ -55,6 +56,8 @@ var _member_picker: OptionButton
 var _assignment_picker: OptionButton
 var _member_id := ""
 var _assignment_target := ""
+var _shared_host_enabled := false
+var _context_slot: Control
 
 func _init(planet, cancel: Callable, publish: Callable, command: Callable, visual_context: Callable = Callable(), crew = null, coordinate: Callable = Callable()) -> void:
 	_planet = planet
@@ -88,6 +91,7 @@ func _ready() -> void:
 	_crew_button.pressed.connect(func(): _toggle_section("crew"))
 	_facility_button.pressed.connect(func(): _toggle_section("facilities"))
 	add_child(world_planet_picker)
+	_track_picker(world_planet_picker)
 	world_planet_picker.item_selected.connect(func(index): select_planet(str(world_planet_picker.get_item_metadata(index))))
 	_stop_button = _action(self, "本次完成后停止", func(): return _planet.set_automatic(_selected_id, false))
 	_cancel_button = _action(self, "立即取消探索", func(): return _cancel.call(_selected_id))
@@ -200,9 +204,42 @@ func _layout() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
-	draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
-	draw_string(get_theme_default_font(), Vector2(24, 74), "星球探索", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("40676b"))
+	draw_rect(Rect2(0, 65 if _shared_host_enabled else 0, size.x, 25 if _shared_host_enabled else 90), Color("f0eddf"))
+	if not _shared_host_enabled:
+		draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
+		draw_string(get_theme_default_font(), Vector2(24, 74), "星球探索", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("40676b"))
+
+## The host owns global chrome. This view keeps its 808x900 interior geometry.
+func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
+	_shared_host_enabled = enabled
+	_wallet.visible = not enabled
+	if _context_slot != null:
+		for child in _context_slot.get_children(): child.queue_free()
+	_context_slot = context_slot
+	if enabled and context_slot != null:
+		var caption := Label.new()
+		caption.text = "星球"
+		caption.size = Vector2(96, 26)
+		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		context_slot.add_child(caption)
+	queue_redraw()
+
+func _track_picker(picker: OptionButton) -> void:
+	picker.get_popup().visibility_changed.connect(func(): exclusive_ui_changed.emit())
+
+func has_exclusive_ui() -> bool:
+	for picker in [world_planet_picker, world_building_picker, _member_picker, _assignment_picker]:
+		if is_instance_valid(picker) and picker.get_popup().visible: return true
+	return false
+
+func prepare_host_hide(force: bool = false) -> bool:
+	if has_exclusive_ui() and not force: return false
+	if force:
+		for picker in [world_planet_picker, world_building_picker, _member_picker, _assignment_picker]:
+			if is_instance_valid(picker): picker.get_popup().hide()
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus != null and is_ancestor_of(focus): focus.release_focus()
+	return true
 
 func refresh() -> void:
 	_dirty = true
@@ -405,6 +442,7 @@ func _build_conquest_detail() -> void:
 
 func _build_facility_detail() -> void:
 	world_building_picker = OptionButton.new()
+	_track_picker(world_building_picker)
 	_drawer_body.add_child(world_building_picker)
 	var found := false
 	for fact in _facts:
@@ -456,6 +494,7 @@ func _build_crew_detail() -> void:
 		_caption(_drawer_body, "人员派遣尚未连接")
 		return
 	_member_picker = OptionButton.new()
+	_track_picker(_member_picker)
 	_drawer_body.add_child(_member_picker)
 	for member in _crew.member_options():
 		_member_picker.add_item(member.name)
@@ -474,6 +513,7 @@ func _build_crew_detail() -> void:
 		for option in _planet.assignment_options([_selected_id]):
 			if fact.kind == option.kind and fact.target == option.target: assigned_here = true
 	_assignment_picker = OptionButton.new()
+	_track_picker(_assignment_picker)
 	_drawer_body.add_child(_assignment_picker)
 	for option in _planet.assignment_options([_selected_id]):
 		_assignment_picker.add_item(option.label)

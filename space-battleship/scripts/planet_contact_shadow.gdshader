@@ -9,5 +9,5 @@ void vertex() {
 void fragment() {
     float radius = length((UV - vec2(0.5)) * 2.0);
     ALBEDO = vec3(0.08, 0.13, 0.11);
-    ALPHA = (1.0 - smoothstep(0.18, 1.0, radius)) * 0.14;
+    ALPHA = (1.0 - smoothstep(0.18, 1.0, radius)) * 0.22;
 }
