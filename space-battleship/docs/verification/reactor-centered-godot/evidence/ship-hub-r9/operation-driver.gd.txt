@@ -31,6 +31,14 @@ func check_paid(api, before, cost_text: String, after) -> void:
 	assert(expected.ok)
 	var compare: Dictionary = api.apply("compare", [expected.value, after])
 	assert(compare.ok and int(compare.scalar) == 0)
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
 func report_owner(session, tag: String) -> void:
 	var model: Dictionary = session.reactor_system.presentation_model()
 	var rows: Array = []
@@ -69,11 +77,13 @@ func run() -> void:
 	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-zero.png")
 	scene._equal.pressed.emit()
 	await frames(4)
+	clear_guidance(session,game)
 	var slider: HSlider = scene._rows.weapons.slider
 	var ratio_before: float = float(session.reactor_system.presentation_model().modules[0].ratio)
-	var slider_click: Vector2 = slider.get_global_transform_with_canvas() * Vector2(16,14)
+	var slider_click: Vector2 = slider.get_global_transform_with_canvas() * Vector2(10,14)
 	await click(slider_click)
 	var ratio_after: float = float(session.reactor_system.presentation_model().modules[0].ratio)
+	print("CHECK slider before=",ratio_before," after=",ratio_after," at=",slider_click)
 	assert(ratio_before == 0.25 and ratio_after < ratio_before)
 	print("MOUSE slider=", slider_click, " ratio_before=", ratio_before, " ratio_after=", ratio_after, " owner_result=", scene.last_result.get("ok", false))
 	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-slider.png")
@@ -87,6 +97,7 @@ func run() -> void:
 	var wallet_before = session.economy.budget()["2"]
 	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-ten-before.png")
 	await click(purchase_click)
+	clear_guidance(session,game)
 	var level_after: int = int(session.reactor_system.presentation_model().level)
 	var wallet_after = session.economy.budget()["2"]
 	assert(scene.last_result.get("ok", false) and level_after == level_before + 10)
@@ -102,6 +113,7 @@ func run() -> void:
 	wallet_before = session.economy.budget()["2"]
 	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-max-before.png")
 	await click(purchase_click)
+	clear_guidance(session,game)
 	level_after = int(session.reactor_system.presentation_model().level)
 	wallet_after = session.economy.budget()["2"]
 	assert(scene.last_result.get("ok", false) and level_after == level_before + int(scene.last_result.count))
@@ -115,6 +127,7 @@ func run() -> void:
 	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-max-after.png")
 	for i in 12:
 		session._step(1.0 / 6.0)
+		clear_guidance(session,game)
 		await frames(1)
 		var image: Image = root.get_texture().get_image().get_region(Rect2i(0,65,808,835))
 		image.save_png("/tmp/reactor-r9-after-upgrade-flow-%02d.png" % i)

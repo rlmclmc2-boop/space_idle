@@ -4,5 +4,5 @@ WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by 
 OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
 
 DIRECT equal={ "ok": true, "defence_changed": true } levels=1
-FLOW phase=4.08333333333333 updates=80
+FLOW phase=4.0 updates=80
 DIRECT slide={ "ok": true, "defence_changed": false, &"actual": { "ok": true, "modules": [{ "id": "weapons", "enabled": true, "ratio": 0.0, "load": 0.0, "has_free": false, "manual": "0e0", "free": "0e0", "effective": "0e0", "factor": "1e0" }, { "id": "defence", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "smelting", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "condensation", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }], "load": 0.75, "capacity": "1e2", "allocated": "7.5e1", "remaining": "2.5e1" } } model=0.0
