@@ -15,6 +15,8 @@ const FACILITY_ANGLES := {
 	"shipyard": PI - 0.42,
 }
 const RADIUS := 4.5
+const TRANSIT_WIDTH := 0.84
+const NODE_WIDTH := 1.50
 const TILT_Y := 0.72
 const TILT_Z := 0.694
 const DECK_HEIGHT := 0.16
@@ -61,23 +63,25 @@ func _ready() -> void:
 		var bounds: Vector2 = ARC_BOUNDS[kind]
 		# A real thick section: dark keel and side walls remain visible under
 		# broad warm armor plates. The central channel belongs to this section.
-		_add_strip(root, bounds.x, bounds.y, 1.48, -0.20, _navy)
-		_add_wall(root, bounds.x, bounds.y, 0.74, -0.20, 0.26, _side)
-		_add_wall(root, bounds.x, bounds.y, -0.74, -0.20, 0.26, _navy)
-		_add_wall(root, bounds.x, bounds.y, 0.745, 0.05, 0.09, _cyan)
-		_add_curved_deck(root, bounds.x, bounds.y, 1.48, 0.22, _deck)
+		_add_strip(root, bounds.x, bounds.y, NODE_WIDTH, -0.20, _navy, kind)
+		_add_wall(root, bounds.x, bounds.y, 0.75, -0.20, 0.26, _side, kind)
+		_add_wall(root, bounds.x, bounds.y, -0.75, -0.20, 0.26, _navy, kind)
+		_add_wall(root, bounds.x, bounds.y, 0.755, 0.05, 0.09, _cyan, kind)
+		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
 		var rib_angle := (bounds.x + bounds.y) * 0.5
-		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, 1.51, 0.236, _side)
+		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
 		_joins[kind] = _add_join(root, bounds.y)
 		var caps: Array[MeshInstance3D] = []
 		for angle in [bounds.x, bounds.y]:
 			var cap := MeshInstance3D.new()
 			var box := BoxMesh.new()
-			box.size = Vector3(0.22, 0.20, 0.22)
+			box.size = Vector3(TRANSIT_WIDTH, 0.65, 0.08)
 			cap.mesh = box
 			cap.material_override = _navy
-			cap.position = point(angle)
+			var radial := point(angle).normalized()
+			var normal := plane_normal()
+			cap.transform = Transform3D(Basis(radial, normal, radial.cross(normal)), point(angle) + normal * 0.125)
 			root.add_child(cap)
 			caps.append(cap)
 		_arcs[kind] = root
@@ -96,7 +100,15 @@ func set_body_scale(scale: Vector3) -> void:
 	for material in _all_materials:
 		material.set_shader_parameter("body_scale", scale)
 
-func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0) -> void:
+func _section_width(kind: String, angle: float) -> float:
+	# The same real cross-section grows out of the transit spine at each owned
+	# work node, then returns to a narrow section before any independent join.
+	var distance := absf(angle - FACILITY_ANGLES[kind])
+	var t := clampf((distance - 0.08) / 0.16, 0.0, 1.0)
+	var blend := 1.0 - t * t * (3.0 - 2.0 * t)
+	return lerpf(TRANSIT_WIDTH, NODE_WIDTH, blend)
+
+func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
@@ -112,13 +124,15 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		var t1 := float(index + 1) / float(steps)
 		var a := lerpf(begin, finish, t0)
 		var b := lerpf(begin, finish, t1)
+		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
+		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
 		for band in profile.size() - 1:
-			_deck_vertex(surface, profile, band, a, t0, width, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band, b, t1, width, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band + 1, a, t0, width, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band + 1, a, t0, width, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band, b, t1, width, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band + 1, b, t1, width, lift, v_start, v_end)
+			_deck_vertex(surface, profile, band, a, t0, wa, lift, v_start, v_end)
+			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end)
+			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end)
+			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end)
+			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end)
+			_deck_vertex(surface, profile, band + 1, b, t1, wb, lift, v_start, v_end)
 	var instance := MeshInstance3D.new()
 	instance.mesh = surface.commit()
 	instance.material_override = material
@@ -135,7 +149,7 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * (lift + current.y))
 
-func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material) -> void:
+func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var normal := plane_normal()
@@ -143,10 +157,12 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 	for index in steps:
 		var a := lerpf(begin, finish, float(index) / float(steps))
 		var b := lerpf(begin, finish, float(index + 1) / float(steps))
-		var ai := point(a) * ((RADIUS - width * 0.5) / RADIUS) + normal * lift
-		var ao := point(a) * ((RADIUS + width * 0.5) / RADIUS) + normal * lift
-		var bi := point(b) * ((RADIUS - width * 0.5) / RADIUS) + normal * lift
-		var bo := point(b) * ((RADIUS + width * 0.5) / RADIUS) + normal * lift
+		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
+		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * lift
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * lift
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * lift
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * lift
 		for vertex in [ai, bi, ao, ao, bi, bo]:
 			surface.set_normal(normal)
 			surface.add_vertex(vertex)
@@ -155,7 +171,7 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 	instance.material_override = material
 	parent.add_child(instance)
 
-func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, bottom: float, top: float, material: Material) -> void:
+func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, bottom: float, top: float, material: Material, kind: String = "") -> void:
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var normal := plane_normal()
@@ -163,8 +179,10 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 	for index in steps:
 		var a := lerpf(begin, finish, float(index) / float(steps))
 		var b := lerpf(begin, finish, float(index + 1) / float(steps))
-		var pa := point(a) * ((RADIUS + radial) / RADIUS)
-		var pb := point(b) * ((RADIUS + radial) / RADIUS)
+		var ra := signf(radial) * (absf(radial) + (_section_width(kind, a) - NODE_WIDTH) * 0.5) if kind != "" else radial
+		var rb := signf(radial) * (absf(radial) + (_section_width(kind, b) - NODE_WIDTH) * 0.5) if kind != "" else radial
+		var pa := point(a) * ((RADIUS + ra) / RADIUS)
+		var pb := point(b) * ((RADIUS + rb) / RADIUS)
 		var wall_normal := (pa + pb).normalized() * signf(radial)
 		for vertex in [pa + normal * bottom, pb + normal * bottom, pa + normal * top, pa + normal * top, pb + normal * bottom, pb + normal * top]:
 			surface.set_normal(wall_normal)
@@ -215,7 +233,7 @@ func _add_join(parent: Node3D, angle: float) -> Node3D:
 	parent.add_child(join)
 	# The mating sleeve spans both quarter ends as a real curved deck piece.
 	# It also keeps the broad foreground arc visually closed at oblique phases.
-	_add_curved_deck(join, angle - 0.12, angle + 0.12, 1.50, 0.232, _sleeve, 0.37, 0.63)
+	_add_curved_deck(join, angle - 0.12, angle + 0.12, TRANSIT_WIDTH + 0.02, 0.232, _sleeve, 0.37, 0.63)
 	var coupling := MeshInstance3D.new()
 	var drum := CylinderMesh.new()
 	drum.top_radius = 0.22
