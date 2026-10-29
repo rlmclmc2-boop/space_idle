@@ -181,38 +181,70 @@ func _setup_materials() -> void:
     _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
     _material_texture=load("res://assets/ui/equipment/materials-20261029/satin-metal-tile.png")
 
-# Texture pixels retain their native scale. Only the actual control's 1px edges
-# are drawn geometrically; no image border or lighting band is stretched.
+# One physical section at native UI pixel scale: a folded deck, recessed
+# instruments/cassettes and shallow-travel keys. Grain never supplies geometry.
 class EquipmentSurface extends StyleBox:
     var texture:Texture2D
     var tint:Color=Color.WHITE
-    var edges:bool=true
-    func _draw(canvas_item:RID, rect:Rect2)->void:
+    var profile:String="flat"
+    var depressed:bool=false
+    func _polygon(canvas:RID, points:Array, color:Color)->void:
+        var colors:=PackedColorArray()
+        for point in points:colors.append(color)
+        RenderingServer.canvas_item_add_polygon(canvas,PackedVector2Array(points),colors)
+    func _face(canvas:RID, rect:Rect2, fill:Color)->void:
+        var points:=PackedVector2Array([rect.position,Vector2(rect.end.x,rect.position.y),rect.end,Vector2(rect.position.x,rect.end.y)])
+        var light:=PackedColorArray([fill.lightened(0.04),fill.lightened(0.015),fill.darkened(0.025),fill.darkened(0.01)])
+        RenderingServer.canvas_item_add_polygon(canvas,points,light)
+        RenderingServer.canvas_item_add_texture_rect(canvas,rect,texture.get_rid(),true,Color(tint.r,tint.g,tint.b,0.12))
+    func _draw(canvas:RID, r:Rect2)->void:
         var fill:Color=tint*Color(0.69,0.69,0.69,1.0)
-        RenderingServer.canvas_item_add_rect(canvas_item,rect,fill)
-        var grain:Color=Color(tint.r,tint.g,tint.b,0.12)
-        RenderingServer.canvas_item_add_texture_rect(canvas_item,rect,texture.get_rid(),true,grain)
-        if not edges:return
-        var top:Color=fill.lerp(Color.WHITE,0.12)
-        var bottom:Color=fill.darkened(0.22)
-        RenderingServer.canvas_item_add_line(canvas_item,rect.position+Vector2(0.5,0.5),Vector2(rect.end.x-0.5,rect.position.y+0.5),top,1.0)
-        RenderingServer.canvas_item_add_line(canvas_item,Vector2(rect.position.x+0.5,rect.end.y-0.5),rect.end-Vector2(0.5,0.5),bottom,1.0)
+        var x:float=r.position.x;var y:float=r.position.y;var w:float=r.size.x;var h:float=r.size.y
+        if profile=="deck":
+            # The 8px front section carries the face; its lower dark seam meets
+            # the hangar/control background inside the existing allocated rect.
+            _polygon(canvas,[Vector2(x+6,y),Vector2(x+w-6,y),Vector2(x+w,y+6),Vector2(x+w,y+h-6),Vector2(x+w-6,y+h),Vector2(x+6,y+h),Vector2(x,y+h-6),Vector2(x,y+6)],fill.darkened(0.45))
+            _face(canvas,Rect2(x+6,y+4,w-12,h-12),fill)
+            _polygon(canvas,[Vector2(x,y+6),Vector2(x+6,y+4),Vector2(x+6,y+h-8),Vector2(x,y+h-6)],fill.darkened(0.20))
+            _polygon(canvas,[Vector2(x+w-6,y+4),Vector2(x+w,y+6),Vector2(x+w,y+h-6),Vector2(x+w-6,y+h-8)],fill.darkened(0.34))
+            _polygon(canvas,[Vector2(x+6,y+h-8),Vector2(x+w-6,y+h-8),Vector2(x+w,y+h-6),Vector2(x+w-6,y+h-1),Vector2(x+6,y+h-1),Vector2(x,y+h-6)],fill.darkened(0.29))
+            RenderingServer.canvas_item_add_line(canvas,Vector2(x+6,y+3.5),Vector2(x+w-6,y+3.5),fill.lightened(0.19),1.0)
+            RenderingServer.canvas_item_add_line(canvas,Vector2(x+6,y+h-8.5),Vector2(x+w-6,y+h-8.5),fill.darkened(0.10),1.0)
+        elif profile=="recess" or profile=="cassette":
+            RenderingServer.canvas_item_add_rect(canvas,r,fill.darkened(0.48))
+            var face:=Rect2(x+3,y+3,w-6,h-6)
+            _face(canvas,face,fill.darkened(0.025))
+            _polygon(canvas,[Vector2(x,y),Vector2(x+w,y),Vector2(x+w-3,y+3),Vector2(x+3,y+3)],fill.darkened(0.39))
+            _polygon(canvas,[Vector2(x,y),Vector2(x+3,y+3),Vector2(x+3,y+h-3),Vector2(x,y+h)],fill.darkened(0.28))
+            _polygon(canvas,[Vector2(x,y+h),Vector2(x+3,y+h-3),Vector2(x+w-3,y+h-3),Vector2(x+w,y+h)],fill.lightened(0.10))
+        elif profile=="button" or profile=="beam":
+            var depth:float=1.0 if depressed else 4.0
+            var drop:float=2.0 if depressed else 0.0
+            RenderingServer.canvas_item_add_rect(canvas,r,fill.darkened(0.48))
+            var face:=Rect2(x+2,y+drop,w-4,h-depth-drop)
+            _face(canvas,face,fill)
+            _polygon(canvas,[Vector2(x+2,y+h-depth),Vector2(x+w-2,y+h-depth),Vector2(x+w,y+h-1),Vector2(x,y+h-1)],fill.darkened(0.30))
+            RenderingServer.canvas_item_add_line(canvas,face.position+Vector2(0,0.5),Vector2(face.end.x,face.position.y+0.5),fill.lightened(0.19),1.0)
+        else:
+            _face(canvas,r,fill)
 
-func _surface_material(kind:String, modulation:Color=Color.WHITE) -> StyleBox:
+func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String="flat", depressed:bool=false) -> StyleBox:
     var material:=EquipmentSurface.new()
     material.texture=_material_texture
     var palette:Dictionary={"enamel":Color(1.13,1.17,1.15),"navy_face":Color(0.24,0.35,0.42),"navy":Color(0.31,0.43,0.49),"teal":Color(0.37,0.58,0.54),"glass":Color(1.0,1.09,1.09),"primary":Color(1.12,0.91,0.62),"quiet":Color(0.24,0.35,0.42),"disabled":Color(0.5,0.59,0.61)}
     material.tint=palette[kind]*modulation
-    material.edges=kind!="quiet"
+    material.profile=profile
+    material.depressed=depressed
     material.content_margin_left=8;material.content_margin_right=8
-    material.content_margin_top=5;material.content_margin_bottom=5
+    material.content_margin_top=(6 if depressed else 3) if profile=="button" else 5
+    material.content_margin_bottom=(4 if depressed else 7) if profile=="button" else 5
     return material
 
 
 func _frame(parent: Control, rect: Rect2) -> Panel:
     var frame := Panel.new()
     frame.position=rect.position;frame.size=rect.size
-    var material := _surface_material("navy_face")
+    var material := _surface_material("navy_face",Color.WHITE,"deck")
     frame.add_theme_stylebox_override("panel",material)
     frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     frame.show_behind_parent=true
@@ -256,7 +288,8 @@ func _prepare_button_material(button: Button, form: String) -> void:
             if form in ["button","candidate","primary","quiet"] and state!="focus":
                 var tint:=Color(1.16,1.18,1.16) if state=="hover" else Color(0.68,0.72,0.76) if state=="pressed" else Color(0.72,0.77,0.8) if state=="disabled" else Color.WHITE
                 var kind:String="disabled" if state=="disabled" else "primary" if form=="primary" else "quiet" if form=="quiet" else "teal" if selected else "navy"
-                states[state]=_surface_material(kind,tint)
+                var section:String="cassette" if form=="candidate" else "flat" if form=="quiet" else "button"
+                states[state]=_surface_material(kind,tint,section,state=="pressed")
             else:states[state]=material
         variants.append(states)
     button.set_meta("material_variants",variants)
@@ -376,10 +409,10 @@ func _build_workbench() -> void:
     _workbench=Panel.new();_workbench.name="EquipmentWorkbench"
     _workbench.position=Vector2(16,610);_workbench.size=Vector2(776,286)
     _workbench.clip_contents=true;_workbench.mouse_filter=Control.MOUSE_FILTER_PASS
-    var body:=_surface_material("enamel")
+    var body:=_surface_material("enamel",Color.WHITE,"deck")
     _workbench.add_theme_stylebox_override("panel",body);add_child(_workbench)
     var header:=Panel.new();header.name="ObjectHeader";header.size=Vector2(776,36);header.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var beam:=_surface_material("navy_face")
+    var beam:=_surface_material("navy_face",Color.WHITE,"beam")
     header.add_theme_stylebox_override("panel",beam);_workbench.add_child(header)
     _current_title=_workbench_label("现装",Rect2(20,4,250,28),18,CREAM)
     _level_label=_workbench_label("",Rect2(190,7,150,22),13,Color("b8d3ca"))
@@ -390,9 +423,9 @@ func _build_workbench() -> void:
     _transaction_rail=Panel.new();_transaction_rail.name="PurchaseRail";_transaction_rail.mouse_filter=Control.MOUSE_FILTER_IGNORE
     _transaction_rail.add_theme_stylebox_override("panel",StyleBoxEmpty.new());_workbench.add_child(_transaction_rail)
     _upgrade_data=Panel.new();var data:Panel=_upgrade_data;data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(320,80);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var glass:=_surface_material("glass");data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
+    var glass:=_surface_material("glass",Color.WHITE,"recess");data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
     _icon_bezel=Panel.new();var icon_frame:Panel=_icon_bezel;icon_frame.name="CurrentIconBezel";icon_frame.position=Vector2(20,88);icon_frame.size=Vector2(66,61);icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var bezel:=StyleBoxEmpty.new();icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
+    var bezel:=_surface_material("glass",Color.WHITE,"recess");icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
     _large_icon=_icon("laser",Rect2(27,95,52,47),_workbench)
     _current_caption=_workbench_label("当前攻击力",Rect2(114,91,140,18),12,Color("4a6265"))
     _upgrade_caption=_workbench_label("升级后",Rect2(290,91,146,18),12,Color("4a6265"))
