@@ -5,6 +5,8 @@ signal exclusive_ui_changed
 var _shared_chrome: Array = []
 var _context_slot: Control
 var _context_caption: Label
+const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
+const RESOURCE_NAMES := {"1":"铁", "2":"铀", "chrono":"时空微粒", "jewel":"强化碎片", "degenerate_matter":"简并物质"}
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"laser": "脉冲炮", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光", "shield": "护盾", "armour": "装甲", "": "空槽"}
 const INK := Color("203f50")
@@ -49,7 +51,6 @@ var _choice_option_slot: String = ""
 var _material_texture: Texture2D
 var _console_texture: Texture2D
 var _console_paint: Color
-var _rim_blend: Shader
 var _pending_level_ids: Dictionary = {}
 var _batch_state_dirty: bool = false
 var _scene_picture: Array = []
@@ -65,7 +66,8 @@ var _hull_textures: Dictionary = {}
 var _background: Texture2D
 var _locator_badge_style: StyleBoxFlat
 var _title: Label
-var _wallet: Label
+var _wallet: Control
+var _wallet_cells: Dictionary = {}
 var _current_title: Label
 var _current_caption: Label
 var _current_value: Label
@@ -191,39 +193,6 @@ func _setup_materials() -> void:
     paint.resize(640,189,Image.INTERPOLATE_LANCZOS)
     _console_paint=paint.get_pixel(320,94);_console_paint.a=1.0
     _console_texture=ImageTexture.create_from_image(paint)
-    _rim_blend=Shader.new()
-    _rim_blend.code="""shader_type canvas_item;
-uniform vec2 panel_size;
-varying vec2 panel_position;
-void vertex(){ panel_position=VERTEX; }
-void fragment(){
-    vec4 result=COLOR;
-    if(TEXTURE_PIXEL_SIZE.x<0.1 && TEXTURE_PIXEL_SIZE.y<0.1){
-        vec4 source=texture(TEXTURE,UV);
-        float inner=min(min(panel_position.x,panel_size.x-panel_position.x),min(panel_position.y,panel_size.y-panel_position.y));
-        float enamel=smoothstep(0.28,0.58,max(max(source.r,source.g),source.b));
-        result.a*=1.0-smoothstep(16.0,31.0,inner)*enamel;
-    }
-    COLOR=result;
-}"""
-
-func _console_blend_material(size:Vector2)->ShaderMaterial:
-    var material:=ShaderMaterial.new();material.shader=_rim_blend
-    material.set_shader_parameter("panel_size",size)
-    return material
-
-
-# Painted housing has fixed, native-size corners and tiled edge strips. The
-# interior paint is independent of the frame, so no complete asset is stretched.
-class PaintedConsole extends StyleBox:
-    var rim:StyleBoxTexture
-    var paint:Color
-    func _draw(canvas:RID, r:Rect2)->void:
-        var face:Rect2=r.grow(-13)
-        var points:=PackedVector2Array([face.position,Vector2(face.end.x,face.position.y),face.end,Vector2(face.position.x,face.end.y)])
-        RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([paint.lightened(0.02),paint,paint.darkened(0.015),paint]))
-        rim.draw(canvas,r)
-
 class EquipmentSurface extends StyleBox:
     var skin:StyleBoxFlat
     var texture:Texture2D
@@ -247,14 +216,13 @@ class EquipmentSurface extends StyleBox:
 
 func _console_material(dark:bool)->StyleBox:
     var frame:=StyleBoxTexture.new()
-    frame.texture=_console_texture;frame.draw_center=false
+    frame.texture=_console_texture;frame.draw_center=true
     for side in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:frame.set_texture_margin(side,32)
-    frame.axis_stretch_horizontal=StyleBoxTexture.AXIS_STRETCH_MODE_TILE
-    frame.axis_stretch_vertical=StyleBoxTexture.AXIS_STRETCH_MODE_TILE
+    frame.axis_stretch_horizontal=StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+    frame.axis_stretch_vertical=StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
     var paint_tint:Color=Color(0.29,0.40,0.43) if dark else Color.WHITE
     frame.modulate_color=paint_tint
-    var material:=PaintedConsole.new();material.rim=frame;material.paint=_console_paint*paint_tint
-    return material
+    return frame
 
 func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String="flat", depressed:bool=false) -> StyleBox:
     if profile=="deck":return _console_material(kind=="navy_face")
@@ -287,7 +255,6 @@ func _frame(parent: Control, rect: Rect2) -> Panel:
     frame.position=rect.position;frame.size=rect.size
     var material := _surface_material("navy_face",Color.WHITE,"deck")
     frame.add_theme_stylebox_override("panel",material)
-    frame.material=_console_blend_material(frame.size)
     frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     frame.show_behind_parent=true
     parent.add_child(frame)
@@ -395,9 +362,42 @@ func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
     parent.add_child(image)
     return image
 
+func _resource_icon(id: String, pixels: float, parent: Control) -> TextureRect:
+    var mark:=TextureRect.new()
+    mark.texture=ResourceVisuals.icon(id);mark.modulate=ResourceVisuals.color(id)
+    mark.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;mark.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    mark.size=Vector2(pixels,pixels);mark.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    parent.add_child(mark);mark.hide()
+    return mark
+
+func _render_wallet() -> void:
+    for id in _wallet_cells:_wallet_cells[id].icon.hide();_wallet_cells[id].text.hide()
+    var count:int=_wallet_dependency.size()
+    var x:float=0.0
+    for raw_id in _wallet_dependency:
+        var id:=str(raw_id)
+        if not _wallet_cells.has(id):continue
+        var cell:Dictionary=_wallet_cells[id]
+        var formatted:Dictionary=_session.amount_api.apply("to_display",[_wallet_dependency[raw_id]])
+        cell.text.text=RESOURCE_NAMES[id]+" "+(PlayerText.number(str(formatted.text)) if formatted.ok else "未知")
+        cell.text.tooltip_text=cell.text.text
+        var width:float=minf(590.0/maxi(1,count),cell.text.get_theme_font("font").get_string_size(cell.text.text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+35.0)
+        cell.icon.position=Vector2(x,6);cell.text.position=Vector2(x+23,0);cell.text.size=Vector2(width-29,30)
+        cell.icon.show();cell.text.show();x+=width
+
 func _build() -> void:
     _shared_chrome.append(_label("远航舰桥",Rect2(24,10,160,34),23))
-    _wallet=_label("",Rect2(204,16,590,30),15)
+    _wallet=Control.new();_wallet.position=Vector2(204,16);_wallet.size=Vector2(590,30)
+    _wallet.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(_wallet)
+    # Resource identity nodes/textures are cached at construction, never per quote.
+    for id in RESOURCE_NAMES:
+        var mark:=_resource_icon(id,17,_wallet)
+        var text:=_label("",Rect2(0,0,100,30),15)
+        remove_child(text);_wallet.add_child(text)
+        text.clip_text=true;text.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+        text.mouse_filter=Control.MOUSE_FILTER_PASS
+        _wallet_cells[id]={"icon":mark,"text":text}
+
     _shared_chrome.append(_label("战力维护  /  装配",Rect2(24,52,380,28),14,Color("57777a")))
     _title=_label("装配",Rect2(35,104,236,30),18,CREAM)
     _title.add_theme_color_override("font_shadow_color",Color("173542"))
@@ -432,7 +432,6 @@ func _workbench_button(text:String,rect:Rect2,action:Callable,form:String="butto
 func _build_workbench() -> void:
     _workbench=Panel.new();_workbench.name="EquipmentWorkbench"
     _workbench.position=Vector2(16,610);_workbench.size=Vector2(776,286)
-    _workbench.material=_console_blend_material(_workbench.size)
     _workbench.clip_contents=true;_workbench.mouse_filter=Control.MOUSE_FILTER_PASS
     var body:=_surface_material("enamel",Color.WHITE,"deck")
     _workbench.add_theme_stylebox_override("panel",body);add_child(_workbench)
@@ -455,6 +454,12 @@ func _build_workbench() -> void:
     _next_value=_workbench_label("—",Rect2(290,109,148,38),27,TEAL)
     for value in [_current_value,_next_value]:value.mouse_filter=Control.MOUSE_FILTER_PASS;value.clip_text=true
     _cost=_workbench_label("本次费用",Rect2(22,204,90,25),13,Color("4a6265"))
+    for id in RESOURCE_NAMES:
+        var mark:=_resource_icon(id,20,_workbench)
+        var name:=_workbench_label(RESOURCE_NAMES[id],Rect2(0,0,90,22),13,Color("4a6265"))
+        var amount:=_workbench_label("",Rect2(0,0,220,26),17,INK)
+        amount.add_theme_font_override("font",_font_strong);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+        _cost_cells[id]={"icon":mark,"name":name,"amount":amount}
     _payment_state=_workbench_label("",Rect2(278,204,160,25),13,Color("a75a3d"));_payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
     _quantity_button=_workbench_button("×1",Rect2(20,208,96,36),_cycle_quantity)
     _quantity_button.name="QuantityCycle"
@@ -494,10 +499,9 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     var rows:int=maxi(1,resource_count)
     var signature:Array=[different,defence,rows]
     if _workbench_layout.get("signature",[])==signature:return
-    var height:float=maxf(272.0 if different else 250.0,250.0+maxi(0,rows-1)*22.0)
-    var action_y:float=height-52.0
+    var height:float=maxf(288.0 if different else 266.0,266.0+maxi(0,rows-1)*22.0)
+    var action_y:float=height-68.0
     _workbench.position.y=896.0-height;_workbench.size.y=height
-    _workbench.material.set_shader_parameter("panel_size",_workbench.size)
     _workbench_divider.size.y=action_y-48.0
     _upgrade_data.position=Vector2(100,70)
     _candidate_row.position=Vector2(460,70)
@@ -543,7 +547,7 @@ func _place_current_icon(key: String) -> void:
 
 func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
-    for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
+    for id in _cost_cells:_cost_cells[id].icon.hide();_cost_cells[id].name.hide();_cost_cells[id].amount.hide()
     _purchase.tooltip_text=""
     var first_row_y:float=_workbench_layout.fee_y
     _cost.text="本次费用";_cost.position=Vector2(20,first_row_y);_cost.size=Vector2(84,22)
@@ -553,18 +557,15 @@ func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     _payment_state.autowrap_mode=TextServer.AUTOWRAP_OFF;_payment_state.clip_text=true;_payment_state.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;_payment_state.mouse_filter=Control.MOUSE_FILTER_PASS
     for index in keys.size():
         var id:String=str(keys[index])
-        if not _cost_cells.has(id):
-            var name:=_workbench_label("",Rect2(0,0,90,22),13,Color("4a6265"))
-            var amount:=_workbench_label("",Rect2(0,0,220,26),17,INK)
-            amount.add_theme_font_override("font",_font_strong);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-            _cost_cells[id]={"name":name,"amount":amount}
+        if not _cost_cells.has(id):continue
         var cell:Dictionary=_cost_cells[id]
         var width:float=308.0
         var x:float=112.0
         var row_y:float=first_row_y+index*22
-        cell.name.position=Vector2(x,row_y);cell.name.size=Vector2(78,22)
-        cell.amount.position=Vector2(x+82,row_y-3);cell.amount.size=Vector2(width-86,26)
-        cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
+        cell.icon.position=Vector2(x,row_y+1);cell.icon.show()
+        cell.name.position=Vector2(x+24,row_y);cell.name.size=Vector2(78,22)
+        cell.amount.position=Vector2(x+106,row_y-3);cell.amount.size=Vector2(width-110,26)
+        cell.name.text=RESOURCE_NAMES.get(id,id)
         var formatted:Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
         cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
         cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"));cell.name.show();cell.amount.show()
@@ -693,7 +694,7 @@ func _refresh_comparison() -> void:
         return
     _wallet_dependency = _session.economy.budget()
     presentation_counts.wallet_refreshes += 1
-    _wallet.text = _cost_text(_wallet_dependency).replace(" / ", "   ")
+    _render_wallet()
     if _maximum: presentation_counts.maximum_reads += 1
     presentation_counts.comparison_reads += 1
     last_comparison = _session.equipment_comparison(_selected, _candidate, _quantity, _maximum)
@@ -869,7 +870,7 @@ func _cost_text(costs: Dictionary) -> String:
     var parts := PackedStringArray()
     for id in costs:
         var result: Dictionary = _session.amount_api.apply("to_display", [costs[id]])
-        var label: String = {"1":"铁", "2":"铀", "degenerate_matter":"简并物质", "jewel":"碎片", "chrono":"时空微粒"}.get(str(id), str(id))
+        var label: String = RESOURCE_NAMES.get(str(id), str(id))
         parts.append((PlayerText.number(str(result.text)) if result.ok else "未知") + " " + label)
     return " / ".join(parts) if not parts.is_empty() else "0"
 
@@ -909,7 +910,6 @@ func _refresh_batch() -> void:
     var position_y:float=roundf((900.0-height)*0.5)
     _batch.position.y=position_y;_batch.size.y=height
     _batch_frame.position.y=position_y;_batch_frame.size.y=height
-    if _batch_frame.material.get_shader_parameter("panel_size")!=_batch_frame.size:_batch_frame.material.set_shader_parameter("panel_size",_batch_frame.size)
     var current: String = "\n".join(_facts.filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [_slot_name(str(row.id)), NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
     if unknown:
         _batch_results.text = "提交结果未知，会话已停止。\n" + current
