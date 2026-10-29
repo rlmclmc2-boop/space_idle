@@ -205,7 +205,14 @@ class EquipmentSurface extends StyleBox:
         elif profile=="tray":
             skin.draw(canvas,Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36)))
         elif profile=="instrument":skin.draw(canvas,r.grow(-3))
-        elif profile=="header":skin.draw(canvas,Rect2(r.position+Vector2(6,10),Vector2(r.size.x-12,r.size.y-10)))
+        elif profile=="header":
+            # The same header fill follows the housing's fixed 32px top corners.
+            # Draw inside the enamel boundary instead of painting over the rim.
+            var points:=PackedVector2Array([
+                r.position+Vector2(32,14),r.position+Vector2(r.size.x-32,14),
+                r.position+Vector2(r.size.x-12,32),r.position+Vector2(r.size.x-12,40),
+                r.position+Vector2(12,40),r.position+Vector2(12,32)])
+            RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([skin.bg_color]))
         elif profile=="button":
             var face:Rect2=r.grow(-3)
             if depressed:face.position.y+=1;face.size.y-=1
@@ -435,7 +442,7 @@ func _build_workbench() -> void:
     _workbench.clip_contents=true;_workbench.mouse_filter=Control.MOUSE_FILTER_PASS
     var body:=_surface_material("enamel",Color.WHITE,"deck")
     _workbench.add_theme_stylebox_override("panel",body);add_child(_workbench)
-    var header:=Panel.new();header.name="ObjectHeader";header.size=Vector2(776,36);header.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    var header:=Panel.new();header.name="ObjectHeader";header.size=Vector2(776,40);header.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var beam:=_surface_material("navy_face",Color.WHITE,"header")
     header.add_theme_stylebox_override("panel",beam);_workbench.add_child(header)
     _current_title=_workbench_label("现装",Rect2(20,4,250,28),18,CREAM)
@@ -716,8 +723,8 @@ func _refresh_comparison() -> void:
     _level_label.text = "Lv."+str(fact.paid_level)
     var title_ink:Rect2=_text_ink_bounds(_current_title.text,_current_title.get_theme_font("font"),18)
     var level_ink:Rect2=_text_ink_bounds(_level_label.text,_level_label.get_theme_font("font"),13)
-    _place_ink_label(_current_title,Vector2(20+title_ink.size.x*0.5,18))
-    _place_ink_label(_level_label,Vector2(32+title_ink.size.x+level_ink.size.x*0.5,18))
+    _place_ink_label(_current_title,Vector2(32+title_ink.size.x*0.5,26))
+    _place_ink_label(_level_label,Vector2(44+title_ink.size.x+level_ink.size.x*0.5,26))
     _current_value.text = _value(comparison.current)
     _next_value.text = _value(comparison.upgrade)
     _current_value.tooltip_text=str(comparison.current.primary) if comparison.current is Dictionary and comparison.current.get("primary")!=null else _value(comparison.current)
