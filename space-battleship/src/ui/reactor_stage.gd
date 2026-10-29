@@ -8,6 +8,7 @@ const CORE_WORK = preload("res://assets/ui/reactor/ship-hub-r4/core_work.gdshade
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const BLUE := Color(0.25, 0.80, 0.95)
 const AMBER := Color(1.0, 0.55, 0.18)
+const MIN_VISIBLE_POWER := 0.18
 const ROUTES := {
 	# Axes of the four visible glass shafts, inside the dark collars. Coordinates
 	# are on the 808 x 835 bay image, from the core towards each device.
@@ -96,22 +97,27 @@ func control_layout(id: String) -> Dictionary:
 	var row: Dictionary = OPERATING[id]
 	return row
 
+static func visibility_power(owner_load: float) -> float:
+	# Keep a positive Owner load legible on a 1x display. Zero still turns off.
+	var load: float = clampf(owner_load, 0.0, 1.0)
+	return maxf(load, MIN_VISIBLE_POWER) if load > 0.0 else 0.0
+
 func show_snapshot(ids: Array, loads: Dictionary) -> void:
 	_enabled = ids.duplicate()
 	_loads = loads.duplicate()
 	var core_power: float = clampf(float(_loads.get("core",0.0)),0.0,1.0)
 	_ambient.visible = core_power > 0.0
-	_ambient.material.set_shader_parameter("power",core_power)
+	_ambient.material.set_shader_parameter("power",visibility_power(core_power))
 	_feed.visible = core_power > 0.0
-	_feed.material.set_shader_parameter("power",core_power)
+	_feed.material.set_shader_parameter("power",visibility_power(core_power))
 	for id in _fields:
 		var load: float = clampf(float(_loads.get(id, 0.0)), 0.0, 1.0)
 		_fields[id].visible = (id == "core" or id in _enabled) and load > 0.0
-		_fields[id].material.set_shader_parameter("power", load)
+		_fields[id].material.set_shader_parameter("power", visibility_power(load))
 	for id in _connections:
 		var load: float = clampf(float(_loads.get(id, 0.0)), 0.0, 1.0)
 		_connections[id].visible = id in _enabled and load > 0.0
-		_connections[id].material.set_shader_parameter("power", load)
+		_connections[id].material.set_shader_parameter("power", visibility_power(load))
 
 func clear_snapshot() -> void:
 	_enabled.clear()
