@@ -1,8 +1,6 @@
 extends Control
-## Display-only 3D architecture over the analytical surface. No building hit targets.
+## Display-only 3D architecture on an independent orbital spine. No building hit targets.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
-## Fixed terrain anchors; both facilities follow the surface phase, not cloud motion.
-const SURFACE_UV := {"refinery": Vector2(0.42, 0.34), "equipment": Vector2(0.44, 0.67)}
 const WORK_PARTS := {
 	"auto_explore": ["HabitatRingSpin", "SolarHingeLeft", "SolarHingeRight"],
 	"refinery": ["IntakeWheelLeft", "IntakeWheelRight", "CoolingShutters"],
@@ -14,9 +12,9 @@ var _viewport := SubViewport.new()
 var _image := TextureRect.new()
 var _world := Node3D.new()
 var _camera := Camera3D.new()
+var _spine: Node3D
 var _models: Dictionary = {}
 var _parts: Dictionary = {}
-var _contact_materials: Dictionary = {}
 var _owned: Array = []
 var _occluder := MeshInstance3D.new()
 var _radius := 3.0
@@ -24,6 +22,7 @@ var _clock := 0.0
 var _phase := 0.0
 var _body_pixels := 200.0
 var _last_size := Vector2.ZERO
+var _last_body_pixels := -1.0
 var _axis_ratio := 1.0
 var _pulse_strength := 0.0
 var _pulse_speed := 0.08
@@ -66,10 +65,12 @@ func _ready() -> void:
 	light.light_color = Color("fff0d8")
 	light.light_energy = 0.95
 	_world.add_child(light)
-	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	_camera.keep_aspect = Camera3D.KEEP_HEIGHT
-	_camera.position.z = 24
+	_camera.position.z = 18
 	_world.add_child(_camera)
+	_spine = preload("res://scripts/planet_orbital_spine.gd").new()
+	_world.add_child(_spine)
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
@@ -87,7 +88,7 @@ func _ready() -> void:
 	_world.add_child(_occluder)
 	for kind in KINDS:
 		var model: Node3D = load("res://assets/planets/facilities_v5/" + kind + ".glb").instantiate()
-		_world.add_child(model)
+		_spine.add_child(model)
 		_models[kind] = model
 		var moving: Dictionary = {}
 		for part_name in WORK_PARTS[kind]:
@@ -98,20 +99,6 @@ func _ready() -> void:
 		if kind == "equipment": _install_workshop_illustration(model, moving)
 		if kind == "refinery": _install_refinery_illustration(model, moving)
 		if kind == "shipyard": _install_shipyard_illustration(model, moving)
-		if SURFACE_UV.has(kind):
-			var patch := MeshInstance3D.new()
-			var plane := PlaneMesh.new()
-			plane.size = Vector2(3.5, 2.7)
-			plane.subdivide_width = 8
-			plane.subdivide_depth = 6
-			patch.mesh = plane
-			var contact := ShaderMaterial.new()
-			contact.shader = preload("res://scripts/planet_contact_shadow.gdshader")
-			contact.render_priority = -64
-			patch.material_override = contact
-			patch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			model.add_child(patch)
-			_contact_materials[kind] = contact
 		_transparent_materials(model)
 		model.visible = false
 	resized.connect(_layout)
@@ -224,7 +211,7 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 		_refinery_feed_markers.append(marker)
 
 func _position_refinery_work(model: Node3D, clock: float) -> void:
-	var camera_to_model := model.transform.basis.inverse()
+	var camera_to_model := model.global_transform.basis.inverse()
 	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
 	var screen_up := (camera_to_model * Vector3.UP).normalized()
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
@@ -283,7 +270,7 @@ func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	_shipyard_ring_sprite = ring
 
 func _position_shipyard_work(model: Node3D, clock: float) -> void:
-	var camera_to_model := model.transform.basis.inverse()
+	var camera_to_model := model.global_transform.basis.inverse()
 	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
 	var screen_up := (camera_to_model * Vector3.UP).normalized()
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
@@ -305,7 +292,7 @@ func _position_workshop_arm(model: Node3D) -> void:
 	var pivot := _parts["equipment"]["ToolArmSweep"] as Node3D
 	# Sprite3D billboards face the camera. Its source image's X/Y axes are
 	# therefore camera right/up, not the model's tilted ground-tangent axes.
-	var camera_to_model := model.transform.basis.inverse()
+	var camera_to_model := model.global_transform.basis.inverse()
 	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
 	var screen_up := (camera_to_model * Vector3.UP).normalized()
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
@@ -329,45 +316,6 @@ func _position_workshop_arm(model: Node3D) -> void:
 func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
 	for child in node.get_children(): _hide_imported_meshes(child)
-
-func _position_surface_illustration(kind: String, model: Node3D, normal: Vector3) -> void:
-	# At the horizon, a fixed camera-facing card puts the entire ground pad in
-	# space. Raise the same art plane from its terrain anchor in screen-up and
-	# shorten its width smoothly as the tangent turns edge-on. Keep the contact
-	# shadow and the named GLB pivots on their original surface tangent.
-	var edge := 1.0 - smoothstep(0.05, 1.05, absf(normal.z))
-	var width := lerpf(1.0, 0.50, edge)
-	var camera_to_model := model.transform.basis.inverse()
-	var screen_up := (camera_to_model * Vector3.UP).normalized()
-	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
-	var body := _workshop_body_sprite if kind == "equipment" else _refinery_body_sprite
-	var height := 1.38 if kind == "equipment" else 1.50
-	var inward := -signf(normal.x) * (1.2 * edge + edge * (1.0 - edge))
-	body.position = Vector3(0, height, 0).lerp(screen_up * height, edge) + screen_right * inward
-	body.scale.x = width
-	if kind == "equipment":
-		# The screen-space correction above moves the bay inward while its flat
-		# billboard still sits at the tangent's old Z. On the near hemisphere the
-		# sphere depth mask then cuts the bay away. Place this camera-facing card
-		# just ahead of the sphere at its innermost visible corner, easing in only
-		# after the anchor has crossed the horizon. The original terrain root and
-		# its contact shadow remain on the ellipsoid.
-		var center := model.transform * body.position
-		var half_width := body.texture.get_width() * body.pixel_size * width * model.transform.basis.get_scale().x * 0.5
-		var half_height := body.texture.get_height() * body.pixel_size * model.transform.basis.get_scale().y * 0.5
-		var closest_x := clampf(0.0, center.x - half_width, center.x + half_width)
-		var closest_y := clampf(0.0, center.y - half_height, center.y + half_height)
-		var radius := _radius * _occluder.scale.x
-		var vertical_radius := _radius * _occluder.scale.y
-		var front := radius * sqrt(maxf(0.0, 1.0 - pow(closest_x / radius, 2.0) - pow(closest_y / vertical_radius, 2.0)))
-		var arrival := smoothstep(0.02, 0.38, normal.z)
-		var forward := maxf(0.0, front + 0.05 - center.z) * arrival
-		body.position += model.transform.basis.inverse() * Vector3(0.0, 0.0, forward)
-		_workshop_carriage_sprite.scale.x = width
-		_workshop_arm_sprite.scale.x = width
-	else:
-		for shutter in _refinery_shutter_sprites.values():
-			(shutter as Sprite3D).scale.x = width
 
 func _transparent_materials(node: Node) -> void:
 	if node is MeshInstance3D:
@@ -393,15 +341,23 @@ func configure(entries: Array) -> void:
 		var kind: String = str(entry.type)
 		if _models.has(kind) and not kind in _owned: _owned.append(kind)
 	for kind in _models: _models[kind].visible = kind in _owned
+	_spine.configure(_owned)
 	update_pose(_clock, _phase, _body_pixels)
 
 func _layout() -> void:
 	if size.x < 1 or size.y < 1: return
 	_viewport.size = Vector2i(size)
 	_last_size = size
-	_camera.size = _radius * size.y / maxf(1, _body_pixels)
-	_camera.position.x = -(scene_center.x - size.x * 0.5) * _radius / maxf(1, _body_pixels)
+	_last_body_pixels = _body_pixels
+	var visible_height := _radius * size.y / _render_pixels()
+	_camera.fov = rad_to_deg(2.0 * atan(visible_height / (2.0 * _camera.position.z)))
+	_camera.position.x = -(scene_center.x - size.x * 0.5) * _radius / _render_pixels()
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+func _render_pixels() -> float:
+	# Tiny white dwarfs and pulsars retain a readable ring instead of shrinking
+	# the whole facility system to the small photosphere's pixel diameter.
+	return maxf(_body_pixels, minf(size.x * 0.235, size.y * 0.34))
 
 func update_pose(clock: float, surface_phase: float, body_pixels: float, surface_clock: float = -1.0) -> void:
 	_clock = clock
@@ -409,40 +365,18 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	_body_pixels = body_pixels
 	if surface_clock >= 0: _surface_clock = surface_clock
 	if not is_inside_tree(): return
-	if size != _last_size or not is_equal_approx(_camera.size, _radius * size.y / maxf(1, body_pixels)): _layout()
+	if size != _last_size or not is_equal_approx(_last_body_pixels, body_pixels): _layout()
 	var pulse := 1.0 + _pulse_strength * sin(_surface_clock * TAU * _pulse_speed)
-	_occluder.scale = Vector3(pulse, _axis_ratio * pulse, pulse)
+	var globe_scale := _body_pixels / _render_pixels()
+	_occluder.scale = Vector3(globe_scale * pulse, _axis_ratio * globe_scale * pulse, globe_scale * pulse)
+	_spine.update_pose(clock)
 	for kind in _owned:
 		var model: Node3D = _models[kind]
 		_animate_parts(kind, clock)
-		if SURFACE_UV.has(kind):
-			var uv: Vector2 = SURFACE_UV[kind]
-			var lon := (uv.x - 0.5 - surface_phase) * TAU
-			var lat := (uv.y - 0.5) * PI
-			var point := Vector3(sin(lon) * cos(lat), -sin(lat), cos(lon) * cos(lat))
-			var normal := Vector3(point.x, point.y / _axis_ratio, point.z).normalized()
-			var east := Vector3(cos(lon), 0, -sin(lon)).normalized()
-			var north := east.cross(normal).normalized()
-			# Model Y is local up. Its foundation lies on the surface tangent.
-			# Embed each broad contact pad into the tangent. The shadow is projected
-			# onto the true ellipsoid, so both pad and shadow follow the same terrain.
-			model.transform = Transform3D(Basis(east, normal, north).rotated(normal, 0.35 if kind == "refinery" else -0.20).scaled(Vector3.ONE * 0.35), Vector3(point.x, point.y * _axis_ratio, point.z) * (_radius * pulse) - normal * 0.055)
-			_contact_materials[kind].set_shader_parameter("body_axes", Vector3(_radius * pulse, _radius * _axis_ratio * pulse, _radius * pulse))
-			_position_surface_illustration(kind, model, normal)
-		else:
-			if kind == "shipyard":
-				# Confirmed independent service berth outside the station orbit.
-				# Keep the berth below the surface workshop's lower-right horizon
-				# passage as well as outside the station's projected orbit.
-				model.position = Vector3(_radius * 1.09, -_radius * 1.24, -_radius * 0.33)
-			else:
-				var path: Dictionary = preload("res://scripts/orbital_facilities.gd").path_for(kind)
-				var a := float(path.phase) + clock * float(path.speed)
-				var radial := minf(_radius * float(path.radius), maxf(_radius * 1.10, (minf(scene_center.x, size.x - scene_center.x) - 82.0) * _radius / maxf(1, _body_pixels)))
-				var xy := Vector2(cos(a) * radial, -sin(a) * radial * float(path.ratio)).rotated(-float(path.tilt))
-				model.position = Vector3(xy.x, xy.y, sin(a) * radial * sqrt(1.0 - float(path.ratio) * float(path.ratio)))
-			model.rotation = Vector3(0.90, -0.25 + (clock * 0.04 if kind == "auto_explore" else 0.0), 0.10)
-			model.scale = Vector3.ONE * (0.28 if kind == "auto_explore" else 0.34)
+		var a: float = _spine.FACILITY_ANGLES[kind]
+		model.position = _spine.point(a)
+		model.rotation = Vector3(0.90, -0.25, 0.10)
+		model.scale = Vector3.ONE * (0.36 if kind == "auto_explore" else 0.42)
 		if kind == "equipment": _position_workshop_arm(model)
 		if kind == "refinery": _position_refinery_work(model, clock)
 		if kind == "shipyard": _position_shipyard_work(model, clock)

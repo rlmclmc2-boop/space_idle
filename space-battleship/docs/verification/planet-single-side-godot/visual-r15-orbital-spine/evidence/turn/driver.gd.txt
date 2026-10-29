@@ -1,0 +1,35 @@
+extends SceneTree
+const OUT := "/tmp/planet-ring-fixture"
+var visual
+func _initialize() -> void:
+	call_deferred("run")
+func shot(name: String) -> void:
+	await process_frame
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT.path_join(name + ".png"))
+func run() -> void:
+	DirAccess.make_dir_recursive_absolute(OUT)
+	root.size = Vector2i(1440, 900)
+	var backdrop := ColorRect.new()
+	backdrop.color = Color("061723")
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root.add_child(backdrop)
+	visual = load("res://scripts/planet_visual.gd").new()
+	backdrop.add_child(visual)
+	visual.position = Vector2(400, 45)
+	visual.size = Vector2(808, 810)
+	await process_frame
+	visual.globe.prepare_material()
+	var types := ["auto_explore", "refinery", "equipment", "shipyard"]
+	for count in 5:
+		var entries: Array = []
+		for index in count:
+			entries.append({"id":str(index), "type":types[index], "owned":true})
+		visual.configure("1", {"visual": {}, "visualFacilities":entries})
+		visual.advance(0.05, false)
+		await shot("state_%d" % count)
+	for index in 4:
+		visual.advance(10.0, false)
+		await shot("turn_%d" % index)
+	quit()

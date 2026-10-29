@@ -105,7 +105,9 @@ func _layout_globe() -> void:
 	queue_redraw()
 
 func _body_radius() -> float:
-	var base := minf(size.y * 0.39, size.x * 0.285)
+	# The shared orbital structure needs the surrounding space to be part of the
+	# composition. Keep the globe smaller without changing its authored texture.
+	var base := minf(size.y * 0.34, size.x * 0.235)
 	var requested := base * clampf(float(appearance.get("radiusScale", 1.0)), 0.08, 1.25)
 	# Keep the entire authored corona/beam envelope inside the scene.
 	var available := maxf(1.0, minf(size.x, size.y) * 0.5 - 16.0)
@@ -361,6 +363,7 @@ func _facility_point(center: Vector2, radius: float, kind: String, angle: float)
 	return center + Vector2(cos(angle) * extent, sin(angle) * extent * float(path.ratio)).rotated(float(path.tilt))
 
 func _draw_facility_paths(center: Vector2, radius: float, front: bool, canvas: CanvasItem) -> void:
+	if architecture != null: return
 	for entry in facilities:
 		var kind := str(entry.get("type", ""))
 		if kind in ["refinery", "equipment"]: continue
