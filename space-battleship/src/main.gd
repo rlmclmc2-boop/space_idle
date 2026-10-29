@@ -203,7 +203,7 @@ func _show_session() -> void:
 	_setup_audio()
 
 func _setup_reactor_scene(layer: CanvasLayer) -> void:
-	reactor_scene = ReactorScene.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor)
+	reactor_scene = ReactorScene.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor, session.economy.can_pay)
 	layer.add_child(reactor_scene)
 	reactor_scene.bind_presentation(_reactor_scene_presentation, func():
 		return {"game_time": session.game_time, "paused": not session.pause_reasons.is_empty() or not session.run_state.is_running(),
@@ -223,10 +223,14 @@ func _reactor_scene_presentation() -> Dictionary:
 		return {"ok": false, "reason": "ReactorSnapshotUnavailable", "message": "供能状态暂不可用"}
 	return session.reactor_system.presentation_model()
 
-func _reactor_scene_quote() -> Dictionary:
+func _reactor_scene_quote(count: int, maximum: bool) -> Dictionary:
+	if maximum:
+		if not session.reactor_system.has_method("purchase_max_preview"):
+			return {"ok": false, "reason": "ReactorQuoteUnavailable"}
+		return session.reactor_system.purchase_max_preview(session.economy.can_pay)
 	if not session.reactor_system.has_method("purchase_preview"):
 		return {"ok": false, "reason": "ReactorQuoteUnavailable"}
-	return session.reactor_system.purchase_preview(session.economy.can_pay)
+	return session.reactor_system.purchase_preview(session.economy.can_pay, count)
 
 func _select_left_module(id: String) -> void:
 	if not _route_available.get(id, true) or not _host.routes.has(id): return

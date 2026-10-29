@@ -1,0 +1,127 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": "",
+			"id": "startup",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "fixture_grants",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "owner_refresh",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "shared_mount",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "battle_projection",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "budget_fixture",
+			"ok": true
+		},
+		{
+			"detail": {
+				"load": 1.0,
+				"result": {
+					"defence_changed": true,
+					"ok": true
+				}
+			},
+			"id": "direct_equal",
+			"ok": true
+		},
+		{
+			"detail": {
+				"actual": {
+					"allocated": "7.5e1",
+					"capacity": "1e2",
+					"load": 0.75,
+					"modules": [
+						{
+							"effective": "0e0",
+							"enabled": true,
+							"factor": "1e0",
+							"free": "0e0",
+							"has_free": false,
+							"id": "weapons",
+							"load": 0.0,
+							"manual": "0e0",
+							"ratio": 0.0
+						},
+						{
+							"effective": "2.5e1",
+							"enabled": true,
+							"factor": "1.13132639022019e0",
+							"free": "0e0",
+							"has_free": false,
+							"id": "defence",
+							"load": 0.25,
+							"manual": "2.5e1",
+							"ratio": 0.25
+						},
+						{
+							"effective": "2.5e1",
+							"enabled": true,
+							"factor": "1.13132639022019e0",
+							"free": "0e0",
+							"has_free": false,
+							"id": "smelting",
+							"load": 0.25,
+							"manual": "2.5e1",
+							"ratio": 0.25
+						},
+						{
+							"effective": "2.5e1",
+							"enabled": true,
+							"factor": "1.13132639022019e0",
+							"free": "0e0",
+							"has_free": false,
+							"id": "condensation",
+							"load": 0.25,
+							"manual": "2.5e1",
+							"ratio": 0.25
+						}
+					],
+					"ok": true,
+					"remaining": "2.5e1"
+				},
+				"defence_changed": false,
+				"ok": true
+			},
+			"id": "direct_slider",
+			"ok": true
+		},
+		{
+			"detail": "费用 550 铀",
+			"id": "ten_owner_quote",
+			"ok": true
+		},
+		{
+			"detail": "MAX 可购 11 级 · 费用 752 铀",
+			"id": "max_owner_quote",
+			"ok": true
+		},
+		{
+			"detail": {
+				"active_frames": 16,
+				"draws": 6,
+				"field_updates": 112
+			},
+			"id": "flow_clock",
+			"ok": true
+		}
+	],
+	"fixture": "Temporary public Campaign grants and Economy credit; one equal distribution, one direct slider, two owner quote modes. No natural unlock or full matrix claim."
+}

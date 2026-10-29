@@ -21,10 +21,10 @@ const ROUTES := {
 	"condensation": [Vector2(514, 429), Vector2(602, 477)],
 }
 const OPERATING := {
-	"weapons": {"mount":Vector2(6, 211), "effect":Vector2(35, 265), "supply":Vector2(35, 289), "effective":Vector2(35, 311), "slider":Vector2(44, 234), "width":180.0, "track":154.0},
-	"defence": {"mount":Vector2(586, 211), "effect":Vector2(615, 265), "supply":Vector2(615, 289), "effective":Vector2(615, 311), "slider":Vector2(624, 234), "width":180.0, "track":154.0},
-	"smelting": {"mount":Vector2(6, 545), "effect":Vector2(39, 601), "supply":Vector2(39, 620), "effective":Vector2(39, 637), "slider":Vector2(44, 568), "width":176.0, "track":154.0},
-	"condensation": {"mount":Vector2(586, 545), "effect":Vector2(642, 601), "supply":Vector2(642, 620), "effective":Vector2(642, 637), "slider":Vector2(624, 568), "width":153.0, "track":154.0},
+	"weapons": {"mount":Vector2(6, 211), "effect":Vector2(39, 289), "slider":Vector2(44, 234), "width":170.0, "track":154.0},
+	"defence": {"mount":Vector2(586, 211), "effect":Vector2(611, 289), "slider":Vector2(624, 234), "width":172.0, "track":154.0},
+	"smelting": {"mount":Vector2(6, 545), "effect":Vector2(40, 620), "slider":Vector2(44, 568), "width":170.0, "track":154.0},
+	"condensation": {"mount":Vector2(586, 545), "effect":Vector2(619, 620), "slider":Vector2(624, 568), "width":168.0, "track":154.0},
 }
 var _enabled: Array = []
 var _loads: Dictionary = {}
@@ -44,9 +44,10 @@ func _init() -> void:
 		var ends: Array = ROUTES[id]
 		var start: Vector2 = ends[0]
 		var finish: Vector2 = ends[1]
-		var flow := _new_work(Rect2(start, Vector2(start.distance_to(finish), 13)), 2, AMBER if id in ["weapons", "smelting"] else BLUE)
+		var flow := _new_work(Rect2(start, Vector2(start.distance_to(finish), 17)), 2, AMBER if id in ["weapons", "smelting"] else BLUE)
 		flow.rotation = (finish - start).angle()
-		flow.position -= Vector2(0, 6.5).rotated(flow.rotation)
+		flow.position -= Vector2(0, 8.5).rotated(flow.rotation)
+		flow.material.set_shader_parameter("module_kind", IDS.find(id))
 		_connections[id] = flow
 
 func _new_work(rect: Rect2, kind: int, tint: Color) -> ColorRect:
@@ -65,6 +66,7 @@ func _new_work(rect: Rect2, kind: int, tint: Color) -> ColorRect:
 
 func _add_work(id: String, rect: Rect2, kind: int, tint: Color) -> void:
 	_fields[id] = _new_work(rect, kind, tint)
+	_fields[id].material.set_shader_parameter("module_kind", IDS.find(id))
 
 func _add_core() -> void:
 	var field := TextureRect.new()

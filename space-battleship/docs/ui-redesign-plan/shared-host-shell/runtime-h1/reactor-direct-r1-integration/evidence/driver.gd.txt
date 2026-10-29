@@ -1,0 +1,59 @@
+extends SceneTree
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-h1/reactor-direct-r1-integration/evidence/"
+var game
+var scene
+var checks: Array = []
+func _initialize() -> void: call_deferred("run")
+func settle(n: int = 6) -> void:
+	for i in n: await process_frame
+func check(id: String, ok: bool, detail = null) -> void:
+	checks.append({"id": id, "ok": ok, "detail": detail})
+	print("DIRECT_HOST ", id, " ", ok)
+func shot(name: String) -> void:
+	await settle()
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT + name + ".png")
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	game = load("res://src/main.gd").new(); root.add_child(game); root.grab_focus()
+	await settle()
+	check("startup", game.startup_error.is_empty(), game.startup_error)
+	if not game.startup_error.is_empty(): quit(1); return
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	check("fixture_grants", session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	check("owner_refresh", session.reactor_system.refresh(session.reactor_inputs(),session.publish_reactor).ok)
+	game._queue_feature_visibility(); await settle()
+	game._skip_tutorial = true; game._sync_guidance(); await settle()
+	game._host.route_requested.emit("reactor"); await settle()
+	scene = game.reactor_scene
+	check("shared_mount", game._left_module == "reactor" and game._host.routes.reactor == scene and scene.visible and scene._ids.size() == 4 and scene._shared_context.text == ("反应炉%s级" % str(scene._model.level)))
+	check("battle_projection", game._battle_viewport.get_parent().position == Vector2(855.875,0) and game._battle_viewport.get_parent().scale == Vector2(.9375,.9375))
+	var amount: Dictionary = session.amount_api.apply("from_decimal", ["1000"])
+	check("budget_fixture", amount.ok and session.economy.credit_yield("2",amount.value,session.wall_time,session.game_time).ok)
+	await settle()
+	scene._equal.pressed.emit(); await settle()
+	check("direct_equal", scene.last_result.get("ok",false) and scene._model.load > 0, {"result":scene.last_result,"load":scene._model.load})
+	await shot("four-running")
+	scene._rows.weapons.slider.set_value(0); await settle()
+	check("direct_slider", scene.last_result.get("ok",false) and int(scene._rows.weapons.slider.value) == 0 and scene._model.modules.any(func(row): return row.id == "weapons" and float(row.ratio) == 0.0), scene.last_result)
+	await shot("direct-applied")
+	scene._quantity_buttons["10"].pressed.emit(); await settle()
+	check("ten_owner_quote", scene._quote.get("ok",false) and int(scene._quote.count) == 10 and scene._cost.text.contains("费用"), scene._cost.text)
+	await shot("bulk-ten")
+	scene._quantity_buttons["max"].pressed.emit(); await settle()
+	check("max_owner_quote", scene._quote.get("ok",false) and int(scene._quote.count) >= 0 and scene._cost.text.contains("MAX 可购"), scene._cost.text)
+	await shot("bulk-max")
+	for i in 12:
+		await process_frame
+		root.get_texture().get_image().save_png(OUT + "flow-%02d.png" % i)
+	check("flow_clock", not session.pause_reasons.has("user") and scene._stage.diagnostics.field_updates > 0, scene._stage.diagnostics)
+	var ok := true
+	for row in checks: ok = ok and row.ok
+	var file := FileAccess.open(OUT + "observations.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify({"all_ok":ok,"checks":checks,"fixture":"Temporary public Campaign grants and Economy credit; one equal distribution, one direct slider, two owner quote modes. No natural unlock or full matrix claim."},"\t")); file.close()
+	print("DIRECT_HOST_COMPLETE ", ok)
+	game._close_game(); quit(0 if ok else 1)
