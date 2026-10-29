@@ -178,7 +178,7 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	return panel
 
 func _build() -> void:
-	_level = _label(Vector2(91, 769), 190, 17)
+	_level = _label(Vector2(112, 769), 190, 17)
 	_level.add_theme_font_override("font",_ui_font_bold)
 	_level.add_theme_color_override("font_color",Color("203f50"))
 	for id in Stage.IDS:
@@ -312,6 +312,7 @@ func _select_quantity(count: int, maximum: bool) -> void:
 	_cost.text = "报价读取中"
 	_cost_details.text = ""
 	_cost_badge.visible = false
+	_cost.size.x = 335
 	_purchase.text = "升级"
 	_quantity.text = "MAX" if maximum else "×" + str(count)
 	_update_buttons()
@@ -490,6 +491,10 @@ func _refresh_quote() -> void:
 	_quote_dirty = false
 	_cost_details.text = ""
 	_cost_badge.visible = false
+	_cost.add_theme_color_override("font_color",Color("203f50"))
+	_cost.add_theme_font_override("font",_ui_font_bold)
+	_cost_details.add_theme_color_override("font_color",Color("203f50"))
+	_cost_details.add_theme_font_override("font",_ui_font_bold)
 	if not _read_quote.is_valid():
 		_quote = {}
 		_quote_cost_ids.clear()
@@ -526,20 +531,30 @@ func _refresh_quote() -> void:
 		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
 	var cost_text: String = " + ".join(labels)
 	var mode_text := "MAX 可购 " + str(quote.count) + " 级" if _purchase_max else "×" + str(_purchase_count)
+	var affordable: bool = bool(quote.can_purchase)
+	var reason: String = str(quote.get("reason", ""))
+	var failure_text: String = "资金不足" if reason in ["InsufficientResources", "InsufficientFunds"] else str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "不可购买"
 	if labels.is_empty():
-		_cost.text = mode_text + " · 资金不足"
+		_cost.text = mode_text
+		_cost_details.text = failure_text
+		_cost_details.position.x = 590
+		_cost_details.add_theme_color_override("font_color",Color("a1593b"))
+		_cost_details.add_theme_font_override("font",_ui_font_medium)
 	else:
-		_cost.text = "费用"
+		_cost.text = "费用" if affordable else failure_text
 		_cost_details.text = cost_text + " · " + mode_text
-		if quote.costs.size() == 1:
+		if not affordable:
+			_cost.size.x = 80
+			_cost.add_theme_color_override("font_color",Color("a1593b"))
+			_cost.add_theme_font_override("font",_ui_font_medium)
+		if affordable and quote.costs.size() == 1:
 			var resource_id: String = str(quote.costs.keys()[0])
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
 			_cost_icon.modulate = ResourceVisuals.icon_modulate(resource_id)
 			_cost_badge.visible = _cost_icon.texture != null
-		_cost_details.position.x = 512 if _cost_badge.visible else 480
+		_cost_details.position.x = 512 if _cost_badge.visible or not affordable else 480
 	_cost.tooltip_text = _cost.text + " " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
-	var reason: String = str(quote.get("reason", ""))
 	var exact_costs: Array = []
 	for id in quote.costs: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
 	_purchase.tooltip_text = " + ".join(exact_costs) + (" · " + str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "")
