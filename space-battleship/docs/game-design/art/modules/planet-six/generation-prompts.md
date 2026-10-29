@@ -92,3 +92,22 @@
 > Edit this attached TWO-PANEL gas giant STAGE 2 image by ADDING EXACTLY ONE new workshop to the RIGHT panel. Keep BOTH panels' planet, storm, station and existing two-balloon refinery collector at the right side in the EXACT same positions and scale. In empty space just LEFT of the existing refinery collector, add a distinct small ivory/navy WORKSHOP with a visible blue gantry bay on its own pair of aerostat balloons and local tethers, separated from the refinery. A short bridge may connect those two built floating platforms; the upper station remains freely orbiting with empty space below it, not attached to the cloud or workshop. Do not add the outer shipyard, drydock, future ring segments, giant structure, extra station, text or UI. Show only station + refinery + workshop, each complete and self-supported. Maintain painting and camera.
 
 [03 工坊原图](stages/gas/03-workshop.png) SHA-256 `e6073da17d7d15331258028f51f93ce84824957bdee462b932cd4eec2176992c`。气态阶段 0／4 仍取既有完整概念图两侧；分步图只是静态设计，不是运行证据。
+
+## 独立建造分步图：恒星
+
+01、02 以[恒星原图](images/star-concept-a.png)为图像编辑输入；03 以[阶段 02](stages/star/02-refinery.png)为输入，防止编辑时丢失已建站体。以下共同前缀直接接 01／02 对应续句。
+
+共同前缀：
+
+> Edit the attached TWO-PANEL yellow main-sequence star concept into a construction stage. Keep the same star, camera, size, glow, background, and left bare panel. On the RIGHT retain only facilities explicitly built in this stage; erase every unbuilt arc, truss, drydock, platform, path, craft and shadow, restoring empty space and corona. No buildings touch the photosphere. Each built facility has its own shield and support, no future structures or placeholders. Maintain ivory/navy/cyan painterly game style, no text or UI.
+
+| 步 | 实际提示词续句 | 原图 SHA-256 |
+|---|---|---|
+| [01 空间站](stages/star/01-station.png) | STAGE 1: ONLY one small self-contained orbital space station above the star with its own short protected docking arms. No magnetic collector arcs, no refinery node, no workshop, no shipyard. | `600974a29eafbd02846c7127661cf57b7bf15f5f923f2fcfcae66d7af5b82104` |
+| [02 精炼厂](stages/star/02-refinery.png) | STAGE 2: orbital station plus ONE shielded refinery: a single short magnetic collector crescent outside the star on the left, with its own support hub and shielded processing pod. Transfer to station by free-flying shuttle. No remaining ring arcs, workshop, cold truss, outer shipyard or dock. | `c70579477b1b55d8b753545b10bf7e9e6acf7318e2d77bc5d9d1a8b698bfe4bd` |
+
+03 独立完整提示词：
+
+> Edit this attached two-panel STAGE 2 stellar construction image. LEFT panel remains bare star. RIGHT panel MUST KEEP the large orbital station above the star EXACTLY as seen, and KEEP the one short shielded magnetic refinery crescent to the star's left EXACTLY as seen. Add exactly one new, small workshop with a recognizable gantry work bay BELOW AND OUTSIDE the refinery crescent, mounted on its OWN compact cool-side truss platform. A short shuttle path may run between built nodes. DO NOT remove, shrink, relocate, or replace the orbital station; do not add shipyard, drydock, future magnetic arcs, large full ring, text or UI. Camera, star scale, space background and painting stay the same.
+
+[03 工坊原图](stages/star/03-workshop.png) SHA-256 `2037b41e3422a252ae1ea7fbb59b3fbadb556b4f4810dd3203750f8aa54b3ecd`。首次由完整态直接编辑的 03 丢失站体，未归档；本图以 02 为输入重生。恒星阶段 0／4 仍取原图左右两侧，图像不构成自转或独立施工的运行验证。
