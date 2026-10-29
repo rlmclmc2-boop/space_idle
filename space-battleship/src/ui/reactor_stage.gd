@@ -18,9 +18,9 @@ const ROUTES := {
 	"condensation": [Vector2(532, 434), Vector2(590, 468)],
 }
 const OPERATING := {
-	"weapons": {"title":Vector2(51, 116), "factor":Vector2(98, 123), "read_tilt":3.0, "work":Vector2(37, 164), "work_size":Vector2(146, 44), "control":Vector2(59, 227), "tilt":6.0},
+	"weapons": {"title":Vector2(51, 116), "factor":Vector2(98, 123), "read_tilt":3.0, "work":Vector2(55, 139), "work_size":Vector2(80, 65), "control":Vector2(59, 227), "tilt":6.0},
 	"defence": {"title":Vector2(665, 123), "factor":Vector2(704, 119), "read_tilt":-3.0, "work":Vector2(624, 164), "work_size":Vector2(146, 44), "control":Vector2(654, 238), "tilt":-6.0},
-	"smelting": {"title":Vector2(36, 427), "factor":Vector2(95, 424), "read_tilt":-3.0, "work":Vector2(37, 474), "work_size":Vector2(146, 72), "control":Vector2(52, 552), "tilt":-10.0},
+	"smelting": {"title":Vector2(36, 427), "factor":Vector2(89, 433), "read_tilt":-3.0, "work":Vector2(37, 474), "work_size":Vector2(146, 72), "control":Vector2(52, 552), "tilt":-10.0},
 	"condensation": {"title":Vector2(660, 426), "factor":Vector2(700, 430), "read_tilt":3.0, "work":Vector2(624, 474), "work_size":Vector2(146, 72), "control":Vector2(662, 535), "tilt":10.0},
 }
 var _enabled: Array = []

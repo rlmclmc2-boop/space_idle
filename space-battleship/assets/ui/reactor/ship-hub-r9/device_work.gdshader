@@ -8,10 +8,11 @@ uniform vec4 tint : source_color = vec4(0.9, 0.6, 0.25, 1.0);
 
 float glass_mask(vec2 uv) {
 	if (module_kind == 0) {
-		float left_edge = 0.13 + 0.015 * uv.y;
-		float right_edge = 0.67 - 0.015 * uv.y;
-		float sides = smoothstep(left_edge, left_edge + 0.035, uv.x) * (1.0 - smoothstep(right_edge - 0.035, right_edge, uv.x));
-		return sides * smoothstep(0.025, 0.07, uv.y) * (1.0 - smoothstep(0.91, 0.98, uv.y));
+		float top_axis = 0.20 + 0.16 * uv.x;
+		float lower_axis = 0.72 + 0.17 * uv.x;
+		float top = (1.0 - smoothstep(0.065, 0.115, abs(uv.y - top_axis))) * smoothstep(0.08, 0.15, uv.x) * (1.0 - smoothstep(0.70, 0.76, uv.x));
+		float lower = (1.0 - smoothstep(0.065, 0.115, abs(uv.y - lower_axis))) * smoothstep(0.07, 0.14, uv.x) * (1.0 - smoothstep(0.72, 0.78, uv.x));
+		return max(top, lower);
 	}
 	if (module_kind == 1) {
 		float left_edge = 0.32 + 0.01 * uv.y;
@@ -35,11 +36,10 @@ void fragment() {
 	float strength = pow(clamp(power, 0.0, 1.0), 0.35);
 	float structure = 0.0;
 	if (module_kind == 0) {
-		// The two copper barrels lean down in the image as they run outward.
-		// Follow their axes and keep the light inside the copper, away from the black gap.
-		float barrel_y = UV.y - 0.20 * (UV.x - 0.13);
-		float rail = min(abs(barrel_y - 0.16), abs(barrel_y - 0.71));
-		structure = 1.0 - smoothstep(0.045, 0.12, rail);
+		float top_axis = 0.20 + 0.16 * UV.x;
+		float lower_axis = 0.72 + 0.17 * UV.x;
+		float rail = min(abs(UV.y - top_axis), abs(UV.y - lower_axis));
+		structure = 1.0 - smoothstep(0.025, 0.08, rail);
 	} else if (module_kind == 1) {
 		// The artwork already contains the physical hex lattice. Light its glass,
 		// leaving those real cell edges intact instead of drawing a second lattice.
