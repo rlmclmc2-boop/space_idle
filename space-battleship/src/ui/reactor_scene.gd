@@ -42,6 +42,7 @@ var _budget: Label
 var _cost: Label
 var _cost_details: Label
 var _cost_icon: TextureRect
+var _cost_badge: Panel
 var _upgrade_heading: Label
 var _notice: Label
 var _notice_panel: Panel
@@ -198,6 +199,7 @@ func _build() -> void:
 		pulse.material = pulse_material
 		add_child(pulse)
 		var name := _label(layout.title + offset,92,17)
+		name.rotation_degrees = float(layout.read_tilt)
 		name.add_theme_font_override("font",_ui_font_bold)
 		name.add_theme_color_override("font_color",Color("eff4ee"))
 		name.add_theme_color_override("font_shadow_color",Color(0.015, 0.07, 0.10, 0.9))
@@ -206,6 +208,7 @@ func _build() -> void:
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name.text = NAMES[id]
 		var effect := _label(layout.factor + offset,58,19)
+		effect.rotation_degrees = float(layout.read_tilt)
 		effect.add_theme_font_override("font", _ui_font_bold)
 		effect.add_theme_color_override("font_color",Color("ffd393") if id in ["weapons","smelting"] else Color("a9edfa"))
 		effect.add_theme_color_override("font_shadow_color",Color(0.015, 0.07, 0.10, 0.9))
@@ -276,13 +279,22 @@ func _build() -> void:
 	_upgrade_heading.add_theme_color_override("font_color",Color("203f50"))
 	_cost = _label(Vector2(430, 775), 335, 18)
 	_cost.add_theme_color_override("font_color",Color("203f50"))
+	_cost_badge = Panel.new()
+	_cost_badge.position = Vector2(477,776)
+	_cost_badge.size = Vector2(27,26)
+	_cost_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var badge_style := StyleBoxFlat.new()
+	badge_style.bg_color = Color("214b55")
+	badge_style.set_corner_radius_all(6)
+	_cost_badge.add_theme_stylebox_override("panel",badge_style)
+	_cost_badge.visible = false
+	add_child(_cost_badge)
 	_cost_icon = TextureRect.new()
-	_cost_icon.position = Vector2(480,779)
+	_cost_icon.position = Vector2(3.5,3)
 	_cost_icon.size = Vector2(20,20)
 	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_cost_icon.visible = false
-	add_child(_cost_icon)
+	_cost_badge.add_child(_cost_icon)
 	_cost_details = _label(Vector2(504,775),259,18)
 	_cost_details.add_theme_color_override("font_color",Color("203f50"))
 	_quantity = _button("×1",Rect2(480,822,82,34),_cycle_quantity)
@@ -305,7 +317,7 @@ func _select_quantity(count: int, maximum: bool) -> void:
 	_quote_dirty = true
 	_cost.text = "报价读取中"
 	_cost_details.text = ""
-	_cost_icon.visible = false
+	_cost_badge.visible = false
 	_purchase.text = "升级"
 	_quantity.text = "MAX" if maximum else "×" + str(count)
 	_update_buttons()
@@ -467,7 +479,7 @@ func _unknown(message: String) -> void:
 		for control in _rows[id].values(): control.visible = false
 	_cost.text = "费用 —"
 	_cost_details.text = ""
-	_cost_icon.visible = false
+	_cost_badge.visible = false
 	_level.text = "等级 —"
 	_budget.text = ""
 	_set_notice(message,true)
@@ -478,7 +490,7 @@ func _unknown(message: String) -> void:
 func _refresh_quote() -> void:
 	_quote_dirty = false
 	_cost_details.text = ""
-	_cost_icon.visible = false
+	_cost_badge.visible = false
 	if not _read_quote.is_valid():
 		_quote = {}
 		_quote_cost_ids.clear()
@@ -524,8 +536,8 @@ func _refresh_quote() -> void:
 			var resource_id: String = str(quote.costs.keys()[0])
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
 			_cost_icon.modulate = ResourceVisuals.color(resource_id)
-			_cost_icon.visible = _cost_icon.texture != null
-		_cost_details.position.x = 504 if _cost_icon.visible else 480
+			_cost_badge.visible = _cost_icon.texture != null
+		_cost_details.position.x = 508 if _cost_badge.visible else 480
 	_cost.tooltip_text = _cost.text + " " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
 	var reason: String = str(quote.get("reason", ""))
