@@ -1,7 +1,6 @@
 extends Control
 ## Reactor bay art and work effects. Every light reads adopted, effective owner load.
-const FOUR = preload("res://assets/ui/reactor/ship-hub-r4/background-four.png")
-const THREE = preload("res://assets/ui/reactor/ship-hub-r4/background-three.png")
+const FOUR = preload("res://assets/ui/reactor/ship-hub-r6/installed-bay-four.png")
 const WORK = preload("res://assets/ui/reactor/ship-hub-r4/hub_work.gdshader")
 const AMBIENT_WORK = preload("res://assets/ui/reactor/ship-hub-r5/ambient_work.gdshader")
 const CORE_SOURCE = preload("res://assets/ui/reactor/ship-hub-r4/core-work.png")
@@ -9,12 +8,6 @@ const CORE_WORK = preload("res://assets/ui/reactor/ship-hub-r4/core_work.gdshade
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const BLUE := Color(0.25, 0.80, 0.95)
 const AMBER := Color(1.0, 0.55, 0.18)
-const PORTS := {
-	"weapons": Rect2(81, 127, 112, 61),
-	"defence": Rect2(642, 129, 95, 68),
-	"smelting": Rect2(85, 476, 98, 72),
-	"condensation": Rect2(646, 472, 95, 78),
-}
 const ROUTES := {
 	"weapons": [Vector2(300, 274), Vector2(213, 209)],
 	"defence": [Vector2(510, 274), Vector2(603, 207)],
@@ -22,10 +15,10 @@ const ROUTES := {
 	"condensation": [Vector2(514, 429), Vector2(602, 477)],
 }
 const OPERATING := {
-	"weapons": {"mount":Vector2(6, 211), "effect":Vector2(39, 289), "slider":Vector2(44, 234), "width":170.0, "track":154.0},
-	"defence": {"mount":Vector2(586, 211), "effect":Vector2(611, 289), "slider":Vector2(624, 234), "width":172.0, "track":154.0},
-	"smelting": {"mount":Vector2(6, 545), "effect":Vector2(40, 620), "slider":Vector2(44, 568), "width":170.0, "track":154.0},
-	"condensation": {"mount":Vector2(586, 545), "effect":Vector2(619, 620), "slider":Vector2(624, 568), "width":168.0, "track":154.0},
+	"weapons": {"mount":Vector2(23, 130), "slider":Vector2(37, 209), "track":150.0},
+	"defence": {"mount":Vector2(610, 130), "slider":Vector2(624, 209), "track":150.0},
+	"smelting": {"mount":Vector2(23, 483), "slider":Vector2(37, 562), "track":150.0},
+	"condensation": {"mount":Vector2(610, 483), "slider":Vector2(624, 562), "track":150.0},
 }
 var _enabled: Array = []
 var _loads: Dictionary = {}
@@ -43,7 +36,6 @@ func _init() -> void:
 	_add_ambient()
 	_add_core()
 	for id in IDS:
-		_add_work(id, PORTS[id], 1, AMBER if id in ["weapons", "smelting"] else BLUE)
 		var ends: Array = ROUTES[id]
 		var start: Vector2 = ends[0]
 		var finish: Vector2 = ends[1]
@@ -66,10 +58,6 @@ func _new_work(rect: Rect2, kind: int, tint: Color) -> ColorRect:
 	field.material = material
 	add_child(field)
 	return field
-
-func _add_work(id: String, rect: Rect2, kind: int, tint: Color) -> void:
-	_fields[id] = _new_work(rect, kind, tint)
-	_fields[id].material.set_shader_parameter("module_kind", IDS.find(id))
 
 func _add_ambient() -> void:
 	_ambient = ColorRect.new()
@@ -151,4 +139,4 @@ func visual_phase() -> float:
 
 func _draw() -> void:
 	diagnostics.draws += 1
-	draw_texture_rect(FOUR if "condensation" in _enabled else THREE, Rect2(0, 0, 808, 835), false)
+	draw_texture_rect(FOUR, Rect2(0, 0, 808, 835), false)

@@ -2,15 +2,8 @@ extends Control
 ## Whole reactor scene. Domain amounts, effects and acceptance stay with Reactor.
 signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
-const DEVICE_MOUNTS := {
-	"weapons": preload("res://assets/ui/reactor/ship-hub-r5/weapons-instrument.png"),
-	"defence": preload("res://assets/ui/reactor/ship-hub-r5/defence-instrument.png"),
-	"smelting": preload("res://assets/ui/reactor/ship-hub-r5/smelting-instrument.png"),
-	"condensation": preload("res://assets/ui/reactor/ship-hub-r5/condensation-instrument.png"),
-}
-const WORK_FACE = preload("res://assets/ui/reactor/ship-hub-r5/instrument_work.gdshader")
-const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r5/instrument_pulse.gdshader")
-const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r5/central-console-workbench.png")
+const WORK_FACE = preload("res://assets/ui/reactor/ship-hub-r6/installed_work.gdshader")
+const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r6/installed_pulse.gdshader")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
@@ -186,31 +179,20 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	return panel
 
 func _build() -> void:
-	var console := TextureRect.new()
-	console.texture = CENTRAL_MOUNT
-	console.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	console.stretch_mode = TextureRect.STRETCH_SCALE
-	console.position = Vector2(154, 747)
-	console.size = Vector2(500, 151)
-	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(console)
-	_level = _label(Vector2(206, 776), 87, 18)
+	var console := _panel(Rect2(16, 769, 776, 123), 0.96)
+	var console_style: StyleBoxFlat = console.get_theme_stylebox("panel").duplicate()
+	console_style.bg_color = Color("e9e6d3",0.96)
+	console_style.border_color = Color("b6bdb0",0.9)
+	console_style.set_corner_radius_all(7)
+	console.add_theme_stylebox_override("panel",console_style)
+	_level = _label(Vector2(34, 775), 186, 22)
 	_level.add_theme_color_override("font_color",Color("203f50"))
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var offset := Vector2(0, 65)
-		var mount := TextureRect.new()
-		mount.texture = DEVICE_MOUNTS[id]
-		mount.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		mount.stretch_mode = TextureRect.STRETCH_SCALE
-		mount.position = layout.mount + offset
-		mount.size = Vector2(216, 140)
-		mount.modulate = Color(0.86,0.92,0.95)
-		mount.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(mount)
 		var work := ColorRect.new()
-		work.position = layout.mount + offset + Vector2(25,42)
-		work.size = Vector2(168,55)
+		work.position = layout.mount + offset + Vector2(14,34)
+		work.size = Vector2(146,44)
 		work.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var work_material := ShaderMaterial.new()
 		work_material.shader = WORK_FACE
@@ -228,15 +210,15 @@ func _build() -> void:
 		pulse_material.set_shader_parameter("tint", Color("f8ba5b") if id in ["weapons","smelting"] else Color("79ddfa"))
 		pulse.material = pulse_material
 		add_child(pulse)
-		var nameplate := _panel(Rect2(layout.mount + offset + Vector2(20,100),Vector2(100,27)),0.80)
-		var name := _label(layout.mount + offset + Vector2(22,100),96,14)
-		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var nameplate := _panel(Rect2(layout.mount + offset + Vector2(11,1),Vector2(153,30)),0.94)
+		var name := _label(layout.mount + offset + Vector2(15,2),99,17)
+		name.add_theme_font_override("font",_ui_font_bold)
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		name.text = NAMES[id] + "增益"
-		var effect := _label(layout.mount + offset + Vector2(128,99),76,18)
+		name.text = NAMES[id] + "供能"
+		var effect := _label(layout.mount + offset + Vector2(112,2),49,16)
 		effect.add_theme_font_override("font", _ui_font_bold)
-		effect.add_theme_color_override("font_color",Color("ffce8d") if id in ["weapons","smelting"] else Color("a9e9f6"))
-		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		effect.add_theme_color_override("font_color",Color("e8e5d0"))
+		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
 		var slider := HSlider.new()
@@ -277,21 +259,21 @@ func _build() -> void:
 		ratio.add_theme_color_override("font_color", Color("f7f1dc"))
 		ratio.add_theme_color_override("font_shadow_color", Color("092733", 0.95))
 		ratio.add_theme_constant_override("shadow_offset_y", 1)
-		_rows[id] = {"effect":effect, "name":name, "nameplate":nameplate, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "mount":mount}
+		_rows[id] = {"effect":effect, "name":name, "nameplate":nameplate, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(301,776),281,15)
+	_budget = _label(Vector2(245,776),530,17)
 	_budget.add_theme_color_override("font_color",Color("203f50"))
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_cost = _label(Vector2(188, 795), 390, 15)
+	_cost = _label(Vector2(34, 805), 740, 19)
 	_cost.add_theme_color_override("font_color",Color("203f50"))
-	_purchase = _button("升级 ×1",Rect2(188,816,132,38),func(): _command(_purchase_action),true)
-	_quantity_buttons["1"] = _button("×1",Rect2(326,816,54,38),func(): _select_quantity(1,false))
-	_quantity_buttons["10"] = _button("×10",Rect2(386,816,54,38),func(): _select_quantity(10,false))
-	_quantity_buttons["max"] = _button("MAX",Rect2(446,816,56,38),func(): _select_quantity(1,true))
-	_equal = _button("均分",Rect2(508,816,70,38),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
-	_notice_panel = _panel(Rect2(292,727,224,29),0.94)
-	_notice = _label(Vector2(298,727),212,14)
-	_notice.size.y = 29
+	_quantity_buttons["1"] = _button("×1",Rect2(34,846,55,40),func(): _select_quantity(1,false))
+	_quantity_buttons["10"] = _button("×10",Rect2(96,846,55,40),func(): _select_quantity(10,false))
+	_quantity_buttons["max"] = _button("MAX",Rect2(158,846,64,40),func(): _select_quantity(1,true))
+	_purchase = _button("升级 ×1",Rect2(240,846,395,40),func(): _command(_purchase_action),true)
+	_equal = _button("均分",Rect2(652,846,122,40),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
+	_notice_panel = _panel(Rect2(282,705,244,38),0.95)
+	_notice = _label(Vector2(295,710),218,18)
+	_notice.size.y = 30
 	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_notice.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_set_notice("")
@@ -348,10 +330,15 @@ func _process(_dt: float) -> void:
 		_message_until = 0
 		_set_notice("")
 
-func _set_notice(message: String) -> void:
+func _set_notice(message: String, rejected: bool = false) -> void:
 	_notice.text = message
 	_notice.visible = not message.is_empty()
 	_notice_panel.visible = _notice.visible
+	var box: StyleBoxFlat = _notice_panel.get_theme_stylebox("panel").duplicate()
+	box.bg_color = Color("4d2630",0.97) if rejected else Color("193b42",0.95)
+	box.border_color = Color("f1a997") if rejected else Color("80c7ad")
+	_notice_panel.add_theme_stylebox_override("panel",box)
+	_notice.add_theme_color_override("font_color",Color("ffe1d7") if rejected else Color("e0f5e9"))
 
 func _set_running(running: bool) -> void:
 	if _running == running: return
@@ -426,7 +413,7 @@ func _unknown(message: String) -> void:
 	_budget.text = "供能状态未知"
 	_cost.text = "费用 —"
 	_level.text = "等级 —"
-	_set_notice(message)
+	_set_notice(message,true)
 	_stage.clear_snapshot()
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	_update_buttons()
@@ -524,7 +511,7 @@ func _command(action: Callable) -> void:
 func _error(result: Dictionary) -> void:
 	var reason: String = str(result.get("reason",result.get("error","")))
 	var message: String = str(result.get("message",ERRORS.get(reason,EconomyView.describe_error(reason))))
-	_set_notice(message if not message.is_empty() else "分配未生效，请重试")
+	_set_notice(message if not message.is_empty() else "分配未生效，请重试",true)
 	_message_until = Time.get_ticks_msec() + 2200
 
 func _update_stage() -> void:

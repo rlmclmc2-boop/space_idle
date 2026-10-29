@@ -1,0 +1,50 @@
+extends SceneTree
+func _initialize() -> void:
+	call_deferred("run")
+func frames(n: int) -> void:
+	for i in n: await process_frame
+
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	root.content_scale_size = Vector2i(1440,900)
+	var game: Node2D = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	game._skip_tutorial = true
+	await frames(4)
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+	game._select_left_module("reactor")
+	await frames(4)
+	var scene = game.reactor_scene
+	var amount: Dictionary = session.amount_api.apply("from_decimal",["1000"])
+	assert(amount.ok)
+	assert(session.economy.credit_yield("2",amount.value,session.wall_time,session.game_time).ok)
+	await frames(3)
+	scene._equal.pressed.emit()
+	await frames(4)
+	for i in 12:
+		var pending_now: Dictionary = session.pending_guidance()
+		var safety := 0
+		while not pending_now.is_empty() and safety < 20:
+			assert(session.dismiss_guidance(str(pending_now.kind), str(pending_now.id)).ok)
+			pending_now = session.pending_guidance()
+			safety += 1
+		game._sync_guidance()
+		await process_frame
+		game._sync_guidance()
+		assert(not game._guidance_panel.visible)
+		root.get_texture().get_image().save_png("/tmp/reactor-flow-%02d.png" % i)
+	print("FLOW context=",scene._clock.call()," updates=",scene._stage.diagnostics)
+	quit()
