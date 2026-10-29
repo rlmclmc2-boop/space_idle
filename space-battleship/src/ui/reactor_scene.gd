@@ -211,13 +211,13 @@ func _build() -> void:
 		pulse.material = pulse_material
 		add_child(pulse)
 		var nameplate := _panel(Rect2(layout.mount + offset + Vector2(11,1),Vector2(153,30)),0.94)
-		var name := _label(layout.mount + offset + Vector2(15,2),99,17)
+		var name := _label(layout.mount + offset + Vector2(15,2),86,16)
 		name.add_theme_font_override("font",_ui_font_bold)
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name.text = NAMES[id] + "供能"
-		var effect := _label(layout.mount + offset + Vector2(112,2),49,16)
+		var effect := _label(layout.mount + offset + Vector2(101,1),62,20)
 		effect.add_theme_font_override("font", _ui_font_bold)
-		effect.add_theme_color_override("font_color",Color("e8e5d0"))
+		effect.add_theme_color_override("font_color",Color("f5cb96") if id in ["weapons","smelting"] else Color("a4e5ec"))
 		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS

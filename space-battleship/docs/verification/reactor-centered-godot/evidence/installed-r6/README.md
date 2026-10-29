@@ -6,4 +6,4 @@ Godot `4.7.2.stable.official.ed1daf0bf`、本地 native、Xorg `:99`/Mesa llvmpi
 
 [截图驱动](capture-driver.gd.txt)/[日志](capture-runtime.txt)通过公开 Campaign 恢复入口临时开放模块，并通过公开 Economy 入账供费；非自然关卡进度。均分成功、超额拒绝保留实际 25% 份额、随后直接接纳到 0% 均由 Owner 返回。[真实鼠标驱动](mouse-driver.gd.txt)/[日志](mouse-runtime.txt)确认嵌入工作口及标签没有挡住武器滑杆，点击后 Owner 实际接纳 3%。[连续帧驱动](flow-driver.gd.txt)/[日志](flow-runtime.txt)在截图前检查引导不可见，结尾 `running=true, paused=false`，工作光 `active_frames=9, field_updates=45`。ALSA 无声卡回退是本机环境。
 
-此处仅交视觉候选，尚待整体视觉审查。共享整体宿主、导航、资源栏、右侧战场仍归整体组；本候选不合 main。
+此版随后发现下方工作层越过斜玻璃，遮罩和工作身份修正在 [R7](../glass-mask-r7/README.md)。此处保留 R6 历史证据。共享整体宿主、导航、资源栏、右侧战场仍归整体组；本候选不合 main。

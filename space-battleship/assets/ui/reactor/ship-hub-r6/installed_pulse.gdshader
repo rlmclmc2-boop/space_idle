@@ -6,24 +6,47 @@ uniform float power : hint_range(0.0, 1.0) = 0.0;
 uniform float phase = 0.0;
 uniform vec4 tint : source_color = vec4(0.95, 0.65, 0.32, 1.0);
 
+float glass_mask(vec2 uv) {
+	if (module_kind == 2) {
+		float lower_edge = 0.97 - 0.73 * uv.x;
+		return smoothstep(0.0, 0.04, uv.x) * (1.0 - smoothstep(0.80, 0.89, uv.x)) * (1.0 - smoothstep(lower_edge - 0.045, lower_edge + 0.025, uv.y));
+	}
+	if (module_kind == 3) {
+		float lower_edge = 0.23 + 0.72 * uv.x;
+		return smoothstep(0.12, 0.20, uv.x) * (1.0 - smoothstep(lower_edge - 0.04, lower_edge + 0.025, uv.y));
+	}
+	return 1.0;
+}
+
 void fragment() {
 	float strength = pow(clamp(power, 0.0, 1.0), 0.35);
 	float motion = 0.0;
-	float gate = smoothstep(0.05, 0.18, UV.x) * (1.0 - smoothstep(0.82, 0.95, UV.x));
 	if (module_kind == 0) {
-		float sweep = fract(UV.x * 2.4 - phase * 0.95);
-		motion = (1.0 - smoothstep(0.02, 0.19, sweep)) * (1.0 - smoothstep(0.12, 0.45, abs(UV.y - 0.5)));
+		float rail = min(abs(UV.y - 0.28), min(abs(UV.y - 0.50), abs(UV.y - 0.72)));
+		float channels = 1.0 - smoothstep(0.015, 0.075, rail);
+		float packet = fract(UV.x * 2.4 + phase * 0.85);
+		float leading = 1.0 - smoothstep(0.04, 0.29, packet);
+		motion = channels * (0.24 + leading * 0.76);
 	} else if (module_kind == 1) {
-		float front = abs(fract(length((UV - vec2(0.5)) * vec2(1.3, 1.0)) * 3.2 - phase * 0.54) - 0.5);
-		motion = (1.0 - smoothstep(0.04, 0.22, front)) * gate;
+		vec2 grid = UV * vec2(7.0, 4.0);
+		grid.x += 0.5 * mod(floor(grid.y), 2.0);
+		vec2 cell = abs(fract(grid) - 0.5);
+		float wall = max(cell.x * 0.866 + cell.y * 0.5, cell.y);
+		float mesh = 1.0 - smoothstep(0.018, 0.07, abs(wall - 0.43));
+		float sweep = 0.5 + 0.5 * sin(phase * 2.0 - UV.x * 10.0);
+		motion = mesh * (0.35 + sweep * 0.65);
 	} else if (module_kind == 2) {
-		float rib = 1.0 - smoothstep(0.12, 0.34, abs(fract(UV.x * 6.0) - 0.5));
-		motion = rib * (0.5 + 0.5 * sin(phase * 2.4 - UV.y * 9.0));
+		float grate = 1.0 - smoothstep(0.08, 0.24, abs(fract(UV.x * 6.0) - 0.5));
+		float heat = 0.5 + 0.5 * sin(phase * 3.0 - UV.y * 12.0 + floor(UV.x * 6.0) * 1.4);
+		motion = grate * (0.24 + heat * 0.76);
 	} else {
-		float converge = abs(fract(length(UV - vec2(0.5)) * 4.0 + phase * 0.65) - 0.5);
-		motion = (1.0 - smoothstep(0.04, 0.20, converge)) * gate;
+		vec2 convergence = vec2(0.56, 0.40);
+		float diagonal_a = 1.0 - smoothstep(0.025, 0.09, abs(UV.y - (convergence.y + (UV.x - convergence.x) * 0.55)));
+		float diagonal_b = 1.0 - smoothstep(0.025, 0.09, abs(UV.y - (convergence.y - (UV.x - convergence.x) * 0.55)));
+		float focus = 1.0 - smoothstep(0.04, 0.19, length((UV - convergence) * vec2(1.0, 1.8)));
+		float gather = 0.78 + 0.22 * sin(phase * 2.4 + length(UV - convergence) * 12.0);
+		motion = max(max(diagonal_a, diagonal_b) * 0.75, focus * 1.5) * gather;
 	}
-	float aperture = smoothstep(0.03, 0.13, UV.y) * (1.0 - smoothstep(0.87, 0.97, UV.y));
-	float opacity = strength * aperture * (0.24 + motion * 0.68);
-	COLOR = vec4(tint.rgb, opacity);
+	float vertical_fade = smoothstep(0.01, 0.10, UV.y) * (1.0 - smoothstep(0.90, 1.0, UV.y));
+	COLOR = vec4(tint.rgb, strength * motion * 0.86 * vertical_fade * glass_mask(UV));
 }
