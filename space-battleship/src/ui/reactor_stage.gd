@@ -1,7 +1,7 @@
 extends Control
 ## Reactor bay art and work effects. Every light reads adopted, effective owner load.
-const FOUR = preload("res://assets/ui/reactor/ship-hub-r6/installed-bay-four.png")
-const WORK = preload("res://assets/ui/reactor/ship-hub-r4/hub_work.gdshader")
+const FOUR = preload("res://assets/ui/reactor/ship-hub-r9/working-bay-four.png")
+const WORK = preload("res://assets/ui/reactor/ship-hub-r9/transport_work.gdshader")
 const AMBIENT_WORK = preload("res://assets/ui/reactor/ship-hub-r5/ambient_work.gdshader")
 const CORE_SOURCE = preload("res://assets/ui/reactor/ship-hub-r4/core-work.png")
 const CORE_WORK = preload("res://assets/ui/reactor/ship-hub-r4/core_work.gdshader")
@@ -9,22 +9,25 @@ const IDS := ["weapons", "defence", "smelting", "condensation"]
 const BLUE := Color(0.25, 0.80, 0.95)
 const AMBER := Color(1.0, 0.55, 0.18)
 const ROUTES := {
-	"weapons": [Vector2(300, 274), Vector2(213, 209)],
-	"defence": [Vector2(510, 274), Vector2(603, 207)],
-	"smelting": [Vector2(294, 429), Vector2(216, 478)],
-	"condensation": [Vector2(514, 429), Vector2(602, 477)],
+	# Axes of the four visible glass shafts, inside the dark collars. Coordinates
+	# are on the 808 x 835 bay image, from the core towards each device.
+	"weapons": [Vector2(277, 219), Vector2(230, 190)],
+	"defence": [Vector2(531, 219), Vector2(578, 190)],
+	"smelting": [Vector2(276, 434), Vector2(218, 468)],
+	"condensation": [Vector2(532, 434), Vector2(590, 468)],
 }
 const OPERATING := {
-	"weapons": {"mount":Vector2(23, 130), "slider":Vector2(37, 209), "track":150.0},
-	"defence": {"mount":Vector2(610, 130), "slider":Vector2(624, 209), "track":150.0},
-	"smelting": {"mount":Vector2(23, 483), "slider":Vector2(37, 562), "track":150.0},
-	"condensation": {"mount":Vector2(610, 483), "slider":Vector2(624, 562), "track":150.0},
+	"weapons": {"title":Vector2(41, 127), "factor":Vector2(125, 127), "work":Vector2(37, 164), "work_size":Vector2(146, 44), "slider":Vector2(59, 214), "ratio":Vector2(118, 214), "track":57.0},
+	"defence": {"title":Vector2(630, 127), "factor":Vector2(708, 127), "work":Vector2(624, 164), "work_size":Vector2(146, 44), "slider":Vector2(656, 214), "ratio":Vector2(717, 214), "track":57.0},
+	"smelting": {"title":Vector2(39, 434), "factor":Vector2(125, 434), "work":Vector2(37, 474), "work_size":Vector2(146, 72), "slider":Vector2(54, 527), "ratio":Vector2(114, 527), "track":57.0},
+	"condensation": {"title":Vector2(629, 434), "factor":Vector2(708, 434), "work":Vector2(624, 474), "work_size":Vector2(146, 72), "slider":Vector2(661, 527), "ratio":Vector2(722, 527), "track":57.0},
 }
 var _enabled: Array = []
 var _loads: Dictionary = {}
 var _fields: Dictionary = {}
 var _connections: Dictionary = {}
 var _ambient: ColorRect
+var _feed: ColorRect
 var _clock: float = -1.0
 var _phase: float = 0.0
 var diagnostics := {"draws":0, "field_updates":0, "active_frames":0}
@@ -34,14 +37,15 @@ func _init() -> void:
 	custom_minimum_size = Vector2(808, 835)
 	set_process(false)
 	_add_ambient()
+	_add_feed()
 	_add_core()
 	for id in IDS:
 		var ends: Array = ROUTES[id]
 		var start: Vector2 = ends[0]
 		var finish: Vector2 = ends[1]
-		var flow := _new_work(Rect2(start, Vector2(start.distance_to(finish), 17)), 2, AMBER if id in ["weapons", "smelting"] else BLUE)
+		var flow := _new_work(Rect2(start, Vector2(start.distance_to(finish), 12)), 2, AMBER if id in ["weapons", "smelting"] else BLUE)
 		flow.rotation = (finish - start).angle()
-		flow.position -= Vector2(0, 8.5).rotated(flow.rotation)
+		flow.position -= Vector2(0, 6.0).rotated(flow.rotation)
 		flow.material.set_shader_parameter("module_kind", IDS.find(id))
 		_connections[id] = flow
 
@@ -70,6 +74,9 @@ func _add_ambient() -> void:
 	_ambient.material = material
 	add_child(_ambient)
 
+func _add_feed() -> void:
+	_feed = _new_work(Rect2(Vector2(395, 64), Vector2(18, 160)), 3, BLUE)
+
 func _add_core() -> void:
 	var field := TextureRect.new()
 	field.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -93,6 +100,8 @@ func show_snapshot(ids: Array, loads: Dictionary, _selected: String) -> void:
 	var core_power: float = clampf(float(_loads.get("core",0.0)),0.0,1.0)
 	_ambient.visible = core_power > 0.0
 	_ambient.material.set_shader_parameter("power",core_power)
+	_feed.visible = core_power > 0.0
+	_feed.material.set_shader_parameter("power",core_power)
 	for id in _fields:
 		var load: float = clampf(float(_loads.get(id, 0.0)), 0.0, 1.0)
 		_fields[id].visible = (id == "core" or id in _enabled) and load > 0.0
@@ -107,6 +116,7 @@ func clear_snapshot() -> void:
 	_enabled.clear()
 	_loads.clear()
 	_ambient.visible = false
+	_feed.visible = false
 	for field in _fields.values(): field.visible = false
 	for field in _connections.values(): field.visible = false
 	queue_redraw()
@@ -120,6 +130,7 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	if paused or elapsed == 0.0 or float(_loads.get("core", 0.0)) <= 0.0: return false
 	_phase = fmod(_phase + elapsed, 4096.0)
 	_ambient.material.set_shader_parameter("phase",_phase)
+	_feed.material.set_shader_parameter("phase",_phase)
 	diagnostics.active_frames += 1
 	for id in _fields:
 		if _fields[id].visible:

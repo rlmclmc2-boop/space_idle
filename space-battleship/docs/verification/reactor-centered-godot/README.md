@@ -40,6 +40,8 @@ r4初轮的[三设备零负载整屏](evidence/reactor-quality-r4-three-zero.png
 
 用户已认可中央核心＋四向短接，授权真实实现。规范入口为[游戏设计 README](../../game-design/README.md)，本轮决定见[M3/V3](../../game-design/art/modules/reactor.md)。当前在`/workspace/space_idle`的`implement/reactor-centered-godot`分支实施；未合main。此前`bd38d881`压缩交接中的“宿主未固定”“新素材未编译”等状态已由下列提交和验证取代。
 
+当前视觉/交互候选为 [R9 舰内工作舱及同版实机证据](evidence/ship-hub-r9/README.md)：新实体四设备与核心源图、四管腔光流、贴合安装座的四组读数/滑杆，以及底台的供能与升级双组。数量改为单键 `×1 → ×10 → MAX` 循环，另键执行升级。此项仍待根线程视觉审阅；下文 R8 及更早证据仅属相应历史候选。
+
 ## 当前固定状态（2026-10-28）
 
 | 提交 | 已固定内容 | 验证边界 |
