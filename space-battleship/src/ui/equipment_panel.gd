@@ -49,6 +49,7 @@ var _choice_option_slot: String = ""
 var _material_texture: Texture2D
 var _console_texture: Texture2D
 var _console_paint: Color
+var _rim_blend: Shader
 var _pending_level_ids: Dictionary = {}
 var _batch_state_dirty: bool = false
 var _scene_picture: Array = []
@@ -190,6 +191,27 @@ func _setup_materials() -> void:
     paint.resize(640,189,Image.INTERPOLATE_LANCZOS)
     _console_paint=paint.get_pixel(320,94);_console_paint.a=1.0
     _console_texture=ImageTexture.create_from_image(paint)
+    _rim_blend=Shader.new()
+    _rim_blend.code="""shader_type canvas_item;
+uniform vec2 panel_size;
+varying vec2 panel_position;
+void vertex(){ panel_position=VERTEX; }
+void fragment(){
+    vec4 result=COLOR;
+    if(TEXTURE_PIXEL_SIZE.x<0.1 && TEXTURE_PIXEL_SIZE.y<0.1){
+        vec4 source=texture(TEXTURE,UV);
+        float inner=min(min(panel_position.x,panel_size.x-panel_position.x),min(panel_position.y,panel_size.y-panel_position.y));
+        float enamel=smoothstep(0.28,0.58,max(max(source.r,source.g),source.b));
+        result.a*=1.0-smoothstep(16.0,31.0,inner)*enamel;
+    }
+    COLOR=result;
+}"""
+
+func _console_blend_material(size:Vector2)->ShaderMaterial:
+    var material:=ShaderMaterial.new();material.shader=_rim_blend
+    material.set_shader_parameter("panel_size",size)
+    return material
+
 
 # Painted housing has fixed, native-size corners and tiled edge strips. The
 # interior paint is independent of the frame, so no complete asset is stretched.
@@ -265,6 +287,7 @@ func _frame(parent: Control, rect: Rect2) -> Panel:
     frame.position=rect.position;frame.size=rect.size
     var material := _surface_material("navy_face",Color.WHITE,"deck")
     frame.add_theme_stylebox_override("panel",material)
+    frame.material=_console_blend_material(frame.size)
     frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     frame.show_behind_parent=true
     parent.add_child(frame)
@@ -409,6 +432,7 @@ func _workbench_button(text:String,rect:Rect2,action:Callable,form:String="butto
 func _build_workbench() -> void:
     _workbench=Panel.new();_workbench.name="EquipmentWorkbench"
     _workbench.position=Vector2(16,610);_workbench.size=Vector2(776,286)
+    _workbench.material=_console_blend_material(_workbench.size)
     _workbench.clip_contents=true;_workbench.mouse_filter=Control.MOUSE_FILTER_PASS
     var body:=_surface_material("enamel",Color.WHITE,"deck")
     _workbench.add_theme_stylebox_override("panel",body);add_child(_workbench)
@@ -473,6 +497,7 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     var height:float=maxf(272.0 if different else 250.0,250.0+maxi(0,rows-1)*22.0)
     var action_y:float=height-52.0
     _workbench.position.y=896.0-height;_workbench.size.y=height
+    _workbench.material.set_shader_parameter("panel_size",_workbench.size)
     _workbench_divider.size.y=action_y-48.0
     _upgrade_data.position=Vector2(100,70)
     _candidate_row.position=Vector2(460,70)
@@ -884,6 +909,7 @@ func _refresh_batch() -> void:
     var position_y:float=roundf((900.0-height)*0.5)
     _batch.position.y=position_y;_batch.size.y=height
     _batch_frame.position.y=position_y;_batch_frame.size.y=height
+    if _batch_frame.material.get_shader_parameter("panel_size")!=_batch_frame.size:_batch_frame.material.set_shader_parameter("panel_size",_batch_frame.size)
     var current: String = "\n".join(_facts.filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [_slot_name(str(row.id)), NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
     if unknown:
         _batch_results.text = "提交结果未知，会话已停止。\n" + current
