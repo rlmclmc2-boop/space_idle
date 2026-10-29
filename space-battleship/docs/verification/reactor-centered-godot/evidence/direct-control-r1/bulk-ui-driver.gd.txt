@@ -34,6 +34,7 @@ func run() -> void:
 	assert(amount.ok)
 	assert(session.economy.credit_yield("2",amount.value,session.wall_time,session.game_time).ok)
 	await frames(2)
+	print("BULK max-after-wallet=",scene._quote," disabled=",scene._purchase.disabled)
 	scene._select_quantity(10,false)
 	await frames(2)
 	print("BULK ten-quote=",scene._quote," disabled=",scene._purchase.disabled," cost=",scene._cost.text)

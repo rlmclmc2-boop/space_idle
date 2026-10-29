@@ -15,4 +15,4 @@ ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
 WARNING: All audio drivers failed, falling back to the dummy driver.
      at: initialize (servers/audio/audio_server.cpp:258)
 
-FLOW context={ "game_time": 0.86666666666667, "paused": false, "running": true } updates={ "draws": 4, "field_updates": 54, "active_frames": 6 }
+FLOW context={ "game_time": 0.73333333333333, "paused": false, "running": true } updates={ "draws": 4, "field_updates": 45, "active_frames": 5 }

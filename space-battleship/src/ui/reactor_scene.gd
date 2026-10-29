@@ -205,6 +205,8 @@ func _build() -> void:
 		add_child(mount)
 		var effect := _label(layout.effect + offset,float(layout.width),18)
 		effect.add_theme_font_override("font", _ui_font_bold)
+		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
