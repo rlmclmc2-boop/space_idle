@@ -57,3 +57,19 @@
 ## 取舍
 
 固态行星另有一张未归档的探索图，画面天体过大且偏写实，弱化设施整体关系；本目录仅固定上述六张候选。图像整体仍偏精细、尚未验证缩至现有模块后的设施识别，也未检验 UI 如何融入。用户可直接在同机位两态上判断结构方向，再决定是否调风格和占比。
+
+## 独立建造分步图：固态行星首套
+
+这三张由 `image_gen.imagegen` 编辑同一[固态原图](images/solid-concept-a.png)，输入 `referenced_image_paths=[该图的 Git 路径]`，`transparent_background=false`。每次实际提示词为以下共同前缀直接接相应续句（前缀末尾已有空格）。图像模型会微调地貌细节，不能声称逐像素锁定同一球面。
+
+共同前缀：
+
+> Edit the attached TWO-PANEL solid rocky planet concept art. Preserve both panels, exact camera, planet size, ocean/coastline/land pattern, lighting, background and framing. The LEFT panel remains fully bare. In the RIGHT panel show a credible standalone construction stage, with only the explicitly named built facilities; remove every other facility and its lights, transport craft, foundations, rails, docks, conduits and shadows entirely, restoring the underlying land/ocean or empty space. Do not show ghost outlines, future pads or placeholders. Keep same painterly ivory/navy/cyan style, no labels, text or UI. Each built facility must have its own necessary support and be complete in this stage.
+
+| 步 | 原提示词续句 | 原图 SHA-256 |
+|---|---|---|
+| [01 空间站](stages/solid/01-station.png) | STAGE 1: ONLY the compact orbital station at top is built. Its own small closed orbital hub and self-contained docking nipple are visible; there are NO surface buildings, no outer drydock, no cargo route to the surface, no construction markers. | `eee958e9988f5a445de1b5ae5ed4c0b3e255f058613623fc291e226f5202cbe4` |
+| [02 精炼厂](stages/solid/02-refinery.png) | STAGE 2: the compact orbital station AND the coastal refinery at lower-left land are built. The refinery includes only its own bedrock foundation, inlet and short local feed conveyor. No workshop, no gantry bay, no outer shipyard, no long transit bridge that depends on future buildings. | `9dd6bf6924ef59d54963f6649e3ddd3306a2c0c89d6163dd6087af93f1faa512` |
+| [03 工坊](stages/solid/03-workshop.png) | STAGE 3: the compact orbital station, the coastal refinery, AND the land-anchored equipment workshop with clear gantry work bay at upper-right land are built. Each land facility has its own complete foundation; a short service route can connect the two built land facilities. No outer shipyard, drydock, cranes or rails to a future dock. | `89eb39e821e37bed013f5d33e98f8989d1d5d2658dd38242805c7d74a74440dc` |
+
+阶段 0 与 4 取既有完整概念图的左右两态；下次继续其余五类的三个中间阶段。所有图均为静态概念编辑，非实际独立施工或自转的运行证据。
