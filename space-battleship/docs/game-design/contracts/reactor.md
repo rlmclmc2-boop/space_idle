@@ -64,3 +64,24 @@ Economy在真正钱包写入点安排独立deferred检查，包括notify=false�
 UI只订阅本实例及相关预算资源；通知只置局部dirty，下一可见显示帧分别消费：presentation dirty读取模型/必要比较，quote dirty仅读+1报价可支付性。预算事件不调用全场景_refresh或_preview_draft，不用限频全量新读兜底，也不新增Session总线。隐藏期只积累相关标记，停止投影；重开/换Session初次读取一次并重绑旧连接。真实工作shader始终只消费current model的load，时钟推进不读取模型/报价/预览；宿主时钟context补显式running（取公共RunState.is_running），running=false禁用交互，paused仅控制动画；不能把用户暂停等同停机而改变原业务准入。
 
 被动容量/免费量/来源变化时，shares草稿须保留已生成canonical金额，沿原amounts分支重取比较；不得由刷新把旧基点重新换成新金额。只有新拖动才用shares生成新金额。equal确认仍一次原distribute并采用提交时状态；开放集合改变清旧预览，不补项。读取错误须禁用相关操作并呈现未知，不沿用消费者缺字段默认为0的绘制回退。
+
+<a id="reactor-bulk-purchase"></a>
+
+### 9.2.2 待审设计：手动升级×10与MAX
+
+**状态：仅最小契约候选，待原审、未实施、未合main。** 用户已要求×10/MAX；本节不把9.2.1固定+1实现冒充批量报价已存在。固定Owner、两消费者及源码证据见[定向核对与提案](../../verification/reactor-bulk-purchase-proposal.md)。UI风格、分配确认/还原的移除及消费接线归反应炉组；本节不扩展分配或自动岗位。
+
+| 拟定所有者出口 | 字段与精确语义 |
+|---|---|
+| `Reactor.purchase_preview(can_pay: Callable, count: int = 1)` | 向后兼容原单参+1；正整数count沿原_purchase/_quote求整批费用。成功仍给ok/count/costs规范Amount文本/can_purchase/reason，并给cost_resource_ids（原费用资源ID集合）。count=10严格为10级；不足时can_purchase=false/reason=InsufficientResources，不降成部分10。非法count、等级范围或费用计算/格式化/比较错误明确失败，不伪成功或伪余额不足。 |
+| `Reactor.purchase_max_preview(can_pay: Callable)` | 给同口径ok/count/costs/cost_resource_ids/can_purchase/reason；count为当下已接纳等级和钱包下可整批支付的最大正整数。连+1也不足时给ok=true/count=0/costs={}/can_purchase=false/reason=InsufficientResources；cost_resource_ids仍保留原+1报价的资源集合。UI显示“可购0级/资金不足”，禁止执行，不把空costs显示成免费升级。所有金额文本由Owner给出，UI不解析、反算、搜索或取整。 |
+| 原`Reactor.purchase(10, false, inputs, pay, publish)` | ×10直接复用既有一次整批报价、pay候选钱包、_submit求值及publish接纳；整批买不起普通拒绝，零部分成交。不是循环10次+1。inputs仍由宿主即时注入Session.reactor_inputs。 |
+| 拟增`Reactor.purchase_max(inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable)` | 点击时在同一同步调用栈用当前等级/钱包重新求MAX，不接收或信任预览count；count=0普通拒绝且不调用pay/publish。正数只调用一次原purchase(count,false,inputs,pay,publish)，费用与支付再沿原路径校验；成功才附本次实际count与costs规范文本，失败沿原结果，不把预览数量当已成交。 |
+
+**MAX求值与终止：** 只复用原_quote与Amount.sum_ceiled_geometric（原L级下一项起点L−1、逐项ceil及其现有极大Amount口径），不以+1报价乘count，不另造初级价格特例、封顶或升级折扣。对费用调用注入Economy.can_pay，传入脱离所有者的费用；只有其明确InsufficientResources可作为搜索的不可支付边界。原_quote/Amount/比较/格式化等其他错误整口返回失败，不将其当不可支付继续搜后返回较小“MAX”。extreme沿原Amount口径是表示事实，不自创为失败或新价格上限。
+
+搜索只在1..(9223372036854775807−当前level)内，安全倍增找到不可支付上界，再用`low+(high-low)/2`二分，避免有符号加倍/中点溢出；至多63次扩界及63次二分，不逐级购买、不任设较小搜索上限。最后核n可支付、n+1不可支付才称MAX；若level已无正整数空间，或可支付一直延伸到最大可表示等级而无法证明业务MAX，明确ReactorLevelRangeExceeded，不把机器边界冒充玩法上限或返回截断MAX。错误、搜索和读取均不写等级、钱包、分配、prepared或通知，不新增RunState.fail。
+
+**既有业务不变：** 手动×1/×10/MAX固定automatic=false，不设置_distribute、不自动花掉新增容量；现有自动岗位仍每秒买1级并均分。原_purchase的原等级/费用准入、原_evaluate、Session.publish_reactor的native→Reactor.accept→贡献/钱包接纳及原故障语义复用，不宣称native故障可回滚。不得新增确认/还原步骤；已有分配相关UI由反应炉组按用户指示处理，不改后台分配规则。
+
+**失效与消费：** 等级或开放变化使相应固定数量及MAX报价失效；钱包变化按cost_resource_ids交集使支付性及MAX数量失效，尤其MAX=0时也必须订阅原资源ID。×1和×10费用/文本可按level/count及会话固定配置缓存，预算变化仅重验固定数量支付性；MAX须重新搜索当下支付边界，可为新探测数量调用原_quote，不能套用旧+1“所有预算刷新零报价计算”的验证结论。报价不锁价；命令当下重算，成功后以实际回执和已接纳模型更新。原presentation_changed/budget_changed局部dirty、隐藏停止投影、换Session重绑继续适用，不新增全局总线或轮询。
