@@ -765,6 +765,25 @@ func equipment_inputs() -> Dictionary:
 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
 		"game_time": game_time}
 
+func equipment_slot_facts() -> Array:
+	return equipment.slot_facts(campaign_system.ship_facts().mounts, game_time, int(_world_factors.equipment_levels))
+
+# Only the accepted inputs actually consumed by charged_base comparisons.
+func _equipment_comparison_dependencies() -> Array:
+	return [_world_factors.get("equipment_levels"), _research_factors.get("weapon_damage"),
+		_research_factors.get("equipment_durability"), _reactor_factors.get("weapons"), _reactor_factors.get("defence")]
+
+func _notify_equipment_comparison(previous: Array) -> void:
+	if _equipment_comparison_dependencies() != previous: equipment.queue_comparison_changed()
+
+func equipment_comparison(slot_id: String, candidate_id: String, count: int = 1, maximum: bool = false) -> Dictionary:
+	if not run_state.is_running(): return run_state.rejection()
+	var inputs: Dictionary = equipment_inputs()
+	inputs.extra_bonus = int(_world_factors.equipment_levels)
+	inputs.ai = _research_factors
+	inputs.reactor = _reactor_factors
+	return equipment.slot_comparison(slot_id, candidate_id, count, inputs, economy.can_pay, maximum)
+
 func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}, module_totals = null,
 		drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
 	if not run_state.is_running(): return run_state.rejection()
@@ -832,6 +851,7 @@ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrid
 	return setup
 
 func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true, accept_drones: Callable = Callable(), hanging_overrides: Dictionary = {}, module_totals = null, drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
+	var comparison_before: Array = _equipment_comparison_dependencies()
 	if not run_state.is_running(): return run_state.rejection()
 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
 	geometry_changed = geometry_changed or equipment.geometry_changed()
@@ -865,6 +885,7 @@ func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_
 	if ship_changed: campaign_system.publish_ship_change()
 	if budget_changed: economy.publish_budget_change()
 	if accept_equipment: equipment.publish_accepted(equipment_notice)
+	_notify_equipment_comparison(comparison_before)
 	return {"ok": true}
 
 func refresh_growth() -> bool:
@@ -1162,6 +1183,7 @@ func _publish_world_values(previous: Dictionary, retreat_after_commit: bool = tr
 	return result
 
 func _publish_research() -> Dictionary:
+	var comparison_before: Array = _equipment_comparison_dependencies()
 	var result = research.contributions()
 	if not result.ok: return result
 	var values: Dictionary = result["values"]
@@ -1179,9 +1201,11 @@ func _publish_research() -> Dictionary:
 		income.jewel = jewel.value
 		income.make_read_only()
 		_income_factors = income
+	_notify_equipment_comparison(comparison_before)
 	return {"ok": true}
 
 func publish_reactor(factors: Dictionary, next_wallet, kind: String, retreat_after_commit: bool = true) -> Dictionary:
+	var comparison_before: Array = _equipment_comparison_dependencies()
 	if not run_state.is_running(): return run_state.rejection()
 	var updated = _publish_native_values(_research_factors, factors, kind, false)
 	if not updated.ok: return updated
@@ -1195,9 +1219,11 @@ func publish_reactor(factors: Dictionary, next_wallet, kind: String, retreat_aft
 	var budget_changed: bool = next_wallet != null and economy.accept_budget(next_wallet, false)
 	if updated.defence_changed and retreat_after_commit: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
 	if budget_changed: economy.publish_budget_change()
+	_notify_equipment_comparison(comparison_before)
 	return {"ok": true, "defence_changed": updated.defence_changed}
 
 func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}, retreat_after_commit: bool = true) -> Dictionary:
+	var comparison_before: Array = _equipment_comparison_dependencies()
 	if not run_state.is_running(): return run_state.rejection()
 	var old_planet: Dictionary = _planet_factors
 	var old_crew: Dictionary = _crew_factors
@@ -1243,6 +1269,7 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
 		_research_speed = old_research_speed
 		_galaxy_crew_experience = old_crew_experience
 		return result
+	if result.ok: _notify_equipment_comparison(comparison_before)
 	return result
 
 func publish_planet_claim(planet: Dictionary) -> Dictionary:

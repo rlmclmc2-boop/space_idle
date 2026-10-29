@@ -7,6 +7,8 @@ const Geometry = preload("res://scripts/ship_geometry_convention.gd")
 signal slots_changed(ids: Array)
 signal loadout_changed
 signal options_changed
+signal comparison_changed
+var _comparison_notice_pending: bool = false
 
 var _slots: Array = []
 var _pending_slots = null
@@ -134,6 +136,10 @@ func geometry_changed() -> bool:
 func equipped_armours(mounts: Dictionary) -> int:
 	return _armour_count(_slots_for(mounts, _pending_slots))
 
+# Read projections must not follow a command's pending loadout.
+func accepted_armours(mounts: Dictionary) -> int:
+	return _armour_count(_slots_for(mounts))
+
 func clear_switch_locks() -> void:
 	if not _run_state.is_running(): return
 	for slot in _slots: slot.switch_ready_at = 0.0
@@ -157,6 +163,107 @@ func panel_equipment(id: String) -> Array:
 	for key in (["laser", "missile", "cannon", "longLaser"] if id.begins_with("weapon:") else ["armour", "shield"]):
 		options.append({"id": key, "name": label(key), "enabled": _available.get(key, false)})
 	return options
+
+# Read accepted slots only; never consume the pending configuration.
+func slot_facts(mounts: Dictionary, game_time: float, extra_bonus: int) -> Array:
+	var rows: Array = []
+	for slot in _slots:
+		var effective = null
+		if int(slot.extra_levels) <= 9223372036854775807 - extra_bonus:
+			var bonus: int = int(slot.extra_levels) + extra_bonus
+			if int(slot.paid_level) <= 9223372036854775807 - bonus: effective = int(slot.paid_level) + bonus
+		rows.append({"id": str(slot.id), "category": str(slot.category), "index": int(slot.index),
+			"equipment_id": str(slot.equipment_id), "paid_level": int(slot.paid_level), "effective_level": effective,
+			"dormant": int(slot.index) >= int(mounts[slot.category]), "switch_ready_at": float(slot.switch_ready_at),
+			"cooldown_remaining": maxf(0.0, float(slot.switch_ready_at) - game_time)})
+	return rows
+
+func _comparison_value(slot: Dictionary, key: String, count: int, inputs: Dictionary) -> Dictionary:
+	var result := {"equipment_id": key, "paid_level": int(slot.paid_level), "effective_level": null,
+		"status": "empty" if key.is_empty() else "unknown", "reason": "", "primary": null, "properties": {}}
+	if count < 0 or int(slot.paid_level) > 9223372036854775807 - count:
+		result.reason = "InvalidEquipmentLevel"; return result
+	var candidate: Dictionary = slot.duplicate(true)
+	candidate.paid_level = int(candidate.paid_level) + count
+	result.paid_level = candidate.paid_level
+	if key.is_empty(): return result
+	if not _definitions.has(key): result.reason = "EquipmentLocked"; return result
+	var row: Dictionary = _definitions[key]
+	var value: Dictionary = _charged_base(row, _definitions.armour, candidate, int(inputs.extra_bonus), _evolution,
+		inputs.ai.equipment_durability if slot.category == "defence" else inputs.ai.weapon_damage,
+		inputs.reactor.defence if slot.category == "defence" else inputs.reactor.weapons, _api)
+	if not value.ok: result.reason = str(value.get("reason", value.get("error", "AmountError"))); return result
+	var text: Dictionary = _api.apply("to_display", [value.value])
+	if not text.ok: result.reason = str(text.get("error", "AmountError")); return result
+	result.effective_level = int(candidate.paid_level) + int(candidate.extra_levels) + int(inputs.extra_bonus)
+	result.primary = text.text
+	result.status = "known"
+	result.properties = {"damage_type": int(row.dmgtype)}
+	if key in ["armour", "shield"]:
+		if key == "shield": result.properties.merge({"recovery_rate": float(row.para2), "recovery_delay_seconds": float(row.para3)})
+	else:
+		result.properties.interval_seconds = float(row.cd)
+		if key == "missile": result.properties.salvo_count = int(row.para1)
+		if key == "longLaser": result.properties.charge_seconds = float(row.para3)
+	return result
+
+func quote_max_levels(slot_id: String, inputs: Dictionary, can_pay: Callable) -> Dictionary:
+	for slot in _slots:
+		if str(slot.id) == slot_id:
+			return _quote_affordable_levels(_definitions.laser if slot.category == "weapon" else _definitions.armour,
+				int(slot.paid_level), _evolution, _material_available, _api,
+				func(costs): return bool(can_pay.call(costs, inputs.balances)))
+	return {"ok": false, "reason": "UnknownSlot"}
+
+func slot_comparison(slot_id: String, candidate_id: String, count: int, inputs: Dictionary,
+		can_pay: Callable, maximum: bool = false) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	var selected: Dictionary = {}
+	for slot in _slots:
+		if str(slot.id) == slot_id: selected = slot; break
+	if selected.is_empty(): return {"ok": false, "reason": "UnknownSlot"}
+	var quote: Dictionary = quote_max_levels(slot_id, inputs, func(costs, balances): return bool(can_pay.call(costs, balances).ok)) if maximum else quote_slot(slot_id, count)
+	var admission: Dictionary = _equip_admission(selected, candidate_id, inputs)
+	var upgraded = null
+	if quote.ok: upgraded = _comparison_value(selected, str(selected.equipment_id), int(quote.count), inputs)
+	var candidate: Dictionary = _comparison_value(selected, candidate_id, 0, inputs)
+	if not candidate_id.is_empty() and ((selected.category == "weapon" and candidate_id not in ["laser", "missile", "cannon", "longLaser"]) or (selected.category == "defence" and candidate_id not in ["armour", "shield"])):
+		candidate.primary = null; candidate.status = "unknown"; candidate.reason = "EquipmentCategoryMismatch"
+	var affordability: Dictionary = can_pay.call(quote.costs, inputs.balances) if quote.ok else quote
+	return {"ok": true, "slot_id": slot_id, "candidate_id": candidate_id, "scope": "charged_base",
+		"dormant": int(selected.index) >= int(inputs.mounts[selected.category]), "upgrade_count": int(quote.count) if quote.ok else null,
+		"quote": quote.duplicate(true), "affordable": quote.ok and affordability.ok, "payment_reason": str(affordability.get("reason", affordability.get("error", ""))),
+		"switch_admission": admission, "current": _comparison_value(selected, str(selected.equipment_id), 0, inputs),
+		"upgrade": upgraded, "candidate": candidate}
+
+# Capture the execution quote before publication; callbacks may reenter.
+func _purchase_result(result: Dictionary, purchases: Array, status: String) -> Dictionary:
+	var output: Dictionary = result.duplicate(true)
+	var total: Dictionary = {}
+	var receipt := {"commit_status": status, "purchases": purchases.duplicate(true) if status == "accepted" else [],
+		"spent": null if status == "fault_unknown" else total}
+	if status == "accepted":
+		for item in purchases:
+			for resource in item.spent:
+				if not total.has(resource): total[resource] = item.spent[resource].duplicate(true)
+				else:
+					var summed: Dictionary = _api.apply("add", [total[resource], item.spent[resource]])
+					if not summed.ok:
+						receipt.spent = null; receipt.error = summed.get("error", "AmountError")
+						output.purchase_receipt = receipt; return output
+					total[resource] = summed.value
+	output.purchase_receipt = receipt
+	return output
+
+# Coalesce at the deferred boundary, after the publishing transaction has returned.
+func queue_comparison_changed() -> void:
+	if _comparison_notice_pending: return
+	_comparison_notice_pending = true
+	call_deferred("_publish_comparison_changed")
+
+func _publish_comparison_changed() -> void:
+	_comparison_notice_pending = false
+	comparison_changed.emit()
 
 func price_text(id: String) -> String:
 	var quote = quote_slot(id, 1)
@@ -506,17 +613,11 @@ func _buy_quoted_levels(index: int, quote: Dictionary, inputs: Dictionary, pay: 
 	if not paid.ok: return paid
 	var next: Array = _slots.duplicate(true)
 	next[index].paid_level = int(_slots[index].paid_level) + int(quote.count)
-	return _submit_levels(next, paid.wallet, [next[index]], publish)
+	var purchases := [{"slot_id": str(next[index].id), "count": int(quote.count), "spent": quote.costs.duplicate(true)}]
+	var committed: Dictionary = _submit_levels(next, paid.wallet, [next[index]], publish)
+	return _purchase_result(committed, purchases, "accepted" if committed.ok else "fault_unknown" if committed.get("fault", false) else "rejected")
 
-func equip_slot(slot_id: String, equipment_id: String, inputs: Dictionary, publish: Callable) -> Dictionary:
-	if not _run_state.is_running(): return _run_state.rejection()
-	var index: int = -1
-	for candidate in _slots.size():
-		if _slots[candidate].id == slot_id:
-			index = candidate
-	if index < 0:
-		return {"ok": false, "reason": "UnknownSlot"}
-	var slot: Dictionary = _slots[index]
+func _equip_admission(slot: Dictionary, equipment_id: String, inputs: Dictionary) -> Dictionary:
 	if slot.category == "defence" and int(slot.index) == 0 and equipment_id.is_empty():
 		return {"ok": false, "reason": "FirstDefenceRequired"}
 	if equipment_id == str(slot.equipment_id):
@@ -530,6 +631,19 @@ func equip_slot(slot_id: String, equipment_id: String, inputs: Dictionary, publi
 			return {"ok": false, "reason": "EquipmentCategoryMismatch"}
 	if int(slot.generation) == 9223372036854775807:
 		return {"ok": false, "reason": "ModuleGenerationRangeExceeded"}
+	return {"ok": true}
+
+func equip_slot(slot_id: String, equipment_id: String, inputs: Dictionary, publish: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	var index: int = -1
+	for candidate in _slots.size():
+		if _slots[candidate].id == slot_id:
+			index = candidate
+	if index < 0:
+		return {"ok": false, "reason": "UnknownSlot"}
+	var slot: Dictionary = _slots[index]
+	var admitted: Dictionary = _equip_admission(slot, equipment_id, inputs)
+	if not admitted.ok: return admitted
 	var next: Array = _slots.duplicate(true)
 	next[index].equipment_id = equipment_id
 	next[index].generation = int(slot.generation) + 1
@@ -556,6 +670,7 @@ func buy_max_levels(slot_id: String, inputs: Dictionary, can_pay: Callable, pay:
 func buy_all_levels(count: int, maximum: bool, inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var purchased: Array = []
+	var purchases: Array = []
 	var changed: Array = []
 	var next: Array = _slots.duplicate(true)
 	var balances: Dictionary = inputs.balances
@@ -574,6 +689,7 @@ func buy_all_levels(count: int, maximum: bool, inputs: Dictionary, can_pay: Call
 				balances = paid.wallet
 				slot.paid_level = int(slot.paid_level) + int(quote.count)
 				purchased.append(str(slot.id))
+				purchases.append({"slot_id": str(slot.id), "count": int(quote.count), "spent": quote.costs.duplicate(true)})
 				changed.append(slot)
 			elif not maximum and paid.get("reason", "") not in ["InsufficientResources", "EvolutionMaterialLocked"]:
 				failure = paid
@@ -581,9 +697,10 @@ func buy_all_levels(count: int, maximum: bool, inputs: Dictionary, can_pay: Call
 		if not failure.is_empty(): break
 	if not purchased.is_empty():
 		var committed = _submit_levels(next, balances, changed, publish)
-		if not committed.ok: return committed
-	if not failure.is_empty(): return failure
-	return {"ok": not purchased.is_empty(), "reason": "NoChange" if purchased.is_empty() else "", "slots": purchased}
+		if not committed.ok: return _purchase_result(committed, purchases, "fault_unknown" if committed.get("fault", false) else "rejected")
+	var status: String = "accepted" if not purchased.is_empty() else "not_submitted"
+	if not failure.is_empty(): return _purchase_result(failure, purchases, status)
+	return _purchase_result({"ok": not purchased.is_empty(), "reason": "NoChange" if purchased.is_empty() else "", "slots": purchased}, purchases, status)
 
 func resize_mounts(current: Dictionary, target: Dictionary, balances: Dictionary, publish: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
