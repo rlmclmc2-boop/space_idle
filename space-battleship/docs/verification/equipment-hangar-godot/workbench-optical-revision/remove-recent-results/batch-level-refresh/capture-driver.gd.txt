@@ -1,0 +1,68 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/remove-recent-results/batch-level-refresh"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+var finished_count:int=0
+func expected_current()->String:
+    return "\n".join(host.equipment_slot_facts().filter(func(row):return not row.dormant).map(func(row):return "%s · %s · Lv.%s" % [panel._slot_name(str(row.id)),panel.NAMES.get(str(row.equipment_id),"空槽"),str(row.paid_level)]))
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"real main Session native startup")
+    host.set_pause("user",true);await flush();wallet("100000","1000");await flush()
+    panel.command_finished.connect(func(_result):finished_count+=1)
+    panel._open_batch();await flush()
+    for index in 2:
+        var before:Dictionary=snapshot();var counts:Dictionary=panel.presentation_counts.duplicate(true)
+        var point:Vector2=panel._batch_submit.get_global_rect().get_center()
+        var down:=InputEventMouseButton.new();down.position=point;down.global_position=point;down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true;Input.parse_input_event(down)
+        await process_frame
+        var up:=InputEventMouseButton.new();up.position=point;up.global_position=point;up.button_index=MOUSE_BUTTON_LEFT;up.pressed=false;Input.parse_input_event(up)
+        await process_frame;await RenderingServer.frame_post_draw
+        var first_text:String=panel._batch_results.text
+        var expected:String=expected_current()
+        check(panel.last_result.get("purchase_receipt",{}).get("commit_status")=="accepted","batch accepted "+str(index))
+        check(first_text==expected,"first rendered frame uses current Owner levels "+str(index))
+        check(finished_count==index+1,"one command_finished per purchase "+str(index))
+        check(panel.presentation_counts.slot_fact_reads-int(counts.slot_fact_reads)==1,"one existing frame fact read "+str(index))
+        var after:Dictionary=snapshot()
+        await flush()
+        check(panel._batch_results.text==expected_current() and panel._batch_results.text==first_text,"subsequent frames stable "+str(index))
+        for row in after.slots:
+            if not row.dormant:check(int(row.paid_level)==index+2,"consecutive current level "+str(row.id))
+        records.append({"purchase":index+1,"before":before,"after":after,"result":panel.last_result.duplicate(true),"first_rendered_text":first_text,"owner_current_text":expected,"later_text":panel._batch_results.text,"presentation_counts_before":counts,"presentation_counts_after":panel.presentation_counts.duplicate(true),"command_finished_count":finished_count})
+        await screenshot("0"+str(index+1)+"-batch-current-levels")
+    check(panel.has_exclusive_ui() and not panel.prepare_host_hide(false),"batch still exclusive")
+    check(panel.prepare_host_hide(true) and not panel.has_exclusive_ui(),"force still closes batch")
+    var file:=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    file.store_string(JSON.stringify({"source_commit":"6233dc6ea25bac9a0dfcbc6a8d7b0673e8f24f06","records":records,"failures":failures},"  "))
+    print("BATCH_CURRENT_LEVEL_REFRESH_COMPLETE failures=",failures.size());app.queue_free();await process_frame;quit(0 if failures.is_empty() else 1)

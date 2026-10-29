@@ -1,0 +1,706 @@
+{
+  "failures": [],
+  "records": [
+    {
+      "after": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "7.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "paid_level": 3,
+            "primary": "5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1.2e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1.2e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 2,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 2,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 2,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "4",
+            "m": "9.987"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：9.99万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "before": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "command_finished_count": 1,
+      "first_rendered_text": "武器1 · 脉冲炮 · Lv.2\n防御1 · 装甲 · Lv.2",
+      "later_text": "武器1 · 脉冲炮 · Lv.2\n防御1 · 装甲 · Lv.2",
+      "owner_current_text": "武器1 · 脉冲炮 · Lv.2\n防御1 · 装甲 · Lv.2",
+      "presentation_counts_after": {
+        "balance_dependency_changes": 2,
+        "candidates_updated": 4,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 3,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 2,
+        "equipment_option_reads": 2,
+        "maximum_reads": 0,
+        "quantity_styles_updated": 3,
+        "refreshes": 2,
+        "scene_draws": 2,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 2,
+        "slot_styles_updated": 2,
+        "slots_updated": 4,
+        "wallet_refreshes": 3
+      },
+      "presentation_counts_before": {
+        "balance_dependency_changes": 1,
+        "candidates_updated": 4,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 2,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 1,
+        "equipment_option_reads": 1,
+        "maximum_reads": 0,
+        "quantity_styles_updated": 3,
+        "refreshes": 1,
+        "scene_draws": 2,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 1,
+        "slot_styles_updated": 2,
+        "slots_updated": 2,
+        "wallet_refreshes": 2
+      },
+      "purchase": 1,
+      "result": {
+        "ok": true,
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "count": 1,
+              "slot_id": "weapon:0",
+              "spent": {
+                "1": {
+                  "e": "1",
+                  "m": "6.5"
+                }
+              }
+            },
+            {
+              "count": 1,
+              "slot_id": "defence:0",
+              "spent": {
+                "1": {
+                  "e": "1",
+                  "m": "6.5"
+                }
+              }
+            }
+          ],
+          "spent": {
+            "1": {
+              "e": "2",
+              "m": "1.3"
+            }
+          }
+        },
+        "reason": "",
+        "slots": [
+          "weapon:0",
+          "defence:0"
+        ]
+      }
+    },
+    {
+      "after": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "paid_level": 3,
+            "primary": "5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "paid_level": 3,
+            "primary": "5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "8.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 4,
+            "equipment_id": "laser",
+            "paid_level": 4,
+            "primary": "6e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1.4e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1.4e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "4",
+            "m": "9.972"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：9.97万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "before": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "7.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "paid_level": 3,
+            "primary": "5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1.2e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1.2e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 2,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 2,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 2,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "4",
+            "m": "9.987"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：9.99万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "command_finished_count": 2,
+      "first_rendered_text": "武器1 · 脉冲炮 · Lv.3\n防御1 · 装甲 · Lv.3",
+      "later_text": "武器1 · 脉冲炮 · Lv.3\n防御1 · 装甲 · Lv.3",
+      "owner_current_text": "武器1 · 脉冲炮 · Lv.3\n防御1 · 装甲 · Lv.3",
+      "presentation_counts_after": {
+        "balance_dependency_changes": 3,
+        "candidates_updated": 4,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 4,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "equipment_option_reads": 3,
+        "maximum_reads": 0,
+        "quantity_styles_updated": 3,
+        "refreshes": 3,
+        "scene_draws": 2,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 3,
+        "slot_styles_updated": 2,
+        "slots_updated": 6,
+        "wallet_refreshes": 4
+      },
+      "presentation_counts_before": {
+        "balance_dependency_changes": 2,
+        "candidates_updated": 4,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 3,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 2,
+        "equipment_option_reads": 2,
+        "maximum_reads": 0,
+        "quantity_styles_updated": 3,
+        "refreshes": 2,
+        "scene_draws": 2,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 2,
+        "slot_styles_updated": 2,
+        "slots_updated": 4,
+        "wallet_refreshes": 3
+      },
+      "purchase": 2,
+      "result": {
+        "ok": true,
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "count": 1,
+              "slot_id": "weapon:0",
+              "spent": {
+                "1": {
+                  "e": "1",
+                  "m": "7.5"
+                }
+              }
+            },
+            {
+              "count": 1,
+              "slot_id": "defence:0",
+              "spent": {
+                "1": {
+                  "e": "1",
+                  "m": "7.5"
+                }
+              }
+            }
+          ],
+          "spent": {
+            "1": {
+              "e": "2",
+              "m": "1.5"
+            }
+          }
+        },
+        "reason": "",
+        "slots": [
+          "weapon:0",
+          "defence:0"
+        ]
+      }
+    }
+  ],
+  "source_commit": "6233dc6ea25bac9a0dfcbc6a8d7b0673e8f24f06"
+}

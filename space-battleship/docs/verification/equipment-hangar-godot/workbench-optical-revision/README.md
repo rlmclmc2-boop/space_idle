@@ -2,6 +2,13 @@
 
 ## 最新窄修：取消记录及最近结果（2026-10-29）
 
+### 原审P2修正：批量当前等级在Owner刷新后同步
+
+原283b版在_buy_all结束时用旧_facts绘列表，随后正常_refresh虽取得新facts却未更新批量列表，可能滞留或落后一笔。固定源码 `6233dc6ea25bac9a0dfcbc6a8d7b0673e8f24f06`（equipment_panel SHA256 `ae8c4055ed2f227f3b9bd29221dda0aab606fd6a9939a349a8a332b91751eec7`）只迁移一次调用：删_buy_all中的_refresh_batch；在既有_refresh读取Owner slot facts之后，仅批量窗口可见时更新当前等级列表。复用原dirty帧合并，不新增Owner读取、信号、全量控件重建，不恢复结果/历史/提示/tooltip/Toast。
+
+同一正式main/Session/native进程真实GUI连续执行两次批量“每槽+1”：武器1/防御1均Lv1→2→3；每笔释放点击后首个绘制帧列表已与实时Owner facts完全一致，随后帧保持一致，各笔只增加原有1次slot_fact_reads、1次command_finished。原独占及force关闭保持。进程exit0，`BATCH_CURRENT_LEVEL_REFRESH_COMPLETE failures=0`；两张原尺寸整屏已全部实际view_image：[第一笔Lv2](remove-recent-results/batch-level-refresh/01-batch-current-levels.png)、[连续第二笔Lv3](remove-recent-results/batch-level-refresh/02-batch-current-levels.png)。[原操作/计数/首帧文本](remove-recent-results/batch-level-refresh/operations.json)、[驱动](remove-recent-results/batch-level-refresh/capture-driver.gd.txt)、[日志](remove-recent-results/batch-level-refresh/capture.log.txt)、[manifest](remove-recent-results/batch-level-refresh/manifest.json)绑定同版。仅针对该回归，不扩全链或故障矩阵；共享224fa500适配接入边界仍按下文保留。本修正交同一原审，未实际压缩。
+
+
 本条覆盖下文ce70历史候选中的记录/短反馈方案。按用户最新范围，已删除“记录/最近结果”入口、专属Popup、历史字符串、短时成功回执层、回执tooltip、计时及专属独占连接，不增加替代提示条。批量内成交明细/花费/成交后余额展示也已取消，保留当前槽位等级和必要失败/未知状态。Owner结果数据、last_result及command_finished保持，正常等级/价格/资源不足/冷却状态仍按原规则显示。
 
 固定源码 `283b579543e8d6e5bba8a0f4fd6ef9ecceb6d6f7`，equipment_panel.gd SHA256 `c780015aa91f9c151327d8179bccf99ee693d49cd7e614fb636496834c1ea85e`。只有该运行文件修改；操作行同物购买从数量按钮后连至原右沿，异物安装收回原记录位置，台体高度/标题/数值/候选/费用布局保持。原记录按钮、Popup、吐司无隐藏空节点或占位。下方旧8图/测量/驱动继续保留真实ce70/CEC3版本，不是本次重跑或当前状态。

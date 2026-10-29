@@ -6,7 +6,7 @@
 
 ### 当前限定：保留U1方向，装备内部整合候选
 
-**最新用户窄修（2026-10-29，覆盖下方历史回执方案）：** 固定源码 `283b579543e8d6e5bba8a0f4fd6ef9ecceb6d6f7` 已取消记录/最近结果入口、Popup、历史、短时成功回执及回执tooltip，不替换提示条。批量只保当前槽等级及必要失败/未知状态，Owner结果数据与正常等级/价格/资源/冷却不变；操作行收回原记录位置。4张真实Godot整屏、定向点击/无记录节点及保留Batch/OptionButton独占证据见[原交接入口最新窄修](../../../verification/equipment-hangar-godot/workbench-optical-revision/README.md)。待原审/整体组接入，未合main。
+**最新用户窄修（2026-10-29，覆盖下方历史回执方案）：** 固定源码 `283b579543e8d6e5bba8a0f4fd6ef9ecceb6d6f7` 已取消记录/最近结果入口、Popup、历史、短时成功回执及回执tooltip，不替换提示条。批量只保当前槽等级及必要失败/未知状态，Owner结果数据与正常等级/价格/资源/冷却不变；操作行收回原记录位置。4张真实Godot整屏、定向点击/无记录节点及保留Batch/OptionButton独占证据见[原交接入口最新窄修](../../../verification/equipment-hangar-godot/workbench-optical-revision/README.md)。待原审/整体组接入，未合main。 原审P2批量当前等级滞后已由 `6233dc6ea25bac9a0dfcbc6a8d7b0673e8f24f06` 修正：在既有Owner facts刷新后更新可见列表；连续两笔真实批量购买首个绘制帧均与Owner一致，仍交同一原审。
 
 **最新状态：用户已撤回本批视觉放行，新内部修正候选待根唯一审核。** 当前运行源码 `ce70b594b6ffc111eb888d11562312526ebfc675`：左右首内容同y70/20px内距，名称/Lv成组，当前值/箭头按实际glyph重排；回执退出标题梁，改3秒固定短反馈+操作行按需查看最近8笔原始详情；按钮以真实描边/阴影/焦点alpha校准轨内距，并修复旧长文字最小宽占位。真实双资源普通/长MAX及频繁实际购级图证见[整体排版修正交接](../../../verification/equipment-hangar-godot/workbench-optical-revision/README.md)，8整屏/8局部均实际看过，仍不自判视觉通过。本批三笔快速+1支持accepted、Lv19→22、真实spent回执与连续反馈布局；沿长MAX巨额钱包的before/after编码完全相同，同一Amount.sub_nonnegative期望值比对不能证明可观察的精确扣减，本批未覆盖该证据。551a/43a及此前本批视觉结论只留退回基线，不重开业务四保护、U1武器基本方向，10游戏秒冷却不改。生产Excel/Owner当前最多铁+简并物质双资源，真实三资源普通/长值图缺实际来源，未模拟第三费或改后端，明确未覆盖。宿主/main未改，内部交接只Git。
 
