@@ -44,6 +44,8 @@ var _preview_reference: Dictionary = {}
 var _slot_presentations: Dictionary = {}
 var _slot_selections: Dictionary = {}
 var _choice_presentations: Dictionary = {}
+var _choice_options: Array = []
+var _choice_option_slot: String = ""
 var _material_texture: Texture2D
 var _console_texture: Texture2D
 var _console_paint: Color
@@ -606,8 +608,11 @@ func select_slot(id: String) -> void:
     _dirty = true
 
 func _select_candidate(id: String) -> void:
+    if id==_candidate:return
     _candidate = id
-    _dirty = true
+    if _facts.is_empty():_dirty=true;return
+    _refresh_choices(_selected_fact(),false)
+    _comparison_dirty = true
 
 func _queue_level_values(ids:Array)->void:
     for id in ids:_pending_level_ids[str(id)]=true
@@ -776,9 +781,12 @@ func _refresh_slots(active: Array) -> void:
         if id not in live:
             _slot_buttons[id].button.queue_free();_slot_buttons.erase(id);_slot_presentations.erase(id);_slot_selections.erase(id)
 
-func _refresh_choices(fact: Dictionary) -> void:
-    presentation_counts.equipment_option_reads+=1
-    var options: Array=_session.equipment.panel_equipment(_selected)
+func _refresh_choices(fact: Dictionary, read_options:bool=true) -> void:
+    if read_options or _choice_option_slot!=_selected:
+        presentation_counts.equipment_option_reads+=1
+        _choice_options=_session.equipment.panel_equipment(_selected)
+        _choice_option_slot=_selected
+    var options: Array=_choice_options
     var live: Array=[]
     var column: int=0
     for option in options:
