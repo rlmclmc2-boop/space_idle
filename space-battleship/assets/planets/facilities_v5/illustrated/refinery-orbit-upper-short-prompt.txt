@@ -1,0 +1,18 @@
+Refinery upper-shell ImageGen provenance, 2026-10-29.
+
+Input for pass 1: refinery-orbit-inlet-shoulders.png
+SHA-256: da84a5d533888fe2b697d7de0acd2b6100d6d907783320a240c3d0e8a2373390
+Generated source: /workspace/generated_images/exec-21019d1a-ce75-4959-a314-5e5bd440950c.png
+Committed copy: refinery-orbit-upper-port.png
+SHA-256: 7d87ac1de1e2965155b342d63e2fc47b7c4e9e7ad635880cf20fda8d551d8cec
+Prompt:
+Make a transparent game-sprite CUTOUT of the UPPER refinery from this exact 1536x1024 reference. Precisely preserve its upper two-thirds: exactly TWO front square dark intake grilles at left and right, the central orange furnace, TWO blue ore hoppers, overall size, camera view, illustrated ivory/navy/cyan linework. There must remain exactly TWO front square grilles; do not invent a third front grille, port, door or window. Remove the entire curved conveyor strip that extends toward the bottom edge, and remove the entire old solid black-outlined base below the intake grilles. Keep the central dark inset BEHIND where the conveyor used to start, so a separate real 3D belt can join this inset at about image pixel (635,665). The two large front grilles should end in short tapered ivory/navy metal mounting sockets around y800, with individual open lower ends; outside/below them should be transparent. The back hopper bases can stay. Leave the lower central area below y720 transparent, so a rotating 3D orbital-ring receiver can occupy it. Keep the top silhouettes and object positions nearly identical to reference. True alpha outside machinery. No ground shadow, base plate, floor, detached platform, bridge, belt, ring, planet, scenery or text.
+
+Input for pass 2: refinery-orbit-upper-port.png
+Generated source: /workspace/generated_images/exec-e8480e5d-2c38-4f16-8f38-70e37164cc62.png
+Committed runtime copy: refinery-orbit-upper-short.png
+SHA-256: b32ca3de81f81f301c103dff6ed4b0c11bc6f3915764d720b82107dbac01b942
+Prompt:
+LOCAL edit of this exact 1536×1024 transparent upper refinery cutout. Keep the two blue ore hoppers, furnace, body, TWO front square dark grilles, and center open navy arch pixel-identical as much as possible. Its two grilles currently extend downward into long dangling ivory legs to about y950–1000. SHORTEN ONLY THESE TWO LOWER LEGS: each front grille must terminate as a compact beveled metal mounting collar around y800–835, with a dark navy recessed undersurface and a small cyan locking seam. Remove all opaque pixels from the lower fourth of the image (approximately y850–1024), except very small vertical connectors directly under the grille corners no lower than y855. Preserve the open central arch around (640,740) for a real 3D short feed trough. There should be genuine alpha transparency below the short collars; no ground shadow or base. Do not add or alter any upper architecture, third intake, belt, standalone platform, bridge, ring, planet, text or background. True alpha outside artwork.
+
+The prompts describe intent. The generated pixels are not exact preservation of the input. The runtime asset retained the twin hoppers/furnace and has an open central port, but the lower front housings were redrawn. The fixed runtime projection anchor is calibrated from the rendered image, near source pixel (640,760), and is not a claim of pixel-identical input artwork.

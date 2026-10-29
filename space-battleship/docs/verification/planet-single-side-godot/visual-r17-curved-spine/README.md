@@ -63,3 +63,9 @@
 上节固定嘴端与所属环槽的定位保留。原审指出旧图在 stage4/024/051 仍只像细线点接触，缺可读的接收边界与整炉承托。本候选用 [ImageGen 原图与准确提示词](../../../../assets/planets/facilities_v5/illustrated/refinery-orbit-inlet-shoulders-prompt.txt)把原单炉插画下方两只细脚收成宽一些的内向承力肩，不改变约 `(840,895)` 的带端定位。精炼厂所属段的原甲板网格自身增加局部细分，刻出一处浅凹与窄唇，并在同一甲板材质 UV 上做克制的青灰深度差；没有独立垫块、桥、第二条输送带或未建邻段支撑。`Sprite3D` 的固定视角性质、四段独立建造与运动、原位工作刷新及共享资源图标均沿用。
 
 [本码主界面 stage2/4 原图](evidence/refinery-receiving-well/)与[020–028、047–055 邻帧原图](evidence/refinery-receiving-well/phases/)来自 Godot 4.7.2 同一候选；[驱动、日志、源码及截图 SHA](evidence/refinery-receiving-well/)一并固定。作者逐张原尺寸查看：stage2 的炉体与凹腔只随精炼厂所属建段出现；stage4/024/028 的下缘有可见接收边，051 及前后相位仍可见青灰接缝与承力肩，未见旧黑桥或环面横贯设施。改进是局部的：整炉仍是高对比 camera-facing 插画，不能仅凭本轮十张加速取样宣称完整 3D 一体化、连续整圈、其他设施、六类天体或实时性能通过。Godot 4.7.2 `--editor --headless --check-only --quit`、`git diff --check` 退出 0；视觉品质留待独立复审。
+
+## 精炼厂原环抬肩与开口接收件：待审代表
+
+上一节及后续未提交的短真实接收件试验在 051 左侧相位仍显成一块青灰三角垫片；单纯固定其姿态留下黑刺，调颜色、降低上身、加极细导光也未让结构可读。本次仅保留一座精炼厂的修订候选。精炼厂所属段的原连续甲板网格在本座角度作局部平滑抬肩，中央留入料凹处；接收件踏面复用同一环甲板材质，内壁复用环侧壁色，不再由独立青灰板主导画面。上身 ImageGen 编辑稿在原双料斗与炉体主形下明确开出暖象牙边、深青内里的中央接收口；[原 PNG 与精确提示词](../../../../assets/planets/facilities_v5/illustrated/refinery-orbit-receiving-port-prompt.txt)保留。上身前侧深度余量使甲板抬肩在 051 不横切双前口。真实接收件下端仍落在本座固定槽口，上端与开口配准；旋转实体环和球、探索船各按原端口独立运动，建造及领取业务未动。
+
+[完整主界面 stage4 原 PNG](evidence/refinery-integral-shoulder/stage_4.png)与[022/024/026、049/051/053 原相位 PNG](evidence/refinery-integral-shoulder/phases/)来自本版源码；[驱动、运行日志、编译日志与 SHA](evidence/refinery-integral-shoulder/)一并固定。作者按原尺寸看了这些画面：024 的暖象牙短坡从原甲板进入中央开口，049–053 未见环面横切炉体或设施越出模块边缘，051 的青灰独立垫片已缩为同材质的小接收面。**小楔形投影仍可见，整炉是否足够读作环上一体设施仍待独立审图**，不宣称已经通过。取样驱动仍按 `TAU/(96×0.045)` 秒跳步推进，只是相位取样；它不证明实时帧率、连续整圈或六类天体。Godot 4.7.2 `--headless --editor --check-only --quit` 与 `git diff --check` 退出 0。

@@ -1,0 +1,12 @@
+afb5ba036da76bd9a74f649d3047e1990fa74c0f28d3b243f8805018a5c54de9  space-battleship/assets/planets/facilities_v5/illustrated/refinery-orbit-receiving-port.png
+aca47607e83105605e4a0c0d61bbd2239a791b5c9efa85f48ff9e40136505e6d  space-battleship/assets/planets/facilities_v5/illustrated/refinery-orbit-receiving-port-prompt.txt
+bda1e77d2dd1f3ee4bb6598992feb129dc4125b39c8087e914d7067bef07c9dc  space-battleship/scripts/planet_facility_scene.gd
+8c9c823adac80fec0cd6ddfb7368c839939f37c807500118ee7e487a257ed8a3  space-battleship/scripts/planet_orbital_spine.gd
+079f200dcfc8f63253c2b033684ed118d892881030fdbdc8861ec5d00057e661  space-battleship/scripts/planet_spine_opaque.gdshader
+dbd731c396283307f2679beef3cbea16db9fb50a5ec86dba9fd606b2c8baef9b  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-integral-shoulder/stage_4.png
+095cc09d695f06c6c696cff2fcd85cfdfcb1999da8827508f8e4157ab12a4ce6  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-integral-shoulder/phases/frame_022.png
+f9e369120d89bc77afadbcdfac0bb785db5e6d18b1f64e36efb3e0b44c6151e3  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-integral-shoulder/phases/frame_024.png
+6cbf8681e0c8a1cd52d55b625bf343c5c184685c89b0ede3b578758b27338518  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-integral-shoulder/phases/frame_026.png
+f56e3f08aa61f6fcf23a235d5ff4cc3f79d98577be9876e5c65a295a205a3771  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-integral-shoulder/phases/frame_049.png
+48e6a49fbfa73b51a3e0471ed15d06ae9576c20d1570c9002f43c00bedb58242  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-integral-shoulder/phases/frame_051.png
+7616d11c50aedd4dabbf372a97e8ee28b4bbe3621eb02aa3975180c2c437a180  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-integral-shoulder/phases/frame_053.png

@@ -31,6 +31,8 @@ var _cyan: ShaderMaterial
 var _deck: ShaderMaterial
 var _sleeve: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
+var _refinery_receiver: Node3D
+var _refinery_receiver_vector := Vector3.ZERO
 
 static func plane_normal() -> Vector3:
 	return Vector3(0.0, TILT_Z, TILT_Y)
@@ -44,6 +46,30 @@ static func socket_position(angle: float, kind: String) -> Vector3:
 	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
 	var radial_offset := -0.30 if kind == "refinery" else 0.0
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
+
+static func refinery_feed_tip() -> Vector3:
+	return point(FACILITY_ANGLES["refinery"]) + plane_normal() * 0.47
+
+static func _refinery_unaimed_feed_top() -> Vector3:
+	var a: float = FACILITY_ANGLES["refinery"]
+	return point(a) * ((RADIUS - 0.12) / RADIUS) + plane_normal() * 0.62
+
+func refinery_feed_top() -> Vector3:
+	return _refinery_receiver.position + _refinery_receiver.basis * _refinery_receiver_vector
+
+func aim_refinery_receiver() -> void:
+	# The short rigid receiver swivels at its fixed ring socket with the
+	# upright service shell. No endpoint selection or section geometry moves.
+	var desired: Vector3 = global_transform.basis.inverse() * Vector3(-0.10, 0.13, 0.18)
+	var from: Vector3 = _refinery_receiver_vector
+	var axis := desired.normalized()
+	var aim := Quaternion(from.normalized(), axis)
+	var facing: Vector3 = global_transform.basis.inverse() * Vector3.BACK
+	var current_up: Vector3 = aim * plane_normal()
+	var roll_from := (current_up - axis * current_up.dot(axis)).normalized()
+	var roll_to := (facing - axis * facing.dot(axis)).normalized()
+	var roll := atan2(axis.dot(roll_from.cross(roll_to)), roll_from.dot(roll_to))
+	_refinery_receiver.basis = Basis(Quaternion(axis, roll) * aim).scaled(Vector3.ONE * (desired.length() / from.length()))
 
 func _ready() -> void:
 	_navy = _material(Color("152f43"))
@@ -68,13 +94,7 @@ func _ready() -> void:
 		_add_wall(root, bounds.x, bounds.y, 0.75, -0.20, 0.26, _side, kind)
 		_add_wall(root, bounds.x, bounds.y, -0.75, -0.20, 0.26, _navy, kind)
 		_add_wall(root, bounds.x, bounds.y, 0.755, 0.05, 0.09, _cyan, kind)
-		var section_deck: ShaderMaterial = _deck
-		if kind == "refinery":
-			section_deck = _deck.duplicate()
-			section_deck.set_shader_parameter("refinery_socket", true)
-			section_deck.set_shader_parameter("socket_angle", (FACILITY_ANGLES[kind] - bounds.x) / (bounds.y - bounds.x))
-			_all_materials.append(section_deck)
-		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, section_deck, 0.0, 1.0, kind)
+		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
 		var rib_angle := (bounds.x + bounds.y) * 0.5
 		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
@@ -124,17 +144,20 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		Vector2(0.43, 0.18), Vector2(0.48, 0.11), Vector2(0.50, 0.04),
 	]
 	if kind == "refinery":
-		profile = [
-			Vector2(-0.50, 0.04), Vector2(-0.48, 0.11), Vector2(-0.43, 0.18),
-			Vector2(-0.34, 0.215), Vector2(-0.26, 0.22), Vector2(-0.20, 0.223),
-			Vector2(-0.14, 0.226), Vector2(-0.08, 0.229), Vector2(0.0, 0.23),
-			Vector2(0.06, 0.23), Vector2(0.12, 0.229), Vector2(0.18, 0.225),
-			Vector2(0.24, 0.221), Vector2(0.30, 0.218), Vector2(0.34, 0.215), Vector2(0.43, 0.18),
-			Vector2(0.48, 0.11), Vector2(0.50, 0.04),
-		]
+		var coarse: Array = profile
+		var dense: Array[Vector2] = []
+		for index in 41:
+			var x: float = -0.5 + float(index) / 40.0
+			for band in coarse.size() - 1:
+				var left: Vector2 = coarse[band]
+				var right: Vector2 = coarse[band + 1]
+				if x <= right.x:
+					dense.append(Vector2(x, lerpf(left.y, right.y, inverse_lerp(left.x, right.x, x))))
+					break
+		profile = dense
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var steps := maxi(48, ceili((finish - begin) * (192.0 if kind == "refinery" else 96.0)))
+	var steps := maxi(48, ceili((finish - begin) * (256.0 if kind == "refinery" else 96.0)))
 	for index in steps:
 		var t0 := float(index) / float(steps)
 		var t1 := float(index + 1) / float(steps)
@@ -165,12 +188,11 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	var height := lift + current.y
 	if kind == "refinery":
-		var radial_unit: float = (current.x - 0.04) / 0.22
-		var angular_unit: float = (angle - FACILITY_ANGLES[kind]) / 0.102
-		var socket_radius: float = Vector2(radial_unit, angular_unit).length()
-		var floor: float = 1.0 - smoothstep(0.68, 0.82, socket_radius)
-		var rim: float = smoothstep(0.73, 0.84, socket_radius) * (1.0 - smoothstep(0.97, 1.09, socket_radius))
-		height += 0.16 * rim - 0.15 * floor
+		var distance := absf(angle - FACILITY_ANGLES[kind])
+		var foot_span: float = 1.0 - smoothstep(0.080, 0.18, distance)
+		var foot_width: float = 1.0 - smoothstep(0.30, 0.46, absf(current.x))
+		var inlet: float = (1.0 - smoothstep(0.023, 0.053, distance)) * (1.0 - smoothstep(0.08, 0.15, absf(current.x - 0.04)))
+		height += 0.18 * foot_span * foot_width * (1.0 - inlet) - 0.035 * inlet
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
@@ -236,6 +258,71 @@ func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
 	if kind == "auto_explore":
 		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.36, 0.42, 0.20, _navy, plane_normal())
 		return
+	if kind == "refinery":
+		_add_refinery_root(parent, angle)
+
+func _add_refinery_root(parent: Node3D, angle: float) -> void:
+	# The feed trough and both load cheeks are one ring-owned receiver. Its
+	# distal tread meets the fixed deck socket while its upper end enters the
+	# open port of the separate camera-facing furnace shell.
+	var tip := refinery_feed_tip()
+	var upper := _refinery_unaimed_feed_top()
+	_refinery_receiver_vector = upper - tip
+	_refinery_receiver = Node3D.new()
+	_refinery_receiver.name = "RefineryReceiver"
+	_refinery_receiver.position = tip
+	parent.add_child(_refinery_receiver)
+	var tangent := (point(angle + 0.001) - point(angle - 0.001)).normalized()
+	var up := plane_normal()
+	var belt := SurfaceTool.new()
+	belt.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for step in 6:
+		var t0 := float(step) / 6.0
+		var t1 := float(step + 1) / 6.0
+		var p0 := tip.lerp(upper, t0) - tip
+		var p1 := tip.lerp(upper, t1) - tip
+		var l0 := p0 - tangent * 0.100
+		var r0 := p0 + tangent * 0.100
+		var l1 := p1 - tangent * 0.100
+		var r1 := p1 + tangent * 0.100
+		_add_receiver_quad(belt, l0, l1, r0, r1, up, t0, t1)
+	var tread := MeshInstance3D.new()
+	tread.name = "RefineryRootTread"
+	tread.mesh = belt.commit()
+	tread.material_override = _deck
+	_refinery_receiver.add_child(tread)
+	for side in [-1.0, 1.0]:
+		var rail := SurfaceTool.new()
+		var inner_wall := SurfaceTool.new()
+		rail.begin(Mesh.PRIMITIVE_TRIANGLES)
+		inner_wall.begin(Mesh.PRIMITIVE_TRIANGLES)
+		for step in 6:
+			var t0 := float(step) / 6.0
+			var t1 := float(step + 1) / 6.0
+			var p0 := tip.lerp(upper, t0) - tip
+			var p1 := tip.lerp(upper, t1) - tip
+			var inner0 := p0 + tangent * float(side) * 0.100
+			var inner1 := p1 + tangent * float(side) * 0.100
+			var outer0 := p0 + tangent * float(side) * 0.145
+			var outer1 := p1 + tangent * float(side) * 0.145
+			_add_receiver_quad(rail, inner0 + up * 0.145, inner1 + up * 0.145, outer0 + up * 0.145, outer1 + up * 0.145, up, t0, t1)
+			_add_receiver_quad(inner_wall, inner0, inner1, inner0 + up * 0.145, inner1 + up * 0.145, tangent * -float(side), t0, t1)
+		var rail_mesh := MeshInstance3D.new()
+		rail_mesh.name = "RefineryRootCheek" + str(side)
+		rail_mesh.mesh = rail.commit()
+		rail_mesh.material_override = _deck
+		_refinery_receiver.add_child(rail_mesh)
+		var wall_mesh := MeshInstance3D.new()
+		wall_mesh.name = "RefineryRootInnerWall" + str(side)
+		wall_mesh.mesh = inner_wall.commit()
+		wall_mesh.material_override = _side
+		_refinery_receiver.add_child(wall_mesh)
+
+func _add_receiver_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, t0: float, t1: float) -> void:
+	for entry in [[a, Vector2(0.46, t0)], [b, Vector2(0.46, t1)], [c, Vector2(0.54, t0)], [c, Vector2(0.54, t0)], [b, Vector2(0.46, t1)], [d, Vector2(0.54, t1)]]:
+		surface.set_normal(normal)
+		surface.set_uv(entry[1])
+		surface.add_vertex(entry[0])
 
 func _add_socket_drum(parent: Node3D, position: Vector3, top: float, bottom: float, height: float, material: Material, normal: Vector3) -> void:
 	var instance := MeshInstance3D.new()

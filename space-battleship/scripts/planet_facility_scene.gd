@@ -169,16 +169,16 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	_workshop_arm_sprite = arm
 
 func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
-	# The two ore hoppers, recessed furnace and feed belt are one fixed image;
-	# the two cooler shutters retain separate, clock-driven working layers.
+	# The upper shell has an open feed port; its lower load path belongs to the
+	# ring-mounted receiver. Cooler shutters keep their working layers.
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedRefineryBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-inlet-shoulders.png")
-	body.pixel_size = 0.0032
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-receiving-port.png")
+	body.pixel_size = 0.0024
 	body.position = Vector3(0, 1.00, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = false
+	body.shaded = true
 	body.double_sided = true
 	model.add_child(body)
 	_refinery_body_sprite = body
@@ -204,25 +204,24 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 		var marker := MeshInstance3D.new()
 		marker.name = "ConveyorOreMarker%d" % index
 		var quad := QuadMesh.new()
-		quad.size = Vector2(0.17, 0.11)
+		quad.size = Vector2(0.065, 0.045)
 		marker.mesh = quad
 		marker.material_override = feed_material
 		model.add_child(marker)
 		_refinery_feed_markers.append(marker)
 
 func _position_refinery_work(model: Node3D, clock: float) -> void:
+	_spine.aim_refinery_receiver()
 	var camera_to_model := model.global_transform.basis.inverse()
 	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
 	var screen_up := (camera_to_model * Vector3.UP).normalized()
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
 	var width := _refinery_body_sprite.scale.x
-	# Move the billboard's authored input-belt end onto its *fixed* physical
-	# socket. This compensates for the camera-facing art projection while the
-	# GLB pivot and the independently rotating spine keep their real poses.
-	var mouth_offset := screen_right * ((840.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 895.0) * _refinery_body_sprite.pixel_size)
-	var a: float = _spine.FACILITY_ANGLES["refinery"]
-	var socket_world: Vector3 = _spine.to_global(_spine.point(a) + _spine.plane_normal() * 0.47) + Vector3(0, 0, 0.045)
-	_refinery_body_sprite.position = model.to_local(socket_world) - mouth_offset
+	# Seat the shell's open port over the upper end of one rigid receiver. Its
+	# lower tip stays at the refinery section's fixed physical socket.
+	var feed_opening_offset := screen_right * ((640.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 760.0) * _refinery_body_sprite.pixel_size)
+	var opening_world: Vector3 = _spine.to_global(_spine.refinery_feed_top()) + Vector3(0, 0, 0.12)
+	_refinery_body_sprite.position = model.to_local(opening_world) - feed_opening_offset
 	var base := _refinery_body_sprite.position + camera_front * 0.25
 	var opening := 0.5 + 0.5 * sin(clock * 0.70)
 	for side in ["Left", "Right"]:
@@ -230,17 +229,13 @@ func _position_refinery_work(model: Node3D, clock: float) -> void:
 		var sign := -1.0 if side == "Left" else 1.0
 		var target := base + screen_up * (0.23 * opening) + screen_right * (sign * 0.10 * opening * width)
 		(_refinery_shutter_sprites[side] as Sprite3D).position = pivot.transform.basis.inverse() * (target - pivot.position)
-	# Keep the moving loads on the same curved belt painted in the new root,
-	# from its keyed deck connector toward the furnace opening.
-	var belt_tip := Vector2(840, 895)
-	var belt_bend := Vector2(640, 790)
-	var belt_furnace := Vector2(630, 565)
+	# The existing moving loads travel on the receiver's physical short tread.
+	var tip := model.to_local(_spine.to_global(_spine.refinery_feed_tip()))
+	var upper := model.to_local(opening_world)
 	for index in _refinery_feed_markers.size():
 		var travel := fposmod(clock * 0.20 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
-		var pixel := belt_tip.lerp(belt_bend, travel).lerp(belt_bend.lerp(belt_furnace, travel), travel)
-		var position_on_belt := _refinery_body_sprite.position + screen_right * ((pixel.x - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - pixel.y) * _refinery_body_sprite.pixel_size)
-		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), position_on_belt + camera_front * 0.29)
+		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), tip.lerp(upper, travel) + camera_front * 0.10)
 
 func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	# The open two-level cantilever stays fixed; only the service crane travels
