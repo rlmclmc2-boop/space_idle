@@ -1,5 +1,22 @@
 # 装备工作区整体排版修正候选：待根唯一审核
 
+## 最新窄修：取消记录及最近结果（2026-10-29）
+
+本条覆盖下文ce70历史候选中的记录/短反馈方案。按用户最新范围，已删除“记录/最近结果”入口、专属Popup、历史字符串、短时成功回执层、回执tooltip、计时及专属独占连接，不增加替代提示条。批量内成交明细/花费/成交后余额展示也已取消，保留当前槽位等级和必要失败/未知状态。Owner结果数据、last_result及command_finished保持，正常等级/价格/资源不足/冷却状态仍按原规则显示。
+
+固定源码 `283b579543e8d6e5bba8a0f4fd6ef9ecceb6d6f7`，equipment_panel.gd SHA256 `c780015aa91f9c151327d8179bccf99ee693d49cd7e614fb636496834c1ea85e`。只有该运行文件修改；操作行同物购买从数量按钮后连至原右沿，异物安装收回原记录位置，台体高度/标题/数值/候选/费用布局保持。原记录按钮、Popup、吐司无隐藏空节点或占位。下方旧8图/测量/驱动继续保留真实ce70/CEC3版本，不是本次重跑或当前状态。
+
+本次复用environment.md所载Godot4.7.2、原native库、Xorg :99及缓存，独立临时设置/存档，实际正式main/Session/native启动，进程exit0，`REMOVE_RECENT_RESULTS_COMPLETE failures=0`。本次仅定向真实GUI购买一笔accepted（Lv19→20）、切候选、批量及OptionButton独占/force检查，不复跑全套、不以零失败代视觉通过。4张1440×900原尺寸整屏均已实际view_image：
+
+- [新局当前状态/资源不足](remove-recent-results/01-current-state-no-recent-results.png)
+- [真实购买后等级/报价更新，无短回执](remove-recent-results/02-accepted-current-state-no-toast.png)
+- [异物选择及操作行，无记录占位](remove-recent-results/03-different-candidate-no-record-gap.png)
+- [批量当前等级列表](remove-recent-results/04-batch-current-levels.png)
+
+[操作/实例树](remove-recent-results/operations.json)包含原始Owner回执（仅证据，不展示给玩家）；递归检查无ReceiptHistory/ReceiptToast/PopupPanel实例及最近结果文案。实际Batch打开时普通hide拒绝；OptionButton经鼠标输入打开仍独占，force同时关闭二者。[驱动](remove-recent-results/capture-driver.gd.txt)、[原始日志](remove-recent-results/capture.log.txt)、[文件绑定](remove-recent-results/manifest.json)保留。未另采扣费专项证据，不将本次定向运行宣称全保护通过。
+
+接入边界：正常只读fetch并比对组合 `224fa5005e8d0a7c89aa6e7570a78ead71408583`；本地未切换或覆盖宿主。组合版额外的_shared_host_enabled/_shared_hangar_top与_draw顶缝、set_shared_host redraw适配未触碰。整体组应cherry-pick本窄修，保留上述组合适配，不能整文件覆盖成装备分支旧宿主版本。本次4图是原装备分支正式main整屏，不冒充224fa500共享组合实机图；共享组合接入由整体组负责。未改Owner/config/native/main/战场，不合main、不force、不用Library/Space。真实三资源缺生产来源及此前未覆盖边界继续保留；本窄修交原审，不自判通过。
+
 运行源码 `ce70b594b6ffc111eb888d11562312526ebfc675`，原目录 `/workspace/space_idle`、原分支 `implement/equipment-hangar-godot`。用户撤回551a/43a本批视觉放行并明确授权“这些都修正”，本次据此内部落实；本候选尚未由根唯一Astra高通过，不以探针0失败自判视觉。U1武器基本方向、真实业务与四项正确性保护不重开，10游戏秒换装冷却不改；main/宿主/后端/config/native/战场没有修改。
 
 ## 已落实的整体排版

@@ -1,0 +1,729 @@
+{
+  "failures": [],
+  "nodes": [
+    {
+      "class": "Control",
+      "name": "@Control@78",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@19",
+      "text": "远航舰桥"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@20",
+      "text": "9.84万 铁   1,000 铀   990 简并物质"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@21",
+      "text": "战力维护  /  装配"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@22",
+      "text": "装配 · 游隼侦察艇"
+    },
+    {
+      "class": "Button",
+      "name": "BatchOpen",
+      "text": "全部装备升级"
+    },
+    {
+      "class": "Panel",
+      "name": "@Panel@24",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@25",
+      "text": "武器 · 启用 1"
+    },
+    {
+      "class": "Panel",
+      "name": "@Panel@26",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@27",
+      "text": "防御 · 启用 1"
+    },
+    {
+      "class": "Panel",
+      "name": "EquipmentWorkbench",
+      "text": ""
+    },
+    {
+      "class": "Panel",
+      "name": "ObjectHeader",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@28",
+      "text": "武器1 · 脉冲炮"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@29",
+      "text": "Lv.20"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@30",
+      "text": "装备升级"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@31",
+      "text": "装备选择"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@32",
+      "text": ""
+    },
+    {
+      "class": "ColorRect",
+      "name": "@ColorRect@33",
+      "text": ""
+    },
+    {
+      "class": "Panel",
+      "name": "PurchaseRail",
+      "text": ""
+    },
+    {
+      "class": "Panel",
+      "name": "UpgradeValues",
+      "text": ""
+    },
+    {
+      "class": "Panel",
+      "name": "CurrentIconBezel",
+      "text": ""
+    },
+    {
+      "class": "TextureRect",
+      "name": "@TextureRect@34",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@35",
+      "text": "当前攻击力"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@36",
+      "text": "升级后"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@37",
+      "text": "1.76万"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@38",
+      "text": "→"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@39",
+      "text": "2.08万"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@40",
+      "text": "本次费用"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@41",
+      "text": ""
+    },
+    {
+      "class": "Button",
+      "name": "Quantity0",
+      "text": "+1"
+    },
+    {
+      "class": "Button",
+      "name": "Quantity1",
+      "text": "+10"
+    },
+    {
+      "class": "Button",
+      "name": "Quantity2",
+      "text": "MAX"
+    },
+    {
+      "class": "Button",
+      "name": "Purchase",
+      "text": "购买1级"
+    },
+    {
+      "class": "Control",
+      "name": "CandidateChoices",
+      "text": ""
+    },
+    {
+      "class": "Button",
+      "name": "Candidate_laser",
+      "text": ""
+    },
+    {
+      "class": "TextureRect",
+      "name": "@TextureRect@88",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@89",
+      "text": "脉冲炮"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@90",
+      "text": "已装备"
+    },
+    {
+      "class": "Button",
+      "name": "Candidate_missile",
+      "text": ""
+    },
+    {
+      "class": "TextureRect",
+      "name": "@TextureRect@92",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@93",
+      "text": "导弹"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@94",
+      "text": "待安装"
+    },
+    {
+      "class": "Button",
+      "name": "Candidate_cannon",
+      "text": ""
+    },
+    {
+      "class": "TextureRect",
+      "name": "@TextureRect@96",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@97",
+      "text": "舰炮"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@98",
+      "text": ""
+    },
+    {
+      "class": "Button",
+      "name": "Candidate_longLaser",
+      "text": ""
+    },
+    {
+      "class": "TextureRect",
+      "name": "@TextureRect@100",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@101",
+      "text": "长激光"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@102",
+      "text": ""
+    },
+    {
+      "class": "Control",
+      "name": "DifferentCandidateComparison",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@46",
+      "text": "现装 · 1.5秒"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@47",
+      "text": "1.76万"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@48",
+      "text": "所选 · 2.4秒"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@49",
+      "text": "8,640"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@50",
+      "text": "攻击力"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@51",
+      "text": "周期"
+    },
+    {
+      "class": "Button",
+      "name": "Install",
+      "text": "安装导弹"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@103",
+      "text": "铁"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@104",
+      "text": "1,900"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@998",
+      "text": "简并物质"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@999",
+      "text": "10"
+    },
+    {
+      "class": "Button",
+      "name": "Slot_weapon_0",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@80",
+      "text": "1"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@81",
+      "text": "脉冲炮"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@82",
+      "text": "Lv.20"
+    },
+    {
+      "class": "Button",
+      "name": "Slot_defence_0",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@84",
+      "text": "1"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@85",
+      "text": "装甲"
+    },
+    {
+      "class": "Label",
+      "name": "@Label@86",
+      "text": "Lv.1"
+    },
+    {
+      "class": "ColorRect",
+      "name": "@ColorRect@53",
+      "text": ""
+    },
+    {
+      "class": "Panel",
+      "name": "@Panel@54",
+      "text": ""
+    },
+    {
+      "class": "PanelContainer",
+      "name": "@PanelContainer@55",
+      "text": ""
+    },
+    {
+      "class": "MarginContainer",
+      "name": "@MarginContainer@56",
+      "text": ""
+    },
+    {
+      "class": "VBoxContainer",
+      "name": "@VBoxContainer@57",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@58",
+      "text": "全部装备升级"
+    },
+    {
+      "class": "OptionButton",
+      "name": "@OptionButton@69",
+      "text": "每槽 +1"
+    },
+    {
+      "class": "ScrollContainer",
+      "name": "@ScrollContainer@72",
+      "text": ""
+    },
+    {
+      "class": "VBoxContainer",
+      "name": "@VBoxContainer@73",
+      "text": ""
+    },
+    {
+      "class": "Label",
+      "name": "@Label@74",
+      "text": "武器1 · 脉冲炮 · Lv.20\n防御1 · 装甲 · Lv.1"
+    },
+    {
+      "class": "HBoxContainer",
+      "name": "@HBoxContainer@75",
+      "text": ""
+    },
+    {
+      "class": "Button",
+      "name": "@Button@76",
+      "text": "执行升级"
+    },
+    {
+      "class": "Button",
+      "name": "@Button@77",
+      "text": "关闭"
+    }
+  ],
+  "records": [
+    {
+      "action": "purchase",
+      "after": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.9"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 21,
+            "equipment_id": "laser",
+            "paid_level": 21,
+            "primary": "2.08e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 20,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "4",
+            "m": "9.84"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.9"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：9.84万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：990"
+          }
+        ]
+      },
+      "before": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "result": {
+        "defence_changed": false,
+        "ok": true,
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "count": 1,
+              "slot_id": "weapon:0",
+              "spent": {
+                "1": {
+                  "e": "3",
+                  "m": "1.6"
+                },
+                "degenerate_matter": {
+                  "e": "1",
+                  "m": "1"
+                }
+              }
+            }
+          ],
+          "spent": {
+            "1": {
+              "e": "3",
+              "m": "1.6"
+            },
+            "degenerate_matter": {
+              "e": "1",
+              "m": "1"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "source_commit": "283b579543e8d6e5bba8a0f4fd6ef9ecceb6d6f7"
+}

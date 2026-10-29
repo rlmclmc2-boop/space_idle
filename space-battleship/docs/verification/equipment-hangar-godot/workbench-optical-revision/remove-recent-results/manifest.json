@@ -1,0 +1,43 @@
+{
+  "source_commit": "283b579543e8d6e5bba8a0f4fd6ef9ecceb6d6f7",
+  "equipment_sha256": "c780015aa91f9c151327d8179bccf99ee693d49cd7e614fb636496834c1ea85e",
+  "shared_reference": "224fa5005e8d0a7c89aa6e7570a78ead71408583",
+  "shared_reference_read_only": true,
+  "viewport": [
+    1440,
+    900
+  ],
+  "run_exit_code": 0,
+  "full_screenshots": 4,
+  "failures": [],
+  "files": {
+    "01-current-state-no-recent-results.png": {
+      "sha256": "f3a103fc048b5c62756c568f36b7c6d46f6aaab5332744e9760a7905bdb7c201",
+      "bytes": 1374584
+    },
+    "02-accepted-current-state-no-toast.png": {
+      "sha256": "afaa933fddb770565df7e32e727d9f1b28c3ee70773153c2c56027f9d1cf27a5",
+      "bytes": 1396631
+    },
+    "03-different-candidate-no-record-gap.png": {
+      "sha256": "a38a72bf60d53702a53f50c54933eea859b04d06a4333a4807cc2772a8f0cfa6",
+      "bytes": 1388540
+    },
+    "04-batch-current-levels.png": {
+      "sha256": "b917113d907a9954020e9ba4de018be53ce43cc3a3a469194504c9e5c348df0a",
+      "bytes": 881068
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "ddf472472ad2394ab779e280ad10f193f0b4eddc739e6546d947d78020a8afac",
+      "bytes": 5277
+    },
+    "capture.log.txt": {
+      "sha256": "5dff52e104016b51e8266165642e30cdbb18e15b1d4f8fbabf1e3b41b94c142c",
+      "bytes": 410
+    },
+    "operations.json": {
+      "sha256": "623d68d674fdfa8d04c122e5708847c3d410e63d45d62e181c83b115e8160832",
+      "bytes": 15338
+    }
+  }
+}

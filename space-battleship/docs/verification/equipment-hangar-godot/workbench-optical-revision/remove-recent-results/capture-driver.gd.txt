@@ -1,0 +1,73 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/remove-recent-results"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+var nodes:Array=[]
+func inspect_nodes(node:Node)->void:
+    nodes.append({"name":str(node.name),"class":node.get_class(),"text":node.get("text") if node is Label or node is Button else ""})
+    check(not node is PopupPanel,"no record PopupPanel instance")
+    check(str(node.name) not in ["ReceiptToast","ReceiptHistory"],"no recent-result presentation node")
+    for child in node.get_children():inspect_nodes(child)
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"real main Session native startup")
+    host.set_pause("user",true);await flush()
+    await screenshot("01-current-state-no-recent-results")
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled availability");host.equipment.refresh_availability(host.campaign_system.available,100)
+    var e:Dictionary=host.equipment.save_state()
+    for row in e.slots:
+        if row.id=="weapon:0":row.paid_level=19;row.switch_ready_at=0.0
+    check(host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts).ok,"controlled level19")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"native sync")
+    wallet("100000","1000");panel._dirty=true;await flush()
+    var before:Dictionary=snapshot();await click(panel._purchase)
+    check(panel.last_result.get("purchase_receipt",{}).get("commit_status")=="accepted","real GUI purchase accepted")
+    records.append({"action":"purchase","before":before,"after":snapshot(),"result":panel.last_result.duplicate(true)})
+    check(panel._level_label.text=="Lv.20","current level updates")
+    await screenshot("02-accepted-current-state-no-toast")
+    await click(panel._choices.missile.button)
+    check(panel._install.visible,"different candidate retains install")
+    await screenshot("03-different-candidate-no-record-gap")
+    panel._open_batch();await flush()
+    check(panel.has_exclusive_ui() and not panel.prepare_host_hide(false),"batch still blocks normal hide")
+    await click(panel._batch_quantity)
+    check(panel._batch_quantity.get_popup().visible and panel.has_exclusive_ui(),"OptionButton popup remains exclusive")
+    check(panel.prepare_host_hide(true) and not panel.has_exclusive_ui(),"force closes batch and OptionButton")
+    panel._open_batch();await flush();await screenshot("04-batch-current-levels")
+    inspect_nodes(panel)
+    check(not nodes.any(func(n):return str(n.text).contains("最近") or str(n.text)=="记录"),"no recent results captions")
+    var file:=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE)
+    file.store_string(JSON.stringify({"source_commit":"283b579543e8d6e5bba8a0f4fd6ef9ecceb6d6f7","records":records,"nodes":nodes,"failures":failures},"  "))
+    print("REMOVE_RECENT_RESULTS_COMPLETE failures=",failures.size());app.queue_free();await process_frame;quit(0 if failures.is_empty() else 1)
