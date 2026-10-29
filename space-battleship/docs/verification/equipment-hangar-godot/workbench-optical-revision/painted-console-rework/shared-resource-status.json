@@ -1,0 +1,13 @@
+{
+  "requested_fixed_git": "c4c48282",
+  "required_files": [
+    "docs/game-design/13-art-interaction.md section2.2",
+    "src/ui/resource_visuals.gd"
+  ],
+  "action": "normal fetch origin design/shared-host-shell, then git show c4c48282",
+  "observed_fetch_head": "fa28589bbf4e2ae84f3174737114eca407a13fcb",
+  "result": "requested object not available locally after fetch; awaiting full SHA/published branch from root",
+  "status": "pending, not denied",
+  "implemented": false,
+  "no_guessed_source_or_new_resource_icons": true
+}

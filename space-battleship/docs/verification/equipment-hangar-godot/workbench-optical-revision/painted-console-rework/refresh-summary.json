@@ -1,0 +1,100 @@
+{
+  "source_commit": "89ac5d0a0a4a124b0dbff9a15b92a50f2a1b9588",
+  "observations": 36,
+  "failures": [],
+  "events": [
+    {
+      "event": "availability",
+      "ui_count_delta": {
+        "refreshes": 1,
+        "numeric_refreshes": 0,
+        "slot_fact_reads": 1,
+        "equipment_option_reads": 1,
+        "scene_redraw_requests": 0,
+        "comparison_reads": 1
+      },
+      "node_count_before": 77,
+      "node_count_after": 77,
+      "node_ids_identical": true,
+      "material_ids_identical": true
+    },
+    {
+      "event": "cycle_quote",
+      "ui_count_delta": {
+        "refreshes": 0,
+        "numeric_refreshes": 0,
+        "slot_fact_reads": 0,
+        "equipment_option_reads": 0,
+        "scene_redraw_requests": 0,
+        "comparison_reads": 1
+      },
+      "node_count_before": 79,
+      "node_count_after": 79,
+      "node_ids_identical": true,
+      "material_ids_identical": true
+    },
+    {
+      "event": "single_level",
+      "ui_count_delta": {
+        "refreshes": 0,
+        "numeric_refreshes": 1,
+        "slot_fact_reads": 1,
+        "equipment_option_reads": 0,
+        "scene_redraw_requests": 0,
+        "comparison_reads": 1
+      },
+      "node_count_before": 79,
+      "node_count_after": 79,
+      "node_ids_identical": true,
+      "material_ids_identical": true
+    },
+    {
+      "event": "candidate_selection",
+      "ui_count_delta": {
+        "refreshes": 0,
+        "numeric_refreshes": 0,
+        "slot_fact_reads": 0,
+        "equipment_option_reads": 0,
+        "scene_redraw_requests": 0,
+        "comparison_reads": 1
+      },
+      "node_count_before": 79,
+      "node_count_after": 79,
+      "node_ids_identical": true,
+      "material_ids_identical": true
+    },
+    {
+      "event": "refit",
+      "ui_count_delta": {
+        "refreshes": 1,
+        "numeric_refreshes": 0,
+        "slot_fact_reads": 1,
+        "equipment_option_reads": 1,
+        "scene_redraw_requests": 1,
+        "comparison_reads": 1
+      },
+      "node_count_before": 79,
+      "node_count_after": 79,
+      "node_ids_identical": true,
+      "material_ids_identical": true
+    },
+    {
+      "event": "batch_levels",
+      "ui_count_delta": {
+        "refreshes": 0,
+        "numeric_refreshes": 1,
+        "slot_fact_reads": 1,
+        "equipment_option_reads": 0,
+        "scene_redraw_requests": 0,
+        "comparison_reads": 1
+      },
+      "node_count_before": 79,
+      "node_count_after": 79,
+      "node_ids_identical": true,
+      "material_ids_identical": true
+    }
+  ],
+  "same_budget": "source-preserved only; not explicitly retriggered this run",
+  "counter_scope": "UI instrumentation only; driver uses independent Owner readbacks for comparison",
+  "snapshot_port_limit": "Existing public equipment_slot_facts returns all slot facts once; UI only applies changed numeric IDs. No new Owner snapshot port."
+}
