@@ -1,32 +1,41 @@
 extends RefCounted
 static func create() -> Theme:
 	var theme := Theme.new()
-	theme.default_font_size = 16
+	theme.default_font_size = 15
 	theme.default_font = ThemeDB.fallback_font
-	for key in ["font_color", "font_color_hover", "font_color_pressed"]: theme.set_color(key, "Button", Color("e2eff5"))
-	theme.set_color("font_color", "Label", Color("c9dce7"))
-	theme.set_color("font_color", "LineEdit", Color("e2eff5"))
+	theme.set_color("font_color", "Button", Color("f0f2e9"))
+	theme.set_color("font_hover_color", "Button", Color("ffffff"))
+	theme.set_color("font_pressed_color", "Button", Color("173e4c"))
+	theme.set_color("font_disabled_color", "Button", Color("9cb4b4"))
+	theme.set_color("font_color", "Label", Color("dfebe6"))
+	theme.set_color("font_color", "LineEdit", Color("f0f2e9"))
 	for type in ["Button", "OptionButton", "LineEdit", "SpinBox"]:
-		for key in ["normal", "hover", "pressed", "focus"]:
+		for key in ["normal", "hover", "pressed", "focus", "disabled"]:
 			var style := StyleBoxFlat.new()
-			style.bg_color = Color("173447") if key in ["hover", "pressed"] else Color("102736")
-			style.border_color = Color("6bc5ce") if key == "focus" else Color("2b566b")
-			style.set_border_width_all(1)
+			style.bg_color = Color("244f60") if key == "hover" else Color("e4ddca") if key == "pressed" else Color("213842") if key == "disabled" else Color("143746")
+			style.border_color = Color("c5dfd7") if key == "focus" else Color("c5a975") if key == "pressed" else Color("597e85")
+			style.set_border_width_all(2 if key == "focus" else 1)
 			style.set_corner_radius_all(5)
 			style.content_margin_left = 10
 			style.content_margin_right = 10
-			style.content_margin_top = 8
-			style.content_margin_bottom = 8
+			style.content_margin_top = 7
+			style.content_margin_bottom = 7
+			style.shadow_color = Color("061925", 0.35)
+			style.shadow_size = 2
+			style.shadow_offset = Vector2(0, 2)
 			theme.set_stylebox(key, type, style)
 	var panel := StyleBoxFlat.new()
-	panel.bg_color = Color("0b1c2b", 0.98)
-	panel.border_color = Color("355569")
+	panel.bg_color = Color("0e2835", 0.98)
+	panel.border_color = Color("5f8589")
 	panel.set_border_width_all(1)
-	panel.set_corner_radius_all(8)
-	panel.content_margin_left = 12
-	panel.content_margin_right = 12
-	panel.content_margin_top = 12
-	panel.content_margin_bottom = 12
+	panel.set_corner_radius_all(5)
+	panel.content_margin_left = 16
+	panel.content_margin_right = 16
+	panel.content_margin_top = 14
+	panel.content_margin_bottom = 14
+	panel.shadow_color = Color("04121a", 0.35)
+	panel.shadow_size = 4
+	panel.shadow_offset = Vector2(0, 3)
 	theme.set_stylebox("panel", "PanelContainer", panel)
 	theme.set_stylebox("panel", "TabContainer", StyleBoxEmpty.new())
 	theme.set_constant("separation", "VBoxContainer", 10)

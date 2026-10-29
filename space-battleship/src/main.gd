@@ -10,6 +10,7 @@ const PlanetPanel = preload("res://src/ui/planet_panel.gd")
 const HyperspacePanel = preload("res://src/ui/hyperspace_panel.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
+const ZoneShell = preload("res://src/ui/zone_shell.gd")
 const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
@@ -25,6 +26,7 @@ var _feature_panels: Dictionary = {}
 var _pages: Dictionary = {}
 var _tabs: TabContainer
 var equipment_scene: Control
+var _zone_shell: Control
 var _battle_viewport: SubViewport
 var _bridge_open: Button
 var _battle_input_blocker: Control
@@ -179,7 +181,7 @@ func _show_session() -> void:
 	var hud_layer := CanvasLayer.new()
 	hud_layer.layer = 8
 	_battle_viewport.add_child(hud_layer)
-	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle, session.economy))
+	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle))
 	_setup_shell_overlay()
 	_battle_viewport.add_child(CampaignView.new(session.campaign_system, _ui_occupied))
 	_battle_viewport.add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
@@ -189,6 +191,13 @@ func _show_session() -> void:
 	equipment_scene = EquipmentPanel.new(session)
 	equipment_layer.add_child(equipment_scene)
 	equipment_scene.exclusive_ui_changed.connect(_sync_equipment_entry)
+	equipment_scene.set_shared_host(true, null)
+	var zone_layer := CanvasLayer.new()
+	zone_layer.layer = 10
+	add_child(zone_layer)
+	_zone_shell = ZoneShell.new(session.economy)
+	zone_layer.add_child(_zone_shell)
+	_zone_shell.route_requested.connect(_zone_route)
 	_battle_input_blocker = Control.new()
 	_battle_input_blocker.position = Vector2(808, 0)
 	_battle_input_blocker.size = Vector2(632, 900)
@@ -413,7 +422,7 @@ func _process(dt: float) -> void:
 				if growth_status != null:
 					growth_status.text = "保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown")))
 		_save_status_elapsed += maxf(dt, 0.0)
-		if save_state_label != null and growth_panel != null and growth_panel.visible and _save_status_elapsed >= 1.0:
+		if save_state_label != null and _save_status_elapsed >= 1.0:
 			_save_status_elapsed = 0.0
 			if session.save_files == null:
 				save_state_label.text = "尚未设置存档目录"
@@ -424,6 +433,8 @@ func _process(dt: float) -> void:
 			else:
 				var status: Dictionary = session.dirty_since_save()
 				save_state_label.text = "暂时无法读取保存状态" if not status.ok else "有未保存进度" if status.dirty else "最近进度已写入文件"
+			if is_instance_valid(_zone_shell) and (_save_warning == null or not _save_warning.visible):
+				_zone_shell.set_status(save_state_label.text, save_state_label.text.begins_with("保存失败"))
 		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
 			_next_autosave_wall = session.wall_time + _autosave_interval
 			var saved: Dictionary = session.request_save()
@@ -480,6 +491,7 @@ func _refresh_save_warning() -> void:
 		_save_warning.text = "保存失败，请在舰桥设置中重试，当前进度尚未写入文件。" if failed_save else _startup_save_error
 	_save_warning.tooltip_text = _save_warning.text
 	_save_warning.visible = not _save_warning.text.is_empty()
+	if is_instance_valid(_zone_shell) and _save_warning.visible: _zone_shell.set_status(_save_warning.text, true)
 
 func _setup_guidance_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -534,8 +546,7 @@ func _sync_guidance() -> void:
 	_guidance_panel.visible = true
 
 func _draw_shell(canvas: Node2D) -> void:
-	var font: Font = ThemeDB.fallback_font
-	canvas.draw_string(font, Vector2(18, 942), "空格暂停 · G 驻守 · 点击掉落领取", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("91a9c0"))
+	pass
 
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
@@ -569,7 +580,32 @@ func _ui_occupied() -> bool:
 	return false
 
 func _modal_ui_occupied() -> bool:
-	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(growth_panel) and growth_panel.visible) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
+	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_zone_shell) and _zone_shell.has_exclusive_ui()) or (is_instance_valid(growth_panel) and growth_panel.visible) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
+
+func _zone_route(id: String) -> void:
+	if _zone_navigation_blocked() or not _zone_shell.is_route_available(id): return
+	_zone_shell.close_details()
+	if id == "equipment":
+		_set_page("battle")
+		return
+	var tabs := {"ship": 0, "growth": 1, "universe": 2, "hyperspace": 3, "archive": 4, "settings": 5}
+	if not tabs.has(id): return
+	_set_page("growth")
+	if is_instance_valid(growth_panel) and growth_panel.visible:
+		_tabs.current_tab = int(tabs[id])
+		_sync_zone_route()
+
+func _zone_navigation_blocked() -> bool:
+	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
+
+func _sync_zone_route() -> void:
+	if not is_instance_valid(_zone_shell): return
+	var pages := ["ship", "growth", "universe", "hyperspace", "archive", "settings"]
+	var id := "equipment"
+	if is_instance_valid(growth_panel) and growth_panel.visible and is_instance_valid(_tabs):
+		id = pages[clampi(_tabs.current_tab, 0, pages.size() - 1)]
+	_zone_shell.set_active_route(id)
+	_zone_shell.set_navigation_blocked(_zone_navigation_blocked())
 
 func _set_growth_visible(visible: bool) -> bool:
 	if visible and is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return false
@@ -587,6 +623,7 @@ func _sync_equipment_entry() -> void:
 	if is_instance_valid(_bridge_open):
 		_bridge_open.disabled = (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible)
 	if is_instance_valid(_battle_input_blocker): _battle_input_blocker.visible = _modal_ui_occupied()
+	_sync_zone_route()
 
 func _set_page(page: String) -> void:
 	if page == "growth" and is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return
@@ -605,10 +642,11 @@ func _setup_growth_panel() -> void:
 	_bridge_open = open
 	open.text = "舰桥面板"
 	open.position = Vector2(678, 48)
+	open.hide()
 	layer.add_child(open)
 	growth_panel = PanelContainer.new()
-	growth_panel.position = Vector2(12, 130)
-	growth_panel.size = Vector2(548, 760)
+	growth_panel.position = Vector2(0, 65)
+	growth_panel.size = Vector2(808, 835)
 	growth_panel.visible = _preferred_page == "growth"
 	layer.add_child(growth_panel)
 	growth_panel.theme = load("res://src/ui/bridge_theme.gd").create()
@@ -617,6 +655,7 @@ func _setup_growth_panel() -> void:
 	var box: VBoxContainer = shell
 	var back := Button.new()
 	back.text = "关闭面板"
+	back.hide()
 	back.pressed.connect(func(): _set_page("battle"))
 	box.add_child(back)
 	growth_status = Label.new()
@@ -626,13 +665,16 @@ func _setup_growth_panel() -> void:
 	save_state_label = Label.new()
 	PlayerText.wrap(save_state_label)
 	box.add_child(save_state_label)
+	save_state_label.hide()
 	_save_status_elapsed = 1.0
 	open.pressed.connect(func(): _set_page("battle" if growth_panel.visible else "growth"))
 	growth_panel.visibility_changed.connect(_sync_equipment_entry)
 	_sync_equipment_entry()
 	_tabs = TabContainer.new()
+	_tabs.tabs_visible = false
 	_tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	shell.add_child(_tabs)
+	_tabs.tab_changed.connect(func(_tab): _sync_zone_route())
 	_pages.clear()
 	for page in [["ship", "舰船"], ["growth", "成长"], ["universe", "星图"], ["hyperspace", "超空间"], ["archive", "档案"], ["settings", "设置"]]:
 		_create_bridge_page(str(page[0]), str(page[1]))
@@ -826,6 +868,11 @@ func _refresh_feature_visibility() -> void:
 		_tabs.set_tab_hidden(_pages.universe.index, not (visible_features.crew or visible_features.planet or visible_features.galaxy))
 		_tabs.set_tab_hidden(_pages.hyperspace.index, not visible_features.hyperspace)
 		if _tabs.is_tab_hidden(_tabs.current_tab): _tabs.current_tab = int(_pages.ship.index)
+	if is_instance_valid(_zone_shell):
+		_zone_shell.set_route_available("growth", visible_features.reactor or visible_features.research or visible_features.enhancement)
+		_zone_shell.set_route_available("universe", visible_features.crew or visible_features.planet or visible_features.galaxy)
+		_zone_shell.set_route_available("hyperspace", visible_features.hyperspace)
+		_sync_zone_route()
 
 func _create_bridge_page(key: String, title: String) -> void:
 	var scroll := ScrollContainer.new()
