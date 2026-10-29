@@ -19,3 +19,11 @@
 抽屉结构签名又移除了纯数值 `source_factor`。当前已建精炼厂或工坊的因子标签在原控件更新；看另一设施时因子变化不重建当前抽屉。[两设施控件身份夹具](evidence/opaque-spine/factor-identity-driver.gd.txt)检查当前因子 1.2→2.5 和另一设施因子变化后的 `instance_id`、文字，日志为 `PASS`。这是修代码路径的确认，未曾观察到用户所担心的全屏控件叠层。
 
 本星球余额栏复用整体组 `c4c48282` 的 `src/ui/resource_visuals.gd` 与同批五个 SVG 图标、颜色，按 `balance_rows()` 的资源 ID 原位更新三个固定单元，不在余额变化时创建新控件。星球设施的掉落加成和征服奖励目前只是描述文案，没有可安全映射到资源 ID 的逐项金额；本候选没有猜测图标或改业务。`--check-only`、`git diff --check` 均退出 0；该受影响夹具与代表取图不覆盖其他模块的资源表现。
+
+## 后续设施根部整合候选
+
+根端退回上节 `opaque-spine` 完整态：三座旧设施插画仍像分别摆在灰环上，底脚与短横 BoxMesh 接口未形成整体。本次只改接合处和材质色阶，保留该版的真实连续环、后侧深度裁剪、独立建段和原位数值刷新。[本次完整主界面五态原图](evidence/integrated-roots/stages/)及[关键相位原图](evidence/integrated-roots/phases/)是**本次代码**重新取的；旧 `opaque-spine` PNG 不代表本次效果。
+
+三座设施各用原 R5 body 图片作 ImageGen 编辑输入，改根部为精炼厂入料承接座、工坊导轨封装裙、船坞双泊位主脊；原上部形态与独立动作层仍沿用，但编辑图并非逐像素保持原上部。[原 PNG、提示词、生成路径和 SHA](../../../../assets/planets/facilities_v5/illustrated/orbit-integrated-prompts.txt)已固定。旧三座设施的短横 BoxMesh 接口已删，避免在新根部下面再叠一套外加条；空间站原圆形座保留。环的原贴图与真实网格没有变，只把受光材质适度调整为暖象牙以缩小与未受光 Sprite3D 的色阶差，没把概念图烘成整环贴片。
+
+作者按原尺寸看了完整主界面和 24/43/51/72/87 相位，前弧连续、选定帧未见旧环面横贯设施，三设施根部与环面的接触比旧横条明确。新根部仍是 camera-facing Sprite3D，不能据静帧宣称其成为完整 3D 模型；整合美术仍待审图。相位驱动沿用上一节的模拟时间加速取样，既非实时性能测量，也不覆盖完整动态或六类天体。本次 Godot `--check-only`、`git diff --check` 退出 0，[驱动、日志与截图 SHA](evidence/integrated-roots/)一并保留。

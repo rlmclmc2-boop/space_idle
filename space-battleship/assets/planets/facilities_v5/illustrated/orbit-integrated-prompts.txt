@@ -1,0 +1,23 @@
+R18 facility root edits; image_gen.imagegen, transparent_background=true.
+Existing R5 art is the first reference in every call. The generated PNGs are
+preserved byte-for-byte as *-orbit-integrated.png (1536x1024 RGBA).
+
+refinery-orbit-integrated.png
+sha256: 19384a831dfbbb689a5a61369d4f57a5e2c874914441579f20b41f57863ac146
+generated image: /workspace/generated_images/exec-c237c812-2bd9-4c57-a491-2970a58b4b59.png
+references: refinery-body.png; docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png
+prompt: Production sprite edit. Preserve refinery upper silhouette, furnace and two ore hoppers from image 1 exactly, same isometric cartoon style. Redesign only bottom 20% into a broad ivory/navy structural cradle with visible integral collars and recessed intake so the facility physically plugs into an orbital belt. Preserve 1536x1024 canvas framing. Transparent background, one isolated refinery, no planet or ring, no text.
+
+workshop-orbit-integrated.png
+sha256: 6d52e227a9029002da83bf52645ec54553e2f8db60d86bb0271b0d95d888e49c
+generated image: /workspace/generated_images/exec-e096f6a8-6eca-485f-924c-f9f0b1e06c01.png
+references: workshop-body.png; docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png
+prompt: Edit the FIRST referenced game sprite only, second is design-language reference. Preserve the upper gantry, lit open work bay and cream/navy silhouette of image 1. Redesign bottom 20 percent into an integral broad armored machine skirt and two structural load sockets, with the workshop bay rails clearly feeding into those sockets. It should look like an orbital ring segment can attach to both sides of its base, not like a freestanding building. Same isometric perspective, 1536x1024 framing, transparent background, isolated module, no full ring, no planet, no text.
+
+shipyard-orbit-integrated.png
+sha256: 2d9ba2a33045929af4634976738020fe11d845ea8b29d49700895ed2b13e92d6
+generated image: /workspace/generated_images/exec-0fa97227-ddc7-4307-a985-c021e79db7ba.png
+references: shipyard-body.png
+prompt: Edit only this isolated transparent game sprite. Keep same 1536x1024 framing, isometric camera, same long open shipyard cantilever with its upper berth and lower berth and same ivory/navy cartoon style. Modify only the bottom ~15% at the LEFT ROOT of both berth arms: create a compact structural keel and two broad ivory load collars around the vertical root so the two arms visibly grow out of one load-bearing module. The structural keel must remain entirely inside the current isolated facility silhouette; do not draw an orbital ring, curved belt, planet, background, extra scene, or bars extending beyond the source sprite. Preserve transparent background and the source's overall silhouette and work surfaces. One facility asset only.
+
+One earlier shipyard edit generated a full ring and was rejected; it is not used.

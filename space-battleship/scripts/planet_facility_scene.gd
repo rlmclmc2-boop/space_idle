@@ -110,7 +110,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedWorkshopBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-body.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-integrated.png")
 	body.pixel_size = 0.0031
 	body.position = Vector3(0, 1.38, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -174,7 +174,7 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedRefineryBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-body.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-integrated.png")
 	body.pixel_size = 0.0032
 	body.position = Vector3(0, 1.50, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -238,7 +238,7 @@ func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedShipyardBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-body.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-orbit-integrated.png")
 	body.pixel_size = 0.0030
 	body.position = Vector3(0, 1.36, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED

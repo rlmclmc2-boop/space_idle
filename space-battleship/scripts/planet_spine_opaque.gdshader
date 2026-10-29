@@ -41,6 +41,6 @@ void fragment() {
 	if (luminous) {
 		EMISSION = color * 1.0;
 	} else if (textured) {
-		EMISSION = color * 0.55;
+		EMISSION = color * 0.78;
 	}
 }

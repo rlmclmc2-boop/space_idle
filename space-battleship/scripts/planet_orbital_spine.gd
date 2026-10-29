@@ -25,7 +25,6 @@ var _joins: Dictionary = {}
 var _owned: Array = []
 var _navy: ShaderMaterial
 var _side: ShaderMaterial
-var _armor: ShaderMaterial
 var _cyan: ShaderMaterial
 var _deck: ShaderMaterial
 var _sleeve: ShaderMaterial
@@ -46,12 +45,10 @@ static func socket_position(angle: float, kind: String) -> Vector3:
 func _ready() -> void:
 	_navy = _material(Color("152f43"))
 	_side = _material(Color("36566a"))
-	_armor = _material(Color("d4d0c0"))
 	_cyan = _material(Color("4cb9c2"), true)
 	_navy.render_priority = -3
 	_side.render_priority = -2
-	_armor.render_priority = -1
-	_deck = _material(Color.WHITE)
+	_deck = _material(Color("fff2df"))
 	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-albedo.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
@@ -178,8 +175,7 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 	parent.add_child(instance)
 
 func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
-	# Each built section owns its facility socket on the continuous deck.
-	# The socket arrives with that section; no neighboring arc is required.
+	# Each built section owns the facility root on its continuous deck.
 	_add_facility_socket(parent, kind, angle)
 	# One restrained amber status light makes the socket read as equipment,
 	# without introducing another buildable node.
@@ -193,43 +189,11 @@ func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
 	parent.add_child(lamp)
 
 func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
-	# The old common dark drum made the illustration look placed on a display
-	# stand. Each socket now exposes the facility's actual load/contact path.
-	var radial := point(angle).normalized()
-	var normal := plane_normal()
-	var tangent := normal.cross(radial).normalized()
-	var basis := Basis(tangent, normal, radial)
-	var origin := point(angle)
+	# The three working facilities carry their load collars in their authored
+	# root artwork. The station alone retains its existing circular dock.
 	if kind == "auto_explore":
-		_add_socket_drum(parent, origin + normal * 0.52, 0.36, 0.42, 0.20, _navy, normal)
+		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.36, 0.42, 0.20, _navy, plane_normal())
 		return
-	if kind == "refinery":
-		# Twin inset intake channels in the armored saddle. The illustration's
-		# feet meet the deck; the channels do not extend to the rotating ground.
-		for flank in [-1.0, 1.0]:
-			_add_socket_box(parent, origin + tangent * flank * 0.40 + radial * -0.18 + normal * 0.45, Vector3(0.12, 0.04, 0.62), basis, _side)
-			_add_socket_box(parent, origin + tangent * flank * 0.40 + radial * -0.42 + normal * 0.48, Vector3(0.055, 0.02, 0.30), basis, _cyan)
-	elif kind == "equipment":
-		# Paired inlaid guides frame the open machining bay and bridge into the
-		# section's native armor, without a separate raised display platform.
-		for flank in [-1.0, 1.0]:
-			_add_socket_box(parent, origin + tangent * flank * 0.43 + normal * 0.46, Vector3(0.11, 0.05, 0.94), basis, _side)
-		_add_socket_box(parent, origin + radial * -0.39 + normal * 0.47, Vector3(0.78, 0.025, 0.10), basis, _cyan)
-	else:
-		# Two recessed berth lines remain beneath the open drydock arms; their
-		# attachment is the existing curved saddle, not another black podium.
-		for flank in [-1.0, 1.0]:
-			_add_socket_box(parent, origin + tangent * flank * 0.37 + normal * 0.46, Vector3(0.10, 0.05, 1.05), basis, _side)
-			_add_socket_box(parent, origin + tangent * flank * 0.37 + normal * 0.50, Vector3(0.045, 0.02, 0.88), basis, _cyan)
-
-func _add_socket_box(parent: Node3D, position: Vector3, size: Vector3, basis: Basis, material: Material) -> void:
-	var instance := MeshInstance3D.new()
-	var box := BoxMesh.new()
-	box.size = size
-	instance.mesh = box
-	instance.material_override = material
-	instance.transform = Transform3D(basis, position)
-	parent.add_child(instance)
 
 func _add_socket_drum(parent: Node3D, position: Vector3, top: float, bottom: float, height: float, material: Material, normal: Vector3) -> void:
 	var instance := MeshInstance3D.new()
