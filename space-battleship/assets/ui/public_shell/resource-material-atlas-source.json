@@ -1,0 +1,53 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-29",
+  "source_path": "/workspace/generated_images/exec-8b1a30be-3ed1-4347-8915-9f830fbda3e8.png",
+  "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec",
+  "dimensions": [
+    2172,
+    724
+  ],
+  "format": "RGBA PNG",
+  "cells": {
+    "1": [
+      0,
+      0,
+      724,
+      724
+    ],
+    "2": [
+      724,
+      0,
+      724,
+      724
+    ],
+    "chrono": [
+      1448,
+      0,
+      724,
+      724
+    ]
+  },
+  "prompt_file": "resource-material-atlas-prompt.txt",
+  "runtime_crop_bounds": {
+    "1": [
+      62,
+      129,
+      602,
+      475
+    ],
+    "2": [
+      111,
+      101,
+      531,
+      503
+    ],
+    "chrono": [
+      195,
+      76,
+      367,
+      568
+    ]
+  },
+  "runtime_icon_pixels": 24
+}

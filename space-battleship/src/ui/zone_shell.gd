@@ -74,7 +74,7 @@ func _init(economy) -> void:
 		var mark := TextureRect.new()
 		var resource_id: String = ["1", "2", "chrono"][index]
 		mark.texture = ResourceVisuals.icon(resource_id)
-		mark.modulate = ResourceVisuals.color(resource_id)
+		mark.modulate = ResourceVisuals.icon_modulate(resource_id)
 		mark.position = Vector2(spec[0] + 10, 24)
 		mark.size = Vector2(17, 17)
 		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -136,7 +136,7 @@ func _init(economy) -> void:
 		var row := HBoxContainer.new()
 		var mark := TextureRect.new()
 		mark.texture = ResourceVisuals.icon(id)
-		mark.modulate = ResourceVisuals.color(id)
+		mark.modulate = ResourceVisuals.icon_modulate(id)
 		mark.custom_minimum_size = Vector2(20, 20)
 		row.add_child(mark)
 		var value := Label.new()

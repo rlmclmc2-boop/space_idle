@@ -28,7 +28,7 @@ func _draw() -> void:
 			var color: Color = ResourceVisuals.color(resource_id)
 			draw_circle(center, 15.0, Color("092536"))
 			draw_arc(center, 15.0, 0.0, TAU, 24, color, 1.3)
-			draw_texture_rect(icon, Rect2(center - Vector2(14, 14), Vector2(28, 28)), false, color)
+			draw_texture_rect(icon, Rect2(center - Vector2(14, 14), Vector2(28, 28)), false, ResourceVisuals.icon_modulate(resource_id))
 		else:
 			draw_circle(center, 5.0, ResourceVisuals.color(resource_id))
 
