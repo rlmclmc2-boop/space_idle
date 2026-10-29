@@ -74,3 +74,9 @@ Godot `4.7.2`，桌面 `1440×900`，正常 main 入口实例。整屏：[装备
 Godot 4.7.2 正常 1440×900 主场景同版实机：[顶部／装备费用整屏](evidence/resource-material-equipment-1440x900.png)、[打开资源详情整屏](evidence/resource-material-details-1440x900.png)、自然铁掉落的[初现整屏](evidence/resource-material-drop-000.png)和[10 帧后整屏](evidence/resource-material-drop-010.png)。[详情取帧驱动](evidence/resource-material-details-driver.gd.txt)和[自然掉落取帧驱动](evidence/resource-material-drop-driver.gd.txt)固定页面断言及掉落事实；自然铁标来自正常战斗，不是伪造掉落。按实际显示尺寸看三种资源在顶部和详情有独立材质与轮廓，铁掉落在原色圈内可辨；没有用放大素材图代替实机判断。自然掉落证据仅覆盖铁，不外推铀／时空微粒的自然掉落状态。
 
 公共 `zone_shell.gd` 的余额／详情及 `economy_view.gd` 的掉落已调用 `icon_modulate` 保留材质原色；装备和反应炉内部虽通过共享 `icon(id)` 得到新图，但其费用行仍有原组自己的 `color(id)` 整幅着色，完整材质显示须由各原组在本身费用／奖励行改用 `icon_modulate(id)`，并以真实小尺寸实机复看。其他模块消费／奖励也归各自所有者。共享契约只在 [13 第 2.2 节](../../../game-design/13-art-interaction.md#22-全局信息层级与适配) 和 [14 第 1 节](../../../game-design/14-ui-contracts.md#1-版本与使用边界) 维护；本段仅记录本次实际接入与未覆盖范围。当前是新候选，须按 13 第 6 节重新整体审图，不能沿用之前公共页面或模块的限定结论。
+
+### 同屏资源家族补齐（当前待审）
+
+原审看 `da018a65` 的正常详情整屏，确认前三枚新材质小尺寸可辨，但强化碎片仍是紫色线框，整体未过。本次从已看过的前三枚图集风格制作 [补充图集](../../../../assets/ui/public_shell/resource-material-supplement.png)：紫色实体晶片与银蓝致密球；[生成提示](../../../../assets/ui/public_shell/resource-material-supplement-prompt.txt) 和 [源文件记录](../../../../assets/ui/public_shell/resource-material-supplement-source.json) 保留来源、哈希与提取边界。`resource_visuals.gd` 将五个已存在的资源 ID 全部映射到同一 24px 缓存提取路径；删除两枚废弃线稿 SVG，不叠新控件，不增资源或改经济事实。唯一视觉契约随之更新在 [13 第 2.2 节](../../../game-design/13-art-interaction.md#22-全局信息层级与适配)，14 第 1 节已有公共接口无需另写一套。
+
+Godot 4.7.2 导入无脚本错误。正常主场景 1440×900 的[四行资源详情整屏](evidence/resource-family-details-1440x900.png)可见紫晶片与前三枚同家族；[五行同版整屏](evidence/resource-family-five-1440x900.png)使用[固定驱动](evidence/resource-family-five-driver.gd.txt)经公开 `Economy.credit_yield` 临时给简并物质入账 `1`，只为显示默认隐藏的第五行，不是自然获得／掉落证据。原[自然铁掉落整屏](evidence/resource-material-drop-000.png)所用前三枚图集及 `economy_view.gd` 绘制路径未变；余额只常驻前三种，不将后两种塞入顶栏。五种详情图标在真实 20px 显示下均有独立轮廓与原色。未取得强化碎片／简并物质自然掉落图，也不外推各模块内部费用、奖励和整体视觉通过。

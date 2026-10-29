@@ -1,0 +1,42 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-29",
+  "reference": "resource-material-atlas.png",
+  "source_path": "/workspace/generated_images/exec-a6299373-4570-4bcd-8d35-fb4a04f8755f.png",
+  "sha256": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3",
+  "dimensions": [
+    1774,
+    887
+  ],
+  "format": "RGBA PNG",
+  "cells": {
+    "jewel": [
+      0,
+      0,
+      887,
+      887
+    ],
+    "degenerate_matter": [
+      887,
+      0,
+      887,
+      887
+    ]
+  },
+  "runtime_crop_bounds": {
+    "jewel": [
+      175,
+      87,
+      619,
+      724
+    ],
+    "degenerate_matter": [
+      96,
+      117,
+      723,
+      669
+    ]
+  },
+  "runtime_icon_pixels": 24,
+  "prompt_file": "resource-material-supplement-prompt.txt"
+}
