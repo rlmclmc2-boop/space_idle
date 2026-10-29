@@ -307,7 +307,7 @@ func _prepare_button_material(button: Button, form: String) -> void:
                 var index_face:=_style(fill,Color("97e2d4") if selected else Color(0.47,0.77,0.75,0.18),1 if selected else 0)
                 index_face.set_corner_radius_all(4);states[state]=index_face
             else:
-                var tint:=Color(1.16,1.18,1.16) if state=="hover" else Color(0.68,0.72,0.76) if state=="pressed" else Color(0.72,0.77,0.8) if state=="disabled" else Color.WHITE
+                var tint:=Color(1.16,1.18,1.16) if state=="hover" else Color(0.84,0.86,0.88) if state=="pressed" else Color(0.72,0.77,0.8) if state=="disabled" else Color.WHITE
                 var kind:String="disabled" if state=="disabled" else "primary" if form=="primary" else "quiet" if form=="quiet" else "teal" if selected else "navy"
                 var section:String="tray" if form=="candidate" else "flat" if form=="quiet" else "button"
                 states[state]=_surface_material(kind,tint,section,state=="pressed")
@@ -326,6 +326,7 @@ func _button_tint(button: Button, chosen: bool) -> void:
     var quiet:bool=button.get_meta("material_role","")=="quiet"
     button.add_theme_color_override("font_color",INK if primary else Color("b9c9cc") if quiet else Color("d5ece3") if chosen else CREAM)
     if primary:
+        button.add_theme_color_override("font_focus_color",INK)
         button.add_theme_color_override("font_hover_color",INK)
         button.add_theme_color_override("font_pressed_color",INK)
 
