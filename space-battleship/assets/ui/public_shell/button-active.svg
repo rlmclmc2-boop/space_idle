@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="64" viewBox="0 0 96 64">
+  <defs><linearGradient id="ceramic" x2="0" y2="1"><stop stop-color="#f4f0da"/><stop offset=".52" stop-color="#e6dfc5"/><stop offset="1" stop-color="#c9c2aa"/></linearGradient></defs>
+  <path d="M1 11 11 1h74l10 10v43L85 63H11L1 54Z" fill="#392e24" stroke="#201e1c" stroke-width="2"/>
+  <path d="M3 12 12 3h72l9 9v41l-9 8H12l-9-8Z" fill="url(#ceramic)" stroke="#d2b877"/>
+  <path d="M6 14 14 6h68l8 8" fill="none" stroke="#fffefa" stroke-opacity=".85"/>
+  <path d="M9 54 14 58h68l5-4" fill="none" stroke="#8a806d" stroke-width="2"/>
+  <path d="M14 10h29" stroke="#ab8247" stroke-width="2"/>
+  <path d="M80 8h3l5 5v3" fill="none" stroke="#ab8247" stroke-width="2"/>
+</svg>

@@ -4,7 +4,10 @@ signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const WORK_FACE = preload("res://assets/ui/reactor/ship-hub-r9/device_work.gdshader")
 const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r9/device_pulse.gdshader")
-const CONSOLE_KEY = preload("res://assets/ui/reactor/ship-hub-r9/console-key.svg")
+const BUTTON_IDLE = preload("res://assets/ui/public_shell/button-idle.svg")
+const BUTTON_ACTIVE = preload("res://assets/ui/public_shell/button-active.svg")
+const BUTTON_HOVER = preload("res://assets/ui/public_shell/button-hover.svg")
+const BUTTON_DISABLED = preload("res://assets/ui/public_shell/button-disabled.svg")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
@@ -19,6 +22,7 @@ var _read: Callable
 var _read_quote: Callable
 var _clock: Callable
 var _ui_font_regular: FontVariation
+var _ui_font_medium: FontVariation
 var _ui_font_bold: FontVariation
 var _stage: Control
 var _stage_viewport: SubViewport
@@ -65,6 +69,9 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	_ui_font_regular = FontVariation.new()
 	_ui_font_regular.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
 	_ui_font_regular.variation_opentype = {2003265652: 400.0}
+	_ui_font_medium = FontVariation.new()
+	_ui_font_medium.base_font = _ui_font_regular.base_font
+	_ui_font_medium.variation_opentype = {2003265652: 500.0}
 	_ui_font_bold = FontVariation.new()
 	_ui_font_bold.base_font = _ui_font_regular.base_font
 	_ui_font_bold.variation_opentype = {2003265652: 600.0}
@@ -130,28 +137,25 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.text = text
 	button.position = rect.position
 	button.size = rect.size
-	button.add_theme_font_size_override("font_size", 20 if primary else 17)
+	button.add_theme_font_size_override("font_size", 18 if primary else 17)
 	button.add_theme_font_override("font", _ui_font_bold)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxTexture.new()
-		box.texture = CONSOLE_KEY
-		box.texture_margin_left = 9
-		box.texture_margin_right = 9
-		box.texture_margin_top = 9
-		box.texture_margin_bottom = 9
-		box.content_margin_left = 10
-		box.content_margin_right = 10
+		box.texture = BUTTON_DISABLED if state == "disabled" else BUTTON_ACTIVE if primary else BUTTON_HOVER if state in ["hover", "focus"] else BUTTON_IDLE
+		box.texture_margin_left = 12
+		box.texture_margin_right = 12
+		box.texture_margin_top = 11
+		box.texture_margin_bottom = 11
+		box.content_margin_left = 8
+		box.content_margin_right = 8
 		box.content_margin_top = 3
 		box.content_margin_bottom = 3
-		box.modulate_color = Color(0.84, 1.10, 1.04) if primary else Color(0.94, 0.98, 1.0)
-		if state == "hover" or state == "focus": box.modulate_color = Color(1.12, 1.28, 1.22)
-		elif state == "pressed": box.modulate_color = Color(0.66, 0.82, 0.83)
-		elif state == "disabled": box.modulate_color = Color(0.54, 0.62, 0.64)
+		box.modulate_color = Color(1.08, 1.08, 1.04) if state in ["hover", "focus"] else Color(0.76, 0.78, 0.80) if state == "pressed" else Color.WHITE
 		button.add_theme_stylebox_override(state, box)
-	button.add_theme_color_override("font_color", Color("f3f0df"))
-	button.add_theme_color_override("font_hover_color", Color("c4fff0"))
-	button.add_theme_color_override("font_pressed_color", Color("f3f0df"))
-	button.add_theme_color_override("font_focus_color", Color("f3f0df"))
+	button.add_theme_color_override("font_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_hover_color", Color("203f50") if primary else Color("c4fff0"))
+	button.add_theme_color_override("font_pressed_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_focus_color", Color("203f50") if primary else Color("f3f0df"))
 	button.add_theme_color_override("font_disabled_color", Color("8da5ac"))
 	button.pressed.connect(action)
 	add_child(button)
@@ -200,20 +204,14 @@ func _build() -> void:
 		add_child(pulse)
 		var name := _label(layout.title + offset,92,17)
 		name.rotation_degrees = float(layout.read_tilt)
-		name.add_theme_font_override("font",_ui_font_bold)
-		name.add_theme_color_override("font_color",Color("eff4ee"))
-		name.add_theme_color_override("font_shadow_color",Color(0.015, 0.07, 0.10, 0.9))
-		name.add_theme_constant_override("shadow_offset_x",1)
-		name.add_theme_constant_override("shadow_offset_y",1)
+		name.add_theme_font_override("font",_ui_font_medium)
+		name.add_theme_color_override("font_color",Color("f3f0df"))
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name.text = NAMES[id]
-		var effect := _label(layout.factor + offset,58,19)
+		var effect := _label(layout.factor + offset,58,18)
 		effect.rotation_degrees = float(layout.read_tilt)
 		effect.add_theme_font_override("font", _ui_font_bold)
-		effect.add_theme_color_override("font_color",Color("ffd393") if id in ["weapons","smelting"] else Color("a9edfa"))
-		effect.add_theme_color_override("font_shadow_color",Color(0.015, 0.07, 0.10, 0.9))
-		effect.add_theme_constant_override("shadow_offset_x",1)
-		effect.add_theme_constant_override("shadow_offset_y",1)
+		effect.add_theme_color_override("font_color",Color("e9c98b") if id in ["weapons","smelting"] else Color("b5d9d8"))
 		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -223,36 +221,29 @@ func _build() -> void:
 		strip.rotation_degrees = float(layout.tilt)
 		strip.mouse_filter = Control.MOUSE_FILTER_PASS
 		add_child(strip)
-		var inset := Panel.new()
-		inset.size = strip.size
-		inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var inset_box := StyleBoxFlat.new()
-		inset_box.bg_color = Color(0.025, 0.12, 0.17, 0.82)
-		inset_box.border_color = Color(0.44, 0.70, 0.72, 0.55)
-		inset_box.set_border_width_all(1)
-		inset_box.set_corner_radius_all(3)
-		inset.add_theme_stylebox_override("panel", inset_box)
-		strip.add_child(inset)
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
-		slider.position = Vector2(8,-4)
-		slider.size = Vector2(52,28)
+		slider.position = Vector2(9,-4)
+		slider.size = Vector2(46,28)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		slider.tooltip_text = "拖动后直接分配供能"
 		for style in ["slider","grabber_area","grabber_area_highlight"]:
 			var box := StyleBoxFlat.new()
-			box.bg_color = Color("62bcb2") if style != "slider" else Color("173642")
+			box.bg_color = Color("4aaea2") if style != "slider" else Color("173642")
 			box.set_corner_radius_all(4)
+			if style == "slider":
+				box.border_color = Color("658d91")
+				box.set_border_width_all(1)
 			box.content_margin_top = 4
 			box.content_margin_bottom = 4
 			slider.add_theme_stylebox_override(style, box)
 		var gradient := Gradient.new()
-		gradient.set_color(0, Color("eff2e5"))
-		gradient.set_color(1, Color("64b9af",0.0))
-		gradient.add_point(0.62, Color("eff2e5"))
-		gradient.add_point(0.72, Color("64b9af"))
+		gradient.set_color(0, Color("fff0c5"))
+		gradient.set_color(1, Color("75b9a8",0.0))
+		gradient.add_point(0.62, Color("fff0c5"))
+		gradient.add_point(0.72, Color("75b9a8"))
 		var grabber := GradientTexture2D.new()
 		grabber.gradient = gradient
 		grabber.width = 14
@@ -264,11 +255,11 @@ func _build() -> void:
 		slider.add_theme_icon_override("grabber_highlight",grabber)
 		slider.value_changed.connect(_slide.bind(id))
 		strip.add_child(slider)
-		var ratio := _label(Vector2(63,-4), 32, 15, strip)
+		var ratio := _label(Vector2(55,-7), 34, 16, strip)
 		ratio.add_theme_font_override("font", _ui_font_bold)
 		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		ratio.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		ratio.add_theme_color_override("font_color", Color("dce9e5"))
+		ratio.add_theme_color_override("font_color", Color("e9c98b") if id in ["weapons","smelting"] else Color("b5d9d8"))
 		_rows[id] = {"effect":effect, "name":name, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "control":strip}
 		for control in _rows[id].values(): control.visible = false
 	_budget = _label(Vector2(91,791),190,16)
@@ -280,8 +271,8 @@ func _build() -> void:
 	_cost = _label(Vector2(430, 775), 335, 18)
 	_cost.add_theme_color_override("font_color",Color("203f50"))
 	_cost_badge = Panel.new()
-	_cost_badge.position = Vector2(477,776)
-	_cost_badge.size = Vector2(27,26)
+	_cost_badge.position = Vector2(476,772)
+	_cost_badge.size = Vector2(32,30)
 	_cost_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_style := StyleBoxFlat.new()
 	badge_style.bg_color = Color("214b55")
@@ -290,17 +281,18 @@ func _build() -> void:
 	_cost_badge.visible = false
 	add_child(_cost_badge)
 	_cost_icon = TextureRect.new()
-	_cost_icon.position = Vector2(3.5,3)
-	_cost_icon.size = Vector2(20,20)
+	_cost_icon.position = Vector2(4,3)
+	_cost_icon.size = Vector2(24,24)
 	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cost_badge.add_child(_cost_icon)
 	_cost_details = _label(Vector2(504,775),259,18)
 	_cost_details.add_theme_color_override("font_color",Color("203f50"))
-	_quantity = _button("×1",Rect2(480,822,82,34),_cycle_quantity)
+	_quantity = _button("×1",Rect2(324,822,74,34),_cycle_quantity)
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
-	_purchase = _button("升级",Rect2(344,822,128,34),func(): _command(_purchase_action,true),true)
-	_equal = _button("均分供能",Rect2(245,822,90,34),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
+	_purchase = _button("升级",Rect2(406,822,152,34),func(): _command(_purchase_action,true),true)
+	_equal = _button("均分",Rect2(246,822,72,34),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
+	_equal.tooltip_text = "均分供能"
 	_notice_panel = _panel(Rect2(282,728,244,34),0.95)
 	_notice = _label(Vector2(295,730),218,18)
 	_notice.size.y = 30
@@ -540,9 +532,9 @@ func _refresh_quote() -> void:
 		if quote.costs.size() == 1:
 			var resource_id: String = str(quote.costs.keys()[0])
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
-			_cost_icon.modulate = ResourceVisuals.color(resource_id)
+			_cost_icon.modulate = ResourceVisuals.icon_modulate(resource_id)
 			_cost_badge.visible = _cost_icon.texture != null
-		_cost_details.position.x = 508 if _cost_badge.visible else 480
+		_cost_details.position.x = 512 if _cost_badge.visible else 480
 	_cost.tooltip_text = _cost.text + " " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
 	var reason: String = str(quote.get("reason", ""))

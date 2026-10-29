@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="64" viewBox="0 0 96 64">
+  <defs><linearGradient id="alloy" x2="0" y2="1"><stop stop-color="#27424b"/><stop offset="1" stop-color="#162c37"/></linearGradient></defs>
+  <path d="M1 11 11 1h74l10 10v43L85 63H11L1 54Z" fill="#0b202b" stroke="#081b25" stroke-width="2"/>
+  <path d="M3 12 12 3h72l9 9v41l-9 8H12l-9-8Z" fill="url(#alloy)" stroke="#59757a" stroke-opacity=".8"/>
+  <path d="M6 14 14 6h68l8 8" fill="none" stroke="#8fa9a6" stroke-opacity=".28"/>
+  <path d="M9 54 14 58h68l5-4" fill="none" stroke="#071d29" stroke-width="2"/>
+</svg>
