@@ -213,10 +213,10 @@ class EquipmentSurface extends StyleBox:
             RenderingServer.canvas_item_add_line(canvas,r.position+Vector2(12,r.size.y-3),r.end-Vector2(12,3),Color("436f70"),2.0)
         elif profile=="tray":
             skin.draw(canvas,Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36)))
-        elif profile=="instrument":skin.draw(canvas,r.grow(-2))
+        elif profile=="instrument":skin.draw(canvas,r.grow(-3))
         elif profile=="header":skin.draw(canvas,Rect2(r.position+Vector2(6,10),Vector2(r.size.x-12,r.size.y-10)))
         elif profile=="button":
-            var face:Rect2=r.grow(-2)
+            var face:Rect2=r.grow(-3)
             if depressed:face.position.y+=1;face.size.y-=1
             skin.draw(canvas,face)
             var grain:Rect2=face.grow(-3)
