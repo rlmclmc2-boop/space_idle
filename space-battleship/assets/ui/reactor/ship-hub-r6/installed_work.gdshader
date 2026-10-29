@@ -7,6 +7,19 @@ uniform float phase = 0.0;
 uniform vec4 tint : source_color = vec4(0.9, 0.6, 0.25, 1.0);
 
 float glass_mask(vec2 uv) {
+	if (module_kind == 0) {
+		float left_edge = 0.04 + 0.045 * uv.y * uv.y;
+		float right_edge = 0.965 - 0.02 * uv.y * uv.y;
+		float sides = smoothstep(left_edge, left_edge + 0.035, uv.x) * (1.0 - smoothstep(right_edge - 0.035, right_edge, uv.x));
+		return sides * smoothstep(0.025, 0.07, uv.y) * (1.0 - smoothstep(0.91, 0.98, uv.y));
+	}
+	if (module_kind == 1) {
+		float left_edge = 0.035 + 0.02 * uv.y;
+		float right_edge = 0.93 - 0.015 * uv.y;
+		float lower_edge = 1.03 - 0.16 * uv.x;
+		float sides = smoothstep(left_edge, left_edge + 0.03, uv.x) * (1.0 - smoothstep(right_edge - 0.035, right_edge, uv.x));
+		return sides * smoothstep(0.025, 0.07, uv.y) * (1.0 - smoothstep(lower_edge - 0.04, lower_edge + 0.015, uv.y));
+	}
 	if (module_kind == 2) {
 		float lower_edge = 0.97 - 0.73 * uv.x;
 		return smoothstep(0.0, 0.04, uv.x) * (1.0 - smoothstep(0.80, 0.89, uv.x)) * (1.0 - smoothstep(lower_edge - 0.045, lower_edge + 0.025, uv.y));
