@@ -1,5 +1,7 @@
 # R15 独立旋转实体环带接入候选
 
+**修前历史：** 此版平色环带及视频已由[有实体截面和设施台座的 R16 候选](../visual-r16-integrated-spine/README.md)替代，以下证据只对应 R15 旧源码。
+
 **源码基线：** `feat/planet-single-side-ui@1eda07fd`，本目录证据由本次 R15 修改后 Godot 4.7.2 实机运行取得；不是此前 R14 的 373 帧整圈证据，也不是概念图直接烘焙的贴图。用户批准的视觉参照是[实体承重脊完整态](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)及[五态闭环修正版](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png)。本页只说明当前实现和定向复核，不代表整体布局或其他模块的验收。
 
 `planet_orbital_spine.gd` 在一个倾斜 3D 平面生成四段相接的实体脊梁。每段只随对应设施 `built` 快照显示；独立建造和领取规则仍由 Planet 模块决定。相邻已建段共端点且隐藏内部封帽，四段齐备后构成完整闭环；后弧不是图上的断口，真实网格延伸到球后，由现有透明深度球遮挡。开口段保留自身端盖。整条已建环带及建筑以自己的时钟转动，球体表面继续由原 shader 时钟自转；探索船沿原独立 2D 轨道运行。没有把采集、稳定器或运输画面解释为新的资源/建造规则。缩小固态球的模块比例，让整组结构落在 808×810 的画面中；绘制使用现有 R5 设施轮廓和原星球贴图。

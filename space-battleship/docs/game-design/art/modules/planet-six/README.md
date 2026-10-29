@@ -1,6 +1,6 @@
 # 六类天体与设施一体化概念
 
-**当前接入方向：** 用户已批准将 [B 方案实体承重脊](scheme-b/README.md)的[固态裸态／完整态代表图](scheme-b/solid-integrated-spine-clearance.png)与[固态独立建设五态闭环修正版](scheme-b/solid-integrated-spine-stages-closed.png)导入游戏，并要求修正概念图球后断环、球与环独立转、探索船另轨。定向 Godot 接入候选与实际截图见[R15 证据](../../../../verification/planet-single-side-godot/visual-r15-orbital-spine/README.md)，仍需视觉审查；这不批准新资源、产出或施工规则。气态／恒星实体带专属概念变体尚未制作，此次运行使用共用主体与既有外观。此前 B 的 C 形托架与独立平台加虚线方案均已退回，保留在 B 页作历史参照。下文六套仍是先前 A 方案，供比较。
+**当前接入方向：** 用户已批准将 [B 方案实体承重脊](scheme-b/README.md)的[固态裸态／完整态代表图](scheme-b/solid-integrated-spine-clearance.png)与[固态独立建设五态闭环修正版](scheme-b/solid-integrated-spine-stages-closed.png)导入游戏，并要求修正概念图球后断环、球与环独立转、探索船另轨。最新 Godot 接入候选与实际截图见[R16 证据](../../../../verification/planet-single-side-godot/visual-r16-integrated-spine/README.md)，仍需视觉审查；[R15 平色条版](../../../../verification/planet-single-side-godot/visual-r15-orbital-spine/README.md)保留为修前历史。这不批准新资源、产出或施工规则。气态／恒星实体带专属概念变体尚未制作，此次运行使用共用主体与既有外观。此前 B 的 C 形托架与独立平台加虚线方案均已退回，保留在 B 页作历史参照。下文六套仍是先前 A 方案，供比较。
 
 本页是六套新概念的唯一入口，承接[M7 星球](../planet.md)。用户方向是逐类设计固态行星、气态行星、恒星、红巨星、白矮星、脉冲星，让“天体+设施的完整布局”成为星球界面的主体。每套先对照**裸天体**与**同机位、同尺度的完整设施态**，由承载、作业和运输关系决定整体构图，再讨论如何让 UI 融入。以下图是静态概念图，尚非 Godot 画面或用户批准资产。
 

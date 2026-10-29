@@ -374,9 +374,12 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		var model: Node3D = _models[kind]
 		_animate_parts(kind, clock)
 		var a: float = _spine.FACILITY_ANGLES[kind]
-		model.position = _spine.point(a)
-		model.rotation = Vector3(0.90, -0.25, 0.10)
-		model.scale = Vector3.ONE * (0.36 if kind == "auto_explore" else 0.42)
+		# The built saddle orbits with the spine; the service module keeps an
+		# upright attitude on that saddle, so long solar wings do not roll into
+		# detached vertical slivers as the orbital structure turns.
+		var scale_factor := 0.36 if kind == "auto_explore" else 0.42
+		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
+		model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a))
 		if kind == "equipment": _position_workshop_arm(model)
 		if kind == "refinery": _position_refinery_work(model, clock)
 		if kind == "shipyard": _position_shipyard_work(model, clock)

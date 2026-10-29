@@ -45,7 +45,8 @@ var last_degree = 0
 var draw_calls := 0
 
 func _scene_center() -> Vector2:
-	return size * Vector2(0.57, 0.5) if not icon_mode else size * 0.5
+	# Center the complete ring and its widest solar wings in the module.
+	return size * 0.5
 
 var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)

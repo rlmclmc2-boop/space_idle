@@ -2,7 +2,7 @@
 
 [六类总入口](../README.md) · 当前实体带：[固态裸／完整态](solid-integrated-spine-clearance.png) · [固态五态闭环修正版](solid-integrated-spine-stages-closed.png) · [五态修前留档](solid-integrated-spine-stages.png) · [前弧修前留档](solid-integrated-spine-concept.png) · 历史退回：独立平台[固态完整态](orbital-plane-solid-complete.png)／[五态](orbital-plane-solid-stages.png)、[气态完整态](orbital-plane-gas-complete.png)／[五态](orbital-plane-gas-stages.png)、[恒星完整态](orbital-plane-star-complete.png)／[五态](orbital-plane-star-stages.png) · [更早 C 形完整态](three-worlds-complete.png)
 
-用户随后批准以实体带和独立建造分步方向接入游戏，明确球与环可以独立转、探索船另轨、模块中球可缩小，并指出设计稿球后断环不能照搬。[R15 Godot 定向接入候选](../../../../../verification/planet-single-side-godot/visual-r15-orbital-spine/README.md)用真正闭合的后侧网格和深度遮挡实现这一点；下述概念图仍是原图与设计推导，不当作运行证据。
+用户随后批准以实体带和独立建造分步方向接入游戏，明确球与环可以独立转、探索船另轨、模块中球可缩小，并指出设计稿球后断环不能照搬。[R16 Godot 定向接入候选](../../../../../verification/planet-single-side-godot/visual-r16-integrated-spine/README.md)以真实闭合的后侧网格、深度遮挡和每座自带的实体平台表现这一点；此前 [R15 平色条版](../../../../../verification/planet-single-side-godot/visual-r15-orbital-spine/README.md)是修前历史。下述概念图仍是原图与设计推导，不当作运行证据。
 
 **当前优先审图：实体带代表稿。** [固态前弧间距修正版](solid-integrated-spine-clearance.png)是一颗裸天体与同机位完整设施态。空间站为上左原点，金顶精炼厂接上右弧，橙色工坊与双臂船坞分别嵌入前方右／左弧；四座通过同一条象牙装甲、深青承重肋和青色通道连续连成整体，不再由虚线轨迹替代建筑带。轨道平面倾斜，远侧脊梁在天体背后被遮挡、两侧重现；近侧实体脊梁越过球前下方暗空间。初版前弧中央至球底暗缝偏窄、稳定节点天线压入球面投影；修正版只将前弧压向暗空间，中央节点换成低矮齐平端盖，让球底暗缝与硬件分离更清楚。精炼厂与地表只用自由飞行小艇，脊梁没有焊到地面。小型姿态／场稳定节点属于各自已建弧段的结构，非额外可建建筑；这只是科幻视觉承载提案，不宣称环状刚体的真实稳定性已获物理或运行验证。
 
