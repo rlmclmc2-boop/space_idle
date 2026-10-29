@@ -3,7 +3,9 @@ WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by 
      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
 OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
 
+REFRESH immediate={ "model_reads": 1, "quote_reads": 2, "preview_reads": 0, "commands": 1, "visible_frames": 7 } children=34 stage_children=7
 DIRECT equal={ "ok": true, "defence_changed": true } levels=1
+REFRESH after={ "model_reads": 2, "quote_reads": 2, "preview_reads": 0, "commands": 1, "visible_frames": 11 } before={ "model_reads": 1, "quote_reads": 2, "preview_reads": 0, "commands": 0, "visible_frames": 7 } children_stable=true stage_children_stable=true
 CYCLE ten quote=10 cost=×10 · 费用 550 铀
 CYCLE max quote=11 cost=MAX 可购 11 级 · 费用 752 铀
 CYCLE one quote=1 cost=×1 · 费用 10 铀

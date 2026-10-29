@@ -30,11 +30,13 @@ var _quote_cost_ids: Array = []
 var _purchase_count: int = 1
 var _purchase_max: bool = false
 var _quantity: Button
-var _selected: String = ""
+var _active_work_ids: Array = []
 var _dirty: bool = true
 var _quote_dirty: bool = true
 var _running: bool = false
 var _message_until: int = 0
+var _notice_initialized: bool = false
+var _notice_rejected: bool = false
 var _budget: Label
 var _cost: Label
 var _upgrade_heading: Label
@@ -266,7 +268,6 @@ func _build() -> void:
 		slider.add_theme_icon_override("grabber",grabber)
 		slider.add_theme_icon_override("grabber_highlight",grabber)
 		slider.value_changed.connect(_slide.bind(id))
-		slider.focus_entered.connect(func(): _selected = id; _update_stage())
 		strip.add_child(slider)
 		var ratio := _label(Vector2(63,-4), 32, 15, strip)
 		ratio.add_theme_font_override("font", _ui_font_bold)
@@ -285,7 +286,7 @@ func _build() -> void:
 	_cost.add_theme_color_override("font_color",Color("203f50"))
 	_quantity = _button("×1",Rect2(480,822,82,34),_cycle_quantity)
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
-	_purchase = _button("升级",Rect2(344,822,128,34),func(): _command(_purchase_action),true)
+	_purchase = _button("升级",Rect2(344,822,128,34),func(): _command(_purchase_action,true),true)
 	_equal = _button("均分供能",Rect2(245,822,90,34),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
 	_notice_panel = _panel(Rect2(282,728,244,34),0.95)
 	_notice = _label(Vector2(295,730),218,18)
@@ -340,7 +341,7 @@ func _process(_dt: float) -> void:
 		_set_running(bool(context.running))
 		if _stage.advance_visual_clock(float(context.game_time),bool(context.paused)):
 			_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-			for id in _ids:
+			for id in _active_work_ids:
 				_rows[id].work.material.set_shader_parameter("phase",_stage.visual_phase())
 				_rows[id].pulse.material.set_shader_parameter("phase",_stage.visual_phase())
 	if _message_until > 0 and Time.get_ticks_msec() >= _message_until:
@@ -348,6 +349,9 @@ func _process(_dt: float) -> void:
 		_set_notice("")
 
 func _set_notice(message: String, rejected: bool = false) -> void:
+	if _notice_initialized and _notice.text == message and _notice_rejected == rejected: return
+	_notice_initialized = true
+	_notice_rejected = rejected
 	_notice.text = message
 	_notice.visible = not message.is_empty()
 	_notice_panel.visible = _notice.visible
@@ -365,8 +369,18 @@ func _set_running(running: bool) -> void:
 		_rows[id].slider.editable = running and bool(_model.get("can_allocate", false))
 
 func _update_buttons() -> void:
-	_purchase.disabled = not _running or _model.is_empty() or not bool(_quote.get("can_purchase", false))
-	_equal.disabled = not _running or _ids.is_empty() or not bool(_model.get("can_allocate", false))
+	var purchase_disabled: bool = not _running or _model.is_empty() or not bool(_quote.get("can_purchase", false))
+	var equal_disabled: bool = not _running or _ids.is_empty() or not bool(_model.get("can_allocate", false))
+	if _purchase.disabled != purchase_disabled: _purchase.disabled = purchase_disabled
+	if _equal.disabled != equal_disabled: _equal.disabled = equal_disabled
+
+func _visual_loads(model: Dictionary, ids: Array) -> Dictionary:
+	if model.is_empty(): return {}
+	var loads := {"core":float(model.load)}
+	for row in model.modules:
+		var id: String = str(row.id)
+		if id in ids: loads[id] = float(row.load)
+	return loads
 
 func _refresh() -> void:
 	_dirty = false
@@ -379,35 +393,52 @@ func _refresh() -> void:
 		_unknown(str(model.get("message", "供能状态暂不可用")))
 		return
 	if _message_until == 0: _set_notice("")
+	var previous: Dictionary = _model
+	var previous_ids: Array = _ids.duplicate()
+	var previous_loads: Dictionary = _visual_loads(previous, previous_ids)
 	var ids: Array = []
 	for row in model.get("modules",[]):
 		if row.get("enabled",true): ids.append(str(row.id))
-	if ids != _ids and _selected not in ids: _selected = ""
 	_ids = ids
 	_model = model
 	for id in _rows:
-		for control in _rows[id].values(): control.visible = id in _ids
-		if id not in _ids: _shares.erase(id)
-	_show_current_readings()
+		var now_enabled: bool = id in ids
+		if now_enabled != (id in previous_ids):
+			for control in _rows[id].values(): control.visible = now_enabled
+		if not now_enabled: _shares.erase(id)
+	_show_current_readings(previous, previous_ids)
 	_update_buttons()
-	_update_stage()
+	if ids != previous_ids or _visual_loads(model, ids) != previous_loads: _update_stage()
 
-func _show_current_readings() -> void:
+func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 	if _model.is_empty(): return
+	var previous_rows: Dictionary = {}
+	if previous.has("modules"):
+		for old_row in previous.modules: previous_rows[str(old_row.id)] = old_row
 	for row in _model.modules:
 		var id: String = str(row.id)
 		if id not in _ids: continue
-		_shares[id] = int(roundf(float(row.ratio)*10000.0))
-		_rows[id].slider.set_value_no_signal(_shares[id])
-		_rows[id].ratio.text = str(int(roundf(float(row.ratio) * 100.0))) + "%"
-		_rows[id].slider.editable = _running and bool(_model.can_allocate)
-		_rows[id].effect.text = "×" + PlayerText.number(str(row.factor))
-		_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
-		_rows[id].slider.tooltip_text = "分配 " + str(int(roundf(float(row.ratio) * 100.0))) + "% · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
-	_level.text = "等级 " + str(_model.level) + " · 容量 " + PlayerText.number(str(_model.capacity))
-	_budget.text = "已配 " + PlayerText.number(str(_model.allocated)) + " · 剩余 " + PlayerText.number(str(_model.remaining))
-	_level.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
-	_budget.tooltip_text = _level.tooltip_text
+		var old_row: Dictionary = previous_rows.get(id, {})
+		var new_row: bool = id not in previous_ids or old_row.is_empty()
+		var adopted_share: int = int(roundf(float(row.ratio)*10000.0))
+		if new_row or int(_shares.get(id,-1)) != adopted_share or old_row.get("ratio") != row.ratio:
+			_shares[id] = adopted_share
+			_rows[id].slider.set_value_no_signal(adopted_share)
+			_rows[id].ratio.text = str(int(roundf(float(row.ratio) * 100.0))) + "%"
+		if new_row or previous.get("can_allocate", false) != _model.can_allocate:
+			_rows[id].slider.editable = _running and bool(_model.can_allocate)
+		if new_row or old_row.get("factor") != row.factor:
+			_rows[id].effect.text = "×" + PlayerText.number(str(row.factor))
+			_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
+		if new_row or old_row.get("ratio") != row.ratio or old_row.get("manual") != row.manual or old_row.get("free") != row.free or old_row.get("effective") != row.effective:
+			_rows[id].slider.tooltip_text = "分配 " + str(int(roundf(float(row.ratio) * 100.0))) + "% · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
+	var level_text := "等级 " + str(_model.level) + " · 容量 " + PlayerText.number(str(_model.capacity))
+	var budget_text := "已配 " + PlayerText.number(str(_model.allocated)) + " · 剩余 " + PlayerText.number(str(_model.remaining))
+	var detail := "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
+	if _level.text != level_text: _level.text = level_text
+	if _budget.text != budget_text: _budget.text = budget_text
+	if _level.tooltip_text != detail: _level.tooltip_text = detail
+	if _budget.tooltip_text != detail: _budget.tooltip_text = detail
 
 func _valid_model(model: Dictionary) -> bool:
 	if model.get("ok") != true: return false
@@ -426,6 +457,9 @@ func _valid_model(model: Dictionary) -> bool:
 
 func _unknown(message: String) -> void:
 	_model = {}
+	_ids.clear()
+	_shares.clear()
+	_active_work_ids.clear()
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
 	_cost.text = "费用 —"
@@ -440,6 +474,7 @@ func _refresh_quote() -> void:
 	_quote_dirty = false
 	if not _read_quote.is_valid():
 		_quote = {}
+		_quote_cost_ids.clear()
 		_cost.text = "费用 —"
 		_update_buttons()
 		return
@@ -457,6 +492,7 @@ func _refresh_quote() -> void:
 	for resource_id in quote.cost_resource_ids:
 		if not resource_id is String:
 			_quote = {}
+			_quote_cost_ids.clear()
 			_cost.text = "费用 —"
 			_update_buttons()
 			return
@@ -465,6 +501,7 @@ func _refresh_quote() -> void:
 	for id in quote.costs:
 		if not quote.costs[id] is String:
 			_quote = {}
+			_quote_cost_ids.clear()
 			_cost.text = "费用 —"
 			_update_buttons()
 			return
@@ -481,7 +518,6 @@ func _refresh_quote() -> void:
 
 func _slide(value: float,id: String) -> void:
 	if id not in _ids or not _running: return
-	_selected = id
 	_shares[id] = int(value)
 	# The owner computes and accepts the entire allocation. No Amount is calculated here.
 	presentation_counts.preview_reads += 1
@@ -514,14 +550,16 @@ func _valid_preview(preview: Dictionary) -> bool:
 			if not row.ratio is float or not row.load is float or not is_finite(row.ratio) or not is_finite(row.load): return false
 	return true
 
-func _command(action: Callable) -> void:
+func _command(action: Callable, quote_may_change: bool = false) -> void:
 	presentation_counts.commands += 1
 	last_result = action.call()
 	if last_result.get("ok",false):
 		_set_notice("供能已更新")
 		_message_until = Time.get_ticks_msec() + 1800
-		_refresh()
-		_quote_dirty = true
+		# The owner emits presentation_changed deferred. Coalesce that delivery
+		# with this fallback read, including successful no-op commands.
+		_dirty = true
+		if quote_may_change: _quote_dirty = true
 	else:
 		_error(last_result)
 		_dirty = true
@@ -535,12 +573,15 @@ func _error(result: Dictionary) -> void:
 
 func _update_stage() -> void:
 	if _model.is_empty():
+		_active_work_ids.clear()
 		_stage.clear_snapshot()
 		return
-	var loads := {"core":float(_model.load)}
-	for row in _model.modules: loads[str(row.id)] = float(row.load)
-	_stage.show_snapshot(_ids,loads,_selected)
+	var loads: Dictionary = _visual_loads(_model, _ids)
+	_stage.show_snapshot(_ids,loads)
+	_active_work_ids.clear()
 	for id in _ids:
-		_rows[id].work.material.set_shader_parameter("power",float(loads.get(id,0.0)))
-		_rows[id].pulse.material.set_shader_parameter("power",float(loads.get(id,0.0)))
+		var power: float = float(loads.get(id,0.0))
+		_rows[id].work.material.set_shader_parameter("power",power)
+		_rows[id].pulse.material.set_shader_parameter("power",power)
+		if power > 0.0: _active_work_ids.append(id)
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
