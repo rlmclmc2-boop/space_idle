@@ -369,6 +369,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	var pulse := 1.0 + _pulse_strength * sin(_surface_clock * TAU * _pulse_speed)
 	var globe_scale := _body_pixels / _render_pixels()
 	_occluder.scale = Vector3(globe_scale * pulse, _axis_ratio * globe_scale * pulse, globe_scale * pulse)
+	_spine.set_body_scale(_occluder.scale)
 	_spine.update_pose(clock)
 	for kind in _owned:
 		var model: Node3D = _models[kind]

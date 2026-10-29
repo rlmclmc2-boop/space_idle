@@ -5,6 +5,7 @@ signal exclusive_ui_changed
 const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球尚未开放", "PlanetConquestSourceUnavailable": "征服来源暂不可用", "PlanetStationRequired": "需先领取空间站", "PlanetBuildingUnavailable": "建筑当前不可派遣施工", "PlanetBuildingNotReady": "建筑尚未完工", "CrewTargetOccupied": "该岗位人数已满", "CrewLocked": "船员尚未开放", "HyperspaceCrewReserved": "船员仍被超空间任务占用"}
 const STATES := {"locked": "未达门槛", "building": "施工中", "ready": "待领取", "built": "已领取"}
 const PAUSES := {"ExplorationNotRunning": "探索未运行，施工暂停", "NoExplorer": "缺少探索者，施工暂停", "MissingBuilders": "缺少额外施工人员，施工暂停"}
+const ResourceVisuals := preload("res://src/ui/resource_visuals.gd")
 var _host: Callable
 var _planet
 var _crew
@@ -40,7 +41,9 @@ var _stop_button: Button
 var _cancel_button: Button
 var _auto_button: Button
 var _progress := ProgressBar.new()
-var _wallet := Label.new()
+var _wallet := HBoxContainer.new()
+var _wallet_rows: Array = []
+var _wallet_signature: Array = []
 var _task_line := Label.new()
 var _feedback := Label.new()
 var _feedback_seconds := 0.0
@@ -52,6 +55,7 @@ var _detail_text: Label
 var _work_text: Label
 var _work_bar: ProgressBar
 var _unlock_text: Label
+var _factor_text: Label
 var _claim_button: Button
 var _reforge_button: Button
 var _member_picker: OptionButton
@@ -100,6 +104,25 @@ func _ready() -> void:
 	for label in [_task_line, _feedback, _wallet]:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(label)
+	_wallet.add_theme_constant_override("separation", 7)
+	for index in 3:
+		var cell := HBoxContainer.new()
+		cell.custom_minimum_size.x = 185
+		cell.add_theme_constant_override("separation", 4)
+		var icon := TextureRect.new()
+		icon.custom_minimum_size = Vector2(17, 17)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_child(icon)
+		var amount := Label.new()
+		amount.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		amount.clip_text = true
+		amount.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		amount.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_child(amount)
+		_wallet.add_child(cell)
+		_wallet_rows.append({"cell": cell, "icon": icon, "amount": amount})
 	_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_feedback.add_theme_color_override("font_color", Color("ffd496"))
 	add_child(_progress)
@@ -201,8 +224,7 @@ func _layout() -> void:
 	_drawer.size.y = 0
 	_wallet.position = Vector2(200, 14)
 	_wallet.size = Vector2(580, 30)
-	_wallet.clip_text = true
-	_wallet.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_wallet.clip_contents = true
 	queue_redraw()
 
 func _draw() -> void:
@@ -333,9 +355,7 @@ func _process(dt: float) -> void:
 		_feedback_seconds = maxf(0, _feedback_seconds - dt)
 		if _feedback_seconds == 0: _feedback.text = ""
 	_context = _visual_context.call() if _visual_context.is_valid() else {}
-	var balances: PackedStringArray = []
-	for row in _context.get("balances", []).slice(0, 3): balances.append(str(row.text))
-	_wallet.text = "   ".join(balances)
+	_update_wallet()
 	if _dirty or _options_dirty:
 		_dirty = false
 		if _options_dirty:
@@ -348,6 +368,26 @@ func _process(dt: float) -> void:
 	if _visual != null: _visual.advance(dt * float(_context.get("speed", 1.0)), bool(_context.get("paused", false)))
 	# Pause context may change without a planet signal; it only changes text.
 	_update_task()
+
+func _update_wallet() -> void:
+	var balances: Array = _context.get("balances", []).slice(0, 3)
+	var signature: Array = []
+	for row in balances: signature.append([str(row.get("id", "")), str(row.get("text", ""))])
+	if signature == _wallet_signature: return
+	_wallet_signature = signature.duplicate(true)
+	for index in _wallet_rows.size():
+		var widgets: Dictionary = _wallet_rows[index]
+		var cell: HBoxContainer = widgets.cell
+		cell.visible = index < balances.size()
+		if not cell.visible: continue
+		var resource_id := str(balances[index].get("id", ""))
+		var icon: TextureRect = widgets.icon
+		icon.texture = ResourceVisuals.icon(resource_id)
+		icon.modulate = ResourceVisuals.color(resource_id)
+		icon.visible = icon.texture != null
+		var amount: Label = widgets.amount
+		amount.text = str(balances[index].get("text", ""))
+		amount.tooltip_text = amount.text
 
 func _read_selected() -> void:
 	_snapshot = _planet.visual_snapshot(_selected_id)
@@ -375,7 +415,9 @@ func _read_selected() -> void:
 	# controls, so keep their live values out of the structural signature.
 	var signature_facts: Array = _facts.duplicate(true)
 	for item in signature_facts:
-		if item is Dictionary and item.get("state") == "building":
+		if not item is Dictionary: continue
+		item.erase("source_factor")
+		if item.get("state") == "building":
 			item.erase("work")
 			item.erase("work_fraction")
 	var signature := {"id": _selected_id, "facts": signature_facts, "crew": local_people}
@@ -412,6 +454,7 @@ func _clear_body() -> void:
 	_work_text = null
 	_work_bar = null
 	_unlock_text = null
+	_factor_text = null
 	for child in _drawer_body.get_children():
 		_drawer_body.remove_child(child)
 		child.queue_free()
@@ -490,7 +533,9 @@ func _build_facility_detail() -> void:
 		elif fact.state == "locked": _unlock_text = _caption(_drawer_body, "探索度 %d 开放 · 当前 %d" % [fact.unlock_exploration, _snapshot.exploration])
 		var effect: String = {"refinery": "铁、铀原生掉落加成", "equipment": "普通装备属性加成", "auto_explore": "允许开启自动探索", "shipyard": "允许首次征服 / 重铸"}.get(fact.type, "")
 		_caption(_drawer_body, ("领取后生效：\n" if fact.state != "built" else "已生效：\n") + effect)
-		if fact.source_factor != null: _caption(_drawer_body, "本设施当前因子 ×" + preload("res://src/ui/player_text.gd").number(str(fact.source_factor)))
+		if fact.state == "built" and fact.type in ["refinery", "equipment"]:
+			_factor_text = _caption(_drawer_body, "")
+			_update_factor_text(fact.source_factor)
 		if fact.type == "shipyard" and fact.state == "built":
 			_reforge_button = Button.new()
 			_reforge_button.text = "前往征服 / 重铸预览"
@@ -511,7 +556,14 @@ func _update_facility_detail_values() -> void:
 			_work_bar.value = float(fact.work_fraction) * 100.0
 		elif fact.state == "locked" and is_instance_valid(_unlock_text):
 			_unlock_text.text = "探索度 %d 开放 · 当前 %d" % [fact.unlock_exploration, _snapshot.exploration]
+		if is_instance_valid(_factor_text): _update_factor_text(fact.source_factor)
 		break
+
+func _update_factor_text(factor) -> void:
+	if not is_instance_valid(_factor_text): return
+	_factor_text.visible = factor != null
+	if factor != null:
+		_factor_text.text = "本设施当前因子 ×" + preload("res://src/ui/player_text.gd").number(str(factor))
 
 func _build_crew_detail() -> void:
 	if _crew == null or not _coordinate.is_valid():

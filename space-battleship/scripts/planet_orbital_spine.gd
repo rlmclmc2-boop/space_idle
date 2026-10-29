@@ -23,12 +23,13 @@ var _arcs: Dictionary = {}
 var _end_caps: Dictionary = {}
 var _joins: Dictionary = {}
 var _owned: Array = []
-var _navy: StandardMaterial3D
-var _side: StandardMaterial3D
-var _armor: StandardMaterial3D
-var _cyan: StandardMaterial3D
-var _deck: StandardMaterial3D
-var _sleeve: StandardMaterial3D
+var _navy: ShaderMaterial
+var _side: ShaderMaterial
+var _armor: ShaderMaterial
+var _cyan: ShaderMaterial
+var _deck: ShaderMaterial
+var _sleeve: ShaderMaterial
+var _all_materials: Array[ShaderMaterial] = []
 
 static func plane_normal() -> Vector3:
 	return Vector3(0.0, TILT_Z, TILT_Y)
@@ -51,15 +52,11 @@ func _ready() -> void:
 	_side.render_priority = -2
 	_armor.render_priority = -1
 	_deck = _material(Color.WHITE)
-	_deck.albedo_texture = preload("res://assets/planets/orbital_spine/deck-albedo.png")
-	_deck.roughness = 0.68
-	_deck.metallic = 0.10
-	_deck.emission_enabled = true
-	_deck.emission_texture = _deck.albedo_texture
-	_deck.emission = Color.WHITE
-	_deck.emission_energy_multiplier = 0.45
+	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-albedo.png"))
+	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
 	_sleeve.render_priority = 1
+	_all_materials.append(_sleeve)
 	for kind in KINDS:
 		var root := Node3D.new()
 		root.name = kind + "SpineSection"
@@ -67,13 +64,13 @@ func _ready() -> void:
 		var bounds: Vector2 = ARC_BOUNDS[kind]
 		# A real thick section: dark keel and side walls remain visible under
 		# broad warm armor plates. The central channel belongs to this section.
-		_add_strip(root, bounds.x, bounds.y, 1.06, -0.18, _navy)
-		_add_wall(root, bounds.x, bounds.y, 0.53, -0.18, 0.05, _side)
-		_add_wall(root, bounds.x, bounds.y, -0.53, -0.18, 0.05, _navy)
-		_add_wall(root, bounds.x, bounds.y, 0.545, -0.10, -0.015, _cyan)
-		_add_curved_deck(root, bounds.x, bounds.y, 1.06, 0.0, _deck)
+		_add_strip(root, bounds.x, bounds.y, 1.48, -0.20, _navy)
+		_add_wall(root, bounds.x, bounds.y, 0.74, -0.20, 0.26, _side)
+		_add_wall(root, bounds.x, bounds.y, -0.74, -0.20, 0.26, _navy)
+		_add_wall(root, bounds.x, bounds.y, 0.745, 0.05, 0.09, _cyan)
+		_add_curved_deck(root, bounds.x, bounds.y, 1.48, 0.22, _deck)
 		var rib_angle := (bounds.x + bounds.y) * 0.5
-		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, 1.09, 0.016, _side)
+		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, 1.51, 0.236, _side)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
 		_joins[kind] = _add_join(root, bounds.y)
 		var caps: Array[MeshInstance3D] = []
@@ -90,16 +87,17 @@ func _ready() -> void:
 		_end_caps[kind] = caps
 		root.visible = false
 
-func _material(color: Color, unshaded: bool = false) -> StandardMaterial3D:
-	var result := StandardMaterial3D.new()
-	result.albedo_color = Color(color, 0.999)
-	result.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	result.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
-	result.cull_mode = BaseMaterial3D.CULL_DISABLED
-	result.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED if unshaded else BaseMaterial3D.SHADING_MODE_PER_PIXEL
-	result.roughness = 0.72
-	result.metallic = 0.08
+func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
+	var result := ShaderMaterial.new()
+	result.shader = preload("res://scripts/planet_spine_opaque.gdshader")
+	result.set_shader_parameter("tint", color)
+	result.set_shader_parameter("luminous", unshaded)
+	_all_materials.append(result)
 	return result
+
+func set_body_scale(scale: Vector3) -> void:
+	for material in _all_materials:
+		material.set_shader_parameter("body_scale", scale)
 
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0) -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
@@ -180,17 +178,10 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 	parent.add_child(instance)
 
 func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
-	# The facility owns this widened saddle and its two dark load collars.
-	# It arrives with the facility even if every other section is unbuilt.
-	_add_strip(parent, angle - 0.23, angle + 0.23, 1.48, -0.20, _navy)
-	_add_wall(parent, angle - 0.23, angle + 0.23, 0.74, -0.20, 0.26, _side)
-	_add_wall(parent, angle - 0.23, angle + 0.23, -0.74, -0.20, 0.26, _navy)
-	_add_wall(parent, angle - 0.23, angle + 0.23, 0.745, 0.05, 0.09, _cyan)
-	_add_curved_deck(parent, angle - 0.23, angle + 0.23, 1.48, 0.22, _deck, 0.28, 0.72)
-	for edge in [angle - 0.23, angle + 0.23]:
-		_add_strip(parent, edge - 0.008, edge + 0.008, 1.52, 0.44, _side)
+	# Each built section owns its facility socket on the continuous deck.
+	# The socket arrives with that section; no neighboring arc is required.
 	_add_facility_socket(parent, kind, angle)
-	# One restrained amber status light makes the saddle read as equipment,
+	# One restrained amber status light makes the socket read as equipment,
 	# without introducing another buildable node.
 	var lamp := MeshInstance3D.new()
 	var lens := SphereMesh.new()
@@ -260,7 +251,7 @@ func _add_join(parent: Node3D, angle: float) -> Node3D:
 	parent.add_child(join)
 	# The mating sleeve spans both quarter ends as a real curved deck piece.
 	# It also keeps the broad foreground arc visually closed at oblique phases.
-	_add_curved_deck(join, angle - 0.12, angle + 0.12, 1.08, 0.012, _sleeve, 0.37, 0.63)
+	_add_curved_deck(join, angle - 0.12, angle + 0.12, 1.50, 0.232, _sleeve, 0.37, 0.63)
 	var coupling := MeshInstance3D.new()
 	var drum := CylinderMesh.new()
 	drum.top_radius = 0.22
