@@ -1,0 +1,699 @@
+{
+  "failures": [],
+  "observations": [
+    {
+      "check": "normal main Session native startup",
+      "ok": true
+    },
+    {
+      "check": "single quantity selector in quote purchase group",
+      "ok": true
+    },
+    {
+      "check": "locked candidate remains blank",
+      "ok": true
+    },
+    {
+      "check": "controlled availability",
+      "ok": true
+    },
+    {
+      "check": "controlled level19",
+      "ok": true
+    },
+    {
+      "check": "native sync",
+      "ok": true
+    },
+    {
+      "check": "validated controlled wallet setup",
+      "ok": true
+    },
+    {
+      "check": "single cycle visible ×10",
+      "ok": true
+    },
+    {
+      "check": "cycle alone does not purchase ×10",
+      "ok": true
+    },
+    {
+      "check": "single cycle visible MAX",
+      "ok": true
+    },
+    {
+      "check": "cycle alone does not purchase MAX",
+      "ok": true
+    },
+    {
+      "check": "single cycle visible ×1",
+      "ok": true
+    },
+    {
+      "check": "cycle alone does not purchase ×1",
+      "ok": true
+    },
+    {
+      "check": "mode switch only refreshes quote without full slot reread",
+      "ok": true
+    },
+    {
+      "check": "single x10 purchase accepted",
+      "ok": true
+    },
+    {
+      "check": "independent buy executes x10 Owner count",
+      "ok": true
+    },
+    {
+      "check": "MAX selection consumes real Owner maximum quote",
+      "ok": true
+    },
+    {
+      "check": "MAX independent buy matches Owner maximum count",
+      "ok": true
+    },
+    {
+      "check": "real install and existing cooldown state retained",
+      "ok": true
+    },
+    {
+      "check": "validated controlled wallet setup",
+      "ok": true
+    },
+    {
+      "check": "batch cycle visible 每槽 ×10",
+      "ok": true
+    },
+    {
+      "check": "batch cycle alone does not purchase 每槽 ×10",
+      "ok": true
+    },
+    {
+      "check": "batch cycle visible 逐槽 MAX",
+      "ok": true
+    },
+    {
+      "check": "batch cycle alone does not purchase 逐槽 MAX",
+      "ok": true
+    },
+    {
+      "check": "batch cycle visible 每槽 ×1",
+      "ok": true
+    },
+    {
+      "check": "batch cycle alone does not purchase 每槽 ×1",
+      "ok": true
+    },
+    {
+      "check": "batch remains exclusive without quantity Popup",
+      "ok": true
+    },
+    {
+      "check": "batch x10 independent execution accepted",
+      "ok": true
+    },
+    {
+      "check": "batch Owner executes selected count weapon:0",
+      "ok": true
+    },
+    {
+      "check": "batch Owner executes selected count defence:0",
+      "ok": true
+    },
+    {
+      "check": "batch current levels match Owner after purchase",
+      "ok": true
+    },
+    {
+      "check": "force releases batch after Popup removal",
+      "ok": true
+    }
+  ],
+  "records": [
+    {
+      "action": "single_x10",
+      "modes": [
+        {
+          "caption": "×10",
+          "maximum": false,
+          "quantity": 10,
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "4",
+                "m": "4.15"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 10,
+            "extreme": false,
+            "ok": true
+          }
+        },
+        {
+          "caption": "MAX",
+          "maximum": true,
+          "quantity": 1,
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "4",
+                "m": "9.44"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 14,
+            "extreme": false,
+            "ok": true
+          }
+        },
+        {
+          "caption": "×1",
+          "maximum": false,
+          "quantity": 1,
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          }
+        }
+      ],
+      "result": {
+        "defence_changed": false,
+        "ok": true,
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "count": 10,
+              "slot_id": "weapon:0",
+              "spent": {
+                "1": {
+                  "e": "4",
+                  "m": "4.15"
+                },
+                "degenerate_matter": {
+                  "e": "1",
+                  "m": "1"
+                }
+              }
+            }
+          ],
+          "spent": {
+            "1": {
+              "e": "4",
+              "m": "4.15"
+            },
+            "degenerate_matter": {
+              "e": "1",
+              "m": "1"
+            }
+          }
+        }
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 29,
+            "equipment_id": "laser",
+            "paid_level": 29,
+            "primary": "9.28e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 29,
+            "equipment_id": "laser",
+            "paid_level": 29,
+            "primary": "9.28e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "5",
+                "m": "2.579"
+              }
+            },
+            "count": 10,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 39,
+            "equipment_id": "laser",
+            "paid_level": 39,
+            "primary": "5.76e5",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 10
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 10,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 29,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 29,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "4",
+            "m": "5.85"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.9"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：5.85万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：990"
+          }
+        ]
+      }
+    },
+    {
+      "action": "single_max",
+      "quoted_count": 4,
+      "result": {
+        "defence_changed": false,
+        "ok": true,
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "count": 4,
+              "slot_id": "weapon:0",
+              "spent": {
+                "1": {
+                  "e": "4",
+                  "m": "5.29"
+                }
+              }
+            }
+          ],
+          "spent": {
+            "1": {
+              "e": "4",
+              "m": "5.29"
+            }
+          }
+        }
+      },
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 33,
+            "equipment_id": "laser",
+            "paid_level": 33,
+            "primary": "1.92e5",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 33,
+            "equipment_id": "laser",
+            "paid_level": 33,
+            "primary": "1.92e5",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "NoChange",
+          "quote": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": null,
+          "upgrade_count": null
+        },
+        "game_time": 0.0,
+        "maximum": true,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 33,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 33,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "3",
+            "m": "5.6"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.9"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：5,600"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：990"
+          }
+        ]
+      }
+    },
+    {
+      "action": "batch_x10",
+      "current_text": "武器1 · 导弹 · Lv.43\n防御1 · 装甲 · Lv.11",
+      "expected_text": "武器1 · 导弹 · Lv.43\n防御1 · 装甲 · Lv.11",
+      "result": {
+        "ok": true,
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "count": 10,
+              "slot_id": "weapon:0",
+              "spent": {
+                "1": {
+                  "e": "5",
+                  "m": "5.37"
+                },
+                "degenerate_matter": {
+                  "e": "1",
+                  "m": "2"
+                }
+              }
+            },
+            {
+              "count": 10,
+              "slot_id": "defence:0",
+              "spent": {
+                "1": {
+                  "e": "3",
+                  "m": "1.555"
+                }
+              }
+            }
+          ],
+          "spent": {
+            "1": {
+              "e": "5",
+              "m": "5.38555"
+            },
+            "degenerate_matter": {
+              "e": "1",
+              "m": "2"
+            }
+          }
+        },
+        "reason": "",
+        "slots": [
+          "weapon:0",
+          "defence:0"
+        ]
+      },
+      "state": {
+        "candidate": "missile",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 43,
+            "equipment_id": "missile",
+            "paid_level": 43,
+            "primary": "8.64e5",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "missile",
+          "current": {
+            "effective_level": 43,
+            "equipment_id": "missile",
+            "paid_level": 43,
+            "primary": "8.64e5",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "5",
+                "m": "1.3"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 44,
+            "equipment_id": "missile",
+            "paid_level": 44,
+            "primary": "1.032e6",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "6.2e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "6.2e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 43,
+            "equipment_id": "missile",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 43,
+            "switch_ready_at": 10.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 11,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 11,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "8",
+            "m": "9.99461445"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.8"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：9.99亿"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：980"
+          }
+        ]
+      }
+    }
+  ],
+  "source_commit": "ba7afb2468ef74529e6dd57f68d183e70fbf9d22"
+}
