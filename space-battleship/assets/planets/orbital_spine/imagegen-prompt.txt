@@ -1,0 +1,6 @@
+Tool: image_gen.imagegen
+transparent_background: false
+Original output: /workspace/generated_images/exec-87d42bbc-279c-4570-a5fe-9e99756cb3d1.png
+SHA-256: 0c24347735e404822f7633487c54716368539285b4170e27ba348cbc8e7ae8bb
+
+Generate a single SQUARE seamless tileable albedo texture for a warm ivory-and-deep-navy stylized orbital megastructure deck. Orthographic flat top-down, no perspective, no surroundings, no planet, no spacecraft, no lettering. Broad ivory ceramic armor panels with restrained subtle material mottling, dark navy structural edges along left/right 10%, one very narrow recessed cyan energy channel dead center running straight from top to bottom; both image edges match exactly for vertical tiling. Big calm panels and soft ambient occlusion at seams, no busy bolts, no high-frequency noise, no cast scene shadows. It must be a usable straight deck surface texture for a real curved 3D orbital ring, not a picture of a ring.

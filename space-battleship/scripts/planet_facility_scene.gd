@@ -46,7 +46,7 @@ func _ready() -> void:
 	_viewport.transparent_bg = true
 	_viewport.own_world_3d = true
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
-	_viewport.msaa_3d = Viewport.MSAA_2X
+	_viewport.msaa_3d = Viewport.MSAA_4X
 	add_child(_viewport)
 	_viewport.add_child(_world)
 	_image.mouse_filter = Control.MOUSE_FILTER_IGNORE

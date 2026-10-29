@@ -1,0 +1,2 @@
+0c24347735e404822f7633487c54716368539285b4170e27ba348cbc8e7ae8bb  space-battleship/assets/planets/orbital_spine/deck-albedo.png
+e64510430cdb7a448acb38c9e9333a5f8188c2b3f713f2fff7495d7a398f0772  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/full-ui-stage4.png
