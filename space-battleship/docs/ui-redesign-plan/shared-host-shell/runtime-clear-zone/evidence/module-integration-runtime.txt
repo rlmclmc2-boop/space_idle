@@ -3,3 +3,6 @@ INTEGRATION route=reactor scene_visible=true equipment_visible=false
 INTEGRATION quantity=×10 level_unchanged=true
 INTEGRATION equal={ "ok": true, "defence_changed": true } model=true
 INTEGRATION return=ship reactor_visible=false equipment_visible=false
+
+Corrected equipment-only capture after explicit public navigation:
+EQUIPMENT_CAPTURE route=equipment title=装备 nav=true panel=true

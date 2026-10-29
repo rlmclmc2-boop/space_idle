@@ -19,6 +19,13 @@ func run() -> void:
 		return
 	game._skip_tutorial = true
 	game._sync_guidance()
+	# The saved page preference can reopen the ship page; select equipment explicitly.
+	game._zone_shell._route_buttons["equipment"].pressed.emit()
+	await frames(4)
+	assert(game._zone_shell._active_route == "equipment")
+	assert(game._zone_shell._context.text == "装备")
+	assert(game._zone_shell._route_buttons["equipment"].button_pressed)
+	assert(game.equipment_scene.visible and not game.growth_panel.visible and not game.reactor_scene.visible)
 	await shot("integration-equipment-1440x900.png")
 	var session = game.session
 	var saved: Dictionary = session.campaign_system.save_state()
