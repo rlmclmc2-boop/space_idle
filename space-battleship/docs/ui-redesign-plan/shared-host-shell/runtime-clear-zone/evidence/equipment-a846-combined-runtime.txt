@@ -1,0 +1,4 @@
+Godot 4.7.2, normal main.tscn instance, 1440x900, design/clear-zone-host after equipment a8467d65 sync.
+The capture driver asserted equipment route/title/navigation and equipment scene visibility; after the normal route action:
+INTEGRATION route=reactor scene_visible=true equipment_visible=false
+No script or parse error in the successful run; audio-device fallback warning only.
