@@ -1,5 +1,7 @@
 # 装备共用资源身份与连续壳面候选（待原审）
 
+后续用户退回标题条右端压切角；[最新标题窄修/高度分析](../header-inner-chamfer/README.md)。下文保持本版源码与原图口径，资源身份继续保留。
+
 固定源码 `bcad25d0bfc6eb3c603cc53fad1df21f24ac3e53`，前置 `dc5b6ff63e4f06362ac6220fa7ca2e954ed08753`。根实看退回前置品质后明确要求继续：本次修源壳侧边重复接头、中心与原壳脱节及底部承托紧，同时完成已授权共用资源身份。作者静态实看不代表原Astra/根/用户艺术通过；不pushmain。
 
 [双费用整屏](01-double.png)及[原像素局部](01-double-local.png)、[单费用整屏](02-single.png)及[局部](02-single-local.png)、[批量整屏](03-batch.png)及[局部](03-batch-local.png)全部实际view_image。三整屏为1440×900，局部从同一Godot根viewport按真实控件rect扩4px截取、不缩放或补绘。
