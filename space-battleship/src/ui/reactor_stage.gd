@@ -1,6 +1,6 @@
 extends Control
 ## Reactor bay art and work effects. Every light reads adopted, effective owner load.
-const FOUR = preload("res://assets/ui/reactor/ship-hub-r9/working-bay-four.png")
+const FOUR = preload("res://assets/ui/reactor/ship-hub-r9/working-bay-five.png")
 const WORK = preload("res://assets/ui/reactor/ship-hub-r9/transport_work.gdshader")
 const AMBIENT_WORK = preload("res://assets/ui/reactor/ship-hub-r5/ambient_work.gdshader")
 const CORE_SOURCE = preload("res://assets/ui/reactor/ship-hub-r4/core-work.png")
@@ -17,10 +17,10 @@ const ROUTES := {
 	"condensation": [Vector2(532, 434), Vector2(590, 468)],
 }
 const OPERATING := {
-	"weapons": {"plate":Rect2(40, 127, 133, 27), "title":Vector2(45, 127), "factor":Vector2(110, 127), "work":Vector2(37, 164), "work_size":Vector2(146, 44), "control":Vector2(59, 219), "tilt":6.0},
-	"defence": {"plate":Rect2(647, 127, 126, 27), "title":Vector2(653, 127), "factor":Vector2(710, 127), "work":Vector2(624, 164), "work_size":Vector2(146, 44), "control":Vector2(654, 228), "tilt":-6.0},
-	"smelting": {"plate":Rect2(39, 434, 134, 27), "title":Vector2(45, 434), "factor":Vector2(110, 434), "work":Vector2(37, 474), "work_size":Vector2(146, 72), "control":Vector2(52, 542), "tilt":-10.0},
-	"condensation": {"plate":Rect2(645, 434, 130, 27), "title":Vector2(651, 434), "factor":Vector2(712, 434), "work":Vector2(624, 474), "work_size":Vector2(146, 72), "control":Vector2(660, 526), "tilt":10.0},
+	"weapons": {"title":Vector2(45, 122), "factor":Vector2(110, 122), "work":Vector2(37, 164), "work_size":Vector2(146, 44), "control":Vector2(59, 219), "tilt":6.0},
+	"defence": {"title":Vector2(653, 122), "factor":Vector2(710, 122), "work":Vector2(624, 164), "work_size":Vector2(146, 44), "control":Vector2(654, 228), "tilt":-6.0},
+	"smelting": {"title":Vector2(45, 429), "factor":Vector2(110, 429), "work":Vector2(37, 474), "work_size":Vector2(146, 72), "control":Vector2(52, 542), "tilt":-10.0},
+	"condensation": {"title":Vector2(651, 429), "factor":Vector2(712, 429), "work":Vector2(624, 474), "work_size":Vector2(146, 72), "control":Vector2(660, 526), "tilt":10.0},
 }
 var _enabled: Array = []
 var _loads: Dictionary = {}

@@ -7,6 +7,7 @@ const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r9/device_pulse.gds
 const CONSOLE_KEY = preload("res://assets/ui/reactor/ship-hub-r9/console-key.svg")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
+const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
 const ERRORS := {"ReactorPlanOverCapacity":"分配超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
 var _owner
@@ -39,6 +40,8 @@ var _notice_initialized: bool = false
 var _notice_rejected: bool = false
 var _budget: Label
 var _cost: Label
+var _cost_details: Label
+var _cost_icon: TextureRect
 var _upgrade_heading: Label
 var _notice: Label
 var _notice_panel: Panel
@@ -194,17 +197,6 @@ func _build() -> void:
 		pulse_material.set_shader_parameter("tint", Color("f8ba5b") if id in ["weapons","smelting"] else Color("79ddfa"))
 		pulse.material = pulse_material
 		add_child(pulse)
-		var plate := Panel.new()
-		plate.position = layout.plate.position + offset
-		plate.size = layout.plate.size
-		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var plate_style := StyleBoxFlat.new()
-		plate_style.bg_color = Color(0.015,0.065,0.095,0.85)
-		plate_style.border_color = Color(0.42,0.65,0.68,0.30)
-		plate_style.set_border_width_all(1)
-		plate_style.set_corner_radius_all(3)
-		plate.add_theme_stylebox_override("panel",plate_style)
-		add_child(plate)
 		var name := _label(layout.title + offset,92,17)
 		name.add_theme_font_override("font",_ui_font_bold)
 		name.add_theme_color_override("font_color",Color("eff4ee"))
@@ -274,16 +266,25 @@ func _build() -> void:
 		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		ratio.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		ratio.add_theme_color_override("font_color", Color("dce9e5"))
-		_rows[id] = {"effect":effect, "name":name, "plate":plate, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "control":strip}
+		_rows[id] = {"effect":effect, "name":name, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "control":strip}
 		for control in _rows[id].values(): control.visible = false
 	_budget = _label(Vector2(91,791),190,16)
 	_budget.add_theme_color_override("font_color",Color("203f50"))
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_upgrade_heading = _label(Vector2(343,766),420,17)
+	_upgrade_heading = _label(Vector2(343,775),82,17)
 	_upgrade_heading.text = "核心升级"
 	_upgrade_heading.add_theme_color_override("font_color",Color("203f50"))
-	_cost = _label(Vector2(343, 791), 420, 18)
+	_cost = _label(Vector2(430, 775), 335, 18)
 	_cost.add_theme_color_override("font_color",Color("203f50"))
+	_cost_icon = TextureRect.new()
+	_cost_icon.position = Vector2(480,779)
+	_cost_icon.size = Vector2(20,20)
+	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cost_icon.visible = false
+	add_child(_cost_icon)
+	_cost_details = _label(Vector2(504,775),259,18)
+	_cost_details.add_theme_color_override("font_color",Color("203f50"))
 	_quantity = _button("×1",Rect2(480,822,82,34),_cycle_quantity)
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
 	_purchase = _button("升级",Rect2(344,822,128,34),func(): _command(_purchase_action,true),true)
@@ -303,6 +304,8 @@ func _select_quantity(count: int, maximum: bool) -> void:
 	_quote = {}
 	_quote_dirty = true
 	_cost.text = "报价读取中"
+	_cost_details.text = ""
+	_cost_icon.visible = false
 	_purchase.text = "升级"
 	_quantity.text = "MAX" if maximum else "×" + str(count)
 	_update_buttons()
@@ -463,6 +466,8 @@ func _unknown(message: String) -> void:
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
 	_cost.text = "费用 —"
+	_cost_details.text = ""
+	_cost_icon.visible = false
 	_level.text = "等级 —"
 	_budget.text = ""
 	_set_notice(message,true)
@@ -472,6 +477,8 @@ func _unknown(message: String) -> void:
 
 func _refresh_quote() -> void:
 	_quote_dirty = false
+	_cost_details.text = ""
+	_cost_icon.visible = false
 	if not _read_quote.is_valid():
 		_quote = {}
 		_quote_cost_ids.clear()
@@ -508,8 +515,19 @@ func _refresh_quote() -> void:
 		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
 	var cost_text: String = " + ".join(labels)
 	var mode_text := "MAX 可购 " + str(quote.count) + " 级" if _purchase_max else "×" + str(_purchase_count)
-	_cost.text = mode_text + " · " + ("费用 " + cost_text if not labels.is_empty() else "资金不足")
-	_cost.tooltip_text = _cost.text
+	if labels.is_empty():
+		_cost.text = mode_text + " · 资金不足"
+	else:
+		_cost.text = "费用"
+		_cost_details.text = cost_text + " · " + mode_text
+		if quote.costs.size() == 1:
+			var resource_id: String = str(quote.costs.keys()[0])
+			_cost_icon.texture = ResourceVisuals.icon(resource_id)
+			_cost_icon.modulate = ResourceVisuals.color(resource_id)
+			_cost_icon.visible = _cost_icon.texture != null
+		_cost_details.position.x = 504 if _cost_icon.visible else 480
+	_cost.tooltip_text = _cost.text + " " + _cost_details.text
+	_cost_details.tooltip_text = _cost.tooltip_text
 	var reason: String = str(quote.get("reason", ""))
 	var exact_costs: Array = []
 	for id in quote.costs: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
