@@ -397,6 +397,11 @@ func _visual_loads(model: Dictionary, ids: Array) -> Dictionary:
 		if id in ids: loads[id] = float(row.load)
 	return loads
 
+func _ratio_text(owner_ratio: float) -> String:
+	if owner_ratio <= 0.0: return "0%"
+	if owner_ratio < 0.01: return "<1%"
+	return str(int(roundf(owner_ratio * 100.0))) + "%"
+
 func _refresh() -> void:
 	_dirty = false
 	if not _read.is_valid():
@@ -439,14 +444,14 @@ func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 		if new_row or int(_shares.get(id,-1)) != adopted_share or old_row.get("ratio") != row.ratio:
 			_shares[id] = adopted_share
 			_rows[id].slider.set_value_no_signal(adopted_share)
-			_rows[id].ratio.text = str(int(roundf(float(row.ratio) * 100.0))) + "%"
+			_rows[id].ratio.text = _ratio_text(float(row.ratio))
 		if new_row or previous.get("can_allocate", false) != _model.can_allocate:
 			_rows[id].slider.editable = _running and bool(_model.can_allocate)
 		if new_row or old_row.get("factor") != row.factor:
 			_rows[id].effect.text = "×" + PlayerText.number(str(row.factor))
 			_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		if new_row or old_row.get("ratio") != row.ratio or old_row.get("manual") != row.manual or old_row.get("free") != row.free or old_row.get("effective") != row.effective:
-			_rows[id].slider.tooltip_text = "分配 " + str(int(roundf(float(row.ratio) * 100.0))) + "% · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
+			_rows[id].slider.tooltip_text = "分配 " + _ratio_text(float(row.ratio)) + " · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 	var level_text := "等级 " + str(_model.level) + " · 容量 " + PlayerText.number(str(_model.capacity))
 	var budget_text := "已配 " + PlayerText.number(str(_model.allocated)) + " · 剩余 " + PlayerText.number(str(_model.remaining))
 	var detail := "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
@@ -611,7 +616,7 @@ func _update_stage() -> void:
 	_active_work_ids.clear()
 	for id in _ids:
 		var power: float = float(loads.get(id,0.0))
-		_rows[id].work.material.set_shader_parameter("power",power)
-		_rows[id].pulse.material.set_shader_parameter("power",power)
+		_rows[id].work.material.set_shader_parameter("power",Stage.visibility_power(power))
+		_rows[id].pulse.material.set_shader_parameter("power",Stage.visibility_power(power))
 		if power > 0.0: _active_work_ids.append(id)
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE

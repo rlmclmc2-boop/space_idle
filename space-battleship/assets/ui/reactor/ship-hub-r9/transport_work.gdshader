@@ -15,7 +15,7 @@ void fragment() {
 	float ends = smoothstep(0.02, 0.14, along) * (1.0 - smoothstep(0.88, 0.99, along));
 	float packet_pos = fract(along * 2.0 - phase * (kind == 3 ? 0.55 : 0.80));
 	float packet = 1.0 - smoothstep(0.045, 0.25, packet_pos);
-	float carrier = 0.10 + 0.09 * sin(along * 11.0 - phase * 1.3);
-	float energy = clamp(carrier + packet * 0.62, 0.0, 1.0);
+	float carrier = 0.16 + 0.09 * sin(along * 11.0 - phase * 1.3);
+	float energy = clamp(carrier + packet * 0.78, 0.0, 1.0);
 	COLOR = vec4(tint.rgb, strength * channel * ends * energy);
 }
