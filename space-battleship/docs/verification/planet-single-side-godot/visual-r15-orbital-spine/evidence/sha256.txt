@@ -9,5 +9,8 @@
 c2c8eac8331848d0a496cd77a96a19dbfafce5207dff0b95f9822d480b1bba68  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/six-types/planet_4.0.png
 4adcd77a795016a1f9be76623dae3a61ed1e7d6024cd3f1f9b9a83cb1705fa16  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/six-types/planet_5.0.png
 d70eafebb7042564c0f6ba9ea3abbaadaa1fa9a6f20632be249ff4ef3ad07747  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/six-types/planet_6.0.png
+cfddc0f13f556c79064f404e073cab4e0682651b90badcd66cc088a11fde3af3  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/six-types/switch_back_complete_1.png
+a6bee2891add7518c46792f1999feb81d3077c6d960973a02285f77834344bb8  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/six-types/switch_to_bare_2.png
+62ea33eec7d0ff4bd17e36000d6fa29e52de0bb3411d0a6a82501369e4a2ba39  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/turn/orbit-one-revolution.mp4
 f822729f929fefcd86c197727857ca95d5ffc732e2f12051dd24ec4fc40732a7  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/turn/turn_0.png
 87e5316df87fd77fe1ee88a34199acc7f6751bb78872fd7ef7ed56303b346769  space-battleship/docs/verification/planet-single-side-godot/visual-r15-orbital-spine/evidence/turn/turn_2.png

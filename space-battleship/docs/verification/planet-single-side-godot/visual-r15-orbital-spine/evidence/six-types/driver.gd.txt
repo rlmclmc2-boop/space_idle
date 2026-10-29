@@ -31,4 +31,18 @@ func run() -> void:
 		await create_timer(0.35).timeout
 		visual.advance(0.05, false)
 		await shot("planet_%s" % row.id)
+	var bare: Dictionary = config.planet.planet[1].duplicate(true)
+	bare.visualFacilities = []
+	visual.configure("2", bare)
+	await create_timer(0.6).timeout
+	assert(visual.facilities.is_empty())
+	assert(visual.architecture._owned.is_empty())
+	await shot("switch_to_bare_2")
+	var complete: Dictionary = config.planet.planet[0].duplicate(true)
+	complete.visualFacilities = entries
+	visual.configure("1", complete)
+	await create_timer(0.6).timeout
+	assert(visual.facilities.size() == 4)
+	assert(visual.architecture._owned.size() == 4)
+	await shot("switch_back_complete_1")
 	quit()
