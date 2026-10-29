@@ -1,0 +1,4 @@
+Godot 4.7.2, normal main.tscn instance, 1440x900, design/clear-zone-host with equipment 348e2321 and shared five-resource helper.
+POST_PURCHASE ten level=11 ratio=0.00433576135969 text=<1% visible=["weapons", "defence", "smelting", "condensation"]
+POST_PURCHASE max level=12 ratio=0.00289050757313 text=<1% visible=["weapons", "defence", "smelting", "condensation"]
+Audio device fallback warning only; no script or parse errors in the successful run.
