@@ -24,8 +24,9 @@ static func public_button(state: String, padding: float = 10.0) -> StyleBoxTextu
 	var path := "button-active.svg" if state in ["pressed", "hover_pressed", "selected"] else "button-hover.svg" if state in ["hover", "focus"] else "button-disabled.svg" if state == "disabled" else "button-idle.svg"
 	return _texture_style(path, 12, padding)
 
-static func public_input() -> StyleBoxTexture:
-	return _texture_style("input-well.svg", 12, 10)
+static func public_input(state: String = "normal") -> StyleBoxTexture:
+	var path := "input-well-focus.svg" if state in ["focus", "hover", "pressed", "hover_pressed"] else "input-well-disabled.svg" if state in ["read_only", "disabled"] else "input-well.svg"
+	return _texture_style(path, 12, 10)
 
 static func create() -> Theme:
 	var theme := Theme.new()

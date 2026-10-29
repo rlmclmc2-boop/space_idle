@@ -604,7 +604,34 @@ func _settings_action(parent: Control, text: String, action: Callable, width: fl
 	return button
 
 func _settings_field(control: Control) -> void:
-	control.add_theme_stylebox_override("normal", BridgeTheme.public_input())
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled", "read_only"]:
+		control.add_theme_stylebox_override(state, BridgeTheme.public_input(state))
+	if control is OptionButton:
+		control.add_theme_color_override("font_pressed_color", Color("f0f2e9"))
+		control.add_theme_color_override("font_hover_pressed_color", Color("f0f2e9"))
+	if control is SpinBox:
+		var spin := control as SpinBox
+		var field := spin.get_line_edit()
+		for state in ["normal", "focus", "read_only"]:
+			field.add_theme_stylebox_override(state, BridgeTheme.public_input(state))
+		var up := preload("res://assets/ui/public_shell/stepper-up.svg")
+		var down := preload("res://assets/ui/public_shell/stepper-down.svg")
+		for state in ["up", "up_hover", "up_pressed"]: spin.add_theme_icon_override(state, up)
+		for state in ["down", "down_hover", "down_pressed"]: spin.add_theme_icon_override(state, down)
+		spin.add_theme_icon_override("up_disabled", preload("res://assets/ui/public_shell/stepper-up-disabled.svg"))
+		spin.add_theme_icon_override("down_disabled", preload("res://assets/ui/public_shell/stepper-down-disabled.svg"))
+		_settings_spin_editable(spin, spin.editable)
+		for direction in ["up", "down"]:
+			for suffix in ["", "_hovered", "_pressed", "_disabled"]:
+				var frame := StyleBoxFlat.new()
+				frame.bg_color = Color("1b4856") if suffix == "_hovered" else Color("2b5b64") if suffix == "_pressed" else Color("172f3c") if suffix == "_disabled" else Color("123746")
+				frame.border_color = Color("a9d7c9") if suffix == "_hovered" else Color("547b81")
+				frame.set_border_width_all(1)
+				spin.add_theme_stylebox_override(direction + "_background" + suffix, frame)
+
+func _settings_spin_editable(spin: SpinBox, enabled: bool) -> void:
+	spin.editable = enabled
+	spin.add_theme_icon_override("updown", preload("res://assets/ui/public_shell/stepper-pair.svg") if enabled else preload("res://assets/ui/public_shell/stepper-pair-disabled.svg"))
 
 # One UI ownership gate for main Space and the battle viewport's G shortcut.
 func _ui_occupied() -> bool:

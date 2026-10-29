@@ -20,7 +20,7 @@
 			"detail": [
 				"铁：0",
 				"铀：0",
-				"时空微粒：4,922"
+				"时空微粒：5,930"
 			],
 			"id": "resource_readouts",
 			"ok": true
@@ -38,6 +38,21 @@
 		{
 			"detail": null,
 			"id": "settings_route",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "spinbox_native_material",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "spinbox_focus",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "spinbox_disabled",
 			"ok": true
 		},
 		{

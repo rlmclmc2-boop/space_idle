@@ -42,19 +42,19 @@ func _init(economy) -> void:
 	theme.default_font_size = 15
 	theme.set_stylebox("panel", "PopupPanel", BridgeTheme.public_panel())
 	var context_back := NinePatchRect.new()
-	context_back.texture = preload("res://assets/ui/public_shell/button-idle.svg")
+	context_back.texture = preload("res://assets/ui/public_shell/title-plaque.svg")
 	context_back.set_patch_margin(SIDE_LEFT, 12)
 	context_back.set_patch_margin(SIDE_RIGHT, 12)
 	context_back.set_patch_margin(SIDE_TOP, 12)
 	context_back.set_patch_margin(SIDE_BOTTOM, 12)
 	context_back.position = Vector2(18, 12)
-	context_back.size = Vector2(118, 41)
+	context_back.size = Vector2(148, 41)
 	context_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(context_back)
-	_context = _label("装备", Rect2(18, 12, 118, 41), 20, TEXT)
+	_context = _label("装备", Rect2(28, 12, 128, 41), 20, TEXT)
 	_context.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_context.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	for spec in [[164, 138], [312, 138], [460, 174]]:
+	for spec in [[190, 118], [326, 116], [460, 174]]:
 		var cell := _label("", Rect2(spec[0] + 10, 12, spec[1] - 20, 41), 16, TEXT)
 		cell.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		cell.clip_text = true
@@ -100,7 +100,7 @@ func _draw() -> void:
 	draw_rect(Rect2(854, 0, 2, 900), Color("63848d"))
 	# The approved hangar art starts at y=85; the rail occupies only its blank top margin.
 	draw_texture_rect(TOP_RAIL, Rect2(0, 0, 808, 85), false)
-	for x in [154, 303, 451, 640]:
+	for x in [180, 316, 451, 640]:
 		draw_rect(Rect2(x, 17, 1, 30), Color("6e9697", 0.65))
 
 func _label(caption: String, rect: Rect2, font_size: int, ink: Color) -> Label:
