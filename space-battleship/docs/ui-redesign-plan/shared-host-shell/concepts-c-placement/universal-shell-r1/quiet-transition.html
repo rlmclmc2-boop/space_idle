@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><title>C 风格公共壳 · 静域衔接候选</title>
+<style>
+:root{color-scheme:dark;font-family:'Noto Sans CJK SC','Noto Sans SC',sans-serif;background:#071723;color:#e9efe7}
+*{box-sizing:border-box}body{margin:0;min-width:1480px;background:radial-gradient(circle at 50% 5%,#163447,#071723 65%);}
+main{width:1440px;margin:18px auto 0}.stage{position:relative;width:1440px;height:900px;overflow:hidden;background:#061a29;box-shadow:0 22px 80px #020b12,0 0 0 1px #668487}
+.stage>img{position:absolute;inset:0;width:1440px;height:900px;object-fit:fill;pointer-events:none}
+/* Public material only. The source screen remains a separate, unmodified IMG. */
+.top{position:absolute;left:0;top:0;width:855.875px;height:65px;z-index:4;background:linear-gradient(180deg,#193949 0,#112c3c 55%,#091e2d 100%);clip-path:polygon(0 0,832px 0,855.875px 50%,832px 100%,0 100%);border-bottom:1px solid #4c7d87}
+.brand{position:absolute;left:18px;top:11px;width:118px;height:42px;display:grid;place-items:center;color:#e9e4d3;font-weight:700;letter-spacing:.08em;background:#274858;border:1px solid #72949a;border-radius:5px}
+.readout{position:absolute;top:10px;height:44px;display:flex;align-items:center;gap:7px;padding:0 10px;color:#d2e0db;font-size:13px;white-space:nowrap;background:linear-gradient(#0a1d2a,#0e2938);border:1px solid #365b67;border-radius:4px}.readout:nth-of-type(2){left:164px;width:138px}.readout:nth-of-type(3){left:312px;width:138px}.readout:nth-of-type(4){left:460px;width:174px}.readout b{color:#ffffff;font-size:16px;letter-spacing:.01em}
+.readout i{display:inline-block;width:7px;height:7px;background:#6eb8b8;transform:rotate(45deg)}
+.status{position:absolute;left:649px;top:18px;width:28px;height:28px;display:grid;place-items:center;color:#87bcb9}
+.resource{position:absolute;left:691px;top:12px;width:76px;height:41px;border:1px solid #5b8188;border-radius:4px;background:#173747;color:#eef2e6;font-size:14px;font-weight:600}
+.nav{position:absolute;z-index:5;left:808px;top:65px;width:47.875px;height:835px;overflow:hidden;background:radial-gradient(circle at 31px 93px,#8cb8cf 0 1px,transparent 2px),radial-gradient(circle at 10px 305px,#7aa0b8 0 1px,transparent 2px),radial-gradient(circle at 38px 641px,#b8cdd5 0 1px,transparent 2px),radial-gradient(ellipse 110px 270px at 20px 450px,#19415c88,transparent 100%),#0a263d}
+.nav-field{position:absolute;inset:0;background-image:linear-gradient(#081b2a30,#0a223330),var(--scene-url);background-size:47.875px 835px,1440px 900px;background-position:0 0,-856px -65px;transform:scaleX(-1);mask-image:linear-gradient(to bottom,transparent 0 180px,#000 235px,#000 510px,transparent 580px 715px,#000 790px)}
+.nav:before,.nav:after{content:"";position:absolute;left:17px;width:14px;height:1px;background:#8db8bb88}.nav:before{top:12px}.nav:after{bottom:10px}
+.keys{position:absolute;z-index:2;top:20px;bottom:20px;left:2px;right:2px;display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.key{position:relative;width:39px;height:56px;flex:none;border:1px solid #668e94;border-radius:6px;background:linear-gradient(145deg,#1b4358d9,#092d41d9);color:#9cdddd;font-size:22px;font-weight:700;cursor:pointer;box-shadow:inset 0 1px #87a4a35e,0 2px 3px #061a2388}
+.key:before{content:"";position:absolute;left:4px;right:4px;top:3px;height:1px;background:linear-gradient(90deg,transparent,#b6dbd080,transparent)}
+.key svg{display:block;width:27px;height:27px;margin:auto;filter:drop-shadow(0 0 3px #4cc9d180)}
+.key:hover,.key:focus-visible{outline:1px solid #a4e8e2;box-shadow:inset 0 1px #b3e5e1,inset 0 0 9px #41c4d277}
+.key.on{background:linear-gradient(145deg,#fff8df,#a9c1bb);color:#1b4d5d;border-color:#ffdfa1;box-shadow:inset 0 1px #fff9e8,inset 0 0 9px #e2c28b8c}
+.outer{position:absolute;z-index:2;left:1392.125px;top:0;width:47.875px;height:900px;overflow:hidden;background:radial-gradient(circle at 11px 116px,#8aafc5 0 1px,transparent 2px),radial-gradient(circle at 34px 334px,#a6cad2 0 1px,transparent 2px),radial-gradient(circle at 27px 689px,#75a8c2 0 1px,transparent 2px),radial-gradient(circle at 8px 804px,#94bbd0 0 1px,transparent 2px),radial-gradient(ellipse 130px 380px at 12px 430px,#1a415b77,transparent 100%),#0a263d}
+.outer-bottom{position:absolute;left:0;bottom:0;width:47.875px;height:120px;background-image:var(--scene-url);background-size:1440px 900px;background-position:-1344px -780px;transform:scaleX(-1);mask-image:linear-gradient(transparent,black 22px)}
+.toolbar{display:flex;gap:12px;align-items:center;padding:18px 2px 25px;color:#c5d4d2}.toolbar button{background:#183b4d;color:#e8efe8;border:1px solid #78979a;border-radius:5px;padding:8px 16px;cursor:pointer;font-size:15px}.toolbar button.sel{background:#e8e1c9;color:#194255;border-color:#f3d99d}.toolbar small{margin-left:auto;color:#9fb8b8}
+</style>
+<main>
+<div class="stage" id="stage">
+<img id="source" src="../../runtime-h1/equipment-623-integration/evidence/equipment-normal.png" width="1440" height="900" alt="未修改的共享实机整屏">
+<div class="top"><div class="brand" id="context">装备</div><div class="readout"><i></i>铁 <b id="iron">10万</b></div><div class="readout"><i></i>铀 <b id="uranium">1,000</b></div><div class="readout"><i></i>时空微粒 <b id="chrono">86</b></div><div class="status" title="保存与会话状态">•</div><button class="resource">资源</button></div>
+<div class="nav"><div class="nav-field" aria-hidden="true"></div><div class="keys" id="keys"></div></div><div class="outer" aria-hidden="true"><div class="outer-bottom"></div></div>
+</div>
+<div class="toolbar"><button data-route="equipment" class="sel">装备实机</button><button data-route="reactor">反应堆 R1 实机</button><button data-route="planet">星球 R14 实机</button><small>静域衔接候选 · 深色资源槽与原图环境延展 · 导航位置仍未定</small></div>
+</main>
+<script>
+const routes={
+equipment:{url:'../../runtime-h1/equipment-623-integration/evidence/equipment-normal.png',context:'装备',iron:'10万',uranium:'1,000',chrono:'86'},
+reactor:{url:'../../runtime-h1/reactor-direct-r1-integration/evidence/four-running.png',context:'反应炉',iron:'0',uranium:'1,000',chrono:'0'},
+planet:{url:'../../runtime-h1/planet-r14-integration/evidence/planet-r14-t0.png',context:'星球',iron:'48',uranium:'0',chrono:'7,332'}};
+const shapes={equipment:'M12 2 L17 11 L21 21 L14 18 L12 24 L10 18 L3 21 L7 11 Z M9 13 L15 13',reactor:'M12 3 C17 3 17 21 12 21 C7 21 7 3 12 3 M3 12 C3 7 21 7 21 12 C21 17 3 17 3 12 M5 5 L19 19 M19 5 L5 19',research:'M9 2 H15 M10 2 V9 L4 20 Q4 22 7 22 H17 Q20 22 20 20 L14 9 V2 M7 17 H17',enhancement:'M12 2 L17 9 L22 12 L17 15 L12 22 L7 15 L2 12 L7 9 Z M12 6 V18 M6 12 H18',crew:'M8 10 A3 3 0 1 0 8 4 A3 3 0 0 0 8 10 M17 10 A3 3 0 1 0 17 4 A3 3 0 0 0 17 10 M2 20 V17 Q2 13 8 13 Q14 13 14 17 V20 M12 20 V17 Q12 13 17 13 Q22 13 22 17 V20',planet:'M12 4 A8 8 0 1 0 12 20 A8 8 0 1 0 12 4 M2 16 Q10 10 22 8 M4 7 Q13 14 21 17',galaxy:'M12 12 Q3 7 4 16 Q7 22 14 20 Q21 19 20 12 Q19 5 12 4 Q5 3 3 9 M12 12 Q18 8 20 12 M12 12 Q8 16 11 20',hyperspace:'M3 4 L10 12 L3 20 M21 4 L14 12 L21 20 M11 4 V20 M13 4 V20',more:'M5 12 H5.1 M12 12 H12.1 M19 12 H19.1'};
+const items=[['equipment','装备'],['reactor','反应炉'],['research','科研'],['enhancement','强化'],['crew','船员'],['planet','星球'],['galaxy','星系'],['hyperspace','超空间'],['more','更多']];
+let active='equipment';
+function render(){const r=routes[active];document.querySelector('#stage').style.setProperty('--scene-url','url("'+r.url+'")');document.querySelector('#source').src=r.url;for(const k of ['context','iron','uranium','chrono'])document.getElementById(k).textContent=r[k];document.querySelectorAll('.toolbar button').forEach(b=>b.classList.toggle('sel',b.dataset.route===active));document.querySelector('#keys').innerHTML='';for(const [key,label] of items){const b=document.createElement('button');b.className='key'+(key===active?' on':'');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="'+shapes[key]+'"/></svg>';b.title=label;b.setAttribute('aria-label',label);if(routes[key])b.onclick=()=>{active=key;render()};document.querySelector('#keys').append(b)}}
+document.querySelectorAll('.toolbar button').forEach(b=>b.onclick=()=>{active=b.dataset.route;render()});render();
+</script>
+</html>
