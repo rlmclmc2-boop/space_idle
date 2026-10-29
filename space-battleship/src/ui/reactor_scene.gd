@@ -3,12 +3,14 @@ extends Control
 signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const DEVICE_MOUNTS := {
-	"weapons": preload("res://assets/ui/reactor/ship-hub-r4/weapons-control-3d.png"),
-	"defence": preload("res://assets/ui/reactor/ship-hub-r4/defence-control-3d.png"),
-	"smelting": preload("res://assets/ui/reactor/ship-hub-r4/smelting-control-3d.png"),
-	"condensation": preload("res://assets/ui/reactor/ship-hub-r4/condensation-control-3d.png"),
+	"weapons": preload("res://assets/ui/reactor/ship-hub-r5/weapons-instrument.png"),
+	"defence": preload("res://assets/ui/reactor/ship-hub-r5/defence-instrument.png"),
+	"smelting": preload("res://assets/ui/reactor/ship-hub-r5/smelting-instrument.png"),
+	"condensation": preload("res://assets/ui/reactor/ship-hub-r5/condensation-instrument.png"),
 }
-const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/central-console-front.png")
+const WORK_FACE = preload("res://assets/ui/reactor/ship-hub-r5/instrument_work.gdshader")
+const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r5/instrument_pulse.gdshader")
+const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r5/central-console-workbench.png")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
@@ -42,6 +44,7 @@ var _message_until: int = 0
 var _budget: Label
 var _cost: Label
 var _notice: Label
+var _notice_panel: Panel
 var _level: Label
 var _purchase: Button
 var _equal: Button
@@ -191,7 +194,8 @@ func _build() -> void:
 	console.size = Vector2(500, 151)
 	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(console)
-	_level = _label(Vector2(242, 762), 80, 18)
+	_level = _label(Vector2(206, 776), 87, 18)
+	_level.add_theme_color_override("font_color",Color("203f50"))
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
 		var offset := Vector2(0, 65)
@@ -201,10 +205,37 @@ func _build() -> void:
 		mount.stretch_mode = TextureRect.STRETCH_SCALE
 		mount.position = layout.mount + offset
 		mount.size = Vector2(216, 140)
+		mount.modulate = Color(0.86,0.92,0.95)
 		mount.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(mount)
-		var effect := _label(layout.effect + offset,float(layout.width),18)
+		var work := ColorRect.new()
+		work.position = layout.mount + offset + Vector2(25,42)
+		work.size = Vector2(168,55)
+		work.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var work_material := ShaderMaterial.new()
+		work_material.shader = WORK_FACE
+		work_material.set_shader_parameter("module_kind", Stage.IDS.find(id))
+		work_material.set_shader_parameter("tint", Color("f5a84e") if id in ["weapons","smelting"] else Color("78d9ea"))
+		work.material = work_material
+		add_child(work)
+		var pulse := ColorRect.new()
+		pulse.position = work.position
+		pulse.size = work.size
+		pulse.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var pulse_material := ShaderMaterial.new()
+		pulse_material.shader = WORK_PULSE
+		pulse_material.set_shader_parameter("module_kind", Stage.IDS.find(id))
+		pulse_material.set_shader_parameter("tint", Color("f8ba5b") if id in ["weapons","smelting"] else Color("79ddfa"))
+		pulse.material = pulse_material
+		add_child(pulse)
+		var nameplate := _panel(Rect2(layout.mount + offset + Vector2(20,100),Vector2(100,27)),0.80)
+		var name := _label(layout.mount + offset + Vector2(22,100),96,14)
+		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		name.text = NAMES[id] + "增益"
+		var effect := _label(layout.mount + offset + Vector2(128,99),76,18)
 		effect.add_theme_font_override("font", _ui_font_bold)
+		effect.add_theme_color_override("font_color",Color("ffce8d") if id in ["weapons","smelting"] else Color("a9e9f6"))
 		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -246,18 +277,24 @@ func _build() -> void:
 		ratio.add_theme_color_override("font_color", Color("f7f1dc"))
 		ratio.add_theme_color_override("font_shadow_color", Color("092733", 0.95))
 		ratio.add_theme_constant_override("shadow_offset_y", 1)
-		_rows[id] = {"effect":effect, "slider":slider, "ratio":ratio, "mount":mount}
+		_rows[id] = {"effect":effect, "name":name, "nameplate":nameplate, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "mount":mount}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(325,762),290,16)
+	_budget = _label(Vector2(301,776),281,15)
+	_budget.add_theme_color_override("font_color",Color("203f50"))
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_cost = _label(Vector2(184, 789), 430, 16)
-	_purchase = _button("升级 ×1",Rect2(181,815,151,44),func(): _command(_purchase_action),true)
-	_quantity_buttons["1"] = _button("×1",Rect2(342,817,59,40),func(): _select_quantity(1,false))
-	_quantity_buttons["10"] = _button("×10",Rect2(407,817,59,40),func(): _select_quantity(10,false))
-	_quantity_buttons["max"] = _button("MAX",Rect2(472,817,61,40),func(): _select_quantity(1,true))
-	_equal = _button("均分",Rect2(540,817,74,40),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
-	_notice = _label(Vector2(184,864),430,16)
-	_notice.size.y = 28
+	_cost = _label(Vector2(188, 795), 390, 15)
+	_cost.add_theme_color_override("font_color",Color("203f50"))
+	_purchase = _button("升级 ×1",Rect2(188,816,132,38),func(): _command(_purchase_action),true)
+	_quantity_buttons["1"] = _button("×1",Rect2(326,816,54,38),func(): _select_quantity(1,false))
+	_quantity_buttons["10"] = _button("×10",Rect2(386,816,54,38),func(): _select_quantity(10,false))
+	_quantity_buttons["max"] = _button("MAX",Rect2(446,816,56,38),func(): _select_quantity(1,true))
+	_equal = _button("均分",Rect2(508,816,70,38),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
+	_notice_panel = _panel(Rect2(292,727,224,29),0.94)
+	_notice = _label(Vector2(298,727),212,14)
+	_notice.size.y = 29
+	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_notice.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_set_notice("")
 	for button in [_purchase,_equal]: button.disabled = true
 	_select_quantity(1,false)
 
@@ -304,9 +341,17 @@ func _process(_dt: float) -> void:
 		_set_running(bool(context.running))
 		if _stage.advance_visual_clock(float(context.game_time),bool(context.paused)):
 			_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+			for id in _ids:
+				_rows[id].work.material.set_shader_parameter("phase",_stage.visual_phase())
+				_rows[id].pulse.material.set_shader_parameter("phase",_stage.visual_phase())
 	if _message_until > 0 and Time.get_ticks_msec() >= _message_until:
 		_message_until = 0
-		_notice.text = ""
+		_set_notice("")
+
+func _set_notice(message: String) -> void:
+	_notice.text = message
+	_notice.visible = not message.is_empty()
+	_notice_panel.visible = _notice.visible
 
 func _set_running(running: bool) -> void:
 	if _running == running: return
@@ -329,7 +374,7 @@ func _refresh() -> void:
 	if not _valid_model(model):
 		_unknown(str(model.get("message", "供能状态暂不可用")))
 		return
-	if _message_until == 0: _notice.text = ""
+	if _message_until == 0: _set_notice("")
 	var ids: Array = []
 	for row in model.get("modules",[]):
 		if row.get("enabled",true): ids.append(str(row.id))
@@ -352,7 +397,7 @@ func _show_current_readings() -> void:
 		_rows[id].slider.set_value_no_signal(_shares[id])
 		_rows[id].ratio.text = str(int(roundf(float(row.ratio) * 100.0))) + "%"
 		_rows[id].slider.editable = _running and bool(_model.can_allocate)
-		_rows[id].effect.text = NAMES[id] + " 增益 ×" + PlayerText.number(str(row.factor))
+		_rows[id].effect.text = "×" + PlayerText.number(str(row.factor))
 		_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		_rows[id].slider.tooltip_text = "分配 " + str(int(roundf(float(row.ratio) * 100.0))) + "% · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 	_level.text = "等级 " + str(_model.level)
@@ -381,7 +426,7 @@ func _unknown(message: String) -> void:
 	_budget.text = "供能状态未知"
 	_cost.text = "费用 —"
 	_level.text = "等级 —"
-	_notice.text = message
+	_set_notice(message)
 	_stage.clear_snapshot()
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	_update_buttons()
@@ -467,7 +512,7 @@ func _command(action: Callable) -> void:
 	presentation_counts.commands += 1
 	last_result = action.call()
 	if last_result.get("ok",false):
-		_notice.text = "供能已更新"
+		_set_notice("供能已更新")
 		_message_until = Time.get_ticks_msec() + 1800
 		_refresh()
 		_quote_dirty = true
@@ -479,7 +524,7 @@ func _command(action: Callable) -> void:
 func _error(result: Dictionary) -> void:
 	var reason: String = str(result.get("reason",result.get("error","")))
 	var message: String = str(result.get("message",ERRORS.get(reason,EconomyView.describe_error(reason))))
-	_notice.text = message if not message.is_empty() else "分配未生效，请重试"
+	_set_notice(message if not message.is_empty() else "分配未生效，请重试")
 	_message_until = Time.get_ticks_msec() + 2200
 
 func _update_stage() -> void:
@@ -489,4 +534,7 @@ func _update_stage() -> void:
 	var loads := {"core":float(_model.load)}
 	for row in _model.modules: loads[str(row.id)] = float(row.load)
 	_stage.show_snapshot(_ids,loads,_selected)
+	for id in _ids:
+		_rows[id].work.material.set_shader_parameter("power",float(loads.get(id,0.0)))
+		_rows[id].pulse.material.set_shader_parameter("power",float(loads.get(id,0.0)))
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE

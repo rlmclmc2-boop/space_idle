@@ -1,5 +1,7 @@
 # 反应炉直接分配与运行光候选 R1
 
+**状态：此版整体实机视觉已由用户退回。** 本页只保留当时的交互、Owner 接线和历史画面证据，不作为现行美术通过结论。内部视觉重做的候选与同版实机证据见 [R5 仪表工作腔](../instrument-r5/README.md)。
+
 基于 `17710fc787431c569b930cf952fe5c8dd094f18f` 的 R4 厚体装配，保留四设备、中央核心和短接。反应炉内部删除“手动/有效”两行，比例嵌入各滑杆；四条增益单行分别对准实际玻璃凹面的中心，右下晶舱按自身内区收回原偏右起点。滑动通过 Reactor `allocation_plan_preview` 得到整组目标，再由 `apply_allocation_plan` 实际接纳。均分直接调用 Reactor `distribute`。取消确认/还原，不在界面计算 Amount。名称与增益仍显示在设备读面。批量后台仅定向取入 [Owner 候选 `aaba6683`](https://github.com/rlmclmc2-boop/space_idle/commit/aaba6683829ca11606003690224a1be9ea16080c) 中 `src/systems/reactor.gd`，文件 SHA-256 与其证据清单相同；Owner 实现仍待原双审。
 
 同版 1440×900、1× 整屏：[四设备运行](four-running.png)、[超额拒绝](direct-rejected.png)、[武器调到 0% 后](direct-applied.png)、[×10 精确报价](bulk-ten.png)、[MAX 报价](bulk-max.png)。[808×835 内容区连续 12 帧](flow-1x.mp4)来自同一运行实例，6 fps 播放，逐帧捕获没有插帧。核心、四工作口及四条核心向外短接的材质相位随游戏时间变化；实际帧差分别非零，停止/隐藏时仍使用现有冻结与不更新路径。

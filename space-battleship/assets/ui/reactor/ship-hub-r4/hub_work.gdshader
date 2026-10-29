@@ -44,8 +44,8 @@ void fragment() {
 			float ring = abs(fract(length(p) * 5.0 + phase * 0.7) - 0.5);
 			detail = 1.0 - smoothstep(0.08, 0.25, ring);
 		}
-		float pulse = 0.53 + 0.14 * sin(phase * 1.8 + p.y * 8.0);
-		COLOR = vec4(tint.rgb, envelope * sqrt(strength) * (pulse + detail * 0.46));
+		float pulse = 0.69 + 0.18 * sin(phase * 1.8 + p.y * 8.0);
+		COLOR = vec4(tint.rgb, envelope * pow(strength, 0.35) * (pulse + detail * 0.64));
 	} else {
 		float width = 1.0 - smoothstep(0.22, 0.49, abs(UV.y - 0.5));
 		float ends = smoothstep(0.0, 0.08, UV.x) * (1.0 - smoothstep(0.92, 1.0, UV.x));

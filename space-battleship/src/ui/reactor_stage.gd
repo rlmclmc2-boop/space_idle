@@ -3,6 +3,7 @@ extends Control
 const FOUR = preload("res://assets/ui/reactor/ship-hub-r4/background-four.png")
 const THREE = preload("res://assets/ui/reactor/ship-hub-r4/background-three.png")
 const WORK = preload("res://assets/ui/reactor/ship-hub-r4/hub_work.gdshader")
+const AMBIENT_WORK = preload("res://assets/ui/reactor/ship-hub-r5/ambient_work.gdshader")
 const CORE_SOURCE = preload("res://assets/ui/reactor/ship-hub-r4/core-work.png")
 const CORE_WORK = preload("res://assets/ui/reactor/ship-hub-r4/core_work.gdshader")
 const IDS := ["weapons", "defence", "smelting", "condensation"]
@@ -30,6 +31,7 @@ var _enabled: Array = []
 var _loads: Dictionary = {}
 var _fields: Dictionary = {}
 var _connections: Dictionary = {}
+var _ambient: ColorRect
 var _clock: float = -1.0
 var _phase: float = 0.0
 var diagnostics := {"draws":0, "field_updates":0, "active_frames":0}
@@ -38,6 +40,7 @@ func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	custom_minimum_size = Vector2(808, 835)
 	set_process(false)
+	_add_ambient()
 	_add_core()
 	for id in IDS:
 		_add_work(id, PORTS[id], 1, AMBER if id in ["weapons", "smelting"] else BLUE)
@@ -68,6 +71,17 @@ func _add_work(id: String, rect: Rect2, kind: int, tint: Color) -> void:
 	_fields[id] = _new_work(rect, kind, tint)
 	_fields[id].material.set_shader_parameter("module_kind", IDS.find(id))
 
+func _add_ambient() -> void:
+	_ambient = ColorRect.new()
+	_ambient.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ambient.position = Vector2(164,120)
+	_ambient.size = Vector2(480,450)
+	_ambient.visible = false
+	var material := ShaderMaterial.new()
+	material.shader = AMBIENT_WORK
+	_ambient.material = material
+	add_child(_ambient)
+
 func _add_core() -> void:
 	var field := TextureRect.new()
 	field.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -88,6 +102,9 @@ func control_layout(id: String) -> Dictionary:
 func show_snapshot(ids: Array, loads: Dictionary, _selected: String) -> void:
 	_enabled = ids.duplicate()
 	_loads = loads.duplicate()
+	var core_power: float = clampf(float(_loads.get("core",0.0)),0.0,1.0)
+	_ambient.visible = core_power > 0.0
+	_ambient.material.set_shader_parameter("power",core_power)
 	for id in _fields:
 		var load: float = clampf(float(_loads.get(id, 0.0)), 0.0, 1.0)
 		_fields[id].visible = (id == "core" or id in _enabled) and load > 0.0
@@ -101,6 +118,7 @@ func show_snapshot(ids: Array, loads: Dictionary, _selected: String) -> void:
 func clear_snapshot() -> void:
 	_enabled.clear()
 	_loads.clear()
+	_ambient.visible = false
 	for field in _fields.values(): field.visible = false
 	for field in _connections.values(): field.visible = false
 	queue_redraw()
@@ -113,6 +131,7 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	_clock = game_time
 	if paused or elapsed == 0.0 or float(_loads.get("core", 0.0)) <= 0.0: return false
 	_phase = fmod(_phase + elapsed, 4096.0)
+	_ambient.material.set_shader_parameter("phase",_phase)
 	diagnostics.active_frames += 1
 	for id in _fields:
 		if _fields[id].visible:
@@ -126,6 +145,9 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 
 func reset_clock() -> void:
 	_clock = -1.0
+
+func visual_phase() -> float:
+	return _phase
 
 func _draw() -> void:
 	diagnostics.draws += 1
