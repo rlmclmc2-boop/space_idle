@@ -30,6 +30,30 @@
 
 原图：[star-concept-a.png](images/star-concept-a.png) · SHA-256 `5e8bc956a5b75f54e68884d9d1626955ba54c3a042d7f19d8273db21bd8dfc30`
 
+## 红巨星
+
+续句：
+
+> RED GIANT STAR: huge but visually soft rust-red and muted coral photosphere with a sparse, translucent outer envelope and wispy prominence loops, recognizably old swollen star, distinct from the yellow main-sequence star. Right panel creates a very wide asymmetric standoff crescent of protected facilities OUTSIDE the diffuse envelope, with only slim remote collector probes reaching toward selected prominences; a shielded refinery/processing node on the crescent, workshop in a cool service spine, a small independent orbital station and shipyard on a remote counterweight pier. Clearly show long-distance transport along the crescent and open gap to stellar surface. Do not put a tight ring around the star, do not mount buildings on plasma. Make negative space and standoff distance the main design idea.
+
+原图：[red-giant-concept-a.png](images/red-giant-concept-a.png) · SHA-256 `4cf3e724e466a5b244e8d0a6582758f6ce58039c00f107da35cc79a36fc1313d`
+
+## 白矮星
+
+续句：
+
+> WHITE DWARF: an unusually SMALL, intensely bright blue-white stellar core with subtle compact halo, deep navy background and no giant sun-sized globe. Right panel keeps the core small and designs an asymmetric layered radiation-shield array around it: three large ivory/navy protective petal baffles offset from the core, a compact energy processing bay behind shields, workshop in their cool shadow, a single inspection station on an outer elliptical path and a separate drydock farther away. Visible sheltered transport corridor from inner shielded bay to outer dock. Architecture frames and protects from tiny dense star; no generic symmetric full ring and no buildings touching core. High contrast, but low bloom so structure remains readable.
+
+原图：[white-dwarf-concept-a.png](images/white-dwarf-concept-a.png) · SHA-256 `e8f48c3bb2c80200669154ed29bfde69bfd855c164fafbe195795e38dff8bb76`
+
+## 脉冲星
+
+续句：
+
+> PULSAR: a compact violet-blue neutron star with two narrow opposite polar beams and a thin tilted magnetic torus, unmistakably NOT a gas giant or ordinary blue star. Left bare state already shows the two beams and magnetic geometry. Right panel builds two protected service arcs in safe equatorial sectors away from polar beams, offset shielded signal/processing node, workshop mounted under one arc, compact orbital station on the other and independent shipyard in a remote beam-free sector. Show a clear transport route along the safe arc with small timed shutter elements, while leave both polar beam corridors visibly EMPTY. No structures intersect the beam cones; avoid a generic full ring, giant sphere or magical glowing clutter.
+
+原图：[pulsar-concept-a.png](images/pulsar-concept-a.png) · SHA-256 `2566be40656a757dfee96907dcc00ba58248478385b635cf7fa579196bf1028d`
+
 ## 取舍
 
-固态行星另有一张未归档的探索图，画面天体过大且偏写实，弱化设施整体关系；本目录仅固定上述首批候选。三张已固定图仍偏精细、尚未验证缩至现有模块后的设施识别，也未检验 UI 如何融入。用户可直接在同机位两态上判断结构方向，再决定是否调风格和占比。
+固态行星另有一张未归档的探索图，画面天体过大且偏写实，弱化设施整体关系；本目录仅固定上述六张候选。图像整体仍偏精细、尚未验证缩至现有模块后的设施识别，也未检验 UI 如何融入。用户可直接在同机位两态上判断结构方向，再决定是否调风格和占比。
