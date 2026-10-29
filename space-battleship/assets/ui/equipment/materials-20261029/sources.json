@@ -1,0 +1,42 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-29",
+  "original_path": "/workspace/generated_images/exec-2f355c37-a7ee-4b20-8787-e4f0084c9f42.png",
+  "original_retained": true,
+  "transparent_background": false,
+  "reference_images": [],
+  "image_sha256": "73d046eabcc6806761e35a4319229fc0ca43542f4675b18f10fc6ba76c14d8e1",
+  "prompt_sha256": "c49aa9d279d12b1175b26216224bf4bf26e5247317daf8dcf4fa89674b29ef34",
+  "image_size": [
+    1536,
+    1024
+  ],
+  "runtime_consumer": "src/ui/equipment_panel.gd::_setup_materials/_surface_material",
+  "regions": {
+    "enamel": [
+      0,
+      0,
+      768,
+      512
+    ],
+    "navy": [
+      768,
+      0,
+      768,
+      512
+    ],
+    "glass": [
+      0,
+      512,
+      768,
+      512
+    ],
+    "teal": [
+      768,
+      512,
+      768,
+      512
+    ]
+  },
+  "derivatives": "Godot initialization only: rim samples cached at192x128; face-only samples crop32px of each region edge and cache512x336. No regenerated ship/weapon or baked text/value."
+}
