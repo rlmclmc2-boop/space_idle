@@ -8,8 +8,8 @@ uniform vec4 tint : source_color = vec4(0.95, 0.65, 0.32, 1.0);
 
 float glass_mask(vec2 uv) {
 	if (module_kind == 0) {
-		float left_edge = 0.20 + 0.015 * uv.y;
-		float right_edge = 0.56 - 0.015 * uv.y;
+		float left_edge = 0.13 + 0.015 * uv.y;
+		float right_edge = 0.67 - 0.015 * uv.y;
 		float sides = smoothstep(left_edge, left_edge + 0.035, uv.x) * (1.0 - smoothstep(right_edge - 0.035, right_edge, uv.x));
 		return sides * smoothstep(0.025, 0.07, uv.y) * (1.0 - smoothstep(0.91, 0.98, uv.y));
 	}
@@ -35,19 +35,16 @@ void fragment() {
 	float strength = pow(clamp(power, 0.0, 1.0), 0.35);
 	float motion = 0.0;
 	if (module_kind == 0) {
-		float rail = min(abs(UV.y - 0.15), abs(UV.y - 0.75));
-		float channels = 1.0 - smoothstep(0.015, 0.075, rail);
-		float packet = fract(UV.x * 2.4 + phase * 0.85);
-		float leading = 1.0 - smoothstep(0.04, 0.29, packet);
-		motion = channels * (0.24 + leading * 0.76);
+		float barrel_y = UV.y - 0.20 * (UV.x - 0.13);
+		float rail = min(abs(barrel_y - 0.16), abs(barrel_y - 0.71));
+		float channels = 1.0 - smoothstep(0.025, 0.095, rail);
+		float axis = UV.x + 0.20 * UV.y;
+		float packet = fract(axis * 1.7 - phase * 0.67);
+		float leading = 1.0 - smoothstep(0.03, 0.22, packet);
+		motion = channels * (0.13 + leading * 0.87);
 	} else if (module_kind == 1) {
-		vec2 grid = UV * vec2(4.0, 2.5);
-		grid.x += 0.5 * mod(floor(grid.y), 2.0);
-		vec2 cell = abs(fract(grid) - 0.5);
-		float wall = max(cell.x * 0.866 + cell.y * 0.5, cell.y);
-		float mesh = 1.0 - smoothstep(0.018, 0.07, abs(wall - 0.43));
-		float sweep = 0.5 + 0.5 * sin(phase * 2.0 - UV.x * 10.0);
-		motion = mesh * (0.35 + sweep * 0.65);
+		float sweep = 1.0 - smoothstep(0.06, 0.30, abs(UV.x - 0.46 + 0.20 * UV.y - 0.20 * sin(phase * 0.9)));
+		motion = 0.11 + 0.32 * sweep;
 	} else if (module_kind == 2) {
 		float grate = 1.0 - smoothstep(0.08, 0.24, abs(fract(UV.x * 6.0) - 0.5));
 		float heat = 0.5 + 0.5 * sin(phase * 3.0 - UV.y * 12.0 + floor(UV.x * 6.0) * 1.4);

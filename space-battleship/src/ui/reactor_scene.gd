@@ -4,10 +4,6 @@ signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const WORK_FACE = preload("res://assets/ui/reactor/ship-hub-r9/device_work.gdshader")
 const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r9/device_pulse.gdshader")
-const BUTTON_IDLE = preload("res://assets/ui/public_shell/button-idle.svg")
-const BUTTON_ACTIVE = preload("res://assets/ui/public_shell/button-active.svg")
-const BUTTON_HOVER = preload("res://assets/ui/public_shell/button-hover.svg")
-const BUTTON_DISABLED = preload("res://assets/ui/public_shell/button-disabled.svg")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
@@ -140,22 +136,28 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.add_theme_font_size_override("font_size", 18 if primary else 17)
 	button.add_theme_font_override("font", _ui_font_bold)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		var box := StyleBoxTexture.new()
-		box.texture = BUTTON_DISABLED if state == "disabled" else BUTTON_ACTIVE if primary else BUTTON_HOVER if state in ["hover", "focus"] else BUTTON_IDLE
-		box.texture_margin_left = 12
-		box.texture_margin_right = 12
-		box.texture_margin_top = 11
-		box.texture_margin_bottom = 11
+		var box := StyleBoxFlat.new()
+		box.bg_color = Color("8c6b45") if primary else Color("344d56")
+		if state == "hover": box.bg_color = Color("a17d50") if primary else Color("45636a")
+		elif state == "pressed": box.bg_color = Color("73583c") if primary else Color("263f48")
+		elif state == "disabled": box.bg_color = Color("77746e") if primary else Color("58676c")
+		elif state == "focus": box.bg_color = Color.TRANSPARENT
+		box.border_color = Color("d6c18e") if primary else Color("648b8d")
+		box.set_border_width_all(2 if state == "focus" else 1)
+		box.set_corner_radius_all(3)
+		if state != "focus":
+			box.shadow_color = Color(0.05,0.11,0.14,0.20)
+			box.shadow_size = 1
+			box.shadow_offset = Vector2(0,1)
 		box.content_margin_left = 8
 		box.content_margin_right = 8
 		box.content_margin_top = 3
 		box.content_margin_bottom = 3
-		box.modulate_color = Color(1.08, 1.08, 1.04) if state in ["hover", "focus"] else Color(0.76, 0.78, 0.80) if state == "pressed" else Color.WHITE
 		button.add_theme_stylebox_override(state, box)
-	button.add_theme_color_override("font_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_hover_color", Color("203f50") if primary else Color("c4fff0"))
-	button.add_theme_color_override("font_pressed_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_focus_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_color", Color("f3f0df"))
+	button.add_theme_color_override("font_hover_color", Color("fff2db"))
+	button.add_theme_color_override("font_pressed_color", Color("f3f0df"))
+	button.add_theme_color_override("font_focus_color", Color("f3f0df"))
 	button.add_theme_color_override("font_disabled_color", Color("8da5ac"))
 	button.pressed.connect(action)
 	add_child(button)
@@ -202,13 +204,13 @@ func _build() -> void:
 		pulse_material.set_shader_parameter("tint", Color("f8ba5b") if id in ["weapons","smelting"] else Color("79ddfa"))
 		pulse.material = pulse_material
 		add_child(pulse)
-		var name := _label(layout.title + offset,92,17)
+		var name := _label(layout.title + offset,54 if id == "smelting" else 92,17)
 		name.rotation_degrees = float(layout.read_tilt)
 		name.add_theme_font_override("font",_ui_font_medium)
 		name.add_theme_color_override("font_color",Color("f3f0df"))
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name.text = NAMES[id]
-		var effect := _label(layout.factor + offset,58,18)
+		var effect := _label(layout.factor + offset,62 if id == "smelting" else 58,18)
 		effect.rotation_degrees = float(layout.read_tilt)
 		effect.add_theme_font_override("font", _ui_font_bold)
 		effect.add_theme_color_override("font_color",Color("e9c98b") if id in ["weapons","smelting"] else Color("b5d9d8"))
