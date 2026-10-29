@@ -1,6 +1,6 @@
 # 清晰分区公共壳：实机接入候选
 
-基线为已接纳装备的 `main@e3b38d7b6d8256f6031e1b086c7db7812b6a441f`，本候选在 `design/clear-zone-host`。前期分区稿保存在独立概念分支 `design/shared-host-shell@fa28589b`，本分支不继承该分支的运行树。遵从用户后续要求：操作区和战斗区完整收边、字体和公共控件一致，分隔克制；去掉“战斗视窗”字样。右侧预留空间不加入环境或特效，后续由战场组处理。本候选仍待原布局审，不代表整体美术验收或合入 main。
+基线为已接纳装备的 `main@e3b38d7b6d8256f6031e1b086c7db7812b6a441f`，本候选在 `design/clear-zone-host`。前期分区稿保存在独立概念分支 `design/shared-host-shell@fa28589b`，本分支不继承该分支的运行树。遵从用户后续要求：操作区和战斗区完整收边、字体和公共控件一致，分隔克制；去掉“战斗视窗”字样。右侧预留空间不加入环境或特效，后续由战场组处理。原布局审和根端已核对 `51cc7c99` 实图，确认设置输入净空问题关闭，本轮公共 UI 限定通过；顶部、导航、分区及设置图已交用户，等待用户意见。本候选不代表模块内部、整体美术或完整游戏验收，尚未获准合入 main。
 
 ## 实际接入
 
@@ -23,3 +23,5 @@
 Godot `4.7.2`，桌面 `1440×900`，正常 main 入口实例，无玩法夹具。整屏：[装备／已选](evidence/equipment-1440x900.png)、[舰船未选悬浮](evidence/ship-hover-1440x900.png)、[舰船标题及悬浮选中](evidence/ship-1440x900.png)、[设置上部](evidence/settings-1440x900.png)、[设置下部](evidence/settings-lower-1440x900.png)、[SpinBox 焦点](evidence/settings-spin-focus-1440x900.png)、[SpinBox 禁用](evidence/settings-spin-disabled-1440x900.png)、[资源详情](evidence/resource-details-1440x900.png)。[连续六帧](evidence/route-motion-00.png) 至 [末帧](evidence/route-motion-05.png) 记录装备→舰船→装备的短切换，均为 Godot 直接截图。
 
 [窄范围检查记录](evidence/checks.json)：15 项通过，包括真实侧栏点击、选中悬浮组合态字底、余额显示、原战斗投影位置与尺度、SpinBox 内嵌材质／焦点／禁用、未开放页拦截、资源弹窗互斥、装备批量弹窗阻止导航。只覆盖本轮受影响的公共壳与入口；不代表自然解锁、完整游戏流程或各模块内部验收。运行日志只有图形 VSync 与音频设备回退告警，未见脚本错误。
+
+模块内部的新质感及“数量循环键＋独立购买／升级键”仍由各模块原组制作和验收；当前 main 的旧装备截图不能作为模块最终效果。本轮审核结论只适用于上述公共 UI 候选与既有证据。
