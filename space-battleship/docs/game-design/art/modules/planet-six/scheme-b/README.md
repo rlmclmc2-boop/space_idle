@@ -4,9 +4,9 @@
 
 这是供用户比较的新**概念候选**，不是替代既有 A 方案的批准、游戏运行画面或新玩法规则。三类沿用同一套象牙／深青／青色能源的卡通化主体：空间站带首段短弧，精炼厂自带第二段及采集端，工坊自带第三段龙门平台，船坞自带末段泊位。五格从左到右为裸天体、仅站、站＋精炼、前三座、四座完整态；同一格内没有未建段。玩家仍可按现行独立施工与领取产生其他建成组合，图中次序只是可行示例，不是强制前置。
 
-轨道带自身维持外部轨道姿态，不随天体表面自转。固态接点为精炼厂带来的可收回探针／自由接驳；气态接点换成悬在云顶的采样器；恒星接点需隔热磁采与显著的光球间距。三类均不以永久硬管焊住旋转表面。轨道设施可随视角与自转遮挡，不保证所有建筑始终可见，也不引入拖动观察。这里的“深入采集”是视觉关系，不代表新增产出或效率。白矮星、红巨星、脉冲星采用此主体时的距离、屏蔽和避束流接点尚未出图，不能直接套用本图。
+轨道带自身维持外部轨道姿态，不随天体表面自转。固态接点为精炼厂带来的可收回探针／自由接驳；气态接点换成精炼厂自带的云顶掠云艇，03 至 05 格持续可见；恒星接点为安全外侧的隔热磁采盘，琥珀色稀疏能流自日冕越过空隙入盘，青色回流沿短臂进入精炼厂。三类均不以永久硬管焊住旋转表面。轨道设施可随视角与自转遮挡，不保证所有建筑始终可见，也不引入拖动观察。这里的“深入采集”是视觉关系，不代表新增产出或效率。白矮星、红巨星、脉冲星采用此主体时的距离、屏蔽和避束流接点尚未出图，不能直接套用本图。
 
-**审图边界。** [完整态对照](three-worlds-complete.png)最直接检验共用主体和三种采集端；三张五态图检验每座带来一段。完整态对照中的恒星采集端视觉上过于贴近光球，以[恒星五态修正版](star-stages.png)的外移位置为此轮较准的空间意向。图像编辑并未逐像素锁住天体纹理或工程件外形，不能据此认定多相位自转、实际模块比例、热防护或四设施状态组合均可运行。恒星五态中磁采盘只示意处于光球外，磁力路径没有绘成实机可读的工作特效。现有图仍偏细，在 808×900 模块尺寸需以后续资产化再做减法。
+**审图边界。** [完整态对照](three-worlds-complete.png)最直接检验共用主体和三种采集端；三张五态图检验每座带来一段。完整态对照中的恒星采集端视觉上过于贴近光球，以[恒星五态修正版](star-stages.png)的外移位置和非接触能流为此轮较准的空间意向。图像编辑并未逐像素锁住天体纹理或工程件外形，不能据此认定多相位自转、实际模块比例、热防护或四设施状态组合均可运行。能流只说明视觉上的采集方向，不新增采集资源或产出规则。现有图仍偏细，在 808×900 模块尺寸需以后续资产化再做减法。
 
 ## 图源与实际提示词
 
@@ -16,8 +16,8 @@
 |---|---|---|
 | [三类完整态](three-worlds-complete.png) | 无 | `d2c5c9ce76e12bf917e56497a58293289d27d00813fd22b0b293578fb3366ef7` |
 | [固态五态](solid-stages.png) | 三类完整态 | `6442178d17ced97d22b84a48f899c19f4381f25733cf0c2da1b63ffb07647db7` |
-| [气态五态](gas-stages.png) | 固态五态 | `f07d956ed5241857dcbeefd1da374e2f7ab867079c0de61427a551f7725ce58b` |
-| [恒星五态](star-stages.png) | 恒星初版五态，后者由固态五态生成 | `32cabdcb7c181a50c784304bf09133f8e4019e22d0b1c5f86a247bd4b51ab7df` |
+| [气态五态](gas-stages.png) | 气态初版五态及三类完整态参照；初版由固态五态生成 | `c7a35309f2d899110bd55e1a0be1980f66682ffef275f71877cf86926e88b360` |
+| [恒星五态](star-stages.png) | 恒星外移磁采版；此前由固态五态及局部修正生成 | `69fbf710a916bc998d3f3163f650c1a93b8e4280c7654c9c756ca7a46dbf6311` |
 
 三类完整态提示词：
 
@@ -38,3 +38,15 @@
 恒星最终局部编辑提示词：
 
 > Correct only the magnetic collection endpoint in panels THREE, FOUR and FIVE of the attached five-panel stellar storyboard. Keep all five panels, the sun disk, station, gold-dome refinery, orange workshop, shipyard, ring arcs, and camera unchanged. The small white-and-blue circular intake disc currently overlaps the bright stellar photosphere at upper-right; move each disc UP AND RIGHT so it floats entirely in DARK SPACE OUTSIDE the orange corona with a VISIBLE GAP between disc and star, connected only by its short arm to the gold-dome refinery. It must not touch the plasma surface. Nothing else changes. Maintain cumulative staged construction, no UI or text.
+
+## 气态与恒星采集接点复审修正
+
+气态初版五态 SHA-256 `f07d956ed5241857dcbeefd1da374e2f7ab867079c0de61427a551f7725ce58b` 的小吊舱留在空中，和三类完整态的贴云掠云艇不同。最终图片以气态初版为首输入、三类完整态为第二参照编辑，保持相同环带和建造累积。实际提示词：
+
+> Edit the attached FIVE-PANEL gas-giant orbital-belt construction storyboard. Preserve all five panels, identical gas giant size/cloud/storm, station, gold-domed refinery, orange gantry workshop, shipyard, ring segments, camera and style. Focus ONLY on the refinery collection endpoint in panels THREE, FOUR and FIVE. Currently a tiny cylindrical pod hangs in EMPTY SPACE from a short diagonal rod, too far above the cloud; replace it in ALL THREE panels with the SAME clearly recognizable slim ivory-and-navy ATMOSPHERIC SKIMMER craft at the uppermost pale cloud layer, like the gas-giant panel in the SECOND attached complete-layout comparison. A flexible retractable tether or short dotted shuttle path goes from refinery to skimmer but ENDS FREE at skimmer, no rigid pipe welded into cloud. The skimmer is a visual part of the refinery and appears exactly when the refinery is built in panel three, remains the same in panels four and five. There is NO skimmer, tether or unbuilt support in bare panel one or station-only panel two. Keep a readable gap between orbital refinery and gas giant cloud top; do not place buildings on solid land. No words or UI.
+
+恒星外移磁采版初图 SHA-256 `32cabdcb7c181a50c784304bf09133f8e4019e22d0b1c5f86a247bd4b51ab7df` 的安全外侧采集盘与日冕之间缺少可读作业关系。最终图片以该版为输入，仅补非接触能流。实际提示词：
+
+> Edit the attached FIVE-PANEL main-sequence STAR cumulative orbital-belt storyboard. Preserve every panel, same yellow star, station, gold-domed refinery, separate white collector disc in DARK SPACE ABOVE-RIGHT of the star in panels THREE to FIVE, orange workshop, shipyard, arcs, camera and palette. In panels THREE, FOUR and FIVE ONLY, show the refinery's working relationship to the star by adding a SHORT, THIN, LUMINOUS AMBER MAGNETIC FLUX TRACE made of sparse curved wisps or small particles FROM the star's upper-right CORONA, ACROSS THE OPEN DARK STANDOFF GAP, INTO the EXISTING white collector disc, then a faint thin cyan return glow along its existing short arm TO the gold-domed refinery. The trace is ENERGY IN SPACE, NOT a solid rod, pipe, crane, needle or structure. Maintain a CLEAR DARK GAP between the collector disc and photosphere; neither disc nor any physical support touches star. The energy direction should read corona → disc → refinery, with restrained brightness so hardware remains legible. No flux, disc or refinery in bare panel one or station-only panel two. Keep same station, refinery and collector visibly unchanged in panels three to five, and no unbuilt ring segment early. No text or UI.
+
+两图均为 `image_gen.imagegen` 编辑，`transparent_background=false`；作者目视确认 03 至 05 格的接点随精炼厂保留，01／02 没有提前出现。能流与掠云艇仍为静态意向，不代表完成运行动画或规则验证。
