@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+MOUSE slider=(81.82324, 296.4539) ratio_before=0.25 ratio_after=0.24 owner_result=true
+MOUSE purchase_ten result={ "ok": true, "defence_changed": false } level=1->11 wallet_uranium=1e3->4.5e2 quoted_cost=5.5e2 notice=供能已更新
+MOUSE purchase_max result={ "ok": true, "defence_changed": false, &"count": 1, &"costs": { "2": "2.02e2" } } level=11->12 wallet_uranium=4.5e2->2.48e2 quoted_cost=2.02e2 notice=供能已更新
