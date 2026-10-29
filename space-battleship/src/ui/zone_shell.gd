@@ -1,6 +1,11 @@
 extends Control
 ## Public presentation around the existing 808px workspace and unchanged battle projection.
 signal route_requested(id: String)
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
+const TOP_RAIL = preload("res://assets/ui/public_shell/command-rail.svg")
+const STATUS_IDLE = preload("res://assets/ui/public_shell/status-idle.svg")
+const STATUS_ALERT = preload("res://assets/ui/public_shell/status-alert.svg")
+const RESOURCE_MARK = preload("res://assets/ui/public_shell/resource-mark.svg")
 
 const ROUTES := [
 	["equipment", "装备", "装备"], ["ship", "舰船", "舰船与航程"],
@@ -32,19 +37,20 @@ func _init(economy) -> void:
 	var font := FontVariation.new()
 	font.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
 	font.variation_opentype = {2003265652: 450.0}
-	theme = preload("res://src/ui/bridge_theme.gd").create()
+	theme = BridgeTheme.create()
 	theme.default_font = font
 	theme.default_font_size = 15
-	var popup_style := StyleBoxFlat.new()
-	popup_style.bg_color = Color("102b39", 0.98)
-	popup_style.border_color = Color("8baaa3")
-	popup_style.set_border_width_all(1)
-	popup_style.set_corner_radius_all(5)
-	popup_style.content_margin_left = 16
-	popup_style.content_margin_right = 16
-	popup_style.content_margin_top = 13
-	popup_style.content_margin_bottom = 13
-	theme.set_stylebox("panel", "PopupPanel", popup_style)
+	theme.set_stylebox("panel", "PopupPanel", BridgeTheme.public_panel())
+	var context_back := NinePatchRect.new()
+	context_back.texture = preload("res://assets/ui/public_shell/button-idle.svg")
+	context_back.set_patch_margin(SIDE_LEFT, 12)
+	context_back.set_patch_margin(SIDE_RIGHT, 12)
+	context_back.set_patch_margin(SIDE_TOP, 12)
+	context_back.set_patch_margin(SIDE_BOTTOM, 12)
+	context_back.position = Vector2(18, 12)
+	context_back.size = Vector2(118, 41)
+	context_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(context_back)
 	_context = _label("装备", Rect2(18, 12, 118, 41), 20, TEXT)
 	_context.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_context.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -54,10 +60,12 @@ func _init(economy) -> void:
 		cell.clip_text = true
 		cell.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_balances.append(cell)
-	_status = _button("·", Rect2(650, 16, 28, 32), false)
+	_status = _button("", Rect2(650, 16, 28, 32), false)
+	_status.icon = STATUS_IDLE
 	_status.tooltip_text = "保存与会话状态"
 	_status.pressed.connect(_show_status)
-	var resources := _button("资源", Rect2(690, 12, 78, 41), false)
+	var resources := _button("资源", Rect2(684, 12, 92, 41), false)
+	resources.icon = RESOURCE_MARK
 	resources.pressed.connect(_show_balances)
 	for index in ROUTES.size():
 		var spec: Array = ROUTES[index]
@@ -77,6 +85,8 @@ func _init(economy) -> void:
 	var close := Button.new()
 	close.text = "关闭"
 	close.custom_minimum_size.y = 38
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+		close.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 8))
 	content.add_child(close)
 	close.pressed.connect(_details.hide)
 	set_active_route("equipment")
@@ -88,14 +98,8 @@ func _draw() -> void:
 	draw_rect(Rect2(808, 0, 47.875, 900), Color("102b3a"))
 	draw_rect(Rect2(808, 0, 2, 900), EDGE)
 	draw_rect(Rect2(854, 0, 2, 900), Color("63848d"))
-	draw_rect(Rect2(0, 0, 808, 65), Color("122f3e"))
-	# The approved hangar art starts at y=85; this shallow public lip covers its blank top margin.
-	draw_rect(Rect2(0, 65, 808, 20), Color("183746"))
-	draw_rect(Rect2(0, 84, 808, 1), Color("819d9b", 0.45))
-	draw_rect(Rect2(0, 0, 808, 1), Color("779a9b", 0.55))
-	draw_rect(Rect2(0, 64, 808, 1), Color("89aaa4", 0.75))
-	draw_rect(Rect2(18, 12, 118, 41), Color("294e5b"))
-	draw_rect(Rect2(18, 12, 118, 41), EDGE, false, 1.0)
+	# The approved hangar art starts at y=85; the rail occupies only its blank top margin.
+	draw_texture_rect(TOP_RAIL, Rect2(0, 0, 808, 85), false)
 	for x in [154, 303, 451, 640]:
 		draw_rect(Rect2(x, 17, 1, 30), Color("6e9697", 0.65))
 
@@ -119,15 +123,7 @@ func _button(caption: String, rect: Rect2, selectable: bool) -> Button:
 	button.toggle_mode = selectable
 	button.add_theme_font_size_override("font_size", 14 if selectable else 15)
 	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		var style := StyleBoxFlat.new()
-		style.bg_color = Color("254a5b") if state == "hover" else Color("0f3040") if state == "pressed" else Color("183848")
-		style.border_color = Color("b9d8cb") if state == "focus" else EDGE
-		style.set_border_width_all(2 if state == "focus" else 1)
-		style.set_corner_radius_all(5)
-		style.shadow_color = Color("06141d", 0.45)
-		style.shadow_size = 2
-		style.shadow_offset = Vector2(0, 2)
-		button.add_theme_stylebox_override(state, style)
+		button.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 1 if selectable else 4))
 	button.add_theme_color_override("font_color", TEXT)
 	button.add_theme_color_override("font_hover_color", Color("ffffff"))
 	button.add_theme_color_override("font_pressed_color", Color("132f3d"))
@@ -156,13 +152,13 @@ func set_active_route(id: String) -> void:
 		var button: Button = _route_buttons[key]
 		var selected: bool = key == id
 		button.set_pressed_no_signal(selected)
-		for color_state in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color"]:
+		for color_state in ["font_color", "font_hover_color"]:
 			button.add_theme_color_override(color_state, Color("173e4c") if selected else TEXT)
-		for state in ["normal", "hover", "pressed", "hover_pressed"]:
-			var style := button.get_theme_stylebox(state).duplicate() as StyleBoxFlat
-			style.bg_color = Color("e9e1cb") if selected else Color("254a5b") if state in ["hover", "hover_pressed"] else Color("0f3040") if state == "pressed" else Color("183848")
-			style.border_color = Color("e1c68d") if selected else EDGE
-			button.add_theme_stylebox_override(state, style)
+		for color_state in ["font_pressed_color", "font_hover_pressed_color"]:
+			button.add_theme_color_override(color_state, Color("173e4c"))
+		button.add_theme_color_override("font_disabled_color", Color("173e4c") if selected else Color("869b9b"))
+		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+			button.add_theme_stylebox_override(state, BridgeTheme.public_button("selected" if selected else state, 1))
 	for spec in ROUTES:
 		if str(spec[0]) == id:
 			_context.text = str(spec[2])
@@ -170,7 +166,7 @@ func set_active_route(id: String) -> void:
 
 func set_status(message: String, warning: bool = false) -> void:
 	_status_message = message
-	_status.text = "!" if warning else "·"
+	_status.icon = STATUS_ALERT if warning else STATUS_IDLE
 	_status.tooltip_text = message if not message.is_empty() else "保存与会话状态"
 
 func set_navigation_blocked(blocked: bool) -> void:

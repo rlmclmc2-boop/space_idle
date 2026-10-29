@@ -1,4 +1,32 @@
 extends RefCounted
+const ART := "res://assets/ui/public_shell/"
+
+static func _texture_style(path: String, inset: float, padding: float) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = load(ART + path)
+	style.texture_margin_left = inset
+	style.texture_margin_right = inset
+	style.texture_margin_top = inset
+	style.texture_margin_bottom = inset
+	style.content_margin_left = padding
+	style.content_margin_right = padding
+	style.content_margin_top = 7
+	style.content_margin_bottom = 7
+	return style
+
+static func public_panel() -> StyleBoxTexture:
+	var style := _texture_style("panel-frame.svg", 18, 16)
+	style.content_margin_top = 14
+	style.content_margin_bottom = 14
+	return style
+
+static func public_button(state: String, padding: float = 10.0) -> StyleBoxTexture:
+	var path := "button-active.svg" if state in ["pressed", "hover_pressed", "selected"] else "button-hover.svg" if state in ["hover", "focus"] else "button-disabled.svg" if state == "disabled" else "button-idle.svg"
+	return _texture_style(path, 12, padding)
+
+static func public_input() -> StyleBoxTexture:
+	return _texture_style("input-well.svg", 12, 10)
+
 static func create() -> Theme:
 	var theme := Theme.new()
 	theme.default_font_size = 15
@@ -14,7 +42,7 @@ static func create() -> Theme:
 		for key in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
 			var style := StyleBoxFlat.new()
 			style.bg_color = Color("e4ddca") if key in ["pressed", "hover_pressed"] else Color("244f60") if key == "hover" else Color("213842") if key == "disabled" else Color("143746")
-			style.border_color = Color("c5dfd7") if key == "focus" else Color("c5a975") if key == "pressed" else Color("597e85")
+			style.border_color = Color("c5dfd7") if key == "focus" else Color("c5a975") if key in ["pressed", "hover_pressed"] else Color("597e85")
 			style.set_border_width_all(2 if key == "focus" else 1)
 			style.set_corner_radius_all(5)
 			style.content_margin_left = 10

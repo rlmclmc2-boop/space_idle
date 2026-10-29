@@ -10,6 +10,7 @@ const PlanetPanel = preload("res://src/ui/planet_panel.gd")
 const HyperspacePanel = preload("res://src/ui/hyperspace_panel.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
 const ZoneShell = preload("res://src/ui/zone_shell.gd")
 const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
@@ -571,6 +572,7 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 
 func _settings_group(parent: Control, title: String, caption: String) -> VBoxContainer:
 	var card := PanelContainer.new()
+	card.add_theme_stylebox_override("panel", BridgeTheme.public_panel())
 	parent.add_child(card)
 	var contents := VBoxContainer.new()
 	contents.add_theme_constant_override("separation", 9)
@@ -597,7 +599,12 @@ func _settings_action(parent: Control, text: String, action: Callable, width: fl
 	var button := _command_button(parent, text, action)
 	button.custom_minimum_size = Vector2(width, 39)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+		button.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 8))
 	return button
+
+func _settings_field(control: Control) -> void:
+	control.add_theme_stylebox_override("normal", BridgeTheme.public_input())
 
 # One UI ownership gate for main Space and the battle viewport's G shortcut.
 func _ui_occupied() -> bool:
@@ -735,6 +742,7 @@ func _setup_growth_panel() -> void:
 	var storage := _settings_group(box, "存档与速度", "本机进度与当前运行节奏")
 	var storage_path_row := _settings_row(storage)
 	var save_path := LineEdit.new()
+	_settings_field(save_path)
 	save_path.placeholder_text = "存档目录（完整路径）"
 	save_path.text = session.save_files._directory if session.save_files != null else _startup_directory
 	save_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -749,6 +757,7 @@ func _setup_growth_panel() -> void:
 		return {"ok": true, "message": "请选择已有的存档目录"})
 	var storage_action_row := _settings_row(storage)
 	var speed_options := OptionButton.new()
+	_settings_field(speed_options)
 	for option in session.chrono_speed_options():
 		speed_options.add_item("%s倍速 · 每秒消耗%s时空微粒" % [option.speed, option.cost], int(option.speed))
 		if int(option.speed) == session.current_chrono_speed(): speed_options.select(speed_options.item_count - 1)
@@ -761,6 +770,7 @@ func _setup_growth_panel() -> void:
 		return session.request_save() if configured.ok else configured)
 	var preferences := _settings_group(box, "偏好设置", "自动保存、声音与战斗提示")
 	var autosave := SpinBox.new()
+	_settings_field(autosave)
 	autosave.min_value = 0.0
 	autosave.max_value = 86400.0
 	autosave.step = 1.0
@@ -826,6 +836,7 @@ func _setup_growth_panel() -> void:
 			effects.set_pressed_no_signal(_effects_enabled)
 			growth_status.text = PlayerText.error(str(saved.reason)))
 	var damage_mode := OptionButton.new()
+	_settings_field(damage_mode)
 	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
 	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 	_damage_option = damage_mode
@@ -861,6 +872,7 @@ func _setup_growth_panel() -> void:
 	var imports := _settings_group(box, "导入存档", "从本机文件预览并确认导入")
 	var import_path_row := _settings_row(imports)
 	var import_path := LineEdit.new()
+	_settings_field(import_path)
 	import_path.placeholder_text = "要导入的存档文件"
 	import_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	import_path_row.add_child(import_path)
