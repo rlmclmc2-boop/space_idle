@@ -1,0 +1,4 @@
+Godot 4.7.2, normal main.tscn instance, 1440x900, design/clear-zone-host after equipment e52e72c3 and reactor 51456ce0 sync.
+INTEGRATION route=reactor scene_visible=true equipment_visible=false
+MATERIAL_COMBO equipment_and_reactor_same_instance=true reactor_purchase_enabled=true
+The driver asserted equipment title, selected navigation and scene visibility, used public Economy.credit_yield to show funded states, then selected the reactor through the public navigation. No script/parse errors; display environment only needed audio-device fallback.

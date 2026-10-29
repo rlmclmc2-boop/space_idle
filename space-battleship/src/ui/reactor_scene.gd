@@ -7,6 +7,7 @@ const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r9/device_pulse.gds
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
+const KEY_PAINT = preload("res://assets/ui/reactor/ship-hub-r9/control-materials.png")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
 const ERRORS := {"ReactorPlanOverCapacity":"分配超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
 var _owner
@@ -20,6 +21,17 @@ var _clock: Callable
 var _ui_font_regular: FontVariation
 var _ui_font_medium: FontVariation
 var _ui_font_bold: FontVariation
+var _key_faces: Dictionary = {}
+
+class ReactorKeySurface extends StyleBox:
+	var painted: StyleBoxTexture
+	var depressed: bool = false
+	func _draw(canvas: RID, rect: Rect2) -> void:
+		var face := rect.grow(-3)
+		if depressed:
+			face.position.y += 1
+			face.size.y -= 1
+		painted.draw(canvas, face)
 var _stage: Control
 var _stage_viewport: SubViewport
 var _rows: Dictionary = {}
@@ -75,6 +87,23 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	theme.default_font = _ui_font_regular
 	theme.default_font_size = 15
 	theme.set_font("font", "Button", _ui_font_bold)
+	var controls: Image = KEY_PAINT.get_image()
+	for id in ["primary", "navy"]:
+		var region := Rect2i(42, 472, 1366, 224) if id == "primary" else Rect2i(42, 772, 1366, 204)
+		var face: Image = controls.get_region(region)
+		face.resize(roundi(face.get_width() * 36.0 / face.get_height()), 36, Image.INTERPOLATE_LANCZOS)
+		_key_faces[id] = ImageTexture.create_from_image(face)
+	# Match the equipment action's cool disabled finish: reduce metal glints
+	# once in the texture, leaving the native action text fully opaque.
+	var disabled_face: Image = _key_faces.navy.get_image()
+	for y in disabled_face.get_height():
+		for x in disabled_face.get_width():
+			var pixel: Color = disabled_face.get_pixel(x, y)
+			var light: float = pixel.r * 0.2126 + pixel.g * 0.7152 + pixel.b * 0.0722
+			if light > 0.24:
+				var scale: float = (0.24 + (light - 0.24) * 0.28) / light
+				disabled_face.set_pixel(x, y, Color(pixel.r * scale, pixel.g * scale, pixel.b * scale, pixel.a))
+	_key_faces.disabled = ImageTexture.create_from_image(disabled_face)
 	var surface := SubViewportContainer.new()
 	surface.position = Vector2(0, 65)
 	surface.size = Vector2(808, 835)
@@ -136,29 +165,32 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.add_theme_font_size_override("font_size", 18 if primary else 17)
 	button.add_theme_font_override("font", _ui_font_bold)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		var box := StyleBoxFlat.new()
-		box.bg_color = Color("8c6b45") if primary else Color("344d56")
-		if state == "hover": box.bg_color = Color("a17d50") if primary else Color("45636a")
-		elif state == "pressed": box.bg_color = Color("73583c") if primary else Color("263f48")
-		elif state == "disabled": box.bg_color = Color("77746e") if primary else Color("58676c")
-		elif state == "focus": box.bg_color = Color.TRANSPARENT
-		box.border_color = Color("d6c18e") if primary else Color("648b8d")
-		box.set_border_width_all(2 if state == "focus" else 1)
-		box.set_corner_radius_all(3)
-		if state != "focus":
-			box.shadow_color = Color(0.05,0.11,0.14,0.20)
-			box.shadow_size = 1
-			box.shadow_offset = Vector2(0,1)
-		box.content_margin_left = 8
-		box.content_margin_right = 8
-		box.content_margin_top = 3
-		box.content_margin_bottom = 3
-		button.add_theme_stylebox_override(state, box)
-	button.add_theme_color_override("font_color", Color("f3f0df"))
-	button.add_theme_color_override("font_hover_color", Color("fff2db"))
-	button.add_theme_color_override("font_pressed_color", Color("f3f0df"))
-	button.add_theme_color_override("font_focus_color", Color("f3f0df"))
-	button.add_theme_color_override("font_disabled_color", Color("8da5ac"))
+		if state == "focus":
+			var focus := StyleBoxFlat.new()
+			focus.bg_color = Color.TRANSPARENT
+			focus.border_color = Color("b3ead8")
+			focus.set_border_width_all(2)
+			focus.set_corner_radius_all(4)
+			button.add_theme_stylebox_override(state, focus)
+			continue
+		var tint := Color(1.16,1.18,1.16) if state == "hover" else Color(0.84,0.86,0.88) if state == "pressed" else Color(0.72,0.77,0.8) if state == "disabled" else Color.WHITE
+		var paint := StyleBoxTexture.new()
+		paint.texture = _key_faces["disabled" if primary and state == "disabled" else "primary" if primary else "navy"]
+		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: paint.set_texture_margin(side, 6)
+		paint.modulate_color = tint if primary or state != "disabled" else tint * Color(0.66,0.73,0.76)
+		var material := ReactorKeySurface.new()
+		material.painted = paint
+		material.depressed = state == "pressed"
+		material.content_margin_left = 8
+		material.content_margin_right = 8
+		material.content_margin_top = 6 if material.depressed else 4
+		material.content_margin_bottom = 4 if material.depressed else 6
+		button.add_theme_stylebox_override(state, material)
+	button.add_theme_color_override("font_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_hover_color", Color("203f50") if primary else Color("c4fff0"))
+	button.add_theme_color_override("font_pressed_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_focus_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_disabled_color", Color("ccd6d0") if primary else Color("8da5ac"))
 	button.pressed.connect(action)
 	add_child(button)
 	return button

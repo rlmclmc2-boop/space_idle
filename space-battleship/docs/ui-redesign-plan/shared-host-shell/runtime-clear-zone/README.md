@@ -120,3 +120,9 @@ Godot 4.7.2 正常主场景同一实例的[装备整屏](evidence/equipment-a846
 原装备组固定源码 `e52e72c36df55f89b3caa70cccf9b66874947d96`、图证 `671215bb`，入口 `workbench-optical-revision/disabled-action-readability/README.md`；其正常／资源不足／受控冷却三整屏获原装备审**本版视觉限定**认可，不代表完整操作通过。相对已接 `a8467d65`，唯一运行差异为 `src/ui/equipment_panel.gd`：从现有 navy 材质缓存禁用态低高光面，禁用键不再整幅压暗；主键禁用文字单独调亮。此文件与源 Git blob 完全一致，没有新资产、结构、价格或输入变更；当前公共五资源、宿主顶带、区域边界与反应堆 `68f35e4e` 均保留。
 
 本检查点只完成装备源码接入、`git diff --check`、Godot 4.7.2 编辑器导入及该脚本 `--check-only`（均无脚本解析错误），**未采最终两页组合整屏**。原装备组 `671215bb` 证据属于其源版本；此时反应堆材质新固定 SHA 尚未交付，不把旧 `68f35e4e` 画面称为新材质组合，亦不把旧动态贴到未来版本。待反应堆固定候选到达后只精确接入其模块变化，再采同一源码版装备／反应堆完整整屏交原整体审按 13 第 6 节重新判断；本检查点不是整体验收，也不合 main。
+
+### 装备 e52e72c3＋反应堆 51456ce0 同版材质组合（待原整体审）
+
+在装备 `e52e72c3` 检查点上，原样同步反应堆固定源码 `51456ce05463cc426239863f0c692689fdf4b893` 的 `src/ui/reactor_scene.gd` 与其直接引用的 `assets/ui/reactor/ship-hub-r9/control-materials.png`／`.import`。该 PNG 的 Git blob 与已接装备 `materials-20261029/control-materials.png` 相同，但保留反应堆原组的场景资产路径；反应堆从图中提取冷深蓝辅助键、暖金主键，并按装备同源方法缓存低高光禁用键，原生文字／焦点保持。`reactor_stage.gd`、shader、Owner、装备 `e52`、公共五资源身份／顶带／导航、输入和战斗区域均未改；未合源分支或实施工作台重排。原装备组 `671215bb` 三态、原反应堆组 `51456ce0` 五整屏的限定视觉认可只属各自源版本，不能替代此组合审。
+
+Godot 4.7.2 正常 `main.tscn` **同一实例** `1440×900`：[装备无钱](evidence/material-combo-equipment-unfunded-1440x900.png)、[装备可购](evidence/material-combo-equipment-funded-1440x900.png)、[反应堆无钱](evidence/material-combo-reactor-unfunded-1440x900.png)、[反应堆可购](evidence/material-combo-reactor-funded-1440x900.png)。[固定驱动](evidence/material-combo-514-driver.gd.txt)显式断言装备路由，再通过公开 Economy 入账铁／铀各 1000 与公共导航切页；[运行摘要](evidence/material-combo-514-runtime.txt)记录场景互斥与可购键。按 13 第 6 节原尺寸重看四张完整实图，两页冷深蓝禁用键文字与暖金主键具有可读主次，新材质没有在公共顶栏／导航、模块边界或右侧战斗主体产生本次增量遮挡。入账为受控视觉状态，**不是自然收入或完整购买流程**；本组合未采连续动态，旧 `492` 动态及原组各自视频均不冒充本版组合动态。普通值四图不覆盖全部费用资源、键盘焦点、极端长字、自然解锁、完整游戏或用户整体品质验收。交原整体审重新判断，不合 main。
