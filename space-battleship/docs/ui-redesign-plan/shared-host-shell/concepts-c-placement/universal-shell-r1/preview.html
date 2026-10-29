@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><title>C 风格公共壳 · 精确边界预览</title>
+<style>
+:root{color-scheme:dark;font-family:'Noto Sans CJK SC','Noto Sans SC',sans-serif;background:#071723;color:#e9efe7}
+*{box-sizing:border-box}body{margin:0;min-width:1480px;background:radial-gradient(circle at 50% 5%,#163447,#071723 65%);}
+main{width:1440px;margin:18px auto 0}.stage{position:relative;width:1440px;height:900px;overflow:hidden;background:#061a29;box-shadow:0 22px 80px #020b12,0 0 0 1px #668487}
+.stage>img{position:absolute;inset:0;width:1440px;height:900px;object-fit:fill;pointer-events:none}
+/* Public material only. The source screen remains a separate, unmodified IMG. */
+.top{position:absolute;left:0;top:0;width:808px;height:65px;z-index:4;background:linear-gradient(180deg,#314a55 0,#142b3a 12%,#102c3d 74%,#0a2433 100%);border-bottom:2px solid #bcae8d;box-shadow:inset 0 2px #73848b,0 3px 9px #051521b5;display:grid;grid-template-columns:108px 162px 162px 206px 32px 88px;align-content:center;gap:6px;padding:0 10px}
+.top:before{content:"";position:absolute;top:28px;left:10px;right:10px;height:1px;background:linear-gradient(90deg,#6b9696,#234c59 32%,#6b9696 68%,#234c59)}
+.brand{height:48px;display:grid;place-items:center;color:#173847;font-weight:700;letter-spacing:.05em;background:linear-gradient(145deg,#fff7df,#b7c4ba);clip-path:polygon(0 12%,8% 0,92% 0,100% 12%,100% 88%,92% 100%,8% 100%,0 88%);text-shadow:0 1px #fff9}
+.readout{height:48px;display:flex;align-items:center;gap:8px;padding:0 10px;border-left:1px solid #63858a66;color:#bdd6d4;font-size:13px;white-space:nowrap}.readout b{color:#f1e7d0;font-size:16px;letter-spacing:.01em}
+.readout i{display:inline-block;width:9px;height:9px;background:#64d4d9;transform:rotate(45deg);box-shadow:0 0 8px #5be5e5}
+.status{align-self:center;height:26px;border:1px solid #71959b;background:#143c4c;border-radius:5px;display:grid;place-items:center;color:#b5efe4}
+.resource{align-self:center;height:31px;border:1px solid #879f9e;border-radius:5px;background:linear-gradient(145deg,#284f60,#143545);color:#eaf0df;font-size:14px;box-shadow:inset 0 1px #91b4af,0 2px #0b1c25}
+.nav{position:absolute;z-index:5;left:808px;top:0;width:47.875px;height:900px;background:linear-gradient(90deg,#50626a 0,#0b2534 10%,#17394c 48%,#061b2a 92%,#9c8f74 100%);border-right:1px solid #b8a577;border-left:1px solid #8aa5a0;box-shadow:inset 4px 0 #e0d5b077,0 0 12px #091f2e}
+.nav:before,.nav:after{content:"";position:absolute;left:19px;width:8px;height:45px;border-radius:4px;background:linear-gradient(#e2b775,#79592d);box-shadow:0 0 12px #efb46c}.nav:before{top:9px}.nav:after{bottom:9px}
+.keys{position:absolute;top:58px;bottom:58px;left:2px;right:2px;display:flex;flex-direction:column;justify-content:space-between}
+.key{height:74px;border:1px solid #678e91;border-radius:5px;background:linear-gradient(145deg,#204559,#0b2939);color:#a3e7e5;font-size:23px;font-weight:700;cursor:pointer;box-shadow:inset 0 1px #87a4a35e,0 2px 3px #061a23}
+.key:hover,.key:focus-visible{outline:1px solid #a4e8e2;box-shadow:0 0 13px #41c4d277,inset 0 1px #b3e5e1}
+.key.on{background:linear-gradient(145deg,#fff8df,#a9c1bb);color:#1b4d5d;border-color:#ffdfa1;box-shadow:inset 0 1px #fff9e8,0 0 11px #e2c28b8c}
+.outer{position:absolute;z-index:2;left:1392.125px;top:0;width:47.875px;height:900px;border-left:1px solid #81a3a6;background:radial-gradient(circle at 25% 17%,#5a9cbc 0 1px,transparent 2px),radial-gradient(circle at 74% 48%,#b4d6da 0 1px,transparent 2px),radial-gradient(circle at 61% 69%,#78acc6 0 1px,transparent 2px),linear-gradient(90deg,#173a55,#0b2841 58%,#102c42);box-shadow:inset 3px 0 #a7c1b344}
+.outer:after{content:"";position:absolute;right:5px;top:0;bottom:0;width:2px;background:linear-gradient(#c1a576,#3a7283 35%,#6c9092 70%,#c1a576);opacity:.72}
+.toolbar{display:flex;gap:12px;align-items:center;padding:18px 2px 25px;color:#c5d4d2}.toolbar button{background:#183b4d;color:#e8efe8;border:1px solid #78979a;border-radius:5px;padding:8px 16px;cursor:pointer;font-size:15px}.toolbar button.sel{background:#e8e1c9;color:#194255;border-color:#f3d99d}.toolbar small{margin-left:auto;color:#9fb8b8}
+</style>
+<main>
+<div class="stage" id="stage">
+<img id="source" src="../../runtime-h1/equipment-623-integration/evidence/equipment-normal.png" width="1440" height="900" alt="未修改的共享实机整屏">
+<div class="top"><div class="brand" id="context">装备</div><div class="readout"><i></i>铁 <b id="iron">10万</b></div><div class="readout"><i></i>铀 <b id="uranium">1,000</b></div><div class="readout"><i></i>时空微粒 <b id="chrono">86</b></div><div class="status" title="保存与会话状态">•</div><button class="resource">资源</button></div>
+<div class="nav"><div class="keys" id="keys"></div></div><div class="outer" aria-hidden="true"></div>
+</div>
+<div class="toolbar"><button data-route="equipment" class="sel">装备实机</button><button data-route="reactor">反应堆 R1 实机</button><button data-route="planet">星球 R14 实机</button><small>1440×900 原图不变 · 中轴 47.875px 仅占战场左侧原黑带 · 导航位置仍未定</small></div>
+</main>
+<script>
+const routes={
+equipment:{url:'../../runtime-h1/equipment-623-integration/evidence/equipment-normal.png',context:'装备',iron:'10万',uranium:'1,000',chrono:'86'},
+reactor:{url:'../../runtime-h1/reactor-direct-r1-integration/evidence/four-running.png',context:'反应炉',iron:'0',uranium:'1,000',chrono:'0'},
+planet:{url:'../../runtime-h1/planet-r14-integration/evidence/planet-r14-t0.png',context:'星球',iron:'48',uranium:'0',chrono:'7,332'}};
+const items=[['equipment','装','装备'],['reactor','炉','反应炉'],['research','研','科研'],['enhancement','强','强化'],['crew','员','船员'],['planet','星','星球'],['galaxy','系','星系'],['hyperspace','跃','超空间'],['more','⋯','更多']];
+let active='equipment';
+function render(){const r=routes[active];document.querySelector('#source').src=r.url;for(const k of ['context','iron','uranium','chrono'])document.getElementById(k).textContent=r[k];document.querySelectorAll('.toolbar button').forEach(b=>b.classList.toggle('sel',b.dataset.route===active));document.querySelector('#keys').innerHTML='';for(const [key,glyph,label] of items){const b=document.createElement('button');b.className='key'+(key===active?' on':'');b.textContent=glyph;b.title=label;b.setAttribute('aria-label',label);if(routes[key])b.onclick=()=>{active=key;render()};document.querySelector('#keys').append(b)}}
+document.querySelectorAll('.toolbar button').forEach(b=>b.onclick=()=>{active=b.dataset.route;render()});render();
+</script>
+</html>
