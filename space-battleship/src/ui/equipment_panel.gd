@@ -194,6 +194,17 @@ func _setup_materials() -> void:
         var native_height:int=64 if id=="glass" else 36
         face.resize(roundi(face.get_width()*float(native_height)/face.get_height()),native_height,Image.INTERPOLATE_LANCZOS)
         _control_textures[id]=ImageTexture.create_from_image(face)
+    # Disabled keys retain the cool painted face but lose the bright metal glints.
+    # Cache the finish once; never attenuate the action text with the texture.
+    var disabled_face:Image=_control_textures.navy.get_image()
+    for y in disabled_face.get_height():
+        for x in disabled_face.get_width():
+            var pixel:Color=disabled_face.get_pixel(x,y)
+            var light:float=pixel.r*0.2126+pixel.g*0.7152+pixel.b*0.0722
+            if light>0.24:
+                var scale:float=(0.24+(light-0.24)*0.28)/light
+                disabled_face.set_pixel(x,y,Color(pixel.r*scale,pixel.g*scale,pixel.b*scale,pixel.a))
+    _control_textures.disabled=ImageTexture.create_from_image(disabled_face)
     var shell:Texture2D=load("res://assets/ui/equipment/materials-20261029/painted-console-shell.png")
     var paint:Image=shell.get_image().get_region(Rect2i(8,56,2102,620))
     # One uniform scale for the painted frame at native UI pixel scale; rounded height is189px.
@@ -268,10 +279,10 @@ func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String
         contact.shadow_color=Color(0.04,0.10,0.12,0.18);contact.shadow_size=2;contact.shadow_offset=Vector2(0,1)
         glass.contact=contact;material.painted=glass
     elif profile=="button":
-        var role:String="primary" if kind=="primary" else "navy"
+        var role:String="disabled" if kind=="disabled" else "primary" if kind=="primary" else "navy"
         var paint:=StyleBoxTexture.new();paint.texture=_control_textures[role]
         for side in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:paint.set_texture_margin(side,6)
-        paint.modulate_color=modulation*(Color(0.66,0.73,0.76) if kind=="disabled" else Color.WHITE)
+        paint.modulate_color=modulation
         material.painted=paint
     material.content_margin_left=8;material.content_margin_right=8
     material.content_margin_top=(6 if depressed else 4) if profile=="button" else 5
@@ -326,6 +337,7 @@ func _button_tint(button: Button, chosen: bool) -> void:
     var quiet:bool=button.get_meta("material_role","")=="quiet"
     button.add_theme_color_override("font_color",INK if primary else Color("b9c9cc") if quiet else Color("d5ece3") if chosen else CREAM)
     if primary:
+        button.add_theme_color_override("font_disabled_color",Color("ccd6d0"))
         button.add_theme_color_override("font_focus_color",INK)
         button.add_theme_color_override("font_hover_color",INK)
         button.add_theme_color_override("font_pressed_color",INK)
