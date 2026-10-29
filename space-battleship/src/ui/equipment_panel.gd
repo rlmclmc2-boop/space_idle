@@ -562,6 +562,7 @@ func _refresh() -> void:
     presentation_counts.refreshes += 1
     presentation_counts.slot_fact_reads += 1
     _facts = _session.equipment_slot_facts()
+    if _batch.visible:_refresh_batch()
     var active: Array = _facts.filter(func(row): return not row.dormant)
     if _selected_fact().is_empty() or _selected_fact().get("dormant", false):
         _selected = str(active[0].id) if not active.is_empty() else ""
@@ -773,7 +774,6 @@ func _buy_all() -> void:
     var result: Dictionary = _session.equipment.buy_all_levels(10 if mode == 1 else 1, mode == 2, _session.equipment_inputs(), _session.economy.affordable, _session.economy.payment, _session.publish_equipment_levels)
     _last_batch_result = result.duplicate(true)
     _accept_result(result)
-    _refresh_batch()
 
 func _slot_name(id: String) -> String:
     var pieces := id.split(":")
