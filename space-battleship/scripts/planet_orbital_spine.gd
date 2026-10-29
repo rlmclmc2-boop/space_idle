@@ -39,10 +39,11 @@ static func point(angle: float) -> Vector3:
 	return Vector3(RADIUS * cos(angle), -RADIUS * TILT_Y * sin(angle), RADIUS * TILT_Z * sin(angle))
 
 static func socket_position(angle: float, kind: String) -> Vector3:
-	# R5 illustrated feet reach slightly below their model origins. Set their
-	# root into the built saddle's curved armor instead of lifting them on top.
+	# The refinery upper shell sits inside its real deck node; its old baked
+	# floor is gone. Other facility roots keep their existing R5 pose.
 	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
-	return point(angle) + plane_normal() * height
+	var radial_offset := -0.30 if kind == "refinery" else 0.0
+	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
 
 func _ready() -> void:
 	_navy = _material(Color("152f43"))
@@ -67,7 +68,13 @@ func _ready() -> void:
 		_add_wall(root, bounds.x, bounds.y, 0.75, -0.20, 0.26, _side, kind)
 		_add_wall(root, bounds.x, bounds.y, -0.75, -0.20, 0.26, _navy, kind)
 		_add_wall(root, bounds.x, bounds.y, 0.755, 0.05, 0.09, _cyan, kind)
-		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
+		var section_deck: ShaderMaterial = _deck
+		if kind == "refinery":
+			section_deck = _deck.duplicate()
+			section_deck.set_shader_parameter("intake_enabled", true)
+			section_deck.set_shader_parameter("intake_angle", (FACILITY_ANGLES[kind] - bounds.x) / (bounds.y - bounds.x))
+			_all_materials.append(section_deck)
+		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, section_deck, 0.0, 1.0, kind)
 		var rib_angle := (bounds.x + bounds.y) * 0.5
 		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
@@ -127,18 +134,18 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
 		for band in profile.size() - 1:
-			_deck_vertex(surface, profile, band, a, t0, wa, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end)
-			_deck_vertex(surface, profile, band + 1, b, t1, wb, lift, v_start, v_end)
+			_deck_vertex(surface, profile, band, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end, kind)
+			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end, kind)
+			_deck_vertex(surface, profile, band + 1, b, t1, wb, lift, v_start, v_end, kind)
 	var instance := MeshInstance3D.new()
 	instance.mesh = surface.commit()
 	instance.material_override = material
 	parent.add_child(instance)
 
-func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float, t: float, width: float, lift: float, v_start: float, v_end: float) -> void:
+func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float, t: float, width: float, lift: float, v_start: float, v_end: float, kind: String) -> void:
 	var current: Vector2 = profile[index]
 	var before: Vector2 = profile[maxi(0, index - 1)]
 	var after: Vector2 = profile[mini(profile.size() - 1, index + 1)]
@@ -147,7 +154,13 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	var normal := (plane_normal() - radial * slope).normalized()
 	surface.set_normal(normal)
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
-	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * (lift + current.y))
+	var height := lift + current.y
+	if kind == "refinery":
+		var distance := absf(angle - FACILITY_ANGLES[kind])
+		var length_mask := clampf((0.052 - distance) / 0.025, 0.0, 1.0)
+		var outboard := clampf((current.x + 0.10) / 0.32, 0.0, 1.0)
+		height -= 0.055 * length_mask * outboard
+	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
 	var surface := SurfaceTool.new()

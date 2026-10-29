@@ -1,0 +1,9 @@
+Selected image_gen.imagegen edit; transparent_background=true.
+Input: refinery-orbit-integrated.png from the preceding R17 candidate.
+Output: refinery-orbit-machinery.png, 1536x1024 RGBA.
+Generated source: /workspace/generated_images/exec-79754e0d-bbe4-4447-95af-559d4226a12a.png
+SHA-256: 55cc350a7a3f3190fd90792ec2c2f5292d5b0f11cd98bf2a8fb2d785a284595e
+Prompt: Edit this exact transparent 1536x1024 game sprite into an UPPER refinery machinery module only. Preserve its twin ore hopper silhouette, cream furnace shell, glowing orange furnace, two intake cavities, black cartoon outline and 3/4 isometric view. REMOVE the entire independent floor/platform/cradle at the bottom: no curved navy disk, no ivory ring, no circular coupling ports at lower left/right, no horizontal blue light bar under the conveyor, no freestanding legs, no shadow floor. The machinery body should terminate at a clean broad dark-navy underside just beneath the two intake cavities and conveyor root, ready to be embedded in a separate true 3D load-bearing orbital spine. Preserve the source framing and scale in the same 1536x1024 canvas, transparent background, isolated facility only; do not create any belt, ring, planet, background, or text.
+
+The selected PNG is an art candidate. It does not itself prove a good in-game
+3D joint; inspect the source-matched Godot screenshots in the R17 evidence.
