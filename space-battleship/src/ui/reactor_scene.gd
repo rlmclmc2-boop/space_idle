@@ -491,6 +491,7 @@ func _refresh_quote() -> void:
 	_quote_dirty = false
 	_cost_details.text = ""
 	_cost_badge.visible = false
+	_cost.size.x = 335
 	_cost.add_theme_color_override("font_color",Color("203f50"))
 	_cost.add_theme_font_override("font",_ui_font_bold)
 	_cost_details.add_theme_color_override("font_color",Color("203f50"))
@@ -547,12 +548,13 @@ func _refresh_quote() -> void:
 			_cost.size.x = 80
 			_cost.add_theme_color_override("font_color",Color("a1593b"))
 			_cost.add_theme_font_override("font",_ui_font_medium)
-		if affordable and quote.costs.size() == 1:
+		if quote.costs.size() == 1:
 			var resource_id: String = str(quote.costs.keys()[0])
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
 			_cost_icon.modulate = ResourceVisuals.icon_modulate(resource_id)
 			_cost_badge.visible = _cost_icon.texture != null
-		_cost_details.position.x = 512 if _cost_badge.visible or not affordable else 480
+		_cost_badge.position.x = 476 if affordable else 512
+		_cost_details.position.x = 548 if _cost_badge.visible and not affordable else 512 if _cost_badge.visible or not affordable else 480
 	_cost.tooltip_text = _cost.text + " " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
 	var exact_costs: Array = []
