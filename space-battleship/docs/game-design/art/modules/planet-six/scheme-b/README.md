@@ -1,0 +1,40 @@
+# B 方案：空间站起笔的扩展式包裹轨道带
+
+[六类总入口](../README.md) · [三类完整态同构对照](three-worlds-complete.png) · [固态五态](solid-stages.png) · [气态五态](gas-stages.png) · [恒星五态](star-stages.png)
+
+这是供用户比较的新**概念候选**，不是替代既有 A 方案的批准、游戏运行画面或新玩法规则。三类沿用同一套象牙／深青／青色能源的卡通化主体：空间站带首段短弧，精炼厂自带第二段及采集端，工坊自带第三段龙门平台，船坞自带末段泊位。五格从左到右为裸天体、仅站、站＋精炼、前三座、四座完整态；同一格内没有未建段。玩家仍可按现行独立施工与领取产生其他建成组合，图中次序只是可行示例，不是强制前置。
+
+轨道带自身维持外部轨道姿态，不随天体表面自转。固态接点为精炼厂带来的可收回探针／自由接驳；气态接点换成悬在云顶的采样器；恒星接点需隔热磁采与显著的光球间距。三类均不以永久硬管焊住旋转表面。轨道设施可随视角与自转遮挡，不保证所有建筑始终可见，也不引入拖动观察。这里的“深入采集”是视觉关系，不代表新增产出或效率。白矮星、红巨星、脉冲星采用此主体时的距离、屏蔽和避束流接点尚未出图，不能直接套用本图。
+
+**审图边界。** [完整态对照](three-worlds-complete.png)最直接检验共用主体和三种采集端；三张五态图检验每座带来一段。图像编辑并未逐像素锁住天体纹理或工程件外形，不能据此认定多相位自转、实际模块比例、热防护或四设施状态组合均可运行。恒星五态中磁采盘只示意处于光球外，磁力路径没有绘成实机可读的工作特效。现有图仍偏细，在 808×900 模块尺寸需以后续资产化再做减法。
+
+## 图源与实际提示词
+
+均由 `image_gen.imagegen` 生成，`transparent_background=false`。除三类完整态新生成，五态图按下述 `referenced_image_paths` 编辑。每张原 PNG 与 SHA-256 固定在 Git。首次固态五态遗漏后续格的精炼厂，第二次编辑仍遗漏，均未归档；最后从三类完整态图出发另生五态，目视保留了四座逐步累积。恒星第一版磁采盘压到光球上，最终以该版编辑移出，未归档第一版。
+
+| 图 | 输入 | SHA-256 |
+|---|---|---|
+| [三类完整态](three-worlds-complete.png) | 无 | `d2c5c9ce76e12bf917e56497a58293289d27d00813fd22b0b293578fb3366ef7` |
+| [固态五态](solid-stages.png) | 三类完整态 | `6442178d17ced97d22b84a48f899c19f4381f25733cf0c2da1b63ffb07647db7` |
+| [气态五态](gas-stages.png) | 固态五态 | `f07d956ed5241857dcbeefd1da374e2f7ab867079c0de61427a551f7725ce58b` |
+| [恒星五态](star-stages.png) | 恒星初版五态，后者由固态五态生成 | `32cabdcb7c181a50c784304bf09133f8e4019e22d0b1c5f86a247bd4b51ab7df` |
+
+三类完整态提示词：
+
+> A clean side-by-side THREE-PANEL concept comparison for a friendly cartoon science-fiction game, no text or UI. Each equal panel shows the COMPLETE SAME FOUR-FACILITY SEGMENTED ORBITAL BELT layout wrapping around a different celestial body at the SAME scale and camera: left blue-green SOLID ROCKY PLANET, middle muted blue/ivory banded GAS GIANT, right gold MAIN-SEQUENCE STAR. Repeat the same distinctive station-origin architecture in all three panels: upper-left compact round ivory/navy SPACE STATION with its own first short rail arc; clockwise connected second curved arc belongs to a gold-domed REFINERY with a sampling probe; third curved arc belongs to a separate orange gantry WORKSHOP; fourth outer curved arc belongs to a drydock SHIPYARD with a small vessel. Four visually distinct built nodes, each support arc part of its own building, no full circular ring and no unused arc. The SAME belt design is obviously reusable across the three bodies, but collection endpoints DIFFER: rocky world uses a free-ended rendezvous shuttle or retractable sampling probe near surface; gas giant uses a short atmospheric skimmer into high cloud, disconnected from rotation; star uses a shielded magnetic intake with a large hot standoff gap. These are orbital structures independent of the celestial bodies' self-rotation; NO permanent rigid pipe welded to a moving surface. Show the building ensemble as a strong clear silhouette, with simplified broad painted shapes and a consistent ivory armor/navy structure/cyan energy/amber signal palette, generous dark teal space. The planets and star are each roughly half the panel height. Preserve readable architecture and equally prominent whole-system layout. Avoid photorealism, glowing clutter, labels, mockup borders.
+
+固态五态提示词：
+
+> Using the attached three-world orbital-belt comparison as exact reference for its CARTOON IVORY/NAVY ORBITAL HARDWARE, make a separate WIDE FIVE-PANEL sequential construction diagram for the SAME reusable belt. Each panel has the SAME SMALL NEUTRAL DARK BLUE PLANET at center, the SAME camera and scale, and thin vertical gutters. No text, no labels, no UI. This is a cumulative assembly sequence, with clear distinct hardware identities. Left to right: PANEL ONE empty bare planet; PANEL TWO only a small ROUND SPACE STATION at 10 o'clock, and its own short orbital arc ending in a visible cap; PANEL THREE keep that exact station and its arc, extend clockwise to a GOLD-DOME REFINERY at 2 o'clock with one intake probe and its OWN added arc, capped at far end; PANEL FOUR keep station and gold-domed refinery fully unchanged, add a SEPARATE RECTANGULAR ORANGE GANTRY WORKSHOP at 4 o'clock and its OWN added arc, with capped end; PANEL FIVE keep all three facilities fully unchanged and add a DOUBLE-ARM SHIPYARD DRYDOCK at 7 o'clock plus its OWN last arc, remaining an OPEN belt, never a full ring. In each panel draw only currently built facilities, never future empty arc sections. Same station, same refinery gold dome and intake, same orange gantry in every later panel. Orbit belt is separate from planet surface and does not rotate with planet. Clear simple toy-like silhouette, broad hand-painted forms, much less detail than the reference, restrained cyan seams, dark space.
+
+气态五态提示词：
+
+> Edit this attached FIVE-PANEL cumulative orbital-belt construction storyboard into the GAS GIANT variant of the EXACT SAME reusable station-origin belt. Preserve the five equal panel layout, every building identity, precise building positions, stages, ring lengths, camera, scale and ivory/navy/cyan cartoon paint style. Replace ONLY the rocky blue-green solid planet in ALL FIVE panels with the SAME muted slate-blue, ivory-banded GAS GIANT with one broad cream storm oval. It has NO ground and NO continents. Panel one bare gas giant; panel two station and its small own arc only; panel three station plus the SAME GOLD-DOME REFINERY with its own second arc and a SHORT FREE-ENDED CLOUD SKIMMER or tethered aerostat at the upper cloud level; panel four KEEP station and refinery fully unchanged and add the orange gantry workshop plus its own added arc; panel five KEEP all three unchanged and add drydock plus final arc. The atmospheric collection endpoint is self-contained with refinery and does not become a rigid pipe welded to moving cloud bands. No future arcs before their building appears. Orbit belt remains independent of atmospheric rotation. Do not redraw structures, do not add text or UI.
+
+恒星初版五态提示词：
+
+> Edit the attached FIVE-PANEL cumulative orbital-belt construction storyboard into the MAIN-SEQUENCE STAR variant of the EXACT SAME reusable station-origin belt. Preserve the five equal panel layout, every building identity, precise building positions, stages, ring lengths, camera, orbital hardware scale and ivory/navy/cyan cartoon style. Replace ONLY the rocky planet in ALL FIVE panels with the SAME glowing WARM GOLD MAIN-SEQUENCE STAR, with restrained dark mottling and short corona. Make the star's visible disk about 75% of the former planet's diameter so there is a clear DARK HOT-STANDOFF GAP between photosphere and orbital rail; no hardware touches plasma. Panel one bare gold star; panel two station and its own small arc only; panel three KEEP station and add the SAME GOLD-DOME REFINERY and second arc, but replace the downward intake probe with a short SHIELDED MAGNETIC COLLECTOR FLOATING OUTSIDE corona, protected by a small screen, no rigid physical contact; panel four KEEP station and refinery fully unchanged and add orange gantry workshop plus its own arc; panel five KEEP those unchanged and add drydock plus final arc. The station remains origin of this segmented orbital belt, not physically welded to rotating plasma. Never show future arcs before their building appears. No text, labels or UI.
+
+恒星最终局部编辑提示词：
+
+> Correct only the magnetic collection endpoint in panels THREE, FOUR and FIVE of the attached five-panel stellar storyboard. Keep all five panels, the sun disk, station, gold-dome refinery, orange workshop, shipyard, ring arcs, and camera unchanged. The small white-and-blue circular intake disc currently overlaps the bright stellar photosphere at upper-right; move each disc UP AND RIGHT so it floats entirely in DARK SPACE OUTSIDE the orange corona with a VISIBLE GAP between disc and star, connected only by its short arm to the gold-dome refinery. It must not touch the plasma surface. Nothing else changes. Maintain cumulative staged construction, no UI or text.
