@@ -1,0 +1,11 @@
+Source image: refinery-orbit-inlet-roots.png, existing uncommitted WIP supplied at handoff.
+Source SHA-256: b3ec264080a4e50545235e69014664620716b17a8a3d460e25e3897c88a08357
+Generated original: /workspace/generated_images/exec-302533d3-d842-4bc9-bed4-6f8a745eab6f.png
+Imported unchanged as: refinery-orbit-inlet-shoulders.png
+SHA-256: da84a5d533888fe2b697d7de0acd2b6100d6d907783320a240c3d0e8a2373390
+Tool: image_gen.imagegen; transparent_background=true; referenced_image_paths=[refinery-orbit-inlet-roots.png]
+
+Exact ImageGen prompt:
+Edit the attached transparent refinery building sprite for a small fixed-camera sci-fi game. Preserve the exact 1536x1024 canvas, transparent background, camera angle, high-contrast ivory/navy/amber cartoon style, both blue ore hoppers, orange furnace, both front intake openings, and the SINGLE dark conveyor with its existing distal tip at approximately pixel (840,895). Make ONLY a narrow local change to the bottom of this SAME building: replace the two thin inward load feet and weak lower silhouette with two broad, visibly substantial ivory-and-navy built-in structural root shoulders under the left and right lower furnace walls. The shoulders should curl INWARD and DOWN into a shallow U-shaped receiving outline around the existing conveyor tip, with matching dark recessed undersides and a narrow cyan mechanical seam. Their bottom surfaces must read as weight-bearing parts of this furnace chassis that can descend into a curved orbital ring's recessed receiving socket at game scale (~100 px wide). Keep the roots tightly tucked inside the original building width, no outward projecting wings, no separate platform or pad, no detached bridge, no wide horizontal bar, no extra conveyor, no new objects. The conveyor tip pixel position must remain fixed for existing code alignment. Transparent outside the sprite; no text, no scenery.
+
+Inspection: original-size RGBA PNG is 1536x1024 and transparent at the canvas corner. The endpoint near (840,895) remains in place; the wider roots are a local edit, not a pixel-identical preservation of the upper machinery. The supplied parent image's exact generating prompt was not available in this handoff, so this record does not invent one.

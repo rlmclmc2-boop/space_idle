@@ -38,9 +38,12 @@ void fragment() {
 		color *= texture(albedo_tex, UV).rgb;
 	}
 	if (refinery_socket) {
-		float across = 1.0 - smoothstep(0.035, 0.075, abs(UV.x - 0.5));
-		float along = 1.0 - smoothstep(0.012, 0.025, abs(UV.y - socket_angle));
-		color = mix(color, vec3(0.13, 0.24, 0.31), across * along * 0.66);
+		vec2 socket_local = vec2((UV.x - 0.54) / 0.22, (UV.y - socket_angle) / 0.065);
+		float socket_radius = length(socket_local);
+		float receiving_floor = 1.0 - smoothstep(0.68, 0.82, socket_radius);
+		float receiving_edge = smoothstep(0.73, 0.84, socket_radius) * (1.0 - smoothstep(0.97, 1.09, socket_radius));
+		color = mix(color, vec3(0.22, 0.36, 0.42), receiving_floor * 0.52);
+		color = mix(color, vec3(0.49, 0.65, 0.64), receiving_edge * 0.52);
 	}
 	ALBEDO = min(color * 1.35, vec3(1.0));
 	ROUGHNESS = 0.68;

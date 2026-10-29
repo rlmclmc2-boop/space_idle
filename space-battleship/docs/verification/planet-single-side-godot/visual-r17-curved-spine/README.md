@@ -57,3 +57,9 @@
 本版保留上一节已审可用的单条弯曲入料带和炉体主形，删除那座 `RefineryInputChannel` 动态网格，不另盖平台。精炼厂所属环段在固定的 `FACILITY_ANGLES["refinery"]` 角度、甲板中心刻一个小凹口，原甲板材质在同一 UV 点着深青；它只随该已建环段出现。每帧把原插画可见带端约 `(840,895)` 的像素经 billboard 所在模型的相机轴变换，对齐到这个**固定 3D 槽口**，并保持 0.045 世界单位的前侧深度余量。这样补偿 camera-facing 插画与旋转实体环的投影差，尾端不再沿环滑动，也没有可视宽度大于接合距离的独立黑桥。原有矿石标记仍沿同一条插画弯带运动；球、环、探索船独立转动和设施业务未改。
 
 [本版完整界面 stage4 原图](evidence/refinery-aligned-socket/stage_4.png)和[024/051 前后相邻取样](evidence/refinery-aligned-socket/phases/)只对应本版源码；[驱动、日志、截图 SHA](evidence/refinery-aligned-socket/)一起归档。作者按原尺寸检查 020/022/024/026/028 与 047/049/051/053/055：旧黑竖刺、短垫块不再出现，入料带端在这些相位贴合本座甲板；后侧可遮挡不据此宣称整圈成立。此候选只修一座精炼厂的可见接合，仍待独立视觉审，不能据图外推其他设施、六类天体或实时性能。原截图是模拟时钟加速跳步，Godot `--check-only` 与 `git diff --check` 通过。
+
+## 精炼厂原环接收凹腔与炉底承力肩
+
+上节固定嘴端与所属环槽的定位保留。原审指出旧图在 stage4/024/051 仍只像细线点接触，缺可读的接收边界与整炉承托。本候选用 [ImageGen 原图与准确提示词](../../../../assets/planets/facilities_v5/illustrated/refinery-orbit-inlet-shoulders-prompt.txt)把原单炉插画下方两只细脚收成宽一些的内向承力肩，不改变约 `(840,895)` 的带端定位。精炼厂所属段的原甲板网格自身增加局部细分，刻出一处浅凹与窄唇，并在同一甲板材质 UV 上做克制的青灰深度差；没有独立垫块、桥、第二条输送带或未建邻段支撑。`Sprite3D` 的固定视角性质、四段独立建造与运动、原位工作刷新及共享资源图标均沿用。
+
+[本码主界面 stage2/4 原图](evidence/refinery-receiving-well/)与[020–028、047–055 邻帧原图](evidence/refinery-receiving-well/phases/)来自 Godot 4.7.2 同一候选；[驱动、日志、源码及截图 SHA](evidence/refinery-receiving-well/)一并固定。作者逐张原尺寸查看：stage2 的炉体与凹腔只随精炼厂所属建段出现；stage4/024/028 的下缘有可见接收边，051 及前后相位仍可见青灰接缝与承力肩，未见旧黑桥或环面横贯设施。改进是局部的：整炉仍是高对比 camera-facing 插画，不能仅凭本轮十张加速取样宣称完整 3D 一体化、连续整圈、其他设施、六类天体或实时性能通过。Godot 4.7.2 `--editor --headless --check-only --quit`、`git diff --check` 退出 0；视觉品质留待独立复审。

@@ -123,9 +123,18 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		Vector2(-0.34, 0.215), Vector2(0.0, 0.23), Vector2(0.34, 0.215),
 		Vector2(0.43, 0.18), Vector2(0.48, 0.11), Vector2(0.50, 0.04),
 	]
+	if kind == "refinery":
+		profile = [
+			Vector2(-0.50, 0.04), Vector2(-0.48, 0.11), Vector2(-0.43, 0.18),
+			Vector2(-0.34, 0.215), Vector2(-0.26, 0.22), Vector2(-0.20, 0.223),
+			Vector2(-0.14, 0.226), Vector2(-0.08, 0.229), Vector2(0.0, 0.23),
+			Vector2(0.06, 0.23), Vector2(0.12, 0.229), Vector2(0.18, 0.225),
+			Vector2(0.24, 0.221), Vector2(0.30, 0.218), Vector2(0.34, 0.215), Vector2(0.43, 0.18),
+			Vector2(0.48, 0.11), Vector2(0.50, 0.04),
+		]
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var steps := maxi(48, ceili((finish - begin) * 96.0))
+	var steps := maxi(48, ceili((finish - begin) * (192.0 if kind == "refinery" else 96.0)))
 	for index in steps:
 		var t0 := float(index) / float(steps)
 		var t1 := float(index + 1) / float(steps)
@@ -156,9 +165,12 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	var height := lift + current.y
 	if kind == "refinery":
-		var along := 1.0 - smoothstep(0.012, 0.035, absf(angle - FACILITY_ANGLES[kind]))
-		var across := 1.0 - smoothstep(0.04, 0.09, absf(current.x * width))
-		height -= 0.055 * along * across
+		var radial_unit: float = (current.x - 0.04) / 0.22
+		var angular_unit: float = (angle - FACILITY_ANGLES[kind]) / 0.102
+		var socket_radius: float = Vector2(radial_unit, angular_unit).length()
+		var floor: float = 1.0 - smoothstep(0.68, 0.82, socket_radius)
+		var rim: float = smoothstep(0.73, 0.84, socket_radius) * (1.0 - smoothstep(0.97, 1.09, socket_radius))
+		height += 0.16 * rim - 0.15 * floor
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
