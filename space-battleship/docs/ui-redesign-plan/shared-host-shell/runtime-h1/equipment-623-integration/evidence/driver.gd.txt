@@ -1,0 +1,81 @@
+extends SceneTree
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-h1/equipment-623-integration/evidence/"
+var game
+var scene
+var checks := []
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func settle() -> void:
+	for i in 6: await process_frame
+
+func check(id: String, ok: bool, detail = null) -> void:
+	checks.append({"id": id, "ok": ok, "detail": detail})
+	print("EQUIPMENT_623_HOST ", id, " ", ok)
+
+func shot(name: String) -> void:
+	await settle()
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT + name + ".png")
+
+func click(control: Control) -> void:
+	var point: Vector2 = control.get_global_rect().get_center()
+	var down := InputEventMouseButton.new()
+	down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+	Input.parse_input_event(down)
+	await process_frame
+	var up := InputEventMouseButton.new()
+	up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+	Input.parse_input_event(up)
+	await settle()
+
+func has_recent_ui(node: Node) -> bool:
+	if node.name in ["ReceiptToast", "ReceiptHistory"]: return true
+	if node is Button and node.text in ["记录", "最近结果"]: return true
+	for child in node.get_children():
+		if has_recent_ui(child): return true
+	return false
+
+func expected_levels() -> String:
+	return "\n".join(game.session.equipment_slot_facts().filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [scene._slot_name(str(row.id)), scene.NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
+
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	game = load("res://src/main.gd").new(); root.add_child(game); root.grab_focus()
+	await settle()
+	check("startup", game.startup_error.is_empty(), game.startup_error)
+	if not game.startup_error.is_empty(): quit(1); return
+	scene = game.equipment_scene
+	game._skip_tutorial = true; game._sync_guidance(); await settle()
+	game._host.route_requested.emit("equipment"); await settle()
+	check("shared_route_and_canvas", game._left_module == "equipment" and scene.visible and game._host.routes.equipment == scene and scene.size == Vector2(808,900) and scene._shared_host_enabled and not scene._wallet.visible and scene._workbench.get_rect().end.y <= 900)
+	check("battle_projection", game._battle_viewport.get_parent().position == Vector2(855.875,0) and game._battle_viewport.get_parent().scale == Vector2(.9375,.9375))
+	check("recent_results_removed", not has_recent_ui(scene))
+	await shot("equipment-normal")
+	game.session.set_pause("user", true)
+	var wallet: Dictionary = game.session.economy.save_state()
+	wallet.wallet = {"1": game.session.amount_api.apply("from_decimal", ["100000"]).value, "2": game.session.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": game.session.amount_api.apply("from_decimal", ["1000"]).value}
+	var funded: Dictionary = game.session.economy.restore_state(wallet)
+	game.session.economy.publish_budget_change(); await settle()
+	check("public_budget_fixture", funded.ok)
+	scene._open_batch(); await settle()
+	check("batch_exclusive", scene.has_exclusive_ui() and not scene.prepare_host_hide() and game._host._buttons.more.disabled)
+	await click(scene._batch_submit)
+	var owner_levels: String = expected_levels()
+	check("batch_accepted_current_levels", scene.last_result.get("purchase_receipt", {}).get("commit_status", "") == "accepted" and scene._batch_results.text == owner_levels, {"shown": scene._batch_results.text, "owner": owner_levels})
+	check("no_result_presentation_after_purchase", not has_recent_ui(scene) and not scene.has_method("_show_receipt_history"))
+	await shot("equipment-batch-levels")
+	check("force_hide_closes_batch", scene.prepare_host_hide(true) and not scene.has_exclusive_ui())
+	game._host.route_requested.emit("reactor"); await settle()
+	check("switch_to_reactor", game._left_module == "reactor" and not scene.visible)
+	game._host.route_requested.emit("equipment"); await settle()
+	check("return_same_equipment", game._left_module == "equipment" and game.equipment_scene == scene and scene.visible)
+	await shot("equipment-return")
+	var ok := true
+	for row in checks: ok = ok and row.ok
+	var f := FileAccess.open(OUT + "observations.json", FileAccess.WRITE)
+	f.store_string(JSON.stringify({"all_ok": ok, "checks": checks, "fixture": "Temporary public Economy restore budget; existing tutorial dismissal; one real batch +1 purchase. No natural-income, full batch, or payment correctness claim."}, "\t"))
+	f.close()
+	game._close_game()
+	quit(0 if ok else 1)

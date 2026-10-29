@@ -1,0 +1,7 @@
+{
+  "source_commit": "6233dc6ea25bac9a0dfcbc6a8d7b0673e8f24f06",
+  "source_path": "space-battleship/src/ui/equipment_panel.gd",
+  "source_sha256": "ae8c4055ed2f227f3b9bd29221dda0aab606fd6a9939a349a8a332b91751eec7",
+  "integrated_sha256": "d360580d3485e0cf253ea01a9fb841ee192fe4e549c4ddbba22da8aa8651e452",
+  "difference": "Only the existing shared-host top seam fields, draw extension, and set_shared_host redraw; see host-seam.patch."
+}

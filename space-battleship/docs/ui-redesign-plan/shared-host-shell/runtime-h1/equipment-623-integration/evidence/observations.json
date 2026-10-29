@@ -1,0 +1,64 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": "",
+			"id": "startup",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "shared_route_and_canvas",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "battle_projection",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "recent_results_removed",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "public_budget_fixture",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "batch_exclusive",
+			"ok": true
+		},
+		{
+			"detail": {
+				"owner": "武器1 · 脉冲炮 · Lv.2\n防御1 · 装甲 · Lv.2",
+				"shown": "武器1 · 脉冲炮 · Lv.2\n防御1 · 装甲 · Lv.2"
+			},
+			"id": "batch_accepted_current_levels",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "no_result_presentation_after_purchase",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "force_hide_closes_batch",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "switch_to_reactor",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "return_same_equipment",
+			"ok": true
+		}
+	],
+	"fixture": "Temporary public Economy restore budget; existing tutorial dismissal; one real batch +1 purchase. No natural-income, full batch, or payment correctness claim."
+}

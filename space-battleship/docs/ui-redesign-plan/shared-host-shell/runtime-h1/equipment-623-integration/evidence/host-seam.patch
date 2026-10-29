@@ -1,0 +1,20 @@
+diff --git a/space-battleship/src/ui/equipment_panel.gd b/space-battleship/src/ui/equipment_panel.gd
+index 23ef3f28..a793be15 100644
+--- a/space-battleship/src/ui/equipment_panel.gd
++++ b/space-battleship/src/ui/equipment_panel.gd
+@@ -7,0 +8,2 @@ var _context_caption: Label
++var _shared_host_enabled := false
++var _shared_hangar_top: Texture2D
+@@ -850 +852,8 @@ func _draw() -> void:
+-    draw_rect(Rect2(0,0,808,900),CREAM)
++    if not _shared_host_enabled:draw_rect(Rect2(0,0,808,900),CREAM)
++    if _shared_host_enabled:
++        # Extend only the static hangar environment beneath the shared chrome.
++        if _shared_hangar_top==null:
++            var top:Image=_background.get_image().get_region(Rect2i(0,0,1188,ceili(20.0*845.0/600.0)))
++            top.flip_y()
++            _shared_hangar_top=ImageTexture.create_from_image(top)
++        draw_texture_rect(_shared_hangar_top,Rect2(0,65,808,20),false)
+@@ -930,0 +940,2 @@ func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D
++    _shared_host_enabled=enabled
++    queue_redraw()

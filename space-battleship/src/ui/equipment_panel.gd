@@ -36,12 +36,6 @@ var _upgrade_data: Panel
 var _icon_bezel: Panel
 var _transaction_rail: Panel
 var _workbench_layout: Dictionary = {}
-var _receipt_toast: Panel
-var _receipt_toast_remaining: float = 0.0
-var _receipt_history_button: Button
-var _receipt_history_popup: PopupPanel
-var _receipt_history_label: Label
-var _receipt_history: Array[String] = []
 var _candidate_row: Control
 var _comparison_group: Control
 var _period_caption: Label
@@ -80,7 +74,6 @@ var _purchase: Button
 var _install: Button
 var _comparison_title: Label
 var _large_icon: TextureRect
-var _feedback: Label
 var _switch_state: Label
 var _batch_blocker: ColorRect
 var _batch: PanelContainer
@@ -96,14 +89,11 @@ var _level_label: Label
 var _compare_headers: Array = []
 var _compare_values: Array = []
 var _compare_row_label: Label
-var _batch_total: Label
-var _batch_secondary: Label
 var _batch_frame: Panel
 var _batch_close: Button
 var _selection_open: bool = true
 var last_result: Dictionary = {}
 var _last_batch_result: Dictionary = {}
-var _batch_balance: String = ""
 var last_comparison: Dictionary = {}
 
 func _init(session) -> void:
@@ -358,11 +348,6 @@ func _build_workbench() -> void:
     header.add_theme_stylebox_override("panel",beam);_workbench.add_child(header)
     _current_title=_workbench_label("现装",Rect2(20,4,250,28),18,CREAM)
     _level_label=_workbench_label("",Rect2(190,7,150,22),13,Color("b8d3ca"))
-    _receipt_toast=Panel.new();_receipt_toast.name="ReceiptToast";_receipt_toast.position=Vector2(238,150);_receipt_toast.size=Vector2(340,32)
-    _receipt_toast.add_theme_stylebox_override("panel",_style(Color("244b5b"),Color("9bd9be"),1));_receipt_toast.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(_receipt_toast)
-    _feedback=_workbench_label("",Rect2(10,4,320,24),13,Color("d9eee2"),_receipt_toast)
-    _feedback.clip_text=true;_feedback.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;_feedback.mouse_filter=Control.MOUSE_FILTER_PASS
-    _receipt_toast.hide()
     _upgrade_section_title=_workbench_label("装备升级",Rect2(20,42,400,24),16)
     _comparison_title=_workbench_label("装备选择",Rect2(460,42,174,24),16)
     _switch_state=_workbench_label("",Rect2(638,46,122,18),12,Color("946338"));_switch_state.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
@@ -398,8 +383,6 @@ func _build_workbench() -> void:
     _compare_row_label=_workbench_label("攻击力",Rect2(0,18,48,25),12,Color("617c78"),_comparison_group)
     _period_caption=_workbench_label("周期",Rect2(0,43,48,18),12,Color("617c78"),_comparison_group)
     _install=_workbench_button("安装",Rect2(484,220,266,36),_equip);_install.name="Install"
-    _receipt_history_button=_workbench_button("最近结果",Rect2(232,208,92,36),_show_receipt_history);_receipt_history_button.name="ReceiptHistory";_receipt_history_button.disabled=true
-    _build_receipt_history()
 
 func _text_ink_bounds(text:String, font:Font, font_size:int) -> Rect2:
     var line:=TextLine.new();line.add_string(text,font,font_size)
@@ -433,12 +416,10 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     _icon_bezel.position=Vector2(20,70);_icon_bezel.size=Vector2(66,80)
     _candidate_row.position=Vector2(460,70)
     _comparison_group.position=Vector2(460,166);_comparison_group.size.y=43
-    _install.position=Vector2(492,action_y);_install.size=Vector2(258,36)
+    _install.position=Vector2(440,action_y);_install.size=Vector2(310,36)
     for index in _quantity_buttons.size():
         _quantity_buttons[index].position=Vector2(26+index*63,action_y);_quantity_buttons[index].size=Vector2(55,36)
-    _purchase.position=Vector2(220 if different else 528,action_y);_purchase.size=Vector2(204 if different else 222,36)
-    _receipt_history_button.text="记录" if different else "最近结果"
-    _receipt_history_button.position=Vector2(432 if different else 326,action_y);_receipt_history_button.size=Vector2(48 if different else 92,36)
+    _purchase.position=Vector2(220,action_y);_purchase.size=Vector2(204 if different else 530,36)
     _transaction_rail.position=Vector2(16,action_y-8);_transaction_rail.size=Vector2(744,52)
     _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
 
@@ -509,27 +490,6 @@ func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
         _payment_state.text=_reason(str(quote.get("reason",quote.get("error","Unknown"))))
     elif not affordable:_purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
 
-func _build_receipt_history() -> void:
-    _receipt_history_popup=PopupPanel.new();_receipt_history_popup.title="最近结果";add_child(_receipt_history_popup)
-    _receipt_history_popup.add_theme_stylebox_override("panel",_style(Color("173c4b"),Color("91b7aa"),1))
-    _receipt_history_popup.visibility_changed.connect(func():exclusive_ui_changed.emit())
-    var margin:=MarginContainer.new()
-    for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,20)
-    _receipt_history_popup.add_child(margin)
-    var box:=VBoxContainer.new();box.add_theme_constant_override("separation",12);margin.add_child(box)
-    var heading:=Label.new();heading.text="最近结果";heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",18);heading.add_theme_color_override("font_color",CREAM);box.add_child(heading)
-    var scroll:=ScrollContainer.new();scroll.custom_minimum_size=Vector2(540,280);box.add_child(scroll)
-    _receipt_history_label=Label.new();_receipt_history_label.custom_minimum_size.x=520;_receipt_history_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_receipt_history_label.add_theme_color_override("font_color",CREAM);scroll.add_child(_receipt_history_label)
-    var close:=_button("关闭",Rect2(0,0,540,36),_receipt_history_popup.hide);remove_child(close);box.add_child(close)
-
-func _show_receipt_history() -> void:
-    _receipt_history_label.text="\n\n".join(_receipt_history)
-    _receipt_history_popup.popup(Rect2i(104,230,600,420))
-
-func _hide_receipt_toast() -> void:
-    _receipt_toast_remaining=0.0;_receipt_toast.hide()
-
-
 func _open_batch() -> void:
     # Godot GUI picking uses scene order as well as the visual canvas order.
     move_child(_batch_blocker, get_child_count() - 1)
@@ -571,16 +531,11 @@ func _build_batch() -> void:
     _batch_quantity.add_theme_color_override("font_color",CREAM)
     _prepare_button_material(_batch_quantity,"button")
     stack.add_child(_batch_quantity)
-    _batch_total=Label.new();_batch_total.add_theme_font_override("font",_font_strong)
-    _batch_total.add_theme_font_size_override("font_size",20);_batch_total.add_theme_color_override("font_color",Color("a8f0d6"))
-    _batch_total.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;stack.add_child(_batch_total)
     _batch_scroll=ScrollContainer.new();_batch_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
     stack.add_child(_batch_scroll)
     var results:=VBoxContainer.new();results.custom_minimum_size.x=554;results.add_theme_constant_override("separation",15);_batch_scroll.add_child(results)
     _batch_results=Label.new();_batch_results.add_theme_font_size_override("font_size",16);_batch_results.add_theme_color_override("font_color",CREAM)
     _batch_results.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_batch_results.custom_minimum_size.x=548;results.add_child(_batch_results)
-    _batch_secondary=Label.new();_batch_secondary.add_theme_font_size_override("font_size",13);_batch_secondary.add_theme_color_override("font_color",Color("a3bcb9"))
-    _batch_secondary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;results.add_child(_batch_secondary)
     var row:=HBoxContainer.new();row.add_theme_constant_override("separation",14);stack.add_child(row)
     _batch_submit=_button("执行升级",Rect2(0,0,270,44),_buy_all,true)
     remove_child(_batch_submit);_batch_submit.custom_minimum_size=Vector2(270,44);row.add_child(_batch_submit)
@@ -594,8 +549,6 @@ func _selected_fact() -> Dictionary:
     return {}
 
 func select_slot(id: String) -> void:
-    if id!=_selected:
-        _feedback.text="";_feedback.tooltip_text="";_hide_receipt_toast()
     _selected = id
     _selection_open = true
     var fact: Dictionary = _selected_fact()
@@ -603,8 +556,6 @@ func select_slot(id: String) -> void:
     _dirty = true
 
 func _select_candidate(id: String) -> void:
-    if id!=_candidate:
-        _feedback.text="";_feedback.tooltip_text="";_hide_receipt_toast()
     _candidate = id
     _dirty = true
 
@@ -613,6 +564,7 @@ func _refresh() -> void:
     presentation_counts.refreshes += 1
     presentation_counts.slot_fact_reads += 1
     _facts = _session.equipment_slot_facts()
+    if _batch.visible:_refresh_batch()
     var active: Array = _facts.filter(func(row): return not row.dormant)
     if _selected_fact().is_empty() or _selected_fact().get("dormant", false):
         _selected = str(active[0].id) if not active.is_empty() else ""
@@ -823,89 +775,33 @@ func _buy_all() -> void:
     var mode: int = _batch_quantity.selected
     var result: Dictionary = _session.equipment.buy_all_levels(10 if mode == 1 else 1, mode == 2, _session.equipment_inputs(), _session.economy.affordable, _session.economy.payment, _session.publish_equipment_levels)
     _last_batch_result = result.duplicate(true)
-    var status: String = str(result.get("purchase_receipt", {}).get("commit_status", ""))
-    _batch_balance = "" if status == "fault_unknown" or result.get("fault", false) else _cost_text(_session.economy.budget()).replace(" / ", "   ")
     _accept_result(result)
-    _refresh_batch(true)
-
-func _receipt_text(result: Dictionary) -> String:
-    var receipt: Dictionary = result.get("purchase_receipt", {})
-    var lines := PackedStringArray()
-    if receipt.get("commit_status") == "fault_unknown": return "提交结果未知，会话已停止。"
-    for purchase in receipt.get("purchases", []):
-        lines.append("%s  +%d级 · %s" % [_slot_name(str(purchase.slot_id)), int(purchase.count), _cost_text(purchase.spent)])
-    if receipt.get("spent") is Dictionary and not receipt.spent.is_empty(): lines.append("实际花费：" + _cost_text(receipt.spent))
-    if not result.get("ok", false): lines.append(_reason(str(result.get("reason", result.get("error", "Unknown")))))
-    return "\n".join(lines) if not lines.is_empty() else "换装完成" if result.get("ok", false) else "没有变更"
 
 func _slot_name(id: String) -> String:
     var pieces := id.split(":")
     return ("武器" if pieces[0] == "weapon" else "防御") + str(int(pieces[1]) + 1) if pieces.size() == 2 else id
 
-func _receipt_summary(result: Dictionary) -> String:
-    var receipt:Dictionary=result.get("purchase_receipt",{})
-    if receipt.get("commit_status")=="fault_unknown":return "提交结果未知，会话已停止。"
-    var purchases:Array=receipt.get("purchases",[])
-    if receipt.get("commit_status")=="accepted" and not purchases.is_empty():
-        if purchases.size()==1:return "%s · 购级完成 +%d级" % [_slot_name(str(purchases[0].slot_id)),int(purchases[0].count)]
-        return "已完成%d个槽位购级" % purchases.size()
-    if not result.get("ok",false):return _reason(str(result.get("reason",result.get("error","Unknown"))))
-    return "没有变更" if receipt.has("purchases") else "换装完成"
-
 func _accept_result(result: Dictionary) -> void:
     last_result = result.duplicate(true)
-    _feedback.text = _receipt_summary(result)
-    _feedback.tooltip_text = _receipt_text(result)
-    _receipt_history.push_front(_feedback.tooltip_text)
-    if _receipt_history.size()>8:_receipt_history.pop_back()
-    _receipt_history_button.disabled=false;_receipt_history_button.tooltip_text=_feedback.tooltip_text
-    if _receipt_history_popup.visible:_receipt_history_label.text="\n\n".join(_receipt_history)
-    _receipt_toast_remaining=3.0;_receipt_toast.show()
     _dirty = true
     command_finished.emit(last_result)
 
-func _refresh_batch(after: bool = false) -> void:
+func _refresh_batch() -> void:
     var result: Dictionary = _last_batch_result
     var receipt: Dictionary = result.get("purchase_receipt", {})
     var status: String = str(receipt.get("commit_status", ""))
     var unknown: bool = status == "fault_unknown" or (result.get("fault", false) and status != "accepted")
-    _batch_total.text=""
-    _batch_secondary.text=""
-    if after or not result.is_empty():
-        if unknown:
-            _batch_results.text = "最近一次升级\n提交结果未知，会话已停止。\n本次等级变化与扣款未确认。"
-        elif status == "accepted" and not receipt.get("purchases", []).is_empty():
-            var purchased: Array = []
-            for item in receipt.purchases: purchased.append(str(item.slot_id))
-            var detail_lines:=PackedStringArray()
-            for purchase in receipt.purchases:detail_lines.append("%s  +%d级    %s" % [_slot_name(str(purchase.slot_id)),int(purchase.count),_cost_text(purchase.spent)])
-            var details: String="\n".join(detail_lines)
-            _batch_total.text="实际总花费  "+_cost_text(receipt.spent) if receipt.get("spent") is Dictionary else "实际总花费未确认"
-            if result.get("fault", false):
-                _batch_results.text = details + "\n其余槽位与后续扣款状态未知。"
-            else:
-                var secondary:=PackedStringArray()
-                for row in _facts:
-                    if not row.dormant and str(row.id) not in purchased:secondary.append(_slot_name(str(row.id))+" · 未成交，等级保持")
-                _batch_results.text=details
-                _batch_secondary.text="\n".join(secondary)+"\n\n成交后余额  "+_batch_balance
-        elif status == "accepted":
-            _batch_results.text = "已接纳，成交明细未返回。\n扣款与槽位变化待核对。"
-        elif status == "rejected":
-            _batch_results.text = "本次提交被拒绝\n" + _reason(str(result.get("reason", result.get("error", "Unknown")))) + "\n未确认成交。"
-        elif status == "not_submitted" or (status.is_empty() and not result.get("ok", false)):
-            _batch_results.text = "本次未执行升级\n" + _reason(str(result.get("reason", result.get("error", "Unknown"))))
-        else:
-            _batch_results.text = "成交明细未返回。\n本次扣款与槽位变化待核对。"
+    var current: String = "\n".join(_facts.filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [_slot_name(str(row.id)), NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
+    if unknown:
+        _batch_results.text = "提交结果未知，会话已停止。\n" + current
+    elif not result.is_empty() and not result.get("ok", false):
+        _batch_results.text = _reason(str(result.get("reason", result.get("error", "Unknown")))) + "\n" + current
     else:
-        _batch_results.text = "\n".join(_facts.filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [_slot_name(str(row.id)), NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
+        _batch_results.text = current
     _batch_submit.disabled = unknown or (status == "accepted" and receipt.get("purchases", []).is_empty()) or not _session.run_state.is_running()
 
 func _process(dt: float) -> void:
     if not is_visible_in_tree(): return
-    if _receipt_toast_remaining>0:
-        _receipt_toast_remaining=maxf(0.0,_receipt_toast_remaining-dt)
-        if _receipt_toast_remaining==0:_receipt_toast.hide()
     _clock += dt
     var cooldown: bool = _facts.any(func(row): return float(row.cooldown_remaining) > 0)
     if _dirty:
@@ -955,7 +851,7 @@ func _draw() -> void:
     presentation_counts.scene_draws+=1
     if not _shared_host_enabled:draw_rect(Rect2(0,0,808,900),CREAM)
     if _shared_host_enabled:
-        # Preserve the approved shared-chrome seam without changing the hangar below y85.
+        # Extend only the static hangar environment beneath the shared chrome.
         if _shared_hangar_top==null:
             var top:Image=_background.get_image().get_region(Rect2i(0,0,1188,ceili(20.0*845.0/600.0)))
             top.flip_y()
@@ -1056,13 +952,12 @@ func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D 
         context_slot.add_child(_context_caption)
 
 func has_exclusive_ui() -> bool:
-    return _batch.visible or _batch_quantity.get_popup().visible or _receipt_history_popup.visible
+    return _batch.visible or _batch_quantity.get_popup().visible
 
 func prepare_host_hide(force: bool = false) -> bool:
     if has_exclusive_ui() and not force:return false
     if force:
-        _receipt_history_popup.hide();_close_batch()
-    _hide_receipt_toast()
+        _close_batch()
     var focus:Control=get_viewport().gui_get_focus_owner()
     if focus!=null and (focus==self or is_ancestor_of(focus)):focus.release_focus()
     return true
