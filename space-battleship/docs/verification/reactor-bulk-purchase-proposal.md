@@ -1,6 +1,6 @@
-# 反应炉手动×10/MAX：Owner最小契约候选
+# 反应炉手动×10/MAX：Owner最小契约与实现记录
 
-**待原审、未实施、未合main；本次仅源码/契约静态核对，不运行游戏或测试。** 用户已要求升级×10/MAX且确认/还原都不需要；本候选仅补缺失的Owner报价与MAX执行接口，前端呈现与分配UI处理归反应炉组。唯一规则入口仍为[设计README](../game-design/README.md)，新增契约唯一正文见[Reactor 9.2.2](../game-design/contracts/reactor.md#reactor-bulk-purchase)，不复制费用公式作为另一个权威。
+**下述提案为`c6170694`历史设计核对；按根线程继续授权实施的当前候选待原双审、未合main，实际出口和定向证据见文末。** 用户已要求升级×10/MAX且确认/还原都不需要；本候选仅补缺失的Owner报价与MAX执行接口，前端呈现与分配UI处理归反应炉组。唯一规则入口仍为[设计README](../game-design/README.md)，新增契约唯一正文见[Reactor 9.2.2](../game-design/contracts/reactor.md#reactor-bulk-purchase)，不复制费用公式作为另一个权威。
 
 ## 固定现场与证据
 
@@ -23,3 +23,14 @@
 后续实施需原审通过；仅验证本次新增出口和复用路径，不扩大后台范围：固定×10与原_purchase/真实payment/publish等级及钱包一致，恰好支付与少1单位整批拒绝；MAX的n可支付/n+1不可支付、0、等级/预算改变后重读及执行当下重算；Amount错误/比较错误传播、signed-int安全终止、极大值沿原口径；读纯度/返回隔离、零失败通知、一次支付/发布、automatic=false分配不变；+1原消费者兼容与局部资源dirty。实际UI、取消确认/还原按钮及共享集成由反应炉组验证。
 
 本执行者尚未实际压缩。当前只固定最小文档候选供审，不声称接口已实现、消费者已接入或完整验收通过。
+
+## 实现候选与必要定向证据
+
+实施基线`c61706942675a25857c425cdf775d28c89154298`；本次仅改Reactor所有者，消费者两个固定版本及UI源码均未动。可消费入口以[Reactor 9.2.2](../game-design/contracts/reactor.md#reactor-bulk-purchase)为唯一正文：`purchase_preview(can_pay,count=1)`、`purchase_max_preview(can_pay)`、`purchase_max(inputs,can_pay,pay,publish)`。原+1单参兼容；×10执行仍`purchase(10,false,inputs,pay,publish)`。报价给cost_resource_ids，MAX=0也保留原资源身份，前端必须按此过滤预算事件，不再只用空costs.keys。
+
+- 原_quote/_purchase/purchase/_submit及Session.publish_reactor源码保持不变；固定数量仅读脱离候选，×1/×10费用文本按已接纳level/count缓存，预算仅重验支付性。MAX只保存局部搜索边界，不写领域状态/候选/钱包；仅InsufficientResources作为不可支付边界，其他错误完整返回。MAX命令格式化先于支付/发布，成功回执附实际count/costs；不可能成交后因新增格式化返回失败。
+- [固定Owner探针](../../foundation/tests/_reactor_bulk_purchase_probe.gd)使用原c617 Reactor原始Git字节作报价对照，生产配置与现有FoundationAmount/native；61项断言通过。覆盖初始+1原价、精确×10及少1单位整批拒绝、固定数量缓存/结果隔离、MAX的0与资源ID、1/2/9/10/31/100/500级n可付及n+1不可付、读纯度/零事件、报价/比较/中途搜索/显示错误、支付/发布拒绝及signed-int边界。
+- 实际Session/native：×10整批一次payment/publish；少1单位不改钱包/等级且不publish；MAX预览5后预算降到2，点击当下重算实际买2，实际count/costs与钱包一致；两种成功动作均保留原非零手动分配7，未自动均分。此为明确边界夹具与真实接纳路径，不代表自然游玩或完整事务组合验收。
+- 当前main入口check-only退出0；两份正式[日志与SHA256清单](reactor-bulk-purchase-evidence/manifest.json)无ERROR/WARNING。源码/文档diff-check通过，原始入口日志末尾空行按原字节和Git blob哈希保留。未运行消费者UI、完整游戏、性能、长期保存或全部native故障组合；消费MAX资源dirty及去除确认/还原仍由反应炉组验证。
+
+复现：按foundation入口使用Godot4.7.2与同一native/config。将c617的Reactor原始Git字节写临时.gd，设置SPACE_IDLE_REACTOR_BULK_BASELINE、SPACE_IDLE_NATIVE_EXTENSION、SPACE_IDLE_GALAXY_PROBE_CONFIG，以`--headless --path . --log-file <临时日志> --script res://foundation/tests/_reactor_bulk_purchase_probe.gd`运行；入口检查仍`--check-only --script res://src/main.gd`。不提交临时基线、DLL、生成配置或存档。本接替尚未实际压缩。

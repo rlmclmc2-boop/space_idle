@@ -67,16 +67,16 @@ UI只订阅本实例及相关预算资源；通知只置局部dirty，下一可�
 
 <a id="reactor-bulk-purchase"></a>
 
-### 9.2.2 待审设计：手动升级×10与MAX
+### 9.2.2 实现候选：手动升级×10与MAX
 
-**状态：仅最小契约候选，待原审、未实施、未合main。** 用户已要求×10/MAX；本节不把9.2.1固定+1实现冒充批量报价已存在。固定Owner、两消费者及源码证据见[定向核对与提案](../../verification/reactor-bulk-purchase-proposal.md)。UI风格、分配确认/还原的移除及消费接线归反应炉组；本节不扩展分配或自动岗位。
+**状态：设计固定`c6170694`，按根线程继续授权实施；当前实现候选待原双审、未合main，不代表消费者或完整游戏验收。** 用户已要求×10/MAX；本节不把9.2.1固定+1实现冒充批量报价已存在。固定Owner、两消费者及源码证据见[定向核对与提案](../../verification/reactor-bulk-purchase-proposal.md)。UI风格、分配确认/还原的移除及消费接线归反应炉组；本节不扩展分配或自动岗位。
 
-| 拟定所有者出口 | 字段与精确语义 |
+| 实现候选所有者出口 | 字段与精确语义 |
 |---|---|
 | `Reactor.purchase_preview(can_pay: Callable, count: int = 1)` | 向后兼容原单参+1；正整数count沿原_purchase/_quote求整批费用。成功仍给ok/count/costs规范Amount文本/can_purchase/reason，并给cost_resource_ids（原费用资源ID集合）。count=10严格为10级；不足时can_purchase=false/reason=InsufficientResources，不降成部分10。非法count、等级范围或费用计算/格式化/比较错误明确失败，不伪成功或伪余额不足。 |
 | `Reactor.purchase_max_preview(can_pay: Callable)` | 给同口径ok/count/costs/cost_resource_ids/can_purchase/reason；count为当下已接纳等级和钱包下可整批支付的最大正整数。连+1也不足时给ok=true/count=0/costs={}/can_purchase=false/reason=InsufficientResources；cost_resource_ids仍保留原+1报价的资源集合。UI显示“可购0级/资金不足”，禁止执行，不把空costs显示成免费升级。所有金额文本由Owner给出，UI不解析、反算、搜索或取整。 |
 | 原`Reactor.purchase(10, false, inputs, pay, publish)` | ×10直接复用既有一次整批报价、pay候选钱包、_submit求值及publish接纳；整批买不起普通拒绝，零部分成交。不是循环10次+1。inputs仍由宿主即时注入Session.reactor_inputs。 |
-| 拟增`Reactor.purchase_max(inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable)` | 点击时在同一同步调用栈用当前等级/钱包重新求MAX，不接收或信任预览count；count=0普通拒绝且不调用pay/publish。正数只调用一次原purchase(count,false,inputs,pay,publish)，费用与支付再沿原路径校验；成功才附本次实际count与costs规范文本，失败沿原结果，不把预览数量当已成交。 |
+| `Reactor.purchase_max(inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable)` | 点击时在同一同步调用栈用当前等级/钱包重新求MAX，不接收或信任预览count；count=0普通拒绝且不调用pay/publish。正数只调用一次原purchase(count,false,inputs,pay,publish)，费用与支付再沿原路径校验；成功才附本次实际count与costs规范文本，失败沿原结果，不把预览数量当已成交。 |
 
 **MAX求值与终止：** 只复用原_quote与Amount.sum_ceiled_geometric（原L级下一项起点L−1、逐项ceil及其现有极大Amount口径），不以+1报价乘count，不另造初级价格特例、封顶或升级折扣。对费用调用注入Economy.can_pay，传入脱离所有者的费用；只有其明确InsufficientResources可作为搜索的不可支付边界。原_quote/Amount/比较/格式化等其他错误整口返回失败，不将其当不可支付继续搜后返回较小“MAX”。extreme沿原Amount口径是表示事实，不自创为失败或新价格上限。
 

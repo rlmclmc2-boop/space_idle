@@ -14,8 +14,7 @@ var _plan_preview_cache: Dictionary = {}
 var _presentation_queued: bool = false
 var _presentation_before: Dictionary = {}
 var _purchase_preview_level: int = -1
-var _purchase_preview_costs: Dictionary = {}
-var _purchase_preview_texts: Dictionary = {}
+var _purchase_preview_quotes: Dictionary = {}
 
 func save_state() -> Dictionary:
 	var state: Dictionary = _state.duplicate(true)
@@ -314,24 +313,94 @@ func presentation_model() -> Dictionary:
 	actual.reason = "" if actual.can_allocate else "SessionUnavailable"
 	return actual
 
-# Immutable per-level price; a budget-only refresh only reruns affordability.
-func purchase_preview(can_pay: Callable) -> Dictionary:
+# Fixed-count prices depend on accepted level, never the current budget.
+func purchase_preview(can_pay: Callable, count: int = 1) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	if not _available: return {"ok": false, "reason": "ReactorLocked"}
 	if _purchase_preview_level != int(_state.level):
-		var changed: Dictionary = _purchase(_state.duplicate(true), 1, false, _parameters, _api)
-		if not changed.ok: return changed
-		var texts: Dictionary = {}
-		for resource in changed.costs:
-			var text: Dictionary = _api.apply("to_display", [changed.costs[resource]])
-			if not text.ok: return text
-			texts[resource] = text.text
-		_purchase_preview_costs = changed.costs.duplicate(true)
-		_purchase_preview_texts = texts
+		_purchase_preview_quotes.clear()
 		_purchase_preview_level = int(_state.level)
-	var affordable: Dictionary = can_pay.call(_purchase_preview_costs.duplicate(true))
-	return {"ok": true, "count": 1, "costs": _purchase_preview_texts.duplicate(true),
+	var quote: Dictionary = _purchase_preview_quotes.get(count, {})
+	if quote.is_empty():
+		var changed: Dictionary = _purchase(_state.duplicate(true), count, false, _parameters, _api)
+		if not changed.ok: return changed
+		var display: Dictionary = _purchase_cost_texts(changed.costs)
+		if not display.ok: return display
+		quote = {"costs": changed.costs.duplicate(true), "texts": display.texts}
+		# Cache the two fixed UI modes only; MAX keeps only local search state.
+		if count in [1, 10]: _purchase_preview_quotes[count] = quote
+	var affordable: Dictionary = can_pay.call(quote.costs.duplicate(true))
+	if not affordable.ok and affordable.get("reason", "") != "InsufficientResources": return affordable
+	return {"ok": true, "count": count, "costs": quote.texts.duplicate(true),
+		"cost_resource_ids": PackedStringArray(quote.costs.keys()),
 		"can_purchase": bool(affordable.ok), "reason": affordable.get("reason", affordable.get("error", ""))}
+
+func purchase_max_preview(can_pay: Callable) -> Dictionary:
+	var quote: Dictionary = _maximum_purchase_quote(can_pay)
+	if not quote.ok: return quote
+	var display: Dictionary = _purchase_cost_texts(quote.costs)
+	if not display.ok: return display
+	return {"ok": true, "count": quote.count, "costs": display.texts,
+		"cost_resource_ids": quote.cost_resource_ids, "can_purchase": quote.count > 0,
+		"reason": "" if quote.count > 0 else "InsufficientResources"}
+
+func purchase_max(inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable) -> Dictionary:
+	var quote: Dictionary = _maximum_purchase_quote(can_pay)
+	if not quote.ok: return quote
+	if quote.count == 0: return {"ok": false, "reason": "InsufficientResources"}
+	# Format before publication: a display error cannot turn a completed purchase into failure.
+	var display: Dictionary = _purchase_cost_texts(quote.costs)
+	if not display.ok: return display
+	var result: Dictionary = purchase(int(quote.count), false, inputs, pay, publish)
+	if not result.ok: return result
+	var receipt: Dictionary = result.duplicate(true)
+	receipt.count = quote.count
+	receipt.costs = display.texts
+	return receipt
+
+func _purchase_cost_texts(costs: Dictionary) -> Dictionary:
+	var texts: Dictionary = {}
+	for resource in costs:
+		var text: Dictionary = _api.apply("to_display", [costs[resource]])
+		if not text.ok: return text
+		texts[resource] = text.text
+	return {"ok": true, "texts": texts}
+
+func _maximum_purchase_quote(can_pay: Callable) -> Dictionary:
+	if not _run_state.is_running(): return _run_state.rejection()
+	if not _available: return {"ok": false, "reason": "ReactorLocked"}
+	var limit: int = 9223372036854775807 - int(_state.level)
+	if limit <= 0: return {"ok": false, "reason": "ReactorLevelRangeExceeded"}
+	var low: int = 0
+	var high: int = 1
+	var accepted: Dictionary = {}
+	var resource_ids := PackedStringArray()
+	while true:
+		var quote: Dictionary = _purchase(_state.duplicate(true), high, false, _parameters, _api)
+		if not quote.ok: return quote
+		resource_ids = PackedStringArray(quote.costs.keys())
+		var affordable: Dictionary = can_pay.call(quote.costs.duplicate(true))
+		if not affordable.ok:
+			if affordable.get("reason", "") != "InsufficientResources": return affordable
+			break
+		low = high
+		accepted = quote
+		if high == limit: return {"ok": false, "reason": "ReactorLevelRangeExceeded"}
+		high = limit if high > (limit >> 1) else high * 2
+	while low + 1 < high:
+		@warning_ignore("integer_division")
+		var middle: int = low + (high - low) / 2
+		var quote: Dictionary = _purchase(_state.duplicate(true), middle, false, _parameters, _api)
+		if not quote.ok: return quote
+		var affordable: Dictionary = can_pay.call(quote.costs.duplicate(true))
+		if affordable.ok:
+			low = middle
+			accepted = quote
+		elif affordable.get("reason", "") == "InsufficientResources": high = middle
+		else: return affordable
+	# low was accepted and high=low+1 was rejected, both using original Amount costs.
+	return {"ok": true, "count": low, "costs": accepted.costs.duplicate(true) if low > 0 else {},
+		"cost_resource_ids": resource_ids}
 
 # Capture before replacing state: deferred delivery must not lose the first change.
 func _queue_presentation_change() -> void:
