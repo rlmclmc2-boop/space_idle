@@ -216,26 +216,14 @@ func _position_refinery_work(model: Node3D, clock: float) -> void:
 	var screen_up := (camera_to_model * Vector3.UP).normalized()
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
 	var width := _refinery_body_sprite.scale.x
+	# Move the billboard's authored input-belt end onto its *fixed* physical
+	# socket. This compensates for the camera-facing art projection while the
+	# GLB pivot and the independently rotating spine keep their real poses.
+	var mouth_offset := screen_right * ((840.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 895.0) * _refinery_body_sprite.pixel_size)
+	var a: float = _spine.FACILITY_ANGLES["refinery"]
+	var socket_world: Vector3 = _spine.to_global(_spine.point(a) + _spine.plane_normal() * 0.47) + Vector3(0, 0, 0.045)
+	_refinery_body_sprite.position = model.to_local(socket_world) - mouth_offset
 	var base := _refinery_body_sprite.position + camera_front * 0.25
-	# The input belt tip is at (840, 895) in the 1536x1024 authored image.
-	# Transform that actual billboard pixel into world space; the receiving end
-	# belongs to the same built spine section's central transport channel.
-	var mouth := _refinery_body_sprite.position + screen_right * ((840.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 895.0) * _refinery_body_sprite.pixel_size)
-	var mouth_world := model.to_global(mouth)
-	var mouth_screen := _camera.unproject_position(mouth_world)
-	var low: float = _spine.FACILITY_ANGLES["refinery"] - 0.20
-	var high: float = _spine.FACILITY_ANGLES["refinery"] + 0.20
-	for index in 14:
-		var left := low + (high - low) / 3.0
-		var right := high - (high - low) / 3.0
-		var left_world: Vector3 = _spine.to_global(_spine.point(left) + _spine.plane_normal() * 0.49)
-		var right_world: Vector3 = _spine.to_global(_spine.point(right) + _spine.plane_normal() * 0.49)
-		var left_distance := mouth_screen.distance_squared_to(_camera.unproject_position(left_world))
-		var right_distance := mouth_screen.distance_squared_to(_camera.unproject_position(right_world))
-		if left_distance < right_distance: high = right
-		else: low = left
-	var closest_angle := (low + high) * 0.5
-	_spine.update_refinery_feed(mouth_world, closest_angle)
 	var opening := 0.5 + 0.5 * sin(clock * 0.70)
 	for side in ["Left", "Right"]:
 		var pivot := _parts["refinery"]["IntakeWheel" + side] as Node3D

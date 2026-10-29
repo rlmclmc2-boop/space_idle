@@ -1,0 +1,11 @@
+2dc9c35c9dedae6b6ea47f0fc4a5b69053f77060bf1dd2bc1f72004499f0a84d  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/stage_4.png
+a0e63a94d494b23882f94949821ef2b1382654fc13251c07145dfc7433298e87  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_020.png
+fdb78c97894616c1ee412c1310ff66ff9438eaff0f3eb425f3ea844bc700afa6  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_022.png
+eb9550c3bea5477dc477dcf38883ead1bbf24ac0e699137e4ac056257a4360ea  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_024.png
+c5eb0ea7514b449e5b410d04a4bd191558093d20f207f3673f0ccc3514c9bd26  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_026.png
+1f98d6e3b463d7472babba9d0ffc67395f8bb7b4d02ed717a33a408f4698e5df  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_028.png
+090aff30782e974c9a6cf06aed8192c346ae23b80d63625f9a195c1d405794da  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_047.png
+e553fa573b87cc8019b4f6476f8ec62d0b423848a1f8700abbaff7f605cdc3f9  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_049.png
+507c845d06d11d124118fa1ded7ed18499c306f97579ea4036749fe825a6ce4c  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_051.png
+be5edc4fed69a34939f170f4b4cd1c26422951d916510c4c966c7c13c9cc3e52  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_053.png
+8a278e9ee0cd48d33409c1b3f3706aec45f8c29eddc66482310b1bc62fc8a17f  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-aligned-socket/phases/frame_055.png

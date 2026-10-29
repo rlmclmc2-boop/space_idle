@@ -6,6 +6,8 @@ uniform sampler2D albedo_tex : source_color;
 uniform bool textured = false;
 uniform bool luminous = false;
 uniform vec3 body_scale = vec3(1.0);
+uniform bool refinery_socket = false;
+uniform float socket_angle = 0.5;
 
 varying vec3 world_point;
 
@@ -34,6 +36,11 @@ void fragment() {
 	vec3 color = tint.rgb;
 	if (textured) {
 		color *= texture(albedo_tex, UV).rgb;
+	}
+	if (refinery_socket) {
+		float across = 1.0 - smoothstep(0.035, 0.075, abs(UV.x - 0.5));
+		float along = 1.0 - smoothstep(0.012, 0.025, abs(UV.y - socket_angle));
+		color = mix(color, vec3(0.13, 0.24, 0.31), across * along * 0.66);
 	}
 	ALBEDO = min(color * 1.35, vec3(1.0));
 	ROUGHNESS = 0.68;
