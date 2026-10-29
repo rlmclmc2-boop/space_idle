@@ -12,7 +12,7 @@ const CENTRAL_MOUNT = preload("res://assets/ui/reactor/ship-hub-r4/central-conso
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
-const ERRORS := {"ReactorPlanOverCapacity":"草稿超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
+const ERRORS := {"ReactorPlanOverCapacity":"分配超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
 var _owner
 var _inputs: Callable
 var _pay: Callable
@@ -26,11 +26,8 @@ var _rows: Dictionary = {}
 var _ids: Array = []
 var _model: Dictionary = {}
 var _shares: Dictionary = {}
-var _preview: Dictionary = {}
-var _canonical: Dictionary = {}
 var _quote: Dictionary = {}
 var _quote_cost_ids: Array = []
-var _kind: String = "none"
 var _selected: String = ""
 var _dirty: bool = true
 var _quote_dirty: bool = true
@@ -41,9 +38,7 @@ var _cost: Label
 var _notice: Label
 var _level: Label
 var _purchase: Button
-var _apply: Button
 var _equal: Button
-var _restore: Button
 var last_result: Dictionary = {}
 var presentation_counts := {"model_reads":0, "quote_reads":0, "preview_reads":0, "commands":0, "visible_frames":0}
 
@@ -55,8 +50,7 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	size = Vector2(808, 900)
 	custom_minimum_size = size
 	clip_contents = true
-	theme = Theme.new()
-	theme.default_font = preload("res://assets/fonts/NotoSansSC-Regular.tres")
+	# Use the same readable host font as the accepted equipment scene.
 	var surface := SubViewportContainer.new()
 	surface.position = Vector2(0, 65)
 	surface.size = Vector2(808, 835)
@@ -114,23 +108,26 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.text = text
 	button.position = rect.position
 	button.size = rect.size
-	button.add_theme_font_size_override("font_size", 16)
+	button.add_theme_font_size_override("font_size", 15)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxFlat.new()
-		box.bg_color = Color("245963") if state in ["hover","pressed"] else Color("173e4b")
+		box.bg_color = Color("277384") if state == "hover" else Color("123e4c") if state == "pressed" else Color("175466")
 		if primary:
-			box.bg_color = Color("f2dbab") if state == "normal" else Color("f9e9c6") if state in ["hover","focus"] else Color("cda967") if state == "pressed" else Color("41545a")
-		if state == "disabled" and not primary: box.bg_color = Color("163945", 0.55)
-		box.border_color = Color("89bfb6") if state == "focus" else Color("58767a", 0.8)
-		if primary: box.border_color = Color("ffe8b7") if state == "focus" else Color("a98551")
-		box.set_border_width_all(1)
-		box.set_corner_radius_all(7)
+			box.bg_color = Color("f3f0df") if state == "normal" else Color("e4eee5") if state in ["hover","focus"] else Color("cce5dd") if state == "pressed" else Color("e0e1d7")
+		if state == "disabled" and not primary: box.bg_color = Color("425c66")
+		box.border_color = Color("d9ae5d") if state == "focus" else Color("75d4d0") if state == "hover" else Color("6ed1ca") if state == "pressed" else Color("9ba9a2") if state == "disabled" else Color("89aaa9")
+		box.set_border_width_all(2 if state in ["hover","pressed","focus"] else 1)
+		box.set_corner_radius_all(6)
+		box.content_margin_left = 8
+		box.content_margin_right = 8
+		box.content_margin_top = 5
+		box.content_margin_bottom = 5
 		button.add_theme_stylebox_override(state, box)
-	button.add_theme_color_override("font_color", Color("173d4a") if primary else Color("e9eee0"))
-	button.add_theme_color_override("font_hover_color", Color("102d39") if primary else Color("ffffff"))
-	button.add_theme_color_override("font_pressed_color", Color("102d39") if primary else Color("ffffff"))
-	button.add_theme_color_override("font_focus_color", Color("102d39") if primary else Color("ffffff"))
-	button.add_theme_color_override("font_disabled_color", Color("849a9c"))
+	button.add_theme_color_override("font_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_hover_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_pressed_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_focus_color", Color("203f50") if primary else Color("f3f0df"))
+	button.add_theme_color_override("font_disabled_color", Color("859795"))
 	button.pressed.connect(action)
 	add_child(button)
 	return button
@@ -172,12 +169,6 @@ func _build() -> void:
 		add_child(mount)
 		var effect := _label(layout.effect + offset,float(layout.width),18)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
-		var supply := _label(layout.supply + offset,float(layout.width),16)
-		var effective := _label(layout.effective + offset,float(layout.width),16)
-		supply.size.y = 24
-		effective.size.y = 24
-		supply.add_theme_color_override("font_color", Color("c1dfd9"))
-		effective.add_theme_color_override("font_color", Color("e5d6b0"))
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
 		slider.position = layout.slider + offset
@@ -185,7 +176,7 @@ func _build() -> void:
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		slider.tooltip_text = "拖动调整手动分配；实际供能在确认整组后变化"
+		slider.tooltip_text = "拖动后直接分配供能"
 		for style in ["slider","grabber_area","grabber_area_highlight"]:
 			var box := StyleBoxFlat.new()
 			box.bg_color = Color("5db3aa") if style != "slider" else Color("244e58")
@@ -210,18 +201,21 @@ func _build() -> void:
 		slider.value_changed.connect(_slide.bind(id))
 		slider.focus_entered.connect(func(): _selected = id; _update_stage())
 		add_child(slider)
-		_rows[id] = {"effect":effect, "supply":supply, "effective":effective, "slider":slider, "mount":mount}
+		var ratio := _label(layout.slider + offset + Vector2(0, 2), float(layout.track), 15)
+		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ratio.add_theme_color_override("font_color", Color("f7f1dc"))
+		ratio.add_theme_color_override("font_shadow_color", Color("092733", 0.95))
+		ratio.add_theme_constant_override("shadow_offset_y", 1)
+		_rows[id] = {"effect":effect, "slider":slider, "ratio":ratio, "mount":mount}
 		for control in _rows[id].values(): control.visible = false
 	_budget = _label(Vector2(325,762),290,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
 	_cost = _label(Vector2(184, 789), 430, 16)
 	_purchase = _button("升级",Rect2(181,815,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(342,817,74,40),func(): _kind = "equal"; _preview_draft())
-	_apply = _button("确认",Rect2(424,817,74,40),func(): _command(_submit))
-	_restore = _button("还原",Rect2(506,817,74,40),_reset)
+	_equal = _button("均分",Rect2(342,817,74,40),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
 	_notice = _label(Vector2(184,864),430,16)
 	_notice.size.y = 28
-	for button in [_purchase,_equal,_apply,_restore]: button.disabled = true
+	for button in [_purchase,_equal]: button.disabled = true
 
 func _ready() -> void:
 	visibility_changed.connect(func():
@@ -258,8 +252,6 @@ func _set_running(running: bool) -> void:
 func _update_buttons() -> void:
 	_purchase.disabled = not _running or _model.is_empty() or not bool(_quote.get("can_purchase", false))
 	_equal.disabled = not _running or _ids.is_empty() or not bool(_model.get("can_allocate", false))
-	_apply.disabled = not _running or _kind == "none" or not bool(_preview.get("ok", false)) or not bool(_preview.get("can_apply", false))
-	_restore.disabled = _kind == "none"
 
 func _refresh() -> void:
 	_dirty = false
@@ -271,22 +263,17 @@ func _refresh() -> void:
 	if not _valid_model(model):
 		_unknown(str(model.get("message", "供能状态暂不可用")))
 		return
-	if _kind == "none" and _message_until == 0: _notice.text = ""
+	if _message_until == 0: _notice.text = ""
 	var ids: Array = []
 	for row in model.get("modules",[]):
 		if row.get("enabled",true): ids.append(str(row.id))
-	if ids != _ids:
-		_kind = "none"
-		_preview = {}
-		_canonical = {}
-		if _selected not in ids: _selected = ""
+	if ids != _ids and _selected not in ids: _selected = ""
 	_ids = ids
 	_model = model
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = id in _ids
 		if id not in _ids: _shares.erase(id)
 	_show_current_readings()
-	if _kind != "none": _preview_draft(false)
 	_update_buttons()
 	_update_stage()
 
@@ -295,18 +282,13 @@ func _show_current_readings() -> void:
 	for row in _model.modules:
 		var id: String = str(row.id)
 		if id not in _ids: continue
-		if _kind == "none":
-			_shares[id] = int(roundf(float(row.ratio)*10000.0))
-			_rows[id].slider.set_value_no_signal(_shares[id])
+		_shares[id] = int(roundf(float(row.ratio)*10000.0))
+		_rows[id].slider.set_value_no_signal(_shares[id])
+		_rows[id].ratio.text = str(int(roundf(float(row.ratio) * 100.0))) + "%"
 		_rows[id].slider.editable = _running and bool(_model.can_allocate)
 		_rows[id].effect.text = NAMES[id] + " 增益 ×" + PlayerText.number(str(row.factor))
 		_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
-		var manual_text: String = str(row.manual)
-		_rows[id].supply.text = "手动 " + PlayerText.number(manual_text)
-		if row.has_free: _rows[id].supply.text += " · 免费 " + PlayerText.number(str(row.free))
-		_rows[id].effective.text = "有效 " + PlayerText.number(str(row.effective))
-		_rows[id].supply.tooltip_text = "手动 " + manual_text + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
-		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
+		_rows[id].slider.tooltip_text = "分配 " + str(int(roundf(float(row.ratio) * 100.0))) + "% · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 	_level.text = "等级 " + str(_model.level)
 	_budget.text = "容量 " + PlayerText.number(str(_model.capacity)) + "   已配 " + PlayerText.number(str(_model.allocated)) + "   剩余 " + PlayerText.number(str(_model.remaining))
 	_budget.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
@@ -328,7 +310,6 @@ func _valid_model(model: Dictionary) -> bool:
 
 func _unknown(message: String) -> void:
 	_model = {}
-	_preview = {}
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
 	_budget.text = "供能状态未知"
@@ -377,68 +358,21 @@ func _slide(value: float,id: String) -> void:
 	if id not in _ids or not _running: return
 	_selected = id
 	_shares[id] = int(value)
-	_kind = "shares"
-	_preview_draft(true)
-	_update_stage()
-
-func _reset() -> void:
-	_kind = "none"
-	_preview = {}
-	_canonical = {}
-	_notice.text = ""
-	_dirty = true
-
-func _preview_draft(fresh_shares: bool = false) -> void:
-	if _kind == "shares" and not fresh_shares and _canonical.is_empty():
-		_update_buttons()
-		return
+	# The owner computes and accepts the entire allocation. No Amount is calculated here.
 	presentation_counts.preview_reads += 1
-	var draft := {"kind":_kind}
-	if _kind == "shares":
-		if fresh_shares:
-			draft.shares_bp = _shares.duplicate()
-		else:
-			draft = {"kind":"amounts", "amount_texts":_canonical.duplicate()}
-	_preview = _owner.allocation_plan_preview(draft,_inputs.call())
-	if not _preview.get("ok",false):
-		if fresh_shares: _canonical.clear()
-		_update_buttons()
-		_error(_preview)
+	var preview: Dictionary = _owner.allocation_plan_preview({"kind":"shares", "shares_bp":_shares.duplicate()},_inputs.call())
+	if not preview.get("ok",false) or not _valid_preview(preview) or not bool(preview.get("can_apply",false)):
+		if preview.get("ok",false) and bool(preview.get("can_apply",false)) == false and _valid_preview(preview):
+			_dirty = true
+			return
+		last_result = preview if not preview.get("ok",false) else {"ok":false,"reason":"InvalidReactorPlan"}
+		_error(last_result)
+		_dirty = true
+		command_finished.emit(last_result)
 		return
-	if not _valid_preview(_preview):
-		_preview = {"ok":false,"reason":"ReactorSnapshotUnavailable"}
-		if fresh_shares: _canonical.clear()
-		_update_buttons()
-		_error(_preview)
-		return
-	_update_buttons()
-	if fresh_shares:
-		_canonical.clear()
-		for row in _preview.target.modules: _canonical[str(row.id)] = str(row.manual)
-	_notice.text = "调配草稿"
-	_message_until = 0
-	_budget.text = "容量 " + PlayerText.number(str(_preview.target.capacity)) + "   草稿 " + PlayerText.number(str(_preview.target.allocated)) + "   剩余 " + PlayerText.number(str(_preview.target.remaining))
-	_budget.tooltip_text = "草稿容量 " + str(_preview.target.capacity) + " / 已分配 " + str(_preview.target.allocated) + " / 剩余 " + str(_preview.target.remaining)
-	for row in _preview.target.modules:
-		var id: String = str(row.id)
-		var current: Dictionary = {}
-		for old in _preview.current.get("modules",[]):
-			if str(old.id) == id: current = old; break
-		var a: String = str(current.get("factor","—"))
-		var b: String = str(row.factor)
-		_rows[id].effect.text = NAMES[id] + " ×" + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
-		_rows[id].effect.tooltip_text = "增益 " + a + " → " + b
-		a = str(current.get("manual","—")); b = str(row.get("manual","—"))
-		var supply_text: String = "手动 " + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
-		if row.has_free: supply_text += " · 免费 " + PlayerText.number(str(row.free))
-		a = str(current.get("effective","—")); b = str(row.effective)
-		_rows[id].supply.text = supply_text
-		_rows[id].effective.text = "有效 " + PlayerText.number(a) + ("→" + PlayerText.number(b) if a != b else "")
-		_rows[id].supply.tooltip_text = "手动 " + str(current.get("manual","—")) + " → " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + a + " → " + b
-		_rows[id].slider.tooltip_text = _rows[id].supply.tooltip_text
-		if _kind == "equal" or (_kind == "shares" and not fresh_shares):
-			_shares[id] = int(roundf(clampf(float(row.ratio),0.0,1.0)*10000.0))
-			_rows[id].slider.set_value_no_signal(_shares[id])
+	var amounts: Dictionary = {}
+	for row in preview.target.modules: amounts[str(row.id)] = str(row.manual)
+	_command(func(): return _owner.apply_allocation_plan(amounts,_inputs.call(),_publish))
 
 func _valid_preview(preview: Dictionary) -> bool:
 	for side in ["current", "target"]:
@@ -455,32 +389,24 @@ func _valid_preview(preview: Dictionary) -> bool:
 			if not row.ratio is float or not row.load is float or not is_finite(row.ratio) or not is_finite(row.load): return false
 	return true
 
-func _submit() -> Dictionary:
-	if _apply.disabled or not _preview.get("ok",false): return {"ok":false,"reason":"InvalidReactorPlan"}
-	if _kind == "equal": return _owner.distribute(_inputs.call(),_publish)
-	var amounts: Dictionary = {}
-	for row in _preview.target.modules: amounts[str(row.id)] = str(row.manual)
-	return _owner.apply_allocation_plan(amounts,_inputs.call(),_publish)
-
 func _command(action: Callable) -> void:
 	presentation_counts.commands += 1
 	last_result = action.call()
 	if last_result.get("ok",false):
-		_kind = "none"
-		_preview = {}
-		_canonical = {}
 		_notice.text = "供能已更新"
 		_message_until = Time.get_ticks_msec() + 1800
-		_show_current_readings()
-		_update_buttons()
-	else: _error(last_result)
+		_refresh()
+		_quote_dirty = true
+	else:
+		_error(last_result)
+		_dirty = true
 	command_finished.emit(last_result)
 
 func _error(result: Dictionary) -> void:
 	var reason: String = str(result.get("reason",result.get("error","")))
 	var message: String = str(result.get("message",ERRORS.get(reason,EconomyView.describe_error(reason))))
-	_notice.text = message if not message.is_empty() else "调配未生效，请检查草稿"
-	_message_until = 0
+	_notice.text = message if not message.is_empty() else "分配未生效，请重试"
+	_message_until = Time.get_ticks_msec() + 2200
 
 func _update_stage() -> void:
 	if _model.is_empty():

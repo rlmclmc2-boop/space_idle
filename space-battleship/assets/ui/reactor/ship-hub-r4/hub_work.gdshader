@@ -2,6 +2,7 @@ shader_type canvas_item;
 render_mode unshaded, blend_add;
 
 uniform int kind = 0; // 0 core, 1 port, 2 conduit
+uniform int module_kind = 0; // stable reactor module order
 uniform float power : hint_range(0.0, 1.0) = 0.0;
 uniform float phase = 0.0;
 uniform vec4 tint : source_color = vec4(0.2, 0.78, 0.9, 1.0);
@@ -27,13 +28,30 @@ void fragment() {
 		COLOR = vec4(color, edge * strength * (halo + filament + inner_flow + heart));
 	} else if (kind == 1) {
 		vec2 p = UV - vec2(0.5);
-		float envelope = (1.0 - smoothstep(0.30, 0.49, length(p))) * (1.0 - smoothstep(0.40, 0.50, abs(p.x)));
-		float pulse = 0.78 + 0.16 * sin(phase * 2.3 + p.y * 8.0);
-		COLOR = vec4(tint.rgb, envelope * sqrt(strength) * pulse * 0.80);
+		float envelope = (1.0 - smoothstep(0.37, 0.49, length(p))) * (1.0 - smoothstep(0.43, 0.50, abs(p.x)));
+		float detail = 0.0;
+		if (module_kind == 0) {
+			float recoil = fract(UV.x * 4.0 - phase * 1.1);
+			detail = (1.0 - smoothstep(0.07, 0.20, recoil)) * (1.0 - smoothstep(0.23, 0.40, abs(p.y)));
+		} else if (module_kind == 1) {
+			vec2 grid = abs(fract(UV * vec2(5.0, 4.0)) - 0.5);
+			float cells = 1.0 - smoothstep(0.28, 0.46, max(grid.x, grid.y));
+			detail = cells * (0.45 + 0.55 * sin(phase * 2.4 + UV.x * 9.0));
+		} else if (module_kind == 2) {
+			float bars = 1.0 - smoothstep(0.17, 0.34, abs(fract(UV.x * 6.0) - 0.5));
+			detail = bars * (0.5 + 0.5 * sin(phase * 2.6 - UV.y * 13.0));
+		} else {
+			float ring = abs(fract(length(p) * 5.0 + phase * 0.7) - 0.5);
+			detail = 1.0 - smoothstep(0.08, 0.25, ring);
+		}
+		float pulse = 0.53 + 0.14 * sin(phase * 1.8 + p.y * 8.0);
+		COLOR = vec4(tint.rgb, envelope * sqrt(strength) * (pulse + detail * 0.46));
 	} else {
-		float width = 1.0 - smoothstep(0.18, 0.50, abs(UV.y - 0.5));
-		float ends = smoothstep(0.0, 0.12, UV.x) * (1.0 - smoothstep(0.88, 1.0, UV.x));
-		float stream = 0.72 + 0.22 * sin(UV.x * 24.0 - phase * 3.0);
-		COLOR = vec4(tint.rgb, width * ends * sqrt(strength) * stream * 0.82);
+		float width = 1.0 - smoothstep(0.22, 0.49, abs(UV.y - 0.5));
+		float ends = smoothstep(0.0, 0.08, UV.x) * (1.0 - smoothstep(0.92, 1.0, UV.x));
+		float head = fract(UV.x * 3.0 - phase * 0.92);
+		float packet = 1.0 - smoothstep(0.04, 0.22, head);
+		float underglow = 0.34 + 0.14 * sin(UV.x * 14.0 - phase * 2.2);
+		COLOR = vec4(tint.rgb, width * ends * sqrt(strength) * (underglow + packet * 1.18));
 	}
 }

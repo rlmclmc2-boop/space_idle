@@ -18,9 +18,10 @@ void fragment() {
 	moved += 0.017 * vec2(sin(phase * 1.1 + p.y * 9.0), cos(phase * 0.8 + p.x * 7.0)) * (1.0 - r);
 	vec2 sample_uv = (center + moved * 132.0) / canvas;
 	vec3 art = texture(TEXTURE, sample_uv).rgb;
-	float river = pow(max(0.0, sin(angle * 5.0 - phase * 1.65 + r * 13.0)), 8.0) * 0.21;
-	float counter = pow(max(0.0, sin(angle * 7.0 + phase * 1.12 - r * 10.0)), 9.0) * 0.17;
-	float heart = exp(-r * r * 20.0) * (0.09 + 0.04 * sin(phase * 2.0));
-	vec3 energy = art + vec3(0.18, 0.77, 0.98) * (river + counter) + vec3(0.50, 0.45, 0.18) * heart;
+	float river = pow(max(0.0, sin(angle * 5.0 - phase * 1.65 + r * 13.0)), 7.0) * 0.28;
+	float counter = pow(max(0.0, sin(angle * 7.0 + phase * 1.12 - r * 10.0)), 8.0) * 0.23;
+	float heart = exp(-r * r * 20.0) * (0.13 + 0.05 * sin(phase * 2.0));
+	float orbit = exp(-pow(r - 0.51 - 0.027 * sin(angle * 4.0 - phase), 2.0) * 190.0) * (0.07 + 0.08 * sin(angle * 3.0 + phase * 1.4));
+	vec3 energy = art + vec3(0.18, 0.77, 0.98) * (river + counter + orbit) + vec3(0.50, 0.45, 0.18) * heart;
 	COLOR = vec4(energy, border * pow(clamp(power, 0.0, 1.0), 0.55));
 }
