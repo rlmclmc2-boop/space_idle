@@ -48,9 +48,8 @@ var _slot_selections: Dictionary = {}
 var _choice_presentations: Dictionary = {}
 var _choice_options: Array = []
 var _choice_option_slot: String = ""
-var _material_texture: Texture2D
+var _control_textures: Dictionary = {}
 var _console_texture: Texture2D
-var _console_paint: Color
 var _pending_level_ids: Dictionary = {}
 var _batch_state_dirty: bool = false
 var _scene_picture: Array = []
@@ -186,25 +185,48 @@ func _setup_materials() -> void:
     theme.set_color("font_color", "PopupMenu", CREAM)
     theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
     _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
-    _material_texture=load("res://assets/ui/equipment/materials-20261029/satin-metal-tile.png")
+    var controls:Image=load("res://assets/ui/equipment/materials-20261029/control-materials.png").get_image()
+    # Sample only the real material forms. The generated outer instrument frame is
+    # deliberately excluded; the existing housing remains the only structural rim.
+    var regions:Dictionary={"glass":Rect2i(94,180,1260,172),"primary":Rect2i(42,472,1366,224),"navy":Rect2i(42,772,1366,204),"header":Rect2i(120,800,1200,130)}
+    for id in regions:
+        var face:Image=controls.get_region(regions[id])
+        var native_height:int=64 if id=="glass" else 36
+        face.resize(roundi(face.get_width()*float(native_height)/face.get_height()),native_height,Image.INTERPOLATE_LANCZOS)
+        _control_textures[id]=ImageTexture.create_from_image(face)
     var shell:Texture2D=load("res://assets/ui/equipment/materials-20261029/painted-console-shell.png")
     var paint:Image=shell.get_image().get_region(Rect2i(8,56,2102,620))
     # One uniform scale for the painted frame at native UI pixel scale; rounded height is189px.
     paint.resize(640,189,Image.INTERPOLATE_LANCZOS)
-    _console_paint=paint.get_pixel(320,94);_console_paint.a=1.0
     _console_texture=ImageTexture.create_from_image(paint)
-class EquipmentSurface extends StyleBox:
-    var skin:StyleBoxFlat
+class PolishedGlass extends StyleBox:
     var texture:Texture2D
-    var tint:Color
+    var modulation:Color=Color.WHITE
+    var radius:float=7.0
+    var contact:StyleBoxFlat
+    func _draw(canvas:RID,r:Rect2)->void:
+        contact.draw(canvas,r)
+        var points:=PackedVector2Array()
+        var uv:=PackedVector2Array()
+        var corners:Array=[Vector2(radius,radius),Vector2(r.size.x-radius,radius),Vector2(r.size.x-radius,r.size.y-radius),Vector2(radius,r.size.y-radius)]
+        for corner in 4:
+            for step in 5:
+                var angle:float=PI+corner*PI*0.5+step*PI*0.125
+                var point:Vector2=corners[corner]+Vector2(cos(angle),sin(angle))*radius
+                points.append(r.position+point);uv.append(point/r.size)
+        RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([modulation]),uv,texture.get_rid())
+
+class EquipmentSurface extends StyleBox:
+    var painted:StyleBox
+    var header_texture:Texture2D
     var profile:String
     var depressed:bool=false
     func _draw(canvas:RID, r:Rect2)->void:
         if profile=="focus_tray":
             RenderingServer.canvas_item_add_line(canvas,r.position+Vector2(12,r.size.y-3),r.end-Vector2(12,3),Color("436f70"),2.0)
         elif profile=="tray":
-            skin.draw(canvas,Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36)))
-        elif profile=="instrument":skin.draw(canvas,r.grow(-3))
+            painted.draw(canvas,Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36)))
+        elif profile=="instrument":painted.draw(canvas,r.grow(-3))
         elif profile=="header":
             # The same header fill follows the housing's fixed 32px top corners.
             # Draw inside the enamel boundary instead of painting over the rim.
@@ -212,13 +234,13 @@ class EquipmentSurface extends StyleBox:
                 r.position+Vector2(32,14),r.position+Vector2(r.size.x-32,14),
                 r.position+Vector2(r.size.x-12,32),r.position+Vector2(r.size.x-12,40),
                 r.position+Vector2(12,40),r.position+Vector2(12,32)])
-            RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([skin.bg_color]))
+            var uv:=PackedVector2Array()
+            for point in points:uv.append(Vector2((point.x-r.position.x)/r.size.x,(point.y-r.position.y-14.0)/26.0))
+            RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([Color.WHITE]),uv,header_texture.get_rid())
         elif profile=="button":
             var face:Rect2=r.grow(-3)
             if depressed:face.position.y+=1;face.size.y-=1
-            skin.draw(canvas,face)
-            var grain:Rect2=face.grow(-3)
-            RenderingServer.canvas_item_add_texture_rect(canvas,grain,texture.get_rid(),true,Color(tint.r,tint.g,tint.b,0.05))
+            painted.draw(canvas,face)
         # Quiet close remains native text, with no unused opaque backing.
 
 func _console_material(dark:bool)->StyleBox:
@@ -235,22 +257,22 @@ func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String
     if profile=="deck":return _console_material(kind=="navy_face")
     if profile=="flat":return StyleBoxEmpty.new()
     var material:=EquipmentSurface.new()
-    material.texture=_material_texture;material.profile=profile;material.depressed=depressed
-    var palette:Dictionary={"navy_face":Color(0.24,0.35,0.42),"navy":Color(0.31,0.43,0.49),"teal":Color(0.37,0.58,0.54),"glass":Color(1.0,1.09,1.09),"primary":Color(1.12,0.91,0.62),"quiet":Color(0.24,0.35,0.42),"disabled":Color(0.5,0.59,0.61)}
-    material.tint=palette[kind]*modulation
-    var fill:Color=material.tint*Color(0.69,0.69,0.69,1.0)
-    var skin:=StyleBoxFlat.new();skin.bg_color=fill;skin.set_corner_radius_all(4)
-    if profile=="tray":
-        skin.bg_color=(Color("b4c9c0") if kind=="teal" else _console_paint.lightened(0.03))*modulation
-        skin.set_corner_radius_all(5);skin.shadow_color=Color(0.08,0.16,0.18,0.16);skin.shadow_size=1;skin.shadow_offset=Vector2(0,1)
-    elif profile=="instrument":
-        skin.bg_color=_console_paint.darkened(0.055);skin.set_corner_radius_all(7)
-        skin.shadow_color=Color(0.07,0.14,0.16,0.18);skin.shadow_size=2;skin.shadow_offset=Vector2(0,1)
-    elif profile=="header":skin.bg_color=Color("354c58");skin.set_corner_radius_all(2)
+    material.profile=profile;material.depressed=depressed
+    if profile=="header":material.header_texture=_control_textures.header
+    if profile in ["instrument","tray"]:
+        var glass:=PolishedGlass.new();glass.texture=_control_textures.glass
+        glass.modulation=modulation*(Color(0.85,1.0,0.93) if kind=="teal" else Color.WHITE)
+        glass.radius=7.0 if profile=="instrument" else 4.0
+        var contact:=StyleBoxFlat.new();contact.bg_color=Color(0,0,0,0)
+        contact.set_corner_radius_all(int(glass.radius))
+        contact.shadow_color=Color(0.04,0.10,0.12,0.18);contact.shadow_size=2;contact.shadow_offset=Vector2(0,1)
+        glass.contact=contact;material.painted=glass
     elif profile=="button":
-        skin.border_color=fill.darkened(0.19);skin.border_width_bottom=1
-        skin.shadow_color=Color(0.05,0.12,0.14,0.22);skin.shadow_size=1;skin.shadow_offset=Vector2(0,1 if depressed else 2)
-    material.skin=skin
+        var role:String="primary" if kind=="primary" else "navy"
+        var paint:=StyleBoxTexture.new();paint.texture=_control_textures[role]
+        for side in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:paint.set_texture_margin(side,6)
+        paint.modulate_color=modulation*(Color(0.66,0.73,0.76) if kind=="disabled" else Color.WHITE)
+        material.painted=paint
     material.content_margin_left=8;material.content_margin_right=8
     material.content_margin_top=(6 if depressed else 4) if profile=="button" else 5
     material.content_margin_bottom=(4 if depressed else 6) if profile=="button" else 5

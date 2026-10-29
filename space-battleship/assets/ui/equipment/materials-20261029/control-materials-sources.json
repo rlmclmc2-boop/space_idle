@@ -1,0 +1,48 @@
+{
+  "tool": "image_gen.imagegen",
+  "original_path": "/workspace/generated_images/exec-b5bf049a-61ff-4974-9a8c-98b23b56a8d2.png",
+  "original_retained": true,
+  "image_sha256": "707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c",
+  "prompt_sha256": "80dfe0a43a921fc53ef3ed755df14b593c150ed74cfabfe4850df44a62a9b6fd",
+  "dimensions": [
+    1448,
+    1086
+  ],
+  "references": {
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/five-resource-material-family/01-material-fees.png": "3609c3e9da98c6e0ee91dd579e3d0f60670956385e27dbe6ec563087963e5514",
+    "space-battleship/assets/ui/equipment/materials-20261029/painted-console-shell.png": "f5aa0c10ee10581319eb257043e526321b5f0fd6b51dbece53d9e62b9c786ce1"
+  },
+  "runtime_regions": {
+    "glass": [
+      94,
+      180,
+      1260,
+      172
+    ],
+    "primary": [
+      42,
+      472,
+      1366,
+      224
+    ],
+    "navy": [
+      42,
+      772,
+      1366,
+      204
+    ],
+    "header": [
+      120,
+      800,
+      1200,
+      130
+    ]
+  },
+  "native_heights": {
+    "glass": 64,
+    "primary": 36,
+    "navy": 36,
+    "header": 36
+  },
+  "purpose": "Replace original instrument/tray/button/header draw; exclude the generated structural frame and dark corner wedges, use real inner glass with native soft silhouette"
+}
