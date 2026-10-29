@@ -45,11 +45,11 @@ func _init(economy) -> void:
 	popup_style.content_margin_top = 13
 	popup_style.content_margin_bottom = 13
 	theme.set_stylebox("panel", "PopupPanel", popup_style)
-	_context = _label("装备", Rect2(18, 12, 118, 41), 18, TEXT)
+	_context = _label("装备", Rect2(18, 12, 118, 41), 20, TEXT)
 	_context.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_context.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	for spec in [[164, 138], [312, 138], [460, 174]]:
-		var cell := _label("", Rect2(spec[0] + 10, 12, spec[1] - 20, 41), 14, TEXT)
+		var cell := _label("", Rect2(spec[0] + 10, 12, spec[1] - 20, 41), 16, TEXT)
 		cell.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		cell.clip_text = true
 		cell.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -62,7 +62,6 @@ func _init(economy) -> void:
 	for index in ROUTES.size():
 		var spec: Array = ROUTES[index]
 		var button := _button(str(spec[1]), Rect2(813, 105 + index * 105, 37, 54), true)
-		button.tooltip_text = str(spec[2])
 		button.pressed.connect(func(): route_requested.emit(str(spec[0])))
 		_route_buttons[str(spec[0])] = button
 	_details = PopupPanel.new()
@@ -97,9 +96,8 @@ func _draw() -> void:
 	draw_rect(Rect2(0, 64, 808, 1), Color("89aaa4", 0.75))
 	draw_rect(Rect2(18, 12, 118, 41), Color("294e5b"))
 	draw_rect(Rect2(18, 12, 118, 41), EDGE, false, 1.0)
-	for rect in [Rect2(164, 12, 138, 41), Rect2(312, 12, 138, 41), Rect2(460, 12, 174, 41)]:
-		draw_rect(rect, DARK)
-		draw_rect(rect, Color("426a76"), false, 1.0)
+	for x in [154, 303, 451, 640]:
+		draw_rect(Rect2(x, 17, 1, 30), Color("6e9697", 0.65))
 
 func _label(caption: String, rect: Rect2, font_size: int, ink: Color) -> Label:
 	var label := Label.new()
@@ -119,8 +117,8 @@ func _button(caption: String, rect: Rect2, selectable: bool) -> Button:
 	button.size = rect.size
 	button.custom_minimum_size = rect.size
 	button.toggle_mode = selectable
-	button.add_theme_font_size_override("font_size", 12 if selectable else 14)
-	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+	button.add_theme_font_size_override("font_size", 14 if selectable else 15)
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
 		var style := StyleBoxFlat.new()
 		style.bg_color = Color("254a5b") if state == "hover" else Color("0f3040") if state == "pressed" else Color("183848")
 		style.border_color = Color("b9d8cb") if state == "focus" else EDGE
@@ -133,6 +131,7 @@ func _button(caption: String, rect: Rect2, selectable: bool) -> Button:
 	button.add_theme_color_override("font_color", TEXT)
 	button.add_theme_color_override("font_hover_color", Color("ffffff"))
 	button.add_theme_color_override("font_pressed_color", Color("132f3d"))
+	button.add_theme_color_override("font_hover_pressed_color", Color("132f3d"))
 	button.add_theme_color_override("font_disabled_color", Color("869b9b"))
 	add_child(button)
 	return button
@@ -155,16 +154,18 @@ func set_active_route(id: String) -> void:
 	_active_route = id
 	for key in _route_buttons:
 		var button: Button = _route_buttons[key]
-		button.set_pressed_no_signal(key == id)
-		button.add_theme_color_override("font_color", Color("173e4c") if key == id else TEXT)
-		for state in ["normal", "pressed"]:
+		var selected: bool = key == id
+		button.set_pressed_no_signal(selected)
+		for color_state in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color"]:
+			button.add_theme_color_override(color_state, Color("173e4c") if selected else TEXT)
+		for state in ["normal", "hover", "pressed", "hover_pressed"]:
 			var style := button.get_theme_stylebox(state).duplicate() as StyleBoxFlat
-			style.bg_color = Color("e9e1cb") if key == id else Color("0f3040") if state == "pressed" else Color("183848")
-			style.border_color = Color("e1c68d") if key == id else EDGE
+			style.bg_color = Color("e9e1cb") if selected else Color("254a5b") if state in ["hover", "hover_pressed"] else Color("0f3040") if state == "pressed" else Color("183848")
+			style.border_color = Color("e1c68d") if selected else EDGE
 			button.add_theme_stylebox_override(state, style)
 	for spec in ROUTES:
 		if str(spec[0]) == id:
-			_context.text = str(spec[2]) if id != "ship" else "舰船"
+			_context.text = str(spec[2])
 			break
 
 func set_status(message: String, warning: bool = false) -> void:

@@ -6,13 +6,14 @@ static func create() -> Theme:
 	theme.set_color("font_color", "Button", Color("f0f2e9"))
 	theme.set_color("font_hover_color", "Button", Color("ffffff"))
 	theme.set_color("font_pressed_color", "Button", Color("173e4c"))
+	theme.set_color("font_hover_pressed_color", "Button", Color("173e4c"))
 	theme.set_color("font_disabled_color", "Button", Color("9cb4b4"))
 	theme.set_color("font_color", "Label", Color("dfebe6"))
 	theme.set_color("font_color", "LineEdit", Color("f0f2e9"))
 	for type in ["Button", "OptionButton", "LineEdit", "SpinBox"]:
-		for key in ["normal", "hover", "pressed", "focus", "disabled"]:
+		for key in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
 			var style := StyleBoxFlat.new()
-			style.bg_color = Color("244f60") if key == "hover" else Color("e4ddca") if key == "pressed" else Color("213842") if key == "disabled" else Color("143746")
+			style.bg_color = Color("e4ddca") if key in ["pressed", "hover_pressed"] else Color("244f60") if key == "hover" else Color("213842") if key == "disabled" else Color("143746")
 			style.border_color = Color("c5dfd7") if key == "focus" else Color("c5a975") if key == "pressed" else Color("597e85")
 			style.set_border_width_all(2 if key == "focus" else 1)
 			style.set_corner_radius_all(5)

@@ -569,6 +569,36 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
 		)
 	return button
 
+func _settings_group(parent: Control, title: String, caption: String) -> VBoxContainer:
+	var card := PanelContainer.new()
+	parent.add_child(card)
+	var contents := VBoxContainer.new()
+	contents.add_theme_constant_override("separation", 9)
+	card.add_child(contents)
+	var heading := Label.new()
+	heading.text = title
+	heading.add_theme_font_size_override("font_size", 19)
+	heading.add_theme_color_override("font_color", Color("f0e6cf"))
+	contents.add_child(heading)
+	var description := Label.new()
+	description.text = caption
+	description.add_theme_font_size_override("font_size", 13)
+	description.add_theme_color_override("font_color", Color("a9c3c6"))
+	contents.add_child(description)
+	return contents
+
+func _settings_row(parent: Control) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	parent.add_child(row)
+	return row
+
+func _settings_action(parent: Control, text: String, action: Callable, width: float = 178.0) -> Button:
+	var button := _command_button(parent, text, action)
+	button.custom_minimum_size = Vector2(width, 39)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	return button
+
 # One UI ownership gate for main Space and the battle viewport's G shortcut.
 func _ui_occupied() -> bool:
 	if _modal_ui_occupied(): return true
@@ -702,28 +732,34 @@ func _setup_growth_panel() -> void:
 	box.add_child(load("res://src/ui/archive_panel.gd").new(session))
 	box.add_child(NotificationsPanel.new(session.notifications, _player_text))
 	box = _pages.settings.box
+	var storage := _settings_group(box, "存档与速度", "本机进度与当前运行节奏")
+	var storage_path_row := _settings_row(storage)
 	var save_path := LineEdit.new()
 	save_path.placeholder_text = "存档目录（完整路径）"
 	save_path.text = session.save_files._directory if session.save_files != null else _startup_directory
-	box.add_child(save_path)
+	save_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	storage_path_row.add_child(save_path)
 	var save_picker := FileDialog.new()
 	save_picker.access = FileDialog.ACCESS_FILESYSTEM
 	save_picker.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	save_picker.dir_selected.connect(func(path: String): save_path.text = path)
 	box.add_child(save_picker)
-	_command_button(box, "选择存档目录", func() -> Dictionary:
+	_settings_action(storage_path_row, "选择目录", func() -> Dictionary:
 		save_picker.popup_centered_ratio()
 		return {"ok": true, "message": "请选择已有的存档目录"})
+	var storage_action_row := _settings_row(storage)
 	var speed_options := OptionButton.new()
 	for option in session.chrono_speed_options():
 		speed_options.add_item("%s倍速 · 每秒消耗%s时空微粒" % [option.speed, option.cost], int(option.speed))
 		if int(option.speed) == session.current_chrono_speed(): speed_options.select(speed_options.item_count - 1)
 	speed_options.item_selected.connect(func(index: int):
 		session.set_chrono_speed(speed_options.get_item_id(index)))
-	box.add_child(speed_options)
-	_command_button(box, "保存", func() -> Dictionary:
+	speed_options.custom_minimum_size.x = 360
+	storage_action_row.add_child(speed_options)
+	_settings_action(storage_action_row, "保存进度", func() -> Dictionary:
 		var configured: Dictionary = _configure_save(save_path.text)
 		return session.request_save() if configured.ok else configured)
+	var preferences := _settings_group(box, "偏好设置", "自动保存、声音与战斗提示")
 	var autosave := SpinBox.new()
 	autosave.min_value = 0.0
 	autosave.max_value = 86400.0
@@ -731,12 +767,14 @@ func _setup_growth_panel() -> void:
 	var autosave_caption := Label.new()
 	autosave_caption.text = "自动保存间隔（现实时间，0为关闭）"
 	PlayerText.wrap(autosave_caption)
-	box.add_child(autosave_caption)
+	preferences.add_child(autosave_caption)
 	autosave.suffix = " 秒"
 	autosave.set_meta("autosave_interval", true)
 	autosave.value = _autosave_interval
 	_autosave_spin = autosave
-	box.add_child(autosave)
+	var autosave_row := _settings_row(preferences)
+	autosave.custom_minimum_size.x = 220
+	autosave_row.add_child(autosave)
 	autosave.value_changed.connect(func(value: float):
 		var saved: Dictionary = PlayerSettings.save_interval(int(value))
 		if saved.ok:
@@ -749,7 +787,9 @@ func _setup_growth_panel() -> void:
 	skip_tutorial.text = "自动跳过引导提示"
 	skip_tutorial.button_pressed = _skip_tutorial
 	_skip_toggle = skip_tutorial
-	box.add_child(skip_tutorial)
+	var tutorial_row := _settings_row(preferences)
+	skip_tutorial.custom_minimum_size.x = 220
+	tutorial_row.add_child(skip_tutorial)
 	skip_tutorial.toggled.connect(func(enabled: bool):
 		var saved: Dictionary = PlayerSettings.save_auto_skip_tutorial(enabled)
 		if saved.ok:
@@ -762,7 +802,9 @@ func _setup_growth_panel() -> void:
 	music.text = "音乐"
 	music.button_pressed = _music_enabled
 	_music_toggle = music
-	box.add_child(music)
+	var audio_row := _settings_row(preferences)
+	music.custom_minimum_size.x = 120
+	audio_row.add_child(music)
 	music.toggled.connect(func(enabled: bool):
 		var saved: Dictionary = PlayerSettings.save_change("music_enabled", enabled)
 		if saved.ok:
@@ -775,7 +817,8 @@ func _setup_growth_panel() -> void:
 	effects.text = "音效"
 	effects.button_pressed = _effects_enabled
 	_effects_toggle = effects
-	box.add_child(effects)
+	effects.custom_minimum_size.x = 120
+	audio_row.add_child(effects)
 	effects.toggled.connect(func(enabled: bool):
 		var saved: Dictionary = PlayerSettings.save_change("effects_enabled", enabled)
 		if saved.ok: _effects_enabled = enabled
@@ -786,7 +829,9 @@ func _setup_growth_panel() -> void:
 	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
 	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 	_damage_option = damage_mode
-	box.add_child(damage_mode)
+	var damage_row := _settings_row(preferences)
+	damage_mode.custom_minimum_size.x = 290
+	damage_row.add_child(damage_mode)
 	damage_mode.item_selected.connect(func(index: int):
 		var chosen: String = PlayerSettings.DAMAGE_MODES[index]
 		var saved: Dictionary = PlayerSettings.save_change("damage_mode", chosen)
@@ -797,32 +842,41 @@ func _setup_growth_panel() -> void:
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 			growth_status.text = PlayerText.error(str(saved.reason)))
+	var progress := _settings_group(box, "进度管理", "先预览变更，再执行新游戏或载入")
 	var clear_settings := CheckBox.new()
 	clear_settings.text = "新游戏同时重置个人设置"
-	box.add_child(clear_settings)
-	_command_button(box, "预览新游戏", func() -> Dictionary:
+	clear_settings.custom_minimum_size.x = 260
+	clear_settings.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	progress.add_child(clear_settings)
+	var new_game_row := _settings_row(progress)
+	_settings_action(new_game_row, "预览新游戏", func() -> Dictionary:
 		return _preview_new_game(save_path.text, clear_settings.button_pressed))
-	_command_button(box, "确认新游戏", func() -> Dictionary:
+	_settings_action(new_game_row, "确认新游戏", func() -> Dictionary:
 		return _confirm_new_game(save_path.text, clear_settings.button_pressed))
-	_command_button(box, "加载主存档", func() -> Dictionary:
+	var load_row := _settings_row(progress)
+	_settings_action(load_row, "加载主存档", func() -> Dictionary:
 		return _load_saved(save_path.text))
-	_command_button(box, "加载备份", func() -> Dictionary:
+	_settings_action(load_row, "加载备份", func() -> Dictionary:
 		return _load_saved(save_path.text, true))
+	var imports := _settings_group(box, "导入存档", "从本机文件预览并确认导入")
+	var import_path_row := _settings_row(imports)
 	var import_path := LineEdit.new()
 	import_path.placeholder_text = "要导入的存档文件"
-	box.add_child(import_path)
+	import_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	import_path_row.add_child(import_path)
 	var import_picker := FileDialog.new()
 	import_picker.access = FileDialog.ACCESS_FILESYSTEM
 	import_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	import_picker.add_filter("*.json", "游戏存档")
 	import_picker.file_selected.connect(func(path: String): import_path.text = path)
 	box.add_child(import_picker)
-	_command_button(box, "选择导入文件", func() -> Dictionary:
+	_settings_action(import_path_row, "选择文件", func() -> Dictionary:
 		import_picker.popup_centered_ratio()
 		return {"ok": true, "message": "请选择游戏存档文件"})
-	_command_button(box, "预览导入", func() -> Dictionary:
+	var import_action_row := _settings_row(imports)
+	_settings_action(import_action_row, "预览导入", func() -> Dictionary:
 		return _preview_import(save_path.text, import_path.text))
-	_command_button(box, "确认导入", func() -> Dictionary:
+	_settings_action(import_action_row, "确认导入", func() -> Dictionary:
 		return _apply_import(save_path.text, import_path.text))
 	box = _pages.universe.box
 	var planet_id := LineEdit.new()

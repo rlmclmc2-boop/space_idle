@@ -20,7 +20,7 @@
 			"detail": [
 				"铁：0",
 				"铀：0",
-				"时空微粒：787"
+				"时空微粒：1,942"
 			],
 			"id": "resource_readouts",
 			"ok": true
@@ -28,6 +28,11 @@
 		{
 			"detail": null,
 			"id": "ship_nav_click",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "selected_hover_ink",
 			"ok": true
 		},
 		{
