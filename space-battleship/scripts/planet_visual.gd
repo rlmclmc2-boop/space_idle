@@ -31,7 +31,6 @@ var preparing:=false
 var pending_row:Dictionary={}
 var prepare_after_frame:=0
 var loading:=Label.new()
-var facility_renderer: Node
 var architecture: Control
 var icon_mode := false
 var planet_id := ""
@@ -208,9 +207,6 @@ func configure(id: String, row: Dictionary) -> void:
 		add_child(architecture)
 		architecture.configure_shape(appearance)
 		_layout_globe()
-	if is_instance_valid(facility_renderer):
-		facility_renderer.configure(next)
-		facility_renderer.update_pose(phase)
 	if facilities != next:
 		if architecture != null:
 			architecture.configure(next)
@@ -285,7 +281,6 @@ func advance(dt: float, paused: bool) -> void:
 	frame_accumulator = 0.0
 	phase += step
 	if architecture != null: architecture.update_pose(phase, globe.phases.x, _body_radius(), globe.visual_clock)
-	if is_instance_valid(facility_renderer):facility_renderer.update_pose(phase)
 	if active:exploration_age += step
 	if completion_age < 3.2:
 		var previous_age := completion_age
@@ -391,7 +386,7 @@ func _draw_facilities(center: Vector2, radius: float, front: bool, canvas: Canva
 		var point := _facility_point(center, radius, kind, angle)
 		var near_weight := (depth + 1.0) * 0.5
 		var span := clampf(_body_radius() * 0.37, 48.0, 76.0) * lerpf(0.78, 1.06, near_weight)
-		var artwork: Texture2D = facility_renderer.texture(kind) if is_instance_valid(facility_renderer) else Art.facility(kind)
+		var artwork: Texture2D = Art.facility(kind)
 		if artwork == null:continue
 		var tint := Color(0.65, 0.72, 0.82).lerp(Color.WHITE, near_weight)
 		Art.draw_fitted(canvas, artwork, Rect2(point - Vector2.ONE * span * 0.5, Vector2.ONE * span), tint)

@@ -49,7 +49,9 @@ var _drawer_box := VBoxContainer.new()
 var _drawer_title := Label.new()
 var _drawer_body := VBoxContainer.new()
 var _detail_text: Label
+var _work_text: Label
 var _work_bar: ProgressBar
+var _unlock_text: Label
 var _claim_button: Button
 var _reforge_button: Button
 var _member_picker: OptionButton
@@ -369,10 +371,18 @@ func _read_selected() -> void:
 	_crew_button.text = "人员 %d" % personnel
 	var local_people := {"explorers": _crew_views.explorers.get(_selected_id, []), "builders": {}}
 	for fact in _facts: local_people.builders[fact.id] = _crew_views.builders.get(_selected_id + ":" + str(fact.id), [])
-	var signature := {"id": _selected_id, "facts": _facts, "crew": local_people}
+	# Work ticks change one caption and one bar. They do not change the drawer's
+	# controls, so keep their live values out of the structural signature.
+	var signature_facts: Array = _facts.duplicate(true)
+	for item in signature_facts:
+		if item is Dictionary and item.get("state") == "building":
+			item.erase("work")
+			item.erase("work_fraction")
+	var signature := {"id": _selected_id, "facts": signature_facts, "crew": local_people}
 	if signature != _detail_signature or (_crew_options_dirty and _open_section == "crew"):
 		_detail_signature = signature.duplicate(true)
 		_rebuild_drawer()
+	_update_facility_detail_values()
 	_crew_options_dirty = false
 	_update_task()
 
@@ -399,6 +409,9 @@ func _toggle_section(section: String) -> void:
 	_layout()
 
 func _clear_body() -> void:
+	_work_text = null
+	_work_bar = null
+	_unlock_text = null
 	for child in _drawer_body.get_children():
 		_drawer_body.remove_child(child)
 		child.queue_free()
@@ -466,7 +479,7 @@ func _build_facility_detail() -> void:
 	for fact in _facts:
 		if str(fact.id) != _selected_facility: continue
 		if fact.state == "building":
-			_caption(_drawer_body, "施工 %d / %d 次探索" % [fact.work, fact.required_work])
+			_work_text = _caption(_drawer_body, "施工 %d / %d 次探索" % [fact.work, fact.required_work])
 			_work_bar = ProgressBar.new()
 			_work_bar.custom_minimum_size.y = 10
 			_work_bar.show_percentage = false
@@ -474,7 +487,7 @@ func _build_facility_detail() -> void:
 			_drawer_body.add_child(_work_bar)
 			_caption(_drawer_body, "额外施工人员 %d / %d" % [fact.builders_present, fact.extra_crew_required])
 			if not str(fact.pause_reason).is_empty(): _caption(_drawer_body, PAUSES[fact.pause_reason])
-		elif fact.state == "locked": _caption(_drawer_body, "探索度 %d 开放 · 当前 %d" % [fact.unlock_exploration, _snapshot.exploration])
+		elif fact.state == "locked": _unlock_text = _caption(_drawer_body, "探索度 %d 开放 · 当前 %d" % [fact.unlock_exploration, _snapshot.exploration])
 		var effect: String = {"refinery": "铁、铀原生掉落加成", "equipment": "普通装备属性加成", "auto_explore": "允许开启自动探索", "shipyard": "允许首次征服 / 重铸"}.get(fact.type, "")
 		_caption(_drawer_body, ("领取后生效：\n" if fact.state != "built" else "已生效：\n") + effect)
 		if fact.source_factor != null: _caption(_drawer_body, "本设施当前因子 ×" + preload("res://src/ui/player_text.gd").number(str(fact.source_factor)))
@@ -487,6 +500,17 @@ func _build_facility_detail() -> void:
 			_claim_button = _action(_drawer_body, "领取", func(): return _planet.claim_build(_selected_id, _selected_facility, _publish))
 			_claim_button.disabled = not fact.claim_allowed
 			if not fact.claim_allowed: _caption(_drawer_body, describe_error(str(fact.claim_reason)))
+		break
+
+func _update_facility_detail_values() -> void:
+	if _open_section != "facilities": return
+	for fact in _facts:
+		if str(fact.id) != _selected_facility: continue
+		if fact.state == "building" and is_instance_valid(_work_bar) and is_instance_valid(_work_text):
+			_work_text.text = "施工 %d / %d 次探索" % [fact.work, fact.required_work]
+			_work_bar.value = float(fact.work_fraction) * 100.0
+		elif fact.state == "locked" and is_instance_valid(_unlock_text):
+			_unlock_text.text = "探索度 %d 开放 · 当前 %d" % [fact.unlock_exploration, _snapshot.exploration]
 		break
 
 func _build_crew_detail() -> void:
