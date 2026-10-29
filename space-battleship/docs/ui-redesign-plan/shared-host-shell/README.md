@@ -1,6 +1,6 @@
 # 共享宿主当前交付
 
-用户已选 C 风格，当前比较入口：[左置导航与居中导航的成熟连接性概念](concepts-c-placement/README.md)。[三种成熟概念 V2](concepts-v2/README.md)与[V1 结构草稿及源码诊断](concepts-v1/README.md)保留追溯。当前仍只讨论公共界面、信息条、通用控件和战场两侧衔接；位置/安装未定，运行公共布局不改，模块与战斗内部仍归原组。
+用户已选 C 风格；当前入口为[三模块通用边界与公共壳 R1](concepts-c-placement/universal-shell-r1/README.md)。[旧左/居中图](concepts-c-placement/README.md)已退回，仅作历史探索；[三种成熟概念 V2](concepts-v2/README.md)与[V1 结构草稿及源码诊断](concepts-v1/README.md)保留追溯。当前先核公共界面、可替换模块与真实战斗投影的职责，再讨论导航位置；安装未定，运行公共布局不改。
 
 模块接入另行推进：[反应堆直接读控 R1 共享组合](runtime-h1/reactor-direct-r1-integration/README.md)。该接入保留当前公共宿主，不实施概念 V2；同版整屏、短动态和必要记录在入口内，待原布局审，不合 main。
 
