@@ -73,3 +73,22 @@
 | [03 工坊](stages/solid/03-workshop.png) | STAGE 3: the compact orbital station, the coastal refinery, AND the land-anchored equipment workshop with clear gantry work bay at upper-right land are built. Each land facility has its own complete foundation; a short service route can connect the two built land facilities. No outer shipyard, drydock, cranes or rails to a future dock. | `89eb39e821e37bed013f5d33e98f8989d1d5d2658dd38242805c7d74a74440dc` |
 
 阶段 0 与 4 取既有完整概念图的左右两态；下次继续其余五类的三个中间阶段。所有图均为静态概念编辑，非实际独立施工或自转的运行证据。
+
+## 独立建造分步图：气态行星
+
+阶段 01、02 以[气态原图](images/gas-concept-a.png)为 `referenced_image_paths`，共同前缀及续句如下；阶段 03 首次输出把站体黏到云顶，未归档，改以[阶段 02](stages/gas/02-refinery.png)作参照重生，确保空间站独立。
+
+共同前缀：
+
+> Edit the attached TWO-PANEL gas giant concept image into a staged construction view. Preserve the same gas planet cloud pattern, camera, scale, lighting and framing in both panels. LEFT panel remains the bare gas giant. RIGHT panel includes ONLY the facilities named for this stage. Remove all unbuilt structures, future ring segments, pylons, tethers, docks, paths, craft and their shadows completely. The gas giant has no hard ground. Every visible structure must have its own aerostat or orbital support and be complete without a later building. No text/UI.
+
+| 步 | 实际续句／独立提示词 | 原图 SHA-256 |
+|---|---|---|
+| [01 空间站](stages/gas/01-station.png) | STAGE 1: ONLY the compact orbital station high above the gas giant exists, with its own short docking arms. No atmospheric platform, no pressure ring, no processing node, no workshop, no outer shipyard. | `310918e751ffd780cfa03572ca764cf088e0bf114790dfbe05cfad7f284d6ce9` |
+| [02 精炼厂](stages/gas/02-refinery.png) | STAGE 2: orbital station plus ONE independent refinery/collection platform in upper atmosphere. The platform brings its own pair of aerostats, short pressure intake and tiny processing deck, and sends cargo via small free-flying shuttles to station. No wider ring, no workshop, no shipyard or connections to unbuilt structures. | `c3dbf579b7fbd87840aee0178679b7519bd7ce304380216190754b932d1dfe2f` |
+
+阶段 03 独立完整提示词：
+
+> Edit this attached TWO-PANEL gas giant STAGE 2 image by ADDING EXACTLY ONE new workshop to the RIGHT panel. Keep BOTH panels' planet, storm, station and existing two-balloon refinery collector at the right side in the EXACT same positions and scale. In empty space just LEFT of the existing refinery collector, add a distinct small ivory/navy WORKSHOP with a visible blue gantry bay on its own pair of aerostat balloons and local tethers, separated from the refinery. A short bridge may connect those two built floating platforms; the upper station remains freely orbiting with empty space below it, not attached to the cloud or workshop. Do not add the outer shipyard, drydock, future ring segments, giant structure, extra station, text or UI. Show only station + refinery + workshop, each complete and self-supported. Maintain painting and camera.
+
+[03 工坊原图](stages/gas/03-workshop.png) SHA-256 `e6073da17d7d15331258028f51f93ce84824957bdee462b932cd4eec2176992c`。气态阶段 0／4 仍取既有完整概念图两侧；分步图只是静态设计，不是运行证据。
