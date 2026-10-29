@@ -6,8 +6,6 @@ uniform sampler2D albedo_tex : source_color;
 uniform bool textured = false;
 uniform bool luminous = false;
 uniform vec3 body_scale = vec3(1.0);
-uniform bool intake_enabled = false;
-uniform float intake_angle = 0.5;
 
 varying vec3 world_point;
 
@@ -36,10 +34,6 @@ void fragment() {
 	vec3 color = tint.rgb;
 	if (textured) {
 		color *= texture(albedo_tex, UV).rgb;
-	}
-	if (intake_enabled) {
-		float lane = (1.0 - smoothstep(0.024, 0.04, abs(UV.y - intake_angle))) * smoothstep(0.45, 0.62, UV.x);
-		color = mix(color, vec3(0.12, 0.22, 0.29), lane * 0.60);
 	}
 	ALBEDO = min(color * 1.35, vec3(1.0));
 	ROUGHNESS = 0.68;

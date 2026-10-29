@@ -41,3 +41,11 @@
 当前候选用 ImageGen 从既有精炼厂稿中移除烘焙的独立底板、圆接口和下横光条，只保留炉体、双料斗、入料口等上部主形；[新原 PNG、提示词和 SHA](../../../../assets/planets/facilities_v5/illustrated/refinery-orbit-machinery-prompt.txt)固定。上部根点沿本座环半径内收 `0.30`，落在同一已建段的真实 3D 节点内。该段原甲板网格在入料方向浅凹，原材质按相同 UV 局部压为深青，作为输送口，不增另一块盖板。工坊、船坞仍沿用上一节资产；各段建设、旋转、球后遮挡、刷新与资源显示端口未变。
 
 [本版完整主界面五态](evidence/refinery-joint/stages/)与[051、072 等受影响相位](evidence/refinery-joint/phases/)是当前代码重新取的。作者原尺寸看了 051/072：双底板轮廓已消失，炉体落入本座节点，未见旧环横贯；不过入料槽在约 100px 的游戏尺度仍较克制，是否形成足够清楚的视觉接合必须由审图决定。它仍是固定透视的上部 Sprite3D 与真实 3D 下部的组合，不能据此声称已经是完整 3D 建筑，更不能外推整圈、六类、性能或其余三座通过。Godot `--check-only`、`git diff --check` 退出 0；[驱动、日志与截图 SHA](evidence/refinery-joint/)保留。
+
+## 精炼厂入料嘴到环槽：单设施修订候选
+
+原审检查上一节的实际画面，指出 stage4 的入料嘴悬在环内、024 的灰块不指向嘴部、051 连接不明。上一版甲板 UV 的深色矩形和浅凹都已**删除**，没有留在新通道下当第二块底板。作者按原尺寸复看了[stage4](evidence/refinery-joint/stages/stage_4.png)、[024](evidence/refinery-joint/phases/frame_024.png)、[051](evidence/refinery-joint/phases/frame_051.png)，用相机投影量到旧插画嘴端与环槽约 50 像素错位。仅用 3D 板横跨这段距离在原尺寸仍像黑色底脚，因此该失败形态没有保留。
+
+这次仍只修精炼厂。ImageGen 在前一张已去独立底板的原稿上，把原来向左下伸出的单条入料带改为向右下弯、带象牙侧壁与蓝灰履带的设备内通道；[生成原图、完整提示词和 SHA](../../../../assets/planets/facilities_v5/illustrated/refinery-orbit-machinery-bent-feed-prompt.txt)已固定，未采纳试验中增加第二条分叉的生成图。可见新带端实际约在 1536×1024 图的 `(840,895)`，代码用该像素映射 Sprite3D billboard 与模型姿态到世界空间，而不是从 GLB 原点推断嘴部。环段内的同一 `RefineryInputChannel` 网格用暗蓝料槽、暖色两侧承力边和窄横档接向该段实际运输槽；终端角度由本座环段上最接近嘴端的屏幕投影连续选取，避免固定角度时阶段 024 出现额外长灰块。三枚既有矿石工作标记改沿新插画的弯曲带运动。该连接网格在 `_ready()` 创建一次，姿态更新只改同一网格表面；没有增控件或重建抽屉。
+
+[新码主界面 stage4 原图](evidence/refinery-bent-feed/stage_4.png)、[受影响相位 024/051/072 原图](evidence/refinery-bent-feed/phases/)是这次代码重新取得，附[驱动、日志和 SHA](evidence/refinery-bent-feed/)。作者按原尺寸看了三相位和 stage4：弯带端与环段的接触比上一版短灰块明确，024/051 不再有旧宽矩形；但约 100 像素的设施尺度下连接仍短小，这只是一座设施的**待审代表候选**，不能称已达到完整一体化或推广到工坊、船坞。相位驱动仍以 `TAU/(96×0.045)` 秒跳步取图，不能外推实时间性能、连续整圈或六类天体。Godot 4.7.2 `--check-only`、`git diff --check` 退出 0。

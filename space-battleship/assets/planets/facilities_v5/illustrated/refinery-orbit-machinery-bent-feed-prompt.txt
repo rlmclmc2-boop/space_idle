@@ -1,0 +1,9 @@
+Source: refinery-orbit-machinery.png (the earlier R17 refinery-joint ImageGen edit).
+Generated original: /workspace/generated_images/exec-c1b88792-7247-43bb-8feb-018285fde0d1.png
+Imported unchanged as: refinery-orbit-machinery-bent-feed.png
+SHA-256: 7e9a11cf78bd69ac417715a1df142cb2dc0a150a11b976351134c4c1d07405d1
+
+ImageGen edit prompt:
+Edit this transparent isometric sci-fi ore refinery sprite, same 1536x1024 canvas and same 100px-game-view readable composition. Keep the two ore hoppers, orange furnace, three arch facades, color and black ink style unchanged. REDRAW ONLY THE CENTRAL ORE CONVEYOR that comes out from the furnace: replace its existing long lower-left projecting strip with ONE continuous compact conveyor which turns gently toward the lower-right and ends at about source-image pixel (1030,810) in a visible dark-teal docking socket. The blue segmented tread and two ivory sidewalls must clearly connect from the furnace mouth to the lower-right tip. Remove the old lower-left belt tip entirely and do not add a second conveyor, extra branch, platform, foundation, floor, rectangular plinth, ground shadow, or other equipment. Preserve alpha transparency outside the machinery and keep the complete silhouette inside original bounds.
+
+Result inspection: the produced belt tip is nearer pixel (840,895) than the requested point; the game projection uses the actual visible tip instead of the prompt coordinates. Earlier ImageGen trials that added a second branch or retained a long left belt were inspected but not imported.

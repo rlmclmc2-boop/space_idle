@@ -174,9 +174,9 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedRefineryBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-machinery.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-machinery-bent-feed.png")
 	body.pixel_size = 0.0032
-	body.position = Vector3(0, 1.10, 0)
+	body.position = Vector3(0, 1.00, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	body.shaded = false
 	body.double_sided = true
@@ -217,20 +217,42 @@ func _position_refinery_work(model: Node3D, clock: float) -> void:
 	var camera_front := (camera_to_model * Vector3.BACK).normalized()
 	var width := _refinery_body_sprite.scale.x
 	var base := _refinery_body_sprite.position + camera_front * 0.25
+	# The input belt tip is at (840, 895) in the 1536x1024 authored image.
+	# Transform that actual billboard pixel into world space; the receiving end
+	# belongs to the same built spine section's central transport channel.
+	var mouth := _refinery_body_sprite.position + screen_right * ((840.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 895.0) * _refinery_body_sprite.pixel_size)
+	var mouth_world := model.to_global(mouth)
+	var mouth_screen := _camera.unproject_position(mouth_world)
+	var low: float = _spine.FACILITY_ANGLES["refinery"] - 0.20
+	var high: float = _spine.FACILITY_ANGLES["refinery"] + 0.20
+	for index in 14:
+		var left := low + (high - low) / 3.0
+		var right := high - (high - low) / 3.0
+		var left_world: Vector3 = _spine.to_global(_spine.point(left) + _spine.plane_normal() * 0.49)
+		var right_world: Vector3 = _spine.to_global(_spine.point(right) + _spine.plane_normal() * 0.49)
+		var left_distance := mouth_screen.distance_squared_to(_camera.unproject_position(left_world))
+		var right_distance := mouth_screen.distance_squared_to(_camera.unproject_position(right_world))
+		if left_distance < right_distance: high = right
+		else: low = left
+	var closest_angle := (low + high) * 0.5
+	_spine.update_refinery_feed(mouth_world, closest_angle)
 	var opening := 0.5 + 0.5 * sin(clock * 0.70)
 	for side in ["Left", "Right"]:
 		var pivot := _parts["refinery"]["IntakeWheel" + side] as Node3D
 		var sign := -1.0 if side == "Left" else 1.0
 		var target := base + screen_up * (0.23 * opening) + screen_right * (sign * 0.10 * opening * width)
 		(_refinery_shutter_sprites[side] as Sprite3D).position = pivot.transform.basis.inverse() * (target - pivot.position)
-	# Three small ore loads travel along the illustrated input belt into the
-	# furnace. This makes processing visible at the actual ~100px game scale.
-	var belt_start := base - screen_right * (0.96 * width) - screen_up * 1.08
-	var belt_end := base - screen_right * (0.27 * width) - screen_up * 0.25
+	# Keep the moving loads on the same curved belt painted in the new root,
+	# from its keyed deck connector toward the furnace opening.
+	var belt_tip := Vector2(840, 895)
+	var belt_bend := Vector2(640, 790)
+	var belt_furnace := Vector2(630, 565)
 	for index in _refinery_feed_markers.size():
 		var travel := fposmod(clock * 0.20 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
-		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), belt_start.lerp(belt_end, travel) + camera_front * 0.04)
+		var pixel := belt_tip.lerp(belt_bend, travel).lerp(belt_bend.lerp(belt_furnace, travel), travel)
+		var position_on_belt := _refinery_body_sprite.position + screen_right * ((pixel.x - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - pixel.y) * _refinery_body_sprite.pixel_size)
+		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), position_on_belt + camera_front * 0.29)
 
 func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	# The open two-level cantilever stays fixed; only the service crane travels

@@ -30,7 +30,9 @@ var _side: ShaderMaterial
 var _cyan: ShaderMaterial
 var _deck: ShaderMaterial
 var _sleeve: ShaderMaterial
+var _feed_cheek: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
+var _refinery_feed: ImmediateMesh
 
 static func plane_normal() -> Vector3:
 	return Vector3(0.0, TILT_Z, TILT_Y)
@@ -57,6 +59,7 @@ func _ready() -> void:
 	_sleeve = _deck.duplicate()
 	_sleeve.render_priority = 1
 	_all_materials.append(_sleeve)
+	_feed_cheek = _material(Color("c5aa80"))
 	for kind in KINDS:
 		var root := Node3D.new()
 		root.name = kind + "SpineSection"
@@ -68,13 +71,13 @@ func _ready() -> void:
 		_add_wall(root, bounds.x, bounds.y, 0.75, -0.20, 0.26, _side, kind)
 		_add_wall(root, bounds.x, bounds.y, -0.75, -0.20, 0.26, _navy, kind)
 		_add_wall(root, bounds.x, bounds.y, 0.755, 0.05, 0.09, _cyan, kind)
-		var section_deck: ShaderMaterial = _deck
+		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
 		if kind == "refinery":
-			section_deck = _deck.duplicate()
-			section_deck.set_shader_parameter("intake_enabled", true)
-			section_deck.set_shader_parameter("intake_angle", (FACILITY_ANGLES[kind] - bounds.x) / (bounds.y - bounds.x))
-			_all_materials.append(section_deck)
-		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, section_deck, 0.0, 1.0, kind)
+			_refinery_feed = ImmediateMesh.new()
+			var intake := MeshInstance3D.new()
+			intake.name = "RefineryInputChannel"
+			intake.mesh = _refinery_feed
+			root.add_child(intake)
 		var rib_angle := (bounds.x + bounds.y) * 0.5
 		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
@@ -155,12 +158,50 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_normal(normal)
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	var height := lift + current.y
-	if kind == "refinery":
-		var distance := absf(angle - FACILITY_ANGLES[kind])
-		var length_mask := clampf((0.052 - distance) / 0.025, 0.0, 1.0)
-		var outboard := clampf((current.x + 0.10) / 0.32, 0.0, 1.0)
-		height -= 0.055 * length_mask * outboard
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
+
+func update_refinery_feed(mouth_world: Vector3, groove_angle: float) -> void:
+	# Its first endpoint follows the *rendered* intake-belt pixel, not the GLB
+	# root. This is the only camera-facing part of an otherwise solid channel.
+	var start := to_local(mouth_world) - basis.inverse() * Vector3(0, 0, 0.055)
+	var end := point(groove_angle) + plane_normal() * 0.49
+	end += basis.inverse() * Vector3(0, 0, 0.20)
+	var world_path := basis * (end - start)
+	var screen_side := Vector3(-world_path.y, world_path.x, 0).normalized()
+	var side := basis.inverse() * screen_side
+	var rim_lift := basis.inverse() * Vector3(0, 0, 0.055)
+	_refinery_feed.clear_surfaces()
+	# The recessed ore lane and two warm load cheeks form one channel. Its
+	# depth follows the illustrated mouth and resolves into the deck groove.
+	_add_feed_ribbon(start, end, side, -0.10, 0.10, _side)
+	_add_feed_ribbon(start + rim_lift, end + rim_lift, side, -0.18, -0.10, _feed_cheek)
+	_add_feed_ribbon(start + rim_lift, end + rim_lift, side, 0.10, 0.18, _feed_cheek)
+	for index in 4:
+		var t := 0.18 + float(index) * 0.18
+		var a := start.lerp(end, t) + rim_lift * 0.6
+		var b := start.lerp(end, t + 0.025) + rim_lift * 0.6
+		_add_feed_ribbon(a, b, side, -0.09, 0.09, _navy)
+	# The lower outboard edge is a narrow structural cheek, not a second deck.
+	var bottom := basis.inverse() * Vector3(0, -0.09, -0.035)
+	_add_feed_wall(start + side * -0.18 + rim_lift, end + side * -0.18 + rim_lift, bottom)
+
+func _add_feed_ribbon(start: Vector3, end: Vector3, side: Vector3, left: float, right: float, material: Material) -> void:
+	_refinery_feed.surface_begin(Mesh.PRIMITIVE_TRIANGLES, material)
+	var a := start + side * left
+	var b := start + side * right
+	var c := end + side * left
+	var d := end + side * right
+	for vertex in [a, c, b, b, c, d]:
+		_refinery_feed.surface_set_normal(plane_normal())
+		_refinery_feed.surface_add_vertex(vertex)
+	_refinery_feed.surface_end()
+
+func _add_feed_wall(start: Vector3, end: Vector3, drop: Vector3) -> void:
+	_refinery_feed.surface_begin(Mesh.PRIMITIVE_TRIANGLES, _navy)
+	for vertex in [start, end, start + drop, start + drop, end, end + drop]:
+		_refinery_feed.surface_set_normal(plane_normal())
+		_refinery_feed.surface_add_vertex(vertex)
+	_refinery_feed.surface_end()
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
 	var surface := SurfaceTool.new()
