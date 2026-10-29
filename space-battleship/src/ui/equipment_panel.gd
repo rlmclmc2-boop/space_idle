@@ -371,7 +371,7 @@ func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
 
 func _resource_icon(id: String, pixels: float, parent: Control) -> TextureRect:
     var mark:=TextureRect.new()
-    mark.texture=ResourceVisuals.icon(id);mark.modulate=ResourceVisuals.color(id)
+    mark.texture=ResourceVisuals.icon(id);mark.modulate=ResourceVisuals.icon_modulate(id)
     mark.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;mark.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
     mark.size=Vector2(pixels,pixels);mark.mouse_filter=Control.MOUSE_FILTER_IGNORE
     parent.add_child(mark);mark.hide()
