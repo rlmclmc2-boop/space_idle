@@ -1,0 +1,306 @@
+{
+  "after": {
+    "budget": {
+      "1": {
+        "e": "5",
+        "m": "1"
+      },
+      "2": {
+        "e": "3",
+        "m": "1"
+      },
+      "degenerate_matter": {
+        "e": "3",
+        "m": "1"
+      }
+    },
+    "result": {},
+    "slots": [
+      {
+        "category": "weapon",
+        "cooldown_remaining": 0.0,
+        "dormant": false,
+        "effective_level": 19,
+        "equipment_id": "laser",
+        "id": "weapon:0",
+        "index": 0,
+        "paid_level": 19,
+        "switch_ready_at": 0.0
+      },
+      {
+        "category": "defence",
+        "cooldown_remaining": 0.0,
+        "dormant": false,
+        "effective_level": 1,
+        "equipment_id": "armour",
+        "id": "defence:0",
+        "index": 0,
+        "paid_level": 1,
+        "switch_ready_at": 0.0
+      }
+    ]
+  },
+  "before": {
+    "budget": {
+      "1": {
+        "e": "5",
+        "m": "1"
+      },
+      "2": {
+        "e": "3",
+        "m": "1"
+      },
+      "degenerate_matter": {
+        "e": "3",
+        "m": "1"
+      }
+    },
+    "result": {},
+    "slots": [
+      {
+        "category": "weapon",
+        "cooldown_remaining": 0.0,
+        "dormant": false,
+        "effective_level": 19,
+        "equipment_id": "laser",
+        "id": "weapon:0",
+        "index": 0,
+        "paid_level": 19,
+        "switch_ready_at": 0.0
+      },
+      {
+        "category": "defence",
+        "cooldown_remaining": 0.0,
+        "dormant": false,
+        "effective_level": 1,
+        "equipment_id": "armour",
+        "id": "defence:0",
+        "index": 0,
+        "paid_level": 1,
+        "switch_ready_at": 0.0
+      }
+    ]
+  },
+  "no_purchase_during_press_cancel": true,
+  "note": "Native GUI visual process only; controlled Lv19, availability and wallet; disabled state from Owner quote at0 iron; no36 rerun/performance claim",
+  "source_commit": "a8467d65653b33e818f79bbe33fae59b0df4d795",
+  "states": [
+    {
+      "disabled": false,
+      "elapsed_seconds": 0.591,
+      "file": "frame-000.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "normal"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 1.188,
+      "file": "frame-001.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "normal"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 1.844,
+      "file": "frame-002.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "normal"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 2.54,
+      "file": "frame-003.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "normal"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 3.3,
+      "file": "frame-004.png",
+      "focus": false,
+      "hover": true,
+      "pressed": false,
+      "state": "hover"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 3.861,
+      "file": "frame-005.png",
+      "focus": false,
+      "hover": true,
+      "pressed": false,
+      "state": "hover"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 4.408,
+      "file": "frame-006.png",
+      "focus": false,
+      "hover": true,
+      "pressed": false,
+      "state": "hover"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 5.025,
+      "file": "frame-007.png",
+      "focus": false,
+      "hover": true,
+      "pressed": false,
+      "state": "hover"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 5.837,
+      "file": "frame-008.png",
+      "focus": true,
+      "hover": true,
+      "pressed": true,
+      "state": "hover-pressed"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 6.452,
+      "file": "frame-009.png",
+      "focus": true,
+      "hover": true,
+      "pressed": true,
+      "state": "hover-pressed"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 7.045,
+      "file": "frame-010.png",
+      "focus": true,
+      "hover": true,
+      "pressed": true,
+      "state": "hover-pressed"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 7.718,
+      "file": "frame-011.png",
+      "focus": true,
+      "hover": true,
+      "pressed": true,
+      "state": "hover-pressed"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 8.482,
+      "file": "frame-012.png",
+      "focus": true,
+      "hover": false,
+      "pressed": true,
+      "state": "pressed-outside"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 9.093,
+      "file": "frame-013.png",
+      "focus": true,
+      "hover": false,
+      "pressed": true,
+      "state": "pressed-outside"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 9.663,
+      "file": "frame-014.png",
+      "focus": true,
+      "hover": false,
+      "pressed": true,
+      "state": "pressed-outside"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 10.34,
+      "file": "frame-015.png",
+      "focus": true,
+      "hover": false,
+      "pressed": true,
+      "state": "pressed-outside"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 11.277,
+      "file": "frame-016.png",
+      "focus": true,
+      "hover": false,
+      "pressed": false,
+      "state": "keyboard-focus"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 11.863,
+      "file": "frame-017.png",
+      "focus": true,
+      "hover": false,
+      "pressed": false,
+      "state": "keyboard-focus"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 12.414,
+      "file": "frame-018.png",
+      "focus": true,
+      "hover": false,
+      "pressed": false,
+      "state": "keyboard-focus"
+    },
+    {
+      "disabled": false,
+      "elapsed_seconds": 13.092,
+      "file": "frame-019.png",
+      "focus": true,
+      "hover": false,
+      "pressed": false,
+      "state": "keyboard-focus"
+    },
+    {
+      "disabled": true,
+      "elapsed_seconds": 13.899,
+      "file": "frame-020.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "disabled"
+    },
+    {
+      "disabled": true,
+      "elapsed_seconds": 14.424,
+      "file": "frame-021.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "disabled"
+    },
+    {
+      "disabled": true,
+      "elapsed_seconds": 14.954,
+      "file": "frame-022.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "disabled"
+    },
+    {
+      "disabled": true,
+      "elapsed_seconds": 15.562,
+      "file": "frame-023.png",
+      "focus": false,
+      "hover": false,
+      "pressed": false,
+      "state": "disabled"
+    }
+  ],
+  "workbench": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+}
