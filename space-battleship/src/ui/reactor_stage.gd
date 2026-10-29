@@ -17,10 +17,10 @@ const ROUTES := {
 	"condensation": [Vector2(532, 434), Vector2(590, 468)],
 }
 const OPERATING := {
-	"weapons": {"title":Vector2(41, 127), "factor":Vector2(125, 127), "work":Vector2(37, 164), "work_size":Vector2(146, 44), "slider":Vector2(59, 214), "ratio":Vector2(118, 214), "track":57.0},
-	"defence": {"title":Vector2(630, 127), "factor":Vector2(708, 127), "work":Vector2(624, 164), "work_size":Vector2(146, 44), "slider":Vector2(656, 214), "ratio":Vector2(717, 214), "track":57.0},
-	"smelting": {"title":Vector2(39, 434), "factor":Vector2(125, 434), "work":Vector2(37, 474), "work_size":Vector2(146, 72), "slider":Vector2(54, 527), "ratio":Vector2(114, 527), "track":57.0},
-	"condensation": {"title":Vector2(629, 434), "factor":Vector2(708, 434), "work":Vector2(624, 474), "work_size":Vector2(146, 72), "slider":Vector2(661, 527), "ratio":Vector2(722, 527), "track":57.0},
+	"weapons": {"title":Vector2(41, 127), "factor":Vector2(125, 127), "work":Vector2(37, 164), "work_size":Vector2(146, 44), "control":Vector2(59, 219), "tilt":6.0},
+	"defence": {"title":Vector2(630, 127), "factor":Vector2(708, 127), "work":Vector2(624, 164), "work_size":Vector2(146, 44), "control":Vector2(654, 228), "tilt":-6.0},
+	"smelting": {"title":Vector2(39, 434), "factor":Vector2(125, 434), "work":Vector2(37, 474), "work_size":Vector2(146, 72), "control":Vector2(52, 542), "tilt":-10.0},
+	"condensation": {"title":Vector2(647, 434), "factor":Vector2(715, 434), "work":Vector2(624, 474), "work_size":Vector2(146, 72), "control":Vector2(660, 526), "tilt":10.0},
 }
 var _enabled: Array = []
 var _loads: Dictionary = {}
@@ -75,7 +75,9 @@ func _add_ambient() -> void:
 	add_child(_ambient)
 
 func _add_feed() -> void:
-	_feed = _new_work(Rect2(Vector2(395, 64), Vector2(18, 160)), 3, BLUE)
+	# The supply glass ends under the upper collar; the lower ivory ring is solid
+	# foreground and must never receive a moving packet over its front lip.
+	_feed = _new_work(Rect2(Vector2(395, 73), Vector2(18, 73)), 3, BLUE)
 
 func _add_core() -> void:
 	var field := TextureRect.new()

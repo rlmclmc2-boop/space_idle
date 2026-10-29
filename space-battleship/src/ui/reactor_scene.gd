@@ -4,6 +4,7 @@ signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const WORK_FACE = preload("res://assets/ui/reactor/ship-hub-r9/device_work.gdshader")
 const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r9/device_pulse.gdshader")
+const CONSOLE_KEY = preload("res://assets/ui/reactor/ship-hub-r9/console-key.svg")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
@@ -105,7 +106,7 @@ func invalidate_budget(resource_ids: PackedStringArray) -> void:
 			_quote_dirty = true
 			return
 
-func _label(point: Vector2, width: float, font_size: int = 16) -> Label:
+func _label(point: Vector2, width: float, font_size: int = 16, parent: Control = null) -> Label:
 	var label := Label.new()
 	label.position = point
 	label.size = Vector2(width, 28)
@@ -115,7 +116,7 @@ func _label(point: Vector2, width: float, font_size: int = 16) -> Label:
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label.clip_text = true
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(label)
+	(parent if parent != null else self).add_child(label)
 	return label
 
 func _button(text: String, rect: Rect2, action: Callable, primary: bool = false) -> Button:
@@ -126,33 +127,20 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.add_theme_font_size_override("font_size", 20 if primary else 17)
 	button.add_theme_font_override("font", _ui_font_bold)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		var box := StyleBoxFlat.new()
-		box.bg_color = Color("286365") if primary else Color("234b5b")
-		box.border_color = Color("9baea9")
-		if state == "hover":
-			box.bg_color = Color("3c6e76")
-			box.border_color = Color("d4f3e4")
-		elif state == "pressed":
-			box.bg_color = Color("122f3d")
-			box.border_color = Color("7bb6b1")
-		elif state == "disabled":
-			box.bg_color = Color("31434a")
-			box.border_color = Color("62747a")
-		elif state == "focus":
-			box.bg_color = Color(0,0,0,0)
-			box.border_color = Color("b3ead8")
-		box.set_border_width_all(1)
-		box.border_width_top = 2
-		box.border_width_bottom = 1 if state == "pressed" else 2
-		box.set_corner_radius_all(6)
-		box.content_margin_left = 8
-		box.content_margin_right = 8
-		box.content_margin_top = 5
-		box.content_margin_bottom = 5
-		box.shadow_size = 0
-		if state == "focus":
-			box.set_border_width_all(2)
-			box.shadow_size = 0
+		var box := StyleBoxTexture.new()
+		box.texture = CONSOLE_KEY
+		box.texture_margin_left = 9
+		box.texture_margin_right = 9
+		box.texture_margin_top = 9
+		box.texture_margin_bottom = 9
+		box.content_margin_left = 10
+		box.content_margin_right = 10
+		box.content_margin_top = 3
+		box.content_margin_bottom = 3
+		box.modulate_color = Color(0.84, 1.10, 1.04) if primary else Color(0.94, 0.98, 1.0)
+		if state == "hover" or state == "focus": box.modulate_color = Color(1.12, 1.28, 1.22)
+		elif state == "pressed": box.modulate_color = Color(0.66, 0.82, 0.83)
+		elif state == "disabled": box.modulate_color = Color(0.54, 0.62, 0.64)
 		button.add_theme_stylebox_override(state, box)
 	button.add_theme_color_override("font_color", Color("f3f0df"))
 	button.add_theme_color_override("font_hover_color", Color("c4fff0"))
@@ -178,7 +166,8 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	return panel
 
 func _build() -> void:
-	_level = _label(Vector2(91, 784), 190, 18)
+	_level = _label(Vector2(91, 769), 190, 17)
+	_level.add_theme_font_override("font",_ui_font_bold)
 	_level.add_theme_color_override("font_color",Color("203f50"))
 	for id in Stage.IDS:
 		var layout: Dictionary = _stage.control_layout(id)
@@ -203,7 +192,7 @@ func _build() -> void:
 		pulse_material.set_shader_parameter("tint", Color("f8ba5b") if id in ["weapons","smelting"] else Color("79ddfa"))
 		pulse.material = pulse_material
 		add_child(pulse)
-		var name := _label(layout.title + offset,92,17)
+		var name := _label(layout.title + offset,92,16 if id == "condensation" else 17)
 		name.add_theme_font_override("font",_ui_font_bold)
 		name.add_theme_color_override("font_color",Color("eff4ee"))
 		name.add_theme_color_override("font_shadow_color",Color(0.015, 0.07, 0.10, 0.9))
@@ -220,10 +209,26 @@ func _build() -> void:
 		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
+		var strip := Control.new()
+		strip.position = layout.control + offset
+		strip.size = Vector2(98,20)
+		strip.rotation_degrees = float(layout.tilt)
+		strip.mouse_filter = Control.MOUSE_FILTER_PASS
+		add_child(strip)
+		var inset := Panel.new()
+		inset.size = strip.size
+		inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var inset_box := StyleBoxFlat.new()
+		inset_box.bg_color = Color(0.025, 0.12, 0.17, 0.82)
+		inset_box.border_color = Color(0.44, 0.70, 0.72, 0.55)
+		inset_box.set_border_width_all(1)
+		inset_box.set_corner_radius_all(3)
+		inset.add_theme_stylebox_override("panel", inset_box)
+		strip.add_child(inset)
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
-		slider.position = layout.slider + offset
-		slider.size = Vector2(float(layout.track),28)
+		slider.position = Vector2(8,-4)
+		slider.size = Vector2(52,28)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -251,26 +256,26 @@ func _build() -> void:
 		slider.add_theme_icon_override("grabber_highlight",grabber)
 		slider.value_changed.connect(_slide.bind(id))
 		slider.focus_entered.connect(func(): _selected = id; _update_stage())
-		add_child(slider)
-		var ratio := _label(layout.ratio + offset, 38, 15)
+		strip.add_child(slider)
+		var ratio := _label(Vector2(63,-4), 32, 15, strip)
 		ratio.add_theme_font_override("font", _ui_font_bold)
 		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		ratio.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		ratio.add_theme_color_override("font_color", Color("dce9e5"))
-		_rows[id] = {"effect":effect, "name":name, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio}
+		_rows[id] = {"effect":effect, "name":name, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "control":strip}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(91,809),190,16)
+	_budget = _label(Vector2(91,791),190,16)
 	_budget.add_theme_color_override("font_color",Color("203f50"))
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_upgrade_heading = _label(Vector2(288,759),475,17)
+	_upgrade_heading = _label(Vector2(288,753),475,17)
 	_upgrade_heading.text = "核心升级"
 	_upgrade_heading.add_theme_color_override("font_color",Color("203f50"))
-	_cost = _label(Vector2(288, 786), 475, 18)
+	_cost = _label(Vector2(288, 779), 475, 18)
 	_cost.add_theme_color_override("font_color",Color("203f50"))
-	_quantity = _button("×1",Rect2(288,845,105,42),_cycle_quantity)
+	_quantity = _button("×1",Rect2(288,821,105,34),_cycle_quantity)
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
-	_purchase = _button("升级 ×1",Rect2(407,845,358,42),func(): _command(_purchase_action),true)
-	_equal = _button("均分供能",Rect2(43,845,175,42),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
+	_purchase = _button("升级 ×1",Rect2(407,821,358,34),func(): _command(_purchase_action),true)
+	_equal = _button("均分供能",Rect2(43,821,175,34),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
 	_notice_panel = _panel(Rect2(282,728,244,34),0.95)
 	_notice = _label(Vector2(295,730),218,18)
 	_notice.size.y = 30
@@ -390,8 +395,8 @@ func _show_current_readings() -> void:
 		_rows[id].slider.tooltip_text = "分配 " + str(int(roundf(float(row.ratio) * 100.0))) + "% · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
 	_level.text = "等级 " + str(_model.level) + " · 容量 " + PlayerText.number(str(_model.capacity))
 	_budget.text = "已配 " + PlayerText.number(str(_model.allocated)) + " · 剩余 " + PlayerText.number(str(_model.remaining))
-	_budget.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
-	_level.tooltip_text = _budget.tooltip_text
+	_level.tooltip_text = "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
+	_budget.tooltip_text = _level.tooltip_text
 
 func _valid_model(model: Dictionary) -> bool:
 	if model.get("ok") != true: return false
@@ -412,9 +417,9 @@ func _unknown(message: String) -> void:
 	_model = {}
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
-	_budget.text = "供能状态未知"
 	_cost.text = "费用 —"
 	_level.text = "等级 —"
+	_budget.text = ""
 	_set_notice(message,true)
 	_stage.clear_snapshot()
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
