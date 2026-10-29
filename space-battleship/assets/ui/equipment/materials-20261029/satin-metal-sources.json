@@ -1,0 +1,14 @@
+{
+  "tool": "image_gen.imagegen",
+  "original_path": "/workspace/generated_images/exec-27e5f04b-1c85-4571-a215-a3621ed0b2d7.png",
+  "original_retained": true,
+  "reference_images": [],
+  "transparent_background": false,
+  "source_dimensions": [
+    1254,
+    1254
+  ],
+  "texture_sha256": "c2462500cf121ada48fd91e6ef2829eb1cb2a6f7aadd57a75e19f023894c2a3b",
+  "prompt_sha256": "4e47ac6ff88bfa52fcb593a07658205835f89d2c438813d551c695a6aee5cd53",
+  "runtime": "EquipmentSurface::_draw: native source pixels via canvas_item_add_texture_rect(tile=true), grain blended at12% over uniform painted-metal fill; actual-rect1px edge geometry derived from fill, no image_resize/axis stretch/atlas."
+}

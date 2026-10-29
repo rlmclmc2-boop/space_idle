@@ -46,8 +46,7 @@ var _preview_reference: Dictionary = {}
 var _slot_presentations: Dictionary = {}
 var _slot_selections: Dictionary = {}
 var _choice_presentations: Dictionary = {}
-var _surface_textures: Dictionary = {}
-var _chrome_material: StyleBoxTexture
+var _material_texture: Texture2D
 var _scene_picture: Array = []
 # Bounded presentation-only diagnostics; no state or rules come from these counts.
 var presentation_counts := {"refreshes":0,"comparison_reads":0,"slot_fact_reads":0,"cooldown_fact_reads":0,"slots_updated":0,"slot_styles_updated":0,"candidates_updated":0,"quantity_styles_updated":0,"scene_redraw_requests":0,"scene_draws":0,"economy_signals":0,"economy_same_budget":0,"balance_dependency_changes":0,"comparison_dependency_changes":0,"wallet_refreshes":0,"equipment_option_reads":0,"maximum_reads":0}
@@ -180,24 +179,31 @@ func _setup_materials() -> void:
     theme.set_color("font_color", "PopupMenu", CREAM)
     theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
     _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
-    var atlas:Texture2D=load("res://assets/ui/equipment/materials-20261029/material-atlas.png")
-    var pixels:Image=atlas.get_image()
-    var half:Vector2i=pixels.get_size()/2
-    for index in 4:
-        var tile:Image=pixels.get_region(Rect2i(Vector2i(index%2,index/2)*half,half))
-        var face:Image=tile.get_region(Rect2i(Vector2i(32,32),half-Vector2i(64,64)))
-        face.resize(512,336,Image.INTERPOLATE_LANCZOS)
-        _surface_textures[["enamel","navy","glass","teal"][index]+"_face"]=ImageTexture.create_from_image(face)
-        # UI-scale derivatives are cached once; source atlas is retained byte-for-byte.
-        tile.resize(192,128,Image.INTERPOLATE_LANCZOS)
-        _surface_textures[["enamel","navy","glass","teal"][index]]=ImageTexture.create_from_image(tile)
-    _chrome_material=_surface_material("enamel_face")
+    _material_texture=load("res://assets/ui/equipment/materials-20261029/satin-metal-tile.png")
 
-func _surface_material(kind:String, tint:Color=Color.WHITE) -> StyleBoxTexture:
-    var material:=StyleBoxTexture.new()
-    material.texture=_surface_textures[kind]
-    for side in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:material.set_texture_margin(side,4)
-    material.modulate_color=tint
+# Texture pixels retain their native scale. Only the actual control's 1px edges
+# are drawn geometrically; no image border or lighting band is stretched.
+class EquipmentSurface extends StyleBox:
+    var texture:Texture2D
+    var tint:Color=Color.WHITE
+    var edges:bool=true
+    func _draw(canvas_item:RID, rect:Rect2)->void:
+        var fill:Color=tint*Color(0.69,0.69,0.69,1.0)
+        RenderingServer.canvas_item_add_rect(canvas_item,rect,fill)
+        var grain:Color=Color(tint.r,tint.g,tint.b,0.12)
+        RenderingServer.canvas_item_add_texture_rect(canvas_item,rect,texture.get_rid(),true,grain)
+        if not edges:return
+        var top:Color=fill.lerp(Color.WHITE,0.12)
+        var bottom:Color=fill.darkened(0.22)
+        RenderingServer.canvas_item_add_line(canvas_item,rect.position+Vector2(0.5,0.5),Vector2(rect.end.x-0.5,rect.position.y+0.5),top,1.0)
+        RenderingServer.canvas_item_add_line(canvas_item,Vector2(rect.position.x+0.5,rect.end.y-0.5),rect.end-Vector2(0.5,0.5),bottom,1.0)
+
+func _surface_material(kind:String, modulation:Color=Color.WHITE) -> StyleBox:
+    var material:=EquipmentSurface.new()
+    material.texture=_material_texture
+    var palette:Dictionary={"enamel":Color(1.13,1.17,1.15),"navy_face":Color(0.24,0.35,0.42),"navy":Color(0.31,0.43,0.49),"teal":Color(0.37,0.58,0.54),"glass":Color(1.0,1.09,1.09),"primary":Color(1.12,0.91,0.62),"quiet":Color(0.24,0.35,0.42),"disabled":Color(0.5,0.59,0.61)}
+    material.tint=palette[kind]*modulation
+    material.edges=kind!="quiet"
     material.content_margin_left=8;material.content_margin_right=8
     material.content_margin_top=5;material.content_margin_bottom=5
     return material
@@ -247,12 +253,15 @@ func _prepare_button_material(button: Button, form: String) -> void:
                 material.set_border_width_all(1)
             if state=="focus":
                 material.bg_color=Color(0,0,0,0);material.border_color=Color("b3ead8");material.set_border_width_all(2);material.shadow_size=0
-            if form in ["button","candidate"] and state!="focus":
+            if form in ["button","candidate","primary","quiet"] and state!="focus":
                 var tint:=Color(1.16,1.18,1.16) if state=="hover" else Color(0.68,0.72,0.76) if state=="pressed" else Color(0.72,0.77,0.8) if state=="disabled" else Color.WHITE
-                states[state]=_surface_material("teal" if selected else "navy",tint)
+                var kind:String="disabled" if state=="disabled" else "primary" if form=="primary" else "quiet" if form=="quiet" else "teal" if selected else "navy"
+                states[state]=_surface_material(kind,tint)
             else:states[state]=material
         variants.append(states)
     button.set_meta("material_variants",variants)
+    button.set_meta("material_chosen",null)
+    button.set_meta("material_role",form)
     _button_tint(button,false)
 
 func _button_tint(button: Button, chosen: bool) -> void:
@@ -260,7 +269,12 @@ func _button_tint(button: Button, chosen: bool) -> void:
     button.set_meta("material_chosen",chosen)
     var states: Dictionary=button.get_meta("material_variants")[1 if chosen else 0]
     for state in states:button.add_theme_stylebox_override(state,states[state])
-    button.add_theme_color_override("font_color",Color("c0f4df") if chosen else CREAM)
+    var primary:bool=button.get_meta("material_role","")=="primary"
+    var quiet:bool=button.get_meta("material_role","")=="quiet"
+    button.add_theme_color_override("font_color",INK if primary else Color("b9c9cc") if quiet else Color("d5ece3") if chosen else CREAM)
+    if primary:
+        button.add_theme_color_override("font_hover_color",INK)
+        button.add_theme_color_override("font_pressed_color",INK)
 
 func _economy_display_changed() -> void:
     presentation_counts.economy_signals += 1
@@ -374,11 +388,11 @@ func _build_workbench() -> void:
     _switch_state=_workbench_label("",Rect2(638,46,122,18),12,Color("946338"));_switch_state.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
     _workbench_divider=ColorRect.new();_workbench_divider.position=Vector2(440,48);_workbench_divider.size=Vector2(1,110);_workbench_divider.color=Color("b5c3b8");_workbench_divider.mouse_filter=Control.MOUSE_FILTER_IGNORE;_workbench.add_child(_workbench_divider)
     _transaction_rail=Panel.new();_transaction_rail.name="PurchaseRail";_transaction_rail.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    _transaction_rail.add_theme_stylebox_override("panel",_surface_material("glass_face",Color(1.28,1.3,1.24)));_workbench.add_child(_transaction_rail)
+    _transaction_rail.add_theme_stylebox_override("panel",StyleBoxEmpty.new());_workbench.add_child(_transaction_rail)
     _upgrade_data=Panel.new();var data:Panel=_upgrade_data;data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(320,80);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var glass:=_surface_material("glass_face",Color(1.36,1.39,1.32));data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
+    var glass:=_surface_material("glass");data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
     _icon_bezel=Panel.new();var icon_frame:Panel=_icon_bezel;icon_frame.name="CurrentIconBezel";icon_frame.position=Vector2(20,88);icon_frame.size=Vector2(66,61);icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var bezel:=_surface_material("enamel_face",Color(1.08,1.08,1.08));icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
+    var bezel:=StyleBoxEmpty.new();icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
     _large_icon=_icon("laser",Rect2(27,95,52,47),_workbench)
     _current_caption=_workbench_label("当前攻击力",Rect2(114,91,140,18),12,Color("4a6265"))
     _upgrade_caption=_workbench_label("升级后",Rect2(290,91,146,18),12,Color("4a6265"))
@@ -391,6 +405,7 @@ func _build_workbench() -> void:
     _quantity_button=_workbench_button("×1",Rect2(20,208,96,36),_cycle_quantity)
     _quantity_button.name="QuantityCycle"
     _purchase=_workbench_button("购买1级",Rect2(226,240,218,36),_buy);_purchase.name="Purchase"
+    _prepare_button_material(_purchase,"primary")
     _purchase.clip_text=true;_purchase.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
     _candidate_row=Control.new();_candidate_row.name="CandidateChoices";_candidate_row.position=Vector2(464,74);_candidate_row.size=Vector2(296,88);_candidate_row.clip_contents=true;_candidate_row.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_candidate_row)
     _comparison_group=Control.new();_comparison_group.name="DifferentCandidateComparison";_comparison_group.position=Vector2(464,170);_comparison_group.size=Vector2(296,64);_comparison_group.clip_contents=true;_comparison_group.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_comparison_group)
@@ -402,6 +417,7 @@ func _build_workbench() -> void:
     _compare_row_label=_workbench_label("攻击力",Rect2(0,18,48,25),12,Color("4a6265"),_comparison_group)
     _period_caption=_workbench_label("周期",Rect2(0,43,48,18),12,Color("4a6265"),_comparison_group)
     _install=_workbench_button("安装",Rect2(484,220,266,36),_equip);_install.name="Install"
+    _prepare_button_material(_install,"primary")
 
 func _text_ink_bounds(text:String, font:Font, font_size:int) -> Rect2:
     var line:=TextLine.new();line.add_string(text,font,font_size)
@@ -549,8 +565,10 @@ func _build_batch() -> void:
     var row:=HBoxContainer.new();row.add_theme_constant_override("separation",14);stack.add_child(row)
     row.add_child(_batch_quantity)
     _batch_submit=_button("执行升级",Rect2(0,0,270,44),_buy_all,true)
+    _prepare_button_material(_batch_submit,"primary")
     remove_child(_batch_submit);_batch_submit.custom_minimum_size=Vector2(240,44);row.add_child(_batch_submit)
     _batch_close=_button("关闭",Rect2(0,0,270,44),_close_batch)
+    _prepare_button_material(_batch_close,"quiet")
     remove_child(_batch_close);_batch_close.custom_minimum_size=Vector2(140,44);row.add_child(_batch_close)
     _batch.hide()
 
@@ -871,7 +889,6 @@ func _slot_label_position(row: Dictionary) -> Vector2:
 func _draw() -> void:
     presentation_counts.scene_draws+=1
     draw_rect(Rect2(0,0,808,900),CREAM)
-    draw_style_box(_chrome_material,Rect2(0,0,808,85))
     draw_texture_rect_region(_background,Rect2(0,85,808,600),Rect2(0,0,1188,845))
     draw_rect(Rect2(0,685,808,215),Color("203b49"))
     if _ship.is_empty() or not _catalog.has(_ship):return
