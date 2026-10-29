@@ -3,6 +3,11 @@ WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by 
      at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
 OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
 
+ZERO core_visible=false feed_visible=false
 MOUSE slider=(81.82324, 296.4539) ratio_before=0.25 ratio_after=0.24 owner_result=true
 MOUSE purchase_ten result={ "ok": true, "defence_changed": false } level=1->11 wallet_uranium=1e3->4.5e2 quoted_cost=5.5e2 notice=供能已更新
+OWNER after_ten core_load=0.01716961498439 rows=[{ "id": "weapons", "ratio": 0.00416233090531, "load": 0.00416233090531, "effective": "2.4e1" }, { "id": "defence", "ratio": 0.00433576135969, "load": 0.00433576135969, "effective": "2.5e1" }, { "id": "smelting", "ratio": 0.00433576135969, "load": 0.00433576135969, "effective": "2.5e1" }, { "id": "condensation", "ratio": 0.00433576135969, "load": 0.00433576135969, "effective": "2.5e1" }]
 MOUSE purchase_max result={ "ok": true, "defence_changed": false, &"count": 1, &"costs": { "2": "2.02e2" } } level=11->12 wallet_uranium=4.5e2->2.48e2 quoted_cost=2.02e2 notice=供能已更新
+NONZERO core_visible=true feed_visible=true routes=4
+OWNER after_max core_load=0.01144640998959 rows=[{ "id": "weapons", "ratio": 0.0027748872702, "load": 0.0027748872702, "effective": "2.4e1" }, { "id": "defence", "ratio": 0.00289050757313, "load": 0.00289050757313, "effective": "2.5e1" }, { "id": "smelting", "ratio": 0.00289050757313, "load": 0.00289050757313, "effective": "2.5e1" }, { "id": "condensation", "ratio": 0.00289050757313, "load": 0.00289050757313, "effective": "2.5e1" }]
+AFTER_UPGRADE phase=6.49999999999999 updates=180

@@ -31,6 +31,11 @@ func check_paid(api, before, cost_text: String, after) -> void:
 	assert(expected.ok)
 	var compare: Dictionary = api.apply("compare", [expected.value, after])
 	assert(compare.ok and int(compare.scalar) == 0)
+func report_owner(session, tag: String) -> void:
+	var model: Dictionary = session.reactor_system.presentation_model()
+	var rows: Array = []
+	for row in model.modules: rows.append({"id":row.id, "ratio":row.ratio, "load":row.load, "effective":row.effective})
+	print("OWNER ",tag," core_load=",model.load," rows=",rows)
 func run() -> void:
 	root.size = Vector2i(1440,900)
 	root.content_scale_size = Vector2i(1440,900)
@@ -59,6 +64,9 @@ func run() -> void:
 	assert(funded.ok)
 	assert(session.economy.credit_yield("2", funded.value, session.wall_time, session.game_time).ok)
 	await frames(3)
+	assert(not scene._stage._fields["core"].visible and not scene._stage._feed.visible)
+	print("ZERO core_visible=",scene._stage._fields["core"].visible," feed_visible=",scene._stage._feed.visible)
+	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-zero.png")
 	scene._equal.pressed.emit()
 	await frames(4)
 	var slider: HSlider = scene._rows.weapons.slider
@@ -84,6 +92,7 @@ func run() -> void:
 	assert(scene.last_result.get("ok", false) and level_after == level_before + 10)
 	check_paid(api, wallet_before, str(ten_quote.costs["2"]), wallet_after)
 	print("MOUSE purchase_ten result=", scene.last_result, " level=", level_before, "->", level_after, " wallet_uranium=", amount_text(api,wallet_before), "->", amount_text(api,wallet_after), " quoted_cost=", ten_quote.costs["2"], " notice=", scene._notice.text)
+	report_owner(session,"after_ten")
 	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-ten-after.png")
 	await click(quantity_click)
 	assert(scene._quantity.text == "MAX" and scene._purchase_max)
@@ -99,5 +108,15 @@ func run() -> void:
 	assert(int(scene.last_result.count) == int(max_quote.count))
 	check_paid(api, wallet_before, str(max_quote.costs["2"]), wallet_after)
 	print("MOUSE purchase_max result=", scene.last_result, " level=", level_before, "->", level_after, " wallet_uranium=", amount_text(api,wallet_before), "->", amount_text(api,wallet_after), " quoted_cost=", max_quote.costs["2"], " notice=", scene._notice.text)
+	assert(scene._stage._fields["core"].visible and scene._stage._feed.visible)
+	for id in scene._stage.IDS: assert(scene._stage._connections[id].visible)
+	print("NONZERO core_visible=",scene._stage._fields["core"].visible," feed_visible=",scene._stage._feed.visible," routes=",scene._stage._connections.size())
+	report_owner(session,"after_max")
 	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-max-after.png")
+	for i in 12:
+		session._step(1.0 / 6.0)
+		await frames(1)
+		var image: Image = root.get_texture().get_image().get_region(Rect2i(0,65,808,835))
+		image.save_png("/tmp/reactor-r9-after-upgrade-flow-%02d.png" % i)
+	print("AFTER_UPGRADE phase=",scene._stage.visual_phase()," updates=",scene._stage.diagnostics.field_updates)
 	quit()
