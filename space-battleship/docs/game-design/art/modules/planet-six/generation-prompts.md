@@ -70,9 +70,13 @@
 |---|---|---|
 | [01 空间站](stages/solid/01-station.png) | STAGE 1: ONLY the compact orbital station at top is built. Its own small closed orbital hub and self-contained docking nipple are visible; there are NO surface buildings, no outer drydock, no cargo route to the surface, no construction markers. | `eee958e9988f5a445de1b5ae5ed4c0b3e255f058613623fc291e226f5202cbe4` |
 | [02 精炼厂](stages/solid/02-refinery.png) | STAGE 2: the compact orbital station AND the coastal refinery at lower-left land are built. The refinery includes only its own bedrock foundation, inlet and short local feed conveyor. No workshop, no gantry bay, no outer shipyard, no long transit bridge that depends on future buildings. | `9dd6bf6924ef59d54963f6649e3ddd3306a2c0c89d6163dd6087af93f1faa512` |
-| [03 工坊](stages/solid/03-workshop.png) | STAGE 3: the compact orbital station, the coastal refinery, AND the land-anchored equipment workshop with clear gantry work bay at upper-right land are built. Each land facility has its own complete foundation; a short service route can connect the two built land facilities. No outer shipyard, drydock, cranes or rails to a future dock. | `89eb39e821e37bed013f5d33e98f8989d1d5d2658dd38242805c7d74a74440dc` |
+| [03 工坊修正版](stages/solid/03-workshop.png) | 初次提示词：STAGE 3: the compact orbital station, the coastal refinery, AND the land-anchored equipment workshop with clear gantry work bay at upper-right land are built. Each land facility has its own complete foundation; a short service route can connect the two built land facilities. No outer shipyard, drydock, cranes or rails to a future dock. 后续修正提示词见下。 | `b1954d75342221d0d16e9bdc42a59e70441d6b0b865f3fa6507c3d802519730c` |
 
 阶段 0 与 4 取既有完整概念图的左右两态；下次继续其余五类的三个中间阶段。所有图均为静态概念编辑，非实际独立施工或自转的运行证据。
+
+固态 03 初版 SHA-256 `89eb39e821e37bed013f5d33e98f8989d1d5d2658dd38242805c7d74a74440dc`，遗漏 02 已建精炼厂右下短输送口。现有 03 原图用 `image_gen.imagegen` 以初版 03 为第一输入、[02](stages/solid/02-refinery.png)为第二参照编辑；修正实际提示词：
+
+> Edit the FIRST attached two-panel solid-planet STAGE 03 image. Use the SECOND attached STAGE 02 image only to reference the complete existing refinery at lower-left, especially its SHORT SILVER-AND-ORANGE CONVEYOR OUTLET descending rightward from the refinery's front wall to the lower-right edge of its rocky coastal ledge. In stage 03 the refinery lost that outlet; restore this SAME outlet, in the SAME position, with its visible terminal orange intake/transfer head. Keep the LEFT bare planet panel fully untouched. In the RIGHT panel keep the orbital station, left refinery towers and foundation, upper-right independent orange workshop gantry, short land route and all terrain as they are. Do not remove or convert the workshop, do not add shipyard or unbuilt supports. Only add back the refinery's own short conveyor outlet from stage 02; it belongs to refinery and remains complete whether or not workshop exists. Same scale, painterly game art, no UI/text.
 
 ## 独立建造分步图：气态行星
 
@@ -111,3 +115,15 @@
 > Edit this attached two-panel STAGE 2 stellar construction image. LEFT panel remains bare star. RIGHT panel MUST KEEP the large orbital station above the star EXACTLY as seen, and KEEP the one short shielded magnetic refinery crescent to the star's left EXACTLY as seen. Add exactly one new, small workshop with a recognizable gantry work bay BELOW AND OUTSIDE the refinery crescent, mounted on its OWN compact cool-side truss platform. A short shuttle path may run between built nodes. DO NOT remove, shrink, relocate, or replace the orbital station; do not add shipyard, drydock, future magnetic arcs, large full ring, text or UI. Camera, star scale, space background and painting stay the same.
 
 [03 工坊原图](stages/star/03-workshop.png) SHA-256 `2037b41e3422a252ae1ea7fbb59b3fbadb556b4f4810dd3203750f8aa54b3ecd`。首次由完整态直接编辑的 03 丢失站体，未归档；本图以 02 为输入重生。恒星阶段 0／4 仍取原图左右两侧，图像不构成自转或独立施工的运行验证。
+
+## 脉冲星束流走廊修正
+
+初版[脉冲星原图](images/pulsar-concept-a.png)下极束流被运输虚线穿过。首次编辑将虚线移到了上极束流，仍不成立，未归档。最终以首次编辑结果作 `referenced_image_paths` 输入，删掉跨扇区虚线；[修正版](images/pulsar-concept-b.png) SHA-256 `57354b50162b9fcc959c5388abfe0b703555339dce41e76c7a0da6d2714e06d4`。两次均用 `image_gen.imagegen`，`transparent_background=false`。
+
+首次编辑提示词：
+
+> Edit the attached TWO-PANEL pulsar concept art. Keep both panels' neutron star, two vertical violet polar beam cones, tilted violet magnetic torus, and all existing station, collector/refinery crescent, workshop and remote right shipyard unchanged. In the RIGHT panel REMOVE the CYAN DOTTED TRANSPORT LINE and tiny ships that cross the LOWER VIOLET POLAR BEAM below the star, including the line from left arc to right shipyard near the lower beam. Replace it with a CLEAR CYAN DOTTED SHUTTLE ROUTE running around the OUTER SAFE EQUATORIAL ARC on the right side of the star, then out to the remote shipyard by an upper-right BEAM-FREE corridor. Keep BOTH polar beam cones visibly empty of ships, paths, structures and docks. The route must visibly avoid the entire lower cone, never cross under it. The two-panel scene, camera, art style and facility design remain otherwise identical. No text or UI.
+
+最终编辑提示词：
+
+> Correct the attached TWO-PANEL pulsar concept: in RIGHT panel, ERASE THE ENTIRE BRIGHT CYAN DOTTED TRANSPORT ROUTE, including all dots running across the TOP polar beam and the curved dots around the left arc and right side. Restore dark space and the subtle violet magnetic torus beneath. Keep only a few separate small solid-bodied shuttle craft parked next to the built LEFT service crescent and separately next to the distant RIGHT shipyard, with no drawn connecting line. Both wide violet polar beam corridors above and below the neutron star must contain NO cyan dots, paths or craft. Keep the star, both violet beams, all four facility silhouettes, collector arc, station, workshop, shipyard, camera and art style unchanged. Do not add any alternative route, do not add text or UI.
