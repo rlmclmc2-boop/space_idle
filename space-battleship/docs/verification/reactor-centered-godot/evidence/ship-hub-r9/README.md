@@ -1,8 +1,14 @@
 # R9 舰内反应堆返修候选
 
-本轮报价修复以本分支当前提交的[无钱图](quote-no-funds.png)、[可购图](quote-funded.png)、[驱动](quote-resource-driver.gd.txt)和[日志](quote-resource-runtime.txt)为同版证据。下述零供能、均分、购级与动态旧证据固定于 `4924205e`，保留其原审范围，不把它们写成本轮重新运行。反应堆内区已获限定审查；共享组合与 main 仍分别审阅。
+## 当前底键材质候选
 
-无字舱室为 [`working-bay-eight.png`](../../../../../assets/ui/reactor/ship-hub-r9/working-bay-eight.png)，1254×1254，SHA-256 `6c6db9e0f2ebcf70561d090644b34fc49602dc653559065650a097b04af702ac`。它把底部三道厚切角槽收为连续浅米色承载带；原生哑光矩形键在这条带上提供“均分”、循环数量 `×1 → ×10 → MAX → ×1` 和唯一主操作“升级”。顶栏与右侧战场属整体组范围。费用图标沿用公共资源图集及原色调制。操作文字保留 Godot 原生，未烘入图中。
+针对共享组合 `6e49c51a2856dfcb456b839de093fc8ad0e1d683` 的装备／反应堆同屏比较，本候选把均分、数量循环、升级三枚原生按钮从薄边平填样式换为装备 `a8467d65653b33e818f79bbe33fae59b0df4d795` 所用的同源漆面切角金属。原始 `control-materials.png` 字节复制到反应堆 R9 资产目录（SHA-256 `707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c`），只提取装备已用的深蓝及主操作漆面片段，按同样原生尺寸压到按钮现有区域。普通、悬浮、按下、禁用与焦点各有一次创建并缓存的 `StyleBox`；状态切换只由 Godot 控件绘制，不在可见帧生成子控件、贴图或样式。主键焦点／按下墨迹沿用装备修订后的深色。旧平填状态资源从 `_button` 移除，没有再加第二层底板、厚槽或改场景结构；三键位置、数量循环与 Owner 报价／执行边界保持原样。
+
+Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe 正式主场景的同版 1440×900 1× 整屏：[无钱禁用](material-no-funds-1440x900.png)、[公开入账后可购](material-funded-1440x900.png)。[焦点](material-focus-1440x900.png)、[循环键悬浮](material-hover-1440x900.png)、[循环键按下](material-pressed-1440x900.png)是受影响状态的短操作取帧；[驱动](material-button-driver.gd.txt)和[日志](material-button-runtime.txt)固定真实控件、Owner 报价与鼠标输入。无钱 Owner 报价为 `10 铀` 且 `can_purchase=false`；公开入账 1000 铀后同一报价 `can_purchase=true`。驱动临时开放反应堆，只证明该受影响按钮状态和画面，不证明自然解锁、收入或按钮成交。`--check-only` 与 `git diff --check` 通过；旧的购级、滑杆、动态证据未在本轮重新运行。反应堆内区此前仅获限定审查，本版及公共组合的整体视觉仍待审阅，未合 main。
+
+以下报价修复为 `68f35e4e0e479112e7eef2cc53c6bce425c2f100` 版记录：[无钱图](quote-no-funds.png)、[可购图](quote-funded.png)、[驱动](quote-resource-driver.gd.txt)和[日志](quote-resource-runtime.txt)。下述零供能、均分、购级与动态旧证据固定于 `4924205e`，保留其原审范围，不把它们写成本轮重新运行。
+
+无字舱室为 [`working-bay-eight.png`](../../../../../assets/ui/reactor/ship-hub-r9/working-bay-eight.png)，1254×1254，SHA-256 `6c6db9e0f2ebcf70561d090644b34fc49602dc653559065650a097b04af702ac`。它把底部三道厚切角槽收为连续浅米色承载带；当前漆面原生键在这条带上提供“均分”、循环数量 `×1 → ×10 → MAX → ×1` 和唯一主操作“升级”。顶栏与右侧战场属整体组范围。费用图标沿用公共资源图集及原色调制。操作文字保留 Godot 原生，未烘入图中。
 
 对照共享组合 `design/clear-zone-host@412d9d2f` 的实图，本版把底台上行“等级”标签移入浅米色净区，首字不再压左上深色斜切边；下行“已配／剩余”仍在原位置。成功报价的费用与数量保持深蓝，MAX 资金不足时将“MAX 可购 0 级”与橙色“资金不足”分成两个原生标签；有报价但不可购时原因同用装备费用行的橙色 `#a1593b`，金额仍按 Owner 报价显示。没有改变 Owner 的费用或 `can_purchase` 判断。
 
