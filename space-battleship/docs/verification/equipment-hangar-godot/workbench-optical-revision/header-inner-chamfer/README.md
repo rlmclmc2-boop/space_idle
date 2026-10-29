@@ -1,6 +1,6 @@
 # 标题条沿内壳切角收边候选（待原审）
 
-源码 `d034de07571fa5866483ab852230143b46baa78c`，基线 `bcad25d0bfc6eb3c603cc53fad1df21f24ac3e53` / 原证据 `3ccb298a77aed8f736a32e1205f7e37d085c1982`。用户退回标题条右端矩形压外框；本轮只修这一处，并给[高度可行分析](height-feasibility.md)。工作台主要布局/高度仍266/288，没有擅自实施压缩。
+源码 `d034de07571fa5866483ab852230143b46baa78c`，基线 `bcad25d0bfc6eb3c603cc53fad1df21f24ac3e53` / 原证据 `3ccb298a77aed8f736a32e1205f7e37d085c1982`。用户退回标题条右端矩形压外框；本轮只修这一处，并给[旧结构高度约束](height-feasibility.md)。后续用户新增“少内容占空间、完整信息拥挤”的核心判断，已补[常用/选择/完整详情的信息组织提案](information-layout-proposal.md)，作为推荐方向；仅评估、未实施。工作台主要布局/高度仍266/288，没有擅自实施压缩。
 
 [异候选双费完整整屏](01-different-double.png)／[原像素工作台](01-different-double-local.png)及[同物单费完整整屏](02-single.png)／[原像素工作台](02-single-local.png)全部实际view_image。正式Godot4.7.2、main.tscn/Session/native固定源码后静态采图exit0，日志 `EQUIPMENT_HEADER_STATIC_COMPLETE`；只浏览真实候选，无购买或新全链/36项复跑。静态fixture延用前版受控availability/Lv19/余额，不当自然开放验证。作者看到右端压外框的矩形角撤除、原壳斜面外露；不代表原Astra/根/用户艺术放行。
 
