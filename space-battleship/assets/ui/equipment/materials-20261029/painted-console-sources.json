@@ -1,0 +1,39 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-29",
+  "original_path": "/workspace/generated_images/exec-866f42f0-5d24-4a52-8558-f585055b792f.png",
+  "original_retained": true,
+  "transparent_background": true,
+  "original_dimensions": [
+    2117,
+    743
+  ],
+  "references": {
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/workbench-structural-depth/02-double.png": "8d16fc3e6bb6c0daba92971ceee85ad1c9de08337a2c8d7f71b1b8ba025c661a",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/workbench-structural-depth/02-double-local.png": "84bb13959b53d250fd1e8e66eaab6feda77b637361b23ef0d829aa21422c1dd8"
+  },
+  "image_sha256": "f5aa0c10ee10581319eb257043e526321b5f0fd6b51dbece53d9e62b9c786ce1",
+  "prompt_sha256": "094afb28aa414154fc1eca97d2f228d28c79d1ad0a067b5004fb3763a0f48c47",
+  "measured_opaque_bbox_alpha_gt_200": {
+    "x": 9,
+    "y": 58,
+    "width": 2100,
+    "height": 615
+  },
+  "runtime_crop": [
+    8,
+    56,
+    2102,
+    620
+  ],
+  "uniform_scale_to_width": 640,
+  "rounded_native_height": 189,
+  "native_corner_margins": 32,
+  "edge_stretch_modes": [
+    "TILE",
+    "TILE"
+  ],
+  "draw_center": false,
+  "center_paint": "sampled native center color with low-amplitude native vertex lighting; no full image stretching",
+  "purpose": "one painted console rim only; no baked text, icons, controls or data"
+}

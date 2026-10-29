@@ -8,7 +8,7 @@
 
 - `src/ui/zone_shell.gd` 管公共顶栏、余额/状态详情、侧栏导航及分区边界。顶栏覆盖已验收装备面板顶部原留白，装备内区仍由原面板绘制；战斗内区仍由原 `BattleView` 绘制。右侧 `47.875 px` 只保留纯底色和细收边，没有重绘战场。
 - `src/main.gd` 将原有舰船、成长、星图、超空、档案、设置页接到唯一导航，并沿用原开放条件；未开放的页禁用，装备独占弹窗期间禁止切页。保留装备原面板、战斗输入及暂停逻辑，去掉重复的装备顶栏余额和战斗 HUD 钱包。状态详情仍读取原保存状态。
-- `src/ui/bridge_theme.gd` 调整原舰桥通用按钮、输入框、面板的字体尺寸、对比、边线、按下/焦点/禁用状态。没有修改装备、反应堆、星球模块内部源码，也没有移入旧设计分支的 R4/R14 内容。
+- `src/ui/bridge_theme.gd` 调整原舰桥通用按钮、输入框、面板的字体尺寸、对比、边线、按下/焦点/禁用状态。公共壳制作阶段没有代改模块内部；下述接入只取装备、反应堆各自已审固定候选，未取星球 R14 或旧设计分支的运行树。
 
 原布局审对首版 `730f94ab` 指出舰船选中悬浮时白字压在象牙底，以及顶栏/导航偏小、设置操作等权长条。后续修订覆盖按钮普通、悬浮、按下和选中悬浮组合态的底色与字色；顶栏资源与导航字级提高，资源改用轻分隔；设置公共操作按“存档与速度／偏好／进度管理／导入存档”分组，保留原回调和预览／确认顺序。导航全称在顶栏呈现，不再让原生提示浮层跨入战场。
 
@@ -36,4 +36,12 @@ Godot `4.7.2`，桌面 `1440×900`，正常 main 入口实例。整屏：[装备
 
 `59237c7d` 的自然铁掉落初现帧中，青色接触亮形压住铁锭，原审据此退回掉落身份。实际绘制关系是 `BattleView.contact_layer` 位于 `z=2`，`EconomyView` 原为默认 `z=0`，而铁标底盘还有 `0.92` 透明度；后续帧亮形离开才看得清轮廓。本次仅把资源掉落层置于接触亮形之上（`z=3`），底盘改为实色，保留既有铁锭图标、琥珀色圈、28px/15px 尺寸、18px 拾取半径及战斗投影。正常入口自然战斗同版 1440×900 的[初现整屏](evidence/drop-identity-1440x900.png)、[10 帧后](evidence/drop-seq-010.png)和[100 帧后](evidence/drop-seq-100.png)显示初现与持续状态；这些图均为真实铁掉落，不替代其他资源的自然实机覆盖。共享身份 helper 中其余四种资源的映射未改，费用与奖励仍归各模块原组。此次只提交掉落识别修正供原审，先前公共页面限定结论不外推为本轮或整体品质通过。
 
-模块内部的新质感及“数量循环键＋独立购买／升级键”仍由各模块原组制作和验收；当前 main 的旧装备截图不能作为模块最终效果。本轮公共 UI 修订仍待原审与用户判断。
+模块内部的新质感及“数量循环键＋独立购买／升级键”由各模块原组制作和验收；下述接入把装备、反应堆固定候选装到本分支，其他模块仍按原组交接。当前 main 的旧装备截图不能作为模块最终效果。本轮公共 UI 修订仍待原审与用户判断。
+
+## 装备与反应堆固定候选接入
+
+装备源码 `bcad25d0bfc6eb3c603cc53fad1df21f24ac3e53`、原组图证 `3ccb298a`，反应堆源码 `bb212aee0d057b27cc8d5934d8711a24e78c16c0`，均只取各自固定候选。装备精确取 `src/ui/equipment_panel.gd` 及实际引用的两张 `materials-20261029` 贴图／导入设置；本分支 `src/ui/resource_visuals.gd` 与该候选的查询接口相同，继续让公共栏、掉落和装备费用共享资源身份。反应堆取 `src/ui/reactor_scene.gd`、`reactor_stage.gd`、Owner `src/systems/reactor.gd` 的原版快照／报价／分配端口，以及两场景直接引用的 r4/r5/r9 图与 shader；未取源分支 `main.gd`、`game_session.gd`、`economy.gd` 或其他模块源码。
+
+安装端口只改本分支 `main.gd` 和公共 `zone_shell.gd`：反应堆场景作为 `808×900` 左区场景，由现有公共顶栏和导航驱动；绑定 Session 的反应堆输入、Owner 只读 `presentation_model`／`purchase_preview`／`purchase_max_preview`、支付与发布回调，Owner 的呈现变更信号及 Economy 已有的 `display_changed` 失效通知。公共导航增加独立“供能”入口，保留“成长”页的科研／强化；旧 `ReactorPanel` 构造路径及不再引用的 `src/ui/reactor_panel.gd` 已移除，反应堆场景和装备场景互斥显示。装备原自绘顶栏继续经 `set_shared_host(true, null)` 隐藏，只保留公共顶栏；没有叠新底板遮住旧控件。另加 `nav-reactor.svg`，与既有导航同线宽/尺寸。原 1440×900 战斗投影、输入通路和 89dc 铁掉落修正保持。
+
+同版 Godot 4.7.2 正常主场景的[装备整屏](evidence/integration-equipment-1440x900.png)、[反应堆零供能](evidence/integration-reactor-zero-1440x900.png)、[×10 报价](evidence/integration-reactor-x10-1440x900.png)、[均分生效](evidence/integration-reactor-active-1440x900.png)、[切回舰船](evidence/integration-ship-return-1440x900.png)，及短工作帧[起点](evidence/integration-reactor-motion-00.png)、[中点](evidence/integration-reactor-motion-02.png)、[末帧](evidence/integration-reactor-motion-05.png)，均以原尺寸复看公共栏、接缝、导航、内区和战斗空间。[固定驱动](evidence/module-integration-driver.gd.txt)在正常实例中使用 Campaign 公开恢复端口临时开放反应堆与凝聚、Economy 公开入账提供预算；[运行摘要](evidence/module-integration-runtime.txt)确认导航互斥、×10 只改报价且等级不变、均分命令成功、切回舰船。此为接入观察，**不证明自然关卡解锁、自然收入、购买成交、极端值或其他模块的完整动态**；原组对各自固定版本的限定审查不替代本组合的原布局审，也不把受影响检查通过等同整体视觉通过。当前候选仍待原审与用户判断，未获准合 main。

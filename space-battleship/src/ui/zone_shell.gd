@@ -10,6 +10,7 @@ const RESOURCE_MARK = preload("res://assets/ui/public_shell/resource-mark.svg")
 const ROUTE_ICONS := [
 	preload("res://assets/ui/public_shell/nav-equipment.svg"),
 	preload("res://assets/ui/public_shell/nav-ship.svg"),
+	preload("res://assets/ui/public_shell/nav-reactor.svg"),
 	preload("res://assets/ui/public_shell/nav-growth.svg"),
 	preload("res://assets/ui/public_shell/nav-universe.svg"),
 	preload("res://assets/ui/public_shell/nav-hyperspace.svg"),
@@ -18,6 +19,7 @@ const ROUTE_ICONS := [
 
 const ROUTES := [
 	["equipment", "装备", "装备"], ["ship", "舰船", "舰船与航程"],
+	["reactor", "供能", "反应堆"],
 	["growth", "成长", "成长"], ["universe", "星图", "星图"],
 	["hyperspace", "超空", "超空间"], ["archive", "档案", "档案"],
 	["settings", "设置", "设置"]]

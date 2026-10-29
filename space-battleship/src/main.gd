@@ -12,7 +12,7 @@ const EconomyView = preload("res://src/ui/economy_view.gd")
 const EquipmentPanel = preload("res://src/ui/equipment_panel.gd")
 const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
 const ZoneShell = preload("res://src/ui/zone_shell.gd")
-const ReactorPanel = preload("res://src/ui/reactor_panel.gd")
+const ReactorScene = preload("res://src/ui/reactor_scene.gd")
 const EnhancementPanel = preload("res://src/ui/enhancement_panel.gd")
 const ResearchPanel = preload("res://src/ui/research_panel.gd")
 const NotificationsPanel = preload("res://src/ui/notifications_panel.gd")
@@ -27,6 +27,8 @@ var _feature_panels: Dictionary = {}
 var _pages: Dictionary = {}
 var _tabs: TabContainer
 var equipment_scene: Control
+var reactor_scene: Control
+var _reactor_active: bool = false
 var _zone_shell: Control
 var _battle_viewport: SubViewport
 var _bridge_open: Button
@@ -193,6 +195,7 @@ func _show_session() -> void:
 	equipment_layer.add_child(equipment_scene)
 	equipment_scene.exclusive_ui_changed.connect(_sync_equipment_entry)
 	equipment_scene.set_shared_host(true, null)
+	_setup_reactor_scene(equipment_layer)
 	var zone_layer := CanvasLayer.new()
 	zone_layer.layer = 10
 	add_child(zone_layer)
@@ -208,6 +211,23 @@ func _show_session() -> void:
 	_refresh_feature_visibility()
 	_setup_guidance_panel()
 	_setup_audio()
+
+func _setup_reactor_scene(layer: CanvasLayer) -> void:
+	reactor_scene = ReactorScene.new(session.reactor_system, session.reactor_inputs,
+		session.economy.payment, session.publish_reactor, session.economy.can_pay)
+	reactor_scene.visible = false
+	layer.add_child(reactor_scene)
+	reactor_scene.bind_presentation(func(): return session.reactor_system.presentation_model(), func():
+		return {"game_time": session.game_time,
+			"paused": not session.pause_reasons.is_empty() or not session.run_state.is_running(),
+			"running": session.run_state.is_running()})
+	reactor_scene.bind_purchase_quote(func(count: int, maximum: bool) -> Dictionary:
+		return session.reactor_system.purchase_max_preview(session.economy.can_pay) if maximum else session.reactor_system.purchase_preview(session.economy.can_pay, count))
+	reactor_scene.command_finished.connect(func(result: Dictionary):
+		if growth_status != null:
+			growth_status.text = str(result.get("message", "完成")) if result.get("ok", false) else PlayerText.error(str(result.get("reason", "Unknown"))))
+	session.reactor_system.presentation_changed.connect(reactor_scene.invalidate_presentation)
+	session.economy.display_changed.connect(func(): reactor_scene.invalidate_budget(PackedStringArray(["2"])))
 
 func _apply_settings(settings: Dictionary) -> void:
 	_autosave_interval = float(settings.interval)
@@ -314,6 +334,8 @@ func _replace_session(replacement) -> Dictionary:
 	_overlay = null
 	_pause_button = null
 	_guidance_panel = null
+	reactor_scene = null
+	_reactor_active = false
 	_guidance_label = null
 	_guidance_button = null
 	growth_panel = null
@@ -659,11 +681,18 @@ func _ui_occupied() -> bool:
 	return false
 
 func _modal_ui_occupied() -> bool:
-	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_zone_shell) and _zone_shell.has_exclusive_ui()) or (is_instance_valid(growth_panel) and growth_panel.visible) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
+	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_zone_shell) and _zone_shell.has_exclusive_ui()) or (is_instance_valid(growth_panel) and growth_panel.visible) or (is_instance_valid(reactor_scene) and reactor_scene.visible) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
 
 func _zone_route(id: String) -> void:
 	if _zone_navigation_blocked() or not _zone_shell.is_route_available(id): return
 	_zone_shell.close_details()
+	if id == "reactor":
+		if is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return
+		_reactor_active = true
+		_set_page("battle")
+		_sync_equipment_entry()
+		return
+	_reactor_active = false
 	if id == "equipment":
 		_set_page("battle")
 		return
@@ -681,13 +710,16 @@ func _sync_zone_route() -> void:
 	if not is_instance_valid(_zone_shell): return
 	var pages := ["ship", "growth", "universe", "hyperspace", "archive", "settings"]
 	var id := "equipment"
-	if is_instance_valid(growth_panel) and growth_panel.visible and is_instance_valid(_tabs):
+	if _reactor_active and is_instance_valid(reactor_scene) and reactor_scene.visible:
+		id = "reactor"
+	elif is_instance_valid(growth_panel) and growth_panel.visible and is_instance_valid(_tabs):
 		id = pages[clampi(_tabs.current_tab, 0, pages.size() - 1)]
 	_zone_shell.set_active_route(id)
 	_zone_shell.set_navigation_blocked(_zone_navigation_blocked())
 
 func _set_growth_visible(visible: bool) -> bool:
 	if visible and is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return false
+	if visible: _reactor_active = false
 	if is_instance_valid(growth_panel):
 		if not visible:
 			var focus: Control = get_viewport().gui_get_focus_owner()
@@ -697,8 +729,11 @@ func _set_growth_visible(visible: bool) -> bool:
 	return true
 
 func _sync_equipment_entry() -> void:
+	if is_instance_valid(reactor_scene):
+		var reactor_visible: bool = _reactor_active and session.campaign_system.available("feature", "reactor") and not (is_instance_valid(growth_panel) and growth_panel.visible)
+		if reactor_scene.visible != reactor_visible: reactor_scene.visible = reactor_visible
 	if is_instance_valid(equipment_scene):
-		var equipment_visible: bool = not (is_instance_valid(growth_panel) and growth_panel.visible)
+		var equipment_visible: bool = not (is_instance_valid(growth_panel) and growth_panel.visible) and not (is_instance_valid(reactor_scene) and reactor_scene.visible)
 		if equipment_scene.visible != equipment_visible: equipment_scene.visible = equipment_visible
 	if is_instance_valid(_bridge_open):
 		var bridge_disabled: bool = (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible)
@@ -777,9 +812,6 @@ func _setup_growth_panel() -> void:
 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
 	box.add_child(load("res://src/ui/attributes_panel.gd").new(session))
 	box = _pages.growth.box
-	var reactor_panel = ReactorPanel.new(session.reactor_system, session.reactor_inputs, session.economy.payment, session.publish_reactor, _command_button)
-	box.add_child(reactor_panel)
-	_feature_panels["reactor"] = reactor_panel
 	var research_panel = ResearchPanel.new(session.research, _command_button)
 	box.add_child(research_panel)
 	_feature_panels["research"] = research_panel
@@ -1000,15 +1032,17 @@ func _refresh_feature_visibility() -> void:
 		"reforge": not session.planet_system.planet_options().is_empty()}
 	for key in _feature_panels: _feature_panels[key].visible = bool(visible_features[key])
 	if _tabs != null:
-		_tabs.set_tab_hidden(_pages.growth.index, not (visible_features.reactor or visible_features.research or visible_features.enhancement))
+		_tabs.set_tab_hidden(_pages.growth.index, not (visible_features.research or visible_features.enhancement))
 		_tabs.set_tab_hidden(_pages.universe.index, not (visible_features.crew or visible_features.planet or visible_features.galaxy))
 		_tabs.set_tab_hidden(_pages.hyperspace.index, not visible_features.hyperspace)
 		if _tabs.is_tab_hidden(_tabs.current_tab): _tabs.current_tab = int(_pages.ship.index)
 	if is_instance_valid(_zone_shell):
-		_zone_shell.set_route_available("growth", visible_features.reactor or visible_features.research or visible_features.enhancement)
+		_zone_shell.set_route_available("reactor", visible_features.reactor)
+		_zone_shell.set_route_available("growth", visible_features.research or visible_features.enhancement)
 		_zone_shell.set_route_available("universe", visible_features.crew or visible_features.planet or visible_features.galaxy)
 		_zone_shell.set_route_available("hyperspace", visible_features.hyperspace)
 		_sync_zone_route()
+	_sync_equipment_entry()
 
 func _create_bridge_page(key: String, title: String) -> void:
 	var scroll := ScrollContainer.new()

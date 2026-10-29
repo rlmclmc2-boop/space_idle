@@ -5,6 +5,8 @@ signal exclusive_ui_changed
 var _shared_chrome: Array = []
 var _context_slot: Control
 var _context_caption: Label
+const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
+const RESOURCE_NAMES := {"1":"铁", "2":"铀", "chrono":"时空微粒", "jewel":"强化碎片", "degenerate_matter":"简并物质"}
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES := {"laser": "脉冲炮", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光", "shield": "护盾", "armour": "装甲", "": "空槽"}
 const INK := Color("203f50")
@@ -31,8 +33,6 @@ var _current_icon_geometry: Dictionary = {}
 var _workbench: Panel
 var _workbench_divider: ColorRect
 var _upgrade_data: Panel
-var _icon_bezel: Panel
-var _transaction_rail: Panel
 var _workbench_layout: Dictionary = {}
 var _candidate_row: Control
 var _comparison_group: Control
@@ -46,12 +46,18 @@ var _preview_reference: Dictionary = {}
 var _slot_presentations: Dictionary = {}
 var _slot_selections: Dictionary = {}
 var _choice_presentations: Dictionary = {}
-var _quantity_presentations: Dictionary = {}
+var _choice_options: Array = []
+var _choice_option_slot: String = ""
+var _material_texture: Texture2D
+var _console_texture: Texture2D
+var _console_paint: Color
+var _pending_level_ids: Dictionary = {}
+var _batch_state_dirty: bool = false
 var _scene_picture: Array = []
 # Bounded presentation-only diagnostics; no state or rules come from these counts.
-var presentation_counts := {"refreshes":0,"comparison_reads":0,"slot_fact_reads":0,"cooldown_fact_reads":0,"slots_updated":0,"slot_styles_updated":0,"candidates_updated":0,"quantity_styles_updated":0,"scene_redraw_requests":0,"scene_draws":0,"economy_signals":0,"economy_same_budget":0,"balance_dependency_changes":0,"comparison_dependency_changes":0,"wallet_refreshes":0,"equipment_option_reads":0,"maximum_reads":0}
+var presentation_counts := {"refreshes":0,"numeric_refreshes":0,"comparison_reads":0,"slot_fact_reads":0,"cooldown_fact_reads":0,"slots_updated":0,"slot_styles_updated":0,"candidates_updated":0,"quantity_styles_updated":0,"scene_redraw_requests":0,"scene_draws":0,"economy_signals":0,"economy_same_budget":0,"balance_dependency_changes":0,"comparison_dependency_changes":0,"wallet_refreshes":0,"equipment_option_reads":0,"maximum_reads":0}
 var _choices: Dictionary = {}
-var _quantity_buttons: Array = []
+var _quantity_button: Button
 var _catalog: Dictionary
 var _weapon_meta: Dictionary
 var _textures: Dictionary = {}
@@ -60,7 +66,8 @@ var _hull_textures: Dictionary = {}
 var _background: Texture2D
 var _locator_badge_style: StyleBoxFlat
 var _title: Label
-var _wallet: Label
+var _wallet: Control
+var _wallet_cells: Dictionary = {}
 var _current_title: Label
 var _current_caption: Label
 var _current_value: Label
@@ -75,7 +82,8 @@ var _large_icon: TextureRect
 var _switch_state: Label
 var _batch_blocker: ColorRect
 var _batch: PanelContainer
-var _batch_quantity: OptionButton
+var _batch_quantity: Button
+var _batch_mode: int = 0
 var _batch_results: Label
 var _batch_scroll: ScrollContainer
 var _batch_submit: Button
@@ -154,7 +162,7 @@ func _init(session) -> void:
     _background = load("res://assets/ui/equipment/hangar/hangar-console.png")
     _setup_materials()
     _build()
-    _session.equipment.slots_changed.connect(func(_ids): _dirty = true)
+    _session.equipment.slots_changed.connect(_queue_level_values)
     _session.equipment.loadout_changed.connect(func(): _dirty = true)
     _session.equipment.options_changed.connect(func(): _dirty = true)
     _session.campaign_system.ship_changed.connect(func(): _dirty = true)
@@ -178,13 +186,74 @@ func _setup_materials() -> void:
     theme.set_color("font_color", "PopupMenu", CREAM)
     theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
     _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
+    _material_texture=load("res://assets/ui/equipment/materials-20261029/satin-metal-tile.png")
+    var shell:Texture2D=load("res://assets/ui/equipment/materials-20261029/painted-console-shell.png")
+    var paint:Image=shell.get_image().get_region(Rect2i(8,56,2102,620))
+    # One uniform scale for the painted frame at native UI pixel scale; rounded height is189px.
+    paint.resize(640,189,Image.INTERPOLATE_LANCZOS)
+    _console_paint=paint.get_pixel(320,94);_console_paint.a=1.0
+    _console_texture=ImageTexture.create_from_image(paint)
+class EquipmentSurface extends StyleBox:
+    var skin:StyleBoxFlat
+    var texture:Texture2D
+    var tint:Color
+    var profile:String
+    var depressed:bool=false
+    func _draw(canvas:RID, r:Rect2)->void:
+        if profile=="focus_tray":
+            RenderingServer.canvas_item_add_line(canvas,r.position+Vector2(12,r.size.y-3),r.end-Vector2(12,3),Color("436f70"),2.0)
+        elif profile=="tray":
+            skin.draw(canvas,Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36)))
+        elif profile=="instrument":skin.draw(canvas,r.grow(-3))
+        elif profile=="header":skin.draw(canvas,Rect2(r.position+Vector2(6,10),Vector2(r.size.x-12,r.size.y-10)))
+        elif profile=="button":
+            var face:Rect2=r.grow(-3)
+            if depressed:face.position.y+=1;face.size.y-=1
+            skin.draw(canvas,face)
+            var grain:Rect2=face.grow(-3)
+            RenderingServer.canvas_item_add_texture_rect(canvas,grain,texture.get_rid(),true,Color(tint.r,tint.g,tint.b,0.05))
+        # Quiet close remains native text, with no unused opaque backing.
+
+func _console_material(dark:bool)->StyleBox:
+    var frame:=StyleBoxTexture.new()
+    frame.texture=_console_texture;frame.draw_center=true
+    for side in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:frame.set_texture_margin(side,32)
+    frame.axis_stretch_horizontal=StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+    frame.axis_stretch_vertical=StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+    var paint_tint:Color=Color(0.29,0.40,0.43) if dark else Color.WHITE
+    frame.modulate_color=paint_tint
+    return frame
+
+func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String="flat", depressed:bool=false) -> StyleBox:
+    if profile=="deck":return _console_material(kind=="navy_face")
+    if profile=="flat":return StyleBoxEmpty.new()
+    var material:=EquipmentSurface.new()
+    material.texture=_material_texture;material.profile=profile;material.depressed=depressed
+    var palette:Dictionary={"navy_face":Color(0.24,0.35,0.42),"navy":Color(0.31,0.43,0.49),"teal":Color(0.37,0.58,0.54),"glass":Color(1.0,1.09,1.09),"primary":Color(1.12,0.91,0.62),"quiet":Color(0.24,0.35,0.42),"disabled":Color(0.5,0.59,0.61)}
+    material.tint=palette[kind]*modulation
+    var fill:Color=material.tint*Color(0.69,0.69,0.69,1.0)
+    var skin:=StyleBoxFlat.new();skin.bg_color=fill;skin.set_corner_radius_all(4)
+    if profile=="tray":
+        skin.bg_color=(Color("b4c9c0") if kind=="teal" else _console_paint.lightened(0.03))*modulation
+        skin.set_corner_radius_all(5);skin.shadow_color=Color(0.08,0.16,0.18,0.16);skin.shadow_size=1;skin.shadow_offset=Vector2(0,1)
+    elif profile=="instrument":
+        skin.bg_color=_console_paint.darkened(0.055);skin.set_corner_radius_all(7)
+        skin.shadow_color=Color(0.07,0.14,0.16,0.18);skin.shadow_size=2;skin.shadow_offset=Vector2(0,1)
+    elif profile=="header":skin.bg_color=Color("354c58");skin.set_corner_radius_all(2)
+    elif profile=="button":
+        skin.border_color=fill.darkened(0.19);skin.border_width_bottom=1
+        skin.shadow_color=Color(0.05,0.12,0.14,0.22);skin.shadow_size=1;skin.shadow_offset=Vector2(0,1 if depressed else 2)
+    material.skin=skin
+    material.content_margin_left=8;material.content_margin_right=8
+    material.content_margin_top=(6 if depressed else 4) if profile=="button" else 5
+    material.content_margin_bottom=(4 if depressed else 6) if profile=="button" else 5
+    return material
+
 
 func _frame(parent: Control, rect: Rect2) -> Panel:
     var frame := Panel.new()
     frame.position=rect.position;frame.size=rect.size
-    var material := _style(Color("234d5c"),Color("dcdcc8"),3)
-    material.set_corner_radius_all(10)
-    material.shadow_color=Color("102c3a",0.6);material.shadow_size=3;material.shadow_offset=Vector2(0,3)
+    var material := _surface_material("navy_face",Color.WHITE,"deck")
     frame.add_theme_stylebox_override("panel",material)
     frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
     frame.show_behind_parent=true
@@ -192,42 +261,31 @@ func _frame(parent: Control, rect: Rect2) -> Panel:
     return frame
 
 func _prepare_button_material(button: Button, form: String) -> void:
-    # Each native interaction state is built once. Selection only swaps cached styles.
-    var variants: Array=[]
+    # Cache only the materials this control uses; no discarded old-frame styles.
+    var variants:Array=[]
     for selected in [false,true]:
-        var states: Dictionary={}
+        var states:Dictionary={}
         for state in ["normal","hover","pressed","disabled","focus"]:
-            var fill:=Color("234b5b") if form!="candidate" else Color("214959")
-            var edge:=Color("9baea9") if form!="candidate" else Color("dedfce")
-            if selected:fill=Color("306958");edge=Color("9bd9be")
-            if state=="hover":fill=Color("3c6e76");edge=Color("d4f3e4")
-            elif state=="pressed":fill=Color("122f3d");edge=Color("7bb6b1")
-            elif state=="disabled":fill=Color("31434a");edge=Color("62747a")
-            var material:=_style(fill,edge,1)
-            material.set_corner_radius_all(5 if form=="candidate" else 6)
-            material.border_width_top=2
-            material.border_width_bottom=2 if state!="pressed" else 1
-            material.shadow_color=Color("102b38",0.45);material.shadow_size=1;material.shadow_offset=Vector2(0,2 if state!="pressed" else 0)
-            if form=="slot":
-                material.bg_color=Color(0,0,0,0) if state=="normal" else Color(0.65,0.95,0.86,0.16) if state=="hover" else Color(0.02,0.09,0.13,0.35) if state=="pressed" else Color(0.15,0.20,0.22,0.5)
-                material.set_border_width_all(0);material.shadow_size=0
-                material.expand_margin_left=-15;material.expand_margin_right=-15;material.expand_margin_top=-12;material.expand_margin_bottom=-26
-            if form=="index":
-                material.bg_color=Color(0,0,0,0) if not selected else Color(0.12,0.39,0.41,0.88)
-                material.border_color=Color(0.47,0.77,0.75,0.18) if not selected else Color("97e2d4")
-                material.set_border_width_all(1 if selected else 0)
-                material.set_corner_radius_all(4)
-                material.shadow_size=0
-                if state=="hover":material.bg_color=Color(0.15,0.38,0.41,0.8)
-                elif state=="pressed":material.bg_color=Color("153c49")
-            if form=="candidate":
-                material.shadow_size=0
-                material.set_border_width_all(1)
             if state=="focus":
-                material.bg_color=Color(0,0,0,0);material.border_color=Color("b3ead8");material.set_border_width_all(2);material.shadow_size=0
-            states[state]=material
+                if form=="candidate":states[state]=_surface_material("navy",Color.WHITE,"focus_tray")
+                else:
+                    var focus:=_style(Color(0,0,0,0),Color("b3ead8"),2)
+                    focus.set_corner_radius_all(4);states[state]=focus
+            elif form=="index":
+                var fill:Color=Color(0.12,0.39,0.41,0.88) if selected else Color(0,0,0,0)
+                if state=="hover":fill=Color(0.15,0.38,0.41,0.8)
+                elif state=="pressed":fill=Color("153c49")
+                var index_face:=_style(fill,Color("97e2d4") if selected else Color(0.47,0.77,0.75,0.18),1 if selected else 0)
+                index_face.set_corner_radius_all(4);states[state]=index_face
+            else:
+                var tint:=Color(1.16,1.18,1.16) if state=="hover" else Color(0.68,0.72,0.76) if state=="pressed" else Color(0.72,0.77,0.8) if state=="disabled" else Color.WHITE
+                var kind:String="disabled" if state=="disabled" else "primary" if form=="primary" else "quiet" if form=="quiet" else "teal" if selected else "navy"
+                var section:String="tray" if form=="candidate" else "flat" if form=="quiet" else "button"
+                states[state]=_surface_material(kind,tint,section,state=="pressed")
         variants.append(states)
     button.set_meta("material_variants",variants)
+    button.set_meta("material_chosen",null)
+    button.set_meta("material_role",form)
     _button_tint(button,false)
 
 func _button_tint(button: Button, chosen: bool) -> void:
@@ -235,7 +293,12 @@ func _button_tint(button: Button, chosen: bool) -> void:
     button.set_meta("material_chosen",chosen)
     var states: Dictionary=button.get_meta("material_variants")[1 if chosen else 0]
     for state in states:button.add_theme_stylebox_override(state,states[state])
-    button.add_theme_color_override("font_color",Color("c0f4df") if chosen else CREAM)
+    var primary:bool=button.get_meta("material_role","")=="primary"
+    var quiet:bool=button.get_meta("material_role","")=="quiet"
+    button.add_theme_color_override("font_color",INK if primary else Color("b9c9cc") if quiet else Color("d5ece3") if chosen else CREAM)
+    if primary:
+        button.add_theme_color_override("font_hover_color",INK)
+        button.add_theme_color_override("font_pressed_color",INK)
 
 func _economy_display_changed() -> void:
     presentation_counts.economy_signals += 1
@@ -299,9 +362,42 @@ func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
     parent.add_child(image)
     return image
 
+func _resource_icon(id: String, pixels: float, parent: Control) -> TextureRect:
+    var mark:=TextureRect.new()
+    mark.texture=ResourceVisuals.icon(id);mark.modulate=ResourceVisuals.color(id)
+    mark.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;mark.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    mark.size=Vector2(pixels,pixels);mark.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    parent.add_child(mark);mark.hide()
+    return mark
+
+func _render_wallet() -> void:
+    for id in _wallet_cells:_wallet_cells[id].icon.hide();_wallet_cells[id].text.hide()
+    var count:int=_wallet_dependency.size()
+    var x:float=0.0
+    for raw_id in _wallet_dependency:
+        var id:=str(raw_id)
+        if not _wallet_cells.has(id):continue
+        var cell:Dictionary=_wallet_cells[id]
+        var formatted:Dictionary=_session.amount_api.apply("to_display",[_wallet_dependency[raw_id]])
+        cell.text.text=RESOURCE_NAMES[id]+" "+(PlayerText.number(str(formatted.text)) if formatted.ok else "未知")
+        cell.text.tooltip_text=cell.text.text
+        var width:float=minf(590.0/maxi(1,count),cell.text.get_theme_font("font").get_string_size(cell.text.text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+35.0)
+        cell.icon.position=Vector2(x,6);cell.text.position=Vector2(x+23,0);cell.text.size=Vector2(width-29,30)
+        cell.icon.show();cell.text.show();x+=width
+
 func _build() -> void:
     _shared_chrome.append(_label("远航舰桥",Rect2(24,10,160,34),23))
-    _wallet=_label("",Rect2(204,16,590,30),15)
+    _wallet=Control.new();_wallet.position=Vector2(204,16);_wallet.size=Vector2(590,30)
+    _wallet.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(_wallet)
+    # Resource identity nodes/textures are cached at construction, never per quote.
+    for id in RESOURCE_NAMES:
+        var mark:=_resource_icon(id,17,_wallet)
+        var text:=_label("",Rect2(0,0,100,30),15)
+        remove_child(text);_wallet.add_child(text)
+        text.clip_text=true;text.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+        text.mouse_filter=Control.MOUSE_FILTER_PASS
+        _wallet_cells[id]={"icon":mark,"text":text}
+
     _shared_chrome.append(_label("战力维护  /  装配",Rect2(24,52,380,28),14,Color("57777a")))
     _title=_label("装配",Rect2(35,104,236,30),18,CREAM)
     _title.add_theme_color_override("font_shadow_color",Color("173542"))
@@ -328,8 +424,8 @@ func _workbench_label(text:String,rect:Rect2,font_size:int=16,color:Color=INK,pa
     (parent if parent!=null else _workbench).add_child(label)
     return label
 
-func _workbench_button(text:String,rect:Rect2,action:Callable) -> Button:
-    var button:=_button(text,rect,action,true)
+func _workbench_button(text:String,rect:Rect2,action:Callable,form:String="button") -> Button:
+    var button:=_button(text,rect,action,true,form)
     remove_child(button);_workbench.add_child(button)
     return button
 
@@ -337,12 +433,10 @@ func _build_workbench() -> void:
     _workbench=Panel.new();_workbench.name="EquipmentWorkbench"
     _workbench.position=Vector2(16,610);_workbench.size=Vector2(776,286)
     _workbench.clip_contents=true;_workbench.mouse_filter=Control.MOUSE_FILTER_PASS
-    var body:=_style(Color("e9e7d6"),Color("849a93"),1)
-    body.set_corner_radius_all(9);body.shadow_color=Color("102b36",0.35);body.shadow_size=3;body.shadow_offset=Vector2(0,2)
+    var body:=_surface_material("enamel",Color.WHITE,"deck")
     _workbench.add_theme_stylebox_override("panel",body);add_child(_workbench)
     var header:=Panel.new();header.name="ObjectHeader";header.size=Vector2(776,36);header.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var beam:=_style(Color("244b5b"),Color("244b5b"),0)
-    beam.corner_radius_top_left=8;beam.corner_radius_top_right=8;beam.corner_radius_bottom_left=0;beam.corner_radius_bottom_right=0
+    var beam:=_surface_material("navy_face",Color.WHITE,"header")
     header.add_theme_stylebox_override("panel",beam);_workbench.add_child(header)
     _current_title=_workbench_label("现装",Rect2(20,4,250,28),18,CREAM)
     _level_label=_workbench_label("",Rect2(190,7,150,22),13,Color("b8d3ca"))
@@ -350,26 +444,26 @@ func _build_workbench() -> void:
     _comparison_title=_workbench_label("装备选择",Rect2(460,42,174,24),16)
     _switch_state=_workbench_label("",Rect2(638,46,122,18),12,Color("946338"));_switch_state.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
     _workbench_divider=ColorRect.new();_workbench_divider.position=Vector2(440,48);_workbench_divider.size=Vector2(1,110);_workbench_divider.color=Color("b5c3b8");_workbench_divider.mouse_filter=Control.MOUSE_FILTER_IGNORE;_workbench.add_child(_workbench_divider)
-    _transaction_rail=Panel.new();_transaction_rail.name="PurchaseRail";_transaction_rail.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    _transaction_rail.add_theme_stylebox_override("panel",_style(Color("dde3d5"),Color("b5c3b8"),1));_workbench.add_child(_transaction_rail)
     _upgrade_data=Panel.new();var data:Panel=_upgrade_data;data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(320,80);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var glass:=_style(Color("e1e9dc"),Color("b0c0b4"),1);glass.set_corner_radius_all(4);data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
-    _icon_bezel=Panel.new();var icon_frame:Panel=_icon_bezel;icon_frame.name="CurrentIconBezel";icon_frame.position=Vector2(20,88);icon_frame.size=Vector2(66,61);icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var bezel:=_style(Color("eeecda"),Color("a6b9aa"),1);bezel.set_corner_radius_all(4);icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
+    var glass:=_surface_material("glass",Color.WHITE,"instrument");data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
     _large_icon=_icon("laser",Rect2(27,95,52,47),_workbench)
-    _current_caption=_workbench_label("当前攻击力",Rect2(114,91,140,18),12,Color("617c78"))
-    _upgrade_caption=_workbench_label("升级后",Rect2(290,91,146,18),12,Color("617c78"))
+    _current_caption=_workbench_label("当前攻击力",Rect2(114,91,140,18),12,Color("4a6265"))
+    _upgrade_caption=_workbench_label("升级后",Rect2(290,91,146,18),12,Color("4a6265"))
     _current_value=_workbench_label("—",Rect2(114,109,140,38),27)
     _upgrade_arrow=_workbench_label("→",Rect2(257,105,32,32),23,Color("72938d"))
     _next_value=_workbench_label("—",Rect2(290,109,148,38),27,TEAL)
     for value in [_current_value,_next_value]:value.mouse_filter=Control.MOUSE_FILTER_PASS;value.clip_text=true
-    _cost=_workbench_label("本次费用",Rect2(22,204,90,25),13,Color("647b75"))
+    _cost=_workbench_label("本次费用",Rect2(22,204,90,25),13,Color("4a6265"))
+    for id in RESOURCE_NAMES:
+        var mark:=_resource_icon(id,20,_workbench)
+        var name:=_workbench_label(RESOURCE_NAMES[id],Rect2(0,0,90,22),13,Color("4a6265"))
+        var amount:=_workbench_label("",Rect2(0,0,220,26),17,INK)
+        amount.add_theme_font_override("font",_font_strong);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+        _cost_cells[id]={"icon":mark,"name":name,"amount":amount}
     _payment_state=_workbench_label("",Rect2(278,204,160,25),13,Color("a75a3d"));_payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-    for index in 3:
-        var captions: Array=["+1","+10","MAX"]
-        var button:=_workbench_button(captions[index],Rect2(18+index*65,240,59,36),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
-        button.name="Quantity"+str(index);_quantity_buttons.append(button)
-    _purchase=_workbench_button("购买1级",Rect2(226,240,218,36),_buy);_purchase.name="Purchase"
+    _quantity_button=_workbench_button("×1",Rect2(20,208,96,36),_cycle_quantity)
+    _quantity_button.name="QuantityCycle"
+    _purchase=_workbench_button("购买1级",Rect2(226,240,218,36),_buy,"primary");_purchase.name="Purchase"
     _purchase.clip_text=true;_purchase.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
     _candidate_row=Control.new();_candidate_row.name="CandidateChoices";_candidate_row.position=Vector2(464,74);_candidate_row.size=Vector2(296,88);_candidate_row.clip_contents=true;_candidate_row.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_candidate_row)
     _comparison_group=Control.new();_comparison_group.name="DifferentCandidateComparison";_comparison_group.position=Vector2(464,170);_comparison_group.size=Vector2(296,64);_comparison_group.clip_contents=true;_comparison_group.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_comparison_group)
@@ -378,9 +472,9 @@ func _build_workbench() -> void:
         header_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;header_label.add_theme_font_override("font",_font_strong);_compare_headers.append(header_label)
         var value:=_workbench_label("—",Rect2(52+column*124,18,118,25),17,INK if column==0 else TEAL,_comparison_group)
         value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.add_theme_font_override("font",_font_strong);_compare_values.append(value)
-    _compare_row_label=_workbench_label("攻击力",Rect2(0,18,48,25),12,Color("617c78"),_comparison_group)
-    _period_caption=_workbench_label("周期",Rect2(0,43,48,18),12,Color("617c78"),_comparison_group)
-    _install=_workbench_button("安装",Rect2(484,220,266,36),_equip);_install.name="Install"
+    _compare_row_label=_workbench_label("攻击力",Rect2(0,18,48,25),12,Color("4a6265"),_comparison_group)
+    _period_caption=_workbench_label("周期",Rect2(0,43,48,18),12,Color("4a6265"),_comparison_group)
+    _install=_workbench_button("安装",Rect2(484,220,266,36),_equip,"primary");_install.name="Install"
 
 func _text_ink_bounds(text:String, font:Font, font_size:int) -> Rect2:
     var line:=TextLine.new();line.add_string(text,font,font_size)
@@ -405,20 +499,16 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     var rows:int=maxi(1,resource_count)
     var signature:Array=[different,defence,rows]
     if _workbench_layout.get("signature",[])==signature:return
-    var extra:float=maxi(0,rows-2)*22.0 if different else 0.0
-    var height:float=272.0+extra if different else 260.0
-    var action_y:float=220.0+extra if different else 208.0
+    var height:float=maxf(288.0 if different else 266.0,266.0+maxi(0,rows-1)*22.0)
+    var action_y:float=height-68.0
     _workbench.position.y=896.0-height;_workbench.size.y=height
-    _workbench_divider.size.y=162.0+extra if different else 110.0
+    _workbench_divider.size.y=action_y-48.0
     _upgrade_data.position=Vector2(100,70)
-    _icon_bezel.position=Vector2(20,70);_icon_bezel.size=Vector2(66,80)
     _candidate_row.position=Vector2(460,70)
     _comparison_group.position=Vector2(460,166);_comparison_group.size.y=43
-    _install.position=Vector2(440,action_y);_install.size=Vector2(310,36)
-    for index in _quantity_buttons.size():
-        _quantity_buttons[index].position=Vector2(26+index*63,action_y);_quantity_buttons[index].size=Vector2(55,36)
-    _purchase.position=Vector2(220,action_y);_purchase.size=Vector2(204 if different else 530,36)
-    _transaction_rail.position=Vector2(16,action_y-8);_transaction_rail.size=Vector2(744,52)
+    _install.position=Vector2(460,action_y);_install.size=Vector2(300,36)
+    _quantity_button.position=Vector2(20,action_y);_quantity_button.size=Vector2(96,36)
+    _purchase.position=Vector2(128,action_y);_purchase.size=Vector2(292,36)
     _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
 
 func _layout_primary_values() -> void:
@@ -453,13 +543,12 @@ func _place_current_icon(key: String) -> void:
     var factor:float=minf(minf((centre.x-safe.position.x)/before.x,(safe.end.x-centre.x)/after.x),minf((centre.y-safe.position.y)/before.y,(safe.end.y-centre.y)/after.y))
     _large_icon.size=source*factor
     _large_icon.position=centre-before*factor
-    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,_workbench_layout.data_y+1),Vector2(64,78)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+_workbench_layout.data_y+40,"optical_mass_offset_y":3}
+    _current_icon_geometry={"key":key,"allocation_inner":Rect2(_workbench.global_position+Vector2(21,_workbench_layout.data_y+1),Vector2(64,78)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+_workbench_layout.data_y+40,"optical_mass_offset_y":3}
 
 func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
-    for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
+    for id in _cost_cells:_cost_cells[id].icon.hide();_cost_cells[id].name.hide();_cost_cells[id].amount.hide()
     _purchase.tooltip_text=""
-    var different:bool=_workbench_layout.different
     var first_row_y:float=_workbench_layout.fee_y
     _cost.text="本次费用";_cost.position=Vector2(20,first_row_y);_cost.size=Vector2(84,22)
     _cost.visible=affordable;_payment_state.visible=not affordable
@@ -468,18 +557,15 @@ func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     _payment_state.autowrap_mode=TextServer.AUTOWRAP_OFF;_payment_state.clip_text=true;_payment_state.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;_payment_state.mouse_filter=Control.MOUSE_FILTER_PASS
     for index in keys.size():
         var id:String=str(keys[index])
-        if not _cost_cells.has(id):
-            var name:=_workbench_label("",Rect2(0,0,90,22),13,Color("5f7876"))
-            var amount:=_workbench_label("",Rect2(0,0,220,26),17,INK)
-            amount.add_theme_font_override("font",_font_strong);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-            _cost_cells[id]={"name":name,"amount":amount}
+        if not _cost_cells.has(id):continue
         var cell:Dictionary=_cost_cells[id]
-        var width:float=308.0 if different or keys.size()==1 else (644.0-24.0*(keys.size()-1))/keys.size()
-        var x:float=112.0 if different else 112.0+index*(width+24.0)
-        var row_y:float=first_row_y+index*22 if different else first_row_y
-        cell.name.position=Vector2(x,row_y);cell.name.size=Vector2(78,22)
-        cell.amount.position=Vector2(x+82,row_y-3);cell.amount.size=Vector2(width-86,26)
-        cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
+        var width:float=308.0
+        var x:float=112.0
+        var row_y:float=first_row_y+index*22
+        cell.icon.position=Vector2(x,row_y+1);cell.icon.show()
+        cell.name.position=Vector2(x+24,row_y);cell.name.size=Vector2(78,22)
+        cell.amount.position=Vector2(x+106,row_y-3);cell.amount.size=Vector2(width-110,26)
+        cell.name.text=RESOURCE_NAMES.get(id,id)
         var formatted:Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
         cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
         cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"));cell.name.show();cell.amount.show()
@@ -500,7 +586,6 @@ func _open_batch() -> void:
     exclusive_ui_changed.emit()
 
 func _close_batch() -> void:
-    _batch_quantity.get_popup().hide()
     _batch.hide()
     _batch_frame.hide()
     _batch_blocker.hide()
@@ -521,24 +606,19 @@ func _build_batch() -> void:
     var heading:=Label.new();heading.text="全部装备升级"
     heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",24);heading.add_theme_color_override("font_color",CREAM)
     stack.add_child(heading)
-    _batch_quantity=OptionButton.new()
-    _batch_quantity.get_popup().visibility_changed.connect(func():exclusive_ui_changed.emit())
-    for caption in ["每槽 +1","每槽 +10","逐槽 MAX"]:_batch_quantity.add_item(caption)
-    _batch_quantity.custom_minimum_size.y=40
-    _batch_quantity.add_theme_font_override("font",_font_strong);_batch_quantity.add_theme_font_size_override("font_size",17)
-    _batch_quantity.add_theme_color_override("font_color",CREAM)
-    _prepare_button_material(_batch_quantity,"button")
-    stack.add_child(_batch_quantity)
+    _batch_quantity=_button("每槽 ×1",Rect2(0,0,270,40),_cycle_batch_quantity)
+    remove_child(_batch_quantity);_batch_quantity.custom_minimum_size=Vector2(132,40)
     _batch_scroll=ScrollContainer.new();_batch_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
     stack.add_child(_batch_scroll)
     var results:=VBoxContainer.new();results.custom_minimum_size.x=554;results.add_theme_constant_override("separation",15);_batch_scroll.add_child(results)
     _batch_results=Label.new();_batch_results.add_theme_font_size_override("font_size",16);_batch_results.add_theme_color_override("font_color",CREAM)
     _batch_results.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_batch_results.custom_minimum_size.x=548;results.add_child(_batch_results)
     var row:=HBoxContainer.new();row.add_theme_constant_override("separation",14);stack.add_child(row)
-    _batch_submit=_button("执行升级",Rect2(0,0,270,44),_buy_all,true)
-    remove_child(_batch_submit);_batch_submit.custom_minimum_size=Vector2(270,44);row.add_child(_batch_submit)
-    _batch_close=_button("关闭",Rect2(0,0,270,44),_close_batch)
-    remove_child(_batch_close);_batch_close.custom_minimum_size=Vector2(270,44);row.add_child(_batch_close)
+    row.add_child(_batch_quantity)
+    _batch_submit=_button("执行升级",Rect2(0,0,270,44),_buy_all,true,"primary")
+    remove_child(_batch_submit);_batch_submit.custom_minimum_size=Vector2(240,44);row.add_child(_batch_submit)
+    _batch_close=_button("关闭",Rect2(0,0,270,44),_close_batch,false,"quiet")
+    remove_child(_batch_close);_batch_close.custom_minimum_size=Vector2(140,44);row.add_child(_batch_close)
     _batch.hide()
 
 func _selected_fact() -> Dictionary:
@@ -554,10 +634,35 @@ func select_slot(id: String) -> void:
     _dirty = true
 
 func _select_candidate(id: String) -> void:
+    if id==_candidate:return
     _candidate = id
-    _dirty = true
+    if _facts.is_empty():_dirty=true;return
+    _refresh_choices(_selected_fact(),false)
+    _comparison_dirty = true
+
+func _queue_level_values(ids:Array)->void:
+    for id in ids:_pending_level_ids[str(id)]=true
+
+func _refresh_level_values()->void:
+    presentation_counts.numeric_refreshes+=1
+    presentation_counts.slot_fact_reads+=1
+    _facts=_session.equipment_slot_facts()
+    var selected_changed:bool=_pending_level_ids.has(_selected)
+    for row in _facts:
+        var id:String=str(row.id)
+        if not _pending_level_ids.has(id) or not _slot_buttons.has(id):continue
+        var signature:Array=[row.category,row.index,row.equipment_id,row.paid_level,id==_selected]
+        if _slot_presentations.get(id)!=signature:
+            _slot_presentations[id]=signature
+            _slot_buttons[id].meta.text="Lv."+str(row.paid_level) if not str(row.equipment_id).is_empty() else ""
+            presentation_counts.slots_updated+=1
+    _pending_level_ids.clear()
+    if _batch.visible:_refresh_batch()
+    _batch_state_dirty=false
+    if selected_changed or _comparison_dirty:_refresh_comparison()
 
 func _refresh() -> void:
+    _pending_level_ids.clear();_batch_state_dirty=false
     _dirty = false
     presentation_counts.refreshes += 1
     presentation_counts.slot_fact_reads += 1
@@ -589,7 +694,7 @@ func _refresh_comparison() -> void:
         return
     _wallet_dependency = _session.economy.budget()
     presentation_counts.wallet_refreshes += 1
-    _wallet.text = _cost_text(_wallet_dependency).replace(" / ", "   ")
+    _render_wallet()
     if _maximum: presentation_counts.maximum_reads += 1
     presentation_counts.comparison_reads += 1
     last_comparison = _session.equipment_comparison(_selected, _candidate, _quantity, _maximum)
@@ -647,12 +752,17 @@ func _refresh_comparison() -> void:
     elif str(comparison.switch_admission.get("reason",""))=="NoChange":_install.text="已装备"
     elif str(comparison.switch_admission.get("reason",""))=="EquipmentSwitchLocked":_install.text="换装冷却中"
     elif str(comparison.switch_admission.get("reason",""))=="EquipmentLocked":_install.text="尚未解锁"
-    for index in 3:
-        var selected: bool = (index == 2 and _maximum) or (not _maximum and index == (1 if _quantity == 10 else 0))
-        if _quantity_presentations.get(index) != selected:
-            _quantity_presentations[index] = selected
-            presentation_counts.quantity_styles_updated += 1
-            _button_tint(_quantity_buttons[index],selected)
+    _quantity_button.text="MAX" if _maximum else "×"+str(_quantity)
+
+func _cycle_quantity() -> void:
+    if _maximum:_maximum=false;_quantity=1
+    elif _quantity==1:_quantity=10
+    else:_maximum=true;_quantity=1
+    _comparison_dirty=true
+
+func _cycle_batch_quantity() -> void:
+    _batch_mode=(_batch_mode+1)%3
+    _batch_quantity.text=["每槽 ×1","每槽 ×10","逐槽 MAX"][_batch_mode]
 
 func _refresh_slots(active: Array) -> void:
     var live: Array=[]
@@ -697,9 +807,12 @@ func _refresh_slots(active: Array) -> void:
         if id not in live:
             _slot_buttons[id].button.queue_free();_slot_buttons.erase(id);_slot_presentations.erase(id);_slot_selections.erase(id)
 
-func _refresh_choices(fact: Dictionary) -> void:
-    presentation_counts.equipment_option_reads+=1
-    var options: Array=_session.equipment.panel_equipment(_selected)
+func _refresh_choices(fact: Dictionary, read_options:bool=true) -> void:
+    if read_options or _choice_option_slot!=_selected:
+        presentation_counts.equipment_option_reads+=1
+        _choice_options=_session.equipment.panel_equipment(_selected)
+        _choice_option_slot=_selected
+    var options: Array=_choice_options
     var live: Array=[]
     var column: int=0
     for option in options:
@@ -711,11 +824,11 @@ func _refresh_choices(fact: Dictionary) -> void:
             remove_child(button);_candidate_row.add_child(button)
             button.name="Candidate_"+id
             var icon:=_icon(id,Rect2(16,8,36,32),button)
-            var caption:=_label("",Rect2(3,42,62,20),13,CREAM)
+            var caption:=_label("",Rect2(3,42,62,20),13,INK)
             remove_child(caption);button.add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             caption.add_theme_font_override("font",_font_strong)
             caption.size=Vector2(62,20)
-            var status:=_label("",Rect2(3,62,62,18),12,Color("c6dfd5"))
+            var status:=_label("",Rect2(3,62,62,18),12,Color("4a6967"))
             remove_child(status);button.add_child(status);status.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
             status.add_theme_font_override("font",_font_strong)
             # Initial Label sizing used the default font before its override.
@@ -737,7 +850,7 @@ func _refresh_choices(fact: Dictionary) -> void:
         item.caption.modulate=Color.WHITE if option.enabled else Color("b1beb9")
         item.icon.modulate=Color.WHITE
         item.icon.material=null
-        item.status.add_theme_color_override("font_color",Color("c6dfd5") if option.enabled else Color("d6bb8a"))
+        item.status.add_theme_color_override("font_color",Color("4a6967") if option.enabled else Color("856e4b"))
         _button_tint(item.button,_candidate==id)
         column+=1
     for id in _choices.keys():
@@ -757,31 +870,34 @@ func _cost_text(costs: Dictionary) -> String:
     var parts := PackedStringArray()
     for id in costs:
         var result: Dictionary = _session.amount_api.apply("to_display", [costs[id]])
-        var label: String = {"1":"铁", "2":"铀", "degenerate_matter":"简并物质", "jewel":"碎片", "chrono":"时空微粒"}.get(str(id), str(id))
+        var label: String = RESOURCE_NAMES.get(str(id), str(id))
         parts.append((PlayerText.number(str(result.text)) if result.ok else "未知") + " " + label)
     return " / ".join(parts) if not parts.is_empty() else "0"
 
 func _buy() -> void:
     var inputs: Dictionary = _session.equipment_inputs()
     var result: Dictionary = _session.equipment.buy_max_levels(_selected, inputs, _session.economy.affordable, _session.economy.payment, _session.publish_equipment_levels) if _maximum else _session.equipment.buy_levels(_selected, _quantity, inputs, _session.economy.payment, _session.publish_equipment_levels)
-    _accept_result(result)
+    _accept_result(result,true)
 
 func _equip() -> void:
     _accept_result(_session.equipment.equip_slot(_selected, _candidate, _session.equipment_inputs(), _session.publish_equipment_refit))
 
 func _buy_all() -> void:
-    var mode: int = _batch_quantity.selected
+    var mode: int = _batch_mode
     var result: Dictionary = _session.equipment.buy_all_levels(10 if mode == 1 else 1, mode == 2, _session.equipment_inputs(), _session.economy.affordable, _session.economy.payment, _session.publish_equipment_levels)
     _last_batch_result = result.duplicate(true)
-    _accept_result(result)
+    _accept_result(result,true)
 
 func _slot_name(id: String) -> String:
     var pieces := id.split(":")
     return ("武器" if pieces[0] == "weapon" else "防御") + str(int(pieces[1]) + 1) if pieces.size() == 2 else id
 
-func _accept_result(result: Dictionary) -> void:
+func _accept_result(result: Dictionary, level_command:bool=false) -> void:
     last_result = result.duplicate(true)
-    _dirty = true
+    if level_command:
+        _comparison_dirty=true;_batch_state_dirty=true
+        for purchase in result.get("purchase_receipt",{}).get("purchases",[]):_pending_level_ids[str(purchase.slot_id)]=true
+    else:_dirty = true
     command_finished.emit(last_result)
 
 func _refresh_batch() -> void:
@@ -789,6 +905,11 @@ func _refresh_batch() -> void:
     var receipt: Dictionary = result.get("purchase_receipt", {})
     var status: String = str(receipt.get("commit_status", ""))
     var unknown: bool = status == "fault_unknown" or (result.get("fault", false) and status != "accepted")
+    var active:Array=_facts.filter(func(row):return not row.dormant)
+    var height:float=clampf(210.0+active.size()*28.0,286.0,500.0)
+    var position_y:float=roundf((900.0-height)*0.5)
+    _batch.position.y=position_y;_batch.size.y=height
+    _batch_frame.position.y=position_y;_batch_frame.size.y=height
     var current: String = "\n".join(_facts.filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [_slot_name(str(row.id)), NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
     if unknown:
         _batch_results.text = "提交结果未知，会话已停止。\n" + current
@@ -805,8 +926,12 @@ func _process(dt: float) -> void:
     if _dirty:
         _clock = 0.0
         _refresh()
+    elif not _pending_level_ids.is_empty():
+        _refresh_level_values()
     elif _comparison_dirty:
         _refresh_comparison()
+        if _batch_state_dirty and _batch.visible:_refresh_batch()
+        _batch_state_dirty=false
     elif cooldown and _clock >= 0.1:
         _clock = 0.0
         _refresh_cooldown()
@@ -941,7 +1066,7 @@ func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D 
         context_slot.add_child(_context_caption)
 
 func has_exclusive_ui() -> bool:
-    return _batch.visible or _batch_quantity.get_popup().visible
+    return _batch.visible
 
 func prepare_host_hide(force: bool = false) -> bool:
     if has_exclusive_ui() and not force:return false
