@@ -16,4 +16,5 @@ WARNING: All audio drivers failed, falling back to the dummy driver.
      at: initialize (servers/audio/audio_server.cpp:258)
 
 DIRECT equal={ "ok": true, "defence_changed": true } levels=1
+DIRECT reject={ "ok": false, "reason": "ReactorPlanOverCapacity" } actual=0.25 notice=分配超过可调容量
 DIRECT slide={ "ok": true, "defence_changed": false, &"actual": { "ok": true, "modules": [{ "id": "weapons", "enabled": true, "ratio": 0.0, "load": 0.0, "has_free": false, "manual": "0e0", "free": "0e0", "effective": "0e0", "factor": "1e0" }, { "id": "defence", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "smelting", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "condensation", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }], "load": 0.75, "capacity": "1e2", "allocated": "7.5e1", "remaining": "2.5e1" } } model=0.0

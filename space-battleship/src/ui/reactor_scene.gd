@@ -16,10 +16,13 @@ const ERRORS := {"ReactorPlanOverCapacity":"分配超过可调容量", "ReactorM
 var _owner
 var _inputs: Callable
 var _pay: Callable
+var _can_pay: Callable
 var _publish: Callable
 var _read: Callable
 var _read_quote: Callable
 var _clock: Callable
+var _ui_font_regular: FontVariation
+var _ui_font_bold: FontVariation
 var _stage: Control
 var _stage_viewport: SubViewport
 var _rows: Dictionary = {}
@@ -28,6 +31,9 @@ var _model: Dictionary = {}
 var _shares: Dictionary = {}
 var _quote: Dictionary = {}
 var _quote_cost_ids: Array = []
+var _purchase_count: int = 1
+var _purchase_max: bool = false
+var _quantity_buttons: Dictionary = {}
 var _selected: String = ""
 var _dirty: bool = true
 var _quote_dirty: bool = true
@@ -42,15 +48,26 @@ var _equal: Button
 var last_result: Dictionary = {}
 var presentation_counts := {"model_reads":0, "quote_reads":0, "preview_reads":0, "commands":0, "visible_frames":0}
 
-func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Callable(), publish: Callable = Callable()) -> void:
+func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Callable(), publish: Callable = Callable(), can_pay: Callable = Callable()) -> void:
 	_owner = owner
 	_inputs = inputs
 	_pay = payment
+	_can_pay = can_pay
 	_publish = publish
 	size = Vector2(808, 900)
 	custom_minimum_size = size
 	clip_contents = true
-	# Use the same readable host font as the accepted equipment scene.
+	# Bind the variable CJK font and actual weights locally, as in the equipment workbench.
+	_ui_font_regular = FontVariation.new()
+	_ui_font_regular.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
+	_ui_font_regular.variation_opentype = {2003265652: 400.0}
+	_ui_font_bold = FontVariation.new()
+	_ui_font_bold.base_font = _ui_font_regular.base_font
+	_ui_font_bold.variation_opentype = {2003265652: 600.0}
+	theme = Theme.new()
+	theme.default_font = _ui_font_regular
+	theme.default_font_size = 15
+	theme.set_font("font", "Button", _ui_font_bold)
 	var surface := SubViewportContainer.new()
 	surface.position = Vector2(0, 65)
 	surface.size = Vector2(808, 835)
@@ -96,6 +113,7 @@ func _label(point: Vector2, width: float, font_size: int = 16) -> Label:
 	label.position = point
 	label.size = Vector2(width, 28)
 	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_font_override("font", _ui_font_bold if font_size >= 18 else _ui_font_regular)
 	label.add_theme_color_override("font_color", Color("dcebe4"))
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label.clip_text = true
@@ -108,26 +126,44 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.text = text
 	button.position = rect.position
 	button.size = rect.size
-	button.add_theme_font_size_override("font_size", 15)
+	button.add_theme_font_size_override("font_size", 16)
+	button.add_theme_font_override("font", _ui_font_bold)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var box := StyleBoxFlat.new()
-		box.bg_color = Color("277384") if state == "hover" else Color("123e4c") if state == "pressed" else Color("175466")
-		if primary:
-			box.bg_color = Color("f3f0df") if state == "normal" else Color("e4eee5") if state in ["hover","focus"] else Color("cce5dd") if state == "pressed" else Color("e0e1d7")
-		if state == "disabled" and not primary: box.bg_color = Color("425c66")
-		box.border_color = Color("d9ae5d") if state == "focus" else Color("75d4d0") if state == "hover" else Color("6ed1ca") if state == "pressed" else Color("9ba9a2") if state == "disabled" else Color("89aaa9")
-		box.set_border_width_all(2 if state in ["hover","pressed","focus"] else 1)
+		box.bg_color = Color("234b5b")
+		box.border_color = Color("9baea9")
+		if state == "hover":
+			box.bg_color = Color("3c6e76")
+			box.border_color = Color("d4f3e4")
+		elif state == "pressed":
+			box.bg_color = Color("122f3d")
+			box.border_color = Color("7bb6b1")
+		elif state == "disabled":
+			box.bg_color = Color("31434a")
+			box.border_color = Color("62747a")
+		elif state == "focus":
+			box.bg_color = Color(0,0,0,0)
+			box.border_color = Color("b3ead8")
+		box.set_border_width_all(1)
+		box.border_width_top = 2
+		box.border_width_bottom = 1 if state == "pressed" else 2
 		box.set_corner_radius_all(6)
 		box.content_margin_left = 8
 		box.content_margin_right = 8
 		box.content_margin_top = 5
 		box.content_margin_bottom = 5
+		box.shadow_color = Color("102b38",0.45)
+		box.shadow_size = 1
+		box.shadow_offset = Vector2(0,0 if state == "pressed" else 2)
+		if state == "focus":
+			box.set_border_width_all(2)
+			box.shadow_size = 0
 		button.add_theme_stylebox_override(state, box)
-	button.add_theme_color_override("font_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_hover_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_pressed_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_focus_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_disabled_color", Color("859795"))
+	button.add_theme_color_override("font_color", Color("f3f0df"))
+	button.add_theme_color_override("font_hover_color", Color("c4fff0"))
+	button.add_theme_color_override("font_pressed_color", Color("f3f0df"))
+	button.add_theme_color_override("font_focus_color", Color("f3f0df"))
+	button.add_theme_color_override("font_disabled_color", Color("8da5ac"))
 	button.pressed.connect(action)
 	add_child(button)
 	return button
@@ -168,6 +204,7 @@ func _build() -> void:
 		mount.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(mount)
 		var effect := _label(layout.effect + offset,float(layout.width),18)
+		effect.add_theme_font_override("font", _ui_font_bold)
 		effect.mouse_filter = Control.MOUSE_FILTER_PASS
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
@@ -202,6 +239,7 @@ func _build() -> void:
 		slider.focus_entered.connect(func(): _selected = id; _update_stage())
 		add_child(slider)
 		var ratio := _label(layout.slider + offset + Vector2(0, 2), float(layout.track), 15)
+		ratio.add_theme_font_override("font", _ui_font_bold)
 		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		ratio.add_theme_color_override("font_color", Color("f7f1dc"))
 		ratio.add_theme_color_override("font_shadow_color", Color("092733", 0.95))
@@ -211,11 +249,37 @@ func _build() -> void:
 	_budget = _label(Vector2(325,762),290,16)
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
 	_cost = _label(Vector2(184, 789), 430, 16)
-	_purchase = _button("升级",Rect2(181,815,151,44),func(): _command(func(): return _owner.purchase(1,false,_inputs.call(),_pay,_publish)),true)
-	_equal = _button("均分",Rect2(342,817,74,40),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
+	_purchase = _button("升级 ×1",Rect2(181,815,151,44),func(): _command(_purchase_action),true)
+	_quantity_buttons["1"] = _button("×1",Rect2(342,817,59,40),func(): _select_quantity(1,false))
+	_quantity_buttons["10"] = _button("×10",Rect2(407,817,59,40),func(): _select_quantity(10,false))
+	_quantity_buttons["max"] = _button("MAX",Rect2(472,817,61,40),func(): _select_quantity(1,true))
+	_equal = _button("均分",Rect2(540,817,74,40),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
 	_notice = _label(Vector2(184,864),430,16)
 	_notice.size.y = 28
 	for button in [_purchase,_equal]: button.disabled = true
+	_select_quantity(1,false)
+
+func _select_quantity(count: int, maximum: bool) -> void:
+	_purchase_count = count
+	_purchase_max = maximum
+	_quote = {}
+	_quote_dirty = true
+	_cost.text = "报价读取中"
+	_purchase.text = "升级 MAX" if maximum else "升级 ×" + str(count)
+	for key in _quantity_buttons:
+		var selected: bool = key == ("max" if maximum else str(count))
+		var button: Button = _quantity_buttons[key]
+		var normal: StyleBoxFlat = button.get_theme_stylebox("normal").duplicate()
+		normal.bg_color = Color("306958") if selected else Color("234b5b")
+		normal.border_color = Color("9bd9be") if selected else Color("9baea9")
+		button.add_theme_stylebox_override("normal", normal)
+		button.add_theme_color_override("font_color",Color("f3f0df"))
+	_update_buttons()
+
+func _purchase_action() -> Dictionary:
+	if _purchase_max:
+		return _owner.purchase_max(_inputs.call(),_can_pay,_pay,_publish)
+	return _owner.purchase(_purchase_count,false,_inputs.call(),_pay,_publish)
 
 func _ready() -> void:
 	visibility_changed.connect(func():
@@ -328,8 +392,8 @@ func _refresh_quote() -> void:
 		_update_buttons()
 		return
 	presentation_counts.quote_reads += 1
-	var quote: Dictionary = _read_quote.call()
-	if quote.get("ok") != true or not quote.has("costs") or not quote.costs is Dictionary or not quote.has("can_purchase") or not quote.can_purchase is bool:
+	var quote: Dictionary = _read_quote.call(_purchase_count,_purchase_max)
+	if quote.get("ok") != true or not quote.has("count") or not quote.count is int or not quote.has("costs") or not quote.costs is Dictionary or not quote.has("cost_resource_ids") or not quote.cost_resource_ids is PackedStringArray or not quote.has("can_purchase") or not quote.can_purchase is bool or (not _purchase_max and int(quote.count) != _purchase_count) or (_purchase_max and int(quote.count) < 0):
 		_quote = {}
 		_quote_cost_ids.clear()
 		_cost.text = "费用 —"
@@ -337,20 +401,28 @@ func _refresh_quote() -> void:
 		_update_buttons()
 		return
 	_quote = quote
-	_quote_cost_ids = quote.costs.keys()
+	_quote_cost_ids.clear()
+	for resource_id in quote.cost_resource_ids:
+		if not resource_id is String:
+			_quote = {}
+			_cost.text = "费用 —"
+			_update_buttons()
+			return
+		_quote_cost_ids.append(resource_id)
 	var labels: Array = []
-	for id in _quote_cost_ids:
+	for id in quote.costs:
 		if not quote.costs[id] is String:
 			_quote = {}
 			_cost.text = "费用 —"
 			_update_buttons()
 			return
 		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
-	_cost.text = "费用 " + " + ".join(labels)
-	_cost.tooltip_text = " + ".join(labels)
+	var cost_text: String = " + ".join(labels)
+	_cost.text = ("MAX 可购 " + str(quote.count) + " 级 · " if _purchase_max else "") + ("费用 " + cost_text if not labels.is_empty() else "资金不足")
+	_cost.tooltip_text = _cost.text
 	var reason: String = str(quote.get("reason", ""))
 	var exact_costs: Array = []
-	for id in _quote_cost_ids: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
+	for id in quote.costs: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
 	_purchase.tooltip_text = " + ".join(exact_costs) + (" · " + str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "")
 	_update_buttons()
 
