@@ -28,6 +28,7 @@ var _side: StandardMaterial3D
 var _armor: StandardMaterial3D
 var _cyan: StandardMaterial3D
 var _deck: StandardMaterial3D
+var _sleeve: StandardMaterial3D
 
 static func plane_normal() -> Vector3:
 	return Vector3(0.0, TILT_Z, TILT_Y)
@@ -35,14 +36,20 @@ static func plane_normal() -> Vector3:
 static func point(angle: float) -> Vector3:
 	return Vector3(RADIUS * cos(angle), -RADIUS * TILT_Y * sin(angle), RADIUS * TILT_Z * sin(angle))
 
-static func socket_position(angle: float) -> Vector3:
-	return point(angle) + plane_normal() * SOCKET_HEIGHT
+static func socket_position(angle: float, kind: String) -> Vector3:
+	# R5 illustrated feet reach slightly below their model origins. Set their
+	# root into the built saddle's curved armor instead of lifting them on top.
+	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
+	return point(angle) + plane_normal() * height
 
 func _ready() -> void:
 	_navy = _material(Color("152f43"))
 	_side = _material(Color("36566a"))
 	_armor = _material(Color("d4d0c0"))
 	_cyan = _material(Color("4cb9c2"), true)
+	_navy.render_priority = -3
+	_side.render_priority = -2
+	_armor.render_priority = -1
 	_deck = _material(Color.WHITE)
 	_deck.albedo_texture = preload("res://assets/planets/orbital_spine/deck-albedo.png")
 	_deck.roughness = 0.68
@@ -51,6 +58,8 @@ func _ready() -> void:
 	_deck.emission_texture = _deck.albedo_texture
 	_deck.emission = Color.WHITE
 	_deck.emission_energy_multiplier = 0.45
+	_sleeve = _deck.duplicate()
+	_sleeve.render_priority = 1
 	for kind in KINDS:
 		var root := Node3D.new()
 		root.name = kind + "SpineSection"
@@ -61,11 +70,11 @@ func _ready() -> void:
 		_add_strip(root, bounds.x, bounds.y, 1.06, -0.18, _navy)
 		_add_wall(root, bounds.x, bounds.y, 0.53, -0.18, 0.05, _side)
 		_add_wall(root, bounds.x, bounds.y, -0.53, -0.18, 0.05, _navy)
-		_add_wall(root, bounds.x, bounds.y, 0.535, -0.035, 0.005, _cyan)
+		_add_wall(root, bounds.x, bounds.y, 0.545, -0.10, -0.015, _cyan)
 		_add_curved_deck(root, bounds.x, bounds.y, 1.06, 0.0, _deck)
 		var rib_angle := (bounds.x + bounds.y) * 0.5
-		_add_curved_deck(root, rib_angle - 0.024, rib_angle + 0.024, 1.09, 0.016, _side)
-		_add_mount(root, FACILITY_ANGLES[kind])
+		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, 1.09, 0.016, _side)
+		_add_mount(root, kind, FACILITY_ANGLES[kind])
 		_joins[kind] = _add_join(root, bounds.y)
 		var caps: Array[MeshInstance3D] = []
 		for angle in [bounds.x, bounds.y]:
@@ -170,7 +179,7 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 	instance.material_override = material
 	parent.add_child(instance)
 
-func _add_mount(parent: Node3D, angle: float) -> void:
+func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
 	# The facility owns this widened saddle and its two dark load collars.
 	# It arrives with the facility even if every other section is unbuilt.
 	_add_strip(parent, angle - 0.23, angle + 0.23, 1.48, -0.20, _navy)
@@ -179,17 +188,8 @@ func _add_mount(parent: Node3D, angle: float) -> void:
 	_add_wall(parent, angle - 0.23, angle + 0.23, 0.745, 0.05, 0.09, _cyan)
 	_add_curved_deck(parent, angle - 0.23, angle + 0.23, 1.48, 0.22, _deck, 0.28, 0.72)
 	for edge in [angle - 0.23, angle + 0.23]:
-		_add_strip(parent, edge - 0.018, edge + 0.018, 1.52, 0.44, _side)
-	var pedestal := MeshInstance3D.new()
-	var drum := CylinderMesh.new()
-	drum.top_radius = 0.36
-	drum.bottom_radius = 0.42
-	drum.height = 0.20
-	pedestal.mesh = drum
-	pedestal.material_override = _navy
-	pedestal.position = point(angle) + plane_normal() * 0.52
-	pedestal.basis = Basis(Quaternion(Vector3.UP, plane_normal()))
-	parent.add_child(pedestal)
+		_add_strip(parent, edge - 0.008, edge + 0.008, 1.52, 0.44, _side)
+	_add_facility_socket(parent, kind, angle)
 	# One restrained amber status light makes the saddle read as equipment,
 	# without introducing another buildable node.
 	var lamp := MeshInstance3D.new()
@@ -201,15 +201,66 @@ func _add_mount(parent: Node3D, angle: float) -> void:
 	lamp.position = point(angle) * ((RADIUS + 0.57) / RADIUS) + plane_normal() * 0.48
 	parent.add_child(lamp)
 
+func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
+	# The old common dark drum made the illustration look placed on a display
+	# stand. Each socket now exposes the facility's actual load/contact path.
+	var radial := point(angle).normalized()
+	var normal := plane_normal()
+	var tangent := normal.cross(radial).normalized()
+	var basis := Basis(tangent, normal, radial)
+	var origin := point(angle)
+	if kind == "auto_explore":
+		_add_socket_drum(parent, origin + normal * 0.52, 0.36, 0.42, 0.20, _navy, normal)
+		return
+	if kind == "refinery":
+		# Twin inset intake channels in the armored saddle. The illustration's
+		# feet meet the deck; the channels do not extend to the rotating ground.
+		for flank in [-1.0, 1.0]:
+			_add_socket_box(parent, origin + tangent * flank * 0.40 + radial * -0.18 + normal * 0.45, Vector3(0.12, 0.04, 0.62), basis, _side)
+			_add_socket_box(parent, origin + tangent * flank * 0.40 + radial * -0.42 + normal * 0.48, Vector3(0.055, 0.02, 0.30), basis, _cyan)
+	elif kind == "equipment":
+		# Paired inlaid guides frame the open machining bay and bridge into the
+		# section's native armor, without a separate raised display platform.
+		for flank in [-1.0, 1.0]:
+			_add_socket_box(parent, origin + tangent * flank * 0.43 + normal * 0.46, Vector3(0.11, 0.05, 0.94), basis, _side)
+		_add_socket_box(parent, origin + radial * -0.39 + normal * 0.47, Vector3(0.78, 0.025, 0.10), basis, _cyan)
+	else:
+		# Two recessed berth lines remain beneath the open drydock arms; their
+		# attachment is the existing curved saddle, not another black podium.
+		for flank in [-1.0, 1.0]:
+			_add_socket_box(parent, origin + tangent * flank * 0.37 + normal * 0.46, Vector3(0.10, 0.05, 1.05), basis, _side)
+			_add_socket_box(parent, origin + tangent * flank * 0.37 + normal * 0.50, Vector3(0.045, 0.02, 0.88), basis, _cyan)
+
+func _add_socket_box(parent: Node3D, position: Vector3, size: Vector3, basis: Basis, material: Material) -> void:
+	var instance := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = size
+	instance.mesh = box
+	instance.material_override = material
+	instance.transform = Transform3D(basis, position)
+	parent.add_child(instance)
+
+func _add_socket_drum(parent: Node3D, position: Vector3, top: float, bottom: float, height: float, material: Material, normal: Vector3) -> void:
+	var instance := MeshInstance3D.new()
+	var drum := CylinderMesh.new()
+	drum.top_radius = top
+	drum.bottom_radius = bottom
+	drum.height = height
+	instance.mesh = drum
+	instance.material_override = material
+	instance.position = position
+	instance.basis = Basis(Quaternion(Vector3.UP, normal))
+	parent.add_child(instance)
+
 func _add_join(parent: Node3D, angle: float) -> Node3D:
 	# Covers the armor gap where two independently built sections mate. This
 	# collar is owned by the preceding section and appears only after both exist.
 	var join := Node3D.new()
 	join.name = "SectionJoin"
 	parent.add_child(join)
-	_add_strip(join, angle - 0.052, angle + 0.052, 1.04, 0.18, _side)
-	_add_strip(join, angle - 0.030, angle + 0.030, 0.76, 0.205, _armor)
-	_add_strip(join, angle - 0.032, angle + 0.032, 0.075, 0.220, _cyan)
+	# The mating sleeve spans both quarter ends as a real curved deck piece.
+	# It also keeps the broad foreground arc visually closed at oblique phases.
+	_add_curved_deck(join, angle - 0.12, angle + 0.12, 1.08, 0.012, _sleeve, 0.37, 0.63)
 	var coupling := MeshInstance3D.new()
 	var drum := CylinderMesh.new()
 	drum.top_radius = 0.22

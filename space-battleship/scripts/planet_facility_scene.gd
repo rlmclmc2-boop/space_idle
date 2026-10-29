@@ -379,7 +379,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# detached vertical slivers as the orbital structure turns.
 		var scale_factor := 0.36 if kind == "auto_explore" else 0.42
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
-		model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a))
+		model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
 		if kind == "equipment": _position_workshop_arm(model)
 		if kind == "refinery": _position_refinery_work(model, clock)
 		if kind == "shipyard": _position_shipyard_work(model, clock)
