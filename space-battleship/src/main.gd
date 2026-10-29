@@ -795,7 +795,7 @@ func _setup_growth_panel() -> void:
 	box.add_child(load("res://src/ui/archive_panel.gd").new(session))
 	box.add_child(NotificationsPanel.new(session.notifications, _player_text))
 	box = _pages.settings.box
-	var storage := _settings_group(box, "存档与速度", "本机进度与当前运行节奏")
+	var storage := _settings_group(box, "存档位置", "本机进度保存在此目录；更换目录后再保存")
 	var storage_path_row := _settings_row(storage)
 	var save_path := LineEdit.new()
 	_settings_field(save_path)
@@ -811,7 +811,24 @@ func _setup_growth_panel() -> void:
 	_settings_action(storage_path_row, "选择目录", func() -> Dictionary:
 		save_picker.popup_centered_ratio()
 		return {"ok": true, "message": "请选择已有的存档目录"})
-	var storage_action_row := _settings_row(storage)
+	var save_action_row := _settings_row(storage)
+	save_action_row.alignment = BoxContainer.ALIGNMENT_END
+	_settings_action(save_action_row, "保存进度", func() -> Dictionary:
+		var configured: Dictionary = _configure_save(save_path.text)
+		return session.request_save() if configured.ok else configured)
+	var columns := HBoxContainer.new()
+	columns.add_theme_constant_override("separation", 20)
+	box.add_child(columns)
+	var progress_column := VBoxContainer.new()
+	progress_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var options_column := VBoxContainer.new()
+	options_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	columns.add_child(progress_column)
+	columns.add_child(options_column)
+	var progress := _settings_group(progress_column, "进度管理", "新游戏先预览，确认后执行；载入已有进度")
+	# Save stays with the directory controls; progress here owns preview/load actions.
+	var preferences := _settings_group(options_column, "运行与显示", "节奏、自动保存与战斗反馈")
+	var speed_row := _settings_row(preferences)
 	var speed_options := OptionButton.new()
 	_settings_field(speed_options)
 	for option in session.chrono_speed_options():
@@ -819,12 +836,8 @@ func _setup_growth_panel() -> void:
 		if int(option.speed) == session.current_chrono_speed(): speed_options.select(speed_options.item_count - 1)
 	speed_options.item_selected.connect(func(index: int):
 		session.set_chrono_speed(speed_options.get_item_id(index)))
-	speed_options.custom_minimum_size.x = 360
-	storage_action_row.add_child(speed_options)
-	_settings_action(storage_action_row, "保存进度", func() -> Dictionary:
-		var configured: Dictionary = _configure_save(save_path.text)
-		return session.request_save() if configured.ok else configured)
-	var preferences := _settings_group(box, "偏好设置", "自动保存、声音与战斗提示")
+	speed_options.custom_minimum_size.x = 330
+	speed_row.add_child(speed_options)
 	var autosave := SpinBox.new()
 	_settings_field(autosave)
 	autosave.min_value = 0.0
@@ -909,7 +922,6 @@ func _setup_growth_panel() -> void:
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 			_set_growth_status(PlayerText.error(str(saved.reason))))
-	var progress := _settings_group(box, "进度管理", "先预览变更，再执行新游戏或载入")
 	var clear_settings := CheckBox.new()
 	clear_settings.text = "新游戏同时重置个人设置"
 	clear_settings.custom_minimum_size.x = 260
@@ -925,7 +937,7 @@ func _setup_growth_panel() -> void:
 		return _load_saved(save_path.text))
 	_settings_action(load_row, "加载备份", func() -> Dictionary:
 		return _load_saved(save_path.text, true))
-	var imports := _settings_group(box, "导入存档", "从本机文件预览并确认导入")
+	var imports := _settings_group(progress_column, "导入存档", "从本机文件预览并确认导入")
 	var import_path_row := _settings_row(imports)
 	var import_path := LineEdit.new()
 	_settings_field(import_path)
@@ -938,7 +950,9 @@ func _setup_growth_panel() -> void:
 	import_picker.add_filter("*.json", "游戏存档")
 	import_picker.file_selected.connect(func(path: String): import_path.text = path)
 	box.add_child(import_picker)
-	_settings_action(import_path_row, "选择文件", func() -> Dictionary:
+	var import_pick_row := _settings_row(imports)
+	import_pick_row.alignment = BoxContainer.ALIGNMENT_END
+	_settings_action(import_pick_row, "选择文件", func() -> Dictionary:
 		import_picker.popup_centered_ratio()
 		return {"ok": true, "message": "请选择游戏存档文件"})
 	var import_action_row := _settings_row(imports)
@@ -1003,7 +1017,15 @@ func _create_bridge_page(key: String, title: String) -> void:
 	_tabs.add_child(scroll)
 	var box := VBoxContainer.new()
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(box)
+	if key == "ship":
+		# Keep the ship page's full-width controls clear of its own scrollbar.
+		var content_inset := MarginContainer.new()
+		content_inset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		content_inset.add_theme_constant_override("margin_right", 18)
+		scroll.add_child(content_inset)
+		content_inset.add_child(box)
+	else:
+		scroll.add_child(box)
 	_pages[key] = {"scroll": scroll, "box": box, "index": _tabs.get_tab_count() - 1}
 
 func _bridge_tab_changed(index: int) -> void:

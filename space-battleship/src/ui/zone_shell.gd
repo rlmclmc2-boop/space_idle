@@ -121,11 +121,11 @@ func _init(economy) -> void:
 	_details.theme = theme
 	add_child(_details)
 	var content := VBoxContainer.new()
-	content.custom_minimum_size = Vector2(430, 130)
+	content.custom_minimum_size.y = 130
 	_details.add_child(content)
 	_detail_text = Label.new()
 	_detail_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_detail_text.custom_minimum_size.x = 400
+	_detail_text.custom_minimum_size.x = 270
 	content.add_child(_detail_text)
 	_resource_rows = VBoxContainer.new()
 	_resource_rows.hide()
@@ -138,7 +138,7 @@ func _init(economy) -> void:
 		mark.custom_minimum_size = Vector2(20, 20)
 		row.add_child(mark)
 		var value := Label.new()
-		value.custom_minimum_size.x = 370
+		value.custom_minimum_size.x = 235
 		row.add_child(value)
 		_resource_rows.add_child(row)
 		_resource_row_labels[id] = value
@@ -208,6 +208,7 @@ func _process(_delta: float) -> void:
 		if label.text != next_text:
 			label.text = next_text
 			label.tooltip_text = next_text
+	if _details.visible and _resource_rows.visible: _update_resource_rows(rows)
 
 func set_active_route(id: String) -> void:
 	if _active_route == id: return
@@ -275,12 +276,17 @@ func _show_balances() -> void:
 	_detail_text.text = "资源余额"
 	_detail_text.show()
 	_resource_rows.show()
+	_update_resource_rows(_economy.balance_rows())
+	_details.popup(Rect2i(450, 66, 330, 190))
+
+func _update_resource_rows(rows: Array) -> void:
 	var shown := {"1": "铁：0", "2": "铀：0", "chrono": "时空微粒：0", "jewel": "强化碎片：0"}
-	for row in _economy.balance_rows():
+	for row in rows:
 		var id: String = str(row.id)
 		if _resource_row_labels.has(id): shown[id] = str(row.text)
 	for id in _resource_row_labels:
 		var value: Label = _resource_row_labels[id]
-		value.text = str(shown.get(id, ""))
-		value.get_parent().visible = shown.has(id)
-	_details.popup(Rect2i(330, 66, 470, 190))
+		var next_text: String = str(shown.get(id, ""))
+		if value.text != next_text: value.text = next_text
+		var row_visible: bool = shown.has(id)
+		if value.get_parent().visible != row_visible: value.get_parent().visible = row_visible

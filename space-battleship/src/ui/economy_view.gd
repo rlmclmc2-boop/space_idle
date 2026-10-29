@@ -23,8 +23,10 @@ func _draw() -> void:
 		var center := Vector2(float(marker.x), float(marker.y))
 		var icon: Texture2D = ResourceVisuals.icon(resource_id)
 		if icon != null:
-			draw_circle(center, 10.0, Color("092536", 0.85))
-			draw_texture_rect(icon, Rect2(center - Vector2(9, 9), Vector2(18, 18)), false, ResourceVisuals.color(resource_id))
+			var color: Color = ResourceVisuals.color(resource_id)
+			draw_circle(center, 15.0, Color("092536", 0.92))
+			draw_arc(center, 15.0, 0.0, TAU, 24, color, 1.3)
+			draw_texture_rect(icon, Rect2(center - Vector2(14, 14), Vector2(28, 28)), false, color)
 		else:
 			draw_circle(center, 5.0, ResourceVisuals.color(resource_id))
 
