@@ -1,0 +1,62 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/tmp/equipment-resource-continuous"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    var pixels:Image=root.get_texture().get_image()
+    pixels.save_png(destination.path_join(name + ".png"))
+    var region:Rect2i=Rect2i(panel._workbench.get_global_rect().grow(4)).intersection(Rect2i(0,0,pixels.get_width(),pixels.get_height()))
+    if name=="03-batch":region=Rect2i(panel._batch_frame.get_global_rect().grow(4))
+    pixels.get_region(region).save_png(destination.path_join(name+"-local.png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    host.set_pause("user",true);await flush()
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    host.campaign_system.restore_state(c);host.equipment.refresh_availability(host.campaign_system.available,100)
+    var e:Dictionary=host.equipment.save_state()
+    for row in e.slots:
+        if row.id=="weapon:0":row.paid_level=19;row.switch_ready_at=0.0
+    host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts);host.publish_equipment_refit(host.economy.budget(),"refit","",null,false)
+    wallet("100000","1000");panel._dirty=true;await flush();await screenshot("01-double")
+    var mappings:Array=[]
+    for id in panel.RESOURCE_NAMES:
+        var fee:Dictionary=panel._cost_cells[id];var balance:Dictionary=panel._wallet_cells[id]
+        check(fee.icon.texture==balance.icon.texture,"same texture "+id)
+        check(fee.icon.modulate==balance.icon.modulate,"same color "+id)
+        mappings.append({"id":id,"name":panel.RESOURCE_NAMES[id],"path":fee.icon.texture.resource_path,"color":fee.icon.modulate.to_html(),"fee_size":fee.icon.size,"balance_size":balance.icon.size,"fee_visible":fee.icon.visible,"balance_visible":balance.icon.visible})
+    var data:Dictionary={"identity":mappings,"quote":panel.last_comparison.quote,"workbench":panel._workbench.get_global_rect(),"button":panel._purchase.get_global_rect(),"bottom_clearance":panel._workbench.size.y-panel._purchase.position.y-panel._purchase.size.y,"node_count":panel.get_child_count(true),"note":"Static controlled Lv19 quote, no purchases, no 36 observation rerun"}
+    FileAccess.open(destination.path_join("mapping.json"),FileAccess.WRITE).store_string(JSON.stringify(data,"  "))
+    panel.select_slot("defence:0");await flush();await screenshot("02-single")
+    panel.select_slot("weapon:0");await flush()
+    await click(panel._choices.missile.button)
+    panel._open_batch();await flush();await screenshot("03-batch")
+    print("RESOURCE_CONTINUOUS_STATIC_COMPLETE failures=",failures.size());app.queue_free();await process_frame;quit()
