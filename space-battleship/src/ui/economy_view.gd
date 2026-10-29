@@ -9,6 +9,8 @@ func _init(economy, context: Callable, after_income: Callable) -> void:
 	_economy = economy
 	_context = context
 	_after_income = after_income
+	# Native contact flashes use z=2; the pickup identity must remain legible above them.
+	z_index = 3
 	_economy.display_changed.connect(queue_redraw)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -24,7 +26,7 @@ func _draw() -> void:
 		var icon: Texture2D = ResourceVisuals.icon(resource_id)
 		if icon != null:
 			var color: Color = ResourceVisuals.color(resource_id)
-			draw_circle(center, 15.0, Color("092536", 0.92))
+			draw_circle(center, 15.0, Color("092536"))
 			draw_arc(center, 15.0, 0.0, TAU, 24, color, 1.3)
 			draw_texture_rect(icon, Rect2(center - Vector2(14, 14), Vector2(28, 28)), false, color)
 		else:
