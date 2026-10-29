@@ -192,14 +192,25 @@ func _build() -> void:
 		pulse_material.set_shader_parameter("tint", Color("f8ba5b") if id in ["weapons","smelting"] else Color("79ddfa"))
 		pulse.material = pulse_material
 		add_child(pulse)
-		var name := _label(layout.title + offset,92,16 if id == "condensation" else 17)
+		var plate := Panel.new()
+		plate.position = layout.plate.position + offset
+		plate.size = layout.plate.size
+		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var plate_style := StyleBoxFlat.new()
+		plate_style.bg_color = Color(0.015,0.065,0.095,0.85)
+		plate_style.border_color = Color(0.42,0.65,0.68,0.30)
+		plate_style.set_border_width_all(1)
+		plate_style.set_corner_radius_all(3)
+		plate.add_theme_stylebox_override("panel",plate_style)
+		add_child(plate)
+		var name := _label(layout.title + offset,92,17)
 		name.add_theme_font_override("font",_ui_font_bold)
 		name.add_theme_color_override("font_color",Color("eff4ee"))
 		name.add_theme_color_override("font_shadow_color",Color(0.015, 0.07, 0.10, 0.9))
 		name.add_theme_constant_override("shadow_offset_x",1)
 		name.add_theme_constant_override("shadow_offset_y",1)
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		name.text = NAMES[id] + "供能"
+		name.text = NAMES[id]
 		var effect := _label(layout.factor + offset,58,19)
 		effect.add_theme_font_override("font", _ui_font_bold)
 		effect.add_theme_color_override("font_color",Color("ffd393") if id in ["weapons","smelting"] else Color("a9edfa"))
@@ -262,20 +273,20 @@ func _build() -> void:
 		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		ratio.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		ratio.add_theme_color_override("font_color", Color("dce9e5"))
-		_rows[id] = {"effect":effect, "name":name, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "control":strip}
+		_rows[id] = {"effect":effect, "name":name, "plate":plate, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "control":strip}
 		for control in _rows[id].values(): control.visible = false
 	_budget = _label(Vector2(91,791),190,16)
 	_budget.add_theme_color_override("font_color",Color("203f50"))
 	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_upgrade_heading = _label(Vector2(288,753),475,17)
+	_upgrade_heading = _label(Vector2(343,766),420,17)
 	_upgrade_heading.text = "核心升级"
 	_upgrade_heading.add_theme_color_override("font_color",Color("203f50"))
-	_cost = _label(Vector2(288, 779), 475, 18)
+	_cost = _label(Vector2(343, 791), 420, 18)
 	_cost.add_theme_color_override("font_color",Color("203f50"))
-	_quantity = _button("×1",Rect2(288,821,105,34),_cycle_quantity)
+	_quantity = _button("×1",Rect2(480,822,82,34),_cycle_quantity)
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
-	_purchase = _button("升级 ×1",Rect2(407,821,358,34),func(): _command(_purchase_action),true)
-	_equal = _button("均分供能",Rect2(43,821,175,34),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
+	_purchase = _button("升级",Rect2(344,822,128,34),func(): _command(_purchase_action),true)
+	_equal = _button("均分供能",Rect2(245,822,90,34),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
 	_notice_panel = _panel(Rect2(282,728,244,34),0.95)
 	_notice = _label(Vector2(295,730),218,18)
 	_notice.size.y = 30
@@ -291,7 +302,7 @@ func _select_quantity(count: int, maximum: bool) -> void:
 	_quote = {}
 	_quote_dirty = true
 	_cost.text = "报价读取中"
-	_purchase.text = "升级 MAX" if maximum else "升级 ×" + str(count)
+	_purchase.text = "升级"
 	_quantity.text = "MAX" if maximum else "×" + str(count)
 	_update_buttons()
 
