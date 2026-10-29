@@ -93,6 +93,17 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 		var face: Image = controls.get_region(region)
 		face.resize(roundi(face.get_width() * 36.0 / face.get_height()), 36, Image.INTERPOLATE_LANCZOS)
 		_key_faces[id] = ImageTexture.create_from_image(face)
+	# Match the equipment action's cool disabled finish: reduce metal glints
+	# once in the texture, leaving the native action text fully opaque.
+	var disabled_face: Image = _key_faces.navy.get_image()
+	for y in disabled_face.get_height():
+		for x in disabled_face.get_width():
+			var pixel: Color = disabled_face.get_pixel(x, y)
+			var light: float = pixel.r * 0.2126 + pixel.g * 0.7152 + pixel.b * 0.0722
+			if light > 0.24:
+				var scale: float = (0.24 + (light - 0.24) * 0.28) / light
+				disabled_face.set_pixel(x, y, Color(pixel.r * scale, pixel.g * scale, pixel.b * scale, pixel.a))
+	_key_faces.disabled = ImageTexture.create_from_image(disabled_face)
 	var surface := SubViewportContainer.new()
 	surface.position = Vector2(0, 65)
 	surface.size = Vector2(808, 835)
@@ -164,9 +175,9 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 			continue
 		var tint := Color(1.16,1.18,1.16) if state == "hover" else Color(0.84,0.86,0.88) if state == "pressed" else Color(0.72,0.77,0.8) if state == "disabled" else Color.WHITE
 		var paint := StyleBoxTexture.new()
-		paint.texture = _key_faces["primary" if primary else "navy"]
+		paint.texture = _key_faces["disabled" if primary and state == "disabled" else "primary" if primary else "navy"]
 		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: paint.set_texture_margin(side, 6)
-		paint.modulate_color = tint * (Color(0.66,0.73,0.76) if state == "disabled" else Color.WHITE)
+		paint.modulate_color = tint if primary or state != "disabled" else tint * Color(0.66,0.73,0.76)
 		var material := ReactorKeySurface.new()
 		material.painted = paint
 		material.depressed = state == "pressed"
@@ -179,7 +190,7 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.add_theme_color_override("font_hover_color", Color("203f50") if primary else Color("c4fff0"))
 	button.add_theme_color_override("font_pressed_color", Color("203f50") if primary else Color("f3f0df"))
 	button.add_theme_color_override("font_focus_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_disabled_color", Color("8da5ac"))
+	button.add_theme_color_override("font_disabled_color", Color("ccd6d0") if primary else Color("8da5ac"))
 	button.pressed.connect(action)
 	add_child(button)
 	return button
