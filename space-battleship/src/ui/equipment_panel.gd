@@ -754,7 +754,8 @@ func _refresh_comparison() -> void:
     _render_costs(quote,comparison.affordable,str(comparison.payment_reason))
     _cost.tooltip_text = _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
     _purchase.text = "购买%s级" % str(quote.count) if quote.get("ok", false) else "购买"
-    if quote.get("ok",false):_purchase.tooltip_text=("" if comparison.affordable else _purchase.tooltip_text+"\n")+_purchase.text
+    if quote.get("ok",false) and _purchase.get_theme_font("font").get_string_size(_purchase.text,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x>_purchase.size.x-20:
+        _purchase.tooltip_text=("" if comparison.affordable else _purchase.tooltip_text+"\n")+_purchase.text
     _purchase.disabled = not comparison.affordable
     _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
     _switch_state.visible=not _switch_state.text.is_empty()
