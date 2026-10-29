@@ -1,7 +1,7 @@
-# 装备当前入口：main功能认可，美术继续修正
+# 装备当前入口：功能认可，美术结构质感继续修正
 
-用户认为main功能没问题、质感未达标。main功能基线 `e3b38d7b6d8256f6031e1b086c7db7812b6a441f` 保持；原美术 `ba7afb24/c6e54749` 已被根实图与原Astra退回，不再作为品质候选通过依据。
+用户认可main功能，美术仍未达标。根实图与原Astra已退回 `38603c36` 整体质感；拉伸纹理/绿亮片/主次和两键报价操作组的限定改善保留，不等于艺术通过。
 
-**当前源码 `f1a16bf6b59aab2005da89ff3062f316e807849a`：** 同一分支art/equipment-materials-main-20261029，修正跨比例纹理、读数/报价亮贴片和动作层级。单循环数量/独立购买及当前操作组/Owner语义保持。新素材按实际屏幕像素平铺，公共顶栏恢复main兼容，具体边界与同版4整屏/4原像素局部见[当前像素尺度材质候选](materials-pixel-scale/README.md)。待原Astra/根实图审查，不自判达标，不pushmain。
+当前固定源码 `75782d9461b46a544abdd116f31baed65e720b99`，原art/equipment-materials-main-20261029继续。单壳折边/前侧承托、凹嵌读数与候选、原生浅行程按钮及同体系批量的实物候选见[当前结构深度交接](workbench-structural-depth/README.md)，含同版4整屏/4原像素局部/真实pressed局部、精确截面、保留边界和来源hash。待原Astra/根实图判断，不自判达标，不pushmain。
 
-历史[前一美术退回候选及其循环逻辑证据](materials-main-revision/README.md)、[原9ed排版/删记录/等级刷新入口](https://github.com/rlmclmc2-boop/space_idle/blob/9ed2090dcee8fb1d90d61846e92e6b1f94622332/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md)、[main最小接入证据](../main-integration/README.md)保留真实版本；旧视频/旧图不能替代本次材质判断。
+历史[386像素尺度限定改善、整体退回](materials-pixel-scale/README.md)、[ba7退回材质及其旧循环动态/32观察](materials-main-revision/README.md)、[原9ed排版/删除记录/等级刷新](https://github.com/rlmclmc2-boop/space_idle/blob/9ed2090dcee8fb1d90d61846e92e6b1f94622332/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md)与[main正常入口](../main-integration/README.md)保留真实版本。旧动态/旧业务验证不冒充本轮美术重跑。

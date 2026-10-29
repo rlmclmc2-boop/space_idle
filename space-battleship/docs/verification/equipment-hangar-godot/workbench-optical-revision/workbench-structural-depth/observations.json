@@ -1,0 +1,38 @@
+{
+  "failures": [],
+  "records": [
+    {
+      "crop": "[P: (8, 638), S: (792, 262)]",
+      "name": "01-normal",
+      "source_commit": "75782d9461b46a544abdd116f31baed65e720b99",
+      "viewport": "(1440, 900)"
+    },
+    {
+      "crop": "[P: (8, 616), S: (792, 284)]",
+      "name": "02-double",
+      "source_commit": "75782d9461b46a544abdd116f31baed65e720b99",
+      "viewport": "(1440, 900)"
+    },
+    {
+      "crop": "[P: (22, 776), S: (428, 118)]",
+      "draw_mode": 1,
+      "name": "05-primary-pressed-local",
+      "source_commit": "75782d9461b46a544abdd116f31baed65e720b99"
+    },
+    {
+      "crop": "[P: (8, 616), S: (792, 284)]",
+      "name": "03-different",
+      "source_commit": "75782d9461b46a544abdd116f31baed65e720b99",
+      "viewport": "(1440, 900)"
+    },
+    {
+      "crop": "[P: (82, 299), S: (644, 302)]",
+      "name": "04-batch",
+      "source_commit": "75782d9461b46a544abdd116f31baed65e720b99",
+      "viewport": "(1440, 900)"
+    }
+  ],
+  "scope": "static visual states plus native press/release-outside appearance; no purchase/cycle retest",
+  "source_commit": "75782d9461b46a544abdd116f31baed65e720b99",
+  "crop_archive_note": "Native Image.get_region crops clipped to original viewport bounds at archive; no padded outside pixels. Original full screenshots unchanged."
+}
