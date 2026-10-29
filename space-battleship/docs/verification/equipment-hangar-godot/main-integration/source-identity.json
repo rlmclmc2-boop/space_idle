@@ -1,0 +1,66 @@
+{
+  "base_main": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "candidate_source": "d5b73e930b046fcc6997a6cf18fcc885d76284e0",
+  "approved_equipment": "6233dc6ea25bac9a0dfcbc6a8d7b0673e8f24f06",
+  "approved_evidence": "9ed2090dcee8fb1d90d61846e92e6b1f94622332",
+  "plan": "ba144b7983f35cabed04aee970b9a3c48a5bce56",
+  "shared_equipment_reference_only": "90a19067af420f8b8b556efe9329da2591614f3e",
+  "campaign_gate_reference": "80e5463ff36f457b9e178315a5cf4b521b871068",
+  "files": {
+    "space-battleship/assets/ui/equipment/hangar/README.md": {
+      "blob": "317b5e0444f21645872a168177e13e4ac9edf5eb",
+      "sha256": "e2e12f3a38c215fcf61f0724b97da34ca46367c6229f97e41004328efb387314",
+      "bytes": 3175
+    },
+    "space-battleship/assets/ui/equipment/hangar/hangar-console.png": {
+      "blob": "047321127bfa81410928ba755643b26006709504",
+      "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "bytes": 2185569
+    },
+    "space-battleship/assets/ui/equipment/hangar/hangar-console.png.import": {
+      "blob": "d340400a404450594e6a85c4fe85b84214317e21",
+      "sha256": "18c750365443ef8581c457432f1bdd1153380072bb745c293ddbd17828e93a6a",
+      "bytes": 973
+    },
+    "space-battleship/assets/ui/equipment/hangar/imagegen-prompt-01.txt": {
+      "blob": "a2727143e54298f3c20567dabc1673bb9a85f839",
+      "sha256": "e058ceafc115659183617859cdc2abf7527c7ee75803e3be87c869f779061580",
+      "bytes": 1712
+    },
+    "space-battleship/assets/ui/equipment/hangar/sources.json": {
+      "blob": "df3a25503298ebcbdf7e6d76b7859ae0cacaf4ca",
+      "sha256": "746f9141fbd95a6f1cbcc07d55dbbd4c3bab614714daa194e76388eaaef0a58a",
+      "bytes": 5664
+    },
+    "space-battleship/project.godot": {
+      "blob": "1ed8ff4eadbf925770f197a4bb7c7e34770aab9d",
+      "sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "bytes": 325
+    },
+    "space-battleship/src/game_session.gd": {
+      "blob": "d5f150e9c55a6245a7ec64827e66315c60ed5037",
+      "sha256": "207018ae172b3d855ef4990833ce95e8095696847c18e4249ad7c3fb931f2dd6",
+      "bytes": 78910
+    },
+    "space-battleship/src/main.gd": {
+      "blob": "df25a5dffd32ee514e34d9037db83733852e2035",
+      "sha256": "5fbd98b5b2607b86ecb4dd921395a4b24c144b6d58a8f93c36f83e8de9514c7f",
+      "bytes": 43394
+    },
+    "space-battleship/src/systems/equipment.gd": {
+      "blob": "c29b79a56cef3da2e9f923df7c277b3286df1c7c",
+      "sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "bytes": 39062
+    },
+    "space-battleship/src/ui/campaign_view.gd": {
+      "blob": "2f03b6fb355b665a14fd8f3ff127c6cc3b092bca",
+      "sha256": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb",
+      "bytes": 580
+    },
+    "space-battleship/src/ui/equipment_panel.gd": {
+      "blob": "23ef3f280eafa4cb7667a6d039735995e58ac400",
+      "sha256": "ae8c4055ed2f227f3b9bd29221dda0aab606fd6a9939a349a8a332b91751eec7",
+      "bytes": 56072
+    }
+  }
+}
