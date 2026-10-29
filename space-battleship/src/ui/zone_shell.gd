@@ -2,10 +2,19 @@ extends Control
 ## Public presentation around the existing 808px workspace and unchanged battle projection.
 signal route_requested(id: String)
 const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
+const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
 const TOP_RAIL = preload("res://assets/ui/public_shell/command-rail.svg")
 const STATUS_IDLE = preload("res://assets/ui/public_shell/status-idle.svg")
 const STATUS_ALERT = preload("res://assets/ui/public_shell/status-alert.svg")
 const RESOURCE_MARK = preload("res://assets/ui/public_shell/resource-mark.svg")
+const ROUTE_ICONS := [
+	preload("res://assets/ui/public_shell/nav-equipment.svg"),
+	preload("res://assets/ui/public_shell/nav-ship.svg"),
+	preload("res://assets/ui/public_shell/nav-growth.svg"),
+	preload("res://assets/ui/public_shell/nav-universe.svg"),
+	preload("res://assets/ui/public_shell/nav-hyperspace.svg"),
+	preload("res://assets/ui/public_shell/nav-archive.svg"),
+	preload("res://assets/ui/public_shell/nav-settings.svg")]
 
 const ROUTES := [
 	["equipment", "装备", "装备"], ["ship", "舰船", "舰船与航程"],
@@ -21,12 +30,16 @@ var _dirty: bool = true
 var _context: Label
 var _balances: Array = []
 var _route_buttons: Dictionary = {}
+var _route_captions: Dictionary = {}
+var _route_marks: Dictionary = {}
 var _route_available: Dictionary = {}
 var _navigation_blocked: bool = false
 var _status: Button
 var _status_message: String = ""
 var _details: PopupPanel
 var _detail_text: Label
+var _resource_rows: VBoxContainer
+var _resource_row_labels: Dictionary = {}
 var _active_route: String = ""
 
 func _init(economy) -> void:
@@ -54,24 +67,56 @@ func _init(economy) -> void:
 	_context = _label("装备", Rect2(28, 12, 128, 41), 20, TEXT)
 	_context.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_context.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	for spec in [[190, 118], [326, 116], [460, 174]]:
-		var cell := _label("", Rect2(spec[0] + 10, 12, spec[1] - 20, 41), 16, TEXT)
+	for index in 3:
+		var spec: Array = [[190, 118], [326, 116], [460, 174]][index]
+		var mark := TextureRect.new()
+		var resource_id: String = ["1", "2", "chrono"][index]
+		mark.texture = ResourceVisuals.icon(resource_id)
+		mark.modulate = ResourceVisuals.color(resource_id)
+		mark.position = Vector2(spec[0] + 10, 24)
+		mark.size = Vector2(17, 17)
+		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(mark)
+		var cell := _label("", Rect2(spec[0] + 34, 12, spec[1] - 42, 41), 16, TEXT)
 		cell.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		cell.clip_text = true
 		cell.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_balances.append(cell)
 	_status = _button("", Rect2(650, 16, 28, 32), false)
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+		_status.add_theme_stylebox_override(state, BridgeTheme.top_button(state))
 	_status.icon = STATUS_IDLE
 	_status.tooltip_text = "保存与会话状态"
 	_status.pressed.connect(_show_status)
 	var resources := _button("资源", Rect2(684, 12, 92, 41), false)
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+		resources.add_theme_stylebox_override(state, BridgeTheme.top_button(state))
 	resources.icon = RESOURCE_MARK
 	resources.pressed.connect(_show_balances)
 	for index in ROUTES.size():
 		var spec: Array = ROUTES[index]
-		var button := _button(str(spec[1]), Rect2(813, 105 + index * 105, 37, 54), true)
+		var button := _button("", Rect2(813, 93 + index * 104, 37, 70), true)
+		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+			button.add_theme_stylebox_override(state, BridgeTheme.route_button(state))
+		var mark := TextureRect.new()
+		mark.texture = ROUTE_ICONS[index]
+		mark.position = Vector2(9, 10)
+		mark.size = Vector2(19, 19)
+		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(mark)
+		var caption := Label.new()
+		caption.text = str(spec[1])
+		caption.position = Vector2(3, 37)
+		caption.size = Vector2(31, 22)
+		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		caption.add_theme_font_size_override("font_size", 12)
+		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(caption)
 		button.pressed.connect(func(): route_requested.emit(str(spec[0])))
 		_route_buttons[str(spec[0])] = button
+		_route_captions[str(spec[0])] = caption
+		_route_marks[str(spec[0])] = mark
 	_details = PopupPanel.new()
 	_details.theme = theme
 	add_child(_details)
@@ -82,9 +127,26 @@ func _init(economy) -> void:
 	_detail_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_detail_text.custom_minimum_size.x = 400
 	content.add_child(_detail_text)
+	_resource_rows = VBoxContainer.new()
+	_resource_rows.hide()
+	content.add_child(_resource_rows)
+	for id in ["1", "2", "chrono", "jewel", "degenerate_matter"]:
+		var row := HBoxContainer.new()
+		var mark := TextureRect.new()
+		mark.texture = ResourceVisuals.icon(id)
+		mark.modulate = ResourceVisuals.color(id)
+		mark.custom_minimum_size = Vector2(20, 20)
+		row.add_child(mark)
+		var value := Label.new()
+		value.custom_minimum_size.x = 370
+		row.add_child(value)
+		_resource_rows.add_child(row)
+		_resource_row_labels[id] = value
+		row.hide()
 	var close := Button.new()
 	close.text = "关闭"
-	close.custom_minimum_size.y = 38
+	close.custom_minimum_size = Vector2(108, 38)
+	close.size_flags_horizontal = Control.SIZE_SHRINK_END
 	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
 		close.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 8))
 	content.add_child(close)
@@ -99,9 +161,9 @@ func _draw() -> void:
 	draw_rect(Rect2(808, 0, 2, 900), EDGE)
 	draw_rect(Rect2(854, 0, 2, 900), Color("63848d"))
 	# The approved hangar art starts at y=85; the rail occupies only its blank top margin.
-	draw_texture_rect(TOP_RAIL, Rect2(0, 0, 808, 85), false)
+	draw_texture_rect(TOP_RAIL, Rect2(0, 0, 808, 85 if _active_route == "equipment" else 65), false)
 	for x in [180, 316, 451, 640]:
-		draw_rect(Rect2(x, 17, 1, 30), Color("6e9697", 0.65))
+		draw_rect(Rect2(x, 18, 1, 28), Color("6e9697", 0.42))
 
 func _label(caption: String, rect: Rect2, font_size: int, ink: Color) -> Label:
 	var label := Label.new()
@@ -142,8 +204,10 @@ func _process(_delta: float) -> void:
 	var names := ["铁", "铀", "时空微粒"]
 	for index in _balances.size():
 		var label: Label = _balances[index]
-		label.text = str(by_id.get(ids[index], names[index] + "：0"))
-		label.tooltip_text = label.text
+		var next_text: String = str(by_id.get(ids[index], names[index] + "：0"))
+		if label.text != next_text:
+			label.text = next_text
+			label.tooltip_text = next_text
 
 func set_active_route(id: String) -> void:
 	if _active_route == id: return
@@ -158,11 +222,14 @@ func set_active_route(id: String) -> void:
 			button.add_theme_color_override(color_state, Color("173e4c"))
 		button.add_theme_color_override("font_disabled_color", Color("173e4c") if selected else Color("869b9b"))
 		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-			button.add_theme_stylebox_override(state, BridgeTheme.public_button("selected" if selected else state, 1))
+			button.add_theme_stylebox_override(state, BridgeTheme.route_button("selected" if selected else state))
+		_route_captions[key].add_theme_color_override("font_color", DARK if selected else MUTED if button.disabled else TEXT)
+		_route_marks[key].modulate = DARK if selected else Color("839d9d") if button.disabled else TEXT
 	for spec in ROUTES:
 		if str(spec[0]) == id:
 			_context.text = str(spec[2])
 			break
+	queue_redraw()
 
 func set_status(message: String, warning: bool = false) -> void:
 	_status_message = message
@@ -170,12 +237,24 @@ func set_status(message: String, warning: bool = false) -> void:
 	_status.tooltip_text = message if not message.is_empty() else "保存与会话状态"
 
 func set_navigation_blocked(blocked: bool) -> void:
+	if _navigation_blocked == blocked: return
 	_navigation_blocked = blocked
-	for id in _route_buttons: _route_buttons[id].disabled = blocked or not bool(_route_available.get(id, true))
+	for id in _route_buttons:
+		_route_buttons[id].disabled = blocked or not bool(_route_available.get(id, true))
+		_refresh_route_ink(id)
 
 func set_route_available(id: String, available: bool) -> void:
+	if _route_available.get(id, true) == available: return
 	_route_available[id] = available
-	if _route_buttons.has(id): _route_buttons[id].disabled = _navigation_blocked or not available
+	if _route_buttons.has(id):
+		_route_buttons[id].disabled = _navigation_blocked or not available
+		_refresh_route_ink(id)
+
+func _refresh_route_ink(id: String) -> void:
+	var selected: bool = id == _active_route
+	var disabled: bool = _route_buttons[id].disabled
+	_route_captions[id].add_theme_color_override("font_color", DARK if selected else MUTED if disabled else TEXT)
+	_route_marks[id].modulate = DARK if selected else Color("839d9d") if disabled else TEXT
 
 func is_route_available(id: String) -> bool:
 	return bool(_route_available.get(id, true))
@@ -187,13 +266,21 @@ func close_details() -> void:
 	_details.hide()
 
 func _show_status() -> void:
+	_resource_rows.hide()
+	_detail_text.show()
 	_detail_text.text = _status_message if not _status_message.is_empty() else "会话运行中。保存和恢复操作在设置中。"
 	_details.popup(Rect2i(330, 66, 470, 190))
 
 func _show_balances() -> void:
-	var lines := PackedStringArray()
-	for label in _balances: lines.append(label.text)
+	_detail_text.text = "资源余额"
+	_detail_text.show()
+	_resource_rows.show()
+	var shown := {"1": "铁：0", "2": "铀：0", "chrono": "时空微粒：0", "jewel": "强化碎片：0"}
 	for row in _economy.balance_rows():
-		if str(row.id) not in ["1", "2", "chrono"]: lines.append(str(row.text))
-	_detail_text.text = "完整资源余额\n" + "\n".join(lines)
+		var id: String = str(row.id)
+		if _resource_row_labels.has(id): shown[id] = str(row.text)
+	for id in _resource_row_labels:
+		var value: Label = _resource_row_labels[id]
+		value.text = str(shown.get(id, ""))
+		value.get_parent().visible = shown.has(id)
 	_details.popup(Rect2i(330, 66, 470, 190))

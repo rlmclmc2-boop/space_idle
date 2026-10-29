@@ -421,7 +421,7 @@ func _process(dt: float) -> void:
 			if failure_generation != _seen_save_failure_generation:
 				_seen_save_failure_generation = failure_generation
 				if growth_status != null:
-					growth_status.text = "保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown")))
+					_set_growth_status("保存失败：" + PlayerText.error(str(session.save_files.last_failure.get("error", "Unknown"))))
 		_save_status_elapsed += maxf(dt, 0.0)
 		if save_state_label != null and _save_status_elapsed >= 1.0:
 			_save_status_elapsed = 0.0
@@ -439,7 +439,7 @@ func _process(dt: float) -> void:
 		if _autosave_interval > 0.0 and session.save_files != null and session.wall_time >= _next_autosave_wall:
 			_next_autosave_wall = session.wall_time + _autosave_interval
 			var saved: Dictionary = session.request_save()
-			if not saved.ok and growth_status != null: growth_status.text = PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed"))))
+			if not saved.ok and growth_status != null: _set_growth_status(PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed")))))
 	_sync_equipment_entry()
 	if _overlay != null: _overlay.queue_redraw()
 	queue_redraw()
@@ -549,34 +549,49 @@ func _sync_guidance() -> void:
 func _draw_shell(canvas: Node2D) -> void:
 	pass
 
+func _set_growth_status(message: String) -> void:
+	if growth_status == null: return
+	growth_status.text = message
+	growth_status.visible = not message.is_empty()
+
 func _command_button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	parent.add_child(button)
 	button.pressed.connect(func():
 		if not session.run_state.is_running():
-			growth_status.text = "当前会话已停止，请恢复有效存档。"
+			_set_growth_status("当前会话已停止，请恢复有效存档。")
 			return
 		if not _pending_reforge.is_empty() and text not in ["确认重铸", "取消重铸"]:
-			growth_status.text = "请先确认或取消重铸"
+			_set_growth_status("请先确认或取消重铸")
 			return
 		var result: Dictionary = action.call()
 		if result.get("settings_failed", false):
-			growth_status.text = "个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown")))
+			_set_growth_status("个人设置重置失败：" + PlayerText.error(str(result.get("settings_error", "Unknown"))))
 			return
 		var reason: String = str(result.get("reason", result.get("error", "操作失败")))
 		var labels := {"NoChange": "没有变更", "NativeConfigurationRejected": "配装或属性不满足条件"}
-		growth_status.text = "会话已切换，保存失败：" + PlayerText.error(str(result.get("persistence_error", "Unknown"))) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, PlayerText.error(reason))))
+		_set_growth_status("会话已切换，保存失败：" + PlayerText.error(str(result.get("persistence_error", "Unknown"))) if result.get("persistence_failed", false) else "保存请求已排队" if result.get("persistence_pending", false) or result.has("generation") else str(result.get("message", "完成")) if result.get("ok", false) else str(result.get("message", labels.get(reason, PlayerText.error(reason)))))
 		)
 	return button
 
 func _settings_group(parent: Control, title: String, caption: String) -> VBoxContainer:
-	var card := PanelContainer.new()
-	card.add_theme_stylebox_override("panel", BridgeTheme.public_panel())
-	parent.add_child(card)
+	# Settings share the page surface. Each group has a single quiet divider
+	# instead of repeating the page frame around every short set of controls.
+	var section := MarginContainer.new()
+	section.add_theme_constant_override("margin_left", 12)
+	section.add_theme_constant_override("margin_right", 12)
+	section.add_theme_constant_override("margin_top", 9)
+	section.add_theme_constant_override("margin_bottom", 9)
+	parent.add_child(section)
 	var contents := VBoxContainer.new()
 	contents.add_theme_constant_override("separation", 9)
-	card.add_child(contents)
+	section.add_child(contents)
+	var divider := ColorRect.new()
+	divider.color = Color("6a999a", 0.6)
+	divider.custom_minimum_size.y = 1
+	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	contents.add_child(divider)
 	var heading := Label.new()
 	heading.text = title
 	heading.add_theme_font_size_override("font_size", 19)
@@ -683,10 +698,14 @@ func _set_growth_visible(visible: bool) -> bool:
 
 func _sync_equipment_entry() -> void:
 	if is_instance_valid(equipment_scene):
-		equipment_scene.visible = not (is_instance_valid(growth_panel) and growth_panel.visible)
+		var equipment_visible: bool = not (is_instance_valid(growth_panel) and growth_panel.visible)
+		if equipment_scene.visible != equipment_visible: equipment_scene.visible = equipment_visible
 	if is_instance_valid(_bridge_open):
-		_bridge_open.disabled = (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible)
-	if is_instance_valid(_battle_input_blocker): _battle_input_blocker.visible = _modal_ui_occupied()
+		var bridge_disabled: bool = (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible)
+		if _bridge_open.disabled != bridge_disabled: _bridge_open.disabled = bridge_disabled
+	if is_instance_valid(_battle_input_blocker):
+		var input_blocked: bool = _modal_ui_occupied()
+		if _battle_input_blocker.visible != input_blocked: _battle_input_blocker.visible = input_blocked
 	_sync_zone_route()
 
 func _set_page(page: String) -> void:
@@ -696,7 +715,7 @@ func _set_page(page: String) -> void:
 		_preferred_page = page
 		_set_growth_visible(page == "growth")
 	elif growth_status != null:
-		growth_status.text = PlayerText.error(str(saved.reason))
+		_set_growth_status(PlayerText.error(str(saved.reason)))
 
 func _setup_growth_panel() -> void:
 	var layer := CanvasLayer.new()
@@ -714,6 +733,15 @@ func _setup_growth_panel() -> void:
 	growth_panel.visible = _preferred_page == "growth"
 	layer.add_child(growth_panel)
 	growth_panel.theme = load("res://src/ui/bridge_theme.gd").create()
+	# The page's outer PanelContainer is only a layout inset. Settings cards and
+	# module views own their visible surfaces; drawing both made a doubled frame.
+	var page_inset := StyleBoxFlat.new()
+	page_inset.bg_color = Color("0e2835")
+	page_inset.content_margin_left = 16
+	page_inset.content_margin_right = 16
+	page_inset.content_margin_top = 14
+	page_inset.content_margin_bottom = 14
+	growth_panel.add_theme_stylebox_override("panel", page_inset)
 	var shell := VBoxContainer.new()
 	growth_panel.add_child(shell)
 	var box: VBoxContainer = shell
@@ -723,7 +751,8 @@ func _setup_growth_panel() -> void:
 	back.pressed.connect(func(): _set_page("battle"))
 	box.add_child(back)
 	growth_status = Label.new()
-	if not _settings_error.is_empty(): growth_status.text = _settings_error
+	growth_status.hide()
+	if not _settings_error.is_empty(): _set_growth_status(_settings_error)
 	PlayerText.wrap(growth_status)
 	box.add_child(growth_status)
 	save_state_label = Label.new()
@@ -819,7 +848,7 @@ func _setup_growth_panel() -> void:
 			_next_autosave_wall = session.wall_time + value
 		else:
 			autosave.set_value_no_signal(_autosave_interval)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var skip_tutorial := CheckBox.new()
 	skip_tutorial.text = "自动跳过引导提示"
 	skip_tutorial.button_pressed = _skip_tutorial
@@ -834,7 +863,7 @@ func _setup_growth_panel() -> void:
 			_sync_guidance()
 		else:
 			skip_tutorial.set_pressed_no_signal(_skip_tutorial)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var music := CheckBox.new()
 	music.text = "音乐"
 	music.button_pressed = _music_enabled
@@ -849,7 +878,7 @@ func _setup_growth_panel() -> void:
 			if _music_player != null: _music_player.stream_paused = not enabled
 		else:
 			music.set_pressed_no_signal(_music_enabled)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var effects := CheckBox.new()
 	effects.text = "音效"
 	effects.button_pressed = _effects_enabled
@@ -861,7 +890,7 @@ func _setup_growth_panel() -> void:
 		if saved.ok: _effects_enabled = enabled
 		else:
 			effects.set_pressed_no_signal(_effects_enabled)
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var damage_mode := OptionButton.new()
 	_settings_field(damage_mode)
 	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
@@ -879,7 +908,7 @@ func _setup_growth_panel() -> void:
 				if child.get_script() == BattleView: child.damage_mode = chosen
 		else:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
-			growth_status.text = PlayerText.error(str(saved.reason)))
+			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var progress := _settings_group(box, "进度管理", "先预览变更，再执行新游戏或载入")
 	var clear_settings := CheckBox.new()
 	clear_settings.text = "新游戏同时重置个人设置"

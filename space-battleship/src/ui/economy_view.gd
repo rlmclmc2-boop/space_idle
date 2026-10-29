@@ -1,4 +1,5 @@
 extends Node2D
+const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
 
 var _economy
 var _context: Callable
@@ -18,7 +19,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _draw() -> void:
 	for marker in _economy.drop_markers():
-		draw_circle(Vector2(float(marker.x), float(marker.y)), 5.0, Color("ffe195") if str(marker.resource) != "jewel" else Color("a2afff"))
+		var resource_id: String = str(marker.resource)
+		var center := Vector2(float(marker.x), float(marker.y))
+		var icon: Texture2D = ResourceVisuals.icon(resource_id)
+		if icon != null:
+			draw_circle(center, 10.0, Color("092536", 0.85))
+			draw_texture_rect(icon, Rect2(center - Vector2(9, 9), Vector2(18, 18)), false, ResourceVisuals.color(resource_id))
+		else:
+			draw_circle(center, 5.0, ResourceVisuals.color(resource_id))
 
 static func describe_error(reason: String) -> String:
 	return str({"InsufficientResources": "资源不足"}.get(reason, ""))

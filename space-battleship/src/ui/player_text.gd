@@ -1,6 +1,6 @@
 extends RefCounted
 ## Presentation names only. Stable business IDs and saved data stay unchanged.
-const RESOURCES := {"1": "铁", "2": "铀", "jewel": "强化碎片", "chrono": "时空微粒"}
+const RESOURCES := {"1": "铁", "2": "铀", "jewel": "强化碎片", "chrono": "时空微粒", "degenerate_matter": "简并物质"}
 const STATES := {"menu": "待命", "departing": "离港", "travel": "航行", "combat": "战斗", "waiting": "通关等待", "guard_wait": "驻守等待", "retreat": "撤退", "hyperspace": "超空间战斗"}
 const TOPICS := {"unlock": "解锁", "research": "研究完成", "hyperspace": "超空间奖励"}
 

@@ -1,9 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <defs><linearGradient id="panel" x2="0" y2="1"><stop stop-color="#173746"/><stop offset=".13" stop-color="#102e3d"/><stop offset="1" stop-color="#0b2635"/></linearGradient></defs>
-  <path d="M2 15 15 2h98l13 13v98l-13 13H15L2 113Z" fill="#071b26" stroke="#051620" stroke-width="2"/>
-  <path d="M4 16 16 4h96l12 12v96l-12 12H16L4 112Z" fill="url(#panel)" stroke="#779a9a"/>
-  <path d="M8 18 18 8h92l10 10" fill="none" stroke="#bfdfd3" stroke-opacity=".5"/>
-  <path d="M8 110 18 120h92l10-10" fill="none" stroke="#061b27" stroke-width="2"/>
-  <path d="M8 24v-6l9-9h5" fill="none" stroke="#d2b77e" stroke-width="1.5" stroke-opacity=".65"/>
-  <path d="M106 9h5l8 8v5" fill="none" stroke="#c7aa74" stroke-width="2"/>
+  <defs><linearGradient id="sheet" x2="0" y2="1"><stop stop-color="#173a49"/><stop offset=".18" stop-color="#10303f"/><stop offset="1" stop-color="#0b2736"/></linearGradient></defs>
+  <rect x="1" y="1" width="126" height="126" rx="5" fill="url(#sheet)" stroke="#456f78" stroke-width="1.5"/>
+  <path d="M8 7h112" stroke="#9dc2bd" stroke-opacity=".48"/>
+  <path d="M8 121h112" stroke="#061c2a" stroke-opacity=".8"/>
 </svg>
