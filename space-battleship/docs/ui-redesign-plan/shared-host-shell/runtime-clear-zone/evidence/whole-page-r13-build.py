@@ -27,11 +27,11 @@ def render(name, ship_y):
     # Replace the old pale conceptual header with the existing public rail.
     rail = etree.Element(f"{{{NS}}}image", x="0", y="0", width="1440", height="900")
     rail.set("clip-path", "url(#header)")
-    rail.set("href", data(OUT / "b57-combo-equipment-1440x900.png"))
+    rail.set("href", data(OUT / "r13-public-reference-1440x900.png"))
     root[1].replace(root[1][0], rail)
     battle = etree.Element(f"{{{NS}}}image", x="0", y="0", width="1440", height="900")
     battle.set("clip-path", "url(#battle)")
-    battle.set("href", data(OUT / "b57-combo-equipment-1440x900.png"))
+    battle.set("href", data(OUT / "r13-public-reference-1440x900.png"))
     root[1].replace(root[1][1], battle)
     next(x for x in defs if x.get("id") == "module")[0].set("y", "65")
     next(x for x in defs if x.get("id") == "module")[0].set("height", "835")
