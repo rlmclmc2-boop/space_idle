@@ -1,0 +1,26 @@
+R17 workshop common-axis and material candidate, 2026-10-30.
+All three edits used image_gen.imagegen with transparent_background=true and the respective existing transparent runtime PNG as referenced_image_paths. No Python or other pixel editing was applied to the generated PNGs. The runtime exports below are byte-for-byte copies of the generated outputs.
+
+Workshop
+Input: workshop-orbit-short-rails.png
+Input SHA-256: 60c03c8f2fdfc26f9d4b546f5152ae8ff80db19ab02a95a0d986144fa9c72110
+Generated path: /workspace/generated_images/exec-99cbbbb3-73f1-4ae4-9c78-c5ccdd0ee4d8.png
+Runtime output: workshop-orbit-soft-edge.png
+Output SHA-256: 67d32092c7ded30a132ff818698a1bc8161a4cb1d5b6a227bdea2dd7d90e5ed8
+Prompt: Local color and linework cleanup of this exact transparent 1536x1024 R5 orbital workshop sprite. Preserve the entire approved silhouette, all shapes and placements, two short front guide sockets, open transparent floor, upper gantry, two support columns, lights and work-bay wall. Soften ONLY the thick pure-black outer contours and interior seams into narrower deep navy/teal ink, with subtle warm ivory reflected light along the lower support edges to match a smoothly lit ivory orbital deck. Keep high readability at small game scale; do not blur, wash out, simplify or change major colors, lights, objects, transparency or composition. No new floor, rails, platform, ring, planet, shadows or background. This is a restrained material and outline edit only.
+
+Shipyard
+Input: shipyard-orbit-open-root.png
+Input SHA-256: 8c85b4a2499025c7598d005c58caac9bd9a0f167c5440b2ac9442e8b3c453c53
+Generated path: /workspace/generated_images/exec-d9dd3220-0b10-40c0-ad15-0f98b342b295.png
+Runtime output: shipyard-orbit-soft-edge.png
+Output SHA-256: 8f8e3612a08fd995158783df788f8a28157c58105feb685f8a8ac72706df93a5
+Prompt: Restrained material and outline edit of this exact transparent 1536x1024 R5 orbital shipyard sprite. Preserve the entire approved silhouette: one tall left load spine, two long open cantilever berths extending right, all docking features, crane mounts, all colors and lights, two short open lower load collars, camera view and alpha transparency. Soften ONLY the thick pure-black outlines and dark seams into narrower deep navy/teal ink, with subtle warm ivory reflected light along the two bottom load collars to match a smoothly lit ivory orbital deck. Keep crisp high readability at small game scale. Do not change the length, direction or shape of either berth, add a base plate, floor, extra column, fin, ring, planet, text, background or shadow. Do not blur or wash out the design.
+
+Refinery
+Input: refinery-orbit-receiving-port.png
+Input SHA-256: afb5ba036da76bd9a74f649d3047e1990fa74c0f28d3b243f8805018a5c54de9
+Generated path: /workspace/generated_images/exec-c4af5683-487f-4e4d-b2bc-a3462237c7dc.png
+Runtime output: refinery-orbit-soft-edge.png
+Output SHA-256: f4ad57683d553291e756d4e77e8fa59a9f839539c4d84a953b90dc0e3e06a426
+Prompt: Restrained material and outline edit of this exact transparent 1536x1024 R5 orbital ore refinery sprite. Preserve the entire approved silhouette, TWO front square intake structures, TWO blue ore hoppers, bright orange central furnace, central open receiving port with its warm ivory rim, all positions, camera view and alpha transparency. Soften ONLY the thick pure-black contour and dark seams into narrower deep navy/teal ink and add subtle warm ivory reflected light near its lower load collars, matching a smoothly lit ivory orbital deck. Keep the clear main shape and high contrast at small game scale. No added or removed structures, no conveyor extension, floor, plinth, bridge, pillars, legs, ring, planet, background, text or shadow. Do not blur or wash out the design.
