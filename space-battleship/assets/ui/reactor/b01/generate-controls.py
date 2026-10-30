@@ -53,6 +53,36 @@ d.line((174, 7, 174, 33), fill=(111, 151, 164, 110), width=1)
 d.line((274, 7, 274, 33), fill=(111, 151, 164, 110), width=1)
 row.save(OUT / "row-instrument.png")
 
+# A single rounded profile is shared by the dark channel, colored glass fill
+# and surrounding machined shell. Their 148×13 opening matches PowerTrack.
+s = 4
+shell = vertical((170*s, 33*s), [
+    (0, (214, 181, 119, 236)), (0.13, (115, 91, 61, 252)),
+    (0.49, (27, 53, 63, 255)), (0.76, (16, 31, 41, 255)),
+    (1, (105, 79, 49, 255)),
+], 14*s)
+d = ImageDraw.Draw(shell)
+d.rounded_rectangle((1*s, 1*s, 169*s-1, 32*s), 13*s, outline=(236, 209, 153, 240), width=1*s)
+d.rounded_rectangle((3*s, 3*s, 167*s-1, 30*s), 11*s, outline=(12, 22, 28, 245), width=2*s)
+d.rounded_rectangle((10*s, 9*s, 160*s, 24*s), 7*s, fill=(0, 0, 0, 0))
+d.arc((8*s, 7*s, 162*s, 26*s), 184, 356, fill=(221, 191, 132, 195), width=1*s)
+shell.resize((170,33), Image.Resampling.LANCZOS).save(OUT / "slider-shell.png")
+
+channel = vertical((148*s, 13*s), [
+    (0, (3, 13, 21, 255)), (0.24, (8, 29, 40, 255)),
+    (0.66, (7, 24, 34, 255)), (1, (1, 8, 15, 255)),
+], 6*s)
+d = ImageDraw.Draw(channel)
+d.rounded_rectangle((0, 0, 148*s-1, 13*s-1), 6*s, outline=(63, 106, 120, 220), width=1*s)
+channel.resize((148,13), Image.Resampling.LANCZOS).save(OUT / "slider-channel.png")
+
+glow = vertical((148*s, 13*s), [
+    (0, (245, 247, 241, 255)), (0.18, (255, 255, 255, 255)),
+    (0.47, (239, 240, 231, 255)), (0.78, (190, 197, 197, 255)),
+    (1, (113, 128, 138, 255)),
+], 6*s)
+glow.resize((148,13), Image.Resampling.LANCZOS).save(OUT / "slider-glass-fill.png")
+
 s = 4
 im = Image.new("RGBA", (31*s, 31*s))
 d = ImageDraw.Draw(im)

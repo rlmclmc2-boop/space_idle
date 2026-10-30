@@ -4,6 +4,8 @@ const IDLE = preload("res://assets/ui/reactor/b01/idle-console.png")
 const ACTIVE = preload("res://assets/ui/reactor/b01/active-console.png")
 const LIVE = preload("res://assets/ui/reactor/b01/live-material.gdshader")
 const EFFECT_MASK = preload("res://assets/ui/reactor/b01/effect-mask.png")
+const MODULE_MASK = preload("res://assets/ui/reactor/b01/module-mask.png")
+const PIPE_MASK = preload("res://assets/ui/reactor/b01/pipe-mask.png")
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const OPERATING := {"weapons":{"row":0}, "defence":{"row":1}, "smelting":{"row":2}, "condensation":{"row":3}}
 var _enabled: Array = []
@@ -20,6 +22,8 @@ func _init() -> void:
 	_paint.shader = LIVE
 	_paint.set_shader_parameter("active_plate", ACTIVE)
 	_paint.set_shader_parameter("effect_mask", EFFECT_MASK)
+	_paint.set_shader_parameter("module_mask", MODULE_MASK)
+	_paint.set_shader_parameter("pipe_mask", PIPE_MASK)
 	material = _paint
 	set_process(false)
 

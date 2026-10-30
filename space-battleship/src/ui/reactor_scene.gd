@@ -9,6 +9,9 @@ const KEY_PAINT = preload("res://assets/ui/reactor/ship-hub-r9/control-materials
 const ICON_ATLAS = preload("res://assets/ui/reactor/b01/control-icons.png")
 const METER_FRAME = preload("res://assets/ui/reactor/b01/meter-frame.png")
 const ROW_INSTRUMENT = preload("res://assets/ui/reactor/b01/row-instrument.png")
+const SLIDER_SHELL = preload("res://assets/ui/reactor/b01/slider-shell.png")
+const SLIDER_CHANNEL = preload("res://assets/ui/reactor/b01/slider-channel.png")
+const SLIDER_GLASS_FILL = preload("res://assets/ui/reactor/b01/slider-glass-fill.png")
 const SLIDER_KNOB = preload("res://assets/ui/reactor/b01/slider-knob.png")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
 const BAR_COLORS := {"weapons":Color("ffc533"), "defence":Color("33b9ff"), "smelting":Color("ff7d37"), "condensation":Color("ae53ef")}
@@ -64,19 +67,12 @@ class PowerTrack extends Control:
 		fraction = next
 		queue_redraw()
 	func _draw() -> void:
-		# The live fill and empty channel share this exact 144×13 cavity.
-		var channel := Rect2(13, 10, 144, 13)
-		draw_rect(Rect2(10, 7, 150, 19), Color("020a10"), true)
-		draw_rect(Rect2(10, 7, 150, 19), Color("748d93"), false, 1)
-		draw_rect(channel, Color("061a27"), true)
-		draw_rect(Rect2(13, 10, 144, 2), Color("183746"), true)
-		draw_rect(Rect2(13, 21, 144, 2), Color("020b13"), true)
-		var width: float = channel.size.x * fraction
-		if width <= 0.0: return
-		draw_rect(Rect2(channel.position.x, channel.position.y, width, channel.size.y), tint.darkened(0.18), true)
-		draw_rect(Rect2(channel.position.x, channel.position.y + 2, width, 7), tint, true)
-		draw_rect(Rect2(channel.position.x, channel.position.y + 2, width, 2), tint.lightened(0.45), true)
-		draw_rect(Rect2(channel.position.x, channel.position.y + 10, width, 3), tint.darkened(0.36), true)
+		# One 148×13 glass cavity gives filled and empty spans identical depth.
+		draw_texture(SLIDER_CHANNEL, Vector2(11, 10))
+		var width: float = 148.0 * fraction
+		if width > 0.0:
+			draw_texture_rect_region(SLIDER_GLASS_FILL, Rect2(11, 10, width, 13), Rect2(0, 0, width, 13), tint)
+		draw_texture(SLIDER_SHELL, Vector2.ZERO)
 var _stage: Control
 var _stage_viewport: SubViewport
 var _allocation_bar: AllocationBar

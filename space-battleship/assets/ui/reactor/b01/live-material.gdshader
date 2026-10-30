@@ -3,6 +3,8 @@ render_mode unshaded;
 
 uniform sampler2D active_plate : source_color, filter_linear;
 uniform sampler2D effect_mask : filter_linear;
+uniform sampler2D module_mask : filter_linear;
+uniform sampler2D pipe_mask : filter_linear;
 uniform float core_load = 0.0;
 uniform float weapons_load = 0.0;
 uniform float defence_load = 0.0;
@@ -33,10 +35,11 @@ void fragment() {
 	float shield = ellipse(uv, vec2(0.90, 0.145), vec2(0.14, 0.11), 0.17);
 	float iron = ellipse(uv, vec2(0.15, 0.385), vec2(0.17, 0.11), 0.17);
 	float crystal = ellipse(uv, vec2(0.86, 0.385), vec2(0.15, 0.12), 0.17);
-	float pipe_w = conduit(uv, vec2(0.39, 0.218), vec2(0.275, 0.165), -0.012, 0.021, phase);
-	float pipe_d = conduit(uv, vec2(0.67, 0.215), vec2(0.785, 0.175), -0.009, 0.022, phase);
-	float pipe_i = conduit(uv, vec2(0.40, 0.296), vec2(0.26, 0.358), 0.015, 0.023, phase);
-	float pipe_c = conduit(uv, vec2(0.68, 0.293), vec2(0.78, 0.35), 0.018, 0.022, phase);
+	vec3 tube_glass = texture(pipe_mask, uv).rgb;
+	float pipe_w = conduit(uv, vec2(0.395, 0.205), vec2(0.270, 0.160), -0.005, 0.014, phase) * tube_glass.r;
+	float pipe_d = conduit(uv, vec2(0.665, 0.205), vec2(0.800, 0.160), -0.005, 0.014, phase) * tube_glass.r;
+	float pipe_i = conduit(uv, vec2(0.400, 0.315), vec2(0.260, 0.411), -0.005, 0.014, phase) * tube_glass.g;
+	float pipe_c = conduit(uv, vec2(0.650, 0.315), vec2(0.800, 0.417), -0.005, 0.014, phase) * tube_glass.b;
 	float selected = max(core * core_load, max((weapon + pipe_w) * weapons_load, max((shield + pipe_d) * defence_load, max((iron + pipe_i) * smelting_load, (crystal + pipe_c) * condensation_load))));
 	float blend_power = selected > 0.0 ? min(1.0, 0.72 + selected * 0.28) * min(1.0, selected * 8.0) : 0.0;
 	vec3 color = mix(idle.rgb, active.rgb, blend_power);
@@ -62,9 +65,9 @@ void fragment() {
 	float muzzle = texture(effect_mask, uv).g;
 	float shot = pow(0.5 + 0.5 * cos((uv.x * 5.0 + phase * 0.88) * 6.2831853), 12.0);
 	color = mix(color, vec3(1.0, 0.81, 0.32), clamp(muzzle * shot * weapons_load * 2.8, 0.0, 0.68));
-	vec2 shield_p = (uv - vec2(0.90, 0.14)) / vec2(0.060, 0.080);
+	vec2 shield_p = (uv - vec2(0.944, 0.132)) / vec2(0.080, 0.100);
 	float shield_r = length(shield_p);
-	float shield_arc = exp(-pow((shield_r - 0.77) * 14.0, 2.0));
+	float shield_arc = exp(-pow((shield_r - 0.77) * 14.0, 2.0)) * texture(module_mask, uv).g;
 	float shield_sweep = pow(0.5 + 0.5 * cos(atan(shield_p.y, shield_p.x) * 3.0 - phase * 2.0), 7.0);
 	color = mix(color, vec3(0.70, 0.96, 1.0), clamp(shield_arc * shield_sweep * defence_load * 2.9, 0.0, 0.70));
 	float molten = texture(effect_mask, uv).b;
@@ -73,7 +76,7 @@ void fragment() {
 	color = mix(color, moving_molten, molten * smelting_load * 0.75);
 	float pour = pow(0.5 + 0.5 * sin(uv.y * 135.0 - phase * 4.6 + uv.x * 26.0), 8.0);
 	color = mix(color, vec3(1.0, 0.87, 0.39), clamp(molten * pour * smelting_load * 2.7, 0.0, 0.68));
-	float facets = ellipse(uv, vec2(0.855, 0.405), vec2(0.065, 0.075), 0.16);
+	float facets = texture(module_mask, uv).r;
 	float refract = pow(0.5 + 0.5 * sin(uv.x * 96.0 + uv.y * 58.0 - phase * 2.9), 13.0);
 	color = mix(color, vec3(0.95, 0.75, 1.0), clamp(facets * refract * condensation_load * 2.8, 0.0, 0.70));
 	COLOR = vec4(color, idle.a);
