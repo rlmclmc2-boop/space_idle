@@ -138,7 +138,7 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 
 [10 秒完整录像](shared-packed-continuous-1440x900-25fps.mp4)是同一工作区固定共享宿主 `051cbd0dc201fb53578d9c074460b8969a207ef8` 叠加 [14 文件闭包](integration-closure.json)中的 `6d0ee146ca54613cf13e9cd1ae2863310e3ed424` 当前 B01 产品源码与八张原板、两张 packed mask 的实际窗口采集；录前已逐文件核 SHA-256 与闭包一致。两张 `.png.import` 均为 `process/fix_alpha_border=false`，否则零 alpha 处 RGB 会变化。公共 `main.tscn`／Owner／战场未改，入口 `res://src/main.tscn`。临时 [驱动](shared-packed-continuous-driver.gd.txt)只受控授予四模块可用状态、点原生均分、清除既有引导并等待录制；[Godot 日志](shared-packed-continuous-runtime.txt)确认 1440×900、1×、负载 1.0、四路各 25%、从 `VIDEO_READY` 到录制结束（含 ffmpeg 启动前的等待）工作相位 `2.45→20.35`、游戏时间 `2.63→20.57` 秒，末尾引导为空，无脚本错误；这段区间长于视频，不能用其计算视频段帧率。受控四路不证明自然解锁 1／2。
 
-Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe，ffmpeg x11grab 25 fps、libx264 ultrafast/CRF18/yuv420p；[采集日志](shared-packed-continuous-ffmpeg.txt)与 ffprobe 核为 1440×900、10.000 秒、250 帧、H.264，无音轨；视频 SHA-256 `91bc3b63526a6417df48e75108f4451636c024a820cda07cbbecadd6caa70974`。已目视检查 0／4／8 秒整屏和每秒接触表，完整 250 帧解码无错：B01 核心、四设备与管路连续工作，底台原生控件保持可见，战场同步推进，没有引导层遮住页面。此录制补当前源码的连续动态证据，视觉结论仍交既有原审；该软件渲染视频不作目标硬件性能验收，也未执行升级操作（升级证据见上段）。
+Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe，ffmpeg x11grab 25 fps、libx264 ultrafast/CRF18/yuv420p；[采集日志](shared-packed-continuous-ffmpeg.txt)与 ffprobe 核为 1440×900、10.000 秒、250 帧、H.264，无音轨；视频 SHA-256 `91bc3b63526a6417df48e75108f4451636c024a820cda07cbbecadd6caa70974`。先前仅检查 0／4／8 秒整屏和每秒接触表，虽完整 250 帧可解码，但原审进一步查出约 4.8–5.0 秒首次拾取引导覆盖核心；本录像保留为有缺陷的历史采集，不能作为无遮挡连续动态通过证据。问题源于驱动每 35 帧才调用公开 `dismiss_guidance`，首次拾取完成后主场景在下次轮询前显示了引导。后续修正采集见下。该软件渲染视频不作目标硬件性能验收，也未执行升级操作（升级证据见上段）。
 
 ### 给整体组的最小接入闭包
 
