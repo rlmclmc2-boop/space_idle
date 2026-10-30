@@ -39,9 +39,6 @@ var _station_body_sprite: Sprite3D
 var _refinery_shutter_sprites: Dictionary = {}
 var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
-var _shipyard_crane_sprite: Sprite3D
-var _shipyard_ring_sprite: Sprite3D
-var _shipyard_body_sprite: Sprite3D
 const WORKSHOP_ARM_SPLIT_Y := 428.0
 const WORKSHOP_ARM_IMAGE_HEIGHT := 1024.0
 const WORKSHOP_ARM_IMAGE_WIDTH := 1536.0
@@ -109,8 +106,7 @@ func _ready() -> void:
 		if kind == "auto_explore": _install_station_illustration(model, moving)
 		if kind == "equipment": _install_workshop_illustration(model, moving)
 		if kind == "refinery": _install_refinery_illustration(model, moving)
-		if kind == "shipyard": _install_shipyard_illustration(model, moving)
-		_transparent_materials(model)
+		if kind != "shipyard": _transparent_materials(model)
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
@@ -267,59 +263,6 @@ func _position_refinery_work(model: Node3D, clock: float) -> void:
 		var marker := _refinery_feed_markers[index]
 		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), tip.lerp(upper, travel) + camera_front * 0.10)
 
-func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
-	# The open two-level cantilever stays fixed; only the service crane travels
-	# along its upper berth and the docking ring signals its active station.
-	_hide_imported_meshes(model)
-	var body := Sprite3D.new()
-	body.name = "IllustratedShipyardBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-orbit-through-node.png")
-	body.pixel_size = 0.0030
-	body.position = Vector3(0, 1.00, 0)
-	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = true
-	body.double_sided = true
-	model.add_child(body)
-	_shipyard_body_sprite = body
-	var crane := Sprite3D.new()
-	crane.name = "IllustratedServiceCrane"
-	crane.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-crane.png")
-	crane.pixel_size = body.pixel_size
-	crane.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	crane.shaded = true
-	crane.double_sided = true
-	crane.render_priority = 1
-	(moving["CraneSlide"] as Node3D).add_child(crane)
-	_shipyard_crane_sprite = crane
-	var ring_texture := AtlasTexture.new()
-	ring_texture.atlas = preload("res://assets/planets/facilities_v5/illustrated/shipyard-berth-ring.png")
-	ring_texture.region = Rect2(820, 310, 560, 390)
-	var ring := Sprite3D.new()
-	ring.name = "IllustratedDockCollar"
-	ring.texture = ring_texture
-	ring.pixel_size = body.pixel_size
-	ring.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	ring.shaded = true
-	ring.double_sided = true
-	ring.render_priority = 2
-	(moving["DockCollarSpin"] as Node3D).add_child(ring)
-	_shipyard_ring_sprite = ring
-
-func _position_shipyard_work(model: Node3D, clock: float) -> void:
-	var camera_to_model := model.global_transform.basis.inverse()
-	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
-	var screen_up := (camera_to_model * Vector3.UP).normalized()
-	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var origin := _shipyard_body_sprite.position + camera_front * 0.25
-	var crane_pivot := _parts["shipyard"]["CraneSlide"] as Node3D
-	var crane_target := origin + screen_right * (crane_pivot.position.x * 0.50)
-	_shipyard_crane_sprite.position = crane_pivot.transform.basis.inverse() * (crane_target - crane_pivot.position)
-	var ring_pivot := _parts["shipyard"]["DockCollarSpin"] as Node3D
-	# The ring crop is centered at source pixel (1100, 505) of a 1536x1024 artboard.
-	var ring_target := origin + screen_right * (332.0 * _shipyard_ring_sprite.pixel_size) + screen_up * (7.0 * _shipyard_ring_sprite.pixel_size)
-	_shipyard_ring_sprite.position = ring_pivot.transform.basis.inverse() * (ring_target - ring_pivot.position)
-	_shipyard_ring_sprite.modulate.a = 0.80 + 0.20 * (0.5 + 0.5 * sin(clock * 1.3))
-
 func _position_workshop_arm(model: Node3D) -> void:
 	# Keep the illustrated arm on a stable camera-facing layer. A direct child
 	# offset follows the tilted ground normal and crosses the body's depth plane,
@@ -423,14 +366,21 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# detached vertical slivers as the orbital structure turns.
 		var scale_factor := 0.64 if kind == "auto_explore" else 0.55 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
-		model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
+		if kind == "shipyard":
+			# Its open berths point away from the globe in the owned section's
+			# local frame, including after the section rotates behind the planet.
+			var outward: Vector3 = _spine.point(a).normalized()
+			var axis_x := -outward
+			var axis_y: Vector3 = _spine.plane_normal()
+			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(Vector3.ONE * scale_factor), _spine.socket_position(a, kind))
+		else:
+			model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
 		if kind == "auto_explore":
 			# The round hull encloses its real section joint at the same station
 			# socket; keep only the short top annulus as a separate moving layer.
 			_station_body_sprite.position = Vector3(0, -0.30, 0) + model.global_transform.basis.inverse() * Vector3(0, 0, 0.25)
 		if kind == "equipment": _position_workshop_arm(model)
 		if kind == "refinery": _position_refinery_work(model, clock)
-		if kind == "shipyard": _position_shipyard_work(model, clock)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _animate_parts(kind: String, clock: float) -> void:

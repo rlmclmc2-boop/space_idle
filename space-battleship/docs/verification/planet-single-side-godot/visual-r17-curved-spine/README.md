@@ -251,3 +251,9 @@
 圆站[新短壳](../../../../assets/planets/facilities_v5/illustrated/station-orbit-through-node.png)从此前获拒的暗尖下垂旧图定向编辑为浅象牙面、深青矮承力鼓和短耦合肩；[两次 ImageGen 输入、准确提示与 SHA](../../../../assets/planets/facilities_v5/illustrated/station-short-hull-prompts.txt)固定。第一步生成带烘焙长桥，已拒绝；第二步只保单个站体。站顶旧 `HabitatRingSpin` 活动层不动。新主体向镜头前移 0.25 世界单位以减少原前弧上表面穿过站身；尝试更大前移会使 90° 站体越到球前，已撤回。站体与弧段是同一 built 状态，但当前画面仍能看到弧段接触站前甲板，**未解决原审的这一点**。
 
 [本版五态、模拟 90° 完整整屏](evidence/station-spine-profile/)及[8.18 秒自然墙钟记录、8.20 秒 VFR 短片和首中末帧](evidence/station-spine-profile/)均来自此版同源 Godot 4.7.2，33 张唯一采样帧。作者原尺寸看：后弧在球后较细，前弧底梁仍厚，工坊开放湾降低后站在环段甲板上；圆站旧暗尖消失，精炼与工坊在所看帧未越边。自然短片仅涉及约 21° 的环相位，受控 90° 为单帧模拟，相位和视频编码均非整圈、自然施工或 FPS。船坞固定向左的贴画与其环段局部方向不一致仍在；一个全 3D Blender 船坞试装在 stage4／90° 因低模大块和球缘重叠更差而撤回，没有进本版。这些与站前弧交错、精炼偏悬共同留待整体结构返修，不能因背弧和短壳局部改善宣称已达批准图。Godot 4.7.2 导入／脚本检查、五态／90°／短动态驱动与 `git diff --check` 退出 0。
+
+## 船坞径向承力壳与泊位：局部结构候选，整体仍待返修
+
+针对上一版船坞后侧仍按画面固定向左伸的问题，本版用可编辑 Blender 源 `art_sources/planet_facilities_v5/build_shipyard_node.py` 生成同一个 `shipyard.blend`／`shipyard.glb`：尖高主脊、所属环段内的暗承力根、两条有截面和内侧导线的开放悬臂、泊于臂间的小艇，以及原名 `CraneSlide`／`DockCollarSpin` 活动枢轴。旧船坞整体贴图和独立吊机／泊位环贴图退出运行层。船坞模型的局部 X 轴按所属段径向、Y 轴按环法线取向，随该段一起转；不再按相机屏幕左侧定位。原建造领取、独立环／球转动和工作时钟接口未改。未建自由端原亮竖片换为同段深青截面，仍需继续收敛截面和青线终点。
+
+[同版 stage3、stage4、受控 90° 原屏](evidence/shipyard-radial-hull/)以及 [8.1 秒自然首末帧和逐帧墙钟记录](evidence/shipyard-radial-hull/natural-timestamps.json)供局部核看。作者原尺寸看见 stage4 双臂向球外左下，90° 随所属段转到左上仍向球外，小艇在双臂之间，主根不再是初试的大白方背。stage3 端帽已不再是亮竖片。**仍未获整体美术通过**：船坞主壳的材质密度与三座绘制设施不齐，双臂／小艇在约百像素下仍偏细；环前弧分层、站／精炼／工坊和四节点共同承力造型仍受此前整体退回约束。自然样本约 21°，90° 仅单帧受控相位，均不代表整圈、自然施工或六类天体通过。[源码、驱动、导入／运行／脚本检查日志及 SHA](evidence/shipyard-radial-hull/)为同版定向证据；Godot 4.7.2 导入、`--check-only`、取图及 `git diff --check` 退出 0。

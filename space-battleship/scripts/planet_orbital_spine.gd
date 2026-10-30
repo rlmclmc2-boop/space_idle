@@ -112,10 +112,10 @@ func _ready() -> void:
 			# A sealed armored cross-section belongs to the built segment alone.
 			# The shallow cyan service slit faces the future mating segment.
 			for layer in [
-				[Vector3(0.63, 0.42, 0.23), Vector3(0, 0.17, outward * 0.04), _deck],
-				[Vector3(0.61, 0.19, 0.20), Vector3(0, 0.28, outward * 0.07), _deck],
-				[Vector3(0.49, 0.09, 0.035), Vector3(0, 0.06, outward * 0.18), _navy],
-				[Vector3(0.37, 0.025, 0.04), Vector3(0, 0.06, outward * 0.205), _cyan],
+				[Vector3(0.63, 0.36, 0.23), Vector3(0, 0.14, outward * 0.04), _navy],
+				[Vector3(0.59, 0.17, 0.19), Vector3(0, 0.27, outward * 0.06), _side],
+				[Vector3(0.38, 0.055, 0.035), Vector3(0, 0.04, outward * 0.16), _navy],
+				[Vector3(0.25, 0.018, 0.04), Vector3(0, 0.04, outward * 0.19), _cyan],
 			]:
 				var face := MeshInstance3D.new()
 				var armor := BoxMesh.new()
