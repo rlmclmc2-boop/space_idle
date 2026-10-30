@@ -353,10 +353,10 @@ func _build() -> void:
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
 	_purchase = _button("升级", Rect2(603, 728, 166, 54), func(): _command(_purchase_action, true), true)
 	_purchase.add_theme_font_size_override("font_size", 27)
-	_cost = _label(Vector2(600, 789), 88, 17)
+	_cost = _label(Vector2(612, 789), 68, 17)
 	_cost.add_theme_color_override("font_color", Color("f4f0dc"))
 	_cost_badge = Panel.new()
-	_cost_badge.position = Vector2(680, 787)
+	_cost_badge.position = Vector2(686, 787)
 	_cost_badge.size = Vector2(26, 27)
 	_cost_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_style := StyleBoxFlat.new()
@@ -371,7 +371,7 @@ func _build() -> void:
 	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cost_badge.add_child(_cost_icon)
-	_cost_details = _label(Vector2(710, 789), 70, 17)
+	_cost_details = _label(Vector2(716, 789), 70, 17)
 	_cost_details.add_theme_color_override("font_color", Color("f4f0dc"))
 	_notice_panel = _panel(Rect2(268, 515, 272, 33), 0.95)
 	_notice = _label(Vector2(279, 518), 250, 17)
@@ -616,16 +616,18 @@ func _refresh_quote() -> void:
 	var reason: String = str(quote.get("reason", ""))
 	var failure_text: String = "资金不足" if reason in ["InsufficientResources", "InsufficientFunds"] else str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "不可购买"
 	if labels.is_empty():
-		_cost.text = mode_text
+		# The MAX button already names the mode; keep the empty quote and reason in separate cells.
+		_cost.text = ("可购" + str(quote.count)) if _purchase_max else mode_text
+		_cost.size.x = 68
 		_cost_details.text = failure_text
-		_cost_details.position.x = 683
+		_cost_details.position.x = 690
 		_cost_details.add_theme_color_override("font_color",Color("efab7c"))
 		_cost_details.add_theme_font_override("font",_ui_font_medium)
 	else:
 		_cost.text = ("可购" + str(quote.count)) if affordable and _purchase_max else "费用" if affordable else failure_text
 		_cost_details.text = cost_text
 		if not affordable:
-			_cost.size.x = 88
+			_cost.size.x = 68
 			_cost.add_theme_color_override("font_color",Color("efab7c"))
 			_cost.add_theme_font_override("font",_ui_font_medium)
 		if quote.costs.size() == 1:
@@ -633,8 +635,8 @@ func _refresh_quote() -> void:
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
 			_cost_icon.modulate = ResourceVisuals.icon_modulate(resource_id)
 			_cost_badge.visible = _cost_icon.texture != null
-		_cost_badge.position.x = 680
-		_cost_details.position.x = 710 if _cost_badge.visible else 682
+		_cost_badge.position.x = 686
+		_cost_details.position.x = 716 if _cost_badge.visible else 690
 	_cost.tooltip_text = _cost.text + " " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
 	var exact_costs: Array = []
