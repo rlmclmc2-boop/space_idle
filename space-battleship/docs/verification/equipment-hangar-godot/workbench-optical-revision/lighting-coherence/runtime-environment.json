@@ -1,0 +1,36 @@
+{
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "executable": "/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64",
+  "native_extension": "/tmp/space-idle-native472/space_native.gdextension",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "scene": "res://src/main.tscn",
+  "display": ":99",
+  "window": [
+    1440,
+    900
+  ],
+  "renderer": "gl_compatibility / llvmpipe (LLVM19.1.7,256bits)",
+  "capture_process_exit": 0,
+  "check_only_exit": 0,
+  "audio_driver": "Dummy",
+  "settings": {
+    "formatVersion": 1,
+    "autosaveInterval": 0,
+    "saveDirectory": "/tmp/equipment-lighting-coherence-final/save",
+    "autoSkipTutorial": true,
+    "musicEnabled": false,
+    "effectsEnabled": false,
+    "damageMode": "off",
+    "preferredPage": "battle"
+  },
+  "method": "Existing original driver adapted only destination/source identifier/completion marker; controlled availability, Lv19 and wallet; root viewport full screen and unscaled get_region local images.",
+  "not_tested": [
+    "purchase/refit transaction chain",
+    "pressed or hover pixel capture",
+    "cooldown timing",
+    "all ships/full loadouts",
+    "extreme MAX",
+    "Windows DPI",
+    "shared host integration"
+  ]
+}
