@@ -2,7 +2,7 @@
 
 main功能已认可；美术仍待判断。根/原Astra退回34c79083的通用灰硬凹框后，本候选改为单件手绘漆面壳、开放候选托盘和软仪表面，撤旧框节点/绘制分支，并修已发现的数值更新过度失效。当前不自判艺术通过，不pushmain。
 
-当前原整体质感任务的禁用可读性窄修源码 `e52e72c36df55f89b3caa70cccf9b66874947d96`，最新必要图：[禁用主动作字底与边高光](disabled-action-readability/README.md)，含正常/资源不足/冷却3同版整屏与原像素局部。保留[完整质感a846候选](coherent-material-polish/README.md)的玻璃/漆面/标题、原结构/字号/两键/Owner与08e资源原色；本轮只修冷暗禁用键的动作可读性，正常金主键层级不变。原整体美术目标仍未闭合、尚无整体通过，局部材质或本项认可不能当原目标完成。旧图/视频仍按其各自源码口径，不能当最新disabled状态图。
+用户新退回“每个控件的确都有质感了，但是分成好几套，没有统一标准”。当前原整体项同族候选源码 `9625564c164406fdfb73801d5180e23f47a3cf73`，最新整页图：[共同面材/边形/字阶/状态语言](unified-control-family/README.md)，含4同版完整整屏、原像素局部与3类Native焦点。实际收敛原玻璃/多描边键/平填侧槽/两套焦点等绘制源，不改保留结构、舰船主体、两键或Owner精准刷新，不新造规范/公共宿主。原[完整材质a846候选](coherent-material-polish/README.md)、[e52禁用窄修](disabled-action-readability/README.md)均保其旧版本图与边界；不能把局部质感或可读性认可当整页统一通过。原整体品质尚未通过，当前仍交原Astra/根整体审核。
 
 用户“目前没有必要性，不是结构级的改善”“先把目前打磨好”继续执行为保留当前结构；[信息组织提案](header-inner-chamfer/information-layout-proposal.md)与[高度分析](header-inner-chamfer/height-feasibility.md)仅历史存档、非待执行。36运行只属于89ac5d0a，当前只做受影响材质的同版实机/原生状态过程，没有重跑交易全链。
 
