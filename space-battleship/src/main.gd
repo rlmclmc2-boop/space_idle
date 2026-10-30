@@ -648,8 +648,9 @@ func _settings_action(parent: Control, text: String, action: Callable, width: fl
 	var button := _command_button(parent, text, action)
 	button.custom_minimum_size = Vector2(width, 39)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	var role := "commit" if text in ["保存进度", "确认新游戏", "确认导入"] else "secondary"
 	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		button.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 8))
+		button.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 8, role))
 	return button
 
 func _settings_field(control: Control) -> void:
