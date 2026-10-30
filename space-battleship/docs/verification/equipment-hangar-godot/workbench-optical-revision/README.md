@@ -1,11 +1,48 @@
-# 装备当前入口：保信息，升级操作组两态协调候选
+# 装备当前入口：结构研究中，运行修改暂停
 
-**最新用户覆盖：** 用户已撤回进一步精简：“不用进一步精简，看没啥可精简”。3916/2cc未获用户接受，当前只以3916现有信息为基线，修同页未选/选择替换时底部升级变两套，以及未选右侧空域；不继续删防御信息或加武器字段。固定运行源码 `304883fbde448cd32fa288ae97967e43100209bc`；最新[升级操作组两态协调](upgrade-group-coherence/README.md)含真实新局空位、同状态武器/防御未选与异物、可用/不足、安装后/冷却与Batch共9整屏＋4原像素局部，全部实际看过，交原整体审，不自判用户或艺术通过。
+**最新覆盖：** 用户退回源码 `304883fbde448cd32fa288ae97967e43100209bc`／证据 `a3a77ee0a723ac33b6795bba6ddfde62c0dda041`：“你这平移就不奇怪吗”。已撤两态接受口径；同一槽位升级对象未变，选候选却使升级组横移，尺寸/材质相同不等于操作连续。用户后续将任务升级为结构研究，暂缓固定按钮等补丁。当前只有本页现结构只读梳理及根已研究的待确认方向；**未获新结构实施结论，不修改代码/采图/复测/Figma/图稿**。3916信息内容保留，已取消806隐藏购级/复用候选主值不复活；不以旧原审或0失败代用户接受。
 
-倍率96×36＋购买292×36、12px间距为同一节点/样式组；未替换时整体居中，选择异物时整体让至左栏并在右显示原安装，不再购买632拉满改变身份。未选右区用已有候选较大正式图和120高承托分配原空间，异物回100高供原比较；原台高按内容266/288响应，未机械锁288、未加无关说明/盖片。左现装当前→升级后/真实升级费/倍率购买、右原周期/容量比较及安装全部保留；65铁仍现装槽购级费，未误当安装费。
+## 现有结构与职责（只读，不是新规范）
 
-曾经本SOL本地80692b00藏防御购级/复用候选主值的精简WIP已完整保全patch/源字节后可逆撤回；该采图未实看、未归档或推送为候选。当前_refresh_comparison/_render_costs/_refresh_cooldown和其它60函数逐字3916，取消内容不在最终源。f7345dee机械布局也只是被覆盖的草稿，最终实物只属于304883fb。历史[3916字段精简](shared-field-reduction/README.md)、[9e原候选](candidate-balance-and-armour/README.md)、[fc共同材质](lighting-coherence/README.md)保原时点，不将内部审当用户接受或混成新证据。
+按当前304源码核实，现界面是上方机库及武器/防御槽索引，下方同一工作台并列“现装升级”和“候选替换”；不是装备背包/独立物品成长系统。
 
-原两键×1→×10→MAX只报价、购买独立，Owner价格/准入/精准刷新，无记录/最近结果、未锁纯空位无交互、用户已取消卸下、资源helper原色、标题切角、舰体与公共宿主边界继续保持。归档重排/详情/大压缩提案不恢复；Figma依赖已取消，不再调用或等待额度/节点。公共状态/风格及组合由整体组协调，不pushmain/Library/Space。
+| 现有部分 | UI当前展示／动作 | 真实数据与职责 |
+|---|---|---|
+| 上方选槽 | 武器/防御分组、槽号、现装名称、paid Lv；点击改变_selected并将_candidate还原当前equipment_id | Session.equipment_slot_facts→Equipment.slot_facts，Owner给id/category/equipment_id/paid_level/effective_level/dormant/cooldown_remaining；UI不重造槽位/挂载规则 |
+| 当前装备工作区 | 标题槽号/现装/Lv、正式图标；当前→升级后主值、当前槽升级费用 | comparison.current/upgrade及quote；武器攻击力、防御容量均scope=charged_base，不是最终DPS或战斗当前HP |
+| 候选选择 | 原可装类型卡、名称/已装备/选中面；选择只预览，不立刻提交 | panel_equipment(_selected)给类型/开放事实；同槽借当前paid_level算candidate，不创建独立候选等级或虚构物品仓库 |
+| 替换比较与安装 | 异物时另显示现装/候选主值，武器附原周期；安装键明确目标及Owner禁用/原因 | comparison.candidate/switch_admission；当前槽购级费与安装是两种对象关系，例65铁是现装护盾槽购级费，不是装甲安装价 |
+| 倍率/费用/购买 | ×1→×10→MAX循环只改报价；独立购买作用于_selected当前槽，选择候选不改购买对象/mode | Owner quote_slot/quote_max_levels、Economy支付、publish_equipment_levels；UI只格式化真实金额/数量，不推价格或MAX |
+| Batch | 顶部入口、当前启用槽名称/Lv、每槽×1/×10/逐槽MAX及执行；无记录/成交明细 | buy_all_levels按Owner原顺序/可支付规则使用余额，可能部分槽成交；不是UI承诺全成或自行分配预算；独占生命周期仍has_exclusive_ui/prepare_host_hide |
 
-本版原主场景必要过程及选择往返均exit0，真实装甲安装一次；×10模式/钱包/节点/样式往返保留。未购买/独立交易全链/36、冷却到期、全舰全槽、极端MAX、focus/hover/pressed矩阵、DPI或共享宿主组合新测；这些界限不因0失败扩大。旧main功能认可不等于本版整体美术或完整运行通过。
+## 状态与不可改变的业务约束
+
+- 同物：候选就是现装，Owner返回NoChange；当前UI隐藏替换比较/安装，保原购级。异物：展示同槽等级下的现装/候选比较及真实安装准入，购级报价仍属于当前槽；预览不冒充已装备。
+- 真实空槽、休眠与未开放是不同状态。Owner保空槽/首防御槽不得卸空的规则；未开放类型按用户要求仅保纯空位，无交互。卸下入口是用户明确取消的设计，非遗漏，不恢复。不能自行推导空槽一律禁购级或改Owner准入。
+- 冷却由Owner的game_time/switch_ready_at/cooldown_remaining决定，当前图10秒不代表UI写死规则；可浏览候选，是否允许安装由switch_admission决定。预算不足/进化材料限制属于升级付款准入，不能串成安装费或用相同灰态掩掉唯一原因。
+- paid_level成长属于槽，替换使用该槽既有等级；有效等级/主值/周期等均由Owner给出。UI不得从primary显示字符串反算DPS、成长、容量、比例或完整公式；恢复率/延迟/damage_type虽有Owner字段，当前未显示，不为对称擅自加字段。
+- 保两键语义、Owner支付/原生提交后接纳、精准局部刷新/缓存、资源helper原色、正式舰/装备身份、无记录，以及公共宿主/独占边界。结构研究不授权改数值/开放/冷却/保存或把上方逻辑防御画成伪物理舰体部件。
+
+## 现有准入与接纳调用链
+
+`select_slot → 已接纳slot_facts → candidate=现装 → panel_equipment / Session.equipment_comparison → Equipment.slot_comparison(current, upgrade, candidate, quote, affordable, switch_admission)`；选候选只更新UI选择和必要比较，不提交Owner。
+
+`_buy → buy_levels / buy_max_levels(_selected, inputs, Economy.payment, publish_equipment_levels) → Owner报价/支付/原生级别提交 → 接纳并按受影响slot刷新`；`_equip → equip_slot(_selected,_candidate,inputs,publish_equipment_refit) → _equip_admission(首槽/同物/冷却/开放/类别/generation等) → 原生换装提交 → 接纳现装`。`_buy_all → buy_all_levels`自持逐槽报价/支付/提交次序，UI不能复制。Session只补既有mounts/balances/game_time/公开倍率输入，数值和准入归Equipment/Economy/native。
+
+核对点：equipment_panel.gd select_slot/_select_candidate/_refresh_comparison(658/665/718)、_buy/_equip/_buy_all(917/922/925)、_refresh_batch(943)、_process(962)；game_session.gd equipment_inputs/slot_facts/comparison(764/768/779)；systems/equipment.gd panel_equipment/slot_facts/_comparison_value/slot_comparison(161/168/181/218)、buy_levels(597)、_equip_admission/equip_slot/quote_slot/buy_all_levels(620/636/653/670)。这些是现有实现事实，不另造权威契约，规则仍由game-design README/M2/13及原Owner负责。
+
+## 当前空间与操作连续性问题
+
+槽索引和候选卡是两层选择：前者决定被升级的槽，后者只决定替换预览。现页面并列两对数值、重复现装身份和两类动作，容易把“当前槽升级后”与“候选替换后”、升级费与安装对象混读；现阶段保其信息，组织方式留结构研究。
+
+304同状态旧图确证：仅选择候选、_selected未变，96/292升级组仍从global x204/312移到36/144；相同节点/皮肤不能抵消同一升级工作点移动。原未选没有右比较/安装时空域明显，扩大图/移动整组也未获用户接受；不能用填说明、加框、拉满购买键或隐藏购级来替代结构解决。本轮不把研究预锁成固定按钮坐标，也不先画新布局。
+
+## 根已研究的待确认结构方向（未授权实施）
+
+根提出“**槽位总览 → 当前装备工作区（默认升级） → 按需候选替换**”，替换不再常驻占升级区一半，以区分槽与候选两层选择、升级费对象与替换比较对象。当前只是供用户判断的方向：候选替换的进入/返回及承载方式、现装基线/两种比较如何组织、安装前后如何回当前工作区并保倍率/焦点/对象连续性，均待真正结构结论，不预先选择抽屉/弹层/页切换，也不直接复活806已取消实现。Owner规则、必要字段语义及原材质/舰体身份不因此改变。
+
+根已研究参考，仅引用来源，不重复联网验证或引外部游戏资产：[AC6官方装配指南](https://en.bandainamcoent.eu/armored-core/news/armored-core-6-fires-of-rubicon-beginners-guide-basic-strategy-and-combat-theory)、[Warframe官方EQUIP/UPGRADE](https://support.warframe.com/hc/en-us/articles/200500194-Mod-Guide-Use-Fusion-Transmutation-Sale)、[God of War列表/详情关系](https://www.gamepressure.com/god-of-war-ragnarok/best-armor-set/zb1062b)。这些参考不能把本项目槽位成长改成外部游戏物品成长规则。
+
+## 现场与历史证据
+
+本次恢复HEAD a3a77ee0、tracked干净，无运行命令，自该交付后未执行新锚点补丁/提交/采图/测试。304/a3a与[原完整图](upgrade-group-coherence/README.md)仅用户已退回的研究对照；[3916字段版](shared-field-reduction/README.md)、[9e版](candidate-balance-and-armour/README.md)保原时点。806原panel/完整patch/json与revert历史、全部tmp/cache/未跟踪均保留，不作为新功能；Figma已取消不恢复。不改main/Library/Space、不新代理/任务/工作区。本轮仅文档固定结构清单，运行源码仍304；新结构未定前暂停实施，原目标未完成。本SOL未实际平台上下文压缩。
