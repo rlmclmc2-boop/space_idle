@@ -6,6 +6,8 @@ const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球�
 const STATES := {"locked": "未达门槛", "building": "施工中", "ready": "待领取", "built": "已领取"}
 const PAUSES := {"ExplorationNotRunning": "探索未运行，施工暂停", "NoExplorer": "缺少探索者，施工暂停", "MissingBuilders": "缺少额外施工人员，施工暂停"}
 const ResourceVisuals := preload("res://src/ui/resource_visuals.gd")
+const CONTROL_MATERIALS := "res://assets/ui/planet/control-materials.png"
+var _material_faces: Dictionary = {}
 var _host: Callable
 var _planet
 var _crew
@@ -87,6 +89,7 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable, visua
 func _ready() -> void:
 	process_priority = 1
 	theme = _theme()
+	_load_control_materials()
 	_visual = preload("res://scripts/planet_visual.gd").new()
 	_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_visual)
@@ -143,6 +146,14 @@ func _ready() -> void:
 	_progress.show_percentage = false
 	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_drawer)
+	# A stable housing surrounds the header and the variable-height content.
+	# Button glass cannot be stretched down a long drawer without vertical bands.
+	var drawer_face := _skin(Color("203b49"), Color("688184"), 1, 6)
+	drawer_face.set_content_margin_all(13)
+	drawer_face.shadow_color = Color("061824", 0.32)
+	drawer_face.shadow_size = 4
+	drawer_face.shadow_offset = Vector2(1, 2)
+	_drawer.add_theme_stylebox_override("panel", drawer_face)
 	_drawer.add_child(_drawer_box)
 	_drawer.draw.connect(_draw_drawer_trim)
 	_drawer_box.add_theme_constant_override("separation", 10)
@@ -221,48 +232,51 @@ func _skin(fill: Color, edge: Color, border: int = 1, radius: int = 6) -> StyleB
 	return style
 
 func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color) -> void:
+	var role := "primary" if normal.r > 0.7 and normal.b < 0.55 else "glass" if normal.r > 0.7 else "navy"
 	for state in ["normal", "hover", "pressed"]:
-		var fill := normal if state == "normal" else hover if state == "hover" else pressed
-		var style := _skin(fill, edge, 1, 4)
-		style.shadow_color = Color("061823", 0.28 if state != "pressed" else 0.14)
-		style.shadow_size = 2 if state != "pressed" else 1
-		style.shadow_offset = Vector2(0, 1)
-		button.add_theme_stylebox_override(state, style)
+		var face := "glass" if state == "pressed" and role == "navy" and pressed.r > 0.7 else role
+		var tint := Color(1.08, 1.08, 1.05) if state == "hover" else Color(0.87, 0.9, 0.91) if state == "pressed" else Color.WHITE
+		button.add_theme_stylebox_override(state, _material_style(face, tint))
 	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c"), 2))
-	button.add_theme_stylebox_override("disabled", _skin(Color("243743"), Color("4d6269")))
+	button.add_theme_stylebox_override("disabled", _material_style("navy", Color(0.68, 0.73, 0.76)))
 	for state in ["font_color", "font_hover_color", "font_focus_color"]:
 		button.add_theme_color_override(state, ink)
 	for state in ["font_pressed_color", "font_hover_pressed_color"]:
 		button.add_theme_color_override(state, Color("173747"))
 	button.add_theme_color_override("font_disabled_color", Color("95a7a8"))
-	button.set_meta("bevel_gold", normal.r > 0.7 and normal.g > 0.45 and normal.b < 0.55)
-	if not button.has_meta("bevel_draw_connected"):
-		button.set_meta("bevel_draw_connected", true)
-		button.draw.connect(_draw_button_bevel.bind(button))
+
+func _load_control_materials() -> void:
+	var image: Image = load(CONTROL_MATERIALS).get_image()
+	var regions := {"glass": Rect2i(42, 132, 1366, 256), "primary": Rect2i(42, 472, 1366, 224), "navy": Rect2i(42, 772, 1366, 204)}
+	for id in regions:
+		var face: Image = image.get_region(regions[id])
+		var height := 44 if id.begins_with("glass") else 40
+		face.resize(roundi(face.get_width() * float(height) / face.get_height()), height, Image.INTERPOLATE_LANCZOS)
+		_material_faces[id] = ImageTexture.create_from_image(face)
+
+func _material_style(role: String, tint: Color = Color.WHITE) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = _material_faces[role]
+	style.modulate_color = tint
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: style.set_texture_margin(side, 7)
+	style.set_content_margin_all(8)
+	return style
 
 func _paint_secondary(button: Button) -> void:
 	_paint_button(button, Color("1a3e4b"), Color("2b5661"), Color("d8d5c5"), Color("729296"), Color("eee9d9"))
 
-func _draw_button_bevel(button: Button) -> void:
-	if button.size.x < 24 or button.size.y < 18: return
-	var gold := bool(button.get_meta("bevel_gold", false))
-	var sheen := Color("fff6df", 0.23) if gold or button.button_pressed else Color("b4dcda", 0.19)
-	var shade := Color("715336", 0.09) if gold or button.button_pressed else Color("041722", 0.13)
-	if button.disabled:
-		sheen.a *= 0.25
-		shade.a *= 0.25
-	button.draw_polygon(
-		PackedVector2Array([Vector2(2, 2), Vector2(button.size.x - 2, 2), Vector2(button.size.x - 2, button.size.y - 2), Vector2(2, button.size.y - 2)]),
-		PackedColorArray([sheen, sheen, shade, shade]))
-
 func _draw_drawer_trim() -> void:
 	var width := _drawer.size.x
 	var height := _drawer.size.y
+	var header_bottom := _drawer_title.get_global_rect().end.y - _drawer.get_global_rect().position.y + 6.0
+	# The quiet body varies only from top to bottom. Its side and bottom rim are
+	# the same housing, so the title does not read as a pasted-on keycap.
 	_drawer.draw_polygon(
-		PackedVector2Array([Vector2(2, 50), Vector2(width - 2, 50), Vector2(width - 2, height - 3), Vector2(2, height - 3)]),
-		PackedColorArray([Color("fff9e8", 0.46), Color("fff9e8", 0.46), Color("aabcb8", 0.24), Color("aabcb8", 0.24)]))
-	_drawer.draw_rect(Rect2(2, 2, width - 4, 48), Color("234653"))
-	_drawer.draw_line(Vector2(2, 50), Vector2(width - 2, 50), Color("8fa49d", 0.72), 1.0)
+		PackedVector2Array([Vector2(5, header_bottom), Vector2(width - 5, header_bottom), Vector2(width - 5, height - 11), Vector2(width - 11, height - 5), Vector2(11, height - 5), Vector2(5, height - 11)]),
+		PackedColorArray([Color("e4e3d9"), Color("e4e3d9"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7")]))
+	_drawer.draw_texture_rect(_material_faces.navy, Rect2(3, 3, width - 6, header_bottom - 3), false, Color(0.82, 0.96, 0.96, 0.9))
+	_drawer.draw_line(Vector2(5, header_bottom + 1), Vector2(width - 5, header_bottom + 1), Color("fff9e8", 0.25), 1.0)
+	_drawer.draw_line(Vector2(11, height - 5), Vector2(width - 11, height - 5), Color("102d3b", 0.42), 1.0)
 
 func _layout() -> void:
 	if _visual == null: return
