@@ -217,7 +217,7 @@ class EquipmentSurface extends StyleBox:
         var focus:bool=profile.begins_with("focus_")
         var form:String=profile.trim_prefix("focus_") if focus else profile
         var face:Rect2=r.grow(-3)
-        if form=="tray" or form=="candidate":face=Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36))
+        if form=="tray" or form=="candidate":face=Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,52.0))
         elif form=="index":face=r.grow(-1)
         elif form in ["backing","locator"]:face=r
         if depressed:face.position.y+=1;face.size.y-=1
@@ -288,7 +288,7 @@ func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String
     if profile=="deck":return _console_material(kind=="navy_face")
     var material:=EquipmentSurface.new()
     material.texture=_face_texture;material.profile=profile;material.depressed=depressed
-    var tones:Dictionary={"glass":Color(0.91,0.95,0.91),"enamel":Color(0.91,0.95,0.91),"teal":Color(0.68,0.90,0.81),"selected_dark":Color(0.29,0.53,0.54),"navy_face":Color(0.28,0.42,0.48),"navy":Color(0.31,0.46,0.53),"primary":Color(1.08,0.87,0.53),"disabled":Color(0.23,0.33,0.38),"quiet":Color(0.31,0.46,0.53)}
+    var tones:Dictionary={"glass":Color(0.91,0.95,0.91),"enamel":Color(0.91,0.95,0.91),"teal":Color(0.68,0.90,0.81),"selected_dark":Color(0.29,0.53,0.54),"navy_face":Color(0.28,0.42,0.48),"navy":Color(0.31,0.46,0.53),"primary":Color(0.38,0.51,0.54),"disabled":Color(0.23,0.33,0.38),"quiet":Color(0.31,0.46,0.53)}
     material.tone=tones.get(kind,Color.WHITE)*modulation
     material.quiet=kind=="clear";material.disabled=kind=="disabled"
     material.content_margin_left=8;material.content_margin_right=8
@@ -335,9 +335,8 @@ func _button_tint(button: Button, chosen: bool) -> void:
     button.set_meta("material_chosen",chosen)
     var states: Dictionary=button.get_meta("material_variants")[1 if chosen else 0]
     for state in states:button.add_theme_stylebox_override(state,states[state])
-    var primary:bool=button.get_meta("material_role","")=="primary"
     var quiet:bool=button.get_meta("material_role","")=="quiet"
-    var ink:Color=INK if primary else LIGHT if quiet else CREAM
+    var ink:Color=LIGHT if quiet else CREAM
     for state in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]:button.add_theme_color_override(state,ink)
     button.add_theme_color_override("font_disabled_color",CONTROL_DISABLED_INK)
 
@@ -532,11 +531,11 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     _workbench.position.y=896.0-height;_workbench.size.y=height
     _workbench_divider.size.y=action_y-48.0
     _upgrade_data.position=Vector2(100,70)
-    _candidate_row.position=Vector2(460,70)
-    _comparison_group.position=Vector2(460,166);_comparison_group.size.y=43
+    _candidate_row.position=Vector2(460,70 if different else roundf(70.0+(action_y-70.0-100.0)*0.5));_candidate_row.size.y=100
+    _comparison_group.position=Vector2(460,176);_comparison_group.size.y=43
     _install.position=Vector2(460,action_y);_install.size=Vector2(300,36)
     _quantity_button.position=Vector2(20,action_y);_quantity_button.size=Vector2(96,36)
-    _purchase.position=Vector2(128,action_y);_purchase.size=Vector2(292,36)
+    _purchase.position=Vector2(128,action_y);_purchase.size=Vector2(292 if different else 632,36)
     _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
 
 func _layout_primary_values() -> void:
@@ -845,6 +844,9 @@ func _refresh_choices(fact: Dictionary, read_options:bool=true) -> void:
     var options: Array=_choice_options
     var live: Array=[]
     var column: int=0
+    var defence:bool=str(fact.category)=="defence"
+    var cell_width:float=144.0 if defence else 68.0
+    var step:float=152.0 if defence else 76.0
     for option in options:
         var id: String=str(option.id)
         if id.is_empty():continue
@@ -869,7 +871,12 @@ func _refresh_choices(fact: Dictionary, read_options:bool=true) -> void:
         if _choice_presentations.get(id)==signature:column+=1;continue
         _choice_presentations[id]=signature;presentation_counts.candidates_updated+=1
         var item: Dictionary=_choices[id]
-        item.button.position=Vector2(column*76,0)
+        item.button.position=Vector2(column*step,0)
+        item.button.size=Vector2(cell_width,100)
+        item.icon.position=Vector2((cell_width-44)*0.5,8)
+        item.icon.size=Vector2(44,44)
+        item.caption.position=Vector2(3,58);item.caption.size=Vector2(cell_width-6,20)
+        item.status.position=Vector2(3,78);item.status.size=Vector2(cell_width-6,18)
         # Keep the catalog column even while its whole control is hidden. Unlocking never compacts the row.
         item.button.visible=_selection_open and option.enabled;item.button.disabled=not option.enabled
         item.button.mouse_filter=Control.MOUSE_FILTER_STOP if option.enabled else Control.MOUSE_FILTER_IGNORE
