@@ -14,5 +14,10 @@
   "assets/weapons/fleet_20261019/longLaser.png": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3",
   "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
   "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c",
+  "docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/coherence-assets/public-rail-b17.png": "40df707599e4a94e9eba17a1f3669d224170a636529ef400e3a89b9784cc5d4b",
+  "docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/coherence-assets/hangar-short-carrier.png": "7af5e62cb5cecdcbc19efce77e4e9f98447dd50220f2e21c4b12f2d62b8efdc2",
+  "assets/ui/equipment/materials-20261029/control-materials.png": "707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c",
+  "docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/coherence-assets/hangar-tall-carrier.png": "b50431fc7e2b1ab85eada0bdca476498dc19a467d63fc8e3955f8ee4d74237ec",
+  "docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/coherence-assets/public-panel-frame.svg": "a0ea73f5bf59400afb0254a94e1daf1f55e31000f5e0b70621ed59b742762f1b",
   "assets/fonts/NotoSansSC.ttf": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
 }

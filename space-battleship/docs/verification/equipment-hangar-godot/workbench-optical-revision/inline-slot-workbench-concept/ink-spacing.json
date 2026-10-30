@@ -384,68 +384,144 @@
     "remaining": "All2fee capacity is a proposal with scrolling tradeoff; arbitrary long level/number strings and3resources not fabricated; keyboard/focus/hover matrix awaits common control style and later implementation."
   },
   "current_revision": {
-    "withdrawn": "c9full108proposal not accepted/recommended",
-    "font_source": "61c9R3roles unchanged",
-    "new_layout": "94row, identity24/benefit50/full-width quote86; all current2fee and reason examples actually viewed. No ordinary-row blank second fee band.",
-    "view_boundary": "Partial identity strips without cost/purchase are drawn in32etc; no operational row without full identity.",
-    "pairs": [
-      {
-        "before": "31-compact-scene-late.png",
-        "after": "36-compact-affordable.png",
-        "all_visible_target_rectangles_equal": true,
-        "visible_target_count": 25,
-        "pixel_diff_bbox": [
-          649,
-          366,
-          772,
-          420
+    "source": "42–62;61c9R3fonts retained; b17paint roles",
+    "layout": {
+      "row_pitch": 94,
+      "baselines": [
+        24,
+        46,
+        66,
+        86
+      ],
+      "benefit": "Two aligned lines; current46/upgrade66 without shrinking font. Quote86 belongs to current-slot upgrade.",
+      "content_height": {
+        "early": 226,
+        "middle": 508,
+        "late": 790
+      },
+      "viewport_height": {
+        "early": 226,
+        "middle": 508,
+        "late": 510
+      },
+      "scroll_range": {
+        "early": [
+          0,
+          0
         ],
-        "downstream_y426_pixel_diff_bbox": null,
-        "static_only": true
+        "middle": [
+          0,
+          0
+        ],
+        "late": [
+          0,
+          280
+        ]
+      },
+      "partial_rows": "Identity only, no property/quote/compare/mode/purchase painted; static clipping organization only.",
+      "logical_targets_global_x_relative_row_y": {
+        "icon": [
+          346,
+          8,
+          48,
+          58
+        ],
+        "name": [
+          400,
+          5,
+          216,
+          27
+        ],
+        "compare_visual": [
+          710,
+          5,
+          62,
+          26
+        ],
+        "compare_proposed_hit": [
+          710,
+          5,
+          62,
+          32
+        ],
+        "quantity": [
+          622,
+          34,
+          52,
+          36
+        ],
+        "purchase": [
+          680,
+          34,
+          92,
+          36
+        ]
+      },
+      "hit_limit": "Logical design allocations, not executable input or focus verification."
+    },
+    "quote": "费用 caption, actual500weight measurement, second resource gap10px;61/62historic true MAX9,300→1.556×10^43,444levels,2fees. Actual whole/native images inspected.",
+    "static_pairs": [
+      {
+        "before": "44-coherent-late.png",
+        "after": "49-coherent-affordable.png",
+        "pixel_diff_bbox": [
+          631,
+          347,
+          771,
+          400
+        ],
+        "downstream_y406_pixel_diff_bbox": null,
+        "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
       },
       {
-        "before": "36-compact-affordable.png",
-        "after": "34-compact-max.png",
-        "all_visible_target_rectangles_equal": true,
-        "visible_target_count": 25,
+        "before": "49-coherent-affordable.png",
+        "after": "47-coherent-max.png",
         "pixel_diff_bbox": [
-          492,
-          368,
+          460,
+          357,
           755,
-          421
+          401
         ],
-        "downstream_y426_pixel_diff_bbox": null,
-        "static_only": true
+        "downstream_y406_pixel_diff_bbox": null,
+        "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
       },
       {
-        "before": "36-compact-affordable.png",
-        "after": "35-compact-material-locked.png",
-        "all_visible_target_rectangles_equal": true,
-        "visible_target_count": 25,
+        "before": "49-coherent-affordable.png",
+        "after": "48-coherent-material-locked.png",
         "pixel_diff_bbox": [
-          454,
-          366,
-          772,
-          421
+          434,
+          347,
+          771,
+          401
         ],
-        "downstream_y426_pixel_diff_bbox": null,
-        "static_only": true
+        "downstream_y406_pixel_diff_bbox": null,
+        "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
       },
       {
-        "before": "37-compact-single-fee.png",
-        "after": "36-compact-affordable.png",
-        "all_visible_target_rectangles_equal": true,
-        "visible_target_count": 25,
+        "before": "50-coherent-single-fee.png",
+        "after": "49-coherent-affordable.png",
         "pixel_diff_bbox": [
           449,
-          345,
+          325,
           666,
-          421
+          401
         ],
-        "downstream_y426_pixel_diff_bbox": null,
-        "static_only": true
+        "downstream_y406_pixel_diff_bbox": null,
+        "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
+      },
+      {
+        "before": "61-coherent-long-max.png",
+        "after": "62-coherent-long-max-poor.png",
+        "pixel_diff_bbox": [
+          681,
+          347,
+          771,
+          400
+        ],
+        "downstream_y406_pixel_diff_bbox": null,
+        "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
       }
     ],
-    "acceptance": "Pending root/overall/independent review, no author pass."
+    "acceptance": "Author observation only; root/independent whole-page review pending."
   }
 }

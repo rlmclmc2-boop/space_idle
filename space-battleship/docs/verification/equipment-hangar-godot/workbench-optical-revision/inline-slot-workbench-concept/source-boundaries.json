@@ -89,19 +89,23 @@
     "05-late-affordability-only.svg",
     "05-late-affordability-only.png"
   ],
-  "current_revision_start": "c9c6021d950d56e062a238f84618f1f2eaf14ae9",
+  "current_revision_start": "04149eae7cb9120bcc4830ae3781e16fc16100d1",
   "typography_source": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
-  "current_scope": "Current29–41static coherence, real weapon art assembly, compact quote band, passive partial rows; latest user constraints. No runtime/shared geometry/common assets edited.",
+  "current_scope": "42–62 docs-only static composition, sharedb17paint, actual historical longMAX fields. No runtime/common-source/Owner/config modifications.",
   "current_changed_tracked_paths": [
     "space-battleship/docs/game-design/art/modules/equipment.md",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/background-composition-handoff.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/build-design-plates.py",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/compact-row-boundaries.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/embedded-asset-audit.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/ink-spacing.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/manifest.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/pending-work.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/reference-hashes.json",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/ship-weapon-layout.json",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/source-boundaries.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/target-boundaries.json"
   ],
   "new_static_files": [
@@ -165,5 +169,8 @@
       },
       "scope": "Current local config only; Owner loops res_n, so2fees is not a future schema limit. No fabricated third currency."
     }
-  }
+  },
+  "common_material_source": "b17db8d2fef26009515df75b5759b6b1ac7ca3fb",
+  "preserved_previous_numbered_source": true,
+  "prior_01_41_svg_png_byte_changes": []
 }

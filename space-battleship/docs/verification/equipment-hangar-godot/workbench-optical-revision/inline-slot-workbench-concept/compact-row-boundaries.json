@@ -1,5 +1,5 @@
 {
-  "('early', False, ('weapon', 0), None, False, False, False, False)": {
+  "('early', False, ('weapon', 0), None, False, False, False, False, False)": {
     "stage": "early",
     "body_top": 354,
     "viewport_height": 226,
@@ -25,7 +25,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('middle', False, ('weapon', 1), None, False, False, False, False)": {
+  "('middle', False, ('weapon', 1), None, False, False, False, False, False)": {
     "stage": "middle",
     "body_top": 314,
     "viewport_height": 508,
@@ -75,7 +75,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('weapon', 0), None, False, False, False, False)": {
+  "('late', False, ('weapon', 0), None, False, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -149,7 +149,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', True, ('weapon', 4), None, False, False, False, False)": {
+  "('late', True, ('weapon', 4), None, False, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -223,7 +223,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', True, ('defence', 1), None, False, False, False, False)": {
+  "('late', True, ('defence', 1), None, False, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -297,7 +297,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('weapon', 0), 'evolution-max', False, False, False, False)": {
+  "('late', False, ('weapon', 0), 'evolution-max', False, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -371,7 +371,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('weapon', 0), 'evolution-locked', False, False, False, False)": {
+  "('late', False, ('weapon', 0), 'evolution-locked', False, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -445,7 +445,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('weapon', 0), 'evolution', False, False, False, False)": {
+  "('late', False, ('weapon', 0), 'evolution', False, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -519,7 +519,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('weapon', 0), 'normal', False, False, False, False)": {
+  "('late', False, ('weapon', 0), 'normal', False, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -593,7 +593,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('defence', 1), None, True, False, False, False)": {
+  "('late', False, ('defence', 1), None, True, False, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -667,7 +667,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('defence', 1), None, False, True, False, False)": {
+  "('late', False, ('defence', 1), None, False, True, False, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -741,7 +741,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('weapon', 0), 'normal', False, False, True, False)": {
+  "('late', False, ('weapon', 0), 'normal', False, False, True, False, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -815,7 +815,7 @@
     ],
     "no_partial_purchase_controls": true
   },
-  "('late', False, ('weapon', 0), 'normal', False, False, False, True)": {
+  "('late', False, ('weapon', 0), 'normal', False, False, False, True, False)": {
     "stage": "late",
     "body_top": 314,
     "viewport_height": 523,
@@ -884,6 +884,1020 @@
         "height": 94,
         "fully_visible": false,
         "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('early', False, ('weapon', 0), None, False, False, False, False, True)": {
+    "stage": "early",
+    "body_top": 432,
+    "viewport_height": 226,
+    "content_height": 226,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 450,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 563,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('middle', False, ('weapon', 1), None, False, False, False, False, True)": {
+    "stage": "middle",
+    "body_top": 294,
+    "viewport_height": 508,
+    "content_height": 508,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 613,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 707,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('weapon', 0), None, False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', True, ('weapon', 4), None, False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 280,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 32,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 126,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 220,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 314,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 408,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 521,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 615,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 709,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', True, ('defence', 1), None, False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 280,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 32,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 126,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 220,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 314,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 408,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 521,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 615,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 709,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('weapon', 0), 'evolution-max', False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('weapon', 0), 'evolution-locked', False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('weapon', 0), 'evolution', False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('weapon', 0), 'normal', False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('defence', 1), None, True, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 280,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 32,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 126,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 220,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 314,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 408,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 521,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 615,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 709,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('defence', 1), None, False, True, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 280,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 32,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 126,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 220,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 314,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 408,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 521,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 615,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 709,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('weapon', 0), 'normal', False, False, True, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, ('weapon', 0), 'normal', False, False, False, True, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('late', False, None, None, False, False, False, False, True)": {
+    "stage": "late",
+    "body_top": 294,
+    "viewport_height": 510,
+    "content_height": 790,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:3",
+        "row_y": 594,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:4",
+        "row_y": 688,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 801,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": true
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 895,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:2",
+        "row_y": 989,
+        "height": 94,
+        "fully_visible": false,
+        "operable_targets_drawn": false,
+        "partial_identity_only": false
+      }
+    ],
+    "no_partial_purchase_controls": true
+  },
+  "('middle', False, None, None, False, False, False, False, True)": {
+    "stage": "middle",
+    "body_top": 294,
+    "viewport_height": 508,
+    "content_height": 508,
+    "scroll_offset": 0,
+    "rows": [
+      {
+        "slot": "weapon:0",
+        "row_y": 312,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:1",
+        "row_y": 406,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "weapon:2",
+        "row_y": 500,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:0",
+        "row_y": 613,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
+        "partial_identity_only": false
+      },
+      {
+        "slot": "defence:1",
+        "row_y": 707,
+        "height": 94,
+        "fully_visible": true,
+        "operable_targets_drawn": true,
         "partial_identity_only": false
       }
     ],

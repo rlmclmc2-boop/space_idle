@@ -1,6 +1,6 @@
 {
   "kind": "whole-equipment-layout-adaptation-static-candidate",
-  "stage": "Current29–41coherence candidate: compact94row, horizontal quote band, passive partial identities, authored weapon assembly. Not accepted; common material/new background/full host pending.",
+  "stage": "Current42–62 shared-source composition candidate; not accepted/user approved/native implementation.",
   "module": [
     0,
     0,
@@ -9,160 +9,256 @@
   ],
   "main_plates": [
     {
-      "file": "29-compact-scene-early.png",
+      "file": "42-coherent-early.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "83620ce56e3b41ebe1eff6e3ced535132c51e31fae8f8fd857758e65a76cd281",
-      "svg_sha256": "5ba21ec4ddc0ca384a41a0e2de760e45b58233a856ca24ba5aa762abf8812a5f",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "93f416e98553cbd21dee407399085099863be3c2f5229a50f0775ac777a294af",
+      "svg_sha256": "9711410ae39f4380a41f862fe296d89e53adc2e3f064bfc34e0804a3b032b33c",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "30-compact-scene-middle.png",
+      "file": "43-coherent-middle.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "3c888490cacf99739a60a15b6333c981aa15d013bac5f740722fb6b79c0b93a4",
-      "svg_sha256": "4e8df75f410aee77a9c217fde1110d198e5c47dba504068844811d32a7b57c8f",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "ef0c1559107b03152b0a291a3d91a3d1c002a82944b25fb05409777df4998e61",
+      "svg_sha256": "2b45ba9e9b7e587056340f3eaa0e5a1c911cfa5420cb26b6e52c2009597e1789",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "31-compact-scene-late.png",
+      "file": "44-coherent-late.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "a492c183aa9a8bce966d29f1489cd873bd6ed54d0b817665cba313cf0b045d01",
-      "svg_sha256": "5cc0aa12299e4a1daca15ccaf9bf5b4530a7feaaf619e2829d26b268b25ec331",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "f1b069f5ec67d99145dd9760beca4c80a7ad05472d3b5f4edbac6ef8e2018c87",
+      "svg_sha256": "25f8b60c3ea1608f9773f6f347318c40c42311d59a45cb07ac4e7eddfe48595f",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "32-compact-scene-bottom.png",
+      "file": "45-coherent-bottom.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "22d4ac44eef37ff141a2055708f048ea2a01dfc275eb435403b98d23216768cc",
-      "svg_sha256": "8293ae8592ffd8303cc383e0d5bd8684b4eadd70e896c1dd0e5e24dd6fcacf3c",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "b79bf9a1b1a6bad99817a453dea60dc6bc5412e92c476986f4028ef57af7b207",
+      "svg_sha256": "371e3ff52a678927030a6d4d9fe1e2038643355c60ae54d9be3d02d24ba95abb",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "33-compact-defence-row-only.png",
+      "file": "46-coherent-defence.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "bb86263deb6fb674c01a0518277daa470b0d1402b07cbc557de6052f7a4762d4",
-      "svg_sha256": "3c1b1f7e5c1bdceb39121af7652f13a91e3756e32a3887aad3912450c025a749",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "3bf671715f42dd0dabebeac75b6f02bcfb8ae5e7b5f336ab70ef43db75abceaa",
+      "svg_sha256": "f25a935e92fa725edc402d9f445b5c308fe44f6faf33affcc70a6b6289381078",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "34-compact-max.png",
+      "file": "47-coherent-max.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "24b7de5b4fbf768d98760e456776cc8170f5f76aabe7631003d265814a14e9d3",
-      "svg_sha256": "cec67e55462bd59c5ed94e092f428b848d677ffbad17c11abfb478e1750cb400",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "632460385f71475f734fb0bb88fb3bde4fa3b01e11e9daece05abe20999c9f5b",
+      "svg_sha256": "68346350112179c39390766dd07da7f721896c64d3ad285b773ee930849c201d",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "35-compact-material-locked.png",
+      "file": "48-coherent-material-locked.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "d984e36832c247d0153e2a953004b09477a62a04e69e70b81805ab222a793a13",
-      "svg_sha256": "a07ec26b715696b1b4e9b7fa01af762e0b37aab1691a88c0f216ee39069604ef",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "dac64ffec72ac80e3c352590c947bcb5c14c67149aa5df37cb765ddff071529e",
+      "svg_sha256": "20b1ba2c46621a9d545da7b207bbf20f535c1f1af2057b93afd58c18b7254ee9",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "36-compact-affordable.png",
+      "file": "49-coherent-affordable.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "06a1925486f8b66e0f95227bfbc872a2453c26b16f7ec2148be0a7724af2dd4e",
-      "svg_sha256": "379c75e5806fe2ce1077f120e05282b4653c51cdc0fccf9f6744818a6c64de8e",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "2bcd72b8ce089b9740a2014878f467dce57b96f6e763f6de373ca86a836353df",
+      "svg_sha256": "ae23de3c7a6b8ce7e67a90b8eac691ef5a5c44f23303acd5b168bd7425b8f748",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "37-compact-single-fee.png",
+      "file": "50-coherent-single-fee.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "a2833239efcea12ad5c2cffa9d9b7de562916ff1835dda23046f71d0b17e2fb1",
-      "svg_sha256": "371877243c6976ffc72192529c10ec95be93d41ee294570853a50e45f343ae70",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "fe4406c83f787207aef0ee8e04f8ef939a1fa797e04d77ba0243fa41458dcf56",
+      "svg_sha256": "29aa09a12b050f8c817e98b3ebefe30893705c29ee2822d82ed4858198e2b06d",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "38-compact-defence-dropdown.png",
+      "file": "51-coherent-defence-dropdown.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "2a724dfd6dbe42e35cf7bf933f561ef786bbc13dbbac9277e68694bf1f7eace6",
-      "svg_sha256": "c017016ebeb70efca0d76024b8f969d16afd48b63c525f002d1cd4205b4f9b11",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "672a8db32d07bb5b6797bf178c37823879d1f1a097f0fe7e06700e29625d6164",
+      "svg_sha256": "3743d6d919163df61604456483ed7312f26da330512c716b9b86a0e10d4e6188",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "39-compact-defence-comparison.png",
+      "file": "52-coherent-defence-comparison.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "d98a6885ea746f2cde8ba3f35e4f4b7f7416278aa73cdb85c266ccc82833e97d",
-      "svg_sha256": "bbea8dc22d7be43dec4399b459887b17b8098b3756e0811bb3392e054431981a",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "12884d71dbc5817a6af24e96128b73bc2deea33d33fe8efd7d4beffae2970e8c",
+      "svg_sha256": "554ab02f9cffcccc24d07f8b252227b858138b5bd7b13b460790a2f8a6a100e1",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "40-compact-weapon-dropdown.png",
+      "file": "53-coherent-weapon-dropdown.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "4cf85a26560832e7f3877bb2596d9cde5052976f3ac6c0c4cd166f791ccb3505",
-      "svg_sha256": "f84ba8cf7d8f5f6c9e1882bdb3ef1fc0930f7b88428940f910c2fa0d75fc30a2",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "36df8e8ad760484223e88556c11738b7cb782b9a59b65e7505078d15ca9746ce",
+      "svg_sha256": "545608921471213b40d6e787ac01b1e94128e54b2c13f9cc1a7d264a786435e4",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     },
     {
-      "file": "41-compact-weapon-comparison.png",
+      "file": "54-coherent-weapon-comparison.png",
       "size": [
         1440,
         900
       ],
-      "sha256": "68e37b198d14115dfa8f81c637818e3f188953e1db0d7dd9575484ba9195c6db",
-      "svg_sha256": "ff17a9306ce04e02d58239bfe61fccf2b1ff21471dac2cc204e2e4fa8b8bd845",
-      "header_pixel_diff_bbox": null,
-      "battle_pixel_diff_bbox": null,
-      "actually_viewed": true
+      "sha256": "b6ae07f3aa19a7ea7399cbbdc82027177b4aedad45207db3f468920e17870681",
+      "svg_sha256": "476bc337064a731432af2d02f9071d0b9466bd00d7263b1c522b30791ad91ae7",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "55-coherent-purchase-hover.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "06ba36936c713bb6790a8d742a2a1c2de66cee5f15ffc188b2dc66f7b86f8654",
+      "svg_sha256": "059f23c57fc55c1112c24a501fea1a3cbd3d3abf0a37231e24c8c8557cd2e7fe",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "56-coherent-purchase-pressed.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "945aef05b2d6de6c110a0ec7ebbc84588d7b154cd37df5b0ef4a723da2a98400",
+      "svg_sha256": "82f6f7a9fe05d5a8d5da0f241d2e580cbb4812c775b1a3cd938ea254bc286377",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "57-coherent-purchase-focus.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "e0e517f2d7f6cf71847467cf47d386dc3b59885e3bdc704e8bfb7752c3dfe1bd",
+      "svg_sha256": "c66362f2f04119104ae49b72d8022d8d497b99b6f58e6813551cf1a8bd6488e2",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "58-coherent-purchase-hover_pressed.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "ec30e64572da6bfd94794c32f29abf21afcc476462dbdb028689af1bcf655af4",
+      "svg_sha256": "45f510f58feb6ca6fda3045e9162fb3f4dc03a11a9314187c52f8fb3e7c3b7ef",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "59-coherent-active-empty.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "51c064c3305c3f9693d0897092473a64ac786d675bb5b8a46afeae0d1eb2d2c6",
+      "svg_sha256": "93bfbe512b8ac742d61d86a47fa85fc86795c00cb9b2679d8071c9e846d29ef1",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "60-coherent-dormant-details.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "f2cf9ad52f9af38288a21afbdebf164a442153d3a658019d31fa4a5cae16b41b",
+      "svg_sha256": "437b64abee39672ca8c407d294dbcbbf40d4769860d1eb39b0ae9ab8ae31d558",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "61-coherent-long-max.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "08f5850c984712d8e5eae3548097141c1a0266bc29eb68a0fbfb85bf3e9f93e3",
+      "svg_sha256": "6fc386ccf731a92e965f0fe4b3b5389ed522a3280145f4aef64a62210a710a08",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "62-coherent-long-max-poor.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "384adfc1c25893efa23faffa9fe6e1e65f7878a2a5e30dfea62f37ce6ad2a021",
+      "svg_sha256": "f4707fe9a6fde2c421e276c74e26646054df34fbfb854821ae24ec3794edc098",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
     }
   ],
   "imagegen_originals": [
@@ -443,20 +539,11 @@
       "row_pitch": 94,
       "baselines": [
         24,
-        50,
+        46,
+        66,
         86
       ],
-      "quantity_purchase_y": 34,
-      "quantity_size": [
-        52,
-        36
-      ],
-      "purchase_size": [
-        92,
-        36
-      ],
-      "fee_capacity": 2,
-      "fee_presentation": "One full-width cost/reason band, current data only; no font shrink or blank second fee row. No row-height change on quote/reason/mode.",
+      "benefit": "Two aligned lines; current46/upgrade66 without shrinking font. Quote86 belongs to current-slot upgrade.",
       "content_height": {
         "early": 226,
         "middle": 508,
@@ -465,7 +552,7 @@
       "viewport_height": {
         "early": 226,
         "middle": 508,
-        "late": 523
+        "late": 510
       },
       "scroll_range": {
         "early": [
@@ -478,10 +565,49 @@
         ],
         "late": [
           0,
-          267
+          280
         ]
       },
-      "whole_row_action_boundary": "Only fully visible rows paint action targets, quote or property controls. Partial rows draw passive identity only; no clipped purchase button/cost. Implemented in static source branch, not just prose."
+      "partial_rows": "Identity only, no property/quote/compare/mode/purchase painted; static clipping organization only.",
+      "logical_targets_global_x_relative_row_y": {
+        "icon": [
+          346,
+          8,
+          48,
+          58
+        ],
+        "name": [
+          400,
+          5,
+          216,
+          27
+        ],
+        "compare_visual": [
+          710,
+          5,
+          62,
+          26
+        ],
+        "compare_proposed_hit": [
+          710,
+          5,
+          62,
+          32
+        ],
+        "quantity": [
+          622,
+          34,
+          52,
+          36
+        ],
+        "purchase": [
+          680,
+          34,
+          92,
+          36
+        ]
+      },
+      "hit_limit": "Logical design allocations, not executable input or focus verification."
     }
   },
   "remaining_limits": [
@@ -953,17 +1079,17 @@
     }
   ],
   "overall_handoff": {
-    "source": "Current29–41SVG+build-design-plates.py; historical01–23not current main. Consume[0,85,808,815].",
-    "consume_module_region": [
+    "source": "42–62SVG/PNG and build-design-plates.py",
+    "module_region": [
       0,
       85,
       808,
       815
     ],
-    "context_only": "Top808x85 and right632x900 are unchanged historical screenshot; overall owner must compose with current shared host before user review.",
-    "common_source_untouched": true,
-    "pending_common_material_dependency": "连续工作台／轻分隔属于本组当前整页组织适配，不是公共材质新标准。当前唯一共同固定源是整体`61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1`的R3字体；尚未收到后续共同材质固定源。公共台面奶油白／蓝结构配色、外框与分隔材质、普通／禁用／focus按钮、比较与下拉表面、与反应堆一致的信息层级，以及模块边缘／公共宿主过渡，仍须整体原组按最新共同源完整整合。本组保留现有控件材质作上下文，不另设计一套；不能因本次七态同版就报风格统一通过。精确接入部件：`plate()`台体face/button/disabled定义与外框、`row()`底色／separator／cradle／identity目标、`compare_button()`与`button()`、下拉和只读比较覆层；身份24／收益47／费用73和固定容量／目标关系需在整体材质适配后保留或同版复核。",
-    "background_goal": "Unity, not imitation of a flat/dark reference; background may be authored to current hull/weapon/operation composition. Existing backdrop remains context, visible area is not acceptance."
+    "shared_source": "b17db8d2fef26009515df75b5759b6b1ac7ca3fb",
+    "ledger": "shared-source-b17.json",
+    "background": "coherence-assets/hangar-short-carrier.png early; hangar-tall-carrier.png middle/late; separate hull/weapons/UI",
+    "remaining": "Overall/root independent whole-host comparison and final composition/material judgment; static source does not implement host or gameplay."
   },
   "spatial_revision": {
     "previous": "7c8d57d17a6bd1a8020ad03c9124fcf46165a8a5",
@@ -1362,146 +1488,366 @@
         "not_runtime_test": true
       }
     ],
-    "review": "c9all108recommendation rejected: sparse single-fee rows, middle scroll and identity-clipped purchase controls. Retained for traceability, not current integration."
+    "review": "c9all108recommendation rejected: sparse single-fee rows, middle scroll and identity-clipped purchase controls. Retained for traceability, not current integration.",
+    "04149_29_41": {
+      "sha": "04149eae7cb9120bcc4830ae3781e16fc16100d1",
+      "main_plates": [
+        {
+          "file": "29-compact-scene-early.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "83620ce56e3b41ebe1eff6e3ced535132c51e31fae8f8fd857758e65a76cd281",
+          "svg_sha256": "5ba21ec4ddc0ca384a41a0e2de760e45b58233a856ca24ba5aa762abf8812a5f",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "30-compact-scene-middle.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "3c888490cacf99739a60a15b6333c981aa15d013bac5f740722fb6b79c0b93a4",
+          "svg_sha256": "4e8df75f410aee77a9c217fde1110d198e5c47dba504068844811d32a7b57c8f",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "31-compact-scene-late.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "a492c183aa9a8bce966d29f1489cd873bd6ed54d0b817665cba313cf0b045d01",
+          "svg_sha256": "5cc0aa12299e4a1daca15ccaf9bf5b4530a7feaaf619e2829d26b268b25ec331",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "32-compact-scene-bottom.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "22d4ac44eef37ff141a2055708f048ea2a01dfc275eb435403b98d23216768cc",
+          "svg_sha256": "8293ae8592ffd8303cc383e0d5bd8684b4eadd70e896c1dd0e5e24dd6fcacf3c",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "33-compact-defence-row-only.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "bb86263deb6fb674c01a0518277daa470b0d1402b07cbc557de6052f7a4762d4",
+          "svg_sha256": "3c1b1f7e5c1bdceb39121af7652f13a91e3756e32a3887aad3912450c025a749",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "34-compact-max.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "24b7de5b4fbf768d98760e456776cc8170f5f76aabe7631003d265814a14e9d3",
+          "svg_sha256": "cec67e55462bd59c5ed94e092f428b848d677ffbad17c11abfb478e1750cb400",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "35-compact-material-locked.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "d984e36832c247d0153e2a953004b09477a62a04e69e70b81805ab222a793a13",
+          "svg_sha256": "a07ec26b715696b1b4e9b7fa01af762e0b37aab1691a88c0f216ee39069604ef",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "36-compact-affordable.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "06a1925486f8b66e0f95227bfbc872a2453c26b16f7ec2148be0a7724af2dd4e",
+          "svg_sha256": "379c75e5806fe2ce1077f120e05282b4653c51cdc0fccf9f6744818a6c64de8e",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "37-compact-single-fee.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "a2833239efcea12ad5c2cffa9d9b7de562916ff1835dda23046f71d0b17e2fb1",
+          "svg_sha256": "371877243c6976ffc72192529c10ec95be93d41ee294570853a50e45f343ae70",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "38-compact-defence-dropdown.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "2a724dfd6dbe42e35cf7bf933f561ef786bbc13dbbac9277e68694bf1f7eace6",
+          "svg_sha256": "c017016ebeb70efca0d76024b8f969d16afd48b63c525f002d1cd4205b4f9b11",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "39-compact-defence-comparison.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "d98a6885ea746f2cde8ba3f35e4f4b7f7416278aa73cdb85c266ccc82833e97d",
+          "svg_sha256": "bbea8dc22d7be43dec4399b459887b17b8098b3756e0811bb3392e054431981a",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "40-compact-weapon-dropdown.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "4cf85a26560832e7f3877bb2596d9cde5052976f3ac6c0c4cd166f791ccb3505",
+          "svg_sha256": "f84ba8cf7d8f5f6c9e1882bdb3ef1fc0930f7b88428940f910c2fa0d75fc30a2",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "41-compact-weapon-comparison.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "68e37b198d14115dfa8f81c637818e3f188953e1db0d7dd9575484ba9195c6db",
+          "svg_sha256": "ff17a9306ce04e02d58239bfe61fccf2b1ff21471dac2cc204e2e4fa8b8bd845",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        }
+      ],
+      "review": "Root/independent review accepted limited static 2/5 same-screen, passive partial-row identity and authored weapon association; whole composition/material unfinished."
+    }
   },
   "current_static_pairs": [
     {
-      "before": "31-compact-scene-late.png",
-      "after": "36-compact-affordable.png",
-      "all_visible_target_rectangles_equal": true,
-      "visible_target_count": 25,
+      "before": "44-coherent-late.png",
+      "after": "49-coherent-affordable.png",
       "pixel_diff_bbox": [
-        649,
-        366,
-        772,
-        420
+        631,
+        347,
+        771,
+        400
       ],
-      "downstream_y426_pixel_diff_bbox": null,
-      "static_only": true
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
     },
     {
-      "before": "36-compact-affordable.png",
-      "after": "34-compact-max.png",
-      "all_visible_target_rectangles_equal": true,
-      "visible_target_count": 25,
+      "before": "49-coherent-affordable.png",
+      "after": "47-coherent-max.png",
       "pixel_diff_bbox": [
-        492,
-        368,
+        460,
+        357,
         755,
-        421
+        401
       ],
-      "downstream_y426_pixel_diff_bbox": null,
-      "static_only": true
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
     },
     {
-      "before": "36-compact-affordable.png",
-      "after": "35-compact-material-locked.png",
-      "all_visible_target_rectangles_equal": true,
-      "visible_target_count": 25,
+      "before": "49-coherent-affordable.png",
+      "after": "48-coherent-material-locked.png",
       "pixel_diff_bbox": [
-        454,
-        366,
-        772,
-        421
+        434,
+        347,
+        771,
+        401
       ],
-      "downstream_y426_pixel_diff_bbox": null,
-      "static_only": true
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
     },
     {
-      "before": "37-compact-single-fee.png",
-      "after": "36-compact-affordable.png",
-      "all_visible_target_rectangles_equal": true,
-      "visible_target_count": 25,
+      "before": "50-coherent-single-fee.png",
+      "after": "49-coherent-affordable.png",
       "pixel_diff_bbox": [
         449,
-        345,
+        325,
         666,
-        421
+        401
       ],
-      "downstream_y426_pixel_diff_bbox": null,
-      "static_only": true
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
+    },
+    {
+      "before": "61-coherent-long-max.png",
+      "after": "62-coherent-long-max-poor.png",
+      "pixel_diff_bbox": [
+        681,
+        347,
+        771,
+        400
+      ],
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
     }
   ],
   "current_native_details": [
     {
-      "file": "31-compact-scene-late-native-detail.png",
+      "file": "42-coherent-early-native-detail.png",
       "size": [
         456,
-        96
+        275
       ],
-      "sha256": "c9bb12d57e8f40d80211f608b24c3f8fd19aee66daf5ff29995e4efab0016888",
+      "sha256": "16898b07e90d16cc0dbe0b68a1274a0167f22ec15697e0da086e6fe018346cd9",
       "actually_viewed": true
     },
     {
-      "file": "32-compact-scene-bottom-native-detail.png",
+      "file": "44-coherent-late-native-detail.png",
       "size": [
         456,
-        132
+        97
       ],
-      "sha256": "30319bd9671925a2f3d64ec10d539280f1761c0270b2f389af3abb9bdf922810",
+      "sha256": "165b800711380d306817c804a7a69cb7e26b84d8c9aa3214435a4eed32ef3a5e",
       "actually_viewed": true
     },
     {
-      "file": "33-compact-defence-row-only-native-detail.png",
-      "size": [
-        332,
-        360
-      ],
-      "sha256": "f9182cf3b4b76a393ac23b65cab38766eb051924d2484fa2fddacb6acf0a9324",
-      "actually_viewed": true
-    },
-    {
-      "file": "34-compact-max-native-detail.png",
+      "file": "45-coherent-bottom-native-detail.png",
       "size": [
         456,
-        96
+        118
       ],
-      "sha256": "f8b4dbf861c571d5df5c2df2d6fe7e6a743622edc8112933941a5910694d4d13",
+      "sha256": "23d6eade2c62715d6951f72e90fe1518c0b0005b3a57dfae2ad4b54779e44441",
       "actually_viewed": true
     },
     {
-      "file": "35-compact-material-locked-native-detail.png",
+      "file": "47-coherent-max-native-detail.png",
       "size": [
         456,
-        96
+        97
       ],
-      "sha256": "6419b06a809d14678c87dfcec7d675deb8ac99a52304ec6aba0f5beb401765be",
+      "sha256": "47b72fbae145fe77d936e099bf360a12cba2375e11bdc81247cb0a8c28b5085d",
       "actually_viewed": true
     },
     {
-      "file": "36-compact-affordable-native-detail.png",
+      "file": "48-coherent-material-locked-native-detail.png",
       "size": [
         456,
-        96
+        97
       ],
-      "sha256": "347a91af5597772b8bad073b2f00309bc2b0ae895c28ce3b4800870c0d7abefb",
+      "sha256": "d4bb4089b575158e5d9fd16957878a28950f91d47439249b576b9c8cf2ee8f71",
       "actually_viewed": true
     },
     {
-      "file": "37-compact-single-fee-native-detail.png",
-      "size": [
-        456,
-        96
-      ],
-      "sha256": "2ac7691f4fc94f572e023aa598979e8d4ef2cad68a76437e772e711e148d71a3",
-      "actually_viewed": true
-    },
-    {
-      "file": "38-compact-defence-dropdown-native-detail.png",
+      "file": "51-coherent-defence-dropdown-native-detail.png",
       "size": [
         398,
-        345
+        343
       ],
-      "sha256": "16ac6fe50567bab2d5501c2a7a368b9b669a53d09aafa4f9718c241a6b23e26d",
+      "sha256": "1ca9371eea756d57ef939ddea3bc22b7d49935124ad4bdc27accb6d6d46987d3",
       "actually_viewed": true
     },
     {
-      "file": "40-compact-weapon-dropdown-native-detail.png",
+      "file": "53-coherent-weapon-dropdown-native-detail.png",
       "size": [
         398,
         470
       ],
-      "sha256": "0887cefae25fe575a9e13c38108eb220dd3bac7e232d6e57b57834e1fac8e019",
+      "sha256": "1d89396a03510920f3d9674b232df3d470dff267796b7b4d675929bc9b911b1e",
+      "actually_viewed": true
+    },
+    {
+      "file": "55-coherent-purchase-hover-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "709af42bdb2efb8e7177e58ef15be5cf95bf8c9b1469a7b993009318b30ad258",
+      "actually_viewed": true
+    },
+    {
+      "file": "56-coherent-purchase-pressed-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "b3587392d2e576ef72c9c21bcef2f888c7823156685a618f89c3e1d15c346f47",
+      "actually_viewed": true
+    },
+    {
+      "file": "57-coherent-purchase-focus-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "de00918223094f7d4b591f17c58b27f63bb928329be5377c5002392f73431e6a",
+      "actually_viewed": true
+    },
+    {
+      "file": "58-coherent-purchase-hover_pressed-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "34e0174394beef3cab712f3285944168afe955a62e05e98c6946c8091be4b5e1",
+      "actually_viewed": true
+    },
+    {
+      "file": "59-coherent-active-empty-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "94c1109e3fb7b72d0e4405f1a14892dbfae95626e793ced1f33d7c86ccf3f020",
+      "actually_viewed": true
+    },
+    {
+      "file": "60-coherent-dormant-details-native-detail.png",
+      "size": [
+        316,
+        239
+      ],
+      "sha256": "35780ae7ad4cfbaf807a3295eb0ae1eabfaddfb6f601307568a9f88a8a9935f4",
+      "actually_viewed": true
+    },
+    {
+      "file": "61-coherent-long-max-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "7293228ccd3f6413360cfc06090d0b9177841e21506ecb7a8d1995966986feed",
+      "actually_viewed": true
+    },
+    {
+      "file": "62-coherent-long-max-poor-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "09c5abbdbde3a2a20c976d1691d01be3aa4ced222b364c0dedb0e5ffa65b5aa8",
       "actually_viewed": true
     }
   ]

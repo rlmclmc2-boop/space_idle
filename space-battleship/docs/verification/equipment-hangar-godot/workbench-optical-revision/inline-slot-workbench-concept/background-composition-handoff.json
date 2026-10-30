@@ -1,53 +1,31 @@
 {
-  "status": "Composition proposal to overall owner; not approved physical geometry or a new public style",
-  "user_goal": "Reference is whole-page unity, not copying dark empty background or a permanent candidate page. Hangar background may be made for this composition.",
-  "existing_sources_available": [
-    "assets/ui/ships/manifest.json",
-    "assets/weapons/fleet_20261019/manifest.json",
-    "src/ui/equipment_panel.gd:995–1040",
-    "existing hull/weapon PNGs",
-    "61c9R3typography",
-    "current29–41row and viewport organization"
-  ],
-  "current_module": [
+  "status": "42–62 actual module-local single-carrier candidate now authored; whole-host unity is not self-approved",
+  "shared_source": "b17db8d2fef26009515df75b5759b6b1ac7ca3fb",
+  "consumed": "BridgeTheme public control roles/atlas luma treatment, panel9slice18, header crop; retain approved61c9R3font roles",
+  "module": [
     0,
     85,
     808,
     815
   ],
-  "current_ship_display_allocation": {
-    "early": [
-      16,
-      475,
-      314,
-      165
-    ],
-    "middle": [
-      16,
-      394,
-      314,
-      286
-    ],
-    "late": [
-      16,
-      344,
-      314,
-      336
-    ]
-  },
-  "current_console_envelope": [
-    332,
-    280,
-    456,
-    564
+  "backgrounds": [
+    "coherence-assets/hangar-short-carrier.png",
+    "coherence-assets/hangar-tall-carrier.png"
   ],
-  "composition_request": {
-    "ship_bay": "Make left hull+real mounted weapons the maintained subject, with floor/pad under its actual visible body rather than the old backdrop centerx404. Current displayed center is aboutx173.",
-    "workbench": "Integrate the operation surface as hangar equipment at right; same shared cream/navy/cyan material language, purposeful edge transition, no generic table pasted over old console.",
-    "upper_space": "Lights/wall/robot arm should frame the maintained ship and the operation surface, not serve as unrelated revealed pixels.",
-    "background_layer": "No baked ship, weapon, slot label, quote, button, defence marker or fake hardpoint. Keep those separate live/design layers.",
-    "no_symmetry_requirement": "Defence remains operation-only. Do not author defence anchors, leader lines, badges or hull pointers."
+  "actual_changes": [
+    "Old double console/background crop and opaque flat-table frames replaced in this static branch. Actual physical carrier bears exact text/control layers.",
+    "Left pad centered around displayed shipx173; ship/name/table share maintained room composition. Early plaque near ship, table starts398.",
+    "Middle/late table starts260; viewport510, row94, late range280; original actual mount geometry retained."
+  ],
+  "defence": "Information and operation only; no models, proxies, leaders or hull pointers.",
+  "art_transform": {
+    "x": -27,
+    "y": 85,
+    "width": 843.2,
+    "height": 815,
+    "preserveAspectRatio": "none",
+    "scope": "Background-only ImageGen illustration; not hull/weapon geometry"
   },
-  "precise_dependency": "Overall fixed Git source for module-specific hangar/background composition plus common operation-surface/button/edge material. The present old backdrop is context, not a hard constraint; may be replaced under user goal by overall-coordinated work.",
-  "scope_limit": "Proposal coordinates from static plate only; no changes to shared battle mounts, model anchors, muzzle geometry, Owner or config. Root/overall review may adjust whole display transform consistently."
+  "precise_remaining": "Overall/root independent review of42/43/44/45 plus B01 fixed host for composition, navy/ivory material hierarchy andx808 edge; decide whether these module-local backgrounds may be adopted. This candidate is available now, not waiting for an unspecified new material source.",
+  "runtime_limit": "No new runtime/shared assets edits or implementation; separate current header/right battle context is not a unified economic or gameplay capture."
 }

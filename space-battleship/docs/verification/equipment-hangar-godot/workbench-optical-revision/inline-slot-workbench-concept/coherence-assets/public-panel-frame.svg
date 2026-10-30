@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs><linearGradient id="sheet" x2="0" y2="1"><stop stop-color="#173a49"/><stop offset=".18" stop-color="#10303f"/><stop offset="1" stop-color="#0b2736"/></linearGradient></defs>
+  <rect x="1" y="1" width="126" height="126" rx="5" fill="url(#sheet)" stroke="#456f78" stroke-width="1.5"/>
+  <path d="M8 7h112" stroke="#9dc2bd" stroke-opacity=".48"/>
+  <path d="M8 121h112" stroke="#061c2a" stroke-opacity=".8"/>
+</svg>
