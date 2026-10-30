@@ -19,6 +19,34 @@ func shot(name: String) -> void:
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/" + name + "-1440x900.png")
 
+func find_button(node: Node, caption: String) -> Button:
+	if node is Button and node.text == caption: return node
+	for child in node.get_children():
+		var found := find_button(child, caption)
+		if found != null: return found
+	return null
+
+func hold(button: Button) -> void:
+	var point := button.get_global_rect().get_center()
+	Input.warp_mouse(point)
+	await frames(3)
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = true
+	event.position = point
+	event.global_position = point
+	root.push_input(event)
+	await frames(2)
+
+func release(button: Button) -> void:
+	var point := button.get_global_rect().get_center()
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.position = point
+	event.global_position = point
+	root.push_input(event)
+	await frames(2)
+
 func run() -> void:
 	root.size = Vector2i(1440, 900)
 	root.content_scale_size = Vector2i(1440, 900)
@@ -48,6 +76,18 @@ func run() -> void:
 	game._zone_shell._show_balances()
 	await frames(4)
 	await shot("public-source-resources")
+	game._zone_shell._details.hide()
+	var resources := find_button(game._zone_shell, "资源")
+	var save := find_button(game, "保存进度")
+	assert(resources != null and save != null)
+	await hold(resources)
+	await shot("public-source-top-held")
+	await release(resources)
+	game._zone_shell._details.hide()
+	await hold(save)
+	await shot("public-source-action-held")
+	save.disabled = true
+	await release(save)
 	print("PUBLIC_SOURCE settings_and_resources captured; music_checked=", game._music_toggle.button_pressed)
 	if game.session.save_files != null: game.session.save_files.close(2000)
 	game.queue_free()

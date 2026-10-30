@@ -100,8 +100,8 @@ static func apply_public_button(button: BaseButton, padding: float = 8.0, role: 
 		button.add_theme_stylebox_override(state, public_button(state, padding, role))
 	button.add_theme_color_override("font_color", Color("f0f2e9"))
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
-	button.add_theme_color_override("font_pressed_color", Color("f0f2e9"))
-	button.add_theme_color_override("font_hover_pressed_color", Color("f0f2e9"))
+	button.add_theme_color_override("font_pressed_color", Color("19363d"))
+	button.add_theme_color_override("font_hover_pressed_color", Color("19363d"))
 	button.add_theme_color_override("font_focus_color", Color("f0f2e9"))
 	button.add_theme_color_override("font_disabled_color", Color("9cb4b4"))
 
@@ -116,8 +116,9 @@ static func apply_route_button(button: Button, selected: bool) -> void:
 static func apply_top_button(button: Button) -> void:
 	for state in PUBLIC_STATES:
 		button.add_theme_stylebox_override(state, top_button(state))
-	button.add_theme_color_override("font_pressed_color", Color("132f3d"))
-	button.add_theme_color_override("font_hover_pressed_color", Color("132f3d"))
+	# top-control-hover.svg is a deep cyan face even while held.
+	button.add_theme_color_override("font_pressed_color", Color("f0f2e9"))
+	button.add_theme_color_override("font_hover_pressed_color", Color("f0f2e9"))
 
 static func apply_public_input(control: Control) -> void:
 	for state in PUBLIC_STATES + ["read_only"]:
@@ -148,8 +149,6 @@ static func public_check(control: CheckBox) -> void:
 	for entry in [["unchecked", "check-off.svg"], ["checked", "check-on.svg"],
 		["unchecked_disabled", "check-off-disabled.svg"], ["checked_disabled", "check-on-disabled.svg"]]:
 		control.add_theme_icon_override(entry[0], load(ART + entry[1]))
-	control.add_theme_color_override("font_pressed_color", Color("19363d"))
-	control.add_theme_color_override("font_hover_pressed_color", Color("19363d"))
 	control.add_theme_constant_override("h_separation", 7)
 
 static func route_button(state: String) -> StyleBoxTexture:
