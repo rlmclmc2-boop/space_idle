@@ -1,69 +1,22 @@
 {
-  "current": "3946a1b8 full21-state static original review passed. Root personally viewed and actually sent63/64/65/66 design confirmation screens to user. Await user decision whether to enter native implementation; no runtime/interaction/final-user acceptance or main integration.",
-  "completed_in_candidate": [
-    "b17common material roles consumed, public header context and panel slices",
-    "single-support short/tall room and table composition; actual weapons remain separated and mounted",
-    "2/5same-screen and8partial-passive organization retained;94row benefits split46/66 without extraheight",
-    "55–58common hover/press/focus/hover_pressed paints",
-    "59empty removes phantom firstweapon;60dormant details",
-    "61historic true longMAX fields;62static insufficiency contrast",
-    "Exact75d55275 e8equipment host context: navigation808–855 with equipment selected; battle855+, no generated host pixels",
-    "Whole21-state review-current-group.html with4 existing fixed e8 B01 host references",
-    "Current63 early hull+mounted weapons uniformly260/165 aboutsame bottom anchor; identity-95; slot data/targets unchanged",
-    "Current short/tall matte environment sources directly original transform, asymmetric left floor support/right wall fixing; prior squeeze withdrawn",
-    "Full21 current states in review-current-group.html +4 existing e8B01 reference screens",
-    "3946 all21 static original review passed, reported by root",
-    "Root personally viewed63/64/65/66 full screens and actually sent these four design confirmation screens to user"
-  ],
+  "current": "Incomplete rectangular-card/native WIP; actual platform compaction, preserved natural item then stopped for replacement. User runtime authorization received.",
+  "handoff": "NATIVE-WIP-HANDOFF.md",
+  "baseline": "c60539e51097e41ec7801e20731fa810b94fda5f",
   "remaining": [
-    {
-      "item": "User decision whether to enter native implementation",
-      "target": "User, after actual four-screen design confirmation delivery by root",
-      "source": "3946 fixed21-state design; root latest handoff confirms original static review passed and63/64/65/66 actually delivered",
-      "reason": "Prior root/original whole-page-review dependency is complete. Hold3946 design and07ca review references unchanged until the user decides whether to enter native implementation. This is not final-user/runtime/interaction acceptance."
-    },
-    {
-      "item": "Native host integration and continuous scrolling/input/focus/switch/payment",
-      "target": "Later authorized implementation phase",
-      "source": "build-design-plates.py, compact-row-boundaries.json, ship-weapon-layout.json; Owner current10game-second switch lock",
-      "reason": "Current phase explicitly static only. Static state images do not prove continuous events or remove Owner lock; later immediate switch-back implementation must remove same-slot lock."
-    },
-    {
-      "item": "Other true oversized paidLv/names/reasons or third-resource cases",
-      "target": "Actual same-version domain sample if such fields arise",
-      "source": "legacy-long-max-source.json covers original preview marker and actual paidLv19/MAX444/twofees; current config twofees is not Owner hardlimit",
-      "reason": "Do not fabricate extra resources or claim arbitrary unobserved content covered."
-    }
+    "Overall-owned formal host minimal Git closure coordination; old main GUI evidence is not final shared geometry",
+    "Check last MAX true-admission and shutdown-cleanup edits; only parse checked after these",
+    "View remaining18 static states and corrected native dropdown; reconcile new manifest/review/checksums",
+    "After formal host integration fix same-version2/5/8 top/bottom and true longMAX native screenshots/video, submit root/original review",
+    "Unobserved extreme fields require true domain sample"
   ],
-  "constraints": {
-    "defence": "Only slot info/operations, no ship model/proxy/leader/hull pointer/symmetry",
-    "structure": "Inline slot→current/benefit→upgrade; local dropdown click switches immediately without confirmation/cost; comparison optional independent",
-    "not_current": "Full108proposal, old01–41 and temp24–28 are historical/process, not current integration",
-    "execution": "Static design only; no runtime/main/Library/independent tests. No actual compaction in this replacement; original WIP/import metadata preserved."
-  },
-  "permissions": "No denied action or technical authorization blocker. Current exact dependency is user decision whether to enter native implementation; later implementation and unknown-field boundaries remain as listed.",
-  "review_status": {
-    "equipment_design_commit": "3946a1b8cf81122b517a6f3e9b7e623f4cb97989",
-    "reference_handoff_commit": "07ca0cc686f4e9cf6ff85b90da9923f3d451087c",
-    "static_original_review": "passed for all21 current states, per latest root handoff",
-    "root_personally_viewed": [
-      "63-host-return-early.png",
-      "64-host-return-middle.png",
-      "65-host-return-late.png",
-      "66-host-return-bottom.png"
-    ],
-    "actually_sent_to_user": [
-      "63-host-return-early.png",
-      "64-host-return-middle.png",
-      "65-host-return-late.png",
-      "66-host-return-bottom.png"
-    ],
-    "current_dependency": "User decision whether to enter native implementation after receiving the four design confirmation screens",
-    "not_claimed": [
-      "Godot native implementation",
-      "interaction verification",
-      "final user acceptance",
-      "main integration"
-    ]
-  }
+  "evidence": "wip-inline-native-operations.json, wip-inline-native-full.log; full run failures=0 before last patch; shutdown leak warnings retained",
+  "stopped_reason": "actual platform compaction per parent rule",
+  "denied_actions": [],
+  "background_processes": [],
+  "not_claimed": [
+    "final native host integration",
+    "new static original review passed",
+    "final user acceptance",
+    "main merge"
+  ]
 }

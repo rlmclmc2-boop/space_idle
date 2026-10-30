@@ -1,0 +1,4401 @@
+{
+  "scope": "static current21 +click feedback84 and delayed hover85, not runtime proof",
+  "original_design": "3946a1b8",
+  "rows": [
+    {
+      "plate": "63",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        452,
+        432,
+        90
+      ],
+      "attribute_baseline": 500,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": true,
+          "rect": [
+            382,
+            514,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        505,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "63",
+      "slot": "defence:0",
+      "card_rect": [
+        340,
+        565,
+        432,
+        90
+      ],
+      "attribute_baseline": 613,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": true,
+          "rect": [
+            382,
+            627,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        618,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "64",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 594.8125,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁25.79万",
+          "full_display": "铁25.79万",
+          "name_omitted": false,
+          "insufficient": true,
+          "rect": [
+            382,
+            376,
+            91.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "64",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "64",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 556.171875,
+      "fee_cells": [],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "64",
+      "slot": "defence:0",
+      "card_rect": [
+        340,
+        615,
+        432,
+        90
+      ],
+      "attribute_baseline": 663,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            677,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        668,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "64",
+      "slot": "defence:1",
+      "card_rect": [
+        340,
+        709,
+        432,
+        90
+      ],
+      "attribute_baseline": 757,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            771,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        762,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "65",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 587.25,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁1,600",
+          "full_display": "铁1,600",
+          "name_omitted": false,
+          "insufficient": true,
+          "rect": [
+            382,
+            376,
+            76.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "简并物质10",
+          "full_display": "简并物质10",
+          "name_omitted": false,
+          "insufficient": true,
+          "rect": [
+            470.65625,
+            376,
+            100.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "65",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "65",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "65",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "65",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "66",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        316,
+        432,
+        90
+      ],
+      "attribute_baseline": 364,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            378,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        369,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "66",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        410,
+        432,
+        90
+      ],
+      "attribute_baseline": 458,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            472,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        463,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "66",
+      "slot": "defence:0",
+      "card_rect": [
+        340,
+        523,
+        432,
+        90
+      ],
+      "attribute_baseline": 571,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            585,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        576,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "66",
+      "slot": "defence:1",
+      "card_rect": [
+        340,
+        617,
+        432,
+        90
+      ],
+      "attribute_baseline": 665,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            679,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        670,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "66",
+      "slot": "defence:2",
+      "card_rect": [
+        340,
+        711,
+        432,
+        90
+      ],
+      "attribute_baseline": 759,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            773,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        764,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "67",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        316,
+        432,
+        90
+      ],
+      "attribute_baseline": 364,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            378,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        369,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "67",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        410,
+        432,
+        90
+      ],
+      "attribute_baseline": 458,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            472,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        463,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "67",
+      "slot": "defence:0",
+      "card_rect": [
+        340,
+        523,
+        432,
+        90
+      ],
+      "attribute_baseline": 571,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            585,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        576,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "67",
+      "slot": "defence:1",
+      "card_rect": [
+        340,
+        617,
+        432,
+        90
+      ],
+      "attribute_baseline": 665,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            679,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        670,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "67",
+      "slot": "defence:2",
+      "card_rect": [
+        340,
+        711,
+        432,
+        90
+      ],
+      "attribute_baseline": 759,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            773,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        764,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "68",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 587.25,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁9.44万",
+          "full_display": "铁9.44万",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            83.109375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "简并物质10",
+          "full_display": "简并物质10",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            477.109375,
+            376,
+            100.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "68",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "68",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "68",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "68",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "69",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 548.609375,
+      "fee_cells": [],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": false,
+      "admission_reason": "进化材料尚未开放",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "69",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "69",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "69",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "69",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "70",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 587.25,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁1,600",
+          "full_display": "铁1,600",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            76.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "简并物质10",
+          "full_display": "简并物质10",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            470.65625,
+            376,
+            100.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "70",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "70",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "70",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "70",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "71",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "71",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "71",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "71",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "71",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "72",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        316,
+        432,
+        90
+      ],
+      "attribute_baseline": 364,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            378,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        369,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "72",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        410,
+        432,
+        90
+      ],
+      "attribute_baseline": 458,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            472,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        463,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "72",
+      "slot": "defence:0",
+      "card_rect": [
+        340,
+        523,
+        432,
+        90
+      ],
+      "attribute_baseline": 571,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            585,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        576,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "72",
+      "slot": "defence:1",
+      "card_rect": [
+        340,
+        617,
+        432,
+        90
+      ],
+      "attribute_baseline": 665,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            679,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        670,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "72",
+      "slot": "defence:2",
+      "card_rect": [
+        340,
+        711,
+        432,
+        90
+      ],
+      "attribute_baseline": 759,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            773,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        764,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "73",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        316,
+        432,
+        90
+      ],
+      "attribute_baseline": 364,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            378,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        369,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "73",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        410,
+        432,
+        90
+      ],
+      "attribute_baseline": 458,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            472,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        463,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "73",
+      "slot": "defence:0",
+      "card_rect": [
+        340,
+        523,
+        432,
+        90
+      ],
+      "attribute_baseline": 571,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            585,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        576,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "73",
+      "slot": "defence:1",
+      "card_rect": [
+        340,
+        617,
+        432,
+        90
+      ],
+      "attribute_baseline": 665,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            679,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        670,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "73",
+      "slot": "defence:2",
+      "card_rect": [
+        340,
+        711,
+        432,
+        90
+      ],
+      "attribute_baseline": 759,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            773,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        764,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "74",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "74",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "74",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "74",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "74",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "75",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "75",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "75",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "75",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "75",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "76",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 587.25,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁1,600",
+          "full_display": "铁1,600",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            76.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "简并物质10",
+          "full_display": "简并物质10",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            470.65625,
+            376,
+            100.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "76",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "76",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "76",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "76",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "77",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 587.25,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁1,600",
+          "full_display": "铁1,600",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            76.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "简并物质10",
+          "full_display": "简并物质10",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            470.65625,
+            376,
+            100.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "77",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "77",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "77",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "77",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "78",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 587.25,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁1,600",
+          "full_display": "铁1,600",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            76.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "简并物质10",
+          "full_display": "简并物质10",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            470.65625,
+            376,
+            100.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "78",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "78",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "78",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "78",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "79",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 587.25,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁1,600",
+          "full_display": "铁1,600",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            76.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "简并物质10",
+          "full_display": "简并物质10",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            470.65625,
+            376,
+            100.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "79",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "79",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "79",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "79",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "80",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 517.53125,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "80",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "80",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "80",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "80",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "81",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 594.8125,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁25.79万",
+          "full_display": "铁25.79万",
+          "name_omitted": false,
+          "insufficient": true,
+          "rect": [
+            382,
+            376,
+            91.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "81",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "81",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 556.171875,
+      "fee_cells": [],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "81",
+      "slot": "defence:0",
+      "card_rect": [
+        340,
+        615,
+        432,
+        90
+      ],
+      "attribute_baseline": 663,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            677,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        668,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "81",
+      "slot": "defence:1",
+      "card_rect": [
+        340,
+        709,
+        432,
+        90
+      ],
+      "attribute_baseline": 757,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            771,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        762,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "82",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 649.875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "1.145×10^39",
+          "full_display": "铁1.145×10^39",
+          "name_omitted": true,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            119.390625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "2,760",
+          "full_display": "简并物质2,760",
+          "name_omitted": true,
+          "insufficient": false,
+          "rect": [
+            513.390625,
+            376,
+            61.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "82",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "82",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "82",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "82",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "83",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 649.875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "1.145×10^39",
+          "full_display": "铁1.145×10^39",
+          "name_omitted": true,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            119.390625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "2,760",
+          "full_display": "简并物质2,760",
+          "name_omitted": true,
+          "insufficient": true,
+          "rect": [
+            513.390625,
+            376,
+            61.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "83",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "83",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "83",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "83",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "84",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 649.875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "1.145×10^39",
+          "full_display": "铁1.145×10^39",
+          "name_omitted": true,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            119.390625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "2,760",
+          "full_display": "简并物质2,760",
+          "name_omitted": true,
+          "insufficient": true,
+          "rect": [
+            513.390625,
+            376,
+            61.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "84",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "84",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "84",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "84",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "85",
+      "slot": "weapon:0",
+      "card_rect": [
+        340,
+        314,
+        432,
+        90
+      ],
+      "attribute_baseline": 362,
+      "attribute_end_x": 649.875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "1.145×10^39",
+          "full_display": "铁1.145×10^39",
+          "name_omitted": true,
+          "insufficient": false,
+          "rect": [
+            382,
+            376,
+            119.390625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        },
+        {
+          "resource": "matter",
+          "display": "2,760",
+          "full_display": "简并物质2,760",
+          "name_omitted": true,
+          "insufficient": true,
+          "rect": [
+            513.390625,
+            376,
+            61.65625,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        367,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": "资源不足"
+    },
+    {
+      "plate": "85",
+      "slot": "weapon:1",
+      "card_rect": [
+        340,
+        408,
+        432,
+        90
+      ],
+      "attribute_baseline": 456,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            470,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        461,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "85",
+      "slot": "weapon:2",
+      "card_rect": [
+        340,
+        502,
+        432,
+        90
+      ],
+      "attribute_baseline": 550,
+      "attribute_end_x": 579.6875,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            564,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        555,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "85",
+      "slot": "weapon:3",
+      "card_rect": [
+        340,
+        596,
+        432,
+        90
+      ],
+      "attribute_baseline": 644,
+      "attribute_end_x": 526.75,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            658,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        649,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    },
+    {
+      "plate": "85",
+      "slot": "weapon:4",
+      "card_rect": [
+        340,
+        690,
+        432,
+        90
+      ],
+      "attribute_baseline": 738,
+      "attribute_end_x": 547.625,
+      "fee_cells": [
+        {
+          "resource": "iron",
+          "display": "铁65",
+          "full_display": "铁65",
+          "name_omitted": false,
+          "insufficient": false,
+          "rect": [
+            382,
+            752,
+            55.09375,
+            24
+          ],
+          "tooltip_delay_seconds": 0.5
+        }
+      ],
+      "purchase_rect": [
+        670,
+        743,
+        98,
+        33
+      ],
+      "purchase_enabled": true,
+      "admission_reason": "",
+      "shortage_click_feedback": ""
+    }
+  ],
+  "plates": [
+    {
+      "file": "63-host-return-early.png",
+      "svg_sha256": "8cdc7e23a7ffc47429a20cc22d26f88b3bdfe557a2ffc0607c1b82e8fbfd6633",
+      "sha256": "fb64544f91bfb5a1cf182656db3b8a881ab4ea48041ee2ee2e7ab87921033318",
+      "actually_viewed": false
+    },
+    {
+      "file": "64-host-return-middle.png",
+      "svg_sha256": "e3dbfea47910d660ad11cd0ce5ff2fd4e814666ee921134ed7b337dd82424137",
+      "sha256": "07b9d29703027f94800a1b7076b03ba6d59827943b8d8b6cf06e5270d930467f",
+      "actually_viewed": false
+    },
+    {
+      "file": "65-host-return-late.png",
+      "svg_sha256": "72d598d037e6ce438c93060cf7ee24f58e9f5e005c91c515b05ec8f82f7d4243",
+      "sha256": "b91a947e80b8b20756eb39d4e7a36ca68ef5cb3a61d49c6ef2e40a8cf5d4b659",
+      "actually_viewed": false
+    },
+    {
+      "file": "66-host-return-bottom.png",
+      "svg_sha256": "206dca2f1a897d80f3206c7753f0433fc91989d5f3dad8b0d412fe29c699b738",
+      "sha256": "de9d491152c66644e765c372161046674f1b65d3b571e23bbcb4c2ec97a7f06a",
+      "actually_viewed": false
+    },
+    {
+      "file": "67-host-return-defence.png",
+      "svg_sha256": "10876a8e5c35af14597074f9122099a8a46905aae3811068f15e1b814f28cbe1",
+      "sha256": "87bfefe2b854fc9c847c43350d50483a4003826584efbff03a81e82b4beada3f",
+      "actually_viewed": false
+    },
+    {
+      "file": "68-host-return-max.png",
+      "svg_sha256": "89ef5fbb2f786d58a984d4a2d3520d103d7e5c2138f0236fa71dafe3fc5a5d74",
+      "sha256": "39d574f0ca2c6fae8cee760a8eb423db49c6e30e55fdf0bb3eb89c456997f0a4",
+      "actually_viewed": false
+    },
+    {
+      "file": "69-host-return-material-locked.png",
+      "svg_sha256": "1988df5c27d54921a1cd122591a28aba4f644c23429ab14bbffa3aa8413a68b7",
+      "sha256": "cbbe9b034aa4ae853097609593ffa1d9e92dfd928377fb1d539950358bf8547a",
+      "actually_viewed": false
+    },
+    {
+      "file": "70-host-return-affordable.png",
+      "svg_sha256": "4cd46016b021093bbb7a12d9eeab16051d9fba908932995b0854dc4ceebd795d",
+      "sha256": "174c2bb97dbd6b6b692d5e868c9a4c8675f94d4504bf4595a8f385f4cf5567ee",
+      "actually_viewed": false
+    },
+    {
+      "file": "71-host-return-single-fee.png",
+      "svg_sha256": "a1de0b3b50323718b44d287143c574f38f5bb743400f251f008a39f9a6c8d436",
+      "sha256": "3d932c1a2e5b1d69358c71818c2f54993a73dd0805dbf92185fbacce9da9ab55",
+      "actually_viewed": false
+    },
+    {
+      "file": "72-host-return-defence-dropdown.png",
+      "svg_sha256": "542d2259e5aa75c55c3cb095c5cb0f1a875bc4b2eeeaad8bcc1e02709e856c40",
+      "sha256": "d237b60e216486e33031a7cb098062a948a950a5279198babb066dff00660db6",
+      "actually_viewed": false
+    },
+    {
+      "file": "73-host-return-defence-comparison.png",
+      "svg_sha256": "fb5cd7825daae07a04c0fb00ea4be00eaaf9b39b7c26ef37d2131a739d36bc56",
+      "sha256": "d824ec23402fd879e3222b31e3464ba638bf087499e5acdf413b55491a09ecd6",
+      "actually_viewed": false
+    },
+    {
+      "file": "74-host-return-weapon-dropdown.png",
+      "svg_sha256": "5441d09ffbad990027272a3f31e91bb04cc75c6ea098e9a5f687597ddc91f611",
+      "sha256": "ec7022cc071ebc8d855b0ca456a6e4fabe724dea316e9eb8c90f1d534233d1f8",
+      "actually_viewed": false
+    },
+    {
+      "file": "75-host-return-weapon-comparison.png",
+      "svg_sha256": "ce4590d7de8b33c6192b503a28bc2c4e387740f351daec8e56c7c4bf07a10b78",
+      "sha256": "d217a39d81caa0119ab843d47ee74aff9a8a2d0367abae9084a50fa1ceef2734",
+      "actually_viewed": false
+    },
+    {
+      "file": "76-host-return-purchase-hover.png",
+      "svg_sha256": "97fdec091c1eb4f13040a6065680dce8465a46e121721ca7b603220da077a705",
+      "sha256": "cadb6946f6a90a38a80be313ffbaea08e2d702fdfbb27f55535fdd96f4dcdd6f",
+      "actually_viewed": false
+    },
+    {
+      "file": "77-host-return-purchase-pressed.png",
+      "svg_sha256": "ea8afde5c0f19e750aa1ac5598e4e5bde3241264ab125a930b710f5ff9ab950d",
+      "sha256": "701f2e9fc79f31e70e4c0bcaf9b9e1db05410b56a48dedfee027495013209ece",
+      "actually_viewed": false
+    },
+    {
+      "file": "78-host-return-purchase-focus.png",
+      "svg_sha256": "31ffa1806f3a6b5e72fe5d4f5c8ae82dee4a577763849fd0859309ec46395cd4",
+      "sha256": "c8d7941f1906340728c124152e5cda284819056941bb9b0d9da779b61b704d8d",
+      "actually_viewed": false
+    },
+    {
+      "file": "79-host-return-purchase-hover_pressed.png",
+      "svg_sha256": "176f31e6372d29f9a96fb10eac320ac7bff79611caaa47e7c20ffc55a5a3ea91",
+      "sha256": "0c8b792a6222c54fb58e77b94d5bcaaaaa48f49db4062faf55eae96db1f87445",
+      "actually_viewed": false
+    },
+    {
+      "file": "80-host-return-active-empty.png",
+      "svg_sha256": "02b71652a734bbf21efccaf779f299d895eb557cbe2d8e20f576b601af2649fe",
+      "sha256": "6e2b791c00e5d2ac0a0207d4fda8557fb44024dc575ec1d9b5a6a1dd4a69742a",
+      "actually_viewed": false
+    },
+    {
+      "file": "81-host-return-dormant-details.png",
+      "svg_sha256": "0dc21e1fb8bd5c359997d1c1bdb6e86fe5f0130bd432f99a777e927ff9bc042c",
+      "sha256": "dd3332a2472438b8f3d3fa0aadce2af0a00bc7417afbac49978fdf7c954a830e",
+      "actually_viewed": false
+    },
+    {
+      "file": "82-host-return-long-max.png",
+      "svg_sha256": "bb8ada3de44def681ea8af0d27a6acaaf371925f5a6272baa79b83bd2d0d963d",
+      "sha256": "6e575587f046d26e019bb7cb9ac23eb97155efe06a41e7308b46390d28d5d77e",
+      "actually_viewed": false
+    },
+    {
+      "file": "83-host-return-long-max-poor.png",
+      "svg_sha256": "cebc6efa67156ab543ff49551d00cd216c3c1de600f9e10c52c0726edaed6c5e",
+      "sha256": "efecaba566b229cf2e16231c65bdf13a894baf72d36ac7dc35ad5698842d5196",
+      "actually_viewed": false
+    },
+    {
+      "file": "84-insufficient-click-feedback.png",
+      "svg_sha256": "d53805f36ef8c2ef527ea3430f6c03b7492d36468cd9b60afc37ee66d8f3587c",
+      "sha256": "a9cd7a0ae8e6475cd63bf5e9d5e0d19398955b8f147965b7ca66c0a3e2dd9f69",
+      "actually_viewed": false
+    },
+    {
+      "file": "85-resource-hover-half-second.png",
+      "svg_sha256": "62ad9b06e5ae5cae97e090340d10648a47ea3280a4f34adb9767e013ef3f6cb2",
+      "sha256": "02e1059e8188ca1945fe54cbb2ccd2b472219bf30869a632efadae4cef2f5196",
+      "actually_viewed": false
+    }
+  ],
+  "shortage_fixture_note": "83/84/85 flip only matter insufficiency on the historical true quote, not new Owner sampling;65 uses both insufficient,63/64 iron insufficient.",
+  "feedback_semantics": "Insufficient funds remain clickable; Owner rejection later triggers transient toast, no history panel. Other admission denial stays disabled."
+}
