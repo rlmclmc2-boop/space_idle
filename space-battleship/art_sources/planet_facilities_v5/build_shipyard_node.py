@@ -35,6 +35,7 @@ blue = material("Blue service housing", (0.16, 0.29, 0.35))
 mid = material("Mid-tone teal joint", (0.25, 0.39, 0.42))
 cyan = material("Recessed cyan channel", (0.07, 0.48, 0.55), emission=0.42)
 amber = material("Small warm status lens", (0.85, 0.29, 0.045), emission=0.36)
+orange = material("Shipyard structural ochre", (0.62, 0.24, 0.075))
 glass = material("Shuttle cockpit glass", (0.035, 0.20, 0.31), metal=0.23)
 
 
@@ -124,14 +125,14 @@ for side in (-1,1):
 # A faceted, stepped pressure hull gives the spine a pointed crown in both
 # face and quarter views. Dark load core dominates; armor is split into
 # narrow cheeks instead of hiding it behind a broad rectangular white wall.
-core = hull("Tapering shipyard load core", [(.06,.63,.79,.48),(.36,.64,.82,.47),(1.12,.50,.70,.48),(1.76,.34,.48,.51),(2.09,.13,.20,.54)], navy, root)
-shoulder = hull("Inset blue machinery shoulder", [(.24,.48,.67,.44),(.53,.55,.72,.43),(1.17,.37,.55,.46),(1.53,.20,.32,.49)], blue, root)
+core = hull("Tapering shipyard load core", [(.06,.63,.79,.48),(.32,.64,.82,.47),(.91,.50,.70,.48),(1.34,.34,.48,.51),(1.60,.13,.20,.54)], navy, root)
+shoulder = hull("Inset blue machinery shoulder", [(.24,.48,.67,.44),(.47,.55,.72,.43),(.98,.37,.55,.46),(1.24,.20,.32,.49)], blue, root)
 # Cut a real transverse service aperture through both nested shells. It leaves
 # paired load legs and a pointed crown; the previous solid back read as a tomb.
-bpy.ops.mesh.primitive_cube_add(size=1, location=(.47, 0, .89))
+bpy.ops.mesh.primitive_cube_add(size=1, location=(.47, 0, .72))
 aperture = bpy.context.object
 aperture.name = "Temporary service aperture cutter"
-aperture.dimensions = (2.8, .72, .79)
+aperture.dimensions = (2.8, .72, .62)
 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 for target in (core, shoulder):
     bpy.context.view_layer.objects.active = target
@@ -140,10 +141,10 @@ for target in (core, shoulder):
     mod.object = aperture
     bpy.ops.object.modifier_apply(modifier=mod.name)
 bpy.data.objects.remove(aperture, do_unlink=True)
-bpy.ops.mesh.primitive_cube_add(size=1, location=(.47, 0, .89))
+bpy.ops.mesh.primitive_cube_add(size=1, location=(.47, 0, .72))
 cross_aperture = bpy.context.object
 cross_aperture.name = "Temporary cross aperture cutter"
-cross_aperture.dimensions = (.68, 2.8, .79)
+cross_aperture.dimensions = (.68, 2.8, .62)
 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 for target in (core, shoulder):
     bpy.context.view_layer.objects.active = target
@@ -160,23 +161,23 @@ for x_side in (-1,1):
     x2 = .50 + x_side*.28
     for y_side in (-1,1):
         strut("Exposed load arch lower", (x0,y_side*.52,.31),
-              (x1,y_side*.42,1.20), .105, ivory, root)
-        strut("Exposed load arch crown", (x1,y_side*.42,1.20),
-              (x2,y_side*.19,1.86), .090, edge, root)
+              (x1,y_side*.42,1.00), .13, ivory, root)
+        strut("Exposed load arch crown", (x1,y_side*.42,1.00),
+              (x2,y_side*.19,1.44), .12, orange, root)
     strut("Cross-face lower pressure bar", (x0,-.52,.31),(x0,.52,.31), .10, ivory, root)
-    strut("Cross-face upper pressure bar", (x1,-.42,1.20),(x1,.42,1.20), .08, ivory, root)
+    strut("Cross-face upper pressure bar", (x1,-.42,1.00),(x1,.42,1.00), .12, orange, root)
     box("Cross-face cyan status lens", (x0+x_side*.04,0,.52), (.035,.18,.075), cyan, root, .01)
 for side in (-1,1):
     y = side*.88
     box("Split ivory root cheek", (.47,y,.66), (.58,.14,.83), ivory, root, .06)
     box("Cheek dark service slit", (.43,side*.959,.75), (.27,.02,.44), navy, root, .01)
     box("Cheek cyan service key", (.40,side*.975,.63), (.07,.015,.21), cyan, root, .004)
-    box("Root upper armor rib", (.52,side*.73,1.34), (.48,.12,.68), ivory, root, .055)
-    box("Tapered crown ivory trim", (.53,side*.45,1.82), (.31,.14,.37), edge, root, .05)
+    box("Root upper armor rib", (.52,side*.73,1.09), (.48,.14,.52), ivory, root, .055)
+    box("Tapered crown ochre truss", (.53,side*.45,1.39), (.34,.16,.29), orange, root, .05)
     for x_side in (-1,1):
         box("Cross-face armor toe", (.48+x_side*.53,side*.58,.40), (.12,.42,.17), ivory, root, .035)
-box("Crown dark sensor socket", (.54,0,2.06), (.18,.24,.09), blue, root, .02)
-cylinder("Crown warm signal", (.54,0,2.14), .073,.13,amber,root,vertices=12)
+box("Crown dark sensor socket", (.54,0,1.57), (.18,.24,.09), blue, root, .02)
+cylinder("Crown warm signal", (.54,0,1.65), .073,.13,amber,root,vertices=12)
 
 # Two open cantilevers, one high and one low, emerge from the same core.
 # Narrow parallel rails plus end clamps frame a visible empty service bay.
@@ -184,26 +185,28 @@ for side, length, level in ((-1,2.02,.45),(1,1.75,.92)):
     y = side*.57
     xmid = -.54 - length*.5
     for rail in (-1,1):
-        ry = y + rail*.18
-        box("Berth deep structural rail", (xmid,ry,level), (length,.15,.24), navy, root, .055)
-        box("Berth segmented armor crest", (xmid,ry,level+.15), (length-.11,.17,.074), ivory, root, .018)
-        box("Berth cyan inner guide", (xmid,ry-rail*.082,level+.035), (length-.25,.02,.026), cyan, root, .004)
+        ry = y + rail*.22
+        box("Berth deep structural rail", (xmid,ry,level), (length,.22,.34), navy, root, .055)
+        box("Berth segmented armor crest", (xmid,ry,level+.20), (length-.11,.21,.11), ivory, root, .018)
+        box("Berth cyan inner guide", (xmid,ry-rail*.104,level+.055), (length-.25,.025,.034), cyan, root, .004)
         for n in range(3):
             x = -.69 - n*(length-.34)/3
-            box("Rail armor break", (x,ry,level+.185), (.042,.18,.017), edge, root, .004)
+            box("Rail armor break", (x,ry,level+.26), (.042,.21,.017), edge, root, .004)
     tip = -.54-length
-    box("Open berth end bridge", (tip+.055,y,level+.08), (.17,.56,.27), ivory, root, .04)
+    box("Open berth end bridge", (tip+.055,y,level+.08), (.20,.65,.34), ivory, root, .04)
     box("Recessed end face", (tip-.034,y,level+.07), (.028,.31,.15), blue, root, .008)
     for x in (-.65, tip+.18):
         box("Amber berth socket", (x,y-side*.28,level+.24), (.08,.07,.09), amber, root, .014)
-    box("Cantilever triangular underbrace", (-.70,y,level-.21), (.83,.24,.18), mid, root, .045)
+    strut("Ochre berth load truss", (.18,y,level-.25), (tip+.22,y,level-.26), .16, orange, root)
+    box("Cantilever triangular underbrace", (-.70,y,level-.24), (.83,.30,.24), mid, root, .045)
 
 # The craft stays physically within the lower open berth.
 craft = node("Docked small craft", root)
 craft.location.y = .57
 craft.location.z = .23
-craft_shell = hull("Craft tapered hull", [(.51,.52,.18,-1.51),(.68,.58,.20,-1.47),(.79,.38,.15,-1.49),(.85,.12,.08,-1.67)], ivory, craft)
+craft_shell = hull("Craft tapered hull", [(.51,.52,.18,-1.51),(.68,.58,.20,-1.47),(.79,.38,.15,-1.49),(.85,.12,.08,-1.67)], blue, craft)
 craft_shell.location.y = -.57
+box("Craft ivory dorsal spine", (-1.52,-.57,.82), (.82,.13,.055), ivory, craft, .025)
 box("Craft dark belly", (-1.45,-.57,.48), (1.02,.30,.12), navy, craft, .04)
 box("Craft cockpit", (-1.64,-.57,.81), (.38,.24,.065), glass, craft, .025)
 for side in (-1,1):
