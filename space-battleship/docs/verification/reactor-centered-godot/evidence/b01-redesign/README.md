@@ -17,7 +17,7 @@
 - 实际参数与颜色身份沿游戏权威数据；图中示例值不是新增数值规则。
 
 ## 当前版本与现场
-本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。本目录保留 `00971d36` 的原四路录像/早期性能与报价图作为历史对照；当前源码新增受控单／双路舱室、无损 shader 优化和原舞台左右收边。下方“整屏统一与合法模块数交接”列出当前源码的八态整屏、最新交互与性能证据；不能把旧录像或旧报价图写成这一版动态验收。
+本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。本目录保留 `00971d36` 的原四路录像/早期性能与报价图作为历史对照；当前源码新增受控单／双路舱室、1／2／3 路无空槽控制井、无损 shader 优化和原舞台左右收边。下方“整屏统一与合法模块数交接”列出当前源码的八态整屏、最新交互与性能证据；不能把旧录像或旧报价图写成这一版动态验收。
 
 ## 交付与对照
 在本目录维护执行进度和固定Git图/视频入口。交同版完整实机画面、正常时间工作视频及必要交互状态；注明受控条件。协调者和既有独立审核按批准图与实际整屏/动态整体对照，包括主体体量、场景一体感、材质、文字、控件与效果，不以问题清单清零或参数通过替代视觉。旧版本局部通过不外推。当前不合main。
@@ -49,13 +49,13 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 
 ## 整屏统一与合法模块数交接（待整体接口固定）
 
-用户已退回装备与反应堆的跨页语言及左外缘、右侧导航交接；本组的局部图和性能采样不代表该整屏问题通过。当前反应堆源码为 `587cf2f9f99d1cf06d8b3fb8e62c1aef6dd72fa2`（相对 `eea1a7e6` 只改真零证据）；2026-10-30 核到的整体远端 `design/clear-zone-host@61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1` 的运行树接了同一 `eea1a7e6` B01 源码。整体分支后续跨页字体 R3 是静态设计预览，尚非固定运行材质或左右边界协议。该分支的完整[反应堆](https://github.com/rlmclmc2-boop/space_idle/blob/61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/eea-combo-reactor-1440x900.png)和[装备](https://github.com/rlmclmc2-boop/space_idle/blob/61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/eea-combo-equipment-1440x900.png)是已存在的同壳运行图，供定位退回问题；不是新版统一已通过证据。本分支的整屏图仍在旧 `main.gd` 宿主下取得，不能冒充整体组合。
+用户已退回装备与反应堆的跨页语言及左外缘、右侧导航交接；本组的局部图和性能采样不代表该整屏问题通过。当前反应堆候选从 `b57b7089073a0a67d0a8adba419733426498b4eb` 续作少模块台面；旧 `587cf2f9f99d1cf06d8b3fb8e62c1aef6dd72fa2` 只用于历史接缝定位；2026-10-30 核到的整体远端 `design/clear-zone-host@61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1` 的运行树接了同一 `eea1a7e6` B01 源码。整体分支后续跨页字体 R3 是静态设计预览，尚非固定运行材质或左右边界协议。该分支的完整[反应堆](https://github.com/rlmclmc2-boop/space_idle/blob/61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/eea-combo-reactor-1440x900.png)和[装备](https://github.com/rlmclmc2-boop/space_idle/blob/61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/eea-combo-equipment-1440x900.png)是已存在的同壳运行图，供定位退回问题；不是新版统一已通过证据。本分支的整屏图仍在旧 `main.gd` 宿主下取得，不能冒充整体组合。
 
 | 可见模块数 | Campaign／Owner 合法来源 | 本组现有整屏与结论 |
 |---|---|---|
-| 1 | 用户描述初开放仅炼铁，但现行 Excel 未列单独门槛、Owner 实际同时开放前三路；自然关卡尚无该状态。 | **受控隔离 Owner 输入**仅 `smelting`：[真零](controlled-one-zero-1440x900.png)、[均分 100%](controlled-one-active-1440x900.png)及[真实鼠标拖到 47%](controlled-one-manual-1440x900.png)，Owner 接纳 47/100；武器、盾甲、凝聚实体／管路／工作光及控件行、总条段均无。此图不冒称自然进度。 |
-| 2 | 当前 Excel 未声明中间两路关卡；不推断自然可达。 | **受控隔离 Owner 输入**`weapons,smelting`：[真零](controlled-two-zero-1440x900.png)、[均分 50/50](controlled-two-active-1440x900.png)及[真实鼠标把武器拖到 26%](controlled-two-manual-1440x900.png)，炼铁仍 50%，Owner 接纳 76/100；盾甲、凝聚实体／管路／工作光及控件行、总条段均无。此组合只是覆盖 2 路布局与分配，不新增玩法。 |
-| 3 | 当前 `Reactor.refresh_availability` 在反应堆可用后无条件启用武器、盾甲、炼铁，只有凝聚查询 Campaign；这只描述当前实现。用户描述下一关武器、盾甲加入，源表尚未声明这一步。 | 原正式 Owner/Campaign [真零](locked-zero-1440x900.png)与[三路均分](locked-active-1440x900.png)为 34/33/33%、100/100；最新边缘版另有[受控真零](controlled-three-zero-1440x900.png)和[均分](controlled-three-active-1440x900.png)。右下未开放设备、管路、工作光与第四控制行/紫色段均无。 |
+| 1 | 用户描述初开放仅炼铁，但现行 Excel 未列单独门槛、Owner 实际同时开放前三路；自然关卡尚无该状态。 | **受控隔离 Owner 输入**仅 `smelting`，专用底板为连续控制井、原生单行居中且无三处空槽：[真零](controlled-one-zero-1440x900.png)、[均分 100%](controlled-one-active-1440x900.png)及[真实鼠标拖到 47%](controlled-one-manual-1440x900.png)，Owner 接纳 47/100；武器、盾甲、凝聚实体／管路／工作光及控件行、总条段均无。此图不冒称自然进度。 |
+| 2 | 当前 Excel 未声明中间两路关卡；不推断自然可达。 | **受控隔离 Owner 输入**`weapons,smelting`，专用连续控制井承载居中的两行、无另外两处空槽：[真零](controlled-two-zero-1440x900.png)、[均分 50/50](controlled-two-active-1440x900.png)及[真实鼠标把武器拖到 26%](controlled-two-manual-1440x900.png)，炼铁仍 50%，Owner 接纳 76/100；盾甲、凝聚实体／管路／工作光及控件行、总条段均无。此组合只是覆盖 2 路布局与分配，不新增玩法。 |
+| 3 | 当前 `Reactor.refresh_availability` 在反应堆可用后无条件启用武器、盾甲、炼铁，只有凝聚查询 Campaign；这只描述当前实现。用户描述下一关武器、盾甲加入，源表尚未声明这一步。 | 原正式 Owner/Campaign [真零](locked-zero-1440x900.png)与[三路均分](locked-active-1440x900.png)为 34/33/33%、100/100；专用连续控制井承载居中的三行，不留第四空槽；最新边缘版另有[受控真零](controlled-three-zero-1440x900.png)和[均分](controlled-three-active-1440x900.png)。右下未开放设备、管路、工作光与第四控制行/紫色段均无。 |
 | 4 | 当前 Owner 在凝聚可用时加入第四路；Excel 凝聚门槛为 cleared 关卡 15。 | 原正式 Owner/Campaign [四路真零](true-zero-1440x900.png)与[四路均分](active-1440x900.png)各 25%、100/100；最新边缘版另有[受控真零](controlled-four-zero-1440x900.png)和[均分](controlled-four-active-1440x900.png)。[×10 报价](ten-1440x900.png)、[MAX 报价](max-1440x900.png)及[成交](ten-purchased-1440x900.png)记录升级区与按钮行为。 |
 
 **纠正 `f33ed6c` 的错误推论：**运行配置 `generated/config.json`（本工作区 SHA-256 `308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de`）和 `src/systems/reactor.gd::refresh_availability` 只能证明现行实现把前三路同时开放，不能证明它符合设计。用户明确初开仅炼铁、下一关再开武器与盾甲；1 路为用户要求覆盖的设计状态，2 路不能只凭当前 Owner 策略排除。现有受控 Campaign 恢复图只说明当前运行态，不是自然关卡顺序实测。三路／四路均分和 ×10／MAX 的 Owner 状态、原生控件及鼠标操作由本目录日志支持；最终整体组合中的均分视觉、控制台主次与跨页统一仍待核。
@@ -75,8 +75,16 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 | 用户退回项 | 本分支当前证据与未完范围 |
 |---|---|
 | 均分、等级升级区 | 受控 1／2／3／4 Owner 分配和按钮可见、四路报价／成交及 1× 整屏已有证据；最终共享宿主下的主次、边界与鼠标净空仍待统一组合实核，局部入框不等于用户验收。 |
-| 1／2／3／4 模块 | 受控 1／2 的整实体、管、光、控件行、总段隐显和分配已覆盖；现行自然实现为 3／4，用户描述的单路自然关卡源表无门槛，遵其要求暂不改正式解锁。其他任意两模块组合没有单独绘制资产，当前受控双路专指武器＋炼铁。 |
+| 1／2／3／4 模块 | 受控 1／2 的整实体、管、光、控件行、总段隐显和分配已覆盖；1／2／3 底台重制为无空槽的连续金属读面，原生行按 enabled 数重排，四路原布局不变；现行自然实现为 3／4，用户描述的单路自然关卡源表无门槛，遵其要求暂不改正式解锁。其他任意两模块组合没有单独绘制资产，当前受控双路专指武器＋炼铁。 |
 | 性能 | 当前边缘版全效果同环境短窗从 25.31／21.08 提至 33.48／27.88 fps（无录／录屏），可见／隐藏环境差缩至约 1.19 fps；目标硬件与最终宿主未验收，不以诊断冻结态作产品。 |
 | 跨页风格及左右边界 | 已在原舞台 shader 层把左右 24px 及下台端收向宿主深蓝；最新整体 f57e5e9f 仍为设计方向与旧宿主运行基线，没有接此源码的真实组合整屏，装备与反应堆异材质尚未通过。 |
 
 以上是边界与证据交接，不是整体统一完成。共享宿主接同一运行提交后还需取装备／B01 完整整屏并审均分、升级与左右接缝；当前不合 main。
+
+### 共享宿主接入的现有运行接口
+
+本组仅拥有 `reactor_scene.gd` 根 `808×900`（`clip_contents=true`）、其 `(0,65)` 的 `808×835` `SubViewportContainer`、`reactor_stage.gd` 和 `assets/ui/reactor/b01`；按现 `live-material.gdshader`，原舞台左／右约 24px 在最终颜色内收向 `#0d2533`，包括下金属台端，非宿主外叠层。该收边目前仍是候选，整体 `b17db8d2fef26009515df75b5759b6b1ac7ca3fb` 的端盖研究图不是运行资产；其文稿也明确要按同几何核所有 idle/active/少态图与 mask。公共 `zone_shell.gd` 当前顶轨在反应堆页高 65、左工作区外的导航带 x808…855.875，x808/854 边线、资源和战场投影归整体组；本组不重写公共导航、路由或主场景。
+
+当前 `main.gd::_setup_reactor_scene` 在现有 CanvasLayer 中以 `session.reactor_system`、`session.reactor_inputs`、`session.economy.payment`、`session.publish_reactor`、`session.economy.can_pay` 构建场景；`bind_presentation` 只读 `presentation_model()` 并传 `game_time/paused/running`，`bind_purchase_quote` 只读固定数量或 MAX 的 Owner 报价。`presentation_changed` 使模型标脏；`budget_changed(resource_ids)` 仅在与当前 `cost_resource_ids` 相交时标脏报价，MAX 零可购的空成本不订阅虚假资源。原 UI 均分／滑杆经 Owner 公开分配命令接纳，循环数量只切报价，独立升级键才交易。B01 页不可见时 `_process` 关闭、SubViewport 为 `UPDATE_DISABLED` 且 stage 时钟重置；可见且未暂停、真实游戏时间推进、有正总负载时才更新相位并请求一次绘制。`main.gd::_refresh_left_module` 依 Campaign feature 可用和当前路由设置 scene.visible；整体公共宿主应继续拥有这层可见路由，不把隐藏页持续更新或新建 B01 控件。
+
+当前只读核到最新整体远端 `design/clear-zone-host@b17db8d2fef26009515df75b5759b6b1ac7ca3fb`，`b57b7089` 并非其祖先，尚无接入此 B01 的固定**运行** SHA。下一同版验证需整体组交接具体整合 SHA、`main.tscn` 运行入口、装备／B01 真实整屏和受影响状态、可见矩形/路由接口，以及原尺寸指出的接缝或操作退回点；本组只修自身舞台、控件与材质后重取受影响证据。静态 R11／端盖研究稿不能代替该运行组合。

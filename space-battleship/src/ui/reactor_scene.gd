@@ -15,6 +15,7 @@ const SLIDER_GLASS_FILL = preload("res://assets/ui/reactor/b01/slider-glass-fill
 const SLIDER_KNOB = preload("res://assets/ui/reactor/b01/slider-knob.png")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
 const BAR_COLORS := {"weapons":Color("ffc533"), "defence":Color("33b9ff"), "smelting":Color("ff7d37"), "condensation":Color("ae53ef")}
+const COMPACT_ROW_TOPS := {1:[698.0], 2:[670.0, 726.0], 3:[642.0, 698.0, 754.0]}
 const ERRORS := {"ReactorPlanOverCapacity":"分配超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
 var _owner
 var _inputs: Callable
@@ -495,6 +496,7 @@ func _refresh() -> void:
 		if row.get("enabled",true): ids.append(str(row.id))
 	_ids = ids
 	_model = model
+	if ids != previous_ids: _layout_enabled_rows(ids)
 	for id in _rows:
 		var now_enabled: bool = id in ids
 		if now_enabled != (id in previous_ids):
@@ -503,6 +505,18 @@ func _refresh() -> void:
 	_show_current_readings(previous, previous_ids)
 	_update_buttons()
 	if ids != previous_ids or _visual_loads(model, ids) != previous_loads: _update_stage()
+
+func _layout_enabled_rows(ids: Array) -> void:
+	var tops: Array = COMPACT_ROW_TOPS.get(ids.size(), [])
+	for index in ids.size():
+		var id: String = str(ids[index])
+		var top: float = float(tops[index]) if not tops.is_empty() else 614.0 + 55.0 * float(index)
+		_rows[id].accent.position.y = top + 8.0
+		_rows[id].icon.position.y = top + 6.0
+		_rows[id].name.position.y = top + 6.0
+		_rows[id].row_face.position.y = top + 4.0
+		_rows[id].control.position.y = top + 4.0
+		_rows[id].effect.position.y = top + 9.0
 
 func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 	if _model.is_empty(): return
