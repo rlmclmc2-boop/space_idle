@@ -1,0 +1,210 @@
+{
+  "kind": "Proposed static hit boundaries; no runtime inputs or focus matrix exercised.",
+  "coordinate_frame": [
+    1440,
+    900
+  ],
+  "module": [
+    0,
+    85,
+    808,
+    815
+  ],
+  "row_target_templates": [
+    {
+      "action": "equipment_icon",
+      "rect_x_yOffset_w_h": [
+        346,
+        5,
+        48,
+        58
+      ],
+      "focus_outset": 3
+    },
+    {
+      "action": "current_name_dropdown",
+      "rect_x_yOffset_w_h": [
+        400,
+        4,
+        216,
+        26
+      ],
+      "focus_outset": 3
+    },
+    {
+      "action": "compare_only",
+      "rect_x_yOffset_w_h": [
+        710,
+        4,
+        62,
+        32
+      ],
+      "focus_outset": 3,
+      "visible_face_height": 26
+    },
+    {
+      "action": "quantity_cycle",
+      "rect_x_yOffset_w_h": [
+        622,
+        44,
+        52,
+        36
+      ],
+      "focus_outset": 3
+    },
+    {
+      "action": "purchase_current_slot",
+      "rect_x_yOffset_w_h": [
+        680,
+        44,
+        92,
+        36
+      ],
+      "focus_outset": 3
+    }
+  ],
+  "stages": {
+    "early": {
+      "panel": [
+        332,
+        320,
+        456,
+        253
+      ],
+      "row_y": {
+        "weapon:0": 372,
+        "defence:0": 478
+      },
+      "row_bounds_x_width_height": [
+        340,
+        440,
+        86
+      ],
+      "row_pitch": 87,
+      "panel_total_outer_envelope_outset": 4,
+      "outer_envelope": [
+        328,
+        316,
+        464,
+        261
+      ],
+      "module_top_clearance": 231,
+      "right_client_clearance": 16,
+      "bottom_client_clearance": 323
+    },
+    "middle": {
+      "panel": [
+        332,
+        200,
+        456,
+        514
+      ],
+      "row_y": {
+        "weapon:0": 252,
+        "weapon:1": 339,
+        "weapon:2": 426,
+        "defence:0": 532,
+        "defence:1": 619
+      },
+      "row_bounds_x_width_height": [
+        340,
+        440,
+        86
+      ],
+      "row_pitch": 87,
+      "panel_total_outer_envelope_outset": 4,
+      "outer_envelope": [
+        328,
+        196,
+        464,
+        522
+      ],
+      "module_top_clearance": 111,
+      "right_client_clearance": 16,
+      "bottom_client_clearance": 182
+    },
+    "late": {
+      "panel": [
+        332,
+        105,
+        456,
+        775
+      ],
+      "row_y": {
+        "weapon:0": 157,
+        "weapon:1": 244,
+        "weapon:2": 331,
+        "weapon:3": 418,
+        "weapon:4": 505,
+        "defence:0": 611,
+        "defence:1": 698,
+        "defence:2": 785
+      },
+      "row_bounds_x_width_height": [
+        340,
+        440,
+        86
+      ],
+      "row_pitch": 87,
+      "panel_total_outer_envelope_outset": 4,
+      "outer_envelope": [
+        328,
+        101,
+        464,
+        783
+      ],
+      "module_top_clearance": 16,
+      "right_client_clearance": 16,
+      "bottom_client_clearance": 16
+    }
+  },
+  "popup": {
+    "panel": [
+      392,
+      454,
+      386,
+      238
+    ],
+    "anchor_slot": "defence:1",
+    "direct_switch_targets": [
+      [
+        400,
+        496,
+        268,
+        84
+      ],
+      [
+        400,
+        590,
+        268,
+        84
+      ]
+    ],
+    "compare_only_targets": [
+      [
+        678,
+        496,
+        90,
+        84
+      ],
+      [
+        678,
+        590,
+        90,
+        84
+      ]
+    ],
+    "horizontal_target_gap": 10,
+    "focus_outset": 3,
+    "focus_envelope_gap": 4,
+    "close": [
+      736,
+      461,
+      32,
+      30
+    ],
+    "dispatch": "Candidate body invokes same-slot Owner switch immediately; compare opens read-only comparison without switch. No enclosing whole-row target; close/outside suppress underlying click.",
+    "no_confirmation": true
+  },
+  "limits": "Focus outlines and shadows not rendered. Outset4 is total reserved outer envelope including border, not a measured rendered shadow. Target/focus envelope assertions establish static spacing only."
+}
