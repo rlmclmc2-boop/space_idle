@@ -197,8 +197,11 @@ func _theme() -> Theme:
 
 func _layout() -> void:
 	if _visual == null: return
-	_visual.position = Vector2(0, 90)
-	_visual.size = Vector2(size.x, maxf(500, size.y - 90))
+	# The public top rail ends at 65. Let the existing planet sky meet it when
+	# hosted; the standalone bridge retains its authored 90px header.
+	var visual_top := 65 if _shared_host_enabled else 90
+	_visual.position = Vector2(0, visual_top)
+	_visual.size = Vector2(size.x, maxf(500, size.y - visual_top))
 	_task_button.position = Vector2(258, 112)
 	_task_button.size = Vector2(226, 44)
 	_crew_button.position = Vector2(148, 112)
