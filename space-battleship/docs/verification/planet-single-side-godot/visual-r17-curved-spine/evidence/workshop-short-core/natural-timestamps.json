@@ -1,0 +1,374 @@
+{
+  "frames": [
+    {
+      "body_radius": 176.144,
+      "frame": 0,
+      "ring_phase": 0.216666666666666,
+      "surface_clock": 0.0521853333333324,
+      "surface_phase": 0.000313111988361925,
+      "wall_seconds": 0.032385
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 1,
+      "ring_phase": 0.462011666666666,
+      "surface_clock": 0.297530333333332,
+      "surface_phase": 0.00178518192842603,
+      "wall_seconds": 0.245345
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 2,
+      "ring_phase": 0.641496666666666,
+      "surface_clock": 0.477015333333332,
+      "surface_phase": 0.00286209187470376,
+      "wall_seconds": 0.42483
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 3,
+      "ring_phase": 0.817736666666666,
+      "surface_clock": 0.653255333333332,
+      "surface_phase": 0.00391953205689788,
+      "wall_seconds": 0.60107
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 4,
+      "ring_phase": 1.00384766666667,
+      "surface_clock": 0.839366333333332,
+      "surface_phase": 0.00503619806841016,
+      "wall_seconds": 0.787181
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 5,
+      "ring_phase": 1.19513866666667,
+      "surface_clock": 1.03065733333333,
+      "surface_phase": 0.00618394417688251,
+      "wall_seconds": 0.978472
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 6,
+      "ring_phase": 1.37152066666667,
+      "surface_clock": 1.20703933333333,
+      "surface_phase": 0.00724223628640175,
+      "wall_seconds": 1.154854
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 7,
+      "ring_phase": 1.55260666666667,
+      "surface_clock": 1.38812533333333,
+      "surface_phase": 0.008328752592206,
+      "wall_seconds": 1.33594
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 8,
+      "ring_phase": 1.74565866666667,
+      "surface_clock": 1.58117733333333,
+      "surface_phase": 0.00948706455528736,
+      "wall_seconds": 1.528992
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 9,
+      "ring_phase": 1.93053866666667,
+      "surface_clock": 1.76605733333333,
+      "surface_phase": 0.0105963442474604,
+      "wall_seconds": 1.713872
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 10,
+      "ring_phase": 2.11616166666667,
+      "surface_clock": 1.95168033333333,
+      "surface_phase": 0.0117100821807981,
+      "wall_seconds": 1.899495
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 11,
+      "ring_phase": 2.29160066666667,
+      "surface_clock": 2.12711933333333,
+      "surface_phase": 0.0127627160400152,
+      "wall_seconds": 2.074934
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 12,
+      "ring_phase": 2.46038666666667,
+      "surface_clock": 2.29590533333333,
+      "surface_phase": 0.0137754324823618,
+      "wall_seconds": 2.24372
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 13,
+      "ring_phase": 2.63469266666667,
+      "surface_clock": 2.47021133333333,
+      "surface_phase": 0.0148212686181068,
+      "wall_seconds": 2.418026
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 14,
+      "ring_phase": 2.82457466666667,
+      "surface_clock": 2.66009333333333,
+      "surface_phase": 0.0159605611115694,
+      "wall_seconds": 2.607908
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 15,
+      "ring_phase": 2.99964766666667,
+      "surface_clock": 2.83516633333333,
+      "surface_phase": 0.0170109998434782,
+      "wall_seconds": 2.782981
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 16,
+      "ring_phase": 3.16293866666667,
+      "surface_clock": 2.99845733333333,
+      "surface_phase": 0.0179907456040382,
+      "wall_seconds": 2.946272
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 17,
+      "ring_phase": 3.33578566666667,
+      "surface_clock": 3.17130433333333,
+      "surface_phase": 0.0190278273075819,
+      "wall_seconds": 3.119119
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 18,
+      "ring_phase": 3.51544266666667,
+      "surface_clock": 3.35096133333333,
+      "surface_phase": 0.0201057698577642,
+      "wall_seconds": 3.298776
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 19,
+      "ring_phase": 3.69114966666667,
+      "surface_clock": 3.52666833333333,
+      "surface_phase": 0.0211600121110678,
+      "wall_seconds": 3.474483
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 20,
+      "ring_phase": 3.86063966666667,
+      "surface_clock": 3.69615833333333,
+      "surface_phase": 0.0221769530326128,
+      "wall_seconds": 3.643973
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 21,
+      "ring_phase": 4.04777166666667,
+      "surface_clock": 3.88329033333333,
+      "surface_phase": 0.0232997443526983,
+      "wall_seconds": 3.831105
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 22,
+      "ring_phase": 4.21114266666667,
+      "surface_clock": 4.04666133333333,
+      "surface_phase": 0.0242799706757069,
+      "wall_seconds": 3.994476
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 23,
+      "ring_phase": 4.38711366666667,
+      "surface_clock": 4.22263233333333,
+      "surface_phase": 0.0253357961773872,
+      "wall_seconds": 4.170447
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 24,
+      "ring_phase": 4.56482166666667,
+      "surface_clock": 4.40034033333333,
+      "surface_phase": 0.0264020450413227,
+      "wall_seconds": 4.348155
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 25,
+      "ring_phase": 4.74551766666667,
+      "surface_clock": 4.58103633333333,
+      "surface_phase": 0.0274862218648195,
+      "wall_seconds": 4.528851
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 26,
+      "ring_phase": 4.92572766666667,
+      "surface_clock": 4.76124633333333,
+      "surface_phase": 0.0285674817860126,
+      "wall_seconds": 4.709061
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 27,
+      "ring_phase": 5.10568666666667,
+      "surface_clock": 4.94120533333333,
+      "surface_phase": 0.0296472366899252,
+      "wall_seconds": 4.88902
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 28,
+      "ring_phase": 5.27934366666667,
+      "surface_clock": 5.11486233333333,
+      "surface_phase": 0.0306891780346632,
+      "wall_seconds": 5.062677
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 29,
+      "ring_phase": 5.44611666666667,
+      "surface_clock": 5.28163533333333,
+      "surface_phase": 0.031689815223217,
+      "wall_seconds": 5.22945
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 30,
+      "ring_phase": 5.61485766666667,
+      "surface_clock": 5.45037633333333,
+      "surface_phase": 0.0327022597193718,
+      "wall_seconds": 5.398191
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 31,
+      "ring_phase": 5.79425566666667,
+      "surface_clock": 5.62977433333333,
+      "surface_phase": 0.0337786488234997,
+      "wall_seconds": 5.577589
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 32,
+      "ring_phase": 5.97078066666667,
+      "surface_clock": 5.80629933333333,
+      "surface_phase": 0.0348377972841263,
+      "wall_seconds": 5.754114
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 33,
+      "ring_phase": 6.15082666666667,
+      "surface_clock": 5.98634533333333,
+      "surface_phase": 0.0359180718660355,
+      "wall_seconds": 5.93416
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 34,
+      "ring_phase": 6.31733466666667,
+      "surface_clock": 6.15285333333333,
+      "surface_phase": 0.036917120218277,
+      "wall_seconds": 6.100668
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 35,
+      "ring_phase": 6.49992566666667,
+      "surface_clock": 6.33544433333333,
+      "surface_phase": 0.0380126647651196,
+      "wall_seconds": 6.283259
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 36,
+      "ring_phase": 6.68748266666667,
+      "surface_clock": 6.52300133333333,
+      "surface_phase": 0.0391380079090595,
+      "wall_seconds": 6.470816
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 37,
+      "ring_phase": 6.85807166666667,
+      "surface_clock": 6.69359033333333,
+      "surface_phase": 0.0401615425944328,
+      "wall_seconds": 6.641405
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 38,
+      "ring_phase": 7.02885766666667,
+      "surface_clock": 6.86437633333333,
+      "surface_phase": 0.0411862581968307,
+      "wall_seconds": 6.812191
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 39,
+      "ring_phase": 7.21556266666667,
+      "surface_clock": 7.05108133333333,
+      "surface_phase": 0.0423064865171909,
+      "wall_seconds": 6.998896
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 40,
+      "ring_phase": 7.41376166666667,
+      "surface_clock": 7.24928033333333,
+      "surface_phase": 0.0434956811368465,
+      "wall_seconds": 7.197095
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 41,
+      "ring_phase": 7.58692366666666,
+      "surface_clock": 7.42244233333333,
+      "surface_phase": 0.0445346534252167,
+      "wall_seconds": 7.370257
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 42,
+      "ring_phase": 7.76306266666666,
+      "surface_clock": 7.59858133333333,
+      "surface_phase": 0.0455914884805679,
+      "wall_seconds": 7.546396
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 43,
+      "ring_phase": 7.93937366666666,
+      "surface_clock": 7.77489233333333,
+      "surface_phase": 0.0466493554413319,
+      "wall_seconds": 7.722707
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 44,
+      "ring_phase": 8.11178666666667,
+      "surface_clock": 7.94730533333333,
+      "surface_phase": 0.0476838350296021,
+      "wall_seconds": 7.89512
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 45,
+      "ring_phase": 8.28969566666667,
+      "surface_clock": 8.12521433333333,
+      "surface_phase": 0.0487512908875942,
+      "wall_seconds": 8.073029
+    }
+  ],
+  "sampling_target_seconds": 0.142857142857143,
+  "wall_target_seconds": 8.0
+}
