@@ -93,6 +93,8 @@ func _ready() -> void:
 	for button in [_task_button, _crew_button, _facility_button]:
 		button.toggle_mode = true
 		add_child(button)
+	_paint_button(_task_button, Color("264b58"), Color("31616b"), Color("e6d5ac"), Color("b39a68"), Color("f6efdc"))
+	_paint_button(world_planet_picker, Color("e7e4d6"), Color("f7f1df"), Color("d9e8e0"), Color("78999c"), Color("203f4c"))
 	_task_button.pressed.connect(func(): _toggle_section("exploration"))
 	_crew_button.pressed.connect(func(): _toggle_section("crew"))
 	_facility_button.pressed.connect(func(): _toggle_section("facilities"))
@@ -101,6 +103,8 @@ func _ready() -> void:
 	world_planet_picker.item_selected.connect(func(index): select_planet(str(world_planet_picker.get_item_metadata(index))))
 	_stop_button = _action(self, "本次完成后停止", func(): return _planet.set_automatic(_selected_id, false))
 	_cancel_button = _action(self, "立即取消探索", func(): return _cancel.call(_selected_id))
+	_paint_button(_stop_button, Color("173747"), Color("285365"), Color("315f6c"), Color("4b7580"), Color("e8ebdf"))
+	_paint_button(_cancel_button, Color("342f31"), Color("594041"), Color("654848"), Color("9c7264"), Color("f1e3d2"))
 	for label in [_task_line, _feedback, _wallet]:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(label)
@@ -125,14 +129,22 @@ func _ready() -> void:
 		_wallet_rows.append({"cell": cell, "icon": icon, "amount": amount})
 	_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_feedback.add_theme_color_override("font_color", Color("ffd496"))
+	_task_line.add_theme_font_size_override("font_size", 17)
+	var status_plate := _skin(Color("142f3b", 0.94), Color("bd9e6e"), 1, 5)
+	status_plate.border_width_left = 3
+	status_plate.content_margin_left = 11
+	_task_line.add_theme_stylebox_override("normal", status_plate)
 	add_child(_progress)
 	_progress.show_percentage = false
 	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_drawer)
 	_drawer.add_child(_drawer_box)
+	_drawer_box.add_theme_constant_override("separation", 10)
 	var header := HBoxContainer.new()
 	_drawer_box.add_child(header)
 	_drawer_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_drawer_title.add_theme_font_size_override("font_size", 20)
+	_drawer_title.add_theme_color_override("font_color", Color("173747"))
 	header.add_child(_drawer_title)
 	var close := Button.new()
 	close.text = "收起"
@@ -154,25 +166,22 @@ func _exit_tree() -> void:
 func _theme() -> Theme:
 	var result := preload("res://src/ui/bridge_theme.gd").create()
 	result.default_font_size = 17
-	result.set_color("font_color", "Label", Color("243d50"))
+	result.set_color("font_color", "Label", Color("274554"))
 	for type in ["Button", "OptionButton"]:
-		for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-			var style := StyleBoxFlat.new()
-			style.bg_color = Color("d2e6df") if state == "pressed" else Color("f0eddf")
-			if state == "disabled": style.bg_color = Color("b3bdb7")
-			style.border_color = Color("75b9b3") if state in ["pressed", "focus"] else Color("8faaa8")
-			style.set_border_width_all(2 if state in ["pressed", "focus"] else 1)
-			style.set_corner_radius_all(8)
-			style.set_content_margin_all(8)
-			result.set_stylebox(state, type, style)
-		for state in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color", "font_disabled_color"]:
-			result.set_color(state, type, Color("243d50"))
-	var panel := StyleBoxFlat.new()
-	panel.bg_color = Color("f0eddf")
-	panel.border_color = Color("80b9b2")
-	panel.set_border_width_all(2)
-	panel.set_corner_radius_all(10)
-	panel.set_content_margin_all(14)
+		result.set_stylebox("normal", type, _skin(Color("173847"), Color("4d7882")))
+		result.set_stylebox("hover", type, _skin(Color("285464"), Color("8fc6c2"), 2))
+		result.set_stylebox("pressed", type, _skin(Color("e4dcc6"), Color("be9d67"), 2))
+		result.set_stylebox("focus", type, _skin(Color("000000", 0.0), Color("e8c982"), 2))
+		result.set_stylebox("disabled", type, _skin(Color("243743"), Color("4d6269")))
+		for state in ["font_color", "font_hover_color", "font_focus_color"]:
+			result.set_color(state, type, Color("eee9d9"))
+		for state in ["font_pressed_color", "font_hover_pressed_color"]:
+			result.set_color(state, type, Color("173747"))
+		result.set_color("font_disabled_color", type, Color("95a7a8"))
+	var panel := _skin(Color("e8e4d5"), Color("426878"), 2, 8)
+	panel.set_content_margin_all(13)
+	panel.shadow_color = Color("061824", 0.4)
+	panel.shadow_size = 5
 	result.set_stylebox("panel", "PanelContainer", panel)
 	var popup := StyleBoxFlat.new()
 	popup.bg_color = Color("143746")
@@ -189,11 +198,31 @@ func _theme() -> Theme:
 	for key in ["font_color", "font_hover_color", "font_accelerator_color"]:
 		result.set_color(key, "PopupMenu", Color("f0eddf"))
 	for state in ["background", "fill"]:
-		var bar := StyleBoxFlat.new()
-		bar.bg_color = Color("4faaa5") if state == "fill" else Color("243d50")
-		bar.set_corner_radius_all(4)
+		var bar := _skin(Color("d6ab6c") if state == "fill" else Color("173747"), Color("325968"), 0, 3)
+		bar.set_content_margin_all(0)
 		result.set_stylebox(state, "ProgressBar", bar)
 	return result
+
+func _skin(fill: Color, edge: Color, border: int = 1, radius: int = 6) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill
+	style.border_color = edge
+	style.set_border_width_all(border)
+	style.set_corner_radius_all(radius)
+	style.set_content_margin_all(8)
+	return style
+
+func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color) -> void:
+	for state in ["normal", "hover", "pressed"]:
+		var fill := normal if state == "normal" else hover if state == "hover" else pressed
+		button.add_theme_stylebox_override(state, _skin(fill, edge, 2 if state == "pressed" else 1))
+	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c"), 2))
+	button.add_theme_stylebox_override("disabled", _skin(Color("243743"), Color("4d6269")))
+	for state in ["font_color", "font_hover_color", "font_focus_color"]:
+		button.add_theme_color_override(state, ink)
+	for state in ["font_pressed_color", "font_hover_pressed_color"]:
+		button.add_theme_color_override(state, Color("173747"))
+	button.add_theme_color_override("font_disabled_color", Color("95a7a8"))
 
 func _layout() -> void:
 	if _visual == null: return
@@ -601,6 +630,7 @@ func _build_crew_detail() -> void:
 		if option.is_empty(): return {"ok": false, "reason": "PlanetBuildingUnavailable"}
 		return _coordinate.call(str(_picker_value(_member_picker)), str(option.kind), str(option.target)))
 	var release := _action(_drawer_body, "撤回本星球人员", func(): return _coordinate.call(str(_picker_value(_member_picker)), "", ""))
+	_paint_button(release, Color("173747"), Color("285365"), Color("315f6c"), Color("4b7580"), Color("e8ebdf"))
 	release.disabled = not assigned_here
 	if not assigned_here: release.tooltip_text = "所选船员当前未在本星球任职"
 
@@ -623,11 +653,15 @@ func _action(parent: Control, text: String, action: Callable) -> Button:
 		_feedback_seconds = 4.0
 		refresh()
 		return result
-	if _host.is_valid(): return _host.call(parent, text, perform)
-	var button := Button.new()
-	button.text = text
-	parent.add_child(button)
-	button.pressed.connect(perform)
+	var button: Button
+	if _host.is_valid():
+		button = _host.call(parent, text, perform)
+	else:
+		button = Button.new()
+		button.text = text
+		parent.add_child(button)
+		button.pressed.connect(perform)
+	_paint_button(button, Color("c9a364"), Color("e4ba76"), Color("f1d398"), Color("f2d293"), Color("183849"))
 	return button
 
 static func describe_error(reason: String) -> String:
