@@ -235,3 +235,11 @@ Godot 4.7.2 主脚本检查、正常主场景及两份受影响驱动无脚本�
 **Figma 角色/状态对照口径**：默认、悬停、按下、选中、禁用、焦点按表内各自的实际 Theme/脚本分支建变体；“可购买”是**带事实条件的操作语义**，不是第七张通用底图。装备 `_refresh_comparison` 读取 `session.equipment_comparison(...)` 的 `comparison.affordable`，决定 `_purchase.disabled`，安装则由 `comparison.switch_admission.ok` 决定；反应堆 `main.gd::_setup_reactor_scene` 把 Owner `purchase_preview/purchase_max_preview(session.economy.can_pay)` 接到 `bind_purchase_quote`，`reactor_scene::_refresh_quote/_update_buttons` 用 `quote.can_purchase`、运行状态和模型决定升级键可用，模式键只切报价。两者在“可购”时的材料强弱仍各由模块原组控制；Figma 可统一语义/角色，不应把静态亮态替代实际可购判定或购买命令。公共导航的 selected 是当前路由，装备 candidate/index 的 chosen 是内区对象选择，二者语义不同。
 
 当前星球仍是 `dc9bdfb8`；普通页签跨页强调待原组固定并经原审确认，`fd099201` 未作为本组合源码。后续模块内实施范围仍归原组：反应堆仅等级升级小面板、均分超框及未解锁碎片检查；装备统一武器/防御操作展示并精简防御冗余。公共组件映射不接管这些内区，也不重做已认可主体。此文稿不新增运行改动或视觉通过结论。
+
+### Figma 公共状态增量与工具限额（阶段交接）
+
+根端唯一 [Figma 文件](https://www.figma.com/design/zlWQqp1rQ4MZoOoMMnerST) 的页面 `0:1`、工作板 `2:14` 已实读：`ActionButton` 变体集 `2:29` 含 `normal/hover/pressed/selected/disabled/ready` 六个 `132×42` 组件，其六态已有同一个成功导入的内漆面 `imageHash=95fe0fd7f32f73eb7d6cab88d7270d3ff7825000`。根端反应堆局部已有该组件的 normal／ready／disabled 实例；不能为改公共颜色直接改 `2:29` 而连带改其局部。根端反应堆布局及装备布局节点本次均未修改，也没有重试此前 HTTP 413／405 的上传路径。
+
+已成功在原有 `舰桥 UI` 变量集合 `VariableCollectionId:2:2` 的 `Default` 模式创建下列**公共按钮专用**颜色变量；颜色来自本节对应 `bridge_theme.gd::public_button`，用于后续独立公共组件绑定，不改原集合旧变量或既有六态组件：`public/button/face-normal` `VariableID:5:8` `#304d57`；`face-hover` `VariableID:5:9` `#3c5c65`；`face-pressed-selected` `VariableID:5:10` `#819995`；`face-disabled` `VariableID:5:11` `#253d47`；`face-commit` `VariableID:5:12` `#52695f`；`edge-normal` `VariableID:5:13` `#89a8a7`/0.47；`edge-hover` `VariableID:5:14` `#b6d3cb`/0.65；`edge-disabled` `VariableID:5:15` `#577b81`/0.36；`edge-commit` `VariableID:5:16` `#baa779`/0.69；`edge-focus` `VariableID:5:17` `#e5c784`/0.88。它们在创建调用中返回了上述 ID；**尚未绑定任何新组件或实例**。现有 `ActionButton` 的 ready 是结构工作稿，真实可购仍由上节装备/反应堆事实端口决定。
+
+下一次 Figma 写入原拟在同页隔离建立公共专用变体集（含缺失的 focus），复用已导入内漆面并绑定这些 token，避免影响反应堆已有实例；**该组件/实例尚未创建**。补 `public/button/text-hover` 变量时，Figma MCP 返回 `INVALID_ARGUMENT`；紧接着只读检查明确返回“Starter plan MCP tool call limit”，因此这笔变量调用是否执行不能确认，不重试或声称其存在。当前 Figma MCP 限额阻断后续读写，待工具恢复后须先只读查这一个变量及上述节点，再继续最小增量。Git 文稿只是已确认事实与未完事项，不是 Figma 公共状态全部完成，也不触发运行游戏替换、测试或合 main。
