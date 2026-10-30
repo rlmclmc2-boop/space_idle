@@ -3,16 +3,16 @@ extends Node3D
 ## geometry continues behind the planet's depth mask instead of ending there.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
 const ARC_BOUNDS := {
-	"auto_explore": Vector2(PI, PI * 1.24),
-	"refinery": Vector2(PI * 1.24, TAU),
-	"equipment": Vector2(0.0, PI * 0.5),
-	"shipyard": Vector2(PI * 0.5, PI),
+	"auto_explore": Vector2(PI * 1.075, PI * 1.24),
+	"refinery": Vector2(PI * 1.24, TAU - 0.16),
+	"equipment": Vector2(-0.16, PI * 0.5),
+	"shipyard": Vector2(PI * 0.5, PI * 1.075),
 }
 const FACILITY_ANGLES := {
 	"auto_explore": PI * 1.09,
 	"refinery": TAU - 0.25,
-	"equipment": 0.42,
-	"shipyard": PI - 0.42,
+	"equipment": 0.78,
+	"shipyard": PI - 0.78,
 }
 const RADIUS := 4.5
 const TRANSIT_WIDTH := 0.60
@@ -92,42 +92,48 @@ func _ready() -> void:
 		# A real thick section: dark keel and side walls remain visible under
 		# broad warm armor plates. The central channel belongs to this section.
 		_add_strip(root, bounds.x, bounds.y, NODE_WIDTH, -0.20, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5, -0.30, 0.26, _side, kind)
-		_add_wall(root, bounds.x, bounds.y, -NODE_WIDTH * 0.5, -0.30, 0.26, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.005, 0.05, 0.09, _cyan, kind)
+		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5, -0.42, 0.26, _navy, kind)
+		_add_wall(root, bounds.x, bounds.y, -NODE_WIDTH * 0.5, -0.42, 0.26, _navy, kind)
+		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.005, 0.08, 0.18, _side, kind)
+		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.008, -0.22, -0.16, _cyan, kind)
 		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
 		for rib_index in range(1, 6):
 			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
 				_add_curved_deck(root, rib_angle - 0.008, rib_angle + 0.008, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
-		_joins[kind] = _add_join(root, bounds.y)
+		_joins[kind] = _add_join(root, bounds.y, kind)
 		var caps: Array[Node3D] = []
 		for angle in [bounds.x, bounds.y]:
 			var cap := Node3D.new()
 			cap.name = "BuiltSectionTerminal"
-			var face := MeshInstance3D.new()
-			var box := BoxMesh.new()
-			box.size = Vector3(TRANSIT_WIDTH, 0.65, 0.08)
-			face.mesh = box
-			face.material_override = _navy
-			cap.add_child(face)
-			var lip := MeshInstance3D.new()
-			var lip_box := BoxMesh.new()
-			lip_box.size = Vector3(TRANSIT_WIDTH, 0.08, 0.13)
-			lip.mesh = lip_box
-			lip.material_override = _deck
-			lip.position.y = 0.32
-			cap.add_child(lip)
-			var locator := MeshInstance3D.new()
-			var locator_disk := CylinderMesh.new()
-			locator_disk.top_radius = 0.055
-			locator_disk.bottom_radius = 0.085
-			locator_disk.height = 0.025
-			locator.mesh = locator_disk
-			locator.material_override = _cyan
-			locator.position.y = 0.34
-			cap.add_child(locator)
+			var outward := -1.0 if angle == bounds.x else 1.0
+			var face_basis := Basis(Quaternion(Vector3.UP, Vector3.BACK))
+			var nose := MeshInstance3D.new()
+			var bulb := SphereMesh.new()
+			bulb.radius = 1.0
+			bulb.height = 2.0
+			nose.mesh = bulb
+			nose.scale = Vector3(0.38, 0.35, 0.28)
+			nose.position.z = outward * 0.10
+			nose.material_override = _side
+			cap.add_child(nose)
+			for layer in [
+				[0.37, 0.15, 0.00, _navy],
+				[0.30, 0.025, 0.09, _deck],
+				[0.23, 0.028, 0.11, _side],
+				[0.065, 0.030, 0.13, _cyan],
+			]:
+				var face := MeshInstance3D.new()
+				var armor := CylinderMesh.new()
+				armor.top_radius = layer[0]
+				armor.bottom_radius = layer[0]
+				armor.height = layer[1]
+				face.mesh = armor
+				face.basis = face_basis
+				face.position.z = outward * layer[2]
+				face.material_override = layer[3]
+				cap.add_child(face)
 			var radial := point(angle).normalized()
 			var normal := plane_normal()
 			cap.transform = Transform3D(Basis(radial, normal, radial.cross(normal)), point(angle) + normal * 0.125)
@@ -299,6 +305,9 @@ func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
 		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.36, 0.42, 0.20, _navy, plane_normal())
 		return
 	if kind == "refinery":
+		_add_socket_drum(parent, point(angle) + plane_normal() * 0.30, 0.72, 0.82, 0.38, _navy, plane_normal())
+		_add_socket_drum(parent, point(angle) + plane_normal() * 0.39, 0.72, 0.77, 0.19, _side, plane_normal())
+		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.66, 0.66, 0.08, _deck, plane_normal())
 		_add_refinery_root(parent, angle)
 	elif kind == "equipment":
 		_add_workshop_rails(parent, angle)
@@ -416,7 +425,7 @@ func _add_socket_drum(parent: Node3D, position: Vector3, top: float, bottom: flo
 	instance.basis = Basis(Quaternion(Vector3.UP, normal))
 	parent.add_child(instance)
 
-func _add_join(parent: Node3D, angle: float) -> Node3D:
+func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
 	# Covers the armor gap where two independently built sections mate. This
 	# collar is owned by the preceding section and appears only after both exist.
 	var join := Node3D.new()
@@ -427,22 +436,22 @@ func _add_join(parent: Node3D, angle: float) -> Node3D:
 	_add_curved_deck(join, angle - 0.12, angle + 0.12, TRANSIT_WIDTH + 0.02, 0.232, _sleeve, 0.37, 0.63)
 	var coupling := MeshInstance3D.new()
 	var drum := CylinderMesh.new()
-	drum.top_radius = 0.22
-	drum.bottom_radius = 0.29
-	drum.height = 0.14
+	drum.top_radius = 0.28 if kind == "equipment" else 0.16
+	drum.bottom_radius = 0.33 if kind == "equipment" else 0.20
+	drum.height = 0.15
 	coupling.mesh = drum
 	coupling.material_override = _side
-	coupling.position = point(angle) + plane_normal() * 0.29
+	coupling.position = point(angle) + plane_normal() * 0.50
 	coupling.basis = Basis(Quaternion(Vector3.UP, plane_normal()))
 	join.add_child(coupling)
 	var indicator := MeshInstance3D.new()
 	var disk := CylinderMesh.new()
-	disk.top_radius = 0.115
-	disk.bottom_radius = 0.115
+	disk.top_radius = 0.09 if kind == "equipment" else 0.055
+	disk.bottom_radius = disk.top_radius
 	disk.height = 0.025
 	indicator.mesh = disk
 	indicator.material_override = _cyan
-	indicator.position = point(angle) + plane_normal() * 0.38
+	indicator.position = point(angle) + plane_normal() * 0.585
 	indicator.basis = coupling.basis
 	join.add_child(indicator)
 	return join

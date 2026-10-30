@@ -207,3 +207,11 @@
 [本版固态裸态至四座完整五张 1440×900 整屏、设施抽屉](evidence/integrated-spine-revision/)由[同版结构驱动](evidence/integrated-spine-revision/integrated-structure-driver.gd)通过受控保存恢复设为各 built 组合；这是外观状态夹具，不证明自然施工或领取成交。作者原尺寸查看 `stage_2` 两独立端盖、`stage_3` 右侧接段、`stage_4` 整体：四建筑身份和位置更接近批准图，前弧有球底暗缝，后弧球后遮挡，未见本次所看状态的越界；仍请原整体审判定其造型、截面和一体感是否真正达到用户概念，不能把本段自查写成用户通过。
 
 [8.16 秒当前码自然时间 VFR 短片](evidence/integrated-spine-revision/natural-short-vfr.mp4)、[50 帧实际时间戳](evidence/integrated-spine-revision/natural-timestamps.json)和首／中／末原帧用于看这段相位的球与环独转及建筑随段，不用编码 `r_frame_rate`、取样率作引擎 FPS 或性能。夹具冻结业务步进，只让视觉按 `Time.get_ticks_usec()` 差推进；画面“探索未运行”是真实夹具状态，未替探索船取证。Godot 4.7.2 导入、`--check-only --quit`、结构与短动态驱动退出 0；[日志、探测与 SHA](evidence/integrated-spine-revision/)固定。此版只交第一固态代表与必要短动态，不借旧码固态整圈／六类静图推断新版完整整圈或其他天体整体通过；若原审继续指出准确的建筑或环形偏差，应在此结构上继续返修。
+
+## 前弧承力节点与自持端头：继续返修候选
+
+前段 `333c43cb` 经原 Astra 看五阶段与短片后**整体退回**：前弧过长而空，深青龙骨和青通道只剩底缘细线，工坊与船坞落在左右腰像外挂；圆站像斜薄盘、金顶精炼缺圆形承力基座，独立已建段的黑切面与亮唇也不像封装端头。用户对建筑造型与环设计的整体否定优先于过去任何局部通过。本段不是 `333c43cb` 的补充通过，而是依 [8136 批准完整概念](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)和 [1eda 逐建闭环概念](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png)重新摆正承力结构的后续候选。
+
+工坊／船坞真实环节点角由左右腰的 `0.42 / π−0.42` 移到前弧的 `0.78 / π−0.78`，工作主体落入原甲板、随节点一同旋转；其环段仍各由自己的 built 状态控制。前弧宽甲板下改为可见的深青龙骨，青能量通道沿外侧延续并从工作节点下穿过，中央两段的真实连接盘露出甲板。空间站可编辑 Blender 源与导出 GLB 增加深承力锥壳、外缘能量腰线和厚观察鼓；精炼厂固定节点增圆形承力鼓。所有段端仍属于自身，仅在相邻段未建时显示装甲圆封帽；站／炉旁的分段边界移入主根下，不提前生成未来段。船坞移动层读取下移后主体位置，避免吊机／泊位与底身漂开。未改业务建造领取、球／环／探索船独立运动或公共宿主。
+
+[本版五阶段与设施整屏](evidence/integrated-bearing-candidate/)、[48 帧实际自然时间记录](evidence/integrated-bearing-candidate/natural-timestamps.json)、[8.11 秒墙钟目标的 VFR 短片](evidence/integrated-bearing-candidate/natural-short-vfr.mp4)及原首／中／末帧均来自本候选源码；[驱动、Godot 4.7.2 日志、源文件 SHA 与证据 SHA](evidence/integrated-bearing-candidate/)同目录。作者原尺寸看 `stage_1/2/3/4`：站端藏在承力体下，炉端不再是大黑切面，第三阶段前弧单独封装，第四阶段中央闭合；短片所录角度的建筑随段、前后深度与活动层未见明显脱接。原审仍须判断圆站／炉基座体量、工坊与船坞跨脊轮廓及端头封装是否真正达到批准图。此片只是固定 built 夹具下约 8.11 秒的墙钟采样：不证明自然施工、整圈、其余五类、探索船启动，也不能把编码视频帧率当游戏 FPS 或性能。

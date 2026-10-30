@@ -85,9 +85,14 @@ for kind in ("auto_explore", "refinery", "equipment", "shipyard"):
     if kind == "auto_explore":
         # A plated round station is the first structural ring node, not a
         # satellite with oversized independent solar wings. Keep named pivots.
+        bpy.ops.mesh.primitive_cone_add(vertices=32, radius1=0.78, radius2=1.20,
+                                        depth=0.58, location=(0, 0, -0.44))
+        done(bpy.context.object, "Deep station load hull", dark, root, 0.04)
+        cyl("Cyan power channel around hull", (0, 0, -0.39), 0.89, 0.055, cyan, root, vertices=32)
         cyl("Navy load-bearing station keel", (0, 0, -0.18), 1.27, 0.26, dark, root, vertices=32)
         cyl("Ivory annular station deck", (0, 0, -0.01), 1.18, 0.16, cream, root, vertices=32)
-        cyl("Navy observation drum", (0, 0, 0.16), 0.73, 0.24, dark, root, vertices=28)
+        cyl("Navy observation drum", (0, 0, 0.20), 0.73, 0.38, dark, root, vertices=28)
+        cyl("Upper ivory observation lip", (0, 0, 0.37), 0.75, 0.09, cream, root, vertices=28)
         ring = empty("HabitatRingSpin", root)
         torus("Revolving inhabited annulus", (0, 0, 0.30), 0.89, 0.12, cream, ring)
         for i in range(4):
