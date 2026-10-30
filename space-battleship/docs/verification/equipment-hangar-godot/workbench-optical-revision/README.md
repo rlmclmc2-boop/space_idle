@@ -1,6 +1,6 @@
-# 装备当前入口：结构研究中，运行修改暂停
+# 装备当前入口：就地直接切换概念，规则冲突待裁
 
-**最新覆盖：** 用户退回源码 `304883fbde448cd32fa288ae97967e43100209bc`／证据 `a3a77ee0a723ac33b6795bba6ddfde62c0dda041`：“你这平移就不奇怪吗”。已撤两态接受口径；同一槽位升级对象未变，选候选却使升级组横移，尺寸/材质相同不等于操作连续。用户后续将任务升级为结构研究，暂缓固定按钮等补丁。用户现已明确一级/二级职责，具体新概念稿仍待形成；**本轮只记结构约束，不修改代码/采图/复测/Figma/图稿**。3916信息内容保留，已取消806隐藏购级/复用候选主值不复活；不以旧原审或0失败代用户接受。
+**最新覆盖：** 用户已撤回“更换→二级预览→确认安装”提议，认为多步和整页是负担；最新交互目标为槽当前名称/图标就地展开候选，点即切换，无额外确认，详细比较仅按需且不阻碍切换。主页面不常驻整套候选，升级贴对应槽且独立显示现装升级费用；保选槽→收益→升级连续、舰船不夹两步。当前仅新概念/规则事实记录，未实施；成功后“立即切回”与现Owner每槽10游戏秒锁存在冲突，须根裁规则，不能由UI默删/加冷却或确认。运行源码仍304、信息内容保3916，304/a3a已用户退回，806取消精简/Figma不恢复。
 
 ## 现有结构与职责（只读，不是新规范）
 
@@ -39,16 +39,32 @@
 
 304同状态旧图确证：仅选择候选、_selected未变，96/292升级组仍从global x204/312移到36/144；相同节点/皮肤不能抵消同一升级工作点移动。原未选没有右比较/安装时空域明显，扩大图/移动整组也未获用户接受；不能用填说明、加框、拉满购买键或隐藏购级来替代结构解决。本轮不把研究预锁成固定按钮坐标，也不先画新布局。
 
-## 用户已明确的一级／二级结构方向（待新概念稿，不实施）
+## 最新就地直接切换方向（新概念，未实施）
 
-- **主页面：现装总览＋直接升级。** 槽位选择贴近对应现装升级工作区，使选槽→看收益→升级在同一区域连续完成；保留舰船主体，但不能让舰船夹在两步之间。主页面不预留候选空间，不因选择候选而移动/重排升级对象或操作。
-- **点“更换”才进入二级界面。** 候选选择、现装/候选比较、替换预览、Owner准入及安装操作全部属于二级，不把所有操作铺在一级，也不是在原主面板留一个按需展开区或底部原地切模式。
-- 这是已明确的职责与连续性方向；二级界面的具体形态、布局/预览组织、入口/返回以及安装后衔接等待新概念稿，不在本轮自行选定或实现。当前槽升级费仍属现装升级，替换准入/提交仍归Owner，不因分层改规则或恢复卸下；取消806一级主值复用/隐藏购级WIP不当新结构实现。
+槽位选择贴现装升级工作区；槽当前名称/图标就地展开候选，点候选即发起切换，不再走“更换→整页/二级预览→确认安装”。比较/详细预览只在需要时看，不挡直接切换；主页面不常驻整套候选，也不让候选选择移动原现装升级工作点。现装升级费用与候选切换对象始终分清，65铁不是安装价。舰船主体保留但不隔断选槽与升级。
 
-根确认本次A/B/C横顶槽概念没解决上下往返；后续A/B/C底部原地切模式也过度拘泥一级展示，均非获批定稿，后者作为定稿方向废止。这里的代号只指本轮概念，不与历史B/C台账整页方案混用。早先“槽位总览→当前装备工作区（默认升级）→按需候选替换”的研究表述由上述明确一级/二级职责覆盖，不能继续解释为一级给候选常驻留半幅或原地换模式。
+7b7047e8所记二级确认方向已撤，之前根“槽位总览→默认升级工作区→按需替换”表述和本轮A/B/C横顶槽/底部原地模式概念均非获批实现；不与历史B/C台账整页方案混用。最新点即换是用户目标，不表示当前代码已实现。只记录方向与下面冲突，等根规则裁定及后续概念，不写UI/图稿/代码/测试。
+
+## 旧下拉真实链与当前规则（本轮只读核实）
+
+指定旧main对象已核为 `e93c221239a10d377b2ca89dd395ebcfa99c9819`。其equipment_panel.gd:22–24的slot_picker.item_selected只刷新选项，:32–34创建equipment_picker下拉并另设“更换所选装备”按钮；:34按钮才调用Equipment.equip_slot，**没有equipment_picker.item_selected→equip_slot绑定**。_command:91–98直调action；旧main.gd _command_button:508–525的pressed在会话/重铸门禁后直接action.call，无换装二次确认。补查更早 `d00d51a4a6f54cf392a52b6287bcdf11fe420c48` main.gd:243、251–253也是槽下拉刷新＋更换按钮。它们可证旧链较短/单按钮直达Owner，不能把它们记成已证“候选点即换”；用户所述另一个旧版未获精确源码证据，不否定用户新意图，也不继续扩大历史追查。
+
+旧e93 Equipment.equip_slot:511–537已含同物NoChange、按slot.switch_ready_at检查锁、成功写该slot的game_time+_cooldown并_submit_refit；_cooldown:33来自参数，旧generated/config.json不在该Git对象中，不用当前配置冒充旧值。当前精确事实如下：
+
+| 事项 | 当前真实来源／行为 | 与最新意图的关系 |
+|---|---|---|
+| 费用 | 当前equipment.gd equip_slot:636–651→_submit_refit:288–293传原inputs.balances；没有Economy.payment/quote.costs。Session publish_equipment_refit:853–889原生提交成功才接纳原wallet | 当前切换不收资源升级费，65铁只在_buy的现装槽升级支付链；无资源付款不等于无冷却或其它换装副作用 |
+| 锁的范围和值 | equipment.gd:35读equipmentSwitchCooldownSeconds；当前本机generated/config.json:1066–1068值10，既有03-progression.md:17明确“每槽换装锁10游戏秒” | **每槽，不是全局**。A槽换装只改A的switch_ready_at，不能由UI给B槽追加全局锁 |
+| 成功后立即切回 | _equip_admission:620–634检查inputs.game_time < 该slot.switch_ready_at；equip_slot:647–651候选成功路径写该slot新timestamp并待提交 | A→B成功后，同槽立即B→A会EquipmentSwitchLocked；返回原装备也没有豁免。与用户“出问题可立即切回”明确冲突，待根裁定，当前不删/缩短/绕过锁 |
+| 同物 | 合法同物在锁检查前NoChange；不准备新槽、不增加generation、不刷新锁 | 点当前项可不变更；不当成功换装或重置锁 |
+| 时间/暂停 | Session.frame:453–460有pause_reasons就return；_step:474–476才增加game_time；slot_facts:168–178算剩余值 | 是游戏时间；暂停下等10墙钟秒不能据此认为解锁。本次不改暂停或自动清锁 |
+| 升级与清锁 | _buy_quoted_levels:610–618只改paid_level；03:17规定升级不触发换装锁、既有遭遇清空/通关/死亡等边界清锁 | 不能把购级变成切换锁或给UI增加“立即回切”清锁捷径；边界原规则不改 |
+| 拒绝/故障 | UnknownSlot/FirstDefenceRequired/EquipmentLocked/类别/generation/锁等拒绝在接纳前返回；_submit_refit失败discard_prepared；Session原生fault停止会话 | 普通拒绝时现装未换，不应先把候选当已装备再“切回”。原生故障未知不能假定可立即补偿换装；就地点击也须保Owner拒绝，不另加确认代替规则 |
+
+**待根裁定的唯一新增规则冲突：** 用户“成功换错可立即切回”是否要求改变当前每槽10游戏秒锁/定义豁免。既有10秒此前明确保留，本条新要求不能默默当已废止；规则未裁前不实现回切例外。就地候选展开、点即提交、比较非阻断、取消二级/确认是最新交互目标；UI减少步骤不等于放宽Owner准入。其它原价格/等级/槽位/原生接纳/资源身份及卸下已取消约束继续保留。
 
 根已研究参考，仅引用来源，不重复联网验证或引外部游戏资产：[AC6官方装配指南](https://en.bandainamcoent.eu/armored-core/news/armored-core-6-fires-of-rubicon-beginners-guide-basic-strategy-and-combat-theory)、[Warframe官方EQUIP/UPGRADE](https://support.warframe.com/hc/en-us/articles/200500194-Mod-Guide-Use-Fusion-Transmutation-Sale)、[God of War列表/详情关系](https://www.gamepressure.com/god-of-war-ragnarok/best-armor-set/zb1062b)。这些参考不能把本项目槽位成长改成外部游戏物品成长规则。
 
 ## 现场与历史证据
 
-本次恢复HEAD a3a77ee0、tracked干净，无运行命令，自该交付后未执行新锚点补丁/提交/采图/测试。304/a3a与[原完整图](upgrade-group-coherence/README.md)仅用户已退回的研究对照；[3916字段版](shared-field-reduction/README.md)、[9e版](candidate-balance-and-armour/README.md)保原时点。806原panel/完整patch/json与revert历史、全部tmp/cache/未跟踪均保留，不作为新功能；Figma已取消不恢复。不改main/Library/Space、不新代理/任务/工作区。本轮仅文档固定结构清单，运行源码仍304；等待新概念稿，暂停运行实施，原目标未完成。本SOL未实际平台上下文压缩。
+本次恢复HEAD a3a77ee0、tracked干净，无运行命令，自该交付后未执行新锚点补丁/提交/采图/测试。304/a3a与[原完整图](upgrade-group-coherence/README.md)仅用户已退回的研究对照；[3916字段版](shared-field-reduction/README.md)、[9e版](candidate-balance-and-armour/README.md)保原时点。806原panel/完整patch/json与revert历史、全部tmp/cache/未跟踪均保留，不作为新功能；Figma已取消不恢复。不改main/Library/Space、不新代理/任务/工作区。本轮仅文档固定结构清单，运行源码仍304；等待根裁回切冲突及后续概念，暂停运行实施，原目标未完成。本SOL未实际平台上下文压缩。
