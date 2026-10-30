@@ -17,7 +17,7 @@
 - 实际参数与颜色身份沿游戏权威数据；图中示例值不是新增数值规则。
 
 ## 当前版本与现场
-本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。下列静态整屏为最终源码的实机证据；四模组正常墙钟视频及性能短窗来自其前一提交 `00971d3635c15ee5e020c2bea41ff6c8c1dbe6e6`，后续只更改未开放专用底图与右侧费用排版，未重录或重测这两项。
+本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。本目录保留 `00971d36` 的原四路录像/早期性能与报价图作为历史对照；当前源码新增受控单／双路舱室、无损 shader 优化和原舞台左右收边。下方“整屏统一与合法模块数交接”列出当前源码的八态整屏、最新交互与性能证据；不能把旧录像或旧报价图写成这一版动态验收。
 
 ## 交付与对照
 在本目录维护执行进度和固定Git图/视频入口。交同版完整实机画面、正常时间工作视频及必要交互状态；注明受控条件。协调者和既有独立审核按批准图与实际整屏/动态整体对照，包括主体体量、场景一体感、材质、文字、控件与效果，不以问题清单清零或参数通过替代视觉。旧版本局部通过不外推。当前不合main。
@@ -33,13 +33,13 @@
 
 运行 shader 的三个源图掩膜由[可复生脚本](../../../../../assets/ui/reactor/b01/generate-effect-mask.py)生成：`effect-mask.png` 固定核心前金属束带，仅让玻璃能量纹运动；把黄光限在真实双炮管管腔；把熔液限在原图 x205–329／y499–588 的炉内开口及流面。新增 `module-mask.png` 按晶体玻璃筒和盾面蓝色穹顶的源坐标及本色像素取样，紫晶折射不进入灰白底座、右金属柱或左传送带。新增 `pipe-mask.png` 按四根实体管路的发光内腔取样，沿各自路径推进的光包与对应 Owner 负载独立绑定。0／4／8 秒全屏及局部抽帧已逐项核核心、武器、盾、炉口、紫晶、四管和控制台，固定机械前景未出现光纹扫动。`reactor_stage.gd` 只在可见、未暂停且 `game_time` 推进时更新相位；真零负载不产生工作光，隐藏页停止渲染。
 
-Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、正式 `main.tscn`、1440×900、1×：同版[四路带载整屏](active-1440x900.png)、[×10 报价](ten-1440x900.png)、[MAX 报价](max-1440x900.png)、[真零整屏](true-zero-1440x900.png)已按原尺寸目视核对。右侧等级在顶、费用在中、循环数量与独立升级键并排等高；均分键缩进实体金属框。等级 1 的 ×10 报价为 550 铀，MAX 当时可购 11 级、费用 752 铀，数值取自[同版报价日志](quantity-runtime.txt)，战场收入使 MAX 随余额重算；循环键仅选报价，升级键才交易。对应[报价驱动](quantity-driver.gd.txt)。原批准[B01 主体图](approved-b01.png)未变。
+Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、正式 `main.tscn`、1440×900、1×：早期版本[四路带载整屏](active-1440x900.png)、[×10 报价](ten-1440x900.png)、[MAX 报价](max-1440x900.png)、[真零整屏](true-zero-1440x900.png)已按原尺寸目视核对，当前版本四路整屏见下方受控矩阵。右侧等级在顶、费用在中、循环数量与独立升级键并排等高；均分键缩进实体金属框。等级 1 的 ×10 报价为 550 铀，MAX 当时可购 11 级、费用 752 铀，数值取自[同版报价日志](quantity-runtime.txt)，战场收入使 MAX 随余额重算；循环键仅选报价，升级键才交易。对应[报价驱动](quantity-driver.gd.txt)。原批准[B01 主体图](approved-b01.png)未变。
 
 [锁定零态](locked-zero-1440x900.png)、[锁定工作态](locked-active-1440x900.png)及[相位诊断帧](locked-active-phase4-1440x900.png)来自凝聚未开放的公开模型。原生第四图标、行、滑杆、倍率和总条紫段不显示；三模块专用底图移除了整台晶体设备、地面紫晶、完整下右管及接口，环形舱壁、栏杆与金属地面连续，第四静态槽无身份。原数学遮板已删除。[锁定驱动](locked-driver.gd.txt)与[模型日志](locked-runtime.txt)先记录 `enabled=[weapons, defence, smelting]` 的满配 34%／33%／33%，凝聚 shader 负载始终 0；相位诊断向现有视觉时钟输入 4 秒受控增量检查动态贴图，不称为正常墙钟录像。之后驱动通过 Owner 公开 `apply_allocation_plan` 将三路各设为 0，读回总 `allocated=0`、`load=0`、三行 `manual/ratio/load=0`、stage `core_load=0`，待原生绘制完成再取零态图。先前误存的 `locked-zero` 满配画面已撤换；当前文件由驱动的 `confirmed-zero` 帧固定复制，显示 `0 / 100`、三行 `0%` 和暗核。开放四模组底图保持原样。
 
 [交互驱动](interaction-driver.gd.txt)及[实机日志](interaction-runtime.txt)覆盖此次布局后的原生鼠标操作。均分后武器从 25% 拖到 10%，Owner 接纳，总分配变为 85/100；再次拖到超额时返回 `ReactorPlanOverCapacity`，控件回到已接纳的 10%，见[接纳整屏](mouse-accepted-1440x900.png)和[拒绝整屏](mouse-rejected-1440x900.png)。×10 经独立升级键以 550 铀从等级 1 到 11，钱包 1000→450；之后经公开 Economy 入账 1000 铀，MAX 依实时预算报价并以 1336 铀购买 4 级，等级 11→15，钱包 1450→114。两笔成交的提示分别为“已升级 10 级”和“已升级 4 级”，见[×10 成交](ten-purchased-1440x900.png)、[MAX 成交](max-purchased-1440x900.png)。低正负载通过 Owner 公开入口设为 1/5766、`<1%`，见[低正负载](low-1440x900.png)；全部回 0 时，真零整屏显示 `0%` 且工作光关闭。这里的受控入账和开放条件用于覆盖状态，不改变 Owner 或玩法规则；正常战场有实时收益，不能把截图报价当固定初始预算。
 
-费用长价按右区 182×195 的内缘调整：金额与完整资源名在图标后统一内收，`1.1万 铀` 的[×10 成交](ten-purchased-1440x900.png)和[低正负载](low-1440x900.png)整屏均保留“铀”且不压斜边；资金不足与金额分占两行，普通费用字号保持可读。当前[MAX 报价](max-1440x900.png)的可购数量、资源图标和 752 铀也在同一框内。
+费用长价按右区 182×195 的内缘调整：当前源码的[×10 成交](ten-purchased-1440x900.png)与[低正负载](low-1440x900.png)整屏保留完整 `1.1万 铀`；[当前交互日志](interaction-runtime.txt)以原生字体实测此串 60px，详情标签 x688、宽72px，字串右端 x748，距面板右界 x780 仍有32px，未压斜边。资金不足与金额分占两行，普通费用字号仍为16。旧[MAX 报价](max-1440x900.png)可购数量及752铀只作前版动态余额样例。
 
 [正常墙钟录像](live-1440x900-30fps.mp4)为运行窗口 X11 连续采集，10.000 秒、1440×900、30 fps、300 帧，SHA-256 `a76d894ae111040e3dab649980ebf285c85fe19c67a2b8e1d86c3593cbff1b13`。原始采集为 10 秒／299 帧，[原采集日志](ffmpeg.txt)和[恒帧率封装日志](ffmpeg-cfr.txt)记录补 1 帧；无静图插帧或人为改变游戏时间。[录制驱动](capture-driver.gd.txt)与[运行日志](capture-runtime.txt)记录 `VIDEO_READY` 四路各 25%、总负载 1、游戏倍速 1×，35 秒墙钟期间游戏时间推进约 35.67 秒；未执行升级。已目视整屏与录像 2／7 秒帧，核心、四设备、四管及金属台完整，战场同步运行。
 
@@ -58,7 +58,7 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 | 3 | 当前 `Reactor.refresh_availability` 在反应堆可用后无条件启用武器、盾甲、炼铁，只有凝聚查询 Campaign；这只描述当前实现。用户描述下一关武器、盾甲加入，源表尚未声明这一步。 | 原正式 Owner/Campaign [真零](locked-zero-1440x900.png)与[三路均分](locked-active-1440x900.png)为 34/33/33%、100/100；最新边缘版另有[受控真零](controlled-three-zero-1440x900.png)和[均分](controlled-three-active-1440x900.png)。右下未开放设备、管路、工作光与第四控制行/紫色段均无。 |
 | 4 | 当前 Owner 在凝聚可用时加入第四路；Excel 凝聚门槛为 cleared 关卡 15。 | 原正式 Owner/Campaign [四路真零](true-zero-1440x900.png)与[四路均分](active-1440x900.png)各 25%、100/100；最新边缘版另有[受控真零](controlled-four-zero-1440x900.png)和[均分](controlled-four-active-1440x900.png)。[×10 报价](ten-1440x900.png)、[MAX 报价](max-1440x900.png)及[成交](ten-purchased-1440x900.png)记录升级区与按钮行为。 |
 
-**纠正 `f33ed6c` 的错误推论：**运行配置 `generated/config.json`（本工作区 SHA-256 `308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de`）和 `src/systems/reactor.gd::refresh_availability` 只能证明现行实现把前三路同时开放，不能证明它符合设计。用户明确初开仅炼铁、下一关再开武器与盾甲；1 路为必需设计状态，2 路不能只凭当前错误实现排除。现有受控 Campaign 恢复图只说明当前运行态，不是自然关卡顺序实测。三路／四路均分和 ×10／MAX 的 Owner 状态、原生控件及鼠标操作由本目录日志支持；最终整体组合中的均分视觉、控制台主次与跨页统一仍待核。
+**纠正 `f33ed6c` 的错误推论：**运行配置 `generated/config.json`（本工作区 SHA-256 `308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de`）和 `src/systems/reactor.gd::refresh_availability` 只能证明现行实现把前三路同时开放，不能证明它符合设计。用户明确初开仅炼铁、下一关再开武器与盾甲；1 路为用户要求覆盖的设计状态，2 路不能只凭当前 Owner 策略排除。现有受控 Campaign 恢复图只说明当前运行态，不是自然关卡顺序实测。三路／四路均分和 ×10／MAX 的 Owner 状态、原生控件及鼠标操作由本目录日志支持；最终整体组合中的均分视觉、控制台主次与跨页统一仍待核。
 
 2026-10-30 源链复核：运行配置源 `config_excel/unlock.xlsx` SHA-256 `ee216e7524e918279a967220c1a205cfd433fe2c9c389c2a7f2a2a35525b2ed7`，`unlock` sheet 第 15 行是 `feature/reactor, level=1, mode=cleared`，第 31 行是 `reactor_module/condensation, level=15, mode=cleared`；全表没有 `reactor_module/weapons`、`defence` 或 `smelting` 行，也没有别名行。`foundation/import_excel.py` 调用 `config_tools/compile.py::compile_config`，现行 `generated/config.json` 同样只有上述反应堆开放行，故**不是导出漏行，而是 Excel 源没有声明前两路门槛**。`Campaign.available(kind,target)` 只按 `type/target` 精确匹配、满足 `cleared_stages` 或 grant 后返回 true，缺行会返回 false；`Reactor.refresh_availability` 第 64 行以 `module != "condensation" or unlocked(...)` 把武器、盾甲、炼铁无条件加进可用集合。Session 创建时 `game_session.gd:112`、恢复后 `:230`、进度发布 `:1359` 都调用该刷新；`Reactor.presentation_model` 带 `_enabled`，`reactor_scene.gd::_refresh` 仅显示 enabled 行并据此更新 stage。因此现行实现是 cleared 关卡 1 后直接三路，与用户描述的“初开炼铁、下一关再加武器盾甲”不同；由于源表无该条件，按用户限制**暂不改正式 Excel、导出配置或 Owner 解锁规则**，也不把“下一关”擅定为具体关卡数。受控验证从同一参数复制仅换 `reactorModules` 输入，在隔离 Reactor Owner 上调用公开 `refresh`、`apply_allocation_plan`，并通过原生 UI 均分键调用 Owner `distribute`；原 Session 及其正式 Owner 保持原样。[受控驱动](controlled-states-driver.gd.txt)与[四态日志](controlled-states-runtime.txt)记录每态 Owner `modules/load/ratio`、UI 行集合、stage 负载和按键状态。隔离 `publish` 只接受该 Owner 候选，不证明整场 Session/native 因子发布或自然解锁流程。1／2 为受控显示与分配证据，3／4 另有上述现行 Campaign/Owner 整屏证据。
 
@@ -79,4 +79,4 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 | 性能 | 当前边缘版全效果同环境短窗从 25.31／21.08 提至 33.48／27.88 fps（无录／录屏），可见／隐藏环境差缩至约 1.19 fps；目标硬件与最终宿主未验收，不以诊断冻结态作产品。 |
 | 跨页风格及左右边界 | 已在原舞台 shader 层把左右 24px 及下台端收向宿主深蓝；最新整体 f57e5e9f 仍为设计方向与旧宿主运行基线，没有接此源码的真实组合整屏，装备与反应堆异材质尚未通过。 |
 
-以上是边界与证据交接，不是整体统一完成。接口固定后应以同一运行提交取装备／B01 完整整屏及受影响均分/升级、三路/四路状态，再交原整体审；当前不合 main。
+以上是边界与证据交接，不是整体统一完成。共享宿主接同一运行提交后还需取装备／B01 完整整屏并审均分、升级与左右接缝；当前不合 main。

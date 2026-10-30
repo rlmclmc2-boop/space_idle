@@ -155,6 +155,12 @@ func run() -> void:
 	assert(float(read_row(model, "weapons").load) > 0.0 and float(model.load) > 0.0)
 	assert(scene._rows["weapons"].ratio.text == "<1%")
 	print("LOW load=", model.load, " weapon=", read_row(model, "weapons").load, " ratio_label=", scene._rows["weapons"].ratio.text, " stage=", scene._stage._paint.get_shader_parameter("core_load"))
+	var cost_label: Label = scene._cost_details
+	var cost_font: Font = cost_label.get_theme_font("font")
+	var cost_px: float = cost_font.get_string_size(cost_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, cost_label.get_theme_font_size("font_size")).x
+	print("COST_BOUNDS text=",cost_label.text," measured_px=",cost_px," label_x=",cost_label.position.x," label_width=",cost_label.size.x," right=",cost_label.position.x+cost_px," panel_right=780")
+	assert(cost_px <= cost_label.size.x and cost_label.position.x + cost_px < 780.0)
+	await create_timer(2.3).timeout; clear_guidance(session, game); await frames(3)
 	await shot("low")
 	low_plan["weapons"] = "0"
 	assert(session.reactor_system.apply_allocation_plan(low_plan, session.reactor_inputs(), session.publish_reactor).ok)
