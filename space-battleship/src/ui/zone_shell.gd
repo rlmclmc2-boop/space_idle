@@ -50,12 +50,7 @@ func _init(economy) -> void:
 	_economy.display_changed.connect(func(): _dirty = true)
 	size = Vector2(1440, 900)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var font := FontVariation.new()
-	font.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
-	font.variation_opentype = {2003265652: 450.0}
 	theme = BridgeTheme.create()
-	theme.default_font = font
-	theme.default_font_size = 15
 	theme.set_stylebox("panel", "PopupPanel", BridgeTheme.public_panel())
 	var context_back := NinePatchRect.new()
 	context_back.texture = preload("res://assets/ui/public_shell/title-plaque.svg")
@@ -86,21 +81,18 @@ func _init(economy) -> void:
 		cell.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_balances.append(cell)
 	_status = _button("", Rect2(650, 16, 28, 32), false)
-	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		_status.add_theme_stylebox_override(state, BridgeTheme.top_button(state))
+	BridgeTheme.apply_top_button(_status)
 	_status.icon = STATUS_IDLE
 	_status.tooltip_text = "保存与会话状态"
 	_status.pressed.connect(_show_status)
 	var resources := _button("资源", Rect2(684, 12, 92, 41), false)
-	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		resources.add_theme_stylebox_override(state, BridgeTheme.top_button(state))
+	BridgeTheme.apply_top_button(resources)
 	resources.icon = RESOURCE_MARK
 	resources.pressed.connect(_show_balances)
 	for index in ROUTES.size():
 		var spec: Array = ROUTES[index]
 		var button := _button("", Rect2(813, 93 + index * 90, 37, 70), true)
-		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-			button.add_theme_stylebox_override(state, BridgeTheme.route_button(state))
+		BridgeTheme.apply_route_button(button, false)
 		var mark := TextureRect.new()
 		mark.texture = ROUTE_ICONS[index]
 		mark.position = Vector2(9, 10)
@@ -150,8 +142,7 @@ func _init(economy) -> void:
 	close.text = "关闭"
 	close.custom_minimum_size = Vector2(108, 38)
 	close.size_flags_horizontal = Control.SIZE_SHRINK_END
-	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		close.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 8))
+	BridgeTheme.apply_public_button(close)
 	content.add_child(close)
 	close.pressed.connect(_details.hide)
 	set_active_route("equipment")
@@ -187,13 +178,7 @@ func _button(caption: String, rect: Rect2, selectable: bool) -> Button:
 	button.custom_minimum_size = rect.size
 	button.toggle_mode = selectable
 	button.add_theme_font_size_override("font_size", 14 if selectable else 15)
-	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		button.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 1 if selectable else 4))
-	button.add_theme_color_override("font_color", TEXT)
-	button.add_theme_color_override("font_hover_color", Color("ffffff"))
-	button.add_theme_color_override("font_pressed_color", Color("132f3d"))
-	button.add_theme_color_override("font_hover_pressed_color", Color("132f3d"))
-	button.add_theme_color_override("font_disabled_color", Color("869b9b"))
+	BridgeTheme.apply_public_button(button, 1 if selectable else 4)
 	add_child(button)
 	return button
 
@@ -220,13 +205,7 @@ func set_active_route(id: String) -> void:
 		var button: Button = _route_buttons[key]
 		var selected: bool = key == id
 		button.set_pressed_no_signal(selected)
-		for color_state in ["font_color", "font_hover_color"]:
-			button.add_theme_color_override(color_state, Color("173e4c") if selected else TEXT)
-		for color_state in ["font_pressed_color", "font_hover_pressed_color"]:
-			button.add_theme_color_override(color_state, Color("173e4c"))
-		button.add_theme_color_override("font_disabled_color", Color("173e4c") if selected else Color("869b9b"))
-		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-			button.add_theme_stylebox_override(state, BridgeTheme.route_button("selected" if selected else state))
+		BridgeTheme.apply_route_button(button, selected)
 		_route_captions[key].add_theme_color_override("font_color", DARK if selected else MUTED if button.disabled else TEXT)
 		_route_marks[key].modulate = DARK if selected else Color("839d9d") if button.disabled else TEXT
 	for spec in ROUTES:

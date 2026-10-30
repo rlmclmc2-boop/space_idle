@@ -72,11 +72,7 @@ var _save_status_elapsed: float = 1.0
 var _seen_save_failure_generation: String = ""
 
 func _ready() -> void:
-	var readable_font := FontVariation.new()
-	readable_font.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
-	readable_font.variation_opentype = {"wght": 450}
-	readable_font.variation_embolden = 0.8
-	ThemeDB.fallback_font = readable_font
+	ThemeDB.fallback_font = BridgeTheme.public_font()
 	ThemeDB.get_default_theme().default_font = ThemeDB.fallback_font
 	if not ClassDB.class_exists("SpaceCombatKernel"):
 		var extension: String = OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION")
@@ -649,39 +645,8 @@ func _settings_action(parent: Control, text: String, action: Callable, width: fl
 	button.custom_minimum_size = Vector2(width, 39)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var role := "commit" if text in ["保存进度", "确认新游戏", "确认导入"] else "secondary"
-	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		button.add_theme_stylebox_override(state, BridgeTheme.public_button(state, 8, role))
+	BridgeTheme.apply_public_button(button, 8, role)
 	return button
-
-func _settings_field(control: Control) -> void:
-	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled", "read_only"]:
-		control.add_theme_stylebox_override(state, BridgeTheme.public_input(state))
-	if control is OptionButton:
-		control.add_theme_color_override("font_pressed_color", Color("f0f2e9"))
-		control.add_theme_color_override("font_hover_pressed_color", Color("f0f2e9"))
-	if control is SpinBox:
-		var spin := control as SpinBox
-		var field := spin.get_line_edit()
-		for state in ["normal", "focus", "read_only"]:
-			field.add_theme_stylebox_override(state, BridgeTheme.public_input(state))
-		var up := preload("res://assets/ui/public_shell/stepper-up.svg")
-		var down := preload("res://assets/ui/public_shell/stepper-down.svg")
-		for state in ["up", "up_hover", "up_pressed"]: spin.add_theme_icon_override(state, up)
-		for state in ["down", "down_hover", "down_pressed"]: spin.add_theme_icon_override(state, down)
-		spin.add_theme_icon_override("up_disabled", preload("res://assets/ui/public_shell/stepper-up-disabled.svg"))
-		spin.add_theme_icon_override("down_disabled", preload("res://assets/ui/public_shell/stepper-down-disabled.svg"))
-		_settings_spin_editable(spin, spin.editable)
-		for direction in ["up", "down"]:
-			for suffix in ["", "_hovered", "_pressed", "_disabled"]:
-				var frame := StyleBoxFlat.new()
-				frame.bg_color = Color("1b4856") if suffix == "_hovered" else Color("2b5b64") if suffix == "_pressed" else Color("172f3c") if suffix == "_disabled" else Color("123746")
-				frame.border_color = Color("a9d7c9") if suffix == "_hovered" else Color("547b81")
-				frame.set_border_width_all(1)
-				spin.add_theme_stylebox_override(direction + "_background" + suffix, frame)
-
-func _settings_spin_editable(spin: SpinBox, enabled: bool) -> void:
-	spin.editable = enabled
-	spin.add_theme_icon_override("updown", preload("res://assets/ui/public_shell/stepper-pair.svg") if enabled else preload("res://assets/ui/public_shell/stepper-pair-disabled.svg"))
 
 # One UI ownership gate for main Space and the battle viewport's G shortcut.
 func _ui_occupied() -> bool:
@@ -860,7 +825,7 @@ func _setup_growth_panel() -> void:
 	var storage := _settings_group(box, "存档位置", "本机进度保存在此目录；更换目录后再保存")
 	var storage_path_row := _settings_row(storage)
 	var save_path := LineEdit.new()
-	_settings_field(save_path)
+	BridgeTheme.apply_public_input(save_path)
 	save_path.placeholder_text = "存档目录（完整路径）"
 	save_path.text = session.save_files._directory if session.save_files != null else _startup_directory
 	save_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -892,7 +857,7 @@ func _setup_growth_panel() -> void:
 	var preferences := _settings_group(options_column, "运行与显示", "节奏、自动保存与战斗反馈")
 	var speed_row := _settings_row(preferences)
 	var speed_options := OptionButton.new()
-	_settings_field(speed_options)
+	BridgeTheme.apply_public_input(speed_options)
 	for option in session.chrono_speed_options():
 		speed_options.add_item("%s倍速 · 每秒消耗%s时空微粒" % [option.speed, option.cost], int(option.speed))
 		if int(option.speed) == session.current_chrono_speed(): speed_options.select(speed_options.item_count - 1)
@@ -901,7 +866,7 @@ func _setup_growth_panel() -> void:
 	speed_options.custom_minimum_size.x = 330
 	speed_row.add_child(speed_options)
 	var autosave := SpinBox.new()
-	_settings_field(autosave)
+	BridgeTheme.apply_public_input(autosave)
 	autosave.min_value = 0.0
 	autosave.max_value = 86400.0
 	autosave.step = 1.0
@@ -970,7 +935,7 @@ func _setup_growth_panel() -> void:
 			effects.set_pressed_no_signal(_effects_enabled)
 			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var damage_mode := OptionButton.new()
-	_settings_field(damage_mode)
+	BridgeTheme.apply_public_input(damage_mode)
 	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
 	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 	_damage_option = damage_mode
@@ -1006,7 +971,7 @@ func _setup_growth_panel() -> void:
 	var imports := _settings_group(progress_column, "导入存档", "从本机文件预览并确认导入")
 	var import_path_row := _settings_row(imports)
 	var import_path := LineEdit.new()
-	_settings_field(import_path)
+	BridgeTheme.apply_public_input(import_path)
 	import_path.placeholder_text = "要导入的存档文件"
 	import_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	import_path_row.add_child(import_path)

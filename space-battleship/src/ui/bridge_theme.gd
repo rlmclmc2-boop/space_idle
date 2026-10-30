@@ -1,7 +1,18 @@
 extends RefCounted
 const ART := "res://assets/ui/public_shell/"
 const CONTROL_MATERIALS := "res://assets/ui/equipment/materials-20261029/control-materials.png"
+const PUBLIC_STATES := ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]
+const CONTROL_CONTENT_Y := 7
 static var _public_faces: Dictionary = {}
+static var _public_font: FontVariation
+
+static func public_font() -> FontVariation:
+	if _public_font == null:
+		_public_font = FontVariation.new()
+		_public_font.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
+		_public_font.variation_opentype = {"wght": 450}
+		_public_font.variation_embolden = 0.8
+	return _public_font
 
 static func _public_face(role: String) -> Texture2D:
 	if not _public_faces.has(role):
@@ -55,8 +66,8 @@ static func _texture_style(path: String, inset: float, padding: float) -> StyleB
 	style.texture_margin_bottom = inset
 	style.content_margin_left = padding
 	style.content_margin_right = padding
-	style.content_margin_top = 7
-	style.content_margin_bottom = 7
+	style.content_margin_top = CONTROL_CONTENT_Y
+	style.content_margin_bottom = CONTROL_CONTENT_Y
 	return style
 
 static func public_panel() -> StyleBoxTexture:
@@ -74,22 +85,71 @@ static func public_button(state: String, padding: float = 10.0, role: String = "
 	style.edge = Color("e5c784", 0.88) if state == "focus" else Color("b6d3cb", 0.65) if state in ["hover", "hover_pressed"] else Color("577b81", 0.36) if state == "disabled" else Color("baa779", 0.69) if role == "commit" else Color("89a8a7", 0.47)
 	style.content_margin_left = padding
 	style.content_margin_right = padding
-	style.content_margin_top = 7
-	style.content_margin_bottom = 7
+	style.content_margin_top = CONTROL_CONTENT_Y
+	style.content_margin_bottom = CONTROL_CONTENT_Y
 	return style
 
+## The live public control entry point. Settings actions, resource-detail close,
+## and the shell use these same native Button overrides rather than copying a
+## palette or placing a decorative control over the real one.
+static func apply_public_button(button: BaseButton, padding: float = 8.0, role: String = "secondary") -> void:
+	button.add_theme_font_override("font", public_font())
+	if not button.has_theme_font_size_override("font_size"):
+		button.add_theme_font_size_override("font_size", 15)
+	for state in PUBLIC_STATES:
+		button.add_theme_stylebox_override(state, public_button(state, padding, role))
+	button.add_theme_color_override("font_color", Color("f0f2e9"))
+	button.add_theme_color_override("font_hover_color", Color.WHITE)
+	button.add_theme_color_override("font_pressed_color", Color("f0f2e9"))
+	button.add_theme_color_override("font_hover_pressed_color", Color("f0f2e9"))
+	button.add_theme_color_override("font_focus_color", Color("f0f2e9"))
+	button.add_theme_color_override("font_disabled_color", Color("9cb4b4"))
+
+static func apply_route_button(button: Button, selected: bool) -> void:
+	for state in PUBLIC_STATES:
+		button.add_theme_stylebox_override(state, route_button("selected" if selected else state))
+	var ink := Color("173e4c") if selected else Color("f0f2e9")
+	for state in ["font_color", "font_hover_color"]: button.add_theme_color_override(state, ink)
+	for state in ["font_pressed_color", "font_hover_pressed_color"]: button.add_theme_color_override(state, Color("173e4c"))
+	button.add_theme_color_override("font_disabled_color", Color("173e4c") if selected else Color("869b9b"))
+
+static func apply_top_button(button: Button) -> void:
+	for state in PUBLIC_STATES:
+		button.add_theme_stylebox_override(state, top_button(state))
+	button.add_theme_color_override("font_pressed_color", Color("132f3d"))
+	button.add_theme_color_override("font_hover_pressed_color", Color("132f3d"))
+
+static func apply_public_input(control: Control) -> void:
+	for state in PUBLIC_STATES + ["read_only"]:
+		control.add_theme_stylebox_override(state, public_input(state))
+	if control is OptionButton:
+		control.add_theme_color_override("font_pressed_color", Color("f0f2e9"))
+		control.add_theme_color_override("font_hover_pressed_color", Color("f0f2e9"))
+	if control is SpinBox:
+		var spin := control as SpinBox
+		apply_public_input(spin.get_line_edit())
+		var up := preload("res://assets/ui/public_shell/stepper-up.svg")
+		var down := preload("res://assets/ui/public_shell/stepper-down.svg")
+		for state in ["up", "up_hover", "up_pressed"]: spin.add_theme_icon_override(state, up)
+		for state in ["down", "down_hover", "down_pressed"]: spin.add_theme_icon_override(state, down)
+		spin.add_theme_icon_override("up_disabled", preload("res://assets/ui/public_shell/stepper-up-disabled.svg"))
+		spin.add_theme_icon_override("down_disabled", preload("res://assets/ui/public_shell/stepper-down-disabled.svg"))
+		spin.add_theme_icon_override("updown", preload("res://assets/ui/public_shell/stepper-pair.svg") if spin.editable else preload("res://assets/ui/public_shell/stepper-pair-disabled.svg"))
+		for direction in ["up", "down"]:
+			for suffix in ["", "_hovered", "_pressed", "_disabled"]:
+				var frame := StyleBoxFlat.new()
+				frame.bg_color = Color("1b4856") if suffix == "_hovered" else Color("2b5b64") if suffix == "_pressed" else Color("172f3c") if suffix == "_disabled" else Color("123746")
+				frame.border_color = Color("a9d7c9") if suffix == "_hovered" else Color("547b81")
+				frame.set_border_width_all(1)
+				spin.add_theme_stylebox_override(direction + "_background" + suffix, frame)
+
 static func public_check(control: CheckBox) -> void:
-	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
-		control.add_theme_stylebox_override(state, public_button(state, 8))
+	apply_public_button(control)
 	for entry in [["unchecked", "check-off.svg"], ["checked", "check-on.svg"],
 		["unchecked_disabled", "check-off-disabled.svg"], ["checked_disabled", "check-on-disabled.svg"]]:
 		control.add_theme_icon_override(entry[0], load(ART + entry[1]))
-	control.add_theme_color_override("font_color", Color("f0f2e9"))
-	control.add_theme_color_override("font_hover_color", Color.WHITE)
 	control.add_theme_color_override("font_pressed_color", Color("19363d"))
 	control.add_theme_color_override("font_hover_pressed_color", Color("19363d"))
-	control.add_theme_color_override("font_focus_color", Color("f0f2e9"))
-	control.add_theme_color_override("font_disabled_color", Color("9cb4b4"))
 	control.add_theme_constant_override("h_separation", 7)
 
 static func route_button(state: String) -> StyleBoxTexture:
@@ -106,7 +166,7 @@ static func public_input(state: String = "normal") -> StyleBoxTexture:
 static func create() -> Theme:
 	var theme := Theme.new()
 	theme.default_font_size = 15
-	theme.default_font = ThemeDB.fallback_font
+	theme.default_font = public_font()
 	theme.set_color("font_color", "Button", Color("f0f2e9"))
 	theme.set_color("font_hover_color", "Button", Color("ffffff"))
 	theme.set_color("font_pressed_color", "Button", Color("f0f2e9"))
