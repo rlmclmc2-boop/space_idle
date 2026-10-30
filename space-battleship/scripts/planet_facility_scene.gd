@@ -110,11 +110,11 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedWorkshopBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-integrated.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-short-rails.png")
 	body.pixel_size = 0.0031
 	body.position = Vector3(0, 1.38, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = false
+	body.shaded = true
 	body.double_sided = true
 	body.render_priority = 0
 	model.add_child(body)
@@ -134,7 +134,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	carriage.texture = carriage_texture
 	carriage.pixel_size = body.pixel_size
 	carriage.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	carriage.shaded = false
+	carriage.shaded = true
 	carriage.double_sided = true
 	carriage.render_priority = 2
 	gantry.add_child(carriage)
@@ -162,7 +162,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	var arm_pivot := moving["ToolArmSweep"] as Node3D
 	_workshop_arm_base_y = arm_pivot.position.y
 	arm.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	arm.shaded = false
+	arm.shaded = true
 	arm.double_sided = true
 	arm.render_priority = 1
 	arm_pivot.add_child(arm)
@@ -243,11 +243,11 @@ func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedShipyardBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-orbit-integrated.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-orbit-open-root.png")
 	body.pixel_size = 0.0030
 	body.position = Vector3(0, 1.36, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = false
+	body.shaded = true
 	body.double_sided = true
 	model.add_child(body)
 	var crane := Sprite3D.new()
@@ -255,7 +255,7 @@ func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	crane.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-crane.png")
 	crane.pixel_size = body.pixel_size
 	crane.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	crane.shaded = false
+	crane.shaded = true
 	crane.double_sided = true
 	crane.render_priority = 1
 	(moving["CraneSlide"] as Node3D).add_child(crane)
@@ -268,7 +268,7 @@ func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	ring.texture = ring_texture
 	ring.pixel_size = body.pixel_size
 	ring.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	ring.shaded = false
+	ring.shaded = true
 	ring.double_sided = true
 	ring.render_priority = 2
 	(moving["DockCollarSpin"] as Node3D).add_child(ring)

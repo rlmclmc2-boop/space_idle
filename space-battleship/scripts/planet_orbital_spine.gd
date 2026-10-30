@@ -44,7 +44,7 @@ static func socket_position(angle: float, kind: String) -> Vector3:
 	# The refinery upper shell sits inside its real deck node; its old baked
 	# floor is gone. Other facility roots keep their existing R5 pose.
 	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
-	var radial_offset := -0.30 if kind == "refinery" else 0.0
+	var radial_offset := -0.30 if kind == "refinery" else (-0.16 if kind == "equipment" else 0.0)
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
 
 static func refinery_feed_tip() -> Vector3:
@@ -143,7 +143,7 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		Vector2(-0.34, 0.215), Vector2(0.0, 0.23), Vector2(0.34, 0.215),
 		Vector2(0.43, 0.18), Vector2(0.48, 0.11), Vector2(0.50, 0.04),
 	]
-	if kind == "refinery":
+	if kind in ["refinery", "equipment", "shipyard"]:
 		var coarse: Array = profile
 		var dense: Array[Vector2] = []
 		for index in 41:
@@ -157,7 +157,7 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		profile = dense
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var steps := maxi(48, ceili((finish - begin) * (256.0 if kind == "refinery" else 96.0)))
+	var steps := maxi(48, ceili((finish - begin) * (256.0 if kind in ["refinery", "equipment", "shipyard"] else 96.0)))
 	for index in steps:
 		var t0 := float(index) / float(steps)
 		var t1 := float(index + 1) / float(steps)
@@ -193,6 +193,11 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		var foot_width: float = 1.0 - smoothstep(0.30, 0.46, absf(current.x))
 		var inlet: float = (1.0 - smoothstep(0.023, 0.053, distance)) * (1.0 - smoothstep(0.08, 0.15, absf(current.x - 0.04)))
 		height += 0.18 * foot_span * foot_width * (1.0 - inlet) - 0.035 * inlet
+	elif kind == "shipyard":
+		# The original deck rises into the cantilevers' one vertical spine.
+		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
+		var keel_width := 1.0 - smoothstep(0.20, 0.39, absf(current.x + 0.10))
+		height += 0.14 * keel_span * keel_width
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
@@ -260,6 +265,45 @@ func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
 		return
 	if kind == "refinery":
 		_add_refinery_root(parent, angle)
+	elif kind == "equipment":
+		_add_workshop_rails(parent, angle)
+
+func _add_workshop_rails(parent: Node3D, angle: float) -> void:
+	# These two real guides belong to the built workshop section. The camera-
+	# facing gantry supplies only short sockets above its open ring work floor.
+	for offset in [-0.22, 0.22]:
+		_add_deck_guide(parent, angle, float(offset), 0.075, 0.05, _side)
+		_add_deck_guide(parent, angle, float(offset), 0.017, 0.057, _cyan)
+
+func _add_deck_guide(parent: Node3D, angle: float, radial_offset: float, width: float, height: float, material: Material) -> void:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for step in 16:
+		var a := angle + lerpf(-0.16, 0.16, float(step) / 16.0)
+		var b := angle + lerpf(-0.16, 0.16, float(step + 1) / 16.0)
+		var ra := point(a).normalized()
+		var rb := point(b).normalized()
+		var center_a := point(a) + ra * radial_offset + plane_normal() * (0.45 + height)
+		var center_b := point(b) + rb * radial_offset + plane_normal() * (0.45 + height)
+		var left_a := center_a - ra * width * 0.5
+		var left_b := center_b - rb * width * 0.5
+		var right_a := center_a + ra * width * 0.5
+		var right_b := center_b + rb * width * 0.5
+		for vertex in [left_a, left_b, right_a, right_a, left_b, right_b]:
+			surface.set_normal(plane_normal())
+			surface.add_vertex(vertex)
+		if width > 0.04:
+			var drop := plane_normal() * (height - 0.005)
+			for face in [[left_a, left_b, -ra], [right_a, right_b, ra]]:
+				var edge_a: Vector3 = face[0]
+				var edge_b: Vector3 = face[1]
+				for vertex in [edge_a, edge_b, edge_a - drop, edge_a - drop, edge_b, edge_b - drop]:
+					surface.set_normal(face[2])
+					surface.add_vertex(vertex)
+	var rail := MeshInstance3D.new()
+	rail.mesh = surface.commit()
+	rail.material_override = material
+	parent.add_child(rail)
 
 func _add_refinery_root(parent: Node3D, angle: float) -> void:
 	# The feed trough and both load cheeks are one ring-owned receiver. Its

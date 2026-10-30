@@ -1,0 +1,28 @@
+ImageGen source chain for the R17 workshop and shipyard root candidate, 2026-10-30.
+All assets are original 1536x1024 RGBA output copies, without pixel editing.
+
+Workshop pass 1 input: workshop-orbit-integrated.png
+Input SHA-256: 6d52e227a9029002da83bf52645ec54553e2f8db60d86bb0271b0d95d888e49c
+Generated: /workspace/generated_images/exec-94f746de-17c0-4501-8a2f-424f66c9eb74.png
+Copy: workshop-orbit-open-bay.png
+Copy SHA-256: f29d82ed1dec6feacf07762142c1b89a92cf099eed52165b9c8e29b220550554
+Prompt:
+Edit this isolated transparent 1536x1024 game sprite of one orbital equipment workshop. Preserve the upper gantry, two dark blue vertical support columns, illuminated open work bay, upper ivory wall and side control housings, camera view, colors, scale and composition. REMOVE the baked freestanding lower perimeter plinth and the large painted floor slab occupying the bottom 35 percent. Let the workshop remain as an OPEN work bay: two narrow dark blue and ivory structural guide rails should project down from the left and right gantry feet toward the bottom center, with their lower ends terminating cleanly in exposed physical mounting sockets around image y=790. The space between and below these two guide rails should be alpha transparent so the actual 3D orbital ring deck can form the work floor and carry the rails. Keep the existing lamps and workshop structure. Do not draw a separate base platform, complete ring, planet, extra building, extra rail pair, or background; true transparent outside the machine. Crisp R5 warm ivory and deep teal game illustration.
+
+Workshop pass 2 input: workshop-orbit-open-bay.png
+Generated: /workspace/generated_images/exec-222686ab-016b-4ca4-85b3-43ba677cf519.png
+Runtime copy: workshop-orbit-short-rails.png
+Runtime SHA-256: 60c03c8f2fdfc26f9d4b546f5152ae8ff80db19ab02a95a0d986144fa9c72110
+Prompt:
+Precisely edit this transparent 1536x1024 open orbital workshop sprite. Keep the entire upper gantry, both tall support columns, side housings, lamps, work-bay walls, ivory/navy/cyan colors and perspective nearly unchanged. Shorten BOTH long forward guide rails dramatically: they must stop as compact paired mounting sockets immediately in front of the gantry feet, no farther down than image y=680. Delete every pixel of their former long protruding rail extensions below y=700, leaving true alpha transparency and a wide open center/bottom so a separate real 3D rotating orbital deck can supply the rail length and workshop floor. There must be no detached floor slab, perimeter platform or shadow. No new objects, extra rail pair, ring, planet or background. Preserve the approved broad open gantry main silhouette.
+
+Shipyard input: shipyard-orbit-integrated.png
+Input SHA-256: 2d9ba2a33045929af4634976738020fe11d845ea8b29d49700895ed2b13e92d6
+Generated: /workspace/generated_images/exec-b4668b8d-c192-4560-8beb-4a51a362185c.png
+Runtime copy: shipyard-orbit-open-root.png
+Runtime SHA-256: 8c85b4a2499025c7598d005c58caac9bd9a0f167c5440b2ac9442e8b3c453c53
+Prompt:
+Edit this transparent 1536x1024 isolated game sprite of a two-level orbital shipyard. Preserve the approved R5 main silhouette, single tall ivory and deep teal spine at LEFT, exactly two long open cantilever berths extending RIGHT, amber lights, docking opening, perspective, colors and overall scale. Remove only the baked independent lower black-and-blue footing/platform beneath the left vertical spine, around image x=250..620 and y=760..930. Let the central load-bearing vertical spine terminate in two short tapered warm ivory and deep teal structural mounting collars at the bottom around y=790, with a clearly open notch between them for the actual rotating 3D orbital ring deck to enter. Retain the upper and lower cantilever root attachment to this same main spine. True alpha below and outside the collars; no ground shadow. Do not add extra columns, fins, ring, planet, dock platforms or background. Do not shorten either berth. This is an artwork edit, not a new scene.
+
+The prompts state intent. ImageGen redrew some lower housings, so the outputs
+preserve the approved broad silhouettes and functions rather than exact pixels.
