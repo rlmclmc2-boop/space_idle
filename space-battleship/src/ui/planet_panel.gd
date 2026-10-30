@@ -94,6 +94,8 @@ func _ready() -> void:
 		button.toggle_mode = true
 		add_child(button)
 	_paint_button(_task_button, Color("264b58"), Color("31616b"), Color("e6d5ac"), Color("b39a68"), Color("f6efdc"))
+	for button in [_crew_button, _facility_button]:
+		_paint_button(button, Color("173847"), Color("285464"), Color("e4dcc6"), Color("6f9ba0"), Color("f0ead8"))
 	_paint_button(world_planet_picker, Color("e7e4d6"), Color("f7f1df"), Color("d9e8e0"), Color("78999c"), Color("203f4c"))
 	_task_button.pressed.connect(func(): _toggle_section("exploration"))
 	_crew_button.pressed.connect(func(): _toggle_section("crew"))
@@ -135,22 +137,25 @@ func _ready() -> void:
 	status_plate.content_margin_left = 11
 	status_plate.content_margin_top = 4
 	status_plate.content_margin_bottom = 4
+	status_plate.border_width_bottom = 2
 	_task_line.add_theme_stylebox_override("normal", status_plate)
 	add_child(_progress)
 	_progress.show_percentage = false
 	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_drawer)
 	_drawer.add_child(_drawer_box)
+	_drawer.draw.connect(_draw_drawer_trim)
 	_drawer_box.add_theme_constant_override("separation", 10)
 	var header := HBoxContainer.new()
 	_drawer_box.add_child(header)
 	_drawer_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_drawer_title.add_theme_font_size_override("font_size", 20)
-	_drawer_title.add_theme_color_override("font_color", Color("173747"))
+	_drawer_title.add_theme_color_override("font_color", Color("f0ead9"))
 	header.add_child(_drawer_title)
 	var close := Button.new()
 	close.text = "收起"
 	close.pressed.connect(func(): _toggle_section(_open_section))
+	_paint_button(close, Color("254a55"), Color("31616b"), Color("d8ccb1"), Color("9cb3ab"), Color("f0ead8"))
 	header.add_child(close)
 	_drawer_box.add_child(_drawer_body)
 	_drawer.hide()
@@ -180,10 +185,13 @@ func _theme() -> Theme:
 		for state in ["font_pressed_color", "font_hover_pressed_color"]:
 			result.set_color(state, type, Color("173747"))
 		result.set_color("font_disabled_color", type, Color("95a7a8"))
-	var panel := _skin(Color("e8e4d5"), Color("426878"), 2, 8)
+	var panel := _skin(Color("e6e1d1"), Color("294c59"), 3, 4)
 	panel.set_content_margin_all(13)
-	panel.shadow_color = Color("061824", 0.4)
-	panel.shadow_size = 5
+	panel.border_width_top = 2
+	panel.border_width_bottom = 5
+	panel.shadow_color = Color("061824", 0.58)
+	panel.shadow_size = 8
+	panel.shadow_offset = Vector2(3, 5)
 	result.set_stylebox("panel", "PanelContainer", panel)
 	var popup := StyleBoxFlat.new()
 	popup.bg_color = Color("143746")
@@ -210,14 +218,19 @@ func _skin(fill: Color, edge: Color, border: int = 1, radius: int = 6) -> StyleB
 	style.bg_color = fill
 	style.border_color = edge
 	style.set_border_width_all(border)
-	style.set_corner_radius_all(radius)
+	style.set_corner_radius_all(mini(radius, 4))
 	style.set_content_margin_all(8)
 	return style
 
 func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color) -> void:
 	for state in ["normal", "hover", "pressed"]:
 		var fill := normal if state == "normal" else hover if state == "hover" else pressed
-		button.add_theme_stylebox_override(state, _skin(fill, edge, 2 if state == "pressed" else 1))
+		var style := _skin(fill, edge, 2 if state == "pressed" else 1)
+		style.border_width_bottom = 3 if state != "pressed" else 1
+		style.shadow_color = Color("061823", 0.46 if state != "pressed" else 0.18)
+		style.shadow_size = 3 if state != "pressed" else 1
+		style.shadow_offset = Vector2(0, 2 if state != "pressed" else 1)
+		button.add_theme_stylebox_override(state, style)
 	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c"), 2))
 	button.add_theme_stylebox_override("disabled", _skin(Color("243743"), Color("4d6269")))
 	for state in ["font_color", "font_hover_color", "font_focus_color"]:
@@ -225,11 +238,48 @@ func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, 
 	for state in ["font_pressed_color", "font_hover_pressed_color"]:
 		button.add_theme_color_override(state, Color("173747"))
 	button.add_theme_color_override("font_disabled_color", Color("95a7a8"))
+	button.set_meta("bevel_gold", normal.r > 0.7 and normal.g > 0.45 and normal.b < 0.55)
+	if not button.has_meta("bevel_draw_connected"):
+		button.set_meta("bevel_draw_connected", true)
+		button.draw.connect(_draw_button_bevel.bind(button))
+
+func _draw_button_bevel(button: Button) -> void:
+	if button.size.x < 24 or button.size.y < 18: return
+	var gold := bool(button.get_meta("bevel_gold", false))
+	var light := Color("fff1c6", 0.76) if gold or button.button_pressed else Color("afd0c7", 0.56)
+	var dark := Color("725538", 0.55) if gold or button.button_pressed else Color("061d29", 0.68)
+	var sheen := Color("fff6df", 0.22) if gold or button.button_pressed else Color("b4dcda", 0.16)
+	var shade := Color("715336", 0.12) if gold or button.button_pressed else Color("041722", 0.19)
+	if button.disabled:
+		light.a *= 0.28
+		dark.a *= 0.28
+		sheen.a *= 0.25
+		shade.a *= 0.25
+	button.draw_polygon(
+		PackedVector2Array([Vector2(4, 5), Vector2(button.size.x - 4, 5), Vector2(button.size.x - 4, button.size.y - 6), Vector2(4, button.size.y - 6)]),
+		PackedColorArray([sheen, sheen, shade, shade]))
+	button.draw_line(Vector2(8, 4), Vector2(button.size.x - 8, 4), light, 1.0)
+	button.draw_line(Vector2(8, button.size.y - 4), Vector2(button.size.x - 8, button.size.y - 4), dark, 1.0)
+	button.draw_line(Vector2(4, 9), Vector2(4, button.size.y - 9), light.darkened(0.22), 1.0)
+
+func _draw_drawer_trim() -> void:
+	var width := _drawer.size.x
+	var height := _drawer.size.y
+	_drawer.draw_polygon(
+		PackedVector2Array([Vector2(5, 51), Vector2(width - 5, 51), Vector2(width - 5, height - 8), Vector2(5, height - 8)]),
+		PackedColorArray([Color("fff9e8", 0.46), Color("fff9e8", 0.46), Color("aabcb8", 0.24), Color("aabcb8", 0.24)]))
+	_drawer.draw_rect(Rect2(5, 5, width - 10, 45), Color("193c49"))
+	_drawer.draw_line(Vector2(13, 6), Vector2(width - 13, 6), Color("bdd2c7", 0.83), 1.0)
+	_drawer.draw_line(Vector2(5, 50), Vector2(width - 5, 50), Color("876f4e", 0.85), 2.0)
+	_drawer.draw_line(Vector2(13, height - 6), Vector2(width - 13, height - 6), Color("647f83", 0.76), 1.0)
 
 func _layout() -> void:
 	if _visual == null: return
-	_visual.position = Vector2(0, 90)
-	_visual.size = Vector2(size.x, maxf(500, size.y - 90))
+	# Keep the complete scene visible beside an open detail drawer. The full
+	# composition returns when the drawer closes; no facility is masked by it.
+	var drawer_open := not _open_section.is_empty()
+	_visual.position = Vector2(292, 90) if drawer_open else Vector2(0, 90)
+	_visual.size = Vector2(maxf(400, size.x - 292), maxf(500, size.y - 90)) if drawer_open else Vector2(size.x, maxf(500, size.y - 90))
 	_task_button.position = Vector2(258, 112)
 	_task_button.size = Vector2(226, 44)
 	_crew_button.position = Vector2(148, 112)
@@ -238,14 +288,14 @@ func _layout() -> void:
 	_facility_button.size = Vector2(116, 44)
 	world_planet_picker.position = Vector2(494, 112)
 	world_planet_picker.size = Vector2(176, 44)
-	_stop_button.position = Vector2(22, 168)
+	_stop_button.position = Vector2(390, 168)
 	_stop_button.size = Vector2(190, 42)
-	_cancel_button.position = Vector2(222, 168)
+	_cancel_button.position = Vector2(590 if _stop_button.visible else 390, 168)
 	_cancel_button.size = Vector2(190, 42)
 	_progress.position = Vector2(258, 158)
 	_progress.size = Vector2(226, 4)
-	_task_line.position = Vector2(22, 216)
-	_task_line.size = Vector2(340, 28)
+	_task_line.position = Vector2(22, 168)
+	_task_line.size = Vector2(340, 46 if bool(_snapshot.get("running", false)) else 28)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
 	_feedback.position = Vector2(22, size.y - 80)
 	_feedback.size = Vector2(500, 70)
@@ -259,6 +309,15 @@ func _layout() -> void:
 	queue_redraw()
 
 func _draw() -> void:
+	if not _open_section.is_empty():
+		# Extend the scene's quiet blue falloff behind the existing drawer so
+		# resizing its art viewport does not leave a hard vertical void.
+		for index in 24:
+			var top := float(index) / 24.0
+			var bottom := float(index + 1) / 24.0
+			var tint := Color("061b28").lerp(Color("0b2634"), minf(top * 1.5, 1.0))
+			if top > 0.67: tint = tint.lerp(Color("09212f"), (top - 0.67) / 0.33)
+			draw_rect(Rect2(0, 90 + (size.y - 90) * top, 292, (size.y - 90) * (bottom - top) + 1), tint)
 	if not _shared_host_enabled:
 		draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
 		draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
@@ -468,13 +527,19 @@ func _update_task() -> void:
 	_progress.value = fraction * 100.0
 	_task_button.text = ("已暂停" if paused else "探索中") + " · 本次 %.0f%%" % (fraction * 100) if running else "探索 · 未派遣"
 	_task_line.text = "探索度 %d · 本次 %.1f / %.1f 秒\n自动探索：%s" % [int(_snapshot.get("exploration", 0)), elapsed, duration, "开启" if _snapshot.get("automatic", false) else "关闭"] if running else "探索度 %d · 探索未运行" % int(_snapshot.get("exploration", 0))
-	_stop_button.disabled = not running or not _snapshot.get("automatic", false)
-	_cancel_button.disabled = not running
+	var show_stop := running and bool(_snapshot.get("automatic", false))
+	var actions_changed := _stop_button.visible != show_stop or _cancel_button.visible != running
+	_stop_button.visible = show_stop
+	_cancel_button.visible = running
+	var auto_changed := false
 	if is_instance_valid(_auto_button):
-		_auto_button.visible = not _snapshot.get("automatic", false)
+		var show_auto := not bool(_snapshot.get("automatic", false))
+		auto_changed = _auto_button.visible != show_auto
+		_auto_button.visible = show_auto
 		_auto_button.disabled = _snapshot.is_empty()
+	if actions_changed or auto_changed: _layout()
 	if _open_section == "exploration" and is_instance_valid(_detail_text):
-		_detail_text.text = "%s\n%s\n探索者 %d / 1" % [_snapshot.get("row", {}).get("name", "无星球"), _task_line.text, _crew_views.explorers.get(_selected_id, []).size()]
+		_detail_text.text = "%s\n探索者 %d / 1" % [_snapshot.get("row", {}).get("name", "无星球"), _crew_views.explorers.get(_selected_id, []).size()]
 
 func _toggle_section(section: String) -> void:
 	_open_section = "" if _open_section == section else section
@@ -566,6 +631,15 @@ func _build_facility_detail() -> void:
 		_caption(_drawer_body, ("领取后生效：\n" if fact.state != "built" else "已生效：\n") + effect)
 		if fact.state == "built" and fact.type in ["refinery", "equipment"]:
 			_factor_text = _caption(_drawer_body, "")
+			_factor_text.custom_minimum_size.y = 42
+			_factor_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			_factor_text.add_theme_font_size_override("font_size", 19)
+			_factor_text.add_theme_color_override("font_color", Color("f0d49a"))
+			var factor_plate := _skin(Color("193a47"), Color("a88c59"), 1, 3)
+			factor_plate.border_width_left = 3
+			factor_plate.border_width_bottom = 2
+			factor_plate.content_margin_left = 10
+			_factor_text.add_theme_stylebox_override("normal", factor_plate)
 			_update_factor_text(fact.source_factor)
 		if fact.type == "shipyard" and fact.state == "built":
 			_reforge_button = Button.new()
@@ -594,7 +668,7 @@ func _update_factor_text(factor) -> void:
 	if not is_instance_valid(_factor_text): return
 	_factor_text.visible = factor != null
 	if factor != null:
-		_factor_text.text = "本设施当前因子 ×" + preload("res://src/ui/player_text.gd").number(str(factor))
+		_factor_text.text = "设施因子  ×" + preload("res://src/ui/player_text.gd").number(str(factor))
 
 func _build_crew_detail() -> void:
 	if _crew == null or not _coordinate.is_valid():
