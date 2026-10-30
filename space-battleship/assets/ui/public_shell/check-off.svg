@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
+  <defs>
+    <linearGradient id="rim" x2="0" y2="1"><stop stop-color="#b8c7bf"/><stop offset=".45" stop-color="#5a7a80"/><stop offset="1" stop-color="#173342"/></linearGradient>
+    <linearGradient id="well" x2="0" y2="1"><stop stop-color="#0d2b38"/><stop offset="1" stop-color="#245061"/></linearGradient>
+  </defs>
+  <path d="M2 5 5 2h12l3 3v12l-3 3H5l-3-3Z" fill="#0a202c" stroke="#0a2330"/>
+  <path d="M3 5.5 5.5 3h11L19 5.5v11L16.5 19h-11L3 16.5Z" fill="url(#rim)"/>
+  <path d="M5 7 7 5h8l2 2v8l-2 2H7l-2-2Z" fill="url(#well)" stroke="#5d8588" stroke-width=".6"/>
+  <path d="M6 7.5 7.5 6h7" fill="none" stroke="#c3ddd0" stroke-opacity=".6" stroke-width=".8"/>
+</svg>

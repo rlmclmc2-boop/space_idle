@@ -41,7 +41,11 @@ def card(y,category,index,name,path,level,current,after,mode,purchase,costs,reas
     if not empty:s+=image(path,358,y+10,44,50)
     s+=box(410,y+6,216,26,'#dae3da','#91aaa2',4)
     s+=text(418,y+24,('武器' if category=='weapon' else '防御')+str(index+1)+' · '+name,16,n['INK'],600)
-    s+=text(614,y+22,'⌄',18,n['TEAL'],500,'middle')+text(642,y+24,'Lv.'+level,14,n['MUTED'],500)
+    s+=text(614,y+22,'⌄',18,n['TEAL'],500,'middle')
+    if empty:
+        row_records.append({'plate':PLATE,'slot':category+':'+str(index),'card_rect':[340,y+2,432,90],'empty':True,'visible_controls':['equipment_choice'],'fee_cells':[],'purchase_enabled':False,'admission_reason':'No installed object; Owner slot-level rule unchanged'})
+        return s
+    s+=text(642,y+24,'Lv.'+level,14,n['MUTED'],500)
     s+=compare(714,y+6,64)
     s+=text(410,y+50,'攻击力' if category=='weapon' else '容量',15,'#3e5d67',500)
     x=459
