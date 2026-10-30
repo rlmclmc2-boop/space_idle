@@ -1,0 +1,2119 @@
+{
+  "failures": [],
+  "fixture": "public restore of availability,Lv19 weapon,finite wallet,current shield with no cooldown; one actual GUI install armour; no purchase or full transaction suite",
+  "installation": {
+    "after": {
+      "candidate": "armour",
+      "comparison": {
+        "affordable": true,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "paid_level": 1,
+          "primary": "1e3",
+          "properties": {
+            "damage_type": 2
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "armour",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "paid_level": 1,
+          "primary": "1e3",
+          "properties": {
+            "damage_type": 2
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "defence:0",
+        "switch_admission": {
+          "ok": false,
+          "reason": "NoChange"
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "armour",
+          "paid_level": 2,
+          "primary": "1.2e3",
+          "properties": {
+            "damage_type": 2
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "game_time": 0.0,
+      "maximum": false,
+      "native": {
+        "armour": "0e0",
+        "armour_fraction": 0.0,
+        "attacks": 0,
+        "incoming": 0,
+        "max_armour": "1e3",
+        "max_shield": "0e0",
+        "shield": "0e0",
+        "shield_fraction": 0.0
+      },
+      "pause_reasons": {
+        "user": true
+      },
+      "quantity": 1,
+      "selected_slot": "defence:0",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 19,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 19,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 10.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 10.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "5",
+          "m": "1"
+        },
+        "2": {
+          "e": "3",
+          "m": "1"
+        },
+        "degenerate_matter": {
+          "e": "3",
+          "m": "1"
+        }
+      },
+      "wallet_text": [
+        {
+          "id": "1",
+          "text": "铁：10万"
+        },
+        {
+          "id": "2",
+          "text": "铀：1,000"
+        },
+        {
+          "id": "degenerate_matter",
+          "text": "资源：1,000"
+        }
+      ]
+    },
+    "before": {
+      "candidate": "armour",
+      "comparison": {
+        "affordable": true,
+        "candidate": {
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "paid_level": 1,
+          "primary": "1e3",
+          "properties": {
+            "damage_type": 2
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "candidate_id": "armour",
+        "current": {
+          "effective_level": 1,
+          "equipment_id": "shield",
+          "paid_level": 1,
+          "primary": "7.5e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "dormant": false,
+        "ok": true,
+        "payment_reason": "",
+        "quote": {
+          "costs": {
+            "1": {
+              "e": "1",
+              "m": "6.5"
+            }
+          },
+          "count": 1,
+          "extreme": false,
+          "ok": true
+        },
+        "scope": "charged_base",
+        "slot_id": "defence:0",
+        "switch_admission": {
+          "ok": true
+        },
+        "upgrade": {
+          "effective_level": 2,
+          "equipment_id": "shield",
+          "paid_level": 2,
+          "primary": "9e2",
+          "properties": {
+            "damage_type": 1,
+            "recovery_delay_seconds": 2.0,
+            "recovery_rate": 0.3
+          },
+          "reason": "",
+          "status": "known"
+        },
+        "upgrade_count": 1
+      },
+      "game_time": 0.0,
+      "maximum": false,
+      "native": {
+        "armour": "0e0",
+        "armour_fraction": 0.0,
+        "attacks": 0,
+        "incoming": 0,
+        "max_armour": "0e0",
+        "max_shield": "7.5e2",
+        "shield": "0e0",
+        "shield_fraction": 0.0
+      },
+      "pause_reasons": {
+        "user": true
+      },
+      "quantity": 1,
+      "selected_slot": "defence:0",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 19,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 19,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "shield",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "5",
+          "m": "1"
+        },
+        "2": {
+          "e": "3",
+          "m": "1"
+        },
+        "degenerate_matter": {
+          "e": "3",
+          "m": "1"
+        }
+      },
+      "wallet_text": [
+        {
+          "id": "1",
+          "text": "铁：10万"
+        },
+        {
+          "id": "2",
+          "text": "铀：1,000"
+        },
+        {
+          "id": "degenerate_matter",
+          "text": "资源：1,000"
+        }
+      ]
+    },
+    "result": {
+      "ok": true
+    }
+  },
+  "source_commit": "304883fbde448cd32fa288ae97967e43100209bc",
+  "stages": [
+    {
+      "candidate_nodes": [
+        "laser",
+        "missile",
+        "cannon",
+        "longLaser"
+      ],
+      "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+      "candidate_status_texts": [
+        "已装备",
+        "",
+        "",
+        ""
+      ],
+      "comparison_headers": [
+        "现装 · 1.5秒",
+        "替换后 · 1.5秒"
+      ],
+      "cooldown_text": "",
+      "current_title": "武器1 · 脉冲炮",
+      "fee_caption": "升级费用",
+      "install_disabled": true,
+      "install_text": "已装备",
+      "install_tooltip": "没有可购买等级",
+      "install_visible": false,
+      "name": "00-fresh-current",
+      "presentation_counts": {
+        "balance_dependency_changes": 0,
+        "candidates_updated": 4,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 1,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 0,
+        "equipment_option_reads": 1,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 1,
+        "scene_draws": 1,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 1,
+        "slot_styles_updated": 2,
+        "slots_updated": 2,
+        "wallet_refreshes": 1
+      },
+      "purchase_disabled": true,
+      "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "paid_level": 1,
+            "primary": "3.5e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "laser",
+            "paid_level": 2,
+            "primary": "4.2e2",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {},
+        "wallet_text": []
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(68.0, 120.0)",
+          "(68.0, 120.0)",
+          "(68.0, 120.0)",
+          "(68.0, 120.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+        "comparison_visible": false,
+        "fee_cells_visible": 1,
+        "fee_visible": false,
+        "gap": 12.0,
+        "main_current": "350",
+        "main_next": "420",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 630.0), S: (776.0, 266.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "laser",
+        "missile",
+        "cannon",
+        "longLaser"
+      ],
+      "candidate_rect": "[P: (476.0, 693.0), S: (296.0, 120.0)]",
+      "candidate_status_texts": [
+        "已装备",
+        "",
+        "",
+        ""
+      ],
+      "comparison_headers": [
+        "现装 · 1.5秒",
+        "替换后 · 1.5秒"
+      ],
+      "cooldown_text": "",
+      "current_title": "武器1 · 脉冲炮",
+      "fee_caption": "升级费用",
+      "install_disabled": true,
+      "install_text": "已装备",
+      "install_tooltip": "没有可购买等级",
+      "install_visible": false,
+      "name": "01-weapon-ready",
+      "presentation_counts": {
+        "balance_dependency_changes": 1,
+        "candidates_updated": 7,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 2,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 1,
+        "equipment_option_reads": 2,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 2,
+        "scene_draws": 1,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 2,
+        "slot_styles_updated": 2,
+        "slots_updated": 3,
+        "wallet_refreshes": 2
+      },
+      "purchase_disabled": false,
+      "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "laser",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "laser",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(68.0, 120.0)",
+          "(68.0, 120.0)",
+          "(68.0, 120.0)",
+          "(68.0, 120.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 693.0), S: (296.0, 120.0)]",
+        "comparison_visible": false,
+        "fee_cells_visible": 2,
+        "fee_visible": true,
+        "gap": 12.0,
+        "main_current": "9,300",
+        "main_next": "1.76万",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "laser",
+        "missile",
+        "cannon",
+        "longLaser"
+      ],
+      "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+      "candidate_status_texts": [
+        "已装备",
+        "",
+        "",
+        ""
+      ],
+      "comparison_headers": [
+        "现装 · 1.5秒",
+        "替换后 · 2.4秒"
+      ],
+      "cooldown_text": "",
+      "current_title": "武器1 · 脉冲炮",
+      "fee_caption": "升级费用",
+      "install_disabled": false,
+      "install_text": "安装导弹",
+      "install_tooltip": "",
+      "install_visible": true,
+      "name": "02-weapon-replacement-ready",
+      "presentation_counts": {
+        "balance_dependency_changes": 1,
+        "candidates_updated": 11,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 3,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 1,
+        "equipment_option_reads": 2,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 2,
+        "scene_draws": 1,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 2,
+        "slot_styles_updated": 2,
+        "slots_updated": 3,
+        "wallet_refreshes": 3
+      },
+      "purchase_disabled": false,
+      "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "missile",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "missile",
+            "paid_level": 19,
+            "primary": "4.5e3",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "missile",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": true
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(68.0, 100.0)",
+          "(68.0, 100.0)",
+          "(68.0, 100.0)",
+          "(68.0, 100.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+        "comparison_visible": true,
+        "fee_cells_visible": 2,
+        "fee_visible": true,
+        "gap": 12.0,
+        "main_current": "9,300",
+        "main_next": "1.76万",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (36.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "laser",
+        "missile",
+        "cannon",
+        "longLaser"
+      ],
+      "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+      "candidate_status_texts": [
+        "已装备",
+        "",
+        "",
+        ""
+      ],
+      "comparison_headers": [
+        "现装 · 1.5秒",
+        "替换后 · 2.4秒"
+      ],
+      "cooldown_text": "",
+      "current_title": "武器1 · 脉冲炮",
+      "fee_caption": "升级费用",
+      "install_disabled": false,
+      "install_text": "安装导弹",
+      "install_tooltip": "",
+      "install_visible": true,
+      "name": "03-weapon-disabled",
+      "presentation_counts": {
+        "balance_dependency_changes": 2,
+        "candidates_updated": 11,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 4,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 2,
+        "equipment_option_reads": 2,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 2,
+        "scene_draws": 1,
+        "scene_redraw_requests": 1,
+        "slot_fact_reads": 2,
+        "slot_styles_updated": 2,
+        "slots_updated": 3,
+        "wallet_refreshes": 4
+      },
+      "purchase_disabled": true,
+      "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "missile",
+        "comparison": {
+          "affordable": false,
+          "candidate": {
+            "effective_level": 19,
+            "equipment_id": "missile",
+            "paid_level": 19,
+            "primary": "4.5e3",
+            "properties": {
+              "damage_type": 2,
+              "interval_seconds": 2.4,
+              "salvo_count": 4
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "missile",
+          "current": {
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "paid_level": 19,
+            "primary": "9.3e3",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "InsufficientResources",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "weapon:0",
+          "switch_admission": {
+            "ok": true
+          },
+          "upgrade": {
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "paid_level": 20,
+            "primary": "1.76e4",
+            "properties": {
+              "damage_type": 1,
+              "interval_seconds": 1.5
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "1e3",
+          "armour_fraction": 1.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "0",
+            "m": "0"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "0",
+            "m": "0"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：0"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：0"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(68.0, 100.0)",
+          "(68.0, 100.0)",
+          "(68.0, 100.0)",
+          "(68.0, 100.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+        "comparison_visible": true,
+        "fee_cells_visible": 2,
+        "fee_visible": false,
+        "gap": 12.0,
+        "main_current": "9,300",
+        "main_next": "1.76万",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (36.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "armour",
+        "shield"
+      ],
+      "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+      "candidate_status_texts": [
+        "",
+        "已装备"
+      ],
+      "comparison_headers": [
+        "现装",
+        "替换后"
+      ],
+      "cooldown_text": "",
+      "current_title": "防御1 · 护盾",
+      "fee_caption": "升级费用",
+      "install_disabled": true,
+      "install_text": "已装备",
+      "install_tooltip": "没有可购买等级",
+      "install_visible": false,
+      "name": "04-shield-current",
+      "presentation_counts": {
+        "balance_dependency_changes": 3,
+        "candidates_updated": 13,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 6,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "equipment_option_reads": 4,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 4,
+        "scene_draws": 3,
+        "scene_redraw_requests": 3,
+        "slot_fact_reads": 4,
+        "slot_styles_updated": 4,
+        "slots_updated": 6,
+        "wallet_refreshes": 6
+      },
+      "purchase_disabled": false,
+      "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "shield",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "shield",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "shield",
+            "paid_level": 2,
+            "primary": "9e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "0e0",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(144.0, 120.0)",
+          "(144.0, 120.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+        "comparison_visible": false,
+        "fee_cells_visible": 1,
+        "fee_visible": true,
+        "gap": 12.0,
+        "main_current": "750",
+        "main_next": "900",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 630.0), S: (776.0, 266.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "armour",
+        "shield"
+      ],
+      "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+      "candidate_status_texts": [
+        "",
+        "已装备"
+      ],
+      "comparison_headers": [
+        "现装",
+        "替换后"
+      ],
+      "cooldown_text": "",
+      "current_title": "防御1 · 护盾",
+      "fee_caption": "升级费用",
+      "install_disabled": false,
+      "install_text": "安装装甲",
+      "install_tooltip": "",
+      "install_visible": true,
+      "name": "05-armour-replacement-ready",
+      "presentation_counts": {
+        "balance_dependency_changes": 3,
+        "candidates_updated": 15,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 7,
+        "cooldown_fact_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "equipment_option_reads": 4,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 4,
+        "scene_draws": 3,
+        "scene_redraw_requests": 3,
+        "slot_fact_reads": 4,
+        "slot_styles_updated": 4,
+        "slots_updated": 6,
+        "wallet_refreshes": 7
+      },
+      "purchase_disabled": false,
+      "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "armour",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "paid_level": 1,
+            "primary": "1e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "armour",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:0",
+          "switch_admission": {
+            "ok": true
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "shield",
+            "paid_level": 2,
+            "primary": "9e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "0e0",
+          "max_shield": "7.5e2",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(144.0, 100.0)",
+          "(144.0, 100.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+        "comparison_visible": true,
+        "fee_cells_visible": 1,
+        "fee_visible": true,
+        "gap": 12.0,
+        "main_current": "750",
+        "main_next": "900",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (36.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "armour",
+        "shield"
+      ],
+      "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+      "candidate_status_texts": [
+        "已装备",
+        ""
+      ],
+      "comparison_headers": [
+        "现装",
+        "替换后"
+      ],
+      "cooldown_text": "换装冷却 10.0秒",
+      "current_title": "防御1 · 装甲",
+      "fee_caption": "升级费用",
+      "install_disabled": true,
+      "install_text": "已装备",
+      "install_tooltip": "没有可购买等级",
+      "install_visible": false,
+      "name": "06-armour-installed",
+      "presentation_counts": {
+        "balance_dependency_changes": 3,
+        "candidates_updated": 17,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 8,
+        "cooldown_fact_reads": 2,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "equipment_option_reads": 5,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 5,
+        "scene_draws": 4,
+        "scene_redraw_requests": 4,
+        "slot_fact_reads": 5,
+        "slot_styles_updated": 4,
+        "slots_updated": 7,
+        "wallet_refreshes": 8
+      },
+      "purchase_disabled": false,
+      "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "armour",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "paid_level": 1,
+            "primary": "1e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "armour",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "paid_level": 1,
+            "primary": "1e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "NoChange"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "armour",
+            "paid_level": 2,
+            "primary": "1.2e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(144.0, 120.0)",
+          "(144.0, 120.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+        "comparison_visible": false,
+        "fee_cells_visible": 1,
+        "fee_visible": true,
+        "gap": 12.0,
+        "main_current": "1,000",
+        "main_next": "1,200",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 630.0), S: (776.0, 266.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "armour",
+        "shield"
+      ],
+      "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+      "candidate_status_texts": [
+        "已装备",
+        ""
+      ],
+      "comparison_headers": [
+        "现装",
+        "替换后"
+      ],
+      "cooldown_text": "换装冷却 10.0秒",
+      "current_title": "防御1 · 装甲",
+      "fee_caption": "升级费用",
+      "install_disabled": true,
+      "install_text": "安装护盾",
+      "install_tooltip": "",
+      "install_visible": true,
+      "name": "07-shield-replacement-cooldown",
+      "presentation_counts": {
+        "balance_dependency_changes": 3,
+        "candidates_updated": 19,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 9,
+        "cooldown_fact_reads": 4,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "equipment_option_reads": 5,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 5,
+        "scene_draws": 4,
+        "scene_redraw_requests": 4,
+        "slot_fact_reads": 5,
+        "slot_styles_updated": 4,
+        "slots_updated": 7,
+        "wallet_refreshes": 9
+      },
+      "purchase_disabled": false,
+      "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "shield",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "shield",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "paid_level": 1,
+            "primary": "1e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "EquipmentSwitchLocked"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "armour",
+            "paid_level": 2,
+            "primary": "1.2e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(144.0, 100.0)",
+          "(144.0, 100.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+        "comparison_visible": true,
+        "fee_cells_visible": 1,
+        "fee_visible": true,
+        "gap": 12.0,
+        "main_current": "1,000",
+        "main_next": "1,200",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (36.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+      }
+    },
+    {
+      "candidate_nodes": [
+        "armour",
+        "shield"
+      ],
+      "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+      "candidate_status_texts": [
+        "已装备",
+        ""
+      ],
+      "comparison_headers": [
+        "现装",
+        "替换后"
+      ],
+      "cooldown_text": "换装冷却 10.0秒",
+      "current_title": "防御1 · 装甲",
+      "fee_caption": "升级费用",
+      "install_disabled": true,
+      "install_text": "安装护盾",
+      "install_tooltip": "",
+      "install_visible": true,
+      "name": "08-batch",
+      "presentation_counts": {
+        "balance_dependency_changes": 3,
+        "candidates_updated": 19,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 9,
+        "cooldown_fact_reads": 5,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "equipment_option_reads": 5,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "quantity_styles_updated": 0,
+        "refreshes": 5,
+        "scene_draws": 5,
+        "scene_redraw_requests": 4,
+        "slot_fact_reads": 5,
+        "slot_styles_updated": 4,
+        "slots_updated": 7,
+        "wallet_refreshes": 9
+      },
+      "purchase_disabled": false,
+      "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+      "purchase_text": "购买1级",
+      "state": {
+        "candidate": "shield",
+        "comparison": {
+          "affordable": true,
+          "candidate": {
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "paid_level": 1,
+            "primary": "7.5e2",
+            "properties": {
+              "damage_type": 1,
+              "recovery_delay_seconds": 2.0,
+              "recovery_rate": 0.3
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "candidate_id": "shield",
+          "current": {
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "paid_level": 1,
+            "primary": "1e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "dormant": false,
+          "ok": true,
+          "payment_reason": "",
+          "quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "scope": "charged_base",
+          "slot_id": "defence:0",
+          "switch_admission": {
+            "ok": false,
+            "reason": "EquipmentSwitchLocked"
+          },
+          "upgrade": {
+            "effective_level": 2,
+            "equipment_id": "armour",
+            "paid_level": 2,
+            "primary": "1.2e3",
+            "properties": {
+              "damage_type": 2
+            },
+            "reason": "",
+            "status": "known"
+          },
+          "upgrade_count": 1
+        },
+        "game_time": 0.0,
+        "maximum": false,
+        "native": {
+          "armour": "0e0",
+          "armour_fraction": 0.0,
+          "attacks": 0,
+          "incoming": 0,
+          "max_armour": "1e3",
+          "max_shield": "0e0",
+          "shield": "0e0",
+          "shield_fraction": 0.0
+        },
+        "pause_reasons": {
+          "user": true
+        },
+        "quantity": 1,
+        "selected_slot": "defence:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 10.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 10.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        },
+        "wallet_text": [
+          {
+            "id": "1",
+            "text": "铁：10万"
+          },
+          {
+            "id": "2",
+            "text": "铀：1,000"
+          },
+          {
+            "id": "degenerate_matter",
+            "text": "资源：1,000"
+          }
+        ]
+      },
+      "upgrade_group": {
+        "candidate_card_sizes": [
+          "(144.0, 100.0)",
+          "(144.0, 100.0)"
+        ],
+        "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+        "comparison_visible": true,
+        "fee_cells_visible": 1,
+        "fee_visible": true,
+        "gap": 12.0,
+        "main_current": "1,000",
+        "main_next": "1,200",
+        "main_next_caption": "升级后",
+        "purchase_node": 68534929159,
+        "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+        "purchase_size": "(292.0, 36.0)",
+        "purchase_style": -9223371968252737781,
+        "purchase_visible": true,
+        "quantity_node": 68400711423,
+        "quantity_rect": "[P: (36.0, 828.0), S: (96.0, 36.0)]",
+        "quantity_size": "(96.0, 36.0)",
+        "quantity_style": -9223371968386955517,
+        "quantity_visible": true,
+        "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+      }
+    }
+  ]
+}
