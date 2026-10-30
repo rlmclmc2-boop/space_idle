@@ -1,0 +1,28 @@
+R17 material-language candidate, 2026-10-30.
+Each output used image_gen.imagegen with transparent_background=true and the previous runtime soft-edge PNG as the single referenced_image_paths input. Generated outputs were copied byte-for-byte into this directory; no raster editor or Python image editing was used. The original R5 body and prior root edits remain recorded in orbit-integrated-prompts.txt, orbit-open-roots-prompts.txt, refinery-orbit-receiving-port-prompt.txt and orbit-soft-edge-prompts.txt.
+
+Workshop
+Input: workshop-orbit-soft-edge.png
+Input SHA-256: 67d32092c7ded30a132ff818698a1bc8161a4cb1d5b6a227bdea2dd7d90e5ed8
+Generated path: /workspace/generated_images/exec-a629ec65-0f7e-4802-803c-0eadeffe3d4b.png
+Runtime output: workshop-orbit-broad-planes.png
+Output SHA-256: 48d8b3c1da8c3da642bff7970166c0b450158cb8e452efa8fd833255610bb830
+Prompt: Edit this exact transparent 1536x1024 orbital workshop sprite for the small in-game 90-pixel-wide display. Keep its silhouette, canvas framing and exact positions of the upper gantry, two vertical load pillars, left/right front rail sockets, open transparent work-bay floor, central tool clearance, side ivory shells and lights. Its two FRONT SOCKETS must remain where they are so a separate 3D V-shaped rail can join them. Preserve warm ivory, deep blue teal and tiny amber/cyan functional lights. Simplify visual frequency: consolidate ivory shells into broad continuous lit planes, navy structure into broad quiet planes; remove approximately half of the tiny interior seam lines, inset ticks, dotted rivets, repeated edge stripes, speckled highlights and redundant cyan glints. Use one consistent medium-width deep teal contour around major silhouette and 3-5 key internal mechanical boundaries, with soft broad shading inside major surfaces. Match a smooth large orbital ring deck rather than a detailed miniature decal. Do NOT blur, lower contrast globally, turn into flat icon, change shape, add floor/base/platform/rails/background, or shift any key feature. This is only a restrained line-density and surface hierarchy cleanup of the same asset.
+
+Shipyard
+Input: shipyard-orbit-soft-edge.png
+Input SHA-256: 8f8e3612a08fd995158783df788f8a28157c58105feb685f8a8ac72706df93a5
+Generated path: /workspace/generated_images/exec-54b684dd-8f79-48c6-8cb2-40acd68983d0.png
+Runtime output: shipyard-orbit-broad-planes.png
+Output SHA-256: 307bfa01cf165fde188e634545a81ad30fa1929370ef3f0f50b316a884631169
+Prompt: Edit this exact transparent 1536x1024 orbital shipyard sprite for a small 90-pixel-wide game view. Preserve the same silhouette, one left vertical load spine, TWO long parallel open cantilever berths reaching to the right, separate docking gaps, functional cranes and lights, and especially the two short bottom load collars that sit on the real orbital ring. Keep all principal forms and their positions, the alpha background, warm ivory and deep blue teal palette. Reduce visual frequency across the illustration: broad uninterrupted lit ivory hull plates and broad quiet navy structural planes, about half as many tiny panel seams, hatch ticks, repeated rail stripes, pin glints and fragmented highlights. Retain a consistent medium-width deep teal outline on the silhouette and only the key berth edges, spine joints and functional docking details. Use broad soft shaded planes matching a smooth ivory orbital ring. Do not merely desaturate, darken or blur. Do not add any base floor, ring, extra berth, pillar, fin, planet, shadow or background. Preserve mechanical clarity and the approved R5 large shape.
+
+Refinery
+Input: refinery-orbit-soft-edge.png
+Input SHA-256: f4ad57683d553291e756d4e77e8fa59a9f839539c4d84a953b90dc0e3e06a426
+Generated path: /workspace/generated_images/exec-d4a07c0e-8ad7-4e5a-9add-487a786e9622.png
+Runtime output: refinery-orbit-broad-planes.png
+Output SHA-256: 099589c19223194107d1b36383377dc5ea35c19eeb48a133c791ab0ce77b8f97
+Prompt: Edit this exact transparent 1536x1024 orbital ore refinery sprite for a small 90-pixel-wide game view. Preserve the full approved silhouette and positions: TWO front square intake structures, TWO blue ore hoppers, bright central orange furnace, and the central open receiving port with its warm ivory rim and navy throat. The open port and two lower load shoulders must stay aligned exactly so the separate physical deck ramp still joins it. Keep warm ivory and deep blue teal, high-level mechanical shapes, cyan/amber functional lights and alpha transparent background. Simplify surface visual frequency by approximately half: fewer tiny panel seams, repeated rib stripes, little corner ticks, duplicate glints and fragmented highlights. Consolidate ivory shells into broad lit planes and blue supports into broad quiet structural areas; use one medium-width deep teal silhouette outline and only key boundaries of the two intakes, hopper mouths, furnace and receiving throat. Broad softly shaded surfaces should match a smooth ivory orbital ring at game scale. Do not just blur or lower contrast. Do not shift, remove or add any main feature, feed bridge, plinth, legs, extra column, ring, planet or background.
+
+Rendering scale: All three new body PNGs and the existing workshop-arm.png, shipyard-crane.png, shipyard-berth-ring.png, refinery-shutter-left.png and refinery-shutter-right.png use Godot PNG import mipmaps/generate=true. They retain the existing Sprite3D LINEAR_WITH_MIPMAPS sampling, billboard placement, directional light and animation pivots. deck-albedo.png already had mipmaps/generate=true. These .png.import files are import settings, not generated .godot cache files.
