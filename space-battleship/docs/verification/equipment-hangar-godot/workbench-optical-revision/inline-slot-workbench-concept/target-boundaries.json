@@ -60,7 +60,7 @@
         440,
         "84 ordinary /108 dense; quiet bottom separator"
       ],
-      "row_pitch": "fixed capacity profile; independent of affordable/reason",
+      "row_pitch": "fixed profile independent of affordability/reason",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
@@ -78,38 +78,50 @@
       "row_capacity_budget": {
         "weapon:0": 2,
         "defence:0": 2
-      }
+      },
+      "row_y_top_scroll": {
+        "weapon:0": 372,
+        "defence:0": 499
+      },
+      "viewport": [
+        340,
+        354,
+        440,
+        254
+      ],
+      "scroll_offset_bottom": null,
+      "row_y_bottom_scroll": null
     },
     "middle": {
       "panel": [
         332,
-        200,
+        280,
         456,
         547
       ],
       "row_y": {
-        "weapon:0": 252,
-        "weapon:1": 360,
-        "weapon:2": 444,
-        "defence:0": 571,
-        "defence:1": 655
+        "weapon:0": 332,
+        "weapon:1": 440,
+        "weapon:2": 524,
+        "defence:0": 651,
+        "defence:1": 735
       },
       "row_bounds_x_width_height": [
         340,
         440,
         "84 ordinary /108 dense; quiet bottom separator"
       ],
-      "row_pitch": "fixed capacity profile; independent of affordable/reason",
+      "row_pitch": "fixed profile independent of affordability/reason",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
-        196,
+        276,
         464,
         555
       ],
-      "module_top_clearance": 111,
+      "module_top_clearance": 191,
       "right_client_clearance": 16,
-      "bottom_client_clearance": 149,
+      "bottom_client_clearance": 69,
       "row_variants": {
         "weapon:0": "dense",
         "weapon:1": "normal",
@@ -123,41 +135,56 @@
         "weapon:2": 2,
         "defence:0": 1,
         "defence:1": 1
-      }
+      },
+      "row_y_top_scroll": {
+        "weapon:0": 332,
+        "weapon:1": 440,
+        "weapon:2": 524,
+        "defence:0": 651,
+        "defence:1": 735
+      },
+      "viewport": [
+        340,
+        314,
+        440,
+        506
+      ],
+      "scroll_offset_bottom": null,
+      "row_y_bottom_scroll": null
     },
     "late": {
       "panel": [
         332,
-        105,
+        280,
         456,
-        775
+        564
       ],
       "row_y": {
-        "weapon:0": 157,
-        "weapon:1": 265,
-        "weapon:2": 349,
-        "weapon:3": 433,
-        "weapon:4": 517,
-        "defence:0": 620,
-        "defence:1": 704,
-        "defence:2": 788
+        "weapon:0": 332,
+        "weapon:1": 440,
+        "weapon:2": 524,
+        "weapon:3": 608,
+        "weapon:4": 692,
+        "defence:0": 795,
+        "defence:1": 879,
+        "defence:2": 963
       },
       "row_bounds_x_width_height": [
         340,
         440,
         "84 ordinary /108 dense; quiet bottom separator"
       ],
-      "row_pitch": "fixed capacity profile; independent of affordable/reason",
+      "row_pitch": "fixed profile independent of affordability/reason",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
-        101,
+        276,
         464,
-        783
+        572
       ],
-      "module_top_clearance": 16,
+      "module_top_clearance": 191,
       "right_client_clearance": 16,
-      "bottom_client_clearance": 16,
+      "bottom_client_clearance": 52,
       "row_variants": {
         "weapon:0": "dense",
         "weapon:1": "normal",
@@ -177,27 +204,54 @@
         "defence:0": 1,
         "defence:1": 1,
         "defence:2": 1
+      },
+      "row_y_top_scroll": {
+        "weapon:0": 332,
+        "weapon:1": 440,
+        "weapon:2": 524,
+        "weapon:3": 608,
+        "weapon:4": 692,
+        "defence:0": 795,
+        "defence:1": 879,
+        "defence:2": 963
+      },
+      "viewport": [
+        340,
+        314,
+        440,
+        523
+      ],
+      "scroll_offset_bottom": 211,
+      "row_y_bottom_scroll": {
+        "weapon:0": 121,
+        "weapon:1": 229,
+        "weapon:2": 313,
+        "weapon:3": 397,
+        "weapon:4": 481,
+        "defence:0": 584,
+        "defence:1": 668,
+        "defence:2": 752
       }
     }
   },
   "popup": {
     "panel": [
       392,
-      460,
+      425,
       386,
       238
     ],
-    "anchor_slot": "defence:1",
+    "anchor_slot": "defence:1 at y668",
     "direct_switch_targets": [
       [
         400,
-        502,
+        467,
         268,
         84
       ],
       [
         400,
-        596,
+        561,
         268,
         84
       ]
@@ -205,13 +259,13 @@
     "compare_only_targets": [
       [
         678,
-        502,
+        467,
         90,
         84
       ],
       [
         678,
-        596,
+        561,
         90,
         84
       ]
@@ -221,12 +275,13 @@
     "focus_envelope_gap": 4,
     "close": [
       736,
-      467,
+      432,
       32,
       30
     ],
     "dispatch": "Candidate body invokes same-slot Owner switch immediately; compare opens read-only comparison without switch. No enclosing whole-row target; close/outside suppress underlying click.",
-    "no_confirmation": true
+    "no_confirmation": true,
+    "scroll_position": "bottom211; same viewport as08"
   },
   "limits": "Focus outlines and shadows not rendered. Outset4 is total reserved outer envelope including border, not a measured rendered shadow. Target/focus envelope assertions establish static spacing only.",
   "content_variants": {
@@ -586,25 +641,48 @@
     "plate": "07-optional-comparison.png",
     "panel": [
       392,
-      460,
+      425,
       386,
       238
     ],
     "close": [
       736,
-      467,
+      432,
       32,
       30
     ],
     "read_only": true,
     "no_confirmation": true,
-    "scope": "Defence2 current shield/candidate armour capacity; weapon period comparison remains undrawn."
+    "scope": "Defence2 current shield/candidate armour capacity; weapon period comparison remains undrawn.",
+    "scroll_position": "bottom211"
   },
   "switch_accepted": {
     "plate": "06-local-switch-accepted.png",
     "changed_slot": "defence:1",
     "from": "shield",
     "to": "armour",
-    "owner_acceptance": "Design fixture only; not an executed transaction. Reopen same dropdown to switch back."
+    "owner_acceptance": "Design fixture only; not an executed transaction. Reopen same dropdown to switch back.",
+    "comparison_before": "08-late-scroll-bottom.png",
+    "scroll_position": "bottom211"
+  },
+  "viewport_behavior": {
+    "late_top_plate": "03-late-eight.png",
+    "late_bottom_plate": "08-late-scroll-bottom.png",
+    "content_height": 734,
+    "viewport_height": 523,
+    "scroll_range": [
+      0,
+      211
+    ],
+    "scrollbar_track": [
+      780,
+      314,
+      6,
+      523
+    ],
+    "top_view": "Weapons1–5 complete; defence1 continues below clip. All defence rows available by same workbench scroll.",
+    "bottom_view": "Weapons3–5 and defence1–3 complete; weapon3 outer row boundary clips1px, all its content targets are fully visible.",
+    "focus_requirement": "Keyboard focus/row selection scrolls its full row into view; clipped/invisible targets receive no input. Popup preserves scroll offset and blocks underlying clicks. Not implemented or input-tested.",
+    "balance_requirement": "Affordability changes preserve row geometry and current scroll offset; no transient automatic reflow."
   }
 }

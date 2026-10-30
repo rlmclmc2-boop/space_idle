@@ -89,22 +89,29 @@
     "05-late-affordability-only.svg",
     "05-late-affordability-only.png"
   ],
-  "current_revision_start": "5e3e29aa3cc8ede06effc33c724ca2074c966abe",
+  "current_revision_start": "7c8d57d17a6bd1a8020ad03c9124fcf46165a8a5",
   "typography_source": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
-  "current_scope": "Static equipment source/layout and evidence only; common source untouched; no code, gameplay, assets, native, config or project edits.",
+  "current_scope": "Static equipment spatial/layout revision and evidence only; original background bytes and public source untouched; no game execution or runtime changes.",
   "current_changed_tracked_paths": [
     "space-battleship/docs/game-design/art/modules/equipment.md",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/01-early-two.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/01-early-two.svg",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/02-middle-five-native-detail.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/02-middle-five.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/02-middle-five.svg",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/03-late-eight-native-detail.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/03-late-eight.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/03-late-eight.svg",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown-native-detail.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown.svg",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/05-late-affordability-only-native-detail.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/05-late-affordability-only.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/05-late-affordability-only.svg",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/06-local-switch-accepted.png",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/06-local-switch-accepted.svg",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/07-optional-comparison.png",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/07-optional-comparison.svg",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/build-design-plates.py",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/embedded-asset-audit.json",
@@ -114,13 +121,8 @@
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/target-boundaries.json"
   ],
   "new_static_files": [
-    "04-local-dropdown-native-detail.png",
-    "06-local-switch-accepted.svg",
-    "07-optional-comparison.svg",
-    "05-late-affordability-only-native-detail.png",
-    "06-local-switch-accepted.png",
-    "07-optional-comparison.png",
-    "03-late-eight-native-detail.png",
-    "02-middle-five-native-detail.png"
+    "08-late-scroll-bottom.svg",
+    "08-late-scroll-bottom.png",
+    "08-late-scroll-bottom-native-detail.png"
   ]
 }

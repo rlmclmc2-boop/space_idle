@@ -153,7 +153,7 @@ def row(y, category, index, key, fee_capacity, state='normal', focus=False):
     return s
 
 
-def plate(stage, popup=False, affordability_override=False, switched=False, comparison=False):
+def plate(stage, popup=False, affordability_override=False, switched=False, comparison=False, scroll_bottom=False):
     hull, title, height = {'early':('01-frigate','游隼侦察艇',165),
                            'middle':('03-cruiser','云鳐巡洋舰',286),
                            'late':('05-heavy-battleship','白鲸无畏舰',336)}[stage]
@@ -161,7 +161,7 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
                'late':['laser','missile','cannon','longLaser','laser']}[stage]
     defence = ['armour'] if stage == 'early' else ['armour','shield'] if stage == 'middle' else ['armour','shield','shield']
     if switched: defence[1]='armour'
-    console_top = {'early':320,'middle':200,'late':105}[stage]
+    console_top = {'early':320,'middle':280,'late':280}[stage]
     states = {}
     for cat,keys in [('weapon',weapons),('defence',defence)]:
         for i,_ in enumerate(keys):
@@ -172,7 +172,10 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
             if affordability_override and stage=='late' and cat=='weapon' and i==1: state='poor'
             states[(cat,i)]=state
     capacities = CAPACITY_PROFILES[stage]
-    console_bottom = console_top + 34 + 2*(18+1) + sum(row_height(v) for v in capacities.values()) + 7
+    content_height = 2*(18+1) + sum(row_height(v) for v in capacities.values())
+    viewport_height = min(content_height,523) if stage=='late' else content_height
+    console_bottom = console_top + 34 + viewport_height + 7
+    scroll_offset = content_height-viewport_height if stage=='late' and (scroll_bottom or popup or switched or comparison) else 0
     s = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1440" height="900" viewBox="0 0 1440 900"><defs>'
     s += '<linearGradient id="face" x2="0" y2="1"><stop stop-color="#f1efdf"/><stop offset="1" stop-color="#d4d9d1"/></linearGradient><linearGradient id="button" x2="0" y2="1"><stop stop-color="#507786"/><stop offset="1" stop-color="#294957"/></linearGradient><linearGradient id="disabled" x2="0" y2="1"><stop stop-color="#9eaba9"/><stop offset="1" stop-color="#83928f"/></linearGradient>'
     s += '<clipPath id="header"><rect width="808" height="85"/></clipPath><clipPath id="battle"><rect x="808" width="632" height="900"/></clipPath><clipPath id="module"><rect y="85" width="808" height="815"/></clipPath><clipPath id="stage"><rect y="85" width="302" height="815"/></clipPath></defs><g font-family="Noto Sans SC, sans-serif">'
@@ -182,13 +185,15 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
     s += '<g clip-path="url(#module)">'+box(0,85,808,815,'#324a57',r=0)
     s += f'<svg x="0" y="85" width="808" height="815" viewBox="0 0 1188 845" preserveAspectRatio="xMidYMid slice"><image href="{ref(ASSETS / "ui/equipment/hangar/hangar-console.png")}" width="1188" height="1324"/></svg>'
     s += box(16,104,309,72,'#274957', '#587882')+text(30,132,title,21,'#f2eedb',600)+text(30,157,f'武器 {len(weapons)}  ·  防御 {len(defence)}',14,'#c9ded9')
-    s += image(ASSETS/f'ui/ships/fleet_20261019/{hull}.png',16,640-height,314,height)
+    s += image(ASSETS/f'ui/ships/fleet_20261019/{hull}.png',16,(640 if stage=='early' else 680)-height,314,height)
     s += text(20,853,'表现候选 · 静态设计稿',13,'#f0e9d3',500)
     s += '<g transform="translate(-10,0)">'
     s += box(342,console_top,456,console_bottom-console_top,'#34525e','#8faaa9',9)+box(348,console_top+6,444,console_bottom-console_top-12,'url(#face)','#a3b3ab',7)
     s += text(356,console_top+25,'逐槽工作台',20,INK,600)
     s += button(686,console_top+2,96,'全部升级',height=30)
-    y=console_top+34
+    body_top=console_top+34
+    s += f'<defs><clipPath id="row-viewport"><rect x="350" y="{body_top}" width="440" height="{viewport_height}"/></clipPath></defs><g clip-path="url(#row-viewport)">'
+    y=body_top-scroll_offset
     for cat, keys in [('weapon',weapons),('defence',defence)]:
         s += box(350,y,440,16,'#355c68',r=3)+text(360,y+13,('武器' if cat=='weapon' else '防御')+' · '+str(len(keys)),14,'#eef0df',500)
         y += 18
@@ -198,11 +203,17 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
             s += row(y,cat,i,key,capacity,state,focus=(cat=='defence' and i==1 and popup))
             y += row_height(capacity)
         y += 1
+    s += '</g>'
+    if content_height>viewport_height:
+        track=viewport_height
+        thumb=track*viewport_height/content_height
+        thumb_y=body_top+scroll_offset/(content_height-viewport_height)*(track-thumb)
+        s += box(790,body_top,6,track,'#b0c1b8',r=3)+box(790,thumb_y,6,thumb,'#345d68',r=3)
     if popup:
         # Anchored upward because defence2 is near the lower edge. Underlying rows do not move.
-        py=460
+        py=425
         s += box(402,py,386,238,'#244450','#10303f',7)
-        s += '<path d="M600 698 L614 708 L626 698Z" fill="#244450"/>'
+        s += '<path d="M600 663 L614 673 L626 663Z" fill="#244450"/>'
         s += text(416,py+27,'防御2 · 同槽Lv.1',16,'#f4f0df',500)
         s += button(746,py+7,32,'×',height=30)
         for k,yy,current in [('shield',py+42,True),('armour',py+136,False)]:
@@ -216,7 +227,7 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
             s += compare_button(688,yy,90,height=84)
     if comparison:
         # Optional reading target, separate from direct candidate selection. No confirmation action.
-        py=460
+        py=425
         s += box(402,py,386,238,'#244450','#10303f',7)
         s += text(416,py+27,'防御2 · 容量比较',16,'#f4f0df',600)
         s += button(746,py+7,32,'×',height=30)
@@ -249,6 +260,7 @@ for name,stage,popup in [('01-early-two','early',False),('02-middle-five','middl
 (HERE/'05-late-affordability-only.svg').write_text(plate('late',affordability_override=True),encoding='utf-8')
 (HERE/'06-local-switch-accepted.svg').write_text(plate('late',switched=True),encoding='utf-8')
 (HERE/'07-optional-comparison.svg').write_text(plate('late',comparison=True),encoding='utf-8')
+(HERE/'08-late-scroll-bottom.svg').write_text(plate('late',scroll_bottom=True),encoding='utf-8')
 used['assets/fonts/NotoSansSC.ttf'] = hashlib.sha256((ASSETS/'fonts/NotoSansSC.ttf').read_bytes()).hexdigest()
 (HERE/'reference-hashes.json').write_text(json.dumps(used,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 # Existing repository family, private render configuration only; no system install.

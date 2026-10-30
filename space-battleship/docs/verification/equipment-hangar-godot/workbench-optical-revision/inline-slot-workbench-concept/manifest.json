@@ -1,6 +1,6 @@
 {
   "kind": "whole-equipment-layout-adaptation-static-candidate",
-  "stage": "Same approved slot structure, R3 typography consumed and containers/spacing adapted; author-viewed, pending root/overall/independent review; not user review readiness or runtime approval",
+  "stage": "Whole equipment spatial composition and typography adaptation; static author-viewed, pending root/overall/independent review",
   "module": [
     0,
     0,
@@ -15,7 +15,7 @@
         900
       ],
       "sha256": "721af24d628e160ba46bbb900f88f117786cd172a7edf71b11e0f7bb1c47347f",
-      "svg_sha256": "488120f5b3f8173fb5b2b183af2853357a911054a8a42d98e8142fdd5aa27c3a",
+      "svg_sha256": "b4bf673c023a945ba85c9360318b3daed4801958bf82455761d04d6f40135d9c",
       "header_pixel_diff_bbox": null,
       "battle_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -26,8 +26,8 @@
         1440,
         900
       ],
-      "sha256": "71222287868bb79739079c82df1fe381b06be71c9852142d287a4f0533db5ac3",
-      "svg_sha256": "eb9436a88bd9ac0bc621ab7f82659d636dd7198e59a6f7d592a0195341edc670",
+      "sha256": "ac058e4d934e1d163502612469fb44a7cb0a4936af082b442134982fdf492886",
+      "svg_sha256": "3f16af0ca5694fcd3993f219535444b41ac55316e0d742a58c6ba2341cb70eb5",
       "header_pixel_diff_bbox": null,
       "battle_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -38,8 +38,8 @@
         1440,
         900
       ],
-      "sha256": "33ed3a08d603be7c3e41d77b94d2a3cd33dbdc036b78244fe03b28fce4a89616",
-      "svg_sha256": "4688bcda40ba0768726dfcd629d4f993dcfbc1ac42b881e433948e0c1c1a67b1",
+      "sha256": "8272771411834dafc621351832ecdb4723b5c637ee676b7a59d0c69d9b88d09a",
+      "svg_sha256": "03947776a38bff3fcf9e6a8e728e104ea34b3ddd72ff76a6e8dd5344d0149d6e",
       "header_pixel_diff_bbox": null,
       "battle_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -50,8 +50,8 @@
         1440,
         900
       ],
-      "sha256": "28aa24ee7d789cd415a5735e9a5d38797573faf1fd35ce8bd373760228526dcd",
-      "svg_sha256": "dc72f554afcba85544d0675116d601963a3ebe240b06edeade446207b9e0ed4c",
+      "sha256": "f1ea2d4f0fda8970546f33e6885b0a9b783856aeffd342897b224d1e6fd8890a",
+      "svg_sha256": "918b247a5ccdf0b33314ca1be568b5983137d360ea68c1f194a312ad9ec0ad5a",
       "header_pixel_diff_bbox": null,
       "battle_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -62,8 +62,8 @@
         1440,
         900
       ],
-      "sha256": "f6431bff585540f2a16ddde76e17b34dde627d1d727b4f676cb6811d084c92d6",
-      "svg_sha256": "dd26ad797200bdbc166db0f429b5304964d2c8bcba43fbb8c19ef34669ae6041",
+      "sha256": "f5b2fcaf67753b531c1199e79ce45131bdcab26d349ea20f87e1e33038e50aa0",
+      "svg_sha256": "80b01c32279465edf5e356028ffa9f31ae74db96938b45586ee4bac144108a51",
       "header_pixel_diff_bbox": null,
       "battle_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -74,8 +74,8 @@
         1440,
         900
       ],
-      "sha256": "8315ce8b24b2f03d19302c8425246b1721494413aad5a7ce57db1b79dcb1ccc0",
-      "svg_sha256": "cad3de624e63c5d0db3c882c5faa2ecc4057d358f8ad242e316ec58c3de92ed6",
+      "sha256": "9d95100fd9f7f05a188f7a91c6a5d03ed71bc5e2a8b26bc3eabc91a0e606aca8",
+      "svg_sha256": "c0e9f1f89ce96bb34b118109fa8aeafa7502397f672db46bf5308f52d3ef0102",
       "header_pixel_diff_bbox": null,
       "battle_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -86,8 +86,20 @@
         1440,
         900
       ],
-      "sha256": "56ff851cdefc68bb65c1af37597455c5c710c81faea4b36edfb8be17c14277c1",
-      "svg_sha256": "aca1466aec6fd94c971d995c90eb1c1d7ceb0a881d57ebd784ff24537c0f2107",
+      "sha256": "785e0a8ac35ea4c2a2c0ad76bcb875010ad1907d218ca2b6a68971caee83b503",
+      "svg_sha256": "4f025bd916a12cdc9abfdc1fcd46c417621e226094aef9eff058368df6151931",
+      "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
+      "actually_viewed": true
+    },
+    {
+      "file": "08-late-scroll-bottom.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "5d9749fbfee4804c606e54d2d8b6c9c7b4b0b35fe9f95d6a1a0fbaddd7556b41",
+      "svg_sha256": "37a5bd84ca3da7747998a574d1538f7df8d941df059cfb87842396dc608ac94e",
       "header_pixel_diff_bbox": null,
       "battle_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -173,7 +185,7 @@
           440,
           "84 ordinary /108 dense; quiet bottom separator"
         ],
-        "row_pitch": "fixed capacity profile; independent of affordable/reason",
+        "row_pitch": "fixed profile independent of affordability/reason",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
@@ -191,38 +203,50 @@
         "row_capacity_budget": {
           "weapon:0": 2,
           "defence:0": 2
-        }
+        },
+        "row_y_top_scroll": {
+          "weapon:0": 372,
+          "defence:0": 499
+        },
+        "viewport": [
+          340,
+          354,
+          440,
+          254
+        ],
+        "scroll_offset_bottom": null,
+        "row_y_bottom_scroll": null
       },
       "middle": {
         "panel": [
           332,
-          200,
+          280,
           456,
           547
         ],
         "row_y": {
-          "weapon:0": 252,
-          "weapon:1": 360,
-          "weapon:2": 444,
-          "defence:0": 571,
-          "defence:1": 655
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "defence:0": 651,
+          "defence:1": 735
         },
         "row_bounds_x_width_height": [
           340,
           440,
           "84 ordinary /108 dense; quiet bottom separator"
         ],
-        "row_pitch": "fixed capacity profile; independent of affordable/reason",
+        "row_pitch": "fixed profile independent of affordability/reason",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
-          196,
+          276,
           464,
           555
         ],
-        "module_top_clearance": 111,
+        "module_top_clearance": 191,
         "right_client_clearance": 16,
-        "bottom_client_clearance": 149,
+        "bottom_client_clearance": 69,
         "row_variants": {
           "weapon:0": "dense",
           "weapon:1": "normal",
@@ -236,41 +260,56 @@
           "weapon:2": 2,
           "defence:0": 1,
           "defence:1": 1
-        }
+        },
+        "row_y_top_scroll": {
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "defence:0": 651,
+          "defence:1": 735
+        },
+        "viewport": [
+          340,
+          314,
+          440,
+          506
+        ],
+        "scroll_offset_bottom": null,
+        "row_y_bottom_scroll": null
       },
       "late": {
         "panel": [
           332,
-          105,
+          280,
           456,
-          775
+          564
         ],
         "row_y": {
-          "weapon:0": 157,
-          "weapon:1": 265,
-          "weapon:2": 349,
-          "weapon:3": 433,
-          "weapon:4": 517,
-          "defence:0": 620,
-          "defence:1": 704,
-          "defence:2": 788
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "weapon:3": 608,
+          "weapon:4": 692,
+          "defence:0": 795,
+          "defence:1": 879,
+          "defence:2": 963
         },
         "row_bounds_x_width_height": [
           340,
           440,
           "84 ordinary /108 dense; quiet bottom separator"
         ],
-        "row_pitch": "fixed capacity profile; independent of affordable/reason",
+        "row_pitch": "fixed profile independent of affordability/reason",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
-          101,
+          276,
           464,
-          783
+          572
         ],
-        "module_top_clearance": 16,
+        "module_top_clearance": 191,
         "right_client_clearance": 16,
-        "bottom_client_clearance": 16,
+        "bottom_client_clearance": 52,
         "row_variants": {
           "weapon:0": "dense",
           "weapon:1": "normal",
@@ -290,8 +329,55 @@
           "defence:0": 1,
           "defence:1": 1,
           "defence:2": 1
+        },
+        "row_y_top_scroll": {
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "weapon:3": 608,
+          "weapon:4": 692,
+          "defence:0": 795,
+          "defence:1": 879,
+          "defence:2": 963
+        },
+        "viewport": [
+          340,
+          314,
+          440,
+          523
+        ],
+        "scroll_offset_bottom": 211,
+        "row_y_bottom_scroll": {
+          "weapon:0": 121,
+          "weapon:1": 229,
+          "weapon:2": 313,
+          "weapon:3": 397,
+          "weapon:4": 481,
+          "defence:0": 584,
+          "defence:1": 668,
+          "defence:2": 752
         }
       }
+    },
+    "viewport_behavior": {
+      "late_top_plate": "03-late-eight.png",
+      "late_bottom_plate": "08-late-scroll-bottom.png",
+      "content_height": 734,
+      "viewport_height": 523,
+      "scroll_range": [
+        0,
+        211
+      ],
+      "scrollbar_track": [
+        780,
+        314,
+        6,
+        523
+      ],
+      "top_view": "Weapons1–5 complete; defence1 continues below clip. All defence rows available by same workbench scroll.",
+      "bottom_view": "Weapons3–5 and defence1–3 complete; weapon3 outer row boundary clips1px, all its content targets are fully visible.",
+      "focus_requirement": "Keyboard focus/row selection scrolls its full row into view; clipped/invisible targets receive no input. Popup preserves scroll offset and blocks underlying clicks. Not implemented or input-tested.",
+      "balance_requirement": "Affordability changes preserve row geometry and current scroll offset; no transient automatic reflow."
     }
   },
   "remaining_limits": [
@@ -360,259 +446,260 @@
   "stability_pair": {
     "before": "03-late-eight.png",
     "after": "05-late-affordability-only.png",
+    "scroll_position": "top in both",
     "changed_slot": "weapon:1",
     "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 and fixed capacity1",
     "all_40_target_rectangles_equal": true,
     "svg_rectangles_local_x_before_transform_minus10": [
       [
         356.0,
-        165.0,
+        340.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        162.0,
+        337.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        162.0,
+        337.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        205.0,
+        380.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        205.0,
+        380.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        273.0,
+        448.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        270.0,
+        445.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        270.0,
+        445.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        307.0,
+        482.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        307.0,
+        482.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        357.0,
+        532.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        354.0,
+        529.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        354.0,
+        529.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        391.0,
+        566.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        391.0,
+        566.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        441.0,
+        616.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        438.0,
+        613.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        438.0,
+        613.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        475.0,
+        650.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        475.0,
+        650.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        525.0,
+        700.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        522.0,
+        697.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        522.0,
+        697.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        559.0,
+        734.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        559.0,
+        734.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        628.0,
+        803.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        625.0,
+        800.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        625.0,
+        800.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        662.0,
+        837.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        662.0,
+        837.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        712.0,
+        887.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        709.0,
+        884.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        709.0,
+        884.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        746.0,
+        921.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        746.0,
+        921.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        796.0,
+        971.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        793.0,
+        968.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        793.0,
+        968.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        830.0,
+        1005.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        830.0,
+        1005.0,
         92.0,
         36.0
       ]
     ],
     "pixel_diff_bbox": [
       540,
-      307,
+      482,
       772,
-      343
+      518
     ],
-    "downstream_y349_pixel_diff_bbox": null,
-    "scope": "Static fixture contrast; no Owner refresh or input testing."
+    "downstream_y524_pixel_diff_bbox": null,
+    "scope": "Static viewport contrast; no Owner refresh or input testing."
   },
   "typography_source_commit": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
   "native_details": [
@@ -622,7 +709,7 @@
         456,
         300
       ],
-      "sha256": "f1f17c31b59789da44afd3137923d4198adfb6f62a49266a7a3ffb781b872513",
+      "sha256": "ce0e20ef840b0776166a39785c386a81a96394befa908f2aa737c270ef951b3f",
       "actually_viewed": true
     },
     {
@@ -631,16 +718,16 @@
         456,
         194
       ],
-      "sha256": "ce32828c5ecabe422d34b3b71e475e50d32ff89553b2ec8252151c9e7ab5732b",
+      "sha256": "0b7ac76a3faa3bd4d3389fc7845e8dba0f57c171c8f6880ac136380a02f71283",
       "actually_viewed": true
     },
     {
       "file": "04-local-dropdown-native-detail.png",
       "size": [
         398,
-        335
+        330
       ],
-      "sha256": "a87f75c71da53321db8354c8ad9a3095884e4c48db5c97735412661bf504bf95",
+      "sha256": "777bad0ee77c4b46ff00f4d5920eb871164b1f70dbf94f6a54c41e2a3f63ad9a",
       "actually_viewed": true
     },
     {
@@ -649,12 +736,21 @@
         456,
         84
       ],
-      "sha256": "8f0b3a15b844a69179d22a7549be302e037fe324a3d87ab898051c012f556713",
+      "sha256": "393a7aec6d13daf29e162095399f59b79e196ddce4c2638158cf557f7f5c1f10",
+      "actually_viewed": true
+    },
+    {
+      "file": "08-late-scroll-bottom-native-detail.png",
+      "size": [
+        456,
+        534
+      ],
+      "sha256": "65ad1f45a8363804ff19418d938a6c93b0a52add297748ebd2d0b271e52fc63b",
       "actually_viewed": true
     }
   ],
   "overall_handoff": {
-    "source": "build-design-plates.py and self-contained 01–07 SVG",
+    "source": "build-design-plates.py and self-contained01–08SVG; consume03/05 top plus08 bottom,04/06/07 bottom context",
     "consume_module_region": [
       0,
       85,
@@ -664,5 +760,34 @@
     "context_only": "Top808x85 and right632x900 are unchanged historical screenshot; overall owner must compose with current shared host before user review.",
     "common_source_untouched": true,
     "pending_common_material_dependency": "连续工作台／轻分隔属于本组当前整页组织适配，不是公共材质新标准。当前唯一共同固定源是整体`61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1`的R3字体；尚未收到后续共同材质固定源。公共台面奶油白／蓝结构配色、外框与分隔材质、普通／禁用／focus按钮、比较与下拉表面、与反应堆一致的信息层级，以及模块边缘／公共宿主过渡，仍须整体原组按最新共同源完整整合。本组保留现有控件材质作上下文，不另设计一套；不能因本次七态同版就报风格统一通过。精确接入部件：`plate()`台体face/button/disabled定义与外框、`row()`底色／separator／cradle／identity目标、`compare_button()`与`button()`、下拉和只读比较覆层；身份24／收益47／费用73和固定容量／目标关系需在整体材质适配后保留或同版复核。"
+  },
+  "spatial_revision": {
+    "previous": "7c8d57d17a6bd1a8020ad03c9124fcf46165a8a5",
+    "late_panel_before": [
+      332,
+      105,
+      456,
+      775
+    ],
+    "late_panel_after": [
+      332,
+      280,
+      456,
+      564
+    ],
+    "middle_panel_after": [
+      332,
+      280,
+      456,
+      547
+    ],
+    "ship_display_bottom": {
+      "early": 640,
+      "middle": 680,
+      "late": 680
+    },
+    "asset_transforms": "Background unchanged; middle/late hulls retain size and x, shift down40 as static display composition only. No physical anchor changed.",
+    "visible_scene": "Unbroken upper wall, lights and right robot arm above table; left crane and floor surround hull. Not a declaration of accepted parking or scene visibility.",
+    "scope": "Same row widths/fonts/data/actions. Finite viewport replaces insistence on8simultaneous rows. Same scroll container retains all8slots; no detail panel or functional removal."
   }
 }

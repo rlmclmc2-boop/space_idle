@@ -6,263 +6,264 @@
     "consumed": "Noto Sans SC; name16/600, value18/600, fee15/500, reason15/600, Lv14/500, actions14/600 and compare14/600; R3 colors preserved. Chevron Noto Sans Symbols."
   },
   "current_change": "Name and level separate; three row baselines24/47/73; second fee95; cost/short reason share one fee band; quiet separators replace repeated row outlines; controls retain same shared appearance.",
-  "visual_review": "All seven1440x900 screens and four native detail PNG actually viewed. Pending root/overall/independent review; not runtime acceptance.",
+  "visual_review": "All eight1440x900 screens and five native detail PNG actually viewed; pending root/overall/independent review, no runtime acceptance",
   "stability_pair": {
     "before": "03-late-eight.png",
     "after": "05-late-affordability-only.png",
+    "scroll_position": "top in both",
     "changed_slot": "weapon:1",
     "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 and fixed capacity1",
     "all_40_target_rectangles_equal": true,
     "svg_rectangles_local_x_before_transform_minus10": [
       [
         356.0,
-        165.0,
+        340.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        162.0,
+        337.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        162.0,
+        337.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        205.0,
+        380.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        205.0,
+        380.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        273.0,
+        448.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        270.0,
+        445.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        270.0,
+        445.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        307.0,
+        482.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        307.0,
+        482.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        357.0,
+        532.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        354.0,
+        529.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        354.0,
+        529.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        391.0,
+        566.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        391.0,
+        566.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        441.0,
+        616.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        438.0,
+        613.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        438.0,
+        613.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        475.0,
+        650.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        475.0,
+        650.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        525.0,
+        700.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        522.0,
+        697.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        522.0,
+        697.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        559.0,
+        734.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        559.0,
+        734.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        628.0,
+        803.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        625.0,
+        800.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        625.0,
+        800.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        662.0,
+        837.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        662.0,
+        837.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        712.0,
+        887.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        709.0,
+        884.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        709.0,
+        884.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        746.0,
+        921.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        746.0,
+        921.0,
         92.0,
         36.0
       ],
       [
         356.0,
-        796.0,
+        971.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        793.0,
+        968.0,
         216.0,
         27.0
       ],
       [
         720.0,
-        793.0,
+        968.0,
         62.0,
         26.0
       ],
       [
         632.0,
-        830.0,
+        1005.0,
         52.0,
         36.0
       ],
       [
         690.0,
-        830.0,
+        1005.0,
         92.0,
         36.0
       ]
     ],
     "pixel_diff_bbox": [
       540,
-      307,
+      482,
       772,
-      343
+      518
     ],
-    "downstream_y349_pixel_diff_bbox": null,
-    "scope": "Static fixture contrast; no Owner refresh or input testing."
+    "downstream_y524_pixel_diff_bbox": null,
+    "scope": "Static viewport contrast; no Owner refresh or input testing."
   },
   "capacity_boundary": {
     "late_safe_row_budget": 696,
@@ -270,6 +271,35 @@
     "current_k": 1,
     "k2_overflow": 24,
     "k8_overflow": 168,
-    "unresolved": "Fixed fixture capacities only. Multiple dense rows/3resources, mode or evolution exceeding allocated profile, long values/reasons, scroll and full focus matrix remain undrawn. Never grow rows on affordability change."
+    "unresolved": "Same-workbench scrolling for current late8 fixture now drawn top/bottom. Multiple dense rows/3resources, changing allocated profile on mode/evolution, long fields/reasons and focus matrix still undrawn. Do not grow rows on affordability change."
+  },
+  "spatial_revision": {
+    "previous": "7c8d57d17a6bd1a8020ad03c9124fcf46165a8a5",
+    "late_panel_before": [
+      332,
+      105,
+      456,
+      775
+    ],
+    "late_panel_after": [
+      332,
+      280,
+      456,
+      564
+    ],
+    "middle_panel_after": [
+      332,
+      280,
+      456,
+      547
+    ],
+    "ship_display_bottom": {
+      "early": 640,
+      "middle": 680,
+      "late": 680
+    },
+    "asset_transforms": "Background unchanged; middle/late hulls retain size and x, shift down40 as static display composition only. No physical anchor changed.",
+    "visible_scene": "Unbroken upper wall, lights and right robot arm above table; left crane and floor surround hull. Not a declaration of accepted parking or scene visibility.",
+    "scope": "Same row widths/fonts/data/actions. Finite viewport replaces insistence on8simultaneous rows. Same scroll container retains all8slots; no detail panel or functional removal."
   }
 }
