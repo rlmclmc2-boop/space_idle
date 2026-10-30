@@ -10,6 +10,7 @@ uniform float weapons_load = 0.0;
 uniform float defence_load = 0.0;
 uniform float smelting_load = 0.0;
 uniform float condensation_load = 0.0;
+uniform float condensation_enabled = 0.0;
 uniform float phase = 0.0;
 
 float ellipse(vec2 uv, vec2 center, vec2 radius, float feather) {
@@ -29,6 +30,25 @@ float conduit(vec2 uv, vec2 a, vec2 b, float bend, float width, float time) {
 void fragment() {
 	vec2 uv = UV;
 	vec4 idle = texture(TEXTURE, uv);
+	// The three-module bay closes the unowned lower-right machine and branch.
+	float bay_left = 0.705 - 0.035 * max(0.0, 1.0 - abs(uv.y - 0.4075) / 0.1325);
+	bool closed_bay = condensation_enabled < 0.5 && uv.x >= bay_left && uv.y >= 0.275 && uv.y <= 0.54;
+	if (closed_bay) {
+		float sweep = 0.5 + 0.5 * sin((uv.x - bay_left) * 18.0);
+		float grain = 0.004 * sin(uv.y * 570.0 + uv.x * 48.0);
+		vec3 steel = mix(vec3(0.10, 0.18, 0.24), vec3(0.17, 0.28, 0.34), sweep * 0.55) + vec3(grain);
+		vec2 metal_uv = vec2(0.42 + (uv.x - bay_left) * 0.55, 0.47 + (uv.y - 0.275) * 0.24);
+		vec3 real_metal = (texture(TEXTURE, metal_uv + vec2(-0.025, -0.012)).rgb + texture(TEXTURE, metal_uv + vec2(0.025, -0.012)).rgb + texture(TEXTURE, metal_uv + vec2(-0.025, 0.012)).rgb + texture(TEXTURE, metal_uv + vec2(0.025, 0.012)).rgb) * 0.25;
+		steel = mix(steel, real_metal * 0.55, 0.18);
+		float edge = min(min(uv.x - bay_left, uv.y - 0.275), 0.54 - uv.y);
+		float rim = 1.0 - smoothstep(0.003, 0.009, edge);
+		float seam = 1.0 - smoothstep(0.001, 0.004, min(abs(uv.y - 0.335), min(abs(uv.y - 0.405), abs(uv.y - 0.475))));
+		steel += rim * vec3(0.25, 0.22, 0.13) + seam * vec3(0.04, 0.07, 0.08);
+		COLOR = vec4(steel, idle.a);
+	// Machinery ends before this static console band; skip all field math there.
+	} else if (uv.y >= 0.58) {
+		COLOR = idle;
+	} else {
 	vec4 active = texture(active_plate, uv);
 	float core = max(ellipse(uv, vec2(0.5, 0.255), vec2(0.19, 0.17), 0.10), ellipse(uv, vec2(0.5, 0.095), vec2(0.047, 0.09), 0.15));
 	float weapon = ellipse(uv, vec2(0.16, 0.145), vec2(0.17, 0.10), 0.16);
@@ -80,4 +100,5 @@ void fragment() {
 	float refract = pow(0.5 + 0.5 * sin(uv.x * 96.0 + uv.y * 58.0 - phase * 2.9), 13.0);
 	color = mix(color, vec3(0.95, 0.75, 1.0), clamp(facets * refract * condensation_load * 2.8, 0.0, 0.70));
 	COLOR = vec4(color, idle.a);
+	}
 }

@@ -339,24 +339,20 @@ func _build() -> void:
 		effect.add_theme_color_override("font_color", Color("e5edf0"))
 		_rows[id] = {"effect":effect, "name":name, "slider":slider, "track":track_visual, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
 		for control in _rows[id].values(): control.visible = false
-	_equal = _button("均分", Rect2(651, 558, 101, 41), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
+	_equal = _button("均分", Rect2(655, 560, 94, 36), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
 	_equal.tooltip_text = "均分供能"
-	_upgrade_heading = _label(Vector2(607, 628), 74, 20)
+	_upgrade_heading = _label(Vector2(612, 630), 74, 20)
 	_upgrade_heading.text = "等级"
 	_upgrade_heading.add_theme_color_override("font_color", Color("f4f1df"))
-	_level = _label(Vector2(690, 622), 65, 29)
+	_level = _label(Vector2(702, 625), 65, 29)
 	_level.size.y = 39
 	_level.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_level.add_theme_font_override("font", _ui_font_bold)
 	_level.add_theme_color_override("font_color", Color("fff8e6"))
-	_quantity = _button("×1", Rect2(612, 673, 150, 42), _cycle_quantity)
-	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
-	_purchase = _button("升级", Rect2(603, 728, 166, 54), func(): _command(_purchase_action, true), true)
-	_purchase.add_theme_font_size_override("font_size", 27)
-	_cost = _label(Vector2(612, 789), 68, 17)
+	_cost = _label(Vector2(612, 688), 68, 17)
 	_cost.add_theme_color_override("font_color", Color("f4f0dc"))
 	_cost_badge = Panel.new()
-	_cost_badge.position = Vector2(686, 787)
+	_cost_badge.position = Vector2(686, 686)
 	_cost_badge.size = Vector2(26, 27)
 	_cost_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_style := StyleBoxFlat.new()
@@ -371,8 +367,12 @@ func _build() -> void:
 	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cost_badge.add_child(_cost_icon)
-	_cost_details = _label(Vector2(716, 789), 70, 17)
+	_cost_details = _label(Vector2(716, 688), 70, 17)
 	_cost_details.add_theme_color_override("font_color", Color("f4f0dc"))
+	_quantity = _button("×1", Rect2(611, 741, 76, 51), _cycle_quantity)
+	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
+	_purchase = _button("升级", Rect2(695, 741, 77, 51), func(): _command(_purchase_action, true), true)
+	_purchase.add_theme_font_size_override("font_size", 22)
 	_notice_panel = _panel(Rect2(268, 515, 272, 33), 0.95)
 	_notice = _label(Vector2(279, 518), 250, 17)
 	_notice.size.y = 27

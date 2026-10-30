@@ -1,16 +1,10 @@
 {
-  "programs": [],
-  "stream_groups": [],
-  "streams": [
-    {
-      "width": 1440,
-      "height": 900,
-      "avg_frame_rate": "30/1",
-      "nb_frames": "300"
-    }
-  ],
-  "format": {
-    "duration": "10.000000",
-    "size": "4566521"
-  }
+  "file": "live-1440x900-30fps.mp4",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "duration_seconds": 10.0,
+  "frames": 300,
+  "raw_capture_frames": 299,
+  "sha256": "a76d894ae111040e3dab649980ebf285c85fe19c67a2b8e1d86c3593cbff1b13"
 }

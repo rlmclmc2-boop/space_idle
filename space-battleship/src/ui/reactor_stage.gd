@@ -37,6 +37,7 @@ static func visibility_power(owner_load: float) -> float:
 func show_snapshot(ids: Array, loads: Dictionary) -> void:
 	_enabled = ids.duplicate()
 	_loads = loads.duplicate()
+	_paint.set_shader_parameter("condensation_enabled", 1.0 if "condensation" in _enabled else 0.0)
 	_paint.set_shader_parameter("core_load", visibility_power(float(_loads.get("core", 0.0))))
 	for id in IDS:
 		_paint.set_shader_parameter(id + "_load", visibility_power(float(_loads.get(id, 0.0))) if id in _enabled else 0.0)
@@ -46,6 +47,7 @@ func show_snapshot(ids: Array, loads: Dictionary) -> void:
 func clear_snapshot() -> void:
 	_enabled.clear()
 	_loads.clear()
+	_paint.set_shader_parameter("condensation_enabled", 0.0)
 	_paint.set_shader_parameter("core_load", 0.0)
 	for id in IDS: _paint.set_shader_parameter(id + "_load", 0.0)
 	queue_redraw()

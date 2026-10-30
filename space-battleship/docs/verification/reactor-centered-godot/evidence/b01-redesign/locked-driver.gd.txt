@@ -1,0 +1,37 @@
+extends SceneTree
+func _initialize() -> void: call_deferred("run")
+func frames(n: int) -> void:
+	for i in n: await process_frame
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance(); tries += 1
+	game._sync_guidance()
+func shot(name: String) -> void:
+	await frames(2); await RenderingServer.frame_post_draw
+	assert(root.get_texture().get_image().save_png("/tmp/reactor-b01-locked-"+name+"-1440x900.png") == OK)
+func run() -> void:
+	root.size = Vector2i(1440,900); root.content_scale_size = Vector2i(1440,900)
+	var game: Node2D = load("res://src/main.tscn").instantiate(); root.add_child(game); await frames(4)
+	var session = game.session
+	assert(session != null and game.startup_error.is_empty() and session.current_chrono_speed() == 1)
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	assert(not bool(saved.grants.get("reactor_module:condensation",false)))
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(),session.publish_reactor).ok)
+	clear_guidance(session,game); game._select_left_module("reactor"); await frames(5); clear_guidance(session,game)
+	var scene = game.reactor_scene
+	assert(scene != null and scene.visible)
+	var model: Dictionary = session.reactor_system.presentation_model()
+	assert(model.ok and model.modules.size() == 3)
+	print("LOCKED enabled=",session.reactor_system.enabled_modules()," owner_model=",model," row_visible=",scene._rows["condensation"].slider.visible," icon_visible=",scene._rows["condensation"].icon.visible," rowface_visible=",scene._rows["condensation"].row_face.visible," stage_load=",scene._stage._paint.get_shader_parameter("condensation_load"))
+	await shot("zero")
+	scene._equal.pressed.emit(); await frames(5)
+	model = session.reactor_system.presentation_model(); assert(model.ok and model.modules.size() == 3)
+	print("LOCKED_ACTIVE model=",model," stage_load=",scene._stage._paint.get_shader_parameter("condensation_load")," slot_visible=",scene._rows["condensation"].slider.visible)
+	await shot("active")
+	quit()

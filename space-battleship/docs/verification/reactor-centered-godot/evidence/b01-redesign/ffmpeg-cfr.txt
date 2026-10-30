@@ -9,14 +9,14 @@ ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers
   libswscale      8.  3.100 /  8.  3.100
   libswresample   5.  3.100 /  5.  3.100
   libpostproc    58.  3.100 / 58.  3.100
-Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/tmp/reactor-b01-whole-live-raw-1440x900.mp4':
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/tmp/reactor-b01-final-live-raw-1440x900.mp4':
   Metadata:
     major_brand     : isom
     minor_version   : 512
     compatible_brands: isomiso2avc1mp41
     encoder         : Lavf61.7.103
-  Duration: 00:00:10.00, start: 0.000000, bitrate: 2760 kb/s
-  Stream #0:0[0x1](und): Video: h264 (Constrained Baseline) (avc1 / 0x31637661), yuv420p(progressive), 1440x900, 2758 kb/s, 29.80 fps, 30 tbr, 15360 tbn (default)
+  Duration: 00:00:10.00, start: 0.000000, bitrate: 5655 kb/s
+  Stream #0:0[0x1](und): Video: h264 (Constrained Baseline) (avc1 / 0x31637661), yuv420p(progressive), 1440x900, 5654 kb/s, 29.90 fps, 30 tbr, 15360 tbn (default)
       Metadata:
         handler_name    : VideoHandler
         vendor_id       : [0][0][0][0]
@@ -24,10 +24,10 @@ Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/tmp/reactor-b01-whole-live-raw-1440x90
 Stream mapping:
   Stream #0:0 -> #0:0 (h264 (native) -> h264 (libx264))
 Press [q] to stop, [?] for help
-[libx264 @ 0x55894764d240] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2 AVX512
-[libx264 @ 0x55894764d240] profile Constrained Baseline, level 4.0, 4:2:0, 8-bit
-[libx264 @ 0x55894764d240] 264 - core 164 r3108 31e19f9 - H.264/MPEG-4 AVC codec - Copyleft 2003-2023 - http://www.videolan.org/x264.html - options: cabac=0 ref=1 deblock=0:0:0 analyse=0:0 me=dia subme=0 psy=1 psy_rd=1.00:0.00 mixed_ref=0 me_range=16 chroma_me=1 trellis=0 8x8dct=0 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=0 threads=7 lookahead_threads=1 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=0 weightp=0 keyint=250 keyint_min=25 scenecut=0 intra_refresh=0 rc=crf mbtree=0 crf=16.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=0
-Output #0, mp4, to '/tmp/reactor-b01-whole-live-1440x900-30fps.mp4':
+[libx264 @ 0x55f7df07e240] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2 AVX512
+[libx264 @ 0x55f7df07e240] profile Constrained Baseline, level 4.0, 4:2:0, 8-bit
+[libx264 @ 0x55f7df07e240] 264 - core 164 r3108 31e19f9 - H.264/MPEG-4 AVC codec - Copyleft 2003-2023 - http://www.videolan.org/x264.html - options: cabac=0 ref=1 deblock=0:0:0 analyse=0:0 me=dia subme=0 psy=1 psy_rd=1.00:0.00 mixed_ref=0 me_range=16 chroma_me=1 trellis=0 8x8dct=0 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=0 threads=7 lookahead_threads=1 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=0 weightp=0 keyint=250 keyint_min=25 scenecut=0 intra_refresh=0 rc=crf mbtree=0 crf=16.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=0
+Output #0, mp4, to '/tmp/reactor-b01-final-live-1440x900-30fps.mp4':
   Metadata:
     major_brand     : isom
     minor_version   : 512
@@ -40,17 +40,14 @@ Output #0, mp4, to '/tmp/reactor-b01-whole-live-1440x900-30fps.mp4':
         encoder         : Lavc61.19.101 libx264
       Side data:
         cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
-frame=   21 fps=0.0 q=7.0 size=     768KiB time=00:00:00.73 bitrate=8579.8kbits/s speed=1.45x
-frame=   88 fps= 87 q=7.0 size=    1536KiB time=00:00:02.93 bitrate=4289.8kbits/s speed=2.92x
-frame=  176 fps=117 q=6.0 size=    2304KiB time=00:00:05.86 bitrate=3217.3kbits/s speed=3.89x
-frame=  259 fps=129 q=6.0 size=    3840KiB time=00:00:08.63 bitrate=3643.7kbits/s speed= 4.3x
-[out#0/mp4 @ 0x558947654140] video:4457KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.046096%
-frame=  300 fps=131 q=-1.0 Lsize=    4459KiB time=00:00:10.00 bitrate=3653.2kbits/s speed=4.35x
-[libx264 @ 0x55894764d240] frame I:2     Avg QP: 9.00  size:515876
-[libx264 @ 0x55894764d240] frame P:298   Avg QP: 7.70  size: 11853
-[libx264 @ 0x55894764d240] mb I  I16..4: 100.0%  0.0%  0.0%
-[libx264 @ 0x55894764d240] mb P  I16..4:  0.1%  0.0%  0.0%  P16..4: 17.0%  0.0%  0.0%  0.0%  0.0%    skip:82.9%
-[libx264 @ 0x55894764d240] coded y,uvDC,uvAC intra: 74.8% 71.5% 64.2% inter: 6.8% 4.8% 3.6%
-[libx264 @ 0x55894764d240] i16 v,h,dc,p: 36% 34% 16% 15%
-[libx264 @ 0x55894764d240] i8c dc,h,v,p: 36% 34% 21%  8%
-[libx264 @ 0x55894764d240] kb/s:3651.05
+frame=  175 fps=0.0 q=9.0 size=    4352KiB time=00:00:05.83 bitrate=6111.8kbits/s speed=11.6x
+[out#0/mp4 @ 0x55f7df085140] video:8129KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.025901%
+frame=  300 fps=0.0 q=-1.0 Lsize=    8131KiB time=00:00:10.00 bitrate=6661.0kbits/s speed=12.8x
+[libx264 @ 0x55f7df07e240] frame I:2     Avg QP:10.50  size:462272
+[libx264 @ 0x55f7df07e240] frame P:298   Avg QP: 9.94  size: 24829
+[libx264 @ 0x55f7df07e240] mb I  I16..4: 100.0%  0.0%  0.0%
+[libx264 @ 0x55f7df07e240] mb P  I16..4:  0.6%  0.0%  0.0%  P16..4: 24.0%  0.0%  0.0%  0.0%  0.0%    skip:75.3%
+[libx264 @ 0x55f7df07e240] coded y,uvDC,uvAC intra: 61.2% 63.9% 51.9% inter: 10.2% 10.2% 5.7%
+[libx264 @ 0x55f7df07e240] i16 v,h,dc,p: 40% 34% 15% 11%
+[libx264 @ 0x55f7df07e240] i8c dc,h,v,p: 37% 33% 22%  7%
+[libx264 @ 0x55f7df07e240] kb/s:6658.76

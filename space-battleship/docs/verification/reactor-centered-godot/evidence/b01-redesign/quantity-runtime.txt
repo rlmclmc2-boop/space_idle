@@ -16,4 +16,4 @@ WARNING: All audio drivers failed, falling back to the dummy driver.
      at: initialize (servers/audio/audio_server.cpp:258)
 
 TEN quote={ "ok": true, "count": 10, "costs": { "2": "5.5e2" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" } level=1
-MAX quote={ "ok": true, "count": 16, "costs": { "2": "3.456e3" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" } level=1 badge=true
+MAX quote={ "ok": true, "count": 11, "costs": { "2": "7.52e2" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" } level=1 badge=true
