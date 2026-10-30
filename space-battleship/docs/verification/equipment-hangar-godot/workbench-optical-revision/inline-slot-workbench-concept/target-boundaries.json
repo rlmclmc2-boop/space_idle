@@ -858,5 +858,86 @@
       564
     ],
     "early": "01already reserves2fee rows for both slots; unchanged"
-  }
+  },
+  "historical_full108_review": "Rejected as current direction; do not integrate17/21clipped controls or all108blank bands",
+  "current_compact_layout": {
+    "row_pitch": 94,
+    "baselines": [
+      24,
+      50,
+      86
+    ],
+    "quantity_purchase_y": 34,
+    "quantity_size": [
+      52,
+      36
+    ],
+    "purchase_size": [
+      92,
+      36
+    ],
+    "fee_capacity": 2,
+    "fee_presentation": "One full-width cost/reason band, current data only; no font shrink or blank second fee row. No row-height change on quote/reason/mode.",
+    "content_height": {
+      "early": 226,
+      "middle": 508,
+      "late": 790
+    },
+    "viewport_height": {
+      "early": 226,
+      "middle": 508,
+      "late": 523
+    },
+    "scroll_range": {
+      "early": [
+        0,
+        0
+      ],
+      "middle": [
+        0,
+        0
+      ],
+      "late": [
+        0,
+        267
+      ]
+    },
+    "whole_row_action_boundary": "Only fully visible rows paint action targets, quote or property controls. Partial rows draw passive identity only; no clipped purchase button/cost. Implemented in static source branch, not just prose."
+  },
+  "current_compact_row_targets": {
+    "icon": [
+      346,
+      8,
+      48,
+      58
+    ],
+    "name": [
+      400,
+      5,
+      216,
+      27
+    ],
+    "compare": [
+      710,
+      5,
+      62,
+      32
+    ],
+    "quantity": [
+      622,
+      34,
+      52,
+      36
+    ],
+    "purchase": [
+      680,
+      34,
+      92,
+      36
+    ],
+    "coordinate_note": "Global x, y relative to complete row. Passive fragments have zero targets."
+  },
+  "current_view_records": "compact-row-boundaries.json",
+  "weapon_model_geometry": "ship-weapon-layout.json",
+  "defence_ship_targets": []
 }

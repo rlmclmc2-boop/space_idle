@@ -6,7 +6,7 @@ import html
 import json
 import re
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageFont
 
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[4]
@@ -78,7 +78,8 @@ CAPACITY_PROFILES = {
 }
 
 
-def row_height(fee_capacity):
+def row_height(fee_capacity, compact=False):
+    if compact: return 94
     return 108 if fee_capacity==2 else 84
 
 
@@ -90,6 +91,47 @@ EQUIPMENT = {
     'armour': ('装甲', ASSETS/'ui/equipment/cartoon_armour.svg', '1,000', '1,200', ''),
     'shield': ('护盾', ASSETS/'ui/equipment/cartoon_shield.svg', '750', '900', ''),
 }
+
+
+ship_scene_records = {}
+compact_view_records = {}
+
+def mounted_weapon_scene(stage, hull_key, weapons, x, y, width, height, selected_slot):
+    """Read existing art geometry only; static composition, no new physical rule or mount."""
+    sources = {}
+    for relative in ['assets/ui/ships/manifest.json','assets/weapons/fleet_20261019/manifest.json']:
+        path = PROJECT/relative
+        used[relative]=hashlib.sha256(path.read_bytes()).hexdigest()
+        sources[relative]=used[relative]
+    catalog=json.loads((ASSETS/'ui/ships/manifest.json').read_text())['hulls'][hull_key]
+    weapon_meta=json.loads((ASSETS/'weapons/fleet_20261019/manifest.json').read_text())['weapons']
+    hull_path=PROJECT/catalog['texture'].replace('res://','')
+    with Image.open(hull_path) as im: bounds=im.getbbox()
+    bx,by,bw,bh=bounds[0],bounds[1],bounds[2]-bounds[0],bounds[3]-bounds[1]
+    factor=min(width/bw,height/bh)
+    origin=(x+(width-bw*factor)/2-bx*factor,y+(height-bh*factor)/2-by*factor)
+    zoom=factor/(350.0/float(catalog['height']))
+    markup=''
+    rows=[]
+    for i,key in enumerate(weapons):
+        meta=weapon_meta[key]; path=PROJECT/meta['texture'].replace('res://','')
+        mx,my=catalog['mounts'][i]
+        mount=(origin[0]+mx*factor,origin[1]+my*factor)
+        wf=(0.16 if key in ['longLaser','cannon'] else 0.13)*zoom
+        left=mount[0]-meta['anchor'][0]*wf; top=mount[1]-meta['anchor'][1]*wf
+        with Image.open(path) as im: tw,th=im.size; ab=im.getbbox()
+        markup+=f'<image href="{ref(path)}" width="{tw}" height="{th}" transform="translate({left},{top}) scale({wf})"/>'
+        visible=[left+ab[0]*wf,top+ab[1]*wf,(ab[2]-ab[0])*wf,(ab[3]-ab[1])*wf]
+        selected=selected_slot==('weapon',i)
+        rows.append({'slot':f'weapon:{i}','key':key,'authored_mount':catalog['mounts'][i],'display_mount':mount,'authored_anchor':meta['anchor'],'weapon_factor':wf,'visible_rect':visible,'selected':selected})
+        if selected:
+            a,b,w,h=visible; a-=4;b-=4;w+=8;h+=8
+            for cx,cy,dx,dy in [(a,b,1,1),(a+w,b,-1,1),(a+w,b+h,-1,-1),(a,b+h,1,-1)]:
+                d=f'M{cx} {cy+dy*8} V{cy} H{cx+dx*8}'
+                markup+=f'<path d="{d}" fill="none" stroke="#153341" stroke-width="3.5"/><path d="{d}" fill="none" stroke="#91e2d4" stroke-width="1.5"/>'
+    identity=f'{stage}:{selected_slot}'
+    ship_scene_records[identity]={'sources':sources,'hull_key':hull_key,'hull_visible_source_bounds':[bx,by,bw,bh],'hull_display_allocation':[x,y,width,height],'hull_canvas_origin':origin,'hull_scale':factor,'preview_zoom_from_existing_calibration':zoom,'selected_slot':selected_slot,'weapons':rows,'defence_ship_targets':[],'geometry_scope':'Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor.'}
+    return markup
 
 
 def button(x, y, width, caption, disabled=False, height=36):
@@ -104,7 +146,49 @@ def compare_button(x, y, width, height=32):
     return s
 
 
-def row(y, category, index, key, fee_capacity, state='normal', focus=False):
+def compact_row(y,category,index,name,path,level,current,after,mode,purchase,costs,reason,disabled,focus,empty=False):
+    # The full two-resource quote and its reason share one cost band, with no blank fee row.
+    s=box(350,y,440,94,'#e0ebe3' if focus else '#e8e8dc',r=0)
+    s+=f'<path d="M358 {y+93} H782" stroke="#b0bcb5"/>'
+    if focus:s+=box(350,y,4,93,'#397e82',r=0)
+    s+=box(356,y+8,48,58,'#d6e0d8','#91aaa2',4)
+    if not empty:s+=image(path,358,y+10,44,54)
+    s+=box(410,y+5,216,27,'#dae3da','#91aaa2',4)
+    s+=text(418,y+24,('武器' if category=='weapon' else '防御')+str(index+1)+' · '+name,16,INK,600)
+    s+=text(614,y+21,'⌄',18,TEAL,500,'middle')+text(642,y+24,'Lv.'+level,14,MUTED,500)
+    s+=compare_button(720,y+5,62)
+    s+=text(410,y+50,'攻击力' if category=='weapon' else '容量',15,'#3e5d67',500)
+    s+=text(459,y+50,current,18,'#173c4e',600)+text(526,y+50,'→',18,MUTED)+text(550,y+50,after,18,'#173c4e',600)
+    s+=button(632,y+34,52,mode)+button(690,y+34,92,purchase,disabled)
+    s+=text(410,y+86,'升级费',15,'#284650',500)
+    measure=ImageFont.truetype(str(ASSETS/'fonts/NotoSansSC.ttf'),15)
+    x=464
+    if costs:
+        for kind,value in costs:
+            s+=resource(kind,x,y+80.25,20)+text(x+23,y+86,value,15,'#1e3e4c',500)
+            x+=23+measure.getlength(value)+12
+    else:
+        s+=text(x,y+86,'—',15,MUTED);x+=28
+    if reason:
+        s+=text(x,y+86,reason,15,WARN,600)
+        x+=measure.getlength(reason)
+    assert x<=782, f'Fixture cost/reason band exceeds its declared width: {x}'
+    return s
+
+
+def passive_row_fragment(y,height,viewport_top,viewport_bottom,category,index,key,state):
+    # Never paint clipped purchase controls or a quote without its full object identity.
+    top=max(y,viewport_top);bottom=min(y+height,viewport_bottom)
+    if bottom<=top:return ''
+    name='空槽' if state=='empty' else EQUIPMENT[key][0]
+    level='19' if state.startswith('evolution') else '29' if state=='ten' else '33' if state=='maxzero' else '1'
+    label=('武器' if category=='weapon' else '防御')+str(index+1)+' · '+name+' · Lv.'+level
+    s=box(350,top,440,bottom-top,'#dce4dc',r=0)
+    if bottom-top>=16:s+=text(360,top+min(23,bottom-top-2),label,14,MUTED,500)
+    return s
+
+
+def row(y, category, index, key, fee_capacity, state='normal', focus=False, compact=False):
     name, path, current, after, interval = EQUIPMENT[key]
     level, mode, purchase, costs, reason = '1', '×1', '购买1级', [('iron','铁65')], ''
     disabled = False
@@ -127,6 +211,7 @@ def row(y, category, index, key, fee_capacity, state='normal', focus=False):
         level,current,after,mode,purchase,costs = '33','19.2万','—','MAX','可购0级',[]
         disabled,reason = True,'当前预算不可购'
     if state=='empty': name,current,after='空槽','—','—'
+    if compact:return compact_row(y,category,index,name,path,level,current,after,mode,purchase,costs,reason,disabled,focus,state=='empty')
     # Geometry follows the fixed presentation budget, never affordability/reason text.
     dense = fee_capacity==2
     height = row_height(fee_capacity)
@@ -162,7 +247,7 @@ def row(y, category, index, key, fee_capacity, state='normal', focus=False):
     return s
 
 
-def plate(stage, popup=False, affordability_override=False, switched=False, comparison=False, scroll_bottom=False, capacity_example=None, weapon_popup=False, weapon_comparison=False, empty_slot=False, dormant_details=False):
+def plate(stage, popup=False, affordability_override=False, switched=False, comparison=False, scroll_bottom=False, capacity_example=None, weapon_popup=False, weapon_comparison=False, empty_slot=False, dormant_details=False, weapon_scene=False, selected_slot=None, compact_workbench=False, first_slot_state=None):
     hull, title, height = {'early':('01-frigate','游隼侦察艇',165),
                            'middle':('03-cruiser','云鳐巡洋舰',286),
                            'late':('05-heavy-battleship','白鲸无畏舰',336)}[stage]
@@ -190,8 +275,10 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
         capacities['weapon:4']=2
         states[('weapon',4)]='evolution-locked' if capacity_example=='locked' else 'evolution'
         states[('weapon',0)]={'single':'evolution','ten':'evolution-ten','max':'evolution-max','locked':'evolution-locked'}[capacity_example]
+    if compact_workbench: capacities={slot_id:2 for slot_id in capacities}
+    if first_slot_state is not None: states[('weapon',0)]=first_slot_state
     if empty_slot: states[('weapon',0)]='empty'
-    content_height = 2*(18+1) + sum(row_height(v) for v in capacities.values())
+    content_height = 2*(18+1) + sum(row_height(v,compact_workbench) for v in capacities.values())
     viewport_height = min(content_height,523)
     console_bottom = console_top + 34 + viewport_height + 7
     scroll_offset = content_height-viewport_height if scroll_bottom or popup or switched or comparison else 0
@@ -204,7 +291,11 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
     s += '<g clip-path="url(#module)">'+box(0,85,808,815,'#324a57',r=0)
     s += f'<svg x="0" y="85" width="808" height="815" viewBox="0 0 1188 845" preserveAspectRatio="xMidYMid slice"><image href="{ref(ASSETS / "ui/equipment/hangar/hangar-console.png")}" width="1188" height="1324"/></svg>'
     s += box(16,104,309,72,'#274957', '#587882')+text(30,132,title,21,'#f2eedb',600)+text(30,157,f'武器 {len(weapons)}  ·  防御 {len(defence)}',14,'#c9ded9')
-    s += image(ASSETS/f'ui/ships/fleet_20261019/{hull}.png',16,(640 if stage=='early' else 680)-height,314,height)
+    ship_y=(640 if stage=='early' else 680)-height
+    s += image(ASSETS/f'ui/ships/fleet_20261019/{hull}.png',16,ship_y,314,height)
+    if weapon_scene:
+        hull_key={'early':'Frigate','middle':'Cruiser','late':'Heavy_Battleship'}[stage]
+        s += mounted_weapon_scene(stage,hull_key,weapons,16,ship_y,314,height,selected_slot)
     s += text(20,853,'表现候选 · 静态设计稿',13,'#f0e9d3',500)
     s += '<g transform="translate(-10,0)">'
     s += box(342,console_top,456,console_bottom-console_top,'#34525e','#8faaa9',9)+box(348,console_top+6,444,console_bottom-console_top-12,'url(#face)','#a3b3ab',7)
@@ -213,16 +304,25 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
     body_top=console_top+34
     s += f'<defs><clipPath id="row-viewport"><rect x="350" y="{body_top}" width="440" height="{viewport_height}"/></clipPath></defs><g clip-path="url(#row-viewport)">'
     y=body_top-scroll_offset
+    compact_rows=[]
     for cat, keys in [('weapon',weapons),('defence',defence)]:
         s += box(350,y,440,16,'#355c68',r=3)+text(360,y+13,('武器' if cat=='weapon' else '防御')+' · '+str(len(keys)),14,'#eef0df',500)
         y += 18
         for i,key in enumerate(keys):
             state=states[(cat,i)]
             capacity=capacities[f'{cat}:{i}']
-            s += row(y,cat,i,key,capacity,state,focus=(cat=='defence' and i==1 and popup))
-            y += row_height(capacity)
+            full_row=(y>=body_top and y+row_height(capacity,compact_workbench)<=body_top+viewport_height)
+            if compact_workbench:compact_rows.append({'slot':f'{cat}:{i}','row_y':y,'height':94,'fully_visible':full_row,'operable_targets_drawn':full_row,'partial_identity_only':not full_row and y<body_top+viewport_height and y+94>body_top})
+            if compact_workbench and not full_row:
+                s += passive_row_fragment(y,row_height(capacity,True),body_top,body_top+viewport_height,cat,i,key,state)
+            else:
+                s += row(y,cat,i,key,capacity,state,focus=((cat=='defence' and i==1 and popup) or selected_slot==(cat,i)),compact=compact_workbench)
+            y += row_height(capacity,compact_workbench)
         y += 1
     s += '</g>'
+    if compact_workbench:
+        identity=str((stage,scroll_bottom,selected_slot,first_slot_state,popup,comparison,weapon_popup,weapon_comparison))
+        compact_view_records[identity]={'stage':stage,'body_top':body_top,'viewport_height':viewport_height,'content_height':content_height,'scroll_offset':scroll_offset,'rows':compact_rows,'no_partial_purchase_controls':True}
     if content_height>viewport_height:
         track=viewport_height
         thumb=track*viewport_height/content_height
@@ -230,9 +330,9 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
         s += box(790,body_top,6,track,'#b0c1b8',r=3)+box(790,thumb_y,6,thumb,'#345d68',r=3)
     if popup:
         # Anchored upward because defence2 is near the lower edge. Underlying rows do not move.
-        py=425
+        py=405 if compact_workbench else 425
         s += box(402,py,386,238,'#244450','#10303f',7)
-        s += '<path d="M600 663 L614 673 L626 663Z" fill="#244450"/>'
+        s += '<path d="M600 643 L614 653 L626 643Z" fill="#244450"/>' if compact_workbench else '<path d="M600 663 L614 673 L626 663Z" fill="#244450"/>'
         s += text(416,py+27,'防御2 · 同槽Lv.1',16,'#f4f0df',500)
         s += button(746,py+7,32,'×',height=30)
         for k,yy,current in [('shield',py+42,True),('armour',py+136,False)]:
@@ -246,7 +346,7 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
             s += compare_button(688,yy,90,height=84)
     if comparison:
         # Optional reading target, separate from direct candidate selection. No confirmation action.
-        py=425
+        py=405 if compact_workbench else 425
         s += box(402,py,386,238,'#244450','#10303f',7)
         s += text(416,py+27,'防御2 · 容量比较',16,'#f4f0df',600)
         s += button(746,py+7,32,'×',height=30)
@@ -325,6 +425,16 @@ for suffix,example,bottom in [('14-reserved-two-fee-base','reserved-base',False)
 (HERE/'21-middle-reserved-two-fee-bottom.svg').write_text(plate('middle',scroll_bottom=True,capacity_example='reserved-base'),encoding='utf-8')
 (HERE/'22-active-empty-slot.svg').write_text(plate('late',capacity_example='reserved-base',empty_slot=True),encoding='utf-8')
 (HERE/'23-dormant-slot-details.svg').write_text(plate('middle',capacity_example='reserved-base',dormant_details=True),encoding='utf-8')
+for suffix,stage,bottom,selection in [('29-compact-scene-early','early',False,('weapon',0)),('30-compact-scene-middle','middle',False,('weapon',1)),('31-compact-scene-late','late',False,('weapon',0)),('32-compact-scene-bottom','late',True,('weapon',4)),('33-compact-defence-row-only','late',True,('defence',1))]:
+    (HERE/(suffix+'.svg')).write_text(plate(stage,scroll_bottom=bottom,weapon_scene=True,selected_slot=selection,compact_workbench=True),encoding='utf-8')
+for suffix,state in [('34-compact-max','evolution-max'),('35-compact-material-locked','evolution-locked'),('36-compact-affordable','evolution'),('37-compact-single-fee','normal')]:
+    (HERE/(suffix+'.svg')).write_text(plate('late',weapon_scene=True,selected_slot=('weapon',0),compact_workbench=True,first_slot_state=state),encoding='utf-8')
+(HERE/'38-compact-defence-dropdown.svg').write_text(plate('late',popup=True,weapon_scene=True,compact_workbench=True,selected_slot=('defence',1)),encoding='utf-8')
+(HERE/'39-compact-defence-comparison.svg').write_text(plate('late',comparison=True,weapon_scene=True,compact_workbench=True,selected_slot=('defence',1)),encoding='utf-8')
+(HERE/'40-compact-weapon-dropdown.svg').write_text(plate('late',weapon_popup=True,weapon_scene=True,compact_workbench=True,first_slot_state='normal',selected_slot=('weapon',0)),encoding='utf-8')
+(HERE/'41-compact-weapon-comparison.svg').write_text(plate('late',weapon_comparison=True,weapon_scene=True,compact_workbench=True,first_slot_state='normal',selected_slot=('weapon',0)),encoding='utf-8')
+(HERE/'ship-weapon-layout.json').write_text(json.dumps(ship_scene_records,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+(HERE/'compact-row-boundaries.json').write_text(json.dumps(compact_view_records,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 used['assets/fonts/NotoSansSC.ttf'] = hashlib.sha256((ASSETS/'fonts/NotoSansSC.ttf').read_bytes()).hexdigest()
 (HERE/'reference-hashes.json').write_text(json.dumps(used,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 # Existing repository family, private render configuration only; no system install.

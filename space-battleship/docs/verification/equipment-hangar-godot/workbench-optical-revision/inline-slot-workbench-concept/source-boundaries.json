@@ -89,9 +89,9 @@
     "05-late-affordability-only.svg",
     "05-late-affordability-only.png"
   ],
-  "current_revision_start": "a1a13a9902ef2b8cc7ce743bcc6b57d3862861c6",
+  "current_revision_start": "c9c6021d950d56e062a238f84618f1f2eaf14ae9",
   "typography_source": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
-  "current_scope": "Static capacity examples and weapon dropdown/comparison, active empty/dormant details only;01–08SVG/PNG byte-preserved from a1a13a; no runtime, rules or common style edits",
+  "current_scope": "Current29–41static coherence, real weapon art assembly, compact quote band, passive partial rows; latest user constraints. No runtime/shared geometry/common assets edited.",
   "current_changed_tracked_paths": [
     "space-battleship/docs/game-design/art/modules/equipment.md",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
@@ -100,7 +100,8 @@
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/embedded-asset-audit.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/ink-spacing.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/manifest.json",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/source-boundaries.json",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/pending-work.json",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/reference-hashes.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/target-boundaries.json"
   ],
   "new_static_files": [

@@ -1,5 +1,5 @@
 {
-  "claim_scope": "Current static source identity only, not recognition/visual acceptance",
+  "claim_scope": "Source identity only; current main29–41, historical01–23retained",
   "plates": {
     "01-early-two": {
       "svg_sha256": "b4bf673c023a945ba85c9360318b3daed4801958bf82455761d04d6f40135d9c",
@@ -27,26 +27,6 @@
         {
           "source": "assets/ui/equipment/cartoon_armour.svg",
           "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            382.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            509.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -84,53 +64,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            534.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            661.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            745.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -181,80 +114,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            534.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            618.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            702.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            805.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            889.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            973.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "04-local-dropdown": {
@@ -303,98 +162,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            131.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            239.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            323.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            407.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            491.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            594.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            678.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            762.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            420.0,
-            481.0,
-            42.0,
-            50.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            420.0,
-            575.0,
-            42.0,
-            50.0
-          ]
         }
       ]
     },
@@ -445,80 +212,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            534.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            618.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            702.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            805.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            889.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            973.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "06-local-switch-accepted": {
@@ -567,80 +260,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            131.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            239.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            323.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            407.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            491.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            594.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            678.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            762.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -691,98 +310,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            131.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            239.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            323.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            407.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            491.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            594.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            678.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            762.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            424.0,
-            484.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            424.0,
-            576.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "08-late-scroll-bottom": {
@@ -831,80 +358,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            131.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            239.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            323.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            407.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            491.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            594.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            678.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            762.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -955,80 +408,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            534.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            618.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            702.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            829.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            913.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            997.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "10-two-dense-ten": {
@@ -1077,80 +456,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            534.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            618.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            702.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            829.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            913.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            997.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -1201,80 +506,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            534.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            618.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            702.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            829.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            913.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            997.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "12-evolution-material-locked": {
@@ -1319,80 +550,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            534.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            618.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            702.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            829.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            913.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            997.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -1443,80 +600,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            107.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            215.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            299.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            383.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            467.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            594.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            678.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            762.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "14-reserved-two-fee-base": {
@@ -1561,80 +644,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            666.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            774.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            901.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1009.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1117.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -1685,80 +694,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            666.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            774.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            901.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1009.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1117.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "16-reserved-two-fee-locked": {
@@ -1803,80 +738,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            666.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            774.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            901.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1009.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1117.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -1923,80 +784,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            -37.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            71.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            179.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            287.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            395.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            522.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            630.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            738.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "18-local-weapon-dropdown": {
@@ -2041,116 +828,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            666.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            774.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            901.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1009.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1117.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            420.0,
-            433.0,
-            42.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            420.0,
-            527.0,
-            42.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            420.0,
-            621.0,
-            42.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            420.0,
-            715.0,
-            42.0,
-            54.0
-          ]
         }
       ]
     },
@@ -2197,98 +874,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            666.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            774.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            901.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1009.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1117.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            424.0,
-            436.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            424.0,
-            528.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "20-middle-reserved-two-fee": {
@@ -2326,53 +911,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            685.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            793.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "21-middle-reserved-two-fee-bottom": {
@@ -2409,53 +947,6 @@
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
-        }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            287.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            395.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            503.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            630.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            738.0,
-            44.0,
-            54.0
-          ]
         }
       ]
     },
@@ -2502,71 +993,6 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
-        {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/cannon.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/longLaser.png",
-          "viewport": [
-            358.0,
-            666.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            774.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            901.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1009.0,
-            44.0,
-            54.0
-          ]
-        },
-        {
-          "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            1117.0,
-            44.0,
-            54.0
-          ]
-        }
       ]
     },
     "23-dormant-slot-details": {
@@ -2604,52 +1030,522 @@
           "source": "assets/ui/equipment/cartoon_shield.svg",
           "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
         }
-      ],
-      "equipment_viewports": [
+      ]
+    },
+    "29-compact-scene-early": {
+      "svg_sha256": "5ba21ec4ddc0ca384a41a0e2de760e45b58233a856ca24ba5aa762abf8812a5f",
+      "all_embedded_images": [
         {
-          "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            342.0,
-            44.0,
-            54.0
-          ]
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
         },
         {
-          "source": "assets/weapons/fleet_20261019/missile.png",
-          "viewport": [
-            358.0,
-            450.0,
-            44.0,
-            54.0
-          ]
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/01-frigate.png",
+          "sha256": "a3982ea4c5f401c73ae9d1da2ed286231677c0a09f8f3f8c1e65b8f43049411c"
         },
         {
           "source": "assets/weapons/fleet_20261019/laser.png",
-          "viewport": [
-            358.0,
-            558.0,
-            44.0,
-            54.0
-          ]
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
         },
         {
           "source": "assets/ui/equipment/cartoon_armour.svg",
-          "viewport": [
-            358.0,
-            685.0,
-            44.0,
-            54.0
-          ]
+          "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
+        }
+      ]
+    },
+    "30-compact-scene-middle": {
+      "svg_sha256": "4e8df75f410aee77a9c217fde1110d198e5c47dba504068844811d32a7b57c8f",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/03-cruiser.png",
+          "sha256": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_armour.svg",
+          "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
         },
         {
           "source": "assets/ui/equipment/cartoon_shield.svg",
-          "viewport": [
-            358.0,
-            793.0,
-            44.0,
-            54.0
-          ]
+          "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
+        }
+      ]
+    },
+    "31-compact-scene-late": {
+      "svg_sha256": "5cc0aa12299e4a1daca15ccaf9bf5b4530a7feaaf619e2829d26b268b25ec331",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-supplement.png",
+          "sha256": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3"
+        }
+      ]
+    },
+    "32-compact-scene-bottom": {
+      "svg_sha256": "8293ae8592ffd8303cc383e0d5bd8684b4eadd70e896c1dd0e5e24dd6fcacf3c",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_armour.svg",
+          "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_shield.svg",
+          "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
+        }
+      ]
+    },
+    "33-compact-defence-row-only": {
+      "svg_sha256": "3c1b1f7e5c1bdceb39121af7652f13a91e3756e32a3887aad3912450c025a749",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_armour.svg",
+          "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_shield.svg",
+          "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
+        }
+      ]
+    },
+    "34-compact-max": {
+      "svg_sha256": "cec67e55462bd59c5ed94e092f428b848d677ffbad17c11abfb478e1750cb400",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-supplement.png",
+          "sha256": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3"
+        }
+      ]
+    },
+    "35-compact-material-locked": {
+      "svg_sha256": "a07ec26b715696b1b4e9b7fa01af762e0b37aab1691a88c0f216ee39069604ef",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        }
+      ]
+    },
+    "36-compact-affordable": {
+      "svg_sha256": "379c75e5806fe2ce1077f120e05282b4653c51cdc0fccf9f6744818a6c64de8e",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-supplement.png",
+          "sha256": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3"
+        }
+      ]
+    },
+    "37-compact-single-fee": {
+      "svg_sha256": "371877243c6976ffc72192529c10ec95be93d41ee294570853a50e45f343ae70",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        }
+      ]
+    },
+    "38-compact-defence-dropdown": {
+      "svg_sha256": "c017016ebeb70efca0d76024b8f969d16afd48b63c525f002d1cd4205b4f9b11",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_armour.svg",
+          "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_shield.svg",
+          "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
+        }
+      ]
+    },
+    "39-compact-defence-comparison": {
+      "svg_sha256": "bbea8dc22d7be43dec4399b459887b17b8098b3756e0811bb3392e054431981a",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_armour.svg",
+          "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
+        },
+        {
+          "source": "assets/ui/equipment/cartoon_shield.svg",
+          "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
+        }
+      ]
+    },
+    "40-compact-weapon-dropdown": {
+      "svg_sha256": "f84ba8cf7d8f5f6c9e1882bdb3ef1fc0930f7b88428940f910c2fa0d75fc30a2",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        }
+      ]
+    },
+    "41-compact-weapon-comparison": {
+      "svg_sha256": "ff17a9306ce04e02d58239bfe61fccf2b1ff21471dac2cc204e2e4fa8b8bd845",
+      "all_embedded_images": [
+        {
+          "source": "docs/verification/equipment-hangar-godot/workbench-optical-revision/upgrade-group-coherence/00-fresh-current.png",
+          "sha256": "1fe66dc7cf49c20a31cfc73c56b22772dcb18c47c101791e3659e64cdd06b907"
+        },
+        {
+          "source": "assets/ui/equipment/hangar/hangar-console.png",
+          "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50"
+        },
+        {
+          "source": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "source": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "source": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
         }
       ]
     }

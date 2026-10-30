@@ -1,0 +1,53 @@
+{
+  "status": "Composition proposal to overall owner; not approved physical geometry or a new public style",
+  "user_goal": "Reference is whole-page unity, not copying dark empty background or a permanent candidate page. Hangar background may be made for this composition.",
+  "existing_sources_available": [
+    "assets/ui/ships/manifest.json",
+    "assets/weapons/fleet_20261019/manifest.json",
+    "src/ui/equipment_panel.gd:995–1040",
+    "existing hull/weapon PNGs",
+    "61c9R3typography",
+    "current29–41row and viewport organization"
+  ],
+  "current_module": [
+    0,
+    85,
+    808,
+    815
+  ],
+  "current_ship_display_allocation": {
+    "early": [
+      16,
+      475,
+      314,
+      165
+    ],
+    "middle": [
+      16,
+      394,
+      314,
+      286
+    ],
+    "late": [
+      16,
+      344,
+      314,
+      336
+    ]
+  },
+  "current_console_envelope": [
+    332,
+    280,
+    456,
+    564
+  ],
+  "composition_request": {
+    "ship_bay": "Make left hull+real mounted weapons the maintained subject, with floor/pad under its actual visible body rather than the old backdrop centerx404. Current displayed center is aboutx173.",
+    "workbench": "Integrate the operation surface as hangar equipment at right; same shared cream/navy/cyan material language, purposeful edge transition, no generic table pasted over old console.",
+    "upper_space": "Lights/wall/robot arm should frame the maintained ship and the operation surface, not serve as unrelated revealed pixels.",
+    "background_layer": "No baked ship, weapon, slot label, quote, button, defence marker or fake hardpoint. Keep those separate live/design layers.",
+    "no_symmetry_requirement": "Defence remains operation-only. Do not author defence anchors, leader lines, badges or hull pointers."
+  },
+  "precise_dependency": "Overall fixed Git source for module-specific hangar/background composition plus common operation-surface/button/edge material. The present old backdrop is context, not a hard constraint; may be replaced under user goal by overall-coordinated work.",
+  "scope_limit": "Proposal coordinates from static plate only; no changes to shared battle mounts, model anchors, muzzle geometry, Owner or config. Root/overall review may adjust whole display transform consistently."
+}

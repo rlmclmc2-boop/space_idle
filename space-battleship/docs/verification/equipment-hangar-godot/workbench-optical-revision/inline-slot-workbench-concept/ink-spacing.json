@@ -382,5 +382,70 @@
     },
     "actual_view": "New09–23fifteen full screens and11native details actually viewed; previous01–08retained exact files",
     "remaining": "All2fee capacity is a proposal with scrolling tradeoff; arbitrary long level/number strings and3resources not fabricated; keyboard/focus/hover matrix awaits common control style and later implementation."
+  },
+  "current_revision": {
+    "withdrawn": "c9full108proposal not accepted/recommended",
+    "font_source": "61c9R3roles unchanged",
+    "new_layout": "94row, identity24/benefit50/full-width quote86; all current2fee and reason examples actually viewed. No ordinary-row blank second fee band.",
+    "view_boundary": "Partial identity strips without cost/purchase are drawn in32etc; no operational row without full identity.",
+    "pairs": [
+      {
+        "before": "31-compact-scene-late.png",
+        "after": "36-compact-affordable.png",
+        "all_visible_target_rectangles_equal": true,
+        "visible_target_count": 25,
+        "pixel_diff_bbox": [
+          649,
+          366,
+          772,
+          420
+        ],
+        "downstream_y426_pixel_diff_bbox": null,
+        "static_only": true
+      },
+      {
+        "before": "36-compact-affordable.png",
+        "after": "34-compact-max.png",
+        "all_visible_target_rectangles_equal": true,
+        "visible_target_count": 25,
+        "pixel_diff_bbox": [
+          492,
+          368,
+          755,
+          421
+        ],
+        "downstream_y426_pixel_diff_bbox": null,
+        "static_only": true
+      },
+      {
+        "before": "36-compact-affordable.png",
+        "after": "35-compact-material-locked.png",
+        "all_visible_target_rectangles_equal": true,
+        "visible_target_count": 25,
+        "pixel_diff_bbox": [
+          454,
+          366,
+          772,
+          421
+        ],
+        "downstream_y426_pixel_diff_bbox": null,
+        "static_only": true
+      },
+      {
+        "before": "37-compact-single-fee.png",
+        "after": "36-compact-affordable.png",
+        "all_visible_target_rectangles_equal": true,
+        "visible_target_count": 25,
+        "pixel_diff_bbox": [
+          449,
+          345,
+          666,
+          421
+        ],
+        "downstream_y426_pixel_diff_bbox": null,
+        "static_only": true
+      }
+    ],
+    "acceptance": "Pending root/overall/independent review, no author pass."
   }
 }
