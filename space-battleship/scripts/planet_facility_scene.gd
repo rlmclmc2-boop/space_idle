@@ -202,7 +202,7 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedRefineryBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-concept-spine.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-through-node.png")
 	body.pixel_size = 0.0024
 	body.position = Vector3(0, 1.00, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -247,7 +247,7 @@ func _position_refinery_work(model: Node3D, clock: float) -> void:
 	var width := _refinery_body_sprite.scale.x
 	# Seat the shell's open port over the upper end of one rigid receiver. Its
 	# lower tip stays at the refinery section's fixed physical socket.
-	var feed_opening_offset := screen_right * ((640.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 760.0) * _refinery_body_sprite.pixel_size)
+	var feed_opening_offset := screen_right * ((768.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 780.0) * _refinery_body_sprite.pixel_size)
 	var opening_world: Vector3 = _spine.to_global(_spine.refinery_feed_top()) + Vector3(0, 0, 0.12)
 	_refinery_body_sprite.position = model.to_local(opening_world) - feed_opening_offset
 	var base := _refinery_body_sprite.position + camera_front * 0.25

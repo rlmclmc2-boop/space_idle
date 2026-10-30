@@ -96,42 +96,32 @@ func _ready() -> void:
 		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.005, 0.08, 0.18, _side, kind)
 		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.008, -0.22, -0.16, _cyan, kind)
 		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
+		_add_load_channel(root, bounds.x, bounds.y)
 		for rib_index in range(1, 6):
 			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
 				_add_curved_deck(root, rib_angle - 0.008, rib_angle + 0.008, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
-		_joins[kind] = _add_join(root, bounds.y, kind)
+		_joins[kind] = _add_join(root, bounds.y)
 		var caps: Array[Node3D] = []
 		for angle in [bounds.x, bounds.y]:
 			var cap := Node3D.new()
 			cap.name = "BuiltSectionTerminal"
 			var outward := -1.0 if angle == bounds.x else 1.0
-			var face_basis := Basis(Quaternion(Vector3.UP, Vector3.BACK))
-			var nose := MeshInstance3D.new()
-			var bulb := SphereMesh.new()
-			bulb.radius = 1.0
-			bulb.height = 2.0
-			nose.mesh = bulb
-			nose.scale = Vector3(0.38, 0.35, 0.28)
-			nose.position.z = outward * 0.10
-			nose.material_override = _side
-			cap.add_child(nose)
+			# A sealed armored cross-section belongs to the built segment alone.
+			# The shallow cyan service slit faces the future mating segment.
 			for layer in [
-				[0.37, 0.15, 0.00, _navy],
-				[0.30, 0.025, 0.09, _deck],
-				[0.23, 0.028, 0.11, _side],
-				[0.065, 0.030, 0.13, _cyan],
+				[Vector3(0.63, 0.42, 0.23), Vector3(0, 0.17, outward * 0.04), _deck],
+				[Vector3(0.61, 0.19, 0.20), Vector3(0, 0.28, outward * 0.07), _deck],
+				[Vector3(0.49, 0.09, 0.035), Vector3(0, 0.06, outward * 0.18), _navy],
+				[Vector3(0.37, 0.025, 0.04), Vector3(0, 0.06, outward * 0.205), _cyan],
 			]:
 				var face := MeshInstance3D.new()
-				var armor := CylinderMesh.new()
-				armor.top_radius = layer[0]
-				armor.bottom_radius = layer[0]
-				armor.height = layer[1]
+				var armor := BoxMesh.new()
+				armor.size = layer[0]
 				face.mesh = armor
-				face.basis = face_basis
-				face.position.z = outward * layer[2]
-				face.material_override = layer[3]
+				face.position = layer[1]
+				face.material_override = layer[2]
 				cap.add_child(face)
 			var radial := point(angle).normalized()
 			var normal := plane_normal()
@@ -149,6 +139,13 @@ func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
 	result.set_shader_parameter("luminous", unshaded)
 	_all_materials.append(result)
 	return result
+
+func _add_load_channel(parent: Node3D, begin: float, finish: float) -> void:
+	# A recessed, armored conduit follows the same physical arc as the deck.
+	# Its dark floor and raised lips have depth at every phase.
+	_add_strip(parent, begin, finish, 0.25, 0.388, _navy)
+	_add_wall(parent, begin, finish, -0.125, 0.39, 0.51, _side)
+	_add_wall(parent, begin, finish, 0.125, 0.39, 0.51, _side)
 
 func set_body_scale(scale: Vector3) -> void:
 	for material in _all_materials:
@@ -221,6 +218,9 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_normal(normal)
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	var height := lift + current.y
+	# The deck's own center sinks to meet the structural conduit; both armor
+	# shoulders remain part of the same continuous mesh.
+	height -= 0.075 * (1.0 - smoothstep(0.11, 0.18, absf(current.x)))
 	if kind != "":
 		# Raise the load-bearing shell beside each work floor, leaving a recessed
 		# center for the facility rather than resting a separate pad on the ring.
@@ -309,9 +309,6 @@ func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
 	if kind == "auto_explore":
 		return
 	if kind == "refinery":
-		_add_socket_drum(parent, point(angle) + plane_normal() * 0.30, 0.72, 0.82, 0.38, _navy, plane_normal())
-		_add_socket_drum(parent, point(angle) + plane_normal() * 0.39, 0.72, 0.77, 0.19, _side, plane_normal())
-		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.66, 0.66, 0.08, _deck, plane_normal())
 		_add_refinery_root(parent, angle)
 	# The workshop's own two-mouth structural shell now straddles this deck.
 
@@ -378,47 +375,21 @@ func _add_receiver_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3
 		surface.set_uv(entry[1])
 		surface.add_vertex(entry[0])
 
-func _add_socket_drum(parent: Node3D, position: Vector3, top: float, bottom: float, height: float, material: Material, normal: Vector3) -> void:
-	var instance := MeshInstance3D.new()
-	var drum := CylinderMesh.new()
-	drum.top_radius = top
-	drum.bottom_radius = bottom
-	drum.height = height
-	instance.mesh = drum
-	instance.material_override = material
-	instance.position = position
-	instance.basis = Basis(Quaternion(Vector3.UP, normal))
-	parent.add_child(instance)
-
-func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
+func _add_join(parent: Node3D, angle: float) -> Node3D:
 	# Covers the armor gap where two independently built sections mate. This
 	# collar is owned by the preceding section and appears only after both exist.
 	var join := Node3D.new()
 	join.name = "SectionJoin"
 	parent.add_child(join)
-	# The mating sleeve spans both quarter ends as a real curved deck piece.
-	# It also keeps the broad foreground arc visually closed at oblique phases.
+	# Close the complete load path, including its keel and lit outer wall. A
+	# top-only sleeve leaves an obvious open cut at oblique orbital phases.
+	_add_strip(join, angle - 0.12, angle + 0.12, TRANSIT_WIDTH + 0.02, -0.20, _navy)
+	_add_wall(join, angle - 0.12, angle + 0.12, (TRANSIT_WIDTH + 0.02) * 0.5, -0.42, 0.26, _navy)
+	_add_wall(join, angle - 0.12, angle + 0.12, -(TRANSIT_WIDTH + 0.02) * 0.5, -0.42, 0.26, _navy)
+	_add_wall(join, angle - 0.12, angle + 0.12, (TRANSIT_WIDTH + 0.02) * 0.5 + 0.005, 0.08, 0.18, _side)
+	_add_wall(join, angle - 0.12, angle + 0.12, (TRANSIT_WIDTH + 0.02) * 0.5 + 0.008, -0.22, -0.16, _cyan)
 	_add_curved_deck(join, angle - 0.12, angle + 0.12, TRANSIT_WIDTH + 0.02, 0.232, _sleeve, 0.37, 0.63)
-	var coupling := MeshInstance3D.new()
-	var drum := CylinderMesh.new()
-	drum.top_radius = 0.28 if kind == "equipment" else 0.16
-	drum.bottom_radius = 0.33 if kind == "equipment" else 0.20
-	drum.height = 0.15
-	coupling.mesh = drum
-	coupling.material_override = _side
-	coupling.position = point(angle) + plane_normal() * 0.50
-	coupling.basis = Basis(Quaternion(Vector3.UP, plane_normal()))
-	join.add_child(coupling)
-	var indicator := MeshInstance3D.new()
-	var disk := CylinderMesh.new()
-	disk.top_radius = 0.09 if kind == "equipment" else 0.055
-	disk.bottom_radius = disk.top_radius
-	disk.height = 0.025
-	indicator.mesh = disk
-	indicator.material_override = _cyan
-	indicator.position = point(angle) + plane_normal() * 0.585
-	indicator.basis = coupling.basis
-	join.add_child(indicator)
+	_add_load_channel(join, angle - 0.12, angle + 0.12)
 	return join
 
 func configure(owned: Array) -> void:
@@ -429,7 +400,9 @@ func configure(owned: Array) -> void:
 		_joins[kind].visible = kind in _owned and KINDS[(index + 1) % KINDS.size()] in _owned
 		var caps: Array = _end_caps[kind]
 		caps[0].visible = kind != "auto_explore" and KINDS[(index + KINDS.size() - 1) % KINDS.size()] not in _owned
-		caps[1].visible = KINDS[(index + 1) % KINDS.size()] not in _owned
+		# The refinery shell itself encloses its nearby free end. An exposed
+		# terminal there reads as an unrelated block hanging below the furnace.
+		caps[1].visible = kind != "refinery" and KINDS[(index + 1) % KINDS.size()] not in _owned
 
 func update_pose(clock: float) -> void:
 	basis = Basis(Vector3(0.0, -TILT_Z, -TILT_Y), clock * 0.045)

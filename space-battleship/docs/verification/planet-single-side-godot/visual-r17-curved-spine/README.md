@@ -235,3 +235,11 @@
 原 `5a1` 的平斜圆盘与裸暗端不满足[批准图](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)圆站从环生长的体积。运行换成[深层暗青承力鼓、象牙圆甲板和两侧短耦合口组成的站体](../../../../assets/planets/facilities_v5/illustrated/station-orbit-through-node.png)；[两步 ImageGen 原输入／提示／SHA](../../../../assets/planets/facilities_v5/illustrated/station-through-node-prompts.txt)固定。只保旧可编辑 GLB 的 `HabitatRingSpin` 作为站顶真实独立活动层，静态旧盘与宽翼不再运行；站段首端置于壳体内，不再露出该阶段曾被看成下挂黑球的端帽，实际弧段与站体仍同 built 状态出现。
 
 [当前码 stage1 单站、stage4 四座、受控 90° 整屏](evidence/station-through-node/)和[8.17 秒、46 帧实墙钟相位](evidence/station-through-node/natural-timestamps.json)、[VFR 短片](evidence/station-through-node/natural-short-vfr.mp4)只核站体/环、站顶活动层和后弧深度。作者原尺寸看站壳在 stage1 吃住端头，完整态在上左，模拟 90° 时球遮去站后部分；自然首末同样未见本次短段越界。[Godot 4.7.2 导入、语法／驱动日志、源与证据 SHA](evidence/station-through-node/)同目录。此版仍不是四设施整体批准；精炼厂与环的共同造型仍按用户最后整体判断继续，不能拿旧版本图和旧局部通过填补本码。
+
+## 精炼厂圆壳节点与整圈承力截面：继续返修候选
+
+原审对 `527a9f46` 整体仍退回：环像双条平铺，中央圆钮不像跨接抱箍；工坊湾轨未贯通、船坞后侧仍固定向左伸、站体接弧与底角也未成同一结构。本节只固定针对该退回的一段实际源码和证据，**不宣称整体通过**。新精炼主体按[批准固态图](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)改为金顶圆形承力壳与双矿斗，正面保留原短接收道的凹口，左右长烘焙管已缩成壳体自身的短肩；[两次 ImageGen 输入、精确提示与 SHA](../../../../assets/planets/facilities_v5/illustrated/refinery-through-node-prompts.txt)可追溯。旧炉体与旧独立 3D 圆鼓不再运行，接收道和双闸活动口继续沿原端口运动，建造／领取及球环独转没有改。
+
+同一真实四段环的每段甲板中央下凹，深青通道有两侧实体立边，完整相邻段的接合同时补上底梁、侧壁与甲板；旧前弧中央圆钮从接合处删除。曾试作发亮的顶面青条，实机仍读成双描线，已撤销。逐建自由端从黑球／圆盘换为本段自身的浅色封装截面；精炼段尾由圆壳遮盖。图中仍能见到相位变化时的接合折线，封装体量和整环装甲品质待继续修正。
+
+[本码 stage0–4 整屏、模拟 90° 整屏](evidence/refinery-through-node/)和[8.11 秒实际墙钟时间戳、VFR 短片、首中末帧](evidence/refinery-through-node/)来自同版 Godot 4.7.2；[两个驱动](evidence/refinery-through-node/refinery-structure-driver.gd)、[源图提示](../../../../assets/planets/facilities_v5/illustrated/refinery-through-node-prompts.txt)与 SHA 同目录。90° 只由 `PI/(2×0.045)` 设置模拟相位；短片 33 张唯一墙钟采样帧编码为 8.16 秒，不是整圈、自然施工、引擎 FPS 或性能证明。作者原尺寸看五态、90° 与自然首中末：精炼旧盘互压已消失，圆壳在右上及前弧仍能辨认；但它与真实弧段在右侧相位仍偏悬，站体接弧和船坞局部朝向问题仍在。下一步须把站／工坊／船坞承力与泊位做成随节点局部转向的真实结构，并继续校准四节点与整圈剪影；不能拿此候选替代用户整体结论。Godot 4.7.2 导入／`--check-only --quit`、五态／90°／短动态驱动、`git diff --check` 均退出 0，测试限本次受影响的固态外观。
