@@ -172,6 +172,12 @@ func _transit_width(angle: float) -> float:
 	# section is slimmer before it passes behind the globe.
 	return lerpf(REAR_TRANSIT_WIDTH, FRONT_TRANSIT_WIDTH, 0.5 + 0.5 * sin(angle))
 
+func _station_saddle_drop(angle: float) -> float:
+	# A continuous local trough routes the real section below the station's
+	# painted front armor; its keel, walls, conduit and joins descend together.
+	var center: float = FACILITY_ANGLES["auto_explore"]
+	return 0.30 * smoothstep(center - 0.21, center - 0.07, angle) * (1.0 - smoothstep(center + 0.06, center + 0.20, angle))
+
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
 	# armor tile. Each independent quarter owns its whole physical arc.
@@ -250,6 +256,7 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
 		var keel_width := 1.0 - smoothstep(0.20, 0.39, absf(current.x + 0.10))
 		height += 0.14 * keel_span * keel_width
+	height -= _station_saddle_drop(angle)
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
@@ -262,10 +269,10 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 		var b := lerpf(begin, finish, float(index + 1) / float(steps))
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
-		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * lift
-		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * lift
-		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * lift
-		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * lift
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(a))
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(a))
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(b))
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(b))
 		for vertex in [ai, bi, ao, ao, bi, bo]:
 			surface.set_normal(normal)
 			surface.add_vertex(vertex)
@@ -287,7 +294,7 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 		var pa := point(a) * ((RADIUS + ra) / RADIUS)
 		var pb := point(b) * ((RADIUS + rb) / RADIUS)
 		var wall_normal := (pa + pb).normalized() * signf(radial)
-		for vertex in [pa + normal * bottom, pb + normal * bottom, pa + normal * top, pa + normal * top, pb + normal * bottom, pb + normal * top]:
+		for vertex in [pa + normal * (bottom - _station_saddle_drop(a)), pb + normal * (bottom - _station_saddle_drop(b)), pa + normal * (top - _station_saddle_drop(a)), pa + normal * (top - _station_saddle_drop(a)), pb + normal * (bottom - _station_saddle_drop(b)), pb + normal * (top - _station_saddle_drop(b))]:
 			surface.set_normal(wall_normal)
 			surface.add_vertex(vertex)
 	var instance := MeshInstance3D.new()

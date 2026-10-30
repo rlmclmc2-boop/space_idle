@@ -1,0 +1,270 @@
+{
+  "frames": [
+    {
+      "body_radius": 176.144,
+      "frame": 0,
+      "ring_phase": 0.235185000000001,
+      "surface_clock": 0.0685183333333341,
+      "surface_phase": 0.000411109998822212,
+      "wall_seconds": 0.023726
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 1,
+      "ring_phase": 0.630663000000001,
+      "surface_clock": 0.463996333333334,
+      "surface_phase": 0.00278397812508047,
+      "wall_seconds": 0.395478
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 2,
+      "ring_phase": 0.815413000000001,
+      "surface_clock": 0.648746333333334,
+      "surface_phase": 0.00389247806742787,
+      "wall_seconds": 0.580228
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 3,
+      "ring_phase": 0.994482000000001,
+      "surface_clock": 0.827815333333334,
+      "surface_phase": 0.004966891836375,
+      "wall_seconds": 0.759297
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 4,
+      "ring_phase": 1.330536,
+      "surface_clock": 1.16386933333333,
+      "surface_phase": 0.00698321592062712,
+      "wall_seconds": 1.095351
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 5,
+      "ring_phase": 1.510646,
+      "surface_clock": 1.34397933333333,
+      "surface_phase": 0.00806387607008219,
+      "wall_seconds": 1.275461
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 6,
+      "ring_phase": 1.831648,
+      "surface_clock": 1.66498133333333,
+      "surface_phase": 0.00998988840728998,
+      "wall_seconds": 1.596463
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 7,
+      "ring_phase": 2.008689,
+      "surface_clock": 1.84202233333333,
+      "surface_phase": 0.0110521344467998,
+      "wall_seconds": 1.773504
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 8,
+      "ring_phase": 2.34101,
+      "surface_clock": 2.17434333333333,
+      "surface_phase": 0.0130460606887937,
+      "wall_seconds": 2.105825
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 9,
+      "ring_phase": 2.510136,
+      "surface_clock": 2.34346933333333,
+      "surface_phase": 0.0140608167275786,
+      "wall_seconds": 2.274951
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 10,
+      "ring_phase": 2.836005,
+      "surface_clock": 2.66933833333333,
+      "surface_phase": 0.0160160306841135,
+      "wall_seconds": 2.60082
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 11,
+      "ring_phase": 3.002916,
+      "surface_clock": 2.83624933333333,
+      "surface_phase": 0.0170174967497587,
+      "wall_seconds": 2.767731
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 12,
+      "ring_phase": 3.336034,
+      "surface_clock": 3.16936733333333,
+      "surface_phase": 0.0190162044018507,
+      "wall_seconds": 3.100849
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 13,
+      "ring_phase": 3.502953,
+      "surface_clock": 3.33628633333333,
+      "surface_phase": 0.0200177188962698,
+      "wall_seconds": 3.267768
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 14,
+      "ring_phase": 3.819602,
+      "surface_clock": 3.65293533333333,
+      "surface_phase": 0.0219176132231951,
+      "wall_seconds": 3.584417
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 15,
+      "ring_phase": 3.997671,
+      "surface_clock": 3.83100433333333,
+      "surface_phase": 0.022986026480794,
+      "wall_seconds": 3.762486
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 16,
+      "ring_phase": 4.327502,
+      "surface_clock": 4.16083533333333,
+      "surface_phase": 0.0249650124460459,
+      "wall_seconds": 4.092317
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 17,
+      "ring_phase": 4.504078,
+      "surface_clock": 4.33741133333333,
+      "surface_phase": 0.0260244682431221,
+      "wall_seconds": 4.268893
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 18,
+      "ring_phase": 4.822755,
+      "surface_clock": 4.65608833333333,
+      "surface_phase": 0.0279365312308073,
+      "wall_seconds": 4.58757
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 19,
+      "ring_phase": 4.999277,
+      "surface_clock": 4.83261033333333,
+      "surface_phase": 0.0289956629276276,
+      "wall_seconds": 4.764092
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 20,
+      "ring_phase": 5.325537,
+      "surface_clock": 5.15887033333333,
+      "surface_phase": 0.0309532228857279,
+      "wall_seconds": 5.090352
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 21,
+      "ring_phase": 5.511947,
+      "surface_clock": 5.34528033333333,
+      "surface_phase": 0.0320716835558414,
+      "wall_seconds": 5.276762
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 22,
+      "ring_phase": 5.83125,
+      "surface_clock": 5.66458333333333,
+      "surface_phase": 0.0339874997735023,
+      "wall_seconds": 5.596065
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 23,
+      "ring_phase": 6.0063,
+      "surface_clock": 5.83963333333333,
+      "surface_phase": 0.0350378006696701,
+      "wall_seconds": 5.771115
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 24,
+      "ring_phase": 6.349378,
+      "surface_clock": 6.18271133333333,
+      "surface_phase": 0.03709626942873,
+      "wall_seconds": 6.114193
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 25,
+      "ring_phase": 6.521782,
+      "surface_clock": 6.35511533333333,
+      "surface_phase": 0.0381306931376457,
+      "wall_seconds": 6.286597
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 26,
+      "ring_phase": 6.845508,
+      "surface_clock": 6.67884133333333,
+      "surface_phase": 0.0400730483233929,
+      "wall_seconds": 6.610323
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 27,
+      "ring_phase": 7.021743,
+      "surface_clock": 6.85507633333333,
+      "surface_phase": 0.0411304570734501,
+      "wall_seconds": 6.786558
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 28,
+      "ring_phase": 7.354631,
+      "surface_clock": 7.18796433333333,
+      "surface_phase": 0.0431277863681316,
+      "wall_seconds": 7.119446
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 29,
+      "ring_phase": 7.527362,
+      "surface_clock": 7.36069533333333,
+      "surface_phase": 0.0441641733050346,
+      "wall_seconds": 7.292177
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 30,
+      "ring_phase": 7.86955,
+      "surface_clock": 7.70288333333333,
+      "surface_phase": 0.0462172999978065,
+      "wall_seconds": 7.634365
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 31,
+      "ring_phase": 8.04815,
+      "surface_clock": 7.88148333333333,
+      "surface_phase": 0.0472888983786106,
+      "wall_seconds": 7.812965
+    },
+    {
+      "body_radius": 176.144,
+      "frame": 32,
+      "ring_phase": 8.377244,
+      "surface_clock": 8.21057733333333,
+      "surface_phase": 0.0492634624242783,
+      "wall_seconds": 8.142059
+    }
+  ],
+  "sampling_target_seconds": 0.25,
+  "wall_target_seconds": 8.0
+}
