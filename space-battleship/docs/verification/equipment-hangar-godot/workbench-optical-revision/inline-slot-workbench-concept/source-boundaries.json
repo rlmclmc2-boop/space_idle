@@ -1,0 +1,73 @@
+{
+  "design_start": "9e7fc183cfecb511ef6fdc20754b21b9584c6a06",
+  "runtime_source_commit": "304883fbde448cd32fa288ae97967e43100209bc",
+  "information_baseline": "3916ffbc9e246f07693a633a772536faad982258",
+  "changed_tracked_paths": [
+    "space-battleship/docs/game-design/art/modules/equipment.md",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md"
+  ],
+  "tracked_non_document_diff": [],
+  "no_game_execution": true,
+  "source_files": {
+    "src/ui/equipment_panel.gd": {
+      "sha256": "da5ed854f9f96ad0dc26753824a39bdf74cf80099677fc9e62f70629e15b2775",
+      "equals_design_start": true
+    },
+    "src/main.gd": {
+      "sha256": "5fbd98b5b2607b86ecb4dd921395a4b24c144b6d58a8f93c36f83e8de9514c7f",
+      "equals_design_start": true
+    },
+    "src/game_session.gd": {
+      "sha256": "207018ae172b3d855ef4990833ce95e8095696847c18e4249ad7c3fb931f2dd6",
+      "equals_design_start": true
+    },
+    "src/systems/equipment.gd": {
+      "sha256": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+      "equals_design_start": true
+    },
+    "src/systems/economy.gd": {
+      "sha256": "38780135a3094f76a41d77048cfb59445101159ac15ff4c75a1434ffb2518702",
+      "equals_design_start": true
+    },
+    "src/ui/resource_visuals.gd": {
+      "sha256": "1cae88972f1f5ce6f5a1793fcbadb24f9f978c2587855e59c28d4a964c4c0080",
+      "equals_design_start": true
+    },
+    "src/ui/campaign_view.gd": {
+      "sha256": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb",
+      "equals_design_start": true
+    },
+    "project.godot": {
+      "sha256": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+      "equals_design_start": true
+    },
+    "assets/ui/equipment/hangar/hangar-console.png": {
+      "sha256": "71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50",
+      "equals_design_start": true
+    },
+    "assets/ui/equipment/materials-20261029/painted-console-shell.png": {
+      "sha256": "f5aa0c10ee10581319eb257043e526321b5f0fd6b51dbece53d9e62b9c786ce1",
+      "equals_design_start": true
+    },
+    "assets/ui/equipment/materials-20261029/control-materials.png": {
+      "sha256": "707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c",
+      "equals_design_start": true
+    },
+    "assets/ui/equipment/cartoon_armour.svg": {
+      "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547",
+      "equals_design_start": true
+    },
+    "assets/ui/equipment/cartoon_shield.svg": {
+      "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788",
+      "equals_design_start": true
+    },
+    "assets/ui/public_shell/resource-material-atlas.png": {
+      "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec",
+      "equals_design_start": true
+    },
+    "assets/ui/public_shell/resource-material-supplement.png": {
+      "sha256": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3",
+      "equals_design_start": true
+    }
+  }
+}

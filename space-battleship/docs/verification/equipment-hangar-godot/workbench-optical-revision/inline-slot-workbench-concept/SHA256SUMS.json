@@ -1,0 +1,20 @@
+{
+  "01-early-two.png": "0a5f7cabbc7b9b584e2e2350408a48aa166b98630a6fccd325b71fcecc77c275",
+  "01-early-two.svg": "86343e9cce8d62041072d204c103bc6209f2225bc65f103f146858db6ff985f9",
+  "02-middle-five.png": "2e1ff05e25d2544853663df3a58f60b7714e6239f5c5823cb19d4648f32d7f82",
+  "02-middle-five.svg": "fe7dfdbddec0b00c337010368d63739522773096620a4ede49e93ac545aa7fc2",
+  "03-late-eight.png": "48b0fdd2674e200521863ac5e22e98947f834b64f973fe7ae0da949da6b43764",
+  "03-late-eight.svg": "5370e0fb4c508037afdc07adfbe6e546cd862e6b37b25fa20e2be9fa8b974471",
+  "04-local-dropdown.png": "f9b43f3d766fc0e265a70225f73cd5e1362838f7ad75ec0dad3361e7f8d6325a",
+  "04-local-dropdown.svg": "75f886376a414790fe7f05f1cd28fad60c751079921350555248edb6067896c2",
+  "README.md": "619b49ba686dcc24adada044104fa44139cc5817bd02d0ef2cf9ae911091c317",
+  "build-design-plates.py": "0a349cdb3cbdf5e427895bf492962c52e0b770ba031746e7d8fc604387649ca9",
+  "imagegen-01-early-process.png": "3d5955d0f6fc6c7775c6f88e8ebf27c451e6b68a7049ba94a18ac5bae518bc39",
+  "imagegen-02-late-process.png": "138efc0d7711d405547e1158adc7f5935417e87e1a85a13fd41a22332b57ce04",
+  "imagegen-03-late-correction.png": "d956b42a935410708048dd29068b55ec33948c5db82c19696d6e37a42291a951",
+  "imagegen-prompts.json": "f07ead5cf2052e6ef29e07b9d150fb0fe81d9a4389ac140747e6874fa07db70e",
+  "imagegen-reference-hashes.json": "bbd5633c9769ed29b138de3d4d8be6fdb9062af41caa5764ec14a196f6066d8d",
+  "manifest.json": "56c6427155dfa2f4b0aca5acafa68f56dc6135569e5dd489ad79c5c149536368",
+  "reference-hashes.json": "da817f5b9f156d18f37eb9c3199d0593b2fb775712b2cd652204d63c81f89363",
+  "source-boundaries.json": "0b334d3e6cd0fea54d75ae56f72366bcc87b89aaaa76c43db7662ef29c76ed85"
+}

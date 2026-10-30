@@ -1,0 +1,129 @@
+{
+  "kind": "unselected-static-structure-concept",
+  "stage": "design-only; no runtime verification",
+  "module": [
+    0,
+    0,
+    808,
+    900
+  ],
+  "main_plates": [
+    {
+      "file": "01-early-two.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "0a5f7cabbc7b9b584e2e2350408a48aa166b98630a6fccd325b71fcecc77c275",
+      "svg_sha256": "86343e9cce8d62041072d204c103bc6209f2225bc65f103f146858db6ff985f9",
+      "battle_pixel_diff_bbox": null,
+      "header_pixel_diff_bbox": null,
+      "actually_viewed": true
+    },
+    {
+      "file": "02-middle-five.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "2e1ff05e25d2544853663df3a58f60b7714e6239f5c5823cb19d4648f32d7f82",
+      "svg_sha256": "fe7dfdbddec0b00c337010368d63739522773096620a4ede49e93ac545aa7fc2",
+      "battle_pixel_diff_bbox": null,
+      "header_pixel_diff_bbox": null,
+      "actually_viewed": true
+    },
+    {
+      "file": "03-late-eight.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "48b0fdd2674e200521863ac5e22e98947f834b64f973fe7ae0da949da6b43764",
+      "svg_sha256": "5370e0fb4c508037afdc07adfbe6e546cd862e6b37b25fa20e2be9fa8b974471",
+      "battle_pixel_diff_bbox": null,
+      "header_pixel_diff_bbox": null,
+      "actually_viewed": true
+    },
+    {
+      "file": "04-local-dropdown.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "f9b43f3d766fc0e265a70225f73cd5e1362838f7ad75ec0dad3361e7f8d6325a",
+      "svg_sha256": "75f886376a414790fe7f05f1cd28fad60c751079921350555248edb6067896c2",
+      "battle_pixel_diff_bbox": null,
+      "header_pixel_diff_bbox": null,
+      "actually_viewed": true
+    }
+  ],
+  "imagegen_originals": [
+    {
+      "file": "imagegen-01-early-process.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "3d5955d0f6fc6c7775c6f88e8ebf27c451e6b68a7049ba94a18ac5bae518bc39",
+      "actually_viewed": true,
+      "not_precision_main_plate": true
+    },
+    {
+      "file": "imagegen-02-late-process.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "138efc0d7711d405547e1158adc7f5935417e87e1a85a13fd41a22332b57ce04",
+      "actually_viewed": true,
+      "not_precision_main_plate": true
+    },
+    {
+      "file": "imagegen-03-late-correction.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "d956b42a935410708048dd29068b55ec33948c5db82c19696d6e37a42291a951",
+      "actually_viewed": true,
+      "not_precision_main_plate": true
+    }
+  ],
+  "renderer": "Inkscape CLI; Noto Sans CJK SC; export only",
+  "svg_source": "build-design-plates.py",
+  "layout": {
+    "workbench_x": [
+      303,
+      798
+    ],
+    "row_height": 81,
+    "quantity_size": [
+      54,
+      30
+    ],
+    "purchase_size": [
+      114,
+      30
+    ],
+    "early_slots": [
+      1,
+      1
+    ],
+    "middle_slots": [
+      3,
+      2
+    ],
+    "late_slots": [
+      5,
+      3
+    ]
+  },
+  "remaining_limits": [
+    "unselected organization",
+    "material finish not final",
+    "not a live coherent save",
+    "right battle/header copied context",
+    "max positive/empty/dormant/unavailable/extreme number/focus matrix not drawn or run",
+    "same-slot lock still10 game seconds; future implementation must remove"
+  ]
+}
