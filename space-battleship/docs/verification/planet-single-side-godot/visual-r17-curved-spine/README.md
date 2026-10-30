@@ -189,3 +189,9 @@
 原整体审已限定接受 `331866cc` 的主序／红巨表现方向及本节既有证据范围，供整体组窄接入。`interaction_crew_assigned.png` 右缘单帧曾引发船体裁切疑问；原路线的探索船从视口右外侧入场，再汇入独立椭圆轨道，入场途中局部出现是原设计过渡，不能由单帧判为运行轨道越界。一次把入场改为视口内起步、收紧轨道边距及离场淡出的路线试验**未运行、未采用、未进入候选**；差异仅隔离于本地 `/tmp/planet-withdrawn-scout-route.patch`（原 HEAD `331866cc`，SHA256 `bd4ba60d3d5553ae0721033ebfd3d544deb8ebe3522c8456a9d0a196d05d5364`），正式 `planet_visual.gd` 已恢复为该 HEAD 原样。
 
 当前固定证据仍限上述同版主序／红巨短自然片、整屏和真实操作，及前节各自注明版本的建设／固态环周记录；不据此推断新码六类完整环周、所有建造／领取流程或公共宿主切页通过。后续整体组需按已交的本模块窄文件接入后审共享组合；公共控件未来 Figma 统一源待明确交接后再消费，本轮不另造控件源或重跑既有相位。
+
+## 页签原生选中态与公共操作角色：内区复审候选
+
+公共组已在 `design/clear-zone-host@91210488` 将实际运行的普通、悬浮、按下、焦点和禁用状态集中到 `BridgeTheme`，并明确星球内页普通页签亮金属包边偏重、选中与未选只靠抽屉才易分辨。此版只调整 `planet_panel.gd` 现有 `_paint_button()` 的三个 toggle 页签：仍取本组已接的深青漆面原材，普通态降低亮边面积／面亮度，悬浮居中，原 `button_pressed` 驱动的 `pressed` 作为持续暖青选中面；另给 `hover_pressed` 独立原生面，焦点细边及禁用字底保留。`_rebuild_drawer()` 原有 `set_pressed_no_signal` 决定当前页签，不用新的状态副本、覆盖控件或全页重建；执行、选择器、抽屉、球环、设施和资源刷新未改。本模块不复制或改写公共 `BridgeTheme`／宿主文件，亦不使用已撤销的 Figma 制作源。
+
+[同版 1440×900 关闭态与三个选中抽屉整屏](evidence/planet-tab-state-source/)由[固定驱动](evidence/planet-tab-state-source/planet-tab-state-driver.gd)按原受控第一固态星四设施 built 取图。作者原尺寸看 `facilities.png`、`crew.png`、`exploration.png`：在未悬浮状态下，当前页签本身的暖边／面色与较暗的其他页签可辨，正文、球环及四设施没有新裁切。`crew_focus.png` 用原 Button `grab_focus()` 展示原生焦点与持续选中的叠加；`crew_facility_disabled_diagnostic.png` 仅把设施页签临时 `disabled=true` 展示禁用字底，**不是**玩法正常禁用状态，取图后恢复。日志断言人员选中、焦点归属、诊断禁用与探索选中；[Godot 4.7.2 运行与脚本检查日志](evidence/planet-tab-state-source/)及六图 SHA 在同目录固定，两命令退出 0。本节只供页签状态与本组整屏原审；公共组合仍须整体组同步本版 `planet_panel.gd` 后另取当前组合整屏，旧 `331` 组合图不能冒充此次状态源码。

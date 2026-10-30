@@ -96,9 +96,9 @@ func _ready() -> void:
 	for button in [_task_button, _crew_button, _facility_button]:
 		button.toggle_mode = true
 		add_child(button)
-	_paint_button(_task_button, Color("264b58"), Color("31616b"), Color("e6d5ac"), Color("b39a68"), Color("f6efdc"))
+	_paint_button(_task_button, Color("264b58"), Color("31616b"), Color("e6d5ac"), Color("b39a68"), Color("f6efdc"), "tab")
 	for button in [_crew_button, _facility_button]:
-		_paint_button(button, Color("173847"), Color("285464"), Color("e4dcc6"), Color("6f9ba0"), Color("f0ead8"))
+		_paint_button(button, Color("173847"), Color("285464"), Color("e4dcc6"), Color("6f9ba0"), Color("f0ead8"), "tab")
 	_paint_button(world_planet_picker, Color("173847"), Color("285464"), Color("315f6c"), Color("78999c"), Color("eee9d9"), "selector")
 	_task_button.pressed.connect(func(): _toggle_section("exploration"))
 	_crew_button.pressed.connect(func(): _toggle_section("crew"))
@@ -237,17 +237,23 @@ func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, 
 		var tint: Color
 		if role == "primary":
 			tint = Color(0.82, 0.86, 0.84) if state == "normal" else Color(0.96, 1.0, 0.94) if state == "hover" else Color(0.76, 0.81, 0.78)
+		elif role == "tab":
+			# The native toggle's pressed style is its persistent selected state.
+			# Use the shared cool-face hierarchy: quiet ordinary tabs, warm-lit selection.
+			tint = Color(0.53, 0.63, 0.67) if state == "normal" else Color(0.69, 0.80, 0.82) if state == "hover" else Color(0.91, 0.99, 0.91)
 		elif role == "quiet":
 			tint = Color(0.72, 0.79, 0.82) if state == "normal" else Color(0.86, 0.93, 0.94) if state == "hover" else Color(0.84, 0.91, 0.91)
 		else:
 			tint = Color(0.79, 0.86, 0.88) if state == "normal" else Color(0.94, 1.0, 1.0) if state == "hover" else Color(1.02, 1.06, 1.01)
 		button.add_theme_stylebox_override(state, _material_style("primary" if role == "primary" else "navy", tint))
+	if role == "tab":
+		button.add_theme_stylebox_override("hover_pressed", _material_style("navy", Color(1.0, 1.05, 0.98)))
 	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c") if role == "primary" else Color("95bfbd"), 1))
 	button.add_theme_stylebox_override("disabled", _material_style("navy", Color(0.62, 0.69, 0.72)))
 	for state in ["font_color", "font_hover_color", "font_focus_color"]:
 		button.add_theme_color_override(state, ink)
 	for state in ["font_pressed_color", "font_hover_pressed_color"]:
-		button.add_theme_color_override(state, Color("173747") if role == "primary" else Color("f0edde"))
+		button.add_theme_color_override(state, Color("173747") if role == "primary" else Color("fff0c6") if role == "tab" else Color("f0edde"))
 	button.add_theme_color_override("font_disabled_color", Color("95a7a8"))
 
 func _load_control_materials() -> void:
