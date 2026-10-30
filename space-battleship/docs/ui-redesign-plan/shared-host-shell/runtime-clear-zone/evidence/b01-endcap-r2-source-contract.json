@@ -1,0 +1,38 @@
+{
+  "status": "design_direction_not_runtime_asset",
+  "source_commit": "e8ec7c447d303e01773d31b8798d6ff630520229",
+  "design_reference": "b01-endcap-r2-full-source-study.png",
+  "comparison_only": "b01-endcap-r2-composition-study.png",
+  "source_plate_px": [1187, 1326],
+  "runtime_stage_px": [808, 835],
+  "runtime_stage_screen_origin_px": [0, 65],
+  "public_navigation_screen_x_px": [808, 855],
+  "source_to_screen_scale": [0.6807076664, 0.6297134238],
+  "source_layers_owned_by_reactor_group": [
+    "one-idle-console.png", "one-active-console.png",
+    "two-idle-console.png", "two-active-console.png",
+    "locked-idle-console.png", "locked-active-console.png",
+    "idle-console.png", "active-console.png"
+  ],
+  "mask_alignment_to_preserve": [
+    "effect-mask.png", "module-mask.png", "pipe-mask.png"
+  ],
+  "architecture_to_complete_in_each_plate": [
+    "Overhead ring and side bulkheads terminate into visible returns at both image edges.",
+    "Catwalk and wall bays connect to those same returns without isolated edge overlay strips.",
+    "Floor rails and lower console side cheeks continue the returns to the bottom edge.",
+    "Right-side room geometry ends inside the painted B01 stage before the public navigation spine."
+  ],
+  "do_not_copy_from_generated_reference": [
+    "central reactor geometry", "module count or machinery", "control-well layout",
+    "literal user-interface text", "battle imagery"
+  ],
+  "integration_guardrails": [
+    "The stage still draws each selected plate at 808x835, screen y65–900.",
+    "Keep the active and idle plate pair aligned for each module count.",
+    "Keep the effects and three masks aligned to the unchanged original machinery.",
+    "The existing shader edge color fade is not a substitute for painted architecture.",
+    "Do not add a host overlay, border, or navigation-width panel over the reactor room."
+  ],
+  "review_required": "real 1440x900 shared screenshots for 1/2/3/4 and idle/active after the reactor group supplies source plates"
+}
