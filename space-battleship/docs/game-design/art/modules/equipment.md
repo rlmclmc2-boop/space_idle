@@ -1,5 +1,8 @@
 # M2 舰体与装备
 
+**当前63–83原素材收端／正式宿主组合：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)继续e154原审后的早期框灯／反光主次与x808接续，采用75固定e8正式导航（装备选中）和右宿主原像素，短／长环境源自行收端。21整屏已实际看；槽内结构、舰武变换与真实长MAX保持，仅静态设计。早期主次／薄侧颊／跨页接续仍交整体与原审判断；无运行／独立复测／main。下列42–62及更旧段落保留历史，当前未完以唯一入口清单为准。
+
+
 [唯一入口](../../README.md) → [全局规范](../../13-art-interaction.md)。[资产来源](../sources.md#s4)；本页只含 M2/V2，须同时遵守全局 2.1–2.3、复用边界及第6节证据口径；[玩法](../../03-progression.md)、[相关契约](../../06-data.md)只读本任务受影响小节，跨模块提交变动再读 [05现行契约](../../05-architecture.md#现行模块交接契约)。
 
 **当前42–62静态整页候选：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已实际消费整体b17共同材质角色，并制作单一船台／工作台承托背景；保61c9R3字体及04149已审2／5同屏、8槽只读残行／真实武器关联。防御仅行内信息操作，无模型／代理／指线。真实历史长MAX来源、共同控件状态及21整屏15局部随源；当前仍待整体／根／原独审完整构图与B01宿主过渡判断，不报用户接受／运行实施。原Owner10秒锁后续移除要求不变，无新复测／main。以下旧“材质／长值／focus全缺”由该入口精确当前清单覆盖。

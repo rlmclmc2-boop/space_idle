@@ -1,0 +1,94 @@
+{
+  "kind": "ImageGen environment edits, not full UI generation",
+  "source_commit": "e15484ceabfe953605eef132e71b6883a3590bf5",
+  "host_commit": "75d55275dadf57b84da62ce0e9ea8f4f0161f97d",
+  "host_source": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-combo-equipment-1440x900.png",
+  "host_geometry": {
+    "canvas": [
+      1440,
+      900
+    ],
+    "module": [
+      0,
+      85,
+      808,
+      815
+    ],
+    "navigation": [
+      808,
+      0,
+      47,
+      900
+    ],
+    "battle_projection": [
+      855,
+      0,
+      585,
+      900
+    ],
+    "selection": "equipment",
+    "method": "Unscaled exact screenshot; original header and x808+ clip rectangles retained. Never use generated full-page study UI."
+  },
+  "environment_edits": [
+    {
+      "input": "coherence-assets/hangar-short-carrier.png",
+      "output": "coherence-assets/hangar-short-return.png",
+      "original_output": "/workspace/generated_images/exec-62da4e9b-e5e4-4bb4-b09f-2d4720e4ec0e.png",
+      "sha256": "4abe9d84a709a4182f193c18a201c9164ba0829fd0d6dc9823abba30f5ef5cfe",
+      "prompt_intent": "Keep room/pad/blank reading plane; model right wall return, full console foot and floor end within source; navy unlit extreme edge; no UI/ship/text. Short: substantially lower frame/ceiling lamps and floor reflection. Tall: reduce harsh blooms.",
+      "observed_deviation": "Generator narrowed blank panel despite preservation request; corrected in editable SVG background mapping, not by moving text/buttons."
+    },
+    {
+      "input": "coherence-assets/hangar-tall-carrier.png",
+      "output": "coherence-assets/hangar-tall-return.png",
+      "original_output": "/workspace/generated_images/exec-349cb48f-6064-42c6-972a-44fcb9a6ad49.png",
+      "sha256": "4d91490b8e0792b4b39670120ead2aeb55e0fd15a80934dc67607a82199f38b7",
+      "prompt_intent": "Keep room/pad/blank reading plane; model right wall return, full console foot and floor end within source; navy unlit extreme edge; no UI/ship/text. Short: substantially lower frame/ceiling lamps and floor reflection. Tall: reduce harsh blooms.",
+      "observed_deviation": "Generator narrowed blank panel despite preservation request; corrected in editable SVG background mapping, not by moving text/buttons."
+    }
+  ],
+  "render_geometry": {
+    "source_canvas": [
+      1240,
+      1268
+    ],
+    "original_transform": [
+      -27,
+      85,
+      843.2,
+      815
+    ],
+    "short_source_x": [
+      0,
+      540,
+      1138,
+      1218,
+      1240
+    ],
+    "tall_source_x": [
+      0,
+      540,
+      1120,
+      1180,
+      1240
+    ],
+    "destination_source_units_x": [
+      0,
+      540,
+      1198,
+      1220,
+      1240
+    ],
+    "reason": "Generated blank read-plane narrowed. Piecewise background-only mapping retains left room anchor and gives unchanged row targets a complete blank carrier, then terminates thin side cheek and wall before navigation. Explicit local source clip paths prevent repeat-image overflow. This is illustration adaptation, no battle or mount geometry change.",
+    "flattened_background": "hangar-{short,tall}-return-layout.svg/png rendered first; main plates contain one background image. Corrects observed nested-clip bleed in intermediate exports; intermediate full plate renders overwritten."
+  },
+  "limits": [
+    "No native host implementation",
+    "No runtime input/focus/scroll/switch/payment evidence",
+    "Right-side cheek compression and early hierarchy require whole-page external review",
+    "No user complete-version approval"
+  ],
+  "host_sha256": "40df707599e4a94e9eba17a1f3669d224170a636529ef400e3a89b9784cc5d4b",
+  "latest_contract_checked": "051cbd0dc201fb53578d9c074460b8969a207ef8",
+  "latest_contract_note": "e154-junction-source-contract.json confirms same public x808, nav right line854, equipment rail85. No public source or sampled75 host changed in051."
+}
