@@ -1,0 +1,49 @@
+{
+  "kind": "Actual same-thread GUI/Owner/native affected checks after MAX admission, shutdown and icon fixes; old main host WIP only",
+  "baseline": "4dd4f1238ad59517965409b58eb52fb3acb14438",
+  "engine": "Godot4.7.2 compatibility on DISPLAY:99 llvmpipe",
+  "result": {
+    "exit_code": 0,
+    "failures": [],
+    "shutdown_objectdb_or_resource_warnings": false
+  },
+  "conditions": "Natural early2; explicit validated Owner restores later progress, wallets and loadouts. Unknown receipt uses explicit publisher fault injection. No new gameplay formulas.",
+  "source_sha256": {
+    "space-battleship/src/ui/equipment_panel.gd": "0fe2277fc5986093aa4afec32b02dd71dce3ef2b33c831330ca5b232496318f1",
+    "space-battleship/src/systems/equipment.gd": "92bb4380f76028a9e53fe1f7deaec6e29dc384e3f136dae5b70d6e0803db319b",
+    "space-battleship/src/main.gd": "5fbd98b5b2607b86ecb4dd921395a4b24c144b6d58a8f93c36f83e8de9514c7f",
+    "space-battleship/generated/config.json": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+    "/tmp/space-idle-native472/bin/libspace_native.so": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d"
+  },
+  "evidence_sha256": {
+    "wip-inline-native-patch-bottom.png": "ef69b41af971c939136fe5feddc5ef4a8e8f944bde61b4b436af3cef4839a726",
+    "wip-inline-native-patch-defence-dropdown.png": "1f527003fb98edccd9356c93ebba7d51d286e9820301d38473e2da139006fc8f",
+    "wip-inline-native-patch-early-feedback.png": "59376d7d96cb43aaf62ab2b25f9f304e35f99097882d8712cb691bbf8f81589a",
+    "wip-inline-native-patch-early.png": "290d64d7ff62f183952909f27cef8095df934c2cd4e19494ea006dd08934e550",
+    "wip-inline-native-patch-late-iron-poor.png": "f87209403904b2fde871d55654e59aeb2d8e88f6ba4d6e7711ce5a1b14a38d52",
+    "wip-inline-native-patch-late-matter-poor.png": "fe773d5d8cec0893249fb5ad1d8c380706f78026189dc9ac442ea3f7fe63e4e0",
+    "wip-inline-native-patch-long-max.png": "30a502b08e519ce0a1cbc29c9c8101d9844aad5b9451c01d0d7e527037b7e970",
+    "wip-inline-native-patch-material-locked.png": "5a7015f34f49b668d2c21fbb547c713cb2315f2f5ad14eba187b1eb6bb3ca8ab",
+    "wip-inline-native-patch-middle.png": "277cf30ba536f5def5608684d31e1b00758354e27174e757f17b621129f610e6",
+    "wip-inline-native-patch-operations.json": "b02ee301bbec60d1eb6117ad11e5b888cc284020214d1f86f45382954a5b8a55",
+    "wip-inline-native-patch-resource-tooltip.png": "bec71f6f11e5672dab9373ba9183c7d6d3d092e9f3048f6efeae95dbf8c15c98",
+    "wip-inline-native-patch-success.png": "416da1a30c2fc2804898c6ce8f1f1482729eae7c2f9a3453cfcea707ccebed2f",
+    "wip-inline-native-patch-unknown-receipt.png": "8d2a6b41106ce1729cfb8968fdc2f328938609eeba57c70f2d481119f0517300"
+  },
+  "driver_sha256": "ad717af01584d07692379ce88ab8ea6f5e6c2fdbbd59e9077dabf72bb206db2a",
+  "log_sha256": "6bc93756491f5cfac9b7bfd7b2654168426a713aa6a7507389edf4b6e2f532c0",
+  "actually_viewed_after_fix": [
+    "early",
+    "middle",
+    "long-max",
+    "bottom",
+    "resource-tooltip",
+    "defence-dropdown"
+  ],
+  "not_claimed": [
+    "Formal shared host geometry",
+    "same-version final video",
+    "original review or user acceptance",
+    "main merge"
+  ]
+}

@@ -1,12 +1,14 @@
-# 装备矩形卡与原生接入：未完成自然检查点
+# 装备矩形卡与原生接入：当前执行检查点
 
-用户已要求完整矩形卡、单行属性、费用逐项不足变红、拥挤时省资源名保图标数字并悬停0.5秒提示，且已明确批准修改后实机接入。旧等待用户落地许可已解除。
+用户已批准矩形卡修订后接入实机：每槽完整矩形卡、单行当前→升级后、逐项不足费用标红，拥挤时保图标数字并悬停0.5秒提示；不足购买可点，真实拒绝后才短暂提示。现装本地下拉点击即免费切换且可立即切回，无额外确认，同槽10游戏秒锁已按授权移除。
 
-本次63–83已改为矩形卡，新增[84不足点击反馈](84-insufficient-click-feedback.png)、[85悬停示意](85-resource-hover-half-second.png)，见[新源账本](rectangular-card-manifest.json)及[导出源](build-rectangular-cards.py)。这23图未获得新整组审结论，仅5张已实际查看；旧3946通过不覆盖本次修订。旧review-current-group/host-return/SHA256SUMS仍为历史快照，未宣称其校验新图。
+63–83当前21态及[84不足点击反馈](84-insufficient-click-feedback.png)、[85资源悬停示意](85-resource-hover-half-second.png)共23张已逐张实际查看。当前统一[审阅页](review-current-group.html)、[矩形卡账本](rectangular-card-manifest.json)与[导出源](build-rectangular-cards.py)。旧3946静态原审通过不覆盖本次矩形修订；历史账本保存在`host-return-*-3946-history.json`，不能作为当前文字/控制节点不变的声明。
 
-原生equipment_panel/Owner换装锁及必要契约已实际修改，真实GUI/Owner受影响流程最后完整运行failures=0；最后MAX准入及退出清理补丁只解析通过。当前[实机视频WIP](wip-inline-native-wip.mp4)和wip-inline-native截图采用旧公共宿主，不能当正式公共几何或最终实机交付。
+真实Godot4.7.2/native/config同线程GUI流程在最后MAX准入及退出清理后已执行，随后因目视发现下拉图标撑大，修正TextureRect初始化顺序并再次执行：退出0、failures=0，含MAX材料禁用及下拉图标边界断言，退出无ObjectDB/资源泄漏警告。新下拉已实际看图；完整运行证据与源码hash见[本轮真实证据账本](wip-inline-native-patch-ledger.json)、[操作JSON](wip-inline-native-patch-operations.json)、[原始日志](wip-inline-native-icon-fix.log)和`wip-inline-native-patch-*.png`。中后期使用明确受控Owner恢复；未知回执保护采用显式publisher故障注入，不称自然故障。旧视频`wip-inline-native-wip.mp4`保全，早于本轮图标修正，不作为同版新视频。
 
-**已实际平台压缩，按父指令保全当前自然项后停止供替换。** 当前无运行进程、权限拒绝或等待用户授权。公共宿主最小Git闭包协调、最后补丁核验、全部图实际查看、新账本统一及正式宿主同版实机证据仍未完。精确文件、环境、全部依赖和已跑范围见[NATIVE-WIP-HANDOFF.md](NATIVE-WIP-HANDOFF.md)、[pending-work.json](pending-work.json)。原分支保全，不合main，不清理原导入元数据。
+当前公共宿主仍是旧main，缺正式导航/等比战场宿主，所有本轮实机证据明确为WIP。最小宿主闭包已报根协调：公共区域挂载和装备选中导航、战场视觉/输入同变换、共同字体按钮/浮层角色及其必要资产；不得把整体混合分支的反应堆/星球实现整包带入。正式宿主接入后仍须固定同版2/5/8顶底及真实长MAX整屏和操作视频，再交根/原审。更多未见极端字段须装备域真源，不造额外资源。
+
+本执行者尚未实际平台压缩；原工作区/分支继续，无等待用户授权、权限拒绝或未知执行结果。当前无Godot/ffmpeg后台进程，不合main、不新建工作区或子代理，原untracked .import/.uid及缓存保全。精确现场见[NATIVE-WIP-HANDOFF.md](NATIVE-WIP-HANDOFF.md)、[pending-work.json](pending-work.json)。下方为历史来源说明，以本段当前事实覆盖历史待办。
 
 ---
 

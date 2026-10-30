@@ -160,6 +160,8 @@ func run() -> void:
     check(panel._cards["defence:2"].panel.visible,"late bottom complete third defence")
     check_geometry("late bottom");await shot("inline-native-bottom")
     await click(panel._cards["defence:1"].select);await shot("inline-native-defence-dropdown")
+    for texture in panel._popup.find_children("*", "TextureRect", true, false):
+        check(texture.size.x<=44 and texture.size.y<=54,"local choice icon respects declared bounds")
     check(panel.has_exclusive_ui(),"local choice reports host input exclusivity")
     check(not panel.prepare_host_hide(),"host route cannot hide active choice without resolution")
     panel.prepare_host_hide(true);await flush();check(not panel.has_exclusive_ui(),"forced hide clears local overlay")

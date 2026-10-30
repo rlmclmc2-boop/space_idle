@@ -240,10 +240,13 @@ func _panel(parent: Control, rect: Rect2) -> Panel:
     parent.add_child(panel);return panel
 
 func _icon(parent: Control, key: String, rect: Rect2) -> TextureRect:
-    var icon=TextureRect.new();icon.texture=_icons.get(key);icon.position=rect.position;icon.size=rect.size
+    var icon=TextureRect.new()
+    # Set expansion before the texture, so its imported size never queues a
+    # minimum-size resize that can outgrow the local choice after it is added.
     icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    icon.size=rect.size
-    icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;parent.add_child(icon);return icon
+    icon.texture=_icons.get(key);icon.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    parent.add_child(icon);icon.position=rect.position;icon.size=rect.size
+    return icon
 
 func _build() -> void:
     _fallback_header=_label(self,"装备",Rect2(25,10,220,45),22,CREAM,600)

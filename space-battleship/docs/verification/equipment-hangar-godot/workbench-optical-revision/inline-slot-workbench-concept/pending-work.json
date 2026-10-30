@@ -1,22 +1,26 @@
 {
-  "current": "Incomplete rectangular-card/native WIP; actual platform compaction, preserved natural item then stopped for replacement. User runtime authorization received.",
+  "current": "Independent rectangular-card static review and last native fixes completed; formal shared host closure pending root coordination",
   "handoff": "NATIVE-WIP-HANDOFF.md",
-  "baseline": "c60539e51097e41ec7801e20731fa810b94fda5f",
+  "baseline": "4dd4f1238ad59517965409b58eb52fb3acb14438",
   "remaining": [
-    "Overall-owned formal host minimal Git closure coordination; old main GUI evidence is not final shared geometry",
-    "Check last MAX true-admission and shutdown-cleanup edits; only parse checked after these",
-    "View remaining18 static states and corrected native dropdown; reconcile new manifest/review/checksums",
-    "After formal host integration fix same-version2/5/8 top/bottom and true longMAX native screenshots/video, submit root/original review",
-    "Unobserved extreme fields require true domain sample"
+    "Receive overall-owned minimal formal-host Git closure without unrelated reactor/planet pages; integrate agreed host attachment only",
+    "On formal host capture same-version2/5/8 top/bottom and actual longMAX screenshots/video plus affected interactions; submit root/original review",
+    "Unobserved extreme fields require true equipment-domain sample"
   ],
-  "evidence": "wip-inline-native-operations.json, wip-inline-native-full.log; full run failures=0 before last patch; shutdown leak warnings retained",
-  "stopped_reason": "actual platform compaction per parent rule",
+  "completed": [
+    "All23 static states actually viewed and current review/manifest reconciled; historical3946 ledgers preserved",
+    "MAX true material admission and clean shutdown actually GUI checked after last patch, exit0 failures0",
+    "Corrected native dropdown icon sizing; actual GUI bounds assertions and visual check completed"
+  ],
+  "evidence": "wip-inline-native-patch-ledger.json, patch-operations.json, icon-fix.log, patch screenshots; old video predates icon fix",
+  "actual_compaction": false,
   "denied_actions": [],
   "background_processes": [],
   "not_claimed": [
-    "final native host integration",
-    "new static original review passed",
-    "final user acceptance",
+    "formal host integrated",
+    "same-version final video",
+    "new original review passed",
+    "user acceptance",
     "main merge"
   ]
 }

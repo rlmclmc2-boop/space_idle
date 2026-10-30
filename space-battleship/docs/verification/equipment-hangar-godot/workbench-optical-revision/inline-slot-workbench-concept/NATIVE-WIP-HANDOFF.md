@@ -1,3 +1,11 @@
+# 2026-10-30 接替执行者当前现场（尚未实际平台压缩）
+
+原目录/原art分支，接管HEAD4dd4f1238ad59517965409b58eb52fb3acb14438。当前独立项已完成：23张矩形静态逐张view；当前审阅页/host-return指针/rectangular账本统一，原3946账本另存历史；MAX材料准入与退出清理已真实GUI执行exit0 failures0、无退出泄漏。新下拉目视发现TextureRect先赋纹理引起延迟最小尺寸膨胀，已修为先expand再纹理、添加后设尺寸；加popup图标<=44×54断言后再跑同流程exit0 failures0，新下拉已实际看、不遮字。精确证据/源码hash见wip-inline-native-patch-ledger.json，日志icon-fix，原始截图patch前缀。旧wip视频早于图标修正，未冒充同版。
+
+剩余唯一可实施依赖：根/整体提供正式公共宿主最小闭包，不能复制整体混合main/BridgeTheme/zone_shell引入新reactor/planet。已报区域挂载、装备选中导航、视觉/输入同等比战场变换、公共按钮字体浮层必要角色/资产。随后同线程接入、固定同版2/5/8顶底/真长MAX完整画面及视频并交审。不等用户许可；未实际压缩，无拒绝/不明结果，无在跑Godot/ffmpeg，WIP/untracked/import/uid/cache保全。下方为前执行者历史交接。
+
+---
+
 # 矩形卡与原生接入 WIP：实际压缩交接（2026-10-30）
 
 原工作区 `/workspace/space_idle`，分支 `art/equipment-materials-main-20261029`，基线 c60539e51097e41ec7801e20731fa810b94fda5f。本次已实际平台压缩，按父指令在自然项保全后停止，供替换者原地续作。没有等待用户授权：用户已要求矩形完整卡、属性单行、逐项不足费用红色、费用拥挤省名保图标数字并悬停0.5秒提示，且已批准修改后接入实机。未合main。

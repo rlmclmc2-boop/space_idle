@@ -1,335 +1,168 @@
 {
-  "source_commit": "e15484ceabfe953605eef132e71b6883a3590bf5",
-  "host_commit": "75d55275dadf57b84da62ce0e9ea8f4f0161f97d",
-  "kind": "static environment source and exact shared host composition; no runtime acceptance",
-  "unchanged": "All original slot/quote/control nodes, authored assets/mounts/anchors unchanged. Current63 adds declared whole-preview/identity transforms; others only swap embedded context/environment images.",
+  "status": "Current rectangular-card manifest pointer; historical source-only claims do not cover current cards",
+  "current": "rectangular-card-manifest.json",
+  "historical_3946_manifest": "host-return-manifest-3946-history.json",
   "plates": [
     {
       "file": "63-host-return-early.png",
-      "source_plate": "42-coherent-early.svg",
-      "sha256": "e3b295932df56cac157d7e3cac24c6619e719d108bbad2fadf4b3ef38bd59366",
-      "svg_sha256": "e45d38a50f158f40a370eff502a76876d459acf99fcd83b9d3488705d9c7e6c6",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "8cdc7e23a7ffc47429a20cc22d26f88b3bdfe557a2ffc0607c1b82e8fbfd6633",
+      "sha256": "fb64544f91bfb5a1cf182656db3b8a881ab4ea48041ee2ee2e7ab87921033318",
       "actually_viewed": true,
-      "early_display_transform": {
-        "hull_and_existing_weapons": "translate(173,640) scale(260/165) translate(-173,-640)",
-        "identity_translation": [
-          0,
-          -95
-        ],
-        "purpose": "Viewing hierarchy only; authored hull ratio/mounts/anchors and slot controls unchanged."
-      },
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "19fcdfccac9d43988982f9dfa0272ce8ea98a743fe0a169e26fe15766cdabd1a",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "64-host-return-middle.png",
-      "source_plate": "43-coherent-middle.svg",
-      "sha256": "e789f4d1d538fee05b632781cff6d36dbaae295682c6ab5882651798ecc90fae",
-      "svg_sha256": "b4a05411243b04b4d59d93dab457ee4d57243b37c6748d02a646fb10f7ec9946",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "e3dbfea47910d660ad11cd0ce5ff2fd4e814666ee921134ed7b337dd82424137",
+      "sha256": "07b9d29703027f94800a1b7076b03ba6d59827943b8d8b6cf06e5270d930467f",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "28ec1ae7bd2e101528e06d7b1c9f394fd0cafb3444455d23a5c30c9265fb4dd3",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "65-host-return-late.png",
-      "source_plate": "44-coherent-late.svg",
-      "sha256": "64626b51e0da66841afd5c5986761ae4e43035b5a8fa917d88ab883461564fc0",
-      "svg_sha256": "e44e1f22d9f492abc40a05fa7bcfea87005426aeb914ef683a051c3bfb3b3111",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "72d598d037e6ce438c93060cf7ee24f58e9f5e005c91c515b05ec8f82f7d4243",
+      "sha256": "b91a947e80b8b20756eb39d4e7a36ca68ef5cb3a61d49c6ef2e40a8cf5d4b659",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "1d406ae5c5c056dffd558cddf79f0c2a317b71c323b8fe06fb3be607e054067d",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "66-host-return-bottom.png",
-      "source_plate": "45-coherent-bottom.svg",
-      "sha256": "b8c0b53b281961ef4720233f5237a086e86777b42f806b27e7b060d68cf7e2a9",
-      "svg_sha256": "c7ba607b02ad5fe97d5ce6383bd76d70f9b47bf43bdcc96360df46464578129e",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "206dca2f1a897d80f3206c7753f0433fc91989d5f3dad8b0d412fe29c699b738",
+      "sha256": "de9d491152c66644e765c372161046674f1b65d3b571e23bbcb4c2ec97a7f06a",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "e7999a00525ebd36c577475e62f1ce0893692a0ee73a91800cf3e1ca33a05881",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "67-host-return-defence.png",
-      "source_plate": "46-coherent-defence.svg",
-      "sha256": "4800f8f630306372dea337248d7bf7630ace21de522c8410589f679a36224ceb",
-      "svg_sha256": "4cf7732f734eae88f2d779ab7f28eee28bf0a88c7b2508176745318fb191ba6b",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "10876a8e5c35af14597074f9122099a8a46905aae3811068f15e1b814f28cbe1",
+      "sha256": "87bfefe2b854fc9c847c43350d50483a4003826584efbff03a81e82b4beada3f",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "176ca52740e00c03e5c3df0f428efba564164f3cd76f1582aff11c866c52bf50",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "68-host-return-max.png",
-      "source_plate": "47-coherent-max.svg",
-      "sha256": "77c92fbf58e8b7a9b3272c0bbb0f8113cd0772036b0bcd6f3aa07cdc0122c764",
-      "svg_sha256": "f2bade7d98c658b7db60d3cf48424ce8ffb9313e690e1da2fb479c10888e69c6",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "89ef5fbb2f786d58a984d4a2d3520d103d7e5c2138f0236fa71dafe3fc5a5d74",
+      "sha256": "39d574f0ca2c6fae8cee760a8eb423db49c6e30e55fdf0bb3eb89c456997f0a4",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "90c1f7bafea3de3569d8380bdf5940fbf49991d06750a87bbc047427c898fab1",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "69-host-return-material-locked.png",
-      "source_plate": "48-coherent-material-locked.svg",
-      "sha256": "0d89a4c86fcc8c6a884b74a0a54d46171989de6dc23fb35c1565489082c699ac",
-      "svg_sha256": "60efd383f97d8e1e8b3e0bba44008eb25ef73e49f95a05553920f1b0b3f3b40d",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "1988df5c27d54921a1cd122591a28aba4f644c23429ab14bbffa3aa8413a68b7",
+      "sha256": "cbbe9b034aa4ae853097609593ffa1d9e92dfd928377fb1d539950358bf8547a",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "6f2e5be4c98f6c862d6a252db444a3b2a757fbd7a32fccf24f5c054a745195fa",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "70-host-return-affordable.png",
-      "source_plate": "49-coherent-affordable.svg",
-      "sha256": "4351c25b06fe2a69c4895d355860a895e022c0cce8ee3485542520ad90329d36",
-      "svg_sha256": "f800ac9c782fab624540c687226d40594671a1dce5282fed39b56ac77ec1c490",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "4cd46016b021093bbb7a12d9eeab16051d9fba908932995b0854dc4ceebd795d",
+      "sha256": "174c2bb97dbd6b6b692d5e868c9a4c8675f94d4504bf4595a8f385f4cf5567ee",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "8a3fdf7b9598e1369021588106704bccaa77bbc6a1f6e8a6db73747f8cdcd93b",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "71-host-return-single-fee.png",
-      "source_plate": "50-coherent-single-fee.svg",
-      "sha256": "342e98c962803118f64aa628e8a4d6e945d7ac97dfa84e90cef5c20d8a21c4e2",
-      "svg_sha256": "ed70d11bcaaa98cecaf3d32d4219df3c281fb928c23d8cd19eb21dbd34f2e77e",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "a1de0b3b50323718b44d287143c574f38f5bb743400f251f008a39f9a6c8d436",
+      "sha256": "3d932c1a2e5b1d69358c71818c2f54993a73dd0805dbf92185fbacce9da9ab55",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "144d5514883437603d4ddec535d006b6623c03c2d80eee0ef5fe24519932dd06",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "72-host-return-defence-dropdown.png",
-      "source_plate": "51-coherent-defence-dropdown.svg",
-      "sha256": "b1070a356a3e56609dc9b82a62bd33ba2972b7a64800a6bd895b2e405c756a79",
-      "svg_sha256": "647cdd1c2d8c93d6cbb359767f6ae7cb80e01427f5499ede1dc7d9a4c432a628",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "542d2259e5aa75c55c3cb095c5cb0f1a875bc4b2eeeaad8bcc1e02709e856c40",
+      "sha256": "d237b60e216486e33031a7cb098062a948a950a5279198babb066dff00660db6",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "49867a2cb7ee72e75d037c76e448f891149dc407361e3e6797ba7b852eacd88e",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "73-host-return-defence-comparison.png",
-      "source_plate": "52-coherent-defence-comparison.svg",
-      "sha256": "eb2afe5d46d969d69e9bcad22dae6f6deabc6ba39c580ec3125cdd0ebc013d8a",
-      "svg_sha256": "f655f35ffcc9bd2a73f921ee80f28ce240632eb102f73dea208dcac0a965b9b9",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "fb5cd7825daae07a04c0fb00ea4be00eaaf9b39b7c26ef37d2131a739d36bc56",
+      "sha256": "d824ec23402fd879e3222b31e3464ba638bf087499e5acdf413b55491a09ecd6",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "73b5ade839a2ff3ee3f9bccc90a17519a0519c4acaca505b448e56e591e95ecf",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "74-host-return-weapon-dropdown.png",
-      "source_plate": "53-coherent-weapon-dropdown.svg",
-      "sha256": "e47c275b817e24701c7369227776240cc51dac4e344f67daf19e0be5c6b9ccde",
-      "svg_sha256": "e6b075f13355630b86ffda896a147070c290899333e675c83aa9e9216ed59628",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "5441d09ffbad990027272a3f31e91bb04cc75c6ea098e9a5f687597ddc91f611",
+      "sha256": "ec7022cc071ebc8d855b0ca456a6e4fabe724dea316e9eb8c90f1d534233d1f8",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "aa856dc2032bc66860f12d3d69bfa8d03c4b26b36b5e03b3229422760417c0f4",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "75-host-return-weapon-comparison.png",
-      "source_plate": "54-coherent-weapon-comparison.svg",
-      "sha256": "56db604803a0ddd59a610b52fb996f8d81f155fc5fd3bf7cd331345fe49d918b",
-      "svg_sha256": "309316a0274ed8865cf4743e645c37e1f663542b2798819abf6ab85d1c0b79cd",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "ce4590d7de8b33c6192b503a28bc2c4e387740f351daec8e56c7c4bf07a10b78",
+      "sha256": "d217a39d81caa0119ab843d47ee74aff9a8a2d0367abae9084a50fa1ceef2734",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "8bcf9d2878998108eee6f0471e1b39ebf5a452d71e4f2ee8962d251be3327f4e",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "76-host-return-purchase-hover.png",
-      "source_plate": "55-coherent-purchase-hover.svg",
-      "sha256": "4360738634f1b20c267f352a11bb81b03c03765b8e8c4cf43389d66bd66b52d5",
-      "svg_sha256": "314da1ccfd0e3cb846e159ee4b80e9ecfcad4819655814aea7ae1aa03820cf8c",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "97fdec091c1eb4f13040a6065680dce8465a46e121721ca7b603220da077a705",
+      "sha256": "cadb6946f6a90a38a80be313ffbaea08e2d702fdfbb27f55535fdd96f4dcdd6f",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "c16350f3725b1d820f849236885c0099982127b8d4f15acfb1919d5b24821c16",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "77-host-return-purchase-pressed.png",
-      "source_plate": "56-coherent-purchase-pressed.svg",
-      "sha256": "4a981394c76f98b60035415dbdde0262a7e23fe92b8e55168a3bafbf1b225eb3",
-      "svg_sha256": "71f48953268e03796b0ed6eb1e8b5697b24bf1af49509cc7aee800c5a5a99e82",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "ea8afde5c0f19e750aa1ac5598e4e5bde3241264ab125a930b710f5ff9ab950d",
+      "sha256": "701f2e9fc79f31e70e4c0bcaf9b9e1db05410b56a48dedfee027495013209ece",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "5211c628dbac3d351218e982f47bb237e6901b959d30fa8c793b360b9b655ade",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "78-host-return-purchase-focus.png",
-      "source_plate": "57-coherent-purchase-focus.svg",
-      "sha256": "c8d21b3f7348a157fbd2bdc318bdd4612d8bfa46f208da6213d21977aa5eecb0",
-      "svg_sha256": "916623805fd165e8a59746831858547bd63ccecc9b10cdacbc93061c0b813259",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "31ffa1806f3a6b5e72fe5d4f5c8ae82dee4a577763849fd0859309ec46395cd4",
+      "sha256": "c8d7941f1906340728c124152e5cda284819056941bb9b0d9da779b61b704d8d",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "a3a34897e0ff49d439cf45471e19ac3fcb57b597dd0eb98f32c640f86a381c36",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "79-host-return-purchase-hover_pressed.png",
-      "source_plate": "58-coherent-purchase-hover_pressed.svg",
-      "sha256": "332321db4ba211d7426c39f9628b5de68a51f3d214315529f8afe4fc973aa3f3",
-      "svg_sha256": "81752d5871b760170da14e6b813d479687f04a32e3b75d850b4c9f03edb4c983",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "176f31e6372d29f9a96fb10eac320ac7bff79611caaa47e7c20ffc55a5a3ea91",
+      "sha256": "0c8b792a6222c54fb58e77b94d5bcaaaaa48f49db4062faf55eae96db1f87445",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "b04485a42004a577b3b078ce98591a74601775a7a3adbde36403d1d5c9973745",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "80-host-return-active-empty.png",
-      "source_plate": "59-coherent-active-empty.svg",
-      "sha256": "ddc0d359c74291639f882adf0f4ec8bcf359d57248a821f18093fcfb3019e858",
-      "svg_sha256": "736062309d13cf639263db9c27ea202ee945f46b843d63dc7fb55cf6742b9085",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "02b71652a734bbf21efccaf779f299d895eb557cbe2d8e20f576b601af2649fe",
+      "sha256": "6e2b791c00e5d2ac0a0207d4fda8557fb44024dc575ec1d9b5a6a1dd4a69742a",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "27508d472a1cca2ac95a603c0ccc074034dc9851d65e4bb3bdd14f86fa1ed3ae",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "81-host-return-dormant-details.png",
-      "source_plate": "60-coherent-dormant-details.svg",
-      "sha256": "4f2a1a9bc7e212e00b3a8bb25c09d84f3d171104cd74cac54cdff6c4e19d4f67",
-      "svg_sha256": "a2c15f81e900930e25f357add13e979299c1ffea618ad54b619e9d89f5512754",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "0dc21e1fb8bd5c359997d1c1bdb6e86fe5f0130bd432f99a777e927ff9bc042c",
+      "sha256": "dd3332a2472438b8f3d3fa0aadce2af0a00bc7417afbac49978fdf7c954a830e",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "c2cc81088a8d7f2a9cb446f592e6d379640fa20b5143a581bdd06bc7f26305d4",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "82-host-return-long-max.png",
-      "source_plate": "61-coherent-long-max.svg",
-      "sha256": "66c010f2f789850e2d2f49b857a277953f35832742cabbd723f54fb6b130177c",
-      "svg_sha256": "362f860522aefe312d696154b07e8c721983f00b64b4716c4e595daee1b986c5",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "bb8ada3de44def681ea8af0d27a6acaaf371925f5a6272baa79b83bd2d0d963d",
+      "sha256": "6e575587f046d26e019bb7cb9ac23eb97155efe06a41e7308b46390d28d5d77e",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "906a05955afc7d449fc12ab049dc5cdccc003aa8e922770b601edc1b2d1d5c39",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     },
     {
       "file": "83-host-return-long-max-poor.png",
-      "source_plate": "62-coherent-long-max-poor.svg",
-      "sha256": "61ae08a6d6467ffe71f9acec4c8274659d955879dbffd264b3f4c7ba8fc47289",
-      "svg_sha256": "9ea99d983534dfa61adcc52271d499b1d075fa1ad2d8a479c7cd98aad25d0d75",
-      "size": [
-        1440,
-        900
-      ],
+      "svg_sha256": "cebc6efa67156ab543ff49551d00cd216c3c1de600f9e10c52c0726edaed6c5e",
+      "sha256": "efecaba566b229cf2e16231c65bdf13a894baf72d36ac7dc35ad5698842d5196",
       "actually_viewed": true,
-      "header_diff_bbox": null,
-      "navigation_and_host_diff_bbox": null,
-      "expected_non_embedded_svg_sha256": "08d89896e44771582fb3fe20f8e897b0c456314710d40a2f4052c1e60da2ce7a",
-      "only_intended_display_and_embedded_asset_changes": true
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
+    },
+    {
+      "file": "84-insufficient-click-feedback.png",
+      "svg_sha256": "d53805f36ef8c2ef527ea3430f6c03b7492d36468cd9b60afc37ee66d8f3587c",
+      "sha256": "a9cd7a0ae8e6475cd63bf5e9d5e0d19398955b8f147965b7ca66c0a3e2dd9f69",
+      "actually_viewed": true,
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
+    },
+    {
+      "file": "85-resource-hover-half-second.png",
+      "svg_sha256": "62ad9b06e5ae5cae97e090340d10648a47ea3280a4f34adb9767e013ef3f6cb2",
+      "sha256": "02e1059e8188ca1945fe54cbb2ccd2b472219bf30869a632efadae4cef2f5196",
+      "actually_viewed": true,
+      "viewed_by": "equipment_native_completion_replacement, 2026-10-30; complete original image via view_image"
     }
-  ],
-  "group_review_entry": "review-current-group.html",
-  "verification_scope": "Final21 full-frame PNGs actually inspected. Exact original header/x808+ host pixel comparison and source-boundary checks only; no runtime test or art acceptance.",
-  "equipment_plates_fixed_commit": "3946a1b8cf81122b517a6f3e9b7e623f4cb97989",
-  "current_b01_reference_commit": "b178ec391b941ac6888bff9b90f11809f4cf3b63"
+  ]
 }
