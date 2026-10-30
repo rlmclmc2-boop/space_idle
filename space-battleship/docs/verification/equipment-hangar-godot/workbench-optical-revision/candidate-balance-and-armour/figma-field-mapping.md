@@ -1,4 +1,6 @@
-# Figma装备局部：字段映射与实施边界（尚无frame）
+# 历史：已取消Figma依赖的字段与资产准备（无frame）
+
+**后续覆盖：用户已明确取消Figma依赖，授权直接按已核字段映射落实原Godot组件；当前实现与实机见[共用字段精简候选](../shared-field-reduction/README.md)。停止Figma调用、额度探索与写尝试，不再等待tokens/节点。下文只保原尝试时点，非待执行方案或当前阻塞。**
 
 用户最新要求精简防御的重复身份/状态、统一武器与防御展示；后明确本次UI调整先经Figma。源码仍 `9e420e1c184d355133737a72f716358203ffa51a`，真实旧证据仍 `ca6914ed3f64eef510c9ca421360a97359ed33f0`。本文与[资产hash表](figma-source-assets.json)只是可独立完成的接入准备，**没有新的Figma设计或Godot实现**。
 

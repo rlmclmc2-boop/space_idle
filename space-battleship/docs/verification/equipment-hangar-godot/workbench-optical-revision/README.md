@@ -1,13 +1,11 @@
-# 装备当前入口：防御精简转Figma，原返修证据保留
+# 装备当前入口：武器／防御统一与防御精简候选
 
-**最新覆盖状态：** 用户后续明确防御内容过多，要求精简重复身份/状态并与武器统一，UI调整经Figma。当前准备见[字段映射、正式资产hash与独立frame职责](candidate-balance-and-armour/figma-field-mapping.md)。唯一现成Figma文件的公共2:29六态及11变量集合已只读确认；随后两次纯只读use_figma返回Starter MCP额度错误；只确认读取被拒，写模式/upload_assets均未调用、未验证，不能写成全部写入不可用。当前停止Figma调用，0节点创建/修改、0上传、没有装备frame，也未改Godot；仍缺变量id→name/type/value/role及公共按钮文本/材质现成映射，由根提供已有源并明确写入路径后继续原设计/实现，不是等待用户重给品质偏好。下列9e/ca为上一版真实交付，不代表最新防御精简已完成。卸下入口属于用户已移除设计，非遗漏，不恢复。
+用户后续明确防御内容过多需统一／精简，并已取消Figma依赖，授权直接在原Godot组件继续。当前固定运行源码 `3916ffbc9e246f07693a633a772536faad982258`；最新[共用字段精简候选](shared-field-reduction/README.md)含同版完整武器/防御同物、替换、可用/不可用、真实装甲安装及原冷却/Batch共8整屏＋4原像素局部，全部实际看过。当前交根/原唯一Astra重新整体审，不自判用户接受，不等待用户重给品质或Figma节点，不pushmain。
 
-用户已看完fc361675/784d8de3新版实图并明确退回：“右侧太空了，而且装甲替换展示没有，购买按钮亮了之后明显不一致”。这是当前返修依据；此前原Astra内部静态接受不等于用户接受，不再写成等待用户给品质结论。本轮仍原唯一SOL/原工作区/art分支，最新固定运行源码 `9e420e1c184d355133737a72f716358203ffa51a`，完整图证与边界见[右侧比例、装甲替换与可用态](candidate-balance-and-armour/README.md)。8同版1440×900真实整屏＋4原像素局部全部实际看过，包含武器购买可用/不足、替换、装甲候选可用、真实GUI安装装甲及之后原冷却/Batch；交原唯一Astra/根重新整体审，不自判艺术通过，不pushmain。
+最小呈现修正：防御比较只“现装／替换后”及必要容量，撤重复装甲/护盾名称；武器同结构附原Owner周期。两类候选都撤“待安装”复述，保候选名称、选中/已装备及明确安装目标；冷却只顶部秒数与原Native禁用，去重复冷却tooltip但其它Owner拒绝原因保留。费用统一标“升级费用”，65铁仍是当前护盾槽购级报价而非安装费，当前→升级后/真实费用/购买对象不变。未增加恢复率等字段、叠节点或新状态皮肤；舰体、工作台范围、原画材质及左右几何保持。
 
-本轮只保留原台壳/船主体结构做比例与展示修正：原候选图44px、52px同族承托、右区无替换时居中；防御两个候选充分利用原右栏；无替换时已有两键行贯通下方，替换时购买/安装各归原左右栏。购买、安装、Batch可用面由整块金改原同面材的蓝灰，次操作/禁用/焦点仍同源。未加无关说明填空、叠层或多套框。装甲/护盾Owner链原已存在，上一批是缺防御交付图；本版真实GUI安装补齐展示，不重造防御规则。
+main功能认可范围、两键×1→×10→MAX只报价且购买独立、Owner价格/准入/精准局部刷新、无记录/最近结果、未锁纯空位无交互、资源icon_modulate原色、标题沿壳切角保持。卸下入口是用户已取消设计，非遗漏，不恢复；[信息组织提案](header-inner-chamfer/information-layout-proposal.md)与[高度分析](header-inner-chamfer/height-feasibility.md)仅历史存档，不复活大压缩/详情重排。公共宿主及共用状态由整体组协调。
 
-main功能认可范围、两键×1→×10→MAX只报价且购买独立、Owner价格/准入/精准局部刷新、无记录/最近结果、未锁纯空位无交互、资源icon_modulate原色、标题沿壳切角继续保持。用户“先把目前打磨好”仍不恢复[信息组织提案](header-inner-chamfer/information-layout-proposal.md)或[高度分析](header-inner-chamfer/height-feasibility.md)中的大幅压缩/详情重排；它们仅历史存档。公共顶栏、宿主及组合接入仍由整体组负责。
+原[9e右侧比例/装甲展示/亮态](candidate-balance-and-armour/README.md)源码 `9e420e1c184d355133737a72f716358203ffa51a`／证据 `ca6914ed3f64eef510c9ca421360a97359ed33f0`，以及[fc共同受光](lighting-coherence/README.md)源码 `fc361675131aa59ce21ec270a5aaa7e9715f9746`／证据 `784d8de3536afaae0bb430506ab1dfc697bcd8d5`和旧f72共享接入记录均保各自时点；不外推本3916已组合或已审。已取消的[Figma尝试/字段准备](candidate-balance-and-armour/figma-field-mapping.md)仅历史，0节点/0上传；停止一切Figma调用/额度探测，不作为本轮实施门槛。
 
-旧[fc共同受光/承托](lighting-coherence/README.md)的源码 `fc361675131aa59ce21ec270a5aaa7e9715f9746`／证据 `784d8de3536afaae0bb430506ab1dfc697bcd8d5`，与整体组固定接入 [`f72f6014ab62641e811834b053adf01d7fe19866`](https://github.com/rlmclmc2-boop/space_idle/blob/f72f6014ab62641e811834b053adf01d7fe19866/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)保持原时点。该对象当时8项panel/helper/素材/字体逐字fc及接口完整的核对，不外推本9e版已组合；本版需整体组精确接入后固定其自身交付/已审标识，不拿远端最新代替。
-
-历史[同族79e](unified-control-family/README.md)、[a846完整材质](coherent-material-polish/README.md)、[e52禁用窄修](disabled-action-readability/README.md)、[34结构退回](workbench-structural-depth/README.md)、[386像素尺度](materials-pixel-scale/README.md)、[ba7源档案](rejected-art-sources/ba7/README.md)及[main正常入口](../main-integration/README.md)保各自版本边界，不误写成最新实现。本版只做受影响必要视觉过程和一次真实装甲安装，未重新购买/36交易全链、冷却到期、自然成长、全舰全槽、极端MAX、焦点/hover/pressed矩阵、Windows-DPI或共享宿主组合；内部视觉或0失败均不扩大成全运行通过。
+本版解析与原8阶段必要视觉过程通过，含一次实际装甲安装；没有购买/独立交易全链/36、冷却到期、自然成长、全舰全槽、极端MAX、focus/hover/pressed矩阵、Windows-DPI或共享宿主组合新测。保留全部旧证据边界，0失败/字段减少不代替完整整体品质判断。
