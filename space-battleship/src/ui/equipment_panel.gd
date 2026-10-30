@@ -196,7 +196,7 @@ func _setup_materials() -> void:
         for x in face.get_width():
             var pixel:Color=face.get_pixel(x,y)
             var light:float=pixel.r*0.2126+pixel.g*0.7152+pixel.b*0.0722
-            var pigment:float=clampf(0.48+1.8*light,0.60,1.02)
+            var pigment:float=clampf(0.44+1.60*light,0.71,0.94)
             face.set_pixel(x,y,Color(pigment,pigment,pigment,pixel.a))
     _face_texture=ImageTexture.create_from_image(face)
     _locator_badge_style=_surface_material("navy",Color.WHITE,"locator")
@@ -234,24 +234,45 @@ class EquipmentSurface extends StyleBox:
         if focus:
             RenderingServer.canvas_item_add_polyline(canvas,outline,PackedColorArray([CONTROL_FOCUS]),1.5,true)
             return
+        # One coated-metal cross section: a small light-facing shoulder, a broad
+        # matte face and a down-facing return. Keys stand off the deck; readouts
+        # sit in it, so the same light gives opposite contact-edge emphasis.
+        var key:bool=form=="button"
+        var recessed:bool=form in ["instrument","tray","candidate"]
         if form not in ["header","backing"]:
             var shadow:=points.duplicate()
-            for i in shadow.size():shadow[i]+=Vector2(0,2 if form=="button" else 1)
-            RenderingServer.canvas_item_add_polygon(canvas,shadow,PackedColorArray([Color(0.04,0.10,0.12,0.18)]))
-        var uv:=PackedVector2Array()
-        for point in points:uv.append((point-face.position)/face.size)
-        var lighting:=PackedColorArray()
-        for point in points:
-            var y:float=clampf((point.y-face.position.y)/face.size.y,0.0,1.0)
-            var pigment:Color=tone if disabled else tone.lightened(0.09*(1.0-y)).darkened(0.08*y)
-            pigment.a=tone.a;lighting.append(pigment)
-        RenderingServer.canvas_item_add_polygon(canvas,points,lighting,uv,texture.get_rid())
+            for i in shadow.size():shadow[i]+=Vector2(0,3 if key and not depressed else 1)
+            RenderingServer.canvas_item_add_polygon(canvas,shadow,PackedColorArray([Color(0.045,0.085,0.095,0.36 if key else 0.22)]))
+        if form=="header":
+            var uv:=PackedVector2Array()
+            for point in points:uv.append((point-face.position)/face.size)
+            RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([tone]),uv,texture.get_rid())
+        else:
+            # The illumination is independent of texture stretch and screen height.
+            # No white reflection is baked across the top of a short tray.
+            var shoulder:float=minf(3.0,face.size.y*0.10)/face.size.y
+            var return_edge:float=minf(3.0 if key else 1.5,face.size.y*0.10)/face.size.y
+            var bands:Array=[0.0,shoulder,0.36,0.78,1.0-return_edge,1.0]
+            var shades:Array=[0.90,1.10,1.02,0.97,0.91,0.66] if key else [0.78,0.97,1.0,0.97,0.94,0.84]
+            if disabled:shades=[0.88,0.94,0.94,0.93,0.91,0.77]
+            if depressed:shades=[0.72,0.89,0.93,0.94,0.91,0.83]
+            for band in range(bands.size()-1):
+                var top:float=bands[band]*face.size.y
+                var bottom:float=bands[band+1]*face.size.y
+                var inset_top:float=maxf(0.0,cut-minf(top,face.size.y-top))
+                var inset_bottom:float=maxf(0.0,cut-minf(bottom,face.size.y-bottom))
+                var section:=PackedVector2Array([face.position+Vector2(inset_top,top),face.position+Vector2(face.size.x-inset_top,top),face.position+Vector2(face.size.x-inset_bottom,bottom),face.position+Vector2(inset_bottom,bottom)])
+                var uv:=PackedVector2Array()
+                for point in section:uv.append((point-face.position)/face.size)
+                var upper:=Color(tone.r*shades[band],tone.g*shades[band],tone.b*shades[band],tone.a)
+                var lower:=Color(tone.r*shades[band+1],tone.g*shades[band+1],tone.b*shades[band+1],tone.a)
+                RenderingServer.canvas_item_add_polygon(canvas,section,PackedColorArray([upper,upper,lower,lower]),uv,texture.get_rid())
         if form=="backing":return
-        var edge:=Color(0.13,0.24,0.28,0.22 if disabled else 0.38)
+        var edge:=Color(0.10,0.19,0.22,0.34 if disabled else 0.56)
         RenderingServer.canvas_item_add_polyline(canvas,outline,PackedColorArray([edge]),1.0,true)
         if not disabled:
-            var shoulder:=PackedVector2Array([points[-1],points[0],points[1],points[2]])
-            RenderingServer.canvas_item_add_polyline(canvas,shoulder,PackedColorArray([Color(0.97,0.98,0.90,0.20)]),1.0,true)
+            var lit_edge:=PackedVector2Array([points[3],points[4],points[5],points[6]]) if recessed else PackedVector2Array([points[-1],points[0],points[1],points[2]])
+            RenderingServer.canvas_item_add_polyline(canvas,lit_edge,PackedColorArray([Color(0.86,0.88,0.77,0.28 if recessed else 0.36)]),1.0,true)
 
 func _console_material(dark:bool)->StyleBox:
     var frame:=StyleBoxTexture.new()
@@ -267,7 +288,7 @@ func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String
     if profile=="deck":return _console_material(kind=="navy_face")
     var material:=EquipmentSurface.new()
     material.texture=_face_texture;material.profile=profile;material.depressed=depressed
-    var tones:Dictionary={"glass":Color(0.98,1.02,1.02),"enamel":Color(0.98,1.02,1.02),"teal":Color(0.85,1.0,0.94),"selected_dark":Color(0.29,0.53,0.54),"navy_face":Color(0.28,0.42,0.48),"navy":Color(0.31,0.46,0.53),"primary":Color(1.05,0.84,0.50),"disabled":Color(0.23,0.33,0.38),"quiet":Color(0.31,0.46,0.53)}
+    var tones:Dictionary={"glass":Color(0.91,0.95,0.91),"enamel":Color(0.91,0.95,0.91),"teal":Color(0.68,0.90,0.81),"selected_dark":Color(0.29,0.53,0.54),"navy_face":Color(0.28,0.42,0.48),"navy":Color(0.31,0.46,0.53),"primary":Color(1.08,0.87,0.53),"disabled":Color(0.23,0.33,0.38),"quiet":Color(0.31,0.46,0.53)}
     material.tone=tones.get(kind,Color.WHITE)*modulation
     material.quiet=kind=="clear";material.disabled=kind=="disabled"
     material.content_margin_left=8;material.content_margin_right=8
