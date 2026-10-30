@@ -17,7 +17,7 @@
 - 实际参数与颜色身份沿游戏权威数据；图中示例值不是新增数值规则。
 
 ## 当前版本与现场
-本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。本目录保留 `00971d36` 的原四路录像/早期性能与报价图作为历史对照；当前源码新增受控单／双路舱室、1／2／3 路无空槽控制井、八态原板建筑端部及同层左右收边；`936d2e4b` 在不改工作画面的前提下打包 mask 并跳过无效 active 采样，回放基线另由 `68f72e7a` 固定。原整体 Astra `b178ec39` 的十屏结论仅关闭当前端部**静态视觉**审，动态／鼠标链、性能目标及装备新版同版仍未关闭。下方“整屏统一与合法模块数交接”和末节列出当前源码的八态整屏、交互与性能证据；不能把旧录像或旧报价图写成这一版动态验收。
+本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。本目录保留 `00971d36` 的原四路录像/早期性能与报价图作为历史对照；当前源码新增受控单／双路舱室、1／2／3 路无空槽控制井、八态原板建筑端部及同层左右收边；`936d2e4b` 在不改工作画面的前提下打包 mask 并跳过无效 active 采样，回放基线另由 `68f72e7a` 固定。原整体 Astra `b178ec39` 的十屏结论仅关闭当前端部**静态视觉**审，动态／鼠标链、性能目标及装备新版同版仍未关闭。下方“整屏统一与合法模块数交接”和末节列出当前源码的八态整屏、交互与性能证据；旧报价图仍只作历史对照；本节末已有当前 packed 版连续录像，但动态与最终组合仍待原审判定。
 
 ## 交付与对照
 在本目录维护执行进度和固定Git图/视频入口。交同版完整实机画面、正常时间工作视频及必要交互状态；注明受控条件。协调者和既有独立审核按批准图与实际整屏/动态整体对照，包括主体体量、场景一体感、材质、文字、控件与效果，不以问题清单清零或参数通过替代视觉。旧版本局部通过不外推。当前不合main。
@@ -124,15 +124,21 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 
 ### 同版 shader 剩余成本：packed mask 与按需底图采样
 
-在整体 `051cbd0d`＋本组八板的同一运行树上，以 Godot 4.7.2、Xorg `:99`、Mesa llvmpipe、OpenGL3、1440×900、四路各 25%、1× 做正反次序 6 秒配对。最终保留的变更把原 `pipe/effect/module` 三纹理的**原始像素通道**按 [pack-runtime-masks.py](pack-runtime-masks.py) 装入两张 RGBA mask：`pipe_effect` 为管 R/G/B＋核心效果 R，`module_effect` 为设备 R/G＋枪口效果 G＋熔流效果 B；原三张 mask 不删不改。新 PNG 的 `.import` 明确 `process/fix_alpha_border=false`，否则 Godot 会在 alpha 为零处改写 RGB，已实测同相位局部差最高 90 级，不能拿默认导入物替代。shader 仍逐帧推进原相位、四路导管与机器工作效果；在 `blend_power==0` 的上景像素跳过多余的 active 底图采样，不降低刷新、亮度或 Owner 工作逻辑。
+在整体 `051cbd0d`＋本组八板的同一运行树上，以 Godot 4.7.2、Xorg `:99`、Mesa llvmpipe、OpenGL3、1440×900、四路各 25%、1× 做两个不同候选的 6 秒配对：正序 ABAB 是最终 packed mask＋按需 active 采样组合；反序 BABA 是仅 packed mask 的中间候选，不能合并为同一产品的正反序保证。最终保留的变更把原 `pipe/effect/module` 三纹理的**原始像素通道**按 [pack-runtime-masks.py](pack-runtime-masks.py) 装入两张 RGBA mask：`pipe_effect` 为管 R/G/B＋核心效果 R，`module_effect` 为设备 R/G＋枪口效果 G＋熔流效果 B；原三张 mask 不删不改。新 PNG 的 `.import` 明确 `process/fix_alpha_border=false`，否则 Godot 会在 alpha 为零处改写 RGB，已实测同相位局部差最高 90 级，不能拿默认导入物替代。shader 仍逐帧推进原相位、四路导管与机器工作效果；在 `blend_power==0` 的上景像素跳过多余的 active 底图采样，不降低刷新、亮度或 Owner 工作逻辑。
 
-[ABAB 驱动](performance-packed-active-abab-driver.gd.txt)／[日志](performance-packed-active-abab-runtime.txt)的原版 `31.29/31.61 fps`、组合候选 `32.33/32.23 fps`；[反序 BABA 驱动](performance-packed-baba-driver.gd.txt)／[日志](performance-packed-baba-runtime.txt)的原版 `31.87/31.54 fps`、仅 packed mask [固定 shader](performance-packed-only.gdshader.txt)候选 `32.67/32.61 fps`。每个窗口游戏时间和 shader 相位约推进 6 秒，stage 静态绘制／field 更新为 0，UI 节点 53 不变；这支持当前软件渲染环境内约 `0.6–1.1 fps` 的小幅收益，不把不同运行间数字作严格 A/B，也不称目标硬件已过。[固定相位旧版](performance-packed-baseline-same-phase.png)和[组合候选](performance-packed-candidate-same-phase.png)在完整 B01 舞台 `x0…807,y65…899` 的 RGB `674,680` 像素逐像素相同；基线 shader [源码](performance-packed-baseline.gdshader.txt)由 e8 当前运行版固定。成品只绑定两张 packed mask 的 [受控八态日志](performance-packed-eight-state-runtime.txt)亦核 1／2／3／4 零载／均分及 1／2 鼠标接受，无脚本错误。该像素比较针对四路固定相位，不自动替代所有交互场景或最终新装备同版验收。
+[ABAB 驱动](performance-packed-active-abab-driver.gd.txt)／[日志](performance-packed-active-abab-runtime.txt)的原版 `31.29/31.61 fps`、组合候选 `32.33/32.23 fps`；[反序 BABA 驱动](performance-packed-baba-driver.gd.txt)／[日志](performance-packed-baba-runtime.txt)的原版 `31.87/31.54 fps`、仅 packed mask [固定 shader](performance-packed-only.gdshader.txt)候选 `32.67/32.61 fps`。每个窗口游戏时间和 shader 相位约推进 6 秒，stage 静态绘制／field 更新为 0，UI 节点 53 不变；当前产品只对应正序 ABAB 的 `+1.04/+0.62 fps`；反序 BABA 的 `+0.80/+1.07 fps` 仅说明 packed-only 中间候选，不为当前产品背书。不同运行间数字不作严格 A/B，目标硬件仍未过。[固定相位旧版](performance-packed-baseline-same-phase.png)和[组合候选](performance-packed-candidate-same-phase.png)在完整 B01 舞台 `x0…807,y65…899` 的 RGB `674,680` 像素逐像素相同；基线 shader [源码](performance-packed-baseline.gdshader.txt)由 e8 当前运行版固定。成品只绑定两张 packed mask 的 [受控八态日志](performance-packed-eight-state-runtime.txt)亦核 1／2／3／4 零载／均分及 1／2 鼠标接受，无脚本错误。该像素比较针对四路固定相位，不自动替代所有交互场景或最终新装备同版验收。
 
 诊断淘汰：椭圆外接框早退同相位零差但 ABAB 无稳定收益；8 位预计算静态几何虽约快 1 fps，却在椭圆边缘最高差 61 级；浮点几何需约 11 MB 新纹理，仅约 `0.5–1 fps`，半精度约 5.2 MB 但收益不稳，故不纳入产品。上述实验文件留本组临时路径而未引入额外运行资产；当前产品变更仅两张打包 mask、对应导入设置、同层 shader 和 stage 参数绑定。
 
 ### 当前 packed 版共享动态桥接
 
 在**同一工作区临时检出**整体运行 `051cbd0dc201fb53578d9c074460b8969a207ef8`，仅叠本组 `6c1367e0719ebd5a537741b73c62b2d6116286cf` 的八原板、`live-material.gdshader`、`reactor_stage.gd`、两张 packed mask 及其 `.import`；运行后逐文件核与本组 Git 对象同 blob、恢复原分支，公共 `main.tscn`／导航／战场／Owner 未改。[当前共享交互驱动](shared-packed-interaction-driver.gd.txt)与[日志](shared-packed-interaction-runtime.txt)复用前次真实鼠标及 Owner 断言，Godot 4.7.2/Xorg `:99`/Mesa/OpenGL3/1440×900/1× 无脚本错误：武器由均分拖至 10% 得 Owner 接纳 `85/100`，[接纳整屏](shared-packed-mouse-accepted-1440x900.png)；超容量拖动被 `ReactorPlanOverCapacity` 拒绝并回到已接纳的 10%，[拒绝整屏](shared-packed-mouse-rejected-1440x900.png)。真实鼠标选 ×10 后独立升级 `1→11`，铀 `1000→450`、扣 `550`、提示“已升级 10 级”，见[×10 整屏](shared-packed-ten-purchased-1440x900.png)；随后受控入账 1000 铀供 MAX，真实鼠标选 MAX 后 `11→15`，铀 `1450→114`、扣 `1336`、提示“已升级 4 级”，见[MAX 整屏](shared-packed-max-purchased-1440x900.png)。[低正载](shared-packed-low-1440x900.png)显示 `<1%` 而 Owner 负载为正，[真零](shared-packed-true-zero-1440x900.png)显示 `0%` 且核心动态关闭。此证据补上新 shader 源码下现有四路鼠标／购级链；1／2 仍是上一节同产品源码下的受控 Owner 鼠标，静态审结论不因此自动扩为整体动态／新装备同版通过。
+
+### 当前 packed 版连续工作画面
+
+[10 秒完整录像](shared-packed-continuous-1440x900-25fps.mp4)是同一工作区固定共享宿主 `051cbd0dc201fb53578d9c074460b8969a207ef8` 叠加 [14 文件闭包](integration-closure.json)中的 `6d0ee146ca54613cf13e9cd1ae2863310e3ed424` 当前 B01 产品源码与八张原板、两张 packed mask 的实际窗口采集；录前已逐文件核 SHA-256 与闭包一致。两张 `.png.import` 均为 `process/fix_alpha_border=false`，否则零 alpha 处 RGB 会变化。公共 `main.tscn`／Owner／战场未改，入口 `res://src/main.tscn`。临时 [驱动](shared-packed-continuous-driver.gd.txt)只受控授予四模块可用状态、点原生均分、清除既有引导并等待录制；[Godot 日志](shared-packed-continuous-runtime.txt)确认 1440×900、1×、负载 1.0、四路各 25%、工作相位 `2.45→20.35`、游戏时间 `2.63→20.57` 秒、末尾引导为空，无脚本错误。受控四路不证明自然解锁 1／2。
+
+Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe，ffmpeg x11grab 25 fps、libx264 ultrafast/CRF18/yuv420p；[采集日志](shared-packed-continuous-ffmpeg.txt)与 ffprobe 核为 1440×900、10.000 秒、250 帧、H.264，无音轨；视频 SHA-256 `91bc3b63526a6417df48e75108f4451636c024a820cda07cbbecadd6caa70974`。已目视检查 0／4／8 秒整屏和每秒接触表，完整 250 帧解码无错：B01 核心、四设备与管路连续工作，底台原生控件保持可见，战场同步推进，没有引导层遮住页面。此录制补当前源码的连续动态证据，视觉结论仍交既有原审；该软件渲染视频不作目标硬件性能验收，也未执行升级操作（升级证据见上段）。
 
 ### 给整体组的最小接入闭包
 
