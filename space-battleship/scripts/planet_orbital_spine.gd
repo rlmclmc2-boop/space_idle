@@ -250,7 +250,8 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		# remains the ring's own recessed work path through the orange portal.
 		var bay_span := 1.0 - smoothstep(0.10, 0.24, absf(angle - FACILITY_ANGLES[kind]))
 		var center_path := 1.0 - smoothstep(0.16, 0.32, absf(current.x))
-		height += bay_span * (0.13 * (1.0 - center_path) - 0.045 * center_path)
+		var front_lip := smoothstep(0.27, 0.47, current.x)
+		height += bay_span * (0.06 * (1.0 - center_path) - 0.16 * center_path - 0.12 * front_lip)
 	elif kind == "shipyard":
 		# The original deck rises into the cantilevers' one vertical spine.
 		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
