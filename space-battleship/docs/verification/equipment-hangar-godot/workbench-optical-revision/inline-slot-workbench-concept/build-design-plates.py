@@ -12,10 +12,10 @@ HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[4]
 ASSETS = PROJECT / 'assets'
 CONTEXT = HERE.parent / 'upgrade-group-coherence/00-fresh-current.png'
-INK = '#243d50'
+INK = '#193847'
 TEAL = '#326272'
-MUTED = '#657d82'
-WARN = '#aa592c'
+MUTED = '#49636c'
+WARN = '#903d23'
 used = {}
 
 
@@ -29,7 +29,8 @@ def ref(path):
 
 def text(x, y, value, size=14, color=INK, weight=400, anchor='start'):
     identity = 'ink' + hashlib.sha256(f'{x}:{y}:{value}'.encode()).hexdigest()[:12]
-    return f'<text id="{identity}" x="{x}" y="{y}" font-size="{size}" fill="{color}" font-weight="{weight}" text-anchor="{anchor}">{html.escape(str(value))}</text>'
+    family = 'Noto Sans Symbols' if str(value)=='⌄' else 'Noto Sans SC'
+    return f'<text font-family="{family}" id="{identity}" x="{x}" y="{y}" font-size="{size}" fill="{color}" font-weight="{weight}" text-anchor="{anchor}">{html.escape(str(value))}</text>'
 
 
 def box(x, y, w, h, fill, stroke='none', r=5):
@@ -92,13 +93,13 @@ EQUIPMENT = {
 
 
 def button(x, y, width, caption, disabled=False, height=36):
-    return box(x,y,width,height,'url(#disabled)' if disabled else 'url(#button)', '#92a4a4') + text(x+width/2,y+height/2+5,caption,14,'#eaf0e8' if not disabled else '#f0f0e8',500,'middle')
+    return box(x,y,width,height,'url(#disabled)' if disabled else 'url(#button)', '#92a4a4') + text(x+width/2,y+height/2+5,caption,14,'#eaf0e8' if not disabled else '#f0f0e8',600,'middle')
 
 
 def compare_button(x, y, width, height=32):
     # Main-row proposed hit area stays32px; visible face26px aligns the identity ink.
     s = box(x,y,width,26 if height==32 else height,'#eef0e4','#6d9291',4)
-    s += text(x+width/2,y+(18.25 if height==32 else 34),'比较',14 if height==32 else 16,TEAL,500,'middle')
+    s += text(x+width/2,y+(18.25 if height==32 else 34),'比较',14 if height==32 else 16,TEAL,600,'middle')
     if height>32: s += text(x+width/2,y+59,'仅查看',14,MUTED,400,'middle')
     return s
 
@@ -121,43 +122,45 @@ def row(y, category, index, key, fee_capacity, state='normal', focus=False):
     dense = fee_capacity==2
     height = row_height(fee_capacity)
     assert len(costs)<=fee_capacity, 'This static budget does not cover this quote.'
-    s = box(350,y,440,height-1,'#e8e8dc' if not focus else '#e0ebe3','#a3b2ae',4)
+    # A single workbench surface with quiet separators; each row retains its own targets.
+    s = box(350,y,440,height,'#e0ebe3' if focus else '#e8e8dc',r=0)
+    s += f'<path d="M358 {y+height-1} H782" stroke="#b0bcb5"/>'
     if focus: s += box(350,y,4,height-1,'#397e82',r=0)
-    # Isolated formal equipment, with a clear equipment cradle; never a ship preview crop.
-    s += box(356,y+5,48,58,'#c9d9d2','#718d8d',4)
-    s += image(path,358,y+7,44,54)
-    s += box(410,y+4,216,26,'#d6ded6','#829d97',4)
-    s += text(418,y+23,('武器' if category=='weapon' else '防御')+str(index+1)+' · '+name,16,INK,500)
-    s += text(614,y+19.25,'⌄',18,TEAL,500,'middle')
-    s += text(565,y+22,'Lv.'+level,14,MUTED)
-    s += compare_button(720,y+4,62)
-    attribute_baseline = 50 if dense else 48
-    fee_baseline = 72 if dense else 65
-    fee_center = 66.25 if dense else 59.75
-    s += text(410,y+attribute_baseline-1,'攻击力' if category=='weapon' else '容量',15,MUTED,500)
-    s += text(459,y+attribute_baseline,current,18,INK,600)+text(526,y+attribute_baseline,'→',18,MUTED)+text(550,y+attribute_baseline,after,18,TEAL,600)
-    s += text(404,y+fee_baseline,'升级费',15,INK,500)
+    s += box(356,y+8,48,58,'#d6e0d8','#91aaa2',4)
+    s += image(path,358,y+10,44,54)
+    # Identity is one clear name target; Lv remains a distinct adjacent reading.
+    s += box(410,y+5,216,27,'#dae3da','#91aaa2',4)
+    s += text(418,y+24,('武器' if category=='weapon' else '防御')+str(index+1)+' · '+name,16,INK,600)
+    s += text(614,y+21,'⌄',18,TEAL,500,'middle')
+    s += text(642,y+24,'Lv.'+level,14,MUTED,500)
+    s += compare_button(720,y+5,62)
+    # Shared three baselines: identity24 / benefit47 / cost73. Fee rows never touch benefit ink.
+    s += text(410,y+47,'攻击力' if category=='weapon' else '容量',15,'#3e5d67',500)
+    s += text(459,y+47,current,18,'#173c4e',600)+text(526,y+47,'→',18,MUTED)+text(550,y+47,after,18,'#173c4e',600)
+    s += text(410,y+73,'升级费',15,'#284650',500)
     for i,(kind,value) in enumerate(costs):
-        s += resource(kind,464,y+fee_center+i*21,20)+text(487,y+fee_baseline+i*21,value,15,INK,500)
-    if not costs: s += text(470,y+fee_baseline,'—',15,MUTED)
-    action_y = 47 if dense else 42
+        s += resource(kind,464,y+67.25+i*22,20)+text(487,y+73+i*22,value,15,'#1e3e4c',500)
+    if not costs: s += text(470,y+73,'—',15,MUTED)
+    action_y = 48 if dense else 42
     s += button(632,y+action_y,52,mode)+button(690,y+action_y,92,purchase,disabled)
     if reason:
         if dense:
-            s += text(632,y+99,reason,15,WARN,500)
+            s += text(632,y+100,reason,15,WARN,600)
         else:
             assert len(reason)<=5, 'Longer reason needs another static budget design.'
-            s += text(632,y+17,'升级',15,MUTED,500)+text(632,y+35,reason,15,WARN,500)
+            # Single-fee reason stays beside its resource, leaving identity and control bands clear.
+            s += text(550,y+73,reason,15,WARN,600)
     return s
 
 
-def plate(stage, popup=False, affordability_override=False):
+def plate(stage, popup=False, affordability_override=False, switched=False, comparison=False):
     hull, title, height = {'early':('01-frigate','游隼侦察艇',165),
                            'middle':('03-cruiser','云鳐巡洋舰',286),
                            'late':('05-heavy-battleship','白鲸无畏舰',336)}[stage]
     weapons = {'early':['laser'],'middle':['laser','missile','laser'],
                'late':['laser','missile','cannon','longLaser','laser']}[stage]
     defence = ['armour'] if stage == 'early' else ['armour','shield'] if stage == 'middle' else ['armour','shield','shield']
+    if switched: defence[1]='armour'
     console_top = {'early':320,'middle':200,'late':105}[stage]
     states = {}
     for cat,keys in [('weapon',weapons),('defence',defence)]:
@@ -211,6 +214,20 @@ def plate(stage, popup=False, affordability_override=False):
             s += text(474,yy+48+(0.995 if current else 0.127),'容量 '+value,16,MUTED)
             s += text(474,yy+71,'✓ 现装' if current else '点选即切换',14,TEAL,500)
             s += compare_button(688,yy,90,height=84)
+    if comparison:
+        # Optional reading target, separate from direct candidate selection. No confirmation action.
+        py=460
+        s += box(402,py,386,238,'#244450','#10303f',7)
+        s += text(416,py+27,'防御2 · 容量比较',16,'#f4f0df',600)
+        s += button(746,py+7,32,'×',height=30)
+        for key,yy,status in [('shield',py+46,'当前'),('armour',py+138,'候选')]:
+            name,path,value,_,_=EQUIPMENT[key]
+            s += box(412,yy,366,82,'#e8e8dc','#91aaa2',4)
+            s += image(path,424,yy+13,44,54)
+            s += text(484,yy+24,status+' · '+name,16,INK,600)
+            s += text(484,yy+57,'容量',15,'#3e5d67',500)
+            s += text(542,yy+57,value,18,'#173c4e',600)
+            s += text(724,yy+24,'Lv.1',14,MUTED,500)
     s += '</g></g></g></svg>'
     # Preserve embedded originals once per SVG, rather than repeating atlas bytes per row.
     embedded = {}
@@ -230,6 +247,8 @@ def plate(stage, popup=False, affordability_override=False):
 for name,stage,popup in [('01-early-two','early',False),('02-middle-five','middle',False),('03-late-eight','late',False),('04-local-dropdown','late',True)]:
     (HERE/(name+'.svg')).write_text(plate(stage,popup),encoding='utf-8')
 (HERE/'05-late-affordability-only.svg').write_text(plate('late',affordability_override=True),encoding='utf-8')
+(HERE/'06-local-switch-accepted.svg').write_text(plate('late',switched=True),encoding='utf-8')
+(HERE/'07-optional-comparison.svg').write_text(plate('late',comparison=True),encoding='utf-8')
 used['assets/fonts/NotoSansSC.ttf'] = hashlib.sha256((ASSETS/'fonts/NotoSansSC.ttf').read_bytes()).hexdigest()
 (HERE/'reference-hashes.json').write_text(json.dumps(used,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 # Existing repository family, private render configuration only; no system install.

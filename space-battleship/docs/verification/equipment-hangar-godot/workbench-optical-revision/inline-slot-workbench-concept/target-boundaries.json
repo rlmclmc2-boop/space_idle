@@ -15,7 +15,7 @@
       "action": "equipment_icon",
       "rect_x_yOffset_w_h": [
         346,
-        5,
+        8,
         48,
         58
       ],
@@ -25,9 +25,9 @@
       "action": "current_name_dropdown",
       "rect_x_yOffset_w_h": [
         400,
-        4,
+        5,
         216,
-        26
+        27
       ],
       "focus_outset": 3
     },
@@ -35,7 +35,7 @@
       "action": "compare_only",
       "rect_x_yOffset_w_h": [
         710,
-        4,
+        5,
         62,
         32
       ],
@@ -58,9 +58,9 @@
       "row_bounds_x_width_height": [
         340,
         440,
-        "83 normal /107 dense"
+        "84 ordinary /108 dense; quiet bottom separator"
       ],
-      "row_pitch": "content-dependent",
+      "row_pitch": "fixed capacity profile; independent of affordable/reason",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
@@ -97,9 +97,9 @@
       "row_bounds_x_width_height": [
         340,
         440,
-        "83 normal /107 dense"
+        "84 ordinary /108 dense; quiet bottom separator"
       ],
-      "row_pitch": "content-dependent",
+      "row_pitch": "fixed capacity profile; independent of affordable/reason",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
@@ -145,9 +145,9 @@
       "row_bounds_x_width_height": [
         340,
         440,
-        "83 normal /107 dense"
+        "84 ordinary /108 dense; quiet bottom separator"
       ],
-      "row_pitch": "content-dependent",
+      "row_pitch": "fixed capacity profile; independent of affordable/reason",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
@@ -232,7 +232,6 @@
   "content_variants": {
     "normal": {
       "pitch": 84,
-      "frame_height": 83,
       "actions": {
         "quantity_cycle": [
           622,
@@ -247,40 +246,49 @@
           36
         ]
       },
-      "fee_lines": 1,
-      "fee_capacity": 1,
-      "reason_area": [
-        622,
-        1,
-        82,
-        35
+      "baselines_yOffset": {
+        "identity": 24,
+        "benefit": 47,
+        "fee": 73
+      },
+      "level": [
+        632,
+        24
       ],
-      "reason_scope": "Upgrade label plus up to5Chinese-character reason, at15px; always reserved even when blank. PaidLv is inside the name target.",
-      "reason_lines": 2
+      "reason_baseline": [
+        540,
+        73
+      ],
+      "reason_scope": "Single-fee short reason beside iron65, up to5Chinese characters only. Long quotes/reasons not covered."
     },
     "dense": {
       "pitch": 108,
-      "frame_height": 107,
       "actions": {
         "quantity_cycle": [
           622,
-          47,
+          48,
           52,
           36
         ],
         "purchase_current_slot": [
           680,
-          47,
+          48,
           92,
           36
         ]
       },
-      "fee_lines_up_to": 2,
-      "reason_baseline_relative": 99,
-      "reason_x": 622,
-      "reason_font": 15,
-      "reason_scope": "Always reserved upgrade-affordability area, regardless of whether reason is present.",
-      "fee_capacity": 2
+      "baselines_yOffset": {
+        "identity": 24,
+        "benefit": 47,
+        "fee1": 73,
+        "fee2": 95,
+        "reason": 100
+      },
+      "reason_baseline": [
+        622,
+        100
+      ],
+      "reason_scope": "Reason below buttons, always reserved."
     }
   },
   "capacity_boundary": {
@@ -573,5 +581,30 @@
     ],
     "unchanged_below_y": 349,
     "limitations": "Static matched fixtures only. Does not prove balance-driven full-screen owner refresh or budgets beyond this profile."
+  },
+  "optional_comparison": {
+    "plate": "07-optional-comparison.png",
+    "panel": [
+      392,
+      460,
+      386,
+      238
+    ],
+    "close": [
+      736,
+      467,
+      32,
+      30
+    ],
+    "read_only": true,
+    "no_confirmation": true,
+    "scope": "Defence2 current shield/candidate armour capacity; weapon period comparison remains undrawn."
+  },
+  "switch_accepted": {
+    "plate": "06-local-switch-accepted.png",
+    "changed_slot": "defence:1",
+    "from": "shield",
+    "to": "armour",
+    "owner_acceptance": "Design fixture only; not an executed transaction. Reopen same dropdown to switch back."
   }
 }

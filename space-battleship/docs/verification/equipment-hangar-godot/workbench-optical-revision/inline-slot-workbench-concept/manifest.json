@@ -1,6 +1,6 @@
 {
-  "kind": "structure-approved-static-presentation-candidate",
-  "stage": "Structure approved; presentation design only; no runtime verification",
+  "kind": "whole-equipment-layout-adaptation-static-candidate",
+  "stage": "Same approved slot structure, R3 typography consumed and containers/spacing adapted; author-viewed, pending root/overall/independent review; not user review readiness or runtime approval",
   "module": [
     0,
     0,
@@ -14,10 +14,10 @@
         1440,
         900
       ],
-      "sha256": "e8033253e3e5d41382961ffb1cdddd656a7e5335b9036a3f0d43b1dc8502dfb5",
-      "svg_sha256": "a6e598572e3cadbc5a2c2ee60a70e99171c2a279a4a7d7c97aa9cbd40669d336",
-      "battle_pixel_diff_bbox": null,
+      "sha256": "721af24d628e160ba46bbb900f88f117786cd172a7edf71b11e0f7bb1c47347f",
+      "svg_sha256": "488120f5b3f8173fb5b2b183af2853357a911054a8a42d98e8142fdd5aa27c3a",
       "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
       "actually_viewed": true
     },
     {
@@ -26,10 +26,10 @@
         1440,
         900
       ],
-      "sha256": "9bbad32984c3ecb306a395b322046eebe62f63ab3039e5e0a388df1a2a79f211",
-      "svg_sha256": "0f2f7bbf7016cf28f7d8e25045e472bc0bcc3512ea34a7d895273542ce67fcf2",
-      "battle_pixel_diff_bbox": null,
+      "sha256": "71222287868bb79739079c82df1fe381b06be71c9852142d287a4f0533db5ac3",
+      "svg_sha256": "eb9436a88bd9ac0bc621ab7f82659d636dd7198e59a6f7d592a0195341edc670",
       "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
       "actually_viewed": true
     },
     {
@@ -38,10 +38,10 @@
         1440,
         900
       ],
-      "sha256": "d14e74655f35da2179ba4af0970de204a69dce5d92eb8bad28f4de1cd0479a78",
-      "svg_sha256": "343f2dce051149a08aa98c70b41380a41f788cf60f989534015046a1596743ca",
-      "battle_pixel_diff_bbox": null,
+      "sha256": "33ed3a08d603be7c3e41d77b94d2a3cd33dbdc036b78244fe03b28fce4a89616",
+      "svg_sha256": "4688bcda40ba0768726dfcd629d4f993dcfbc1ac42b881e433948e0c1c1a67b1",
       "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
       "actually_viewed": true
     },
     {
@@ -50,21 +50,46 @@
         1440,
         900
       ],
-      "sha256": "bf5cb47bee26a16fb8af6257e15a370a583a74de46d6c26b472b79d4016c19f8",
-      "svg_sha256": "7a6e436fe5070068f4ebbbd1bca2954d1e801ba5ec29821f94818ff0afb40fc7",
-      "battle_pixel_diff_bbox": null,
+      "sha256": "28aa24ee7d789cd415a5735e9a5d38797573faf1fd35ce8bd373760228526dcd",
+      "svg_sha256": "dc72f554afcba85544d0675116d601963a3ebe240b06edeade446207b9e0ed4c",
       "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
       "actually_viewed": true
     },
     {
       "file": "05-late-affordability-only.png",
-      "role": "necessary matched static affordability contrast, not new layout",
       "size": [
         1440,
         900
       ],
-      "sha256": "c7e1243262b7401b99ab8412f650dede6de207e0418bc1f9724240adfacf3ddc",
-      "svg_sha256": "f8e9b64c5913cedcd028a769b74becb77f967d0a1b86cd7f24489dce194776f6",
+      "sha256": "f6431bff585540f2a16ddde76e17b34dde627d1d727b4f676cb6811d084c92d6",
+      "svg_sha256": "dd26ad797200bdbc166db0f429b5304964d2c8bcba43fbb8c19ef34669ae6041",
+      "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
+      "actually_viewed": true
+    },
+    {
+      "file": "06-local-switch-accepted.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "8315ce8b24b2f03d19302c8425246b1721494413aad5a7ce57db1b79dcb1ccc0",
+      "svg_sha256": "cad3de624e63c5d0db3c882c5faa2ecc4057d358f8ad242e316ec58c3de92ed6",
+      "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
+      "actually_viewed": true
+    },
+    {
+      "file": "07-optional-comparison.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "56ff851cdefc68bb65c1af37597455c5c710c81faea4b36edfb8be17c14277c1",
+      "svg_sha256": "aca1466aec6fd94c971d995c90eb1c1d7ceb0a881d57ebd784ff24537c0f2107",
+      "header_pixel_diff_bbox": null,
+      "battle_pixel_diff_bbox": null,
       "actually_viewed": true
     }
   ],
@@ -111,6 +136,12 @@
       "normal": 84,
       "dense": 108
     },
+    "baselines_yOffset": [
+      24,
+      47,
+      73
+    ],
+    "second_fee_baseline": 95,
     "quantity_size": [
       52,
       36
@@ -119,6 +150,11 @@
       92,
       36
     ],
+    "identity_dropdown_size": [
+      216,
+      27
+    ],
+    "level_separate_from_dropdown": true,
     "fee_and_reason_font_size": 15,
     "stage_panel_positions": {
       "early": {
@@ -135,9 +171,9 @@
         "row_bounds_x_width_height": [
           340,
           440,
-          "83 normal /107 dense"
+          "84 ordinary /108 dense; quiet bottom separator"
         ],
-        "row_pitch": "content-dependent",
+        "row_pitch": "fixed capacity profile; independent of affordable/reason",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
@@ -151,6 +187,10 @@
         "row_variants": {
           "weapon:0": "dense",
           "defence:0": "dense"
+        },
+        "row_capacity_budget": {
+          "weapon:0": 2,
+          "defence:0": 2
         }
       },
       "middle": {
@@ -170,9 +210,9 @@
         "row_bounds_x_width_height": [
           340,
           440,
-          "83 normal /107 dense"
+          "84 ordinary /108 dense; quiet bottom separator"
         ],
-        "row_pitch": "content-dependent",
+        "row_pitch": "fixed capacity profile; independent of affordable/reason",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
@@ -189,6 +229,13 @@
           "weapon:2": "dense",
           "defence:0": "normal",
           "defence:1": "normal"
+        },
+        "row_capacity_budget": {
+          "weapon:0": 2,
+          "weapon:1": 1,
+          "weapon:2": 2,
+          "defence:0": 1,
+          "defence:1": 1
         }
       },
       "late": {
@@ -211,9 +258,9 @@
         "row_bounds_x_width_height": [
           340,
           440,
-          "83 normal /107 dense"
+          "84 ordinary /108 dense; quiet bottom separator"
         ],
-        "row_pitch": "content-dependent",
+        "row_pitch": "fixed capacity profile; independent of affordable/reason",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
@@ -233,6 +280,16 @@
           "defence:0": "normal",
           "defence:1": "normal",
           "defence:2": "normal"
+        },
+        "row_capacity_budget": {
+          "weapon:0": 2,
+          "weapon:1": 1,
+          "weapon:2": 1,
+          "weapon:3": 1,
+          "weapon:4": 1,
+          "defence:0": 1,
+          "defence:1": 1,
+          "defence:2": 1
         }
       }
     }
@@ -304,148 +361,236 @@
     "before": "03-late-eight.png",
     "after": "05-late-affordability-only.png",
     "changed_slot": "weapon:1",
-    "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 mode and fixed fee_capacity1",
-    "slot_y": 265,
-    "slot_pitch": 84,
-    "all_40_geometry_anchors_equal": true,
-    "svg_rect_anchors_before_and_after": [
+    "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 and fixed capacity1",
+    "all_40_target_rectangles_equal": true,
+    "svg_rectangles_local_x_before_transform_minus10": [
       [
         356.0,
+        165.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
         162.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        162.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        205.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        205.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        273.0,
         48.0,
         58.0
       ],
       [
-        356.0,
+        410.0,
         270.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        270.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        307.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        307.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        357.0,
         48.0,
         58.0
       ],
       [
-        356.0,
+        410.0,
         354.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        354.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        391.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        391.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        441.0,
         48.0,
         58.0
       ],
       [
-        356.0,
+        410.0,
         438.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        438.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        475.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        475.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        525.0,
         48.0,
         58.0
       ],
       [
-        356.0,
+        410.0,
         522.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        522.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        559.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        559.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        628.0,
         48.0,
         58.0
       ],
       [
-        356.0,
+        410.0,
         625.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        625.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        662.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        662.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        712.0,
         48.0,
         58.0
       ],
       [
-        356.0,
+        410.0,
         709.0,
-        48.0,
-        58.0
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        709.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        746.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        746.0,
+        92.0,
+        36.0
       ],
       [
         356.0,
-        793.0,
+        796.0,
         48.0,
         58.0
       ],
       [
         410.0,
-        161.0,
+        793.0,
         216.0,
+        27.0
+      ],
+      [
+        720.0,
+        793.0,
+        62.0,
         26.0
-      ],
-      [
-        410.0,
-        269.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        353.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        437.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        521.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        624.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        708.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        792.0,
-        216.0,
-        26.0
-      ],
-      [
-        632.0,
-        204.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        307.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        391.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        475.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        559.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        662.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        746.0,
-        52.0,
-        36.0
       ],
       [
         632.0,
@@ -455,108 +600,69 @@
       ],
       [
         690.0,
-        204.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        307.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        391.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        475.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        559.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        662.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        746.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
         830.0,
         92.0,
         36.0
-      ],
-      [
-        720.0,
-        161.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        269.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        353.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        437.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        521.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        624.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        708.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        792.0,
-        62.0,
-        26.0
       ]
     ],
     "pixel_diff_bbox": [
-      622,
-      269,
+      540,
+      307,
       772,
       343
     ],
-    "unchanged_below_y": 349,
-    "limitations": "Static matched fixtures only. Does not prove balance-driven full-screen owner refresh or budgets beyond this profile."
+    "downstream_y349_pixel_diff_bbox": null,
+    "scope": "Static fixture contrast; no Owner refresh or input testing."
+  },
+  "typography_source_commit": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
+  "native_details": [
+    {
+      "file": "02-middle-five-native-detail.png",
+      "size": [
+        456,
+        300
+      ],
+      "sha256": "f1f17c31b59789da44afd3137923d4198adfb6f62a49266a7a3ffb781b872513",
+      "actually_viewed": true
+    },
+    {
+      "file": "03-late-eight-native-detail.png",
+      "size": [
+        456,
+        194
+      ],
+      "sha256": "ce32828c5ecabe422d34b3b71e475e50d32ff89553b2ec8252151c9e7ab5732b",
+      "actually_viewed": true
+    },
+    {
+      "file": "04-local-dropdown-native-detail.png",
+      "size": [
+        398,
+        335
+      ],
+      "sha256": "a87f75c71da53321db8354c8ad9a3095884e4c48db5c97735412661bf504bf95",
+      "actually_viewed": true
+    },
+    {
+      "file": "05-late-affordability-only-native-detail.png",
+      "size": [
+        456,
+        84
+      ],
+      "sha256": "8f0b3a15b844a69179d22a7549be302e037fe324a3d87ab898051c012f556713",
+      "actually_viewed": true
+    }
+  ],
+  "overall_handoff": {
+    "source": "build-design-plates.py and self-contained 01–07 SVG",
+    "consume_module_region": [
+      0,
+      85,
+      808,
+      815
+    ],
+    "context_only": "Top808x85 and right632x900 are unchanged historical screenshot; overall owner must compose with current shared host before user review.",
+    "common_source_untouched": true,
+    "pending_common_material_dependency": "连续工作台／轻分隔属于本组当前整页组织适配，不是公共材质新标准。当前唯一共同固定源是整体`61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1`的R3字体；尚未收到后续共同材质固定源。公共台面奶油白／蓝结构配色、外框与分隔材质、普通／禁用／focus按钮、比较与下拉表面、与反应堆一致的信息层级，以及模块边缘／公共宿主过渡，仍须整体原组按最新共同源完整整合。本组保留现有控件材质作上下文，不另设计一套；不能因本次七态同版就报风格统一通过。精确接入部件：`plate()`台体face/button/disabled定义与外框、`row()`底色／separator／cradle／identity目标、`compare_button()`与`button()`、下拉和只读比较覆层；身份24／收益47／费用73和固定容量／目标关系需在整体材质适配后保留或同版复核。"
   }
 }

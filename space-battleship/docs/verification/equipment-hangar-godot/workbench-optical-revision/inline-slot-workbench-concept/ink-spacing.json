@@ -1,300 +1,275 @@
 {
-  "status": "Prior9c ink-gap equality was insufficient and is superseded as a quality criterion. No new equality target or acceptance claim.",
-  "current_change": "Fixed capacity budgets replace transient-state classification. Always-reserved reason areas; unchanged fee15/status15; name/Lv/chevron visually checked in same target. No new equal-gap quality criterion.",
+  "status": "Whole-page visual adaptation, no equal-gap acceptance criterion",
   "font_reference": {
-    "commit": "ad7afd6425e16cd36f9c0612db920e8faa8cba5e",
-    "review_status": "R1 expressly proposed, pending review, not implemented; not an accepted norm",
-    "files": {
-      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md": "bfa2df4d7b61ad6e365d213340ca4627d09105ea81b30c5c34c97f0ca23d2fe5",
-      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/typography-visible-area-r1.html": "1df58d8750e9fd3fc5ed78c69c8b4300c5dc10ec27d3d9647cdb1a7fca5106d6"
-    },
-    "consumed": "Existing NotoSansSC.ttf family, original400/500/600 roles, fee/status15/500 as local proposed reference. No new family or global token."
+    "commit": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
+    "source": "runtime-clear-zone/evidence/typography-r3-equipment-03-after.svg",
+    "consumed": "Noto Sans SC; name16/600, value18/600, fee15/500, reason15/600, Lv14/500, actions14/600 and compare14/600; R3 colors preserved. Chevron Noto Sans Symbols."
   },
-  "native_detail": {
-    "path": "/tmp/space-idle-workbench-rebuild/dense-fees-reason-native.png",
-    "size": [
-      456,
-      108
+  "current_change": "Name and level separate; three row baselines24/47/73; second fee95; cost/short reason share one fee band; quiet separators replace repeated row outlines; controls retain same shared appearance.",
+  "visual_review": "All seven1440x900 screens and four native detail PNG actually viewed. Pending root/overall/independent review; not runtime acceptance.",
+  "stability_pair": {
+    "before": "03-late-eight.png",
+    "after": "05-late-affordability-only.png",
+    "changed_slot": "weapon:1",
+    "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 and fixed capacity1",
+    "all_40_target_rectangles_equal": true,
+    "svg_rectangles_local_x_before_transform_minus10": [
+      [
+        356.0,
+        165.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        162.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        162.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        205.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        205.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        273.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        270.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        270.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        307.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        307.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        357.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        354.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        354.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        391.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        391.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        441.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        438.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        438.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        475.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        475.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        525.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        522.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        522.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        559.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        559.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        628.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        625.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        625.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        662.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        662.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        712.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        709.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        709.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        746.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        746.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        796.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        793.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        793.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        830.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        830.0,
+        92.0,
+        36.0
+      ]
     ],
-    "sha256": "f8b314bbf5be2faae3c84898af7049c4d310c55a3fcd0d310567f6b6942c51a1",
-    "actually_viewed": true,
-    "scope": "Historical56e4 dense detail retained; current comparison is03/05 and ordinary_failure_native_detail."
+    "pixel_diff_bbox": [
+      540,
+      307,
+      772,
+      343
+    ],
+    "downstream_y349_pixel_diff_bbox": null,
+    "scope": "Static fixture contrast; no Owner refresh or input testing."
   },
-  "visual_review": "Four current1440x900 main plates plus necessary05 matched contrast and its456x84native detail actually viewed; pending review, not runtime focus validation.",
   "capacity_boundary": {
     "late_safe_row_budget": 696,
     "formula": "672+24*k for8rows, k dense rows",
     "current_k": 1,
     "k2_overflow": 24,
     "k8_overflow": 168,
-    "unresolved": "Capacity profiles are design-fixture budgets, not a complete production allocation. Mode changes, evolution/upgrades or resource-count changes that exceed a slot capacity are not drawn; no automatic height promotion is allowed to push later slots. Multiple2-fee slots,3currencies,long levels/reasons require original design backlog work, potentially same-workbench scrolling. No all-operation stability claim."
-  },
-  "stability_pair": {
-    "before": "03-late-eight.png",
-    "after": "05-late-affordability-only.png",
-    "changed_slot": "weapon:1",
-    "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 mode and fixed fee_capacity1",
-    "slot_y": 265,
-    "slot_pitch": 84,
-    "all_40_geometry_anchors_equal": true,
-    "svg_rect_anchors_before_and_after": [
-      [
-        356.0,
-        162.0,
-        48.0,
-        58.0
-      ],
-      [
-        356.0,
-        270.0,
-        48.0,
-        58.0
-      ],
-      [
-        356.0,
-        354.0,
-        48.0,
-        58.0
-      ],
-      [
-        356.0,
-        438.0,
-        48.0,
-        58.0
-      ],
-      [
-        356.0,
-        522.0,
-        48.0,
-        58.0
-      ],
-      [
-        356.0,
-        625.0,
-        48.0,
-        58.0
-      ],
-      [
-        356.0,
-        709.0,
-        48.0,
-        58.0
-      ],
-      [
-        356.0,
-        793.0,
-        48.0,
-        58.0
-      ],
-      [
-        410.0,
-        161.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        269.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        353.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        437.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        521.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        624.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        708.0,
-        216.0,
-        26.0
-      ],
-      [
-        410.0,
-        792.0,
-        216.0,
-        26.0
-      ],
-      [
-        632.0,
-        204.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        307.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        391.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        475.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        559.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        662.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        746.0,
-        52.0,
-        36.0
-      ],
-      [
-        632.0,
-        830.0,
-        52.0,
-        36.0
-      ],
-      [
-        690.0,
-        204.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        307.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        391.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        475.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        559.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        662.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        746.0,
-        92.0,
-        36.0
-      ],
-      [
-        690.0,
-        830.0,
-        92.0,
-        36.0
-      ],
-      [
-        720.0,
-        161.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        269.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        353.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        437.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        521.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        624.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        708.0,
-        62.0,
-        26.0
-      ],
-      [
-        720.0,
-        792.0,
-        62.0,
-        26.0
-      ]
-    ],
-    "pixel_diff_bbox": [
-      622,
-      269,
-      772,
-      343
-    ],
-    "unchanged_below_y": 349,
-    "limitations": "Static matched fixtures only. Does not prove balance-driven full-screen owner refresh or budgets beyond this profile."
-  },
-  "ordinary_failure_native_detail": {
-    "path": "/tmp/space-idle-workbench-rebuild/stable-ordinary-insufficient-native.png",
-    "size": [
-      456,
-      84
-    ],
-    "sha256": "22b039bb77d3cdcb201cd9272c8ee4ac5ae56c7a7b27cfe98806412fa5000958",
-    "actually_viewed": true
+    "unresolved": "Fixed fixture capacities only. Multiple dense rows/3resources, mode or evolution exceeding allocated profile, long values/reasons, scroll and full focus matrix remain undrawn. Never grow rows on affordability change."
   }
 }
