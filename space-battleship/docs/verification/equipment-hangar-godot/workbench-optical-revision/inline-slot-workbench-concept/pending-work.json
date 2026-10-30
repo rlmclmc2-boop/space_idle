@@ -1,5 +1,5 @@
 {
-  "current": "63–83 current full-group candidate: early subject260px +95px identity shift; unwarped short/long wall-fixed environment sources; no art acceptance",
+  "current": "3946a1b8 full21-state static original review passed. Root personally viewed and actually sent63/64/65/66 design confirmation screens to user. Await user decision whether to enter native implementation; no runtime/interaction/final-user acceptance or main integration.",
   "completed_in_candidate": [
     "b17common material roles consumed, public header context and panel slices",
     "single-support short/tall room and table composition; actual weapons remain separated and mounted",
@@ -11,14 +11,16 @@
     "Whole21-state review-current-group.html with4 existing fixed e8 B01 host references",
     "Current63 early hull+mounted weapons uniformly260/165 aboutsame bottom anchor; identity-95; slot data/targets unchanged",
     "Current short/tall matte environment sources directly original transform, asymmetric left floor support/right wall fixing; prior squeeze withdrawn",
-    "Full21 current states in review-current-group.html +4 existing e8B01 reference screens"
+    "Full21 current states in review-current-group.html +4 existing e8B01 reference screens",
+    "3946 all21 static original review passed, reported by root",
+    "Root personally viewed63/64/65/66 full screens and actually sent these four design confirmation screens to user"
   ],
   "remaining": [
     {
-      "item": "Whole-page composition/material/host judgment",
-      "target": "Overall/root/independent original reviewer",
-      "source": "3946 equipment21states preserved; review-current-group.html now usesb178 current0af shared B01 references; host-return-source.json and5ba/10dc ownership contract",
-      "reason": "Root/overall/original reviewer must decide3946 early hull/nameplate/wall/desk hierarchy and natural asymmetric support thickness/x808 termination against current0af B01 shared reference. b178 supplies no new equipment public source requirement or3946 review conclusion. Native integration remains later phase; no complete user-confirmation delivery."
+      "item": "User decision whether to enter native implementation",
+      "target": "User, after actual four-screen design confirmation delivery by root",
+      "source": "3946 fixed21-state design; root latest handoff confirms original static review passed and63/64/65/66 actually delivered",
+      "reason": "Prior root/original whole-page-review dependency is complete. Hold3946 design and07ca review references unchanged until the user decides whether to enter native implementation. This is not final-user/runtime/interaction acceptance."
     },
     {
       "item": "Native host integration and continuous scrolling/input/focus/switch/payment",
@@ -39,5 +41,29 @@
     "not_current": "Full108proposal, old01–41 and temp24–28 are historical/process, not current integration",
     "execution": "Static design only; no runtime/main/Library/independent tests. No actual compaction in this replacement; original WIP/import metadata preserved."
   },
-  "permissions": "No denied action or technical authorization blocker. Remaining review/integration dependencies are explicit above."
+  "permissions": "No denied action or technical authorization blocker. Current exact dependency is user decision whether to enter native implementation; later implementation and unknown-field boundaries remain as listed.",
+  "review_status": {
+    "equipment_design_commit": "3946a1b8cf81122b517a6f3e9b7e623f4cb97989",
+    "reference_handoff_commit": "07ca0cc686f4e9cf6ff85b90da9923f3d451087c",
+    "static_original_review": "passed for all21 current states, per latest root handoff",
+    "root_personally_viewed": [
+      "63-host-return-early.png",
+      "64-host-return-middle.png",
+      "65-host-return-late.png",
+      "66-host-return-bottom.png"
+    ],
+    "actually_sent_to_user": [
+      "63-host-return-early.png",
+      "64-host-return-middle.png",
+      "65-host-return-late.png",
+      "66-host-return-bottom.png"
+    ],
+    "current_dependency": "User decision whether to enter native implementation after receiving the four design confirmation screens",
+    "not_claimed": [
+      "Godot native implementation",
+      "interaction verification",
+      "final user acceptance",
+      "main integration"
+    ]
+  }
 }
