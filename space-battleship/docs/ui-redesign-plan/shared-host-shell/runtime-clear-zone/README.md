@@ -150,3 +150,11 @@ Godot 4.7.2 正常 `main.tscn` 的[第一固态四设施完整态整屏](evidenc
 原组固定 `867e18256c0bef231a6f32b33d244e88237bc854` 相对已接 R17 的唯一运行文件差异是 `src/ui/planet_panel.gd`，原组入口仍为 [R17 README 的 planet-control-surface 小节](../../../verification/planet-single-side-godot/visual-r17-curved-spine/README.md)。本组合从该 SHA 精确取此文件的内区按钮、抽屉、选择器和展开态场景避让；保留已审宿主专用的顶轨 y=65 接续：收起时原视觉从 y=65 到900，展开时原视觉在 x=292…808 同样从 y=65 起，原组既有左抽屉背景也在共享模式从 y=65 起。独立模式仍用原组 y=90。没有取原组 main、公共壳或其他模块文件，装备、反应堆、资源身份、焦点输入与右侧战斗空间未改。
 
 已在 Godot 4.7.2 以 Dummy 音频驱动完成本版编辑器导入、主脚本 `--check-only` 及 `git diff --check`，无脚本／资源错误。本检查点**尚未取最终组合整屏或动态**：原星球组还在收口征服详情的两处文字层级，当前 `867e1825` 的七张整屏静态方向限定认可只属其内区版本，不能外推本共享组合或完整操作。最终固定修订到达后，只同步后续实际差异，再采同版装备／反应堆／星球必要整屏供原整体审重新判断；当前旧版截图不冒充 `867e1825` 最终视觉证据，不合 main。
+
+### 星球 5458a8b1 征服详情收口后的共享组合（待原整体审）
+
+原星球组后续固定 `5458a8b19c96a1b3b8305772e01728a55c76a1f3`，源 [R17 README 的征服详情局部排版收口小节](../../../verification/planet-single-side-godot/visual-r17-curved-spine/README.md)。相对 `867e1825` 仅 `src/ui/planet_panel.gd` 中两条征服事实、累计奖励标题及四项左右对齐排版变化；本分支只应用这段源补丁。当前文件与该源 SHA 的差异只余共享宿主 y=65 顶轨接续及展开态左背景适配，独立星球模式仍 y=90。装备 `e52e72c3`、反应堆 `51456ce0`、五资源身份、公共导航、战斗投影和输入未改；反应堆此版只作既有场景返回对照，用户要求的反应堆重设计仍暂停在概念阶段，本接入没有续改。
+
+Godot 4.7.2 正常主场景同一源码版的 `1440×900` 原图：[星球完整态](evidence/planet-5458-combo-stage4-1440x900.png)、[设施展开](evidence/planet-5458-combo-facilities-1440x900.png)、[探索／征服详情](evidence/planet-5458-combo-conquest-1440x900.png)、[切回装备](evidence/planet-5458-combo-equipment-1440x900.png)、[切回反应堆](evidence/planet-5458-combo-reactor-1440x900.png)、[切回星图](evidence/planet-5458-combo-universe-1440x900.png)。[固定驱动](evidence/planet-5458-combo-driver.gd.txt)使用既有 Campaign/Planet 恢复端口造第一固态四设施 built 状态，刷新反应堆可用性，未提交购买、建设或探索命令；[运行摘要](evidence/planet-5458-combo-runtime.txt)记录路由互斥、钱包隐藏及焦点清理。Godot 导入、主脚本 `--check-only`、同版运行与 `git diff --check` 通过，Dummy 音频驱动下无脚本／资源错误；音频播放未验证。
+
+按 13 第 6 节原尺寸查看本版整屏：星球顶轨接续无 y65–90 断带，收起与展开时环、球、四设施未见新裁切，征服事实与累计奖励不再逐字断行且主次可辨；返回装备与反应堆时公共栏、导航及两区边界未见本次增量遮挡。此为交原整体审的当前候选，**不预称整体视觉或星球原组最终通过**。夹具图不证明自然解锁／逐步建设／连续动态／其他天体；旧自然时间视频与本版控件源码不同，不拼接为本版动态证据。反应堆现有页面的品质亦不因路由截图被重新验收，未合 main。
