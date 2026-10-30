@@ -19,7 +19,7 @@ SLIDER rect=[P: (194.0, 622.0), S: (170.0, 33.0)] value=2500.0
 MOUSE_ACCEPT ratio=0.1 slider=1000.0 allocated=8.5e1 notice=供能已更新
 REJECT_STATE before=0.1 actual=0.1 slider=1000.0 last={ "ok": false, "reason": "ReactorPlanOverCapacity" } commands=1
 MOUSE_REJECT reason=ReactorPlanOverCapacity actual=0.1 slider=1000.0 commands_delta=1 notice=分配超过可调容量
-TEN_PURCHASE count=10 cost=5.5e2 level=1->11 wallet_before=4.005e3 wallet_after=3.455e3 feedback=供能已更新
+TEN_PURCHASE count=10 cost=5.5e2 level=1->11 wallet_before=4.005e3 wallet_after=3.455e3 feedback=已升级 10 级
 LOW load=0.00017343045439 weapon=0.00017343045439 ratio_label=<1% stage=0.18
 ZERO load=0.0 ratio_label=0% stage=0.0
-MAX_PURCHASE count=7 cost=4.124e3 level=11->18 wallet_before=4.455e3 wallet_after=3.31e2 feedback=供能已更新
+MAX_PURCHASE count=7 cost=4.124e3 level=11->18 wallet_before=4.455e3 wallet_after=3.31e2 feedback=已升级 7 级

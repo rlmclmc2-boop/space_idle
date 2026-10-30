@@ -682,7 +682,10 @@ func _command(action: Callable, quote_may_change: bool = false) -> void:
 	presentation_counts.commands += 1
 	last_result = action.call()
 	if last_result.get("ok",false):
-		_set_notice("供能已更新")
+		var notice := "供能已更新"
+		if quote_may_change:
+			notice = "已升级 " + str(int(last_result.get("count", _purchase_count))) + " 级"
+		_set_notice(notice)
 		_message_until = Time.get_ticks_msec() + 1800
 		# The owner emits presentation_changed deferred. Coalesce that delivery
 		# with this fallback read, including successful no-op commands.
