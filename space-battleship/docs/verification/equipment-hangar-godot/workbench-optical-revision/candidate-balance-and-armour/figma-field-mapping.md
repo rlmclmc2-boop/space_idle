@@ -25,14 +25,16 @@ Owner另给weapon interval_seconds/salvo_count/charge_seconds，shield recovery_
 
 对应代码：equipment_panel.gd `_refresh_comparison`(716)、`_refresh_choices`(839)、`_render_costs`(575)、`_refresh_batch`(940)；systems/equipment.gd `_comparison_value`(181)、`slot_comparison`(218)、`_equip_admission`(620)、`equip_slot`(636)、`quote_slot`(653)；Session仅透传既有公开比较依赖。此映射限定字段语义，不提前另造布局；具体去重排布由真实editable Figma节点承载。
 
-## 实际Figma检查与当前阻塞
+## 实际Figma检查、读取拒绝与未验证写路径
 
-已读figma-generate-design、figma-use及其必需index/working-with-design-systems/gotchas。官方create_session成功，sessionId `bea65e24-0ded-49b0-9851-c0a98b0eed24`。成功只读确认：page `0:1`；公共ActionButton `2:29`是COMPONENT_SET，key `2bcb9ce1eecc1c18943144dafd48c69665b8c858`，含normal/hover/pressed/selected/disabled/ready六variant；集合 `VariableCollectionId:2:2`名“舰桥UI”，11个变量、Default模式；可用Noto Sans SC Regular/Medium/Bold。变量的具体名称/值/绑定和按钮各态细节尚未读取，不编造绑定事实。代码库未发现相关Code Connect文件；team-library按equipment workbench/ActionButton搜索为空，现成2:29仍是根明确指定的公共源。
+已读figma-generate-design、figma-use及其必需index/working-with-design-systems/gotchas。官方create_session成功，sessionId `bea65e24-0ded-49b0-9851-c0a98b0eed24`。成功只读确认：page `0:1`；公共ActionButton `2:29`是COMPONENT_SET，key `2bcb9ce1eecc1c18943144dafd48c69665b8c858`，含normal/hover/pressed/selected/disabled/ready六variant；集合 `VariableCollectionId:2:2`名“舰桥 UI”，11个变量、Default模式；可用Noto Sans SC Regular/Medium/Bold。变量的具体名称/值/绑定和按钮各态细节尚未读取，不编造绑定事实。代码库未发现相关Code Connect文件；team-library按equipment workbench/ActionButton搜索为空，现成2:29仍是根明确指定的公共源。
 
-接下来两次只读use_figma（变量名称/类型，及按钮细节/既有绑定）均被官方明确拒绝：
+接下来两次 `mcp__codex_apps__figma_use_figma`（官方use_figma）均为纯只读code：读取变量名称/类型，以及读取按钮细节/既有绑定，均被官方明确拒绝；没有写入或上传请求：
 
 `You've reached the Figma MCP tool call limit on the Starter plan. Upgrade your plan for more tool calls`
 
-返回isError=true，error_code=INVALID_ARGUMENT；额度处理链接 [Figma计划入口](https://www.figma.com/files/team/1697926730519558802/all-projects?upgrade=mcp_rate_limit_paywall)。这是官方计划额度阻塞，非用户设计偏好缺失、非审批拒绝或不确定写入。两调用均只读；截至本记录 **0个创建/修改节点、0次素材上传、0个装备frame**，没有待确认的写入结果。
+返回isError=true，error_code=INVALID_ARGUMENT；额度处理链接 [Figma计划入口](https://www.figma.com/files/team/1697926730519558802/all-projects?upgrade=mcp_rate_limit_paywall)。这是已确认的两次只读use_figma额度拒绝，不能外推所有写入或upload_assets不可用；写模式和上传未调用、未验证，不能记为被拒。非用户设计偏好缺失、非审批拒绝或不确定写入。两调用均只读；截至本记录 **0个创建/修改节点、0次素材上传、0个装备frame**，没有待确认的写入结果。
 
-依根指示已停止所有Figma调用/上传/创建及同能力替代路由，不重试绕过；未直接实施Godot。独立完成本Git字段映射、正式源hash与职责说明；需根处理现成Figma额度后再恢复原项，不能把准备文档当设计交付或总体完成。不新workspace/代理/素材、不pushmain/Library；本SOL未实际上下文压缩。
+依根指示现停止所有Figma调用，不重试被限读取或换身份/同义读路由；未直接实施Godot。官方[额度说明](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)区分读限与部分写工具豁免；当前use_figma schema只有code，没有单独read/write参数，不能凭读失败推测写结果。generate_figma_design明确豁免但用于网页capture，不符合本Godot独立原生editableframe要求；不拿它作绕过或整屏替代。未测试写模式或上传。
+
+现成已持有variant ID：normal2:17、hover2:19、pressed2:21、selected2:23、disabled2:25、ready2:27；component set的state默认normal。变量仅持有ID2:3至2:13及集合/mode信息，缺逐变量name/type/value/语义role映射，无法诚实绑定。公共button只确认state variant property，没有TEXT property；未持有文本子节点/字体及面材绑定细节。15正式源文件hash已齐，尚无Figma asset imageHash。根若已有这些现成token与按钮映射可直接提供，不需新读取绕限；之后也须明确合法写入路径才续建。独立完成本Git字段映射、正式源hash与职责说明，不能把准备文档当设计交付或总体完成。不新workspace/代理/素材、不pushmain/Library；本SOL未实际上下文压缩。
