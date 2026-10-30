@@ -7,7 +7,7 @@
     "font_roles": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
     "thin_frame_and_return_studies": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
     "minimal_owner_package": "5ba98734a8de355865e2c55cf1e907b68ccf770a",
-    "latest_read": "10dc56f14ff400e8bbea2f093606c17b74e6a1a4",
+    "latest_read": "b178ec391b941ac6888bff9b90f11809f4cf3b63",
     "note": "Actual238 study images used as generation references;5ba source-node/ownership contract consumed. No zone_shell/BridgeTheme/public resource or sampled75equipment host changes across these commits.",
     "early_reference": {
       "local": "coherence-assets/shared-early-balanced-23819624.png",
@@ -138,5 +138,12 @@
     "Continuous scrolling/focus/crop/input/switch/payment not implemented. Owner same-slot10game-second lock still requires later removal for instant switch-back.",
     "True paidLv19/MAX444/twofee sample does not cover arbitrary longer fields or invented third resources.",
     "No author/user full-page acceptance."
-  ]
+  ],
+  "review_reference_update": {
+    "commit": "b178ec391b941ac6888bff9b90f11809f4cf3b63",
+    "reactor_owner": "0afc66924e39ad0958a01b38f8bacdd09650f274",
+    "files": "review-host-references.json lists4 current existing shared images",
+    "equipment_plates_unchanged_commit": "3946a1b8cf81122b517a6f3e9b7e623f4cb97989",
+    "reason": "Latest overall integration changes8 B01 assets and emits current shared reference; former e8 reference no longer current for cross-page judgment. No public equipment source change or new local runtime."
+  }
 }

@@ -1,30 +1,30 @@
 [
   {
-    "file": "coherence-assets/b01-host-1-23819624.png",
-    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
-    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-controlled-combo-1-active.png",
-    "sha256": "70d6558173b445de6a1f877fa18f0f097cae5d496817f5444b1553fee551ef01",
-    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+    "file": "coherence-assets/b01-host-1-b178ec39.png",
+    "source_commit": "b178ec391b941ac6888bff9b90f11809f4cf3b63",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/r0af-controlled-1-active-1440x900.png",
+    "sha256": "b3bfa1e949eeb20a0e6902f3596826bd42ce31e08ddca5802a3f85f2b3139741",
+    "scope": "Existing0af actual shared screenshot only,1/2/3controlled not natural unlock evidence. Equipment21 plates remain3946 exact bytes; no local runtime started."
   },
   {
-    "file": "coherence-assets/b01-host-2-23819624.png",
-    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
-    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-controlled-combo-2-active.png",
-    "sha256": "76503e124785f23f56ff531018daa54dbe01d6d9bd738316144a9c51fa3b7f69",
-    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+    "file": "coherence-assets/b01-host-2-b178ec39.png",
+    "source_commit": "b178ec391b941ac6888bff9b90f11809f4cf3b63",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/r0af-controlled-2-active-1440x900.png",
+    "sha256": "d74557c3be668694634561b08ee4c9820eefe00c22fa12802d15e691e117d372",
+    "scope": "Existing0af actual shared screenshot only,1/2/3controlled not natural unlock evidence. Equipment21 plates remain3946 exact bytes; no local runtime started."
   },
   {
-    "file": "coherence-assets/b01-host-3-23819624.png",
-    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
-    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-controlled-combo-3-active.png",
-    "sha256": "e6860011773d2940bb5c8703990f6f97dfe607a3a397a6ee69c02354d185d760",
-    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+    "file": "coherence-assets/b01-host-3-b178ec39.png",
+    "source_commit": "b178ec391b941ac6888bff9b90f11809f4cf3b63",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/r0af-controlled-3-active-1440x900.png",
+    "sha256": "34676e9c06835b35846ad1d3e4510c47a9823bd1d820e9f4bffeedadb651e605",
+    "scope": "Existing0af actual shared screenshot only,1/2/3controlled not natural unlock evidence. Equipment21 plates remain3946 exact bytes; no local runtime started."
   },
   {
-    "file": "coherence-assets/b01-host-4-23819624.png",
-    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
-    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-combo-reactor-1440x900.png",
-    "sha256": "03775ca54a81e165f83b506d618c04d6b318f46a6bf7bf39d1cc8d5f039bb6bd",
-    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+    "file": "coherence-assets/b01-host-4-b178ec39.png",
+    "source_commit": "b178ec391b941ac6888bff9b90f11809f4cf3b63",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/r0af-combo-reactor-1440x900.png",
+    "sha256": "af51beab3cd22ebf0de69d614717201ec709ce71ad3b1dbc93c05c749883a156",
+    "scope": "Existing0af actual shared screenshot only,1/2/3controlled not natural unlock evidence. Equipment21 plates remain3946 exact bytes; no local runtime started."
   }
 ]

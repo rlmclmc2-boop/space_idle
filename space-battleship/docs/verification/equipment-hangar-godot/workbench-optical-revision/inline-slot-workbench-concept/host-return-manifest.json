@@ -329,5 +329,7 @@
     }
   ],
   "group_review_entry": "review-current-group.html",
-  "verification_scope": "Final21 full-frame PNGs actually inspected. Exact original header/x808+ host pixel comparison and source-boundary checks only; no runtime test or art acceptance."
+  "verification_scope": "Final21 full-frame PNGs actually inspected. Exact original header/x808+ host pixel comparison and source-boundary checks only; no runtime test or art acceptance.",
+  "equipment_plates_fixed_commit": "3946a1b8cf81122b517a6f3e9b7e623f4cb97989",
+  "current_b01_reference_commit": "b178ec391b941ac6888bff9b90f11809f4cf3b63"
 }
