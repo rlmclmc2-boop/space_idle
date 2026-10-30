@@ -2,6 +2,8 @@ extends Control
 ## B01 painted reactor bay. Animation and power read accepted Owner presentation.
 const IDLE = preload("res://assets/ui/reactor/b01/idle-console.png")
 const ACTIVE = preload("res://assets/ui/reactor/b01/active-console.png")
+const LOCKED_IDLE = preload("res://assets/ui/reactor/b01/locked-idle-console.png")
+const LOCKED_ACTIVE = preload("res://assets/ui/reactor/b01/locked-active-console.png")
 const LIVE = preload("res://assets/ui/reactor/b01/live-material.gdshader")
 const EFFECT_MASK = preload("res://assets/ui/reactor/b01/effect-mask.png")
 const MODULE_MASK = preload("res://assets/ui/reactor/b01/module-mask.png")
@@ -21,6 +23,8 @@ func _init() -> void:
 	_paint = ShaderMaterial.new()
 	_paint.shader = LIVE
 	_paint.set_shader_parameter("active_plate", ACTIVE)
+	_paint.set_shader_parameter("locked_idle_plate", LOCKED_IDLE)
+	_paint.set_shader_parameter("locked_active_plate", LOCKED_ACTIVE)
 	_paint.set_shader_parameter("effect_mask", EFFECT_MASK)
 	_paint.set_shader_parameter("module_mask", MODULE_MASK)
 	_paint.set_shader_parameter("pipe_mask", PIPE_MASK)

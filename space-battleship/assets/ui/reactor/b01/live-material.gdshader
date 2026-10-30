@@ -2,6 +2,8 @@ shader_type canvas_item;
 render_mode unshaded;
 
 uniform sampler2D active_plate : source_color, filter_linear;
+uniform sampler2D locked_idle_plate : source_color, filter_linear;
+uniform sampler2D locked_active_plate : source_color, filter_linear;
 uniform sampler2D effect_mask : filter_linear;
 uniform sampler2D module_mask : filter_linear;
 uniform sampler2D pipe_mask : filter_linear;
@@ -29,27 +31,13 @@ float conduit(vec2 uv, vec2 a, vec2 b, float bend, float width, float time) {
 
 void fragment() {
 	vec2 uv = UV;
-	vec4 idle = texture(TEXTURE, uv);
-	// The three-module bay closes the unowned lower-right machine and branch.
-	float bay_left = 0.705 - 0.035 * max(0.0, 1.0 - abs(uv.y - 0.4075) / 0.1325);
-	bool closed_bay = condensation_enabled < 0.5 && uv.x >= bay_left && uv.y >= 0.275 && uv.y <= 0.54;
-	if (closed_bay) {
-		float sweep = 0.5 + 0.5 * sin((uv.x - bay_left) * 18.0);
-		float grain = 0.004 * sin(uv.y * 570.0 + uv.x * 48.0);
-		vec3 steel = mix(vec3(0.10, 0.18, 0.24), vec3(0.17, 0.28, 0.34), sweep * 0.55) + vec3(grain);
-		vec2 metal_uv = vec2(0.42 + (uv.x - bay_left) * 0.55, 0.47 + (uv.y - 0.275) * 0.24);
-		vec3 real_metal = (texture(TEXTURE, metal_uv + vec2(-0.025, -0.012)).rgb + texture(TEXTURE, metal_uv + vec2(0.025, -0.012)).rgb + texture(TEXTURE, metal_uv + vec2(-0.025, 0.012)).rgb + texture(TEXTURE, metal_uv + vec2(0.025, 0.012)).rgb) * 0.25;
-		steel = mix(steel, real_metal * 0.55, 0.18);
-		float edge = min(min(uv.x - bay_left, uv.y - 0.275), 0.54 - uv.y);
-		float rim = 1.0 - smoothstep(0.003, 0.009, edge);
-		float seam = 1.0 - smoothstep(0.001, 0.004, min(abs(uv.y - 0.335), min(abs(uv.y - 0.405), abs(uv.y - 0.475))));
-		steel += rim * vec3(0.25, 0.22, 0.13) + seam * vec3(0.04, 0.07, 0.08);
-		COLOR = vec4(steel, idle.a);
+	bool locked = condensation_enabled < 0.5;
+	vec4 idle = locked ? texture(locked_idle_plate, uv) : texture(TEXTURE, uv);
 	// Machinery ends before this static console band; skip all field math there.
-	} else if (uv.y >= 0.58) {
+	if (uv.y >= 0.58) {
 		COLOR = idle;
 	} else {
-	vec4 active = texture(active_plate, uv);
+	vec4 active = locked ? texture(locked_active_plate, uv) : texture(active_plate, uv);
 	float core = max(ellipse(uv, vec2(0.5, 0.255), vec2(0.19, 0.17), 0.10), ellipse(uv, vec2(0.5, 0.095), vec2(0.047, 0.09), 0.15));
 	float weapon = ellipse(uv, vec2(0.16, 0.145), vec2(0.17, 0.10), 0.16);
 	float shield = ellipse(uv, vec2(0.90, 0.145), vec2(0.14, 0.11), 0.17);
@@ -69,7 +57,7 @@ void fragment() {
 	float r = length((uv - vec2(0.5, 0.255)) / vec2(0.145, 0.132));
 	float angle = atan(uv.y - 0.255, uv.x - 0.5);
 	vec2 drift = 0.006 * vec2(sin(angle * 3.0 + r * 12.0 - phase * 2.3), cos(angle * 4.0 - r * 10.0 + phase * 1.7));
-	vec3 moving_core = texture(active_plate, uv + drift).rgb;
+	vec3 moving_core = locked ? texture(locked_active_plate, uv + drift).rgb : texture(active_plate, uv + drift).rgb;
 	color = mix(color, moving_core, inner * (0.35 + 0.48 * core_load));
 	float orbit = pow(0.5 + 0.5 * sin(angle * 5.0 + r * 19.0 - phase * 3.4), 8.0);
 	float ring = exp(-pow((r - 0.56 - 0.14 * sin(phase * 1.9)) * 10.0, 2.0));
@@ -92,7 +80,7 @@ void fragment() {
 	color = mix(color, vec3(0.70, 0.96, 1.0), clamp(shield_arc * shield_sweep * defence_load * 2.9, 0.0, 0.70));
 	float molten = texture(effect_mask, uv).b;
 	vec2 molten_flow = uv + vec2(0.002 * sin(uv.y * 80.0 - phase * 2.3), -0.003 * sin(phase * 2.1 + uv.x * 54.0));
-	vec3 moving_molten = texture(active_plate, molten_flow).rgb;
+	vec3 moving_molten = locked ? texture(locked_active_plate, molten_flow).rgb : texture(active_plate, molten_flow).rgb;
 	color = mix(color, moving_molten, molten * smelting_load * 0.75);
 	float pour = pow(0.5 + 0.5 * sin(uv.y * 135.0 - phase * 4.6 + uv.x * 26.0), 8.0);
 	color = mix(color, vec3(1.0, 0.87, 0.39), clamp(molten * pour * smelting_load * 2.7, 0.0, 0.68));
