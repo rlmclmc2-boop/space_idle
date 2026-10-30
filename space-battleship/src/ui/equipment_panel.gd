@@ -217,7 +217,7 @@ class EquipmentSurface extends StyleBox:
         var focus:bool=profile.begins_with("focus_")
         var form:String=profile.trim_prefix("focus_") if focus else profile
         var face:Rect2=r.grow(-3)
-        if form=="tray" or form=="candidate":face=Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,52.0))
+        if form=="tray" or form=="candidate":face=Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,r.size.y-48.0))
         elif form=="index":face=r.grow(-1)
         elif form in ["backing","locator"]:face=r
         if depressed:face.position.y+=1;face.size.y-=1
@@ -526,16 +526,18 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     var rows:int=maxi(1,resource_count)
     var signature:Array=[different,defence,rows]
     if _workbench_layout.get("signature",[])==signature:return
-    var height:float=maxf(288.0,266.0+maxi(0,rows-1)*22.0)
+    var height:float=maxf(288.0 if different else 266.0,266.0+maxi(0,rows-1)*22.0)
     var action_y:float=height-68.0
     _workbench.position.y=896.0-height;_workbench.size.y=height
     _workbench_divider.size.y=action_y-48.0
     _upgrade_data.position=Vector2(100,70)
-    _candidate_row.position=Vector2(460,70 if different else roundf(70.0+(action_y-70.0-100.0)*0.5));_candidate_row.size.y=100
+    var card_height:float=100.0 if different else 120.0
+    _candidate_row.position=Vector2(460,70 if different else roundf(70.0+(action_y-70.0-card_height)*0.5));_candidate_row.size.y=card_height
     _comparison_group.position=Vector2(460,176);_comparison_group.size.y=43
     _install.position=Vector2(460,action_y);_install.size=Vector2(300,36)
-    _quantity_button.position=Vector2(20,action_y);_quantity_button.size=Vector2(96,36)
-    _purchase.position=Vector2(128,action_y);_purchase.size=Vector2(292,36)
+    var upgrade_x:float=20.0 if different else 188.0
+    _quantity_button.position=Vector2(upgrade_x,action_y);_quantity_button.size=Vector2(96,36)
+    _purchase.position=Vector2(upgrade_x+108.0,action_y);_purchase.size=Vector2(292,36)
     _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
 
 func _layout_primary_values() -> void:
@@ -846,6 +848,8 @@ func _refresh_choices(fact: Dictionary, read_options:bool=true) -> void:
     var defence:bool=str(fact.category)=="defence"
     var cell_width:float=144.0 if defence else 68.0
     var step:float=152.0 if defence else 76.0
+    var different:bool=not _candidate.is_empty() and _candidate!=str(fact.equipment_id)
+    var image_size:Vector2=Vector2(44,44) if different else Vector2(64 if defence else 48,64)
     for option in options:
         var id: String=str(option.id)
         if id.is_empty():continue
@@ -866,16 +870,16 @@ func _refresh_choices(fact: Dictionary, read_options:bool=true) -> void:
             # Reapply the actual slot after the status font's minimum is known.
             status.size=Vector2(62,18)
             _choices[id]={"button":button,"icon":icon,"caption":caption,"status":status}
-        var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
+        var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column,different]
         if _choice_presentations.get(id)==signature:column+=1;continue
         _choice_presentations[id]=signature;presentation_counts.candidates_updated+=1
         var item: Dictionary=_choices[id]
         item.button.position=Vector2(column*step,0)
-        item.button.size=Vector2(cell_width,100)
-        item.icon.position=Vector2((cell_width-44)*0.5,8)
-        item.icon.size=Vector2(44,44)
-        item.caption.position=Vector2(3,58);item.caption.size=Vector2(cell_width-6,20)
-        item.status.position=Vector2(3,78);item.status.size=Vector2(cell_width-6,18)
+        item.button.size=Vector2(cell_width,100 if different else 120)
+        item.icon.position=Vector2((cell_width-image_size.x)*0.5,8)
+        item.icon.size=image_size
+        item.caption.position=Vector2(3,58 if different else 78);item.caption.size=Vector2(cell_width-6,20)
+        item.status.position=Vector2(3,78 if different else 98);item.status.size=Vector2(cell_width-6,18)
         # Keep the catalog column even while its whole control is hidden. Unlocking never compacts the row.
         item.button.visible=_selection_open and option.enabled;item.button.disabled=not option.enabled
         item.button.mouse_filter=Control.MOUSE_FILTER_STOP if option.enabled else Control.MOUSE_FILTER_IGNORE
