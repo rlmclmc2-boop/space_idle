@@ -69,8 +69,16 @@ def resource(kind, x, center_y, size=20):
     return image(path,x,center_y-visible_height/2-offset,size,size,bounds)
 
 
-def row_height(state):
-    return 108 if state in ['poor','evolution','evolution-poor','ten','maxzero'] else 84
+CAPACITY_PROFILES = {
+    'early': {'weapon:0':2,'defence:0':2},
+    'middle': {'weapon:0':2,'weapon:1':1,'weapon:2':2,'defence:0':1,'defence:1':1},
+    'late': {'weapon:0':2,'weapon:1':1,'weapon:2':1,'weapon:3':1,'weapon:4':1,
+             'defence:0':1,'defence:1':1,'defence:2':1},
+}
+
+
+def row_height(fee_capacity):
+    return 108 if fee_capacity==2 else 84
 
 
 EQUIPMENT = {
@@ -95,7 +103,7 @@ def compare_button(x, y, width, height=32):
     return s
 
 
-def row(y, category, index, key, state='normal', focus=False):
+def row(y, category, index, key, fee_capacity, state='normal', focus=False):
     name, path, current, after, interval = EQUIPMENT[key]
     level, mode, purchase, costs, reason = '1', '×1', '购买1级', [('iron','铁65')], ''
     disabled = False
@@ -109,8 +117,10 @@ def row(y, category, index, key, state='normal', focus=False):
     if state == 'maxzero':
         level,current,after,mode,purchase,costs = '33','19.2万','—','MAX','可购0级',[]
         disabled,reason = True,'当前预算不可购'
-    dense = len(costs)>1 or bool(reason)
-    height = row_height(state)
+    # Geometry follows the fixed presentation budget, never affordability/reason text.
+    dense = fee_capacity==2
+    height = row_height(fee_capacity)
+    assert len(costs)<=fee_capacity, 'This static budget does not cover this quote.'
     s = box(350,y,440,height-1,'#e8e8dc' if not focus else '#e0ebe3','#a3b2ae',4)
     if focus: s += box(350,y,4,height-1,'#397e82',r=0)
     # Isolated formal equipment, with a clear equipment cradle; never a ship preview crop.
@@ -119,7 +129,7 @@ def row(y, category, index, key, state='normal', focus=False):
     s += box(410,y+4,216,26,'#d6ded6','#829d97',4)
     s += text(418,y+23,('武器' if category=='weapon' else '防御')+str(index+1)+' · '+name,16,INK,500)
     s += text(614,y+19.25,'⌄',18,TEAL,500,'middle')
-    s += text(636,y+22,'Lv.'+level,14,MUTED)
+    s += text(565,y+22,'Lv.'+level,14,MUTED)
     s += compare_button(720,y+4,62)
     attribute_baseline = 50 if dense else 48
     fee_baseline = 72 if dense else 65
@@ -132,11 +142,16 @@ def row(y, category, index, key, state='normal', focus=False):
     if not costs: s += text(470,y+fee_baseline,'—',15,MUTED)
     action_y = 47 if dense else 42
     s += button(632,y+action_y,52,mode)+button(690,y+action_y,92,purchase,disabled)
-    if reason: s += text(632,y+99,reason,15,WARN,500)
+    if reason:
+        if dense:
+            s += text(632,y+99,reason,15,WARN,500)
+        else:
+            assert len(reason)<=5, 'Longer reason needs another static budget design.'
+            s += text(632,y+17,'升级',15,MUTED,500)+text(632,y+35,reason,15,WARN,500)
     return s
 
 
-def plate(stage, popup=False):
+def plate(stage, popup=False, affordability_override=False):
     hull, title, height = {'early':('01-frigate','游隼侦察艇',165),
                            'middle':('03-cruiser','云鳐巡洋舰',286),
                            'late':('05-heavy-battleship','白鲸无畏舰',336)}[stage]
@@ -151,8 +166,10 @@ def plate(stage, popup=False):
             if stage=='middle' and cat=='weapon' and i==0: state='ten'
             if stage=='middle' and cat=='weapon' and i==2: state='maxzero'
             if stage=='late' and cat=='weapon' and i==0: state='evolution-poor'
+            if affordability_override and stage=='late' and cat=='weapon' and i==1: state='poor'
             states[(cat,i)]=state
-    console_bottom = console_top + 34 + 2*(18+1) + sum(row_height(v) for v in states.values()) + 7
+    capacities = CAPACITY_PROFILES[stage]
+    console_bottom = console_top + 34 + 2*(18+1) + sum(row_height(v) for v in capacities.values()) + 7
     s = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1440" height="900" viewBox="0 0 1440 900"><defs>'
     s += '<linearGradient id="face" x2="0" y2="1"><stop stop-color="#f1efdf"/><stop offset="1" stop-color="#d4d9d1"/></linearGradient><linearGradient id="button" x2="0" y2="1"><stop stop-color="#507786"/><stop offset="1" stop-color="#294957"/></linearGradient><linearGradient id="disabled" x2="0" y2="1"><stop stop-color="#9eaba9"/><stop offset="1" stop-color="#83928f"/></linearGradient>'
     s += '<clipPath id="header"><rect width="808" height="85"/></clipPath><clipPath id="battle"><rect x="808" width="632" height="900"/></clipPath><clipPath id="module"><rect y="85" width="808" height="815"/></clipPath><clipPath id="stage"><rect y="85" width="302" height="815"/></clipPath></defs><g font-family="Noto Sans SC, sans-serif">'
@@ -174,8 +191,9 @@ def plate(stage, popup=False):
         y += 18
         for i,key in enumerate(keys):
             state=states[(cat,i)]
-            s += row(y,cat,i,key,state,focus=(cat=='defence' and i==1 and popup))
-            y += row_height(state)
+            capacity=capacities[f'{cat}:{i}']
+            s += row(y,cat,i,key,capacity,state,focus=(cat=='defence' and i==1 and popup))
+            y += row_height(capacity)
         y += 1
     if popup:
         # Anchored upward because defence2 is near the lower edge. Underlying rows do not move.
@@ -211,6 +229,7 @@ def plate(stage, popup=False):
 
 for name,stage,popup in [('01-early-two','early',False),('02-middle-five','middle',False),('03-late-eight','late',False),('04-local-dropdown','late',True)]:
     (HERE/(name+'.svg')).write_text(plate(stage,popup),encoding='utf-8')
+(HERE/'05-late-affordability-only.svg').write_text(plate('late',affordability_override=True),encoding='utf-8')
 used['assets/fonts/NotoSansSC.ttf'] = hashlib.sha256((ASSETS/'fonts/NotoSansSC.ttf').read_bytes()).hexdigest()
 (HERE/'reference-hashes.json').write_text(json.dumps(used,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 # Existing repository family, private render configuration only; no system install.

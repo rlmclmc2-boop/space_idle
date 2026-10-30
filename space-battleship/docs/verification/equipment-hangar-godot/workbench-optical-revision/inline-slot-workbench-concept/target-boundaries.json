@@ -74,6 +74,10 @@
       "row_variants": {
         "weapon:0": "dense",
         "defence:0": "dense"
+      },
+      "row_capacity_budget": {
+        "weapon:0": 2,
+        "defence:0": 2
       }
     },
     "middle": {
@@ -112,6 +116,13 @@
         "weapon:2": "dense",
         "defence:0": "normal",
         "defence:1": "normal"
+      },
+      "row_capacity_budget": {
+        "weapon:0": 2,
+        "weapon:1": 1,
+        "weapon:2": 2,
+        "defence:0": 1,
+        "defence:1": 1
       }
     },
     "late": {
@@ -156,6 +167,16 @@
         "defence:0": "normal",
         "defence:1": "normal",
         "defence:2": "normal"
+      },
+      "row_capacity_budget": {
+        "weapon:0": 2,
+        "weapon:1": 1,
+        "weapon:2": 1,
+        "weapon:3": 1,
+        "weapon:4": 1,
+        "defence:0": 1,
+        "defence:1": 1,
+        "defence:2": 1
       }
     }
   },
@@ -226,7 +247,16 @@
           36
         ]
       },
-      "fee_lines": 1
+      "fee_lines": 1,
+      "fee_capacity": 1,
+      "reason_area": [
+        622,
+        1,
+        82,
+        35
+      ],
+      "reason_scope": "Upgrade label plus up to5Chinese-character reason, at15px; always reserved even when blank. PaidLv is inside the name target.",
+      "reason_lines": 2
     },
     "dense": {
       "pitch": 108,
@@ -249,7 +279,8 @@
       "reason_baseline_relative": 99,
       "reason_x": 622,
       "reason_font": 15,
-      "reason_scope": "current slot upgrade affordability, not switch price"
+      "reason_scope": "Always reserved upgrade-affordability area, regardless of whether reason is present.",
+      "fee_capacity": 2
     }
   },
   "capacity_boundary": {
@@ -258,6 +289,289 @@
     "current_k": 1,
     "k2_overflow": 24,
     "k8_overflow": 168,
-    "unresolved": "Multiple dense rows need same-workbench vertical scroll; longer reasons/more than2currencies also need further slot-row growth before scrolling. Neither drawn nor implemented; remains original design backlog, not accepted all-state coverage."
+    "unresolved": "Capacity profiles are design-fixture budgets, not a complete production allocation. Mode changes, evolution/upgrades or resource-count changes that exceed a slot capacity are not drawn; no automatic height promotion is allowed to push later slots. Multiple2-fee slots,3currencies,long levels/reasons require original design backlog work, potentially same-workbench scrolling. No all-operation stability claim."
+  },
+  "height_basis": "Fixed per-slot fee-capacity profile chosen for these design fixtures; no affordability, reason, current fee count or quantity-mode condition decides height.",
+  "capacity_profiles": {
+    "early": {
+      "weapon:0": 2,
+      "defence:0": 2
+    },
+    "middle": {
+      "weapon:0": 2,
+      "weapon:1": 1,
+      "weapon:2": 2,
+      "defence:0": 1,
+      "defence:1": 1
+    },
+    "late": {
+      "weapon:0": 2,
+      "weapon:1": 1,
+      "weapon:2": 1,
+      "weapon:3": 1,
+      "weapon:4": 1,
+      "defence:0": 1,
+      "defence:1": 1,
+      "defence:2": 1
+    }
+  },
+  "stability_pair": {
+    "before": "03-late-eight.png",
+    "after": "05-late-affordability-only.png",
+    "changed_slot": "weapon:1",
+    "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 mode and fixed fee_capacity1",
+    "slot_y": 265,
+    "slot_pitch": 84,
+    "all_40_geometry_anchors_equal": true,
+    "svg_rect_anchors_before_and_after": [
+      [
+        356.0,
+        162.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        270.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        354.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        438.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        522.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        625.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        709.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        793.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        161.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        269.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        353.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        437.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        521.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        624.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        708.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        792.0,
+        216.0,
+        26.0
+      ],
+      [
+        632.0,
+        204.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        307.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        391.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        475.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        559.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        662.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        746.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        830.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        204.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        307.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        391.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        475.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        559.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        662.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        746.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        830.0,
+        92.0,
+        36.0
+      ],
+      [
+        720.0,
+        161.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        269.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        353.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        437.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        521.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        624.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        708.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        792.0,
+        62.0,
+        26.0
+      ]
+    ],
+    "pixel_diff_bbox": [
+      622,
+      269,
+      772,
+      343
+    ],
+    "unchanged_below_y": 349,
+    "limitations": "Static matched fixtures only. Does not prove balance-driven full-screen owner refresh or budgets beyond this profile."
   }
 }

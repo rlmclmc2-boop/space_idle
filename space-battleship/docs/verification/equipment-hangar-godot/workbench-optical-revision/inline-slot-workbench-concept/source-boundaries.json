@@ -18,7 +18,6 @@
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/embedded-asset-audit.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/ink-spacing.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/manifest.json",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/reference-hashes.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/target-boundaries.json"
   ],
   "tracked_non_document_diff": [],
@@ -85,10 +84,9 @@
       "equals_design_start": true
     }
   },
-  "design_revision_start": "9c795d6e40367c7f84adca627a7593ca25b529dd",
+  "design_revision_start": "56e4cc1827eb95e87aa82999a075b952de0aa0bc",
   "new_design_only_files": [
-    "embedded-asset-audit.json",
-    "target-boundaries.json",
-    "ink-spacing.json"
+    "05-late-affordability-only.svg",
+    "05-late-affordability-only.png"
   ]
 }

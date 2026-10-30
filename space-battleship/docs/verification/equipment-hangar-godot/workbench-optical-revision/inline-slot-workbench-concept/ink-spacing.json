@@ -1,6 +1,6 @@
 {
   "status": "Prior9c ink-gap equality was insufficient and is superseded as a quality criterion. No new equality target or acceptance claim.",
-  "current_change": "84px ordinary /108px dual-fee or failed row; two currency lines; reason beneath purchase area with visible bottom breathing room; fee/status15px not shrunk. Same organization and style.",
+  "current_change": "Fixed capacity budgets replace transient-state classification. Always-reserved reason areas; unchanged fee15/status15; name/Lv/chevron visually checked in same target. No new equal-gap quality criterion.",
   "font_reference": {
     "commit": "ad7afd6425e16cd36f9c0612db920e8faa8cba5e",
     "review_status": "R1 expressly proposed, pending review, not implemented; not an accepted norm",
@@ -17,15 +17,284 @@
       108
     ],
     "sha256": "f8b314bbf5be2faae3c84898af7049c4d310c55a3fcd0d310567f6b6942c51a1",
-    "actually_viewed": true
+    "actually_viewed": true,
+    "scope": "Historical56e4 dense detail retained; current comparison is03/05 and ordinary_failure_native_detail."
   },
-  "visual_review": "Four final1440x900 plates and native dense detail actually viewed. Presentation pending original reviewer and user.",
+  "visual_review": "Four current1440x900 main plates plus necessary05 matched contrast and its456x84native detail actually viewed; pending review, not runtime focus validation.",
   "capacity_boundary": {
     "late_safe_row_budget": 696,
     "formula": "672+24*k for8rows, k dense rows",
     "current_k": 1,
     "k2_overflow": 24,
     "k8_overflow": 168,
-    "unresolved": "Multiple dense rows need same-workbench vertical scroll; longer reasons/more than2currencies also need further slot-row growth before scrolling. Neither drawn nor implemented; remains original design backlog, not accepted all-state coverage."
+    "unresolved": "Capacity profiles are design-fixture budgets, not a complete production allocation. Mode changes, evolution/upgrades or resource-count changes that exceed a slot capacity are not drawn; no automatic height promotion is allowed to push later slots. Multiple2-fee slots,3currencies,long levels/reasons require original design backlog work, potentially same-workbench scrolling. No all-operation stability claim."
+  },
+  "stability_pair": {
+    "before": "03-late-eight.png",
+    "after": "05-late-affordability-only.png",
+    "changed_slot": "weapon:1",
+    "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 mode and fixed fee_capacity1",
+    "slot_y": 265,
+    "slot_pitch": 84,
+    "all_40_geometry_anchors_equal": true,
+    "svg_rect_anchors_before_and_after": [
+      [
+        356.0,
+        162.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        270.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        354.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        438.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        522.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        625.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        709.0,
+        48.0,
+        58.0
+      ],
+      [
+        356.0,
+        793.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        161.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        269.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        353.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        437.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        521.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        624.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        708.0,
+        216.0,
+        26.0
+      ],
+      [
+        410.0,
+        792.0,
+        216.0,
+        26.0
+      ],
+      [
+        632.0,
+        204.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        307.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        391.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        475.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        559.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        662.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        746.0,
+        52.0,
+        36.0
+      ],
+      [
+        632.0,
+        830.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        204.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        307.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        391.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        475.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        559.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        662.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        746.0,
+        92.0,
+        36.0
+      ],
+      [
+        690.0,
+        830.0,
+        92.0,
+        36.0
+      ],
+      [
+        720.0,
+        161.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        269.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        353.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        437.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        521.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        624.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        708.0,
+        62.0,
+        26.0
+      ],
+      [
+        720.0,
+        792.0,
+        62.0,
+        26.0
+      ]
+    ],
+    "pixel_diff_bbox": [
+      622,
+      269,
+      772,
+      343
+    ],
+    "unchanged_below_y": 349,
+    "limitations": "Static matched fixtures only. Does not prove balance-driven full-screen owner refresh or budgets beyond this profile."
+  },
+  "ordinary_failure_native_detail": {
+    "path": "/tmp/space-idle-workbench-rebuild/stable-ordinary-insufficient-native.png",
+    "size": [
+      456,
+      84
+    ],
+    "sha256": "22b039bb77d3cdcb201cd9272c8ee4ac5ae56c7a7b27cfe98806412fa5000958",
+    "actually_viewed": true
   }
 }
