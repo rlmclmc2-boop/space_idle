@@ -91,13 +91,8 @@ func _ready() -> void:
 		var bounds: Vector2 = ARC_BOUNDS[kind]
 		# A real thick section: dark keel and side walls remain visible under
 		# broad warm armor plates. The central channel belongs to this section.
-		_add_strip(root, bounds.x, bounds.y, NODE_WIDTH, -0.20, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5, -0.42, 0.26, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, -NODE_WIDTH * 0.5, -0.42, 0.26, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.005, 0.08, 0.18, _side, kind)
-		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.008, -0.22, -0.16, _cyan, kind)
+		_add_section_hull(root, bounds.x, bounds.y, NODE_WIDTH, kind)
 		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
-		_add_load_channel(root, bounds.x, bounds.y)
 		for rib_index in range(1, 6):
 			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
@@ -115,11 +110,11 @@ func _ready() -> void:
 			var face_mesh := SurfaceTool.new()
 			face_mesh.begin(Mesh.PRIMITIVE_TRIANGLES)
 			for vertex in [
-				Vector3(-width_at_end * 0.5, -0.545, outward * 0.006),
-				Vector3(width_at_end * 0.5, -0.545, outward * 0.006),
+				Vector3(-width_at_end * 0.5, -0.305, outward * 0.006),
+				Vector3(width_at_end * 0.5, -0.305, outward * 0.006),
 				Vector3(-width_at_end * 0.5, 0.325, outward * 0.006),
 				Vector3(-width_at_end * 0.5, 0.325, outward * 0.006),
-				Vector3(width_at_end * 0.5, -0.545, outward * 0.006),
+				Vector3(width_at_end * 0.5, -0.305, outward * 0.006),
 				Vector3(width_at_end * 0.5, 0.325, outward * 0.006),
 			]:
 				face_mesh.set_normal(Vector3(0, 0, outward))
@@ -145,12 +140,14 @@ func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
 	_all_materials.append(result)
 	return result
 
-func _add_load_channel(parent: Node3D, begin: float, finish: float) -> void:
-	# A recessed, armored conduit follows the same physical arc as the deck.
-	# Its dark floor and raised lips have depth at every phase.
-	_add_strip(parent, begin, finish, 0.25, 0.388, _navy)
-	_add_wall(parent, begin, finish, -0.125, 0.39, 0.51, _side)
-	_add_wall(parent, begin, finish, 0.125, 0.39, 0.51, _side)
+func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float, kind: String = "") -> void:
+	# One shared cross-section runs through every owned arc and completed join.
+	# The lit inset is set into its armored wall, above the structural keel.
+	_add_strip(parent, begin, finish, width, -0.18, _navy, kind)
+	for side in [-1.0, 1.0]:
+		_add_wall(parent, begin, finish, side * width * 0.5, -0.18, 0.26, _navy, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.15, _side, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.008), 0.015, 0.055, _cyan, kind)
 
 func set_body_scale(scale: Vector3) -> void:
 	for material in _all_materials:
@@ -190,9 +187,11 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
-		Vector2(-0.50, 0.04), Vector2(-0.48, 0.11), Vector2(-0.43, 0.18),
-		Vector2(-0.34, 0.215), Vector2(0.0, 0.23), Vector2(0.34, 0.215),
-		Vector2(0.43, 0.18), Vector2(0.48, 0.11), Vector2(0.50, 0.04),
+		Vector2(-0.50, 0.04), Vector2(-0.47, 0.12), Vector2(-0.40, 0.21),
+		Vector2(-0.29, 0.24), Vector2(-0.14, 0.24), Vector2(-0.10, 0.18),
+		Vector2(0.0, 0.16), Vector2(0.10, 0.18), Vector2(0.14, 0.24),
+		Vector2(0.29, 0.24), Vector2(0.40, 0.21), Vector2(0.47, 0.12),
+		Vector2(0.50, 0.04),
 	]
 	if kind in ["refinery", "equipment", "shipyard"]:
 		var coarse: Array = profile
@@ -238,9 +237,8 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_normal(normal)
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	var height := lift + current.y
-	# The deck's own center sinks to meet the structural conduit; both armor
-	# shoulders remain part of the same continuous mesh.
-	height -= 0.075 * (1.0 - smoothstep(0.11, 0.18, absf(current.x)))
+	# The recessed passage is cut into the same armor extrusion. Its center
+	# texture and flanking shoulders carry through each independent section.
 	if kind != "":
 		# Raise the load-bearing shell beside each work floor, leaving a recessed
 		# center for the facility rather than resting a separate pad on the ring.
@@ -406,13 +404,8 @@ func _add_join(parent: Node3D, angle: float) -> Node3D:
 	var joint_width := _transit_width(angle) + 0.02
 	# Close the complete load path, including its keel and lit outer wall. A
 	# top-only sleeve leaves an obvious open cut at oblique orbital phases.
-	_add_strip(join, angle - 0.12, angle + 0.12, joint_width, -0.20, _navy)
-	_add_wall(join, angle - 0.12, angle + 0.12, joint_width * 0.5, -0.42, 0.26, _navy)
-	_add_wall(join, angle - 0.12, angle + 0.12, -joint_width * 0.5, -0.42, 0.26, _navy)
-	_add_wall(join, angle - 0.12, angle + 0.12, joint_width * 0.5 + 0.005, 0.08, 0.18, _side)
-	_add_wall(join, angle - 0.12, angle + 0.12, joint_width * 0.5 + 0.008, -0.22, -0.16, _cyan)
+	_add_section_hull(join, angle - 0.12, angle + 0.12, joint_width)
 	_add_curved_deck(join, angle - 0.12, angle + 0.12, joint_width, 0.232, _sleeve, 0.37, 0.63)
-	_add_load_channel(join, angle - 0.12, angle + 0.12)
 	return join
 
 func configure(owned: Array) -> void:
