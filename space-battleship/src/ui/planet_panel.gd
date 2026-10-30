@@ -155,7 +155,7 @@ func _ready() -> void:
 	var close := Button.new()
 	close.text = "收起"
 	close.pressed.connect(func(): _toggle_section(_open_section))
-	_paint_button(close, Color("254a55"), Color("31616b"), Color("d8ccb1"), Color("9cb3ab"), Color("f0ead8"))
+	_paint_secondary(close)
 	header.add_child(close)
 	_drawer_box.add_child(_drawer_body)
 	_drawer.hide()
@@ -185,13 +185,11 @@ func _theme() -> Theme:
 		for state in ["font_pressed_color", "font_hover_pressed_color"]:
 			result.set_color(state, type, Color("173747"))
 		result.set_color("font_disabled_color", type, Color("95a7a8"))
-	var panel := _skin(Color("e6e1d1"), Color("294c59"), 3, 4)
+	var panel := _skin(Color("e6e1d1"), Color("55727a"), 1, 4)
 	panel.set_content_margin_all(13)
-	panel.border_width_top = 2
-	panel.border_width_bottom = 5
-	panel.shadow_color = Color("061824", 0.58)
-	panel.shadow_size = 8
-	panel.shadow_offset = Vector2(3, 5)
+	panel.shadow_color = Color("061824", 0.38)
+	panel.shadow_size = 5
+	panel.shadow_offset = Vector2(1, 3)
 	result.set_stylebox("panel", "PanelContainer", panel)
 	var popup := StyleBoxFlat.new()
 	popup.bg_color = Color("143746")
@@ -225,11 +223,10 @@ func _skin(fill: Color, edge: Color, border: int = 1, radius: int = 6) -> StyleB
 func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color) -> void:
 	for state in ["normal", "hover", "pressed"]:
 		var fill := normal if state == "normal" else hover if state == "hover" else pressed
-		var style := _skin(fill, edge, 2 if state == "pressed" else 1)
-		style.border_width_bottom = 3 if state != "pressed" else 1
-		style.shadow_color = Color("061823", 0.46 if state != "pressed" else 0.18)
-		style.shadow_size = 3 if state != "pressed" else 1
-		style.shadow_offset = Vector2(0, 2 if state != "pressed" else 1)
+		var style := _skin(fill, edge, 1, 4)
+		style.shadow_color = Color("061823", 0.28 if state != "pressed" else 0.14)
+		style.shadow_size = 2 if state != "pressed" else 1
+		style.shadow_offset = Vector2(0, 1)
 		button.add_theme_stylebox_override(state, style)
 	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c"), 2))
 	button.add_theme_stylebox_override("disabled", _skin(Color("243743"), Color("4d6269")))
@@ -243,35 +240,29 @@ func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, 
 		button.set_meta("bevel_draw_connected", true)
 		button.draw.connect(_draw_button_bevel.bind(button))
 
+func _paint_secondary(button: Button) -> void:
+	_paint_button(button, Color("1a3e4b"), Color("2b5661"), Color("d8d5c5"), Color("729296"), Color("eee9d9"))
+
 func _draw_button_bevel(button: Button) -> void:
 	if button.size.x < 24 or button.size.y < 18: return
 	var gold := bool(button.get_meta("bevel_gold", false))
-	var light := Color("fff1c6", 0.76) if gold or button.button_pressed else Color("afd0c7", 0.56)
-	var dark := Color("725538", 0.55) if gold or button.button_pressed else Color("061d29", 0.68)
-	var sheen := Color("fff6df", 0.22) if gold or button.button_pressed else Color("b4dcda", 0.16)
-	var shade := Color("715336", 0.12) if gold or button.button_pressed else Color("041722", 0.19)
+	var sheen := Color("fff6df", 0.23) if gold or button.button_pressed else Color("b4dcda", 0.19)
+	var shade := Color("715336", 0.09) if gold or button.button_pressed else Color("041722", 0.13)
 	if button.disabled:
-		light.a *= 0.28
-		dark.a *= 0.28
 		sheen.a *= 0.25
 		shade.a *= 0.25
 	button.draw_polygon(
-		PackedVector2Array([Vector2(4, 5), Vector2(button.size.x - 4, 5), Vector2(button.size.x - 4, button.size.y - 6), Vector2(4, button.size.y - 6)]),
+		PackedVector2Array([Vector2(2, 2), Vector2(button.size.x - 2, 2), Vector2(button.size.x - 2, button.size.y - 2), Vector2(2, button.size.y - 2)]),
 		PackedColorArray([sheen, sheen, shade, shade]))
-	button.draw_line(Vector2(8, 4), Vector2(button.size.x - 8, 4), light, 1.0)
-	button.draw_line(Vector2(8, button.size.y - 4), Vector2(button.size.x - 8, button.size.y - 4), dark, 1.0)
-	button.draw_line(Vector2(4, 9), Vector2(4, button.size.y - 9), light.darkened(0.22), 1.0)
 
 func _draw_drawer_trim() -> void:
 	var width := _drawer.size.x
 	var height := _drawer.size.y
 	_drawer.draw_polygon(
-		PackedVector2Array([Vector2(5, 51), Vector2(width - 5, 51), Vector2(width - 5, height - 8), Vector2(5, height - 8)]),
+		PackedVector2Array([Vector2(2, 50), Vector2(width - 2, 50), Vector2(width - 2, height - 3), Vector2(2, height - 3)]),
 		PackedColorArray([Color("fff9e8", 0.46), Color("fff9e8", 0.46), Color("aabcb8", 0.24), Color("aabcb8", 0.24)]))
-	_drawer.draw_rect(Rect2(5, 5, width - 10, 45), Color("193c49"))
-	_drawer.draw_line(Vector2(13, 6), Vector2(width - 13, 6), Color("bdd2c7", 0.83), 1.0)
-	_drawer.draw_line(Vector2(5, 50), Vector2(width - 5, 50), Color("876f4e", 0.85), 2.0)
-	_drawer.draw_line(Vector2(13, height - 6), Vector2(width - 13, height - 6), Color("647f83", 0.76), 1.0)
+	_drawer.draw_rect(Rect2(2, 2, width - 4, 48), Color("234653"))
+	_drawer.draw_line(Vector2(2, 50), Vector2(width - 2, 50), Color("8fa49d", 0.72), 1.0)
 
 func _layout() -> void:
 	if _visual == null: return
@@ -573,6 +564,7 @@ func _rebuild_drawer() -> void:
 		var conquest_button := Button.new()
 		conquest_button.text = "征服奖励 · 收起" if _conquest_open else "征服奖励 · 展开"
 		_drawer_body.add_child(conquest_button)
+		_paint_secondary(conquest_button)
 		conquest_button.pressed.connect(func():
 			_conquest_open = not _conquest_open
 			_rebuild_drawer())
@@ -596,6 +588,7 @@ func _build_facility_detail() -> void:
 	world_building_picker = OptionButton.new()
 	_track_picker(world_building_picker)
 	_drawer_body.add_child(world_building_picker)
+	_paint_secondary(world_building_picker)
 	var found := false
 	for fact in _facts:
 		if str(fact.id) == _selected_facility: found = true
@@ -636,8 +629,7 @@ func _build_facility_detail() -> void:
 			_factor_text.add_theme_font_size_override("font_size", 19)
 			_factor_text.add_theme_color_override("font_color", Color("f0d49a"))
 			var factor_plate := _skin(Color("193a47"), Color("a88c59"), 1, 3)
-			factor_plate.border_width_left = 3
-			factor_plate.border_width_bottom = 2
+			factor_plate.border_width_left = 2
 			factor_plate.content_margin_left = 10
 			_factor_text.add_theme_stylebox_override("normal", factor_plate)
 			_update_factor_text(fact.source_factor)
@@ -646,6 +638,7 @@ func _build_facility_detail() -> void:
 			_reforge_button.text = "前往征服 / 重铸预览"
 			_reforge_button.pressed.connect(func(): reforge_requested.emit(_selected_id))
 			_drawer_body.add_child(_reforge_button)
+			_paint_secondary(_reforge_button)
 		if fact.state == "ready":
 			_claim_button = _action(_drawer_body, "领取", func(): return _planet.claim_build(_selected_id, _selected_facility, _publish))
 			_claim_button.disabled = not fact.claim_allowed
@@ -677,6 +670,7 @@ func _build_crew_detail() -> void:
 	_member_picker = OptionButton.new()
 	_track_picker(_member_picker)
 	_drawer_body.add_child(_member_picker)
+	_paint_secondary(_member_picker)
 	for member in _crew.member_options():
 		_member_picker.add_item(member.name)
 		_member_picker.set_item_metadata(_member_picker.item_count - 1, member.id)
@@ -696,6 +690,7 @@ func _build_crew_detail() -> void:
 	_assignment_picker = OptionButton.new()
 	_track_picker(_assignment_picker)
 	_drawer_body.add_child(_assignment_picker)
+	_paint_secondary(_assignment_picker)
 	for option in _planet.assignment_options([_selected_id]):
 		_assignment_picker.add_item(option.label)
 		_assignment_picker.set_item_metadata(_assignment_picker.item_count - 1, option)
