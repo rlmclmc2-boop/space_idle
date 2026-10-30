@@ -2,13 +2,19 @@ extends Control
 ## Whole reactor scene. Domain amounts, effects and acceptance stay with Reactor.
 signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
-const WORK_FACE = preload("res://assets/ui/reactor/ship-hub-r9/device_work.gdshader")
-const WORK_PULSE = preload("res://assets/ui/reactor/ship-hub-r9/device_pulse.gdshader")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
 const KEY_PAINT = preload("res://assets/ui/reactor/ship-hub-r9/control-materials.png")
+const ICON_ATLAS = preload("res://assets/ui/reactor/b01/control-icons.png")
+const METER_FRAME = preload("res://assets/ui/reactor/b01/meter-frame.png")
+const ROW_INSTRUMENT = preload("res://assets/ui/reactor/b01/row-instrument.png")
+const SLIDER_SHELL = preload("res://assets/ui/reactor/b01/slider-shell.png")
+const SLIDER_CHANNEL = preload("res://assets/ui/reactor/b01/slider-channel.png")
+const SLIDER_GLASS_FILL = preload("res://assets/ui/reactor/b01/slider-glass-fill.png")
+const SLIDER_KNOB = preload("res://assets/ui/reactor/b01/slider-knob.png")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
+const BAR_COLORS := {"weapons":Color("ffc533"), "defence":Color("33b9ff"), "smelting":Color("ff7d37"), "condensation":Color("ae53ef")}
 const ERRORS := {"ReactorPlanOverCapacity":"分配超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
 var _owner
 var _inputs: Callable
@@ -32,8 +38,44 @@ class ReactorKeySurface extends StyleBox:
 			face.position.y += 1
 			face.size.y -= 1
 		painted.draw(canvas, face)
+class AllocationBar extends Control:
+	var ratios: Dictionary = {}
+	func update_ratios(next: Dictionary) -> void:
+		if ratios == next: return
+		ratios = next.duplicate()
+		queue_redraw()
+	func _draw() -> void:
+		draw_rect(Rect2(5, 5, size.x - 10, size.y - 10), Color("041019"), true)
+		var left: float = 5.0
+		for id in ["weapons", "defence", "smelting", "condensation"]:
+			var width: float = minf(size.x - 5.0 - left, (size.x - 10.0) * clampf(float(ratios.get(id, 0.0)), 0.0, 1.0))
+			if width <= 0.0: continue
+			var color: Color = BAR_COLORS[id]
+			draw_rect(Rect2(left, 5, width, 21), color.darkened(0.39), true)
+			draw_rect(Rect2(left, 8, width, 11), color, true)
+			draw_rect(Rect2(left, 8, width, 3), color.lightened(0.48), true)
+			draw_rect(Rect2(left, 19, width, 6), color.darkened(0.17), true)
+			if left > 5.0: draw_rect(Rect2(left, 5, 2, 21), Color("10202d"), true)
+			left += width
+		draw_texture(METER_FRAME, Vector2.ZERO)
+class PowerTrack extends Control:
+	var fraction: float = 0.0
+	var tint: Color = Color.WHITE
+	func update_fraction(value: float) -> void:
+		var next: float = clampf(value, 0.0, 1.0)
+		if is_equal_approx(fraction, next): return
+		fraction = next
+		queue_redraw()
+	func _draw() -> void:
+		# One 148×13 glass cavity gives filled and empty spans identical depth.
+		draw_texture(SLIDER_CHANNEL, Vector2(11, 10))
+		var width: float = 148.0 * fraction
+		if width > 0.0:
+			draw_texture_rect_region(SLIDER_GLASS_FILL, Rect2(11, 10, width, 13), Rect2(0, 0, width, 13), tint)
+		draw_texture(SLIDER_SHELL, Vector2.ZERO)
 var _stage: Control
 var _stage_viewport: SubViewport
+var _allocation_bar: AllocationBar
 var _rows: Dictionary = {}
 var _ids: Array = []
 var _model: Dictionary = {}
@@ -43,7 +85,6 @@ var _quote_cost_ids: Array = []
 var _purchase_count: int = 1
 var _purchase_max: bool = false
 var _quantity: Button
-var _active_work_ids: Array = []
 var _dirty: bool = true
 var _quote_dirty: bool = true
 var _running: bool = false
@@ -210,131 +251,136 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	return panel
 
 func _build() -> void:
-	_level = _label(Vector2(112, 769), 190, 17)
-	_level.add_theme_font_override("font",_ui_font_bold)
-	_level.add_theme_color_override("font_color",Color("203f50"))
+	_allocation_bar = AllocationBar.new()
+	_allocation_bar.position = Vector2(82, 562)
+	_allocation_bar.size = Vector2(545, 31)
+	add_child(_allocation_bar)
+	_budget = _label(Vector2(84, 560), 540, 21)
+	_budget.size.y = 35
+	_budget.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_budget.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_budget.add_theme_font_override("font", _ui_font_bold)
+	_budget.add_theme_color_override("font_color", Color("f8f8f0"))
+	_budget.add_theme_color_override("font_shadow_color", Color("102c3c"))
+	_budget.add_theme_constant_override("shadow_offset_x", 1)
+	_budget.add_theme_constant_override("shadow_offset_y", 2)
 	for id in Stage.IDS:
-		var layout: Dictionary = _stage.control_layout(id)
-		var offset := Vector2(0, 65)
-		var work := ColorRect.new()
-		work.position = layout.work + offset
-		work.size = layout.work_size
-		work.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var work_material := ShaderMaterial.new()
-		work_material.shader = WORK_FACE
-		work_material.set_shader_parameter("module_kind", Stage.IDS.find(id))
-		work_material.set_shader_parameter("tint", Color("f5a84e") if id in ["weapons","smelting"] else Color("78d9ea"))
-		work.material = work_material
-		add_child(work)
-		var pulse := ColorRect.new()
-		pulse.position = work.position
-		pulse.size = work.size
-		pulse.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var pulse_material := ShaderMaterial.new()
-		pulse_material.shader = WORK_PULSE
-		pulse_material.set_shader_parameter("module_kind", Stage.IDS.find(id))
-		pulse_material.set_shader_parameter("tint", Color("f8ba5b") if id in ["weapons","smelting"] else Color("79ddfa"))
-		pulse.material = pulse_material
-		add_child(pulse)
-		var name := _label(layout.title + offset,54 if id == "smelting" else 92,17)
-		name.rotation_degrees = float(layout.read_tilt)
-		name.add_theme_font_override("font",_ui_font_medium)
-		name.add_theme_color_override("font_color",Color("f3f0df"))
+		var index: int = Stage.IDS.find(id)
+		var top: float = 614.0 + 55.0 * index
+		var accent := ColorRect.new()
+		accent.position = Vector2(73, top + 8)
+		accent.size = Vector2(6, 33)
+		accent.color = BAR_COLORS[id]
+		accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(accent)
+		var icon_texture := AtlasTexture.new()
+		icon_texture.atlas = ICON_ATLAS
+		icon_texture.region = Rect2(index * 543, 75, 543, 565)
+		var icon := TextureRect.new()
+		icon.position = Vector2(81, top + 6)
+		icon.size = Vector2(34, 36)
+		icon.texture = icon_texture
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(icon)
+		var name := _label(Vector2(116, top + 6), 79, 19)
+		name.size.y = 36
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		name.add_theme_font_override("font", _ui_font_bold)
+		name.add_theme_color_override("font_color", Color("f5f3e9"))
 		name.text = NAMES[id]
-		var effect := _label(layout.factor + offset,62 if id == "smelting" else 58,18)
-		effect.rotation_degrees = float(layout.read_tilt)
-		effect.add_theme_font_override("font", _ui_font_bold)
-		effect.add_theme_color_override("font_color",Color("e9c98b") if id in ["weapons","smelting"] else Color("b5d9d8"))
-		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		effect.mouse_filter = Control.MOUSE_FILTER_PASS
+		var row_face := TextureRect.new()
+		row_face.position = Vector2(190, top + 4)
+		row_face.size = Vector2(370, 41)
+		row_face.texture = ROW_INSTRUMENT
+		row_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(row_face)
 		var strip := Control.new()
-		strip.position = layout.control + offset
-		strip.size = Vector2(98,20)
-		strip.rotation_degrees = float(layout.tilt)
+		strip.position = Vector2(194, top + 4)
+		strip.size = Vector2(265, 41)
 		strip.mouse_filter = Control.MOUSE_FILTER_PASS
 		add_child(strip)
+		var track_visual := PowerTrack.new()
+		track_visual.position = Vector2(0, 4)
+		track_visual.size = Vector2(170, 33)
+		track_visual.tint = BAR_COLORS[id]
+		track_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		strip.add_child(track_visual)
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
-		slider.position = Vector2(9,-4)
-		slider.size = Vector2(46,28)
+		slider.position = Vector2(0, 4)
+		slider.size = Vector2(170, 33)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		slider.tooltip_text = "拖动后直接分配供能"
-		for style in ["slider","grabber_area","grabber_area_highlight"]:
-			var box := StyleBoxFlat.new()
-			box.bg_color = Color("4aaea2") if style != "slider" else Color("173642")
-			box.set_corner_radius_all(4)
-			if style == "slider":
-				box.border_color = Color("658d91")
-				box.set_border_width_all(1)
-			box.content_margin_top = 4
-			box.content_margin_bottom = 4
-			slider.add_theme_stylebox_override(style, box)
-		var gradient := Gradient.new()
-		gradient.set_color(0, Color("fff0c5"))
-		gradient.set_color(1, Color("75b9a8",0.0))
-		gradient.add_point(0.62, Color("fff0c5"))
-		gradient.add_point(0.72, Color("75b9a8"))
-		var grabber := GradientTexture2D.new()
-		grabber.gradient = gradient
-		grabber.width = 14
-		grabber.height = 14
-		grabber.fill = GradientTexture2D.FILL_RADIAL
-		grabber.fill_from = Vector2(0.5,0.5)
-		grabber.fill_to = Vector2(0.5,1.0)
-		slider.add_theme_icon_override("grabber",grabber)
-		slider.add_theme_icon_override("grabber_highlight",grabber)
+		for state in ["slider", "grabber_area", "grabber_area_highlight"]:
+			var hidden_track := StyleBoxFlat.new()
+			hidden_track.bg_color = Color.TRANSPARENT
+			hidden_track.content_margin_top = 9
+			hidden_track.content_margin_bottom = 9
+			slider.add_theme_stylebox_override(state, hidden_track)
+		slider.add_theme_icon_override("grabber", SLIDER_KNOB)
+		slider.add_theme_icon_override("grabber_highlight", SLIDER_KNOB)
+		slider.add_theme_icon_override("grabber_disabled", SLIDER_KNOB)
 		slider.value_changed.connect(_slide.bind(id))
 		strip.add_child(slider)
-		var ratio := _label(Vector2(55,-7), 34, 16, strip)
+		var ratio := _label(Vector2(178, 5), 78, 21, strip)
 		ratio.add_theme_font_override("font", _ui_font_bold)
 		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		ratio.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		ratio.add_theme_color_override("font_color", Color("e9c98b") if id in ["weapons","smelting"] else Color("b5d9d8"))
-		_rows[id] = {"effect":effect, "name":name, "work":work, "pulse":pulse, "slider":slider, "ratio":ratio, "control":strip}
+		ratio.add_theme_color_override("font_color", Color("f2f3f2"))
+		var effect := _label(Vector2(476, top + 9), 83, 19)
+		effect.size.y = 30
+		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		effect.add_theme_font_override("font", _ui_font_bold)
+		effect.add_theme_color_override("font_color", Color("e5edf0"))
+		_rows[id] = {"effect":effect, "name":name, "slider":slider, "track":track_visual, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
 		for control in _rows[id].values(): control.visible = false
-	_budget = _label(Vector2(91,791),190,16)
-	_budget.add_theme_color_override("font_color",Color("203f50"))
-	_budget.mouse_filter = Control.MOUSE_FILTER_PASS
-	_upgrade_heading = _label(Vector2(343,775),82,17)
-	_upgrade_heading.text = "核心升级"
-	_upgrade_heading.add_theme_color_override("font_color",Color("203f50"))
-	_cost = _label(Vector2(430, 775), 335, 18)
-	_cost.add_theme_color_override("font_color",Color("203f50"))
+	_equal = _button("均分", Rect2(651, 558, 101, 41), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
+	_equal.tooltip_text = "均分供能"
+	_upgrade_heading = _label(Vector2(607, 628), 74, 20)
+	_upgrade_heading.text = "等级"
+	_upgrade_heading.add_theme_color_override("font_color", Color("f4f1df"))
+	_level = _label(Vector2(690, 622), 65, 29)
+	_level.size.y = 39
+	_level.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_level.add_theme_font_override("font", _ui_font_bold)
+	_level.add_theme_color_override("font_color", Color("fff8e6"))
+	_quantity = _button("×1", Rect2(612, 673, 150, 42), _cycle_quantity)
+	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
+	_purchase = _button("升级", Rect2(603, 728, 166, 54), func(): _command(_purchase_action, true), true)
+	_purchase.add_theme_font_size_override("font_size", 27)
+	_cost = _label(Vector2(600, 789), 88, 17)
+	_cost.add_theme_color_override("font_color", Color("f4f0dc"))
 	_cost_badge = Panel.new()
-	_cost_badge.position = Vector2(476,772)
-	_cost_badge.size = Vector2(32,30)
+	_cost_badge.position = Vector2(680, 787)
+	_cost_badge.size = Vector2(26, 27)
 	_cost_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_style := StyleBoxFlat.new()
-	badge_style.bg_color = Color("214b55")
-	badge_style.set_corner_radius_all(6)
-	_cost_badge.add_theme_stylebox_override("panel",badge_style)
+	badge_style.bg_color = Color("193c4b")
+	badge_style.set_corner_radius_all(5)
+	_cost_badge.add_theme_stylebox_override("panel", badge_style)
 	_cost_badge.visible = false
 	add_child(_cost_badge)
 	_cost_icon = TextureRect.new()
-	_cost_icon.position = Vector2(4,3)
-	_cost_icon.size = Vector2(24,24)
+	_cost_icon.position = Vector2(2, 2)
+	_cost_icon.size = Vector2(22, 22)
 	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cost_badge.add_child(_cost_icon)
-	_cost_details = _label(Vector2(504,775),259,18)
-	_cost_details.add_theme_color_override("font_color",Color("203f50"))
-	_quantity = _button("×1",Rect2(324,822,74,34),_cycle_quantity)
-	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
-	_purchase = _button("升级",Rect2(406,822,152,34),func(): _command(_purchase_action,true),true)
-	_equal = _button("均分",Rect2(246,822,72,34),func(): _command(func(): return _owner.distribute(_inputs.call(),_publish)))
-	_equal.tooltip_text = "均分供能"
-	_notice_panel = _panel(Rect2(282,728,244,34),0.95)
-	_notice = _label(Vector2(295,730),218,18)
-	_notice.size.y = 30
+	_cost_details = _label(Vector2(710, 789), 70, 17)
+	_cost_details.add_theme_color_override("font_color", Color("f4f0dc"))
+	_notice_panel = _panel(Rect2(268, 515, 272, 33), 0.95)
+	_notice = _label(Vector2(279, 518), 250, 17)
+	_notice.size.y = 27
 	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_notice.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_set_notice("")
-	for button in [_purchase,_equal]: button.disabled = true
-	_select_quantity(1,false)
+	for button in [_purchase, _equal]: button.disabled = true
+	_select_quantity(1, false)
 
 func _select_quantity(count: int, maximum: bool) -> void:
 	_purchase_count = count
@@ -383,9 +429,6 @@ func _process(_dt: float) -> void:
 		_set_running(bool(context.running))
 		if _stage.advance_visual_clock(float(context.game_time),bool(context.paused)):
 			_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-			for id in _active_work_ids:
-				_rows[id].work.material.set_shader_parameter("phase",_stage.visual_phase())
-				_rows[id].pulse.material.set_shader_parameter("phase",_stage.visual_phase())
 	if _message_until > 0 and Time.get_ticks_msec() >= _message_until:
 		_message_until = 0
 		_set_notice("")
@@ -471,6 +514,7 @@ func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 		if new_row or int(_shares.get(id,-1)) != adopted_share or old_row.get("ratio") != row.ratio:
 			_shares[id] = adopted_share
 			_rows[id].slider.set_value_no_signal(adopted_share)
+			_rows[id].track.update_fraction(float(row.ratio))
 			_rows[id].ratio.text = _ratio_text(float(row.ratio))
 		if new_row or previous.get("can_allocate", false) != _model.can_allocate:
 			_rows[id].slider.editable = _running and bool(_model.can_allocate)
@@ -479,13 +523,17 @@ func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 			_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		if new_row or old_row.get("ratio") != row.ratio or old_row.get("manual") != row.manual or old_row.get("free") != row.free or old_row.get("effective") != row.effective:
 			_rows[id].slider.tooltip_text = "分配 " + _ratio_text(float(row.ratio)) + " · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
-	var level_text := "等级 " + str(_model.level) + " · 容量 " + PlayerText.number(str(_model.capacity))
-	var budget_text := "已配 " + PlayerText.number(str(_model.allocated)) + " · 剩余 " + PlayerText.number(str(_model.remaining))
+	var level_text := str(_model.level)
+	var budget_text := PlayerText.number(str(_model.allocated)) + " / " + PlayerText.number(str(_model.capacity))
 	var detail := "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
 	if _level.text != level_text: _level.text = level_text
 	if _budget.text != budget_text: _budget.text = budget_text
 	if _level.tooltip_text != detail: _level.tooltip_text = detail
 	if _budget.tooltip_text != detail: _budget.tooltip_text = detail
+	var ratios: Dictionary = {}
+	for row in _model.modules:
+		if str(row.id) in _ids: ratios[str(row.id)] = float(row.ratio)
+	_allocation_bar.update_ratios(ratios)
 
 func _valid_model(model: Dictionary) -> bool:
 	if model.get("ok") != true: return false
@@ -506,7 +554,6 @@ func _unknown(message: String) -> void:
 	_model = {}
 	_ids.clear()
 	_shares.clear()
-	_active_work_ids.clear()
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
 	_cost.text = "费用 —"
@@ -516,6 +563,7 @@ func _unknown(message: String) -> void:
 	_budget.text = ""
 	_set_notice(message,true)
 	_stage.clear_snapshot()
+	_allocation_bar.update_ratios({})
 	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	_update_buttons()
 
@@ -524,9 +572,9 @@ func _refresh_quote() -> void:
 	_cost_details.text = ""
 	_cost_badge.visible = false
 	_cost.size.x = 335
-	_cost.add_theme_color_override("font_color",Color("203f50"))
+	_cost.add_theme_color_override("font_color",Color("f4f0dc"))
 	_cost.add_theme_font_override("font",_ui_font_bold)
-	_cost_details.add_theme_color_override("font_color",Color("203f50"))
+	_cost_details.add_theme_color_override("font_color",Color("f4f0dc"))
 	_cost_details.add_theme_font_override("font",_ui_font_bold)
 	if not _read_quote.is_valid():
 		_quote = {}
@@ -570,23 +618,23 @@ func _refresh_quote() -> void:
 	if labels.is_empty():
 		_cost.text = mode_text
 		_cost_details.text = failure_text
-		_cost_details.position.x = 590
-		_cost_details.add_theme_color_override("font_color",Color("a1593b"))
+		_cost_details.position.x = 683
+		_cost_details.add_theme_color_override("font_color",Color("efab7c"))
 		_cost_details.add_theme_font_override("font",_ui_font_medium)
 	else:
-		_cost.text = "费用" if affordable else failure_text
-		_cost_details.text = cost_text + " · " + mode_text
+		_cost.text = ("可购" + str(quote.count)) if affordable and _purchase_max else "费用" if affordable else failure_text
+		_cost_details.text = cost_text
 		if not affordable:
-			_cost.size.x = 80
-			_cost.add_theme_color_override("font_color",Color("a1593b"))
+			_cost.size.x = 88
+			_cost.add_theme_color_override("font_color",Color("efab7c"))
 			_cost.add_theme_font_override("font",_ui_font_medium)
 		if quote.costs.size() == 1:
 			var resource_id: String = str(quote.costs.keys()[0])
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
 			_cost_icon.modulate = ResourceVisuals.icon_modulate(resource_id)
 			_cost_badge.visible = _cost_icon.texture != null
-		_cost_badge.position.x = 476 if affordable else 512
-		_cost_details.position.x = 548 if _cost_badge.visible and not affordable else 512 if _cost_badge.visible or not affordable else 480
+		_cost_badge.position.x = 680
+		_cost_details.position.x = 710 if _cost_badge.visible else 682
 	_cost.tooltip_text = _cost.text + " " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
 	var exact_costs: Array = []
@@ -651,15 +699,8 @@ func _error(result: Dictionary) -> void:
 
 func _update_stage() -> void:
 	if _model.is_empty():
-		_active_work_ids.clear()
 		_stage.clear_snapshot()
 		return
 	var loads: Dictionary = _visual_loads(_model, _ids)
 	_stage.show_snapshot(_ids,loads)
-	_active_work_ids.clear()
-	for id in _ids:
-		var power: float = float(loads.get(id,0.0))
-		_rows[id].work.material.set_shader_parameter("power",Stage.visibility_power(power))
-		_rows[id].pulse.material.set_shader_parameter("power",Stage.visibility_power(power))
-		if power > 0.0: _active_work_ids.append(id)
 	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE

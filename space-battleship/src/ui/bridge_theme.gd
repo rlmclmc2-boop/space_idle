@@ -1,5 +1,19 @@
 extends RefCounted
 const ART := "res://assets/ui/public_shell/"
+const CONTROL_MATERIALS := "res://assets/ui/equipment/materials-20261029/control-materials.png"
+static var _public_faces: Dictionary = {}
+
+static func _public_face(role: String) -> Texture2D:
+	if not _public_faces.has(role):
+		# Reuse the approved control material itself, rather than drawing a
+		# second outline over the old public button art.
+		var image: Image = load(CONTROL_MATERIALS).get_image()
+		var region := Rect2i(42, 132, 1366, 256) if role == "glass" else Rect2i(42, 772, 1366, 204)
+		var face := image.get_region(region)
+		var height := 44 if role == "glass" else 40
+		face.resize(roundi(face.get_width() * float(height) / face.get_height()), height, Image.INTERPOLATE_LANCZOS)
+		_public_faces[role] = ImageTexture.create_from_image(face)
+	return _public_faces[role]
 
 static func _texture_style(path: String, inset: float, padding: float) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
@@ -20,9 +34,37 @@ static func public_panel() -> StyleBoxTexture:
 	style.content_margin_bottom = 14
 	return style
 
-static func public_button(state: String, padding: float = 10.0) -> StyleBoxTexture:
-	var path := "button-active.svg" if state in ["pressed", "hover_pressed", "selected"] else "button-hover.svg" if state in ["hover", "focus"] else "button-disabled.svg" if state == "disabled" else "button-idle.svg"
-	return _texture_style(path, 12, padding)
+static func public_button(state: String, padding: float = 10.0) -> StyleBox:
+	if state == "focus":
+		var focus := StyleBoxFlat.new()
+		focus.bg_color = Color.TRANSPARENT
+		focus.border_color = Color("f0c987")
+		focus.set_border_width_all(2)
+		focus.set_corner_radius_all(5)
+		return focus
+	var style := StyleBoxTexture.new()
+	style.texture = _public_face("glass" if state in ["pressed", "hover_pressed", "selected"] else "navy")
+	style.modulate_color = Color(1.08, 1.08, 1.05) if state in ["hover", "hover_pressed"] else Color(0.63, 0.68, 0.71) if state == "disabled" else Color.WHITE
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: style.set_texture_margin(side, 7)
+	style.content_margin_left = padding
+	style.content_margin_right = padding
+	style.content_margin_top = 7
+	style.content_margin_bottom = 7
+	return style
+
+static func public_check(control: CheckBox) -> void:
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+		control.add_theme_stylebox_override(state, public_button(state, 8))
+	for entry in [["unchecked", "check-off.svg"], ["checked", "check-on.svg"],
+		["unchecked_disabled", "check-off-disabled.svg"], ["checked_disabled", "check-on-disabled.svg"]]:
+		control.add_theme_icon_override(entry[0], load(ART + entry[1]))
+	control.add_theme_color_override("font_color", Color("f0f2e9"))
+	control.add_theme_color_override("font_hover_color", Color.WHITE)
+	control.add_theme_color_override("font_pressed_color", Color("173e4c"))
+	control.add_theme_color_override("font_hover_pressed_color", Color("173e4c"))
+	control.add_theme_color_override("font_focus_color", Color("f0f2e9"))
+	control.add_theme_color_override("font_disabled_color", Color("9cb4b4"))
+	control.add_theme_constant_override("h_separation", 7)
 
 static func route_button(state: String) -> StyleBoxTexture:
 	var path := "nav-active.svg" if state in ["selected", "pressed", "hover_pressed"] else "nav-hover.svg" if state in ["hover", "focus"] else "nav-idle.svg"

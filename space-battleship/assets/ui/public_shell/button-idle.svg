@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="96" height="64" viewBox="0 0 96 64">
-  <defs><linearGradient id="alloy" x2="0" y2="1"><stop stop-color="#275465"/><stop offset=".28" stop-color="#1a4151"/><stop offset="1" stop-color="#102c3d"/></linearGradient></defs>
-  <path d="M1 11 11 1h74l10 10v43L85 63H11L1 54Z" fill="#071c2a" stroke="#081b25" stroke-width="2"/>
-  <path d="M3 12 12 3h72l9 9v41l-9 8H12l-9-8Z" fill="url(#alloy)" stroke="#668e92"/>
-  <path d="M6 14 14 6h68l8 8" fill="none" stroke="#b8d8c8" stroke-opacity=".58"/>
-  <path d="M9 54 14 58h68l5-4" fill="none" stroke="#031b2a" stroke-width="2"/>
-  <path d="M14 10h29" stroke="#d1b77d" stroke-width="1.5" stroke-opacity=".72"/>
-  <path d="M80 8h3l5 5v3" fill="none" stroke="#d2b477" stroke-width="1.5"/>
-</svg>

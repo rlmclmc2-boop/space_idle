@@ -924,6 +924,7 @@ func _setup_growth_panel() -> void:
 			autosave.set_value_no_signal(_autosave_interval)
 			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var skip_tutorial := CheckBox.new()
+	BridgeTheme.public_check(skip_tutorial)
 	skip_tutorial.text = "自动跳过引导提示"
 	skip_tutorial.button_pressed = _skip_tutorial
 	_skip_toggle = skip_tutorial
@@ -939,6 +940,7 @@ func _setup_growth_panel() -> void:
 			skip_tutorial.set_pressed_no_signal(_skip_tutorial)
 			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var music := CheckBox.new()
+	BridgeTheme.public_check(music)
 	music.text = "音乐"
 	music.button_pressed = _music_enabled
 	_music_toggle = music
@@ -954,6 +956,7 @@ func _setup_growth_panel() -> void:
 			music.set_pressed_no_signal(_music_enabled)
 			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var effects := CheckBox.new()
+	BridgeTheme.public_check(effects)
 	effects.text = "音效"
 	effects.button_pressed = _effects_enabled
 	_effects_toggle = effects
@@ -984,6 +987,7 @@ func _setup_growth_panel() -> void:
 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var clear_settings := CheckBox.new()
+	BridgeTheme.public_check(clear_settings)
 	clear_settings.text = "新游戏同时重置个人设置"
 	clear_settings.custom_minimum_size.x = 260
 	clear_settings.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN

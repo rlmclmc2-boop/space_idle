@@ -1,131 +1,54 @@
 extends Control
-## Reactor bay art and work effects. Every light reads adopted, effective owner load.
-const FOUR = preload("res://assets/ui/reactor/ship-hub-r9/working-bay-eight.png")
-const WORK = preload("res://assets/ui/reactor/ship-hub-r9/transport_work.gdshader")
-const AMBIENT_WORK = preload("res://assets/ui/reactor/ship-hub-r5/ambient_work.gdshader")
-const CORE_SOURCE = preload("res://assets/ui/reactor/ship-hub-r4/core-work.png")
-const CORE_WORK = preload("res://assets/ui/reactor/ship-hub-r4/core_work.gdshader")
+## B01 painted reactor bay. Animation and power read accepted Owner presentation.
+const IDLE = preload("res://assets/ui/reactor/b01/idle-console.png")
+const ACTIVE = preload("res://assets/ui/reactor/b01/active-console.png")
+const LIVE = preload("res://assets/ui/reactor/b01/live-material.gdshader")
+const EFFECT_MASK = preload("res://assets/ui/reactor/b01/effect-mask.png")
+const MODULE_MASK = preload("res://assets/ui/reactor/b01/module-mask.png")
+const PIPE_MASK = preload("res://assets/ui/reactor/b01/pipe-mask.png")
 const IDS := ["weapons", "defence", "smelting", "condensation"]
-const BLUE := Color(0.25, 0.80, 0.95)
-const AMBER := Color(1.0, 0.55, 0.18)
-const MIN_VISIBLE_POWER := 0.18
-const ROUTES := {
-	# Axes of the four visible glass shafts, inside the dark collars. Coordinates
-	# are on the 808 x 835 bay image, from the core towards each device.
-	"weapons": [Vector2(277, 219), Vector2(230, 190)],
-	"defence": [Vector2(531, 219), Vector2(578, 190)],
-	"smelting": [Vector2(276, 434), Vector2(218, 468)],
-	"condensation": [Vector2(532, 434), Vector2(590, 468)],
-}
-const OPERATING := {
-	"weapons": {"title":Vector2(51, 116), "factor":Vector2(98, 123), "read_tilt":3.0, "work":Vector2(55, 139), "work_size":Vector2(80, 65), "control":Vector2(59, 227), "tilt":6.0},
-	"defence": {"title":Vector2(665, 123), "factor":Vector2(704, 119), "read_tilt":-3.0, "work":Vector2(624, 164), "work_size":Vector2(146, 44), "control":Vector2(654, 238), "tilt":-6.0},
-	"smelting": {"title":Vector2(36, 427), "factor":Vector2(89, 427), "read_tilt":-3.0, "work":Vector2(37, 474), "work_size":Vector2(146, 72), "control":Vector2(52, 552), "tilt":-10.0},
-	"condensation": {"title":Vector2(660, 426), "factor":Vector2(700, 430), "read_tilt":3.0, "work":Vector2(624, 474), "work_size":Vector2(146, 72), "control":Vector2(662, 535), "tilt":10.0},
-}
+const OPERATING := {"weapons":{"row":0}, "defence":{"row":1}, "smelting":{"row":2}, "condensation":{"row":3}}
 var _enabled: Array = []
 var _loads: Dictionary = {}
-var _fields: Dictionary = {}
-var _connections: Dictionary = {}
-var _ambient: ColorRect
-var _feed: ColorRect
 var _clock: float = -1.0
 var _phase: float = 0.0
+var _paint: ShaderMaterial
 var diagnostics := {"draws":0, "field_updates":0, "active_frames":0}
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	custom_minimum_size = Vector2(808, 835)
+	_paint = ShaderMaterial.new()
+	_paint.shader = LIVE
+	_paint.set_shader_parameter("active_plate", ACTIVE)
+	_paint.set_shader_parameter("effect_mask", EFFECT_MASK)
+	_paint.set_shader_parameter("module_mask", MODULE_MASK)
+	_paint.set_shader_parameter("pipe_mask", PIPE_MASK)
+	material = _paint
 	set_process(false)
-	_add_ambient()
-	_add_feed()
-	_add_core()
-	for id in IDS:
-		var ends: Array = ROUTES[id]
-		var start: Vector2 = ends[0]
-		var finish: Vector2 = ends[1]
-		var flow := _new_work(Rect2(start, Vector2(start.distance_to(finish), 12)), 2, AMBER if id in ["weapons", "smelting"] else BLUE)
-		flow.rotation = (finish - start).angle()
-		flow.position -= Vector2(0, 6.0).rotated(flow.rotation)
-		flow.material.set_shader_parameter("module_kind", IDS.find(id))
-		_connections[id] = flow
-
-func _new_work(rect: Rect2, kind: int, tint: Color) -> ColorRect:
-	var field := ColorRect.new()
-	field.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	field.position = rect.position
-	field.size = rect.size
-	field.visible = false
-	var material := ShaderMaterial.new()
-	material.shader = WORK
-	material.set_shader_parameter("kind", kind)
-	material.set_shader_parameter("tint", tint)
-	field.material = material
-	add_child(field)
-	return field
-
-func _add_ambient() -> void:
-	_ambient = ColorRect.new()
-	_ambient.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_ambient.position = Vector2(164,120)
-	_ambient.size = Vector2(480,450)
-	_ambient.visible = false
-	var material := ShaderMaterial.new()
-	material.shader = AMBIENT_WORK
-	_ambient.material = material
-	add_child(_ambient)
-
-func _add_feed() -> void:
-	# The supply glass ends under the upper collar; the lower ivory ring is solid
-	# foreground and must never receive a moving packet over its front lip.
-	_feed = _new_work(Rect2(Vector2(395, 73), Vector2(18, 73)), 3, BLUE)
-
-func _add_core() -> void:
-	var field := TextureRect.new()
-	field.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	field.position = Vector2(272, 211)
-	field.size = Vector2(264, 264)
-	field.texture = CORE_SOURCE
-	field.visible = false
-	var material := ShaderMaterial.new()
-	material.shader = CORE_WORK
-	field.material = material
-	add_child(field)
-	_fields["core"] = field
 
 func control_layout(id: String) -> Dictionary:
-	var row: Dictionary = OPERATING[id]
-	return row
+	return OPERATING[id]
 
 static func visibility_power(owner_load: float) -> float:
-	# Keep a positive Owner load legible on a 1x display. Zero still turns off.
 	var load: float = clampf(owner_load, 0.0, 1.0)
-	return maxf(load, MIN_VISIBLE_POWER) if load > 0.0 else 0.0
+	return maxf(load, 0.18) if load > 0.0 else 0.0
 
 func show_snapshot(ids: Array, loads: Dictionary) -> void:
 	_enabled = ids.duplicate()
 	_loads = loads.duplicate()
-	var core_power: float = clampf(float(_loads.get("core",0.0)),0.0,1.0)
-	_ambient.visible = core_power > 0.0
-	_ambient.material.set_shader_parameter("power",visibility_power(core_power))
-	_feed.visible = core_power > 0.0
-	_feed.material.set_shader_parameter("power",visibility_power(core_power))
-	for id in _fields:
-		var load: float = clampf(float(_loads.get(id, 0.0)), 0.0, 1.0)
-		_fields[id].visible = (id == "core" or id in _enabled) and load > 0.0
-		_fields[id].material.set_shader_parameter("power", visibility_power(load))
-	for id in _connections:
-		var load: float = clampf(float(_loads.get(id, 0.0)), 0.0, 1.0)
-		_connections[id].visible = id in _enabled and load > 0.0
-		_connections[id].material.set_shader_parameter("power", visibility_power(load))
+	_paint.set_shader_parameter("core_load", visibility_power(float(_loads.get("core", 0.0))))
+	for id in IDS:
+		_paint.set_shader_parameter(id + "_load", visibility_power(float(_loads.get(id, 0.0))) if id in _enabled else 0.0)
+	diagnostics.field_updates += 1
+	queue_redraw()
 
 func clear_snapshot() -> void:
 	_enabled.clear()
 	_loads.clear()
-	_ambient.visible = false
-	_feed.visible = false
-	for field in _fields.values(): field.visible = false
-	for field in _connections.values(): field.visible = false
+	_paint.set_shader_parameter("core_load", 0.0)
+	for id in IDS: _paint.set_shader_parameter(id + "_load", 0.0)
+	queue_redraw()
 
 func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	if not is_visible_in_tree():
@@ -135,17 +58,8 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	_clock = game_time
 	if paused or elapsed == 0.0 or float(_loads.get("core", 0.0)) <= 0.0: return false
 	_phase = fmod(_phase + elapsed, 4096.0)
-	_ambient.material.set_shader_parameter("phase",_phase)
-	_feed.material.set_shader_parameter("phase",_phase)
+	_paint.set_shader_parameter("phase", _phase)
 	diagnostics.active_frames += 1
-	for id in _fields:
-		if _fields[id].visible:
-			_fields[id].material.set_shader_parameter("phase", _phase)
-			diagnostics.field_updates += 1
-	for id in _connections:
-		if _connections[id].visible:
-			_connections[id].material.set_shader_parameter("phase", _phase)
-			diagnostics.field_updates += 1
 	return true
 
 func reset_clock() -> void:
@@ -156,4 +70,4 @@ func visual_phase() -> float:
 
 func _draw() -> void:
 	diagnostics.draws += 1
-	draw_texture_rect(FOUR, Rect2(0, 0, 808, 835), false)
+	draw_texture_rect(IDLE, Rect2(0, 0, 808, 835), false)
