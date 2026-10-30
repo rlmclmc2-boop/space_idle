@@ -40,5 +40,25 @@
   "not_required_current_data": [
     "fabricated_third_resource"
   ],
-  "acceptance": "Pending root/overall/independent review; no author pass claim"
+  "acceptance": "Pending root/overall/independent review; no author pass claim",
+  "ship_presentation_constraints": {
+    "status": "user_decided",
+    "ship_association_scope": "existing weapon models and their corresponding weapon slots only",
+    "defence_scope": "slot identity, attributes, costs and operations only",
+    "defence_ship_presentation_excluded": [
+      "models",
+      "proxy badges",
+      "leader lines",
+      "pointers to hull",
+      "symmetry-driven additions"
+    ],
+    "preserved": [
+      "inline slot organization",
+      "nearby upgrade actions",
+      "local dropdown immediate switch",
+      "immediate switch-back design target"
+    ],
+    "current_static_source": "No defence hull attachment is drawn; retain that scope. Full weapon-model/slot ship association is not declared completed.",
+    "this_followup_scope": "documentation correction only; no new image/design/test/runtime task"
+  }
 }
