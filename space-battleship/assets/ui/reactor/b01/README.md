@@ -1,0 +1,9 @@
+# B01 reactor plates
+
+`active-console.png` and `idle-console.png` are matching 1187×1326 text-free painted plates generated from the user-approved B01 image at `docs/verification/reactor-centered-godot/evidence/b01-redesign/approved-b01.png`. The active plate preserves its monumental core, four distinct machines, direct conduits, and full carved console; the idle edit keeps the same structure with unpowered glass and devices. Both remove example labels, numbers, meter fills, sliders, knobs and button text so Godot supplies the real Owner-backed controls.
+
+The source image SHA-256 is `0df4f03e7d9deac6d92a8bc05624aa8c57721367253a9d16ae5448bf21a61c9a`. The active plate SHA-256 is `0d3fa5de1e2c4d7752741c83b93fa740cf1f870374fdab9d929d089c97af7db4`; the idle plate SHA-256 is `e8686944a2477c9ed6837be216c40d4456c7cecd077f623cca030f3fe51f46bb`. The source generation paths for this work session were `/workspace/generated_images/exec-66bdd780-dbe1-46d1-b1b0-e25b2d44bd47.png` and `/workspace/generated_images/exec-c09e6aae-6d7f-48be-9020-53a2a5bb05c5.png`.
+
+`live-material.gdshader` blends these plates only over the operating machinery based on accepted Reactor loads. It advances its restrained core and conduit light on the existing game-time clock; zero load displays the idle plate. The lower console has no baked interaction.
+
+`control-icons.png` is a transparent four-cell atlas generated from the same approved B01 reference: amber weapon, blue shield, orange iron, purple crystal. SHA-256 `b32c7e536d9e8aa3ef3d700e16f64b626a4cb04d94acff654417e7c20d864592`; session source `/workspace/generated_images/exec-448c74a0-6dda-40a3-bbee-a55215d3fe68.png`. `AtlasTexture` selects each cell for a 34×36 native `TextureRect`; the icons contain no text, slider, value or input surface.
