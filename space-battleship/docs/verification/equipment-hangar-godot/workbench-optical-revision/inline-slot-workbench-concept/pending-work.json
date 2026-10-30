@@ -1,26 +1,21 @@
 {
-  "current": "Independent rectangular-card static review and last native fixes completed; formal shared host closure pending root coordination",
+  "current": "Formal isolated host implementation and same-version affected GUI evidence completed; submitted root/original review, not self-accepted",
+  "runtime_source_commit": "8430cd9c8cd84372e0218762daab986e989f3fbe",
   "handoff": "NATIVE-WIP-HANDOFF.md",
-  "baseline": "4dd4f1238ad59517965409b58eb52fb3acb14438",
+  "evidence": "formal-native-ledger.json",
   "remaining": [
-    "Receive overall-owned minimal formal-host Git closure without unrelated reactor/planet pages; integrate agreed host attachment only",
-    "On formal host capture same-version2/5/8 top/bottom and actual longMAX screenshots/video plus affected interactions; submit root/original review",
-    "Unobserved extreme fields require true equipment-domain sample"
+    "Root/original reviewer judgment of current rectangular cards/real empty slots/formal full screens; user acceptance remains separate",
+    "Unobserved arbitrary extreme equipment fields need real domain source if later requested"
   ],
-  "completed": [
-    "All23 static states actually viewed and current review/manifest reconciled; historical3946 ledgers preserved",
-    "MAX true material admission and clean shutdown actually GUI checked after last patch, exit0 failures0",
-    "Corrected native dropdown icon sizing; actual GUI bounds assertions and visual check completed"
-  ],
-  "evidence": "wip-inline-native-patch-ledger.json, patch-operations.json, icon-fix.log, patch screenshots; old video predates icon fix",
+  "implementation_dependency": null,
   "actual_compaction": false,
   "denied_actions": [],
+  "unknown_outcomes": [],
   "background_processes": [],
   "not_claimed": [
-    "formal host integrated",
-    "same-version final video",
-    "new original review passed",
+    "original review passed",
     "user acceptance",
-    "main merge"
+    "main merge",
+    "unrelated module regression"
   ]
 }

@@ -1,14 +1,16 @@
-# 装备矩形卡与原生接入：当前执行检查点
+# 装备矩形卡与正式公共宿主：同版实机候选
 
-用户已批准矩形卡修订后接入实机：每槽完整矩形卡、单行当前→升级后、逐项不足费用标红，拥挤时保图标数字并悬停0.5秒提示；不足购买可点，真实拒绝后才短暂提示。现装本地下拉点击即免费切换且可立即切回，无额外确认，同槽10游戏秒锁已按授权移除。
+已在原工作区/原分支完成正式公共宿主最小闭包接入，运行源码固定 `8430cd9c8cd84372e0218762daab986e989f3fbe`。按0fccb579交接只取bfe5a193公共壳/主题/资源身份与必要资产；main保原e3、仅窄接公共挂载/导航/状态，原战场投影和输入路径保持。反应堆/星球独立页禁用，未带入其内部实现。精确来源见[公共闭包](formal-host-source.json)，不再等待旧缺源。
 
-63–83当前21态及[84不足点击反馈](84-insufficient-click-feedback.png)、[85资源悬停示意](85-resource-hover-half-second.png)共23张已逐张实际查看。当前统一[审阅页](review-current-group.html)、[矩形卡账本](rectangular-card-manifest.json)与[导出源](build-rectangular-cards.py)。旧3946静态原审通过不覆盖本次矩形修订；历史账本保存在`host-return-*-3946-history.json`，不能作为当前文字/控制节点不变的声明。
+[同版真实整屏审阅页](review-formal-native.html)包含15张1440×900原始Godot截图，以及[操作视频](formal-native-actions.mp4)和[原始全程录屏](formal-native-raw.mp4)。[源码/证据账本](formal-native-ledger.json)、[操作JSON](formal-native-operations.json)、[驱动](formal-native-driver.gd)、[原始日志](formal-native.log)绑定同版源码和本地native/config哈希。最终真实流程退出0、failures=0，无ObjectDB/资源泄漏警告；15张最终整屏均实际查看，视频完整解码并抽看原帧。录屏操作段仅从原始20.0–36.8秒截取，原始录屏含启动和退出空白，不裁图、不加速、不美化。
 
-真实Godot4.7.2/native/config同线程GUI流程在最后MAX准入及退出清理后已执行，随后因目视发现下拉图标撑大，修正TextureRect初始化顺序并再次执行：退出0、failures=0，含MAX材料禁用及下拉图标边界断言，退出无ObjectDB/资源泄漏警告。新下拉已实际看图；完整运行证据与源码hash见[本轮真实证据账本](wip-inline-native-patch-ledger.json)、[操作JSON](wip-inline-native-patch-operations.json)、[原始日志](wip-inline-native-icon-fix.log)和`wip-inline-native-patch-*.png`。中后期使用明确受控Owner恢复；未知回执保护采用显式publisher故障注入，不称自然故障。旧视频`wip-inline-native-wip.mp4`保全，早于本轮图标修正，不作为同版新视频。
+早期2槽为自然启动；中5/晚8为既有Owner公开恢复/真实换舰形成的明确受控状态，含原生发布与真实支付。中晚空槽完整保留，不只交满装图：空槽卡只留装备选择，无现装Lv、—→—、费用、数量、购买、比较假对象；点击旧购买位置不发命令，真实免费装配成功后才恢复现装升级控件。Owner本来保存并允许购买空槽的“槽位等级”，未改规则；批量仍走原Owner全槽命令，界面准确称全部槽位升级/槽位Lv。静态80也同步此语义，另22态SVG/PNG字节保持11632386。
 
-当前公共宿主仍是旧main，缺正式导航/等比战场宿主，所有本轮实机证据明确为WIP。最小宿主闭包已报根协调：公共区域挂载和装备选中导航、战场视觉/输入同变换、共同字体按钮/浮层角色及其必要资产；不得把整体混合分支的反应堆/星球实现整包带入。正式宿主接入后仍须固定同版2/5/8顶底及真实长MAX整屏和操作视频，再交根/原审。更多未见极端字段须装备域真源，不造额外资源。
+完整矩形卡、单行当前→升级后、逐费不足红、图标数字/0.5秒资源提示、不足可点且真实拒绝后短暂反馈、数量循环、免费即时切回、MAX材料禁用、局部刷新焦点、残行不可操作、底部下拉与公共导航互斥均有本轮受影响实机证据。材料未开放明确显示真实领域原因并保持控件净空。未知回执保护使用显式publisher故障注入，不称自然/native故障。无新业务公式、config或其他战斗规则变化。
 
-本执行者尚未实际平台压缩；原工作区/分支继续，无等待用户授权、权限拒绝或未知执行结果。当前无Godot/ffmpeg后台进程，不合main、不新建工作区或子代理，原untracked .import/.uid及缓存保全。精确现场见[NATIVE-WIP-HANDOFF.md](NATIVE-WIP-HANDOFF.md)、[pending-work.json](pending-work.json)。下方为历史来源说明，以本段当前事实覆盖历史待办。
+[23张静态审阅](review-current-group.html)、[静态账本](rectangular-card-manifest.json)仍与真实运行分别标注。旧3946静态通过、旧宿主wip图/视频及a5da组合参考都不替代本版审结论；原始过程日志和一次驱动数组索引错误保全并解释，不冒充全程无失败。
+
+当前实现及其受影响证据已完成，交根/原审判断新矩形卡、空槽和正式整屏；不自判验收、不合main。更多未见极端字段仍需对应装备域真源。尚未实际平台压缩，无权限拒绝、未知结果、后台Godot/ffmpeg或未完成技术接入依赖；原WIP/untracked/import/uid/cache保全。精确交接见[NATIVE-WIP-HANDOFF.md](NATIVE-WIP-HANDOFF.md)、[pending-work.json](pending-work.json)。下方为历史来源，旧缺源/未实施状态由本段覆盖。
 
 ---
 

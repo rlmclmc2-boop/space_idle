@@ -1,3 +1,5 @@
+**2026-10-30当前实机候选：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已接正式公共隔离宿主，15完整实图/同版视频/Owner事实及源码hash齐备；矩形卡与真实空槽区分、材料理由净空已实施并同线程受影响核验exit0 failures0。原Owner槽位等级规则保持，空槽卡不冒充现装升级对象。未报新原审或用户验收，不合main。以下历史阶段描述按该入口当前状态解释。
+
 # M2 舰体与装备
 
 **当前63–83整组续修：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)及其完整可切换审阅入口固定全部21静态整屏。早期舰武整组按同底锚165→260px展示、名称牌上移95px；短长环境撤掉源图挤薄，改为左落地脚＋右墙固定承托，直接使用原背景变换。槽内结构／字段／目标与原挂点anchor保持，公共正式装备选中导航及右宿主原像素保持。当前早期主次、墙托厚度与x808／B01邻接仍交根／整体／原独审明确判断；无运行／独立复测／main，不称等用户。下述旧段落按唯一入口当前状态解释。

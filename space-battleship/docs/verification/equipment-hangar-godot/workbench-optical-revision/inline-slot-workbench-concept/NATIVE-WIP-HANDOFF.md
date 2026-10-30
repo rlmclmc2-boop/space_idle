@@ -1,3 +1,15 @@
+# 2026-10-30 正式宿主原地完成检查点（未实际平台压缩）
+
+原/workspace/space_idle，art/equipment-materials-main-20261029。运行源码固定8430cd9c8cd84372e0218762daab986e989f3fbe；0fccb579da0c6ed98c4b046b860e66b5594298b9隔离闭包已实际消费，公共源bfe5a19373c348946982d37c79f148789b5649e0，a5da0606ba063fc3b7dccfb02d83eb9f3c25f03a只参考不整合。main仅窄接原入口公共挂载/导航/status，保原等比战场视觉/输入；公共three整文件+必要图源详formal-host-source。无reactor_scene/新planet内部。
+
+空槽实查Owner accepted equipment_id空、槽位paidLv1及quote_slot铁65确有规则来源；UI不把它冒成现装对象，空槽只留选择、隐藏现装等级/属性/费用/数量/购买/比较。真实点击旧购买坐标无命令，点下拉导弹免费接受后恢复现装升级UI；Owner规则未改，批量标题与等级明示槽位。静态80同步，余22图字节保11632386。材料门槛旧fallback长句已修准确中文并裁切兜底。
+
+最终同线程Godot4.7.2/native/config/main.tscn GUI exit0 failures0，含空槽稳定ID事实、MAX准入、原变换实际暂停输入、公共导航/弹层、支付/即时切回/长MAX/不足/tooltip/残行/底部/未知回执保护。15张最终完整截图已逐张view，67.1秒原视频完整解码、抽帧view，操作片段20..36.8秒无变速/裁图。formal-native-ledger.json绑定源码和全部证据。首轮新增驱动错取facts[1]断言失败（真正weapon:1不在该索引），已按稳定ID修正；原失败log/JSON保全。第二轮0失败后发现材料文字视觉问题，最终重新实跑并看修正，不外推旧0失败。自然早2，其余明确受控Owner恢复，unknown用显式publisher故障，不称自然故障。
+
+现在无原授权实现待办或公共源依赖，交根/原审新整屏判断。未自判验收/用户接受/main；未实际平台压缩，无权限拒绝/未知结果/后台Godot或ffmpeg，原WIP/untracked/import/uid/cache保全。不为保持工作增新任务。下方历史缺源/旧宿主状态由本节覆盖。
+
+---
+
 # 2026-10-30 接替执行者当前现场（尚未实际平台压缩）
 
 原目录/原art分支，接管HEAD4dd4f1238ad59517965409b58eb52fb3acb14438。当前独立项已完成：23张矩形静态逐张view；当前审阅页/host-return指针/rectangular账本统一，原3946账本另存历史；MAX材料准入与退出清理已真实GUI执行exit0 failures0、无退出泄漏。新下拉目视发现TextureRect先赋纹理引起延迟最小尺寸膨胀，已修为先expand再纹理、添加后设尺寸；加popup图标<=44×54断言后再跑同流程exit0 failures0，新下拉已实际看、不遮字。精确证据/源码hash见wip-inline-native-patch-ledger.json，日志icon-fix，原始截图patch前缀。旧wip视频早于图标修正，未冒充同版。

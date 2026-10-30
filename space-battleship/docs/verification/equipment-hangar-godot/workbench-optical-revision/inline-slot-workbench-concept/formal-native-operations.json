@@ -1,0 +1,1595 @@
+{
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "records": [
+    {
+      "case": "formal shared host attachment",
+      "surface_position": "(855.875, 0.0)",
+      "surface_scale": "(0.9375, 0.9375)",
+      "title": "装备",
+      "viewport_size": "(572, 960)"
+    },
+    {
+      "case": "battle visual/input use the same retained transform",
+      "paused_restored": true,
+      "root_click": "(1268.844, 31.875)"
+    },
+    {
+      "cards": [
+        "weapon:0",
+        "defence:0"
+      ],
+      "case": "natural early rejection and transient feedback",
+      "state": {
+        "last_result": {
+          "ok": false,
+          "reason": "InsufficientResources"
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "chrono": {
+            "e": "3",
+            "m": "5.587"
+          }
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "attribute": "攻击力  350 → 420",
+          "attribute_box": "[P: (400.0, 481.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 151.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": true,
+              "rect": "[P: (382.0, 514.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 452.0), S: (432.0, 90.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "attribute": "容量  1,000 → 1,200",
+          "attribute_box": "[P: (400.0, 594.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 165.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": true,
+              "rect": "[P: (382.0, 627.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 565.0), S: (432.0, 90.0)]",
+          "slot": "defence:0"
+        }
+      ],
+      "case": "natural early rectangular cards",
+      "state": {
+        "last_result": {
+          "ok": false,
+          "reason": "InsufficientResources"
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "chrono": {
+            "e": "3",
+            "m": "5.587"
+          }
+        }
+      }
+    },
+    {
+      "case": "actual GUI immediate free switch and back, paused game time",
+      "state": {
+        "last_result": {
+          "ok": true
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "6",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "attribute": "攻击力  1.76万 → 2.08万",
+          "attribute_box": "[P: (400.0, 343.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 199.0,
+          "fees": [
+            {
+              "full_text": "铁 · 1,900",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 376.0), S: (77.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 314.0), S: (432.0, 90.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "attribute": "容量  1,000 → 1,200",
+          "attribute_box": "[P: (400.0, 644.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 165.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 677.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 615.0), S: (432.0, 90.0)]",
+          "slot": "defence:0"
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:1",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:2",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "defence:1",
+          "upgrade_controls_visible": false
+        }
+      ],
+      "case": "middle5 real state with true empty slots",
+      "state": {
+        "last_result": {
+          "defence_changed": false,
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "3",
+                    "m": "1.6"
+                  },
+                  "degenerate_matter": {
+                    "e": "1",
+                    "m": "1"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            }
+          }
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 20,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "9.984"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.9"
+          }
+        }
+      }
+    },
+    {
+      "after": {
+        "last_result": {
+          "ok": true
+        },
+        "running": true,
+        "selected": "weapon:1",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 20,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "9.984"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.9"
+          }
+        }
+      },
+      "before": {
+        "last_result": {
+          "defence_changed": false,
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "3",
+                    "m": "1.6"
+                  },
+                  "degenerate_matter": {
+                    "e": "1",
+                    "m": "1"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "3",
+                "m": "1.6"
+              },
+              "degenerate_matter": {
+                "e": "1",
+                "m": "1"
+              }
+            }
+          }
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 20,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "9.984"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.9"
+          }
+        }
+      },
+      "case": "actual empty-slot click, free installation and upgrade object restoration"
+    },
+    {
+      "cards": [
+        {
+          "attribute": "攻击力  1.76万 → 2.08万",
+          "attribute_box": "[P: (400.0, 343.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 199.0,
+          "fees": [
+            {
+              "full_text": "铁 · 1,900",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 376.0), S: (77.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 314.0), S: (432.0, 90.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "attribute": "攻击力  170 → 200",
+          "attribute_box": "[P: (400.0, 437.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 151.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 470.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 408.0), S: (432.0, 90.0)]",
+          "slot": "weapon:1"
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:2",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:3",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:4",
+          "upgrade_controls_visible": false
+        }
+      ],
+      "case": "late true empty slots before loadout restoration",
+      "state": {
+        "last_result": {
+          "ok": true
+        },
+        "running": true,
+        "selected": "weapon:1",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 20,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 20,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "9.984"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "2",
+            "m": "9.9"
+          }
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "attribute": "攻击力  9,300 → 1.76万",
+          "attribute_box": "[P: (400.0, 343.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 191.0,
+          "fees": [
+            {
+              "full_text": "铁 · 1,600",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 376.0), S: (77.0, 24.0)]",
+              "resource": "1"
+            },
+            {
+              "full_text": "简并物质 · 10",
+              "name_omitted": false,
+              "poor": true,
+              "rect": "[P: (471.0, 376.0), S: (101.0, 24.0)]",
+              "resource": "degenerate_matter"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 314.0), S: (432.0, 90.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "attribute": "攻击力  170 → 200",
+          "attribute_box": "[P: (400.0, 437.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 151.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 470.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 408.0), S: (432.0, 90.0)]",
+          "slot": "weapon:1"
+        },
+        {
+          "attribute": "攻击力  1,200 → 1,400",
+          "attribute_box": "[P: (400.0, 531.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 183.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 564.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 502.0), S: (432.0, 90.0)]",
+          "slot": "weapon:2"
+        },
+        {
+          "attribute": "攻击力  35 → 45",
+          "attribute_box": "[P: (400.0, 625.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 130.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 658.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 596.0), S: (432.0, 90.0)]",
+          "slot": "weapon:3"
+        },
+        {
+          "attribute": "攻击力  350 → 420",
+          "attribute_box": "[P: (400.0, 719.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 151.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 752.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 690.0), S: (432.0, 90.0)]",
+          "slot": "weapon:4"
+        }
+      ],
+      "case": "late only matter insufficient",
+      "state": {
+        "last_result": {
+          "ok": true
+        },
+        "running": true,
+        "selected": "weapon:1",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "6",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "0",
+            "m": "0"
+          }
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "attribute": "攻击力  9,300 → 1.556×10^43",
+          "attribute_box": "[P: (400.0, 343.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 254.0,
+          "fees": [
+            {
+              "full_text": "铁 · 1.145×10^39",
+              "name_omitted": true,
+              "poor": false,
+              "rect": "[P: (382.0, 376.0), S: (120.0, 24.0)]",
+              "resource": "1"
+            },
+            {
+              "full_text": "简并物质 · 2,760",
+              "name_omitted": true,
+              "poor": false,
+              "rect": "[P: (514.0, 376.0), S: (62.0, 24.0)]",
+              "resource": "degenerate_matter"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 314.0), S: (432.0, 90.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "attribute": "攻击力  170 → 200",
+          "attribute_box": "[P: (400.0, 437.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 151.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 470.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 408.0), S: (432.0, 90.0)]",
+          "slot": "weapon:1"
+        },
+        {
+          "attribute": "攻击力  1,200 → 1,400",
+          "attribute_box": "[P: (400.0, 531.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 183.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 564.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 502.0), S: (432.0, 90.0)]",
+          "slot": "weapon:2"
+        },
+        {
+          "attribute": "攻击力  35 → 45",
+          "attribute_box": "[P: (400.0, 625.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 130.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 658.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 596.0), S: (432.0, 90.0)]",
+          "slot": "weapon:3"
+        },
+        {
+          "attribute": "攻击力  350 → 420",
+          "attribute_box": "[P: (400.0, 719.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 151.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 752.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 690.0), S: (432.0, 90.0)]",
+          "slot": "weapon:4"
+        }
+      ],
+      "case": "late actual longMAX",
+      "state": {
+        "last_result": {
+          "ok": true
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "attribute": "容量  1,000 → 1,200",
+          "attribute_box": "[P: (400.0, 552.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 165.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 585.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 523.0), S: (432.0, 90.0)]",
+          "slot": "defence:0"
+        },
+        {
+          "attribute": "容量  750 → 900",
+          "attribute_box": "[P: (400.0, 646.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 133.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 679.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 617.0), S: (432.0, 90.0)]",
+          "slot": "defence:1"
+        },
+        {
+          "attribute": "攻击力  35 → 45",
+          "attribute_box": "[P: (400.0, 345.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 130.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 378.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 316.0), S: (432.0, 90.0)]",
+          "slot": "weapon:3"
+        },
+        {
+          "attribute": "攻击力  350 → 420",
+          "attribute_box": "[P: (400.0, 439.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 151.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 472.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 410.0), S: (432.0, 90.0)]",
+          "slot": "weapon:4"
+        },
+        {
+          "attribute": "容量  750 → 900",
+          "attribute_box": "[P: (400.0, 740.0), S: (368.0, 27.0)]",
+          "attribute_ink_width": 133.0,
+          "fees": [
+            {
+              "full_text": "铁 · 65",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (382.0, 773.0), S: (56.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "purchase_enabled": true,
+          "rect": "[P: (340.0, 711.0), S: (432.0, 90.0)]",
+          "slot": "defence:2"
+        }
+      ],
+      "case": "late bottom",
+      "state": {
+        "last_result": {
+          "ok": true
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      }
+    },
+    {
+      "case": "Owner-generated fault_unknown with explicit injected publisher, not a native fault claim",
+      "result": {
+        "fault": true,
+        "ok": false,
+        "purchase_receipt": {
+          "commit_status": "fault_unknown",
+          "purchases": [],
+          "spent": null
+        },
+        "reason": "InjectedPublishFailure"
+      },
+      "state": {
+        "last_result": {
+          "fault": true,
+          "ok": false,
+          "purchase_receipt": {
+            "commit_status": "fault_unknown",
+            "purchases": [],
+            "spent": null
+          },
+          "reason": "InjectedPublishFailure"
+        },
+        "running": false,
+        "selected": "defence:1",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 19,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 19,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "6",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      }
+    }
+  ],
+  "source": "formal isolated host same-thread native equipment integration; controlled later states explicit"
+}

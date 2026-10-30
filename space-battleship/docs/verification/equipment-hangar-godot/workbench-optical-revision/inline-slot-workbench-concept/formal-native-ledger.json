@@ -1,0 +1,160 @@
+{
+  "kind": "Actual same-thread normal main.tscn native run with isolated formal public host; no reactor/planet scene integration",
+  "runtime_source_commit": "8430cd9c8cd84372e0218762daab986e989f3fbe",
+  "runtime_source_sha256": {
+    "space-battleship/src/ui/zone_shell.gd": "ec45f1de4f1ce9c82ef9f4333758a20af3ce2680c1d2a157efa94b1d7fb90057",
+    "space-battleship/src/ui/bridge_theme.gd": "dff1c8326969bc65f716682dbde8d763204b311624874ca61fea1d333c5f4e6e",
+    "space-battleship/src/ui/resource_visuals.gd": "1cae88972f1f5ce6f5a1793fcbadb24f9f978c2587855e59c28d4a964c4c0080",
+    "space-battleship/assets/ui/public_shell/resource-material-atlas.png": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec",
+    "space-battleship/assets/ui/public_shell/resource-material-atlas.png.import": "ff7f00f85a09e351da9b1b949a2b755ac1320c8a06f753e8485efd8332188fa7",
+    "space-battleship/assets/ui/public_shell/resource-material-supplement.png": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3",
+    "space-battleship/assets/ui/public_shell/resource-material-supplement.png.import": "9712b5204ec0e7bc4ff6bfb656edfe85ef217b05d3044b6e559cbd11872a9e16",
+    "space-battleship/assets/ui/equipment/materials-20261029/control-materials.png": "707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c",
+    "space-battleship/assets/ui/equipment/materials-20261029/control-materials.png.import": "5cd0f9d9cd1748e057f79b0bc634530cd5232d2ced37a2559fc203e9b674fa14",
+    "space-battleship/assets/ui/public_shell/check-off-disabled.svg": "f6e9877ea0cb32a40aea91292d4f128fccec889b5f1c39dd357811feb85deab5",
+    "space-battleship/assets/ui/public_shell/check-off.svg": "f7daeb9b600a699f1338e8085041a7fa35bdff9bb99f24ee5d7b37d545e2f759",
+    "space-battleship/assets/ui/public_shell/check-on-disabled.svg": "5e6078cc9b16b34e214c139156f1c9a00e1cb370433522b919645bf49ab83cb1",
+    "space-battleship/assets/ui/public_shell/check-on.svg": "2a76d4c7da91ef75c88cc0770bcb18e83924fd2f835815af45a1b581cbb89a92",
+    "space-battleship/assets/ui/public_shell/command-rail.svg": "0048347b1ca9376d503bd1ed74d2cd46c3de22e36fab74630f6e022ee71a4597",
+    "space-battleship/assets/ui/public_shell/input-well-disabled.svg": "5be8af99b6b86a4c5e81fb2d53ae6d4d16b0c24cafd89d328a377c56c06993a3",
+    "space-battleship/assets/ui/public_shell/input-well-focus.svg": "56b09a3cba29587a6e7d799667d7844f3fe93f3a368a20bc945ec2ccb19b2570",
+    "space-battleship/assets/ui/public_shell/input-well.svg": "e64f4ae6aa904c4abef1ce6f33d0fc72ce4f73a3db18575ed1d03d3c6e797c19",
+    "space-battleship/assets/ui/public_shell/nav-active.svg": "45272215a56be4462f4c6f03b90612f25bc2ac44543432b9dc578accf2c0ad4f",
+    "space-battleship/assets/ui/public_shell/nav-archive.svg": "81be7e036d1616fe7a2566e277a34a4915658b3417e3c27df854215c89641a1a",
+    "space-battleship/assets/ui/public_shell/nav-equipment.svg": "a25d2a800f01d202d93f3595c31cec90bda00741cd643f9c03fcced7b85c052d",
+    "space-battleship/assets/ui/public_shell/nav-growth.svg": "de10666bb304161e658a7e3dae4ca92ca13813c17d312782cf1d952a51cf4f8d",
+    "space-battleship/assets/ui/public_shell/nav-hover.svg": "6a1e89961fba86ee35919a45820c1fddf4fda81635b2eec8d45be46b5b2de1c9",
+    "space-battleship/assets/ui/public_shell/nav-hyperspace.svg": "c9269690d637b6802893a52cdd78ffdef173c7fa39af8ea0e9df596cbdc6a475",
+    "space-battleship/assets/ui/public_shell/nav-idle.svg": "75d757ca100674744b01118ee034d41a3552ae178d88a46fb294cbd81eb7785a",
+    "space-battleship/assets/ui/public_shell/nav-planet.svg": "83500ec62849e372ea3df10b2c186251d4c05065bbbe0e4d06867db17567cf2e",
+    "space-battleship/assets/ui/public_shell/nav-reactor.svg": "5fd82bbc2f65fd6254c1d6d1b320de23029ff1caab0840f4ddc91c1430a618cb",
+    "space-battleship/assets/ui/public_shell/nav-settings.svg": "540d9ed7e80c260352ddc695e1075190fa357efea0e5bedcbeb67ee31f3ea6af",
+    "space-battleship/assets/ui/public_shell/nav-ship.svg": "cad12b6a002fffaf46130b8b40cdb38ec971823a375a7527ddc0e7f5e86e2e14",
+    "space-battleship/assets/ui/public_shell/nav-universe.svg": "f612fd5cec7bfcd8b04fd23a9e513f8d8ae75746d383c8b9a847e27f646ae73a",
+    "space-battleship/assets/ui/public_shell/panel-frame.svg": "a0ea73f5bf59400afb0254a94e1daf1f55e31000f5e0b70621ed59b742762f1b",
+    "space-battleship/assets/ui/public_shell/resource-mark.svg": "7f4948a30514b63a1e69e89f0ef6ac7e3eba1e418451439cb0f0323c09f62766",
+    "space-battleship/assets/ui/public_shell/status-alert.svg": "6b5015b4ac991a715a99b78a51de4a90fbbacdd68f86320b15c1eff69c1f92c7",
+    "space-battleship/assets/ui/public_shell/status-idle.svg": "8937e2a37843e51551a99b111e9f62ecd85d1f7307f200c1ca9c71d1c2307b50",
+    "space-battleship/assets/ui/public_shell/stepper-down-disabled.svg": "a8f6cedb771366e79a2dc7764ae75d60999124154c520aa5c2504ddceb3544de",
+    "space-battleship/assets/ui/public_shell/stepper-down.svg": "ed61270c9dc18eb08f86025194604b0b82cce65d0af84a6c3d5fafe73f2b7c74",
+    "space-battleship/assets/ui/public_shell/stepper-pair-disabled.svg": "a41bfd182523cf8e5989a91c6415de31e1fca9c4bd85d4d3e0789e1ceb87e253",
+    "space-battleship/assets/ui/public_shell/stepper-pair.svg": "62362933c2f9dcbee73c34623b54747da46b0fd6d45b5ce958bb123dec7a309f",
+    "space-battleship/assets/ui/public_shell/stepper-up-disabled.svg": "6feb4cff51f7dd332f586abe6e4ba68d33776c621a791fd6aaca300b86c0b42d",
+    "space-battleship/assets/ui/public_shell/stepper-up.svg": "b67537d625dd49204a2b1e5eebbd2cabaf2141fb8fcbf452bba58e096ca53a29",
+    "space-battleship/assets/ui/public_shell/title-plaque.svg": "2350929a21d432d12f30f42fac218a9255b52382e04570bc6c6cec878926bcb4",
+    "space-battleship/assets/ui/public_shell/top-control-hover.svg": "3873bed90a7c3c18786ac13933abdef1b83491297d244c5c18fc2a0a25b334eb",
+    "space-battleship/assets/ui/public_shell/top-control.svg": "98e94ac0be8ab4db437035d18c9b3257af2e266c4d17c6de453319b5c7d157fb",
+    "space-battleship/src/main.gd": "9b9ba075486b7b25ab1b390a94a4e6c763e3b9f94beefb6fab8f54b46b1c5c0f",
+    "space-battleship/src/ui/equipment_panel.gd": "30d3ff1374da05e721d01fcf9848d3bbac61f20efe8410e07873170c625d0921",
+    "space-battleship/src/systems/equipment.gd": "92bb4380f76028a9e53fe1f7deaec6e29dc384e3f136dae5b70d6e0803db319b",
+    "space-battleship/src/game_session.gd": "207018ae172b3d855ef4990833ce95e8095696847c18e4249ad7c3fb931f2dd6",
+    "space-battleship/src/ui/battle_hud.gd": "525613eb697a4308b075e0b2e5fa7e5ac5006c40e08744e99fd2045758225a43",
+    "space-battleship/assets/ui/equipment/hangar/inline-short.png": "9b40cc620b11a0cc594c977be9eb3b9f4b3fe972ddbaf71a74253d9bf57d037f",
+    "space-battleship/assets/ui/equipment/hangar/inline-tall.png": "b4352c8e2c35f0ee10bbec8ee6ef3633b8954c67a14908f6da65b41f1f6b60d7"
+  },
+  "local_runtime_dependencies_sha256": {
+    "generated/config.json": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+    "native_library": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d"
+  },
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "result": {
+    "exit_code": 0,
+    "failures": [],
+    "shutdown_objectdb_or_resource_warnings": false
+  },
+  "scope": [
+    "shared host title/navigation/body agree; actual ship route and equipment return",
+    "original855.875,.9375 visual/input projection; real transformed pause button click and restore",
+    "natural early2 rejection/transient feedback; immediate free same-time switch and back; actual Owner debit and local label/focus refresh",
+    "actual Cruiser5/HeavyBattleship8 empty slots after real ship changes; empty cards have no equipped-object upgrade UI; old purchase point cannot issue command; free install then upgrade UI restores",
+    "true Owner paidLv19/MAX444 exact comparison; per-resource iron/matter shortage red; .5sec resource hover; partial row inert; late bottom and local defence choice; unknown receipt stops further payment"
+  ],
+  "empty_owner_fact": "Owner stores and can quote/buy paid slot levels even when equipment_id is empty. No Owner/config rule changed. Empty card hides current equipment level/attribute/fee/quantity/purchase/compare; available equipment choice remains. Batch remains original Owner all-slot command, label explicitly all-slot upgrade and slot levels.",
+  "controlled_states": "Only early startup is natural. Later campaign/loadout/wallet values use validated existing restore/publish ports. Unknown receipt explicitly injects publisher failure; no natural/native failure claim.",
+  "viewed_final_screenshots": [
+    "formal-native-bottom.png",
+    "formal-native-defence-dropdown.png",
+    "formal-native-early-feedback.png",
+    "formal-native-early.png",
+    "formal-native-empty-choice.png",
+    "formal-native-late-empty.png",
+    "formal-native-late-iron-poor.png",
+    "formal-native-late-matter-poor.png",
+    "formal-native-long-max.png",
+    "formal-native-material-locked.png",
+    "formal-native-middle-empty.png",
+    "formal-native-middle-installed.png",
+    "formal-native-resource-tooltip.png",
+    "formal-native-success.png",
+    "formal-native-unknown-receipt.png"
+  ],
+  "video": {
+    "raw": "formal-native-raw.mp4",
+    "raw_duration_seconds": 67.1,
+    "actions": "formal-native-actions.mp4",
+    "actions_source_interval_seconds": [
+      20.0,
+      36.8
+    ],
+    "editing": "Only startup/exit duration trim and video encoding; no crop, overlay, speed change or replacement frames. Raw includes boot, navigation/pause checks and exit.",
+    "checks": "Entire raw video decoded by ffmpeg without error; sampled original video frames viewed including active material/MAX and defence dropdown."
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "failures": [
+        "driver wrongly assumed facts[1] wasweapon:1; actual accepted facts ordering haddefence:0 there"
+      ],
+      "resolution": "Stable slot_id filter; screenshots and Owner state showed free installation occurred; not a product denial"
+    },
+    {
+      "number": 2,
+      "failures": [],
+      "visual_issue": "Material gate fallback text was generic and overflowed",
+      "resolution": "Exact EvolutionMaterialLocked display and label clipping; final same-version run includes explicit assertion and viewed corrected full screenshot"
+    }
+  ],
+  "not_claimed": [
+    "Original reviewer approval",
+    "user final acceptance",
+    "main merge",
+    "full game regression",
+    "all arbitrary extreme fields",
+    "reactor/planet composition"
+  ],
+  "evidence_sha256": {
+    "formal-native-actions.mp4": "01d254ffcdb3708d9c9f8b3852e9a755ad82119301f150b50032c9ca5474095b",
+    "formal-native-attempt1-operations.json": "abedb448ce557217a10ac54a858188dcced5724e7f0959ec453d08cdc6d9f336",
+    "formal-native-attempt1.log": "559f4ae9a63184d0a04a78da87166929836475bbd5e62e52737f9b21b7232918",
+    "formal-native-attempt2-operations.json": "125e70395941bc830ca7d21447994245ffb9622fab17264245bdeb9120605087",
+    "formal-native-attempt2.log": "6bc93756491f5cfac9b7bfd7b2654168426a713aa6a7507389edf4b6e2f532c0",
+    "formal-native-bottom.png": "308701f7f6ecf56232b5739772c0f9200ed954eadad0d40a6348a9e2a394aa59",
+    "formal-native-defence-dropdown.png": "b1dde56f46fff0d98632056cfae725c17e683cb64a5335069938333f348f9eb9",
+    "formal-native-driver.gd": "6d2e5b1dc828993721ea424dbe8addf8308bc57f36b9b869fe0e89f83b91b27b",
+    "formal-native-early-feedback.png": "e0e067d24b87cefb2f0208359e12bdb07b95aad5198cc165ba0e52495c23a146",
+    "formal-native-early.png": "de792cf5d9a5fd808cd9503cf7728483a0f1168ff6064b07469f9c8ba83e3777",
+    "formal-native-empty-choice.png": "d5530ec42db95a59c403af010e25909b28ec0feeeef5bcfc434a5444c61006e8",
+    "formal-native-late-empty.png": "4ccbab7d862f034f9b8c14be20128eba88129cdd8174b7e78dee6ebdce1296ec",
+    "formal-native-late-iron-poor.png": "f108ffe089bb3051df3e7b9dc49c527764edae2e72c43a83807f7a9cfe348d01",
+    "formal-native-late-matter-poor.png": "8f753a35e5842611dc72a20908ad9251f381c556f5828548a526e0139b08acb2",
+    "formal-native-long-max.png": "5f27d7ecca4571a2ef5eecb6b4868ca928a5a2dd9db9c72e0f27b7b9984c198b",
+    "formal-native-material-locked.png": "ebe0ce6386f99ca00c1224b474377f9bdd22b6433493b3ee9aa0417e3fe23ab0",
+    "formal-native-middle-empty.png": "46f7dc5fd05af5919c70d2bd64dbe809f0a4bec60d7c7e8dfdc1dd464505f643",
+    "formal-native-middle-installed.png": "6ad9aa519ee4a616bd890f3d42f746bef11a8d61eedeb151b8252cd766c160fd",
+    "formal-native-operations.json": "0dfe2b2102cbb705b13010de5deb2969ff4a4ae918d76c5e327a5f1ddaefd11e",
+    "formal-native-raw.mp4": "98440a7f8dfd9ac902a18e5d84df1f8201bf8d1483832b143416fa873c8a74b1",
+    "formal-native-resource-tooltip.png": "019f7dbd515b848333423232d256754779efbbc4324f3dcbea3351e44b9c6856",
+    "formal-native-success.png": "00f9c34985a7395e27aa2ad8ee1fe6368d17292c9f024ae3cf030d0defa7ac7c",
+    "formal-native-unknown-receipt.png": "3f9d332a6efeb9a370999d83d4fdf50e839a7187c295511c770797252025685a"
+  }
+}
