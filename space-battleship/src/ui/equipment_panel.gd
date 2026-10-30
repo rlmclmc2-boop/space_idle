@@ -526,14 +526,14 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     var rows:int=maxi(1,resource_count)
     var signature:Array=[different,defence,rows]
     if _workbench_layout.get("signature",[])==signature:return
-    var height:float=maxf(288.0 if different else 266.0,266.0+maxi(0,rows-1)*22.0)
+    var height:float=maxf(288.0 if different and not defence else 266.0,266.0+maxi(0,rows-1)*22.0)
     var action_y:float=height-68.0
     _workbench.position.y=896.0-height;_workbench.size.y=height
     _workbench_divider.size.y=action_y-48.0
     _upgrade_data.position=Vector2(100,70)
     _candidate_row.position=Vector2(460,70 if different else roundf(70.0+(action_y-70.0-100.0)*0.5));_candidate_row.size.y=100
     _comparison_group.position=Vector2(460,176);_comparison_group.size.y=43
-    _install.position=Vector2(460,action_y);_install.size=Vector2(300,36)
+    _install.position=Vector2(20 if defence and different else 460,action_y);_install.size=Vector2(740 if defence and different else 300,36)
     _quantity_button.position=Vector2(20,action_y);_quantity_button.size=Vector2(96,36)
     _purchase.position=Vector2(128,action_y);_purchase.size=Vector2(292 if different else 632,36)
     _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
@@ -737,7 +737,8 @@ func _refresh_comparison() -> void:
         _title.add_theme_color_override("font_color",Color("b9e6d7") if scope else CREAM)
     var quote: Dictionary = comparison.quote
     var different:bool=not _candidate.is_empty() and _candidate!=str(fact.equipment_id)
-    _layout_workbench(different,scope,quote.get("costs",{}).size() if quote.get("ok",false) else 0)
+    var replacement:bool=scope and different
+    _layout_workbench(different,scope,0 if replacement else quote.get("costs",{}).size() if quote.get("ok",false) else 0)
     _place_current_icon(str(fact.equipment_id))
     _current_title.text = "%s · %s" % [_slot_name(_selected),NAMES.get(str(fact.equipment_id),"装备")]
     _level_label.text = "Lv."+str(fact.paid_level)
@@ -746,17 +747,27 @@ func _refresh_comparison() -> void:
     _place_ink_label(_current_title,Vector2(32+title_ink.size.x*0.5,26))
     _place_ink_label(_level_label,Vector2(44+title_ink.size.x+level_ink.size.x*0.5,26))
     _current_value.text = _value(comparison.current)
-    _next_value.text = _value(comparison.upgrade)
+    var shown_next = comparison.candidate if replacement else comparison.upgrade
+    _next_value.text = _value(shown_next)
+    _upgrade_caption.text = "替换后" if replacement else "升级后"
+    _upgrade_section_title.text = "装备替换" if replacement else "装备升级"
     _current_value.tooltip_text=str(comparison.current.primary) if comparison.current is Dictionary and comparison.current.get("primary")!=null else _value(comparison.current)
-    _next_value.tooltip_text=str(comparison.upgrade.primary) if comparison.upgrade is Dictionary and comparison.upgrade.get("primary")!=null else _value(comparison.upgrade)
-    _render_costs(quote,comparison.affordable,str(comparison.payment_reason))
-    _cost.tooltip_text = _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
+    _next_value.tooltip_text=str(shown_next.primary) if shown_next is Dictionary and shown_next.get("primary")!=null else _value(shown_next)
+    _purchase.visible=not replacement;_quantity_button.visible=not replacement
+    _purchase.focus_mode=Control.FOCUS_NONE if replacement else Control.FOCUS_ALL
+    _quantity_button.focus_mode=Control.FOCUS_NONE if replacement else Control.FOCUS_ALL
+    _quantity_button.disabled=replacement
+    if replacement:
+        _cost.hide();_payment_state.hide()
+        for cell in _cost_cells.values():cell.icon.hide();cell.name.hide();cell.amount.hide()
+    else:_render_costs(quote,comparison.affordable,str(comparison.payment_reason))
+    _cost.tooltip_text = "" if replacement else _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
     _purchase.text = "购买%s级" % str(quote.count) if quote.get("ok", false) else "购买"
     if quote.get("ok",false) and _purchase.get_theme_font("font").get_string_size(_purchase.text,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x>_purchase.size.x-20:
         _purchase.tooltip_text=("" if comparison.affordable else _purchase.tooltip_text+"\n")+_purchase.text
-    _purchase.disabled = not comparison.affordable
+    _purchase.disabled = replacement or not comparison.affordable
     _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
-    _switch_state.visible=not _switch_state.text.is_empty()
+    _switch_state.visible=(not scope or replacement) and not _switch_state.text.is_empty()
 
     var primary: String = "容量" if fact.category == "defence" else "攻击力"
     _current_caption.text = "当前" + primary
@@ -764,7 +775,7 @@ func _refresh_comparison() -> void:
     _install.text = "安装" + str(NAMES.get(_candidate, "装备")) if not _candidate.is_empty() else "选择装备"
     _install.disabled = _candidate.is_empty() or not comparison.switch_admission.ok
     _install.tooltip_text = "" if comparison.switch_admission.ok or str(comparison.switch_admission.get("reason",""))=="EquipmentSwitchLocked" else _reason(str(comparison.switch_admission.reason))
-    _comparison_group.visible=_selection_open and different
+    _comparison_group.visible=_selection_open and different and not scope
     _install.visible=_selection_open and different
     _comparison_title.text = "装备选择"
     _compare_row_label.text=primary
@@ -985,7 +996,7 @@ func _refresh_cooldown() -> void:
         _dirty = true
         return
     _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
-    _switch_state.visible=not _switch_state.text.is_empty()
+    _switch_state.visible=(str(fact.category)!="defence" or (not _candidate.is_empty() and _candidate!=str(fact.equipment_id))) and not _switch_state.text.is_empty()
 
 
 func _ship_rect() -> Rect2:
