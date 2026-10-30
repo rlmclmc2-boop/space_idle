@@ -223,3 +223,9 @@
 新[橙色开放工坊节点](../../../../assets/planets/facilities_v5/illustrated/workshop-orbit-through-node.png)及[原始 ImageGen 编辑链、输入和 SHA](../../../../assets/planets/facilities_v5/illustrated/workshop-through-node-prompts.txt)保留厚承力双颊、门洞内短脊和青通道。外部长环全部交给该设施自有的真实 3D built 弧段，既不把长弧烘入固定视角插画，也不在旧工坊上垫一层新甲板；工坊原独立活动工具/滑座仍在开放湾内工作。该节点处原环甲板直接压出两侧承载肩与中心凹工作路径，废弃不再参与运行的工作导轨附加层。单节点的低模四脚表试验与带外部烘焙长弧试验均经原尺寸／四分之一圈相位看出桌形或错轴，未用入本候选运行资产。
 
 [同版 `stage_3` 工坊建成、`stage_4` 全四座与受控 90° 相位整屏](evidence/workshop-through-node/)由[结构驱动](evidence/workshop-through-node/workshop-structure-driver.gd)取得；90° 是把视觉时钟置为 `π/(2×0.045)` 后单帧绘制，不是自然耗时片段。[本版 8.16 秒、47 个自然墙钟采样帧](evidence/workshop-through-node/natural-timestamps.json)及[短片](evidence/workshop-through-node/natural-short-vfr.mp4)用于检查所录相位内节点/活动工具/环的连接，不用视频编码帧率作游戏 FPS。作者原尺寸查看阶段、90° 图和首／中／末动态帧：工坊由原横外挂改为门洞跨在真实环上，未见本次所看角度的烘焙支路再向球内乱伸；仍请原审判定此单节点的尺寸、跨脊承重剪影和层次能否按批准概念继续用于船坞。其余三座及整体环仍在返修范围；不借此证明整圈、自然建设、其他天体或探索船。对应 Godot 4.7.2 导入、语法、驱动日志、源码与证据 SHA 均在[同目录](evidence/workshop-through-node/)。
+
+## 船坞双臂从同一主脊承托：第二节点候选
+
+沿工坊单节点的必要验证方向，船坞换用[一件带泊位和小艇的紧凑节点](../../../../assets/planets/facilities_v5/illustrated/shipyard-orbit-through-node.png)；[原 ImageGen 提示、两步输入及 SHA](../../../../assets/planets/facilities_v5/illustrated/shipyard-through-node-prompts.txt)固定。双臂仍从深青／象牙主根伸出，门内有短通道与青供能，外部后弧和前弧仍来自随 built 状态出现并独转的原真实段，不烘焙长环到固定视角素材。旧船坞主体不再进入运行图层；独立吊机与泊位活动层位置、原任务业务保持。
+
+[同版 stage3／stage4、明确模拟 90° 整屏](evidence/shipyard-through-node/)与[8.01 秒、46 帧墙钟记录](evidence/shipyard-through-node/natural-timestamps.json)、[VFR 短片](evidence/shipyard-through-node/natural-short-vfr.mp4)供原尺寸看左前主根、双臂／小艇身份、活动层与真实弧段的关系。[驱动、Godot 4.7.2 导入／语法／运行日志、SHA](evidence/shipyard-through-node/)同目录。作者看完整态、90°、自然片首末，未见这三个样本中双臂与所属节点脱开；这不能外推全圈和全部工作循环，更不能把工坊／船坞局部方向写成用户整体通过。原审仍须看圆站、精炼与两节点及环的共同剪影是否达到批准概念，旧 `5a1` 退回事实保留。
