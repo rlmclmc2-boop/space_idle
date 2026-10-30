@@ -46,3 +46,25 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 性能只在本轮同一台受控 Xorg/Mesa llvmpipe 环境定位：[优化前日志](performance-before-runtime.txt)的同场景 8 秒窗口为不录制 22.90 fps（p50 37.65／p95 51.22 ms）、录制 20.21 fps（p50 46.05／p95 69.59 ms）；[优化后日志](performance-after-runtime.txt)为不录制 26.87 fps（p50 32.71／p95 41.59 ms）、录制 24.44 fps（p50 39.01／p95 54.16 ms），隐藏反应堆页为 34.56 fps、工作相位更新 0。[采样驱动](performance-driver.gd.txt)保持同一分辨率、1×、四路各 25%；仅在 shader 的静态控制台 `uv.y >= 0.58` 区域跳过无效工作场计算，上方动态效果未降质、未限帧或改逻辑。这是软件渲染环境中的定位证据，不代表目标硬件帧率或性能门槛已通过。先前因引导使时间不推进、录像未开始的采样已剔除，不纳入本组数字。
 
 本候选已做受影响实机操作、最终源码静态整屏与锁定态相位诊断核验。[Godot 4.7.2 `--check-only` 日志](check-only.txt)无脚本／shader 错误；`git diff --check` 通过。候选交协调者与独立审核，当前不合 main。
+
+## 整屏统一与合法模块数交接（待整体接口固定）
+
+用户已退回装备与反应堆的跨页语言及左外缘、右侧导航交接；本组的局部图和性能采样不代表该整屏问题通过。当前反应堆源码为 `587cf2f9f99d1cf06d8b3fb8e62c1aef6dd72fa2`（相对 `eea1a7e6` 只改真零证据）；2026-10-30 核到的整体远端 `design/clear-zone-host@61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1` 的运行树接了同一 `eea1a7e6` B01 源码。整体分支后续跨页字体 R3 是静态设计预览，尚非固定运行材质或左右边界协议。该分支的完整[反应堆](https://github.com/rlmclmc2-boop/space_idle/blob/61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/eea-combo-reactor-1440x900.png)和[装备](https://github.com/rlmclmc2-boop/space_idle/blob/61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/eea-combo-equipment-1440x900.png)是已存在的同壳运行图，供定位退回问题；不是新版统一已通过证据。本分支的整屏图仍在旧 `main.gd` 宿主下取得，不能冒充整体组合。
+
+| 可见模块数 | Campaign／Owner 合法来源 | 本组现有整屏与结论 |
+|---|---|---|
+| 3 | 配置 `reactorModules=weapons,defence,smelting,condensation`；反应堆功能开放后，`Reactor.refresh_availability` 无条件启用前三路，只有凝聚查询 `Campaign.available("reactor_module", "condensation")`；凝聚配置在 cleared 关卡 15 开放。 | [真零](locked-zero-1440x900.png)读回 0/100、三行 0%、核心工作光 0；[三路均分](locked-active-1440x900.png)为 34/33/33%、100/100，右下未开放整设备、管路、工作光与第四控制行/紫色段均无。均分键和等级／费用／数量／独立升级仍在右区。 |
+| 4 | `feature/reactor` 在 cleared 关卡 1 开放；凝聚已满足关卡 15 或公开 Campaign grant 后，Owner 加入第四路。 | [四路真零](true-zero-1440x900.png)与[四路均分](active-1440x900.png)：均分各 25%、100/100；[×10 报价](ten-1440x900.png)、[MAX 报价](max-1440x900.png)及[成交](ten-purchased-1440x900.png)记录升级区与按钮行为。 |
+| 1／2 | 当前配置没有前三路各自的开放行；Owner 逻辑不提供单独关闭它们的门槛。反应堆功能尚未开放时为 0 路且页不可用。 | 不是现行玩法可达的反应堆页面状态，不增造 grant、模块或新玩法来凑数量。 |
+
+上述开放事实来自运行配置 `generated/config.json`（本工作区 SHA-256 `308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de`）的 `reactorModules`、`feature/reactor`（`level=1, mode=cleared`）、`reactor_module/condensation`（`level=15, mode=cleared`）条目，以及 `src/systems/campaign.gd::available`、`src/systems/reactor.gd::refresh_availability`。受控 Campaign 恢复仅让现有合法门槛在证据会话生效，不把自然达到关卡 15 说成已实测。三路／四路均分和 ×10／MAX 交易的 Owner 状态、原生控件可见及鼠标操作由本目录驱动和日志支持；它们尚未解决用户对**最终整体组合中的均分视觉、控制台主次与跨页统一**的退回。共享组合 `61c9cdbc` 只固定了其已有的静态接入图，不从本组图外推新公共壳的鼠标净空或视觉通过。
+
+**性能当前未通过用户要求，仍在定位和优化。** 源码保留 shader 静态控制台 `uv.y >= 0.58` 跳过无效工作场计算，以及按可见／未暂停／真实游戏时间推进相位的路径；不降四路工作效果或限帧。上文 22.90→26.87 fps、录屏 20.21→24.44 fps 是 `00971d36` 在同一 Mesa llvmpipe、1440×900、1×、四路 25% 的短窗定位。当前 `587cf2f9` 的同配置、单活实例 8 秒[采样日志](performance-current-runtime.txt)显示反应堆可见不录制 25.31 fps、录制 21.08 fps、切装备隐藏反应堆 32.89 fps；[录制日志](performance-current-ffmpeg.txt)只作录制窗口存在证据。可见与隐藏差约 7.58 fps，但隐藏页同时换成装备画面，这是环境差分，**不是反应堆独占耗时**；录制还与游戏争用同一 Mesa CPU。当前共享宿主组合、目标硬件及明确帧率门槛均未验证，不能据软件渲染短窗宣称达标或归咎某个 shader。下一步需在同实例诊断 phase 更新链、等尺寸低成本材质与隐藏页回调，再保全效果复测实际优化。
+
+| 绘制/布局边界 | 当前实际归属与接缝 |
+|---|---|
+| B01 内区 | `reactor_scene.gd` 根为 `808×900`、裁剪开启；`SubViewportContainer` 位于 `(0,65)`、尺寸 `808×835`。`reactor_stage.gd` 将整张不透明的 `1187×1326` 舱室加金属台底图绘到此内区；图的左端直接到屏幕 `x=0`、右端直接到 `x=808`。内部控件、均分、等级、费用和工作效果归 B01。 |
+| 整体宿主 | 最新整体运行源 `zone_shell.gd` 绘顶轨 `y=0…65`（装备 `0…85`）、中间导航暗带 `x=808…855.875` 与 `x=808/854` 边线；战场投影 `x=855.875…1392.125`，最右保留 `47.875px`。`main.gd::_draw` 底色在不透明模块图后不可见。导航、资源、页面显隐、战场投影及公共边线归整体。 |
+| 当前断点 | B01 的左 `x=0` 裁边、`x=808` 金属台和舱壁断面直接碰公共导航带；其光照、厚度和线色未按整体固定的过渡接口校准。整体组先固定可见/可交互内容矩形、左外缘和右导航接缝的材质/厚度/净空、顶轨 `y=65` 接续、跨页字体与按钮角色及对应运行 SHA；本组据此改 B01 原底图边缘、台面外围和局部控件材质/文字位置，不动已认可核心与四设备主体、Owner、公共导航或战场。不能在模块外叠遮框来假装接续。 |
+
+以上是边界与证据交接，不是整体统一完成。接口固定后应以同一运行提交取装备／B01 完整整屏及受影响均分/升级、三路/四路状态，再交原整体审；当前不合 main。
