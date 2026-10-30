@@ -2,6 +2,8 @@ shader_type canvas_item;
 render_mode unshaded;
 
 uniform sampler2D active_plate : source_color, filter_linear;
+uniform sampler2D locked_idle_plate : source_color, filter_linear;
+uniform sampler2D locked_active_plate : source_color, filter_linear;
 uniform sampler2D effect_mask : filter_linear;
 uniform sampler2D module_mask : filter_linear;
 uniform sampler2D pipe_mask : filter_linear;
@@ -10,6 +12,7 @@ uniform float weapons_load = 0.0;
 uniform float defence_load = 0.0;
 uniform float smelting_load = 0.0;
 uniform float condensation_load = 0.0;
+uniform float condensation_enabled = 0.0;
 uniform float phase = 0.0;
 
 float ellipse(vec2 uv, vec2 center, vec2 radius, float feather) {
@@ -28,8 +31,13 @@ float conduit(vec2 uv, vec2 a, vec2 b, float bend, float width, float time) {
 
 void fragment() {
 	vec2 uv = UV;
-	vec4 idle = texture(TEXTURE, uv);
-	vec4 active = texture(active_plate, uv);
+	bool locked = condensation_enabled < 0.5;
+	vec4 idle = locked ? texture(locked_idle_plate, uv) : texture(TEXTURE, uv);
+	// Machinery ends before this static console band; skip all field math there.
+	if (uv.y >= 0.58) {
+		COLOR = idle;
+	} else {
+	vec4 active = locked ? texture(locked_active_plate, uv) : texture(active_plate, uv);
 	float core = max(ellipse(uv, vec2(0.5, 0.255), vec2(0.19, 0.17), 0.10), ellipse(uv, vec2(0.5, 0.095), vec2(0.047, 0.09), 0.15));
 	float weapon = ellipse(uv, vec2(0.16, 0.145), vec2(0.17, 0.10), 0.16);
 	float shield = ellipse(uv, vec2(0.90, 0.145), vec2(0.14, 0.11), 0.17);
@@ -49,7 +57,7 @@ void fragment() {
 	float r = length((uv - vec2(0.5, 0.255)) / vec2(0.145, 0.132));
 	float angle = atan(uv.y - 0.255, uv.x - 0.5);
 	vec2 drift = 0.006 * vec2(sin(angle * 3.0 + r * 12.0 - phase * 2.3), cos(angle * 4.0 - r * 10.0 + phase * 1.7));
-	vec3 moving_core = texture(active_plate, uv + drift).rgb;
+	vec3 moving_core = locked ? texture(locked_active_plate, uv + drift).rgb : texture(active_plate, uv + drift).rgb;
 	color = mix(color, moving_core, inner * (0.35 + 0.48 * core_load));
 	float orbit = pow(0.5 + 0.5 * sin(angle * 5.0 + r * 19.0 - phase * 3.4), 8.0);
 	float ring = exp(-pow((r - 0.56 - 0.14 * sin(phase * 1.9)) * 10.0, 2.0));
@@ -72,7 +80,7 @@ void fragment() {
 	color = mix(color, vec3(0.70, 0.96, 1.0), clamp(shield_arc * shield_sweep * defence_load * 2.9, 0.0, 0.70));
 	float molten = texture(effect_mask, uv).b;
 	vec2 molten_flow = uv + vec2(0.002 * sin(uv.y * 80.0 - phase * 2.3), -0.003 * sin(phase * 2.1 + uv.x * 54.0));
-	vec3 moving_molten = texture(active_plate, molten_flow).rgb;
+	vec3 moving_molten = locked ? texture(locked_active_plate, molten_flow).rgb : texture(active_plate, molten_flow).rgb;
 	color = mix(color, moving_molten, molten * smelting_load * 0.75);
 	float pour = pow(0.5 + 0.5 * sin(uv.y * 135.0 - phase * 4.6 + uv.x * 26.0), 8.0);
 	color = mix(color, vec3(1.0, 0.87, 0.39), clamp(molten * pour * smelting_load * 2.7, 0.0, 0.68));
@@ -80,4 +88,5 @@ void fragment() {
 	float refract = pow(0.5 + 0.5 * sin(uv.x * 96.0 + uv.y * 58.0 - phase * 2.9), 13.0);
 	color = mix(color, vec3(0.95, 0.75, 1.0), clamp(facets * refract * condensation_load * 2.8, 0.0, 0.70));
 	COLOR = vec4(color, idle.a);
+	}
 }
