@@ -89,3 +89,9 @@
 真正的屏幕尺度差还来自贴图导入：甲板已有 mipmap，原设施主体和活动层却未生成。现在三张 body PNG 与原工坊机械臂、船坞起重机/泊位环、精炼厂双闸门共八张设施图的 `.png.import` 启用 `mipmaps/generate=true`，继续使用原 Sprite3D 双线性 mipmap 采样与原有受光，不在 UI 上叠滤镜。这样缩到约百像素时细节预先按比例合并，不让密集高频线条产生新的亮边；承力轮廓和功能灯仍能辨认。
 
 [本版完整 stage4 整屏原图](evidence/broad-plane-mipmaps/stage_4.png)、[024/051/072 原相位图](evidence/broad-plane-mipmaps/phases/)与[本版取图驱动、导入/运行/编译日志及 SHA](evidence/broad-plane-mipmaps/)同源。作者逐张原尺寸核看：024 工坊开放湾的短 V 轨仍汇入中心线，精炼厂短坡落在中央口；051 左侧工坊连接与精炼厂端口未脱开；072 后侧工坊未出现横湾长轨，前弧船坞双悬臂及主脊落地仍在；stage4 四座与环、球没有新增裁边。游戏尺度的设施轮廓不再呈前版高频锯齿，但原活动件保留更多原 R5 线条，最终整体材质品质仍交由独立原审判断，本节不自称已验收。相位仍是 `TAU/(96×0.045)` 加速跳步取样，不证明实时性能、完整整圈或六类天体。Godot 4.7.2 `--headless --editor --check-only --quit`、`git diff --check` 与全部 SHA 校验通过。
+
+## 已接受固态外观的逐建与动态交接证据
+
+原审对上节 `f0b617f1` 第一固态星四设施完整态的静态外观和结构已接受；本节**没有改动运行代码、资产、导轨轴或材质**，只补同版逐步建设及动态取证。[stage0→4 原屏及四张 ready 原屏](evidence/f0-dynamic-handoff/stages/)来自第一星球原面板：夹具先把当前设施置为 `ready`（模拟施工完成），`facility_facts` 的 `claim_allowed` 为 true，再经实际 `planet_system.claim_build(..., publish_planet_claim)` 领取，四次返回 `ok`；[逐状态记录](evidence/f0-dynamic-handoff/states.json)显示每座从 ready 到 built 时只出现自己的实体环段，第四座领取后形成完整环。`paused` 原屏和状态记录确认显式 `advance(dt,true)` 不推进视觉相位。这是业务端口的定向夹具，不代表玩家自然施工耗时或重新测试全游戏。
+
+[完整 97 帧模拟相位视频](evidence/f0-dynamic-handoff/simulated-phase-sweep-24fps.mp4)与[关键帧原屏](evidence/f0-dynamic-handoff/keyframes/)由[同一驱动](evidence/f0-dynamic-handoff/planet-f0-dynamic.gd)生成。面板自动时钟在动态段停止，每帧只显式推进 `TAU/(96×0.045)=1.454441` **模拟秒**，从帧 0 到 96 使实体环恰转一圈；编码 24 fps 仅是 4.041667 秒视频的播放速度，**不是游戏实际帧率、自然时间或性能结论**。[运行日志、逐帧相位/设施枢轴/侦察船前后标记及视频探测](evidence/f0-dynamic-handoff/)可复核。球面相位从 0.020455 到 0.858214，与环一圈各自推进；侦察船在球前/球后切换，四设施各工作枢轴在 97 帧中均有不同姿态。作者逐帧扫描全部编号画面，并对 031/068/072 等受影响位原尺寸复核：前后环体保持连续，设施没有被环横切或越出模块，工坊湾轨、精炼口、船坞主脊及活动件未见脱开。静态及动态结论仅限第一固态星与这轮模拟相位。其他天体沿现有外观/设施接口适配，不能把固态地表硬套到气态或恒星，也不能据此宣称六类视觉已验收。[安装接入边界](evidence/f0-dynamic-handoff/HANDOFF.md)记录本组运行源码、资产、共享资源版本、面板尺寸和与现有主线装备宿主的协调点；本分支不直接合 main。
