@@ -12,6 +12,8 @@ var _viewport := SubViewport.new()
 var _image := TextureRect.new()
 var _world := Node3D.new()
 var _camera := Camera3D.new()
+var _scene_environment: WorldEnvironment
+var _scene_light: DirectionalLight3D
 var _spine: Node3D
 var _models: Dictionary = {}
 var _parts: Dictionary = {}
@@ -24,6 +26,7 @@ var _body_pixels := 200.0
 var _last_size := Vector2.ZERO
 var _last_body_pixels := -1.0
 var _axis_ratio := 1.0
+var _compact_stellar := false
 var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
@@ -60,11 +63,13 @@ func _ready() -> void:
 	environment.environment.ambient_light_color = Color("91aeb6")
 	environment.environment.ambient_light_energy = 0.42
 	_world.add_child(environment)
+	_scene_environment = environment
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-35, -38, 0)
 	light.light_color = Color("fff0d8")
 	light.light_energy = 0.95
 	_world.add_child(light)
+	_scene_light = light
 	_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	_camera.position.z = 18
@@ -337,6 +342,13 @@ func _transparent_materials(node: Node) -> void:
 
 func configure_shape(appearance: Dictionary) -> void:
 	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
+	_compact_stellar = float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("radiusScale", 1.0)) <= 0.3
+	var scale := float(appearance.get("radiusScale", 1.0))
+	var is_large_star := float(appearance.get("emission", 0.0)) > 0.0 and scale > 0.3
+	var field_tint := Color("e9bd8d") if scale > 1.0 else Color("f1d6a9") if is_large_star else Color(str(appearance.get("atmosphereColor", "fff2df")))
+	_spine.set_stellar_field(field_tint, 0.62 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0)
+	_scene_light.light_color = Color("ffd3af") if scale > 1.0 and is_large_star else Color("ffe8c8") if is_large_star else Color("fff0d8")
+	_scene_environment.environment.ambient_light_color = Color("b5a5a0") if scale > 1.0 and is_large_star else Color("a9adb1") if is_large_star else Color("91aeb6")
 	_pulse_strength = clampf(float(appearance.get("pulseStrength", 0.0)), 0.0, 0.05)
 	_pulse_speed = maxf(0, float(appearance.get("pulseSpeed", 0.08)))
 
@@ -360,9 +372,9 @@ func _layout() -> void:
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _render_pixels() -> float:
-	# Tiny white dwarfs and pulsars retain a readable ring instead of shrinking
-	# the whole facility system to the small photosphere's pixel diameter.
-	return maxf(_body_pixels, minf(size.x * 0.235, size.y * 0.34))
+	# Compact stellar cores still need an orbital facility structure, but the
+	# full terrestrial ring makes the center read as an empty 700px hole.
+	return maxf(_body_pixels, minf(size.x * (0.16 if _compact_stellar else 0.235), size.y * (0.235 if _compact_stellar else 0.34)))
 
 func update_pose(clock: float, surface_phase: float, body_pixels: float, surface_clock: float = -1.0) -> void:
 	_clock = clock

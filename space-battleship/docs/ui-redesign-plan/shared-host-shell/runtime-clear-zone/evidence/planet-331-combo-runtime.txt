@@ -1,0 +1,7 @@
+Godot 4.7.2 normal main.tscn, 1440x900, --audio-driver Dummy.
+Editor import, main.gd --check-only, runtime and git diff --check: exit 0.
+Runtime ERROR/SCRIPT ERROR/ERR_CANT_OPEN: none. Audio output not assessed.
+PLANET_331 route=planet selected=1 scene=(808.0, 900.0) wallet_hidden=true
+PLANET_331 return_equipment_and_universe=true focus_clear=true
+Fixture: Campaign grants all; six planet rows conquered with station/refinery/workshop/shipyard built, exploration=240. No purchase or planet action submitted. Star screenshots assert selected planet visual ID and !preparing.
+First capture had unprepared/unavailable star rows; its blank star images were replaced after fixture correction and are not evidence.

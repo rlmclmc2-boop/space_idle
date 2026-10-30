@@ -1,0 +1,15 @@
+ImageGen source and use, 2026-10-30
+
+Source 1: /workspace/generated_images/exec-c8dfa0c9-f5b9-4a32-8052-693c562e76a6.png
+Copied without pixel edits to: assets/planets/stellar-main-granulation.png
+SHA256: 89d43018dfd60c808583155876240e99beb313ca1e8f8367f257e93ef384d803
+Prompt (verbatim):
+Produce a seamless 2:1 equirectangular COLOR TEXTURE MAP for a stylized main-sequence star photosphere. This must be a flat full-bleed rectangular surface map only, not a globe or landscape. Warm luminous ivory, pale gold and amber gas, with many hundreds of soft polygonal convective granules about 10–25 pixels wide at a 1774-pixel texture width; smaller bright faculae, hair-thin branching magnetic dark threads, a few medium dark turbulent patches and bright hot clusters. Forms are flowing gas and light, NOT stone or cracked earth: no rocky grain, no fissured ground, no embossed relief, no giant swirls or continent-shaped broad bands. Preserve a balanced readable hierarchy of tiny, small and medium plasma structures so that when projected on a 300-pixel sphere it looks incandescent rather than a smooth painted ball or noisy static. Soft radiative diffusion at bright edges, deep amber microstructure, gentle variation across map. Left and right edges join naturally without a seam. Top/bottom near-polar portions remain coherent. Illustration quality for a polished space strategy game. No text, no border, no circle, no scene, no stars in space.
+
+Source 2: /workspace/generated_images/exec-3d5fb033-e2f0-4ff4-9e87-0dd207fc35fe.png
+Copied without pixel edits to: assets/planets/stellar-red-convection.png
+SHA256: 391ab894b6bdbfa16d7c8e0c607a5b948d20f62013475d305489227635b9429b
+Prompt (verbatim):
+Create a seamless 2:1 equirectangular COLOR TEXTURE MAP for a RED GIANT STAR photosphere in a polished illustrated space strategy game. Flat edge-to-edge rectangular map, NOT a sphere or background scene. Deep copper-red, ember orange, hot coral, and restrained pale-yellow glowing faculae. Layered convective plasma: many small fine granules (tens of pixels at 1774-pixel map width), medium turbulent cell groups, a few broad low-contrast thermal streams, narrow branching dark maroon magnetic structures; irregular bright patches and cooler crimson patches. It must look like roiling incandescent gas with embedded light, NOT a painted orange marble, NOT cracked rock, NOT continent-shaped blobs, NOT coarse raised grooves, NOT a heightmap. Keep details at three controlled scales and high enough contrast to remain readable when projected on a 400-pixel sphere; do not wash everything out. Soft glows around hot streaks and clean illustrative game-art edges. Seamless join at left/right edges, coherent pole bands. No typography, borders, UI, circles, external corona or starfield.
+
+The generated PNGs are the actual shader input maps, not edited screenshots. Godot import settings enable mipmaps for the game-size sphere. The older stellar_plasma.png remains the source for the accepted compact stellar rows; no white-dwarf or pulsar art change is asserted here.

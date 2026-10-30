@@ -99,7 +99,7 @@ func _ready() -> void:
 	_paint_button(_task_button, Color("264b58"), Color("31616b"), Color("e6d5ac"), Color("b39a68"), Color("f6efdc"))
 	for button in [_crew_button, _facility_button]:
 		_paint_button(button, Color("173847"), Color("285464"), Color("e4dcc6"), Color("6f9ba0"), Color("f0ead8"))
-	_paint_button(world_planet_picker, Color("e7e4d6"), Color("f7f1df"), Color("d9e8e0"), Color("78999c"), Color("203f4c"))
+	_paint_button(world_planet_picker, Color("173847"), Color("285464"), Color("315f6c"), Color("78999c"), Color("eee9d9"), "selector")
 	_task_button.pressed.connect(func(): _toggle_section("exploration"))
 	_crew_button.pressed.connect(func(): _toggle_section("crew"))
 	_facility_button.pressed.connect(func(): _toggle_section("facilities"))
@@ -166,7 +166,7 @@ func _ready() -> void:
 	var close := Button.new()
 	close.text = "收起"
 	close.pressed.connect(func(): _toggle_section(_open_section))
-	_paint_secondary(close)
+	_paint_secondary(close, true)
 	header.add_child(close)
 	_drawer_box.add_child(_drawer_body)
 	_drawer.hide()
@@ -231,18 +231,23 @@ func _skin(fill: Color, edge: Color, border: int = 1, radius: int = 6) -> StyleB
 	style.set_content_margin_all(8)
 	return style
 
-func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color) -> void:
-	var role := "primary" if normal.r > 0.7 and normal.b < 0.55 else "glass" if normal.r > 0.7 else "navy"
+func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color, visual_role := "") -> void:
+	var role := visual_role if not visual_role.is_empty() else "primary" if normal.r > 0.7 and normal.b < 0.55 else "navy"
 	for state in ["normal", "hover", "pressed"]:
-		var face := "glass" if state == "pressed" and role == "navy" and pressed.r > 0.7 else role
-		var tint := Color(1.08, 1.08, 1.05) if state == "hover" else Color(0.87, 0.9, 0.91) if state == "pressed" else Color.WHITE
-		button.add_theme_stylebox_override(state, _material_style(face, tint))
-	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c"), 2))
-	button.add_theme_stylebox_override("disabled", _material_style("navy", Color(0.68, 0.73, 0.76)))
+		var tint: Color
+		if role == "primary":
+			tint = Color(0.82, 0.86, 0.84) if state == "normal" else Color(0.96, 1.0, 0.94) if state == "hover" else Color(0.76, 0.81, 0.78)
+		elif role == "quiet":
+			tint = Color(0.72, 0.79, 0.82) if state == "normal" else Color(0.86, 0.93, 0.94) if state == "hover" else Color(0.84, 0.91, 0.91)
+		else:
+			tint = Color(0.79, 0.86, 0.88) if state == "normal" else Color(0.94, 1.0, 1.0) if state == "hover" else Color(1.02, 1.06, 1.01)
+		button.add_theme_stylebox_override(state, _material_style("primary" if role == "primary" else "navy", tint))
+	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c") if role == "primary" else Color("95bfbd"), 1))
+	button.add_theme_stylebox_override("disabled", _material_style("navy", Color(0.62, 0.69, 0.72)))
 	for state in ["font_color", "font_hover_color", "font_focus_color"]:
 		button.add_theme_color_override(state, ink)
 	for state in ["font_pressed_color", "font_hover_pressed_color"]:
-		button.add_theme_color_override(state, Color("173747"))
+		button.add_theme_color_override(state, Color("173747") if role == "primary" else Color("f0edde"))
 	button.add_theme_color_override("font_disabled_color", Color("95a7a8"))
 
 func _load_control_materials() -> void:
@@ -262,8 +267,8 @@ func _material_style(role: String, tint: Color = Color.WHITE) -> StyleBoxTexture
 	style.set_content_margin_all(8)
 	return style
 
-func _paint_secondary(button: Button) -> void:
-	_paint_button(button, Color("1a3e4b"), Color("2b5661"), Color("d8d5c5"), Color("729296"), Color("eee9d9"))
+func _paint_secondary(button: Button, quiet := false) -> void:
+	_paint_button(button, Color("1a3e4b"), Color("2b5661"), Color("315f6c"), Color("729296"), Color("eee9d9"), "quiet" if quiet else "selector" if button is OptionButton else "navy")
 
 func _draw_drawer_trim() -> void:
 	var width := _drawer.size.x
@@ -308,7 +313,7 @@ func _layout() -> void:
 	# Shared left drawer belongs to the three scoped entry tabs; facility aligns above it.
 	_drawer.position = Vector2(22, 278)
 	_drawer.size.x = 276
-	_drawer.size.y = 0
+	_fit_drawer()
 	_wallet.position = Vector2(200, 14)
 	_wallet.size = Vector2(580, 30)
 	_wallet.clip_contents = true
@@ -587,6 +592,14 @@ func _rebuild_drawer() -> void:
 		if _conquest_open: _build_conquest_detail()
 		_update_task()
 	_layout()
+	call_deferred("_fit_drawer")
+
+func _fit_drawer() -> void:
+	if _drawer == null or not _drawer.visible: return
+	# Content changes when a crew member is assigned. Give the existing housing
+	# its actual minimum height before drawing the side and bottom rim.
+	_drawer.size.y = _drawer.get_combined_minimum_size().y
+	_drawer.queue_redraw()
 
 func _build_conquest_detail() -> void:
 	_read_conquest_if_needed()
