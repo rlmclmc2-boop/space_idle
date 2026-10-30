@@ -215,3 +215,11 @@
 工坊／船坞真实环节点角由左右腰的 `0.42 / π−0.42` 移到前弧的 `0.78 / π−0.78`，工作主体落入原甲板、随节点一同旋转；其环段仍各由自己的 built 状态控制。前弧宽甲板下改为可见的深青龙骨，青能量通道沿外侧延续并从工作节点下穿过，中央两段的真实连接盘露出甲板。空间站可编辑 Blender 源与导出 GLB 增加深承力锥壳、外缘能量腰线和厚观察鼓；精炼厂固定节点增圆形承力鼓。所有段端仍属于自身，仅在相邻段未建时显示装甲圆封帽；站／炉旁的分段边界移入主根下，不提前生成未来段。船坞移动层读取下移后主体位置，避免吊机／泊位与底身漂开。未改业务建造领取、球／环／探索船独立运动或公共宿主。
 
 [本版五阶段与设施整屏](evidence/integrated-bearing-candidate/)、[48 帧实际自然时间记录](evidence/integrated-bearing-candidate/natural-timestamps.json)、[8.11 秒墙钟目标的 VFR 短片](evidence/integrated-bearing-candidate/natural-short-vfr.mp4)及原首／中／末帧均来自本候选源码；[驱动、Godot 4.7.2 日志、源文件 SHA 与证据 SHA](evidence/integrated-bearing-candidate/)同目录。作者原尺寸看 `stage_1/2/3/4`：站端藏在承力体下，炉端不再是大黑切面，第三阶段前弧单独封装，第四阶段中央闭合；短片所录角度的建筑随段、前后深度与活动层未见明显脱接。原审仍须判断圆站／炉基座体量、工坊与船坞跨脊轮廓及端头封装是否真正达到批准图。此片只是固定 built 夹具下约 8.11 秒的墙钟采样：不证明自然施工、整圈、其余五类、探索船启动，也不能把编码视频帧率当游戏 FPS 或性能。
+
+## 工坊跨脊单节点：完整建筑与本段一起修
+
+原审与根端对前段 `5a1bd51d` 整体仍退回：旧设施主体压环面，暗带、底青线、圆钮及炉下圆鼓像后贴底座，不是 [8136 批准图](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)中建筑壳体吞入脊梁、前后通道贯穿的同一结构。这里先只替换前弧工坊，**没有**把单节点试图冒充四建筑整体通过。
+
+新[橙色开放工坊节点](../../../../assets/planets/facilities_v5/illustrated/workshop-orbit-through-node.png)及[原始 ImageGen 编辑链、输入和 SHA](../../../../assets/planets/facilities_v5/illustrated/workshop-through-node-prompts.txt)保留厚承力双颊、门洞内短脊和青通道。外部长环全部交给该设施自有的真实 3D built 弧段，既不把长弧烘入固定视角插画，也不在旧工坊上垫一层新甲板；工坊原独立活动工具/滑座仍在开放湾内工作。该节点处原环甲板直接压出两侧承载肩与中心凹工作路径，废弃不再参与运行的工作导轨附加层。单节点的低模四脚表试验与带外部烘焙长弧试验均经原尺寸／四分之一圈相位看出桌形或错轴，未用入本候选运行资产。
+
+[同版 `stage_3` 工坊建成、`stage_4` 全四座与受控 90° 相位整屏](evidence/workshop-through-node/)由[结构驱动](evidence/workshop-through-node/workshop-structure-driver.gd)取得；90° 是把视觉时钟置为 `π/(2×0.045)` 后单帧绘制，不是自然耗时片段。[本版 8.16 秒、47 个自然墙钟采样帧](evidence/workshop-through-node/natural-timestamps.json)及[短片](evidence/workshop-through-node/natural-short-vfr.mp4)用于检查所录相位内节点/活动工具/环的连接，不用视频编码帧率作游戏 FPS。作者原尺寸查看阶段、90° 图和首／中／末动态帧：工坊由原横外挂改为门洞跨在真实环上，未见本次所看角度的烘焙支路再向球内乱伸；仍请原审判定此单节点的尺寸、跨脊承重剪影和层次能否按批准概念继续用于船坞。其余三座及整体环仍在返修范围；不借此证明整圈、自然建设、其他天体或探索船。对应 Godot 4.7.2 导入、语法、驱动日志、源码与证据 SHA 均在[同目录](evidence/workshop-through-node/)。

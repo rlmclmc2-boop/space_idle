@@ -33,7 +33,6 @@ var _sleeve: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
 var _refinery_receiver: Node3D
 var _refinery_receiver_vector := Vector3.ZERO
-var _workshop_guides: Node3D
 
 static func plane_normal() -> Vector3:
 	return Vector3(0.0, TILT_Z, TILT_Y)
@@ -234,6 +233,12 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		var foot_width: float = 1.0 - smoothstep(0.30, 0.46, absf(current.x))
 		var inlet: float = (1.0 - smoothstep(0.023, 0.053, distance)) * (1.0 - smoothstep(0.08, 0.15, absf(current.x - 0.04)))
 		height += 0.18 * foot_span * foot_width * (1.0 - inlet) - 0.035 * inlet
+	elif kind == "equipment":
+		# The load cheeks are raised out of this very deck; the open center
+		# remains the ring's own recessed work path through the orange portal.
+		var bay_span := 1.0 - smoothstep(0.10, 0.24, absf(angle - FACILITY_ANGLES[kind]))
+		var center_path := 1.0 - smoothstep(0.16, 0.32, absf(current.x))
+		height += bay_span * (0.13 * (1.0 - center_path) - 0.045 * center_path)
 	elif kind == "shipyard":
 		# The original deck rises into the cantilevers' one vertical spine.
 		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
@@ -309,46 +314,7 @@ func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
 		_add_socket_drum(parent, point(angle) + plane_normal() * 0.39, 0.72, 0.77, 0.19, _side, plane_normal())
 		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.66, 0.66, 0.08, _deck, plane_normal())
 		_add_refinery_root(parent, angle)
-	elif kind == "equipment":
-		_add_workshop_rails(parent, angle)
-
-func _add_workshop_rails(parent: Node3D, angle: float) -> void:
-	# The upright camera-facing work bay and its two physical guides share
-	# one axis on the tilted deck. The node remains owned by this built arc,
-	# while its bearing holds the work direction as that arc revolves.
-	_workshop_guides = Node3D.new()
-	_workshop_guides.name = "WorkshopBayGuides"
-	_workshop_guides.position = point(angle) + plane_normal() * 0.49
-	parent.add_child(_workshop_guides)
-	for side in [-1.0, 1.0]:
-		var base := SurfaceTool.new()
-		var accent := SurfaceTool.new()
-		base.begin(Mesh.PRIMITIVE_TRIANGLES)
-		accent.begin(Mesh.PRIMITIVE_TRIANGLES)
-		var inner_x := float(side) * 0.22
-		_add_workshop_guide_segment(base, inner_x, -0.28, 0.0, 0.0, 0.075, 0.00)
-		_add_workshop_guide_segment(accent, inner_x, -0.28, 0.0, 0.0, 0.018, 0.012)
-		var rail := MeshInstance3D.new()
-		rail.name = "WorkshopLoadRail" + str(side)
-		rail.mesh = base.commit()
-		rail.material_override = _side
-		_workshop_guides.add_child(rail)
-		var light := MeshInstance3D.new()
-		light.name = "WorkshopGuideTrace" + str(side)
-		light.mesh = accent.commit()
-		light.material_override = _cyan
-		_workshop_guides.add_child(light)
-
-func _add_workshop_guide_segment(surface: SurfaceTool, x0: float, y0: float, x1: float, y1: float, width: float, lift: float) -> void:
-	var direction := Vector2(x1 - x0, y1 - y0).normalized()
-	var across := Vector2(direction.y, -direction.x) * width * 0.5
-	var a := Vector3(x0 - across.x, y0 - across.y, lift)
-	var b := Vector3(x1 - across.x, y1 - across.y, lift)
-	var c := Vector3(x0 + across.x, y0 + across.y, lift)
-	var d := Vector3(x1 + across.x, y1 + across.y, lift)
-	for vertex in [a, b, c, c, b, d]:
-		surface.set_normal(Vector3.BACK)
-		surface.add_vertex(vertex)
+	# The workshop's own two-mouth structural shell now straddles this deck.
 
 func _add_refinery_root(parent: Node3D, angle: float) -> void:
 	# The feed trough and both load cheeks are one ring-owned receiver. Its
@@ -468,5 +434,3 @@ func configure(owned: Array) -> void:
 
 func update_pose(clock: float) -> void:
 	basis = Basis(Vector3(0.0, -TILT_Z, -TILT_Y), clock * 0.045)
-	var work_forward := Vector3(0.0, -TILT_Y, TILT_Z)
-	_workshop_guides.basis = basis.inverse() * Basis(Vector3.LEFT, work_forward, plane_normal())

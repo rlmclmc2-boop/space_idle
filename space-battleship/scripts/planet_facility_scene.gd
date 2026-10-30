@@ -119,7 +119,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedWorkshopBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-concept-spine.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-through-node.png")
 	body.pixel_size = 0.0031
 	body.position = Vector3(0, 0.90, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
