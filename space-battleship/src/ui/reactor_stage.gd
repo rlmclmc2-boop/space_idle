@@ -4,6 +4,10 @@ const IDLE = preload("res://assets/ui/reactor/b01/idle-console.png")
 const ACTIVE = preload("res://assets/ui/reactor/b01/active-console.png")
 const LOCKED_IDLE = preload("res://assets/ui/reactor/b01/locked-idle-console.png")
 const LOCKED_ACTIVE = preload("res://assets/ui/reactor/b01/locked-active-console.png")
+const ONE_IDLE = preload("res://assets/ui/reactor/b01/one-idle-console.png")
+const ONE_ACTIVE = preload("res://assets/ui/reactor/b01/one-active-console.png")
+const TWO_IDLE = preload("res://assets/ui/reactor/b01/two-idle-console.png")
+const TWO_ACTIVE = preload("res://assets/ui/reactor/b01/two-active-console.png")
 const LIVE = preload("res://assets/ui/reactor/b01/live-material.gdshader")
 const EFFECT_MASK = preload("res://assets/ui/reactor/b01/effect-mask.png")
 const MODULE_MASK = preload("res://assets/ui/reactor/b01/module-mask.png")
@@ -41,6 +45,18 @@ static func visibility_power(owner_load: float) -> float:
 func show_snapshot(ids: Array, loads: Dictionary) -> void:
 	_enabled = ids.duplicate()
 	_loads = loads.duplicate()
+	# Only the controlled one/two-module presentation needs new empty alcoves.
+	# Official three/four-module imagery stays on its approved plates.
+	var idle_plate: Texture2D = LOCKED_IDLE
+	var active_plate: Texture2D = LOCKED_ACTIVE
+	if _enabled.size() == 1 and "smelting" in _enabled:
+		idle_plate = ONE_IDLE
+		active_plate = ONE_ACTIVE
+	elif _enabled.size() == 2 and "smelting" in _enabled and "weapons" in _enabled:
+		idle_plate = TWO_IDLE
+		active_plate = TWO_ACTIVE
+	_paint.set_shader_parameter("locked_idle_plate", idle_plate)
+	_paint.set_shader_parameter("locked_active_plate", active_plate)
 	_paint.set_shader_parameter("condensation_enabled", 1.0 if "condensation" in _enabled else 0.0)
 	_paint.set_shader_parameter("core_load", visibility_power(float(_loads.get("core", 0.0))))
 	for id in IDS:
