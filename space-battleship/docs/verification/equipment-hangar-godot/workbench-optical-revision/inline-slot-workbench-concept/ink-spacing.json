@@ -1,144 +1,31 @@
 {
-  "kind": "Static ink evidence, not artistic acceptance or runtime test.",
-  "font": "Existing export Noto Sans CJK SC; production NotoSansSC and overall typography standards still govern; values await narrow alignment.",
-  "method": "Inkscape text ink bounds; source resource alpha bbox transformed at exact SVG scale; visible border included.",
-  "before_example": {
-    "pair": "170 → 200",
-    "gap_above": 0.928,
-    "gap_below": 6.256
+  "status": "Prior9c ink-gap equality was insufficient and is superseded as a quality criterion. No new equality target or acceptance claim.",
+  "current_change": "84px ordinary /108px dual-fee or failed row; two currency lines; reason beneath purchase area with visible bottom breathing room; fee/status15px not shrunk. Same organization and style.",
+  "font_reference": {
+    "commit": "ad7afd6425e16cd36f9c0612db920e8faa8cba5e",
+    "review_status": "R1 expressly proposed, pending review, not implemented; not an accepted norm",
+    "files": {
+      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md": "bfa2df4d7b61ad6e365d213340ca4627d09105ea81b30c5c34c97f0ca23d2fe5",
+      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/typography-visible-area-r1.html": "1df58d8750e9fd3fc5ed78c69c8b4300c5dc10ec27d3d9647cdb1a7fca5106d6"
+    },
+    "consumed": "Existing NotoSansSC.ttf family, original400/500/600 roles, fee/status15/500 as local proposed reference. No new family or global token."
   },
-  "final_rows_measured": 23,
-  "max_upper_lower_gap_difference": 0.001,
-  "unique_examples": {
-    "350 → 420": {
-      "plate": "04-local-dropdown",
-      "slot": "weapon:4",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        35.959,
-        49.783
-      ],
-      "fee_visible_top_relative": 55.242,
-      "gap_above": 5.459,
-      "gap_below": 5.459
-    },
-    "1,000 → 1,200": {
-      "plate": "04-local-dropdown",
-      "slot": "defence:0",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        34.159,
-        51.583
-      ],
-      "fee_visible_top_relative": 55.242,
-      "gap_above": 3.659,
-      "gap_below": 3.659
-    },
-    "9.28万 → 57.6万": {
-      "plate": "02-middle-five",
-      "slot": "weapon:0",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        35.05,
-        50.692
-      ],
-      "fee_visible_top_relative": 55.242,
-      "gap_above": 4.55,
-      "gap_below": 4.55
-    },
-    "170 → 200": {
-      "plate": "04-local-dropdown",
-      "slot": "weapon:1",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        35.959,
-        49.783
-      ],
-      "fee_visible_top_relative": 55.242,
-      "gap_above": 5.459,
-      "gap_below": 5.459
-    },
-    "19.2万 → —": {
-      "plate": "02-middle-five",
-      "slot": "weapon:2",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        35.542,
-        51.184
-      ],
-      "fee_visible_top_relative": 56.226,
-      "gap_above": 5.042,
-      "gap_below": 5.042
-    },
-    "750 → 900": {
-      "plate": "04-local-dropdown",
-      "slot": "defence:2",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        35.959,
-        49.783
-      ],
-      "fee_visible_top_relative": 55.242,
-      "gap_above": 5.459,
-      "gap_below": 5.459
-    },
-    "9,300 → 1.76万": {
-      "plate": "04-local-dropdown",
-      "slot": "weapon:0",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        33.133,
-        51.043
-      ],
-      "fee_visible_top_relative": 53.677,
-      "gap_above": 2.633,
-      "gap_below": 2.634
-    },
-    "1,200 → 1,400": {
-      "plate": "04-local-dropdown",
-      "slot": "weapon:2",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        34.159,
-        51.583
-      ],
-      "fee_visible_top_relative": 55.242,
-      "gap_above": 3.659,
-      "gap_below": 3.659
-    },
-    "35 → 45": {
-      "plate": "04-local-dropdown",
-      "slot": "weapon:3",
-      "name_visible_bottom_relative": 30.5,
-      "attribute_ink_relative": [
-        35.959,
-        49.783
-      ],
-      "fee_visible_top_relative": 55.242,
-      "gap_above": 5.459,
-      "gap_below": 5.459
-    }
-  },
-  "dropdown_ink_gaps": [
-    {
-      "candidate": "护盾",
-      "ink_gap_1": 8.949,
-      "ink_gap_2": 8.949
-    },
-    {
-      "candidate": "装甲",
-      "ink_gap_1": 8.045,
-      "ink_gap_2": 8.045
-    }
-  ],
-  "native_pixel_detail": {
-    "path": "/tmp/space-idle-workbench-rebuild/late-first-two-rows-native.png",
+  "native_detail": {
+    "path": "/tmp/space-idle-workbench-rebuild/dense-fees-reason-native.png",
     "size": [
       456,
-      174
+      108
     ],
-    "sha256": "35dd7ae774055623f5cb5d4fa1b46ca8391a7e8b87c3721791374de12b904858",
+    "sha256": "f8b314bbf5be2faae3c84898af7049c4d310c55a3fcd0d310567f6b6942c51a1",
     "actually_viewed": true
   },
-  "limits": "Ink measurements are static drawing corrections for these examples only. No new font family, global typography rule, focus matrix or game verification."
+  "visual_review": "Four final1440x900 plates and native dense detail actually viewed. Presentation pending original reviewer and user.",
+  "capacity_boundary": {
+    "late_safe_row_budget": 696,
+    "formula": "672+24*k for8rows, k dense rows",
+    "current_k": 1,
+    "k2_overflow": 24,
+    "k8_overflow": 168,
+    "unresolved": "Multiple dense rows need same-workbench vertical scroll; longer reasons/more than2currencies also need further slot-row growth before scrolling. Neither drawn nor implemented; remains original design backlog, not accepted all-state coverage."
+  }
 }

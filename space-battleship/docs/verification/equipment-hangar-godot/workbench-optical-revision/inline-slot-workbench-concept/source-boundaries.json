@@ -14,10 +14,12 @@
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown.png",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown.svg",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/SHA256SUMS.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/build-design-plates.py",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/embedded-asset-audit.json",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/ink-spacing.json",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/manifest.json",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/source-boundaries.json"
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/reference-hashes.json",
+    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/target-boundaries.json"
   ],
   "tracked_non_document_diff": [],
   "no_game_execution": true,
@@ -83,7 +85,7 @@
       "equals_design_start": true
     }
   },
-  "design_revision_start": "2d5be87dbf6b93b08c408870aafe518089abb1c2",
+  "design_revision_start": "9c795d6e40367c7f84adca627a7593ca25b529dd",
   "new_design_only_files": [
     "embedded-asset-audit.json",
     "target-boundaries.json",

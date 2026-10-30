@@ -41,26 +41,6 @@
       ],
       "focus_outset": 3,
       "visible_face_height": 26
-    },
-    {
-      "action": "quantity_cycle",
-      "rect_x_yOffset_w_h": [
-        622,
-        44,
-        52,
-        36
-      ],
-      "focus_outset": 3
-    },
-    {
-      "action": "purchase_current_slot",
-      "rect_x_yOffset_w_h": [
-        680,
-        44,
-        92,
-        36
-      ],
-      "focus_outset": 3
     }
   ],
   "stages": {
@@ -69,59 +49,70 @@
         332,
         320,
         456,
-        253
+        295
       ],
       "row_y": {
         "weapon:0": 372,
-        "defence:0": 478
+        "defence:0": 499
       },
       "row_bounds_x_width_height": [
         340,
         440,
-        86
+        "83 normal /107 dense"
       ],
-      "row_pitch": 87,
+      "row_pitch": "content-dependent",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
         316,
         464,
-        261
+        303
       ],
       "module_top_clearance": 231,
       "right_client_clearance": 16,
-      "bottom_client_clearance": 323
+      "bottom_client_clearance": 281,
+      "row_variants": {
+        "weapon:0": "dense",
+        "defence:0": "dense"
+      }
     },
     "middle": {
       "panel": [
         332,
         200,
         456,
-        514
+        547
       ],
       "row_y": {
         "weapon:0": 252,
-        "weapon:1": 339,
-        "weapon:2": 426,
-        "defence:0": 532,
-        "defence:1": 619
+        "weapon:1": 360,
+        "weapon:2": 444,
+        "defence:0": 571,
+        "defence:1": 655
       },
       "row_bounds_x_width_height": [
         340,
         440,
-        86
+        "83 normal /107 dense"
       ],
-      "row_pitch": 87,
+      "row_pitch": "content-dependent",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
         196,
         464,
-        522
+        555
       ],
       "module_top_clearance": 111,
       "right_client_clearance": 16,
-      "bottom_client_clearance": 182
+      "bottom_client_clearance": 149,
+      "row_variants": {
+        "weapon:0": "dense",
+        "weapon:1": "normal",
+        "weapon:2": "dense",
+        "defence:0": "normal",
+        "defence:1": "normal"
+      }
     },
     "late": {
       "panel": [
@@ -132,20 +123,20 @@
       ],
       "row_y": {
         "weapon:0": 157,
-        "weapon:1": 244,
-        "weapon:2": 331,
-        "weapon:3": 418,
-        "weapon:4": 505,
-        "defence:0": 611,
-        "defence:1": 698,
-        "defence:2": 785
+        "weapon:1": 265,
+        "weapon:2": 349,
+        "weapon:3": 433,
+        "weapon:4": 517,
+        "defence:0": 620,
+        "defence:1": 704,
+        "defence:2": 788
       },
       "row_bounds_x_width_height": [
         340,
         440,
-        86
+        "83 normal /107 dense"
       ],
-      "row_pitch": 87,
+      "row_pitch": "content-dependent",
       "panel_total_outer_envelope_outset": 4,
       "outer_envelope": [
         328,
@@ -155,13 +146,23 @@
       ],
       "module_top_clearance": 16,
       "right_client_clearance": 16,
-      "bottom_client_clearance": 16
+      "bottom_client_clearance": 16,
+      "row_variants": {
+        "weapon:0": "dense",
+        "weapon:1": "normal",
+        "weapon:2": "normal",
+        "weapon:3": "normal",
+        "weapon:4": "normal",
+        "defence:0": "normal",
+        "defence:1": "normal",
+        "defence:2": "normal"
+      }
     }
   },
   "popup": {
     "panel": [
       392,
-      454,
+      460,
       386,
       238
     ],
@@ -169,13 +170,13 @@
     "direct_switch_targets": [
       [
         400,
-        496,
+        502,
         268,
         84
       ],
       [
         400,
-        590,
+        596,
         268,
         84
       ]
@@ -183,13 +184,13 @@
     "compare_only_targets": [
       [
         678,
-        496,
+        502,
         90,
         84
       ],
       [
         678,
-        590,
+        596,
         90,
         84
       ]
@@ -199,12 +200,64 @@
     "focus_envelope_gap": 4,
     "close": [
       736,
-      461,
+      467,
       32,
       30
     ],
     "dispatch": "Candidate body invokes same-slot Owner switch immediately; compare opens read-only comparison without switch. No enclosing whole-row target; close/outside suppress underlying click.",
     "no_confirmation": true
   },
-  "limits": "Focus outlines and shadows not rendered. Outset4 is total reserved outer envelope including border, not a measured rendered shadow. Target/focus envelope assertions establish static spacing only."
+  "limits": "Focus outlines and shadows not rendered. Outset4 is total reserved outer envelope including border, not a measured rendered shadow. Target/focus envelope assertions establish static spacing only.",
+  "content_variants": {
+    "normal": {
+      "pitch": 84,
+      "frame_height": 83,
+      "actions": {
+        "quantity_cycle": [
+          622,
+          42,
+          52,
+          36
+        ],
+        "purchase_current_slot": [
+          680,
+          42,
+          92,
+          36
+        ]
+      },
+      "fee_lines": 1
+    },
+    "dense": {
+      "pitch": 108,
+      "frame_height": 107,
+      "actions": {
+        "quantity_cycle": [
+          622,
+          47,
+          52,
+          36
+        ],
+        "purchase_current_slot": [
+          680,
+          47,
+          92,
+          36
+        ]
+      },
+      "fee_lines_up_to": 2,
+      "reason_baseline_relative": 99,
+      "reason_x": 622,
+      "reason_font": 15,
+      "reason_scope": "current slot upgrade affordability, not switch price"
+    }
+  },
+  "capacity_boundary": {
+    "late_safe_row_budget": 696,
+    "formula": "672+24*k for8rows, k dense rows",
+    "current_k": 1,
+    "k2_overflow": 24,
+    "k8_overflow": 168,
+    "unresolved": "Multiple dense rows need same-workbench vertical scroll; longer reasons/more than2currencies also need further slot-row growth before scrolling. Neither drawn nor implemented; remains original design backlog, not accepted all-state coverage."
+  }
 }

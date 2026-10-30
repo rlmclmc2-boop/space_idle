@@ -14,8 +14,8 @@
         1440,
         900
       ],
-      "sha256": "7a8a63b7825a3d89b5a8c82d1121092dd2c3758a50e7ab66540573a48b79f819",
-      "svg_sha256": "522852fc16f08c82441afaeecc201008552c2bb834c40cecd011222eb356c44d",
+      "sha256": "fde7bd3a43fc39fa03895f8bdcc2048871733439bc8d8e3278d4646a663840b7",
+      "svg_sha256": "619838531dc020de47bfc7519071ba2538b1dbb42f5da91c53a6d38ad58062cb",
       "battle_pixel_diff_bbox": null,
       "header_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -26,8 +26,8 @@
         1440,
         900
       ],
-      "sha256": "002851ae498612e4ead78de44d5cc55eb2e916e295640d4ee7c48bd6a95d29a6",
-      "svg_sha256": "e6609250f8081f812e1a4b15a02ba5283f73da163a764a133149bf8f868afa0f",
+      "sha256": "698b5647c8339038b1ca46a3f2baff66e43dbfc00063e6cf0e1eaf0ff58d741c",
+      "svg_sha256": "b47e99c925dfe167e5cf5e56cf86c9514a30908839ed6563a3dc8aa404160104",
       "battle_pixel_diff_bbox": null,
       "header_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -38,8 +38,8 @@
         1440,
         900
       ],
-      "sha256": "e22328ba460f8c4f324c79e7201552cea24c6c96184a82edea375d5fa5159197",
-      "svg_sha256": "55ae824f154398ac3064f5274aec347a8537a777ae117e926406b96a4e106b22",
+      "sha256": "a5ed268d72953d5db83efffe3017badfee42cf700b71da8c88491121731350d9",
+      "svg_sha256": "fce6a51b75d1f33d12ab06d9326c23522a543aa36ea6d85374af1d399747fb1a",
       "battle_pixel_diff_bbox": null,
       "header_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -50,8 +50,8 @@
         1440,
         900
       ],
-      "sha256": "316ad8ce8418feac411abe8b88961e28fa23999fc72d5f295e5449bc88cb1197",
-      "svg_sha256": "090b39ddaefd96b0e32bdc8f4d43da49bc1abcf9832f67e7db9a39f96d871932",
+      "sha256": "1ef56af025aa8ef754d2f870446e5fd2048fe87387535c5077e3e98e5455773c",
+      "svg_sha256": "e6a0c9ec1f1210a2be33812542262098d2638d7e4d6b44aaf832294025220bd7",
       "battle_pixel_diff_bbox": null,
       "header_pixel_diff_bbox": null,
       "actually_viewed": true
@@ -89,15 +89,17 @@
       "not_precision_main_plate": true
     }
   ],
-  "renderer": "Inkscape CLI; Noto Sans CJK SC; export only",
+  "renderer": "Inkscape CLI with repository NotoSansSC.ttf resolved via private FONTCONFIG_FILE; static export only",
   "svg_source": "build-design-plates.py",
   "layout": {
     "workbench_x": [
       332,
       788
     ],
-    "row_pitch": 87,
-    "row_frame_height": 86,
+    "row_pitch": {
+      "normal": 84,
+      "dense": 108
+    },
     "quantity_size": [
       52,
       36
@@ -106,75 +108,77 @@
       92,
       36
     ],
-    "compare_size": [
-      62,
-      32
-    ],
-    "equipment_icon_size": [
-      44,
-      54
-    ],
-    "fee_and_reason_font_size": 14,
-    "resource_size": 20,
+    "fee_and_reason_font_size": 15,
     "stage_panel_positions": {
       "early": {
         "panel": [
           332,
           320,
           456,
-          253
+          295
         ],
         "row_y": {
           "weapon:0": 372,
-          "defence:0": 478
+          "defence:0": 499
         },
         "row_bounds_x_width_height": [
           340,
           440,
-          86
+          "83 normal /107 dense"
         ],
-        "row_pitch": 87,
+        "row_pitch": "content-dependent",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
           316,
           464,
-          261
+          303
         ],
         "module_top_clearance": 231,
         "right_client_clearance": 16,
-        "bottom_client_clearance": 323
+        "bottom_client_clearance": 281,
+        "row_variants": {
+          "weapon:0": "dense",
+          "defence:0": "dense"
+        }
       },
       "middle": {
         "panel": [
           332,
           200,
           456,
-          514
+          547
         ],
         "row_y": {
           "weapon:0": 252,
-          "weapon:1": 339,
-          "weapon:2": 426,
-          "defence:0": 532,
-          "defence:1": 619
+          "weapon:1": 360,
+          "weapon:2": 444,
+          "defence:0": 571,
+          "defence:1": 655
         },
         "row_bounds_x_width_height": [
           340,
           440,
-          86
+          "83 normal /107 dense"
         ],
-        "row_pitch": 87,
+        "row_pitch": "content-dependent",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
           196,
           464,
-          522
+          555
         ],
         "module_top_clearance": 111,
         "right_client_clearance": 16,
-        "bottom_client_clearance": 182
+        "bottom_client_clearance": 149,
+        "row_variants": {
+          "weapon:0": "dense",
+          "weapon:1": "normal",
+          "weapon:2": "dense",
+          "defence:0": "normal",
+          "defence:1": "normal"
+        }
       },
       "late": {
         "panel": [
@@ -185,20 +189,20 @@
         ],
         "row_y": {
           "weapon:0": 157,
-          "weapon:1": 244,
-          "weapon:2": 331,
-          "weapon:3": 418,
-          "weapon:4": 505,
-          "defence:0": 611,
-          "defence:1": 698,
-          "defence:2": 785
+          "weapon:1": 265,
+          "weapon:2": 349,
+          "weapon:3": 433,
+          "weapon:4": 517,
+          "defence:0": 620,
+          "defence:1": 704,
+          "defence:2": 788
         },
         "row_bounds_x_width_height": [
           340,
           440,
-          86
+          "83 normal /107 dense"
         ],
-        "row_pitch": 87,
+        "row_pitch": "content-dependent",
         "panel_total_outer_envelope_outset": 4,
         "outer_envelope": [
           328,
@@ -208,11 +212,19 @@
         ],
         "module_top_clearance": 16,
         "right_client_clearance": 16,
-        "bottom_client_clearance": 16
+        "bottom_client_clearance": 16,
+        "row_variants": {
+          "weapon:0": "dense",
+          "weapon:1": "normal",
+          "weapon:2": "normal",
+          "weapon:3": "normal",
+          "weapon:4": "normal",
+          "defence:0": "normal",
+          "defence:1": "normal",
+          "defence:2": "normal"
+        }
       }
-    },
-    "name_visible_face_height": 26,
-    "compare_visible_face_height": 26
+    }
   },
   "remaining_limits": [
     "presentation pending review; structure approved",
@@ -222,12 +234,35 @@
     "max positive/empty/dormant/unavailable/extreme number/focus matrix not drawn or run",
     "same-slot lock still10 game seconds; future implementation must remove"
   ],
-  "revision_start": "2d5be87dbf6b93b08c408870aafe518089abb1c2",
+  "revision_start": "9c795d6e40367c7f84adca627a7593ca25b529dd",
   "source_audit": "embedded-asset-audit.json",
   "target_boundaries": "target-boundaries.json",
-  "revision_note": "Same approved organization corrected for slot content and target clarity; presentation remains under review. No new ImageGen calls.",
+  "revision_note": "Approved structure retained. Dense row breathing and separate cost/status space replace previous equal-ink-gap optimization. Same4states; no game tests or new public assets.",
   "user_structure_acceptance": "2d5be87: 思路没太大问题，再优化表现",
   "shared_presentation_scope": "Background is context; public background/button standards belong to the original overall-UI group, not finalized by this module.",
   "ink_evidence": "ink-spacing.json",
-  "typography_status": "Overall group owns common type/layout. Fee14 and optical corrections remain local presentation proposals pending alignment; no new type family or public skin."
+  "typography_status": "Consumes fixed overallR1 proposed reference, not accepted standard; overall owns common typography/public controls/background.",
+  "typography_reference": {
+    "commit": "ad7afd6425e16cd36f9c0612db920e8faa8cba5e",
+    "review_status": "R1 expressly proposed, pending review, not implemented; not an accepted norm",
+    "files": {
+      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md": "bfa2df4d7b61ad6e365d213340ca4627d09105ea81b30c5c34c97f0ca23d2fe5",
+      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/typography-visible-area-r1.html": "1df58d8750e9fd3fc5ed78c69c8b4300c5dc10ec27d3d9647cdb1a7fca5106d6"
+    },
+    "consumed": "Existing NotoSansSC.ttf family, original400/500/600 roles, fee/status15/500 as local proposed reference. No new family or global token."
+  },
+  "render_font": {
+    "path": "assets/fonts/NotoSansSC.ttf",
+    "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+    "config_generated_by": "build-design-plates.py",
+    "config_path": "/tmp/space-idle-workbench-rebuild/fontconfig-local.xml"
+  },
+  "capacity_boundary": {
+    "late_safe_row_budget": 696,
+    "formula": "672+24*k for8rows, k dense rows",
+    "current_k": 1,
+    "k2_overflow": 24,
+    "k8_overflow": 168,
+    "unresolved": "Multiple dense rows need same-workbench vertical scroll; longer reasons/more than2currencies also need further slot-row growth before scrolling. Neither drawn nor implemented; remains original design backlog, not accepted all-state coverage."
+  }
 }

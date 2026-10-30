@@ -11,5 +11,6 @@
   "assets/ui/ships/fleet_20261019/05-heavy-battleship.png": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e",
   "assets/ui/public_shell/resource-material-supplement.png": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3",
   "assets/weapons/fleet_20261019/cannon.png": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a",
-  "assets/weapons/fleet_20261019/longLaser.png": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+  "assets/weapons/fleet_20261019/longLaser.png": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3",
+  "assets/fonts/NotoSansSC.ttf": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
 }

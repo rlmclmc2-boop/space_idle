@@ -69,15 +69,8 @@ def resource(kind, x, center_y, size=20):
     return image(path,x,center_y-visible_height/2-offset,size,size,bounds)
 
 
-# Measured Inkscape ink bounds for these static examples in the existing export font.
-# These are optical drawing corrections, not runtime font/layout rules.
-ATTRIBUTE_INK = {
-    ('9,300','1.76万'):(32.942,50.852), ('170','200'):(33.428,47.252),
-    ('1,200','1,400'):(33.428,50.852), ('35','45'):(33.428,47.252),
-    ('350','420'):(33.428,47.252), ('1,000','1,200'):(33.428,50.852),
-    ('750','900'):(33.428,47.252), ('9.28万','57.6万'):(32.942,48.584),
-    ('19.2万','—'):(32.942,48.584),
-}
+def row_height(state):
+    return 108 if state in ['poor','evolution','evolution-poor','ten','maxzero'] else 84
 
 
 EQUIPMENT = {
@@ -116,8 +109,10 @@ def row(y, category, index, key, state='normal', focus=False):
     if state == 'maxzero':
         level,current,after,mode,purchase,costs = '33','19.2万','—','MAX','可购0级',[]
         disabled,reason = True,'当前预算不可购'
-    s = box(350,y,440,86,'#e8e8dc' if not focus else '#e0ebe3','#a3b2ae',4)
-    if focus: s += box(350,y,4,86,'#397e82',r=0)
+    dense = len(costs)>1 or bool(reason)
+    height = row_height(state)
+    s = box(350,y,440,height-1,'#e8e8dc' if not focus else '#e0ebe3','#a3b2ae',4)
+    if focus: s += box(350,y,4,height-1,'#397e82',r=0)
     # Isolated formal equipment, with a clear equipment cradle; never a ship preview crop.
     s += box(356,y+5,48,58,'#c9d9d2','#718d8d',4)
     s += image(path,358,y+7,44,54)
@@ -126,19 +121,18 @@ def row(y, category, index, key, state='normal', focus=False):
     s += text(614,y+19.25,'⌄',18,TEAL,500,'middle')
     s += text(636,y+22,'Lv.'+level,14,MUTED)
     s += compare_button(720,y+4,62)
-    fee_top = min([56.226]+[62.75-resource_geometry(kind,20)[2]/2 for kind,_ in costs])
-    top_ink,bottom_ink = ATTRIBUTE_INK[(current,after)]
-    optical_shift = (30.5+fee_top)/2-(top_ink+bottom_ink)/2
-    s += text(410,y+46+optical_shift,'攻击力' if category=='weapon' else '容量',14,MUTED)
-    s += text(459,y+47+optical_shift,current,18,INK,600)+text(526,y+47+optical_shift,'→',18,MUTED)+text(550,y+47+optical_shift,after,18,TEAL,600)
-    s += text(404,y+68,'升级费',14,INK,500)
-    cursor = 450
-    for kind, value in costs:
-        s += resource(kind,cursor,y+62.75,20)+text(cursor+23,y+68,value,14,INK,500)
-        cursor += 84 if len(value)>5 else 72
-    if not costs: s += text(453,y+68,'—',14,MUTED)
-    s += button(632,y+44,52,mode)+button(690,y+44,92,purchase,disabled)
-    if reason: s += text(404,y+84,reason,14,WARN,500)
+    attribute_baseline = 50 if dense else 48
+    fee_baseline = 72 if dense else 65
+    fee_center = 66.25 if dense else 59.75
+    s += text(410,y+attribute_baseline-1,'攻击力' if category=='weapon' else '容量',15,MUTED,500)
+    s += text(459,y+attribute_baseline,current,18,INK,600)+text(526,y+attribute_baseline,'→',18,MUTED)+text(550,y+attribute_baseline,after,18,TEAL,600)
+    s += text(404,y+fee_baseline,'升级费',15,INK,500)
+    for i,(kind,value) in enumerate(costs):
+        s += resource(kind,464,y+fee_center+i*21,20)+text(487,y+fee_baseline+i*21,value,15,INK,500)
+    if not costs: s += text(470,y+fee_baseline,'—',15,MUTED)
+    action_y = 47 if dense else 42
+    s += button(632,y+action_y,52,mode)+button(690,y+action_y,92,purchase,disabled)
+    if reason: s += text(632,y+99,reason,15,WARN,500)
     return s
 
 
@@ -150,10 +144,18 @@ def plate(stage, popup=False):
                'late':['laser','missile','cannon','longLaser','laser']}[stage]
     defence = ['armour'] if stage == 'early' else ['armour','shield'] if stage == 'middle' else ['armour','shield','shield']
     console_top = {'early':320,'middle':200,'late':105}[stage]
-    console_bottom = console_top + 34 + 2*(18+1) + 87*(len(weapons)+len(defence)) + 7
+    states = {}
+    for cat,keys in [('weapon',weapons),('defence',defence)]:
+        for i,_ in enumerate(keys):
+            state='poor' if stage=='early' else 'normal'
+            if stage=='middle' and cat=='weapon' and i==0: state='ten'
+            if stage=='middle' and cat=='weapon' and i==2: state='maxzero'
+            if stage=='late' and cat=='weapon' and i==0: state='evolution-poor'
+            states[(cat,i)]=state
+    console_bottom = console_top + 34 + 2*(18+1) + sum(row_height(v) for v in states.values()) + 7
     s = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1440" height="900" viewBox="0 0 1440 900"><defs>'
     s += '<linearGradient id="face" x2="0" y2="1"><stop stop-color="#f1efdf"/><stop offset="1" stop-color="#d4d9d1"/></linearGradient><linearGradient id="button" x2="0" y2="1"><stop stop-color="#507786"/><stop offset="1" stop-color="#294957"/></linearGradient><linearGradient id="disabled" x2="0" y2="1"><stop stop-color="#9eaba9"/><stop offset="1" stop-color="#83928f"/></linearGradient>'
-    s += '<clipPath id="header"><rect width="808" height="85"/></clipPath><clipPath id="battle"><rect x="808" width="632" height="900"/></clipPath><clipPath id="module"><rect y="85" width="808" height="815"/></clipPath><clipPath id="stage"><rect y="85" width="302" height="815"/></clipPath></defs><g font-family="Noto Sans CJK SC, sans-serif">'
+    s += '<clipPath id="header"><rect width="808" height="85"/></clipPath><clipPath id="battle"><rect x="808" width="632" height="900"/></clipPath><clipPath id="module"><rect y="85" width="808" height="815"/></clipPath><clipPath id="stage"><rect y="85" width="302" height="815"/></clipPath></defs><g font-family="Noto Sans SC, sans-serif">'
     # Unchanged screenshot regions are context, not a new battle/nav proposal.
     for clip in ['header','battle']:
         s += f'<image href="{ref(CONTEXT)}" width="1440" height="900" clip-path="url(#{clip})"/>'
@@ -171,18 +173,15 @@ def plate(stage, popup=False):
         s += box(350,y,440,16,'#355c68',r=3)+text(360,y+13,('武器' if cat=='weapon' else '防御')+' · '+str(len(keys)),14,'#eef0df',500)
         y += 18
         for i,key in enumerate(keys):
-            state='poor' if stage=='early' else 'normal'
-            if stage=='middle' and cat=='weapon' and i==0: state='ten'
-            if stage=='middle' and cat=='weapon' and i==2: state='maxzero'
-            if stage=='late' and cat=='weapon' and i==0: state='evolution-poor'
+            state=states[(cat,i)]
             s += row(y,cat,i,key,state,focus=(cat=='defence' and i==1 and popup))
-            y += 87
+            y += row_height(state)
         y += 1
     if popup:
         # Anchored upward because defence2 is near the lower edge. Underlying rows do not move.
-        py=454
+        py=460
         s += box(402,py,386,238,'#244450','#10303f',7)
-        s += '<path d="M600 692 L614 702 L626 692Z" fill="#244450"/>'
+        s += '<path d="M600 698 L614 708 L626 698Z" fill="#244450"/>'
         s += text(416,py+27,'防御2 · 同槽Lv.1',16,'#f4f0df',500)
         s += button(746,py+7,32,'×',height=30)
         for k,yy,current in [('shield',py+42,True),('armour',py+136,False)]:
@@ -212,4 +211,9 @@ def plate(stage, popup=False):
 
 for name,stage,popup in [('01-early-two','early',False),('02-middle-five','middle',False),('03-late-eight','late',False),('04-local-dropdown','late',True)]:
     (HERE/(name+'.svg')).write_text(plate(stage,popup),encoding='utf-8')
+used['assets/fonts/NotoSansSC.ttf'] = hashlib.sha256((ASSETS/'fonts/NotoSansSC.ttf').read_bytes()).hexdigest()
 (HERE/'reference-hashes.json').write_text(json.dumps(used,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+# Existing repository family, private render configuration only; no system install.
+fontconfig = Path('/tmp/space-idle-workbench-rebuild/fontconfig-local.xml')
+fontconfig.parent.mkdir(parents=True,exist_ok=True)
+fontconfig.write_text('<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><include ignore_missing="yes">/etc/fonts/fonts.conf</include><dir>'+str(ASSETS/'fonts')+'</dir><cachedir>/tmp/space-idle-workbench-rebuild/font-cache</cachedir></fontconfig>')
