@@ -35,6 +35,7 @@ var _workshop_body_sprite: Sprite3D
 var _workshop_arm_sprite: Sprite3D
 var _workshop_carriage_sprite: Sprite3D
 var _workshop_link: MeshInstance3D
+var _station_body_sprite: Sprite3D
 var _refinery_shutter_sprites: Dictionary = {}
 var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
@@ -131,6 +132,7 @@ func _install_station_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.double_sided = true
 	body.render_priority = -1
 	model.add_child(body)
+	_station_body_sprite = body
 
 func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	# The approved R5 silhouette is carried by two depth-tested, camera-facing
@@ -140,7 +142,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.name = "IllustratedWorkshopBody"
 	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-through-node.png")
 	body.pixel_size = 0.0031
-	body.position = Vector3(0, 0.90, 0)
+	body.position = Vector3(0, 0.55, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	body.shaded = true
 	body.double_sided = true
@@ -422,6 +424,10 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		var scale_factor := 0.64 if kind == "auto_explore" else 0.55 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
 		model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
+		if kind == "auto_explore":
+			# The round hull encloses its real section joint at the same station
+			# socket; keep only the short top annulus as a separate moving layer.
+			_station_body_sprite.position = Vector3(0, -0.30, 0) + model.global_transform.basis.inverse() * Vector3(0, 0, 0.25)
 		if kind == "equipment": _position_workshop_arm(model)
 		if kind == "refinery": _position_refinery_work(model, clock)
 		if kind == "shipyard": _position_shipyard_work(model, clock)

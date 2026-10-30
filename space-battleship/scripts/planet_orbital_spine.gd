@@ -15,7 +15,8 @@ const FACILITY_ANGLES := {
 	"shipyard": PI - 0.78,
 }
 const RADIUS := 4.5
-const TRANSIT_WIDTH := 0.60
+const REAR_TRANSIT_WIDTH := 0.42
+const FRONT_TRANSIT_WIDTH := 0.70
 const NODE_WIDTH := 1.30
 const TILT_Y := 0.66
 const TILT_Z := 0.751
@@ -44,7 +45,7 @@ static func socket_position(angle: float, kind: String) -> Vector3:
 	# The refinery upper shell sits inside its real deck node; its old baked
 	# floor is gone. Other facility roots keep their existing R5 pose.
 	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
-	var radial_offset := -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
+	var radial_offset := 0.25 if kind == "auto_explore" else -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
 
 static func refinery_feed_tip() -> Vector3:
@@ -164,7 +165,12 @@ func _section_width(kind: String, angle: float) -> float:
 	var distance := absf(angle - FACILITY_ANGLES[kind])
 	var t := clampf((distance - 0.08) / 0.16, 0.0, 1.0)
 	var blend := 1.0 - t * t * (3.0 - 2.0 * t)
-	return lerpf(TRANSIT_WIDTH, NODE_WIDTH, blend)
+	return lerpf(_transit_width(angle), NODE_WIDTH, blend)
+
+func _transit_width(angle: float) -> float:
+	# The front load path carries the visible heavy deck; the rear transit
+	# section is slimmer before it passes behind the globe.
+	return lerpf(REAR_TRANSIT_WIDTH, FRONT_TRANSIT_WIDTH, 0.5 + 0.5 * sin(angle))
 
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
@@ -381,14 +387,15 @@ func _add_join(parent: Node3D, angle: float) -> Node3D:
 	var join := Node3D.new()
 	join.name = "SectionJoin"
 	parent.add_child(join)
+	var joint_width := _transit_width(angle) + 0.02
 	# Close the complete load path, including its keel and lit outer wall. A
 	# top-only sleeve leaves an obvious open cut at oblique orbital phases.
-	_add_strip(join, angle - 0.12, angle + 0.12, TRANSIT_WIDTH + 0.02, -0.20, _navy)
-	_add_wall(join, angle - 0.12, angle + 0.12, (TRANSIT_WIDTH + 0.02) * 0.5, -0.42, 0.26, _navy)
-	_add_wall(join, angle - 0.12, angle + 0.12, -(TRANSIT_WIDTH + 0.02) * 0.5, -0.42, 0.26, _navy)
-	_add_wall(join, angle - 0.12, angle + 0.12, (TRANSIT_WIDTH + 0.02) * 0.5 + 0.005, 0.08, 0.18, _side)
-	_add_wall(join, angle - 0.12, angle + 0.12, (TRANSIT_WIDTH + 0.02) * 0.5 + 0.008, -0.22, -0.16, _cyan)
-	_add_curved_deck(join, angle - 0.12, angle + 0.12, TRANSIT_WIDTH + 0.02, 0.232, _sleeve, 0.37, 0.63)
+	_add_strip(join, angle - 0.12, angle + 0.12, joint_width, -0.20, _navy)
+	_add_wall(join, angle - 0.12, angle + 0.12, joint_width * 0.5, -0.42, 0.26, _navy)
+	_add_wall(join, angle - 0.12, angle + 0.12, -joint_width * 0.5, -0.42, 0.26, _navy)
+	_add_wall(join, angle - 0.12, angle + 0.12, joint_width * 0.5 + 0.005, 0.08, 0.18, _side)
+	_add_wall(join, angle - 0.12, angle + 0.12, joint_width * 0.5 + 0.008, -0.22, -0.16, _cyan)
+	_add_curved_deck(join, angle - 0.12, angle + 0.12, joint_width, 0.232, _sleeve, 0.37, 0.63)
 	_add_load_channel(join, angle - 0.12, angle + 0.12)
 	return join
 
