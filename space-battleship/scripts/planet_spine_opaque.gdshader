@@ -44,6 +44,6 @@ void fragment() {
 	if (luminous) {
 		EMISSION = color * 1.0;
 	} else if (textured) {
-		EMISSION = color * 0.78 + stellar_field_tint * inner_field * 0.42;
+		EMISSION = color * 0.63 + stellar_field_tint * inner_field * 0.42;
 	}
 }

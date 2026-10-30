@@ -83,24 +83,30 @@ for kind in ("auto_explore", "refinery", "equipment", "shipyard"):
     root = empty("Facility")
 
     if kind == "auto_explore":
-        # One ring, an obvious docking aperture and two broad wings.
+        # A plated round station is the first structural ring node, not a
+        # satellite with oversized independent solar wings. Keep named pivots.
+        cyl("Navy load-bearing station keel", (0, 0, -0.18), 1.27, 0.26, dark, root, vertices=32)
+        cyl("Ivory annular station deck", (0, 0, -0.01), 1.18, 0.16, cream, root, vertices=32)
+        cyl("Navy observation drum", (0, 0, 0.16), 0.73, 0.24, dark, root, vertices=28)
         ring = empty("HabitatRingSpin", root)
-        torus("Navy inhabited ring", (0, 0, 0), 1.08, 0.21, dark, ring)
+        torus("Revolving inhabited annulus", (0, 0, 0.30), 0.89, 0.12, cream, ring)
         for i in range(4):
             a = i * math.pi / 2
-            o = box("Ivory ring quadrant", (1.08 * math.cos(a), 1.08 * math.sin(a), 0.02),
-                    (0.87, 0.43, 0.27), cream, ring, 0.1)
-            o.rotation_euler.z = a + math.pi / 2
-        cyl("Dock core", (0, 0, 0.08), 0.48, 0.53, cream, root)
-        cyl("Deep docking mouth", (0, 0, 0.38), 0.31, 0.04, dark, root)
-        cyl("Dock guidance circle", (0, 0, 0.41), 0.16, 0.02, cyan, root)
+            o = box("Navy radial ring socket", (0.89 * math.cos(a), 0.89 * math.sin(a), 0.30),
+                    (0.26, 0.31, 0.16), dark, ring, 0.04)
+            o.rotation_euler.z = a
+        cyl("Dock mouth armor", (0, 0, 0.34), 0.48, 0.15, cream, root)
+        cyl("Deep docking mouth", (0, 0, 0.43), 0.33, 0.05, dark, root)
+        cyl("Dock guidance circle", (0, 0, 0.47), 0.16, 0.03, cyan, root)
+        for x, height in ((-0.75, 0.50), (0.0, 0.64), (0.75, 0.50)):
+            cyl("Station attitude mast", (x, 0.50, height * 0.5), 0.055, height, dark, root, vertices=12)
+            cyl("Amber mast tip", (x, 0.50, height + 0.025), 0.10, 0.09, amber, root, vertices=12)
         for sign in (-1, 1):
             hinge = empty("SolarHingeLeft" if sign < 0 else "SolarHingeRight", root,
-                          (sign * 1.46, 0, 0))
-            box("Wing boom", (sign * 0.44, 0, 0), (0.9, 0.14, 0.16), dark, hinge)
-            box("Broad solar wing", (sign * 1.05, 0, 0), (1.05, 1.1, 0.09), solar, hinge)
-            box("Wing edge", (sign * 1.05, 0, 0.07), (1.1, 1.15, 0.04), cream, hinge, 0.02)
-            box("Visible blue field", (sign * 1.05, 0, 0.10), (0.93, 0.98, 0.025), solar, hinge, 0.01)
+                          (sign * 1.08, 0, 0))
+            box("Short power hinge", (sign * 0.19, 0, -0.03), (0.43, 0.14, 0.16), dark, hinge)
+            box("Compact solar fin", (sign * 0.52, 0, -0.02), (0.59, 0.57, 0.07), solar, hinge)
+            box("Solar fin ivory lip", (sign * 0.52, 0, 0.03), (0.62, 0.60, 0.035), cream, hinge, 0.01)
 
     elif kind == "refinery":
         # The furnace sits between two raised ore hoppers; the belt enters its mouth.

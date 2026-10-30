@@ -3,8 +3,8 @@ extends Node3D
 ## geometry continues behind the planet's depth mask instead of ending there.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
 const ARC_BOUNDS := {
-	"auto_explore": Vector2(PI, PI * 1.5),
-	"refinery": Vector2(PI * 1.5, TAU),
+	"auto_explore": Vector2(PI, PI * 1.24),
+	"refinery": Vector2(PI * 1.24, TAU),
 	"equipment": Vector2(0.0, PI * 0.5),
 	"shipyard": Vector2(PI * 0.5, PI),
 }
@@ -15,10 +15,10 @@ const FACILITY_ANGLES := {
 	"shipyard": PI - 0.42,
 }
 const RADIUS := 4.5
-const TRANSIT_WIDTH := 0.84
-const NODE_WIDTH := 1.50
-const TILT_Y := 0.72
-const TILT_Z := 0.694
+const TRANSIT_WIDTH := 0.60
+const NODE_WIDTH := 1.30
+const TILT_Y := 0.66
+const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
 const SOCKET_HEIGHT := 0.65
 var _arcs: Dictionary = {}
@@ -45,7 +45,7 @@ static func socket_position(angle: float, kind: String) -> Vector3:
 	# The refinery upper shell sits inside its real deck node; its old baked
 	# floor is gone. Other facility roots keep their existing R5 pose.
 	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
-	var radial_offset := -0.30 if kind == "refinery" else (-0.16 if kind == "equipment" else 0.0)
+	var radial_offset := -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
 
 static func refinery_feed_tip() -> Vector3:
@@ -79,7 +79,7 @@ func _ready() -> void:
 	_navy.render_priority = -3
 	_side.render_priority = -2
 	_deck = _material(Color("fff2df"))
-	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-albedo.png"))
+	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-concept-spine.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
 	_sleeve.render_priority = 1
@@ -92,21 +92,42 @@ func _ready() -> void:
 		# A real thick section: dark keel and side walls remain visible under
 		# broad warm armor plates. The central channel belongs to this section.
 		_add_strip(root, bounds.x, bounds.y, NODE_WIDTH, -0.20, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, 0.75, -0.20, 0.26, _side, kind)
-		_add_wall(root, bounds.x, bounds.y, -0.75, -0.20, 0.26, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, 0.755, 0.05, 0.09, _cyan, kind)
+		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5, -0.30, 0.26, _side, kind)
+		_add_wall(root, bounds.x, bounds.y, -NODE_WIDTH * 0.5, -0.30, 0.26, _navy, kind)
+		_add_wall(root, bounds.x, bounds.y, NODE_WIDTH * 0.5 + 0.005, 0.05, 0.09, _cyan, kind)
 		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
-		var rib_angle := (bounds.x + bounds.y) * 0.5
-		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
+		for rib_index in range(1, 6):
+			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
+			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
+				_add_curved_deck(root, rib_angle - 0.008, rib_angle + 0.008, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
 		_joins[kind] = _add_join(root, bounds.y)
-		var caps: Array[MeshInstance3D] = []
+		var caps: Array[Node3D] = []
 		for angle in [bounds.x, bounds.y]:
-			var cap := MeshInstance3D.new()
+			var cap := Node3D.new()
+			cap.name = "BuiltSectionTerminal"
+			var face := MeshInstance3D.new()
 			var box := BoxMesh.new()
 			box.size = Vector3(TRANSIT_WIDTH, 0.65, 0.08)
-			cap.mesh = box
-			cap.material_override = _navy
+			face.mesh = box
+			face.material_override = _navy
+			cap.add_child(face)
+			var lip := MeshInstance3D.new()
+			var lip_box := BoxMesh.new()
+			lip_box.size = Vector3(TRANSIT_WIDTH, 0.08, 0.13)
+			lip.mesh = lip_box
+			lip.material_override = _deck
+			lip.position.y = 0.32
+			cap.add_child(lip)
+			var locator := MeshInstance3D.new()
+			var locator_disk := CylinderMesh.new()
+			locator_disk.top_radius = 0.055
+			locator_disk.bottom_radius = 0.085
+			locator_disk.height = 0.025
+			locator.mesh = locator_disk
+			locator.material_override = _cyan
+			locator.position.y = 0.34
+			cap.add_child(locator)
 			var radial := point(angle).normalized()
 			var normal := plane_normal()
 			cap.transform = Transform3D(Basis(radial, normal, radial.cross(normal)), point(angle) + normal * 0.125)
@@ -195,6 +216,12 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_normal(normal)
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	var height := lift + current.y
+	if kind != "":
+		# Raise the load-bearing shell beside each work floor, leaving a recessed
+		# center for the facility rather than resting a separate pad on the ring.
+		var node_span := 1.0 - smoothstep(0.10, 0.29, absf(angle - FACILITY_ANGLES[kind]))
+		var shoulder := smoothstep(0.19, 0.38, absf(current.x))
+		height += 0.15 * node_span * shoulder
 	if kind == "refinery":
 		var distance := absf(angle - FACILITY_ANGLES[kind])
 		var foot_span: float = 1.0 - smoothstep(0.080, 0.18, distance)

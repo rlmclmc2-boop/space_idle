@@ -195,3 +195,15 @@
 公共组已在 `design/clear-zone-host@91210488` 将实际运行的普通、悬浮、按下、焦点和禁用状态集中到 `BridgeTheme`，并明确星球内页普通页签亮金属包边偏重、选中与未选只靠抽屉才易分辨。此版只调整 `planet_panel.gd` 现有 `_paint_button()` 的三个 toggle 页签：仍取本组已接的深青漆面原材，普通态降低亮边面积／面亮度，悬浮居中，原 `button_pressed` 驱动的 `pressed` 作为持续暖青选中面；另给 `hover_pressed` 独立原生面，焦点细边及禁用字底保留。`_rebuild_drawer()` 原有 `set_pressed_no_signal` 决定当前页签，不用新的状态副本、覆盖控件或全页重建；执行、选择器、抽屉、球环、设施和资源刷新未改。本模块不复制或改写公共 `BridgeTheme`／宿主文件，亦不使用已撤销的 Figma 制作源。
 
 [同版 1440×900 关闭态与三个选中抽屉整屏](evidence/planet-tab-state-source/)由[固定驱动](evidence/planet-tab-state-source/planet-tab-state-driver.gd)按原受控第一固态星四设施 built 取图。作者原尺寸看 `facilities.png`、`crew.png`、`exploration.png`：在未悬浮状态下，当前页签本身的暖边／面色与较暗的其他页签可辨，正文、球环及四设施没有新裁切。`crew_focus.png` 用原 Button `grab_focus()` 展示原生焦点与持续选中的叠加；`crew_facility_disabled_diagnostic.png` 仅把设施页签临时 `disabled=true` 展示禁用字底，**不是**玩法正常禁用状态，取图后恢复。日志断言人员选中、焦点归属、诊断禁用与探索选中；[Godot 4.7.2 运行与脚本检查日志](evidence/planet-tab-state-source/)及六图 SHA 在同目录固定，两命令退出 0。本节只供页签状态与本组整屏原审；公共组合仍须整体组同步本版 `planet_panel.gd` 后另取当前组合整屏，旧 `331` 组合图不能冒充此次状态源码。
+
+## 承重脊与四座建筑整体返修：固态代表候选
+
+用户亲看 `ac5d7d55` 的公共组合后明确退回星球主体：“离概念图差太多，只是单纯的接了起来”，并指出建筑摆放和环设计本身不对。此前对局部连接、控件或限定帧的接受不能当作整体品质认可。此版重新逐张对照[已批准固态完整代表稿](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)（`8136cef8`）和[五态闭环稿](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png)（`1eda07fd`）：上一运行图的环为约全宽均匀象牙托盘、球后上弧几乎整段露出、四建筑小且分离贴在环缘；概念则是倾斜的单条象牙装甲／深青承力肋／青色通道，背段进球后，前段与球底留暗缝，圆站、金顶炉、橙开放湾、双臂船坞成为四个不同的承力节点。
+
+本次改 `planet_orbital_spine.gd` 的同一个四段 3D mesh：缩窄通行截面、每座自带的节点处平滑张肩并形成凹座；前后仍为可独立领取的四段，未建段无预支环体，端部是有暗色断面／象牙唇／低矮青色定位点的封帽，建齐后真实接合。轨道平面俯仰和相对球体的视觉高度调整后，后弧由现有深度遮挡进入球后，前弧在暗空间与球底分开；球径略收，仍由原球 shader 独立自转。环面改用[概念约束的新 UV 原图及提示词](../../../../assets/planets/orbital_spine/deck-concept-spine-prompt.txt)（SHA256 `e2bd9d9d3c7527558e0271f9095324620c7dacca540cc6ad91754a128f67defa`），中心深青承重槽／青线与两侧大面装甲在 mipmap 后按模块尺度合并；环材不再以强自发光洗平受光，仍保原四段深度和活动轴。
+
+空间站的[可编辑 Blender 来源／导出 GLB](../../../../art_sources/planet_facilities_v5/build.py)把卫星式大翼改为短供能片、增圆形承力站体和低天线，原 `HabitatRingSpin`、`SolarHingeLeft/Right` 枢轴仍在。精炼、工坊、船坞的三张透明主体图由 ImageGen 按批准稿和各自旧主体定向编辑；[实际提示词、输入、生成原路径与 PNG SHA](../../../../assets/planets/facilities_v5/illustrated/concept-spine-asset-prompts.txt)固定，图像未经 Python 像素修改。金顶炉保现有入料口／散热活动层配准，橙色工坊保开放湾与独立工具，船坞保双臂、吊机／泊位枢轴并在静态主体内放一只小型停泊艇。设施依旧随各自段转动，已有探索船路线和人员／资源／独立施工／领取逻辑未改；页签状态仍为上节源码。
+
+[本版固态裸态至四座完整五张 1440×900 整屏、设施抽屉](evidence/integrated-spine-revision/)由[同版结构驱动](evidence/integrated-spine-revision/integrated-structure-driver.gd)通过受控保存恢复设为各 built 组合；这是外观状态夹具，不证明自然施工或领取成交。作者原尺寸查看 `stage_2` 两独立端盖、`stage_3` 右侧接段、`stage_4` 整体：四建筑身份和位置更接近批准图，前弧有球底暗缝，后弧球后遮挡，未见本次所看状态的越界；仍请原整体审判定其造型、截面和一体感是否真正达到用户概念，不能把本段自查写成用户通过。
+
+[8.16 秒当前码自然时间 VFR 短片](evidence/integrated-spine-revision/natural-short-vfr.mp4)、[50 帧实际时间戳](evidence/integrated-spine-revision/natural-timestamps.json)和首／中／末原帧用于看这段相位的球与环独转及建筑随段，不用编码 `r_frame_rate`、取样率作引擎 FPS 或性能。夹具冻结业务步进，只让视觉按 `Time.get_ticks_usec()` 差推进；画面“探索未运行”是真实夹具状态，未替探索船取证。Godot 4.7.2 导入、`--check-only --quit`、结构与短动态驱动退出 0；[日志、探测与 SHA](evidence/integrated-spine-revision/)固定。此版只交第一固态代表与必要短动态，不借旧码固态整圈／六类静图推断新版完整整圈或其他天体整体通过；若原审继续指出准确的建筑或环形偏差，应在此结构上继续返修。

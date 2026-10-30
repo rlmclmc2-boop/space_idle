@@ -1,8 +1,8 @@
 [
   {
     "kind": "auto_explore",
-    "meshes": 16,
-    "triangles": 2516
+    "meshes": 23,
+    "triangles": 4232
   },
   {
     "kind": "refinery",

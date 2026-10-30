@@ -76,6 +76,9 @@ func _ready() -> void:
 	_world.add_child(_camera)
 	_spine = preload("res://scripts/planet_orbital_spine.gd").new()
 	_world.add_child(_spine)
+	# The tilted architectural plane sits below the photosphere's visual center:
+	# its front load path clears the lower limb while the back path stays masked.
+	_spine.position.y = -0.42
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
@@ -115,7 +118,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedWorkshopBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-broad-planes.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-concept-spine.png")
 	body.pixel_size = 0.0031
 	body.position = Vector3(0, 1.38, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -179,7 +182,7 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedRefineryBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-broad-planes.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-concept-spine.png")
 	body.pixel_size = 0.0024
 	body.position = Vector3(0, 1.00, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -248,7 +251,7 @@ func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedShipyardBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-orbit-broad-planes.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-orbit-concept-spine.png")
 	body.pixel_size = 0.0030
 	body.position = Vector3(0, 1.36, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -395,7 +398,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# The built saddle orbits with the spine; the service module keeps an
 		# upright attitude on that saddle, so long solar wings do not roll into
 		# detached vertical slivers as the orbital structure turns.
-		var scale_factor := 0.36 if kind == "auto_explore" else 0.42
+		var scale_factor := 0.64 if kind == "auto_explore" else 0.55 if kind == "refinery" else 0.50 if kind == "equipment" else 0.52
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
 		model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
 		if kind == "equipment": _position_workshop_arm(model)
