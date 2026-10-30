@@ -1,15 +1,11 @@
-# 装备当前入口：返修版内部静态接受，继续组合交付
+# 装备当前入口：用户三项退回后的返修候选
 
-main功能已认可；用户已明确退回“控件分好几套，没有统一标准”，本轮返修版尚未作为新版交用户，不得写成用户未给品质结论或以“等待用户结论”作停工门槛。根/原Astra退回34c79083的通用灰硬凹框后，本候选改为单件手绘漆面壳、开放候选托盘和软仪表面，撤旧框节点/绘制分支，并修已发现的数值更新过度失效。根现转告原唯一Astra已亲看本轮4整屏/7局部，整页静态视觉接受；这属于内部静态审，不是用户验收或全运行通过，不pushmain。
+用户已看完fc361675/784d8de3新版实图并明确退回：“右侧太空了，而且装甲替换展示没有，购买按钮亮了之后明显不一致”。这是当前返修依据；此前原Astra内部静态接受不等于用户接受，不再写成等待用户给品质结论。本轮仍原唯一SOL/原工作区/art分支，最新固定运行源码 `9e420e1c184d355133737a72f716358203ffa51a`，完整图证与边界见[右侧比例、装甲替换与可用态](candidate-balance-and-armour/README.md)。8同版1440×900真实整屏＋4原像素局部全部实际看过，包含武器购买可用/不足、替换、装甲候选可用、真实GUI安装装甲及之后原冷却/Batch；交原唯一Astra/根重新整体审，不自判艺术通过，不pushmain。
 
-用户新退回“每个控件的确都有质感了，但是分成好几套，没有统一标准”。原同族候选 `9625564c/79e48f10` 已被原审整体退回（近白薄片感、金键承托弱）；字阶/轮廓/焦点保留。本轮返修源码 `fc361675131aa59ce21ec270a5aaa7e9715f9746`，最新整页图：[共同受光与承托关系](lighting-coherence/README.md)，含4同版完整整屏、原像素局部与3类Native焦点。在原同一绘制源替换亮度峰值、连续受光截面与嵌入/抬起承托关系，不改保留结构、舰船主体、两键或Owner精准刷新，不新造规范/公共宿主。原[完整材质a846候选](coherent-material-polish/README.md)、[e52禁用窄修](disabled-action-readability/README.md)均保其旧版本图与边界；不能把局部质感或可读性认可当整页统一通过。本轮内部整页静态接受已成立，继续原整页统一交付与整体接入配合；历史退回保留原版本，不误转成本版待返修项。
+本轮只保留原台壳/船主体结构做比例与展示修正：原候选图44px、52px同族承托、右区无替换时居中；防御两个候选充分利用原右栏；无替换时已有两键行贯通下方，替换时购买/安装各归原左右栏。购买、安装、Batch可用面由整块金改原同面材的蓝灰，次操作/禁用/焦点仍同源。未加无关说明填空、叠层或多套框。装甲/护盾Owner链原已存在，上一批是缺防御交付图；本版真实GUI安装补齐展示，不重造防御规则。
 
-用户“目前没有必要性，不是结构级的改善”“先把目前打磨好”继续执行为保留当前结构；[信息组织提案](header-inner-chamfer/information-layout-proposal.md)与[高度分析](header-inner-chamfer/height-feasibility.md)仅历史存档、非待执行。36运行只属于89ac5d0a，当前只做受影响材质的同版实机/原生状态过程，没有重跑交易全链。
+main功能认可范围、两键×1→×10→MAX只报价且购买独立、Owner价格/准入/精准局部刷新、无记录/最近结果、未锁纯空位无交互、资源icon_modulate原色、标题沿壳切角继续保持。用户“先把目前打磨好”仍不恢复[信息组织提案](header-inner-chamfer/information-layout-proposal.md)或[高度分析](header-inner-chamfer/height-feasibility.md)中的大幅压缩/详情重排；它们仅历史存档。公共顶栏、宿主及组合接入仍由整体组负责。
 
-历史[34结构深度退回候选](workbench-structural-depth/README.md)、[386像素尺度限定改善、整体退回](materials-pixel-scale/README.md)、[ba7退回材质及旧动态/32观察](https://github.com/rlmclmc2-boop/space_idle/blob/c6e54749a6450c53df6e2900fb6e9bcb4b6ff262/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/materials-main-revision/README.md)、[原9ed功能证据](https://github.com/rlmclmc2-boop/space_idle/blob/9ed2090dcee8fb1d90d61846e92e6b1f94622332/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md)及[main正常入口](../main-integration/README.md)保持原版边界。旧源atlas已按原字节移入[历史来源档案](rejected-art-sources/ba7/README.md)，不再runtime消费。
+旧[fc共同受光/承托](lighting-coherence/README.md)的源码 `fc361675131aa59ce21ec270a5aaa7e9715f9746`／证据 `784d8de3536afaae0bb430506ab1dfc697bcd8d5`，与整体组固定接入 [`f72f6014ab62641e811834b053adf01d7fe19866`](https://github.com/rlmclmc2-boop/space_idle/blob/f72f6014ab62641e811834b053adf01d7fe19866/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)保持原时点。该对象当时8项panel/helper/素材/字体逐字fc及接口完整的核对，不外推本9e版已组合；本版需整体组精确接入后固定其自身交付/已审标识，不拿远端最新代替。
 
-当前原整页返修实物与图证已齐：固定源码 `fc361675131aa59ce21ec270a5aaa7e9715f9746`，固定证据 `784d8de3536afaae0bb430506ab1dfc697bcd8d5`。整体组现成接入对象 [`f72f6014ab62641e811834b053adf01d7fe19866`](https://github.com/rlmclmc2-boop/space_idle/blob/f72f6014ab62641e811834b053adf01d7fe19866/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md) 明确绑定上述源/证据，并给出装备、B01反应堆、星球同场景三整屏及路由摘要；它是已固定接入记录，不因它是查得的远端HEAD就认定整体已审通过。
-
-本组只读按该固定对象比对：equipment_panel、resource_visuals helper、机库、painted-console-shell、control-materials、两张五资源图集及NotoSansSC字体共8项逐字本组源码；set_shared_host、prepare_host_hide、has_exclusive_ui、exclusive_ui_changed及icon_modulate保持。未发现本装备源/资产/接口/资源身份漏接；没有本组需要新做的材质微调或独立复测。组合证据交付与整体审状态由整体组/根继续负责，其文档所列B01旧版费用/MAX问题属于反应堆接入责任，不能转成本装备未完或要求用户重给品质意见。组合最终已审SHA须由整体组/根的明确固定标识确认，不用远端最新代替。
-
-当前继续配合原组合交付，不扩大归档布局提案、业务、独立交易全链、素材批或工作区。原源码、图片、日志、映射及manifest保持各自版本；原未测按下/hover像素图、冷却计时、全舰满装、极端MAX、Windows-DPI和本组未跑的共享宿主组合，不因内部静态接受而扩大为全运行通过。
+历史[同族79e](unified-control-family/README.md)、[a846完整材质](coherent-material-polish/README.md)、[e52禁用窄修](disabled-action-readability/README.md)、[34结构退回](workbench-structural-depth/README.md)、[386像素尺度](materials-pixel-scale/README.md)、[ba7源档案](rejected-art-sources/ba7/README.md)及[main正常入口](../main-integration/README.md)保各自版本边界，不误写成最新实现。本版只做受影响必要视觉过程和一次真实装甲安装，未重新购买/36交易全链、冷却到期、自然成长、全舰全槽、极端MAX、焦点/hover/pressed矩阵、Windows-DPI或共享宿主组合；内部视觉或0失败均不扩大成全运行通过。
