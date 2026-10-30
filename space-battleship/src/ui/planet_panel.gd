@@ -133,6 +133,8 @@ func _ready() -> void:
 	var status_plate := _skin(Color("142f3b", 0.94), Color("bd9e6e"), 1, 5)
 	status_plate.border_width_left = 3
 	status_plate.content_margin_left = 11
+	status_plate.content_margin_top = 4
+	status_plate.content_margin_bottom = 4
 	_task_line.add_theme_stylebox_override("normal", status_plate)
 	add_child(_progress)
 	_progress.show_percentage = false
@@ -243,7 +245,7 @@ func _layout() -> void:
 	_progress.position = Vector2(258, 158)
 	_progress.size = Vector2(226, 4)
 	_task_line.position = Vector2(22, 216)
-	_task_line.size = Vector2(340, 48)
+	_task_line.size = Vector2(340, 28)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
 	_feedback.position = Vector2(22, size.y - 80)
 	_feedback.size = Vector2(500, 70)
