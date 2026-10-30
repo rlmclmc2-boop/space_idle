@@ -129,3 +129,11 @@
 原审保留 `867e1825` 的主体、展开态详情和页内表面层级，只指出征服详情中的“探索经验共享”被逐字断行、累计奖励标题与四项同权。本次把本星球征服状态和经验共享状态拆为两个完整事实行，保持原布尔来源与“开启／未开启”措辞；累计奖励标题增加字号和段前空间，四项使用左右对齐的名称／原 `display_text` 值，单位、来源和内容均未改。只调整原探索抽屉这一处布局，不动控件材质、交互、刷新和球环展示。
 
 [本版 stage4、设施、人员、探索与征服展开整屏](evidence/planet-control-conquest/)由[同版驱动](evidence/planet-control-conquest/planet-control-conquest-driver.gd)重取，作者逐张原尺寸查看无断词、截字或展开态设施遮挡；同版自动／手动运行态仅是视觉状态注入，未提交探索命令。[运行、编译与 SHA](evidence/planet-control-conquest/)固定本次版本。前述 `84c47af1` 自然时间视频与此版不同，不作为新码动态证据；其他天体及征服报价／领取未在此局部排版取证中重验。
+
+## 内区漆面材质与抽屉标题净空：共享接入复审候选
+
+共享组合 `design/clear-zone-host@63a2476a` 的六张整屏显示：星球按钮、选择框、抽屉仍主要靠渐变／细框，装备同屏控件则有完整漆面纹理、浅边光和接触唇；探索抽屉“收起”键的下缘越过原固定 50px 标题带。此版不改已接受的场景／详情并置、奖励断词及层级、业务或刷新。`planet_panel.gd` 在原 Button/OptionButton 上以九宫格键面替换程序渐变和叠画亮暗线，冷深蓝辅助、暖金主操作和带框象牙选择面均从[星球复用的三材质原图](../../../../assets/ui/planet/control-materials.png)按原装备内区同源素材取样；抽屉只用其低对比玻璃内面，原 PanelContainer 与标题行仍是唯一结构。标题深面下缘按实际标题行位置绘制，给关闭键 6px 下净空，不再穿过按钮或压正文。禁用色调、焦点轮廓及原生按钮命令仍保留。
+
+图像**没有二次编辑或重生成**：星球原图 SHA256 为 `707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c`，与共享分支 `assets/ui/equipment/materials-20261029/control-materials.png` 字节一致；[原生成提示](../../../../assets/ui/planet/control-materials-prompt.txt)及[来源／区域记录](../../../../assets/ui/planet/control-materials-sources.json)一并保留。共享接入需同步此 PNG、其 `.import` 与 `planet_panel.gd`，无需改公共 Theme、main 或装备资产。
+
+[本版 stage4、设施、人员、探索、征服展开及两种运行态原屏](evidence/planet-control-painted/)由[同版驱动](evidence/planet-control-painted/planet-control-painted-driver.gd)取得。作者逐张原尺寸看主键、次键、人员／设施选择器与抽屉同屏时的材质、文字净空和四设施展示；运行态仅注入视觉状态，不代表探索命令或完整操作验收。[运行、Godot 4.7.2 编译日志及 SHA](evidence/planet-control-painted/)限定此源码版。共享组合中的实际顶轨／导航须由整体组精确接入后重新取同版整屏审查，本节的独立星球屏与 `63a2476a` 旧组合屏不能拼成新组合验收；也不把旧自然时间视频算作新码动态。
