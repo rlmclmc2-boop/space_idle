@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1440" height="900" viewBox="0 0 1440 900">
+<defs><clipPath id="scene"><rect x="0" y="65" width="808" height="445"/></clipPath><linearGradient id="opening" gradientUnits="userSpaceOnUse" x1="0" x2="808" y1="0" y2="0"><stop stop-color="#000"/><stop offset="0.045" stop-color="#fff"/><stop offset="0.955" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient><mask id="scene-edge" maskUnits="userSpaceOnUse" x="0" y="65" width="808" height="445"><rect x="0" y="65" width="808" height="445" fill="url(#opening)"/></mask></defs>
+<image x="0" y="0" width="1440" height="900" xlink:href="eea-combo-reactor-max-1440x900.png"/>
+<g clip-path="url(#scene)"><rect x="0" y="65" width="808" height="445" fill="#102a39"/><image x="0" y="0" width="1440" height="900" mask="url(#scene-edge)" xlink:href="eea-combo-reactor-max-1440x900.png"/></g>
+</svg>
