@@ -1,0 +1,5 @@
+Godot 4.7.2 normal main.tscn, 1440x900, --audio-driver Dummy.
+PUBLIC_52C ship_settings_resources=true
+Runtime ERROR/SCRIPT ERROR: none; VSync warning only.
+Campaign/Planet restore fixture grants all and builds first solid planet before public routes.
+No purchase, planet build, or natural unlock claimed.
