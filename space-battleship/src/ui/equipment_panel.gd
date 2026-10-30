@@ -577,7 +577,7 @@ func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
     for id in _cost_cells:_cost_cells[id].icon.hide();_cost_cells[id].name.hide();_cost_cells[id].amount.hide()
     _purchase.tooltip_text=""
     var first_row_y:float=_workbench_layout.fee_y
-    _cost.text="本次费用";_cost.position=Vector2(20,first_row_y);_cost.size=Vector2(84,22)
+    _cost.text="升级费用";_cost.position=Vector2(20,first_row_y);_cost.size=Vector2(84,22)
     _cost.visible=affordable;_payment_state.visible=not affordable
     _payment_state.position=Vector2(20,first_row_y);_payment_state.size=Vector2(84,22)
     _payment_state.text="" if affordable else _reason(reason);_payment_state.tooltip_text=_payment_state.text
@@ -763,14 +763,14 @@ func _refresh_comparison() -> void:
     _layout_primary_values()
     _install.text = "安装" + str(NAMES.get(_candidate, "装备")) if not _candidate.is_empty() else "选择装备"
     _install.disabled = _candidate.is_empty() or not comparison.switch_admission.ok
-    _install.tooltip_text = "" if comparison.switch_admission.ok else _reason(str(comparison.switch_admission.reason))
+    _install.tooltip_text = "" if comparison.switch_admission.ok or str(comparison.switch_admission.get("reason",""))=="EquipmentSwitchLocked" else _reason(str(comparison.switch_admission.reason))
     _comparison_group.visible=_selection_open and different
     _install.visible=_selection_open and different
     _comparison_title.text = "装备选择"
     _compare_row_label.text=primary
     for column in 2:
         var row = comparison.current if column==0 else comparison.candidate
-        _compare_headers[column].text=("现装 · " if column==0 else "所选 · ")+(_interval(row) if fact.category=="weapon" else str(NAMES.get(str(row.equipment_id),"空槽")))
+        _compare_headers[column].text=("现装" if column==0 else "替换后")+(" · "+_interval(row) if fact.category=="weapon" else "")
         _compare_values[column].text=_value(row)
     _period_caption.position=Vector2(0,0)
     _period_caption.visible=fact.category=="weapon"
@@ -778,7 +778,6 @@ func _refresh_comparison() -> void:
         _install.text="选择装备"
         _install.tooltip_text=""
     elif str(comparison.switch_admission.get("reason",""))=="NoChange":_install.text="已装备"
-    elif str(comparison.switch_admission.get("reason",""))=="EquipmentSwitchLocked":_install.text="换装冷却中"
     elif str(comparison.switch_admission.get("reason",""))=="EquipmentLocked":_install.text="尚未解锁"
     _quantity_button.text="MAX" if _maximum else "×"+str(_quantity)
 
@@ -883,7 +882,7 @@ func _refresh_choices(fact: Dictionary, read_options:bool=true) -> void:
         item.button.focus_mode=Control.FOCUS_ALL if option.enabled else Control.FOCUS_NONE
         item.button.tooltip_text=""
         item.caption.text=str(NAMES.get(id,option.name))
-        item.status.text="已装备" if str(fact.equipment_id)==id else "待安装" if _candidate==id else ""
+        item.status.text="已装备" if str(fact.equipment_id)==id else ""
         item.caption.modulate=Color.WHITE if option.enabled else Color("b1beb9")
         item.icon.modulate=Color.WHITE
         item.icon.material=null
