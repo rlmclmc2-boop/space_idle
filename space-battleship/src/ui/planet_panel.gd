@@ -577,12 +577,31 @@ func _build_conquest_detail() -> void:
 	if not _conquest_error.is_empty():
 		_caption(_drawer_body, "征服详情暂不可用：" + describe_error(_conquest_error))
 		return
-	_caption(_drawer_body, "本星球：%s · 探索经验共享：%s" % ["已征服" if _conquest_planet.get("conquered", false) else "未征服", "开启" if _conquest_planet.get("shared_experience", false) else "未开启"])
-	_caption(_drawer_body, "已征服星球累计奖励")
+	_caption(_drawer_body, "本星球：%s" % ["已征服" if _conquest_planet.get("conquered", false) else "未征服"])
+	_caption(_drawer_body, "探索经验共享：%s" % ["开启" if _conquest_planet.get("shared_experience", false) else "未开启"])
+	var rewards_heading := _caption(_drawer_body, "已征服星球累计奖励")
+	rewards_heading.custom_minimum_size.y = 31
+	rewards_heading.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	rewards_heading.add_theme_font_size_override("font_size", 19)
+	rewards_heading.add_theme_color_override("font_color", Color("173b4b"))
 	var names := {"level_bonus:equipment": "装备有效等级加成", "level_bonus:enhancement": "强化额外等级", "free_charge:all": "免费充能比例", "luck:all": "幸运加成"}
 	for row in _conquest_rewards:
 		var key: String = str(row.kind) + ":" + str(row.target)
-		_caption(_drawer_body, str(names.get(key, key)) + "：" + str(row.display_text))
+		var reward_line := HBoxContainer.new()
+		reward_line.add_theme_constant_override("separation", 4)
+		_drawer_body.add_child(reward_line)
+		var reward_name := Label.new()
+		reward_name.text = str(names.get(key, key))
+		reward_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		reward_name.add_theme_font_size_override("font_size", 16)
+		reward_name.add_theme_color_override("font_color", Color("46606a"))
+		reward_line.add_child(reward_name)
+		var reward_value := Label.new()
+		reward_value.text = str(row.display_text)
+		reward_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		reward_value.add_theme_font_size_override("font_size", 16)
+		reward_value.add_theme_color_override("font_color", Color("173b4b"))
+		reward_line.add_child(reward_value)
 
 func _build_facility_detail() -> void:
 	world_building_picker = OptionButton.new()
