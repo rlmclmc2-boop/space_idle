@@ -2,6 +2,7 @@ shader_type canvas_item;
 render_mode unshaded;
 
 uniform sampler2D active_plate : source_color, filter_linear;
+uniform sampler2D effect_mask : filter_linear;
 uniform float core_load = 0.0;
 uniform float weapons_load = 0.0;
 uniform float defence_load = 0.0;
@@ -41,8 +42,7 @@ void fragment() {
 	vec3 color = mix(idle.rgb, active.rgb, blend_power);
 
 	// Fluid inside the glass sphere moves while painted metal braces stay fixed.
-	float glass = smoothstep(0.13, 0.30, active.b - active.r);
-	float inner = ellipse(uv, vec2(0.5, 0.255), vec2(0.145, 0.132), 0.12) * glass * step(0.0001, core_load);
+	float inner = texture(effect_mask, uv).r * step(0.0001, core_load);
 	float r = length((uv - vec2(0.5, 0.255)) / vec2(0.145, 0.132));
 	float angle = atan(uv.y - 0.255, uv.x - 0.5);
 	vec2 drift = 0.006 * vec2(sin(angle * 3.0 + r * 12.0 - phase * 2.3), cos(angle * 4.0 - r * 10.0 + phase * 1.7));
@@ -59,8 +59,7 @@ void fragment() {
 	color = mix(color, vec3(0.83, 0.54, 1.0), clamp(pipe_c * condensation_load * 3.1, 0.0, 0.72));
 
 	// Each machine has its own moving signature and no glow at true zero.
-	float muzzle_y = 0.098 + uv.x * 0.39;
-	float muzzle = (1.0 - smoothstep(0.006, 0.020, abs(uv.y - muzzle_y))) * step(0.01, uv.x) * step(uv.x, 0.24);
+	float muzzle = texture(effect_mask, uv).g;
 	float shot = pow(0.5 + 0.5 * cos((uv.x * 5.0 + phase * 0.88) * 6.2831853), 12.0);
 	color = mix(color, vec3(1.0, 0.81, 0.32), clamp(muzzle * shot * weapons_load * 2.8, 0.0, 0.68));
 	vec2 shield_p = (uv - vec2(0.90, 0.14)) / vec2(0.060, 0.080);

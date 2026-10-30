@@ -8,7 +8,7 @@ const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
 const KEY_PAINT = preload("res://assets/ui/reactor/ship-hub-r9/control-materials.png")
 const ICON_ATLAS = preload("res://assets/ui/reactor/b01/control-icons.png")
 const METER_FRAME = preload("res://assets/ui/reactor/b01/meter-frame.png")
-const READOUT_FRAME = preload("res://assets/ui/reactor/b01/readout-frame.png")
+const ROW_INSTRUMENT = preload("res://assets/ui/reactor/b01/row-instrument.png")
 const SLIDER_TRACK = preload("res://assets/ui/reactor/b01/slider-track.png")
 const SLIDER_FILL = preload("res://assets/ui/reactor/b01/slider-fill.png")
 const SLIDER_KNOB = preload("res://assets/ui/reactor/b01/slider-knob.png")
@@ -274,18 +274,12 @@ func _build() -> void:
 		name.add_theme_font_override("font", _ui_font_bold)
 		name.add_theme_color_override("font_color", Color("f5f3e9"))
 		name.text = NAMES[id]
-		var ratio_face := TextureRect.new()
-		ratio_face.position = Vector2(368, top + 5)
-		ratio_face.size = Vector2(88, 33)
-		ratio_face.texture = READOUT_FRAME
-		ratio_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(ratio_face)
-		var effect_face := TextureRect.new()
-		effect_face.position = Vector2(470, top + 5)
-		effect_face.size = Vector2(91, 33)
-		effect_face.texture = READOUT_FRAME
-		effect_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(effect_face)
+		var row_face := TextureRect.new()
+		row_face.position = Vector2(190, top + 4)
+		row_face.size = Vector2(370, 41)
+		row_face.texture = ROW_INSTRUMENT
+		row_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(row_face)
 		var strip := Control.new()
 		strip.position = Vector2(194, top + 4)
 		strip.size = Vector2(265, 41)
@@ -303,7 +297,7 @@ func _build() -> void:
 			var track := StyleBoxTexture.new()
 			track.texture = SLIDER_TRACK if state == "slider" else SLIDER_FILL
 			track.modulate_color = Color.WHITE if state == "slider" else BAR_COLORS[id].lightened(0.22) if state == "grabber_area_highlight" else BAR_COLORS[id]
-			for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: track.set_texture_margin(side, 10)
+			for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: track.set_texture_margin(side, 6 if state == "slider" else 3)
 			track.content_margin_top = 9
 			track.content_margin_bottom = 9
 			slider.add_theme_stylebox_override(state, track)
@@ -323,7 +317,7 @@ func _build() -> void:
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.add_theme_font_override("font", _ui_font_bold)
 		effect.add_theme_color_override("font_color", Color("e5edf0"))
-		_rows[id] = {"effect":effect, "name":name, "slider":slider, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "ratio_face":ratio_face, "effect_face":effect_face}
+		_rows[id] = {"effect":effect, "name":name, "slider":slider, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
 		for control in _rows[id].values(): control.visible = false
 	_equal = _button("均分", Rect2(651, 558, 101, 41), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
 	_equal.tooltip_text = "均分供能"

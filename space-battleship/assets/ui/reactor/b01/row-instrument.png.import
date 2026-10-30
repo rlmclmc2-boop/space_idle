@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c167ufska7g75"
-path="res://.godot/imported/readout-frame.png-424264b026e1ba1f68ec732bd5c6427e.ctex"
+uid="uid://dyp7o0n64ae0b"
+path="res://.godot/imported/row-instrument.png-c139c6226694b989a8a665b5ccd9b609.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/reactor/b01/readout-frame.png"
-dest_files=["res://.godot/imported/readout-frame.png-424264b026e1ba1f68ec732bd5c6427e.ctex"]
+source_file="res://assets/ui/reactor/b01/row-instrument.png"
+dest_files=["res://.godot/imported/row-instrument.png-c139c6226694b989a8a665b5ccd9b609.ctex"]
 
 [params]
 
