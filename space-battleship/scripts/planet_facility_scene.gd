@@ -35,8 +35,6 @@ var _workshop_body_sprite: Sprite3D
 var _workshop_arm_sprite: Sprite3D
 var _workshop_carriage_sprite: Sprite3D
 var _workshop_link: MeshInstance3D
-var _workshop_guides: Array[MeshInstance3D] = []
-var _workshop_bay_floor: MeshInstance3D
 var _station_body_sprite: Sprite3D
 var _refinery_shutter_sprites: Dictionary = {}
 var _refinery_body_sprite: Sprite3D
@@ -138,7 +136,7 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	_hide_imported_meshes(model)
 	var body := Sprite3D.new()
 	body.name = "IllustratedWorkshopBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-open-through-node.png")
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-short-throat.png")
 	body.pixel_size = 0.0031
 	body.position = Vector3(0, 0.25, 0)
 	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -147,31 +145,6 @@ func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.render_priority = 0
 	model.add_child(body)
 	_workshop_body_sprite = body
-	var bay_floor := MeshInstance3D.new()
-	bay_floor.name = "WorkshopOwnedTransferThroat"
-	var bay_finish := StandardMaterial3D.new()
-	bay_finish.albedo_color = Color("193c52")
-	bay_finish.metallic = 0.14
-	bay_finish.roughness = 0.60
-	bay_finish.cull_mode = BaseMaterial3D.CULL_DISABLED
-	bay_floor.material_override = bay_finish
-	model.add_child(bay_floor)
-	_workshop_bay_floor = bay_floor
-	# Two real transfer members run from the illustrated foot sockets into the
-	# owned section's recessed channel. Their ends are solved each pose because
-	# the upper gantry remains camera-facing while its actual deck rotates.
-	for side in [-1.0, 1.0]:
-		for tone in [Color("233f50"), Color("e6d7b8"), Color("4cb9c2")]:
-			var guide := MeshInstance3D.new()
-			guide.name = "WorkshopBayGuide%s%s" % [str(side), str(_workshop_guides.size() % 3)]
-			guide.mesh = BoxMesh.new()
-			var finish := StandardMaterial3D.new()
-			finish.albedo_color = tone
-			finish.metallic = 0.12
-			finish.roughness = 0.58
-			guide.material_override = finish
-			model.add_child(guide)
-			_workshop_guides.append(guide)
 	# Both sprites sample the original illustration. Splitting at the shoulder
 	# keeps the ivory carriage on the gantry while the tool works below it.
 	var arm_texture := preload("res://assets/planets/facilities_v5/illustrated/workshop-arm.png")
@@ -318,37 +291,6 @@ func _position_workshop_arm(model: Node3D) -> void:
 	if _workshop_link.visible:
 		var joint := origin - screen_right * (0.10 * width) + screen_up * ((WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size)
 		_workshop_link.transform = Transform3D(Basis(screen_right, screen_up, camera_front).scaled(Vector3(width, extension + 0.10, 1)), joint - screen_up * extension * 0.5)
-	_position_workshop_guides(model, screen_right, screen_up, camera_front)
-
-func _position_workshop_guides(model: Node3D, screen_right: Vector3, screen_up: Vector3, camera_front: Vector3) -> void:
-	var angle: float = _spine.FACILITY_ANGLES["equipment"]
-	var starts: Array[Vector3] = []
-	var ends: Array[Vector3] = []
-	for index in 2:
-		var side := -1.0 if index == 0 else 1.0
-		var socket_pixel := 548.0 if index == 0 else 970.0
-		var socket := _workshop_body_sprite.position + screen_right * ((socket_pixel - 768.0) * _workshop_body_sprite.pixel_size) + screen_up * ((512.0 - 850.0) * _workshop_body_sprite.pixel_size) + camera_front * 0.11
-		var target_angle := angle + (0.30 if index == 0 else 0.22)
-		var target_spine: Vector3 = _spine.point(target_angle) + _spine.point(target_angle).normalized() * side * 0.10 + _spine.plane_normal() * 0.53
-		var target := model.to_local(_spine.to_global(target_spine)) + camera_front * 0.08
-		starts.append(socket)
-		ends.append(target)
-		var travel := target - socket
-		if travel.length() < 0.01: continue
-		var bearing := Basis(Quaternion(Vector3.UP, travel.normalized()))
-		for layer in 3:
-			var guide := _workshop_guides[index * 3 + layer]
-			var thickness := 0.12 if layer == 0 else 0.085 if layer == 1 else 0.018
-			var offset := camera_front * (0.0 if layer == 0 else 0.027 if layer == 1 else 0.055)
-			guide.transform = Transform3D(bearing.scaled(Vector3(thickness, travel.length(), 0.075 if layer == 0 else 0.027)), socket + travel * 0.5 + offset)
-	if starts.size() == 2:
-		var throat := SurfaceTool.new()
-		throat.begin(Mesh.PRIMITIVE_TRIANGLES)
-		var lip := camera_front * -0.018
-		for vertex in [starts[0] + lip, ends[0] + lip, starts[1] + lip, starts[1] + lip, ends[0] + lip, ends[1] + lip]:
-			throat.set_normal(camera_front)
-			throat.add_vertex(vertex)
-		_workshop_bay_floor.mesh = throat.commit()
 
 func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
