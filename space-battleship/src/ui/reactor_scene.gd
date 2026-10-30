@@ -7,6 +7,11 @@ const PlayerText = preload("res://src/ui/player_text.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
 const KEY_PAINT = preload("res://assets/ui/reactor/ship-hub-r9/control-materials.png")
 const ICON_ATLAS = preload("res://assets/ui/reactor/b01/control-icons.png")
+const METER_FRAME = preload("res://assets/ui/reactor/b01/meter-frame.png")
+const READOUT_FRAME = preload("res://assets/ui/reactor/b01/readout-frame.png")
+const SLIDER_TRACK = preload("res://assets/ui/reactor/b01/slider-track.png")
+const SLIDER_FILL = preload("res://assets/ui/reactor/b01/slider-fill.png")
+const SLIDER_KNOB = preload("res://assets/ui/reactor/b01/slider-knob.png")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
 const BAR_COLORS := {"weapons":Color("ffc533"), "defence":Color("33b9ff"), "smelting":Color("ff7d37"), "condensation":Color("ae53ef")}
 const ERRORS := {"ReactorPlanOverCapacity":"分配超过可调容量", "ReactorModuleSetChanged":"设备范围已变化，请重新调整", "ReactorLocked":"反应炉尚未开放", "InsufficientFunds":"铀不足"}
@@ -39,15 +44,19 @@ class AllocationBar extends Control:
 		ratios = next.duplicate()
 		queue_redraw()
 	func _draw() -> void:
-		draw_rect(Rect2(Vector2.ZERO, size), Color("061623"), true)
-		var left: float = 0.0
+		draw_rect(Rect2(5, 5, size.x - 10, size.y - 10), Color("041019"), true)
+		var left: float = 5.0
 		for id in ["weapons", "defence", "smelting", "condensation"]:
-			var width: float = minf(size.x - left, size.x * clampf(float(ratios.get(id, 0.0)), 0.0, 1.0))
+			var width: float = minf(size.x - 5.0 - left, (size.x - 10.0) * clampf(float(ratios.get(id, 0.0)), 0.0, 1.0))
 			if width <= 0.0: continue
 			var color: Color = BAR_COLORS[id]
-			draw_rect(Rect2(left, 0, width, size.y), color, true)
-			draw_rect(Rect2(left, 0, width, 4), color.lightened(0.35), true)
+			draw_rect(Rect2(left, 5, width, 21), color.darkened(0.39), true)
+			draw_rect(Rect2(left, 8, width, 11), color, true)
+			draw_rect(Rect2(left, 8, width, 3), color.lightened(0.48), true)
+			draw_rect(Rect2(left, 19, width, 6), color.darkened(0.17), true)
+			if left > 5.0: draw_rect(Rect2(left, 5, 2, 21), Color("10202d"), true)
 			left += width
+		draw_texture(METER_FRAME, Vector2.ZERO)
 var _stage: Control
 var _stage_viewport: SubViewport
 var _allocation_bar: AllocationBar
@@ -265,6 +274,18 @@ func _build() -> void:
 		name.add_theme_font_override("font", _ui_font_bold)
 		name.add_theme_color_override("font_color", Color("f5f3e9"))
 		name.text = NAMES[id]
+		var ratio_face := TextureRect.new()
+		ratio_face.position = Vector2(368, top + 5)
+		ratio_face.size = Vector2(88, 33)
+		ratio_face.texture = READOUT_FRAME
+		ratio_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(ratio_face)
+		var effect_face := TextureRect.new()
+		effect_face.position = Vector2(470, top + 5)
+		effect_face.size = Vector2(91, 33)
+		effect_face.texture = READOUT_FRAME
+		effect_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(effect_face)
 		var strip := Control.new()
 		strip.position = Vector2(194, top + 4)
 		strip.size = Vector2(265, 41)
@@ -272,34 +293,23 @@ func _build() -> void:
 		add_child(strip)
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
-		slider.position = Vector2(4, 7)
-		slider.size = Vector2(163, 27)
+		slider.position = Vector2(0, 4)
+		slider.size = Vector2(170, 33)
 		slider.max_value = 10000
 		slider.step = 100
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		slider.tooltip_text = "拖动后直接分配供能"
 		for state in ["slider", "grabber_area", "grabber_area_highlight"]:
-			var track := StyleBoxFlat.new()
-			track.bg_color = Color("061725") if state == "slider" else BAR_COLORS[id]
-			track.border_color = Color("b9b3a1") if state == "slider" else BAR_COLORS[id].lightened(0.2)
-			track.set_border_width_all(1)
-			track.set_corner_radius_all(8)
-			track.content_margin_top = 7
-			track.content_margin_bottom = 7
+			var track := StyleBoxTexture.new()
+			track.texture = SLIDER_TRACK if state == "slider" else SLIDER_FILL
+			track.modulate_color = Color.WHITE if state == "slider" else BAR_COLORS[id].lightened(0.22) if state == "grabber_area_highlight" else BAR_COLORS[id]
+			for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: track.set_texture_margin(side, 10)
+			track.content_margin_top = 9
+			track.content_margin_bottom = 9
 			slider.add_theme_stylebox_override(state, track)
-		var gradient := Gradient.new()
-		gradient.set_color(0, Color("fff8da"))
-		gradient.set_color(1, Color("ab763000"))
-		gradient.add_point(0.65, Color("d99b45"))
-		var grabber := GradientTexture2D.new()
-		grabber.gradient = gradient
-		grabber.width = 20
-		grabber.height = 20
-		grabber.fill = GradientTexture2D.FILL_RADIAL
-		grabber.fill_from = Vector2(0.5, 0.5)
-		grabber.fill_to = Vector2(0.5, 1.0)
-		slider.add_theme_icon_override("grabber", grabber)
-		slider.add_theme_icon_override("grabber_highlight", grabber)
+		slider.add_theme_icon_override("grabber", SLIDER_KNOB)
+		slider.add_theme_icon_override("grabber_highlight", SLIDER_KNOB)
+		slider.add_theme_icon_override("grabber_disabled", SLIDER_KNOB)
 		slider.value_changed.connect(_slide.bind(id))
 		strip.add_child(slider)
 		var ratio := _label(Vector2(178, 5), 78, 21, strip)
@@ -313,7 +323,7 @@ func _build() -> void:
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.add_theme_font_override("font", _ui_font_bold)
 		effect.add_theme_color_override("font_color", Color("e5edf0"))
-		_rows[id] = {"effect":effect, "name":name, "slider":slider, "ratio":ratio, "control":strip, "accent":accent, "icon":icon}
+		_rows[id] = {"effect":effect, "name":name, "slider":slider, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "ratio_face":ratio_face, "effect_face":effect_face}
 		for control in _rows[id].values(): control.visible = false
 	_equal = _button("均分", Rect2(651, 558, 101, 41), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
 	_equal.tooltip_text = "均分供能"

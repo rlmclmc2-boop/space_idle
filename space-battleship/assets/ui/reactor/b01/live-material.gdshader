@@ -14,32 +14,65 @@ float ellipse(vec2 uv, vec2 center, vec2 radius, float feather) {
 	return 1.0 - smoothstep(1.0 - feather, 1.0 + feather, d);
 }
 
-float segment(vec2 uv, vec2 a, vec2 b, float width) {
-	vec2 ab = b - a;
-	float t = clamp(dot(uv - a, ab) / dot(ab, ab), 0.0, 1.0);
-	return 1.0 - smoothstep(width * 0.6, width, distance(uv, a + ab * t));
+// The four streams follow the bent conduits from the core to each machine.
+float conduit(vec2 uv, vec2 a, vec2 b, float bend, float width, float time) {
+	float t = clamp((uv.x - a.x) / (b.x - a.x), 0.0, 1.0);
+	float y = mix(a.y, b.y, t) + bend * sin(t * 3.14159265);
+	float body = (1.0 - smoothstep(width * 0.45, width, abs(uv.y - y))) * step(min(a.x, b.x), uv.x) * step(uv.x, max(a.x, b.x));
+	float moving = pow(0.5 + 0.5 * cos((t * 4.0 - time * 0.8) * 6.2831853), 10.0);
+	return body * (0.09 + moving * 0.68);
 }
 
 void fragment() {
 	vec2 uv = UV;
 	vec4 idle = texture(TEXTURE, uv);
 	vec4 active = texture(active_plate, uv);
-	float core = ellipse(uv, vec2(0.5, 0.255), vec2(0.19, 0.17), 0.10);
-	core = max(core, ellipse(uv, vec2(0.5, 0.095), vec2(0.047, 0.09), 0.15));
-	float weapon = max(ellipse(uv, vec2(0.16, 0.145), vec2(0.17, 0.10), 0.16), segment(uv, vec2(0.32, 0.17), vec2(0.41, 0.215), 0.024));
-	float shield = max(ellipse(uv, vec2(0.90, 0.145), vec2(0.14, 0.11), 0.17), segment(uv, vec2(0.69, 0.215), vec2(0.78, 0.17), 0.024));
-	float iron = max(ellipse(uv, vec2(0.15, 0.385), vec2(0.17, 0.11), 0.17), segment(uv, vec2(0.32, 0.335), vec2(0.42, 0.29), 0.025));
-	float crystal = max(ellipse(uv, vec2(0.86, 0.385), vec2(0.15, 0.12), 0.17), segment(uv, vec2(0.68, 0.29), vec2(0.78, 0.34), 0.025));
-	float p = max(core * core_load, max(weapon * weapons_load, max(shield * defence_load, max(iron * smelting_load, crystal * condensation_load))));
-	p = p > 0.0 ? min(1.0, 0.70 + p * 0.30) * min(1.0, p * 8.0) : 0.0;
-	vec3 color = mix(idle.rgb, active.rgb, p);
-	float live = step(0.0001, core_load);
-	float radial = length((uv - vec2(0.5, 0.255)) / vec2(0.18, 0.16));
-	float ring = exp(-pow((radial - (0.48 + 0.13 * sin(phase * 1.8))) * 7.0, 2.0));
-	float swirl = sin(atan(uv.y - 0.255, uv.x - 0.5) * 4.0 + radial * 13.0 - phase * 2.7);
-	float pulse = core * live * (0.045 + 0.055 * ring + 0.035 * swirl) * (0.6 + 0.4 * core_load);
-	color += vec3(0.13, 0.72, 1.0) * pulse;
-	float packet = 0.5 + 0.5 * sin(phase * 6.0 - uv.x * 65.0 - uv.y * 22.0);
-	color += vec3(0.08, 0.55, 0.92) * packet * 0.045 * max(weapon * weapons_load, max(shield * defence_load, max(iron * smelting_load, crystal * condensation_load)));
+	float core = max(ellipse(uv, vec2(0.5, 0.255), vec2(0.19, 0.17), 0.10), ellipse(uv, vec2(0.5, 0.095), vec2(0.047, 0.09), 0.15));
+	float weapon = ellipse(uv, vec2(0.16, 0.145), vec2(0.17, 0.10), 0.16);
+	float shield = ellipse(uv, vec2(0.90, 0.145), vec2(0.14, 0.11), 0.17);
+	float iron = ellipse(uv, vec2(0.15, 0.385), vec2(0.17, 0.11), 0.17);
+	float crystal = ellipse(uv, vec2(0.86, 0.385), vec2(0.15, 0.12), 0.17);
+	float pipe_w = conduit(uv, vec2(0.39, 0.218), vec2(0.275, 0.165), -0.012, 0.021, phase);
+	float pipe_d = conduit(uv, vec2(0.67, 0.215), vec2(0.785, 0.175), -0.009, 0.022, phase);
+	float pipe_i = conduit(uv, vec2(0.40, 0.296), vec2(0.26, 0.358), 0.015, 0.023, phase);
+	float pipe_c = conduit(uv, vec2(0.68, 0.293), vec2(0.78, 0.35), 0.018, 0.022, phase);
+	float selected = max(core * core_load, max((weapon + pipe_w) * weapons_load, max((shield + pipe_d) * defence_load, max((iron + pipe_i) * smelting_load, (crystal + pipe_c) * condensation_load))));
+	float blend_power = selected > 0.0 ? min(1.0, 0.72 + selected * 0.28) * min(1.0, selected * 8.0) : 0.0;
+	vec3 color = mix(idle.rgb, active.rgb, blend_power);
+
+	// Fluid inside the glass sphere moves while painted metal braces stay fixed.
+	float glass = smoothstep(0.13, 0.30, active.b - active.r);
+	float inner = ellipse(uv, vec2(0.5, 0.255), vec2(0.145, 0.132), 0.12) * glass * step(0.0001, core_load);
+	float r = length((uv - vec2(0.5, 0.255)) / vec2(0.145, 0.132));
+	float angle = atan(uv.y - 0.255, uv.x - 0.5);
+	vec2 drift = 0.006 * vec2(sin(angle * 3.0 + r * 12.0 - phase * 2.3), cos(angle * 4.0 - r * 10.0 + phase * 1.7));
+	vec3 moving_core = texture(active_plate, uv + drift).rgb;
+	color = mix(color, moving_core, inner * (0.35 + 0.48 * core_load));
+	float orbit = pow(0.5 + 0.5 * sin(angle * 5.0 + r * 19.0 - phase * 3.4), 8.0);
+	float ring = exp(-pow((r - 0.56 - 0.14 * sin(phase * 1.9)) * 10.0, 2.0));
+	color += inner * core_load * (vec3(0.08, 0.56, 0.9) * orbit * 0.24 + vec3(0.06, 0.35, 0.65) * ring * 0.15);
+
+	// Bright packets travel outwards on each actual pipe, independently gated.
+	color = mix(color, vec3(0.60, 0.95, 1.0), clamp(pipe_w * weapons_load * 2.8, 0.0, 0.70));
+	color = mix(color, vec3(0.58, 0.90, 1.0), clamp(pipe_d * defence_load * 2.8, 0.0, 0.70));
+	color = mix(color, vec3(1.0, 0.63, 0.18), clamp(pipe_i * smelting_load * 3.1, 0.0, 0.72));
+	color = mix(color, vec3(0.83, 0.54, 1.0), clamp(pipe_c * condensation_load * 3.1, 0.0, 0.72));
+
+	// Each machine has its own moving signature and no glow at true zero.
+	float muzzle_y = 0.098 + uv.x * 0.39;
+	float muzzle = (1.0 - smoothstep(0.006, 0.020, abs(uv.y - muzzle_y))) * step(0.01, uv.x) * step(uv.x, 0.24);
+	float shot = pow(0.5 + 0.5 * cos((uv.x * 5.0 + phase * 0.88) * 6.2831853), 12.0);
+	color = mix(color, vec3(1.0, 0.81, 0.32), clamp(muzzle * shot * weapons_load * 2.8, 0.0, 0.68));
+	vec2 shield_p = (uv - vec2(0.90, 0.14)) / vec2(0.060, 0.080);
+	float shield_r = length(shield_p);
+	float shield_arc = exp(-pow((shield_r - 0.77) * 14.0, 2.0));
+	float shield_sweep = pow(0.5 + 0.5 * cos(atan(shield_p.y, shield_p.x) * 3.0 - phase * 2.0), 7.0);
+	color = mix(color, vec3(0.70, 0.96, 1.0), clamp(shield_arc * shield_sweep * defence_load * 2.9, 0.0, 0.70));
+	float molten = ellipse(uv, vec2(0.15, 0.405), vec2(0.08, 0.041), 0.18);
+	float pour = pow(0.5 + 0.5 * sin(uv.y * 135.0 - phase * 4.6 + uv.x * 26.0), 8.0);
+	color = mix(color, vec3(1.0, 0.87, 0.39), clamp(molten * pour * smelting_load * 2.7, 0.0, 0.68));
+	float facets = ellipse(uv, vec2(0.855, 0.405), vec2(0.065, 0.075), 0.16);
+	float refract = pow(0.5 + 0.5 * sin(uv.x * 96.0 + uv.y * 58.0 - phase * 2.9), 13.0);
+	color = mix(color, vec3(0.95, 0.75, 1.0), clamp(facets * refract * condensation_load * 2.8, 0.0, 0.70));
 	COLOR = vec4(color, idle.a);
 }
