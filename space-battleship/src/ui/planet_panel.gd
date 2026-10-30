@@ -146,8 +146,13 @@ func _ready() -> void:
 	_progress.show_percentage = false
 	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_drawer)
-	var drawer_face := _material_style("glass_insert", Color(1.0, 0.97, 0.86))
+	# A stable housing surrounds the header and the variable-height content.
+	# Button glass cannot be stretched down a long drawer without vertical bands.
+	var drawer_face := _skin(Color("203b49"), Color("688184"), 1, 6)
 	drawer_face.set_content_margin_all(13)
+	drawer_face.shadow_color = Color("061824", 0.32)
+	drawer_face.shadow_size = 4
+	drawer_face.shadow_offset = Vector2(1, 2)
 	_drawer.add_theme_stylebox_override("panel", drawer_face)
 	_drawer.add_child(_drawer_box)
 	_drawer.draw.connect(_draw_drawer_trim)
@@ -242,7 +247,7 @@ func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, 
 
 func _load_control_materials() -> void:
 	var image: Image = load(CONTROL_MATERIALS).get_image()
-	var regions := {"glass": Rect2i(42, 132, 1366, 256), "glass_insert": Rect2i(94, 180, 1260, 172), "primary": Rect2i(42, 472, 1366, 224), "navy": Rect2i(42, 772, 1366, 204)}
+	var regions := {"glass": Rect2i(42, 132, 1366, 256), "primary": Rect2i(42, 472, 1366, 224), "navy": Rect2i(42, 772, 1366, 204)}
 	for id in regions:
 		var face: Image = image.get_region(regions[id])
 		var height := 44 if id.begins_with("glass") else 40
@@ -262,8 +267,16 @@ func _paint_secondary(button: Button) -> void:
 
 func _draw_drawer_trim() -> void:
 	var width := _drawer.size.x
+	var height := _drawer.size.y
 	var header_bottom := _drawer_title.get_global_rect().end.y - _drawer.get_global_rect().position.y + 6.0
-	_drawer.draw_texture_rect(_material_faces.navy, Rect2(2, 2, width - 4, header_bottom - 2), false, Color(0.82, 0.96, 0.96, 0.9))
+	# The quiet body varies only from top to bottom. Its side and bottom rim are
+	# the same housing, so the title does not read as a pasted-on keycap.
+	_drawer.draw_polygon(
+		PackedVector2Array([Vector2(5, header_bottom), Vector2(width - 5, header_bottom), Vector2(width - 5, height - 11), Vector2(width - 11, height - 5), Vector2(11, height - 5), Vector2(5, height - 11)]),
+		PackedColorArray([Color("e4e3d9"), Color("e4e3d9"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7")]))
+	_drawer.draw_texture_rect(_material_faces.navy, Rect2(3, 3, width - 6, header_bottom - 3), false, Color(0.82, 0.96, 0.96, 0.9))
+	_drawer.draw_line(Vector2(5, header_bottom + 1), Vector2(width - 5, header_bottom + 1), Color("fff9e8", 0.25), 1.0)
+	_drawer.draw_line(Vector2(11, height - 5), Vector2(width - 11, height - 5), Color("102d3b", 0.42), 1.0)
 
 func _layout() -> void:
 	if _visual == null: return

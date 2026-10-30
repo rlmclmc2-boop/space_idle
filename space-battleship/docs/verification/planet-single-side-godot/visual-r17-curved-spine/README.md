@@ -137,3 +137,9 @@
 图像**没有二次编辑或重生成**：星球原图 SHA256 为 `707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c`，与共享分支 `assets/ui/equipment/materials-20261029/control-materials.png` 字节一致；[原生成提示](../../../../assets/ui/planet/control-materials-prompt.txt)及[来源／区域记录](../../../../assets/ui/planet/control-materials-sources.json)一并保留。共享接入需同步此 PNG、其 `.import` 与 `planet_panel.gd`，无需改公共 Theme、main 或装备资产。
 
 [本版 stage4、设施、人员、探索、征服展开及两种运行态原屏](evidence/planet-control-painted/)由[同版驱动](evidence/planet-control-painted/planet-control-painted-driver.gd)取得。作者逐张原尺寸看主键、次键、人员／设施选择器与抽屉同屏时的材质、文字净空和四设施展示；运行态仅注入视觉状态，不代表探索命令或完整操作验收。[运行、Godot 4.7.2 编译日志及 SHA](evidence/planet-control-painted/)限定此源码版。共享组合中的实际顶轨／导航须由整体组精确接入后重新取同版整屏审查，本节的独立星球屏与 `63a2476a` 旧组合屏不能拼成新组合验收；也不把旧自然时间视频算作新码动态。
+
+## 变高抽屉的连续承载面：整屏复审候选
+
+原审在 `dc11d1c7` 接受按键／选择框同源漆面、收起键位置和主体阅读，但退回抽屉：按钮用的玻璃切片被 `StyleBoxTexture` 九宫格纵向拉到征服详情的约 480px，中心像黄绿色竖带，且侧底直切与顶部厚漆标题分离。本版仅替换**原同一个 PanelContainer 的背景绘制**：外壳为细暗青漆边和轻投影，标题仍用同源深漆片但边界按真实标题行；正文由上暖灰象牙到下冷灰的低幅纵向面色插值，不再对按钮贴图作长面板拉伸。连续侧边与底边保留在同一外壳，内面底角小幅切角，与标题的漆面轮廓衔接。没有叠新容器、滤镜或控件，已保留的按钮／选择器／收起键、详情和场景构图、业务与局部刷新不变。
+
+[本版 stage4、设施、人员、探索及征服详情原屏](evidence/planet-control-housing/)由[同版驱动](evidence/planet-control-housing/planet-control-housing-driver.gd)重取。作者原尺寸逐看短设施／人员和长征服抽屉：面色无纵向带，标题、侧底薄壳连续，文字及球环四设施未被裁；[运行、Godot 4.7.2 编译日志与 SHA](evidence/planet-control-housing/)固定本版。自动／手动运行态仍仅为视觉状态注入，不代替实际探索动作。共享宿主新组合仍需整体组按本版 `planet_panel.gd` 窄接入后重新取图审，旧 `63a2476a` 组合图与本版独立内区图不能混称同版。
