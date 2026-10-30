@@ -40,8 +40,10 @@ def owner(name):
     return href(blob)
 
 
-def add_image(parent, source, x=0, y=0, width=1440, height=900, clip=None, mask=None):
+def add_image(parent, source, x=0, y=0, width=1440, height=900, clip=None, mask=None, stretch=False):
     node = etree.SubElement(parent, f"{{{NS}}}image", href=source, x=str(x), y=str(y), width=str(width), height=str(height))
+    if stretch:
+        node.set("preserveAspectRatio", "none")
     if clip:
         node.set("clip-path", f"url(#{clip})")
     if mask:
@@ -83,7 +85,7 @@ def reactor(name, screen, edge_art):
     current = local(screen)
     # Exact source screen underneath retains the original selected nav and battle.
     add_image(root, current)
-    add_image(root, local(edge_art), 0, 65, 808, 835, clip="reactor")
+    add_image(root, local(edge_art), 0, 65, 808, 835, clip="reactor", stretch=True)
     # Keep actual source machine and full interactive desk pixels; architectural
     # returns remain visible across both upper room and lower console cheeks.
     add_image(root, current, mask="reactor-center")
