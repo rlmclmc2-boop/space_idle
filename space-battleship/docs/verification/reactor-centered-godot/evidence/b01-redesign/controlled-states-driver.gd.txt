@@ -32,6 +32,19 @@ func measure(label: String, scene: Control, session, game, duration: float) -> v
 	var stage_delta: Dictionary = {}
 	for key in scene._stage.diagnostics: stage_delta[key] = scene._stage.diagnostics[key] - stage_before[key]
 	print("DIAG ", label, " frames=", samples.size(), " wall_ms=", total, " fps=", 1000.0*float(samples.size())/total, " p50_ms=", samples[int((samples.size()-1)*0.50)], " p95_ms=", samples[int((samples.size()-1)*0.95)], " game_seconds=", session.game_time-game_start, " phase_delta=", scene._stage.visual_phase()-phase_start, " stage_delta=", stage_delta, " ui_delta=", ui_delta, " nodes=", nodes_before, "->", count_nodes(scene))
+func drag(start: Vector2, finish: Vector2) -> void:
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT; press.pressed = true
+	press.position = start; press.global_position = start
+	root.push_input(press, true)
+	var motion := InputEventMouseMotion.new()
+	motion.position = finish; motion.global_position = finish
+	motion.relative = finish - start; motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+	root.push_input(motion, true)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT; release.pressed = false
+	release.position = finish; release.global_position = finish
+	root.push_input(release, true)
 func run() -> void:
 	root.size = Vector2i(1440,900); root.content_scale_size = Vector2i(1440,900)
 	var game: Node2D = load("res://src/main.tscn").instantiate(); root.add_child(game); await frames(4)
@@ -86,4 +99,19 @@ func run() -> void:
 		assert(model1.get("ok",false) and is_equal_approx(float(model1.load),1.0))
 		await create_timer(2.7).timeout; clear_guidance(session,game); await frames(3)
 		get_root().get_texture().get_image().save_png("/tmp/reactor-b01-controlled-"+str(count)+"-active.png")
+		if count <= 2:
+			var target_id: String = "smelting" if count == 1 else "weapons"
+			var slider: HSlider = scene._rows[target_id].slider
+			var rect: Rect2 = slider.get_global_rect()
+			var y: float = rect.position.y + rect.size.y * 0.5
+			var from_share: float = 1.0 if count == 1 else 0.5
+			var to_share: float = 0.5 if count == 1 else 0.25
+			drag(Vector2(rect.position.x + 15.0 + 148.0 * from_share, y), Vector2(rect.position.x + 15.0 + 148.0 * to_share, y))
+			await frames(8); clear_guidance(session,game)
+			var after_drag: Dictionary = fixture_owner.presentation_model()
+			print("CONTROLLED_MANUAL ",count," owner=",JSON.stringify(after_drag)," ui_ratio=",scene._rows[target_id].ratio.text," slider=",slider.value," accepted=",scene.last_result)
+			assert(after_drag.get("ok",false) and scene.last_result.get("ok",false))
+			assert(float(after_drag.load) > 0.0 and float(after_drag.load) < 1.0)
+			await create_timer(2.7).timeout; clear_guidance(session,game); await frames(3)
+			get_root().get_texture().get_image().save_png("/tmp/reactor-b01-controlled-"+str(count)+"-manual.png")
 	quit()
