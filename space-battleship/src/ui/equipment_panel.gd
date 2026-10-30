@@ -526,7 +526,7 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     var rows:int=maxi(1,resource_count)
     var signature:Array=[different,defence,rows]
     if _workbench_layout.get("signature",[])==signature:return
-    var height:float=maxf(288.0 if different else 266.0,266.0+maxi(0,rows-1)*22.0)
+    var height:float=maxf(288.0,266.0+maxi(0,rows-1)*22.0)
     var action_y:float=height-68.0
     _workbench.position.y=896.0-height;_workbench.size.y=height
     _workbench_divider.size.y=action_y-48.0
@@ -535,7 +535,7 @@ func _layout_workbench(different: bool, defence: bool, resource_count: int) -> v
     _comparison_group.position=Vector2(460,176);_comparison_group.size.y=43
     _install.position=Vector2(460,action_y);_install.size=Vector2(300,36)
     _quantity_button.position=Vector2(20,action_y);_quantity_button.size=Vector2(96,36)
-    _purchase.position=Vector2(128,action_y);_purchase.size=Vector2(292 if different else 632,36)
+    _purchase.position=Vector2(128,action_y);_purchase.size=Vector2(292,36)
     _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
 
 func _layout_primary_values() -> void:
