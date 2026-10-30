@@ -9,8 +9,6 @@ const KEY_PAINT = preload("res://assets/ui/reactor/ship-hub-r9/control-materials
 const ICON_ATLAS = preload("res://assets/ui/reactor/b01/control-icons.png")
 const METER_FRAME = preload("res://assets/ui/reactor/b01/meter-frame.png")
 const ROW_INSTRUMENT = preload("res://assets/ui/reactor/b01/row-instrument.png")
-const SLIDER_TRACK = preload("res://assets/ui/reactor/b01/slider-track.png")
-const SLIDER_FILL = preload("res://assets/ui/reactor/b01/slider-fill.png")
 const SLIDER_KNOB = preload("res://assets/ui/reactor/b01/slider-knob.png")
 const NAMES := {"weapons":"武器", "defence":"盾甲", "smelting":"铁产出", "condensation":"碎片"}
 const BAR_COLORS := {"weapons":Color("ffc533"), "defence":Color("33b9ff"), "smelting":Color("ff7d37"), "condensation":Color("ae53ef")}
@@ -57,6 +55,28 @@ class AllocationBar extends Control:
 			if left > 5.0: draw_rect(Rect2(left, 5, 2, 21), Color("10202d"), true)
 			left += width
 		draw_texture(METER_FRAME, Vector2.ZERO)
+class PowerTrack extends Control:
+	var fraction: float = 0.0
+	var tint: Color = Color.WHITE
+	func update_fraction(value: float) -> void:
+		var next: float = clampf(value, 0.0, 1.0)
+		if is_equal_approx(fraction, next): return
+		fraction = next
+		queue_redraw()
+	func _draw() -> void:
+		# The live fill and empty channel share this exact 144×13 cavity.
+		var channel := Rect2(13, 10, 144, 13)
+		draw_rect(Rect2(10, 7, 150, 19), Color("020a10"), true)
+		draw_rect(Rect2(10, 7, 150, 19), Color("748d93"), false, 1)
+		draw_rect(channel, Color("061a27"), true)
+		draw_rect(Rect2(13, 10, 144, 2), Color("183746"), true)
+		draw_rect(Rect2(13, 21, 144, 2), Color("020b13"), true)
+		var width: float = channel.size.x * fraction
+		if width <= 0.0: return
+		draw_rect(Rect2(channel.position.x, channel.position.y, width, channel.size.y), tint.darkened(0.18), true)
+		draw_rect(Rect2(channel.position.x, channel.position.y + 2, width, 7), tint, true)
+		draw_rect(Rect2(channel.position.x, channel.position.y + 2, width, 2), tint.lightened(0.45), true)
+		draw_rect(Rect2(channel.position.x, channel.position.y + 10, width, 3), tint.darkened(0.36), true)
 var _stage: Control
 var _stage_viewport: SubViewport
 var _allocation_bar: AllocationBar
@@ -285,6 +305,12 @@ func _build() -> void:
 		strip.size = Vector2(265, 41)
 		strip.mouse_filter = Control.MOUSE_FILTER_PASS
 		add_child(strip)
+		var track_visual := PowerTrack.new()
+		track_visual.position = Vector2(0, 4)
+		track_visual.size = Vector2(170, 33)
+		track_visual.tint = BAR_COLORS[id]
+		track_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		strip.add_child(track_visual)
 		var slider := HSlider.new()
 		slider.name = "Allocation_" + id
 		slider.position = Vector2(0, 4)
@@ -294,13 +320,11 @@ func _build() -> void:
 		slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		slider.tooltip_text = "拖动后直接分配供能"
 		for state in ["slider", "grabber_area", "grabber_area_highlight"]:
-			var track := StyleBoxTexture.new()
-			track.texture = SLIDER_TRACK if state == "slider" else SLIDER_FILL
-			track.modulate_color = Color.WHITE if state == "slider" else BAR_COLORS[id].lightened(0.22) if state == "grabber_area_highlight" else BAR_COLORS[id]
-			for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: track.set_texture_margin(side, 6 if state == "slider" else 3)
-			track.content_margin_top = 9
-			track.content_margin_bottom = 9
-			slider.add_theme_stylebox_override(state, track)
+			var hidden_track := StyleBoxFlat.new()
+			hidden_track.bg_color = Color.TRANSPARENT
+			hidden_track.content_margin_top = 9
+			hidden_track.content_margin_bottom = 9
+			slider.add_theme_stylebox_override(state, hidden_track)
 		slider.add_theme_icon_override("grabber", SLIDER_KNOB)
 		slider.add_theme_icon_override("grabber_highlight", SLIDER_KNOB)
 		slider.add_theme_icon_override("grabber_disabled", SLIDER_KNOB)
@@ -317,7 +341,7 @@ func _build() -> void:
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		effect.add_theme_font_override("font", _ui_font_bold)
 		effect.add_theme_color_override("font_color", Color("e5edf0"))
-		_rows[id] = {"effect":effect, "name":name, "slider":slider, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
+		_rows[id] = {"effect":effect, "name":name, "slider":slider, "track":track_visual, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
 		for control in _rows[id].values(): control.visible = false
 	_equal = _button("均分", Rect2(651, 558, 101, 41), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
 	_equal.tooltip_text = "均分供能"
@@ -494,6 +518,7 @@ func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 		if new_row or int(_shares.get(id,-1)) != adopted_share or old_row.get("ratio") != row.ratio:
 			_shares[id] = adopted_share
 			_rows[id].slider.set_value_no_signal(adopted_share)
+			_rows[id].track.update_fraction(float(row.ratio))
 			_rows[id].ratio.text = _ratio_text(float(row.ratio))
 		if new_row or previous.get("can_allocate", false) != _model.can_allocate:
 			_rows[id].slider.editable = _running and bool(_model.can_allocate)

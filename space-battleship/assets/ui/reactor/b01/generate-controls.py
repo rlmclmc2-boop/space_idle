@@ -53,18 +53,6 @@ d.line((174, 7, 174, 33), fill=(111, 151, 164, 110), width=1)
 d.line((274, 7, 274, 33), fill=(111, 151, 164, 110), width=1)
 row.save(OUT / "row-instrument.png")
 
-track = vertical((326, 54), [(0, (7, 19, 28, 255)), (0.20, (15, 42, 52, 255)), (0.50, (6, 24, 35, 255)), (0.75, (11, 33, 43, 255)), (1, (3, 11, 17, 255))], 11)
-d = ImageDraw.Draw(track)
-d.rounded_rectangle((1, 1, 324, 52), 11, outline=(6, 12, 17, 255), width=3)
-d.rounded_rectangle((5, 5, 320, 48), 8, outline=(91, 131, 145, 190), width=2)
-d.line((16, 8, 309, 8), fill=(208, 222, 212, 80), width=1)
-d.line((16, 47, 309, 47), fill=(0, 4, 9, 255), width=2)
-track.save(OUT / "slider-track.png")
-
-fill = vertical((326, 54), [(0, (255, 255, 255, 90)), (0.20, (255, 255, 255, 220)), (0.45, (255, 255, 255, 255)), (0.78, (170, 180, 182, 255)), (1, (65, 85, 92, 250))], 4)
-ImageDraw.Draw(fill).line((5, 8, 320, 8), fill=(255, 255, 255, 140), width=1)
-fill.save(OUT / "slider-fill.png")
-
 s = 4
 im = Image.new("RGBA", (31*s, 31*s))
 d = ImageDraw.Draw(im)

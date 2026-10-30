@@ -38,7 +38,7 @@ func run() -> void:
 	clear_guidance(session, game)
 	await frames(2)
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("/tmp/reactor-b01-mask-zero-1440x900.png")
+	root.get_texture().get_image().save_png("/tmp/reactor-b01-smelt-zero-1440x900.png")
 	var amount: Dictionary = session.amount_api.apply("from_decimal", ["1000"])
 	assert(amount.ok)
 	assert(session.economy.credit_yield("2", amount.value, session.wall_time, session.game_time).ok)
@@ -56,19 +56,19 @@ func run() -> void:
 	clear_guidance(session, game)
 	await frames(2)
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("/tmp/reactor-b01-mask-active-1440x900.png")
+	root.get_texture().get_image().save_png("/tmp/reactor-b01-smelt-active-1440x900.png")
 	assert(scene._quote.ok and scene._quote.can_purchase)
 	scene._quantity.pressed.emit()
 	await frames(3)
 	assert(scene._quantity.text == "×10" and scene._quote.ok and int(scene._quote.count) == 10)
 	print("TEN quote=", scene._quote, " level=", session.reactor_system.presentation_model().level)
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("/tmp/reactor-b01-mask-ten-1440x900.png")
+	root.get_texture().get_image().save_png("/tmp/reactor-b01-smelt-ten-1440x900.png")
 	scene._quantity.pressed.emit()
 	await frames(8)
 	assert(scene._quantity.text == "MAX" and scene._quote.ok and int(scene._quote.count) >= 0)
 	assert(scene._cost_badge.visible and scene._cost_icon.texture != null)
 	print("MAX quote=", scene._quote, " level=", session.reactor_system.presentation_model().level, " badge=", scene._cost_badge.visible)
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("/tmp/reactor-b01-mask-max-1440x900.png")
+	root.get_texture().get_image().save_png("/tmp/reactor-b01-smelt-max-1440x900.png")
 	quit()

@@ -67,7 +67,10 @@ void fragment() {
 	float shield_arc = exp(-pow((shield_r - 0.77) * 14.0, 2.0));
 	float shield_sweep = pow(0.5 + 0.5 * cos(atan(shield_p.y, shield_p.x) * 3.0 - phase * 2.0), 7.0);
 	color = mix(color, vec3(0.70, 0.96, 1.0), clamp(shield_arc * shield_sweep * defence_load * 2.9, 0.0, 0.70));
-	float molten = ellipse(uv, vec2(0.15, 0.405), vec2(0.08, 0.041), 0.18);
+	float molten = texture(effect_mask, uv).b;
+	vec2 molten_flow = uv + vec2(0.002 * sin(uv.y * 80.0 - phase * 2.3), -0.003 * sin(phase * 2.1 + uv.x * 54.0));
+	vec3 moving_molten = texture(active_plate, molten_flow).rgb;
+	color = mix(color, moving_molten, molten * smelting_load * 0.75);
 	float pour = pow(0.5 + 0.5 * sin(uv.y * 135.0 - phase * 4.6 + uv.x * 26.0), 8.0);
 	color = mix(color, vec3(1.0, 0.87, 0.39), clamp(molten * pour * smelting_load * 2.7, 0.0, 0.68));
 	float facets = ellipse(uv, vec2(0.855, 0.405), vec2(0.065, 0.075), 0.16);
