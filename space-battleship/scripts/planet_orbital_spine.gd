@@ -109,21 +109,25 @@ func _ready() -> void:
 			var cap := Node3D.new()
 			cap.name = "BuiltSectionTerminal"
 			var outward := -1.0 if angle == bounds.x else 1.0
-			# A sealed armored cross-section belongs to the built segment alone.
-			# The shallow cyan service slit faces the future mating segment.
-			for layer in [
-				[Vector3(0.63, 0.36, 0.23), Vector3(0, 0.14, outward * 0.04), _navy],
-				[Vector3(0.59, 0.17, 0.19), Vector3(0, 0.27, outward * 0.06), _side],
-				[Vector3(0.38, 0.055, 0.035), Vector3(0, 0.04, outward * 0.16), _navy],
-				[Vector3(0.25, 0.018, 0.04), Vector3(0, 0.04, outward * 0.19), _cyan],
+			# Close the real end plane flush with its keel. Separate protruding
+			# boxes made the free end read as an unrelated dark bumper.
+			var width_at_end := _transit_width(angle)
+			var face_mesh := SurfaceTool.new()
+			face_mesh.begin(Mesh.PRIMITIVE_TRIANGLES)
+			for vertex in [
+				Vector3(-width_at_end * 0.5, -0.545, outward * 0.006),
+				Vector3(width_at_end * 0.5, -0.545, outward * 0.006),
+				Vector3(-width_at_end * 0.5, 0.325, outward * 0.006),
+				Vector3(-width_at_end * 0.5, 0.325, outward * 0.006),
+				Vector3(width_at_end * 0.5, -0.545, outward * 0.006),
+				Vector3(width_at_end * 0.5, 0.325, outward * 0.006),
 			]:
-				var face := MeshInstance3D.new()
-				var armor := BoxMesh.new()
-				armor.size = layer[0]
-				face.mesh = armor
-				face.position = layer[1]
-				face.material_override = layer[2]
-				cap.add_child(face)
+				face_mesh.set_normal(Vector3(0, 0, outward))
+				face_mesh.add_vertex(vertex)
+			var face := MeshInstance3D.new()
+			face.mesh = face_mesh.commit()
+			face.material_override = _navy
+			cap.add_child(face)
 			var radial := point(angle).normalized()
 			var normal := plane_normal()
 			cap.transform = Transform3D(Basis(radial, normal, radial.cross(normal)), point(angle) + normal * 0.125)
