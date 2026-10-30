@@ -31,7 +31,7 @@ var preparing:=false
 var pending_row:Dictionary={}
 var prepare_after_frame:=0
 var loading:=Label.new()
-var facility_renderer: Node
+var architecture: Control
 var icon_mode := false
 var planet_id := ""
 var appearance: Dictionary = {}
@@ -42,9 +42,15 @@ var phase := 0.0
 var completion_age := 10.0
 var last_degree = 0
 var draw_calls := 0
+
+func _scene_center() -> Vector2:
+	# Center the complete ring and its widest solar wings in the module.
+	return size * 0.5
+
 var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)
 var background_layer := Control.new()
+var scene_sky := GradientTexture2D.new()
 var orbit_back_layer := Control.new()
 var configured_appearance: Dictionary = {}
 var appearance_initialized := false
@@ -59,6 +65,15 @@ var departure_front := true
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	var gradient := Gradient.new()
+	gradient.colors = PackedColorArray([Color("153a47"), Color("071e2c"), Color("051824")])
+	gradient.offsets = PackedFloat32Array([0.0, 0.65, 1.0])
+	scene_sky.gradient = gradient
+	scene_sky.width = 1024
+	scene_sky.height = 1024
+	scene_sky.fill = GradientTexture2D.FILL_RADIAL
+	scene_sky.fill_from = Vector2(0.4, 0.6)
+	scene_sky.fill_to = Vector2(1, 0)
 	for layer in [background_layer, orbit_back_layer, globe]:
 		layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.show_behind_parent = true
@@ -80,13 +95,19 @@ func _ready() -> void:
 
 func _layout_globe() -> void:
 	orbit_geometry.clear()
-	globe.fit_sphere(size * 0.5, minf(size.x, size.y) * 0.43 / maxf(1.0, globe.extent) if icon_mode else _body_radius())
+	if architecture != null:
+		architecture.position = Vector2.ZERO
+		architecture.scene_center = _scene_center()
+		architecture.size = size
+	globe.fit_sphere(_scene_center(), minf(size.x, size.y) * 0.43 / maxf(1.0, globe.extent) if icon_mode else _body_radius())
 	background_layer.queue_redraw()
 	orbit_back_layer.queue_redraw()
 	queue_redraw()
 
 func _body_radius() -> float:
-	var base := minf(size.y * 0.39, size.x * 0.285)
+	# The shared orbital structure needs the surrounding space to be part of the
+	# composition. Keep the globe smaller without changing its authored texture.
+	var base := minf(size.y * 0.34, size.x * 0.235)
 	var requested := base * clampf(float(appearance.get("radiusScale", 1.0)), 0.08, 1.25)
 	# Keep the entire authored corona/beam envelope inside the scene.
 	var available := maxf(1.0, minf(size.x, size.y) * 0.5 - 16.0)
@@ -139,6 +160,11 @@ func _visual_value(value, fallback):
 	return value
 
 func configure(id: String, row: Dictionary) -> void:
+	if id != planet_id:
+		facilities = []
+		if architecture != null: architecture.configure([])
+		orbit_back_layer.queue_redraw()
+		queue_redraw()
 	planet_id = id
 	var appearance_source = row.get("visual", {})
 	appearance_source = _visual_value(appearance_source, {})
@@ -156,11 +182,12 @@ func configure(id: String, row: Dictionary) -> void:
 		globe.cloud_map = _map_texture("cloudTexture", PlanetSphere.CLOUDS)
 		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.006))
 		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0073))
-		globe.glow_strength = clampf(float(appearance.get("glowStrength", 0.30)), 0.0, 1.0)
+		globe.glow_strength = clampf(float(appearance.get("glowStrength", 0.62)), 0.0, 1.0)
 		globe.shadow_strength = clampf(float(appearance.get("shadowStrength", 0.86)), 0.0, 1.0)
 		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
 		globe.atmosphere_color = _color("atmosphereColor", Color("5ac8f0"))
 		globe.configure_visual(appearance)
+		if architecture != null: architecture.configure_shape(appearance)
 		globe.light_direction = Vector3(-0.65, -0.45, 0.62)
 		globe.apply_settings()
 		_layout_globe()
@@ -174,10 +201,16 @@ func configure(id: String, row: Dictionary) -> void:
 		var kind := str(entry.get("type", ""))
 		if not FACILITY_COLORS.has(kind) or not bool(entry.get("owned", false)):continue
 		next.append(entry)
-	if is_instance_valid(facility_renderer):
-		facility_renderer.configure(next)
-		facility_renderer.update_pose(phase)
+	if not icon_mode and architecture == null and not next.is_empty():
+		architecture = preload("res://scripts/planet_facility_scene.gd").new()
+		architecture.show_behind_parent = true
+		add_child(architecture)
+		architecture.configure_shape(appearance)
+		_layout_globe()
 	if facilities != next:
+		if architecture != null:
+			architecture.configure(next)
+			architecture.update_pose(phase, globe.phases.x, _body_radius(), globe.visual_clock)
 		facilities = next
 		orbit_back_layer.queue_redraw()
 		queue_redraw()
@@ -186,7 +219,7 @@ func set_exploration(is_active: bool, degree, elapsed: float = 0.0) -> void:
 	last_degree = degree
 	if active != is_active:
 		if active and not is_active and is_visible_in_tree():
-			var center := size * 0.5
+			var center := _scene_center()
 			var radius := _orbit_radius()
 			departure_point = _scout_position(exploration_age, center, radius)
 			departure_direction = (_scout_position(exploration_age + 0.01, center, radius) - departure_point).normalized()
@@ -247,7 +280,7 @@ func advance(dt: float, paused: bool) -> void:
 	globe.advance(step)
 	frame_accumulator = 0.0
 	phase += step
-	if is_instance_valid(facility_renderer):facility_renderer.update_pose(phase)
+	if architecture != null: architecture.update_pose(phase, globe.phases.x, _body_radius(), globe.visual_clock)
 	if active:exploration_age += step
 	if completion_age < 3.2:
 		var previous_age := completion_age
@@ -264,14 +297,21 @@ func advance(dt: float, paused: bool) -> void:
 func _draw_background() -> void:
 	if icon_mode:return
 	# Static field, separate from the owner-driven sphere and orbital motion.
-	background_layer.draw_texture_rect(BACKDROP, Rect2(Vector2.ZERO, size), false)
+	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, size), false)
+	var stars := RandomNumberGenerator.new()
+	stars.seed = 178
+	for index in 100:
+		var point := Vector2(stars.randf(), stars.randf()) * size
+		var radius := stars.randf_range(0.5, 1.3)
+		background_layer.draw_circle(point, radius, Color(0.65, 0.84, 0.86, stars.randf_range(0.18, 0.55)))
 
 func _draw_back_orbits() -> void:
 	if icon_mode:return
-	var center := size * 0.5
+	var center := _scene_center()
 	var radius := _orbit_radius()
 	for ring in ([1] if active else []):
-		_orbit(center, radius * (1.42 + ring * 0.26), 0.37 + ring * 0.04, ring, false, orbit_back_layer)
+		var axes := _scout_axes(center, radius)
+		_orbit(center, axes.x, axes.y / axes.x, ring, false, orbit_back_layer)
 	_draw_facility_paths(center, radius, false, orbit_back_layer)
 	_draw_facilities(center, radius, false, orbit_back_layer)
 	if active and not _scout_in_front():_draw_scout(center, radius, orbit_back_layer)
@@ -280,12 +320,13 @@ func _draw_back_orbits() -> void:
 func _draw() -> void:
 	if icon_mode:return
 	draw_calls += 1
-	var center := size * 0.5
+	var center := _scene_center()
 	var radius := _orbit_radius()
 	var atmosphere := _color("atmosphereColor", Color("5ac8f0"))
 	if active:_draw_scans(center, _body_radius(), atmosphere)
 	for ring in ([1] if active else []):
-		_orbit(center, radius * (1.42 + ring * 0.26), 0.37 + ring * 0.04, ring, true)
+		var axes := _scout_axes(center, radius)
+		_orbit(center, axes.x, axes.y / axes.x, ring, true)
 	_draw_facility_paths(center, radius, true, self)
 	_draw_facilities(center, radius, true)
 	_draw_ambient(center, radius)
@@ -294,7 +335,7 @@ func _draw() -> void:
 
 func _orbit(center: Vector2, horizontal: float, vertical_ratio: float, ring: int, front: bool, canvas: CanvasItem = null) -> void:
 	if canvas == null:canvas = self
-	horizontal = minf(horizontal, size.x * 0.5 - 48.0)
+	horizontal = minf(horizontal, minf(center.x, size.x - center.x) - (32.0 if ring == 1 else 48.0))
 	var begin := 0.0 if front else PI
 	var geometry_key := ring * 2 + int(front)
 	if not orbit_geometry.has(geometry_key):
@@ -314,12 +355,14 @@ func _orbit(center: Vector2, horizontal: float, vertical_ratio: float, ring: int
 
 func _facility_point(center: Vector2, radius: float, kind: String, angle: float) -> Vector2:
 	var path := OrbitModels.path_for(kind)
-	var extent := minf(radius * float(path.radius), size.x * 0.5 - 44.0)
+	var extent := minf(radius * float(path.radius), minf(center.x, size.x - center.x) - 82.0)
 	return center + Vector2(cos(angle) * extent, sin(angle) * extent * float(path.ratio)).rotated(float(path.tilt))
 
 func _draw_facility_paths(center: Vector2, radius: float, front: bool, canvas: CanvasItem) -> void:
+	if architecture != null: return
 	for entry in facilities:
 		var kind := str(entry.get("type", ""))
+		if kind in ["refinery", "equipment"]: continue
 		var path := OrbitModels.path_for(kind)
 		# Stationary docks have no misleading orbital track.
 		if float(path.speed) == 0.0:continue
@@ -333,6 +376,7 @@ func _draw_facility_paths(center: Vector2, radius: float, front: bool, canvas: C
 		canvas.draw_polyline(orbit_geometry[key], Color(0.52, 0.72, 0.82, (0.17 if front else 0.055) * (1.65 if chosen else 1.0)), 1.0, true)
 
 func _draw_facilities(center: Vector2, radius: float, front: bool, canvas: CanvasItem = null) -> void:
+	if architecture != null: return
 	if canvas == null:canvas = self
 	for entry in facilities:
 		var kind := str(entry.get("type", ""))
@@ -342,7 +386,7 @@ func _draw_facilities(center: Vector2, radius: float, front: bool, canvas: Canva
 		var point := _facility_point(center, radius, kind, angle)
 		var near_weight := (depth + 1.0) * 0.5
 		var span := clampf(_body_radius() * 0.37, 48.0, 76.0) * lerpf(0.78, 1.06, near_weight)
-		var artwork: Texture2D = facility_renderer.texture(kind) if is_instance_valid(facility_renderer) else Art.facility(kind)
+		var artwork: Texture2D = Art.facility(kind)
 		if artwork == null:continue
 		var tint := Color(0.65, 0.72, 0.82).lerp(Color.WHITE, near_weight)
 		Art.draw_fitted(canvas, artwork, Rect2(point - Vector2.ONE * span * 0.5, Vector2.ONE * span), tint)
@@ -355,16 +399,20 @@ func _arrival_strength() -> float:
 	if age < 0.0 or age >= 0.8:return 0.0
 	return sin(PI * age / 0.8) * (1.0 - age / 0.8)
 
+func _scout_axes(center: Vector2, radius: float) -> Vector2:
+	return Vector2(minf(radius * 1.65, minf(center.x, size.x - center.x) - 32.0), radius * 0.68)
+
 func _scout_position(age: float, center: Vector2, radius: float) -> Vector2:
 	if age >= ENTRY_DURATION:
 		var angle := (age - ENTRY_DURATION) * 0.48
-		return center + Vector2(cos(angle) * radius * 1.65, sin(angle) * radius * 0.68)
+		var axes := _scout_axes(center, radius)
+		return center + Vector2(cos(angle) * axes.x, sin(angle) * axes.y)
 	var t := clampf(age / ENTRY_DURATION, 0.0, 1.0)
 	# Accelerate on approach, brake into the original ellipse with matching tangent speed.
 	var end_slope := 0.68 * 0.48 * ENTRY_DURATION / 1.5
 	var u := (0.24 + end_slope - 2.0) * t * t * t + (3.0 - 0.48 - end_slope) * t * t + 0.24 * t
 	var start := Vector2(size.x + 16.0, center.y - radius * 1.2)
-	var end := center + Vector2(radius * 1.65, 0.0)
+	var end := center + Vector2(_scout_axes(center, radius).x, 0.0)
 	return start.bezier_interpolate(start + Vector2(-radius * 0.55, radius * 0.18), end - Vector2(0.0, radius * 0.5), end, u)
 
 func _scout_in_front() -> bool:

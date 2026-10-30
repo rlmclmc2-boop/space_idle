@@ -29,6 +29,8 @@ var _tabs: TabContainer
 var equipment_scene: Control
 var reactor_scene: Control
 var _reactor_active: bool = false
+var planet_scene: Control
+var _planet_active: bool = false
 var _zone_shell: Control
 var _battle_viewport: SubViewport
 var _bridge_open: Button
@@ -196,6 +198,16 @@ func _show_session() -> void:
 	equipment_scene.exclusive_ui_changed.connect(_sync_equipment_entry)
 	equipment_scene.set_shared_host(true, null)
 	_setup_reactor_scene(equipment_layer)
+	planet_scene = PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel,
+		session.publish_planet_claim, _command_button, _planet_visual_context,
+		session.crew_system, session.coordinate_assignment)
+	planet_scene.position = Vector2.ZERO
+	planet_scene.size = Vector2(808, 900)
+	planet_scene.visible = false
+	planet_scene.set_shared_host(true, null)
+	planet_scene.reforge_requested.connect(_open_planet_reforge)
+	planet_scene.exclusive_ui_changed.connect(_sync_equipment_entry)
+	equipment_layer.add_child(planet_scene)
 	var zone_layer := CanvasLayer.new()
 	zone_layer.layer = 10
 	add_child(zone_layer)
@@ -681,18 +693,28 @@ func _ui_occupied() -> bool:
 	return false
 
 func _modal_ui_occupied() -> bool:
-	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_zone_shell) and _zone_shell.has_exclusive_ui()) or (is_instance_valid(growth_panel) and growth_panel.visible) or (is_instance_valid(reactor_scene) and reactor_scene.visible) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
+	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(planet_scene) and planet_scene.has_exclusive_ui()) or (is_instance_valid(_zone_shell) and _zone_shell.has_exclusive_ui()) or (is_instance_valid(growth_panel) and growth_panel.visible) or (is_instance_valid(reactor_scene) and reactor_scene.visible) or (is_instance_valid(planet_scene) and planet_scene.visible) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
 
 func _zone_route(id: String) -> void:
 	if _zone_navigation_blocked() or not _zone_shell.is_route_available(id): return
+	if id != "planet" and is_instance_valid(planet_scene) and planet_scene.visible and not planet_scene.prepare_host_hide(): return
 	_zone_shell.close_details()
 	if id == "reactor":
 		if is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return
 		_reactor_active = true
+		_planet_active = false
+		_set_page("battle")
+		_sync_equipment_entry()
+		return
+	if id == "planet":
+		if is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return
+		_planet_active = true
+		_reactor_active = false
 		_set_page("battle")
 		_sync_equipment_entry()
 		return
 	_reactor_active = false
+	_planet_active = false
 	if id == "equipment":
 		_set_page("battle")
 		return
@@ -704,7 +726,7 @@ func _zone_route(id: String) -> void:
 		_sync_zone_route()
 
 func _zone_navigation_blocked() -> bool:
-	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
+	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(planet_scene) and planet_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
 
 func _sync_zone_route() -> void:
 	if not is_instance_valid(_zone_shell): return
@@ -712,6 +734,8 @@ func _sync_zone_route() -> void:
 	var id := "equipment"
 	if _reactor_active and is_instance_valid(reactor_scene) and reactor_scene.visible:
 		id = "reactor"
+	elif _planet_active and is_instance_valid(planet_scene) and planet_scene.visible:
+		id = "planet"
 	elif is_instance_valid(growth_panel) and growth_panel.visible and is_instance_valid(_tabs):
 		id = pages[clampi(_tabs.current_tab, 0, pages.size() - 1)]
 	_zone_shell.set_active_route(id)
@@ -719,7 +743,10 @@ func _sync_zone_route() -> void:
 
 func _set_growth_visible(visible: bool) -> bool:
 	if visible and is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return false
-	if visible: _reactor_active = false
+	if visible and is_instance_valid(planet_scene) and planet_scene.visible and not planet_scene.prepare_host_hide(): return false
+	if visible:
+		_reactor_active = false
+		_planet_active = false
 	if is_instance_valid(growth_panel):
 		if not visible:
 			var focus: Control = get_viewport().gui_get_focus_owner()
@@ -730,13 +757,16 @@ func _set_growth_visible(visible: bool) -> bool:
 
 func _sync_equipment_entry() -> void:
 	if is_instance_valid(reactor_scene):
-		var reactor_visible: bool = _reactor_active and session.campaign_system.available("feature", "reactor") and not (is_instance_valid(growth_panel) and growth_panel.visible)
+		var reactor_visible: bool = _reactor_active and not _planet_active and session.campaign_system.available("feature", "reactor") and not (is_instance_valid(growth_panel) and growth_panel.visible)
 		if reactor_scene.visible != reactor_visible: reactor_scene.visible = reactor_visible
+	if is_instance_valid(planet_scene):
+		var planet_visible: bool = _planet_active and not session.planet_system.planet_options().is_empty() and not (is_instance_valid(growth_panel) and growth_panel.visible)
+		if planet_scene.visible != planet_visible: planet_scene.visible = planet_visible
 	if is_instance_valid(equipment_scene):
-		var equipment_visible: bool = not (is_instance_valid(growth_panel) and growth_panel.visible) and not (is_instance_valid(reactor_scene) and reactor_scene.visible)
+		var equipment_visible: bool = not (is_instance_valid(growth_panel) and growth_panel.visible) and not (is_instance_valid(reactor_scene) and reactor_scene.visible) and not (is_instance_valid(planet_scene) and planet_scene.visible)
 		if equipment_scene.visible != equipment_visible: equipment_scene.visible = equipment_visible
 	if is_instance_valid(_bridge_open):
-		var bridge_disabled: bool = (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible)
+		var bridge_disabled: bool = (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(planet_scene) and planet_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible)
 		if _bridge_open.disabled != bridge_disabled: _bridge_open.disabled = bridge_disabled
 	if is_instance_valid(_battle_input_blocker):
 		var input_blocked: bool = _modal_ui_occupied()
@@ -820,7 +850,6 @@ func _setup_growth_panel() -> void:
 	box = _pages.universe.box
 	_add_feature_panel(box, "crew", CrewPanel.new(session.crew_system, session.planet_system, session.galaxy_system, session.coordinate_assignment, _command_button))
 	_add_feature_panel(box, "galaxy", GalaxyPanel.new(session.galaxy_system, _world_visual_context))
-	_add_feature_panel(box, "planet", PlanetPanel.new(session.planet_system, session.coordinate_planet_cancel, session.publish_planet_claim, _command_button, _world_visual_context))
 	box = _pages.hyperspace.box
 	_add_feature_panel(box, "hyperspace", HyperspacePanel.new(session, _command_button))
 	box = _pages.archive.box
@@ -1038,6 +1067,7 @@ func _refresh_feature_visibility() -> void:
 		if _tabs.is_tab_hidden(_tabs.current_tab): _tabs.current_tab = int(_pages.ship.index)
 	if is_instance_valid(_zone_shell):
 		_zone_shell.set_route_available("reactor", visible_features.reactor)
+		_zone_shell.set_route_available("planet", visible_features.planet)
 		_zone_shell.set_route_available("growth", visible_features.research or visible_features.enhancement)
 		_zone_shell.set_route_available("universe", visible_features.crew or visible_features.planet or visible_features.galaxy)
 		_zone_shell.set_route_available("hyperspace", visible_features.hyperspace)
@@ -1068,6 +1098,24 @@ func _bridge_tab_changed(index: int) -> void:
 func _world_visual_context() -> Dictionary:
 	return {"paused": not session.pause_reasons.is_empty(), "speed": session.current_chrono_speed(),
 		"galaxy_crew": session.crew_system.galaxy_assignments()}
+
+func _planet_visual_context() -> Dictionary:
+	var context: Dictionary = _world_visual_context()
+	context.balances = session.economy.balance_rows()
+	return context
+
+func _open_planet_reforge(id: String) -> void:
+	# Navigate to the existing transaction surface; its preview and commit stay owned there.
+	if not _pending_reforge.is_empty(): _cancel_reforge()
+	_refresh_reforge_selection()
+	for index in _reforge_picker.item_count:
+		if str(_reforge_picker.get_item_metadata(index)) == id:
+			_reforge_picker.select(index)
+			_reforge_planet_value.text = id
+	_tabs.current_tab = int(_pages.universe.index)
+	_set_page("growth")
+	_pages.universe.scroll.set_deferred("scroll_vertical", 0)
+	_reforge_picker.call_deferred("grab_focus")
 
 func _setup_reforge_selection(parent: Control, planet_value: LineEdit, drone_value: LineEdit) -> void:
 	_reforge_planet_value = planet_value

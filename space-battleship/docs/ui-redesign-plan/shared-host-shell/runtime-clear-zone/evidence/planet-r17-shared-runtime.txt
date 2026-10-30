@@ -1,0 +1,3 @@
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+PLANET_R17 route=planet selected=1 scene=(808.0, 900.0) wallet_hidden=true
+PLANET_R17 return_equipment_and_universe=true focus_clear=true
