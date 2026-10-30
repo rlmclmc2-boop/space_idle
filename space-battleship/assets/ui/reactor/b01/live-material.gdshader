@@ -105,4 +105,9 @@ void fragment() {
 	}
 	COLOR = vec4(color, idle.a);
 	}
+	// End the painted bay inside its own surface, meeting the shared navy spine.
+	// The central machinery and controls remain untouched beyond the 24px edges.
+	float left_edge = smoothstep(0.0, 0.03, uv.x);
+	float right_edge = smoothstep(0.0, 0.03, 1.0 - uv.x);
+	COLOR.rgb = mix(vec3(0.05098, 0.14510, 0.2), COLOR.rgb, left_edge * right_edge);
 }

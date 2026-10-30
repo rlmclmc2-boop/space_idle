@@ -50,7 +50,7 @@ func run() -> void:
 	assert(model.ok and model.modules.size() == 4 and float(model.load) == 1.0)
 	print("DIAG_CONTEXT pid=", OS.get_process_id(), " size=", root.size, " speed=", session.current_chrono_speed(), " loads=", model.modules.map(func(row): return [row.id,row.load]), " renderer=", RenderingServer.get_rendering_device() != null)
 	var Reactor = preload("res://src/systems/reactor.gd")
-	for count in [1,2]:
+	for count in [1,2,3,4]:
 		var module_ids: String = "smelting" if count == 1 else "weapons,smelting" if count == 2 else "weapons,defence,smelting" if count == 3 else "weapons,defence,smelting,condensation"
 		var parameters: Dictionary = session.reactor_system._parameters.duplicate(true)
 		parameters.reactorModules = module_ids
