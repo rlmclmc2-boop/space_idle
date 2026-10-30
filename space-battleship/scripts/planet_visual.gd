@@ -111,7 +111,9 @@ func _body_radius() -> float:
 	var requested := base * clampf(float(appearance.get("radiusScale", 1.0)), 0.08, 1.25)
 	# Keep the entire authored corona/beam envelope inside the scene.
 	var available := maxf(1.0, minf(size.x, size.y) * 0.5 - 16.0)
-	return minf(requested, available / maxf(1.0, globe.extent))
+	# The orbital facility envelope extends beyond the globe. A large stellar
+	# radius must leave room for its built nodes at the module's left edge.
+	return minf(minf(requested, size.x * 0.245), available / maxf(1.0, globe.extent))
 
 func _orbit_radius() -> float:
 	# Compact stars keep a readable operational area without an Earth-sized scan.
