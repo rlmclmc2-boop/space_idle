@@ -165,6 +165,10 @@ func _section_width(kind: String, angle: float) -> float:
 	var distance := absf(angle - FACILITY_ANGLES[kind])
 	var t := clampf((distance - 0.08) / 0.16, 0.0, 1.0)
 	var blend := 1.0 - t * t * (3.0 - 2.0 * t)
+	if kind == "refinery":
+		# The furnace sits close to its next independent section. Its near
+		# shoulder must return to transit width at the actual mating plane.
+		blend *= smoothstep(0.0, 0.10, ARC_BOUNDS[kind].y - angle)
 	return lerpf(_transit_width(angle), NODE_WIDTH, blend)
 
 func _transit_width(angle: float) -> float:
