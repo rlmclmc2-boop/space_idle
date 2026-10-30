@@ -70,11 +70,18 @@ void fragment() {
             float granules = clamp(mix(0.78, cells * 0.78 + detail * 0.22, detail_strength), 0.0, 1.0);
             granules = mix(granules, 0.32 + smoothstep(0.36, 0.53, granules) * 0.36
                 + smoothstep(0.64, 0.78, granules) * 0.24, 0.65);
+            // Broad, slowly advected plasma lanes keep a stellar photosphere
+            // from reading as a smoothly painted solid globe.
+            float lane = sin(star_uv.y * 15.0 + sin(star_uv.x * TAU * 5.0 + visual_clock * 0.04) * 1.7
+                + visual_clock * 0.035);
+            float eddy = sin(star_uv.x * TAU * 13.0 - star_uv.y * 22.0 + visual_clock * 0.065);
+            granules = clamp(granules + lane * 0.13 + eddy * 0.045, 0.0, 1.0);
             // Compress authored brightness before output so compact stars keep
             // their blue limb and spherical depth instead of clipping to white.
             float exposure = emission / (1.0 + max(0.0, emission - 1.0) * 0.85);
             rgb = mix(shadow_tint.rgb, surface_tint.rgb, granules) * exposure;
             rgb *= 0.58 + 0.42 * pow(normal.z, 0.8);
+            rgb += surface_tint.rgb * smoothstep(0.66, 0.9, granules) * 0.16;
             rgb += atmosphere_color.rgb * pow(1.0 - normal.z, 5.0) * glow_strength * 0.25;
         }
         // Atmosphere replaces the former black cartoon contour.
@@ -89,13 +96,17 @@ void fragment() {
         float lit = 0.35 + 0.65 * max(0.0, dot(normalize(vec3(p, 0.2)), light));
         if (emission > 0.0) {
             float angle = atan(p.y, p.x);
-            float rays = 0.86 + 0.10 * sin(angle * 12.0 + phase.y * TAU) + 0.04 * sin(angle * 23.0 - phase.x * TAU);
+            float rays = 0.88 + 0.13 * sin(angle * 12.0 + phase.y * TAU) + 0.07 * sin(angle * 23.0 - phase.x * TAU);
             float flare = pow(max(0.0, sin(visual_clock * 0.37)), 24.0) * pow(max(0.0, cos(angle - visual_clock * 0.04)), 48.0);
             halo *= rays + flare * flare_strength;
             lit = 1.0;
         }
         rgb = atmosphere_color.rgb;
         alpha = halo * glow_strength * lit;
+        if (emission > 0.0) {
+            float outer = exp(-pow((r - 1.0) / max(0.12, width * 3.5), 1.4));
+            alpha = max(alpha, outer * glow_strength * 0.10);
+        }
     }
     if (beam_length > 0.0) {
         // A tilted bipolar axis makes a full revolution around vertical Y.

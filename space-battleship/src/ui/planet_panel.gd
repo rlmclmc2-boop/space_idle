@@ -307,7 +307,7 @@ func _layout() -> void:
 	# Shared left drawer belongs to the three scoped entry tabs; facility aligns above it.
 	_drawer.position = Vector2(22, 278)
 	_drawer.size.x = 276
-	_drawer.size.y = 0
+	_fit_drawer()
 	_wallet.position = Vector2(200, 14)
 	_wallet.size = Vector2(580, 30)
 	_wallet.clip_contents = true
@@ -585,6 +585,14 @@ func _rebuild_drawer() -> void:
 		if _conquest_open: _build_conquest_detail()
 		_update_task()
 	_layout()
+	call_deferred("_fit_drawer")
+
+func _fit_drawer() -> void:
+	if _drawer == null or not _drawer.visible: return
+	# Content changes when a crew member is assigned. Give the existing housing
+	# its actual minimum height before drawing the side and bottom rim.
+	_drawer.size.y = _drawer.get_combined_minimum_size().y
+	_drawer.queue_redraw()
 
 func _build_conquest_detail() -> void:
 	_read_conquest_if_needed()

@@ -128,6 +128,13 @@ func set_body_scale(scale: Vector3) -> void:
 	for material in _all_materials:
 		material.set_shader_parameter("body_scale", scale)
 
+func set_stellar_field(tint: Color, strength: float) -> void:
+	# The existing deck's inward lip acts as a restrained thermal boundary.
+	# No extra ring or facility is added, and nonstellar decks keep their finish.
+	for material in [_deck, _sleeve]:
+		material.set_shader_parameter("stellar_field_tint", Vector3(tint.r, tint.g, tint.b))
+		material.set_shader_parameter("stellar_field_strength", strength)
+
 func _section_width(kind: String, angle: float) -> float:
 	# The same real cross-section grows out of the transit spine at each owned
 	# work node, then returns to a narrow section before any independent join.

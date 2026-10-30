@@ -109,6 +109,10 @@ func _body_radius() -> float:
 	# composition. Keep the globe smaller without changing its authored texture.
 	var base := minf(size.y * 0.34, size.x * 0.235)
 	var requested := base * clampf(float(appearance.get("radiusScale", 1.0)), 0.08, 1.25)
+	# A compact stellar photosphere remains physically small in the composition,
+	# but needs enough pixels for its limb and field to read beside its own ring.
+	if float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("radiusScale", 1.0)) <= 0.3:
+		requested = maxf(requested, size.x * (0.06 if float(appearance.get("beamLength", 0.0)) > 0.0 else 0.07))
 	# Keep the entire authored corona/beam envelope inside the scene.
 	var available := maxf(1.0, minf(size.x, size.y) * 0.5 - 16.0)
 	# The orbital facility envelope extends beyond the globe. A large stellar
@@ -184,7 +188,7 @@ func configure(id: String, row: Dictionary) -> void:
 		globe.cloud_map = _map_texture("cloudTexture", PlanetSphere.CLOUDS)
 		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.006))
 		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0073))
-		globe.glow_strength = clampf(float(appearance.get("glowStrength", 0.62)), 0.0, 1.0)
+		globe.glow_strength = clampf(maxf(float(appearance.get("glowStrength", 0.62)), 0.68 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0), 0.0, 1.0)
 		globe.shadow_strength = clampf(float(appearance.get("shadowStrength", 0.86)), 0.0, 1.0)
 		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
 		globe.atmosphere_color = _color("atmosphereColor", Color("5ac8f0"))

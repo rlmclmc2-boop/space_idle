@@ -24,6 +24,7 @@ var _body_pixels := 200.0
 var _last_size := Vector2.ZERO
 var _last_body_pixels := -1.0
 var _axis_ratio := 1.0
+var _compact_stellar := false
 var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
@@ -337,6 +338,9 @@ func _transparent_materials(node: Node) -> void:
 
 func configure_shape(appearance: Dictionary) -> void:
 	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
+	_compact_stellar = float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("radiusScale", 1.0)) <= 0.3
+	var field_tint := Color(str(appearance.get("atmosphereColor", "fff2df")))
+	_spine.set_stellar_field(field_tint, 0.62 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0)
 	_pulse_strength = clampf(float(appearance.get("pulseStrength", 0.0)), 0.0, 0.05)
 	_pulse_speed = maxf(0, float(appearance.get("pulseSpeed", 0.08)))
 
@@ -360,9 +364,9 @@ func _layout() -> void:
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _render_pixels() -> float:
-	# Tiny white dwarfs and pulsars retain a readable ring instead of shrinking
-	# the whole facility system to the small photosphere's pixel diameter.
-	return maxf(_body_pixels, minf(size.x * 0.235, size.y * 0.34))
+	# Compact stellar cores still need an orbital facility structure, but the
+	# full terrestrial ring makes the center read as an empty 700px hole.
+	return maxf(_body_pixels, minf(size.x * (0.16 if _compact_stellar else 0.235), size.y * (0.235 if _compact_stellar else 0.34)))
 
 func update_pose(clock: float, surface_phase: float, body_pixels: float, surface_clock: float = -1.0) -> void:
 	_clock = clock
