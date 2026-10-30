@@ -1,6 +1,6 @@
 # M2 舰体与装备
 
-**当前63–83原素材收端／正式宿主组合：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)继续e154原审后的早期框灯／反光主次与x808接续，采用75固定e8正式导航（装备选中）和右宿主原像素，短／长环境源自行收端。21整屏已实际看；槽内结构、舰武变换与真实长MAX保持，仅静态设计。早期主次／薄侧颊／跨页接续仍交整体与原审判断；无运行／独立复测／main。下列42–62及更旧段落保留历史，当前未完以唯一入口清单为准。
+**当前63–83整组续修：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)及其完整可切换审阅入口固定全部21静态整屏。早期舰武整组按同底锚165→260px展示、名称牌上移95px；短长环境撤掉源图挤薄，改为左落地脚＋右墙固定承托，直接使用原背景变换。槽内结构／字段／目标与原挂点anchor保持，公共正式装备选中导航及右宿主原像素保持。当前早期主次、墙托厚度与x808／B01邻接仍交根／整体／原独审明确判断；无运行／独立复测／main，不称等用户。下述旧段落按唯一入口当前状态解释。
 
 
 [唯一入口](../../README.md) → [全局规范](../../13-art-interaction.md)。[资产来源](../sources.md#s4)；本页只含 M2/V2，须同时遵守全局 2.1–2.3、复用边界及第6节证据口径；[玩法](../../03-progression.md)、[相关契约](../../06-data.md)只读本任务受影响小节，跨模块提交变动再读 [05现行契约](../../05-architecture.md#现行模块交接契约)。

@@ -1,94 +1,142 @@
 {
-  "kind": "ImageGen environment edits, not full UI generation",
-  "source_commit": "e15484ceabfe953605eef132e71b6883a3590bf5",
-  "host_commit": "75d55275dadf57b84da62ce0e9ea8f4f0161f97d",
-  "host_source": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-combo-equipment-1440x900.png",
-  "host_geometry": {
-    "canvas": [
-      1440,
-      900
-    ],
-    "module": [
-      0,
-      85,
-      808,
-      815
-    ],
-    "navigation": [
-      808,
-      0,
-      47,
-      900
-    ],
-    "battle_projection": [
-      855,
-      0,
-      585,
-      900
-    ],
-    "selection": "equipment",
-    "method": "Unscaled exact screenshot; original header and x808+ clip rectangles retained. Never use generated full-page study UI."
+  "kind": "static equipment source revision; no runtime acceptance",
+  "base_editable_source_commit": "e15484ceabfe953605eef132e71b6883a3590bf5",
+  "previous_candidate_commit": "000a53590acb11ba1cb4f2c803350c4fc12ca1a7",
+  "shared_sources": {
+    "material_roles": "b17db8d2fef26009515df75b5759b6b1ac7ca3fb",
+    "font_roles": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
+    "thin_frame_and_return_studies": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
+    "minimal_owner_package": "5ba98734a8de355865e2c55cf1e907b68ccf770a",
+    "latest_read": "10dc56f14ff400e8bbea2f093606c17b74e6a1a4",
+    "note": "Actual238 study images used as generation references;5ba source-node/ownership contract consumed. No zone_shell/BridgeTheme/public resource or sampled75equipment host changes across these commits.",
+    "early_reference": {
+      "local": "coherence-assets/shared-early-balanced-23819624.png",
+      "sha256": "42f8871bcb1bfaf6eff7f5d2ef897fa5f10d7b3aaed4042fc829d16470571ec7",
+      "git_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e154-early-balanced-carrier-study.png"
+    },
+    "tall_reference": {
+      "local": "coherence-assets/shared-tall-return-23819624.png",
+      "sha256": "d7a4bbcddee66fedcaadb851bc0fb304bacd63713fe01dcbf11cdcffeff8dfa4",
+      "git_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e154-tall-return-carrier-study.png"
+    }
   },
-  "environment_edits": [
+  "current_environment_sources": [
     {
-      "input": "coherence-assets/hangar-short-carrier.png",
-      "output": "coherence-assets/hangar-short-return.png",
-      "original_output": "/workspace/generated_images/exec-62da4e9b-e5e4-4bb4-b09f-2d4720e4ec0e.png",
-      "sha256": "4abe9d84a709a4182f193c18a201c9164ba0829fd0d6dc9823abba30f5ef5cfe",
-      "prompt_intent": "Keep room/pad/blank reading plane; model right wall return, full console foot and floor end within source; navy unlit extreme edge; no UI/ship/text. Short: substantially lower frame/ceiling lamps and floor reflection. Tall: reduce harsh blooms.",
-      "observed_deviation": "Generator narrowed blank panel despite preservation request; corrected in editable SVG background mapping, not by moving text/buttons."
+      "stage": "short",
+      "file": "coherence-assets/hangar-short-subordinate.png",
+      "sha256": "9b40cc620b11a0cc594c977be9eb3b9f4b3fe972ddbaf71a74253d9bf57d037f",
+      "original_output": "/workspace/generated_images/exec-a2d02614-9d86-4a58-ab6b-e90bded946a6.png",
+      "actual_result": "1240x1268; full matte non-emissive read plane, naturally drawn right metal/wall attachment and floor termination; no compressed pillar/foot. Low-emission room/console accents. No ships, weapons, controls or text baked."
     },
     {
-      "input": "coherence-assets/hangar-tall-carrier.png",
-      "output": "coherence-assets/hangar-tall-return.png",
-      "original_output": "/workspace/generated_images/exec-349cb48f-6064-42c6-972a-44fcb9a6ad49.png",
-      "sha256": "4d91490b8e0792b4b39670120ead2aeb55e0fd15a80934dc67607a82199f38b7",
-      "prompt_intent": "Keep room/pad/blank reading plane; model right wall return, full console foot and floor end within source; navy unlit extreme edge; no UI/ship/text. Short: substantially lower frame/ceiling lamps and floor reflection. Tall: reduce harsh blooms.",
-      "observed_deviation": "Generator narrowed blank panel despite preservation request; corrected in editable SVG background mapping, not by moving text/buttons."
+      "stage": "tall",
+      "file": "coherence-assets/hangar-tall-wallfixed.png",
+      "sha256": "b4352c8e2c35f0ee10bbec8ee6ef3633b8954c67a14908f6da65b41f1f6b60d7",
+      "original_output": "/workspace/generated_images/exec-bb51476a-4359-4a2f-9245-443fe86de58b.png",
+      "actual_result": "1240x1268; full matte non-emissive read plane, naturally drawn right metal/wall attachment and floor termination; no compressed pillar/foot. Low-emission room/console accents. No ships, weapons, controls or text baked."
     }
   ],
-  "render_geometry": {
-    "source_canvas": [
-      1240,
-      1268
-    ],
-    "original_transform": [
+  "placement": {
+    "both_environment_images": [
       -27,
       85,
       843.2,
       815
     ],
-    "short_source_x": [
+    "clip": [
       0,
-      540,
-      1138,
-      1218,
-      1240
+      85,
+      808,
+      815
     ],
-    "tall_source_x": [
-      0,
-      540,
-      1120,
-      1180,
-      1240
+    "source_canvas": [
+      1240,
+      1268
     ],
-    "destination_source_units_x": [
-      0,
-      540,
-      1198,
-      1220,
-      1240
-    ],
-    "reason": "Generated blank read-plane narrowed. Piecewise background-only mapping retains left room anchor and gives unchanged row targets a complete blank carrier, then terminates thin side cheek and wall before navigation. Explicit local source clip paths prevent repeat-image overflow. This is illustration adaptation, no battle or mount geometry change.",
-    "flattened_background": "hangar-{short,tall}-return-layout.svg/png rendered first; main plates contain one background image. Corrects observed nested-clip bleed in intermediate exports; intermediate full plate renders overwritten."
+    "source_remapping": "NONE. Former000 piecewise stretch/compression no longer used. Each source has a modeled right wall fixture and no right free-standing floor foot; left floor leg retained.",
+    "early_subject_display": {
+      "anchor": [
+        173,
+        640
+      ],
+      "uniform_scale": "260/165",
+      "original_hull_height": 165,
+      "current_height": 260,
+      "identity_translation": [
+        0,
+        -95
+      ],
+      "inner_asset_ratio_mounts_anchors": "Unchanged; hull and actual mounted weapon/selection corners transform together. This changes only static module viewing geometry, never battle/shared geometry.",
+      "slot_controls": "Every original slot/quote/dropdown/compare/purchase text and rectangle remains at its original source location."
+    }
   },
-  "limits": [
-    "No native host implementation",
-    "No runtime input/focus/scroll/switch/payment evidence",
-    "Right-side cheek compression and early hierarchy require whole-page external review",
-    "No user complete-version approval"
+  "public_host": {
+    "commit": "75d55275dadf57b84da62ce0e9ea8f4f0161f97d",
+    "source": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-combo-equipment-1440x900.png",
+    "local": "coherence-assets/host-75d55275.png",
+    "sha256": "40df707599e4a94e9eba17a1f3669d224170a636529ef400e3a89b9784cc5d4b",
+    "canvas": [
+      1440,
+      900
+    ],
+    "equipment_rail": [
+      0,
+      0,
+      808,
+      85
+    ],
+    "navigation_x": [
+      808,
+      855.875
+    ],
+    "effective_battle_projection_x": [
+      855.875,
+      1392.125
+    ],
+    "battle_scale": 0.9375,
+    "preservation": "Original raster header and x808+ retained unscaled; equipment selected. Includes outside projection margin. No generated public UI used; row fixtures are not same economic snapshot."
+  },
+  "generation_process": [
+    {
+      "stage": "short",
+      "output_original": "/workspace/generated_images/exec-5a6d01b2-95b3-4780-82aa-f160596d9622.png",
+      "local": "coherence-assets/hangar-short-subordinate-process.png",
+      "sha256": "c0afc4bcd24a4637a1cc452e85c17a5d3412d05abaaa1eae3640460c5a395e15",
+      "inputs": "000 short-return-layout target +238 shared thin-frame reference",
+      "prompt_intent_summary_not_verbatim": "Thin blue frame, smaller caps, low-value cool ivory plane while retaining000 subdued room. Observed near-edge right foot then corrected in current short."
+    },
+    {
+      "stage": "short",
+      "output_original": "/workspace/generated_images/exec-a2d02614-9d86-4a58-ab6b-e90bded946a6.png",
+      "local": "coherence-assets/hangar-short-subordinate.png",
+      "sha256": "9b40cc620b11a0cc594c977be9eb3b9f4b3fe972ddbaf71a74253d9bf57d037f",
+      "inputs": "Prior short process",
+      "prompt_intent_summary_not_verbatim": "Localized removal of right freestanding foot; model shallow wall fixing and wall/floor return, retain left leg and read-plane geometry."
+    },
+    {
+      "stage": "tall",
+      "output_original": "/workspace/generated_images/exec-1eb4a67d-30b6-4f64-911e-e361669db2df.png",
+      "local": "coherence-assets/hangar-tall-wallfixed-process.png",
+      "sha256": "64bda9af20e5f48a7b98304968a1b1799b7becc6c21c07c5280c1bdf289774a7",
+      "inputs": "e154 tall carrier target +238 shared tall-return reference +new short matte palette",
+      "prompt_intent_summary_not_verbatim": "Redesign right support as wall fixing, retain left foot; matte read plane. Actual generator ended read plane too early nearx1144, so not used as final."
+    },
+    {
+      "stage": "tall",
+      "output_original": "/workspace/generated_images/exec-bb51476a-4359-4a2f-9245-443fe86de58b.png",
+      "local": "coherence-assets/hangar-tall-wallfixed.png",
+      "sha256": "b4352c8e2c35f0ee10bbec8ee6ef3633b8954c67a14908f6da65b41f1f6b60d7",
+      "inputs": "Prior tall process",
+      "prompt_intent_summary_not_verbatim": "Localized read-plane right-edge expansion; rebuild right frame at natural thickness, quiet terminal wall at canvas edge. Removes source-capacity mismatch without source squeeze."
+    }
   ],
-  "host_sha256": "40df707599e4a94e9eba17a1f3669d224170a636529ef400e3a89b9784cc5d4b",
-  "latest_contract_checked": "051cbd0dc201fb53578d9c074460b8969a207ef8",
-  "latest_contract_note": "e154-junction-source-contract.json confirms same public x808, nav right line854, equipment rail85. No public source or sampled75 host changed in051."
+  "historical_sources": "000a535 original short/tall return and piecewise layout SVG/PNG retained for traceability, not current background inputs. e15401–62 image/source bytes retained.",
+  "review_limits": [
+    "Current63 enlarged early subject vs nameplate/large wall/low-value short console needs whole-page judgment.",
+    "Both asymmetrical left-floor/right-wall supports and right corners/floor end need physical/material judgment at actual808nav.",
+    "B01 references are existing e8 shared screenshots, not new equipment/native integration.",
+    "Continuous scrolling/focus/crop/input/switch/payment not implemented. Owner same-slot10game-second lock still requires later removal for instant switch-back.",
+    "True paidLv19/MAX444/twofee sample does not cover arbitrary longer fields or invented third resources.",
+    "No author/user full-page acceptance."
+  ]
 }

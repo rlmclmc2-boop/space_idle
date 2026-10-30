@@ -1,0 +1,30 @@
+[
+  {
+    "file": "coherence-assets/b01-host-1-23819624.png",
+    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-controlled-combo-1-active.png",
+    "sha256": "70d6558173b445de6a1f877fa18f0f097cae5d496817f5444b1553fee551ef01",
+    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+  },
+  {
+    "file": "coherence-assets/b01-host-2-23819624.png",
+    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-controlled-combo-2-active.png",
+    "sha256": "76503e124785f23f56ff531018daa54dbe01d6d9bd738316144a9c51fa3b7f69",
+    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+  },
+  {
+    "file": "coherence-assets/b01-host-3-23819624.png",
+    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-controlled-combo-3-active.png",
+    "sha256": "e6860011773d2940bb5c8703990f6f97dfe607a3a397a6ee69c02354d185d760",
+    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+  },
+  {
+    "file": "coherence-assets/b01-host-4-23819624.png",
+    "source_commit": "23819624d2277b4b52f1ac1dd858912780a4cbcc",
+    "source_path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/e8-combo-reactor-1440x900.png",
+    "sha256": "03775ca54a81e165f83b506d618c04d6b318f46a6bf7bf39d1cc8d5f039bb6bd",
+    "scope": "Existing shared e8 runtime screenshot for cross-page comparison only;1/2controlled states not natural unlock evidence; current equipment remains static."
+  }
+]
