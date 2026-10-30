@@ -112,12 +112,21 @@ def row(y, category, index, key, fee_capacity, state='normal', focus=False):
     if state in ['evolution','evolution-poor']:
         level,current,after,costs = '19','9,300','1.76万',[('iron','铁1,600'),('matter','简并物质10')]
         if state=='evolution-poor': disabled,reason=True,'资源不足'
+    if state in ['evolution-ten','evolution-max','evolution-locked']:
+        level,current = '19','9,300'
+        if state=='evolution-ten':
+            after,mode,purchase,costs = '9.28万','×10','购买10级',[('iron','铁4.15万'),('matter','简并物质10')]
+        elif state=='evolution-max':
+            after,mode,purchase,costs = '19.2万','MAX','购买14级',[('iron','铁9.44万'),('matter','简并物质10')]
+        else:
+            after,costs,disabled,reason = '—',[],True,'进化材料尚未开放'
     if state == 'ten':
         level,current,after,mode,purchase,costs = '29','9.28万','57.6万','×10','购买10级',[('iron','铁25.79万')]
         disabled,reason = True,'铁不足'
     if state == 'maxzero':
         level,current,after,mode,purchase,costs = '33','19.2万','—','MAX','可购0级',[]
         disabled,reason = True,'当前预算不可购'
+    if state=='empty': name,current,after='空槽','—','—'
     # Geometry follows the fixed presentation budget, never affordability/reason text.
     dense = fee_capacity==2
     height = row_height(fee_capacity)
@@ -127,7 +136,7 @@ def row(y, category, index, key, fee_capacity, state='normal', focus=False):
     s += f'<path d="M358 {y+height-1} H782" stroke="#b0bcb5"/>'
     if focus: s += box(350,y,4,height-1,'#397e82',r=0)
     s += box(356,y+8,48,58,'#d6e0d8','#91aaa2',4)
-    s += image(path,358,y+10,44,54)
+    if state!='empty': s += image(path,358,y+10,44,54)
     # Identity is one clear name target; Lv remains a distinct adjacent reading.
     s += box(410,y+5,216,27,'#dae3da','#91aaa2',4)
     s += text(418,y+24,('武器' if category=='weapon' else '防御')+str(index+1)+' · '+name,16,INK,600)
@@ -153,7 +162,7 @@ def row(y, category, index, key, fee_capacity, state='normal', focus=False):
     return s
 
 
-def plate(stage, popup=False, affordability_override=False, switched=False, comparison=False, scroll_bottom=False):
+def plate(stage, popup=False, affordability_override=False, switched=False, comparison=False, scroll_bottom=False, capacity_example=None, weapon_popup=False, weapon_comparison=False, empty_slot=False, dormant_details=False):
     hull, title, height = {'early':('01-frigate','游隼侦察艇',165),
                            'middle':('03-cruiser','云鳐巡洋舰',286),
                            'late':('05-heavy-battleship','白鲸无畏舰',336)}[stage]
@@ -171,11 +180,21 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
             if stage=='late' and cat=='weapon' and i==0: state='evolution-poor'
             if affordability_override and stage=='late' and cat=='weapon' and i==1: state='poor'
             states[(cat,i)]=state
-    capacities = CAPACITY_PROFILES[stage]
+    capacities = CAPACITY_PROFILES[stage].copy()
+    if capacity_example is not None and capacity_example.startswith('reserved-'):
+        # Lifecycle-safe capacity proposal: reserve current config's2fees up front for every slot.
+        capacities={slot_id:2 for slot_id in capacities}
+        states[('weapon',0)]={'reserved-base':'normal','reserved-evolution':'evolution','reserved-locked':'evolution-locked'}[capacity_example]
+    elif capacity_example is not None:
+        # Separate preset design fixture, never automatic promotion from quote/reason.
+        capacities['weapon:4']=2
+        states[('weapon',4)]='evolution-locked' if capacity_example=='locked' else 'evolution'
+        states[('weapon',0)]={'single':'evolution','ten':'evolution-ten','max':'evolution-max','locked':'evolution-locked'}[capacity_example]
+    if empty_slot: states[('weapon',0)]='empty'
     content_height = 2*(18+1) + sum(row_height(v) for v in capacities.values())
-    viewport_height = min(content_height,523) if stage=='late' else content_height
+    viewport_height = min(content_height,523)
     console_bottom = console_top + 34 + viewport_height + 7
-    scroll_offset = content_height-viewport_height if stage=='late' and (scroll_bottom or popup or switched or comparison) else 0
+    scroll_offset = content_height-viewport_height if scroll_bottom or popup or switched or comparison else 0
     s = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1440" height="900" viewBox="0 0 1440 900"><defs>'
     s += '<linearGradient id="face" x2="0" y2="1"><stop stop-color="#f1efdf"/><stop offset="1" stop-color="#d4d9d1"/></linearGradient><linearGradient id="button" x2="0" y2="1"><stop stop-color="#507786"/><stop offset="1" stop-color="#294957"/></linearGradient><linearGradient id="disabled" x2="0" y2="1"><stop stop-color="#9eaba9"/><stop offset="1" stop-color="#83928f"/></linearGradient>'
     s += '<clipPath id="header"><rect width="808" height="85"/></clipPath><clipPath id="battle"><rect x="808" width="632" height="900"/></clipPath><clipPath id="module"><rect y="85" width="808" height="815"/></clipPath><clipPath id="stage"><rect y="85" width="302" height="815"/></clipPath></defs><g font-family="Noto Sans SC, sans-serif">'
@@ -239,6 +258,41 @@ def plate(stage, popup=False, affordability_override=False, switched=False, comp
             s += text(484,yy+57,'容量',15,'#3e5d67',500)
             s += text(542,yy+57,value,18,'#173c4e',600)
             s += text(724,yy+24,'Lv.1',14,MUTED,500)
+    if weapon_popup:
+        py=376
+        s += box(402,py,386,418,'#244450','#10303f',7)
+        s += '<path d="M600 376 L614 366 L626 376Z" fill="#244450"/>'
+        s += text(416,py+27,'武器1 · 同槽Lv.1',16,'#f4f0df',600)
+        s += button(746,py+7,32,'×',height=30)
+        for i,key in enumerate(['laser','missile','cannon','longLaser']):
+            name,path,value,_,period=EQUIPMENT[key]
+            yy=py+42+i*94
+            s += box(410,yy,268,84,'#e0e8de' if key=='laser' else '#f1efdf','#aac1b8')
+            s += image(path,420,yy+15,42,54)
+            s += text(474,yy+23,name,18,INK,600)
+            if key=='laser': s += text(606,yy+23,'现装',14,TEAL,500)
+            s += text(474,yy+46,'攻击力 '+value,15,'#3e5d67',500)
+            s += text(474,yy+69,'周期 '+period,15,'#3e5d67',500)
+            s += compare_button(688,yy,90,height=84)
+    if weapon_comparison:
+        py=376
+        s += box(402,py,386,238,'#244450','#10303f',7)
+        s += text(416,py+27,'武器1 · 同槽比较',16,'#f4f0df',600)
+        s += button(746,py+7,32,'×',height=30)
+        for key,yy,status in [('laser',py+46,'当前'),('missile',py+138,'候选')]:
+            name,path,value,_,period=EQUIPMENT[key]
+            s += box(412,yy,366,82,'#e8e8dc','#91aaa2',4)
+            s += image(path,424,yy+14,44,54)
+            s += text(484,yy+23,status+' · '+name,16,INK,600)
+            s += text(484,yy+48,'攻击力 '+value,16,'#173c4e',600)
+            s += text(630,yy+48,'周期 '+period,15,'#3e5d67',500)
+            s += text(724,yy+23,'Lv.1',14,MUTED,500)
+    if dormant_details:
+        # Optional tooltip on existing hull identity, no extra permanent pane or action.
+        s += box(26,184,309,152,'#244450','#10303f',6)
+        s += text(40,212,'未启用槽',16,'#f4f0df',600)
+        for yy,label in [(242,'武器4 · 长激光 · Lv.1'),(274,'武器5 · 脉冲炮 · Lv.19'),(306,'防御3 · 护盾 · Lv.1')]:
+            s += text(40,yy,label,15,'#dce7df',500)
     s += '</g></g></g></svg>'
     # Preserve embedded originals once per SVG, rather than repeating atlas bytes per row.
     embedded = {}
@@ -261,6 +315,16 @@ for name,stage,popup in [('01-early-two','early',False),('02-middle-five','middl
 (HERE/'06-local-switch-accepted.svg').write_text(plate('late',switched=True),encoding='utf-8')
 (HERE/'07-optional-comparison.svg').write_text(plate('late',comparison=True),encoding='utf-8')
 (HERE/'08-late-scroll-bottom.svg').write_text(plate('late',scroll_bottom=True),encoding='utf-8')
+for suffix,example,bottom in [('09-two-dense-single','single',False),('10-two-dense-ten','ten',False),('11-two-dense-max','max',False),('12-evolution-material-locked','locked',False),('13-two-dense-bottom','single',True)]:
+    (HERE/(suffix+'.svg')).write_text(plate('late',scroll_bottom=bottom,capacity_example=example),encoding='utf-8')
+for suffix,example,bottom in [('14-reserved-two-fee-base','reserved-base',False),('15-reserved-two-fee-evolution','reserved-evolution',False),('16-reserved-two-fee-locked','reserved-locked',False),('17-reserved-two-fee-bottom','reserved-base',True)]:
+    (HERE/(suffix+'.svg')).write_text(plate('late',scroll_bottom=bottom,capacity_example=example),encoding='utf-8')
+(HERE/'18-local-weapon-dropdown.svg').write_text(plate('late',capacity_example='reserved-base',weapon_popup=True),encoding='utf-8')
+(HERE/'19-optional-weapon-comparison.svg').write_text(plate('late',capacity_example='reserved-base',weapon_comparison=True),encoding='utf-8')
+(HERE/'20-middle-reserved-two-fee.svg').write_text(plate('middle',capacity_example='reserved-base'),encoding='utf-8')
+(HERE/'21-middle-reserved-two-fee-bottom.svg').write_text(plate('middle',scroll_bottom=True,capacity_example='reserved-base'),encoding='utf-8')
+(HERE/'22-active-empty-slot.svg').write_text(plate('late',capacity_example='reserved-base',empty_slot=True),encoding='utf-8')
+(HERE/'23-dormant-slot-details.svg').write_text(plate('middle',capacity_example='reserved-base',dormant_details=True),encoding='utf-8')
 used['assets/fonts/NotoSansSC.ttf'] = hashlib.sha256((ASSETS/'fonts/NotoSansSC.ttf').read_bytes()).hexdigest()
 (HERE/'reference-hashes.json').write_text(json.dumps(used,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 # Existing repository family, private render configuration only; no system install.

@@ -684,5 +684,179 @@
     "bottom_view": "Weapons3–5 and defence1–3 complete; weapon3 outer row boundary clips1px, all its content targets are fully visible.",
     "focus_requirement": "Keyboard focus/row selection scrolls its full row into view; clipped/invisible targets receive no input. Popup preserves scroll offset and blocks underlying clicks. Not implemented or input-tested.",
     "balance_requirement": "Affordability changes preserve row geometry and current scroll offset; no transient automatic reflow."
+  },
+  "capacity_examples": {
+    "09_13": {
+      "preset": "weapon0 and weapon4 capacity2; remaining slots capacity1",
+      "content_height": 758,
+      "viewport_height": 523,
+      "scroll_range": [
+        0,
+        235
+      ],
+      "reason_capacity": "108row contains actual8Chinese-character reason at15px below buttons; costs and upgrade omitted on failed quote",
+      "unchanged_on_mode": "09/10/11 same slot capacities and anchors"
+    },
+    "14_17": {
+      "proposal": "Every enabled slot reserves capacity2 from start; no promotion by current count/reason/affordability",
+      "row_pitch": 108,
+      "content_height": 902,
+      "viewport_height": 523,
+      "scroll_range": [
+        0,
+        379
+      ],
+      "cost_count": {
+        "14": 1,
+        "15": 2,
+        "16": 0
+      },
+      "tradeoff": "4complete rows rather than6in the bottom viewport; more scrolling, same text sizes/ship/background",
+      "acceptance": "Capacity proposal only; no user acceptance or runtime guarantee"
+    }
+  },
+  "weapon_dropdown": {
+    "plate": "18-local-weapon-dropdown.png",
+    "panel": [
+      392,
+      376,
+      386,
+      418
+    ],
+    "anchor": "weapon0 name target, reserved-base fixture",
+    "direct_switch_targets": [
+      [
+        400,
+        418,
+        268,
+        84
+      ],
+      [
+        400,
+        512,
+        268,
+        84
+      ],
+      [
+        400,
+        606,
+        268,
+        84
+      ],
+      [
+        400,
+        700,
+        268,
+        84
+      ]
+    ],
+    "compare_only_targets": [
+      [
+        678,
+        418,
+        90,
+        84
+      ],
+      [
+        678,
+        512,
+        90,
+        84
+      ],
+      [
+        678,
+        606,
+        90,
+        84
+      ],
+      [
+        678,
+        700,
+        90,
+        84
+      ]
+    ],
+    "close": [
+      736,
+      383,
+      32,
+      30
+    ],
+    "no_confirmation": true,
+    "no_enclosing_row_target": true,
+    "current_item": "laser, NoChange",
+    "unlocked_only": true
+  },
+  "weapon_comparison": {
+    "plate": "19-optional-weapon-comparison.png",
+    "panel": [
+      392,
+      376,
+      386,
+      238
+    ],
+    "close": [
+      736,
+      383,
+      32,
+      30
+    ],
+    "current": [
+      "laser",
+      "350",
+      "1.5秒"
+    ],
+    "candidate": [
+      "missile",
+      "170",
+      "2.4秒"
+    ],
+    "scope": "same paidLv1, charged_base, actual existing interval. Read-only; no confirm/switch fee/DPS."
+  },
+  "active_empty_slot": {
+    "plate": "22-active-empty-slot.png",
+    "slot": "weapon:0",
+    "fixture": "paidLv1, equipment_id empty, activated slot",
+    "source": "equipment.gd _comparison_value181–196 returns null primary and empty status; quote_slot653 uses category/paid_level independently of equipment_id",
+    "no_placeholder_equipment": true,
+    "upgrade_fee": "iron65 quote for active paidLv1 slot, not installation fee; no fabricated current/upgrade effect",
+    "not_locked_slot": true
+  },
+  "dormant_details": {
+    "plate": "23-dormant-slot-details.png",
+    "trigger": "existing ship identity hover/focus tooltip, not a new permanent action",
+    "panel": [
+      16,
+      184,
+      309,
+      152
+    ],
+    "source": "slot_facts168–178 dormant=index>=mounts; controlled same-layout fixture, not a ship-change replay",
+    "fields": [
+      "weapon4 longLaser Lv1",
+      "weapon5 laser Lv19",
+      "defence3 shield Lv1"
+    ],
+    "no_purchase_targets": true,
+    "not_a_recent_result_or_log": true
+  },
+  "middle_reserved_capacity": {
+    "plates": [
+      "20-middle-reserved-two-fee.png",
+      "21-middle-reserved-two-fee-bottom.png"
+    ],
+    "content_height": 578,
+    "viewport_height": 523,
+    "scroll_range": [
+      0,
+      55
+    ],
+    "panel": [
+      332,
+      280,
+      456,
+      564
+    ],
+    "early": "01already reserves2fee rows for both slots; unchanged"
   }
 }

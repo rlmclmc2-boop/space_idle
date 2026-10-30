@@ -1,0 +1,44 @@
+{
+  "as_of_base": "a1a13a9902ef2b8cc7ce743bcc6b57d3862861c6",
+  "single_owner": true,
+  "runtime_implementation_authorized": false,
+  "completed_static_examples": [
+    "multi_dense_fee_rows",
+    "x1_x10_positive_MAX",
+    "EvolutionMaterialLocked_8char",
+    "reserve_two_fee_lifecycle_capacity_proposal",
+    "weapon_four_candidates_and_period_comparison",
+    "active_empty_slot",
+    "dormant_slot_identity_details"
+  ],
+  "dependencies": [
+    {
+      "item": "shared_material_control_and_focus_styles",
+      "owner": "overall original group via root",
+      "required": "fixed Git SHA plus plate/button/disabled/focus/dropdown/tooltip/edge source",
+      "status": "awaiting_source_not_permission_denial"
+    },
+    {
+      "item": "current_full_shared_host_and_reactor_consistency",
+      "owner": "overall original group/root/independent reviewer",
+      "required": "same budget integrated full screen",
+      "status": "awaiting_integration_not_user_confirmation"
+    },
+    {
+      "item": "actual_long_level_amount_name_fixture",
+      "owner": "authoritative Owner evidence via root",
+      "required": "same-version snapshot or exact Git evidence; no fake amounts/levels",
+      "status": "source_gap_no_new_runtime_test"
+    },
+    {
+      "item": "switch_cooldown_removal",
+      "owner": "later implementation phase",
+      "required": "authorized runtime phase plus contracts/03 sync",
+      "status": "out_of_scope_current_static_phase"
+    }
+  ],
+  "not_required_current_data": [
+    "fabricated_third_resource"
+  ],
+  "acceptance": "Pending root/overall/independent review; no author pass claim"
+}

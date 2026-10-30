@@ -89,29 +89,12 @@
     "05-late-affordability-only.svg",
     "05-late-affordability-only.png"
   ],
-  "current_revision_start": "7c8d57d17a6bd1a8020ad03c9124fcf46165a8a5",
+  "current_revision_start": "a1a13a9902ef2b8cc7ce743bcc6b57d3862861c6",
   "typography_source": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
-  "current_scope": "Static equipment spatial/layout revision and evidence only; original background bytes and public source untouched; no game execution or runtime changes.",
+  "current_scope": "Static capacity examples and weapon dropdown/comparison, active empty/dormant details only;01–08SVG/PNG byte-preserved from a1a13a; no runtime, rules or common style edits",
   "current_changed_tracked_paths": [
     "space-battleship/docs/game-design/art/modules/equipment.md",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/01-early-two.svg",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/02-middle-five-native-detail.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/02-middle-five.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/02-middle-five.svg",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/03-late-eight-native-detail.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/03-late-eight.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/03-late-eight.svg",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown-native-detail.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/04-local-dropdown.svg",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/05-late-affordability-only-native-detail.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/05-late-affordability-only.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/05-late-affordability-only.svg",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/06-local-switch-accepted.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/06-local-switch-accepted.svg",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/07-optional-comparison.png",
-    "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/07-optional-comparison.svg",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/build-design-plates.py",
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/embedded-asset-audit.json",
@@ -121,8 +104,65 @@
     "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/target-boundaries.json"
   ],
   "new_static_files": [
-    "08-late-scroll-bottom.svg",
-    "08-late-scroll-bottom.png",
-    "08-late-scroll-bottom-native-detail.png"
-  ]
+    "09-two-dense-single-native-detail.png",
+    "09-two-dense-single.png",
+    "09-two-dense-single.svg",
+    "10-two-dense-ten-native-detail.png",
+    "10-two-dense-ten.png",
+    "10-two-dense-ten.svg",
+    "11-two-dense-max-native-detail.png",
+    "11-two-dense-max.png",
+    "11-two-dense-max.svg",
+    "12-evolution-material-locked-native-detail.png",
+    "12-evolution-material-locked.png",
+    "12-evolution-material-locked.svg",
+    "13-two-dense-bottom.png",
+    "13-two-dense-bottom.svg",
+    "14-reserved-two-fee-base-native-detail.png",
+    "14-reserved-two-fee-base.png",
+    "14-reserved-two-fee-base.svg",
+    "15-reserved-two-fee-evolution-native-detail.png",
+    "15-reserved-two-fee-evolution.png",
+    "15-reserved-two-fee-evolution.svg",
+    "16-reserved-two-fee-locked-native-detail.png",
+    "16-reserved-two-fee-locked.png",
+    "16-reserved-two-fee-locked.svg",
+    "17-reserved-two-fee-bottom.png",
+    "17-reserved-two-fee-bottom.svg",
+    "18-local-weapon-dropdown-native-detail.png",
+    "18-local-weapon-dropdown.png",
+    "18-local-weapon-dropdown.svg",
+    "19-optional-weapon-comparison-native-detail.png",
+    "19-optional-weapon-comparison.png",
+    "19-optional-weapon-comparison.svg",
+    "20-middle-reserved-two-fee.png",
+    "20-middle-reserved-two-fee.svg",
+    "21-middle-reserved-two-fee-bottom.png",
+    "21-middle-reserved-two-fee-bottom.svg",
+    "22-active-empty-slot-native-detail.png",
+    "22-active-empty-slot.png",
+    "22-active-empty-slot.svg",
+    "23-dormant-slot-details-native-detail.png",
+    "23-dormant-slot-details.png",
+    "23-dormant-slot-details.svg"
+  ],
+  "current_capacity_source": {
+    "mode_quotes": "materials-main-revision/operations.json records[0].modes: x1 count1 iron1600+matter10; x10 count10 iron41500+matter10; MAX count14 iron94400+matter10",
+    "value_endpoints": "visual-operations Lv19 primary9300, upgrade1=17600; materials-main-revision records[0].state Lv29 primary92800 and records[1].state Lv33 primary192000; no new Owner run or formula calculation",
+    "long_reason": "src/ui/equipment_panel.gd:906–907 EvolutionMaterialLocked → 进化材料尚未开放; systems/equipment.gd:544 returns failed quote before count/cost output",
+    "current_fee_data": {
+      "config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "equipment_cost_rows": {
+        "laser": {
+          "res_1": 1,
+          "res_2": null
+        },
+        "armour": {
+          "res_1": 1,
+          "res_2": null
+        }
+      },
+      "scope": "Current local config only; Owner loops res_n, so2fees is not a future schema limit. No fabricated third currency."
+    }
+  }
 }

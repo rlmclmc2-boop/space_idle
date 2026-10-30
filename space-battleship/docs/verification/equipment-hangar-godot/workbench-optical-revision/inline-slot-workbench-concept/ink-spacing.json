@@ -301,5 +301,86 @@
     "asset_transforms": "Background unchanged; middle/late hulls retain size and x, shift down40 as static display composition only. No physical anchor changed.",
     "visible_scene": "Unbroken upper wall, lights and right robot arm above table; left crane and floor surround hull. Not a declaration of accepted parking or scene visibility.",
     "scope": "Same row widths/fonts/data/actions. Finite viewport replaces insistence on8simultaneous rows. Same scroll container retains all8slots; no detail panel or functional removal."
+  },
+  "current_capacity_revision": {
+    "pairs": [
+      {
+        "before": "09-two-dense-single.png",
+        "after": "10-two-dense-ten.png",
+        "scope": "same Lv19 slot x1 to x10; two-fee preset",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          492,
+          365,
+          755,
+          408
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      },
+      {
+        "before": "09-two-dense-single.png",
+        "after": "11-two-dense-max.png",
+        "scope": "same Lv19 slot x1 to MAX14; two-fee preset",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          492,
+          365,
+          755,
+          408
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      },
+      {
+        "before": "14-reserved-two-fee-base.png",
+        "after": "15-reserved-two-fee-evolution.png",
+        "scope": "same allocated2fee capacity; slot Lv1 single-fee fixture to Lv19 evolution fixture, not a replayed progression",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          449,
+          345,
+          666,
+          430
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      },
+      {
+        "before": "15-reserved-two-fee-evolution.png",
+        "after": "16-reserved-two-fee-locked.png",
+        "scope": "same capacity and Lv19; material available to locked, no fake quote on failure",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          454,
+          365,
+          772,
+          434
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      }
+    ],
+    "sources": {
+      "mode_quotes": "materials-main-revision/operations.json records[0].modes: x1 count1 iron1600+matter10; x10 count10 iron41500+matter10; MAX count14 iron94400+matter10",
+      "value_endpoints": "visual-operations Lv19 primary9300, upgrade1=17600; materials-main-revision records[0].state Lv29 primary92800 and records[1].state Lv33 primary192000; no new Owner run or formula calculation",
+      "long_reason": "src/ui/equipment_panel.gd:906–907 EvolutionMaterialLocked → 进化材料尚未开放; systems/equipment.gd:544 returns failed quote before count/cost output",
+      "current_fee_data": {
+        "config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+        "equipment_cost_rows": {
+          "laser": {
+            "res_1": 1,
+            "res_2": null
+          },
+          "armour": {
+            "res_1": 1,
+            "res_2": null
+          }
+        },
+        "scope": "Current local config only; Owner loops res_n, so2fees is not a future schema limit. No fabricated third currency."
+      }
+    },
+    "actual_view": "New09–23fifteen full screens and11native details actually viewed; previous01–08retained exact files",
+    "remaining": "All2fee capacity is a proposal with scrolling tradeoff; arbitrary long level/number strings and3resources not fabricated; keyboard/focus/hover matrix awaits common control style and later implementation."
   }
 }
