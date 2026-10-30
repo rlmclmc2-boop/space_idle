@@ -13,6 +13,7 @@ uniform float visual_clock = 0.0;
 uniform float completion_flash = 0.0;
 uniform vec2 completion_spot = vec2(0.0);
 uniform float emission = 0.0;
+uniform bool authored_stellar_color = false;
 uniform float detail_scale = 1.0;
 uniform float detail_strength = 1.0;
 uniform float axis_ratio = 1.0;
@@ -62,6 +63,15 @@ void fragment() {
         rgb += atmosphere_color.rgb * fresnel * glow_strength * (0.3 + 0.7 * day);
         rgb += vec3(0.94, 0.98, 0.91) * pow(max(0.0, illumination), 16.0) * 0.055;
         if (emission > 0.0) {
+            float exposure = emission / (1.0 + max(0.0, emission - 1.0) * 0.85);
+            if (authored_stellar_color) {
+                // The two large stars use authored, multiscale plasma maps.
+                // Keep their bright patches and dark magnetic structures in
+                // color rather than reducing them to the old coarse luminance.
+                vec3 plasma = map_sample(surface_map, uv + vec2(phase.x, 0.0)).rgb;
+                plasma = mix(plasma, surface_tint.rgb, 0.13);
+                rgb = plasma * exposure * (0.70 + 0.30 * pow(normal.z, 0.8));
+            } else {
             // Both detail layers belong to the same turning surface. Integer longitude
             // repeats keep a full rotation seamless even with fractional detail scale.
             vec2 star_uv = vec2((uv.x + phase.x) * max(1.0, round(detail_scale)), uv.y * max(0.1, detail_scale));
@@ -78,10 +88,10 @@ void fragment() {
             granules = clamp(granules + lane * 0.13 + eddy * 0.045, 0.0, 1.0);
             // Compress authored brightness before output so compact stars keep
             // their blue limb and spherical depth instead of clipping to white.
-            float exposure = emission / (1.0 + max(0.0, emission - 1.0) * 0.85);
             rgb = mix(shadow_tint.rgb, surface_tint.rgb, granules) * exposure;
             rgb *= 0.58 + 0.42 * pow(normal.z, 0.8);
             rgb += surface_tint.rgb * smoothstep(0.66, 0.9, granules) * 0.16;
+            }
             rgb += atmosphere_color.rgb * pow(1.0 - normal.z, 5.0) * glow_strength * 0.25;
         }
         // Atmosphere replaces the former black cartoon contour.

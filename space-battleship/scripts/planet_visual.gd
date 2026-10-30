@@ -4,6 +4,8 @@ extends Control
 const OrbitModels := preload("res://scripts/orbital_facilities.gd")
 const Art := preload("res://scripts/planet_art.gd")
 const PlanetSphere := preload("res://scripts/rotating_planet.gd")
+const STELLAR_MAIN := preload("res://assets/planets/stellar-main-granulation.png")
+const STELLAR_RED := preload("res://assets/planets/stellar-red-convection.png")
 const BACKDROP := preload("res://assets/planets/toon/exploration-field.svg")
 const FACILITY_COLORS := {
 	"scout_satellite": Color("8ce9ff"),
@@ -184,7 +186,7 @@ func configure(id: String, row: Dictionary) -> void:
 		appearance_initialized = true
 		configured_appearance = appearance.duplicate(true)
 		# Legacy texture is a finished globe, never scroll it as an albedo map.
-		globe.surface_map = _map_texture("surfaceTexture", PlanetSphere.SURFACE)
+		globe.surface_map = STELLAR_MAIN if id == "3" else STELLAR_RED if id == "4" else _map_texture("surfaceTexture", PlanetSphere.SURFACE)
 		globe.cloud_map = _map_texture("cloudTexture", PlanetSphere.CLOUDS)
 		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.006))
 		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0073))
@@ -193,6 +195,7 @@ func configure(id: String, row: Dictionary) -> void:
 		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
 		globe.atmosphere_color = _color("atmosphereColor", Color("5ac8f0"))
 		globe.configure_visual(appearance)
+		globe.globe_material.set_shader_parameter("authored_stellar_color", id in ["3", "4"])
 		if architecture != null: architecture.configure_shape(appearance)
 		globe.light_direction = Vector3(-0.65, -0.45, 0.62)
 		globe.apply_settings()
