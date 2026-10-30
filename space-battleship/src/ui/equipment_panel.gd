@@ -48,7 +48,7 @@ var _slot_selections: Dictionary = {}
 var _choice_presentations: Dictionary = {}
 var _choice_options: Array = []
 var _choice_option_slot: String = ""
-var _control_textures: Dictionary = {}
+var _face_texture: Texture2D
 var _console_texture: Texture2D
 var _pending_level_ids: Dictionary = {}
 var _batch_state_dirty: bool = false
@@ -63,7 +63,7 @@ var _textures: Dictionary = {}
 var _weapon_visible_bounds: Dictionary = {}
 var _hull_textures: Dictionary = {}
 var _background: Texture2D
-var _locator_badge_style: StyleBoxFlat
+var _locator_badge_style: StyleBox
 var _title: Label
 var _wallet: Control
 var _wallet_cells: Dictionary = {}
@@ -182,77 +182,76 @@ func _setup_materials() -> void:
     theme.default_font = _font_regular
     theme.default_font_size = 15
     theme.set_font("font", "Button", _font_strong)
-    theme.set_color("font_color", "PopupMenu", CREAM)
-    theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
-    _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
-    var controls:Image=load("res://assets/ui/equipment/materials-20261029/control-materials.png").get_image()
-    # Sample only the real material forms. The generated outer instrument frame is
-    # deliberately excluded; the existing housing remains the only structural rim.
-    var regions:Dictionary={"glass":Rect2i(94,180,1260,172),"primary":Rect2i(42,472,1366,224),"navy":Rect2i(42,772,1366,204),"header":Rect2i(120,800,1200,130)}
-    for id in regions:
-        var face:Image=controls.get_region(regions[id])
-        var native_height:int=64 if id=="glass" else 36
-        face.resize(roundi(face.get_width()*float(native_height)/face.get_height()),native_height,Image.INTERPOLATE_LANCZOS)
-        _control_textures[id]=ImageTexture.create_from_image(face)
-    # Disabled keys retain the cool painted face but lose the bright metal glints.
-    # Cache the finish once; never attenuate the action text with the texture.
-    var disabled_face:Image=_control_textures.navy.get_image()
-    for y in disabled_face.get_height():
-        for x in disabled_face.get_width():
-            var pixel:Color=disabled_face.get_pixel(x,y)
-            var light:float=pixel.r*0.2126+pixel.g*0.7152+pixel.b*0.0722
-            if light>0.24:
-                var scale:float=(0.24+(light-0.24)*0.28)/light
-                disabled_face.set_pixel(x,y,Color(pixel.r*scale,pixel.g*scale,pixel.b*scale,pixel.a))
-    _control_textures.disabled=ImageTexture.create_from_image(disabled_face)
     var shell:Texture2D=load("res://assets/ui/equipment/materials-20261029/painted-console-shell.png")
     var paint:Image=shell.get_image().get_region(Rect2i(8,56,2102,620))
     # One uniform scale for the painted frame at native UI pixel scale; rounded height is189px.
     paint.resize(640,189,Image.INTERPOLATE_LANCZOS)
     _console_texture=ImageTexture.create_from_image(paint)
-class PolishedGlass extends StyleBox:
-    var texture:Texture2D
-    var modulation:Color=Color.WHITE
-    var radius:float=7.0
-    var contact:StyleBoxFlat
-    func _draw(canvas:RID,r:Rect2)->void:
-        contact.draw(canvas,r)
-        var points:=PackedVector2Array()
-        var uv:=PackedVector2Array()
-        var corners:Array=[Vector2(radius,radius),Vector2(r.size.x-radius,radius),Vector2(r.size.x-radius,r.size.y-radius),Vector2(radius,r.size.y-radius)]
-        for corner in 4:
-            for step in 5:
-                var angle:float=PI+corner*PI*0.5+step*PI*0.125
-                var point:Vector2=corners[corner]+Vector2(cos(angle),sin(angle))*radius
-                points.append(r.position+point);uv.append(point/r.size)
-        RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([modulation]),uv,texture.get_rid())
+    # All controls share one painted albedo and one edge profile. Sample only the
+    # existing navy key's inner paint, never its separate metallic border.
+    var source_face:Image=load("res://assets/ui/equipment/materials-20261029/control-materials.png").get_image()
+    var face:Image=source_face.get_region(Rect2i(120,800,1200,130))
+    face.resize(298,64,Image.INTERPOLATE_LANCZOS)
+    for y in face.get_height():
+        for x in face.get_width():
+            var pixel:Color=face.get_pixel(x,y)
+            var light:float=pixel.r*0.2126+pixel.g*0.7152+pixel.b*0.0722
+            var pigment:float=clampf(0.48+1.8*light,0.60,1.02)
+            face.set_pixel(x,y,Color(pigment,pigment,pigment,pixel.a))
+    _face_texture=ImageTexture.create_from_image(face)
+    _locator_badge_style=_surface_material("navy",Color.WHITE,"locator")
+
+const CONTROL_FOCUS := Color("8ab9b2")
+const CONTROL_DISABLED_INK := Color("ccd6d0")
+const CONTROL_CUT := 5.0
 
 class EquipmentSurface extends StyleBox:
-    var painted:StyleBox
-    var header_texture:Texture2D
+    var texture:Texture2D
+    var tone:Color=Color.WHITE
     var profile:String
     var depressed:bool=false
-    func _draw(canvas:RID, r:Rect2)->void:
-        if profile=="focus_tray":
-            RenderingServer.canvas_item_add_line(canvas,r.position+Vector2(12,r.size.y-3),r.end-Vector2(12,3),Color("436f70"),2.0)
-        elif profile=="tray":
-            painted.draw(canvas,Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36)))
-        elif profile=="instrument":painted.draw(canvas,r.grow(-3))
-        elif profile=="header":
-            # The same header fill follows the housing's fixed 32px top corners.
-            # Draw inside the enamel boundary instead of painting over the rim.
-            var points:=PackedVector2Array([
-                r.position+Vector2(32,14),r.position+Vector2(r.size.x-32,14),
-                r.position+Vector2(r.size.x-12,32),r.position+Vector2(r.size.x-12,40),
-                r.position+Vector2(12,40),r.position+Vector2(12,32)])
-            var uv:=PackedVector2Array()
-            for point in points:uv.append(Vector2((point.x-r.position.x)/r.size.x,(point.y-r.position.y-14.0)/26.0))
-            RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([Color.WHITE]),uv,header_texture.get_rid())
-        elif profile=="button":
-            var face:Rect2=r.grow(-3)
-            if depressed:face.position.y+=1;face.size.y-=1
-            painted.draw(canvas,face)
-        # Quiet close remains native text, with no unused opaque backing.
+    var quiet:bool=false
+    var disabled:bool=false
+    func _draw(canvas:RID,r:Rect2)->void:
+        if quiet:return
+        var focus:bool=profile.begins_with("focus_")
+        var form:String=profile.trim_prefix("focus_") if focus else profile
+        var face:Rect2=r.grow(-3)
+        if form=="tray" or form=="candidate":face=Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,36))
+        elif form=="index":face=r.grow(-1)
+        elif form in ["backing","locator"]:face=r
+        if depressed:face.position.y+=1;face.size.y-=1
+        var cut:float=minf(CONTROL_CUT,minf(face.size.x,face.size.y)*0.25)
+        var points:=PackedVector2Array([
+            face.position+Vector2(cut,0),Vector2(face.end.x-cut,face.position.y),
+            Vector2(face.end.x,face.position.y+cut),face.end-Vector2(0,cut),
+            face.end-Vector2(cut,0),Vector2(face.position.x+cut,face.end.y),
+            Vector2(face.position.x,face.end.y-cut),face.position+Vector2(0,cut)])
+        if form=="header":
+            face=Rect2(r.position+Vector2(12,14),Vector2(r.size.x-24,26))
+            points=PackedVector2Array([r.position+Vector2(32,14),r.position+Vector2(r.size.x-32,14),r.position+Vector2(r.size.x-12,32),r.position+Vector2(r.size.x-12,40),r.position+Vector2(12,40),r.position+Vector2(12,32)])
+        var outline:=points.duplicate();outline.append(points[0])
+        if focus:
+            RenderingServer.canvas_item_add_polyline(canvas,outline,PackedColorArray([CONTROL_FOCUS]),1.5,true)
+            return
+        if form not in ["header","backing"]:
+            var shadow:=points.duplicate()
+            for i in shadow.size():shadow[i]+=Vector2(0,2 if form=="button" else 1)
+            RenderingServer.canvas_item_add_polygon(canvas,shadow,PackedColorArray([Color(0.04,0.10,0.12,0.18)]))
+        var uv:=PackedVector2Array()
+        for point in points:uv.append((point-face.position)/face.size)
+        var lighting:=PackedColorArray()
+        for point in points:
+            var y:float=clampf((point.y-face.position.y)/face.size.y,0.0,1.0)
+            var pigment:Color=tone if disabled else tone.lightened(0.09*(1.0-y)).darkened(0.08*y)
+            pigment.a=tone.a;lighting.append(pigment)
+        RenderingServer.canvas_item_add_polygon(canvas,points,lighting,uv,texture.get_rid())
+        if form=="backing":return
+        var edge:=Color(0.13,0.24,0.28,0.22 if disabled else 0.38)
+        RenderingServer.canvas_item_add_polyline(canvas,outline,PackedColorArray([edge]),1.0,true)
+        if not disabled:
+            var shoulder:=PackedVector2Array([points[-1],points[0],points[1],points[2]])
+            RenderingServer.canvas_item_add_polyline(canvas,shoulder,PackedColorArray([Color(0.97,0.98,0.90,0.20)]),1.0,true)
 
 func _console_material(dark:bool)->StyleBox:
     var frame:=StyleBoxTexture.new()
@@ -266,24 +265,11 @@ func _console_material(dark:bool)->StyleBox:
 
 func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String="flat", depressed:bool=false) -> StyleBox:
     if profile=="deck":return _console_material(kind=="navy_face")
-    if profile=="flat":return StyleBoxEmpty.new()
     var material:=EquipmentSurface.new()
-    material.profile=profile;material.depressed=depressed
-    if profile=="header":material.header_texture=_control_textures.header
-    if profile in ["instrument","tray"]:
-        var glass:=PolishedGlass.new();glass.texture=_control_textures.glass
-        glass.modulation=modulation*(Color(0.85,1.0,0.93) if kind=="teal" else Color.WHITE)
-        glass.radius=7.0 if profile=="instrument" else 4.0
-        var contact:=StyleBoxFlat.new();contact.bg_color=Color(0,0,0,0)
-        contact.set_corner_radius_all(int(glass.radius))
-        contact.shadow_color=Color(0.04,0.10,0.12,0.18);contact.shadow_size=2;contact.shadow_offset=Vector2(0,1)
-        glass.contact=contact;material.painted=glass
-    elif profile=="button":
-        var role:String="disabled" if kind=="disabled" else "primary" if kind=="primary" else "navy"
-        var paint:=StyleBoxTexture.new();paint.texture=_control_textures[role]
-        for side in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:paint.set_texture_margin(side,6)
-        paint.modulate_color=modulation
-        material.painted=paint
+    material.texture=_face_texture;material.profile=profile;material.depressed=depressed
+    var tones:Dictionary={"glass":Color(0.98,1.02,1.02),"enamel":Color(0.98,1.02,1.02),"teal":Color(0.85,1.0,0.94),"selected_dark":Color(0.29,0.53,0.54),"navy_face":Color(0.28,0.42,0.48),"navy":Color(0.31,0.46,0.53),"primary":Color(1.05,0.84,0.50),"disabled":Color(0.23,0.33,0.38),"quiet":Color(0.31,0.46,0.53)}
+    material.tone=tones.get(kind,Color.WHITE)*modulation
+    material.quiet=kind=="clear";material.disabled=kind=="disabled"
     material.content_margin_left=8;material.content_margin_right=8
     material.content_margin_top=(6 if depressed else 4) if profile=="button" else 5
     material.content_margin_bottom=(4 if depressed else 6) if profile=="button" else 5
@@ -303,24 +289,19 @@ func _frame(parent: Control, rect: Rect2) -> Panel:
 func _prepare_button_material(button: Button, form: String) -> void:
     # Cache only the materials this control uses; no discarded old-frame styles.
     var variants:Array=[]
-    for selected in [false,true]:
+    var focus_material:=_surface_material("navy",Color.WHITE,"focus_"+form)
+    for selected in ([false,true] if form in ["candidate","index"] else [false]):
         var states:Dictionary={}
         for state in ["normal","hover","pressed","disabled","focus"]:
             if state=="focus":
-                if form=="candidate":states[state]=_surface_material("navy",Color.WHITE,"focus_tray")
-                else:
-                    var focus:=_style(Color(0,0,0,0),Color("b3ead8"),2)
-                    focus.set_corner_radius_all(4);states[state]=focus
-            elif form=="index":
-                var fill:Color=Color(0.12,0.39,0.41,0.88) if selected else Color(0,0,0,0)
-                if state=="hover":fill=Color(0.15,0.38,0.41,0.8)
-                elif state=="pressed":fill=Color("153c49")
-                var index_face:=_style(fill,Color("97e2d4") if selected else Color(0.47,0.77,0.75,0.18),1 if selected else 0)
-                index_face.set_corner_radius_all(4);states[state]=index_face
+                states[state]=focus_material
             else:
-                var tint:=Color(1.16,1.18,1.16) if state=="hover" else Color(0.84,0.86,0.88) if state=="pressed" else Color(0.72,0.77,0.8) if state=="disabled" else Color.WHITE
-                var kind:String="disabled" if state=="disabled" else "primary" if form=="primary" else "quiet" if form=="quiet" else "teal" if selected else "navy"
-                var section:String="tray" if form=="candidate" else "flat" if form=="quiet" else "button"
+                var tint:=Color(1.06,1.07,1.06) if state=="hover" else Color(0.88,0.90,0.91) if state=="pressed" else Color.WHITE
+                var kind:String="disabled" if state=="disabled" else "primary" if form=="primary" else "teal" if form=="candidate" and selected else "enamel" if form=="candidate" else "selected_dark" if form=="index" and selected else "navy"
+                if form in ["quiet","index"] and not selected:
+                    if state=="normal":kind="clear"
+                    elif state!="disabled":tint.a=0.65
+                var section:String="tray" if form=="candidate" else "index" if form=="index" else "button"
                 states[state]=_surface_material(kind,tint,section,state=="pressed")
         variants.append(states)
     button.set_meta("material_variants",variants)
@@ -335,12 +316,9 @@ func _button_tint(button: Button, chosen: bool) -> void:
     for state in states:button.add_theme_stylebox_override(state,states[state])
     var primary:bool=button.get_meta("material_role","")=="primary"
     var quiet:bool=button.get_meta("material_role","")=="quiet"
-    button.add_theme_color_override("font_color",INK if primary else Color("b9c9cc") if quiet else Color("d5ece3") if chosen else CREAM)
-    if primary:
-        button.add_theme_color_override("font_disabled_color",Color("ccd6d0"))
-        button.add_theme_color_override("font_focus_color",INK)
-        button.add_theme_color_override("font_hover_color",INK)
-        button.add_theme_color_override("font_pressed_color",INK)
+    var ink:Color=INK if primary else LIGHT if quiet else CREAM
+    for state in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]:button.add_theme_color_override(state,ink)
+    button.add_theme_color_override("font_disabled_color",CONTROL_DISABLED_INK)
 
 func _economy_display_changed() -> void:
     presentation_counts.economy_signals += 1
@@ -368,26 +346,14 @@ func _label(text: String, rect: Rect2, font_size: int = 16, color: Color = INK) 
     add_child(label)
     return label
 
-func _style(fill: Color, edge: Color, width: int = 1) -> StyleBoxFlat:
-    var style := StyleBoxFlat.new()
-    style.bg_color = fill
-    style.border_color = edge
-    style.set_border_width_all(width)
-    style.set_corner_radius_all(6)
-    style.content_margin_left = 8
-    style.content_margin_right = 8
-    style.content_margin_top = 5
-    style.content_margin_bottom = 5
-    return style
-
 func _button(text: String, rect: Rect2, action: Callable, dark: bool = false, form: String = "button") -> Button:
     var button := Button.new()
     button.text=text;button.position=rect.position;button.size=rect.size
     button.add_theme_font_size_override("font_size",16)
     button.add_theme_font_override("font",_font_strong)
     for key in ["font_color","font_pressed_color"]:button.add_theme_color_override(key,CREAM)
-    button.add_theme_color_override("font_hover_color",Color("c4fff0"))
-    button.add_theme_color_override("font_disabled_color",Color("8da5ac"))
+    button.add_theme_color_override("font_hover_color",CREAM)
+    button.add_theme_color_override("font_disabled_color",CONTROL_DISABLED_INK)
     _prepare_button_material(button,form)
     add_child(button)
     button.pressed.connect(action)
@@ -450,8 +416,7 @@ func _build() -> void:
         var backing:=Panel.new()
         backing.position=Vector2(24,164);backing.size=Vector2(184,71)
         backing.mouse_filter=Control.MOUSE_FILTER_IGNORE
-        var material:=_style(Color(0.06,0.16,0.21,0.78),Color(0,0,0,0),0)
-        material.set_corner_radius_all(4)
+        var material:=_surface_material("navy",Color(1,1,1,0.82),"backing")
         backing.add_theme_stylebox_override("panel",material)
         add_child(backing);_slot_backdrops[category]=backing
         _slot_groups[category]=_label("",Rect2(30,170,178,25),15,CREAM)
@@ -646,7 +611,7 @@ func _build_batch() -> void:
     _batch.add_child(margin)
     var stack:=VBoxContainer.new();stack.add_theme_constant_override("separation",14);margin.add_child(stack)
     var heading:=Label.new();heading.text="全部装备升级"
-    heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",24);heading.add_theme_color_override("font_color",CREAM)
+    heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",18);heading.add_theme_color_override("font_color",CREAM)
     stack.add_child(heading)
     _batch_quantity=_button("每槽 ×1",Rect2(0,0,270,40),_cycle_batch_quantity)
     remove_child(_batch_quantity);_batch_quantity.custom_minimum_size=Vector2(132,40)
@@ -828,6 +793,7 @@ func _refresh_slots(active: Array) -> void:
             var number:=_label(str(int(row.index)+1),Rect2(10,0,24,30),14,Color("b4d7d1"))
             remove_child(number);button.add_child(number)
             var title:=_label("",Rect2(38,0,77,30),14,CREAM)
+            title.add_theme_font_override("font",_font_strong)
             remove_child(title);button.add_child(title)
             var meta:=_label("",Rect2(115,0,57,30),12,Color("b2cac5"))
             meta.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
