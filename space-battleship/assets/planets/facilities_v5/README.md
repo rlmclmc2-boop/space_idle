@@ -8,4 +8,6 @@
 
 整体环返修继续时，工坊与船坞分别替换为[跨脊开放工坊及完整提示链](illustrated/workshop-through-node-prompts.txt)、[短喉双臂船坞及提示链](illustrated/shipyard-through-node-prompts.txt)。两图仅保留节点内部短通道，外部长弧仍是 Godot 的独立 built 网格段；前者的原滑座工具、后者的吊机与泊位层仍按原业务时钟工作。两张素材与真实环的最终共同剪影仍待整体审，不因资产本身完成而宣称通过。
 
+空间站运行壳体也替换为[圆站承力节点及提示链](illustrated/station-through-node-prompts.txt)，旧 `auto_explore.glb` 可编辑源和导出资产仍保留，运行仅显示其中独立转动的 `HabitatRingSpin`，两侧的长环依旧由该 built 段和相邻 built 段的真实网格拥有。该图尚为整体审候选。
+
 精炼厂/工坊随地表相位改变位置和切线姿态，地表足座压入表面，接触阴影投射至解析椭球；空间站独立绕轨，船坞为轨道外侧固定服务位。具体运行静帧、连续证据与限制见本轮验证目录；这份资产说明本身不宣称接触、净空或全星球已通过。

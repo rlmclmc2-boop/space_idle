@@ -105,6 +105,7 @@ func _ready() -> void:
 			assert(pivot != null, "Missing facility work pivot: " + kind + "/" + part_name)
 			moving[part_name] = pivot
 		_parts[kind] = moving
+		if kind == "auto_explore": _install_station_illustration(model, moving)
 		if kind == "equipment": _install_workshop_illustration(model, moving)
 		if kind == "refinery": _install_refinery_illustration(model, moving)
 		if kind == "shipyard": _install_shipyard_illustration(model, moving)
@@ -112,6 +113,24 @@ func _ready() -> void:
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
+
+func _install_station_illustration(model: Node3D, moving: Dictionary) -> void:
+	_hide_imported_meshes(model)
+	var habitat := moving["HabitatRingSpin"] as Node3D
+	for part in habitat.get_children():
+		if part is MeshInstance3D: part.visible = true
+	habitat.scale = Vector3.ONE * 0.65
+	habitat.position.y -= 0.35
+	var body := Sprite3D.new()
+	body.name = "IllustratedStationThroughNode"
+	body.texture = preload("res://assets/planets/facilities_v5/illustrated/station-orbit-through-node.png")
+	body.pixel_size = 0.0027
+	body.position = Vector3(0, -0.30, 0)
+	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	body.shaded = true
+	body.double_sided = true
+	body.render_priority = -1
+	model.add_child(body)
 
 func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
 	# The approved R5 silhouette is carried by two depth-tested, camera-facing

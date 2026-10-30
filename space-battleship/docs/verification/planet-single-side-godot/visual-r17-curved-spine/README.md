@@ -229,3 +229,9 @@
 沿工坊单节点的必要验证方向，船坞换用[一件带泊位和小艇的紧凑节点](../../../../assets/planets/facilities_v5/illustrated/shipyard-orbit-through-node.png)；[原 ImageGen 提示、两步输入及 SHA](../../../../assets/planets/facilities_v5/illustrated/shipyard-through-node-prompts.txt)固定。双臂仍从深青／象牙主根伸出，门内有短通道与青供能，外部后弧和前弧仍来自随 built 状态出现并独转的原真实段，不烘焙长环到固定视角素材。旧船坞主体不再进入运行图层；独立吊机与泊位活动层位置、原任务业务保持。
 
 [同版 stage3／stage4、明确模拟 90° 整屏](evidence/shipyard-through-node/)与[8.01 秒、46 帧墙钟记录](evidence/shipyard-through-node/natural-timestamps.json)、[VFR 短片](evidence/shipyard-through-node/natural-short-vfr.mp4)供原尺寸看左前主根、双臂／小艇身份、活动层与真实弧段的关系。[驱动、Godot 4.7.2 导入／语法／运行日志、SHA](evidence/shipyard-through-node/)同目录。作者看完整态、90°、自然片首末，未见这三个样本中双臂与所属节点脱开；这不能外推全圈和全部工作循环，更不能把工坊／船坞局部方向写成用户整体通过。原审仍须看圆站、精炼与两节点及环的共同剪影是否达到批准概念，旧 `5a1` 退回事实保留。
+
+## 空间站承力圆体：第三节点候选
+
+原 `5a1` 的平斜圆盘与裸暗端不满足[批准图](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)圆站从环生长的体积。运行换成[深层暗青承力鼓、象牙圆甲板和两侧短耦合口组成的站体](../../../../assets/planets/facilities_v5/illustrated/station-orbit-through-node.png)；[两步 ImageGen 原输入／提示／SHA](../../../../assets/planets/facilities_v5/illustrated/station-through-node-prompts.txt)固定。只保旧可编辑 GLB 的 `HabitatRingSpin` 作为站顶真实独立活动层，静态旧盘与宽翼不再运行；站段首端置于壳体内，不再露出该阶段曾被看成下挂黑球的端帽，实际弧段与站体仍同 built 状态出现。
+
+[当前码 stage1 单站、stage4 四座、受控 90° 整屏](evidence/station-through-node/)和[8.17 秒、46 帧实墙钟相位](evidence/station-through-node/natural-timestamps.json)、[VFR 短片](evidence/station-through-node/natural-short-vfr.mp4)只核站体/环、站顶活动层和后弧深度。作者原尺寸看站壳在 stage1 吃住端头，完整态在上左，模拟 90° 时球遮去站后部分；自然首末同样未见本次短段越界。[Godot 4.7.2 导入、语法／驱动日志、源与证据 SHA](evidence/station-through-node/)同目录。此版仍不是四设施整体批准；精炼厂与环的共同造型仍按用户最后整体判断继续，不能拿旧版本图和旧局部通过填补本码。

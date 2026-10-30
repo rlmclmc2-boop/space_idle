@@ -307,7 +307,6 @@ func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
 	# The three working facilities carry their load collars in their authored
 	# root artwork. The station alone retains its existing circular dock.
 	if kind == "auto_explore":
-		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.36, 0.42, 0.20, _navy, plane_normal())
 		return
 	if kind == "refinery":
 		_add_socket_drum(parent, point(angle) + plane_normal() * 0.30, 0.72, 0.82, 0.38, _navy, plane_normal())
@@ -429,7 +428,7 @@ func configure(owned: Array) -> void:
 		var index := KINDS.find(kind)
 		_joins[kind].visible = kind in _owned and KINDS[(index + 1) % KINDS.size()] in _owned
 		var caps: Array = _end_caps[kind]
-		caps[0].visible = KINDS[(index + KINDS.size() - 1) % KINDS.size()] not in _owned
+		caps[0].visible = kind != "auto_explore" and KINDS[(index + KINDS.size() - 1) % KINDS.size()] not in _owned
 		caps[1].visible = KINDS[(index + 1) % KINDS.size()] not in _owned
 
 func update_pose(clock: float) -> void:
