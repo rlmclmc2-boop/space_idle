@@ -376,3 +376,9 @@ R8四图已原尺寸实际查看：比a1更清楚地把早期舰体落在左可�
 [当前固定装备源的同版跨页驱动](evidence/e8-combo-driver.gd.txt)在 Godot 4.7.2 主场景取 [装备旧源对照](evidence/e8-combo-equipment-1440x900.png)、[反应堆 4 路](evidence/e8-combo-reactor-1440x900.png)、[MAX 报价](evidence/e8-combo-reactor-max-1440x900.png)、[星球旧源对照](evidence/e8-combo-planet-1440x900.png)四张原尺寸整屏；[受控驱动](evidence/e8-controlled-combo-driver.gd.txt)在同一共享宿主另取 1／2／3 路 [零与带载](evidence/e8-controlled-combo-1-active.png)及 1／2 的真实拖动：具体同前缀 `e8-controlled-combo-{1,2,3}-{zero,active}.png` 与 `{1,2}-manual.png`。驱动实际断言 1 路 100%、2 路 50/50、3 路 34/33/33 及 1/2 拖动 Owner 接受。编辑器导入与本次组合脚本无解析／资源错误；未重跑原组完整鼠标、升级、性能矩阵，原组证据不可冒充此版共享组合。当前 1 路整屏连续控制井和右侧升级区在同屏可见；左右 x0/x808 端仍要按公共轨和导航一起审，24px shader 末端收色不等于用户已认可整体接缝。
 
 取图前将未提交 304 装备 WIP 以字节副本和 Git binary patch 保存在 `/tmp/space-idle-runtime472/`，原 SHA256 为 `da5ed854f9f96ad0dc26753824a39bdf74cf80099677fc9e62f70629e15b2775`；临时换入当时 HEAD 已提交装备源，取完 e8 图再恢复，恢复后哈希相同。R13 静态稿原公共像素参照已另存 [固定副本](evidence/r13-public-reference-1440x900.png)（SHA256 `bd1e5d9a9640aa32404f0aaf6f6dde6401fe68b0640ef2d2d2728bcd3f7c5c15`），脚本改指该副本，避免矫正旧 b57 图改变 R13 再现性。装备页仍只是固定旧源，不代表 041 设计运行；星球 ac5 仍为用户品质退回接入基线。本组仅交 e8 当前组合供原整体审，不称最终通过；B01 外缘/公共接续设计与装备 R13 退回项继续。
+
+### 装备 041 R14 整页收边修订（静态设计，待原审）
+
+针对 R13 原审指出的早期平面舰名牌与晚8摘要横条，继续在**同一 041 SVG 源**完成 [R14 可复现源](evidence/whole-page-r14-build.py)：不新增外框，也不改舰体、武器关联、逐槽次序、报价、两键或战斗。原蓝色舰名卡及其冗余武器／防御行被实际移除，舰名变成工作台现有搪瓷顶沿的铭牌文字；机库悬臂仍在台底承托，早中晚不再有悬空说明卡。晚8顶／底的滚动摘要保留“还有哪些槽”的身份语义，但移除压在台内缘的独立深／浅横条：顶端用台面内一行向下提示，底端在台面内用一行向上提示，只有完整原生槽行仍有操作外形。其余原组 041 停位、视口与控制节点不动。
+
+R14 四张 `1440×900` 完整改后页：[早2](evidence/whole-page-r14-29-compact-scene-early.png)、[中5](evidence/whole-page-r14-30-compact-scene-middle.png)、[晚8顶](evidence/whole-page-r14-31-compact-scene-late.png)、[晚8底](evidence/whole-page-r14-32-compact-scene-bottom.png)。这是基于当前公共原像素参照与 041 静态 SVG 的**设计图，不是运行图**。交装备原组时按源脚本删除旧卡／摘要背景节点并重排既有标题／提示文本，不可运行时在旧卡上盖新字；原组仍负责连续滚动、焦点、完整行视口和换装后的真实面板，待真实组合再依 13§6 审整体。
