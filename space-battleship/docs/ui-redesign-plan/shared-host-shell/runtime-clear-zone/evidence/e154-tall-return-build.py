@@ -40,5 +40,6 @@ def build(name, source):
 
 
 if __name__ == "__main__":
+    build("middle", "43-coherent-middle.svg")
     build("late-top", "44-coherent-late.svg")
     build("late-bottom", "45-coherent-bottom.svg")
