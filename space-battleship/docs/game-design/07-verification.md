@@ -1,6 +1,6 @@
-# 07 测试运行与实施顺序
+# 07 复查方法与规则验收场景
 
-[回唯一入口](README.md)。本章定义新游戏使用的测试数据和运行方法。
+[回唯一入口](README.md)。本章维护复查方法与设计验收场景，不表示场景已运行或已有配套运行器。当前构建/发布命令见 [foundation](../../foundation/README.md)；当前制作与证据范围见 [11](11-stage6-contract.md)。文档整理不运行游戏。
 
 ## 0. 复查方法
 
@@ -14,30 +14,7 @@
 
 ## 1. 一套规则，一种场景运行器
 
-生产Excel和测试Excel通过同一个ConfigCompiler生成相同ConfigBundle；测试不复制生产表、不在用例代码中构造一套隐藏平衡数据。测试工作簿显式提供所需最小定义，允许专门小数值以便手算，但必须经过同一类型/引用/拓扑校验。每个测试数据包自足，不能运行时从正式大表补缺失行。
-
-`tests/excel/`规划分包：`core_rules.xlsx`（最小资源/装备/关卡/敌人）、`combat_cases.xlsx`、`progression_cases.xlsx`、`hyperspace_cases.xlsx`、`persistence_cases.xlsx`。这些为测试独立权威；schema与生产共享，内容完全独立。不要求本次文档任务创建这些xlsx。
-
-测试用例表：
-
-| 表 | 列与含义 |
-|---|---|
-| case | case_id、config_fixture、seed、duration、comparison_mode |
-| initial | case_id、entity_kind、entity_id、field_id、typed_value；field_id从测试装配允许表，不任意执行路径 |
-| actions | case_id、sequence、at_game_time、method、typed_args；method只允许具名session方法 |
-| clock_segments | case_id、order、real_dt、focus、pause_action、speed；专项测试现实/游戏转换 |
-| expected_state | case_id、checkpoint、owner、field_id、value、tolerance_kind、tolerance |
-| expected_events | case_id、sequence、type、source_id、target_id、amount、count |
-| expected_errors | case_id、operation、reason、must_leave_unchanged |
-| fault_schedule | case_id、file_operation、boundary、fault_kind；注入保存写入/导入读取故障 |
-
-运行命令规划为`godot --headless --path . --script tests/run_cases.gd -- --fixture <manifest> --case <id>`。运行器先调用同一Excel编译器，加载小型ConfigBundle，构造真实GameSession和实际SpaceCombatKernel；按actions时刻直接调用具名方法，用clock_segments传入real_dt/focus/speed，推进真实frame。它不创建游戏主场景、显示窗口或GPU图形对象；逻辑几何来自fixture所引用的同一几何函数。native GDExtension是此运行的必需依赖，缺失即启动失败，不改跑另一套战斗。
-
-测试保存使用隔离临时目录；SaveFiles在指定文件操作位置注入错误，不需要一套模拟业务存储。UTC值由加载函数参数显式提供，战斗/世界/改造随机种子由fixture提供，与新档初始化相同。运行器读取完成步的宿主状态、核只读视图和take_results所生成的观察记录，与Excel期望比较；观察记录不再驱动战斗。失败输出首个分歧时间、规则ID、Excel坐标及局部输入/期望。
-
-Amount和几何纯函数可直接在native测试程序中调用同一C++函数；不把伤害重新写成Python/GDScript oracle。配置编译器的类型/引用测试可独立运行Python，无需Godot。
-
-期望值不能调用生产公式生成，否则只是自证。可手算例子写在Excel；复杂随机效果使用固定seed与显式规则事件期望，概率正确性另用多seed统计区间；不在运行器重写随机效果生成逻辑。常规测试只用小矩阵；新增规则才添加对应边界，避免每次文档改动跑整游戏。
+验证使用既有能力及当次授权范围，不要求恢复已撤销的包装、runner或测试工作簿。下列场景保留预期业务行为，不能把未建 fixture 或未运行场景登记为通过。
 
 ## 2. 必须覆盖的具体场景
 
@@ -67,7 +44,7 @@ Amount和几何纯函数可直接在native测试程序中调用同一C++函数�
 | C12 | 我方普通炮、Higgs多个带内/带外目标、敌炮、炮触发的连锁 | 普通炮发射同clock命中主目标；Higgs冻结点且同次按距离结算/清场即停；敌炮与连锁到达前无伤害 |
 | C13 | 仅第一防御槽装护盾、装甲最大值及当前值均为0；护盾先有余量，随后被命中耗尽；另以仅装甲、护盾当前值0重复 | 有护盾余量时不死亡、不重建、不撤退，能出击并在撤退结束后恢复原目的地；两类当前余量均为0才尝试重建，失败只发一次终止死亡；仅装甲有余量同样存活 |
 | C14 | 装甲当前值0而最大值大于0、护盾当前值大于0；再测试装甲最大值0但护盾当前值大于0；对到期延期扣款重复 | 两种装甲为0场景均保持存活；查询最大容量不替代当前余量，延期扣款与直接命中使用相同的盾甲同时耗尽条件 |
-| C15 | 首防御槽装甲→卸空、装甲→已解锁护盾；另卸空非首防御槽 | 首槽卸空拒绝且不改装备、换装锁、代次或战斗配置；首槽换护盾可提交，不固定装甲；其他槽仍可卸空；护盾单独有当前余量时按C13存活 |
+| C15 | 首防御槽装甲→卸空、装甲→已解锁护盾；另卸空非首防御槽 | 首槽卸空拒绝且不改装备、旧兼容字段、代次或战斗配置；首槽换护盾可提交，不固定装甲；其他槽仍可卸空；护盾单独有当前余量时按C13存活 |
 | E01 | 手动/自动收同一铁物、通关强制收、普通碎片 | 铁50%损耗口径；碎片不误减半；重复收取NoChange |
 | E02 | income窗口60秒边界、加速、星系收益再入账 | 左开右闭；现实/游戏钟分开；派生不反馈原生窗口 |
 | E03 | 定时铁/铀生成后研究收入因子改变；分别手动、到达自动、终波强制领取旧物，再生成并领取新物 | 旧物三种领取均只入账其生成时固定amount，收入样本actual同值且productionBase不变；新物按新因子生成；每物只入账一次；普通敌人掉落仍按自身拾取时规则 |
@@ -113,7 +90,7 @@ Amount和几何纯函数可直接在native测试程序中调用同一C++函数�
 
 ## 3. 配置负例与覆盖
 
-独立负例工作簿至少包括：重复ID、缺外键、关卡战点越界/乱序、非法概率、空必填、文本伪数字、公式缺缓存、非法sheet、科技环、星球解锁环、重复槽索引、尺寸包络重叠/越界、路线未覆盖/重复组、预算块重复/缺失、零预算被压缩、词缀区间反转、传说值同时不在当前/历史两区间、未知规则键、生产/测试manifest交叉引用。
+配置负例的设计覆盖包括（不要求新建独立工作簿或恢复旧测试设施）：重复ID、缺外键、关卡战点越界/乱序、非法概率、空必填、文本伪数字、公式缺缓存、非法sheet、科技环、星球解锁环、重复槽索引、尺寸包络重叠/越界、路线未覆盖/重复组、预算块重复/缺失、零预算被压缩、词缀区间反转、传说值同时不在当前/历史两区间、未知规则键、生产/测试manifest交叉引用。
 
 编译失败必须给到单元格和稳定错误码，active包hash不变。编译全部正式Excel一次验证实际内容完整，但不把正式平衡当成每个单元测试的隐式依赖。内容回归比较ID集合、有效行数、关键字段、引用和语义hash；候选表/发布副本不得覆盖根表。
 

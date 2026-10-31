@@ -1,8 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
-     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
-OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
-
-R0AF_CONTROLLED_VISUAL count=1 ids=["smelting"] stage_loads={ "core": 1.0, "smelting": 1.0 }
-R0AF_CONTROLLED_VISUAL count=2 ids=["weapons", "smelting"] stage_loads={ "core": 1.0, "weapons": 0.5, "smelting": 0.5 }
-R0AF_CONTROLLED_VISUAL count=3 ids=["weapons", "defence", "smelting"] stage_loads={ "core": 1.0, "weapons": 0.34, "defence": 0.33, "smelting": 0.33 }

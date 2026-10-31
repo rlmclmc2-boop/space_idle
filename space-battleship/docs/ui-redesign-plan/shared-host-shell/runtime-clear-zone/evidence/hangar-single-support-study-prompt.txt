@@ -1,8 +1,0 @@
-ImageGen edit reference: space-battleship/assets/ui/equipment/hangar/hangar-console.png
-Reference SHA256: 71ced13889ca44b2f1c3753630e4f4fa5deb08738430486ec31b1bfd54184f50
-Output: hangar-single-support-study.png (1188×1324)
-Output SHA256: 96d96000956bbdec4667aaf8f4b62bf9f2de07bbbfe0d5f49342dc47d3879a63
-
-Prompt: Edit the attached existing 1188x1324 science-fiction hangar background artwork as background art only. Preserve its established room perspective, blue-grey painted-metal architecture, mechanical arms, warm floor lighting, and central circular ship docking pad. Make the scene coherent for a game equipment workbench: leave the left/central docking disc and ship viewing space open, while the RIGHT side of the room visibly grows one integrated tall console support out of the wall and floor, using deep naval-blue structural metal, cool ivory enamel work surfaces and restrained warm gold edge lighting. The right console support should belong to the same physical hangar as the docking disc, with continuous floor rails and wall supports; it is architectural backing for an exact UI that will be added later, so do not add readable screens, text, button shapes, slot rows, ship artwork, or duplicated floating panels. Remove the old two large empty console faces at the very bottom and replace them with continuous hangar floor/wall structure. This is a premium painted game background study, not a finished UI screen. Preserve original portrait composition, central floor pad, and mechanical arm positions as closely as possible.
-
-The study background is not a runtime asset. Source overlay in whole-page-r11-build.py preserves the 7c/a1 static slot, ship and battle geometry only; it does not prove engine behavior or final material quality.

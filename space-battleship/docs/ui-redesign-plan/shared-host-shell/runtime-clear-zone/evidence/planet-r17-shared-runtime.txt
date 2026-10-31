@@ -1,8 +1,0 @@
-Godot 4.7.2 normal main.tscn, 1440x900, --audio-driver Dummy.
-Editor import and main.gd --check-only passed. Runtime exit 0.
-ERROR/SCRIPT ERROR: none. VSync warning: graphics driver does not support changing VSync.
-PLANET_R17 route=planet selected=1 scene=(808.0, 900.0) wallet_hidden=true
-PLANET_R17 return_equipment_and_universe=true focus_clear=true
-Previous automatic audio-driver run: AudioDriverALSA::init_output_device returned
-ERR_CANT_OPEN because /dev/snd is absent, then Godot fell back to Dummy.
-This is the host audio device; no audio playback is claimed by this visual check.

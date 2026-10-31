@@ -1,3 +1,0 @@
-Godot 4.7.2, DISPLAY=:99, 1440x900, normal main.tscn instance on design/clear-zone-host.
-EQUIPMENT_CAPTURE route=equipment title=装备 nav=true panel=true
-The first local capture attempt stopped before scene load because generated SVG import metadata was absent. An editor import rebuilt the cache; the successful capture above then ran without script/parse errors. Audio device fallback warning remained.

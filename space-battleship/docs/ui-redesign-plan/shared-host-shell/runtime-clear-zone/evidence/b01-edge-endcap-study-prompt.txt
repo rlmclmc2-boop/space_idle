@@ -1,8 +1,0 @@
-ImageGen edit reference: space-battleship/assets/ui/reactor/b01/idle-console.png
-Reference SHA256: e8686944a2477c9ed6837be216c40d4456c7cecd077f623cca030f3fe51f46bb
-Output: b01-edge-endcap-study.png (1188×1324)
-Output SHA256: 1bb6200066b01dfa1d00edcbccb6a2ecfba1af70e0c9f1285f846fc0a227e4db
-
-Prompt: Edit this B01 reactor stage artwork as a narrow art-direction study. Preserve the central core, all four existing machines, conduit paths, lower console's inner navy wells, overall perspective and lighting. Finish the architectural side edges instead of abruptly slicing the machinery at x=0 and x=1187. Extend the lower white-gold console into clear left and right end caps which settle into dark navy at the margins, as part of the original stage artwork, without a new overlay frame. Right edge should naturally meet a narrow dark navy navigation rail; left edge should terminate its machine/wall in the same premium industrial painted-metal vocabulary. No UI text, labels, controls, new rooms, or extra modules. Preserve original portrait proportions and central composition as closely as possible.
-
-This generated reference does not preserve exact source pixels or the four locked/active plate and mask alignment. It is not a game asset or runtime-state screenshot.

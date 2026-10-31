@@ -2,12 +2,14 @@
 
 [回唯一入口](README.md)。游戏在主线程中顺序执行。`GameSession`保存玩家进度并调用具名系统函数；Battle持有`SpaceCombatKernel`，由内核保存和推进实时战斗；页面通过Battle读取完成后的状态并绘制。下文为目标实现，标为“现有”的名称指出可接续的源码，其余函数是本方案定义的新接口。
 
+> 配置直接读取与保存去绑定已按用户裁定纠正，见[D9](review/conflicts.md#d9)。文件完整性和实际业务合法性校验保留；旧文档不能授权恢复已撤方案。
+
 ## 1. 实际需要的对象
 
 | 对象 | 职责与存在原因 |
 |---|---|
 | GameSession | 一局游戏的入口，拥有下面的进度数据与时间余量，并持有Battle模块；按固定顺序调用各系统，避免各页面自行推进时间 |
-| ConfigBundle | 一次编译的只读Excel数据、索引、来源坐标；游戏和测试都直接查询它 |
+| 运行配置 | 直接读取已发布JSON并交给各业务模块；不增加ConfigBundle加载/查询包装，必要字段与业务合法性校验留在实际消费边界 |
 | 具名系统函数 | equipment/research/crew/planet/galaxy/hyperspace/economy各文件保存本系统公式和动作；直接接收session或所需数据，没有各自隐藏的玩家进度 |
 | SpaceCombatKernel | 现有C++核改造后的唯一战斗实现，管理双方防御、攻击出生、运动、接触、传说和波次；让大批弹体继续使用现有紧凑存储与快路径 |
 | combat_setup.gd | 把槽位与成长结果组装为native配置，计算逻辑舰体与炮口输入；只在实际变更时更新，不逐帧重编译装备 |
@@ -24,7 +26,7 @@
 |---|---|
 | session.campaign | 最高到达、生涯最高、通关集合、永久授予、当前关/战点/距离、航行/战斗/撤退/等待状态、驻守策略和返回目的地；出击/通关触发equipment清锁 |
 | session.economy | Amount钱包、带来源的收入样本、原生生产窗口、宿主可拾取物及领取标志；定时物在生成时持有固定最终amount与productionBase，移动和领取不重新读取收入倍率；native只生成掉落，不写余额 |
-| session.equipment | 船型、全部保存槽位、付费等级/装备ID、switchReadyAt换装锁、启用范围；reactor子数据保存等级和模块分配 |
+| session.equipment | 船型、全部保存槽位、付费等级/装备ID、switchReadyAt旧兼容字段（不再锁定换装）、启用范围；reactor子数据保存等级和模块分配 |
 | session.enhancement | 强化购买等级、排列、分支；全局攻击/来袭历史由native核保存，宿主读其计数，不存第二份可改计数 |
 | session.research | 科技等级/工作量/当前项、投入额和比例、下次刷新时刻、原生实际收入历史峰值 |
 | session.crew | 船员经验、岗位和唯一占用登记；登记含crewId、kind、targetId，kind为system_job/planet_explore/planet_build/galaxy/hyperspace之一；施工targetId含planetId与buildingId，探索只含planetId |
@@ -58,7 +60,7 @@ Campaign只依赖Battle的防御容量判断、出航重置、死亡撤退、恢
 | 出击/驻守/撤退 | 关与战点有效、解锁；不能以无装甲拒绝有护盾的出击或恢复 | 收取应结算物→改变航程→native开始/结束相应波→更新显示 |
 | 槽位+1/+10/MAX | 槽身份、等级/材料门槛、全部费用 | pay→升级槽位→刷新配置→native按03升级规则调防御 |
 | 全体升级 | 舰体与启用槽合法 | 武器槽再防御槽顺序逐个报价/购买；买不起跳过；全部结束才刷新UI，不在槽间执行自动岗位 |
-| 换装/换舰/无人机装备或预设 | 最终槽位组合（首防御槽不可为空、类型可选）、换装锁、封存、容量、品质限额、Higgs炮数量 | 写最终配装→修正无人机装备序列→截断反应炉分配→刷新native并按refit保防御比例 |
+| 换装/换舰/无人机装备或预设 | 最终槽位组合（首防御槽不可为空、类型可选）、封存、容量、品质限额、Higgs炮数量 | 写最终配装→修正无人机装备序列→截断反应炉分配→刷新native并按refit保防御比例 |
 | 强化/反应炉 | 等级费用或合法排列/节点/模块分配 | 扣费或写选择→重算属性/容量→按03对应动作调防御 |
 | 科研选择/投入 | 科技前置、资源、合法比例 | 写当前项/投入；推进时才按片段扣实际投入 |
 | 船员/星球任务 | 解锁、空闲/占用、工程状态 | 更新引用和占用→写任务→重算受影响属性 |
@@ -96,17 +98,11 @@ frame(real_dt, focused):
 
 ## 5. 以现有native/GPU为基础
 
-### 5.1 现有实现和需要补入的规则
+### 5.1 当前执行归属
 
 `combat_execution_kernel.h`已有Actor、Weapon、Attack、Instance、Flight、Timed、Defence，内部roots/ejections/repeats队列及反馈数组；`advance`不回调Game。保留generation句柄、活跃弹体索引、MotionArena、出生快照、接触检测、光束周期和紧凑激光路径。`combat_presentation.h`/`combat_retained_presentation.h`读取该核的活跃顺序和generation，使用MultiMesh与shader绘制；这些是目标结构的基础。
 
-现`native_execution_compiler.gd`只允许部分范围：手动超空间被拒；武器分支只放行熟练B2、连发B1/B3，防御分支全部被拒；传说只放行scatter_pulse、prism_tower、laser_charge、strange_matter、precise_guidance、wild_missile、endless_beam。其数值入口要求普通double且全局计数小于2^53。现`native_execution_session.gd`在数值边界、非终波/终波结束都交回旧游戏。这些限制不进入新运行流程。
-
-| native中续用并改接新数据 | 必须在同一核补齐 |
-|---|---|
-| 四武器、导弹离管/运动、连发/连锁、光束、敌盾甲/抗性/反应装甲、基础强化防御、现有七传说算法 | 02全部尚未接入的强化A/B分支：熟练A/B1/B3、连发A（B2第二代禁用）、武器天生率0/critical主效果25%与B3保底效果及原率爆伤判定、其他暴击分支、适应/记忆/延期全部分支；不得只删compiler拒绝条件 |
-| 已有玩家模块损失、记忆保护、延期债务及计时 | 五传说higgs_cannon、dodge_counter、drone_master、black_hole、drone_rebuild；含同次冻结射线贯穿、共同闪避冷却、统御减伤、黑洞双方拦截/累计、重建禁用与重算；规则见04 |
-| 现有掉落抽样、敌死亡反馈、紧凑激光反馈 | Amount全链路、int64历史计数、手动超空间编队和完成结果、无旧逻辑交接的连续波次/撤退/返回、配置变更及长期字段保存/全新战场恢复 |
+当前main固定源由Battle/CombatSetup组装描述，native直接执行普通与手动超空间、强化和传说、Amount伤害与防御、int64计数及长期状态。旧native_execution_compiler/session的double、2^53和部分分支拒绝条件已不是当前入口，不恢复旧逻辑交接，也不按旧“尚须补齐”表重造已存在算法。是否符合全部规则须按02/04逐项判断；C4身份/水位仍有明确未决差异，本段不把代码存在写成完整验收。
 
 宿主负责为所有启用普通槽和合法无人机产生武器定义，提供品质/等级/词缀/挂设数值和传说选择。核负责每个真实攻击和动态效果，不把黑洞、重建或分支放到GDScript帧后再补扣血。挂设收入、无人机仓库/改造和任务奖励仍属宿主，因为它们不参与接触计算。
 
@@ -199,9 +195,9 @@ write_persistent_state() / read_persistent_state(data)  # 历史/随机/ID，不
 
 `Battle.attribute_details()`直接查询native已提交的武器、防具、当前倍率及临时标记；查询不推进时间、随机或计数，不在UI复写战斗公式。Planet/Galaxy的`visual_snapshot`与Crew的`galaxy_assignments`仅提供表现副本；旧星球/星系纯表现资源消费这些副本，暂停与倍速来自Session。
 
-战场HUD从native读取当前/最大盾甲，以Amount安全比例绘制条形显示；数字与来源名在表现边界格式化，金额及存档仍保留原精度。舰体尺寸统一取资源`static_height`、`player_display_multiplier`及对应`playerVisualScale*`；敌舰配置宽高作用于实际alpha凸包包络。相同顶点供绘制和原生命中使用，不再独立放大贴图。炮台使用批准锚点及各武器的native真实目标建立同一姿态和真炮口，数值与屏幕发射坐标消费同一组端口；活光束按自身真实绑定目标更新，保留已接受的目标/端口修复。我舰`playerVisualScale*`参与上述共享舰体尺寸；当前`enemy_opening_*`敌舰在旋转后按普通框或条目`display_size`等比适配，覆盖旧`enemy_width`中间尺寸，`enemyVisualScaleSize*`不再决定这些key的最终大小。保留字段名不表示旧倍率仍生效；完整参数与覆盖顺序见[尺寸参考8.2–8.5](reference/ship-scale.md#82-我方五档实际倍率与舰体逻辑尺寸)，本次只校正文案，不改变实现。完整伤害明细位于档案。
+战场HUD从native读取当前/最大盾甲，以Amount安全比例绘制条形显示；数字与来源名在表现边界格式化，金额及存档仍保留原精度。舰体尺寸统一取资源`static_height`、`player_display_multiplier`及对应`playerVisualScale*`；敌舰配置宽高作用于实际alpha凸包包络。相同顶点供绘制和原生命中使用，不再独立放大贴图。炮台使用批准锚点及各武器的native真实目标建立同一姿态和真炮口，数值与屏幕发射坐标消费同一组端口；活光束按自身真实绑定目标更新，保留已接受的目标/端口修复。我舰`playerVisualScale*`参与上述共享舰体尺寸；当前`enemy_opening_*`敌舰在旋转后按普通框或条目`display_size`等比适配，覆盖旧`enemy_width`中间尺寸，`enemyVisualScaleSize*`不再决定这些key的最终大小。保留字段名不表示旧倍率仍生效；当前尺度制作约束见[尺寸参考](reference/ship-scale.md)，本次只校正文案，不改变实现。完整伤害明细位于档案。
 
-Battle在重新出击、撤退开始/恢复及超空间返回使用同一遭遇退役路径：丢弃敌方表现描述、敌炮口与旧反馈，再按native过渡后的演员集合重建几何/姿态；新波敌炮台按UID绑定演员，不依赖上一遭遇的存储索引。**HUD实现事实（main@7a85481，非固定矩形契约）：** 当时防御、余额、伤害摘要由BattleHud负责，区域为y708–830、838–894、902–927，四余额两列两行；EconomyView负责掉落绘制/拾取。此处仅记录消费归属和当时矩形，不能据此要求保留大面板、空框或重复读数；目标信息层级与整屏/战场验收见[13](13-art-interaction.md#22-全局信息层级与适配)和[M1/V1](art/modules/battle.md)。
+Battle在重新出击、撤退开始/恢复及超空间返回使用同一遭遇退役路径：丢弃敌方表现描述、敌炮口与旧反馈，再按native过渡后的演员集合重建几何/姿态；新波敌炮台按UID绑定演员，不依赖上一遭遇的存储索引。HUD/资源归属以当前BattleHud/EconomyView及公共壳分支实际消费为准，不从旧矩形要求恢复大面板、空框或重复读数；目标信息层级与整屏/战场验收见[13](13-art-interaction.md#22-全局信息层级与适配)和[M1/V1](art/modules/battle.md)。
 
 ## 现行模块交接契约
 
