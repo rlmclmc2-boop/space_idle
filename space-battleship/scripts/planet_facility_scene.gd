@@ -207,7 +207,8 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 			var outward: Vector3 = _spine.point(a).normalized()
 			var axis_x: Vector3 = -outward if kind == "shipyard" else (_spine.point(a + 0.001) - _spine.point(a - 0.001)).normalized()
 			var axis_y: Vector3 = _spine.plane_normal()
-			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(Vector3.ONE * scale_factor), _spine.socket_position(a, kind))
+			var model_scale := Vector3(scale_factor, 0.52 if kind == "auto_explore" else scale_factor, scale_factor)
+			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(model_scale), _spine.socket_position(a, kind))
 		else:
 			model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
 		if kind == "refinery": _position_refinery_work(model, clock)
