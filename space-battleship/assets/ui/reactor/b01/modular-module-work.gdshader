@@ -31,42 +31,45 @@ void fragment() {
         float charge = smoothstep(0.07,0.72,cycle)*(1.0-smoothstep(0.78,0.92,cycle));
         float fire = pow(1.0-smoothstep(0.0,0.075,abs(cycle-0.92)),2.0);
         material = 0.25+charge*0.95+fire*1.4;
-        float left = disk(q,vec2(0.18,0.14),vec2(0.075,0.043))
-                   + disk(q,vec2(0.18,0.34),vec2(0.075,0.043));
-        float bolt = disk(q,vec2(0.18+0.32*fract((cycle-0.92)*9.0),0.14),vec2(0.065,0.030))
-                   + disk(q,vec2(0.18+0.32*fract((cycle-0.92)*9.0),0.34),vec2(0.065,0.030));
-        action = (left*fire*1.8+bolt*fire)*load;
+        float mouths = disk(q,vec2(0.12,0.12),vec2(0.025,0.023))
+                     + disk(q,vec2(0.12,0.23),vec2(0.025,0.023));
+        float coil = band(q.x,0.38-0.26*charge,0.022)*
+                     (band(q.y,0.12,0.018)+band(q.y,0.23,0.018));
+        float shot = fire*(disk(q,vec2(0.10-0.07*fract((cycle-0.92)*9.0),0.12),vec2(0.024,0.019))
+                         +disk(q,vec2(0.10-0.07*fract((cycle-0.92)*9.0),0.23),vec2(0.024,0.019)));
+        action = (mouths*fire*1.7+coil*0.34+shot)*load;
         hue = vec3(1.0,0.55,0.14);
     } else if (module_kind == 1) {
-        // Eight radial conductors are energized one after another on a contained face.
-        vec2 d = (q-vec2(0.52,0.53))*vec2(1.0,1.0);
+        // A pressure field grows from the emitter hub to the retaining rim.
+        vec2 d = (q-vec2(0.66,0.39))*vec2(1.0,1.05);
         float angle = atan(d.y,d.x);
         float r = length(d);
-        float segment = pow(max(0.0,cos(angle*8.0-phase*2.5)),14.0);
-        float rim = band(r,0.38,0.045);
-        float spoke = segment*(1.0-smoothstep(0.25,0.41,r))*smoothstep(0.08,0.17,r);
-        material = 0.2+1.15*segment;
-        action = (rim*segment*0.65+spoke*0.38)*load;
+        float establish = smoothstep(0.03,0.88,fract(phase*0.18));
+        float front = band(r,0.03+establish*0.21,0.017);
+        float lattice = pow(max(0.0,cos(angle*12.0)),28.0)*
+                        smoothstep(0.07,0.11,r)*(1.0-smoothstep(0.19,0.24,r));
+        material = 0.25+0.55*establish;
+        action = (front*0.54+lattice*establish*0.25)*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
         float pour = 0.25+0.75*smoothstep(0.18,0.43,fract(phase*0.29));
         float falling = fract(phase*0.72);
-        vec2 throat=vec2(0.36,0.35);
-        vec2 tap=vec2(0.95,0.88);
-        float slot=conduit(q,throat,tap,0.035);
-        float drop=disk(q,mix(throat,tap,falling),vec2(0.06,0.065));
+        vec2 throat=vec2(0.52,0.51);
+        vec2 tap=vec2(0.72,0.84);
+        float slot=conduit(q,throat,tap,0.013);
+        float drop=disk(q,mix(throat,tap,falling),vec2(0.019,0.022));
         material = 0.3+pour*0.85;
-        action = slot*(0.18+drop*0.95)*load;
+        action = (slot*0.13+drop*0.75)*pour*load;
         hue = vec3(1.0,0.30,0.025);
     } else {
         // Seed energy climbs inside the vessel and illuminates crystal facets.
         float growth = fract(phase*0.19);
         float climb = 1.0-smoothstep(growth-0.10,growth+0.06,1.0-q.y);
-        float center = disk(q,vec2(0.52,0.54),vec2(0.39,0.48));
+        float center = disk(q,vec2(0.66,0.66),vec2(0.20,0.28));
         float sparkle = pow(max(0.0,cos(q.x*54.0-q.y*31.0+phase*2.0)),26.0);
-        material = 0.17+0.95*climb+0.25*sparkle;
-        action = center*band(q.y,0.90-growth*0.70,0.026)*0.50*load;
+        material = 0.16+0.80*climb+0.22*sparkle;
+        action = center*band(q.y,0.85-growth*0.37,0.012)*0.34*load;
         hue = vec3(0.68,0.34,1.0);
     }
     vec3 working = surface.rgb*surface.a*material*load*1.65 + hue*action;

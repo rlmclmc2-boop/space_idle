@@ -27,6 +27,24 @@ W, H = CONTRACT["source_size"]
 SPECS = CONTRACT["devices"]
 
 
+def projected_socket_axis(p, axis, z):
+    """Invert the camera's planar projection so the inlet follows the pipe axis on screen."""
+    scene=bpy.context.scene
+    camera=scene.camera
+    def screen(x,y):
+        q=world_to_camera_view(scene,camera,Vector((x,-y,z)))
+        return Vector((q.x*W,(1-q.y)*H))
+    origin=screen(p.x,p.y)
+    ex=screen(p.x+1,p.y)-origin
+    ey=screen(p.x,p.y+1)-origin
+    determinant=ex.x*ey.y-ex.y*ey.x
+    assert abs(determinant)>.1
+    result=Vector(((axis.x*ey.y-axis.y*ey.x)/determinant,
+                   (ex.x*axis.y-ex.y*axis.x)/determinant)).normalized()
+    assert (screen(p.x+result.x,p.y+result.y)-origin).normalized().dot(axis)>.99999
+    return result
+
+
 def material(name, color, metallic=0.0, roughness=.35, emission=0.0, alpha=1.0):
     mat = bpy.data.materials.new(name)
     mat.diffuse_color = (*color, alpha)
@@ -55,31 +73,43 @@ def setup():
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
     mats = {
-        "steel": material("titanium armor", (.30,.38,.42), .63,.27,.04),
-        "dark": material("recessed gunmetal", (.065,.11,.15), .58,.34,.015),
-        "black": material("glass interior", (.018,.039,.055), .16,.12,.015),
-        "silver": material("brushed silver edges", (.63,.72,.75), .72,.19,.08),
-        "brass": material("copper brass contacts", (.66,.31,.085), .72,.24,.10),
+        "steel": material("titanium armor", (.48,.57,.59), .38,.27,.10),
+        "dark": material("recessed gunmetal", (.12,.20,.24), .31,.36,.045),
+        "black": material("glass interior", (.025,.055,.075), .12,.16,.025),
+        "silver": material("brushed silver edges", (.77,.81,.76), .48,.22,.15),
+        "brass": material("copper brass contacts", (.72,.40,.13), .53,.26,.19),
         "blue": material("shield blue glass", (.015,.14,.30), .18,.14,.24),
         "blue_lit": material("shield field filaments", (.025,.40,.85), .05,.2,1.3),
         "orange": material("furnace liner", (.42,.15,.035), .25,.3,.22),
         "orange_lit": material("molten charge", (1.0,.28,.025), .04,.22,1.0),
         "violet": material("crystal glass", (.22,.07,.36), .18,.14,.2),
         "violet_lit": material("crystal facet", (.48,.15,.76), .05,.17,.85),
+        "violet_glint": material("crystal cleavage glint", (.78,.52,.96), .27,.11,.42),
+        "worklamp": material("warm bay service emitter", (1.0,.66,.27), .05,.25,3.0),
+        "ice": material("blue instrument emitter", (.16,.66,1.0), .05,.2,2.3),
     }
     world = bpy.context.scene.world
     world.color = (.11,.15,.22)
-    for loc, energy, size in [((220,-110,470),52000,360),((950,-390,380),43000,320)]:
+    for loc, energy, size in [((220,-110,470),105000,360),((950,-390,380),95000,320),((600,200,330),51000,440)]:
         ld = bpy.data.lights.new("bay softbox", "AREA")
         ld.energy, ld.shape, ld.size = energy, "DISK", size
         ob = bpy.data.objects.new("bay softbox", ld)
         bpy.context.collection.objects.link(ob)
         ob.location = loc
+    # Small practicals cut hard specular edges into each machine, like the
+    # warm service lights in the host bay. They are absent from transparent pixels.
+    for x,y in ((155,195),(1010,170),(150,510),(1000,520)):
+        ld=bpy.data.lights.new("service strip highlight","AREA")
+        ld.energy,ld.shape,ld.size=32000,"DISK",85
+        ld.color=(1.0,.73,.43)
+        ob=bpy.data.objects.new("service strip highlight",ld)
+        bpy.context.collection.objects.link(ob)
+        ob.location=(x,-y,165)
     camera_data = bpy.data.cameras.new("source orthographic")
     camera = bpy.data.objects.new("source orthographic", camera_data)
     bpy.context.collection.objects.link(camera)
-    tilt = float(os.environ.get("REACTOR_CAMERA_TILT", "15"))
-    yaw = float(os.environ.get("REACTOR_CAMERA_YAW", "-16"))
+    tilt = float(os.environ.get("REACTOR_CAMERA_TILT", "24"))
+    yaw = float(os.environ.get("REACTOR_CAMERA_YAW", "-21"))
     camera.rotation_euler = (math.radians(tilt),math.radians(yaw),0)
     forward = camera.rotation_euler.to_matrix() @ Vector((0,0,-1))
     camera.location = Vector((W/2,-H/2,0))-forward*1000
@@ -88,7 +118,7 @@ def setup():
     bpy.context.scene.camera = camera
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
-    scene.cycles.samples = 12
+    scene.cycles.samples = 20
     scene.cycles.use_denoising = False
     bpy.context.view_layer.cycles.use_denoising = False
     scene.render.resolution_x, scene.render.resolution_y = W,H
@@ -147,15 +177,17 @@ def ring(name,x,y,r,t,z,mat):
     return ob
 
 
-def jewel(name, x,y,rx,ry,z,mat):
-    # A small faceted crystal, not a wave-shaped transparency overlay.
-    verts=[(x,-y-ry,z),(x+rx,-y,z),(x,-y+ry,z),(x-rx,-y,z),
-           (x,-y,z+rx*.75),(x,-y,z-rx*.3)]
-    faces=[(0,1,4),(1,2,4),(2,3,4),(3,0,4),
-           (1,0,5),(2,1,5),(3,2,5),(0,3,5)]
+def jewel(name, x,y,rx,ry,z,mat,glint):
+    # A six-sided growth crystal with alternating inset facets and a deep crown.
+    verts=[(x,-y-ry,z-8),(x+rx,-y-ry*.32,z),(x+rx*.85,-y+ry*.52,z+5),
+           (x,-y+ry,z+2),(x-rx*.85,-y+ry*.52,z+5),(x-rx,-y-ry*.32,z),
+           (x,-y-ry*.24,z+rx*.95),(x,-y+ry*.15,z-rx*.55)]
+    faces=[(i,(i+1)%6,6) for i in range(6)] + [(i,7,(i+1)%6) for i in range(6)]
     mesh=bpy.data.meshes.new(name)
     mesh.from_pydata(verts,[],faces)
     mesh.materials.append(mat)
+    mesh.materials.append(glint)
+    for i,face in enumerate(mesh.polygons): face.material_index=1 if i in (1,4,7,10) else 0
     ob=bpy.data.objects.new(name,mesh)
     bpy.context.collection.objects.link(ob)
     return ob
@@ -163,19 +195,24 @@ def jewel(name, x,y,rx,ry,z,mat):
 
 def socket(name,spec,m):
     p=Vector(spec["device_port"])
-    axis=Vector(spec["axis_to_device"]).normalized()
+    axis=projected_socket_axis(p,Vector(spec["axis_to_device"]).normalized(),spec["socket_depth"])
     radius=spec["socket_radius"]
     # p is the visible meeting plane. Its front lip is on the same source
     # plane as the conduit front collar; the barrel continues into the body.
     reach = 98 if name == "crystal" else (62 if name == "shield" else 38)
     rod(name+" keyed inlet",p,p+axis*reach,radius,0,m["dark"])
     rod(name+" machined sleeve",p+axis*5,p+axis*(reach-10),radius+4,0,m["steel"])
+    rod(name+" exposed sleeve crown",p+axis*2,p+axis*(reach-4),7,28,m["silver"],16)
+    normal=Vector((-axis.y,axis.x))
+    for side in (-1,1):
+        edge=p+normal*side*19
+        rod(name+" inlet load rail",edge+axis*2,edge+axis*(reach-4),3.5,23,m["brass"],12)
     for t in range(23,reach-10,21):
         disc(name+" sleeve index",(p+axis*t).x,(p+axis*t).y,3.2,3,34,m["brass"],12)
-    disc(name+" visible mouth",p.x,p.y,radius-7,5,spec["socket_depth"]-7,m["black"])
-    ring(name+" inlet face",p.x,p.y,radius-3,4,spec["socket_depth"],m["silver"])
+    # The conduit terminates directly in the extruded barrel. No front-facing
+    # painted circle or cap conceals a separation at the meeting plane.
+    rod(name+" inlet retaining sleeve",p+axis*2,p+axis*15,radius+5,0,m["silver"])
     for side in (-1,1):
-        normal=Vector((-axis.y,axis.x))
         q=p+normal*side*(radius-3)
         disc(name+" keyed bolt",q.x,q.y,2.8,3,spec["socket_depth"]+4,m["brass"],12)
 
@@ -184,6 +221,8 @@ def foot(name,x,y,w,m):
     cube(name+" plinth",x,y,w,33,20,16,m["dark"],5)
     cube(name+" silver skirt",x,y-13,w-12,12,14,27,m["steel"],3)
     cube(name+" brass rail",x,y+15,w-24,3,4,30,m["brass"],1)
+    for sx in (-1,1):
+        cube(name+" recessed plinth lamp",x+sx*w*.31,y-16,28,3,2,32,m["worklamp"],1)
     for sx in (-1,1):
         cube(name+" anchor",x+sx*(w*.41),y-4,17,35,25,28,m["silver"],2)
     for i in range(11):
@@ -209,9 +248,15 @@ def tubing(name,points,r,z,m):
 def weapon(spec,m):
     foot("weapon",176,316,244,m)
     cube("turret yoke",218,253,122,86,53,35,m["steel"],12)
+    for sx in (-1,1):
+        cube("weapon stepped shoulder",218+sx*66,249,25,84,43,48,m["dark"],5)
+        cube("weapon shoulder bright chine",218+sx*76,249,4,75,16,74,m["silver"],2)
+        for yy in (222,249,276):
+            disc("weapon shoulder bolt",218+sx*76,yy,2.8,2,84,m["brass"],12)
     disc("rotary breech",217,212,59,28,45,m["dark"])
     ring("breech brass lock",217,212,56,4,63,m["brass"])
     cube("upper armor",235,143,92,38,21,59,m["steel"],8)
+    cube("weapon crown service lamp",235,121,62,3,2,74,m["worklamp"],1)
     cube("turret inset armored panel",231,240,77,38,3,65,m["dark"],4)
     for ix in range(5):
         cube("turret heat vent",201+ix*15,240,6,27,4,70,m["silver"],2)
@@ -232,7 +277,14 @@ def weapon(spec,m):
             disc("barrel fastener",bx,y-12,2,2,81,m["brass"],10)
         for bx in (65,98,131,164):
             cube("barrel side vent",bx,y+5,11,3,3,83,m["black"],1)
+        cube("weapon barrel armor rib",134,y-19,124,9,13,70,m["steel"],3)
+        cube("weapon barrel lower shadow",134,y+18,126,5,8,67,m["dark"],2)
+    cube("weapon recoil carriage",160,216,152,18,24,39,m["steel"],4)
+    for bx in (92,131,170):
+        cube("recoil housing dark tooth",bx,216,19,10,5,55,m["dark"],2)
+        cube("recoil housing hot tooth",bx,215,7,3,2,59,m["brass"],1)
     cube("rear power junction",285,207,58,58,38,52,m["dark"],7)
+    cube("weapon power input indicator",285,189,29,3,2,77,m["ice"],1)
     corner_fasteners("rear power junction",285,207,58,58,75,m)
     tubing("side supply",[(160,279),(165,253),(202,239),(234,232)],4,65,m["brass"])
     for i in range(7):
@@ -243,15 +295,30 @@ def weapon(spec,m):
 def defence(spec,m):
     foot("shield",1030,288,224,m)
     cube("field drive",974,197,92,112,50,29,m["steel"],11)
+    cube("field drive bridge service lamp",974,140,53,3,2,61,m["worklamp"],1)
     corner_fasteners("field drive",974,197,92,112,61,m)
     rod("field transmission",(969,196),(1030,172),35,18,m["dark"])
     disc("field emitter barrel",1050,172,75,18,43,m["dark"])
-    disc("glass force face",1050,172,70,3,58,m["blue"])
+    disc("recessed dielectric well",1050,172,68,4,53,m["black"])
+    disc("glass force face",1050,172,57,3,57,m["blue"])
+    for i in range(12):
+        a=i*math.tau/12
+        r=58
+        x0,y0=1050+r*math.cos(a),172+r*math.sin(a)
+        x1,y1=1050+(r+23)*math.cos(a),172+(r+23)*math.sin(a)
+        rod("shield segmented ceramic blade",(x0,y0),(x1,y1),7,62,m["steel"],8)
+        disc("shield blade root",x0,y0,3,3,72,m["brass"],12)
     disc("shield emitter inner hub",1050,172,20,5,65,m["dark"],24)
     ring("hub contact",1050,172,18,2.5,69,m["brass"])
     ring("inner field rim",1050,172,66,6,68,m["silver"])
     ring("outer brass retaining ring",1050,172,78,3,61,m["brass"])
     ring("inner glass boundary",1050,172,43,1.8,69,m["blue_lit"])
+    for radius in (32,49):
+        ring("shield nested focusing rim",1050,172,radius,1.8,69,m["silver"])
+    for sx in (-1,1):
+        cube("field-drive lateral heat exchanger",969+sx*50,193,15,93,29,51,m["steel"],4)
+        for iy in range(5):
+            cube("heat exchanger grille",969+sx*50,158+iy*17,13,4,3,68,m["dark"],1)
     for radius in (24,47):
         for i in range(8):
             a=i*math.tau/8+radius*.01
@@ -272,6 +339,13 @@ def defence(spec,m):
 def smelting(spec,m):
     foot("furnace",201,633,280,m)
     cube("heat jacket",177,517,182,176,48,32,m["steel"],15)
+    for sx in (-1,1):
+        cube("furnace shoulder service lamp",177+sx*77,459,3,45,2,75,m["worklamp"],1)
+    for sx in (-1,1):
+        cube("furnace heavy buttress",177+sx*97,523,28,153,47,45,m["dark"],8)
+        cube("furnace silver corner chine",177+sx*106,523,5,134,12,72,m["silver"],2)
+        for iy in range(5):
+            cube("furnace buttress radiator",177+sx*101,471+iy*24,17,6,5,75,m["brass"],1)
     disc("domed refractory crown",177,431,77,17,37,m["dark"])
     ring("furnace crown retainer",177,431,74,4,47,m["silver"])
     for i in range(10):
@@ -284,7 +358,15 @@ def smelting(spec,m):
             cube("furnace jacket louver",x,y,16,4,4,67,m["silver"],1)
     cube("molten aperture",179,532,84,76,5,71,m["black"],6)
     cube("firebrick throat",179,536,56,57,6,78,m["orange"],5)
-    cube("tap-hole",179,541,33,31,4,84,m["orange_lit"],6)
+    cube("recessed tap well",179,541,38,33,5,84,m["black"],6)
+    for i,(xx,yy,rr) in enumerate(((169,545,9),(181,540,10),(190,547,7),(175,553,9))):
+        disc("moving melt pool %d"%i,xx,yy,rr,3,88,m["orange_lit"],20)
+    rod("furnace pour seam",(181,553),(197,574),4,88,m["orange_lit"],12)
+    for sx in (-1,1):
+        cube("refractory throat jamb",179+sx*40,536,14,76,13,86,m["silver"],3)
+        cube("jamb black heat slot",179+sx*40,535,4,57,3,94,m["dark"],1)
+    for yy in (500,518,554,572):
+        cube("cast refractory course",179,yy,84,7,8,88,m["steel"],2)
     for y in (510,523,547,560):
         cube("refractory courses",179,y,76,2,2,83,m["brass"],1)
     corner_fasteners("heat jacket",177,517,182,176,64,m)
@@ -306,7 +388,13 @@ def smelting(spec,m):
 def condensation(spec,m):
     foot("crystal",1003,626,242,m)
     cube("growth vessel back",1020,518,152,188,44,20,m["dark"],14)
+    cube("growth vessel crown service lamp",1020,422,78,3,2,73,m["worklamp"],1)
     cube("growth chamber glass",1020,517,118,170,5,53,m["black"],10)
+    for sx in (-1,1):
+        cube("vessel side pressure bank",1020+sx*81,516,23,158,39,43,m["steel"],6)
+        for iy in range(6):
+            cube("vessel bank gill",1020+sx*83,453+iy*23,19,6,4,69,m["dark"],1)
+            cube("vessel bank gill trim",1020+sx*83,455+iy*23,15,2,2,73,m["brass"],1)
     for y in (452,480,555,580):
         cube("vessel retaining glass seam",1020,y,101,2,2,62,m["violet"],1)
     corner_fasteners("growth vessel back",1020,518,152,188,53,m)
@@ -317,9 +405,16 @@ def condensation(spec,m):
     for y in (429,605):
         cube("vessel retention band",1020,y,149,13,18,67,m["steel"],4)
         cube("band brass trace",1020,y+5,119,2,3,78,m["brass"],1)
-    for i,(x,y,rx,ry) in enumerate(((987,564,19,52),(1020,535,25,76),(1050,565,17,52),
-                                     (969,585,11,30),(1080,588,13,29))):
-        jewel("growth crystal %d"%i,x,y,rx,ry,70,m["violet"] if i%2 else m["violet_lit"])
+    for i,(x,y,rx,ry) in enumerate(((983,564,12,37),(1002,540,13,54),(1021,522,16,64),
+                                     (1042,553,13,49),(1061,568,11,37),(971,585,8,24),(1077,586,8,23))):
+        jewel("growth crystal %d"%i,x,y,rx,ry,70,m["violet"] if i%2 else m["violet_lit"],m["violet_glint"])
+    for y in (476,522,568):
+        cube("growth chamber laminated glass rail",1020,y,107,2,2,85,m["silver"],1)
+        for x in (974,1066):
+            disc("glass rail pin",x,y,2,2,89,m["brass"],10)
+    for sx in (-1,1):
+        rod("growth chamber diagonal brace",(1020+sx*51,442),(1020+sx*58,590),4,76,m["silver"])
+        disc("growth chamber clamp",1020+sx*55,506,7,5,83,m["brass"],16)
     cube("vessel crown",1020,414,118,27,25,55,m["steel"],7)
     corner_fasteners("vessel crown",1020,414,118,27,72,m)
     tubing("crystal coolant",[(1101,454),(1119,467),(1119,565),(1096,583)],4,55,m["brass"])

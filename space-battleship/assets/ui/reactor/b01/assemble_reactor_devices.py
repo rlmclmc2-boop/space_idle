@@ -7,7 +7,7 @@ import json
 import os
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 
 ROOT=Path(__file__).resolve().parent
@@ -35,6 +35,17 @@ for name,spec in contract["devices"].items():
         assert original.size==(w,h)
         aligned=Image.new("RGBA",(w,h))
         aligned.alpha_composite(original,(dx,dy))
+        if not suffix:
+            # The machine's contact shadow belongs to its own detachable asset.
+            # It anchors the raised plinth against the host bay without baking
+            # any piece of the old room or another machine into this sprite.
+            alpha=aligned.getchannel("A").filter(ImageFilter.GaussianBlur(12))
+            shadow=Image.new("RGBA",(w,h),(0,7,12,0))
+            shadow.putalpha(alpha.point(lambda v: int(v*.53)))
+            grounded=Image.new("RGBA",(w,h))
+            grounded.alpha_composite(shadow,(3,7))
+            grounded.alpha_composite(aligned)
+            aligned=grounded
         cx,cy,cw,ch=rect
         crop=aligned.crop((cx,cy,cx+cw,cy+ch))
         assert crop.getbbox() is not None,(name,suffix)
