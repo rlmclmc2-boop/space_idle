@@ -1,3 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-PLANET_CONQUEST_SESSION checks=226 failures=0

@@ -8,4 +8,4 @@ Static weapon art and complete pivot/emission geometry come from `assets/weapons
 
 Enemy archetype/armour identity and encounter tier select one visual_key. Rendering, collision, mounts and intel thumbnails consume that same key. The newly authorized untyped compatibility mapping is recorded in the design/acceptance notes rather than presented as an older approval.
 
-Superseded models and their retired renderer dependency closure are removed from this checkout after reference migration. They remain recoverable from Git at baseline `4128ae49`. The exact deletion list is `docs/game-design/12-asset-recovery-deletions.txt`. Shared effects, retained shaders, the WeaponDrone preview, galaxy assets and current source art are preserved.
+Retired models and retired renderer dependencies are not current manufacturing inputs. Shared effects, retained shaders, the WeaponDrone preview, galaxy assets and current source art are preserved.

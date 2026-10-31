@@ -1,6 +1,6 @@
 # 当前保留的基础代码
 
-第 5 阶段的模块状态与跨模块提交顺序见 [阶段契约](../docs/game-design/10-stage5-contract.md)。
+当前规则与模块交接从[设计唯一入口](../docs/game-design/README.md)按需读取；本页保留当前构建、发布与运行命令。
 
 当前保留 Excel 转 JSON、共享 C++ Amount/绑定和保存骨架，入口在 `src/main.tscn`，由 `src/game_session.gd` 驱动持续存在的 native 核。整体架构完成后再安排整体测试；本阶段只检查编译，并运行独立 Amount 的直接 C++ 正确性测试。
 
