@@ -4,6 +4,15 @@ const SOURCE_SIZE := Vector2(1187.0,1326.0)
 const VIEW_SIZE := Vector2(808.0,835.0)
 const WORK_SHADER = preload("res://assets/ui/reactor/b01/modular-module-work.gdshader")
 const KINDS := {"weapons":0, "defence":1, "smelting":2, "condensation":3}
+# Conservative UV envelopes of each shader's nonzero device-local work.
+# Paint only these pixels; the shader maps screen coordinates back to the
+# original full-device UV so the visible result and phase stay identical.
+const WORK_BOUNDS := {
+	"weapons": Rect2(0.0, 0.24, 0.21, 0.18),
+	"defence": Rect2(0.46, 0.10, 0.54, 0.58),
+	"smelting": Rect2(0.46, 0.42, 0.14, 0.40),
+	"condensation": Rect2(0.44, 0.25, 0.32, 0.54),
+}
 var _work: ShaderMaterial
 var _effect: ColorRect
 var _load: float = 0.0
@@ -22,13 +31,17 @@ func configure(id: String, texture: Texture2D, source_rect: Rect2) -> void:
 	surface.scale = VIEW_SIZE / SOURCE_SIZE
 	add_child(surface)
 	_effect = ColorRect.new()
-	_effect.position = Vector2.ZERO
-	_effect.size = size
+	var bounds: Rect2 = WORK_BOUNDS[id]
+	_effect.position = size * bounds.position
+	_effect.size = size * bounds.size
 	_effect.color = Color.WHITE
 	_effect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_work = ShaderMaterial.new()
 	_work.shader = WORK_SHADER
 	_work.set_shader_parameter("module_kind",KINDS[id])
+	_work.set_shader_parameter("work_origin_px",position)
+	_work.set_shader_parameter("work_size_px",size)
+	_work.set_shader_parameter("work_view_size_px",VIEW_SIZE)
 	_effect.material = _work
 	_effect.visible = false
 	add_child(_effect)
