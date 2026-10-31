@@ -50,7 +50,6 @@ var pending_seconds: float = 0.0
 var wall_time: float = 0.0
 var game_time: float = 0.0
 var _configuration_path: String = ""
-var _configuration_hash: String = ""
 var _combat_seed: int = 0
 var _session_id: String = ""
 var _change_number: int = 0
@@ -81,7 +80,6 @@ func initialize(path: String, combat_seed: int, native_state: Dictionary = {}, s
 	var parameter_check: Dictionary = HyperspaceConfigContract.validate(configuration)
 	if not parameter_check.ok: return _fail(str(parameter_check.reason))
 	_configuration_path = path
-	_configuration_hash = configuration_text.sha256_text()
 	_combat_seed = combat_seed
 	_session_id = str(Time.get_unix_time_from_system()) + ":" + str(combat_seed)
 	var parameters: Dictionary = {}
@@ -283,7 +281,7 @@ func request_save() -> Dictionary:
 	if _change_number == 9223372036854775807: return {"ok": false, "reason": "ChangeNumberRange"}
 	_change_number += 1
 	return save_files.request(snapshot.payload, str(_change_number), _session_id,
-		str(int(Time.get_unix_time_from_system())), _configuration_hash)
+		str(int(Time.get_unix_time_from_system())))
 
 func dirty_since_save() -> Dictionary:
 	if save_files == null: return {"ok": true, "dirty": true}
@@ -316,8 +314,6 @@ static func import_candidate(path: String, directory: String, source_file: Strin
 
 static func _candidate_from_envelope(path: String, directory: String, envelope: Dictionary) -> Dictionary:
 	if not SaveFiles.valid_envelope_shape(envelope): return {"ok": false, "reason": "InvalidImportEnvelope"}
-	if FileAccess.get_file_as_string(path).sha256_text() != envelope.configHash:
-		return {"ok": false, "reason": "ConfigurationMismatch"}
 	var decoded: Dictionary = StateCodec.unpack(envelope.payload)
 	if not decoded.ok or not decoded.value is Dictionary:
 		return {"ok": false, "reason": "InvalidSavePayload"}
@@ -327,8 +323,6 @@ static func _candidate_from_envelope(path: String, directory: String, envelope: 
 	var candidate = load("res://src/game_session.gd").new()
 	var ready: Dictionary = candidate.initialize(path, saved.seed, saved.native, saved)
 	if not ready.ok: return ready
-	if candidate._configuration_hash != envelope.configHash:
-		return {"ok": false, "reason": "ConfigurationMismatch"}
 	candidate._session_id = envelope.sessionId
 	candidate._change_number = str(envelope.changeNumber).to_int()
 	var elapsed: int = offline_elapsed(str(envelope.savedUtc).to_int(), int(Time.get_unix_time_from_system()))

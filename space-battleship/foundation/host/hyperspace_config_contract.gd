@@ -1,5 +1,5 @@
 extends RefCounted
-## Validate a ConfigBundle before constructing gameplay systems. The compiler
+## Validate configuration data before constructing gameplay systems. The compiler
 ## reads the same machine-readable contract for workbook publication.
 
 const PATH: String = "res://config_tools/hyperspace_parameter_contract.json"

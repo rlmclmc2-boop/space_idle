@@ -31,7 +31,7 @@ static func valid_envelope_shape(envelope) -> bool:
 	if not envelope.get("sessionId") is String or str(envelope.sessionId).is_empty(): return false
 	for field in ["changeNumber", "generation", "savedUtc"]:
 		if not integer_text(envelope.get(field)): return false
-	for field in ["configHash", "payloadHash"]:
+	for field in ["payloadHash"]:
 		var value = envelope.get(field)
 		if not value is String or value.length() != 64 or not value.is_valid_hex_number(): return false
 	return true
@@ -66,8 +66,9 @@ static func read_store(directory: String) -> Dictionary:
 func load_latest() -> Dictionary:
 	return read_store(_directory)
 
-func request(payload: Dictionary, change_number: String, session_id: String, utc: String, config_hash: String) -> Dictionary:
-	if not integer_text(change_number) or not integer_text(utc) or session_id.is_empty() or not config_hash.is_valid_hex_number() or config_hash.length() != 64:
+## The optional fifth argument is ignored for old callers; new saves have no configuration identity.
+func request(payload: Dictionary, change_number: String, session_id: String, utc: String, _legacy_config_identity: String = "") -> Dictionary:
+	if not integer_text(change_number) or not integer_text(utc) or session_id.is_empty():
 		return {"ok": false, "error": "InvalidSaveRequest"}
 	var store := load_latest()
 	if not store.ok and store.error != "MissingSave": return store
@@ -81,7 +82,7 @@ func request(payload: Dictionary, change_number: String, session_id: String, utc
 	var snapshot = JSON.parse_string(payload_text)
 	if not snapshot is Dictionary: return {"ok": false, "error": "InvalidSavePayload"}
 	var envelope := {"formatVersion": 1, "sessionId": session_id, "changeNumber": change_number,
-		"generation": str(_generation), "savedUtc": utc, "configHash": config_hash,
+		"generation": str(_generation), "savedUtc": utc,
 		"payloadHash": JSON.stringify(snapshot).sha256_text(), "payload": snapshot}
 	if JSON.stringify(envelope).to_utf8_buffer().size() > MAX_BYTES:
 		return {"ok": false, "error": "SaveTooLarge"}
