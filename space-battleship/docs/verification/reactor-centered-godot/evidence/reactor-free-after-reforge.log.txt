@@ -1,4 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-FREE_INITIAL input=0.0
-FREE_AFTER_REFORGE prepared=true conquered=true input=0.1 model_ok=true modules=[{ "id": "weapons", "enabled": true, "ratio": 0.0, "load": 0.1, "has_free": true, "manual": "0e0", "free": "1e1", "effective": "1e1", "factor": "1.06309573444802e0" }, { "id": "defence", "enabled": true, "ratio": 0.0, "load": 0.1, "has_free": true, "manual": "0e0", "free": "1e1", "effective": "1e1", "factor": "1.06309573444802e0" }, { "id": "smelting", "enabled": true, "ratio": 0.0, "load": 0.1, "has_free": true, "manual": "0e0", "free": "1e1", "effective": "1e1", "factor": "1.06309573444802e0" }]

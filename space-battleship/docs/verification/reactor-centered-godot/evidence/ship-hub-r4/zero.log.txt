@@ -1,7 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
-     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
-OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
-
-ZERO_APPLY { "ok": true, "defence_changed": true, &"actual": { "ok": true, "modules": [{ "id": "weapons", "enabled": true, "ratio": 0.0, "load": 0.0, "has_free": false, "manual": "0e0", "free": "0e0", "effective": "0e0", "factor": "1e0" }, { "id": "defence", "enabled": true, "ratio": 0.0, "load": 0.0, "has_free": false, "manual": "0e0", "free": "0e0", "effective": "0e0", "factor": "1e0" }, { "id": "smelting", "enabled": true, "ratio": 0.0, "load": 0.0, "has_free": false, "manual": "0e0", "free": "0e0", "effective": "0e0", "factor": "1e0" }], "load": 0.0, "capacity": "1.5e2", "allocated": "0e0", "remaining": "1.5e2" } }
-ZERO_MODEL load=0.0 rows=[["weapons", 0.0], ["defence", 0.0], ["smelting", 0.0]] core_visible=false

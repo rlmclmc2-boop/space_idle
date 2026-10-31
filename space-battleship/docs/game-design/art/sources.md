@@ -1,67 +1,57 @@
-# 资产与实现来源
+# 当前资产与实现来源
 
-[唯一入口](../README.md)；按模块指定的 S 编号读取，来源事实不自动构成恢复命令。
+[唯一入口](../README.md)。来源用于识别当前资产、消费关系与必要锚点，不是恢复旧布局、玩法或工具的授权。各制作分支最新批准依据与证据从[11](../11-stage6-contract.md)进入。
 
-## 4. 资产与实现来源核对表（事实）
-
-以下路径相对 `space-battleship/`。当前文件可直接访问；历史文件统一用 `git show b4729b9:space-battleship/<路径>`，不把旧实现复制进当前运行路径。素材来源/许可/生成提示词仍由各 README 维护，不在本篇另建一份提示词。
-
-**复用时的对齐来源记录（规范）：** 在相应资产元数据或消费记录中引用资源尺寸/模型包围盒、可见主体边界的取得方式与范围、约定锚点及坐标系、布局内边距/偏移、点击区域和最终缩放/旋转变换；已有 manifest/接口可直接引用，不重复维护。记录区分静态边界事实与尚未核对的动态包络：S2/[尺寸参考](../reference/ship-scale.md)的源画布、alpha 轮廓和真挂点，S5 的设备管口/管路，S9/S10 的模型原点、设施枢轴及图标，均按各自消费关系核对。缺少边界或锚点证据时标记待核对，不用 PNG 宽高或模型包围盒自动充当可见尺寸。
+**对齐记录：**在当前资产元数据或消费记录中标明源尺寸、可见主体边界、锚点/坐标系、内距/变换、点击区和最终安装尺度；可引用已有manifest，不重复维护。静态边界不冒充动态包络，PNG画布/模型包围盒不自动等于可见尺寸。缺少证据时标待核对。
 
 ### S1
 
-**页面骨架**。当前 `src/main.gd::_setup_growth_panel/_setup_shell_overlay/_setup_guidance_panel`、`src/ui/bridge_theme.gd` 形成六页舰桥、暂停与提示；历史 `scripts/shell_presentation.gd`、`dialog_presentation.gd` 提供浅壳配色、菜单/勾选/焦点样式。历史壳不等于必须恢复十二个旧导航入口。
+公共壳与控件：`src/main.gd`、`src/ui/bridge_theme.gd`；当前R3制作与有限状态见[整体入口](https://github.com/rlmclmc2-boop/space_idle/blob/6e0e86c80d7cc7ee4f8623fca929c2f4828b6215/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)。
 
 ### S2
 
-**舰体/武器/几何**。[舰体](../../../assets/ships/README.md)、[静态预览](../../../assets/ui/ships/README.md)、[武器](../../../assets/weapons/README.md)；以当前 fleet_20261019、enemy/elite_boss_20261020、武器 manifest 和 ranked 装配为准。当前 `scripts/ship_geometry_convention.gd`、`src/systems/battle.gd`、`src/ui/battle_view.gd` 消费链及 11 中的几何/目标修复优先，历史 ship_panel/dev 布局只供预览与槽位表达参考。
+舰体/武器/几何：现存`assets/ships/`、`assets/weapons/`及其manifest，运行消费为`src/systems/battle.gd`、`src/ui/battle_view.gd`与共享几何。实际尺度口径见[尺寸参考](../reference/ship-scale.md)；不恢复已退役舰模或固定朝向。
 
 ### S3
 
-**战斗场景/资源**。[开场背景](../../../assets/backgrounds/opening/README.md)、[路线图集](../../../assets/backgrounds/hyperspace/README.md)、[资源图标](../../../assets/resources/README.md)，当前 `src/ui/battle_scenery.gd`、`src/ui/battle_hud.gd`、`src/ui/economy_view.gd`。开场仅 1–2 段精修可用，3–10 用现有回退；路线图集已在当前 scenery 绑定，README 的“未连接”是旧状态。资源 README 的旧 resource_art 消费尺寸不能代替当前 UI 适配。
+场景/资源：现存`assets/backgrounds/opening/`、`assets/backgrounds/hyperspace/`、`assets/resources/`；消费为`battle_scenery.gd/battle_hud.gd/economy_view.gd`。开场3–10精修仍未完成，已有回退保留；图标读取原透明纹理。
 
 ### S4
 
-**舰体/装备专用 UI**。历史 `scripts/ship_panel.gd::setup/refresh`、`equipment_tab.gd`、`equipment_card.gd`：模块卡、费用流、冷却、详情/换装与比较；当前 `assets/ui/equipment/` 图标/面板可复用；旧 `assets/weapons/icons/` 已在基线删除，只是历史来源，不列入可复用资产，不为本篇恢复。当前 `src/ui/equipment_panel.gd`、`src/ui/fleet_panel.gd`、`src/ui/attributes_panel.gd` 有命令与属性接口，但没有完整还原旧卡片与比较呈现。
+装备：当前逐槽场景、卡、比较/费用与裁剪见[装备入口](https://github.com/rlmclmc2-boop/space_idle/blob/ee802997f84a3627f8f92bdd76fd93ad94676207/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)及[M2](modules/equipment.md)。当前已有武器模型/真实挂点继续使用，防御不加代理模型。
 
 ### S5
 
-[父审已查看的整体场景来源：Git b4d2adc8](https://github.com/rlmclmc2-boop/space_idle/commit/b4d2adc8)，项目路径 `test/evidence/seven-parent-20261017/17-reactor6.png`。画面依据是统一控制台外壳中的核心、能源分配区、升级区及管路相连设备舱，效果读数对应设备；只复用核心/设备图标不算保留完成。旧截图仅作整体控制台关系参考；其中攻击、防御、资源设备造型未获认可，不冻结为恢复目标。可另行生成替换静态资产，先按[M3资产接口](modules/reactor.md#可替换静态资产契约)准备；重复读数、永久教学和旧像素尺寸也不冻结。本地精简Git对象未含该提交，短SHA fetch未取回；本条来源可见性依据父审确认，不冒称本轮已重新查看图片。
-
-**反应炉**。[圆润版与历史来源](../../../assets/ui/reactor/README.md)、[旧金属版接口](../../../assets/ui/reactor/interface-contract.md)；历史 `scripts/reactor_panel.gd::setup/refresh`、`reactor_routes.gd`、`reactor_visual.gd` 是供能/分配/局部动效证据。当前 `src/ui/reactor_panel.gd` 为简化控制行；旧 README 中 panel/visual 的名称不表示专用舞台当前已接入。
+反应堆：按用户批准B01的独立核心/设备/实体管路制作，见[B01入口](../../verification/reactor-centered-godot/evidence/b01-redesign/README.md)。资产身份/锚点/导入条件只见[M3资产契约](modules/reactor-asset-contract.md)，不导航回旧整图舞台。
 
 ### S6
 
-**AI 工厂**。[首代工厂](../../../assets/ai_tech_factory/README.md)：背景、八台透明设备、独立探针；历史 `scripts/ai_tech_factory_page.gd::setup/_build_drawer`、`ai_tech_factory_art.gd` 是舞台/选择层来源。当前 `src/ui/research_panel.gd` 已有投入草稿/当前值、应用/还原及自动投入控制。 [hightech](../../../assets/hightech/README.md) 记录另一组已确认悬浮科技造型，不可把两套画面同时当 AI 工厂默认机器。
+科研：现存`assets/ai_tech_factory/`首代工厂与`assets/hightech/`悬浮图集；两套素材在现行研究ID上的具体分工尚待D3定稿，不能同时宣称为唯一默认机器。当前业务消费为`src/ui/research_panel.gd`，规则见[M4](modules/research.md)。
 
 ### S7
 
-**强化**。历史 `scripts/enhancement_panel.gd::create_effect_card/build_branch_drawer/refresh_branches` 提供顺位卡、详情、分支路径；当前 `src/ui/enhancement_panel.gd` 为效果/节点/A-B 选择。共享 `assets/ui/shell/enhancement.svg` 延续强化身份。[旧宝石图集](../../../assets/jewels/premium/README.md) 与其 workshop/toggle 仅为历史资产，不是恢复宝石中心授权。
+强化：`src/ui/enhancement_panel.gd`及`assets/ui/shell/enhancement.svg`；顺位/效果/分支见[M5](modules/enhancement.md)。旧宝石玩法未获恢复授权。
 
 ### S8
 
-**船员**。[身份与徽章规范](../../../assets/ui/crew/README.md)；历史 `scripts/crew_panel.gd::setup/reset_assignment_draft/refresh_actions/member_portrait` 的名册、详情、派遣预览与占用原因；当前 `src/ui/crew_panel.gd` 有人员/岗位/模式与发布端口，专用人物卡和任务反馈仍缺。
+船员：现存`assets/ui/crew/`身份素材、`src/ui/crew_panel.gd`；人物、占用/岗位与任务反馈见[M6](modules/crew.md)。
 
 ### S9
 
-[历史整屏来源：Git 573e9312](https://github.com/rlmclmc2-boop/space_idle/commit/573e9312)，`after/planet-1-start.png`，父审已查看，表示星球探索起始整体界面；仅作表现参照，不批准旧布局、数值或状态。
-
-**星球**。[球体/参数](../../../assets/planets/README.md)、[卡通底图](../../../assets/planets/toon/README.md)、[轨道资产](../../../assets/planets/orbital/README.md)、[模型与图标](../../../assets/planets/orbital/models/README.md)。历史 `scripts/planet_panel.gd::ensure_card_content/_show_facility/_refresh_facility_dialog` 提供导航、设施详情和反馈；当前 `src/ui/planet_panel.gd` 已接 `scripts/planet_visual.gd`，不能登记成“待重建球体”。
+星球：现存球体/轨道资产与`planet_visual.gd`、当前R17设施制作；当前批准与原生状态见[R17](https://github.com/rlmclmc2-boop/space_idle/blob/ee802997f84a3627f8f92bdd76fd93ad94676207/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md)和[M7](modules/planet.md)，不恢复贴地强制分工。
 
 ### S10
 
-[历史整屏来源：Git 72b0fa22](https://github.com/rlmclmc2-boop/space_idle/commit/72b0fa22)，`galaxy-city-ui.png`，父审已查看，表示已建成城市场景；仅作表现参照，不批准旧布局、数值或状态。新旧对照须匹配建设阶段，不能用旧满城对比新空底座直接判定资产退化。
-
-**星系**。[现行 GLB 与模型契约](../../../assets/galaxy/v3/README.md)、`manifest.json`；历史 `scripts/galaxy_panel.gd::refresh_detail` 与 `galaxy_map.gd::pick/_gui_input/refresh`；当前 `src/ui/galaxy_panel.gd` 已接保留的 map。 [建筑 PNG v3](../../../assets/galaxy/buildings/v3/README.md) 明确为退役参考，不用它替换当前模型。
+星系：当前`assets/galaxy/v3/`GLB/manifest及`src/ui/galaxy_panel.gd`、`galaxy_map.gd`；按[M8](modules/galaxy.md)表达真实建设阶段。退役PNG不替换现行模型。
 
 ### S11
 
-**超空间**。[家族模型/缩略图](../../../assets/hyperspace/README.md)、`assets/hyperspace/icons/` 与 S3 路线图集；历史 `scripts/hyperspace_panel.gd::refresh_details/protection_flags`、`hyperspace_equipment_ui.gd`、`hyperspace_route_ui.gd`、`hyperspace_material_exchange_ui.gd`、`hyperspace_reforge_dialog.gd` 是品质、装备、岗位、费用审阅与保留确认的来源；当前 `src/ui/hyperspace_panel.gd` 有四子页及绑定预览确认，专用图标与改造对照待完善。旧模型 viewport/测试描述是历史事实。
+超空间：现存`assets/hyperspace/`家族模型、缩略图和图标，`src/ui/hyperspace_panel.gd`四子页及领域预览；规则与呈现见[M9](modules/hyperspace.md)。不恢复旧独立友方世界或每卡viewport。
 
 ### S12
 
-**保存与档案**。历史 `scripts/save_panel.gd`、`beginner_guide.gd` 可借鉴动作分区；当前 `src/main.gd` 的预览/确认、保存警告与设置，`src/ui/archive_panel.gd`、`src/ui/notifications_panel.gd` 的已见/已读、教程及敌方资料，按 [06](../06-data.md) 与 [11](../11-stage6-contract.md) 定义实际持久化语义。
+保存/档案：`src/main.gd`、`archive_panel.gd`、`notifications_panel.gd`；语义见[06](../06-data.md)及[M10](modules/persistence.md)。D9已定去配置绑定由原后台纠正，不恢复查询包装。
 
-### 4.1 来源中的已知断链与时效
+### 4.1 来源时效与当前缺口
 
-本次确认以下资产说明仍指向当前树已不存在的规范/工具/夹具：`assets/weapons/README.md` → `docs/ART_GUIDELINES.md`；开场 README → `docs/art/continuous-v2-refinement/...`、`docs/art/parent-continuous-v2/...` 及旧构建工具；星系 README → `docs/GALAXY.md` 和旧 test 夹具；AI 工厂 README 的概念分支引用也不等于当前工作树中的文件。它们只作历史溯源，不能列为制作前必须读取的现行规范。本篇不伪造替代内容，也不通过恢复整套旧文档/工具来补链；实际资产、manifest 和本篇可见要求可继续使用。需追溯原稿时指定 Git 提交与路径，找不到则列 D6。
+资产README中若出现已不存在的旧美术文档、概念分支、工具或夹具，不作为前置要求，也不为补链恢复旧依赖。当前资产、manifest与本页具名消费范围可以继续使用；缺少必要来源时记录D6并核实际对象，不凭旧文案扩任务。

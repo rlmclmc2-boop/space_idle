@@ -1,8 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-BULK max-zero={ "ok": true, "count": 0, "costs": {  }, "cost_resource_ids": ["2"], "can_purchase": false, "reason": "InsufficientResources" } disabled=true cost=MAX 可购 0 级 · 资金不足
-BULK max-after-wallet={ "ok": true, "count": 11, "costs": { "2": "7.52e2" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" } disabled=false
-BULK ten-quote={ "ok": true, "count": 10, "costs": { "2": "5.5e2" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" } disabled=false cost=费用 550 铀
-BULK ten-result={ "ok": true, "defence_changed": false } level=11
-BULK max-quote={ "ok": true, "count": 1, "costs": { "2": "2.02e2" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" } disabled=false cost=MAX 可购 1 级 · 费用 202 铀
-BULK max-result={ "ok": true, "defence_changed": false, &"count": 1, &"costs": { "2": "2.02e2" } } level=12
