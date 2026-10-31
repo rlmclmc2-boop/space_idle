@@ -10,7 +10,7 @@ const ARC_BOUNDS := {
 }
 const FACILITY_ANGLES := {
 	"auto_explore": PI * 1.155,
-	"refinery": TAU - 0.25,
+	"refinery": TAU - 0.36,
 	"equipment": 0.78,
 	"shipyard": PI - 0.78,
 }
