@@ -1,11 +1,11 @@
 {
-  "current": "User feedback after19a2 addressed in new name-column/shared-number candidate; same-version19 full screens and video ready for root/original review, not waiting old user decision",
+  "current": "Parent confirmed original reviewer viewed0f98119 full screens and23.4s action clip at0.25s frame intervals; root viewed early/bottom/long and actually sent those three layout confirmation images to user. Current layout awaits user feedback; cross-module style awaits overall new proposal, not accepted/main.",
   "runtime_source_commit": "75b7a1918b2c988e81ebdb64e7006369189c77cc",
   "shared_number_source": "f688ea7c8856ad87775b0853044b9020303b8137",
   "evidence": "name-column-revision/ledger.json",
   "remaining": [
-    "Root/original reviewer judgment of this new full candidate; delivery/user acceptance remain separate",
-    "Unobserved arbitrary extremes require real domain source only if later requested"
+    "Await user feedback on current layout three images already delivered by root",
+    "Cross-module style awaits overall new proposal; no accepted new style source to consume"
   ],
   "independent_implementation_remaining": [],
   "implementation_dependency": null,
@@ -14,9 +14,17 @@
   "unknown_outcomes": [],
   "background_processes": [],
   "not_claimed": [
-    "new original review passed",
-    "new user acceptance",
+    "cross-module style approval",
+    "final user acceptance",
     "main merge",
     "whole-game completion"
-  ]
+  ],
+  "reviewed_delivered_evidence": "0f981d19658d2b7ce020d8de5e7fec1c50ee7841",
+  "delivered_layout_images": [
+    "name-column-revision/inline-native-early.png",
+    "name-column-revision/inline-native-bottom.png",
+    "name-column-revision/inline-native-long-max.png"
+  ],
+  "auxiliary_hover": "Native exact original value retained; not rounded to shared one-decimal primary display",
+  "stop_reason": "Authorized implementation and evidence complete; preserve reviewed/delivered layout candidate while awaiting user layout feedback and overall style proposal"
 }

@@ -4,7 +4,7 @@
 
 19张最终1440×900整屏已逐张view，42.6秒原视频完整解码、23.4秒动作[18.7,42.1]抽5帧view；actual main/native/config同线程exit0 failures0，无脚本/资源泄漏。19状态含早2/中5/晚8、空槽/真实安装、双费数字红/名正常/图标原色、MAX444、公有1位小数、材料禁用、hover/pressed/focus、单槽与批量真实拒绝、qty不付不提示、即时切回、wheel/clipped焦点、unknown保护。后期受控，ID由Owner真实安装更新几何；非自然解锁或自然故障宣称。21完整卡原图字形辅助：名称框→属性最小12px、费字→卡底最小6px、文字左沿偏差0；不代替整屏原审。唯一README/review-name-column及name-column-revision账本/driver/log/JSON/hash/视频为当前证据。
 
-用户新反馈已结束旧19a2等待状态；现交根/原审新整组判断，未自判接受/交用户/main。独立实现项与共源依赖已清，无权限拒绝/未知结果/后台，未实际压缩；原WIP/untracked/import/uid/cache保全。下方历史待用户/旧通过不覆盖本版。
+父最新事实：既有原审整看0f981d19658d2b7ce020d8de5e7fec1c50ee7841的19整屏与23.4秒动作每0.25秒顺序抽帧，根亲看early/bottom/long，判断本轮排版具用户评价条件，已实际送三图请求确认。当前排版待用户意见，跨模块风格待整体新方案，非风格通过/最终/main验收。辅助悬浮保持native精确原文，不称也一位小数。仅README/pending/HANDOFF状态同步，0f981证据SHA快照、75b7代码/全部图/视频/账本保全，无新测试或设计。独立实现项与共源依赖已清，无权限拒绝/未知结果/后台，未实际压缩；原WIP/untracked/import/uid/cache保全。下方历史待用户/旧通过不覆盖本版。
 
 ---
 
