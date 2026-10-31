@@ -1,7 +1,0 @@
-# Flush section end face — local geometry candidate
-
-The independent ring sections formerly added four protruding BoxMesh layers at every exposed built end. At game scale the unbuilt shipyard boundary showed a detached black bumper and the station's isolated short section acquired a dark block near the globe. `planet_orbital_spine.gd` now closes each exposed cross-section with one flush deep-navy mesh face spanning the actual keel to deck height. The existing deck and outer cyan conduit end at that same plane. Built ownership and the rules for hiding caps after the adjoining section is built remain unchanged.
-
-`structure-driver.gd` uses the real main scene in Godot 4.7.2 with controlled stage 1, 3 and 4 built states and a single controlled 90° phase. All four PNGs are 1440×900 original screens from this exact source. `runtime.txt` records an empty startup error without GDScript errors; `check-only.txt` is the entry script compile check. These fixtures do not establish natural construction, claiming, continuous orbit, or FPS.
-
-Author review at original size: stage 1 and 3 no longer show an extra bumper at the free end; the ring ends with a flat structural face. The end is visually plainer than the approved concept, and the central cyan channel still needs a more considered termination. The large front belt, station/refinery/workshop/shipyard forms and joint profile remain under the original whole-scene return. This is **not** acceptance of the end design or the overall planet.

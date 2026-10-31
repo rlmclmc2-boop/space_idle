@@ -1,5 +1,0 @@
-7e9a11cf78bd69ac417715a1df142cb2dc0a150a11b976351134c4c1d07405d1  space-battleship/assets/planets/facilities_v5/illustrated/refinery-orbit-machinery-bent-feed.png
-3017d9b9d3c0c4f16650aaa1150462111613491643f122d8b1ede9007209295f  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-bent-feed/stage_4.png
-5db1791573c85016fea88b4898b7e78554651d8ca517a794d7da9eee33b93b7b  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-bent-feed/phases/frame_024.png
-30de7a25a0c58da9c59933f262c00e475be4b8f4c53dea149307b3c8fcfda0d3  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-bent-feed/phases/frame_051.png
-a3d5e5dd6a3b7f34d4bee7144c9fc5cbdbd9ac0df36870e8e25a5ed6e0429c3e  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-bent-feed/phases/frame_072.png

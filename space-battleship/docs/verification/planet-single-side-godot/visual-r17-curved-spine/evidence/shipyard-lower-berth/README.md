@@ -1,7 +1,0 @@
-# Shipyard lower hull and thicker berths — local candidate
-
-Editable Blender source `art_sources/planet_facilities_v5/build_shipyard_node.py` generates `shipyard.blend` and the running `assets/planets/facilities_v5/shipyard.glb`. This revision shortens the tall grey core, thickens its twin open berth rails, adds restrained ochre load trusses, and changes the docked craft's shell from broad ivory to deep blue with a narrow ivory spine. The named `CraneSlide` and `DockCollarSpin` pivots remain in the same GLB. Its radial section orientation remains as in the prior candidate.
-
-`structure-driver.gd` runs the actual Godot 4.7.2 main scene with controlled built states. `stage_3.png` has no shipyard, `stage_4.png` has all four built, and `quarter_simulated.png` is one controlled 90° phase. Each is a 1440×900 original screen from this source. `runtime.txt` reports empty startup error and no GDScript error; `check-only.txt` records the entry script compile check. A trial adding inward arms toward the globe crossed the globe edge at 90° and was removed before this fixed candidate.
-
-Author inspection at original size: the upper hull is less dominant and the berth frame is more legible, while the craft remains small at game scale. The open berths still extend primarily on one side and do not yet read as a complete cross-spine dock. This is a bounded improvement for original review, **not** shipyard or whole-scene acceptance. The station, refinery, workshop, common spine profile, joins and free end caps remain under the earlier return.

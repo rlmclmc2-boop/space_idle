@@ -1,5 +1,0 @@
-width=1440
-height=900
-avg_frame_rate=24/1
-duration=4.041667
-nb_frames=97
