@@ -857,7 +857,7 @@ func _setup_growth_panel() -> void:
 	var preferences := _settings_group(options_column, "运行与显示", "节奏、自动保存与战斗反馈")
 	var speed_row := _settings_row(preferences)
 	var speed_options := OptionButton.new()
-	BridgeTheme.apply_public_input(speed_options)
+	BridgeTheme.apply_operation_select(speed_options)
 	for option in session.chrono_speed_options():
 		speed_options.add_item("%s倍速 · 每秒消耗%s时空微粒" % [option.speed, option.cost], int(option.speed))
 		if int(option.speed) == session.current_chrono_speed(): speed_options.select(speed_options.item_count - 1)
@@ -935,7 +935,7 @@ func _setup_growth_panel() -> void:
 			effects.set_pressed_no_signal(_effects_enabled)
 			_set_growth_status(PlayerText.error(str(saved.reason))))
 	var damage_mode := OptionButton.new()
-	BridgeTheme.apply_public_input(damage_mode)
+	BridgeTheme.apply_operation_select(damage_mode)
 	for mode in PlayerSettings.DAMAGE_MODES: damage_mode.add_item("伤害数字：" + str({"all": "全部", "critical": "仅暴击", "off": "关闭"}[mode]))
 	damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
 	_damage_option = damage_mode

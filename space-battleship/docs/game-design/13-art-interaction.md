@@ -69,7 +69,7 @@
 
 数字颜色的**可运行共源**是现有 `src/ui/bridge_theme.gd::number_role_color(role, surface)`，角色仅 `current`（当前事实）、`gain`（升级后收益／重要新值）、`cost`（正常费用）、`insufficient`（不足消耗值）；`surface` 为 `light`（浅设备漆面）或 `dark`（深海军蓝面），`apply_number_role(label, role, surface)` 只给原生 Label 换文字色，不另建面板或改字号／基线。颜色须和标签、箭头、资源身份图标、费用所在位置一起理解：当前值稳重、收益更醒目、正常费清楚、不足值红而资源名／图标仍原色；不只靠颜色区分状态，不把一页所有数字或普通边框都点亮。两页模块原组按实际面底调用并用完整整屏核墨迹／净空，不能把共源常量存在视作运行已统一。
 
-用户认可装备逐槽与 B01 分配/升级在同一设备材质语言下推进实机。共同操作材质使用项目现有 `control-materials.png` 的低反光承托面、深青普通/选择键和仅用于主执行的暖金键；完整原生 `normal/hover/pressed/hover_pressed/selected/disabled/focus` 要有可见字底，选择入口保留明确箭头与点击区，能源功能色不染普通边框。运行共源 `BridgeTheme.operation_plate/operation_button/apply_operation_button/apply_operation_select` 只装在原有控件节点，模块内部原旧面层须退出，不能叠一层框；装备机库与反应堆舱景仍各自承托操作区，不能把静态整页设计图当运行贴图。共同源及接口可供原组实施，是否已达到统一效果仍按同版完整画面与状态审定，不凭共用文件或局部通过外推。
+用户认可装备逐槽与 B01 分配/升级在同一设备材质语言下推进实机。共同操作材质使用项目现有 `control-materials.png` 的低反光承托面、深青普通/选择键和仅用于主执行的暖金键；完整原生 `normal/hover/pressed/hover_pressed/selected/disabled/focus` 要有可见字底，选择入口保留明确箭头与点击区，能源功能色不染普通边框。已勾选按钮也需有可分辨的 `pressed`／`hover_pressed`，不能仅凭鼠标已进入就称视觉悬浮。公共路径/数值输入按同源低反光凹槽绘在原控件上，保留文字、焦点和原生步进器，不在旧线框上叠新面。运行共源 `BridgeTheme.operation_plate/operation_button/apply_operation_button/apply_operation_select/public_input` 只装在原有控件节点，模块内部原旧面层须退出，不能叠一层框；装备机库与反应堆舱景仍各自承托操作区，不能把静态整页设计图当运行贴图。共同源及接口可供原组实施，是否已达到统一效果仍按同版完整画面与状态审定，不凭共用文件或局部通过外推。
 
 每类资产约定可见边界与用途相符的锚点（如视觉中心、设备底座、管口或挂载点），控件/模型按对应主体边缘或锚点对齐；不同资产不强用画布中心。旋转炮台、护盾和动效范围另列为扩展包络，不拿它们替代主体对齐，也不因对齐修正改变已定共享几何、真炮口或交互语义。可使用现有元数据、静态边界记录和消费端偏移适配，不要求一律裁切贴图、改模型原点或逐帧扫描 alpha。
 

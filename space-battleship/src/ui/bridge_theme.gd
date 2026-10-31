@@ -102,7 +102,8 @@ class SharedOperationSurface extends StyleBox:
 		var tint := Color.WHITE
 		match state:
 			"hover": tint = Color(1.13, 1.16, 1.14)
-			"pressed", "hover_pressed": tint = Color(0.78, 0.84, 0.84)
+			"pressed": tint = Color(0.78, 0.84, 0.84)
+			"hover_pressed": tint = Color(0.94, 1.00, 0.98)
 			"selected": tint = Color(0.79, 0.94, 0.95)
 			"selected_hover": tint = Color(0.9, 1.04, 1.04)
 			"disabled": tint = Color(0.55, 0.62, 0.65, 0.85)
@@ -210,9 +211,11 @@ static func route_button(state: String) -> StyleBoxTexture:
 static func top_button(state: String) -> StyleBoxTexture:
 	return _texture_style("top-control-hover.svg" if state in ["hover", "focus", "pressed", "hover_pressed"] else "top-control.svg", 8, 5)
 
-static func public_input(state: String = "normal") -> StyleBoxTexture:
-	var path := "input-well-focus.svg" if state in ["focus", "hover", "pressed", "hover_pressed"] else "input-well-disabled.svg" if state in ["read_only", "disabled"] else "input-well.svg"
-	return _texture_style(path, 12, 15)
+static func public_input(state: String = "normal") -> StyleBox:
+	# Recessed input and text stay on the existing native control. The old SVG
+	# well is retired here, so no line frame remains underneath this paint.
+	var face := "disabled" if state in ["read_only", "disabled"] else "selected_hover" if state == "hover" else "selected" if state == "normal" else state
+	return operation_button(face, 15.0, "secondary")
 
 static func create() -> Theme:
 	var theme := Theme.new()
