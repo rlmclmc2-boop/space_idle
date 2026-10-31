@@ -2,6 +2,7 @@ extends Control
 ## Public presentation around the existing 808px workspace and unchanged battle projection.
 signal route_requested(id: String)
 const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
+const PlayerText = preload("res://src/ui/player_text.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
 const TOP_RAIL = preload("res://assets/ui/public_shell/command-rail.svg")
 const STATUS_IDLE = preload("res://assets/ui/public_shell/status-idle.svg")
@@ -188,7 +189,10 @@ func _process(_delta: float) -> void:
 	_dirty = false
 	var rows: Array = _economy.balance_rows()
 	var by_id := {}
-	for row in rows: by_id[str(row.id)] = str(row.text)
+	var by_raw := {}
+	for row in rows:
+		by_id[str(row.id)] = str(row.text)
+		by_raw[str(row.id)] = str(row.raw)
 	var ids := ["1", "2", "chrono"]
 	var names := ["铁", "铀", "时空微粒"]
 	for index in _balances.size():
@@ -196,9 +200,7 @@ func _process(_delta: float) -> void:
 		var next_text: String = str(by_id.get(ids[index], names[index] + "：0"))
 		var separator: int = next_text.find("：")
 		var amount: String = next_text.substr(separator + 1) if separator >= 0 else next_text
-		# PlayerText.number owns the compact unit/scientific value. In the narrow rail,
-		# render its scientific marker without redundant mathematical spacing.
-		amount = amount.replace("×10^", "e")
+		# PlayerText.number owns the same compact value in rail and detail.
 		var font: Font = label.get_theme_font("font")
 		var size: int = 16
 		for candidate in [16, 14, 12]:
@@ -206,9 +208,9 @@ func _process(_delta: float) -> void:
 			if font.get_string_size(amount, HORIZONTAL_ALIGNMENT_LEFT, -1, candidate).x <= label.size.x:
 				break
 		label.add_theme_font_size_override("font_size", size)
-		if label.text != amount:
-			label.text = amount
-			label.tooltip_text = next_text
+		if label.text != amount: label.text = amount
+		var full_text: String = names[index] + "：" + str(by_raw.get(ids[index], "0"))
+		if label.tooltip_text != full_text: label.tooltip_text = full_text
 	if _details.visible and _resource_rows.visible: _update_resource_rows(rows)
 
 func set_active_route(id: String) -> void:
@@ -276,12 +278,17 @@ func _show_balances() -> void:
 
 func _update_resource_rows(rows: Array) -> void:
 	var shown := {"1": "铁：0", "2": "铀：0", "chrono": "时空微粒：0", "jewel": "强化碎片：0"}
+	var raw := {}
 	for row in rows:
 		var id: String = str(row.id)
-		if _resource_row_labels.has(id): shown[id] = str(row.text)
+		if _resource_row_labels.has(id):
+			shown[id] = str(row.text)
+			raw[id] = str(row.raw)
 	for id in _resource_row_labels:
 		var value: Label = _resource_row_labels[id]
 		var next_text: String = str(shown.get(id, ""))
 		if value.text != next_text: value.text = next_text
+		var full_text: String = PlayerText.resource(id) + "：" + str(raw.get(id, "0"))
+		if value.tooltip_text != full_text: value.tooltip_text = full_text
 		var row_visible: bool = shown.has(id)
 		if value.get_parent().visible != row_visible: value.get_parent().visible = row_visible

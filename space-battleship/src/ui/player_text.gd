@@ -1,6 +1,6 @@
 extends RefCounted
 ## Presentation names only. Stable business IDs and saved data stay unchanged.
-const RESOURCES := {"1": "铁", "2": "铀", "jewel": "强化碎片", "chrono": "时空微粒"}
+const RESOURCES := {"1": "铁", "2": "铀", "jewel": "强化碎片", "chrono": "时空微粒", "degenerate_matter": "简并物质"}
 const STATES := {"menu": "待命", "departing": "离港", "travel": "航行", "combat": "战斗", "waiting": "通关等待", "guard_wait": "驻守等待", "retreat": "撤退", "hyperspace": "超空间战斗"}
 const TOPICS := {"unlock": "解锁", "research": "研究完成", "hyperspace": "超空间奖励"}
 
@@ -45,7 +45,7 @@ static func error(reason: String) -> String:
 static var _number_pattern: RegEx
 
 # Presentation only: Amount remains the owner of value arithmetic and precision.
-# Parse the exponent as text first, so an extreme Amount never becomes float INF.
+# Round decimal digits, never convert an Amount or its exponent to float.
 static func number(value: String) -> String:
 	if _number_pattern == null:
 		_number_pattern = RegEx.new()
@@ -53,53 +53,64 @@ static func number(value: String) -> String:
 	var matched: RegExMatch = _number_pattern.search(value.strip_edges())
 	if matched == null: return "—"
 	var sign: String = "-" if matched.get_string(1) == "-" else ""
-	var mantissa: String = matched.get_string(2)
-	var parts: PackedStringArray = mantissa.split(".")
+	var parts: PackedStringArray = matched.get_string(2).split(".")
 	var whole: String = parts[0]
-	var digits: String = whole + (parts[1] if parts.size() > 1 else "")
-	var significant: String = digits.lstrip("0")
+	var significant: String = (whole + (parts[1] if parts.size() > 1 else "")).lstrip("0")
 	if significant.is_empty(): return "0"
-	var exponent: String = matched.get_string(3)
-	var negative_exponent: bool = exponent.begins_with("-")
-	exponent = exponent.trim_prefix("-").trim_prefix("+").lstrip("0")
-	if exponent.is_empty(): exponent = "0"
-	if negative_exponent and exponent != "0": exponent = "-" + exponent
-	if exponent.trim_prefix("-").length() > 9:
-		# Keep an unbounded exponent verbatim rather than overflow a native integer.
-		if "." in mantissa:
-			mantissa = mantissa.rstrip("0").trim_suffix(".")
-		if mantissa.length() > 24: mantissa = mantissa.substr(0, 20) + "…"
-		return sign + mantissa + "×10^" + exponent
-	var leading: int = digits.length() - significant.length()
-	var magnitude: int = exponent.to_int() + whole.length() - leading - 1
-	var prefix: String = significant.substr(0, 15)
-	var coefficient: float = prefix.to_float() / pow(10.0, prefix.length() - 1)
-	if magnitude >= -4 and magnitude < 4:
-		var decimals: int = maxi(2, 2 - magnitude) if magnitude < 0 else 2
-		return sign + _group_decimal(_decimal_text(coefficient * pow(10.0, magnitude), decimals))
-	if magnitude >= 4 and magnitude < 20:
-		var units := ["万", "亿", "兆", "京"]
-		var unit_index: int = mini(3, magnitude / 4 - 1)
-		var scaled: float = coefficient * pow(10.0, magnitude - (unit_index + 1) * 4)
-		if scaled >= 9999.995 and unit_index < 3:
-			unit_index += 1
-			scaled /= 10000.0
-		return sign + _decimal_text(scaled, 2) + units[unit_index]
-	if coefficient >= 9.9995:
-		coefficient = 1.0
-		magnitude += 1
-	return sign + _decimal_text(coefficient, 3) + "×10^" + str(magnitude)
+	var leading: int = (whole + (parts[1] if parts.size() > 1 else "")).length() - significant.length()
+	var raw_exponent: String = matched.get_string(3)
+	var exponent_digits: String = raw_exponent.trim_prefix("-").trim_prefix("+").lstrip("0")
+	if exponent_digits.is_empty(): exponent_digits = "0"
+	if exponent_digits.length() > 15:
+		if raw_exponent.begins_with("-"): return "0"
+		var large_magnitude: String = _add_decimal_offset(exponent_digits, whole.length() - leading - 1)
+		var large_tenths: int = _round_tenths(significant, 0, 0)
+		if large_tenths == 100:
+			large_tenths = 10
+			large_magnitude = _add_decimal_offset(large_magnitude, 1)
+		return sign + _tenths_text(large_tenths) + "e" + large_magnitude
+	var magnitude: int = raw_exponent.to_int() + whole.length() - leading - 1
+	var unit_index: int = -1
+	if magnitude >= 15 and magnitude < 18: unit_index = 4
+	elif magnitude >= 12 and magnitude < 15: unit_index = 3
+	elif magnitude >= 9 and magnitude < 12: unit_index = 2
+	elif magnitude >= 6 and magnitude < 9: unit_index = 1
+	elif magnitude >= 3 and magnitude < 6: unit_index = 0
+	if magnitude >= 18:
+		var sci_tenths: int = _round_tenths(significant, magnitude, magnitude)
+		if sci_tenths == 100:
+			sci_tenths = 10
+			magnitude += 1
+		return sign + _tenths_text(sci_tenths) + "e" + str(magnitude)
+	var scale: int = [3, 6, 9, 12, 15][unit_index] if unit_index >= 0 else 0
+	var tenths: int = _round_tenths(significant, magnitude, scale)
+	if tenths == 0: return "0"
+	if tenths == 10000:
+		unit_index += 1
+		tenths = 10
+		if unit_index == 5: return sign + "1.0e18"
+	return sign + _tenths_text(tenths) + (["k", "m", "b", "t", "kt"][unit_index] if unit_index >= 0 else "")
 
-static func _decimal_text(value: float, decimals: int) -> String:
-	var result: String = ("%." + str(decimals) + "f") % value
-	if "." in result: result = result.rstrip("0").trim_suffix(".")
+static func _round_tenths(significant: String, magnitude: int, scale: int) -> int:
+	var kept: int = magnitude - scale + 2
+	if kept < 0: return 0
+	var whole_digits: String = significant.substr(0, kept) if kept > 0 else ""
+	if whole_digits.length() < kept: whole_digits += "0".repeat(kept - whole_digits.length())
+	var result: int = whole_digits.to_int() if not whole_digits.is_empty() else 0
+	if kept < significant.length() and significant.substr(kept, 1).to_int() >= 5: result += 1
 	return result
 
-static func _group_decimal(value: String) -> String:
-	var parts: PackedStringArray = value.split(".")
-	var whole: String = parts[0]
-	var grouped: String = ""
-	for index in whole.length():
-		if index > 0 and (whole.length() - index) % 3 == 0: grouped += ","
-		grouped += whole[index]
-	return grouped + ("." + parts[1] if parts.size() > 1 else "")
+static func _tenths_text(tenths: int) -> String:
+	return str(tenths / 10) + "." + str(tenths % 10)
+
+static func _add_decimal_offset(digits: String, offset: int) -> String:
+	var out: String = ""
+	var carry: int = offset
+	for index in range(digits.length() - 1, -1, -1):
+		var total: int = digits.substr(index, 1).to_int() + carry
+		var digit: int = total % 10
+		if digit < 0: digit += 10
+		carry = (total - digit) / 10
+		out = str(digit) + out
+	if carry > 0: out = str(carry) + out
+	return out.lstrip("0")
