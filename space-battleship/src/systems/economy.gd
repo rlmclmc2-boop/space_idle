@@ -4,6 +4,7 @@ const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 ## Economy owns balances, drop ownership, timed production and income history.
 signal display_changed
+signal budget_changed(resource_ids: PackedStringArray)
 signal drop_collected
 
 var _wallet: Dictionary = {}
@@ -21,6 +22,8 @@ var _income_dirty: bool = false
 var _balance_dirty: bool = true
 var _balance_text: String = ""
 var _balance_rows: Array = []
+var _budget_queued: bool = false
+var _budget_before: Dictionary = {}
 
 func _init(parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
 	_run_state = run_state
@@ -119,6 +122,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 			var value: Dictionary = Resources.whole(sample[field], _api)
 			if not value.ok: return value
 			sample[field] = value.value
+	_queue_budget_change()
 	_wallet = whole_wallet.values
 	_yield_progress = progress.values
 	_wallet.make_read_only()
@@ -138,6 +142,7 @@ func accept_budget(next: Dictionary, notify: bool = true) -> bool:
 		_run_state.fail(str(checked.get("reason", checked.get("error", "InvalidResourceBudget"))))
 		return false
 	if checked.values == _wallet: return false
+	_queue_budget_change()
 	_wallet = checked.values
 	_wallet.make_read_only()
 	_balance_dirty = true
@@ -146,6 +151,34 @@ func accept_budget(next: Dictionary, notify: bool = true) -> bool:
 
 func publish_budget_change() -> void:
 	display_changed.emit()
+
+# Capture the first wallet before coordinated writes, then emit only changed
+# resource IDs after the accepted state has settled.
+func _queue_budget_change() -> void:
+	if _budget_queued: return
+	_budget_before = _wallet.duplicate(true)
+	_budget_queued = true
+	call_deferred("_emit_budget_change")
+
+func _emit_budget_change() -> void:
+	var before: Dictionary = _budget_before
+	_budget_before = {}
+	_budget_queued = false
+	var ids: Array = before.keys()
+	for id in _wallet:
+		if id not in ids: ids.append(id)
+	ids.sort()
+	var zero: Dictionary = _api.apply("zero", [])
+	if not zero.ok: return
+	var changed := PackedStringArray()
+	for id in ids:
+		var previous: Dictionary = before.get(id, zero.value)
+		var current: Dictionary = _wallet.get(id, zero.value)
+		if previous == current: continue
+		var comparison: Dictionary = _api.apply("compare", [previous, current])
+		if not comparison.ok: return
+		if int(comparison.scalar) != 0: changed.append(str(id))
+	if not changed.is_empty(): budget_changed.emit(changed)
 
 func affordable(costs: Dictionary, candidate = null) -> bool:
 	return can_pay(costs, candidate).ok
@@ -363,6 +396,7 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 	wallet = wallet.duplicate()
 	wallet[resource] = result.value
 	wallet.make_read_only()
+	_queue_budget_change()
 	_wallet = wallet
 	samples.append({"resource": resource, "actual": quantity, "production_base": base,
 		"wall": wall, "game": game, "source": row.income_source})
@@ -522,6 +556,7 @@ func credit_yield(resource: String, quantity: Dictionary, wall: float, game: flo
 	wallet = wallet.duplicate()
 	wallet[resource] = total.value
 	wallet.make_read_only()
+	_queue_budget_change()
 	_wallet = wallet
 	_balance_dirty = true
 	samples.append({"resource": resource, "actual": quantity, "production_base": zero,
