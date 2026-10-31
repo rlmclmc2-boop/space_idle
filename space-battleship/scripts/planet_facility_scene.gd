@@ -66,9 +66,10 @@ func _ready() -> void:
 	_world.add_child(_camera)
 	_spine = preload("res://scripts/planet_orbital_spine.gd").new()
 	_world.add_child(_spine)
-	# The tilted architectural plane sits below the photosphere's visual center:
-	# its front load path clears the lower limb while the back path stays masked.
-	_spine.position.y = -0.42
+	# Lift the shared plane enough for the rear load path to crest above the
+	# globe; the depth mask still hides the parts behind its silhouette.
+	# The front path crosses the lower limb as one physical ring.
+	_spine.position.y = 0.25
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
