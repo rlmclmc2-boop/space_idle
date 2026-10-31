@@ -263,3 +263,35 @@ Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe，ffmpeg x11grab 25 fps、libx264
 现 UI 文件 `e2b58e6a` 和公共数字源 `f688ea7c` 相对上述已报告测量有源码／文字变化，本轮没有用它们重测；不能暗把旧 FPS 当新 UI 或未来可组合舞台的实测。原 shader 收益来自三 mask 打包成两张 RGBA（导入 `fix_alpha_border=false` 保零 alpha 处 RGB）并在无工作权重处跳过 active 底图采样；四路固定相位 [前](performance-packed-baseline-same-phase.png)／[后](performance-packed-candidate-same-phase.png)的 B01 舞台 `674,680` RGB 像素差为 `0`，只证明该相位现旧舞台画面保持，不外推动态或新结构。反序 BABA 是仅 packed mask 中间版，不能与上述最终组合正序拼成一组保证。其他淘汰方案（椭圆早退无稳收益、8 位几何边缘失真、较大浮点几何纹理收益有限）与已修静态控制台／mask0 昂贵场分支见上节；冻结相位／廉材仅诊断，产品全效果不降级。
 
 模块显示／关闭的**严格同战场同条件净成本**在当前最终组合上尚无可靠配对：`2b057a21` 同构建的可见→装备隐藏→可见 `23.78/28.15/31.43 fps` 是顺序不同战斗时刻和不同页面 UI，不能差分成 B01 独占开销；旧 `34.67/32.89 fps` 分属旧版／旧宿主，仅历史，不与当前配对。目标机器、其 renderer、实际分辨率、录屏状态与同场 profile 均未观察到，不能声称用户所报约 `10 fps` 损失已消。后续新可组合舞台会改变源码、纹理/mesh 与画面，届时需单独同版本性能证据；本轮没有以现旧 shader 报告为新架构背书。
+
+### 当前可组合 R3 实机候选：返修后的同版交付
+
+**本节覆盖前述 73ee 新结构预览和旧 packed 视频的当前性，原旧片继续留作历史。** 本节视频、八态、真实购级、性能与 [49 文件源码／资产 SHA-256 清单](modular-r3-source.sha256)均取自本次同一工作树的相同生产文件；提交后以本节所在 Git 提交为候选身份。入口仍为 `res://src/main.tscn`，不改公共 main／导航／战场、正式 Excel 或 Owner 业务规则。用户已退回旧整图管路／核心与控制台细节；本节是返修候选，**尚待原整体 Astra 对本次新分件整页与连续运动审核及用户意见**，不可借旧审通过。
+
+造型层保持独立 `bay/core/4 module/4 pipe shell/4 pipe front/console`；四根实体管按同一 Blender 截面、不同公开端点／切线生成，壳变薄并收为冷钢、玻璃腔与金箍。`reactor_pipe_view.gd` 的弧长 UV 在各自内腔推进离散浅青光包；不把全页 shader 或一张新贴图充当分件。核心另有独立透镜、12 张三维机械环姿态和原钳臂，真零关所有工作光。原 `modular-core-rotor.png` 已无运行引用并移除；资产生成脚本、裁切脚本及实际八管 bounds TSV 同在清单。此版以 [1× 全页](modular-r3-controlled-4-active-1440x900.png)和本节真连续片评估；不能凭分件代码本身判定最终品质。
+
+控制区只定向消费整体组固定 `design/clear-zone-host@6e0e86c80d7cc7ee4f8623fca929c2f4828b6215` 的 `BridgeTheme.operation_plate`／`apply_operation_button`／`public_font` 和数字颜色角色；公共 `control-materials.png` 在本组保留相同 SHA-256 `707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c`。浅金属两板替换本页旧填充，均分与数量用深青、升级用暖金，全部直接作用于原生 Panel／Button，没有叠新点击层；可用行仍按 Owner 的 1／2／3／4 集合自适应。资源图标源 `control-icons.png` 和 `public_shell/resource-material-atlas.png` 角点 alpha 均为 0；本页费用后方旧不透明 `_cost_badge` Panel 已改为透明 Control，资源原图色保持。无需把图标重造为暖色底块。
+
+资源金额窄接后台固定候选 `feat/amount-safe-previews@f9244a30ad1843128aaa0a620c4dc3e4866685b2` 的逐字节 `src/systems/resource_amounts.gd` 与 `src/systems/reactor.gd` 报价字段，公共 `PlayerText.resource_number` 只格式显示 Owner 的 `cost_integer_texts`，不将金额转 float 再计算、也不更动正式钱包。没有复制该分支无关的 Session／Hyperspace 代码；其原 Astra high 是**后台限定复核**，本页接线测试不是全局资源双审或 main 验收。费用数字不足时按共享 light 数字角色红色，图标保原色；升级键仍可点，仅执行被 Owner 拒绝时显示“资源不足”。[原生鼠标／预算驱动](modular-r3-budget-driver.gd.txt)与[日志](modular-r3-budget-runtime.txt)显示受控入账 1000 铀，MAX 实买 11 级扣 `752`、余 `248`；下一价 `272 铀`，点击前仅数字红而无不足提示，[点击前整屏](modular-r3-insufficient-before-1440x900.png)；点击后 Owner 返回 `InsufficientResources` 才出提示，[点击后整屏](modular-r3-insufficient-click-1440x900.png)。MAX 零可购再点击亦同一拒绝链。该驱动受控入账供操作，不是自然经济进度。
+
+本次 [八态驱动](modular-r3-controlled-driver.gd.txt)／[运行日志](modular-r3-controlled-runtime.txt)在 Godot `4.7.2`、Xorg `:99`、Mesa llvmpipe／OpenGL3、1440×900、正常 1× 下确认：
+
+| 受控可用模块 | 真零 | 原生均分后工作 | 真实鼠标 Owner 接纳 |
+|---|---|---|---|
+| 1 炼铁 | [整屏](modular-r3-controlled-1-zero-1440x900.png) | [整屏](modular-r3-controlled-1-active-1440x900.png) | [整屏](modular-r3-controlled-1-manual-1440x900.png)；47% |
+| 2 武器＋炼铁 | [整屏](modular-r3-controlled-2-zero-1440x900.png) | [整屏](modular-r3-controlled-2-active-1440x900.png) | [整屏](modular-r3-controlled-2-manual-1440x900.png)；武器26% |
+| 3 武器＋盾甲＋炼铁 | [整屏](modular-r3-controlled-3-zero-1440x900.png) | [整屏](modular-r3-controlled-3-active-1440x900.png)；34/33/33% | — |
+| 4 全部 | [整屏](modular-r3-controlled-4-zero-1440x900.png) | [整屏](modular-r3-controlled-4-active-1440x900.png)；各25% | — |
+
+四路 [当前同版 10 秒真连续视频](modular-r3-continuous-1440x900-25fps.mp4) SHA-256 `70c952a3cfc53f6d04f0ec29f87ca43075327d42d08a553bc3b2ee3e354193ed`、[驱动](modular-r3-continuous-driver.gd.txt)／[Godot 日志](modular-r3-continuous-runtime.txt)／[ffmpeg 日志](modular-r3-continuous-ffmpeg.txt)：主场景真实 1×，受控四路各 25%，1440×900 X11 **游戏窗口**采集，25 fps H.264 250 帧、10.000 秒，无音轨。已解码全片、看 0／4／8 秒原尺寸与每 0.2 秒整页接触表：钳臂／三维环、四机体及各管独立光包运动，原生操作区和战场一直可见，所看样本无引导层遮挡。驱动仍输出遗留硬编码 `wall_seconds=35`，它不是实测时长；以 ffprobe 的片长为准。受控四路不证明自然 1／2 解锁，也不把此视频当鼠标升级过程或硬件帧率证明。
+
+**性能：上次已报告记录 → 本次可组合 R3。** 上次旧 packed 软件同实例正序 ABAB 是 `31.29→32.33`、`31.61→32.23 fps`，源为 `051cbd0d＋6d0ee146`，不录制、正常 1×、四路各25%；本次分件／三维姿态图／原生 R3 操作面与旧架构的源码、纹理、绘制层已改变，**不可拿 32.33 当本次基线做增减差**。本次另用 [同工作树短窗驱动](modular-r3-performance-driver.gd.txt)／[日志](modular-r3-performance-runtime.txt)在同一 Godot 实例、同环境、四路25%、正常 1×、不录屏，2.3 秒预热后顺序量每窗约6秒。战场在窗口间自主推进，隐藏舞台仅作诊断，非产品配置：
+
+| 本次窗口 | FPS | 平均帧 ms | p50 ms | p95 ms | 舞台动态帧 |
+|---|---:|---:|---:|---:|---:|
+| 可见 A1 | 32.31 | 30.95 | 29.33 | 37.14 | 193 |
+| 隐藏 B1 | 44.14 | 22.65 | 22.25 | 25.92 | 0 |
+| 可见 A2 | 32.25 | 31.01 | 30.04 | 35.60 | 194 |
+| 隐藏 B2 | 44.26 | 22.59 | 22.24 | 25.00 | 0 |
+
+新舞台在 Mesa 软件渲染中有明显显示成本；因隐藏时战场阶段仍改变、两侧 UI 和原片版本不同，上表不是同战斗帧的 GPU 净成本或目标硬件结论。诊断曾只隐藏动态场约 `33.49→35.45 fps`，而全舞台隐藏约 `45.42 fps`，提示静态像素层是较大来源；隐藏效果仅用于定位，产品未降级。当前资产已核透明 bounds：八张管层按 alpha 紧裁，核心 `416×638/418×638`，设备近满裁区，三维机械环 `214×224/240×240`；透镜虽仅 `89×88/240×240`，显示 quad 约 `163×151` 像素，不足以据此宣称可解决全舞台较大的静态成本。底图 `1187×1326` 实为整面不透明，台面近满，不能无损删除其有效像素。未观察用户目标机、renderer、分辨率和同场 profile，用户报告的约 10 fps 损失**未证明消除**；当前合理低风险裁切及动态区域定位已做，后续若仍需查收益，需目标机同版同场测量定位具体热点，不能凭本软件短窗继续声称达标。

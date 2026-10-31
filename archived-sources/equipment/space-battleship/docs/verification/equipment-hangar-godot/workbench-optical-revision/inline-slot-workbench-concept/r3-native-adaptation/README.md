@@ -1,3 +1,17 @@
+# 当前：已认可R3方向的原生材质适配候选（未实际平台压缩）
+
+运行源码 `81744e5a7da14577ea5792a621529f304ed82b3c`。已按用户认可的共同方向消费固定 `6e0e86c80d7cc7ee4f8623fca929c2f4828b6215`（实现059ac56b）最小运行材质，在原卡／信息面／下拉／按钮上替换旧样式；旧EquipmentSurface及灰化面初始化已删除，无新外框盖板或设计整屏贴图。**当前交根／原审看最新完整实机，未自判验收、未合main。**下方“材质源待到／仅诊断”是历史，依赖现已解除并完成。
+
+- [最新完整审阅入口](../review-r3-native.html)、[同版账本／源码hash](evidence/ledger.json)、[24.7秒真实动作](evidence/session-actions.mp4)、[41.05秒原录屏](evidence/session-raw.mp4)。真实main/native/config1440×900同一原驱动，最终exit0／failures0，无脚本错误或退出泄漏；19完整图逐张view，原／动作视频完整解码并顺序5帧view。早2自然，后5／8受控Owner恢复＋真实装备安装；unknown仍显式publisher注入，不声称自然故障。
+- 原节点卡面使用operation_plate；普通键secondary、购买commit、选择键同源selected漆面与stepper-down SVG。原选择器是Button＋Owner真实弹层，故调用apply_operation_button(selected=true)与共享箭头，保原立即免费换装／切回，不强改OptionButton。compact只调每控件新建style上下内距1，保26px实尺寸；16px名称／属性／费用、单行当前→升级后、整卡操作与原裁剪／排序保。共享深浅文字角色与逐费数字红保留。
+- 图标根因已闭合：42ea静态源从旧整屏裁图，携带不透明卡面；共同6e0e另存transparent-icons修订源按ID直接绘原纹理，14:52已投图字节保留。本真实UI本就走manifest Texture／ResourceVisuals.icon，此次继续统一原透明路径，无逐图手裁／mask／每帧去底。实际进口图像记录四武器及铁／铀／简并24px图四角alpha均0；完整浅卡图未见静态矩形底。见[原始诊断＋闭合来源](icon-source-diagnosis.json)及新账本实际记录；不把透明角点当所有内部像素均正确的证明。
+- 最新 `f9244a30ad1843128aaa0a620c4dc3e4866685b2` helper原字节已经真实运行，装备报价／钱包支付必要边界保持；Equipment／Economy源相对a83不变，Session／Hyperspace奖励与chrono非本组闭包未强塞。父转同一Astra限定复核通过不冒全局整数／main验收。[精确必要范围](integer-source-f924.json)。
+- 首轮compact复制自定义StyleBox丢script纹理字段，虽然业务断言0但日志有null texture，未报通过；现直接调整每控件工厂新建的独占style后整组重跑，首轮日志／JSON保留。新金属边曾令旧深色阈值把边框误当字，修辅助测量为语义核心字色后21卡为名称框→属性最小13px、费用字→卡底最小5px、起线差≤1px，仅辅助完整图判断。
+
+当前授权的本组独立实现与受影响同版证据已完成，无公共材质／图标处理技术依赖；剩余是根／原审对当前真画面的裁定和各模块组合终审，不等旧用户意见。本人未实际压缩，无拒绝／未知结果或后台进程，原WIP／untracked.import／.uid／cache保全。原背景字节／变换与等比战场几何保持，不声称整张静态R3与实机逐像素相同，也不冒其它模块、性能或全局资源结算验收。
+
+---
+
 # R3 已认可方向：同项原生适配进行中
 
 用户已认可14:52实际送达的42ea4ffc R3共同方向并要求解决图标底色；本轮恢复原任务，保2fe87f93的16px字号、共享数字角色、费用同排／逐费不足、原裁剪和武器→防御顺序，不main、不新工作区或独立复测线程。本人未实际平台压缩。此页仅当前调查，不把旧22395运行证据称R3新实机。

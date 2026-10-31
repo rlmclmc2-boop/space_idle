@@ -1,0 +1,576 @@
+{
+  "scope": "Pixel ink threshold support on complete original screenshots, not a substitute for original-size visual review",
+  "method": "Near-exact semantic label RGB284650 and light name RGBf0f2e9 core pixels within recorded text regions, to exclude new textured metal borders. This measures core ink and is supporting only. Original screenshot unedited.",
+  "rows": [
+    {
+      "file": "inline-native-early.png",
+      "slot": "weapon:0",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        446,
+        455,
+        461
+      ],
+      "attribute_ink": [
+        409,
+        479,
+        454,
+        494
+      ],
+      "fee_title_ink": [
+        410,
+        503,
+        438,
+        518
+      ],
+      "name_frame_to_attribute_ink_px": 13.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "39167f61a48dd324b8810db8098a992acaf14caaa8f30710dce92dbd517e78d8"
+    },
+    {
+      "file": "inline-native-early.png",
+      "slot": "defence:0",
+      "name": "装甲",
+      "name_ink": [
+        409,
+        540,
+        438,
+        555
+      ],
+      "attribute_ink": [
+        410,
+        574,
+        439,
+        588
+      ],
+      "fee_title_ink": [
+        410,
+        597,
+        438,
+        612
+      ],
+      "name_frame_to_attribute_ink_px": 14.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "39167f61a48dd324b8810db8098a992acaf14caaa8f30710dce92dbd517e78d8"
+    },
+    {
+      "file": "inline-native-middle-empty.png",
+      "slot": "weapon:0",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        308,
+        455,
+        323
+      ],
+      "attribute_ink": [
+        409,
+        341,
+        454,
+        356
+      ],
+      "fee_title_ink": [
+        410,
+        365,
+        438,
+        380
+      ],
+      "name_frame_to_attribute_ink_px": 13.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "23282766cd8ae5a89f6f2bba01b54f24d04e9f0f7cf400c9db80d4d03ddfda18"
+    },
+    {
+      "file": "inline-native-middle-empty.png",
+      "slot": "defence:0",
+      "name": "装甲",
+      "name_ink": [
+        409,
+        590,
+        438,
+        605
+      ],
+      "attribute_ink": [
+        410,
+        624,
+        439,
+        638
+      ],
+      "fee_title_ink": [
+        410,
+        647,
+        438,
+        662
+      ],
+      "name_frame_to_attribute_ink_px": 14.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "23282766cd8ae5a89f6f2bba01b54f24d04e9f0f7cf400c9db80d4d03ddfda18"
+    },
+    {
+      "file": "inline-native-late-empty.png",
+      "slot": "weapon:0",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        308,
+        455,
+        323
+      ],
+      "attribute_ink": [
+        409,
+        344,
+        454,
+        356
+      ],
+      "fee_title_ink": [
+        410,
+        365,
+        438,
+        380
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "4cd9e7e8fb8d9d773a0b2d01b80f62e24e7a9f67071b46294fa247191dcc1887"
+    },
+    {
+      "file": "inline-native-late-empty.png",
+      "slot": "weapon:1",
+      "name": "导弹",
+      "name_ink": [
+        410,
+        403,
+        438,
+        417
+      ],
+      "attribute_ink": [
+        409,
+        435,
+        454,
+        450
+      ],
+      "fee_title_ink": [
+        410,
+        459,
+        438,
+        474
+      ],
+      "name_frame_to_attribute_ink_px": 13.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "4cd9e7e8fb8d9d773a0b2d01b80f62e24e7a9f67071b46294fa247191dcc1887"
+    },
+    {
+      "file": "inline-native-late-matter-poor.png",
+      "slot": "weapon:0",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        308,
+        455,
+        323
+      ],
+      "attribute_ink": [
+        409,
+        344,
+        454,
+        356
+      ],
+      "fee_title_ink": [
+        410,
+        365,
+        438,
+        380
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "95ce52cfd778d951c2592cded572236597714b1b093bf88b4a5b290414f7b838"
+    },
+    {
+      "file": "inline-native-late-matter-poor.png",
+      "slot": "weapon:1",
+      "name": "导弹",
+      "name_ink": [
+        410,
+        403,
+        438,
+        417
+      ],
+      "attribute_ink": [
+        409,
+        435,
+        454,
+        450
+      ],
+      "fee_title_ink": [
+        410,
+        459,
+        438,
+        474
+      ],
+      "name_frame_to_attribute_ink_px": 13.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "95ce52cfd778d951c2592cded572236597714b1b093bf88b4a5b290414f7b838"
+    },
+    {
+      "file": "inline-native-late-matter-poor.png",
+      "slot": "weapon:2",
+      "name": "舰炮",
+      "name_ink": [
+        409,
+        496,
+        439,
+        511
+      ],
+      "attribute_ink": [
+        409,
+        532,
+        454,
+        544
+      ],
+      "fee_title_ink": [
+        410,
+        553,
+        438,
+        568
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "95ce52cfd778d951c2592cded572236597714b1b093bf88b4a5b290414f7b838"
+    },
+    {
+      "file": "inline-native-late-matter-poor.png",
+      "slot": "weapon:3",
+      "name": "长激光",
+      "name_ink": [
+        410,
+        590,
+        455,
+        605
+      ],
+      "attribute_ink": [
+        409,
+        626,
+        454,
+        638
+      ],
+      "fee_title_ink": [
+        410,
+        647,
+        438,
+        662
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "95ce52cfd778d951c2592cded572236597714b1b093bf88b4a5b290414f7b838"
+    },
+    {
+      "file": "inline-native-late-matter-poor.png",
+      "slot": "weapon:4",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        684,
+        455,
+        699
+      ],
+      "attribute_ink": [
+        409,
+        720,
+        454,
+        732
+      ],
+      "fee_title_ink": [
+        410,
+        741,
+        438,
+        756
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "95ce52cfd778d951c2592cded572236597714b1b093bf88b4a5b290414f7b838"
+    },
+    {
+      "file": "inline-native-long-max.png",
+      "slot": "weapon:0",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        308,
+        455,
+        323
+      ],
+      "attribute_ink": [
+        409,
+        341,
+        454,
+        356
+      ],
+      "fee_title_ink": [
+        410,
+        365,
+        438,
+        380
+      ],
+      "name_frame_to_attribute_ink_px": 13.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "ac7db4a2953ec7ec366a312b1eb73a2ff98a78c6382fbe222dde9f94387b2ad3"
+    },
+    {
+      "file": "inline-native-long-max.png",
+      "slot": "weapon:1",
+      "name": "导弹",
+      "name_ink": [
+        410,
+        403,
+        438,
+        417
+      ],
+      "attribute_ink": [
+        409,
+        438,
+        454,
+        450
+      ],
+      "fee_title_ink": [
+        410,
+        459,
+        438,
+        474
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "ac7db4a2953ec7ec366a312b1eb73a2ff98a78c6382fbe222dde9f94387b2ad3"
+    },
+    {
+      "file": "inline-native-long-max.png",
+      "slot": "weapon:2",
+      "name": "舰炮",
+      "name_ink": [
+        409,
+        496,
+        439,
+        511
+      ],
+      "attribute_ink": [
+        409,
+        532,
+        454,
+        544
+      ],
+      "fee_title_ink": [
+        410,
+        553,
+        438,
+        568
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "ac7db4a2953ec7ec366a312b1eb73a2ff98a78c6382fbe222dde9f94387b2ad3"
+    },
+    {
+      "file": "inline-native-long-max.png",
+      "slot": "weapon:3",
+      "name": "长激光",
+      "name_ink": [
+        410,
+        590,
+        455,
+        605
+      ],
+      "attribute_ink": [
+        409,
+        626,
+        454,
+        638
+      ],
+      "fee_title_ink": [
+        410,
+        647,
+        438,
+        662
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "ac7db4a2953ec7ec366a312b1eb73a2ff98a78c6382fbe222dde9f94387b2ad3"
+    },
+    {
+      "file": "inline-native-long-max.png",
+      "slot": "weapon:4",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        684,
+        455,
+        699
+      ],
+      "attribute_ink": [
+        409,
+        720,
+        454,
+        732
+      ],
+      "fee_title_ink": [
+        410,
+        741,
+        438,
+        756
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "ac7db4a2953ec7ec366a312b1eb73a2ff98a78c6382fbe222dde9f94387b2ad3"
+    },
+    {
+      "file": "inline-native-bottom.png",
+      "slot": "defence:0",
+      "name": "装甲",
+      "name_ink": [
+        409,
+        508,
+        438,
+        523
+      ],
+      "attribute_ink": [
+        410,
+        542,
+        439,
+        556
+      ],
+      "fee_title_ink": [
+        410,
+        565,
+        438,
+        580
+      ],
+      "name_frame_to_attribute_ink_px": 14.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "96bdd9632655463eb609042862884d746be188daa8c8914a17e7d9705f5d5e4c"
+    },
+    {
+      "file": "inline-native-bottom.png",
+      "slot": "defence:1",
+      "name": "护盾",
+      "name_ink": [
+        409,
+        602,
+        438,
+        617
+      ],
+      "attribute_ink": [
+        410,
+        636,
+        439,
+        650
+      ],
+      "fee_title_ink": [
+        410,
+        659,
+        438,
+        674
+      ],
+      "name_frame_to_attribute_ink_px": 14.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "96bdd9632655463eb609042862884d746be188daa8c8914a17e7d9705f5d5e4c"
+    },
+    {
+      "file": "inline-native-bottom.png",
+      "slot": "weapon:3",
+      "name": "长激光",
+      "name_ink": [
+        410,
+        320,
+        455,
+        335
+      ],
+      "attribute_ink": [
+        409,
+        356,
+        454,
+        368
+      ],
+      "fee_title_ink": [
+        410,
+        377,
+        438,
+        392
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "96bdd9632655463eb609042862884d746be188daa8c8914a17e7d9705f5d5e4c"
+    },
+    {
+      "file": "inline-native-bottom.png",
+      "slot": "weapon:4",
+      "name": "脉冲炮",
+      "name_ink": [
+        409,
+        414,
+        455,
+        429
+      ],
+      "attribute_ink": [
+        409,
+        450,
+        454,
+        462
+      ],
+      "fee_title_ink": [
+        410,
+        471,
+        438,
+        486
+      ],
+      "name_frame_to_attribute_ink_px": 16.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "96bdd9632655463eb609042862884d746be188daa8c8914a17e7d9705f5d5e4c"
+    },
+    {
+      "file": "inline-native-bottom.png",
+      "slot": "defence:2",
+      "name": "护盾",
+      "name_ink": [
+        409,
+        696,
+        438,
+        711
+      ],
+      "attribute_ink": [
+        410,
+        730,
+        439,
+        744
+      ],
+      "fee_title_ink": [
+        410,
+        753,
+        438,
+        768
+      ],
+      "name_frame_to_attribute_ink_px": 14.0,
+      "fee_ink_to_card_bottom_px": 5.0,
+      "name_attribute_fee_left_spread_px": 1,
+      "image_sha256": "96bdd9632655463eb609042862884d746be188daa8c8914a17e7d9705f5d5e4c"
+    }
+  ],
+  "minimum_name_frame_to_attribute_ink_px": 13.0,
+  "minimum_fee_ink_to_card_bottom_px": 5.0,
+  "maximum_text_left_spread_px": 1
+}

@@ -1,8 +1,8 @@
 {
-  "current": "User approved delivered42ea R3 common direction; same-task native adaptation active, no new R3 runtime yet. Screenshot-cropped icon background source diagnosed; stable-ID alpha texture path retained.",
-  "runtime_source_commit": "22395e3aa67f9684bbf0d05fb503b6f770b77405",
-  "evidence": "card-alignment-revision/ledger.json",
-  "review": "review-card-alignment.html",
+  "current": "User-approved R3 direction native operation materials implemented on existing equipment nodes; latest same-version19 screens/24.7s actions complete, root/original review pending.",
+  "runtime_source_commit": "81744e5a7da14577ea5792a621529f304ed82b3c",
+  "evidence": "r3-native-adaptation/evidence/ledger.json",
+  "review": "review-r3-native.html",
   "shared_sources": {
     "resource_display": {
       "commit": "36258b1eb8a2beca7ef9641477be05a7991031ed",
@@ -41,15 +41,17 @@
       "display_boundary": "Owner integer_text/cost_texts extreme ×10^ strings intentionally not reparsed. Equipment retains authoritative canonical Amount costs and native to_display raw, consumed by fixed resource_number; no UI ceil or private resource amount math.",
       "latest_fix_commit": "f9244a30ad1843128aaa0a620c4dc3e4866685b2",
       "latest_fix_scope": "resource_amounts.gd exact latest bytes; Session/Hyperspace fix methods outside current equipment closure, not imported"
+    },
+    "r3_material": {
+      "commit": "6e0e86c80d7cc7ee4f8623fca929c2f4828b6215",
+      "scope": "Exact operation material/apply closure inBridgeTheme, existing control atlas/SVG; module existing-node style replacements",
+      "runtime_source": "81744e5a7da14577ea5792a621529f304ed82b3c"
     }
   },
-  "independent_implementation_remaining": [
-    "Consume overall fixed minimal R3 material source into existing native cards/select/buttons preserving16px/layout/clipping",
-    "Same-thread affected current R3 full screenshots/actions including original-alpha icons on light cards"
-  ],
+  "independent_implementation_remaining": [],
   "remaining": [
-    "Overall fixed R3 plate/key/select material state source needed; current190a number roles already integrated",
-    "Root/original review of latest native R3 whole screens/actions after implementation"
+    "Root/original review judge current19 full native screens and24.7s actions",
+    "Other-module combined style/global integer resource acceptance outside this equipment closure not claimed"
   ],
   "actual_compaction": false,
   "denied_actions": [],
