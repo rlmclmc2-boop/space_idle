@@ -120,6 +120,14 @@ for side in (-1, 1):
              (x,side*.66,1.22), .27, .27, ivory, root)
         box("Foot armor socket", (x,side*.83,-.27), (.39,.44,.25), ivory, root)
         box("Foot pressure face", (x,side*1.057,-.25), (.25,.022,.13), ochre, root, .01)
+        # The end-on view exposes the through-node pressure cheeks. Armoring
+        # their outer end faces makes each inlet read as a framed load socket.
+        box("Portal end pressure armor", (end*1.195,side*.80,-.035),
+            (.075,.39,.49), ochre, root, .035)
+        box("Portal end ivory spine", (end*1.238,side*.80,.035),
+            (.027,.30,.095), ivory, root, .009)
+        box("Portal end recessed slot", (end*1.238,side*.80,-.14),
+            (.028,.18,.048), blue, root, .007)
         box("Inset portal guide", (x,side*.55,.57), (.08,.045,.61), cyan, root, .009)
         box("Portal cut edge", (x,side*.53,1.25), (.25,.22,.08), edge, root)
     loft("Upper ivory side armor", [
@@ -131,6 +139,20 @@ for side in (-1, 1):
         box("Observation glazing", (x,side*.471,.55), (.29,.016,.18), cyan, root, .007)
         box("Window mullion", (x+.18,side*.46,.55), (.035,.025,.31), edge, root, .004)
     box("Buried continuous power slit", (0,side*1.115,-.09), (1.59,.016,.055), cyan, root, .006)
+    # Faceted service armor grows out of the real pressure wall. The slanted
+    # load ribs lead into the buried shoe and keep the ring passage open.
+    for x in (-.70, -.23, .23, .70):
+        box("Lower pressure armor cassette", (x,side*1.112,.045),
+            (.37,.105,.30), ochre, root, .028)
+        box("Cassette upper lip", (x,side*1.124,.205),
+            (.36,.12,.065), ivory, root, .012)
+        box("Cassette inspection inset", (x,side*1.178,.045),
+            (.20,.018,.075), blue, root, .006)
+    for x in (-.81,.81):
+        beam("Diagonal outer load rib", (x,side*1.145,.55),
+             (x*1.22,side*1.13,-.30), .12,.10, ivory, root)
+        box("Lower load rib heel", (x*1.22,side*1.13,-.31),
+            (.23,.15,.13), ochre, root, .016)
     for x in (-.65,-.22,.22,.65):
         box("Warm cheek armor tile", (x,side*1.005,.74), (.31,.06,.24),
             ivory if abs(x) < .4 else ochre,root,.016)
