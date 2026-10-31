@@ -315,11 +315,12 @@ func _refresh_structure() -> void:
     _identity_counts.text="武器 %s  ·  防御 %s" % [_active.filter(func(f):return f.category=="weapon").size(),_active.filter(func(f):return f.category=="defence").size()]
     for id in _cards:_cards[id].panel.hide()
     var y: float=0.0
-    for fact in _active:
-        var id: String=str(fact.id)
-        if not _cards.has(id):_create_card(id)
-        _cards[id].row_y=y;_cards[id].panel.position=Vector2(0,y+2)
-        _refresh_card(id);y+=94
+    for category in ["weapon","defence"]:
+        for fact in _active.filter(func(f):return f.category==category):
+            var id: String=str(fact.id)
+            if not _cards.has(id):_create_card(id)
+            _cards[id].row_y=y;_cards[id].panel.position=Vector2(0,y+2)
+            _refresh_card(id);y+=94
     _update_visible_cards();_refresh_scene_picture()
 
 func _create_card(id: String) -> void:
