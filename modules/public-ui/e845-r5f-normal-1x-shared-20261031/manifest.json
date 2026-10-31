@@ -1,0 +1,54 @@
+{
+  "source_commit": "3504a52de1ba4dfce5101bc1932820db0e71bc3a",
+  "archive_parent": "cd1842eea9875283652c08ea76aefe7e9729023f",
+  "files": {
+    "r5f-shared-live.mp4": {
+      "sha256": "00eec6aaa8c3bca9961e4c5f9d52ad30f9921b22b2de938501df568ccc15c6b1",
+      "bytes": 4040202
+    },
+    "frame-at-2s.png": {
+      "sha256": "5d2d8dd9fe06c94846ef31cb4995ee73c1c9621463d7720007e934b5e72a50f1",
+      "bytes": 1766221
+    },
+    "frame-at-8s.png": {
+      "sha256": "680a1c656ed57776dbf5ffe76eb5025928f53152973621c38a8227d8e1adda92",
+      "bytes": 1785122
+    },
+    "ready.json": {
+      "sha256": "4414496acfe8f95f6adcf0846b8c2ef4c2254985a882da8cb1894f30f6964ebd",
+      "bytes": 742
+    },
+    "runtime.json": {
+      "sha256": "3a510dfef15a95184902a45e93b4fa774d812bf92fdee9f7870080b0e659519b",
+      "bytes": 645
+    },
+    "capture-wall.json": {
+      "sha256": "a7b8ee2b9fa45bf8457e747e9b5b1c71c7bda233eca2c97f894fb6ec47017101",
+      "bytes": 189
+    },
+    "run.log": {
+      "sha256": "e9aa5006a4317492506a425c9c0de23c9636ecae474ae65f5d7d09da2653971b",
+      "bytes": 454
+    },
+    "encode.log": {
+      "sha256": "413a2d46f42c2fe945653cdc56c45ec40cc115ce97d00e2854b23b99a564ee96",
+      "bytes": 4569
+    },
+    "windows.txt": {
+      "sha256": "2d398d374cd99d9f65a77992e6694e6fd7c0e999a06bf56e09367cdc08ac8dcd",
+      "bytes": 851
+    },
+    "driver.gd.txt": {
+      "sha256": "881e5b4ce9ca0615dcf944ae062d31fd9cb1e837bd30e26ec46cd43884c9bf52",
+      "bytes": 3722
+    },
+    "runner.sh.txt": {
+      "sha256": "f6cb64738b12b37fc65f9d17639f8d2ee3852192ca89712aed42101043ad4f2d",
+      "bytes": 1702
+    },
+    "README.md": {
+      "sha256": "49a2b9875084071c2bf36947dc8428a5c2182c4e8b4500a62dd48b03e21f7bcf",
+      "bytes": 2003
+    }
+  }
+}

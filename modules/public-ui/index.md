@@ -28,3 +28,5 @@
 - [2026-10-31 pressed route ink on both navigation directions](nav-pressed-ink-20261031/README.md): original-size affected frames and timeline, author observation pending independent review.
 
 - [2026-10-31 R5f and final equipment shared-shell WIP](e845-r5f-shared-wip-20261031/README.md): exact runtime closure and current static screens, pending original reviews.
+
+- [2026-10-31 R5f 1x shared-shell full-screen work-light capture](e845-r5f-normal-1x-shared-20261031/README.md): actual current-combination video and timing metadata, author evidence only.

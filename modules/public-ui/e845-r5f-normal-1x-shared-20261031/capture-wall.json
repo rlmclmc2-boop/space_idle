@@ -1,0 +1,7 @@
+{
+  "capture_wall_start_ns": 275085888374980,
+  "capture_wall_end_ns": 275096246019487,
+  "capture_wall_seconds": 10.357644507,
+  "requested_capture_seconds": 10,
+  "x11grab_poll_fps": 12
+}

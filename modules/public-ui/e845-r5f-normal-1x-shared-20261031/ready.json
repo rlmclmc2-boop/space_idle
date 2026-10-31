@@ -1,0 +1,39 @@
+{
+  "balance_rows": [
+    {
+      "id": "1",
+      "raw": "9.987e4",
+      "text": "铁：99.9k"
+    },
+    {
+      "id": "2",
+      "raw": "1e3",
+      "text": "铀：1.0k"
+    },
+    {
+      "id": "degenerate_matter",
+      "raw": "1e3",
+      "text": "简并物质：1.0k"
+    },
+    {
+      "id": "chrono",
+      "raw": "4.32e4",
+      "text": "时空微粒：43.2k"
+    }
+  ],
+  "drawn_start": 81,
+  "game_time_start": 20.4500000000002,
+  "pause_reasons": {},
+  "route": "reactor",
+  "running": true,
+  "source": "3504a52de1ba4dfce5101bc1932820db0e71bc3a",
+  "stage_loads": {
+    "condensation": 0.25,
+    "core": 1.0,
+    "defence": 0.25,
+    "smelting": 0.25,
+    "weapons": 0.25
+  },
+  "time_scale": 1.0,
+  "wall_start_us": 11558751
+}

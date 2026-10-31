@@ -1,0 +1,78 @@
+extends SceneTree
+
+const OUT := "/tmp/space-idle-runtime472/r5f-shared-live/"
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func frames(count: int) -> void:
+	for i in count:
+		await process_frame
+
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+
+func write_json(path: String, data: Dictionary) -> void:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data, "  "))
+	file.close()
+
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(70)
+	assert(game.startup_error.is_empty())
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	clear_guidance(session, game)
+	game._refresh_feature_visibility()
+	session.set_pause("user", false)
+	assert(session.pause_reasons.is_empty())
+	game._zone_shell._route_buttons["reactor"].pressed.emit()
+	await frames(12)
+	assert(game.reactor_scene.visible and game._zone_shell._active_route == "reactor")
+	assert(Engine.time_scale == 1.0)
+	var start_wall_us: int = Time.get_ticks_usec()
+	var start_game_time: float = session.game_time
+	var start_drawn: int = Engine.get_frames_drawn()
+	var start_budget: Dictionary = session.economy.budget().duplicate(true)
+	write_json(OUT + "ready.json", {"source": "3504a52de1ba4dfce5101bc1932820db0e71bc3a", "wall_start_us": start_wall_us,
+		"drawn_start": start_drawn, "game_time_start": start_game_time, "time_scale": Engine.time_scale,
+		"running": session.run_state.is_running(), "pause_reasons": session.pause_reasons,
+		"route": game._zone_shell._active_route, "stage_loads": game.reactor_scene._stage._loads,
+		"balance_rows": session.economy.balance_rows()})
+	while Time.get_ticks_usec() - start_wall_us < 13_000_000:
+		await process_frame
+	var end_wall_us: int = Time.get_ticks_usec()
+	var end_game_time: float = session.game_time
+	var end_drawn: int = Engine.get_frames_drawn()
+	write_json(OUT + "runtime.json", {"source": "3504a52de1ba4dfce5101bc1932820db0e71bc3a",
+		"wall_start_us": start_wall_us, "wall_end_us": end_wall_us, "wall_seconds": float(end_wall_us-start_wall_us)/1_000_000.0,
+		"game_time_start": start_game_time, "game_time_end": end_game_time, "game_time_delta": end_game_time-start_game_time,
+		"drawn_start": start_drawn, "drawn_end": end_drawn, "drawn_delta": end_drawn-start_drawn,
+		"time_scale": Engine.time_scale, "running_end": session.run_state.is_running(),
+		"pause_reasons_end": session.pause_reasons, "route_end": game._zone_shell._active_route,
+		"stage_loads_end": game.reactor_scene._stage._loads,
+		"resource_text_end": [game._zone_shell._balances[0].text, game._zone_shell._balances[1].text, game._zone_shell._balances[2].text],
+		"budget_changed": session.economy.budget() != start_budget})
+	print("R5F_SHARED_LIVE wall_s=", float(end_wall_us-start_wall_us)/1_000_000.0,
+		" game_delta=", end_game_time-start_game_time, " frames=", end_drawn-start_drawn,
+		" route=", game._zone_shell._active_route)
+	if session.save_files != null:
+		session.save_files.close(2000)
+	game.queue_free()
+	await frames(3)
+	quit()
