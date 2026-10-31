@@ -1,0 +1,12 @@
+{
+  "source_commit": "86a8ff9eef2704cc10843cfafb5a5b85f71716e5",
+  "runtime": "Godot 4.7.2 gl_compatibility 1440x900",
+  "files": {
+    "settings-normal.png": "74543ea14be45614732df677541c4b160b3a7d912a7f55f709fef357f7ad8de6",
+    "popup-open.png": "4756242284f47533ae76e882dc7304bc2c25932f0d66dc6c4b0ced73e4f496fb",
+    "popup-focused.png": "a60e53435698fb198f00742997ec689a4359d10d31614c617695089f4f1a65df",
+    "speed-popup-open.png": "b3bced3cb0a6bd29bd623c22acbd734ecb2ecec692f27941f5fd22f6f55c7668",
+    "spin-focus.png": "aff0b9492254d3cd2675448b2dce7d3e35fdc8e076f948eb7f6bff8d49bf014d",
+    "spin-disabled.png": "93ea502ef5f95683507a9547ba08d0a07157fb4c40ef573e0ad7666b7224a3a3"
+  }
+}

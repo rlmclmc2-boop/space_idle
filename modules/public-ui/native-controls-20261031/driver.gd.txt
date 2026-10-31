@@ -1,0 +1,68 @@
+extends SceneTree
+func _initialize() -> void: call_deferred("run")
+func frames(n:int) -> void:
+ for i in n: await process_frame
+func shot(name:String) -> void:
+ await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png("/tmp/space-idle-runtime472/public-controls/"+name+".png")
+func clear_guidance(session,game) -> void:
+ var pending:Dictionary=session.pending_guidance()
+ var tries:=0
+ while not pending.is_empty() and tries<20:
+  assert(session.dismiss_guidance(str(pending.kind),str(pending.id)).ok)
+  pending=session.pending_guidance()
+  tries+=1
+ game._sync_guidance()
+func find_speed(node:Node) -> OptionButton:
+ if node is OptionButton and node.item_count>0 and "倍速" in node.get_item_text(0): return node
+ for child in node.get_children():
+  var result:=find_speed(child)
+  if result!=null: return result
+ return null
+func run() -> void:
+ root.size=Vector2i(1440,900)
+ root.content_scale_size=Vector2i(1440,900)
+ var game:Node2D=load("res://src/main.tscn").instantiate()
+ root.add_child(game)
+ await frames(45)
+ assert(game.session!=null and game.startup_error.is_empty())
+ clear_guidance(game.session,game)
+ game._refresh_feature_visibility()
+ game._zone_shell._route_buttons["settings"].pressed.emit()
+ await frames(8)
+ clear_guidance(game.session,game)
+ await shot("settings-normal")
+ var select:OptionButton=game._damage_option
+ var popup:PopupMenu=select.get_popup()
+ print("POPUP_BEFORE panel=",popup.get_theme_stylebox("panel").get_class()," hover=",popup.get_theme_stylebox("hover").get_class()," parent_theme=",popup.theme)
+ print("SELECT rect=",select.get_global_rect()," popup_count=",popup.item_count)
+ select.grab_focus()
+ await frames(3)
+ await shot("select-focus")
+ popup.popup(Rect2i(Vector2i(select.get_global_rect().position),Vector2i(290,140)))
+ await frames(5)
+ print("POPUP visible=",popup.visible," rect=",popup.get_visible_rect())
+ await shot("popup-open")
+ popup.set_focused_item(1)
+ await frames(3)
+ print("POPUP focused=",popup.get_focused_item())
+ await shot("popup-focused")
+ popup.hide()
+ var speed:=find_speed(game)
+ assert(speed!=null)
+ var speed_popup:=speed.get_popup()
+ speed_popup.popup(Rect2i(Vector2i(speed.get_global_rect().position),Vector2i(330,190)))
+ await frames(3)
+ await shot("speed-popup-open")
+ speed_popup.hide()
+ game._autosave_spin.get_line_edit().grab_focus()
+ await frames(3)
+ await shot("spin-focus")
+ game._autosave_spin.editable=false
+ game._autosave_spin.get_line_edit().editable=false
+ await frames(3)
+ await shot("spin-disabled")
+ if game.session.save_files!=null: game.session.save_files.close(2000)
+ game.queue_free()
+ await frames(3)
+ quit()
