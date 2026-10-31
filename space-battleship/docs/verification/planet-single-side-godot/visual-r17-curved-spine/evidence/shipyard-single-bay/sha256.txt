@@ -1,11 +1,11 @@
 05f5d7dbb6ef5975c2285a5ecdad456370c9fb6f37b2c2e72e3c9086f1a7bc84  art_sources/planet_facilities_v5/build_shipyard_node.py
 ea6e18b8c36974898e0ea6253959e4053f8b06c0a27c3d72977b8477125a6a3f  art_sources/planet_facilities_v5/shipyard.blend
 6d7ff5efed342b53ed339dae07c227e19df0aceda7998090cd8da7495e15762e  assets/planets/facilities_v5/shipyard.glb
-6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/planet-shipyard-single-bay-check-clean.log
-0e9619b3491283555b643b1bdec015bda2ac1c8f308977064c61eb06e57c665d  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/planet-shipyard-single-bay-import-clean.log
-2c83433fc1bfd6e31faab72b3400c8794b5b9ffcb1d89c699eb90dd28357ab10  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/planet-shipyard-single-bay-run-clean.log
 83ebe8021eca00d4774522140c892206d6d9aa5046acbdb71051f96268fa9647  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/quarter_simulated.png
-0042f9a7776c44621a188a4342c44f5a8e4c8d51a94760d63a88926eeaa1b547  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/selected-driver.gd.txt
 63d888c4b9827dd2e4c32bc164d94a532e0af50798f39c01470bd956bf446597  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/stage_3.png
 63b8a6095c068d04f2476b2d4c4b8fe6f6cdf77080b6311d97545295b15a3e94  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/stage_4.png
 8231ac9a40b60c4809e878266a9a912374122983d196e9080048a92bcf24f5da  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/work_clock_4.png
+6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/check.txt
+0e9619b3491283555b643b1bdec015bda2ac1c8f308977064c61eb06e57c665d  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/import.txt
+2c83433fc1bfd6e31faab72b3400c8794b5b9ffcb1d89c699eb90dd28357ab10  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/run.txt
+0042f9a7776c44621a188a4342c44f5a8e4c8d51a94760d63a88926eeaa1b547  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-single-bay/selected-driver.gd.txt
