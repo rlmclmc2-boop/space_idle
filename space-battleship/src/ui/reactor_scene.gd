@@ -304,14 +304,15 @@ func _refresh_quote() -> void:
 		return
 	_quote = quote
 	_quote_cost_ids = quote.costs.keys()
+	var integer_costs: Dictionary = quote.get("cost_integer_texts", {})
 	var labels: Array = []
 	for id in _quote_cost_ids:
-		if not quote.costs[id] is String:
+		if not integer_costs.get(id) is String:
 			_quote = {}
 			_purchase.text = "升级 · —"
 			_update_buttons()
 			return
-		labels.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
+		labels.append(PlayerText.resource_number(str(integer_costs[id])) + " " + PlayerText.resource(str(id)))
 	_purchase.text = "升级 · " + " + ".join(labels)
 	var reason: String = str(quote.get("reason", ""))
 	_purchase.tooltip_text = "" if reason.is_empty() else str(ERRORS.get(reason, PlayerText.error(reason)))
