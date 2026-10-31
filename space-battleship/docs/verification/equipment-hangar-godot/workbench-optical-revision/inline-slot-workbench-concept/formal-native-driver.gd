@@ -35,6 +35,12 @@ func button_with_equipment(node: Node, id: String) -> Button:
     return null
 func move_mouse(position: Vector2) -> void:
     var event=InputEventMouseMotion.new();event.position=position;event.global_position=position;Input.parse_input_event(event)
+func wheel(button_index: int) -> void:
+    var point: Vector2=panel._scroll.global_position+Vector2(420,250)
+    move_mouse(point)
+    var event=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=button_index;event.factor=1.0;event.pressed=true;Input.parse_input_event(event);await process_frame
+    event=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=button_index;event.pressed=false;Input.parse_input_event(event);await flush()
+
 func cell(id: String, resource: String) -> Dictionary:
     for fee in panel._cards[id].fee_cells:
         if fee.resource==resource:return fee
@@ -163,9 +169,16 @@ func run() -> void:
     equipment=host.equipment.save_state()
     for slot in equipment.slots:
         slot.paid_level=19 if slot.id=="weapon:0" else 1
-        slot.equipment_id=["laser","missile","cannon","longLaser","laser"][slot.index] if slot.category=="weapon" else ["armour","shield","shield"][slot.index]
     check(host.equipment.restore_state(equipment,host.campaign_system.ship_facts().mounts).ok,"controlled late loadout validates")
-    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"controlled late loadout publishes native")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"controlled late levels publish native without replacing geometry")
+    var accepted_installs: Array=[]
+    for fact in host.equipment_slot_facts():
+        var key: String=["laser","missile","cannon","longLaser","laser"][int(fact.index)] if fact.category=="weapon" else ["armour","shield","shield"][int(fact.index)]
+        if str(fact.equipment_id)==key:continue
+        var installed: Dictionary=host.equipment.equip_slot(str(fact.id),key,host.equipment_inputs(),host.publish_equipment_refit)
+        check(installed.get("ok",false),"controlled target loadout uses actual Owner installation "+str(fact.id))
+        accepted_installs.append({"slot":fact.id,"equipment_id":key,"result":installed})
+    records.append({"case":"controlled final loadout installed through real Owner geometry transaction, not ID restoration","installations":accepted_installs,"state":state()})
     wallet("1000000","0");panel._structure_dirty=true;await flush()
     check(not cell("weapon:0","1").poor and cell("weapon:0","degenerate_matter").poor,"only deficient matter is red")
     check(not panel._cards["weapon:0"].purchase.disabled,"dual-resource shortage remains clickable")
@@ -188,14 +201,23 @@ func run() -> void:
     check(panel._tooltip.visible,"resource tooltip after .5second delay")
     await shot("inline-native-resource-tooltip")
     move_mouse(Vector2(900,100));await flush();check(not panel._tooltip.visible,"resource tooltip clears on exit")
-    panel._scroll.scroll_vertical=60;await flush()
+    panel._cards["weapon:0"].purchase.grab_focus();await flush()
+    await wheel(MOUSE_BUTTON_WHEEL_DOWN)
+    check(panel._scroll.scroll_vertical>18 and panel._scroll.scroll_vertical<112,"real wheel input exposes partial first row")
+    check(root.gui_get_focus_owner()!=panel._cards["weapon:0"].purchase,"real wheel partial row releases hidden purchase focus")
+    records.append({"case":"real continuous wheel first movement","scroll":panel._scroll.scroll_vertical,"focus":str(root.gui_get_focus_owner()),"state":state()})
     check(not panel._cards["weapon:0"].panel.visible and panel._cards["weapon:0"].fragment.visible,"partial row only passive identity")
     var untouched: Dictionary=state()
     var hidden_point=panel._scroll.global_position+Vector2(350,30)
     var down=InputEventMouseButton.new();down.position=hidden_point;down.global_position=hidden_point;down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true;Input.parse_input_event(down);await process_frame
     down=InputEventMouseButton.new();down.position=hidden_point;down.global_position=hidden_point;down.button_index=MOUSE_BUTTON_LEFT;down.pressed=false;Input.parse_input_event(down);await flush()
     check(host.equipment_slot_facts()==untouched.slots and host.economy.budget()==untouched.wallet,"clipped row cannot purchase via visible strip")
-    panel._scroll.scroll_vertical=int(panel._content_height-panel._view_height);await flush()
+    var scroll_positions: Array=[panel._scroll.scroll_vertical]
+    for step in 12:
+        if panel._scroll.scroll_vertical>=int(panel._content_height-panel._view_height):break
+        await wheel(MOUSE_BUTTON_WHEEL_DOWN);scroll_positions.append(panel._scroll.scroll_vertical)
+    check(panel._scroll.scroll_vertical==int(panel._content_height-panel._view_height),"real continuous wheel reaches bottom")
+    records.append({"case":"real wheel-down sequence to bottom","positions":scroll_positions,"state":state()})
     check(panel._cards["defence:2"].panel.visible,"late bottom complete third defence")
     check_geometry("late bottom");await shot("inline-native-bottom")
     await click(panel._cards["defence:1"].select);await shot("inline-native-defence-dropdown")
@@ -205,7 +227,12 @@ func run() -> void:
     check(app._zone_shell._route_buttons["ship"].disabled,"local choice blocks shared navigation")
     check(not panel.prepare_host_hide(),"host route cannot hide active choice without resolution")
     panel.prepare_host_hide(true);await flush();check(not panel.has_exclusive_ui(),"forced hide clears local overlay")
-    panel._scroll.scroll_vertical=0;await flush()
+    scroll_positions=[panel._scroll.scroll_vertical]
+    for step in 12:
+        if panel._scroll.scroll_vertical<=0:break
+        await wheel(MOUSE_BUTTON_WHEEL_UP);scroll_positions.append(panel._scroll.scroll_vertical)
+    check(panel._scroll.scroll_vertical==0,"real wheel-up returns to top")
+    records.append({"case":"real wheel-up sequence to top","positions":scroll_positions,"state":state()})
     wallet("1000000","1000");await flush()
     var before_fault: Dictionary=state()
     var failed: Dictionary=host.equipment.buy_levels("weapon:1",1,host.equipment_inputs(),host.economy.payment,func(_budget):

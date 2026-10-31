@@ -77,10 +77,12 @@
     "original855.875,.9375 visual/input projection; real transformed pause button click and restore",
     "natural early2 rejection/transient feedback; immediate free same-time switch and back; actual Owner debit and local label/focus refresh",
     "actual Cruiser5/HeavyBattleship8 empty slots after real ship changes; empty cards have no equipped-object upgrade UI; old purchase point cannot issue command; free install then upgrade UI restores",
-    "true Owner paidLv19/MAX444 exact comparison; per-resource iron/matter shortage red; .5sec resource hover; partial row inert; late bottom and local defence choice; unknown receipt stops further payment"
+    "true Owner paidLv19/MAX444 exact comparison; per-resource iron/matter shortage red; .5sec resource hover; partial row inert; late bottom and local defence choice; unknown receipt stops further payment",
+    "Actual wheel_down positions63,127,191,255,280; wheel_up280,216,152,88,25,0; first clipped purchase loses focus. No direct scroll value assignments in final driver.",
+    "Later loadout restores only paid levels, then five actual Owner.equip_slot→publish transactions install new equipment; original geometry path updates the battle. Final full screenshots actually show all five weapons on both module preview and battle ship."
   ],
   "empty_owner_fact": "Owner stores and can quote/buy paid slot levels even when equipment_id is empty. No Owner/config rule changed. Empty card hides current equipment level/attribute/fee/quantity/purchase/compare; available equipment choice remains. Batch remains original Owner all-slot command, label explicitly all-slot upgrade and slot levels.",
-  "controlled_states": "Only early startup is natural. Later campaign/loadout/wallet values use validated existing restore/publish ports. Unknown receipt explicitly injects publisher failure; no natural/native failure claim.",
+  "controlled_states": "Early startup is natural. Later campaign/wallet/paid levels use validated existing restore/publish ports. Equipment IDs are never restored for the full late fixture: actual Owner install transactions fill the accepted empty slots and update geometry. Unknown receipt explicitly injects publisher failure.",
   "viewed_final_screenshots": [
     "formal-native-bottom.png",
     "formal-native-defence-dropdown.png",
@@ -100,14 +102,14 @@
   ],
   "video": {
     "raw": "formal-native-raw.mp4",
-    "raw_duration_seconds": 67.1,
+    "raw_duration_seconds": 33.6,
     "actions": "formal-native-actions.mp4",
     "actions_source_interval_seconds": [
-      20.0,
-      36.8
+      15.2,
+      32.9
     ],
     "editing": "Only startup/exit duration trim and video encoding; no crop, overlay, speed change or replacement frames. Raw includes boot, navigation/pause checks and exit.",
-    "checks": "Entire raw video decoded by ffmpeg without error; sampled original video frames viewed including active material/MAX and defence dropdown."
+    "checks": "Final raw video fully decoded without error; four five-second interval frames from final actions clip actually viewed. All15 final original screenshots viewed again after wheel/fixture correction."
   },
   "attempts": [
     {
@@ -133,29 +135,63 @@
     "reactor/planet composition"
   ],
   "evidence_sha256": {
-    "formal-native-actions.mp4": "01d254ffcdb3708d9c9f8b3852e9a755ad82119301f150b50032c9ca5474095b",
+    "formal-native-actions.mp4": "06fea71ee23c291367df55111fdd69e564af504bc54cb03ee2837196b66576b1",
     "formal-native-attempt1-operations.json": "abedb448ce557217a10ac54a858188dcced5724e7f0959ec453d08cdc6d9f336",
     "formal-native-attempt1.log": "559f4ae9a63184d0a04a78da87166929836475bbd5e62e52737f9b21b7232918",
     "formal-native-attempt2-operations.json": "125e70395941bc830ca7d21447994245ffb9622fab17264245bdeb9120605087",
     "formal-native-attempt2.log": "6bc93756491f5cfac9b7bfd7b2654168426a713aa6a7507389edf4b6e2f532c0",
-    "formal-native-bottom.png": "308701f7f6ecf56232b5739772c0f9200ed954eadad0d40a6348a9e2a394aa59",
-    "formal-native-defence-dropdown.png": "b1dde56f46fff0d98632056cfae725c17e683cb64a5335069938333f348f9eb9",
-    "formal-native-driver.gd": "6d2e5b1dc828993721ea424dbe8addf8308bc57f36b9b869fe0e89f83b91b27b",
-    "formal-native-early-feedback.png": "e0e067d24b87cefb2f0208359e12bdb07b95aad5198cc165ba0e52495c23a146",
-    "formal-native-early.png": "de792cf5d9a5fd808cd9503cf7728483a0f1168ff6064b07469f9c8ba83e3777",
+    "formal-native-bottom.png": "dc98209f45ffc51d8d586fd7f1ad897a05b15c466556451ff7c0579ece3b0f8d",
+    "formal-native-defence-dropdown.png": "4c35a8fa2dde4723b2915d89b6d0d091d5a7024927ecfa253bafbe12e5080ee4",
+    "formal-native-driver.gd": "4ed4f87dfc29c4df49d2a7d2f8095b24c9b1caba1c557dd4aad06e103dbc2148",
+    "formal-native-early-feedback.png": "6a6334b05b5df4c2f438e11157ac4bc2b4bd1d48e1ffdc693158630bfb1e6a69",
+    "formal-native-early.png": "0ffbcb1ed17289fd90cf801c0dcfe8c4276c982da2142b4983a2de48421a856e",
     "formal-native-empty-choice.png": "d5530ec42db95a59c403af010e25909b28ec0feeeef5bcfc434a5444c61006e8",
     "formal-native-late-empty.png": "4ccbab7d862f034f9b8c14be20128eba88129cdd8174b7e78dee6ebdce1296ec",
-    "formal-native-late-iron-poor.png": "f108ffe089bb3051df3e7b9dc49c527764edae2e72c43a83807f7a9cfe348d01",
-    "formal-native-late-matter-poor.png": "8f753a35e5842611dc72a20908ad9251f381c556f5828548a526e0139b08acb2",
-    "formal-native-long-max.png": "5f27d7ecca4571a2ef5eecb6b4868ca928a5a2dd9db9c72e0f27b7b9984c198b",
-    "formal-native-material-locked.png": "ebe0ce6386f99ca00c1224b474377f9bdd22b6433493b3ee9aa0417e3fe23ab0",
+    "formal-native-late-iron-poor.png": "96529811b0757b06c609129023c20d348dd4ce6b0fae3d292e1361c61dee0c3a",
+    "formal-native-late-matter-poor.png": "d4c299ee36fa977fdf1e3fce9df34048601e58c0c0e730f6f6c3915a684f02e3",
+    "formal-native-long-max.png": "36c964cf3f704592b404839769a01e5bc22516b29774cd85d2578ec1ad3a9591",
+    "formal-native-material-locked.png": "9c858856d72f1dd2de064888a40de1b9e1ba723d6117194fbb296de1f01d5579",
     "formal-native-middle-empty.png": "46f7dc5fd05af5919c70d2bd64dbe809f0a4bec60d7c7e8dfdc1dd464505f643",
     "formal-native-middle-installed.png": "6ad9aa519ee4a616bd890f3d42f746bef11a8d61eedeb151b8252cd766c160fd",
-    "formal-native-operations.json": "0dfe2b2102cbb705b13010de5deb2969ff4a4ae918d76c5e327a5f1ddaefd11e",
-    "formal-native-raw.mp4": "98440a7f8dfd9ac902a18e5d84df1f8201bf8d1483832b143416fa873c8a74b1",
-    "formal-native-resource-tooltip.png": "019f7dbd515b848333423232d256754779efbbc4324f3dcbea3351e44b9c6856",
+    "formal-native-operations.json": "b5ed2f6123c92b34c821473ac6976948adbbd968d885644b129cc4d11b1bb018",
+    "formal-native-raw.mp4": "b8f4bf4e8ea4f920d99150ca14b0a20389e404f19ab3aafa36bc11a32c71cf02",
+    "formal-native-resource-tooltip.png": "c60ecf859d41879938ca31a52a899cafb101e1c4220da101a425a6fe6bcccc42",
     "formal-native-success.png": "00f9c34985a7395e27aa2ad8ee1fe6368d17292c9f024ae3cf030d0defa7ac7c",
-    "formal-native-unknown-receipt.png": "3f9d332a6efeb9a370999d83d4fdf50e839a7187c295511c770797252025685a",
+    "formal-native-unknown-receipt.png": "d67a946a50fe772e7b849b6348b6a429befa9a3d5cbd4b0721b0fc7cf6a74f96",
     "formal-native.log": "6bc93756491f5cfac9b7bfd7b2654168426a713aa6a7507389edf4b6e2f532c0"
-  }
+  },
+  "supersedes_evidence": "9818145d97823c66dd26dc4968091f8fcc23dc0a: its real GUI0-failure evidence used direct scroll values and its restored full equipment IDs did not trigger battle geometry. This final driver uses actual wheel events and normal Owner installations; old evidence is historical only.",
+  "actual_wheel_records": [
+    {
+      "case": "real continuous wheel first movement",
+      "positions": null,
+      "scroll": 63,
+      "focus": "<Object#null>"
+    },
+    {
+      "case": "real wheel-down sequence to bottom",
+      "positions": [
+        63,
+        127,
+        191,
+        255,
+        280
+      ],
+      "scroll": null,
+      "focus": null
+    },
+    {
+      "case": "real wheel-up sequence to top",
+      "positions": [
+        280,
+        216,
+        152,
+        88,
+        25,
+        0
+      ],
+      "scroll": null,
+      "focus": null
+    }
+  ]
 }

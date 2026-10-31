@@ -1,3 +1,11 @@
+# 2026-10-31 最终整组证据补齐（未实际平台压缩）
+
+运行代码仍8430cd9c8cd84372e0218762daab986e989f3fbe；最终驱动同线程实际wheel_down63/127/191/255/280与wheel_up280/216/152/88/25/0，部分行购买焦点真实释放，取代此前直接赋scroll值。后期fixture仅restore付费等级，新增装备经五次真实Owner.equip_slot→publish几何事务安装；最终右战场与左预览均完整五武器，未改产品或强制重建数值升级战场。9818145d旧证据直接restore装备ID后未触发右侧几何，现已准确替换并在ledger记录限制，历史Git保留。
+
+最终exit0 failures0、无脚本或资源泄漏错误；15张最终整屏逐张重新view，33.6秒原始视频完整解码、17.7秒动作段[15.2,32.9]抽四帧view，无裁图/加速/叠层。formal-native-ledger及操作JSON/driver/log/视频/图绑定同版源码。全部原授权实现和受影响运行项已完成，提交根/原审整组判断；没有新技术依赖/权限拒绝/未知结果/后台进程，尚未实际平台压缩。原工作区/art分支/untracked.import/.uid/cache保全，不main、不新增任务。下方历史状态以本节及唯一README为准。
+
+---
+
 # 2026-10-30 正式宿主原地完成检查点（未实际平台压缩）
 
 原/workspace/space_idle，art/equipment-materials-main-20261029。运行源码固定8430cd9c8cd84372e0218762daab986e989f3fbe；0fccb579da0c6ed98c4b046b860e66b5594298b9隔离闭包已实际消费，公共源bfe5a19373c348946982d37c79f148789b5649e0，a5da0606ba063fc3b7dccfb02d83eb9f3c25f03a只参考不整合。main仅窄接原入口公共挂载/导航/status，保原等比战场视觉/输入；公共three整文件+必要图源详formal-host-source。无reactor_scene/新planet内部。
