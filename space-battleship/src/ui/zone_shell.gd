@@ -34,6 +34,7 @@ var _dirty: bool = true
 var _context: Label
 var _balances: Array = []
 var _route_buttons: Dictionary = {}
+var _route_held: Dictionary = {}
 var _route_captions: Dictionary = {}
 var _route_marks: Dictionary = {}
 var _route_available: Dictionary = {}
@@ -114,6 +115,13 @@ func _init(economy) -> void:
 		_route_buttons[str(spec[0])] = button
 		_route_captions[str(spec[0])] = caption
 		_route_marks[str(spec[0])] = mark
+		var route_id: String = str(spec[0])
+		button.button_down.connect(func():
+			_route_held[route_id] = true
+			_refresh_route_ink(route_id))
+		button.button_up.connect(func():
+			_route_held[route_id] = false
+			_refresh_route_ink(route_id))
 	_details = PopupPanel.new()
 	_details.theme = theme
 	add_child(_details)
@@ -231,8 +239,7 @@ func set_active_route(id: String) -> void:
 		var selected: bool = key == id
 		button.set_pressed_no_signal(selected)
 		BridgeTheme.apply_route_button(button, selected)
-		_route_captions[key].add_theme_color_override("font_color", DARK if selected else MUTED if button.disabled else TEXT)
-		_route_marks[key].modulate = DARK if selected else Color("839d9d") if button.disabled else TEXT
+		_refresh_route_ink(key)
 	for spec in ROUTES:
 		if str(spec[0]) == id:
 			_context.text = str(spec[2])
@@ -248,6 +255,7 @@ func set_navigation_blocked(blocked: bool) -> void:
 	if _navigation_blocked == blocked: return
 	_navigation_blocked = blocked
 	for id in _route_buttons:
+		if blocked: _route_held[id] = false
 		_route_buttons[id].disabled = blocked or not bool(_route_available.get(id, true))
 		_refresh_route_ink(id)
 
@@ -255,14 +263,16 @@ func set_route_available(id: String, available: bool) -> void:
 	if _route_available.get(id, true) == available: return
 	_route_available[id] = available
 	if _route_buttons.has(id):
+		if not available: _route_held[id] = false
 		_route_buttons[id].disabled = _navigation_blocked or not available
 		_refresh_route_ink(id)
 
 func _refresh_route_ink(id: String) -> void:
 	var selected: bool = id == _active_route
 	var disabled: bool = _route_buttons[id].disabled
-	_route_captions[id].add_theme_color_override("font_color", DARK if selected else MUTED if disabled else TEXT)
-	_route_marks[id].modulate = DARK if selected else Color("839d9d") if disabled else TEXT
+	var light_face: bool = selected or (bool(_route_held.get(id, false)) and not disabled)
+	_route_captions[id].add_theme_color_override("font_color", DARK if light_face else MUTED if disabled else TEXT)
+	_route_marks[id].modulate = DARK if light_face else Color("839d9d") if disabled else TEXT
 
 func is_route_available(id: String) -> bool:
 	return bool(_route_available.get(id, true))
