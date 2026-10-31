@@ -29,6 +29,7 @@ var _ui_font_medium: FontVariation
 var _ui_font_bold: FontVariation
 var _light_plate_style: StyleBox
 var _left_plate: Panel
+var _left_heading: Label
 class AllocationBar extends Control:
 	var ratios: Dictionary = {}
 	func update_ratios(next: Dictionary) -> void:
@@ -210,6 +211,11 @@ func _light_panel(rect: Rect2) -> Panel:
 func _build() -> void:
 	_left_plate = _light_panel(Rect2(73, 607, 493, 225))
 	_left_plate.visible = false
+	_left_heading = _label(Vector2(88, 615), 170, 17)
+	_left_heading.add_theme_font_override("font", BridgeTheme.public_font())
+	_left_heading.add_theme_color_override("font_color", Color("315b64"))
+	_left_heading.text = "供能分配"
+	_left_heading.visible = false
 	_light_panel(Rect2(582, 607, 196, 225))
 	_allocation_bar = AllocationBar.new()
 	_allocation_bar.position = Vector2(82, 562)
@@ -331,9 +337,9 @@ func _build() -> void:
 	_cost_details.add_theme_font_size_override("font_size", 16)
 	_cost_details.add_theme_font_override("font", BridgeTheme.public_font())
 	BridgeTheme.apply_number_role(_cost_details, "cost")
-	_quantity = _button("×1", Rect2(611, 741, 76, 51), _cycle_quantity)
+	_quantity = _button("×1", Rect2(602, 741, 74, 51), _cycle_quantity)
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
-	_purchase = _button("升级", Rect2(695, 741, 77, 51), func(): _command(_purchase_action, true), true)
+	_purchase = _button("升级", Rect2(685, 741, 89, 51), func(): _command(_purchase_action, true), true)
 	_purchase.add_theme_font_size_override("font_size", 22)
 	_notice_panel = _panel(Rect2(268, 515, 272, 33), 0.95)
 	_notice = _label(Vector2(279, 518), 250, 17)
@@ -471,10 +477,10 @@ func _refresh() -> void:
 func _layout_enabled_rows(ids: Array) -> void:
 	var tops: Array = COMPACT_ROW_TOPS.get(ids.size(), [])
 	_left_plate.visible = not ids.is_empty()
+	_left_heading.visible = not ids.is_empty() and ids.size() < 4
 	if not ids.is_empty():
 		var first_top: float = float(tops[0]) if not tops.is_empty() else 614.0
-		_left_plate.position.y = first_top - 7.0
-		_left_plate.size.y = 60.0 + 55.0 * float(ids.size() - 1)
+		_left_heading.position.y = maxf(615.0, first_top - 38.0)
 	for index in ids.size():
 		var id: String = str(ids[index])
 		var top: float = float(tops[index]) if not tops.is_empty() else 614.0 + 55.0 * float(index)
@@ -539,6 +545,7 @@ func _unknown(message: String) -> void:
 	_model = {}
 	_ids.clear()
 	_left_plate.visible = false
+	_left_heading.visible = false
 	_shares.clear()
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false

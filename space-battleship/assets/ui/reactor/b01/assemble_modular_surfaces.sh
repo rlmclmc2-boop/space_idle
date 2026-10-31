@@ -14,7 +14,7 @@ for id in weapons defence smelting condensation; do
     fi
   done
 done
-for file in modular-core-clamp-left.png modular-core-clamp-right.png modular-core-lens.png modular-core-gimbal-*.png; do
+for file in modular-core-clamp-left.png modular-core-clamp-right.png modular-core-gimbal-*.png; do
   if [ "$(magick identify -format '%wx%h' "$file")" != "1187x1326" ]; then
     echo "Expected a Blender source canvas: $file; run generate_modular_pipes.py first" >&2
     exit 1
@@ -52,7 +52,9 @@ for side in left right; do
   magick "$file" -crop "190x45+$x+300" +repage "$file.crop.png"
   mv "$file.crop.png" "$file"
 done
-for file in modular-core-lens.png modular-core-gimbal-*.png; do
-  magick "$file" -crop 240x240+475+210 +repage "$file.crop.png"
+magick -crop 240x240+475+210 +repage.crop.png
+mv.crop.png
+for file in modular-core-gimbal-*.png; do
+  magick "$file" -crop 320x320+435+170 +repage "$file.crop.png"
   mv "$file.crop.png" "$file"
 done

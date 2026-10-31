@@ -11,7 +11,7 @@ float hash21(vec2 p) {
 void fragment() {
     vec2 centered = (UV-vec2(0.5,0.5))*vec2(1.0,1.06);
     float radius = length(centered);
-    if (radius > 0.48 || radius < 0.08 || abs(centered.y) < 0.052) {
+    if (radius > 0.48) {
         COLOR = vec4(0.0);
     } else {
         float azimuth = atan(centered.y,centered.x);
@@ -36,8 +36,11 @@ void fragment() {
             float pulse = 1.0-smoothstep(0.08,0.35,fract(along*4.0-phase*0.35));
             outlet += path*pulse;
         }
-        float strength = load_fraction * (0.18*ring+0.10*cage+0.24*marker
-                                          +0.29*particle*generated+0.24*outlet);
+        float ignition = (1.0-smoothstep(0.035,0.11,radius))
+                       *pow(max(0.0,sin(phase*3.8)),8.0);
+        float strength = load_fraction * (0.34*ring+0.13*cage+0.37*marker
+                                          +0.46*particle*generated+0.55*outlet
+                                          +0.70*ignition);
         COLOR = vec4(0.08,0.54,1.0,strength);
     }
 }
