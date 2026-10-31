@@ -250,9 +250,8 @@ for side in (-1,1):
             face.material_index = 1
     box("Berth lower load web", (-1.34,side*.69,.33), (2.37,.31,.17), navy, root, .035)
     box("Berth recessed dark crown", (-1.43,side*.70,1.015), (1.86,.25,.045), navy, root, .012)
-    for x, length in ((-2.13,.43),(-1.42,.50),(-.69,.49)):
-        box("Upper armor cassette on pressure cheek", (x,side*.70,1.055), (length,.22,.055), ivory, root, .012)
-        box("Pressure cassette blue key", (x,side*.70,1.089), (length*.37,.08,.012), blue, root, .004)
+    box("Continuous berth crown load rail", (-1.43,side*.70,1.055),
+        (1.86,.22,.055), ivory, root, .012)
     box("Dock inner launch guide", (-1.41,side*.55,.59), (2.12,.028,.045), cyan, root, .005)
     strut("Dock diagonal load brace", (.20,side*.82,.16), (-1.77,side*.80,.26), .13, orange, root)
 for x, top in ((-.36,1.18),(-2.31,1.06)):
