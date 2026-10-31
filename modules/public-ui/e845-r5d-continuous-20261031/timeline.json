@@ -1,0 +1,547 @@
+{
+  "capture": "same-process successive frame_post_draw; PNG save runs between frame awaits",
+  "frames": [
+    {
+      "drawn_frame": 69,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 0,
+      "ticks_us": 11395748
+    },
+    {
+      "drawn_frame": 70,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 1,
+      "ticks_us": 12255280
+    },
+    {
+      "drawn_frame": 71,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 2,
+      "ticks_us": 13096597
+    },
+    {
+      "drawn_frame": 72,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 3,
+      "ticks_us": 14006496
+    },
+    {
+      "drawn_frame": 73,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 4,
+      "ticks_us": 15009775
+    },
+    {
+      "drawn_frame": 74,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 5,
+      "ticks_us": 15929236
+    },
+    {
+      "drawn_frame": 75,
+      "equipment_visible": true,
+      "event_before_draw": "reactor_mouse_down",
+      "focus": "@Button@213",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 6,
+      "ticks_us": 16712074
+    },
+    {
+      "drawn_frame": 76,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 7,
+      "ticks_us": 17651411
+    },
+    {
+      "drawn_frame": 77,
+      "equipment_visible": false,
+      "event_before_draw": "reactor_mouse_up",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 8,
+      "ticks_us": 18491985
+    },
+    {
+      "drawn_frame": 78,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 9,
+      "ticks_us": 19324172
+    },
+    {
+      "drawn_frame": 79,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 10,
+      "ticks_us": 20058676
+    },
+    {
+      "drawn_frame": 80,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 11,
+      "ticks_us": 20808028
+    },
+    {
+      "drawn_frame": 81,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 12,
+      "ticks_us": 21596675
+    },
+    {
+      "drawn_frame": 82,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 13,
+      "ticks_us": 22362753
+    },
+    {
+      "drawn_frame": 83,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 14,
+      "ticks_us": 23089240
+    },
+    {
+      "drawn_frame": 84,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 15,
+      "ticks_us": 23925851
+    },
+    {
+      "drawn_frame": 85,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 16,
+      "ticks_us": 24685864
+    },
+    {
+      "drawn_frame": 86,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 17,
+      "ticks_us": 25437990
+    },
+    {
+      "drawn_frame": 87,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 18,
+      "ticks_us": 26297712
+    },
+    {
+      "drawn_frame": 88,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 19,
+      "ticks_us": 27040917
+    },
+    {
+      "drawn_frame": 89,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@213",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 20,
+      "ticks_us": 27771759
+    },
+    {
+      "drawn_frame": 90,
+      "equipment_visible": false,
+      "event_before_draw": "equipment_mouse_down",
+      "focus": "@Button@207",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 21,
+      "ticks_us": 28436538
+    },
+    {
+      "drawn_frame": 91,
+      "equipment_visible": false,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "sample": 22,
+      "ticks_us": 29186938
+    },
+    {
+      "drawn_frame": 92,
+      "equipment_visible": true,
+      "event_before_draw": "equipment_mouse_up",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 23,
+      "ticks_us": 30143844
+    },
+    {
+      "drawn_frame": 93,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 24,
+      "ticks_us": 30999608
+    },
+    {
+      "drawn_frame": 94,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 25,
+      "ticks_us": 31835473
+    },
+    {
+      "drawn_frame": 95,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 26,
+      "ticks_us": 32596329
+    },
+    {
+      "drawn_frame": 96,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 27,
+      "ticks_us": 33488539
+    },
+    {
+      "drawn_frame": 97,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 28,
+      "ticks_us": 34224800
+    },
+    {
+      "drawn_frame": 98,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 29,
+      "ticks_us": 35057020
+    },
+    {
+      "drawn_frame": 99,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 30,
+      "ticks_us": 35817941
+    },
+    {
+      "drawn_frame": 100,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 31,
+      "ticks_us": 36640973
+    },
+    {
+      "drawn_frame": 101,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 32,
+      "ticks_us": 37453478
+    },
+    {
+      "drawn_frame": 102,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 33,
+      "ticks_us": 38363933
+    },
+    {
+      "drawn_frame": 103,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 34,
+      "ticks_us": 39393475
+    },
+    {
+      "drawn_frame": 104,
+      "equipment_visible": true,
+      "event_before_draw": "none",
+      "focus": "@Button@207",
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "sample": 35,
+      "ticks_us": 40099786
+    }
+  ],
+  "gaps": [],
+  "source": "7bdf00627cc895636e37ab71802711e7e68ed408"
+}

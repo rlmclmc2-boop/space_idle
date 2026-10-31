@@ -1,0 +1,92 @@
+extends SceneTree
+
+const OUT := "/tmp/space-idle-runtime472/e845-r5d-continuous/"
+var timeline: Array = []
+var prior_drawn := -1
+var gaps: Array = []
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func frames(count: int) -> void:
+	for i in count:
+		await process_frame
+
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+
+func mouse_event(button: Control, pressed: bool) -> void:
+	var point: Vector2 = button.get_global_rect().get_center()
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.position = point
+	event.global_position = point
+	event.pressed = pressed
+	Input.parse_input_event(event)
+
+func frame_record(index: int, event_name: String, game) -> void:
+	await RenderingServer.frame_post_draw
+	var drawn: int = Engine.get_frames_drawn()
+	if prior_drawn >= 0 and drawn != prior_drawn + 1:
+		gaps.append({"sample": index, "previous": prior_drawn, "current": drawn})
+	prior_drawn = drawn
+	root.get_texture().get_image().save_png(OUT + "frame-%03d.png" % index)
+	var focus: Control = root.gui_get_focus_owner()
+	timeline.append({"sample": index, "drawn_frame": drawn, "ticks_us": Time.get_ticks_usec(), "event_before_draw": event_name,
+		"route": game._zone_shell._active_route, "equipment_visible": game.equipment_scene.visible,
+		"reactor_visible": game.reactor_scene.visible,
+		"focus": str(focus.name) if focus != null else "",
+		"resource_text": [game._zone_shell._balances[0].text, game._zone_shell._balances[1].text, game._zone_shell._balances[2].text]})
+
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(70)
+	assert(game.startup_error.is_empty())
+	var session = game.session
+	game.set_process(false)
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	clear_guidance(session, game)
+	game._refresh_feature_visibility()
+	assert(game.equipment_scene.visible and not game.reactor_scene.visible)
+	var reactor_button: Control = game._zone_shell._route_buttons["reactor"]
+	var equipment_button: Control = game._zone_shell._route_buttons["equipment"]
+	for i in 36:
+		var event_name := "none"
+		if i == 6:
+			mouse_event(reactor_button, true)
+			event_name = "reactor_mouse_down"
+		elif i == 8:
+			mouse_event(reactor_button, false)
+			event_name = "reactor_mouse_up"
+		elif i == 21:
+			mouse_event(equipment_button, true)
+			event_name = "equipment_mouse_down"
+		elif i == 23:
+			mouse_event(equipment_button, false)
+			event_name = "equipment_mouse_up"
+		await frame_record(i, event_name, game)
+	assert(game.equipment_scene.visible and not game.reactor_scene.visible)
+	var file := FileAccess.open(OUT + "timeline.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify({"source": "7bdf00627cc895636e37ab71802711e7e68ed408",
+		"capture": "same-process successive frame_post_draw; PNG save runs between frame awaits", "gaps": gaps, "frames": timeline}, "  "))
+	file.close()
+	print("E845_R5D_CONTINUOUS frames=", timeline.size(), " drawn_gaps=", gaps.size())
+	if session.save_files != null:
+		session.save_files.close(2000)
+	game.queue_free()
+	await frames(3)
+	quit()
