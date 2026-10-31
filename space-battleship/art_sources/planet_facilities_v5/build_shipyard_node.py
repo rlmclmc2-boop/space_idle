@@ -268,7 +268,7 @@ box("Dock nose inset", (-2.75,0,.42), (.028,.75,.14), blue, root, .008)
 # One readable shuttle sits inside the lower open berth. The pointed nose,
 # large glass canopy and twin cyan exhausts are actual geometry at orbital
 # depth, not a camera-facing billboard or another independently orbiting icon.
-craft = node("Docked small craft", root, (-.27, 0, 0))
+craft = node("Docked small craft", root, (-.27, 0, .05))
 craft_hull("Ivory shuttle pressure shell", [
     (-2.42,0,.79,.06,.06),(-2.23,0,.78,.17,.11),
     (-1.91,0,.79,.26,.18),(-1.25,0,.80,.27,.19),
