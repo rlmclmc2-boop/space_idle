@@ -1,4 +1,5 @@
 extends RefCounted
+const Resources = preload("res://src/systems/resource_amounts.gd")
 
 const Battle = preload("res://src/systems/battle.gd")
 const RunState = preload("res://src/systems/run_state.gd")
@@ -56,6 +57,8 @@ var _change_number: int = 0
 var _offline_max_hours: int = 0
 var _chrono_rate: String = "0"
 var _chrono_speed: int = 1
+var _chrono_progress: Dictionary = {}
+var _chrono_meter: Dictionary = {}
 var _chrono_costs: Dictionary = {}
 var save_files
 var notifications = Notifications.new()
@@ -210,6 +213,13 @@ func _restore_modules(saved: Dictionary) -> Dictionary:
 			return {"ok": false, "reason": "InvalidSessionClock"}
 	if not times.get("speed", 1) is int or not _chrono_costs.has(times.get("speed", 1)):
 		return {"ok": false, "reason": "InvalidChronoSpeed"}
+	if not times.get("chrono_progress",{}) is Dictionary or not times.get("chrono_meter",{}) is Dictionary: return {"ok":false,"reason":"InvalidResourceProgress"}
+	var progress_check: Dictionary = Resources.progress_map({"chrono":times.chrono_progress} if not times.get("chrono_progress",{}).is_empty() else {},amount_api)
+	if not progress_check.ok: return progress_check
+	var meter_check: Dictionary = Resources.meters({"chrono":times.chrono_meter} if not times.get("chrono_meter",{}).is_empty() else {},amount_api)
+	if not meter_check.ok: return meter_check
+	_chrono_progress = times.get("chrono_progress",{}).duplicate(true)
+	_chrono_meter = times.get("chrono_meter",{}).duplicate(true)
 	wall_time = times.wall
 	game_time = times.game
 	pending_seconds = times.pending
@@ -242,7 +252,7 @@ func save_payload() -> Dictionary:
 	reasons.erase("reforge")
 	var snapshot: Dictionary = {"seed": _combat_seed, "native": native.state,
 		"times": {"wall": wall_time, "game": game_time, "pending": pending_seconds,
-			"speed": _chrono_speed},
+			"speed": _chrono_speed, "chrono_progress":_chrono_progress.duplicate(true), "chrono_meter":_chrono_meter.duplicate(true)},
 		"pause_reasons": reasons,
 		"modules": {"campaign": campaign_system.save_state(), "economy": economy.save_state(),
 			"equipment": equipment.save_state(), "enhancement": enhancement.save_state(),
@@ -429,25 +439,34 @@ func _accept_real_time(seconds: float, focused: bool) -> Dictionary:
 	var cost: int = int(_chrono_costs[speed])
 	if cost == 0: return {"ok": true, "accepted": seconds}
 	var rate: Dictionary = amount_api.apply("from_decimal", [str(cost)])
-	var requested: Dictionary = amount_api.apply("from_decimal", [str(seconds * cost)])
-	if not rate.ok or not requested.ok: return {"ok": false, "reason": "ChronoAmountFailed"}
+	if not rate.ok: return rate
 	var zero: Dictionary = amount_api.apply("zero", []).value
 	var balance: Dictionary = economy.budget().get("chrono", zero)
-	var compared: Dictionary = amount_api.apply("compare", [balance, requested.value])
+	var supported: Dictionary = amount_api.apply("add",[balance,_chrono_progress if not _chrono_progress.is_empty() else zero])
+	if not supported.ok: return supported
+	var integrated: Dictionary = Resources.integrate(rate.value,seconds,_chrono_meter,amount_api)
+	if not integrated.ok: return integrated
+	var compared: Dictionary = amount_api.apply("compare", [supported.value, integrated.amount])
 	if not compared.ok: return compared
 	var accelerated: float = seconds
-	var charged: Dictionary = requested.value
+	var raw: Dictionary = integrated.amount
 	if compared.scalar < 0:
-		var duration: Dictionary = amount_api.apply("div", [balance, rate.value])
+		var duration: Dictionary = amount_api.apply("div", [supported.value, rate.value])
 		if not duration.ok: return duration
 		var one: Dictionary = amount_api.apply("from_decimal", ["1"]).value
 		var ratio: Dictionary = amount_api.apply("to_ratio", [duration.value, one])
 		if not ratio.ok: return ratio
 		accelerated = clampf(float(ratio.scalar), 0.0, seconds)
-		charged = balance
-	var paid: Dictionary = economy.payment({"chrono": charged})
+		raw = supported.value
+		integrated = Resources.integrate(rate.value,accelerated,_chrono_meter,amount_api)
+		if not integrated.ok: return integrated
+	var settled: Dictionary = Resources.settle(raw,_chrono_progress if not _chrono_progress.is_empty() else zero,amount_api)
+	if not settled.ok: return settled
+	var paid: Dictionary = economy.payment({"chrono": settled.amount})
 	if not paid.ok: return paid
 	economy.accept_budget(paid.wallet, false)
+	_chrono_progress = settled.progress
+	_chrono_meter = integrated.meter
 	return {"ok": true, "accepted": accelerated * float(speed) + (seconds - accelerated)}
 
 func frame(real_dt: float, focused: bool) -> void:
@@ -654,6 +673,8 @@ func _hyperspace_credit(reward: Dictionary) -> Dictionary:
 	if int(reward.ultimate_cores) > 0: amounts.ultimate_cores = int(reward.ultimate_cores)
 	for resource in amounts:
 		var quantity = amount_api.apply("from_decimal", [str(amounts[resource])])
+		if not quantity.ok: return quantity
+		quantity = Resources.whole(quantity.value,amount_api)
 		if not quantity.ok: return quantity
 		var old = next_wallet.get(resource, amount_api.apply("zero", []).value)
 		var added = amount_api.apply("add", [old, quantity.value])
@@ -1047,7 +1068,9 @@ func _hyperspace_forge_costs(forecast: Dictionary) -> Dictionary:
 	for resource in forecast.costs:
 		var amount: Dictionary = amount_api.apply("from_decimal", [str(forecast.costs[resource])])
 		if not amount.ok: return amount
-		costs[resource] = amount.value
+		var integer: Dictionary = Resources.whole(amount.value,amount_api)
+		if not integer.ok: return integer
+		costs[resource] = integer.value
 	return {"ok": true, "costs": costs}
 
 func preview_hyperspace_forge(id: String, operation: String, args: Dictionary = {}) -> Dictionary:
@@ -1064,6 +1087,9 @@ func preview_hyperspace_forge(id: String, operation: String, args: Dictionary = 
 		amounts[resource] = text.text
 	forecast.source = {"id": id, "forge_revision": int(forecast.drone.forge_revision) - 1}
 	forecast.cost_amounts = amounts
+	var integer_texts: Dictionary = economy.cost_texts(converted.costs)
+	if not integer_texts.ok: return integer_texts
+	forecast.cost_integer_texts = integer_texts.texts
 	forecast.can_pay = payable.ok
 	forecast.payment_reason = payable.get("reason", "")
 	forecast.loadout_admission = null

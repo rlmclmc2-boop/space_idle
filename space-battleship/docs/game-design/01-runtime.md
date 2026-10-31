@@ -60,7 +60,7 @@ gain = min(floor(offlineSeconds×rate), floor(capacity-current))
 
 只发微粒，不离线推关、科研、星球、星系或无人机挂机。自然加载时顺序增加离线补偿并写登录标记，每次加载调用只发一次。显式导入同样按导入文件savedUtc与当前UTC计算离线微粒，应用同一12小时上限和容量；每次加载/导入调用只补偿一次，不额外阻止玩家人为重复导入单机档。
 
-可选速度 1～10，每现实秒费用依次 0～9。设现实片段 `r`、速度 `s`、每秒费用 `c`、余额 `B`，可加速时长 `a=min(r,B/c)`（c=0 则 a=r）；扣 `a×c`，接受 `a×s` 游戏秒，余下 `(r-a)` 用基础速度。保存待执行时间时必须同时保存已经扣费的接受区间；恢复不得再次扣微粒。跨暂停、换倍率时按区间边界处理。
+可选速度 1～10，每现实秒费用依次 0～9。设现实片段 `r`、速度 `s`、每秒费用 `c`、余额 `B`，可加速时长 `a=min(r,B/c)`（c=0 则 a=r）；扣 `a×c`，接受 `a×s` 游戏秒，余下 `(r-a)` 用基础速度。保存待执行时间时必须同时保存已经扣费的接受区间；恢复不得再次扣微粒。跨暂停、换倍率时按区间边界处理。实际整数扣费按累计已付服务进度结算，未消化进度保留，不能逐帧ceil(a×c)重复扣费；服务进度不属于钱包余额。
 
 ### 3.2 共享系统顺序
 
@@ -74,7 +74,7 @@ gain = min(floor(offlineSeconds×rate), floor(capacity-current))
 
 ## 4. 经济账本与收入分类
 
-钱包含铁 `1`、铀 `2`、强化碎片 `jewel`、微粒 `chrono`、四类超空间材料及究极核心。经济数量统一用近似 `Amount`；格数、ID、抽签次数等离散身份使用整数。钱包使用`credit/debit/transfer`具名函数，收入记录明确来源；奖励和掉落使用其本身的唯一ID防重复领取。消费检查全部资源够付才整体扣除，失败不能留下部分扣费。
+钱包含铁 `1`、铀 `2`、强化碎片 `jewel`、微粒 `chrono`、四类超空间材料及究极核心。用户明确所有资源无论展示还是实际值均为整数，必要向上取整；实施边界、累计进度和旧档候选恢复见[资源整数契约](contracts/resources.md)。经济数量统一用近似 `Amount`；格数、ID、抽签次数等离散身份使用整数。钱包使用`credit/debit/transfer`具名函数，收入记录明确来源；奖励和掉落使用其本身的唯一ID防重复领取。消费检查全部资源够付才整体扣除，失败不能留下部分扣费。
 
 基线把铁/铀掉落分为“基础生产量”和“实际到账量”；新模型显式保存两个字段，不从 UI 显示数反推。收入源至少有 `enemy_drop/timed_drop/fragment_drop/galaxy_yield/hyperspace_material/dismantle/forge_refund`；旧 `furnace` 分支仅作为停用规则记录，不能重新生成炉子。
 
@@ -95,7 +95,7 @@ gain = min(floor(offlineSeconds×rate), floor(capacity-current))
 ```
 input = base × (1+gemRefinerHanging)
              × crewGemFactor × reactorCondensation × galaxyFragmentFactor
-credited = roundToCent(input × stageJewelRatio) × aiFragmentFactor
+credited = ceil(input × stageJewelRatio × aiFragmentFactor)
 ```
 
 普通击杀碎片 2 秒后自动收取，基线不应用普通资源的 50% 自动损耗。炉子分支的特殊损耗不能扩散到普通碎片。普通敌人掉落的倍率取值时点：敌人资源倍率在遭遇创建时固化；掉落金额在死亡时形成；采集损耗与收入因子在拾取函数执行时读取。此顺序允许玩家在普通敌人物体落地后升级收入再拾取；顶部定时资源遵循上段的生成时冻结规则。
