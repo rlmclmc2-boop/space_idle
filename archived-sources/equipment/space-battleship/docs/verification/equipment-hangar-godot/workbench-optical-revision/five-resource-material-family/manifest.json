@@ -1,0 +1,14 @@
+{
+  "source_commit": "723ec0ed924e923b19ef9d95552c22382d3040ba",
+  "files": {
+    "01-material-fees-costs-local.png": "0d4ea2c950668acb71a95d76a398e6bee4376a25df871175bbe77c8c47de7e39",
+    "01-material-fees-local.png": "e802fd5b9630275158236b9653c5d1e41051268fa4305387e2198d081a3708eb",
+    "01-material-fees.png": "3609c3e9da98c6e0ee91dd579e3d0f60670956385e27dbe6ec563087963e5514",
+    "README.md": "5ae789d31c62bd1744c96f3d9530e84d8217336b94887a2fcb8f1266e9ddcd70",
+    "capture-driver.gd.txt": "9e7605156317339b2352dad0aed23b8361bbce9428a1c7065809ff98fdba17dc",
+    "check.log.txt": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+    "mapping.json": "2210eb6653b948b32035f1ac1b17aea7cbd01263407198be7b627142c6bb3028",
+    "runtime.log.txt": "055699318d1d63b512a4b8bf465f4a8bbbdbe904c1dbab8ab2b7d7b2ef69aa9a",
+    "source-boundaries.json": "e686f4459d5b33c065e14f37390887d898fd94289deac5e71ed83b0c0a24bbbc"
+  }
+}

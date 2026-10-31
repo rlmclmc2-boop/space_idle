@@ -1,0 +1,106 @@
+{
+  "source_commit": "b538267e7dd1d2b7152802696ddee6aa34907b81",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "repeat moves to first; full six-card response with proficiency third A inactive until E40",
+    "repeat node1 A to B returns50percent plus extra chain1",
+    "continue buy1 E31: repeat50percent x7.2 memory37.2percent cap3.72",
+    "continue node2 detail with disabled saved B",
+    "exact fixture signature only; no frontend gameplay formula"
+  ],
+  "images": [
+    {
+      "file": "scene-branch-new-response-1440x900.png",
+      "family": "scene",
+      "case": "scene-branch-new-response",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "155556c2eaae8bc739943250b59d865bbc0c4c639c8cb41c3ded38531302de0f"
+    },
+    {
+      "file": "scene-continue-buy-level-1440x900.png",
+      "family": "scene",
+      "case": "scene-continue-buy-level",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "d481cd17ba1d13fe62c4de4f68815fc45e7687eab5fb7e37a1b913890bd97dad"
+    },
+    {
+      "file": "scene-continue-node-details-1440x900.png",
+      "family": "scene",
+      "case": "scene-continue-node-details",
+      "route": "enhancement/branch/repeat/1",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "c040bdfcbe47ca82d2b3de093a46dd8a92ea6b8054b31b404c56ad65245422ca"
+    },
+    {
+      "file": "scene-reordered-new-response-1440x900.png",
+      "family": "scene",
+      "case": "scene-reordered-new-response",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "49bb24adb7f918c5a6ce2ee786e39d365ce2864aa049d735ca7f97a4b12e5dda"
+    },
+    {
+      "file": "work-branch-new-response-1440x900.png",
+      "family": "work",
+      "case": "work-branch-new-response",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "d4e2d509f0a5e43d4986caafefa37d9ca06cd91fd37e988e32676f3f522e0cbe"
+    },
+    {
+      "file": "work-continue-buy-level-1440x900.png",
+      "family": "work",
+      "case": "work-continue-buy-level",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "49aae36cede242b827c5e27fbdfaf4410e7d9bbab5562406035a5566df4fd29a"
+    },
+    {
+      "file": "work-continue-node-details-1440x900.png",
+      "family": "work",
+      "case": "work-continue-node-details",
+      "route": "enhancement/branch/repeat/1",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "80aec448a7f78098683f65d2987c241215f987ed3f631dd15677014d6a652f66"
+    },
+    {
+      "file": "work-reordered-new-response-1440x900.png",
+      "family": "work",
+      "case": "work-reordered-new-response",
+      "route": "enhancement",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "f768f273898c1c7121c7d7e0f9df2103bd3d452e6215ec4139e8e30a2b3e751d"
+    }
+  ]
+}

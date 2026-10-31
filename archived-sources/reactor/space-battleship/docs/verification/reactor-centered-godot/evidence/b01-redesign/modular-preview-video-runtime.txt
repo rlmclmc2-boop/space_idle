@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+STARTUP  session=true
+VIDEO_READY load=1.0 modules=[{ "id": "weapons", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "defence", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "smelting", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "condensation", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }] game_time=0.06666666666667 phase=0.05
+VIDEO_END wall_seconds=35 game_seconds=20.4666666666668 phase_delta=20.4333333333334 active_frames=610 field_updates=2

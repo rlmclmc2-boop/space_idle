@@ -1,0 +1,150 @@
+{
+  "kind": "planet_image_P5_left_concentrated_controls_same_side_drawer",
+  "base_main": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "scene_and_drawer_reference_commit": "dbd70b2908994156df85677eb6c471086e058e45",
+  "shared_visual_spec_commit": "bf359c0d9073e064f71028958a21a649b3951875",
+  "contract_candidate": "09af963c",
+  "user_confirmed_direction": [
+    "left_concentrated_exploration_personnel_facility_entries",
+    "same_side_detail_drawer",
+    "task_summary_and_stop_cancel_accessible_while_drawer_open",
+    "right_side_for_watching",
+    "buildings_visual_only",
+    "station_orbits_refinery_grounded"
+  ],
+  "placement_suggestions_unconfirmed": [
+    "workshop_on_surface",
+    "shipyard_fixed_near_orbit"
+  ],
+  "independent_image_review": "pending",
+  "user_image_confirmation": "pending",
+  "ui_implementation": false,
+  "renderer_route_selected": false,
+  "benchmark_executed": false,
+  "tool": "image_gen.imagegen",
+  "successful_generations": 5,
+  "target_client_size": [
+    1440,
+    900
+  ],
+  "target_module_size": [
+    808,
+    900
+  ],
+  "targets_are_provisional": true,
+  "candidate_native_size_both": [
+    1586,
+    992
+  ],
+  "module_divider_x_approx": 1002,
+  "module_width_mapped_to_1440": 909.7604035308954,
+  "exact_geometry_passed": false,
+  "common_operation_cluster_native_bounds_approx": [
+    28,
+    133,
+    640,
+    253
+  ],
+  "open_drawer_native_bounds_approx": [
+    27,
+    271,
+    307,
+    573
+  ],
+  "open_drawer_native_size_approx": [
+    280,
+    302
+  ],
+  "vertical_gap_from_common_buttons_to_drawer_approx": 18,
+  "common_controls_occluded_by_drawer_in_static_images": false,
+  "default_static_clearance_note": "current station outline below common row; cancel button close to orbital arc",
+  "full_motion_and_arrival_clearance": "not verified",
+  "world_scene_pixel_exact_preservation": false,
+  "station_alignment_note": "residual rightward station drift in opened image versus default remains after one concentrated correction; cannot use as exact original-pose occlusion evidence",
+  "source_P4_artifacts_modified": false,
+  "same_illustrated_state": {
+    "planet": "1",
+    "degree": 68,
+    "task_percent": 68,
+    "explorers": 1,
+    "automatic": true,
+    "station": "built",
+    "workshop": "built",
+    "refinery": "ready",
+    "shipyard": "building",
+    "shipyard_work": 38,
+    "shipyard_required_work": 180,
+    "extra_builders": 1
+  },
+  "time_or_claim_progression_demonstrated": false,
+  "claim_effect_text": "领取后生效：铁、铀原生掉落加成",
+  "original_generated_png_bytes_preserved": true,
+  "extra_compression_resize_crop_compositing": false,
+  "files": [
+    {
+      "path": "default-watch.png",
+      "bytes": 1835150,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "c245df669600edacadff01cc7b79dff0b00105590b14c78af3a0d2d59c082409"
+    },
+    {
+      "path": "drafts/default-before-planet-selector.png",
+      "bytes": 1888577,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "078f49a7654643bdbe4738a030810f6c429fe8d3f922e7401589a3be6f9299d8"
+    },
+    {
+      "path": "drafts/left-drawer-before-planet-selector.png",
+      "bytes": 1821713,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "ac8306c4d4612d1177a5ff519ff90ba6be25ad9072c57933096c67f812c4188a"
+    },
+    {
+      "path": "drafts/left-drawer-initial.png",
+      "bytes": 1847382,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "0d3b836c09b3da1f16684e9fd0bad05526ba7b5cd502a6579b577f930f785a1b"
+    },
+    {
+      "path": "left-drawer.png",
+      "bytes": 1816258,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "cbe19526be92766db3709dc77d4858ba5282faa9cc05272b4af001a322f5dda9"
+    }
+  ],
+  "previous_fixed_candidate": "7f03468be2ffa0d2ebaad9e31cac14794a5b8462",
+  "direction_review": "parent and independent reviewer allow P5 concentration direction to continue; current selector revision pending review",
+  "generations_in_this_selector_revision": 2,
+  "planet_selector_default_native_bounds_approx": [
+    526,
+    145,
+    640,
+    191
+  ],
+  "planet_selector_open_native_bounds_approx": [
+    528,
+    148,
+    636,
+    191
+  ],
+  "planet_selector_same_logical_slot": true,
+  "planet_selector_pixel_exact_alignment": false,
+  "right_planet_navigation_controls_present": false,
+  "right_title_identity_only": true,
+  "selector_revision_scope": "add compact left selector in both states; remove two right title arrows; no intended scene/typography/subject-size change"
+}

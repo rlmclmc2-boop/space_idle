@@ -1,0 +1,69 @@
+{
+  "kind": "archive-of-existing-results-no-rerun",
+  "logs": {
+    "baseline-engine.txt": {
+      "original_filename": "baseline-engine.log",
+      "sha256": "17d6a83495c1e5ea51067849a367501e38ad3ee53d244b16fc0961768e5d98e5",
+      "bytes": 435
+    },
+    "final-probe.txt": {
+      "original_filename": "final-probe.log",
+      "sha256": "44f29be048ff520a5fd727d58791dcdf91adedae1d6f99e27e83f00a9f738b09",
+      "bytes": 383
+    },
+    "baseline-probe.gd.txt": {
+      "original_filename": "baseline-probe.gd",
+      "sha256": "40d0a84996f18d7020176a4887342dc011a9184f4c808f123adff0d9a470980f",
+      "bytes": 4543
+    },
+    "config.validation.json": {
+      "original_filename": "config.validation.json",
+      "sha256": "723757de8f8827d4df56100176fff1946e4b23e286f1ccd0c426bfa98789aad7",
+      "bytes": 294
+    }
+  },
+  "baseline": {
+    "log": "baseline-engine.txt",
+    "source": {
+      "commit": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+      "path": "space-battleship/src/systems/galaxy.gd",
+      "git_blob": "8638693afc1ac7b113166beb66c78b78abbc93c3",
+      "git_canonical_sha256": "713dac421ea90359c8a9ce3f11edd75a845026896c86092ecb5329cb28b435f2"
+    },
+    "executed_harness": "baseline-probe.gd.txt",
+    "recorded_tool_exit_code": 1
+  },
+  "fixed": {
+    "log": "final-probe.txt",
+    "source": {
+      "commit": "29be6f541a4ff06e84959338e43879f310015202",
+      "path": "space-battleship/src/systems/galaxy.gd",
+      "git_blob": "62e98815ffc063a4f69f2b79b59bad5e9c56ef4f",
+      "git_canonical_sha256": "3c1e36111043e5ab98402b429101cdc82423fd6337339cb761863f14a1aca14e"
+    },
+    "executed_harness": {
+      "commit": "29be6f541a4ff06e84959338e43879f310015202",
+      "path": "space-battleship/foundation/tests/_galaxy_contribution_restore_probe.gd",
+      "git_blob": "0142c94759a4f4813286f3ce8a5efda7634467c4",
+      "git_canonical_sha256": "2331a72d27e116e43d0b856e0bb83074723badc9f58c9d6df8dece811946fed5"
+    },
+    "recorded_tool_exit_code": 0
+  },
+  "configuration": {
+    "ok": true,
+    "errors": [],
+    "sourceHash": "3726dc29b176425c13428b4c5c8c3da73256d044425ac223955bb1de337310d2",
+    "semanticHash": "6b18941c69d6e647ed85cdcbbcd0584b2914dcd14d020c38351eda34082fb27c",
+    "outputHash": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de"
+  },
+  "native_dll_sha256": "ce6761c5dbd96f7262ffb5418fd2794afe52b6bf9a3164db5ea528d8b790dd75",
+  "notes": [
+    "Logs are original engine-log bytes, renamed .txt for Git; no rerun or edited output.",
+    "Exit codes were retained in tool results of the original runs; engine logs themselves do not embed exit status or content hashes.",
+    "Source/configuration associations are recorded retrospectively from retained files and Git objects, not claimed as contemporaneous engine attestations.",
+    "Baseline retained source bytes exactly match the pinned Git object. Fixed source and committed probe working copies match pinned Git canonical bytes after CRLF normalization.",
+    "Baseline harness uses literal local extension/configuration paths and loads a temporary baseline source file; fixed committed harness reads the same paths from explicit environment variables and loads the repaired res:// source. Assertion bodies are unchanged.",
+    "The earlier baseline attempt failed to parse a PowerShell-decoded source copy and was interrupted; baseline-engine.txt is the subsequent completed baseline run after exact Git bytes were written. No separate raw log of that interrupted attempt remains.",
+    "An earlier temporary fixed-harness draft used compare.value rather than compare.scalar; its log was overwritten by the corrected run. No raw failure log of that draft remains. It is not presented as a product regression."
+  ]
+}

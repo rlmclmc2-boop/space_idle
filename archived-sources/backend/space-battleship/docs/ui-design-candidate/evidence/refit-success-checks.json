@@ -1,0 +1,60 @@
+{
+  "scope": "small refit receipt correction; fixed fixtures; no game tests",
+  "passed": 12,
+  "total": 12,
+  "source_sha256": {
+    "preview.html": "c0ddd88f034dc6f1b52574efa92b516e180b65cc20f0293a202a33a4aeb59ac9",
+    "desktop.css": "2af8f8684058bc46995a8c2fb22b18f31468eebdbdc32664177f02f1e63414bc",
+    "desktop.js": "381d107b36f0e41f7fd1a60e1293dbfb16d4b8015746a8c206d03f5beb5196ce"
+  },
+  "checks": [
+    {
+      "check": "refit current metric is sustained per second",
+      "pass": true
+    },
+    {
+      "check": "no single-hit per second label",
+      "pass": true
+    },
+    {
+      "check": "receipt actual before metric",
+      "pass": true
+    },
+    {
+      "check": "receipt actual after metric",
+      "pass": true
+    },
+    {
+      "check": "refit keeps level19",
+      "pass": true
+    },
+    {
+      "check": "current slot rail matches refit",
+      "pass": true
+    },
+    {
+      "check": "no actionable stale preview",
+      "pass": true
+    },
+    {
+      "check": "technical notes absent from product panel",
+      "pass": true
+    },
+    {
+      "check": "review note explicitly separated",
+      "pass": true
+    },
+    {
+      "check": "purchase receipt retains both values",
+      "pass": true
+    },
+    {
+      "check": "notice expires without collapsing receipt",
+      "pass": true
+    },
+    {
+      "check": "no JS errors",
+      "pass": true
+    }
+  ]
+}

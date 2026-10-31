@@ -1,0 +1,10 @@
+6b50760f2205ef378f27b13c49626b841479ec862407b1e4a1d2eceb8d3b59fe  space-battleship/assets/planets/facilities_v5/illustrated/orbit-open-roots-prompts.txt
+f29d82ed1dec6feacf07762142c1b89a92cf099eed52165b9c8e29b220550554  space-battleship/assets/planets/facilities_v5/illustrated/workshop-orbit-open-bay.png
+60c03c8f2fdfc26f9d4b546f5152ae8ff80db19ab02a95a0d986144fa9c72110  space-battleship/assets/planets/facilities_v5/illustrated/workshop-orbit-short-rails.png
+8c85b4a2499025c7598d005c58caac9bd9a0f167c5440b2ac9442e8b3c453c53  space-battleship/assets/planets/facilities_v5/illustrated/shipyard-orbit-open-root.png
+43b959d0ceafdef618057f20fde369c3bb2cbc80a27f883e779b74cd07237e14  space-battleship/scripts/planet_facility_scene.gd
+5f1e510dc8e75be2144bb2806bde3653c938dc0df30d3d365ecd1aabc763da48  space-battleship/scripts/planet_orbital_spine.gd
+fd6eeba9147ffcb966010809b4880a9eba9cd78b73a6c0fcd9b95cba14387e1d  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-shipyard-open-roots/stage_4.png
+eb30e7ac731a0c4fdb47230e7724271e14f40733767d39afdf60908dff0a3de8  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-shipyard-open-roots/phases/frame_024.png
+426036483623daf40dc86e2afcfecbf725f006c5d6c2ece203cb60ad83c775e3  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-shipyard-open-roots/phases/frame_051.png
+0e67bb26b79626dfb97f13de19d58b65590765117149ec9854b62695862ae5f2  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-shipyard-open-roots/phases/frame_072.png

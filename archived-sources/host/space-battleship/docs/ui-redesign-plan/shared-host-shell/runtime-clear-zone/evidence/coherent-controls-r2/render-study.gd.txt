@@ -1,0 +1,151 @@
+extends SceneTree
+
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/coherent-controls-r2/"
+const ROOT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/"
+const EQUIP_SOURCE := ROOT + "coherent-controls-r1/source-equipment-19a2-early2.png"
+const REACTOR_SOURCE := ROOT + "r51c6d-combo-reactor-1440x900.png"
+const CREAM := Color("e9eee6")
+const INK := Color("173c48")
+const GOLD := Color("c99a54")
+
+class Study:
+    extends Control
+    var variant: String
+    var font: Font
+    var equipment_source: Texture2D
+    var reactor_source: Texture2D
+    var controls: Texture2D
+    var grabber: Texture2D
+    func _init(v: String, f: Font, e: Texture2D, r: Texture2D, c: Texture2D, g: Texture2D) -> void:
+        variant=v; font=f; equipment_source=e; reactor_source=r; controls=c; grabber=g
+    func text(s:String,x:float,y:float,size:int,color:Color=CREAM) -> void:
+        draw_string(font,Vector2(x,y),s,HORIZONTAL_ALIGNMENT_LEFT,-1,size,color)
+    func line(a:Vector2,b:Vector2,color:Color,width:float=1.0) -> void:
+        draw_line(a,b,color,width)
+    func frame(r:Rect2,fill:Color,border:Color,width:float=1.0) -> void:
+        draw_rect(r,fill);draw_rect(r,border,false,width)
+    func nine(src:Rect2,dest:Rect2,tint:Color=Color.WHITE) -> void:
+        var sx:float=65.0;var sy:float=65.0;var dx:float=minf(13.0,dest.size.x*.16);var dy:float=minf(10.0,dest.size.y*.25)
+        var sw:float=src.size.x-2*sx;var sh:float=src.size.y-2*sy
+        var dw:float=dest.size.x-2*dx;var dh:float=dest.size.y-2*dy
+        var ws:=[sx,sw,sx];var hs:=[sy,sh,sy];var wd:=[dx,dw,dx];var hd:=[dy,dh,dy]
+        var yy:float=src.position.y;var ty:float=dest.position.y
+        for j in 3:
+            var xx:float=src.position.x;var tx:float=dest.position.x
+            for i in 3:
+                draw_texture_rect_region(controls,Rect2(tx,ty,wd[i],hd[j]),Rect2(xx,yy,ws[i],hs[j]),tint)
+                xx+=ws[i];tx+=wd[i]
+            yy+=hs[j];ty+=hd[j]
+    func plate(r:Rect2) -> void:
+        nine(Rect2(45,131,1360,250),r)
+    func key(r:Rect2,s:String,primary:bool=false,state:String="normal") -> void:
+        var src:=Rect2(45,470,1360,220) if primary else Rect2(45,770,1360,210)
+        var tint:=Color.WHITE
+        if state=="hover":tint=Color(1.13,1.16,1.14)
+        elif state=="pressed":tint=Color(.78,.84,.84)
+        elif state=="disabled":tint=Color(.55,.62,.65,.85)
+        nine(src,r,tint)
+        if state=="selected":draw_rect(r.grow(1),Color("72bdc0"),false,2)
+        if state=="focus":draw_rect(r.grow(3),Color("b9e5d8"),false,1.5)
+        var color:=INK if primary else CREAM
+        if state=="disabled":color=Color("aab6b2")
+        var x:=r.position.x+maxf(4.0,(r.size.x-font.get_string_size(s,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x)/2.0)
+        text(s,x,r.position.y+r.size.y/2+5,15,color)
+    func select_arrow(x:float,y:float) -> void:
+        frame(Rect2(x,y,27,22),Color("234c58"),Color("659398"))
+        draw_colored_polygon(PackedVector2Array([Vector2(x+7,y+8),Vector2(x+20,y+8),Vector2(x+13.5,y+15)]),Color("e8e0c6"))
+    func equipment_page() -> void:
+        draw_texture_rect(equipment_source,Rect2(0,0,1440,900),false)
+        # Keep the original x313..800 mechanical rim, feet and stand. The new
+        # face replaces only the original inner drawing, not a second host frame.
+        draw_texture_rect_region(equipment_source,Rect2(313,380,486,316),Rect2(313,380,486,316),Color(.85,.94,.93))
+        # Replace the former face inside its original rim. Otherwise old row
+        # lettering remains underneath the new controls at the card gaps.
+        draw_rect(Rect2(340,399,436,278),Color("12333f"))
+        frame(Rect2(342,399,434,42),Color("183e4a"),Color("729b9b"),1)
+        text("逐槽工作台",352,425,18,CREAM)
+        key(Rect2(675,404,96,30),"全部升级")
+        for i in 2:
+            var top:float=450+i*113.0
+            plate(Rect2(340,top,434,97))
+            var icon_src:=Rect2(350,459,41,49) if i==0 else Rect2(350,575,41,49)
+            draw_texture_rect_region(equipment_source,Rect2(348,top+25,42,48),icon_src)
+            text("武器1 · 脉冲炮" if i==0 else "防御1 · 装甲",400,top+29,15,INK)
+            select_arrow(579,top+10)
+            text("Lv.1",615,top+28,14,Color("4d6870"))
+            key(Rect2(706,top+8,61,29),"比较")
+            text("攻击力  350 → 420" if i==0 else "容量  1,000 → 1,200",400,top+55,17,INK)
+            text("费用",400,top+82,13,Color("345862"))
+            draw_texture_rect_region(equipment_source,Rect2(438,top+66,20,20),Rect2(382,515 if i==0 else 628,20,20))
+            text("铁 65",462,top+82,14,Color("a33725"))
+            key(Rect2(610,top+60,53,32),"×1")
+            key(Rect2(670,top+60,101,32),"购买1级",true)
+    func reactor_page() -> void:
+        draw_texture_rect(reactor_source,Rect2(0,0,1440,900),false)
+        # The original full-height B01 beam, side cheeks and floor terminate
+        # against the stage. Cool their warm metal without erasing geometry.
+        draw_texture_rect_region(reactor_source,Rect2(0,507,808,393),Rect2(0,507,808,393),Color(.72,.86,.87))
+        # Keep its original mechanical power-bar support; color stays functional.
+        key(Rect2(652,555,94,38),"均分")
+        plate(Rect2(74,607,492,225))
+        plate(Rect2(572,607,207,225))
+        var colors:=[Color("daa44e"),Color("46addd"),Color("da8053"),Color("ad75cf")]
+        var names:=["武器","盾甲","铁产出","碎片"]
+        for i in 4:
+            var y:float=611+i*54.0
+            if i>0:line(Vector2(84,y),Vector2(554,y),Color("9bb1ae"),1)
+            draw_rect(Rect2(83,y+6,4,38),colors[i])
+            text(names[i],99,y+34,17,INK)
+            frame(Rect2(198,y+17,154,18),Color("173d4c"),Color("5e7f81"),1)
+            draw_rect(Rect2(201,y+20,37,12),colors[i])
+            draw_texture_rect(grabber,Rect2(229,y+12,26,26),false)
+            text("25%",386,y+34,18,INK)
+            line(Vector2(464,y+7),Vector2(464,y+45),Color("9cafab"))
+            text("×1.13",479,y+34,15,Color("3b6068"))
+        text("等级",592,644,16,INK);text("1",743,652,26,INK)
+        line(Vector2(591,670),Vector2(758,670),Color("9db1ad"))
+        text("费用",592,704,14,INK)
+        draw_texture_rect_region(reactor_source,Rect2(631,687,21,21),Rect2(657,687,23,23))
+        text("10 铀",657,704,15,INK)
+        key(Rect2(592,737,75,40),"×1")
+        key(Rect2(675,737,94,40),"升级",true)
+        text("100% 已分配",593,811,13,Color("4d6971"))
+    func _draw() -> void:
+        if variant=="equipment":equipment_page()
+        elif variant=="reactor":reactor_page()
+        else:
+            draw_rect(Rect2(0,0,2400,1030),Color("0b2633"))
+            text("同族设备操作面 · R2",52,58,28)
+            text("保留真实 1440×900 舱景、台架、公共导航与战场；替换原内层绘制的静态设计预览，非实机",53,87,16,Color("b8d0cc"))
+            draw_set_transform(Vector2(52,116),0,Vector2(.78,.78));equipment_page()
+            draw_set_transform(Vector2(1223,116),0,Vector2(.78,.78));reactor_page()
+            draw_set_transform(Vector2.ZERO)
+            frame(Rect2(52,842,2295,158),Color("143844"),Color("668b8e"))
+            text("原机械端接保留：装备旧框/支脚、B01 舱梁/台颊直接承托操作面；未另盖整块宿主板。",72,875,18,CREAM)
+            text("同源现有金属控件图集：深青普通键、暖金仅执行；原生 B01 抓手、明确下拉箭头；四色只标分配。",72,907,16,Color("c4d7d1"))
+            text("状态方向：普通 / 悬浮 / 按下 / 已选 / 禁用沿同一按钮材质调亮度；不足仅费用金额红，执行后由 Owner 提示。",72,935,16,Color("c4d7d1"))
+            text("当前仅早2槽和四路25%代表；新标题/费用排版与1/2/3路、MAX、长费、hover/按下均待原组运行适配与整屏审核。",72,964,15,Color("9fbebd"))
+            text("源：装备 19a2/d354 · B01 808/6d",1680,984,14,Color("9fbebd"))
+
+func texture(path:String) -> Texture2D:
+    var image:=Image.new()
+    if image.load(path)!=OK:push_error("Missing "+path);return null
+    return ImageTexture.create_from_image(image)
+func _initialize() -> void:
+    call_deferred("run")
+func run() -> void:
+    var font:=FontVariation.new()
+    font.base_font=load("res://assets/fonts/NotoSansSC.ttf")
+    font.variation_opentype={2003265652:500.0}
+    var e:=texture(EQUIP_SOURCE);var r:=texture(REACTOR_SOURCE)
+    var c:=texture("res://assets/ui/equipment/materials-20261029/control-materials.png")
+    var g:=texture("res://assets/ui/reactor/b01/slider-knob.png")
+    for v in ["equipment","reactor","comparison"]:
+        root.size=Vector2i(2400,1030) if v=="comparison" else Vector2i(1440,900)
+        root.content_scale_size=root.size
+        var study:=Study.new(v,font,e,r,c,g)
+        root.add_child(study);study.size=root.size
+        await process_frame;await RenderingServer.frame_post_draw
+        root.get_texture().get_image().save_png(OUT+("compare-2400x1030.png" if v=="comparison" else v+"-1440x900.png"))
+        study.queue_free();await process_frame
+    quit()

@@ -1,0 +1,30 @@
+extends SceneTree
+func _initialize() -> void:
+	call_deferred("run")
+func run() -> void:
+	assert(GDExtensionManager.load_extension("/tmp/planet-native-472/planet.gdextension") == GDExtensionManager.LOAD_STATUS_OK)
+	var game = load("res://src/main.gd").new()
+	root.add_child(game)
+	await process_frame
+	assert(game.startup_error.is_empty())
+	game._skip_tutorial = true
+	game._select_left_module("planet")
+	var panel = game.planet_scene
+	var slot := Control.new()
+	root.add_child(slot)
+	panel.set_shared_host(true, slot)
+	assert(not panel._wallet.visible and slot.get_child_count() == 1)
+	assert(panel.prepare_host_hide())
+	var changed := [0]
+	panel.exclusive_ui_changed.connect(func(): changed[0] += 1)
+	panel.world_planet_picker.get_popup().popup()
+	await process_frame
+	assert(panel.has_exclusive_ui() and not panel.prepare_host_hide())
+	assert(panel.prepare_host_hide(true))
+	await process_frame
+	assert(not panel.has_exclusive_ui() and changed[0] >= 2)
+	panel.set_shared_host(false, null)
+	assert(panel._wallet.visible)
+	if game.session.save_files != null: game.session.save_files.close(2000)
+	print("PLANET_H1_PORT_COMPLETE ", changed[0])
+	quit()

@@ -1,0 +1,167 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var observed: Dictionary = {"equipment_slots":0,"loadout":0,"wallet":0,"ship":0,"statistics":0,"node_added":0,"node_removed":0,"battle_draw":0,"equipment_draw":0}
+var perf_records: Array = []
+var failures: Array = []
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/evidence"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    root.get_texture().get_image().save_png(destination.path_join(name + ".png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func record(action: String, before: Dictionary) -> void:
+    records.append({"action": action, "before": before, "after": snapshot(), "actual_result": panel.last_result.duplicate(true)})
+func assert_purchase(before: Dictionary, label: String) -> void:
+    var result: Dictionary = panel.last_result
+    check(result.get("purchase_receipt", {}).get("commit_status") == "accepted", label + " native accepted receipt")
+    var after: Dictionary = snapshot()
+    var spent: Dictionary = result.get("purchase_receipt", {}).get("spent", {})
+    for resource in spent:
+        var expected: Dictionary = host.amount_api.apply("sub_nonnegative", [before.wallet[resource], spent[resource]])
+        check(expected.ok and host.amount_api.apply("compare", [expected.value, after.wallet[resource]]).scalar == 0, label + " exact wallet minus actual spent " + resource)
+    for purchase in result.get("purchase_receipt", {}).get("purchases", []):
+        var old_level: int = -1
+        var new_level: int = -1
+        for row in before.slots:
+            if row.id == purchase.slot_id: old_level = row.paid_level
+        for row in after.slots:
+            if row.id == purchase.slot_id: new_level = row.paid_level
+        check(new_level - old_level == int(purchase.count), label + " actual count " + purchase.slot_id)
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func nodes_of(node: Node, nodes: Dictionary, styles: Dictionary, texts: Dictionary) -> void:
+    nodes[str(node.get_instance_id())] = str(node.get_path())
+    if node is Button:
+        styles[str(node.get_instance_id())] = node.get_theme_stylebox("normal").get_instance_id()
+    if node is Label: texts[str(node.get_instance_id())] = node.text
+    for child in node.get_children(): nodes_of(child, nodes, styles, texts)
+func perf_snapshot() -> Dictionary:
+    var nodes: Dictionary = {}; var styles: Dictionary = {}; var texts: Dictionary = {}
+    nodes_of(app, nodes, styles, texts)
+    var resources: Dictionary = {}
+    for key in host.battle._models: resources[key] = host.battle._models[key].texture.get_instance_id()
+    return {"nodes":nodes,"styles":styles,"texts":texts,"observed":observed.duplicate(),"configuration_commits":host.battle.configuration_commits,
+        "kernel_id":host.battle._kernel.get_instance_id(),"presentation_id":host.battle._presentation.get_instance_id(),"statistics_id":host.battle._statistics.get_instance_id(),
+        "hull_resources":resources,"weapons":host.battle._values.duplicate(true),"enemies":host.battle._kernel.enemy_views(),"workload":host.battle._kernel.workload_metrics(),"persistent":host.battle._kernel.persistent_state(),"frames":Engine.get_frames_drawn(),"equipment_counters":panel.get("presentation_counts").duplicate(true) if panel.get("presentation_counts") != null else null}
+func perf_record(label: String, before: Dictionary) -> void:
+    var after: Dictionary = perf_snapshot()
+    var added: Array = []; var removed: Array = []; var styles: Array = [];var texts: Array = []
+    for key in after.nodes:
+        if not before.nodes.has(key): added.append(after.nodes[key])
+    for key in before.nodes:
+        if not after.nodes.has(key): removed.append(before.nodes[key])
+    for key in after.styles:
+        if before.styles.has(key) and before.styles[key] != after.styles[key]: styles.append(after.nodes[key])
+    for key in after.texts:
+        if before.texts.has(key) and before.texts[key] != after.texts[key]: texts.append(after.nodes[key])
+    var delta: Dictionary = {}
+    for key in observed: delta[key] = after.observed[key] - before.observed[key]
+    var differences: Dictionary = {"weapons":[],"defences":[]}
+    var ui_delta: Dictionary = {}
+    if before.equipment_counters != null:
+        for key in after.equipment_counters: ui_delta[key] = after.equipment_counters[key] - before.equipment_counters[key]
+    for group in differences:
+        for key in after.weapons[group]:
+            if after.weapons[group][key] != before.weapons[group].get(key): differences[group].append(key)
+    var stable: bool = before.kernel_id == after.kernel_id and before.presentation_id == after.presentation_id and before.statistics_id == after.statistics_id and before.hull_resources == after.hull_resources
+    perf_records.append({"action":label,"before":before,"after":after,"observed_delta":delta,"added_nodes":added,"removed_nodes":removed,"replaced_button_styles":styles,"changed_label_texts":texts,"changed_battle_values":differences,"equipment_counter_delta":ui_delta,"battle_objects_and_resources_same":stable,"same_enemy_array_identity":is_same(before.enemies,after.enemies),"configuration_commit_delta":after.configuration_commits-before.configuration_commits,"result":panel.last_result.duplicate(true)})
+    check(stable,"stable battle/resources "+label)
+    check(before.enemies == after.enemies,"unrelated enemies unchanged "+label)
+    for key in ["active_flights","flight_slots","active_capacity","feedback_capacity"]:
+        check(before.workload[key] == after.workload[key],"flight pool retained "+key+" "+label)
+    if label != "actual_refit_cannon": check(before.workload == after.workload,"queues retained "+label)
+    check(after.configuration_commits-before.configuration_commits == (1 if label=="actual_refit_cannon" else 0), "configuration commit scope "+label)
+    if label != "actual_refit_cannon":
+        check(before.persistent == after.persistent,"encounter/flight serial and history retained "+label)
+    else:
+        check(before.persistent.history_counts == after.persistent.history_counts and before.persistent.next_ids.attack == after.persistent.next_ids.attack and before.persistent.next_ids.encounter == after.persistent.next_ids.encounter, "refit retains in-flight attack/encounter identity")
+func perf_click(label: String, control: Control) -> void:
+    var before: Dictionary = perf_snapshot()
+    await click(control)
+    perf_record(label,before)
+func run() -> void:
+    app = load("res://src/main.tscn").instantiate();root.add_child(app);host = app.session;panel = app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"real startup")
+    host.set_pause("user",true)
+    var campaign: Dictionary = host.campaign_system.save_state()
+    campaign.state.highest_reached=100;campaign.cycle_reached=100;campaign.state.state="menu";campaign.departure_remaining=0.0;campaign.state.speed=0.0;campaign.state.cleared_stages={}
+    for level in range(1,100): campaign.state.cleared_stages[level]=true
+    check(host.campaign_system.restore_state(campaign).ok,"validated controlled campaign")
+    host.equipment.refresh_availability(host.campaign_system.available,100)
+    check(host.campaign_system.change_ship("Cruiser",host.commit_ship_refit).ok,"real cruiser refit")
+    for pair in [["weapon:0","missile"],["weapon:1","missile"],["weapon:2","longLaser"],["defence:0","shield"],["defence:1","armour"]]:
+        check(host.equipment.equip_slot(pair[0],pair[1],host.equipment_inputs(),host.publish_equipment_refit).ok,"setup equip "+pair[0])
+    var setup: Dictionary = host.equipment.save_state()
+    for slot in setup.slots:
+        slot.paid_level=80 if slot.category=="defence" else 1
+        slot.switch_ready_at=0.0
+    check(host.equipment.restore_state(setup,host.campaign_system.ship_facts().mounts).ok,"validated controlled equipment")
+    check(host.publish_equipment_refit(host.economy.budget(),"refit","",null,false).ok,"native setup sync")
+    wallet("2000000","2000")
+    check(host.start_campaign_sortie(5).ok,"actual stage5 sortie")
+    host.set_pause("user",false)
+    var warm: int = Time.get_ticks_msec()
+    while (host.battle._kernel.enemy_views().is_empty() or host.battle._kernel.active_flight_count()==0) and Time.get_ticks_msec()-warm<20000:
+        await create_timer(0.1).timeout
+    host.set_pause("user",true)
+    await flush()
+    check(not host.battle._kernel.enemy_views().is_empty() and host.battle._kernel.active_flight_count()>0,"live enemies and native in-flight attacks for isolated click diagnosis")
+    await click(panel._slot_buttons["weapon:0"].button)
+    host.equipment.slots_changed.connect(func(_ids):observed.equipment_slots+=1)
+    host.equipment.loadout_changed.connect(func():observed.loadout+=1)
+    host.economy.display_changed.connect(func():observed.wallet+=1)
+    host.campaign_system.ship_changed.connect(func():observed.ship+=1)
+    host.battle._statistics.changed.connect(func():observed.statistics+=1)
+    node_added.connect(func(_node):observed.node_added+=1)
+    node_removed.connect(func(_node):observed.node_removed+=1)
+    panel.draw.connect(func():observed.equipment_draw+=1)
+    for child in app._battle_viewport.get_children():
+        if child.get_script()==app.BattleView: child.draw.connect(func():observed.battle_draw+=1)
+    var idle: Dictionary = perf_snapshot()
+    for i in 12: await process_frame
+    await RenderingServer.frame_post_draw
+    perf_record("idle12frames",idle)
+    await perf_click("slot_selection_same_category",panel._slot_buttons["weapon:1"].button)
+    await perf_click("quantity_plus10_browse",panel._quantity_buttons[1])
+    await perf_click("candidate_cannon_browse",panel._choices.cannon.button)
+    await perf_click("batch_open",panel.get_node("BatchOpen"))
+    var close: Button = panel._batch.get_child(0).get_child(0).get_child(3).get_child(1)
+    await perf_click("batch_close",close)
+    check(not panel._batch.visible,"actual batch close")
+    await click(panel._quantity_buttons[0])
+    await perf_click("actual_plus1",panel._purchase)
+    await click(panel._quantity_buttons[1])
+    await perf_click("actual_plus10",panel._purchase)
+    await click(panel._quantity_buttons[2])
+    await perf_click("actual_MAX",panel._purchase)
+    await perf_click("actual_refit_cannon",panel._install)
+    var cooling: Dictionary = perf_snapshot()
+    await create_timer(0.7).timeout
+    perf_record("paused_cooldown_ui_0.7seconds",cooling)
+    var file := FileAccess.open(destination.path_join(OS.get_environment("SPACE_IDLE_PERF_OUTPUT")),FileAccess.WRITE)
+    file.store_string(JSON.stringify({"setup_scope":"validated controlled owner save states, actual main/native stage5, pause only after real enemy+in-flight attacks exist to isolate click effects; rendering remains unlimited and active","source_commit":OS.get_environment("SPACE_IDLE_PERF_SOURCE"),"engine":Engine.get_version_info(),"records":perf_records,"failures":failures},"  "));file.close()
+    print("PERF_CAPTURE_COMPLETE failures=",failures.size()," records=",perf_records.size())
+    app._close_game()

@@ -1,0 +1,160 @@
+{
+  "branch": "feat/amount-safe-previews",
+  "before_commit": "3d14ded89ce8e91395d64d23a49d9d520edb6818",
+  "design_review": "3d14ded8 approved in limited scope; current implementation pending original dual review; main paused",
+  "scope": "owner-only Reactor presentation, +1 price/affordability, current/target display ratios, deferred local presentation and true budget-net-change signals",
+  "evidence": {
+    "reactor-presentation-probe.txt": {
+      "sha256": "b293cfdcf78b4b648c82288018a185f774cd1bcfa80fa90b95d3d5b36578797f",
+      "bytes": 312,
+      "exit_code": 0,
+      "script": "foundation/tests/_reactor_presentation_probe.gd"
+    },
+    "reactor-purity-regression.txt": {
+      "sha256": "5c5bfe75e8806d06aa5ba4641ceaa229f7a7faa9d9ee83c0ad3476888b843791",
+      "bytes": 274,
+      "exit_code": 0,
+      "script": "foundation/tests/_reactor_candidate_purity_probe.gd"
+    },
+    "amount-preview-regression.txt": {
+      "sha256": "1f4f164357e72736bc66ef3a08467c7e6f6039155cb06754ebfd49f014e5441f",
+      "bytes": 295,
+      "exit_code": 0,
+      "script": "foundation/tests/_amount_preview_probe.gd"
+    },
+    "reactor-presentation-check.txt": {
+      "sha256": "83cf0b082206af2aa236c83064fbcfa76be1e00a4aa3558574b2f65965d9481c",
+      "bytes": 75,
+      "exit_code": 0,
+      "script": "src/main.gd"
+    }
+  },
+  "sources": {
+    "src/systems/reactor.gd": {
+      "canonical_lf_sha256": "0ed064d7f40cf2ac42e27b55b825ff60fe06e7f808ee586bbbd2ab771e6a1d8b"
+    },
+    "src/systems/economy.gd": {
+      "canonical_lf_sha256": "becf89543f685ef9512e1c5a918dd9a9f776d2730fbb2fb51552bf2b59a6817f"
+    },
+    "src/game_session.gd": {
+      "canonical_lf_sha256": "de56e2010aa1433c263b79c235b190aebfcdcb332dae231d09b5546ba44649ac"
+    },
+    "src/main.gd": {
+      "canonical_lf_sha256": "ba9d563549853e402caf86a04cc200beb64d86bbb9257e75a876bcfa2dce270e"
+    },
+    "foundation/tests/_reactor_presentation_probe.gd": {
+      "canonical_lf_sha256": "e7573b32d3e1fd4d1004bb15540ff0dc65ae1a7209230634e49aed15fd9a09b9"
+    },
+    "foundation/tests/_reactor_candidate_purity_probe.gd": {
+      "canonical_lf_sha256": "0f97316c7978fa9f58fc3862904f24cf07b4f9a2f5d33033735fff46bf495007"
+    },
+    "foundation/tests/_amount_preview_probe.gd": {
+      "canonical_lf_sha256": "ae2a6c2cd411459fca94e290eff084170ed9ab40a02fd277fcc433cbdc30cf35"
+    }
+  },
+  "baselines": {
+    "src/systems/reactor.gd": {
+      "git_blob": "a1b482a6dde148d2b032acdab7ba9dd94a0f473a",
+      "sha256": "d3d11ed1400dc4af12dc128b4d89a7e19a9d70447410db14a17a08e87869ec95",
+      "bytes": 20066
+    },
+    "src/systems/economy.gd": {
+      "git_blob": "26e65198a84e35f2eea29b627397b16db9e95f97",
+      "sha256": "38780135a3094f76a41d77048cfb59445101159ac15ff4c75a1434ffb2518702",
+      "bytes": 22266
+    },
+    "src/game_session.gd": {
+      "git_blob": "3a8a01f7a776deca2d37c0469b7167b82d70216b",
+      "sha256": "de56e2010aa1433c263b79c235b190aebfcdcb332dae231d09b5546ba44649ac",
+      "bytes": 84195
+    }
+  },
+  "research_regression_baseline": {
+    "commit": "077cd522e514fde6a715ea6d02397e50263f2509",
+    "sha256": "56c124239a8a9d9fbfdc945300eb4fdf5f144e9320cebc9d245333521ce2a26c",
+    "bytes": 17575
+  },
+  "unchanged_methods": {
+    "reactor.save_state": "6d3e28d138b05deae7af13e9d3933fecced24e9219448ec09c084008b9a2b240",
+    "reactor._init": "7607031745156d4c3cc54526b314cb382fe5eaef9169978188751566b37748a7",
+    "reactor.panel_options": "b1b4b1a80aca1cf186f8f02f797ab6771c416267d814ff2952804c83c6a4dd31",
+    "reactor.publish_availability": "ad93a845e36d71ec52afabe4edbc9c16b08e4825bd30023baa6af61ff8b6b04c",
+    "reactor.enabled_modules": "7a743919480bd3795be1f215ea5b9f8a07f9d0d5ed41c4d11ff11e67f62df022",
+    "reactor.modules_changed": "4289c08937bff255429551c0e393db0063b5904888ac3ca8764e15a40ae8d416",
+    "reactor.prepare": "ab359ad783539e1e51d34d8e0b17c78c0f94e712c6f34841c631132e6681eb40",
+    "reactor.accept": "49895290742afbbb6df84edaeb7fec0a7c5c914b84780309bb1487d44bab11dc",
+    "reactor.discard_prepared": "da8ff5b68c35118b0e2d09e966b3ff08bd7f52fb439ed0a64aeeb8262ddbe950",
+    "reactor._submit": "160fd9a88d42d62b115bdfe2aeaad28b47b4013988dc89576cb5e0256fb58f1f",
+    "reactor.purchase": "be96d362253a03f86147b0095da9090985356c129956bd81085384a0ec8639bc",
+    "reactor.allocate_text": "b79562fd359b787e76574553a3053ba4d43b2b73ea2a56482a1cf3fcc4c1c426",
+    "reactor.distribute": "fa2a0da443f03fe223bc89a8ae28ada128f7f88dd523a0d5ac7b529e44c680b1",
+    "reactor.refresh": "689b8c47b1cdb9bd1a5404f8a42a0c720e828ea9a8d566044005d6e4b7e7f927",
+    "reactor.allocation_plan_preview": "0be4de0b85c5788e54873a757ce888959c27a8f9bdc6c17fca1268a63d63287e",
+    "reactor.apply_allocation_plan": "d9ec04adf73629f6fad42029093c8fabe6f18855c7d819bd6035bbdd633d997c",
+    "reactor._plan_input_admission": "1cbc22f41cb5bed2f329cb613e4f2f66290fb78ae6828b3ddb28999009ed1e77",
+    "reactor._allocation_plan": "217e31190dcd237a0ca72cb490e1f83b71b6b40cc1574ea06b82ce77f0a5c4bd",
+    "reactor._accepted_plan_readings": "2d803e5c0d5ef7d8d77ee65d19e2086efc66f24761d4a4f2fd987f3b8bfb5d37",
+    "reactor._initial": "f258a4665d9b7085f5d393131a8b0d0cfe2f4cd96a18279f0716c09ae129fbd8",
+    "reactor._quote": "b90c18706d174ee9d081d7ccbd493dddfa30497e3a4de9be62ecbd3f8693b22a",
+    "reactor._capacity": "545cffba2f5887ffb317412f6a2bb19b6c0a03656bed41e99e0f3a783002e9b9",
+    "reactor._evaluate": "9992e41f2b44f14f905d041487cf8cf878757cdeb7fbe1f1a866972d96b7685e",
+    "reactor._allocate": "e963be0a5690cfaeb5ae02ca90c115d457901c529df58da62573fcbeacc50c58",
+    "reactor._distribute": "989d8a569a873d3c88cab429037786a3ba732ddbb01d388e27f547eb9c5c1af0",
+    "reactor._purchase": "0ccf717cf79f706e37e7249b63f519444df1b4c5c5e68fb6dd34da3a50255257",
+    "economy.budget": "3803b86de8c74095689dc4fa74808e4102277273b3faa63c0efcf570398ffce0",
+    "economy.credit_offline": "d67cb4aee37d8f50272c9ebf566ab9a09c3b1e710592d0acbf0ce3f3164117de",
+    "economy.save_state": "4d9a76b92b4f2e56a1b4434c621a225ab6b5c5cf2d5108805369d092dce8d83c",
+    "economy.publish_budget_change": "06e9445404dfc9594d453026da99316364a7a945e51bd12cf80a3117d945f523",
+    "economy.affordable": "bde5e053e27de036315a40e386872d707260f96237345182dc8ff8ced37a136c",
+    "economy.can_pay": "ee093c2832e47e878428889e5c935b76874c082c228c0a50ac43cc719f03cea3",
+    "economy.payment": "9d157ad15bf4a4b102a23b16e9c6df7728785ce1d3eb3437d998951909f1377f",
+    "economy.register_drops": "7abfa89383f3dc986ac7e686f945d9b7a609b64aa9ea71f8a1a8a42f9bc5f461",
+    "economy.collect_due": "7167b157e6a01c4aa29c0ea1ebd09457908349c434331a0b3e7f3817256eb494",
+    "economy._spawn_timed_drop": "a6f26df5d5cfbca1fe1c39080b936052fd88c953617218c0331bfd9902ad72b0",
+    "economy._advance_timed_drops": "aa8b3af0d88be567eee0433cb72bae1adf7a3950169149cf3dc364c4ec2ba34a",
+    "economy.prune_income": "2fe8296be8ec542ef33b8d407e5abd1281721f7f1e393fcb1c86de66528d8466",
+    "economy.income_rates": "b102a121d2359ec2688ed9709493a7662f75aa10be7bfb18f4339f617d9a877e"
+  },
+  "notification_only_hooks": {
+    "reactor.restore_state": {
+      "original_sha256": "034b81e7f79e752cfa22d5996a44bbda2caa2abbbd0191a82c9f70e644345099",
+      "change": "only insert notification queue before real state/wallet replacement"
+    },
+    "reactor.refresh_availability": {
+      "original_sha256": "8115a1c190ea034c587d84b46ffc6518d50636ee70ea76382e11b80991b40bab",
+      "change": "only insert notification queue before real state/wallet replacement"
+    },
+    "reactor._adopt": {
+      "original_sha256": "949a9a330bfce276eada803261371837089016bf952279f9c6493a912a15b687",
+      "change": "only insert notification queue before real state/wallet replacement"
+    },
+    "economy.restore_state": {
+      "original_sha256": "404fc10519e5df4ebe31c06c12f1eeea6ee799852c3202b2b82b570ac004b817",
+      "change": "only insert notification queue before real state/wallet replacement"
+    },
+    "economy.accept_budget": {
+      "original_sha256": "d32cbce3fcfab626ff42e1a440ee9e7422dca87a560336d728f2498bc39d8b7e",
+      "change": "only insert notification queue before real state/wallet replacement"
+    },
+    "economy.collect_drop": {
+      "original_sha256": "73f050f98efa5bea19151157c150ac8570a6287a5c651fb10b846b5ae45ec431",
+      "change": "only insert notification queue before real state/wallet replacement"
+    },
+    "economy.credit_yield": {
+      "original_sha256": "76cb7be6682c75f2462ae44556c7dbb8ac158043db2346a13f166eb6596babc2",
+      "change": "only insert notification queue before real state/wallet replacement"
+    }
+  },
+  "configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
+  "native_source_tree": "a990ed73bdb2c63471ebed15dd9ddbe500d22ce8",
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "consumer_reference": {
+    "commit": "170849dd",
+    "reactor_scene_git_blob": "b106e803c9900f03d26df21b6d28fcc646fc98bd",
+    "main_git_blob": "7ce2a7e257f18f7c7f3bc655395fb2db7e25f6e9",
+    "validation": "static interface/schema/signal comparison only; no consumer UI modified or executed"
+  },
+  "byte_policy": "Four raw stdout files use directory *.txt -text; compare exact Git blob bytes separately from source/docs whitespace checks. Source hashes explicitly canonical LF.",
+  "limits": "Focused owner fixtures and actual Windows Session/native publication, not consumer UI integration or full gameplay/physics/native combination/performance acceptance. No independent retest claim. Original M10 WIP unchanged and excluded."
+}

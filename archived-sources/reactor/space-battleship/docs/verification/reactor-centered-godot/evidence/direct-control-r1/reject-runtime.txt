@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+DIRECT equal={ "ok": true, "defence_changed": true } levels=1
+DIRECT reject={ "ok": false, "reason": "ReactorPlanOverCapacity" } model=0.25 slider=2500.0 notice=分配超过可调容量

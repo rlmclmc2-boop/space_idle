@@ -1,0 +1,1854 @@
+{
+  "kind": "whole-equipment-layout-adaptation-static-candidate",
+  "stage": "Current42–62 shared-source composition candidate; not accepted/user approved/native implementation.",
+  "module": [
+    0,
+    0,
+    808,
+    900
+  ],
+  "main_plates": [
+    {
+      "file": "42-coherent-early.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "93f416e98553cbd21dee407399085099863be3c2f5229a50f0775ac777a294af",
+      "svg_sha256": "9711410ae39f4380a41f862fe296d89e53adc2e3f064bfc34e0804a3b032b33c",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "43-coherent-middle.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "ef0c1559107b03152b0a291a3d91a3d1c002a82944b25fb05409777df4998e61",
+      "svg_sha256": "2b45ba9e9b7e587056340f3eaa0e5a1c911cfa5420cb26b6e52c2009597e1789",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "44-coherent-late.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "f1b069f5ec67d99145dd9760beca4c80a7ad05472d3b5f4edbac6ef8e2018c87",
+      "svg_sha256": "25f8b60c3ea1608f9773f6f347318c40c42311d59a45cb07ac4e7eddfe48595f",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "45-coherent-bottom.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "b79bf9a1b1a6bad99817a453dea60dc6bc5412e92c476986f4028ef57af7b207",
+      "svg_sha256": "371e3ff52a678927030a6d4d9fe1e2038643355c60ae54d9be3d02d24ba95abb",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "46-coherent-defence.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "3bf671715f42dd0dabebeac75b6f02bcfb8ae5e7b5f336ab70ef43db75abceaa",
+      "svg_sha256": "f25a935e92fa725edc402d9f445b5c308fe44f6faf33affcc70a6b6289381078",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "47-coherent-max.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "632460385f71475f734fb0bb88fb3bde4fa3b01e11e9daece05abe20999c9f5b",
+      "svg_sha256": "68346350112179c39390766dd07da7f721896c64d3ad285b773ee930849c201d",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "48-coherent-material-locked.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "dac64ffec72ac80e3c352590c947bcb5c14c67149aa5df37cb765ddff071529e",
+      "svg_sha256": "20b1ba2c46621a9d545da7b207bbf20f535c1f1af2057b93afd58c18b7254ee9",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "49-coherent-affordable.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "2bcd72b8ce089b9740a2014878f467dce57b96f6e763f6de373ca86a836353df",
+      "svg_sha256": "ae23de3c7a6b8ce7e67a90b8eac691ef5a5c44f23303acd5b168bd7425b8f748",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "50-coherent-single-fee.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "fe4406c83f787207aef0ee8e04f8ef939a1fa797e04d77ba0243fa41458dcf56",
+      "svg_sha256": "29aa09a12b050f8c817e98b3ebefe30893705c29ee2822d82ed4858198e2b06d",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "51-coherent-defence-dropdown.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "672a8db32d07bb5b6797bf178c37823879d1f1a097f0fe7e06700e29625d6164",
+      "svg_sha256": "3743d6d919163df61604456483ed7312f26da330512c716b9b86a0e10d4e6188",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "52-coherent-defence-comparison.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "12884d71dbc5817a6af24e96128b73bc2deea33d33fe8efd7d4beffae2970e8c",
+      "svg_sha256": "554ab02f9cffcccc24d07f8b252227b858138b5bd7b13b460790a2f8a6a100e1",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "53-coherent-weapon-dropdown.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "36df8e8ad760484223e88556c11738b7cb782b9a59b65e7505078d15ca9746ce",
+      "svg_sha256": "545608921471213b40d6e787ac01b1e94128e54b2c13f9cc1a7d264a786435e4",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "54-coherent-weapon-comparison.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "b6ae07f3aa19a7ea7399cbbdc82027177b4aedad45207db3f468920e17870681",
+      "svg_sha256": "476bc337064a731432af2d02f9071d0b9466bd00d7263b1c522b30791ad91ae7",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "55-coherent-purchase-hover.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "06ba36936c713bb6790a8d742a2a1c2de66cee5f15ffc188b2dc66f7b86f8654",
+      "svg_sha256": "059f23c57fc55c1112c24a501fea1a3cbd3d3abf0a37231e24c8c8557cd2e7fe",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "56-coherent-purchase-pressed.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "945aef05b2d6de6c110a0ec7ebbc84588d7b154cd37df5b0ef4a723da2a98400",
+      "svg_sha256": "82f6f7a9fe05d5a8d5da0f241d2e580cbb4812c775b1a3cd938ea254bc286377",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "57-coherent-purchase-focus.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "e0e517f2d7f6cf71847467cf47d386dc3b59885e3bdc704e8bfb7752c3dfe1bd",
+      "svg_sha256": "c66362f2f04119104ae49b72d8022d8d497b99b6f58e6813551cf1a8bd6488e2",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "58-coherent-purchase-hover_pressed.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "ec30e64572da6bfd94794c32f29abf21afcc476462dbdb028689af1bcf655af4",
+      "svg_sha256": "45f510f58feb6ca6fda3045e9162fb3f4dc03a11a9314187c52f8fb3e7c3b7ef",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "59-coherent-active-empty.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "51c064c3305c3f9693d0897092473a64ac786d675bb5b8a46afeae0d1eb2d2c6",
+      "svg_sha256": "93bfbe512b8ac742d61d86a47fa85fc86795c00cb9b2679d8071c9e846d29ef1",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "60-coherent-dormant-details.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "f2cf9ad52f9af38288a21afbdebf164a442153d3a658019d31fa4a5cae16b41b",
+      "svg_sha256": "437b64abee39672ca8c407d294dbcbbf40d4769860d1eb39b0ae9ab8ae31d558",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "61-coherent-long-max.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "08f5850c984712d8e5eae3548097141c1a0266bc29eb68a0fbfb85bf3e9f93e3",
+      "svg_sha256": "6fc386ccf731a92e965f0fe4b3b5389ed522a3280145f4aef64a62210a710a08",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    },
+    {
+      "file": "62-coherent-long-max-poor.png",
+      "size": [
+        1440,
+        900
+      ],
+      "sha256": "384adfc1c25893efa23faffa9fe6e1e65f7878a2a5e30dfea62f37ce6ad2a021",
+      "svg_sha256": "f4707fe9a6fde2c421e276c74e26646054df34fbfb854821ae24ec3794edc098",
+      "actually_viewed": true,
+      "header_diff_bbox_against_b17": null,
+      "battle_diff_bbox_against_context": null
+    }
+  ],
+  "imagegen_originals": [
+    {
+      "file": "imagegen-01-early-process.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "3d5955d0f6fc6c7775c6f88e8ebf27c451e6b68a7049ba94a18ac5bae518bc39",
+      "actually_viewed": true,
+      "not_precision_main_plate": true
+    },
+    {
+      "file": "imagegen-02-late-process.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "138efc0d7711d405547e1158adc7f5935417e87e1a85a13fd41a22332b57ce04",
+      "actually_viewed": true,
+      "not_precision_main_plate": true
+    },
+    {
+      "file": "imagegen-03-late-correction.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "d956b42a935410708048dd29068b55ec33948c5db82c19696d6e37a42291a951",
+      "actually_viewed": true,
+      "not_precision_main_plate": true
+    }
+  ],
+  "renderer": "Inkscape CLI with repository NotoSansSC.ttf resolved via private FONTCONFIG_FILE; static export only",
+  "svg_source": "build-design-plates.py",
+  "layout": {
+    "workbench_x": [
+      332,
+      788
+    ],
+    "row_pitch": {
+      "normal": 84,
+      "dense": 108
+    },
+    "baselines_yOffset": [
+      24,
+      47,
+      73
+    ],
+    "second_fee_baseline": 95,
+    "quantity_size": [
+      52,
+      36
+    ],
+    "purchase_size": [
+      92,
+      36
+    ],
+    "identity_dropdown_size": [
+      216,
+      27
+    ],
+    "level_separate_from_dropdown": true,
+    "fee_and_reason_font_size": 15,
+    "stage_panel_positions": {
+      "early": {
+        "panel": [
+          332,
+          320,
+          456,
+          295
+        ],
+        "row_y": {
+          "weapon:0": 372,
+          "defence:0": 499
+        },
+        "row_bounds_x_width_height": [
+          340,
+          440,
+          "84 ordinary /108 dense; quiet bottom separator"
+        ],
+        "row_pitch": "fixed profile independent of affordability/reason",
+        "panel_total_outer_envelope_outset": 4,
+        "outer_envelope": [
+          328,
+          316,
+          464,
+          303
+        ],
+        "module_top_clearance": 231,
+        "right_client_clearance": 16,
+        "bottom_client_clearance": 281,
+        "row_variants": {
+          "weapon:0": "dense",
+          "defence:0": "dense"
+        },
+        "row_capacity_budget": {
+          "weapon:0": 2,
+          "defence:0": 2
+        },
+        "row_y_top_scroll": {
+          "weapon:0": 372,
+          "defence:0": 499
+        },
+        "viewport": [
+          340,
+          354,
+          440,
+          254
+        ],
+        "scroll_offset_bottom": null,
+        "row_y_bottom_scroll": null
+      },
+      "middle": {
+        "panel": [
+          332,
+          280,
+          456,
+          547
+        ],
+        "row_y": {
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "defence:0": 651,
+          "defence:1": 735
+        },
+        "row_bounds_x_width_height": [
+          340,
+          440,
+          "84 ordinary /108 dense; quiet bottom separator"
+        ],
+        "row_pitch": "fixed profile independent of affordability/reason",
+        "panel_total_outer_envelope_outset": 4,
+        "outer_envelope": [
+          328,
+          276,
+          464,
+          555
+        ],
+        "module_top_clearance": 191,
+        "right_client_clearance": 16,
+        "bottom_client_clearance": 69,
+        "row_variants": {
+          "weapon:0": "dense",
+          "weapon:1": "normal",
+          "weapon:2": "dense",
+          "defence:0": "normal",
+          "defence:1": "normal"
+        },
+        "row_capacity_budget": {
+          "weapon:0": 2,
+          "weapon:1": 1,
+          "weapon:2": 2,
+          "defence:0": 1,
+          "defence:1": 1
+        },
+        "row_y_top_scroll": {
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "defence:0": 651,
+          "defence:1": 735
+        },
+        "viewport": [
+          340,
+          314,
+          440,
+          506
+        ],
+        "scroll_offset_bottom": null,
+        "row_y_bottom_scroll": null
+      },
+      "late": {
+        "panel": [
+          332,
+          280,
+          456,
+          564
+        ],
+        "row_y": {
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "weapon:3": 608,
+          "weapon:4": 692,
+          "defence:0": 795,
+          "defence:1": 879,
+          "defence:2": 963
+        },
+        "row_bounds_x_width_height": [
+          340,
+          440,
+          "84 ordinary /108 dense; quiet bottom separator"
+        ],
+        "row_pitch": "fixed profile independent of affordability/reason",
+        "panel_total_outer_envelope_outset": 4,
+        "outer_envelope": [
+          328,
+          276,
+          464,
+          572
+        ],
+        "module_top_clearance": 191,
+        "right_client_clearance": 16,
+        "bottom_client_clearance": 52,
+        "row_variants": {
+          "weapon:0": "dense",
+          "weapon:1": "normal",
+          "weapon:2": "normal",
+          "weapon:3": "normal",
+          "weapon:4": "normal",
+          "defence:0": "normal",
+          "defence:1": "normal",
+          "defence:2": "normal"
+        },
+        "row_capacity_budget": {
+          "weapon:0": 2,
+          "weapon:1": 1,
+          "weapon:2": 1,
+          "weapon:3": 1,
+          "weapon:4": 1,
+          "defence:0": 1,
+          "defence:1": 1,
+          "defence:2": 1
+        },
+        "row_y_top_scroll": {
+          "weapon:0": 332,
+          "weapon:1": 440,
+          "weapon:2": 524,
+          "weapon:3": 608,
+          "weapon:4": 692,
+          "defence:0": 795,
+          "defence:1": 879,
+          "defence:2": 963
+        },
+        "viewport": [
+          340,
+          314,
+          440,
+          523
+        ],
+        "scroll_offset_bottom": 211,
+        "row_y_bottom_scroll": {
+          "weapon:0": 121,
+          "weapon:1": 229,
+          "weapon:2": 313,
+          "weapon:3": 397,
+          "weapon:4": 481,
+          "defence:0": 584,
+          "defence:1": 668,
+          "defence:2": 752
+        }
+      }
+    },
+    "viewport_behavior": {
+      "late_top_plate": "03-late-eight.png",
+      "late_bottom_plate": "08-late-scroll-bottom.png",
+      "content_height": 734,
+      "viewport_height": 523,
+      "scroll_range": [
+        0,
+        211
+      ],
+      "scrollbar_track": [
+        780,
+        314,
+        6,
+        523
+      ],
+      "top_view": "Weapons1–5 complete; defence1 continues below clip. All defence rows available by same workbench scroll.",
+      "bottom_view": "Weapons3–5 and defence1–3 complete; weapon3 outer row boundary clips1px, all its content targets are fully visible.",
+      "focus_requirement": "Keyboard focus/row selection scrolls its full row into view; clipped/invisible targets receive no input. Popup preserves scroll offset and blocks underlying clicks. Not implemented or input-tested.",
+      "balance_requirement": "Affordability changes preserve row geometry and current scroll offset; no transient automatic reflow."
+    },
+    "current": {
+      "row_pitch": 94,
+      "baselines": [
+        24,
+        46,
+        66,
+        86
+      ],
+      "benefit": "Two aligned lines; current46/upgrade66 without shrinking font. Quote86 belongs to current-slot upgrade.",
+      "content_height": {
+        "early": 226,
+        "middle": 508,
+        "late": 790
+      },
+      "viewport_height": {
+        "early": 226,
+        "middle": 508,
+        "late": 510
+      },
+      "scroll_range": {
+        "early": [
+          0,
+          0
+        ],
+        "middle": [
+          0,
+          0
+        ],
+        "late": [
+          0,
+          280
+        ]
+      },
+      "partial_rows": "Identity only, no property/quote/compare/mode/purchase painted; static clipping organization only.",
+      "logical_targets_global_x_relative_row_y": {
+        "icon": [
+          346,
+          8,
+          48,
+          58
+        ],
+        "name": [
+          400,
+          5,
+          216,
+          27
+        ],
+        "compare_visual": [
+          710,
+          5,
+          62,
+          26
+        ],
+        "compare_proposed_hit": [
+          710,
+          5,
+          62,
+          32
+        ],
+        "quantity": [
+          622,
+          34,
+          52,
+          36
+        ],
+        "purchase": [
+          680,
+          34,
+          92,
+          36
+        ]
+      },
+      "hit_limit": "Logical design allocations, not executable input or focus verification."
+    }
+  },
+  "remaining_limits": [
+    "presentation pending review; structure approved",
+    "material finish not final",
+    "not a live coherent save",
+    "right battle/header copied context",
+    "max positive/empty/dormant/unavailable/extreme number/focus matrix not drawn or run",
+    "same-slot lock still10 game seconds; future implementation must remove"
+  ],
+  "revision_start": "56e4cc1827eb95e87aa82999a075b952de0aa0bc",
+  "source_audit": "embedded-asset-audit.json",
+  "target_boundaries": "target-boundaries.json",
+  "revision_note": "Same approved structure; fixed fee-capacity geometry decoupled from affordability/reason. Added only necessary matched05 static contrast. No automatic budget promotion, game execution or full-operation stability claim.",
+  "user_structure_acceptance": "2d5be87: 思路没太大问题，再优化表现",
+  "shared_presentation_scope": "Background is context; public background/button standards belong to the original overall-UI group, not finalized by this module.",
+  "ink_evidence": "ink-spacing.json",
+  "typography_status": "Consumes fixed overallR1 proposed reference, not accepted standard; overall owns common typography/public controls/background.",
+  "typography_reference": {
+    "commit": "ad7afd6425e16cd36f9c0612db920e8faa8cba5e",
+    "review_status": "R1 expressly proposed, pending review, not implemented; not an accepted norm",
+    "files": {
+      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md": "bfa2df4d7b61ad6e365d213340ca4627d09105ea81b30c5c34c97f0ca23d2fe5",
+      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/typography-visible-area-r1.html": "1df58d8750e9fd3fc5ed78c69c8b4300c5dc10ec27d3d9647cdb1a7fca5106d6"
+    },
+    "consumed": "Existing NotoSansSC.ttf family, original400/500/600 roles, fee/status15/500 as local proposed reference. No new family or global token."
+  },
+  "render_font": {
+    "path": "assets/fonts/NotoSansSC.ttf",
+    "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+    "config_generated_by": "build-design-plates.py",
+    "config_path": "/tmp/space-idle-workbench-rebuild/fontconfig-local.xml"
+  },
+  "capacity_boundary": {
+    "late_safe_row_budget": 696,
+    "formula": "672+24*k for8rows, k dense rows",
+    "current_k": 1,
+    "k2_overflow": 24,
+    "k8_overflow": 168,
+    "unresolved": "Capacity profiles are design-fixture budgets, not a complete production allocation. Mode changes, evolution/upgrades or resource-count changes that exceed a slot capacity are not drawn; no automatic height promotion is allowed to push later slots. Multiple2-fee slots,3currencies,long levels/reasons require original design backlog work, potentially same-workbench scrolling. No all-operation stability claim."
+  },
+  "height_basis": "Fixed per-slot fee-capacity profile chosen for these design fixtures; no affordability, reason, current fee count or quantity-mode condition decides height.",
+  "capacity_profiles": {
+    "early": {
+      "weapon:0": 2,
+      "defence:0": 2
+    },
+    "middle": {
+      "weapon:0": 2,
+      "weapon:1": 1,
+      "weapon:2": 2,
+      "defence:0": 1,
+      "defence:1": 1
+    },
+    "late": {
+      "weapon:0": 2,
+      "weapon:1": 1,
+      "weapon:2": 1,
+      "weapon:3": 1,
+      "weapon:4": 1,
+      "defence:0": 1,
+      "defence:1": 1,
+      "defence:2": 1
+    }
+  },
+  "stability_pair": {
+    "before": "03-late-eight.png",
+    "after": "05-late-affordability-only.png",
+    "scroll_position": "top in both",
+    "changed_slot": "weapon:1",
+    "only_fixture_change": "affordable true to false; same Lv1, iron65 quote, x1 and fixed capacity1",
+    "all_40_target_rectangles_equal": true,
+    "svg_rectangles_local_x_before_transform_minus10": [
+      [
+        356.0,
+        340.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        337.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        337.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        380.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        380.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        448.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        445.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        445.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        482.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        482.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        532.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        529.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        529.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        566.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        566.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        616.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        613.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        613.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        650.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        650.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        700.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        697.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        697.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        734.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        734.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        803.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        800.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        800.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        837.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        837.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        887.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        884.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        884.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        921.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        921.0,
+        92.0,
+        36.0
+      ],
+      [
+        356.0,
+        971.0,
+        48.0,
+        58.0
+      ],
+      [
+        410.0,
+        968.0,
+        216.0,
+        27.0
+      ],
+      [
+        720.0,
+        968.0,
+        62.0,
+        26.0
+      ],
+      [
+        632.0,
+        1005.0,
+        52.0,
+        36.0
+      ],
+      [
+        690.0,
+        1005.0,
+        92.0,
+        36.0
+      ]
+    ],
+    "pixel_diff_bbox": [
+      540,
+      482,
+      772,
+      518
+    ],
+    "downstream_y524_pixel_diff_bbox": null,
+    "scope": "Static viewport contrast; no Owner refresh or input testing."
+  },
+  "typography_source_commit": "61c9cdbcef596037d0c6e8be1e6f94ae0fdb57b1",
+  "native_details": [
+    {
+      "file": "02-middle-five-native-detail.png",
+      "size": [
+        456,
+        300
+      ],
+      "sha256": "ce0e20ef840b0776166a39785c386a81a96394befa908f2aa737c270ef951b3f",
+      "actually_viewed": true
+    },
+    {
+      "file": "03-late-eight-native-detail.png",
+      "size": [
+        456,
+        194
+      ],
+      "sha256": "0b7ac76a3faa3bd4d3389fc7845e8dba0f57c171c8f6880ac136380a02f71283",
+      "actually_viewed": true
+    },
+    {
+      "file": "04-local-dropdown-native-detail.png",
+      "size": [
+        398,
+        330
+      ],
+      "sha256": "777bad0ee77c4b46ff00f4d5920eb871164b1f70dbf94f6a54c41e2a3f63ad9a",
+      "actually_viewed": true
+    },
+    {
+      "file": "05-late-affordability-only-native-detail.png",
+      "size": [
+        456,
+        84
+      ],
+      "sha256": "393a7aec6d13daf29e162095399f59b79e196ddce4c2638158cf557f7f5c1f10",
+      "actually_viewed": true
+    },
+    {
+      "file": "08-late-scroll-bottom-native-detail.png",
+      "size": [
+        456,
+        534
+      ],
+      "sha256": "65ad1f45a8363804ff19418d938a6c93b0a52add297748ebd2d0b271e52fc63b",
+      "actually_viewed": true
+    },
+    {
+      "file": "09-two-dense-single-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "7fcd012727df35c157fe79b57dfef262a4c0150599553b6f825a16383f3e7131",
+      "actually_viewed": true
+    },
+    {
+      "file": "10-two-dense-ten-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "816ac42c2fe65ce8ea47892c219c31bdbcbe663422dc07f0300e66380d40457d",
+      "actually_viewed": true
+    },
+    {
+      "file": "11-two-dense-max-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "1d38aeb2f43b45d0b6001bfe3bb88beb04bbf98e101b0aeed20e4ceac90506ed",
+      "actually_viewed": true
+    },
+    {
+      "file": "12-evolution-material-locked-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "9fc15f5d8968db5363dfffb22ef0d26f934369e9335d94887d8e1fbf7241c519",
+      "actually_viewed": true
+    },
+    {
+      "file": "14-reserved-two-fee-base-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "89730e0bbb5a0462f72efdeb27273874743a3e3a6d48212aad5002cae15a5fd3",
+      "actually_viewed": true
+    },
+    {
+      "file": "15-reserved-two-fee-evolution-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "7fcd012727df35c157fe79b57dfef262a4c0150599553b6f825a16383f3e7131",
+      "actually_viewed": true
+    },
+    {
+      "file": "16-reserved-two-fee-locked-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "9fc15f5d8968db5363dfffb22ef0d26f934369e9335d94887d8e1fbf7241c519",
+      "actually_viewed": true
+    },
+    {
+      "file": "18-local-weapon-dropdown-native-detail.png",
+      "size": [
+        398,
+        470
+      ],
+      "sha256": "9270d9a66541faaf9bdc6488bc4b5a5f1c3f7c4ba3d38c091e0ea8ab970a9901",
+      "actually_viewed": true
+    },
+    {
+      "file": "19-optional-weapon-comparison-native-detail.png",
+      "size": [
+        398,
+        290
+      ],
+      "sha256": "69019bda26c6e5df644d4cf5f8d72d5eb34a6ba2d136747006f06cf8132963a0",
+      "actually_viewed": true
+    },
+    {
+      "file": "22-active-empty-slot-native-detail.png",
+      "size": [
+        456,
+        110
+      ],
+      "sha256": "f799b9371b4fdb2c35b0cc11a7b1001ceb400c2924d9178c8943e7abada4eefe",
+      "actually_viewed": true
+    },
+    {
+      "file": "23-dormant-slot-details-native-detail.png",
+      "size": [
+        316,
+        236
+      ],
+      "sha256": "4695613859f31f44e2a52761178d3c45b2d385459a721040650c8c078c93c712",
+      "actually_viewed": true
+    }
+  ],
+  "overall_handoff": {
+    "source": "42–62SVG/PNG and build-design-plates.py",
+    "module_region": [
+      0,
+      85,
+      808,
+      815
+    ],
+    "shared_source": "b17db8d2fef26009515df75b5759b6b1ac7ca3fb",
+    "ledger": "shared-source-b17.json",
+    "background": "coherence-assets/hangar-short-carrier.png early; hangar-tall-carrier.png middle/late; separate hull/weapons/UI",
+    "remaining": "Overall/root independent whole-host comparison and final composition/material judgment; static source does not implement host or gameplay."
+  },
+  "spatial_revision": {
+    "previous": "7c8d57d17a6bd1a8020ad03c9124fcf46165a8a5",
+    "late_panel_before": [
+      332,
+      105,
+      456,
+      775
+    ],
+    "late_panel_after": [
+      332,
+      280,
+      456,
+      564
+    ],
+    "middle_panel_after": [
+      332,
+      280,
+      456,
+      547
+    ],
+    "ship_display_bottom": {
+      "early": 640,
+      "middle": 680,
+      "late": 680
+    },
+    "asset_transforms": "Background unchanged; middle/late hulls retain size and x, shift down40 as static display composition only. No physical anchor changed.",
+    "visible_scene": "Unbroken upper wall, lights and right robot arm above table; left crane and floor surround hull. Not a declaration of accepted parking or scene visibility.",
+    "scope": "Same row widths/fonts/data/actions. Finite viewport replaces insistence on8simultaneous rows. Same scroll container retains all8slots; no detail panel or functional removal."
+  },
+  "capacity_sources": {
+    "mode_quotes": "materials-main-revision/operations.json records[0].modes: x1 count1 iron1600+matter10; x10 count10 iron41500+matter10; MAX count14 iron94400+matter10",
+    "value_endpoints": "visual-operations Lv19 primary9300, upgrade1=17600; materials-main-revision records[0].state Lv29 primary92800 and records[1].state Lv33 primary192000; no new Owner run or formula calculation",
+    "long_reason": "src/ui/equipment_panel.gd:906–907 EvolutionMaterialLocked → 进化材料尚未开放; systems/equipment.gd:544 returns failed quote before count/cost output",
+    "current_fee_data": {
+      "config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "equipment_cost_rows": {
+        "laser": {
+          "res_1": 1,
+          "res_2": null
+        },
+        "armour": {
+          "res_1": 1,
+          "res_2": null
+        }
+      },
+      "scope": "Current local config only; Owner loops res_n, so2fees is not a future schema limit. No fabricated third currency."
+    }
+  },
+  "review_groups": {
+    "01–08": "a1a13a existing scene/row workbench candidate unchanged",
+    "09–13": "multiple dense rows, real x1/x10/MAX quotes and8-character material lock reason",
+    "14–17": "new capacity proposal: all slots reserve two fee lines up front to prevent cross-step content pushing",
+    "18–19": "weapon local candidate menu and same-slot primary/period comparison on reserved-base fixture",
+    "20–21": "middle5same reserved2fee proposal top/bottom, scroll0/55",
+    "22–23": "real active empty slot and dormant current-slot details; distinct from locked pure blanks"
+  },
+  "historical_design_groups": {
+    "main_01_08": [
+      {
+        "file": "01-early-two.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "721af24d628e160ba46bbb900f88f117786cd172a7edf71b11e0f7bb1c47347f",
+        "svg_sha256": "b4bf673c023a945ba85c9360318b3daed4801958bf82455761d04d6f40135d9c",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "02-middle-five.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "ac058e4d934e1d163502612469fb44a7cb0a4936af082b442134982fdf492886",
+        "svg_sha256": "3f16af0ca5694fcd3993f219535444b41ac55316e0d742a58c6ba2341cb70eb5",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "03-late-eight.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "8272771411834dafc621351832ecdb4723b5c637ee676b7a59d0c69d9b88d09a",
+        "svg_sha256": "03947776a38bff3fcf9e6a8e728e104ea34b3ddd72ff76a6e8dd5344d0149d6e",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "04-local-dropdown.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "f1ea2d4f0fda8970546f33e6885b0a9b783856aeffd342897b224d1e6fd8890a",
+        "svg_sha256": "918b247a5ccdf0b33314ca1be568b5983137d360ea68c1f194a312ad9ec0ad5a",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "05-late-affordability-only.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "f5b2fcaf67753b531c1199e79ce45131bdcab26d349ea20f87e1e33038e50aa0",
+        "svg_sha256": "80b01c32279465edf5e356028ffa9f31ae74db96938b45586ee4bac144108a51",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "06-local-switch-accepted.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "9d95100fd9f7f05a188f7a91c6a5d03ed71bc5e2a8b26bc3eabc91a0e606aca8",
+        "svg_sha256": "c0e9f1f89ce96bb34b118109fa8aeafa7502397f672db46bf5308f52d3ef0102",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "07-optional-comparison.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "785e0a8ac35ea4c2a2c0ad76bcb875010ad1907d218ca2b6a68971caee83b503",
+        "svg_sha256": "4f025bd916a12cdc9abfdc1fcd46c417621e226094aef9eff058368df6151931",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "08-late-scroll-bottom.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "5d9749fbfee4804c606e54d2d8b6c9c7b4b0b35fe9f95d6a1a0fbaddd7556b41",
+        "svg_sha256": "37a5bd84ca3da7747998a574d1538f7df8d941df059cfb87842396dc608ac94e",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      }
+    ],
+    "capacity_09_17_20_21": [
+      {
+        "file": "09-two-dense-single.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "4976cb792c6ce7b3ef0254e699d95ae0c4a9fd1ebda18a99b8e85b724c7f074b",
+        "svg_sha256": "ca612007d89fd6bb974e1c13cf8a1a05c361b560030e812466c78e53bd07dfbe",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "10-two-dense-ten.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "dbc2310695fc0afbbae9f37f1c29e101116838acfa34924a5a4bb7dedc0afb19",
+        "svg_sha256": "676da6c703234935c26c4afa7547aba617702d2ff15c195867f1dc9f8be9a0f6",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "11-two-dense-max.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "c49200aafc91b07a59a64e78db815489a46d77f2bc33aa8c9de208dabfc8b2e6",
+        "svg_sha256": "5598788cb500f6fe0191cd322274c5f113e7973bad25a55ebf6896af7c5e1aac",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "12-evolution-material-locked.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "db1833786fecee1ba542d3f07a7c7f7dac7ea838461a770b8c7e87e1a63810b5",
+        "svg_sha256": "a4ead55ec0dbd56c1ce6a43ff7f1ab02caed73027952bde5f50fde50daa15b59",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "13-two-dense-bottom.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "3db68eff6c6180197d58b5d4b11df444ec7e36d59398ad2fcb5459a15b8c102a",
+        "svg_sha256": "6bd845de55f7cfeb9252d8b04ae4522d3f79e559696cb3b33e43d1822c2c8362",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "14-reserved-two-fee-base.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "b720b3aa058ef8e701a42ec726429bf828f053ec2e1aef757e00e100cd49a633",
+        "svg_sha256": "eb299eefdccba4885e78693e8b0d5697447d4137f00eb499d811f32613348751",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "15-reserved-two-fee-evolution.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "42c6d56e3552c13cc6fa06540b8e47ebbf40d7894431dd0cba7dc079ec5afbdf",
+        "svg_sha256": "791e05b62dbddda98bd925c2b4a77296b8c75abe0f96f233d1149b953be1f7ec",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "16-reserved-two-fee-locked.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "295caa6514118e0c25c67e165bc24b3dbd1347c7853200def9311c7ead7cb57c",
+        "svg_sha256": "196d6ba57c24cf4cee118acfbac112f102ffe62c3b53f4b9951e58f4e9ff1325",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "17-reserved-two-fee-bottom.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "b3cf90bbedeca2c8b02f49d7fc6fabfd8535d3047d88b1646e998d2aef1dc826",
+        "svg_sha256": "4e150c1d7925cda9e5889aec7434e804b8b9708c59253e4ca973fef7c09ad538",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "20-middle-reserved-two-fee.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "36dac1fd12864196fb2401f05452c23d3e36465eebcc449c268e5cfeffbc19d5",
+        "svg_sha256": "58f5026779951fd3ce7b6264048b4c21cb45826cbe0b6638cedd28dd2206b18b",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "21-middle-reserved-two-fee-bottom.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "b12896c9df5aa341e05c647ddb3cade706874c980fbdc31324928fbecaf39c6c",
+        "svg_sha256": "a3ccd8530851ffa4a69c22e315be6a816554546d4f899e8663f0908eafb73693",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      }
+    ],
+    "states_18_19_22_23": [
+      {
+        "file": "18-local-weapon-dropdown.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "2ec2b58bcf5677f4049ef44af95ae01306cb57fc2ad2586578564013eec035f1",
+        "svg_sha256": "7d0c150030165106d0b16beecd8268691cada0d68efecd66c2de5aa980106604",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "19-optional-weapon-comparison.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "c7fbda5777115cc08a2ba5e1f5c2f452d8b1a22d80a419a425cb73b8e0467b05",
+        "svg_sha256": "9900f37ef6b4dddabb3ac24f8ccff58071fce3a540a9edc35486df02e5055017",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "22-active-empty-slot.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "15aa604442b9c52b64cff08e120144a05e4fc53f53a2d13012146feada4e27a7",
+        "svg_sha256": "b2687177fa631e6ee2162389611ef161b71e008a5ed8f580ef5610635d4e27ba",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      },
+      {
+        "file": "23-dormant-slot-details.png",
+        "size": [
+          1440,
+          900
+        ],
+        "sha256": "16b61e9fd00dbbfd2db117193d01b39bf327de8714fa65a340b82f3d541c8838",
+        "svg_sha256": "3c80650430796087134a7aebbf897a96b01a25db456d3c04b82f01b2a0581f01",
+        "header_pixel_diff_bbox": null,
+        "battle_pixel_diff_bbox": null,
+        "actually_viewed": true
+      }
+    ],
+    "capacity_pairs": [
+      {
+        "before": "09-two-dense-single.png",
+        "after": "10-two-dense-ten.png",
+        "scope": "same Lv19 slot x1 to x10; two-fee preset",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          492,
+          365,
+          755,
+          408
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      },
+      {
+        "before": "09-two-dense-single.png",
+        "after": "11-two-dense-max.png",
+        "scope": "same Lv19 slot x1 to MAX14; two-fee preset",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          492,
+          365,
+          755,
+          408
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      },
+      {
+        "before": "14-reserved-two-fee-base.png",
+        "after": "15-reserved-two-fee-evolution.png",
+        "scope": "same allocated2fee capacity; slot Lv1 single-fee fixture to Lv19 evolution fixture, not a replayed progression",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          449,
+          345,
+          666,
+          430
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      },
+      {
+        "before": "15-reserved-two-fee-evolution.png",
+        "after": "16-reserved-two-fee-locked.png",
+        "scope": "same capacity and Lv19; material available to locked, no fake quote on failure",
+        "all_40_target_rectangles_equal": true,
+        "pixel_diff_bbox": [
+          454,
+          365,
+          772,
+          434
+        ],
+        "downstream_y440_pixel_diff_bbox": null,
+        "not_runtime_test": true
+      }
+    ],
+    "review": "c9all108recommendation rejected: sparse single-fee rows, middle scroll and identity-clipped purchase controls. Retained for traceability, not current integration.",
+    "04149_29_41": {
+      "sha": "04149eae7cb9120bcc4830ae3781e16fc16100d1",
+      "main_plates": [
+        {
+          "file": "29-compact-scene-early.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "83620ce56e3b41ebe1eff6e3ced535132c51e31fae8f8fd857758e65a76cd281",
+          "svg_sha256": "5ba21ec4ddc0ca384a41a0e2de760e45b58233a856ca24ba5aa762abf8812a5f",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "30-compact-scene-middle.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "3c888490cacf99739a60a15b6333c981aa15d013bac5f740722fb6b79c0b93a4",
+          "svg_sha256": "4e8df75f410aee77a9c217fde1110d198e5c47dba504068844811d32a7b57c8f",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "31-compact-scene-late.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "a492c183aa9a8bce966d29f1489cd873bd6ed54d0b817665cba313cf0b045d01",
+          "svg_sha256": "5cc0aa12299e4a1daca15ccaf9bf5b4530a7feaaf619e2829d26b268b25ec331",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "32-compact-scene-bottom.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "22d4ac44eef37ff141a2055708f048ea2a01dfc275eb435403b98d23216768cc",
+          "svg_sha256": "8293ae8592ffd8303cc383e0d5bd8684b4eadd70e896c1dd0e5e24dd6fcacf3c",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "33-compact-defence-row-only.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "bb86263deb6fb674c01a0518277daa470b0d1402b07cbc557de6052f7a4762d4",
+          "svg_sha256": "3c1b1f7e5c1bdceb39121af7652f13a91e3756e32a3887aad3912450c025a749",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "34-compact-max.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "24b7de5b4fbf768d98760e456776cc8170f5f76aabe7631003d265814a14e9d3",
+          "svg_sha256": "cec67e55462bd59c5ed94e092f428b848d677ffbad17c11abfb478e1750cb400",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "35-compact-material-locked.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "d984e36832c247d0153e2a953004b09477a62a04e69e70b81805ab222a793a13",
+          "svg_sha256": "a07ec26b715696b1b4e9b7fa01af762e0b37aab1691a88c0f216ee39069604ef",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "36-compact-affordable.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "06a1925486f8b66e0f95227bfbc872a2453c26b16f7ec2148be0a7724af2dd4e",
+          "svg_sha256": "379c75e5806fe2ce1077f120e05282b4653c51cdc0fccf9f6744818a6c64de8e",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "37-compact-single-fee.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "a2833239efcea12ad5c2cffa9d9b7de562916ff1835dda23046f71d0b17e2fb1",
+          "svg_sha256": "371877243c6976ffc72192529c10ec95be93d41ee294570853a50e45f343ae70",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "38-compact-defence-dropdown.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "2a724dfd6dbe42e35cf7bf933f561ef786bbc13dbbac9277e68694bf1f7eace6",
+          "svg_sha256": "c017016ebeb70efca0d76024b8f969d16afd48b63c525f002d1cd4205b4f9b11",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "39-compact-defence-comparison.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "d98a6885ea746f2cde8ba3f35e4f4b7f7416278aa73cdb85c266ccc82833e97d",
+          "svg_sha256": "bbea8dc22d7be43dec4399b459887b17b8098b3756e0811bb3392e054431981a",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "40-compact-weapon-dropdown.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "4cf85a26560832e7f3877bb2596d9cde5052976f3ac6c0c4cd166f791ccb3505",
+          "svg_sha256": "f84ba8cf7d8f5f6c9e1882bdb3ef1fc0930f7b88428940f910c2fa0d75fc30a2",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        },
+        {
+          "file": "41-compact-weapon-comparison.png",
+          "size": [
+            1440,
+            900
+          ],
+          "sha256": "68e37b198d14115dfa8f81c637818e3f188953e1db0d7dd9575484ba9195c6db",
+          "svg_sha256": "ff17a9306ce04e02d58239bfe61fccf2b1ff21471dac2cc204e2e4fa8b8bd845",
+          "header_pixel_diff_bbox": null,
+          "battle_pixel_diff_bbox": null,
+          "actually_viewed": true
+        }
+      ],
+      "review": "Root/independent review accepted limited static 2/5 same-screen, passive partial-row identity and authored weapon association; whole composition/material unfinished."
+    }
+  },
+  "current_static_pairs": [
+    {
+      "before": "44-coherent-late.png",
+      "after": "49-coherent-affordable.png",
+      "pixel_diff_bbox": [
+        631,
+        347,
+        771,
+        400
+      ],
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
+    },
+    {
+      "before": "49-coherent-affordable.png",
+      "after": "47-coherent-max.png",
+      "pixel_diff_bbox": [
+        460,
+        357,
+        755,
+        401
+      ],
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
+    },
+    {
+      "before": "49-coherent-affordable.png",
+      "after": "48-coherent-material-locked.png",
+      "pixel_diff_bbox": [
+        434,
+        347,
+        771,
+        401
+      ],
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
+    },
+    {
+      "before": "50-coherent-single-fee.png",
+      "after": "49-coherent-affordable.png",
+      "pixel_diff_bbox": [
+        449,
+        325,
+        666,
+        401
+      ],
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
+    },
+    {
+      "before": "61-coherent-long-max.png",
+      "after": "62-coherent-long-max-poor.png",
+      "pixel_diff_bbox": [
+        681,
+        347,
+        771,
+        400
+      ],
+      "downstream_y406_pixel_diff_bbox": null,
+      "scope": "Static quote/affordability contrast; source uses identical94 row allocations. No runtime/input proof."
+    }
+  ],
+  "current_native_details": [
+    {
+      "file": "42-coherent-early-native-detail.png",
+      "size": [
+        456,
+        275
+      ],
+      "sha256": "16898b07e90d16cc0dbe0b68a1274a0167f22ec15697e0da086e6fe018346cd9",
+      "actually_viewed": true
+    },
+    {
+      "file": "44-coherent-late-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "165b800711380d306817c804a7a69cb7e26b84d8c9aa3214435a4eed32ef3a5e",
+      "actually_viewed": true
+    },
+    {
+      "file": "45-coherent-bottom-native-detail.png",
+      "size": [
+        456,
+        118
+      ],
+      "sha256": "23d6eade2c62715d6951f72e90fe1518c0b0005b3a57dfae2ad4b54779e44441",
+      "actually_viewed": true
+    },
+    {
+      "file": "47-coherent-max-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "47b72fbae145fe77d936e099bf360a12cba2375e11bdc81247cb0a8c28b5085d",
+      "actually_viewed": true
+    },
+    {
+      "file": "48-coherent-material-locked-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "d4bb4089b575158e5d9fd16957878a28950f91d47439249b576b9c8cf2ee8f71",
+      "actually_viewed": true
+    },
+    {
+      "file": "51-coherent-defence-dropdown-native-detail.png",
+      "size": [
+        398,
+        343
+      ],
+      "sha256": "1ca9371eea756d57ef939ddea3bc22b7d49935124ad4bdc27accb6d6d46987d3",
+      "actually_viewed": true
+    },
+    {
+      "file": "53-coherent-weapon-dropdown-native-detail.png",
+      "size": [
+        398,
+        470
+      ],
+      "sha256": "1d89396a03510920f3d9674b232df3d470dff267796b7b4d675929bc9b911b1e",
+      "actually_viewed": true
+    },
+    {
+      "file": "55-coherent-purchase-hover-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "709af42bdb2efb8e7177e58ef15be5cf95bf8c9b1469a7b993009318b30ad258",
+      "actually_viewed": true
+    },
+    {
+      "file": "56-coherent-purchase-pressed-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "b3587392d2e576ef72c9c21bcef2f888c7823156685a618f89c3e1d15c346f47",
+      "actually_viewed": true
+    },
+    {
+      "file": "57-coherent-purchase-focus-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "de00918223094f7d4b591f17c58b27f63bb928329be5377c5002392f73431e6a",
+      "actually_viewed": true
+    },
+    {
+      "file": "58-coherent-purchase-hover_pressed-native-detail.png",
+      "size": [
+        156,
+        45
+      ],
+      "sha256": "34e0174394beef3cab712f3285944168afe955a62e05e98c6946c8091be4b5e1",
+      "actually_viewed": true
+    },
+    {
+      "file": "59-coherent-active-empty-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "94c1109e3fb7b72d0e4405f1a14892dbfae95626e793ced1f33d7c86ccf3f020",
+      "actually_viewed": true
+    },
+    {
+      "file": "60-coherent-dormant-details-native-detail.png",
+      "size": [
+        316,
+        239
+      ],
+      "sha256": "35780ae7ad4cfbaf807a3295eb0ae1eabfaddfb6f601307568a9f88a8a9935f4",
+      "actually_viewed": true
+    },
+    {
+      "file": "61-coherent-long-max-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "7293228ccd3f6413360cfc06090d0b9177841e21506ecb7a8d1995966986feed",
+      "actually_viewed": true
+    },
+    {
+      "file": "62-coherent-long-max-poor-native-detail.png",
+      "size": [
+        456,
+        97
+      ],
+      "sha256": "09c5abbdbde3a2a20c976d1691d01be3aa4ced222b364c0dedb0e5ffa65b5aa8",
+      "actually_viewed": true
+    }
+  ]
+}

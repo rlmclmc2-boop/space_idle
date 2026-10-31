@@ -1,0 +1,242 @@
+{
+  "source_commit": "47225d44e4d7489fce3eccc4603a1fb175462b8a",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "A/B native route IDs; no-best manual eligibility; manual8.4 vs online minimum10",
+    "bound route/layer and independent frozen receipts; duplicate claim no credit",
+    "auto crew reservation and stop with no reward; full200+10 pending then same reward after freeing slot",
+    "core-only full inventory claim; manual exit and completed-during-exit preservation",
+    "filter result frozen despite subsequent policy change; old-round claim rejected"
+  ],
+  "limitations": [
+    "Docs-only finite response fixtures; not native game integration or complete M9/G2 approval",
+    "Reproduction uses local Chromium and preview server port8766"
+  ],
+  "images": [
+    {
+      "file": "scene-short-manual-victory-1440x900.png",
+      "family": "scene",
+      "case": "scene-short-manual-victory",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "50ea6a5d7a0a26b386e4dafb642a46359a4989120cca1583e6cc26e27e40c1a3"
+    },
+    {
+      "file": "scene-single-frozen-object-1440x900.png",
+      "family": "scene",
+      "case": "scene-single-frozen-object",
+      "route": "hyperspace/routes",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "de15c496990d6e72c484a6d3cc08db5561ab8f5f8addfb60d9aa112b53d9a65e"
+    },
+    {
+      "file": "scene-independent-receipts-1440x900.png",
+      "family": "scene",
+      "case": "scene-independent-receipts",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "9208a02b703c9baf07156e36c95632fdd40a98547eff71ef40c3888a009e3cfa"
+    },
+    {
+      "file": "scene-stop-auto-no-reward-1440x900.png",
+      "family": "scene",
+      "case": "scene-stop-auto-no-reward",
+      "route": "hyperspace/routes",
+      "scroll": {
+        "outer": 111,
+        "inner": 0
+      },
+      "sha256": "788a74e79d48cf61863b4cb1be393aa876fc7a3019575d4f069b3d3f421d1863"
+    },
+    {
+      "file": "scene-full-pending-reward-1440x900.png",
+      "family": "scene",
+      "case": "scene-full-pending-reward",
+      "route": "hyperspace/receipt/online",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "75adbf6c7f2f3a15d77ed7c1ff3d73c676d426a5e099e3b4ae62292c1057e018"
+    },
+    {
+      "file": "scene-freed-slot-same-reward-claimed-1440x900.png",
+      "family": "scene",
+      "case": "scene-freed-slot-same-reward-claimed",
+      "route": "hyperspace/receipt/online",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "f39d63024a1b830248654b5a0a56a48984e81ad593e4d1c7ed13f3cc63f01d1f"
+    },
+    {
+      "file": "scene-full-core-no-drone-1440x900.png",
+      "family": "scene",
+      "case": "scene-full-core-no-drone",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "1d672e22fb68a5f091ea87cfda51d8e54b2c3a8b4ec3bc88b79fb076ee6fd7c1"
+    },
+    {
+      "file": "scene-manual-exit-no-success-1440x900.png",
+      "family": "scene",
+      "case": "scene-manual-exit-no-success",
+      "route": "hyperspace/routes",
+      "scroll": {
+        "outer": 111,
+        "inner": 0
+      },
+      "sha256": "d0fd156325937fe8700ae9717dea88ad43161580de627a5c8ea83f02336692e6"
+    },
+    {
+      "file": "scene-filtered-frozen-reward-1440x900.png",
+      "family": "scene",
+      "case": "scene-filtered-frozen-reward",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "ba6520d692367815796baa192820f6160b0626f950b3a5031718e9b8ecbd046a"
+    },
+    {
+      "file": "scene-old-round-receipt-rejected-1440x900.png",
+      "family": "scene",
+      "case": "scene-old-round-receipt-rejected",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "2b3ada75cd49abbc01347439f316d7a39f4ef52f2c52dc573983260339afdea1"
+    },
+    {
+      "file": "work-short-manual-victory-1440x900.png",
+      "family": "work",
+      "case": "work-short-manual-victory",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "d138f196fb1627c7fe4879190a7697310f3918180f75c12abe13614984de6dec"
+    },
+    {
+      "file": "work-single-frozen-object-1440x900.png",
+      "family": "work",
+      "case": "work-single-frozen-object",
+      "route": "hyperspace/routes",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "52666bf63a11245ec01b371642484d87fe3916cfbce7602f1b7ab7021968065c"
+    },
+    {
+      "file": "work-independent-receipts-1440x900.png",
+      "family": "work",
+      "case": "work-independent-receipts",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "fee33587d9c20658b31ed298a1b32a8b2775359b4277947983f81d848b6fbbb6"
+    },
+    {
+      "file": "work-stop-auto-no-reward-1440x900.png",
+      "family": "work",
+      "case": "work-stop-auto-no-reward",
+      "route": "hyperspace/routes",
+      "scroll": {
+        "outer": 0,
+        "inner": 83
+      },
+      "sha256": "655711d549fb2e792b586deea378daa3ed469452d087d2dd742300aa71b32c3d"
+    },
+    {
+      "file": "work-full-pending-reward-1440x900.png",
+      "family": "work",
+      "case": "work-full-pending-reward",
+      "route": "hyperspace/receipt/online",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "34707cf3279f8ac169e3c46e831902ab169a52664d2da21937a7cf3b8be5dce7"
+    },
+    {
+      "file": "work-freed-slot-same-reward-claimed-1440x900.png",
+      "family": "work",
+      "case": "work-freed-slot-same-reward-claimed",
+      "route": "hyperspace/receipt/online",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "b920447b0de48b00b2b45e568e4b42572dff774432705a15cc01d9e5c3ef3f8d"
+    },
+    {
+      "file": "work-full-core-no-drone-1440x900.png",
+      "family": "work",
+      "case": "work-full-core-no-drone",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "cb6bdc6d84813de077cc9e507529b400bed4c75598f03112d5f596ed62820828"
+    },
+    {
+      "file": "work-manual-exit-no-success-1440x900.png",
+      "family": "work",
+      "case": "work-manual-exit-no-success",
+      "route": "hyperspace/routes",
+      "scroll": {
+        "outer": 0,
+        "inner": 83
+      },
+      "sha256": "5be7b0ce348cb0a9539295eb1db329e7b31c9eaa70788350eae2b40581ac08b1"
+    },
+    {
+      "file": "work-filtered-frozen-reward-1440x900.png",
+      "family": "work",
+      "case": "work-filtered-frozen-reward",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "0a7efa11893ebea6a1350f1699fcffd5dcd5c8524c7b7fd51b688f491869ff72"
+    },
+    {
+      "file": "work-old-round-receipt-rejected-1440x900.png",
+      "family": "work",
+      "case": "work-old-round-receipt-rejected",
+      "route": "hyperspace/receipt/manual",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "62deaf278ff1610acd1892ac2f356045765ff9cd2550784f4d57ef03dc7b61c8"
+    }
+  ]
+}

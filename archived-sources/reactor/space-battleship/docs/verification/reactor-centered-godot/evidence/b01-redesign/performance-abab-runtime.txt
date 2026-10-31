@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5728:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+DIAG_CONTEXT pid=93929 size=(1440, 900) speed=1 loads=[["weapons", 0.25], ["defence", 0.25], ["smelting", 0.25], ["condensation", 0.25]] renderer=false
+DIAG original_0 frames=167 wall_ms=6006.902 fps=27.8013525108284 p50_ms=33.585 p95_ms=43.22 game_seconds=5.99999999999998 phase_delta=5.99999999999998 stage_delta={ "draws": 0, "field_updates": 0, "active_frames": 167 } ui_delta={ "model_reads": 0, "quote_reads": 0, "preview_reads": 0, "commands": 0, "visible_frames": 167 } nodes=53->53
+DIAG optimized_0 frames=201 wall_ms=6010.362 fps=33.4422452424663 p50_ms=28.747 p95_ms=34.7 game_seconds=5.81666666666687 phase_delta=5.78333333333353 stage_delta={ "draws": 0, "field_updates": 0, "active_frames": 191 } ui_delta={ "model_reads": 0, "quote_reads": 0, "preview_reads": 0, "commands": 0, "visible_frames": 201 } nodes=53->53
+DIAG original_1 frames=168 wall_ms=6013.679 fps=27.9363098695491 p50_ms=34.129 p95_ms=42.536 game_seconds=6.03333333333338 phase_delta=6.03333333333338 stage_delta={ "draws": 0, "field_updates": 0, "active_frames": 168 } ui_delta={ "model_reads": 0, "quote_reads": 0, "preview_reads": 0, "commands": 0, "visible_frames": 168 } nodes=53->53
+DIAG optimized_1 frames=204 wall_ms=6014.329 fps=33.9189957848997 p50_ms=28.35 p95_ms=36.219 game_seconds=6.01666666666632 phase_delta=6.01666666666632 stage_delta={ "draws": 0, "field_updates": 0, "active_frames": 204 } ui_delta={ "model_reads": 0, "quote_reads": 0, "preview_reads": 0, "commands": 0, "visible_frames": 204 } nodes=53->53
+WARNING: 4 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

@@ -1,0 +1,196 @@
+{
+  "source_commit": "628ad931b0496f4ad733da4344c98fc8139955c8",
+  "viewport": [
+    1440,
+    900
+  ],
+  "scope": "Controlled browser design fixtures only; no Godot/runtime acceptance",
+  "files": [
+    {
+      "file": "scene-crew-1440x900.png",
+      "sha256": "c6eb4846643b685a3b929241be93018314d7736965c1176feba929265f1a8dec",
+      "state": {
+        "family": "scene",
+        "route": "crew",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "9",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "scene-planet-1440x900.png",
+      "sha256": "4e804e0bec76ef87a44c38967d9802cfeafb177b45361d93c95e80fd4b45dbcf",
+      "state": {
+        "family": "scene",
+        "route": "planet",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "9",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "scene-galaxy-1440x900.png",
+      "sha256": "35ef702bcb48138c2f2468b1bff79796d5697c7d80e0e52ee46a0bb5833204da",
+      "state": {
+        "family": "scene",
+        "route": "galaxy",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "9",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "work-crew-1440x900.png",
+      "sha256": "fecfe36e35432d96c80a23ccc2a167e9b062777ed96024abc5955629710debbc",
+      "state": {
+        "family": "work",
+        "route": "crew",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "9",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "work-planet-1440x900.png",
+      "sha256": "2f8c691768b374f816fec2127197b97a14a037bba360f3457145994aba2c8c4e",
+      "state": {
+        "family": "work",
+        "route": "planet",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "9",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "work-galaxy-1440x900.png",
+      "sha256": "aa0dab39ce3e4556ec96f7f2ff76632845c1f5ae4bf5e4c7a237c0033bca56b6",
+      "state": {
+        "family": "work",
+        "route": "galaxy",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "9",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "work-planet-missing-builder-1440x900.png",
+      "sha256": "02794515bec71c50253d0f72fe6dee2d88b8d28b5e4e8df6f5deb82343d44514",
+      "state": {
+        "family": "work",
+        "route": "planet",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "9",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "work-galaxy-upgrading-1440x900.png",
+      "sha256": "c570461dd0fa96d78f7af2b2349fbaee843c57abd87e9b5dd66509cda9087f9f",
+      "state": {
+        "family": "work",
+        "route": "galaxy",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "10",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    },
+    {
+      "file": "work-galaxy-fog-1440x900.png",
+      "sha256": "29ae37ebcb794b72335878340de2b1920a67b4af57bf93b42972b2e53e5f94eb",
+      "state": {
+        "family": "work",
+        "route": "galaxy",
+        "planet": "1",
+        "facility": "shipyard",
+        "crew": "navigator",
+        "galaxyNode": "18",
+        "view": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.3
+        },
+        "outer": 0,
+        "inner": 0
+      }
+    }
+  ],
+  "checks": [
+    "No page errors or broken HTML images in six primary screens",
+    "Crew release / target-specific reassignment updates shipyard missing-person state",
+    "Switch planet retains facility identity",
+    "Cancel exploration clears current task and releases explorer",
+    "Online auto reserves idle member only after task start confirmation",
+    "Galaxy click selects stable node, drag does not select, view survives module navigation"
+  ],
+  "browser": "151.0.7922.173",
+  "source_hashes": {
+    "app.js": "0a10bfeb4bf446c4d2de6dc7b870f130d960ed880cfe0c704d9319b79771ae15",
+    "style.css": "27499dacac4ab75e9a588a25ee252fb9ef9ce885d90913e6ab2fb0cc50993652",
+    "index.html": "3bb09721507fc9dff68dead25ba728353e33fb6f04ed81699fc1620c533b3faf",
+    "colony-models.js": "d0272153707c3188e84586abc202c3c429ba28652929ef4a891e446d0a27f85b"
+  }
+}

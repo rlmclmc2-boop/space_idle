@@ -1,0 +1,96 @@
+{
+  "source_commit": "57ae32c3dd18d59ac19a7c953fe10b2d14b1d766",
+  "viewport": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "research ratio/draft/partial resource apply/follow0.1/stop/selector/actual crew target",
+    "planet explorer identity and modal cancelled without side effect",
+    "map tools inside scene, drag/zoom identity and view retained",
+    "danger loss/retention matrix remains reachable",
+    "P3 R/T unchanged on routes/collapse"
+  ],
+  "records": [
+    {
+      "file": "after/quality-scene-research-selected.png",
+      "family": "scene",
+      "route": "research",
+      "checkpoint": "research-selected-after-continuous-budget",
+      "state": {
+        "id": "uranium_extraction",
+        "mode": "follow",
+        "ratio": "0.1",
+        "automatic": false,
+        "iron": "1184000",
+        "uranium": "120000"
+      },
+      "sha256": "3e18113d2c78473d35c32243186659070658fe2410db5f96d16fe4efd8300df8"
+    },
+    {
+      "file": "after/quality-scene-danger-losses.png",
+      "family": "scene",
+      "route": "settings/danger/reforge",
+      "checkpoint": "danger-losses-preserved",
+      "state": {
+        "preview": {
+          "id": "preview-1",
+          "kind": "reforge",
+          "source": "始源星-E178b",
+          "planetId": "1",
+          "retained": [
+            "d2"
+          ],
+          "lost": [
+            "d1",
+            "d3"
+          ],
+          "clearSettings": false
+        },
+        "planet": "1"
+      },
+      "sha256": "a67cf3bc9d119b2665a2ecb3834efaa2ebed5d7da0ef04ba31a30d36172061c6"
+    },
+    {
+      "file": "after/quality-work-research-selected.png",
+      "family": "work",
+      "route": "research",
+      "checkpoint": "research-selected-after-continuous-budget",
+      "state": {
+        "id": "uranium_extraction",
+        "mode": "follow",
+        "ratio": "0.1",
+        "automatic": false,
+        "iron": "1184000",
+        "uranium": "120000"
+      },
+      "sha256": "2a58aace9f7db2e598be4b757853cfd07863652e7728794f08040c246b85cc21"
+    },
+    {
+      "file": "after/quality-work-danger-losses.png",
+      "family": "work",
+      "route": "settings/danger/reforge",
+      "checkpoint": "danger-losses-preserved",
+      "state": {
+        "preview": {
+          "id": "preview-1",
+          "kind": "reforge",
+          "source": "始源星-E178b",
+          "planetId": "1",
+          "retained": [
+            "d2"
+          ],
+          "lost": [
+            "d1",
+            "d3"
+          ],
+          "clearSettings": false
+        },
+        "planet": "1"
+      },
+      "sha256": "252f0a35058894df948bbedc89a415be77316d9906f9b7952ed97332c13e873d"
+    }
+  ]
+}

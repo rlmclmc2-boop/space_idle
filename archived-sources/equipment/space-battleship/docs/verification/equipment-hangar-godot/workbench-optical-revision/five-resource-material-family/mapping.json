@@ -1,0 +1,105 @@
+{
+  "fixed_shared_source": "08e23a1cbca396b3c0ccb4765d43ad034e0c8c20",
+  "icons": [
+    {
+      "balance_modulate": "ffffffff",
+      "balance_nominal_size": "(17.0, 17.0)",
+      "balance_visible": true,
+      "expected_modulate": "ffffffff",
+      "fee_modulate": "ffffffff",
+      "fee_nominal_size": "(20.0, 20.0)",
+      "fee_self_modulate": "ffffffff",
+      "fee_visible": true,
+      "id": "1",
+      "image_pixels_sha256": "f9d2dcff671a77adab254ef7ff24d132a8ccb40a822fd9e5c9cfe58ebaa9c699",
+      "image_size": "(24, 24)",
+      "image_used_rect": "[P: (1, 3), S: (22, 17)]",
+      "same_texture": true,
+      "semantic_color": "d9b681ff"
+    },
+    {
+      "balance_modulate": "ffffffff",
+      "balance_nominal_size": "(17.0, 17.0)",
+      "balance_visible": true,
+      "expected_modulate": "ffffffff",
+      "fee_modulate": "ffffffff",
+      "fee_nominal_size": "(20.0, 20.0)",
+      "fee_self_modulate": "ffffffff",
+      "fee_visible": false,
+      "id": "2",
+      "image_pixels_sha256": "9fca0d78af39cdf164a90f2f754ec98559eccb65ec2a968a195e570e81f4d2be",
+      "image_size": "(24, 24)",
+      "image_used_rect": "[P: (1, 1), S: (22, 21)]",
+      "same_texture": true,
+      "semantic_color": "8ed4bbff"
+    },
+    {
+      "balance_modulate": "ffffffff",
+      "balance_nominal_size": "(17.0, 17.0)",
+      "balance_visible": false,
+      "expected_modulate": "ffffffff",
+      "fee_modulate": "ffffffff",
+      "fee_nominal_size": "(20.0, 20.0)",
+      "fee_self_modulate": "ffffffff",
+      "fee_visible": false,
+      "id": "chrono",
+      "image_pixels_sha256": "753e9c9614ebdd82e1b95ef7e4db5522c73f4f8152f2ab19689a41caa105cc07",
+      "image_size": "(24, 24)",
+      "image_used_rect": "[P: (5, 1), S: (14, 22)]",
+      "same_texture": true,
+      "semantic_color": "86cddfff"
+    },
+    {
+      "balance_modulate": "ffffffff",
+      "balance_nominal_size": "(17.0, 17.0)",
+      "balance_visible": false,
+      "expected_modulate": "ffffffff",
+      "fee_modulate": "ffffffff",
+      "fee_nominal_size": "(20.0, 20.0)",
+      "fee_self_modulate": "ffffffff",
+      "fee_visible": false,
+      "id": "jewel",
+      "image_pixels_sha256": "f7132a1eb0814872ee5dd3b8ebb440fd639886cbf36fd9c87e2441af0d68c55c",
+      "image_size": "(24, 24)",
+      "image_used_rect": "[P: (2, 1), S: (19, 22)]",
+      "same_texture": true,
+      "semantic_color": "b9abf0ff"
+    },
+    {
+      "balance_modulate": "ffffffff",
+      "balance_nominal_size": "(17.0, 17.0)",
+      "balance_visible": true,
+      "expected_modulate": "ffffffff",
+      "fee_modulate": "ffffffff",
+      "fee_nominal_size": "(20.0, 20.0)",
+      "fee_self_modulate": "ffffffff",
+      "fee_visible": true,
+      "id": "degenerate_matter",
+      "image_pixels_sha256": "e038f16460f1cd1df482c75256925a45b8f948949365180966108f56d0e95b4c",
+      "image_size": "(24, 24)",
+      "image_used_rect": "[P: (1, 2), S: (22, 20)]",
+      "same_texture": true,
+      "semantic_color": "b9c8d5ff"
+    }
+  ],
+  "note": "Static controlled Lv19 two-resource quote, no invented uranium/chrono costs, no purchase or 36 runtime rerun",
+  "quote": {
+    "costs": {
+      "1": {
+        "e": "3",
+        "m": "1.6"
+      },
+      "degenerate_matter": {
+        "e": "1",
+        "m": "1"
+      }
+    },
+    "count": 1,
+    "extreme": false,
+    "ok": true
+  },
+  "source_commit": "723ec0ed924e923b19ef9d95552c22382d3040ba",
+  "title_source": "d034de07571fa5866483ab852230143b46baa78c",
+  "wallet_modulate": "ffffffff",
+  "workbench_modulate": "ffffffff"
+}

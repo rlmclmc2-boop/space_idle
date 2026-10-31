@@ -1,0 +1,14 @@
+22783a8710691dcea43115a76ff5cca0cf8e1f32813c1cb62b8d716ced91f646  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/phases-driver.gd.txt
+afb1f5fc2b66a934a3065a96218b0e267afe77f117083274512da2a3a15b1cb7  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/phases.log
+f3db4537c537660c18c4412c8ba82550ab10b99398edd73fd3953cbb8baf615c  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/phases/frame_024.png
+a82f59fa281b67a2d21710afb5293999b5608fd099491ea74d10e2afdff5d2b5  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/phases/frame_043.png
+a0f17f38cdc82b744aff084fd38ec0105554d93269629a26290da89c6f6a4f96  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/phases/frame_051.png
+c8f56f7b986f3fed1750762a985a81a687007b60f5ce8a6dc9d84a01639a66e2  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/phases/frame_072.png
+252003cb654c2fd053e88d977b20ab40e6523c51487239424f60cce2f413bede  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/phases/frame_087.png
+f4b8017ecaadaed365566164160fcdc495e1fe7aeab81f32d9ffdcc705611157  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/stages-driver.gd.txt
+162be59c11d0f604464fcd939c345caf16d36ae5fe5526a65a515dc42b9be9ce  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/stages.log
+e34414fc5d604186edadfd5e330c999234ef992f5b8cc7a033ad2dc09587f047  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/stages/stage_0.png
+19b1ff59a15fa1fa5619df1a9f4c24462caa89561621353864c4c3bc6088ad63  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/stages/stage_1.png
+b55c95a62ecd899db8971e5fc515c8f398903d29dee0d9a20f9f58646ad6f9d5  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/stages/stage_2.png
+f7a2c0bb0c42677e1fa962258b1d8ee338d2f8bffa5bb57e7b3384b902b16fe9  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/stages/stage_3.png
+c6f2e7f0cbd92c39c740754bf4e3b56d0dc4f3d96e098fe0bfa6b0ab0caef899  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/refinery-joint/stages/stage_4.png

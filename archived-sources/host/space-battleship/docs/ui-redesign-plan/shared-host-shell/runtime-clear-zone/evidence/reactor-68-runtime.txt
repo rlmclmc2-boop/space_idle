@@ -1,0 +1,3 @@
+Godot 4.7.2, normal main.tscn, 1440x900, design/clear-zone-host after reactor 68f35e4e sync.
+QUOTE_RESOURCE route=reactor icon=true text=10 铀 · ×1
+The driver captured unfunded and funded quotes through the same route, then released the scene before quitting. No script/parse errors; the display environment produced an audio-device fallback warning.

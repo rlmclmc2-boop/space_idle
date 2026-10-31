@@ -1,0 +1,4 @@
+ImageGen standalone material reference, generated for this design preview (not a runtime asset):
+Create a standalone game UI material sheet, no text, no buttons, no background scene, no border around the whole image. Two matching horizontal surface strips shown on a neutral transparent-looking dark backdrop: one deep desaturated teal lacquer with fine satin brushed-metal grain and very restrained cool edge sheen; one warm pale ceramic/ivory inset with subtle fine texture and restrained depth. Sophisticated premium science fiction ship interface, low reflection, no bright gold ornament, no symbols, no glow. This is raw surface material for compositing into a precisely measured UI mockup, not a complete UI. Wide 16:9 image.
+
+render-study.gd.txt crops central x430..1242,y230..385 for the dark material and x450..1220,y550..655 for the ivory material; generated corner motifs and checkerboard-like surrounding pixels are excluded from all delivered previews.

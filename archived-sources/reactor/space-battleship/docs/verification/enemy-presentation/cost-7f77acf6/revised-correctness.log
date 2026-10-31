@@ -1,0 +1,47 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS load candidate native extension
+PASS initialize controlled accepted facts
+PASS public snapshots are read-only
+PASS huge Amount and zero shield capacity
+PASS unchanged read reuses native and Battle arrays #0
+PASS unchanged read reuses native and Battle arrays #1
+PASS unchanged read reuses native and Battle arrays #2
+PASS unchanged read reuses native and Battle arrays #3
+PASS unchanged read reuses native and Battle arrays #4
+PASS unchanged read reuses native and Battle arrays #5
+PASS unchanged read reuses native and Battle arrays #6
+PASS unchanged read reuses native and Battle arrays #7
+PASS unchanged read reuses native and Battle arrays #8
+PASS unchanged read reuses native and Battle arrays #9
+PASS unchanged read reuses native and Battle arrays #10
+PASS unchanged read reuses native and Battle arrays #11
+PASS unchanged read reuses native and Battle arrays #12
+PASS unchanged read reuses native and Battle arrays #13
+PASS unchanged read reuses native and Battle arrays #14
+PASS unchanged read reuses native and Battle arrays #15
+PASS unchanged read reuses native and Battle arrays #16
+PASS unchanged read reuses native and Battle arrays #17
+PASS unchanged read reuses native and Battle arrays #18
+PASS unchanged read reuses native and Battle arrays #19
+PASS queries do not advance clocks or history
+PASS unchanged shared hull reuses geometry/bounds cache
+PASS advance first shot
+PASS pure shield loss publishes text and fraction with hp unchanged
+PASS only changed row replaced; old snapshot and geometry retained
+PASS presentation reads leave damage receipt for sole consumer
+PASS advance shield recovery wait
+PASS recovery wait creates no display invalidation
+PASS advance pure shield recovery
+PASS pure shield recovery updates amount/fraction without geometry rebuild
+PASS actual shared geometry change invalidates positioning only
+PASS retreat changes runtime generation but preserves display birth identity
+PASS cleared encounter exposes no old bindings
+PASS install next wave with reused uid
+PASS new wave receives new identity; empty shield differs from absent capacity
+PASS initialize lethal hit probe
+PASS advance lethal hit
+PASS death preserves birth identity and clamps drawing fraction
+PASS reinitialize owner
+PASS owner reinstallation rebinds identity and initial cache
+PROBE_FAILURES=0

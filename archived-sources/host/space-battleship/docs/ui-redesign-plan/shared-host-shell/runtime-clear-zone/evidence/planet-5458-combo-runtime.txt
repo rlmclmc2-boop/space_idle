@@ -1,0 +1,6 @@
+Godot 4.7.2 normal main.tscn, 1440x900, --audio-driver Dummy.
+Editor import, main.gd --check-only, runtime and git diff --check: exit 0.
+Runtime ERROR/SCRIPT ERROR: none. VSync warning only; audio output not assessed.
+PLANET_5458 route=planet selected=1 scene=(808.0, 900.0) wallet_hidden=true
+PLANET_5458 return_equipment_and_universe=true focus_clear=true
+Fixture: Campaign grants all; first planet conquered with station/refinery/workshop/shipyard built. Reactor availability refreshed; no purchase or planet action submitted.

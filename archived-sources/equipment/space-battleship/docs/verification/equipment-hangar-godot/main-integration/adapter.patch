@@ -1,0 +1,341 @@
+diff --git a/space-battleship/project.godot b/space-battleship/project.godot
+index cf7a9028..1ed8ff4e 100644
+--- a/space-battleship/project.godot
++++ b/space-battleship/project.godot
+@@ -6,8 +6,8 @@ run/main_scene="res://src/main.tscn"
+ config/features=PackedStringArray("4.7", "GL Compatibility")
+ 
+ [display]
+-window/size/viewport_width=572
+-window/size/viewport_height=960
++window/size/viewport_width=1440
++window/size/viewport_height=900
+ window/stretch/mode="canvas_items"
+ 
+ [rendering]
+diff --git a/space-battleship/src/game_session.gd b/space-battleship/src/game_session.gd
+index b4f516e2..d5f150e9 100644
+--- a/space-battleship/src/game_session.gd
++++ b/space-battleship/src/game_session.gd
+@@ -765,6 +765,25 @@ func equipment_inputs() -> Dictionary:
+ 	return {"mounts": campaign_system.ship_facts().mounts, "balances": economy.budget(),
+ 		"game_time": game_time}
+ 
++func equipment_slot_facts() -> Array:
++	return equipment.slot_facts(campaign_system.ship_facts().mounts, game_time, int(_world_factors.equipment_levels))
++
++# Only the accepted inputs actually consumed by charged_base comparisons.
++func _equipment_comparison_dependencies() -> Array:
++	return [_world_factors.get("equipment_levels"), _research_factors.get("weapon_damage"),
++		_research_factors.get("equipment_durability"), _reactor_factors.get("weapons"), _reactor_factors.get("defence")]
++
++func _notify_equipment_comparison(previous: Array) -> void:
++	if _equipment_comparison_dependencies() != previous: equipment.queue_comparison_changed()
++
++func equipment_comparison(slot_id: String, candidate_id: String, count: int = 1, maximum: bool = false) -> Dictionary:
++	if not run_state.is_running(): return run_state.rejection()
++	var inputs: Dictionary = equipment_inputs()
++	inputs.extra_bonus = int(_world_factors.equipment_levels)
++	inputs.ai = _research_factors
++	inputs.reactor = _reactor_factors
++	return equipment.slot_comparison(slot_id, candidate_id, count, inputs, economy.can_pay, maximum)
++
+ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrides: Dictionary = {}, module_totals = null,
+ 		drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
+ 	if not run_state.is_running(): return run_state.rejection()
+@@ -832,6 +851,7 @@ func _growth_setup(next_ship: String = "", contributions = null, hanging_overrid
+ 	return setup
+ 
+ func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_ship: String = "", contributions = null, accept_equipment: bool = true, accept_drones: Callable = Callable(), hanging_overrides: Dictionary = {}, module_totals = null, drone_replacements: Dictionary = {}, refresh_contributions: bool = true) -> Dictionary:
++	var comparison_before: Array = _equipment_comparison_dependencies()
+ 	if not run_state.is_running(): return run_state.rejection()
+ 	var geometry_changed: bool = (not next_ship.is_empty() and next_ship != campaign_system.selected_ship()) or contributions != null
+ 	geometry_changed = geometry_changed or equipment.geometry_changed()
+@@ -865,6 +885,7 @@ func publish_equipment_refit(next_wallet: Dictionary, change_kind: String, next_
+ 	if ship_changed: campaign_system.publish_ship_change()
+ 	if budget_changed: economy.publish_budget_change()
+ 	if accept_equipment: equipment.publish_accepted(equipment_notice)
++	_notify_equipment_comparison(comparison_before)
+ 	return {"ok": true}
+ 
+ func refresh_growth() -> bool:
+@@ -1162,6 +1183,7 @@ func _publish_world_values(previous: Dictionary, retreat_after_commit: bool = tr
+ 	return result
+ 
+ func _publish_research() -> Dictionary:
++	var comparison_before: Array = _equipment_comparison_dependencies()
+ 	var result = research.contributions()
+ 	if not result.ok: return result
+ 	var values: Dictionary = result["values"]
+@@ -1179,9 +1201,11 @@ func _publish_research() -> Dictionary:
+ 		income.jewel = jewel.value
+ 		income.make_read_only()
+ 		_income_factors = income
++	_notify_equipment_comparison(comparison_before)
+ 	return {"ok": true}
+ 
+ func publish_reactor(factors: Dictionary, next_wallet, kind: String, retreat_after_commit: bool = true) -> Dictionary:
++	var comparison_before: Array = _equipment_comparison_dependencies()
+ 	if not run_state.is_running(): return run_state.rejection()
+ 	var updated = _publish_native_values(_research_factors, factors, kind, false)
+ 	if not updated.ok: return updated
+@@ -1195,9 +1219,11 @@ func publish_reactor(factors: Dictionary, next_wallet, kind: String, retreat_aft
+ 	var budget_changed: bool = next_wallet != null and economy.accept_budget(next_wallet, false)
+ 	if updated.defence_changed and retreat_after_commit: campaign_system.retreat_if_dead(equipment.clear_switch_locks)
+ 	if budget_changed: economy.publish_budget_change()
++	_notify_equipment_comparison(comparison_before)
+ 	return {"ok": true, "defence_changed": updated.defence_changed}
+ 
+ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dictionary = {}, retreat_after_commit: bool = true) -> Dictionary:
++	var comparison_before: Array = _equipment_comparison_dependencies()
+ 	if not run_state.is_running(): return run_state.rejection()
+ 	var old_planet: Dictionary = _planet_factors
+ 	var old_crew: Dictionary = _crew_factors
+@@ -1243,6 +1269,7 @@ func publish_world(planet: Dictionary = {}, crew: Dictionary = {}, galaxy: Dicti
+ 		_research_speed = old_research_speed
+ 		_galaxy_crew_experience = old_crew_experience
+ 		return result
++	if result.ok: _notify_equipment_comparison(comparison_before)
+ 	return result
+ 
+ func publish_planet_claim(planet: Dictionary) -> Dictionary:
+diff --git a/space-battleship/src/main.gd b/space-battleship/src/main.gd
+index f3f66e37..df25a5df 100644
+--- a/space-battleship/src/main.gd
++++ b/space-battleship/src/main.gd
+@@ -24,6 +24,10 @@ var _startup_directory: String = ""
+ var _feature_panels: Dictionary = {}
+ var _pages: Dictionary = {}
+ var _tabs: TabContainer
++var equipment_scene: Control
++var _battle_viewport: SubViewport
++var _bridge_open: Button
++var _battle_input_blocker: Control
+ var _reforge_picker: OptionButton
+ var _reforge_drones: ItemList
+ var _reforge_planet_value: LineEdit
+@@ -86,7 +90,7 @@ func _ready() -> void:
+ 	if not result.ok:
+ 		startup_error = str(result.reason)
+ 		return
+-	get_window().content_scale_size = session.battle.view_size()
++	get_window().content_scale_size = Vector2i(1440, 900)
+ 	result = session.campaign_system.start_sortie(1, session.equipment.clear_switch_locks)
+ 	if not result.ok:
+ 		startup_error = str(result.reason)
+@@ -151,20 +155,45 @@ func _show_session() -> void:
+ 	_feature_panels.clear()
+ 	_visibility_pending = true
+ 	session.campaign_system.progress_changed.connect(_queue_feature_visibility)
+-	get_window().content_scale_size = session.battle.view_size()
++	get_window().content_scale_size = Vector2i(1440, 900)
++	# Preserve the battle's authored logical coordinates inside the fixed right surface.
++	# The viewport container transforms input together with its existing presentation.
++	var battle_surface := SubViewportContainer.new()
++	var logical_size := Vector2(session.battle.view_size())
++	var surface_size := Vector2(632, 900)
++	var projection_scale: float = minf(surface_size.x / logical_size.x, surface_size.y / logical_size.y)
++	battle_surface.position = Vector2(808, 0) + (surface_size - logical_size * projection_scale) * 0.5
++	battle_surface.size = logical_size
++	battle_surface.scale = Vector2.ONE * projection_scale
++	add_child(battle_surface)
++	_battle_viewport = SubViewport.new()
++	_battle_viewport.size = session.battle.view_size()
++	_battle_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
++	battle_surface.add_child(_battle_viewport)
+ 	if DisplayServer.get_name() != "headless":
+-		add_child(load("res://src/ui/battle_scenery.gd").new(session))
++		_battle_viewport.add_child(load("res://src/ui/battle_scenery.gd").new(session))
+ 		var battle_view = BattleView.new(session.battle)
+ 		battle_view.damage_mode = _damage_mode
+ 		battle_view.damage_received.connect(_play_effect)
+-		add_child(battle_view)
++		_battle_viewport.add_child(battle_view)
+ 	var hud_layer := CanvasLayer.new()
+ 	hud_layer.layer = 8
+-	add_child(hud_layer)
++	_battle_viewport.add_child(hud_layer)
+ 	hud_layer.add_child(load("res://src/ui/battle_hud.gd").new(session.battle, session.economy))
+ 	_setup_shell_overlay()
+-	add_child(CampaignView.new(session.campaign_system))
+-	add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
++	_battle_viewport.add_child(CampaignView.new(session.campaign_system, _ui_occupied))
++	_battle_viewport.add_child(EconomyView.new(session.economy, session.economy_display_context, session.refresh_growth))
++	var equipment_layer := CanvasLayer.new()
++	equipment_layer.layer = 9
++	add_child(equipment_layer)
++	equipment_scene = EquipmentPanel.new(session)
++	equipment_layer.add_child(equipment_scene)
++	equipment_scene.exclusive_ui_changed.connect(_sync_equipment_entry)
++	_battle_input_blocker = Control.new()
++	_battle_input_blocker.position = Vector2(808, 0)
++	_battle_input_blocker.size = Vector2(632, 900)
++	_battle_input_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
++	equipment_layer.add_child(_battle_input_blocker)
+ 	_setup_growth_panel()
+ 	_refresh_feature_visibility()
+ 	_setup_guidance_panel()
+@@ -184,9 +213,9 @@ func _apply_settings(settings: Dictionary) -> void:
+ 	if _skip_toggle != null: _skip_toggle.set_pressed_no_signal(_skip_tutorial)
+ 	if _autosave_spin != null: _autosave_spin.set_value_no_signal(_autosave_interval)
+ 	if _damage_option != null: _damage_option.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
+-	for child in get_children():
++	for child in (_battle_viewport.get_children() if _battle_viewport != null else get_children()):
+ 		if child.get_script() == BattleView: child.damage_mode = _damage_mode
+-	if growth_panel != null: growth_panel.visible = _preferred_page == "growth"
++	if growth_panel != null: _set_growth_visible(_preferred_page == "growth")
+ 
+ func _setup_audio() -> void:
+ 	_music_player = AudioStreamPlayer.new()
+@@ -259,6 +288,7 @@ func _replace_session(replacement) -> Dictionary:
+ 		var closed: Dictionary = session.save_files.close()
+ 		if not closed.ok: return closed
+ 	_stop_audio()
++	if is_instance_valid(equipment_scene): equipment_scene.prepare_host_hide(true)
+ 	for child in get_children(): child.queue_free()
+ 	session = replacement
+ 	_startup_save_error = ""
+@@ -398,10 +428,12 @@ func _process(dt: float) -> void:
+ 			_next_autosave_wall = session.wall_time + _autosave_interval
+ 			var saved: Dictionary = session.request_save()
+ 			if not saved.ok and growth_status != null: growth_status.text = PlayerText.error(str(saved.get("error", saved.get("reason", "SaveFailed"))))
++	_sync_equipment_entry()
+ 	if _overlay != null: _overlay.queue_redraw()
+ 	queue_redraw()
+ 
+ func _unhandled_input(event: InputEvent) -> void:
++	if _ui_occupied(): return
+ 	if session == null or not startup_error.is_empty() or not session.run_state.is_running():
+ 		return
+ 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
+@@ -417,7 +449,7 @@ func _draw() -> void:
+ func _setup_shell_overlay() -> void:
+ 	var layer := CanvasLayer.new()
+ 	layer.layer = 9
+-	add_child(layer)
++	_battle_viewport.add_child(layer)
+ 	_overlay = Node2D.new()
+ 	layer.add_child(_overlay)
+ 	_overlay.draw.connect(_draw_shell.bind(_overlay))
+@@ -425,7 +457,7 @@ func _setup_shell_overlay() -> void:
+ 	_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停"
+ 	_pause_button.position = Vector2(420, 18)
+ 	_pause_button.pressed.connect(func():
+-		if session.run_state.is_running():
++		if session.run_state.is_running() and not _modal_ui_occupied():
+ 			session.set_pause("user", not session.pause_reasons.has("user"))
+ 			_pause_button.text = "继续" if session.pause_reasons.has("user") else "暂停")
+ 	layer.add_child(_pause_button)
+@@ -526,11 +558,42 @@ func _command_button(parent: Control, text: String, action: Callable) -> Button:
+ 		)
+ 	return button
+ 
++# One UI ownership gate for main Space and the battle viewport's G shortcut.
++func _ui_occupied() -> bool:
++	if _modal_ui_occupied(): return true
++	var focus: Control = get_viewport().gui_get_focus_owner()
++	if focus != null and focus.is_visible_in_tree(): return true
++	if is_instance_valid(_battle_viewport):
++		focus = _battle_viewport.gui_get_focus_owner()
++		if focus != null and focus.is_visible_in_tree(): return true
++	return false
++
++func _modal_ui_occupied() -> bool:
++	return (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(growth_panel) and growth_panel.visible) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible) or not _pending_reforge.is_empty() or not _pending_import.is_empty() or not _pending_new_game.is_empty()
++
++func _set_growth_visible(visible: bool) -> bool:
++	if visible and is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return false
++	if is_instance_valid(growth_panel):
++		if not visible:
++			var focus: Control = get_viewport().gui_get_focus_owner()
++			if focus != null and (growth_panel.is_ancestor_of(focus) or focus == _bridge_open): focus.release_focus()
++		growth_panel.visible = visible
++	_sync_equipment_entry()
++	return true
++
++func _sync_equipment_entry() -> void:
++	if is_instance_valid(equipment_scene):
++		equipment_scene.visible = not (is_instance_valid(growth_panel) and growth_panel.visible)
++	if is_instance_valid(_bridge_open):
++		_bridge_open.disabled = (is_instance_valid(equipment_scene) and equipment_scene.has_exclusive_ui()) or (is_instance_valid(_guidance_panel) and _guidance_panel.visible)
++	if is_instance_valid(_battle_input_blocker): _battle_input_blocker.visible = _modal_ui_occupied()
++
+ func _set_page(page: String) -> void:
++	if page == "growth" and is_instance_valid(equipment_scene) and not equipment_scene.prepare_host_hide(): return
+ 	var saved: Dictionary = PlayerSettings.save_change("page", page)
+ 	if saved.ok:
+ 		_preferred_page = page
+-		growth_panel.visible = page == "growth"
++		_set_growth_visible(page == "growth")
+ 	elif growth_status != null:
+ 		growth_status.text = PlayerText.error(str(saved.reason))
+ 
+@@ -539,8 +602,9 @@ func _setup_growth_panel() -> void:
+ 	layer.layer = 10
+ 	add_child(layer)
+ 	var open := Button.new()
+-	open.text = "舰桥 · 配装与发展"
+-	open.position = Vector2(18, 80)
++	_bridge_open = open
++	open.text = "舰桥面板"
++	open.position = Vector2(678, 48)
+ 	layer.add_child(open)
+ 	growth_panel = PanelContainer.new()
+ 	growth_panel.position = Vector2(12, 130)
+@@ -552,7 +616,7 @@ func _setup_growth_panel() -> void:
+ 	growth_panel.add_child(shell)
+ 	var box: VBoxContainer = shell
+ 	var back := Button.new()
+-	back.text = "返回战斗"
++	back.text = "关闭面板"
+ 	back.pressed.connect(func(): _set_page("battle"))
+ 	box.add_child(back)
+ 	growth_status = Label.new()
+@@ -564,6 +628,8 @@ func _setup_growth_panel() -> void:
+ 	box.add_child(save_state_label)
+ 	_save_status_elapsed = 1.0
+ 	open.pressed.connect(func(): _set_page("battle" if growth_panel.visible else "growth"))
++	growth_panel.visibility_changed.connect(_sync_equipment_entry)
++	_sync_equipment_entry()
+ 	_tabs = TabContainer.new()
+ 	_tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
+ 	shell.add_child(_tabs)
+@@ -572,8 +638,7 @@ func _setup_growth_panel() -> void:
+ 		_create_bridge_page(str(page[0]), str(page[1]))
+ 	box = _pages.ship.box
+ 	box.add_child(load("res://src/ui/campaign_panel.gd").new(session, _command_button))
+-	box.add_child(EquipmentPanel.new(session.equipment, session.equipment_inputs, session.economy.affordable,
+-		session.economy.payment, session.publish_equipment_levels, session.publish_equipment_refit, _command_button))
++	# Equipment has one scene and one command surface in the hangar at left.
+ 	box.add_child(FleetPanel.new(session.campaign_system, session.commit_ship_refit, _command_button))
+ 	box.add_child(load("res://src/ui/attributes_panel.gd").new(session))
+ 	box = _pages.growth.box
+@@ -685,7 +750,7 @@ func _setup_growth_panel() -> void:
+ 		var saved: Dictionary = PlayerSettings.save_change("damage_mode", chosen)
+ 		if saved.ok:
+ 			_damage_mode = chosen
+-			for child in get_children():
++			for child in (_battle_viewport.get_children() if _battle_viewport != null else get_children()):
+ 				if child.get_script() == BattleView: child.damage_mode = chosen
+ 		else:
+ 			damage_mode.select(PlayerSettings.DAMAGE_MODES.find(_damage_mode))
+diff --git a/space-battleship/src/ui/campaign_view.gd b/space-battleship/src/ui/campaign_view.gd
+index 195d561e..2f03b6fb 100644
+--- a/space-battleship/src/ui/campaign_view.gd
++++ b/space-battleship/src/ui/campaign_view.gd
+@@ -1,11 +1,14 @@
+ extends Node2D
+ var _campaign
++var _ui_gate: Callable
+ 
+-func _init(campaign) -> void:
++func _init(campaign, ui_gate: Callable = Callable()) -> void:
+ 	_campaign = campaign
++	_ui_gate = ui_gate
+ 	_campaign.status_changed.connect(queue_redraw)
+ 
+ func _unhandled_input(event: InputEvent) -> void:
++	if _ui_gate.is_valid() and _ui_gate.call(): return
+ 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_G:
+ 		_campaign.toggle_guard()
+ 

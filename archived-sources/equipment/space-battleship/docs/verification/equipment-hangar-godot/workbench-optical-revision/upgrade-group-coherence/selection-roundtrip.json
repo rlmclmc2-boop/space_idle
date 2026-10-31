@@ -1,0 +1,249 @@
+{
+  "failures": [],
+  "records": [
+    {
+      "before": {
+        "group": {
+          "candidate_card_sizes": [
+            "(68.0, 120.0)",
+            "(68.0, 120.0)",
+            "(68.0, 120.0)",
+            "(68.0, 120.0)"
+          ],
+          "candidate_rect": "[P: (476.0, 693.0), S: (296.0, 120.0)]",
+          "comparison_visible": false,
+          "fee_cells_visible": 2,
+          "fee_visible": true,
+          "gap": 12.0,
+          "main_current": "9,300",
+          "main_next": "9.28万",
+          "main_next_caption": "升级后",
+          "purchase_node": 68534929159,
+          "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+          "purchase_size": "(292.0, 36.0)",
+          "purchase_style": -9223371968252737781,
+          "purchase_visible": true,
+          "quantity_node": 68400711423,
+          "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+          "quantity_size": "(96.0, 36.0)",
+          "quantity_style": -9223371968386955517,
+          "quantity_visible": true,
+          "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+        },
+        "maximum": false,
+        "quantity": 10,
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "returned": {
+        "group": {
+          "candidate_card_sizes": [
+            "(68.0, 120.0)",
+            "(68.0, 120.0)",
+            "(68.0, 120.0)",
+            "(68.0, 120.0)"
+          ],
+          "candidate_rect": "[P: (476.0, 693.0), S: (296.0, 120.0)]",
+          "comparison_visible": false,
+          "fee_cells_visible": 2,
+          "fee_visible": true,
+          "gap": 12.0,
+          "main_current": "9,300",
+          "main_next": "9.28万",
+          "main_next_caption": "升级后",
+          "purchase_node": 68534929159,
+          "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+          "purchase_size": "(292.0, 36.0)",
+          "purchase_style": -9223371968252737781,
+          "purchase_visible": true,
+          "quantity_node": 68400711423,
+          "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+          "quantity_size": "(96.0, 36.0)",
+          "quantity_style": -9223371968386955517,
+          "quantity_visible": true,
+          "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+        },
+        "maximum": false,
+        "quantity": 10,
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "selected": {
+        "group": {
+          "candidate_card_sizes": [
+            "(68.0, 100.0)",
+            "(68.0, 100.0)",
+            "(68.0, 100.0)",
+            "(68.0, 100.0)"
+          ],
+          "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+          "comparison_visible": true,
+          "fee_cells_visible": 2,
+          "fee_visible": true,
+          "gap": 12.0,
+          "main_current": "9,300",
+          "main_next": "9.28万",
+          "main_next_caption": "升级后",
+          "purchase_node": 68534929159,
+          "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+          "purchase_size": "(292.0, 36.0)",
+          "purchase_style": -9223371968252737781,
+          "purchase_visible": true,
+          "quantity_node": 68400711423,
+          "quantity_rect": "[P: (36.0, 828.0), S: (96.0, 36.0)]",
+          "quantity_size": "(96.0, 36.0)",
+          "quantity_style": -9223371968386955517,
+          "quantity_visible": true,
+          "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+        },
+        "maximum": false,
+        "quantity": 10
+      },
+      "slot": "weapon:0"
+    },
+    {
+      "before": {
+        "group": {
+          "candidate_card_sizes": [
+            "(144.0, 120.0)",
+            "(144.0, 120.0)"
+          ],
+          "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+          "comparison_visible": false,
+          "fee_cells_visible": 1,
+          "fee_visible": true,
+          "gap": 12.0,
+          "main_current": "1,000",
+          "main_next": "6,200",
+          "main_next_caption": "升级后",
+          "purchase_node": 68534929159,
+          "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+          "purchase_size": "(292.0, 36.0)",
+          "purchase_style": -9223371968252737781,
+          "purchase_visible": true,
+          "quantity_node": 68400711423,
+          "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+          "quantity_size": "(96.0, 36.0)",
+          "quantity_style": -9223371968386955517,
+          "quantity_visible": true,
+          "workbench_rect": "[P: (16.0, 630.0), S: (776.0, 266.0)]"
+        },
+        "maximum": false,
+        "quantity": 10,
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "returned": {
+        "group": {
+          "candidate_card_sizes": [
+            "(144.0, 120.0)",
+            "(144.0, 120.0)"
+          ],
+          "candidate_rect": "[P: (476.0, 704.0), S: (296.0, 120.0)]",
+          "comparison_visible": false,
+          "fee_cells_visible": 1,
+          "fee_visible": true,
+          "gap": 12.0,
+          "main_current": "1,000",
+          "main_next": "6,200",
+          "main_next_caption": "升级后",
+          "purchase_node": 68534929159,
+          "purchase_rect": "[P: (312.0, 828.0), S: (292.0, 36.0)]",
+          "purchase_size": "(292.0, 36.0)",
+          "purchase_style": -9223371968252737781,
+          "purchase_visible": true,
+          "quantity_node": 68400711423,
+          "quantity_rect": "[P: (204.0, 828.0), S: (96.0, 36.0)]",
+          "quantity_size": "(96.0, 36.0)",
+          "quantity_style": -9223371968386955517,
+          "quantity_visible": true,
+          "workbench_rect": "[P: (16.0, 630.0), S: (776.0, 266.0)]"
+        },
+        "maximum": false,
+        "quantity": 10,
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "1"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "selected": {
+        "group": {
+          "candidate_card_sizes": [
+            "(144.0, 100.0)",
+            "(144.0, 100.0)"
+          ],
+          "candidate_rect": "[P: (476.0, 678.0), S: (296.0, 100.0)]",
+          "comparison_visible": true,
+          "fee_cells_visible": 1,
+          "fee_visible": true,
+          "gap": 12.0,
+          "main_current": "1,000",
+          "main_next": "6,200",
+          "main_next_caption": "升级后",
+          "purchase_node": 68534929159,
+          "purchase_rect": "[P: (144.0, 828.0), S: (292.0, 36.0)]",
+          "purchase_size": "(292.0, 36.0)",
+          "purchase_style": -9223371968252737781,
+          "purchase_visible": true,
+          "quantity_node": 68400711423,
+          "quantity_rect": "[P: (36.0, 828.0), S: (96.0, 36.0)]",
+          "quantity_size": "(96.0, 36.0)",
+          "quantity_style": -9223371968386955517,
+          "quantity_visible": true,
+          "workbench_rect": "[P: (16.0, 608.0), S: (776.0, 288.0)]"
+        },
+        "maximum": false,
+        "quantity": 10
+      },
+      "slot": "defence:0"
+    }
+  ],
+  "scope": "Actual GUI current-candidate-current selection with quote10 retained; no screenshots, purchase, installation or independent transaction matrix",
+  "source_commit": "304883fbde448cd32fa288ae97967e43100209bc"
+}

@@ -1,0 +1,154 @@
+extends SceneTree
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func _frames(count: int) -> void:
+	for i in count: await process_frame
+	await RenderingServer.frame_post_draw
+
+func _shot(tag: String) -> void:
+	root.get_texture().get_image().save_png("/tmp/space-idle-native472/reactor-hub-flow-" + tag + ".png")
+
+func _dismiss_guidance(game: Node2D) -> void:
+	var session = game.session
+	var pending: Dictionary = session.pending_guidance()
+	var attempts: int = 0
+	while not pending.is_empty() and attempts < 20:
+		var dismissed: Dictionary = session.dismiss_guidance(str(pending.kind), str(pending.id))
+		assert(dismissed.ok)
+		pending = session.pending_guidance()
+		attempts += 1
+	game._sync_guidance()
+	print("GUIDANCE ",attempts," pending=",pending," pauses=",session.pause_reasons)
+
+func _open(game: Node2D, extra: bool = false) -> void:
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	if extra: saved.grants["reactor_module:condensation"] = true
+	var restored: Dictionary = session.campaign_system.restore_state(saved)
+	assert(restored.ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	var refreshed: Dictionary = session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor)
+	assert(refreshed.ok)
+	_dismiss_guidance(game)
+	game._select_left_module("reactor")
+
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	root.content_scale_size = Vector2i(1440,900)
+	var game: Node2D = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await _frames(28)
+	_open(game)
+	await _frames(20)
+	var scene = game.reactor_scene
+	var session = game.session
+	var first: Dictionary = session.reactor_system.presentation_model()
+	var initial_level: int = first.level
+	print("INITIAL ", first.modules.size(), " load=", first.load, " model_reads=", scene.presentation_counts.model_reads)
+	assert(first.ok and first.modules.size() == 3)
+	_shot("three-zero")
+	scene._equal.pressed.emit()
+	await _frames(3)
+	print("EQUAL_PREVIEW ", scene._preview.get("ok"), " budget=", scene._budget.text)
+	_shot("equal-preview")
+	assert(scene._preview.get("ok",false))
+	scene._apply.pressed.emit()
+	await _frames(5)
+	var active: Dictionary = session.reactor_system.presentation_model()
+	print("EQUAL_ACCEPT ", scene.last_result.get("ok"), " load=", active.load, " model_reads=", scene.presentation_counts.model_reads)
+	assert(scene.last_result.ok and active.load > 0.0)
+	_shot("three-active")
+	scene._equal.pressed.emit()
+	await _frames(2)
+	var reads_before: int = scene.presentation_counts.model_reads
+	print("SAME_PREVIEW ", scene._budget.text)
+	_shot("same-preview")
+	scene._apply.pressed.emit()
+	await _frames(5)
+	print("SAME_ACCEPT ", scene.last_result.get("ok"), " reads=", reads_before, "->", scene.presentation_counts.model_reads, " budget=",scene._budget.text)
+	assert(scene.last_result.ok and scene.presentation_counts.model_reads == reads_before and scene._budget.text.begins_with("容量"))
+	_shot("same-confirm")
+	scene._rows["weapons"].slider.value = 10000
+	await _frames(2)
+	print("OVER_CAP ", scene._preview.get("ok"), " reason=", scene._preview.get("reason"), " apply_disabled=", scene._apply.disabled)
+	assert(not scene._preview.get("ok",false) and scene._apply.disabled)
+	_shot("over-capacity")
+	scene._restore.pressed.emit()
+	await _frames(3)
+	var reads_wallet: int = scene.presentation_counts.model_reads
+	var quote_wallet: int = scene.presentation_counts.quote_reads
+	var amount: Dictionary = session.amount_api.apply("from_decimal",["1000"])
+	assert(amount.ok)
+	var credit: Dictionary = session.economy.credit_yield("2", amount.value, session.wall_time, session.game_time)
+	assert(credit.ok)
+	await _frames(4)
+	print("QUOTE_DIRTY ", reads_wallet, "->",scene.presentation_counts.model_reads," quote=",quote_wallet,"->",scene.presentation_counts.quote_reads," purchase_disabled=",scene._purchase.disabled)
+	assert(scene.presentation_counts.model_reads == reads_wallet and scene.presentation_counts.quote_reads > quote_wallet and not scene._purchase.disabled)
+	_shot("affordable")
+	scene._purchase.pressed.emit()
+	await _frames(5)
+	print("PURCHASE ",scene.last_result.get("ok")," level=",session.reactor_system.presentation_model().level)
+	assert(scene.last_result.ok and session.reactor_system.presentation_model().level == initial_level + 1)
+	_shot("purchased")
+	_dismiss_guidance(game)
+	await _frames(14)
+	var updates_before: int = scene._stage.diagnostics.field_updates
+	print("CLOCK_ACTIVE game_time=",session.game_time," reasons=",session.pause_reasons," field_updates=",updates_before)
+	assert(updates_before > 0)
+	session.set_pause("user",true)
+	await _frames(8)
+	print("CLOCK_BEFORE_PAUSE game_time=",session.game_time," reasons=",session.pause_reasons," stage_clock=",scene._stage._clock," loads=",scene._stage._loads)
+	print("PAUSED ",updates_before,"->",scene._stage.diagnostics.field_updates," slider_editable=",scene._rows["weapons"].slider.editable)
+	assert(scene._stage.diagnostics.field_updates == updates_before and scene._rows["weapons"].slider.editable)
+	_shot("paused")
+	session.set_pause("user",false)
+	game._select_left_module("equipment")
+	var hidden_before: int = scene.presentation_counts.visible_frames
+	await _frames(8)
+	print("HIDDEN ",hidden_before,"->",scene.presentation_counts.visible_frames)
+	assert(scene.presentation_counts.visible_frames == hidden_before)
+	game._select_left_module("reactor")
+	await _frames(4)
+	_open(game,true)
+	await _frames(8)
+	var four: Dictionary = session.reactor_system.presentation_model()
+	print("FOUR ",four.modules.size()," ids=",scene._ids," load=",four.load)
+	assert(four.ok and four.modules.size()==4 and scene._rows["condensation"].slider.visible)
+	_shot("four-open")
+	scene._equal.pressed.emit()
+	await _frames(2)
+	assert(scene._preview.get("ok",false))
+	scene._apply.pressed.emit()
+	await _frames(6)
+	var four_active: Dictionary = session.reactor_system.presentation_model()
+	print("FOUR_ACTIVE ",scene.last_result.get("ok")," rows=",four_active.modules.size()," loads=",four_active.modules.map(func(row): return row.load))
+	assert(scene.last_result.ok and four_active.modules.size()==4)
+	for row in four_active.modules: assert(row.load > 0.0)
+	_dismiss_guidance(game)
+	await _frames(12)
+	print("FOUR_CLOCK game_time=",session.game_time," reasons=",session.pause_reasons," updates=",scene._stage.diagnostics.field_updates)
+	_shot("four-active-t0")
+	var updates_visible: int = scene._stage.diagnostics.field_updates
+	var visible_start: int = Time.get_ticks_usec()
+	await _frames(35)
+	var visible_ms: float = float(Time.get_ticks_usec()-visible_start)/1000.0
+	print("VISIBLE_SAMPLE frames=35 ms=",visible_ms," field_updates=",scene._stage.diagnostics.field_updates-updates_visible,
+		" model_reads=",scene.presentation_counts.model_reads," quote_reads=",scene.presentation_counts.quote_reads)
+	_shot("four-active-t1")
+	var phase_before_hide: float = scene._stage._phase
+	game._select_left_module("equipment")
+	var updates_hidden: int = scene._stage.diagnostics.field_updates
+	var hidden_start: int = Time.get_ticks_usec()
+	await _frames(35)
+	var hidden_ms: float = float(Time.get_ticks_usec()-hidden_start)/1000.0
+	print("HIDDEN_SAMPLE frames=35 ms=",hidden_ms," field_updates=",scene._stage.diagnostics.field_updates-updates_hidden,
+		" visible_frames=",scene.presentation_counts.visible_frames)
+	assert(scene._stage.diagnostics.field_updates == updates_hidden)
+	game._select_left_module("reactor")
+	await _frames(4)
+	print("REOPEN phase=",phase_before_hide,"->",scene._stage._phase," game_time=",session.game_time)
+	_shot("four-reopen")
+	quit()

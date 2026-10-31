@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+MOUSE_SLIDE before=2267 after=0 kind=shares preview=true
+MOUSE_APPLY result={ "ok": true, "defence_changed": false, &"actual": { "ok": true, "modules": [{ "id": "weapons", "enabled": true, "ratio": 0.0, "load": 0.0, "has_free": false, "manual": "0e0", "free": "0e0", "effective": "0e0", "factor": "1e0" }, { "id": "defence", "enabled": true, "ratio": 0.22, "load": 0.22, "has_free": false, "manual": "3.3e1", "free": "0e0", "effective": "3.3e1", "factor": "1.16398765361702e0" }, { "id": "smelting", "enabled": true, "ratio": 0.22, "load": 0.22, "has_free": false, "manual": "3.3e1", "free": "0e0", "effective": "3.3e1", "factor": "1.16398765361702e0" }], "load": 0.44, "capacity": "1.5e2", "allocated": "6.6e1", "remaining": "8.4e1" } } kind=none
+MOUSE_PURCHASE level=2->3 result=true

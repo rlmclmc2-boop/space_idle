@@ -1,0 +1,18 @@
+{
+  "platform": "linux.x86_64",
+  "shipping_windows_build": false,
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_cpp_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+  "api_sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986",
+  "library_sha256": "8409b862a91588611a689374f6865f930f2c715c27b1d04189b9ee4b6b0cb58e",
+  "source_sha256": {
+    "amount_api.hpp": "479b310852a81463ad8bce361075da99534f5d172b646aa070c2e798c715b4ff",
+    "amount_value.hpp": "b17594755bd8175130e381131aa9e7cf5c9a5a5446b997dfa38e204811613867",
+    "combat_execution_kernel.h": "f531d51fa00b740210af861ca530d32aeda193b933bd902a8ba8b6c907155d04",
+    "combat_presentation.h": "54ed37820f4902058a8e380dfdd615bf1b7d75b9355b575cf7d7d97a5519f780",
+    "combat_retained_presentation.h": "88e4e3b6ca052d8a7080e5d3131cfe63af8b98c721446ab1b689c1ed6643c439",
+    "foundation_disk.hpp": "79975eeaf90a84774de93e6936af52a1b165ff00cd6d53f00c6dcbc75c7906e5",
+    "space_native.cpp": "23b3c0da6d0cec700e733408288ed6eb5ddf87ec9762bf873b893365b0bf9f09",
+    "space_native.os": "fa0a6893dcaba6de53a2a411de9c250b4611834962e2c474544332afa6a35e20"
+  }
+}

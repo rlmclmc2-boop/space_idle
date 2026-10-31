@@ -1,0 +1,69 @@
+{
+  "source_commit": "d5b73e930b046fcc6997a6cf18fcc885d76284e0",
+  "base_main": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "run_exit_code": 0,
+  "observations": 26,
+  "failures": [],
+  "files": {
+    "01-normal-equipment-entry.png": {
+      "sha256": "6a59a11add2f5b5a9ec341c3affd6c71139b90be1362fa9a9b8ae8dbc42608d2",
+      "bytes": 1379031
+    },
+    "02-original-bridge-equipment-hidden.png": {
+      "sha256": "a11b81a571ed189fcca3038c3779ab0744eed3e6390fe304a799567e0b4c0d4f",
+      "bytes": 610697
+    },
+    "03-batch-current-levels-exclusive.png": {
+      "sha256": "d924cebc00fff9b8fd8209d1bcd3fb790b0481770c64695ecba398e0e1115360",
+      "bytes": 872169
+    },
+    "04-equipment-return.png": {
+      "sha256": "1bb3dde6cde83bb4de40d6e9f7130b05469d82b4e08ade58193143b9d758d044",
+      "bytes": 1384402
+    },
+    "README.md": {
+      "sha256": "51af5458737e496ca88adfc285c8546b2ec90afdde725f5ba806f3934eae7d36",
+      "bytes": 5638
+    },
+    "adapter.patch": {
+      "sha256": "0231887373b7cfcdf7268d5c1381f1be40eb5748ea737187ff9f6c833005679f",
+      "bytes": 17198
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "847fc98ce1a74074b3525dd8c2698df00e9e7e7a6465cea3c9c481d80d440bca",
+      "bytes": 8722
+    },
+    "check.log.txt": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    "diagnostics/first-bridge.png": {
+      "sha256": "2cb36c8a09eb4f7603812043dadabe0bc359d522dbbe460cb3bdc64d84a18bdd",
+      "bytes": 1374568
+    },
+    "diagnostics/first-driver.gd.txt": {
+      "sha256": "a88d2e913ca97227b68936b8aae93848ba7b4c10a30e66ad49a7c77ae6ad5c3e",
+      "bytes": 8595
+    },
+    "diagnostics/first-operations.json": {
+      "sha256": "f2d993cda3e5de38ae7e97bafe235d896e146665780fe6a82bf6c5a8fab8d9b4",
+      "bytes": 1350
+    },
+    "diagnostics/first-runtime.log.txt": {
+      "sha256": "16c98d087edef5454972e90ab7c8f608eded89588289b51b20724a40f88b6e16",
+      "bytes": 490
+    },
+    "operations.json": {
+      "sha256": "0e5b731d6f4380405cb79e4ee3788255c6c776d9be1a9ca756df2dc3293ef74e",
+      "bytes": 3371
+    },
+    "runtime.log.txt": {
+      "sha256": "cf210b8e94e8e4da61eff2b6336055652887e17b68319ec00b94073fac51d1c4",
+      "bytes": 411
+    },
+    "source-identity.json": {
+      "sha256": "d1352d638848a5417227a63422ed4f86a088c1e8ea347c0be16c51ef5cfade94",
+      "bytes": 2984
+    }
+  }
+}

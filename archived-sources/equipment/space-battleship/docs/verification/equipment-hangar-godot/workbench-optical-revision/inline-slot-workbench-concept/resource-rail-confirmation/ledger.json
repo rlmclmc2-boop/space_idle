@@ -1,0 +1,58 @@
+{
+  "kind": "Narrow shared resource-rail confirmation on approved equipment candidate; no full workflow rerun",
+  "runtime_source_commit": "d354e60f1530435a6790cca0814ddc7e76f84f82",
+  "approved_equipment_candidate": "04ae5710c27d2cd8c6e6e7e6741ad1b597c7dbb3",
+  "approval_scope": "Parent relayed original reviewer limited acceptance of04ae15 full screens and action clip; not main or final user acceptance",
+  "public_fix_source": "459df59315e20708075bda5fafe9ef8408b69a7d",
+  "public_fix_entry": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md:475",
+  "only_runtime_change_from_approved": [
+    "space-battleship/src/ui/zone_shell.gd"
+  ],
+  "runtime_source_sha256": {
+    "space-battleship/src/ui/zone_shell.gd": "44323b2a3ee7f1f7d31861f7c3dbfbcad5e8b0f02974de1822b9e3a6b3dad9c1",
+    "space-battleship/src/ui/equipment_panel.gd": "30d3ff1374da05e721d01fcf9848d3bbac61f20efe8410e07873170c625d0921",
+    "space-battleship/src/ui/bridge_theme.gd": "dff1c8326969bc65f716682dbde8d763204b311624874ca61fea1d333c5f4e6e",
+    "space-battleship/src/ui/resource_visuals.gd": "1cae88972f1f5ce6f5a1793fcbadb24f9f978c2587855e59c28d4a964c4c0080",
+    "space-battleship/src/main.gd": "9b9ba075486b7b25ab1b390a94a4e6c763e3b9f94beefb6fab8f54b46b1c5c0f",
+    "space-battleship/src/systems/equipment.gd": "92bb4380f76028a9e53fe1f7deaec6e29dc384e3f136dae5b70d6e0803db319b"
+  },
+  "local_dependencies_sha256": {
+    "config": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+    "native": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d"
+  },
+  "result": {
+    "exit_code": 0,
+    "failures": [],
+    "script_or_resource_leak_errors": false
+  },
+  "scope": [
+    "Natural early2; controlled Owner progress and wallet/Cruiser produce middle5 empty slots with9.99万 directly visible",
+    "Controlled real Owner installations and only paid-level restoration produce late8 full loadout on both ships; actual wheel bottom capture",
+    "Known Owner longMAX444 and existing native amount formatting retained;1.235e39 directly visible in rail; official tooltip铁：1.235×10^39 retained",
+    "Actual font ink width fits every visible rail cell in five same-version screenshots; title/navigation/equipment body agree"
+  ],
+  "not_claimed": [
+    "New full interaction video;04ae complete operation evidence remains bound to its prior shared rail",
+    "arbitrary unobserved exponent domain",
+    "other module integration",
+    "new overall or user acceptance",
+    "main merge"
+  ],
+  "actually_viewed": [
+    "resource-rail-early2.png",
+    "resource-rail-late8-bottom.png",
+    "resource-rail-late8-top.png",
+    "resource-rail-long-max.png",
+    "resource-rail-middle5-empty.png"
+  ],
+  "evidence_sha256": {
+    "driver.gd": "3fe8f678a68fd6da427859cd5a1f807852efd22d6e67d3145eb18579785a7c35",
+    "operations.json": "90ac9103b58e48de64aa8710024347c1e0d21117d66d98de33515cb4d83238a6",
+    "resource-rail-early2.png": "6dd4500c22d621ef2dd62635e604cb5b298c6a613b6f456c24810963306917dc",
+    "resource-rail-late8-bottom.png": "9d153f9a852d37435d4a81070c6d1b0d0a88595411e03faca040c975d9e2e4ac",
+    "resource-rail-late8-top.png": "facb7f81354dfe2134e11086126181111ad36afbf02a8fcc6caf62a0d282838e",
+    "resource-rail-long-max.png": "6db6fdf9e076b8a68acfd1bcb8c6f42948b710f7de696d925c727aeb1f56d623",
+    "resource-rail-middle5-empty.png": "e409676d30747799c6c5c367240baf35355e9b9b9213e7a5b1adaeff0de05a3b",
+    "runtime.log": "d8de86561ebe311c875935e65aecdd04866d8d180d26183df5ea4e81bd585bcb"
+  }
+}

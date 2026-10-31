@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+DIRECT equal={ "ok": true, "defence_changed": true } levels=1
+ROTATED click=(81.82324, 296.4539)
+ROTATED slide={ "ok": true, "defence_changed": false, &"actual": { "ok": true, "modules": [{ "id": "weapons", "enabled": true, "ratio": 0.24, "load": 0.24, "has_free": false, "manual": "2.4e1", "free": "0e0", "effective": "2.4e1", "factor": "1.12710686092586e0" }, { "id": "defence", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "smelting", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "condensation", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }], "load": 0.99, "capacity": "1e2", "allocated": "9.9e1", "remaining": "1e0" } } model=0.24

@@ -1,0 +1,15 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+STARTUP_ERROR 
+synthetic_campaign_grants { "ok": true }
+crew_availability { "ok": true, "changed": true }
+synthetic_planet_state { "ok": true }
+assign_explorer_1 { "ok": true }
+automatic_1 { "ok": true }
+assign_explorer_2 { "ok": true }
+synthetic_elapsed { "ok": true }
+publish_real_fixture_contributions { "ok": true, "defence_changed": true }
+MOTION_COMPLETE {"capture_method":"real 4.7.2 main framebuffer; >=0.25s sampling interval; rendering not frame capped","conservative_aabb_intersections":[],"duration_wall_seconds":180.468476,"frames":327,"gameplay":"real Session processing; first explorer re-dispatched through OS mouse; automatic enabled through UI","note":"AABB checks are supporting data; actual video and stills decide visible occlusion. Arrival starts outside the module by design.","operator_regions":{"cancel":[222.0,168.0,190.0,42.0],"crew":[148.0,112.0,100.0,44.0],"facilities":[22.0,112.0,116.0,44.0],"planet":[494.0,112.0,176.0,44.0],"stop":[22.0,168.0,190.0,42.0],"task":[258.0,112.0,226.0,44.0],"task_clock":[22.0,216.0,340.0,48.0]},"surface_turns":0.533899955451488}

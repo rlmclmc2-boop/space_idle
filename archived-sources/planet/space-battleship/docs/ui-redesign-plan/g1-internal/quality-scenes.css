@@ -1,0 +1,50 @@
+/* R1 review continuation: normal working state first; optional controls are local drawers. */
+.quality-pass .research-workbench{padding:0;min-height:576px}
+.quality-pass .research-workbench .investment-console[hidden]{display:none}
+.quality-pass .research-workbench .research-current-console{position:absolute;right:18px;bottom:18px;width:calc(48% - 30px);padding:18px 20px;background:linear-gradient(125deg,#f7f2e6f5,#e5e9d9f5);border:1px solid #97ada3;border-bottom:7px solid #355664;border-radius:11px;box-shadow:0 8px 18px #274a5440;z-index:3}
+.quality-pass .research-current-console h3{font-size:17px;margin:0}.quality-pass .research-budget-state{font-size:11px;color:#608175}
+.quality-pass .research-current-console dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px;margin:17px 0 12px;align-items:baseline}
+.quality-pass .research-current-console dt{font-size:12px;color:#608175}.quality-pass .research-current-console dd{font-size:19px;margin:0;text-align:right;overflow-wrap:anywhere}
+.quality-pass .current-follow-state{font-size:12px;color:#56776e;margin-bottom:14px}.quality-pass .current-research-benefit{border-top:1px solid #b4c7b3;padding-top:12px;margin-bottom:16px;display:flex;flex-direction:column;gap:7px}
+.quality-pass .current-research-benefit small{font-size:11px;color:#6c8277}.quality-pass .current-research-benefit b{font-size:13px;line-height:1.7;font-weight:500}
+.quality-pass .research-current-console>button{width:100%;font-size:13px;padding:10px}
+.quality-pass .research-workbench .research-device-status,.quality-pass.work-family .research-workbench .research-device-status{top:auto;bottom:18px;left:18px;width:calc(48% - 24px);min-height:178px;padding:18px 17px;align-content:center}
+.quality-pass .research-workbench .factory-machine,.quality-pass.work-family .research-workbench .factory-machine{left:29%;top:87px;width:330px;height:310px}
+.quality-pass .research-workbench .factory-probe,.quality-pass.work-family .research-workbench .factory-probe{left:26%;top:41px}
+.quality-pass .research-workbench .investment-console.is-open,.quality-pass.work-family .research-workbench .investment-console.is-open{position:absolute;right:12px;top:12px;bottom:12px;width:390px;max-width:calc(100% - 24px);padding:0 18px 18px;overflow:auto;z-index:7;border:1px solid #91aaa0;border-bottom:7px solid #355664;box-shadow:-12px 0 24px #24475245}
+.quality-pass .research-workbench .investment-console.is-open:before{display:none}
+.quality-pass .budget-drawer-heading{position:sticky;top:0;z-index:2;background:#f1efdf;border-bottom:1px solid #b0c3b0;display:flex;justify-content:space-between;align-items:center;gap:14px;margin:0 -4px 17px;padding:17px 4px 14px}
+.quality-pass .budget-drawer-heading h2{font-size:20px;margin:0}.quality-pass .budget-drawer-heading button{font-size:12px;padding:7px 9px}
+.quality-pass .research-workbench:has(.investment-console.is-open) .research-current-console{visibility:hidden}
+.quality-pass .research-workbench .investment-title h3{font-size:16px}.quality-pass .research-workbench .budget-modes button{font-size:12px;padding:9px 11px}
+.quality-pass .research-workbench .budget-comparison article{padding:13px 0}.quality-pass .research-workbench .budget-comparison article>strong{font-size:16px}.quality-pass .research-workbench .budget-comparison article>span{font-size:12px;line-height:1.8}.quality-pass .research-workbench .budget-comparison article>button{font-size:12px;padding:9px 11px}
+.quality-pass .research-workbench .budget-intent>label{font-size:13px;margin:14px 0}.quality-pass .research-workbench .budget-benefit{font-size:13px;line-height:1.8;margin-top:16px}
+/* The selected building stays in the city. The live development desk is its lower edge. */
+.quality-pass .city-room,.quality-pass.work-family .city-room{display:block;position:relative;height:480px;min-height:480px;background:radial-gradient(ellipse at 50% 40%,#d5e4d8,#e3e9d9);border-color:#a1b8aa}
+.quality-pass .city-map,.quality-pass.work-family .city-map{height:100%;width:100%}
+.quality-pass .city-map>svg{height:100%;width:100%}
+.quality-pass .city-map-tools{top:13px;bottom:auto;left:13px}
+.quality-pass .city-console,.quality-pass.work-family .city-console{position:absolute;left:13px;right:13px;bottom:13px;height:135px;padding:15px 18px;display:grid;grid-template-columns:33% minmax(0,1fr);gap:18px;border:1px solid #9fb7a6;border-bottom:6px solid #3e6269;border-radius:9px;background:linear-gradient(125deg,#f6f1e4f5,#e9ecdcf5);box-shadow:0 -4px 16px #2d574827;overflow:auto;z-index:3}
+.quality-pass .city-selection-identity{border-right:1px solid #c1cebc;padding-right:13px;min-width:0}.quality-pass .city-selection-identity>small{font-size:11px;color:#6c8476}.quality-pass .city-selection-identity h2,.quality-pass.work-family .city-selection-identity h2{font-size:18px;line-height:1.5;margin:7px 0 10px}
+.quality-pass .city-selection-facts{display:grid;grid-template-columns:85px minmax(0,1fr);column-gap:14px;align-items:start;min-width:0}
+.quality-pass .city-selection-facts .city-node-progress{margin:0;grid-column:1;grid-row:1}.quality-pass .city-selection-facts .city-node-progress>b{font-size:24px}.quality-pass .city-selection-facts .city-node-progress span{font-size:11px;line-height:1.7}
+.quality-pass .city-selection-facts>.meter{grid-column:1;grid-row:2;margin-top:6px}
+.quality-pass .city-selection-facts .city-facts{grid-column:2;grid-row:1/4;grid-template-columns:60px minmax(0,1fr);font-size:11px;line-height:1.7;gap:6px;margin:0}
+.quality-pass .city-selection-facts>small{display:none}.quality-pass .city-selection-facts>.unknown-site{width:48px;height:48px;grid-column:1;font-size:28px}.quality-pass .city-selection-facts>p{grid-column:2;margin:0;font-size:12px;line-height:1.9}
+.quality-pass .city-selected-orbit{fill:none;stroke:#456f70;stroke-width:1.2;stroke-dasharray:5 3;pointer-events:none}
+.quality-pass .city-node.selected .city-platform{fill:#c3e1d0;stroke:#387e78;stroke-width:3}
+.quality-pass .city-node.selected .city-node-label{font-weight:700;fill:#2e555b;paint-order:stroke;stroke:#eef1df;stroke-width:3px;stroke-linejoin:round}
+/* Orbital installations sit on pads along the ring, with labels below their visible assets. */
+.quality-pass .orbit-facility,.quality-pass.work-family .orbit-facility{width:112px;background:transparent;border:2px solid transparent;box-shadow:none;border-radius:12px;padding:4px 5px;isolation:isolate}
+.quality-pass .orbit-facility:before{content:'';position:absolute;left:9px;right:9px;top:47px;height:24px;border:1px solid #8ead9b;border-bottom:3px solid #71938a;border-radius:50%;background:#dbe8d4c9;z-index:-1;transform:rotate(-8deg)}
+.quality-pass .orbit-facility img,.quality-pass.work-family .orbit-facility img{width:88px;height:70px;filter:drop-shadow(0 5px 3px #34594a33)}
+.quality-pass .orbit-facility-label{background:#f6f1e3ed;border-radius:5px;padding:6px 7px;border-left:3px solid #a2b7a6;display:block;width:100%;box-shadow:0 3px 6px #36564b18}
+.quality-pass .orbit-facility-label b{font-size:12px}.quality-pass .orbit-facility-label small{font-size:10px;line-height:1.7;display:block}
+.quality-pass .orbit-facility.selected{border-color:transparent;box-shadow:none}.quality-pass .orbit-facility.selected:before{border-color:#4c9385;background:#c8e3d3;box-shadow:0 0 0 3px #78b29a4d}.quality-pass .orbit-facility.selected .orbit-facility-label{border-left-color:#438d7e;background:#e7f0e1}
+.quality-pass .orbit-facility.ready,.quality-pass .orbit-facility.ready.selected{border:2px solid #b98a44;background:#f4e6c733;box-shadow:0 0 0 2px #dfb66d3d}
+.quality-pass .orbit-facility.ready .orbit-facility-label{border-left-color:#b98a44;background:#f5e6c9}.quality-pass .orbit-facility.ready:before{border-color:#b98a44}
+.quality-pass .orbit-facility.ready.selected{border-color:#a9772f;box-shadow:0 0 0 3px #d4ab6459}
+.quality-pass .orbit-position-0{top:1%;left:7%}.quality-pass .orbit-position-1{top:8%;right:3%}.quality-pass .orbit-position-2{bottom:18%;left:2%}.quality-pass .orbit-position-3{bottom:14%;right:3%}
+
+.quality-pass .research-workbench:has(.investment-console.is-open) .research-device-status{width:calc(100% - 430px)}
+.quality-pass .orbital-scout{width:42px;top:36%;left:3%}

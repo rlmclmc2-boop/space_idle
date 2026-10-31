@@ -1,0 +1,135 @@
+extends SceneTree
+func _initialize() -> void:
+	call_deferred("run")
+func frames(n: int) -> void:
+	for i in n: await process_frame
+func click(point: Vector2) -> void:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.position = point
+	event.global_position = point
+	event.pressed = true
+	root.push_input(event, false)
+	await frames(1)
+	event = InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.position = point
+	event.global_position = point
+	event.pressed = false
+	root.push_input(event, false)
+	await frames(3)
+func center(control: Control) -> Vector2:
+	return control.get_global_transform_with_canvas() * (control.size * 0.5)
+func amount_text(api, amount) -> String:
+	var result: Dictionary = api.apply("to_display", [amount])
+	assert(result.ok)
+	return str(result.text)
+func check_paid(api, before, cost_text: String, after) -> void:
+	var cost: Dictionary = api.apply("from_decimal", [cost_text])
+	assert(cost.ok)
+	var expected: Dictionary = api.apply("sub_nonnegative", [before, cost.value])
+	assert(expected.ok)
+	var compare: Dictionary = api.apply("compare", [expected.value, after])
+	assert(compare.ok and int(compare.scalar) == 0)
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+func report_owner(session, tag: String) -> void:
+	var model: Dictionary = session.reactor_system.presentation_model()
+	var rows: Array = []
+	for row in model.modules: rows.append({"id":row.id, "ratio":row.ratio, "load":row.load, "effective":row.effective})
+	print("OWNER ",tag," core_load=",model.load," rows=",rows)
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	root.content_scale_size = Vector2i(1440,900)
+	var game: Node2D = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(4)
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+	game._select_left_module("reactor")
+	await frames(4)
+	var scene = game.reactor_scene
+	var api = session.amount_api
+	var funded: Dictionary = api.apply("from_decimal", ["1000"])
+	assert(funded.ok)
+	assert(session.economy.credit_yield("2", funded.value, session.wall_time, session.game_time).ok)
+	await frames(3)
+	assert(not scene._stage._fields["core"].visible and not scene._stage._feed.visible)
+	print("ZERO core_visible=",scene._stage._fields["core"].visible," feed_visible=",scene._stage._feed.visible)
+	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-zero.png")
+	scene._equal.pressed.emit()
+	await frames(4)
+	clear_guidance(session,game)
+	var slider: HSlider = scene._rows.weapons.slider
+	var ratio_before: float = float(session.reactor_system.presentation_model().modules[0].ratio)
+	var slider_click: Vector2 = slider.get_global_transform_with_canvas() * Vector2(10,14)
+	await click(slider_click)
+	var ratio_after: float = float(session.reactor_system.presentation_model().modules[0].ratio)
+	print("CHECK slider before=",ratio_before," after=",ratio_after," at=",slider_click)
+	assert(ratio_before == 0.25 and ratio_after < ratio_before)
+	print("MOUSE slider=", slider_click, " ratio_before=", ratio_before, " ratio_after=", ratio_after, " owner_result=", scene.last_result.get("ok", false))
+	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-slider.png")
+	var quantity_click: Vector2 = center(scene._quantity)
+	var purchase_click: Vector2 = center(scene._purchase)
+	await click(quantity_click)
+	assert(scene._quantity.text == "×10" and scene._purchase_count == 10 and not scene._purchase_max)
+	var ten_quote: Dictionary = scene._quote.duplicate(true)
+	assert(ten_quote.ok and ten_quote.can_purchase and int(ten_quote.count) == 10 and ten_quote.costs.has("2"))
+	var level_before: int = int(session.reactor_system.presentation_model().level)
+	var wallet_before = session.economy.budget()["2"]
+	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-ten-before.png")
+	await click(purchase_click)
+	clear_guidance(session,game)
+	var level_after: int = int(session.reactor_system.presentation_model().level)
+	var wallet_after = session.economy.budget()["2"]
+	assert(scene.last_result.get("ok", false) and level_after == level_before + 10)
+	check_paid(api, wallet_before, str(ten_quote.costs["2"]), wallet_after)
+	print("MOUSE purchase_ten result=", scene.last_result, " level=", level_before, "->", level_after, " wallet_uranium=", amount_text(api,wallet_before), "->", amount_text(api,wallet_after), " quoted_cost=", ten_quote.costs["2"], " notice=", scene._notice.text)
+	report_owner(session,"after_ten")
+	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-ten-after.png")
+	await click(quantity_click)
+	assert(scene._quantity.text == "MAX" and scene._purchase_max)
+	var max_quote: Dictionary = scene._quote.duplicate(true)
+	assert(max_quote.ok and max_quote.can_purchase and int(max_quote.count) > 0 and max_quote.costs.has("2"))
+	level_before = int(session.reactor_system.presentation_model().level)
+	wallet_before = session.economy.budget()["2"]
+	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-max-before.png")
+	await click(purchase_click)
+	clear_guidance(session,game)
+	level_after = int(session.reactor_system.presentation_model().level)
+	wallet_after = session.economy.budget()["2"]
+	assert(scene.last_result.get("ok", false) and level_after == level_before + int(scene.last_result.count))
+	assert(int(scene.last_result.count) == int(max_quote.count))
+	check_paid(api, wallet_before, str(max_quote.costs["2"]), wallet_after)
+	print("MOUSE purchase_max result=", scene.last_result, " level=", level_before, "->", level_after, " wallet_uranium=", amount_text(api,wallet_before), "->", amount_text(api,wallet_after), " quoted_cost=", max_quote.costs["2"], " notice=", scene._notice.text)
+	assert(scene._stage._fields["core"].visible and scene._stage._feed.visible)
+	for id in scene._stage.IDS: assert(scene._stage._connections[id].visible)
+	print("NONZERO core_visible=",scene._stage._fields["core"].visible," feed_visible=",scene._stage._feed.visible," routes=",scene._stage._connections.size())
+	report_owner(session,"after_max")
+	root.get_texture().get_image().save_png("/tmp/reactor-r9-operation-max-after.png")
+	for i in 12:
+		session._step(1.0 / 6.0)
+		clear_guidance(session,game)
+		await frames(1)
+		var image: Image = root.get_texture().get_image().get_region(Rect2i(0,65,808,835))
+		image.save_png("/tmp/reactor-r9-after-upgrade-flow-%02d.png" % i)
+	print("AFTER_UPGRADE phase=",scene._stage.visual_phase()," updates=",scene._stage.diagnostics.field_updates)
+	quit()

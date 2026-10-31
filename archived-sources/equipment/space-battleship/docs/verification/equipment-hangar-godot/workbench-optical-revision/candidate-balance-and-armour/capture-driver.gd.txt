@@ -1,0 +1,83 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var destination: String = "/tmp/equipment-candidate-balance-final"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name: String) -> void:
+    await flush()
+    var pixels:Image=root.get_texture().get_image()
+    pixels.save_png(destination.path_join(name + ".png"))
+    var region:Rect2i=Rect2i(panel._workbench.get_global_rect().grow(4)).intersection(Rect2i(0,0,pixels.get_width(),pixels.get_height()))
+    if name=="08-batch":region=Rect2i(panel._batch_frame.get_global_rect().grow(4))
+    if name in ["01-weapon-ready","03-weapon-disabled","05-armour-replacement-ready","08-batch"]:
+        pixels.get_region(region).save_png(destination.path_join(name+"-local.png"))
+    records.append({"name":name,"state":snapshot(),"purchase_disabled":panel._purchase.disabled,"install_visible":panel._install.visible,"install_disabled":panel._install.disabled,"current_title":panel._current_title.text,"purchase_text":panel._purchase.text,"install_text":panel._install.text,"candidate_rect":panel._candidate_row.get_global_rect(),"purchase_rect":panel._purchase.get_global_rect(),"candidate_nodes":panel._choices.keys(),"presentation_counts":panel.presentation_counts.duplicate(true)})
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func local_state(name:String, batch:bool=false)->void:
+    await flush()
+    var rect:Rect2=panel._batch_frame.get_global_rect() if batch else panel._workbench.get_global_rect()
+    root.get_texture().get_image().get_region(Rect2i(rect.grow(4))).save_png(destination.path_join(name+".png"))
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    host.set_pause("user",true);await flush()
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    host.campaign_system.restore_state(c);host.equipment.refresh_availability(host.campaign_system.available,100)
+    var e:Dictionary=host.equipment.save_state()
+    for row in e.slots:
+        if row.id=="weapon:0":row.paid_level=19;row.switch_ready_at=0.0
+    host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts);host.publish_equipment_refit(host.economy.budget(),"refit","",null,false)
+    wallet("100000","1000");panel._dirty=true;await flush();await create_timer(1.2).timeout;await flush()
+    check(not panel._purchase.disabled,"weapon purchase ready from real owner quote")
+    await screenshot("01-weapon-ready")
+    await click(panel._choices.missile.button);await screenshot("02-weapon-replacement-ready")
+    wallet("0","0");await screenshot("03-weapon-disabled")
+    check(panel._purchase.disabled,"owner quote disables purchase when wallet insufficient")
+    wallet("100000","1000")
+    var defence:Dictionary=host.equipment.save_state()
+    for row in defence.slots:
+        if row.id=="defence:0":row.equipment_id="shield";row.switch_ready_at=0.0
+    check(host.equipment.restore_state(defence,host.campaign_system.ship_facts().mounts).ok,"controlled valid current shield")
+    host.publish_equipment_refit(host.economy.budget(),"refit","",null,false)
+    panel._dirty=true;await flush();await click(panel._slot_buttons["defence:0"].button);await screenshot("04-shield-current")
+    await click(panel._choices.armour.button);await screenshot("05-armour-replacement-ready")
+    check(panel._candidate=="armour" and panel._install.visible and not panel._install.disabled,"armour replacement naturally reachable and owner-ready")
+    var installation_before:Dictionary=snapshot()
+    await click(panel._install);await flush()
+    check(panel.last_result.get("ok",false),"native GUI armour installation accepted")
+    check(panel._selected_fact().equipment_id=="armour","current defence now armour")
+    var installation:Dictionary={"before":installation_before,"result":panel.last_result.duplicate(true),"after":snapshot()}
+    await screenshot("06-armour-installed")
+    await click(panel._choices.shield.button);await screenshot("07-shield-replacement-cooldown")
+    check(panel._install.disabled,"real armour installation starts owner cooldown for next replacement")
+    panel._open_batch();await screenshot("08-batch")
+    FileAccess.open(destination.path_join("visual-operations.json"),FileAccess.WRITE).store_string(JSON.stringify({"source_commit":"9e420e1c184d355133737a72f716358203ffa51a","stages":records,"installation":installation,"failures":failures,"fixture":"public restore of availability,Lv19 weapon,finite wallet,current shield with no cooldown; one actual GUI install armour; no purchase or full transaction suite"},"  "))
+    print("EQUIPMENT_CANDIDATE_BALANCE_VISUAL_COMPLETE failures=",failures.size()," stages=",records.size())
+    panel=null;host=null;app.queue_free();app=null
+    for i in 8:await process_frame
+    quit()

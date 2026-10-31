@@ -1,0 +1,851 @@
+{
+  "early:('weapon', 0)": {
+    "sources": {
+      "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "hull_key": "Frigate",
+    "hull_visible_source_bounds": [
+      276,
+      239,
+      215,
+      290
+    ],
+    "hull_display_allocation": [
+      16,
+      475,
+      314,
+      165
+    ],
+    "hull_canvas_origin": [
+      -45.19827586206898,
+      339.01724137931035
+    ],
+    "hull_scale": 0.5689655172413793,
+    "preview_zoom_from_existing_calibration": 0.46433048275862077,
+    "selected_slot": [
+      "weapon",
+      0
+    ],
+    "weapons": [
+      {
+        "slot": "weapon:0",
+        "key": "laser",
+        "authored_mount": [
+          382.5512,
+          388.2704
+        ],
+        "display_mount": [
+          172.46016551724136,
+          559.9297103448276
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.0603629627586207,
+        "visible_rect": [
+          157.0676100137931,
+          533.4907326565517,
+          30.724748044137936,
+          35.49342210206897
+        ],
+        "selected": true
+      }
+    ],
+    "defence_ship_targets": [],
+    "geometry_scope": "Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor."
+  },
+  "middle:('weapon', 1)": {
+    "sources": {
+      "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "hull_key": "Cruiser",
+    "hull_visible_source_bounds": [
+      192,
+      133,
+      383,
+      502
+    ],
+    "hull_display_allocation": [
+      16,
+      394,
+      314,
+      286
+    ],
+    "hull_canvas_origin": [
+      -45.48804780876496,
+      318.2270916334661
+    ],
+    "hull_scale": 0.5697211155378487,
+    "preview_zoom_from_existing_calibration": 0.8099993682413205,
+    "selected_slot": [
+      "weapon",
+      1
+    ],
+    "weapons": [
+      {
+        "slot": "weapon:0",
+        "key": "laser",
+        "authored_mount": [
+          382.0767,
+          225.4099
+        ],
+        "display_mount": [
+          172.189115936255,
+          446.647871314741
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.10529991787137166,
+        "visible_rect": [
+          145.33763687905525,
+          400.5265072870802,
+          53.59765819652818,
+          61.916351708366534
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:1",
+        "key": "missile",
+        "authored_mount": [
+          274.8447,
+          452.3739
+        ],
+        "display_mount": [
+          111.09678127490038,
+          575.9540545816733
+        ],
+        "authored_anchor": [
+          273,
+          411
+        ],
+        "weapon_factor": 0.10529991787137166,
+        "visible_rect": [
+          84.03470238195786,
+          534.3605870224815,
+          54.12415778588503,
+          58.23085458286853
+        ],
+        "selected": true
+      },
+      {
+        "slot": "weapon:2",
+        "key": "laser",
+        "authored_mount": [
+          493.1042,
+          452.3739
+        ],
+        "display_mount": [
+          235.44382709163347,
+          575.9540545816733
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.10529991787137166,
+        "visible_rect": [
+          208.5923480344337,
+          529.8326905540125,
+          53.59765819652818,
+          61.916351708366534
+        ],
+        "selected": false
+      }
+    ],
+    "defence_ship_targets": [],
+    "geometry_scope": "Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor."
+  },
+  "late:('weapon', 0)": {
+    "sources": {
+      "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "hull_key": "Heavy_Battleship",
+    "hull_visible_source_bounds": [
+      134,
+      90,
+      499,
+      587
+    ],
+    "hull_display_allocation": [
+      16,
+      344,
+      314,
+      336
+    ],
+    "hull_canvas_origin": [
+      -46.51618398637139,
+      292.4838160136286
+    ],
+    "hull_scale": 0.5724020442930153,
+    "preview_zoom_from_existing_calibration": 0.9527838091993185,
+    "selected_slot": [
+      "weapon",
+      0
+    ],
+    "weapons": [
+      {
+        "slot": "weapon:0",
+        "key": "laser",
+        "authored_mount": [
+          383.0254,
+          212.9052
+        ],
+        "display_mount": [
+          172.72833798977854,
+          414.3511877342419
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          141.14355471482114,
+          360.0996776384327,
+          63.04570465471891,
+          72.83079437519591
+        ],
+        "selected": true
+      },
+      {
+        "slot": "weapon:1",
+        "key": "missile",
+        "authored_mount": [
+          221.6331,
+          333.6049
+        ],
+        "display_mount": [
+          80.34705553662691,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          273,
+          411
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          48.51454847127768,
+          434.5144941574105,
+          63.66501413069847,
+          68.49562804333901
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:2",
+        "key": "cannon",
+        "authored_mount": [
+          544.4178,
+          333.6049
+        ],
+        "display_mount": [
+          265.1096776831346,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          252,
+          504
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          229.13256104776832,
+          409.04658293751277,
+          71.49689704231687,
+          99.08951615672913
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:3",
+        "key": "longLaser",
+        "authored_mount": [
+          221.6331,
+          484.7161
+        ],
+        "display_mount": [
+          80.34705553662691,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          261,
+          509
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          42.99793021601362,
+          494.7807156857239,
+          74.08846900333901,
+          99.24196156620103
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:4",
+        "key": "laser",
+        "authored_mount": [
+          544.4178,
+          484.7161
+        ],
+        "display_mount": [
+          265.1096776831346,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          233.52489440817718,
+          515.6847924595569,
+          63.04570465471891,
+          72.83079437519591
+        ],
+        "selected": false
+      }
+    ],
+    "defence_ship_targets": [],
+    "geometry_scope": "Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor."
+  },
+  "late:('weapon', 4)": {
+    "sources": {
+      "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "hull_key": "Heavy_Battleship",
+    "hull_visible_source_bounds": [
+      134,
+      90,
+      499,
+      587
+    ],
+    "hull_display_allocation": [
+      16,
+      344,
+      314,
+      336
+    ],
+    "hull_canvas_origin": [
+      -46.51618398637139,
+      292.4838160136286
+    ],
+    "hull_scale": 0.5724020442930153,
+    "preview_zoom_from_existing_calibration": 0.9527838091993185,
+    "selected_slot": [
+      "weapon",
+      4
+    ],
+    "weapons": [
+      {
+        "slot": "weapon:0",
+        "key": "laser",
+        "authored_mount": [
+          383.0254,
+          212.9052
+        ],
+        "display_mount": [
+          172.72833798977854,
+          414.3511877342419
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          141.14355471482114,
+          360.0996776384327,
+          63.04570465471891,
+          72.83079437519591
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:1",
+        "key": "missile",
+        "authored_mount": [
+          221.6331,
+          333.6049
+        ],
+        "display_mount": [
+          80.34705553662691,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          273,
+          411
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          48.51454847127768,
+          434.5144941574105,
+          63.66501413069847,
+          68.49562804333901
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:2",
+        "key": "cannon",
+        "authored_mount": [
+          544.4178,
+          333.6049
+        ],
+        "display_mount": [
+          265.1096776831346,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          252,
+          504
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          229.13256104776832,
+          409.04658293751277,
+          71.49689704231687,
+          99.08951615672913
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:3",
+        "key": "longLaser",
+        "authored_mount": [
+          221.6331,
+          484.7161
+        ],
+        "display_mount": [
+          80.34705553662691,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          261,
+          509
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          42.99793021601362,
+          494.7807156857239,
+          74.08846900333901,
+          99.24196156620103
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:4",
+        "key": "laser",
+        "authored_mount": [
+          544.4178,
+          484.7161
+        ],
+        "display_mount": [
+          265.1096776831346,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          233.52489440817718,
+          515.6847924595569,
+          63.04570465471891,
+          72.83079437519591
+        ],
+        "selected": true
+      }
+    ],
+    "defence_ship_targets": [],
+    "geometry_scope": "Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor."
+  },
+  "late:('defence', 1)": {
+    "sources": {
+      "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "hull_key": "Heavy_Battleship",
+    "hull_visible_source_bounds": [
+      134,
+      90,
+      499,
+      587
+    ],
+    "hull_display_allocation": [
+      16,
+      344,
+      314,
+      336
+    ],
+    "hull_canvas_origin": [
+      -46.51618398637139,
+      292.4838160136286
+    ],
+    "hull_scale": 0.5724020442930153,
+    "preview_zoom_from_existing_calibration": 0.9527838091993185,
+    "selected_slot": [
+      "defence",
+      1
+    ],
+    "weapons": [
+      {
+        "slot": "weapon:0",
+        "key": "laser",
+        "authored_mount": [
+          383.0254,
+          212.9052
+        ],
+        "display_mount": [
+          172.72833798977854,
+          414.3511877342419
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          141.14355471482114,
+          360.0996776384327,
+          63.04570465471891,
+          72.83079437519591
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:1",
+        "key": "missile",
+        "authored_mount": [
+          221.6331,
+          333.6049
+        ],
+        "display_mount": [
+          80.34705553662691,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          273,
+          411
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          48.51454847127768,
+          434.5144941574105,
+          63.66501413069847,
+          68.49562804333901
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:2",
+        "key": "cannon",
+        "authored_mount": [
+          544.4178,
+          333.6049
+        ],
+        "display_mount": [
+          265.1096776831346,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          252,
+          504
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          229.13256104776832,
+          409.04658293751277,
+          71.49689704231687,
+          99.08951615672913
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:3",
+        "key": "longLaser",
+        "authored_mount": [
+          221.6331,
+          484.7161
+        ],
+        "display_mount": [
+          80.34705553662691,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          261,
+          509
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          42.99793021601362,
+          494.7807156857239,
+          74.08846900333901,
+          99.24196156620103
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:4",
+        "key": "laser",
+        "authored_mount": [
+          544.4178,
+          484.7161
+        ],
+        "display_mount": [
+          265.1096776831346,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          233.52489440817718,
+          515.6847924595569,
+          63.04570465471891,
+          72.83079437519591
+        ],
+        "selected": false
+      }
+    ],
+    "defence_ship_targets": [],
+    "geometry_scope": "Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor."
+  },
+  "late:None": {
+    "sources": {
+      "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "hull_key": "Heavy_Battleship",
+    "hull_visible_source_bounds": [
+      134,
+      90,
+      499,
+      587
+    ],
+    "hull_display_allocation": [
+      16,
+      344,
+      314,
+      336
+    ],
+    "hull_canvas_origin": [
+      -46.51618398637139,
+      292.4838160136286
+    ],
+    "hull_scale": 0.5724020442930153,
+    "preview_zoom_from_existing_calibration": 0.9527838091993185,
+    "selected_slot": null,
+    "weapons": [
+      {
+        "slot": "weapon:1",
+        "key": "missile",
+        "authored_mount": [
+          221.6331,
+          333.6049
+        ],
+        "display_mount": [
+          80.34705553662691,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          273,
+          411
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          48.51454847127768,
+          434.5144941574105,
+          63.66501413069847,
+          68.49562804333901
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:2",
+        "key": "cannon",
+        "authored_mount": [
+          544.4178,
+          333.6049
+        ],
+        "display_mount": [
+          265.1096776831346,
+          483.43994275979554
+        ],
+        "authored_anchor": [
+          252,
+          504
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          229.13256104776832,
+          409.04658293751277,
+          71.49689704231687,
+          99.08951615672913
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:3",
+        "key": "longLaser",
+        "authored_mount": [
+          221.6331,
+          484.7161
+        ],
+        "display_mount": [
+          80.34705553662691,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          261,
+          509
+        ],
+        "weapon_factor": 0.15244540947189097,
+        "visible_rect": [
+          42.99793021601362,
+          494.7807156857239,
+          74.08846900333901,
+          99.24196156620103
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:4",
+        "key": "laser",
+        "authored_mount": [
+          544.4178,
+          484.7161
+        ],
+        "display_mount": [
+          265.1096776831346,
+          569.9363025553662
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.12386189519591141,
+        "visible_rect": [
+          233.52489440817718,
+          515.6847924595569,
+          63.04570465471891,
+          72.83079437519591
+        ],
+        "selected": false
+      }
+    ],
+    "defence_ship_targets": [],
+    "geometry_scope": "Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor."
+  },
+  "middle:None": {
+    "sources": {
+      "assets/ui/ships/manifest.json": "ef3e7190fe8f9263b2ee0f90242a1ef0f148038837090e53c1f790e543de4aab",
+      "assets/weapons/fleet_20261019/manifest.json": "bcb49b877431ee4430e39f903b0bc6fc1ebc7ab11222fb0e381816758ab8d29c"
+    },
+    "hull_key": "Cruiser",
+    "hull_visible_source_bounds": [
+      192,
+      133,
+      383,
+      502
+    ],
+    "hull_display_allocation": [
+      16,
+      394,
+      314,
+      286
+    ],
+    "hull_canvas_origin": [
+      -45.48804780876496,
+      318.2270916334661
+    ],
+    "hull_scale": 0.5697211155378487,
+    "preview_zoom_from_existing_calibration": 0.8099993682413205,
+    "selected_slot": null,
+    "weapons": [
+      {
+        "slot": "weapon:0",
+        "key": "laser",
+        "authored_mount": [
+          382.0767,
+          225.4099
+        ],
+        "display_mount": [
+          172.189115936255,
+          446.647871314741
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.10529991787137166,
+        "visible_rect": [
+          145.33763687905525,
+          400.5265072870802,
+          53.59765819652818,
+          61.916351708366534
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:1",
+        "key": "missile",
+        "authored_mount": [
+          274.8447,
+          452.3739
+        ],
+        "display_mount": [
+          111.09678127490038,
+          575.9540545816733
+        ],
+        "authored_anchor": [
+          273,
+          411
+        ],
+        "weapon_factor": 0.10529991787137166,
+        "visible_rect": [
+          84.03470238195786,
+          534.3605870224815,
+          54.12415778588503,
+          58.23085458286853
+        ],
+        "selected": false
+      },
+      {
+        "slot": "weapon:2",
+        "key": "laser",
+        "authored_mount": [
+          493.1042,
+          452.3739
+        ],
+        "display_mount": [
+          235.44382709163347,
+          575.9540545816733
+        ],
+        "authored_anchor": [
+          271,
+          454
+        ],
+        "weapon_factor": 0.10529991787137166,
+        "visible_rect": [
+          208.5923480344337,
+          529.8326905540125,
+          53.59765819652818,
+          61.916351708366534
+        ],
+        "selected": false
+      }
+    ],
+    "defence_ship_targets": [],
+    "geometry_scope": "Existing manifest mounts/weapon anchors and equipment_panel.gd995–1040 calibration consumed under current static hull transform. Not a new battle/shared geometry or accepted parking anchor."
+  }
+}

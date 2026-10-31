@@ -1,0 +1,46 @@
+extends SceneTree
+const Session = preload("res://src/game_session.gd")
+func _initialize() -> void:
+    var loaded = GDExtensionManager.load_extension(OS.get_environment("SPACE_IDLE_NATIVE_EXTENSION"))
+    if loaded != GDExtensionManager.LOAD_STATUS_OK and loaded != GDExtensionManager.LOAD_STATUS_ALREADY_LOADED:
+        printerr("extension: ",loaded)
+        quit(1)
+        return
+    call_deferred("run")
+func run() -> void:
+    var directory := "/tmp/space-idle-runtime472/reactor-free-reforge-save"
+    DirAccess.make_dir_recursive_absolute(directory)
+    var session = Session.new()
+    assert(session.initialize("res://generated/config.json", 121).ok)
+    print("FREE_INITIAL input=",session.reactor_inputs().free_charge)
+    # Existing public stage gate fixture from _stage6_reforge_live_probe.
+    assert(session.campaign_system.accept_reforge(session.campaign_system.save_state(), 5).ok)
+    session.planet_system.refresh_availability(session.campaign_system.available, false)
+    session.crew_system.refresh_availability(session.campaign_system.available, false)
+    var crew_ids: Array = session.crew_system.save_state().members.keys()
+    assert(crew_ids.size() >= 2 and session.planet_system.is_available("1"))
+    var explorer: String = str(crew_ids[0])
+    var builder: String = str(crew_ids[1])
+    var assigned := false
+    for cycle in 220:
+        var planet: Dictionary = session.planet_system.save_state().planets["1"]
+        if planet.buildings.shipyard.state == "ready": break
+        if planet.buildings.shipyard.state == "building" and not assigned:
+            assert(session.coordinate_assignment(builder,"planet_build","1:shipyard").ok)
+            assigned = true
+        assert(session.coordinate_assignment(explorer,"planet_explore","1").ok)
+        var builders: Dictionary = {"1:shipyard":[builder]} if assigned else {}
+        assert(session._advance_planets(1000000.0,{"1":[explorer]},builders))
+    assert(session.planet_system.save_state().planets["1"].buildings.shipyard.state == "ready")
+    assert(session.planet_system.claim_build("1","shipyard",session.publish_planet_claim).ok)
+    assert(session.planet_system.save_state().planets["1"].buildings.shipyard.state == "built")
+    var candidate: Dictionary = session.prepare_reforge("1",[],directory)
+    assert(candidate.ok)
+    var next = candidate.session
+    var model: Dictionary = next.reactor_system.presentation_model()
+    var inputs: Dictionary = next.reactor_inputs()
+    print("FREE_AFTER_REFORGE prepared=",candidate.ok," conquered=",next.planet_system.save_state().planets["1"].conquered," input=",inputs.free_charge," model_ok=",model.get("ok")," modules=",model.get("modules"))
+    assert(inputs.free_charge > 0.0 and model.ok)
+    for row in model.modules:
+        assert(row.has_free)
+    quit()

@@ -1,0 +1,24 @@
+{
+  "source_commit": "502e9d2094ebcde09feca14910f4f228e7624f09",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "rule_source": "Parent verified config.xlsx config!A48:C48 equipmentSwitchCooldownSeconds=10 game seconds",
+  "images": [
+    {
+      "file": "scene-cooldown-10-game-seconds-1440x900.png",
+      "family": "scene",
+      "description": "slot 1 switch accepted, ten game seconds cooldown; second switch disabled",
+      "sha256": "8e5598efbc944739e98d30fddf32cc6512254e5b830258ada7b91c2f83447e7b"
+    },
+    {
+      "file": "work-cooldown-10-game-seconds-1440x900.png",
+      "family": "work",
+      "description": "slot 1 switch accepted, ten game seconds cooldown; second switch disabled",
+      "sha256": "3b49097c66511bbbf155909fd31a1235b99516051f6f6d4a083d98ffc27c35ad"
+    }
+  ],
+  "pageerrors": []
+}

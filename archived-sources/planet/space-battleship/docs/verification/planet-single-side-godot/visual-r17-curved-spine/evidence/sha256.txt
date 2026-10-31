@@ -1,0 +1,12 @@
+887286709ce4cf7c78fc1d6e08d119299106b3802c45da401318796cb18b992e  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/full-ui-stage4.png
+9f466f39f33928ae42e2979a369c0f98ae508b73823044e75e06a1fbbfa4dae5  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/stage_0.png
+47613cc513d990d708f7d06a1d4405b3d6ccb6359b6262ab7568051520419a48  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/stage_1.png
+3751285a5f9c4bbbeb8b110b333c421fa213158eb557b8a625fd955cff81e808  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/stage_2.png
+c2863b9af49c98a463b92dc408791e403992326e71c83ecb8ab0d1527b4aec48  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/stage_3.png
+4b588ee11f072cbde5862ca5b49f653975b8cfe866de67b995302850a81da889  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/phases/frame_000.png
+080a9bd39f6dceaabd550fc44b4a9813d08f46ccc3fd67a7adad9620ab6751ca  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/phases/frame_024.png
+34b4558d237ffc62ed1ffe8336b3a32fd60262c4365d66aac60dacd9166fa58e  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/phases/frame_043.png
+0789e7a81c60427d29c963b9aaa25ffcfdaf6711f85ba21a9225b715e7841f49  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/phases/frame_051.png
+a1793dee8bf69f89664265c9012c8590721cec9773a21bd28c4d1403367ca4c4  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/phases/frame_072.png
+7bc1c59350c204391cbc75d843fd594ae44fa4546ac25c50eaa63262a25b1782  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/phases/frame_087.png
+b8e904ffb57087d8a0580a900e9749aed27d3b4cfda19696893ee4e4a1420fe7  space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/phases/frame_096.png

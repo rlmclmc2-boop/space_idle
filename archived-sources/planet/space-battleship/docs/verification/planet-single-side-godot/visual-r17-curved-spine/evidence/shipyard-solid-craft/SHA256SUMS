@@ -1,0 +1,14 @@
+49cf8d261e1fcaa4188a0c0b8a4a8cd3f20f933c17d87e488ef7a300e2710ca7  art_sources/planet_facilities_v5/build_shipyard_node.py
+79575a78eceb0946016dc4a89afdb90ee95e9fd581cb67eb60a9aae6e44731ca  art_sources/planet_facilities_v5/shipyard.blend
+de1e7a07fb1903f9df619ca85e79b56de1484dec7a968097c50ea601f10ec2af  assets/planets/facilities_v5/shipyard.glb
+eea3a89ffa7c71f37c8ebb491d6016fcc5bf971ef33a2d69605cc481dfd09427  scripts/planet_facility_scene.gd
+a3479e03fa759792ef38d2d832300a11e44684e0c9e0edd6d1bbebaf4350c5e3  scripts/planet_orbital_spine.gd
+0ab98c1c055f70833ccd0b319ccda3b6c9aac8a1896e45786b08eed9c1d2d651  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/stage_3.png
+5e42d0c6be14ea176ed7762d5dce4e0563ac1717613c2739525895642fc6dbb4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/stage_4.png
+68db346068206621a77f0f3aa0f7012397401c3a104b503a2e002f628cd725f9  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/quarter_simulated.png
+60039bf5ea0ac3db64b4a92a9e8ad6fce19f4746cd85bb111cc01c2661c539d3  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/backside_180_simulated.png
+7738adfed61e473917cecd7b05d67756d033c98168617578a6b5c0cecc9f7e9c  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/driver.gd
+0ec157c0f42a5b99d38766e05cf5efe5f2161b96d8b3e05934c15e77cffb1e3c  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/backside-driver.gd
+0e9619b3491283555b643b1bdec015bda2ac1c8f308977064c61eb06e57c665d  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/check-only.log
+cfcfc975f16525faf323293da6c1ede206593e52e7fba165fe85acacf66463b4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/runtime.log
+cfcfc975f16525faf323293da6c1ede206593e52e7fba165fe85acacf66463b4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-solid-craft/backside-runtime.log

@@ -1,0 +1,110 @@
+extends SceneTree
+var app
+var panel
+var host
+var records: Array = []
+var failures: Array = []
+var observations:Array=[]
+var destination: String = "/workspace/space_idle/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/painted-console-rework"
+func _initialize() -> void:
+    call_deferred("run")
+func check(value: bool, label: String) -> void:
+    observations.append({"check":label,"ok":value})
+    if not value: failures.append(label); printerr("FAIL: ", label)
+func flush() -> void:
+    for i in 4: await process_frame
+    await RenderingServer.frame_post_draw
+func screenshot(name:String)->void:
+    await flush()
+    var pixels:Image=root.get_texture().get_image();pixels.save_png(destination.path_join(name+".png"))
+    var region:Rect2i=Rect2i((panel._batch.get_global_rect() if name=="04-batch" else panel._workbench.get_global_rect()).grow(8)).intersection(Rect2i(Vector2i.ZERO,pixels.get_size()))
+    pixels.get_region(region).save_png(destination.path_join(name+"-local.png"))
+func click(control: Control) -> void:
+    var point: Vector2 = control.get_global_rect().get_center()
+    var down := InputEventMouseButton.new()
+    down.position = point; down.global_position = point; down.button_index = MOUSE_BUTTON_LEFT; down.pressed = true
+    Input.parse_input_event(down)
+    await process_frame
+    var up := InputEventMouseButton.new()
+    up.position = point; up.global_position = point; up.button_index = MOUSE_BUTTON_LEFT; up.pressed = false
+    Input.parse_input_event(up)
+    await flush()
+func snapshot() -> Dictionary:
+    return {"wallet": host.economy.budget().duplicate(true), "wallet_text": host.economy.balance_rows(), "slots": host.equipment_slot_facts(), "native": host.battle.hud_values(), "game_time": host.game_time, "pause_reasons": host.pause_reasons.duplicate(), "candidate": panel._candidate, "selected_slot": panel._selected, "comparison": panel.last_comparison.duplicate(true), "quantity": panel._quantity, "maximum": panel._maximum}
+func wallet(iron: String, material: String) -> void:
+    var state: Dictionary = host.economy.save_state()
+    state.wallet = {"1": host.amount_api.apply("from_decimal", [iron]).value, "2": host.amount_api.apply("from_decimal", ["1000"]).value, "degenerate_matter": host.amount_api.apply("from_decimal", [material]).value}
+    check(host.economy.restore_state(state).ok, "validated controlled wallet setup")
+    host.economy.publish_budget_change()
+func tree_ids(node:Node)->Array:
+    var ids:Array=[node.get_instance_id()]
+    for child in node.get_children():ids.append_array(tree_ids(child))
+    return ids
+func material_ids()->Array:
+    var ids:Array=[]
+    var buttons:Array=[panel._purchase,panel._quantity_button,panel._install,panel._batch_submit,panel._batch_quantity,panel._batch_close]
+    for key in panel._choices:buttons.append(panel._choices[key].button)
+    for button in buttons:
+        for variant in button.get_meta("material_variants"):
+            for state in variant:ids.append(variant[state].get_instance_id())
+    return ids
+func mark()->Dictionary:
+    return {"counts":panel.presentation_counts.duplicate(true),"node_ids":tree_ids(panel),"material_ids":material_ids(),"facts":host.equipment_slot_facts(),"wallet":host.economy.budget().duplicate(true)}
+func compare_owner(label:String)->void:
+    var value:Dictionary=host.equipment_comparison(panel._selected,panel._candidate,panel._quantity,panel._maximum)
+    check(value.current==panel.last_comparison.current and value.quote==panel.last_comparison.quote,label+" comparison matches real Owner")
+    check(panel._current_value.text==panel._value(value.current),label+" rendered current value matches Owner")
+func numeric_checks(before:Dictionary,label:String)->void:
+    var after:Dictionary=mark()
+    check(after.counts.numeric_refreshes-before.counts.numeric_refreshes==1,label+" one coalesced numeric refresh")
+    check(after.counts.refreshes==before.counts.refreshes,label+" no structural/full refresh")
+    check(after.counts.equipment_option_reads==before.counts.equipment_option_reads,label+" no unrelated option reads")
+    check(after.counts.scene_redraw_requests==before.counts.scene_redraw_requests,label+" no unrelated stage redraw")
+    check(after.node_ids==before.node_ids,label+" reuses node tree")
+    check(after.material_ids==before.material_ids,label+" reuses cached material states")
+    compare_owner(label);records.append({"event":label,"before":before,"after":after,"result":panel.last_result.duplicate(true)})
+func run()->void:
+    app=load("res://src/main.tscn").instantiate();root.add_child(app);host=app.session;panel=app.equipment_scene
+    check(app.startup_error.is_empty() and host.run_state.is_running(),"normal main Session native startup")
+    host.set_pause("user",true);await flush();await screenshot("01-normal")
+    check(panel.find_child("PurchaseRail",true,false)==null and panel.find_child("CurrentIconBezel",true,false)==null,"obsolete empty rail/icon frame nodes removed")
+    var before:Dictionary=mark()
+    var c:Dictionary=host.campaign_system.save_state();c.state.highest_reached=100;c.cycle_reached=100;c.state.state="menu";c.state.cleared_stages={}
+    for i in range(1,100):c.state.cleared_stages[i]=true
+    check(host.campaign_system.restore_state(c).ok,"controlled availability state")
+    host.equipment.refresh_availability(host.campaign_system.available,100);await flush()
+    check(panel._choices.missile.button.visible and panel.presentation_counts.equipment_option_reads>before.counts.equipment_option_reads,"availability signal refreshes real options")
+    records.append({"event":"availability","before":before,"after":mark(),"source":"campaign public restore plus Equipment refresh_availability; controlled setup"})
+    var e:Dictionary=host.equipment.save_state()
+    for row in e.slots:
+        if row.id=="weapon:0":row.paid_level=19;row.switch_ready_at=0.0
+    host.equipment.restore_state(e,host.campaign_system.ship_facts().mounts);host.publish_equipment_refit(host.economy.budget(),"refit","",null,false)
+    wallet("100000","1000");panel._dirty=true;await flush();await screenshot("02-double")
+    before=mark();await click(panel._quantity_button)
+    check(host.equipment_slot_facts()==before.facts and host.economy.budget()==before.wallet,"cycle changes presentation only")
+    check(panel.presentation_counts.refreshes==before.counts.refreshes and panel.presentation_counts.equipment_option_reads==before.counts.equipment_option_reads,"cycle refreshes quote without full/options refresh")
+    records.append({"event":"cycle_quote","before":before,"after":mark()})
+    await click(panel._quantity_button);await click(panel._quantity_button)
+    before=mark();await click(panel._purchase)
+    check(panel.last_result.get("purchase_receipt",{}).get("commit_status")=="accepted","single actual buy accepted")
+    check(panel._level_label.text=="Lv.20","single current level20")
+    numeric_checks(before,"single_level")
+    before=mark();await click(panel._choices.missile.button)
+    check(panel.presentation_counts.refreshes==before.counts.refreshes and panel.presentation_counts.equipment_option_reads==before.counts.equipment_option_reads,"candidate selection updates cached choices and quote only")
+    check(tree_ids(panel)==before.node_ids,"candidate selection reuses nodes")
+    records.append({"event":"candidate_selection","before":before,"after":mark()});await screenshot("03-different")
+    before=mark();await click(panel._install)
+    check(panel.last_result.get("ok",false) and panel._selected_fact().equipment_id=="missile","actual refit updates identity")
+    check(panel.presentation_counts.refreshes>before.counts.refreshes and panel.presentation_counts.equipment_option_reads>before.counts.equipment_option_reads,"refit retains necessary full/options refresh")
+    check(panel.presentation_counts.scene_redraw_requests>before.counts.scene_redraw_requests,"refit redraws changed physical assembly")
+    compare_owner("refit");records.append({"event":"refit","before":before,"after":mark(),"result":panel.last_result.duplicate(true)})
+    panel._open_batch();await flush();before=mark();await click(panel._batch_submit)
+    check(panel.last_result.get("purchase_receipt",{}).get("commit_status")=="accepted","actual batch accepted")
+    numeric_checks(before,"batch_levels")
+    var expected:String="\n".join(host.equipment_slot_facts().filter(func(r):return not r.dormant).map(func(r):return "%s · %s · Lv.%s" % [panel._slot_name(str(r.id)),panel.NAMES.get(str(r.equipment_id),"空槽"),str(r.paid_level)]))
+    check(panel._batch_results.text==expected,"visible batch levels match Owner after coalesced refresh")
+    check(panel.has_exclusive_ui() and not panel.prepare_host_hide(false),"batch exclusive remains")
+    await screenshot("04-batch")
+    check(panel.prepare_host_hide(true) and not panel.has_exclusive_ui(),"force still releases batch")
+    var file:=FileAccess.open(destination.path_join("operations.json"),FileAccess.WRITE);file.store_string(JSON.stringify({"source_commit":"89ac5d0a0a4a124b0dbff9a15b92a50f2a1b9588","records":records,"observations":observations,"failures":failures,"scope":"same visual run; necessary numeric refresh and source invalidation observations, not full-chain rerun"},"  "))
+    print("PAINTED_CONSOLE_CAPTURE_COMPLETE failures=",failures.size());app.queue_free();await process_frame;quit(0 if failures.is_empty() else 1)

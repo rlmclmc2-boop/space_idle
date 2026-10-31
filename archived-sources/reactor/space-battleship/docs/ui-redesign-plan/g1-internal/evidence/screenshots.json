@@ -1,0 +1,200 @@
+{
+  "source_commit": "0e9a8d31533801e71b613b589f7183295fee4b7b",
+  "kind": "Internal G1 browser presentation after integrated review corrections; not game or design acceptance",
+  "viewport_css_px": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "full_page": false,
+  "source_sha256": {
+    "index.html": "f0b09f24196b82973404c4a789e21d4830b39e39e1d0e392b310d7d653e9e4a4",
+    "app.js": "cad71a8401607f5a349a768c742c0e4bf5cb23cc019450863c15025c9200a8dd",
+    "style.css": "d1677d48746c9af57898088a5df2c19a463d41efbdc0c464c220ecdc73f33afc"
+  },
+  "images": [
+    {
+      "file": "scene-equipment-1440x900.png",
+      "family": "scene",
+      "module": "equipment",
+      "route": "equipment",
+      "state": "slot 1 pulse Lv.24; current/upgrade comparison and 0.42M quote in first screen and dock",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "691c3f05fb70f44c9c346ba9d5c55104d66dee23f5856dcd37b073710b0b9d6d"
+    },
+    {
+      "file": "scene-reactor-1440x900.png",
+      "family": "scene",
+      "module": "reactor",
+      "route": "reactor",
+      "state": "task draft 45/35/20 -> 60/35/5; effects shown; not applied",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "56652e9fa3c9ae480d4daaa793392347f2a8bc3285e34f837c347aacdf8972e1"
+    },
+    {
+      "file": "scene-planet-1440x900.png",
+      "family": "scene",
+      "module": "planet",
+      "route": "planet",
+      "state": "orbital dock ready, not claimed",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "8a5967d5e791802f7a3d83ba738bdfcff27eae1b50424427479827b0241c56c9"
+    },
+    {
+      "file": "scene-galaxy-1440x900.png",
+      "family": "scene",
+      "module": "galaxy",
+      "route": "galaxy",
+      "state": "Lv.2 object retained while upgrade to Lv.3 in progress",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "130c44f5da99345378d5be4a099df7cde7bb68128714dd3c4c9cf2fa4ea6d312"
+    },
+    {
+      "file": "scene-formation-1440x900.png",
+      "family": "scene",
+      "module": "formation",
+      "route": "hyperspace/formation",
+      "state": "drone formation current d1, proposed d2; equip/remove preview not confirmed",
+      "scroll": {
+        "outer": 55,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "cea9a13a97fa4be7e2c0ba21cc99747940a1bd4c6861728bfd5664df6e34a7ab"
+    },
+    {
+      "file": "scene-forge-1440x900.png",
+      "family": "scene",
+      "module": "forge",
+      "route": "hyperspace/forge",
+      "state": "d2 forge range/cost preview, no random result yet",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "fdeb89b5068ea5b7897cbc36f0b7a16b06190b87f64744fab255da6dbf3544b9"
+    },
+    {
+      "file": "scene-reforge-1440x900.png",
+      "family": "scene",
+      "module": "reforge",
+      "route": "settings/danger/reforge",
+      "state": "reforge origin source bound preview, losses and retained drone; not confirmed",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "ed3b84ff24d24a6013b654d7755ef37974c5ad95ffceac8c20115d62d7ca9b7a"
+    },
+    {
+      "file": "work-equipment-1440x900.png",
+      "family": "work",
+      "module": "equipment",
+      "route": "equipment",
+      "state": "slot 1 pulse Lv.24; current/upgrade comparison and 0.42M quote in first screen and dock",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "fe1f286a6f65868ca8e4a121e6f4e5514acd25a892844291ba2c7061dbbcb1a2"
+    },
+    {
+      "file": "work-reactor-1440x900.png",
+      "family": "work",
+      "module": "reactor",
+      "route": "reactor",
+      "state": "task draft 45/35/20 -> 60/35/5; effects shown; not applied",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "cd99eace00b6d55146f29f229e0810859abadf1d09e9a750312335b0be8e378c"
+    },
+    {
+      "file": "work-planet-1440x900.png",
+      "family": "work",
+      "module": "planet",
+      "route": "planet",
+      "state": "orbital dock ready, not claimed",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "e72a1e54c944c95f8162f3b81350ee9bb2d41d52bffdda0cc7bf6d1dea03e257"
+    },
+    {
+      "file": "work-galaxy-1440x900.png",
+      "family": "work",
+      "module": "galaxy",
+      "route": "galaxy",
+      "state": "Lv.2 object retained while upgrade to Lv.3 in progress",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "483d163076a7ca3609d670dd791f0b9b7ef39adf14f9ed6223394eee6c401d0e"
+    },
+    {
+      "file": "work-formation-1440x900.png",
+      "family": "work",
+      "module": "formation",
+      "route": "hyperspace/formation",
+      "state": "drone formation current d1, proposed d2; equip/remove preview not confirmed",
+      "scroll": {
+        "outer": 0,
+        "inner": 140
+      },
+      "assembly_overlay": false,
+      "sha256": "a4233ebfde8698ca5f74fdc480fbcbb1251903cfed7166a7ccf6db445c409625"
+    },
+    {
+      "file": "work-forge-1440x900.png",
+      "family": "work",
+      "module": "forge",
+      "route": "hyperspace/forge",
+      "state": "d2 forge range/cost preview, no random result yet",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "605e19937558ef6dcd6579fb298ca10b8c2ac86fcd3996ced51a313e58369e2f"
+    },
+    {
+      "file": "work-reforge-1440x900.png",
+      "family": "work",
+      "module": "reforge",
+      "route": "settings/danger/reforge",
+      "state": "reforge origin source bound preview, losses and retained drone; not confirmed",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "assembly_overlay": false,
+      "sha256": "c1ce0d8649719706e902acb387abe1a32baffcaee4ee4729a58107e274403517"
+    }
+  ],
+  "browser": "151.0.7922.173"
+}

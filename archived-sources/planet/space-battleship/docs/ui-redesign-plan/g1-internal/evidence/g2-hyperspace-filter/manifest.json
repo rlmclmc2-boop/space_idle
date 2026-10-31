@@ -1,0 +1,150 @@
+{
+  "source_commit": "ba177beb73795d8be9785cb498bb7aaddf4fbfd7",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "five types and maximum5; all/any; keep/clear; disabled/empty and invalid level",
+    "current versus draft; apply leaves existing inventory unchanged",
+    "canonical SPACE-FILTER-v2 export only current",
+    "invalid/overlong/noncanonical/unknown fields rejection",
+    "decoded current/candidate review, explicit confirm/cancel, source edit invalidates confirmation"
+  ],
+  "images": [
+    {
+      "file": "scene-applied-existing-inventory-kept-1440x900.png",
+      "family": "scene",
+      "case": "scene-applied-existing-inventory-kept",
+      "route": "hyperspace/filter",
+      "scroll": {
+        "outer": 167,
+        "inner": 0
+      },
+      "sha256": "b4f476585fe402eaf794b3a476f76df2e3530b13dd05178d35221aed49682c39"
+    },
+    {
+      "file": "scene-export-current-1440x900.png",
+      "family": "scene",
+      "case": "scene-export-current",
+      "route": "hyperspace/filter-export",
+      "scroll": {
+        "outer": 53,
+        "inner": 0
+      },
+      "sha256": "cc18761a3e2cedfbc9ec0ae49d773842edf383b38252c805fb66f92eb9e87559"
+    },
+    {
+      "file": "scene-five-condition-draft-1440x900.png",
+      "family": "scene",
+      "case": "scene-five-condition-draft",
+      "route": "hyperspace/filter",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "3fe2db7be07011641d3c70e0b40acfc0d2536577deee005be6d22a84c82523d5"
+    },
+    {
+      "file": "scene-five-condition-lower-1440x900.png",
+      "family": "scene",
+      "case": "scene-five-condition-lower",
+      "route": "hyperspace/filter",
+      "scroll": {
+        "outer": 167,
+        "inner": 0
+      },
+      "sha256": "d39b5a393330db6aa57d6fc603c2e50b0007bd2b4b469ba12cf969926eaf9a8e"
+    },
+    {
+      "file": "scene-invalid-import-keeps-current-1440x900.png",
+      "family": "scene",
+      "case": "scene-invalid-import-keeps-current",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "d9bf3e26563a3d25d3e308c809931bb21b2919cfdfac0272c9458e9c16866b42"
+    },
+    {
+      "file": "scene-review-import-1440x900.png",
+      "family": "scene",
+      "case": "scene-review-import",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "6f2709f5c2140a4952091bf4add8ed2c518521e9513baa1497445f2afb5ae342"
+    },
+    {
+      "file": "work-applied-existing-inventory-kept-1440x900.png",
+      "family": "work",
+      "case": "work-applied-existing-inventory-kept",
+      "route": "hyperspace/filter",
+      "scroll": {
+        "outer": 0,
+        "inner": 238
+      },
+      "sha256": "192e55ddbc71ed950634d5864ad177756bcf55b727b64e5fbf4ba6e804d58126"
+    },
+    {
+      "file": "work-export-current-1440x900.png",
+      "family": "work",
+      "case": "work-export-current",
+      "route": "hyperspace/filter-export",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "9465868071706011550438fe5abe46f1f45c6ef1f0271cf84f8a60b271ef1e7d"
+    },
+    {
+      "file": "work-five-condition-draft-1440x900.png",
+      "family": "work",
+      "case": "work-five-condition-draft",
+      "route": "hyperspace/filter",
+      "scroll": {
+        "outer": 0,
+        "inner": 22
+      },
+      "sha256": "b632d8fddc8047f5ada5975dbb6b66616c9f5e485230d0784f4561acb7ff4450"
+    },
+    {
+      "file": "work-five-condition-lower-1440x900.png",
+      "family": "work",
+      "case": "work-five-condition-lower",
+      "route": "hyperspace/filter",
+      "scroll": {
+        "outer": 0,
+        "inner": 238
+      },
+      "sha256": "cb5f1b35114a9c904f1ea8363f4b04a7a4e842c3f54512a419bfd50ad4d19d21"
+    },
+    {
+      "file": "work-invalid-import-keeps-current-1440x900.png",
+      "family": "work",
+      "case": "work-invalid-import-keeps-current",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "acf9b8f67e19e0b7e23c21729612e115c255454bfd8f7f9bad37e937a38228c3"
+    },
+    {
+      "file": "work-review-import-1440x900.png",
+      "family": "work",
+      "case": "work-review-import",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "4b01f6d779d4a4a7cafbef23c59ec8d0478594d93c9508a064d8e4dc5ad4082e"
+    }
+  ]
+}

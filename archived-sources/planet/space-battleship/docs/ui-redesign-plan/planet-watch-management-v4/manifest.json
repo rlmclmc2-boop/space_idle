@@ -1,0 +1,136 @@
+{
+  "kind": "planet_image_P4_side_space_default_and_on_demand_drawer",
+  "base_main": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "previous_image_candidate": "088a22986835da22e3952cc087ce9db54f500bef",
+  "shared_visual_spec_commit": "bf359c0d9073e064f71028958a21a649b3951875",
+  "contract_candidate": "09af963c",
+  "user_direction": [
+    "prioritize_empty_space_beside_round_planet",
+    "compact_stable_exploration_controls",
+    "facility_management_details_on_demand_drawer",
+    "preserve_orbital_motion_clearance",
+    "no_building_click_actions",
+    "no_large_persistent_bottom_ledger"
+  ],
+  "placement_suggestions_still_unconfirmed": [
+    "workshop_on_surface",
+    "shipyard_fixed_near_orbit"
+  ],
+  "independent_image_review": "compact drawer revision pending; default direction accepted",
+  "user_image_confirmation": "pending",
+  "ui_implementation": false,
+  "renderer_route_selected": false,
+  "benchmark_executed": false,
+  "tool": "image_gen.imagegen",
+  "successful_generations": 3,
+  "target_client_size": [
+    1440,
+    900
+  ],
+  "target_module_size": [
+    808,
+    900
+  ],
+  "targets_are_provisional": true,
+  "native_size_both_images": [
+    1586,
+    992
+  ],
+  "main_divider_x_approx": 1002,
+  "module_width_mapped_to_1440": 909.7604035308952,
+  "module_width_difference_from_808": 101.76040353089525,
+  "exact_geometry_passed": false,
+  "drawer_observed_native_bounds_approx": [
+    738,
+    135,
+    998,
+    416
+  ],
+  "drawer_observed_native_size_approx": [
+    260,
+    281
+  ],
+  "drawer_mapped_to_1440_scale_approx": [
+    236.0655737704918,
+    255.13240857503152
+  ],
+  "drawer_proposed_work_size_range": {
+    "width": [
+      210,
+      230
+    ],
+    "height": [
+      240,
+      280
+    ]
+  },
+  "drawer_budget_met": false,
+  "full_motion_and_arrival_clearance": "unverified; orbit arc approaches left cancel control in static image",
+  "sample_world_state_same_in_both": {
+    "planet": "1",
+    "exploration_degree": 68,
+    "task_percent": 68,
+    "explorers": 1,
+    "automatic": true,
+    "station": "built",
+    "workshop": "built",
+    "refinery": "ready",
+    "refinery_work": 5,
+    "refinery_required_work": 5,
+    "shipyard": "building",
+    "shipyard_work": 38,
+    "shipyard_required_work": 180,
+    "extra_builders": 1
+  },
+  "time_progression_or_claim_demonstrated": false,
+  "original_generated_png_bytes_preserved": true,
+  "extra_compression_applied": false,
+  "resize_crop_compositing_applied": false,
+  "files": [
+    {
+      "path": "default-watch.png",
+      "bytes": 1993899,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "95bc6e14e494afed8edff68cb7d4014fd6bac4ea8e2c8572a2144add63eb5314"
+    },
+    {
+      "path": "drafts/facility-drawer-before-compact.png",
+      "bytes": 1887072,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "a3f5c7e6beb41d1e0a2f730807ae18ac81a62624edbd7c5be788aed96401461b"
+    },
+    {
+      "path": "facility-drawer.png",
+      "bytes": 1878300,
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "d1ee34721f79e7ee76de6dac87939649466961a95facb2a7d111f4bb48781db1"
+    }
+  ],
+  "default_direction_review": "accepted direction by parent and independent reviewer; no pixel/runtime approval implied",
+  "default_original_frozen_at": "0cf4be88c5cb506ce367ff29c22e8e5b304d464b",
+  "generations_in_this_revision": 1,
+  "drawer_previous_native_bounds_approx": [
+    738,
+    136,
+    998,
+    514
+  ],
+  "drawer_previous_native_size_approx": [
+    260,
+    378
+  ],
+  "drawer_budget_note": "height reduced into proposed mapped height range; mapped width remains above original proposal and 808 target requires layout/reflow without global font scaling",
+  "drawer_overlap_policy": "moderate temporary overlap allowed; no claim of zero scene/trajectory coverage",
+  "claim_effect_text": "领取后生效：铁、铀原生掉落加成",
+  "claim_effect_source": "docs/game-design/03-progression.md §5; qualitative rule only, no numeric forecast",
+  "secondary_controls": "更多 · 加成与重铸, condition details on demand"
+}

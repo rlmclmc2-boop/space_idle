@@ -1,0 +1,13 @@
+7074ef8de5bf7bf945fde2afb4cabfb4aa6b549cc0635ab465c7b2fe598bf822  scripts/planet_orbital_spine.gd
+625ed8e0caa18f293e2b9c27afaf14978a5737ee242f3e011beddfea1f689601  docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md
+6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/check.log
+1b57d5ba585f143e24a85c655794c2c7d68ace4fafdbf64ce07c02cdc78a93b0  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/natural-driver.gd
+7fe2d7baff3d8ecf907e35a46b51e12060a5bc80a4a6c9732d7a9f88288e047c  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/natural-first.jpg
+a7a7e88872794385af9d9f663efefc7d7333ca1b794e09849b27e3456b435856  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/natural-last.jpg
+5c4794881a91dc797366021acb3d0ea36471c492848cec04f33121d906ff31a5  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/natural-timestamps.json
+ae3630e15e5d18491a5d3d09f573f5399c49ca843320f8b4aff3ffbcc34693d4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/natural.log
+988aaf3cd84f75eb435545eedd95580a6d81d82644e8caadcc46e308e3afcc1f  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/quarter_simulated.png
+c46b60a4bfba066fd6392e6838e05927a796a3b1f66367bbfe70db1ddf110216  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/stage_1.png
+827fa26764912d4af681072d16b4ef2357017bf4f0f8d9bf603f01abab55008f  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/stage_4.png
+7eef0b889bae5af7341652ff3051ac744323043287afa3e0593278fff3c74bb1  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/structure-driver.gd
+cfcfc975f16525faf323293da6c1ede206593e52e7fba165fe85acacf66463b4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/station-saddle/structure.log

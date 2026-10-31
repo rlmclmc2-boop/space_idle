@@ -1,0 +1,8 @@
+{
+  "status": "Current sources and runtime evidence are distinct",
+  "current_card_source": "build-rectangular-cards.py",
+  "current_card_manifest": "rectangular-card-manifest.json",
+  "preserved_background_and_host_sources": "host-return-source-3946-history.json",
+  "runtime_panel": "../../../../../src/ui/equipment_panel.gd",
+  "host_note": "Static top/navigation/right scene is75d55275 snapshot. Native wip-inline-* is old main host; neither is final formal host integration."
+}

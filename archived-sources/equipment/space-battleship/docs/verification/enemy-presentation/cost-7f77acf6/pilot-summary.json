@@ -1,0 +1,98 @@
+[
+  {
+    "case": "loss-hidden",
+    "samples_usec": {
+      "baseline": [
+        1353118,
+        1309809,
+        1262919
+      ],
+      "candidate": [
+        1557201,
+        1545597,
+        1536535
+      ]
+    },
+    "median_usec": {
+      "baseline": 1309809,
+      "candidate": 1545597
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.1800170864606978
+    },
+    "simulation_facts_equal": true
+  },
+  {
+    "case": "loss-visible",
+    "samples_usec": {
+      "baseline": [
+        1288197,
+        1258979,
+        1253363
+      ],
+      "candidate": [
+        1476092,
+        1477981,
+        1554832
+      ]
+    },
+    "median_usec": {
+      "baseline": 1258979,
+      "candidate": 1477981
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.1739520675086716
+    },
+    "simulation_facts_equal": true
+  },
+  {
+    "case": "recovery-hidden",
+    "samples_usec": {
+      "baseline": [
+        1289518,
+        1285304,
+        1255258
+      ],
+      "candidate": [
+        1506939,
+        1530554,
+        1568065
+      ]
+    },
+    "median_usec": {
+      "baseline": 1285304,
+      "candidate": 1530554
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.1908108898750802
+    },
+    "simulation_facts_equal": true
+  },
+  {
+    "case": "recovery-visible",
+    "samples_usec": {
+      "baseline": [
+        1273616,
+        1260179,
+        1273394
+      ],
+      "candidate": [
+        1503756,
+        1509273,
+        1601559
+      ]
+    },
+    "median_usec": {
+      "baseline": 1273394,
+      "candidate": 1509273
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.1852364625559724
+    },
+    "simulation_facts_equal": true
+  }
+]

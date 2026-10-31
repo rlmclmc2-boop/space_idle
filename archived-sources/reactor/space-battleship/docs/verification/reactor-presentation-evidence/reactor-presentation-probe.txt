@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS: 103 reactor presentation/budget assertions; baseline numeric and native publication parity; accepted snapshots, pre-replacement baselines, deferred net changes/reentry; cached +1 affordability without model/preview/power refresh.

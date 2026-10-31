@@ -1,0 +1,245 @@
+{
+  "source_commit": "ca80f1ed155d9af8d5a50850be127e6fe1fbf12a",
+  "viewport": [
+    1440,
+    900
+  ],
+  "scope": "Browser design response fixtures only; no file/audio/runtime verification",
+  "files": [
+    {
+      "file": "scene-settings-save-1440x900.png",
+      "sha256": "b2fc33e9a4b942dbc415c08fb133b453d3c8e7d143208da7a9f45fc7773b6266",
+      "state": {
+        "family": "scene",
+        "route": "settings/save",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "scene-settings-preferences-1440x900.png",
+      "sha256": "637449bc64cb56bd410ad20c361b18ff793c1e13be4544cb5bf548b0d3ecfba5",
+      "state": {
+        "family": "scene",
+        "route": "settings/preferences",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "scene-archive-tutorial-1440x900.png",
+      "sha256": "be744f70fd635df8975471914247c110675806052711d0413dc94389751074e2",
+      "state": {
+        "family": "scene",
+        "route": "archive/tutorial",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "scene-archive-intel-1440x900.png",
+      "sha256": "86c5f5e609d61357116705a070ae559016643615024961ed5c1b06ae91fb2e38",
+      "state": {
+        "family": "scene",
+        "route": "archive/intel",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "scene-archive-notifications-1440x900.png",
+      "sha256": "7c2632bdc7d308a51802fa95527988aa3daf4743328b5e2f7c28f796b225d8db",
+      "state": {
+        "family": "scene",
+        "route": "archive/notifications",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-settings-save-1440x900.png",
+      "sha256": "74bdf851001ec380a662263a7988ba12b709b8c947e4c423bcb84c65a5d79276",
+      "state": {
+        "family": "work",
+        "route": "settings/save",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-settings-preferences-1440x900.png",
+      "sha256": "27eb8f8fdb9ef4f9b82a4c83c463711cd6e02cef4c0af3e5f33678133eb36d34",
+      "state": {
+        "family": "work",
+        "route": "settings/preferences",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-archive-tutorial-1440x900.png",
+      "sha256": "08c9576b3255582f175bb8c2a9941848943f9d102a4fcef791c748d8af1a3605",
+      "state": {
+        "family": "work",
+        "route": "archive/tutorial",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-archive-intel-1440x900.png",
+      "sha256": "a0391983974e6b7cdd90574285ab3d2e27d0351945eee3424dfe4e172b0324f1",
+      "state": {
+        "family": "work",
+        "route": "archive/intel",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-archive-notifications-1440x900.png",
+      "sha256": "db87d37007a45604a7bc40d3322b4fca1aed04568e883dbad4dcfc1e9e111f6a",
+      "state": {
+        "family": "work",
+        "route": "archive/notifications",
+        "save": "saved",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-save-failed-1440x900.png",
+      "sha256": "f01a74d21a4647b1baca213092a2776171cc6ba36b31f537bf8dd7625459a994",
+      "state": {
+        "family": "work",
+        "route": "settings/save",
+        "save": "failed",
+        "preview": null,
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-reforge-preview-1440x900.png",
+      "sha256": "008aeefc2495622ba0b1e4c962a406c4f1ff0fe3847c2f074109c7d345725aff",
+      "state": {
+        "family": "work",
+        "route": "settings/danger/reforge",
+        "save": "failed",
+        "preview": {
+          "id": "preview-1",
+          "kind": "reforge",
+          "source": "始源星-E178b",
+          "planetId": "1",
+          "retained": [
+            "d2"
+          ],
+          "clearSettings": false
+        },
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-reforge-preview-lower-1440x900.png",
+      "sha256": "883dddf938cf5c6985215e76f43578326edde010bdd9f55704c883ac386dd42f",
+      "state": {
+        "family": "work",
+        "route": "settings/danger/reforge",
+        "save": "failed",
+        "preview": {
+          "id": "preview-1",
+          "kind": "reforge",
+          "source": "始源星-E178b",
+          "planetId": "1",
+          "retained": [
+            "d2"
+          ],
+          "clearSettings": false
+        },
+        "result": null,
+        "guide": false,
+        "unread": 2,
+        "scroll": 443
+      }
+    },
+    {
+      "file": "work-import-memory-disk-separated-1440x900.png",
+      "sha256": "3570e57a33a81d14333918514ae5ab66dc307be9efac3f64654cd1717e8902b8",
+      "state": {
+        "family": "work",
+        "route": "settings/danger/import",
+        "save": "failed",
+        "preview": null,
+        "result": "演示结果：候选已替换内存会话，持久化待重试；原有效文件保留。",
+        "guide": false,
+        "unread": 2,
+        "scroll": 0
+      }
+    },
+    {
+      "file": "work-first-guide-1440x900.png",
+      "sha256": "6530842f6c3f1d8417d47c908184b2ef7c9dd968faeaaafaa4f7fd323471b8c8",
+      "state": {
+        "family": "work",
+        "route": "archive/tutorial",
+        "save": "failed",
+        "preview": null,
+        "result": "演示结果：候选已替换内存会话，持久化待重试；原有效文件保留。",
+        "guide": true,
+        "unread": 2,
+        "scroll": 0
+      }
+    }
+  ],
+  "browser": "151.0.7922.173",
+  "source_hashes": {
+    "app.js": "62c667b2b90f5bf8a534379b553b33f6e86635faf413ba187ee48e5e1dec2a34",
+    "style.css": "fb351afb20eccdb1ea63cf1438b9d7c75adcfd197a1071e5a8d359d4aa208d79",
+    "index.html": "2bc4da9338fac8fb589fdae3a5c1b53d45b1c18c71ad711bfa3e4149166c11b2",
+    "maintenance-models.js": "a251df89d4154b0ccd29428e3e29256b98bd571655a5c8cd297835fa3a313187"
+  }
+}

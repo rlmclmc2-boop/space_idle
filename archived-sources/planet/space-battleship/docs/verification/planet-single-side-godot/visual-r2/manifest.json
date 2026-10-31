@@ -1,0 +1,321 @@
+{
+  "runtime_source_commit": "ef774207828e04026fcbdbeb747f8f4682198a4c",
+  "shared_host_commit": "170849dd",
+  "approved_image_commit": "e78af05f",
+  "previous_visual_candidate": "35d27587 (rejected)",
+  "visual_acceptance": "pending original independent review and user",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "godot_official_download": "https://godotengine.org/download/archive/4.7.2-stable/",
+  "engine_sha256": "8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
+  "native_build": {
+    "platform": "linux.x86_64",
+    "shipping_windows_build": false,
+    "godot": "4.7.2.stable.official.ed1daf0bf",
+    "godot_cpp_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+    "api_sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986",
+    "library_sha256": "8409b862a91588611a689374f6865f930f2c715c27b1d04189b9ee4b6b0cb58e",
+    "source_sha256": {
+      "amount_api.hpp": "479b310852a81463ad8bce361075da99534f5d172b646aa070c2e798c715b4ff",
+      "amount_value.hpp": "b17594755bd8175130e381131aa9e7cf5c9a5a5446b997dfa38e204811613867",
+      "combat_execution_kernel.h": "f531d51fa00b740210af861ca530d32aeda193b933bd902a8ba8b6c907155d04",
+      "combat_presentation.h": "54ed37820f4902058a8e380dfdd615bf1b7d75b9355b575cf7d7d97a5519f780",
+      "combat_retained_presentation.h": "88e4e3b6ca052d8a7080e5d3131cfe63af8b98c721446ab1b689c1ed6643c439",
+      "foundation_disk.hpp": "79975eeaf90a84774de93e6936af52a1b165ff00cd6d53f00c6dcbc75c7906e5",
+      "space_native.cpp": "23b3c0da6d0cec700e733408288ed6eb5ddf87ec9762bf873b893365b0bf9f09",
+      "space_native.os": "fa0a6893dcaba6de53a2a411de9c250b4611834962e2c474544332afa6a35e20"
+    }
+  },
+  "validation_linkage": "use_static_cpp=no; Linux only",
+  "shipping_api_exact_match": true,
+  "windows_runtime_verified": false,
+  "renderer": "GL Compatibility; Mesa llvmpipe; VSync change unsupported",
+  "client": [
+    1440,
+    900
+  ],
+  "module": [
+    808,
+    900
+  ],
+  "native_popup_mouse_choices": 7,
+  "popup_window_id": 0,
+  "popup_input_method": "XTest OS mouse; real Godot PopupMenu rows; no select/signal emulation",
+  "keyboard_acceptance": false,
+  "construction_progression": {
+    "before": 1,
+    "after": 2,
+    "required": 10,
+    "builders": 1,
+    "exploration_after": 152
+  },
+  "initial_state_fixture": true,
+  "natural_unlock_or_progression_verified": false,
+  "reactor_shared_host_status": "scene loads and navigation works, but adopted host reports presentation unavailable; not triple-module acceptance",
+  "cumulative_buff_details": "not implemented; proposal in buff-readonly-gap.md",
+  "benchmark_executed": false,
+  "visible_mesh_sphere_B_implemented": false,
+  "raw_imagegen_png_unchanged": true,
+  "imagegen_successful_generations_this_revision": 4,
+  "source_sha256": {
+    "src/main.gd": "734a7cf5bcb1f64d7076ace882dd8e3d9566b425bb1ff59204d0dbde76719a79",
+    "src/ui/planet_panel.gd": "417dc4c111802735937f7a117f022f4b68ea2fbf1058e6a659427b830882beeb",
+    "scripts/planet_visual.gd": "7ca208bce50be81818c8656e1c12340774c4e07688406c7ac168771453ea7928",
+    "scripts/planet_facility_scene.gd": "2c17051b3d911311d226257259b9443ddf80faac36396d9b2d1bd79bbb4d476d",
+    "scripts/rotating_planet.gd": "a0c61051aa23467cc0784ac93e730a540a2cae103b807eb18fe174056835ab8e",
+    "scripts/rotating_planet.gdshader": "f8fcf6502ae8885ca9481e73d261a568481880069c377e036174b9508f627971",
+    "src/systems/planet.gd": "ec3ecc23eddc59e7192a3484b0d976a2f1b6ef2157c3ebae1bdd1efc673c929a",
+    "src/systems/crew.gd": "3681568b1d05aaf40fc979f038117d135ace4e7b7415964226c9d37328408d77",
+    "art_sources/planet_facilities_v3/build.py": "f3b2b10f35f096b91201c5a9ba2c97897c49b7a9b69502e7f4660fc91cef0e7c",
+    "assets/planets/painted-v3/surface.png": "ed0e8f3561f979624fa7a485a4d0124d2336d619a899f5516f507fe4002bdc9c",
+    "assets/planets/painted-v3/cloud-density.png": "3c6611c566cf964dccd623823f28654a497d3544e1bdfedb7fe28aa5f5024fd4",
+    "assets/planets/facilities_v3/material-atlas.png": "f3faef5a013ddedb846b8e693209d49723e8f448da683c2c3d0684bb5c3dbc6d",
+    "art_sources/planet_facilities_v3/imagegen-reference.png": "dda3d46e8735f9bb0d4a795a4d099536d7c68b0fb946f94cc014b4952438b6bf",
+    "assets/planets/facilities_v3/auto_explore.glb": "31da833acf62ff9b7bbaffbbdb1acddcd541f8bd7265ab6a853bc04502a40b87",
+    "assets/planets/facilities_v3/equipment.glb": "62592c37fcf9aa54adb05aad35c1fdfd723a135c00f38ed72cee92bb7ca8845b",
+    "assets/planets/facilities_v3/refinery.glb": "cc58037cbe7e80749c2846b89c0011ea6fc008a1bf10ff3b343a6e553514e4be",
+    "assets/planets/facilities_v3/shipyard.glb": "d23c303e9bbcddd31db689288ba638767fbcf154b59ea512f28a26dd3c452af1"
+  },
+  "files": [
+    {
+      "path": "evidence/01-default-planet1.png",
+      "bytes": 1054512,
+      "sha256": "9540985643b852a5d07d7754b8f17aab229363847b5669738659646ba56d63b0",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/02-facilities-planet1-ready.png",
+      "bytes": 1040623,
+      "sha256": "3b1d6ceacad2b9e5e9a3e9dc340f5dd17d860d1ca32ebe7d1ecd76d26b4403e5",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/03-same-drawer-planet2-building.png",
+      "bytes": 874450,
+      "sha256": "6a2497a41ed2a17849744f7143454e43d31830778d70107ada1a042a6671cbe8",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/04-switch-back-planet1-ready.png",
+      "bytes": 1033400,
+      "sha256": "a2a597574e6d94e43ac8f7acd9d6238a04cc62ed6e5ee4d0a92484999d099a1b",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/05-planet1-claimed.png",
+      "bytes": 1036152,
+      "sha256": "3d72145e8404010124f69256b460385bd3e80bf67758348677d83cfedb9be43b",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/06-stop-after-current.png",
+      "bytes": 1036226,
+      "sha256": "e5be5174ce2c75c0a553af5f135ab6b9040d1dbd6ec0afe7c68ade5836af62eb",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/07-cancelled.png",
+      "bytes": 1029054,
+      "sha256": "80424941e394c9499ffbd70bfcaea40ea31f54be03bfb25c0f05c1b0e3750a4c",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/08-crew-section.png",
+      "bytes": 1009861,
+      "sha256": "20c3cc137ec76f6fb897447d805840820b6247c360bd19475c99013026ece6eb",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/09-exploration-section.png",
+      "bytes": 1029270,
+      "sha256": "d8780253f84328b9cfdf1d55f78a37573420b7e99813798d1208ec5617364fc1",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/10-motion-t0-all-built.png",
+      "bytes": 1047505,
+      "sha256": "b599fb9ad7d3e42b54d9b2e9aa5ee8d1d52bc28489dc8e6aaec6aa6b7804d3f7",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/11-motion-t4-all-built.png",
+      "bytes": 1005203,
+      "sha256": "1087a6cf756bb24e439ab7551a713f5f434b9cc1545d16a4d078f621e797cff1",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/12-motion-t8-all-built.png",
+      "bytes": 988299,
+      "sha256": "9b98e3af8d2c6ad64c8f67d33c51bdbe66795c2e8ffb3776ef71449b966dd17c",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/13-existing-reforge-context.png",
+      "bytes": 795755,
+      "sha256": "95ee10cb245381b6b98b8c985dcad93e49763ab5577cf5d6d3a56a0323d5178f",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/14-missing-builder.png",
+      "bytes": 854549,
+      "sha256": "32655515e7d96aa72c39c8e279424e58fd7c44384840bc231511a1c1b8de76e0",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/15-builder-assigned.png",
+      "bytes": 857818,
+      "sha256": "c0ab64a41de60cefba197675600f05a516553cb4368aa6bec6f5d1bfd90403c3",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/16-construction-actually-progressed.png",
+      "bytes": 837283,
+      "sha256": "34266316c96eead913687816caa36d71e8639f99bf90d47b32a3e24fc0ddb63f",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/17-shared-host-reactor.png",
+      "bytes": 694415,
+      "sha256": "8824eea56d9832c09d867f74cbe4a4fb452aeddac1e72f0defc36fceaf352d8c",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/18-shared-host-equipment.png",
+      "bytes": 1570344,
+      "sha256": "a1aa60632b536890e9693a0ec63870fb49ae474f1eb98eff560132c87823f7c2",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/bootstrap-build.py.txt",
+      "bytes": 2158,
+      "sha256": "6a09847d5391a6abd34326ded8c1b473dabdbb5e010f911f54f09751fcce235a"
+    },
+    {
+      "path": "evidence/fixture-driver.gd.txt",
+      "bytes": 11947,
+      "sha256": "478a7d7cb7b110d1ebb95d2f88253e1c0d665bce10d7e2b66560d8a669674bce"
+    },
+    {
+      "path": "evidence/native-build-manifest.json",
+      "bytes": 1140,
+      "sha256": "cb0e31c9b4d99ac162111ce1004c24ac5ab05c3a19274e383ea6d05cb1ac952f"
+    },
+    {
+      "path": "evidence/native-crew-popup.png",
+      "bytes": 824228,
+      "sha256": "5f9b96ccc9586d2015fe593c274f733d8258c18bfcf619f2ce0936c9d5b44a43",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/native-facility-popup.png",
+      "bytes": 978302,
+      "sha256": "25f81c46b91b39d4e704aaab8aeee2a51a4b0a04abe404c804b19ff040d3a18f",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/native-planet-popup.png",
+      "bytes": 1046769,
+      "sha256": "a08a49027beb40eacac801459833775f9530cdd2534aaa4d4e3fec2356f13f89",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/native.gdextension.txt",
+      "bytes": 233,
+      "sha256": "6839e8863ba4ea0ae263e87b996d133a355064e77eb6d3bd4b2f8d78a88c77ed"
+    },
+    {
+      "path": "evidence/operations.json",
+      "bytes": 76206,
+      "sha256": "48f17d843a9e197f4c16f2755b2093a37bf919f8484baac7f336a5e5e3663bfc"
+    },
+    {
+      "path": "evidence/os-input.py.txt",
+      "bytes": 1331,
+      "sha256": "de691b8e15d14f3328134d81772c4401579451dfaa9e69e591e0088555ed9353"
+    },
+    {
+      "path": "evidence/runtime.txt",
+      "bytes": 842,
+      "sha256": "2c6aa13ce0e98e774c05951d639ba51b14f055e253a176f38e9d2502b32e3089"
+    },
+    {
+      "path": "evidence/script-check.txt",
+      "bytes": 73,
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e"
+    },
+    {
+      "path": "evidence/xorg.conf.txt",
+      "bytes": 564,
+      "sha256": "1e69d7249853aa8ed73d0b76266634c1518a3edcc3ce72a91b7c6ad1684b60ed"
+    }
+  ],
+  "remaining": [
+    "independent and user visual review",
+    "matching reactor interface integration by owning group",
+    "cumulative Buff read-only outlet",
+    "full orbit/arrival envelope and all body states",
+    "Windows and user GPU verification"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "source_commit": "f1a16bf6b59aab2005da89ff3062f316e807849a",
+  "base_main": "e3b38d7b6d8256f6031e1b086c7db7812b6a441f",
+  "viewport": [
+    1440,
+    900
+  ],
+  "full_screenshots": 4,
+  "lossless_pixel_crops": 4,
+  "run_exit_code": 0,
+  "scope": "static visual capture only; cycle/Owner logic unchanged, no new transaction/full-chain retest",
+  "files": {
+    "01-normal-local.png": {
+      "sha256": "79660119db594205f2fcee499778b666eddf946c5ac1378828e9be9a389dc7b7",
+      "bytes": 201480
+    },
+    "01-normal.png": {
+      "sha256": "285b7079ff024eef553104fa16fddbd5f7782479f33a22676f239b358c55f849",
+      "bytes": 1551709
+    },
+    "02-double-local.png": {
+      "sha256": "625eaa945a0cee9b3e2492bc27de36c0729dd6e2c822d349e94bff269f727610",
+      "bytes": 221668
+    },
+    "02-double.png": {
+      "sha256": "a0e1ffec9a6ba718239dffc5a9262c1b81b0c24a0f7ffcda00467e5697622fb0",
+      "bytes": 1546248
+    },
+    "03-different-local.png": {
+      "sha256": "a58a52eb5f4360955582205b8a1b383c8d4ead2f20031ba27d2bdb53a8d32670",
+      "bytes": 222079
+    },
+    "03-different.png": {
+      "sha256": "82ea6127ecd4ddf699e146f5064962dba2aef073cb81c7a76d1b0b6b84250c8f",
+      "bytes": 1546164
+    },
+    "04-batch-local.png": {
+      "sha256": "b7207eb21ac625e1fdf04e8f2ced9024d4dce55171675367bb37f9ead3590625",
+      "bytes": 145619
+    },
+    "04-batch.png": {
+      "sha256": "61da0f38aabe6865a91efc23dd2573238a21ebeacdbbab6561e732325b0fb503",
+      "bytes": 1268268
+    },
+    "README.md": {
+      "sha256": "cd9eb99ab2857b398e223fcd2151d55760f68c8dd24003292e65634c1c04536a",
+      "bytes": 4979
+    },
+    "capture-driver.gd.txt": {
+      "sha256": "14177d9e2a3fc6728f96e54e190a749ff87d71b24ad48c883433693f9c93fa57",
+      "bytes": 4028
+    },
+    "check.log.txt": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    "observations.json": {
+      "sha256": "52cbead0fdb477f7de76a906a5fea86b8df866575df5d53593265e97351db886",
+      "bytes": 906
+    },
+    "runtime.log.txt": {
+      "sha256": "724bc74300684450a58c6b08fcba68f43af5e0d915fe1a2bbebda6f4f8105a5a",
+      "bytes": 417
+    },
+    "source-boundaries.json": {
+      "sha256": "7112ef6d4e12fec1c9211705d8d5ea93747d6ffc9e56d38ad964eba18c91a553",
+      "bytes": 2825
+    }
+  }
+}

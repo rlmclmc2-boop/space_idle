@@ -1,0 +1,26 @@
+{
+  "source_commit": "fc361675131aa59ce21ec270a5aaa7e9715f9746",
+  "base": "79e48f10502fa169c02c7802fe5c3104eafa01e7",
+  "equipment_sha256": "238f1d8fd487ccbca6607f8917d06e0b64b55cfd35cba27bc7909ed1b71651d8",
+  "files": {
+    "01-normal-local.png": "0f3d914b6a1544f85aaf56354ee6a124665acec4eb2c48866454f9fc92f1db82",
+    "01-normal.png": "3006302e3b65e0cc7bb76fb5d56efeffa5e48f94156126c8168b0e3eb415bbc3",
+    "02-comparison-local.png": "0dac3d2cec28cf71f6e720a76cb8871b2c6c9d544c2140a03d6e307a814bbd7d",
+    "02-comparison.png": "5334b74856fc503f13cb6bcedc86e0573b7201a63b54759910e29193af312633",
+    "03-disabled-local.png": "03af7dfc72401e3b704e07b403c1904cf5fbf13a107109a6ca815357fc0ed585",
+    "03-disabled.png": "2e21073e3f9a4a580e9c1417bcc3f86e0f28d3c3bf094c67c25ffac111ed3285",
+    "04-batch-local.png": "9342b9de4210f40ac9352e7d36c9e4e09b4f30aa670720563485aa1b8a3af034",
+    "04-batch.png": "20e67f0686831834ec87e2d33c74aba950776a005be5332fa62c934605d4d528",
+    "README.md": "b1a2fbcf1c1a3dc29209876f37947087241a98ec44e97fd6452e9beb4bc81c7e",
+    "capture-driver.gd.txt": "9ac7ccde26a05d4073545d069071530a35d838f9b74f4bcc6d3a9427d1820ce7",
+    "check.log.txt": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+    "focus-candidate-local.png": "ae3efde4e848b438ef84f35ecdb04d85b9268961fff428afc960b2b3d40c7300",
+    "focus-primary-local.png": "8ed833ad3f97cd4be8f9e5bb204d0f8febede400708304d1b71eee454f53a4ab",
+    "focus-quiet-local.png": "6af551a4da8d602256536e5621a02d1350e834928bf8f628edf24036d6f0e502",
+    "runtime-environment.json": "ee5e3440928efdcc8d8e9b367530ce2668e97f51f713a337dbb38839959de553",
+    "runtime.log.txt": "0267ce6e82b06ed3e7473e6aa4070980411165b3da348f198da4508f419eb519",
+    "source-boundaries.json": "6464e99ce60101cb67b93eacc90b9043ffad0ffffc1a06e8c80cd83e1521ec38",
+    "visual-family-records.json": "b79f0f54c89a00244f1319c505e5a513a9bc43e9a5f01fa2432cd3ba427ebb74"
+  },
+  "note": "same fixed source captured after commit; all11PNG actually viewed; overall art pending"
+}

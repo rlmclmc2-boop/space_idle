@@ -1,0 +1,9 @@
+extends SceneTree
+const PlayerText = preload("res://src/ui/player_text.gd")
+func _initialize() -> void:
+    var examples := {"0":"0", "12":"12.0", "999.94":"999.9", "999.95":"1.0k", "999950":"1.0m", "1e15":"1.0kt", "9.9995e17":"1.0e18", "1e20":"1.0e20", "1.235e39":"1.2e39", "-0.0001":"0"}
+    for input in examples:
+        var actual: String = PlayerText.number(input)
+        assert(actual == examples[input], input + " -> " + actual)
+    print("PASS planet shared display: ", examples.size())
+    quit()

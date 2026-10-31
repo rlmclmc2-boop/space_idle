@@ -1,0 +1,17 @@
+{
+  "source_commit": "d034de07571fa5866483ab852230143b46baa78c",
+  "files": {
+    "01-different-double-local.png": "e24a0fa792c4678493a7fa002beda7e68ac673cf26dbd177fa256a3c5c4cc382",
+    "01-different-double.png": "16ca02a6419f07b79fdbcb1428074be04a8406ce5780dcefe4ec22c520c78b9d",
+    "02-single-local.png": "71ab8e1d2b0cda26a9b9dabfcd7d683836fa2ea1e56dc8408c62e29af92f14f5",
+    "02-single.png": "3641763d5a93c798373e82729a4f31a866bbc015b6d44dc613461c118c53d110",
+    "README.md": "204062990aba8d23f79aa8826630b68e83f65dc9449b801af90ad9c6b6ad5d2e",
+    "capture-driver.gd.txt": "00c9ff571ca965412ab81c32f2c9e89f87f01804c0b0076da1313a72a78fe15b",
+    "check.log.txt": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+    "geometry.json": "88100e0c537421e698541d5f33198d02f1de5228439391d8640d2a474c8aa8bd",
+    "height-feasibility.md": "f7da9662581efce5acda33a15379acca541e2823581680588ca10ffbfca89f00",
+    "information-layout-proposal.md": "dbf6bd0bf9b62ea1332543dd444f94c7b905da3d3889f506505ad775276ea941",
+    "runtime.log.txt": "e3eca351e1fee918cd026eb285b6f5bf2c0e98d86942b120f358859ca289eaa5",
+    "source-boundaries.json": "6d284c4cb7de37597750e338668948e7a23a79cc28f0e89158e98cd9a7d85f14"
+  }
+}

@@ -1,0 +1,4 @@
+9614ead291851ca172b8e59ba2589b63bd1643f1a602d4d1401bf0caf6eb4648  src/ui/player_text.gd
+eb7c2733193b7da179b5ca862006125813d2dca1458ad26924cd6fc4451cc301  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/planet-shared-number/driver.gd.txt
+6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/planet-shared-number/main-check.txt
+43b77f4c3590756d4cda539c982f5f419c46f341c360ac7bed9463dae76cc14b  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/planet-shared-number/number-check.txt

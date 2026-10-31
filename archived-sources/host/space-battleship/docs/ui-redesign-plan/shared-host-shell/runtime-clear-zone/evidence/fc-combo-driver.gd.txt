@@ -1,0 +1,65 @@
+extends SceneTree
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/"
+func _initialize() -> void: call_deferred("run")
+func frames(count: int) -> void:
+	for i in count: await process_frame
+func shot(name: String) -> void:
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT + name + "-1440x900.png")
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(80)
+	assert(game.startup_error.is_empty())
+	var session = game.session
+	game.set_process(false)
+	var config: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json"))
+	var saved: Dictionary = session.campaign_system.save_state()
+	for row in config.unlock.unlock: saved.grants[str(row.type) + ":" + str(row.target)] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.crew_system.refresh_availability(session.campaign_system.available)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	var planets: Dictionary = session.planet_system.save_state().duplicate(true)
+	var first: Dictionary = planets.planets["1"]
+	first.exploration = 240
+	first.conquered = true
+	for key in ["station", "refinery", "workshop", "shipyard"]:
+		first.buildings[key].state = "built"
+		for candidate in config.planet_build.planet_build:
+			if str(candidate.id) == key: first.buildings[key].work = int(candidate.build_explore)
+	assert(session.planet_system.restore_state(planets).ok)
+	session.planet_system.refresh_availability(session.campaign_system.available)
+	clear_guidance(session, game)
+	game._refresh_feature_visibility()
+	game._zone_shell._route_buttons["equipment"].pressed.emit()
+	await frames(20)
+	assert(game.equipment_scene.visible and not game.reactor_scene.visible and not game.planet_scene.visible)
+	assert(game._zone_shell._active_route == "equipment")
+	await shot("fc-combo-equipment")
+	game._zone_shell._route_buttons["reactor"].pressed.emit()
+	await frames(15)
+	assert(game.reactor_scene.visible and not game.equipment_scene.visible and not game.planet_scene.visible)
+	await shot("fc-combo-reactor")
+	game._zone_shell._route_buttons["planet"].pressed.emit()
+	await frames(50)
+	game.planet_scene.select_planet("1")
+	await frames(45)
+	assert(game.planet_scene.visible and not game.equipment_scene.visible and not game.reactor_scene.visible)
+	assert(not game.planet_scene._wallet.visible)
+	await shot("fc-combo-planet")
+	print("FC_COMBO routes=equipment_reactor_planet scene=808x900 planet_wallet_hidden=", not game.planet_scene._wallet.visible)
+	if session.save_files != null: session.save_files.close(2000)
+	game.queue_free()
+	await frames(3)
+	quit()

@@ -1,0 +1,15 @@
+4bac0c0f45b0510b6728d873151b20d43c4604dcb181aaba3d784ec2911b7d83  art_sources/planet_facilities_v5/build_workshop_node.py
+ed31859680b64752501877d6defff24afecd8f4346304822cc5c8b5533b3bd46  art_sources/planet_facilities_v5/equipment.blend
+696cfabd6838f1e9a74e13fa26d8da69439cce092ee2c15d1f4ee9ec68ca98f8  assets/planets/facilities_v5/equipment.glb
+af9397df5af25979703c5ac16310e567232de9f3bc8a22a8271d0906cef409c9  scripts/planet_facility_scene.gd
+a3479e03fa759792ef38d2d832300a11e44684e0c9e0edd6d1bbebaf4350c5e3  scripts/planet_orbital_spine.gd
+492b9cf42b865f4b3263c3ff2c506a9a4628dff2a7dc35de876f783f11c2e52b  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/stage_1.png
+b5f624035d44bb945595db2073505f18992d4559b5ed1efa2a89ddb266841d57  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/stage_4.png
+d4c0a7f9bb63f2200502cf049e28de6eecef786c0b6ec94f23ed15b074727a6d  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/quarter_simulated.png
+487ce823398c9b146e5c7d9480250928b45a02f18e4545ac6eb27b14d9428066  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/backside_180_simulated.png
+22f2ce7ef80dc9ae608cc7e2c1a354ecb82a528bf9aad207f4593ba2805cf322  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/work_clock_4.png
+7738adfed61e473917cecd7b05d67756d033c98168617578a6b5c0cecc9f7e9c  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/driver.gd
+0ec157c0f42a5b99d38766e05cf5efe5f2161b96d8b3e05934c15e77cffb1e3c  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/backside-driver.gd
+cfcfc975f16525faf323293da6c1ede206593e52e7fba165fe85acacf66463b4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/runtime.log
+cfcfc975f16525faf323293da6c1ede206593e52e7fba165fe85acacf66463b4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/backside-runtime.log
+0e9619b3491283555b643b1bdec015bda2ac1c8f308977064c61eb06e57c665d  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-local-through-node/check-only.log

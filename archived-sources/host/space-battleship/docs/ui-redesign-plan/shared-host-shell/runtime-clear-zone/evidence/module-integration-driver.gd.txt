@@ -1,0 +1,71 @@
+extends SceneTree
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/"
+func _initialize() -> void:
+	call_deferred("run")
+func frames(count: int) -> void:
+	for i in count: await process_frame
+func shot(name: String) -> void:
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT + name)
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(90)
+	if not game.startup_error.is_empty():
+		print("INTEGRATION startup_failed ", game.startup_error)
+		quit(1)
+		return
+	game._skip_tutorial = true
+	game._sync_guidance()
+	# The saved page preference can reopen the ship page; select equipment explicitly.
+	game._zone_shell._route_buttons["equipment"].pressed.emit()
+	await frames(4)
+	assert(game._zone_shell._active_route == "equipment")
+	assert(game._zone_shell._context.text == "装备")
+	assert(game._zone_shell._route_buttons["equipment"].button_pressed)
+	assert(game.equipment_scene.visible and not game.growth_panel.visible and not game.reactor_scene.visible)
+	await shot("integration-equipment-1440x900.png")
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	game._refresh_feature_visibility()
+	var pending: Dictionary = session.pending_guidance()
+	for attempt in 20:
+		if pending.is_empty(): break
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+	game._sync_guidance()
+	game._zone_shell._route_buttons["reactor"].pressed.emit()
+	await frames(5)
+	print("INTEGRATION route=", game._zone_shell._active_route, " scene_visible=", game.reactor_scene.visible, " equipment_visible=", game.equipment_scene.visible)
+	await shot("integration-reactor-zero-1440x900.png")
+	var level_before: int = session.reactor_system.presentation_model().level
+	game.reactor_scene._quantity.pressed.emit()
+	await frames(4)
+	print("INTEGRATION quantity=", game.reactor_scene._quantity.text, " level_unchanged=", session.reactor_system.presentation_model().level == level_before)
+	await shot("integration-reactor-x10-1440x900.png")
+	game.reactor_scene._quantity.pressed.emit()
+	game.reactor_scene._quantity.pressed.emit()
+	var amount: Dictionary = session.amount_api.apply("from_decimal", ["1000"])
+	assert(amount.ok)
+	assert(session.economy.credit_yield("2", amount.value, session.wall_time, session.game_time).ok)
+	await frames(4)
+	game.reactor_scene._equal.pressed.emit()
+	await frames(5)
+	print("INTEGRATION equal=", game.reactor_scene.last_result, " model=", session.reactor_system.presentation_model().get("ok", false))
+	await shot("integration-reactor-active-1440x900.png")
+	for i in 6:
+		session._step(1.0 / 6.0)
+		await frames(1)
+		if i in [0, 2, 5]: await shot("integration-reactor-motion-%02d.png" % i)
+	game._zone_shell._route_buttons["ship"].pressed.emit()
+	await frames(4)
+	print("INTEGRATION return=", game._zone_shell._active_route, " reactor_visible=", game.reactor_scene.visible, " equipment_visible=", game.equipment_scene.visible)
+	await shot("integration-ship-return-1440x900.png")
+	quit()

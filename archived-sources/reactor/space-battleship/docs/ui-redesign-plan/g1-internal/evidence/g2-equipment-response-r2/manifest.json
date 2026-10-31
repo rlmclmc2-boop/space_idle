@@ -1,0 +1,4402 @@
+{
+  "source_commit": "efc6fde422cea7a90698f536d39ffcaf9aafd1b1",
+  "viewport": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "records": [
+    {
+      "file": "scene-single-current-quote.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "exact initial request identity, canonical wallet128600000, material240",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "128.6 M",
+          "ironCanonical": "128600000",
+          "material": "240"
+        },
+        "materials": null,
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "12.4 K",
+          "next": "13.1 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "45f825259cb670c08c88f0fcda19fb925ab5fbe91a5cc282999ec7dd672649c6"
+    },
+    {
+      "file": "scene-single-first-receipt.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "actual count1/spent420000 accepted with new slot/wallet",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 296,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          25,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "13.1 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "128180000",
+          "iron": "128.18 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 24,
+          "after": 25,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "13.1 K",
+          "next": "13.8 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "931ba973876eb8feac07f3c8757be03be8798f41518ed2f2770d014c4fc4d99e"
+    },
+    {
+      "file": "scene-single-second-receipt.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "next exact response, new receipt count1, no replay",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 296,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          26,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "13.8 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "127760000",
+          "iron": "127.76 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 25,
+          "after": 26,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "13.8 K",
+          "next": "14.5 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "2ff719e756c6b47dd99039de4bbcd307d7b821f8c565fc4e9d5f83cdbae0cb78"
+    },
+    {
+      "file": "scene-single-next-pending.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "after last finite response, no more grade or wallet mutation",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 296,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          27,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "14.5 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "127340000",
+          "iron": "127.34 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 26,
+          "after": 27,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "14.5 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "48054316f3cdcc9ba009dfbf4f629a44f8ac30d7d07b8102d39a3c4bfa3e5fca"
+    },
+    {
+      "file": "scene-single-evolution-material.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "Lv19→20 actual receipt spends iron420000 plus material10, shared240→230",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 378,
+        "inner": null
+      },
+      "state": {
+        "slot": 1,
+        "levels": [
+          24,
+          20,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "13.8 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "1": 0
+        },
+        "wallet": {
+          "ironCanonical": "127760000",
+          "iron": "127.76 M",
+          "material": "230"
+        },
+        "materials": {
+          "degenerate_matter": "230",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:1",
+          "slot_label": "武器2",
+          "count": 1,
+          "before": 19,
+          "after": 20,
+          "spent_display": "0.42 M 铁 + 简并物质10",
+          "spent": {
+            "1": "420000",
+            "degenerate_matter": "10"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:1",
+              "count": 1,
+              "spent": {
+                "1": "420000",
+                "degenerate_matter": "10"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000",
+            "degenerate_matter": "10"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "13.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "68a5656a0b07def355267f40a1b2ff5fdec392a1374d2402213a0877fb4c39fa"
+    },
+    {
+      "file": "scene-single-ten-first.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "known exact request count10 and full wallet122800000",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 296,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          34,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "24.2 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "122800000",
+          "iron": "122.8 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 10,
+          "before": 24,
+          "after": 34,
+          "spent_display": "5.80 M 铁",
+          "spent": {
+            "1": "5800000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 10,
+              "spent": {
+                "1": "5800000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "5800000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买10级",
+          "current": "24.2 K",
+          "next": "36.0 K",
+          "price": "5.80 M 铁 + 简并物质20",
+          "costs": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          },
+          "count": 10,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "4bfce42f203bf93929df26a773a962900e0d0acd19a8455524c03e306533dc6a"
+    },
+    {
+      "file": "scene-single-ten-second.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "known second count10 with material20, all actual acceptance fields",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 296,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          44,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "36.0 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "117000000",
+          "iron": "117.0 M",
+          "material": "220"
+        },
+        "materials": {
+          "degenerate_matter": "220",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 10,
+          "before": 34,
+          "after": 44,
+          "spent_display": "5.80 M 铁 + 简并物质20",
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 10,
+              "spent": {
+                "1": "5800000",
+                "degenerate_matter": "20"
+              }
+            }
+          ],
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买10级",
+          "current": "36.0 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "b082d71006588a7cdd90b60d16d0b3f0af72cccc3a3ab2071214474931aaabea"
+    },
+    {
+      "file": "scene-high-level-candidate-pending.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "Lv44 candidate has no complete response; old constants cannot apply",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 296,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          44,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "36.0 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "117000000",
+          "iron": "117.0 M",
+          "material": "220"
+        },
+        "materials": {
+          "degenerate_matter": "220",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 10,
+          "before": 34,
+          "after": 44,
+          "spent_display": "5.80 M 铁 + 简并物质20",
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 10,
+              "spent": {
+                "1": "5800000",
+                "degenerate_matter": "20"
+              }
+            }
+          ],
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "更换为舰炮",
+          "current": "36.0 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "cba111e5d71f58d441b211a4065b253f36fc49406a1d1bdd8865075b05f1ecc5"
+    },
+    {
+      "file": "scene-single-max-actual.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "MAX response actual4, canonical spend2100000 and wallet126500000",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 378,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          28,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "16.3 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "126500000",
+          "iron": "126.5 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 4,
+          "before": 24,
+          "after": 28,
+          "spent_display": "2.10 M 铁",
+          "spent": {
+            "1": "2100000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 4,
+              "spent": {
+                "1": "2100000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "2100000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "本槽MAX",
+          "current": "16.3 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "4578d6aac7bb3083228ec2703608cd92a44c3151fc08d64f784e6ca8cc7f56c8"
+    },
+    {
+      "file": "scene-single-insufficient.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "explicit budget200000; whole requested count rejected without fake acceptance",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "ironCanonical": "200000",
+          "iron": "0.20 M",
+          "material": "240"
+        },
+        "materials": null,
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "12.4 K",
+          "next": "13.1 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false,
+          "reason": "铁不足，完整请求未成交，当前状态保持。",
+          "known": true
+        }
+      },
+      "sha256": "91b41e3b0b01933cd07f1471ff5b46052ad401559013c1a083bca087da392596"
+    },
+    {
+      "file": "scene-free-switch-poor-wallet.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "free refit still allowed with low wallet, paid level and budget unchanged",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 433,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "cannon",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "15.8 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 10
+        },
+        "wallet": {
+          "ironCanonical": "200000",
+          "iron": "0.20 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "switch",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 0,
+          "before": 24,
+          "after": 24,
+          "spent_display": "0",
+          "spent": {}
+        },
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "15.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "6bd799ff0e35f530e8ea1097ab5cbfef8339ce7c4fdaa433a083dcb74a04e391"
+    },
+    {
+      "file": "scene-switch-cooldown-read.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "matching same paid-level comparison remains read-only; switch admission rejects10sec",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "cannon",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "15.8 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 10
+        },
+        "wallet": {
+          "ironCanonical": "128600000",
+          "iron": "128.6 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "switch",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 0,
+          "before": 24,
+          "after": 24,
+          "spent_display": "0",
+          "spent": {}
+        },
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "更换为脉冲炮",
+          "current": "15.8 K",
+          "next": "12.4 K",
+          "price": "0 · 更换不购级",
+          "costs": {},
+          "count": 0,
+          "action": "equip-apply",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "本槽换装冷却剩余10游戏秒，购级仍可操作。",
+          "known": true
+        }
+      },
+      "sha256": "958e43d9352c2673f7669db7e9d5bd30e4a45c62c2332e3a70a95102b35de124"
+    },
+    {
+      "file": "scene-switch-cooldown-upgrade.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "count1 accepted while switch cooldown remains10; complete canonical wallet receipt",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 433,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          25,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "cannon",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "16.5 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 10
+        },
+        "wallet": {
+          "ironCanonical": "128180000",
+          "iron": "128.18 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 24,
+          "after": 25,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "16.5 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "b0d2fa37882cec9c0a9bc233f94a4a5219bf6f61738dc78354a9b1cda57ceac8"
+    },
+    {
+      "file": "scene-batch-max-nochange-bound.png",
+      "family": "scene",
+      "route": "equipment/batch",
+      "response_source": "NoChange explicitly belongs to MAX request/context",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 859,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "max",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次已结束；逐槽实际数量与支出见下方。",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "2cdfba8e6b493f9a98722541efc600ad85d19374b5d0e2b4d98c8b2431ec525f"
+    },
+    {
+      "file": "scene-batch-one-no-matching-response.png",
+      "family": "scene",
+      "route": "equipment/batch",
+      "response_source": "switch+1: MAX NoChange remains history, no new result inferred",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 19,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "dce89d3d9855f37ed2c3114698f6f1dea00e95ee027aa99746186ebf9c4dcc87"
+    },
+    {
+      "file": "scene-batch-ten-no-matching-response.png",
+      "family": "scene",
+      "route": "equipment/batch",
+      "response_source": "switch+10 also awaits an applicable response; no assertion of what owner would return",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 19,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "ten",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "43b19091a23dd98e7044b4b5452f6535084fee3d8310f02a215bcc8ed25ae4b2"
+    },
+    {
+      "file": "scene-batch39-weapon-switch-pending.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "review counterexample: weapon paid39 cannot reuse initial candidate constants",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 156,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "ten",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "更换为舰炮",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "655aedaba4c88a3a6c5f27c1c5da249752141a944c01884c33e561b2f6def515"
+    },
+    {
+      "file": "scene-batch-defence-switch-pending.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "full updated assembly/budget identity also rejects stale defence constants",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 156,
+        "inner": null
+      },
+      "state": {
+        "slot": 3,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "ten",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "更换为装甲",
+          "current": "87.2 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "288dce10b28101d5afbfc5e67f6c46cc53699a905b98adb359eb6f5c5f7ec751"
+    },
+    {
+      "file": "scene-public-input-change-invalidates.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "explicit reactor input response changes scope; no stale static comparison",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": null
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "128.6 M",
+          "ironCanonical": "128600000",
+          "material": "240"
+        },
+        "materials": null,
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "更换为舰炮",
+          "current": "12.4 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "285ece590b93e44627573424e5c03455c79079cdf211ebf41cdcfbfe2525019c"
+    },
+    {
+      "file": "scene-new-slot-complete-upgrade.png",
+      "family": "scene",
+      "route": "equipment",
+      "response_source": "extra weapon:3 free install then exact one-grade65 receipt/canonical wallet; no assumed increment",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 433,
+        "inner": null
+      },
+      "state": {
+        "slot": 5,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          2,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "cannon",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "65",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "5": 10
+        },
+        "wallet": {
+          "ironCanonical": "128599935",
+          "iron": "128.6 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:3",
+          "slot_label": "武器4",
+          "count": 1,
+          "before": 1,
+          "after": 2,
+          "spent_display": "65 铁",
+          "spent": {
+            "1": "65"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:3",
+              "count": 1,
+              "spent": {
+                "1": "65"
+              }
+            }
+          ],
+          "spent": {
+            "1": "65"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "65",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "b0ed5697d325fd626a360a521691a6746af45cf2e37017239165f83d0cc6c0b7"
+    },
+    {
+      "file": "work-single-current-quote.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "exact initial request identity, canonical wallet128600000, material240",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 0
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "128.6 M",
+          "ironCanonical": "128600000",
+          "material": "240"
+        },
+        "materials": null,
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "12.4 K",
+          "next": "13.1 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "ff81e34ad15464cd6d6207b9c49337588fbfd3d23eb8087679fca73c6ca34a8c"
+    },
+    {
+      "file": "work-single-first-receipt.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "actual count1/spent420000 accepted with new slot/wallet",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 375
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          25,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "13.1 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "128180000",
+          "iron": "128.18 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 24,
+          "after": 25,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "13.1 K",
+          "next": "13.8 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "f8876b5f2ba3ae62c559ac761b5645283b37e667cfe428c4f004f7c22e0a46fe"
+    },
+    {
+      "file": "work-single-second-receipt.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "next exact response, new receipt count1, no replay",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 375
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          26,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "13.8 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "127760000",
+          "iron": "127.76 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 25,
+          "after": 26,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "13.8 K",
+          "next": "14.5 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "bf8e030883ce3b6c63608e87db5308c900231e0e527a2ccf17b229e1969fe9d7"
+    },
+    {
+      "file": "work-single-next-pending.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "after last finite response, no more grade or wallet mutation",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 375
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          27,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "14.5 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "127340000",
+          "iron": "127.34 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 26,
+          "after": 27,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "14.5 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "bc6befc318ed293a38010c57a24d8bfa2beefe9a5d9c45702cff8938ff9aa3b2"
+    },
+    {
+      "file": "work-single-evolution-material.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "Lv19→20 actual receipt spends iron420000 plus material10, shared240→230",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 457
+        }
+      },
+      "state": {
+        "slot": 1,
+        "levels": [
+          24,
+          20,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "13.8 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "1": 0
+        },
+        "wallet": {
+          "ironCanonical": "127760000",
+          "iron": "127.76 M",
+          "material": "230"
+        },
+        "materials": {
+          "degenerate_matter": "230",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:1",
+          "slot_label": "武器2",
+          "count": 1,
+          "before": 19,
+          "after": 20,
+          "spent_display": "0.42 M 铁 + 简并物质10",
+          "spent": {
+            "1": "420000",
+            "degenerate_matter": "10"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:1",
+              "count": 1,
+              "spent": {
+                "1": "420000",
+                "degenerate_matter": "10"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000",
+            "degenerate_matter": "10"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "13.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "69fba18aa683b1920d1f629eb8e184733e08adfb0b05f4c1250efba3c14ddb1d"
+    },
+    {
+      "file": "work-single-ten-first.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "known exact request count10 and full wallet122800000",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 272
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          34,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "24.2 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "122800000",
+          "iron": "122.8 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 10,
+          "before": 24,
+          "after": 34,
+          "spent_display": "5.80 M 铁",
+          "spent": {
+            "1": "5800000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 10,
+              "spent": {
+                "1": "5800000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "5800000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买10级",
+          "current": "24.2 K",
+          "next": "36.0 K",
+          "price": "5.80 M 铁 + 简并物质20",
+          "costs": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          },
+          "count": 10,
+          "action": "equip-buy",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "",
+          "known": true
+        }
+      },
+      "sha256": "323482110638834fdd7c2587b9896504d099e916168e957f6b33375caeeb7adb"
+    },
+    {
+      "file": "work-single-ten-second.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "known second count10 with material20, all actual acceptance fields",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 353
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          44,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "36.0 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "117000000",
+          "iron": "117.0 M",
+          "material": "220"
+        },
+        "materials": {
+          "degenerate_matter": "220",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 10,
+          "before": 34,
+          "after": 44,
+          "spent_display": "5.80 M 铁 + 简并物质20",
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 10,
+              "spent": {
+                "1": "5800000",
+                "degenerate_matter": "20"
+              }
+            }
+          ],
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买10级",
+          "current": "36.0 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "40c60954ae65604fd771d3335ae7e9abe3f0d8b4dbdb852c9a10bb2beb9d21ee"
+    },
+    {
+      "file": "work-high-level-candidate-pending.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "Lv44 candidate has no complete response; old constants cannot apply",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 353
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          44,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "36.0 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "117000000",
+          "iron": "117.0 M",
+          "material": "220"
+        },
+        "materials": {
+          "degenerate_matter": "220",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 10,
+          "before": 34,
+          "after": 44,
+          "spent_display": "5.80 M 铁 + 简并物质20",
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 10,
+              "spent": {
+                "1": "5800000",
+                "degenerate_matter": "20"
+              }
+            }
+          ],
+          "spent": {
+            "1": "5800000",
+            "degenerate_matter": "20"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "更换为舰炮",
+          "current": "36.0 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "4fbd8bc08c84999c5e7c629ba48321ca7c39c76fbafc7dc76edc0c974d7401be"
+    },
+    {
+      "file": "work-single-max-actual.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "MAX response actual4, canonical spend2100000 and wallet126500000",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 353
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          28,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "16.3 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 0
+        },
+        "wallet": {
+          "ironCanonical": "126500000",
+          "iron": "126.5 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 4,
+          "before": 24,
+          "after": 28,
+          "spent_display": "2.10 M 铁",
+          "spent": {
+            "1": "2100000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 4,
+              "spent": {
+                "1": "2100000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "2100000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "本槽MAX",
+          "current": "16.3 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "6b5eb2600a9347832d29e7696ab25c2361a28a83fb7e90acf198538b92106cb5"
+    },
+    {
+      "file": "work-single-insufficient.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "explicit budget200000; whole requested count rejected without fake acceptance",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 0
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "ironCanonical": "200000",
+          "iron": "0.20 M",
+          "material": "240"
+        },
+        "materials": null,
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "购买1级",
+          "current": "12.4 K",
+          "next": "13.1 K",
+          "price": "0.42 M 铁",
+          "costs": {
+            "1": "420000"
+          },
+          "count": 1,
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false,
+          "reason": "铁不足，完整请求未成交，当前状态保持。",
+          "known": true
+        }
+      },
+      "sha256": "d7acb3b7e459b8e1450209de71d25f73c5bcf0d5beb10210ae31241a61b020ed"
+    },
+    {
+      "file": "work-free-switch-poor-wallet.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "free refit still allowed with low wallet, paid level and budget unchanged",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 512
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "cannon",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "15.8 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 10
+        },
+        "wallet": {
+          "ironCanonical": "200000",
+          "iron": "0.20 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "switch",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 0,
+          "before": 24,
+          "after": 24,
+          "spent_display": "0",
+          "spent": {}
+        },
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "15.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "94255d720de46344df49d9bc1c256e992f2032ee3fd2c42674e30361760aafa0"
+    },
+    {
+      "file": "work-switch-cooldown-read.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "matching same paid-level comparison remains read-only; switch admission rejects10sec",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 0
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "cannon",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "15.8 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 10
+        },
+        "wallet": {
+          "ironCanonical": "128600000",
+          "iron": "128.6 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "switch",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 0,
+          "before": 24,
+          "after": 24,
+          "spent_display": "0",
+          "spent": {}
+        },
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "label": "更换为脉冲炮",
+          "current": "15.8 K",
+          "next": "12.4 K",
+          "price": "0 · 更换不购级",
+          "costs": {},
+          "count": 0,
+          "action": "equip-apply",
+          "canPay": true,
+          "canSwitch": false,
+          "reason": "本槽换装冷却剩余10游戏秒，购级仍可操作。",
+          "known": true
+        }
+      },
+      "sha256": "061c38ab64a09b2c882b91dd924c64ed20e7066cf342d03c7bf568300e49a714"
+    },
+    {
+      "file": "work-switch-cooldown-upgrade.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "count1 accepted while switch cooldown remains10; complete canonical wallet receipt",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 409
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          25,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "cannon",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "16.5 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "0": 10
+        },
+        "wallet": {
+          "ironCanonical": "128180000",
+          "iron": "128.18 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:0",
+          "slot_label": "武器1",
+          "count": 1,
+          "before": 24,
+          "after": 25,
+          "spent_display": "0.42 M 铁",
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:0",
+              "count": 1,
+              "spent": {
+                "1": "420000"
+              }
+            }
+          ],
+          "spent": {
+            "1": "420000"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "16.5 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "d7c912d0945aa8df84f71c8551062be577d262fe60dbb88c64b560201602ba12"
+    },
+    {
+      "file": "work-batch-max-nochange-bound.png",
+      "family": "work",
+      "route": "equipment/batch",
+      "response_source": "NoChange explicitly belongs to MAX request/context",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 899
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "max",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次已结束；逐槽实际数量与支出见下方。",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "c6452992c57ea1e9c712544e8b0a0e928d004657cccff967765fe202938e2111"
+    },
+    {
+      "file": "work-batch-one-no-matching-response.png",
+      "family": "work",
+      "route": "equipment/batch",
+      "response_source": "switch+1: MAX NoChange remains history, no new result inferred",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 389
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "2a11581e4fd0b1a873e2137e91a324b74f347015e21b1cd1f0592b6d53b0f5a8"
+    },
+    {
+      "file": "work-batch-ten-no-matching-response.png",
+      "family": "work",
+      "route": "equipment/batch",
+      "response_source": "switch+10 also awaits an applicable response; no assertion of what owner would return",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 389
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "ten",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "15a921f640341a30dd6cde07eb7b5bd1ed35673d6fc204731e587a0ab6d0939c"
+    },
+    {
+      "file": "work-batch39-weapon-switch-pending.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "review counterexample: weapon paid39 cannot reuse initial candidate constants",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 235
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "ten",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "更换为舰炮",
+          "current": "51.8 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "d405e1e687c8eb226b9b9b676c47dc9616a1e1e1b992f21251cf409ce468fcde"
+    },
+    {
+      "file": "work-batch-defence-switch-pending.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "full updated assembly/budget identity also rejects stale defence constants",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 235
+        }
+      },
+      "state": {
+        "slot": 3,
+        "levels": [
+          39,
+          39,
+          19,
+          19,
+          19,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "51.8 K",
+          "51.8 K",
+          "13.1 K",
+          "87.2 K",
+          "87.2 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "99.9 M",
+          "ironCanonical": "99900000",
+          "material": "0"
+        },
+        "materials": {
+          "degenerate_matter": "0",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "ten",
+        "batchReceipt": {
+          "signature": "Cruiser|39,39,19,19,19|laser,missile,longLaser,shield,armour",
+          "budgetBefore": {
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "ok": false,
+          "committed": false,
+          "rows": [
+            {
+              "slot": 0,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 1,
+              "count": 0,
+              "before": 39,
+              "after": 39,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 2,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 3,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            },
+            {
+              "slot": 4,
+              "count": 0,
+              "before": 19,
+              "after": 19,
+              "spent": "0",
+              "costs": {},
+              "reason": "NoChange",
+              "description": "本槽本次可购0级"
+            }
+          ],
+          "total": "0",
+          "totalCosts": {},
+          "wallet": {
+            "iron": "99.9 M",
+            "ironCanonical": "99900000",
+            "material": "0"
+          },
+          "reason": "NoChange",
+          "message": "本次没有可成交槽位，余额和等级保持。",
+          "mode": "max"
+        },
+        "feedback": "本次尚未取得新的所有者响应，当前等级和余额保持；上次成交仍可查。",
+        "quote": {
+          "known": false,
+          "label": "更换为装甲",
+          "current": "87.2 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "19ac8a02e5e3fde22414bec1186bcc4cd9d3666b4727b3fe7870250c96de22f4"
+    },
+    {
+      "file": "work-public-input-change-invalidates.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "explicit reactor input response changes scope; no stale static comparison",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 0
+        }
+      },
+      "state": {
+        "slot": 0,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          1,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "0",
+          "0",
+          "0"
+        ],
+        "cooldowns": {},
+        "wallet": {
+          "iron": "128.6 M",
+          "ironCanonical": "128600000",
+          "material": "240"
+        },
+        "materials": null,
+        "singleReceipt": null,
+        "purchase_receipt": null,
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "更换为舰炮",
+          "current": "12.4 K",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-apply",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "1dd3bff9ba0e660ce9ece3ee37aaeceb87bb97f53e97725d003aba54ef3ef3aa"
+    },
+    {
+      "file": "work-new-slot-complete-upgrade.png",
+      "family": "work",
+      "route": "equipment",
+      "response_source": "extra weapon:3 free install then exact one-grade65 receipt/canonical wallet; no assumed increment",
+      "layout": {
+        "width": 782,
+        "scrollWidth": 782,
+        "scroll": 0,
+        "inner": {
+          "width": 744,
+          "scrollWidth": 744,
+          "scroll": 518
+        }
+      },
+      "state": {
+        "slot": 5,
+        "levels": [
+          24,
+          18,
+          18,
+          18,
+          18,
+          2,
+          1,
+          1
+        ],
+        "keys": [
+          "laser",
+          "missile",
+          "longLaser",
+          "shield",
+          "armour",
+          "cannon",
+          "",
+          ""
+        ],
+        "primary": [
+          "12.4 K",
+          "12.4 K",
+          "12.4 K",
+          "84.0 K",
+          "84.0 K",
+          "65",
+          "0",
+          "0"
+        ],
+        "cooldowns": {
+          "5": 10
+        },
+        "wallet": {
+          "ironCanonical": "128599935",
+          "iron": "128.6 M",
+          "material": "240"
+        },
+        "materials": {
+          "degenerate_matter": "240",
+          "glueball": "60",
+          "antiproton": "0",
+          "zero_point_energy": "0"
+        },
+        "singleReceipt": {
+          "kind": "upgrade",
+          "slot_id": "weapon:3",
+          "slot_label": "武器4",
+          "count": 1,
+          "before": 1,
+          "after": 2,
+          "spent_display": "65 铁",
+          "spent": {
+            "1": "65"
+          }
+        },
+        "purchase_receipt": {
+          "commit_status": "accepted",
+          "purchases": [
+            {
+              "slot_id": "weapon:3",
+              "count": 1,
+              "spent": {
+                "1": "65"
+              }
+            }
+          ],
+          "spent": {
+            "1": "65"
+          }
+        },
+        "batchMode": "one",
+        "batchReceipt": null,
+        "feedback": "",
+        "quote": {
+          "known": false,
+          "label": "购买1级",
+          "current": "65",
+          "next": "待读取匹配响应",
+          "price": "待响应",
+          "reason": "当前比较与报价待刷新，实际装配保持。",
+          "action": "equip-buy",
+          "canPay": false,
+          "canSwitch": false
+        }
+      },
+      "sha256": "e810cd46ddff4045bdc44cf8e3c1170c3c764b5a9819f61617c3f9c9936bf240"
+    }
+  ],
+  "kind": "M2 complete finite-response binding and single acceptance regression evidence; not actual Excel/native gameplay numbers",
+  "source_files": {
+    "index.html": "a9bd3e586dc2b4ed9dcd36acafe4f696a8df725093188842b16d03c2b4f99750",
+    "style.css": "9b5f9c1368c9e437599b8f9beabdd210517bfa2e9d1fc0d07f64b6c259c8e9d0",
+    "app.js": "c591f6118b2e0cfd1eb4e500e02b89371d3b9134e3e5b9b6c49a38e5c4d84620",
+    "battle-budget-models.js": "dde091cf2b82c9619bb6a08f36de29c319a0f5a0ae332473939f3ad1ccf8beaa",
+    "battle-source-data.js": "3e3a900d958c77e57e198163c570b5d49648c7b0160c05212a34b38d886dc30d",
+    "battle-workbench.js": "5cbffbad80a2432aa1b7017369bb73ef9fb390825af73860e5069f7c9d87b6f6",
+    "budget-response-fixtures.js": "360acacde8d070ec9de10cef512e6d2f5cb937d5ca69fbf3dab98b617a2239c7",
+    "colony-models.js": "6afb376d22d86ef04e7b535e39c65f8ac0529171c8d202991795d95e6d4189a3",
+    "enhancement-models.js": "115a1e006fb29bd13d46f1a39889cc783feb248df39a0a37bd5af24f6c0883bc",
+    "equipment-response-models.js": "791dae6d4b452512fe6580d555e1f3ee7ee097ebc5c0d22381c297554d1a85be",
+    "equipment-workbench.js": "68e6be7a6cf19c1026a1802e64dfdd3a6bbf31ccd5c66ebfc897162b2deec430",
+    "filter-workbench.js": "89da132a0df2afe62f09bdf868666f9b5c67467f5c06932fe54c9b2c9ea1532a",
+    "forge-response-models.js": "0df92253ef16b7b396aa22a3869935be29c1176377a46db9d59e9e2077f863e3",
+    "forge-workbench.js": "6a79eb55baf624b354099589576a2f500794499f5a76f247967e5f014ee801a4",
+    "hyperspace-task-workbench.js": "09d09221d2587afd2d8285cf4f5cb702c9a5e788172e2421bff0a20aaf55fb96",
+    "hyperspace-workshop.js": "95bb47c41783d6bd6dec129ba27e504dd6209ec78cc8fafb964b0440001c7b62",
+    "maintenance-models.js": "26caea0cd3b10591bbc211cc3566a3aef773244da14435bbb4d5eccbbbabde9b",
+    "scene-models.js": "3d491e525c8a624506dc2b3950fbafcd4f6aff3cda8099627bff6ece7e6154fa"
+  },
+  "response_fixture_checks": {
+    "accepted_single_responses": 88,
+    "wallet_and_material_difference_matches_declared_spent": true,
+    "runtime_amount_calculation_in_consumer": false
+  },
+  "limitations": [
+    "Explicit finite quote/accept responses; not real GameSession/native execution or current Excel quotation proof",
+    "Other batch modes may legitimately return their own NoChange; only supplied MAX NoChange is applied",
+    "Unknown identity/input/budget/mode keeps actual data and awaits response",
+    "Candidate backend ab6e887 is implemented and reviewed per root relay, not merged into main",
+    "No P3 parameter approval, real drone muzzle installation, overall quality or G2/G4/G9 acceptance"
+  ]
+}

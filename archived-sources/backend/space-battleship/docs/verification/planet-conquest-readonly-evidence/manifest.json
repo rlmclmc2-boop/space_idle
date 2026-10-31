@@ -1,0 +1,93 @@
+{
+  "branch": "feat/amount-safe-previews",
+  "implementation_base": "1865da2f03912fdc7b961fadf0c91fc378edd608",
+  "status": "implementation pending original dual review; main unchanged",
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "logs": {
+    "planet-conquest-engine.txt": {
+      "sha256": "c4c670c00edc70d73320d54fa6dab3e7ee7c2d74d4bb38f32f1e0406ed120868",
+      "bytes": 110,
+      "exit_code": 0
+    },
+    "planet-conquest-session-engine.txt": {
+      "sha256": "bf5af7283817e2fed5ffa5ead52e13cfb95a7f6b02ce0d53d76b95e2df7c8c31",
+      "bytes": 119,
+      "exit_code": 0
+    },
+    "planet-conquest-main-check.txt": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73,
+      "exit_code": 0
+    }
+  },
+  "assertions": {
+    "owner": 69,
+    "production_session": 226
+  },
+  "baseline": {
+    "sha256": "ec3ecc23eddc59e7192a3484b0d976a2f1b6ef2157c3ebae1bdd1efc673c929a",
+    "bytes": 23303,
+    "git_blob": "5f6ffa34591a21eef72c160a935db6685ee930ae"
+  },
+  "canonical_lf_sources": {
+    "src/systems/planet.gd": "91a0eb5a5271d692f70a1be2fca72ff8d0ce6025d70e8da0583834258daa99c2",
+    "src/game_session.gd": "de56e2010aa1433c263b79c235b190aebfcdcb332dae231d09b5546ba44649ac",
+    "src/main.gd": "ba9d563549853e402caf86a04cc200beb64d86bbb9257e75a876bcfa2dce270e",
+    "foundation/tests/_planet_conquest_probe.gd": "592b6be545d921e887da336475c14a63caf7778bb21aa369a85300c67c48ea8d",
+    "foundation/tests/_planet_conquest_session_probe.gd": "13873265ee99eae70bdc30ef0c7a4148fff6b21a1340e1e7391566251001f850"
+  },
+  "changed_existing_planet_methods": [
+    "accept_reforge",
+    "restore_state",
+    "_contributions"
+  ],
+  "unchanged_planet_methods": {
+    "save_state": "9ea23e8e32af9ce0104e2cd01632e15c2a1f9f9d95bf5fe91c8944762079ed85",
+    "prepare_reforge": "531d1bf2655f6ea278d16d18dba3937ac036b0bfc20e38134c4b1a178a2fb294",
+    "_init": "fca35c5041a148f685e10a484e1a938533cd68838ca0b2d87e092ff6dd175ced",
+    "refresh_availability": "82f76d655e17e0b3c46b49967beb62f31d1e2beaaa300febd59791777bd98545",
+    "publish_availability": "d0bf97777691b52b13ee89e75eaa7f63bcbcf9a276aa10cc42c27a405c8e14f4",
+    "_refresh_available": "a8a5e45a8833aafc3479679bd02d9da34e99f31e137dc87dd9dc105ce371b3af",
+    "is_available": "10085d109464f52acbdc7ffa179adf6e5bdc2be04a46ab1e32cab8be08e11a7f",
+    "assignment_capacity": "0b7fdcd62b0362b07a9bec6d233434fa08cc5d5b061dc2bd62889260177bf0d7",
+    "set_explorer": "2dee1ee8181de1aa67007af60a82d2e55d93a636dca722b1d61b6f6b0b926b6e",
+    "cancel": "11c71ab36939356c4a2518eb2b45724d1d33cc6508e118318b427037c61b1755",
+    "publish_status": "835d200b10e156d7344a104cbaf09b1e951c6db5aa47eca4a02ea6f977172b6d",
+    "set_automatic": "ddf3e3b2699db416324ba2990d14dded51008b279c47c5bbbbc334d332b3032f",
+    "_claim_admission": "e1076186177111ef4dd9868cdddb4523026ddff44f8cbfade202c3c844c66e1d",
+    "claim_build": "4f100cba9fd0a00c8d70742fe701933411c1d91a6c2674cbf09bf42e2834f149",
+    "accept_prepared_claim": "904ed999635ab48f9a4ab1399ac82bdf9c9f46f0df134bfa662002060d3df40a",
+    "publish_claim": "d0d014f58f46808bee6344563ce32a7045dd8bcbcb5368ee662ecb2efe8f2288",
+    "contributions": "e309c57dfc0e7a4193f89c232ca28e0ad9c34cab8cc148b806291591df9c01de",
+    "_published_contributions": "f33cd8b53250c1c0bfedbc0aa27db8a0cd06395398dcfc9b079b12084910fed8",
+    "advance": "7fac0dfbfbb6eb1bf5c6a7f8fee1253d661eb5124ff63a8fb88d949bc945f2dc",
+    "publish_advance": "1d36572124fdde5b40a35ab301fd5c2fde8d91da4f0bcc97934737488a503288",
+    "visual_snapshot": "1ab0fd04125a24e75ef1c251a1ea726022eabe1d315cfc62946dca0c6408ad81",
+    "facility_facts": "a53935561ced56b4ab3f911d9ad4ebed6b4f32fa75a2d9c903c22836246b99b8",
+    "planet_options": "11db59ee85518406c474a950160d7b3da827038db3a13f0b4afbb462a69912ee",
+    "assignment_options": "2df8ed9f76add5c57da193df9834b752309aed5e37fb9ac452c9639989fbb39e",
+    "building_options": "12cd70360d20a36047cc7c4a4f46bd10bcbb2b3fa0f12140880f47b671a86681",
+    "status_rows": "1a043f7606dff62e7bd537e2f562ff87569b310e06ea608e5b586dfaf73a1824",
+    "_applicable": "8640369a809469212313a36348ce144d9c7dbc04766037194a396ba9ccf2d49a",
+    "_initial": "14af6efac7f9fced57209229a47bc56175bafb7bf347ee697fe18905e9a4e8fa",
+    "_duration": "29934a000b4e136ac939575949c1e0cafee9fa7cde26c0c4c35f58042395d050",
+    "_set_explorer": "ebda0c3337aa7e89f3677eb8cff7a7ccada88a79009b8d789bfe4d71e26d6663",
+    "_start": "7e581ea482541b9646ab0d44b19ff6d364440d43e32d32c12a6e2a1f97b51461",
+    "_cancel": "38aa7479ab4cda536715b25da5bf2f0795f653879ef40e0a3ba85461eda47487",
+    "_set_automatic": "4e18ab09db572ba4ce447bf0fbef9e5673b08997814bab63e9e7676309a470c6",
+    "_claim_build": "659a6f32172cc867023d596e255f8ab860e9a6200bb3f692d8343a15f5940554",
+    "_advance": "321d3ff2fcedd957ec979660bfad4a777031a929ea259ed187db81dc5061c929",
+    "_buff": "38a1e100848be3261d9ecae5b3c1576a9a109c77a6c217e3bcf400ef5da62c55",
+    "_facility_source_factor": "92cc0808366e4fc5ab4d35b0485dc48e843803905baf173d7a9d1d6f46a936ab",
+    "_experience_reward": "1ed20a70c0e3216dda558134f53c202c715c8e3b1a067a675ed726d1cbf1c6cb"
+  },
+  "configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
+  "preserved_m10_sha256": "208cb3d6d24dd214b642f8dda470a3326152856bd608658d335ca85f93966158",
+  "limits": [
+    "no consumer UI execution or rewiring",
+    "no complete reforge transaction",
+    "no full game, performance or long-term save validation"
+  ],
+  "method_hash_semantics": "canonical LF, comment-only lines excluded, trailing whitespace stripped"
+}

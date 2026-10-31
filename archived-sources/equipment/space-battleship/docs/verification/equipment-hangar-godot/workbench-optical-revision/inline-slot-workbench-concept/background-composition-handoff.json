@@ -1,0 +1,31 @@
+{
+  "status": "42–62 actual module-local single-carrier candidate now authored; whole-host unity is not self-approved",
+  "shared_source": "b17db8d2fef26009515df75b5759b6b1ac7ca3fb",
+  "consumed": "BridgeTheme public control roles/atlas luma treatment, panel9slice18, header crop; retain approved61c9R3font roles",
+  "module": [
+    0,
+    85,
+    808,
+    815
+  ],
+  "backgrounds": [
+    "coherence-assets/hangar-short-carrier.png",
+    "coherence-assets/hangar-tall-carrier.png"
+  ],
+  "actual_changes": [
+    "Old double console/background crop and opaque flat-table frames replaced in this static branch. Actual physical carrier bears exact text/control layers.",
+    "Left pad centered around displayed shipx173; ship/name/table share maintained room composition. Early plaque near ship, table starts398.",
+    "Middle/late table starts260; viewport510, row94, late range280; original actual mount geometry retained."
+  ],
+  "defence": "Information and operation only; no models, proxies, leaders or hull pointers.",
+  "art_transform": {
+    "x": -27,
+    "y": 85,
+    "width": 843.2,
+    "height": 815,
+    "preserveAspectRatio": "none",
+    "scope": "Background-only ImageGen illustration; not hull/weapon geometry"
+  },
+  "precise_remaining": "Overall/root independent review of42/43/44/45 plus B01 fixed host for composition, navy/ivory material hierarchy andx808 edge; decide whether these module-local backgrounds may be adopted. This candidate is available now, not waiting for an unspecified new material source.",
+  "runtime_limit": "No new runtime/shared assets edits or implementation; separate current header/right battle context is not a unified economic or gameplay capture."
+}

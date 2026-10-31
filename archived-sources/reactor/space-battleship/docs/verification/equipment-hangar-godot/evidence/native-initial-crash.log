@@ -1,0 +1,56 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+
+================================================================
+handle_crash: Program crashed with signal 11
+Engine version: Godot Engine v4.7.2.stable.official (ed1daf0bf001b61586d9930840f2f1394092c079)
+Dumping the backtrace. Please include this when reporting the bug on: https://github.com/godotengine/godot/issues
+Load address: 400000
+
+[1] 7f364ab08df0 (libc.so.6+3fdf0) - /lib/x86_64-linux-gnu/libc.so.6(+0x3fdf0) [0x7f364ab08df0]
+[2] 7f35e6c54be1 (libspace_native.so+24ebe1) - /tmp/space-idle-native472/bin/libspace_native.so(+0x24ebe1) [0x7f35e6c54be1]
+[3] 7f35e6c56e24 (libspace_native.so+250e24) - std::codecvt<char16_t, char, __mbstate_t>::do_length(__mbstate_t&, char const*, char const*, unsigned long) const
+[4] 7f35e6c126c1 (libspace_native.so+20c6c1) - std::ostream& std::ostream::_M_insert<double>(double)
+[5] 7f35e6ac3f0c (libspace_native.so+bdf0c) - /tmp/space-idle-native472/bin/libspace_native.so(+0xbdf0c) [0x7f35e6ac3f0c]
+[6] 7f35e6b00992 (libspace_native.so+fa992) - /tmp/space-idle-native472/bin/libspace_native.so(+0xfa992) [0x7f35e6b00992]
+[7] 7f35e6b30405 (libspace_native.so+12a405) - /tmp/space-idle-native472/bin/libspace_native.so(+0x12a405) [0x7f35e6b30405]
+[8] 7f35e6b305fa (libspace_native.so+12a5fa) - /tmp/space-idle-native472/bin/libspace_native.so(+0x12a5fa) [0x7f35e6b305fa]
+[9] 7f35e6b41e92 (libspace_native.so+13be92) - /tmp/space-idle-native472/bin/libspace_native.so(+0x13be92) [0x7f35e6b41e92]
+[10] 48383be (main+44383be) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x48383be]
+[11] 48f714b (main+44f714b) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x48f714b]
+[12] 46ada1b (main+42ada1b) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x46ada1b]
+[13] af6c08 (main+6f6c08) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0xaf6c08]
+[14] 937d6f (main+537d6f) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x937d6f]
+[15] 46ada1b (main+42ada1b) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x46ada1b]
+[16] af6c08 (main+6f6c08) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0xaf6c08]
+[17] 960066 (main+560066) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x960066]
+[18] 960533 (main+560533) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x960533]
+[19] 94cc83 (main+54cc83) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x94cc83]
+[20] b0d3b6 (main+70d3b6) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0xb0d3b6]
+[21] 9380de (main+5380de) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x9380de]
+[22] 48f70b5 (main+44f70b5) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x48f70b5]
+[23] 46ada1b (main+42ada1b) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x46ada1b]
+[24] af6c08 (main+6f6c08) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0xaf6c08]
+[25] 9380de (main+5380de) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x9380de]
+[26] 2acd656 (main+26cd656) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x2acd656]
+[27] 323590d (main+2e3590d) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x323590d]
+[28] 48bff41 (main+44bff41) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x48bff41]
+[29] 2a4d456 (main+264d456) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x2a4d456]
+[30] 2a4d404 (main+264d404) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x2a4d404]
+[31] 2a7e9cf (main+267e9cf) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x2a7e9cf]
+[32] 42c127 (main+2c127) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x42c127]
+[33] 7f364aaf2ca8 (libc.so.6+29ca8) - /lib/x86_64-linux-gnu/libc.so.6(+0x29ca8) [0x7f364aaf2ca8]
+[34] 7f364aaf2d65 (libc.so.6+29d65) - /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x85) [0x7f364aaf2d65]
+[35] 48a6da (main+8a6da) - /tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64() [0x48a6da]
+-- END OF C++ BACKTRACE --
+================================================================
+GDScript backtrace (most recent call first):
+    [0] _initial (res://src/systems/crew.gd:286)
+    [1] _init (res://src/systems/crew.gd:109)
+    [2] initialize (res://src/game_session.gd:116)
+    [3] _ready (res://src/main.gd:85)
+-- END OF GDSCRIPT BACKTRACE --
+================================================================

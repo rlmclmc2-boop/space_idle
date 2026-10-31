@@ -1,0 +1,2 @@
+# Captured stdout must retain its exact original bytes.
+*.txt -text

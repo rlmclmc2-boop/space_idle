@@ -1,0 +1,22 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 3.3 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+CAPTURE_CONTEXT pid=110518 host=051cbd0d module=6d0ee146 size=(1440, 900) speed=1 pickup_seen=true
+SEGMENT_START controlled=1 ids=["smelting"] loads=[["smelting", 1.0]] phase=19.1000000000152 game_time=163.783333333355
+SEGMENT_END controlled_1 wall_requested=3.0 game_delta=3.00000000000239 phase_delta=3.00000000000239 pending={  }
+SEGMENT_START controlled=2 ids=["weapons", "smelting"] loads=[["weapons", 0.5], ["smelting", 0.5]] phase=22.2500000000177 game_time=166.933333333358
+SEGMENT_END controlled_2 wall_requested=3.0 game_delta=3.00000000000239 phase_delta=3.00000000000239 pending={  }
+SEGMENT_START controlled=3 ids=["weapons", "defence", "smelting"] loads=[["weapons", 0.34], ["defence", 0.33], ["smelting", 0.33]] phase=25.4000000000202 game_time=170.08333333336
+SEGMENT_END controlled_3 wall_requested=3.0 game_delta=3.01666666666907 phase_delta=3.01666666666907 pending={  }
+FOUR_RESTORE {"allocated":"1e2","can_allocate":true,"capacity":"1e2","level":1,"load":1.0,"modules":[{"effective":"2.5e1","enabled":true,"factor":"1.13132639022019e0","free":"0e0","has_free":false,"id":"weapons","load":0.25,"manual":"2.5e1","ratio":0.25},{"effective":"2.5e1","enabled":true,"factor":"1.13132639022019e0","free":"0e0","has_free":false,"id":"defence","load":0.25,"manual":"2.5e1","ratio":0.25},{"effective":"2.5e1","enabled":true,"factor":"1.13132639022019e0","free":"0e0","has_free":false,"id":"smelting","load":0.25,"manual":"2.5e1","ratio":0.25},{"effective":"2.5e1","enabled":true,"factor":"1.13132639022019e0","free":"0e0","has_free":false,"id":"condensation","load":0.25,"manual":"2.5e1","ratio":0.25}],"ok":true,"reason":"","remaining":"0e0"} scene_ids=["weapons", "defence", "smelting", "condensation"] last={  }
+SEGMENT_START four_upgrade_before level=1 wallet=3.025e3 loads=[["weapons", 0.25], ["defence", 0.25], ["smelting", 0.25], ["condensation", 0.25]] phase=28.9666666666897
+SEGMENT_END four_upgrade_before wall_requested=1.6 game_delta=1.63333333333463 phase_delta=1.63333333333463 pending={  }
+SEGMENT_START purchase_result level=1->11 cost=5.5e2 wallet=2.475e3 notice=已升级 10 级 phase=30.7666666666912
+SEGMENT_END purchase_feedback wall_requested=1.6 game_delta=1.63333333333463 phase_delta=1.63333333333463 pending={  }
+SEGMENT_START low_positive load=0.00017343045439 label=<1% phase=32.5500000000259
+SEGMENT_END low_positive wall_requested=2.3 game_delta=2.31666666666851 phase_delta=2.31666666666851 pending={  }
+SEGMENT_START true_zero load=0.0 label=0% phase=34.8666666666944
+SEGMENT_END true_zero wall_requested=2.3 game_delta=2.31666666666851 phase_delta=0.0 pending={  }
+SEQUENCE_DONE pending={  } panel=false speed=1

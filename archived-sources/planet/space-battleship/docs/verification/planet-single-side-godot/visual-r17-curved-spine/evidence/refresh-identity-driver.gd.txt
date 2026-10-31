@@ -1,0 +1,41 @@
+extends SceneTree
+class FakePlanet extends RefCounted:
+	signal availability_changed
+	signal status_changed(ids)
+	signal buildings_changed(ids)
+	signal conquest_changed(ids, cumulative)
+	var work := 1
+	func planet_options() -> Array:
+		return [{"id":"1","name":"Probe"}]
+	func visual_snapshot(_id: String) -> Dictionary:
+		return {"row":{"name":"Probe","visual":{},"visualFacilities":[]},"running":false,"exploration":10,"elapsed":0.0,"duration":1.0}
+	func conquest_facts(_id: String) -> Dictionary:
+		return {"ok":true,"conquered":false,"shared_experience":false,"rewards":[]}
+	func facility_facts(_id: String, _explorers: Dictionary, _builders: Dictionary) -> Array:
+		return [{"id":"refinery","name":"Refinery","type":"refinery","state":"building","work":work,"required_work":10,"unlock_exploration":5,"work_fraction":float(work)/10.0,"extra_crew_required":0,"source_factor":null,"builders_present":0,"pause_reason":"ExplorationNotRunning","claim_allowed":false,"claim_reason":""}]
+func _initialize() -> void:
+	call_deferred("run")
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	var fake := FakePlanet.new()
+	var panel: Control = load("res://src/ui/planet_panel.gd").new(fake, Callable(), Callable(), Callable())
+	root.add_child(panel)
+	await process_frame
+	panel._toggle_section("facilities")
+	panel._process(0.01)
+	var bar: ProgressBar = panel._work_bar
+	var label: Label = panel._work_text
+	if bar == null or label == null:
+		push_error("No building widgets")
+		quit(1)
+		return
+	var original_id := bar.get_instance_id()
+	fake.work = 2
+	panel.refresh()
+	panel._process(0.01)
+	if not is_instance_valid(bar) or panel._work_bar.get_instance_id() != original_id or int(bar.value) != 20 or not label.text.contains("2 / 10"):
+		push_error("Building refresh replaced widget or missed values")
+		quit(1)
+		return
+	print("PASS: work tick preserves widget identity and updates caption/bar")
+	quit()

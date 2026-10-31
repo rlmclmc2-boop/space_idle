@@ -1,0 +1,6152 @@
+{
+  "kind": "Unapproved conditional joint-space design proposals. No runtime/config changes. Classification undecided.",
+  "source_baseline": "d829dd30e1d87b2b329af9082b33b157df23df55",
+  "source_files": {
+    "config_excel/level.xlsx": "202eae560214354c5a78cc2f2d042a7b292fc88b944b9580acb7d560e546f18f",
+    "config_excel/monGroup.xlsx": "321f2d87798e6a8374f16a47f6f24956fe5d07e58e97cc5078d5e451b0219b6b",
+    "config_excel/mon.xlsx": "204acd2961cec56282763513415d4bcf14cee40de4ea59e4a852ac3e1cf2040e",
+    "config_excel/hyperspace_enemies.xlsx": "5db22fee0de977835b4101b8689dfbf11f76b2185cde2b359a710f2371a15085",
+    "src/combat_setup.gd": "9a8e12bb7c4550a5e00093767d0538986fca99109bf6a2dfa1e5038758a8a5d6",
+    "scripts/enemy_visual_identity.gd": "d2f1302817929906177318a425a472a90bd53a812eb007e723276a4b861c0052",
+    "data/ship_weapon_visuals.json": "cb6b0c31760f4061d8c8bbad13676c8f6315418ebf02d65fba0cdbd37d91f509"
+  },
+  "models": [
+    "enemy_opening_sentry",
+    "enemy_opening_swarm",
+    "enemy_opening_reactive",
+    "enemy_opening_command",
+    "enemy_opening_scout",
+    "enemy_opening_interceptor",
+    "enemy_opening_anchor",
+    "enemy_opening_shielded",
+    "enemy_opening_anchor_elite",
+    "enemy_opening_reactive_elite",
+    "enemy_opening_shielded_elite",
+    "enemy_opening_command_elite",
+    "enemy_opening_anchor_boss",
+    "enemy_opening_reactive_boss",
+    "enemy_opening_shielded_boss",
+    "enemy_opening_command_boss"
+  ],
+  "profiles": {
+    "art": {
+      "title": "P1 · 若按模型display_span占位",
+      "condition": "Authored display_span condition only; not approved actor role classification",
+      "columns": 7,
+      "rows": 3,
+      "cell": [
+        80,
+        96
+      ],
+      "player_origin": [
+        286,
+        520
+      ],
+      "player_scale": 0.8,
+      "pickup_point": [
+        250,
+        316
+      ],
+      "visual_bounds": [
+        -32,
+        -48,
+        604,
+        960
+      ],
+      "shield_margin": 6,
+      "effect_margin": 4,
+      "label_height_px": 18,
+      "label_width_px": [
+        42,
+        60,
+        84
+      ],
+      "label_gap": 6,
+      "drone_centres": [
+        [
+          105,
+          768
+        ],
+        [
+          195,
+          850
+        ],
+        [
+          286,
+          768
+        ],
+        [
+          377,
+          850
+        ],
+        [
+          467,
+          768
+        ]
+      ],
+      "drone_radius": 48,
+      "main_scale": 0.6567460317460317,
+      "models": {
+        "enemy_opening_sentry": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.06260840000315533,
+            "display_size": [
+              45.015439602268685,
+              39.44329200198786
+            ],
+            "raw_half_upper": [
+              382.4732892293995,
+              340.1472087847572
+            ],
+            "assembly_half_upper": [
+              23.946040682596763,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.18301931656726875,
+            "display_size": [
+              131.59088861186623,
+              115.3021694373793
+            ],
+            "raw_half_upper": [
+              382.4732892293995,
+              340.1472087847572
+            ],
+            "assembly_half_upper": [
+              70.0,
+              62.253509684050336
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.20372377229002323,
+            "display_size": [
+              146.4773922765267,
+              128.34597654271462
+            ],
+            "raw_half_upper": [
+              382.4732892293995,
+              340.1472087847572
+            ],
+            "assembly_half_upper": [
+              77.91890128198638,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_swarm": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.06569876873965019,
+            "display_size": [
+              47.23741472380849,
+              39.222164937571165
+            ],
+            "raw_half_upper": [
+              381.3571856494935,
+              324.1472087847572
+            ],
+            "assembly_half_upper": [
+              25.054697547189917,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.183554952244527,
+            "display_size": [
+              131.97601066381492,
+              109.58230648998263
+            ],
+            "raw_half_upper": [
+              381.3571856494935,
+              324.1472087847572
+            ],
+            "assembly_half_upper": [
+              70.0,
+              59.49882542868283
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.21377963662666424,
+            "display_size": [
+              153.7075587345716,
+              127.62644306611855
+            ],
+            "raw_half_upper": [
+              381.3571856494935,
+              324.1472087847572
+            ],
+            "assembly_half_upper": [
+              81.52640057311605,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_reactive": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05324479988815934,
+            "display_size": [
+              38.33625591947472,
+              34.76885432696805
+            ],
+            "raw_half_upper": [
+              432.9703430694851,
+              399.9653027579267
+            ],
+            "assembly_half_upper": [
+              23.053419274242433,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.16167389088071113,
+            "display_size": [
+              116.40520143411202,
+              105.57305074510437
+            ],
+            "raw_half_upper": [
+              432.9703430694851,
+              399.9653027579267
+            ],
+            "assembly_half_upper": [
+              70.0,
+              64.66394671415563
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1732552099637836,
+            "display_size": [
+              124.7437511739242,
+              113.13565210635069
+            ],
+            "raw_half_upper": [
+              432.9703430694851,
+              399.9653027579267
+            ],
+            "assembly_half_upper": [
+              75.01436769659506,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_command": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04294207697335765,
+            "display_size": [
+              30.918295420817508,
+              22.888127026799626
+            ],
+            "raw_half_upper": [
+              512.428055400977,
+              495.9255352451977
+            ],
+            "assembly_half_upper": [
+              22.00472499833673,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13660454235907268,
+            "display_size": [
+              98.35527049853233,
+              72.81022107738573
+            ],
+            "raw_half_upper": [
+              512.428055400977,
+              495.9255352451977
+            ],
+            "assembly_half_upper": [
+              70.0,
+              67.7456807863484
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.13973080146657743,
+            "display_size": [
+              100.60617705593575,
+              74.47651718168576
+            ],
+            "raw_half_upper": [
+              512.428055400977,
+              495.9255352451977
+            ],
+            "assembly_half_upper": [
+              71.60198287513825,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_scout": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.03620874534379801,
+            "display_size": [
+              26.07029664753457,
+              40.771047257116564
+            ],
+            "raw_half_upper": [
+              399.77289471794256,
+              588.1472087847571
+            ],
+            "assembly_half_upper": [
+              14.475274940194955,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11782096637121504,
+            "display_size": [
+              84.83109578727483,
+              132.66640813398814
+            ],
+            "raw_half_upper": [
+              399.77289471794256,
+              588.1472087847571
+            ],
+            "assembly_half_upper": [
+              47.101628784686,
+              69.29607250755286
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.11782096637121504,
+            "display_size": [
+              84.83109578727483,
+              132.66640813398814
+            ],
+            "raw_half_upper": [
+              399.77289471794256,
+              588.1472087847571
+            ],
+            "assembly_half_upper": [
+              47.101628784686,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_interceptor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.053353930677332934,
+            "display_size": [
+              38.41483008767971,
+              39.8553862159677
+            ],
+            "raw_half_upper": [
+              386.58892118030286,
+              399.1472087847572
+            ],
+            "assembly_half_upper": [
+              20.626038501278803,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.1736103146468982,
+            "display_size": [
+              124.9994265457667,
+              129.68690504123296
+            ],
+            "raw_half_upper": [
+              386.58892118030286,
+              399.1472087847572
+            ],
+            "assembly_half_upper": [
+              67.11582424511731,
+              69.29607250755286
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1736103146468982,
+            "display_size": [
+              124.9994265457667,
+              129.68690504123296
+            ],
+            "raw_half_upper": [
+              386.58892118030286,
+              399.1472087847572
+            ],
+            "assembly_half_upper": [
+              67.11582424511731,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_anchor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05386344413895894,
+            "display_size": [
+              38.78167978005044,
+              25.585135966005495
+            ],
+            "raw_half_upper": [
+              428.3765737881862,
+              395.37153347662775
+            ],
+            "assembly_half_upper": [
+              23.073837652678588,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.16340762843537748,
+            "display_size": [
+              117.65349247347179,
+              77.6186235068043
+            ],
+            "raw_half_upper": [
+              428.3765737881862,
+              395.37153347662775
+            ],
+            "assembly_half_upper": [
+              70.0,
+              64.6067246362742
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.17526823921340628,
+            "display_size": [
+              126.19313223365252,
+              83.25241362636798
+            ],
+            "raw_half_upper": [
+              428.3765737881862,
+              395.37153347662775
+            ],
+            "assembly_half_upper": [
+              75.0808078081272,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_shielded": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.042838538650488894,
+            "display_size": [
+              30.843747828352004,
+              24.46080556942916
+            ],
+            "raw_half_upper": [
+              513.6266793457853,
+              497.12415919000614
+            ],
+            "assembly_half_upper": [
+              22.00301635507669,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13628575542290783,
+            "display_size": [
+              98.12574390449363,
+              77.81916634648037
+            ],
+            "raw_half_upper": [
+              513.6266793457853,
+              497.12415919000614
+            ],
+            "assembly_half_upper": [
+              70.0,
+              67.75094157418788
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.13939389431497567,
+            "display_size": [
+              100.36360390678249,
+              79.5939136538511
+            ],
+            "raw_half_upper": [
+              513.6266793457853,
+              497.12415919000614
+            ],
+            "assembly_half_upper": [
+              71.5964230580783,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_anchor_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.053590592266014266,
+            "display_size": [
+              38.58522643153027,
+              29.63559752310589
+            ],
+            "raw_half_upper": [
+              430.38957381032844,
+              397.38453349877
+            ],
+            "assembly_half_upper": [
+              23.064832165612962,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.16264334514490078,
+            "display_size": [
+              117.10320850432856,
+              89.94176986513013
+            ],
+            "raw_half_upper": [
+              430.38957381032844,
+              397.38453349877
+            ],
+            "assembly_half_upper": [
+              70.0,
+              64.63194983708584
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1743803964825605,
+            "display_size": [
+              125.55388546744356,
+              96.43235925485597
+            ],
+            "raw_half_upper": [
+              430.38957381032844,
+              397.38453349877
+            ],
+            "assembly_half_upper": [
+              75.05150452300532,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_reactive_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05318988679493177,
+            "display_size": [
+              38.29671849235088,
+              35.58403426580936
+            ],
+            "raw_half_upper": [
+              433.38326615095013,
+              400.3782258393917
+            ],
+            "assembly_half_upper": [
+              23.051606865386823,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.16151984967416474,
+            "display_size": [
+              116.29429176539861,
+              108.05677943201621
+            ],
+            "raw_half_upper": [
+              433.38326615095013,
+              400.3782258393917
+            ],
+            "assembly_half_upper": [
+              70.0,
+              64.66903085038733
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1730765262328486,
+            "display_size": [
+              124.615098887651,
+              115.78819604977572
+            ],
+            "raw_half_upper": [
+              433.38326615095013,
+              400.3782258393917
+            ],
+            "assembly_half_upper": [
+              75.00847023285253,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_shielded_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04277340288411189,
+            "display_size": [
+              30.79685007656056,
+              25.492948118930688
+            ],
+            "raw_half_upper": [
+              514.3837049951379,
+              497.88118483935875
+            ],
+            "assembly_half_upper": [
+              22.001941450779192,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13608518178207388,
+            "display_size": [
+              97.9813308830932,
+              81.10676834211603
+            ],
+            "raw_half_upper": [
+              514.3837049951379,
+              497.88118483935875
+            ],
+            "assembly_half_upper": [
+              70.0,
+              67.75425154473847
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.13918194665241512,
+            "display_size": [
+              100.21100158973888,
+              82.95244020483942
+            ],
+            "raw_half_upper": [
+              514.3837049951379,
+              497.88118483935875
+            ],
+            "assembly_half_upper": [
+              71.59292538750492,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_command_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04248272648256341,
+            "display_size": [
+              30.587563067445657,
+              29.90783944372464
+            ],
+            "raw_half_upper": [
+              517.7903204172247,
+              501.28780026144557
+            ],
+            "assembly_half_upper": [
+              21.99714455760383,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13518985821055027,
+            "display_size": [
+              97.33669791159619,
+              95.17366018022739
+            ],
+            "raw_half_upper": [
+              517.7903204172247,
+              501.28780026144557
+            ],
+            "assembly_half_upper": [
+              70.0,
+              67.76902664002347
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1382361040332752,
+            "display_size": [
+              99.52999490395814,
+              97.31821723942573
+            ],
+            "raw_half_upper": [
+              517.7903204172247,
+              501.28780026144557
+            ],
+            "assembly_half_upper": [
+              71.57731660061837,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_anchor_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05318303062135996,
+            "display_size": [
+              38.29178204737917,
+              35.685813546932536
+            ],
+            "raw_half_upper": [
+              433.4348815361333,
+              400.42984122457483
+            ],
+            "assembly_half_upper": [
+              23.051380577101703,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.16150061516026012,
+            "display_size": [
+              116.28044291538728,
+              108.36691277253455
+            ],
+            "raw_half_upper": [
+              433.4348815361333,
+              400.42984122457483
+            ],
+            "assembly_half_upper": [
+              70.0,
+              64.66966568629412
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.17305421667784554,
+            "display_size": [
+              124.59903600804878,
+              116.11937939083435
+            ],
+            "raw_half_upper": [
+              433.4348815361333,
+              400.42984122457483
+            ],
+            "assembly_half_upper": [
+              75.00773390509032,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_reactive_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05044702905618696,
+            "display_size": [
+              36.32186092045461,
+              40.05494107061245
+            ],
+            "raw_half_upper": [
+              436.5834200323045,
+              422.1472087847572
+            ],
+            "assembly_half_upper": [
+              22.024336475819144,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.1603359101333267,
+            "display_size": [
+              115.44185529599523,
+              127.30671264586141
+            ],
+            "raw_half_upper": [
+              436.5834200323045,
+              422.1472087847572
+            ],
+            "assembly_half_upper": [
+              70.0,
+              67.68535693074753
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1641514406953838,
+            "display_size": [
+              118.18903730067633,
+              130.33624391213473
+            ],
+            "raw_half_upper": [
+              436.5834200323045,
+              422.1472087847572
+            ],
+            "assembly_half_upper": [
+              71.66579738202066,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_shielded_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04249877148708224,
+            "display_size": [
+              30.599115470699214,
+              29.62164372649632
+            ],
+            "raw_half_upper": [
+              517.6010640048864,
+              501.0985438491073
+            ],
+            "assembly_half_upper": [
+              21.997409340614297,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.1352392892286233,
+            "display_size": [
+              97.37228824460878,
+              94.26178459235044
+            ],
+            "raw_half_upper": [
+              517.6010640048864,
+              501.0985438491073
+            ],
+            "assembly_half_upper": [
+              70.0,
+              67.7682109036514
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1382883134627898,
+            "display_size": [
+              99.56758569320866,
+              96.3869544835645
+            ],
+            "raw_half_upper": [
+              517.6010640048864,
+              501.0985438491073
+            ],
+            "assembly_half_upper": [
+              71.57817818778126,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_command_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04216435153325933,
+            "display_size": [
+              30.358333103946716,
+              34.74342566340569
+            ],
+            "raw_half_upper": [
+              521.575448663988,
+              505.07292850820875
+            ],
+            "assembly_half_upper": [
+              21.991890568585845,
+              21.29607250755287
+            ],
+            "content_budget": [
+              60,
+              42.59214501510574
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13420877109784313,
+            "display_size": [
+              96.63031519044705,
+              110.58802738462273
+            ],
+            "raw_half_upper": [
+              521.575448663988,
+              505.07292850820875
+            ],
+            "assembly_half_upper": [
+              70.0,
+              67.78521704987547
+            ],
+            "content_budget": [
+              140,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.13720013209226403,
+            "display_size": [
+              98.7840951064301,
+              113.05290884402557
+            ],
+            "raw_half_upper": [
+              521.575448663988,
+              505.07292850820875
+            ],
+            "assembly_half_upper": [
+              71.56022045278104,
+              69.29607250755286
+            ],
+            "content_budget": [
+              220,
+              138.59214501510573
+            ],
+            "target_longest_px": null
+          }
+        }
+      }
+    },
+    "tier": {
+      "title": "P2 · 若按encounter rank占位",
+      "condition": "Encounter rank condition only; not approved actor role classification",
+      "columns": 10,
+      "rows": 6,
+      "cell": [
+        56,
+        80
+      ],
+      "player_origin": [
+        286,
+        710
+      ],
+      "player_scale": 0.8,
+      "pickup_point": [
+        250,
+        505
+      ],
+      "visual_bounds": [
+        -32,
+        -48,
+        604,
+        1008
+      ],
+      "shield_margin": 4,
+      "effect_margin": 2,
+      "label_height_px": 18,
+      "label_width_px": [
+        34,
+        60,
+        84
+      ],
+      "label_gap": 6,
+      "drone_centres": [
+        [
+          78,
+          930
+        ],
+        [
+          182,
+          930
+        ],
+        [
+          286,
+          930
+        ],
+        [
+          390,
+          930
+        ],
+        [
+          494,
+          930
+        ]
+      ],
+      "drone_radius": 48,
+      "main_scale": 0.6268939393939394,
+      "models": {
+        "enemy_opening_sentry": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04893029871150273,
+            "display_size": [
+              35.18088477357046,
+              30.826088188246718
+            ],
+            "raw_half_upper": [
+              382.4732892293995,
+              340.1472087847572
+            ],
+            "assembly_half_upper": [
+              18.714532291165497,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13072808326233482,
+            "display_size": [
+              93.99349186561874,
+              82.35869245527094
+            ],
+            "raw_half_upper": [
+              382.4732892293995,
+              340.1472087847572
+            ],
+            "assembly_half_upper": [
+              50.0,
+              44.46679263146452
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.16652644228389266,
+            "display_size": [
+              119.73251200211882,
+              104.91165863885237
+            ],
+            "raw_half_upper": [
+              382.4732892293995,
+              340.1472087847572
+            ],
+            "assembly_half_upper": [
+              63.691916123990175,
+              56.64350453172205
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_swarm": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05134551241122612,
+            "display_size": [
+              36.91742342367158,
+              30.65327090950199
+            ],
+            "raw_half_upper": [
+              381.3571856494935,
+              324.1472087847572
+            ],
+            "assembly_half_upper": [
+              19.580980108876332,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13111068017466215,
+            "display_size": [
+              94.26857904558209,
+              78.27307606427331
+            ],
+            "raw_half_upper": [
+              381.3571856494935,
+              324.1472087847572
+            ],
+            "assembly_half_upper": [
+              50.0,
+              42.49916102048774
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.17474623565040454,
+            "display_size": [
+              125.64254343264086,
+              104.32350268329151
+            ],
+            "raw_half_upper": [
+              381.3571856494935,
+              324.1472087847572
+            ],
+            "assembly_half_upper": [
+              66.64073263048147,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_reactive": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04161237091557239,
+            "display_size": [
+              29.960907059212122,
+              27.17287820786877
+            ],
+            "raw_half_upper": [
+              432.9703430694851,
+              399.9653027579267
+            ],
+            "assembly_half_upper": [
+              18.016922511250044,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11548135062907938,
+            "display_size": [
+              83.14657245293715,
+              75.40932196078883
+            ],
+            "raw_half_upper": [
+              432.9703430694851,
+              399.9653027579267
+            ],
+            "assembly_half_upper": [
+              50.0,
+              46.188533367254024
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.14162104597859262,
+            "display_size": [
+              101.96715310458669,
+              92.47854302402098
+            ],
+            "raw_half_upper": [
+              432.9703430694851,
+              399.9653027579267
+            ],
+            "assembly_half_upper": [
+              61.31771286321057,
+              56.64350453172205
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_command": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.03356049114005211,
+            "display_size": [
+              24.16355362083752,
+              17.887741777647772
+            ],
+            "raw_half_upper": [
+              512.428055400977,
+              495.9255352451977
+            ],
+            "assembly_half_upper": [
+              17.19733721319862,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.09757467311362335,
+            "display_size": [
+              70.25376464180881,
+              52.00730076956125
+            ],
+            "raw_half_upper": [
+              512.428055400977,
+              495.9255352451977
+            ],
+            "assembly_half_upper": [
+              50.0,
+              48.38977199024886
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.11421776155106861,
+            "display_size": [
+              82.23678831676939,
+              60.87806690671957
+            ],
+            "raw_half_upper": [
+              512.428055400977,
+              495.9255352451977
+            ],
+            "assembly_half_upper": [
+              58.52838544386656,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_scout": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.028298195219035784,
+            "display_size": [
+              20.374700557705765,
+              31.863767816634294
+            ],
+            "raw_half_upper": [
+              399.77289471794256,
+              588.1472087847571
+            ],
+            "assembly_half_upper": [
+              11.312851418007378,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.09630837940855,
+            "display_size": [
+              69.342033174156,
+              108.4432352140273
+            ],
+            "raw_half_upper": [
+              399.77289471794256,
+              588.1472087847571
+            ],
+            "assembly_half_upper": [
+              38.50147962174993,
+              56.64350453172206
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.09630837940855,
+            "display_size": [
+              69.342033174156,
+              108.4432352140273
+            ],
+            "raw_half_upper": [
+              399.77289471794256,
+              588.1472087847571
+            ],
+            "assembly_half_upper": [
+              38.50147962174993,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_interceptor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04169765982429098,
+            "display_size": [
+              30.022315073489505,
+              31.148151888745364
+            ],
+            "raw_half_upper": [
+              386.58892118030286,
+              399.1472087847572
+            ],
+            "assembly_half_upper": [
+              16.119853327215907,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.12933634995887605,
+            "display_size": [
+              93.12217197039075,
+              96.61425341928042
+            ],
+            "raw_half_upper": [
+              386.58892118030286,
+              399.1472087847572
+            ],
+            "assembly_half_upper": [
+              50.0,
+              51.62424308049392
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.14191131313226205,
+            "display_size": [
+              102.17614545522868,
+              106.00775090979975
+            ],
+            "raw_half_upper": [
+              386.58892118030286,
+              399.1472087847572
+            ],
+            "assembly_half_upper": [
+              54.86134144708133,
+              56.64350453172205
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_anchor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04209585952071567,
+            "display_size": [
+              30.309018854915283,
+              19.995533272339944
+            ],
+            "raw_half_upper": [
+              428.3765737881862,
+              395.37153347662775
+            ],
+            "assembly_half_upper": [
+              18.032880072152977,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11671973459669821,
+            "display_size": [
+              84.03820890962271,
+              55.44187393343165
+            ],
+            "raw_half_upper": [
+              428.3765737881862,
+              395.37153347662775
+            ],
+            "assembly_half_upper": [
+              50.0,
+              46.147660454481574
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.14326652208275514,
+            "display_size": [
+              103.1518958995837,
+              68.05159798930869
+            ],
+            "raw_half_upper": [
+              428.3765737881862,
+              395.37153347662775
+            ],
+            "assembly_half_upper": [
+              61.372021868360164,
+              56.64350453172205
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_shielded": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.03347957290758169,
+            "display_size": [
+              24.105292493458816,
+              19.116836130229146
+            ],
+            "raw_half_upper": [
+              513.6266793457853,
+              497.12415919000614
+            ],
+            "assembly_half_upper": [
+              17.1960018584363,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.09734696815921988,
+            "display_size": [
+              70.08981707463832,
+              55.58511881891455
+            ],
+            "raw_half_upper": [
+              513.6266793457853,
+              497.12415919000614
+            ],
+            "assembly_half_upper": [
+              50.0,
+              48.393529695848486
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.11394236929465403,
+            "display_size": [
+              82.0385058921509,
+              65.06109286724745
+            ],
+            "raw_half_upper": [
+              513.6266793457853,
+              497.12415919000614
+            ],
+            "assembly_half_upper": [
+              58.52384077760431,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_anchor_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04188261778883141,
+            "display_size": [
+              30.15548480795861,
+              23.16108763722377
+            ],
+            "raw_half_upper": [
+              430.38957381032844,
+              397.38453349877
+            ],
+            "assembly_half_upper": [
+              18.02584202019603,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11617381796064341,
+            "display_size": [
+              83.64514893166326,
+              64.2441213322358
+            ],
+            "raw_half_upper": [
+              430.38957381032844,
+              397.38453349877
+            ],
+            "assembly_half_upper": [
+              50.0,
+              46.16567845506131
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.14254078796928665,
+            "display_size": [
+              102.62936733788639,
+              78.82505574701553
+            ],
+            "raw_half_upper": [
+              430.38957381032844,
+              397.38453349877
+            ],
+            "assembly_half_upper": [
+              61.348068984689675,
+              56.643504531722066
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_reactive_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.04156945472453953,
+            "display_size": [
+              29.930007401668462,
+              27.809965210716946
+            ],
+            "raw_half_upper": [
+              433.38326615095013,
+              400.3782258393917
+            ],
+            "assembly_half_upper": [
+              18.015506060634987,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11537132119583196,
+            "display_size": [
+              83.06735126099902,
+              77.18341388001159
+            ],
+            "raw_half_upper": [
+              433.38326615095013,
+              400.3782258393917
+            ],
+            "assembly_half_upper": [
+              50.0,
+              46.19216489313381
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.14147498758947025,
+            "display_size": [
+              101.86199106441858,
+              94.6467666973556
+            ],
+            "raw_half_upper": [
+              433.38326615095013,
+              400.3782258393917
+            ],
+            "assembly_half_upper": [
+              61.31289220018975,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_shielded_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.03342866739800998,
+            "display_size": [
+              24.068640526567187,
+              19.923485769213947
+            ],
+            "raw_half_upper": [
+              514.3837049951379,
+              497.88118483935875
+            ],
+            "assembly_half_upper": [
+              17.19516178923855,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.0972037012729099,
+            "display_size": [
+              69.98666491649513,
+              57.933405958654305
+            ],
+            "raw_half_upper": [
+              514.3837049951379,
+              497.88118483935875
+            ],
+            "assembly_half_upper": [
+              50.0,
+              48.39589396052747
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1137691205382627,
+            "display_size": [
+              81.91376678754915,
+              67.80639584080457
+            ],
+            "raw_half_upper": [
+              514.3837049951379,
+              497.88118483935875
+            ],
+            "assembly_half_upper": [
+              58.52098173651001,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_command_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.03320149527485343,
+            "display_size": [
+              23.905076597894467,
+              23.373852673496813
+            ],
+            "raw_half_upper": [
+              517.7903204172247,
+              501.28780026144557
+            ],
+            "assembly_half_upper": [
+              17.19141287669733,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.09656418443610733,
+            "display_size": [
+              69.52621279399727,
+              67.98118584301956
+            ],
+            "raw_half_upper": [
+              517.7903204172247,
+              501.28780026144557
+            ],
+            "assembly_half_upper": [
+              50.0,
+              48.40644760001676
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.11299597656711327,
+            "display_size": [
+              81.35710312832155,
+              79.54916750324774
+            ],
+            "raw_half_upper": [
+              517.7903204172247,
+              501.28780026144557
+            ],
+            "assembly_half_upper": [
+              58.5082229125428,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_anchor_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.041564096424042,
+            "display_size": [
+              29.92614942531024,
+              27.88950870053218
+            ],
+            "raw_half_upper": [
+              433.4348815361333,
+              400.42984122457483
+            ],
+            "assembly_half_upper": [
+              18.015329209711062,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11535758225732867,
+            "display_size": [
+              83.05745922527665,
+              77.40493769466754
+            ],
+            "raw_half_upper": [
+              433.4348815361333,
+              400.42984122457483
+            ],
+            "assembly_half_upper": [
+              50.0,
+              46.19261834735295
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.14145675147111333,
+            "display_size": [
+              101.8488610592016,
+              94.91748023711705
+            ],
+            "raw_half_upper": [
+              433.4348815361333,
+              400.42984122457483
+            ],
+            "assembly_half_upper": [
+              61.312290316368255,
+              56.64350453172205
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_reactive_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.03942583104987005,
+            "display_size": [
+              28.386598355906433,
+              31.304109853596817
+            ],
+            "raw_half_upper": [
+              436.5834200323045,
+              422.1472087847572
+            ],
+            "assembly_half_upper": [
+              17.21266415736809,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11452565009523336,
+            "display_size": [
+              82.45846806856801,
+              90.93336617561529
+            ],
+            "raw_half_upper": [
+              436.5834200323045,
+              422.1472087847572
+            ],
+            "assembly_half_upper": [
+              50.0,
+              48.346683521962525
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.13417950741586743,
+            "display_size": [
+              96.60924533942455,
+              106.53852888819874
+            ],
+            "raw_half_upper": [
+              436.5834200323045,
+              422.1472087847572
+            ],
+            "assembly_half_upper": [
+              58.580548245869366,
+              56.643504531722066
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_shielded_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.03321403491592227,
+            "display_size": [
+              23.914105139464034,
+              23.150182336397823
+            ],
+            "raw_half_upper": [
+              517.6010640048864,
+              501.0985438491073
+            ],
+            "assembly_half_upper": [
+              17.191619812376818,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.09659949230615951,
+            "display_size": [
+              69.55163446043484,
+              67.32984613739318
+            ],
+            "raw_half_upper": [
+              517.6010640048864,
+              501.0985438491073
+            ],
+            "assembly_half_upper": [
+              50.0,
+              48.40586493117957
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.11303865322901191,
+            "display_size": [
+              81.38783032488857,
+              78.7879413006213
+            ],
+            "raw_half_upper": [
+              517.6010640048864,
+              501.0985438491073
+            ],
+            "assembly_half_upper": [
+              58.508927185015956,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        },
+        "enemy_opening_command_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.0329526759251987,
+            "display_size": [
+              23.725926666143067,
+              27.15300496236373
+            ],
+            "raw_half_upper": [
+              521.575448663988,
+              505.07292850820875
+            ],
+            "assembly_half_upper": [
+              17.18730673036451,
+              16.643504531722055
+            ],
+            "content_budget": [
+              44,
+              33.28700906344411
+            ],
+            "target_longest_px": null
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.09586340792703081,
+            "display_size": [
+              69.02165370746218,
+              78.99144813187338
+            ],
+            "raw_half_upper": [
+              521.575448663988,
+              505.07292850820875
+            ],
+            "assembly_half_upper": [
+              50.0,
+              48.418012178482485
+            ],
+            "content_budget": [
+              100,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.1121491597243693,
+            "display_size": [
+              80.7473950015459,
+              92.41090761288031
+            ],
+            "raw_half_upper": [
+              521.575448663988,
+              505.07292850820875
+            ],
+            "assembly_half_upper": [
+              58.494248300527175,
+              56.64350453172206
+            ],
+            "content_budget": [
+              156,
+              113.28700906344412
+            ],
+            "target_longest_px": null
+          }
+        }
+      }
+    },
+    "full_art": {
+      "title": "P3 · 贯通战场 / 模型span条件",
+      "occupancy": "art",
+      "master_layout": "full",
+      "presentation": "volume",
+      "enemy_weapon_floor": 18,
+      "columns": 7,
+      "rows": 3,
+      "cell": [
+        84,
+        100
+      ],
+      "grid_top": 40,
+      "templates": {
+        "elite": {
+          "columns": 10,
+          "rows": 6,
+          "cell": [
+            60,
+            86
+          ]
+        },
+        "normal": {
+          "columns": 5,
+          "rows": 3,
+          "cell": [
+            112,
+            100
+          ]
+        },
+        "boss": {
+          "columns": 7,
+          "rows": 3,
+          "cell": [
+            84,
+            120
+          ]
+        }
+      },
+      "player_origin": [
+        286,
+        780
+      ],
+      "player_scale": 0.8,
+      "visual_bounds": [
+        -32,
+        0,
+        604,
+        960
+      ],
+      "shield_margin": 4,
+      "effect_margin": 2,
+      "label_height_px": 8,
+      "label_width_px": [
+        40,
+        60,
+        88
+      ],
+      "label_gap": 6,
+      "drone_centres": [
+        [
+          75,
+          680
+        ],
+        [
+          497,
+          730
+        ],
+        [
+          75,
+          780
+        ],
+        [
+          497,
+          830
+        ],
+        [
+          75,
+          880
+        ]
+      ],
+      "drone_radius": 38,
+      "drone_draw_size": 48,
+      "pickup_point": [
+        286,
+        590
+      ],
+      "volume_targets_px": [
+        56,
+        88,
+        160
+      ],
+      "main_scale": 0.9375,
+      "models": {
+        "enemy_opening_sentry": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08307834955957348,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                382.4732892293995,
+                340.1472087847572
+              ],
+              "assembly_half": [
+                31.7752496197999,
+                28.258868713133282
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13055169216504403,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                382.4732892293995,
+                340.1472087847572
+              ],
+              "assembly_half": [
+                49.93253511682841,
+                44.406793692066586
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2373667130273528,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                382.4732892293995,
+                340.1472087847572
+              ],
+              "assembly_half": [
+                90.78642748514257,
+                80.73962489466652
+              ]
+            }
+          }
+        },
+        "enemy_opening_swarm": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08307834955957348,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                381.3571856494935,
+                324.1472087847572
+              ],
+              "assembly_half": [
+                31.68252557644378,
+                26.929615120180106
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13055169216504403,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                381.3571856494935,
+                324.1472087847572
+              ],
+              "assembly_half": [
+                49.78682590584022,
+                42.31796661742588
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2373667130273528,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                381.3571856494935,
+                324.1472087847572
+              ],
+              "assembly_half": [
+                90.52150164698223,
+                76.94175748622887
+              ]
+            }
+          }
+        },
+        "enemy_opening_reactive": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                432.9703430694851,
+                399.9653027579267
+              ],
+              "assembly_half": [
+                35.92050253613506,
+                33.18230659917614
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                432.9703430694851,
+                399.9653027579267
+              ],
+              "assembly_half": [
+                56.44650398535509,
+                52.143624655848214
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                432.9703430694851,
+                399.9653027579267
+              ],
+              "assembly_half": [
+                102.63000724610016,
+                94.80659028336039
+              ]
+            }
+          }
+        },
+        "enemy_opening_command": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                512.428055400977,
+                495.9255352451977
+              ],
+              "assembly_half": [
+                42.512549781414386,
+                41.14345181293492
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                512.428055400977,
+                495.9255352451977
+              ],
+              "assembly_half": [
+                66.80543537079403,
+                64.65399570604058
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                512.428055400977,
+                495.9255352451977
+              ],
+              "assembly_half": [
+                121.46442794689824,
+                117.55271946552833
+              ]
+            }
+          }
+        },
+        "enemy_opening_scout": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05304914150384843,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                399.77289471794256,
+                588.1472087847571
+              ],
+              "assembly_half": [
+                21.207608861295235,
+                31.200704503916068
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.08336293664890466,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                399.77289471794256,
+                588.1472087847571
+              ],
+              "assembly_half": [
+                33.32624249632108,
+                49.029678506153815
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.15156897572528122,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                399.77289471794256,
+                588.1472087847571
+              ],
+              "assembly_half": [
+                60.59316817512924,
+                89.14487001118876
+              ]
+            }
+          }
+        },
+        "enemy_opening_interceptor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.07996430165104865,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                386.58892118030286,
+                399.1472087847572
+              ],
+              "assembly_half": [
+                30.913313108215206,
+                31.917527806438418
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.12565818830879072,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                386.58892118030286,
+                399.1472087847572
+              ],
+              "assembly_half": [
+                48.57806345576675,
+                50.15611512440322
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2284694332887104,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                386.58892118030286,
+                399.1472087847572
+              ],
+              "assembly_half": [
+                88.32375173775772,
+                91.19293658982404
+              ]
+            }
+          }
+        },
+        "enemy_opening_anchor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                428.3765737881862,
+                395.37153347662775
+              ],
+              "assembly_half": [
+                35.53938982539026,
+                32.801193888431335
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                428.3765737881862,
+                395.37153347662775
+              ],
+              "assembly_half": [
+                55.84761258275612,
+                51.54473325324924
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                428.3765737881862,
+                395.37153347662775
+              ],
+              "assembly_half": [
+                101.54111378682931,
+                93.71769682408953
+              ]
+            }
+          }
+        },
+        "enemy_opening_shielded": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                513.6266793457853,
+                497.12415919000614
+              ],
+              "assembly_half": [
+                42.61199117535404,
+                41.242893206874584
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                513.6266793457853,
+                497.12415919000614
+              ],
+              "assembly_half": [
+                66.96170041841349,
+                64.81026075366006
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                513.6266793457853,
+                497.12415919000614
+              ],
+              "assembly_half": [
+                121.74854621529725,
+                117.83683773392737
+              ]
+            }
+          }
+        },
+        "enemy_opening_anchor_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                430.38957381032844,
+                397.38453349877
+              ],
+              "assembly_half": [
+                35.70639427167169,
+                32.96819833471277
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                430.38957381032844,
+                397.38453349877
+              ],
+              "assembly_half": [
+                56.11004814119837,
+                51.80716881169149
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                430.38957381032844,
+                397.38453349877
+              ],
+              "assembly_half": [
+                102.0182693476334,
+                94.19485238489362
+              ]
+            }
+          }
+        },
+        "enemy_opening_reactive_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.38326615095013,
+                400.3782258393917
+              ],
+              "assembly_half": [
+                35.954759858449194,
+                33.21656392149027
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.38326615095013,
+                400.3782258393917
+              ],
+              "assembly_half": [
+                56.50033692042016,
+                52.19745759091328
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.38326615095013,
+                400.3782258393917
+              ],
+              "assembly_half": [
+                102.72788530985484,
+                94.90446834711506
+              ]
+            }
+          }
+        },
+        "enemy_opening_shielded_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                514.3837049951379,
+                497.88118483935875
+              ],
+              "assembly_half": [
+                42.67479626626329,
+                41.305698297783835
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                514.3837049951379,
+                497.88118483935875
+              ],
+              "assembly_half": [
+                67.06039413269946,
+                64.90895446794602
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                514.3837049951379,
+                497.88118483935875
+              ],
+              "assembly_half": [
+                121.92798933218083,
+                118.01628085081096
+              ]
+            }
+          }
+        },
+        "enemy_opening_command_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.7903204172247,
+                501.28780026144557
+              ],
+              "assembly_half": [
+                42.95741917535494,
+                41.588321206875484
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.7903204172247,
+                501.28780026144557
+              ],
+              "assembly_half": [
+                67.50451584698634,
+                65.3530761822329
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.7903204172247,
+                501.28780026144557
+              ],
+              "assembly_half": [
+                122.73548335815697,
+                118.82377487678708
+              ]
+            }
+          }
+        },
+        "enemy_opening_anchor_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.4348815361333,
+                400.42984122457483
+              ],
+              "assembly_half": [
+                35.95904202373846,
+                33.22084608677954
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.4348815361333,
+                400.42984122457483
+              ],
+              "assembly_half": [
+                56.5070660373033,
+                52.20418670779642
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.4348815361333,
+                400.42984122457483
+              ],
+              "assembly_half": [
+                102.74012006782418,
+                94.9167031050844
+              ]
+            }
+          }
+        },
+        "enemy_opening_reactive_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.07523089840470193,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                436.5834200323045,
+                422.1472087847572
+              ],
+              "assembly_half": [
+                32.844562917627606,
+                31.75851377591456
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11821998320738875,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                436.5834200323045,
+                422.1472087847572
+              ],
+              "assembly_half": [
+                51.612884584843385,
+                49.90623593358003
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.21494542401343408,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                436.5834200323045,
+                422.1472087847572
+              ],
+              "assembly_half": [
+                93.84160833607888,
+                90.73861078832732
+              ]
+            }
+          }
+        },
+        "enemy_opening_shielded_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.6010640048864,
+                501.0985438491073
+              ],
+              "assembly_half": [
+                42.941717902627616,
+                41.57261993414816
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.6010640048864,
+                501.0985438491073
+              ],
+              "assembly_half": [
+                67.47984241841482,
+                65.3284027536614
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.6010640048864,
+                501.0985438491073
+              ],
+              "assembly_half": [
+                122.69062257893603,
+                118.77891409756616
+              ]
+            }
+          }
+        },
+        "enemy_opening_command_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.07249190938511327,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                521.575448663988,
+                505.07292850820875
+              ],
+              "assembly_half": [
+                37.81000016204962,
+                36.61370096629086
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11391585760517799,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                521.575448663988,
+                505.07292850820875
+              ],
+              "assembly_half": [
+                59.41571454036368,
+                57.53581580417135
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2071197411003236,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                521.575448663988,
+                505.07292850820875
+              ],
+              "assembly_half": [
+                108.02857189157032,
+                104.61057418940246
+              ]
+            }
+          }
+        }
+      }
+    },
+    "full_tier": {
+      "title": "P3 · 贯通战场 / encounter条件",
+      "occupancy": "tier",
+      "master_layout": "full",
+      "presentation": "volume",
+      "enemy_weapon_floor": 18,
+      "columns": 7,
+      "rows": 3,
+      "cell": [
+        84,
+        100
+      ],
+      "grid_top": 40,
+      "templates": {
+        "elite": {
+          "columns": 10,
+          "rows": 6,
+          "cell": [
+            60,
+            86
+          ]
+        },
+        "normal": {
+          "columns": 5,
+          "rows": 3,
+          "cell": [
+            112,
+            100
+          ]
+        },
+        "boss": {
+          "columns": 7,
+          "rows": 3,
+          "cell": [
+            84,
+            120
+          ]
+        }
+      },
+      "player_origin": [
+        286,
+        780
+      ],
+      "player_scale": 0.8,
+      "visual_bounds": [
+        -32,
+        0,
+        604,
+        960
+      ],
+      "shield_margin": 4,
+      "effect_margin": 2,
+      "label_height_px": 8,
+      "label_width_px": [
+        40,
+        60,
+        88
+      ],
+      "label_gap": 6,
+      "drone_centres": [
+        [
+          75,
+          680
+        ],
+        [
+          497,
+          730
+        ],
+        [
+          75,
+          780
+        ],
+        [
+          497,
+          830
+        ],
+        [
+          75,
+          880
+        ]
+      ],
+      "drone_radius": 38,
+      "drone_draw_size": 48,
+      "pickup_point": [
+        286,
+        590
+      ],
+      "volume_targets_px": [
+        56,
+        88,
+        160
+      ],
+      "main_scale": 0.9375,
+      "models": {
+        "enemy_opening_sentry": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08307834955957348,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                382.4732892293995,
+                340.1472087847572
+              ],
+              "assembly_half": [
+                31.7752496197999,
+                28.258868713133282
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13055169216504403,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                382.4732892293995,
+                340.1472087847572
+              ],
+              "assembly_half": [
+                49.93253511682841,
+                44.406793692066586
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2373667130273528,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                382.4732892293995,
+                340.1472087847572
+              ],
+              "assembly_half": [
+                90.78642748514257,
+                80.73962489466652
+              ]
+            }
+          }
+        },
+        "enemy_opening_swarm": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08307834955957348,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                381.3571856494935,
+                324.1472087847572
+              ],
+              "assembly_half": [
+                31.68252557644378,
+                26.929615120180106
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13055169216504403,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                381.3571856494935,
+                324.1472087847572
+              ],
+              "assembly_half": [
+                49.78682590584022,
+                42.31796661742588
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2373667130273528,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                381.3571856494935,
+                324.1472087847572
+              ],
+              "assembly_half": [
+                90.52150164698223,
+                76.94175748622887
+              ]
+            }
+          }
+        },
+        "enemy_opening_reactive": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                432.9703430694851,
+                399.9653027579267
+              ],
+              "assembly_half": [
+                35.92050253613506,
+                33.18230659917614
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                432.9703430694851,
+                399.9653027579267
+              ],
+              "assembly_half": [
+                56.44650398535509,
+                52.143624655848214
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                432.9703430694851,
+                399.9653027579267
+              ],
+              "assembly_half": [
+                102.63000724610016,
+                94.80659028336039
+              ]
+            }
+          }
+        },
+        "enemy_opening_command": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                512.428055400977,
+                495.9255352451977
+              ],
+              "assembly_half": [
+                42.512549781414386,
+                41.14345181293492
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                512.428055400977,
+                495.9255352451977
+              ],
+              "assembly_half": [
+                66.80543537079403,
+                64.65399570604058
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                512.428055400977,
+                495.9255352451977
+              ],
+              "assembly_half": [
+                121.46442794689824,
+                117.55271946552833
+              ]
+            }
+          }
+        },
+        "enemy_opening_scout": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.05304914150384843,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                399.77289471794256,
+                588.1472087847571
+              ],
+              "assembly_half": [
+                21.207608861295235,
+                31.200704503916068
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.08336293664890466,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                399.77289471794256,
+                588.1472087847571
+              ],
+              "assembly_half": [
+                33.32624249632108,
+                49.029678506153815
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.15156897572528122,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                399.77289471794256,
+                588.1472087847571
+              ],
+              "assembly_half": [
+                60.59316817512924,
+                89.14487001118876
+              ]
+            }
+          }
+        },
+        "enemy_opening_interceptor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.07996430165104865,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                386.58892118030286,
+                399.1472087847572
+              ],
+              "assembly_half": [
+                30.913313108215206,
+                31.917527806438418
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.12565818830879072,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                386.58892118030286,
+                399.1472087847572
+              ],
+              "assembly_half": [
+                48.57806345576675,
+                50.15611512440322
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2284694332887104,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                386.58892118030286,
+                399.1472087847572
+              ],
+              "assembly_half": [
+                88.32375173775772,
+                91.19293658982404
+              ]
+            }
+          }
+        },
+        "enemy_opening_anchor": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                428.3765737881862,
+                395.37153347662775
+              ],
+              "assembly_half": [
+                35.53938982539026,
+                32.801193888431335
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                428.3765737881862,
+                395.37153347662775
+              ],
+              "assembly_half": [
+                55.84761258275612,
+                51.54473325324924
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                428.3765737881862,
+                395.37153347662775
+              ],
+              "assembly_half": [
+                101.54111378682931,
+                93.71769682408953
+              ]
+            }
+          }
+        },
+        "enemy_opening_shielded": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                513.6266793457853,
+                497.12415919000614
+              ],
+              "assembly_half": [
+                42.61199117535404,
+                41.242893206874584
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                513.6266793457853,
+                497.12415919000614
+              ],
+              "assembly_half": [
+                66.96170041841349,
+                64.81026075366006
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                513.6266793457853,
+                497.12415919000614
+              ],
+              "assembly_half": [
+                121.74854621529725,
+                117.83683773392737
+              ]
+            }
+          }
+        },
+        "enemy_opening_anchor_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                430.38957381032844,
+                397.38453349877
+              ],
+              "assembly_half": [
+                35.70639427167169,
+                32.96819833471277
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                430.38957381032844,
+                397.38453349877
+              ],
+              "assembly_half": [
+                56.11004814119837,
+                51.80716881169149
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                430.38957381032844,
+                397.38453349877
+              ],
+              "assembly_half": [
+                102.0182693476334,
+                94.19485238489362
+              ]
+            }
+          }
+        },
+        "enemy_opening_reactive_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.38326615095013,
+                400.3782258393917
+              ],
+              "assembly_half": [
+                35.954759858449194,
+                33.21656392149027
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.38326615095013,
+                400.3782258393917
+              ],
+              "assembly_half": [
+                56.50033692042016,
+                52.19745759091328
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.38326615095013,
+                400.3782258393917
+              ],
+              "assembly_half": [
+                102.72788530985484,
+                94.90446834711506
+              ]
+            }
+          }
+        },
+        "enemy_opening_shielded_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                514.3837049951379,
+                497.88118483935875
+              ],
+              "assembly_half": [
+                42.67479626626329,
+                41.305698297783835
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                514.3837049951379,
+                497.88118483935875
+              ],
+              "assembly_half": [
+                67.06039413269946,
+                64.90895446794602
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                514.3837049951379,
+                497.88118483935875
+              ],
+              "assembly_half": [
+                121.92798933218083,
+                118.01628085081096
+              ]
+            }
+          }
+        },
+        "enemy_opening_command_elite": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.7903204172247,
+                501.28780026144557
+              ],
+              "assembly_half": [
+                42.95741917535494,
+                41.588321206875484
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.7903204172247,
+                501.28780026144557
+              ],
+              "assembly_half": [
+                67.50451584698634,
+                65.3530761822329
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.7903204172247,
+                501.28780026144557
+              ],
+              "assembly_half": [
+                122.73548335815697,
+                118.82377487678708
+              ]
+            }
+          }
+        },
+        "enemy_opening_anchor_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.4348815361333,
+                400.42984122457483
+              ],
+              "assembly_half": [
+                35.95904202373846,
+                33.22084608677954
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.4348815361333,
+                400.42984122457483
+              ],
+              "assembly_half": [
+                56.5070660373033,
+                52.20418670779642
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                433.4348815361333,
+                400.42984122457483
+              ],
+              "assembly_half": [
+                102.74012006782418,
+                94.9167031050844
+              ]
+            }
+          }
+        },
+        "enemy_opening_reactive_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.07523089840470193,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                436.5834200323045,
+                422.1472087847572
+              ],
+              "assembly_half": [
+                32.844562917627606,
+                31.75851377591456
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11821998320738875,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                436.5834200323045,
+                422.1472087847572
+              ],
+              "assembly_half": [
+                51.612884584843385,
+                49.90623593358003
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.21494542401343408,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                436.5834200323045,
+                422.1472087847572
+              ],
+              "assembly_half": [
+                93.84160833607888,
+                90.73861078832732
+              ]
+            }
+          }
+        },
+        "enemy_opening_shielded_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.08296296296296296,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.6010640048864,
+                501.0985438491073
+              ],
+              "assembly_half": [
+                42.941717902627616,
+                41.57261993414816
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.13037037037037036,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.6010640048864,
+                501.0985438491073
+              ],
+              "assembly_half": [
+                67.47984241841482,
+                65.3284027536614
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.23703703703703702,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                517.6010640048864,
+                501.0985438491073
+              ],
+              "assembly_half": [
+                122.69062257893603,
+                118.77891409756616
+              ]
+            }
+          }
+        },
+        "enemy_opening_command_boss": {
+          "0": {
+            "span": [
+              1,
+              1
+            ],
+            "q_upper": 0.07249190938511327,
+            "display_size": [
+              59.733333333333334,
+              59.733333333333334
+            ],
+            "content_budget": null,
+            "target_longest_px": 56,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                521.575448663988,
+                505.07292850820875
+              ],
+              "assembly_half": [
+                37.81000016204962,
+                36.61370096629086
+              ]
+            }
+          },
+          "1": {
+            "span": [
+              2,
+              2
+            ],
+            "q_upper": 0.11391585760517799,
+            "display_size": [
+              93.86666666666666,
+              93.86666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 88,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                521.575448663988,
+                505.07292850820875
+              ],
+              "assembly_half": [
+                59.41571454036368,
+                57.53581580417135
+              ]
+            }
+          },
+          "2": {
+            "span": [
+              3,
+              2
+            ],
+            "q_upper": 0.2071197411003236,
+            "display_size": [
+              170.66666666666666,
+              170.66666666666666
+            ],
+            "content_budget": null,
+            "target_longest_px": 160,
+            "legacy_all_direction_diagnostic": {
+              "raw_half": [
+                521.575448663988,
+                505.07292850820875
+              ],
+              "assembly_half": [
+                108.02857189157032,
+                104.61057418940246
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "maxima": {
+    "main_referenced_groups": 1970,
+    "hyperspace_groups": 40,
+    "art_cells": 21,
+    "tier_cells": 60
+  },
+  "main_samples": [
+    "33001",
+    "30081",
+    "30086",
+    "33011",
+    "7018",
+    "7036",
+    "7037"
+  ],
+  "witnesses": {
+    "33001": {
+      "source": "main reachable level.xlsx",
+      "tier": "normal",
+      "current_positions": [
+        [
+          286.0,
+          140
+        ]
+      ],
+      "members": [
+        [
+          4,
+          1,
+          271001,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "art_cells": 1,
+      "tier_cells": 1
+    },
+    "30081": {
+      "source": "main reachable level.xlsx",
+      "tier": "normal",
+      "current_positions": [
+        [
+          400.0,
+          270
+        ],
+        [
+          286.0,
+          110
+        ],
+        [
+          58.0,
+          270
+        ],
+        [
+          172.0,
+          110
+        ],
+        [
+          514.0,
+          270
+        ],
+        [
+          400.0,
+          110
+        ],
+        [
+          286.0,
+          350
+        ],
+        [
+          58.0,
+          110
+        ],
+        [
+          172.0,
+          350
+        ],
+        [
+          514.0,
+          110
+        ],
+        [
+          400.0,
+          350
+        ],
+        [
+          286.0,
+          270
+        ],
+        [
+          58.0,
+          350
+        ],
+        [
+          172.0,
+          270
+        ],
+        [
+          514.0,
+          350
+        ]
+      ],
+      "members": [
+        [
+          1,
+          1,
+          48020,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          1,
+          48021,
+          2,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          48022,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          1,
+          48023,
+          2,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          48024,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          1,
+          48025,
+          2,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          48026,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          1,
+          48027,
+          2,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          48028,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          1,
+          48029,
+          2,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          48030,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          1,
+          48031,
+          2,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          48032,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          1,
+          48033,
+          2,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          48034,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "art_cells": 15,
+      "tier_cells": 15
+    },
+    "30086": {
+      "source": "main reachable level.xlsx",
+      "tier": "elite",
+      "current_positions": [
+        [
+          400.0,
+          110
+        ],
+        [
+          286.0,
+          350
+        ],
+        [
+          58.0,
+          110
+        ],
+        [
+          172.0,
+          350
+        ],
+        [
+          514.0,
+          110
+        ],
+        [
+          286.0,
+          110
+        ],
+        [
+          286.0,
+          270
+        ],
+        [
+          400.0,
+          350
+        ],
+        [
+          172.0,
+          270
+        ],
+        [
+          172.0,
+          110
+        ],
+        [
+          400.0,
+          270
+        ],
+        [
+          58.0,
+          350
+        ],
+        [
+          58.0,
+          270
+        ],
+        [
+          514.0,
+          350
+        ],
+        [
+          514.0,
+          270
+        ]
+      ],
+      "members": [
+        [
+          5,
+          2,
+          48120,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          48121,
+          1,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          2,
+          48122,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          48123,
+          1,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          2,
+          48124,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          8,
+          2,
+          48125,
+          4,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            2,
+            2
+          ]
+        ],
+        [
+          5,
+          2,
+          48126,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          48127,
+          1,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          2,
+          48128,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          8,
+          2,
+          48129,
+          4,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            2,
+            2
+          ]
+        ],
+        [
+          5,
+          2,
+          48130,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          48131,
+          1,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          2,
+          48132,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          48133,
+          1,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          5,
+          2,
+          48134,
+          2,
+          [
+            "cannon"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "art_cells": 21,
+      "tier_cells": 60
+    },
+    "33011": {
+      "source": "main reachable level.xlsx",
+      "tier": "elite",
+      "current_positions": [
+        [
+          172.0,
+          110
+        ],
+        [
+          400.0,
+          110
+        ],
+        [
+          58.0,
+          110
+        ],
+        [
+          514.0,
+          110
+        ],
+        [
+          286.0,
+          270
+        ],
+        [
+          172.0,
+          270
+        ],
+        [
+          400.0,
+          270
+        ],
+        [
+          58.0,
+          270
+        ],
+        [
+          514.0,
+          270
+        ],
+        [
+          286.0,
+          350
+        ],
+        [
+          172.0,
+          350
+        ],
+        [
+          400.0,
+          350
+        ],
+        [
+          58.0,
+          350
+        ],
+        [
+          514.0,
+          350
+        ],
+        [
+          286.0,
+          110
+        ]
+      ],
+      "members": [
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271013,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271020,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271020,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          271020,
+          1,
+          [
+            "laser"
+          ],
+          false,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          8,
+          2,
+          271019,
+          4,
+          [
+            "laser"
+          ],
+          false,
+          [
+            2,
+            2
+          ]
+        ]
+      ],
+      "art_cells": 18,
+      "tier_cells": 60
+    },
+    "7018": {
+      "source": "hyperspace configured routes",
+      "tier": "elite",
+      "current_positions": [
+        [
+          106,
+          255
+        ],
+        [
+          226,
+          255
+        ],
+        [
+          346,
+          255
+        ],
+        [
+          466,
+          255
+        ],
+        [
+          286,
+          155
+        ],
+        [
+          141,
+          335
+        ],
+        [
+          286,
+          335
+        ],
+        [
+          431,
+          335
+        ]
+      ],
+      "members": [
+        [
+          4,
+          2,
+          701800,
+          1,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          4,
+          2,
+          701801,
+          1,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          4,
+          2,
+          701802,
+          1,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          4,
+          2,
+          701803,
+          1,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          0,
+          2,
+          701804,
+          5,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          4,
+          2,
+          701805,
+          1,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          4,
+          2,
+          701806,
+          1,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          4,
+          2,
+          701807,
+          1,
+          [
+            "missile"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "art_cells": 8,
+      "tier_cells": 32
+    },
+    "7036": {
+      "source": "hyperspace configured routes",
+      "tier": "boss",
+      "current_positions": [
+        [
+          286,
+          190
+        ],
+        [
+          166,
+          350
+        ],
+        [
+          406,
+          350
+        ]
+      ],
+      "members": [
+        [
+          15,
+          3,
+          703600,
+          6,
+          [
+            "laser"
+          ],
+          true,
+          [
+            3,
+            2
+          ]
+        ],
+        [
+          1,
+          1,
+          703601,
+          1,
+          [
+            "laser"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          703602,
+          1,
+          [
+            "laser"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "art_cells": 8,
+      "tier_cells": 8
+    },
+    "7037": {
+      "source": "hyperspace configured routes",
+      "tier": "ultimate",
+      "current_positions": [
+        [
+          286,
+          210
+        ],
+        [
+          166,
+          350
+        ],
+        [
+          406,
+          350
+        ]
+      ],
+      "members": [
+        [
+          15,
+          3,
+          703700,
+          6,
+          [
+            "laser"
+          ],
+          true,
+          [
+            3,
+            2
+          ]
+        ],
+        [
+          1,
+          1,
+          703701,
+          1,
+          [
+            "laser"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1,
+          1,
+          703702,
+          1,
+          [
+            "laser"
+          ],
+          true,
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "art_cells": 8,
+      "tier_cells": 8
+    }
+  }
+}

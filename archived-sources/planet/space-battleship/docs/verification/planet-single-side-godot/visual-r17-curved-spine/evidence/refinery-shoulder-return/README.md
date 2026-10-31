@@ -1,0 +1,7 @@
+# Refinery shoulder returns to the section seam
+
+The refinery center sits only 0.09 radians from its independent section's outgoing boundary. Previously its 1.30-unit node width was still near full at that boundary, while the neighboring workshop section started at transit width. `planet_orbital_spine.gd::_section_width` now tapers only the refinery's short shoulder to the transit width at the actual boundary, leaving the furnace position and other node profiles unchanged. This changes the owned ring mesh, not the facility illustration or building state.
+
+`structure-driver.gd` runs the real main scene in Godot 4.7.2 with controlled built states. `stage_3.png` and `stage_4.png` are 1440×900 original screens; `quarter_simulated.png` is one controlled 90° phase. `runtime.txt` has an empty startup error and no GDScript error; `check-only.txt` records the entry script compile check. These fixtures do not test natural construction, claiming, a full revolution, or FPS.
+
+Author review at original size: the 90° seam's hard black step is less conspicuous, though a pale ledge and displaced cyan underside remain. The refinery's large dark under-shoulder at the normal phase remains visible. This is a local geometry correction for review, **not** refinery or whole-scene acceptance. The station, workshop, shipyard, common ring profile, joins and free end caps still require the original return work.

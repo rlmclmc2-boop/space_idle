@@ -1,0 +1,172 @@
+{
+  "source_commit": "f1cf60faf86b41acc26b62e3158c1a2846dcc5a6",
+  "viewport_physical": [
+    1440,
+    900
+  ],
+  "device_scale_factor": 1,
+  "pageerrors": [],
+  "checks": [
+    "preset same machine shows current collector+algorithm to collector target",
+    "sealed/overflow true detail identity and disabled equipment entry",
+    "controlled full200 storage includes2 sealed;198 main dense rows; no performance benchmark",
+    "select bulk100 and199, persistent selected3 at bottom, remove via summary and nearby formation",
+    "filter enum strings and own keys reject toString constructor arrays field arrays; current unchanged via v2 import"
+  ],
+  "images": [
+    {
+      "file": "scene-dense-initial-1440x900.png",
+      "family": "scene",
+      "case": "scene-dense-initial",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "6a5b1603196525867718dca796c92f4c8e57a74b307145da37e07d5a6cd83966"
+    },
+    {
+      "file": "scene-dense-scrolled-selected-summary-1440x900.png",
+      "family": "scene",
+      "case": "scene-dense-scrolled-selected-summary",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 12765,
+        "inner": 0
+      },
+      "sha256": "f7eb1814345dfe8a1688e9fb3a54b400d2278deaae2734fecd4b91e34efaa1d5"
+    },
+    {
+      "file": "scene-filter-prototype-name-rejection-1440x900.png",
+      "family": "scene",
+      "case": "scene-filter-prototype-name-rejection",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "025c26078fae525b2d6f8626cea3391bab93e8464a8c6b88056dc4503692a401"
+    },
+    {
+      "file": "scene-filter-string-own-key-rejection-1440x900.png",
+      "family": "scene",
+      "case": "scene-filter-string-own-key-rejection",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "64007b45b596cd513d89ebb1f62093427d33ba51ee011de0e80cec64e7e92d5a"
+    },
+    {
+      "file": "scene-overflow-detail-status-1440x900.png",
+      "family": "scene",
+      "case": "scene-overflow-detail-status",
+      "route": "hyperspace/drone",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "b5e6d51299c3ee7253296c0a63ff338e9eb35211b9ff48fbb9261d07f7d9fa17"
+    },
+    {
+      "file": "scene-preset-hanging-only-difference-1440x900.png",
+      "family": "scene",
+      "case": "scene-preset-hanging-only-difference",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "ba9b4912a6daeb54c93fe07ed3613611ff767b49bdd8431163d245759e95a09f"
+    },
+    {
+      "file": "scene-sealed-detail-status-1440x900.png",
+      "family": "scene",
+      "case": "scene-sealed-detail-status",
+      "route": "hyperspace/drone",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "1dc449e377ec96bd3d41c491a9c3c8c07ff21fe3eacdf8cb5713fd893c9ada79"
+    },
+    {
+      "file": "work-dense-initial-1440x900.png",
+      "family": "work",
+      "case": "work-dense-initial",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "d667e030869a299d5348b6a263e7b8b27018e1e73b785f478933852777b52833"
+    },
+    {
+      "file": "work-dense-scrolled-selected-summary-1440x900.png",
+      "family": "work",
+      "case": "work-dense-scrolled-selected-summary",
+      "route": "hyperspace/warehouse",
+      "scroll": {
+        "outer": 0,
+        "inner": 12844
+      },
+      "sha256": "8228ccc58813ea567bc0a6a63377cdef35bb4c6318c62014fe0e616091d6cee0"
+    },
+    {
+      "file": "work-filter-prototype-name-rejection-1440x900.png",
+      "family": "work",
+      "case": "work-filter-prototype-name-rejection",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "8561e423544e96723d06465281e9adab934f30fefff91644ab031af52d67beb7"
+    },
+    {
+      "file": "work-filter-string-own-key-rejection-1440x900.png",
+      "family": "work",
+      "case": "work-filter-string-own-key-rejection",
+      "route": "hyperspace/filter-import",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "0a5982641513c38555db04ad038df35de53f5aa7232d01b591567c280229e644"
+    },
+    {
+      "file": "work-overflow-detail-status-1440x900.png",
+      "family": "work",
+      "case": "work-overflow-detail-status",
+      "route": "hyperspace/drone",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "9c99400f18ccc12972520d4ad9e8c85c17f2c91f2287aa01305aae25650acab2"
+    },
+    {
+      "file": "work-preset-hanging-only-difference-1440x900.png",
+      "family": "work",
+      "case": "work-preset-hanging-only-difference",
+      "route": "hyperspace/presets",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "3a331e59335b441dfff4cd12b65cc6b00bd0954c3f438b314f1cdcd89a2ed9c0"
+    },
+    {
+      "file": "work-sealed-detail-status-1440x900.png",
+      "family": "work",
+      "case": "work-sealed-detail-status",
+      "route": "hyperspace/drone",
+      "scroll": {
+        "outer": 0,
+        "inner": 0
+      },
+      "sha256": "f035386c35e446cc01b415aadb6d2cc2c4c6f4d54ad382230e35fd5c4f609bd2"
+    }
+  ]
+}

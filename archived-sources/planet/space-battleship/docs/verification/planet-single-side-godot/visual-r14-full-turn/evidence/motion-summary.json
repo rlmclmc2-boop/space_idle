@@ -1,0 +1,11 @@
+{
+  "capture_method": "Godot 4.7.2 actual main framebuffer, 0.45s minimum sample interval; no engine frame cap",
+  "capture_wall_seconds": 11.756185,
+  "duration_wall_seconds": 176.437823,
+  "frames": 373,
+  "full_cycle_complete": true,
+  "key_png_frames": 14,
+  "station_shipyard_conservative_min_rect_gap_px": 20.5309143066406,
+  "station_shipyard_min_gap_frame": 187,
+  "surface_turns": 1.0507973767817
+}

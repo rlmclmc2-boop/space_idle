@@ -1,0 +1,221 @@
+{
+  "pageerrors": [],
+  "checks": [
+    {
+      "family": "scene",
+      "device": "equipment_finishing",
+      "status": "精密制造\n68%\n工作量 36.72 K / 54.00 K\n速度 14.4工作量 / 游戏秒\n预计剩余 20 分（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "device": "uranium_extraction",
+      "status": "铀萃取\n42%\n工作量 22.68 K / 54.00 K\n速度 14.4工作量 / 游戏秒\n预计剩余 36 分 15 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "device": "weapon_accuracy",
+      "status": "武器校准\n24%\n工作量 16.86 K / 70.26 K\n速度 14.4工作量 / 游戏秒\n预计剩余 61 分 48 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "device": "equipment_reinforcement",
+      "status": "装甲强化\n12%\n工作量 3.56 K / 29.67 K\n速度 14.4工作量 / 游戏秒\n预计剩余 30 分 13 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "device": "resource_refining",
+      "status": "资源精炼\n56%\n工作量 39.35 K / 70.26 K\n速度 14.4工作量 / 游戏秒\n预计剩余 35 分 46 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "device": "singularity",
+      "status": "AI奇点\n36%\n工作量 125.97 / 349.92\n速度 14.4工作量 / 游戏秒\n预计剩余 16 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "device": "fragment_condensation",
+      "status": "碎片凝聚\n0%\n工作量 0 / 60\n速度 14.4工作量 / 游戏秒\n预计剩余 5 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "device": "unification",
+      "status": "联合一体化\n0%\n工作量 0 / 1.62 M\n速度 14.4工作量 / 游戏秒\n预计剩余 31 小时 15 分（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "scene",
+      "research_state": "running",
+      "visible": "研究中"
+    },
+    {
+      "family": "scene",
+      "research_state": "paused",
+      "visible": "暂停"
+    },
+    {
+      "family": "scene",
+      "research_state": "unfunded",
+      "visible": "基础研究中 · 投入加速不足"
+    },
+    {
+      "family": "scene",
+      "research_state": "completed",
+      "visible": "本级研究完成"
+    },
+    {
+      "family": "scene",
+      "galaxy_state": "building",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n建设中"
+    },
+    {
+      "family": "scene",
+      "galaxy_state": "fog",
+      "selection": "地图所选 · 9\n未探索节点\n未探索"
+    },
+    {
+      "family": "scene",
+      "galaxy_state": "planned",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n规划地基"
+    },
+    {
+      "family": "scene",
+      "galaxy_state": "upgrading",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n升级中 · Lv.2仍生效"
+    },
+    {
+      "family": "scene",
+      "galaxy_state": "complete",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n已建成 Lv.3"
+    },
+    {
+      "family": "scene",
+      "planet_state": "building",
+      "facility": "新式船坞\n施工中"
+    },
+    {
+      "family": "scene",
+      "planet_state": "paused",
+      "facility": "新式船坞\n缺少额外施工人员"
+    },
+    {
+      "family": "scene",
+      "planet_state": "ready",
+      "facility": "新式船坞\n待领取"
+    },
+    {
+      "family": "scene",
+      "planet_state": "owned",
+      "facility": "新式船坞\n已领取 · 收益生效"
+    },
+    {
+      "family": "work",
+      "device": "equipment_finishing",
+      "status": "精密制造\n68%\n工作量 36.72 K / 54.00 K\n速度 14.4工作量 / 游戏秒\n预计剩余 20 分（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "device": "uranium_extraction",
+      "status": "铀萃取\n42%\n工作量 22.68 K / 54.00 K\n速度 14.4工作量 / 游戏秒\n预计剩余 36 分 15 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "device": "weapon_accuracy",
+      "status": "武器校准\n24%\n工作量 16.86 K / 70.26 K\n速度 14.4工作量 / 游戏秒\n预计剩余 61 分 48 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "device": "equipment_reinforcement",
+      "status": "装甲强化\n12%\n工作量 3.56 K / 29.67 K\n速度 14.4工作量 / 游戏秒\n预计剩余 30 分 13 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "device": "resource_refining",
+      "status": "资源精炼\n56%\n工作量 39.35 K / 70.26 K\n速度 14.4工作量 / 游戏秒\n预计剩余 35 分 46 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "device": "singularity",
+      "status": "AI奇点\n36%\n工作量 125.97 / 349.92\n速度 14.4工作量 / 游戏秒\n预计剩余 16 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "device": "fragment_condensation",
+      "status": "碎片凝聚\n0%\n工作量 0 / 60\n速度 14.4工作量 / 游戏秒\n预计剩余 5 秒（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "device": "unification",
+      "status": "联合一体化\n0%\n工作量 0 / 1.62 M\n速度 14.4工作量 / 游戏秒\n预计剩余 31 小时 15 分（游戏时间）\n续研岗位：有人 · 完成后续研 查看"
+    },
+    {
+      "family": "work",
+      "research_state": "running",
+      "visible": "研究中"
+    },
+    {
+      "family": "work",
+      "research_state": "paused",
+      "visible": "暂停"
+    },
+    {
+      "family": "work",
+      "research_state": "unfunded",
+      "visible": "基础研究中 · 投入加速不足"
+    },
+    {
+      "family": "work",
+      "research_state": "completed",
+      "visible": "本级研究完成"
+    },
+    {
+      "family": "work",
+      "galaxy_state": "building",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n建设中"
+    },
+    {
+      "family": "work",
+      "galaxy_state": "fog",
+      "selection": "地图所选 · 9\n未探索节点\n未探索"
+    },
+    {
+      "family": "work",
+      "galaxy_state": "planned",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n规划地基"
+    },
+    {
+      "family": "work",
+      "galaxy_state": "upgrading",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n升级中 · Lv.2仍生效"
+    },
+    {
+      "family": "work",
+      "galaxy_state": "complete",
+      "selection": "地图所选 · 9\n恒星能源阵列 9\n已建成 Lv.3"
+    },
+    {
+      "family": "work",
+      "planet_state": "building",
+      "facility": "新式船坞\n施工中"
+    },
+    {
+      "family": "work",
+      "planet_state": "paused",
+      "facility": "新式船坞\n缺少额外施工人员"
+    },
+    {
+      "family": "work",
+      "planet_state": "ready",
+      "facility": "新式船坞\n待领取"
+    },
+    {
+      "family": "work",
+      "planet_state": "owned",
+      "facility": "新式船坞\n已领取 · 收益生效"
+    }
+  ],
+  "extra": [
+    "budget open/close focuses appropriate control; mode keeps focus",
+    "precise>1e100 input retained through strategy change",
+    "0 invalid,0.1 valid continuous; no domain amount computation added",
+    "map tools inside scene; five development states; four planet linked responses"
+  ]
+}

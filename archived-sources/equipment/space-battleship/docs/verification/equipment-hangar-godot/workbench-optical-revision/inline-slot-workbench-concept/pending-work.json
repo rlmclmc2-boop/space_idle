@@ -1,0 +1,72 @@
+{
+  "current": "User approved delivered42ea R3 common direction; same-task native adaptation active, no new R3 runtime yet. Screenshot-cropped icon background source diagnosed; stable-ID alpha texture path retained.",
+  "runtime_source_commit": "22395e3aa67f9684bbf0d05fb503b6f770b77405",
+  "evidence": "card-alignment-revision/ledger.json",
+  "review": "review-card-alignment.html",
+  "shared_sources": {
+    "resource_display": {
+      "commit": "36258b1eb8a2beca7ef9641477be05a7991031ed",
+      "files": {
+        "src/ui/player_text.gd": "whole file exact bytes; only addition relative prior f688 is resource_number/_is_exact_integer_text"
+      },
+      "callsite": "equipment fees and existing Economy balance rows use native to_display raw → resource_number; tooltip retains raw"
+    },
+    "number_roles": {
+      "commit": "190a21b47574a0a4f5c9c7be798f7ec38224d5dd",
+      "files": {
+        "src/ui/bridge_theme.gd": "only number_role_color/apply_number_role and their source comment, exact function bytes; no constants required"
+      },
+      "callsite": "RichText current/gain via number_role_color(light); amount Label via apply_number_role(cost/insufficient,light); names/icons retain identity colors"
+    },
+    "integer_equipment_boundaries": {
+      "commit": "a83ad9c83aebdfc18ac98f4f784aeb16eca16da4",
+      "read": [
+        "docs/game-design/contracts/resources.md",
+        "docs/verification/integer-resources-implementation.md"
+      ],
+      "files": {
+        "src/systems/resource_amounts.gd": "whole exact helper file",
+        "src/systems/equipment.gd": "Resources preload; _quote_levels final whole_map only",
+        "src/systems/economy.gd": "Resources preload; restore wallet normalization; accept_budget; can_pay/payment normalized costs and candidate holdings. Existing balance_rows raw field remains and formatter becomes resource_number."
+      },
+      "not_imported": [
+        "Research",
+        "Session chrono/material/forge",
+        "Hyperspace energy and rewards",
+        "Reactor",
+        "Galaxy",
+        "drop/sample/credit_yield production changes",
+        "budget_changed signal from older source tree"
+      ],
+      "display_boundary": "Owner integer_text/cost_texts extreme ×10^ strings intentionally not reparsed. Equipment retains authoritative canonical Amount costs and native to_display raw, consumed by fixed resource_number; no UI ceil or private resource amount math.",
+      "latest_fix_commit": "f9244a30ad1843128aaa0a620c4dc3e4866685b2",
+      "latest_fix_scope": "resource_amounts.gd exact latest bytes; Session/Hyperspace fix methods outside current equipment closure, not imported"
+    }
+  },
+  "independent_implementation_remaining": [
+    "Consume overall fixed minimal R3 material source into existing native cards/select/buttons preserving16px/layout/clipping",
+    "Same-thread affected current R3 full screenshots/actions including original-alpha icons on light cards"
+  ],
+  "remaining": [
+    "Overall fixed R3 plate/key/select material state source needed; current190a number roles already integrated",
+    "Root/original review of latest native R3 whole screens/actions after implementation"
+  ],
+  "actual_compaction": false,
+  "denied_actions": [],
+  "unknown_outcomes": [],
+  "background_processes": [],
+  "not_claimed": [
+    "Original reviewer passed latest candidate",
+    "User final acceptance",
+    "Main merge",
+    "Cross-module style approval",
+    "Global resource integer contract integration",
+    "Unrelated full-game regression"
+  ],
+  "auxiliary_hover": "Native exact original resource amount, not forced one-decimal display",
+  "product_edits_this_feedback_round": true,
+  "new_runtime_or_evidence_this_feedback_round": true,
+  "previous_compacted_handoff": "6a9b7b48f7fd9931698ffffbb78c8af0dc6e84e0 preserved below new current sections",
+  "stop_reason": null,
+  "icon_diagnosis": "r3-native-adaptation/icon-source-diagnosis.json"
+}

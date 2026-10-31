@@ -1,0 +1,126 @@
+[
+  {
+    "case": "loss-hidden",
+    "samples_usec": {
+      "baseline": [
+        1305758,
+        1380451,
+        1254572
+      ],
+      "candidate": [
+        1500445,
+        1512566,
+        1456228
+      ],
+      "revised": [
+        1320079,
+        1310672,
+        1278990
+      ]
+    },
+    "median_usec": {
+      "baseline": 1305758,
+      "candidate": 1500445,
+      "revised": 1310672
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.149098837610032,
+      "revised": 1.003763331337047
+    },
+    "simulation_facts_equal": true
+  },
+  {
+    "case": "loss-visible",
+    "samples_usec": {
+      "baseline": [
+        1245300,
+        1252435,
+        1251723
+      ],
+      "candidate": [
+        1470534,
+        1462756,
+        1458982
+      ],
+      "revised": [
+        1352955,
+        1282000,
+        1350635
+      ]
+    },
+    "median_usec": {
+      "baseline": 1251723,
+      "candidate": 1462756,
+      "revised": 1350635
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.168594010016593,
+      "revised": 1.079020677897586
+    },
+    "simulation_facts_equal": true
+  },
+  {
+    "case": "recovery-hidden",
+    "samples_usec": {
+      "baseline": [
+        1253593,
+        1287351,
+        1292884
+      ],
+      "candidate": [
+        1492030,
+        1470508,
+        1569597
+      ],
+      "revised": [
+        1277927,
+        1259855,
+        1268972
+      ]
+    },
+    "median_usec": {
+      "baseline": 1287351,
+      "candidate": 1492030,
+      "revised": 1268972
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.15899238047743,
+      "revised": 0.9857233963386831
+    },
+    "simulation_facts_equal": true
+  },
+  {
+    "case": "recovery-visible",
+    "samples_usec": {
+      "baseline": [
+        1318878,
+        1290643,
+        1288732
+      ],
+      "candidate": [
+        1508086,
+        1534798,
+        1508133
+      ],
+      "revised": [
+        1328082,
+        1282832,
+        1335625
+      ]
+    },
+    "median_usec": {
+      "baseline": 1290643,
+      "candidate": 1508133,
+      "revised": 1328082
+    },
+    "relative_to_baseline": {
+      "baseline": 1.0,
+      "candidate": 1.168512904033106,
+      "revised": 1.0290080215830404
+    },
+    "simulation_facts_equal": true
+  }
+]

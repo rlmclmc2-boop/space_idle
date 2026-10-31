@@ -1,0 +1,3036 @@
+{
+  "kind": "G2 design installation records, 1440x900 primary client; not Godot import/validation",
+  "contract_source": "game-design/art/modules/reactor.md v1; draft until actual Godot imports and scene acceptance",
+  "variants": [
+    {
+      "family": "scene",
+      "state": "condensation-hidden",
+      "coordinate_space": "reactor-room local logical pixels",
+      "canvas_logical_size": [
+        870.890625,
+        358
+      ],
+      "resources": [
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.weapons",
+          "module_id": "weapons",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/weapons.svg",
+            "sha256": "9e0cdf825ffd93e14ed56805ffa7daa6c94483874a1318b3f4498c90a9d3cccd",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              115,
+              436,
+              369
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.slot.weapons",
+            "install_rect_logical": [
+              120.359375,
+              43.546875,
+              115.8125,
+              98.015625
+            ],
+            "target_anchor_logical": [
+              178.0,
+              128.28125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.265625,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                12,
+                81.671875,
+                39
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                35,
+                81.671875,
+                16
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                70,
+                30.015625,
+                24
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                94,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                105,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                141,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                141,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                97.65625,
+                141,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                97.65625,
+                141,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                213.21875,
+                141,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                213.21875,
+                141,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.smelting",
+          "module_id": "smelting",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/smelting.svg",
+            "sha256": "51c169bd0e9c991600f8a0812aec50b30375fc2bbb25159b39847e283c8cbc9e",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              77,
+              436,
+              407
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.slot.smelting",
+            "install_rect_logical": [
+              120.359375,
+              208.453125,
+              115.8125,
+              108.109375
+            ],
+            "target_anchor_logical": [
+              178.0,
+              303.28125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.265625,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                187,
+                91.671875,
+                39
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                210,
+                91.671875,
+                16
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                245,
+                30.015625,
+                24
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                269,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                280,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                316,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                316,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                97.65625,
+                316,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                97.65625,
+                316,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                213.21875,
+                316,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                213.21875,
+                316,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.defence",
+          "module_id": "defence",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/defence.svg",
+            "sha256": "bd05126c4301de152e32dd15dbd9d273368e3e3c70fcc09caeb88614e4109f1f",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              37,
+              102,
+              434,
+              382
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                64,
+                336
+              ],
+              "outward": [
+                -1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                64,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.slot.defence",
+            "install_rect_logical": [
+              728.71875,
+              120.09375,
+              115.28125,
+              101.46875
+            ],
+            "target_anchor_logical": [
+              786.890625,
+              208.28125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.265625,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                627.890625,
+                92,
+                81.671875,
+                39
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                627.890625,
+                115,
+                81.671875,
+                16
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                628.890625,
+                150,
+                30.015625,
+                24
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                628.890625,
+                174,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                628.890625,
+                185,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                629.890625,
+                221,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                629.890625,
+                221,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                706.546875,
+                221,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                706.546875,
+                221,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                822.109375,
+                221,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                822.109375,
+                221,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                46,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.core_housing",
+          "module_id": null,
+          "layer": "core_housing",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/core.svg",
+            "sha256": "d1387aa79d0db5094419fddaca3dd22cea143252bb45e9a90649f5323da2f8e3",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              86,
+              103,
+              340,
+              378
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": null,
+            "power_out": {
+              "position_px": [
+                256,
+                464
+              ],
+              "outward": [
+                0,
+                1
+              ]
+            },
+            "junctions": {},
+            "effects": {
+              "work": [
+                257,
+                248
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.core",
+            "install_rect_logical": [
+              375.671875,
+              109.453125,
+              119.53125,
+              134.6484375
+            ],
+            "target_anchor_logical": [
+              435.4375,
+              227.578125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.3515625,
+            "clip_rect_logical": null
+          },
+          "regions": {},
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                107,
+                98,
+                300,
+                300
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        }
+      ]
+    },
+    {
+      "family": "scene",
+      "state": "condensation-open",
+      "coordinate_space": "reactor-room local logical pixels",
+      "canvas_logical_size": [
+        870.890625,
+        358
+      ],
+      "resources": [
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.weapons",
+          "module_id": "weapons",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/weapons.svg",
+            "sha256": "9e0cdf825ffd93e14ed56805ffa7daa6c94483874a1318b3f4498c90a9d3cccd",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              115,
+              436,
+              369
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.slot.weapons",
+            "install_rect_logical": [
+              120.359375,
+              43.546875,
+              115.8125,
+              98.015625
+            ],
+            "target_anchor_logical": [
+              178.0,
+              128.28125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.265625,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                12,
+                81.671875,
+                39
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                35,
+                81.671875,
+                16
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                70,
+                30.015625,
+                24
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                94,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                105,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                141,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                141,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                97.65625,
+                141,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                97.65625,
+                141,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                213.21875,
+                141,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                213.21875,
+                141,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.smelting",
+          "module_id": "smelting",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/smelting.svg",
+            "sha256": "51c169bd0e9c991600f8a0812aec50b30375fc2bbb25159b39847e283c8cbc9e",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              77,
+              436,
+              407
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.slot.smelting",
+            "install_rect_logical": [
+              120.359375,
+              208.453125,
+              115.8125,
+              108.109375
+            ],
+            "target_anchor_logical": [
+              178.0,
+              303.28125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.265625,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                187,
+                91.671875,
+                39
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                210,
+                91.671875,
+                16
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                245,
+                30.015625,
+                24
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                269,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                280,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                316,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                316,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                97.65625,
+                316,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                97.65625,
+                316,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                213.21875,
+                316,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                213.21875,
+                316,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.defence",
+          "module_id": "defence",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/defence.svg",
+            "sha256": "bd05126c4301de152e32dd15dbd9d273368e3e3c70fcc09caeb88614e4109f1f",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              37,
+              102,
+              434,
+              382
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                64,
+                336
+              ],
+              "outward": [
+                -1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                64,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.slot.defence",
+            "install_rect_logical": [
+              728.71875,
+              40.09375,
+              115.28125,
+              101.46875
+            ],
+            "target_anchor_logical": [
+              786.890625,
+              128.28125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.265625,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                627.890625,
+                12,
+                81.671875,
+                39
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                627.890625,
+                35,
+                81.671875,
+                16
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                628.890625,
+                70,
+                30.015625,
+                24
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                628.890625,
+                94,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                628.890625,
+                105,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                629.890625,
+                141,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                629.890625,
+                141,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                706.546875,
+                141,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                706.546875,
+                141,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                822.109375,
+                141,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                822.109375,
+                141,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                46,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.condensation",
+          "module_id": "condensation",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/condensation.svg",
+            "sha256": "93f150dd7501da4bd7b8e611ce2b5a9ef27283b1e7ae035027495faa60b17571",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              37,
+              77,
+              434,
+              407
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                64,
+                336
+              ],
+              "outward": [
+                -1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                64,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.slot.condensation",
+            "install_rect_logical": [
+              728.71875,
+              214.453125,
+              115.28125,
+              108.109375
+            ],
+            "target_anchor_logical": [
+              786.890625,
+              309.28125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.265625,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                627.890625,
+                193,
+                71.671875,
+                39
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                627.890625,
+                216,
+                71.671875,
+                16
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                628.890625,
+                251,
+                25.015625,
+                24
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                628.890625,
+                275,
+                25.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                628.890625,
+                286,
+                25.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                629.890625,
+                322,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                629.890625,
+                322,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                710.4375,
+                322,
+                58.90625,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                710.4375,
+                322,
+                58.90625,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                822.109375,
+                322,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                822.109375,
+                322,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                46,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.core_housing",
+          "module_id": null,
+          "layer": "core_housing",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/core.svg",
+            "sha256": "d1387aa79d0db5094419fddaca3dd22cea143252bb45e9a90649f5323da2f8e3",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              86,
+              103,
+              340,
+              378
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": null,
+            "power_out": {
+              "position_px": [
+                256,
+                464
+              ],
+              "outward": [
+                0,
+                1
+              ]
+            },
+            "junctions": {},
+            "effects": {
+              "work": [
+                257,
+                248
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              870.890625,
+              358
+            ],
+            "slot_id": "reactor.core",
+            "install_rect_logical": [
+              375.671875,
+              109.453125,
+              119.53125,
+              134.6484375
+            ],
+            "target_anchor_logical": [
+              435.4375,
+              227.578125
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.3515625,
+            "clip_rect_logical": null
+          },
+          "regions": {},
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                107,
+                98,
+                300,
+                300
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        }
+      ]
+    },
+    {
+      "family": "work",
+      "state": "condensation-hidden",
+      "coordinate_space": "reactor-room local logical pixels",
+      "canvas_logical_size": [
+        844.890625,
+        318
+      ],
+      "resources": [
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.weapons",
+          "module_id": "weapons",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/weapons.svg",
+            "sha256": "9e0cdf825ffd93e14ed56805ffa7daa6c94483874a1318b3f4498c90a9d3cccd",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              115,
+              436,
+              369
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.slot.weapons",
+            "install_rect_logical": [
+              120.369140625,
+              37.626953125,
+              104.7421875,
+              88.646484375
+            ],
+            "target_anchor_logical": [
+              172.5,
+              114.26171875
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.240234375,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                11,
+                73.515625,
+                36.390625
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                33,
+                73.515625,
+                14.390625
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                66,
+                30.015625,
+                22
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                88,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                99,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                123,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                123,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                91.65625,
+                123,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                91.65625,
+                123,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                201.21875,
+                123,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                201.21875,
+                123,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.smelting",
+          "module_id": "smelting",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/smelting.svg",
+            "sha256": "51c169bd0e9c991600f8a0812aec50b30375fc2bbb25159b39847e283c8cbc9e",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              77,
+              436,
+              407
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.slot.smelting",
+            "install_rect_logical": [
+              120.369140625,
+              185.498046875,
+              104.7421875,
+              97.775390625
+            ],
+            "target_anchor_logical": [
+              172.5,
+              271.26171875
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.240234375,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                168,
+                82.515625,
+                36.390625
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                190,
+                82.515625,
+                14.390625
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                223,
+                30.015625,
+                22
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                245,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                256,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                280,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                280,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                91.65625,
+                280,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                91.65625,
+                280,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                201.21875,
+                280,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                201.21875,
+                280,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.defence",
+          "module_id": "defence",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/defence.svg",
+            "sha256": "bd05126c4301de152e32dd15dbd9d273368e3e3c70fcc09caeb88614e4109f1f",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              37,
+              102,
+              434,
+              382
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                64,
+                336
+              ],
+              "outward": [
+                -1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                64,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.slot.defence",
+            "install_rect_logical": [
+              714.779296875,
+              110.50390625,
+              104.26171875,
+              91.76953125
+            ],
+            "target_anchor_logical": [
+              767.390625,
+              190.26171875
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.240234375,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                613.890625,
+                87,
+                73.515625,
+                36.390625
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                613.890625,
+                109,
+                73.515625,
+                14.390625
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                614.890625,
+                142,
+                30.015625,
+                22
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                614.890625,
+                164,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                614.890625,
+                175,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                615.890625,
+                199,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                615.890625,
+                199,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                686.546875,
+                199,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                686.546875,
+                199,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                796.109375,
+                199,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                796.109375,
+                199,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                46,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.core_housing",
+          "module_id": null,
+          "layer": "core_housing",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/core.svg",
+            "sha256": "d1387aa79d0db5094419fddaca3dd22cea143252bb45e9a90649f5323da2f8e3",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              86,
+              103,
+              340,
+              378
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": null,
+            "power_out": {
+              "position_px": [
+                256,
+                464
+              ],
+              "outward": [
+                0,
+                1
+              ]
+            },
+            "junctions": {},
+            "effects": {
+              "work": [
+                257,
+                248
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.core",
+            "install_rect_logical": [
+              370.640625,
+              96.859375,
+              103.59375,
+              116.6953125
+            ],
+            "target_anchor_logical": [
+              422.4375,
+              199.234375
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.3046875,
+            "clip_rect_logical": null
+          },
+          "regions": {},
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                107,
+                98,
+                300,
+                300
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        }
+      ]
+    },
+    {
+      "family": "work",
+      "state": "condensation-open",
+      "coordinate_space": "reactor-room local logical pixels",
+      "canvas_logical_size": [
+        844.890625,
+        318
+      ],
+      "resources": [
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.weapons",
+          "module_id": "weapons",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/weapons.svg",
+            "sha256": "9e0cdf825ffd93e14ed56805ffa7daa6c94483874a1318b3f4498c90a9d3cccd",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              115,
+              436,
+              369
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.slot.weapons",
+            "install_rect_logical": [
+              120.369140625,
+              37.626953125,
+              104.7421875,
+              88.646484375
+            ],
+            "target_anchor_logical": [
+              172.5,
+              114.26171875
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.240234375,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                11,
+                73.515625,
+                36.390625
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                33,
+                73.515625,
+                14.390625
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                66,
+                30.015625,
+                22
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                88,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                99,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                123,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                123,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                91.65625,
+                123,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                91.65625,
+                123,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                201.21875,
+                123,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                201.21875,
+                123,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.smelting",
+          "module_id": "smelting",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/smelting.svg",
+            "sha256": "51c169bd0e9c991600f8a0812aec50b30375fc2bbb25159b39847e283c8cbc9e",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              39,
+              77,
+              436,
+              407
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                448,
+                336
+              ],
+              "outward": [
+                1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                448,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.slot.smelting",
+            "install_rect_logical": [
+              120.369140625,
+              185.498046875,
+              104.7421875,
+              97.775390625
+            ],
+            "target_anchor_logical": [
+              172.5,
+              271.26171875
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.240234375,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                19,
+                168,
+                82.515625,
+                36.390625
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                19,
+                190,
+                82.515625,
+                14.390625
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                20,
+                223,
+                30.015625,
+                22
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                20,
+                245,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                20,
+                256,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                21,
+                280,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                21,
+                280,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                91.65625,
+                280,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                91.65625,
+                280,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                201.21875,
+                280,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                201.21875,
+                280,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                430,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.defence",
+          "module_id": "defence",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/defence.svg",
+            "sha256": "bd05126c4301de152e32dd15dbd9d273368e3e3c70fcc09caeb88614e4109f1f",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              37,
+              102,
+              434,
+              382
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                64,
+                336
+              ],
+              "outward": [
+                -1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                64,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.slot.defence",
+            "install_rect_logical": [
+              714.779296875,
+              33.50390625,
+              104.26171875,
+              91.76953125
+            ],
+            "target_anchor_logical": [
+              767.390625,
+              113.26171875
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.240234375,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                613.890625,
+                10,
+                73.515625,
+                36.390625
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                613.890625,
+                32,
+                73.515625,
+                14.390625
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                614.890625,
+                65,
+                30.015625,
+                22
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                614.890625,
+                87,
+                30.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                614.890625,
+                98,
+                30.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                615.890625,
+                122,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                615.890625,
+                122,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                686.546875,
+                122,
+                66.6875,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                686.546875,
+                122,
+                66.6875,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                796.109375,
+                122,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                796.109375,
+                122,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                46,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.device.condensation",
+          "module_id": "condensation",
+          "layer": "device",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/condensation.svg",
+            "sha256": "93f150dd7501da4bd7b8e611ce2b5a9ef27283b1e7ae035027495faa60b17571",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              37,
+              77,
+              434,
+              407
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": {
+              "position_px": [
+                64,
+                336
+              ],
+              "outward": [
+                -1,
+                0
+              ]
+            },
+            "power_out": null,
+            "junctions": {},
+            "effects": {
+              "work": [
+                64,
+                336
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.slot.condensation",
+            "install_rect_logical": [
+              714.779296875,
+              185.498046875,
+              104.26171875,
+              97.775390625
+            ],
+            "target_anchor_logical": [
+              767.390625,
+              271.26171875
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.240234375,
+            "clip_rect_logical": null
+          },
+          "regions": {
+            "name": {
+              "rect_logical": [
+                613.890625,
+                168,
+                64.515625,
+                36.390625
+              ],
+              "binding": "name",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effect_summary": {
+              "rect_logical": [
+                613.890625,
+                190,
+                64.515625,
+                14.390625
+              ],
+              "binding": "effect_summary",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "manual_supply": {
+              "rect_logical": [
+                614.890625,
+                223,
+                25.015625,
+                22
+              ],
+              "binding": "manual_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "free_supply": {
+              "rect_logical": [
+                614.890625,
+                245,
+                25.015625,
+                11
+              ],
+              "binding": "free_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "effective_supply": {
+              "rect_logical": [
+                614.890625,
+                256,
+                25.015625,
+                11
+              ],
+              "binding": "effective_supply",
+              "role": "readout",
+              "hit_rect_logical": null
+            },
+            "allocation_minus": {
+              "rect_logical": [
+                615.890625,
+                280,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_minus",
+              "role": "control",
+              "hit_rect_logical": [
+                615.890625,
+                280,
+                27.78125,
+                24
+              ]
+            },
+            "allocation_input": {
+              "rect_logical": [
+                690.4375,
+                280,
+                58.90625,
+                24
+              ],
+              "binding": "allocation_input",
+              "role": "control",
+              "hit_rect_logical": [
+                690.4375,
+                280,
+                58.90625,
+                24
+              ]
+            },
+            "allocation_plus": {
+              "rect_logical": [
+                796.109375,
+                280,
+                27.78125,
+                24
+              ],
+              "binding": "allocation_plus",
+              "role": "control",
+              "hit_rect_logical": [
+                796.109375,
+                280,
+                27.78125,
+                24
+              ]
+            }
+          },
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                46,
+                318,
+                36,
+                36
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        },
+        {
+          "contract_version": 1,
+          "status": "draft",
+          "asset_id": "reactor.core_housing",
+          "module_id": null,
+          "layer": "core_housing",
+          "resource": {
+            "path": "res://docs/ui-redesign-plan/g1-internal/art/reactor/core.svg",
+            "sha256": "d1387aa79d0db5094419fddaca3dd22cea143252bb45e9a90649f5323da2f8e3",
+            "canvas_px": [
+              512,
+              512
+            ],
+            "visible_rect_px": [
+              86,
+              103,
+              340,
+              378
+            ]
+          },
+          "anchors": {
+            "install": [
+              256,
+              434
+            ],
+            "power_in": null,
+            "power_out": {
+              "position_px": [
+                256,
+                464
+              ],
+              "outward": [
+                0,
+                1
+              ]
+            },
+            "junctions": {},
+            "effects": {
+              "work": [
+                257,
+                248
+              ]
+            }
+          },
+          "layout": {
+            "canvas_logical_size": [
+              844.890625,
+              318
+            ],
+            "slot_id": "reactor.core",
+            "install_rect_logical": [
+              370.640625,
+              96.859375,
+              103.59375,
+              116.6953125
+            ],
+            "target_anchor_logical": [
+              422.4375,
+              199.234375
+            ],
+            "rotation_deg": 0,
+            "scale_mode": "fit_visible",
+            "max_scale": 0.3046875,
+            "clip_rect_logical": null
+          },
+          "regions": {},
+          "effects": {
+            "work": {
+              "anchor_key": "anchors.effects.work",
+              "envelope_rect_px": [
+                107,
+                98,
+                300,
+                300
+              ],
+              "clip_rect_px": null,
+              "binding": "effective_supply"
+            }
+          },
+          "import": {
+            "source_import_path": null,
+            "settings_snapshot": {}
+          },
+          "pending": "No Godot .import exists; source/anchors/layout are design records, not ready/imported assets."
+        }
+      ]
+    }
+  ]
+}

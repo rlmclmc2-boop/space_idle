@@ -1,0 +1,12 @@
+9db6905e07be9e4dd523d17fea2fa8cd7c896b37009b84ecb82e5bcf8038c2d9  scripts/planet_orbital_spine.gd
+ed454b58dcc39ed0debd407f8ed3fc9938e0ca297d8f264c2ee013627baf5348  assets/planets/orbital_spine/deck-armor-continuous.png
+bea8f3133a70bf19de8f624f10429ffaf83ec239ee6d3806d6c17dea1934443e  assets/planets/orbital_spine/deck-armor-continuous.png.import
+6b1afecd9a83e3deda37625cb54791d916797113844123ac9eaa131179ca41c3  assets/planets/orbital_spine/deck-armor-continuous-prompt.txt
+51820ebb7348566d7ab5155842883a0a9ff7f7e8b3c909b82548c4adea5a4ec5  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/quarter_simulated.png
+178980da8c68b28071adb6ba0ee48c53d6a0797f6a647a577161ba54ccf60133  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/stage_1.png
+413980326a7444ae58aec86dfc195315e545b6d638294ce9b01ae71ad17c204b  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/stage_3.png
+206d6c31a8ab697efcd50b6c750d9f8fcedbe9bbe42b67b46a2703d9ebfb8394  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/stage_4.png
+6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/check.txt
+30cdb910158375d5e55da8bb6455f9fd2aabcd0b2528d0922de55b9b58d31c1e  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/import.txt
+cfcfc975f16525faf323293da6c1ede206593e52e7fba165fe85acacf66463b4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/run.txt
+ec5592903e37012ae39256eb945c27de34f37a4690e082b2d94798ad029174f4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/continuous-armor-spine/selected-driver.gd.txt

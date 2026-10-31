@@ -1,0 +1,48 @@
+extends SceneTree
+const OUT := "/tmp/planet-ring-six"
+func _initialize() -> void: call_deferred("run")
+func shot(name: String) -> void:
+	await process_frame
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT.path_join(name + ".png"))
+func run() -> void:
+	DirAccess.make_dir_recursive_absolute(OUT)
+	root.size = Vector2i(1440, 900)
+	var backdrop := ColorRect.new()
+	backdrop.color = Color("061723")
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root.add_child(backdrop)
+	var visual = load("res://scripts/planet_visual.gd").new()
+	backdrop.add_child(visual)
+	visual.position = Vector2(400, 45)
+	visual.size = Vector2(808, 810)
+	await process_frame
+	visual.globe.prepare_material()
+	var config: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://generated/config.json"))
+	var types := ["auto_explore", "refinery", "equipment", "shipyard"]
+	var entries: Array = []
+	for index in 4: entries.append({"id":str(index), "type":types[index], "owned":true})
+	for row in config.planet.planet:
+		if int(row.id) > 6: break
+		var copy: Dictionary = row.duplicate(true)
+		copy.visualFacilities = entries
+		visual.configure(str(row.id), copy)
+		await create_timer(0.35).timeout
+		visual.advance(0.05, false)
+		await shot("planet_%s" % row.id)
+	var bare: Dictionary = config.planet.planet[1].duplicate(true)
+	bare.visualFacilities = []
+	visual.configure("2", bare)
+	await create_timer(0.6).timeout
+	assert(visual.facilities.is_empty())
+	assert(visual.architecture._owned.is_empty())
+	await shot("switch_to_bare_2")
+	var complete: Dictionary = config.planet.planet[0].duplicate(true)
+	complete.visualFacilities = entries
+	visual.configure("1", complete)
+	await create_timer(0.6).timeout
+	assert(visual.facilities.size() == 4)
+	assert(visual.architecture._owned.size() == 4)
+	await shot("switch_back_complete_1")
+	quit()

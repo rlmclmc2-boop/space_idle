@@ -1,0 +1,25 @@
+{
+  "source_commit": "243b24a199f6eb5757a6ddd5118052c8eb5a4f8f",
+  "previous": "6829c44af95b4ded820e84b34623c65caf3a7380",
+  "fixed_shared_source": "da018a65cbf52eda9cbea0db4dcf640c09b4da86",
+  "equipment_sha256": "81428e7c1837ca7e6fca66867123bdd0cad9b3a3976a24ddc9afe0f27bc0411c",
+  "equipment_change": "Exactly one call ResourceVisuals.color(id) -> ResourceVisuals.icon_modulate(id); normalized entire file equals prior",
+  "shared_exact_files": {
+    "src/ui/resource_visuals.gd": "4c4cba630f027319ceb6d6aa345bcdc886873d130bc2165e9a83718f54f7fc4f",
+    "assets/ui/public_shell/resource-material-atlas.png": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec",
+    "assets/ui/public_shell/resource-material-atlas.png.import": "ff7f00f85a09e351da9b1b949a2b755ac1320c8a06f753e8485efd8332188fa7",
+    "assets/ui/public_shell/resource-material-atlas-source.json": "f45578ec86aa84494c39452814d576e27d9e3d3f79537b63f7824e45a99a9bc2",
+    "assets/ui/public_shell/resource-material-atlas-prompt.txt": "a6b60a169304761b575a5c34bd6742dd94f58589d1dcaf1b9c9c898ffb0a3ffb"
+  },
+  "unchanged_files": {
+    "src/main.gd": "5fbd98b5b2607b86ecb4dd921395a4b24c144b6d58a8f93c36f83e8de9514c7f",
+    "src/game_session.gd": "207018ae172b3d855ef4990833ce95e8095696847c18e4249ad7c3fb931f2dd6",
+    "src/systems/equipment.gd": "7c60bb46bc30e24909ccd4db3a24a85c800fedc02b200b241ec641dac02bdb26",
+    "src/systems/economy.gd": "38780135a3094f76a41d77048cfb59445101159ac15ff4c75a1434ffb2518702",
+    "project.godot": "06c7e89e15f1c35756f485e129d61f829a11d695bff41e4038e122051032c6e9",
+    "assets/ui/equipment/materials-20261029/painted-console-shell.png": "f5aa0c10ee10581319eb257043e526321b5f0fd6b51dbece53d9e62b9c786ce1",
+    "assets/ui/public_shell/resource-jewel.svg": "6e779759432ef9647f8680bce60c4ccff974d44f6ca86dd2496f437c27cb2fb4",
+    "assets/ui/public_shell/resource-matter.svg": "b45ec0261f6fa44d41235f1cbc2c9f88dce49e9ba50507237e7ac926ff0e8797"
+  },
+  "norm_change": "Only fixed resource identity paragraph in13 section2.2; remainder equals prior"
+}

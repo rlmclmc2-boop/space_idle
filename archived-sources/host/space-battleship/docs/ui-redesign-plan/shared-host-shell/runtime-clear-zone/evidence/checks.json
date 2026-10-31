@@ -1,0 +1,85 @@
+{
+	"all_ok": true,
+	"checks": [
+		{
+			"detail": "",
+			"id": "startup",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "base_and_projection",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "equipment_single_and_chrome",
+			"ok": true
+		},
+		{
+			"detail": [
+				"铁：0",
+				"铀：0",
+				"时空微粒：1.13万"
+			],
+			"id": "resource_readouts",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "ship_nav_click",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "selected_hover_ink",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "settings_route",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "spinbox_native_material",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "spinbox_focus",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "spinbox_disabled",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "locked_growth_stays_put",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "locked_universe_stays_put",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "equipment_return",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "resource_details",
+			"ok": true
+		},
+		{
+			"detail": null,
+			"id": "batch_blocks_navigation",
+			"ok": true
+		}
+	],
+	"source": "main e3b38d7b plus isolated public zone shell; no gameplay fixture"
+}

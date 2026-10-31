@@ -1,0 +1,104 @@
+{
+  "report_kind": "historical_evidence_and_static_route_comparison",
+  "base_commit": "e93c221239a10d377b2ca89dd395ebcfa99c9819",
+  "rejected_design_preserved_at": "f85e020f5ce4df472e1e8de81a9d40d4f7f6b64c",
+  "source_commit": "573e9312f6fd6d9257a5e78aa5588b0403751441",
+  "source_url_base": "https://raw.githubusercontent.com/rlmclmc2-boop/space_idle/573e9312f6fd6d9257a5e78aa5588b0403751441/",
+  "original_video_shape": [
+    1372,
+    884
+  ],
+  "original_video_fps": 10,
+  "original_video_frames": 120,
+  "original_video_seconds": 12,
+  "historical_capture_environment": "Linux llvmpipe, page-owned simulated-time capture, synthetic unlocked states",
+  "decoder_command": "ffmpeg -i INPUT.mp4 -vf 'select=eq(n\\,0)+eq(n\\,40)+eq(n\\,80)+eq(n\\,119)' -vsync 0 OUTPUT-frame-%02d.png",
+  "frame_processing": "decode full frames only; no crop/resize/compositing",
+  "new_image_generation_after_stop": false,
+  "new_ui_implementation": false,
+  "performance_benchmark_executed": false,
+  "cpu_gpu_power_measurements": "unmeasured",
+  "route_selected": false,
+  "official_docs_checked_on": "2026-10-28",
+  "files": [
+    {
+      "path": "evidence/historical-README.txt",
+      "bytes": 620,
+      "sha256": "2a2d626d10598d22ca5dacf550583bde3d34ec24eee83b0877974dcad555f0d5"
+    },
+    {
+      "path": "evidence/planet-1-frame-01.png",
+      "bytes": 423324,
+      "sha256": "741a8db597163b4ee89c949b216f50b07de651fba88e08e69272eb44a7c60ea6",
+      "decoded_frame_index": 0,
+      "video_time_seconds": 0,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-1-frame-02.png",
+      "bytes": 431532,
+      "sha256": "099a2b2ee1810bf5fbb6c48c1be29cf57599e393943b422e82f10ef0541b4381",
+      "decoded_frame_index": 40,
+      "video_time_seconds": 4,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-1-frame-03.png",
+      "bytes": 431123,
+      "sha256": "d7cc4caa1e6e54c99c1f0903e3e6f0ae967c634625cdce132093bde34fa4b844",
+      "decoded_frame_index": 80,
+      "video_time_seconds": 8,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-1-frame-04.png",
+      "bytes": 427202,
+      "sha256": "562a371ff5de429fe5f813a6b521ef7c61faed87576eb775dd8f51ff20fd0ba0",
+      "decoded_frame_index": 119,
+      "video_time_seconds": 11.9,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-1.mp4",
+      "bytes": 216874,
+      "sha256": "8e8f0db52a96cf8e583f237ba1a34d3c05af3857d19b468a35d0b7d03840d95b"
+    },
+    {
+      "path": "evidence/planet-6-frame-01.png",
+      "bytes": 360434,
+      "sha256": "983288ed8e5ab789fa24306fd365f806afa82b22d6378f77180f5ca5bbc7c063",
+      "decoded_frame_index": 0,
+      "video_time_seconds": 0,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-6-frame-02.png",
+      "bytes": 365213,
+      "sha256": "254ee86bac7dfc22cc1ae7efcb5731ee1dc9ad1da952bfb149491335f5165734",
+      "decoded_frame_index": 40,
+      "video_time_seconds": 4,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-6-frame-03.png",
+      "bytes": 365830,
+      "sha256": "27d1c037c3638d32fba4adb33efd81f045e854e88b75994b26bad41c55d033e4",
+      "decoded_frame_index": 80,
+      "video_time_seconds": 8,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-6-frame-04.png",
+      "bytes": 362657,
+      "sha256": "21018c4505ae9d1dee4da187b0eea764da6efadf07b8fbd74107606115b5d92e",
+      "decoded_frame_index": 119,
+      "video_time_seconds": 11.9,
+      "inspected": true
+    },
+    {
+      "path": "evidence/planet-6.mp4",
+      "bytes": 140000,
+      "sha256": "fa6e2286860612c3a0f17793e538c313438277b69dfb1a9f70aa08e86cfca416"
+    }
+  ]
+}

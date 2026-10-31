@@ -1,0 +1,53 @@
+{
+  "branch": "feat/amount-safe-previews",
+  "before_commit": "3264858bab136d504eefb938e7582035702ecd60",
+  "change": "Deep-copy state at entry to _evaluate, _allocate and _distribute; adopt only on accept",
+  "evidence": {
+    "purity-before.txt": {
+      "sha256": "3714a6d3f62da216866387c9b02cb5d0be756f6372fb40aa3abcc3be54ae7ff8",
+      "bytes": 669,
+      "original_file": "reactor-purity-before.log",
+      "exit_code": 1
+    },
+    "purity-after.txt": {
+      "sha256": "2dfb299955a8896c589966d009ccb0a39cd8caba4e75110fc1df3185658e8936",
+      "bytes": 394,
+      "original_file": "reactor-purity-final.log",
+      "exit_code": 0
+    },
+    "amount-after-purity.txt": {
+      "sha256": "cafef9e7abab7432e60408464691dc0e6631d75e2436ede90bf1eaa341dde43a",
+      "bytes": 415,
+      "original_file": "amount-purity-final.log",
+      "exit_code": 0
+    },
+    "purity-check-only.txt": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73,
+      "original_file": "purity-check-final.log",
+      "exit_code": 0
+    }
+  },
+  "sources": {
+    "src/systems/reactor.gd": {
+      "canonical_lf_sha256": "9dd1d1a3e2d631d50f5520f29f8bd6c044ef399898d61f971977cdb5b1146b5f"
+    },
+    "src/systems/research.gd": {
+      "canonical_lf_sha256": "a0e291babc2c6776ba9a412cc29674929b4b696780896a56cfb33d61161516f9"
+    },
+    "src/game_session.gd": {
+      "canonical_lf_sha256": "2419737f31191d09378227de91553e5dedf7e8f58b739e5d881a458fe3f103de"
+    },
+    "foundation/tests/_reactor_candidate_purity_probe.gd": {
+      "canonical_lf_sha256": "0f97316c7978fa9f58fc3862904f24cf07b4f9a2f5d33033735fff46bf495007"
+    },
+    "foundation/tests/_amount_preview_probe.gd": {
+      "canonical_lf_sha256": "ae2a6c2cd411459fca94e290eff084170ed9ab40a02fd277fcc433cbdc30cf35"
+    }
+  },
+  "configuration_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_dll_sha256": "a8d7ff72fabdbf4b09605e9c63015cdadd57a8bc5ad18030aae78f83a93da7ca",
+  "before_failure_count": 10,
+  "limitations": "Focused probes and entry check only; no complete gameplay acceptance. Before log retained from pre-fix run, not regenerated.",
+  "before_reactor_canonical_lf_sha256": "3471aba0f8594b9533d5c3ec96445ed9770f7d6f0b4415cc4ec8dd7045468db0"
+}

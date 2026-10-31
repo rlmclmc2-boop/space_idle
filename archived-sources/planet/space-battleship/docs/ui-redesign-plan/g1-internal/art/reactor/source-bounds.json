@@ -1,0 +1,77 @@
+{
+  "condensation": {
+    "path": "docs/ui-redesign-plan/g1-internal/art/reactor/condensation.svg",
+    "sha256": "93f150dd7501da4bd7b8e611ce2b5a9ef27283b1e7ae035027495faa60b17571",
+    "canvas_px": [
+      512,
+      512
+    ],
+    "visible_rect_px": [
+      37,
+      77,
+      434,
+      407
+    ],
+    "bounds_method": "Chromium transparent SVG rasterization at 512x512, alpha>0 pixel cells; not a Godot import result"
+  },
+  "core": {
+    "path": "docs/ui-redesign-plan/g1-internal/art/reactor/core.svg",
+    "sha256": "d1387aa79d0db5094419fddaca3dd22cea143252bb45e9a90649f5323da2f8e3",
+    "canvas_px": [
+      512,
+      512
+    ],
+    "visible_rect_px": [
+      86,
+      103,
+      340,
+      378
+    ],
+    "bounds_method": "Chromium transparent SVG rasterization at 512x512, alpha>0 pixel cells; not a Godot import result"
+  },
+  "defence": {
+    "path": "docs/ui-redesign-plan/g1-internal/art/reactor/defence.svg",
+    "sha256": "bd05126c4301de152e32dd15dbd9d273368e3e3c70fcc09caeb88614e4109f1f",
+    "canvas_px": [
+      512,
+      512
+    ],
+    "visible_rect_px": [
+      37,
+      102,
+      434,
+      382
+    ],
+    "bounds_method": "Chromium transparent SVG rasterization at 512x512, alpha>0 pixel cells; not a Godot import result"
+  },
+  "smelting": {
+    "path": "docs/ui-redesign-plan/g1-internal/art/reactor/smelting.svg",
+    "sha256": "51c169bd0e9c991600f8a0812aec50b30375fc2bbb25159b39847e283c8cbc9e",
+    "canvas_px": [
+      512,
+      512
+    ],
+    "visible_rect_px": [
+      39,
+      77,
+      436,
+      407
+    ],
+    "bounds_method": "Chromium transparent SVG rasterization at 512x512, alpha>0 pixel cells; not a Godot import result"
+  },
+  "weapons": {
+    "path": "docs/ui-redesign-plan/g1-internal/art/reactor/weapons.svg",
+    "sha256": "9e0cdf825ffd93e14ed56805ffa7daa6c94483874a1318b3f4498c90a9d3cccd",
+    "canvas_px": [
+      512,
+      512
+    ],
+    "visible_rect_px": [
+      39,
+      115,
+      436,
+      369
+    ],
+    "bounds_method": "Chromium transparent SVG rasterization at 512x512, alpha>0 pixel cells; not a Godot import result"
+  }
+}

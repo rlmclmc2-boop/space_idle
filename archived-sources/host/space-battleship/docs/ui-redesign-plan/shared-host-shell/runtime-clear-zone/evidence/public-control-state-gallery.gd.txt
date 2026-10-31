@@ -1,0 +1,92 @@
+extends SceneTree
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/public-control-state-gallery-1440x900.png"
+
+func _initialize() -> void: call_deferred("run")
+
+func title(parent: Control, caption: String, point: Vector2, size: int = 20) -> void:
+	var label := Label.new()
+	label.text = caption
+	label.position = point
+	label.add_theme_font_override("font", BridgeTheme.public_font())
+	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_color_override("font_color", Color("f0f2e9"))
+	parent.add_child(label)
+
+func sample(parent: Control, point: Vector2, caption: String, state: String, family: String, role := "secondary") -> void:
+	if family == "check":
+		var check := CheckBox.new()
+		check.text = caption
+		check.position = point
+		check.size = Vector2(158, 45)
+		BridgeTheme.public_check(check)
+		check.button_pressed = state == "selected"
+		check.disabled = state == "disabled"
+		parent.add_child(check)
+		if state == "focus": check.grab_focus()
+		return
+	var face := Panel.new()
+	face.position = point
+	face.size = Vector2(158, 45)
+	face.add_theme_stylebox_override("panel", BridgeTheme.route_button(state) if family == "route" else BridgeTheme.top_button(state) if family == "top" else BridgeTheme.public_input(state) if family == "input" else BridgeTheme.public_button(state, 8, role))
+	parent.add_child(face)
+	if state == "focus" and family == "action":
+		var under := Panel.new()
+		under.position = point
+		under.size = face.size
+		under.add_theme_stylebox_override("panel", BridgeTheme.public_button("normal", 8, role))
+		parent.add_child(under)
+		parent.move_child(under, parent.get_child_count() - 2)
+	var label := Label.new()
+	label.text = caption
+	label.position = Vector2(12, 8)
+	label.size = Vector2(134, 29)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font", BridgeTheme.public_font())
+	label.add_theme_font_size_override("font_size", 15)
+	var source_button: Button = OptionButton.new() if family == "input" else Button.new()
+	source_button.theme = BridgeTheme.create()
+	BridgeTheme.apply_public_button(source_button)
+	if family == "route": BridgeTheme.apply_route_button(source_button, state == "selected")
+	if family == "top": BridgeTheme.apply_top_button(source_button)
+	if family == "input": BridgeTheme.apply_public_input(source_button)
+	var color_key := "font_disabled_color" if state == "disabled" else "font_pressed_color" if state in ["pressed", "selected"] else "font_hover_pressed_color" if state == "hover_pressed" else "font_hover_color" if state == "hover" else "font_color"
+	label.add_theme_color_override("font_color", source_button.get_theme_color(color_key))
+	face.add_child(label)
+
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var board := Control.new()
+	board.size = Vector2(1440, 900)
+	root.add_child(board)
+	var back := ColorRect.new()
+	back.color = Color("0e2835")
+	back.size = board.size
+	board.add_child(back)
+	title(board, "公共控件状态 · 实际 BridgeTheme 源", Vector2(45, 30), 26)
+	title(board, "仅受影响样式取样；原生文字与业务端口在主场景，非游戏新界面", Vector2(45, 77), 15)
+	var rows := [
+		["操作键 · secondary / commit", "action", ["normal", "hover", "pressed", "hover_pressed", "selected", "disabled", "focus", "commit"]],
+		["导航键 · SVG / 选中", "route", ["normal", "hover", "pressed", "selected", "disabled", "focus"]],
+		["顶部键 · SVG", "top", ["normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]],
+		["输入槽 · SVG", "input", ["normal", "hover", "pressed", "disabled", "focus"]],
+		["勾选 · native CheckBox", "check", ["normal", "selected", "disabled", "focus"]]
+	]
+	var names := {"normal":"默认", "hover":"悬停", "pressed":"按下", "hover_pressed":"悬停按下", "selected":"选中", "disabled":"禁用", "focus":"焦点", "commit":"提交"}
+	for row_index in rows.size():
+		var row: Array = rows[row_index]
+		var y: float = 142 + row_index * 140
+		title(board, row[0], Vector2(46, y), 19)
+		for index in row[2].size():
+			var state: String = row[2][index]
+			sample(board, Vector2(45 + index * 168, y + 42), names[state], "normal" if state == "commit" else state, row[1], "commit" if state == "commit" else "secondary")
+	title(board, "可购买由装备 comparison.affordable / 反应堆 quote.can_purchase 判定；此板不伪造可购业务态。", Vector2(46, 847), 15)
+	for i in 4: await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT)
+	print("PUBLIC_CONTROL_GALLERY source=BridgeTheme families=action,route,top,input,check")
+	board.queue_free()
+	await process_frame
+	quit()
