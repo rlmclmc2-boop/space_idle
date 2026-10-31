@@ -6,6 +6,9 @@ ce2a9ac1d2117afaca89a48245079f2a54f65cbcdafcdb0a7a2d1d925ce835a1  ./reactor-r9-c
 3570983622bda710eb4bcff7f0d13d61d189861679158327af38a9bfe85a1d91  ./reactor-r9-controlled-3-zero-1440x900.png
 914118a06b188dc351380498af74f2f10f6772fc366ed4e2bd415f2f3064aa66  ./reactor-r9-controlled-4-active-1440x900.png
 9109102fb18084e3b8357c2cb32199bb42da3d4a0b6252c40e9b59c7ceba59d1  ./reactor-r9-controlled-4-zero-1440x900.png
+e494d244a4d110dbb40f8332e4b9aec5f483874c1626eb2d014456795f116af2  ./reactor-r9-edge-low-positive-1440x900.png
+ee7072d1d5ea1a08ef5837380f1853d37afda0e79d1c7be4c29b4c459bf66ada  ./reactor-r9-edge-mixed-zero-1440x900.png
+55f702add97ea8386e10fc48bce49e03fdf571789c43c441d39a85ac59cad17d  ./reactor-r9-edge-reopened-low-positive-1440x900.png
 b67306b33354311ccc088bd8f90a0aabd5239822c16cee8e55d7cb1d0b5a6b10  ./reactor-r9v-final-phase-2.png
 b4f744fc6848b06e5f57a8bc004a1088df143bd991d0fef4a503a0a7f87e4234  ./reactor-r9v-final-phase-5.png
 e94c14ffd96d71309e8401194b9017750ea5ee6de95d5a2921c6859c7bc2a277  ./reactor-r9v-final-phase-9.png
