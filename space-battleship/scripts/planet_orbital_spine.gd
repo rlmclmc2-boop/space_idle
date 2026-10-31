@@ -71,7 +71,12 @@ func _ready() -> void:
 		for rib_index in range(1, 6):
 			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
+				# Carry each deck seam around the real owned pressure box; the
+				# transverse clamp interrupts the inset power line at the same cut.
 				_add_curved_deck(root, rib_angle - 0.008, rib_angle + 0.008, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
+				for side in [-1.0, 1.0]:
+					_add_wall(root, rib_angle - 0.008, rib_angle + 0.008,
+						side * (NODE_WIDTH * 0.5 + 0.018), -0.38, 0.27, _side, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
 		_joins[kind] = _add_join(root, bounds.y, kind)
 		var caps: Array[Node3D] = []
