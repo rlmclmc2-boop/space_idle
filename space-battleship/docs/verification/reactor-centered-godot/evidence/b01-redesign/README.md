@@ -1,6 +1,6 @@
 # B01 反应堆：当前制作入口
 
-**现行制作固定点（2026-10-31）：**`implement/reactor-centered-godot@a0ccc0de`。同版八态整屏与正常 1× 250 帧作者证据已固定在[当前证据](current-a0ccc0de/README.md)，设备表面、承重、炉口热流与外伸盾壳仍待整页判断；本版未获独立整页视觉通过或目标硬件性能验收。设计依据仅为 [M3 反应炉](../../../../game-design/art/modules/reactor.md)、[13 全局呈现](../../../../game-design/13-art-interaction.md)及用户本轮重做要求。历史候选与裁定留在独立 Git archive，不在此入口导航。
+**现行制作固定点（2026-10-31）：**`implement/reactor-centered-godot@a0ccc0de`。同版八态整屏与正常 1× 250 帧作者证据已固定在[独立归档 `921f0461`](https://github.com/rlmclmc2-boop/space_idle/blob/921f0461bc994ffc676d48c6425ab1cae167b79e/modules/reactor/r9-centered-20261031/README.md)，设备表面、承重、炉口热流与外伸盾壳仍待整页判断；本版未获独立整页视觉通过或目标硬件性能验收。设计依据仅为 [M3 反应炉](../../../../game-design/art/modules/reactor.md)、[13 全局呈现](../../../../game-design/13-art-interaction.md)及用户本轮重做要求。历史候选与裁定留在独立 Git archive，不在此入口导航。
 
 ## 制作与接入边界
 
