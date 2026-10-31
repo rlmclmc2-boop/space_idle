@@ -145,8 +145,9 @@ func _icon(parent: Control, key: String, rect: Rect2) -> TextureRect:
 func _build() -> void:
     _fallback_header=_label(self,"装备",Rect2(25,10,220,45),22,CREAM,600)
     _identity=_panel(self,Rect2(16,297,276,72));_identity.mouse_filter=Control.MOUSE_FILTER_PASS
-    _identity_title=_label(_identity,"",Rect2(14,8,248,30),21,CREAM,600)
-    _identity_counts=_label(_identity,"",Rect2(14,39,248,23),14,LIGHT,400)
+    _identity.add_theme_stylebox_override("panel",BridgeTheme.operation_plate(14))
+    _identity_title=_label(_identity,"",Rect2(18,10,240,30),21,INK,600)
+    _identity_counts=_label(_identity,"",Rect2(18,40,240,23),14,Color("49636c"),400)
     _global_quantity=_button(self,"×1",Rect2(552,254,64,30),_cycle_global,"button",true)
     _global_quantity.add_theme_font_size_override("font_size",16);_global_quantity.tooltip_text="全部槽位数量"
     _batch_open=_button(self,"全部升级",Rect2(628,254,134,30),_open_batch,"primary",true)
@@ -197,7 +198,7 @@ func _refresh_structure() -> void:
     _view_height=minf(484,_content_height)
     _scroll.position=Vector2(340,_body_top);_scroll.size=Vector2(434,_view_height)
     _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
-    _global_quantity.position.y=400 if early else 254;_batch_open.position.y=_global_quantity.position.y
+    _global_quantity.position.y=403 if early else 260;_batch_open.position.y=_global_quantity.position.y
     _global_quantity.disabled=not _session.run_state.is_running();_batch_open.disabled=_global_quantity.disabled
     var display_height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
     var bottom: float=640.0 if early else 680.0
@@ -359,7 +360,7 @@ func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejectio
                 row.fee_reason=_label(row.fees,"",Rect2(0,0,144,24),16,Color("903d23"))
                 row.fee_reason.clip_text=true
                 row.fee_reason.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
-            row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else PlayerText.error(reason)
+            row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else _failure_text(reason)
             row.fee_reason.tooltip_text=row.fee_reason.text;row.fee_reason.show()
 
 func _card_border(id: String) -> void:
@@ -500,23 +501,47 @@ func _buy_slot(id: String) -> void:
     if not result.get("ok",false) and str(result.get("reason",""))=="InsufficientResources":_show_toast("资源不足")
     elif not result.get("ok",false) and mode==2 and str(result.get("reason",""))=="NoChange":
         var next_quote: Dictionary=_session.equipment.quote_slot(id,1)
-        _show_toast("资源不足" if next_quote.get("ok",false) else PlayerText.error(str(next_quote.get("reason","NoChange"))))
+        _show_toast("资源不足" if next_quote.get("ok",false) else _failure_text(str(next_quote.get("reason","NoChange"))))
     _accept_result(result,true)
 
 func _accept_result(result: Dictionary, levels: bool) -> void:
     last_result=result.duplicate(true)
+    if result.get("ok",false):
+        _toast.hide();_toast_time=0.0
     var receipt: Dictionary=result.get("purchase_receipt",{})
     var unknown: bool=str(receipt.get("commit_status",""))=="fault_unknown" or (result.get("fault",false) and str(receipt.get("commit_status",""))!="accepted")
+    if not result.get("ok",false) and str(result.get("reason","")) not in ["InsufficientResources","NoChange","EquipmentLocked","EvolutionMaterialLocked","FirstDefenceRequired"]:
+        _log_failure(result)
     if unknown:
-        _close_popup();_show_toast("提交结果未知，会话已停止。",true);_values_dirty=true
+        _close_popup();_show_toast("操作失败，当前游戏已停止。",true);_values_dirty=true
         _global_quantity.disabled=true;_batch_open.disabled=true
     elif not result.get("ok",false):
-        if str(result.get("reason","")) not in ["InsufficientResources","NoChange"]:_show_toast(PlayerText.error(str(result.get("reason",result.get("error","Unknown")))))
+        if not _session.run_state.is_running():
+            _close_popup();_show_toast("操作失败，当前游戏已停止。",true)
+            _global_quantity.disabled=true;_batch_open.disabled=true
+        elif str(result.get("reason","")) not in ["InsufficientResources","NoChange"]:_show_toast(_failure_text(str(result.get("reason",""))))
         _values_dirty=true
     elif levels:
         for purchase in receipt.get("purchases",[]):_pending_ids[str(purchase.slot_id)]=true
     else:_structure_dirty=true
     command_finished.emit(last_result)
+
+func _failure_text(reason: String) -> String:
+    return str({"EquipmentLocked":"装备尚未开放。","EvolutionMaterialLocked":"进化材料尚未开放。",
+        "FirstDefenceRequired":"首个防御槽需要保留装备。","InsufficientResources":"资源不足。",
+        "NoChange":"没有可升级的装备。"}.get(reason,"操作失败。"))
+
+func _diagnostic_code(value: Variant) -> String:
+    # Log symbolic cause codes only: never dump payloads, balances, paths or secrets.
+    var code: String=str(value)
+    return "none" if code.is_empty() else code if code.length()<=96 and code.is_valid_identifier() else "redacted"
+
+func _log_failure(result: Dictionary) -> void:
+    var receipt: Dictionary=result.get("purchase_receipt",{})
+    print("EQUIPMENT_COMMAND_FAILURE ",JSON.stringify({"reason":_diagnostic_code(result.get("reason","none")),
+        "error":_diagnostic_code(result.get("error","none")),"fault":bool(result.get("fault",false)),
+        "commit_status":_diagnostic_code(receipt.get("commit_status","none")),
+        "running":_session.run_state.is_running(),"stop_reason":_diagnostic_code(_session.run_state.reason())}))
 
 func _open_batch() -> void:
     var panel=_new_popup("",minf(700,130+_active.size()*48))
@@ -534,6 +559,7 @@ func _cycle_batch() -> void:
 func _buy_all() -> void:
     var result: Dictionary=_session.equipment.buy_all_levels(10 if _batch_mode==1 else 1,_batch_mode==2,_session.equipment_inputs(),_session.economy.affordable,_session.economy.payment,_session.publish_equipment_levels)
     _accept_result(result,true)
+    if not _session.run_state.is_running():return
     if result.get("ok",false):_close_popup()
     elif str(result.get("reason",""))=="NoChange":
         # The batch owner reports no accepted slot, rather than a per-slot error.
@@ -546,7 +572,7 @@ func _buy_all() -> void:
                 if not _session.economy.can_pay(quote.costs,budget).get("ok",false):
                     rejection="InsufficientResources";break
             elif rejection=="NoChange":rejection=str(quote.get("reason","NoChange"))
-        _show_toast("资源不足" if rejection=="InsufficientResources" else "进化材料尚未开放" if rejection=="EvolutionMaterialLocked" else PlayerText.error(rejection))
+        _show_toast("资源不足" if rejection=="InsufficientResources" else "进化材料尚未开放" if rejection=="EvolutionMaterialLocked" else _failure_text(rejection))
 
 func _refresh_scene_picture() -> void:
     var signature: Array=[_ship,_selected,_active.map(func(f):return [f.id,f.equipment_id])]
@@ -575,6 +601,7 @@ func _draw() -> void:
     if not _shared:draw_rect(Rect2(0,0,808,85),Color("173b49"))
     var early: bool=_active.size()<=2
     draw_texture_rect(_short if early else _tall,Rect2(-27,85,843.2,815),false)
+    _draw_console_detail(early)
     if not _hulls.has(_ship):return
     var texture: Texture2D=_hulls[_ship];var bounds: Rect2=texture.get_image().get_used_rect()
     var height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
@@ -599,6 +626,25 @@ func _draw() -> void:
                 var direction=Vector2(1 if corner.x==target.position.x else -1,1 if corner.y==target.position.y else -1)
                 var points=PackedVector2Array([corner+Vector2(0,direction.y*8),corner,corner+Vector2(direction.x*8,0)])
                 draw_polyline(points,Color("153341"),3.5,true);draw_polyline(points,Color("91e2d4"),1.5,true)
+
+func _draw_console_detail(early: bool) -> void:
+    # Recessed machining marks, fully inside the console face; no status meaning.
+    var y: float=418.0 if early else 275.0
+    var shadow: Color=Color("728b89")
+    var highlight: Color=Color("c4cebd")
+    for i in 5:
+        var x: float=359.0+i*9.0
+        draw_line(Vector2(x,y-5),Vector2(x+5,y+5),shadow,1.0,true)
+        draw_line(Vector2(x+1,y-5),Vector2(x+6,y+5),highlight,1.0,true)
+    draw_polyline(PackedVector2Array([Vector2(418,y+4),Vector2(470,y+4),Vector2(478,y-4),Vector2(524,y-4)]),shadow,1.0,true)
+    draw_circle(Vector2(418,y+4),2.0,shadow,false,1.0,true)
+    draw_circle(Vector2(524,y-4),2.0,shadow,false,1.0,true)
+    var bottom: float=670.0 if early else 792.0
+    draw_line(Vector2(380,bottom),Vector2(514,bottom),shadow,1.0,true)
+    draw_line(Vector2(590,bottom),Vector2(724,bottom),shadow,1.0,true)
+    for i in 3:
+        var center: Vector2=Vector2(540+i*12,bottom)
+        draw_polyline(PackedVector2Array([center+Vector2(-3,0),center+Vector2(0,-2),center+Vector2(3,0),center+Vector2(0,2),center+Vector2(-3,0)]),shadow,1.0,true)
 
 func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D=null) -> void:
     _shared=enabled;_fallback_header.visible=not enabled
