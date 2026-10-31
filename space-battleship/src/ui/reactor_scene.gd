@@ -4,11 +4,10 @@ signal command_finished(result: Dictionary)
 const Stage = preload("res://src/ui/reactor_stage.gd")
 const EconomyView = preload("res://src/ui/economy_view.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
-const KEY_PAINT = preload("res://assets/ui/reactor/ship-hub-r9/control-materials.png")
 const ICON_ATLAS = preload("res://assets/ui/reactor/b01/control-icons.png")
 const METER_FRAME = preload("res://assets/ui/reactor/b01/meter-frame.png")
-const ROW_INSTRUMENT = preload("res://assets/ui/reactor/b01/row-instrument.png")
 const SLIDER_SHELL = preload("res://assets/ui/reactor/b01/slider-shell.png")
 const SLIDER_CHANNEL = preload("res://assets/ui/reactor/b01/slider-channel.png")
 const SLIDER_GLASS_FILL = preload("res://assets/ui/reactor/b01/slider-glass-fill.png")
@@ -28,17 +27,8 @@ var _clock: Callable
 var _ui_font_regular: FontVariation
 var _ui_font_medium: FontVariation
 var _ui_font_bold: FontVariation
-var _key_faces: Dictionary = {}
-
-class ReactorKeySurface extends StyleBox:
-	var painted: StyleBoxTexture
-	var depressed: bool = false
-	func _draw(canvas: RID, rect: Rect2) -> void:
-		var face := rect.grow(-3)
-		if depressed:
-			face.position.y += 1
-			face.size.y -= 1
-		painted.draw(canvas, face)
+var _light_plate_style: StyleBox
+var _left_plate: Panel
 class AllocationBar extends Control:
 	var ratios: Dictionary = {}
 	func update_ratios(next: Dictionary) -> void:
@@ -96,7 +86,7 @@ var _budget: Label
 var _cost: Label
 var _cost_details: Label
 var _cost_icon: TextureRect
-var _cost_badge: Panel
+var _cost_badge: Control
 var _upgrade_heading: Label
 var _notice: Label
 var _notice_panel: Panel
@@ -129,23 +119,7 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	theme.default_font = _ui_font_regular
 	theme.default_font_size = 15
 	theme.set_font("font", "Button", _ui_font_bold)
-	var controls: Image = KEY_PAINT.get_image()
-	for id in ["primary", "navy"]:
-		var region := Rect2i(42, 472, 1366, 224) if id == "primary" else Rect2i(42, 772, 1366, 204)
-		var face: Image = controls.get_region(region)
-		face.resize(roundi(face.get_width() * 36.0 / face.get_height()), 36, Image.INTERPOLATE_LANCZOS)
-		_key_faces[id] = ImageTexture.create_from_image(face)
-	# Match the equipment action's cool disabled finish: reduce metal glints
-	# once in the texture, leaving the native action text fully opaque.
-	var disabled_face: Image = _key_faces.navy.get_image()
-	for y in disabled_face.get_height():
-		for x in disabled_face.get_width():
-			var pixel: Color = disabled_face.get_pixel(x, y)
-			var light: float = pixel.r * 0.2126 + pixel.g * 0.7152 + pixel.b * 0.0722
-			if light > 0.24:
-				var scale: float = (0.24 + (light - 0.24) * 0.28) / light
-				disabled_face.set_pixel(x, y, Color(pixel.r * scale, pixel.g * scale, pixel.b * scale, pixel.a))
-	_key_faces.disabled = ImageTexture.create_from_image(disabled_face)
+	_light_plate_style = BridgeTheme.operation_plate()
 	var surface := SubViewportContainer.new()
 	surface.position = Vector2(0, 65)
 	surface.size = Vector2(808, 835)
@@ -205,34 +179,7 @@ func _button(text: String, rect: Rect2, action: Callable, primary: bool = false)
 	button.position = rect.position
 	button.size = rect.size
 	button.add_theme_font_size_override("font_size", 18 if primary else 17)
-	button.add_theme_font_override("font", _ui_font_bold)
-	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		if state == "focus":
-			var focus := StyleBoxFlat.new()
-			focus.bg_color = Color.TRANSPARENT
-			focus.border_color = Color("b3ead8")
-			focus.set_border_width_all(2)
-			focus.set_corner_radius_all(4)
-			button.add_theme_stylebox_override(state, focus)
-			continue
-		var tint := Color(1.16,1.18,1.16) if state == "hover" else Color(0.84,0.86,0.88) if state == "pressed" else Color(0.72,0.77,0.8) if state == "disabled" else Color.WHITE
-		var paint := StyleBoxTexture.new()
-		paint.texture = _key_faces["disabled" if primary and state == "disabled" else "primary" if primary else "navy"]
-		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: paint.set_texture_margin(side, 6)
-		paint.modulate_color = tint if primary or state != "disabled" else tint * Color(0.66,0.73,0.76)
-		var material := ReactorKeySurface.new()
-		material.painted = paint
-		material.depressed = state == "pressed"
-		material.content_margin_left = 8
-		material.content_margin_right = 8
-		material.content_margin_top = 6 if material.depressed else 4
-		material.content_margin_bottom = 4 if material.depressed else 6
-		button.add_theme_stylebox_override(state, material)
-	button.add_theme_color_override("font_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_hover_color", Color("203f50") if primary else Color("c4fff0"))
-	button.add_theme_color_override("font_pressed_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_focus_color", Color("203f50") if primary else Color("f3f0df"))
-	button.add_theme_color_override("font_disabled_color", Color("ccd6d0") if primary else Color("8da5ac"))
+	BridgeTheme.apply_operation_button(button, "commit" if primary else "secondary")
 	button.pressed.connect(action)
 	add_child(button)
 	return button
@@ -251,7 +198,19 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	add_child(panel)
 	return panel
 
+func _light_panel(rect: Rect2) -> Panel:
+	var panel := Panel.new()
+	panel.position = rect.position
+	panel.size = rect.size
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_theme_stylebox_override("panel", _light_plate_style)
+	add_child(panel)
+	return panel
+
 func _build() -> void:
+	_left_plate = _light_panel(Rect2(73, 607, 493, 225))
+	_left_plate.visible = false
+	_light_panel(Rect2(582, 607, 196, 225))
 	_allocation_bar = AllocationBar.new()
 	_allocation_bar.position = Vector2(82, 562)
 	_allocation_bar.size = Vector2(545, 31)
@@ -260,7 +219,7 @@ func _build() -> void:
 	_budget.size.y = 35
 	_budget.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_budget.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_budget.add_theme_font_override("font", _ui_font_bold)
+	_budget.add_theme_font_override("font", BridgeTheme.public_font())
 	_budget.add_theme_color_override("font_color", Color("f8f8f0"))
 	_budget.add_theme_color_override("font_shadow_color", Color("102c3c"))
 	_budget.add_theme_constant_override("shadow_offset_x", 1)
@@ -289,13 +248,17 @@ func _build() -> void:
 		name.size.y = 36
 		name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name.add_theme_font_override("font", _ui_font_bold)
-		name.add_theme_color_override("font_color", Color("f5f3e9"))
+		name.add_theme_color_override("font_color", Color("173c48"))
 		name.text = NAMES[id]
-		var row_face := TextureRect.new()
+		var row_face := Panel.new()
 		row_face.position = Vector2(190, top + 4)
 		row_face.size = Vector2(370, 41)
-		row_face.texture = ROW_INSTRUMENT
 		row_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var row_rule := StyleBoxFlat.new()
+		row_rule.bg_color = Color.TRANSPARENT
+		row_rule.border_color = Color("91a9a6")
+		row_rule.border_width_bottom = 1
+		row_face.add_theme_stylebox_override("panel", row_rule)
 		add_child(row_face)
 		var strip := Control.new()
 		strip.position = Vector2(194, top + 4)
@@ -328,38 +291,34 @@ func _build() -> void:
 		slider.value_changed.connect(_slide.bind(id))
 		strip.add_child(slider)
 		var ratio := _label(Vector2(178, 5), 78, 21, strip)
-		ratio.add_theme_font_override("font", _ui_font_bold)
+		ratio.add_theme_font_override("font", BridgeTheme.public_font())
 		ratio.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		ratio.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		ratio.add_theme_color_override("font_color", Color("f2f3f2"))
+		BridgeTheme.apply_number_role(ratio, "gain")
 		var effect := _label(Vector2(476, top + 9), 83, 19)
 		effect.size.y = 30
 		effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		effect.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		effect.add_theme_font_override("font", _ui_font_bold)
-		effect.add_theme_color_override("font_color", Color("e5edf0"))
+		effect.add_theme_font_override("font", BridgeTheme.public_font())
+		BridgeTheme.apply_number_role(effect, "current")
 		_rows[id] = {"effect":effect, "name":name, "slider":slider, "track":track_visual, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
 		for control in _rows[id].values(): control.visible = false
-	_equal = _button("均分", Rect2(655, 560, 94, 36), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
+	_equal = _button("均分", Rect2(670, 565, 60, 26), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)))
 	_equal.tooltip_text = "均分供能"
 	_upgrade_heading = _label(Vector2(612, 630), 74, 20)
 	_upgrade_heading.text = "等级"
-	_upgrade_heading.add_theme_color_override("font_color", Color("f4f1df"))
+	_upgrade_heading.add_theme_color_override("font_color", Color("173c48"))
 	_level = _label(Vector2(702, 625), 65, 29)
 	_level.size.y = 39
 	_level.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_level.add_theme_font_override("font", _ui_font_bold)
-	_level.add_theme_color_override("font_color", Color("fff8e6"))
+	_level.add_theme_font_override("font", BridgeTheme.public_font())
+	BridgeTheme.apply_number_role(_level, "gain")
 	_cost = _label(Vector2(612, 688), 68, 17)
-	_cost.add_theme_color_override("font_color", Color("f4f0dc"))
-	_cost_badge = Panel.new()
-	_cost_badge.position = Vector2(658, 686)
+	_cost.add_theme_color_override("font_color", Color("173c48"))
+	_cost_badge = Control.new()
+	_cost_badge.position = Vector2(612, 686)
 	_cost_badge.size = Vector2(26, 27)
 	_cost_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var badge_style := StyleBoxFlat.new()
-	badge_style.bg_color = Color("193c4b")
-	badge_style.set_corner_radius_all(5)
-	_cost_badge.add_theme_stylebox_override("panel", badge_style)
 	_cost_badge.visible = false
 	add_child(_cost_badge)
 	_cost_icon = TextureRect.new()
@@ -368,9 +327,10 @@ func _build() -> void:
 	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cost_badge.add_child(_cost_icon)
-	_cost_details = _label(Vector2(688, 688), 72, 17)
+	_cost_details = _label(Vector2(642, 688), 118, 17)
 	_cost_details.add_theme_font_size_override("font_size", 16)
-	_cost_details.add_theme_color_override("font_color", Color("f4f0dc"))
+	_cost_details.add_theme_font_override("font", BridgeTheme.public_font())
+	BridgeTheme.apply_number_role(_cost_details, "cost")
 	_quantity = _button("×1", Rect2(611, 741, 76, 51), _cycle_quantity)
 	_quantity.tooltip_text = "选择升级数量：×1 / ×10 / MAX"
 	_purchase = _button("升级", Rect2(695, 741, 77, 51), func(): _command(_purchase_action, true), true)
@@ -394,8 +354,9 @@ func _select_quantity(count: int, maximum: bool) -> void:
 	_cost_badge.visible = false
 	_cost.size.x = 335
 	_cost.position.y = 688
-	_cost_badge.position.y = 686
+	_cost_badge.position = Vector2(612, 686)
 	_cost_details.position.y = 688
+	_cost_details.position.x = 642
 	_purchase.text = "升级"
 	_quantity.text = "MAX" if maximum else "×" + str(count)
 	_update_buttons()
@@ -459,7 +420,8 @@ func _set_running(running: bool) -> void:
 		_rows[id].slider.editable = running and bool(_model.get("can_allocate", false))
 
 func _update_buttons() -> void:
-	var purchase_disabled: bool = not _running or _model.is_empty() or not bool(_quote.get("can_purchase", false))
+	var budget_rejection: bool = str(_quote.get("reason", "")) in ["InsufficientResources", "InsufficientFunds"]
+	var purchase_disabled: bool = not _running or _model.is_empty() or (_quote.is_empty() or (not bool(_quote.get("can_purchase", false)) and not budget_rejection))
 	var equal_disabled: bool = not _running or _ids.is_empty() or not bool(_model.get("can_allocate", false))
 	if _purchase.disabled != purchase_disabled: _purchase.disabled = purchase_disabled
 	if _equal.disabled != equal_disabled: _equal.disabled = equal_disabled
@@ -508,6 +470,11 @@ func _refresh() -> void:
 
 func _layout_enabled_rows(ids: Array) -> void:
 	var tops: Array = COMPACT_ROW_TOPS.get(ids.size(), [])
+	_left_plate.visible = not ids.is_empty()
+	if not ids.is_empty():
+		var first_top: float = float(tops[0]) if not tops.is_empty() else 614.0
+		_left_plate.position.y = first_top - 7.0
+		_left_plate.size.y = 60.0 + 55.0 * float(ids.size() - 1)
 	for index in ids.size():
 		var id: String = str(ids[index])
 		var top: float = float(tops[index]) if not tops.is_empty() else 614.0 + 55.0 * float(index)
@@ -571,6 +538,7 @@ func _valid_model(model: Dictionary) -> bool:
 func _unknown(message: String) -> void:
 	_model = {}
 	_ids.clear()
+	_left_plate.visible = false
 	_shares.clear()
 	for id in _rows:
 		for control in _rows[id].values(): control.visible = false
@@ -589,14 +557,15 @@ func _refresh_quote() -> void:
 	_quote_dirty = false
 	_cost_details.text = ""
 	_cost_badge.visible = false
-	_cost.size.x = 335
+	_cost.size.x = 148
 	_cost.position.y = 688
-	_cost_badge.position.y = 686
+	_cost_badge.position = Vector2(612, 686)
 	_cost_details.position.y = 688
-	_cost.add_theme_color_override("font_color",Color("f4f0dc"))
+	_cost_details.position.x = 642
+	_cost.add_theme_color_override("font_color",Color("173c48"))
 	_cost.add_theme_font_override("font",_ui_font_bold)
-	_cost_details.add_theme_color_override("font_color",Color("f4f0dc"))
-	_cost_details.add_theme_font_override("font",_ui_font_bold)
+	BridgeTheme.apply_number_role(_cost_details, "cost")
+	_cost_details.add_theme_font_override("font",BridgeTheme.public_font())
 	if not _read_quote.is_valid():
 		_quote = {}
 		_quote_cost_ids.clear()
@@ -623,6 +592,7 @@ func _refresh_quote() -> void:
 			return
 		_quote_cost_ids.append(resource_id)
 	var labels: Array = []
+	var integer_costs: Dictionary = quote.get("cost_integer_texts", {}) if quote.get("cost_integer_texts", {}) is Dictionary else {}
 	for id in quote.costs:
 		if not quote.costs[id] is String:
 			_quote = {}
@@ -630,42 +600,31 @@ func _refresh_quote() -> void:
 			_cost.text = "费用 —"
 			_update_buttons()
 			return
-		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
-	var cost_text: String = " + ".join(labels)
-	var mode_text := "MAX 可购 " + str(quote.count) + " 级" if _purchase_max else "×" + str(_purchase_count)
+		var cost_text: String = str(integer_costs[id]) if integer_costs.get(id) is String else PlayerText.resource_number(str(quote.costs[id]))
+		labels.append(cost_text + " " + PlayerText.resource(str(id)))
 	var affordable: bool = bool(quote.can_purchase)
 	var reason: String = str(quote.get("reason", ""))
-	var failure_text: String = "资金不足" if reason in ["InsufficientResources", "InsufficientFunds"] else str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "不可购买"
 	if labels.is_empty():
-		# The MAX button already names the mode; keep the empty quote and reason in separate cells.
-		_cost.text = ("可购" + str(quote.count)) if _purchase_max else mode_text
-		_cost.size.x = 68
-		_cost_details.text = failure_text
-		_cost_details.position.x = 690
-		_cost_details.add_theme_color_override("font_color",Color("efab7c"))
-		_cost_details.add_theme_font_override("font",_ui_font_medium)
+		# A zero MAX quote has no priced resource to mark; rejection appears on click.
+		_cost.text = "—"
 	else:
-		_cost.text = ("可购" + str(quote.count)) if affordable and _purchase_max else "费用" if affordable else failure_text
-		_cost_details.text = cost_text
-		if not affordable or _purchase_max:
-			_cost.size.x = 120
-			_cost.position.y = 669
-			_cost_badge.position.y = 700
-			_cost_details.position.y = 702
-		if not affordable:
-			_cost.add_theme_color_override("font_color",Color("efab7c"))
-			_cost.add_theme_font_override("font",_ui_font_medium)
+		_cost.text = ""
+		_cost_details.text = " + ".join(labels)
+		# The current Reactor quote contains one uranium resource; its affordability
+		# is therefore the quote's affordability, with no Amount string round-trip.
+		var poor: bool = not affordable and reason in ["InsufficientResources", "InsufficientFunds"]
+		BridgeTheme.apply_number_role(_cost_details, "insufficient" if poor else "cost")
 		if quote.costs.size() == 1:
 			var resource_id: String = str(quote.costs.keys()[0])
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
 			_cost_icon.modulate = ResourceVisuals.icon_modulate(resource_id)
 			_cost_badge.visible = _cost_icon.texture != null
-		_cost_badge.position.x = 658
-		_cost_details.position.x = 688 if _cost_badge.visible else 658
-	_cost.tooltip_text = _cost.text + " " + _cost_details.text
+		_cost_details.position.x = 642 if _cost_badge.visible else 612
+	_cost.tooltip_text = "升级费用 " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
 	var exact_costs: Array = []
-	for id in quote.costs: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
+	for id in quote.costs:
+		exact_costs.append((str(integer_costs[id]) if integer_costs.get(id) is String else str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
 	_purchase.tooltip_text = " + ".join(exact_costs) + (" · " + str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "")
 	_update_buttons()
 
@@ -723,7 +682,7 @@ func _command(action: Callable, quote_may_change: bool = false) -> void:
 
 func _error(result: Dictionary) -> void:
 	var reason: String = str(result.get("reason",result.get("error","")))
-	var message: String = str(result.get("message",ERRORS.get(reason,EconomyView.describe_error(reason))))
+	var message: String = "资源不足" if reason in ["InsufficientResources", "InsufficientFunds"] else str(result.get("message",ERRORS.get(reason,EconomyView.describe_error(reason))))
 	_set_notice(message if not message.is_empty() else "分配未生效，请重试",true)
 	_message_until = Time.get_ticks_msec() + 2200
 

@@ -1,4 +1,5 @@
 extends RefCounted
+const Resources = preload("res://src/systems/resource_amounts.gd")
 var _run_state
 
 signal choices_changed
@@ -326,12 +327,12 @@ func purchase_preview(can_pay: Callable, count: int = 1) -> Dictionary:
 		if not changed.ok: return changed
 		var display: Dictionary = _purchase_cost_texts(changed.costs)
 		if not display.ok: return display
-		quote = {"costs": changed.costs.duplicate(true), "texts": display.texts}
+		quote = {"costs": changed.costs.duplicate(true), "texts": display.texts, "integer_texts":display.integer_texts}
 		# Cache the two fixed UI modes only; MAX keeps only local search state.
 		if count in [1, 10]: _purchase_preview_quotes[count] = quote
 	var affordable: Dictionary = can_pay.call(quote.costs.duplicate(true))
 	if not affordable.ok and affordable.get("reason", "") != "InsufficientResources": return affordable
-	return {"ok": true, "count": count, "costs": quote.texts.duplicate(true),
+	return {"ok": true, "count": count, "costs": quote.texts.duplicate(true), "cost_integer_texts":quote.integer_texts.duplicate(true),
 		"cost_resource_ids": PackedStringArray(quote.costs.keys()),
 		"can_purchase": bool(affordable.ok), "reason": affordable.get("reason", affordable.get("error", ""))}
 
@@ -340,7 +341,7 @@ func purchase_max_preview(can_pay: Callable) -> Dictionary:
 	if not quote.ok: return quote
 	var display: Dictionary = _purchase_cost_texts(quote.costs)
 	if not display.ok: return display
-	return {"ok": true, "count": quote.count, "costs": display.texts,
+	return {"ok": true, "count": quote.count, "costs": display.texts, "cost_integer_texts":display.integer_texts,
 		"cost_resource_ids": quote.cost_resource_ids, "can_purchase": quote.count > 0,
 		"reason": "" if quote.count > 0 else "InsufficientResources"}
 
@@ -356,15 +357,20 @@ func purchase_max(inputs: Dictionary, can_pay: Callable, pay: Callable, publish:
 	var receipt: Dictionary = result.duplicate(true)
 	receipt.count = quote.count
 	receipt.costs = display.texts
+	receipt.cost_integer_texts = display.integer_texts
 	return receipt
 
 func _purchase_cost_texts(costs: Dictionary) -> Dictionary:
 	var texts: Dictionary = {}
+	var integer_texts: Dictionary = {}
 	for resource in costs:
 		var text: Dictionary = _api.apply("to_display", [costs[resource]])
 		if not text.ok: return text
 		texts[resource] = text.text
-	return {"ok": true, "texts": texts}
+		var shown: Dictionary = Resources.integer_text(costs[resource],_api)
+		if not shown.ok: return shown
+		integer_texts[resource] = shown.text
+	return {"ok": true, "texts": texts, "integer_texts":integer_texts}
 
 func _maximum_purchase_quote(can_pay: Callable) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
