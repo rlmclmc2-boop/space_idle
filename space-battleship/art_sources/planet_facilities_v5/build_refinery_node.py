@@ -180,7 +180,7 @@ for side in (-1,1):
     longitudinal_hull("Continuous refinery pressure cheek",[
         (-1.21,y,-.28,.27,.18),(-.89,y,-.28,.39,.23),
         (.89,y,-.28,.39,.23),(1.21,y,-.28,.27,.18),
-    ],lower_steel,root)
+    ],ochre,root)
     shoulder = longitudinal_hull("Rising ochre load shoulder",[
         (-1.17,y,.17,.28,.38),(-.88,y,.28,.37,.52),
         (.88,y,.28,.37,.52),(1.17,y,.17,.28,.38),
@@ -207,22 +207,8 @@ for side in (-1,1):
             (.075,.025,.55),cyan,root,.009)
     box("Long side armor inset",(0,side*1.064,.56),
         (1.55,.07,.35),ivory,root,.028)
-    # Match the station's pressure-bay cadence while giving the furnace its
-    # own hot industrial shell. The bays grow directly from the lower cheek.
-    for x in (-.77,-.26,.26,.77):
-        longitudinal_hull("Furnace lower stepped pressure bay",[
-            (x-.21,side*1.075,-.34,.085,.15),
-            (x-.15,side*1.125,-.35,.10,.18),
-            (x+.15,side*1.125,-.35,.10,.18),
-            (x+.21,side*1.075,-.34,.085,.15),
-        ],ochre,root)
-        box("Furnace lower bay pale service face",(x,side*1.23,-.36),
-            (.25,.018,.12),ivory,root,.008)
-        box("Furnace lower bay hot status",(x,side*1.242,-.26),
-            (.13,.014,.025),ember,root,.004)
-    for x in (-.51,0,.51):
-        beam("Furnace lower pressure web",(x,side*1.16,-.16),
-             (x,side*1.16,-.54),.075,.09,blue,root)
+    # The original bearing cheek is one continuous lower shell beneath both
+    # hoppers; leave its long face exposed instead of dividing it into bays.
     for x in (-.53,0,.53):
         box("Side cooling louver",(x,side*1.106,.57),
             (.28,.021,.17),navy,root,.012)
