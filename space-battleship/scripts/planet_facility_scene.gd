@@ -14,6 +14,7 @@ var _world := Node3D.new()
 var _camera := Camera3D.new()
 var _scene_environment: WorldEnvironment
 var _scene_light: DirectionalLight3D
+var _fill_light: DirectionalLight3D
 var _spine: Node3D
 var _models: Dictionary = {}
 var _parts: Dictionary = {}
@@ -60,6 +61,12 @@ func _ready() -> void:
 	light.light_energy = 0.95
 	_world.add_child(light)
 	_scene_light = light
+	var fill := DirectionalLight3D.new()
+	fill.rotation_degrees = Vector3(24, 132, 0)
+	fill.light_color = Color("b5d4df")
+	fill.light_energy = 0.18
+	_world.add_child(fill)
+	_fill_light = fill
 	_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	_camera.position.z = 18
@@ -151,6 +158,7 @@ func configure_shape(appearance: Dictionary) -> void:
 	var field_tint := Color("e9bd8d") if scale > 1.0 else Color("f1d6a9") if is_large_star else Color(str(appearance.get("atmosphereColor", "fff2df")))
 	_spine.set_stellar_field(field_tint, 0.62 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0)
 	_scene_light.light_color = Color("ffd3af") if scale > 1.0 and is_large_star else Color("ffe8c8") if is_large_star else Color("fff0d8")
+	_fill_light.light_color = Color("ffd2b5") if is_large_star else Color("b5d4df")
 	_scene_environment.environment.ambient_light_color = Color("b5a5a0") if scale > 1.0 and is_large_star else Color("a9adb1") if is_large_star else Color("91aeb6")
 	_pulse_strength = clampf(float(appearance.get("pulseStrength", 0.0)), 0.0, 0.05)
 	_pulse_speed = maxf(0, float(appearance.get("pulseSpeed", 0.08)))
