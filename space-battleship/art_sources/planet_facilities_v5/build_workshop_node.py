@@ -166,8 +166,6 @@ for side in (-1, 1):
     ], orange, root)
     box("Head rail ivory edge", (0, side*.87, 1.62), (1.52, .20, .08), ivory, root, .02)
     box("Inner head rail dark guide", (0, side*.52, 1.38), (1.26, .06, .06), navy, root, .012)
-    for x in (-.47, 0, .47):
-        box("Broad ochre crown tile", (x, side*.85, 1.65), (.36, .34, .11), orange, root, .025)
     for x in (-.58, .58):
         box("Recessed cyan gantry guide", (x, side*.539, 1.37), (.25, .025, .055), cyan, root, .008)
 for end in (-1, 1):
