@@ -1,0 +1,113 @@
+{
+  "runtime_source": "5050378c41ec3eb015eb039aa31d71b0d523915e",
+  "product_changes": false,
+  "images": [
+    {
+      "original": "04-middle-mixed-bottom.png",
+      "original_sha256": "89679bc8a05ec4e2b1571bbec771cb7c777da7887f01ac8670341955f5e872b8",
+      "archive": "a7da4a92df813087c991394e2768954de7e9c935",
+      "archive_path": "modules/equipment/20261031-scroll-5050378c/04-middle-mixed-bottom.png",
+      "original_size": [
+        1440,
+        900
+      ],
+      "crop": "04-middle-mixed-bottom-unscaled-text-column.png",
+      "crop_box": [
+        406,
+        330,
+        765,
+        750
+      ],
+      "crop_size": [
+        359,
+        420
+      ],
+      "resize": false,
+      "crop_sha256": "af85a156f283110c3734ba0f617887d6dfec6961b7ba55e0e1c2c3dbec6c0e80"
+    },
+    {
+      "original": "07-long-max-bottom.png",
+      "original_sha256": "a7249a357abc04ce428bd006d15486d8644b51e91862042197a2f7dc5d63b1d4",
+      "archive": "a7da4a92df813087c991394e2768954de7e9c935",
+      "archive_path": "modules/equipment/20261031-scroll-5050378c/07-long-max-bottom.png",
+      "original_size": [
+        1440,
+        900
+      ],
+      "crop": "07-long-max-bottom-unscaled-text-column.png",
+      "crop_box": [
+        406,
+        330,
+        765,
+        750
+      ],
+      "crop_size": [
+        359,
+        420
+      ],
+      "resize": false,
+      "crop_sha256": "58e3d32a4749e31ee3790703ed6e19bd4981f67d51f3214eedff57654b5e5d4c"
+    },
+    {
+      "original": "09-scrollbar-bottom.png",
+      "original_sha256": "a7249a357abc04ce428bd006d15486d8644b51e91862042197a2f7dc5d63b1d4",
+      "archive": "a7da4a92df813087c991394e2768954de7e9c935",
+      "archive_path": "modules/equipment/20261031-scroll-5050378c/09-scrollbar-bottom.png",
+      "original_size": [
+        1440,
+        900
+      ],
+      "crop": "09-scrollbar-bottom-unscaled-text-column.png",
+      "crop_box": [
+        406,
+        330,
+        765,
+        750
+      ],
+      "crop_size": [
+        359,
+        420
+      ],
+      "resize": false,
+      "crop_sha256": "58e3d32a4749e31ee3790703ed6e19bd4981f67d51f3214eedff57654b5e5d4c"
+    },
+    {
+      "original": "10-stopped-bottom.png",
+      "original_sha256": "f888ede7ae6e6d8d6c9ebae44f6cd85a2bd9a54db958e485fdd957baabfbf647",
+      "archive": "a7da4a92df813087c991394e2768954de7e9c935",
+      "archive_path": "modules/equipment/20261031-scroll-5050378c/10-stopped-bottom.png",
+      "original_size": [
+        1440,
+        900
+      ],
+      "crop": "10-stopped-bottom-unscaled-text-column.png",
+      "crop_box": [
+        406,
+        330,
+        765,
+        750
+      ],
+      "crop_size": [
+        359,
+        420
+      ],
+      "resize": false,
+      "crop_sha256": "ed244baede476b52009cff8ef5b0210857205da894bf17bdbc1686503731b87c"
+    }
+  ],
+  "video_source": {
+    "file": "modules/equipment/20261031-scroll-5050378c/operations-actions.mp4",
+    "sha256": "fc47408c99a226aad8b0167f3f653065021c12f51534cebfd5afe8f6713c8759",
+    "decoded_times_seconds": [
+      8,
+      10
+    ],
+    "crop_box": [
+      400,
+      330,
+      570,
+      750
+    ],
+    "resize": false
+  }
+}

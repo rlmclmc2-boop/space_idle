@@ -1,0 +1,90 @@
+[
+  {
+    "row": 0,
+    "kind": "prefix",
+    "rect": [
+      414,
+      340,
+      446,
+      364
+    ],
+    "rgb_pixels_identical_to_07": true
+  },
+  {
+    "row": 0,
+    "kind": "fee_title",
+    "rect": [
+      414,
+      368,
+      448,
+      392
+    ],
+    "rgb_pixels_identical_to_07": true
+  },
+  {
+    "row": 1,
+    "kind": "prefix",
+    "rect": [
+      414,
+      458,
+      446,
+      482
+    ],
+    "rgb_pixels_identical_to_07": true
+  },
+  {
+    "row": 1,
+    "kind": "fee_title",
+    "rect": [
+      414,
+      486,
+      448,
+      510
+    ],
+    "rgb_pixels_identical_to_07": true
+  },
+  {
+    "row": 2,
+    "kind": "prefix",
+    "rect": [
+      414,
+      576,
+      446,
+      600
+    ],
+    "rgb_pixels_identical_to_07": true
+  },
+  {
+    "row": 2,
+    "kind": "fee_title",
+    "rect": [
+      414,
+      604,
+      448,
+      628
+    ],
+    "rgb_pixels_identical_to_07": true
+  },
+  {
+    "row": 3,
+    "kind": "prefix",
+    "rect": [
+      414,
+      694,
+      446,
+      718
+    ],
+    "rgb_pixels_identical_to_07": false
+  },
+  {
+    "row": 3,
+    "kind": "fee_title",
+    "rect": [
+      414,
+      722,
+      448,
+      746
+    ],
+    "rgb_pixels_identical_to_07": false
+  }
+]
