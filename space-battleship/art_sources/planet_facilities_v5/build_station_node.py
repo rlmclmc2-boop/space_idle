@@ -116,8 +116,8 @@ for side in (-1, 1):
         (1.30,side*.77,-.25,.19,.13),
     ], lower_steel, root)
     loft("Tapered station pressure wall", [
-        (-1.16,y,.17,.26,.42), (-.82,y,.25,.34,.57),
-        (.82,y,.25,.34,.57), (1.16,y,.17,.26,.42),
+        (-1.16,y,.14,.20,.34), (-.68,y,.25,.36,.45),
+        (.68,y,.25,.36,.45), (1.16,y,.14,.20,.34),
     ], blue, root)
     for end in (-1, 1):
         x = end * .96
@@ -165,24 +165,17 @@ for side in (-1, 1):
     for x in (-.58,-.19,.19,.58):
         box("Observation glazing", (x,side*.471,.55), (.29,.016,.18), cyan, root, .007)
         box("Window mullion", (x+.18,side*.46,.55), (.035,.025,.31), edge, root, .004)
-    box("Buried continuous power slit", (0,side*1.115,-.09), (1.59,.016,.055), cyan, root, .006)
-    # The lower pressure cheek is an exposed load hull, not an empty dark
-    # skirt. Stepped armor bays cross its full length and taper into the four
-    # portal feet while keeping the central ring passage clear.
-    for x in (-.77, -.26, .26, .77):
-        loft("Lower stepped pressure bay", [
-            (x-.21,side*1.085,-.31,.082,.15),
-            (x-.15,side*1.13,-.32,.10,.18),
-            (x+.15,side*1.13,-.32,.10,.18),
-            (x+.21,side*1.085,-.31,.082,.15),
-        ], ivory, root)
-        box("Lower bay ochre core", (x,side*1.236,-.34),
-            (.25,.018,.12), ochre, root, .008)
-        box("Lower bay cyan inspection light", (x,side*1.247,-.25),
-            (.13,.014,.025), cyan, root, .004)
-    for x in (-.51,0,.51):
-        beam("Lower bay pressure web", (x,side*1.17,-.14),
-             (x,side*1.17,-.53), .075,.09, blue, root)
+    # One load course wraps the lower cheek and the portal feet. Its tapered
+    # ends finish inside the existing bearings while the ring stays exposed
+    # through the central passage.
+    loft("Continuous lower station side armor", [
+        (-1.19,side*1.02,-.24,.13,.11),
+        (-.88,side*1.06,-.24,.18,.19),
+        (.88,side*1.06,-.24,.18,.19),
+        (1.19,side*1.02,-.24,.13,.11),
+    ], ivory, root)
+    box("Lower armor recessed power slit", (0,side*1.245,-.20),
+        (1.60,.016,.055), cyan, root, .006)
     # The inner armor joins the deep load cheek but leaves a deck-width low
     # transit opening. Its inlet flares toward each owned spine section.
     loft("Portal throat stepped inner armor", [
@@ -196,15 +189,7 @@ for side in (-1, 1):
     for x in (-.79,0,.79):
         box("Portal throat amber load key", (x,side*.476,.10),
             (.17,.018,.045), amber, root, .006)
-    # Faceted service armor grows out of the real pressure wall. The slanted
-    # load ribs lead into the buried shoe and keep the ring passage open.
-    for x in (-.70, -.23, .23, .70):
-        box("Lower pressure armor cassette", (x,side*1.112,.045),
-            (.37,.105,.30), ochre, root, .028)
-        box("Cassette upper lip", (x,side*1.124,.205),
-            (.36,.12,.065), ivory, root, .012)
-        box("Cassette inspection inset", (x,side*1.178,.045),
-            (.20,.018,.075), blue, root, .006)
+    # A pair of real compression ribs still runs from wall to the lower shoe.
     for x in (-.81,.81):
         beam("Diagonal outer load rib", (x,side*1.145,.55),
              (x*1.22,side*1.13,-.30), .12,.10, ivory, root)
