@@ -12,7 +12,7 @@
 
 ## 最新同版证据边界
 
-环甲板中心槽的四阶段默认与单建／完整态 70° 原尺寸图、脚本和日志见[独立归档 3d34cacd](https://github.com/rlmclmc2-boop/space_idle/tree/3d34cacd7de591d7939d0199be069cfc5812faaa)，13 件证据文件已从 Git blob 复核 SHA256；所见建造段与接缝仍连续。工坊开放滑座的第三阶段及完整态默认／70° 原尺寸图、脚本和日志见[独立归档 f206eec2](https://github.com/rlmclmc2-boop/space_idle/tree/f206eec25a1b8b76cf567b193a948379d9d02ebf)，11 件证据文件已从 Git blob 复核 SHA256；工作口在所见角度可辨。炉体料斗内腔的第二阶段及完整态默认／70° 原尺寸图、脚本和日志见[独立归档 fd882c1f](https://github.com/rlmclmc2-boop/space_idle/tree/fd882c1f02cebf6a9bf124c128e4ca97b1966f72)，11 件证据文件已从 Git blob 复核 SHA256；双料斗井口在所见角度可辨。船坞小艇上抬后的 2048×768 默认／70° 完整体图、脚本及日志见[独立归档 3a73a52c](https://github.com/rlmclmc2-boop/space_idle/tree/3a73a52c89dffea2515117469baf9df4cf4b9834)，8 件证据文件已从 Git blob 复核 SHA256；原尺寸图显示小艇仍在坞内。48bd506b 的 2048×768 站单建与四设施完整态默认／25°／70°图、脚本、导入和检查日志固定于[独立归档 0aaacd61](https://github.com/rlmclmc2-boop/space_idle/tree/0aaacd6121a13b0a0dd77677699d54dabca60ab9)；14 件证据文件已从 Git blob 复核 SHA256。已亲看六张原图：站体低位口仍开放、前移小艇仍留在坞内；这不代表整体通过、自然施工或整圈。炉体热井改动前的局部模拟片段与取图边界仍固定于[独立归档 adb5e9fb](https://github.com/rlmclmc2-boop/space_idle/tree/adb5e9fb77ae77c392c93f5f457c11e7929cc9ce)，其中 advance(0.25, false) 是模拟步进。以后仅补实际改动影响的建造态、侧角与必要连续片段，不另开独立复测。
+ba5474f9 的 2048×768 四阶段默认角度、站单建与完整态 70° 图、取图脚本及检查日志固定于[独立归档 3d34cacd](https://github.com/rlmclmc2-boop/space_idle/tree/3d34cacd7de591d7939d0199be069cfc5812faaa)；13 件证据文件已从 Git blob 复核 SHA256。已亲看六张原图：所见建造段与接缝连续，站低位口、炉双料斗井口、工坊工作口和坞内小艇可辨。图中 built 状态为脚本配置、角度为模拟姿态，不代表自然施工、整圈、六类变体或整体通过。后续只补实际改动影响的建造态和侧角。
 
 ## 有效契约与持续交付
 
