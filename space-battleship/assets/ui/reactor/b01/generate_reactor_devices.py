@@ -102,7 +102,7 @@ def molten_material():
     links.new(noise.outputs["Fac"],colors.inputs["Fac"])
     links.new(colors.outputs["Color"],bsdf.inputs["Base Color"])
     links.new(colors.outputs["Color"],bsdf.inputs["Emission Color"])
-    bsdf.inputs["Emission Strength"].default_value=.75
+    bsdf.inputs["Emission Strength"].default_value=1.10
     relief=nodes.new("ShaderNodeBump")
     relief.inputs["Strength"].default_value=.28
     relief.inputs["Distance"].default_value=.5
@@ -124,7 +124,7 @@ def setup():
         "contact": material("contact shadow iron", (.018,.033,.042), .08,.85),
         "blue": material("unpowered shield glass", (.006,.045,.11), .25,.16,.035),
         "blue_lit": material("shield field filaments", (.025,.40,.85), .05,.2,1.3),
-        "blue_field": material("deployed field glass", (.025,.28,.52), .12,.12,.30,.38),
+        "blue_field": material("deployed field glass", (.035,.34,.58), .12,.12,.45,.58),
         "orange": material("furnace liner", (.24,.075,.022), .18,.53,.035),
         "slag": material("unpowered cooled charge", (.16,.075,.038), .12,.63,.012),
         "orange_lit": molten_material(),
@@ -270,8 +270,11 @@ def field_canopy(mat):
         y=172+94*math.sin(theta)
         for j in range(columns+1):
             span=j/columns
-            x=1050+(79+49*span)*bow
-            z=54+27*math.sin(math.pi*span)*bow
+            # The inner part curves over the emitter face; the front shoes
+            # occlude it. This gives the deployed field a readable volume at
+            # the actual page scale, rather than only a bright outer rim.
+            x=1050+(53+75*span)*bow
+            z=54+35*math.sin(math.pi*span)*bow
             verts.append((x,-y,z))
     faces=[]
     for i in range(rows):
@@ -618,41 +621,41 @@ def smelting(spec,m):
         cube("furnace jacket service panel",x,531,25,84,5,62,m["dark"],4)
         for y in (508,525,542,559):
             cube("furnace jacket louver",x,y,16,4,4,67,m["silver"],1)
-    cube("molten aperture",179,532,112,90,5,71,m["black"],6)
-    cube("firebrick throat",179,536,100,76,6,78,m["orange"],5)
-    cube("recessed tap well",179,541,88,63,6,84,m["black"],6)
-    cast_plate("refractory catch basin",[(136,552),(141,522),(160,510),
-               (196,511),(219,528),(223,554),(210,570),(149,570)],86,4,m["dark"],3)
+    cube("molten aperture",179,532,150,114,5,71,m["black"],6)
+    cube("firebrick throat",179,536,138,100,6,78,m["orange"],5)
+    cube("recessed tap well",179,541,126,87,6,84,m["black"],6)
+    cast_plate("refractory catch basin",[(119,557),(126,519),(153,503),
+               (207,504),(237,525),(242,559),(221,579),(135,578)],86,4,m["dark"],3)
     # The charge is collected in a broad recessed vessel.  Its exposed liquid
     # surface is much wider than the feed stream, and the dark raised shore
     # gives it a visible wall instead of letting the orange read as tubing.
-    cast_plate("cold catch floor",[(143,542),(148,528),(163,523),(190,524),
-               (208,536),(214,552),(204,561),(177,556),(153,558)],91,3,m["black"],2)
-    molten_bath("molten collection bath",[(151,542),(157,534),(172,531),
-                (190,533),(202,542),(206,551),(196,554),(177,548),
-                (159,552)],m["orange_lit"])
-    cast_plate("left refractory bank",[(140,543),(147,526),(159,518),
-               (172,519),(158,535),(153,553),(146,562),(139,554)],98,5,m["slag"],2)
-    cast_plate("right refractory bank",[(187,516),(202,522),(216,537),
-               (219,555),(211,565),(204,557),(204,541),(190,531)],98,5,m["slag"],2)
-    rod("feed pipe jacket",(170,488),(170,520),8,105,m["steel"],16)
-    disc("feed nozzle dark mouth",170,521,8,3,109,m["black"],24)
-    rod("molten fall",(170,522),(171,536),2.6,108,m["orange_lit"],12)
-    disc("molten impact crown",171,537,7,2,100,m["orange_lit"],20)
-    cast_plate("front refractory sill",[(144,559),(157,561),(177,558),
-               (199,563),(210,569),(209,573),(183,568),(159,569),
-               (144,565)],95,4,m["dark"],2)
-    rod("molten tap spill",(199,552),(216,567),4.2,109,m["orange_lit"],12)
+    cast_plate("cold catch floor",[(129,546),(137,527),(157,521),(202,521),
+               (226,537),(232,557),(217,568),(177,563),(140,564)],91,3,m["black"],2)
+    molten_bath("molten collection bath",[(137,545),(145,534),(164,529),
+                (201,531),(219,542),(225,555),(211,561),(177,554),
+                (145,560)],m["orange_lit"])
+    cast_plate("left refractory bank",[(122,547),(132,522),(151,513),
+               (166,515),(146,538),(139,559),(129,569),(120,558)],98,5,m["slag"],2)
+    cast_plate("right refractory bank",[(204,513),(221,521),(239,540),
+               (242,562),(229,573),(221,563),(221,541),(207,528)],98,5,m["slag"],2)
+    rod("feed pipe jacket",(162,463),(162,505),9,105,m["steel"],16)
+    disc("feed nozzle dark mouth",162,506,9,3,109,m["black"],24)
+    rod("molten fall",(162,507),(163,537),3.8,108,m["orange_lit"],12)
+    disc("molten impact crown",163,539,8,2,100,m["orange_lit"],20)
+    cast_plate("front refractory sill",[(127,566),(151,569),(177,565),
+               (215,570),(232,577),(228,581),(183,575),(146,577),
+               (126,573)],95,4,m["dark"],2)
+    rod("molten tap spill",(218,556),(234,574),4.4,109,m["orange_lit"],12)
     for sx in (-1,1):
-        cube("refractory throat jamb",179+sx*53,536,14,87,13,86,m["silver"],3)
-        cube("jamb black heat slot",179+sx*53,535,4,66,3,94,m["dark"],1)
-    for yy in (500,572):
-        cube("cast refractory course",179,yy,110,7,8,88,m["steel"],2)
+        cube("refractory throat jamb",179+sx*72,536,13,108,13,86,m["silver"],3)
+        cube("jamb black heat slot",179+sx*72,535,4,84,3,94,m["dark"],1)
+    for yy in (486,583):
+        cube("cast refractory course",179,yy,150,7,8,88,m["steel"],2)
     for y in (510,523,547,560):
-        cube("refractory courses",179,y,102,2,2,83,m["brass"],1)
+        cube("refractory courses",179,y,136,2,2,83,m["brass"],1)
     corner_fasteners("heat jacket",177,517,182,176,64,m)
-    cube("throat crown",179,487,136,10,10,83,m["silver"],3)
-    cube("throat sill",179,580,136,9,9,83,m["brass"],3)
+    cube("throat crown",179,480,166,10,10,83,m["silver"],3)
+    cube("throat sill",179,587,166,9,9,83,m["brass"],3)
     rod("exhaust riser",(104,487),(104,412),16,36,m["dark"])
     rod("exhaust ferrule",(104,419),(104,405),19,39,m["silver"])
     rod("molten delivery",(196,569),(282,617),13,39,m["dark"])

@@ -64,21 +64,21 @@ void fragment() {
         float dome_x = 0.642+(0.045+0.370*establish)*bow;
         float shield_shell = band(q.x,dome_x,0.010)*visible_arc;
         float shell_depth = band(q.x,dome_x-0.030,0.008)*visible_arc;
-        float shell_volume = smoothstep(0.70,0.75,q.x)
-                             *(1.0-smoothstep(dome_x-0.018,dome_x+0.012,q.x))*visible_arc;
-        float canopy = surface.a*smoothstep(0.83,0.96,q.x);
+        float shell_volume = smoothstep(0.65,0.79,q.x)
+                             *(1.0-smoothstep(dome_x-0.035,dome_x+0.012,q.x))*visible_arc;
+        float canopy = surface.a*smoothstep(0.73,0.89,q.x);
         float lens = surface.a;
         material = 0.04+0.16*lattice;
         action = ((front*0.95+lattice*0.16+curved*0.25+glancing*0.12)*lens
-                  +shield_shell*1.20+shell_depth*0.33+shell_volume*0.12
-                  +canopy*0.95)*load;
+                  +shield_shell*1.04+shell_depth*0.29+shell_volume*0.38
+                  +canopy*1.18)*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
         float pour = 0.55+0.45*smoothstep(0.18,0.43,fract(phase*0.29));
         // These coordinates are measured in the aligned rendered work crop,
         // after the Blender camera and shared port translation.
-        vec2 throat=vec2(0.49,0.41);
+        vec2 throat=vec2(0.49,0.35);
         vec2 elbow=vec2(0.49,0.46);
         vec2 tap=vec2(0.61,0.54);
         float pool=disk(q,vec2(0.55,0.49),vec2(0.105,0.055));
