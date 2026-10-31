@@ -1,15 +1,26 @@
 {
-  "current": "Parent confirmed original reviewer viewed0f98119 full screens and23.4s action clip at0.25s frame intervals; root viewed early/bottom/long and actually sent those three layout confirmation images to user. Current layout awaits user feedback; cross-module style awaits overall new proposal, not accepted/main.",
+  "current": "User feedback ended prior wait. Same layout item restored; source investigation only, no new code/runtime/evidence. Actual platform compaction occurred; preserved handoff then stop for in-place replacement.",
   "runtime_source_commit": "75b7a1918b2c988e81ebdb64e7006369189c77cc",
   "shared_number_source": "f688ea7c8856ad87775b0853044b9020303b8137",
   "evidence": "name-column-revision/ledger.json",
   "remaining": [
-    "Await user feedback on current layout three images already delivered by root",
-    "Cross-module style awaits overall new proposal; no accepted new style source to consume"
+    "Unify equipment name/property/fee typography and fee baseline/fixed gaps; semantic current/gain/cost/shortage colors",
+    "Remove passive clipped-row identity fragment and evaluate/remove redundant heading/hints/group labels while retaining clipped-card noninteraction",
+    "Capture before boundary/node evidence and structurally repair lower content/scrollbar leakage; exact artwork boundary not measured yet",
+    "Consume authoritative shared resource-integer display and economy contract when fixed source arrives; no UI ceil or generic formatter mutation",
+    "Same-thread affected native full-screen/actions for2/5/8,long MAX,dual fees,shortage/buttons,bounds,then code/evidence Git binding",
+    "Cross-module style remains pending overall replacement proposal; rejected4bdea not consumed"
   ],
-  "independent_implementation_remaining": [],
-  "implementation_dependency": null,
-  "actual_compaction": false,
+  "independent_implementation_remaining": [
+    "Typography/baseline/gaps/semantic numeric roles",
+    "Passive fragment/redundant copy cleanup",
+    "Workbench clipping/bottom boundary structure and affected evidence"
+  ],
+  "implementation_dependency": {
+    "resource_integer": "Pending backend authoritative preview/execution integer contract and overall resource-specific formatter API/full fixed SHA/minimal files; do not UI ceil or alter generic PlayerText.number",
+    "semantic_roles": "Use common roles; no new fixed role source supplied in this round; coordinate exact minimal helper if required"
+  },
+  "actual_compaction": true,
   "denied_actions": [],
   "unknown_outcomes": [],
   "background_processes": [],
@@ -26,5 +37,10 @@
     "name-column-revision/inline-native-long-max.png"
   ],
   "auxiliary_hover": "Native exact original value retained; not rounded to shared one-decimal primary display",
-  "stop_reason": "Authorized implementation and evidence complete; preserve reviewed/delivered layout candidate while awaiting user layout feedback and overall style proposal"
+  "stop_reason": "Actual platform compaction: preserve investigated natural item and stop for in-place executor replacement per parent instruction",
+  "product_edits_this_feedback_round": false,
+  "new_runtime_or_evidence_this_feedback_round": false,
+  "investigation_baseline": "f6b0c6fa2bdcf019d5823ce3cbd5d645254a3ac7",
+  "root_cause_fragment": "Intentional per-slot passive identity continuation Label; not proven old-layer/baked-text bug",
+  "bottom_boundary_status": "Source nominal scroll rect(340,294,450,510) confirmed; actual visible artwork edge/node bounds and before screenshot not captured in this feedback round"
 }
