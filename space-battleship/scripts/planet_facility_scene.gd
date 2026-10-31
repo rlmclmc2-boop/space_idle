@@ -31,17 +31,10 @@ var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
-var _workshop_body_sprite: Sprite3D
-var _workshop_arm_sprite: Sprite3D
-var _workshop_carriage_sprite: Sprite3D
-var _workshop_link: MeshInstance3D
 var _station_body_sprite: Sprite3D
 var _refinery_shutter_sprites: Dictionary = {}
 var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
-const WORKSHOP_ARM_SPLIT_Y := 428.0
-const WORKSHOP_ARM_IMAGE_HEIGHT := 1024.0
-const WORKSHOP_ARM_IMAGE_WIDTH := 1536.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -104,9 +97,9 @@ func _ready() -> void:
 			moving[part_name] = pivot
 		_parts[kind] = moving
 		if kind == "auto_explore": _install_station_illustration(model, moving)
-		if kind == "equipment": _install_workshop_illustration(model, moving)
+		if kind == "equipment": _workshop_arm_base_y = (moving["ToolArmSweep"] as Node3D).position.y
 		if kind == "refinery": _install_refinery_illustration(model, moving)
-		if kind != "shipyard": _transparent_materials(model)
+		if kind not in ["shipyard", "equipment"]: _transparent_materials(model)
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
@@ -129,70 +122,6 @@ func _install_station_illustration(model: Node3D, moving: Dictionary) -> void:
 	body.render_priority = -1
 	model.add_child(body)
 	_station_body_sprite = body
-
-func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
-	# The approved R5 silhouette is carried by two depth-tested, camera-facing
-	# art layers. The original GLB keeps its named animation pivots and anchor.
-	_hide_imported_meshes(model)
-	var body := Sprite3D.new()
-	body.name = "IllustratedWorkshopBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-short-throat.png")
-	body.pixel_size = 0.0031
-	body.position = Vector3(0, 0.25, 0)
-	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = true
-	body.double_sided = true
-	body.render_priority = 0
-	model.add_child(body)
-	_workshop_body_sprite = body
-	# Both sprites sample the original illustration. Splitting at the shoulder
-	# keeps the ivory carriage on the gantry while the tool works below it.
-	var arm_texture := preload("res://assets/planets/facilities_v5/illustrated/workshop-arm.png")
-	var carriage_texture := AtlasTexture.new()
-	carriage_texture.atlas = arm_texture
-	carriage_texture.region = Rect2(0, 0, WORKSHOP_ARM_IMAGE_WIDTH, WORKSHOP_ARM_SPLIT_Y)
-	var tool_texture := AtlasTexture.new()
-	tool_texture.atlas = arm_texture
-	tool_texture.region = Rect2(0, WORKSHOP_ARM_SPLIT_Y, WORKSHOP_ARM_IMAGE_WIDTH, WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y)
-	var gantry := moving["GantrySlide"] as Node3D
-	var carriage := Sprite3D.new()
-	carriage.name = "IllustratedGantryCarriage"
-	carriage.texture = carriage_texture
-	carriage.pixel_size = body.pixel_size
-	carriage.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	carriage.shaded = true
-	carriage.double_sided = true
-	carriage.render_priority = 2
-	gantry.add_child(carriage)
-	_workshop_carriage_sprite = carriage
-	var link := MeshInstance3D.new()
-	link.name = "TelescopingToolLink"
-	var link_mesh := CylinderMesh.new()
-	link_mesh.top_radius = 0.075
-	link_mesh.bottom_radius = 0.075
-	link_mesh.height = 1.0
-	link.mesh = link_mesh
-	var link_material := StandardMaterial3D.new()
-	link_material.albedo_color = Color("102b48")
-	link_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	link_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	link_material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
-	link_material.render_priority = 0
-	link.material_override = link_material
-	model.add_child(link)
-	_workshop_link = link
-	var arm := Sprite3D.new()
-	arm.name = "IllustratedToolArm"
-	arm.texture = tool_texture
-	arm.pixel_size = body.pixel_size
-	var arm_pivot := moving["ToolArmSweep"] as Node3D
-	_workshop_arm_base_y = arm_pivot.position.y
-	arm.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	arm.shaded = true
-	arm.double_sided = true
-	arm.render_priority = 1
-	arm_pivot.add_child(arm)
-	_workshop_arm_sprite = arm
 
 func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	# The upper shell has an open feed port; its lower load path belongs to the
@@ -262,35 +191,6 @@ func _position_refinery_work(model: Node3D, clock: float) -> void:
 		var travel := fposmod(clock * 0.20 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
 		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), tip.lerp(upper, travel) + camera_front * 0.10)
-
-func _position_workshop_arm(model: Node3D) -> void:
-	# Keep the illustrated arm on a stable camera-facing layer. A direct child
-	# offset follows the tilted ground normal and crosses the body's depth plane,
-	# making the arm vanish behind opaque pixels during its vertical stroke.
-	var gantry := _parts["equipment"]["GantrySlide"] as Node3D
-	var pivot := _parts["equipment"]["ToolArmSweep"] as Node3D
-	# Sprite3D billboards face the camera. Its source image's X/Y axes are
-	# therefore camera right/up, not the model's tilted ground-tangent axes.
-	var camera_to_model := model.global_transform.basis.inverse()
-	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
-	var screen_up := (camera_to_model * Vector3.UP).normalized()
-	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var width := _workshop_body_sprite.scale.x
-	var origin := _workshop_body_sprite.position + screen_right * (gantry.position.x * width) + camera_front * 0.25
-	var pixel_size := _workshop_arm_sprite.pixel_size
-	var carriage_center := origin + screen_up * (WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y) * pixel_size * 0.5
-	# The pivot still owns the game-clock cycle. Map its full stroke to a
-	# downward extension, keeping the tool below the rail at every phase.
-	var extension := (_workshop_arm_base_y + 0.35 - pivot.position.y) * 0.5
-	var tool_center := origin - screen_up * (WORKSHOP_ARM_SPLIT_Y * pixel_size * 0.5 + extension)
-	_workshop_carriage_sprite.position = carriage_center - gantry.position
-	_workshop_arm_sprite.position = pivot.transform.basis.inverse() * (tool_center - gantry.position - pivot.position)
-	# The telescoping section occupies only the opening below the fixed rail
-	# carriage; the tool art covers its lower end and the carriage covers its top.
-	_workshop_link.visible = extension > 0.01
-	if _workshop_link.visible:
-		var joint := origin - screen_right * (0.10 * width) + screen_up * ((WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size)
-		_workshop_link.transform = Transform3D(Basis(screen_right, screen_up, camera_front).scaled(Vector3(width, extension + 0.10, 1)), joint - screen_up * extension * 0.5)
 
 func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
@@ -366,11 +266,11 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# detached vertical slivers as the orbital structure turns.
 		var scale_factor := 0.64 if kind == "auto_explore" else 0.55 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
-		if kind == "shipyard":
-			# Its open berths point away from the globe in the owned section's
-			# local frame, including after the section rotates behind the planet.
+		if kind in ["shipyard", "equipment"]:
+			# Both open work bays are authored in the owned section's local frame.
+			# The workshop's through axis follows the actual orbit tangent.
 			var outward: Vector3 = _spine.point(a).normalized()
-			var axis_x := -outward
+			var axis_x: Vector3 = -outward if kind == "shipyard" else (_spine.point(a + 0.001) - _spine.point(a - 0.001)).normalized()
 			var axis_y: Vector3 = _spine.plane_normal()
 			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(Vector3.ONE * scale_factor), _spine.socket_position(a, kind))
 		else:
@@ -379,7 +279,6 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 			# The round hull encloses its real section joint at the same station
 			# socket; keep only the short top annulus as a separate moving layer.
 			_station_body_sprite.position = Vector3(0, -0.30, 0) + model.global_transform.basis.inverse() * Vector3(0, 0, 0.25)
-		if kind == "equipment": _position_workshop_arm(model)
 		if kind == "refinery": _position_refinery_work(model, clock)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
