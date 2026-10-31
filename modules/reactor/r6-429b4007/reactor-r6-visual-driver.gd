@@ -1,0 +1,102 @@
+extends SceneTree
+func _initialize() -> void: call_deferred("run")
+func frames(n: int) -> void:
+	for i in n: await process_frame
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance(); var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance(); tries += 1
+	game._sync_guidance()
+func count_nodes(node: Node) -> int:
+	var total := 1
+	for child in node.get_children(): total += count_nodes(child)
+	return total
+func measure(label: String, scene: Control, session, game, duration: float) -> void:
+	var samples: Array[float] = []
+	var start: int = Time.get_ticks_usec(); var last: int = start
+	var game_start: float = session.game_time
+	var phase_start: float = scene._stage.visual_phase()
+	var stage_before: Dictionary = scene._stage.diagnostics.duplicate()
+	var ui_before: Dictionary = scene.presentation_counts.duplicate()
+	var nodes_before: int = count_nodes(scene)
+	while float(Time.get_ticks_usec() - start) / 1000000.0 < duration:
+		await process_frame
+		var now: int = Time.get_ticks_usec()
+		samples.append(float(now-last)/1000.0); last = now
+		if samples.size() % 35 == 0: clear_guidance(session, game)
+	samples.sort()
+	var total: float = float(last-start)/1000.0
+	var ui_delta: Dictionary = {}
+	for key in scene.presentation_counts: ui_delta[key] = scene.presentation_counts[key] - ui_before[key]
+	var stage_delta: Dictionary = {}
+	for key in scene._stage.diagnostics: stage_delta[key] = scene._stage.diagnostics[key] - stage_before[key]
+	print("DIAG ", label, " frames=", samples.size(), " wall_ms=", total, " fps=", 1000.0*float(samples.size())/total, " p50_ms=", samples[int((samples.size()-1)*0.50)], " p95_ms=", samples[int((samples.size()-1)*0.95)], " game_seconds=", session.game_time-game_start, " phase_delta=", scene._stage.visual_phase()-phase_start, " stage_delta=", stage_delta, " ui_delta=", ui_delta, " nodes=", nodes_before, "->", count_nodes(scene))
+func drag(start: Vector2, finish: Vector2) -> void:
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT; press.pressed = true
+	press.position = start; press.global_position = start
+	root.push_input(press, true)
+	var motion := InputEventMouseMotion.new()
+	motion.position = finish; motion.global_position = finish
+	motion.relative = finish - start; motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+	root.push_input(motion, true)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT; release.pressed = false
+	release.position = finish; release.global_position = finish
+	root.push_input(release, true)
+func run() -> void:
+	root.size = Vector2i(1440,900); root.content_scale_size = Vector2i(1440,900)
+	var game: Node2D = load("res://src/main.tscn").instantiate(); root.add_child(game); await frames(4)
+	var session = game.session
+	assert(session != null and game.startup_error.is_empty() and session.current_chrono_speed() == 1)
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true; saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	clear_guidance(session, game); game._select_left_module("reactor"); await frames(5)
+	var scene: Control = game.reactor_scene
+	assert(scene.visible)
+	scene._equal.pressed.emit(); await frames(5); clear_guidance(session, game)
+	var model: Dictionary = session.reactor_system.presentation_model()
+	assert(model.ok and model.modules.size() == 4 and float(model.load) == 1.0)
+	print("DIAG_CONTEXT pid=", OS.get_process_id(), " size=", root.size, " speed=", session.current_chrono_speed(), " loads=", model.modules.map(func(row): return [row.id,row.load]), " renderer=", RenderingServer.get_rendering_device() != null)
+	var Reactor = preload("res://src/systems/reactor.gd")
+	for count in [1,4]:
+		var module_ids: String = "smelting" if count == 1 else "weapons,smelting" if count == 2 else "weapons,defence,smelting" if count == 3 else "weapons,defence,smelting,condensation"
+		var parameters: Dictionary = session.reactor_system._parameters.duplicate(true)
+		parameters.reactorModules = module_ids
+		var fixture_owner = Reactor.new(parameters, session.amount_api, session.run_state)
+		var fixture_publish: Callable = func(_factors, _wallet, _kind):
+			fixture_owner.accept()
+			return {"ok": true}
+		fixture_owner.refresh_availability(func(kind, target): return kind == "feature" and target == "reactor" or kind == "reactor_module" and target == "condensation" and count == 4)
+		var refreshed: Dictionary = fixture_owner.refresh(session.reactor_inputs(), fixture_publish)
+		assert(refreshed.get("ok",false))
+		scene._owner = fixture_owner
+		scene._publish = fixture_publish
+		scene.bind_presentation(fixture_owner.presentation_model, func(): return {"game_time": session.game_time, "paused": false, "running": true})
+		scene.bind_purchase_quote(func(quantity, maximum): return fixture_owner.purchase_max_preview(session.economy.can_pay) if maximum else fixture_owner.purchase_preview(session.economy.can_pay, quantity))
+		fixture_owner.presentation_changed.connect(scene.invalidate_presentation)
+		await frames(6); clear_guidance(session,game)
+		var amounts: Dictionary = {}
+		for id in fixture_owner.enabled_modules(): amounts[id] = "0"
+		var zero: Dictionary = fixture_owner.apply_allocation_plan(amounts, session.reactor_inputs(), fixture_publish)
+		assert(zero.get("ok",false))
+		await frames(6); clear_guidance(session,game)
+		var model0: Dictionary = fixture_owner.presentation_model()
+		print("CONTROLLED_ZERO ",count," ids=",fixture_owner.enabled_modules()," model=",JSON.stringify(model0)," ui_ids=",scene._ids," stage_loads=",scene._stage._loads)
+		assert(model0.get("ok",false) and is_zero_approx(float(model0.load)))
+		await create_timer(2.7).timeout; clear_guidance(session,game); await frames(3)
+		get_root().get_texture().get_image().save_png("/tmp/reactor-r6-"+str(count)+"-zero.png")
+		scene._equal.pressed.emit()
+		await frames(6); clear_guidance(session,game)
+		var model1: Dictionary = fixture_owner.presentation_model()
+		var visible_rows: Array = []
+		for id in ["weapons","defence","smelting","condensation"]: visible_rows.append([id,scene._rows[id].name.visible])
+		print("CONTROLLED_ACTIVE ",count," ids=",fixture_owner.enabled_modules()," model=",JSON.stringify(model1)," ui_ids=",scene._ids," stage_loads=",scene._stage._loads," visible_rows=",visible_rows," equal_disabled=",scene._equal.disabled," upgrade_disabled=",scene._purchase.disabled)
+		assert(model1.get("ok",false) and is_equal_approx(float(model1.load),1.0))
+		await create_timer(2.7).timeout; clear_guidance(session,game); await frames(3)
+		get_root().get_texture().get_image().save_png("/tmp/reactor-r6-"+str(count)+"-active.png")
+	quit()
