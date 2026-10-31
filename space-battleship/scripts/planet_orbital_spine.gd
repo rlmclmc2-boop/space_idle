@@ -79,7 +79,7 @@ func _ready() -> void:
 	_navy.render_priority = -3
 	_side.render_priority = -2
 	_deck = _material(Color("fff2df"))
-	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-single-channel.png"))
+	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
 	_sleeve.render_priority = 1
@@ -196,8 +196,8 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
 		Vector2(-0.50, 0.04), Vector2(-0.47, 0.12), Vector2(-0.40, 0.21),
-		Vector2(-0.29, 0.24), Vector2(-0.14, 0.24), Vector2(-0.10, 0.18),
-		Vector2(0.0, 0.16), Vector2(0.10, 0.18), Vector2(0.14, 0.24),
+		Vector2(-0.29, 0.24), Vector2(-0.14, 0.24), Vector2(-0.10, 0.22),
+		Vector2(0.0, 0.21), Vector2(0.10, 0.22), Vector2(0.14, 0.24),
 		Vector2(0.29, 0.24), Vector2(0.40, 0.21), Vector2(0.47, 0.12),
 		Vector2(0.50, 0.04),
 	]
