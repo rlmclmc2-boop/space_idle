@@ -28,6 +28,8 @@
 
 `442b2bf0` 把站顶指挥舱做成较宽的浅层圆形壳、暖白接缝和琥珀小窗，仍直接坐落于承力墙。四阶段与 25° 受影响角的原尺寸图、0–6 秒 `advance(0.25, false)` 模拟相位的 25 帧及 4 fps／6.25 秒短片，连同脚本、日志、哈希，共 43 件固定于[独立归档](https://github.com/rlmclmc2-boop/space_idle/tree/054d36c525b18942bc87e92c12f62b80056909bc) `archive/planet-station-saucer-442b2bf0-20261031@054d36c5`；42 件文件的哈希已从归档 blob 解出复核。逐张原尺寸复看未见建造顺序或连续相位断裂。顶部圆形身份更清楚，前正面的深色开口仍偏重，四节点整体尚未通过，继续制作。
 
+同源码另补[70° 站体单建／四节点完整态](https://github.com/rlmclmc2-boop/space_idle/tree/d4ad7cb8752adf4db1d6c6acefa7ad8cf462850b)，固定于独立归档 `archive/planet-station-saucer70-442b2bf0-20261031@d4ad7cb8`；原尺寸两图、脚本、日志和哈希解档复核。站体到球后时按深度遮挡，只露圆舱；这是指定相位静图，不代表自然连续运动或整体通过。
+
 ## 固定源与现场快照
 
 快照读取于 **2026-10-31 07:31 UTC**；会变化的 WIP 以 `git status/diff` 为准，不能将本表当后续未读取的事实。
