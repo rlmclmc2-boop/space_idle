@@ -1,0 +1,8 @@
+# R5e reactor work material evidence
+
+Runtime source: `implement/reactor-centered-godot@d40855989faa5a07c0637058ae5382fb8ae2a1c7`.
+This archive contains only this candidate's controlled 1/2/3/4-route zero and active whole screens, 1/2-route real slider states, and a normal-speed continuous 10.000-second recording at 1440x900/25fps/250 frames. Both GDScript drivers and runtime logs are included. The limited route sets are isolated Owner parameter fixtures; route 4 is controlled open, not natural progression. The shared host in these images is the module branch's old temporary host; public shell integration requires a new whole-screen review.
+
+The device sources were split into idle material and load-driven local emissive texture. Compare each zero/active pair: blue shield field, furnace throat, violet crystal chamber and gun's twin charging mouths respond to actual Owner workload; mechanical casings, glass geometry, core gimbal, clamps, conduit shells and control panel remain separate. The 10-second film shows four routes at 25% each under normal 1x game time. Shader and imports ran without Godot script errors. This is author evidence, not an independent visual approval or target-hardware performance result. The R5c independent review accepted upper composition and physical connections but returned work-state legibility; this evidence is the subsequent candidate for that item.
+
+`SHA256SUMS` records source file byte hashes. The R5c film at its earlier fixed version showed first-pickup guidance covering the lower core near 8.4 seconds; that limitation belongs to the R5c clip and is not described as a device effect.
