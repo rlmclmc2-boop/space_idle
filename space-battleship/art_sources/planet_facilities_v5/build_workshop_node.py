@@ -176,8 +176,13 @@ for end in (-1, 1):
 # Named animation ports from the original runtime. The carriage moves along
 # the local tangent; the actual tool stays within the genuinely open center.
 gantry = node("GantrySlide", root)
-box("Moving dark overhead carriage", (0, 0, 1.23), (.62, .52, .28), blue, gantry, .05)
-box("Carriage ivory upper face", (0, 0, 1.40), (.58, .48, .10), ivory, gantry, .025)
+# Two structural tracks leave the work tool's centerline genuinely open.
+# They remain on the same sliding pivot and meet the existing outer bearings.
+for side in (-1, 1):
+    box("Moving dark carriage track", (0, side*.20, 1.23),
+        (.62, .16, .28), blue, gantry, .035)
+    box("Carriage ivory track armor", (0, side*.20, 1.40),
+        (.58, .13, .10), ivory, gantry, .018)
 for side in (-1, 1):
     box("Carriage bearing", (0, side*.39, 1.22), (.26, .16, .18), navy, gantry, .025)
 arm = node("ToolArmSweep", gantry, (0, 0, 1.10))
