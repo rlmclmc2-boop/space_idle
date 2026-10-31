@@ -22,6 +22,8 @@
 
 站体装甲同版补了[0–6 秒完整态模拟连续片段](https://github.com/rlmclmc2-boop/space_idle/tree/36270df7417416ea1ee00dd6a0e5bcefb8574a7e)，固定于独立归档分支 `archive/planet-station-armor-motion-20261031@36270df7`，已逐帧复看。此段由 `advance(0.25, false)` 逐步取样，不是墙钟自然运行，也未覆盖自然建设、整圈或整体通过。
 
+`0cbc1a4a` 将站／炉下腹厚暗壳收薄，做成直接长在贯通承力颊上的分段压力舱格、端盖和斜受力跟。其[同版四阶段、25° 受影响角和 0–6 秒模拟连续片段](https://github.com/rlmclmc2-boop/space_idle/tree/2c589932604b441c618a5f9df728415d4a079727)固定于独立分支 `archive/planet-pressure-bays-0cbc1a4a-20261031@2c589932`，原图、脚本、日志、哈希和短片已核。侧面材料层次略清楚，但默认角度站体暗开口仍大；继续站／炉与其余两节点的体量、材质和细节密度协调，不能当作整体通过。
+
 ## 固定源与现场快照
 
 快照读取于 **2026-10-31 07:31 UTC**；会变化的 WIP 以 `git status/diff` 为准，不能将本表当后续未读取的事实。
