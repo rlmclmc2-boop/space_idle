@@ -1,0 +1,10 @@
+{
+  "source_commit": "d08767023654772f8b2eca6212ef877d5677cbed",
+  "runtime": "Godot 4.7.2 gl_compatibility 1440x900",
+  "files": {
+    "equipment-return-reference-1440x900.png": "ef399f97f2b7eeec9eb2b092c09744b0977fc75ff975cf7059ddfa90ad581bc5",
+    "reactor-four-1440x900.png": "2f0a29b976e5dfe5bc08d1110f19e5a1be84b813cdee61026026fd9ac30b15fa",
+    "reactor-one-controlled-1440x900.png": "57845b362c33d3dd403f4739a02727fb3ff5fbe7d1d9538718f1c0ca7f2d120b",
+    "equipment-return-after-reactor-1440x900.png": "ef399f97f2b7eeec9eb2b092c09744b0977fc75ff975cf7059ddfa90ad581bc5"
+  }
+}
