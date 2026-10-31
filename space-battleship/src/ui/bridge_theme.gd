@@ -157,6 +157,22 @@ static func apply_operation_select(button: OptionButton, padding: float = 10.0) 
 	button.add_theme_icon_override("arrow", preload("res://assets/ui/public_shell/stepper-down.svg"))
 	button.add_theme_constant_override("arrow_margin", 8)
 	button.add_theme_constant_override("h_separation", 8)
+	# OptionButton's list is a separate PopupMenu window. Style the native menu
+	# itself so opening a select does not fall back to Godot's gray editor menu.
+	var menu_theme := Theme.new()
+	menu_theme.set_stylebox("panel", "PopupMenu", operation_button("normal", 7.0))
+	menu_theme.set_stylebox("hover", "PopupMenu", operation_button("selected_hover", 5.0))
+	menu_theme.set_font("font", "PopupMenu", public_font())
+	menu_theme.set_font_size("font_size", "PopupMenu", 15)
+	menu_theme.set_color("font_color", "PopupMenu", Color("f0f2e9"))
+	menu_theme.set_color("font_hover_color", "PopupMenu", Color.WHITE)
+	menu_theme.set_color("font_disabled_color", "PopupMenu", Color("9cb4b4"))
+	menu_theme.set_constant("item_start_padding", "PopupMenu", 8)
+	menu_theme.set_constant("item_end_padding", "PopupMenu", 8)
+	menu_theme.set_constant("v_separation", "PopupMenu", 5)
+	menu_theme.set_icon("radio_checked", "PopupMenu", preload("res://assets/ui/dialog/radio-on.svg"))
+	menu_theme.set_icon("radio_unchecked", "PopupMenu", preload("res://assets/ui/dialog/radio-off.svg"))
+	button.get_popup().theme = menu_theme
 
 static func apply_route_button(button: Button, selected: bool) -> void:
 	for state in PUBLIC_STATES:
@@ -191,11 +207,8 @@ static func apply_public_input(control: Control) -> void:
 		spin.add_theme_icon_override("updown", preload("res://assets/ui/public_shell/stepper-pair.svg") if spin.editable else preload("res://assets/ui/public_shell/stepper-pair-disabled.svg"))
 		for direction in ["up", "down"]:
 			for suffix in ["", "_hovered", "_pressed", "_disabled"]:
-				var frame := StyleBoxFlat.new()
-				frame.bg_color = Color("1b4856") if suffix == "_hovered" else Color("2b5b64") if suffix == "_pressed" else Color("172f3c") if suffix == "_disabled" else Color("123746")
-				frame.border_color = Color("a9d7c9") if suffix == "_hovered" else Color("547b81")
-				frame.set_border_width_all(1)
-				spin.add_theme_stylebox_override(direction + "_background" + suffix, frame)
+				var state := "hover" if suffix == "_hovered" else "pressed" if suffix == "_pressed" else "disabled" if suffix == "_disabled" else "normal"
+				spin.add_theme_stylebox_override(direction + "_background" + suffix, operation_button(state, 1.0))
 
 static func public_check(control: CheckBox) -> void:
 	apply_public_button(control)
