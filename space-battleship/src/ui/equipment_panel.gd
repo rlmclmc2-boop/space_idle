@@ -240,10 +240,13 @@ func _panel(parent: Control, rect: Rect2) -> Panel:
     parent.add_child(panel);return panel
 
 func _icon(parent: Control, key: String, rect: Rect2) -> TextureRect:
-    var icon=TextureRect.new();icon.texture=_icons.get(key);icon.position=rect.position;icon.size=rect.size
+    var icon=TextureRect.new()
+    # Set expansion before the texture, so its imported size never queues a
+    # minimum-size resize that can outgrow the local choice after it is added.
     icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    icon.size=rect.size
-    icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;parent.add_child(icon);return icon
+    icon.texture=_icons.get(key);icon.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    parent.add_child(icon);icon.position=rect.position;icon.size=rect.size
+    return icon
 
 func _build() -> void:
     _fallback_header=_label(self,"装备",Rect2(25,10,220,45),22,CREAM,600)
@@ -366,6 +369,20 @@ func _refresh_card(id: String) -> void:
     var fact: Dictionary=_fact(id)
     if fact.is_empty():return
     var row: Dictionary=_cards[id]
+    var empty: bool=str(fact.equipment_id).is_empty()
+    for control in [row.level,row.compare,row.attribute,row.cost_title,row.fees,row.quantity,row.purchase]:
+        control.visible=not empty
+    row.select.text=_slot_name(id)+" · "+str(NAMES.get(str(fact.equipment_id),"装备"))
+    row.select.tooltip_text=row.select.text
+    row.icon.texture=_icons.get(str(fact.equipment_id))
+    if empty:
+        row.comparison={};row.signature=[];row.fee_cells=[]
+        row.select.disabled=not _session.run_state.is_running()
+        row.purchase.disabled=true;row.quantity.disabled=true
+        row.fragment.text=_slot_name(id)+" · 空槽"
+        if id==_selected:last_comparison={}
+        _card_border(id)
+        return
     var comparison: Dictionary=_comparison(id,str(fact.equipment_id))
     if id==_selected:last_comparison=comparison
     if not comparison.get("ok",false):
@@ -438,8 +455,12 @@ func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejectio
         if not is_instance_valid(row.fee_empty):row.fee_empty=_label(row.fees,"—",Rect2(0,-2,20,26))
         row.fee_empty.show()
         if not reason.is_empty() and not budget_rejection:
-            if not is_instance_valid(row.fee_reason):row.fee_reason=_label(row.fees,"",Rect2(28,-2,190,26),15,Color("903d23"))
-            row.fee_reason.text=PlayerText.error(reason);row.fee_reason.show()
+            if not is_instance_valid(row.fee_reason):
+                row.fee_reason=_label(row.fees,"",Rect2(28,-2,190,26),15,Color("903d23"))
+                row.fee_reason.clip_text=true
+                row.fee_reason.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+            row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else PlayerText.error(reason)
+            row.fee_reason.tooltip_text=row.fee_reason.text;row.fee_reason.show()
 
 func _card_border(id: String) -> void:
     var chosen: bool=id==_selected
@@ -517,7 +538,7 @@ func _open_choices(id: String) -> void:
     _select_visual(id)
     var options: Array=_session.equipment.panel_equipment(id).filter(func(option):return option.enabled and not str(option.id).is_empty())
     var panel=_new_popup(id,42+options.size()*94)
-    _label(panel,_slot_name(id)+" · 同槽Lv."+str(_fact(id).paid_level),Rect2(14,8,320,24),16,CREAM,600)
+    _label(panel,_slot_name(id)+(" · 选择装备" if str(_fact(id).equipment_id).is_empty() else " · 同槽Lv."+str(_fact(id).paid_level)),Rect2(14,8,320,24),16,CREAM,600)
     for i in options.size():
         var option: Dictionary=options[i];var y: float=42+i*94
         var key: String=str(option.id)
@@ -587,10 +608,10 @@ func _accept_result(result: Dictionary, levels: bool) -> void:
 
 func _open_batch() -> void:
     var panel=_new_popup("",minf(700,130+_active.size()*48))
-    _label(panel,"全部装备升级",Rect2(14,8,320,26),18,CREAM,600)
+    _label(panel,"全部槽位升级",Rect2(14,8,320,26),18,CREAM,600)
     for i in _active.size():
         var fact: Dictionary=_active[i]
-        _label(panel,_slot_name(str(fact.id))+" · "+str(NAMES.get(str(fact.equipment_id),"空槽"))+" · Lv."+str(fact.paid_level),Rect2(16,45+i*48,350,30),15,CREAM)
+        _label(panel,_slot_name(str(fact.id))+" · "+str(NAMES.get(str(fact.equipment_id),"空槽"))+" · 槽位Lv."+str(fact.paid_level),Rect2(16,45+i*48,350,30),15,CREAM)
     _button(panel,["每槽 ×1","每槽 ×10","逐槽 MAX"][_batch_mode],Rect2(16,panel.size.y-48,145,36),_cycle_batch)
     var submit=_button(panel,"执行升级",Rect2(174,panel.size.y-48,196,36),_buy_all,"primary")
     submit.disabled=not _session.run_state.is_running()
