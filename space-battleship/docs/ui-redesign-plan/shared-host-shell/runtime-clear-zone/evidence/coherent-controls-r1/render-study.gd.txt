@@ -1,0 +1,156 @@
+extends SceneTree
+
+const OUT := "res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/coherent-controls-r1/"
+const ORIGINAL := "res://docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/evidence/"
+const W := Color("e9eee6")
+const INK := Color("1b4049")
+const MUTED := Color("9dc1be")
+const GOLD := Color("d9a45d")
+
+class Study:
+    extends Control
+    var variant: String
+    var font: Font
+    var screen_e: Texture2D
+    var screen_r: Texture2D
+    var surface_tex: Texture2D
+    func _init(v: String, f: Font, e: Texture2D, r: Texture2D, m: Texture2D) -> void:
+        variant = v; font = f; screen_e = e; screen_r = r; surface_tex = m
+    func label(value: String, x: float, y: float, size: int, color: Color = Color("e9eee6")) -> void:
+        draw_string(font, Vector2(x,y), value, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
+    func box(r: Rect2, fill: Color, stroke: Color, width: float = 1.0) -> void:
+        draw_rect(r, fill); draw_rect(r, stroke, false, width)
+    func button(r: Rect2, value: String, primary: bool = false, disabled: bool = false) -> void:
+        var body := Color("294d58") if not disabled else Color("213943")
+        box(r, body, GOLD if primary else Color("779999"), 1.5)
+        draw_line(r.position + Vector2(3,2), r.position + Vector2(r.size.x-3,2), Color("88acab") if not disabled else Color("527277"), 1)
+        draw_line(r.position + Vector2(2,r.size.y-3), r.position + Vector2(r.size.x-2,r.size.y-3), Color("0b2733"), 2)
+        var tx := r.position.x + maxf(5,(r.size.x-font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,14).x)/2)
+        label(value,tx,r.position.y+r.size.y/2+5,14,Color("f8dfac") if primary else W if not disabled else Color("9aaba8"))
+    func state_button(r: Rect2, caption: String, state: String) -> void:
+        var fill := Color("294d58")
+        var stroke := Color("779999")
+        var text_color := W
+        if state == "hover": fill = Color("3b6470"); stroke = Color("a4c6bc")
+        elif state == "pressed": fill = Color("183842"); stroke = Color("779999")
+        elif state == "selected": fill = Color("345e68"); stroke = Color("77b7bd")
+        elif state == "disabled": fill = Color("263e47"); stroke = Color("49666c"); text_color = Color("91a8a7")
+        elif state == "affordable": fill = Color("294d58"); stroke = GOLD; text_color = Color("ffe0ad")
+        box(r,fill,stroke,2 if state == "selected" else 1)
+        if state == "focus": draw_rect(r.grow(3),Color("a8d4d1"),false,1)
+        if state == "pressed": draw_line(r.position+Vector2(3,r.size.y-3),r.end-Vector2(3,3),Color("091f2b"),3)
+        label(caption,r.position.x+10,r.position.y+30,15,text_color)
+    func base_panel(r: Rect2) -> void:
+        draw_texture_rect_region(surface_tex,r,Rect2(430,230,812,155))
+        draw_rect(r,Color("3d6972"),false,2)
+        draw_line(Vector2(r.position.x+12,r.position.y+3),Vector2(r.end.x-12,r.position.y+3),Color("b4ccbb",0.75),1)
+        draw_line(Vector2(r.position.x+12,r.end.y-4),Vector2(r.end.x-12,r.end.y-4),Color("0a2730"),3)
+    func ivory(r: Rect2) -> void:
+        draw_texture_rect_region(surface_tex,r,Rect2(450,550,770,105))
+        draw_rect(r,Color("819c9b"),false,1.5)
+        draw_line(r.position+Vector2(4,2),Vector2(r.end.x-4,r.position.y+2),Color("ffffff",0.6),1)
+    func equipment() -> void:
+        draw_texture_rect(screen_e,Rect2(0,0,1440,900),false)
+        base_panel(Rect2(309,378,495,337))
+        label("逐槽工作台",332,417,20)
+        label("武器 1  ·  防御 1",468,416,13,MUTED)
+        button(Rect2(679,391,102,34),"全部升级")
+        draw_line(Vector2(326,435),Vector2(787,435),Color("65898c"),1)
+        for index in 2:
+            var top := 445.0+index*126
+            ivory(Rect2(326,top,461,117))
+            draw_rect(Rect2(327,top+2,5,113),Color("478c93"))
+            var icon_src := Rect2(350,459,41,49) if index==0 else Rect2(350,575,41,49)
+            draw_texture_rect_region(screen_e,Rect2(338,top+30,45,53),icon_src)
+            label("武器1 · 脉冲炮" if index==0 else "防御1 · 装甲",396,top+27,16,INK)
+            label("⌄",589,top+27,18,Color("507982"))
+            draw_line(Vector2(394,top+31),Vector2(604,top+31),Color("89a9a7"),1)
+            label("Lv.1",620,top+27,13,Color("46646b"))
+            button(Rect2(714,top+8,63,28),"比较")
+            label("攻击力  350 → 420" if index==0 else "容量  1,000 → 1,200",395,top+60,18,INK)
+            label("费用",340,top+98,13,Color("385862"))
+            draw_texture_rect_region(screen_e,Rect2(381,top+82,20,20),Rect2(382,515 if index==0 else 628,20,20))
+            label("铁 65",404,top+98,14,Color("a33725"))
+            button(Rect2(610,top+77,54,31),"×1")
+            button(Rect2(671,top+77,107,31),"购买1级",true)
+        draw_line(Vector2(329,703),Vector2(785,703),Color("6d9392"),1)
+    func reactor() -> void:
+        draw_texture_rect(screen_r,Rect2(0,0,1440,900),false)
+        base_panel(Rect2(0,517,808,383))
+        box(Rect2(22,538,762,61),Color("102f3c"),Color("769a9a"),1.5)
+        label("功率分配",39,562,14,MUTED); label("100 / 100",39,583,16,W)
+        var colors := [Color("e4aa4f"),Color("4fb7e9"),Color("df8159"),Color("ad78d3")]
+        box(Rect2(139,554,535,26),Color("092632"),Color("65888b"))
+        for i in 4: draw_rect(Rect2(143+i*132,558,129,18),colors[i])
+        button(Rect2(692,549,74,37),"均分")
+        var names := ["武器","盾甲","铁产出","碎片"]
+        ivory(Rect2(23,611,538,236))
+        for i in 4:
+            var y := 611.0 + i*59
+            if i > 0: draw_line(Vector2(33,y),Vector2(551,y),Color("91aaa7"),1)
+            draw_rect(Rect2(27,y+8,4,41),colors[i])
+            label(names[i],42,y+36,16,INK)
+            box(Rect2(189,y+20,155,16),Color("092632"),Color("618688"))
+            draw_rect(Rect2(192,y+23,37,10),colors[i])
+            draw_line(Vector2(231,y+16),Vector2(231,y+40),Color("d7e2d4"),2)
+            label("25%",386,y+37,19,INK)
+            draw_line(Vector2(456,y+10),Vector2(456,y+47),Color("91aaa7"),1)
+            label("×1.13",471,y+36,16,Color("3d6069"))
+        ivory(Rect2(572,611,211,236))
+        label("等级",589,642,15,INK);label("1",744,649,27,INK)
+        draw_line(Vector2(589,669),Vector2(765,669),Color("91aaaa"),1)
+        label("费用",589,698,14,INK)
+        draw_texture_rect_region(screen_r,Rect2(631,681,21,21),Rect2(657,687,23,23))
+        label("10 铀",656,698,15,INK)
+        button(Rect2(590,736,76,42),"×1")
+        button(Rect2(674,736,91,42),"升级",true)
+        label("当前预算 · 100% 已分配",589,814,12,Color("49696d"))
+        draw_line(Vector2(24,863),Vector2(782,863),Color("789798"),1)
+    func _draw() -> void:
+        if variant=="equipment": equipment()
+        elif variant=="reactor": reactor()
+        else:
+            draw_rect(Rect2(0,0,2400,1030),Color("0a2531"))
+            label("同族操作承载面 · 设计提案",52,57,29)
+            label("真实 1440×900 原图与公共几何为底 · 仅替换模块操作层的设计预览，非 Godot 实机",53,87,16,MUTED)
+            draw_set_transform(Vector2(52,116),0,Vector2(.78,.78))
+            equipment()
+            draw_set_transform(Vector2(1223,116),0,Vector2(.78,.78))
+            reactor()
+            draw_set_transform(Vector2.ZERO)
+            box(Rect2(52,842,2295,169),Color("143541"),Color("587e7f"))
+            label("同一操作状态家族",73,870,18,Color("f4dcaf"))
+            var samples := ["普通","悬浮","按下","焦点","已选","禁用","可购"]
+            var states := ["normal","hover","pressed","focus","selected","disabled","affordable"]
+            for i in samples.size(): state_button(Rect2(73+i*150,884,132,44),samples[i],states[i])
+            label("不足",1160,911,15,Color("f0a097"));label("铁 75",1220,911,15,Color("f0a097"))
+            state_button(Rect2(1300,884,150,44),"购买后提示","normal")
+            label("深青单层承托 + 象牙低反光信息面；金边只给执行，可购不额外加框。四色仅示能量/资源。",73,957,16)
+            label("逐槽 / 分配、均分、等级的结构各自保留。旧面板绘制源需替换，不在运行树叠一层。",73,985,16,MUTED)
+            label("装备 d354 / 19a2    ·    反应堆 6d / 808",1754,870,13,MUTED)
+
+func texture(path: String) -> Texture2D:
+    var image := Image.new()
+    if image.load(path) != OK: push_error("Missing source: "+path); return null
+    return ImageTexture.create_from_image(image)
+func _initialize() -> void:
+    call_deferred("run")
+func run() -> void:
+    var font := FontVariation.new()
+    font.base_font = load("res://assets/fonts/NotoSansSC.ttf")
+    font.variation_opentype = {2003265652:500.0}
+    var e := texture(OUT+"source-equipment-19a2-early2.png")
+    var r := texture(ORIGINAL+"r51c6d-combo-reactor-1440x900.png")
+    var material := texture(OUT+"material-reference.png")
+    for v in ["equipment","reactor","comparison"]:
+        root.size = Vector2i(2400,1030) if v=="comparison" else Vector2i(1440,900)
+        root.content_scale_size = root.size
+        var study := Study.new(v,font,e,r,material)
+        root.add_child(study)
+        study.size = root.size
+        await process_frame
+        await RenderingServer.frame_post_draw
+        root.get_texture().get_image().save_png(OUT + ("compare-2400x1030.png" if v=="comparison" else v+"-1440x900.png"))
+        study.queue_free()
+        await process_frame
+    quit()
