@@ -1,0 +1,80 @@
+extends SceneTree
+const OUT := "/tmp/space-idle-runtime472/e845-r5f-combo/"
+const Reactor = preload("res://src/systems/reactor.gd")
+func _initialize() -> void: call_deferred("run")
+func frames(n:int) -> void:
+ for i in n: await process_frame
+func shot(name:String) -> void:
+ await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png(OUT+name+"-1440x900.png")
+func clear_guidance(session,game) -> void:
+ var pending:Dictionary=session.pending_guidance()
+ var tries:=0
+ while not pending.is_empty() and tries<20:
+  assert(session.dismiss_guidance(str(pending.kind),str(pending.id)).ok)
+  pending=session.pending_guidance()
+  tries+=1
+ game._sync_guidance()
+func run() -> void:
+ root.size=Vector2i(1440,900)
+ root.content_scale_size=Vector2i(1440,900)
+ var game=load("res://src/main.tscn").instantiate()
+ root.add_child(game)
+ await frames(70)
+ assert(game.startup_error.is_empty())
+ var session=game.session
+ game.set_process(false)
+ var saved:Dictionary=session.campaign_system.save_state()
+ saved.grants["feature:reactor"]=true
+ saved.grants["reactor_module:condensation"]=true
+ assert(session.campaign_system.restore_state(saved).ok)
+ session.reactor_system.refresh_availability(session.campaign_system.available)
+ assert(session.reactor_system.refresh(session.reactor_inputs(),session.publish_reactor).ok)
+ clear_guidance(session,game)
+ game._refresh_feature_visibility()
+ game._zone_shell._route_buttons["equipment"].pressed.emit()
+ await frames(12)
+ assert(game.equipment_scene.visible and not game.reactor_scene.visible)
+ var cruiser_state:Dictionary=session.campaign_system.save_state()
+ cruiser_state.state.highest_reached=100
+ cruiser_state.cycle_reached=100
+ cruiser_state.state.state="menu"
+ cruiser_state.state.cleared_stages={}
+ for stage in range(1,100): cruiser_state.state.cleared_stages[stage]=true
+ assert(session.campaign_system.restore_state(cruiser_state).ok)
+ session.equipment.refresh_availability(session.campaign_system.available,100)
+ assert(session.campaign_system.change_ship("Cruiser",session.commit_ship_refit).ok)
+ await frames(12)
+ await shot("equipment-final-empty-controlled")
+ game._zone_shell._route_buttons["reactor"].pressed.emit()
+ await frames(18)
+ clear_guidance(session,game)
+ assert(game.reactor_scene.visible and game._zone_shell._active_route=="reactor")
+ print("R5F_E845_SHARED four src=c0add scene=",game.reactor_scene.get_rect()," stage=",game.reactor_scene._stage.size)
+ await shot("reactor-four")
+ var parameters:Dictionary=session.reactor_system._parameters.duplicate(true)
+ parameters.reactorModules="smelting"
+ var fixture_owner=Reactor.new(parameters,session.amount_api,session.run_state)
+ var fixture_publish:Callable=func(_factors,_wallet,_kind):
+  fixture_owner.accept()
+  return {"ok":true}
+ fixture_owner.refresh_availability(func(kind,target):return kind=="feature" and target=="reactor")
+ assert(fixture_owner.refresh(session.reactor_inputs(),fixture_publish).get("ok",false))
+ var scene=game.reactor_scene
+ scene._owner=fixture_owner
+ scene._publish=fixture_publish
+ scene.bind_presentation(fixture_owner.presentation_model,func():return {"game_time":session.game_time,"paused":false,"running":true})
+ scene.bind_purchase_quote(func(quantity,maximum):return fixture_owner.purchase_max_preview(session.economy.can_pay) if maximum else fixture_owner.purchase_preview(session.economy.can_pay,quantity))
+ fixture_owner.presentation_changed.connect(scene.invalidate_presentation)
+ await frames(18)
+ clear_guidance(session,game)
+ print("R5F_E845_SHARED one controlled ids=",fixture_owner.enabled_modules()," stage_loads=",scene._stage._loads)
+ await shot("reactor-one-controlled")
+ game._zone_shell._route_buttons["equipment"].pressed.emit()
+ await frames(12)
+ assert(game.equipment_scene.visible and not game.reactor_scene.visible)
+ await shot("equipment-return-after-reactor")
+ if session.save_files!=null:session.save_files.close(2000)
+ game.queue_free()
+ await frames(3)
+ quit()

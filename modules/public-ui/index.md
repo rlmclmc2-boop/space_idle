@@ -26,3 +26,5 @@
 - [2026-10-31 final equipment and R5d continuous native route frames](e845-r5d-continuous-20261031/README.md): 36 successive rendered frames with event timeline; author affected-path observation.
 
 - [2026-10-31 pressed route ink on both navigation directions](nav-pressed-ink-20261031/README.md): original-size affected frames and timeline, author observation pending independent review.
+
+- [2026-10-31 R5f and final equipment shared-shell WIP](e845-r5f-shared-wip-20261031/README.md): exact runtime closure and current static screens, pending original reviews.
