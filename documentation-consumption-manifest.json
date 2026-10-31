@@ -900,7 +900,8 @@
       "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/workbench-structural-depth/source-boundaries.json",
       "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/workbench-structural-depth/structural-profiles.json"
     ],
-    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone."
+    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone.",
+    "current_document_commit": "ee802997f84a3627f8f92bdd76fd93ad94676207"
   },
   "reactor": {
     "source": "519fd7ee82b5c54785bd53b4e36e50f768b6b6de",
@@ -2793,7 +2794,8 @@
       "space-battleship/docs/verification/ui-contract-split-evidence/manifest.json",
       "space-battleship/docs/verification/ui-contract-split.md"
     ],
-    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone."
+    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone.",
+    "current_document_commit": "ee802997f84a3627f8f92bdd76fd93ad94676207"
   },
   "planet": {
     "source": "a40cbae14204f68254f46e0b2a69bb51ac5d00aa",
@@ -5549,7 +5551,8 @@
       "space-battleship/docs/verification/ui-contract-split-evidence/manifest.json",
       "space-battleship/docs/verification/ui-contract-split.md"
     ],
-    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone."
+    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone.",
+    "current_document_commit": "ee802997f84a3627f8f92bdd76fd93ad94676207"
   },
   "host": {
     "source": "5df3d3dd59cf4fcd427f0fb9e719ad3a0a9e6969",
@@ -6214,7 +6217,8 @@
       "space-battleship/docs/verification/equipment-hangar-godot/main-integration/runtime.log.txt",
       "space-battleship/docs/verification/equipment-hangar-godot/main-integration/source-identity.json"
     ],
-    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone."
+    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone.",
+    "current_document_commit": "ee802997f84a3627f8f92bdd76fd93ad94676207"
   },
   "backend": {
     "source": "c38f1c2b06478d1d8b6e98b8571240e693e296fc",
@@ -6474,7 +6478,8 @@
       "space-battleship/docs/verification/ui-contract-split-evidence/manifest.json",
       "space-battleship/docs/verification/ui-contract-split.md"
     ],
-    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone."
+    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone.",
+    "current_document_commit": "ee802997f84a3627f8f92bdd76fd93ad94676207"
   },
   "main": {
     "source": "e3b38d7b6d8256f6031e1b086c7db7812b6a441f",
@@ -6661,6 +6666,7 @@
       "space-battleship/docs/verification/equipment-hangar-godot/main-integration/runtime.log.txt",
       "space-battleship/docs/verification/equipment-hangar-godot/main-integration/source-identity.json"
     ],
-    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone."
+    "warning": "Apply only to tracked files at this fixed source. Preserve latest WIP. Recheck authoring dependencies before deleting any current work source; never delete by suffix alone.",
+    "current_document_commit": "ee802997f84a3627f8f92bdd76fd93ad94676207"
   }
 }
