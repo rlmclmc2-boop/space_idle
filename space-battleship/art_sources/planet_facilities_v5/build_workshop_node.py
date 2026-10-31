@@ -110,7 +110,7 @@ for side in (-1, 1):
     bpy.ops.mesh.primitive_cube_add(size=1, location=(0, y, .74))
     window_cut = bpy.context.object
     window_cut.name = "Temporary open side service window"
-    window_cut.dimensions = (1.27, .84, .48)
+    window_cut.dimensions = (1.43, .96, .61)
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     bpy.context.view_layer.objects.active = cheek
     cut = cheek.modifiers.new("Open working side", "BOOLEAN")

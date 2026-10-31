@@ -182,15 +182,15 @@ for side in (-1, 1):
     # The inner armor joins the deep load cheek but leaves a deck-width low
     # transit opening. Its inlet flares toward each owned spine section.
     loft("Portal throat stepped inner armor", [
-        (-1.18,side*.64,.14,.17,.40),
-        (-.82,side*.61,.15,.18,.43),
-        (.82,side*.61,.15,.18,.43),
-        (1.18,side*.64,.14,.17,.40),
+        (-1.18,side*.69,.14,.14,.40),
+        (-.82,side*.66,.15,.15,.43),
+        (.82,side*.66,.15,.15,.43),
+        (1.18,side*.69,.14,.14,.40),
     ], ivory, root)
-    box("Portal throat recessed service way", (0,side*.423,.08),
+    box("Portal throat recessed service way", (0,side*.493,.08),
         (1.79,.026,.055), blue, root, .009)
     for x in (-.79,0,.79):
-        box("Portal throat amber load key", (x,side*.406,.10),
+        box("Portal throat amber load key", (x,side*.476,.10),
             (.17,.018,.045), amber, root, .006)
     # Faceted service armor grows out of the real pressure wall. The slanted
     # load ribs lead into the buried shoe and keep the ring passage open.

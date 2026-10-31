@@ -154,7 +154,7 @@ core = hull("Ring-to-berth pressure shell", [
 bpy.ops.mesh.primitive_cube_add(size=1, location=(-.35, 0, .64))
 berth_cut = bpy.context.object
 berth_cut.name = "Temporary radial launch cavity"
-berth_cut.dimensions = (3.30, .94, .68)
+berth_cut.dimensions = (3.30, 1.08, .74)
 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 bpy.context.view_layer.objects.active = core
 mod = core.modifiers.new("Open radial launch cavity", "BOOLEAN")
@@ -165,7 +165,7 @@ bpy.data.objects.remove(berth_cut, do_unlink=True)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(.02, 0, .48))
 ring_cut = bpy.context.object
 ring_cut.name = "Temporary tangent ring cavity"
-ring_cut.dimensions = (.86, 2.80, .56)
+ring_cut.dimensions = (1.00, 2.80, .64)
 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 bpy.context.view_layer.objects.active = core
 mod = core.modifiers.new("Open owned spine passage", "BOOLEAN")

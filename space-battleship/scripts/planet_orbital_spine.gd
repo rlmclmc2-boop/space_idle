@@ -30,6 +30,7 @@ var _navy: ShaderMaterial
 var _side: ShaderMaterial
 var _cyan: ShaderMaterial
 var _deck: ShaderMaterial
+var _channel: ShaderMaterial
 var _sleeve: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
 
@@ -54,6 +55,7 @@ func _ready() -> void:
 	_navy.render_priority = -3
 	_side.render_priority = -2
 	_deck = _material(Color("fff2df"))
+	_channel = _material(Color("294451"))
 	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
@@ -241,8 +243,8 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
 		Vector2(-0.50, 0.04), Vector2(-0.47, 0.12), Vector2(-0.40, 0.21),
-		Vector2(-0.29, 0.24), Vector2(-0.14, 0.22), Vector2(-0.10, 0.17),
-		Vector2(0.0, 0.15), Vector2(0.10, 0.17), Vector2(0.14, 0.22),
+		Vector2(-0.29, 0.24), Vector2(-0.14, 0.18), Vector2(-0.10, 0.11),
+		Vector2(0.0, 0.07), Vector2(0.10, 0.11), Vector2(0.14, 0.18),
 		Vector2(0.29, 0.24), Vector2(0.40, 0.21), Vector2(0.47, 0.12),
 		Vector2(0.50, 0.04),
 	]
@@ -259,7 +261,9 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 					break
 		profile = dense
 	var surface := SurfaceTool.new()
+	var channel_surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	channel_surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var steps := maxi(48, ceili((finish - begin) * (256.0 if kind in ["refinery", "equipment", "shipyard"] else 96.0)))
 	for index in steps:
 		var t0 := float(index) / float(steps)
@@ -269,16 +273,23 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
 		for band in profile.size() - 1:
-			_deck_vertex(surface, profile, band, a, t0, wa, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band + 1, b, t1, wb, lift, v_start, v_end, kind)
+			var band_center: float = (profile[band].x + profile[band + 1].x) * 0.5
+			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.105 else surface
+			_deck_vertex(target, profile, band, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band + 1, b, t1, wb, lift, v_start, v_end, kind)
 	var instance := MeshInstance3D.new()
 	instance.mesh = surface.commit()
 	instance.material_override = material
 	parent.add_child(instance)
+	if material in [_deck, _sleeve]:
+		var channel_instance := MeshInstance3D.new()
+		channel_instance.mesh = channel_surface.commit()
+		channel_instance.material_override = _channel
+		parent.add_child(channel_instance)
 
 func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float, t: float, width: float, lift: float, v_start: float, v_end: float, kind: String) -> void:
 	var current: Vector2 = profile[index]
