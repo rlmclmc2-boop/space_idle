@@ -308,7 +308,13 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		# center for the facility rather than resting a separate pad on the ring.
 		var shoulder := smoothstep(0.19, 0.38, absf(current.x))
 		height += _shoulder_lift(kind, angle) * shoulder
-	if kind == "refinery":
+	if kind == "auto_explore":
+		# The station's own armored section climbs into both pressure cheeks.
+		# Keep the middle passage sunk so the through-node remains open.
+		var station_span := 1.0 - smoothstep(0.11, 0.29, absf(angle - FACILITY_ANGLES[kind]))
+		var station_cheek := smoothstep(0.19, 0.42, absf(current.x))
+		height += station_span * (0.16 * station_cheek - 0.025 * (1.0 - station_cheek))
+	elif kind == "refinery":
 		var refinery_end_blend := smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
 		var distance := absf(angle - FACILITY_ANGLES[kind])
 		var foot_span: float = 1.0 - smoothstep(0.080, 0.18, distance)

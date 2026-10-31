@@ -108,8 +108,12 @@ root = node("Facility")
 for side in (-1, 1):
     y = side * .73
     loft("Continuous deep load cheek", [
-        (-1.22,y,-.27,.27,.18), (-.93,y,-.27,.37,.23),
-        (.93,y,-.27,.37,.23), (1.22,y,-.27,.27,.18),
+        (-1.30,side*.77,-.25,.19,.13),
+        (-1.08,side*.79,-.27,.27,.21),
+        (-.72,side*.82,-.28,.35,.27),
+        (.72,side*.82,-.28,.35,.27),
+        (1.08,side*.79,-.27,.27,.21),
+        (1.30,side*.77,-.25,.19,.13),
     ], lower_steel, root)
     loft("Tapered station pressure wall", [
         (-1.16,y,.17,.26,.42), (-.82,y,.25,.34,.57),
@@ -246,14 +250,14 @@ loft("Station elevated command hull", [
 ], navy, root)
 # The real load walls carry a broad, shallow command pressure saucer. Its
 # annular edge links the observation crown to those walls without a loose pod.
-cylinder("Command load saucer", (0,0,1.44), .95,.18, blue, root, 24)
-bpy.ops.mesh.primitive_torus_add(major_radius=.92, minor_radius=.055,
+cylinder("Command load saucer", (0,0,1.44), 1.20,.22, blue, root, 32)
+bpy.ops.mesh.primitive_torus_add(major_radius=1.17, minor_radius=.065,
                                 major_segments=48, minor_segments=8,
                                 location=(0,0,1.43))
 finish(bpy.context.object, "Command saucer ivory pressure seam", ivory, root, 0)
 for angle_index in range(8):
     a=angle_index*math.tau/8
-    box("Saucer amber service port", (.91*math.cos(a),.91*math.sin(a),1.49),
+    box("Saucer amber service port", (1.15*math.cos(a),1.15*math.sin(a),1.52),
         (.08,.08,.045), amber, root, .007)
 box("Command deck crown armor", (0,0,1.78), (.92,1.15,.16), ivory, root, .055)
 for x in (-.36,0,.36):
@@ -278,13 +282,13 @@ for side in (-1, 1):
             (.06,.06,.035),amber,root,.009)
 
 spin = node("HabitatRingSpin", root, (0,0,1.82))
-bpy.ops.mesh.primitive_torus_add(major_radius=.82, minor_radius=.09,
+bpy.ops.mesh.primitive_torus_add(major_radius=1.00, minor_radius=.09,
                                 major_segments=48, minor_segments=10,
                                 location=(0,0,0))
 finish(bpy.context.object, "Turning observation annulus", ivory, spin, 0)
 for i in range(8):
     angle = i*math.tau/8
-    box("Rotating navy sector", (.82*math.cos(angle),.82*math.sin(angle),0),
+    box("Rotating navy sector", (1.00*math.cos(angle),1.00*math.sin(angle),0),
         (.16,.14,.08), navy, spin, .012).rotation_euler.z = angle
 cylinder("Central docking rim", (0,0,1.89), .34,.11,ivory,root)
 cylinder("Dark open docking well", (0,0,1.95), .24,.025,navy,root)
