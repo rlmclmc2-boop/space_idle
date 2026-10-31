@@ -9,7 +9,7 @@ const ARC_BOUNDS := {
 	"shipyard": Vector2(PI * 0.5, PI * 1.075),
 }
 const FACILITY_ANGLES := {
-	"auto_explore": PI * 1.09,
+	"auto_explore": PI * 1.155,
 	"refinery": TAU - 0.25,
 	"equipment": 0.78,
 	"shipyard": PI - 0.78,
