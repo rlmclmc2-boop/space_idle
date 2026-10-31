@@ -1,5 +1,9 @@
 # 反应堆 B01 整模块重设计：当前唯一设计入口
 
+## 2026-10-31 用户复看后的现行返修状态
+
+用户看过本目录交付的三段 1× 实机视频后明确退回：均分仍压实体内边；升级费用资源须与上方“等级”左沿对齐；余额不足要按正式装备的逐资源红字／点击执行才短提示；右上光未贴实际管腔、左右下连接不像实体管、上下接口穿帮，核心通用水波不能表达能量约束／输送。用户进一步要求从“整图＋mask 点特效”改为可组合 core、四设备、独立接口和真双层管路。**下文三段旧片及 Astra 视觉结论只对应退回前版本，现仅保留为历史对照，不再代表现行连接／动态已获用户认可。** 控件与数字返修的当前证据、待实现结构合同及性能报告在本页末；未改 Owner、Excel、main 或公共壳，不合 main。
+
 ## 用户批准（2026-10-30 UTC+8）
 - 12:02：“按这个b1修订后的方向做”。
 - 12:03：“面板和上方主体展示效果都要改”。
@@ -202,3 +206,43 @@ Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe，ffmpeg x11grab 25 fps、libx264
 ### 当前完整视觉候选已交用户看效果（状态登记）
 
 根端已将本组 `implement/reactor-centered-godot@808253769aa381560d6b0377785543eaacce711b` 的当前完整 B01 视觉候选实际送用户请求效果确认；根所交的是同一固定公共树 `design/clear-zone-host@a037ecbf5b9bf046d0da5c8101751fa1343667ab` 所含相同 14 文件 B01 运行闭包的三段真实视频：[四路各 25% 正常连续工作 10 秒](shared-packed-continuous-after-pickup-1440x900-25fps.mp4)、[受控 1／2／3 正常连续工作 22 秒](shared-packed-controlled-123-1440x900-25fps.mp4)、[四路真实购级到低正载／真零 18 秒](shared-packed-upgrade-zero-1440x900-25fps.mp4)。前述既有原 Astra 已对三段各自限定范围给视觉可保结论；当前是**完整视觉候选待用户意见**，不是用户已确认、自然 1／2 解锁验收、目标机器约 `10 fps` 降幅已消或整游戏任务通过。用户机性能未测的证据限制已随候选告知，现阶段无已定位的 B01 独立性能修复待做；不合 main。本节只记录根已完成的交付事实，本组未另发消息或 Library 文件。
+
+### 用户返修一：原生控制区与公共数字（已完成源码，待整体视觉复看）
+
+本组 `implement/reactor-centered-godot@e2b58e6acbd0ae0c17b53acfa7d67295e6597213` 只改 `src/ui/reactor_scene.gd` 的 B01 控件和定向消费整体 `design/clear-zone-host@f688ea7c8856ad87775b0853044b9020303b8137` 已固定的 `src/ui/player_text.gd::number(String)` 展示函数；本组函数块与整体源逐字相同，不取公共 `main/zone_shell/economy`。均分原 `Rect(655,560,94,36)` 的图形压金色端框，现缩为 `Rect(670,565,60,26)`，完整贴面落入原按钮内腔；费用唯一当前资源铀的彩色图标移至 `x612` 与“等级”标题同左沿，金额起 `x642`，不再常驻独立“资金不足”行。当前 quote 的唯一铀资源不足时金额文字红 `#e44b3a`，图标保持 `ResourceVisuals.icon_modulate` 原色；Owner 报价返回 `can_purchase=false/reason=InsufficientResources` 时升级键仍可点，实际点击 `purchase/purchase_max` 的 Owner 拒绝才短示“资源不足”。数量键仍仅切 `×1/×10/MAX` 本地报价，升级键仍是独立真实执行；非预算报价错误仍禁执行。报价及金额只格式显示，不将 `PlayerText.number` 的 `k/m/b/t/kt/e` 文本回传 Amount 运算。本轮权威反应堆费用只有单铀，故其 quote 可付布尔值恰对应唯一费用项；若未来增加多资源须由 Owner 报价补逐项可付信息，不能猜格式化字符串当 Amount 逐项比较。装备及其他模块仍归各自原组，不能据此说“全模块不足”已实现。
+
+同一工作区临时检出整体 `f688ea7c`，只覆写本组上述 `reactor_scene.gd`（文件 SHA-256 `926fa49456462ab55da0e4ea445a88b943c7dee68540ef32d4602b9fa49f1639`），`PlayerText.number` 函数块与 f688 同源，公共 main／导航／Owner 保持不动；Godot `4.7.2.stable.official.ed1daf0bf`／Xorg `:99`／Mesa llvmpipe／OpenGL3／1440×900／1×。借用 native 清单并按正常 editor import 后 `--check-only` 无脚本错误。[受控驱动](return-ui-shared-controlled-driver.gd.txt)和[运行日志](return-ui-shared-controlled-runtime.txt)核 1／2／3／4 Owner 零态与均分、1／2 真鼠标拖动回读，均分键在四态同一内腔；下列整屏只用于检查**当前原生 UI**，舞台沿用已被用户退回的整图动态，不能当新结构证据。
+
+| 可用路数 | 真零整屏 | 均分整屏 |
+|---|---|---|
+| 1 炼铁 | [图](return-ui-shared-1-zero-1440x900.png) | [图](return-ui-shared-1-active-1440x900.png) |
+| 2 武器＋炼铁 | [图](return-ui-shared-2-zero-1440x900.png) | [图](return-ui-shared-2-active-1440x900.png) |
+| 3 武器＋盾甲＋炼铁 | [图](return-ui-shared-3-zero-1440x900.png) | [图](return-ui-shared-3-active-1440x900.png) |
+| 4 全部 | [图](return-ui-shared-4-zero-1440x900.png) | [图](return-ui-shared-4-active-1440x900.png) |
+
+[不足驱动](return-ui-shared-budget-driver.gd.txt)与[同版日志](return-ui-shared-budget-runtime.txt)实点 MAX 买 14 级后钱包余额 `134`、下一级报价 `668.0 铀`；[点击前](return-ui-shared-insufficient-before-1440x900.png)费用红、升级可点，点击后 [整屏](return-ui-shared-insufficient-click-1440x900.png)由 Owner 拒绝 `InsufficientResources`、才出“资源不足”。切 MAX 零可购时[整屏](return-ui-shared-max-zero-1440x900.png)报价空成本显示“—”、执行键仍可点，点击同样由 Owner 拒绝。`100.0/100.0` 与 `10.0 铀` 是公共新数字函数展示，Owner canonical Amount 未改。现已返回原分支并恢复临时覆写；当前 UI 真组合源需随新可组合舞台一起再作最终视觉验收，不将旧管线背景重复送审。
+
+### 用户返修二：可组合 B01 舞台的实施合同（现行制作方向）
+
+已核本地 Blender `4.3.2`、Inkscape、ffmpeg 和 Godot `4.7.2` 可用。现源 `reactor_stage.gd` 以一张 `1187×1326` 全景板绘 `808×835`，`live-material.gdshader` 用椭圆场、三张旧 mask 打包成两张贴图及 UV 正弦流动覆盖；用户指出的错管光、下管非实体和接口穿帮正来自“像素亮了却没有独立零件与遮挡关系”，不能再靠扩大 mask／改水波频率处理。批准的主体体量与控制台空间沿用，整图仅作构图／材质参照，最终运行舞台不把四设备及管路烘在同张底图上。
+
+拟按原舞台源坐标 `1187×1326` 和显示域 `x0…807,y65…899` 制作分层 2.5D 资产：①无设备／无管的舱壁与地坪，②独立核心内场、约束环、前金属束带与上下锁口，③武器、盾甲、炼铁、凝聚各自机体／工作腔／前法兰，④每路可复用截面的后管壳、透明内腔、发光芯、前法兰及遮挡片，⑤现有金属控制台空壳与原生 HSlider／按钮／文字。Blender 的同一正交机位和带倒角的金属／玻璃材质生成可追溯 alpha 层；曲管由端点和端点切线的三次 Bézier 中心线放样双层截面，环箍／螺栓／导光条沿弧长放置，不用一条发光线代替实体管。需要另出独立端口正面与背面遮挡片，让管外壳进入核心／设备壳体后被法兰覆盖，内腔光仅在玻璃范围可见。顶部注入柱与下部核心基座也分别建后、内场、前锁口层，杜绝原完整贴图在接口上透出。
+
+路径合同使用每路 `core_socket → device_socket` 的源坐标、出入切线、管径、前后层级与弧长 UV；基于批准板的**初测锚点**约为武器 `(455,240)→(320,210)`、盾甲 `(730,245)→(900,210)`、炼铁 `(470,440)→(305,530)`、凝聚 `(710,440)→(880,530)`，单位是 `1187×1326` 源像素。这些只是建模前对照点，不能沿用旧 shader 的 UV 线当真实管腔；最终须用源图和各部件 alpha 的实际端口逐像素校准，右上内腔轴线及左右下管的实体透视是重点退点。1／2／3／4 可用集合只挂载对应部件／管路，未开放者不留空槽或幽灵接口；现 1／2 专用连续控制井保留原生行布局，不回旧金框 HUD。
+
+运行阶段由 `reactor_stage.gd` 持有 `CoreView`、四个 `ModuleView` 和四个 `PipeView`，每块自己的局部材质与裁剪而非全景 shader。Owner 已接纳 `load` 分别驱动核心约束运动、四路管腔沿弧长从核心向设备的有向节律、设备专属动作（武器双炮、盾面、炉内熔流、晶体腔）；真零时各块工作场关闭，少态的隐藏部件不绘制。现 `game_time/paused/visible` 的生命周期合同保持：只在页可见、未暂停且时间推进时更新正载相位，隐藏页停止更新；不改分配、报价、升级、Session/native 或公共导航。新 0／1／2／3／4 静态和真实连续动态稳定后，才停止运行旧全景动态 shader／packed mask／八张含完整设备的底板；旧资产与视频保留为历史对照而不继续叠在新零件下。
+
+**参考观看前置仍未满足，故上段是结构接口计划，不是已完成的新运行效果。** 已找到 Coffee Stain Studios 的 [Satisfactory Update 4 官方 Steam 预告条目](https://store.steampowered.com/app/526870/Satisfactory/)（Steam trailer id `361661`）和 Digital Extremes 的 [Warframe Reactor Sabotage 官方介绍](https://www.warframe.com/en/news/attention-pc-tenno-33)，但本环境直接读取 Steam 视频 CDN 和 Pixor CC0 动画 GIF 时代理返回 `CONNECT 403`，web 视频入口亦不可播放，**尚未实际看到任何参考动态帧或完整片**，不填写虚构的观看时间段／借鉴动作。下一步须通过当前工具正常可播放来源实际看清核心约束、能量产生／沿管输送／端口反馈的时间关系，记录 URL、作者、观看段和逐帧借鉴点，再据此做上述部件的最终动态；不绕网络限制，也不以网页描述或单帧图替代观看。
+
+### 性能完整对照：上次已报告记录 → 本次状态
+
+本次仅把原已测数据补齐为同口径报告，**没有新采样，数值不更新**。上次用户已收到的产品对照是公共 `051cbd0dc201fb53578d9c074460b8969a207ef8`＋本组 `6d0ee146ca54613cf13e9cd1ae2863310e3ed424` 当前 packed＋按需 active 组合，在 Godot `4.7.2`、Xorg `:99`、Mesa llvmpipe/OpenGL3、`1440×900`、正常 `1×`、四路各 `25%`、**不录屏**的同一实例 6 秒 ABAB；[驱动](performance-packed-active-abab-driver.gd.txt) SHA-256 `4898608634d6a9ac7f5f59da669360f72e9d28c67a077e7548a907978b3b8162`，[原日志](performance-packed-active-abab-runtime.txt) SHA-256 `226900128b9ca4320d629cae1af347268d2e46bada65537f9e5390d36626eef8`。四窗各游戏时间／材质相位约推进 6 秒、节点 53 不变，战场自主进程不是同一冻结帧；故这说明该环境同实例短窗趋势，不是战斗完全同帧的净成本分离。
+
+| 已报告配对 → 本次 | 基线 FPS／平均帧 ms／p50／p95 ms | 当前组合 FPS／平均帧 ms／p50／p95 ms | 可比范围 |
+|---|---|---|---|
+| 第一次 B→A → 数值未更新 | `31.29 / 31.96 / 30.812 / 36.627` | `32.33 / 30.93 / 30.099 / 35.771` | 同实例相邻 6 秒；`+1.04 fps`，角色/负载/分辨率/录制状态相同，战场仍自主变化。 |
+| 第二次 B→A → 数值未更新 | `31.61 / 31.64 / 31.048 / 36.987` | `32.23 / 31.03 / 30.161 / 35.763` | 同实例相邻 6 秒；`+0.62 fps`，同上。 |
+
+现 UI 文件 `e2b58e6a` 和公共数字源 `f688ea7c` 相对上述已报告测量有源码／文字变化，本轮没有用它们重测；不能暗把旧 FPS 当新 UI 或未来可组合舞台的实测。原 shader 收益来自三 mask 打包成两张 RGBA（导入 `fix_alpha_border=false` 保零 alpha 处 RGB）并在无工作权重处跳过 active 底图采样；四路固定相位 [前](performance-packed-baseline-same-phase.png)／[后](performance-packed-candidate-same-phase.png)的 B01 舞台 `674,680` RGB 像素差为 `0`，只证明该相位现旧舞台画面保持，不外推动态或新结构。反序 BABA 是仅 packed mask 中间版，不能与上述最终组合正序拼成一组保证。其他淘汰方案（椭圆早退无稳收益、8 位几何边缘失真、较大浮点几何纹理收益有限）与已修静态控制台／mask0 昂贵场分支见上节；冻结相位／廉材仅诊断，产品全效果不降级。
+
+模块显示／关闭的**严格同战场同条件净成本**在当前最终组合上尚无可靠配对：`2b057a21` 同构建的可见→装备隐藏→可见 `23.78/28.15/31.43 fps` 是顺序不同战斗时刻和不同页面 UI，不能差分成 B01 独占开销；旧 `34.67/32.89 fps` 分属旧版／旧宿主，仅历史，不与当前配对。目标机器、其 renderer、实际分辨率、录屏状态与同场 profile 均未观察到，不能声称用户所报约 `10 fps` 损失已消。后续新可组合舞台会改变源码、纹理/mesh 与画面，届时需单独同版本性能证据；本轮没有以现旧 shader 报告为新架构背书。
