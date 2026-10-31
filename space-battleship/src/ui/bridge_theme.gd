@@ -197,18 +197,33 @@ static func apply_public_input(control: Control) -> void:
 		control.add_theme_color_override("font_hover_pressed_color", Color("f0f2e9"))
 	if control is SpinBox:
 		var spin := control as SpinBox
-		apply_public_input(spin.get_line_edit())
-		var up := preload("res://assets/ui/public_shell/stepper-up.svg")
-		var down := preload("res://assets/ui/public_shell/stepper-down.svg")
-		for state in ["up", "up_hover", "up_pressed"]: spin.add_theme_icon_override(state, up)
-		for state in ["down", "down_hover", "down_pressed"]: spin.add_theme_icon_override(state, down)
-		spin.add_theme_icon_override("up_disabled", preload("res://assets/ui/public_shell/stepper-up-disabled.svg"))
-		spin.add_theme_icon_override("down_disabled", preload("res://assets/ui/public_shell/stepper-down-disabled.svg"))
-		spin.add_theme_icon_override("updown", preload("res://assets/ui/public_shell/stepper-pair.svg") if spin.editable else preload("res://assets/ui/public_shell/stepper-pair-disabled.svg"))
+		var field := spin.get_line_edit()
+		apply_public_input(field)
+		# SpinBox keeps a focusable LineEdit when it becomes read-only. Keep its
+		# copyable focus, but do not draw an actionable bright focus edge then.
+		var focus := SpinInputFocus.new()
+		focus.spin = weakref(spin)
+		field.add_theme_stylebox_override("focus", focus)
+		apply_public_spin_editable(spin, spin.editable)
 		for direction in ["up", "down"]:
 			for suffix in ["", "_hovered", "_pressed", "_disabled"]:
 				var state := "hover" if suffix == "_hovered" else "pressed" if suffix == "_pressed" else "disabled" if suffix == "_disabled" else "normal"
 				spin.add_theme_stylebox_override(direction + "_background" + suffix, operation_button(state, 1.0))
+
+## SpinBox's valid updown texture overrides its individual disabled icons and
+## never changes with interaction. Use this when the public field changes
+## editability; SpinBox itself keeps the inner LineEdit's read-only flag synced.
+static func apply_public_spin_editable(spin: SpinBox, editable: bool) -> void:
+	spin.editable = editable
+	spin.add_theme_icon_override("updown", preload("res://assets/ui/public_shell/stepper-pair.svg") if editable else preload("res://assets/ui/public_shell/stepper-pair-disabled.svg"))
+
+class SpinInputFocus extends StyleBox:
+	var spin: WeakRef
+	func _draw(canvas: RID, rect: Rect2) -> void:
+		var owner := spin.get_ref() as SpinBox if spin != null else null
+		var edge := Color("b9e5d8", 0.86) if owner != null and owner.editable else Color("678a8d", 0.48)
+		var box := rect.grow(-1.5)
+		RenderingServer.canvas_item_add_polyline(canvas, PackedVector2Array([box.position, Vector2(box.end.x, box.position.y), box.end, Vector2(box.position.x, box.end.y), box.position]), PackedColorArray([edge]), 1.5, true)
 
 static func public_check(control: CheckBox) -> void:
 	apply_public_button(control)
