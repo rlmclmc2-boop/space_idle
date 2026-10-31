@@ -21,7 +21,7 @@ const NODE_WIDTH := 1.30
 const TILT_Y := 0.66
 const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
-const SOCKET_HEIGHT := 0.59
+const SOCKET_HEIGHT := 0.51
 var _arcs: Dictionary = {}
 var _end_caps: Dictionary = {}
 var _joins: Dictionary = {}
@@ -44,7 +44,7 @@ static func socket_position(angle: float, kind: String) -> Vector3:
 	# The refinery upper shell sits inside its real deck node. The station
 	# bears closer to the ring center so its port no longer hangs beyond the
 	# owned side wall; the through passage remains open at both ends.
-	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
+	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.44
 	var radial_offset := 0.12 if kind == "auto_explore" else -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
 
