@@ -239,18 +239,24 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	var height := lift + current.y
 	# The recessed passage is cut into the same armor extrusion. Its center
 	# texture and flanking shoulders carry through each independent section.
+	var refinery_end_blend := 1.0
+	if kind == "refinery":
+		# This furnace is only 0.09 radians from its section's independent
+		# mating plane. The old width returned to transit there, but its raised
+		# deck shoulders did not, leaving a hard high-to-low step at 90 degrees.
+		refinery_end_blend = smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
 	if kind != "":
 		# Raise the load-bearing shell beside each work floor, leaving a recessed
 		# center for the facility rather than resting a separate pad on the ring.
 		var node_span := 1.0 - smoothstep(0.10, 0.29, absf(angle - FACILITY_ANGLES[kind]))
 		var shoulder := smoothstep(0.19, 0.38, absf(current.x))
-		height += 0.15 * node_span * shoulder
+		height += 0.15 * node_span * shoulder * refinery_end_blend
 	if kind == "refinery":
 		var distance := absf(angle - FACILITY_ANGLES[kind])
 		var foot_span: float = 1.0 - smoothstep(0.080, 0.18, distance)
 		var foot_width: float = 1.0 - smoothstep(0.30, 0.46, absf(current.x))
 		var inlet: float = (1.0 - smoothstep(0.023, 0.053, distance)) * (1.0 - smoothstep(0.08, 0.15, absf(current.x - 0.04)))
-		height += 0.18 * foot_span * foot_width * (1.0 - inlet) - 0.035 * inlet
+		height += (0.18 * foot_span * foot_width * (1.0 - inlet) - 0.035 * inlet) * refinery_end_blend
 	elif kind == "equipment":
 		# The load cheeks are raised out of this very deck; the open center
 		# remains the ring's own recessed work path through the orange portal.
