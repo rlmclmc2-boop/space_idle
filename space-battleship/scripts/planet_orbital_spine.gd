@@ -79,7 +79,7 @@ func _ready() -> void:
 	_navy.render_priority = -3
 	_side.render_priority = -2
 	_deck = _material(Color("fff2df"))
-	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-concept-spine.png"))
+	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-single-channel.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
 	_sleeve.render_priority = 1

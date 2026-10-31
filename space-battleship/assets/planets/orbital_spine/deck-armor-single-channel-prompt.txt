@@ -1,0 +1,11 @@
+Source: deck-concept-spine.png (existing authored top-down deck material).
+Output: deck-armor-single-channel.png, ImageGen edit, 1254 x 1254 RGB.
+
+Prompt:
+Edit the supplied top-down sci-fi orbital spine armor texture as a seamless repeating square material tile. Preserve its exact UV layout and proportions: warm ivory armor plates on the left and right of a narrow center service channel, four repeat bands down the image, crisp beveled geometry with subtle wear. Reshape the central channel as ONE deep navy recessed armored trench, with a restrained narrow cyan inset on only one inner wall, not a glowing blue central stripe or two bright parallel rails. Make both warm armor shoulders visibly thick, gently angled toward the recessed trench. Outer edges should read as wrapped dark teal structural sidewalls under the armor, not separate rails or a flat decorative border. Art direction: polished illustrated premium sci-fi, broad legible material planes, warm ivory and deep teal, minimal fine detail, no extra symbols or text, no vehicles, no cast shadows outside the tile. Retain edge-to-edge tiling and square image format.
+
+The first live import used the default `mipmaps/generate=false`, causing visible
+high-frequency moire at the actual orbital scale; it was rejected. The final
+candidate uses the same generated RGB image with `mipmaps/generate=true`, as
+the prior deck texture does. The unfiltered game screenshot is not evidence
+for this final candidate.
