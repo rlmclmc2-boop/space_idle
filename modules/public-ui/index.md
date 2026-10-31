@@ -13,3 +13,5 @@
 - [2026-10-31 native select click and keyboard confirmation](native-select-interaction-20261031/README.md): bounded current-screen interaction evidence.
 
 - [2026-10-31 R5c shared-shell WIP](r5c-shared-wip-20261031/README.md): exact source and bounded cross-page images, not visual approval.
+
+- [2026-10-31 equipment 505 and R5c shared-shell WIP](r5c-505-shared-wip-20261031/README.md): current same-source cross-page images, not approval.
