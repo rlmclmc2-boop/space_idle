@@ -10,9 +10,12 @@ contract=json.loads((ROOT/"reactor_ports.json").read_text())
 canvas_size=tuple(contract["source_size"])
 for name,spec in contract["devices"].items():
     end=spec["device_port"]
-    for layer in ("shell","front"):
+    for layer in ("shell","front","insert"):
         x,y,w,h=spec[f"pipe_{layer}_rect"]
         assert x<=end[0]<x+w and y<=end[1]<y+h,(name,layer,"endpoint outside crop")
+        if layer == "shell":
+            inserted=[end[i]+spec["axis_to_device"][i]*spec["insert_depth"] for i in range(2)]
+            assert x<=inserted[0]<x+w and y<=inserted[1]<y+h,(name,"inserted section outside crop")
         source=Image.open(BUILD/f"modular-pipe-{name}-{layer}-full.png").convert("RGBA")
         assert source.size==canvas_size
         cropped=source.crop((x,y,x+w,y+h))

@@ -21,13 +21,15 @@ void fragment() {
     float load=sqrt(load_fraction);
     vec3 light=vec3(0.0);
     if (r < 0.465) {
-        // Radial compression visibly converges on the ignition point.
-        float contraction=fract(phase*0.47);
-        float compression_radius=mix(0.41,0.09,contraction);
-        float compression=(1.0-smoothstep(0.009,0.018,abs(r-compression_radius)))
-                          *(1.0-smoothstep(0.29,0.43,r));
+        // Broken spiral filaments collapse into the ignition point. A complete
+        // rotating ring reads as a dashboard dial inside the glass chamber.
+        float angle=atan(p.y,p.x);
+        float spiral=pow(max(0.0,sin(angle*7.0+r*36.0-phase*2.8)),8.0);
+        float folds=0.35+0.65*pow(max(0.0,sin(r*23.0+angle*3.0+phase*1.7)),4.0);
+        float compression=spiral*folds*smoothstep(0.07,0.13,r)
+                          *(1.0-smoothstep(0.31,0.44,r));
         float ignition=disk(p,vec2(0.0),0.09)*(0.45+0.55*pow(max(0.0,sin(phase*2.95)),4.0));
-        light += vec3(0.16,0.70,1.0)*(compression*0.26+ignition*1.14)*load;
+        light += vec3(0.16,0.70,1.0)*(compression*0.37+ignition*1.14)*load;
         // Each outlet has its own Owner-driven packet travelling outward.
         vec2 ends[4]=vec2[4](vec2(-0.38,-0.24),vec2(0.39,-0.24),
                               vec2(-0.36,0.31),vec2(0.36,0.31));
@@ -35,9 +37,9 @@ void fragment() {
         for (int i=0;i<4;i++) {
             vec2 start=normalize(ends[i])*0.10;
             float progress=fract(phase*0.52-float(i)*0.17);
-            float guide=line_segment(p,start,ends[i],0.021)*0.52;
-            float packet=disk(p,mix(start,ends[i],progress),0.037);
-            light += vec3(0.06,0.76,1.0)*(guide+packet*1.5)*powers[i];
+            float guide=line_segment(p,start,ends[i],0.017)*0.23;
+            float packet=disk(p,mix(start,ends[i],progress),0.028);
+            light += vec3(0.06,0.76,1.0)*(guide+packet*1.25)*powers[i];
         }
         vec4 source=texture(core_work_surface,UV);
         light += source.rgb*source.a*load*0.25;

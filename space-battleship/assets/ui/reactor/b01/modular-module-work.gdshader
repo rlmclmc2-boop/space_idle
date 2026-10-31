@@ -31,25 +31,24 @@ void fragment() {
         float charge = smoothstep(0.07,0.72,cycle)*(1.0-smoothstep(0.78,0.92,cycle));
         float fire = pow(1.0-smoothstep(0.0,0.075,abs(cycle-0.92)),2.0);
         material = 0.25+charge*0.95+fire*1.4;
-        float mouths = disk(q,vec2(0.12,0.12),vec2(0.025,0.023))
-                     + disk(q,vec2(0.12,0.23),vec2(0.025,0.023));
+        float mouths = disk(q,vec2(0.20,0.125),vec2(0.025,0.023))
+                     + disk(q,vec2(0.20,0.285),vec2(0.025,0.023));
         float coil = band(q.x,0.38-0.26*charge,0.022)*
-                     (band(q.y,0.12,0.018)+band(q.y,0.23,0.018));
-        float shot = fire*(disk(q,vec2(0.10-0.07*fract((cycle-0.92)*9.0),0.12),vec2(0.024,0.019))
-                         +disk(q,vec2(0.10-0.07*fract((cycle-0.92)*9.0),0.23),vec2(0.024,0.019)));
+                     (band(q.y,0.125,0.018)+band(q.y,0.285,0.018));
+        float shot = fire*(disk(q,vec2(0.18-0.07*fract((cycle-0.92)*9.0),0.125),vec2(0.024,0.019))
+                         +disk(q,vec2(0.18-0.07*fract((cycle-0.92)*9.0),0.285),vec2(0.024,0.019)));
         action = (mouths*fire*1.7+coil*0.34+shot)*load;
         hue = vec3(1.0,0.55,0.14);
     } else if (module_kind == 1) {
         // A pressure field grows from the emitter hub to the retaining rim.
         vec2 d = (q-vec2(0.66,0.39))*vec2(1.0,1.05);
-        float angle = atan(d.y,d.x);
         float r = length(d);
         float establish = smoothstep(0.03,0.88,fract(phase*0.18));
         float front = band(r,0.03+establish*0.21,0.017);
-        float lattice = pow(max(0.0,cos(angle*12.0)),28.0)*
-                        smoothstep(0.07,0.11,r)*(1.0-smoothstep(0.19,0.24,r));
-        material = 0.25+0.55*establish;
-        action = (front*0.54+lattice*establish*0.25)*load;
+        float membrane = (1.0-smoothstep(0.03+establish*0.15,0.07+establish*0.16,r))
+                         *establish;
+        material = 0.16+0.35*establish;
+        action = (front*0.85+membrane*0.46)*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
@@ -68,10 +67,10 @@ void fragment() {
         float climb = 1.0-smoothstep(growth-0.10,growth+0.06,1.0-q.y);
         float center = disk(q,vec2(0.66,0.66),vec2(0.20,0.28));
         float sparkle = pow(max(0.0,cos(q.x*54.0-q.y*31.0+phase*2.0)),26.0);
-        material = 0.16+0.80*climb+0.22*sparkle;
-        action = center*band(q.y,0.85-growth*0.37,0.012)*0.34*load;
+        material = 0.10+0.40*climb+0.14*sparkle;
+        action = center*band(q.y,0.85-growth*0.37,0.012)*0.18*load;
         hue = vec3(0.68,0.34,1.0);
     }
-    vec3 working = surface.rgb*surface.a*material*load*1.65 + hue*action;
+    vec3 working = surface.rgb*surface.a*material*load*(module_kind == 3 ? 0.88 : 1.65) + hue*action;
     COLOR = vec4(working,1.0);
 }

@@ -29,6 +29,7 @@ const MODULES := {
 }
 var _pipes: Dictionary = {}
 var _modules: Dictionary = {}
+var _insert_tips: Dictionary = {}
 var _bay: Sprite2D
 var _core_field: ColorRect
 var _field_material: ShaderMaterial
@@ -87,6 +88,13 @@ func _init() -> void:
 		module.visible = false
 		add_child(module)
 		_modules[id] = module
+	for id in IDS:
+		var rect_data: Array = PortContract.device(id).pipe_insert_rect
+		var rect := Rect2(float(rect_data[0]),float(rect_data[1]),float(rect_data[2]),float(rect_data[3]))
+		var tip_texture: Texture2D = load("res://assets/ui/reactor/b01/modular-pipe-%s-insert.png" % id)
+		var tip := _source_layer(tip_texture,rect)
+		tip.visible = false
+		_insert_tips[id] = tip
 	_console = _source_layer(CONSOLE_FOUR,Rect2(0,670,1187,656))
 	_console.modulate = Color(0.57,0.76,0.79)
 	# Keep the source assets separate. Only the unchanged background, conduit
@@ -122,6 +130,7 @@ func show_snapshot(ids: Array, loads: Dictionary) -> void:
 		var enabled: bool = id in _enabled
 		_pipes[id].visible = enabled
 		_modules[id].visible = enabled
+		_insert_tips[id].visible = enabled
 		var workload: float = visibility_power(float(_loads.get(id,0.0))) if enabled else 0.0
 		_pipes[id].set_workload(workload)
 		_modules[id].set_workload(workload)
@@ -149,6 +158,7 @@ func clear_snapshot() -> void:
 	for id in IDS:
 		_pipes[id].visible = false
 		_modules[id].visible = false
+		_insert_tips[id].visible = false
 
 func _rebuild_static_cache() -> void:
 	_static_generation += 1

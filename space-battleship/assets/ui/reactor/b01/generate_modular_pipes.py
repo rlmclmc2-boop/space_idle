@@ -110,6 +110,21 @@ def build_pipe(name, path):
     tube(name+"_ridge", path, 22, 0, MATS["ridge"], theta0=0.02, theta1=0.38)
     tube(name+"_ridge2", path, 22, 0, MATS["ridge"], theta0=math.pi-0.38, theta1=math.pi-0.02)
     surface_strip(name+"_glass", path, 13, 21.5, MATS["glass"])
+    spec=PORTS[name]
+    start=Vector(spec["device_port"])
+    direction=Vector(spec["axis_to_device"]).normalized()
+    depth=spec["insert_depth"]
+    # A straight, full section continues past the shared meeting plane into
+    # the device's hollow sleeve. The original Bezier still ends exactly at it.
+    inserted=tuple(tuple(start+direction*depth*f) for f in (0.0,1/3,2/3,1.0))
+    tube(name+"_insert_jacket",inserted,20,0,MATS["metal"],steps=24)
+    surface_strip(name+"_insert_glass",inserted,13,21.5,MATS["glass"],steps=30)
+    # The short section visible in front of the sleeve mouth is rendered as
+    # the same three-dimensional conduit, then composited above the device.
+    # Beyond the mouth, the long inserted section is occluded by the barrel.
+    tip=tuple(tuple(start+direction*(30*f-18)) for f in (0.0,1/3,2/3,1.0))
+    tube(name+"_insertfront_jacket",tip,20,0,MATS["metal"],steps=16)
+    surface_strip(name+"_insertfront_glass",tip,13,21.5,MATS["glass"],steps=20)
     for t in (0.0, 0.14, 0.43, 0.72, 0.93, 0.985):
         shoulder = 0.030 if t in (0.0, 0.985) else 0.018
         s, e = max(0.0,t-shoulder), min(1.0,t+shoulder)
@@ -173,8 +188,9 @@ for pipe_id, anchors in PATHS.items():
     generated=set(bpy.data.objects)
     build_pipe(pipe_id,anchors)
     parts=set(bpy.data.objects)-generated
+    tips={ob for ob in parts if "_insertfront_" in ob.name}
     fronts={ob for ob in parts if "_collar" in ob.name or "_lip" in ob.name}
-    for layer,shown in (("shell",parts-fronts),("front",fronts)):
+    for layer,shown in (("shell",parts-fronts-tips),("front",fronts),("insert",tips)):
         for ob in parts: ob.hide_render=ob not in shown
         bpy.context.scene.render.filepath=str(BUILD/("modular-pipe-"+pipe_id+"-"+layer+"-full.png"))
         bpy.ops.render.render(write_still=True)

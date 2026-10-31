@@ -73,23 +73,27 @@ def setup():
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
     mats = {
-        "steel": material("titanium armor", (.48,.57,.59), .38,.27,.10),
-        "dark": material("recessed gunmetal", (.12,.20,.24), .31,.36,.045),
+        "steel": material("titanium armor", (.22,.31,.36), .69,.22,.06),
+        "dark": material("recessed gunmetal", (.065,.12,.16), .58,.32,.025),
         "black": material("glass interior", (.025,.055,.075), .12,.16,.025),
-        "silver": material("brushed silver edges", (.77,.81,.76), .48,.22,.15),
-        "brass": material("copper brass contacts", (.72,.40,.13), .53,.26,.19),
+        "silver": material("brushed silver edges", (.62,.72,.73), .73,.17,.10),
+        "brass": material("copper brass contacts", (.66,.34,.10), .75,.20,.12),
         "blue": material("shield blue glass", (.015,.14,.30), .18,.14,.24),
         "blue_lit": material("shield field filaments", (.025,.40,.85), .05,.2,1.3),
         "orange": material("furnace liner", (.42,.15,.035), .25,.3,.22),
         "orange_lit": material("molten charge", (1.0,.28,.025), .04,.22,1.0),
         "violet": material("crystal glass", (.22,.07,.36), .18,.14,.2),
-        "violet_lit": material("crystal facet", (.48,.15,.76), .05,.17,.85),
-        "violet_glint": material("crystal cleavage glint", (.78,.52,.96), .27,.11,.42),
+        "violet_lit": material("crystal facet", (.34,.11,.57), .12,.19,.42),
+        "violet_glint": material("crystal cleavage glint", (.43,.25,.65), .42,.13,.12),
         "worklamp": material("warm bay service emitter", (1.0,.66,.27), .05,.25,3.0),
         "ice": material("blue instrument emitter", (.16,.66,1.0), .05,.2,2.3),
     }
     world = bpy.context.scene.world
-    world.color = (.11,.15,.22)
+    world.use_nodes = True
+    environment = world.node_tree.nodes.new("ShaderNodeTexEnvironment")
+    environment.image = bpy.data.images.load(str(ROOT / "modular-bay-background.png"), check_existing=True)
+    world.node_tree.links.new(environment.outputs["Color"],world.node_tree.nodes["Background"].inputs["Color"])
+    world.node_tree.nodes["Background"].inputs["Strength"].default_value = .68
     for loc, energy, size in [((220,-110,470),105000,360),((950,-390,380),95000,320),((600,200,330),51000,440)]:
         ld = bpy.data.lights.new("bay softbox", "AREA")
         ld.energy, ld.shape, ld.size = energy, "DISK", size
@@ -144,6 +148,24 @@ def cube(name, x,y,w,h,d,z,mat, bevel=3):
     return ob
 
 
+def cast_plate(name,outline,z,depth,mat,bevel=3):
+    count=len(outline)
+    verts=[(x,-y,z+depth/2) for x,y in outline]
+    verts += [(x,-y,z-depth/2) for x,y in outline]
+    faces=[tuple(range(count)),tuple(range(2*count-1,count-1,-1))]
+    faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
+    mesh=bpy.data.meshes.new(name)
+    mesh.from_pydata(verts,[],faces)
+    mesh.materials.append(mat)
+    ob=bpy.data.objects.new(name,mesh)
+    bpy.context.collection.objects.link(ob)
+    if bevel:
+        mod=ob.modifiers.new("cast arris","BEVEL")
+        mod.width,mod.segments=bevel,3
+        ob.modifiers.new("weighted normals","WEIGHTED_NORMAL")
+    return ob
+
+
 def rod(name, a, b, radius, z, mat, vertices=20):
     start, end = Vector((a[0],-a[1],z)), Vector((b[0],-b[1],z))
     axis = end-start
@@ -155,6 +177,32 @@ def rod(name, a, b, radius, z, mat, vertices=20):
     bevel = ob.modifiers.new("turned lip", "BEVEL")
     bevel.width, bevel.segments = min(radius*.18,3), 2
     ob.modifiers.new("face normals", "WEIGHTED_NORMAL")
+    return ob
+
+
+def tubular_sleeve(name, a, b, outer, inner, mat, vertices=32):
+    start,end=Vector((a[0],-a[1],0)),Vector((b[0],-b[1],0))
+    axis=(end-start).normalized()
+    side=Vector((-axis.y,axis.x,0))
+    up=Vector((0,0,1))
+    verts=[]
+    for origin,radius in ((start,outer),(end,outer),(start,inner),(end,inner)):
+        for i in range(vertices):
+            angle=math.tau*i/vertices
+            verts.append(origin+radius*(side*math.cos(angle)+up*math.sin(angle)))
+    faces=[]
+    for i in range(vertices):
+        j=(i+1)%vertices
+        faces.extend(((i,j,vertices+j,vertices+i),
+                      (2*vertices+j,2*vertices+i,3*vertices+i,3*vertices+j),
+                      (i,2*vertices+i,2*vertices+j,j),
+                      (vertices+j,3*vertices+j,3*vertices+i,vertices+i)))
+    mesh=bpy.data.meshes.new(name)
+    mesh.from_pydata(verts,[],faces)
+    mesh.materials.append(mat)
+    ob=bpy.data.objects.new(name,mesh)
+    bpy.context.collection.objects.link(ob)
+    for face in mesh.polygons: face.use_smooth=True
     return ob
 
 
@@ -177,17 +225,44 @@ def ring(name,x,y,r,t,z,mat):
     return ob
 
 
+def convex_lens(name,x,y,r,z,mat):
+    verts=[(x,-y,z+13)]
+    radii=(14,28,42,r)
+    for radius in radii:
+        rise=13*(1-(radius/r)**2)
+        for i in range(48):
+            angle=math.tau*i/48
+            verts.append((x+radius*math.cos(angle),-y-radius*math.sin(angle),z+rise))
+    faces=[]
+    for i in range(48): faces.append((0,1+i,1+(i+1)%48))
+    for level in range(len(radii)-1):
+        a=1+48*level;b=a+48
+        for i in range(48): faces.append((a+i,b+i,b+(i+1)%48,a+(i+1)%48))
+    mesh=bpy.data.meshes.new(name)
+    mesh.from_pydata(verts,[],faces)
+    mesh.materials.append(mat)
+    ob=bpy.data.objects.new(name,mesh)
+    bpy.context.collection.objects.link(ob)
+    for face in mesh.polygons: face.use_smooth=True
+    return ob
+
+
 def jewel(name, x,y,rx,ry,z,mat,glint):
-    # A six-sided growth crystal with alternating inset facets and a deep crown.
-    verts=[(x,-y-ry,z-8),(x+rx,-y-ry*.32,z),(x+rx*.85,-y+ry*.52,z+5),
-           (x,-y+ry,z+2),(x-rx*.85,-y+ry*.52,z+5),(x-rx,-y-ry*.32,z),
-           (x,-y-ry*.24,z+rx*.95),(x,-y+ry*.15,z-rx*.55)]
-    faces=[(i,(i+1)%6,6) for i in range(6)] + [(i,7,(i+1)%6) for i in range(6)]
+    # A raised five-sided prism grown from a socket. The broad front face is
+    # split around a ridge, and its actual side walls catch a separate light.
+    outline=[(x-rx*.66,y+ry*.58),(x+rx*.62,y+ry*.58),
+             (x+rx,y-ry*.31),(x+rx*.28,y-ry),(x-rx*.81,y-ry*.47)]
+    verts=[(px,-py,z+6) for px,py in outline]
+    verts += [(x+rx*.07,-y,z+rx*.92)]
+    verts += [(px,-py,z-13) for px,py in outline]
+    faces=[(i,(i+1)%5,5) for i in range(5)]
+    faces += [(i,i+6,(i+1)%5+6,(i+1)%5) for i in range(5)]
+    faces.append((6,7,8,9,10))
     mesh=bpy.data.meshes.new(name)
     mesh.from_pydata(verts,[],faces)
     mesh.materials.append(mat)
     mesh.materials.append(glint)
-    for i,face in enumerate(mesh.polygons): face.material_index=1 if i in (1,4,7,10) else 0
+    for i,face in enumerate(mesh.polygons): face.material_index=1 if i in (1,3,7,9) else 0
     ob=bpy.data.objects.new(name,mesh)
     bpy.context.collection.objects.link(ob)
     return ob
@@ -200,18 +275,21 @@ def socket(name,spec,m):
     # p is the visible meeting plane. Its front lip is on the same source
     # plane as the conduit front collar; the barrel continues into the body.
     reach = 98 if name == "crystal" else (62 if name == "shield" else 38)
-    rod(name+" keyed inlet",p,p+axis*reach,radius,0,m["dark"])
-    rod(name+" machined sleeve",p+axis*5,p+axis*(reach-10),radius+4,0,m["steel"])
-    rod(name+" exposed sleeve crown",p+axis*2,p+axis*(reach-4),7,28,m["silver"],16)
+    # The pipe jacket itself continues through this hollow sleeve; leaving the
+    # bore open lets its real glass lumen show through at the meeting plane.
+    rod(name+" energized throat",p-axis*18,p+axis*(reach-5),3,22,m["blue_lit"],12)
+    tubular_sleeve(name+" receiving barrel",p+axis*12,p+axis*(reach-5),33,27.5,m["steel"])
+    for distance in (13,reach-13):
+        tubular_sleeve(name+" cast locking ferrule",p+axis*distance,p+axis*(distance+5),35,32,m["brass"])
+    rod(name+" exposed sleeve crown",p+axis*13,p+axis*(reach-4),5,34,m["silver"],16)
     normal=Vector((-axis.y,axis.x))
     for side in (-1,1):
-        edge=p+normal*side*19
-        rod(name+" inlet load rail",edge+axis*2,edge+axis*(reach-4),3.5,23,m["brass"],12)
+        edge=p+normal*side*24
+        rod(name+" inlet load rail",edge-axis*11,edge+axis*(reach-4),4,27,m["brass"],12)
     for t in range(23,reach-10,21):
         disc(name+" sleeve index",(p+axis*t).x,(p+axis*t).y,3.2,3,34,m["brass"],12)
     # The conduit terminates directly in the extruded barrel. No front-facing
     # painted circle or cap conceals a separation at the meeting plane.
-    rod(name+" inlet retaining sleeve",p+axis*2,p+axis*15,radius+5,0,m["silver"])
     for side in (-1,1):
         q=p+normal*side*(radius-3)
         disc(name+" keyed bolt",q.x,q.y,2.8,3,spec["socket_depth"]+4,m["brass"],12)
@@ -247,6 +325,12 @@ def tubing(name,points,r,z,m):
 
 def weapon(spec,m):
     foot("weapon",176,316,244,m)
+    for yy in (267,312):
+        rod("weapon wall bearing",(51,yy),(118,yy+13),13,18,m["steel"])
+        cube("weapon wall anchor lug",55,yy,19,29,28,28,m["silver"],4)
+    rod("weapon lower load strut",(83,302),(154,328),15,16,m["dark"])
+    cast_plate("weapon turret scalloped armor",[(135,180),(171,161),(269,168),(303,194),
+                                                 (300,261),(272,283),(154,281),(130,253)],36,43,m["steel"],5)
     cube("turret yoke",218,253,122,86,53,35,m["steel"],12)
     for sx in (-1,1):
         cube("weapon stepped shoulder",218+sx*66,249,25,84,43,48,m["dark"],5)
@@ -263,22 +347,22 @@ def weapon(spec,m):
     for yy in (133,152):
         cube("upper armor etched rail",235,yy,69,2,2,73,m["brass"],1)
     corner_fasteners("upper armor",235,143,92,38,74,m)
-    for offset in (-18,18):
+    for offset in (-25,25):
         y=190+offset
-        rod("twin gun barrel",(35,y-16),(215,y),13,59,m["dark"])
-        rod("cooled rifled casing",(54,y-14),(203,y-1),8,67,m["steel"])
-        rod("charge rail",(80,y-10),(182,y-1),3,76,m["brass"])
-        ring("muzzle crown",48,y-14,16,3,75,m["silver"])
-        disc("muzzle bore",48,y-14,9,3,78,m["black"])
-        ring("muzzle firing coil",48,y-14,9,1.9,91,m["orange_lit"])
-        rod("dual charger",(64,y-13),(118,y-8),2.8,84,m["orange_lit"],10)
+        rod("twin gun barrel",(62,y-16),(215,y),18,56,m["dark"])
+        rod("cooled rifled casing",(69,y-14),(203,y-1),13,65,m["steel"])
+        rod("charge rail",(86,y-10),(182,y-1),3.5,79,m["brass"])
+        ring("muzzle crown",65,y-14,20,4,75,m["silver"])
+        disc("muzzle bore",65,y-14,10,3,78,m["black"])
+        ring("muzzle firing coil",65,y-14,10,2.2,91,m["orange_lit"])
+        rod("dual charger",(75,y-13),(125,y-8),3.5,84,m["orange_lit"],10)
         for bx in (77,110,145,178):
-            ring("barrel cooling collar",bx,y-12,14,2,77,m["silver"])
+            ring("barrel cooling collar",bx,y-12,18,2.8,77,m["silver"])
             disc("barrel fastener",bx,y-12,2,2,81,m["brass"],10)
         for bx in (65,98,131,164):
             cube("barrel side vent",bx,y+5,11,3,3,83,m["black"],1)
-        cube("weapon barrel armor rib",134,y-19,124,9,13,70,m["steel"],3)
-        cube("weapon barrel lower shadow",134,y+18,126,5,8,67,m["dark"],2)
+        cube("weapon barrel armor rib",142,y-19,124,10,13,72,m["steel"],3)
+        cube("weapon barrel lower shadow",142,y+20,126,7,9,67,m["dark"],2)
     cube("weapon recoil carriage",160,216,152,18,24,39,m["steel"],4)
     for bx in (92,131,170):
         cube("recoil housing dark tooth",bx,216,19,10,5,55,m["dark"],2)
@@ -294,13 +378,19 @@ def weapon(spec,m):
 
 def defence(spec,m):
     foot("shield",1030,288,224,m)
+    for yy in (258,307):
+        rod("shield wall bearing",(1085,yy),(1140,yy-10),13,18,m["steel"])
+        cube("shield wall anchor lug",1137,yy-9,18,28,27,29,m["silver"],4)
+    rod("shield lower load strut",(1060,295),(1115,325),16,15,m["dark"])
+    cast_plate("shield drive cast side armor",[(905,156),(938,135),(996,138),(1018,160),
+                                               (1012,232),(995,253),(933,251),(907,232)],31,45,m["steel"],5)
     cube("field drive",974,197,92,112,50,29,m["steel"],11)
     cube("field drive bridge service lamp",974,140,53,3,2,61,m["worklamp"],1)
     corner_fasteners("field drive",974,197,92,112,61,m)
     rod("field transmission",(969,196),(1030,172),35,18,m["dark"])
     disc("field emitter barrel",1050,172,75,18,43,m["dark"])
     disc("recessed dielectric well",1050,172,68,4,53,m["black"])
-    disc("glass force face",1050,172,57,3,57,m["blue"])
+    convex_lens("convex glass force face",1050,172,57,53,m["blue"])
     for i in range(12):
         a=i*math.tau/12
         r=58
@@ -310,21 +400,19 @@ def defence(spec,m):
         disc("shield blade root",x0,y0,3,3,72,m["brass"],12)
     disc("shield emitter inner hub",1050,172,20,5,65,m["dark"],24)
     ring("hub contact",1050,172,18,2.5,69,m["brass"])
-    ring("inner field rim",1050,172,66,6,68,m["silver"])
-    ring("outer brass retaining ring",1050,172,78,3,61,m["brass"])
-    ring("inner glass boundary",1050,172,43,1.8,69,m["blue_lit"])
-    for radius in (32,49):
-        ring("shield nested focusing rim",1050,172,radius,1.8,69,m["silver"])
+    ring("field lens bearing",1050,172,75,3,55,m["silver"])
+    for i in range(10):
+        a=i*math.tau/10
+        left,right=a-.22,a+.22
+        panel=[(1050+r*math.cos(t),172+r*math.sin(t))
+               for r,t in ((58,left),(79,left),(81,right),(58,right))]
+        cast_plate("shield segmented projector shoe",panel,62,11,m["steel"],2)
+        q=Vector((1050+68*math.cos(a),172+68*math.sin(a)))
+        disc("shoe bronze radial pivot",q.x,q.y,3.7,3,70,m["brass"],12)
     for sx in (-1,1):
         cube("field-drive lateral heat exchanger",969+sx*50,193,15,93,29,51,m["steel"],4)
         for iy in range(5):
             cube("heat exchanger grille",969+sx*50,158+iy*17,13,4,3,68,m["dark"],1)
-    for radius in (24,47):
-        for i in range(8):
-            a=i*math.tau/8+radius*.01
-            x0=1050+radius*math.cos(a);y0=172+radius*math.sin(a)
-            x1=1050+(radius+13)*math.cos(a+.06);y1=172+(radius+13)*math.sin(a+.06)
-            rod("field lattice conductor",(x0,y0),(x1,y1),1.4,71,m["blue_lit"],8)
     for i in range(12):
         a=i*math.tau/12
         x=1050+80*math.cos(a);y=172+80*math.sin(a)
@@ -338,7 +426,18 @@ def defence(spec,m):
 
 def smelting(spec,m):
     foot("furnace",201,633,280,m)
+    for sx in (-1,1):
+        x=201+sx*107
+        rod("furnace deck compression leg",(x,622),(x+sx*7,685),15,16,m["steel"])
+        cube("furnace visible load column",x+sx*3,661,24,70,20,40,m["steel"],4)
+        cube("furnace load column spine",x+sx*3,661,5,61,3,53,m["silver"],2)
+        cube("furnace deck bearing",x+sx*7,689,42,23,25,18,m["dark"],5)
+        cube("furnace bearing bright lip",x+sx*7,684,36,4,3,32,m["silver"],2)
     cube("heat jacket",177,517,182,176,48,32,m["steel"],15)
+    for sx in (-1,1):
+        cast_plate("furnace outer heat shield",[(177+sx*86,438),(177+sx*108,461),
+                                               (177+sx*111,565),(177+sx*95,598),
+                                               (177+sx*67,586),(177+sx*66,464)],30,34,m["steel"],4)
     for sx in (-1,1):
         cube("furnace shoulder service lamp",177+sx*77,459,3,45,2,75,m["worklamp"],1)
     for sx in (-1,1):
@@ -387,6 +486,13 @@ def smelting(spec,m):
 
 def condensation(spec,m):
     foot("crystal",1003,626,242,m)
+    for sx in (-1,1):
+        x=1003+sx*93
+        rod("pressure vessel deck leg",(x,615),(x+sx*8,684),14,17,m["steel"])
+        cube("vessel visible load column",x+sx*4,658,23,75,20,40,m["steel"],4)
+        cube("vessel load column spine",x+sx*4,658,5,65,3,53,m["silver"],2)
+        cube("vessel deck bearing",x+sx*8,690,42,23,25,18,m["dark"],5)
+        cube("vessel bearing bright lip",x+sx*8,684,35,4,3,32,m["silver"],2)
     cube("growth vessel back",1020,518,152,188,44,20,m["dark"],14)
     cube("growth vessel crown service lamp",1020,422,78,3,2,73,m["worklamp"],1)
     cube("growth chamber glass",1020,517,118,170,5,53,m["black"],10)
@@ -405,8 +511,8 @@ def condensation(spec,m):
     for y in (429,605):
         cube("vessel retention band",1020,y,149,13,18,67,m["steel"],4)
         cube("band brass trace",1020,y+5,119,2,3,78,m["brass"],1)
-    for i,(x,y,rx,ry) in enumerate(((983,564,12,37),(1002,540,13,54),(1021,522,16,64),
-                                     (1042,553,13,49),(1061,568,11,37),(971,585,8,24),(1077,586,8,23))):
+    for i,(x,y,rx,ry) in enumerate(((983,565,11,30),(1002,548,12,40),(1021,541,13,47),
+                                     (1042,553,11,36),(1061,567,10,28),(971,585,8,21),(1077,586,8,20))):
         jewel("growth crystal %d"%i,x,y,rx,ry,70,m["violet"] if i%2 else m["violet_lit"],m["violet_glint"])
     for y in (476,522,568):
         cube("growth chamber laminated glass rail",1020,y,107,2,2,85,m["silver"],1)
@@ -459,6 +565,8 @@ def run():
         for ob,slots in original_slots.items():
             ob.hide_render=ob not in work_objects
             for i,mat in enumerate(slots): ob.material_slots[i].material=mat
+            for i,mat in enumerate(slots):
+                if mat == mats["violet_glint"]: ob.material_slots[i].material=mats["black"]
         bpy.context.scene.render.filepath=str(BUILD / ("r6-"+name+"-work-full.png"))
         bpy.ops.render.render(write_still=True)
         print("RENDERED",name,"port",spec["device_port"],"axis",spec["axis_to_device"],"rect",spec["rect"])
