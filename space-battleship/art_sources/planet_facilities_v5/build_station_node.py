@@ -135,6 +135,18 @@ for side in (-1, 1):
             (.018,.23,.11), ochre, root, .006)
         beam("Portal lower diagonal load heel", (end*.93,side*.99,-.15),
              (end*1.17,side*.88,-.51), .13,.12, ivory, root)
+        # The side silhouette descends as a faceted pressure gusset into the
+        # curved deck node. Its inner edge stops at the existing load cheek;
+        # the central passage and independently owned arc remain exposed.
+        gusset_sections = [
+            (end*.68,side*.93,-.34,.10,.19),
+            (end*.91,side*.96,-.39,.17,.27),
+            (end*1.18,side*.92,-.43,.13,.23),
+        ]
+        loft("Portal lower faceted load gusset",
+             gusset_sections if end > 0 else list(reversed(gusset_sections)), ivory, root)
+        box("Portal gusset blue bearing key", (end*.96,side*1.115,-.36),
+            (.18,.018,.12), blue, root, .007)
         beam("Portal inner chamfer load lining", (end*1.12,side*.47,-.23),
              (end*.93,side*.49,.94), .17,.13, ivory, root)
         box("Portal inner warm pressure socket", (end*1.15,side*.46,-.19),
@@ -167,6 +179,20 @@ for side in (-1, 1):
     for x in (-.51,0,.51):
         beam("Lower bay pressure web", (x,side*1.17,-.14),
              (x,side*1.17,-.53), .075,.09, blue, root)
+    # The exposed mouth previously read as one black void under the command
+    # deck. These two stepped inner cheeks continue the real pressure wall
+    # toward the ring deck, while leaving its central transit channel open.
+    loft("Portal throat stepped inner armor", [
+        (-1.18,side*.57,.01,.12,.24),
+        (-.82,side*.52,.02,.14,.27),
+        (.82,side*.52,.02,.14,.27),
+        (1.18,side*.57,.01,.12,.24),
+    ], ivory, root)
+    box("Portal throat recessed service way", (0,side*.375,.08),
+        (1.79,.028,.055), blue, root, .009)
+    for x in (-.79,0,.79):
+        box("Portal throat amber load key", (x,side*.388,.10),
+            (.17,.018,.045), amber, root, .006)
     # Faceted service armor grows out of the real pressure wall. The slanted
     # load ribs lead into the buried shoe and keep the ring passage open.
     for x in (-.70, -.23, .23, .70):
@@ -191,6 +217,11 @@ for end in (-1, 1):
     beam("Cross portal armored lintel", (x,-.76,1.16),
          (x,.76,1.16), .24,.26, ivory, root)
     box("Open passage soffit", (x,0,1.03), (.10,.91,.06), navy, root, .01)
+    # A shallow faceted arch makes the inlet's bearing frame legible from
+    # oblique views without capping the open passage or masking the ring.
+    for side in (-1, 1):
+        beam("Portal chamfered upper bearing", (x,side*.52,.86),
+             (x,side*.25,1.12), .13,.12, ivory, root)
     for side in (-1, 1):
         box("Corner amber status", (x,side*.75,1.31), (.11,.11,.06), amber, root, .014)
 

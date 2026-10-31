@@ -137,6 +137,10 @@ for side in (-1, 1):
         box("Dark foot socket", (x, side*.86, .16), (.38, .45, .22), navy, root, .035)
         box("Deep blue load shoe", (x, side*1.12, .18), (.43, .30, .35), blue, root, .04)
         box("Load shoe crown inset", (x, side*1.10, .37), (.28, .24, .055), ivory, root, .015)
+        beam("Foot ivory diagonal bearing", (end*.68, side*1.05, .38),
+             (end*1.03, side*1.10, -.02), .13, .13, ivory, root)
+        box("Foot ochre bearing inset", (end*.94, side*1.277, .10),
+            (.18, .018, .085), orange, root, .006)
         box("Portal inner amber inset", (end*.894, side*.55, 1.01), (.065, .065, .35), orange_lit, root, .016)
         cylinder("Amber corner mast", (x, side*.86, 1.65), .065, .20, orange_lit, root)
 

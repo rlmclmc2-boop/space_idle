@@ -196,6 +196,13 @@ bpy.ops.object.modifier_apply(modifier=port_bevel.name)
 for side in (-1,1):
     box("Pressure shell blue service recess", (.03,side*1.025,.53), (.66,.025,.25), blue, root, .015)
     box("Pressure shell cyan power key", (.02,side*1.046,.53), (.22,.015,.055), cyan, root, .005)
+    # The shell's lower load edge meets the same armored pressure language as
+    # the station and workshop feet, but leaves both launch and ring cuts open.
+    for x in (-.51, .49):
+        strut("Shell diagonal lower bearing", (x,side*.94,.35),
+              (x+.11,side*.88,.02), .13, ivory, root)
+        box("Shell bearing blue inset", (x+.10,side*.99,.08),
+            (.16,.028,.075), blue, root, .007)
     for x in (-.60,.57):
         box("Shell warm locking socket", (x,side*.83,.30), (.12,.075,.10), amber, root, .012)
 box("Pressure shell dorsal service ridge", (-.02,0,1.28), (.40,.62,.13), blue, root, .027)
