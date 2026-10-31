@@ -1,0 +1,11 @@
+{
+  "source_commit": "3991713d6a0a4a406b950b2cbd4b1ad142caf34e",
+  "runtime": "Godot 4.7.2 gl_compatibility 1440x900",
+  "files": {
+    "normal.png": "74543ea14be45614732df677541c4b160b3a7d912a7f55f709fef357f7ad8de6",
+    "focus-editable.png": "aff0b9492254d3cd2675448b2dce7d3e35fdc8e076f948eb7f6bff8d49bf014d",
+    "readonly-focused.png": "b3a52b0dafeaf4a1ba844142d612f0e490d77e2fe78078fee4975fe7a8278448",
+    "readonly-blurred.png": "379eedc61118cbd5c03d150e237f3cbacc19f958a139cfe411aae74a93edaa79",
+    "reenabled-focus.png": "aff0b9492254d3cd2675448b2dce7d3e35fdc8e076f948eb7f6bff8d49bf014d"
+  }
+}

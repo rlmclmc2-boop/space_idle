@@ -1,0 +1,63 @@
+extends SceneTree
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
+func _initialize() -> void: call_deferred("run")
+func frames(n:int) -> void:
+ for i in n: await process_frame
+func shot(name:String) -> void:
+ await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png("/tmp/space-idle-runtime472/spin-state/"+name+".png")
+func clear_guidance(session,game) -> void:
+ var pending:Dictionary=session.pending_guidance()
+ var tries:=0
+ while not pending.is_empty() and tries<20:
+  assert(session.dismiss_guidance(str(pending.kind),str(pending.id)).ok)
+  pending=session.pending_guidance()
+  tries+=1
+ game._sync_guidance()
+func run() -> void:
+ root.size=Vector2i(1440,900)
+ root.content_scale_size=Vector2i(1440,900)
+ var game:Node2D=load("res://src/main.tscn").instantiate()
+ root.add_child(game)
+ await frames(45)
+ assert(game.session!=null and game.startup_error.is_empty())
+ clear_guidance(game.session,game)
+ game._refresh_feature_visibility()
+ game._zone_shell._route_buttons["settings"].pressed.emit()
+ await frames(8)
+ clear_guidance(game.session,game)
+ var spin:SpinBox=game._autosave_spin
+ var field:=spin.get_line_edit()
+ print("STATE initial spin=",spin.editable," field=",field.editable," focus=",field.has_focus()," updown=",spin.get_theme_icon("updown"))
+ await shot("normal")
+ field.grab_focus()
+ await frames(2)
+ await shot("focus-editable")
+ BridgeTheme.apply_public_spin_editable(spin,false)
+ await frames(3)
+ print("STATE readonly spin=",spin.editable," field=",field.editable," focus=",field.has_focus()," updown=",spin.get_theme_icon("updown"))
+ await shot("readonly-focused")
+ var old_value:float=spin.value
+ var point:Vector2=spin.get_global_rect().position+Vector2(spin.size.x-8.0,8.0)
+ for pressed in [true,false]:
+  var click:=InputEventMouseButton.new()
+  click.button_index=MOUSE_BUTTON_LEFT
+  click.pressed=pressed
+  click.position=point
+  click.global_position=point
+  root.push_input(click)
+  await frames(2)
+ print("STATE readonly_arrow_click value_before=",old_value," value_after=",spin.value)
+ assert(spin.value==old_value)
+ field.release_focus()
+ await frames(2)
+ await shot("readonly-blurred")
+ BridgeTheme.apply_public_spin_editable(spin,true)
+ field.grab_focus()
+ await frames(2)
+ print("STATE reenabled spin=",spin.editable," field=",field.editable," focus=",field.has_focus())
+ await shot("reenabled-focus")
+ if game.session.save_files!=null: game.session.save_files.close(2000)
+ game.queue_free()
+ await frames(3)
+ quit()

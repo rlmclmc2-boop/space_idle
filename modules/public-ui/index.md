@@ -7,3 +7,5 @@
 - 当前来源核查结论见本分支根目录的全游戏核查报告；不将不同分支证据拼成同版通过。
 
 - [2026-10-31 native public select and input states](native-controls-20261031/README.md): current R3 source screenshots and bounded capture.
+
+- [2026-10-31 native SpinBox read-only state](native-spin-readonly-20261031/README.md): current whole-screen state evidence.
