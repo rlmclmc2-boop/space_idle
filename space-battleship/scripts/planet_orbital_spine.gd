@@ -219,6 +219,18 @@ func _shoulder_lift(kind: String, angle: float) -> float:
 		lift *= smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
 	return lift
 
+func _station_section_rise(kind: String, angle: float) -> float:
+	if kind != "auto_explore": return 0.0
+	# The pressure box returns to the common section at each independent cut.
+	# Under the station its side wall rises into the bearing cheeks themselves,
+	# keeping a real enclosed lower box without a dangling dark slab.
+	var bounds: Vector2 = ARC_BOUNDS[kind]
+	var inlet := smoothstep(0.0, 0.06, angle - bounds.x)
+	var outlet := smoothstep(0.0, 0.08, bounds.y - angle)
+	var center: float = FACILITY_ANGLES[kind] + 0.05
+	var node := 1.0 - smoothstep(0.11, 0.26, absf(angle - center))
+	return 0.18 * inlet * outlet * node
+
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
 	# armor tile. Each independent quarter owns its whole physical arc.
@@ -309,12 +321,14 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 	for index in steps:
 		var a := lerpf(begin, finish, float(index) / float(steps))
 		var b := lerpf(begin, finish, float(index + 1) / float(steps))
+		var section_a := _station_section_rise(kind, a) if lift < 0.0 else 0.0
+		var section_b := _station_section_rise(kind, b) if lift < 0.0 else 0.0
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
-		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * lift
-		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * lift
-		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * lift
-		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * lift
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift + section_a)
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift + section_a)
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift + section_b)
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift + section_b)
 		for vertex in [ai, bi, ao, ao, bi, bo]:
 			surface.set_normal(normal)
 			surface.add_vertex(vertex)
@@ -342,6 +356,13 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 		var lower_b := bottom + (lift_b if material == _cyan else 0.0)
 		var upper_a := top + lift_a
 		var upper_b := top + lift_b
+		var section_a := _station_section_rise(kind, a)
+		var section_b := _station_section_rise(kind, b)
+		lower_a += section_a
+		lower_b += section_b
+		if top < 0.10:
+			upper_a += section_a
+			upper_b += section_b
 		for vertex in [pa + normal * lower_a, pb + normal * lower_b, pa + normal * upper_a, pa + normal * upper_a, pb + normal * lower_b, pb + normal * upper_b]:
 			surface.set_normal(wall_normal)
 			surface.add_vertex(vertex)

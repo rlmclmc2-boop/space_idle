@@ -183,10 +183,10 @@ for side in (-1, 1):
     # deck. These two stepped inner cheeks continue the real pressure wall
     # toward the ring deck, while leaving its central transit channel open.
     loft("Portal throat stepped inner armor", [
-        (-1.18,side*.57,.01,.12,.24),
-        (-.82,side*.52,.02,.14,.27),
-        (.82,side*.52,.02,.14,.27),
-        (1.18,side*.57,.01,.12,.24),
+        (-1.18,side*.48,.01,.16,.24),
+        (-.82,side*.45,.02,.17,.27),
+        (.82,side*.45,.02,.17,.27),
+        (1.18,side*.48,.01,.16,.24),
     ], ivory, root)
     box("Portal throat recessed service way", (0,side*.375,.08),
         (1.79,.028,.055), blue, root, .009)
