@@ -13,7 +13,21 @@ const CONSOLE_COMPACT = preload("res://assets/ui/reactor/b01/modular-console-com
 const CONSOLE_FOUR = preload("res://assets/ui/reactor/b01/modular-console-four.png")
 const CLAMP_LEFT = preload("res://assets/ui/reactor/b01/modular-core-clamp-left.png")
 const CLAMP_RIGHT = preload("res://assets/ui/reactor/b01/modular-core-clamp-right.png")
-const CORE_ROTOR = preload("res://assets/ui/reactor/b01/modular-core-rotor.png")
+const CORE_LENS = preload("res://assets/ui/reactor/b01/modular-core-lens.png")
+const GIMBAL_FRAMES := [
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-00.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-01.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-02.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-03.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-04.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-05.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-06.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-07.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-08.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-09.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-10.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-11.png"),
+]
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const OPERATING := {"weapons":{"row":0}, "defence":{"row":1}, "smelting":{"row":2}, "condensation":{"row":3}}
 const SOURCE_SIZE := Vector2(1187.0, 1326.0)
@@ -31,7 +45,8 @@ var _field_material: ShaderMaterial
 var _console: Sprite2D
 var _clamp_left: Sprite2D
 var _clamp_right: Sprite2D
-var _rotor: Sprite2D
+var _lens: Sprite2D
+var _gimbal: Sprite2D
 var _clamp_left_home: Vector2
 var _clamp_right_home: Vector2
 var _enabled: Array = []
@@ -64,12 +79,8 @@ func _init() -> void:
 	_core_field.material = _field_material
 	_core_field.visible = false
 	add_child(_core_field)
-	_rotor = Sprite2D.new()
-	_rotor.texture = CORE_ROTOR
-	_rotor.position = Vector2(595,330) * VIEW_SIZE / SOURCE_SIZE
-	_rotor.scale = VIEW_SIZE / SOURCE_SIZE
-	_rotor.visible = false
-	add_child(_rotor)
+	_lens = _central_layer(CORE_LENS)
+	_gimbal = _central_layer(GIMBAL_FRAMES[0])
 	_clamp_left = _source_layer(CLAMP_LEFT,Rect2(395,300,190,45))
 	_clamp_right = _source_layer(CLAMP_RIGHT,Rect2(603,300,190,45))
 	_clamp_left_home = _clamp_left.position
@@ -81,6 +92,7 @@ func _init() -> void:
 		add_child(module)
 		_modules[id] = module
 	_console = _source_layer(CONSOLE_FOUR,Rect2(0,670,1187,656))
+	_console.modulate = Color(0.57,0.76,0.79)
 
 func control_layout(id: String) -> Dictionary:
 	return OPERATING[id]
@@ -101,7 +113,8 @@ func show_snapshot(ids: Array, loads: Dictionary) -> void:
 		_pipes[id].set_workload(workload)
 		_modules[id].set_workload(workload)
 	_core_field.visible = float(_loads.get("core",0.0)) > 0.0
-	_rotor.visible = _core_field.visible
+	_lens.visible = _core_field.visible
+	_gimbal.visible = _core_field.visible
 	_field_material.set_shader_parameter("load_fraction",visibility_power(float(_loads.get("core",0.0))))
 	_set_clamp_travel(0.0)
 	diagnostics.field_updates += 1
@@ -110,7 +123,8 @@ func clear_snapshot() -> void:
 	_enabled.clear()
 	_loads.clear()
 	_core_field.visible = false
-	_rotor.visible = false
+	_lens.visible = false
+	_gimbal.visible = false
 	_set_clamp_travel(0.0)
 	for id in IDS:
 		_pipes[id].visible = false
@@ -125,8 +139,8 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	if paused or elapsed == 0.0 or float(_loads.get("core",0.0)) <= 0.0: return false
 	_phase = fmod(_phase+elapsed,4096.0)
 	_field_material.set_shader_parameter("phase",_phase)
-	_rotor.rotation = _phase*0.55
 	var cycle: float = fmod(_phase,5.2)
+	_gimbal.texture = GIMBAL_FRAMES[int(floor(cycle * GIMBAL_FRAMES.size() / 5.2))]
 	var travel: float = 0.0
 	if cycle < 1.2:
 		travel = _smooth_travel(cycle/1.2)
@@ -170,5 +184,14 @@ func _source_layer(texture: Texture2D, source_rect: Rect2) -> Sprite2D:
 	layer.centered = false
 	layer.position = source_rect.position * VIEW_SIZE / SOURCE_SIZE
 	layer.scale = VIEW_SIZE / SOURCE_SIZE
+	add_child(layer)
+	return layer
+
+func _central_layer(texture: Texture2D) -> Sprite2D:
+	var layer := Sprite2D.new()
+	layer.texture = texture
+	layer.position = Vector2(595,330) * VIEW_SIZE / SOURCE_SIZE
+	layer.scale = VIEW_SIZE / SOURCE_SIZE
+	layer.visible = false
 	add_child(layer)
 	return layer

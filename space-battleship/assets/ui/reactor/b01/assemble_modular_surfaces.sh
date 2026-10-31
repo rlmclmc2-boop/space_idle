@@ -14,7 +14,7 @@ for id in weapons defence smelting condensation; do
     fi
   done
 done
-for file in modular-core-clamp-left.png modular-core-clamp-right.png modular-core-rotor.png; do
+for file in modular-core-clamp-left.png modular-core-clamp-right.png modular-core-lens.png modular-core-gimbal-*.png; do
   if [ "$(magick identify -format '%wx%h' "$file")" != "1187x1326" ]; then
     echo "Expected a Blender source canvas: $file; run generate_modular_pipes.py first" >&2
     exit 1
@@ -36,9 +36,11 @@ for state in compact four; do
 done
 # Blender renders each independent physical layer on the source canvas. Tight
 # alpha bounds keep the eight transparent quads from shading the whole bay.
+: > modular-pipe-bounds.tsv
 for id in weapons defence smelting condensation; do
   for layer in shell front; do
     file="modular-pipe-$id-$layer.png"
+    printf '%s\t%s\t%s\n' "$id" "$layer" "$(magick "$file" -format '%@' info:)" >> modular-pipe-bounds.tsv
     magick "$file" -trim +repage "$file.trim.png"
     mv "$file.trim.png" "$file"
   done
@@ -50,5 +52,7 @@ for side in left right; do
   magick "$file" -crop "190x45+$x+300" +repage "$file.crop.png"
   mv "$file.crop.png" "$file"
 done
-magick modular-core-rotor.png -crop 240x240+475+210 +repage modular-core-rotor.crop.png
-mv modular-core-rotor.crop.png modular-core-rotor.png
+for file in modular-core-lens.png modular-core-gimbal-*.png; do
+  magick "$file" -crop 240x240+475+210 +repage "$file.crop.png"
+  mv "$file.crop.png" "$file"
+done

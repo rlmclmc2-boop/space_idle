@@ -22,10 +22,10 @@ PATHS = {
     "smelting": ((463, 450), (410, 479), (360, 533), (313, 517)),
     "condensation": ((729, 446), (776, 482), (819, 530), (889, 518)),
 }
-METAL = (0.065, 0.105, 0.15, 1)
-RIDGE = (0.24, 0.32, 0.39, 1)
-GOLD = (0.65, 0.36, 0.12, 1)
-GLASS = (0.015, 0.19, 0.30, 1)
+METAL = (0.13, 0.14, 0.17, 1)
+RIDGE = (0.31, 0.33, 0.36, 1)
+GOLD = (0.69, 0.41, 0.18, 1)
+GLASS = (0.04, 0.30, 0.45, 1)
 
 
 def material(name, color, metallic=0.0, roughness=0.38, emission=0.0):
@@ -105,19 +105,19 @@ def surface_strip(name, path, half_width, z, mat, start=0.01, end=0.99, steps=90
 def build_pipe(name, path):
     # The section is a shadowed metal outer jacket with a separately visible
     # glass slot. The inset lumen and discrete energy packets are independent.
-    tube(name+"_jacket", path, 26, 0, MATS["metal"])
-    tube(name+"_ridge", path, 28, 0, MATS["ridge"], theta0=0.02, theta1=0.38)
-    tube(name+"_ridge2", path, 28, 0, MATS["ridge"], theta0=math.pi-0.38, theta1=math.pi-0.02)
-    surface_strip(name+"_glass", path, 17, 27.5, MATS["glass"])
+    tube(name+"_jacket", path, 20, 0, MATS["metal"])
+    tube(name+"_ridge", path, 22, 0, MATS["ridge"], theta0=0.02, theta1=0.38)
+    tube(name+"_ridge2", path, 22, 0, MATS["ridge"], theta0=math.pi-0.38, theta1=math.pi-0.02)
+    surface_strip(name+"_glass", path, 13, 21.5, MATS["glass"])
     for t in (0.0, 0.14, 0.43, 0.72, 0.93, 0.985):
         s, e = max(0.0,t-0.018), min(1.0,t+0.018)
-        tube(name+"_collar", path, 32, 0, MATS["metal"], s, e, steps=5)
-        tube(name+"_lip", path, 33, 0, MATS["gold"], s, min(1.0,s+0.007), steps=2)
-        tube(name+"_lip", path, 33, 0, MATS["gold"], max(0.0,e-0.007), e, steps=2)
+        tube(name+"_collar", path, 25, 0, MATS["metal"], s, e, steps=5)
+        tube(name+"_lip", path, 26, 0, MATS["gold"], s, min(1.0,s+0.007), steps=2)
+        tube(name+"_lip", path, 26, 0, MATS["gold"], max(0.0,e-0.007), e, steps=2)
         # A short raised window keeps the luminous lumen legible across each
         # physical clamp. It is still subordinate to the clamp's front lip.
         if t not in (0.0, 0.985):
-            surface_strip(name+"_collar_glass", path, 10, 33.2, MATS["glass"], s+0.003, e-0.003, 5)
+            surface_strip(name+"_collar_glass", path, 9, 26.2, MATS["glass"], s+0.003, e-0.003, 5)
 
 
 def beveled_plate(name, cx, cy, width, height, depth, z, mat, bevel=2.0):
@@ -146,30 +146,40 @@ def clamp_half(name, start_x):
         ob.data.materials.append(MATS["ridge"])
 
 
-def core_rotor():
-    center = (595,-330,63)
-    for radius, metal, name in ((102,MATS["metal"],"outer rotor rim"),
-                                (79,MATS["ridge"],"inner rotor bearing")):
+def core_gimbal(phase):
+    center = (595, -330, 63)
+    for radius, thickness, metal, pitch, roll, name in (
+        (101, 10.0, MATS["gimbal"], 0.96*math.sin(phase), 0.30*math.cos(phase), "outer containment hoop"),
+        (76, 8.0, MATS["ridge"], -0.82*math.cos(phase), 0.42*math.sin(phase), "inner containment hoop"),
+        (101, 2.6, MATS["gold"], 0.96*math.sin(phase), 0.30*math.cos(phase), "outer brass tracking lip"),
+    ):
         bpy.ops.mesh.primitive_torus_add(major_segments=96, minor_segments=8,
-                                        location=center, major_radius=radius, minor_radius=4.5)
+                                        location=center, major_radius=radius, minor_radius=thickness)
         ob = bpy.context.object
         ob.name = name
         ob.data.materials.append(metal)
-    for i in range(12):
-        a = 2*math.pi*i/12
-        cx = center[0]+91*math.cos(a)
-        cy = 330+91*math.sin(a)
-        spoke = beveled_plate("rotor restraint tooth",cx,cy,23,8,5,68,MATS["gold"],2)
-        spoke.rotation_euler[2] = -a
-    for i in range(6):
-        a = 2*math.pi*i/6
-        cx = center[0]+79*math.cos(a)
-        cy = 330+79*math.sin(a)
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=6, radius=5,
-                                             location=(cx,-cy,73))
-        ob = bpy.context.object
-        ob.name = "rotor contained charge"
-        ob.data.materials.append(MATS["charge"])
+        ob.rotation_euler = (pitch, roll, phase*0.16)
+
+
+def core_lens():
+    center = (595, -330, 63)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=48, ring_count=24, radius=43,
+                                         location=(center[0], center[1], 52))
+    lens = bpy.context.object
+    lens.name = "contained reaction lens"
+    lens.data.materials.append(MATS["lens"])
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=16, radius=23,
+                                         location=(center[0], center[1], 93))
+    seed = bpy.context.object
+    seed.name = "reaction seed"
+    seed.data.materials.append(MATS["seed"])
+    for radius in (33, 41):
+        bpy.ops.mesh.primitive_torus_add(major_segments=72, minor_segments=8,
+                                        location=(center[0],center[1],74),
+                                        major_radius=radius, minor_radius=2.5)
+        lip = bpy.context.object
+        lip.name = "lens machined restraint"
+        lip.data.materials.append(MATS["gold"])
 
 
 def setup():
@@ -178,9 +188,12 @@ def setup():
     MATS.update({
         "metal": material("gunmetal jacket", METAL, 0.82, 0.27),
         "ridge": material("steel rim", RIDGE, 0.78, 0.2),
+        "gimbal": material("brushed pale-steel containment hoop", (0.43,0.58,0.65,1), 0.50, 0.25),
         "gold": material("brass collar edge", GOLD, 0.85, 0.25),
-        "glass": material("deep glass lumen", GLASS, 0.18, 0.1, 0.035),
+        "glass": material("deep glass lumen", GLASS, 0.18, 0.1, 0.13),
         "charge": material("contained blue charge", (0.045,0.48,0.85,1),0.1,0.15,0.65),
+        "lens": material("contained reaction lens", (0.025,0.19,0.31,1),0.48,0.16,0.25),
+        "seed": material("reaction seed", (0.10,0.66,0.94,1),0.15,0.12,2.8),
     })
     world = bpy.context.scene.world
     world.color = (0.20,0.25,0.34)
@@ -232,8 +245,15 @@ for side, start_x in (("left",395),("right",603)):
     for ob in set(bpy.data.objects)-generated:
         bpy.data.objects.remove(ob, do_unlink=True)
 generated = set(bpy.data.objects)
-core_rotor()
-bpy.context.scene.render.filepath = str(ROOT / "modular-core-rotor.png")
+core_lens()
+bpy.context.scene.render.filepath = str(ROOT / "modular-core-lens.png")
 bpy.ops.render.render(write_still=True)
 for ob in set(bpy.data.objects)-generated:
     bpy.data.objects.remove(ob, do_unlink=True)
+for frame in range(12):
+    generated = set(bpy.data.objects)
+    core_gimbal(2*math.pi*frame/12)
+    bpy.context.scene.render.filepath = str(ROOT / ("modular-core-gimbal-%02d.png" % frame))
+    bpy.ops.render.render(write_still=True)
+    for ob in set(bpy.data.objects)-generated:
+        bpy.data.objects.remove(ob, do_unlink=True)

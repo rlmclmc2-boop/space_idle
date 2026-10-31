@@ -10,10 +10,10 @@ const ROUTES := {
 	"condensation": [Vector2(729,446), Vector2(776,482), Vector2(819,530), Vector2(889,518)],
 }
 const PIPE_BOUNDS := {
-	"weapons": {"shell":Vector2(311,175), "front":Vector2(310,172)},
-	"defence": {"shell":Vector2(722,165), "front":Vector2(719,161)},
-	"smelting": {"shell":Vector2(303,425), "front":Vector2(302,420)},
-	"condensation": {"shell":Vector2(712,424), "front":Vector2(709,419)},
+	"weapons": {"shell":Vector2(312,182), "front":Vector2(311,178)},
+	"defence": {"shell":Vector2(726,171), "front":Vector2(723,168)},
+	"smelting": {"shell":Vector2(305,430), "front":Vector2(304,427)},
+	"condensation": {"shell":Vector2(715,428), "front":Vector2(713,425)},
 }
 
 var _shell: Sprite2D
@@ -82,7 +82,7 @@ static func _arc_mesh(route: Array) -> ArrayMesh:
 		var tangent := (next-prev).normalized()
 		var normal := Vector2(-tangent.y,tangent.x)
 		for side in [-1.0,1.0]:
-			var p: Vector2 = (pts[i]+normal*7.5*side)*scale
+			var p: Vector2 = (pts[i]+normal*9.0*side)*scale
 			vertices.append(Vector3(p.x,p.y,0.0))
 			uvs.append(Vector2(lengths[i]/maxf(length,0.001),(side+1.0)*0.5))
 		if i < STEPS:

@@ -91,6 +91,31 @@ static func number(value: String) -> String:
 		if unit_index == 5: return sign + "1.0e18"
 	return sign + _tenths_text(tenths) + (["k", "m", "b", "t", "kt"][unit_index] if unit_index >= 0 else "")
 
+# Resource values are integer facts supplied by their Owner. An unexpected
+# fractional source remains visible verbatim rather than being rounded into
+# an apparently valid balance. Exact integers only drop redundant unscaled
+# .0; this does not mutate Amount. Other roles continue to use number().
+static func resource_number(value: String) -> String:
+	var display: String = number(value)
+	if not _is_exact_integer_text(value): return value.strip_edges() if display != "—" else display
+	if not display.ends_with(".0"): return display
+	return display.trim_suffix(".0")
+
+static func _is_exact_integer_text(value: String) -> bool:
+	if _number_pattern == null: return false
+	var matched: RegExMatch = _number_pattern.search(value.strip_edges())
+	if matched == null: return false
+	var parts: PackedStringArray = matched.get_string(2).split(".")
+	var digits: String = parts[0] + (parts[1] if parts.size() > 1 else "")
+	if digits.lstrip("0").is_empty(): return true
+	var trailing: int = digits.length() - digits.rstrip("0").length()
+	var decimal_places: int = (parts[1].length() if parts.size() > 1 else 0) - trailing
+	var exponent: String = matched.get_string(3)
+	if exponent.is_empty(): return decimal_places <= 0
+	var unsigned: String = exponent.trim_prefix("+").trim_prefix("-").lstrip("0")
+	if unsigned.length() > 15: return not exponent.begins_with("-")
+	return exponent.to_int() >= decimal_places
+
 static func _round_tenths(significant: String, magnitude: int, scale: int) -> int:
 	var kept: int = magnitude - scale + 2
 	if kept < 0: return 0
