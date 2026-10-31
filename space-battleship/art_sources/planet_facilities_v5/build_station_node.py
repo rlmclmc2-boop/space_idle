@@ -183,10 +183,10 @@ for side in (-1, 1):
     # deck. These two stepped inner cheeks continue the real pressure wall
     # toward the ring deck, while leaving its central transit channel open.
     loft("Portal throat stepped inner armor", [
-        (-1.18,side*.48,.01,.16,.24),
-        (-.82,side*.45,.02,.17,.27),
-        (.82,side*.45,.02,.17,.27),
-        (1.18,side*.48,.01,.16,.24),
+        (-1.18,side*.37,.14,.20,.40),
+        (-.82,side*.34,.15,.21,.43),
+        (.82,side*.34,.15,.21,.43),
+        (1.18,side*.37,.14,.20,.40),
     ], ivory, root)
     box("Portal throat recessed service way", (0,side*.375,.08),
         (1.79,.028,.055), blue, root, .009)
@@ -223,11 +223,19 @@ for end in (-1, 1):
          (x,.43,.84), .15,.13, ivory, root)
     box("Compression arch blue underside", (x,0,.76),
         (.095,.58,.035), blue, root, .008)
+    # Close the command hull's upper shadow with a structural header. The
+    # ring deck remains visible through the lower, independently owned slot.
+    box("Portal upper pressure header", (x,0,.70),
+        (.20,.60,.26), ivory, root, .035)
     # A shallow faceted arch makes the inlet's bearing frame legible from
     # oblique views without capping the open passage or masking the ring.
     for side in (-1, 1):
         beam("Portal chamfered upper bearing", (x,side*.52,.86),
              (x,side*.25,1.12), .13,.12, ivory, root)
+        # A lower diagonal carries the inner throat into its actual deck-side
+        # pressure shoe while preserving a central open transit slot.
+        beam("Portal lower inner bearing", (x,side*.43,-.15),
+             (x,side*.21,.59), .18,.15, ivory, root)
     for side in (-1, 1):
         box("Corner amber status", (x,side*.75,1.31), (.11,.11,.06), amber, root, .014)
 
