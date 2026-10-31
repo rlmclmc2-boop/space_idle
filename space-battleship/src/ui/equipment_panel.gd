@@ -97,7 +97,7 @@ func _operation_button(button: Button, role: String="button", compact_card: bool
     button.add_theme_font_override("font",_font_strong)
     if compact_card:
         for state in BridgeTheme.PUBLIC_STATES:
-            var surface: StyleBox=button.get_theme_stylebox(state).duplicate()
+            var surface: StyleBox=button.get_theme_stylebox(state)
             surface.content_margin_top=1;surface.content_margin_bottom=1
             button.add_theme_stylebox_override(state,surface)
 
