@@ -13,6 +13,11 @@ const LIGHT = Color("c9ded9")
 const CONTROL_FOCUS = Color("e5c784")
 const CONTROL_DISABLED_INK = Color("9cb4b4")
 const CONTROL_CUT = 5.0
+const CARD_WIDTH = 420.0
+const EQUIPPED_HEIGHT = 106.0
+const EMPTY_HEIGHT = 52.0
+const CARD_GAP = 12.0
+const CONTENT_PAD = 4.0
 var _session
 var _font_regular: FontVariation
 var _font_medium: FontVariation
@@ -42,9 +47,13 @@ var _content: Control
 var _body_top: float = 294.0
 var _view_height: float = 510.0
 var _content_height: float = 0.0
+var _scroll_stops: Array[int] = [0]
+var _scroll_anchor: int = 0
+var _aligning_scroll: bool = false
 var _identity: Panel
 var _identity_title: Label
 var _identity_counts: Label
+var _global_quantity: Button
 var _batch_open: Button
 var _fallback_header: Label
 var _popup: Control
@@ -93,12 +102,12 @@ func _init(session) -> void:
 
 func _operation_button(button: Button, role: String="button", compact_card: bool=false, selected: bool=false) -> void:
     BridgeTheme.apply_operation_button(button,"commit" if role=="primary" else "secondary",8,selected)
-    # Module typography and26px card controls retain their validated geometry.
+    # Card controls keep the common material; local content padding supports the new28px controls.
     button.add_theme_font_override("font",_font_strong)
     if compact_card:
         for state in BridgeTheme.PUBLIC_STATES:
             var surface: StyleBox=button.get_theme_stylebox(state)
-            surface.content_margin_top=1;surface.content_margin_bottom=1
+            surface.content_margin_top=2;surface.content_margin_bottom=2
             button.add_theme_stylebox_override(state,surface)
 
 func _style(fill: Color, edge: Color, thickness: int=1) -> StyleBoxFlat:
@@ -138,16 +147,19 @@ func _icon(parent: Control, key: String, rect: Rect2) -> TextureRect:
 
 func _build() -> void:
     _fallback_header=_label(self,"装备",Rect2(25,10,220,45),22,CREAM,600)
-    _identity=_panel(self,Rect2(16,297,309,72));_identity.mouse_filter=Control.MOUSE_FILTER_PASS
-    _identity_title=_label(_identity,"",Rect2(14,8,285,30),21,CREAM,600)
-    _identity_counts=_label(_identity,"",Rect2(14,39,285,23),14,LIGHT,400)
-    _batch_open=_button(self,"全部升级",Rect2(676,262,96,30),_open_batch,"primary")
+    _identity=_panel(self,Rect2(16,297,276,72));_identity.mouse_filter=Control.MOUSE_FILTER_PASS
+    _identity.add_theme_stylebox_override("panel",BridgeTheme.operation_plate(14))
+    _identity_title=_label(_identity,"",Rect2(18,10,240,30),21,INK,600)
+    _identity_counts=_label(_identity,"",Rect2(18,40,240,23),14,Color("49636c"),400)
+    _global_quantity=_button(self,"×1",Rect2(552,254,64,30),_cycle_global,"button",true)
+    _global_quantity.add_theme_font_size_override("font_size",16);_global_quantity.tooltip_text="全部槽位数量"
+    _batch_open=_button(self,"全部升级",Rect2(628,254,134,30),_open_batch,"primary",true)
     _scroll=ScrollContainer.new();_scroll.position=Vector2(340,294);_scroll.size=Vector2(434,484)
     _scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
     _scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
     _scroll.focus_mode=Control.FOCUS_ALL;add_child(_scroll)
     _content=Control.new();_content.custom_minimum_size=Vector2(424,484);_scroll.add_child(_content)
-    _scroll.get_v_scroll_bar().value_changed.connect(func(_value):_update_visible_cards())
+    _scroll.get_v_scroll_bar().value_changed.connect(_align_scroll_rows)
     _toast=PanelContainer.new();_toast.position=Vector2(430,207);_toast.size=Vector2(348,44)
     _toast.add_theme_stylebox_override("panel",_style(Color("173b49"),Color("bda56d")))
     _toast.mouse_filter=Control.MOUSE_FILTER_IGNORE;_toast.z_index=90;add_child(_toast)
@@ -183,10 +195,13 @@ func _refresh_structure() -> void:
     _ship=str(_session.campaign_system.selected_ship())
     if _selected.is_empty() or _fact(_selected).get("dormant",true):_selected=str(_active[0].id) if not _active.is_empty() else ""
     var early: bool=_active.size()<=2
-    _body_top=432 if early else 294;_content_height=2+94*_active.size();_view_height=minf(484,_content_height)
+    _body_top=432 if early else 294
+    _content_height=CONTENT_PAD*2+CARD_GAP*maxi(0,_active.size()-1)
+    for fact in _active:_content_height+=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+    _view_height=minf(484,_content_height)
     _scroll.position=Vector2(340,_body_top);_scroll.size=Vector2(434,_view_height)
-    _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
-    _batch_open.position.y=400 if early else 262
+    _global_quantity.position.y=403 if early else 260;_batch_open.position.y=_global_quantity.position.y
+    _global_quantity.disabled=not _session.run_state.is_running();_batch_open.disabled=_global_quantity.disabled
     var display_height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
     var bottom: float=640.0 if early else 680.0
     _identity.position.y=bottom-display_height-83.0
@@ -196,20 +211,61 @@ func _refresh_structure() -> void:
     _identity_title.text=ship_title
     _identity_counts.text="武器 %s  ·  防御 %s" % [_active.filter(func(f):return f.category=="weapon").size(),_active.filter(func(f):return f.category=="defence").size()]
     for id in _cards:_cards[id].panel.hide()
-    var y: float=0.0
+    var y: float=CONTENT_PAD
     for category in ["weapon","defence"]:
         for fact in _active.filter(func(f):return f.category==category):
             var id: String=str(fact.id)
             if not _cards.has(id):_create_card(id)
-            _cards[id].row_y=y;_cards[id].panel.position=Vector2(0,y+2)
-            _refresh_card(id);y+=94
+            var height: float=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+            _cards[id].row_y=y;_cards[id].panel.position=Vector2(2,y);_cards[id].panel.size=Vector2(CARD_WIDTH,height)
+            _refresh_card(id);y+=height+CARD_GAP
+    _configure_scroll_rows()
     _update_visible_cards();_refresh_scene_picture()
 
+func _configure_scroll_rows() -> void:
+    var starts: Array[int] = []
+    for fact in _active:starts.append(int(_cards[str(fact.id)].row_y-CONTENT_PAD))
+    starts.sort()
+    var last_start: int=0
+    for start in starts:
+        # Keep the final complete row group aligned with the same top inset.
+        # Spare viewport height belongs below that group, never above it.
+        if _content_height-CONTENT_PAD*2-start<=_view_height-CONTENT_PAD*2:
+            last_start=start;break
+    _scroll_stops.assign(starts.filter(func(start):return start<=last_start))
+    if _scroll_stops.is_empty():_scroll_stops.append(0)
+    _content_height=maxf(_content_height,last_start+_view_height)
+    _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
+    var retained: int=0
+    for start in _scroll_stops:
+        if start<=_scroll_anchor:retained=start
+    _scroll_anchor=retained
+    _aligning_scroll=true;_scroll.scroll_vertical=retained;_aligning_scroll=false
+    # ScrollContainer updates its bounds in the following layout pass.
+    _scroll.set_deferred("scroll_vertical",retained)
+
+func _align_scroll_rows(value: float) -> void:
+    if _aligning_scroll:return
+    var requested: int=int(value)
+    var target: int=_scroll_anchor
+    if requested>_scroll_anchor:
+        target=_scroll_stops.back()
+        for stop in _scroll_stops:
+            if stop>=requested:target=stop;break
+    elif requested<_scroll_anchor:
+        target=0
+        for stop in _scroll_stops:
+            if stop>requested:break
+            target=stop
+    _scroll_anchor=target
+    _aligning_scroll=true;_scroll.scroll_vertical=target;_aligning_scroll=false
+    _update_visible_cards()
+
 func _create_card(id: String) -> void:
-    var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(424,90)
+    var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(CARD_WIDTH,EQUIPPED_HEIGHT)
     _content.add_child(panel)
-    var icon=_icon(panel,"",Rect2(8,18,44,54))
-    var select=_button(panel,"",Rect2(60,6,216,26),_open_choices.bind(id),"button",true)
+    var icon=_icon(panel,"",Rect2(12,26,44,54))
+    var select=_button(panel,"",Rect2(64,10,198,28),_open_choices.bind(id),"button",true)
     select.alignment=HORIZONTAL_ALIGNMENT_LEFT;select.clip_text=true
     _operation_button(select,"button",true,true)
     # This picker is a Button opening the existing Owner-backed choice popup,
@@ -217,21 +273,21 @@ func _create_card(id: String) -> void:
     # into an unrelated OptionButton selection/confirmation flow.
     var arrow=TextureRect.new();arrow.texture=preload("res://assets/ui/public_shell/stepper-down.svg")
     arrow.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;arrow.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    arrow.mouse_filter=Control.MOUSE_FILTER_IGNORE;select.add_child(arrow);arrow.position=Vector2(198,7);arrow.size=Vector2(14,12)
+    arrow.mouse_filter=Control.MOUSE_FILTER_IGNORE;select.add_child(arrow);arrow.position=Vector2(176,8);arrow.size=Vector2(14,12)
     select.add_theme_font_size_override("font_size",16)
-    select.size=Vector2(216,26)
-    var level=_label(panel,"",Rect2(292,6,72,26),14,Color("49636c"))
-    var compare=_button(panel,"比较",Rect2(356,6,64,26),_show_comparison.bind(id,""),"button",true)
-    var attribute=RichTextLabel.new();attribute.position=Vector2(68,40);attribute.size=Vector2(352,24)
+    select.size=Vector2(198,28)
+    var level=_label(panel,"",Rect2(272,10,68,28),16,INK,600)
+    var compare=_button(panel,"比较",Rect2(350,10,58,28),_show_comparison.bind(id,""),"button",true)
+    var attribute=RichTextLabel.new();attribute.position=Vector2(72,42);attribute.size=Vector2(336,24)
     attribute.bbcode_enabled=true;attribute.scroll_active=false;attribute.mouse_filter=Control.MOUSE_FILTER_IGNORE
     attribute.add_theme_font_override("normal_font",_font_medium);attribute.add_theme_font_override("bold_font",_font_strong)
     attribute.add_theme_font_size_override("normal_font_size",16);attribute.add_theme_font_size_override("bold_font_size",16)
     panel.add_child(attribute)
-    var cost_title=_label(panel,"费用",Rect2(68,64,34,24),16,Color("284650"))
-    var fee_area=Control.new();fee_area.position=Vector2(104,64);fee_area.size=Vector2(150,24);panel.add_child(fee_area)
-    var quantity=_button(panel,"×1",Rect2(264,62,52,26),_cycle_slot.bind(id),"button",true)
-    var purchase=_button(panel,"购买1级",Rect2(322,62,98,26),_buy_slot.bind(id),"primary",true)
-    _cards[id]={"panel":panel,"icon":icon,"select":select,"level":level,"compare":compare,"attribute":attribute,"cost_title":cost_title,"fees":fee_area,"fee_cells":[],"fee_cache":{},"fee_empty":null,"fee_reason":null,"border_selected":null,"quantity":quantity,"purchase":purchase,"row_y":0.0,"mode":0,"signature":[],"comparison":{}}
+    var cost_title=_label(panel,"费用",Rect2(72,70,34,24),16,Color("284650"))
+    var fee_area=Control.new();fee_area.position=Vector2(108,70);fee_area.size=Vector2(144,24);panel.add_child(fee_area)
+    var quantity=_button(panel,"×1",Rect2(262,68,48,28),_cycle_slot.bind(id),"button",true)
+    var purchase=_button(panel,"购买1级",Rect2(322,68,86,28),_buy_slot.bind(id),"primary",true)
+    _cards[id]={"panel":panel,"icon":icon,"select":select,"level":level,"compare":compare,"attribute":attribute,"cost_title":cost_title,"fees":fee_area,"fee_cells":[],"fee_cache":{},"fee_empty":null,"fee_reason":null,"border_selected":null,"quantity":quantity,"purchase":purchase,"row_y":0.0,"mode":_batch_mode,"signature":[],"comparison":{}}
     purchase.focus_entered.connect(_select_visual.bind(id));quantity.focus_entered.connect(_select_visual.bind(id))
 
 func _comparison(id: String, candidate: String="") -> Dictionary:
@@ -264,9 +320,9 @@ func _refresh_card(id: String) -> void:
     var comparison: Dictionary=_comparison(id,str(fact.equipment_id))
     if id==_selected:last_comparison=comparison
     if not comparison.get("ok",false):
-        row.purchase.disabled=true;row.quantity.disabled=true;row.select.disabled=true
+        row.purchase.disabled=true;row.quantity.disabled=true;row.select.disabled=true;row.compare.disabled=true
         return
-    row.comparison=comparison
+    row.comparison=comparison;row.compare.disabled=false
     var quote: Dictionary=comparison.get("quote",{})
     var reason: String=str(comparison.get("payment_reason",comparison.get("reason","Unknown")))
     if int(row.mode)==2 and reason=="NoChange":
@@ -343,10 +399,10 @@ func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejectio
         if not reason.is_empty() and not budget_rejection:
             row.fee_empty.hide()
             if not is_instance_valid(row.fee_reason):
-                row.fee_reason=_label(row.fees,"",Rect2(0,0,150,24),16,Color("903d23"))
+                row.fee_reason=_label(row.fees,"",Rect2(0,0,144,24),16,Color("903d23"))
                 row.fee_reason.clip_text=true
                 row.fee_reason.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
-            row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else PlayerText.error(reason)
+            row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else _failure_text(reason)
             row.fee_reason.tooltip_text=row.fee_reason.text;row.fee_reason.show()
 
 func _card_border(id: String) -> void:
@@ -369,12 +425,22 @@ func select_slot(id: String) -> void:
 func _cycle_slot(id: String) -> void:
     _select_visual(id);_cards[id].mode=(int(_cards[id].mode)+1)%3;_refresh_card(id)
 
+func _cycle_global() -> void:
+    _apply_global_quantity((_batch_mode+1)%3)
+
+func _apply_global_quantity(mode: int) -> void:
+    if not _session.run_state.is_running():return
+    _batch_mode=mode;_global_quantity.text=["×1","×10","MAX"][mode]
+    for row in _cards.values():row.mode=mode
+    # Only quantity-dependent quotes change; no Owner command or scene rebuild.
+    for fact in _active:_refresh_card(str(fact.id))
+
 func _update_visible_cards() -> void:
     var top: float=_scroll.scroll_vertical
     for fact in _active:
         var id: String=str(fact.id);var row: Dictionary=_cards[id]
         var y: float=float(row.row_y)
-        var full: bool=y>=top and y+94<=top+_view_height
+        var full: bool=y>=top and y+row.panel.size.y<=top+_view_height
         row.panel.visible=full
         if not full:
             var focus: Control=get_viewport().gui_get_focus_owner() if is_inside_tree() else null
@@ -409,8 +475,8 @@ func _new_popup(slot: String, height: float) -> Panel:
         if event is InputEventMouseButton and event.pressed:_close_popup())
     var y: float=(900-height)*.5
     if _cards.has(slot):
-        var anchor: float=_body_top+float(_cards[slot].row_y)-_scroll.scroll_vertical+2
-        y=anchor+32 if anchor+32+height<=minf(880,_body_top+_view_height) else maxf(100,anchor-height-4)
+        var anchor: float=_body_top+float(_cards[slot].row_y)-_scroll.scroll_vertical
+        y=anchor+46 if anchor+46+height<=minf(880,_body_top+_view_height) else maxf(100,anchor-height-4)
     var panel=_panel(_popup,Rect2(392,y,386,height));panel.mouse_filter=Control.MOUSE_FILTER_STOP
     _button(panel,"×",Rect2(344,6,32,28),_close_popup)
     exclusive_ui_changed.emit();return panel
@@ -447,6 +513,7 @@ func _open_choices(id: String) -> void:
     if first!=null and first is Button:first.grab_focus()
 
 func _show_comparison(id: String, candidate: String) -> void:
+    if not _session.run_state.is_running():return
     _select_visual(id)
     var fact: Dictionary=_fact(id)
     var choice: String=str(fact.equipment_id) if candidate.is_empty() else candidate
@@ -477,22 +544,47 @@ func _buy_slot(id: String) -> void:
     if not result.get("ok",false) and str(result.get("reason",""))=="InsufficientResources":_show_toast("资源不足")
     elif not result.get("ok",false) and mode==2 and str(result.get("reason",""))=="NoChange":
         var next_quote: Dictionary=_session.equipment.quote_slot(id,1)
-        _show_toast("资源不足" if next_quote.get("ok",false) else PlayerText.error(str(next_quote.get("reason","NoChange"))))
+        _show_toast("资源不足" if next_quote.get("ok",false) else _failure_text(str(next_quote.get("reason","NoChange"))))
     _accept_result(result,true)
 
 func _accept_result(result: Dictionary, levels: bool) -> void:
     last_result=result.duplicate(true)
+    if result.get("ok",false):
+        _toast.hide();_toast_time=0.0
     var receipt: Dictionary=result.get("purchase_receipt",{})
     var unknown: bool=str(receipt.get("commit_status",""))=="fault_unknown" or (result.get("fault",false) and str(receipt.get("commit_status",""))!="accepted")
+    if not result.get("ok",false) and str(result.get("reason","")) not in ["InsufficientResources","NoChange","EquipmentLocked","EvolutionMaterialLocked","FirstDefenceRequired"]:
+        _log_failure(result)
     if unknown:
-        _close_popup();_show_toast("提交结果未知，会话已停止。",true);_values_dirty=true
+        _close_popup();_show_toast("操作失败，当前游戏已停止。",true);_values_dirty=true
+        _global_quantity.disabled=true;_batch_open.disabled=true
     elif not result.get("ok",false):
-        if str(result.get("reason","")) not in ["InsufficientResources","NoChange"]:_show_toast(PlayerText.error(str(result.get("reason",result.get("error","Unknown")))))
+        if not _session.run_state.is_running():
+            _close_popup();_show_toast("操作失败，当前游戏已停止。",true)
+            _global_quantity.disabled=true;_batch_open.disabled=true
+        elif str(result.get("reason","")) not in ["InsufficientResources","NoChange"]:_show_toast(_failure_text(str(result.get("reason",""))))
         _values_dirty=true
     elif levels:
         for purchase in receipt.get("purchases",[]):_pending_ids[str(purchase.slot_id)]=true
     else:_structure_dirty=true
     command_finished.emit(last_result)
+
+func _failure_text(reason: String) -> String:
+    return str({"EquipmentLocked":"装备尚未开放。","EvolutionMaterialLocked":"进化材料尚未开放。",
+        "FirstDefenceRequired":"首个防御槽需要保留装备。","InsufficientResources":"资源不足。",
+        "NoChange":"没有可升级的装备。"}.get(reason,"操作失败。"))
+
+func _diagnostic_code(value: Variant) -> String:
+    # Log symbolic cause codes only: never dump payloads, balances, paths or secrets.
+    var code: String=str(value)
+    return "none" if code.is_empty() else code if code.length()<=96 and code.is_valid_identifier() else "redacted"
+
+func _log_failure(result: Dictionary) -> void:
+    var receipt: Dictionary=result.get("purchase_receipt",{})
+    print("EQUIPMENT_COMMAND_FAILURE ",JSON.stringify({"reason":_diagnostic_code(result.get("reason","none")),
+        "error":_diagnostic_code(result.get("error","none")),"fault":bool(result.get("fault",false)),
+        "commit_status":_diagnostic_code(receipt.get("commit_status","none")),
+        "running":_session.run_state.is_running(),"stop_reason":_diagnostic_code(_session.run_state.reason())}))
 
 func _open_batch() -> void:
     var panel=_new_popup("",minf(700,130+_active.size()*48))
@@ -505,11 +597,12 @@ func _open_batch() -> void:
     submit.disabled=not _session.run_state.is_running()
 
 func _cycle_batch() -> void:
-    _batch_mode=(_batch_mode+1)%3;_open_batch()
+    _apply_global_quantity((_batch_mode+1)%3);_open_batch()
 
 func _buy_all() -> void:
     var result: Dictionary=_session.equipment.buy_all_levels(10 if _batch_mode==1 else 1,_batch_mode==2,_session.equipment_inputs(),_session.economy.affordable,_session.economy.payment,_session.publish_equipment_levels)
     _accept_result(result,true)
+    if not _session.run_state.is_running():return
     if result.get("ok",false):_close_popup()
     elif str(result.get("reason",""))=="NoChange":
         # The batch owner reports no accepted slot, rather than a per-slot error.
@@ -522,7 +615,7 @@ func _buy_all() -> void:
                 if not _session.economy.can_pay(quote.costs,budget).get("ok",false):
                     rejection="InsufficientResources";break
             elif rejection=="NoChange":rejection=str(quote.get("reason","NoChange"))
-        _show_toast("资源不足" if rejection=="InsufficientResources" else "进化材料尚未开放" if rejection=="EvolutionMaterialLocked" else PlayerText.error(rejection))
+        _show_toast("资源不足" if rejection=="InsufficientResources" else "进化材料尚未开放" if rejection=="EvolutionMaterialLocked" else _failure_text(rejection))
 
 func _refresh_scene_picture() -> void:
     var signature: Array=[_ship,_selected,_active.map(func(f):return [f.id,f.equipment_id])]
@@ -551,6 +644,7 @@ func _draw() -> void:
     if not _shared:draw_rect(Rect2(0,0,808,85),Color("173b49"))
     var early: bool=_active.size()<=2
     draw_texture_rect(_short if early else _tall,Rect2(-27,85,843.2,815),false)
+    _draw_console_detail(early)
     if not _hulls.has(_ship):return
     var texture: Texture2D=_hulls[_ship];var bounds: Rect2=texture.get_image().get_used_rect()
     var height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
@@ -575,6 +669,25 @@ func _draw() -> void:
                 var direction=Vector2(1 if corner.x==target.position.x else -1,1 if corner.y==target.position.y else -1)
                 var points=PackedVector2Array([corner+Vector2(0,direction.y*8),corner,corner+Vector2(direction.x*8,0)])
                 draw_polyline(points,Color("153341"),3.5,true);draw_polyline(points,Color("91e2d4"),1.5,true)
+
+func _draw_console_detail(early: bool) -> void:
+    # Recessed machining marks, fully inside the console face; no status meaning.
+    var y: float=418.0 if early else 275.0
+    var shadow: Color=Color("728b89")
+    var highlight: Color=Color("c4cebd")
+    for i in 5:
+        var x: float=359.0+i*9.0
+        draw_line(Vector2(x,y-5),Vector2(x+5,y+5),shadow,1.0,true)
+        draw_line(Vector2(x+1,y-5),Vector2(x+6,y+5),highlight,1.0,true)
+    draw_polyline(PackedVector2Array([Vector2(418,y+4),Vector2(470,y+4),Vector2(478,y-4),Vector2(524,y-4)]),shadow,1.0,true)
+    draw_circle(Vector2(418,y+4),2.0,shadow,false,1.0,true)
+    draw_circle(Vector2(524,y-4),2.0,shadow,false,1.0,true)
+    var bottom: float=670.0 if early else 792.0
+    draw_line(Vector2(380,bottom),Vector2(514,bottom),shadow,1.0,true)
+    draw_line(Vector2(590,bottom),Vector2(724,bottom),shadow,1.0,true)
+    for i in 3:
+        var center: Vector2=Vector2(540+i*12,bottom)
+        draw_polyline(PackedVector2Array([center+Vector2(-3,0),center+Vector2(0,-2),center+Vector2(3,0),center+Vector2(0,2),center+Vector2(-3,0)]),shadow,1.0,true)
 
 func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D=null) -> void:
     _shared=enabled;_fallback_header.visible=not enabled
