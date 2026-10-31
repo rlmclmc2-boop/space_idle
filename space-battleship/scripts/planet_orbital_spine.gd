@@ -21,7 +21,7 @@ const NODE_WIDTH := 1.30
 const TILT_Y := 0.66
 const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
-const SOCKET_HEIGHT := 0.65
+const SOCKET_HEIGHT := 0.59
 var _arcs: Dictionary = {}
 var _end_caps: Dictionary = {}
 var _joins: Dictionary = {}
@@ -40,10 +40,11 @@ static func point(angle: float) -> Vector3:
 	return Vector3(RADIUS * cos(angle), -RADIUS * TILT_Y * sin(angle), RADIUS * TILT_Z * sin(angle))
 
 static func socket_position(angle: float, kind: String) -> Vector3:
-	# The refinery upper shell sits inside its real deck node; its old baked
-	# floor is gone. Other facility roots keep their existing R5 pose.
+	# The refinery upper shell sits inside its real deck node. The station
+	# bears closer to the ring center so its port no longer hangs beyond the
+	# owned side wall; the through passage remains open at both ends.
 	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
-	var radial_offset := 0.25 if kind == "auto_explore" else -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
+	var radial_offset := 0.12 if kind == "auto_explore" else -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
 
 func _ready() -> void:
@@ -200,7 +201,10 @@ func _section_width(kind: String, angle: float) -> float:
 		# The furnace sits close to its next independent section. Its near
 		# shoulder must return to transit width at the actual mating plane.
 		blend *= smoothstep(0.0, 0.10, ARC_BOUNDS[kind].y - angle)
-	return lerpf(_transit_width(angle), NODE_WIDTH, blend)
+	# The station's pressure cheeks need less overhanging side wall than the
+	# wider furnace and open industrial bays.
+	var node_width := 1.10 if kind == "auto_explore" else NODE_WIDTH
+	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:
 	# The front load path carries the visible heavy deck; the rear transit
