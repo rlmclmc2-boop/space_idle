@@ -28,14 +28,14 @@ def material(name, rgb, metallic=0.12, emission=0):
     return mat
 
 
-ivory = material("Station warm load armor", (.66, .61, .50))
+ivory = material("Station warm load armor", (.74, .68, .55))
 edge = material("Station bevel shadow", (.48, .48, .44))
 navy = material("Station deep pressure hull", (.035, .105, .15))
 lower_steel = material("Station lower load steel", (.11, .22, .27))
 blue = material("Station blue structural steel", (.08, .22, .29))
 cyan = material("Station inset cyan power", (.04, .56, .64), emission=.32)
 amber = material("Station amber beacons", (.91, .42, .11), emission=.42)
-ochre = material("Station warm equipment plating", (.46, .27, .13))
+ochre = material("Station warm equipment plating", (.58, .31, .12))
 
 
 def node(name, parent=None, at=(0, 0, 0)):

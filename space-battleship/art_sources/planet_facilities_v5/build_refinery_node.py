@@ -28,7 +28,7 @@ def material(name, rgb, metallic=.13, emission=0):
     return mat
 
 
-ivory = material("Furnace warm ivory armor", (.69,.62,.50))
+ivory = material("Furnace warm ivory armor", (.74,.67,.54))
 edge = material("Furnace cut armor edge", (.47,.43,.36))
 navy = material("Furnace pressure interior", (.035,.10,.15))
 lower_steel = material("Furnace lower load steel", (.10,.18,.23))
