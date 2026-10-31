@@ -1,0 +1,2052 @@
+{
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "records": [
+    {
+      "case": "controlled owner progress plus real ship and slot refit for decoration boundaries",
+      "global_rect": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "identity_rect": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll_rect": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "state": {
+        "last_result": {
+          "ok": false,
+          "reason": "FirstDefenceRequired"
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      }
+    },
+    {
+      "campaign": {
+        "cycle_reached": 100,
+        "departure_remaining": 0.0,
+        "grants": {},
+        "guard": {
+          "death_option": 0,
+          "distance": 0.0,
+          "enabled": false,
+          "point": 0,
+          "stage": 1
+        },
+        "next_enemy_uid": 0,
+        "retreat_elapsed": 0.0,
+        "retreat_from": 0.0,
+        "retreat_to": 0.0,
+        "selected_ship": "Heavy_Battleship",
+        "state": {
+          "cleared_stages": {
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": true,
+            "7": true,
+            "8": true,
+            "9": true,
+            "10": true,
+            "11": true,
+            "12": true,
+            "13": true,
+            "14": true,
+            "15": true,
+            "16": true,
+            "17": true,
+            "18": true,
+            "19": true,
+            "20": true,
+            "21": true,
+            "22": true,
+            "23": true,
+            "24": true,
+            "25": true,
+            "26": true,
+            "27": true,
+            "28": true,
+            "29": true,
+            "30": true,
+            "31": true,
+            "32": true,
+            "33": true,
+            "34": true,
+            "35": true,
+            "36": true,
+            "37": true,
+            "38": true,
+            "39": true,
+            "40": true,
+            "41": true,
+            "42": true,
+            "43": true,
+            "44": true,
+            "45": true,
+            "46": true,
+            "47": true,
+            "48": true,
+            "49": true,
+            "50": true,
+            "51": true,
+            "52": true,
+            "53": true,
+            "54": true,
+            "55": true,
+            "56": true,
+            "57": true,
+            "58": true,
+            "59": true,
+            "60": true,
+            "61": true,
+            "62": true,
+            "63": true,
+            "64": true,
+            "65": true,
+            "66": true,
+            "67": true,
+            "68": true,
+            "69": true,
+            "70": true,
+            "71": true,
+            "72": true,
+            "73": true,
+            "74": true,
+            "75": true,
+            "76": true,
+            "77": true,
+            "78": true,
+            "79": true,
+            "80": true,
+            "81": true,
+            "82": true,
+            "83": true,
+            "84": true,
+            "85": true,
+            "86": true,
+            "87": true,
+            "88": true,
+            "89": true,
+            "90": true,
+            "91": true,
+            "92": true,
+            "93": true,
+            "94": true,
+            "95": true,
+            "96": true,
+            "97": true,
+            "98": true,
+            "99": true
+          },
+          "distance": 0.0,
+          "highest_reached": 100,
+          "origin": 0.0,
+          "point": 0,
+          "points": [
+            {
+              "id": 33001,
+              "position": 0.14
+            },
+            {
+              "id": 33002,
+              "position": 0.325
+            },
+            {
+              "id": 33003,
+              "position": 0.51
+            },
+            {
+              "id": 33004,
+              "position": 0.695
+            },
+            {
+              "id": 33005,
+              "position": 0.88
+            }
+          ],
+          "speed": 0.0,
+          "stage": 1,
+          "state": "menu",
+          "wait": 0.0
+        }
+      },
+      "case": "performance conditions",
+      "max_fps": 0,
+      "note": "same live scene, no recording during measurement; old source/environment baseline unavailable",
+      "renderer": "gl_compatibility",
+      "viewport": "(1440, 900)",
+      "vsync": 0
+    },
+    {
+      "accepted": 0,
+      "after": {
+        "last_result": {
+          "ok": false,
+          "reason": "FirstDefenceRequired"
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "before": {
+        "last_result": {
+          "ok": false,
+          "reason": "FirstDefenceRequired"
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "case": "idle-before",
+      "command_ms_p95": 0,
+      "commands": 0,
+      "fps": 44.7940816068533,
+      "frame_ms_p50": 22.448,
+      "frame_ms_p95": 26.069,
+      "frames": 180,
+      "native_configuration_commits": 0,
+      "nodes_after": 1413,
+      "nodes_before": 1413,
+      "observed_hz": 0.0,
+      "presentation_delta": {
+        "balance_dependency_changes": 0,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 0,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "refreshes": 0,
+        "scene_draws": 0,
+        "scene_redraw_requests": 0,
+        "slots_updated": 0
+      },
+      "process_ms_p95": 996.992,
+      "seconds": 4.018388,
+      "signal_counts": [
+        2,
+        2,
+        1,
+        1
+      ],
+      "target_hz": 0
+    },
+    {
+      "accepted": 30,
+      "after": {
+        "last_result": {
+          "defence_changed": false,
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.7"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "4",
+                "m": "1.7"
+              }
+            }
+          }
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 33,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 33,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "before": {
+        "last_result": {
+          "ok": false,
+          "reason": "FirstDefenceRequired"
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "case": "single-slot-8hz",
+      "command_ms_p95": 1.154,
+      "commands": 30,
+      "fps": 45.7176661805938,
+      "frame_ms_p50": 21.812,
+      "frame_ms_p95": 25.842,
+      "frames": 183,
+      "native_configuration_commits": 0,
+      "nodes_after": 1413,
+      "nodes_before": 1413,
+      "observed_hz": 7.49469937386783,
+      "presentation_delta": {
+        "balance_dependency_changes": 0,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 30,
+        "economy_same_budget": 0,
+        "economy_signals": 0,
+        "maximum_reads": 0,
+        "numeric_refreshes": 30,
+        "refreshes": 0,
+        "scene_draws": 0,
+        "scene_redraw_requests": 0,
+        "slots_updated": 30
+      },
+      "process_ms_p95": 32.564,
+      "seconds": 4.002829,
+      "signal_counts": [
+        2,
+        2,
+        1,
+        1
+      ],
+      "target_hz": 8
+    },
+    {
+      "accepted": 30,
+      "after": {
+        "last_result": {
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "6",
+                    "m": "4.1"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:3",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:4",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:0",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "6",
+                "m": "4.184"
+              }
+            }
+          },
+          "reason": "",
+          "slots": [
+            "weapon:0",
+            "weapon:1",
+            "weapon:2",
+            "weapon:3",
+            "weapon:4",
+            "defence:0",
+            "defence:1",
+            "defence:2"
+          ]
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 63,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 63,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "before": {
+        "last_result": {
+          "defence_changed": false,
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.7"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "4",
+                "m": "1.7"
+              }
+            }
+          }
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 33,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 33,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "case": "all-slots-8hz",
+      "command_ms_p95": 4.32,
+      "commands": 30,
+      "fps": 41.8873439883434,
+      "frame_ms_p50": 22.604,
+      "frame_ms_p95": 35.205,
+      "frames": 168,
+      "native_configuration_commits": 0,
+      "nodes_after": 1413,
+      "nodes_before": 1413,
+      "observed_hz": 7.47988285506131,
+      "presentation_delta": {
+        "balance_dependency_changes": 0,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 240,
+        "economy_same_budget": 0,
+        "economy_signals": 0,
+        "maximum_reads": 0,
+        "numeric_refreshes": 30,
+        "refreshes": 0,
+        "scene_draws": 0,
+        "scene_redraw_requests": 0,
+        "slots_updated": 240
+      },
+      "process_ms_p95": 37.375,
+      "seconds": 4.010758,
+      "signal_counts": [
+        2,
+        2,
+        1,
+        1
+      ],
+      "target_hz": 8
+    },
+    {
+      "accepted": 0,
+      "after": {
+        "last_result": {
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "6",
+                    "m": "4.1"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:3",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:4",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:0",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "6",
+                "m": "4.184"
+              }
+            }
+          },
+          "reason": "",
+          "slots": [
+            "weapon:0",
+            "weapon:1",
+            "weapon:2",
+            "weapon:3",
+            "weapon:4",
+            "defence:0",
+            "defence:1",
+            "defence:2"
+          ]
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 63,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 63,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "before": {
+        "last_result": {
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "6",
+                    "m": "4.1"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:3",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:4",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:0",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "6",
+                "m": "4.184"
+              }
+            }
+          },
+          "reason": "",
+          "slots": [
+            "weapon:0",
+            "weapon:1",
+            "weapon:2",
+            "weapon:3",
+            "weapon:4",
+            "defence:0",
+            "defence:1",
+            "defence:2"
+          ]
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 63,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 63,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "case": "idle-after",
+      "command_ms_p95": 0,
+      "commands": 0,
+      "fps": 48.8784027535499,
+      "frame_ms_p50": 20.305,
+      "frame_ms_p95": 23.643,
+      "frames": 196,
+      "native_configuration_commits": 0,
+      "nodes_after": 1413,
+      "nodes_before": 1413,
+      "observed_hz": 0.0,
+      "presentation_delta": {
+        "balance_dependency_changes": 0,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 0,
+        "economy_same_budget": 0,
+        "economy_signals": 0,
+        "maximum_reads": 0,
+        "numeric_refreshes": 0,
+        "refreshes": 0,
+        "scene_draws": 0,
+        "scene_redraw_requests": 0,
+        "slots_updated": 0
+      },
+      "process_ms_p95": 37.375,
+      "seconds": 4.009951,
+      "signal_counts": [
+        2,
+        2,
+        1,
+        1
+      ],
+      "target_hz": 0
+    },
+    {
+      "after": {
+        "balance_dependency_changes": 4,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 328,
+        "economy_same_budget": 0,
+        "economy_signals": 4,
+        "maximum_reads": 8,
+        "numeric_refreshes": 66,
+        "refreshes": 5,
+        "scene_draws": 7,
+        "scene_redraw_requests": 5,
+        "slots_updated": 308
+      },
+      "before": {
+        "balance_dependency_changes": 4,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 328,
+        "economy_same_budget": 0,
+        "economy_signals": 4,
+        "maximum_reads": 8,
+        "numeric_refreshes": 66,
+        "refreshes": 5,
+        "scene_draws": 7,
+        "scene_redraw_requests": 5,
+        "slots_updated": 308
+      },
+      "case": "hidden equipment"
+    },
+    {
+      "after": {
+        "last_result": {
+          "error": "InjectedPublishFailure",
+          "ok": false,
+          "reason": "SessionUnavailable"
+        },
+        "running": false,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 63,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 63,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "before": {
+        "last_result": {
+          "ok": true,
+          "purchase_receipt": {
+            "commit_status": "accepted",
+            "purchases": [
+              {
+                "count": 1,
+                "slot_id": "weapon:0",
+                "spent": {
+                  "1": {
+                    "e": "6",
+                    "m": "4.1"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:3",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "weapon:4",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:0",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:1",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              },
+              {
+                "count": 1,
+                "slot_id": "defence:2",
+                "spent": {
+                  "1": {
+                    "e": "4",
+                    "m": "1.2"
+                  }
+                }
+              }
+            ],
+            "spent": {
+              "1": {
+                "e": "6",
+                "m": "4.184"
+              }
+            }
+          },
+          "reason": "",
+          "slots": [
+            "weapon:0",
+            "weapon:1",
+            "weapon:2",
+            "weapon:3",
+            "weapon:4",
+            "defence:0",
+            "defence:1",
+            "defence:2"
+          ]
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 63,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 63,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "missile",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "cannon",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "longLaser",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "laser",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 31,
+            "equipment_id": "shield",
+            "id": "defence:2",
+            "index": 2,
+            "paid_level": 31,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "39",
+            "m": "1.23456789012346"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "22",
+            "m": "1"
+          }
+        }
+      },
+      "blocked_repeat": {
+        "error": "InjectedPublishFailure",
+        "ok": false,
+        "reason": "SessionUnavailable"
+      },
+      "case": "single",
+      "fault": {
+        "fault": true,
+        "ok": false,
+        "purchase_receipt": {
+          "commit_status": "fault_unknown",
+          "purchases": [],
+          "spent": null
+        },
+        "reason": "InjectedPublishFailure"
+      },
+      "injection": "explicit publisher, not actual native fault",
+      "player_text": "操作失败，当前游戏已停止。"
+    }
+  ]
+}
