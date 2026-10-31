@@ -251,20 +251,6 @@ for side in (-1, 1):
     box("Command bridge glazing", (0,side*.82,1.51), (.83,.03,.22), cyan, root, .012)
     for x in (-.29,0,.29):
         box("Bridge frame", (x,side*.85,1.51), (.035,.045,.30), edge, root, .005)
-    # Four compact service housings remain fastened to the two load walls.
-    # Keeping their crowns below the annulus lets the carried circular
-    # command deck define the upper silhouette instead of a square roof.
-    for x in (-.57,.57):
-        box("Wall borne avionics block", (x,side*1.00,1.22),
-            (.32,.27,.26),blue,root,.035)
-        box("Avionics ivory upper armor", (x,side*1.00,1.38),
-            (.36,.31,.07),ivory,root,.02)
-        box("Avionics dark top inset", (x,side*1.00,1.43),
-            (.22,.18,.024),navy,root,.008)
-        box("Avionics cyan guide", (x,side*1.151,1.24),
-            (.18,.018,.055),cyan,root,.006)
-        box("Avionics amber status", (x,side*1.00,1.46),
-            (.06,.06,.035),amber,root,.009)
 
 spin = node("HabitatRingSpin", root, (0,0,1.82))
 bpy.ops.mesh.primitive_torus_add(major_radius=1.00, minor_radius=.09,
