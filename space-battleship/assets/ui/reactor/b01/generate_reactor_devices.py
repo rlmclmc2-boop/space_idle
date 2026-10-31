@@ -667,7 +667,7 @@ def condensation(spec,m):
         cube("band brass trace",1020,y+5,119,2,3,78,m["brass"],1)
     for i,(x,y,rx,ry) in enumerate(((983,565,11,30),(1002,548,12,40),(1021,541,13,47),
                                      (1042,553,11,36),(1061,567,10,28),(971,585,8,21),(1077,586,8,20))):
-        jewel("growth crystal %d"%i,x,y,rx,ry,70,m["violet"] if i%2 else m["violet_lit"],m["violet_glint"])
+        jewel("growth crystal %d"%i,x,y,rx,ry,70,m["violet_lit"],m["violet_glint"])
     for y in (476,522,568):
         cube("growth chamber laminated glass rail",1020,y,107,2,2,85,m["silver"],1)
         for x in (974,1066):
@@ -721,7 +721,7 @@ def run():
             ob.hide_render=ob not in work_objects
             for i,mat in enumerate(slots): ob.material_slots[i].material=mat
             for i,mat in enumerate(slots):
-                if mat == mats["violet_glint"]: ob.material_slots[i].material=mats["black"]
+                if mat == mats["violet_glint"]: ob.material_slots[i].material=mats["violet_lit"]
         bpy.context.scene.render.filepath=str(BUILD / ("r6-"+name+"-work-full.png"))
         bpy.ops.render.render(write_still=True)
         if name == "defence":

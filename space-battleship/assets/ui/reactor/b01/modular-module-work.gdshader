@@ -97,7 +97,9 @@ void fragment() {
         hue = vec3(1.0,0.30,0.025);
     } else {
         // Five seed sockets feed a growth front up distinct crystal columns.
-        float growth = fract(phase*0.19);
+        // The crystal remains condensed after the front reaches its crown;
+        // facet reflections continue to move over the solid volume.
+        float growth = clamp(phase*0.12,0.0,1.0);
         float front_y = 0.75-growth*0.37;
         float grown = smoothstep(front_y-0.05,front_y+0.07,q.y);
         float facets = pow(max(0.0,cos(q.x*62.0-q.y*37.0+phase*1.5)),18.0);
