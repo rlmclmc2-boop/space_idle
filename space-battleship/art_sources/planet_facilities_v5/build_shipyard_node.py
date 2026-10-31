@@ -28,14 +28,14 @@ def material(name, color, emission=0.0, metal=0.12):
     return m
 
 
-ivory = material("Ivory armor", (0.78, 0.70, 0.55))
+ivory = material("Ivory armor", (0.69, 0.65, 0.57))
 edge = material("Warm armor bevel", (0.56, 0.52, 0.43))
 navy = material("Deep teal load shell", (0.085, 0.17, 0.22))
 blue = material("Blue service housing", (0.16, 0.29, 0.35))
 mid = material("Mid-tone teal joint", (0.25, 0.39, 0.42))
 cyan = material("Recessed cyan channel", (0.07, 0.48, 0.55), emission=0.42)
 amber = material("Small warm status lens", (0.85, 0.29, 0.045), emission=0.36)
-orange = material("Shipyard structural ochre", (0.62, 0.24, 0.075))
+orange = material("Shipyard structural ochre", (0.56, 0.29, 0.12))
 glass = material("Shuttle cockpit glass", (0.035, 0.20, 0.31), metal=0.23)
 
 

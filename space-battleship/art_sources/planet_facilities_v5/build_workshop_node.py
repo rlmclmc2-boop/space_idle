@@ -27,9 +27,9 @@ def material(name, rgb, metallic=0.12, emission=0.0):
     return result
 
 
-ivory = material("Warm ivory load armor", (0.82, 0.75, 0.62))
+ivory = material("Warm ivory load armor", (0.69, 0.66, 0.58))
 ivory_edge = material("Ivory cut edge", (0.55, 0.50, 0.42))
-orange = material("Ochre structural cheeks", (0.68, 0.24, 0.065))
+orange = material("Ochre structural cheeks", (0.57, 0.30, 0.12))
 orange_lit = material("Warm inner bay", (0.92, 0.36, 0.07), emission=0.12)
 navy = material("Deep teal pressure shell", (0.045, 0.13, 0.18))
 blue = material("Blue steel machinery", (0.14, 0.27, 0.33))

@@ -28,12 +28,12 @@ def material(name, rgb, metallic=.13, emission=0):
     return mat
 
 
-ivory = material("Furnace warm ivory armor", (.74,.67,.54))
+ivory = material("Furnace warm ivory armor", (.68,.64,.56))
 edge = material("Furnace cut armor edge", (.47,.43,.36))
 navy = material("Furnace pressure interior", (.035,.10,.15))
 lower_steel = material("Furnace lower load steel", (.10,.18,.23))
 blue = material("Furnace blue machinery", (.075,.19,.27))
-ochre = material("Furnace warm industrial plate", (.58,.27,.085))
+ochre = material("Furnace warm industrial plate", (.56,.32,.13))
 ember = material("Furnace hot amber aperture", (.97,.41,.065), emission=.44)
 cyan = material("Furnace inset cyan service light", (.045,.54,.62), emission=.35)
 

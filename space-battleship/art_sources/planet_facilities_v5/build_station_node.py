@@ -28,7 +28,7 @@ def material(name, rgb, metallic=0.12, emission=0):
     return mat
 
 
-ivory = material("Station warm load armor", (.74, .68, .55))
+ivory = material("Station warm load armor", (.68, .65, .57))
 edge = material("Station bevel shadow", (.48, .48, .44))
 navy = material("Station deep pressure hull", (.035, .105, .15))
 lower_steel = material("Station lower load steel", (.11, .22, .27))
