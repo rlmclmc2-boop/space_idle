@@ -115,18 +115,18 @@ def setup():
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
     mats = {
-        "steel": material("titanium armor", (.27,.35,.38), .59,.29,.035),
-        "dark": material("recessed gunmetal", (.065,.12,.16), .49,.43,.015),
+        "steel": material("titanium armor", (.35,.45,.49), .73,.21,.035),
+        "dark": material("recessed gunmetal", (.075,.14,.18), .58,.32,.015),
         "black": material("glass interior", (.025,.055,.075), .12,.16,.025),
-        "silver": material("brushed silver edges", (.49,.59,.62), .61,.29,.055),
-        "brass": material("copper brass contacts", (.60,.32,.10), .69,.27,.075),
-        "mount": material("cast load bearing iron", (.095,.15,.18), .39,.53,.012),
+        "silver": material("brushed silver edges", (.61,.70,.73), .72,.20,.055),
+        "brass": material("copper brass contacts", (.67,.37,.13), .74,.21,.075),
+        "mount": material("cast load bearing iron", (.11,.17,.20), .47,.42,.012),
         "contact": material("contact shadow iron", (.018,.033,.042), .08,.85),
         "blue": material("unpowered shield glass", (.006,.045,.11), .25,.16,.035),
         "blue_lit": material("shield field filaments", (.025,.40,.85), .05,.2,1.3),
         "blue_field": material("deployed field glass", (.035,.34,.58), .12,.12,.45,.58),
-        "orange": material("furnace liner", (.24,.075,.022), .18,.53,.035),
-        "slag": material("unpowered cooled charge", (.16,.075,.038), .12,.63,.012),
+        "orange": material("furnace liner", (.30,.10,.036), .18,.53,.035),
+        "slag": material("unpowered cooled charge", (.095,.064,.05), .12,.72,.012),
         "orange_lit": molten_material(),
         "violet": material("unpowered crystal glass", (.035,.016,.065), .16,.28,.018),
         "violet_lit": material("crystal facet", (.34,.11,.57), .12,.19,.42),
@@ -150,7 +150,7 @@ def setup():
     # warm service lights in the host bay. They are absent from transparent pixels.
     for x,y in ((155,195),(1010,170),(150,510),(1000,520)):
         ld=bpy.data.lights.new("service strip highlight","AREA")
-        ld.energy,ld.shape,ld.size=32000,"DISK",85
+        ld.energy,ld.shape,ld.size=45000,"DISK",85
         ld.color=(1.0,.73,.43)
         ob=bpy.data.objects.new("service strip highlight",ld)
         bpy.context.collection.objects.link(ob)

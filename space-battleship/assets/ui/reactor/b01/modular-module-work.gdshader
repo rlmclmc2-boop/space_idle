@@ -88,7 +88,7 @@ void fragment() {
                                   : mix(elbow,tap,(fall-0.28)/0.72);
         float drop=disk(q,bead_pos,vec2(0.017,0.019))*surface.a;
         float heat_ribbons = 0.5+0.5*sin(q.x*66.0+phase*2.4)*sin(q.y*38.0-phase*3.2);
-        material = 0.14+pour*(0.29+0.72*heat_ribbons);
+        material = 0.30+pour*(0.48+0.82*heat_ribbons);
         float heat_bounce = disk(q,vec2(0.54,0.47),vec2(0.27,0.23))
                             -disk(q,vec2(0.54,0.47),vec2(0.16,0.12));
         float inlet_glow=disk(q,vec2(0.51,0.49),vec2(0.028,0.024));
@@ -96,10 +96,10 @@ void fragment() {
         float flow_t=fract(phase*0.47);
         vec2 flow_pos=mix(vec2(0.51,0.49),vec2(0.68,0.56),flow_t);
         float moving_heat=disk(q,flow_pos,vec2(0.027,0.015))*surface.a;
-        action = (pool*surface.a*0.04+slot*surface.a*0.08+drop*0.42
-                  +inlet_glow*surface.a*0.25+outlet_glow*surface.a*0.34
-                  +moving_heat*0.42+heat_bounce*0.04)*pour*load;
-        hue = vec3(1.0,0.30,0.025);
+        action = (pool*surface.a*0.08+slot*surface.a*0.08+drop*0.58
+                  +inlet_glow*surface.a*0.37+outlet_glow*surface.a*0.38
+                  +moving_heat*0.60+heat_bounce*0.04)*pour*load;
+        hue = vec3(1.0,0.38,0.035);
     } else {
         // Five seed sockets feed a growth front up distinct crystal columns.
         // The crystal remains condensed after the front reaches its crown;
