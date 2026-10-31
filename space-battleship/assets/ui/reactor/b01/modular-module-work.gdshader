@@ -5,9 +5,6 @@ uniform int module_kind = 0;
 uniform sampler2D work_surface : source_color, filter_linear;
 uniform float load_fraction : hint_range(0.0, 1.0) = 0.0;
 uniform float phase = 0.0;
-uniform vec2 work_origin_px = vec2(0.0);
-uniform vec2 work_size_px = vec2(1.0);
-uniform vec2 work_view_size_px = vec2(808.0, 835.0);
 
 float disk(vec2 p, vec2 c, vec2 r) {
     return 1.0 - smoothstep(0.82, 1.0, length((p-c)/r));

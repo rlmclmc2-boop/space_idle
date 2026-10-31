@@ -11,9 +11,7 @@ const WORK_SURFACES := {
 	"condensation": preload("res://assets/ui/reactor/b01/r6-condensation-work.png"),
 }
 const KINDS := {"weapons":0, "defence":1, "smelting":2, "condensation":3}
-# Conservative UV envelopes of each shader's nonzero device-local work.
-# Paint only these pixels; the shader maps screen coordinates back to the
-# original full-device UV so the visible result and phase stay identical.
+# The work layer is cropped by the shared source-space contract.
 var _work: ShaderMaterial
 var _effect: ColorRect
 var _load: float = 0.0
@@ -41,9 +39,6 @@ func configure(id: String, texture: Texture2D, source_rect: Rect2) -> void:
 	_work.shader = WORK_SHADER
 	_work.set_shader_parameter("module_kind",KINDS[id])
 	_work.set_shader_parameter("work_surface",WORK_SURFACES[id])
-	_work.set_shader_parameter("work_origin_px",position)
-	_work.set_shader_parameter("work_size_px",size)
-	_work.set_shader_parameter("work_view_size_px",VIEW_SIZE)
 	_effect.material = _work
 	_effect.visible = false
 	add_child(_effect)

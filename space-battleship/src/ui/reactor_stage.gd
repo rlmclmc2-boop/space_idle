@@ -37,8 +37,6 @@ var _clamp_left: Sprite2D
 var _clamp_right: Sprite2D
 var _gimbal_back: Sprite2D
 var _gimbal_front: Sprite2D
-var _clamp_left_home: Vector2
-var _clamp_right_home: Vector2
 var _enabled: Array = []
 var _loads: Dictionary = {}
 var _static_viewport: SubViewport
@@ -83,8 +81,6 @@ func _init() -> void:
 	# unobstructed so the chamber and the front/rear bearing read as a volume.
 	_clamp_left.position.x -= 52.0
 	_clamp_right.position.x += 52.0
-	_clamp_left_home = _clamp_left.position
-	_clamp_right_home = _clamp_right.position
 	for id in IDS:
 		var module: Control = ModuleView.new()
 		module.configure(id,MODULES[id],PortContract.source_rect(id))
