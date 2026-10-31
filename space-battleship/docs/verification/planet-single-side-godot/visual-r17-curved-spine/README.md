@@ -13,6 +13,8 @@
 
 现证据只覆盖各候选注明的第一固态受控建设阶段／局部相位，以及注明墙钟时长的短动态；它不代表新码自然施工／领取、完整一圈、其余五类、引擎 FPS 或性能。下一制作需保持四设施各自 `built` 弧段、球／环独转、独立探索路线、后弧真实深度遮挡、前弧球底暗缝，以及现有业务和原位 UI 刷新。候选只经 Git 分支交原整体审，不合 main。
 
+当前返修定位：船坞橙色承力颊／真实侧窗与工坊埋入脚均是局部可审候选，仍缺与后侧站、炉同级的完整工程壳品质。精炼与站当前运行主体分别是 `scripts/planet_facility_scene.gd` 中的 `refinery-orbit-through-node.png`、`station-orbit-through-node.png` 相机朝向图片；两张原图本身烘入厚圆基座／暗侧墙。已自审撤销的精炼下部真环壁收窄（`/tmp/planet-refinery-taper-no-visual-gain.patch`）、四段共用侧壁重剖面（`/tmp/planet-profile-wall-no-visual-gain.patch`）、自由端齐平曲面封口及青线抬升均未在实际尺寸显著改善对应症状。用 ImageGen 只保留精炼上部后，受控 90° 变成炉与两料斗直接摆在环面；旧 `refinery.blend` 原网格实机呈方盒白模，均已退出运行。要消除这两座的暗肩／暗角且保持相位承力，下一步需把上部设备与真实根壳一起重建，不能凭删图或调背后环参数宣称完成；自由端和环下整段封装仍需独立重做。
+
 这是接续[R16 结构与台座候选](../visual-r16-integrated-spine/README.md)的美术候选。[1440×900 正常主界面完整态原 PNG](evidence/full-ui-stage4.png)来自 Godot 4.7.2、既有恢复端口设置的第一星球四设施 `built` 临时状态；金币和探索度是夹具值。[同版五个建造可见状态](evidence/)及[受影响相位原图](evidence/phases/)也已归档。作者按原尺寸查看，并与用户认可的[固态实体环概念](../../../game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png)并排比较。
 
 本版保留真实四段独立 3D 环、球后深度遮挡、建筑自带台座和独立运动规则。环主体换成高细分圆滑截面，深青侧壁与青色外侧光槽围住带受光的暖象牙装甲曲面；结构肋和台座边缘收窄，完整环接头增加曲面套筒。鞍座与环面共用[原始 ImageGen 材质](../../../../assets/planets/orbital_spine/deck-albedo.png)，只作为真实网格的表面贴图，球后环没有被烘成图。Godot 贴图导入启用 mipmaps，SubViewport 使用 4x MSAA；相机与可建造业务未改。材质[生成提示词与原图 SHA](../../../../assets/planets/orbital_spine/imagegen-prompt.txt)、截图 SHA 见[哈希文件](evidence/sha256.txt)。
