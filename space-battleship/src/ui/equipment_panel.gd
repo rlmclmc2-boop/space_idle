@@ -45,11 +45,8 @@ var _content_height: float = 0.0
 var _identity: Panel
 var _identity_title: Label
 var _identity_counts: Label
-var _heading: Label
-var _scroll_hint: Label
 var _batch_open: Button
 var _fallback_header: Label
-var _group_labels: Array = []
 var _popup: Control
 var _popup_slot: String = ""
 var _batch_mode: int = 0
@@ -262,14 +259,12 @@ func _build() -> void:
     _identity=_panel(self,Rect2(16,297,309,72));_identity.mouse_filter=Control.MOUSE_FILTER_PASS
     _identity_title=_label(_identity,"",Rect2(14,8,285,30),21,CREAM,600)
     _identity_counts=_label(_identity,"",Rect2(14,39,285,23),14,LIGHT,400)
-    _heading=_label(self,"逐槽工作台",Rect2(366,260,300,34),20,INK,600)
-    _scroll_hint=_label(self,"",Rect2(535,265,130,24),14,Color("315768"))
     _batch_open=_button(self,"全部升级",Rect2(676,262,96,30),_open_batch,"primary")
-    _scroll=ScrollContainer.new();_scroll.position=Vector2(340,294);_scroll.size=Vector2(450,510)
+    _scroll=ScrollContainer.new();_scroll.position=Vector2(340,294);_scroll.size=Vector2(434,484)
     _scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
     _scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
     _scroll.focus_mode=Control.FOCUS_ALL;add_child(_scroll)
-    _content=Control.new();_content.custom_minimum_size=Vector2(440,510);_scroll.add_child(_content)
+    _content=Control.new();_content.custom_minimum_size=Vector2(424,484);_scroll.add_child(_content)
     _scroll.get_v_scroll_bar().value_changed.connect(func(_value):_update_visible_cards())
     _toast=PanelContainer.new();_toast.position=Vector2(430,207);_toast.size=Vector2(348,44)
     _toast.add_theme_stylebox_override("panel",_style(Color("173b49"),Color("bda56d")))
@@ -306,11 +301,10 @@ func _refresh_structure() -> void:
     _ship=str(_session.campaign_system.selected_ship())
     if _selected.is_empty() or _fact(_selected).get("dormant",true):_selected=str(_active[0].id) if not _active.is_empty() else ""
     var early: bool=_active.size()<=2
-    _body_top=432 if early else 294;_content_height=38+94*_active.size();_view_height=minf(510,_content_height)
-    _scroll.position=Vector2(340,_body_top);_scroll.size=Vector2(450,_view_height)
-    _content.custom_minimum_size=Vector2(440,_content_height);_content.size=_content.custom_minimum_size
-    _heading.position.y=398 if early else 260;_batch_open.position.y=_heading.position.y+2
-    _scroll_hint.position.y=_heading.position.y+5
+    _body_top=432 if early else 294;_content_height=2+94*_active.size();_view_height=minf(484,_content_height)
+    _scroll.position=Vector2(340,_body_top);_scroll.size=Vector2(434,_view_height)
+    _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
+    _batch_open.position.y=400 if early else 262
     var display_height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
     var bottom: float=640.0 if early else 680.0
     _identity.position.y=bottom-display_height-83.0
@@ -319,26 +313,17 @@ func _refresh_structure() -> void:
         if option.selected:ship_title=str(option.name)
     _identity_title.text=ship_title
     _identity_counts.text="武器 %s  ·  防御 %s" % [_active.filter(func(f):return f.category=="weapon").size(),_active.filter(func(f):return f.category=="defence").size()]
-    for label in _group_labels:label.queue_free()
-    _group_labels.clear()
-    for id in _cards:_cards[id].panel.hide();_cards[id].fragment.hide()
+    for id in _cards:_cards[id].panel.hide()
     var y: float=0.0
-    for category in ["weapon","defence"]:
-        var group: Array=_active.filter(func(f):return str(f.category)==category)
-        var bar=Panel.new();bar.position=Vector2(0,y);bar.size=Vector2(432,16)
-        bar.add_theme_stylebox_override("panel",_style(Color("304d57"),Color("304d57"),0));bar.mouse_filter=Control.MOUSE_FILTER_IGNORE
-        _content.add_child(bar);_label(bar,("武器" if category=="weapon" else "防御")+" · "+str(group.size()),Rect2(10,-3,410,22),14,CREAM)
-        _group_labels.append(bar);y+=18
-        for fact in group:
-            var id: String=str(fact.id)
-            if not _cards.has(id):_create_card(id)
-            _cards[id].row_y=y;_cards[id].panel.position=Vector2(0,y+2)
-            _refresh_card(id);y+=94
-        y+=1
+    for fact in _active:
+        var id: String=str(fact.id)
+        if not _cards.has(id):_create_card(id)
+        _cards[id].row_y=y;_cards[id].panel.position=Vector2(0,y+2)
+        _refresh_card(id);y+=94
     _update_visible_cards();_refresh_scene_picture()
 
 func _create_card(id: String) -> void:
-    var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(432,90)
+    var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(424,90)
     _content.add_child(panel)
     var icon=_icon(panel,"",Rect2(8,18,44,54))
     var select=_button(panel,"",Rect2(60,6,216,26),_open_choices.bind(id),"button",true)
@@ -353,14 +338,17 @@ func _create_card(id: String) -> void:
     select.add_theme_font_size_override("font_size",16)
     select.size=Vector2(216,26)
     var level=_label(panel,"",Rect2(292,6,72,26),14,Color("49636c"))
-    var compare=_button(panel,"比较",Rect2(364,6,64,26),_show_comparison.bind(id,""),"button",true)
-    var attribute=_label(panel,"",Rect2(68,38,360,24),18,Color("173c4e"),600)
-    var cost_title=_label(panel,"费用",Rect2(68,64,34,24),15,Color("284650"))
-    var fee_area=Control.new();fee_area.position=Vector2(104,64);fee_area.size=Vector2(158,24);panel.add_child(fee_area)
-    var quantity=_button(panel,"×1",Rect2(272,62,52,26),_cycle_slot.bind(id),"button",true)
-    var purchase=_button(panel,"购买1级",Rect2(330,62,98,26),_buy_slot.bind(id),"primary",true)
-    var fragment=_label(_content,"",Rect2(68,0,360,24),14,Color("49636c"))
-    _cards[id]={"panel":panel,"icon":icon,"select":select,"level":level,"compare":compare,"attribute":attribute,"cost_title":cost_title,"fees":fee_area,"fee_cells":[],"fee_cache":{},"fee_empty":null,"fee_reason":null,"border_selected":null,"quantity":quantity,"purchase":purchase,"fragment":fragment,"row_y":0.0,"mode":0,"signature":[],"comparison":{}}
+    var compare=_button(panel,"比较",Rect2(356,6,64,26),_show_comparison.bind(id,""),"button",true)
+    var attribute=RichTextLabel.new();attribute.position=Vector2(68,40);attribute.size=Vector2(352,24)
+    attribute.bbcode_enabled=true;attribute.scroll_active=false;attribute.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    attribute.add_theme_font_override("normal_font",_font_medium);attribute.add_theme_font_override("bold_font",_font_strong)
+    attribute.add_theme_font_size_override("normal_font_size",16);attribute.add_theme_font_size_override("bold_font_size",16)
+    panel.add_child(attribute)
+    var cost_title=_label(panel,"费用",Rect2(68,64,34,24),16,Color("284650"))
+    var fee_area=Control.new();fee_area.position=Vector2(104,64);fee_area.size=Vector2(150,24);panel.add_child(fee_area)
+    var quantity=_button(panel,"×1",Rect2(264,62,52,26),_cycle_slot.bind(id),"button",true)
+    var purchase=_button(panel,"购买1级",Rect2(322,62,98,26),_buy_slot.bind(id),"primary",true)
+    _cards[id]={"panel":panel,"icon":icon,"select":select,"level":level,"compare":compare,"attribute":attribute,"cost_title":cost_title,"fees":fee_area,"fee_cells":[],"fee_cache":{},"fee_empty":null,"fee_reason":null,"border_selected":null,"quantity":quantity,"purchase":purchase,"row_y":0.0,"mode":0,"signature":[],"comparison":{}}
     purchase.focus_entered.connect(_select_visual.bind(id));quantity.focus_entered.connect(_select_visual.bind(id))
 
 func _comparison(id: String, candidate: String="") -> Dictionary:
@@ -387,7 +375,6 @@ func _refresh_card(id: String) -> void:
         row.comparison={};row.signature=[];row.fee_cells=[]
         row.select.disabled=not _session.run_state.is_running()
         row.purchase.disabled=true;row.quantity.disabled=true
-        row.fragment.text="空槽"
         if id==_selected:last_comparison={}
         _card_border(id)
         return
@@ -413,15 +400,14 @@ func _refresh_card(id: String) -> void:
     row.select.tooltip_text=row.select.text
     row.level.text="Lv."+str(fact.paid_level)
     var primary: String="攻击力" if fact.category=="weapon" else "容量"
-    row.attribute.text=primary+"  "+_value(comparison.get("current"))+" → "+_value(comparison.get("upgrade"))
-    row.attribute.tooltip_text=row.attribute.text
+    row.attribute.text="[color=#284650]"+primary+"  [/color][color=#173c4e]"+_value(comparison.get("current"))+"[/color][color=#49636c] → [/color][b][color=#20694f]"+_value(comparison.get("upgrade"))+"[/color][/b]"
+    row.attribute.tooltip_text=row.attribute.get_parsed_text()
     row.quantity.text=["×1","×10","MAX"][int(row.mode)]
     row.purchase.text="购买%s级" % str(quote.count) if quote.get("ok",false) else "可购0级" if reason=="NoChange" and int(row.mode)==2 else "购买"
     var budget_rejection: bool=reason=="InsufficientResources" or (reason=="NoChange" and int(row.mode)==2)
     row.purchase.disabled=not _session.run_state.is_running() or not comparison.get("ok",false) or (not quote.get("ok",false) and not budget_rejection)
     row.quantity.disabled=not _session.run_state.is_running();row.select.disabled=not _session.run_state.is_running()
     _render_fees(id,quote,reason,budget_rejection)
-    row.fragment.text=str(NAMES.get(str(fact.equipment_id),"空槽"))+"  Lv."+str(fact.paid_level)
     _card_border(id)
 
 func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejection: bool) -> void:
@@ -432,10 +418,10 @@ func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejectio
         var name: String=str(RESOURCE_NAMES.get(str(resource),str(resource)))
         var displayed: Dictionary=_session.amount_api.apply("to_display",[costs[resource]])
         var raw: String=str(displayed.text) if displayed.get("ok",false) else "未知"
-        var number: String=PlayerText.number(raw) if displayed.get("ok",false) else "未知"
+        var number: String=PlayerText.resource_number(raw) if displayed.get("ok",false) else "未知"
         var can_pay: Dictionary=_session.economy.can_pay({resource:costs[resource]},_budget)
         values.append({"id":str(resource),"name":name,"number":number,"raw":raw,"poor":not can_pay.ok})
-        total+=23+_font_medium.get_string_size(name+number,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+12
+        total+=24+_font_medium.get_string_size(name+number,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x+4+12
     var omit_names: bool=total-12>row.fees.size.x
     for cached in row.fee_cache.values():cached.control.hide()
     if is_instance_valid(row.fee_empty):row.fee_empty.hide()
@@ -444,34 +430,35 @@ func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejectio
     var x: float=0.0
     for value in values:
         var name_caption: String="" if omit_names else value.name
-        var name_width: float=_font_medium.get_string_size(name_caption,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x
-        var number_width: float=_font_medium.get_string_size(value.number,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x
-        var width: float=23+name_width+number_width
+        var name_width: float=_font_medium.get_string_size(name_caption,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x
+        var number_width: float=_font_medium.get_string_size(value.number,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x
+        var name_gap: float=4.0 if not name_caption.is_empty() else 0.0
+        var width: float=24+name_width+name_gap+number_width
         if not row.fee_cache.has(value.id):
             var created=Control.new();created.mouse_filter=Control.MOUSE_FILTER_PASS;row.fees.add_child(created)
             var icon=TextureRect.new();icon.texture=ResourceVisuals.icon(value.id);icon.modulate=ResourceVisuals.icon_modulate(value.id)
             icon.position=Vector2(0,2);icon.size=Vector2(20,20);icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;icon.size=Vector2(20,20);created.add_child(icon)
-            var name_label=_label(created,"",Rect2(23,-2,100,26),15,Color("1e3e4c"))
-            var label=_label(created,"",Rect2(23,-2,190,26),15)
+            var name_label=_label(created,"",Rect2(24,0,100,24),16,Color("1e3e4c"))
+            var label=_label(created,"",Rect2(24,0,190,24),16)
             created.mouse_entered.connect(_schedule_tooltip.bind(id,created));created.mouse_exited.connect(_hide_tooltip)
             row.fee_cache[value.id]={"control":created,"name_label":name_label,"label":label}
         var cached: Dictionary=row.fee_cache[value.id]
         var cell: Control=cached.control
         cell.position=Vector2(x,0);cell.size=Vector2(width,24);cell.show()
         cached.name_label.text=name_caption;cached.name_label.size.x=name_width
-        cached.label.text=value.number;cached.label.position.x=23+name_width;cached.label.size.x=number_width
+        cached.label.text=value.number;cached.label.position.x=24+name_width+name_gap;cached.label.size.x=number_width
         cached.label.add_theme_color_override("font_color",Color("a33725") if value.poor else Color("1e3e4c"))
         var full: String=value.name+" · "+value.raw
         cell.set_meta("resource_tooltip",full)
         row.fee_cells.append({"control":cell,"resource":value.id,"poor":value.poor,"name_omitted":omit_names,"full_text":full})
         x+=width+12
     if values.is_empty():
-        if not is_instance_valid(row.fee_empty):row.fee_empty=_label(row.fees,"—",Rect2(0,-2,20,26))
+        if not is_instance_valid(row.fee_empty):row.fee_empty=_label(row.fees,"—",Rect2(0,0,20,24),16)
         row.fee_empty.show()
         if not reason.is_empty() and not budget_rejection:
             row.fee_empty.hide()
             if not is_instance_valid(row.fee_reason):
-                row.fee_reason=_label(row.fees,"",Rect2(0,-2,158,26),15,Color("903d23"))
+                row.fee_reason=_label(row.fees,"",Rect2(0,0,150,24),16,Color("903d23"))
                 row.fee_reason.clip_text=true
                 row.fee_reason.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
             row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else PlayerText.error(reason)
@@ -501,14 +488,11 @@ func _update_visible_cards() -> void:
         var id: String=str(fact.id);var row: Dictionary=_cards[id]
         var y: float=float(row.row_y)
         var full: bool=y>=top and y+94<=top+_view_height
-        var overlap: float=minf(y+94,top+_view_height)-maxf(y,top)
-        row.panel.visible=full;row.fragment.visible=not full and overlap>=16
-        if row.fragment.visible:row.fragment.position.y=maxf(y,top)+minf(23,overlap-2)-18
+        row.panel.visible=full
         if not full:
             var focus: Control=get_viewport().gui_get_focus_owner() if is_inside_tree() else null
             if focus!=null and row.panel.is_ancestor_of(focus):focus.release_focus();_scroll.grab_focus()
             if _popup_slot==id:_close_popup()
-    _scroll_hint.text="" if _content_height<=_view_height else "↑ 返回武器" if top>0 else "↓ 防御还有%s槽" % _active.filter(func(f):return f.category=="defence").size()
     _hide_tooltip()
 
 func _schedule_tooltip(_id: String, cell: Control) -> void:
