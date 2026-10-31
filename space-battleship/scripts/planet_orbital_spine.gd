@@ -238,11 +238,11 @@ func _station_section_rise(kind: String, angle: float) -> float:
 	# Under the station its side wall rises into the bearing cheeks themselves,
 	# keeping a real enclosed lower box without a dangling dark slab.
 	var bounds: Vector2 = ARC_BOUNDS[kind]
-	var inlet := smoothstep(0.0, 0.06, angle - bounds.x)
+	var inlet := smoothstep(0.0, 0.045, angle - bounds.x)
 	var outlet := smoothstep(0.0, 0.08, bounds.y - angle)
-	var center: float = FACILITY_ANGLES[kind] + 0.05
-	var node := 1.0 - smoothstep(0.11, 0.26, absf(angle - center))
-	return 0.18 * inlet * outlet * node
+	var center: float = FACILITY_ANGLES[kind]
+	var node := 1.0 - smoothstep(0.16, 0.40, absf(angle - center))
+	return 0.22 * inlet * outlet * node
 
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
