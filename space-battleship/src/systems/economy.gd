@@ -1,4 +1,5 @@
 extends RefCounted
+const Resources = preload("res://src/systems/resource_amounts.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 ## Economy owns balances, drop ownership, timed production and income history.
@@ -100,7 +101,9 @@ func restore_state(state: Dictionary) -> Dictionary:
 			var value = sample.get(field)
 			if not value is Dictionary or not _api.apply("compare", [value, zero]).get("ok", false) or _api.apply("compare", [value, zero]).scalar < 0:
 				return {"ok": false, "reason": "InvalidIncomeSample"}
-	_wallet = state.wallet.duplicate(true)
+	var whole_wallet: Dictionary = Resources.whole_map(state.wallet, _api)
+	if not whole_wallet.ok: return whole_wallet
+	_wallet = whole_wallet.values
 	_wallet.make_read_only()
 	_drops = state.drops.duplicate(true)
 	_markers = markers
@@ -112,8 +115,13 @@ func restore_state(state: Dictionary) -> Dictionary:
 	return {"ok": true}
 
 func accept_budget(next: Dictionary, notify: bool = true) -> bool:
-	if not _run_state.is_running() or next == _wallet: return false
-	_wallet = next.duplicate()
+	if not _run_state.is_running(): return false
+	var checked: Dictionary = Resources.whole_map(next, _api)
+	if not checked.ok:
+		_run_state.fail(str(checked.get("reason", checked.get("error", "InvalidResourceBudget"))))
+		return false
+	if checked.values == _wallet: return false
+	_wallet = checked.values
 	_wallet.make_read_only()
 	_balance_dirty = true
 	if notify: display_changed.emit()
@@ -143,9 +151,10 @@ func balances_text() -> String:
 		_balance_rows = []
 		for resource in _wallet:
 			var text = _api.apply("to_display", [_wallet[resource]])
-			var label: String = PlayerText.resource(str(resource)) + "：" + PlayerText.number(str(text.text))
+			var raw: String = str(text.text)
+			var label: String = PlayerText.resource(str(resource)) + "：" + PlayerText.resource_number(raw)
 			balances.append(label)
-			_balance_rows.append({"id": str(resource), "text": label})
+			_balance_rows.append({"id": str(resource), "text": label, "raw": raw})
 		_balance_text = "   ".join(balances)
 		_balance_dirty = false
 	return _balance_text
@@ -179,6 +188,12 @@ func advance_timed(dt: float, active: bool, resource_ratio: Callable, origin: Ve
 func can_pay(costs: Dictionary, candidate = null) -> Dictionary:
 	var wallet: Dictionary = _wallet if candidate == null else candidate
 	var amount_api = _api
+	var normalized: Dictionary = Resources.whole_map(costs, amount_api)
+	if not normalized.ok: return normalized
+	costs = normalized.values
+	var holdings: Dictionary = Resources.whole_map(wallet, amount_api)
+	if not holdings.ok: return holdings
+	wallet = holdings.values
 	var zero = amount_api.apply("zero", [])
 	for resource in costs:
 		var balance: Dictionary = wallet.get(resource, zero.value)
@@ -192,8 +207,14 @@ func can_pay(costs: Dictionary, candidate = null) -> Dictionary:
 func payment(costs: Dictionary, candidate = null) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var wallet: Dictionary = _wallet if candidate == null else candidate
-	if costs.is_empty(): return {"ok": true, "wallet": wallet}
 	var amount_api = _api
+	var normalized: Dictionary = Resources.whole_map(costs, amount_api)
+	if not normalized.ok: return normalized
+	costs = normalized.values
+	var holdings: Dictionary = Resources.whole_map(wallet, amount_api)
+	if not holdings.ok: return holdings
+	wallet = holdings.values
+	if costs.is_empty(): return {"ok": true, "wallet": wallet}
 	var affordable = can_pay(costs, candidate)
 	if not affordable.ok:
 		return affordable

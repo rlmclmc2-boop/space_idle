@@ -1,962 +1,718 @@
 extends Control
-## Equipment owns all prices, admission and receipts; this scene owns only presentation.
+## Slot operations consume owner comparisons/receipts; this view owns no price formula.
 signal command_finished(result: Dictionary)
 signal exclusive_ui_changed
-var _shared_chrome: Array = []
-var _context_slot: Control
-var _context_caption: Label
+const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
-const NAMES := {"laser": "脉冲炮", "missile": "导弹", "cannon": "舰炮", "longLaser": "长激光", "shield": "护盾", "armour": "装甲", "": "空槽"}
-const INK := Color("203f50")
-const TEAL := Color("175466")
-const CREAM := Color("f3f0df")
-const LIGHT := Color("d8ece8")
+const NAMES = {"laser":"脉冲炮","missile":"导弹","cannon":"舰炮","longLaser":"长激光","armour":"装甲","shield":"护盾","":"空槽"}
+const RESOURCE_NAMES = {"1":"铁","2":"铀","chrono":"时空微粒","jewel":"强化碎片","degenerate_matter":"简并物质"}
+const INK = Color("193847")
+const CREAM = Color("f0f2e9")
+const LIGHT = Color("c9ded9")
+const CONTROL_FOCUS = Color("e5c784")
+const CONTROL_DISABLED_INK = Color("9cb4b4")
+const CONTROL_CUT = 5.0
+const CARD_WIDTH = 420.0
+const EQUIPPED_HEIGHT = 106.0
+const EMPTY_HEIGHT = 52.0
+const CARD_GAP = 12.0
+const CONTENT_PAD = 4.0
 var _session
-var _selected: String = ""
-var _candidate: String = ""
-var _quantity: int = 1
-var _maximum: bool = false
-var _dirty: bool = true
-var _comparison_dirty: bool = false
-var _wallet_dependency: Dictionary = {}
-var _clock: float = 0.0
-var _ship: String = ""
-var _facts: Array = []
-var _slot_buttons: Dictionary = {}
-var _slot_groups: Dictionary = {}
-var _slot_backdrops: Dictionary = {}
-var _icon_textures: Dictionary = {}
-var _icon_centres: Dictionary = {}
-var _current_icon_geometry: Dictionary = {}
-var _workbench: Panel
-var _workbench_divider: ColorRect
-var _upgrade_data: Panel
-var _icon_bezel: Panel
-var _transaction_rail: Panel
-var _workbench_layout: Dictionary = {}
-var _candidate_row: Control
-var _comparison_group: Control
-var _period_caption: Label
-var _upgrade_section_title: Label
-var _defence_scope: bool = false
-var _hull_visible_bounds: Dictionary = {}
-var _preview_rects: Dictionary = {}
-var _preview_zooms: Dictionary = {}
-var _preview_reference: Dictionary = {}
-var _slot_presentations: Dictionary = {}
-var _slot_selections: Dictionary = {}
-var _choice_presentations: Dictionary = {}
-var _quantity_presentations: Dictionary = {}
-var _scene_picture: Array = []
-# Bounded presentation-only diagnostics; no state or rules come from these counts.
-var presentation_counts := {"refreshes":0,"comparison_reads":0,"slot_fact_reads":0,"cooldown_fact_reads":0,"slots_updated":0,"slot_styles_updated":0,"candidates_updated":0,"quantity_styles_updated":0,"scene_redraw_requests":0,"scene_draws":0,"economy_signals":0,"economy_same_budget":0,"balance_dependency_changes":0,"comparison_dependency_changes":0,"wallet_refreshes":0,"equipment_option_reads":0,"maximum_reads":0}
-var _choices: Dictionary = {}
-var _quantity_buttons: Array = []
+var _font_regular: FontVariation
+var _font_medium: FontVariation
+var _font_strong: FontVariation
 var _catalog: Dictionary
 var _weapon_meta: Dictionary
 var _textures: Dictionary = {}
-var _weapon_visible_bounds: Dictionary = {}
-var _hull_textures: Dictionary = {}
-var _background: Texture2D
-var _locator_badge_style: StyleBoxFlat
-var _title: Label
-var _wallet: Label
-var _current_title: Label
-var _current_caption: Label
-var _current_value: Label
-var _next_value: Label
-var _upgrade_caption: Label
-var _upgrade_arrow: Label
-var _cost: Label
-var _purchase: Button
-var _install: Button
-var _comparison_title: Label
-var _large_icon: TextureRect
-var _switch_state: Label
-var _batch_blocker: ColorRect
-var _batch: PanelContainer
-var _batch_quantity: OptionButton
-var _batch_results: Label
-var _batch_scroll: ScrollContainer
-var _batch_submit: Button
-var _font_regular: FontVariation
-var _font_strong: FontVariation
-var _cost_cells: Dictionary = {}
-var _payment_state: Label
-var _level_label: Label
-var _compare_headers: Array = []
-var _compare_values: Array = []
-var _compare_row_label: Label
-var _batch_frame: Panel
-var _batch_close: Button
-var _selection_open: bool = true
+var _hulls: Dictionary = {}
+var _icons: Dictionary = {}
+var _short: Texture2D
+var _tall: Texture2D
+var _cards: Dictionary = {}
+var _facts: Array = []
+var _active: Array = []
+var _selected: String = ""
+var _ship: String = ""
+var _ship_origin = Vector2.ZERO
+var _ship_factor: float = 1.0
+var _ship_zoom: float = 1.0
+var _structure_dirty: bool = true
+var _values_dirty: bool = true
+var _pending_ids: Dictionary = {}
+var _budget: Dictionary = {}
+var _scene_signature: Array = []
+var _scroll: ScrollContainer
+var _content: Control
+var _body_top: float = 294.0
+var _view_height: float = 510.0
+var _content_height: float = 0.0
+var _scroll_stops: Array[int] = [0]
+var _scroll_anchor: int = 0
+var _aligning_scroll: bool = false
+var _identity: Panel
+var _identity_title: Label
+var _identity_counts: Label
+var _global_quantity: Button
+var _batch_open: Button
+var _fallback_header: Label
+var _popup: Control
+var _popup_slot: String = ""
+var _batch_mode: int = 0
+var _toast: PanelContainer
+var _toast_text: Label
+var _toast_time: float = 0.0
+var _tooltip: PanelContainer
+var _tooltip_ticket: int = 0
+var _context_caption: Label
+var _shared: bool = false
 var last_result: Dictionary = {}
-var _last_batch_result: Dictionary = {}
 var last_comparison: Dictionary = {}
+var presentation_counts = {"refreshes":0,"numeric_refreshes":0,"comparison_reads":0,"slots_updated":0,"scene_draws":0,"scene_redraw_requests":0,"economy_signals":0,"economy_same_budget":0,"balance_dependency_changes":0,"comparison_dependency_changes":0,"maximum_reads":0}
 
 func _init(session) -> void:
     _session = session
-    custom_minimum_size = Vector2(808, 900)
+    custom_minimum_size = Vector2(808,900)
     size = custom_minimum_size
     mouse_filter = Control.MOUSE_FILTER_PASS
-    _catalog = JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/ships/manifest.json")).hulls
-    _weapon_meta = JSON.parse_string(FileAccess.get_file_as_string("res://assets/weapons/fleet_20261019/manifest.json")).weapons
-    var largest_reference:float=0.0
-    for key in _catalog:
-        _hull_textures[key]=load(str(_catalog[key].texture))
-        _hull_visible_bounds[key]=_hull_textures[key].get_image().get_used_rect()
-        # Read the existing public visual-geometry output once; do not duplicate or change battle parameters.
-        var inputs:Dictionary=_session.battle.mount_inputs(key)
-        var image:Image=load(str(inputs.art.texture)).get_image()
-        var reference_height:float=inputs.dimensions.y*image.get_used_rect().size.y/image.get_height()
-        _preview_reference[key]={"height":reference_height,"source":str(inputs.art.texture)}
-        largest_reference=maxf(largest_reference,reference_height)
-    for key in _catalog:
-        var visible:Rect2=Rect2(_hull_visible_bounds[key])
-        var height:float=320.0*_preview_reference[key].height/largest_reference
-        var factor:float=height/visible.size.y
-        # The pad's front docking line is authored in the hangar source; each hull uses its visible aft anchor.
-        var dock_source:=Vector2(594,730)
-        var dock_target:=Vector2(dock_source.x*808.0/1188.0,85.0+dock_source.y*600.0/845.0)
-        var aft:=Vector2(visible.get_center().x,visible.end.y)
-        _preview_rects[key]=Rect2(dock_target-aft*factor,Vector2(768,768)*factor)
-        _preview_reference[key].dock_source=dock_source
-        _preview_reference[key].dock_target=dock_target
-        _preview_reference[key].aft_source=aft
-        # 350 only converts the existing authored weapon calibration; it is no longer a per-ship target fit.
-        _preview_zooms[key]=factor/(350.0/float(_catalog[key].height))
-        _preview_reference[key].preview_height=height
-        _preview_reference[key].canvas_scale=factor
-    for key in _weapon_meta:
-        _textures[key] = load(str(_weapon_meta[key].texture))
-        _weapon_visible_bounds[key]=_textures[key].get_image().get_used_rect()
-    _textures.shield = load("res://assets/ui/equipment/cartoon_shield.svg")
-    _textures.armour = load("res://assets/ui/equipment/cartoon_armour.svg")
-    # Cache visible-only thumbnail regions once; formal scene textures and mount anchors stay intact.
+    var font = load("res://assets/fonts/NotoSansSC.ttf")
+    _font_regular = FontVariation.new(); _font_regular.base_font=font; _font_regular.variation_opentype={2003265652:400.0}
+    _font_medium = FontVariation.new(); _font_medium.base_font=font; _font_medium.variation_opentype={2003265652:500.0}
+    _font_strong = FontVariation.new(); _font_strong.base_font=font; _font_strong.variation_opentype={2003265652:600.0}
+    theme=Theme.new();theme.default_font=_font_regular;theme.default_font_size=15
+    _catalog=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/ships/manifest.json")).hulls
+    _weapon_meta=JSON.parse_string(FileAccess.get_file_as_string("res://assets/weapons/fleet_20261019/manifest.json")).weapons
+    for key in _catalog: _hulls[key]=load(str(_catalog[key].texture))
+    for key in _weapon_meta: _textures[key]=load(str(_weapon_meta[key].texture))
+    _textures.armour=load("res://assets/ui/equipment/cartoon_armour.svg")
+    _textures.shield=load("res://assets/ui/equipment/cartoon_shield.svg")
     for key in _textures:
-        var texture: Texture2D = _textures[key]
-        var thumbnail := AtlasTexture.new()
-        thumbnail.atlas = texture
-        var pixels: Image = texture.get_image()
-        thumbnail.region = pixels.get_used_rect()
-        _icon_textures[key] = thumbnail
-        # A small initialization-only alpha sample records optical mass, not the PNG canvas centre.
-        var sample: Image = pixels.get_region(Rect2i(thumbnail.region))
-        sample.resize(32,32,Image.INTERPOLATE_BILINEAR)
-        var weighted:=Vector2.ZERO
-        var mass:float=0.0
-        for y in 32:
-            for x in 32:
-                var alpha:float=sample.get_pixel(x,y).a
-                weighted+=Vector2(x+0.5,y+0.5)*alpha
-                mass+=alpha
-        _icon_centres[key]=weighted/(mass*32.0) if mass>0.0 else Vector2(0.5,0.5)
-    _background = load("res://assets/ui/equipment/hangar/hangar-console.png")
-    _setup_materials()
+        var atlas=AtlasTexture.new();atlas.atlas=_textures[key];atlas.region=_textures[key].get_image().get_used_rect();_icons[key]=atlas
+    _short=load("res://assets/ui/equipment/hangar/inline-short.png")
+    _tall=load("res://assets/ui/equipment/hangar/inline-tall.png")
     _build()
-    _session.equipment.slots_changed.connect(func(_ids): _dirty = true)
-    _session.equipment.loadout_changed.connect(func(): _dirty = true)
-    _session.equipment.options_changed.connect(func(): _dirty = true)
-    _session.campaign_system.ship_changed.connect(func(): _dirty = true)
-    _wallet_dependency = _session.economy.budget()
-    _session.economy.display_changed.connect(_economy_display_changed)
-    _session.equipment.comparison_changed.connect(func():
-        presentation_counts.comparison_dependency_changes += 1
-        _comparison_dirty = true)
+    _budget=_session.economy.budget()
+    _session.equipment.slots_changed.connect(func(ids):
+        for id in ids:_pending_ids[str(id)]=true)
+    _session.equipment.loadout_changed.connect(func():_structure_dirty=true)
+    _session.equipment.options_changed.connect(func():_structure_dirty=true)
+    _session.equipment.comparison_changed.connect(func():presentation_counts.comparison_dependency_changes+=1;_values_dirty=true)
+    _session.campaign_system.ship_changed.connect(func():_structure_dirty=true)
+    _session.economy.display_changed.connect(_economy_changed)
 
-func _setup_materials() -> void:
-    _font_regular = FontVariation.new()
-    _font_regular.base_font = load("res://assets/fonts/NotoSansSC.ttf")
-    _font_regular.variation_opentype = {2003265652:400.0}
-    _font_strong = FontVariation.new()
-    _font_strong.base_font = _font_regular.base_font
-    _font_strong.variation_opentype = {2003265652:600.0}
-    theme = Theme.new()
-    theme.default_font = _font_regular
-    theme.default_font_size = 15
-    theme.set_font("font", "Button", _font_strong)
-    theme.set_color("font_color", "PopupMenu", CREAM)
-    theme.set_stylebox("panel", "PopupMenu", _style(Color("173c4b"),Color("7faaa7")))
-    _locator_badge_style=_style(Color("214452"),Color("e9c98b"),1)
+func _operation_button(button: Button, role: String="button", compact_card: bool=false, selected: bool=false) -> void:
+    BridgeTheme.apply_operation_button(button,"commit" if role=="primary" else "secondary",8,selected)
+    # Card controls keep the common material; local content padding supports the new28px controls.
+    button.add_theme_font_override("font",_font_strong)
+    if compact_card:
+        for state in BridgeTheme.PUBLIC_STATES:
+            var surface: StyleBox=button.get_theme_stylebox(state)
+            surface.content_margin_top=2;surface.content_margin_bottom=2
+            button.add_theme_stylebox_override(state,surface)
 
-func _frame(parent: Control, rect: Rect2) -> Panel:
-    var frame := Panel.new()
-    frame.position=rect.position;frame.size=rect.size
-    var material := _style(Color("234d5c"),Color("dcdcc8"),3)
-    material.set_corner_radius_all(10)
-    material.shadow_color=Color("102c3a",0.6);material.shadow_size=3;material.shadow_offset=Vector2(0,3)
-    frame.add_theme_stylebox_override("panel",material)
-    frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    frame.show_behind_parent=true
-    parent.add_child(frame)
-    return frame
-
-func _prepare_button_material(button: Button, form: String) -> void:
-    # Each native interaction state is built once. Selection only swaps cached styles.
-    var variants: Array=[]
-    for selected in [false,true]:
-        var states: Dictionary={}
-        for state in ["normal","hover","pressed","disabled","focus"]:
-            var fill:=Color("234b5b") if form!="candidate" else Color("214959")
-            var edge:=Color("9baea9") if form!="candidate" else Color("dedfce")
-            if selected:fill=Color("306958");edge=Color("9bd9be")
-            if state=="hover":fill=Color("3c6e76");edge=Color("d4f3e4")
-            elif state=="pressed":fill=Color("122f3d");edge=Color("7bb6b1")
-            elif state=="disabled":fill=Color("31434a");edge=Color("62747a")
-            var material:=_style(fill,edge,1)
-            material.set_corner_radius_all(5 if form=="candidate" else 6)
-            material.border_width_top=2
-            material.border_width_bottom=2 if state!="pressed" else 1
-            material.shadow_color=Color("102b38",0.45);material.shadow_size=1;material.shadow_offset=Vector2(0,2 if state!="pressed" else 0)
-            if form=="slot":
-                material.bg_color=Color(0,0,0,0) if state=="normal" else Color(0.65,0.95,0.86,0.16) if state=="hover" else Color(0.02,0.09,0.13,0.35) if state=="pressed" else Color(0.15,0.20,0.22,0.5)
-                material.set_border_width_all(0);material.shadow_size=0
-                material.expand_margin_left=-15;material.expand_margin_right=-15;material.expand_margin_top=-12;material.expand_margin_bottom=-26
-            if form=="index":
-                material.bg_color=Color(0,0,0,0) if not selected else Color(0.12,0.39,0.41,0.88)
-                material.border_color=Color(0.47,0.77,0.75,0.18) if not selected else Color("97e2d4")
-                material.set_border_width_all(1 if selected else 0)
-                material.set_corner_radius_all(4)
-                material.shadow_size=0
-                if state=="hover":material.bg_color=Color(0.15,0.38,0.41,0.8)
-                elif state=="pressed":material.bg_color=Color("153c49")
-            if form=="candidate":
-                material.shadow_size=0
-                material.set_border_width_all(1)
-            if state=="focus":
-                material.bg_color=Color(0,0,0,0);material.border_color=Color("b3ead8");material.set_border_width_all(2);material.shadow_size=0
-            states[state]=material
-        variants.append(states)
-    button.set_meta("material_variants",variants)
-    _button_tint(button,false)
-
-func _button_tint(button: Button, chosen: bool) -> void:
-    if button.has_meta("material_chosen") and button.get_meta("material_chosen")==chosen:return
-    button.set_meta("material_chosen",chosen)
-    var states: Dictionary=button.get_meta("material_variants")[1 if chosen else 0]
-    for state in states:button.add_theme_stylebox_override(state,states[state])
-    button.add_theme_color_override("font_color",Color("c0f4df") if chosen else CREAM)
-
-func _economy_display_changed() -> void:
-    presentation_counts.economy_signals += 1
-    var budget: Dictionary = _session.economy.budget()
-    # Economy also notifies marker motion. Its accepted budget is immutable.
-    if is_same(budget, _wallet_dependency) or budget == _wallet_dependency:
-        _wallet_dependency = budget
-        presentation_counts.economy_same_budget += 1
-        return
-    _wallet_dependency = budget
-    presentation_counts.balance_dependency_changes += 1
-    _comparison_dirty = true
-
-func _ready() -> void:
-    process_priority = 1
-    _refresh()
-
-func _label(text: String, rect: Rect2, font_size: int = 16, color: Color = INK) -> Label:
-    var label := Label.new()
-    label.text=text;label.position=rect.position;label.size=rect.size
-    label.add_theme_font_size_override("font_size",font_size)
-    label.add_theme_font_override("font",_font_strong if font_size>=18 else _font_regular)
-    label.add_theme_color_override("font_color",color)
-    label.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    add_child(label)
-    return label
-
-func _style(fill: Color, edge: Color, width: int = 1) -> StyleBoxFlat:
-    var style := StyleBoxFlat.new()
-    style.bg_color = fill
-    style.border_color = edge
-    style.set_border_width_all(width)
-    style.set_corner_radius_all(6)
-    style.content_margin_left = 8
-    style.content_margin_right = 8
-    style.content_margin_top = 5
-    style.content_margin_bottom = 5
+func _style(fill: Color, edge: Color, thickness: int=1) -> StyleBoxFlat:
+    var style=StyleBoxFlat.new();style.bg_color=fill;style.border_color=edge
+    style.set_border_width_all(thickness);style.content_margin_left=8;style.content_margin_right=8
+    style.content_margin_top=4;style.content_margin_bottom=4
     return style
 
-func _button(text: String, rect: Rect2, action: Callable, dark: bool = false, form: String = "button") -> Button:
-    var button := Button.new()
-    button.text=text;button.position=rect.position;button.size=rect.size
-    button.add_theme_font_size_override("font_size",16)
-    button.add_theme_font_override("font",_font_strong)
-    for key in ["font_color","font_pressed_color"]:button.add_theme_color_override(key,CREAM)
-    button.add_theme_color_override("font_hover_color",Color("c4fff0"))
-    button.add_theme_color_override("font_disabled_color",Color("8da5ac"))
-    _prepare_button_material(button,form)
-    add_child(button)
-    button.pressed.connect(action)
-    return button
+func _label(parent: Control, value: String, rect: Rect2, font_size: int=15, color: Color=INK, weight: int=500) -> Label:
+    var label=Label.new();label.text=value;label.position=rect.position;label.size=rect.size
+    label.add_theme_font_override("font",_font_strong if weight==600 else _font_medium if weight==500 else _font_regular)
+    label.add_theme_font_size_override("font_size",font_size);label.add_theme_color_override("font_color",color)
+    label.mouse_filter=Control.MOUSE_FILTER_IGNORE;parent.add_child(label);return label
 
-func _icon(key: String, rect: Rect2, parent: Control = self) -> TextureRect:
-    var image := TextureRect.new()
-    image.texture = _icon_textures.get(key)
-    image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-    image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    image.position = rect.position
-    image.size = rect.size
-    image.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    parent.add_child(image)
-    return image
+func _button(parent: Control, value: String, rect: Rect2, action: Callable, role: String="button", compact_card: bool=false) -> Button:
+    var button=Button.new();button.text=value;button.position=rect.position;button.size=rect.size
+    button.add_theme_font_override("font",_font_strong);button.add_theme_font_size_override("font_size",14)
+    _operation_button(button,role,compact_card)
+    button.size=rect.size
+    parent.add_child(button)
+    if compact_card:button.set_deferred("size",rect.size)
+    button.pressed.connect(action);return button
+
+func _panel(parent: Control, rect: Rect2) -> Panel:
+    var panel=Panel.new();panel.position=rect.position;panel.size=rect.size
+    panel.add_theme_stylebox_override("panel",_style(Color("173b49"),Color("72969a")))
+    parent.add_child(panel);return panel
+
+func _icon(parent: Control, key: String, rect: Rect2) -> TextureRect:
+    var icon=TextureRect.new()
+    # Set expansion before the texture, so its imported size never queues a
+    # minimum-size resize that can outgrow the local choice after it is added.
+    icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    icon.texture=_icons.get(key);icon.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    parent.add_child(icon);icon.position=rect.position;icon.size=rect.size
+    return icon
 
 func _build() -> void:
-    _shared_chrome.append(_label("远航舰桥",Rect2(24,10,160,34),23))
-    _wallet=_label("",Rect2(204,16,590,30),15)
-    _shared_chrome.append(_label("战力维护  /  装配",Rect2(24,52,380,28),14,Color("57777a")))
-    _title=_label("装配",Rect2(35,104,236,30),18,CREAM)
-    _title.add_theme_color_override("font_shadow_color",Color("173542"))
-    _title.add_theme_constant_override("shadow_offset_x",1)
-    _title.add_theme_constant_override("shadow_offset_y",2)
-    _button("全部装备升级",Rect2(614,96,174,49),_open_batch,true).name="BatchOpen"
-    for category in ["weapon","defence"]:
-        var backing:=Panel.new()
-        backing.position=Vector2(24,164);backing.size=Vector2(184,71)
-        backing.mouse_filter=Control.MOUSE_FILTER_IGNORE
-        var material:=_style(Color(0.06,0.16,0.21,0.78),Color(0,0,0,0),0)
-        material.set_corner_radius_all(4)
-        backing.add_theme_stylebox_override("panel",material)
-        add_child(backing);_slot_backdrops[category]=backing
-        _slot_groups[category]=_label("",Rect2(30,170,178,25),15,CREAM)
-        _slot_groups[category].add_theme_color_override("font_shadow_color",Color("173542"))
-        _slot_groups[category].add_theme_constant_override("shadow_offset_y",1)
-    _build_workbench()
-    _build_batch()
+    _fallback_header=_label(self,"装备",Rect2(25,10,220,45),22,CREAM,600)
+    _identity=_panel(self,Rect2(16,297,276,72));_identity.mouse_filter=Control.MOUSE_FILTER_PASS
+    _identity.add_theme_stylebox_override("panel",BridgeTheme.operation_plate(14))
+    _identity_title=_label(_identity,"",Rect2(18,10,240,30),21,INK,600)
+    _identity_counts=_label(_identity,"",Rect2(18,40,240,23),14,Color("49636c"),400)
+    _global_quantity=_button(self,"×1",Rect2(552,254,64,30),_cycle_global,"button",true)
+    _global_quantity.add_theme_font_size_override("font_size",16);_global_quantity.tooltip_text="全部槽位数量"
+    _batch_open=_button(self,"全部升级",Rect2(628,254,134,30),_open_batch,"primary",true)
+    _scroll=ScrollContainer.new();_scroll.position=Vector2(340,294);_scroll.size=Vector2(434,484)
+    _scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+    _scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+    _scroll.focus_mode=Control.FOCUS_ALL;add_child(_scroll)
+    _content=Control.new();_content.custom_minimum_size=Vector2(424,484);_scroll.add_child(_content)
+    _scroll.get_v_scroll_bar().value_changed.connect(_align_scroll_rows)
+    _toast=PanelContainer.new();_toast.position=Vector2(430,207);_toast.size=Vector2(348,44)
+    _toast.add_theme_stylebox_override("panel",_style(Color("173b49"),Color("bda56d")))
+    _toast.mouse_filter=Control.MOUSE_FILTER_IGNORE;_toast.z_index=90;add_child(_toast)
+    _toast_text=_label(_toast,"",Rect2(0,0,348,44),18,Color("f2e5c8"),600)
+    _toast_text.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;_toast_text.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+    _toast.hide()
+    _tooltip=PanelContainer.new();_tooltip.z_index=80
+    _tooltip.add_theme_stylebox_override("panel",_style(Color("173b49"),Color("72969a")))
+    _tooltip.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(_tooltip);_tooltip.hide()
 
-func _workbench_label(text:String,rect:Rect2,font_size:int=16,color:Color=INK,parent:Control=null) -> Label:
-    var label:=_label(text,rect,font_size,color)
-    remove_child(label)
-    (parent if parent!=null else _workbench).add_child(label)
-    return label
+func _ready() -> void:
+    process_priority=1;_refresh_structure()
 
-func _workbench_button(text:String,rect:Rect2,action:Callable) -> Button:
-    var button:=_button(text,rect,action,true)
-    remove_child(button);_workbench.add_child(button)
-    return button
+func _economy_changed() -> void:
+    presentation_counts.economy_signals+=1
+    var next: Dictionary=_session.economy.budget()
+    if is_same(next,_budget) or next==_budget:
+        presentation_counts.economy_same_budget+=1;return
+    _budget=next;presentation_counts.balance_dependency_changes+=1;_values_dirty=true
 
-func _build_workbench() -> void:
-    _workbench=Panel.new();_workbench.name="EquipmentWorkbench"
-    _workbench.position=Vector2(16,610);_workbench.size=Vector2(776,286)
-    _workbench.clip_contents=true;_workbench.mouse_filter=Control.MOUSE_FILTER_PASS
-    var body:=_style(Color("e9e7d6"),Color("849a93"),1)
-    body.set_corner_radius_all(9);body.shadow_color=Color("102b36",0.35);body.shadow_size=3;body.shadow_offset=Vector2(0,2)
-    _workbench.add_theme_stylebox_override("panel",body);add_child(_workbench)
-    var header:=Panel.new();header.name="ObjectHeader";header.size=Vector2(776,36);header.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var beam:=_style(Color("244b5b"),Color("244b5b"),0)
-    beam.corner_radius_top_left=8;beam.corner_radius_top_right=8;beam.corner_radius_bottom_left=0;beam.corner_radius_bottom_right=0
-    header.add_theme_stylebox_override("panel",beam);_workbench.add_child(header)
-    _current_title=_workbench_label("现装",Rect2(20,4,250,28),18,CREAM)
-    _level_label=_workbench_label("",Rect2(190,7,150,22),13,Color("b8d3ca"))
-    _upgrade_section_title=_workbench_label("装备升级",Rect2(20,42,400,24),16)
-    _comparison_title=_workbench_label("装备选择",Rect2(460,42,174,24),16)
-    _switch_state=_workbench_label("",Rect2(638,46,122,18),12,Color("946338"));_switch_state.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-    _workbench_divider=ColorRect.new();_workbench_divider.position=Vector2(440,48);_workbench_divider.size=Vector2(1,110);_workbench_divider.color=Color("b5c3b8");_workbench_divider.mouse_filter=Control.MOUSE_FILTER_IGNORE;_workbench.add_child(_workbench_divider)
-    _transaction_rail=Panel.new();_transaction_rail.name="PurchaseRail";_transaction_rail.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    _transaction_rail.add_theme_stylebox_override("panel",_style(Color("dde3d5"),Color("b5c3b8"),1));_workbench.add_child(_transaction_rail)
-    _upgrade_data=Panel.new();var data:Panel=_upgrade_data;data.name="UpgradeValues";data.position=Vector2(100,85);data.size=Vector2(320,80);data.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var glass:=_style(Color("e1e9dc"),Color("b0c0b4"),1);glass.set_corner_radius_all(4);data.add_theme_stylebox_override("panel",glass);_workbench.add_child(data)
-    _icon_bezel=Panel.new();var icon_frame:Panel=_icon_bezel;icon_frame.name="CurrentIconBezel";icon_frame.position=Vector2(20,88);icon_frame.size=Vector2(66,61);icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var bezel:=_style(Color("eeecda"),Color("a6b9aa"),1);bezel.set_corner_radius_all(4);icon_frame.add_theme_stylebox_override("panel",bezel);_workbench.add_child(icon_frame)
-    _large_icon=_icon("laser",Rect2(27,95,52,47),_workbench)
-    _current_caption=_workbench_label("当前攻击力",Rect2(114,91,140,18),12,Color("617c78"))
-    _upgrade_caption=_workbench_label("升级后",Rect2(290,91,146,18),12,Color("617c78"))
-    _current_value=_workbench_label("—",Rect2(114,109,140,38),27)
-    _upgrade_arrow=_workbench_label("→",Rect2(257,105,32,32),23,Color("72938d"))
-    _next_value=_workbench_label("—",Rect2(290,109,148,38),27,TEAL)
-    for value in [_current_value,_next_value]:value.mouse_filter=Control.MOUSE_FILTER_PASS;value.clip_text=true
-    _cost=_workbench_label("本次费用",Rect2(22,204,90,25),13,Color("647b75"))
-    _payment_state=_workbench_label("",Rect2(278,204,160,25),13,Color("a75a3d"));_payment_state.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-    for index in 3:
-        var captions: Array=["+1","+10","MAX"]
-        var button:=_workbench_button(captions[index],Rect2(18+index*65,240,59,36),func():_maximum=index==2;_quantity=10 if index==1 else 1;_dirty=true)
-        button.name="Quantity"+str(index);_quantity_buttons.append(button)
-    _purchase=_workbench_button("购买1级",Rect2(226,240,218,36),_buy);_purchase.name="Purchase"
-    _purchase.clip_text=true;_purchase.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
-    _candidate_row=Control.new();_candidate_row.name="CandidateChoices";_candidate_row.position=Vector2(464,74);_candidate_row.size=Vector2(296,88);_candidate_row.clip_contents=true;_candidate_row.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_candidate_row)
-    _comparison_group=Control.new();_comparison_group.name="DifferentCandidateComparison";_comparison_group.position=Vector2(464,170);_comparison_group.size=Vector2(296,64);_comparison_group.clip_contents=true;_comparison_group.mouse_filter=Control.MOUSE_FILTER_PASS;_workbench.add_child(_comparison_group)
-    for column in 2:
-        var header_label:=_workbench_label("",Rect2(52+column*124,0,118,18),12,INK if column==0 else TEAL,_comparison_group)
-        header_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;header_label.add_theme_font_override("font",_font_strong);_compare_headers.append(header_label)
-        var value:=_workbench_label("—",Rect2(52+column*124,18,118,25),17,INK if column==0 else TEAL,_comparison_group)
-        value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.add_theme_font_override("font",_font_strong);_compare_values.append(value)
-    _compare_row_label=_workbench_label("攻击力",Rect2(0,18,48,25),12,Color("617c78"),_comparison_group)
-    _period_caption=_workbench_label("周期",Rect2(0,43,48,18),12,Color("617c78"),_comparison_group)
-    _install=_workbench_button("安装",Rect2(484,220,266,36),_equip);_install.name="Install"
-
-func _text_ink_bounds(text:String, font:Font, font_size:int) -> Rect2:
-    var line:=TextLine.new();line.add_string(text,font,font_size)
-    var server:=TextServerManager.get_primary_interface()
-    var pen:float=0.0
-    var bounds:=Rect2()
-    for glyph in server.shaped_text_get_glyphs(line.get_rid()):
-        for repeat in int(glyph.repeat):
-            var rect:=Rect2(Vector2(pen,0)+Vector2(glyph.offset)+server.font_get_glyph_offset(glyph.font_rid,Vector2i(glyph.font_size,0),glyph.index),server.font_get_glyph_size(glyph.font_rid,Vector2i(glyph.font_size,0),glyph.index))
-            if rect.has_area():bounds=bounds.merge(rect) if bounds.has_area() else rect
-            pen+=float(glyph.advance)
-    return bounds
-
-func _place_ink_label(label:Label, centre:Vector2) -> void:
-    var font:Font=label.get_theme_font("font");var font_size:int=label.get_theme_font_size("font_size")
-    var ink:Rect2=_text_ink_bounds(label.text,font,font_size)
-    label.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT;label.vertical_alignment=VERTICAL_ALIGNMENT_TOP;label.clip_text=false
-    label.size=Vector2(ceilf(font.get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)+8,font.get_height(font_size))
-    label.position=(centre-ink.get_center()-Vector2(0,font.get_ascent(font_size))).round()
-
-func _layout_workbench(different: bool, defence: bool, resource_count: int) -> void:
-    var rows:int=maxi(1,resource_count)
-    var signature:Array=[different,defence,rows]
-    if _workbench_layout.get("signature",[])==signature:return
-    var extra:float=maxi(0,rows-2)*22.0 if different else 0.0
-    var height:float=272.0+extra if different else 260.0
-    var action_y:float=220.0+extra if different else 208.0
-    _workbench.position.y=896.0-height;_workbench.size.y=height
-    _workbench_divider.size.y=162.0+extra if different else 110.0
-    _upgrade_data.position=Vector2(100,70)
-    _icon_bezel.position=Vector2(20,70);_icon_bezel.size=Vector2(66,80)
-    _candidate_row.position=Vector2(460,70)
-    _comparison_group.position=Vector2(460,166);_comparison_group.size.y=43
-    _install.position=Vector2(440,action_y);_install.size=Vector2(310,36)
-    for index in _quantity_buttons.size():
-        _quantity_buttons[index].position=Vector2(26+index*63,action_y);_quantity_buttons[index].size=Vector2(55,36)
-    _purchase.position=Vector2(220,action_y);_purchase.size=Vector2(204 if different else 530,36)
-    _transaction_rail.position=Vector2(16,action_y-8);_transaction_rail.size=Vector2(744,52)
-    _workbench_layout={"signature":signature,"different":different,"rows":rows,"data_y":70.0,"action_y":action_y,"height":height,"fee_y":166.0}
-
-func _layout_primary_values() -> void:
-    var long_values:bool=_text_ink_bounds(_current_value.text,_font_strong,27).size.x>124 or _text_ink_bounds(_next_value.text,_font_strong,27).size.x>124
-    var y:float=_workbench_layout.data_y
-    _upgrade_arrow.show()
-    _upgrade_arrow.text="↓" if long_values else "→";_upgrade_arrow.add_theme_font_size_override("font_size",16 if long_values else 23)
-    if long_values:
-        _place_ink_label(_current_caption,Vector2(151,y+17));_place_ink_label(_upgrade_caption,Vector2(151,y+63))
-        _place_ink_label(_current_value,Vector2(304,y+17));_place_ink_label(_next_value,Vector2(304,y+63))
-        var gap_centre_y:float=y+40+(_text_ink_bounds(_current_value.text,_font_strong,27).size.y-_text_ink_bounds(_next_value.text,_font_strong,27).size.y)*0.25
-        _place_ink_label(_upgrade_arrow,Vector2(304,gap_centre_y))
-    else:
-        _place_ink_label(_current_caption,Vector2(174,y+15));_place_ink_label(_upgrade_caption,Vector2(346,y+15))
-        _place_ink_label(_current_value,Vector2(174,y+55));_place_ink_label(_next_value,Vector2(346,y+55))
-        var gap_centre_x:float=260+(_text_ink_bounds(_current_value.text,_font_strong,27).size.x-_text_ink_bounds(_next_value.text,_font_strong,27).size.x)*0.25
-        _place_ink_label(_upgrade_arrow,Vector2(gap_centre_x,y+55))
-    _workbench_layout.long_values=long_values
-
-func _place_current_icon(key: String) -> void:
-    _large_icon.texture=_icon_textures.get(key)
-    if _large_icon.texture==null:
-        _current_icon_geometry={}
-        return
-    var shift:float=float(_workbench_layout.get("data_y",70.0))-77.0
-    var safe:=Rect2(27,95+shift,52,47)
-    var centre:=Vector2(53,120+shift)
-    var mass:Vector2=_icon_centres[key]
-    var source:Vector2=_large_icon.texture.get_size()
-    var before:Vector2=source*mass
-    var after:Vector2=source-before
-    var factor:float=minf(minf((centre.x-safe.position.x)/before.x,(safe.end.x-centre.x)/after.x),minf((centre.y-safe.position.y)/before.y,(safe.end.y-centre.y)/after.y))
-    _large_icon.size=source*factor
-    _large_icon.position=centre-before*factor
-    _current_icon_geometry={"key":key,"frame_inner":Rect2(_workbench.global_position+Vector2(21,_workbench_layout.data_y+1),Vector2(64,78)),"safe":Rect2(_workbench.global_position+safe.position,safe.size),"visible_rect":_large_icon.get_global_rect(),"alpha_centre_normalized":mass,"displayed_alpha_centre":_large_icon.global_position+_large_icon.size*mass,"primary_surface_centre_y":_workbench.global_position.y+_workbench_layout.data_y+40,"optical_mass_offset_y":3}
-
-func _render_costs(quote: Dictionary, affordable: bool, reason: String) -> void:
-    var keys: Array = quote.get("costs",{}).keys() if quote.get("ok",false) else []
-    for id in _cost_cells:_cost_cells[id].name.visible=false;_cost_cells[id].amount.visible=false
-    _purchase.tooltip_text=""
-    var different:bool=_workbench_layout.different
-    var first_row_y:float=_workbench_layout.fee_y
-    _cost.text="本次费用";_cost.position=Vector2(20,first_row_y);_cost.size=Vector2(84,22)
-    _cost.visible=affordable;_payment_state.visible=not affordable
-    _payment_state.position=Vector2(20,first_row_y);_payment_state.size=Vector2(84,22)
-    _payment_state.text="" if affordable else _reason(reason);_payment_state.tooltip_text=_payment_state.text
-    _payment_state.autowrap_mode=TextServer.AUTOWRAP_OFF;_payment_state.clip_text=true;_payment_state.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;_payment_state.mouse_filter=Control.MOUSE_FILTER_PASS
-    for index in keys.size():
-        var id:String=str(keys[index])
-        if not _cost_cells.has(id):
-            var name:=_workbench_label("",Rect2(0,0,90,22),13,Color("5f7876"))
-            var amount:=_workbench_label("",Rect2(0,0,220,26),17,INK)
-            amount.add_theme_font_override("font",_font_strong);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-            _cost_cells[id]={"name":name,"amount":amount}
-        var cell:Dictionary=_cost_cells[id]
-        var width:float=308.0 if different or keys.size()==1 else (644.0-24.0*(keys.size()-1))/keys.size()
-        var x:float=112.0 if different else 112.0+index*(width+24.0)
-        var row_y:float=first_row_y+index*22 if different else first_row_y
-        cell.name.position=Vector2(x,row_y);cell.name.size=Vector2(78,22)
-        cell.amount.position=Vector2(x+82,row_y-3);cell.amount.size=Vector2(width-86,26)
-        cell.name.text={"1":"铁","2":"铀","degenerate_matter":"简并物质","jewel":"碎片"}.get(id,id)
-        var formatted:Dictionary=_session.amount_api.apply("to_display",[quote.costs[id]])
-        cell.amount.text=PlayerText.number(str(formatted.text)) if formatted.ok else "未知"
-        cell.amount.add_theme_color_override("font_color",INK if affordable else Color("a1593b"));cell.name.show();cell.amount.show()
-    if not quote.get("ok",false):
-        _payment_state.position=Vector2(112,first_row_y);_payment_state.size=Vector2(308,22)
-        _payment_state.text=_reason(str(quote.get("reason",quote.get("error","Unknown"))))
-    elif not affordable:_purchase.tooltip_text=_reason(reason)+"\n"+_cost_text(quote.costs)
-
-func _open_batch() -> void:
-    # Godot GUI picking uses scene order as well as the visual canvas order.
-    move_child(_batch_blocker, get_child_count() - 1)
-    move_child(_batch_frame,get_child_count()-1)
-    move_child(_batch, get_child_count() - 1)
-    _batch_blocker.show()
-    _batch_frame.show()
-    _batch.show()
-    _refresh_batch()
-    exclusive_ui_changed.emit()
-
-func _close_batch() -> void:
-    _batch_quantity.get_popup().hide()
-    _batch.hide()
-    _batch_frame.hide()
-    _batch_blocker.hide()
-    exclusive_ui_changed.emit()
-
-func _build_batch() -> void:
-    _batch_blocker=ColorRect.new();_batch_blocker.size=Vector2(808,900)
-    _batch_blocker.color=Color(0.03,0.08,0.11,0.30);_batch_blocker.z_index=19
-    add_child(_batch_blocker);_batch_blocker.hide()
-    _batch_frame=_frame(self,Rect2(90,180,628,590))
-    _batch_frame.show_behind_parent=false;_batch_frame.z_index=20;_batch_frame.hide()
-    _batch=PanelContainer.new();_batch.position=Vector2(90,180);_batch.size=Vector2(628,590);_batch.z_index=21
-    _batch.add_theme_stylebox_override("panel",StyleBoxEmpty.new());add_child(_batch)
-    var margin:=MarginContainer.new()
-    for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,30)
-    _batch.add_child(margin)
-    var stack:=VBoxContainer.new();stack.add_theme_constant_override("separation",14);margin.add_child(stack)
-    var heading:=Label.new();heading.text="全部装备升级"
-    heading.add_theme_font_override("font",_font_strong);heading.add_theme_font_size_override("font_size",24);heading.add_theme_color_override("font_color",CREAM)
-    stack.add_child(heading)
-    _batch_quantity=OptionButton.new()
-    _batch_quantity.get_popup().visibility_changed.connect(func():exclusive_ui_changed.emit())
-    for caption in ["每槽 +1","每槽 +10","逐槽 MAX"]:_batch_quantity.add_item(caption)
-    _batch_quantity.custom_minimum_size.y=40
-    _batch_quantity.add_theme_font_override("font",_font_strong);_batch_quantity.add_theme_font_size_override("font_size",17)
-    _batch_quantity.add_theme_color_override("font_color",CREAM)
-    _prepare_button_material(_batch_quantity,"button")
-    stack.add_child(_batch_quantity)
-    _batch_scroll=ScrollContainer.new();_batch_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
-    stack.add_child(_batch_scroll)
-    var results:=VBoxContainer.new();results.custom_minimum_size.x=554;results.add_theme_constant_override("separation",15);_batch_scroll.add_child(results)
-    _batch_results=Label.new();_batch_results.add_theme_font_size_override("font_size",16);_batch_results.add_theme_color_override("font_color",CREAM)
-    _batch_results.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;_batch_results.custom_minimum_size.x=548;results.add_child(_batch_results)
-    var row:=HBoxContainer.new();row.add_theme_constant_override("separation",14);stack.add_child(row)
-    _batch_submit=_button("执行升级",Rect2(0,0,270,44),_buy_all,true)
-    remove_child(_batch_submit);_batch_submit.custom_minimum_size=Vector2(270,44);row.add_child(_batch_submit)
-    _batch_close=_button("关闭",Rect2(0,0,270,44),_close_batch)
-    remove_child(_batch_close);_batch_close.custom_minimum_size=Vector2(270,44);row.add_child(_batch_close)
-    _batch.hide()
-
-func _selected_fact() -> Dictionary:
-    for row in _facts:
-        if str(row.id) == _selected: return row
+func _fact(id: String) -> Dictionary:
+    for fact in _facts:
+        if str(fact.id)==id:return fact
     return {}
 
-func select_slot(id: String) -> void:
-    _selected = id
-    _selection_open = true
-    var fact: Dictionary = _selected_fact()
-    _candidate = str(fact.get("equipment_id", ""))
-    _dirty = true
-
-func _select_candidate(id: String) -> void:
-    _candidate = id
-    _dirty = true
-
-func _refresh() -> void:
-    _dirty = false
-    presentation_counts.refreshes += 1
-    presentation_counts.slot_fact_reads += 1
-    _facts = _session.equipment_slot_facts()
-    if _batch.visible:_refresh_batch()
-    var active: Array = _facts.filter(func(row): return not row.dormant)
-    if _selected_fact().is_empty() or _selected_fact().get("dormant", false):
-        _selected = str(active[0].id) if not active.is_empty() else ""
-        _candidate = str(_selected_fact().get("equipment_id", ""))
-    var fact: Dictionary = _selected_fact()
-    if fact.is_empty(): return
-    _ship = str(_session.campaign_system.selected_ship())
-    for option in _session.campaign_system.ship_options():
-        if option.selected: _title.text = "装配 · " + str(option.name)
-    _refresh_slots(active)
-    _refresh_choices(fact)
-    _refresh_comparison()
-    var scene_picture: Array = [_ship, _selected, active.map(func(row): return [row.id,row.category,row.index,row.equipment_id])]
-    if scene_picture != _scene_picture:
-        _scene_picture = scene_picture
-        presentation_counts.scene_redraw_requests += 1
-        queue_redraw()
-
-func _refresh_comparison() -> void:
-    _comparison_dirty = false
-    var fact: Dictionary = _selected_fact()
-    if fact.is_empty():
-        _dirty = true
-        return
-    _wallet_dependency = _session.economy.budget()
-    presentation_counts.wallet_refreshes += 1
-    _wallet.text = _cost_text(_wallet_dependency).replace(" / ", "   ")
-    if _maximum: presentation_counts.maximum_reads += 1
-    presentation_counts.comparison_reads += 1
-    last_comparison = _session.equipment_comparison(_selected, _candidate, _quantity, _maximum)
-    if not last_comparison.get("ok", false):
-        _cost.text = PlayerText.error(str(last_comparison.get("reason", "Unknown")))
-        _purchase.disabled = true
-        _install.disabled = true
-        return
-    var comparison: Dictionary = last_comparison
-    var scope:bool=fact.category=="defence"
-    if scope!=_defence_scope:
-        _defence_scope=scope
-        _title.add_theme_color_override("font_color",Color("b9e6d7") if scope else CREAM)
-    var quote: Dictionary = comparison.quote
-    var different:bool=not _candidate.is_empty() and _candidate!=str(fact.equipment_id)
-    _layout_workbench(different,scope,quote.get("costs",{}).size() if quote.get("ok",false) else 0)
-    _place_current_icon(str(fact.equipment_id))
-    _current_title.text = "%s · %s" % [_slot_name(_selected),NAMES.get(str(fact.equipment_id),"装备")]
-    _level_label.text = "Lv."+str(fact.paid_level)
-    var title_ink:Rect2=_text_ink_bounds(_current_title.text,_current_title.get_theme_font("font"),18)
-    var level_ink:Rect2=_text_ink_bounds(_level_label.text,_level_label.get_theme_font("font"),13)
-    _place_ink_label(_current_title,Vector2(20+title_ink.size.x*0.5,18))
-    _place_ink_label(_level_label,Vector2(32+title_ink.size.x+level_ink.size.x*0.5,18))
-    _current_value.text = _value(comparison.current)
-    _next_value.text = _value(comparison.upgrade)
-    _current_value.tooltip_text=str(comparison.current.primary) if comparison.current is Dictionary and comparison.current.get("primary")!=null else _value(comparison.current)
-    _next_value.tooltip_text=str(comparison.upgrade.primary) if comparison.upgrade is Dictionary and comparison.upgrade.get("primary")!=null else _value(comparison.upgrade)
-    _render_costs(quote,comparison.affordable,str(comparison.payment_reason))
-    _cost.tooltip_text = _cost_text(quote.costs) if quote.get("ok",false) else _payment_state.text
-    _purchase.text = "购买%s级" % str(quote.count) if quote.get("ok", false) else "购买"
-    if quote.get("ok",false):_purchase.tooltip_text=("" if comparison.affordable else _purchase.tooltip_text+"\n")+_purchase.text
-    _purchase.disabled = not comparison.affordable
-    _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
-    _switch_state.visible=not _switch_state.text.is_empty()
-
-    var primary: String = "容量" if fact.category == "defence" else "攻击力"
-    _current_caption.text = "当前" + primary
-    _layout_primary_values()
-    _install.text = "安装" + str(NAMES.get(_candidate, "装备")) if not _candidate.is_empty() else "选择装备"
-    _install.disabled = _candidate.is_empty() or not comparison.switch_admission.ok
-    _install.tooltip_text = "" if comparison.switch_admission.ok else _reason(str(comparison.switch_admission.reason))
-    _comparison_group.visible=_selection_open and different
-    _install.visible=_selection_open and different
-    _comparison_title.text = "装备选择"
-    _compare_row_label.text=primary
-    for column in 2:
-        var row = comparison.current if column==0 else comparison.candidate
-        _compare_headers[column].text=("现装 · " if column==0 else "所选 · ")+(_interval(row) if fact.category=="weapon" else str(NAMES.get(str(row.equipment_id),"空槽")))
-        _compare_values[column].text=_value(row)
-    _period_caption.position=Vector2(0,0)
-    _period_caption.visible=fact.category=="weapon"
-    if _candidate.is_empty():
-        _install.text="选择装备"
-        _install.tooltip_text=""
-    elif str(comparison.switch_admission.get("reason",""))=="NoChange":_install.text="已装备"
-    elif str(comparison.switch_admission.get("reason",""))=="EquipmentSwitchLocked":_install.text="换装冷却中"
-    elif str(comparison.switch_admission.get("reason",""))=="EquipmentLocked":_install.text="尚未解锁"
-    for index in 3:
-        var selected: bool = (index == 2 and _maximum) or (not _maximum and index == (1 if _quantity == 10 else 0))
-        if _quantity_presentations.get(index) != selected:
-            _quantity_presentations[index] = selected
-            presentation_counts.quantity_styles_updated += 1
-            _button_tint(_quantity_buttons[index],selected)
-
-func _refresh_slots(active: Array) -> void:
-    var live: Array=[]
-    var weapons: int=active.filter(func(row): return row.category=="weapon").size()
-    var defences: int=active.size()-weapons
-    for category in _slot_groups:
-        var count: int=weapons if category=="weapon" else defences
-        _slot_groups[category].text=("武器" if category=="weapon" else "防御")+" · 启用 "+str(count)
-        _slot_groups[category].position.y=170 if category=="weapon" else 217+weapons*31
-        _slot_groups[category].visible=count>0
-        _slot_backdrops[category].position.y=_slot_groups[category].position.y-6
-        _slot_backdrops[category].size.y=40+count*31
-        _slot_backdrops[category].visible=count>0
-    for row in active:
-        var id: String=str(row.id)
-        live.append(id)
-        if not _slot_buttons.has(id):
-            var button:=_button("",Rect2(0,0,180,30),select_slot.bind(id),false,"index")
-            button.name="Slot_"+id.replace(":","_")
-            var number:=_label(str(int(row.index)+1),Rect2(10,0,24,30),14,Color("b4d7d1"))
-            remove_child(number);button.add_child(number)
-            var title:=_label("",Rect2(38,0,77,30),14,CREAM)
-            remove_child(title);button.add_child(title)
-            var meta:=_label("",Rect2(115,0,57,30),12,Color("b2cac5"))
-            meta.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-            remove_child(meta);button.add_child(meta)
-            _slot_buttons[id]={"button":button,"caption":title,"meta":meta,"number":number}
-        var item: Dictionary=_slot_buttons[id]
-        # Ship changes can move the defence group even when this slot's own facts are stable.
-        item.button.position=_slot_label_position(row)
-        var signature: Array=[row.category,row.index,row.equipment_id,row.paid_level,id==_selected]
-        if _slot_presentations.get(id)!=signature:
-            _slot_presentations[id]=signature
-            presentation_counts.slots_updated+=1
-            item.caption.text=str(NAMES.get(str(row.equipment_id),"装备"))
-            item.meta.text="Lv."+str(row.paid_level) if not str(row.equipment_id).is_empty() else ""
-        if _slot_selections.get(id)!=(id==_selected):
-            presentation_counts.slot_styles_updated+=1
-            _slot_selections[id]=id==_selected
-            _button_tint(item.button,id==_selected)
-    for id in _slot_buttons.keys():
-        if id not in live:
-            _slot_buttons[id].button.queue_free();_slot_buttons.erase(id);_slot_presentations.erase(id);_slot_selections.erase(id)
-
-func _refresh_choices(fact: Dictionary) -> void:
-    presentation_counts.equipment_option_reads+=1
-    var options: Array=_session.equipment.panel_equipment(_selected)
-    var live: Array=[]
-    var column: int=0
-    for option in options:
-        var id: String=str(option.id)
-        if id.is_empty():continue
-        live.append(id)
-        if not _choices.has(id):
-            var button:=_button("",Rect2(0,0,68,88),_select_candidate.bind(id),false,"candidate")
-            remove_child(button);_candidate_row.add_child(button)
-            button.name="Candidate_"+id
-            var icon:=_icon(id,Rect2(16,8,36,32),button)
-            var caption:=_label("",Rect2(3,42,62,20),13,CREAM)
-            remove_child(caption);button.add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-            caption.add_theme_font_override("font",_font_strong)
-            caption.size=Vector2(62,20)
-            var status:=_label("",Rect2(3,62,62,18),12,Color("c6dfd5"))
-            remove_child(status);button.add_child(status);status.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-            status.add_theme_font_override("font",_font_strong)
-            # Initial Label sizing used the default font before its override.
-            # Reapply the actual slot after the status font's minimum is known.
-            status.size=Vector2(62,18)
-            _choices[id]={"button":button,"icon":icon,"caption":caption,"status":status}
-        var signature: Array=[option.enabled,str(fact.equipment_id)==id,_candidate==id,_selection_open,column]
-        if _choice_presentations.get(id)==signature:column+=1;continue
-        _choice_presentations[id]=signature;presentation_counts.candidates_updated+=1
-        var item: Dictionary=_choices[id]
-        item.button.position=Vector2(column*76,0)
-        # Keep the catalog column even while its whole control is hidden. Unlocking never compacts the row.
-        item.button.visible=_selection_open and option.enabled;item.button.disabled=not option.enabled
-        item.button.mouse_filter=Control.MOUSE_FILTER_STOP if option.enabled else Control.MOUSE_FILTER_IGNORE
-        item.button.focus_mode=Control.FOCUS_ALL if option.enabled else Control.FOCUS_NONE
-        item.button.tooltip_text=""
-        item.caption.text=str(NAMES.get(id,option.name))
-        item.status.text="已装备" if str(fact.equipment_id)==id else "待安装" if _candidate==id else ""
-        item.caption.modulate=Color.WHITE if option.enabled else Color("b1beb9")
-        item.icon.modulate=Color.WHITE
-        item.icon.material=null
-        item.status.add_theme_color_override("font_color",Color("c6dfd5") if option.enabled else Color("d6bb8a"))
-        _button_tint(item.button,_candidate==id)
-        column+=1
-    for id in _choices.keys():
-        if id not in live:_choices[id].button.queue_free();_choices.erase(id);_choice_presentations.erase(id)
-
-func _value(row) -> String:
-    if row == null: return "—"
-    return PlayerText.number(str(row.primary)) if row.get("status") == "known" and row.primary != null else "空槽" if row.get("status") == "empty" else "未知"
-
-func _interval(row) -> String:
-    return "—" if row == null or not row.get("properties", {}).has("interval_seconds") else "%s秒" % str(row.properties.interval_seconds)
-
-func _reason(reason: String) -> String:
-    return str({"EquipmentSwitchLocked": "换装冷却尚未结束", "NoChange": "没有可购买等级", "EquipmentLocked": "装备尚未解锁", "EvolutionMaterialLocked": "进化材料尚未开放", "FirstDefenceRequired": "首防御槽不可卸空", "InsufficientResources": "资源不足"}.get(reason, PlayerText.error(reason)))
-
-func _cost_text(costs: Dictionary) -> String:
-    var parts := PackedStringArray()
-    for id in costs:
-        var result: Dictionary = _session.amount_api.apply("to_display", [costs[id]])
-        var label: String = {"1":"铁", "2":"铀", "degenerate_matter":"简并物质", "jewel":"碎片", "chrono":"时空微粒"}.get(str(id), str(id))
-        parts.append((PlayerText.number(str(result.text)) if result.ok else "未知") + " " + label)
-    return " / ".join(parts) if not parts.is_empty() else "0"
-
-func _buy() -> void:
-    var inputs: Dictionary = _session.equipment_inputs()
-    var result: Dictionary = _session.equipment.buy_max_levels(_selected, inputs, _session.economy.affordable, _session.economy.payment, _session.publish_equipment_levels) if _maximum else _session.equipment.buy_levels(_selected, _quantity, inputs, _session.economy.payment, _session.publish_equipment_levels)
-    _accept_result(result)
-
-func _equip() -> void:
-    _accept_result(_session.equipment.equip_slot(_selected, _candidate, _session.equipment_inputs(), _session.publish_equipment_refit))
-
-func _buy_all() -> void:
-    var mode: int = _batch_quantity.selected
-    var result: Dictionary = _session.equipment.buy_all_levels(10 if mode == 1 else 1, mode == 2, _session.equipment_inputs(), _session.economy.affordable, _session.economy.payment, _session.publish_equipment_levels)
-    _last_batch_result = result.duplicate(true)
-    _accept_result(result)
-
 func _slot_name(id: String) -> String:
-    var pieces := id.split(":")
-    return ("武器" if pieces[0] == "weapon" else "防御") + str(int(pieces[1]) + 1) if pieces.size() == 2 else id
+    var parts=id.split(":")
+    return ("武器" if parts[0]=="weapon" else "防御")+str(int(parts[1])+1)
 
-func _accept_result(result: Dictionary) -> void:
-    last_result = result.duplicate(true)
-    _dirty = true
+func _refresh_structure() -> void:
+    _structure_dirty=false;_values_dirty=false;_pending_ids.clear();presentation_counts.refreshes+=1
+    _facts=_session.equipment_slot_facts();_active=_facts.filter(func(f):return not f.dormant)
+    _ship=str(_session.campaign_system.selected_ship())
+    if _selected.is_empty() or _fact(_selected).get("dormant",true):_selected=str(_active[0].id) if not _active.is_empty() else ""
+    var early: bool=_active.size()<=2
+    _body_top=432 if early else 294
+    _content_height=CONTENT_PAD*2+CARD_GAP*maxi(0,_active.size()-1)
+    for fact in _active:_content_height+=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+    _view_height=minf(484,_content_height)
+    _scroll.position=Vector2(340,_body_top);_scroll.size=Vector2(434,_view_height)
+    _global_quantity.position.y=403 if early else 260;_batch_open.position.y=_global_quantity.position.y
+    _global_quantity.disabled=not _session.run_state.is_running();_batch_open.disabled=_global_quantity.disabled
+    var display_height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
+    var bottom: float=640.0 if early else 680.0
+    _identity.position.y=bottom-display_height-83.0
+    var ship_title: String=_ship
+    for option in _session.campaign_system.ship_options():
+        if option.selected:ship_title=str(option.name)
+    _identity_title.text=ship_title
+    _identity_counts.text="武器 %s  ·  防御 %s" % [_active.filter(func(f):return f.category=="weapon").size(),_active.filter(func(f):return f.category=="defence").size()]
+    for id in _cards:_cards[id].panel.hide()
+    var y: float=CONTENT_PAD
+    for category in ["weapon","defence"]:
+        for fact in _active.filter(func(f):return f.category==category):
+            var id: String=str(fact.id)
+            if not _cards.has(id):_create_card(id)
+            var height: float=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+            _cards[id].row_y=y;_cards[id].panel.position=Vector2(2,y);_cards[id].panel.size=Vector2(CARD_WIDTH,height)
+            _refresh_card(id);y+=height+CARD_GAP
+    _configure_scroll_rows()
+    _update_visible_cards();_refresh_scene_picture()
+
+func _configure_scroll_rows() -> void:
+    var starts: Array[int] = []
+    for fact in _active:starts.append(int(_cards[str(fact.id)].row_y-CONTENT_PAD))
+    starts.sort()
+    var last_start: int=0
+    for start in starts:
+        # Keep the final complete row group aligned with the same top inset.
+        # Spare viewport height belongs below that group, never above it.
+        if _content_height-CONTENT_PAD*2-start<=_view_height-CONTENT_PAD*2:
+            last_start=start;break
+    _scroll_stops.assign(starts.filter(func(start):return start<=last_start))
+    if _scroll_stops.is_empty():_scroll_stops.append(0)
+    _content_height=maxf(_content_height,last_start+_view_height)
+    _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
+    var retained: int=0
+    for start in _scroll_stops:
+        if start<=_scroll_anchor:retained=start
+    _scroll_anchor=retained
+    _aligning_scroll=true;_scroll.scroll_vertical=retained;_aligning_scroll=false
+    # ScrollContainer updates its bounds in the following layout pass.
+    _scroll.set_deferred("scroll_vertical",retained)
+
+func _align_scroll_rows(value: float) -> void:
+    if _aligning_scroll:return
+    var requested: int=int(value)
+    var target: int=_scroll_anchor
+    if requested>_scroll_anchor:
+        target=_scroll_stops.back()
+        for stop in _scroll_stops:
+            if stop>=requested:target=stop;break
+    elif requested<_scroll_anchor:
+        target=0
+        for stop in _scroll_stops:
+            if stop>requested:break
+            target=stop
+    _scroll_anchor=target
+    _aligning_scroll=true;_scroll.scroll_vertical=target;_aligning_scroll=false
+    _update_visible_cards()
+
+func _create_card(id: String) -> void:
+    var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(CARD_WIDTH,EQUIPPED_HEIGHT)
+    _content.add_child(panel)
+    var icon=_icon(panel,"",Rect2(12,26,44,54))
+    var select=_button(panel,"",Rect2(64,10,198,28),_open_choices.bind(id),"button",true)
+    select.alignment=HORIZONTAL_ALIGNMENT_LEFT;select.clip_text=true
+    _operation_button(select,"button",true,true)
+    # This picker is a Button opening the existing Owner-backed choice popup,
+    # so consume the shared selected face and the same arrow without changing it
+    # into an unrelated OptionButton selection/confirmation flow.
+    var arrow=TextureRect.new();arrow.texture=preload("res://assets/ui/public_shell/stepper-down.svg")
+    arrow.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;arrow.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    arrow.mouse_filter=Control.MOUSE_FILTER_IGNORE;select.add_child(arrow);arrow.position=Vector2(176,8);arrow.size=Vector2(14,12)
+    select.add_theme_font_size_override("font_size",16)
+    select.size=Vector2(198,28)
+    var level=_label(panel,"",Rect2(272,10,68,28),16,INK,600)
+    var compare=_button(panel,"比较",Rect2(350,10,58,28),_show_comparison.bind(id,""),"button",true)
+    var attribute=RichTextLabel.new();attribute.position=Vector2(72,42);attribute.size=Vector2(336,24)
+    attribute.bbcode_enabled=true;attribute.scroll_active=false;attribute.mouse_filter=Control.MOUSE_FILTER_IGNORE
+    attribute.add_theme_font_override("normal_font",_font_medium);attribute.add_theme_font_override("bold_font",_font_strong)
+    attribute.add_theme_font_size_override("normal_font_size",16);attribute.add_theme_font_size_override("bold_font_size",16)
+    panel.add_child(attribute)
+    var cost_title=_label(panel,"费用",Rect2(72,70,34,24),16,Color("284650"))
+    var fee_area=Control.new();fee_area.position=Vector2(108,70);fee_area.size=Vector2(144,24);panel.add_child(fee_area)
+    var quantity=_button(panel,"×1",Rect2(262,68,48,28),_cycle_slot.bind(id),"button",true)
+    var purchase=_button(panel,"购买1级",Rect2(322,68,86,28),_buy_slot.bind(id),"primary",true)
+    _cards[id]={"panel":panel,"icon":icon,"select":select,"level":level,"compare":compare,"attribute":attribute,"cost_title":cost_title,"fees":fee_area,"fee_cells":[],"fee_cache":{},"fee_empty":null,"fee_reason":null,"border_selected":null,"quantity":quantity,"purchase":purchase,"row_y":0.0,"mode":_batch_mode,"signature":[],"comparison":{}}
+    purchase.focus_entered.connect(_select_visual.bind(id));quantity.focus_entered.connect(_select_visual.bind(id))
+
+func _comparison(id: String, candidate: String="") -> Dictionary:
+    var row: Dictionary=_cards[id]
+    presentation_counts.comparison_reads+=1
+    if int(row.mode)==2:presentation_counts.maximum_reads+=1
+    return _session.equipment_comparison(id,candidate,10 if int(row.mode)==1 else 1,int(row.mode)==2)
+
+func _value(value) -> String:
+    if value==null:return "—"
+    return PlayerText.number(str(value.primary)) if value.get("status")=="known" and value.get("primary")!=null else "—" if value.get("status")=="empty" else "未知"
+
+func _refresh_card(id: String) -> void:
+    var fact: Dictionary=_fact(id)
+    if fact.is_empty():return
+    var row: Dictionary=_cards[id]
+    var empty: bool=str(fact.equipment_id).is_empty()
+    # The painted card face and picker rim need 2px beyond their Rect centres.
+    row.select.position.y=(row.panel.size.y-row.select.size.y)*0.5+2.0 if empty else 10.0
+    for control in [row.level,row.compare,row.attribute,row.cost_title,row.fees,row.quantity,row.purchase]:
+        control.visible=not empty
+    row.select.text=str(NAMES.get(str(fact.equipment_id),"装备"))
+    row.select.tooltip_text=row.select.text
+    row.icon.texture=_icons.get(str(fact.equipment_id))
+    if empty:
+        row.comparison={};row.signature=[];row.fee_cells=[]
+        row.select.disabled=not _session.run_state.is_running()
+        row.purchase.disabled=true;row.quantity.disabled=true
+        if id==_selected:last_comparison={}
+        _card_border(id)
+        return
+    var comparison: Dictionary=_comparison(id,str(fact.equipment_id))
+    if id==_selected:last_comparison=comparison
+    if not comparison.get("ok",false):
+        row.purchase.disabled=true;row.quantity.disabled=true;row.select.disabled=true;row.compare.disabled=true
+        return
+    row.comparison=comparison;row.compare.disabled=false
+    var quote: Dictionary=comparison.get("quote",{})
+    var reason: String=str(comparison.get("payment_reason",comparison.get("reason","Unknown")))
+    if int(row.mode)==2 and reason=="NoChange":
+        var next_quote: Dictionary=_session.equipment.quote_slot(id,1)
+        if not next_quote.get("ok",false):reason=str(next_quote.get("reason",reason))
+    var individual: Dictionary={}
+    for resource in quote.get("costs",{}):
+        individual[resource]=_session.economy.can_pay({resource:quote.costs[resource]},_budget).get("ok",false)
+    var signature: Array=[fact.equipment_id,fact.paid_level,row.mode,comparison,individual,_session.run_state.is_running()]
+    if row.signature==signature:return
+    row.signature=signature;presentation_counts.slots_updated+=1
+    row.icon.texture=_icons.get(str(fact.equipment_id))
+    row.select.text=str(NAMES.get(str(fact.equipment_id),"装备"))
+    row.select.tooltip_text=row.select.text
+    row.level.text="Lv."+str(fact.paid_level)
+    var primary: String="攻击力" if fact.category=="weapon" else "容量"
+    var current_ink: String=BridgeTheme.number_role_color("current","light").to_html(false)
+    var gain_ink: String=BridgeTheme.number_role_color("gain","light").to_html(false)
+    row.attribute.text="[color=#284650]"+primary+"  [/color][color=#"+current_ink+"]"+_value(comparison.get("current"))+"[/color][color=#49636c] → [/color][b][color=#"+gain_ink+"]"+_value(comparison.get("upgrade"))+"[/color][/b]"
+    row.attribute.tooltip_text=row.attribute.get_parsed_text()
+    row.quantity.text=["×1","×10","MAX"][int(row.mode)]
+    row.purchase.text="购买%s级" % str(quote.count) if quote.get("ok",false) else "可购0级" if reason=="NoChange" and int(row.mode)==2 else "购买"
+    var budget_rejection: bool=reason=="InsufficientResources" or (reason=="NoChange" and int(row.mode)==2)
+    row.purchase.disabled=not _session.run_state.is_running() or not comparison.get("ok",false) or (not quote.get("ok",false) and not budget_rejection)
+    row.quantity.disabled=not _session.run_state.is_running();row.select.disabled=not _session.run_state.is_running()
+    _render_fees(id,quote,reason,budget_rejection)
+    _card_border(id)
+
+func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejection: bool) -> void:
+    var row: Dictionary=_cards[id]
+    var values: Array=[];var total: float=0.0
+    var costs: Dictionary=quote.get("costs",{}) if quote.get("ok",false) else {}
+    for resource in costs:
+        var name: String=str(RESOURCE_NAMES.get(str(resource),str(resource)))
+        var displayed: Dictionary=_session.amount_api.apply("to_display",[costs[resource]])
+        var raw: String=str(displayed.text) if displayed.get("ok",false) else "未知"
+        var number: String=PlayerText.resource_number(raw) if displayed.get("ok",false) else "未知"
+        var can_pay: Dictionary=_session.economy.can_pay({resource:costs[resource]},_budget)
+        values.append({"id":str(resource),"name":name,"number":number,"raw":raw,"poor":not can_pay.ok})
+        total+=24+_font_medium.get_string_size(name+number,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x+4+12
+    var omit_names: bool=total-12>row.fees.size.x
+    for cached in row.fee_cache.values():cached.control.hide()
+    if is_instance_valid(row.fee_empty):row.fee_empty.hide()
+    if is_instance_valid(row.fee_reason):row.fee_reason.hide()
+    row.fee_cells=[]
+    var x: float=0.0
+    for value in values:
+        var name_caption: String="" if omit_names else value.name
+        var name_width: float=_font_medium.get_string_size(name_caption,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x
+        var number_width: float=_font_medium.get_string_size(value.number,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x
+        var name_gap: float=4.0 if not name_caption.is_empty() else 0.0
+        var width: float=24+name_width+name_gap+number_width
+        if not row.fee_cache.has(value.id):
+            var created=Control.new();created.mouse_filter=Control.MOUSE_FILTER_PASS;row.fees.add_child(created)
+            var icon=TextureRect.new();icon.texture=ResourceVisuals.icon(value.id);icon.modulate=ResourceVisuals.icon_modulate(value.id)
+            icon.position=Vector2(0,2);icon.size=Vector2(20,20);icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;icon.size=Vector2(20,20);created.add_child(icon)
+            var name_label=_label(created,"",Rect2(24,0,100,24),16,Color("1e3e4c"))
+            var label=_label(created,"",Rect2(24,0,190,24),16)
+            created.mouse_entered.connect(_schedule_tooltip.bind(id,created));created.mouse_exited.connect(_hide_tooltip)
+            row.fee_cache[value.id]={"control":created,"name_label":name_label,"label":label}
+        var cached: Dictionary=row.fee_cache[value.id]
+        var cell: Control=cached.control
+        cell.position=Vector2(x,0);cell.size=Vector2(width,24);cell.show()
+        cached.name_label.text=name_caption;cached.name_label.size.x=name_width
+        cached.label.text=value.number;cached.label.position.x=24+name_width+name_gap;cached.label.size.x=number_width
+        BridgeTheme.apply_number_role(cached.label,"insufficient" if value.poor else "cost","light")
+        var full: String=value.name+" · "+value.raw
+        cell.set_meta("resource_tooltip",full)
+        row.fee_cells.append({"control":cell,"resource":value.id,"poor":value.poor,"name_omitted":omit_names,"full_text":full})
+        x+=width+12
+    if values.is_empty():
+        if not is_instance_valid(row.fee_empty):row.fee_empty=_label(row.fees,"—",Rect2(0,0,20,24),16)
+        row.fee_empty.show()
+        if not reason.is_empty() and not budget_rejection:
+            row.fee_empty.hide()
+            if not is_instance_valid(row.fee_reason):
+                row.fee_reason=_label(row.fees,"",Rect2(0,0,144,24),16,Color("903d23"))
+                row.fee_reason.clip_text=true
+                row.fee_reason.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+            row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else _failure_text(reason)
+            row.fee_reason.tooltip_text=row.fee_reason.text;row.fee_reason.show()
+
+func _card_border(id: String) -> void:
+    var chosen: bool=id==_selected
+    if _cards[id].border_selected==chosen:return
+    _cards[id].border_selected=chosen
+    var face: StyleBox=BridgeTheme.operation_plate(8)
+    face.state="selected" if chosen else "normal"
+    _cards[id].panel.add_theme_stylebox_override("panel",face)
+
+func _select_visual(id: String) -> void:
+    if _selected==id:return
+    var old: String=_selected;_selected=id
+    if _cards.has(old):_card_border(old)
+    _card_border(id);last_comparison=_cards[id].comparison;_refresh_scene_picture()
+
+func select_slot(id: String) -> void:
+    if _cards.has(id):_select_visual(id)
+
+func _cycle_slot(id: String) -> void:
+    _select_visual(id);_cards[id].mode=(int(_cards[id].mode)+1)%3;_refresh_card(id)
+
+func _cycle_global() -> void:
+    _apply_global_quantity((_batch_mode+1)%3)
+
+func _apply_global_quantity(mode: int) -> void:
+    if not _session.run_state.is_running():return
+    _batch_mode=mode;_global_quantity.text=["×1","×10","MAX"][mode]
+    for row in _cards.values():row.mode=mode
+    # Only quantity-dependent quotes change; no Owner command or scene rebuild.
+    for fact in _active:_refresh_card(str(fact.id))
+
+func _update_visible_cards() -> void:
+    var top: float=_scroll.scroll_vertical
+    for fact in _active:
+        var id: String=str(fact.id);var row: Dictionary=_cards[id]
+        var y: float=float(row.row_y)
+        var full: bool=y>=top and y+row.panel.size.y<=top+_view_height
+        row.panel.visible=full
+        if not full:
+            var focus: Control=get_viewport().gui_get_focus_owner() if is_inside_tree() else null
+            if focus!=null and row.panel.is_ancestor_of(focus):focus.release_focus();_scroll.grab_focus()
+            if _popup_slot==id:_close_popup()
+    _hide_tooltip()
+
+func _schedule_tooltip(_id: String, cell: Control) -> void:
+    _tooltip_ticket+=1;var ticket: int=_tooltip_ticket
+    get_tree().create_timer(.5,false).timeout.connect(func():
+        if ticket!=_tooltip_ticket or not is_instance_valid(cell) or not cell.is_visible_in_tree() or not is_visible_in_tree():return
+        for child in _tooltip.get_children():child.queue_free()
+        var text: String=str(cell.get_meta("resource_tooltip",""))
+        var label=_label(_tooltip,text,Rect2(0,0,280,28),15,CREAM)
+        label.custom_minimum_size=Vector2(_font_medium.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+20,32)
+        var point: Vector2=cell.global_position-global_position
+        _tooltip.position=Vector2(clampf(point.x,345,778-label.custom_minimum_size.x),clampf(point.y-43,90,842))
+        _tooltip.show())
+
+func _hide_tooltip() -> void:
+    _tooltip_ticket+=1
+    if is_instance_valid(_tooltip):_tooltip.hide()
+
+func _show_toast(text: String, persistent: bool=false) -> void:
+    _toast_text.text=text;_toast_time=-1.0 if persistent else 1.8;_toast.show()
+
+func _new_popup(slot: String, height: float) -> Panel:
+    _close_popup();_popup_slot=slot
+    _popup=Control.new();_popup.size=Vector2(808,900);_popup.z_index=50;add_child(_popup)
+    var blocker=ColorRect.new();blocker.color=Color(0,0,0,.08);blocker.size=Vector2(808,900);blocker.mouse_filter=Control.MOUSE_FILTER_STOP
+    _popup.add_child(blocker);blocker.gui_input.connect(func(event):
+        if event is InputEventMouseButton and event.pressed:_close_popup())
+    var y: float=(900-height)*.5
+    if _cards.has(slot):
+        var anchor: float=_body_top+float(_cards[slot].row_y)-_scroll.scroll_vertical
+        y=anchor+46 if anchor+46+height<=minf(880,_body_top+_view_height) else maxf(100,anchor-height-4)
+    var panel=_panel(_popup,Rect2(392,y,386,height));panel.mouse_filter=Control.MOUSE_FILTER_STOP
+    _button(panel,"×",Rect2(344,6,32,28),_close_popup)
+    exclusive_ui_changed.emit();return panel
+
+func _close_popup() -> void:
+    if is_instance_valid(_popup):
+        _popup.hide();_popup.queue_free();_popup=null;_popup_slot="";exclusive_ui_changed.emit()
+    _hide_tooltip()
+
+func _open_choices(id: String) -> void:
+    _select_visual(id)
+    var options: Array=_session.equipment.panel_equipment(id).filter(func(option):return option.enabled and not str(option.id).is_empty())
+    var panel=_new_popup(id,42+options.size()*94)
+    _label(panel,"选择装备" if str(_fact(id).equipment_id).is_empty() else str(NAMES.get(str(_fact(id).equipment_id),"装备"))+"  Lv."+str(_fact(id).paid_level),Rect2(14,8,320,24),16,CREAM,600)
+    for i in options.size():
+        var option: Dictionary=options[i];var y: float=42+i*94
+        var key: String=str(option.id)
+        var current: bool=key==str(_fact(id).equipment_id)
+        var choice=_button(panel,"",Rect2(8,y,268,84),_equip_choice.bind(id,key))
+        choice.set_meta("equipment_id",key)
+        for state in ["normal","hover","pressed","disabled"]:
+            var face: StyleBox=BridgeTheme.operation_plate(8)
+            face.state="selected" if current else state
+            choice.add_theme_stylebox_override(state,face)
+        _icon(choice,key,Rect2(10,15,42,54))
+        _label(choice,str(NAMES.get(key,option.name)),Rect2(64,6,194,27),18,INK,600)
+        if current:_label(choice,"现装",Rect2(194,8,62,24),14,Color("326272"))
+        var owner_value: Dictionary=_session.equipment_comparison(id,key,1,false).get("candidate",{})
+        _label(choice,("攻击力 " if id.begins_with("weapon:") else "容量 ")+_value(owner_value),Rect2(64,33,194,25),15,INK)
+        if owner_value.get("properties",{}).has("interval_seconds"):
+            _label(choice,"周期 "+str(owner_value.properties.interval_seconds)+"秒",Rect2(64,57,194,23),15,INK)
+        _button(panel,"比较",Rect2(286,y,90,84),_show_comparison.bind(id,str(option.id)))
+    var first: Control=panel.get_child(2) if panel.get_child_count()>2 else null
+    if first!=null and first is Button:first.grab_focus()
+
+func _show_comparison(id: String, candidate: String) -> void:
+    if not _session.run_state.is_running():return
+    _select_visual(id)
+    var fact: Dictionary=_fact(id)
+    var choice: String=str(fact.equipment_id) if candidate.is_empty() else candidate
+    var compared: Dictionary=_comparison(id,choice)
+    var panel=_new_popup(id,238)
+    _label(panel,str(NAMES.get(str(fact.equipment_id),"空槽"))+" 属性比较",Rect2(14,8,320,26),16,CREAM,600)
+    var values: Array=[compared.get("current"),compared.get("upgrade") if candidate.is_empty() else compared.get("candidate")]
+    for i in 2:
+        var value=values[i]
+        var background=_panel(panel,Rect2(10,46+i*90,366,82));background.add_theme_stylebox_override("panel",BridgeTheme.operation_plate(8))
+        var key: String=str(value.get("equipment_id",choice)) if value is Dictionary else choice
+        _icon(background,key,Rect2(12,13,44,54))
+        _label(background,("当前" if i==0 else "升级后" if candidate.is_empty() else "候选")+" · "+str(NAMES.get(key,"空槽")),Rect2(72,8,285,24),16,INK,600)
+        _label(background,_value(value),Rect2(72,36,285,25),18,INK,600)
+        if fact.category=="weapon" and value is Dictionary and value.get("properties",{}).has("interval_seconds"):
+            _label(background,"周期 "+str(value.properties.interval_seconds)+"秒",Rect2(228,54,130,22),14,INK)
+
+func _equip_choice(id: String, candidate: String) -> void:
+    _select_visual(id);_close_popup()
+    if candidate==str(_fact(id).get("equipment_id","")):return
+    var result: Dictionary=_session.equipment.equip_slot(id,candidate,_session.equipment_inputs(),_session.publish_equipment_refit)
+    _accept_result(result,false)
+
+func _buy_slot(id: String) -> void:
+    _select_visual(id)
+    var mode: int=int(_cards[id].mode);var inputs: Dictionary=_session.equipment_inputs()
+    var result: Dictionary=_session.equipment.buy_max_levels(id,inputs,_session.economy.affordable,_session.economy.payment,_session.publish_equipment_levels) if mode==2 else _session.equipment.buy_levels(id,10 if mode==1 else 1,inputs,_session.economy.payment,_session.publish_equipment_levels)
+    if not result.get("ok",false) and str(result.get("reason",""))=="InsufficientResources":_show_toast("资源不足")
+    elif not result.get("ok",false) and mode==2 and str(result.get("reason",""))=="NoChange":
+        var next_quote: Dictionary=_session.equipment.quote_slot(id,1)
+        _show_toast("资源不足" if next_quote.get("ok",false) else _failure_text(str(next_quote.get("reason","NoChange"))))
+    _accept_result(result,true)
+
+func _accept_result(result: Dictionary, levels: bool) -> void:
+    last_result=result.duplicate(true)
+    if result.get("ok",false):
+        _toast.hide();_toast_time=0.0
+    var receipt: Dictionary=result.get("purchase_receipt",{})
+    var unknown: bool=str(receipt.get("commit_status",""))=="fault_unknown" or (result.get("fault",false) and str(receipt.get("commit_status",""))!="accepted")
+    if not result.get("ok",false) and str(result.get("reason","")) not in ["InsufficientResources","NoChange","EquipmentLocked","EvolutionMaterialLocked","FirstDefenceRequired"]:
+        _log_failure(result)
+    if unknown:
+        _close_popup();_show_toast("操作失败，当前游戏已停止。",true);_values_dirty=true
+        _global_quantity.disabled=true;_batch_open.disabled=true
+    elif not result.get("ok",false):
+        if not _session.run_state.is_running():
+            _close_popup();_show_toast("操作失败，当前游戏已停止。",true)
+            _global_quantity.disabled=true;_batch_open.disabled=true
+        elif str(result.get("reason","")) not in ["InsufficientResources","NoChange"]:_show_toast(_failure_text(str(result.get("reason",""))))
+        _values_dirty=true
+    elif levels:
+        for purchase in receipt.get("purchases",[]):_pending_ids[str(purchase.slot_id)]=true
+    else:_structure_dirty=true
     command_finished.emit(last_result)
 
-func _refresh_batch() -> void:
-    var result: Dictionary = _last_batch_result
-    var receipt: Dictionary = result.get("purchase_receipt", {})
-    var status: String = str(receipt.get("commit_status", ""))
-    var unknown: bool = status == "fault_unknown" or (result.get("fault", false) and status != "accepted")
-    var current: String = "\n".join(_facts.filter(func(row): return not row.dormant).map(func(row): return "%s · %s · Lv.%s" % [_slot_name(str(row.id)), NAMES.get(str(row.equipment_id), "空槽"), str(row.paid_level)]))
-    if unknown:
-        _batch_results.text = "提交结果未知，会话已停止。\n" + current
-    elif not result.is_empty() and not result.get("ok", false):
-        _batch_results.text = _reason(str(result.get("reason", result.get("error", "Unknown")))) + "\n" + current
-    else:
-        _batch_results.text = current
-    _batch_submit.disabled = unknown or (status == "accepted" and receipt.get("purchases", []).is_empty()) or not _session.run_state.is_running()
+func _failure_text(reason: String) -> String:
+    return str({"EquipmentLocked":"装备尚未开放。","EvolutionMaterialLocked":"进化材料尚未开放。",
+        "FirstDefenceRequired":"首个防御槽需要保留装备。","InsufficientResources":"资源不足。",
+        "NoChange":"没有可升级的装备。"}.get(reason,"操作失败。"))
+
+func _diagnostic_code(value: Variant) -> String:
+    # Log symbolic cause codes only: never dump payloads, balances, paths or secrets.
+    var code: String=str(value)
+    return "none" if code.is_empty() else code if code.length()<=96 and code.is_valid_identifier() else "redacted"
+
+func _log_failure(result: Dictionary) -> void:
+    var receipt: Dictionary=result.get("purchase_receipt",{})
+    print("EQUIPMENT_COMMAND_FAILURE ",JSON.stringify({"reason":_diagnostic_code(result.get("reason","none")),
+        "error":_diagnostic_code(result.get("error","none")),"fault":bool(result.get("fault",false)),
+        "commit_status":_diagnostic_code(receipt.get("commit_status","none")),
+        "running":_session.run_state.is_running(),"stop_reason":_diagnostic_code(_session.run_state.reason())}))
+
+func _open_batch() -> void:
+    var panel=_new_popup("",minf(700,130+_active.size()*48))
+    _label(panel,"全部槽位升级",Rect2(14,8,320,26),18,CREAM,600)
+    for i in _active.size():
+        var fact: Dictionary=_active[i]
+        _label(panel,str(NAMES.get(str(fact.equipment_id),"空槽"))+"  槽位Lv."+str(fact.paid_level),Rect2(16,45+i*48,350,30),15,CREAM)
+    _button(panel,["每槽 ×1","每槽 ×10","逐槽 MAX"][_batch_mode],Rect2(16,panel.size.y-48,145,36),_cycle_batch)
+    var submit=_button(panel,"执行升级",Rect2(174,panel.size.y-48,196,36),_buy_all,"primary")
+    submit.disabled=not _session.run_state.is_running()
+
+func _cycle_batch() -> void:
+    _apply_global_quantity((_batch_mode+1)%3);_open_batch()
+
+func _buy_all() -> void:
+    var result: Dictionary=_session.equipment.buy_all_levels(10 if _batch_mode==1 else 1,_batch_mode==2,_session.equipment_inputs(),_session.economy.affordable,_session.economy.payment,_session.publish_equipment_levels)
+    _accept_result(result,true)
+    if not _session.run_state.is_running():return
+    if result.get("ok",false):_close_popup()
+    elif str(result.get("reason",""))=="NoChange":
+        # The batch owner reports no accepted slot, rather than a per-slot error.
+        # Read existing admission/payment facts only after that actual response.
+        var rejection: String="NoChange"
+        var budget: Dictionary=_session.economy.budget()
+        for fact in _active:
+            var quote: Dictionary=_session.equipment.quote_slot(str(fact.id),1)
+            if quote.get("ok",false):
+                if not _session.economy.can_pay(quote.costs,budget).get("ok",false):
+                    rejection="InsufficientResources";break
+            elif rejection=="NoChange":rejection=str(quote.get("reason","NoChange"))
+        _show_toast("资源不足" if rejection=="InsufficientResources" else "进化材料尚未开放" if rejection=="EvolutionMaterialLocked" else _failure_text(rejection))
+
+func _refresh_scene_picture() -> void:
+    var signature: Array=[_ship,_selected,_active.map(func(f):return [f.id,f.equipment_id])]
+    if signature==_scene_signature:return
+    _scene_signature=signature;presentation_counts.scene_redraw_requests+=1;queue_redraw()
 
 func _process(dt: float) -> void:
-    if not is_visible_in_tree(): return
-    _clock += dt
-    var cooldown: bool = _facts.any(func(row): return float(row.cooldown_remaining) > 0)
-    if _dirty:
-        _clock = 0.0
-        _refresh()
-    elif _comparison_dirty:
-        _refresh_comparison()
-    elif cooldown and _clock >= 0.1:
-        _clock = 0.0
-        _refresh_cooldown()
-
-func _refresh_cooldown() -> void:
-    var previous: Dictionary = _selected_fact()
-    presentation_counts.cooldown_fact_reads += 1
-    _facts = _session.equipment_slot_facts()
-    var fact: Dictionary = _selected_fact()
-    if fact.is_empty() or previous.is_empty():
-        _dirty = true
-        return
-    if float(previous.cooldown_remaining) > 0 and float(fact.cooldown_remaining) <= 0:
-        # Admission is always re-read from the owner when the deadline is crossed.
-        _dirty = true
-        return
-    _switch_state.text = "换装冷却 %.1f秒" % float(fact.cooldown_remaining) if float(fact.cooldown_remaining)>0 else ""
-    _switch_state.visible=not _switch_state.text.is_empty()
-
-
-func _ship_rect() -> Rect2:
-    return _preview_rects[_ship]
-
-func _weapon_factor(key: String) -> float:
-    return (0.16 if key in ["longLaser","cannon"] else 0.13)*float(_preview_zooms[_ship])
-
-func _mount_position(row: Dictionary) -> Vector2:
-    var rect := _ship_rect()
-    if row.category == "weapon":
-        var mounts: Array = _catalog[_ship].mounts
-        return rect.position + Vector2(float(mounts[int(row.index)][0]), float(mounts[int(row.index)][1])) / 768.0 * rect.size
-    # Logical defence has no scene component or physical target point.
-    return Vector2.ZERO
-
-func _slot_label_position(row: Dictionary) -> Vector2:
-    var weapons: int=_catalog[_ship].mounts.size()
-    return Vector2(26,202+int(row.index)*31 if row.category=="weapon" else 249+weapons*31+int(row.index)*31)
+    if not is_visible_in_tree():return
+    if _toast_time>0:
+        _toast_time-=dt
+        if _toast_time<=0:_toast.hide()
+    if _structure_dirty:_refresh_structure()
+    elif _values_dirty:
+        _values_dirty=false;_budget=_session.economy.budget();presentation_counts.numeric_refreshes+=1
+        if not _pending_ids.is_empty():
+            _facts=_session.equipment_slot_facts();_active=_facts.filter(func(f):return not f.dormant);_pending_ids.clear()
+        for fact in _active:_refresh_card(str(fact.id))
+    elif not _pending_ids.is_empty():
+        _facts=_session.equipment_slot_facts();presentation_counts.numeric_refreshes+=1
+        for id in _pending_ids:
+            if _cards.has(id):_refresh_card(id)
+        _pending_ids.clear()
 
 func _draw() -> void:
     presentation_counts.scene_draws+=1
-    draw_rect(Rect2(0,0,808,900),CREAM)
-    draw_texture_rect_region(_background,Rect2(0,85,808,600),Rect2(0,0,1188,845))
-    draw_rect(Rect2(0,685,808,215),Color("203b49"))
-    if _ship.is_empty() or not _catalog.has(_ship):return
-    draw_texture_rect(_hull_textures[_ship],_ship_rect(),false)
-    for row in _facts:
-        if row.dormant or row.category!="weapon":continue
-        var mount: Vector2=_mount_position(row)
-        var key: String=str(row.equipment_id)
-        if not _textures.has(key):continue
-        var tex: Texture2D=_textures[key]
+    if not _shared:draw_rect(Rect2(0,0,808,85),Color("173b49"))
+    var early: bool=_active.size()<=2
+    draw_texture_rect(_short if early else _tall,Rect2(-27,85,843.2,815),false)
+    _draw_console_detail(early)
+    if not _hulls.has(_ship):return
+    var texture: Texture2D=_hulls[_ship];var bounds: Rect2=texture.get_image().get_used_rect()
+    var height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
+    _ship_factor=minf(314.0/bounds.size.x,height/bounds.size.y)
+    var allocation: Rect2=Rect2(16,(640 if early else 680)-height,314,height)
+    _ship_origin=allocation.position+(allocation.size-bounds.size*_ship_factor)*.5-bounds.position*_ship_factor
+    _ship_zoom=_ship_factor/(350.0/float(_catalog[_ship].height))
+    draw_texture_rect(texture,Rect2(_ship_origin,texture.get_size()*_ship_factor),false)
+    for fact in _active:
+        var key: String=str(fact.equipment_id)
+        if fact.category!="weapon" or key.is_empty() or not _weapon_meta.has(key):continue
         var meta: Dictionary=_weapon_meta[key]
-        var factor:float=_weapon_factor(key)
-        var anchor:=Vector2(float(meta.anchor[0]),float(meta.anchor[1]))*factor
-        draw_texture_rect(tex,Rect2(mount-anchor,Vector2(tex.get_size())*factor),false)
+        var factor: float=(.16 if key in ["longLaser","cannon"] else .13)*_ship_zoom
+        var mount: Vector2=_ship_origin+Vector2(_catalog[_ship].mounts[int(fact.index)][0],_catalog[_ship].mounts[int(fact.index)][1])*_ship_factor
+        var origin: Vector2=mount-Vector2(meta.anchor[0],meta.anchor[1])*factor
+        var weapon: Texture2D=_textures[key]
+        draw_texture_rect(weapon,Rect2(origin,weapon.get_size()*factor),false)
+        if str(fact.id)==_selected:
+            var used: Rect2=weapon.get_image().get_used_rect()
+            var target: Rect2=Rect2(origin+used.position*factor,used.size*factor).grow(4)
+            for corner in [target.position,Vector2(target.end.x,target.position.y),target.end,Vector2(target.position.x,target.end.y)]:
+                var direction=Vector2(1 if corner.x==target.position.x else -1,1 if corner.y==target.position.y else -1)
+                var points=PackedVector2Array([corner+Vector2(0,direction.y*8),corner,corner+Vector2(direction.x*8,0)])
+                draw_polyline(points,Color("153341"),3.5,true);draw_polyline(points,Color("91e2d4"),1.5,true)
 
-    _draw_selected_locator()
+func _draw_console_detail(early: bool) -> void:
+    # Recessed machining marks, fully inside the console face; no status meaning.
+    var y: float=418.0 if early else 275.0
+    var shadow: Color=Color("728b89")
+    var highlight: Color=Color("c4cebd")
+    for i in 5:
+        var x: float=359.0+i*9.0
+        draw_line(Vector2(x,y-5),Vector2(x+5,y+5),shadow,1.0,true)
+        draw_line(Vector2(x+1,y-5),Vector2(x+6,y+5),highlight,1.0,true)
+    draw_polyline(PackedVector2Array([Vector2(418,y+4),Vector2(470,y+4),Vector2(478,y-4),Vector2(524,y-4)]),shadow,1.0,true)
+    draw_circle(Vector2(418,y+4),2.0,shadow,false,1.0,true)
+    draw_circle(Vector2(524,y-4),2.0,shadow,false,1.0,true)
+    var bottom: float=670.0 if early else 792.0
+    draw_line(Vector2(380,bottom),Vector2(514,bottom),shadow,1.0,true)
+    draw_line(Vector2(590,bottom),Vector2(724,bottom),shadow,1.0,true)
+    for i in 3:
+        var center: Vector2=Vector2(540+i*12,bottom)
+        draw_polyline(PackedVector2Array([center+Vector2(-3,0),center+Vector2(0,-2),center+Vector2(3,0),center+Vector2(0,2),center+Vector2(-3,0)]),shadow,1.0,true)
 
-func _component_rect(row: Dictionary) -> Rect2:
-    var point:Vector2=_mount_position(row)
-    var key:String=str(row.equipment_id)
-    if row.category=="weapon" and _weapon_visible_bounds.has(key):
-        var factor:float=_weapon_factor(key)
-        var meta:Dictionary=_weapon_meta[key]
-        var bound:Rect2=Rect2(_weapon_visible_bounds[key])
-        return Rect2(point-Vector2(float(meta.anchor[0]),float(meta.anchor[1]))*factor+bound.position*factor,bound.size*factor)
-    return Rect2()
-
-func _draw_selected_locator() -> void:
-    var row:Dictionary=_selected_fact()
-    if row.is_empty() or row.dormant or row.category!="weapon":return
-    # An open empty slot has no visible weapon PNG to locate. Its index and workbench remain selectable.
-    if row.category=="weapon" and not _weapon_visible_bounds.has(str(row.equipment_id)):return
-    var card:Rect2=Rect2(_slot_label_position(row),Vector2(180,30))
-    var target:Rect2=_component_rect(row).grow(5)
-    var centre:Vector2=target.get_center()
-    var direction:Vector2=centre-card.get_center()
-    var start:Vector2=card.get_center()
-    if absf(direction.x)>absf(direction.y):start.x=card.end.x if direction.x>0 else card.position.x
-    else:start.y=card.end.y if direction.y>0 else card.position.y
-    var ends:Array=[Vector2(target.position.x,centre.y),Vector2(target.end.x,centre.y),Vector2(centre.x,target.position.y),Vector2(centre.x,target.end.y)]
-    var end:Vector2=ends[0];var best:float=INF
-    for candidate in ends:
-        var hidden:bool=false
-        for id in _slot_buttons:
-            if _slot_buttons[id].button.get_rect().grow(2).has_point(candidate):hidden=true;break
-        if not hidden and start.distance_squared_to(candidate)<best:end=candidate;best=start.distance_squared_to(candidate)
-    var points:PackedVector2Array=PackedVector2Array([start,end])
-    var accent:Color=Color("91e2d4")
-    draw_polyline(points,Color("153341"),3.5,true)
-    draw_polyline(points,accent,1.5,true)
-    for corner in [target.position,Vector2(target.end.x,target.position.y),target.end,Vector2(target.position.x,target.end.y)]:
-        var sign:Vector2=Vector2(1 if corner.x==target.position.x else -1,1 if corner.y==target.position.y else -1)
-        draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),Color("173542"),3.5,true)
-        draw_polyline(PackedVector2Array([corner+Vector2(0,sign.y*10),corner,corner+Vector2(sign.x*10,0)]),accent,1.5,true)
-    var badge:Rect2=_locator_badge_rect(row,target)
-    if not badge.has_area():return
-    draw_style_box(_locator_badge_style,badge)
-    draw_string(_font_strong,badge.position+Vector2(3,16),"武"+str(int(row.index)+1),HORIZONTAL_ALIGNMENT_LEFT,-1,12,CREAM)
-
-func _locator_badge_rect(row: Dictionary, target: Rect2) -> Rect2:
-    if row.category!="weapon":return Rect2()
-    var centre:Vector2=target.get_center()
-    var positions:Array=[Vector2(target.end.x-29,target.end.y+3),Vector2(target.end.x+5,centre.y-11),Vector2(target.position.x-37,centre.y-11),Vector2(centre.x-16,target.position.y-25),Vector2(target.position.x,target.end.y+3),Vector2(centre.x-16,target.end.y+3),Vector2(target.end.x+5,target.position.y),Vector2(target.position.x-37,target.end.y-22)]
-    for position in positions:
-        var badge:Rect2=Rect2(position,Vector2(32,22))
-        if not Rect2(16,90,776,470).encloses(badge):continue
-        var blocked:bool=false
-        for id in _slot_buttons:
-            if badge.intersects(_slot_buttons[id].button.get_rect().grow(4)):blocked=true;break
-        if blocked:continue
-        for other in _facts:
-            if other.dormant or other.id==row.id:continue
-            if badge.intersects(_component_rect(other).grow(2)):blocked=true;break
-        if not blocked:return badge
-    # Never paint a clipped fragment if a future unverified layout has no free candidate.
-    return Rect2()
-
-
-## H1 chrome/exclusive ports: the host owns routing, shared input gates and the context slot.
-func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D = null) -> void:
-    for item in _shared_chrome:item.visible=not enabled
-    _wallet.visible=not enabled
+func set_shared_host(enabled: bool, context_slot: Control, _backdrop: Texture2D=null) -> void:
+    _shared=enabled;_fallback_header.visible=not enabled
     _release_host_context()
-    _context_slot=context_slot
     if enabled and is_instance_valid(context_slot):
-        _context_caption=Label.new()
-        _context_caption.text="装备"
-        _context_caption.size=Vector2(96,26)
-        _context_caption.clip_text=true
-        _context_caption.mouse_filter=Control.MOUSE_FILTER_IGNORE
-        context_slot.add_child(_context_caption)
+        _context_caption=Label.new();_context_caption.text="装备";_context_caption.size=Vector2(96,26)
+        _context_caption.mouse_filter=Control.MOUSE_FILTER_IGNORE;context_slot.add_child(_context_caption)
+    queue_redraw()
 
 func has_exclusive_ui() -> bool:
-    return _batch.visible or _batch_quantity.get_popup().visible
+    return is_instance_valid(_popup) and _popup.visible
 
-func prepare_host_hide(force: bool = false) -> bool:
+func prepare_host_hide(force: bool=false) -> bool:
     if has_exclusive_ui() and not force:return false
-    if force:
-        _close_batch()
-    var focus:Control=get_viewport().gui_get_focus_owner()
-    if focus!=null and (focus==self or is_ancestor_of(focus)):focus.release_focus()
+    if force:_close_popup()
+    _hide_tooltip()
+    var focus: Control=get_viewport().gui_get_focus_owner()
+    if focus!=null and is_ancestor_of(focus):focus.release_focus()
     return true
 
 func _release_host_context() -> void:
-    if is_instance_valid(_context_caption):
-        _context_caption.hide()
-        _context_caption.queue_free()
+    if is_instance_valid(_context_caption):_context_caption.queue_free()
     _context_caption=null
-    _context_slot=null
 
 func _exit_tree() -> void:
     _release_host_context()

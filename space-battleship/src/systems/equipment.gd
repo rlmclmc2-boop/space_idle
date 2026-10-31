@@ -1,4 +1,5 @@
 extends RefCounted
+const Resources = preload("res://src/systems/resource_amounts.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 const BattleSchema = preload("res://src/combat_setup.gd")
@@ -20,7 +21,6 @@ var _evolution: Dictionary = {}
 var _labels: Dictionary = {}
 var _available: Dictionary = {}
 var _api
-var _cooldown: float
 var _material_gate: int
 
 func _init(rows: Array, evolution_rows: Array, unlocks: Array, parameters: Dictionary, rules: Dictionary, api, run_state) -> void:
@@ -32,7 +32,6 @@ func _init(rows: Array, evolution_rows: Array, unlocks: Array, parameters: Dicti
 	for row in evolution_rows: _evolution[str(row.key)] = row.value
 	for row in unlocks:
 		if row.type == "equipment": _labels[str(row.target)] = str(row.title)
-	_cooldown = float(parameters.equipmentSwitchCooldownSeconds)
 	_material_gate = int(rules.hyperspace_unlock_reached)
 	_api = api
 
@@ -91,6 +90,7 @@ func restore_state(state: Dictionary, mounts: Dictionary) -> Dictionary:
 		seen[id] = true
 	if not first_defence: return {"ok": false, "reason": "FirstDefenceRequired"}
 	_slots = state.slots.duplicate(true)
+	for slot in _slots: slot.switch_ready_at = 0.0
 	_pending_slots = null
 	_pending_level_slots = []
 	_pending_notice = {}
@@ -174,8 +174,8 @@ func slot_facts(mounts: Dictionary, game_time: float, extra_bonus: int) -> Array
 			if int(slot.paid_level) <= 9223372036854775807 - bonus: effective = int(slot.paid_level) + bonus
 		rows.append({"id": str(slot.id), "category": str(slot.category), "index": int(slot.index),
 			"equipment_id": str(slot.equipment_id), "paid_level": int(slot.paid_level), "effective_level": effective,
-			"dormant": int(slot.index) >= int(mounts[slot.category]), "switch_ready_at": float(slot.switch_ready_at),
-			"cooldown_remaining": maxf(0.0, float(slot.switch_ready_at) - game_time)})
+			"dormant": int(slot.index) >= int(mounts[slot.category]), "switch_ready_at": 0.0,
+			"cooldown_remaining": 0.0})
 	return rows
 
 func _comparison_value(slot: Dictionary, key: String, count: int, inputs: Dictionary) -> Dictionary:
@@ -555,7 +555,9 @@ static func _quote_levels(row: Dictionary, level: int, count: int, evolution: Di
 		if not sum.ok:
 			return sum
 		costs[str(evolution.material_id)] = sum.value
-	return {"ok": true, "count": count, "costs": costs, "extreme": extreme}
+	var normalized: Dictionary = Resources.whole_map(costs,amount_api)
+	if not normalized.ok: return normalized
+	return {"ok": true, "count": count, "costs": normalized.values, "extreme": extreme}
 
 # The economy supplies only affordability; equipment owns MAX search and its limits.
 static func _quote_affordable_levels(row: Dictionary, level: int, evolution: Dictionary, material_unlocked: bool, api, can_pay: Callable) -> Dictionary:
@@ -622,8 +624,6 @@ func _equip_admission(slot: Dictionary, equipment_id: String, inputs: Dictionary
 		return {"ok": false, "reason": "FirstDefenceRequired"}
 	if equipment_id == str(slot.equipment_id):
 		return {"ok": false, "reason": "NoChange"}
-	if float(inputs.game_time) < float(slot.switch_ready_at):
-		return {"ok": false, "reason": "EquipmentSwitchLocked"}
 	if not equipment_id.is_empty():
 		if not _definitions.has(equipment_id) or not _available.get(equipment_id, false):
 			return {"ok": false, "reason": "EquipmentLocked"}
@@ -647,7 +647,7 @@ func equip_slot(slot_id: String, equipment_id: String, inputs: Dictionary, publi
 	var next: Array = _slots.duplicate(true)
 	next[index].equipment_id = equipment_id
 	next[index].generation = int(slot.generation) + 1
-	next[index].switch_ready_at = float(inputs.game_time) + _cooldown
+	next[index].switch_ready_at = 0.0
 	return _submit_refit(next, inputs.balances, publish)
 
 func quote_slot(slot_id: String, count: int) -> Dictionary:
