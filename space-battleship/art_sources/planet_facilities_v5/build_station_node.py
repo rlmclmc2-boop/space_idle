@@ -135,6 +135,10 @@ for side in (-1, 1):
             (.018,.23,.11), ochre, root, .006)
         beam("Portal lower diagonal load heel", (end*.93,side*.99,-.15),
              (end*1.17,side*.88,-.51), .13,.12, ivory, root)
+        beam("Portal inner chamfer load lining", (end*1.12,side*.47,-.23),
+             (end*.93,side*.49,.94), .17,.13, ivory, root)
+        box("Portal inner warm pressure socket", (end*1.15,side*.46,-.19),
+            (.18,.16,.17), ochre, root, .021)
         box("Inset portal guide", (x,side*.55,.57), (.08,.045,.61), cyan, root, .009)
         box("Portal cut edge", (x,side*.53,1.25), (.25,.22,.08), edge, root)
     loft("Upper ivory side armor", [
