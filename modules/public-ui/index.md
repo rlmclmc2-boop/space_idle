@@ -9,3 +9,5 @@
 - [2026-10-31 native public select and input states](native-controls-20261031/README.md): current R3 source screenshots and bounded capture.
 
 - [2026-10-31 native SpinBox read-only state](native-spin-readonly-20261031/README.md): current whole-screen state evidence.
+
+- [2026-10-31 native select click and keyboard confirmation](native-select-interaction-20261031/README.md): bounded current-screen interaction evidence.

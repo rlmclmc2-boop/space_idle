@@ -1,0 +1,10 @@
+{
+  "source_commit": "bc57c5261178a7240e806a7fcf98f7e998e464e8",
+  "runtime": "Godot 4.7.2 gl_compatibility 1440x900",
+  "files": {
+    "before-click.png": "74543ea14be45614732df677541c4b160b3a7d912a7f55f709fef357f7ad8de6",
+    "clicked-open.png": "fe64f6829e369e917102583a33f530ee3183f99548283399917462ddae4ca658",
+    "keyboard-down.png": "829cf44614487b6a0a49acad4fd70d523613587d92a4a3b3a86a0edcdbf4dbed",
+    "keyboard-confirmed.png": "66cd601da0bb8c5e241cd96ecc332e44bfd6cfbc7e4242064a1b502b9f5332af"
+  }
+}
