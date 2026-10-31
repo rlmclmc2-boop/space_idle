@@ -3,6 +3,23 @@ set -euo pipefail
 cd "$(dirname "$0")"
 # The source sheets only supply device surfaces. The eight conduit layers are
 # separately rendered by generate_modular_pipes.py and animated by Godot.
+# Blender must render full source canvases first. Reject already cropped output
+# before touching any file, so a second assembly cannot silently erase a pipe.
+for id in weapons defence smelting condensation; do
+  for layer in shell front; do
+    file="modular-pipe-$id-$layer.png"
+    if [ "$(magick identify -format '%wx%h' "$file")" != "1187x1326" ]; then
+      echo "Expected a Blender source canvas: $file; run generate_modular_pipes.py first" >&2
+      exit 1
+    fi
+  done
+done
+for file in modular-core-clamp-left.png modular-core-clamp-right.png modular-core-rotor.png; do
+  if [ "$(magick identify -format '%wx%h' "$file")" != "1187x1326" ]; then
+    echo "Expected a Blender source canvas: $file; run generate_modular_pipes.py first" >&2
+    exit 1
+  fi
+done
 magick modular-core-source.png -crop 615x850+285+0 +repage -resize '418x638!' modular-core.png
 magick modular-modules-source.png -crop 570x430+0+100 +repage -resize '359x271!' modular-weapons.png
 magick modular-modules-source.png -crop 467x430+720+105 +repage -resize '294x271!' modular-defence.png
