@@ -8,11 +8,11 @@
 
 ## 当前具体动作
 
-当前源码 `dea98dba` 在四段 owned 承力截面基础上，让炉原压力舱一体拱起并在同网格开热井，双料斗与接收口保留；船坞原停靠艇沿发射轨前移微抬，船首露出泊位端；工坊已有侧窗后的遮挡内墙收成上下承力边，侧角可读内部工具行程；站原四个顶设备块缩在承力墙上，圆形指挥冠在默认角更显，低位通道和顶运动件保持。四设施与环的共同主剪影、材质协调仍不足，整体未通过；下一步继续实体衔接，按受影响处补原尺寸图。
+当前源码 `46aa53a7` 在四段 owned 承力截面基础上，让炉原压力舱从两侧承力墙一体拱起，并提高冠部、在同网格切热井；双料斗和中间接收口保留。船坞原停靠艇沿发射轨前移微抬，船首露出泊位端；工坊侧窗后的遮挡内墙收成上下承力边，侧角可读内部工具行程；站原四个顶设备块缩在承力墙上，默认角圆形指挥冠更显，低位通道和顶运动件保持。四设施与环的共同主剪影、材质协调仍不足，整体未通过；下一步继续实体衔接，按受影响处补原尺寸图。
 
 ## 最新同版证据边界
 
-`dea98dba` 的站受影响完整态默认、站单建 25° 原图、脚本、构建／导入／取图日志固定于[独立归档 dea98dba](https://github.com/rlmclmc2-boop/space_idle/tree/dea98dba)；8 件文件逐件从 Git blob 复核 SHA256。工坊默认／70° 沿用[归档 0c6474eb](https://github.com/rlmclmc2-boop/space_idle/tree/0c6474eb)，船坞默认／25° 沿用[归档 1f5c63e0](https://github.com/rlmclmc2-boop/space_idle/tree/1f5c63e0)，炉默认／25°／70° 沿用[归档 2709cb92](https://github.com/rlmclmc2-boop/space_idle/tree/2709cb92)，其余六类默认沿用[归档 1d4e07ad](https://github.com/rlmclmc2-boop/space_idle/tree/1d4e07ad)。built 状态及角度由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。
+`46aa53a7` 的炉受影响完整态默认、25°、70° 原图、脚本、构建／导入／取图日志固定于[独立归档 46aa53a7](https://github.com/rlmclmc2-boop/space_idle/tree/46aa53a7)；11 件文件逐件从 Git blob 复核 SHA256。站默认／单建25° 沿用[归档 dea98dba](https://github.com/rlmclmc2-boop/space_idle/tree/dea98dba)，工坊默认／70° 沿用[归档 0c6474eb](https://github.com/rlmclmc2-boop/space_idle/tree/0c6474eb)，船坞默认／25° 沿用[归档 1f5c63e0](https://github.com/rlmclmc2-boop/space_idle/tree/1f5c63e0)，其余六类默认沿用[归档 1d4e07ad](https://github.com/rlmclmc2-boop/space_idle/tree/1d4e07ad)。built 状态及角度由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。
 
 ## 有效契约与持续交付
 
