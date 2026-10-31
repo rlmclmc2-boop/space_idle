@@ -197,7 +197,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	# it so the common ring and all four sockets contract as one structure.
 	# A beamed core is capped by its beam envelope and would otherwise shrink
 	# the four work nodes below a readable size in the desktop scene.
-	_spine.scale = Vector3.ONE * maxf(0.50, globe_scale) if _compact_stellar else Vector3.ONE
+	_spine.scale = Vector3.ONE * maxf(0.42, globe_scale) if _compact_stellar else Vector3.ONE
 	for kind in _owned:
 		var model: Node3D = _models[kind]
 		_animate_parts(kind, clock)
