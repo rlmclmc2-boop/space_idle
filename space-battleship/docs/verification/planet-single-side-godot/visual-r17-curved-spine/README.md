@@ -12,25 +12,7 @@
 
 ## 最新同版证据边界
 
-a7ed241c 的 2048×768 站单建与完整态默认／25°／70° 图、取图脚本及导入日志固定于[独立归档 222a29a8](https://github.com/rlmclmc2-boop/space_idle/tree/222a29a8d23768035490556a7c004f68b3dbda15)；17 件证据文件已从 Git blob 复核 SHA256。已亲看六张原图：站顶仍由压力墙承托，观测环与低位通道保持可辨；另在明确开启探索状态的完整态图中，探索船沿独立椭圆轨迹显示。图中 built 状态为脚本配置、角度为模拟姿态，不代表自然施工、整圈、六类变体或整体通过。后续只补实际改动影响的建造态、侧角和必要连续片段。
-
-a43d7b81 的六类完整态默认原图、站单建 25°、完整态 25°／70° 原图、取图脚本及日志固定于[独立归档 e1bf3efd](https://github.com/rlmclmc2-boop/space_idle/tree/e1bf3efdebf2836cff38bd0926918318f4349626)；14 件文件已逐件从 Git blob 复核 SHA256。built 状态和角度均由脚本模拟，不代表自然施工、整圈或整体通过。
-
-64a26f57 的炉顶受影响完整态默认、25°／70° 原图、取图脚本与日志固定于[独立归档 e43a5ae6](https://github.com/rlmclmc2-boop/space_idle/tree/e43a5ae6d705d8b829ba6dc7e63aae6fed8d54c8)；10 件文件已逐件从 Git blob 复核 SHA256。其余六类变体与站单建沿用上版证据，不把此三帧扩称新全套验证。
-
-be19dfa6 的六类默认完整态、站单建 25° 与完整态 25°／70° 原图、取图脚本、导入及取图日志固定于[独立归档 fb1e7643](https://github.com/rlmclmc2-boop/space_idle/tree/fb1e7643762df76f8132761131fd6a3d338188bf)；16 件文件逐件从 Git blob 复核 SHA256。built 与角度均为脚本模拟，不扩称自然流程或整圈验证。
-
-6823e761 的六类默认完整态、站单建 25° 与完整态 25°／70° 原图及取图脚本、日志固定于[独立归档 5e1e5fdd](https://github.com/rlmclmc2-boop/space_idle/tree/5e1e5fdd9c9390c150a036612432d9be0ea9211d)；15 件文件逐件从 Git blob 复核 SHA256。图证只支持当前模拟姿态，不称自然流程或整圈通过。
-
-bd4cd488 的受影响完整态默认、站单建 25° 与完整态 25°／70° 原图及取图脚本、日志固定于[独立归档 c228969a](https://github.com/rlmclmc2-boop/space_idle/tree/c228969a50faf1a2f15ca5460decac12c1e32e41)；10 件文件逐件从 Git blob 复核 SHA256。不把此局部改变扩称全六类新验证或整体通过。
-
-51af7808 的船坞受影响完整态默认、25°／70° 原图、取图脚本、导入及取图日志固定于[独立归档 346671c7](https://github.com/rlmclmc2-boop/space_idle/tree/346671c781ce7b2ace49381b22fe01d51a910488)；10 件文件逐件从 Git blob 复核 SHA256。艇可读性改动不代表全部四设施整体通过。
-
-同一源码的站＋炉、站＋炉＋工坊两个模拟建造中间态固定于[独立归档 9cf48120](https://github.com/rlmclmc2-boop/space_idle/tree/9cf4812053bfc50e20c277b914b180961ec4a0de)；4 件图证文件从 Git blob 复核 SHA256。两建时前弧保持空白，三建时工坊段以独立终端收尾，不扩称自然施工或整体通过。
-
-b07c944e 的站单建 25°、完整态默认及 25°／70° 受影响原图、取图脚本与日志固定于[独立归档 6f75c332](https://github.com/rlmclmc2-boop/space_idle/tree/6f75c332fe2a90d839f634a8357f9fcd01a1d4c5)；10 件文件逐件从 Git blob 复核 SHA256。站体轮廓改动不称全部四设施通过。
-
-7fe354e3 的工坊受影响完整态默认、25°／70° 原图、取图脚本、导入及取图日志固定于[独立归档 d68f01f7](https://github.com/rlmclmc2-boop/space_idle/tree/d68f01f7f3c075087289e37820a1f3add215a73a)；10 件文件逐件从 Git blob 复核 SHA256。口部可读性改动不称整体通过。
+`a2c49979` 的六类完整态默认原图、地球类站单建和完整态 25°／70° 原图、取图脚本、导入与取图日志固定于[独立归档 1d4e07ad](https://github.com/rlmclmc2-boop/space_idle/tree/1d4e07ad)；17 件文件逐件从 Git blob 复核 SHA256。六类共用设施与环布局；默认和 25° 可辨站低位通道、炉拱顶、工坊工作口与船坞艇，70° 站大幅受球遮挡。所有 built 状态和角度均由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。四设施主剪影、承力脊贯入感及材质协调仍不足；下一步继续实体制作，按受影响处补原尺寸图。
 
 ## 有效契约与持续交付
 
