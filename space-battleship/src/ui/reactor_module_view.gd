@@ -3,15 +3,21 @@ extends Control
 const SOURCE_SIZE := Vector2(1187.0,1326.0)
 const VIEW_SIZE := Vector2(808.0,835.0)
 const WORK_SHADER = preload("res://assets/ui/reactor/b01/modular-module-work.gdshader")
+const WORK_SURFACES := {
+	"weapons": preload("res://assets/ui/reactor/b01/modular-weapons-work.png"),
+	"defence": preload("res://assets/ui/reactor/b01/modular-defence-work.png"),
+	"smelting": preload("res://assets/ui/reactor/b01/modular-smelting-work.png"),
+	"condensation": preload("res://assets/ui/reactor/b01/modular-condensation-work.png"),
+}
 const KINDS := {"weapons":0, "defence":1, "smelting":2, "condensation":3}
 # Conservative UV envelopes of each shader's nonzero device-local work.
 # Paint only these pixels; the shader maps screen coordinates back to the
 # original full-device UV so the visible result and phase stay identical.
 const WORK_BOUNDS := {
-	"weapons": Rect2(0.0, 0.24, 0.21, 0.18),
-	"defence": Rect2(0.46, 0.10, 0.54, 0.58),
-	"smelting": Rect2(0.46, 0.42, 0.14, 0.40),
-	"condensation": Rect2(0.44, 0.25, 0.32, 0.54),
+	"weapons": Rect2(0.0, 0.17, 0.29, 0.31),
+	"defence": Rect2(0.43, 0.06, 0.57, 0.78),
+	"smelting": Rect2(0.34, 0.38, 0.46, 0.50),
+	"condensation": Rect2(0.34, 0.12, 0.53, 0.78),
 }
 var _work: ShaderMaterial
 var _effect: ColorRect
@@ -39,6 +45,7 @@ func configure(id: String, texture: Texture2D, source_rect: Rect2) -> void:
 	_work = ShaderMaterial.new()
 	_work.shader = WORK_SHADER
 	_work.set_shader_parameter("module_kind",KINDS[id])
+	_work.set_shader_parameter("work_surface",WORK_SURFACES[id])
 	_work.set_shader_parameter("work_origin_px",position)
 	_work.set_shader_parameter("work_size_px",size)
 	_work.set_shader_parameter("work_view_size_px",VIEW_SIZE)
