@@ -141,10 +141,17 @@ for side in (-1,1):
         (-1.21,y,-.28,.27,.18),(-.89,y,-.28,.39,.23),
         (.89,y,-.28,.39,.23),(1.21,y,-.28,.27,.18),
     ],lower_steel,root)
-    longitudinal_hull("Rising ochre load shoulder",[
+    shoulder = longitudinal_hull("Rising ochre load shoulder",[
         (-1.17,y,.17,.28,.38),(-.88,y,.28,.37,.52),
         (.88,y,.28,.37,.52),(1.17,y,.17,.28,.38),
     ],ochre,root)
+    # The upper bearing facet belongs to this same shoulder mesh. It links
+    # the furnace's load path to the warm station/workshop/shipyard armor while
+    # the lower ochre face still identifies the hot receiving node.
+    shoulder.data.materials.append(ivory)
+    for face in shoulder.data.polygons:
+        if face.center.z > .54:
+            face.material_index = 1
     for end in (-1,1):
         x=end*.99
         beam("Portal flared pressure upright",(x,side*.81,-.26),
