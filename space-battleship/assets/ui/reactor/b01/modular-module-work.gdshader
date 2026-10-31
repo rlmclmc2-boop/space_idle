@@ -87,18 +87,21 @@ void fragment() {
         vec2 bead_pos=fall<0.28 ? mix(throat,elbow,fall/0.28)
                                   : mix(elbow,tap,(fall-0.28)/0.72);
         float drop=disk(q,bead_pos,vec2(0.017,0.019))*surface.a;
-        float heat_ribbons = 0.5+0.5*sin(q.x*66.0+phase*2.4)*sin(q.y*38.0-phase*3.2);
-        material = 0.30+pour*(0.48+0.82*heat_ribbons);
+        // One broad thermal front travels from the fall toward the right tap.
+        // Fine static crust stays in the Blender surface; this motion remains
+        // readable at the assembled page scale and inside the liquid alpha.
+        float heat_ribbons = 0.5+0.5*sin(q.x*21.0-phase*2.8+0.45*sin(q.y*20.0));
+        material = 0.18+pour*(0.38+0.98*heat_ribbons);
         float heat_bounce = disk(q,vec2(0.54,0.47),vec2(0.27,0.23))
                             -disk(q,vec2(0.54,0.47),vec2(0.16,0.12));
         float inlet_glow=disk(q,vec2(0.51,0.49),vec2(0.028,0.024));
         float outlet_glow=disk(q,vec2(0.71,0.54),vec2(0.03,0.023));
         float flow_t=fract(phase*0.47);
         vec2 flow_pos=mix(vec2(0.51,0.49),vec2(0.70,0.53),flow_t);
-        float moving_heat=disk(q,flow_pos,vec2(0.027,0.015))*surface.a;
+        float moving_heat=disk(q,flow_pos,vec2(0.045,0.027))*surface.a;
         action = (pool*surface.a*0.08+slot*surface.a*0.08+drop*0.58
                   +inlet_glow*surface.a*0.37+outlet_glow*surface.a*0.38
-                  +moving_heat*0.60+heat_bounce*0.04)*pour*load;
+                  +moving_heat*0.72+heat_bounce*0.04)*pour*load;
         hue = vec3(1.0,0.38,0.035);
     } else {
         // Five seed sockets feed a growth front up distinct crystal columns.
