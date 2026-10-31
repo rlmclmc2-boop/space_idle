@@ -21,3 +21,4 @@
 - [2026-10-31 final main equipment + R5d shared shell](e845-r5d-shared-20261031/README.md): same-version affected static routes, pending whole-combination review.
 
 - [2026-10-31 final equipment and R5d native route clip](e845-r5d-transition-20261031/README.md): 34 frames and state log, author affected-path observation only.
+- [Correction: the 34-frame e845/R5d clip is stitched post-action sampling](e845-r5d-transition-20261031/CORRECTION.md); original media is preserved.
