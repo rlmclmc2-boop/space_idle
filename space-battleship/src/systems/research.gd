@@ -1,4 +1,5 @@
 extends RefCounted
+const Resources = preload("res://src/systems/resource_amounts.gd")
 var _run_state
 
 signal choices_changed
@@ -37,7 +38,16 @@ func restore_state(state: Dictionary) -> Dictionary:
 			return {"ok": false, "reason": "InvalidResearchState"}
 	if not is_finite(state.ratio) or not is_finite(state.refresh_elapsed) or state.ratio < 0.0 or state.refresh_elapsed < 0.0 or (not state.current.is_empty() and not _definitions.has(state.current)):
 		return {"ok": false, "reason": "InvalidResearchState"}
+	if not state.get("funding_progress",{}) is Dictionary or not state.get("funding_meters",{}) is Dictionary: return {"ok":false,"reason":"InvalidResourceProgress"}
+	for resource in state.get("funding_progress",{}).keys()+state.get("funding_meters",{}).keys():
+		if resource not in ["1","2"]: return {"ok":false,"reason":"InvalidResearchResource"}
+	var progress: Dictionary = Resources.progress_map(state.get("funding_progress",{}),_api)
+	if not progress.ok: return progress
+	var meters: Dictionary = Resources.meters(state.get("funding_meters",{}),_api)
+	if not meters.ok: return meters
 	_state = _initial(_rules)
+	_state.funding_progress = progress.values
+	_state.funding_meters = meters.values
 	_budget_work_cache.clear()
 	_budget_effect_cache.clear()
 	for key in ["levels", "work", "current", "investment", "auto_invest", "ratio", "refresh_elapsed", "peaks", "required_work"]:
@@ -204,10 +214,12 @@ func _budget_resource(resource: String, rate: Dictionary, inputs: Dictionary) ->
 	if not net.ok: return net
 	var stock := {"kind": "not_spending", "game_seconds": null}
 	if _api.apply("compare", [rate, zero]).scalar > 0:
-		var duration: Dictionary = _api.apply("div", [balance, rate])
+		var supported: Dictionary = _api.apply("add",[balance,_state.funding_progress.get(resource,zero)])
+		if not supported.ok: return supported
+		var duration: Dictionary = _api.apply("div", [supported.value, rate])
 		if not duration.ok: return duration
 		stock = {"kind": "finite", "game_seconds": _api.apply("to_display", [duration.value]).text}
-	return {"ok": true, "income_rate": _api.apply("to_display", [income]).text, "balance": _api.apply("to_display", [balance]).text,
+	return {"ok": true, "income_rate": _api.apply("to_display", [income]).text, "balance": _api.apply("to_display", [balance]).text, "balance_integer_text":Resources.integer_text(balance,_api).get("text", "—"),
 		"net": {"direction": "surplus" if direction > 0 else "deficit" if direction < 0 else "balanced", "amount": _api.apply("to_display", [net.value]).text},
 		"stock_duration": stock}
 
@@ -224,7 +236,11 @@ func _budget_view(rates: Dictionary, inputs: Dictionary, context: Dictionary) ->
 		resources[resource] = row
 		if _api.apply("compare", [rates[resource], zero]).scalar > 0:
 			funded[resource] = rates[resource]
-			if _api.apply("compare", [inputs.wallet.get(resource, zero), zero]).scalar > 0: paying[resource] = rates[resource]
+			var supported: Dictionary = _api.apply("add",[inputs.wallet.get(resource,zero),_state.funding_progress.get(resource,zero)])
+			if not supported.ok: return supported
+			var available: Dictionary = _api.apply("compare",[supported.value,zero])
+			if not available.ok: return available
+			if available.scalar>0: paying[resource] = rates[resource]
 	var result := {"ok": true, "investment": investment, "resources": resources,
 		"speed_now": null, "completion_estimate": null, "reason": str(context.details.reason)}
 	if str(_state.current).is_empty(): return result
@@ -248,8 +264,10 @@ func _budget_view(rates: Dictionary, inputs: Dictionary, context: Dictionary) ->
 		if not cost.ok:
 			result.reason = str(cost.get("error", "ResearchEstimateUnavailable"))
 			return result
-		required_funding[resource] = _api.apply("to_display", [cost.value]).text
-		enough = enough and _api.apply("compare", [inputs.wallet.get(resource, zero), cost.value]).scalar >= 0
+		var settlement: Dictionary = Resources.settle(cost.value,_state.funding_progress.get(resource,zero),_api)
+		if not settlement.ok: return settlement
+		required_funding[resource] = _api.apply("to_display", [settlement.amount]).text
+		enough = enough and _api.apply("compare", [inputs.wallet.get(resource, zero), settlement.amount]).scalar >= 0
 	result.completion_estimate = {"condition": "FrozenInputsContinuouslyFunded", "funded_speed": _api.apply("to_display", [fully_funded.value]).text,
 		"game_seconds": _api.apply("to_display", [duration.value]).text, "assumed_paid_resources": funded.keys(),
 		"required_funding": required_funding, "current_wallet_sufficient": enough}
@@ -312,7 +330,7 @@ func publish_choices_changed() -> void:
 	choices_changed.emit()
 
 static func _initial(rules: Dictionary) -> Dictionary:
-	return {"levels": {}, "work": {}, "current": "", "investment": {},
+	return {"levels": {}, "work": {}, "current": "", "investment": {}, "funding_progress": {}, "funding_meters": {},
 		"auto_invest": false, "ratio": float(rules.research_default_ratio), "contributions": {}, "refresh_elapsed": 0.0,
 		"peaks": {}, "required_work": {}, "gates": {}, "available": {}}
 
@@ -541,7 +559,11 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 			if not selected.ok: return selected
 		return _finish_advance(next, wallet, false)
 	next.work = state.work.duplicate()
-	var balances: Dictionary = wallet.duplicate()
+	var holdings: Dictionary = Resources.whole_map(wallet, api)
+	if not holdings.ok: return holdings
+	var balances: Dictionary = holdings.values
+	next.funding_progress = state.funding_progress.duplicate(true)
+	next.funding_meters = state.funding_meters.duplicate(true)
 	# Selection admits gates/requirements; both stay valid until this level completes.
 	if not definitions.has(key):
 		return {"ok": false, "reason": "ResearchUnavailable"}
@@ -561,7 +583,9 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 		var full_dt = api.apply("from_decimal", [str(remaining)])
 		for resource in ["1", "2"]:
 			var rate: Dictionary = next.investment.get(resource, zero)
-			var balance: Dictionary = balances.get(resource, zero)
+			var supported: Dictionary = api.apply("add",[balances.get(resource,zero),next.funding_progress.get(resource,zero)])
+			if not supported.ok: return supported
+			var balance: Dictionary = supported.value
 			if api.apply("compare", [rate, zero]).scalar <= 0 or api.apply("compare", [balance, zero]).scalar <= 0:
 				continue
 			var wanted = api.apply("mul", [rate, full_dt.value])
@@ -594,16 +618,24 @@ func advance(wallet: Dictionary, dt: float, crew_speed: Dictionary, continue_res
 			duration = api.apply("from_decimal", [str(piece)])
 			work = deficit
 		for resource in paying:
-			var cost = api.apply("mul", [paying[resource], duration.value])
-			if not cost.ok:
-				return cost
-			var left = api.apply("sub_nonnegative", [balances.get(resource, zero), cost.value])
+			var integrated: Dictionary = Resources.integrate(paying[resource],piece,next.funding_meters.get(resource,{}),api)
+			if not integrated.ok: return integrated
+			var raw: Dictionary = integrated.amount
+			if not completed and resource in exhausted:
+				var supported: Dictionary = api.apply("add",[balances.get(resource,zero),next.funding_progress.get(resource,zero)])
+				if not supported.ok: return supported
+				raw = supported.value
+			var settled: Dictionary = Resources.settle(raw,next.funding_progress.get(resource,zero),api)
+			if not settled.ok: return settled
+			var left = api.apply("sub_nonnegative", [balances.get(resource, zero), settled.amount])
 			if not left.ok:
 				return left
 			# The Amount comparison owns this exhaustion boundary. A duration
 			# may round to zero as a float; consume the limiting balance once
 			# and recompute the remaining step without its acceleration.
-			balances[resource] = zero if not completed and resource in exhausted else left.value
+			balances[resource] = left.value
+			next.funding_progress[resource] = settled.progress
+			next.funding_meters[resource] = integrated.meter
 		var added = api.apply("add", [progress, work.value])
 		if not added.ok:
 			return added
