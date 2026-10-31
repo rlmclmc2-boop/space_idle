@@ -208,11 +208,17 @@ box("Dock load pan", (-1.32,0,.24), (2.12,1.25,.18), navy, root, .06)
 box("Dock recessed service bed", (-1.36,0,.35), (1.85,.83,.045), blue, root, .012)
 for side in (-1,1):
     y = side*.70
-    box("Dock deep load rail", (-1.39,y,.52), (2.38,.27,.34), navy, root, .05)
-    box("Dock armor rail crest", (-1.39,y,.74), (2.20,.25,.10), ivory, root, .018)
+    craft_hull("Continuous ochre berth pressure cheek", [
+        (-2.57,y,.55,.15,.18), (-2.36,y,.62,.22,.28),
+        (-1.52,y,.65,.25,.34), (-.49,y,.67,.28,.37),
+        (.22,y,.63,.25,.34), (.56,y,.52,.18,.20),
+    ], orange, root)
+    box("Berth lower load web", (-1.34,side*.69,.33), (2.37,.31,.17), navy, root, .035)
+    box("Berth recessed dark crown", (-1.43,side*.70,1.015), (1.86,.25,.045), navy, root, .012)
+    for x, length in ((-2.13,.43),(-1.42,.50),(-.69,.49)):
+        box("Armor cassette on pressure cheek", (x,side*.955,.73), (length,.055,.22), ivory, root, .018)
+        box("Pressure cassette blue key", (x,side*.993,.73), (length*.37,.018,.075), blue, root, .007)
     box("Dock inner launch guide", (-1.41,side*.55,.59), (2.12,.028,.045), cyan, root, .005)
-    for x in (-2.23,-1.48,-.73):
-        box("Dock rail armor break", (x,y,.80), (.045,.24,.018), edge, root, .005)
     strut("Dock diagonal load brace", (.20,side*.82,.16), (-1.77,side*.80,.26), .13, orange, root)
 for x, top in ((-.36,1.18),(-2.31,1.06)):
     for side in (-1,1):
