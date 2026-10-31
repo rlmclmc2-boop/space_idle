@@ -217,6 +217,12 @@ for end in (-1, 1):
     beam("Cross portal armored lintel", (x,-.76,1.16),
          (x,.76,1.16), .24,.26, ivory, root)
     box("Open passage soffit", (x,0,1.03), (.10,.91,.06), navy, root, .01)
+    # A second, recessed compression arch lowers the apparent black crown of
+    # the inlet while maintaining clear height above the deck transit path.
+    beam("Recessed portal compression arch", (x,-.43,.84),
+         (x,.43,.84), .15,.13, ivory, root)
+    box("Compression arch blue underside", (x,0,.76),
+        (.095,.58,.035), blue, root, .008)
     # A shallow faceted arch makes the inlet's bearing frame legible from
     # oblique views without capping the open passage or masking the ring.
     for side in (-1, 1):
