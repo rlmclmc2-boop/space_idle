@@ -14,7 +14,7 @@
 
 `082e2e2e` 的炉受影响完整态默认和70°原图、脚本、导入／取图日志固定于[独立归档 ac4ce0be](https://github.com/rlmclmc2-boop/space_idle/tree/ac4ce0be)；7 件文件逐件从 Git blob 复核 SHA256。炉料斗25°及构建图证仍见[归档 72bb3c81](https://github.com/rlmclmc2-boop/space_idle/tree/72bb3c81)，70°图不能证明矿石可辨。站受影响完整态默认、单建25°和完整态25°原图见[归档 40b4d44b](https://github.com/rlmclmc2-boop/space_idle/tree/40b4d44b)，站模型构建及下侧图见[归档 8a15ec7d](https://github.com/rlmclmc2-boop/space_idle/tree/8a15ec7d)；两归档分别复核 8／9 件文件。工坊默认／70° 沿用[归档 0c6474eb](https://github.com/rlmclmc2-boop/space_idle/tree/0c6474eb)，船坞默认／25° 沿用[归档 1f5c63e0](https://github.com/rlmclmc2-boop/space_idle/tree/1f5c63e0)，其余六类默认沿用[归档 1d4e07ad](https://github.com/rlmclmc2-boop/space_idle/tree/1d4e07ad)。built 状态及角度由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。
 
-四段 owned 的站、站＋炉、站＋炉＋工坊、完整态默认角模拟累积图固定于[独立归档 0ffa7e4e](https://github.com/rlmclmc2-boop/space_idle/tree/0ffa7e4e)；6 件文件从 Git blob 复核 SHA256。此后只改炉料斗和站节点／其 owned 甲板截面，不改变环段归属；图证仍不能当作自然建造流程。
+四段 owned 的站、站＋炉、站＋炉＋工坊、完整态默认角模拟累积图固定于[独立归档 42bc486a](https://github.com/rlmclmc2-boop/space_idle/tree/42bc486a)；6 件文件从 Git blob 复核 SHA256。站单建下缘端部仍明显；图证不能当作自然建造流程。
 
 ## 有效契约与持续交付
 
