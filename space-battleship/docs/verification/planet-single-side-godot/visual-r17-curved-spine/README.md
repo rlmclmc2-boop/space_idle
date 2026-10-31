@@ -8,11 +8,11 @@
 
 ## 当前具体动作
 
-当前源码 `a47c2e46` 在四段 owned 承力截面基础上，让炉原压力舱一体拱起、冠部高于双料斗内缘、同网格切热井；两只原料斗侧墙外张、蓝色下壳和浅色料块分层，接收口保留。R48 将两只料斗内各三块方料改为两块不规则矿石；原尺寸默认／25°仅局部可辨，70°受口沿遮挡，不能把矿石当成整体形体改进。船坞原停靠艇沿发射轨前移微抬，船首露出泊位端；工坊侧窗后的遮挡内墙收成上下承力边，侧角可读内部工具行程。R49 扩大站指挥冠承力盘及运动环，改站原下承力颊为六截面渐缩形状，并在站 owned 环甲板抬起两侧承肩；R50 把站压力墙压入同一环截面，中央低位通道保持。顶部圆形识别与站口接环改善，但站下暗方箱仍显，四设施与环的共同主剪影、材质协调仍不足，整体未通过。下一步须继续重做站节点与环的共同轮廓，不以局部调高／收窄代替。
+当前源码 `350f3d51` 在四段 owned 承力截面基础上，让炉原压力舱一体拱起、冠部高于双料斗内缘、同网格切热井；两只原料斗侧墙外张、蓝色下壳和浅色料块分层，接收口保留。R48 将两只料斗内各三块方料改为两块不规则矿石；原尺寸默认／25°仅局部可辨，70°受口沿遮挡，不能把矿石当成整体形体改进。船坞原停靠艇沿发射轨前移微抬，船首露出泊位端；工坊侧窗后的遮挡内墙收成上下承力边，侧角可读内部工具行程。站指挥冠承力盘和运动环扩大，原下承力颊渐缩并压入 owned 环截面；R52 将站下缘重复箱体改成连续装甲侧壳，低位通道保持。站下暗色块仍显，四设施与环的共同主剪影、材质协调仍不足，整体未通过。下一步须继续重做站节点与环的共同轮廓，不以局部调高／收窄代替。
 
 ## 最新同版证据边界
 
-`a47c2e46` 的站受影响完整态默认、单建25°、完整态25°及70°原图、脚本、导入／取图日志固定于[独立归档 d893352c](https://github.com/rlmclmc2-boop/space_idle/tree/d893352c)；11 件文件逐件从 Git blob 复核 SHA256。R49 站 Blender 构建和初版图证仍在[归档 117d2a16](https://github.com/rlmclmc2-boop/space_idle/tree/117d2a16)，9 件文件逐件复核。`2ea70ccd` 的炉受影响完整态默认、25°、70° 原图、脚本、构建／导入／取图日志固定于[独立归档 72bb3c81](https://github.com/rlmclmc2-boop/space_idle/tree/72bb3c81)；11 件文件逐件从 Git blob 复核 SHA256。70°图仅支持料斗总体，不能证明矿石可辨。工坊默认／70° 沿用[归档 0c6474eb](https://github.com/rlmclmc2-boop/space_idle/tree/0c6474eb)，船坞默认／25° 沿用[归档 1f5c63e0](https://github.com/rlmclmc2-boop/space_idle/tree/1f5c63e0)，其余六类默认沿用[归档 1d4e07ad](https://github.com/rlmclmc2-boop/space_idle/tree/1d4e07ad)。built 状态及角度由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。
+`350f3d51` 的站受影响完整态默认、单建25°和完整态25°原图、脚本、构建／导入／取图日志固定于[独立归档 8a15ec7d](https://github.com/rlmclmc2-boop/space_idle/tree/8a15ec7d)；9 件文件逐件从 Git blob 复核 SHA256。站接环70°沿用[归档 d893352c](https://github.com/rlmclmc2-boop/space_idle/tree/d893352c)。`2ea70ccd` 的炉受影响完整态默认、25°、70° 原图、脚本、构建／导入／取图日志固定于[独立归档 72bb3c81](https://github.com/rlmclmc2-boop/space_idle/tree/72bb3c81)；11 件文件逐件从 Git blob 复核 SHA256，70°图仅支持料斗总体，不能证明矿石可辨。工坊默认／70° 沿用[归档 0c6474eb](https://github.com/rlmclmc2-boop/space_idle/tree/0c6474eb)，船坞默认／25° 沿用[归档 1f5c63e0](https://github.com/rlmclmc2-boop/space_idle/tree/1f5c63e0)，其余六类默认沿用[归档 1d4e07ad](https://github.com/rlmclmc2-boop/space_idle/tree/1d4e07ad)。built 状态及角度由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。
 
 四段 owned 的站、站＋炉、站＋炉＋工坊、完整态默认角模拟累积图固定于[独立归档 0ffa7e4e](https://github.com/rlmclmc2-boop/space_idle/tree/0ffa7e4e)；6 件文件从 Git blob 复核 SHA256。此后只改炉料斗和站节点／其 owned 甲板截面，不改变环段归属；图证仍不能当作自然建造流程。
 
