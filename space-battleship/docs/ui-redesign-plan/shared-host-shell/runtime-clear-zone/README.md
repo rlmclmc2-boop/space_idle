@@ -513,3 +513,11 @@ Godot 4.7.2 本版导入无解析／资源错误。[同版跨页驱动](evidence
 `feat/planet-single-side-ui@6400b71e8bfb4197078e9ead414861d2ce5fed53` 相对前版 `affb1ea6` 只新增 `evidence/shipyard-single-bay/` 的运行／导入／哈希文本，无 `src/`、`scripts/`、`assets/` 变更；原 [R17 入口](../../../verification/planet-single-side-godot/visual-r17-curved-spine/README.md) 仍称船坞单泊位为局部候选，四建筑整体退回且由原组核整体范围。相对本组 ac5 基线还隔着未整体验收的星球几何、设施与素材变化，不将该局部证据或其中任一文件单挑接入。
 
 装备 `19a2ba967cd265673a40b9d526db88671b5f1924` 五态图已送用户，仍待意见；当前九整屏＋三往返静态组合的限定结论保持。现无新增明确公共缺陷或已获整组交接结论的运行差异，本次只更正依赖状态，不另取图或复测。后续固定依赖分别为装备用户反馈、星球原组完整运行源与品质结论、反应堆目标机性能实证／未覆盖的本组合动态，以及新模块候选齐备后的跨页终审；这些是证据与原组交接依赖，非本工作区技术阻塞，也不构成整体通过或合 main 授权。
+
+### 全局数字档位与逐资源不足反馈：公共源交接
+
+用户新定的 `k/m/b/t/kt/e`、一位小数规则已写入唯一[13 全局数字显示](../../../game-design/13-art-interaction.md#22-全局信息层级与适配)，展示端口与逐资源不足语义见[14 两键契约](../../../game-design/14-ui-contracts.md#1-版本与使用边界)。可供各模块消费的实际公共运行文件仅 `src/ui/player_text.gd` 的静态 `PlayerText.number(value: String)`；已有装备、反应堆、战斗等数字路径调用它。入口接受 native Amount `to_display` 的十进制／科学记数文本，按十进制字位舍入，不将 Amount 转成 float；不改 Amount、Owner、报价、支付、比较或数据库。公共余额对齐另改 `src/systems/economy.gd::balances_text/balance_rows`（增加只读 `raw` 字段）、`src/ui/zone_shell.gd::_process/_update_resource_rows`（顶栏与详情共用格式、悬浮显示 native 原文），不再有顶栏专属科学记号改写。模块内部若只需统一金额，可仅取 `player_text.gd`；若使用公共余额顶栏，须同时取上述两个文件，并以当前公共宿主为基线精确合并，不取整棵未审模块树。
+
+边界校核：`0→0`、`12→12.0`、`999.94→999.9`、`999.95→1.0k`、`999950→1.0m`、`1e15→1.0kt`、`9.9995e17→1.0e18`、`1e20→1.0e20`、`1.235e39→1.2e39`；负数保符号，舍入后为零不显示 `-0`，极大指数仍按字符串进位。Godot 4.7.2 对 21 个定向输入比对均通过，`economy.gd`／`zone_shell.gd` 脚本解析通过；这是展示函数边界检查，不冒充各模块同版整屏已重新视觉验收。顶栏和详情现在都显示缩写；悬浮 native 文本仅补精度，主读数本身保量级。
+
+资源不足参考当前已接装备 `d354e60f1530435a6790cca0814ddc7e76f84f82` 的 `equipment_panel.gd::_refresh_card/_render_fees/_cycle_slot/_buy_slot`：报价按资源逐项 `Economy.can_pay`，只将不足项费用文字转红，彩色图标保持原色；余额不足不禁用购买键，数量循环只刷新本地模式与报价，真正执行收到 `InsufficientResources` 才短暂提示。其他模块由原组按自身 Owner 端口接入，不能由公共组代改内部；装备批量弹层 `_buy_all` 的不足提示仍需装备原组按同一规则核，不能将逐槽实现外推为批量／全模块完成。原反应堆组的均分、费用与不足状态修订仍由其内部负责，公共规则不准许切数量时发命令或改变失败业务语义。
