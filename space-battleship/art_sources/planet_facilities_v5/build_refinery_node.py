@@ -162,9 +162,14 @@ def hopper(name, y, parent):
     for rail in (-1,1):
         box("Hopper ivory mouth lip",(0,rail*.405,1.79),
             (1.35,.095,.09),ivory,root,.016)
-    for x in (-.52,-.12,.28):
-        box("Ore chunk in receiving bin",(x,side*.10,1.38),
-            (.22,.21,.10),edge,root,.02)
+    for index,x in enumerate((-.48,.20)):
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=0, radius=1,
+                                              location=(x,side*(.08+.07*index),1.53))
+        ore = bpy.context.object
+        ore.scale = (.18,.15,.20) if index == 0 else (.23,.17,.17)
+        ore.rotation_euler = (.24*index, .27*(index+1), .35*side)
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        finish(ore,"Ore chunk in receiving bin",edge,root,0)
 
 
 root=node("Facility")
