@@ -1,0 +1,9 @@
+Controlled Owner states:
+STATE 1 IDs=["weapons"] LOAD=1.0
+STATE 2 IDs=["weapons", "defence"] LOAD=1.0
+STATE 3 IDs=["weapons", "defence", "smelting"] LOAD=1.0
+STATE 4 IDs=["weapons", "defence", "smelting", "condensation"] LOAD=1.0
+
+Continuous 1x run:
+VIDEO_READY load=1.0 modules=[{ "id": "weapons", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "defence", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "smelting", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "condensation", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }] game_time=0.05 phase=0.03333333333333
+VIDEO_END wall_seconds=35 game_seconds=10.2833333333334 phase_delta=10.2833333333334 active_frames=274 field_updates=2
