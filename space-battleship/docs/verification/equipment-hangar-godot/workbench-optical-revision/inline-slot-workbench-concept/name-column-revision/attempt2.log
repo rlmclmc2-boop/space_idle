@@ -1,0 +1,54 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FAIL: natural early rectangular cards quantity is within actual card bounds
+FAIL: natural early rectangular cards purchase contained weapon:0
+FAIL: natural early rectangular cards quantity is within actual card bounds
+FAIL: natural early rectangular cards purchase contained defence:0
+FAIL: middle5 real state with true empty slots quantity is within actual card bounds
+FAIL: middle5 real state with true empty slots purchase contained weapon:0
+FAIL: middle5 real state with true empty slots quantity is within actual card bounds
+FAIL: middle5 real state with true empty slots purchase contained defence:0
+FAIL: middle5 real state with true empty slots quantity is within actual card bounds
+FAIL: middle5 real state with true empty slots quantity is within actual card bounds
+FAIL: middle5 real state with true empty slots quantity is within actual card bounds
+FAIL: late true empty slots before loadout restoration quantity is within actual card bounds
+FAIL: late true empty slots before loadout restoration purchase contained weapon:0
+FAIL: late true empty slots before loadout restoration quantity is within actual card bounds
+FAIL: late true empty slots before loadout restoration purchase contained weapon:1
+FAIL: late true empty slots before loadout restoration quantity is within actual card bounds
+FAIL: late true empty slots before loadout restoration quantity is within actual card bounds
+FAIL: late true empty slots before loadout restoration quantity is within actual card bounds
+FAIL: late only matter insufficient quantity is within actual card bounds
+FAIL: late only matter insufficient purchase contained weapon:0
+FAIL: late only matter insufficient quantity is within actual card bounds
+FAIL: late only matter insufficient purchase contained weapon:1
+FAIL: late only matter insufficient quantity is within actual card bounds
+FAIL: late only matter insufficient purchase contained weapon:2
+FAIL: late only matter insufficient quantity is within actual card bounds
+FAIL: late only matter insufficient purchase contained weapon:3
+FAIL: late only matter insufficient quantity is within actual card bounds
+FAIL: late only matter insufficient purchase contained weapon:4
+FAIL: late actual longMAX quantity is within actual card bounds
+FAIL: late actual longMAX purchase contained weapon:0
+FAIL: late actual longMAX quantity is within actual card bounds
+FAIL: late actual longMAX purchase contained weapon:1
+FAIL: late actual longMAX quantity is within actual card bounds
+FAIL: late actual longMAX purchase contained weapon:2
+FAIL: late actual longMAX quantity is within actual card bounds
+FAIL: late actual longMAX purchase contained weapon:3
+FAIL: late actual longMAX quantity is within actual card bounds
+FAIL: late actual longMAX purchase contained weapon:4
+FAIL: late bottom quantity is within actual card bounds
+FAIL: late bottom purchase contained defence:0
+FAIL: late bottom quantity is within actual card bounds
+FAIL: late bottom purchase contained defence:1
+FAIL: late bottom quantity is within actual card bounds
+FAIL: late bottom purchase contained weapon:3
+FAIL: late bottom quantity is within actual card bounds
+FAIL: late bottom purchase contained weapon:4
+FAIL: late bottom quantity is within actual card bounds
+FAIL: late bottom purchase contained defence:2
+TEXT_COLUMN_NATIVE_COMPLETE failures=48

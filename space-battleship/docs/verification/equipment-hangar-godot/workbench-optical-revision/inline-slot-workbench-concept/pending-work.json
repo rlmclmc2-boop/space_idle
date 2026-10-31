@@ -1,27 +1,22 @@
 {
-  "current": "19a2 five formal full-screen images personally viewed by root, limited original-review acceptance confirmed per parent, and actually delivered to user requesting confirmation; only this candidate awaits user feedback, not full game/final/main acceptance",
-  "runtime_source_commit": "d354e60f1530435a6790cca0814ddc7e76f84f82",
-  "approved_equipment_candidate": "04ae5710c27d2cd8c6e6e7e6741ad1b597c7dbb3",
-  "public_fix_source": "459df59315e20708075bda5fafe9ef8408b69a7d",
-  "evidence": "resource-rail-confirmation/ledger.json",
+  "current": "User feedback after19a2 addressed in new name-column/shared-number candidate; same-version19 full screens and video ready for root/original review, not waiting old user decision",
+  "runtime_source_commit": "75b7a1918b2c988e81ebdb64e7006369189c77cc",
+  "shared_number_source": "f688ea7c8856ad87775b0853044b9020303b8137",
+  "evidence": "name-column-revision/ledger.json",
   "remaining": [
-    "Await user feedback on the five-image candidate already delivered by root"
+    "Root/original reviewer judgment of this new full candidate; delivery/user acceptance remain separate",
+    "Unobserved arbitrary extremes require real domain source only if later requested"
   ],
+  "independent_implementation_remaining": [],
   "implementation_dependency": null,
   "actual_compaction": false,
   "denied_actions": [],
   "unknown_outcomes": [],
   "background_processes": [],
   "not_claimed": [
-    "full game completion",
-    "final user acceptance",
+    "new original review passed",
+    "new user acceptance",
     "main merge",
-    "new complete workflow or video rerun"
-  ],
-  "reviewed_delivered_evidence": "19a2ba967cd265673a40b9d526db88671b5f1924",
-  "independent_original_work_remaining": [],
-  "coverage_limits": [
-    "Arbitrary unobserved extreme fields are outside current confirmed scope and need domain source only if later requested"
-  ],
-  "stop_reason": "All authorized independent implementation/evidence work completed; preserve current reviewed and delivered candidate while awaiting user feedback"
+    "whole-game completion"
+  ]
 }
