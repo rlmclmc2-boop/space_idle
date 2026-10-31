@@ -352,7 +352,7 @@ func _forge(preview: bool) -> Dictionary:
 			_forge_preview = {"request": request.duplicate(true), "fingerprint": JSON.stringify(request, "", true),
 				"source": _forge_source(request), "forecast": JSON.stringify(forecast, "", true),
 				"operation_id": "forge-ui:%s:%s" % [get_instance_id(), _forge_sequence], "completed": false}
-			_forecast.text = "%s · 费用 %s · 抽数 %d。确认仅执行本次预览。" % [OPERATIONS.get(request.operation, "改造"), _cost_text(forecast.costs), int(forecast.draws)]
+			_forecast.text = "%s · 费用 %s · 抽数 %d。确认仅执行本次预览。" % [OPERATIONS.get(request.operation, "改造"), _cost_text(forecast.get("cost_integer_texts", forecast.costs)), int(forecast.draws)]
 		else: _forecast.text = "当前条件不满足，请检查无人机形态、收藏与材料。"
 		return forecast
 	_sync_forge_preview()
@@ -389,9 +389,9 @@ func _refresh() -> void:
 	if _warehouse == null: return
 	var online: Dictionary = _session.hyperspace_system.online_status()
 	var manual: Dictionary = _session.hyperspace_system.manual_receipt()
-	_status.text = "手动 %s · 挂机 %s (%.1f/%.1f 秒) · 能源 %.0f" % [
+	_status.text = "手动 %s · 挂机 %s (%.1f/%.1f 秒) · 能源 %s" % [
 		_status_name(str(manual.get("status", ""))), _status_name(str(online.idle.get("status", ""))),
-		float(online.idle.get("work", 0.0)), float(online.idle.get("duration", 0.0)), float(online.energy)]
+		float(online.idle.get("work", 0.0)), float(online.idle.get("duration", 0.0)), PlayerText.resource_number(str(online.energy_text))]
 	var selected: Array = _selected_ids()
 	_warehouse.clear()
 	_ids.clear()
@@ -458,7 +458,7 @@ func _refresh_detail() -> void:
 
 func _cost_text(costs: Dictionary) -> String:
 	var parts := PackedStringArray()
-	for key in costs: parts.append(_name(key) + " " + PlayerText.number(str(costs[key])))
+	for key in costs: parts.append(_name(key) + " " + PlayerText.resource_number(str(costs[key])))
 	return "、".join(parts)
 
 func _status_name(value: String) -> String:
