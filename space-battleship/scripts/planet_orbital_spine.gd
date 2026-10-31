@@ -3,8 +3,8 @@ extends Node3D
 ## geometry continues behind the planet's depth mask instead of ending there.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
 const ARC_BOUNDS := {
-	"auto_explore": Vector2(PI * 1.075, PI * 1.24),
-	"refinery": Vector2(PI * 1.24, TAU - 0.16),
+	"auto_explore": Vector2(PI * 1.075, PI * 1.39),
+	"refinery": Vector2(PI * 1.39, TAU - 0.16),
 	"equipment": Vector2(-0.16, PI * 0.5),
 	"shipyard": Vector2(PI * 0.5, PI * 1.075),
 }
