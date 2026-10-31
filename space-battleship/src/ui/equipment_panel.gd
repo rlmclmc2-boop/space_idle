@@ -13,6 +13,11 @@ const LIGHT = Color("c9ded9")
 const CONTROL_FOCUS = Color("e5c784")
 const CONTROL_DISABLED_INK = Color("9cb4b4")
 const CONTROL_CUT = 5.0
+const CARD_WIDTH = 420.0
+const EQUIPPED_HEIGHT = 106.0
+const EMPTY_HEIGHT = 52.0
+const CARD_GAP = 12.0
+const CONTENT_PAD = 4.0
 var _session
 var _font_regular: FontVariation
 var _font_medium: FontVariation
@@ -45,6 +50,7 @@ var _content_height: float = 0.0
 var _identity: Panel
 var _identity_title: Label
 var _identity_counts: Label
+var _global_quantity: Button
 var _batch_open: Button
 var _fallback_header: Label
 var _popup: Control
@@ -93,12 +99,12 @@ func _init(session) -> void:
 
 func _operation_button(button: Button, role: String="button", compact_card: bool=false, selected: bool=false) -> void:
     BridgeTheme.apply_operation_button(button,"commit" if role=="primary" else "secondary",8,selected)
-    # Module typography and26px card controls retain their validated geometry.
+    # Card controls keep the common material; local content padding supports the new28px controls.
     button.add_theme_font_override("font",_font_strong)
     if compact_card:
         for state in BridgeTheme.PUBLIC_STATES:
             var surface: StyleBox=button.get_theme_stylebox(state)
-            surface.content_margin_top=1;surface.content_margin_bottom=1
+            surface.content_margin_top=2;surface.content_margin_bottom=2
             button.add_theme_stylebox_override(state,surface)
 
 func _style(fill: Color, edge: Color, thickness: int=1) -> StyleBoxFlat:
@@ -138,10 +144,12 @@ func _icon(parent: Control, key: String, rect: Rect2) -> TextureRect:
 
 func _build() -> void:
     _fallback_header=_label(self,"装备",Rect2(25,10,220,45),22,CREAM,600)
-    _identity=_panel(self,Rect2(16,297,309,72));_identity.mouse_filter=Control.MOUSE_FILTER_PASS
-    _identity_title=_label(_identity,"",Rect2(14,8,285,30),21,CREAM,600)
-    _identity_counts=_label(_identity,"",Rect2(14,39,285,23),14,LIGHT,400)
-    _batch_open=_button(self,"全部升级",Rect2(676,262,96,30),_open_batch,"primary")
+    _identity=_panel(self,Rect2(16,297,276,72));_identity.mouse_filter=Control.MOUSE_FILTER_PASS
+    _identity_title=_label(_identity,"",Rect2(14,8,248,30),21,CREAM,600)
+    _identity_counts=_label(_identity,"",Rect2(14,39,248,23),14,LIGHT,400)
+    _global_quantity=_button(self,"×1",Rect2(552,254,64,30),_cycle_global,"button",true)
+    _global_quantity.add_theme_font_size_override("font_size",16);_global_quantity.tooltip_text="全部槽位数量"
+    _batch_open=_button(self,"全部升级",Rect2(628,254,134,30),_open_batch,"primary",true)
     _scroll=ScrollContainer.new();_scroll.position=Vector2(340,294);_scroll.size=Vector2(434,484)
     _scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
     _scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
@@ -183,10 +191,14 @@ func _refresh_structure() -> void:
     _ship=str(_session.campaign_system.selected_ship())
     if _selected.is_empty() or _fact(_selected).get("dormant",true):_selected=str(_active[0].id) if not _active.is_empty() else ""
     var early: bool=_active.size()<=2
-    _body_top=432 if early else 294;_content_height=2+94*_active.size();_view_height=minf(484,_content_height)
+    _body_top=432 if early else 294
+    _content_height=CONTENT_PAD*2+CARD_GAP*maxi(0,_active.size()-1)
+    for fact in _active:_content_height+=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+    _view_height=minf(484,_content_height)
     _scroll.position=Vector2(340,_body_top);_scroll.size=Vector2(434,_view_height)
     _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
-    _batch_open.position.y=400 if early else 262
+    _global_quantity.position.y=400 if early else 254;_batch_open.position.y=_global_quantity.position.y
+    _global_quantity.disabled=not _session.run_state.is_running();_batch_open.disabled=_global_quantity.disabled
     var display_height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
     var bottom: float=640.0 if early else 680.0
     _identity.position.y=bottom-display_height-83.0
@@ -196,20 +208,21 @@ func _refresh_structure() -> void:
     _identity_title.text=ship_title
     _identity_counts.text="武器 %s  ·  防御 %s" % [_active.filter(func(f):return f.category=="weapon").size(),_active.filter(func(f):return f.category=="defence").size()]
     for id in _cards:_cards[id].panel.hide()
-    var y: float=0.0
+    var y: float=CONTENT_PAD
     for category in ["weapon","defence"]:
         for fact in _active.filter(func(f):return f.category==category):
             var id: String=str(fact.id)
             if not _cards.has(id):_create_card(id)
-            _cards[id].row_y=y;_cards[id].panel.position=Vector2(0,y+2)
-            _refresh_card(id);y+=94
+            var height: float=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+            _cards[id].row_y=y;_cards[id].panel.position=Vector2(2,y);_cards[id].panel.size=Vector2(CARD_WIDTH,height)
+            _refresh_card(id);y+=height+CARD_GAP
     _update_visible_cards();_refresh_scene_picture()
 
 func _create_card(id: String) -> void:
-    var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(424,90)
+    var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(CARD_WIDTH,EQUIPPED_HEIGHT)
     _content.add_child(panel)
-    var icon=_icon(panel,"",Rect2(8,18,44,54))
-    var select=_button(panel,"",Rect2(60,6,216,26),_open_choices.bind(id),"button",true)
+    var icon=_icon(panel,"",Rect2(12,26,44,54))
+    var select=_button(panel,"",Rect2(64,10,198,28),_open_choices.bind(id),"button",true)
     select.alignment=HORIZONTAL_ALIGNMENT_LEFT;select.clip_text=true
     _operation_button(select,"button",true,true)
     # This picker is a Button opening the existing Owner-backed choice popup,
@@ -217,21 +230,21 @@ func _create_card(id: String) -> void:
     # into an unrelated OptionButton selection/confirmation flow.
     var arrow=TextureRect.new();arrow.texture=preload("res://assets/ui/public_shell/stepper-down.svg")
     arrow.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;arrow.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    arrow.mouse_filter=Control.MOUSE_FILTER_IGNORE;select.add_child(arrow);arrow.position=Vector2(198,7);arrow.size=Vector2(14,12)
+    arrow.mouse_filter=Control.MOUSE_FILTER_IGNORE;select.add_child(arrow);arrow.position=Vector2(176,8);arrow.size=Vector2(14,12)
     select.add_theme_font_size_override("font_size",16)
-    select.size=Vector2(216,26)
-    var level=_label(panel,"",Rect2(292,6,72,26),14,Color("49636c"))
-    var compare=_button(panel,"比较",Rect2(356,6,64,26),_show_comparison.bind(id,""),"button",true)
-    var attribute=RichTextLabel.new();attribute.position=Vector2(68,40);attribute.size=Vector2(352,24)
+    select.size=Vector2(198,28)
+    var level=_label(panel,"",Rect2(272,10,68,28),16,INK,600)
+    var compare=_button(panel,"比较",Rect2(350,10,58,28),_show_comparison.bind(id,""),"button",true)
+    var attribute=RichTextLabel.new();attribute.position=Vector2(72,42);attribute.size=Vector2(336,24)
     attribute.bbcode_enabled=true;attribute.scroll_active=false;attribute.mouse_filter=Control.MOUSE_FILTER_IGNORE
     attribute.add_theme_font_override("normal_font",_font_medium);attribute.add_theme_font_override("bold_font",_font_strong)
     attribute.add_theme_font_size_override("normal_font_size",16);attribute.add_theme_font_size_override("bold_font_size",16)
     panel.add_child(attribute)
-    var cost_title=_label(panel,"费用",Rect2(68,64,34,24),16,Color("284650"))
-    var fee_area=Control.new();fee_area.position=Vector2(104,64);fee_area.size=Vector2(150,24);panel.add_child(fee_area)
-    var quantity=_button(panel,"×1",Rect2(264,62,52,26),_cycle_slot.bind(id),"button",true)
-    var purchase=_button(panel,"购买1级",Rect2(322,62,98,26),_buy_slot.bind(id),"primary",true)
-    _cards[id]={"panel":panel,"icon":icon,"select":select,"level":level,"compare":compare,"attribute":attribute,"cost_title":cost_title,"fees":fee_area,"fee_cells":[],"fee_cache":{},"fee_empty":null,"fee_reason":null,"border_selected":null,"quantity":quantity,"purchase":purchase,"row_y":0.0,"mode":0,"signature":[],"comparison":{}}
+    var cost_title=_label(panel,"费用",Rect2(72,70,34,24),16,Color("284650"))
+    var fee_area=Control.new();fee_area.position=Vector2(108,70);fee_area.size=Vector2(144,24);panel.add_child(fee_area)
+    var quantity=_button(panel,"×1",Rect2(262,68,48,28),_cycle_slot.bind(id),"button",true)
+    var purchase=_button(panel,"购买1级",Rect2(322,68,86,28),_buy_slot.bind(id),"primary",true)
+    _cards[id]={"panel":panel,"icon":icon,"select":select,"level":level,"compare":compare,"attribute":attribute,"cost_title":cost_title,"fees":fee_area,"fee_cells":[],"fee_cache":{},"fee_empty":null,"fee_reason":null,"border_selected":null,"quantity":quantity,"purchase":purchase,"row_y":0.0,"mode":_batch_mode,"signature":[],"comparison":{}}
     purchase.focus_entered.connect(_select_visual.bind(id));quantity.focus_entered.connect(_select_visual.bind(id))
 
 func _comparison(id: String, candidate: String="") -> Dictionary:
@@ -343,7 +356,7 @@ func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejectio
         if not reason.is_empty() and not budget_rejection:
             row.fee_empty.hide()
             if not is_instance_valid(row.fee_reason):
-                row.fee_reason=_label(row.fees,"",Rect2(0,0,150,24),16,Color("903d23"))
+                row.fee_reason=_label(row.fees,"",Rect2(0,0,144,24),16,Color("903d23"))
                 row.fee_reason.clip_text=true
                 row.fee_reason.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
             row.fee_reason.text="进化材料尚未开放" if reason=="EvolutionMaterialLocked" else PlayerText.error(reason)
@@ -369,12 +382,22 @@ func select_slot(id: String) -> void:
 func _cycle_slot(id: String) -> void:
     _select_visual(id);_cards[id].mode=(int(_cards[id].mode)+1)%3;_refresh_card(id)
 
+func _cycle_global() -> void:
+    _apply_global_quantity((_batch_mode+1)%3)
+
+func _apply_global_quantity(mode: int) -> void:
+    if not _session.run_state.is_running():return
+    _batch_mode=mode;_global_quantity.text=["×1","×10","MAX"][mode]
+    for row in _cards.values():row.mode=mode
+    # Only quantity-dependent quotes change; no Owner command or scene rebuild.
+    for fact in _active:_refresh_card(str(fact.id))
+
 func _update_visible_cards() -> void:
     var top: float=_scroll.scroll_vertical
     for fact in _active:
         var id: String=str(fact.id);var row: Dictionary=_cards[id]
         var y: float=float(row.row_y)
-        var full: bool=y>=top and y+94<=top+_view_height
+        var full: bool=y>=top and y+row.panel.size.y<=top+_view_height
         row.panel.visible=full
         if not full:
             var focus: Control=get_viewport().gui_get_focus_owner() if is_inside_tree() else null
@@ -409,8 +432,8 @@ func _new_popup(slot: String, height: float) -> Panel:
         if event is InputEventMouseButton and event.pressed:_close_popup())
     var y: float=(900-height)*.5
     if _cards.has(slot):
-        var anchor: float=_body_top+float(_cards[slot].row_y)-_scroll.scroll_vertical+2
-        y=anchor+32 if anchor+32+height<=minf(880,_body_top+_view_height) else maxf(100,anchor-height-4)
+        var anchor: float=_body_top+float(_cards[slot].row_y)-_scroll.scroll_vertical
+        y=anchor+46 if anchor+46+height<=minf(880,_body_top+_view_height) else maxf(100,anchor-height-4)
     var panel=_panel(_popup,Rect2(392,y,386,height));panel.mouse_filter=Control.MOUSE_FILTER_STOP
     _button(panel,"×",Rect2(344,6,32,28),_close_popup)
     exclusive_ui_changed.emit();return panel
@@ -486,6 +509,7 @@ func _accept_result(result: Dictionary, levels: bool) -> void:
     var unknown: bool=str(receipt.get("commit_status",""))=="fault_unknown" or (result.get("fault",false) and str(receipt.get("commit_status",""))!="accepted")
     if unknown:
         _close_popup();_show_toast("提交结果未知，会话已停止。",true);_values_dirty=true
+        _global_quantity.disabled=true;_batch_open.disabled=true
     elif not result.get("ok",false):
         if str(result.get("reason","")) not in ["InsufficientResources","NoChange"]:_show_toast(PlayerText.error(str(result.get("reason",result.get("error","Unknown")))))
         _values_dirty=true
@@ -505,7 +529,7 @@ func _open_batch() -> void:
     submit.disabled=not _session.run_state.is_running()
 
 func _cycle_batch() -> void:
-    _batch_mode=(_batch_mode+1)%3;_open_batch()
+    _apply_global_quantity((_batch_mode+1)%3);_open_batch()
 
 func _buy_all() -> void:
     var result: Dictionary=_session.equipment.buy_all_levels(10 if _batch_mode==1 else 1,_batch_mode==2,_session.equipment_inputs(),_session.economy.affordable,_session.economy.payment,_session.publish_equipment_levels)
