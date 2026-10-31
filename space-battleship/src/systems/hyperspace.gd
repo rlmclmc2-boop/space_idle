@@ -1355,6 +1355,7 @@ func player_catalog() -> Dictionary:
 func _whole_resource_texts(values: Dictionary) -> Dictionary:
 	var result: Dictionary = {}
 	for id in values:
+		if not Resources.valid_id(id): return {"ok":false,"reason":"InvalidResourceId"}
 		var value: Dictionary = values[id] if values[id] is Dictionary else _api.apply("from_decimal",[str(values[id])]).get("value",{})
 		var checked: Dictionary = Resources.whole(value,_api)
 		if not checked.ok: return checked

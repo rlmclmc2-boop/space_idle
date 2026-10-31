@@ -435,6 +435,8 @@ func current_chrono_speed() -> int:
 	return _chrono_speed
 
 func _accept_real_time(seconds: float, focused: bool) -> Dictionary:
+	if not is_finite(seconds) or seconds < 0.0: return {"ok":false,"reason":"InvalidResourceInterval"}
+	if seconds == 0.0: return {"ok":true,"accepted":0.0}
 	var speed: int = _chrono_speed if focused else 1
 	var cost: int = int(_chrono_costs[speed])
 	if cost == 0: return {"ok": true, "accepted": seconds}
@@ -453,10 +455,13 @@ func _accept_real_time(seconds: float, focused: bool) -> Dictionary:
 	if compared.scalar < 0:
 		var duration: Dictionary = amount_api.apply("div", [supported.value, rate.value])
 		if not duration.ok: return duration
-		var one: Dictionary = amount_api.apply("from_decimal", ["1"]).value
-		var ratio: Dictionary = amount_api.apply("to_ratio", [duration.value, one])
+		# to_ratio is bounded to one: normalize by this requested time window,
+		# not by one second, then project the bounded ratio back to seconds.
+		var window: Dictionary = amount_api.apply("from_decimal", [str(seconds)])
+		if not window.ok: return window
+		var ratio: Dictionary = amount_api.apply("to_ratio", [duration.value, window.value])
 		if not ratio.ok: return ratio
-		accelerated = clampf(float(ratio.scalar), 0.0, seconds)
+		accelerated = clampf(seconds * float(ratio.scalar), 0.0, seconds)
 		raw = supported.value
 		integrated = Resources.integrate(rate.value,accelerated,_chrono_meter,amount_api)
 		if not integrated.ok: return integrated
@@ -672,6 +677,7 @@ func _hyperspace_credit(reward: Dictionary) -> Dictionary:
 	var amounts: Dictionary = reward.materials.duplicate()
 	if int(reward.ultimate_cores) > 0: amounts.ultimate_cores = int(reward.ultimate_cores)
 	for resource in amounts:
+		if not Resources.valid_id(resource): return {"ok":false,"reason":"InvalidResourceId"}
 		var quantity = amount_api.apply("from_decimal", [str(amounts[resource])])
 		if not quantity.ok: return quantity
 		quantity = Resources.whole(quantity.value,amount_api)
@@ -680,7 +686,11 @@ func _hyperspace_credit(reward: Dictionary) -> Dictionary:
 		var added = amount_api.apply("add", [old, quantity.value])
 		if not added.ok: return added
 		next_wallet[resource] = added.value
-	return {"ok": true, "wallet": next_wallet}
+	# Validate the complete candidate using the same rule as accept_budget before
+	# any Claim/native adoption. A later false means legitimate unchanged budget.
+	var validated: Dictionary = Resources.whole_map(next_wallet,amount_api)
+	if not validated.ok: return validated
+	return {"ok": true, "wallet": validated.values}
 
 # Preview and commands share admission order; only commands reserve and accept.
 func _prepare_hyperspace_idle(route: String, automatic: bool, crew_id: String) -> Dictionary:

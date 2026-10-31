@@ -8,10 +8,13 @@ static func whole(value: Dictionary, api) -> Dictionary:
 	if checked.scalar < 0: return {"ok":false,"reason":"InvalidResourceAmount"}
 	return api.apply("ceil", [value])
 
+static func valid_id(id) -> bool:
+	return id is String and not id.is_empty()
+
 static func whole_map(values: Dictionary, api) -> Dictionary:
 	var result: Dictionary = {}
 	for id in values:
-		if not id is String or id.is_empty(): return {"ok":false,"reason":"InvalidResourceId"}
+		if not valid_id(id): return {"ok":false,"reason":"InvalidResourceId"}
 		if not values[id] is Dictionary: return {"ok":false,"reason":"InvalidResourceAmount"}
 		var value: Dictionary = whole(values[id], api)
 		if not value.ok: return value
@@ -22,7 +25,7 @@ static func progress_map(values: Dictionary, api) -> Dictionary:
 	var one: Dictionary = api.apply("from_decimal", ["1"])
 	if not one.ok: return one
 	for id in values:
-		if not id is String or id.is_empty(): return {"ok":false,"reason":"InvalidResourceId"}
+		if not valid_id(id): return {"ok":false,"reason":"InvalidResourceId"}
 		var value = values[id]
 		if not value is Dictionary: return {"ok":false,"reason":"InvalidResourceProgress"}
 		var checked: Dictionary = whole(value, api)

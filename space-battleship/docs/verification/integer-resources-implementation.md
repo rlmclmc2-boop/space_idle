@@ -1,6 +1,6 @@
 # 全局资源整数：实现候选与集成边界
 
-基线`feat/amount-safe-previews@aaba6683829ca11606003690224a1be9ea16080c`，用户规则与唯一出口说明见[资源契约](../game-design/contracts/resources.md)，由[设计README](../game-design/README.md)进入。**作者必要验证通过，仍待根线程原双审；未合main，不代表消费者UI或完整游戏验收。** M10 WIP原hash与179项tracked/262项untracked元数据均保留，不纳入提交。本接替尚未实际压缩。
+基线`feat/amount-safe-previews@aaba6683829ca11606003690224a1be9ea16080c`，用户规则与唯一出口说明见[资源契约](../game-design/contracts/resources.md)，由[设计README](../game-design/README.md)进入。**原候选`a83ad9c8`经Astra审核未通过：奖励键校验/领取原子性与chrono长窗口分帧两处退点；当前仅修复这两处，待同一Astra复核，未合main。** 本页290/61项为原作者必要验证历史，不能视为原审通过；[同版修复与必要证据](integer-resource-review-fixes.md)单独固定。 M10 WIP原hash与179项tracked/262项untracked元数据均保留，不纳入提交。本接替尚未实际压缩。
 
 ## 精确源差异及依赖
 
