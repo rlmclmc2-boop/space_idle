@@ -13,20 +13,33 @@ const CONSOLE_COMPACT = preload("res://assets/ui/reactor/b01/modular-console-com
 const CONSOLE_FOUR = preload("res://assets/ui/reactor/b01/modular-console-four.png")
 const CLAMP_LEFT = preload("res://assets/ui/reactor/b01/modular-core-clamp-left.png")
 const CLAMP_RIGHT = preload("res://assets/ui/reactor/b01/modular-core-clamp-right.png")
-const CORE_LENS = preload("res://assets/ui/reactor/b01/modular-core-lens.png")
-const GIMBAL_FRAMES := [
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-00.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-01.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-02.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-03.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-04.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-05.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-06.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-07.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-08.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-09.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-10.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-11.png"),
+const GIMBAL_REAR_FRAMES := [
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-00.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-01.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-02.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-03.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-04.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-05.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-06.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-07.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-08.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-09.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-10.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-11.png"),
+]
+const GIMBAL_FRONT_FRAMES := [
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-00.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-01.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-02.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-03.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-04.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-05.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-06.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-07.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-08.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-09.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-10.png"),
+	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-11.png"),
 ]
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const OPERATING := {"weapons":{"row":0}, "defence":{"row":1}, "smelting":{"row":2}, "condensation":{"row":3}}
@@ -40,17 +53,23 @@ const MODULES := {
 }
 var _pipes: Dictionary = {}
 var _modules: Dictionary = {}
+var _bay: Sprite2D
 var _core_field: ColorRect
 var _field_material: ShaderMaterial
 var _console: Sprite2D
 var _clamp_left: Sprite2D
 var _clamp_right: Sprite2D
-var _lens: Sprite2D
-var _gimbal: Sprite2D
+var _gimbal_back: Sprite2D
+var _gimbal_front: Sprite2D
 var _clamp_left_home: Vector2
 var _clamp_right_home: Vector2
 var _enabled: Array = []
 var _loads: Dictionary = {}
+var _static_viewport: SubViewport
+var _static_layer: Sprite2D
+var _static_originals: Array[Sprite2D] = []
+var _static_generation: int = 0
+var _static_ids: Array = []
 var _clock: float = -1.0
 var _phase: float = 0.0
 var diagnostics := {"draws":0, "field_updates":0, "active_frames":0}
@@ -59,7 +78,7 @@ func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	custom_minimum_size = VIEW_SIZE
 	set_process(false)
-	_full_layer(BAY)
+	_bay = _full_layer(BAY)
 	for id in IDS:
 		var pipe: Control = PipeView.new()
 		pipe.size = VIEW_SIZE
@@ -67,6 +86,7 @@ func _init() -> void:
 		pipe.visible = false
 		add_child(pipe)
 		_pipes[id] = pipe
+	_gimbal_back = _central_layer(GIMBAL_REAR_FRAMES[0])
 	var core := _source_layer(CORE,Rect2(385,0,418,638))
 	core.visible = true
 	_core_field = ColorRect.new()
@@ -79,10 +99,13 @@ func _init() -> void:
 	_core_field.material = _field_material
 	_core_field.visible = false
 	add_child(_core_field)
-	_lens = _central_layer(CORE_LENS)
-	_gimbal = _central_layer(GIMBAL_FRAMES[0])
-	_clamp_left = _source_layer(CLAMP_LEFT,Rect2(395,300,190,45))
-	_clamp_right = _source_layer(CLAMP_RIGHT,Rect2(603,300,190,45))
+	_gimbal_front = _central_layer(GIMBAL_FRONT_FRAMES[0])
+	_clamp_left = _source_layer(CLAMP_LEFT,Rect2(395,285,190,75))
+	_clamp_right = _source_layer(CLAMP_RIGHT,Rect2(603,285,190,75))
+	# Keep the gripping feet on the globe's outer sockets; the centre stays
+	# unobstructed so the chamber and the front/rear bearing read as a volume.
+	_clamp_left.position.x -= 52.0
+	_clamp_right.position.x += 52.0
 	_clamp_left_home = _clamp_left.position
 	_clamp_right_home = _clamp_right.position
 	for id in IDS:
@@ -93,6 +116,19 @@ func _init() -> void:
 		_modules[id] = module
 	_console = _source_layer(CONSOLE_FOUR,Rect2(0,670,1187,656))
 	_console.modulate = Color(0.57,0.76,0.79)
+	# Keep the source assets separate. Only the unchanged background, conduit
+	# shells and console are composed once per availability state in a viewport.
+	_static_viewport = SubViewport.new()
+	_static_viewport.size = Vector2i(VIEW_SIZE)
+	_static_viewport.disable_3d = true
+	_static_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	add_child(_static_viewport)
+	_static_layer = Sprite2D.new()
+	_static_layer.centered = false
+	_static_layer.texture = _static_viewport.get_texture()
+	_static_layer.visible = false
+	add_child(_static_layer)
+	move_child(_static_layer, 0)
 
 func control_layout(id: String) -> Dictionary:
 	return OPERATING[id]
@@ -102,9 +138,13 @@ static func visibility_power(owner_load: float) -> float:
 	return maxf(load, 0.18) if load > 0.0 else 0.0
 
 func show_snapshot(ids: Array, loads: Dictionary) -> void:
+	var static_changed: bool = ids != _static_ids
 	_enabled = ids.duplicate()
 	_loads = loads.duplicate()
 	_console.texture = CONSOLE_FOUR if _enabled.size() >= 4 else CONSOLE_COMPACT
+	if static_changed:
+		_static_ids = ids.duplicate()
+		_rebuild_static_cache()
 	for id in IDS:
 		var enabled: bool = id in _enabled
 		_pipes[id].visible = enabled
@@ -113,22 +153,64 @@ func show_snapshot(ids: Array, loads: Dictionary) -> void:
 		_pipes[id].set_workload(workload)
 		_modules[id].set_workload(workload)
 	_core_field.visible = float(_loads.get("core",0.0)) > 0.0
-	_lens.visible = _core_field.visible
-	_gimbal.visible = _core_field.visible
+	_gimbal_back.visible = _core_field.visible
+	_gimbal_front.visible = _core_field.visible
 	_field_material.set_shader_parameter("load_fraction",visibility_power(float(_loads.get("core",0.0))))
 	_set_clamp_travel(0.0)
 	diagnostics.field_updates += 1
 
 func clear_snapshot() -> void:
+	_static_generation += 1
+	_static_ids.clear()
+	_static_layer.visible = false
+	for original in _static_originals: original.visible = true
 	_enabled.clear()
 	_loads.clear()
 	_core_field.visible = false
-	_lens.visible = false
-	_gimbal.visible = false
+	_gimbal_back.visible = false
+	_gimbal_front.visible = false
 	_set_clamp_travel(0.0)
 	for id in IDS:
 		_pipes[id].visible = false
 		_modules[id].visible = false
+
+func _rebuild_static_cache() -> void:
+	_static_generation += 1
+	var generation: int = _static_generation
+	_static_layer.visible = false
+	for original in _static_originals: original.visible = true
+	_static_originals.clear()
+	for child in _static_viewport.get_children():
+		_static_viewport.remove_child(child)
+		child.queue_free()
+	_static_originals.append(_bay)
+	_clone_static_sprite(_bay)
+	for id in IDS:
+		if id in _static_ids:
+			var shell: Sprite2D = _pipes[id]._shell
+			_static_originals.append(shell)
+			_clone_static_sprite(shell)
+	_static_originals.append(_console)
+	_clone_static_sprite(_console)
+	_static_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	_finish_static_cache(generation)
+
+func _clone_static_sprite(original: Sprite2D) -> void:
+	var copy := Sprite2D.new()
+	copy.texture = original.texture
+	copy.centered = original.centered
+	copy.position = original.position
+	copy.scale = original.scale
+	copy.modulate = original.modulate
+	_static_viewport.add_child(copy)
+
+func _finish_static_cache(generation: int) -> void:
+	await RenderingServer.frame_post_draw
+	await get_tree().process_frame
+	if generation != _static_generation: return
+	_static_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	for original in _static_originals: original.visible = false
+	_static_layer.visible = true
 
 func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	if not is_visible_in_tree():
@@ -140,7 +222,9 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	_phase = fmod(_phase+elapsed,4096.0)
 	_field_material.set_shader_parameter("phase",_phase)
 	var cycle: float = fmod(_phase,5.2)
-	_gimbal.texture = GIMBAL_FRAMES[int(floor(cycle * GIMBAL_FRAMES.size() / 5.2))]
+	var bearing_frame: int = int(floor(cycle * GIMBAL_FRONT_FRAMES.size() / 5.2))
+	_gimbal_back.texture = GIMBAL_REAR_FRAMES[bearing_frame]
+	_gimbal_front.texture = GIMBAL_FRONT_FRAMES[bearing_frame]
 	var travel: float = 0.0
 	if cycle < 1.2:
 		travel = _smooth_travel(cycle/1.2)
