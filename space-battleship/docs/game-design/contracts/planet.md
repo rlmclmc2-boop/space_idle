@@ -1,8 +1,7 @@
 # 星球前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；保留原第14章节号及原版本状态，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
 [本组版本状态、共同身份与失效边界](../14-ui-contracts.md#8-实现候选成员设施与选中节点的最小只读事实)。
-[船员/星球早期共同候选连接](crew.md#3-候选展示扩展与尚未补齐的交换)。
 
 ## 2. 主线现有模块连接
 
@@ -12,7 +11,7 @@
 
 ### 8.3 Planet：设施事实
 
-拟增`Planet.facility_facts(planet_id: String, explorers: Dictionary, builders: Dictionary) -> Array`。未知或未开放星球返回空数组；可用星球仅返回其实际适用设施，包含locked/building/ready/built。explorers/builders由装配处在当前Session的可见显示帧同步新读`Crew.step_assignments()`并即读即传，不复用固定步开头缓存的people；它们是同名只读临时视图：按星球键与现有施工目标键映射成员id数组，形状与现有Planet推进输入一致。视图不得自报人数，Planet不留存这些人员视图或另建占用账本。
+工作分支提供`Planet.facility_facts(planet_id: String, explorers: Dictionary, builders: Dictionary) -> Array`。未知或未开放星球返回空数组；可用星球仅返回其实际适用设施，包含locked/building/ready/built。explorers/builders由装配处在当前Session的可见显示帧同步新读`Crew.step_assignments()`并即读即传，不复用固定步开头缓存的people；它们是同名只读临时视图：按星球键与现有施工目标键映射成员id数组，形状与现有Planet推进输入一致。视图不得自报人数，Planet不留存这些人员视图或另建占用账本。
 
 | 必需字段 | 类型、单位与来源 | 消费边界 |
 |---|---|---|
@@ -41,7 +40,7 @@
 
 ## 11. 实现候选：当前星球征服事实与累计来源摘要
 
-**状态：设计候选`1865da2f`已获根审及原星球独审限定通过；本实现候选待原双审、未合main，不代表完整M7/V7验收。** 实际出口与定向证据见[实现记录](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/planet-conquest-readonly-implementation.md)。 固定业务基线`26832431d6546a436774c802e80aff2dc086f7dd`；消费者`a91f65b4`的实际缺口、权威来源和验证边界见[短提案](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/planet-conquest-readonly-proposal.md)。本节不改变征服/重铸、Buff叠加、保存或开放规则。
+**状态：设计候选`1865da2f`原记录为根协调者及原星球独审限定通过（模型本次未核实）；接口已在后台候选存在，实际消费状态见11、未合main，不代表完整M7/V7验收。** 当前消费者依11固定源核对。 固定业务基线`26832431d6546a436774c802e80aff2dc086f7dd`；消费者`a91f65b4`的实际缺口、权威来源和验证边界见短提案。本节不改变征服/重铸、Buff叠加、保存或开放规则。
 
 候选新增`Planet.conquest_facts(planet_id: String) -> Dictionary`，仅消费当前已正式绑定Session的Planet已接纳状态。未知/未开放沿现有Planet可用性判定返回`ok=false/reason=PlanetLocked`，不泄露该球详情或伪造成功空奖励。成功给`ok/planet_id/conquered/shared_experience/rewards`；conquered取该球原标记，shared_experience沿原`_buff(state,buffs,"crew_exp_share","all",planet_id)>0`，只指该球探索经验是否共享，不给未来经验或人数。
 

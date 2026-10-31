@@ -1,7 +1,5 @@
-# Cartoon exploration assets
+# 星球球面素材
 
-Hand-authored SVG artwork (2026-10-01), no third-party source images. `origin-surface.svg` is an unlit 2048×1024 equirectangular albedo with broad navy-outlined cream/green land, teal oceans, and matching ocean seams. `origin-clouds.svg` is an independent black/white density field. Both use mipmaps and feed `rotating_planet.gd`; the shader provides sphere projection, stationary light, cel bands, rim and differential rotation. The body is approximately 424 logical pixels wide in its exploration stage. This is a presentation prototype for the first configured body's default maps, not a new planet or gameplay rule.
+origin-surface.svg为2048×1024等距柱状球面色图，origin-clouds.svg为独立密度层，mipmap控制缩小采样；exploration-field.svg为独立静态背景。配置中的各球体路径保持权威，不强制所有星球复用首球素材。
 
-`exploration-field.svg` is a static 764×884 stage field: navy gradient, subdued orbital guides and sparse stars. `planet_visual.gd` draws it on its separate background layer; animations never redraw that layer. Existing configured bodies retain their map paths, rotations and unique corona/beam envelopes. The globe has no per-card 3D viewport; orbital facilities continue using the page's single existing renderer.
-
-No ImageGen prompt: these resources are vector/code-native artwork.
+现行制作和可见验收只见[M/V模块](../../../docs/game-design/art/modules/planet.md)；本页只说明当前素材边界，不保留生成历史、旧验收报告或方案入口。

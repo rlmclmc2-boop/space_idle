@@ -1,5 +1,5 @@
-# Approved eight static enemy hulls
+# 敌舰静态纹理
 
-True-alpha top-down PNGs with bow up; enemies rotate 180° at runtime. Source, prompt intent and provenance: `art_sources/enemy-fleet-20261019/README.md`. Regenerate with `python art_sources/enemy-fleet-20261019/prepare_assets.py`; manifest retains source hashes and normalization bounds. Hulls contain no installed weapons; existing weapon components remain independent.
+八种敌舰源图舰首向上，战斗绘制旋转180度；普通敌舰按当前共享几何适配，elite/BOSS按其visual_key与display_size。表现、碰撞、挂点和情报缩略图共用同一身份；纹理变更不自行改变编队槽位或数值。
 
-Only the eight enemy_opening_* texture paths change in ship_weapon_visuals.json. geometry_texture keeps the original image for centre-hit geometry. Main.enemy_hull_rect fits these sprites uniformly into the approved 90.4×79.333 logical box (the former single-cell body allowance); the same presentation-only allowance applies to the drawn protection and status bars. No grid allocation, enemy movement, encounter rank inference, actor size, capacity, health/shield values or native simulation changes. Other enemy_* fallback art keeps its original display policy.
+现行制作和可见验收只见[M/V模块](../../../../docs/game-design/art/modules/battle.md)；本页只说明当前素材边界，不保留生成历史、旧验收报告或方案入口。

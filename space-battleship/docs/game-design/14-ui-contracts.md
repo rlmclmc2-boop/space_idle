@@ -6,17 +6,11 @@
 
 ## 1. 版本与使用边界
 
-| 标记 | 含义 |
-|---|---|
-| 历史主线连接快照 | 以 `main@08bf2e1e10d69a5edf2e94919ffc9357234129d9` 的源码核对，含已合入的C1容量消费修正。各分册第2节仅列此版本确有的端口/连接。 |
-| 历史候选连接快照 | `rewrite/ui-review-followup@b7bb3de33287783721a8bbd9417f2ea040ad32ff` 中的展示扩展和反馈修正。只有C1已单独合入；其余不能当作主线现有能力或整体通过。各分册第3节显式列出。 |
-| 待补/待审 | 已识别的交换数据或展示缺口，不表示端口已经存在，也不默认批准新增字段、规则或实现。先复用现有公开查询，再确认最小增补。 |
-
-来源记录为[共用接口候选及验证边界](https://github.com/rlmclmc2-boop/space_idle/blob/fa1373dd13ca8b8e3eb12d928ede107191f96741/interface-candidate.md)及同提交的[交接说明](https://github.com/rlmclmc2-boop/space_idle/blob/fa1373dd13ca8b8e3eb12d928ede107191f96741/review.md)。候选中的受控回调/历史GPU画面不证明当前主线实操通过；不据历史窄屏证据启动适配或检查，本阶段范围服从入口的桌面宽屏要求。
+主线连接核对固定为`main@e3b38d7b6d8256f6031e1b086c7db7812b6a441f`；工作分支最新公开出口按[11](11-stage6-contract.md)列出的各自固定源及下文具名实现节区分。早期候选接口快照已退出正式树，不要求恢复其字段或缓存。
 
 后端拥有规则、费用、Amount、容量/解锁、进度、随机、候选接纳和真实状态。前端只读必要事实、提交稳定对象ID与候选输入、显示实际结果；跨模块动作走现有GameSession协调口或注入callable，普通模块动作保持所属模块直调。**读取查询、命令和消费事件必须区分，不能把所有返回Dictionary的方法当作只读查询。** 不由UI重复计算成长、报价、MAX、伤害、研究速度或任务推进。
 
-各分册第2/3节是上述固定旧版本的连接快照；不得用“主线没有/候选未合”覆盖各分册后续具名实现或当前制作。各工作分支的固定源、接入范围和缺口统一见[11当前状态](11-stage6-contract.md)，本分支汇集文档不等于合入这些实现。资源整数契约为[resources](contracts/resources.md)；`f9244a30`只获限定只读复核，不是全局游戏验收。
+分册第2节只列当前main已有的连接，后续具名节定义所需接口及其独立实现范围；规范收录不等于所有分支已集成。资源整数契约见[resources](contracts/resources.md)，f924仅获限定只读复核，不是全局游戏验收。
 
 数量控件消费[13§2.3](13-art-interaction.md#23-所有模块共享的状态与反馈)：数量键只改本地模式并重读Owner报价，独立执行键才提交；原无MAX的动作不因通用样式新增MAX。费用逐资源不足判断由既有预算/Owner端口提供，仅对应消耗值红；点击执行遭普通资源不足才短提示，其他准入与故障语义保持。资源文本只展示Owner整数事实，UI不ceil或从缩写反算；显示入口/版本按13与11核对。
 
@@ -24,7 +18,7 @@
 
 以下文件名均指 `src/ui/<名称>.gd`；公开方法由对应 `src/systems/<模块>.gd` 或 `src/game_session.gd` 提供。结果解释及接纳顺序见第4–5节；不要求所有命令拥有同一组附加返回字段。
 
-按模块只读所需分册；版本与第4–6节共同边界仍以本页为准。分册沿用原节号，“本页第N节”指本共同页或分册的同号正文；旧链接保留跳转，不保留正文副本。
+按模块只读所需分册；版本与第4–6节共同边界仍以本页为准。分册沿用原节号，“本页第N节”指本共同页或分册的同号正文；只保留当前模块正文。
 
 | 模块 | 唯一模块契约正文 |
 |---|---|
@@ -39,11 +33,9 @@
 | 超空间 | [超空间](contracts/hyperspace.md) |
 | 档案/通知/设置 | [档案/通知/设置](contracts/persistence.md) |
 
-## 3. 候选展示扩展与尚未补齐的交换
+## 3. 当前接口缺口的处理
 
-**各分册第3节“候选”均只在第1节指定的候选代码存在，未因文档收录而进入主线。** 新前端可据此评估接入依赖，不能直接调用不存在的主线方法，也不能以读取私有字段替代缺少的端口。
-
-候选新增查询的最小字段截面按模块列在分册第3节，均为展示输出而非新增全量业务状态副本：
+按本页后续具名节及对应模块分册核当前出口。未实现或未接入的查询明确列为依赖，不调用缺失方法、不读私有账本顶替，也不恢复早期候选的整套展示缓存。
 
 ## 4. 查询、操作结果与单一消费事件
 
@@ -103,7 +95,7 @@
 
 ## 8. 实现候选：成员、设施与选中节点的最小只读事实
 
-**状态：候选实现`372f8499`已定向双审、未合main；不作为主线已有方法或完整游戏验收。** 本节只约定当前成员、当前设施和当前节点事实。审查依据与未覆盖项另见[核对记录](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/frontend-contract-audit/colony-readonly-proposal.md)。比例/预算意图、整组原子调配、动态战斗效果和未来效果预测不在本节范围。
+**状态：候选实现`372f8499`原记录称定向双审（主体/模型本次未核实）、未合main；不作为主线已有方法或完整游戏验收。** 本节只约定当前成员、当前设施和当前节点事实。现行实现来源及消费状态见11。比例/预算意图、整组原子调配、动态战斗效果和未来效果预测不在本节范围。
 
 ### 8.1 共同读取与身份边界
 
@@ -131,7 +123,7 @@
 - 每项可单独评审/实现；依赖的人员输入复用已有只读视图，不增加相互持有的模块对象或新业务协调。未选定的比例/预算、整组原子提交、未来效果/动态战斗效果继续待定，不能以本节授权运行实现或整批G2验收。
 ## 9. 已审设计：反应炉整组草稿与科研预算的Amount安全预览
 
-**状态：设计已审；[候选实现`6f6f9fd2`](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/amount-preview-implementation.md)已定向双审、未合main，不作为主线已有方法或完整游戏验收。** 只补当前已定工作点需要的只读换算/比较；玩法及接纳仍按[03第2–3节](03-progression.md#2-反应炉)和本页第5节。固定请求、源码核对及持续0%的差异见[审查记录](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/amount-safe-preview-contract.md)。本节选定Reactor最小具名整组金额入口及Research原单资源入口的归属；不引入通用事务层、保存字段、随机现金流预测或未选UI。
+**状态：设计按本节约束；候选实现`6f6f9fd2`原记录称定向双审（主体/模型本次未核实）、未合main，不作为主线已有方法或完整游戏验收。** 只补当前已定工作点需要的只读换算/比较；玩法及接纳仍按[03第2–3节](03-progression.md#2-反应炉)和本页第5节。持续0%只影响后续自动预算，实际输入按现行规则处理。本节选定Reactor最小具名整组金额入口及Research原单资源入口的归属；不引入通用事务层、保存字段、随机现金流预测或未选UI。
 
 ### 9.1 单位与共同读取边界
 
@@ -160,7 +152,7 @@
 
 模块正文见[超空间分册](contracts/hyperspace.md#10-实现候选超空间只读预览与星球自动设置)与[星球分册](contracts/planet.md#10-实现候选超空间只读预览与星球自动设置)。
 
-优先三项候选实现`4c1de507`已定向双审、未合main，不代表完整游戏验收。基线`cd4169ccbb9cf94b58e29ac6583ff682465a9df2`，仅补现行规则下的读取，未实施同提案其余清单。固定源码/定向证据见[实现记录](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/readonly-preview-implementation.md)。
+优先三项候选实现`4c1de507`原记录称定向双审（主体/模型本次未核实）、未合main，不代表完整游戏验收。基线`cd4169ccbb9cf94b58e29ac6583ff682465a9df2`，仅补现行规则下的读取，未实施同提案其余清单。当前消费状态按11固定版本核对。
 
 过滤命令与预览共用原解析/规范化及纯校验，set_filter直接输入仍保留原严格类型准入。预览不改当前规则，返回值可本地编辑而不污染所有者；确认仍调用import_filter原串并重新解析校验，不能提交客户端candidate绕过原准入。UI编辑分享串、切换来源、取消或成功后清对应旧确认；不为此添加全局revision、过滤影响扫描或仓库处理动作。Planet关闭自动仍只改变后续继续设置，不取消正在进行的探索。
 
@@ -168,7 +160,7 @@
 
 模块正文见[装备分册](contracts/equipment.md#11-实现候选装备比较强化摘要与成交回执)与[强化分册](contracts/enhancement.md#11-实现候选装备比较强化摘要与成交回执)。
 
-设计`0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8`已双审通过；候选实现`ab6e8873`已定向双审、未合main，不代表完整游戏验收。仅本节读取与回执边界，未搬入b7bb旧缓存/提前通知；历史来源核对留在[提案](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/equipment-enhancement-readonly-contract-proposal.md)，固定源码及原始证据见[实现记录](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/equipment-enhancement-readonly-implementation.md)。
+设计`0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8`原记录称双审通过（主体/模型本次未核实）；候选实现`ab6e8873`原记录称定向双审（主体/模型本次未核实）、未合main，不代表完整游戏验收。仅本节读取与回执边界，未搬入b7bb旧缓存/提前通知；固定实现与未合主线边界按11核对。
 
 静态比较止于成长/进化/科研/供能；当前实战值另复用Battle.attribute_details，不拿当前native最终值对比候选charged_base。switch_admission仅复用原单槽换装准入，不承诺最终无人机/Higgs组合许可，实际提交仍沿Session原链。查询只读已接纳事实；_charged_base仅给脱离slot，强化不调用会写_pending_output的evaluate，不设可写展示缓存或临时接纳。
 

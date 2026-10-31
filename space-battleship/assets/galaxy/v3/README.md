@@ -1,20 +1,12 @@
 # Galaxy orbital assets
 
-GLB is the runtime authority. The separate central headquarters anchors 30 functional nodes in the first Galaxy; types, IDs, rotation, prerequisites and counts come from the saved construction blueprint; view positions use the approved individual-platform mapping documented in [GALAXY](../../../docs/GALAXY.md).
+GLB is the runtime authority. The separate central headquarters anchors 30 functional nodes in the first Galaxy; types, IDs, rotation, prerequisites and counts come from the saved construction blueprint; view positions use the approved individual-platform mapping defined by the current blueprint and galaxy_city_layout.gd.
 
-## Rebuild and provenance
+## Rebuild
 
-All geometry and the static [space field](galaxy_field.svg) are original, repository-authored work. No downloaded models, textures, add-ons or external license dependencies are used. The core's selected rounded concept is modeled by [galaxy_core_stylized.py](../../../tools/galaxy_core_stylized.py) with [baked shading](../../../tools/galaxy_core_detail.py). It remains a separate headquarters, never a functional slot.
+All geometry and the static [space field](galaxy_field.svg) are original, repository-authored work. No downloaded models, textures, add-ons or external license dependencies are used. The model and import contract below define current runtime consumption.
 
 All six functional families have five unique progressive levels: habitat rings, open-rail shipyards, solar paddles, orbital alloy foundries, clamped crystal processing rigs and heavy-element pressure vessels. Broad matte ivory armor and navy hulls match the accepted ship world. Blue solar paddles, cyan crystals and warm foundry roofs separate the functional families at normal map size; open shipyard frames and pressure vessels omit subpixel fittings. Headquarters keeps its rounded silhouette with the same ivory/navy/teal palette. Floating hulls, cargo berths and service collars keep the stations orbital; no ground stairs, smoke or terrain are baked into them.
-
-From the project directory with Blender 4.3 or newer:
-
-```
-blender --background --python tools/galaxy_toon_buildings.py -- --shuttle
-```
-
-Add `--family colony_ring interstellar_refinery --levels 1 5` for a filtered rebuild. Add `--preview-dir PATH` to render a level lineup; `--preview-only` avoids re-exporting. Disable Cycles denoising where OpenImageDenoise is unavailable (the generator does this). To rebuild only the preserved headquarters, use `tools/galaxy_assets_blender.py -- --core-only`.
 
 [manifest.json](manifest.json) records exact paths, bounds, triangle counts and bytes. Geometry is bounded per model; levels change the silhouette without exceeding the plan's reserved footprint. There is no runtime Blender dependency.
 
@@ -28,5 +20,3 @@ Add `--family colony_ring interstellar_refinery --levels 1 5` for a filtered reb
 - Visible sampling updates affected model/state nodes only. Cached assets/materials/static routes are reused; hidden and paused pages stop viewport rendering, traffic and construction motion. The backdrop is static, with no shader clock. Small UI-scaled windows bound viewport fill cost while retaining 4× edge AA
 
 Display traffic is tuned in `config_excel/galaxy_config.xlsx`: `transport_buildings_per_ship` (completed buildings/boat), `max_transport_ships` (upper bound), `transport_initial_delay` and `transport_departure_interval` (seconds). These never affect work or income. The pool grows with completed buildings, reuses scenes/materials and departs in staggered batches.
-
-Use the logic-owned [complete fixture](../../../../test/fixtures/galaxy_1_complete.json) for normal-UI full-build QA. `test_galaxy_assets.gd` verifies all level imports, vertex tint and scaled footprint; `test_galaxy_ui.gd` verifies exact plan consumption, normal UI captures, picking, pan/zoom, construction/upgrade states and stopping/reuse behavior.

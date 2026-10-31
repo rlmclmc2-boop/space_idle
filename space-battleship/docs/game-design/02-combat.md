@@ -6,7 +6,7 @@
 
 `EncounterId` 标识本次编队实例；`CombatantId` 标识本次敌舰；`ModuleId` 标识实际槽位/无人机武器源；`AttackId` 标识一次规范攻击；`CarrierId` 标识一枚弹体；`HitId=(EncounterId, AttackId, EmitterId, hitOrdinal, targetId)` 标识一次可去重的接触。EmitterId统一覆盖普通弹体、光束和无弹体计时释放；CarrierId是可移动载体的EmitterId子类。相同 enemy 配置 ID 在同一编队可出现多次，不能作实例 ID。槽位换装替换模块代际，不能让旧延时任务误绑新装备。
 
-普通阵型保留槽位和空位，按尺寸占用逻辑格；显式阵型保留 `slot_index` 及 `(x,y)`，当前超空间最多15槽。配置中的尺寸控制几何与舰型，不额外乘生命。普通旧表注释“10格”不能覆盖现行15槽。逻辑几何至少输出舰体包络、护盾边界、炮口、接触表面、朝向；所有坐标为逻辑战场单位，再由视口变换成像素。现行 572 宽的战场尺寸及边界常量迁入 `battle_rules.xlsx`，UI 实际显示高与逻辑高不同不能混用。
+普通阵型保留槽位和空位，按尺寸占用逻辑格；显式阵型保留 `slot_index` 及 `(x,y)`，当前超空间最多15槽。配置中的尺寸控制几何与舰型，不额外乘生命。普通旧表注释“10格”不能覆盖现行15槽。逻辑几何至少输出舰体包络、护盾边界、炮口、接触表面、朝向；所有坐标为逻辑战场单位，再由视口变换成像素。战场尺寸及边界从当前 `battle_geometry.xlsx` 与 `game_rules.xlsx` 对应字段读取，UI 实际显示高与逻辑高不同不能混用。
 
 `combat_setup.gd`的逻辑姿态函数从同一位置与舰体形状给native核碰撞输入、给表现器插值姿态。炮口、敌舰进入位置、护盾命中点不可分别从截图尺寸推算。静态舰体烘焙、模型、GPU网格、尾迹可复用；战斗规则不读取节点 transform、绘制帧或动画是否完成。
 
@@ -57,7 +57,7 @@ shotBase = ceil(enemyWeapon.dmg × mon.dmgMultiple × atkRatio)
 
 **Higgs炮**：仅符合主触发权限的炮建立Higgs贯穿。发射时冻结起点、瞄准方向、到战场边界并向外延伸一个full_width的线段，以及当时各活敌的命中点。宽度`full_width=max(12,rail_trail_width)×max(1,1+area_bonus)`；点投影在线段范围内且到线段距离≤full_width/2才入候选，不把敌舰完整包络与射线相交当成此规则。候选按冻结命中点到起点距离平方升序排列，在同次调用依次emit impact并命中，每目标仅一次；每次仍由命中函数检查存活。若过程中遭遇终止/清场使该次射线失效，就停止剩余候选；最后退役射线。整条射线在同一发射逻辑时刻处理，不按弹速等待前后目标分别到达，也不在下一帧重采样敌位置。
 
-这些是main实际玩家入口的行为：`battlefield.gd`装配`presented_battle_game.gd`，其`launch_player_attack`直接处理普通炮和`advance_higgs_projectile(shot,0.0)`；`game.gd`的freeze/advance函数定义冻结线和候选。现有native的`kind==1 && !hostile`分支同clock执行impact→hit_enemy→retire；Higgs按上述规则补入同一核。
+当前执行由`src/systems/battle.gd`组装同一native核；我方炮在发射同clock内impact→hit_enemy→retire，Higgs沿同核冻结候选规则执行。不恢复已退出的battlefield/presented_battle_game/game旧业务入口。
 
 **飞行弹体**：普通玩家laser以及敌方炮/激光保留飞行，沿逻辑路径检查实际接触后扣血；敌炮不套用我方炮的即时命中规则。导弹按3.1执行。**连锁载体**无论由哪种主武器触发，都独立以720速度到达额外目标才结算；即时炮的主命中不会把其连锁也改成即时。一次攻击的同一连锁机会只能消费一次。连续光束的连锁连接与每跳伤害分别处理，死目标断开，不在每个绘制帧重新抽目标。
 
@@ -160,6 +160,6 @@ R是未被B3强制覆盖、且不含无人机C的原始暴击率。武器天生c
 
 ## 8. native战斗与GPU表现连接
 
-战斗由现有`addons/native_battle/src/combat_execution_kernel.h`扩展后执行；Godot提供装备/编队/逻辑几何，核直接拥有防御、弹体、冷却、临时效果、随机和接触结果。现有native缺少的强化分支及传说按本章与04加入同一核，具体清单和函数见[05](05-architecture.md)。数值接入统一C++ Amount；不保留数值越界时转旧业务的流程。
+战斗由`addons/native_battle/src/combat_execution_kernel.h`执行；Godot提供装备/编队/逻辑几何，核直接拥有防御、弹体、冷却、临时效果、随机和接触结果。强化分支与传说在同核按本章和04执行；身份表示未决差异见C4，不把旧阶段缺口清单当成当前待重写项。数值接入统一C++ Amount；不保留数值越界时转旧业务的流程。
 
 `advance_combat`完成后宿主一次`take_results`取得已发生的命中/死亡/掉落与波状态；先登记掉落，再处理死亡/通关和奖励，最后刷新页面。native不写钱包或存档；宿主不再次计算命中伤害。非终波的合法遗留弹体继续在该核推进，终波先清攻击、收齐掉落再转场。GPU和表现层可丢纯绘制帧或合并火花，不能丢业务结果或产生奖励。

@@ -1,5 +1,5 @@
-# Current static fleet previews
+# 舰体预览
 
-The five player previews in `fleet_20261019/` correspond to the approved five static hulls (`9d485149`). `manifest.json` keeps their measured image mounts/heights and hashes without a dependency on retired scene models or preview renderers. The approved `WeaponDrone.png` preview is retained unchanged.
+fleet_20261019及manifest.json提供五舰静态预览和菜单挂点；WeaponDrone.png保留现有用途。战斗几何由实际舰体/武器manifest与共享几何提供，预览图尺寸不提供碰撞或发射口规则。
 
-Player runtime images live in `assets/ships/fleet_20261019/player/`; runtime weapon pivots and every emission port come from `assets/weapons/fleet_20261019/manifest.json`. Preview dimensions do not supply combat geometry. Source provenance and current runtime directions/scales are documented in `assets/ships/README.md` and the single design entry.
+现行制作和可见验收只见[M/V模块](../../../docs/game-design/art/modules/equipment.md)；本页只说明当前素材边界，不保留生成历史、旧验收报告或方案入口。

@@ -1,6 +1,6 @@
 # 科研前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；保留原第14章节号及原版本状态，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
 [本组版本状态、Amount边界与草稿失效](../14-ui-contracts.md#9-已审设计反应炉整组草稿与科研预算的amount安全预览)。
 
 ## 2. 主线现有模块连接
@@ -9,19 +9,10 @@
 |---|---|---|---|---|
 | 科研：research_panel | Research `panel_model/choices`；panel_model提供选项、当前每资源投入、自动开关和比例，不是完整工作进度舞台模型 | `select/set_investment_text/set_automatic`；返回原拒绝/成功事实 | `choices_changed/investment_changed` | 每资源投入草稿、自动比例草稿、焦点和选择；刷新不能将草稿伪装成已生效值。 |
 
-## 3. 候选展示扩展与尚未补齐的交换
-
-| 模块 | 候选已实现、未合主线 | 尚待补齐/审核 |
-|---|---|---|
-| 科研 | Research `presentation_model`；Session `research_presentation_inputs`；页面注入真实暂停、人员和时间事实 | 清楚显示未应用草稿、暂停后的预计时间口径和岗位续研状态。已有字段先正确消费，不能重新计算研究速度。 |
-
-| 候选查询 | 已有候选字段 |
-|---|---|
-| Research.presentation_model | `speed/remaining/rows`，行内 `id/name/level/active/available/work/required/progress/effect_summary/effect`；不由UI推进工作量。 |
 
 ### 9.3 Research：单工作点预算预览
 
-拟增`Research.budget_preview(request: Dictionary, inputs: Dictionary) -> Dictionary`。request带当前`research_id`和以下一种意图；ID须与当前已接纳研究一致，查询不选择/续选项目。inputs由装配在当前Session显示帧从拟增最小公开`Session.research_preview_inputs()`即读即传：Economy当前钱包、`income_rates(..., research.income_window(), "investment")`的收入率及游戏时钟/窗口终点、原研究外部速度因子和实际科研岗位事实；外部速度只提供聚合因子供Research消费，UI通过注入的具名预览callable调用，不读取`Session._research_speed`或拆分人员/算法组成来求值或管理失效。不读取UI钱包、墙钟peak或production_base冒充投入收入。
+工作分支提供`Research.budget_preview(request: Dictionary, inputs: Dictionary) -> Dictionary`。request带当前`research_id`和以下一种意图；ID须与当前已接纳研究一致，查询不选择/续选项目。inputs由装配在当前Session显示帧从工作分支提供最小公开`Session.research_preview_inputs()`即读即传：Economy当前钱包、`income_rates(..., research.income_window(), "investment")`的收入率及游戏时钟/窗口终点、原研究外部速度因子和实际科研岗位事实；外部速度只提供聚合因子供Research消费，UI通过注入的具名预览callable调用，不读取`Session._research_speed`或拆分人员/算法组成来求值或管理失效。不读取UI钱包、墙钟peak或production_base冒充投入收入。
 
 | request | 本次只读目标及既有写入口 |
 |---|---|

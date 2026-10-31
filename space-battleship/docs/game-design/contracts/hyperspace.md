@@ -1,6 +1,6 @@
 # 超空间前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；保留原第14章节号及原版本状态，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
 
 ## 2. 主线现有模块连接
 
@@ -8,15 +8,6 @@
 |---|---|---|---|---|
 | 超空间：hyperspace_panel | Hyperspace `routes/online_status/manual_receipt/warehouse/module_growth/filter_configuration/legend_collection/player_catalog/material_ids`；钱包由Economy `budget`提供 | Session `start_hyperspace_manual/start_hyperspace_single/start_hyperspace_auto/claim_hyperspace/equip_hyperspace_drones/set_hyperspace_hangings/dismantle_hyperspace_drone/exchange_hyperspace_materials/save_hyperspace_preset/apply_hyperspace_preset/preview_hyperspace_forge/forge`；模块 `organize/set_favorite/set_filter/import_filter/export_filter/set_legend_collected/release_sealed` | 主线没有领域变化信号，当前界面每秒读取并保持选择；不是已具备对象级通知 | 仓库区/筛选/选择、编队与改造草稿、预览fingerprint/source/operation_id/完成状态。原请求绑定、失效和幂等仍有效。 |
 
-## 3. 候选展示扩展与尚未补齐的交换
-
-| 模块 | 候选已实现、未合主线 | 尚待补齐/审核 |
-|---|---|---|
-| 超空间 | 只读 `forge_display_limits(id)`；页面补究极核心余额、预兆/究极词缀/传说参数、装卸对象与具体拒绝原因 | 仓库/挑战对象级通知仍无实现。若需增补，只加受影响对象/状态的最小通知，不重写成全模块事件广播。 |
-
-| 候选查询 | 已有候选字段 |
-|---|---|
-| Hyperspace.forge_display_limits | `affix_limit/hanging_limit/reroll_ranges[]`；范围行 `kind/key/minimum/maximum`，普通词缀另有tier。不表示随机结果已取得。 |
 
 ## 10. 实现候选：超空间只读预览与星球自动设置
 
@@ -32,7 +23,7 @@ Session预览与两个开始命令共用准备链，保留拒绝顺序：单次�
 
 ## 12. 实现候选：M9仓储、挂设、改造与确认前读取
 
-设计`cad1ee17`及分册修正`09af963c`已双审；本节运行候选待定向双审、未合main。实现与定向证据见[M9实现记录](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/m9-readonly-implementation.md)，不代表UI接线、完整V9或游戏验收。原第3节b7bb候选是历史版本；本节出口以当前分支为准。
+设计`cad1ee17`及分册修正`09af963c`原记录称双审（主体/模型本次未核实）；本节接口已在后台候选存在；本次未核定原审主体，不冒称新审核通过、未合main。实现与定向证据见M9实现记录，不代表UI接线、完整V9或游戏验收。本节出口以11所列当前分支为准。
 
 | 出口 / 消费者 | 最小输出与边界 |
 |---|---|

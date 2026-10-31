@@ -1,6 +1,6 @@
 # 船员前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；保留原第14章节号及原版本状态，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
 [本组版本状态、共同身份与失效边界](../14-ui-contracts.md#8-实现候选成员设施与选中节点的最小只读事实)。
 
 ## 2. 主线现有模块连接
@@ -9,15 +9,10 @@
 |---|---|---|---|---|
 | 船员：crew_panel | Crew `member_options/status_rows/job_options`；Planet/Galaxy `assignment_options` 提供任务身份；Planet `assignment_capacity`、Galaxy `assignment_admission`为各自领域端口 | Session `coordinate_assignment(member_id,kind,target,...)`；保留唯一占用与原协调结果 | Crew `members_changed(ids)/options_changed`；Planet `assignment_options_changed/availability_changed`，Galaxy `availability_changed` | 选中成员、派遣候选与筛选/滚动。按kind/target关联任务，不能越权读目标私有账本。 |
 
-## 3. 候选展示扩展与尚未补齐的交换
-
-| 模块 | 候选已实现、未合主线 | 尚待补齐/审核 |
-|---|---|---|
-| 船员/星球 | Crew `assignment_count(kind,target)`；候选页面将人数事实接入星球详情并订阅成员变化 | 目标人数/容量/任务进度的充分关联展示；各目标模块提供自己的公开事实，不新增通用任务账本。 |
 
 ### 8.2 Crew：成员事实
 
-拟增`Crew.member_facts(ids: Array = []) -> Array`。空ids按现有成员选项顺序返回当前可用成员；显式ids只查询这些配置成员，未知id不生成行。显式查询已知未开放成员时，只返回`id/name/available=false/reason="CrewLocked"`，不伪造其可用人物状态。该接口不负责选出“下一个解锁成员”或新增开放门槛算法。
+工作分支提供`Crew.member_facts(ids: Array = []) -> Array`。空ids按现有成员选项顺序返回当前可用成员；显式ids只查询这些配置成员，未知id不生成行。显式查询已知未开放成员时，只返回`id/name/available=false/reason="CrewLocked"`，不伪造其可用人物状态。该接口不负责选出“下一个解锁成员”或新增开放门槛算法。
 
 | 必需字段（可用成员行） | 类型、单位与来源 | 消费边界 |
 |---|---|---|

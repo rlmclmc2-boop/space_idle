@@ -1,6 +1,6 @@
 # 反应炉前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；保留原第14章节号及原版本状态，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
 [本组版本状态、Amount边界与草稿失效](../14-ui-contracts.md#9-已审设计反应炉整组草稿与科研预算的amount安全预览)。
 
 用户已明确取消分配确认/还原，见[D10](../review/conflicts.md#d10)。分配操作直接沿原所有者提交；本节预览/接纳分离是后台边界，不要求额外确认控件。
@@ -11,19 +11,10 @@
 |---|---|---|---|---|
 | 反应炉：reactor_panel | Reactor `panel_options`；Session `reactor_inputs` 提供容量因子与免费供能输入，不能据此冒充已有完整分配展示模型 | `purchase/allocate_text/distribute`；注入 `payment/publish_reactor` | `choices_changed`；主线没有专用 `presentation_changed` | 设备选择与金额草稿、控制区展开；实际分配与增益归Reactor。 |
 
-## 3. 候选展示扩展与尚未补齐的交换
-
-| 模块 | 候选已实现、未合主线 | 尚待补齐/审核 |
-|---|---|---|
-| 反应炉 | `presentation_model/allocation_preview/adjust_allocation` 及 `presentation_changed` | 与前端设备身份、工作/停机和编辑器连接；资产锚点属于前端，不向后端新增像素字段。 |
-
-| 候选查询 | 已有候选字段 |
-|---|---|
-| Reactor.presentation_model | `level/capacity/remaining/load`；modules行 `id/name/enabled/allocation/free/effective/factor/ratio/load`，区分手动、免费、有效供能和最终增益。 |
 
 ### 9.2 Reactor：整组分配预览
 
-拟增`Reactor.allocation_plan_preview(draft: Dictionary, inputs: Dictionary) -> Dictionary`。inputs由装配具名callable即时注入现有`Session.reactor_inputs()`的当下值，不要求UI构造或认识内部组成。draft仅有三个具名读取分支，不是通用命令容器：
+工作分支提供`Reactor.allocation_plan_preview(draft: Dictionary, inputs: Dictionary) -> Dictionary`。inputs由装配具名callable即时注入现有`Session.reactor_inputs()`的当下值，不要求UI构造或认识内部组成。draft仅有三个具名读取分支，不是通用命令容器：
 
 | draft | 精确含义 |
 |---|---|
@@ -35,7 +26,7 @@
 
 最小成功输出：`source`只给外部必要的容量、开放设备ID及配置顺序等公开结果，可复用`current`对应值，不重复暴露输入分解；`current/target`各给`capacity/allocated/remaining`，设备行给`id/manual/free/effective/factor`的Amount文本。容量输入因子、免费输入比例及人员/算法等内部组成不透给UI作比较或管理失效。C来自原_capacity；free的实际Amount读数仍展示且不占手动容量，effective及factor复用原_evaluate，不能把免费比例当最终伤害比例。target是同快照的整组效果比较，不承诺完整战斗收益。比例条可另给有限显示比例，C为0时比例为0，不产生NaN。
 
-**选定的整组提交：** 拟增所有者内最小具名金额入口`Reactor.apply_allocation_plan(amount_texts: Dictionary, inputs: Dictionary, publish: Callable) -> Dictionary`；装配负责即时提供inputs/publish，UI只提交本次操作选定的全套canonical金额目标。比例草稿只用于预览生成目标，命令不接收基点、不按新容量重算金额。映射键必须恰为提交时开放设备ID集合，含0值项；金额须为规范非负整数Amount，不重取整改变提交值。
+**选定的整组提交：** 工作分支提供所有者内最小具名金额入口`Reactor.apply_allocation_plan(amount_texts: Dictionary, inputs: Dictionary, publish: Callable) -> Dictionary`；装配负责即时提供inputs/publish，UI只提交本次操作选定的全套canonical金额目标。比例草稿只用于预览生成目标，命令不接收基点、不按新容量重算金额。映射键必须恰为提交时开放设备ID集合，含0值项；金额须为规范非负整数Amount，不重取整改变提交值。
 
 所有者按提交时容量/开放集合一次校验完整映射与合计，不能容纳或集合变化即普通拒绝，不补项、不按设备钳制；复用原候选求值后仍须核对全部手动值等于提交金额。容量改变但仍能容纳、集合未变时保留提交金额并允许接纳，不引入容量快照锁。通过后形成一个所属模块候选，一次求值、接纳及既有发布；普通拒绝不写入任何本组目标，无逐设备部分成功，原fault仍按第5节停机，不声称可回滚native故障。
 
@@ -45,12 +36,12 @@
 
 ### 9.2.1 实现候选：真实展示与局部变化通知
 
-**状态：设计`3d14ded8`已根线程及原独审核限定通过；[运行实现候选](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/reactor-presentation-implementation.md)待原双审、未合main，不代表UI或完整游戏验收。** 现有整组接口以已审`09af963cf6f66146e019cecd08353426ab6d6abb`为基线；本增补不改变它们或原购级/均分/发布语义。第3节b7bb展示候选不因本节转为已实现。固定消费者、接纳/钱包写入路径、验证计划见[本次定向提案](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/amount-safe-preview-contract.md#反应炉真实场景最小展示与局部通知提案)。
+**状态：设计`3d14ded8`原记录为根协调者及原独审限定通过（模型本次未核实）；接口已在后台候选存在，实际消费状态见11、未合main，不代表UI或完整游戏验收。** 现有整组接口以已审`09af963cf6f66146e019cecd08353426ab6d6abb`为基线；本增补不改变它们或原购级/均分/发布语义。不恢复旧候选缓存或提前通知；当前消费者按11区分。
 
 | 运行候选出口 | 最小职责与字段 |
 |---|---|
 | `Reactor.presentation_model()` | 仅读已接纳状态与容量/效果缓存，给ok、level、capacity/allocated/remaining规范Amount文本、can_allocate/reason、modules及core load；不带预算/购级报价，不把即时inputs或prepared预测为current。缺已接纳缓存给ReactorSnapshotUnavailable，不伪造0或factor=1。modules沿已接纳开放ID及顺序，给id/enabled、manual/free/effective/factor规范文本、has_free及有限ratio/load。当前准入开放集合与已接纳缓存不一致时明确不可用，不混成一个成功快照。 |
-| `Reactor.purchase_preview(can_pay: Callable)` | 仅当前消费者所需+1；复用原_purchase的脱离候选及_quote/等级范围判断，给原costs规范文本、can_purchase/reason。count固定1，不新增MAX；付款能力只用注入Economy.can_pay。金额/文本只按已接纳level和会话内固定配置重算/复用，预算变化只重读可支付性；执行仍由原purchase重验和发布。显示cost_text/message由宿主/前端按资源ID与原原因本地化，不解析Amount或计算费用。 |
+| `Reactor.purchase_preview(can_pay: Callable, count: int = 1)` | 当前固定数量报价统一按下节9.2.2，已支持×1/×10，MAX用独立具名出口。原+1-only签名和“count固定1”限制已失效，不恢复。 |
 | 原`allocation_plan_preview`及实际结果的current/target行 | 在共用_plan_readings中补同口径ratio/load/has_free；沿现行_amounts/shares/equal准备求值，不另写均分或效果算法。current仍已接纳，target仍脱离候选；命令及其canonical金额、拒绝顺序和回执原字段不变。 |
 | `Reactor.presentation_changed(changes: PackedStringArray)` | 仅该Reactor实例的局部deferred合并通知；变化类别限level/capacity/availability/allocation/free/effect/readiness。只标记失效，不携带或接纳候选。level/availability才影响+1报价/准入；当前/来源相关变化才重读场景与必要草稿比较。 |
 | `Economy.budget_changed(resource_ids: PackedStringArray)` | 仅真实已接纳余额的局部deferred变化提示；由Economy拥有，保留原display_changed语义。宿主仅把与+1 costs资源集合相交的事件标记为报价可支付性失效；不触发场景/草稿预览/效果/滑杆重建。 |
@@ -71,12 +62,12 @@ UI只订阅本实例及相关预算资源；通知只置局部dirty，下一可�
 
 ### 9.2.2 实现候选：手动升级×10与MAX
 
-**状态：设计固定`c6170694`，按根线程继续授权实施；当前实现候选待原双审、未合main，不代表消费者或完整游戏验收。** 用户已要求×10/MAX；本节不把9.2.1固定+1实现冒充批量报价已存在。固定Owner、两消费者及源码证据见[定向核对与提案](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/reactor-bulk-purchase-proposal.md)。UI风格、分配确认/还原的移除及消费接线归反应炉组；本节不扩展分配或自动岗位。
+**状态：设计固定`c6170694`，按根线程继续授权实施；后台aaba6683及其后f924/c38已实现；本次仅来源核对、未合main，不代表消费者或完整游戏验收。** 用户已要求×10/MAX；9.2.1只保展示/通知；批量出口以本节为准。当前Owner与消费者按11分别核对。UI风格、分配确认/还原的移除及消费接线归反应炉组；本节不扩展分配或自动岗位。
 
 | 实现候选所有者出口 | 字段与精确语义 |
 |---|---|
 | `Reactor.purchase_preview(can_pay: Callable, count: int = 1)` | 向后兼容原单参+1；正整数count沿原_purchase/_quote求整批费用。成功仍给ok/count/costs规范Amount文本/can_purchase/reason，并给cost_resource_ids（原费用资源ID集合）。count=10严格为10级；不足时can_purchase=false/reason=InsufficientResources，不降成部分10。非法count、等级范围或费用计算/格式化/比较错误明确失败，不伪成功或伪余额不足。 |
-| `Reactor.purchase_max_preview(can_pay: Callable)` | 给同口径ok/count/costs/cost_resource_ids/can_purchase/reason；count为当下已接纳等级和钱包下可整批支付的最大正整数。连+1也不足时给ok=true/count=0/costs={}/can_purchase=false/reason=InsufficientResources；cost_resource_ids仍保留原+1报价的资源集合。UI显示“可购0级/资金不足”，禁止执行，不把空costs显示成免费升级。所有金额文本由Owner给出，UI不解析、反算、搜索或取整。 |
+| `Reactor.purchase_max_preview(can_pay: Callable)` | 给同口径ok/count/costs/cost_resource_ids/can_purchase/reason；count为当下已接纳等级和钱包下可整批支付的最大正整数。连+1也不足时给ok=true/count=0/costs={}/can_purchase=false/reason=InsufficientResources；cost_resource_ids仍保留原+1报价的资源集合。UI可显示可购0级，允许点击沿Owner普通拒绝；不足提示只在实际请求被拒后出现，不调用pay/publish，不把空costs显示成免费升级。所有金额文本由Owner给出，UI不解析、反算、搜索或取整。 |
 | 原`Reactor.purchase(10, false, inputs, pay, publish)` | ×10直接复用既有一次整批报价、pay候选钱包、_submit求值及publish接纳；整批买不起普通拒绝，零部分成交。不是循环10次+1。inputs仍由宿主即时注入Session.reactor_inputs。 |
 | `Reactor.purchase_max(inputs: Dictionary, can_pay: Callable, pay: Callable, publish: Callable)` | 点击时在同一同步调用栈用当前等级/钱包重新求MAX，不接收或信任预览count；count=0普通拒绝且不调用pay/publish。正数只调用一次原purchase(count,false,inputs,pay,publish)，费用与支付再沿原路径校验；成功才附本次实际count与costs规范文本，失败沿原结果，不把预览数量当已成交。 |
 

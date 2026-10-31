@@ -1,6 +1,6 @@
 # 星系前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；保留原第14章节号及原版本状态，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
 [本组版本状态、共同身份与失效边界](../14-ui-contracts.md#8-实现候选成员设施与选中节点的最小只读事实)。
 
 ## 2. 主线现有模块连接
@@ -9,19 +9,10 @@
 |---|---|---|---|---|
 | 星系：galaxy_panel | Galaxy `status_rows/assignment_options/visual_snapshot`；上下文来自Crew `galaxy_assignments`及Session暂停/速度 | 当前星系面板主要读地图；派遣通过crew_panel的 `coordinate_assignment`。探索/施工/升级由Galaxy推进 | `status_changed(keys)/availability_changed`；主线面板未订阅Crew变化，没有候选的所选节点详情刷新链 | 当前区域、节点选择、pan/zoom和详情开合；不能在UI推进工程量。 |
 
-## 3. 候选展示扩展与尚未补齐的交换
-
-| 模块 | 候选已实现、未合主线 | 尚待补齐/审核 |
-|---|---|---|
-| 星系 | `node_presentation(region,id)`；候选面板订阅Crew变化，可见所选详情每250ms只读刷新 | 完整发展阶段、撤人/恢复与升级结束实操未通过；不能用静态字段存在代替该验收。 |
-
-| 候选查询 | 已有候选字段 |
-|---|---|
-| Galaxy.node_presentation | `name/state/level/effect/bonus/explored/reachable/explore_remaining/construction_remaining/upgrade_remaining`；人数仍由Crew事实按区域关联。 |
 
 ### 8.4 Galaxy：选中节点事实
 
-拟增`Galaxy.node_facts(region_id: String, node_id: String, counts: Dictionary) -> Dictionary`。未知/不可用区域或不存在节点返回空字典。counts由装配处在当前Session的可见显示帧同步新读`Crew.galaxy_assignments()`并即读即传，不复用固定步开头缓存的people；它仅转交该区域人数映射，与现有Galaxy推进输入一致，不由视图按人物图标计数或写回。地图形状/连接与人员总数继续消费原接口，本方法只补选中节点的语义截面。
+工作分支提供`Galaxy.node_facts(region_id: String, node_id: String, counts: Dictionary) -> Dictionary`。未知/不可用区域或不存在节点返回空字典。counts由装配处在当前Session的可见显示帧同步新读`Crew.galaxy_assignments()`并即读即传，不复用固定步开头缓存的people；它仅转交该区域人数映射，与现有Galaxy推进输入一致，不由视图按人物图标计数或写回。地图形状/连接与人员总数继续消费原接口，本方法只补选中节点的语义截面。
 
 | 必需字段 | 类型、单位与来源 | 消费边界 |
 |---|---|---|

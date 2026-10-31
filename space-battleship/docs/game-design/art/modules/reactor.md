@@ -15,6 +15,3 @@
 ## 可替换静态资产契约
 
 唯一正文移至[资产交付契约](reactor-asset-contract.md#可替换静态资产契约)，保留元数据v1、稳定ID、坐标/锚点、导入与ready条件；仅需要制作/导入时展开。
-
-<a id="v1元数据结构与稳定身份"></a><a id="坐标锚点与转换约定"></a><a id="元数据草稿示例"></a>
-旧细节锚点迁移到上述分册。早期M3构图与阶段记录在[固定原文](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/game-design/art/modules/reactor.md)保留，不再默认加载。

@@ -39,6 +39,6 @@ powershell -ExecutionPolicy Bypass -File run_game.ps1
 
 启动前设置 `SPACE_IDLE_GODOT` 为 Godot 4.7.2 程序路径，或以 `-Godot` 参数传入；`run_game.ps1` 与构建脚本使用相同的 `BuildRoot` 默认值或覆盖值。启动脚本先按原路线将 Excel 导入为 JSON，再运行正常 Godot 主场景。它是游戏启动入口，不是测试 runner。编译检查不会执行该启动脚本。
 
-## 职责与历史
+## 当前职责
 
-模块归属以 [05 现行模块交接契约](../docs/game-design/05-architecture.md#现行模块交接契约)为准；页面连接见 [14](../docs/game-design/14-ui-contracts.md)，数据/保存见 [06](../docs/game-design/06-data.md)，设计场景与证据判定见 [07](../docs/game-design/07-verification.md)。旧阶段实现叙述、当时测试禁令和通过记录移至 [HISTORY](HISTORY.md)，不默认加载、不作为新阶段执行指令。
+模块归属以 [05 现行模块交接契约](../docs/game-design/05-architecture.md#现行模块交接契约)为准；页面连接见 [14](../docs/game-design/14-ui-contracts.md)，数据/保存见 [06](../docs/game-design/06-data.md)，设计场景与证据判定见 [07](../docs/game-design/07-verification.md)。

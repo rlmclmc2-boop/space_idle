@@ -1,6 +1,6 @@
 # 全局资源整数契约
 
-[回唯一入口](../README.md)。用户明确“全局游戏的所有资源不能非整数，有必要的话向上取整”“无论展示还是实际值”；本页记录本轮执行边界。实施基线`aaba6683829ca11606003690224a1be9ea16080c`；资源消费最新固定版`feat/amount-safe-previews@f9244a30ad1843128aaa0a620c4dc3e4866685b2`已普通发布，**获同一Astra high限定只读复核通过：非法奖励键在restore/Claim前拒绝、完整候选钱包前置校验，chrono按当前请求窗口比例还原支持秒数，关闭两处退点。91项为作者证据，非独立复测、完整游戏或main验收，未合main**。消费者按各自既有依赖精确合并，不覆盖新UI、不停止其他制作；[源差异、依赖与证据](https://github.com/rlmclmc2-boop/space_idle/blob/ad4c01d7fd765a20701845b8bf0effe7ae217c91/space-battleship/docs/verification/integer-resources-implementation.md)。
+[回唯一入口](../README.md)。用户明确“全局游戏的所有资源不能非整数，有必要的话向上取整”“无论展示还是实际值”；本页记录本轮执行边界。实施基线`aaba6683829ca11606003690224a1be9ea16080c`；资源消费最新固定版`feat/amount-safe-previews@f9244a30ad1843128aaa0a620c4dc3e4866685b2`已普通发布，**获同一Astra high限定只读复核通过：非法奖励键在restore/Claim前拒绝、完整候选钱包前置校验，chrono按当前请求窗口比例还原支持秒数，关闭两处退点。91项为作者证据，非独立复测、完整游戏或main验收，未合main**。消费者按各自既有依赖精确合并，不覆盖新UI、不停止其他制作。
 
 ## 数量与取整
 

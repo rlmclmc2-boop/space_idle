@@ -1,9 +1,5 @@
-# Hyperspace route scenery
+# 超空间背景
 
-`routes_atlas.png` is original ImageGen artwork generated for this project, not a screenshot or a runtime render. The 2×2 atlas contains alpha/beta on the top row and gamma/delta below. Source output: `exec-c3e575aa-2b99-4bd4-9796-c2a3c9f233b9.png` (971×1619).
+routes_atlas.png是2×2场景图集，alpha/beta上排、gamma/delta下排；src/ui/battle_scenery.gd按现行路线读取。背景不编码关卡、时间或掉落规则。
 
-Art direction/prompt: four portrait deep-space environments; cyan optical lens arrays, cracked ochre planet and sparse debris, steel magnetic accelerator spines, violet eclipsed star and tilted accretion disk. Detailed upper/outer scenery with a dark empty lower central combat lane; no ships, projectiles, text or UI.
-
-Retained shader: `scripts/starfield.gdshader`; the current `src/main.tscn` entry does not connect this background. One quadrant covers the existing 572×960 battlefield fog quad; a 2.5% inset provides seam-safe overscan for ±0.8% slow UV motion. Runtime brightness is restrained for target readability. This replaces the route SDF scenery; no additional full-screen pass, GPU noise, screenshot readback or runtime asset generation.
-
-Edit the source image with ImageGen if the composition needs changes. Keep quadrant order, dark combat lane and seam-safe margins. Production appearance and performance require parent validation.
+现行制作和可见验收只见[M/V模块](../../../docs/game-design/art/modules/battle.md)；本页只说明当前素材边界，不保留生成历史、旧验收报告或方案入口。

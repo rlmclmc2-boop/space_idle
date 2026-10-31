@@ -1,32 +1,23 @@
 # 反应堆 B01：当前制作入口
 
-## 目标与唯一批准依据
+## 目标与批准依据
 
-以[用户批准B01修订图](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/approved-b01.png)为方向：上方核心、四种设备、短接供能与下方完整控制区一起制作。用户2026-10-30 12:02–12:04（UTC+8）要求按图同时改面板和上方主体，并拿图对照成品。四路控制集中同一控制区，四色条只表达已配/总量；等级、费用、数量循环、独立升级与均分保留。
-
-用户看过三段旧1×片后已退回管光、实体接口、核心水波和控制区贴边；要求独立核心、四设备、独立接口与真双层管路。旧packed/Astra局部视觉通过均不再代表此新结构通过；不合main。
+沿用户批准的B01方向及随后退回意见，制作上方独立核心、四种设备、实体双层管路和下方完整控制区；按图同时改主体和面板。旧整图/核心水波/接口假接合已被退回，旧局部视觉通过不覆盖新结构。现行规范见[M3](../../../../game-design/art/modules/reactor.md)及[资产契约](../../../../game-design/art/modules/reactor-asset-contract.md)。
 
 ## 固定源与现场
 
-| 项目 | 本次可核快照 |
-|---|---|
-| 分支/文档源 | `implement/reactor-centered-godot@73ee39c08b03ff6a4845f7d317baf4cdedc92874` |
-| 新结构源码 | `4f107f6e`建立可组合舞台；`e02fe186`加资产装配防重复裁切；73ee仅澄清历史标签 |
-| 新结构 | 独立舱壁、核心、四机体、四路shell/front透明实体层、弧长UV管腔光、独立转子/钳臂及控制台壳；旧整图+live-material不再实例化 |
-| 原生控制修订 | `e2b58e6a`均分入内腔、费用对齐、执行拒绝才短提示；其旧背景图只证控件，不证新管路 |
+`implement/reactor-centered-godot@519fd7ee82b5c54785bd53b4e36e50f768b6b6de`为本次同版分件R3候选；独立bay/core/四设备/四管shell与front/console，新增三维机械环姿态、核心透镜和原钳臂，管腔沿弧长输送。已在原生节点消费6e0/059ac公共面层，费用徽章底改透明，保留原资源色。f924 helper与Reactor报价整数出口仅作必要窄接，未取Session/Hyperspace/完整钱包结算。
 
-## 当前一步与完成标准
+原组WIP/缓存未读取或清理；此页只是固定Git快照，接替先核真实HEAD及现场。
 
-**当前一步：**围绕新结构完成核心约束/产能、沿真实管腔定向输送、设备回应及端口遮挡的整模块修订。按已生效Owner负载驱动；零载无工作光，未开放部件隐藏，暂停/隐藏/重开沿既有生命周期。
+## 当前一步、完成标准与下一步
 
-完成标准：当前资产的1/2/3/4路零/工作态、受影响交互、完整整屏与正常1×连续片属于同一固定源码/资产版本，原审按批准图及实际整页判断连接、材质、控件和运动，不能只清旧问题清单。随后继续可独立的R3面层与资源契约精确接入；未闭合范围不写成完成。
+**当前一步：**由协调者/既有整体Astra审核本次分件整页和连续运动，判断核心产能、实体接口、沿管腔输送、设备回应、控制台净空和R3材质是否共同成立。作者已交候选及受影响自查；没有本版独立视觉通过或用户实机验收结论，未核见本候选附件实际发用户，不写待用户确认。
 
-## 证据覆盖与剩余依赖
+完成标准：同版1/2/3/4路零/工作、原生均分/拖动/数量与购买、真实完整页及正常1×连续片一致。分配直接沿Owner接纳，不恢复确认/还原。候选固定后继续尚未覆盖状态与性能定位，不能以代码分件或清单清零代替整页判断。
 
-- [八态日志](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/modular-controlled-runtime.txt)及[当前四路整屏](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/modular-controlled-4-active-1440x900.png)覆盖受控1/2/3/4路零/工作态，1/2路真鼠标拖动回读；不证明自然开放。
-- [10秒新结构运动预览](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/modular-preview-10s-1440x900-25fps.mp4)录于最后资产再生成之前，仅证明当时运动；当前最终贴图连续片缺失。日志`wall_seconds=35`是硬编码文字，不能当实测时长。完整版本/hash见[历史新结构记录](HISTORY.md#用户返修二可组合-b01-舞台的当前实现与验证边界)。
-- 新架构尚无可比性能配对，目标机约10fps损失未证明消除。旧31–32fps软件渲染短窗属于旧packed舞台，不能移植到新结构；性能报告按[07](../../../../game-design/07-verification.md#全项目性能优化报告的用户基线)追溯最近实际送达用户的指标。
-- R3共同面层/完整状态依赖[整体入口](../../../../ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)；整数Owner源为`f9244a30`，消费者尚需核范围，不混入旧公共壳代码或扩大只读复核结论。
-- 用户明确取消确认/还原，分配操作直接沿原所有者提交，见[已关闭D10](../../../../game-design/review/conflicts.md#d10)。预览/接纳分离仍有效，不恢复旧确认控件或控制台。
+## 当前覆盖与未完依赖
 
-[完整历史](HISTORY.md)保留265行过程及各版本图/片/性能。旧“末节/当前packed/待新图确认”不再是接替指令。
+- 作者519fd7ee记录同版八态、1/2路真鼠标回读、MAX实际购11级扣752铀/余248、下一价272不足后执行拒绝；均受控状态，不证明自然开放。当前最终资产已有10秒/250帧连续片，旧“最终片缺失”已过时；日志wall_seconds=35仍是硬编码，不能当实测时长。
+- 作者软件环境同实例可见A1/A2为32.31/32.25fps、隐藏B1/B2为44.14/44.26fps；战场阶段变化，属于诊断短窗，不能算GPU净成本/可比改善或目标机通过。用户约10fps损失尚未证明消除，性能口径只见[07](../../../../game-design/07-verification.md#全项目性能优化报告的用户基线)。本Astra仅来源/代码只读核对，没有新增性能或实机测试。
+- 完整资源整数闭包与保存去绑定c38f1c2b仍待精确消费；不覆盖当前新舞台/UI。公共3c3719bf新增控件状态须按受影响控件核需要，不能把公共设置有限图当B01全态通过。当前未合main。
