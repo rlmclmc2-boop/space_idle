@@ -3,6 +3,7 @@ extends Control
 signal command_finished(result: Dictionary)
 signal exclusive_ui_changed
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const NAMES = {"laser":"脉冲炮","missile":"导弹","cannon":"舰炮","longLaser":"长激光","armour":"装甲","shield":"护盾","":"空槽"}
 const RESOURCE_NAMES = {"1":"铁","2":"铀","chrono":"时空微粒","jewel":"强化碎片","degenerate_matter":"简并物质"}
@@ -401,7 +402,9 @@ func _refresh_card(id: String) -> void:
     row.select.tooltip_text=row.select.text
     row.level.text="Lv."+str(fact.paid_level)
     var primary: String="攻击力" if fact.category=="weapon" else "容量"
-    row.attribute.text="[color=#284650]"+primary+"  [/color][color=#173c4e]"+_value(comparison.get("current"))+"[/color][color=#49636c] → [/color][b][color=#20694f]"+_value(comparison.get("upgrade"))+"[/color][/b]"
+    var current_ink: String=BridgeTheme.number_role_color("current","light").to_html(false)
+    var gain_ink: String=BridgeTheme.number_role_color("gain","light").to_html(false)
+    row.attribute.text="[color=#284650]"+primary+"  [/color][color=#"+current_ink+"]"+_value(comparison.get("current"))+"[/color][color=#49636c] → [/color][b][color=#"+gain_ink+"]"+_value(comparison.get("upgrade"))+"[/color][/b]"
     row.attribute.tooltip_text=row.attribute.get_parsed_text()
     row.quantity.text=["×1","×10","MAX"][int(row.mode)]
     row.purchase.text="购买%s级" % str(quote.count) if quote.get("ok",false) else "可购0级" if reason=="NoChange" and int(row.mode)==2 else "购买"
@@ -448,7 +451,7 @@ func _render_fees(id: String, quote: Dictionary, reason: String, budget_rejectio
         cell.position=Vector2(x,0);cell.size=Vector2(width,24);cell.show()
         cached.name_label.text=name_caption;cached.name_label.size.x=name_width
         cached.label.text=value.number;cached.label.position.x=24+name_width+name_gap;cached.label.size.x=number_width
-        cached.label.add_theme_color_override("font_color",Color("a33725") if value.poor else Color("1e3e4c"))
+        BridgeTheme.apply_number_role(cached.label,"insufficient" if value.poor else "cost","light")
         var full: String=value.name+" · "+value.raw
         cell.set_meta("resource_tooltip",full)
         row.fee_cells.append({"control":cell,"resource":value.id,"poor":value.poor,"name_omitted":omit_names,"full_text":full})
