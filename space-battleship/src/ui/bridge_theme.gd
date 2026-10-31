@@ -14,6 +14,31 @@ static func public_font() -> FontVariation:
 		_public_font.variation_embolden = 0.8
 	return _public_font
 
+## Text roles shared by equipment and reactor on their existing native faces.
+## Light means the low-reflection enamel operation face; dark means the navy
+## console face. This does not restyle controls or decide business states.
+static func number_role_color(role: String, surface: String = "light") -> Color:
+	if surface not in ["light", "dark"]:
+		push_warning("Unknown number surface: " + surface)
+		return Color("173c48")
+	if surface == "dark":
+		match role:
+			"current": return Color("b1cbd1")
+			"gain": return Color("7bd2e2")
+			"cost": return Color("e1ded0")
+			"insufficient": return Color("ff9f81")
+	else:
+		match role:
+			"current": return Color("4e7580")
+			"gain": return Color("087d98")
+			"cost": return Color("26718a")
+			"insufficient": return Color("a33725")
+	push_warning("Unknown number role or surface: " + surface + "/" + role)
+	return Color("173c48") if surface == "light" else Color("e9eee6")
+
+static func apply_number_role(label: Label, role: String, surface: String = "light") -> void:
+	label.add_theme_color_override("font_color", number_role_color(role, surface))
+
 static func _public_face(role: String) -> Texture2D:
 	if not _public_faces.has(role):
 		# Take only the painted face: its bright outer key rim belongs to the

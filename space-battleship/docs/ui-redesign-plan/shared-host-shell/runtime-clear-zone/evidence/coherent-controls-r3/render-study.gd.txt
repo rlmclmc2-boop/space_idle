@@ -8,6 +8,7 @@ const REACTOR_SOURCE := ROOT + "r51c6d-combo-reactor-1440x900.png"
 const CREAM := Color("e9eee6")
 const INK := Color("173c48")
 const GOLD := Color("c99a54")
+const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
 
 class Study:
     extends Control
@@ -71,21 +72,21 @@ class Study:
         var values:PackedStringArray=(stat_parts[1] if stat_parts.size()>1 else "").split(" → ",false)
         var old_value:String=values[0] if values.size()>0 else ""
         var new_value:String=values[1] if values.size()>1 else ""
-        text(old_value,470,top+55,15,Color("4e7580"))
+        text(old_value,470,top+55,15,BridgeTheme.number_role_color("current"))
         var arrow_x:float=470+font.get_string_size(old_value,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+5
         text("→",arrow_x,top+55,15,Color("778681"))
-        text(new_value,arrow_x+19,top+55,15,Color("087d98"))
+        text(new_value,arrow_x+19,top+55,15,BridgeTheme.number_role_color("gain"))
         text("费用",407,top+80,15,INK)
         draw_texture_rect_region(source,Rect2(441,top+63,20,20),Rect2(445,top+63,20,20))
         if mode=="MAX":
             text("铁",465,top+80,15,INK)
-            text("1.1e39",484,top+80,15,Color("26718a"))
+            text("1.1e39",484,top+80,15,BridgeTheme.number_role_color("cost"))
             draw_texture_rect_region(source,Rect2(537,top+64,19,19),Rect2(534,top+64,19,19))
             text("铀",560,top+80,15,INK)
-            text("2.8k",579,top+80,15,Color("a33725"))
+            text("2.8k",579,top+80,15,BridgeTheme.number_role_color("insufficient"))
         else:
             text("铁",465,top+80,15,INK)
-            text("65.0",484,top+80,15,Color("a33725") if poor else Color("26718a"))
+            text("65.0",484,top+80,15,BridgeTheme.number_role_color("insufficient" if poor else "cost"))
         key(Rect2(616,top+60,50,28),mode)
         key(Rect2(671,top+60,98,28),buy,true)
     func equipment_page(late:bool=false) -> void:
@@ -139,10 +140,10 @@ class Study:
             frame(Rect2(198,y+17,154,18),Color("173d4c"),Color("5e7f81"),1)
             draw_rect(Rect2(201,y+20,37,12),colors[i])
             draw_texture_rect(grabber,Rect2(229,y+12,26,26),false)
-            text("25%",386,y+34,18,Color("087d98"))
+            text("25%",386,y+34,18,BridgeTheme.number_role_color("gain"))
             line(Vector2(464,y+7),Vector2(464,y+45),Color("9cafab"))
             text("×1.13",479,y+34,15,Color("3b6068"))
-        text("等级",592,644,16,INK);text("1",743,652,26,Color("087d98"))
+        text("等级",592,644,16,INK);text("1",743,652,26,BridgeTheme.number_role_color("gain"))
         line(Vector2(591,670),Vector2(758,670),Color("9db1ad"))
         text("费用",592,704,14,INK)
         draw_texture_rect_region(reactor_source,Rect2(631,687,21,21),Rect2(657,687,23,23))
