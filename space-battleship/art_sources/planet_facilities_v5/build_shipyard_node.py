@@ -141,62 +141,65 @@ for side in (-1,1):
     box("Coupling jaw ivory cap", (.22,side*.99,.12), (.68,.14,.11), ivory, root, .025)
     box("Small coupling beacon", (.19,side*1.06,.17), (.08,.035,.08), cyan, root, .008)
 
-# A faceted, stepped pressure hull gives the spine a pointed crown in both
-# face and quarter views. Dark load core dominates; armor is split into
-# narrow cheeks instead of hiding it behind a broad rectangular white wall.
-core = hull("Tapering shipyard load core", [(.06,.63,.79,.48),(.32,.64,.82,.47),(.91,.50,.70,.48),(1.34,.34,.48,.51),(1.60,.13,.20,.54)], navy, root)
-shoulder = hull("Inset blue machinery shoulder", [(.24,.48,.67,.44),(.47,.55,.72,.43),(.98,.37,.55,.46),(1.24,.20,.32,.49)], blue, root)
-# Cut a real transverse service aperture through both nested shells. It leaves
-# paired load legs and a pointed crown; the previous solid back read as a tomb.
-bpy.ops.mesh.primitive_cube_add(size=1, location=(.47, 0, .72))
-aperture = bpy.context.object
-aperture.name = "Temporary service aperture cutter"
-aperture.dimensions = (2.8, .72, .62)
+# One monocoque pressure shell is the shipyard's load junction. It wraps the
+# ring passage and the radial launch way in one tapered body; the former tall
+# gray tower, nested shoulder and external arches no longer stack around it.
+core = hull("Ring-to-berth pressure shell", [
+    (-.08,.81,.93,.04), (.20,.89,1.02,.04),
+    (.62,.83,.98,.02), (1.04,.63,.74,-.02),
+    (1.27,.36,.46,-.04),
+], ivory, root)
+# A radial through cavity accepts the ship and both real berth rails. A second
+# tangent cavity lets the owned curved ring deck cross the same shell.
+bpy.ops.mesh.primitive_cube_add(size=1, location=(-.35, 0, .64))
+berth_cut = bpy.context.object
+berth_cut.name = "Temporary radial launch cavity"
+berth_cut.dimensions = (3.30, .94, .68)
 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-for target in (core, shoulder):
-    bpy.context.view_layer.objects.active = target
-    mod = target.modifiers.new("Open working throat", "BOOLEAN")
-    mod.operation = "DIFFERENCE"
-    mod.object = aperture
-    bpy.ops.object.modifier_apply(modifier=mod.name)
-bpy.data.objects.remove(aperture, do_unlink=True)
-bpy.ops.mesh.primitive_cube_add(size=1, location=(.47, 0, .72))
-cross_aperture = bpy.context.object
-cross_aperture.name = "Temporary cross aperture cutter"
-cross_aperture.dimensions = (.68, 2.8, .62)
+bpy.context.view_layer.objects.active = core
+mod = core.modifiers.new("Open radial launch cavity", "BOOLEAN")
+mod.operation = "DIFFERENCE"
+mod.object = berth_cut
+bpy.ops.object.modifier_apply(modifier=mod.name)
+bpy.data.objects.remove(berth_cut, do_unlink=True)
+bpy.ops.mesh.primitive_cube_add(size=1, location=(.02, 0, .48))
+ring_cut = bpy.context.object
+ring_cut.name = "Temporary tangent ring cavity"
+ring_cut.dimensions = (.86, 2.80, .56)
 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-for target in (core, shoulder):
-    bpy.context.view_layer.objects.active = target
-    mod = target.modifiers.new("Open lateral service bay", "BOOLEAN")
-    mod.operation = "DIFFERENCE"
-    mod.object = cross_aperture
-    bpy.ops.object.modifier_apply(modifier=mod.name)
-bpy.data.objects.remove(cross_aperture, do_unlink=True)
-# Both exposed end faces carry armor arches. This reads as a pressure frame
-# from either side of the orbit instead of a featureless black back wall.
-for x_side in (-1,1):
-    x0 = .48 + x_side*.69
-    x1 = .48 + x_side*.51
-    x2 = .50 + x_side*.28
-    for y_side in (-1,1):
-        strut("Exposed load arch lower", (x0,y_side*.52,.31),
-              (x1,y_side*.42,1.00), .13, ivory, root)
-        strut("Exposed load arch crown", (x1,y_side*.42,1.00),
-              (x2,y_side*.19,1.44), .12, orange, root)
-    strut("Cross-face lower pressure bar", (x0,-.52,.31),(x0,.52,.31), .10, ivory, root)
-    strut("Cross-face upper pressure bar", (x1,-.42,1.00),(x1,.42,1.00), .12, orange, root)
-    box("Cross-face cyan status lens", (x0+x_side*.04,0,.52), (.035,.18,.075), cyan, root, .01)
+bpy.context.view_layer.objects.active = core
+mod = core.modifiers.new("Open owned spine passage", "BOOLEAN")
+mod.operation = "DIFFERENCE"
+mod.object = ring_cut
+bpy.ops.object.modifier_apply(modifier=mod.name)
+bpy.data.objects.remove(ring_cut, do_unlink=True)
+# The freshly cut walls are the dark pressure interior of the same mesh, not
+# extra boxes placed over the shell. Small real bevels catch the port edges.
+core.data.materials.append(blue)
+core.data.materials.append(navy)
+core.data.update()
+for polygon in core.data.polygons:
+    center = polygon.center
+    if center.z < .19:
+        polygon.material_index = 2
+    elif (.29 < center.z < 1.00 and abs(abs(center.y) - .47) < .08) or \
+         (.20 < center.z < .77 and abs(center.x - .02) < .53):
+        polygon.material_index = 1
+bpy.context.view_layer.objects.active = core
+port_bevel = core.modifiers.new("Machined port cut edge", "BEVEL")
+port_bevel.width = .032
+port_bevel.segments = 2
+port_bevel.limit_method = "ANGLE"
+bpy.ops.object.modifier_apply(modifier=port_bevel.name)
+# Local machined insets follow the shell's load faces. They mark a pressurized
+# shipyard node without covering the two structural openings with new frames.
 for side in (-1,1):
-    y = side*.88
-    box("Split ivory root cheek", (.47,y,.66), (.58,.14,.83), ivory, root, .06)
-    box("Cheek dark service slit", (.43,side*.959,.75), (.27,.02,.44), navy, root, .01)
-    box("Cheek cyan service key", (.40,side*.975,.63), (.07,.015,.21), cyan, root, .004)
-    box("Root upper armor rib", (.52,side*.73,1.09), (.48,.14,.52), ivory, root, .055)
-    box("Tapered crown ochre truss", (.53,side*.45,1.39), (.34,.16,.29), orange, root, .05)
-    for x_side in (-1,1):
-        box("Cross-face armor toe", (.48+x_side*.53,side*.58,.40), (.12,.42,.17), ivory, root, .035)
-box("Crown dark sensor socket", (.54,0,1.57), (.18,.24,.09), blue, root, .02)
-cylinder("Crown warm signal", (.54,0,1.65), .073,.13,amber,root,vertices=12)
+    box("Pressure shell blue service recess", (.03,side*1.025,.53), (.66,.025,.25), blue, root, .015)
+    box("Pressure shell cyan power key", (.02,side*1.046,.53), (.22,.015,.055), cyan, root, .005)
+    for x in (-.60,.57):
+        box("Shell warm locking socket", (x,side*.83,.30), (.12,.075,.10), amber, root, .012)
+box("Pressure shell dorsal service ridge", (-.02,0,1.28), (.40,.62,.13), blue, root, .027)
+cylinder("Pressure shell warm signal", (-.02,0,1.39), .075,.13,amber,root,vertices=12)
 
 # One broad launch cavity crosses the ring node. Two transverse pressure
 # portals tie its paired rails into the same keel; the craft remains visible

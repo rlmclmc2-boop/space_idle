@@ -1,0 +1,12 @@
+917719e63bc2ee400cbfa698cfc4598b300c149bc95258539382a3b4cbf3a5bc  art_sources/planet_facilities_v5/build_shipyard_node.py
+fbf0c3a004927d61c2990437929697bfc986773cce90dad3546048803d6d3f9f  art_sources/planet_facilities_v5/shipyard.blend
+cca1425334eda3aa62a748b1bf064fb68fe98a632391fb2d56060c6a02f733ce  assets/planets/facilities_v5/shipyard.glb
+2f3d10ff48ab8a3247b94554e85b5caee0f6029f5221ac3b6ceece5b1e770fdd  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/quarter_simulated.png
+ce7778a7886176b7bc4f096e2618c8f06c7160c145403f5b346542f9809df74f  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/rear_simulated.png
+b54a7320b1b21d8cd1b885f71526aba96895c37e2392c5dc8314662c16999977  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/stage_3.png
+c7f4ffaa8d0810e13ba4555ac440ba184b3298d38373cdaa66101289530a7af9  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/stage_4.png
+3746ffcf1b2373808f8aaceabf2fe8e86ce508acf92f477c64075aa6cc7f3949  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/work_clock_4.png
+6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/check.txt
+222c7738acede505906edb05ffbe4db4a231d7879422612b94526be6bb511c2d  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/import.txt
+cfcfc975f16525faf323293da6c1ede206593e52e7fba165fe85acacf66463b4  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/run.txt
+db4f7d6a2ed4925410c57d6b88aefe569d002bb4e5b8dde5cf482dfc428528ed  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-monocoque-shell/selected-driver.gd.txt
