@@ -7,9 +7,9 @@
 | 组 | 独立分支与固定版本 | 当前一步与覆盖边界 |
 |---|---|---|
 | main | `e3b38d7b6d8256f6031e1b086c7db7812b6a441f` | 仅已合入基线；不含下列所有最新制作，不是最新设计决定的总和 |
-| 整体 | `design/clear-zone-host@5df3d3dd59cf4fcd427f0fb9e719ad3a0a9e6969` | [R3入口](../ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)：方向已认可，059ac公共运行材质已固定；3c公共有限状态获原独立整体审核者所见无阻断；5df已装装备/B01，同版新组合待原整体审核者审查 |
-| 装备 | `art/equipment-materials-main-20261029@bb4c7bceb39ef9c8f014662bd767ebca9008bde5` | [逐槽入口](../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)：运行81744已接R3；原独审限定可交用户；根16:10已实际发送三图，当前待用户本轮实机意见 |
-| 反应堆 | `implement/reactor-centered-godot@519fd7ee82b5c54785bd53b4e36e50f768b6b6de` | [B01入口](../verification/reactor-centered-godot/evidence/b01-redesign/README.md)：新分件R3已有作者同版八态/连续片及软件诊断；待既有整体Astra看整页/运动，目标机性能未证 |
+| 整体 | `design/clear-zone-host@5df3d3dd59cf4fcd427f0fb9e719ad3a0a9e6969` | [R3入口](../ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)：方向已认可，059ac公共运行材质已固定；3c公共有限状态获原独立整体审核者所见无阻断；5df已装装备/B01，但所用7dfa/519f均已有后续退回，依赖原组返修；组合不获默认通过 |
+| 装备 | `art/equipment-materials-main-20261029@bb4c7bceb39ef9c8f014662bd767ebca9008bde5` | [逐槽入口](../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)：运行81744已接R3；用户16:24已退回7dfa：舰名牌侵台、控件贴边/行内关系、等级弱、顶部倍率须同步下槽；原组返修中，新WIP未取回 |
+| 反应堆 | `implement/reactor-centered-godot@519fd7ee82b5c54785bd53b4e36e50f768b6b6de` | [B01入口](../verification/reactor-centered-godot/evidence/b01-redesign/README.md)：新分件R3已有作者同版八态/连续片及软件诊断；根协调者16:06整页检查未通过：单路升级裁字/核心材质/少态排版；原组返修中，目标机性能未证 |
 | 星球 | `feat/planet-single-side-ui@a40cbae14204f68254f46e0b2a69bb51ac5d00aa`（文档）；源码`662952f7c12a1f1a83412cdab4a6cefb683a7ae5` | [R17入口](../verification/planet-single-side-godot/visual-r17-curved-spine/README.md)：原协调07:31快照：站/炉试装已撤回，换完整形体路线；下一独立项环下暗层/自由端；整数Owner试合已撤回，待逐方法整合；本整理未读其未提交现场 |
 | 后台 | `feat/amount-safe-previews@c38f1c2b06478d1d8b6e98b8571240e693e296fc`；资源实现`f9244a30ad1843128aaa0a620c4dc3e4866685b2` | [资源契约](contracts/resources.md)：奖励校验/chrono退点获同一Astra限定只读复核；91项是作者证据，非全局实机/独立复测/main验收，D9去绑定已在c38实现、同一Astra仅源码定向核对，main/四组待精确合并 |
 
