@@ -31,6 +31,7 @@ def material(name, rgb, metallic=0.12, emission=0):
 ivory = material("Station warm load armor", (.66, .61, .50))
 edge = material("Station bevel shadow", (.48, .48, .44))
 navy = material("Station deep pressure hull", (.035, .105, .15))
+lower_steel = material("Station lower load steel", (.11, .22, .27))
 blue = material("Station blue structural steel", (.08, .22, .29))
 cyan = material("Station inset cyan power", (.04, .56, .64), emission=.32)
 amber = material("Station amber beacons", (.91, .42, .11), emission=.42)
@@ -107,9 +108,9 @@ root = node("Facility")
 for side in (-1, 1):
     y = side * .73
     loft("Continuous deep load cheek", [
-        (-1.22,y,-.31,.27,.24), (-.93,y,-.31,.37,.31),
-        (.93,y,-.31,.37,.31), (1.22,y,-.31,.27,.24),
-    ], navy, root)
+        (-1.22,y,-.27,.27,.18), (-.93,y,-.27,.37,.23),
+        (.93,y,-.27,.37,.23), (1.22,y,-.27,.27,.18),
+    ], lower_steel, root)
     loft("Tapered station pressure wall", [
         (-1.16,y,.17,.26,.42), (-.82,y,.25,.34,.57),
         (.82,y,.25,.34,.57), (1.16,y,.17,.26,.42),
@@ -128,6 +129,12 @@ for side in (-1, 1):
             (.027,.34,.11), ivory, root, .009)
         box("Portal end recessed slot", (end*1.238,side*.80,-.07),
             (.028,.22,.065), blue, root, .007)
+        box("Portal lower pressure end cap", (end*1.248,side*.76,-.36),
+            (.085,.46,.33), ivory, root, .035)
+        box("Portal lower end cap service inset", (end*1.297,side*.76,-.36),
+            (.018,.23,.11), ochre, root, .006)
+        beam("Portal lower diagonal load heel", (end*.93,side*.99,-.15),
+             (end*1.17,side*.88,-.51), .13,.12, ivory, root)
         box("Inset portal guide", (x,side*.55,.57), (.08,.045,.61), cyan, root, .009)
         box("Portal cut edge", (x,side*.53,1.25), (.25,.22,.08), edge, root)
     loft("Upper ivory side armor", [
@@ -139,6 +146,23 @@ for side in (-1, 1):
         box("Observation glazing", (x,side*.471,.55), (.29,.016,.18), cyan, root, .007)
         box("Window mullion", (x+.18,side*.46,.55), (.035,.025,.31), edge, root, .004)
     box("Buried continuous power slit", (0,side*1.115,-.09), (1.59,.016,.055), cyan, root, .006)
+    # The lower pressure cheek is an exposed load hull, not an empty dark
+    # skirt. Stepped armor bays cross its full length and taper into the four
+    # portal feet while keeping the central ring passage clear.
+    for x in (-.77, -.26, .26, .77):
+        loft("Lower stepped pressure bay", [
+            (x-.21,side*1.085,-.31,.082,.15),
+            (x-.15,side*1.13,-.32,.10,.18),
+            (x+.15,side*1.13,-.32,.10,.18),
+            (x+.21,side*1.085,-.31,.082,.15),
+        ], ivory, root)
+        box("Lower bay ochre core", (x,side*1.236,-.34),
+            (.25,.018,.12), ochre, root, .008)
+        box("Lower bay cyan inspection light", (x,side*1.247,-.25),
+            (.13,.014,.025), cyan, root, .004)
+    for x in (-.51,0,.51):
+        beam("Lower bay pressure web", (x,side*1.17,-.14),
+             (x,side*1.17,-.53), .075,.09, blue, root)
     # Faceted service armor grows out of the real pressure wall. The slanted
     # load ribs lead into the buried shoe and keep the ring passage open.
     for x in (-.70, -.23, .23, .70):
