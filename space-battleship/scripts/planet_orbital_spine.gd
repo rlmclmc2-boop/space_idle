@@ -76,21 +76,9 @@ func _ready() -> void:
 		var caps: Array[Node3D] = []
 		for angle in [bounds.x, bounds.y]:
 			var cap := Node3D.new()
-			cap.name = "BuiltSectionTerminal"
+			cap.name = "BuiltSectionTaperedTerminal"
 			var outward := -1.0 if angle == bounds.x else 1.0
-			# Close the real end plane flush with its keel. Separate protruding
-			# boxes made the free end read as an unrelated dark bumper.
-			var width_at_end := _transit_width(angle)
-			# The independently built arc must have a finished pressure end. A
-			# single dark rectangle reads as a dangling construction block.
-			_add_terminal_band(cap, width_at_end, -0.405, -0.295, outward, _side)
-			_add_terminal_band(cap, width_at_end, -0.295, 0.025, outward, _side)
-			_add_terminal_band(cap, width_at_end, 0.025, 0.075, outward, _cyan)
-			_add_terminal_band(cap, width_at_end, 0.075, 0.205, outward, _side)
-			_add_terminal_band(cap, width_at_end, 0.205, 0.325, outward, _deck)
-			var radial := point(angle).normalized()
-			var normal := plane_normal()
-			cap.transform = Transform3D(Basis(radial, normal, radial.cross(normal)), point(angle) + normal * 0.125)
+			_add_tapered_terminal(cap, angle, outward)
 			root.add_child(cap)
 			caps.append(cap)
 		_arcs[kind] = root
@@ -105,39 +93,90 @@ func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
 	_all_materials.append(result)
 	return result
 
-func _add_terminal_band(parent: Node3D, width: float, bottom: float, top: float, outward: float, material: Material) -> void:
-	var surface := SurfaceTool.new()
-	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var lower_width := width * 0.5
-	var upper_width := width * (0.46 if top > 0.2 else 0.5)
-	for vertex in [
-		Vector3(-lower_width, bottom, outward * 0.008),
-		Vector3(lower_width, bottom, outward * 0.008),
-		Vector3(-upper_width, top, outward * 0.008),
-		Vector3(-upper_width, top, outward * 0.008),
-		Vector3(lower_width, bottom, outward * 0.008),
-		Vector3(upper_width, top, outward * 0.008),
-	]:
-		surface.set_normal(Vector3(0, 0, outward))
-		surface.set_uv(Vector2(vertex.x / width + 0.5, 0.5))
-		surface.add_vertex(vertex)
-	var face := MeshInstance3D.new()
-	face.mesh = surface.commit()
-	face.material_override = material
-	parent.add_child(face)
+func _add_tapered_terminal(parent: Node3D, angle: float, outward: float) -> void:
+	# Continue the actual orbital cross-section before tapering it to a small
+	# closed pressure nose. Nothing is placed underneath or atop a flat cut.
+	var top_mesh := SurfaceTool.new()
+	var side_mesh := SurfaceTool.new()
+	var bottom_mesh := SurfaceTool.new()
+	var light_mesh := SurfaceTool.new()
+	for surface in [top_mesh, side_mesh, bottom_mesh, light_mesh]:
+		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var start_width := _transit_width(angle)
+	var start_drop := _station_saddle_drop(angle)
+	var nose_span := 0.09
+	var nose_width := 0.32
+	var nose_top := 0.27 - start_drop * 0.4
+	var nose_edge := 0.19 - start_drop * 0.4
+	var nose_bottom := -0.17 - start_drop * 0.4
+	for step in 8:
+		var t0 := float(step) / 8.0
+		var t1 := float(step + 1) / 8.0
+		var a := angle + outward * nose_span * t0
+		var b := angle + outward * nose_span * t1
+		var wa := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t0))
+		var wb := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t1))
+		var ta := lerpf(0.43 - start_drop, nose_top, t0)
+		var tb := lerpf(0.43 - start_drop, nose_top, t1)
+		var ea := lerpf(0.26 - start_drop, nose_edge, t0)
+		var eb := lerpf(0.26 - start_drop, nose_edge, t1)
+		var ba := lerpf(-0.40 - start_drop, nose_bottom, t0)
+		var bb := lerpf(-0.40 - start_drop, nose_bottom, t1)
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS)
+		var am := point(a) * ((RADIUS - wa * 0.15) / RADIUS)
+		var ap := point(a) * ((RADIUS + wa * 0.15) / RADIUS)
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS)
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS)
+		var bm := point(b) * ((RADIUS - wb * 0.15) / RADIUS)
+		var bp := point(b) * ((RADIUS + wb * 0.15) / RADIUS)
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS)
+		var up := plane_normal()
+		_add_terminal_quad(top_mesh, ai + up * ea, bi + up * eb, am + up * ta, bm + up * tb, up, t0, t1)
+		_add_terminal_quad(top_mesh, am + up * ta, bm + up * tb, ap + up * ta, bp + up * tb, up, t0, t1)
+		_add_terminal_quad(top_mesh, ap + up * ta, bp + up * tb, ao + up * ea, bo + up * eb, up, t0, t1)
+		_add_terminal_quad(bottom_mesh, ai + up * ba, bi + up * bb, ao + up * ba, bo + up * bb, -up, t0, t1)
+		for side in [-1.0, 1.0]:
+			var pa := ai if side < 0 else ao
+			var pb := bi if side < 0 else bo
+			var outward_normal: Vector3 = point(a).normalized() * float(side)
+			_add_terminal_quad(side_mesh, pa + up * ba, pb + up * bb, pa + up * ea, pb + up * eb, outward_normal, t0, t1)
+			var la := lerpf(0.04 - start_drop, 0.04 - start_drop * 0.4, t0)
+			var lb := lerpf(0.04 - start_drop, 0.04 - start_drop * 0.4, t1)
+			_add_terminal_quad(light_mesh, pa + up * la, pb + up * lb, pa + up * (la + 0.035), pb + up * (lb + 0.035), outward_normal, t0, t1)
+	var end_angle := angle + outward * nose_span
+	var end_center := point(end_angle)
+	var radial := end_center.normalized()
+	var up := plane_normal()
+	var end_normal := (point(end_angle + 0.001) - point(end_angle - 0.001)).normalized() * outward
+	var face := SurfaceTool.new()
+	face.begin(Mesh.PRIMITIVE_TRIANGLES)
+	_add_terminal_quad(face, end_center - radial * nose_width * 0.5 + up * nose_bottom, end_center + up * nose_bottom, end_center - radial * nose_width * 0.5 + up * nose_edge, end_center + up * nose_top, end_normal, 0.0, 1.0)
+	_add_terminal_quad(face, end_center + up * nose_bottom, end_center + radial * nose_width * 0.5 + up * nose_bottom, end_center + up * nose_top, end_center + radial * nose_width * 0.5 + up * nose_edge, end_normal, 0.0, 1.0)
+	for spec in [[top_mesh, _deck], [side_mesh, _side], [bottom_mesh, _navy], [light_mesh, _cyan], [face, _side]]:
+		var instance := MeshInstance3D.new()
+		instance.mesh = (spec[0] as SurfaceTool).commit()
+		instance.material_override = spec[1]
+		parent.add_child(instance)
+
+func _add_terminal_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, t0: float, t1: float) -> void:
+	for entry in [[a, Vector2(0.0, t0)], [b, Vector2(0.0, t1)], [c, Vector2(1.0, t0)], [c, Vector2(1.0, t0)], [b, Vector2(0.0, t1)], [d, Vector2(1.0, t1)]]:
+		surface.set_normal(normal)
+		surface.set_uv(entry[1])
+		surface.add_vertex(entry[0])
 
 func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float, kind: String = "") -> void:
 	# One shared cross-section runs through every owned arc and completed join.
 	# The lit inset is set into its armored wall, above the structural keel.
 	# A second underside closes the lower pressure box all the way to each
 	# independent end plane; the upper blue light remains recessed above it.
-	_add_strip(parent, begin, finish, width, -0.40, _navy, kind)
+	_add_strip(parent, begin, finish, width, -0.40, _side, kind)
 	for side in [-1.0, 1.0]:
 		_add_wall(parent, begin, finish, side * width * 0.5, -0.40, -0.18, _navy, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.003), -0.38, -0.30, _side, kind)
 	_add_strip(parent, begin, finish, width, -0.18, _navy, kind)
 	for side in [-1.0, 1.0]:
 		_add_wall(parent, begin, finish, side * width * 0.5, -0.18, 0.26, _navy, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.004), -0.28, 0.01, _side, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.26, _side, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.008), 0.015, 0.055, _cyan, kind)
 
@@ -352,9 +391,7 @@ func configure(owned: Array) -> void:
 		_joins[kind].visible = kind in _owned and KINDS[(index + 1) % KINDS.size()] in _owned
 		var caps: Array = _end_caps[kind]
 		caps[0].visible = KINDS[(index + KINDS.size() - 1) % KINDS.size()] not in _owned
-		# The refinery shell itself encloses its nearby free end. An exposed
-		# terminal there reads as an unrelated block hanging below the furnace.
-		caps[1].visible = kind != "refinery" and KINDS[(index + 1) % KINDS.size()] not in _owned
+		caps[1].visible = KINDS[(index + 1) % KINDS.size()] not in _owned
 
 func update_pose(clock: float) -> void:
 	basis = Basis(Vector3(0.0, -TILT_Z, -TILT_Y), clock * 0.045)
