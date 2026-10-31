@@ -193,6 +193,11 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	for material in _orbital_depth_materials:
 		material.set_shader_parameter("body_scale", _occluder.scale)
 	_spine.update_pose(clock)
+	# update_pose sets a new rotation basis; apply the compact star scale after
+	# it so the common ring and all four sockets contract as one structure.
+	# A beamed core is capped by its beam envelope and would otherwise shrink
+	# the four work nodes below a readable size in the desktop scene.
+	_spine.scale = Vector3.ONE * maxf(0.50, globe_scale) if _compact_stellar else Vector3.ONE
 	for kind in _owned:
 		var model: Node3D = _models[kind]
 		_animate_parts(kind, clock)

@@ -32,6 +32,7 @@ var _cyan: ShaderMaterial
 var _deck: ShaderMaterial
 var _channel: ShaderMaterial
 var _sleeve: ShaderMaterial
+var _ivory: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
 
 static func plane_normal() -> Vector3:
@@ -55,6 +56,7 @@ func _ready() -> void:
 	_navy.render_priority = -3
 	_side.render_priority = -2
 	_deck = _material(Color("fff2df"))
+	_ivory = _material(Color("b9b3a2"))
 	_channel = _material(Color("294451"))
 	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
@@ -86,7 +88,7 @@ func _ready() -> void:
 			var cap := Node3D.new()
 			cap.name = "BuiltSectionTaperedTerminal"
 			var outward := -1.0 if angle == bounds.x else 1.0
-			_add_tapered_terminal(cap, angle, outward)
+			_add_tapered_terminal(cap, angle, outward, kind)
 			root.add_child(cap)
 			caps.append(cap)
 		_arcs[kind] = root
@@ -101,7 +103,7 @@ func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
 	_all_materials.append(result)
 	return result
 
-func _add_tapered_terminal(parent: Node3D, angle: float, outward: float) -> void:
+func _add_tapered_terminal(parent: Node3D, angle: float, outward: float, kind: String) -> void:
 	# Continue the actual orbital cross-section before tapering it to a small
 	# closed pressure nose. Nothing is placed underneath or atop a flat cut.
 	var top_mesh := SurfaceTool.new()
@@ -111,11 +113,14 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float) -> void
 	for surface in [top_mesh, side_mesh, bottom_mesh, light_mesh]:
 		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var start_width := _transit_width(angle)
-	var nose_span := 0.09
-	var nose_width := 0.32
+	# The station's unsupported tip closes as a short pressure shoe in the
+	# same shell as its bearing cheeks, without a long dark prow below them.
+	var station_tip := kind == "auto_explore"
+	var nose_span := 0.055 if station_tip else 0.09
+	var nose_width := 0.34 if station_tip else 0.32
 	var nose_top := 0.27
 	var nose_edge := 0.19
-	var nose_bottom := -0.17
+	var nose_bottom := -0.10 if station_tip else -0.17
 	for step in 8:
 		var t0 := float(step) / 8.0
 		var t1 := float(step + 1) / 8.0
@@ -159,7 +164,7 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float) -> void
 	face.begin(Mesh.PRIMITIVE_TRIANGLES)
 	_add_terminal_quad(face, end_center - radial * nose_width * 0.5 + up * nose_bottom, end_center + up * nose_bottom, end_center - radial * nose_width * 0.5 + up * nose_edge, end_center + up * nose_top, end_normal, 0.0, 1.0)
 	_add_terminal_quad(face, end_center + up * nose_bottom, end_center + radial * nose_width * 0.5 + up * nose_bottom, end_center + up * nose_top, end_center + radial * nose_width * 0.5 + up * nose_edge, end_normal, 0.0, 1.0)
-	for spec in [[top_mesh, _deck], [side_mesh, _side], [bottom_mesh, _navy], [light_mesh, _cyan], [face, _side]]:
+	for spec in [[top_mesh, _deck], [side_mesh, _side], [bottom_mesh, _side if station_tip else _navy], [light_mesh, _cyan], [face, _ivory if station_tip else _side]]:
 		var instance := MeshInstance3D.new()
 		instance.mesh = (spec[0] as SurfaceTool).commit()
 		instance.material_override = spec[1]
@@ -177,8 +182,9 @@ func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float
 	# A second underside closes the lower pressure box all the way to each
 	# independent end plane; the upper blue light remains recessed above it.
 	_add_strip(parent, begin, finish, width, -0.40, _side, kind)
+	var lower_shell := _side if kind == "auto_explore" else _navy
 	for side in [-1.0, 1.0]:
-		_add_wall(parent, begin, finish, side * width * 0.5, -0.40, -0.18, _navy, kind)
+		_add_wall(parent, begin, finish, side * width * 0.5, -0.40, -0.18, lower_shell, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.003), -0.38, -0.30, _side, kind)
 	_add_strip(parent, begin, finish, width, -0.18, _navy, kind)
 	for side in [-1.0, 1.0]:
@@ -208,8 +214,8 @@ func _section_width(kind: String, angle: float) -> float:
 		# The furnace sits close to its next independent section. Its near
 		# shoulder must return to transit width at the actual mating plane.
 		blend *= smoothstep(0.0, 0.10, ARC_BOUNDS[kind].y - angle)
-	# The station's pressure cheeks need less overhanging side wall than the
-	# wider furnace and open industrial bays.
+	# Keep the station side wall inside its two pressure cheeks; a broad deck
+	# here masks the real through passage when this node is built alone.
 	var node_width := 1.10 if kind == "auto_explore" else NODE_WIDTH
 	return lerpf(_transit_width(angle), node_width, blend)
 
