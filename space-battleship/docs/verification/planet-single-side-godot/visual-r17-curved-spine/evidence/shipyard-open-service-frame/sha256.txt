@@ -1,0 +1,11 @@
+bc2c11ea6000765e5a6bb6a98c90590d69d9ce7809f3455c79b30c7c46e16c6b  art_sources/planet_facilities_v5/build_shipyard_node.py
+0054cd60ca1b169c950b9c999e10d5850b9da7816548fda5a467aa968a4be479  art_sources/planet_facilities_v5/shipyard.blend
+8e407861575ac5d9a2266c3824d9ab4e9cdfeac6881bb987fc7d127b7510c28e  assets/planets/facilities_v5/shipyard.glb
+97df05d1eb6814f3ec3cb5c90b11970ea187483114367b125b3e7ba795ebc2c9  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/blender.txt
+f04c85fc7fb66037412fa449ed116942587e199b83f5e7b5f1ab9ec306ab14dc  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/check.txt
+7109f115f18929053c250683a294faba9ad7bcf341855cdcca1667815c5e89cb  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/driver.gd.txt
+859061735c05aedda723476459eb58c860d8369a90e6c7a6783c445c62e5ce24  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/import.txt
+2c83433fc1bfd6e31faab72b3400c8794b5b9ffcb1d89c699eb90dd28357ab10  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/run.txt
+a8b1376e47150f9039245f7b800adc5533d99bc25c009da87e1941b43518fef1  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/quarter_simulated.png
+44da8e37b865ccf8dc80210132efe1ded85ba6a13683fe5e3f2eb5d6cd4086ac  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/stage_4.png
+cd9fac7460f2894cfe04409b0112f4947c95d1e124c858b020d37b5b17acffb8  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/shipyard-open-service-frame/work_clock_4.png

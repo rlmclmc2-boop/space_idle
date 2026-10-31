@@ -208,16 +208,30 @@ box("Dock load pan", (-1.32,0,.24), (2.12,1.25,.18), navy, root, .06)
 box("Dock recessed service bed", (-1.36,0,.35), (1.85,.83,.045), blue, root, .012)
 for side in (-1,1):
     y = side*.70
-    craft_hull("Continuous ochre berth pressure cheek", [
+    cheek = craft_hull("Continuous ochre berth pressure cheek", [
         (-2.57,y,.55,.15,.18), (-2.36,y,.62,.22,.28),
         (-1.52,y,.65,.25,.34), (-.49,y,.67,.28,.37),
         (.22,y,.63,.25,.34), (.56,y,.52,.18,.20),
     ], orange, root)
+    # Two real service windows make each cheek a load frame. Both the upper
+    # and lower orange members continue into the common pressure shell.
+    for x in (-1.98, -1.12):
+        bpy.ops.mesh.primitive_cube_add(size=1, location=(x,y,.68))
+        window = bpy.context.object
+        window.name = "Temporary berth cheek service opening"
+        window.dimensions = (.60,.90,.39)
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        bpy.context.view_layer.objects.active = cheek
+        cut = cheek.modifiers.new("Open load-frame service window", "BOOLEAN")
+        cut.operation = "DIFFERENCE"
+        cut.object = window
+        bpy.ops.object.modifier_apply(modifier=cut.name)
+        bpy.data.objects.remove(window, do_unlink=True)
     box("Berth lower load web", (-1.34,side*.69,.33), (2.37,.31,.17), navy, root, .035)
     box("Berth recessed dark crown", (-1.43,side*.70,1.015), (1.86,.25,.045), navy, root, .012)
     for x, length in ((-2.13,.43),(-1.42,.50),(-.69,.49)):
-        box("Armor cassette on pressure cheek", (x,side*.955,.73), (length,.055,.22), ivory, root, .018)
-        box("Pressure cassette blue key", (x,side*.993,.73), (length*.37,.018,.075), blue, root, .007)
+        box("Upper armor cassette on pressure cheek", (x,side*.70,1.055), (length,.22,.055), ivory, root, .012)
+        box("Pressure cassette blue key", (x,side*.70,1.089), (length*.37,.08,.012), blue, root, .004)
     box("Dock inner launch guide", (-1.41,side*.55,.59), (2.12,.028,.045), cyan, root, .005)
     strut("Dock diagonal load brace", (.20,side*.82,.16), (-1.77,side*.80,.26), .13, orange, root)
 for x, top in ((-.36,1.18),(-2.31,1.06)):
