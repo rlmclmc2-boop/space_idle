@@ -208,9 +208,23 @@ longitudinal_hull("Raised furnace pressure chamber",[
     (-.25,0,1.35,.48,.30),(.03,0,1.45,.57,.40),
     (.85,0,1.45,.57,.40),(1.04,0,1.32,.47,.28),
 ],blue,root)
-box("Furnace warm crown plate",(.47,0,1.85),
+crown=box("Furnace warm crown plate",(.47,0,1.85),
     (1.06,.90,.13),ivory,root,.04)
-for x in (.08,.42,.76):
+# The heat crown is a true open socket cut through its armor, with a recessed
+# glowing inner well rather than a bright object placed on the roof.
+bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=.28,depth=.26,
+                                    location=(.47,0,1.88))
+heat_cut=bpy.context.object
+bpy.context.view_layer.objects.active=crown
+cut=crown.modifiers.new("Open top heat well","BOOLEAN")
+cut.operation="DIFFERENCE"
+cut.object=heat_cut
+bpy.ops.object.modifier_apply(modifier=cut.name)
+bpy.data.objects.remove(heat_cut,do_unlink=True)
+cylinder("Top heat well dark floor",(.47,0,1.855),.255,.025,navy,root,24)
+cylinder("Top heat well refractory lining",(.47,0,1.875),.225,.018,ochre,root,24)
+cylinder("Top heat well ember core",(.47,0,1.889),.115,.012,ember,root,24)
+for x in (-.04,.98):
     box("Crown heat armor rib",(x,0,1.93),
         (.11,.82,.06),ochre,root,.012)
 box("Open dark receiving mouth",(-.30,0,1.18),
