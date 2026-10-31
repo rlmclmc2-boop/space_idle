@@ -38,3 +38,25 @@
 | F4 来源断链 | 资产说明引用已不存在的旧美术文档/工具，原13已有清单 | 保留[来源时效说明](../art/sources.md#41-来源中的已知断链与时效)，不恢复旧依赖 |
 
 03中“更换首槽类型使两类当前余量均为0是否立即死亡”仍是原有未决项，不因整理而判定。用户本轮明确的“战斗持续可见、无返回战斗关系”已直接更新13唯一导航原则，属于新指示覆盖旧表述，不列为未决冲突；旧代码/历史测试中的返回按钮仅是实现事实。
+
+## D9 配置身份与运行配置结构（本次发现，待核实）
+
+- 原文 A：[06 第4节](../06-data.md#4-configbundle运行结构)要求 `schemaVersion/semanticHash/sourceManifestHash` 的 ConfigBundle，且“一份会话固定使用一个 configHash”；第5节封套含 `configHash`，加载要求 ConfigBundle 匹配。[11 原记录](https://github.com/rlmclmc2-boop/space_idle/blob/e3b38d7b6d8256f6031e1b086c7db7812b6a441f/space-battleship/docs/game-design/11-stage6-contract.md)仍写“配置指纹不匹配保持明确拒绝”。
+- 原文 B：[首阶段决定记录](../../knowledge/tasks/foundation-restart.md)记录用户确认“删除保存与配置哈希的绑定”，提交 `a65327c25adb0d752fc5c393f77703497ab1882a` 移除了保存封套/读取中的配置身份；同页另记删除 ConfigBundle，配置直接加载 `generated/config.json`。这不是单凭代码猜出的意图。
+- 后续事实：main 的 foundation 命令已使用 `config_tools/production_manifest.json`；早期删除输入清单的决定不能无条件解释为永久禁止后来的配置发布校验。保存层去耦是否同时废止06全部运行配置结构要求，现有材料不足以完整判定。
+- 影响：是否把 configHash/ConfigBundle 重新加回保存协议、是否重建运行配置包装、如何解释校验与旧存档拒绝；本次不更改协议、代码或Excel。
+- 必要问题：配置身份/ConfigBundle 旧设计是否全部退出当前规范，还是仅保存层去耦、其余设计仍保留？请补最新用户裁定或固定 Git 来源。答复前保留原条款并标记争议，不从任一侧新增实现任务。
+
+## D10 B01分配提交语义（待裁定）
+
+- 原文A：[M3@73ee](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/game-design/art/modules/reactor.md)：“只有一套整组草稿确认/还原”；V3要求“未确认草稿不改变工作动态”。[反应炉契约§9.2](../contracts/reactor.md#92-reactor整组分配预览)仍区分预览与一次接纳。
+- 原文B：[B01同提交入口](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md)记录用户批准B01、四路集中控制；运行记录为拖动10%即Owner接纳、再次超额拒绝并回到已接纳10%。该行为事实不能自行证明用户取消了确认/还原。
+- 已确定：集中下台替代旧每设备独立操作面板；上方/下方一起改。未确定：提交语义是否随新批准改变。
+- 必要问题：B01分配采用拖动/均分立即应用，还是保留整组草稿确认/还原？影响提交时机、取消和动态来源；答案前保留双方文字，不改代码或默认恢复旧控件。其他结构/材质工作可继续。
+
+## D11 星球设施承载与六类适用范围（待核）
+
+- 原文A：[M7@e7ff](https://github.com/rlmclmc2-boop/space_idle/blob/e7ff7673eea06611ca65337c58f32e248115cc13/space-battleship/docs/game-design/art/modules/planet.md)写“资源工厂（现有精炼厂）与工坊在星球表面”，随地貌自转；并称用户在R5造型后确认。
+- 原文B：[六类入口@e7ff](https://github.com/rlmclmc2-boop/space_idle/blob/e7ff7673eea06611ca65337c58f32e248115cc13/space-battleship/docs/game-design/art/modules/planet-six/README.md)记录批准B实体承重脊固态完整态/独立建造闭环，球环独立转；同时明确“气态/恒星实体带专属概念变体尚未制作，此次运行使用共用主体与既有外观”。[R17](../../verification/planet-single-side-godot/visual-r17-curved-spine/README.md)正制作四设施共同根壳。
+- 可确认：固态当前制作按R17批准代表，不回退旧贴地/独立平台；六类专属设计和实机没有整体完成。
+- 必要问题：旧M7地表分工是否整体退出所有六类，或只在获准固态代表中被覆盖？其他类别的承载/采集端是否已有固定新决定？不以共用运行模型代替设计授权；确定的固态制作继续。

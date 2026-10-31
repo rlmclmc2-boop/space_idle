@@ -1,5 +1,7 @@
 # G0 前端画布、挂载、输入与资产约束记录（已审准入依据）
 
+> 历史G0依据：下文状态和消费链均指列明基线，不是当前各分支完成状态；现行版本/入口见[11](../game-design/11-stage6-contract.md)。只按坐标/输入/覆盖问题查阅。
+
 从[唯一设计入口](../game-design/README.md)进入，执行[已审规划](README.md)的G0。本记录基线为 `main@6b8c266556b0b95d8aaa3a97a5a756bd98f653f5`，只读核对当前前端消费端，不批准窗口目标或候选方向，不改变实现。规划及本G0准备依据已完成主线程交叉审要求，作为准入G1的工作依据；不表示候选视觉、最终适配或运行品质通过。
 
 原线程已提供的窗口/耦合事实见[99b35d3d封存依据](https://github.com/rlmclmc2-boop/space_idle/blob/99b35d3dc5448b66e5238590c7e79d585ea0363f/layout-display-input-baseline.md)。已收到并阅读[4a388d81窗口与适配建议](https://github.com/rlmclmc2-boop/space_idle/blob/4a388d81ddca456b501b9ca9779ed5f02c3624d9/g0-window-display-adaptation-advice.md)，其代码基线317548d7与本记录基线的src/scripts/shaders/addons/config_excel/project.godot无差异；已独立读前端及原生retained/contacts/shader消费段落。主线程本次另选定核查基准，见下表；该选择不是原报告测量自动推导的批准。问题分类与双审方法引用[07](../game-design/07-verification.md#0-复查方法)；本次不启动游戏、窗口测量、额外测试、资产生成或运行代码修改。
@@ -104,4 +106,4 @@
 
 当前结论：窗口/适配/包络精确依据及主线程核查基准已纳入，按主线程交叉审要求补明样本范围、默认变换例外与视觉安全区；**G0准备依据已审准入，后续G1组织审亦已通过并进入G2，不表示完整候选、最终差异品质或运行品质通过**。全系统覆盖准备见[准备表](g0-system-coverage.md)。具体候选的内容/可读性、包络/输入与核心契约影响仍需证据，不能以本规则建议替代。没有启动额外测试或运行验证。
 
-状态补充：敌盾/双条的最小展示绑定已由原线程冻结为[14第7节待实施契约基准](../game-design/14-ui-contracts.md#7-待实施契约基准敌盾与双条的最小战场展示契约)，不是运行接口已存在。012283f4第6节的精化归属见[固定报告](https://github.com/rlmclmc2-boop/space_idle/blob/012283f42725aeb8fb316a585489e79284329f95/g0-envelope-and-godot-coordinate-review.md#6-追加可达敌阵的占位归属及三项装配边界)：33011缺精英跨格预留，真实重叠尚未证实；独立无人机真炮口需共享装配几何另审。缺字段不删视觉设计，不借UI授权修改逻辑几何。
+状态补充：敌盾/双条的最小展示绑定已由原线程冻结为[14第7节待实施契约基准](../game-design/14-ui-contracts.md#7-已实现出口敌盾与双条的最小战场展示契约)，不是运行接口已存在。012283f4第6节的精化归属见[固定报告](https://github.com/rlmclmc2-boop/space_idle/blob/012283f42725aeb8fb316a585489e79284329f95/g0-envelope-and-godot-coordinate-review.md#6-追加可达敌阵的占位归属及三项装配边界)：33011缺精英跨格预留，真实重叠尚未证实；独立无人机真炮口需共享装配几何另审。缺字段不删视觉设计，不借UI授权修改逻辑几何。

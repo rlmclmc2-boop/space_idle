@@ -1,5 +1,7 @@
 # 修订03：六项复审的验证与边界
 
+> 历史候选资料，不生效。文中的“当前/本轮/未合”仅指当时版本；当前制作见[唯一入口](../game-design/README.md)，本目录状态见[归档索引](README.md)。
+
 本轮依据[独立报告10733223](https://github.com/rlmclmc2-boop/space_idle/blob/10733223b1ce801781cfba18afeaba547b4484bf/space-battleship/docs/review-evidence/frontend-revision02-f806-independent.md)修正UI-01–UI-06。正式入口按main@08bf2e1e；本提交只改ui-design-candidate，不改正式规范、后端、Excel、保存或共用契约，未合main。未启动游戏、未做窄屏专项检查、未生成最终资产。
 
 ## 定向检查
