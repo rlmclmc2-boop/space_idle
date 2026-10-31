@@ -1,12 +1,11 @@
 {
-  "current": "04ae equipment candidate limited original review passed per parent; only shared resource-rail update consumed and same-version five confirmation images ready for parent/overall review before user delivery",
+  "current": "19a2 five formal full-screen images personally viewed by root, limited original-review acceptance confirmed per parent, and actually delivered to user requesting confirmation; only this candidate awaits user feedback, not full game/final/main acceptance",
   "runtime_source_commit": "d354e60f1530435a6790cca0814ddc7e76f84f82",
   "approved_equipment_candidate": "04ae5710c27d2cd8c6e6e7e6741ad1b597c7dbb3",
   "public_fix_source": "459df59315e20708075bda5fafe9ef8408b69a7d",
   "evidence": "resource-rail-confirmation/ledger.json",
   "remaining": [
-    "Parent/overall judge current resource-rail confirmation full screens and deliver to user; not currently waiting user",
-    "Unobserved arbitrary extreme fields need domain source if later requested"
+    "Await user feedback on the five-image candidate already delivered by root"
   ],
   "implementation_dependency": null,
   "actual_compaction": false,
@@ -14,9 +13,15 @@
   "unknown_outcomes": [],
   "background_processes": [],
   "not_claimed": [
-    "new overall acceptance",
-    "user acceptance",
+    "full game completion",
+    "final user acceptance",
     "main merge",
     "new complete workflow or video rerun"
-  ]
+  ],
+  "reviewed_delivered_evidence": "19a2ba967cd265673a40b9d526db88671b5f1924",
+  "independent_original_work_remaining": [],
+  "coverage_limits": [
+    "Arbitrary unobserved extreme fields are outside current confirmed scope and need domain source only if later requested"
+  ],
+  "stop_reason": "All authorized independent implementation/evidence work completed; preserve current reviewed and delivered candidate while awaiting user feedback"
 }

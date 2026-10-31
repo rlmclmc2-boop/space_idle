@@ -2,7 +2,7 @@
 
 保04ae原审限定通过的装备内部，仅读取/消费整体459df59315e20708075bda5fafe9ef8408b69a7d入口475节所述ZoneShell净宽/格式化修复；BridgeTheme/ResourceVisuals/public_shell资产相对bfe无差，不复制其它模块。运行代码d354e60f1530435a6790cca0814ddc7e76f84f82相对04ae的src/assets仅zone_shell一文件差异，完整资源身份/金额规则保持。
 
-五同版1440×900确认图（早2、中5空槽9.99万、晚8顶/底、长MAX444顶栏1.235e39）已逐张view；正常main/native/config窄确认exit0 failures0，官方tooltip完整行和各余额实字体墨迹宽有断言/状态记录。resource-rail-confirmation/ledger.json绑定本轮源码/驱动/原始log/JSON/图；review-resource-rail.html为当前五图入口。未全套复跑/重录视频，旧04ae视频只属旧公共条版本。无技术依赖/权限拒绝/未知结果/后台进程，未实际压缩。新五图尚未交用户，当前交父/整体判定后投递，不记待用户；不自判新整体接受/main，不新增任务。以下历史由本节和唯一README覆盖。
+五同版1440×900确认图（早2、中5空槽9.99万、晚8顶/底、长MAX444顶栏1.235e39）已逐张view；正常main/native/config窄确认exit0 failures0，官方tooltip完整行和各余额实字体墨迹宽有断言/状态记录。resource-rail-confirmation/ledger.json绑定本轮源码/驱动/原始log/JSON/图；review-resource-rail.html为当前五图入口。未全套复跑/重录视频，旧04ae视频只属旧公共条版本。无技术依赖/权限拒绝/未知结果/后台进程，未实际压缩。父最新事实：19a2ba967cd265673a40b9d526db88671b5f1924五态正式整屏根已亲看+既有独审限定通过当前可评价范围，并已实际发送用户请求确认。当前仅该候选等用户意见，非全游戏完成/最终验收/main；无独立原未完项，保全现场不再微调/跑检查。仅README/pending/本HANDOFF同步此事实，运行d354、19a2五图/账本与04ae视频保持；SHA256SUMS留19a2历史证据快照，不把状态文档旧hash称当前。以下历史由本节和唯一README覆盖。
 
 ---
 
