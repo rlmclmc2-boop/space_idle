@@ -103,6 +103,39 @@ def longitudinal_hull(name, sections, mat, parent):
     return finish(obj,name,mat,parent,.035)
 
 
+def vaulted_chamber(name, parent):
+    """One pressure shell from both cheek bearings over the furnace hot well."""
+    stations = [
+        (-.50, .32, 1.71), (-.35, .43, 1.87), (-.15, .52, 2.01),
+        (.12, .56, 2.10), (.43, .57, 2.14), (.73, .55, 2.08),
+        (.98, .47, 1.94), (1.18, .34, 1.74),
+    ]
+    # The lower corners enter the original cheek volume. The curved upper
+    # crown is part of the same closed mesh, including its inlet/end walls.
+    verts = []
+    for x, half_width, crown in stations:
+        verts.extend((x, y * half_width, z) for y, z in (
+            (-1.0, 1.18), (-1.0, 1.43), (-.88, crown-.29),
+            (-.62, crown-.12), (-.31, crown-.03), (0.0, crown),
+            (.31, crown-.03), (.62, crown-.12), (.88, crown-.29),
+            (1.0, 1.43), (1.0, 1.18),
+        ))
+    ring = 11
+    faces = [tuple(reversed(range(ring)))]
+    for station in range(len(stations)-1):
+        for side in range(ring):
+            next_side = (side+1) % ring
+            faces.append((station*ring+side, station*ring+next_side,
+                          (station+1)*ring+next_side, (station+1)*ring+side))
+    faces.append(tuple((len(stations)-1)*ring+side for side in range(ring)))
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    return finish(obj, name, blue, parent, .018)
+
+
 def hopper(name, y, parent):
     """Deep open-topped octagonal bin, made from four thick sloped walls."""
     root=node(name,parent,(0,y,0))
@@ -206,12 +239,7 @@ for side in (-1,1):
 
 # Furnace bridge sits on both load shoulders; the ore receiver remains visible
 # through the opening between the hoppers and under its dark inner lip.
-chamber=longitudinal_hull("Arched furnace pressure chamber",[
-    (-.35,0,1.28,.38,.23),(-.18,0,1.48,.47,.32),
-    (.08,0,1.56,.52,.43),(.45,0,1.58,.55,.47),
-    (.82,0,1.56,.52,.43),(1.08,0,1.48,.46,.32),
-    (1.21,0,1.28,.38,.23),
-],blue,root)
+chamber=vaulted_chamber("Arched furnace pressure chamber",root)
 # The arch and hot well are one pressure shell. Its warm upper facets belong
 # to that mesh, while the lower blue chamber remains tied to both load cheeks.
 bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=.20,depth=.52,
@@ -225,7 +253,7 @@ bpy.ops.object.modifier_apply(modifier=cut.name)
 bpy.data.objects.remove(heat_cut,do_unlink=True)
 chamber.data.materials.append(ochre)
 for face in chamber.data.polygons:
-    if face.center.z > 1.66:
+    if face.center.z > 1.50 and face.normal.z > .12:
         face.material_index=1
 cylinder("Top heat well dark floor",(.47,0,1.715),.19,.025,navy,root,24)
 cylinder("Top heat well refractory lining",(.47,0,1.735),.16,.018,ochre,root,24)
