@@ -629,11 +629,14 @@ def smelting(spec,m):
     # The charge is collected in a broad recessed vessel.  Its exposed liquid
     # surface is much wider than the feed stream, and the dark raised shore
     # gives it a visible wall instead of letting the orange read as tubing.
-    cast_plate("cold catch floor",[(129,546),(137,527),(157,521),(202,521),
-               (226,537),(232,557),(217,568),(177,563),(140,564)],91,3,m["black"],2)
-    molten_bath("molten collection bath",[(137,545),(145,534),(164,529),
-                (201,531),(219,542),(225,555),(211,561),(177,554),
-                (145,560)],m["orange_lit"])
+    cast_plate("cold catch floor",[(126,548),(134,524),(156,514),(196,514),
+               (225,525),(236,546),(231,566),(211,577),(170,575),
+               (138,566)],91,3,m["black"],2)
+    # The exposed charge is a deep vessel surface, not a long curved stripe.
+    # Its short right-hand tap leaves the broad pool legible at page scale.
+    molten_bath("molten collection bath",[(135,550),(140,531),(158,520),
+                (184,517),(210,524),(224,538),(226,552),(215,564),
+                (188,569),(157,566)],m["orange_lit"])
     cast_plate("left refractory bank",[(122,547),(132,522),(151,513),
                (166,515),(146,538),(139,559),(129,569),(120,558)],98,5,m["slag"],2)
     cast_plate("right refractory bank",[(204,513),(221,521),(239,540),
@@ -645,7 +648,7 @@ def smelting(spec,m):
     cast_plate("front refractory sill",[(127,566),(151,569),(177,565),
                (215,570),(232,577),(228,581),(183,575),(146,577),
                (126,573)],95,4,m["dark"],2)
-    rod("molten tap spill",(218,556),(234,574),4.4,109,m["orange_lit"],12)
+    rod("molten tap spill",(205,548),(234,555),4.2,109,m["orange_lit"],12)
     for sx in (-1,1):
         cube("refractory throat jamb",179+sx*72,536,13,108,13,86,m["silver"],3)
         cube("jamb black heat slot",179+sx*72,535,4,84,3,94,m["dark"],1)

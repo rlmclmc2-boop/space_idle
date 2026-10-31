@@ -80,8 +80,8 @@ void fragment() {
         // after the Blender camera and shared port translation.
         vec2 throat=vec2(0.49,0.35);
         vec2 elbow=vec2(0.49,0.46);
-        vec2 tap=vec2(0.61,0.54);
-        float pool=disk(q,vec2(0.55,0.49),vec2(0.105,0.055));
+        vec2 tap=vec2(0.67,0.53);
+        float pool=disk(q,vec2(0.55,0.49),vec2(0.13,0.09));
         float slot=conduit(q,elbow,tap,0.010);
         float fall=fract(phase*0.72);
         vec2 bead_pos=fall<0.28 ? mix(throat,elbow,fall/0.28)
@@ -92,9 +92,9 @@ void fragment() {
         float heat_bounce = disk(q,vec2(0.54,0.47),vec2(0.27,0.23))
                             -disk(q,vec2(0.54,0.47),vec2(0.16,0.12));
         float inlet_glow=disk(q,vec2(0.51,0.49),vec2(0.028,0.024));
-        float outlet_glow=disk(q,vec2(0.69,0.57),vec2(0.03,0.023));
+        float outlet_glow=disk(q,vec2(0.71,0.54),vec2(0.03,0.023));
         float flow_t=fract(phase*0.47);
-        vec2 flow_pos=mix(vec2(0.51,0.49),vec2(0.68,0.56),flow_t);
+        vec2 flow_pos=mix(vec2(0.51,0.49),vec2(0.70,0.53),flow_t);
         float moving_heat=disk(q,flow_pos,vec2(0.027,0.015))*surface.a;
         action = (pool*surface.a*0.08+slot*surface.a*0.08+drop*0.58
                   +inlet_glow*surface.a*0.37+outlet_glow*surface.a*0.38
