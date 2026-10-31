@@ -305,6 +305,7 @@ func _refresh_card(id: String) -> void:
     if fact.is_empty():return
     var row: Dictionary=_cards[id]
     var empty: bool=str(fact.equipment_id).is_empty()
+    row.select.position.y=(row.panel.size.y-row.select.size.y)*0.5 if empty else 10.0
     for control in [row.level,row.compare,row.attribute,row.cost_title,row.fees,row.quantity,row.purchase]:
         control.visible=not empty
     row.select.text=str(NAMES.get(str(fact.equipment_id),"装备"))
