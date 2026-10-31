@@ -8,31 +8,31 @@
 
 ## 当前具体动作与完成判据
 
-**当前制作：空间站上部设备＋真实承力根壳。** 新源 `art_sources/planet_facilities_v5/build_station_node.py` 已导出；当前实机仍呈过大白顶圆盘，暗层像下挂底座，maker 正调整壳顶分段和承力层。
+**当前制作：重新构思站／炉的完整承力建筑资产。** 空间站用 Blender 贯通压力壳与 ImageGen 透明上部在原尺寸实机试装：全模型成为浅圆盘，上部加根壳则成浅盘摆小塔，均低于原站图。精炼厂又试了真实单壳压力框与配准插画、全真 3D 炉与双料斗、以及 ImageGen 四材质图集映射全真模型；在同一原尺寸画面分别成浅色方壳垫在炉下、白色简模、表面改善但仍是小玩具且前弧根部不读承力。全部从正式运行源撤回，不作可审候选。失败源码／补丁分别在 `/tmp/planet-build-station-node-rejected.py`、`/tmp/planet-build-refinery-{node,integral,painted}-rejected.py` 与相邻 `*-rejected.patch`，同码图在 `/tmp/planet-station-load-node/`、`/tmp/planet-refinery-pressure-node/`、`/tmp/planet-refinery-integral/`。继续制作必须改变整体形体与材质映射，不重复“图叠壳”或无细节白模。
 
-完成判据：在原尺寸完整态和受影响侧向角，站体体量接近批准图；环通道从低位承力口连续进入／离开，不爬前甲板；没有独立飞碟／悬挂暗盘或为遮错新增垫层。保留站顶工作部件、独立建造归属和球后深度。作者先看同版图，达到可审程度就固定候选，不自行宣布整体通过。
+完成判据：原尺寸完整态及受影响侧向角下，站／炉的环通道从低位承力口连续进入和离开，四节点材质、体量和细节密度共同成形；炉的双料斗、接收口及工作动作、站顶运动部件仍可读；无飞碟、暗盘、浅方壳、外挂三件或假垫层。保留各自独立建造归属和球后深度。达到可审程度才固定候选，不自行宣布整体通过。
 
-**提交后下一独立项：精炼上部机器与真实承力根一体制作。** 不重复只削图片暗底／改背后环宽度的失败路线；站候选送审不暂停精炼制作。
+**下一独立项：环下暗层与自由端整段封装。** 站／炉完整资产仍是主任务；两项能独立制作，均不以局部替代整体审。
 
 ## 固定源与现场快照
 
-快照读取于 **2026-10-31 07:13 UTC**；会变化的 WIP 以 `git status/diff` 为准，不能将本表当后续未读取的事实。
+快照读取于 **2026-10-31 07:31 UTC**；会变化的 WIP 以 `git status/diff` 为准，不能将本表当后续未读取的事实。
 
 | 项目 | 当前可核事实 |
 |---|---|
 | 工作区／分支 | `/workspace/space_idle` · `feat/planet-single-side-ui`，不新建工作区、不合 main |
-| 固定 HEAD | `662952f7c12a1f1a83412cdab4a6cefb683a7ae5`，局部候选，整体未过 |
-| 站体 WIP | 新 `build_station_node.py`；修改 `auto_explore.blend`、`auto_explore.glb`、`planet_facility_scene.gd`、`planet_orbital_spine.gd`；未固定 |
-| 最新同版图 | `/tmp/planet-station-load-node/stage_1.png`、`stage_3.png`、`stage_4.png`、`quarter_simulated.png`、`work_clock_4.png`；最新 07:09，尚非通过证据 |
-| 可追溯运行 | `/tmp/planet-station-load-node-driver.gd`、`/tmp/planet-station-{blender,import,run}.log`；不要凭“有日志”代替看图 |
+| 起点 HEAD | `e7ff7673eea06611ca65337c58f32e248115cc13`，文档分离后的局部候选，整体未过；本页提交后以新 HEAD 为准 |
+| 站／炉 WIP | 均已撤回，原运行资产／脚本保留；下一轮须换形体制作路线 |
+| 最近退回实屏 | `/tmp/planet-station-load-node/`、`/tmp/planet-refinery-pressure-node/`、`/tmp/planet-refinery-integral/`；是失败试装，不是当前码验收图 |
+| 可追溯运行 | `/tmp/planet-station-load-node-driver.gd`、`/tmp/planet-refinery-{pressure-node,integral}-driver.gd` 及同前缀日志；不要混用新旧版本图 |
 | 旧未用素材 | `refinery-orbit-supported.png`、`shipyard-docked-shuttle.png` 为旧试验，不引用／提交 |
 
 ## 原授权剩余项与依赖
 
-1. 当前站体共同承力根及精炼完整设备／根壳；按上面的顺序继续。
+1. 精炼完整设备／根壳与站体共同承力节点均独立未完；按上文完成判据继续新形体制作。
 2. 工坊、船坞与站／炉的主形体量和细节密度统一；环下层、自由端封装及四节点整体剪影仍未完成。已有局部记录不算销项。
 3. 源码／资产版本固定后，补受改动影响的原尺寸建设态、角度和必要连续片段；旧静图、受控 90° 或旧短片不能补称新码整圈、自然施工／六类通过。不新增独立复测。
-4. 资源整数接口按原 Owner 交接精确消费 `f9244a30ad1843128aaa0a620c4dc3e4866685b2`；该版仅限定只读复核通过。涉及跨 Owner 的最小文件边界须与根端协调，不拿旧 `a83` 当最终，也不阻塞主体制作。公共控件／图标由整体项目源维护，不再等待 Figma、不强制接公共壳。
+4. 资源整数接口按原 Owner 交接精确消费 `f9244a30ad1843128aaa0a620c4dc3e4866685b2`；该版仅限定只读复核通过。星球余额现已原位读 Economy `balance_rows()`，新版 Owner 的整数文本可沿这一出口消费，无本模块另造格式器或费用行。直接将 `aaba..f924` Owner 补丁套到本分支会在 Session、Economy、Reactor 与已有前置功能冲突；一次试合已撤回，未留下半套逻辑，需按最新 Owner 语义及本分支前置逐方法整合。不拿旧 `a83` 当最终，也不阻塞主体制作。公共控件／图标由整体项目源维护，不再等待 Figma、不强制接公共壳。
 
 保留四设施各自 built 弧段／领取业务、球环独转、探索船另轨、真实后环遮挡和前弧暗缝；保留资源身份与数值原位刷新。**只禁止三类回退：**旧整身图下面叠柱／垫片假接合；低质白盒或仅改色／环宽代替资产制作；混用旧码图、日志或数值宣称新码视觉通过。
 
