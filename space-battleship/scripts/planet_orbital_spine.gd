@@ -103,12 +103,11 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float) -> void
 	for surface in [top_mesh, side_mesh, bottom_mesh, light_mesh]:
 		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var start_width := _transit_width(angle)
-	var start_drop := _station_saddle_drop(angle)
 	var nose_span := 0.09
 	var nose_width := 0.32
-	var nose_top := 0.27 - start_drop * 0.4
-	var nose_edge := 0.19 - start_drop * 0.4
-	var nose_bottom := -0.17 - start_drop * 0.4
+	var nose_top := 0.27
+	var nose_edge := 0.19
+	var nose_bottom := -0.17
 	for step in 8:
 		var t0 := float(step) / 8.0
 		var t1 := float(step + 1) / 8.0
@@ -116,12 +115,12 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float) -> void
 		var b := angle + outward * nose_span * t1
 		var wa := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t0))
 		var wb := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t1))
-		var ta := lerpf(0.43 - start_drop, nose_top, t0)
-		var tb := lerpf(0.43 - start_drop, nose_top, t1)
-		var ea := lerpf(0.26 - start_drop, nose_edge, t0)
-		var eb := lerpf(0.26 - start_drop, nose_edge, t1)
-		var ba := lerpf(-0.40 - start_drop, nose_bottom, t0)
-		var bb := lerpf(-0.40 - start_drop, nose_bottom, t1)
+		var ta := lerpf(0.43, nose_top, t0)
+		var tb := lerpf(0.43, nose_top, t1)
+		var ea := lerpf(0.26, nose_edge, t0)
+		var eb := lerpf(0.26, nose_edge, t1)
+		var ba := lerpf(-0.40, nose_bottom, t0)
+		var bb := lerpf(-0.40, nose_bottom, t1)
 		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS)
 		var am := point(a) * ((RADIUS - wa * 0.15) / RADIUS)
 		var ap := point(a) * ((RADIUS + wa * 0.15) / RADIUS)
@@ -140,8 +139,8 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float) -> void
 			var pb := bi if side < 0 else bo
 			var outward_normal: Vector3 = point(a).normalized() * float(side)
 			_add_terminal_quad(side_mesh, pa + up * ba, pb + up * bb, pa + up * ea, pb + up * eb, outward_normal, t0, t1)
-			var la := lerpf(0.04 - start_drop, 0.04 - start_drop * 0.4, t0)
-			var lb := lerpf(0.04 - start_drop, 0.04 - start_drop * 0.4, t1)
+			var la := 0.04
+			var lb := 0.04
 			_add_terminal_quad(light_mesh, pa + up * la, pb + up * lb, pa + up * (la + 0.035), pb + up * (lb + 0.035), outward_normal, t0, t1)
 	var end_angle := angle + outward * nose_span
 	var end_center := point(end_angle)
@@ -207,12 +206,6 @@ func _transit_width(angle: float) -> float:
 	# The front load path carries the visible heavy deck; the rear transit
 	# section is slimmer before it passes behind the globe.
 	return lerpf(REAR_TRANSIT_WIDTH, FRONT_TRANSIT_WIDTH, 0.5 + 0.5 * sin(angle))
-
-func _station_saddle_drop(angle: float) -> float:
-	# A continuous local trough routes the real section below the station's
-	# painted front armor; its keel, walls, conduit and joins descend together.
-	var center: float = FACILITY_ANGLES["auto_explore"]
-	return 0.30 * smoothstep(center - 0.21, center - 0.07, angle) * (1.0 - smoothstep(center + 0.06, center + 0.20, angle))
 
 func _shoulder_lift(kind: String, angle: float) -> float:
 	if kind == "": return 0.0
@@ -302,7 +295,6 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
 		var keel_width := 1.0 - smoothstep(0.20, 0.39, absf(current.x + 0.10))
 		height += 0.14 * keel_span * keel_width
-	height -= _station_saddle_drop(angle)
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
@@ -315,10 +307,10 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 		var b := lerpf(begin, finish, float(index + 1) / float(steps))
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
-		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(a))
-		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(a))
-		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(b))
-		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift - _station_saddle_drop(b))
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * lift
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * lift
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * lift
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * lift
 		for vertex in [ai, bi, ao, ao, bi, bo]:
 			surface.set_normal(normal)
 			surface.add_vertex(vertex)
@@ -342,10 +334,10 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 		var wall_normal := (pa + pb).normalized() * signf(radial)
 		var lift_a := _shoulder_lift(kind, a)
 		var lift_b := _shoulder_lift(kind, b)
-		var lower_a := bottom + (lift_a if material == _cyan else 0.0) - _station_saddle_drop(a)
-		var lower_b := bottom + (lift_b if material == _cyan else 0.0) - _station_saddle_drop(b)
-		var upper_a := top + lift_a - _station_saddle_drop(a)
-		var upper_b := top + lift_b - _station_saddle_drop(b)
+		var lower_a := bottom + (lift_a if material == _cyan else 0.0)
+		var lower_b := bottom + (lift_b if material == _cyan else 0.0)
+		var upper_a := top + lift_a
+		var upper_b := top + lift_b
 		for vertex in [pa + normal * lower_a, pb + normal * lower_b, pa + normal * upper_a, pa + normal * upper_a, pb + normal * lower_b, pb + normal * upper_b]:
 			surface.set_normal(wall_normal)
 			surface.add_vertex(vertex)

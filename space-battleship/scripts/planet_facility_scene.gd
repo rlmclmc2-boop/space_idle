@@ -199,7 +199,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# The built saddle orbits with the spine; the service module keeps an
 		# upright attitude on that saddle, so long solar wings do not roll into
 		# detached vertical slivers as the orbital structure turns.
-		var scale_factor := 0.64 if kind == "auto_explore" else 0.55 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
+		var scale_factor := 0.70 if kind == "auto_explore" else 0.65 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
 		if kind in ["shipyard", "equipment", "auto_explore", "refinery"]:
 			# Both open work bays are authored in the owned section's local frame.

@@ -157,6 +157,19 @@ for side in (-1, 1):
     box("Command bridge glazing", (0,side*.82,1.51), (.83,.03,.22), cyan, root, .012)
     for x in (-.29,0,.29):
         box("Bridge frame", (x,side*.85,1.51), (.035,.045,.30), edge, root, .005)
+    # Four roof service clusters are fastened to the two load walls below the
+    # turning annulus. Their broad dark tops remain legible at page scale.
+    for x in (-.57,.57):
+        box("Wall borne avionics block", (x,side*1.04,1.27),
+            (.43,.34,.35),blue,root,.035)
+        box("Avionics ivory upper armor", (x,side*1.04,1.47),
+            (.47,.38,.075),ivory,root,.02)
+        box("Avionics dark top inset", (x,side*1.04,1.52),
+            (.30,.23,.024),navy,root,.008)
+        box("Avionics cyan guide", (x,side*1.235,1.30),
+            (.21,.018,.055),cyan,root,.006)
+        box("Avionics amber status", (x,side*1.04,1.55),
+            (.08,.08,.035),amber,root,.009)
 
 spin = node("HabitatRingSpin", root, (0,0,1.82))
 bpy.ops.mesh.primitive_torus_add(major_radius=.82, minor_radius=.09,
