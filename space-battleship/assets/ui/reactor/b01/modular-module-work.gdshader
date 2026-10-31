@@ -91,7 +91,10 @@ void fragment() {
         // Fine static crust stays in the Blender surface; this motion remains
         // readable at the assembled page scale and inside the liquid alpha.
         float heat_ribbons = 0.5+0.5*sin(q.x*21.0-phase*2.8+0.45*sin(q.y*20.0));
-        material = 0.18+pour*(0.38+0.98*heat_ribbons);
+        // Keep the crust dark between fronts; a uniformly hot surface reads
+        // as a static orange lump once the work crop is scaled into the bay.
+        float exposed_heat = pow(heat_ribbons,3.0);
+        material = 0.07+pour*(0.12+1.45*exposed_heat);
         float heat_bounce = disk(q,vec2(0.54,0.47),vec2(0.27,0.23))
                             -disk(q,vec2(0.54,0.47),vec2(0.16,0.12));
         float inlet_glow=disk(q,vec2(0.51,0.49),vec2(0.028,0.024));
