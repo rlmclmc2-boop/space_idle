@@ -1,0 +1,80 @@
+diff --git a/space-battleship/src/ui/equipment_panel.gd b/space-battleship/src/ui/equipment_panel.gd
+index 862947162..29f67a1d4 100644
+--- a/space-battleship/src/ui/equipment_panel.gd
++++ b/space-battleship/src/ui/equipment_panel.gd
+@@ -47,6 +47,9 @@ var _content: Control
+ var _body_top: float = 294.0
+ var _view_height: float = 510.0
+ var _content_height: float = 0.0
++var _scroll_stops: Array[int] = [0]
++var _scroll_anchor: int = 0
++var _aligning_scroll: bool = false
+ var _identity: Panel
+ var _identity_title: Label
+ var _identity_counts: Label
+@@ -156,7 +159,7 @@ func _build() -> void:
+     _scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+     _scroll.focus_mode=Control.FOCUS_ALL;add_child(_scroll)
+     _content=Control.new();_content.custom_minimum_size=Vector2(424,484);_scroll.add_child(_content)
+-    _scroll.get_v_scroll_bar().value_changed.connect(func(_value):_update_visible_cards())
++    _scroll.get_v_scroll_bar().value_changed.connect(_align_scroll_rows)
+     _toast=PanelContainer.new();_toast.position=Vector2(430,207);_toast.size=Vector2(348,44)
+     _toast.add_theme_stylebox_override("panel",_style(Color("173b49"),Color("bda56d")))
+     _toast.mouse_filter=Control.MOUSE_FILTER_IGNORE;_toast.z_index=90;add_child(_toast)
+@@ -197,7 +200,6 @@ func _refresh_structure() -> void:
+     for fact in _active:_content_height+=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+     _view_height=minf(484,_content_height)
+     _scroll.position=Vector2(340,_body_top);_scroll.size=Vector2(434,_view_height)
+-    _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
+     _global_quantity.position.y=403 if early else 260;_batch_open.position.y=_global_quantity.position.y
+     _global_quantity.disabled=not _session.run_state.is_running();_batch_open.disabled=_global_quantity.disabled
+     var display_height: float={"Frigate":260.0,"Destroyer":272.0,"Cruiser":286.0,"Battleship":310.0,"Heavy_Battleship":336.0}.get(_ship,286.0)
+@@ -217,8 +219,48 @@ func _refresh_structure() -> void:
+             var height: float=EMPTY_HEIGHT if str(fact.equipment_id).is_empty() else EQUIPPED_HEIGHT
+             _cards[id].row_y=y;_cards[id].panel.position=Vector2(2,y);_cards[id].panel.size=Vector2(CARD_WIDTH,height)
+             _refresh_card(id);y+=height+CARD_GAP
++    _configure_scroll_rows()
+     _update_visible_cards();_refresh_scene_picture()
+ 
++func _configure_scroll_rows() -> void:
++    var starts: Array[int] = []
++    for fact in _active:starts.append(int(_cards[str(fact.id)].row_y-CONTENT_PAD))
++    starts.sort()
++    var last_start: int=0
++    for start in starts:
++        # Keep the final complete row group aligned with the same top inset.
++        # Spare viewport height belongs below that group, never above it.
++        if _content_height-CONTENT_PAD*2-start<=_view_height-CONTENT_PAD*2:
++            last_start=start;break
++    _scroll_stops.assign(starts.filter(func(start):return start<=last_start))
++    if _scroll_stops.is_empty():_scroll_stops.append(0)
++    _content_height=maxf(_content_height,last_start+_view_height)
++    _content.custom_minimum_size=Vector2(424,_content_height);_content.size=_content.custom_minimum_size
++    var retained: int=0
++    for start in _scroll_stops:
++        if start<=_scroll_anchor:retained=start
++    _scroll_anchor=retained
++    _aligning_scroll=true;_scroll.scroll_vertical=retained;_aligning_scroll=false
++    # ScrollContainer updates its bounds in the following layout pass.
++    _scroll.set_deferred("scroll_vertical",retained)
++
++func _align_scroll_rows(value: float) -> void:
++    if _aligning_scroll:return
++    var requested: int=int(value)
++    var target: int=_scroll_anchor
++    if requested>_scroll_anchor:
++        target=_scroll_stops.back()
++        for stop in _scroll_stops:
++            if stop>=requested:target=stop;break
++    elif requested<_scroll_anchor:
++        target=0
++        for stop in _scroll_stops:
++            if stop>requested:break
++            target=stop
++    _scroll_anchor=target
++    _aligning_scroll=true;_scroll.scroll_vertical=target;_aligning_scroll=false
++    _update_visible_cards()
++
+ func _create_card(id: String) -> void:
+     var panel=Panel.new();panel.name="Card_"+id.replace(":","_");panel.size=Vector2(CARD_WIDTH,EQUIPPED_HEIGHT)
+     _content.add_child(panel)

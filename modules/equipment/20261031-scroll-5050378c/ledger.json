@@ -1,0 +1,823 @@
+{
+  "runtime_source": "5050378c41ec3eb015eb039aa31d71b0d523915e",
+  "branch": "art/equipment-materials-main-20261029",
+  "rejected_runtime": "8fe99e95529b42752cc79d4c7b00769a07de3b4b",
+  "scope": "Author same-thread affected scroll-layout rework after existing reviewer block; no new test agent or performance rerun",
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "equipment_panel_sha256": "276a5dc5a288f1261bd5f5534f26165d6b53b2190f9d3e8a17e700a53413a091",
+  "config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "images": [
+    "01-short-top.png",
+    "02-middle-empty.png",
+    "03-middle-mixed-top.png",
+    "04-middle-mixed-bottom.png",
+    "05-late-mixed-top.png",
+    "06-long-max-top.png",
+    "07-long-max-bottom.png",
+    "08-long-max-return-top.png",
+    "09-scrollbar-bottom.png",
+    "10-stopped-bottom.png"
+  ],
+  "video_seconds": {
+    "raw": 27.533333,
+    "actions": 12.533333
+  },
+  "video_note": "15fps real X11 capture, unchanged speed; actions trims first15s startup; both fully decoded with no error and four ordered frames viewed",
+  "author_visual": "All ten final screenshots actually viewed individually plus four ordered video frames; no new observed clipping/occlusion/first-row drift, no acceptance claim",
+  "records": [
+    {
+      "button": "[P: (552.0, 403.0), S: (64.0, 30.0)]",
+      "case": "early short top",
+      "content_height": 232.0,
+      "first_card_gap": 3.0,
+      "identity": "[P: (16.0, 297.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0
+      ],
+      "viewport": "[P: (340.0, 432.0), S: (434.0, 232.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 436.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 554.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 403.0), S: (64.0, 30.0)]",
+      "case": "early short wheel endpoint",
+      "content_height": 232.0,
+      "first_card_gap": 3.0,
+      "identity": "[P: (16.0, 297.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0
+      ],
+      "viewport": "[P: (340.0, 432.0), S: (434.0, 232.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 436.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 554.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "middle mixed no scroll",
+      "content_height": 424.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 311.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 424.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 52.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 480.0), S: (420.0, 52.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 544.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 662.0), S: (420.0, 52.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "middle mixed top",
+      "content_height": 602.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 311.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0,
+        118
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "middle mixed bottom",
+      "content_height": 602.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 311.0), S: (276.0, 72.0)]",
+      "scroll": 118,
+      "stops": [
+        0,
+        118
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 52.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "middle mixed return top",
+      "content_height": 602.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 311.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0,
+        118
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late mixed top",
+      "content_height": 838.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0,
+        118,
+        236,
+        354
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 52.0)]"
+        },
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 716.0), S: (420.0, 52.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full long MAX top",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel down 0",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 118,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel down 1",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 236,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel down 2",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 354,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel down 3",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 472,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:2",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel down 4",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 472,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:2",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full long MAX bottom",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 472,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:2",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel up 0",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 354,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel up 1",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 236,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel up 2",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 118,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel up 3",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "late full wheel up 4",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 0,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:0",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:1",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:2",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "weapon:3",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "actual scrollbar bottom endpoint",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 472,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:2",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "bottom quantity change retains aligned rows",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 472,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:2",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "accepted bottom slot keeps layout",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 472,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:2",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    },
+    {
+      "button": "[P: (552.0, 260.0), S: (64.0, 30.0)]",
+      "case": "stopped aligned bottom",
+      "content_height": 956.0,
+      "first_card_gap": 8.0,
+      "identity": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "scroll": 472,
+      "stops": [
+        0,
+        118,
+        236,
+        354,
+        472
+      ],
+      "viewport": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "visible": [
+        {
+          "id": "weapon:4",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:0",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:1",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]"
+        },
+        {
+          "id": "defence:2",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "acceptance": "Existing parent/original review pending, other review findings not settled; no independent/user/main acceptance",
+  "actually_compacted": false,
+  "artifacts_sha256": {
+    "review.html": "f2381bf0819f550f37623008bf049f9b4a54c5fb3d0891144ffc50d05804332d",
+    "review.md": "44e57e99a70cac6716e64e8ab3aab2e47f312da5c9f269cc9d26f32c1b37f983",
+    "source-change.patch": "d17aab8499669af69b9c32688ce03e077a7e2de1cd148d8e7b9d403c977210be",
+    "record-scroll-alignment.py": "967ba4108bfd9f8201b55d071890164a671b75e71af743b8c58967b92e5ca180",
+    "scroll-alignment.gd": "ca144f0e50cf169050393b97def2764ead562e4e644a1f328868df17dca18ded",
+    "operations-actions.mp4": "fc47408c99a226aad8b0167f3f653065021c12f51534cebfd5afe8f6713c8759",
+    "operations-raw.mp4": "596311d323c2cc6e5e8a8bb91fc92249954baa90e1f35ab22a9bc03861aba98b",
+    "video-run.json": "d94bc7acb69e026497827c53351b09f69fb1568d4d8dfd09f0ec1276b4e1a420",
+    "video-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "recording.log": "8e2c983bb6e89b398e7feec39005f43b8b49c2846be0ab7d324e89e635c5a0bb",
+    "recorded-runtime.log": "b72ec0fffb89c1d8fdf59653e9cfd7a48f2002616cc494c8f857082078b74368",
+    "operations.json": "42c242c4f42a9345d7530504d3d90225d32ca4b7409b131c002745936505a91d",
+    "video-frame-04.png": "c660c80a1db3859ba243d9d1db6e0ba9043039d7b6921da9040d56d5dd675b8c",
+    "video-frame-03.png": "c4b164d420d2abe3fd1c44e41e1399b1ffced08801ccb6e112815b248c82298a",
+    "video-frame-02.png": "8b0f9ace9fda91cea9b177446ece01f4dd6fde5257e827b41eb78370fbc5d169",
+    "video-frame-01.png": "49ec73dc11db8680849ee6c17ef7a89f0f65a07c10192078084f8dbd86e55c19",
+    "10-stopped-bottom.png": "f888ede7ae6e6d8d6c9ebae44f6cd85a2bd9a54db958e485fdd957baabfbf647",
+    "09-scrollbar-bottom.png": "a7249a357abc04ce428bd006d15486d8644b51e91862042197a2f7dc5d63b1d4",
+    "08-long-max-return-top.png": "8f69c4f64928a3c10be7aa545ec4a7fb8f77ecee86398264fa86a59baf60414a",
+    "07-long-max-bottom.png": "a7249a357abc04ce428bd006d15486d8644b51e91862042197a2f7dc5d63b1d4",
+    "06-long-max-top.png": "fb8ea78461a1f346bb77ba7b0ee12637432e87c8165a99e42fb98a123d0d30d4",
+    "05-late-mixed-top.png": "870c9cccd5a6cfe23103a69ba91d807e5a3efaed93c20d183f15b9fb5d25a5c4",
+    "04-middle-mixed-bottom.png": "89679bc8a05ec4e2b1571bbec771cb7c777da7887f01ac8670341955f5e872b8",
+    "03-middle-mixed-top.png": "3d3d9bb72050d254add55d78465b5722d0bbb0216f8ee8ce7289b7dc65f919cf",
+    "02-middle-empty.png": "1c6aad0ae7735300adc5ae0807756385bf1583b8b7074657bbb2159300edf2f6",
+    "01-short-top.png": "a1a619f1345c02e8350d70e0300c28631eb4f72c17072ffd647445662d72f114"
+  }
+}
