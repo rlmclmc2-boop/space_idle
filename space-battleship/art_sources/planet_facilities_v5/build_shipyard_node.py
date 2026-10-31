@@ -198,61 +198,63 @@ for side in (-1,1):
 box("Crown dark sensor socket", (.54,0,1.57), (.18,.24,.09), blue, root, .02)
 cylinder("Crown warm signal", (.54,0,1.65), .073,.13,amber,root,vertices=12)
 
-# Two open cantilevers, one high and one low, emerge from the same core.
-# Narrow parallel rails plus end clamps frame a visible empty service bay.
-for side, length, level in ((-1,2.02,.45),(1,1.75,.92)):
-    y = side*.57
-    xmid = -.54 - length*.5
-    for rail in (-1,1):
-        ry = y + rail*.22
-        box("Berth deep structural rail", (xmid,ry,level), (length,.22,.34), navy, root, .055)
-        box("Berth segmented armor crest", (xmid,ry,level+.20), (length-.11,.21,.11), ivory, root, .018)
-        box("Berth cyan inner guide", (xmid,ry-rail*.104,level+.055), (length-.25,.025,.034), cyan, root, .004)
-        for n in range(3):
-            x = -.69 - n*(length-.34)/3
-            box("Rail armor break", (x,ry,level+.26), (.042,.21,.017), edge, root, .004)
-    tip = -.54-length
-    box("Open berth end bridge", (tip+.055,y,level+.08), (.20,.65,.34), ivory, root, .04)
-    box("Recessed end face", (tip-.034,y,level+.07), (.028,.31,.15), blue, root, .008)
-    for x in (-.65, tip+.18):
-        box("Amber berth socket", (x,y-side*.28,level+.24), (.08,.07,.09), amber, root, .014)
-    strut("Ochre berth load truss", (.18,y,level-.25), (tip+.22,y,level-.26), .16, orange, root)
-    box("Cantilever triangular underbrace", (-.70,y,level-.24), (.83,.30,.24), mid, root, .045)
+# One broad launch cavity crosses the ring node. Two transverse pressure
+# portals tie its paired rails into the same keel; the craft remains visible
+# through the cavity rather than sitting beside a second decorative fork.
+box("Dock load pan", (-1.32,0,.24), (2.12,1.25,.18), navy, root, .06)
+box("Dock recessed service bed", (-1.36,0,.35), (1.85,.83,.045), blue, root, .012)
+for side in (-1,1):
+    y = side*.70
+    box("Dock deep load rail", (-1.39,y,.52), (2.38,.27,.34), navy, root, .05)
+    box("Dock armor rail crest", (-1.39,y,.74), (2.20,.25,.10), ivory, root, .018)
+    box("Dock inner launch guide", (-1.41,side*.55,.59), (2.12,.028,.045), cyan, root, .005)
+    for x in (-2.23,-1.48,-.73):
+        box("Dock rail armor break", (x,y,.80), (.045,.24,.018), edge, root, .005)
+    strut("Dock diagonal load brace", (.20,side*.82,.16), (-1.77,side*.80,.26), .13, orange, root)
+for x, top in ((-.36,1.18),(-2.31,1.06)):
+    for side in (-1,1):
+        box("Dock portal pressure leg", (x,side*.78,(.39+top)*.5), (.24,.28,top-.39), ivory, root, .035)
+        box("Dock portal joint", (x,side*.79,.59), (.27,.30,.16), blue, root, .025)
+        box("Dock portal amber lock", (x,side*.94,.65), (.045,.025,.09), amber, root, .008)
+    box("Dock portal roof truss", (x,0,top), (.28,1.78,.17), orange, root, .03)
+    box("Dock portal upper armor", (x,0,top+.09), (.20,1.48,.055), ivory, root, .01)
+box("Dock terminal armored nose", (-2.61,0,.42), (.24,1.38,.32), ivory, root, .04)
+box("Dock nose inset", (-2.75,0,.42), (.028,.75,.14), blue, root, .008)
 
 # One readable shuttle sits inside the lower open berth. The pointed nose,
 # large glass canopy and twin cyan exhausts are actual geometry at orbital
 # depth, not a camera-facing billboard or another independently orbiting icon.
 craft = node("Docked small craft", root)
 craft_hull("Ivory shuttle pressure shell", [
-    (-2.42,-.57,.79,.06,.06),(-2.23,-.57,.78,.17,.11),
-    (-1.91,-.57,.79,.26,.18),(-1.25,-.57,.80,.27,.19),
-    (-.86,-.57,.77,.19,.14),
+    (-2.42,0,.79,.06,.06),(-2.23,0,.78,.17,.11),
+    (-1.91,0,.79,.26,.18),(-1.25,0,.80,.27,.19),
+    (-.86,0,.77,.19,.14),
 ], ivory, craft)
 craft_hull("Deep blue shuttle belly", [
-    (-2.25,-.57,.64,.14,.07),(-1.76,-.57,.63,.27,.09),
-    (-1.00,-.57,.63,.24,.09),(-.84,-.57,.65,.13,.06),
+    (-2.25,0,.64,.14,.07),(-1.76,0,.63,.27,.09),
+    (-1.00,0,.63,.24,.09),(-.84,0,.65,.13,.06),
 ], navy, craft)
 craft_hull("Faceted blue cockpit canopy", [
-    (-2.17,-.57,.90,.10,.04),(-1.97,-.57,.94,.17,.09),
-    (-1.60,-.57,.94,.19,.09),(-1.47,-.57,.92,.12,.05),
+    (-2.17,0,.90,.10,.04),(-1.97,0,.94,.17,.09),
+    (-1.60,0,.94,.19,.09),(-1.47,0,.92,.12,.05),
 ], glass, craft)
-box("Shuttle ivory rear armor", (-1.10,-.57,.99), (.42,.37,.09), ivory, craft, .035)
+box("Shuttle ivory rear armor", (-1.10,0,.99), (.42,.37,.09), ivory, craft, .035)
 for side in (-1,1):
-    y = -.57 + side*.28
+    y = side*.28
     craft_hull("Shuttle swept ivory wing", [
         (-1.81,y,.72,.08,.055),(-1.48,y+side*.08,.73,.17,.08),
         (-1.03,y+side*.05,.72,.14,.06),
     ], ivory, craft)
-    box("Blue engine fairing", (-.91,-.57+side*.20,.76), (.28,.19,.20), blue, craft, .04)
-    box("Cyan rear nozzle", (-.745,-.57+side*.20,.76), (.03,.13,.13), cyan, craft, .008)
-    box("Warm docked status", (-1.36,-.57+side*.28,.78), (.10,.04,.09), amber, craft, .014)
+    box("Blue engine fairing", (-.91,side*.20,.76), (.28,.19,.20), blue, craft, .04)
+    box("Cyan rear nozzle", (-.745,side*.20,.76), (.03,.13,.13), cyan, craft, .008)
+    box("Warm docked status", (-1.36,side*.28,.78), (.10,.04,.09), amber, craft, .014)
 
 # Existing runtime animation names are preserved; no new clock or business path.
 crane = node("CraneSlide", root)
-box("Crane sliding armored saddle", (-1.02,.57,1.26), (.35,.43,.21), ivory, crane, .045)
-box("Crane dark folding jib", (-1.24,.57,1.31), (.65,.12,.12), blue, crane, .025)
-box("Crane amber hook", (-1.54,.57,1.15), (.12,.13,.26), amber, crane, .024)
-collar = node("DockCollarSpin", root, (-1.78,-.57,.65))
+box("Crane sliding armored saddle", (-1.02,.81,1.26), (.35,.30,.21), ivory, crane, .045)
+box("Crane dark folding jib", (-1.24,.81,1.31), (.65,.12,.12), blue, crane, .025)
+box("Crane amber hook", (-1.54,.81,1.15), (.12,.13,.26), amber, crane, .024)
+collar = node("DockCollarSpin", root, (-1.78,0,.65))
 torus("Berth working collar", (0,0,0), .22,.060, navy, collar, rot=(math.pi/2,0,0))
 torus("Berth cyan collar aperture", (0,0,0), .22,.022, cyan, collar, rot=(math.pi/2,0,0))
 
