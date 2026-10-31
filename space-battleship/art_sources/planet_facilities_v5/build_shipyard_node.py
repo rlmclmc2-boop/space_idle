@@ -212,6 +212,13 @@ cylinder("Pressure shell warm signal", (-.02,0,1.39), .075,.13,amber,root,vertic
 # portals tie its paired rails into the same keel; the craft remains visible
 # through the cavity rather than sitting beside a second decorative fork.
 box("Dock load pan", (-1.32,0,.24), (2.12,1.25,.18), navy, root, .06)
+# The exposed launch deck is carried by a tapered pressure keel that runs
+# back into the same ring-coupled shell, not by a thin pan in open space.
+craft_hull("Dock integrated tapered lower keel", [
+    (-2.63,0,-.10,.35,.18),(-2.34,0,-.10,.57,.27),
+    (-1.20,0,-.10,.61,.27),(-.48,0,-.08,.54,.26),
+    (.02,0,-.05,.39,.23),
+], blue, root)
 box("Dock recessed service bed", (-1.36,0,.35), (1.85,.83,.045), blue, root, .012)
 for side in (-1,1):
     y = side*.70
