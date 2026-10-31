@@ -107,22 +107,12 @@ func _ready() -> void:
 			# Close the real end plane flush with its keel. Separate protruding
 			# boxes made the free end read as an unrelated dark bumper.
 			var width_at_end := _transit_width(angle)
-			var face_mesh := SurfaceTool.new()
-			face_mesh.begin(Mesh.PRIMITIVE_TRIANGLES)
-			for vertex in [
-				Vector3(-width_at_end * 0.5, -0.305, outward * 0.006),
-				Vector3(width_at_end * 0.5, -0.305, outward * 0.006),
-				Vector3(-width_at_end * 0.5, 0.325, outward * 0.006),
-				Vector3(-width_at_end * 0.5, 0.325, outward * 0.006),
-				Vector3(width_at_end * 0.5, -0.305, outward * 0.006),
-				Vector3(width_at_end * 0.5, 0.325, outward * 0.006),
-			]:
-				face_mesh.set_normal(Vector3(0, 0, outward))
-				face_mesh.add_vertex(vertex)
-			var face := MeshInstance3D.new()
-			face.mesh = face_mesh.commit()
-			face.material_override = _navy
-			cap.add_child(face)
+			# The independently built arc must have a finished pressure end. A
+			# single dark rectangle reads as a dangling construction block.
+			_add_terminal_band(cap, width_at_end, -0.305, 0.025, outward, _navy)
+			_add_terminal_band(cap, width_at_end, 0.025, 0.075, outward, _cyan)
+			_add_terminal_band(cap, width_at_end, 0.075, 0.205, outward, _side)
+			_add_terminal_band(cap, width_at_end, 0.205, 0.325, outward, _deck)
 			var radial := point(angle).normalized()
 			var normal := plane_normal()
 			cap.transform = Transform3D(Basis(radial, normal, radial.cross(normal)), point(angle) + normal * 0.125)
@@ -139,6 +129,27 @@ func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
 	result.set_shader_parameter("luminous", unshaded)
 	_all_materials.append(result)
 	return result
+
+func _add_terminal_band(parent: Node3D, width: float, bottom: float, top: float, outward: float, material: Material) -> void:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var lower_width := width * 0.5
+	var upper_width := width * (0.46 if top > 0.2 else 0.5)
+	for vertex in [
+		Vector3(-lower_width, bottom, outward * 0.008),
+		Vector3(lower_width, bottom, outward * 0.008),
+		Vector3(-upper_width, top, outward * 0.008),
+		Vector3(-upper_width, top, outward * 0.008),
+		Vector3(lower_width, bottom, outward * 0.008),
+		Vector3(upper_width, top, outward * 0.008),
+	]:
+		surface.set_normal(Vector3(0, 0, outward))
+		surface.set_uv(Vector2(vertex.x / width + 0.5, 0.5))
+		surface.add_vertex(vertex)
+	var face := MeshInstance3D.new()
+	face.mesh = surface.commit()
+	face.material_override = material
+	parent.add_child(face)
 
 func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float, kind: String = "") -> void:
 	# One shared cross-section runs through every owned arc and completed join.
@@ -433,7 +444,7 @@ func configure(owned: Array) -> void:
 		var index := KINDS.find(kind)
 		_joins[kind].visible = kind in _owned and KINDS[(index + 1) % KINDS.size()] in _owned
 		var caps: Array = _end_caps[kind]
-		caps[0].visible = kind != "auto_explore" and KINDS[(index + KINDS.size() - 1) % KINDS.size()] not in _owned
+		caps[0].visible = KINDS[(index + KINDS.size() - 1) % KINDS.size()] not in _owned
 		# The refinery shell itself encloses its nearby free end. An exposed
 		# terminal there reads as an unrelated block hanging below the furnace.
 		caps[1].visible = kind != "refinery" and KINDS[(index + 1) % KINDS.size()] not in _owned

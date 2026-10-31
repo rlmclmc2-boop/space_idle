@@ -31,7 +31,6 @@ var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
-var _station_body_sprite: Sprite3D
 var _refinery_shutter_sprites: Dictionary = {}
 var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
@@ -97,33 +96,14 @@ func _ready() -> void:
 			assert(pivot != null, "Missing facility work pivot: " + kind + "/" + part_name)
 			moving[part_name] = pivot
 		_parts[kind] = moving
-		if kind == "auto_explore": _install_station_illustration(model, moving)
+		if kind == "auto_explore": _depth_clip_orbital_model(model)
 		if kind == "equipment": _workshop_arm_base_y = (moving["ToolArmSweep"] as Node3D).position.y
 		if kind in ["equipment", "shipyard"]: _depth_clip_orbital_model(model)
 		if kind == "refinery": _install_refinery_illustration(model, moving)
-		if kind not in ["shipyard", "equipment"]: _transparent_materials(model)
+		if kind == "refinery": _transparent_materials(model)
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
-
-func _install_station_illustration(model: Node3D, moving: Dictionary) -> void:
-	_hide_imported_meshes(model)
-	var habitat := moving["HabitatRingSpin"] as Node3D
-	for part in habitat.get_children():
-		if part is MeshInstance3D: part.visible = true
-	habitat.scale = Vector3.ONE * 0.65
-	habitat.position.y -= 0.35
-	var body := Sprite3D.new()
-	body.name = "IllustratedStationThroughNode"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/station-orbit-through-node.png")
-	body.pixel_size = 0.0027
-	body.position = Vector3(0, -0.30, 0)
-	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = true
-	body.double_sided = true
-	body.render_priority = -1
-	model.add_child(body)
-	_station_body_sprite = body
 
 func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	# The upper shell has an open feed port; its lower load path belongs to the
@@ -285,7 +265,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# detached vertical slivers as the orbital structure turns.
 		var scale_factor := 0.64 if kind == "auto_explore" else 0.55 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
-		if kind in ["shipyard", "equipment"]:
+		if kind in ["shipyard", "equipment", "auto_explore"]:
 			# Both open work bays are authored in the owned section's local frame.
 			# The workshop's through axis follows the actual orbit tangent.
 			var outward: Vector3 = _spine.point(a).normalized()
@@ -294,10 +274,6 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(Vector3.ONE * scale_factor), _spine.socket_position(a, kind))
 		else:
 			model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
-		if kind == "auto_explore":
-			# The round hull encloses its real section joint at the same station
-			# socket; keep only the short top annulus as a separate moving layer.
-			_station_body_sprite.position = Vector3(0, -0.30, 0) + model.global_transform.basis.inverse() * Vector3(0, 0, 0.25)
 		if kind == "refinery": _position_refinery_work(model, clock)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
