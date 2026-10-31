@@ -1,4 +1,5 @@
 extends RefCounted
+const Resources = preload("res://src/systems/resource_amounts.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 ## Economy owns balances, drop ownership, timed production and income history.
@@ -6,6 +7,7 @@ signal display_changed
 signal drop_collected
 
 var _wallet: Dictionary = {}
+var _yield_progress: Dictionary = {}
 var _drops: Dictionary = {}
 var _markers: Dictionary = {}
 var _cursor: Dictionary = {"registered_through": 0}
@@ -43,8 +45,8 @@ func credit_offline(seconds: int, maximum_hours: int, rate_text: String) -> Dict
 	var offered_raw: Dictionary = _api.apply("mul", [duration.value, rate.value])
 	var capacity_raw: Dictionary = _api.apply("mul", [maximum.value, rate.value])
 	if not offered_raw.ok or not capacity_raw.ok: return {"ok": false, "reason": "InvalidOfflineAmount"}
-	var offered: Dictionary = _api.apply("floor", [offered_raw.value])
-	var capacity: Dictionary = _api.apply("floor", [capacity_raw.value])
+	var offered: Dictionary = Resources.whole(offered_raw.value, _api)
+	var capacity: Dictionary = Resources.whole(capacity_raw.value, _api)
 	if not offered.ok or not capacity.ok: return {"ok": false, "reason": "InvalidOfflineAmount"}
 	var zero: Dictionary = _api.apply("zero", []).value
 	var current: Dictionary = _wallet.get("chrono", zero)
@@ -65,7 +67,7 @@ func credit_offline(seconds: int, maximum_hours: int, rate_text: String) -> Dict
 func save_state() -> Dictionary:
 	return {"wallet": _wallet.duplicate(true), "drops": _drops.duplicate(true),
 		"cursor": _cursor.duplicate(true), "samples": _samples.duplicate(true),
-		"generator": _generator.duplicate(true)}
+		"generator": _generator.duplicate(true), "yield_progress": _yield_progress.duplicate(true)}
 
 func restore_state(state: Dictionary) -> Dictionary:
 	if not state.get("wallet") is Dictionary or not state.get("drops") is Dictionary or not state.get("cursor") is Dictionary or not state.get("samples") is Array or not state.get("generator") is Dictionary:
@@ -100,20 +102,43 @@ func restore_state(state: Dictionary) -> Dictionary:
 			var value = sample.get(field)
 			if not value is Dictionary or not _api.apply("compare", [value, zero]).get("ok", false) or _api.apply("compare", [value, zero]).scalar < 0:
 				return {"ok": false, "reason": "InvalidIncomeSample"}
-	_wallet = state.wallet.duplicate(true)
+	var whole_wallet: Dictionary = Resources.whole_map(state.wallet, _api)
+	if not whole_wallet.ok: return whole_wallet
+	if not state.get("yield_progress", {}) is Dictionary: return {"ok":false,"reason":"InvalidResourceProgress"}
+	var progress: Dictionary = Resources.progress_map(state.get("yield_progress", {}), _api)
+	if not progress.ok: return progress
+	var drops: Dictionary = state.drops.duplicate(true)
+	for id in drops:
+		for field in ["amount", "production_base"]:
+			var value: Dictionary = Resources.whole(drops[id][field], _api)
+			if not value.ok: return value
+			drops[id][field] = value.value
+	var samples: Array = state.samples.duplicate(true)
+	for sample in samples:
+		for field in ["actual", "production_base"]:
+			var value: Dictionary = Resources.whole(sample[field], _api)
+			if not value.ok: return value
+			sample[field] = value.value
+	_wallet = whole_wallet.values
+	_yield_progress = progress.values
 	_wallet.make_read_only()
-	_drops = state.drops.duplicate(true)
+	_drops = drops
 	_markers = markers
 	_cursor = state.cursor.duplicate(true)
-	_samples = state.samples.duplicate(true)
+	_samples = samples
 	_generator = state.generator.duplicate(true)
 	_income_dirty = true
 	_balance_dirty = true
 	return {"ok": true}
 
 func accept_budget(next: Dictionary, notify: bool = true) -> bool:
-	if not _run_state.is_running() or next == _wallet: return false
-	_wallet = next.duplicate()
+	if not _run_state.is_running(): return false
+	var checked: Dictionary = Resources.whole_map(next, _api)
+	if not checked.ok:
+		_run_state.fail(str(checked.get("reason", checked.get("error", "InvalidResourceBudget"))))
+		return false
+	if checked.values == _wallet: return false
+	_wallet = checked.values
 	_wallet.make_read_only()
 	_balance_dirty = true
 	if notify: display_changed.emit()
@@ -142,8 +167,8 @@ func balances_text() -> String:
 		var balances: PackedStringArray = []
 		_balance_rows = []
 		for resource in _wallet:
-			var text = _api.apply("to_display", [_wallet[resource]])
-			var label: String = PlayerText.resource(str(resource)) + "：" + PlayerText.number(str(text.text))
+			var text = Resources.integer_text(_wallet[resource],_api)
+			var label: String = PlayerText.resource(str(resource)) + "：" + (str(text.text) if text.ok else "—")
 			balances.append(label)
 			_balance_rows.append({"id": str(resource), "text": label})
 		_balance_text = "   ".join(balances)
@@ -179,6 +204,12 @@ func advance_timed(dt: float, active: bool, resource_ratio: Callable, origin: Ve
 func can_pay(costs: Dictionary, candidate = null) -> Dictionary:
 	var wallet: Dictionary = _wallet if candidate == null else candidate
 	var amount_api = _api
+	var normalized: Dictionary = Resources.whole_map(costs, amount_api)
+	if not normalized.ok: return normalized
+	costs = normalized.values
+	var holdings: Dictionary = Resources.whole_map(wallet, amount_api)
+	if not holdings.ok: return holdings
+	wallet = holdings.values
 	var zero = amount_api.apply("zero", [])
 	for resource in costs:
 		var balance: Dictionary = wallet.get(resource, zero.value)
@@ -192,8 +223,14 @@ func can_pay(costs: Dictionary, candidate = null) -> Dictionary:
 func payment(costs: Dictionary, candidate = null) -> Dictionary:
 	if not _run_state.is_running(): return _run_state.rejection()
 	var wallet: Dictionary = _wallet if candidate == null else candidate
-	if costs.is_empty(): return {"ok": true, "wallet": wallet}
 	var amount_api = _api
+	var normalized: Dictionary = Resources.whole_map(costs, amount_api)
+	if not normalized.ok: return normalized
+	costs = normalized.values
+	var holdings: Dictionary = Resources.whole_map(wallet, amount_api)
+	if not holdings.ok: return holdings
+	wallet = holdings.values
+	if costs.is_empty(): return {"ok": true, "wallet": wallet}
 	var affordable = can_pay(costs, candidate)
 	if not affordable.ok:
 		return affordable
@@ -235,6 +272,11 @@ func register_drops(rows: Array, now: float, refinery: Dictionary, notify: bool 
 			if not quantity.ok:
 				return quantity
 			quantity = amount_api.apply("ceil", [quantity.value])
+		if not quantity.ok: return quantity
+		quantity = Resources.whole(quantity.value, amount_api)
+		if not quantity.ok: return quantity
+		base = Resources.whole(base.value, amount_api)
+		if not base.ok: return base
 		row.domain = "native"
 		row.income_source = "fragment_drop" if row.get("jewel", false) else "enemy_drop"
 		row.amount = quantity.value
@@ -298,20 +340,6 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 		result = amount_api.apply("mul", [quantity, factor.value])
 		if not result.ok:
 			return result
-		var hundred = amount_api.apply("from_decimal", ["100"])
-		var half = amount_api.apply("from_decimal", ["0.5"])
-		result = amount_api.apply("mul", [result.value, hundred.value])
-		if not result.ok:
-			return result
-		result = amount_api.apply("add", [result.value, half.value])
-		if not result.ok:
-			return result
-		result = amount_api.apply("floor", [result.value])
-		if not result.ok:
-			return result
-		result = amount_api.apply("div", [result.value, hundred.value])
-		if not result.ok:
-			return result
 		quantity = result.value
 	var effect: String = "iron" if resource == "1" else "uranium" if resource == "2" else "jewel" if resource == "jewel" else ""
 	if str(row.domain) != "timed" and income_factors.has(effect):
@@ -324,6 +352,9 @@ func collect_drop(id: String, automatic: bool, wall: float, game: float, income_
 			if not result.ok:
 				return result
 			quantity = result.value
+	result = Resources.whole(quantity, amount_api)
+	if not result.ok: return result
+	quantity = result.value
 	var zero = amount_api.apply("zero", [])
 	result = amount_api.apply("add", [wallet.get(resource, zero.value), quantity])
 	if not result.ok:
@@ -396,6 +427,8 @@ func _spawn_timed_drop(resource: String, base_text: String, speed: float, resour
 			quantity = amount_api.apply("ceil", [quantity.value])
 			if not quantity.ok:
 				return quantity
+	quantity = Resources.whole(quantity.value, amount_api)
+	if not quantity.ok: return quantity
 	var id: int = int(generator.next_id) + 1
 	var key: String = "timed:" + str(id)
 	pending[key] = {"domain": "timed", "uid": id, "id": resource,
@@ -476,11 +509,16 @@ func credit_yield(resource: String, quantity: Dictionary, wall: float, game: flo
 	var samples: Array = _samples
 	var api = _api
 	var zero: Dictionary = api.apply("zero", []).value
+	var settled: Dictionary = Resources.settle(quantity, _yield_progress.get(resource, zero), api)
+	if not settled.ok: return settled
+	quantity = settled.amount
 	if api.apply("compare", [quantity, zero]).scalar <= 0:
+		_yield_progress[resource] = settled.progress
 		return {"ok": true, "credited": false}
 	var total = api.apply("add", [wallet.get(resource, zero), quantity])
 	if not total.ok:
 		return total
+	_yield_progress[resource] = settled.progress
 	wallet = wallet.duplicate()
 	wallet[resource] = total.value
 	wallet.make_read_only()
@@ -490,3 +528,17 @@ func credit_yield(resource: String, quantity: Dictionary, wall: float, game: flo
 		"wall": wall, "game": game, "source": "galaxy_yield"})
 	if notify: display_changed.emit()
 	return {"ok": true, "credited": true}
+
+## Owner formatting for resources only; do not use for rates/effects/work.
+func quantity_text(value) -> Dictionary:
+	var parsed: Dictionary = {"ok":true,"value":value} if value is Dictionary else _api.apply("from_decimal",[str(value)])
+	if not parsed.ok: return parsed
+	return Resources.integer_text(parsed.value,_api)
+
+func cost_texts(costs: Dictionary) -> Dictionary:
+	var texts: Dictionary = {}
+	for id in costs:
+		var shown: Dictionary = quantity_text(costs[id])
+		if not shown.ok: return shown
+		texts[id] = shown.text
+	return {"ok":true,"texts":texts}
