@@ -135,6 +135,13 @@ def setup():
     hearth_bounce_ob=bpy.data.objects.new("hearth warm broad bounce",hearth_bounce)
     bpy.context.collection.objects.link(hearth_bounce_ob)
     hearth_bounce_ob.location=(W/2,-530,210)
+    for x,y in ((335,220),(855,210),(335,515),(850,510)):
+        pipe_bounce=bpy.data.lights.new("bay cool fill","AREA")
+        pipe_bounce.energy,pipe_bounce.shape,pipe_bounce.size=42000,"DISK",170
+        pipe_bounce.color=(.21,.65,1.0)
+        pipe_bounce_ob=bpy.data.objects.new("bay cool fill",pipe_bounce)
+        bpy.context.collection.objects.link(pipe_bounce_ob)
+        pipe_bounce_ob.location=(x,-y,150)
     camera_data = bpy.data.cameras.new("source orthographic")
     camera = bpy.data.objects.new("source orthographic", camera_data)
     bpy.context.collection.objects.link(camera)
