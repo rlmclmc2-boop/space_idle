@@ -1,4 +1,0 @@
-probe.gd -text
-probe.log -text
-README.md text eol=lf
-manifest.json text eol=lf
