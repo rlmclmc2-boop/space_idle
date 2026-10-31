@@ -40,35 +40,57 @@ void fragment() {
         action = (mouths*fire*1.7+coil*0.34+shot)*load;
         hue = vec3(1.0,0.55,0.14);
     } else if (module_kind == 1) {
-        // A pressure field grows from the emitter hub to the retaining rim.
-        vec2 d = (q-vec2(0.66,0.39))*vec2(1.0,1.05);
+        // Curved face receives a travelling pressure front and several grazing
+        // reflections. The lens mesh, rather than a full rectangle, clips it.
+        vec2 d = (q-vec2(0.642,0.412))*vec2(1.0,1.06);
         float r = length(d);
         float establish = smoothstep(0.03,0.88,fract(phase*0.18));
-        float front = band(r,0.03+establish*0.21,0.017);
-        float membrane = (1.0-smoothstep(0.03+establish*0.15,0.07+establish*0.16,r))
-                         *establish;
-        material = 0.16+0.35*establish;
-        action = (front*0.85+membrane*0.46)*load;
+        float front_radius = 0.025+establish*0.19;
+        float front = band(r,front_radius,0.012);
+        float grid = band(fract(q.x*13.0+q.y*7.5),0.5,0.055)
+                   + band(fract(q.x*13.0-q.y*7.5),0.5,0.055)
+                   + band(fract(q.y*15.0),0.5,0.045);
+        float lattice = min(grid,1.0)*(1.0-smoothstep(front_radius-0.01,front_radius+0.015,r));
+        float curved = band(d.y+0.42*d.x*d.x, -0.052+establish*0.075,0.012);
+        float glancing = band(d.x-0.33*d.y*d.y,-0.11+establish*0.09,0.009);
+        float lens = surface.a;
+        material = 0.04+0.22*lattice;
+        action = (front*1.15+lattice*0.62+curved*0.36+glancing*0.16)*lens*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
         float pour = 0.25+0.75*smoothstep(0.18,0.43,fract(phase*0.29));
-        float falling = fract(phase*0.72);
-        vec2 throat=vec2(0.52,0.51);
-        vec2 tap=vec2(0.72,0.84);
-        float slot=conduit(q,throat,tap,0.013);
-        float drop=disk(q,mix(throat,tap,falling),vec2(0.019,0.022));
-        material = 0.3+pour*0.85;
-        action = (slot*0.13+drop*0.75)*pour*load;
+        vec2 throat=vec2(0.42,0.64);
+        vec2 tap=vec2(0.63,0.79);
+        float pool=disk(q,vec2(0.42,0.65),vec2(0.105,0.055));
+        float slot=conduit(q,vec2(0.48,0.70),tap,0.010);
+        float drop=0.0;
+        for (int i=0;i<3;i++) {
+            float fall=fract(phase*0.72+float(i)/3.0);
+            drop += disk(q,mix(throat,tap,fall),vec2(0.012,0.017));
+        }
+        float heat_ribbons = 0.5+0.5*sin(q.x*41.0+phase*2.4)*sin(q.y*32.0-phase*3.2);
+        material = 0.07+pour*(0.38+0.85*heat_ribbons);
+        action = (pool*0.20+slot*0.14+drop*0.54)*pour*load;
         hue = vec3(1.0,0.30,0.025);
     } else {
-        // Seed energy climbs inside the vessel and illuminates crystal facets.
+        // Five seed sockets feed a growth front up distinct crystal columns.
         float growth = fract(phase*0.19);
-        float climb = 1.0-smoothstep(growth-0.10,growth+0.06,1.0-q.y);
-        float center = disk(q,vec2(0.66,0.66),vec2(0.20,0.28));
-        float sparkle = pow(max(0.0,cos(q.x*54.0-q.y*31.0+phase*2.0)),26.0);
-        material = 0.10+0.40*climb+0.14*sparkle;
-        action = center*band(q.y,0.85-growth*0.37,0.012)*0.18*load;
+        float front_y = 0.79-growth*0.35;
+        float grown = smoothstep(front_y-0.05,front_y+0.07,q.y);
+        float facets = pow(max(0.0,cos(q.x*62.0-q.y*37.0+phase*1.5)),18.0);
+        float seeds = 0.0;
+        float climbing = 0.0;
+        float feed = 0.0;
+        for (int i=0;i<5;i++) {
+            float column = 0.46+float(i)*0.07;
+            seeds += disk(q,vec2(column,0.77),vec2(0.012,0.015));
+            climbing += band(q.x,column,0.008)*band(q.y,front_y,0.018);
+            feed += band(q.x,column,0.003)*smoothstep(front_y-0.015,front_y+0.015,q.y)
+                    *(1.0-smoothstep(0.77,0.79,q.y));
+        }
+        material = 0.04+1.10*grown+0.25*facets*grown;
+        action = ((seeds*0.28+climbing*0.62)*surface.a+feed*0.30)*load;
         hue = vec3(0.68,0.34,1.0);
     }
     vec3 working = surface.rgb*surface.a*material*load*(module_kind == 3 ? 0.88 : 1.65) + hue*action;

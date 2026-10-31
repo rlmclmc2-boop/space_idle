@@ -58,6 +58,17 @@ def material(name, color, metallic=0.0, roughness=.35, emission=0.0, alpha=1.0):
         bsdf.inputs["Emission Color"].default_value = (*color, 1)
         bsdf.inputs["Emission Strength"].default_value = emission
     if metallic > .3:
+        mottling = mat.node_tree.nodes.new("ShaderNodeTexNoise")
+        mottling.inputs["Scale"].default_value = 7.0
+        mottling.inputs["Detail"].default_value = 4.0
+        mottling.inputs["Roughness"].default_value = .72
+        patina = mat.node_tree.nodes.new("ShaderNodeValToRGB")
+        patina.color_ramp.elements[0].position = .27
+        patina.color_ramp.elements[0].color = (*[max(0.0,c*.67) for c in color],1)
+        patina.color_ramp.elements[1].position = .77
+        patina.color_ramp.elements[1].color = (*[min(1.0,c*1.28) for c in color],1)
+        mat.node_tree.links.new(mottling.outputs["Fac"],patina.inputs["Fac"])
+        mat.node_tree.links.new(patina.outputs["Color"],bsdf.inputs["Base Color"])
         noise = mat.node_tree.nodes.new("ShaderNodeTexNoise")
         noise.inputs["Scale"].default_value = 76.0
         noise.inputs["Detail"].default_value = 2.0
@@ -73,16 +84,19 @@ def setup():
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
     mats = {
-        "steel": material("titanium armor", (.22,.31,.36), .69,.22,.06),
-        "dark": material("recessed gunmetal", (.065,.12,.16), .58,.32,.025),
+        "steel": material("titanium armor", (.22,.31,.36), .57,.34,.035),
+        "dark": material("recessed gunmetal", (.065,.12,.16), .49,.43,.015),
         "black": material("glass interior", (.025,.055,.075), .12,.16,.025),
-        "silver": material("brushed silver edges", (.62,.72,.73), .73,.17,.10),
-        "brass": material("copper brass contacts", (.66,.34,.10), .75,.20,.12),
-        "blue": material("shield blue glass", (.015,.14,.30), .18,.14,.24),
+        "silver": material("brushed silver edges", (.49,.59,.62), .61,.29,.055),
+        "brass": material("copper brass contacts", (.60,.32,.10), .69,.27,.075),
+        "mount": material("cast load bearing iron", (.095,.15,.18), .39,.53,.012),
+        "contact": material("contact shadow iron", (.018,.033,.042), .08,.85),
+        "blue": material("unpowered shield glass", (.006,.045,.11), .25,.16,.035),
         "blue_lit": material("shield field filaments", (.025,.40,.85), .05,.2,1.3),
-        "orange": material("furnace liner", (.42,.15,.035), .25,.3,.22),
+        "orange": material("furnace liner", (.24,.075,.022), .18,.53,.035),
+        "slag": material("unpowered cooled charge", (.16,.075,.038), .12,.63,.012),
         "orange_lit": material("molten charge", (1.0,.28,.025), .04,.22,1.0),
-        "violet": material("crystal glass", (.22,.07,.36), .18,.14,.2),
+        "violet": material("unpowered crystal glass", (.035,.016,.065), .16,.28,.018),
         "violet_lit": material("crystal facet", (.34,.11,.57), .12,.19,.42),
         "violet_glint": material("crystal cleavage glint", (.43,.25,.65), .42,.13,.12),
         "worklamp": material("warm bay service emitter", (1.0,.66,.27), .05,.25,3.0),
@@ -122,7 +136,9 @@ def setup():
     bpy.context.scene.camera = camera
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
-    scene.cycles.samples = 20
+    # This local Blender build lacks OpenImageDenoise; converge the transparent
+    # metal passes directly so the bay does not receive a grainy grey overlay.
+    scene.cycles.samples = 128
     scene.cycles.use_denoising = False
     bpy.context.view_layer.cycles.use_denoising = False
     scene.render.resolution_x, scene.render.resolution_y = W,H
@@ -309,6 +325,34 @@ def foot(name,x,y,w,m):
         disc(name+" deck rivet",bx,y-14,1.6,2,38,m["brass"],10)
 
 
+def wall_mount(name,x,y,side,m):
+    """Two visible load paths from an upper machine into the bay girder."""
+    for sx in (-1,1):
+        px=x+sx*77
+        cast_plate(name+" welded wall web",[(px-22,y-47),(px+22,y-47),
+                   (px+31,y+32),(px-31,y+32)],9,15,m["mount"],4)
+        rod(name+" diagonal compression tie",(px,y-39),(px+sx*26,y+27),8,20,m["steel"],16)
+        cube(name+" girder saddle",px+sx*12,y+31,83,17,22,24,m["mount"],4)
+        cube(name+" saddle edge",px+sx*12,y+23,69,3,3,38,m["silver"],1)
+        for dx in (-25,25):
+            disc(name+" girder through bolt",px+sx*12+dx,y+31,4.5,4,39,m["brass"],12)
+    cube(name+" wall root",x+side*111,y-17,32,86,22,12,m["mount"],5)
+
+
+def deck_contact(name,x,y,w,m):
+    """A dark bearing footprint, bolted shoe and rear gussets at floor level."""
+    for sx in (-1,1):
+        px=x+sx*w*.40
+        cast_plate(name+" contact footprint",[(px-31,y-7),(px+31,y-7),
+                   (px+35,y+15),(px-35,y+15)],5,6,m["mount"],3)
+        cast_plate(name+" floor gusset",[(px-18,y-43),(px+18,y-43),
+                   (px+30,y+4),(px-30,y+4)],14,12,m["mount"],3)
+        cube(name+" bolted shoe",px,y+7,62,20,20,22,m["dark"],4)
+        cube(name+" shoe machined lip",px,y-2,54,3,4,37,m["silver"],1)
+        for dx in (-21,21):
+            disc(name+" anchor bolt",px+dx,y+9,4,4,36,m["brass"],12)
+
+
 def corner_fasteners(name,x,y,w,h,z,m):
     for sx in (-1,1):
         for sy in (-1,1):
@@ -324,6 +368,7 @@ def tubing(name,points,r,z,m):
 
 
 def weapon(spec,m):
+    wall_mount("weapon",176,303,-1,m)
     foot("weapon",176,316,244,m)
     for yy in (267,312):
         rod("weapon wall bearing",(51,yy),(118,yy+13),13,18,m["steel"])
@@ -377,6 +422,7 @@ def weapon(spec,m):
 
 
 def defence(spec,m):
+    wall_mount("shield",1030,291,1,m)
     foot("shield",1030,288,224,m)
     for yy in (258,307):
         rod("shield wall bearing",(1085,yy),(1140,yy-10),13,18,m["steel"])
@@ -390,7 +436,17 @@ def defence(spec,m):
     rod("field transmission",(969,196),(1030,172),35,18,m["dark"])
     disc("field emitter barrel",1050,172,75,18,43,m["dark"])
     disc("recessed dielectric well",1050,172,68,4,53,m["black"])
-    convex_lens("convex glass force face",1050,172,57,53,m["blue"])
+    convex_lens("convex glass force face",1050,172,57,53,m["blue_lit"])
+    for j in range(8):
+        x0=-39+j*9.5
+        x1=x0+8.2
+        rod("lens grazing upper reflection",(1050+x0,148+0.012*x0*x0),
+            (1050+x1,148+0.012*x1*x1),1.1,69,m["silver"],8)
+    for j in range(6):
+        x0=-30+j*9.5
+        x1=x0+7.2
+        rod("lens lower curvature etch",(1050+x0,191-0.006*x0*x0),
+            (1050+x1,191-0.006*x1*x1),0.8,67,m["steel"],8)
     for i in range(12):
         a=i*math.tau/12
         r=58
@@ -425,6 +481,7 @@ def defence(spec,m):
 
 
 def smelting(spec,m):
+    deck_contact("furnace",201,689,254,m)
     foot("furnace",201,633,280,m)
     for sx in (-1,1):
         x=201+sx*107
@@ -455,26 +512,32 @@ def smelting(spec,m):
         cube("furnace jacket service panel",x,531,25,84,5,62,m["dark"],4)
         for y in (508,525,542,559):
             cube("furnace jacket louver",x,y,16,4,4,67,m["silver"],1)
-    cube("molten aperture",179,532,84,76,5,71,m["black"],6)
-    cube("firebrick throat",179,536,56,57,6,78,m["orange"],5)
-    cube("recessed tap well",179,541,38,33,5,84,m["black"],6)
-    for i,(xx,yy,rr) in enumerate(((169,545,9),(181,540,10),(190,547,7),(175,553,9))):
-        disc("moving melt pool %d"%i,xx,yy,rr,3,88,m["orange_lit"],20)
+    cube("molten aperture",179,532,112,90,5,71,m["black"],6)
+    cube("firebrick throat",179,536,84,68,6,78,m["orange"],5)
+    cube("recessed tap well",179,541,62,48,5,84,m["black"],6)
+    for sx in (-1,1):
+        cast_plate("refractory channel bank",[(179+sx*7,514),(179+sx*26,520),
+                   (179+sx*21,555),(179+sx*4,557)],85,5,m["orange"],2)
+        rod("molten channel rail",(179+sx*18,522),(179+sx*15,554),2,90,m["brass"],12)
+    cast_plate("molten charge surface",[(148,550),(157,539),(173,534),(186,536),
+               (198,543),(209,553),(195,558),(180,554),(165,561)],88,4,m["orange_lit"],2)
+    for i,(a,b) in enumerate(((((155,548),(177,543))),(((179,550),(202,550))))):
+        rod("separate molten fold %d"%i,a,b,2.5,92,m["orange_lit"],10)
     rod("furnace pour seam",(181,553),(197,574),4,88,m["orange_lit"],12)
     for sx in (-1,1):
-        cube("refractory throat jamb",179+sx*40,536,14,76,13,86,m["silver"],3)
-        cube("jamb black heat slot",179+sx*40,535,4,57,3,94,m["dark"],1)
+        cube("refractory throat jamb",179+sx*53,536,14,87,13,86,m["silver"],3)
+        cube("jamb black heat slot",179+sx*53,535,4,66,3,94,m["dark"],1)
     for yy in (500,518,554,572):
-        cube("cast refractory course",179,yy,84,7,8,88,m["steel"],2)
+        cube("cast refractory course",179,yy,110,7,8,88,m["steel"],2)
     for y in (510,523,547,560):
-        cube("refractory courses",179,y,76,2,2,83,m["brass"],1)
+        cube("refractory courses",179,y,102,2,2,83,m["brass"],1)
     corner_fasteners("heat jacket",177,517,182,176,64,m)
-    cube("throat crown",179,493,104,10,10,83,m["silver"],3)
-    cube("throat sill",179,572,104,9,9,83,m["brass"],3)
+    cube("throat crown",179,487,136,10,10,83,m["silver"],3)
+    cube("throat sill",179,580,136,9,9,83,m["brass"],3)
     rod("exhaust riser",(104,487),(104,412),16,36,m["dark"])
     rod("exhaust ferrule",(104,419),(104,405),19,39,m["silver"])
     rod("molten delivery",(196,569),(282,617),13,39,m["dark"])
-    rod("molten slot",(196,569),(282,617),6,49,m["orange"])
+    rod("molten slot",(196,569),(239,592),5,49,m["orange_lit"])
     tubing("left cooling coil",[(88,534),(74,534),(70,581),(82,603)],5,44,m["brass"])
     tubing("right pressure return",[(254,463),(284,466),(299,488),(298,520)],5,45,m["dark"])
     for x in (106,145,217,251):
@@ -485,6 +548,7 @@ def smelting(spec,m):
 
 
 def condensation(spec,m):
+    deck_contact("crystal",1003,690,226,m)
     foot("crystal",1003,626,242,m)
     for sx in (-1,1):
         x=1003+sx*93
@@ -558,8 +622,9 @@ def run():
         for ob,slots in original_slots.items():
             for i,mat in enumerate(slots):
                 if mat == mats["blue_lit"]: ob.material_slots[i].material=mats["blue"]
-                if mat == mats["orange_lit"]: ob.material_slots[i].material=mats["orange"]
+                if mat == mats["orange_lit"]: ob.material_slots[i].material=mats["slag"]
                 if mat == mats["violet_lit"]: ob.material_slots[i].material=mats["violet"]
+                if mat == mats["violet_glint"]: ob.material_slots[i].material=mats["violet"]
         bpy.context.scene.render.filepath=str(BUILD / ("r6-"+name+"-full.png"))
         bpy.ops.render.render(write_still=True)
         for ob,slots in original_slots.items():
