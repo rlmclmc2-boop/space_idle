@@ -35,7 +35,7 @@ var _station_body_sprite: Sprite3D
 var _refinery_shutter_sprites: Dictionary = {}
 var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
-var _workshop_depth_materials: Array[ShaderMaterial] = []
+var _orbital_depth_materials: Array[ShaderMaterial] = []
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -99,7 +99,7 @@ func _ready() -> void:
 		_parts[kind] = moving
 		if kind == "auto_explore": _install_station_illustration(model, moving)
 		if kind == "equipment": _workshop_arm_base_y = (moving["ToolArmSweep"] as Node3D).position.y
-		if kind == "equipment": _depth_clip_workshop(model)
+		if kind in ["equipment", "shipyard"]: _depth_clip_orbital_model(model)
 		if kind == "refinery": _install_refinery_illustration(model, moving)
 		if kind not in ["shipyard", "equipment"]: _transparent_materials(model)
 		model.visible = false
@@ -198,7 +198,7 @@ func _hide_imported_meshes(node: Node) -> void:
 	if node is MeshInstance3D: node.visible = false
 	for child in node.get_children(): _hide_imported_meshes(child)
 
-func _depth_clip_workshop(node: Node) -> void:
+func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned
 	# ring. A transparent depth mask cannot hide an already drawn opaque GLB.
 	if node is MeshInstance3D and node.mesh != null:
@@ -210,8 +210,8 @@ func _depth_clip_workshop(node: Node) -> void:
 			material.set_shader_parameter("tint", original.albedo_color)
 			material.set_shader_parameter("luminous", original.emission_enabled)
 			node.set_surface_override_material(index, material)
-			_workshop_depth_materials.append(material)
-	for child in node.get_children(): _depth_clip_workshop(child)
+			_orbital_depth_materials.append(material)
+	for child in node.get_children(): _depth_clip_orbital_model(child)
 
 func _transparent_materials(node: Node) -> void:
 	if node is MeshInstance3D and node.mesh != null:
@@ -273,7 +273,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	var globe_scale := _body_pixels / _render_pixels()
 	_occluder.scale = Vector3(globe_scale * pulse, _axis_ratio * globe_scale * pulse, globe_scale * pulse)
 	_spine.set_body_scale(_occluder.scale)
-	for material in _workshop_depth_materials:
+	for material in _orbital_depth_materials:
 		material.set_shader_parameter("body_scale", _occluder.scale)
 	_spine.update_pose(clock)
 	for kind in _owned:

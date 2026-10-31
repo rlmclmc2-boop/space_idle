@@ -110,6 +110,25 @@ def hull(name, rings, mat, parent):
     return finish(obj, name, mat, parent, 0.035)
 
 
+def craft_hull(name, stations, mat, parent):
+    """Closed chamfered craft shell along the actual launch direction (X)."""
+    vertices = []
+    for x, cy, cz, hy, hz in stations:
+        for u, v in ((-1,-.72),(-.72,-1),(.72,-1),(1,-.72),(1,.72),(.72,1),(-.72,1),(-1,.72)):
+            vertices.append((x, cy+u*hy, cz+v*hz))
+    faces = [tuple(reversed(range(8)))]
+    for k in range(len(stations)-1):
+        for n in range(8):
+            faces.append((k*8+n,k*8+(n+1)%8,(k+1)*8+(n+1)%8,(k+1)*8+n))
+    faces.append(tuple((len(stations)-1)*8+n for n in range(8)))
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    return finish(obj, name, mat, parent, 0.022)
+
+
 root = node("Facility")
 # Owned ring deck passes inside the root. The spine load path remains visible
 # through the two short ends, while the central bay is deliberately open.
@@ -200,19 +219,33 @@ for side, length, level in ((-1,2.02,.45),(1,1.75,.92)):
     strut("Ochre berth load truss", (.18,y,level-.25), (tip+.22,y,level-.26), .16, orange, root)
     box("Cantilever triangular underbrace", (-.70,y,level-.24), (.83,.30,.24), mid, root, .045)
 
-# The craft stays physically within the lower open berth.
+# One readable shuttle sits inside the lower open berth. The pointed nose,
+# large glass canopy and twin cyan exhausts are actual geometry at orbital
+# depth, not a camera-facing billboard or another independently orbiting icon.
 craft = node("Docked small craft", root)
-craft.location.y = .57
-craft.location.z = .23
-craft_shell = hull("Craft tapered hull", [(.51,.52,.18,-1.51),(.68,.58,.20,-1.47),(.79,.38,.15,-1.49),(.85,.12,.08,-1.67)], blue, craft)
-craft_shell.location.y = -.57
-box("Craft ivory dorsal spine", (-1.52,-.57,.82), (.82,.13,.055), ivory, craft, .025)
-box("Craft dark belly", (-1.45,-.57,.48), (1.02,.30,.12), navy, craft, .04)
-box("Craft cockpit", (-1.64,-.57,.81), (.38,.24,.065), glass, craft, .025)
+craft_hull("Ivory shuttle pressure shell", [
+    (-2.42,-.57,.79,.06,.06),(-2.23,-.57,.78,.17,.11),
+    (-1.91,-.57,.79,.26,.18),(-1.25,-.57,.80,.27,.19),
+    (-.86,-.57,.77,.19,.14),
+], ivory, craft)
+craft_hull("Deep blue shuttle belly", [
+    (-2.25,-.57,.64,.14,.07),(-1.76,-.57,.63,.27,.09),
+    (-1.00,-.57,.63,.24,.09),(-.84,-.57,.65,.13,.06),
+], navy, craft)
+craft_hull("Faceted blue cockpit canopy", [
+    (-2.17,-.57,.90,.10,.04),(-1.97,-.57,.94,.17,.09),
+    (-1.60,-.57,.94,.19,.09),(-1.47,-.57,.92,.12,.05),
+], glass, craft)
+box("Shuttle ivory rear armor", (-1.10,-.57,.99), (.42,.37,.09), ivory, craft, .035)
 for side in (-1,1):
-    box("Craft swept short wing", (-1.22,-.57+side*.22,.62), (.53,.23,.07), edge, craft, .034)
-    cylinder("Craft aft cyan thruster", (-.94,-.57+side*.11,.55), .065,.09, cyan, craft,
-             rot=(0, math.pi/2, 0), vertices=12)
+    y = -.57 + side*.28
+    craft_hull("Shuttle swept ivory wing", [
+        (-1.81,y,.72,.08,.055),(-1.48,y+side*.08,.73,.17,.08),
+        (-1.03,y+side*.05,.72,.14,.06),
+    ], ivory, craft)
+    box("Blue engine fairing", (-.91,-.57+side*.20,.76), (.28,.19,.20), blue, craft, .04)
+    box("Cyan rear nozzle", (-.745,-.57+side*.20,.76), (.03,.13,.13), cyan, craft, .008)
+    box("Warm docked status", (-1.36,-.57+side*.28,.78), (.10,.04,.09), amber, craft, .014)
 
 # Existing runtime animation names are preserved; no new clock or business path.
 crane = node("CraneSlide", root)
