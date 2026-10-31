@@ -340,7 +340,7 @@ func _build() -> void:
 		effect.add_theme_color_override("font_color", Color("e5edf0"))
 		_rows[id] = {"effect":effect, "name":name, "slider":slider, "track":track_visual, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
 		for control in _rows[id].values(): control.visible = false
-	_equal = _button("均分", Rect2(655, 560, 94, 36), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
+	_equal = _button("均分", Rect2(670, 565, 60, 26), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)), true)
 	_equal.tooltip_text = "均分供能"
 	_upgrade_heading = _label(Vector2(612, 630), 74, 20)
 	_upgrade_heading.text = "等级"
@@ -353,7 +353,7 @@ func _build() -> void:
 	_cost = _label(Vector2(612, 688), 68, 17)
 	_cost.add_theme_color_override("font_color", Color("f4f0dc"))
 	_cost_badge = Panel.new()
-	_cost_badge.position = Vector2(658, 686)
+	_cost_badge.position = Vector2(612, 686)
 	_cost_badge.size = Vector2(26, 27)
 	_cost_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_style := StyleBoxFlat.new()
@@ -368,7 +368,7 @@ func _build() -> void:
 	_cost_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_cost_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cost_badge.add_child(_cost_icon)
-	_cost_details = _label(Vector2(688, 688), 72, 17)
+	_cost_details = _label(Vector2(642, 688), 118, 17)
 	_cost_details.add_theme_font_size_override("font_size", 16)
 	_cost_details.add_theme_color_override("font_color", Color("f4f0dc"))
 	_quantity = _button("×1", Rect2(611, 741, 76, 51), _cycle_quantity)
@@ -394,8 +394,9 @@ func _select_quantity(count: int, maximum: bool) -> void:
 	_cost_badge.visible = false
 	_cost.size.x = 335
 	_cost.position.y = 688
-	_cost_badge.position.y = 686
+	_cost_badge.position = Vector2(612, 686)
 	_cost_details.position.y = 688
+	_cost_details.position.x = 642
 	_purchase.text = "升级"
 	_quantity.text = "MAX" if maximum else "×" + str(count)
 	_update_buttons()
@@ -459,7 +460,8 @@ func _set_running(running: bool) -> void:
 		_rows[id].slider.editable = running and bool(_model.get("can_allocate", false))
 
 func _update_buttons() -> void:
-	var purchase_disabled: bool = not _running or _model.is_empty() or not bool(_quote.get("can_purchase", false))
+	var budget_rejection: bool = str(_quote.get("reason", "")) in ["InsufficientResources", "InsufficientFunds"]
+	var purchase_disabled: bool = not _running or _model.is_empty() or (_quote.is_empty() or (not bool(_quote.get("can_purchase", false)) and not budget_rejection))
 	var equal_disabled: bool = not _running or _ids.is_empty() or not bool(_model.get("can_allocate", false))
 	if _purchase.disabled != purchase_disabled: _purchase.disabled = purchase_disabled
 	if _equal.disabled != equal_disabled: _equal.disabled = equal_disabled
@@ -589,10 +591,11 @@ func _refresh_quote() -> void:
 	_quote_dirty = false
 	_cost_details.text = ""
 	_cost_badge.visible = false
-	_cost.size.x = 335
+	_cost.size.x = 148
 	_cost.position.y = 688
-	_cost_badge.position.y = 686
+	_cost_badge.position = Vector2(612, 686)
 	_cost_details.position.y = 688
+	_cost_details.position.x = 642
 	_cost.add_theme_color_override("font_color",Color("f4f0dc"))
 	_cost.add_theme_font_override("font",_ui_font_bold)
 	_cost_details.add_theme_color_override("font_color",Color("f4f0dc"))
@@ -631,38 +634,25 @@ func _refresh_quote() -> void:
 			_update_buttons()
 			return
 		labels.append(PlayerText.number(str(quote.costs[id])) + " " + PlayerText.resource(str(id)))
-	var cost_text: String = " + ".join(labels)
-	var mode_text := "MAX 可购 " + str(quote.count) + " 级" if _purchase_max else "×" + str(_purchase_count)
 	var affordable: bool = bool(quote.can_purchase)
 	var reason: String = str(quote.get("reason", ""))
-	var failure_text: String = "资金不足" if reason in ["InsufficientResources", "InsufficientFunds"] else str(ERRORS.get(reason, PlayerText.error(reason))) if not reason.is_empty() else "不可购买"
 	if labels.is_empty():
-		# The MAX button already names the mode; keep the empty quote and reason in separate cells.
-		_cost.text = ("可购" + str(quote.count)) if _purchase_max else mode_text
-		_cost.size.x = 68
-		_cost_details.text = failure_text
-		_cost_details.position.x = 690
-		_cost_details.add_theme_color_override("font_color",Color("efab7c"))
-		_cost_details.add_theme_font_override("font",_ui_font_medium)
+		# A zero MAX quote has no priced resource to mark; rejection appears on click.
+		_cost.text = "—"
 	else:
-		_cost.text = ("可购" + str(quote.count)) if affordable and _purchase_max else "费用" if affordable else failure_text
-		_cost_details.text = cost_text
-		if not affordable or _purchase_max:
-			_cost.size.x = 120
-			_cost.position.y = 669
-			_cost_badge.position.y = 700
-			_cost_details.position.y = 702
-		if not affordable:
-			_cost.add_theme_color_override("font_color",Color("efab7c"))
-			_cost.add_theme_font_override("font",_ui_font_medium)
+		_cost.text = ""
+		_cost_details.text = " + ".join(labels)
+		# The current Reactor quote contains one uranium resource; its affordability
+		# is therefore the quote's affordability, with no Amount string round-trip.
+		var poor: bool = not affordable and reason in ["InsufficientResources", "InsufficientFunds"]
+		_cost_details.add_theme_color_override("font_color",Color("e44b3a") if poor else Color("f4f0dc"))
 		if quote.costs.size() == 1:
 			var resource_id: String = str(quote.costs.keys()[0])
 			_cost_icon.texture = ResourceVisuals.icon(resource_id)
 			_cost_icon.modulate = ResourceVisuals.icon_modulate(resource_id)
 			_cost_badge.visible = _cost_icon.texture != null
-		_cost_badge.position.x = 658
-		_cost_details.position.x = 688 if _cost_badge.visible else 658
-	_cost.tooltip_text = _cost.text + " " + _cost_details.text
+		_cost_details.position.x = 642 if _cost_badge.visible else 612
+	_cost.tooltip_text = "升级费用 " + _cost_details.text
 	_cost_details.tooltip_text = _cost.tooltip_text
 	var exact_costs: Array = []
 	for id in quote.costs: exact_costs.append(str(quote.costs[id]) + " " + PlayerText.resource(str(id)))
@@ -723,7 +713,7 @@ func _command(action: Callable, quote_may_change: bool = false) -> void:
 
 func _error(result: Dictionary) -> void:
 	var reason: String = str(result.get("reason",result.get("error","")))
-	var message: String = str(result.get("message",ERRORS.get(reason,EconomyView.describe_error(reason))))
+	var message: String = "资源不足" if reason in ["InsufficientResources", "InsufficientFunds"] else str(result.get("message",ERRORS.get(reason,EconomyView.describe_error(reason))))
 	_set_notice(message if not message.is_empty() else "分配未生效，请重试",true)
 	_message_until = Time.get_ticks_msec() + 2200
 
