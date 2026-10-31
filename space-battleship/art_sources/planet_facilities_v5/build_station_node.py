@@ -246,14 +246,14 @@ loft("Station elevated command hull", [
 ], navy, root)
 # The real load walls carry a broad, shallow command pressure saucer. Its
 # annular edge links the observation crown to those walls without a loose pod.
-cylinder("Command load saucer", (0,0,1.44), 1.04,.18, blue, root, 48)
-bpy.ops.mesh.primitive_torus_add(major_radius=1.00, minor_radius=.055,
+cylinder("Command load saucer", (0,0,1.44), .95,.18, blue, root, 24)
+bpy.ops.mesh.primitive_torus_add(major_radius=.92, minor_radius=.055,
                                 major_segments=48, minor_segments=8,
                                 location=(0,0,1.43))
 finish(bpy.context.object, "Command saucer ivory pressure seam", ivory, root, 0)
 for angle_index in range(8):
     a=angle_index*math.tau/8
-    box("Saucer amber service port", (.99*math.cos(a),.99*math.sin(a),1.49),
+    box("Saucer amber service port", (.91*math.cos(a),.91*math.sin(a),1.49),
         (.08,.08,.045), amber, root, .007)
 box("Command deck crown armor", (0,0,1.78), (.92,1.15,.16), ivory, root, .055)
 for x in (-.36,0,.36):
