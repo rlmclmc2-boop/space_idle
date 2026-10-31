@@ -17,7 +17,6 @@ var _session
 var _font_regular: FontVariation
 var _font_medium: FontVariation
 var _font_strong: FontVariation
-var _face_texture: Texture2D
 var _catalog: Dictionary
 var _weapon_meta: Dictionary
 var _textures: Dictionary = {}
@@ -72,14 +71,6 @@ func _init(session) -> void:
     _font_medium = FontVariation.new(); _font_medium.base_font=font; _font_medium.variation_opentype={2003265652:500.0}
     _font_strong = FontVariation.new(); _font_strong.base_font=font; _font_strong.variation_opentype={2003265652:600.0}
     theme=Theme.new();theme.default_font=_font_regular;theme.default_font_size=15
-    var image: Image=load("res://assets/ui/equipment/materials-20261029/control-materials.png").get_image().get_region(Rect2i(120,800,1200,130))
-    image.resize(298,64,Image.INTERPOLATE_LANCZOS)
-    for y in image.get_height():
-        for x in image.get_width():
-            var pixel: Color=image.get_pixel(x,y)
-            var light: float=clampf(.44+1.6*(pixel.r*.2126+pixel.g*.7152+pixel.b*.0722),.71,.94)
-            image.set_pixel(x,y,Color(light,light,light,pixel.a))
-    _face_texture=ImageTexture.create_from_image(image)
     _catalog=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/ships/manifest.json")).hulls
     _weapon_meta=JSON.parse_string(FileAccess.get_file_as_string("res://assets/weapons/fleet_20261019/manifest.json")).weapons
     for key in _catalog: _hulls[key]=load(str(_catalog[key].texture))
@@ -100,125 +91,15 @@ func _init(session) -> void:
     _session.campaign_system.ship_changed.connect(func():_structure_dirty=true)
     _session.economy.display_changed.connect(_economy_changed)
 
-class EquipmentSurface extends StyleBox:
-    var texture:Texture2D
-    var tone:Color=Color.WHITE
-    var profile:String
-    var depressed:bool=false
-    var quiet:bool=false
-    var disabled:bool=false
-    func _draw(canvas:RID,r:Rect2)->void:
-        if quiet:return
-        var focus:bool=profile.begins_with("focus_")
-        var form:String=profile.trim_prefix("focus_") if focus else profile
-        var face:Rect2=r.grow(-3)
-        if form=="tray" or form=="candidate":face=Rect2(r.position+Vector2(8,4),Vector2(r.size.x-16,r.size.y-48.0))
-        elif form=="index":face=r.grow(-1)
-        elif form in ["backing","locator"]:face=r
-        if depressed:face.position.y+=1;face.size.y-=1
-        var cut:float=minf(CONTROL_CUT,minf(face.size.x,face.size.y)*0.25)
-        var points:=PackedVector2Array([
-            face.position+Vector2(cut,0),Vector2(face.end.x-cut,face.position.y),
-            Vector2(face.end.x,face.position.y+cut),face.end-Vector2(0,cut),
-            face.end-Vector2(cut,0),Vector2(face.position.x+cut,face.end.y),
-            Vector2(face.position.x,face.end.y-cut),face.position+Vector2(0,cut)])
-        if form=="header":
-            face=Rect2(r.position+Vector2(12,14),Vector2(r.size.x-24,26))
-            points=PackedVector2Array([r.position+Vector2(32,14),r.position+Vector2(r.size.x-32,14),r.position+Vector2(r.size.x-12,32),r.position+Vector2(r.size.x-12,40),r.position+Vector2(12,40),r.position+Vector2(12,32)])
-        var outline:=points.duplicate();outline.append(points[0])
-        if focus:
-            RenderingServer.canvas_item_add_polyline(canvas,outline,PackedColorArray([CONTROL_FOCUS]),1.5,true)
-            return
-        # One coated-metal cross section: a small light-facing shoulder, a broad
-        # matte face and a down-facing return. Keys stand off the deck; readouts
-        # sit in it, so the same light gives opposite contact-edge emphasis.
-        var key:bool=form=="button"
-        var recessed:bool=form in ["instrument","tray","candidate"]
-        if form not in ["header","backing"]:
-            var shadow:=points.duplicate()
-            for i in shadow.size():shadow[i]+=Vector2(0,3 if key and not depressed else 1)
-            RenderingServer.canvas_item_add_polygon(canvas,shadow,PackedColorArray([Color(0.045,0.085,0.095,0.36 if key else 0.22)]))
-        if form=="header":
-            var uv:=PackedVector2Array()
-            for point in points:uv.append((point-face.position)/face.size)
-            RenderingServer.canvas_item_add_polygon(canvas,points,PackedColorArray([tone]),uv,texture.get_rid())
-        else:
-            # The illumination is independent of texture stretch and screen height.
-            # No white reflection is baked across the top of a short tray.
-            var shoulder:float=minf(3.0,face.size.y*0.10)/face.size.y
-            var return_edge:float=minf(3.0 if key else 1.5,face.size.y*0.10)/face.size.y
-            var bands:Array=[0.0,shoulder,0.36,0.78,1.0-return_edge,1.0]
-            var shades:Array=[0.90,1.10,1.02,0.97,0.91,0.66] if key else [0.78,0.97,1.0,0.97,0.94,0.84]
-            if disabled:shades=[0.88,0.94,0.94,0.93,0.91,0.77]
-            if depressed:shades=[0.72,0.89,0.93,0.94,0.91,0.83]
-            for band in range(bands.size()-1):
-                var top:float=bands[band]*face.size.y
-                var bottom:float=bands[band+1]*face.size.y
-                var inset_top:float=maxf(0.0,cut-minf(top,face.size.y-top))
-                var inset_bottom:float=maxf(0.0,cut-minf(bottom,face.size.y-bottom))
-                var section:=PackedVector2Array([face.position+Vector2(inset_top,top),face.position+Vector2(face.size.x-inset_top,top),face.position+Vector2(face.size.x-inset_bottom,bottom),face.position+Vector2(inset_bottom,bottom)])
-                var uv:=PackedVector2Array()
-                for point in section:uv.append((point-face.position)/face.size)
-                var upper:=Color(tone.r*shades[band],tone.g*shades[band],tone.b*shades[band],tone.a)
-                var lower:=Color(tone.r*shades[band+1],tone.g*shades[band+1],tone.b*shades[band+1],tone.a)
-                RenderingServer.canvas_item_add_polygon(canvas,section,PackedColorArray([upper,upper,lower,lower]),uv,texture.get_rid())
-        if form=="backing":return
-        var edge:=Color(0.10,0.19,0.22,0.34 if disabled else 0.56)
-        RenderingServer.canvas_item_add_polyline(canvas,outline,PackedColorArray([edge]),1.0,true)
-        if not disabled:
-            var lit_edge:=PackedVector2Array([points[3],points[4],points[5],points[6]]) if recessed else PackedVector2Array([points[-1],points[0],points[1],points[2]])
-            RenderingServer.canvas_item_add_polyline(canvas,lit_edge,PackedColorArray([Color(0.86,0.88,0.77,0.28 if recessed else 0.36)]),1.0,true)
-
-func _surface_material(kind:String, modulation:Color=Color.WHITE, profile:String="flat", depressed:bool=false) -> StyleBox:
-    var material:=EquipmentSurface.new()
-    material.texture=_face_texture;material.profile=profile;material.depressed=depressed
-    var tones:Dictionary={"glass":Color(0.91,0.95,0.91),"enamel":Color(0.91,0.95,0.91),"teal":Color(0.68,0.90,0.81),"selected_dark":Color(0.29,0.53,0.54),"navy_face":Color(0.28,0.42,0.48),"navy":Color("304d57"),"primary":Color("52695f"),"disabled":Color("253d47"),"quiet":Color(0.31,0.46,0.53)}
-    material.tone=tones.get(kind,Color.WHITE)*modulation
-    material.quiet=kind=="clear";material.disabled=kind=="disabled"
-    material.content_margin_left=8;material.content_margin_right=8
-    material.content_margin_top=(6 if depressed else 4) if profile=="button" else 5
-    material.content_margin_bottom=(4 if depressed else 6) if profile=="button" else 5
-    return material
-
-
-func _prepare_button_material(button: Button, form: String, compact_card: bool=false) -> void:
-    # Cache only the materials this control uses; no discarded old-frame styles.
-    var variants:Array=[]
-    var focus_material:=_surface_material("navy",Color.WHITE,"focus_"+form)
+func _operation_button(button: Button, role: String="button", compact_card: bool=false, selected: bool=false) -> void:
+    BridgeTheme.apply_operation_button(button,"commit" if role=="primary" else "secondary",8,selected)
+    # Module typography and26px card controls retain their validated geometry.
+    button.add_theme_font_override("font",_font_strong)
     if compact_card:
-        focus_material.content_margin_top=1;focus_material.content_margin_bottom=1
-    for selected in ([false,true] if form in ["candidate","index"] else [false]):
-        var states:Dictionary={}
-        for state in ["normal","hover","pressed","disabled","focus"]:
-            if state=="focus":
-                states[state]=focus_material
-            else:
-                var tint:=Color(1.06,1.07,1.06) if state=="hover" else Color(0.88,0.90,0.91) if state=="pressed" else Color.WHITE
-                var kind:String="disabled" if state=="disabled" else "primary" if form=="primary" else "teal" if form=="candidate" and selected else "enamel" if form=="candidate" else "selected_dark" if form=="index" and selected else "navy"
-                if form in ["quiet","index"] and not selected:
-                    if state=="normal":kind="clear"
-                    elif state!="disabled":tint.a=0.65
-                var section:String="tray" if form=="candidate" else "index" if form=="index" else "button"
-                var surface:=_surface_material(kind,tint,section,state=="pressed")
-                if compact_card:
-                    surface.content_margin_top=1;surface.content_margin_bottom=1
-                states[state]=surface
-        variants.append(states)
-    button.set_meta("material_variants",variants)
-    button.set_meta("material_chosen",null)
-    button.set_meta("material_role",form)
-    _button_tint(button,false)
-
-func _button_tint(button: Button, chosen: bool) -> void:
-    if button.has_meta("material_chosen") and button.get_meta("material_chosen")==chosen:return
-    button.set_meta("material_chosen",chosen)
-    var states: Dictionary=button.get_meta("material_variants")[1 if chosen else 0]
-    for state in states:button.add_theme_stylebox_override(state,states[state])
-    var quiet:bool=button.get_meta("material_role","")=="quiet"
-    var ink:Color=LIGHT if quiet else CREAM
-    for state in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]:button.add_theme_color_override(state,ink)
-    button.add_theme_color_override("font_disabled_color",CONTROL_DISABLED_INK)
-
+        for state in BridgeTheme.PUBLIC_STATES:
+            var surface: StyleBox=button.get_theme_stylebox(state).duplicate()
+            surface.content_margin_top=1;surface.content_margin_bottom=1
+            button.add_theme_stylebox_override(state,surface)
 
 func _style(fill: Color, edge: Color, thickness: int=1) -> StyleBoxFlat:
     var style=StyleBoxFlat.new();style.bg_color=fill;style.border_color=edge
@@ -235,7 +116,7 @@ func _label(parent: Control, value: String, rect: Rect2, font_size: int=15, colo
 func _button(parent: Control, value: String, rect: Rect2, action: Callable, role: String="button", compact_card: bool=false) -> Button:
     var button=Button.new();button.text=value;button.position=rect.position;button.size=rect.size
     button.add_theme_font_override("font",_font_strong);button.add_theme_font_size_override("font_size",14)
-    _prepare_button_material(button,role,compact_card)
+    _operation_button(button,role,compact_card)
     button.size=rect.size
     parent.add_child(button)
     if compact_card:button.set_deferred("size",rect.size)
@@ -330,13 +211,13 @@ func _create_card(id: String) -> void:
     var icon=_icon(panel,"",Rect2(8,18,44,54))
     var select=_button(panel,"",Rect2(60,6,216,26),_open_choices.bind(id),"button",true)
     select.alignment=HORIZONTAL_ALIGNMENT_LEFT;select.clip_text=true
-    for state in ["normal","hover","pressed","disabled"]:
-        var name_surface=_style(Color("dae3da") if state=="normal" else Color("e2e9dd"),Color("91aaa2"))
-        name_surface.content_margin_top=0;name_surface.content_margin_bottom=0
-        select.add_theme_stylebox_override(state,name_surface)
-    select.add_theme_stylebox_override("focus",_style(Color(0,0,0,0),CONTROL_FOCUS,2))
-    for key in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]:select.add_theme_color_override(key,INK)
-    var arrow=Polygon2D.new();arrow.polygon=PackedVector2Array([Vector2(200,10),Vector2(208,10),Vector2(204,15)]);arrow.color=Color("326272");select.add_child(arrow)
+    _operation_button(select,"button",true,true)
+    # This picker is a Button opening the existing Owner-backed choice popup,
+    # so consume the shared selected face and the same arrow without changing it
+    # into an unrelated OptionButton selection/confirmation flow.
+    var arrow=TextureRect.new();arrow.texture=preload("res://assets/ui/public_shell/stepper-down.svg")
+    arrow.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;arrow.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    arrow.mouse_filter=Control.MOUSE_FILTER_IGNORE;select.add_child(arrow);arrow.position=Vector2(198,7);arrow.size=Vector2(14,12)
     select.add_theme_font_size_override("font_size",16)
     select.size=Vector2(216,26)
     var level=_label(panel,"",Rect2(292,6,72,26),14,Color("49636c"))
@@ -472,7 +353,9 @@ func _card_border(id: String) -> void:
     var chosen: bool=id==_selected
     if _cards[id].border_selected==chosen:return
     _cards[id].border_selected=chosen
-    _cards[id].panel.add_theme_stylebox_override("panel",_style(Color("d2ddd3") if chosen else Color("dce2d7"),Color("397c85") if chosen else Color("65858a"),2 if chosen else 1))
+    var face: StyleBox=BridgeTheme.operation_plate(8)
+    face.state="selected" if chosen else "normal"
+    _cards[id].panel.add_theme_stylebox_override("panel",face)
 
 func _select_visual(id: String) -> void:
     if _selected==id:return
@@ -549,7 +432,9 @@ func _open_choices(id: String) -> void:
         var choice=_button(panel,"",Rect2(8,y,268,84),_equip_choice.bind(id,key))
         choice.set_meta("equipment_id",key)
         for state in ["normal","hover","pressed","disabled"]:
-            choice.add_theme_stylebox_override(state,_style(Color("e0e8de") if current else Color("f1efdf"),Color("aac1b8")))
+            var face: StyleBox=BridgeTheme.operation_plate(8)
+            face.state="selected" if current else state
+            choice.add_theme_stylebox_override(state,face)
         _icon(choice,key,Rect2(10,15,42,54))
         _label(choice,str(NAMES.get(key,option.name)),Rect2(64,6,194,27),18,INK,600)
         if current:_label(choice,"现装",Rect2(194,8,62,24),14,Color("326272"))
@@ -571,7 +456,7 @@ func _show_comparison(id: String, candidate: String) -> void:
     var values: Array=[compared.get("current"),compared.get("upgrade") if candidate.is_empty() else compared.get("candidate")]
     for i in 2:
         var value=values[i]
-        var background=_panel(panel,Rect2(10,46+i*90,366,82));background.add_theme_stylebox_override("panel",_style(Color("e8e8dc"),Color("91aaa2")))
+        var background=_panel(panel,Rect2(10,46+i*90,366,82));background.add_theme_stylebox_override("panel",BridgeTheme.operation_plate(8))
         var key: String=str(value.get("equipment_id",choice)) if value is Dictionary else choice
         _icon(background,key,Rect2(12,13,44,54))
         _label(background,("当前" if i==0 else "升级后" if candidate.is_empty() else "候选")+" · "+str(NAMES.get(key,"空槽")),Rect2(72,8,285,24),16,INK,600)
