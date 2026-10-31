@@ -9,6 +9,7 @@ const CREAM := Color("e9eee6")
 const INK := Color("173c48")
 const GOLD := Color("c99a54")
 const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
+const PlayerText = preload("res://src/ui/player_text.gd")
 
 class Study:
     extends Control
@@ -61,6 +62,17 @@ class Study:
         text(name,r.position.x+12,r.position.y+r.size.y/2+5,15,CREAM)
         var x:=r.end.x-23.0;var y:=r.position.y+r.size.y/2-2.0
         draw_colored_polygon(PackedVector2Array([Vector2(x,y),Vector2(x+14,y),Vector2(x+7,y+7)]),Color("e8e0c6"))
+    func resource_rail(source:Texture2D,late:bool=false,reactor:bool=false) -> void:
+        # Replace only the old glyph pixels inside the existing top rail.
+        # x548..638 at this same y is a blank portion of that source rail;
+        # icons, separators and rail material remain from the source image.
+        # These are decimal equivalents of the quantity expressed by each
+        # fixed screenshot, not a claim to recover its hidden native Amount.
+        var shown_amount:PackedStringArray=["99900","1000","43200"] if reactor else ["1200000000000000000000000000000000000000","1000","0"] if late else ["0","0","25600"]
+        for i in 3:
+            var x:float=[216.0,350.0,481.0][i]
+            draw_texture_rect_region(source,Rect2(x,18,91,32),Rect2(548,18,91,32))
+            text(PlayerText.resource_number(shown_amount[i]),x+6,38,16,Color("f0f2e9"))
     func equipment_row(source:Texture2D,top:float,icon_src:Rect2,name:String,level:String,stat:String,cost:String,mode:String,buy:String,poor:bool=false) -> void:
         plate(Rect2(340,top,432,91))
         draw_texture_rect_region(source,Rect2(348,top+22,42,48),icon_src)
@@ -80,18 +92,19 @@ class Study:
         draw_texture_rect_region(source,Rect2(441,top+63,20,20),Rect2(445,top+63,20,20))
         if mode=="MAX":
             text("铁",465,top+80,15,INK)
-            text("1.1e39",484,top+80,15,BridgeTheme.number_role_color("cost"))
+            text(PlayerText.resource_number("1.1e39"),484,top+80,15,BridgeTheme.number_role_color("cost"))
             draw_texture_rect_region(source,Rect2(537,top+64,19,19),Rect2(534,top+64,19,19))
             text("铀",560,top+80,15,INK)
-            text("2.8k",579,top+80,15,BridgeTheme.number_role_color("insufficient"))
+            text(PlayerText.resource_number("2800"),579,top+80,15,BridgeTheme.number_role_color("insufficient"))
         else:
             text("铁",465,top+80,15,INK)
-            text("65.0",484,top+80,15,BridgeTheme.number_role_color("insufficient" if poor else "cost"))
+            text(PlayerText.resource_number("65.0"),484,top+80,15,BridgeTheme.number_role_color("insufficient" if poor else "cost"))
         key(Rect2(616,top+60,50,28),mode)
         key(Rect2(671,top+60,98,28),buy,true)
     func equipment_page(late:bool=false) -> void:
         var source:=equipment_late if late else equipment_source
         draw_texture_rect(source,Rect2(0,0,1440,900),false)
+        resource_rail(source,late)
         # The latest source already has the correct real carrier, ship size,
         # row viewport and host. Replace only its existing inner face.
         var inner:=Rect2(339,260,434,522) if late else Rect2(339,399,434,278)
@@ -116,6 +129,7 @@ class Study:
             equipment_row(source,565,Rect2(349,586,42,48),"装甲","Lv.1","容量  1.0k → 1.2k","铁65.0","×1","购买1级",true)
     func reactor_page() -> void:
         draw_texture_rect(reactor_source,Rect2(0,0,1440,900),false)
+        resource_rail(reactor_source,false,true)
         # The original full-height B01 beam, side cheeks and floor terminate
         # against the stage. Cool their warm metal without erasing geometry.
         draw_texture_rect_region(reactor_source,Rect2(0,507,808,393),Rect2(0,507,808,393),Color(.57,.76,.79))
