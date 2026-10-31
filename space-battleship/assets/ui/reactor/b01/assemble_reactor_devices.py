@@ -28,8 +28,12 @@ for name,spec in contract["devices"].items():
     x,y,rw,rh=spec["rect"]
     wx,wy,ww,wh=spec["work_rect"]
     assert x<=target[0]<x+rw and y<=target[1]<y+rh
-    assert x<=wx and y<=wy and wx+ww<=x+rw and wy+wh<=y+rh
-    for suffix,rect in (("",(x,y,rw,rh)),("-work",(wx,wy,ww,wh))):
+    # A field can project beyond its machine body while still staying inside
+    # the shared source canvas and retaining the exact same inlet transform.
+    assert x<=wx and y<=wy and wx+ww<=w and wy+wh<=h
+    layers=[("",(x,y,rw,rh)),("-work",(wx,wy,ww,wh))]
+    if name=="defence":layers.append(("-front",(x,y,rw,rh)))
+    for suffix,rect in layers:
         source=BUILD/f"r6-{name}{suffix}-full.png"
         original=Image.open(source).convert("RGBA")
         assert original.size==(w,h)

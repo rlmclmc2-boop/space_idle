@@ -84,7 +84,7 @@ def setup():
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
     mats = {
-        "steel": material("titanium armor", (.22,.31,.36), .57,.34,.035),
+        "steel": material("titanium armor", (.27,.35,.38), .59,.29,.035),
         "dark": material("recessed gunmetal", (.065,.12,.16), .49,.43,.015),
         "black": material("glass interior", (.025,.055,.075), .12,.16,.025),
         "silver": material("brushed silver edges", (.49,.59,.62), .61,.29,.055),
@@ -123,6 +123,18 @@ def setup():
         ob=bpy.data.objects.new("service strip highlight",ld)
         bpy.context.collection.objects.link(ob)
         ob.location=(x,-y,165)
+    core_bounce=bpy.data.lights.new("constrained core blue bounce","AREA")
+    core_bounce.energy,core_bounce.shape,core_bounce.size=115000,"DISK",300
+    core_bounce.color=(.23,.63,1.0)
+    core_bounce_ob=bpy.data.objects.new("constrained core blue bounce",core_bounce)
+    bpy.context.collection.objects.link(core_bounce_ob)
+    core_bounce_ob.location=(W/2,-360,190)
+    hearth_bounce=bpy.data.lights.new("hearth warm broad bounce","AREA")
+    hearth_bounce.energy,hearth_bounce.shape,hearth_bounce.size=72000,"DISK",330
+    hearth_bounce.color=(1.0,.58,.30)
+    hearth_bounce_ob=bpy.data.objects.new("hearth warm broad bounce",hearth_bounce)
+    bpy.context.collection.objects.link(hearth_bounce_ob)
+    hearth_bounce_ob.location=(W/2,-530,210)
     camera_data = bpy.data.cameras.new("source orthographic")
     camera = bpy.data.objects.new("source orthographic", camera_data)
     bpy.context.collection.objects.link(camera)
@@ -513,21 +525,25 @@ def smelting(spec,m):
         for y in (508,525,542,559):
             cube("furnace jacket louver",x,y,16,4,4,67,m["silver"],1)
     cube("molten aperture",179,532,112,90,5,71,m["black"],6)
-    cube("firebrick throat",179,536,84,68,6,78,m["orange"],5)
-    cube("recessed tap well",179,541,62,48,5,84,m["black"],6)
-    for sx in (-1,1):
-        cast_plate("refractory channel bank",[(179+sx*7,514),(179+sx*26,520),
-                   (179+sx*21,555),(179+sx*4,557)],85,5,m["orange"],2)
-        rod("molten channel rail",(179+sx*18,522),(179+sx*15,554),2,90,m["brass"],12)
-    cast_plate("molten charge surface",[(148,550),(157,539),(173,534),(186,536),
-               (198,543),(209,553),(195,558),(180,554),(165,561)],88,4,m["orange_lit"],2)
-    for i,(a,b) in enumerate(((((155,548),(177,543))),(((179,550),(202,550))))):
-        rod("separate molten fold %d"%i,a,b,2.5,92,m["orange_lit"],10)
-    rod("furnace pour seam",(181,553),(197,574),4,88,m["orange_lit"],12)
+    cube("firebrick throat",179,536,100,76,6,78,m["orange"],5)
+    cube("recessed tap well",179,541,88,63,6,84,m["black"],6)
+    cast_plate("refractory catch basin",[(143,553),(150,528),(176,519),
+               (204,529),(217,550),(204,568),(154,568)],86,4,m["dark"],3)
+    rod("refractory feed nozzle",(170,509),(168,535),7,84,m["dark"],16)
+    rod("contained vertical feed",(170,514),(168,534),2.8,92,m["orange_lit"],12)
+    cast_plate("molten charge surface",[(149,547),(157,532),(174,527),
+               (191,529),(205,541),(210,552),(199,560),(181,553),
+               (163,558)],90,3,m["orange"],2)
+    for i,points in enumerate(([(157,539),(172,539),(188,547),(204,557)],
+                               [(167,532),(181,540),(195,548),(207,557)],
+                               [(180,531),(193,540),(205,550)])):
+        for a,b in zip(points,points[1:]):
+            rod("contained molten vein %d"%i,a,b,2.8-i*.35,93,m["orange_lit"],12)
+    rod("furnace pour seam",(199,553),(207,561),3,92,m["orange_lit"],12)
     for sx in (-1,1):
         cube("refractory throat jamb",179+sx*53,536,14,87,13,86,m["silver"],3)
         cube("jamb black heat slot",179+sx*53,535,4,66,3,94,m["dark"],1)
-    for yy in (500,518,554,572):
+    for yy in (500,572):
         cube("cast refractory course",179,yy,110,7,8,88,m["steel"],2)
     for y in (510,523,547,560):
         cube("refractory courses",179,y,102,2,2,83,m["brass"],1)
@@ -537,7 +553,8 @@ def smelting(spec,m):
     rod("exhaust riser",(104,487),(104,412),16,36,m["dark"])
     rod("exhaust ferrule",(104,419),(104,405),19,39,m["silver"])
     rod("molten delivery",(196,569),(282,617),13,39,m["dark"])
-    rod("molten slot",(196,569),(239,592),5,49,m["orange_lit"])
+    rod("covered tapping throat",(203,560),(239,590),11,38,m["steel"])
+    rod("tapping sight slit",(201,557),(213,566),2.8,53,m["orange_lit"],12)
     tubing("left cooling coil",[(88,534),(74,534),(70,581),(82,603)],5,44,m["brass"])
     tubing("right pressure return",[(254,463),(284,466),(299,488),(298,520)],5,45,m["dark"])
     for x in (106,145,217,251):
@@ -634,6 +651,17 @@ def run():
                 if mat == mats["violet_glint"]: ob.material_slots[i].material=mats["black"]
         bpy.context.scene.render.filepath=str(BUILD / ("r6-"+name+"-work-full.png"))
         bpy.ops.render.render(write_still=True)
+        if name == "defence":
+            # The physical projector shoes and front bearing pass in front of
+            # the deployed field, so the field has a real occlusion boundary.
+            front_names=("shield segmented projector shoe","shoe bronze radial pivot",
+                         "shield radial fastener","field lens bearing",
+                         "shield emitter inner hub","hub contact")
+            for ob in work_objects: ob.hide_render=True
+            for ob in original_slots:
+                ob.hide_render=not ob.name.startswith(front_names)
+            bpy.context.scene.render.filepath=str(BUILD / "r6-defence-front-full.png")
+            bpy.ops.render.render(write_still=True)
         print("RENDERED",name,"port",spec["device_port"],"axis",spec["axis_to_device"],"rect",spec["rect"])
 
 
