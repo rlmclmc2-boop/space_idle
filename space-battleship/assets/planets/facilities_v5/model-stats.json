@@ -1,22 +1,22 @@
 [
   {
     "kind": "auto_explore",
-    "meshes": 26,
-    "triangles": 5324
+    "meshes": 261,
+    "triangles": 34660
   },
   {
     "kind": "refinery",
-    "meshes": 35,
-    "triangles": 3940
+    "meshes": 168,
+    "triangles": 22430
   },
   {
     "kind": "equipment",
-    "meshes": 19,
-    "triangles": 2052
+    "meshes": 86,
+    "triangles": 18720
   },
   {
     "kind": "shipyard",
-    "meshes": 16,
-    "triangles": 2132
+    "meshes": 88,
+    "triangles": 13536
   }
 ]
