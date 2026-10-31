@@ -1,0 +1,18 @@
+Runtime asset source: implement/reactor-centered-godot@5a3e3a81483353dec27b2231f6c09497d8027a74
+Production entry at capture: implement/reactor-centered-godot@4ff71bd23b312dc4ead32ac9363cbe63b3ce4c25
+
+Controlled Owner states:
+STATE 1 IDs=["weapons"] LOAD=1.0
+STATE 2 IDs=["weapons", "defence"] LOAD=1.0
+STATE 3 IDs=["weapons", "defence", "smelting"] LOAD=1.0
+STATE 4 IDs=["weapons", "defence", "smelting", "condensation"] LOAD=1.0
+
+Continuous 1x run:
+VIDEO_READY load=1.0 modules=[{ "id": "weapons", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "defence", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "smelting", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "condensation", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }] game_time=0.08333333333333 phase=0.05
+VIDEO_END wall_seconds=35 game_seconds=10.2666666666668 phase_delta=10.2666666666668 active_frames=249 field_updates=2
+
+Mixed and low-load author run:
+EDGE_DONE def_load=0.01 phase_before=4.76666666666666 phase_hidden=4.76666666666666 phase_after=5.29999999999999
+
+Video stream: 1440x900, 30 fps, 250 frames, 8.366667 seconds (ffprobe).
+Capture driver: ffmpeg x11grab at normal 1x on Godot 4.7.2.
