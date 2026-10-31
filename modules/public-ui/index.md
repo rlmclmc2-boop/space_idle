@@ -24,3 +24,5 @@
 - [Correction: the 34-frame e845/R5d clip is stitched post-action sampling](e845-r5d-transition-20261031/CORRECTION.md); original media is preserved.
 
 - [2026-10-31 final equipment and R5d continuous native route frames](e845-r5d-continuous-20261031/README.md): 36 successive rendered frames with event timeline; author affected-path observation.
+
+- [2026-10-31 pressed route ink on both navigation directions](nav-pressed-ink-20261031/README.md): original-size affected frames and timeline, author observation pending independent review.

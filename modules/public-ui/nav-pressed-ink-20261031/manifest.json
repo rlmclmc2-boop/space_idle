@@ -1,0 +1,31 @@
+{
+  "source_commit": "0049ed4c0d911ed31117f1317fffee1a07eeff1f",
+  "saved_samples": [
+    3,
+    4,
+    6,
+    7,
+    8,
+    9,
+    18,
+    19,
+    21,
+    22,
+    23,
+    24
+  ],
+  "images": {
+    "frame-003.png": "c7d07c0f0a9a9a9d22b26694ece785514909665b22d02c214da2cf80a0ccce99",
+    "frame-004.png": "174b598c69f947354484cc8f057cdb78cbb8e9aa3ef8550000c78db59ee5d294",
+    "frame-006.png": "c74816b2a18be4882558c8c164c59c0db4a8c7a8af28bdd74f8bd09d229879b4",
+    "frame-007.png": "c74816b2a18be4882558c8c164c59c0db4a8c7a8af28bdd74f8bd09d229879b4",
+    "frame-008.png": "17c763eb1f630e4bb3f4b72aead377753549e6c2ad3a87ed116996791836f41c",
+    "frame-009.png": "17c763eb1f630e4bb3f4b72aead377753549e6c2ad3a87ed116996791836f41c",
+    "frame-018.png": "17c763eb1f630e4bb3f4b72aead377753549e6c2ad3a87ed116996791836f41c",
+    "frame-019.png": "4f5fc91ee01d93ebc930befb75bb147b25d3c369eef76f513acb7f18d8fa1359",
+    "frame-021.png": "e3d6c4da62cb002980a9acfe5aff50c53920bdc693be14656c3691a1943363b5",
+    "frame-022.png": "e3d6c4da62cb002980a9acfe5aff50c53920bdc693be14656c3691a1943363b5",
+    "frame-023.png": "c7d07c0f0a9a9a9d22b26694ece785514909665b22d02c214da2cf80a0ccce99",
+    "frame-024.png": "c7d07c0f0a9a9a9d22b26694ece785514909665b22d02c214da2cf80a0ccce99"
+  }
+}
