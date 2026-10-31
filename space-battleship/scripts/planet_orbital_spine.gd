@@ -98,7 +98,7 @@ func _ready() -> void:
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
 				_add_curved_deck(root, rib_angle - 0.008, rib_angle + 0.008, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
-		_joins[kind] = _add_join(root, bounds.y)
+		_joins[kind] = _add_join(root, bounds.y, kind)
 		var caps: Array[Node3D] = []
 		for angle in [bounds.x, bounds.y]:
 			var cap := Node3D.new()
@@ -401,7 +401,7 @@ func _add_receiver_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3
 		surface.set_uv(entry[1])
 		surface.add_vertex(entry[0])
 
-func _add_join(parent: Node3D, angle: float) -> Node3D:
+func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
 	# Covers the armor gap where two independently built sections mate. This
 	# collar is owned by the preceding section and appears only after both exist.
 	var join := Node3D.new()
@@ -411,7 +411,11 @@ func _add_join(parent: Node3D, angle: float) -> Node3D:
 	# Close the complete load path, including its keel and lit outer wall. A
 	# top-only sleeve leaves an obvious open cut at oblique orbital phases.
 	_add_section_hull(join, angle - 0.12, angle + 0.12, joint_width)
-	_add_curved_deck(join, angle - 0.12, angle + 0.12, joint_width, 0.232, _sleeve, 0.37, 0.63)
+	# The refinery deck now returns to the exact mating height. Its two owned
+	# top surfaces meet there, so a second raised sleeve would cover that
+	# shared plane with a visible white step. The bottom load collar remains.
+	if kind != "refinery":
+		_add_curved_deck(join, angle - 0.12, angle + 0.12, joint_width, 0.232, _sleeve, 0.37, 0.63)
 	return join
 
 func configure(owned: Array) -> void:
