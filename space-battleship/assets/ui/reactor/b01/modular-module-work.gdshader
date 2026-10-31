@@ -45,7 +45,7 @@ void fragment() {
         // reflections. The lens mesh, rather than a full rectangle, clips it.
         vec2 d = (q-vec2(0.642,0.412))*vec2(1.0,1.06);
         float r = length(d);
-        float establish = smoothstep(0.03,0.88,fract(phase*0.18));
+        float establish = smoothstep(0.03,0.88,clamp(phase*0.18,0.0,1.0));
         float front_radius = 0.025+establish*0.19;
         float front = band(r,front_radius,0.012);
         // Bend the three line families across the convex lens rather than
@@ -61,15 +61,15 @@ void fragment() {
         float sweep_y = (q.y-0.412)/0.31;
         float visible_arc = 1.0-smoothstep(0.82,1.0,abs(sweep_y));
         float bow = sqrt(max(0.0,1.0-sweep_y*sweep_y));
-        float dome_x = 0.642+(0.045+0.300*establish)*bow;
+        float dome_x = 0.642+(0.045+0.370*establish)*bow;
         float shield_shell = band(q.x,dome_x,0.010)*visible_arc;
         float shell_depth = band(q.x,dome_x-0.030,0.008)*visible_arc;
         float shell_volume = smoothstep(0.70,0.75,q.x)
                              *(1.0-smoothstep(dome_x-0.018,dome_x+0.012,q.x))*visible_arc;
         float lens = surface.a;
-        material = 0.04+0.22*lattice;
-        action = ((front*0.95+lattice*0.31+curved*0.25+glancing*0.12)*lens
-                  +shield_shell*1.22+shell_depth*0.33+shell_volume*0.09)*load;
+        material = 0.04+0.16*lattice;
+        action = ((front*0.95+lattice*0.16+curved*0.25+glancing*0.12)*lens
+                  +shield_shell*1.20+shell_depth*0.33+shell_volume*0.20)*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
@@ -91,9 +91,12 @@ void fragment() {
                             -disk(q,vec2(0.54,0.47),vec2(0.16,0.12));
         float inlet_glow=disk(q,vec2(0.51,0.49),vec2(0.028,0.024));
         float outlet_glow=disk(q,vec2(0.69,0.57),vec2(0.03,0.023));
+        float flow_t=fract(phase*0.47);
+        vec2 flow_pos=mix(vec2(0.51,0.49),vec2(0.68,0.56),flow_t);
+        float moving_heat=disk(q,flow_pos,vec2(0.027,0.015))*surface.a;
         action = (pool*surface.a*0.04+slot*surface.a*0.08+drop*0.42
                   +inlet_glow*surface.a*0.25+outlet_glow*surface.a*0.34
-                  +heat_bounce*0.04)*pour*load;
+                  +moving_heat*0.42+heat_bounce*0.04)*pour*load;
         hue = vec3(1.0,0.30,0.025);
     } else {
         // Five seed sockets feed a growth front up distinct crystal columns.
