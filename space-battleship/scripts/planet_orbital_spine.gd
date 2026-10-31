@@ -146,7 +146,7 @@ func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float
 	_add_strip(parent, begin, finish, width, -0.18, _navy, kind)
 	for side in [-1.0, 1.0]:
 		_add_wall(parent, begin, finish, side * width * 0.5, -0.18, 0.26, _navy, kind)
-		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.15, _side, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.26, _side, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.008), 0.015, 0.055, _cyan, kind)
 
 func set_body_scale(scale: Vector3) -> void:
@@ -182,6 +182,14 @@ func _station_saddle_drop(angle: float) -> float:
 	# painted front armor; its keel, walls, conduit and joins descend together.
 	var center: float = FACILITY_ANGLES["auto_explore"]
 	return 0.30 * smoothstep(center - 0.21, center - 0.07, angle) * (1.0 - smoothstep(center + 0.06, center + 0.20, angle))
+
+func _shoulder_lift(kind: String, angle: float) -> float:
+	if kind == "": return 0.0
+	var distance := absf(angle - FACILITY_ANGLES[kind])
+	var lift := 0.15 * (1.0 - smoothstep(0.10, 0.29, distance))
+	if kind == "refinery":
+		lift *= smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
+	return lift
 
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
@@ -239,19 +247,13 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	var height := lift + current.y
 	# The recessed passage is cut into the same armor extrusion. Its center
 	# texture and flanking shoulders carry through each independent section.
-	var refinery_end_blend := 1.0
-	if kind == "refinery":
-		# This furnace is only 0.09 radians from its section's independent
-		# mating plane. The old width returned to transit there, but its raised
-		# deck shoulders did not, leaving a hard high-to-low step at 90 degrees.
-		refinery_end_blend = smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
 	if kind != "":
 		# Raise the load-bearing shell beside each work floor, leaving a recessed
 		# center for the facility rather than resting a separate pad on the ring.
-		var node_span := 1.0 - smoothstep(0.10, 0.29, absf(angle - FACILITY_ANGLES[kind]))
 		var shoulder := smoothstep(0.19, 0.38, absf(current.x))
-		height += 0.15 * node_span * shoulder * refinery_end_blend
+		height += _shoulder_lift(kind, angle) * shoulder
 	if kind == "refinery":
+		var refinery_end_blend := smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
 		var distance := absf(angle - FACILITY_ANGLES[kind])
 		var foot_span: float = 1.0 - smoothstep(0.080, 0.18, distance)
 		var foot_width: float = 1.0 - smoothstep(0.30, 0.46, absf(current.x))
@@ -307,7 +309,13 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 		var pa := point(a) * ((RADIUS + ra) / RADIUS)
 		var pb := point(b) * ((RADIUS + rb) / RADIUS)
 		var wall_normal := (pa + pb).normalized() * signf(radial)
-		for vertex in [pa + normal * (bottom - _station_saddle_drop(a)), pb + normal * (bottom - _station_saddle_drop(b)), pa + normal * (top - _station_saddle_drop(a)), pa + normal * (top - _station_saddle_drop(a)), pb + normal * (bottom - _station_saddle_drop(b)), pb + normal * (top - _station_saddle_drop(b))]:
+		var lift_a := _shoulder_lift(kind, a)
+		var lift_b := _shoulder_lift(kind, b)
+		var lower_a := bottom + (lift_a if material == _cyan else 0.0) - _station_saddle_drop(a)
+		var lower_b := bottom + (lift_b if material == _cyan else 0.0) - _station_saddle_drop(b)
+		var upper_a := top + lift_a - _station_saddle_drop(a)
+		var upper_b := top + lift_b - _station_saddle_drop(b)
+		for vertex in [pa + normal * lower_a, pb + normal * lower_b, pa + normal * upper_a, pa + normal * upper_a, pb + normal * lower_b, pb + normal * upper_b]:
 			surface.set_normal(wall_normal)
 			surface.add_vertex(vertex)
 	var instance := MeshInstance3D.new()
