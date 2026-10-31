@@ -144,7 +144,7 @@ func balances_text() -> String:
 		for resource in _wallet:
 			var text = _api.apply("to_display", [_wallet[resource]])
 			var raw: String = str(text.text)
-			var label: String = PlayerText.resource(str(resource)) + "：" + PlayerText.number(raw)
+			var label: String = PlayerText.resource(str(resource)) + "：" + PlayerText.resource_number(raw)
 			balances.append(label)
 			_balance_rows.append({"id": str(resource), "text": label, "raw": raw})
 		_balance_text = "   ".join(balances)

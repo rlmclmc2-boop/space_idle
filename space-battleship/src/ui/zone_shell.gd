@@ -200,7 +200,7 @@ func _process(_delta: float) -> void:
 		var next_text: String = str(by_id.get(ids[index], names[index] + "：0"))
 		var separator: int = next_text.find("：")
 		var amount: String = next_text.substr(separator + 1) if separator >= 0 else next_text
-		# PlayerText.number owns the same compact value in rail and detail.
+		# Economy supplies the same resource_number value to rail and detail.
 		var font: Font = label.get_theme_font("font")
 		var size: int = 16
 		for candidate in [16, 14, 12]:

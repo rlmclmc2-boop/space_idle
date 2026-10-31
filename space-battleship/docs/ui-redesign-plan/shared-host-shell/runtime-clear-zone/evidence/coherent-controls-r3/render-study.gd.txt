@@ -68,7 +68,13 @@ class Study:
         key(Rect2(704,top+6,65,28),"比较")
         var stat_parts:=stat.split("  ",false,1)
         text(stat_parts[0],407,top+55,15,INK)
-        text(stat_parts[1] if stat_parts.size()>1 else "",470,top+55,15,Color("26718a"))
+        var values:PackedStringArray=(stat_parts[1] if stat_parts.size()>1 else "").split(" → ",false)
+        var old_value:String=values[0] if values.size()>0 else ""
+        var new_value:String=values[1] if values.size()>1 else ""
+        text(old_value,470,top+55,15,Color("4e7580"))
+        var arrow_x:float=470+font.get_string_size(old_value,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+5
+        text("→",arrow_x,top+55,15,Color("778681"))
+        text(new_value,arrow_x+19,top+55,15,Color("087d98"))
         text("费用",407,top+80,15,INK)
         draw_texture_rect_region(source,Rect2(441,top+63,20,20),Rect2(445,top+63,20,20))
         if mode=="MAX":
@@ -133,10 +139,10 @@ class Study:
             frame(Rect2(198,y+17,154,18),Color("173d4c"),Color("5e7f81"),1)
             draw_rect(Rect2(201,y+20,37,12),colors[i])
             draw_texture_rect(grabber,Rect2(229,y+12,26,26),false)
-            text("25%",386,y+34,18,INK)
+            text("25%",386,y+34,18,Color("087d98"))
             line(Vector2(464,y+7),Vector2(464,y+45),Color("9cafab"))
             text("×1.13",479,y+34,15,Color("3b6068"))
-        text("等级",592,644,16,INK);text("1",743,652,26,INK)
+        text("等级",592,644,16,INK);text("1",743,652,26,Color("087d98"))
         line(Vector2(591,670),Vector2(758,670),Color("9db1ad"))
         text("费用",592,704,14,INK)
         draw_texture_rect_region(reactor_source,Rect2(631,687,21,21),Rect2(657,687,23,23))
