@@ -9,7 +9,12 @@
 - [保存与配置](persistence/index.md)
 - [经济与资源](economy/index.md)
 - [战斗与命中死亡](combat/index.md)
-- [科研船员强化与解锁](progression/index.md)
+- [航程与解锁](progression/index.md)
 - [星系](galaxy/index.md)
 - [超空间](hyperspace/index.md)
 - [时间与离线](time/index.md)
+
+- [科研](research/index.md)
+- [船员](crew/index.md)
+- [强化与宝石边界](enhancement/index.md)
+- [配置发布](config/index.md)
