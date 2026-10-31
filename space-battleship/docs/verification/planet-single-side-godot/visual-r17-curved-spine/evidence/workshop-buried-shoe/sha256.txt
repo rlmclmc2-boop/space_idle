@@ -1,0 +1,10 @@
+6ac466bd06845841a33f5bb56f115c60dd859b8ae177370b8200d781581730fe  art_sources/planet_facilities_v5/build_workshop_node.py
+aa898235dd44cea401c42d486414fdd917dab108e05d2df28c12fe2f36db5f91  art_sources/planet_facilities_v5/equipment.blend
+94e690798f8a327a50bf9e7ab5a4b27b3529b84802bc3febfff3ed45a2fd78f9  assets/planets/facilities_v5/equipment.glb
+45d0a7718497d145244a05ddaf34d4cb0103236e211e921bdca4a66b3d42a67f  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-buried-shoe/blender.txt
+f04c85fc7fb66037412fa449ed116942587e199b83f5e7b5f1ab9ec306ab14dc  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-buried-shoe/check.txt
+e1b8b0361d774d269bfbc9fc4ae2e6be98c34dadd10811ac18cd0d2b0d2ee518  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-buried-shoe/driver.gd.txt
+afde23f6cc7fb9898ca1601d81ecd4536b95d8b80d35f291fd79a62ff99281b0  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-buried-shoe/import.txt
+2c83433fc1bfd6e31faab72b3400c8794b5b9ffcb1d89c699eb90dd28357ab10  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-buried-shoe/run.txt
+13f8b0c05fbd1bdce1374d8934bb2762c38fa49f44221bbd4254fb59acb8b823  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-buried-shoe/quarter_simulated.png
+4c27c47ac51ae090763aad9e17742e36d7dd77ec9e8ddea38abc2cc60dbb68a6  docs/verification/planet-single-side-godot/visual-r17-curved-spine/evidence/workshop-buried-shoe/stage_4.png

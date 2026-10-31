@@ -136,7 +136,7 @@ for side in (-1, 1):
              (x, side*.70, 1.49), .24, .25, ivory, root)
         box("Dark foot socket", (x, side*.86, .16), (.38, .45, .22), navy, root, .035)
         box("Deep blue load shoe", (x, side*1.12, .18), (.43, .30, .35), blue, root, .04)
-        box("Ivory load shoe face", (x, side*1.30, .21), (.29, .075, .25), ivory, root, .03)
+        box("Load shoe crown inset", (x, side*1.10, .37), (.28, .24, .055), ivory, root, .015)
         box("Portal inner amber inset", (end*.894, side*.55, 1.01), (.065, .065, .35), orange_lit, root, .016)
         cylinder("Amber corner mast", (x, side*.86, 1.65), .065, .20, orange_lit, root)
 

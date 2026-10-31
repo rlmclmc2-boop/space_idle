@@ -1,0 +1,161 @@
+Extensions: writing cache failed ([Errno 30] Read-only file system: '/home/agent/.config/blender/4.3/extensions').
+Info: Saved "equipment.blend"
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+06:13:41 | INFO: Starting glTF 2.0 export
+06:13:41 | INFO: Extracting primitive: Cylinder
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cylinder.001
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cylinder.002
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cylinder.003
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.040
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.041
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.042
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.047
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.048
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.049
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.008
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.027
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Continuous orange load cheek
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Continuous orange load cheek.001
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.010
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.015
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.029
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.034
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.011
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.016
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.030
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.035
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Deep pressure foot wrapped around section
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Deep pressure foot wrapped around section.001
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.052
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.056
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.053
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.057
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.062
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.063
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.061
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.060
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.066
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Broad service tool
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.065
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.064
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.038
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.045
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.039
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.046
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.001
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.020
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.012
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.017
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.031
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.036
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Open bay orange head rail
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Open bay orange head rail.001
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.054
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.058
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.013
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.018
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.032
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.037
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.055
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.059
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.009
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.014
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.028
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.033
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.043
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.044
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.050
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.051
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.007
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.026
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.002
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.021
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.004
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.006
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.023
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.025
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.003
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.005
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.022
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Extracting primitive: Cube.024
+06:13:41 | INFO: Primitives created: 1
+06:13:41 | INFO: Finished glTF 2.0 export in 0.13592290878295898 s
+
+Blender 4.3.2
+
+Blender quit
