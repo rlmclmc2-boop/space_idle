@@ -1,5 +1,5 @@
 {
-  "current": "User-approved R3 direction native operation materials implemented on existing equipment nodes; latest same-version19 screens/24.7s actions complete, root/original review pending.",
+  "current": "Original independent equipment reviewer limited current7dfa R3 native evidence as ready for user confirmation; root actually delivered early/bottom/long attachments at16:10. Await current user native feedback.",
   "runtime_source_commit": "81744e5a7da14577ea5792a621529f304ed82b3c",
   "evidence": "r3-native-adaptation/evidence/ledger.json",
   "review": "review-r3-native.html",
@@ -50,25 +50,50 @@
   },
   "independent_implementation_remaining": [],
   "remaining": [
-    "Root/original review judge current19 full native screens and24.7s actions",
-    "Other-module combined style/global integer resource acceptance outside this equipment closure not claimed"
+    "User feedback on the current R3 native candidate actually delivered at16:10"
   ],
   "actual_compaction": false,
   "denied_actions": [],
   "unknown_outcomes": [],
   "background_processes": [],
   "not_claimed": [
-    "Original reviewer passed latest candidate",
     "User final acceptance",
     "Main merge",
     "Cross-module style approval",
     "Global resource integer contract integration",
-    "Unrelated full-game regression"
+    "Unrelated full-game regression",
+    "Original review beyond limited readiness for current user confirmation"
   ],
   "auxiliary_hover": "Native exact original resource amount, not forced one-decimal display",
   "product_edits_this_feedback_round": true,
   "new_runtime_or_evidence_this_feedback_round": true,
   "previous_compacted_handoff": "6a9b7b48f7fd9931698ffffbb78c8af0dc6e84e0 preserved below new current sections",
-  "stop_reason": null,
-  "icon_diagnosis": "r3-native-adaptation/icon-source-diagnosis.json"
+  "stop_reason": "Awaiting actual user feedback on the current native candidate delivered16:10; no independent implementation remaining",
+  "icon_diagnosis": "r3-native-adaptation/icon-source-diagnosis.json",
+  "reviewed_delivered_evidence": "7dfa54dc612c1e8357bab7e797ced519a166a9d9",
+  "original_review_fact": {
+    "scope": "Limited readiness for current user native confirmation, not global/cross-module/main acceptance",
+    "coverage": "19 full screens;24.7s actions every0.25s with99 frames;23 hashes",
+    "root_viewed": [
+      "early",
+      "bottom",
+      "long"
+    ]
+  },
+  "delivery_fact": {
+    "time_as_reported_by_parent": "16:10",
+    "actual_attachments": true,
+    "images": [
+      "r3-native-adaptation/evidence/inline-native-early.png",
+      "r3-native-adaptation/evidence/inline-native-bottom.png",
+      "r3-native-adaptation/evidence/inline-native-long-max.png"
+    ],
+    "qualifiers": [
+      "Later stages controlled",
+      "Not global integer-resource acceptance",
+      "Not cross-module acceptance",
+      "Not main acceptance"
+    ]
+  },
+  "archive_constraint": "Follow latest separate archive branch rule after documentation owner supplies exact migration list; preserve current source/evidence, no migration/deletion/overwrite in this status update."
 }
