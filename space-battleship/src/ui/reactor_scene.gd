@@ -497,7 +497,8 @@ func _layout_enabled_rows(ids: Array) -> void:
 			_rows[id].accent.size.y = 88
 			_rows[id].icon.position = Vector2(88, 679)
 			_rows[id].name.position = Vector2(125, 679)
-			_rows[id].effect.position = Vector2(464, 681)
+			# Align the live ratio and its Owner multiplier on one reading line.
+			_rows[id].effect.position = Vector2(468, 734)
 			_rows[id].row_face.position = Vector2(88, 674)
 			_rows[id].row_face.size = Vector2(470, 105)
 			_rows[id].control.position = Vector2(194, 729)

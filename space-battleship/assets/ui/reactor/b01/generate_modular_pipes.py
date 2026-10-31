@@ -3,6 +3,7 @@
 Source coordinates are 1187x1326 pixels. The four paths differ only in their
 socket/tangent contract; material, section, collar and UV placement are shared.
 Run with Blender 4.3: blender -b -t 2 --python generate_modular_pipes.py
+Use -- --only-clamps to re-render only the two side grips.
 """
 from __future__ import annotations
 
@@ -149,9 +150,14 @@ def clamp_half(name, start_x):
     # Their three-dimensional feet/rails live above the sphere's front face;
     # the runtime translates only these two pieces along their guide axis.
     center_x = start_x + (104 if name.endswith("right") else 90)
-    beveled_plate(name+"_foot", center_x,323,94,41,17,40,MATS["metal"],6)
-    beveled_plate(name+"_spine", center_x,312,86,8,5,51,MATS["ridge"],2)
-    beveled_plate(name+"_contact", center_x,337,76,5,4,52,MATS["gold"],1.5)
+    local_softbox(name+" polished face key", (center_x,-250,190), 36000, 95)
+    # Match the machined containment hoop at the visible grip point. The
+    # deeper gunmetal guide is a recess, not the face of a black rectangle.
+    beveled_plate(name+"_foot", center_x,323,82,34,18,40,MATS["gimbal"],8)
+    beveled_plate(name+"_guide", center_x,314,64,5,3,50,MATS["ridge"],2)
+    beveled_plate(name+"_contact", center_x,339,61,4,3,52,MATS["gold"],1.5)
+    for cheek_x in (center_x-38, center_x+38):
+        beveled_plate(name+"_cheek", cheek_x,323,11,39,20,48,MATS["gimbal_plate"],4)
     for cx in (center_x-29, center_x, center_x+29):
         bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=3.4, depth=4,
                                             location=(cx,-322,52))
@@ -288,7 +294,8 @@ def depth_material(base, front):
 
 setup()
 only_core = "--only-core" in sys.argv
-for pipe_id, anchors in ({} if only_core else PATHS).items():
+only_clamps = "--only-clamps" in sys.argv
+for pipe_id, anchors in ({} if only_core or only_clamps else PATHS).items():
     generated = set(bpy.data.objects)
     build_pipe(pipe_id, anchors)
     parts = set(bpy.data.objects)-generated
@@ -308,7 +315,7 @@ for side, start_x in (("left",395),("right",603)):
     bpy.ops.render.render(write_still=True)
     for ob in set(bpy.data.objects)-generated:
         bpy.data.objects.remove(ob, do_unlink=True)
-for frame in range(12):
+for frame in range(0 if only_clamps else 12):
     generated = set(bpy.data.objects)
     core_gimbal(2*math.pi*frame/12)
     parts = set(bpy.data.objects)-generated
