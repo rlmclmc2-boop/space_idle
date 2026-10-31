@@ -96,8 +96,11 @@ static func number(value: String) -> String:
 # an apparently valid balance. Exact integers only drop redundant unscaled
 # .0; this does not mutate Amount. Other roles continue to use number().
 static func resource_number(value: String) -> String:
-	var display: String = number(value)
-	if not _is_exact_integer_text(value): return value.strip_edges() if display != "—" else display
+	# The Owner's exact integer_text can use digits×10^exponent for enormous
+	# values. Normalize that spelling only for compact presentation.
+	var normalized: String = value.strip_edges().replace("×10^", "e")
+	var display: String = number(normalized)
+	if not _is_exact_integer_text(normalized): return value.strip_edges() if display != "—" else display
 	if not display.ends_with(".0"): return display
 	return display.trim_suffix(".0")
 

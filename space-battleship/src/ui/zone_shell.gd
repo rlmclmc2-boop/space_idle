@@ -191,8 +191,9 @@ func _process(_delta: float) -> void:
 	var by_id := {}
 	var by_raw := {}
 	for row in rows:
-		by_id[str(row.id)] = str(row.text)
-		by_raw[str(row.id)] = str(row.raw)
+		var presented: Dictionary = _present_resource_row(row)
+		by_id[str(row.id)] = str(presented.text)
+		by_raw[str(row.id)] = str(presented.raw)
 	var ids := ["1", "2", "chrono"]
 	var names := ["铁", "铀", "时空微粒"]
 	for index in _balances.size():
@@ -212,6 +213,15 @@ func _process(_delta: float) -> void:
 		var full_text: String = names[index] + "：" + str(by_raw.get(ids[index], "0"))
 		if label.tooltip_text != full_text: label.tooltip_text = full_text
 	if _details.visible and _resource_rows.visible: _update_resource_rows(rows)
+
+func _present_resource_row(row: Dictionary) -> Dictionary:
+	var id: String = str(row.get("id", ""))
+	var owner_text: String = str(row.get("text", ""))
+	var separator: int = owner_text.find("：")
+	var exact_text: String = str(row.get("raw", owner_text.substr(separator + 1) if separator >= 0 else owner_text))
+	var compact: String = PlayerText.resource_number(exact_text)
+	if compact == "—": compact = exact_text
+	return {"text": PlayerText.resource(id) + "：" + compact, "raw": exact_text}
 
 func set_active_route(id: String) -> void:
 	if _active_route == id: return
@@ -282,8 +292,9 @@ func _update_resource_rows(rows: Array) -> void:
 	for row in rows:
 		var id: String = str(row.id)
 		if _resource_row_labels.has(id):
-			shown[id] = str(row.text)
-			raw[id] = str(row.raw)
+			var presented: Dictionary = _present_resource_row(row)
+			shown[id] = str(presented.text)
+			raw[id] = str(presented.raw)
 	for id in _resource_row_labels:
 		var value: Label = _resource_row_labels[id]
 		var next_text: String = str(shown.get(id, ""))
