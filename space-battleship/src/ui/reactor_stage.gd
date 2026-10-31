@@ -2,55 +2,30 @@ extends Control
 ## Composable B01 bay: background, four physical routes, core, four devices.
 const PipeView = preload("res://src/ui/reactor_pipe_view.gd")
 const ModuleView = preload("res://src/ui/reactor_module_view.gd")
+const PortContract = preload("res://src/ui/reactor_port_contract.gd")
 const BAY = preload("res://assets/ui/reactor/b01/modular-bay-background.png")
 const CORE = preload("res://assets/ui/reactor/b01/modular-core.png")
 const CORE_WORK = preload("res://assets/ui/reactor/b01/modular-core-work.png")
-const WEAPONS = preload("res://assets/ui/reactor/b01/modular-weapons.png")
-const DEFENCE = preload("res://assets/ui/reactor/b01/modular-defence.png")
-const SMELTING = preload("res://assets/ui/reactor/b01/modular-smelting.png")
-const CONDENSATION = preload("res://assets/ui/reactor/b01/modular-condensation.png")
+const WEAPONS = preload("res://assets/ui/reactor/b01/r6-weapons.png")
+const DEFENCE = preload("res://assets/ui/reactor/b01/r6-defence.png")
+const SMELTING = preload("res://assets/ui/reactor/b01/r6-smelting.png")
+const CONDENSATION = preload("res://assets/ui/reactor/b01/r6-condensation.png")
 const CORE_FIELD = preload("res://assets/ui/reactor/b01/modular-core-field.gdshader")
 const CONSOLE_COMPACT = preload("res://assets/ui/reactor/b01/modular-console-compact.png")
 const CONSOLE_FOUR = preload("res://assets/ui/reactor/b01/modular-console-four.png")
 const CLAMP_LEFT = preload("res://assets/ui/reactor/b01/modular-core-clamp-left.png")
 const CLAMP_RIGHT = preload("res://assets/ui/reactor/b01/modular-core-clamp-right.png")
-const GIMBAL_REAR_FRAMES := [
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-00.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-01.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-02.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-03.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-04.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-05.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-06.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-07.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-08.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-09.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-10.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-11.png"),
-]
-const GIMBAL_FRONT_FRAMES := [
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-00.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-01.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-02.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-03.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-04.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-05.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-06.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-07.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-08.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-09.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-10.png"),
-	preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-11.png"),
-]
+const GIMBAL_REAR = preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-00.png")
+const GIMBAL_FRONT = preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-00.png")
 const IDS := ["weapons", "defence", "smelting", "condensation"]
 const OPERATING := {"weapons":{"row":0}, "defence":{"row":1}, "smelting":{"row":2}, "condensation":{"row":3}}
 const SOURCE_SIZE := Vector2(1187.0, 1326.0)
 const VIEW_SIZE := Vector2(808.0, 835.0)
 const MODULES := {
-	"weapons": {"texture":WEAPONS, "source_rect":Rect2(0,70,359,271)},
-	"defence": {"texture":DEFENCE, "source_rect":Rect2(893,40,294,271)},
-	"smelting": {"texture":SMELTING, "source_rect":Rect2(55,380,315,276)},
-	"condensation": {"texture":CONDENSATION, "source_rect":Rect2(845,380,291,283)},
+	"weapons": WEAPONS,
+	"defence": DEFENCE,
+	"smelting": SMELTING,
+	"condensation": CONDENSATION,
 }
 var _pipes: Dictionary = {}
 var _modules: Dictionary = {}
@@ -87,7 +62,7 @@ func _init() -> void:
 		pipe.visible = false
 		add_child(pipe)
 		_pipes[id] = pipe
-	_gimbal_back = _central_layer(GIMBAL_REAR_FRAMES[0])
+	_gimbal_back = _central_layer(GIMBAL_REAR)
 	var core := _source_layer(CORE,Rect2(385,0,418,638))
 	core.visible = true
 	_core_field = ColorRect.new()
@@ -101,7 +76,7 @@ func _init() -> void:
 	_core_field.material = _field_material
 	_core_field.visible = false
 	add_child(_core_field)
-	_gimbal_front = _central_layer(GIMBAL_FRONT_FRAMES[0])
+	_gimbal_front = _central_layer(GIMBAL_FRONT)
 	_clamp_left = _source_layer(CLAMP_LEFT,Rect2(395,285,190,75))
 	_clamp_right = _source_layer(CLAMP_RIGHT,Rect2(603,285,190,75))
 	# Keep the gripping feet on the globe's outer sockets; the centre stays
@@ -112,7 +87,7 @@ func _init() -> void:
 	_clamp_right_home = _clamp_right.position
 	for id in IDS:
 		var module: Control = ModuleView.new()
-		module.configure(id,MODULES[id].texture,MODULES[id].source_rect)
+		module.configure(id,MODULES[id],PortContract.source_rect(id))
 		module.visible = false
 		add_child(module)
 		_modules[id] = module
@@ -155,10 +130,14 @@ func show_snapshot(ids: Array, loads: Dictionary) -> void:
 		_pipes[id].set_workload(workload)
 		_modules[id].set_workload(workload)
 	_core_field.visible = float(_loads.get("core",0.0)) > 0.0
-	_gimbal_back.visible = _core_field.visible
-	_gimbal_front.visible = _core_field.visible
+	_gimbal_back.visible = true
+	_gimbal_front.visible = true
 	_field_material.set_shader_parameter("load_fraction",visibility_power(float(_loads.get("core",0.0))))
-	_set_clamp_travel(0.0)
+	_field_material.set_shader_parameter("route_loads",Vector4(
+		visibility_power(float(_loads.get("weapons",0.0))) if "weapons" in _enabled else 0.0,
+		visibility_power(float(_loads.get("defence",0.0))) if "defence" in _enabled else 0.0,
+		visibility_power(float(_loads.get("smelting",0.0))) if "smelting" in _enabled else 0.0,
+		visibility_power(float(_loads.get("condensation",0.0))) if "condensation" in _enabled else 0.0))
 	diagnostics.field_updates += 1
 
 func clear_snapshot() -> void:
@@ -171,7 +150,6 @@ func clear_snapshot() -> void:
 	_core_field.visible = false
 	_gimbal_back.visible = false
 	_gimbal_front.visible = false
-	_set_clamp_travel(0.0)
 	for id in IDS:
 		_pipes[id].visible = false
 		_modules[id].visible = false
@@ -223,18 +201,6 @@ func advance_visual_clock(game_time: float, paused: bool) -> bool:
 	if paused or elapsed == 0.0 or float(_loads.get("core",0.0)) <= 0.0: return false
 	_phase = fmod(_phase+elapsed,4096.0)
 	_field_material.set_shader_parameter("phase",_phase)
-	var cycle: float = fmod(_phase,5.2)
-	var bearing_frame: int = int(floor(cycle * GIMBAL_FRONT_FRAMES.size() / 5.2))
-	_gimbal_back.texture = GIMBAL_REAR_FRAMES[bearing_frame]
-	_gimbal_front.texture = GIMBAL_FRONT_FRAMES[bearing_frame]
-	var travel: float = 0.0
-	if cycle < 1.2:
-		travel = _smooth_travel(cycle/1.2)
-	elif cycle < 3.1:
-		travel = 1.0
-	elif cycle < 4.3:
-		travel = 1.0-_smooth_travel((cycle-3.1)/1.2)
-	_set_clamp_travel(travel)
 	for id in _enabled:
 		_pipes[id].set_visual_phase(_phase)
 		_modules[id].set_visual_phase(_phase)
@@ -246,14 +212,6 @@ func reset_clock() -> void:
 
 func visual_phase() -> float:
 	return _phase
-
-static func _smooth_travel(t: float) -> float:
-	return t*t*(3.0-2.0*t)
-
-func _set_clamp_travel(t: float) -> void:
-	var travel: float = t*10.0*VIEW_SIZE.x/SOURCE_SIZE.x
-	_clamp_left.position = _clamp_left_home + Vector2(travel,0.0)
-	_clamp_right.position = _clamp_right_home - Vector2(travel,0.0)
 
 func _full_layer(texture: Texture2D) -> Sprite2D:
 	var layer := Sprite2D.new()

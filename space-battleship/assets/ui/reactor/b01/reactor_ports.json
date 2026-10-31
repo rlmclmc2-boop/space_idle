@@ -1,0 +1,212 @@
+{
+  "source_size": [
+    1187,
+    1326
+  ],
+  "view_size": [
+    808,
+    835
+  ],
+  "devices": {
+    "weapons": {
+      "rect": [
+        42,
+        96,
+        313,
+        245
+      ],
+      "work_rect": [
+        42,
+        102,
+        185,
+        160
+      ],
+      "core_port": [
+        448,
+        249
+      ],
+      "controls": [
+        [
+          408,
+          220
+        ],
+        [
+          370,
+          195
+        ]
+      ],
+      "device_port": [
+        318,
+        208
+      ],
+      "axis_to_device": [
+        -0.972,
+        0.243
+      ],
+      "socket_radius": 26,
+      "socket_depth": 28,
+      "pipe_shell_rect": [
+        312,
+        182,
+        150,
+        85
+      ],
+      "pipe_front_rect": [
+        311,
+        178,
+        153,
+        93
+      ]
+    },
+    "defence": {
+      "rect": [
+        880,
+        82,
+        265,
+        250
+      ],
+      "work_rect": [
+        964,
+        91,
+        170,
+        170
+      ],
+      "core_port": [
+        741,
+        247
+      ],
+      "controls": [
+        [
+          789,
+          205
+        ],
+        [
+          848,
+          184
+        ]
+      ],
+      "device_port": [
+        916,
+        199
+      ],
+      "axis_to_device": [
+        0.976,
+        0.215
+      ],
+      "socket_radius": 26,
+      "socket_depth": 28,
+      "pipe_shell_rect": [
+        726,
+        171,
+        196,
+        93
+      ],
+      "pipe_front_rect": [
+        723,
+        168,
+        199,
+        99
+      ]
+    },
+    "smelting": {
+      "rect": [
+        55,
+        335,
+        295,
+        325
+      ],
+      "work_rect": [
+        118,
+        490,
+        170,
+        144
+      ],
+      "core_port": [
+        463,
+        450
+      ],
+      "controls": [
+        [
+          410,
+          479
+        ],
+        [
+          360,
+          533
+        ]
+      ],
+      "device_port": [
+        313,
+        517
+      ],
+      "axis_to_device": [
+        -0.947,
+        -0.322
+      ],
+      "socket_radius": 26,
+      "socket_depth": 28,
+      "pipe_shell_rect": [
+        305,
+        430,
+        169,
+        113
+      ],
+      "pipe_front_rect": [
+        304,
+        427,
+        172,
+        119
+      ]
+    },
+    "condensation": {
+      "rect": [
+        850,
+        390,
+        285,
+        275
+      ],
+      "work_rect": [
+        956,
+        448,
+        132,
+        170
+      ],
+      "core_port": [
+        729,
+        446
+      ],
+      "controls": [
+        [
+          776,
+          482
+        ],
+        [
+          819,
+          530
+        ]
+      ],
+      "device_port": [
+        889,
+        518
+      ],
+      "axis_to_device": [
+        0.986,
+        -0.169
+      ],
+      "socket_radius": 26,
+      "socket_depth": 28,
+      "pipe_shell_rect": [
+        715,
+        428,
+        178,
+        115
+      ],
+      "pipe_front_rect": [
+        713,
+        425,
+        181,
+        122
+      ]
+    }
+  }
+}

@@ -309,7 +309,7 @@ func _build() -> void:
 		BridgeTheme.apply_number_role(effect, "current")
 		_rows[id] = {"effect":effect, "name":name, "slider":slider, "track":track_visual, "ratio":ratio, "control":strip, "accent":accent, "icon":icon, "row_face":row_face}
 		for control in _rows[id].values(): control.visible = false
-	_equal = _button("均分", Rect2(670, 565, 60, 26), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)))
+	_equal = _button("均分", Rect2(670, 555, 60, 22), func(): _command(func(): return _owner.distribute(_inputs.call(), _publish)))
 	_equal.tooltip_text = "均分供能"
 	_upgrade_heading = _label(Vector2(612, 630), 74, 20)
 	_upgrade_heading.text = "等级"
@@ -493,15 +493,14 @@ func _layout_enabled_rows(ids: Array) -> void:
 		if ids.size() == 1:
 			# One device occupies a two-line native group within the same full
 			# console, rather than a lone 41px row floating in a blank plate.
-			_rows[id].accent.position = Vector2(73, 678)
-			_rows[id].accent.size.y = 88
-			_rows[id].icon.position = Vector2(88, 679)
-			_rows[id].name.position = Vector2(125, 679)
-			# Align the live ratio and its Owner multiplier on one reading line.
-			_rows[id].effect.position = Vector2(468, 734)
-			_rows[id].row_face.position = Vector2(88, 674)
-			_rows[id].row_face.size = Vector2(470, 105)
-			_rows[id].control.position = Vector2(194, 729)
+			_rows[id].accent.position = Vector2(73, 688)
+			_rows[id].accent.size.y = 59
+			_rows[id].icon.position = Vector2(88, 699)
+			_rows[id].name.position = Vector2(125, 699)
+			_rows[id].effect.position = Vector2(468, 704)
+			_rows[id].row_face.position = Vector2(88, 689)
+			_rows[id].row_face.size = Vector2(470, 59)
+			_rows[id].control.position = Vector2(194, 699)
 		else:
 			_rows[id].accent.position.x = 73
 			_rows[id].accent.size.y = 33
