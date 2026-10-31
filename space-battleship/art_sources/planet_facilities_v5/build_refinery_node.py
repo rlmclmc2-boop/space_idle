@@ -206,29 +206,30 @@ for side in (-1,1):
 
 # Furnace bridge sits on both load shoulders; the ore receiver remains visible
 # through the opening between the hoppers and under its dark inner lip.
-longitudinal_hull("Raised furnace pressure chamber",[
-    (-.25,0,1.35,.48,.30),(.03,0,1.45,.57,.40),
-    (.85,0,1.45,.57,.40),(1.04,0,1.32,.47,.28),
+chamber=longitudinal_hull("Arched furnace pressure chamber",[
+    (-.35,0,1.28,.38,.23),(-.18,0,1.48,.47,.32),
+    (.08,0,1.56,.52,.43),(.45,0,1.58,.55,.47),
+    (.82,0,1.56,.52,.43),(1.08,0,1.48,.46,.32),
+    (1.21,0,1.28,.38,.23),
 ],blue,root)
-crown=box("Furnace warm crown plate",(.47,0,1.85),
-    (1.06,.90,.13),ivory,root,.04)
-# The heat crown is a true open socket cut through its armor, with a recessed
-# glowing inner well rather than a bright object placed on the roof.
-bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=.28,depth=.26,
-                                    location=(.47,0,1.88))
+# The arch and hot well are one pressure shell. Its warm upper facets belong
+# to that mesh, while the lower blue chamber remains tied to both load cheeks.
+bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=.20,depth=.52,
+                                    location=(.47,0,1.96))
 heat_cut=bpy.context.object
-bpy.context.view_layer.objects.active=crown
-cut=crown.modifiers.new("Open top heat well","BOOLEAN")
+bpy.context.view_layer.objects.active=chamber
+cut=chamber.modifiers.new("Open top heat well","BOOLEAN")
 cut.operation="DIFFERENCE"
 cut.object=heat_cut
 bpy.ops.object.modifier_apply(modifier=cut.name)
 bpy.data.objects.remove(heat_cut,do_unlink=True)
-cylinder("Top heat well dark floor",(.47,0,1.855),.255,.025,navy,root,24)
-cylinder("Top heat well refractory lining",(.47,0,1.875),.225,.018,ochre,root,24)
-cylinder("Top heat well ember core",(.47,0,1.889),.115,.012,ember,root,24)
-for x in (-.04,.98):
-    box("Crown heat armor rib",(x,0,1.93),
-        (.11,.82,.06),ochre,root,.012)
+chamber.data.materials.append(ochre)
+for face in chamber.data.polygons:
+    if face.center.z > 1.66:
+        face.material_index=1
+cylinder("Top heat well dark floor",(.47,0,1.715),.19,.025,navy,root,24)
+cylinder("Top heat well refractory lining",(.47,0,1.735),.16,.018,ochre,root,24)
+cylinder("Top heat well ember core",(.47,0,1.75),.085,.012,ember,root,24)
 box("Open dark receiving mouth",(-.30,0,1.18),
     (.08,.61,.60),navy,root,.025)
 box("Hot furnace aperture",(-.352,0,1.19),
