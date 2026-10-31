@@ -278,9 +278,9 @@ func _refresh_card(id: String) -> void:
     var comparison: Dictionary=_comparison(id,str(fact.equipment_id))
     if id==_selected:last_comparison=comparison
     if not comparison.get("ok",false):
-        row.purchase.disabled=true;row.quantity.disabled=true;row.select.disabled=true
+        row.purchase.disabled=true;row.quantity.disabled=true;row.select.disabled=true;row.compare.disabled=true
         return
-    row.comparison=comparison
+    row.comparison=comparison;row.compare.disabled=false
     var quote: Dictionary=comparison.get("quote",{})
     var reason: String=str(comparison.get("payment_reason",comparison.get("reason","Unknown")))
     if int(row.mode)==2 and reason=="NoChange":
@@ -471,6 +471,7 @@ func _open_choices(id: String) -> void:
     if first!=null and first is Button:first.grab_focus()
 
 func _show_comparison(id: String, candidate: String) -> void:
+    if not _session.run_state.is_running():return
     _select_visual(id)
     var fact: Dictionary=_fact(id)
     var choice: String=str(fact.equipment_id) if candidate.is_empty() else candidate
