@@ -15,8 +15,8 @@ const FACILITY_ANGLES := {
 	"shipyard": PI - 0.78,
 }
 const RADIUS := 4.5
-const REAR_TRANSIT_WIDTH := 0.42
-const FRONT_TRANSIT_WIDTH := 0.70
+const REAR_TRANSIT_WIDTH := 0.50
+const FRONT_TRANSIT_WIDTH := 0.82
 const NODE_WIDTH := 1.30
 const TILT_Y := 0.66
 const TILT_Z := 0.751
