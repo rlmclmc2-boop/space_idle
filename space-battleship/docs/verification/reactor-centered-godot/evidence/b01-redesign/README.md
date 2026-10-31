@@ -2,13 +2,15 @@
 
 **状态（2026-10-31）：返修候选，视觉原审与用户确认未通过。** 旧 `519fd7ee82b5c54785bd53b4e36e50f768b6b6de` 分件初版被根协调者于整页检查退回：单路“升级”裁字、少态左板露深井、中央青圆/双环像平面图形，冷青管壳与原机体脱节。后续当前运行源码/资产为 `implement/reactor-centered-godot@3b2c31e2e1b525d7c8ffc1fc4935dc5b2f31f284`。本组已实看新版整页与动态，但**不能把作者自看写成原 Astra 或用户通过**；根在原审核链继续判定。
 
-当前同版实机资料已移入[独立归档 R4l 包](https://github.com/rlmclmc2-boop/space_idle/tree/97108363d8432ba93d7d42fe61cef051e6645f71/modules/reactor/r4l-3b2c31e2)，固定归档提交 `97108363d8432ba93d7d42fe61cef051e6645f71`。该包有受控 1/2/3/4 路真零/工作整屏、1/2 路真实鼠标 Owner 接纳、四路正常 1× 连续 10.000 秒/250 帧视频（SHA-256 `ba6ab727637941e88e893577fbb1bbb4967372e08bfc2975772ffdc335a973db`）、驱动、日志、缓存同相位画面与性能原窗。旧 519 及更早证据在同归档的 `archived-sources/reactor/space-battleship/docs/verification/reactor-centered-godot/`，仅供追溯，不定义当前画面。归档不回流旧片/日志到制作树。
+当前同版实机资料已移入[独立归档 R4l 包](https://github.com/rlmclmc2-boop/space_idle/tree/e4417edc644f1431195580da2f54e22a93a8cbee/modules/reactor/r4l-3b2c31e2)，固定归档提交 `e4417edc644f1431195580da2f54e22a93a8cbee`。该包有受控 1/2/3/4 路真零/工作整屏、1/2 路真实鼠标 Owner 接纳、四路正常 1× 连续 10.000 秒/250 帧视频（SHA-256 `ba6ab727637941e88e893577fbb1bbb4967372e08bfc2975772ffdc335a973db`）、驱动、日志、缓存同相位画面与性能原窗。旧 519 及更早证据在同归档的 `archived-sources/reactor/space-battleship/docs/verification/reactor-centered-godot/`，仅供追溯，不定义当前画面。归档不回流旧片/日志到制作树。
 
 ## 当前运行边界
 
 批准 B01 构图保留中央核心、四身份设备和短实体接续，已改为[独立部件与生成源](../../../../../assets/ui/reactor/b01/README.md)：背景、核心球、三维机械约束转子/钳臂、四机体、四条有前后遮挡的管壳及各自弧长内腔；真实已接纳负载驱动核心离散事件、管内向设备输送及设备专属局部工作。撤掉像按钮的中央圆 lens 样片，不回整张前景贴图+通用水波。原生 `Panel/HSlider/Button/Label` 不烘焙在美术图；少态左承托板全高，启用行按数量居中，无未开放空槽；升级按钮扩宽为 89px 以保 glyph 净空。动态仍需原视觉审核按整页/全片判断物理体量、主次、接口和跨页材料，局部修正不等于验收。
 
 共享宿主只提供外根 `808×900`、顶轨65、左内容 `0,65,808,835`，导航始于 x808；本组不改公共 `main`/战场/导航。下方操作面仅定向消费 `design/clear-zone-host@6e0e86c80d7cc7ee4f8623fca929c2f4828b6215` 的 R3 原生 style/字体角色；费用只展示 Owner 的 `cost_integer_texts`，调用公共 `PlayerText.resource_number`，不足数字逐项红且仅执行拒绝后提示，图标保原色。资源窄依赖取自 `feat/amount-safe-previews@f9244a30ad1843128aaa0a620c4dc3e4866685b2`，不是本页后台独审或全局验收。
+
+同版[预算鼠标证据](https://github.com/rlmclmc2-boop/space_idle/tree/e4417edc644f1431195580da2f54e22a93a8cbee/modules/reactor/r4l-3b2c31e2)已补：受控入账1000铀，MAX真购11级扣752、余248，后续×1报价272；点击前仅金额红、图标原色且升级字完整，点击后 Owner `InsufficientResources` 才短提示，MAX零可购仍走拒绝链。预算不是自然收入。
 
 正式 `unlock.xlsx` 仅 feature/reactor 第1关、condensation 第15关门槛，Owner 前三模块硬开放；受控1/2/3路是隔离 Owner 参数副本测试，不证明自然解锁。分配/均分直接 Owner 接纳，数量循环 ×1→×10→MAX 仅报价，独立升级才成交，真零关工作光，暂停/隐藏遵 Session 时钟与可见性。完整交互、布局和性能口径按[当前 M3](../../../../game-design/art/modules/reactor.md)、[13§2.4](../../../../game-design/13-art-interaction.md)、[07](../../../../game-design/07-verification.md)，不拿历史截图推规则。
 
