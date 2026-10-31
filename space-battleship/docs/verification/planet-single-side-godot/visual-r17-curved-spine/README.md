@@ -371,3 +371,9 @@
 前版工坊外侧整片象牙护板遮住橙色承力颊；直接开侧服务窗并把护板拆成两片后，原尺寸完整态仍像白色碎片挂在橙框下。本版保留可编辑 Blender 源中橙颊的真实布尔侧窗，但撤除外侧两片护板及其蓝色盒面，把连续下脚改成深青承力材质；窗框小件退到内侧，外面不再堆独立盒面。开放湾、真实环甲板通行、`GantrySlide`／`ToolArmSweep` 及原 built 归属不变。
 
 [本码 stage1／3／4、受控模拟 90° 和工作时钟 4 秒原屏](evidence/workshop-cheek-pressure-foot/)连同驱动、Blender／Godot 4.7.2 导入／脚本检查／运行日志及源码／资产／图 SHA 已固定。按原尺寸比较 stage4 和 90°，外侧白色外挂块减弱，湾口仍开放，工坊仍随本段转；**仅根部局部可审，工坊及四设施整体仍未过审**。橙颊体块细节密度仍低于后侧站／精炼，船坞长浅梁、炉下暗肩、站侧墙、自由端截线与环下分层也未解。本组静图不证明自然施工／领取、连续动态、完整环周、其余五类或性能。Godot 导入、检查和取图退出 0，`STARTUP_ERROR` 为空；运行时 ALSA 设备失败后使用 dummy driver。
+
+## 公共数字规范：星球现有余额的定向消费
+
+按整体组唯一 [runtime-clear-zone 交接](../../../ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md) 的公共数字节，从 `design/clear-zone-host@f688ea7c` **仅**精确取 `src/ui/player_text.gd`，Git blob `66555c0e`。现有 `Economy.balance_rows()` 已调用 `PlayerText.number(String)` 生成星球余额所用原行，星球 `planet_panel.gd::_update_wallet()` 按原资源 ID 在原三个单元更新文本，因此本模块没有新增格式器、余额缓存或控件。比率 `source_factor`、施工工作量、探索度、时钟及征服 `display_text` 未按 Amount 金额缩写；Owner 数值和提交路径未改。公共顶栏的 `economy.gd`／`zone_shell.gd` 两文件未接入本分支，用户后续允许暂不整合公共壳。
+
+[定向十例与主入口脚本检查](evidence/planet-shared-number/)由 Godot 4.7.2 执行，覆盖零、正常数、各档进位、科学记数和负小值；脚本检查退出 0。这只证实格式函数及当前脚本可加载，**没有**把数值变化、余额不足执行反馈或公共宿主同版整屏称为本次实测；星球当前没有独立报价行可标逐项不足。四设施及环的整体美术退回状态保持。
