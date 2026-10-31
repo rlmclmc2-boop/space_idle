@@ -1,10 +1,12 @@
 # B01 反应堆当前制作入口
 
-**状态（2026-10-31）：R5d 固定返修候选；根原审与用户确认未通过。** 最新运行源码/资产为 `implement/reactor-centered-godot@0c2abe55`（交接文档提交不改变运行代码）。R5c 已亲看 1/2/3/4 路整页、10 秒动态与 1/2 真点击；R5d 只收设备工作光的实际非零绘制范围，四路同相位完整左舞台像素零差，因此 R5c 画面可说明当前外观，但仍不是本版完整公共壳整屏。作者自看不是独立视觉通过。根对 R5b 整页提出旧宿主顶带、夹具材质和单路读序问题；后两项已在本组改，公共壳交整体组接入，不能因局部改善宣称整页完成。原 `3b2c31e2` 与更早证据只用于追溯。
+**状态（2026-10-31）：R5e 工作材质返修候选；原审尚未审本版。** 最新运行源码/资产为 `implement/reactor-centered-godot@d4085598`。根原审已收口 R5c：上部构图和实体连接可保留，工作态可读性退回。R5e 针对该项把设备底图中烘焙的工作光拆到独立、真实负载驱动的局部表面，并实机核了 1/2/3/4 路整页及正常 1× 连续动态；作者自看不是独立视觉通过。旧宿主顶带仍待整体组公共壳组合审，不能因上部局部改善宣称整页完成。原 `3b2c31e2` 与更早证据只用于追溯。
+
+[R5e 独立 Git 归档包](https://github.com/rlmclmc2-boop/space_idle/tree/cd9e2384cffe8d43797a4c963c74c5eb849c93fd/modules/reactor/r5e-d4085598)固定于 `cd9e2384cffe8d43797a4c963c74c5eb849c93fd`，17 个 blob 已逐个与原始资料核对。包含同一运行代码下四路数零/工作整屏、1/2 路真滑动、四路各25%的 10.000 秒/250帧/1440×900/25fps 正常 1× 视频、驱动及日志；视频 SHA-256 `3c37e5b61a06fdc2d318cadf2b796ff1f0db00a815acad0d2ba18111ebc1d49b`。R5c 的首次拾取引导约8.4秒遮核心下部只属于其原片覆盖缺口，不冒称 R5e 特效问题。
 
 [R5c 独立 Git 归档包](https://github.com/rlmclmc2-boop/space_idle/tree/4611cfe0205096b3c8504d53d12ab0d49690a7fc/modules/reactor/r5c-fc1be75d)固定于 `4611cfe0205096b3c8504d53d12ab0d49690a7fc`，17 个 blob 已逐个与原始资料核对，含 R5c 的 1/2/3/4 路真零/工作整屏、1/2 真鼠标接纳、四路正常 1× 连续 10.000 秒/250 帧视频、驱动和日志；视频 SHA-256 `09b19511da483495f636d4fb0350cf4524f857d51456a5cc83a4fd725afbfc85`。[R5b 固定包](https://github.com/rlmclmc2-boop/space_idle/tree/86fca64d8bc510dd846d373e49504856375cb384/modules/reactor/r5b-06e04db)保留同架构改夹具前的预算、性能和同相位证据；其画面不是 R5c 画面。旧 `R4l` 与更早材料仍留在原归档，不回流制作树。
 
-[R5d 性能与同相位归档](https://github.com/rlmclmc2-boop/space_idle/tree/38d908ee4c0334c53a56d49534f35eca070a2141/modules/reactor/r5d-0c2abe55)固定于 `38d908ee4c0334c53a56d49534f35eca070a2141`，8 个 blob 已核，含真实运行日志、驱动和像素对照图。R5c 的动态视频不冒充 R5d 录制，当前外观连续性由 R5d 同相位零差和限域计算支持。
+[R5d 性能与同相位归档](https://github.com/rlmclmc2-boop/space_idle/tree/38d908ee4c0334c53a56d49534f35eca070a2141/modules/reactor/r5d-0c2abe55)固定于 `38d908ee4c0334c53a56d49534f35eca070a2141`，8 个 blob 已核，含真实运行日志、驱动和像素对照图。该版同相位零差只证明 R5d 与 R5c 的关系；R5e 修改工作材质和局部绘制范围，不能援引前版零差或性能数字为本版通过。
 
 ## 本版画面与运行边界
 
@@ -15,6 +17,8 @@ B01 保留中央球形核心、四身份设备和各自短实体管线。新版�
 正式 `unlock.xlsx` 仅 feature/reactor 第1关、condensation 第15关门槛；Owner 前三模块硬开放。1/2/3 路是隔离参数副本，4 路受控开放，不证明自然解锁。分配和均分直接 Owner 接纳，真零关工作光；暂停/隐藏按 Session 时钟与可见性。整数资源事实来自 `feat/amount-safe-previews@f9244a30ad1843128aaa0a620c4dc3e4866685b2`，UI 不重算。规则和视觉口径见[当前 M3](../../../../game-design/art/modules/reactor.md)、[13§2.4](../../../../game-design/13-art-interaction.md)与[07](../../../../game-design/07-verification.md)。
 
 ## 性能：上次已报 → R5b 定位 → R5d 限域
+
+以下数字截止 R5d。R5e 将工作贴图加回四设备的局部非零包围域，尚未在目标机测性能；这些旧测量只作为成本定位，不是 R5e 的帧率验收。
 
 上次向用户报告的**旧 packed 架构**为 `31.29→32.33` 和 `31.61→32.23 fps`；R5b 源/分层/控制台均变，不跨架构相减。R5c 只改两张同尺寸夹具图和一处文字位置，未另做性能窗。下面先列 R5b 同架构定位，随后列当前 R5d 同实例实测。均为 Godot 4.7.2、Xorg、Mesa llvmpipe、OpenGL Compatibility、1440×900、正常 1×、四路各25%、不录屏；每窗6秒 ABAB、战场自主推进，原始帧样本见各自归档：
 
