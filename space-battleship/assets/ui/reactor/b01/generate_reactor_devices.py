@@ -80,6 +80,37 @@ def material(name, color, metallic=0.0, roughness=.35, emission=0.0, alpha=1.0):
     return mat
 
 
+def molten_material():
+    """A crusted, relief-lit surface with hot seams rather than a flat orange decal."""
+    mat=material("crusted liquid iron",(.56,.16,.025),.13,.32)
+    nodes=mat.node_tree.nodes
+    links=mat.node_tree.links
+    bsdf=nodes.get("Principled BSDF")
+    noise=nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value=7.5
+    noise.inputs["Detail"].default_value=3.0
+    noise.inputs["Roughness"].default_value=.62
+    noise.inputs["Distortion"].default_value=.38
+    colors=nodes.new("ShaderNodeValToRGB")
+    ramp=colors.color_ramp
+    ramp.elements[0].position=.26
+    ramp.elements[0].color=(.12,.023,.007,1)
+    ramp.elements[1].position=.68
+    ramp.elements[1].color=(1.0,.55,.075,1)
+    middle=ramp.elements.new(.48)
+    middle.color=(.72,.13,.012,1)
+    links.new(noise.outputs["Fac"],colors.inputs["Fac"])
+    links.new(colors.outputs["Color"],bsdf.inputs["Base Color"])
+    links.new(colors.outputs["Color"],bsdf.inputs["Emission Color"])
+    bsdf.inputs["Emission Strength"].default_value=.75
+    relief=nodes.new("ShaderNodeBump")
+    relief.inputs["Strength"].default_value=.28
+    relief.inputs["Distance"].default_value=.5
+    links.new(noise.outputs["Fac"],relief.inputs["Height"])
+    links.new(relief.outputs["Normal"],bsdf.inputs["Normal"])
+    return mat
+
+
 def setup():
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
@@ -95,7 +126,7 @@ def setup():
         "blue_lit": material("shield field filaments", (.025,.40,.85), .05,.2,1.3),
         "orange": material("furnace liner", (.24,.075,.022), .18,.53,.035),
         "slag": material("unpowered cooled charge", (.16,.075,.038), .12,.63,.012),
-        "orange_lit": material("molten charge", (1.0,.28,.025), .04,.22,1.0),
+        "orange_lit": molten_material(),
         "violet": material("unpowered crystal glass", (.035,.016,.065), .16,.28,.018),
         "violet_lit": material("crystal facet", (.34,.11,.57), .12,.19,.42),
         "violet_glint": material("crystal cleavage glint", (.43,.25,.65), .42,.13,.12),
@@ -198,6 +229,33 @@ def cast_plate(name,outline,z,depth,mat,bevel=3):
         mod=ob.modifiers.new("cast arris","BEVEL")
         mod.width,mod.segments=bevel,3
         ob.modifiers.new("weighted normals","WEIGHTED_NORMAL")
+    return ob
+
+
+def molten_bath(name,outline,mat):
+    """A shallow domed liquid volume constrained by the refractory banks."""
+    center=Vector((sum(p[0] for p in outline)/len(outline),
+                   sum(p[1] for p in outline)/len(outline)))
+    verts=[]
+    for factor,z in ((1.0,94.0),(.72,96.3),(.34,97.8)):
+        for x,y in outline:
+            p=center+(Vector((x,y))-center)*factor
+            verts.append((p.x,-p.y,z))
+    verts.append((center.x,-center.y,98.1))
+    count=len(outline)
+    faces=[]
+    for ring in range(2):
+        for i in range(count):
+            j=(i+1)%count
+            faces.append((ring*count+i,ring*count+j,
+                          (ring+1)*count+j,(ring+1)*count+i))
+    faces.extend(((2*count+i,2*count+(i+1)%count,3*count) for i in range(count)))
+    mesh=bpy.data.meshes.new(name)
+    mesh.from_pydata(verts,[],faces)
+    mesh.materials.append(mat)
+    ob=bpy.data.objects.new(name,mesh)
+    bpy.context.collection.objects.link(ob)
+    for face in mesh.polygons:face.use_smooth=True
     return ob
 
 
@@ -534,19 +592,28 @@ def smelting(spec,m):
     cube("molten aperture",179,532,112,90,5,71,m["black"],6)
     cube("firebrick throat",179,536,100,76,6,78,m["orange"],5)
     cube("recessed tap well",179,541,88,63,6,84,m["black"],6)
-    cast_plate("refractory catch basin",[(143,553),(150,528),(176,519),
-               (204,529),(217,550),(204,568),(154,568)],86,4,m["dark"],3)
-    rod("refractory feed nozzle",(170,509),(168,535),7,84,m["dark"],16)
-    rod("contained vertical feed",(170,514),(168,534),2.8,92,m["orange_lit"],12)
-    cast_plate("molten charge surface",[(149,547),(157,532),(174,527),
-               (191,529),(205,541),(210,552),(199,560),(181,553),
-               (163,558)],90,3,m["orange"],2)
-    for i,points in enumerate(([(157,539),(172,539),(188,547),(204,557)],
-                               [(167,532),(181,540),(195,548),(207,557)],
-                               [(180,531),(193,540),(205,550)])):
-        for a,b in zip(points,points[1:]):
-            rod("contained molten vein %d"%i,a,b,2.8-i*.35,93,m["orange_lit"],12)
-    rod("furnace pour seam",(199,553),(207,561),3,92,m["orange_lit"],12)
+    cast_plate("refractory catch basin",[(136,552),(141,522),(160,510),
+               (196,511),(219,528),(223,554),(210,570),(149,570)],86,4,m["dark"],3)
+    # The charge is collected in a broad recessed vessel.  Its exposed liquid
+    # surface is much wider than the feed stream, and the dark raised shore
+    # gives it a visible wall instead of letting the orange read as tubing.
+    cast_plate("cold catch floor",[(143,542),(148,528),(163,523),(190,524),
+               (208,536),(214,552),(204,561),(177,556),(153,558)],91,3,m["black"],2)
+    molten_bath("molten collection bath",[(151,542),(157,534),(172,531),
+                (190,533),(202,542),(206,551),(196,554),(177,548),
+                (159,552)],m["orange_lit"])
+    cast_plate("left refractory bank",[(140,543),(147,526),(159,518),
+               (172,519),(158,535),(153,553),(146,562),(139,554)],98,5,m["slag"],2)
+    cast_plate("right refractory bank",[(187,516),(202,522),(216,537),
+               (219,555),(211,565),(204,557),(204,541),(190,531)],98,5,m["slag"],2)
+    rod("feed pipe jacket",(170,488),(170,520),8,105,m["steel"],16)
+    disc("feed nozzle dark mouth",170,521,8,3,109,m["black"],24)
+    rod("molten fall",(170,522),(171,536),2.6,108,m["orange_lit"],12)
+    disc("molten impact crown",171,537,7,2,100,m["orange_lit"],20)
+    cast_plate("front refractory sill",[(144,559),(157,561),(177,558),
+               (199,563),(210,569),(209,573),(183,568),(159,569),
+               (144,565)],95,4,m["dark"],2)
+    rod("molten tap spill",(199,552),(216,567),4.2,109,m["orange_lit"],12)
     for sx in (-1,1):
         cube("refractory throat jamb",179+sx*53,536,14,87,13,86,m["silver"],3)
         cube("jamb black heat slot",179+sx*53,535,4,66,3,94,m["dark"],1)
@@ -561,7 +628,6 @@ def smelting(spec,m):
     rod("exhaust ferrule",(104,419),(104,405),19,39,m["silver"])
     rod("molten delivery",(196,569),(282,617),13,39,m["dark"])
     rod("covered tapping throat",(203,560),(239,590),11,38,m["steel"])
-    rod("tapping sight slit",(201,557),(213,566),2.8,53,m["orange_lit"],12)
     tubing("left cooling coil",[(88,534),(74,534),(70,581),(82,603)],5,44,m["brass"])
     tubing("right pressure return",[(254,463),(284,466),(299,488),(298,520)],5,45,m["dark"])
     for x in (106,145,217,251):

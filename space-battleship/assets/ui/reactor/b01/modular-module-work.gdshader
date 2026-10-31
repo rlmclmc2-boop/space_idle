@@ -61,7 +61,7 @@ void fragment() {
         float sweep_y = (q.y-0.412)/0.31;
         float visible_arc = 1.0-smoothstep(0.82,1.0,abs(sweep_y));
         float bow = sqrt(max(0.0,1.0-sweep_y*sweep_y));
-        float dome_x = 0.642+(0.045+0.370*establish)*bow;
+        float dome_x = 0.642+(0.045+0.300*establish)*bow;
         float shield_shell = band(q.x,dome_x,0.010)*visible_arc;
         float shell_depth = band(q.x,dome_x-0.030,0.008)*visible_arc;
         float shell_volume = smoothstep(0.70,0.75,q.x)
@@ -69,24 +69,31 @@ void fragment() {
         float lens = surface.a;
         material = 0.04+0.22*lattice;
         action = ((front*0.95+lattice*0.31+curved*0.25+glancing*0.12)*lens
-                  +shield_shell*1.22+shell_depth*0.33+shell_volume*0.055)*load;
+                  +shield_shell*1.22+shell_depth*0.33+shell_volume*0.09)*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
-        float pour = 0.25+0.75*smoothstep(0.18,0.43,fract(phase*0.29));
+        float pour = 0.55+0.45*smoothstep(0.18,0.43,fract(phase*0.29));
         // These coordinates are measured in the aligned rendered work crop,
         // after the Blender camera and shared port translation.
-        vec2 throat=vec2(0.475,0.41);
-        vec2 tap=vec2(0.615,0.54);
+        vec2 throat=vec2(0.49,0.41);
+        vec2 elbow=vec2(0.49,0.46);
+        vec2 tap=vec2(0.61,0.54);
         float pool=disk(q,vec2(0.55,0.49),vec2(0.105,0.055));
-        float slot=conduit(q,vec2(0.52,0.44),tap,0.010);
+        float slot=conduit(q,elbow,tap,0.010);
         float fall=fract(phase*0.72);
-        float drop=disk(q,mix(throat,tap,fall),vec2(0.023,0.025));
-        float heat_ribbons = 0.5+0.5*sin(q.x*41.0+phase*2.4)*sin(q.y*32.0-phase*3.2);
-        material = 0.08+pour*(0.25+0.50*heat_ribbons);
+        vec2 bead_pos=fall<0.28 ? mix(throat,elbow,fall/0.28)
+                                  : mix(elbow,tap,(fall-0.28)/0.72);
+        float drop=disk(q,bead_pos,vec2(0.017,0.019))*surface.a;
+        float heat_ribbons = 0.5+0.5*sin(q.x*66.0+phase*2.4)*sin(q.y*38.0-phase*3.2);
+        material = 0.14+pour*(0.29+0.72*heat_ribbons);
         float heat_bounce = disk(q,vec2(0.54,0.47),vec2(0.27,0.23))
                             -disk(q,vec2(0.54,0.47),vec2(0.16,0.12));
-        action = (pool*0.06+slot*0.10+drop*1.10+heat_bounce*0.04)*pour*load;
+        float inlet_glow=disk(q,vec2(0.51,0.49),vec2(0.028,0.024));
+        float outlet_glow=disk(q,vec2(0.69,0.57),vec2(0.03,0.023));
+        action = (pool*surface.a*0.04+slot*surface.a*0.08+drop*0.42
+                  +inlet_glow*surface.a*0.25+outlet_glow*surface.a*0.34
+                  +heat_bounce*0.04)*pour*load;
         hue = vec3(1.0,0.30,0.025);
     } else {
         // Five seed sockets feed a growth front up distinct crystal columns.
