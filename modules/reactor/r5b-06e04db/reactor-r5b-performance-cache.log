@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+PROFILE_CONTEXT pid=141610 renderer=false size=(1440, 900) speed=1 load=1.0 modules=[["weapons", 0.25], ["defence", 0.25], ["smelting", 0.25], ["condensation", 0.25]]
+PROFILE product_uncached_A1 frames=203 wall_ms=6012.735 fps=33.7616741798865 mean_ms=29.6193842364532 p50_ms=28.446 p95_ms=35.513 stage_draw_delta=0 stage_active_delta=202 game_seconds=5.98333333333334
+PROFILE product_cache_B1 frames=207 wall_ms=6017.948 fps=34.3971067878951 mean_ms=29.0722125603865 p50_ms=28.635 p95_ms=34.539 stage_draw_delta=0 stage_active_delta=184 game_seconds=5.50000000000027
+PROFILE product_uncached_A2 frames=189 wall_ms=6001.974 fps=31.4896399084701 mean_ms=31.7564761904762 p50_ms=30.296 p95_ms=36.834 stage_draw_delta=0 stage_active_delta=189 game_seconds=5.99999999999981
+PROFILE product_cache_B2 frames=200 wall_ms=6013.75 fps=33.2571191020578 mean_ms=30.06875 p50_ms=28.941 p95_ms=35.279 stage_draw_delta=0 stage_active_delta=200 game_seconds=5.99999999999966
