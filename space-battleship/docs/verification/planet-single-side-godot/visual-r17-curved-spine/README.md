@@ -26,6 +26,8 @@ bd4cd488 的受影响完整态默认、站单建 25° 与完整态 25°／70° �
 
 51af7808 的船坞受影响完整态默认、25°／70° 原图、取图脚本、导入及取图日志固定于[独立归档 346671c7](https://github.com/rlmclmc2-boop/space_idle/tree/346671c781ce7b2ace49381b22fe01d51a910488)；10 件文件逐件从 Git blob 复核 SHA256。艇可读性改动不代表全部四设施整体通过。
 
+同一源码的站＋炉、站＋炉＋工坊两个模拟建造中间态固定于[独立归档 9cf48120](https://github.com/rlmclmc2-boop/space_idle/tree/9cf4812053bfc50e20c277b914b180961ec4a0de)；4 件图证文件从 Git blob 复核 SHA256。两建时前弧保持空白，三建时工坊段以独立终端收尾，不扩称自然施工或整体通过。
+
 ## 有效契约与持续交付
 
 四设施业务领取、人员及建造状态继续读现有已接纳快照；星球余额原位读 Economy balance_rows()。资源整数接口已按 Owner f9244a30 逐方法消费至本分支，定向证据在[归档 65b689a4](https://github.com/rlmclmc2-boop/space_idle/tree/65b689a4ed17fc8f38d6b0cc807fe7abc77df55f)，不称完整玩法验收；炉页既有 presentation_model 缺口归原组，不阻塞星球形体。保存去 configHash 绑定的本分支方法整合见[归档 1ac375fa](https://github.com/rlmclmc2-boop/space_idle/tree/1ac375fa7ba7061d512eabef3e7da6f512e7b060)，不重改规则。公共控件／图标由项目源维护，不等待 Figma 或公共壳。
