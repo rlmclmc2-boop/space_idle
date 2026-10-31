@@ -106,9 +106,9 @@ def longitudinal_hull(name, sections, mat, parent):
 def vaulted_chamber(name, parent):
     """One pressure shell from both cheek bearings over the furnace hot well."""
     stations = [
-        (-.50, .32, 1.71), (-.35, .43, 1.87), (-.15, .52, 2.01),
-        (.12, .56, 2.10), (.43, .57, 2.14), (.73, .55, 2.08),
-        (.98, .47, 1.94), (1.18, .34, 1.74),
+        (-.50, .32, 1.71), (-.35, .43, 1.94), (-.15, .52, 2.18),
+        (.12, .56, 2.35), (.43, .57, 2.43), (.73, .55, 2.31),
+        (.98, .47, 2.04), (1.18, .34, 1.74),
     ]
     # The lower corners enter the original cheek volume. The curved upper
     # crown is part of the same closed mesh, including its inlet/end walls.
@@ -242,8 +242,8 @@ for side in (-1,1):
 chamber=vaulted_chamber("Arched furnace pressure chamber",root)
 # The arch and hot well are one pressure shell. Its warm upper facets belong
 # to that mesh, while the lower blue chamber remains tied to both load cheeks.
-bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=.20,depth=.52,
-                                    location=(.47,0,1.96))
+bpy.ops.mesh.primitive_cylinder_add(vertices=24,radius=.20,depth=.65,
+                                    location=(.47,0,2.21))
 heat_cut=bpy.context.object
 bpy.context.view_layer.objects.active=chamber
 cut=chamber.modifiers.new("Open top heat well","BOOLEAN")
@@ -255,9 +255,9 @@ chamber.data.materials.append(ochre)
 for face in chamber.data.polygons:
     if face.center.z > 1.50 and face.normal.z > .12:
         face.material_index=1
-cylinder("Top heat well dark floor",(.47,0,1.715),.19,.025,navy,root,24)
-cylinder("Top heat well refractory lining",(.47,0,1.735),.16,.018,ochre,root,24)
-cylinder("Top heat well ember core",(.47,0,1.75),.085,.012,ember,root,24)
+cylinder("Top heat well dark floor",(.47,0,1.915),.19,.025,navy,root,24)
+cylinder("Top heat well refractory lining",(.47,0,1.935),.16,.018,ochre,root,24)
+cylinder("Top heat well ember core",(.47,0,1.95),.085,.012,ember,root,24)
 box("Open dark receiving mouth",(-.30,0,1.18),
     (.08,.61,.60),navy,root,.025)
 box("Hot furnace aperture",(-.352,0,1.19),
