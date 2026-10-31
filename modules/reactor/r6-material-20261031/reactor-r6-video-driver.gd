@@ -1,0 +1,71 @@
+extends SceneTree
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func frames(n: int) -> void:
+	for i in n: await process_frame
+
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var game: Node2D = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(4)
+	var session = game.session
+	print("STARTUP ", game.startup_error, " session=", session != null)
+	assert(session != null and game.startup_error.is_empty())
+	assert(session.current_chrono_speed() == 1)
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	clear_guidance(session, game)
+	game._select_left_module("reactor")
+	await frames(5)
+	var scene = game.reactor_scene
+	assert(scene != null and scene.visible)
+	clear_guidance(session, game)
+	await frames(2)
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("/tmp/reactor-r6-whole-zero-1440x900.png")
+	var amount: Dictionary = session.amount_api.apply("from_decimal", ["1000"])
+	assert(amount.ok)
+	assert(session.economy.credit_yield("2", amount.value, session.wall_time, session.game_time).ok)
+	await frames(3)
+	scene._equal.pressed.emit()
+	await frames(5)
+	clear_guidance(session, game)
+	var model: Dictionary = session.reactor_system.presentation_model()
+	assert(scene.last_result.get("ok", false))
+	assert(float(model.load) > 0.0)
+	for row in model.modules:
+		assert(float(row.load) > 0.0)
+	# Let the native command notice expire before the continuous capture begins.
+	await create_timer(2.3).timeout
+	clear_guidance(session, game)
+	await frames(2)
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("/tmp/reactor-r6-whole-active-1440x900.png")
+	assert(scene._quote.ok and scene._quote.can_purchase)
+	var game_start: float = session.game_time
+	var phase_start: float = scene._stage.visual_phase()
+	print("VIDEO_READY load=", model.load, " modules=", model.modules, " game_time=", game_start, " phase=", phase_start)
+	await RenderingServer.frame_post_draw
+	FileAccess.open("/tmp/reactor-r6-video-ready", FileAccess.WRITE).store_string("ready\n")
+	for second in 20:
+		await create_timer(1.0).timeout
+		clear_guidance(session, game)
+	print("VIDEO_END wall_seconds=35 game_seconds=", session.game_time - game_start, " phase_delta=", scene._stage.visual_phase() - phase_start, " active_frames=", scene._stage.diagnostics.active_frames, " field_updates=", scene._stage.diagnostics.field_updates)
+	quit()
