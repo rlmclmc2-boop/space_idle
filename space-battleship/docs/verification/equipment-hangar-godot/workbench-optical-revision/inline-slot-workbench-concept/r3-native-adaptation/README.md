@@ -9,3 +9,5 @@
 整体正在固定最小R3材质源；本组需精确plate／card九宫格源矩形与边距、ordinary／primary／select各normal／hover／pressed／disabled／focus和选中态材质／文字角色。当前可用数字角色190a已接；不整棵覆盖BridgeTheme或从设计截图提纹理。源到后在原EquipmentSurface、原card、原select和原buttons替换材质，不新增层盖旧控件，复用现有真实2／5／8及长MAX／双费／不足／tooltip／边界驱动采同版完整图与动作。
 
 后台a83最新共同入口称奖励恢复校验和chrono分帧仍待修，不把它称最终全局整数源。本分支此前仅接装备报价／钱包支付必要域，未接上述奖励／chrono方法；该窄接事实和原运行证据保持，新后台源由父／原组固定后再核本组必要范围，不自主扩整棵Owner树。
+
+后台新固定修复 `f9244a30ad1843128aaa0a620c4dc3e4866685b2` 已按本组必要域接入：只更新原字节 `resource_amounts.gd`（valid_id共用谓词；whole_map原非法键条件不变），Equipment／Economy源相对a83无差。GameSession chrono／超空奖励与Hyperspace奖励恢复方法未在本组旧闭包接入，不强塞无关两文件。父提供同一Astra限定复核已过事实，非全局／main验收；精确范围见[整数源记录](integer-source-f924.json)。当前只解析核，旧22395图hash仍属历史，最新R3实机将绑定本helper。

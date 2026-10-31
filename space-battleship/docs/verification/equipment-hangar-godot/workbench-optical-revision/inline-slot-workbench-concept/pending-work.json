@@ -38,7 +38,9 @@
         "drop/sample/credit_yield production changes",
         "budget_changed signal from older source tree"
       ],
-      "display_boundary": "Owner integer_text/cost_texts extreme ×10^ strings intentionally not reparsed. Equipment retains authoritative canonical Amount costs and native to_display raw, consumed by fixed resource_number; no UI ceil or private resource amount math."
+      "display_boundary": "Owner integer_text/cost_texts extreme ×10^ strings intentionally not reparsed. Equipment retains authoritative canonical Amount costs and native to_display raw, consumed by fixed resource_number; no UI ceil or private resource amount math.",
+      "latest_fix_commit": "f9244a30ad1843128aaa0a620c4dc3e4866685b2",
+      "latest_fix_scope": "resource_amounts.gd exact latest bytes; Session/Hyperspace fix methods outside current equipment closure, not imported"
     }
   },
   "independent_implementation_remaining": [
@@ -47,7 +49,6 @@
   ],
   "remaining": [
     "Overall fixed R3 plate/key/select material state source needed; current190a number roles already integrated",
-    "New fixed backend integer candidate confirmation for equipment necessary domain after a83 global review blockers",
     "Root/original review of latest native R3 whole screens/actions after implementation"
   ],
   "actual_compaction": false,
