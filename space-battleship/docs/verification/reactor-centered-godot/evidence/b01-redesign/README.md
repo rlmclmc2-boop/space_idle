@@ -27,6 +27,6 @@
 - [10秒新结构运动预览](https://github.com/rlmclmc2-boop/space_idle/blob/73ee39c08b03ff6a4845f7d317baf4cdedc92874/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/modular-preview-10s-1440x900-25fps.mp4)录于最后资产再生成之前，仅证明当时运动；当前最终贴图连续片缺失。日志`wall_seconds=35`是硬编码文字，不能当实测时长。完整版本/hash见[历史新结构记录](HISTORY.md#用户返修二可组合-b01-舞台的当前实现与验证边界)。
 - 新架构尚无可比性能配对，目标机约10fps损失未证明消除。旧31–32fps软件渲染短窗属于旧packed舞台，不能移植到新结构；性能报告按[07](../../../../game-design/07-verification.md#全项目性能优化报告的用户基线)追溯最近实际送达用户的指标。
 - R3共同面层/完整状态依赖[整体入口](../../../../ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)；整数Owner源为`f9244a30`，消费者尚需核范围，不混入旧公共壳代码或扩大只读复核结论。
-- M3旧“整组草稿确认/还原”与当前B01直接操作的语义是否已被新批准覆盖，列[待裁定D10](../../../../game-design/review/conflicts.md#d10-b01分配提交语义待裁定)。保留原合同，不由此整理改玩法或恢复旧控制台。
+- 用户明确取消确认/还原，分配操作直接沿原所有者提交，见[已关闭D10](../../../../game-design/review/conflicts.md#d10)。预览/接纳分离仍有效，不恢复旧确认控件或控制台。
 
 [完整历史](HISTORY.md)保留265行过程及各版本图/片/性能。旧“末节/当前packed/待新图确认”不再是接替指令。

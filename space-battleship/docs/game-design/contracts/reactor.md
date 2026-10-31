@@ -3,7 +3,7 @@
 [回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；保留原第14章节号及原版本状态，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
 [本组版本状态、Amount边界与草稿失效](../14-ui-contracts.md#9-已审设计反应炉整组草稿与科研预算的amount安全预览)。
 
-B01分配提交语义待核[D10](../review/conflicts.md#d10-b01分配提交语义待裁定)；保留本节预览/接纳分离合同，不由当前UI调用方式默改设计。
+用户已明确取消分配确认/还原，见[D10](../review/conflicts.md#d10)。分配操作直接沿原所有者提交；本节预览/接纳分离是后台边界，不要求额外确认控件。
 
 ## 2. 主线现有模块连接
 
@@ -35,11 +35,11 @@ B01分配提交语义待核[D10](../review/conflicts.md#d10-b01分配提交语�
 
 最小成功输出：`source`只给外部必要的容量、开放设备ID及配置顺序等公开结果，可复用`current`对应值，不重复暴露输入分解；`current/target`各给`capacity/allocated/remaining`，设备行给`id/manual/free/effective/factor`的Amount文本。容量输入因子、免费输入比例及人员/算法等内部组成不透给UI作比较或管理失效。C来自原_capacity；free的实际Amount读数仍展示且不占手动容量，effective及factor复用原_evaluate，不能把免费比例当最终伤害比例。target是同快照的整组效果比较，不承诺完整战斗收益。比例条可另给有限显示比例，C为0时比例为0，不产生NaN。
 
-**选定的整组提交：** 拟增所有者内最小具名金额入口`Reactor.apply_allocation_plan(amount_texts: Dictionary, inputs: Dictionary, publish: Callable) -> Dictionary`；装配负责即时提供inputs/publish，UI只提交已显示并确认的全套canonical金额目标。比例草稿只用于预览生成目标，命令不接收基点、不按新容量重算金额。映射键必须恰为提交时开放设备ID集合，含0值项；金额须为规范非负整数Amount，不重取整改变确认值。
+**选定的整组提交：** 拟增所有者内最小具名金额入口`Reactor.apply_allocation_plan(amount_texts: Dictionary, inputs: Dictionary, publish: Callable) -> Dictionary`；装配负责即时提供inputs/publish，UI只提交本次操作选定的全套canonical金额目标。比例草稿只用于预览生成目标，命令不接收基点、不按新容量重算金额。映射键必须恰为提交时开放设备ID集合，含0值项；金额须为规范非负整数Amount，不重取整改变提交值。
 
-所有者按提交时容量/开放集合一次校验完整映射与合计，不能容纳或集合变化即普通拒绝，不补项、不按设备钳制；复用原候选求值后仍须核对全部手动值等于确认金额。容量改变但仍能容纳、集合未变时保留确认金额并允许接纳，不引入容量快照锁。通过后形成一个所属模块候选，一次求值、接纳及既有发布；普通拒绝不写入任何本组目标，无逐设备部分成功，原fault仍按第5节停机，不声称可回滚native故障。
+所有者按提交时容量/开放集合一次校验完整映射与合计，不能容纳或集合变化即普通拒绝，不补项、不按设备钳制；复用原候选求值后仍须核对全部手动值等于提交金额。容量改变但仍能容纳、集合未变时保留提交金额并允许接纳，不引入容量快照锁。通过后形成一个所属模块候选，一次求值、接纳及既有发布；普通拒绝不写入任何本组目标，无逐设备部分成功，原fault仍按第5节停机，不声称可回滚native故障。
 
-成功后当前真实分配/免费/有效量及效果替换旧比较；不把旧预览的倍率当承诺。现有allocate_text仍供单设备动作，新整组确认不让UI管理先减后增、多次发布或差异重试。均分保持确认后**一次distribute**，明确按提交时状态均分；预览的容量/效果不锁住提交时容量，实际回执优先。
+成功后当前真实分配/免费/有效量及效果替换旧比较；不把旧预览的倍率当承诺。现有allocate_text仍供单设备动作，整组提交不让UI管理先减后增、多次发布或差异重试。均分操作直接**一次distribute**，明确按提交时状态均分；预览的容量/效果不锁住提交时容量，实际回执优先。
 
 <a id="921-待审增补真实展示与局部变化通知"></a>
 
@@ -50,7 +50,7 @@ B01分配提交语义待核[D10](../review/conflicts.md#d10-b01分配提交语�
 | 运行候选出口 | 最小职责与字段 |
 |---|---|
 | `Reactor.presentation_model()` | 仅读已接纳状态与容量/效果缓存，给ok、level、capacity/allocated/remaining规范Amount文本、can_allocate/reason、modules及core load；不带预算/购级报价，不把即时inputs或prepared预测为current。缺已接纳缓存给ReactorSnapshotUnavailable，不伪造0或factor=1。modules沿已接纳开放ID及顺序，给id/enabled、manual/free/effective/factor规范文本、has_free及有限ratio/load。当前准入开放集合与已接纳缓存不一致时明确不可用，不混成一个成功快照。 |
-| `Reactor.purchase_preview(can_pay: Callable)` | 仅当前消费者所需+1；复用原_purchase的脱离候选及_quote/等级范围判断，给原costs规范文本、can_purchase/reason。count固定1，不新增MAX；付款能力只用注入Economy.can_pay。金额/文本只按已接纳level和会话内固定配置重算/复用，预算变化只重读可支付性；确认仍原purchase重验和发布。显示cost_text/message由宿主/前端按资源ID与原原因本地化，不解析Amount或计算费用。 |
+| `Reactor.purchase_preview(can_pay: Callable)` | 仅当前消费者所需+1；复用原_purchase的脱离候选及_quote/等级范围判断，给原costs规范文本、can_purchase/reason。count固定1，不新增MAX；付款能力只用注入Economy.can_pay。金额/文本只按已接纳level和会话内固定配置重算/复用，预算变化只重读可支付性；执行仍由原purchase重验和发布。显示cost_text/message由宿主/前端按资源ID与原原因本地化，不解析Amount或计算费用。 |
 | 原`allocation_plan_preview`及实际结果的current/target行 | 在共用_plan_readings中补同口径ratio/load/has_free；沿现行_amounts/shares/equal准备求值，不另写均分或效果算法。current仍已接纳，target仍脱离候选；命令及其canonical金额、拒绝顺序和回执原字段不变。 |
 | `Reactor.presentation_changed(changes: PackedStringArray)` | 仅该Reactor实例的局部deferred合并通知；变化类别限level/capacity/availability/allocation/free/effect/readiness。只标记失效，不携带或接纳候选。level/availability才影响+1报价/准入；当前/来源相关变化才重读场景与必要草稿比较。 |
 | `Economy.budget_changed(resource_ids: PackedStringArray)` | 仅真实已接纳余额的局部deferred变化提示；由Economy拥有，保留原display_changed语义。宿主仅把与+1 costs资源集合相交的事件标记为报价可支付性失效；不触发场景/草稿预览/效果/滑杆重建。 |
@@ -65,7 +65,7 @@ Economy在真正钱包写入点安排独立deferred检查，包括notify=false�
 
 UI只订阅本实例及相关预算资源；通知只置局部dirty，下一可见显示帧分别消费：presentation dirty读取模型/必要比较，quote dirty仅读+1报价可支付性。预算事件不调用全场景_refresh或_preview_draft，不用限频全量新读兜底，也不新增Session总线。隐藏期只积累相关标记，停止投影；重开/换Session初次读取一次并重绑旧连接。真实工作shader始终只消费current model的load，时钟推进不读取模型/报价/预览；宿主时钟context补显式running（取公共RunState.is_running），running=false禁用交互，paused仅控制动画；不能把用户暂停等同停机而改变原业务准入。
 
-被动容量/免费量/来源变化时，shares草稿须保留已生成canonical金额，沿原amounts分支重取比较；不得由刷新把旧基点重新换成新金额。只有新拖动才用shares生成新金额。equal确认仍一次原distribute并采用提交时状态；开放集合改变清旧预览，不补项。读取错误须禁用相关操作并呈现未知，不沿用消费者缺字段默认为0的绘制回退。
+被动容量/免费量/来源变化时，shares草稿须保留已生成canonical金额，沿原amounts分支重取比较；不得由刷新把旧基点重新换成新金额。只有新拖动才用shares生成新金额。equal操作仍一次原distribute并采用提交时状态；开放集合改变清旧预览，不补项。读取错误须禁用相关操作并呈现未知，不沿用消费者缺字段默认为0的绘制回退。
 
 <a id="reactor-bulk-purchase"></a>
 
