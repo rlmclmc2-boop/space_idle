@@ -70,17 +70,17 @@ class Study:
         text(stat_parts[0],407,top+55,15,INK)
         text(stat_parts[1] if stat_parts.size()>1 else "",470,top+55,15,Color("26718a"))
         text("费用",407,top+80,15,INK)
-        draw_texture_rect_region(source,Rect2(445,top+63,20,20),Rect2(445,top+63,20,20))
+        draw_texture_rect_region(source,Rect2(441,top+63,20,20),Rect2(445,top+63,20,20))
         if mode=="MAX":
-            text("铁",470,top+80,15,INK)
-            text("1.1e39",487,top+80,14,Color("26718a"))
-            draw_texture_rect_region(source,Rect2(536,top+64,19,19),Rect2(534,top+64,19,19))
-            text("铀",559,top+80,15,INK)
-            text("2.8k",578,top+80,14,Color("a33725"))
+            text("铁",465,top+80,15,INK)
+            text("1.1e39",484,top+80,15,Color("26718a"))
+            draw_texture_rect_region(source,Rect2(537,top+64,19,19),Rect2(534,top+64,19,19))
+            text("铀",560,top+80,15,INK)
+            text("2.8k",579,top+80,15,Color("a33725"))
         else:
-            text("铁",470,top+80,15,INK)
-            text("65.0",488,top+80,14,Color("a33725") if poor else Color("26718a"))
-        key(Rect2(613,top+60,51,28),mode)
+            text("铁",465,top+80,15,INK)
+            text("65.0",484,top+80,15,Color("a33725") if poor else Color("26718a"))
+        key(Rect2(616,top+60,50,28),mode)
         key(Rect2(671,top+60,98,28),buy,true)
     func equipment_page(late:bool=false) -> void:
         var source:=equipment_late if late else equipment_source
