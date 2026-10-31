@@ -435,10 +435,10 @@ func _reason(reason: String) -> String:
 
 func _cost_text(costs: Dictionary) -> String:
     var parts := PackedStringArray()
+    var shown: Dictionary = _session.economy.cost_texts(costs)
     for id in costs:
-        var result: Dictionary = _session.amount_api.apply("to_display", [costs[id]])
         var label: String = {"1":"铁", "2":"铀", "degenerate_matter":"简并物质", "jewel":"碎片", "chrono":"时空微粒"}.get(str(id), str(id))
-        parts.append((PlayerText.number(str(result.text)) if result.ok else "未知") + " " + label)
+        parts.append((PlayerText.resource_number(str(shown.texts[id])) if shown.ok else "未知") + " " + label)
     return " / ".join(parts) if not parts.is_empty() else "0"
 
 func _buy() -> void:

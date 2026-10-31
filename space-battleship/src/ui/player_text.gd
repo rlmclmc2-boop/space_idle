@@ -43,6 +43,19 @@ static func error(reason: String) -> String:
 
 
 static var _number_pattern: RegEx
+static var _resource_integer_pattern: RegEx
+
+# Resource owners hand this formatter their settled integer text. An unexpected
+# fractional source stays visible instead of being presented as a whole holding.
+static func resource_number(value: String) -> String:
+	if _resource_integer_pattern == null:
+		_resource_integer_pattern = RegEx.new()
+		_resource_integer_pattern.compile("^[0-9]+$")
+	var raw := value.strip_edges()
+	if raw.contains("×10^"): return raw
+	if _resource_integer_pattern.search(raw) == null: return value
+	var shown := number(raw)
+	return shown.trim_suffix(".0") if not shown.contains("k") and not shown.contains("m") and not shown.contains("b") and not shown.contains("t") and not shown.contains("e") else shown
 
 # Presentation only: Amount remains the owner of value arithmetic and precision.
 # Round decimal digits, never convert an Amount or its exponent to float.
