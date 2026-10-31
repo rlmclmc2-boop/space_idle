@@ -1,0 +1,12 @@
+{
+  "candidate": "e845ca58afd39184c3d4c5743021480e393adf74",
+  "base": "e3b38d7b6d8256f6031e1b086c7db7812b6a441f",
+  "source": "771295dc89d97aaed0152ed1cd89663a9e88810d",
+  "selected_files_byte_identical": 47,
+  "referenced_project_paths_checked": 72,
+  "missing": [],
+  "active_code_diff_to_worktree_head": [],
+  "runtime_config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "method": "read-only candidate tree versus original art workspace; no main push, checkout or copied project",
+  "pending": "existing root/original quick read before main push; cached runtime resource binding will accompany authorized affected entry check"
+}

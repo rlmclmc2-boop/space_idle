@@ -1,0 +1,1141 @@
+{
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "records": [
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 544.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 554.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 430.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 480.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 494.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 662.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 676.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": true
+        }
+      ],
+      "case": "middle empty slots",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 3,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 3,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "5",
+          "m": "9.99925"
+        },
+        "2": {
+          "e": "3",
+          "m": "1"
+        },
+        "degenerate_matter": {
+          "e": "3",
+          "m": "1"
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 598.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 608.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 426.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 534.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 548.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 716.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 730.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": true
+        }
+      ],
+      "case": "middle installed header restored",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 3,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 3,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "missile",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "5",
+          "m": "9.99925"
+        },
+        "2": {
+          "e": "3",
+          "m": "1"
+        },
+        "degenerate_matter": {
+          "e": "3",
+          "m": "1"
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 544.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 554.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 430.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 480.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 494.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 662.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 676.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": true
+        }
+      ],
+      "case": "middle returned empty",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 3,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 3,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "5",
+          "m": "9.99925"
+        },
+        "2": {
+          "e": "3",
+          "m": "1"
+        },
+        "degenerate_matter": {
+          "e": "3",
+          "m": "1"
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 672.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 682.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 430.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 480.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 494.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 790.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 804.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": false
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 544.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 558.0), S: (198.0, 28.0)]",
+          "slot": "weapon:3",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 608.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 622.0), S: (198.0, 28.0)]",
+          "slot": "weapon:4",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 854.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 868.0), S: (198.0, 28.0)]",
+          "slot": "defence:2",
+          "top_gap": 14.0,
+          "visible": false
+        }
+      ],
+      "case": "late mixed empty slots",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 3,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 3,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:3",
+          "index": 3,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:4",
+          "index": 4,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "5",
+          "m": "9.99925"
+        },
+        "2": {
+          "e": "3",
+          "m": "1"
+        },
+        "degenerate_matter": {
+          "e": "3",
+          "m": "1"
+        }
+      }
+    },
+    {
+      "cached": [
+        {
+          "path": "assets/audio/bgm/deep_space_idle_01.ogg",
+          "sha256": "2080d737d0aa30b3e9f786991ff351a8cc9f7984cda6e9d378fb1ecc0487e8de"
+        },
+        {
+          "path": "assets/backgrounds/hyperspace/routes_atlas.png",
+          "sha256": "44b9940eb24c0bb46209278009ddd335c7519de4cf86c1d9e14aa14c1b635e2c"
+        },
+        {
+          "path": "assets/backgrounds/opening/stage_01.png",
+          "sha256": "5a15a1df4f666a3b36cd27947baec86639475a9c2433e9cd4f77d37b8803912b"
+        },
+        {
+          "path": "assets/fonts/NotoSansSC.ttf",
+          "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+        },
+        {
+          "path": "assets/galaxy/v3/galaxy_field.svg",
+          "sha256": "346e7d6044b7d4b50f195d4b669151d2d085d257bb250b79998026997c4dc3d3"
+        },
+        {
+          "path": "assets/planets/orbital/models/auto_explore-icon.png",
+          "sha256": "a42e8d2a473ac8a76698319154478226d79661d0463a6385813907af03440647"
+        },
+        {
+          "path": "assets/planets/orbital/models/equipment-icon.png",
+          "sha256": "44dfe7abf71a91fa0d844f10286a5a08e0e23899f578ae7305201e49cb9b2e85"
+        },
+        {
+          "path": "assets/planets/orbital/models/refinery-icon.png",
+          "sha256": "5b222bd74052e5c52fac0b1c61d14d04682e78fa04dffd0b29ccf937033181c2"
+        },
+        {
+          "path": "assets/planets/orbital/models/shipyard-icon.png",
+          "sha256": "c3314c0404f4c332e7bd912506e945120adeb7944807b3c6b76c201e661e43d9"
+        },
+        {
+          "path": "assets/planets/orbital/scout-v1.png",
+          "sha256": "3d328163aa95e39efb731b2796e670d59ea4f744be1b693155a60f970793a282"
+        },
+        {
+          "path": "assets/planets/toon/exploration-field.svg",
+          "sha256": "4816672253dbd453397c674301d7dd78978a4e360ae0ed48e302ad1389293d5d"
+        },
+        {
+          "path": "assets/planets/toon/origin-clouds.svg",
+          "sha256": "66078e8ada15b9301e1eefbeb85b2f2810f41740e32dacc9d9bf408bd5b89588"
+        },
+        {
+          "path": "assets/planets/toon/origin-surface.svg",
+          "sha256": "6f0230ac539692994ce9e2be17b75169cb316fc1103c3fb6b5c172449e52a125"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/anchor-boss.png",
+          "sha256": "fbed2eba5d173f97b5fe83927fbb51e5ec0527dad5417f8e28759ef2c3010c50"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/anchor-elite.png",
+          "sha256": "1b6bb40679af09700c83e629b61cdfea8ec10e0b83efa7cbb5fa6fb7283afa18"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/command-boss.png",
+          "sha256": "6a16b97e155d9ebe45beffbc620c44c6ca390ba098ddbc70316384a6cb65c149"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/command-elite.png",
+          "sha256": "c9f3d6f099691983377ee69f4dc9c81f16993a8299bfe9cded08bc50576cabd1"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/reactive-boss.png",
+          "sha256": "e5efc27836e633097f6208a7841d437daed41dd1464ed4510489392eb44580c9"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/reactive-elite.png",
+          "sha256": "b9f067e577d494b9d0687253ab5d60c7e8a6dd0212baf9744fcf7ae1ae4180ad"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/shielded-boss.png",
+          "sha256": "3e87b7f9991a0aa91e5abf8ab645c203a59ed14ed1cab31a285c812972944d5d"
+        },
+        {
+          "path": "assets/ships/enemy/elite_boss_20261020/shielded-elite.png",
+          "sha256": "2d457858bb5ba222089caf798da869ff4be192291670889881aa78fa7831040d"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/anchor.png",
+          "sha256": "c0537907af243c46c6d342530b869f069d4f653c93b2c77255d4079cb592a8fb"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/command.png",
+          "sha256": "63b017e18d47169b899052513584da66fd7d73b3fd28e876b3fce5795dffe460"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/interceptor.png",
+          "sha256": "ba5f29ebeeb548046e7e1b489f86ab2e20b8ccfbe4e433114cec2b1ecbf0d0a0"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/reactive.png",
+          "sha256": "72da5db9646ea27834e50aa3015b8bf947c91eb79c96376d9d2ba3efcff41e83"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/scout.png",
+          "sha256": "acb4f1bbe3011a38c323444ac0d2141d9c35b615a830137a51d2602aa136eaea"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/sentry.png",
+          "sha256": "611f42c213a38dae52dbf56387367cb8deec4384e32c4edbc34d10a9efcd44cc"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/shielded.png",
+          "sha256": "0f6fbd6516ca6a0e7f3d51956db1697b396463b8999f42c8670942fca23f4dae"
+        },
+        {
+          "path": "assets/ships/enemy/fleet_20261019/swarm.png",
+          "sha256": "2318ec1f7632b0d62c4a3fbbd183ee4915560691225a8316b960d4f154b8bdd8"
+        },
+        {
+          "path": "assets/ships/fleet_20261019/player/01-frigate.png",
+          "sha256": "0aac6f2efd909f273551d37ae40d5e03e4611c1bedc1659aee9ed411a339d61a"
+        },
+        {
+          "path": "assets/ships/fleet_20261019/player/02-destroyer.png",
+          "sha256": "760297cb7a2fdc3e4dcfb18dbfc7e4d527789797180d55e493786bd0e59a44ba"
+        },
+        {
+          "path": "assets/ships/fleet_20261019/player/03-cruiser.png",
+          "sha256": "1b1bddf839c762a3234dbd61da26d490f50396405bf2b07e409877c66242f363"
+        },
+        {
+          "path": "assets/ships/fleet_20261019/player/04-battleship.png",
+          "sha256": "f1bbf09e0ac1ccac6b9a43f63e25875fbb01a4ab6933c442074eb2b048c2f7c8"
+        },
+        {
+          "path": "assets/ships/fleet_20261019/player/05-heavy-battleship.png",
+          "sha256": "4dc7511feba6dd6912215039a6112aefd0b2236898103b638b799677e49160ee"
+        },
+        {
+          "path": "assets/ui/equipment/cartoon_armour.svg",
+          "sha256": "05c1f1c466b1155735d45d026ecf3d8de64360cfc53a8995825f3b9c33906547"
+        },
+        {
+          "path": "assets/ui/equipment/cartoon_shield.svg",
+          "sha256": "ddb2b22063230f947eef5a2639dd0ea0be3461aa382384edc6671af52238f788"
+        },
+        {
+          "path": "assets/ui/equipment/hangar/inline-short.png",
+          "sha256": "9b40cc620b11a0cc594c977be9eb3b9f4b3fe972ddbaf71a74253d9bf57d037f"
+        },
+        {
+          "path": "assets/ui/equipment/hangar/inline-tall.png",
+          "sha256": "b4352c8e2c35f0ee10bbec8ee6ef3633b8954c67a14908f6da65b41f1f6b60d7"
+        },
+        {
+          "path": "assets/ui/equipment/materials-20261029/control-materials.png",
+          "sha256": "707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c"
+        },
+        {
+          "path": "assets/ui/public_shell/command-rail.svg",
+          "sha256": "0048347b1ca9376d503bd1ed74d2cd46c3de22e36fab74630f6e022ee71a4597"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-active.svg",
+          "sha256": "45272215a56be4462f4c6f03b90612f25bc2ac44543432b9dc578accf2c0ad4f"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-archive.svg",
+          "sha256": "81be7e036d1616fe7a2566e277a34a4915658b3417e3c27df854215c89641a1a"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-equipment.svg",
+          "sha256": "a25d2a800f01d202d93f3595c31cec90bda00741cd643f9c03fcced7b85c052d"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-growth.svg",
+          "sha256": "de10666bb304161e658a7e3dae4ca92ca13813c17d312782cf1d952a51cf4f8d"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-hover.svg",
+          "sha256": "6a1e89961fba86ee35919a45820c1fddf4fda81635b2eec8d45be46b5b2de1c9"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-hyperspace.svg",
+          "sha256": "c9269690d637b6802893a52cdd78ffdef173c7fa39af8ea0e9df596cbdc6a475"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-idle.svg",
+          "sha256": "75d757ca100674744b01118ee034d41a3552ae178d88a46fb294cbd81eb7785a"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-planet.svg",
+          "sha256": "83500ec62849e372ea3df10b2c186251d4c05065bbbe0e4d06867db17567cf2e"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-reactor.svg",
+          "sha256": "5fd82bbc2f65fd6254c1d6d1b320de23029ff1caab0840f4ddc91c1430a618cb"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-settings.svg",
+          "sha256": "540d9ed7e80c260352ddc695e1075190fa357efea0e5bedcbeb67ee31f3ea6af"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-ship.svg",
+          "sha256": "cad12b6a002fffaf46130b8b40cdb38ec971823a375a7527ddc0e7f5e86e2e14"
+        },
+        {
+          "path": "assets/ui/public_shell/nav-universe.svg",
+          "sha256": "f612fd5cec7bfcd8b04fd23a9e513f8d8ae75746d383c8b9a847e27f646ae73a"
+        },
+        {
+          "path": "assets/ui/public_shell/panel-frame.svg",
+          "sha256": "a0ea73f5bf59400afb0254a94e1daf1f55e31000f5e0b70621ed59b742762f1b"
+        },
+        {
+          "path": "assets/ui/public_shell/resource-mark.svg",
+          "sha256": "7f4948a30514b63a1e69e89f0ef6ac7e3eba1e418451439cb0f0323c09f62766"
+        },
+        {
+          "path": "assets/ui/public_shell/resource-material-atlas.png",
+          "sha256": "5ac83cda22d7e7e57beb6e8d20ae6c20e1353a5e2b8c0430f97e404a750dc8ec"
+        },
+        {
+          "path": "assets/ui/public_shell/resource-material-supplement.png",
+          "sha256": "39d511b72b17a67616b10647b3494c3914cb2f1ab14141cc17c52031223562d3"
+        },
+        {
+          "path": "assets/ui/public_shell/status-alert.svg",
+          "sha256": "6b5015b4ac991a715a99b78a51de4a90fbbacdd68f86320b15c1eff69c1f92c7"
+        },
+        {
+          "path": "assets/ui/public_shell/status-idle.svg",
+          "sha256": "8937e2a37843e51551a99b111e9f62ecd85d1f7307f200c1ca9c71d1c2307b50"
+        },
+        {
+          "path": "assets/ui/public_shell/stepper-down-disabled.svg",
+          "sha256": "a8f6cedb771366e79a2dc7764ae75d60999124154c520aa5c2504ddceb3544de"
+        },
+        {
+          "path": "assets/ui/public_shell/stepper-down.svg",
+          "sha256": "ed61270c9dc18eb08f86025194604b0b82cce65d0af84a6c3d5fafe73f2b7c74"
+        },
+        {
+          "path": "assets/ui/public_shell/stepper-pair-disabled.svg",
+          "sha256": "a41bfd182523cf8e5989a91c6415de31e1fca9c4bd85d4d3e0789e1ceb87e253"
+        },
+        {
+          "path": "assets/ui/public_shell/stepper-pair.svg",
+          "sha256": "62362933c2f9dcbee73c34623b54747da46b0fd6d45b5ce958bb123dec7a309f"
+        },
+        {
+          "path": "assets/ui/public_shell/stepper-up-disabled.svg",
+          "sha256": "6feb4cff51f7dd332f586abe6e4ba68d33776c621a791fd6aaca300b86c0b42d"
+        },
+        {
+          "path": "assets/ui/public_shell/stepper-up.svg",
+          "sha256": "b67537d625dd49204a2b1e5eebbd2cabaf2141fb8fcbf452bba58e096ca53a29"
+        },
+        {
+          "path": "assets/ui/public_shell/title-plaque.svg",
+          "sha256": "2350929a21d432d12f30f42fac218a9255b52382e04570bc6c6cec878926bcb4"
+        },
+        {
+          "path": "assets/ui/public_shell/top-control-hover.svg",
+          "sha256": "3873bed90a7c3c18786ac13933abdef1b83491297d244c5c18fc2a0a25b334eb"
+        },
+        {
+          "path": "assets/ui/public_shell/top-control.svg",
+          "sha256": "98e94ac0be8ab4db437035d18c9b3257af2e266c4d17c6de453319b5c7d157fb"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/01-frigate.png",
+          "sha256": "a3982ea4c5f401c73ae9d1da2ed286231677c0a09f8f3f8c1e65b8f43049411c"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/02-destroyer.png",
+          "sha256": "a17656a0c9919216196378cfe937314ef30f361931f61f8a5209b4b5e5ad0e60"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/03-cruiser.png",
+          "sha256": "8b655cc3805c7e0d2b7d216ab8cf4762641923b47c45dd4b91d6bfc4b2091304"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/04-battleship.png",
+          "sha256": "2c83c7ecb13310daae95a4a18cfbc91a64c22ba9c99b15449e72615ccf3bdf72"
+        },
+        {
+          "path": "assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+          "sha256": "96812e26fc68aa52bc9f257d7db703b0160ca8f6b7fcf70581585ac9f8d4372e"
+        },
+        {
+          "path": "assets/weapons/fleet_20261019/cannon.png",
+          "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+        },
+        {
+          "path": "assets/weapons/fleet_20261019/laser.png",
+          "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+        },
+        {
+          "path": "assets/weapons/fleet_20261019/longLaser.png",
+          "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+        },
+        {
+          "path": "assets/weapons/fleet_20261019/missile.png",
+          "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+        },
+        {
+          "path": "assets/weapons/fleet_20261019/pulse-bolt.png",
+          "sha256": "93eda61b1bf03049126658875dbd7a60c21df9d35a7a773164e638457096cc49"
+        },
+        {
+          "path": "assets/weapons/integrated_ranked_20261020/cannon-rotating.png",
+          "sha256": "f5252b35125f2667a4451d3648ad51803bc63a5dc3252dafe7dd1496307fb772"
+        },
+        {
+          "path": "foundation/host/hyperspace_config_contract.gd",
+          "sha256": "73b2217b6167d5f790874c5880cd45bc4709744889fb65b2104bfcee3d707db6"
+        },
+        {
+          "path": "foundation/host/player_settings.gd",
+          "sha256": "e5d96ad3e64ebbeb3df408576322ad0f54e9a104f26f0c3ae20e4833b4b3188e"
+        },
+        {
+          "path": "foundation/host/save_files.gd",
+          "sha256": "d96f6813894de44dae6de05965d25d33c48c353ba9b340215c7567ab56655b25"
+        },
+        {
+          "path": "foundation/host/state_codec.gd",
+          "sha256": "acdd651c85f314f7d9dc68ac36fd911f5f3511f2a31d73187f30f791f8c90a38"
+        },
+        {
+          "path": "scripts/approved_weapon_art.gd",
+          "sha256": "78f496900556f2280255061026564294cce72edace0b521b5651c17f6abfd30e"
+        },
+        {
+          "path": "scripts/enemy_visual_identity.gd",
+          "sha256": "d2f1302817929906177318a425a472a90bd53a812eb007e723276a4b861c0052"
+        },
+        {
+          "path": "scripts/galaxy_city_layout.gd",
+          "sha256": "80260b564f5f1fa0541a2fe88ddb124cb5948bd3c88dfbe3b515fac926958499"
+        },
+        {
+          "path": "scripts/galaxy_city_modules.gd",
+          "sha256": "664ed39a51d2ac03a29b9136cdfd6ff4fcb0c01dcf308ac1f9cd70541bcb4b5d"
+        },
+        {
+          "path": "scripts/galaxy_city_structure.gd",
+          "sha256": "4f3b2fa96d4d91c393957a875bb5158506b3ba9971c38a0bf163eb59137845e0"
+        },
+        {
+          "path": "scripts/galaxy_construction.gdshader",
+          "sha256": "93ef4065c92d57846d87a6b2ad5e2729182a917c2ca9eec347697fa76f97f9b1"
+        },
+        {
+          "path": "scripts/galaxy_map.gd",
+          "sha256": "fb9d5fed441a417c65edff69841f53fe7caea8376a29f2828faaceee0570c77c"
+        },
+        {
+          "path": "scripts/galaxy_space.gdshader",
+          "sha256": "9655e1627309db097dff115f3c883a9ee32c18bf2645bae040ea831675b81944"
+        },
+        {
+          "path": "scripts/galaxy_transit.gd",
+          "sha256": "0578dbc06ce58867e5296896785ae8de9523e3d693477c382274bdc1610dff4b"
+        },
+        {
+          "path": "scripts/gpu_contact_mesh.gd",
+          "sha256": "e845241454c8e7d956e723b74748dbe24779661ff7f703cecb1b7a1bc45344b8"
+        },
+        {
+          "path": "scripts/orbital_facilities.gd",
+          "sha256": "6da3ad49cbc9bc0802b453e4b27ef67979cd8e1b52737f4263d136eacefe5c4f"
+        },
+        {
+          "path": "scripts/planet_art.gd",
+          "sha256": "bc6dbb7c1a00e56ddcc91dd00966f0d33cc136c6716547c827e47b83e34d3c39"
+        },
+        {
+          "path": "scripts/planet_visual.gd",
+          "sha256": "d653fbae001e0a28d7a6398dc6e3052e341d6d795331c875cac08088ec5f85bb"
+        },
+        {
+          "path": "scripts/rotating_planet.gd",
+          "sha256": "d766dfe3b762cc85f4f7305594bfeb1e8664c4480413c0901165e92f53cc1354"
+        },
+        {
+          "path": "scripts/rotating_planet.gdshader",
+          "sha256": "0b4f6a3c293310caefb75b25bde722be9e4716a82939c403ac06b9f773741dda"
+        },
+        {
+          "path": "scripts/ship_geometry_convention.gd",
+          "sha256": "db3c10121283085165d7e1df0cb349dce7a7c11c42ca4fb47e551c72a9a47292"
+        },
+        {
+          "path": "scripts/starfield.gdshader",
+          "sha256": "c5b0a702985823c8318098dda01382f844a30f174d4f234455337a68ce17e399"
+        },
+        {
+          "path": "shaders/gpu_contacts.gdshader",
+          "sha256": "d0f7723a2390ba891c9a9d22be039af3d889b2ce7b2986987f003568caa71b50"
+        },
+        {
+          "path": "shaders/retained_beams.gdshader",
+          "sha256": "ce2d886fa229d73768573b04ad2e605ee1e4483fad397d62edc6789ffe8b972d"
+        },
+        {
+          "path": "shaders/retained_flights.gdshader",
+          "sha256": "1e5a045b9494ddd60c644260f2b1af7701e03c5d4be5b3f098eda051de7be3b7"
+        },
+        {
+          "path": "src/combat_setup.gd",
+          "sha256": "9a8e12bb7c4550a5e00093767d0538986fca99109bf6a2dfa1e5038758a8a5d6"
+        },
+        {
+          "path": "src/game_session.gd",
+          "sha256": "207018ae172b3d855ef4990833ce95e8095696847c18e4249ad7c3fb931f2dd6"
+        },
+        {
+          "path": "src/main.gd",
+          "sha256": "9b9ba075486b7b25ab1b390a94a4e6c763e3b9f94beefb6fab8f54b46b1c5c0f"
+        },
+        {
+          "path": "src/systems/battle.gd",
+          "sha256": "10875d02d77f676d61bc1f463ef6336f6eeaee8a682322c9513194b252f35bde"
+        },
+        {
+          "path": "src/systems/battle_statistics.gd",
+          "sha256": "32b4b9f26a51625d4d7b5bd5b13f41e52f0334b6a92d7b06f205dee6356dcb6d"
+        },
+        {
+          "path": "src/systems/campaign.gd",
+          "sha256": "8527ec4893d43284f0d51c1ce4ee2ecf7d53342169bfe1c44847aa429cc0cd01"
+        },
+        {
+          "path": "src/systems/crew.gd",
+          "sha256": "f947870dd3a708f61965c2be3a08ea952854aa13739351c33d0bccacd4735fa3"
+        },
+        {
+          "path": "src/systems/economy.gd",
+          "sha256": "206b9f0d636d2e13eeab66e66e0943883dd583c5fd969a7b8cf8e8732a21ed8f"
+        },
+        {
+          "path": "src/systems/enhancement.gd",
+          "sha256": "0582dbbf24b23a2cd8635f988ac208bc246840d38a0b56da6fa202840f74b501"
+        },
+        {
+          "path": "src/systems/equipment.gd",
+          "sha256": "80aa306c25b68e9ca1ca7422ccc8b42748351ad3298a27600c3fb1d462ce43a8"
+        },
+        {
+          "path": "src/systems/galaxy.gd",
+          "sha256": "713dac421ea90359c8a9ce3f11edd75a845026896c86092ecb5329cb28b435f2"
+        },
+        {
+          "path": "src/systems/hyperspace.gd",
+          "sha256": "304d605a4f6efa2b3bd2ea23c4e0f954a5828b41ed0370f978be5a4fa0a10653"
+        },
+        {
+          "path": "src/systems/notifications.gd",
+          "sha256": "917c8de4db3dc6d1e9c52f932f5a1cad59590ccdcf9f5032678acb3e2808d63d"
+        },
+        {
+          "path": "src/systems/planet.gd",
+          "sha256": "cf608ca3f5809a4e7d6d76067150222b9c087b51808596604eced8dd7bdde0fe"
+        },
+        {
+          "path": "src/systems/reactor.gd",
+          "sha256": "1693a29057c7149023b8b5860fbdda96e57927bf1fc64ff94d00f1f774bc0a95"
+        },
+        {
+          "path": "src/systems/research.gd",
+          "sha256": "56c124239a8a9d9fbfdc945300eb4fdf5f144e9320cebc9d245333521ce2a26c"
+        },
+        {
+          "path": "src/systems/resource_amounts.gd",
+          "sha256": "b70f1d62a3010477c218342069ee7cba06c60eac80c57e99df7905edf78e0023"
+        },
+        {
+          "path": "src/systems/run_state.gd",
+          "sha256": "f4b5a0925f4f09c6ee3c4e8bf3225d4444f560041600aca227dfbba846d48eff"
+        },
+        {
+          "path": "src/systems/tutorial.gd",
+          "sha256": "23eb85a38d67c7e3bf1e6f887215d502658e5f0bcb7c9823399381c8384c5460"
+        },
+        {
+          "path": "src/ui/archive_panel.gd",
+          "sha256": "a3e9d8371cd11982491f02fa5f928eb5d9152f2140cc17d89688898a1058214f"
+        },
+        {
+          "path": "src/ui/attributes_panel.gd",
+          "sha256": "6b6c6177d2d7884ab0177c9fec34cc8202e06d2e2a896ef8f1a6b17f497e2054"
+        },
+        {
+          "path": "src/ui/battle_hud.gd",
+          "sha256": "525613eb697a4308b075e0b2e5fa7e5ac5006c40e08744e99fd2045758225a43"
+        },
+        {
+          "path": "src/ui/battle_scenery.gd",
+          "sha256": "5b56228d0943ff35785f23bc6da7988e8335c670802a287d87477767e127178a"
+        },
+        {
+          "path": "src/ui/battle_view.gd",
+          "sha256": "86d9ae1b655c0340187048d6a5f2c1b3c52ecc3a2e5852571d35f31bbc6b764e"
+        },
+        {
+          "path": "src/ui/bridge_theme.gd",
+          "sha256": "57a17be6af72b274f154b8860b2e0ae44b42c04e62e8f969263553ae5c77aa2e"
+        },
+        {
+          "path": "src/ui/campaign_panel.gd",
+          "sha256": "9f3bf7abfcc61be5270149f2c821a4e1df4dfd5734d4a86f67345efa198ed241"
+        },
+        {
+          "path": "src/ui/campaign_view.gd",
+          "sha256": "6039cd85a312a9a068304f17cba420f71b9435d82b38ebabd6defb29047b82fb"
+        },
+        {
+          "path": "src/ui/crew_panel.gd",
+          "sha256": "2db4f97722b59e21a088153400169770fcdb36bf2f26d6f569bb4fe6511b7ef1"
+        },
+        {
+          "path": "src/ui/economy_view.gd",
+          "sha256": "a3d17d7344324f81a725e1a8076240b24e2ea45d8e9fadef792f0b91f85e6999"
+        },
+        {
+          "path": "src/ui/enhancement_panel.gd",
+          "sha256": "c881d9bf1e020dc8d876c2368e845ce0575033acc52038b87eff99ff54520957"
+        },
+        {
+          "path": "src/ui/equipment_panel.gd",
+          "sha256": "74fb7282a74624e436ec52a2c94216543693c1517935fb3ab724c0c861596de4"
+        },
+        {
+          "path": "src/ui/fleet_panel.gd",
+          "sha256": "81ae616e7d9466aec9a9e828f37f2bf344f92761a4d1b3280846d34e54968b3e"
+        },
+        {
+          "path": "src/ui/galaxy_panel.gd",
+          "sha256": "8e0e4afb3e0b91415aca5f861eef605f425ded5429044560f4faf3ee891e08f6"
+        },
+        {
+          "path": "src/ui/hyperspace_panel.gd",
+          "sha256": "c16e8eb9b86ba54c6dff4acb51827755f8eeef289736623eaa64bb540cc39247"
+        },
+        {
+          "path": "src/ui/notifications_panel.gd",
+          "sha256": "4dd8d7691b5165a615eaf855755cb87351b78f11ca7618373fbf483cb33d8cba"
+        },
+        {
+          "path": "src/ui/planet_panel.gd",
+          "sha256": "5ad95a5c99adab601935a5669a4100271a42180b285881a71b87aed61d8ded72"
+        },
+        {
+          "path": "src/ui/player_text.gd",
+          "sha256": "2e32275e0ef39f4c0ee3aee477303bab90b68d0686821ff1797c933d2958c1c1"
+        },
+        {
+          "path": "src/ui/reactor_panel.gd",
+          "sha256": "5556ceb117a22dae05a8a9816a62a135185e7873423e11c10a068f7391778a87"
+        },
+        {
+          "path": "src/ui/research_panel.gd",
+          "sha256": "7789957706bc1b71bf1388c61be611fa521cd5ad89ea6355221d37aa4c2f2885"
+        },
+        {
+          "path": "src/ui/resource_visuals.gd",
+          "sha256": "1cae88972f1f5ce6f5a1793fcbadb24f9f978c2587855e59c28d4a964c4c0080"
+        },
+        {
+          "path": "src/ui/zone_shell.gd",
+          "sha256": "f85214d12f098e088b79384650954ebec4fe68238a97f2c2bdf25fb08271e46c"
+        }
+      ],
+      "candidate": "e845ca58afd39184c3d4c5743021480e393adf74",
+      "case": "actual main candidate resource binding",
+      "config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+      "note": "original art workspace preserved; external validator must confirm every cached project source/asset belongs to candidate tree with identical bytes",
+      "working_source": "771295dc89d97aaed0152ed1cd89663a9e88810d"
+    }
+  ]
+}

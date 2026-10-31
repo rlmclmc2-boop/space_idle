@@ -1,0 +1,15 @@
+{
+  "original_main": "e3b38d7b6d8256f6031e1b086c7db7812b6a441f",
+  "main_commit": "e845ca58afd39184c3d4c5743021480e393adf74",
+  "fetched_remote_main": "e845ca58afd39184c3d4c5743021480e393adf74",
+  "parent": "e3b38d7b6d8256f6031e1b086c7db7812b6a441f",
+  "actual_file_count": 47,
+  "actual_script_count": 9,
+  "actual_asset_count": 38,
+  "runtime_source": "771295dc89d97aaed0152ed1cd89663a9e88810d",
+  "original_worktree_branch": "art/equipment-materials-main-20261029",
+  "original_worktree_head": "771295dc89d97aaed0152ed1cd89663a9e88810d",
+  "tracked_wip": [],
+  "push": "ordinary fast-forward; no force",
+  "workspace": "original art workspace retained; alternate Git index, no clone/worktree/checkout/reset/clean; runtime code/resource identity bound explicitly"
+}
