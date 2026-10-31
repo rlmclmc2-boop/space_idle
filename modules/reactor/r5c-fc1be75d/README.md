@@ -1,0 +1,9 @@
+# B01 R5c same-source visual follow-up
+
+Production source: `implement/reactor-centered-godot@fc1be75d` (2026-10-31). This follow-up changes the two procedural side-grip faces and the single-route multiplier placement. It does not install the shared `ZoneShell`, revise Owner economics, or establish external visual approval.
+
+`reactor-r5c-controlled-{1,2,3,4}-{zero,active}.png` are complete 1440×900 Godot 4.7.2 game frames; 1/2 also have `manual` frames from actual mouse slider input. The accompanying raw log and driver record accepted Owner amounts and ratios. One to three routes use isolated parameters, while four routes use controlled availability; these are not natural unlock proof. The full four-route normal 1× video, `reactor-r5c-10s-1440x900-25fps.mp4`, runs 10.000 seconds/250 frames, SHA-256 `09b19511da483495f636d4fb0350cf4524f857d51456a5cc83a4fd725afbfc85`. The author inspected all four active pages and sampled frames near 0.5, 5 and 9.5 seconds.
+
+The previous [R5b evidence](../r5b-06e04db/README.md) contains budget interaction and diagnostic performance. The minor R5c material/layout revision has not been profiled independently, so R5b frame times are architectural context, not R5c measurements. On R5b, product static-cache on/off ABAB showed small variable gains and identical-phase full-frame RGB error count zero; full-stage visible/hidden ABAB isolated roughly 7.6–8.1 ms of stage cost in Mesa llvmpipe/OpenGL Compatibility at 1440×900. The target player's renderer/resolution is still unavailable. No effect was removed or slowed for a performance claim.
+
+Current top bar in these frames is the reactor branch's old host. Shared-shell/full-composition review belongs to the overall group after they install this exact module source on their fixed `design/clear-zone-host` candidate; these images are module-stage evidence only.
