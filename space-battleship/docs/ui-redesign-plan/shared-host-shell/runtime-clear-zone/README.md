@@ -483,3 +483,9 @@ Godot 4.7.2 本版导入无解析／资源错误。[同版跨页驱动](evidence
 当前资源条修复固定在本组 `design/clear-zone-host@459df59315e20708075bda5fafe9ef8408b69a7d`；相对该提交的父 `a5da0606ba063fc3b7dccfb02d83eb9f3c25f03a`，**唯一公共运行源码差异是 `space-battleship/src/ui/zone_shell.gd`**（完整 Git blob `8998e38d746b31f7f676fdbc0126906c79e0863d`，旧 `dfe75787802b6118e681b4f32141292dc48b4b0f`）。`zone_shell.gd` 的原公共闭包／素材已在上文 `0fccb579` 取入；原装备 8430 的文件现仍为旧 `dfe75787`，故原组只须从 459df593 **精确替换这一个脚本**即可消费新宽度／数值格式，不需要本组 `main.gd`、反应堆／星球代码、另一份资源资产、Amount／Economy 规则或其他公共叠层。其正常主入口继续使用已交 `0fccb579` 的公共挂载与原装备 Session；本补丁只在原 `ZoneShell` 现有三格改文本净宽、复用 `Economy.balance_rows()` 的官方紧凑数值、科学量级窄轨表示与字号容纳，完整资源详情／悬停原文保留。
 
 原组可直接看本组合的[正常余额真实 1440 整屏](evidence/r51c6d-combo-equipment-1440x900.png)与[受控长铁真实 1440 整屏](evidence/r51c6d-combo-resource-long-1440x900.png)：主栏分别直接显示 `9.99万` 与 `1.235e39`，资源图标仍在，长铁详情原格式为 `铁：1.235×10^39`；[同版运行日志](evidence/r51c6d-combo-runtime.txt)有实际 `Economy.balance_rows()` 值。两图只是当前共享静态画面及资源可读性，不替代装备组 8430／51c 内部全链、组合整体视觉审或目标性能；本组不要求原组复制当前 B01／星球运行树。
+
+### 装备 d354 资源条同源确认稿已送用户（仅状态续记）
+
+原装备组运行代码 `art/equipment-materials-main-20261029@d354e60f1530435a6790cca0814ddc7e76f84f82` 相对其 `8430cd9c8cd84372e0218762daab986e989f3fbe` 的 `src/`／`assets/` **只改** `src/ui/zone_shell.gd`；该文件 Git blob `8998e38d746b31f7f676fdbc0126906c79e0863d` 与本组已接 `459df593`／当前组合**完全相同**，装备 `equipment_panel.gd` 仍同一 blob `9bc82d3a`。原组证据固定 `19a2ba967cd265673a40b9d526db88671b5f1924`，唯一入口 `inline-slot-workbench-concept/README.md` 最新资源条节、`resource-rail-confirmation/` 五张 1440×900 原生整图与账本；根端确认这五态已由根和既有审看过，**实际送用户确认**。故本组无需再复制同一运行源、重拍五态或催原组重复消费资源条；此前“等原组取公共修复／仅 8430”已过时。五态只覆盖装备本页与顶部量级；用户意见尚待回复，不代表整游戏、星球／B01 或 main 验收。
+
+当前组合仍是本组 `459df593` 的 51c／8430 同 blob 装备面板＋已接 6d packed B01＋旧 ac5 星球＋当前公共资源修复，实际完整图见上节。独立余项的固定依赖是星球原组新运行源与质量审、反应堆原组目标环境严格同版性能／未覆盖动态范围，以及新候选到位后的跨页整体终审；装备当前只待已送五态的用户反馈，不再待其资源条源码。没有新的明确公共可独立修正退点，本轮不造微调／重复复测，不合 main。
