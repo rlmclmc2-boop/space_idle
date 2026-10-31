@@ -214,9 +214,9 @@ func _section_width(kind: String, angle: float) -> float:
 		# The furnace sits close to its next independent section. Its near
 		# shoulder must return to transit width at the actual mating plane.
 		blend *= smoothstep(0.0, 0.10, ARC_BOUNDS[kind].y - angle)
-	# Keep the station side wall inside its two pressure cheeks; a broad deck
-	# here masks the real through passage when this node is built alone.
-	var node_width := 1.10 if kind == "auto_explore" else NODE_WIDTH
+	# Give each built work floor a real shoulder matching its pressure feet.
+	# The station stays narrow so its independently built passage stays open.
+	var node_width := 1.10 if kind == "auto_explore" else 1.36 if kind == "refinery" else 1.50 if kind == "equipment" else 1.55 if kind == "shipyard" else NODE_WIDTH
 	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:
