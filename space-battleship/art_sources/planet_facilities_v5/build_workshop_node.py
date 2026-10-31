@@ -118,6 +118,13 @@ for side in (-1, 1):
     cut.object = window_cut
     bpy.ops.object.modifier_apply(modifier=cut.name)
     bpy.data.objects.remove(window_cut, do_unlink=True)
+    # The upper bearing face is part of the cut cheek mesh, not a plate laid
+    # across its open work window. It carries the station/refinery ivory into
+    # this orange industrial node without flattening its working silhouette.
+    cheek.data.materials.append(ivory)
+    for face in cheek.data.polygons:
+        if face.center.z > 1.06:
+            face.material_index = 1
     loft("Deep pressure foot wrapped around section", [
         (-1.12, side*.86, .06, .35, .18), (-.86, side*.86, .14, .41, .24),
         (.86, side*.86, .14, .41, .24), (1.12, side*.86, .06, .35, .18),

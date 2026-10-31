@@ -234,6 +234,13 @@ for side in (-1,1):
         cut.object = window
         bpy.ops.object.modifier_apply(modifier=cut.name)
         bpy.data.objects.remove(window, do_unlink=True)
+    # The upper facet is the same machined shell as the ochre lower berth.
+    # Its warm ivory face ties the dock into the other pressure nodes while
+    # keeping both real service windows open.
+    cheek.data.materials.append(ivory)
+    for face in cheek.data.polygons:
+        if face.center.z > .88:
+            face.material_index = 1
     box("Berth lower load web", (-1.34,side*.69,.33), (2.37,.31,.17), navy, root, .035)
     box("Berth recessed dark crown", (-1.43,side*.70,1.015), (1.86,.25,.045), navy, root, .012)
     for x, length in ((-2.13,.43),(-1.42,.50),(-.69,.49)):
