@@ -1,0 +1,544 @@
+{
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "records": [
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 544.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 554.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 430.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 480.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 494.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 662.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 676.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": true
+        }
+      ],
+      "case": "middle empty slots",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 2,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 2,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "2",
+          "m": "9.35"
+        },
+        "chrono": {
+          "e": "4",
+          "m": "4.32"
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 598.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 608.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 426.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 534.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 548.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 716.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 730.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": true
+        }
+      ],
+      "case": "middle installed header restored",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 2,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 2,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "missile",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "2",
+          "m": "9.35"
+        },
+        "chrono": {
+          "e": "4",
+          "m": "4.32"
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 544.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 554.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 430.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 480.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 494.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 662.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 676.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": true
+        }
+      ],
+      "case": "middle returned empty",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 2,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 2,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "2",
+          "m": "9.35"
+        },
+        "chrono": {
+          "e": "4",
+          "m": "4.32"
+        }
+      }
+    },
+    {
+      "cards": [
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "slot": "weapon:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 68.0,
+          "card": "[P: (342.0, 672.0), S: (420.0, 106.0)]",
+          "empty": false,
+          "select": "[P: (406.0, 682.0), S: (198.0, 28.0)]",
+          "slot": "defence:0",
+          "top_gap": 10.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 416.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 430.0), S: (198.0, 28.0)]",
+          "slot": "weapon:1",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 480.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 494.0), S: (198.0, 28.0)]",
+          "slot": "weapon:2",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 790.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 804.0), S: (198.0, 28.0)]",
+          "slot": "defence:1",
+          "top_gap": 14.0,
+          "visible": false
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 544.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 558.0), S: (198.0, 28.0)]",
+          "slot": "weapon:3",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 608.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 622.0), S: (198.0, 28.0)]",
+          "slot": "weapon:4",
+          "top_gap": 14.0,
+          "visible": true
+        },
+        {
+          "bottom_gap": 10.0,
+          "card": "[P: (342.0, 854.0), S: (420.0, 52.0)]",
+          "empty": true,
+          "select": "[P: (406.0, 868.0), S: (198.0, 28.0)]",
+          "slot": "defence:2",
+          "top_gap": 14.0,
+          "visible": false
+        }
+      ],
+      "case": "late mixed empty slots",
+      "slots": [
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 2,
+          "equipment_id": "laser",
+          "id": "weapon:0",
+          "index": 0,
+          "paid_level": 2,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "armour",
+          "id": "defence:0",
+          "index": 0,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:1",
+          "index": 1,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:3",
+          "index": 3,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "weapon",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "weapon:4",
+          "index": 4,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        },
+        {
+          "category": "defence",
+          "cooldown_remaining": 0.0,
+          "dormant": false,
+          "effective_level": 1,
+          "equipment_id": "",
+          "id": "defence:2",
+          "index": 2,
+          "paid_level": 1,
+          "switch_ready_at": 0.0
+        }
+      ],
+      "wallet": {
+        "1": {
+          "e": "2",
+          "m": "9.35"
+        },
+        "chrono": {
+          "e": "4",
+          "m": "4.32"
+        }
+      }
+    }
+  ]
+}

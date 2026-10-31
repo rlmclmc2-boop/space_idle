@@ -1,0 +1,67 @@
+{
+  "runtime_source": "771295dc89d97aaed0152ed1cd89663a9e88810d",
+  "source_sha256": "74fb7282a74624e436ec52a2c94216543693c1517935fb3ab724c0c861596de4",
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "images": [
+    "01-middle-empty-centered.png",
+    "02-middle-mixed-installed.png",
+    "03-middle-return-empty.png",
+    "04-late-empty-centered.png"
+  ],
+  "optical_check": {
+    "x": 500,
+    "card_visible_inner_y": [
+      422,
+      464
+    ],
+    "selector_visible_rim_y": [
+      430,
+      456
+    ],
+    "upper_free_pixels": [
+      422,
+      429
+    ],
+    "lower_free_pixels": [
+      457,
+      464
+    ],
+    "visible_gap_pixels_each": 8,
+    "rect_insets": [
+      14,
+      10
+    ],
+    "unscaled_crop_box": [
+      338,
+      412,
+      766,
+      472
+    ]
+  },
+  "audit": "author affected checks complete; existing root/original quick read pending; main authorized but not yet pushed",
+  "artifacts_sha256": {
+    "review.html": "408da9c3a18274f43112293772020148b2484c88bdc04114c0a5c65fd9f551ec",
+    "review.md": "c29545f95dc0b6817fd6a7ecb46ad3bd1e1fbd8433a3be772bfaa52fc44a1496",
+    "source-change.patch": "ec5f61c61976e85a90c90391fcf3720f06afb8c5ed49e57014298235eaa176bc",
+    "main-preview-files.json": "713dbcda9e44af62fee0518cda95aa4902cf80cbb1c7b8c0c0720b97976b9b9d",
+    "driver.gd": "5fd26bf75d942d1892f59d57919444588251a5e956635d2f16bb6760f6715045",
+    "runtime.log": "0d2a5e74fab426911f16a93e232037d53faed918d8d996533bdea43104f0591e",
+    "operations.json": "2e6e649f6c33dda9d9dacafa98dd921e214629ebecfbb91fdc3b623cf0976436",
+    "empty-visible-contour-unscaled.png": "2dd3306bb896505a7b211e464687d850a8bd39ed1d214e08b91e5d9203156d3c",
+    "04-late-empty-centered.png": "5d986138df6bdb2421d8290a8bc23030a271813c7de5e5ed497acea6a3912499",
+    "03-middle-return-empty.png": "88eeeec05d7de086bc964a00792190beffb9f6f52927861eb720f26f71f96107",
+    "02-middle-mixed-installed.png": "5b323008aded8022eaeb6cdcbd011be3916786120a5f8ad7ea3afba201060726",
+    "01-middle-empty-centered.png": "192f8b07edd1055dd8c4c2b5897b01c8323c014ab9d1cc3f9ff2167ec00975d6"
+  }
+}
