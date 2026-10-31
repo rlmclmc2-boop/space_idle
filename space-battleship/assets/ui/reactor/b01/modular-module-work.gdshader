@@ -4,13 +4,16 @@ render_mode unshaded, blend_add;
 uniform int module_kind = 0; // 0 weapon, 1 shield, 2 smelter, 3 crystal
 uniform float load_fraction : hint_range(0.0,1.0) = 0.0;
 uniform float phase = 0.0;
+uniform vec2 work_origin_px = vec2(0.0);
+uniform vec2 work_size_px = vec2(1.0);
+uniform vec2 work_view_size_px = vec2(808.0,835.0);
 
 float ellipse(vec2 p, vec2 c, vec2 r) {
     return 1.0 - smoothstep(0.88, 1.0, length((p-c)/r));
 }
 
 void fragment() {
-    vec2 p = UV;
+    vec2 p = (SCREEN_UV * work_view_size_px - work_origin_px) / work_size_px;
     float load = sqrt(load_fraction);
     vec3 tint = vec3(0.0);
     float a = 0.0;
