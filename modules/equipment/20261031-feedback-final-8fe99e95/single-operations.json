@@ -1,0 +1,158 @@
+{
+  "engine": {
+    "build": "official",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "records": [
+    {
+      "after": {
+        "balance_dependency_changes": 3,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 14,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "maximum_reads": 0,
+        "numeric_refreshes": 6,
+        "refreshes": 1,
+        "scene_draws": 3,
+        "scene_redraw_requests": 1,
+        "slots_updated": 7
+      },
+      "before": {
+        "balance_dependency_changes": 3,
+        "comparison_dependency_changes": 0,
+        "comparison_reads": 14,
+        "economy_same_budget": 0,
+        "economy_signals": 3,
+        "maximum_reads": 0,
+        "numeric_refreshes": 6,
+        "refreshes": 1,
+        "scene_draws": 3,
+        "scene_redraw_requests": 1,
+        "slots_updated": 7
+      },
+      "case": "hidden equipment"
+    },
+    {
+      "after": {
+        "last_result": {
+          "error": "InjectedPublishFailure",
+          "ok": false,
+          "reason": "SessionUnavailable"
+        },
+        "running": false,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "9.99925"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "before": {
+        "last_result": {
+          "ok": false,
+          "reason": "FirstDefenceRequired"
+        },
+        "running": true,
+        "selected": "weapon:0",
+        "slots": [
+          {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 3,
+            "equipment_id": "laser",
+            "id": "weapon:0",
+            "index": 0,
+            "paid_level": 3,
+            "switch_ready_at": 0.0
+          },
+          {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "armour",
+            "id": "defence:0",
+            "index": 0,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          }
+        ],
+        "wallet": {
+          "1": {
+            "e": "5",
+            "m": "9.99925"
+          },
+          "2": {
+            "e": "3",
+            "m": "1"
+          },
+          "degenerate_matter": {
+            "e": "3",
+            "m": "1"
+          }
+        }
+      },
+      "blocked_repeat": {
+        "error": "InjectedPublishFailure",
+        "ok": false,
+        "reason": "SessionUnavailable"
+      },
+      "case": "single",
+      "fault": {
+        "fault": true,
+        "ok": false,
+        "purchase_receipt": {
+          "commit_status": "fault_unknown",
+          "purchases": [],
+          "spent": null
+        },
+        "reason": "InjectedPublishFailure"
+      },
+      "injection": "explicit publisher, not actual native fault",
+      "player_text": "操作失败，当前游戏已停止。"
+    }
+  ]
+}
