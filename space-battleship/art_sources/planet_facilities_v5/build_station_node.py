@@ -122,12 +122,12 @@ for side in (-1, 1):
         box("Foot pressure face", (x,side*1.057,-.25), (.25,.022,.13), ochre, root, .01)
         # The end-on view exposes the through-node pressure cheeks. Armoring
         # their outer end faces makes each inlet read as a framed load socket.
-        box("Portal end pressure armor", (end*1.195,side*.80,-.035),
-            (.075,.39,.49), ochre, root, .035)
-        box("Portal end ivory spine", (end*1.238,side*.80,.035),
-            (.027,.30,.095), ivory, root, .009)
-        box("Portal end recessed slot", (end*1.238,side*.80,-.14),
-            (.028,.18,.048), blue, root, .007)
+        box("Portal end pressure armor", (end*1.195,side*.80,.20),
+            (.075,.43,.83), ochre, root, .045)
+        box("Portal end ivory spine", (end*1.238,side*.80,.34),
+            (.027,.34,.11), ivory, root, .009)
+        box("Portal end recessed slot", (end*1.238,side*.80,-.07),
+            (.028,.22,.065), blue, root, .007)
         box("Inset portal guide", (x,side*.55,.57), (.08,.045,.61), cyan, root, .009)
         box("Portal cut edge", (x,side*.53,1.25), (.25,.22,.08), edge, root)
     loft("Upper ivory side armor", [
