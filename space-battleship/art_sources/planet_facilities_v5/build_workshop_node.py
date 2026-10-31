@@ -129,8 +129,12 @@ for side in (-1, 1):
         (-1.12, side*.86, .06, .35, .18), (-.86, side*.86, .14, .41, .24),
         (.86, side*.86, .14, .41, .24), (1.12, side*.86, .06, .35, .18),
     ], navy, root)
-    box("Inset inner bay wall", (0, side*.575, .70), (1.70, .065, .68), navy, root, .025)
-    box("Warm working recess", (0, side*.532, .80), (1.42, .014, .31), orange_lit, root, .01)
+    # The side cut is a real opening into the tool path. Keep its lower sill
+    # and upper header as load members, leaving the center visibly open.
+    box("Inset inner bay lower sill", (0, side*.575, .32),
+        (1.70, .065, .17), navy, root, .025)
+    box("Inset inner bay upper header", (0, side*.575, 1.12),
+        (1.70, .065, .14), navy, root, .025)
     for x in (-.66, .66):
         box("Window jamb inner armor", (x, side*.655, .78), (.12, .07, .40), ivory_edge, root, .012)
         box("Window jamb amber signal", (x, side*.61, .79), (.06, .012, .14), orange_lit, root, .005)
