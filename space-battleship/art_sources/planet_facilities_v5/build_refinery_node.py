@@ -141,14 +141,14 @@ def hopper(name, y, parent):
     root=node(name,parent,(0,y,0))
     side=1 if y>0 else -1
     box("Hopper navy pressure cradle",(.08,0,.55),(1.58,.70,.55),navy,root,.08)
-    box("Hopper ochre lower shell",(.08,0,.97),(1.40,.79,.42),ochre,root,.07)
+    box("Hopper blue lower pressure shell",(.08,0,.97),(1.40,.79,.42),blue,root,.07)
     for rail in (-1,1):
         beam("Hopper outward flare",(-.67,rail*.34,1.12),
              (-.74,rail*.49,1.72),.13,.13,ivory,root)
         beam("Hopper far flare",(.72,rail*.34,1.12),
              (.78,rail*.49,1.72),.13,.13,ivory,root)
-        box("Hopper raised side plate",(.02,rail*.46,1.45),
-            (1.51,.16,.52),ivory,root,.055)
+        box("Hopper outward sloped armor wall",(.02,rail*.46,1.45),
+            (1.51,.16,.52),ivory,root,.055).rotation_euler.x=-rail*.19
         box("Hopper service line",(.02,rail*.548,1.34),
             (1.09,.018,.06),cyan,root,.008)
     for end in (-1,1):
@@ -164,7 +164,7 @@ def hopper(name, y, parent):
             (1.35,.095,.09),ivory,root,.016)
     for x in (-.52,-.12,.28):
         box("Ore chunk in receiving bin",(x,side*.10,1.38),
-            (.22,.21,.10),blue,root,.02)
+            (.22,.21,.10),edge,root,.02)
 
 
 root=node("Facility")
