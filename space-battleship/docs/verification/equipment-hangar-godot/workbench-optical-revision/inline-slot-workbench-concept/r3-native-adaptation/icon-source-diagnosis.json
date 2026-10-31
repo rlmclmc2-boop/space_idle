@@ -174,5 +174,11 @@
     "Exact ordinary/primary/select normal,hover,pressed,disabled,focus material and text roles, including selected variants",
     "Shared transparent-texture icon policy using original stable IDs; preserve native20px fees/44×54 equipment and existing validated16px card layout"
   ],
-  "official_import_reference": "https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html#process-fix-alpha-border"
+  "official_import_reference": "https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html#process-fix-alpha-border",
+  "resolution": {
+    "common_fixed_source": "6e0e86c80d7cc7ee4f8623fca929c2f4828b6215",
+    "native_source": "81744e5a7da14577ea5792a621529f304ed82b3c",
+    "evidence": "evidence/ledger.json",
+    "status": "Shared static renderer now uses original Texture IDs, native retains same original-alpha route; latest native materials and19 frames actually reviewed."
+  }
 }

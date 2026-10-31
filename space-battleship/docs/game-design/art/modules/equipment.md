@@ -1,3 +1,5 @@
+**2026-10-31最新R3原生候选：** [唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已消费6e0e共享运行材质，在原卡／下拉／按钮替换旧面，保16px与原边界／费用交互。81744e5a同版19整屏／24.7秒真实动作及f924必要helper运行记录齐；交根／原审重判，不自判最终或main。下方旧依赖／候选均以唯一入口当前节为准。
+
 **2026-10-31当前同卡排版修订候选：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已落实16px同卡文字、共享数字角色、同排费用、删身份续条／冗余组文案及原滚动区结构收边；同版19整图和23.2秒真实动作随22395e3a运行源。装备实际整数报价／支付边界已窄接a83ad9固定候选，不宣称全局后台或整体风格通过。交根／原审重判，未main；下方历史状态以唯一入口为准。
 
 **2026-10-31用户反馈后当前候选：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已改名称/属性/费用统一文字列、图标独列、名称仅装备名及名称框下缘真实留白，消费f688共享数字/不足规范；19同版完整实图和真实操作视频随源码。新候选交根/原审，不沿用旧19a2已投递/等待意见或旧静态通过结论。以下历史由当前入口覆盖。
