@@ -1,46 +1,67 @@
 {
-  "current": "User feedback ended prior wait. Same layout item restored; source investigation only, no new code/runtime/evidence. Actual platform compaction occurred; preserved handoff then stop for in-place replacement.",
-  "runtime_source_commit": "75b7a1918b2c988e81ebdb64e7006369189c77cc",
-  "shared_number_source": "f688ea7c8856ad87775b0853044b9020303b8137",
-  "evidence": "name-column-revision/ledger.json",
-  "remaining": [
-    "Unify equipment name/property/fee typography and fee baseline/fixed gaps; semantic current/gain/cost/shortage colors",
-    "Remove passive clipped-row identity fragment and evaluate/remove redundant heading/hints/group labels while retaining clipped-card noninteraction",
-    "Capture before boundary/node evidence and structurally repair lower content/scrollbar leakage; exact artwork boundary not measured yet",
-    "Consume authoritative shared resource-integer display and economy contract when fixed source arrives; no UI ceil or generic formatter mutation",
-    "Same-thread affected native full-screen/actions for2/5/8,long MAX,dual fees,shortage/buttons,bounds,then code/evidence Git binding",
-    "Cross-module style remains pending overall replacement proposal; rejected4bdea not consumed"
-  ],
-  "independent_implementation_remaining": [
-    "Typography/baseline/gaps/semantic numeric roles",
-    "Passive fragment/redundant copy cleanup",
-    "Workbench clipping/bottom boundary structure and affected evidence"
-  ],
-  "implementation_dependency": {
-    "resource_integer": "Pending backend authoritative preview/execution integer contract and overall resource-specific formatter API/full fixed SHA/minimal files; do not UI ceil or alter generic PlayerText.number",
-    "semantic_roles": "Use common roles; no new fixed role source supplied in this round; coordinate exact minimal helper if required"
+  "current": "Implementation and same-version native evidence complete for current card alignment feedback; root/original review pending, not user acceptance/main.",
+  "runtime_source_commit": "22395e3aa67f9684bbf0d05fb503b6f770b77405",
+  "evidence": "card-alignment-revision/ledger.json",
+  "review": "review-card-alignment.html",
+  "shared_sources": {
+    "resource_display": {
+      "commit": "36258b1eb8a2beca7ef9641477be05a7991031ed",
+      "files": {
+        "src/ui/player_text.gd": "whole file exact bytes; only addition relative prior f688 is resource_number/_is_exact_integer_text"
+      },
+      "callsite": "equipment fees and existing Economy balance rows use native to_display raw → resource_number; tooltip retains raw"
+    },
+    "number_roles": {
+      "commit": "190a21b47574a0a4f5c9c7be798f7ec38224d5dd",
+      "files": {
+        "src/ui/bridge_theme.gd": "only number_role_color/apply_number_role and their source comment, exact function bytes; no constants required"
+      },
+      "callsite": "RichText current/gain via number_role_color(light); amount Label via apply_number_role(cost/insufficient,light); names/icons retain identity colors"
+    },
+    "integer_equipment_boundaries": {
+      "commit": "a83ad9c83aebdfc18ac98f4f784aeb16eca16da4",
+      "read": [
+        "docs/game-design/contracts/resources.md",
+        "docs/verification/integer-resources-implementation.md"
+      ],
+      "files": {
+        "src/systems/resource_amounts.gd": "whole exact helper file",
+        "src/systems/equipment.gd": "Resources preload; _quote_levels final whole_map only",
+        "src/systems/economy.gd": "Resources preload; restore wallet normalization; accept_budget; can_pay/payment normalized costs and candidate holdings. Existing balance_rows raw field remains and formatter becomes resource_number."
+      },
+      "not_imported": [
+        "Research",
+        "Session chrono/material/forge",
+        "Hyperspace energy and rewards",
+        "Reactor",
+        "Galaxy",
+        "drop/sample/credit_yield production changes",
+        "budget_changed signal from older source tree"
+      ],
+      "display_boundary": "Owner integer_text/cost_texts extreme ×10^ strings intentionally not reparsed. Equipment retains authoritative canonical Amount costs and native to_display raw, consumed by fixed resource_number; no UI ceil or private resource amount math."
+    }
   },
-  "actual_compaction": true,
+  "independent_implementation_remaining": [],
+  "remaining": [
+    "Root/original reviewer judge complete current screens and23.2s actions",
+    "Overall cross-module style proposal/review remains separate",
+    "Global Owner integer-resource integration and original dual review outside equipment payment boundaries not claimed complete"
+  ],
+  "actual_compaction": false,
   "denied_actions": [],
   "unknown_outcomes": [],
   "background_processes": [],
   "not_claimed": [
-    "cross-module style approval",
-    "final user acceptance",
-    "main merge",
-    "whole-game completion"
+    "Original reviewer passed latest candidate",
+    "User final acceptance",
+    "Main merge",
+    "Cross-module style approval",
+    "Global resource integer contract integration",
+    "Unrelated full-game regression"
   ],
-  "reviewed_delivered_evidence": "0f981d19658d2b7ce020d8de5e7fec1c50ee7841",
-  "delivered_layout_images": [
-    "name-column-revision/inline-native-early.png",
-    "name-column-revision/inline-native-bottom.png",
-    "name-column-revision/inline-native-long-max.png"
-  ],
-  "auxiliary_hover": "Native exact original value retained; not rounded to shared one-decimal primary display",
-  "stop_reason": "Actual platform compaction: preserve investigated natural item and stop for in-place executor replacement per parent instruction",
-  "product_edits_this_feedback_round": false,
-  "new_runtime_or_evidence_this_feedback_round": false,
-  "investigation_baseline": "f6b0c6fa2bdcf019d5823ce3cbd5d645254a3ac7",
-  "root_cause_fragment": "Intentional per-slot passive identity continuation Label; not proven old-layer/baked-text bug",
-  "bottom_boundary_status": "Source nominal scroll rect(340,294,450,510) confirmed; actual visible artwork edge/node bounds and before screenshot not captured in this feedback round"
+  "auxiliary_hover": "Native exact original resource amount, not forced one-decimal display",
+  "product_edits_this_feedback_round": true,
+  "new_runtime_or_evidence_this_feedback_round": true,
+  "previous_compacted_handoff": "6a9b7b48f7fd9931698ffffbb78c8af0dc6e84e0 preserved below new current sections",
+  "stop_reason": null
 }

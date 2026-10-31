@@ -1,3 +1,18 @@
+# 2026-10-31 同卡字号／数字角色／真实裁剪修订候选（未实际平台压缩）
+
+本节覆盖下方“恢复调查／实际压缩交接”与旧等待意见状态。用户新反馈已在原目录、原 `art/equipment-materials-main-20261029` 实施；当前运行源码 `22395e3aa67f9684bbf0d05fb503b6f770b77405`，保留原90px矩形卡／94px行、单行当前→升级后、整卡费用与数量／购买在框内。**交根／原审重新判断，未自判验收、未合main。**
+
+- [本轮完整审阅入口](review-card-alignment.html)：早2／中5／晚8、长MAX、两种单项不足、上下完整端接、下拉／空槽／按钮／提示等19张同版1440×900原整屏；[23.2秒动作](card-alignment-revision/session-actions.mp4)、[43.55秒原录屏](card-alignment-revision/session-raw.mp4)、[ledger及版本／hash](card-alignment-revision/ledger.json)、[原驱动](card-alignment-revision/driver.gd)。均为真实main/native/config同线程，最终exit0/failures0，19整屏逐张view、整段视频解码与5帧检查。早期自然，后期Owner受控恢复／真实安装，不声称自然解锁；unknown回执用显式publisher注入。
+- 名称、攻击力／容量标签、费用标签／资源名／消耗值统一16px，保既有字体角色；当前值、升级后收益、普通费用、不足金额消费 `190a21b47574a0a4f5c9c7be798f7ec38224d5dd` 的 `BridgeTheme.number_role_color/apply_number_role` 浅面角色。只取两函数／源注释，不覆盖整棵主题。图标原色，资源名身份色；不足仅对应数字红。费用同一24px行同基线，20px图标居中，图标→字／名称→数各4px、资源组12px；长MAX双费省名保完整数与0.5秒native精确原文提示。
+- 名称、属性、费用共文字左沿，图标独列其下无内容；名称框下缘→属性墨迹21完整卡实测最小13px，费用墨迹→卡底最小5px，左沿差0。[墨迹支持记录](card-alignment-revision/glyph-spacing.json)只辅助判断，完整图才是可读性证据。
+- 灰“舰炮 Lv.1”根因是原 `_create_card/_refresh_card/_update_visible_cards` 特意绘制的fragment身份续条，已删真实节点／分支；不是证实几十层、底图残字或重复整页。删除“逐槽工作台”、滚动提示和带数量组条的原节点，保武器→防御顺序、部分卡不可操作／聚焦及真实滚轮焦点释放。
+- 底边根因是原滚动区 `(340,294,450,510)` 延至x790／y804，内容／滚条跨到原背景右内壁约x775和下斜角收口约y778。现原容器宽434／高484、卡与内容424、尾键左收8；晚8实测滚条 `(766,294,8,484)` 止于y778，末卡止于y774。[本轮前态底整图](card-alignment-revision/before-inline-native-bottom.png)／[本轮后态底整图](card-alignment-revision/inline-native-bottom.png)均保上下边界；原背景字节／变换保，未新增遮板／外框／mask，未全量刷新。
+- 资源展示逐字消费 `36258b1eb8a2beca7ef9641477be05a7991031ed` 的 `player_text.gd`；费用和公共余额仍从既有native十进制原文调用 `resource_number`，属性仍 `number`，native tooltip不改精度。装备整数报价／支付必要域消费 `a83ad9c83aebdfc18ac98f4f784aeb16eca16da4`：helper原字节、Equipment最终费用whole_map、Economy钱包restore/accept及can_pay/payment边界。未取旧树或Research／Session／Hyperspace／产出／掉落等非本组变化；Owner极大整数 `×10^` 文本不拿来二次解析。**不声明全局资源整数化完成**。[精确消费范围](card-alignment-revision/sources.json)。
+
+当前独立实现项与上述必要接线已完成；剩余为根／原审对本轮整屏及动态的裁定、跨模块整体风格和后台全局资源整数整合／双审，不等旧用户授权。无权限拒绝、未知结果或后台进程；本人未实际平台压缩，原WIP／untracked.import／.uid／cache保全。首次删组条曾显露Owner交错槽序，完整图检查后已修并重录；前轮图视频保留/tmp，不冒充本版。
+
+---
+
 # 2026-10-31 用户新反馈恢复调查／实际平台压缩交接
 
 本节覆盖下方“等待用户意见/无独立未完项/未实际压缩”的历史状态。用户13:46反馈已结束等待，恢复同一排版项；本执行者随后发生**实际平台压缩**，按父既定要求在当前调查自然点保全并停止，供原地替换。接管核查HEAD为 `f6b0c6fa2bdcf019d5823ce3cbd5d645254a3ac7`，原 `art/equipment-materials-main-20261029` 分支；本轮尚无产品代码修改、采图或实机运行。tracked原先干净，既有大量untracked/import/uid/cache原样保留；无Godot/ffmpeg后台，无权限拒绝或未知执行结果。环境此前正常可用，本次仅核现场未重新启动引擎。

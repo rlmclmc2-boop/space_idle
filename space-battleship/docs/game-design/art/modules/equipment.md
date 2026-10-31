@@ -1,3 +1,5 @@
+**2026-10-31当前同卡排版修订候选：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已落实16px同卡文字、共享数字角色、同排费用、删身份续条／冗余组文案及原滚动区结构收边；同版19整图和23.2秒真实动作随22395e3a运行源。装备实际整数报价／支付边界已窄接a83ad9固定候选，不宣称全局后台或整体风格通过。交根／原审重判，未main；下方历史状态以唯一入口为准。
+
 **2026-10-31用户反馈后当前候选：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已改名称/属性/费用统一文字列、图标独列、名称仅装备名及名称框下缘真实留白，消费f688共享数字/不足规范；19同版完整实图和真实操作视频随源码。新候选交根/原审，不沿用旧19a2已投递/等待意见或旧静态通过结论。以下历史由当前入口覆盖。
 
 **2026-10-30当前实机候选：** [装备唯一入口](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md)已接正式公共隔离宿主，15完整实图/同版视频/Owner事实及源码hash齐备；矩形卡与真实空槽区分、材料理由净空已实施并同线程受影响核验exit0 failures0。原Owner槽位等级规则保持，空槽卡不冒充现装升级对象。未报新原审或用户验收，不合main。以下历史阶段描述按该入口当前状态解释。
