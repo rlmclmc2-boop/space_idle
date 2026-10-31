@@ -1,3 +1,11 @@
+# 2026-10-31 公共资源条最小修复已消费（未实际平台压缩）
+
+保04ae原审限定通过的装备内部，仅读取/消费整体459df59315e20708075bda5fafe9ef8408b69a7d入口475节所述ZoneShell净宽/格式化修复；BridgeTheme/ResourceVisuals/public_shell资产相对bfe无差，不复制其它模块。运行代码d354e60f1530435a6790cca0814ddc7e76f84f82相对04ae的src/assets仅zone_shell一文件差异，完整资源身份/金额规则保持。
+
+五同版1440×900确认图（早2、中5空槽9.99万、晚8顶/底、长MAX444顶栏1.235e39）已逐张view；正常main/native/config窄确认exit0 failures0，官方tooltip完整行和各余额实字体墨迹宽有断言/状态记录。resource-rail-confirmation/ledger.json绑定本轮源码/驱动/原始log/JSON/图；review-resource-rail.html为当前五图入口。未全套复跑/重录视频，旧04ae视频只属旧公共条版本。无技术依赖/权限拒绝/未知结果/后台进程，未实际压缩。新五图尚未交用户，当前交父/整体判定后投递，不记待用户；不自判新整体接受/main，不新增任务。以下历史由本节和唯一README覆盖。
+
+---
+
 # 2026-10-31 最终整组证据补齐（未实际平台压缩）
 
 运行代码仍8430cd9c8cd84372e0218762daab986e989f3fbe；最终驱动同线程实际wheel_down63/127/191/255/280与wheel_up280/216/152/88/25/0，部分行购买焦点真实释放，取代此前直接赋scroll值。后期fixture仅restore付费等级，新增装备经五次真实Owner.equip_slot→publish几何事务安装；最终右战场与左预览均完整五武器，未改产品或强制重建数值升级战场。9818145d旧证据直接restore装备ID后未触发右侧几何，现已准确替换并在ledger记录限制，历史Git保留。
