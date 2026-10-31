@@ -2,7 +2,7 @@
 
 ## 2026-10-31 用户复看后的现行返修状态
 
-用户看过本目录交付的三段 1× 实机视频后明确退回：均分仍压实体内边；升级费用资源须与上方“等级”左沿对齐；余额不足要按正式装备的逐资源红字／点击执行才短提示；右上光未贴实际管腔、左右下连接不像实体管、上下接口穿帮，核心通用水波不能表达能量约束／输送。用户进一步要求从“整图＋mask 点特效”改为可组合 core、四设备、独立接口和真双层管路。**下文三段旧片及 Astra 视觉结论只对应退回前版本，现仅保留为历史对照，不再代表现行连接／动态已获用户认可。** 控件与数字返修的当前证据、待实现结构合同及性能报告在本页末；未改 Owner、Excel、main 或公共壳，不合 main。
+用户看过本目录交付的三段 1× 实机视频后明确退回：均分仍压实体内边；升级费用资源须与上方“等级”左沿对齐；余额不足要按正式装备的逐资源红字／点击执行才短提示；右上光未贴实际管腔、左右下连接不像实体管、上下接口穿帮，核心通用水波不能表达能量约束／输送。用户进一步要求从“整图＋mask 点特效”改为可组合 core、四设备、独立接口和真双层管路。**下文三段旧片及 Astra 视觉结论只对应退回前版本，现仅保留为历史对照，不再代表现行连接／动态已获用户认可。** 控件与数字返修证据、新模块化舞台实现及性能报告在本页末；未改 Owner、Excel、main 或公共壳，不合 main。
 
 ## 用户批准（2026-10-30 UTC+8）
 - 12:02：“按这个b1修订后的方向做”。
@@ -222,17 +222,32 @@ Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe，ffmpeg x11grab 25 fps、libx264
 
 [不足驱动](return-ui-shared-budget-driver.gd.txt)与[同版日志](return-ui-shared-budget-runtime.txt)实点 MAX 买 14 级后钱包余额 `134`、下一级报价 `668.0 铀`；[点击前](return-ui-shared-insufficient-before-1440x900.png)费用红、升级可点，点击后 [整屏](return-ui-shared-insufficient-click-1440x900.png)由 Owner 拒绝 `InsufficientResources`、才出“资源不足”。切 MAX 零可购时[整屏](return-ui-shared-max-zero-1440x900.png)报价空成本显示“—”、执行键仍可点，点击同样由 Owner 拒绝。`100.0/100.0` 与 `10.0 铀` 是公共新数字函数展示，Owner canonical Amount 未改。现已返回原分支并恢复临时覆写；当前 UI 真组合源需随新可组合舞台一起再作最终视觉验收，不将旧管线背景重复送审。
 
-### 用户返修二：可组合 B01 舞台的实施合同（现行制作方向）
+### 用户返修二：可组合 B01 舞台的当前实现与验证边界
 
-已核本地 Blender `4.3.2`、Inkscape、ffmpeg 和 Godot `4.7.2` 可用。现源 `reactor_stage.gd` 以一张 `1187×1326` 全景板绘 `808×835`，`live-material.gdshader` 用椭圆场、三张旧 mask 打包成两张贴图及 UV 正弦流动覆盖；用户指出的错管光、下管非实体和接口穿帮正来自“像素亮了却没有独立零件与遮挡关系”，不能再靠扩大 mask／改水波频率处理。批准的主体体量与控制台空间沿用，整图仅作构图／材质参照，最终运行舞台不把四设备及管路烘在同张底图上。
+已核本地 Blender `4.3.2`、Inkscape、ffmpeg 和 Godot `4.7.2` 可用。退回前 `reactor_stage.gd` 以整张板画设备及导管、再由 `live-material.gdshader` 用 mask 覆盖工作场，产生错管光和连接穿帮。**本次制作树**已改为独立背景、核心、四机体、四根双层实体管、前法兰、核心钳臂／转子及单独控制台壳；运行阶段不再实例化旧整图或旧 `live-material.gdshader`。批准主体体量与原生控制台空间沿用。旧资产、三段旧视频和其性能数字仅作历史对照，不能代表本次新结构已获用户验收。
 
-拟按原舞台源坐标 `1187×1326` 和显示域 `x0…807,y65…899` 制作分层 2.5D 资产：①无设备／无管的舱壁与地坪，②独立核心内场、约束环、前金属束带与上下锁口，③武器、盾甲、炼铁、凝聚各自机体／工作腔／前法兰，④每路可复用截面的后管壳、透明内腔、发光芯、前法兰及遮挡片，⑤现有金属控制台空壳与原生 HSlider／按钮／文字。Blender 的同一正交机位和带倒角的金属／玻璃材质生成可追溯 alpha 层；曲管由端点和端点切线的三次 Bézier 中心线放样双层截面，环箍／螺栓／导光条沿弧长放置，不用一条发光线代替实体管。需要另出独立端口正面与背面遮挡片，让管外壳进入核心／设备壳体后被法兰覆盖，内腔光仅在玻璃范围可见。顶部注入柱与下部核心基座也分别建后、内场、前锁口层，杜绝原完整贴图在接口上透出。
+源画布仍为 `1187×1326`，显示域 `x0…807,y65…899`。`modular-bay-background.png` 只承载舱壁地坪，`modular-core.png` 和四张 `modular-{weapons,defence,smelting,condensation}.png` 为分别裁出的机体；源层分别在 `modular-core-source.png`、`modular-modules-source.png`，可用 [装配脚本](../../../../assets/ui/reactor/b01/assemble_modular_surfaces.sh)重建裁切。四路管的**同一** Blender 双层截面与金属／玻璃／金色环箍由 [生成脚本](../../../../assets/ui/reactor/b01/generate_modular_pipes.py)沿各自 Bézier 端点和切线放样；每路产出独立 `shell` 和 `front` 透明层，运行时中间另有沿弧长 UV 的定向内腔光 Mesh。核心和设备在管前绘制，盖住各自交接边；原生 HSlider／按钮／文字保持在分离的控制台壳之上。源图由生成资产切片提供表面质感，代码和 Blender 路径持有部件、端点及动画；没有把整张新图再当设备／管路 mask。
 
-路径合同使用每路 `core_socket → device_socket` 的源坐标、出入切线、管径、前后层级与弧长 UV；基于批准板的**初测锚点**约为武器 `(455,240)→(320,210)`、盾甲 `(730,245)→(900,210)`、炼铁 `(470,440)→(305,530)`、凝聚 `(710,440)→(880,530)`，单位是 `1187×1326` 源像素。这些只是建模前对照点，不能沿用旧 shader 的 UV 线当真实管腔；最终须用源图和各部件 alpha 的实际端口逐像素校准，右上内腔轴线及左右下管的实体透视是重点退点。1／2／3／4 可用集合只挂载对应部件／管路，未开放者不留空槽或幽灵接口；现 1／2 专用连续控制井保留原生行布局，不回旧金框 HUD。
+实际端点／切线合同在 `reactor_pipe_view.gd::ROUTES` 与 Blender `PATHS` 同值：武器 `(448,249)→(318,208)`、盾甲 `(741,247)→(916,199)`、炼铁 `(463,450)→(313,517)`、凝聚 `(729,446)→(889,518)`，中间两控制点也逐项固定。各自 `PIPE_BOUNDS` 仅给裁后实体层定位；弧长 UV 与载荷／相位则只作用于对应管腔。1／2／3／4 仅挂对应部件／管，少态控制井保留原生行；零载保留静态实体，关闭局部工作光。未开放方位在核心自身的结构法兰上仍可能看见硬点，是否足够像封闭建筑需结合实机整屏审，不能以代码断言视觉通过。
 
-运行阶段由 `reactor_stage.gd` 持有 `CoreView`、四个 `ModuleView` 和四个 `PipeView`，每块自己的局部材质与裁剪而非全景 shader。Owner 已接纳 `load` 分别驱动核心约束运动、四路管腔沿弧长从核心向设备的有向节律、设备专属动作（武器双炮、盾面、炉内熔流、晶体腔）；真零时各块工作场关闭，少态的隐藏部件不绘制。现 `game_time/paused/visible` 的生命周期合同保持：只在页可见、未暂停且时间推进时更新正载相位，隐藏页停止更新；不改分配、报价、升级、Session/native 或公共导航。新 0／1／2／3／4 静态和真实连续动态稳定后，才停止运行旧全景动态 shader／packed mask／八张含完整设备的底板；旧资产与视频保留为历史对照而不继续叠在新零件下。
+运行阶段 `reactor_stage.gd` 持有四个 `PipeView`、四个 `ModuleView` 和独立核心场／转子／双钳臂。Owner `load` 控制核心离散产生和约束运动、对应管腔沿弧长从核心向设备前进的光包、武器双炮、盾面、炉内熔流和晶体腔四种局部动作；真零关闭所有局部工作光，少态隐藏未开放件。钳臂按 5.2 秒周期压合、停驻、释放，转子单独转动。`game_time/paused/visible` 生命周期、Owner 分配／报价／升级、Session/native 和公共导航未改；本次只替换 B01 舞台绘制。当前受控八态与四路 1× 连续片在下段固定后再请原视觉审核，**旧 Astra 对旧整图的通过不外推**，新结构性能尚无可比采样。
 
-**参考观看前置仍未满足，故上段是结构接口计划，不是已完成的新运行效果。** 已找到 Coffee Stain Studios 的 [Satisfactory Update 4 官方 Steam 预告条目](https://store.steampowered.com/app/526870/Satisfactory/)（Steam trailer id `361661`）和 Digital Extremes 的 [Warframe Reactor Sabotage 官方介绍](https://www.warframe.com/en/news/attention-pc-tenno-33)，但本环境直接读取 Steam 视频 CDN 和 Pixor CC0 动画 GIF 时代理返回 `CONNECT 403`，web 视频入口亦不可播放，**尚未实际看到任何参考动态帧或完整片**，不填写虚构的观看时间段／借鉴动作。下一步须通过当前工具正常可播放来源实际看清核心约束、能量产生／沿管输送／端口反馈的时间关系，记录 URL、作者、观看段和逐帧借鉴点，再据此做上述部件的最终动态；不绕网络限制，也不以网页描述或单帧图替代观看。
+**已观看的真实游戏动态参考，仅支撑机械约束运动。** PIndustries 的 [Arkline / Ship Pioneer 开发记录](https://github.com/PIndustries/arkline-engine/wiki/Ship-Pioneer)所附[反应堆机制实机动图](https://raw.githubusercontent.com/PIndustries/arkline-engine/7e82a0690aab21a9d10cde906140f75393931031/docs/ships/pioneer/images/progress-20261024/pioneer-raised-bridge-reactor-mechanism.gif)由项目作者标为 `100 ms authority replay`／真实注册几何（2026-10-24）。从公开 Git 对象正常取得完整 `1280×720`、94 帧／9.4 秒 GIF，SHA-256 `942742715ff8fde0ee27eea448d235f9f80b5baf129ee75da696edbc470271b7`；已看每 0.5 秒接触表和原尺寸 2／4／6／8 秒帧。约 1–4 秒，多道刚性颊／束带沿同轴导轨向稳定中心压合并在 100% 紧缩处短暂停住；约 5–6 秒按原机械轨迹张开，7 秒后切到只读控制屏。借鉴的是**中心定形、独立机械束缚件有行程和停驻**，不照搬其低多边形材质、画面构图或编辑后的停帧。片中没有可信的能量管内流和端口反馈，因此**不能**把它当管路／能量动态证据。
+
+**已观看的核心产能动态参考，仅支撑离散反应事件。** WestonBDev 的开源 Unity [Nuclear Reactor Dynamics Simulator](https://github.com/WestonBDev/nuclear-reactor-simulator)在固定 Git `5a48a28b2437fec509acc2d5b201e68437cda2c2` 内提供[真实 Game-view 高活性核心动图](https://github.com/WestonBDev/nuclear-reactor-simulator/blob/5a48a28b2437fec509acc2d5b201e68437cda2c2/Documentation/Media/unity-reactor-excursion.gif)，`1080×608`、56 帧／6.72 秒，SHA-256 `ba11f53d16e72e66bfdd51b1cacaa47abd2ff9554592d0e9808390a5583dd49b`；已看完整每 0.5 秒接触表。0–6.5 秒中蓝色燃料位置固定，亮／暗离散粒子移动、相遇与增殖，粒子数随活性逐步上升，而吸收棒几何保持独立。借鉴**固定约束内的离散生成、捕获和向出口传递**这一时间关系，不把科学可视化的二维点阵当最终美术，也不把它当游戏 B01 的物理公式或已验证管路外形。公开仓库说明 GIF 来自 Unity Game view；这里的观察限于所见画面。
+
+另查 Coffee Stain Studios 的 [Satisfactory Update 4 官方 Steam 预告条目](https://store.steampowered.com/app/526870/Satisfactory/)（Steam trailer id `361661`）和 Digital Extremes 的 [Warframe Reactor Sabotage 官方介绍](https://www.warframe.com/en/news/attention-pc-tenno-33)，但当前 Steam 视频 CDN 和 Pixor CC0 动画 GIF 直取遭 `CONNECT 403`，web 视频入口不可播放；这两项**未看过动态**，不得据文字或静图虚构管流效果。后续核心产能／沿实体管输送／端口设备回应必须用实际可运行新分层舞台观察与验证；若再引外部运动范例，先看完整动态并记录观看段。
+
+**当前新结构的受控实机包。** 运行源码与图／片保存在本节所在 Git 提交，旧公共 `main.tscn` 宿主、Godot `4.7.2`、Xorg `:99`、Mesa llvmpipe/OpenGL3、`1440×900`、正常 `1×`。受控 [驱动](modular-controlled-driver.gd.txt) SHA-256 `5058b648ddb12edcd8c329a53132105878c35554823d3c096549a5708f269e4b` 只在隔离 Owner 复制 `reactorModules`，不改正式 Excel／自然解锁；[日志](modular-controlled-runtime.txt) SHA-256 `682732562aac305b471041c758ef86d009e56c8dd2d2375c8551f54bb6a65b58` 记下八态模型、stage loads、原生行显示及 1／2 路真实鼠标拖拽被 Owner 接纳。各整屏为实际 Godot viewport，不是贴图合成：
+
+| 受控可用集合 | 真零、实体仍在 | 原生均分、工作光 | 鼠标手分并回读 Owner |
+|---|---|---|---|
+| 1 炼铁 | [整屏](modular-controlled-1-zero-1440x900.png) | [整屏](modular-controlled-1-active-1440x900.png) | [整屏](modular-controlled-1-manual-1440x900.png) |
+| 2 武器＋炼铁 | [整屏](modular-controlled-2-zero-1440x900.png) | [整屏](modular-controlled-2-active-1440x900.png) | [整屏](modular-controlled-2-manual-1440x900.png) |
+| 3 武器＋盾甲＋炼铁 | [整屏](modular-controlled-3-zero-1440x900.png) | [整屏](modular-controlled-3-active-1440x900.png) | — |
+| 4 全部 | [整屏](modular-controlled-4-zero-1440x900.png) | [整屏](modular-controlled-4-active-1440x900.png) | — |
+
+[新结构四路工作预览片](modular-preview-10s-1440x900-25fps.mp4) SHA-256 `fed5c8d18b87deae67d35187eea4c20f062d8bd42e9f8b1169aa6b4350befed0` 为真实游戏 `1×` 连续 `10.00 s`、`250` 帧、`25 fps`；[驱动](modular-preview-video-driver.gd.txt)／[日志](modular-preview-video-runtime.txt)说明四路 `25%` 和主场景已正常关闭引导，观察的 0／4／8／9.8 秒关键帧可见机械转子／钳臂、各机体与管腔运动，未见引导遮页。日志 `VIDEO_END wall_seconds=35` 是驱动遗留**硬编码文字**，实际驱动执行 20 次一秒定时并由 ffprobe 核片长 10 秒，不能把 `35` 当实测时长。**版本限定：**该片在本次最后一轮 Blender 资产再生成前数分钟录得；之后相同生成脚本重出透明管／转子贴图，并用上表当前资产实际重跑八态。片子仅作新结构运动预览，不能冒充最终资产的逐帧同源连续片；当前资产新的连续片尚无。`generate_modular_pipes.py` SHA-256 `1df0308235f675f1819d2c2f21e82eaddc022534efd464a814ec73481426da66`、`assemble_modular_surfaces.sh` SHA-256 `ee3945dc2a7d844f62a5c72bbb5d66966d0ad7f21bd1844c955c05e8490b4034`，三张源图 SHA 分别为背景 `65ec38308fa8f7e376b8b50769d0ea0b54758a9fd88435653914321198e40dfc`、核心 `cb623fd94dd6e433a6507a073e9e98e6777abe8c66d69b4e729f979ecb656295`、四机体 `3f787d1467346b1b38971d1ad5513cc9c10d6165ac997419c0b7891105e4e9f7`。原独立 Astra 尚未审此新结构，也没有新架构性能配对；八态图只证上述受控显示／点击范围，不证明自然 1／2 解锁或用户目标机性能。
 
 ### 性能完整对照：上次已报告记录 → 本次状态
 
