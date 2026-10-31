@@ -29,7 +29,7 @@
 ## 保留的契约与待办
 
 1. 四设施各自 built 弧段、领取业务、球环独转、探索船另轨、真实后环遮挡和前弧暗缝保持；星球余额原位读 Economy `balance_rows()`，不另造格式器或费用行。
-2. 资源整数接口仍按原 Owner 交接精确消费 `f9244a30ad1843128aaa0a620c4dc3e4866685b2`。该版只完成只读复核；将 `aaba..f924` Owner 补丁直接套本分支会在 Session、Economy、Reactor 与已有前置功能冲突，已撤回试合。后续按最新 Owner 语义逐方法整合，不用旧 `a83` 当最终，也不阻塞主体制作。
+2. 资源整数接口已按原 Owner `f9244a30ad1843128aaa0a620c4dc3e4866685b2` 的方法边界逐项消费到本分支：Economy 的整数钱包／掉落／累计产出，Equipment 报价，Research 付费进度，Session chrono／奖励／forge，Hyperspace 能源与固化奖励，Reactor 固定数量与 MAX 预览／回执，以及余额、装备、超空间、炉体的整数展示口。保留本树原有功能，未整文件覆盖。`35b5cadb` 的定向运行证据固定于[独立归档 `65b689a4`](https://github.com/rlmclmc2-boop/space_idle/tree/65b689a4ed17fc8f38d6b0cc807fe7abc77df55f)：Owner 探针 290 项、适配本树既有信号差异的炉体批量探针 60 项、显示 9 例均通过，8 个文件哈希从归档 blob 复核。该范围不称完整玩法验收；炉体页面缺失的既有 presentation_model 出口仍需原组处理，也不阻塞星球主体制作。
 3. 保存配置去绑定已从 Owner `c38f1c2b` 按 SaveFiles 与 Session 方法精确整合到本分支 `c883a36b`，保留本分支其他新源码和 UI。新信封不写 `configHash`，旧信封含该字段仍可读但不按配置文本身份拒载；checksum、payloadHash、配置自身和业务状态校验保留。本分支[定向运行日志与复现条件](https://github.com/rlmclmc2-boop/space_idle/tree/1ac375fa7ba7061d512eabef3e7da6f512e7b060)在独立归档 `archive/planet-save-config-c883a36b-20261031@1ac375fa`，实际 Session／原生扩展探针 27 项通过、入口 check-only 通过；旧探针仍有退役 `configHash` 断言，不将其作为本次准则，也不称完整保存验收。
 
 公共控件／图标由整体项目源维护，不再等待 Figma，也不强制接公共壳。不得回退为旧整身图下叠柱／垫片、低质白盒或仅改色／环宽代替资产制作；不得混用旧码图、日志或数值宣称新码视觉通过。
