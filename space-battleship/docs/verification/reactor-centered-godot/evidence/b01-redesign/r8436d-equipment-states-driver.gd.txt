@@ -1,0 +1,53 @@
+extends SceneTree
+const OUT := "/tmp/reactor-new-equip-combo/"
+func frames(count: int) -> void:
+	for i in count: await process_frame
+func shot(name: String) -> void:
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT + name + "-1440x900.png")
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(80)
+	assert(game.startup_error.is_empty())
+	var session = game.session
+	game.set_process(false)
+	var pending: Dictionary = session.pending_guidance()
+	while not pending.is_empty():
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+	game._sync_guidance()
+	game._zone_shell._route_buttons["equipment"].pressed.emit()
+	await frames(20)
+	assert(game._zone_shell._active_route == "equipment")
+	assert(game.equipment_scene._active.size() == 2)
+	await shot("r8436d-equipment-early")
+	var campaign: Dictionary = session.campaign_system.save_state()
+	campaign.state.highest_reached = 100
+	campaign.cycle_reached = 100
+	campaign.state.state = "menu"
+	campaign.departure_remaining = 0.0
+	campaign.state.speed = 0.0
+	campaign.state.cleared_stages = {}
+	for stage in range(1, 100): campaign.state.cleared_stages[stage] = true
+	assert(session.campaign_system.restore_state(campaign).ok)
+	session.equipment.refresh_availability(session.campaign_system.available, 100)
+	assert(session.campaign_system.change_ship("Cruiser", session.commit_ship_refit).ok)
+	await frames(25)
+	assert(game.equipment_scene._active.size() == 5)
+	await shot("r8436d-equipment-middle")
+	assert(session.campaign_system.change_ship("Heavy_Battleship", session.commit_ship_refit).ok)
+	await frames(25)
+	assert(game.equipment_scene._active.size() == 8)
+	await shot("r8436d-equipment-late-top")
+	game.equipment_scene._scroll.scroll_vertical = int(game.equipment_scene._content_height - game.equipment_scene._view_height)
+	await frames(15)
+	await shot("r8436d-equipment-late-bottom")
+	print("R4DD6D_EQUIPMENT current_shared_host true 2/5/8 bottom;")
+	if session.save_files != null: session.save_files.close(2000)
+	game.queue_free()
+	await frames(3)
+	quit()
+func _initialize() -> void: call_deferred("run")

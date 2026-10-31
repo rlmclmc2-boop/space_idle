@@ -17,7 +17,7 @@
 - 实际参数与颜色身份沿游戏权威数据；图中示例值不是新增数值规则。
 
 ## 当前版本与现场
-本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。本目录保留 `00971d36` 的原四路录像/早期性能与报价图作为历史对照；当前源码新增受控单／双路舱室、1／2／3 路无空槽控制井、八态原板建筑端部及同层左右收边；`936d2e4b` 在不改工作画面的前提下打包 mask 并跳过无效 active 采样，回放基线另由 `68f72e7a` 固定。原整体 Astra `b178ec39` 的十屏结论仅关闭当前端部**静态视觉**审，动态／鼠标链、性能目标及装备新版同版仍未关闭。下方“整屏统一与合法模块数交接”和末节列出当前源码的八态整屏、交互与性能证据；旧报价图仍只作历史对照；本节末已有当前 packed 版连续录像，但动态与最终组合仍待原审判定。
+本入口对应 `implement/reactor-centered-godot` 从 `01efbf12e7c2d8a814343fe7503fd692861f4712` 延续的候选；原旧入口：../ship-hub-r9/README.md。本目录保留 `00971d36` 的原四路录像/早期性能与报价图作为历史对照；当前源码新增受控单／双路舱室、1／2／3 路无空槽控制井、八态原板建筑端部及同层左右收边；`936d2e4b` 在不改工作画面的前提下打包 mask 并跳过无效 active 采样，回放基线另由 `68f72e7a` 固定。原整体 Astra `b178ec39` 的十屏结论关闭当前端部**静态视觉**阶段；随后原审已按新片 `b68994bb` 全片每 0.2 秒及关键正常 1× 帧核四路各 25% 持续动态，认定核心／设备／导管可辨、控件／导航稳定、无引导遮挡，限此状态可保。少态动态、升级过渡、性能目标和装备新版同版终审仍未关闭。下方“整屏统一与合法模块数交接”和末节列出当前源码的八态整屏、交互与性能证据；旧报价图仍只作历史对照；本节末已有当前 packed 版连续录像，但动态与最终组合仍待原审判定。
 
 ## 交付与对照
 在本目录维护执行进度和固定Git图/视频入口。交同版完整实机画面、正常时间工作视频及必要交互状态；注明受控条件。协调者和既有独立审核按批准图与实际整屏/动态整体对照，包括主体体量、场景一体感、材质、文字、控件与效果，不以问题清单清零或参数通过替代视觉。旧版本局部通过不外推。当前不合main。
@@ -120,7 +120,7 @@ Godot `4.7.2.stable.official.ed1daf0bf`、native、Xorg `:99`、Mesa llvmpipe、
 
 整体远端 `design/clear-zone-host@23819624d2277b4b52f1ac1dd858912780a4cbcc` 自 `051cbd0d` 以来只新增 `runtime-clear-zone` 的 R3 B01 精确研究与 e154 装备早／中／晚端部**设计**比较，`src`／运行 UI 资产无新改动；其文稿明确这些不是装备运行实现。故当前可复现真实公共组合仍为 `051cbd0d` 加本组八 PNG；还缺装备原组固定的新运行材质 SHA 与其早2／中5／晚8实机图供同版跨页判断。051c 原短窗可见／隐藏差 `3.07 fps` 与前次 656 的 `3.36 fps` 量级相近；这不证明端图性能零成本或用户目标通过，后续同版 shader 优化见下节。
 
-原整体 Astra 已按其固定 `b178ec39` 真组合十屏作**静态视觉**审：侧墙至台颊、公共导航与少态原生控件无明显遮断，可作为当前静态视觉阶段的候选，不再把“八态端部尚缺静态审”列作未完。该结论仅覆盖所审固定整屏；动态效果／鼠标链、最终性能、自然 1／2 开放和装备新版运行材质的跨页同版审仍独立待核。上段关于武器／盾球贴近边缘是交审观察，不表示静态阶段被退回；若后续审提出具体美术退点，本组按原舞台修源图。
+原整体 Astra 已按其固定 `b178ec39` 真组合十屏作**静态视觉**审：侧墙至台颊、公共导航与少态原生控件无明显遮断，可作为当前静态视觉阶段的候选，不再把“八态端部尚缺静态审”列作未完。该结论仅覆盖所审固定整屏；其后四路 25% 连续动态已有下文 b689 限定复审；少态动态、最终性能、自然 1／2 开放和装备新版运行材质的跨页同版终审仍独立待核。上段关于武器／盾球贴近边缘是交审观察，不表示静态阶段被退回；若后续审提出具体美术退点，本组按原舞台修源图。
 
 ### 同版 shader 剩余成本：packed mask 与按需底图采样
 
@@ -142,7 +142,13 @@ Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe，ffmpeg x11grab 25 fps、libx264
 
 [修正后的 10 秒连续录像](shared-packed-continuous-after-pickup-1440x900-25fps.mp4)仍用上述 `051cbd0d`＋`6d0ee146` 的相同 14 文件闭包、原八板及两张 packed mask；两张 `.import` 均保持 `process/fix_alpha_border=false`，公共运行代码未变。新版[录制驱动](shared-packed-continuous-after-pickup-driver.gd.txt)在正常 1× 预录阶段等待**真实**战场拾取事件使 `tutorial.completed("pickup")` 成立，再通过公开 `session.pending_guidance()`／`session.dismiss_guidance()` 完成提示链并确认主场景引导面板隐藏，才开放录制标记；没有修改游戏时钟或拼帧。录制期间逐帧检查 pending／面板，出现即记录 `VIDEO_UNEXPECTED_GUIDANCE`。本次[运行日志](shared-packed-continuous-after-pickup-runtime.txt)确认为 `pickup_completed=true`、`pickup_seen=true`、四路各 25%、1×、结束 pending 为空、无 `VIDEO_UNEXPECTED_GUIDANCE`／脚本错误；仍属受控四路可用，不代表自然 1／2 解锁。
 
-[采集日志](shared-packed-continuous-after-pickup-ffmpeg.txt)和 ffprobe 核为 Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe、ffmpeg x11grab／H.264 libx264 ultrafast CRF18／yuv420p、1440×900、25 fps、10.000 秒、250 帧、无音轨；新视频 SHA-256 `3e649abb4eabc8ea840e7a7da86553d4f89d6604624ccbe3c112553cc42c1e70`。已目视复看 0／4／8 秒整屏及每 0.25 秒全片接触表，完整解码全部 250 帧无错；进一步逐帧检查原提示覆盖区 `x250…489,y266…329` 的灰度均值：旧片最低 `73.42`（第 117 帧），新片最低 `177.03`（第 61 帧），没有旧片的遮暗突变。核心、四设备、导管和原生控制台在新片持续可见，战场继续推进。此证据供既有原审判断当前产品动态；不外推目标硬件帧率、升级操作或新版装备同版跨页通过。
+[采集日志](shared-packed-continuous-after-pickup-ffmpeg.txt)和 ffprobe 核为 Xorg `:99`、Godot 4.7.2/OpenGL3/Mesa llvmpipe、ffmpeg x11grab／H.264 libx264 ultrafast CRF18／yuv420p、1440×900、25 fps、10.000 秒、250 帧、无音轨；新视频 SHA-256 `3e649abb4eabc8ea840e7a7da86553d4f89d6604624ccbe3c112553cc42c1e70`。已目视复看 0／4／8 秒整屏及每 0.25 秒全片接触表，完整解码全部 250 帧无错；进一步逐帧检查原提示覆盖区 `x250…489,y266…329` 的灰度均值：旧片最低 `73.42`（第 117 帧），新片最低 `177.03`（第 61 帧），没有旧片的遮暗突变。核心、四设备、导管和原生控制台在新片持续可见，战场继续推进。既有原 Astra 已按这条新片全片每 0.2 秒及关键 1× 帧审过：四路各 25% 持续工作阶段的核心、设备、导管动态可辨，原生控件与公共导航稳定、无引导遮挡，限此阶段可保；不外推少态动态、升级过渡、目标硬件帧率或新版装备同版跨页终验。
+
+### 正式装备面板窄接当前公共组合
+
+2026-10-31 只读核到装备组正式公共宿主运行源 `8430cd9c8cd84372e0218762daab986e989f3fbe`，装备分支证据 HEAD `9818145d97823c66dd26dc4968091f8fcc23dc0a`；其原入口 `workbench-optical-revision/inline-slot-workbench-concept/README.md` 固定 15 张正式宿主真整屏／操作，但仍待原审美术裁定。整体组当前 `design/clear-zone-host@a5da0606ba063fc3b7dccfb02d83eb9f3c25f03a` 已接 6d B01 14 文件闭包（本次逐 Git blob 全相同），装备仍为 4dd WIP。两树的公共 `zone_shell.gd`／`bridge_theme.gd`／`resource_visuals.gd` 及装备运行资产同版；正式装备相对 a5 的可消费运行差仅 `src/ui/equipment_panel.gd`（blob `9bc82d3afbfed4e70e77317bb9851677293eab09`）与**不能取**的隔离宿主 `src/main.gd`。本组在原工作区临时检出 a5，仅将该装备面板文件覆写为 8430；公共 main／导航／战场／Owner、B01 源和 mask 全保持 a5，完成后已恢复原分支。此为给整体组确认的最小组合，不提交他组生产文件、不视为整体已经正式合入。
+
+首次 GUI 因新 `inline-{short,tall}.png` 导入缓存 `.ctex` 缺失报资源错误，原[预导入错误日志](r8436d-preimport-error-runtime.txt)保留；正常 Godot 4.7.2 editor [导入日志](r8436d-import-runtime.txt)后在**同一源码**重跑，[跨页驱动](r8436d-combo-driver.gd.txt)／[运行日志](r8436d-combo-runtime.txt)无脚本或资源错误，原生路由互斥。原尺寸已看[装备早2](r8436d-combo-equipment-1440x900.png)→[B01 真零](r8436d-combo-reactor-1440x900.png)→[B01 均分/MAX](r8436d-combo-reactor-max-1440x900.png)→[装备返回](r8436d-combo-equipment-return-1440x900.png)；原[装备阶段驱动](r8436d-equipment-states-driver.gd.txt)／[日志](r8436d-equipment-states-runtime.txt)另得同公共壳[中5](r8436d-equipment-middle-1440x900.png)、[晚8顶](r8436d-equipment-late-top-1440x900.png)、[晚8底](r8436d-equipment-late-bottom-1440x900.png)。中晚阶段通过原 Campaign／Equipment Owner 受控恢复换舰，非自然进度。装备空槽只留选择，B01 不被装备面板覆盖；x0–808 内区和 x808–855 导航在所看整屏无新越界。装备浅色工台与 B01 高亮舱室的跨页材质主次仍须原整体审判断，不由本组凭能运行宣布统一；当前短图也不代替目标硬件性能或后续正式整组源。
 
 ### 给整体组的最小接入闭包
 

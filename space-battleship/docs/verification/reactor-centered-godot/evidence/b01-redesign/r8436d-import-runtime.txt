@@ -1,0 +1,528 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Scanning file structure...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+WARNING: Missing .uid file for path "res://src/ui/reactor_scene.gd". The file was re-created from cache.
+     at: _process_file_system (editor/file_system/editor_file_system.cpp:1391)
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started Registering global classes... (21 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1m_update_scan_actions[22m | Started Scanning actions... (392 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | refinery-orbit-broad-planes.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | refinery-shutter-left.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | refinery-shutter-right.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | shipyard-berth-ring.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | shipyard-crane.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | shipyard-orbit-broad-planes.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | workshop-arm.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | workshop-orbit-broad-planes.png[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | auto_explore.glb[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | equipment.glb[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | refinery.glb[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | shipyard.glb[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | deck-albedo.png[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | cloud-density.png[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | surface.png[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | stellar-main-granulation.png[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | stellar-red-convection.png[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | inline-short.png[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | inline-tall.png[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | control-materials.png[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | painted-console-shell.png[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | satin-metal-tile.png[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | control-materials.png[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | check-off-disabled.svg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | check-off.svg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | check-on-disabled.svg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | check-on.svg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | command-rail.svg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | input-well-disabled.svg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | input-well-focus.svg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | input-well.svg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | nav-active.svg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | nav-archive.svg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | nav-equipment.svg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | nav-growth.svg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | nav-hover.svg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | nav-hyperspace.svg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | nav-idle.svg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | nav-planet.svg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | nav-reactor.svg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | nav-settings.svg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | nav-ship.svg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | nav-universe.svg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | panel-frame.svg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | resource-mark.svg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | resource-material-atlas.png[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | resource-material-supplement.png[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | status-alert.svg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | status-idle.svg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | stepper-down-disabled.svg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | stepper-down.svg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | stepper-pair-disabled.svg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | stepper-pair.svg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | stepper-up-disabled.svg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | stepper-up.svg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | title-plaque.svg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | top-control-hover.svg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | top-control.svg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | active-console.png[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | idle-console.png[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | locked-active-console.png[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | locked-idle-console.png[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | module-effect-mask.png[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | one-active-console.png[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | one-idle-console.png[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | pipe-effect-mask.png[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | two-active-console.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | two-idle-console.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | b01-edge-endcap-study.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | b01-endcap-r1-four.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | b01-endcap-r1-one.png[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | b01-endcap-r1-three.png[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | b01-endcap-r1-two.png[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | b01-endcap-r2-composition-1440x900-design.png[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | b01-endcap-r2-composition-study.png[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | b01-endcap-r2-full-source-study.png[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | b01-public-resources-1440x900.png[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | b01-public-settings-disabled-1440x900.png[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | b01-public-settings-focus-1440x900.png[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | b01-public-settings-hover-1440x900.png[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | b01-public-settings-normal-1440x900.png[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | b01-r3-exact-four.png[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | b01-r3-exact-one.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | b01-r3-exact-three.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | b01-r3-exact-two.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | b01-r3-one-source-study.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | b01-r3-three-source-study.png[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | b01-r3-two-source-study.png[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | b01-shared-active-1440x900.png[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | b01-shared-equipment-1440x900.png[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | b01-shared-max-1440x900.png[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | b01-shared-ten-1440x900.png[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | b01-shared-zero-1440x900.png[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | b01-structural-endcap-study.png[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | b57-combo-equipment-1440x900.png[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | b57-combo-planet-1440x900.png[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | b57-combo-reactor-1440x900.png[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | b57-combo-reactor-max-1440x900.png[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-1-active.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-1-manual.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-1-zero.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-2-active.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-2-manual.png[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-2-zero.png[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-3-active.png[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | b57-controlled-combo-3-zero.png[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | drop-identity-1440x900.png[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | drop-seq-010.png[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | drop-seq-100.png[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | e8-combo-equipment-1440x900.png[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | e8-combo-planet-1440x900.png[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | e8-combo-reactor-1440x900.png[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | e8-combo-reactor-max-1440x900.png[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-1-active.png[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-1-manual.png[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-1-zero.png[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-2-active.png[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-2-manual.png[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-2-zero.png[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-3-active.png[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | e8-controlled-combo-3-zero.png[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | e154-early-balanced-carrier-study.png[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | e154-early-balanced-exact-1440x900.png[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | e154-public-junction-1440x900-design.png[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | e154-public-junction-study.png[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | e154-source-context-bottom.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | e154-source-context-early.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | e154-source-context-late.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | e154-source-context-middle.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | e154-tall-return-carrier-study.png[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | e154-tall-return-late-bottom-1440x900.png[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | e154-tall-return-late-top-1440x900.png[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | e154-tall-return-middle-1440x900.png[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | e3946-source-early-1440x900.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | e3946-source-late-bottom-1440x900.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | e3946-source-late-top-1440x900.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | e3946-source-middle-1440x900.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | eea-combo-equipment-1440x900.png[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | eea-combo-planet-1440x900.png[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | eea-combo-reactor-1440x900.png[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | eea-combo-reactor-locked-loaded-1440x900.png[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | eea-combo-reactor-max-1440x900.png[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | equipment-1440x900.png[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | equipment-a846-combined-1440x900.png[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | equipment-design-9c-01-early-two.png[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | equipment-design-9c-02-middle-five.png[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | equipment-design-9c-03-late-eight.png[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | equipment-design-9c-04-local-dropdown.png[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | equipment-source243-combined-1440x900.png[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | fc-combo-equipment-1440x900.png[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | fc-combo-planet-1440x900.png[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | fc-combo-reactor-1440x900.png[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | final-combo-equipment-1440x900.png[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | final-combo-planet-1440x900.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | final-combo-reactor-1440x900.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | final-equipment-armour-replacement-1440x900.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | final-equipment-shield-current-1440x900.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | final-equipment-weapon-disabled-1440x900.png[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | final-equipment-weapon-ready-1440x900.png[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | final-equipment-weapon-replacement-1440x900.png[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | final-reactor-active-1440x900.png[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | final-reactor-equipment-1440x900.png[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | final-reactor-max-1440x900.png[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | final-reactor-purchased-1440x900.png[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | final-reactor-ten-1440x900.png[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | final-reactor-zero-1440x900.png[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | hangar-cantilever-support-study.png[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | hangar-single-support-study.png[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | integration-equipment-1440x900.png[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | integration-reactor-active-1440x900.png[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | integration-reactor-motion-00.png[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | integration-reactor-motion-02.png[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | integration-reactor-motion-05.png[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | integration-reactor-post-max-1440x900.png[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | integration-reactor-post-motion-00.png[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | integration-reactor-post-motion-03.png[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | integration-reactor-post-motion-05.png[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | integration-reactor-post-ten-1440x900.png[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | integration-reactor-x10-1440x900.png[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | integration-reactor-zero-1440x900.png[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | integration-ship-return-1440x900.png[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | material-combo-equipment-funded-1440x900.png[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | material-combo-equipment-unfunded-1440x900.png[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | material-combo-reactor-funded-1440x900.png[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | material-combo-reactor-unfunded-1440x900.png[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | planet-331-combo-conquest-1440x900.png[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | planet-331-combo-equipment-1440x900.png[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | planet-331-combo-facilities-1440x900.png[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | planet-331-combo-main-star-1440x900.png[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | planet-331-combo-reactor-1440x900.png[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | planet-331-combo-red-giant-1440x900.png[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | planet-331-combo-stage4-1440x900.png[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | planet-331-combo-universe-1440x900.png[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | planet-5458-combo-conquest-1440x900.png[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | planet-5458-combo-equipment-1440x900.png[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | planet-5458-combo-facilities-1440x900.png[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | planet-5458-combo-reactor-1440x900.png[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | planet-5458-combo-stage4-1440x900.png[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | planet-5458-combo-universe-1440x900.png[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-conquest-1440x900.png[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-equipment-1440x900.png[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-facilities-1440x900.png[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-main-star-1440x900.png[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-reactor-1440x900.png[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-red-giant-1440x900.png[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-stage4-1440x900.png[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | planet-ac5-public-universe-1440x900.png[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | planet-dc9-combo-conquest-1440x900.png[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | planet-dc9-combo-equipment-1440x900.png[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | planet-dc9-combo-facilities-1440x900.png[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | planet-dc9-combo-reactor-1440x900.png[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | planet-dc9-combo-stage4-1440x900.png[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | planet-dc9-combo-universe-1440x900.png[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | planet-r17-shared-equipment-return-1440x900.png[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | planet-r17-shared-stage4-1440x900.png[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | planet-r17-shared-universe-return-1440x900.png[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | public-52c-resource-details-1440x900.png[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | public-52c-settings-1440x900.png[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | public-52c-ship-1440x900.png[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | public-control-state-gallery-1440x900.png[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | public-source-action-held-1440x900.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | public-source-resources-1440x900.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | public-source-settings-disabled-1440x900.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | public-source-settings-focus-1440x900.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | public-source-settings-hover-1440x900.png[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | public-source-settings-normal-1440x900.png[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | public-source-top-held-1440x900.png[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | r0af-combo-equipment-1440x900.png[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | r0af-combo-planet-1440x900.png[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | r0af-combo-reactor-1440x900.png[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | r0af-combo-reactor-max-1440x900.png[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | r0af-controlled-1-active-1440x900.png[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | r0af-controlled-1-zero-1440x900.png[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | r0af-controlled-2-active-1440x900.png[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | r0af-controlled-2-zero-1440x900.png[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | r0af-controlled-3-active-1440x900.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | r0af-controlled-3-zero-1440x900.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | r4dd6d-combo-equipment-1440x900.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | r4dd6d-combo-planet-1440x900.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | r4dd6d-combo-reactor-1440x900.png[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | r4dd6d-combo-reactor-max-1440x900.png[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | r4dd6d-equipment-early-1440x900.png[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | r4dd6d-equipment-late-bottom-1440x900.png[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | r4dd6d-equipment-late-top-1440x900.png[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | r4dd6d-equipment-middle-1440x900.png[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | r13-public-reference-1440x900.png[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | r927-shared-active-1440x900.png[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | r927-shared-equipment-1440x900.png[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | r927-shared-max-1440x900.png[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | r927-shared-ten-1440x900.png[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | r927-shared-zero-1440x900.png[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | reactor-68-funded-1440x900.png[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | reactor-68-no-funds-1440x900.png[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | reactor-492-active-1440x900.png[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | reactor-492-affordable-1440x900.png[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | reactor-492-post-max-failure-1440x900.png[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | reactor-492-zero-failure-1440x900.png[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | reactor-a846-combined-1440x900.png[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | reactor-c317-active-1440x900.png[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | reactor-c317-motion-00.png[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | reactor-c317-motion-03.png[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | reactor-c317-motion-05.png[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | reactor-c317-post-max-1440x900.png[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | reactor-c317-post-ten-1440x900.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | reactor-c317-zero-1440x900.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | resource-details-1440x900.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | resource-family-details-1440x900.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | resource-family-five-1440x900.png[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | resource-live-update-1440x900.png[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | resource-material-details-1440x900.png[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | resource-material-drop-000.png[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | resource-material-drop-010.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | resource-material-equipment-1440x900.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | role2-combo-equipment-1440x900.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | role2-combo-planet-1440x900.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | role2-combo-reactor-1440x900.png[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | role2-public-resources-1440x900.png[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | role2-public-settings-disabled-1440x900.png[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | role2-public-settings-focus-1440x900.png[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | role2-public-settings-hover-1440x900.png[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | role2-public-settings-normal-1440x900.png[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | route-motion-00.png[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | route-motion-01.png[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | route-motion-02.png[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | route-motion-03.png[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | route-motion-04.png[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | route-motion-05.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | settings-1440x900.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | settings-spin-disabled-1440x900.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | settings-spin-focus-1440x900.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | ship-1440x900.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | ship-hover-1440x900.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | typography-r2-board-equipment.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | typography-r2-board-planet.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | typography-r2-board-reactor.png[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | typography-r2-equipment-after.png[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | typography-r2-equipment-after.svg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | typography-r2-equipment-before.png[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | typography-r2-planet-after.png[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | typography-r2-reactor-after.png[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | typography-r3-board-equipment.png[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | typography-r3-board-equipment_05.png[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | typography-r3-board-planet.png[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | typography-r3-board-reactor.png[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | typography-r3-equipment-03-after.png[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | typography-r3-equipment-03-after.svg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | typography-r3-equipment-03-before.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | typography-r3-equipment-05-after.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | typography-r3-equipment-05-after.svg[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | typography-r3-equipment-05-before.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | typography-r3-planet-after.png[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | typography-r3-reactor-after.png[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | typography-r4-board-afford.png[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | typography-r4-board-dropdown.png[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | typography-r4-board-early.png[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | typography-r4-board-late.png[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | typography-r4-board-middle.png[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | typography-r4-board-planet.png[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | typography-r4-board-reactor.png[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-01-after.png[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-01-after.svg[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-01-before.png[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-02-after.png[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-02-after.svg[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-02-before.png[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-03-after.png[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-03-after.svg[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-03-before.png[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-04-after.png[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-04-after.svg[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-04-before.png[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-05-after.png[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-05-after.svg[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | typography-r4-equipment-05-before.png[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | typography-r4-reactor-edge.png[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | typography-r4-reactor-edge.svg[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | typography-r5-board-01.png[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | typography-r5-board-03.png[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | typography-r5-board-05.png[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | typography-r5-board-06.png[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | typography-r5-board-07.png[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | typography-r5-board-reactor.png[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-01-combo.png[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-01-source.png[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-02-combo.png[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-02-source.png[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-03-combo.png[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-03-source.png[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-04-combo.png[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-04-source.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-05-combo.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-05-source.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-06-combo.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-06-source.png[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-07-combo.png[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | typography-r5-equipment-07-source.png[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | typography-visible-area-r1-equipment-dropdown.png[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | typography-visible-area-r1-equipment-early.png[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | typography-visible-area-r1-equipment-middle.png[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | typography-visible-area-r1-equipment.png[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | typography-visible-area-r1-planet.png[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | typography-visible-area-r1-reactor.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | whole-page-r6-01-early-two.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | whole-page-r6-02-middle-five.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | whole-page-r6-03-late-eight.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | whole-page-r7-01-early-two.png[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | whole-page-r7-02-middle-five.png[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | whole-page-r7-03-late-eight.png[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | whole-page-r7-08-late-scroll-bottom.png[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | whole-page-r8-01-early-two.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | whole-page-r8-02-middle-five.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | whole-page-r8-03-late-eight.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | whole-page-r8-08-late-scroll-bottom.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | whole-page-r11-01-early-two.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | whole-page-r11-02-middle-five.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | whole-page-r11-03-late-eight.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | whole-page-r11-08-late-scroll-bottom.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | whole-page-r13-29-compact-scene-early.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | whole-page-r13-30-compact-scene-middle.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | whole-page-r13-31-compact-scene-late.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | whole-page-r13-32-compact-scene-bottom.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | whole-page-r14-29-compact-scene-early.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | whole-page-r14-30-compact-scene-middle.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | whole-page-r14-31-compact-scene-late.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | whole-page-r14-32-compact-scene-bottom.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | workbench-short-face-study.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | workbench-tall-face-study.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | first-bridge.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | 01-normal-equipment-entry.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | 02-original-bridge-equipment-hidden.png[39m[0m
+[  99% ] [90m[1m_update_scan_actions[22m | 03-batch-current-levels-exclusive.png[39m[0m
+[  99% ] [90m[1m_update_scan_actions[22m | 04-equipment-return.png[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (41 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing pre-reimport operations...[39m[0m
+[   0% ] [90m[1mreimport[22m | e3946-source-late-top-1440x900.png[39m[0m
+[   2% ] [90m[1mreimport[22m | e3946-source-middle-1440x900.png[39m[0m
+[   4% ] [90m[1mreimport[22m | r0af-combo-equipment-1440x900.png[39m[0m
+[   7% ] [90m[1mreimport[22m | r0af-combo-planet-1440x900.png[39m[0m
+[   9% ] [90m[1mreimport[22m | r0af-combo-reactor-1440x900.png[39m[0m
+[  11% ] [90m[1mreimport[22m | r0af-combo-reactor-max-1440x900.png[39m[0m
+[  14% ] [90m[1mreimport[22m | r0af-controlled-1-active-1440x900.png[39m[0m
+[  16% ] [90m[1mreimport[22m | r0af-controlled-1-zero-1440x900.png[39m[0m
+[  19% ] [90m[1mreimport[22m | r0af-controlled-2-active-1440x900.png[39m[0m
+[  21% ] [90m[1mreimport[22m | r0af-controlled-2-zero-1440x900.png[39m[0m
+[  23% ] [90m[1mreimport[22m | r0af-controlled-3-active-1440x900.png[39m[0m
+[  26% ] [90m[1mreimport[22m | r0af-controlled-3-zero-1440x900.png[39m[0m
+[  28% ] [90m[1mreimport[22m | r4dd6d-combo-equipment-1440x900.png[39m[0m
+[  30% ] [90m[1mreimport[22m | r4dd6d-combo-planet-1440x900.png[39m[0m
+[  33% ] [90m[1mreimport[22m | r4dd6d-combo-reactor-1440x900.png[39m[0m
+[  35% ] [90m[1mreimport[22m | r4dd6d-combo-reactor-max-1440x900.png[39m[0m
+[  38% ] [90m[1mreimport[22m | r4dd6d-equipment-early-1440x900.png[39m[0m
+[  40% ] [90m[1mreimport[22m | r4dd6d-equipment-late-bottom-1440x900.png[39m[0m
+[  42% ] [90m[1mreimport[22m | r4dd6d-equipment-late-top-1440x900.png[39m[0m
+[  45% ] [90m[1mreimport[22m | r4dd6d-equipment-middle-1440x900.png[39m[0m
+[  47% ] [90m[1mreimport[22m | inline-short.png[39m[0m
+[  50% ] [90m[1mreimport[22m | inline-tall.png[39m[0m
+[  52% ] [90m[1mreimport[22m | b01-r3-exact-four.png[39m[0m
+[  54% ] [90m[1mreimport[22m | b01-r3-exact-one.png[39m[0m
+[  57% ] [90m[1mreimport[22m | b01-r3-exact-three.png[39m[0m
+[  59% ] [90m[1mreimport[22m | b01-r3-exact-two.png[39m[0m
+[  61% ] [90m[1mreimport[22m | b01-r3-one-source-study.png[39m[0m
+[  64% ] [90m[1mreimport[22m | b01-r3-three-source-study.png[39m[0m
+[  66% ] [90m[1mreimport[22m | b01-r3-two-source-study.png[39m[0m
+[  69% ] [90m[1mreimport[22m | e154-early-balanced-carrier-study.png[39m[0m
+[  71% ] [90m[1mreimport[22m | e154-early-balanced-exact-1440x900.png[39m[0m
+[  73% ] [90m[1mreimport[22m | e154-source-context-bottom.png[39m[0m
+[  76% ] [90m[1mreimport[22m | e154-source-context-early.png[39m[0m
+[  78% ] [90m[1mreimport[22m | e154-source-context-late.png[39m[0m
+[  80% ] [90m[1mreimport[22m | e154-source-context-middle.png[39m[0m
+[  83% ] [90m[1mreimport[22m | e154-tall-return-carrier-study.png[39m[0m
+[  85% ] [90m[1mreimport[22m | e154-tall-return-late-bottom-1440x900.png[39m[0m
+[  88% ] [90m[1mreimport[22m | e154-tall-return-late-top-1440x900.png[39m[0m
+[  90% ] [90m[1mreimport[22m | e154-tall-return-middle-1440x900.png[39m[0m
+[  92% ] [90m[1mreimport[22m | e3946-source-early-1440x900.png[39m[0m
+[  95% ] [90m[1mreimport[22m | e3946-source-late-bottom-1440x900.png[39m[0m
+[  97% ] [90m[1mreimport[22m | Finalizing Asset Import...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (41 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing post-reimport operations...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Loading editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Loading editor layout...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Loading docks...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
