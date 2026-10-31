@@ -32,8 +32,6 @@ var _cyan: ShaderMaterial
 var _deck: ShaderMaterial
 var _sleeve: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
-var _refinery_receiver: Node3D
-var _refinery_receiver_vector := Vector3.ZERO
 
 static func plane_normal() -> Vector3:
 	return Vector3(0.0, TILT_Z, TILT_Y)
@@ -47,30 +45,6 @@ static func socket_position(angle: float, kind: String) -> Vector3:
 	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
 	var radial_offset := 0.25 if kind == "auto_explore" else -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
-
-static func refinery_feed_tip() -> Vector3:
-	return point(FACILITY_ANGLES["refinery"]) + plane_normal() * 0.47
-
-static func _refinery_unaimed_feed_top() -> Vector3:
-	var a: float = FACILITY_ANGLES["refinery"]
-	return point(a) * ((RADIUS - 0.12) / RADIUS) + plane_normal() * 0.62
-
-func refinery_feed_top() -> Vector3:
-	return _refinery_receiver.position + _refinery_receiver.basis * _refinery_receiver_vector
-
-func aim_refinery_receiver() -> void:
-	# The short rigid receiver swivels at its fixed ring socket with the
-	# upright service shell. No endpoint selection or section geometry moves.
-	var desired: Vector3 = global_transform.basis.inverse() * Vector3(-0.10, 0.13, 0.18)
-	var from: Vector3 = _refinery_receiver_vector
-	var axis := desired.normalized()
-	var aim := Quaternion(from.normalized(), axis)
-	var facing: Vector3 = global_transform.basis.inverse() * Vector3.BACK
-	var current_up: Vector3 = aim * plane_normal()
-	var roll_from := (current_up - axis * current_up.dot(axis)).normalized()
-	var roll_to := (facing - axis * facing.dot(axis)).normalized()
-	var roll := atan2(axis.dot(roll_from.cross(roll_to)), roll_from.dot(roll_to))
-	_refinery_receiver.basis = Basis(Quaternion(axis, roll) * aim).scaled(Vector3.ONE * (desired.length() / from.length()))
 
 func _ready() -> void:
 	_navy = _material(Color("152f43"))
@@ -342,8 +316,6 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 	parent.add_child(instance)
 
 func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
-	# Each built section owns the facility root on its continuous deck.
-	_add_facility_socket(parent, kind, angle)
 	# One restrained amber status light makes the socket read as equipment,
 	# without introducing another buildable node.
 	var lamp := MeshInstance3D.new()
@@ -354,78 +326,6 @@ func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
 	lamp.material_override = _material(Color("d5a661"), true)
 	lamp.position = point(angle) * ((RADIUS + 0.57) / RADIUS) + plane_normal() * 0.48
 	parent.add_child(lamp)
-
-func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
-	# The three working facilities carry their load collars in their authored
-	# root artwork. The station alone retains its existing circular dock.
-	if kind == "auto_explore":
-		return
-	if kind == "refinery":
-		_add_refinery_root(parent, angle)
-	# The workshop's own two-mouth structural shell now straddles this deck.
-
-func _add_refinery_root(parent: Node3D, angle: float) -> void:
-	# The feed trough and both load cheeks are one ring-owned receiver. Its
-	# distal tread meets the fixed deck socket while its upper end enters the
-	# open port of the separate camera-facing furnace shell.
-	var tip := refinery_feed_tip()
-	var upper := _refinery_unaimed_feed_top()
-	_refinery_receiver_vector = upper - tip
-	_refinery_receiver = Node3D.new()
-	_refinery_receiver.name = "RefineryReceiver"
-	_refinery_receiver.position = tip
-	parent.add_child(_refinery_receiver)
-	var tangent := (point(angle + 0.001) - point(angle - 0.001)).normalized()
-	var up := plane_normal()
-	var belt := SurfaceTool.new()
-	belt.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for step in 6:
-		var t0 := float(step) / 6.0
-		var t1 := float(step + 1) / 6.0
-		var p0 := tip.lerp(upper, t0) - tip
-		var p1 := tip.lerp(upper, t1) - tip
-		var l0 := p0 - tangent * 0.100
-		var r0 := p0 + tangent * 0.100
-		var l1 := p1 - tangent * 0.100
-		var r1 := p1 + tangent * 0.100
-		_add_receiver_quad(belt, l0, l1, r0, r1, up, t0, t1)
-	var tread := MeshInstance3D.new()
-	tread.name = "RefineryRootTread"
-	tread.mesh = belt.commit()
-	tread.material_override = _deck
-	_refinery_receiver.add_child(tread)
-	for side in [-1.0, 1.0]:
-		var rail := SurfaceTool.new()
-		var inner_wall := SurfaceTool.new()
-		rail.begin(Mesh.PRIMITIVE_TRIANGLES)
-		inner_wall.begin(Mesh.PRIMITIVE_TRIANGLES)
-		for step in 6:
-			var t0 := float(step) / 6.0
-			var t1 := float(step + 1) / 6.0
-			var p0 := tip.lerp(upper, t0) - tip
-			var p1 := tip.lerp(upper, t1) - tip
-			var inner0 := p0 + tangent * float(side) * 0.100
-			var inner1 := p1 + tangent * float(side) * 0.100
-			var outer0 := p0 + tangent * float(side) * 0.145
-			var outer1 := p1 + tangent * float(side) * 0.145
-			_add_receiver_quad(rail, inner0 + up * 0.145, inner1 + up * 0.145, outer0 + up * 0.145, outer1 + up * 0.145, up, t0, t1)
-			_add_receiver_quad(inner_wall, inner0, inner1, inner0 + up * 0.145, inner1 + up * 0.145, tangent * -float(side), t0, t1)
-		var rail_mesh := MeshInstance3D.new()
-		rail_mesh.name = "RefineryRootCheek" + str(side)
-		rail_mesh.mesh = rail.commit()
-		rail_mesh.material_override = _deck
-		_refinery_receiver.add_child(rail_mesh)
-		var wall_mesh := MeshInstance3D.new()
-		wall_mesh.name = "RefineryRootInnerWall" + str(side)
-		wall_mesh.mesh = inner_wall.commit()
-		wall_mesh.material_override = _side
-		_refinery_receiver.add_child(wall_mesh)
-
-func _add_receiver_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, t0: float, t1: float) -> void:
-	for entry in [[a, Vector2(0.46, t0)], [b, Vector2(0.46, t1)], [c, Vector2(0.54, t0)], [c, Vector2(0.54, t0)], [b, Vector2(0.46, t1)], [d, Vector2(0.54, t1)]]:
-		surface.set_normal(normal)
-		surface.set_uv(entry[1])
-		surface.add_vertex(entry[0])
 
 func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
 	# Covers the armor gap where two independently built sections mate. This

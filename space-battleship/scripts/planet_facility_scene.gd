@@ -31,8 +31,6 @@ var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
-var _refinery_shutter_sprites: Dictionary = {}
-var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
 var _orbital_depth_materials: Array[ShaderMaterial] = []
 
@@ -98,39 +96,15 @@ func _ready() -> void:
 		_parts[kind] = moving
 		if kind == "auto_explore": _depth_clip_orbital_model(model)
 		if kind == "equipment": _workshop_arm_base_y = (moving["ToolArmSweep"] as Node3D).position.y
-		if kind in ["equipment", "shipyard"]: _depth_clip_orbital_model(model)
-		if kind == "refinery": _install_refinery_illustration(model, moving)
-		if kind == "refinery": _transparent_materials(model)
+		if kind in ["equipment", "shipyard", "refinery"]: _depth_clip_orbital_model(model)
+		if kind == "refinery": _install_refinery_work(model)
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
 
-func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
-	# The upper shell has an open feed port; its lower load path belongs to the
-	# ring-mounted receiver. Cooler shutters keep their working layers.
-	_hide_imported_meshes(model)
-	var body := Sprite3D.new()
-	body.name = "IllustratedRefineryBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-through-node.png")
-	body.pixel_size = 0.0024
-	body.position = Vector3(0, 1.00, 0)
-	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = true
-	body.double_sided = true
-	model.add_child(body)
-	_refinery_body_sprite = body
-	for side in ["Left", "Right"]:
-		var pivot := moving["IntakeWheel" + side] as Node3D
-		var shutter := Sprite3D.new()
-		shutter.name = "IllustratedCoolerShutter" + side
-		shutter.texture = load("res://assets/planets/facilities_v5/illustrated/refinery-shutter-" + side.to_lower() + ".png")
-		shutter.pixel_size = body.pixel_size
-		shutter.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		shutter.shaded = false
-		shutter.double_sided = true
-		shutter.render_priority = 1
-		pivot.add_child(shutter)
-		_refinery_shutter_sprites[side] = shutter
+func _install_refinery_work(model: Node3D) -> void:
+	# The three moving loads follow the real recessed tread into the furnace
+	# mouth; all static walls, hoppers, and the mouth are imported 3D geometry.
 	var feed_material := StandardMaterial3D.new()
 	feed_material.albedo_color = Color("ffd079")
 	feed_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -140,43 +114,18 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	for index in 3:
 		var marker := MeshInstance3D.new()
 		marker.name = "ConveyorOreMarker%d" % index
-		var quad := QuadMesh.new()
-		quad.size = Vector2(0.065, 0.045)
-		marker.mesh = quad
+		var ore := BoxMesh.new()
+		ore.size = Vector3(0.11, 0.065, 0.12)
+		marker.mesh = ore
 		marker.material_override = feed_material
 		model.add_child(marker)
 		_refinery_feed_markers.append(marker)
 
-func _position_refinery_work(model: Node3D, clock: float) -> void:
-	_spine.aim_refinery_receiver()
-	var camera_to_model := model.global_transform.basis.inverse()
-	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
-	var screen_up := (camera_to_model * Vector3.UP).normalized()
-	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var width := _refinery_body_sprite.scale.x
-	# Seat the shell's open port over the upper end of one rigid receiver. Its
-	# lower tip stays at the refinery section's fixed physical socket.
-	var feed_opening_offset := screen_right * ((768.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 780.0) * _refinery_body_sprite.pixel_size)
-	var opening_world: Vector3 = _spine.to_global(_spine.refinery_feed_top()) + Vector3(0, 0, 0.12)
-	_refinery_body_sprite.position = model.to_local(opening_world) - feed_opening_offset
-	var base := _refinery_body_sprite.position + camera_front * 0.25
-	var opening := 0.5 + 0.5 * sin(clock * 0.70)
-	for side in ["Left", "Right"]:
-		var pivot := _parts["refinery"]["IntakeWheel" + side] as Node3D
-		var sign := -1.0 if side == "Left" else 1.0
-		var target := base + screen_up * (0.23 * opening) + screen_right * (sign * 0.10 * opening * width)
-		(_refinery_shutter_sprites[side] as Sprite3D).position = pivot.transform.basis.inverse() * (target - pivot.position)
-	# The existing moving loads travel on the receiver's physical short tread.
-	var tip := model.to_local(_spine.to_global(_spine.refinery_feed_tip()))
-	var upper := model.to_local(opening_world)
+func _position_refinery_work(_model: Node3D, clock: float) -> void:
 	for index in _refinery_feed_markers.size():
-		var travel := fposmod(clock * 0.20 + float(index) / 3.0, 1.0)
+		var travel := fposmod(clock * 0.28 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
-		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), tip.lerp(upper, travel) + camera_front * 0.10)
-
-func _hide_imported_meshes(node: Node) -> void:
-	if node is MeshInstance3D: node.visible = false
-	for child in node.get_children(): _hide_imported_meshes(child)
+		marker.position = Vector3(lerpf(-1.15, -0.31, travel), 0.0, 0.36)
 
 func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned
@@ -192,19 +141,6 @@ func _depth_clip_orbital_model(node: Node) -> void:
 			node.set_surface_override_material(index, material)
 			_orbital_depth_materials.append(material)
 	for child in node.get_children(): _depth_clip_orbital_model(child)
-
-func _transparent_materials(node: Node) -> void:
-	if node is MeshInstance3D and node.mesh != null:
-		for index in node.mesh.get_surface_count():
-			var original = node.mesh.surface_get_material(index)
-			if original is StandardMaterial3D:
-				var material: StandardMaterial3D = original.duplicate()
-				material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-				material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
-				material.albedo_color.a = 0.999
-				material.render_priority = 0
-				node.set_surface_override_material(index, material)
-	for child in node.get_children(): _transparent_materials(child)
 
 func configure_shape(appearance: Dictionary) -> void:
 	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
@@ -265,7 +201,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# detached vertical slivers as the orbital structure turns.
 		var scale_factor := 0.64 if kind == "auto_explore" else 0.55 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
-		if kind in ["shipyard", "equipment", "auto_explore"]:
+		if kind in ["shipyard", "equipment", "auto_explore", "refinery"]:
 			# Both open work bays are authored in the owned section's local frame.
 			# The workshop's through axis follows the actual orbit tangent.
 			var outward: Vector3 = _spine.point(a).normalized()
