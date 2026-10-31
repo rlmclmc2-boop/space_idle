@@ -9,6 +9,7 @@
 - 本组 `design/clear-zone-host@5df3d3dd59cf4fcd427f0fb9e719ad3a0a9e6969` 精确装入装备运行源 `81744e5a7da14577ea5792a621529f304ed82b3c`（交接 `7dfa54dc`）及 B01 `519fd7ee82b5c54785bd53b4e36e50f768b6b6de` 的必要模块源、同源 `ResourceAmounts` helper 和 34 项分件资产；公共 `main.gd`、`BridgeTheme`、`PlayerText` 与战斗投影保持本组源。后续 `3c3719bf` 公共状态及 466/6ee 文稿增补已在当前分支，运行组合仍以 5df 的源身份为准，不将文稿提交冒称新模块版本。
 - 公共操作材质源是 `BridgeTheme.operation_plate/operation_button/apply_operation_button/apply_operation_select`，取用需 `control-materials.png`、原导入依赖与选择箭头 `stepper-down.svg`；数字角色与 `PlayerText.resource_number` 仍共用现有入口。原生节点应替换旧面层，不加盖板；数量循环只读报价，执行键才提交。顶部“全部升级”旁全局数量键同步各槽模式、报价、可购状态，由装备原组实施。
 - 原独立整体审核者已看 `3c3719bf` 十张同版公共设置/资源弹层实图及哈希：已展示状态无所见整页阻断，音乐键真实 hover 相对 normal 有 3894 像素差且 `is_hovered()=true`。审核范围仅该公共静态/按住与受影响悬浮状态；下拉展开列表、输入/SpinBox 全态、模块 plate/select 落位及跨页最终品质未覆盖。此结论不外推后台结算或用户验收。
+- 公共原生输入窄修 `86a8ff9eef2704cc10843cfafb5a5b85f71716e5`：`BridgeTheme.apply_operation_select` 直接给现有 `OptionButton.get_popup()` 接 R3 面层、焦点行字色、公共字体和单选标识；`apply_public_input` 把原 SpinBox 步进区平面背景替换为同一材质源，无额外控件。Godot 4.7.2 同版 1440×900 设置页已看伤害/十项倍速展开、行焦点、SpinBox 常态/内嵌输入焦点/不可编辑整屏；图、哈希和驱动保留于 `archive/design-docs-before-cleanup-20261031@86d4536da23c466f5d4006e3929f7d573e4ce600` 的 `modules/public-ui/native-controls-20261031/`。此为本组受影响状态自检，尚未由原整体审确认；键盘确认/全部输入组合态与模块内部落位仍未覆盖。
 - `7dfa54dc` **材质方向未撤，排版被用户 16:24 退回**：舰名牌侵右台、选择键右缘与下方 ×1 键左缘关系不对、卡片文字贴边及等级太弱；新增顶部倍率同步由装备组返修。`519fd7ee` **内区被根协调者 16:06 整页检查退回**：单路升级裁字、中心纯色环质感、少态浅条/深井关系。两原组均在返修，5df 仅是可复现接入基线，不是可交用户的模块组合。旧星球 ac5 仍为品质退回的返回路由对照。
 
 ## 当前一步与依赖
