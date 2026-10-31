@@ -121,14 +121,16 @@ def hopper(name, y, parent):
     for end in (-1,1):
         box("Hopper beveled end",(end*.74,0,1.45),
             (.17,1.04,.54),ochre,root,.042)
-    box("Dark open hopper throat",(.02,0,1.74),(1.18,.69,.045),navy,root,.012)
+    # The four existing load walls surround a recessed floor. Keeping its
+    # dark face below the rim gives the receiving bin actual visible depth.
+    box("Recessed hopper pressure floor",(.02,0,1.30),(1.18,.69,.045),navy,root,.012)
     for x in (-.62,.62):
         box("Hopper ivory mouth lip",(x,0,1.79),(.095,.90,.09),ivory,root,.016)
     for rail in (-1,1):
         box("Hopper ivory mouth lip",(0,rail*.405,1.79),
             (1.35,.095,.09),ivory,root,.016)
     for x in (-.52,-.12,.28):
-        box("Ore chunk in receiving bin",(x,side*.10,1.78),
+        box("Ore chunk in receiving bin",(x,side*.10,1.38),
             (.22,.21,.10),blue,root,.02)
 
 
