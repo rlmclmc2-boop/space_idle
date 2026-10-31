@@ -1,6 +1,6 @@
 # 全局资源整数：实现候选与集成边界
 
-基线`feat/amount-safe-previews@aaba6683829ca11606003690224a1be9ea16080c`，用户规则与唯一出口说明见[资源契约](../game-design/contracts/resources.md)，由[设计README](../game-design/README.md)进入。**原候选`a83ad9c8`经Astra审核未通过：奖励键校验/领取原子性与chrono长窗口分帧两处退点；当前仅修复这两处，待同一Astra复核，未合main。** 本页290/61项为原作者必要验证历史，不能视为原审通过；[同版修复与必要证据](integer-resource-review-fixes.md)单独固定。 M10 WIP原hash与179项tracked/262项untracked元数据均保留，不纳入提交。本接替尚未实际压缩。
+基线`feat/amount-safe-previews@aaba6683829ca11606003690224a1be9ea16080c`，用户规则与唯一出口说明见[资源契约](../game-design/contracts/resources.md)，由[设计README](../game-design/README.md)进入。**原候选`a83ad9c8`经Astra审核未通过；资源消费最新固定版`feat/amount-safe-previews@f9244a30ad1843128aaa0a620c4dc3e4866685b2`已普通发布，获同一Astra high限定只读复核通过，关闭奖励键/候选钱包与chrono长窗口分帧两退点，未合main。** 本页290/61项及修复91项均为作者证据，不是独立复测、完整游戏或main验收。消费者按各自既有依赖精确合并，不用旧树覆盖新UI、不停止其他制作；[同版修复与必要证据](integer-resource-review-fixes.md)单独固定。 M10 WIP原hash与179项tracked/262项untracked元数据均保留，不纳入提交。本接替尚未实际压缩。
 
 ## 精确源差异及依赖
 
