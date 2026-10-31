@@ -1,5 +1,6 @@
 extends RefCounted
 
+const Resources = preload("res://src/systems/resource_amounts.gd")
 const CombatSetup = preload("res://src/combat_setup.gd")
 
 var _run_state
@@ -44,7 +45,9 @@ var _forge_costs: Dictionary = {}
 var _last_forge: Dictionary = {}
 var _legend_seen: Dictionary = {}
 var _legend_collection: Dictionary = {}
-var _energy: float = 0.0
+var _energy: Dictionary = {}
+var _energy_progress: Dictionary = {}
+var _energy_meter: Dictionary = {}
 var _late_supply_work: float = 0.0
 var _reward_rng := RandomNumberGenerator.new()
 var _luck_rng := RandomNumberGenerator.new()
@@ -65,7 +68,7 @@ func save_state() -> Dictionary:
 		"receipts": _receipts.duplicate(true), "filter": _filter.duplicate(true),
 		"modules": _modules.duplicate(true), "last_forge": _last_forge.duplicate(true),
 		"legend_seen": _legend_seen.duplicate(true), "legend_collection": _legend_collection.duplicate(true),
-		"energy": _energy, "late_supply_work": _late_supply_work,
+		"energy": _energy.duplicate(true), "energy_progress":_energy_progress.duplicate(true), "energy_meter":_energy_meter.duplicate(true), "late_supply_work": _late_supply_work,
 		"reward_rng_state": _reward_rng.state, "luck_rng_state": _luck_rng.state,
 		"round_id": _round_id, "next_run": _next_run, "next_enemy_uid": _next_enemy_uid,
 		"base_seed": _base_seed, "reforge_count": _reforge_count, "unlocked_drones": _unlocked_drones.duplicate(true)}
@@ -80,7 +83,7 @@ func restore_state(state: Dictionary) -> Dictionary:
 		if not state.get(key) is int: return {"ok": false, "reason": "InvalidHyperspaceState"}
 	if state.round_id < 1 or state.next_run < 1 or state.next_enemy_uid < 0 or state.reforge_count < 0 or state.base_seed != _base_seed:
 		return {"ok": false, "reason": "InvalidHyperspaceSequence"}
-	for key in ["energy", "late_supply_work"]:
+	for key in ["late_supply_work"]:
 		if not state.get(key) is float or not is_finite(state[key]) or state[key] < 0.0:
 			return {"ok": false, "reason": "InvalidHyperspaceTimer"}
 	for route in state.history:
@@ -129,11 +132,51 @@ func restore_state(state: Dictionary) -> Dictionary:
 	var restored_capacity: int = int(_parameters.warehouse_capacity) + state.reforge_count * int(_parameters.reforge_capacity_gain)
 	if state.warehouse.size() > restored_capacity or state.overflow.size() > int(_parameters.overflow_capacity):
 		return {"ok": false, "reason": "InvalidHyperspaceCapacity"}
+	var energy: Dictionary = state.get("energy",{}) if state.get("energy") is Dictionary else _api.apply("from_decimal",[str(state.get("energy", "invalid"))]).get("value",{})
+	var whole_energy: Dictionary = Resources.whole(energy,_api)
+	if not whole_energy.ok: return whole_energy
+	var cap: Dictionary = _resource_energy_cap()
+	if not cap.ok: return cap
+	var limit: Dictionary = _api.apply("compare",[whole_energy.value,cap.value])
+	if not limit.ok: return limit
+	if limit.scalar>0: return {"ok":false,"reason":"InvalidHyperspaceEnergy"}
+	if not state.get("energy_progress",{}) is Dictionary or not state.get("energy_meter",{}) is Dictionary: return {"ok":false,"reason":"InvalidResourceProgress"}
+	var progress: Dictionary = Resources.progress_map({"energy":state.energy_progress} if not state.get("energy_progress",{}).is_empty() else {},_api)
+	if not progress.ok: return progress
+	var meter: Dictionary = state.get("energy_meter",{})
+	if not meter.is_empty():
+		if not meter.get("elapsed") is float or not meter.get("origin") is float or not meter.get("late") is bool or not meter.get("total") is Dictionary or not is_finite(meter.elapsed) or not is_finite(meter.origin) or meter.elapsed<0.0 or meter.origin<0.0:
+			return {"ok":false,"reason":"InvalidResourceMeter"}
+		var end: Dictionary = _energy_integral(meter.origin+meter.elapsed,meter.late)
+		var begin: Dictionary = _energy_integral(meter.origin,meter.late)
+		if not end.ok: return end
+		if not begin.ok: return begin
+		var total: Dictionary = _api.apply("sub_nonnegative",[end.value,begin.value])
+		if not total.ok: return total
+		var check: Dictionary = _api.apply("compare",[total.value,meter.total])
+		if not check.ok: return check
+		if check.scalar!=0: return {"ok":false,"reason":"InvalidResourceMeter"}
+	var last_forge: Dictionary = state.last_forge.duplicate(true)
+	if not last_forge.is_empty():
+		if not last_forge.get("result") is Dictionary or not last_forge.result.get("costs") is Dictionary: return {"ok":false,"reason":"InvalidForgeReceipt"}
+		var normalized: Dictionary = _whole_resource_texts(last_forge.result.costs)
+		if not normalized.ok: return normalized
+		last_forge.result.costs = normalized.values
+	var receipts: Dictionary = state.receipts.duplicate(true)
+	for id in receipts:
+		if receipts[id].status in ["CompletedPending","Claimed"]:
+			var normalized: Dictionary = _whole_reward(receipts[id].reward)
+			if not normalized.ok: return normalized
+			receipts[id].reward = normalized.reward
+	var manual: Dictionary = state.manual.duplicate(true)
+	var idle: Dictionary = state.idle.duplicate(true)
+	if not manual.is_empty() and receipts.has(manual.get("run_id")): manual = receipts[manual.run_id]
+	if not idle.is_empty() and receipts.has(idle.get("run_id")): idle = receipts[idle.run_id]
 	var filter_result: Dictionary = set_filter(state.filter)
 	if not filter_result.ok: return filter_result
 	_history = state.history.duplicate(true)
-	_manual = state.manual.duplicate(true)
-	_idle = state.idle.duplicate(true)
+	_manual = manual
+	_idle = idle
 	_auto = state.auto.duplicate(true)
 	_warehouse = state.warehouse.duplicate(true)
 	_overflow = state.overflow.duplicate(true)
@@ -141,12 +184,14 @@ func restore_state(state: Dictionary) -> Dictionary:
 	_favorites = state.favorites.duplicate(true)
 	_sealed = state.sealed.duplicate(true)
 	_presets = state.presets.duplicate(true)
-	_receipts = state.receipts.duplicate(true)
+	_receipts = receipts
 	_modules = state.modules.duplicate(true)
-	_last_forge = state.last_forge.duplicate(true)
+	_last_forge = last_forge
 	_legend_seen = state.legend_seen.duplicate(true)
 	_legend_collection = state.legend_collection.duplicate(true)
-	_energy = state.energy
+	_energy = whole_energy.value
+	_energy_progress = state.get("energy_progress",{}).duplicate(true)
+	_energy_meter = meter.duplicate(true)
 	_late_supply_work = state.late_supply_work
 	_reward_rng.state = state.reward_rng_state
 	_luck_rng.state = state.luck_rng_state
@@ -235,7 +280,9 @@ func _init(configuration: Dictionary, api, run_state, seed_value: int = 1) -> vo
 	_reward_rng.seed = seed_value ^ 0x4859504552
 	_luck_rng.seed = seed_value ^ 0x4c55434b
 	for row in configuration.hyperspace_config["\u57fa\u7840\u53c2\u6570"]: _parameters[str(row.key)] = row.value
-	_energy = float(_parameters.energy_cap)
+	_energy = _resource_energy_cap().value
+	_energy_progress = {}
+	_energy_meter = {}
 	for row in configuration.hyperspace_config["\u8def\u7ebf"]: _routes[str(row.route_id)] = row
 	_qualities = configuration.hyperspace_config["\u54c1\u8d28"].duplicate()
 	_qualities.sort_custom(func(a, b): return int(a.order) < int(b.order))
@@ -750,9 +797,21 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}, highest
 	if _forge_costs.has(operation):
 		var row: Dictionary = _forge_costs[operation]
 		if guarantee_points.is_empty():
-			costs[str(row.resource)] = int(row.amount) * multiplier * (1 if str(row.resource) == "ultimate_cores" else int(_parameters.material_unit_scale))
+			var amount: Dictionary = _api.apply("from_decimal",[str(row.amount)])
+			for factor in [str(multiplier),"1" if str(row.resource)=="ultimate_cores" else str(_parameters.material_unit_scale)]:
+				if not amount.ok: return amount
+				var scale: Dictionary = _api.apply("from_decimal",[factor])
+				if not scale.ok: return scale
+				amount = _api.apply("mul",[amount.value,scale.value])
+			if not amount.ok: return amount
+			costs[str(row.resource)] = _api.apply("to_display",[amount.value]).text
 		else:
-			var quantity: Dictionary = _api.apply("from_decimal", [str(int(row.amount) * int(_parameters.material_unit_scale) * int(_parameters.reroll_guarantee_multiplier))])
+			var quantity: Dictionary = _api.apply("from_decimal", [str(row.amount)])
+			for factor in [str(_parameters.material_unit_scale),str(_parameters.reroll_guarantee_multiplier)]:
+				if not quantity.ok: return quantity
+				var scale: Dictionary = _api.apply("from_decimal",[factor])
+				if not scale.ok: return scale
+				quantity = _api.apply("mul",[quantity.value,scale.value])
 			if not quantity.ok: return quantity
 			for points in guarantee_points:
 				var factor: Dictionary = _api.apply("from_decimal", [str(points)])
@@ -767,10 +826,24 @@ func preview_forge(id: String, operation: String, args: Dictionary = {}, highest
 		for affix in candidate.affixes:
 			for tier in _tiers:
 				if int(tier.tier) == int(affix.tier): weight += float(tier.modernization_weight)
-		var cost_unit: float = float(_parameters.modernization_cost_base)
-		var base: float = cost_unit * (1.0 + float(int(candidate.level) - int(_parameters.material_reward_start_level)) / float(_parameters.modernization_level_step)) * (float(_parameters.modernization_base_coefficient) + weight) * (float(_parameters.modernization_legendary_multiplier) if candidate.legendary else 1.0)
-		costs[str(_routes[_route_for_weapon(str(candidate.weapon))].material)] = roundi(base / cost_unit) * int(_parameters.modernization_cost_base) * int(_parameters.material_unit_scale)
-	return {"ok": true, "drone": candidate, "costs": costs, "draws": multiplier}
+		var units: Dictionary = _api.apply("from_decimal",[str(1.0 + float(int(candidate.level)-int(_parameters.material_reward_start_level))/float(_parameters.modernization_level_step))])
+		for factor in [str(float(_parameters.modernization_base_coefficient)+weight),str(_parameters.modernization_legendary_multiplier if candidate.legendary else 1)]:
+			if not units.ok: return units
+			var scale: Dictionary = _api.apply("from_decimal",[factor])
+			if not scale.ok: return scale
+			units = _api.apply("mul",[units.value,scale.value])
+		if not units.ok: return units
+		units = _api.apply("add",[units.value,_api.apply("from_decimal",["0.5"]).value])
+		if not units.ok: return units
+		units = _api.apply("floor",[units.value])
+		for factor in [str(_parameters.modernization_cost_base),str(_parameters.material_unit_scale)]:
+			if not units.ok: return units
+			units = _api.apply("mul",[units.value,_api.apply("from_decimal",[factor]).value])
+		if not units.ok: return units
+		costs[str(_routes[_route_for_weapon(str(candidate.weapon))].material)] = _api.apply("to_display",[units.value]).text
+	var normalized: Dictionary = _whole_resource_texts(costs)
+	if not normalized.ok: return normalized
+	return {"ok": true, "drone": candidate, "costs": normalized.values, "draws": multiplier}
 
 func accept_forge(id: String, candidate: Dictionary, operation_id: String, fingerprint: String, result: Dictionary) -> void:
 	for collection in [_warehouse, _overflow]:
@@ -804,7 +877,8 @@ func _draw_legend_with(random: RandomNumberGenerator, weapon: String) -> Diction
 	return _draw_legend(weapon, random)
 
 func online_status() -> Dictionary:
-	return {"idle": _idle.duplicate(true), "auto": _auto.duplicate(true), "energy": _energy}
+	var energy: Dictionary = Resources.integer_text(_energy,_api)
+	return {"idle": _idle.duplicate(true), "auto": _auto.duplicate(true), "energy": energy.text if energy.ok else "", "energy_text": energy.text if energy.ok else "", "energy_amount":_energy.duplicate(true)}
 
 func prepare_idle(route: String, automatic: bool, crew_id: String, crew_level: int, permanent_luck: float,
 		return_target: Dictionary = {}) -> Dictionary:
@@ -850,15 +924,12 @@ func stop_auto() -> Dictionary:
 
 func advance_online(dt: float, cleared_stages: Dictionary) -> void:
 	var late_supply: bool = cleared_stages.has(int(_parameters.late_supply_unlock_stage))
-	if late_supply:
-		var before: float = _late_supply_work
-		_late_supply_work = minf(float(_parameters.late_supply_ramp_seconds), before + dt)
-		var head: float = minf(dt, maxf(0.0, float(_parameters.late_supply_ramp_seconds) - before))
-		var slope: float = float(_parameters.energy_rate) * (float(_parameters.late_energy_rate_multiplier) - 1.0) / float(_parameters.late_supply_ramp_seconds)
-		var initial: float = float(_parameters.energy_rate) + slope * before
-		_energy = minf(float(_parameters.energy_cap), _energy + initial * head + slope * head * head * 0.5 + float(_parameters.energy_rate) * float(_parameters.late_energy_rate_multiplier) * (dt - head))
-	else:
-		_energy = minf(float(_parameters.energy_cap), _energy + float(_parameters.energy_rate) * dt)
+	var before: float = _late_supply_work
+	if late_supply: _late_supply_work = minf(float(_parameters.late_supply_ramp_seconds), before + dt)
+	var generated: Dictionary = _advance_energy(dt,late_supply,before)
+	if not generated.ok:
+		_run_state.fail(str(generated.get("reason",generated.get("error","EnergyGenerationFailed"))))
+		return
 	if _idle.get("status") == "Started":
 		_idle.work = minf(float(_idle.duration), float(_idle.work) + dt)
 		if float(_idle.work) + 1e-9 >= float(_idle.duration):
@@ -1018,7 +1089,9 @@ func accept_reforge(retained: Array) -> Dictionary:
 	_round_id += 1
 	_next_run = 1
 	_next_enemy_uid = 0
-	_energy = float(_parameters.energy_cap)
+	_energy = _resource_energy_cap().value
+	_energy_progress = {}
+	_energy_meter = {}
 	_late_supply_work = 0.0
 	_reward_rng.seed = _base_seed ^ 0x4859504552 ^ _round_id
 	_luck_rng.seed = _base_seed ^ 0x4c55434b ^ _round_id
@@ -1056,7 +1129,19 @@ func _generate_reward(receipt: Dictionary) -> Dictionary:
 	var route: Dictionary = _routes[str(receipt.route)]
 	var base: int = int(_parameters.material_base_reward) + maxi(0, int(receipt.level) - int(_parameters.material_reward_start_level)) / int(_parameters.material_reward_level_step)
 	var ramp: float = 1.0 + (float(_parameters.late_material_reward_multiplier) - 1.0) * _late_supply_work / float(_parameters.late_supply_ramp_seconds)
-	reward.materials[str(route.material)] = floori(float(base) * float(_parameters.material_unit_scale) * ramp * (1.0 + float(module_contributions().get("hyperspace_charge", 0.0))))
+	var quantity: Dictionary = _api.apply("from_decimal",[str(base)])
+	for factor in [str(_parameters.material_unit_scale),str(ramp),str(1.0 + float(module_contributions().get("hyperspace_charge",0.0)))]:
+		if not quantity.ok: break
+		var multiplier: Dictionary = _api.apply("from_decimal",[factor])
+		if not multiplier.ok:
+			quantity = multiplier
+			break
+		quantity = _api.apply("mul",[quantity.value,multiplier.value])
+	if quantity.ok: quantity = _api.apply("floor",[quantity.value])
+	if not quantity.ok:
+		_run_state.fail(str(quantity.get("error","MaterialRewardFailed")))
+		return reward
+	reward.materials[str(route.material)] = _api.apply("to_display",[quantity.value]).text
 	if _reward_rng.randf() < float(_parameters.ultimate_core_probability):
 		reward.ultimate_cores = 1
 		return reward
@@ -1089,7 +1174,11 @@ func _generate_reward(receipt: Dictionary) -> Dictionary:
 	var keep: bool = _filter_matches(drone) if _filter.action == "keep_matches" else not _filter_matches(drone)
 	if _filter.enabled and not keep:
 		var reclaimed: Dictionary = _dismantle_reward(drone)
-		reward.materials[str(route.material)] += int(reclaimed.materials[str(route.material)])
+		var merged: Dictionary = _api.apply("add",[_api.apply("from_decimal",[str(reward.materials[str(route.material)])]).value,_api.apply("from_decimal",[str(reclaimed.materials[str(route.material)])]).value])
+		if not merged.ok:
+			_run_state.fail(str(merged.get("error","MaterialRewardFailed")))
+			return reward
+		reward.materials[str(route.material)] = _api.apply("to_display",[merged.value]).text
 		reward.hanging_rewards = reclaimed.hanging_rewards
 	else:
 		reward.drone = drone
@@ -1197,3 +1286,87 @@ func player_catalog() -> Dictionary:
 	for row in _routes.values():
 		if str(row.weapon) not in weapons: weapons.append(str(row.weapon))
 	return {"weapons": weapons, "qualities": qualities, "affixes": _affixes.keys(), "legends": legends}
+
+func _whole_resource_texts(values: Dictionary) -> Dictionary:
+	var result: Dictionary = {}
+	for id in values:
+		if not Resources.valid_id(id): return {"ok":false,"reason":"InvalidResourceId"}
+		var value: Dictionary = values[id] if values[id] is Dictionary else _api.apply("from_decimal",[str(values[id])]).get("value",{})
+		var checked: Dictionary = Resources.whole(value,_api)
+		if not checked.ok: return checked
+		var text: Dictionary = _api.apply("to_display",[checked.value])
+		if not text.ok: return text
+		result[id] = text.text
+	return {"ok":true,"values":result}
+
+func _whole_reward(reward: Dictionary) -> Dictionary:
+	var checked: Dictionary = _whole_resource_texts(reward.materials)
+	if not checked.ok: return checked
+	var result: Dictionary = reward.duplicate(true)
+	result.materials = checked.values
+	return {"ok":true,"reward":result}
+
+func _resource_energy_cap() -> Dictionary:
+	var value: Dictionary = _api.apply("from_decimal",[str(_parameters.energy_cap)])
+	if not value.ok: return value
+	return Resources.whole(value.value,_api)
+
+func _energy_integral(seconds: float, late: bool) -> Dictionary:
+	var base: Dictionary = _api.apply("from_decimal",[str(_parameters.energy_rate)])
+	if not base.ok: return base
+	if not late: return _api.apply("mul",[base.value,_api.apply("from_decimal",[str(seconds)]).value])
+	var head: Dictionary = _api.apply("from_decimal",[str(minf(seconds,float(_parameters.late_supply_ramp_seconds)))])
+	var tail: Dictionary = _api.apply("from_decimal",[str(maxf(0.0,seconds-float(_parameters.late_supply_ramp_seconds)))])
+	var multiplier: Dictionary = _api.apply("from_decimal",[str(_parameters.late_energy_rate_multiplier)])
+	for item in [head,tail,multiplier]:
+		if not item.ok: return item
+	var slope: Dictionary = _api.apply("mul",[base.value,_api.apply("from_decimal",[str(float(_parameters.late_energy_rate_multiplier)-1.0)]).value])
+	if not slope.ok: return slope
+	slope = _api.apply("div",[slope.value,_api.apply("from_decimal",[str(_parameters.late_supply_ramp_seconds)]).value])
+	if not slope.ok: return slope
+	var curve: Dictionary = _api.apply("mul",[slope.value,head.value])
+	if not curve.ok: return curve
+	curve = _api.apply("mul",[curve.value,head.value])
+	if not curve.ok: return curve
+	curve = _api.apply("div",[curve.value,_api.apply("from_decimal",["2"]).value])
+	if not curve.ok: return curve
+	var initial: Dictionary = _api.apply("mul",[base.value,head.value])
+	var final: Dictionary = _api.apply("mul",[base.value,multiplier.value])
+	if not initial.ok: return initial
+	if not final.ok: return final
+	final = _api.apply("mul",[final.value,tail.value])
+	if not final.ok: return final
+	var total: Dictionary = _api.apply("add",[initial.value,curve.value])
+	if not total.ok: return total
+	return _api.apply("add",[total.value,final.value])
+
+func _advance_energy(dt: float, late: bool, origin: float) -> Dictionary:
+	if not is_finite(dt) or dt<0.0: return {"ok":false,"reason":"InvalidResourceInterval"}
+	var cap: Dictionary = _resource_energy_cap()
+	if not cap.ok: return cap
+	var meter: Dictionary = _energy_meter.duplicate(true)
+	if meter.is_empty() or meter.late!=late:
+		meter = {"elapsed":0.0,"origin":origin if late else 0.0,"late":late,"total":_api.apply("zero",[]).value}
+	meter.elapsed += dt
+	var end: Dictionary = _energy_integral(meter.origin+meter.elapsed,late)
+	var start: Dictionary = _energy_integral(meter.origin,late)
+	if not end.ok: return end
+	if not start.ok: return start
+	var total: Dictionary = _api.apply("sub_nonnegative",[end.value,start.value])
+	if not total.ok: return total
+	var delta: Dictionary = _api.apply("sub_nonnegative",[total.value,meter.total])
+	if not delta.ok: return delta
+	var zero: Dictionary = _api.apply("zero",[]).value
+	var settled: Dictionary = Resources.settle(delta.value,_energy_progress if not _energy_progress.is_empty() else zero,_api)
+	if not settled.ok: return settled
+	var sum: Dictionary = _api.apply("add",[_energy,settled.amount])
+	if not sum.ok: return sum
+	var bounded: Dictionary = _api.apply("min",[sum.value,cap.value])
+	if not bounded.ok: return bounded
+	var full: Dictionary = _api.apply("compare",[bounded.value,cap.value])
+	if not full.ok: return full
+	_energy = bounded.value
+	meter.total = total.value
+	_energy_progress = settled.progress if full.scalar<0 else {}
+	_energy_meter = meter if full.scalar<0 else {}
+	return {"ok":true}
