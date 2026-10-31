@@ -241,8 +241,8 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
 		Vector2(-0.50, 0.04), Vector2(-0.47, 0.12), Vector2(-0.40, 0.21),
-		Vector2(-0.29, 0.24), Vector2(-0.14, 0.24), Vector2(-0.10, 0.22),
-		Vector2(0.0, 0.21), Vector2(0.10, 0.22), Vector2(0.14, 0.24),
+		Vector2(-0.29, 0.24), Vector2(-0.14, 0.22), Vector2(-0.10, 0.17),
+		Vector2(0.0, 0.15), Vector2(0.10, 0.17), Vector2(0.14, 0.22),
 		Vector2(0.29, 0.24), Vector2(0.40, 0.21), Vector2(0.47, 0.12),
 		Vector2(0.50, 0.04),
 	]
