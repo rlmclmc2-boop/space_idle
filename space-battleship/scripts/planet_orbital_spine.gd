@@ -109,7 +109,8 @@ func _ready() -> void:
 			var width_at_end := _transit_width(angle)
 			# The independently built arc must have a finished pressure end. A
 			# single dark rectangle reads as a dangling construction block.
-			_add_terminal_band(cap, width_at_end, -0.305, 0.025, outward, _navy)
+			_add_terminal_band(cap, width_at_end, -0.405, -0.295, outward, _side)
+			_add_terminal_band(cap, width_at_end, -0.295, 0.025, outward, _side)
 			_add_terminal_band(cap, width_at_end, 0.025, 0.075, outward, _cyan)
 			_add_terminal_band(cap, width_at_end, 0.075, 0.205, outward, _side)
 			_add_terminal_band(cap, width_at_end, 0.205, 0.325, outward, _deck)
@@ -154,6 +155,12 @@ func _add_terminal_band(parent: Node3D, width: float, bottom: float, top: float,
 func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float, kind: String = "") -> void:
 	# One shared cross-section runs through every owned arc and completed join.
 	# The lit inset is set into its armored wall, above the structural keel.
+	# A second underside closes the lower pressure box all the way to each
+	# independent end plane; the upper blue light remains recessed above it.
+	_add_strip(parent, begin, finish, width, -0.40, _navy, kind)
+	for side in [-1.0, 1.0]:
+		_add_wall(parent, begin, finish, side * width * 0.5, -0.40, -0.18, _navy, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.003), -0.38, -0.30, _side, kind)
 	_add_strip(parent, begin, finish, width, -0.18, _navy, kind)
 	for side in [-1.0, 1.0]:
 		_add_wall(parent, begin, finish, side * width * 0.5, -0.18, 0.26, _navy, kind)
