@@ -3,6 +3,7 @@ render_mode unshaded, blend_add;
 
 uniform float load_fraction : hint_range(0.0,1.0) = 0.0;
 uniform float phase = 0.0;
+uniform sampler2D core_work_surface : source_color, filter_linear;
 
 float hash21(vec2 p) {
     return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);
@@ -41,6 +42,9 @@ void fragment() {
         float strength = load_fraction * (0.34*ring+0.13*cage+0.37*marker
                                           +0.46*particle*generated+0.55*outlet
                                           +0.70*ignition);
-        COLOR = vec4(0.08,0.54,1.0,strength);
+        vec4 material_light = texture(core_work_surface,UV);
+        float shimmer = 0.82+0.18*sin(phase*1.8+UV.y*12.0);
+        vec3 emissive = material_light.rgb*material_light.a*sqrt(load_fraction)*shimmer*1.32;
+        COLOR = vec4(emissive+vec3(0.08,0.54,1.0)*strength,1.0);
     }
 }

@@ -4,6 +4,7 @@ const PipeView = preload("res://src/ui/reactor_pipe_view.gd")
 const ModuleView = preload("res://src/ui/reactor_module_view.gd")
 const BAY = preload("res://assets/ui/reactor/b01/modular-bay-background.png")
 const CORE = preload("res://assets/ui/reactor/b01/modular-core.png")
+const CORE_WORK = preload("res://assets/ui/reactor/b01/modular-core-work.png")
 const WEAPONS = preload("res://assets/ui/reactor/b01/modular-weapons.png")
 const DEFENCE = preload("res://assets/ui/reactor/b01/modular-defence.png")
 const SMELTING = preload("res://assets/ui/reactor/b01/modular-smelting.png")
@@ -96,6 +97,7 @@ func _init() -> void:
 	_core_field.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_field_material = ShaderMaterial.new()
 	_field_material.shader = CORE_FIELD
+	_field_material.set_shader_parameter("core_work_surface",CORE_WORK)
 	_core_field.material = _field_material
 	_core_field.visible = false
 	add_child(_core_field)

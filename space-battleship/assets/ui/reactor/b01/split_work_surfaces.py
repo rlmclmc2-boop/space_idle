@@ -88,3 +88,33 @@ def build(kind: str) -> None:
 
 for module in BOUNDS:
     build(module)
+
+
+def build_core() -> None:
+    """Move the globe's blue plasma into the existing core event viewport."""
+    source = Image.open(ROOT / "modular-core-lit-source.png").convert("RGBA")
+    pixels = np.asarray(source, dtype=np.float32) / 255.0
+    h, w = pixels.shape[:2]
+    y, x = np.mgrid[:h, :w]
+    u = (x + .5) / w
+    v = (y + .5) / h
+    r, g, b, alpha = (pixels[:, :, i] for i in range(4))
+    globe = np.clip((1.0 - np.sqrt(((u - .50) / .39) ** 2 + ((v - .515) / .26) ** 2)) * 9.0, 0, 1)
+    blue = np.clip((b - r * 1.05) * 4.2, 0, 1) * np.clip((b - g * .94) * 4.2, 0, 1)
+    mask = np.clip(globe * blue * .83 * alpha, 0, 1)
+    luma = r * .23 + g * .68 + b * .09
+    neutral = np.stack((luma * .47, luma * .55, luma * .62), axis=-1)
+    base = pixels.copy()
+    base[:, :, :3] = pixels[:, :, :3] * (1 - mask[:, :, None]) + neutral * mask[:, :, None]
+    emission = np.zeros_like(pixels)
+    emission[:, :, :3] = pixels[:, :, :3]
+    emission[:, :, 3] = mask
+    # The runtime core field occupies stage (283,95)..(527,315), which maps
+    # to these source pixels under the existing 1187x1326 -> 808x835 scale.
+    crop = (31, 151, 389, 500)
+    Image.fromarray(np.uint8(np.clip(base * 255, 0, 255))).save(ROOT / "modular-core.png")
+    Image.fromarray(np.uint8(np.clip(emission * 255, 0, 255))).crop(crop).save(ROOT / "modular-core-work.png")
+    print("core", "work pixels", int((mask > .05).sum()), "crop", crop)
+
+
+build_core()
