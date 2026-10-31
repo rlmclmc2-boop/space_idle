@@ -19,3 +19,5 @@
 - [2026-10-31 R5d shared-shell WIP](r5d-shared-wip-20261031/README.md): same-version static routes; old equipment is a return reference.
 
 - [2026-10-31 final main equipment + R5d shared shell](e845-r5d-shared-20261031/README.md): same-version affected static routes, pending whole-combination review.
+
+- [2026-10-31 final equipment and R5d native route clip](e845-r5d-transition-20261031/README.md): 34 frames and state log, author affected-path observation only.

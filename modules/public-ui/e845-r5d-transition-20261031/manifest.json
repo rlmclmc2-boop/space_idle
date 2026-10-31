@@ -1,0 +1,12 @@
+{
+  "source_commit": "7bdf00627cc895636e37ab71802711e7e68ed408",
+  "frames": 34,
+  "video_sha256": "af74fef635ec1acc722fd820cd07684b73aa202c7d0d0e34964099de48d7f174",
+  "images": {
+    "equipment-start-1440x900.png": "c7d07c0f0a9a9a9d22b26694ece785514909665b22d02c214da2cf80a0ccce99",
+    "equipment-quantity-1440x900.png": "6ada89aef37a0f1850a53fec24e75f5378520e99b083e6fa31372813c90cef87",
+    "reactor-route-1440x900.png": "17c763eb1f630e4bb3f4b72aead377753549e6c2ad3a87ed116996791836f41c",
+    "reactor-quantity-1440x900.png": "463958ba8e15e61c3f5425df9208af46fe9c4546344bb9a0df9ee4e33f3a1a33",
+    "equipment-return-1440x900.png": "3de44feab5d70e8f6e5c831b409d6185e464f4b12819cf6a44e51ec1fdd1eaa2"
+  }
+}

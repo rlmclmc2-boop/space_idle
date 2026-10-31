@@ -1,0 +1,87 @@
+{
+  "frames": 34,
+  "same_wallet_after_quantity_clicks": true,
+  "segments": [
+    {
+      "equipment_mode": 0,
+      "equipment_visible": true,
+      "focus": "@Button@207",
+      "reactor_count": 1,
+      "reactor_max": false,
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "segment": "equipment-start",
+      "through_frame": 6
+    },
+    {
+      "equipment_mode": 1,
+      "equipment_visible": true,
+      "focus": "@Button@23",
+      "reactor_count": 1,
+      "reactor_max": false,
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "segment": "equipment-quantity-only",
+      "through_frame": 12
+    },
+    {
+      "equipment_mode": 1,
+      "equipment_visible": false,
+      "focus": "@Button@213",
+      "reactor_count": 1,
+      "reactor_max": false,
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "segment": "reactor-route",
+      "through_frame": 20
+    },
+    {
+      "equipment_mode": 1,
+      "equipment_visible": false,
+      "focus": "@Button@150",
+      "reactor_count": 10,
+      "reactor_max": false,
+      "reactor_visible": true,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "reactor",
+      "segment": "reactor-quantity-only",
+      "through_frame": 26
+    },
+    {
+      "equipment_mode": 1,
+      "equipment_visible": true,
+      "focus": "@Button@207",
+      "reactor_count": 10,
+      "reactor_max": false,
+      "reactor_visible": false,
+      "resource_text": [
+        "99.9k",
+        "1.0k",
+        "43.2k"
+      ],
+      "route": "equipment",
+      "segment": "equipment-return",
+      "through_frame": 34
+    }
+  ],
+  "source": "7bdf00627cc895636e37ab71802711e7e68ed408"
+}

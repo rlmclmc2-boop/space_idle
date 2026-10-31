@@ -1,0 +1,97 @@
+extends SceneTree
+
+const OUT := "/tmp/space-idle-runtime472/e845-r5d-transition/"
+var frame_number := 0
+var records: Array = []
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func frames(count: int) -> void:
+	for i in count:
+		await process_frame
+
+func click(button: Control) -> void:
+	assert(button.visible and not button.disabled)
+	var point: Vector2 = button.get_global_rect().get_center()
+	var down := InputEventMouseButton.new()
+	down.button_index = MOUSE_BUTTON_LEFT
+	down.position = point
+	down.global_position = point
+	down.pressed = true
+	Input.parse_input_event(down)
+	await process_frame
+	var up := InputEventMouseButton.new()
+	up.button_index = MOUSE_BUTTON_LEFT
+	up.position = point
+	up.global_position = point
+	up.pressed = false
+	Input.parse_input_event(up)
+	await frames(3)
+
+func capture(name: String, count: int, game) -> void:
+	for i in count:
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png(OUT + "frame-%03d.png" % frame_number)
+		frame_number += 1
+	records.append({"segment": name, "through_frame": frame_number, "route": game._zone_shell._active_route,
+		"equipment_visible": game.equipment_scene.visible, "reactor_visible": game.reactor_scene.visible,
+		"resource_text": [game._zone_shell._balances[0].text, game._zone_shell._balances[1].text, game._zone_shell._balances[2].text],
+		"equipment_mode": game.equipment_scene._batch_mode, "reactor_count": game.reactor_scene._purchase_count,
+		"reactor_max": game.reactor_scene._purchase_max,
+		"focus": str(root.gui_get_focus_owner().name) if root.gui_get_focus_owner() != null else ""})
+
+func clear_guidance(session, game) -> void:
+	var pending: Dictionary = session.pending_guidance()
+	var tries := 0
+	while not pending.is_empty() and tries < 20:
+		assert(session.dismiss_guidance(str(pending.kind), str(pending.id)).ok)
+		pending = session.pending_guidance()
+		tries += 1
+	game._sync_guidance()
+
+func run() -> void:
+	root.size = Vector2i(1440, 900)
+	root.content_scale_size = Vector2i(1440, 900)
+	var game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(70)
+	assert(game.startup_error.is_empty())
+	var session = game.session
+	game.set_process(false)
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(), session.publish_reactor).ok)
+	clear_guidance(session, game)
+	game._refresh_feature_visibility()
+	await click(game._zone_shell._route_buttons["equipment"])
+	assert(game.equipment_scene.visible and not game.reactor_scene.visible)
+	await capture("equipment-start", 6, game)
+	var before_wallet: Dictionary = session.economy.budget().duplicate(true)
+	await click(game.equipment_scene._global_quantity)
+	assert(game.equipment_scene._batch_mode == 1)
+	assert(session.economy.budget() == before_wallet)
+	await capture("equipment-quantity-only", 6, game)
+	await click(game._zone_shell._route_buttons["reactor"])
+	assert(game.reactor_scene.visible and not game.equipment_scene.visible)
+	await capture("reactor-route", 8, game)
+	await click(game.reactor_scene._quantity)
+	assert(game.reactor_scene._purchase_count == 10 and not game.reactor_scene._purchase_max)
+	assert(session.economy.budget() == before_wallet)
+	await capture("reactor-quantity-only", 6, game)
+	await click(game._zone_shell._route_buttons["equipment"])
+	assert(game.equipment_scene.visible and not game.reactor_scene.visible)
+	await capture("equipment-return", 8, game)
+	var file := FileAccess.open(OUT + "states.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify({"source": "7bdf00627cc895636e37ab71802711e7e68ed408", "frames": frame_number,
+		"same_wallet_after_quantity_clicks": session.economy.budget() == before_wallet, "segments": records}, "  "))
+	file.close()
+	print("E845_R5D_TRANSITION frames=", frame_number, " wallet_unchanged=", session.economy.budget() == before_wallet)
+	if session.save_files != null:
+		session.save_files.close(2000)
+	game.queue_free()
+	await frames(3)
+	quit()
