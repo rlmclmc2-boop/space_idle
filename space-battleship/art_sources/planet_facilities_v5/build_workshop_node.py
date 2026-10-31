@@ -103,20 +103,30 @@ root = node("Facility")
 # These two cheek shells clamp it from both radial sides at two tangent portals.
 for side in (-1, 1):
     y = side * .87
-    loft("Continuous orange load cheek", [
+    cheek = loft("Continuous orange load cheek", [
         (-1.08, y, .59, .26, .37), (-.88, y, .70, .32, .53),
         (.81, y, .70, .32, .53), (1.08, y, .59, .26, .37),
     ], orange, root)
-    loft("Ivory foot wrapped around section", [
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, y, .74))
+    window_cut = bpy.context.object
+    window_cut.name = "Temporary open side service window"
+    window_cut.dimensions = (1.27, .84, .48)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    bpy.context.view_layer.objects.active = cheek
+    cut = cheek.modifiers.new("Open working side", "BOOLEAN")
+    cut.operation = "DIFFERENCE"
+    cut.object = window_cut
+    bpy.ops.object.modifier_apply(modifier=cut.name)
+    bpy.data.objects.remove(window_cut, do_unlink=True)
+    loft("Deep pressure foot wrapped around section", [
         (-1.12, side*.86, .06, .35, .18), (-.86, side*.86, .14, .41, .24),
         (.86, side*.86, .14, .41, .24), (1.12, side*.86, .06, .35, .18),
-    ], ivory, root)
+    ], navy, root)
     box("Inset inner bay wall", (0, side*.575, .70), (1.70, .065, .68), navy, root, .025)
     box("Warm working recess", (0, side*.532, .80), (1.42, .014, .31), orange_lit, root, .01)
-    box("Broad outer ivory armor", (0, side*1.153, .74), (1.59, .07, .39), ivory, root, .035)
-    for x in (-.57, .57):
-        box("Blue cheek service cassette", (x, side*1.205, .78), (.43, .045, .21), blue, root, .024)
-        box("Cassette amber work signal", (x, side*1.233, .78), (.18, .013, .09), orange_lit, root, .008)
+    for x in (-.66, .66):
+        box("Window jamb inner armor", (x, side*.655, .78), (.12, .07, .40), ivory_edge, root, .012)
+        box("Window jamb amber signal", (x, side*.61, .79), (.06, .012, .14), orange_lit, root, .005)
     box("Upper bevel armor", (0, side*.99, 1.22), (1.76, .23, .14), ivory_edge, root, .03)
     box("Buried cyan power slit", (0, side*1.221, .55), (1.37, .016, .055), cyan, root, .006)
     # Four full-height end columns define two actual openings along the ring.
