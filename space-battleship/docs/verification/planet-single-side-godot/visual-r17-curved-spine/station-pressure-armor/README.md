@@ -6,4 +6,4 @@ Godot 4.7.2、2048×768 的同版累计 built 对照：[站体](planet-station-a
 
 受影响侧向角补了站单建与完整态各两张：[25° 单建](planet-station-side25-1.png)、[25° 完整](planet-station-side25-4.png)、[70° 单建](planet-station-side-1.png)、[70° 完整](planet-station-side-4.png)，脚本与日志见 `capture-side25.*`、`capture-side70.*`。25° 可见承力墙沿环侧连续且口端装甲仍留出通道；70° 时站体大部被真实球体遮挡，仅顶冠可见，不可拿它判断入口形体。它们也是受影响角的局部图，不证明整圈。
 
-新版候选的[0–6 秒模拟连续片段](local-motion/README.md)另存 25 张同版原图、脚本、日志与短片；它只核完整态局部相位，不是墙钟自然运行或自然建设态。
+新版候选的[0–6 秒模拟连续片段归档](https://github.com/rlmclmc2-boop/space_idle/tree/36270df7417416ea1ee00dd6a0e5bcefb8574a7e)固定于独立分支 `archive/planet-station-armor-motion-20261031@36270df7`，含 25 张同版原图、脚本、日志、哈希与短片；它只核完整态局部相位，不是墙钟自然运行或自然建设态。

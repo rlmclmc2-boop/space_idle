@@ -20,7 +20,7 @@
 
 随后站体承力墙加了分段装甲和口端受力面，受影响的单建／完整态原尺寸图见[站体装甲局部候选](station-pressure-armor/README.md)。前端暗面略有层次，但腹部深灰体量尚未解决；继续形体与材质协调，不当作整体通过。
 
-站体装甲同版补了[0–6 秒完整态模拟连续片段](station-pressure-armor/local-motion/README.md)，已逐帧复看并归档。此段由 `advance(0.25, false)` 逐步取样，不是墙钟自然运行，也未覆盖自然建设、整圈或整体通过。
+站体装甲同版补了[0–6 秒完整态模拟连续片段](https://github.com/rlmclmc2-boop/space_idle/tree/36270df7417416ea1ee00dd6a0e5bcefb8574a7e)，固定于独立归档分支 `archive/planet-station-armor-motion-20261031@36270df7`，已逐帧复看。此段由 `advance(0.25, false)` 逐步取样，不是墙钟自然运行，也未覆盖自然建设、整圈或整体通过。
 
 ## 固定源与现场快照
 
