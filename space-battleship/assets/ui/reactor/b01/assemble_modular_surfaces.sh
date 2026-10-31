@@ -14,13 +14,13 @@ for id in weapons defence smelting condensation; do
     fi
   done
 done
-for file in modular-core-clamp-left.png modular-core-clamp-right.png modular-core-gimbal-*.png; do
+for file in modular-core-clamp-left.png modular-core-clamp-right.png modular-core-gimbal-{rear,front}-*.png; do
   if [ "$(magick identify -format '%wx%h' "$file")" != "1187x1326" ]; then
     echo "Expected a Blender source canvas: $file; run generate_modular_pipes.py first" >&2
     exit 1
   fi
 done
-magick modular-core-source.png -crop 615x850+285+0 +repage -resize '418x638!' modular-core.png
+cp modular-core-unbanded-source.png modular-core.png
 magick modular-modules-source.png -crop 570x430+0+100 +repage -resize '359x271!' modular-weapons.png
 magick modular-modules-source.png -crop 467x430+720+105 +repage -resize '294x271!' modular-defence.png
 magick modular-modules-source.png -crop 595x520+25+585 +repage -resize '315x276!' modular-smelting.png
@@ -49,12 +49,10 @@ for side in left right; do
   x=395
   if [ "$side" = right ]; then x=603; fi
   file="modular-core-clamp-$side.png"
-  magick "$file" -crop "190x45+$x+300" +repage "$file.crop.png"
+  magick "$file" -crop "190x75+$x+285" +repage "$file.crop.png"
   mv "$file.crop.png" "$file"
 done
-magick -crop 240x240+475+210 +repage.crop.png
-mv.crop.png
-for file in modular-core-gimbal-*.png; do
+for file in modular-core-gimbal-{rear,front}-*.png; do
   magick "$file" -crop 320x320+435+170 +repage "$file.crop.png"
   mv "$file.crop.png" "$file"
 done

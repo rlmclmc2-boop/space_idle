@@ -475,12 +475,12 @@ func _refresh() -> void:
 	if ids != previous_ids or _visual_loads(model, ids) != previous_loads: _update_stage()
 
 func _layout_enabled_rows(ids: Array) -> void:
-	var tops: Array = COMPACT_ROW_TOPS.get(ids.size(), [])
+	var tops: Array = [626.0, 675.0, 724.0, 773.0] if ids.size() == 4 else COMPACT_ROW_TOPS.get(ids.size(), [])
 	_left_plate.visible = not ids.is_empty()
 	_left_heading.visible = not ids.is_empty() and ids.size() < 4
 	if not ids.is_empty():
 		var first_top: float = float(tops[0]) if not tops.is_empty() else 614.0
-		_left_heading.position.y = maxf(615.0, first_top - 38.0)
+		_left_heading.position.y = 635.0 if ids.size() == 1 else maxf(615.0, first_top - 38.0)
 	for index in ids.size():
 		var id: String = str(ids[index])
 		var top: float = float(tops[index]) if not tops.is_empty() else 614.0 + 55.0 * float(index)
@@ -490,6 +490,26 @@ func _layout_enabled_rows(ids: Array) -> void:
 		_rows[id].row_face.position.y = top + 4.0
 		_rows[id].control.position.y = top + 4.0
 		_rows[id].effect.position.y = top + 9.0
+		if ids.size() == 1:
+			# One device occupies a two-line native group within the same full
+			# console, rather than a lone 41px row floating in a blank plate.
+			_rows[id].accent.position = Vector2(73, 678)
+			_rows[id].accent.size.y = 88
+			_rows[id].icon.position = Vector2(88, 679)
+			_rows[id].name.position = Vector2(125, 679)
+			_rows[id].effect.position = Vector2(464, 681)
+			_rows[id].row_face.position = Vector2(88, 674)
+			_rows[id].row_face.size = Vector2(470, 105)
+			_rows[id].control.position = Vector2(194, 729)
+		else:
+			_rows[id].accent.position.x = 73
+			_rows[id].accent.size.y = 33
+			_rows[id].icon.position.x = 81
+			_rows[id].name.position.x = 116
+			_rows[id].effect.position.x = 476
+			_rows[id].row_face.position.x = 190
+			_rows[id].row_face.size = Vector2(370, 41)
+			_rows[id].control.position.x = 194
 
 func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 	if _model.is_empty(): return

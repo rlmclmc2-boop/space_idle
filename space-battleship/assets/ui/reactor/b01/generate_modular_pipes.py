@@ -145,17 +145,19 @@ def beveled_plate(name, cx, cy, width, height, depth, z, mat, bevel=2.0):
 
 
 def clamp_half(name, start_x):
-    # A guided mechanical jaw sits above, but apart from, the core glass.
-    # The runtime translates the two jaws toward each other, then holds.
-    center_x = start_x + (106 if name.endswith("right") else 82)
-    beveled_plate(name+"_base", center_x,323,150,24,8,43,MATS["metal"],4)
-    beveled_plate(name+"_rail", center_x,314,138,4,3,49,MATS["ridge"],1)
-    beveled_plate(name+"_brass", center_x,333,142,3,3,49,MATS["gold"],1)
-    for cx in (center_x-65,center_x-33,center_x,center_x+33,center_x+65):
-        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=3.2, depth=2.5, location=(cx,-323,50))
-        ob = bpy.context.object
-        ob.name = name+"_bolt"
-        ob.data.materials.append(MATS["ridge"])
+    # The two actuators grip the perimeter and leave the energy chamber open.
+    # Their three-dimensional feet/rails live above the sphere's front face;
+    # the runtime translates only these two pieces along their guide axis.
+    center_x = start_x + (104 if name.endswith("right") else 90)
+    beveled_plate(name+"_foot", center_x,323,94,41,17,40,MATS["metal"],6)
+    beveled_plate(name+"_spine", center_x,312,86,8,5,51,MATS["ridge"],2)
+    beveled_plate(name+"_contact", center_x,337,76,5,4,52,MATS["gold"],1.5)
+    for cx in (center_x-29, center_x, center_x+29):
+        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=3.4, depth=4,
+                                            location=(cx,-322,52))
+        bolt = bpy.context.object
+        bolt.name = name+"_fastener"
+        bolt.data.materials.append(MATS["gold"] if cx == center_x else MATS["ridge"])
 
 
 def local_softbox(name, location, energy, size):
@@ -258,6 +260,32 @@ def setup():
     scene.view_settings.view_transform = "Standard"
 
 
+def depth_material(base, front):
+    """Keep the same lit material, but render only one side of the core plane."""
+    result = base.copy()
+    result.name = base.name + (" front" if front else " rear")
+    nodes, links = result.node_tree.nodes, result.node_tree.links
+    output = nodes.get("Material Output")
+    surface = output.inputs["Surface"]
+    prior = surface.links[0]
+    lit_surface = prior.from_socket
+    links.remove(prior)
+    geometry = nodes.new("ShaderNodeNewGeometry")
+    split = nodes.new("ShaderNodeSeparateXYZ")
+    compare = nodes.new("ShaderNodeMath")
+    compare.operation = "GREATER_THAN" if front else "LESS_THAN"
+    compare.inputs[1].default_value = 63.0
+    transparent = nodes.new("ShaderNodeBsdfTransparent")
+    mix = nodes.new("ShaderNodeMixShader")
+    links.new(geometry.outputs["Position"], split.inputs[0])
+    links.new(split.outputs["Z"], compare.inputs[0])
+    links.new(compare.outputs[0], mix.inputs[0])
+    links.new(transparent.outputs[0], mix.inputs[1])
+    links.new(lit_surface, mix.inputs[2])
+    links.new(mix.outputs[0], surface)
+    return result
+
+
 setup()
 only_core = "--only-core" in sys.argv
 for pipe_id, anchors in ({} if only_core else PATHS).items():
@@ -273,7 +301,7 @@ for pipe_id, anchors in ({} if only_core else PATHS).items():
         bpy.ops.render.render(write_still=True)
     for ob in parts:
         bpy.data.objects.remove(ob, do_unlink=True)
-for side, start_x in (() if only_core else (("left",395),("right",603))):
+for side, start_x in (("left",395),("right",603)):
     generated = set(bpy.data.objects)
     clamp_half("core_clamp_"+side,start_x)
     bpy.context.scene.render.filepath = str(ROOT / ("modular-core-clamp-"+side+".png"))
@@ -283,7 +311,18 @@ for side, start_x in (() if only_core else (("left",395),("right",603))):
 for frame in range(12):
     generated = set(bpy.data.objects)
     core_gimbal(2*math.pi*frame/12)
-    bpy.context.scene.render.filepath = str(ROOT / ("modular-core-gimbal-%02d.png" % frame))
-    bpy.ops.render.render(write_still=True)
-    for ob in set(bpy.data.objects)-generated:
+    parts = set(bpy.data.objects)-generated
+    materials = {ob: [slot.material for slot in ob.material_slots]
+                 for ob in parts if hasattr(ob.data, "materials")}
+    variants = {}
+    for side in ("rear", "front"):
+        for ob, originals in materials.items():
+            for index, mat in enumerate(originals):
+                key = (mat.name, side)
+                if key not in variants:
+                    variants[key] = depth_material(mat, side == "front")
+                ob.material_slots[index].material = variants[key]
+        bpy.context.scene.render.filepath = str(ROOT / ("modular-core-gimbal-%s-%02d.png" % (side,frame)))
+        bpy.ops.render.render(write_still=True)
+    for ob in parts:
         bpy.data.objects.remove(ob, do_unlink=True)
