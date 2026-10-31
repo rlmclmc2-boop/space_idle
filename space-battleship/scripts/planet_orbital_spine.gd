@@ -242,7 +242,7 @@ func _station_section_rise(kind: String, angle: float) -> float:
 	var outlet := smoothstep(0.0, 0.08, bounds.y - angle)
 	var center: float = FACILITY_ANGLES[kind]
 	var node := 1.0 - smoothstep(0.16, 0.40, absf(angle - center))
-	return 0.22 * inlet * outlet * node
+	return 0.30 * inlet * outlet * node
 
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
