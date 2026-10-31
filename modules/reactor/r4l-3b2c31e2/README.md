@@ -29,3 +29,7 @@
 |A2→B2|32.33 / 30.93 / 29.758 / 35.878|34.00 / 29.41 / 28.394 / 34.535|
 
 缓存保持所有动态/刷新/Owner 控件，仅将不变底图、已启用管壳与console在可用集合变化时一次合成，再作为原舞台视口第一层绘制。第二稳态短窗 Canvas draw calls `27→22`（[诊断日志](performance-draw-info.txt)；首冷窗阶段不稳，不作FPS结论）。[A同相位整屏](performance-uncached-samephase.png)与[B同相位整屏](performance-cached-samephase.png)RGB差异0；[1路](cache-count-1-uncached.png)/[缓存](cache-count-1-cached.png)与[4路](cache-count-4-uncached.png)/[缓存](cache-count-4-cached.png)舞台纹理RGB各0（[切态驱动](cache-count-driver.gd.txt)）。窗口收益不稳定，不能把+1.67单窗写成产品保证；无目标机硬件 profile，用户性能验收仍未成立。先前外层双视口原型约+3fps但边缘差126620像素，已淘汰，**非产品**。
+
+## 本版费用/数量原生交互补核
+
+[现有预算鼠标驱动](budget-driver.gd.txt)、[日志](budget-runtime.txt)在同一当前源码正常1×主场景中，受控入账1000铀；数量循环到MAX后真买11级花752、余248，下一次×1报价272铀。[点击前整屏](budget-insufficient-before.png)逐资源数字红、图标保原色、无“资源不足”常驻，升级两字在键内完整；[点击后](budget-insufficient-click.png)Owner 返回 `InsufficientResources` 才出短提示。[MAX零可购前](budget-max-zero-before.png)按钮仍可执行，再点击同一Owner拒绝链。预算为受控夹具，不是自然收入。Godot退出报 `2 resources still in use` 清理提示，驱动业务断言未失败；它不扩为全游戏无资源泄漏结论。
