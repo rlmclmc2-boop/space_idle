@@ -12,7 +12,7 @@
 
 ## 最新同版证据边界
 
-`fa744a07` 的完整态默认、25°、70°，站单建25°及四段默认相位累积原图、脚本、导入／取图日志固定于[独立归档 56454fad](https://github.com/rlmclmc2-boop/space_idle/tree/56454fad)；17 件文件逐件从 Git blob 复核 SHA256。炉料斗构建图证仍见[归档 72bb3c81](https://github.com/rlmclmc2-boop/space_idle/tree/72bb3c81)，70°图不能证明矿石可辨。站模型构建见[归档 8a15ec7d](https://github.com/rlmclmc2-boop/space_idle/tree/8a15ec7d)。工坊和船坞模型沿用[归档 0c6474eb](https://github.com/rlmclmc2-boop/space_idle/tree/0c6474eb)与[归档 1f5c63e0](https://github.com/rlmclmc2-boop/space_idle/tree/1f5c63e0)，其余六类默认沿用[归档 1d4e07ad](https://github.com/rlmclmc2-boop/space_idle/tree/1d4e07ad)。built 状态及角度由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。
+`fa744a07` 的完整态默认、25°、70°，站单建25°及四段默认相位累积原图、脚本、导入／取图日志固定于[独立归档 56454fad](https://github.com/rlmclmc2-boop/space_idle/tree/56454fad)；17 件文件逐件从 Git blob 复核 SHA256。六类当前默认完整态另见[独立归档 495c5861](https://github.com/rlmclmc2-boop/space_idle/tree/495c5861)，8 件文件逐件复核；六类均未见画布裁切，第5／6类球体远小于环，不称六类主剪影通过。炉料斗构建图证仍见[归档 72bb3c81](https://github.com/rlmclmc2-boop/space_idle/tree/72bb3c81)，70°图不能证明矿石可辨。站模型构建见[归档 8a15ec7d](https://github.com/rlmclmc2-boop/space_idle/tree/8a15ec7d)。工坊和船坞模型沿用[归档 0c6474eb](https://github.com/rlmclmc2-boop/space_idle/tree/0c6474eb)与[归档 1f5c63e0](https://github.com/rlmclmc2-boop/space_idle/tree/1f5c63e0)。built 状态及角度由脚本模拟，不代表自然施工、自然转动、整圈或整体通过。
 
 四段 owned 的站、站＋炉、站＋炉＋工坊、完整态默认角模拟累积图已包含于 R56 最新归档；站＋炉上弧可见，站单建下缘端部仍明显。图证不能当作自然建造流程。
 
