@@ -15,3 +15,5 @@
 - [2026-10-31 R5c shared-shell WIP](r5c-shared-wip-20261031/README.md): exact source and bounded cross-page images, not visual approval.
 
 - [2026-10-31 equipment 505 and R5c shared-shell WIP](r5c-505-shared-wip-20261031/README.md): current same-source cross-page images, not approval.
+
+- [2026-10-31 R5d shared-shell WIP](r5d-shared-wip-20261031/README.md): same-version static routes; old equipment is a return reference.
