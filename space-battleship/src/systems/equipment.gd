@@ -1,4 +1,5 @@
 extends RefCounted
+const Resources = preload("res://src/systems/resource_amounts.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 var _run_state
 const BattleSchema = preload("res://src/combat_setup.gd")
@@ -555,7 +556,9 @@ static func _quote_levels(row: Dictionary, level: int, count: int, evolution: Di
 		if not sum.ok:
 			return sum
 		costs[str(evolution.material_id)] = sum.value
-	return {"ok": true, "count": count, "costs": costs, "extreme": extreme}
+	var normalized: Dictionary = Resources.whole_map(costs, amount_api)
+	if not normalized.ok: return normalized
+	return {"ok": true, "count": count, "costs": normalized.values, "extreme": extreme}
 
 # The economy supplies only affordability; equipment owns MAX search and its limits.
 static func _quote_affordable_levels(row: Dictionary, level: int, evolution: Dictionary, material_unlocked: bool, api, can_pay: Callable) -> Dictionary:
