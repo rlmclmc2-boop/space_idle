@@ -1,0 +1,1350 @@
+{
+  "kind": "User7dfa layout rejection whole-page equipment reflow and synchronized top quantity candidate; author native evidence, no new independent/user acceptance",
+  "runtime_source_commit": "ce33e869b76c83d698502e23589507e84c738d8e",
+  "retired_previous_evidence": "7dfa54dc612c1e8357bab7e797ced519a166a9d9; user rejected16:24",
+  "source_sha256": {
+    "space-battleship/src/ui/equipment_panel.gd": "de583d40b8281ab0c38e8e929afccc502351298c7e690c69ead390e79f91b00a",
+    "space-battleship/src/ui/bridge_theme.gd": "57a17be6af72b274f154b8860b2e0ae44b42c04e62e8f969263553ae5c77aa2e",
+    "space-battleship/src/ui/player_text.gd": "2e32275e0ef39f4c0ee3aee477303bab90b68d0686821ff1797c933d2958c1c1",
+    "space-battleship/src/systems/resource_amounts.gd": "b70f1d62a3010477c218342069ee7cba06c60eac80c57e99df7905edf78e0023",
+    "space-battleship/src/systems/equipment.gd": "80aa306c25b68e9ca1ca7422ccc8b42748351ad3298a27600c3fb1d462ce43a8",
+    "space-battleship/src/systems/economy.gd": "206b9f0d636d2e13eeab66e66e0943883dd583c5fd969a7b8cf8e8732a21ed8f",
+    "space-battleship/src/game_session.gd": "207018ae172b3d855ef4990833ce95e8095696847c18e4249ad7c3fb931f2dd6",
+    "space-battleship/src/main.gd": "9b9ba075486b7b25ab1b390a94a4e6c763e3b9f94beefb6fab8f54b46b1c5c0f",
+    "space-battleship/src/ui/zone_shell.gd": "f85214d12f098e088b79384650954ebec4fe68238a97f2c2bdf25fb08271e46c",
+    "space-battleship/src/ui/resource_visuals.gd": "1cae88972f1f5ce6f5a1793fcbadb24f9f978c2587855e59c28d4a964c4c0080",
+    "space-battleship/assets/ui/equipment/materials-20261029/control-materials.png": "707d137c2201aa0e9f33d730675402cff2b9195d26282d6305a66b22e37e5d6c",
+    "space-battleship/assets/ui/public_shell/stepper-down.svg": "ed61270c9dc18eb08f86025194604b0b82cce65d0af84a6c3d5fafe73f2b7c74",
+    "space-battleship/assets/ui/equipment/hangar/inline-short.png": "9b40cc620b11a0cc594c977be9eb3b9f4b3fe972ddbaf71a74253d9bf57d037f",
+    "space-battleship/assets/ui/equipment/hangar/inline-tall.png": "b4352c8e2c35f0ee10bbec8ee6ef3633b8954c67a14908f6da65b41f1f6b60d7",
+    "space-battleship/assets/fonts/NotoSansSC.ttf": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+  },
+  "config_sha256": "308b8f8089750db99e0190526f2f1fde91ee2950c5229567d295860b04d077de",
+  "native_sha256": "a96c00d424b0aee223abc349b8f1c10c767b535e5b5f324974275a94ada4c24d",
+  "shared_sources": {
+    "material": "6e0e86c80d7cc7ee4f8623fca929c2f4828b6215",
+    "number_roles": "190a21b47574a0a4f5c9c7be798f7ec38224d5dd",
+    "resource_display": "36258b1eb8a2beca7ef9641477be05a7991031ed",
+    "integer_equipment_helper": "f9244a30ad1843128aaa0a620c4dc3e4866685b2",
+    "layout_and_handoff_rules": "ee802997f84a3627f8f92bdd76fd93ad94676207:13§2.4/07§5"
+  },
+  "layout_decisions": {
+    "content": "Existing card420x106 with explicit header/name-level-comparison, property, and footer quote/action groups; original90/94/26 no longer fixed. Header top10; comparison/purchase right12; purchase bottom10;12px between cards; icon independent left column.",
+    "selector_alignment": "Actual name-selector right edge equals lower quantity left edge262 in card coordinates; fees retain full same-line values and10px clearance to quantity for known long dualMAX.",
+    "level": "16px strong existing font and dark identity ink beside object, replacing14px muted secondary treatment.",
+    "empty": "True empty card52px with only choice, rather than full108-like empty bands; mid mixed states remain readable without allocating installed-card height to empties.",
+    "whole_page": "Ship identity width276 endsx292, clear of table return. Top global quantity x552w64 beside all-upgrade x628w134 with12px gap; same operation group drives previews and existing batch mode.",
+    "nonfixed": "Early/middle/full use content-derived heights and existing scrolling; one-screen five rows is not a constraint. Common R3 materials,16px text, true resource formatting and original ship/battle transforms retained."
+  },
+  "maker_choice_note": "Prior handoff carried90/94 and26px geometry. I interpreted preserve structure/original-node style replacement too narrowly as coordinate continuity;429 shrank right-side controls only andfa8 explicitly preserved26px. This prioritized old capacity/regression containment over safe content margins. No user instruction required those dimensions; no deeper historical motive asserted, further backward investigation stopped per user.",
+  "result": {
+    "exit_code": 0,
+    "failures": [],
+    "script_errors_or_shutdown_leaks": false,
+    "warning": "Known software X11 V-Sync capability warning only"
+  },
+  "coverage": [
+    "Actual main.tscn/Godot4.7.2/native/config1440x900, same existing driver",
+    "Natural early2; controlled valid Owner middle5/late8, new IDs through actual equip/publish, not natural unlock claim",
+    "Top global ×1→×10→MAX→×1 syncs all active slot modes/quotes and existing batch mode, including empty mode values; no Owner change/debit/toast/scene rebuild",
+    "Late every global-mode comparison equals exactOwner per-slot comparison; local quantity/real single purchase and old batch Owner payment semantics retained",
+    "Actual early failure/toast, late dual individual shortages only numeric red, MAX444, normal/hover/press/focus/cancel-outside/disabled,0.5s native-original tooltip",
+    "True empty card has no hidden purchase target; free immediate install/back; actual wheel partial-focus release/top/bottom and popup host exclusivity; explicit fault-injected unknown receipt disables global and per-slot actions",
+    "f924 integer quote/payment candidate equals actual debit; no global resource/energy integer closure claim"
+  ],
+  "actual_geometry": [
+    {
+      "case": "natural early rectangular cards",
+      "cards": [
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  350.0 → 420.0",
+          "attribute_box": "[P: (414.0, 478.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 161.0,
+          "attribute_rect": "[P: (414.0, 478.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 506.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": true,
+              "rect": "[P: (450.0, 506.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 462.0), S: (44.0, 54.0)]",
+          "name": "脉冲炮",
+          "name_rect": "[P: (406.0, 446.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 504.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 504.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 436.0), S: (420.0, 106.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "容量  1.0k → 1.2k",
+          "attribute_box": "[P: (414.0, 596.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 127.0,
+          "attribute_rect": "[P: (414.0, 596.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 624.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": true,
+              "rect": "[P: (450.0, 624.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 580.0), S: (44.0, 54.0)]",
+          "name": "装甲",
+          "name_rect": "[P: (406.0, 564.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 622.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 622.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 554.0), S: (420.0, 106.0)]",
+          "slot": "defence:0"
+        }
+      ],
+      "scroll_rect": "[P: (340.0, 432.0), S: (434.0, 232.0)]",
+      "scrollbar_rect": "[P: (774.0, 432.0), S: (8.0, 232.0)]",
+      "content_rect": "[P: (340.0, 432.0), S: (424.0, 232.0)]",
+      "identity_rect": "[P: (16.0, 297.0), S: (276.0, 72.0)]",
+      "global_quantity_rect": "[P: (552.0, 400.0), S: (64.0, 30.0)]",
+      "batch_rect": "[P: (628.0, 400.0), S: (134.0, 30.0)]"
+    },
+    {
+      "case": "middle5 real state with true empty slots",
+      "cards": [
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  17.6k → 20.8k",
+          "attribute_box": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 162.0,
+          "attribute_rect": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 368.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 1.9e3",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 368.0), S: (77.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 324.0), S: (44.0, 54.0)]",
+          "name": "脉冲炮",
+          "name_rect": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 366.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 366.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "容量  1.0k → 1.2k",
+          "attribute_box": "[P: (414.0, 586.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 127.0,
+          "attribute_rect": "[P: (414.0, 586.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 614.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 614.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 570.0), S: (44.0, 54.0)]",
+          "name": "装甲",
+          "name_rect": "[P: (406.0, 554.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 612.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 612.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 544.0), S: (420.0, 106.0)]",
+          "slot": "defence:0"
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:1",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:2",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "defence",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "defence:1",
+            "index": 1,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "defence:1",
+          "upgrade_controls_visible": false
+        }
+      ],
+      "scroll_rect": "[P: (340.0, 294.0), S: (434.0, 424.0)]",
+      "scrollbar_rect": "[P: (774.0, 294.0), S: (8.0, 424.0)]",
+      "content_rect": "[P: (340.0, 294.0), S: (424.0, 424.0)]",
+      "identity_rect": "[P: (16.0, 311.0), S: (276.0, 72.0)]",
+      "global_quantity_rect": "[P: (552.0, 254.0), S: (64.0, 30.0)]",
+      "batch_rect": "[P: (628.0, 254.0), S: (134.0, 30.0)]"
+    },
+    {
+      "case": "late true empty slots before loadout restoration",
+      "cards": [
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  17.6k → 20.8k",
+          "attribute_box": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 162.0,
+          "attribute_rect": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 368.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 1.9e3",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 368.0), S: (77.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 324.0), S: (44.0, 54.0)]",
+          "name": "脉冲炮",
+          "name_rect": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 366.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 366.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  170.0 → 200.0",
+          "attribute_box": "[P: (414.0, 458.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 161.0,
+          "attribute_rect": "[P: (414.0, 458.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 486.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 486.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 442.0), S: (44.0, 54.0)]",
+          "name": "导弹",
+          "name_rect": "[P: (406.0, 426.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 484.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 484.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]",
+          "slot": "weapon:1"
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:2",
+            "index": 2,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:2",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:3",
+            "index": 3,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:3",
+          "upgrade_controls_visible": false
+        },
+        {
+          "empty": true,
+          "fact": {
+            "category": "weapon",
+            "cooldown_remaining": 0.0,
+            "dormant": false,
+            "effective_level": 1,
+            "equipment_id": "",
+            "id": "weapon:4",
+            "index": 4,
+            "paid_level": 1,
+            "switch_ready_at": 0.0
+          },
+          "owner_slot_quote": {
+            "costs": {
+              "1": {
+                "e": "1",
+                "m": "6.5"
+              }
+            },
+            "count": 1,
+            "extreme": false,
+            "ok": true
+          },
+          "slot": "weapon:4",
+          "upgrade_controls_visible": false
+        }
+      ],
+      "scroll_rect": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "scrollbar_rect": "[P: (766.0, 294.0), S: (8.0, 484.0)]",
+      "content_rect": "[P: (340.0, 294.0), S: (424.0, 670.0)]",
+      "identity_rect": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "global_quantity_rect": "[P: (552.0, 254.0), S: (64.0, 30.0)]",
+      "batch_rect": "[P: (628.0, 254.0), S: (134.0, 30.0)]"
+    },
+    {
+      "case": "late only matter insufficient",
+      "cards": [
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  9.3k → 17.6k",
+          "attribute_box": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 152.0,
+          "attribute_rect": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 368.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 1.6e3",
+              "name_omitted": true,
+              "poor": false,
+              "rect": "[P: (450.0, 368.0), S: (57.0, 24.0)]",
+              "resource": "1"
+            },
+            {
+              "full_text": "简并物质 · 1e1",
+              "name_omitted": true,
+              "poor": true,
+              "rect": "[P: (519.0, 368.0), S: (43.0, 24.0)]",
+              "resource": "degenerate_matter"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 324.0), S: (44.0, 54.0)]",
+          "name": "脉冲炮",
+          "name_rect": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 366.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 366.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  170.0 → 200.0",
+          "attribute_box": "[P: (414.0, 458.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 161.0,
+          "attribute_rect": "[P: (414.0, 458.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 486.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 486.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 442.0), S: (44.0, 54.0)]",
+          "name": "导弹",
+          "name_rect": "[P: (406.0, 426.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 484.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 484.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]",
+          "slot": "weapon:1"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  1.2k → 1.4k",
+          "attribute_box": "[P: (414.0, 576.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 143.0,
+          "attribute_rect": "[P: (414.0, 576.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 604.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 604.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 560.0), S: (44.0, 54.0)]",
+          "name": "舰炮",
+          "name_rect": "[P: (406.0, 544.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 602.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 602.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]",
+          "slot": "weapon:2"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  35.0 → 45.0",
+          "attribute_box": "[P: (414.0, 694.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 143.0,
+          "attribute_rect": "[P: (414.0, 694.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 722.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 722.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 678.0), S: (44.0, 54.0)]",
+          "name": "长激光",
+          "name_rect": "[P: (406.0, 662.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 720.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 720.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]",
+          "slot": "weapon:3"
+        }
+      ],
+      "scroll_rect": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "scrollbar_rect": "[P: (766.0, 294.0), S: (8.0, 484.0)]",
+      "content_rect": "[P: (340.0, 294.0), S: (424.0, 940.0)]",
+      "identity_rect": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "global_quantity_rect": "[P: (552.0, 254.0), S: (64.0, 30.0)]",
+      "batch_rect": "[P: (628.0, 254.0), S: (134.0, 30.0)]"
+    },
+    {
+      "case": "late actual longMAX",
+      "cards": [
+        {
+          "action_minimum": "(83.0, 26.0)",
+          "attribute": "攻击力  9.3k → 1.6e43",
+          "attribute_box": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 161.0,
+          "attribute_rect": "[P: (414.0, 340.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 368.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 1.14513563292685e39",
+              "name_omitted": true,
+              "poor": false,
+              "rect": "[P: (450.0, 368.0), S: (75.0, 24.0)]",
+              "resource": "1"
+            },
+            {
+              "full_text": "简并物质 · 2.76e3",
+              "name_omitted": true,
+              "poor": false,
+              "rect": "[P: (537.0, 368.0), S: (57.0, 24.0)]",
+              "resource": "degenerate_matter"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 324.0), S: (44.0, 54.0)]",
+          "name": "脉冲炮",
+          "name_rect": "[P: (406.0, 308.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 366.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 366.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 298.0), S: (420.0, 106.0)]",
+          "slot": "weapon:0"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  170.0 → 200.0",
+          "attribute_box": "[P: (414.0, 458.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 161.0,
+          "attribute_rect": "[P: (414.0, 458.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 486.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 486.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 442.0), S: (44.0, 54.0)]",
+          "name": "导弹",
+          "name_rect": "[P: (406.0, 426.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 484.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 484.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 416.0), S: (420.0, 106.0)]",
+          "slot": "weapon:1"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  1.2k → 1.4k",
+          "attribute_box": "[P: (414.0, 576.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 143.0,
+          "attribute_rect": "[P: (414.0, 576.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 604.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 604.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 560.0), S: (44.0, 54.0)]",
+          "name": "舰炮",
+          "name_rect": "[P: (406.0, 544.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 602.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 602.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 534.0), S: (420.0, 106.0)]",
+          "slot": "weapon:2"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  35.0 → 45.0",
+          "attribute_box": "[P: (414.0, 694.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 143.0,
+          "attribute_rect": "[P: (414.0, 694.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 722.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 722.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 678.0), S: (44.0, 54.0)]",
+          "name": "长激光",
+          "name_rect": "[P: (406.0, 662.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 720.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 720.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 652.0), S: (420.0, 106.0)]",
+          "slot": "weapon:3"
+        }
+      ],
+      "scroll_rect": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "scrollbar_rect": "[P: (766.0, 294.0), S: (8.0, 484.0)]",
+      "content_rect": "[P: (340.0, 294.0), S: (424.0, 940.0)]",
+      "identity_rect": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "global_quantity_rect": "[P: (552.0, 254.0), S: (64.0, 30.0)]",
+      "batch_rect": "[P: (628.0, 254.0), S: (134.0, 30.0)]"
+    },
+    {
+      "case": "late bottom complete boundary",
+      "cards": [
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "容量  1.0k → 1.2k",
+          "attribute_box": "[P: (414.0, 474.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 127.0,
+          "attribute_rect": "[P: (414.0, 474.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 502.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 502.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 458.0), S: (44.0, 54.0)]",
+          "name": "装甲",
+          "name_rect": "[P: (406.0, 442.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 500.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 500.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 432.0), S: (420.0, 106.0)]",
+          "slot": "defence:0"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "容量  750.0 → 900.0",
+          "attribute_box": "[P: (414.0, 592.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 145.0,
+          "attribute_rect": "[P: (414.0, 592.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 620.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 620.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 576.0), S: (44.0, 54.0)]",
+          "name": "护盾",
+          "name_rect": "[P: (406.0, 560.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 618.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 618.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 550.0), S: (420.0, 106.0)]",
+          "slot": "defence:1"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "攻击力  350.0 → 420.0",
+          "attribute_box": "[P: (414.0, 356.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 161.0,
+          "attribute_rect": "[P: (414.0, 356.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 384.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 384.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 340.0), S: (44.0, 54.0)]",
+          "name": "脉冲炮",
+          "name_rect": "[P: (406.0, 324.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 382.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 382.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 314.0), S: (420.0, 106.0)]",
+          "slot": "weapon:4"
+        },
+        {
+          "action_minimum": "(67.0, 26.0)",
+          "attribute": "容量  750.0 → 900.0",
+          "attribute_box": "[P: (414.0, 710.0), S: (336.0, 24.0)]",
+          "attribute_ink_width": 145.0,
+          "attribute_rect": "[P: (414.0, 710.0), S: (336.0, 24.0)]",
+          "fee_title_rect": "[P: (414.0, 738.0), S: (34.0, 24.0)]",
+          "fees": [
+            {
+              "full_text": "铁 · 6.5e1",
+              "name_omitted": false,
+              "poor": false,
+              "rect": "[P: (450.0, 738.0), S: (63.0, 24.0)]",
+              "resource": "1"
+            }
+          ],
+          "icon_rect": "[P: (354.0, 694.0), S: (44.0, 54.0)]",
+          "name": "护盾",
+          "name_rect": "[P: (406.0, 678.0), S: (198.0, 28.0)]",
+          "name_text_left": 414.0,
+          "purchase_enabled": true,
+          "purchase_rect": "[P: (664.0, 736.0), S: (86.0, 28.0)]",
+          "quantity_rect": "[P: (604.0, 736.0), S: (48.0, 28.0)]",
+          "rect": "[P: (342.0, 668.0), S: (420.0, 106.0)]",
+          "slot": "defence:2"
+        }
+      ],
+      "scroll_rect": "[P: (340.0, 294.0), S: (434.0, 484.0)]",
+      "scrollbar_rect": "[P: (766.0, 294.0), S: (8.0, 484.0)]",
+      "content_rect": "[P: (340.0, -162.0), S: (424.0, 940.0)]",
+      "identity_rect": "[P: (16.0, 261.0), S: (276.0, 72.0)]",
+      "global_quantity_rect": "[P: (552.0, 254.0), S: (64.0, 30.0)]",
+      "batch_rect": "[P: (628.0, 254.0), S: (134.0, 30.0)]"
+    }
+  ],
+  "pixel_support": {
+    "scope": "Pixel ink threshold support on complete original screenshots, not a substitute for original-size visual review",
+    "method": "Near-exact semantic label RGB284650 and light name RGBf0f2e9 core pixels within recorded text regions, to exclude new textured metal borders. This measures core ink and is supporting only. Original screenshot unedited.",
+    "rows": [
+      {
+        "file": "inline-native-early.png",
+        "slot": "weapon:0",
+        "name": "脉冲炮",
+        "name_ink": [
+          415,
+          453,
+          461,
+          468
+        ],
+        "attribute_ink": [
+          415,
+          483,
+          460,
+          498
+        ],
+        "fee_title_ink": [
+          416,
+          511,
+          444,
+          526
+        ],
+        "name_frame_to_attribute_ink_px": 9.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "ae92e49061feb8496a4f20c0b10d50efef4240bcd44cf29a097c88eed9683050"
+      },
+      {
+        "file": "inline-native-early.png",
+        "slot": "defence:0",
+        "name": "装甲",
+        "name_ink": [
+          415,
+          571,
+          444,
+          586
+        ],
+        "attribute_ink": [
+          416,
+          602,
+          445,
+          616
+        ],
+        "fee_title_ink": [
+          416,
+          629,
+          444,
+          644
+        ],
+        "name_frame_to_attribute_ink_px": 10.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "ae92e49061feb8496a4f20c0b10d50efef4240bcd44cf29a097c88eed9683050"
+      },
+      {
+        "file": "inline-native-middle-empty.png",
+        "slot": "weapon:0",
+        "name": "脉冲炮",
+        "name_ink": [
+          415,
+          315,
+          461,
+          330
+        ],
+        "attribute_ink": [
+          415,
+          345,
+          460,
+          360
+        ],
+        "fee_title_ink": [
+          416,
+          373,
+          444,
+          388
+        ],
+        "name_frame_to_attribute_ink_px": 9.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "198be5feae8f818e5703558249dbd91db275a9680098e7b5587cc27515f8357b"
+      },
+      {
+        "file": "inline-native-middle-empty.png",
+        "slot": "defence:0",
+        "name": "装甲",
+        "name_ink": [
+          415,
+          561,
+          444,
+          576
+        ],
+        "attribute_ink": [
+          416,
+          592,
+          445,
+          606
+        ],
+        "fee_title_ink": [
+          416,
+          619,
+          444,
+          634
+        ],
+        "name_frame_to_attribute_ink_px": 10.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "198be5feae8f818e5703558249dbd91db275a9680098e7b5587cc27515f8357b"
+      },
+      {
+        "file": "inline-native-late-empty.png",
+        "slot": "weapon:0",
+        "name": "脉冲炮",
+        "name_ink": [
+          415,
+          315,
+          461,
+          330
+        ],
+        "attribute_ink": [
+          415,
+          348,
+          460,
+          360
+        ],
+        "fee_title_ink": [
+          416,
+          373,
+          444,
+          388
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "deb9293bae8bd3260cb1e5692743a81f95cd557481192f8d37bbb8492a55bfd9"
+      },
+      {
+        "file": "inline-native-late-empty.png",
+        "slot": "weapon:1",
+        "name": "导弹",
+        "name_ink": [
+          416,
+          434,
+          444,
+          448
+        ],
+        "attribute_ink": [
+          415,
+          463,
+          460,
+          478
+        ],
+        "fee_title_ink": [
+          416,
+          491,
+          444,
+          506
+        ],
+        "name_frame_to_attribute_ink_px": 9.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "deb9293bae8bd3260cb1e5692743a81f95cd557481192f8d37bbb8492a55bfd9"
+      },
+      {
+        "file": "inline-native-late-matter-poor.png",
+        "slot": "weapon:0",
+        "name": "脉冲炮",
+        "name_ink": [
+          415,
+          315,
+          461,
+          330
+        ],
+        "attribute_ink": [
+          415,
+          348,
+          460,
+          360
+        ],
+        "fee_title_ink": [
+          416,
+          373,
+          444,
+          388
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d95f12c87cbf467cd5556fe1cb53d2754000d960c0d3603e20b3d52fe64ad7eb"
+      },
+      {
+        "file": "inline-native-late-matter-poor.png",
+        "slot": "weapon:1",
+        "name": "导弹",
+        "name_ink": [
+          416,
+          434,
+          444,
+          448
+        ],
+        "attribute_ink": [
+          415,
+          463,
+          460,
+          478
+        ],
+        "fee_title_ink": [
+          416,
+          491,
+          444,
+          506
+        ],
+        "name_frame_to_attribute_ink_px": 9.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d95f12c87cbf467cd5556fe1cb53d2754000d960c0d3603e20b3d52fe64ad7eb"
+      },
+      {
+        "file": "inline-native-late-matter-poor.png",
+        "slot": "weapon:2",
+        "name": "舰炮",
+        "name_ink": [
+          415,
+          551,
+          445,
+          566
+        ],
+        "attribute_ink": [
+          415,
+          584,
+          460,
+          596
+        ],
+        "fee_title_ink": [
+          416,
+          609,
+          444,
+          624
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d95f12c87cbf467cd5556fe1cb53d2754000d960c0d3603e20b3d52fe64ad7eb"
+      },
+      {
+        "file": "inline-native-late-matter-poor.png",
+        "slot": "weapon:3",
+        "name": "长激光",
+        "name_ink": [
+          416,
+          669,
+          461,
+          684
+        ],
+        "attribute_ink": [
+          415,
+          702,
+          460,
+          714
+        ],
+        "fee_title_ink": [
+          416,
+          727,
+          444,
+          742
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d95f12c87cbf467cd5556fe1cb53d2754000d960c0d3603e20b3d52fe64ad7eb"
+      },
+      {
+        "file": "inline-native-long-max.png",
+        "slot": "weapon:0",
+        "name": "脉冲炮",
+        "name_ink": [
+          415,
+          315,
+          461,
+          330
+        ],
+        "attribute_ink": [
+          415,
+          345,
+          460,
+          360
+        ],
+        "fee_title_ink": [
+          416,
+          373,
+          444,
+          388
+        ],
+        "name_frame_to_attribute_ink_px": 9.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d7f7eda24c78f5d3f486b19b81282f9b22fa10e8efe58133e1489b7ccd3295c9"
+      },
+      {
+        "file": "inline-native-long-max.png",
+        "slot": "weapon:1",
+        "name": "导弹",
+        "name_ink": [
+          416,
+          434,
+          444,
+          448
+        ],
+        "attribute_ink": [
+          415,
+          466,
+          460,
+          478
+        ],
+        "fee_title_ink": [
+          416,
+          491,
+          444,
+          506
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d7f7eda24c78f5d3f486b19b81282f9b22fa10e8efe58133e1489b7ccd3295c9"
+      },
+      {
+        "file": "inline-native-long-max.png",
+        "slot": "weapon:2",
+        "name": "舰炮",
+        "name_ink": [
+          415,
+          551,
+          445,
+          566
+        ],
+        "attribute_ink": [
+          415,
+          584,
+          460,
+          596
+        ],
+        "fee_title_ink": [
+          416,
+          609,
+          444,
+          624
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d7f7eda24c78f5d3f486b19b81282f9b22fa10e8efe58133e1489b7ccd3295c9"
+      },
+      {
+        "file": "inline-native-long-max.png",
+        "slot": "weapon:3",
+        "name": "长激光",
+        "name_ink": [
+          416,
+          669,
+          461,
+          684
+        ],
+        "attribute_ink": [
+          415,
+          702,
+          460,
+          714
+        ],
+        "fee_title_ink": [
+          416,
+          727,
+          444,
+          742
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "d7f7eda24c78f5d3f486b19b81282f9b22fa10e8efe58133e1489b7ccd3295c9"
+      },
+      {
+        "file": "inline-native-bottom.png",
+        "slot": "defence:0",
+        "name": "装甲",
+        "name_ink": [
+          415,
+          449,
+          444,
+          464
+        ],
+        "attribute_ink": [
+          416,
+          480,
+          445,
+          494
+        ],
+        "fee_title_ink": [
+          416,
+          507,
+          444,
+          522
+        ],
+        "name_frame_to_attribute_ink_px": 10.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "b467001f6654b2f59f71fbfc193b30cdce91f481591a4e795473856ae5a7e463"
+      },
+      {
+        "file": "inline-native-bottom.png",
+        "slot": "defence:1",
+        "name": "护盾",
+        "name_ink": [
+          415,
+          567,
+          444,
+          582
+        ],
+        "attribute_ink": [
+          416,
+          598,
+          445,
+          612
+        ],
+        "fee_title_ink": [
+          416,
+          625,
+          444,
+          640
+        ],
+        "name_frame_to_attribute_ink_px": 10.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "b467001f6654b2f59f71fbfc193b30cdce91f481591a4e795473856ae5a7e463"
+      },
+      {
+        "file": "inline-native-bottom.png",
+        "slot": "weapon:4",
+        "name": "脉冲炮",
+        "name_ink": [
+          415,
+          331,
+          461,
+          346
+        ],
+        "attribute_ink": [
+          415,
+          364,
+          460,
+          376
+        ],
+        "fee_title_ink": [
+          416,
+          389,
+          444,
+          404
+        ],
+        "name_frame_to_attribute_ink_px": 12.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "b467001f6654b2f59f71fbfc193b30cdce91f481591a4e795473856ae5a7e463"
+      },
+      {
+        "file": "inline-native-bottom.png",
+        "slot": "defence:2",
+        "name": "护盾",
+        "name_ink": [
+          415,
+          685,
+          444,
+          700
+        ],
+        "attribute_ink": [
+          416,
+          716,
+          445,
+          730
+        ],
+        "fee_title_ink": [
+          416,
+          743,
+          444,
+          758
+        ],
+        "name_frame_to_attribute_ink_px": 10.0,
+        "fee_ink_to_card_bottom_px": 15.0,
+        "name_attribute_fee_left_spread_px": 1,
+        "image_sha256": "b467001f6654b2f59f71fbfc193b30cdce91f481591a4e795473856ae5a7e463"
+      }
+    ],
+    "minimum_name_frame_to_attribute_ink_px": 9.0,
+    "minimum_fee_ink_to_card_bottom_px": 15.0,
+    "maximum_text_left_spread_px": 1
+  },
+  "measurement_limit": "Near-semantic-core color pixels assist reading;18 recorded visible installed cards min name-frame→attribute core9px, fee core→card bottom15px, start spread≤1px. Original full-screen visual review is primary, no acceptance inferred fromRect or thresholds.",
+  "video": {
+    "raw": "session-raw.mp4",
+    "raw_duration_seconds": 49.6,
+    "actions": "session-actions.mp4",
+    "source_interval_seconds": [
+      17.0,
+      49.25
+    ],
+    "actions_duration_seconds": 32.25,
+    "editing": "Only startup/exit time trim and encoding; no image crop, overlay or speed change. Raw/actions fully decoded, six sequential action samples actually viewed."
+  },
+  "actually_viewed_screenshots": [
+    "inline-native-batch-insufficient.png",
+    "inline-native-bottom.png",
+    "inline-native-defence-dropdown.png",
+    "inline-native-early-feedback.png",
+    "inline-native-early.png",
+    "inline-native-empty-choice.png",
+    "inline-native-global-max.png",
+    "inline-native-global-ten.png",
+    "inline-native-late-empty.png",
+    "inline-native-late-iron-poor.png",
+    "inline-native-late-matter-poor.png",
+    "inline-native-long-max.png",
+    "inline-native-material-locked.png",
+    "inline-native-middle-empty.png",
+    "inline-native-middle-installed.png",
+    "inline-native-purchase-focus.png",
+    "inline-native-purchase-hover.png",
+    "inline-native-purchase-pressed.png",
+    "inline-native-resource-tooltip.png",
+    "inline-native-success.png",
+    "inline-native-unknown-receipt.png"
+  ],
+  "first_attempt": "Seven old-driver assertions: one hardcoded middle content-height expectation and six containment assertions on intentionally hidden empty-card quantity controls. Replaced with actual visible-card fit and nonempty bounds; sourceunchangedce33, final complete flow rerun0 failures. First JSON/log and all /tmp originals preserved.",
+  "archive_policy": "New evidence delivered only on independent archive module index; original current README/HANDOFF/pending snapshot preserved here before trimming old repeated histories. Old manifest files only removed after exact93cca/blob verification. New product/assets/config/cache untouched by documentation isolation.",
+  "not_claimed": [
+    "New independent review passed",
+    "User accepts new reflow",
+    "Cross-module or global integer acceptance",
+    "Main merge",
+    "Unrelated regression/performance"
+  ],
+  "evidence_sha256": {
+    "attempt1-inline-native-operations.json": "1b550eea514d39520063a20e37bea0822359c09bc7e303c3e6b8f552e27144ae",
+    "attempt1-runtime.log": "21160bf4c3d13e9067f5897149c8abb8c9c138cd94f8b893541af7559565ac1e",
+    "document-migration-verification.json": "4b8e25d046d119044632e603b9ce031282c3a98e0a6a69f8e4e9fe3665059430",
+    "driver.gd": "610773f3acee764b3deca6591912f20b817a07e62690fac6f82c13f837f5312e",
+    "glyph-spacing.json": "541dc1e31ee27987d14f388bc55e1eca026dc629cdea39e1a15460ae0b5ada8c",
+    "inline-native-batch-insufficient.png": "b3d4c68e1e64ed3fda4758106bb4f50452b85f6d95e086d43f751b6d7a24e34f",
+    "inline-native-bottom.png": "b467001f6654b2f59f71fbfc193b30cdce91f481591a4e795473856ae5a7e463",
+    "inline-native-defence-dropdown.png": "416efaf2ff4d10ff049b10258a9532fb64bd51d46c0620b16c1e112e393e5063",
+    "inline-native-early-feedback.png": "c62565a67d14d186b717b6b34a47ebfd90b50eaf645204c1b0e3635a1b4d7ef3",
+    "inline-native-early.png": "ae92e49061feb8496a4f20c0b10d50efef4240bcd44cf29a097c88eed9683050",
+    "inline-native-empty-choice.png": "055129812e5b55718fbc7f6aaa628acb8e498029556739b5afed5d3ce188e21a",
+    "inline-native-global-max.png": "edf2fbcc7f134086489d9fc9342e07c6ac62779876a35219c594215784dcd06a",
+    "inline-native-global-ten.png": "3bb635f3bf0542225451f3b57ec7a823b8892981c3e341cafa54bd8d4222afc0",
+    "inline-native-late-empty.png": "deb9293bae8bd3260cb1e5692743a81f95cd557481192f8d37bbb8492a55bfd9",
+    "inline-native-late-iron-poor.png": "5afac48ec63f8a6dd441d06fa5f91ab948b018260fbf96ec7a12724400436eb6",
+    "inline-native-late-matter-poor.png": "d95f12c87cbf467cd5556fe1cb53d2754000d960c0d3603e20b3d52fe64ad7eb",
+    "inline-native-long-max.png": "d7f7eda24c78f5d3f486b19b81282f9b22fa10e8efe58133e1489b7ccd3295c9",
+    "inline-native-material-locked.png": "ac9d6540158a3f7ed0ce70613f617bee4fd3d640a0486c15c7e1c0d74cc71b71",
+    "inline-native-middle-empty.png": "198be5feae8f818e5703558249dbd91db275a9680098e7b5587cc27515f8357b",
+    "inline-native-middle-installed.png": "93641fcb9f8964e37f03e9839f1eca68e89d8977e1335d6f2e8157519efe67fe",
+    "inline-native-operations.json": "89045d61cec3ab86110d402b057943d3e8c77f0e8fad3cba2ea2b87f1b522280",
+    "inline-native-purchase-focus.png": "84c1b018693c06cfab25b0293a13e55d7b9352d02e4a3514232e5426b45218a6",
+    "inline-native-purchase-hover.png": "9cb8eb76e563cc812b82edb466cf0128cdf0cadd39b7c46f37107393fa0997d2",
+    "inline-native-purchase-pressed.png": "ca8a32e824797a562c3f82f3586ebb413298bc1ccc1d91c27c10a3865a404d81",
+    "inline-native-resource-tooltip.png": "ff768fabf763fd3e455384fea1262145e7a34d33f29084f1eaed2fce2480cb1b",
+    "inline-native-success.png": "a856b052c78c158af61181de2bdcb43190e50477fdbc754838a5506ea5b0dde3",
+    "inline-native-unknown-receipt.png": "3d8959c7f90a718edcf92ec7ee15c3402da058a8c044b45af0ee2201794e472c",
+    "measure-reflow.py": "b5855b5ca96c1ba8c16b23204ba65c7cd0fac3672029bbb4fee6bad8a1a781e6",
+    "pre-document-isolation/NATIVE-WIP-HANDOFF.md": "2ae6c09d3b659265cfd9fe4ba2324df168ee48a4d29a94696f22569687cf94d7",
+    "pre-document-isolation/README.md": "1803758a86565ae0e770d6950caaeb26f4552d73b708f52dfb3781311fec0f10",
+    "pre-document-isolation/pending-work.json": "0a6cc40e05ded25d09774e3fbdb4078938051dd467f58d0b284571f513f52feb",
+    "recording.log": "4f771a4fc8cebcf526e87949ea65dce92481fb840dbccd55d27128121fdfecfc",
+    "runtime.log": "8e8cd0387ea912e746fefea0b03bfc89e576d1fa3c767a963af70f61a52de71b",
+    "session-actions.mp4": "56edf9bc08a0750fb4f206189cb4e1ba6fd78b6df467d8e96a452cc7bbd39ee2",
+    "session-raw.mp4": "86e9a749a297fd702bb3a48b2f7ad7cf52e4ec63c54bdd9dad8bdd2ff4a36e7d",
+    "trim.log": "79ad549f1edb83d662dc41e4f3779762bbd9693395dce682c9dce3f3c378439f",
+    "video-check-01.png": "af298fb9f2cc47a80af4757fddb84c488b270d51f9e8bbc07fd310f5f75b41bb",
+    "video-check-02.png": "b9fe801e51a2eb04f27a53953049c549c58e136938528cd02960fbe6f1fb43bd",
+    "video-check-03.png": "709d3a29d7cedd5c72862be7526191c5d114c2ecafcc0c1a35cd143150ed7cf7",
+    "video-check-04.png": "91888780b22a5b7afb79cccdb98aa93c25de2cad88c216368003fdffc6e7e46f",
+    "video-check-05.png": "f6030fc081f0dda0440fc4bd907b850fb2706c4ce125d23265fe47d3a3eba277",
+    "video-check-06.png": "d91955b4e264993f58dfb646d76dbcf7c5a2e3cc859a325ddbb785be6ada0c57"
+  }
+}
