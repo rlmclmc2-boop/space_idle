@@ -75,7 +75,8 @@ func _init(economy) -> void:
 		mark.size = Vector2(17, 17)
 		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(mark)
-		var cell := _label("", Rect2(spec[0] + 34, 12, spec[1] - 42, 41), 16, TEXT)
+		# The icon carries the resource name; give the Amount's visible order room.
+		var cell := _label("", Rect2(spec[0] + 34, 12, spec[1] - 30, 41), 16, TEXT)
 		cell.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		cell.clip_text = true
 		cell.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -193,8 +194,20 @@ func _process(_delta: float) -> void:
 	for index in _balances.size():
 		var label: Label = _balances[index]
 		var next_text: String = str(by_id.get(ids[index], names[index] + "：0"))
-		if label.text != next_text:
-			label.text = next_text
+		var separator: int = next_text.find("：")
+		var amount: String = next_text.substr(separator + 1) if separator >= 0 else next_text
+		# PlayerText.number owns the compact unit/scientific value. In the narrow rail,
+		# render its scientific marker without redundant mathematical spacing.
+		amount = amount.replace("×10^", "e")
+		var font: Font = label.get_theme_font("font")
+		var size: int = 16
+		for candidate in [16, 14, 12]:
+			size = candidate
+			if font.get_string_size(amount, HORIZONTAL_ALIGNMENT_LEFT, -1, candidate).x <= label.size.x:
+				break
+		label.add_theme_font_size_override("font_size", size)
+		if label.text != amount:
+			label.text = amount
 			label.tooltip_text = next_text
 	if _details.visible and _resource_rows.visible: _update_resource_rows(rows)
 
