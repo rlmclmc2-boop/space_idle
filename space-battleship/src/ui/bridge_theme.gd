@@ -3,7 +3,6 @@ const ART := "res://assets/ui/public_shell/"
 const CONTROL_MATERIALS := "res://assets/ui/equipment/materials-20261029/control-materials.png"
 const PUBLIC_STATES := ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]
 const CONTROL_CONTENT_Y := 7
-static var _public_faces: Dictionary = {}
 static var _public_font: FontVariation
 
 static func public_font() -> FontVariation:
@@ -39,49 +38,6 @@ static func number_role_color(role: String, surface: String = "light") -> Color:
 static func apply_number_role(label: Label, role: String, surface: String = "light") -> void:
 	label.add_theme_color_override("font_color", number_role_color(role, surface))
 
-static func _public_face(role: String) -> Texture2D:
-	if not _public_faces.has(role):
-		# Take only the painted face: its bright outer key rim belongs to the
-		# module, while the public control needs a quieter structural role.
-		var image: Image = load(CONTROL_MATERIALS).get_image()
-		var face := image.get_region(Rect2i(120, 800, 1200, 130))
-		face.resize(298, 64, Image.INTERPOLATE_LANCZOS)
-		for y in face.get_height():
-			for x in face.get_width():
-				var pixel: Color = face.get_pixel(x, y)
-				var light: float = pixel.r * 0.2126 + pixel.g * 0.7152 + pixel.b * 0.0722
-				var pigment: float = clampf(0.44 + 1.60 * light, 0.71, 0.94)
-				face.set_pixel(x, y, Color(pigment, pigment, pigment, pixel.a))
-		_public_faces[role] = ImageTexture.create_from_image(face)
-	return _public_faces[role]
-
-class PublicControlSurface extends StyleBox:
-	var texture: Texture2D
-	var tone: Color
-	var edge: Color
-	var focus_only := false
-	var raised := false
-	func _draw(canvas: RID, rect: Rect2) -> void:
-		var face := rect.grow(-2)
-		var cut := minf(5.0, minf(face.size.x, face.size.y) * 0.25)
-		var points := PackedVector2Array([
-			face.position + Vector2(cut, 0), Vector2(face.end.x - cut, face.position.y),
-			Vector2(face.end.x, face.position.y + cut), face.end - Vector2(0, cut),
-			face.end - Vector2(cut, 0), Vector2(face.position.x + cut, face.end.y),
-			Vector2(face.position.x, face.end.y - cut), face.position + Vector2(0, cut)])
-		if not focus_only:
-			var uv := PackedVector2Array()
-			for point in points: uv.append((point - face.position) / face.size)
-			RenderingServer.canvas_item_add_polygon(canvas, points, PackedColorArray([tone]), uv, texture.get_rid())
-		var outline := points.duplicate()
-		outline.append(points[0])
-		RenderingServer.canvas_item_add_polyline(canvas, outline, PackedColorArray([edge]), 1.5 if focus_only else 1.0, true)
-		if not focus_only:
-			var upper := PackedVector2Array([points[7], points[0], points[1], points[2]])
-			RenderingServer.canvas_item_add_polyline(canvas, upper, PackedColorArray([Color("e6e8d7", 0.37 if raised else 0.23)]), 1.0, true)
-			var lower := PackedVector2Array([points[3], points[4], points[5], points[6]])
-			RenderingServer.canvas_item_add_polyline(canvas, lower, PackedColorArray([Color("091b28", 0.55)]), 1.0, true)
-
 static func _texture_style(path: String, inset: float, padding: float) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
 	style.texture = load(ART + path)
@@ -102,17 +58,71 @@ static func public_panel() -> StyleBoxTexture:
 	return style
 
 static func public_button(state: String, padding: float = 10.0, role: String = "secondary") -> StyleBox:
-	var style := PublicControlSurface.new()
-	style.texture = _public_face("paint")
+	return operation_button(state, padding, role)
+
+## The accepted R3 operation material, shared with modules through their own
+## existing native Button nodes. Never paste the static whole-page study into UI.
+static func operation_button(state: String, padding: float = 10.0, role: String = "secondary") -> StyleBox:
+	var style := SharedOperationSurface.new()
+	style.texture = load(CONTROL_MATERIALS)
 	style.focus_only = state == "focus"
-	style.raised = role == "commit"
-	style.tone = Color("819995") if state in ["pressed", "hover_pressed", "selected"] else Color("253d47") if state == "disabled" else Color("3c5c65") if state == "hover" else Color("52695f") if role == "commit" else Color("304d57")
-	style.edge = Color("e5c784", 0.88) if state == "focus" else Color("b6d3cb", 0.65) if state in ["hover", "hover_pressed"] else Color("577b81", 0.36) if state == "disabled" else Color("baa779", 0.69) if role == "commit" else Color("89a8a7", 0.47)
+	style.primary = role == "commit"
+	style.state = state
 	style.content_margin_left = padding
 	style.content_margin_right = padding
 	style.content_margin_top = CONTROL_CONTENT_Y
 	style.content_margin_bottom = CONTROL_CONTENT_Y
 	return style
+
+## An existing module Panel may consume this single operation face in place of
+## its old card fill. Geometry, labels and interaction remain module-owned.
+static func operation_plate(padding: float = 10.0) -> StyleBox:
+	var style := SharedOperationSurface.new()
+	style.texture = load(CONTROL_MATERIALS)
+	style.plate = true
+	style.content_margin_left = padding
+	style.content_margin_right = padding
+	style.content_margin_top = CONTROL_CONTENT_Y
+	style.content_margin_bottom = CONTROL_CONTENT_Y
+	return style
+
+class SharedOperationSurface extends StyleBox:
+	var texture: Texture2D
+	var state: String
+	var primary := false
+	var plate := false
+	var focus_only := false
+	func _draw(canvas: RID, rect: Rect2) -> void:
+		if focus_only:
+			var focus_rect := rect.grow(-1.5)
+			var focus_outline := PackedVector2Array([focus_rect.position, Vector2(focus_rect.end.x, focus_rect.position.y), focus_rect.end, Vector2(focus_rect.position.x, focus_rect.end.y), focus_rect.position])
+			RenderingServer.canvas_item_add_polyline(canvas, focus_outline, PackedColorArray([Color("b9e5d8", 0.86)]), 1.5, true)
+			return
+		var source := Rect2(45, 131, 1360, 250) if plate else Rect2(45, 470, 1360, 220) if primary else Rect2(45, 770, 1360, 210)
+		var tint := Color.WHITE
+		match state:
+			"hover": tint = Color(1.13, 1.16, 1.14)
+			"pressed", "hover_pressed": tint = Color(0.78, 0.84, 0.84)
+			"selected": tint = Color(0.79, 0.94, 0.95)
+			"selected_hover": tint = Color(0.9, 1.04, 1.04)
+			"disabled": tint = Color(0.55, 0.62, 0.65, 0.85)
+		var source_edge := Vector2(65, 65)
+		var dest_edge := Vector2(minf(13.0, rect.size.x * 0.16), minf(10.0, rect.size.y * 0.25))
+		var source_widths := [source_edge.x, source.size.x - 2.0 * source_edge.x, source_edge.x]
+		var source_heights := [source_edge.y, source.size.y - 2.0 * source_edge.y, source_edge.y]
+		var dest_widths := [dest_edge.x, rect.size.x - 2.0 * dest_edge.x, dest_edge.x]
+		var dest_heights := [dest_edge.y, rect.size.y - 2.0 * dest_edge.y, dest_edge.y]
+		var source_y := source.position.y
+		var dest_y := rect.position.y
+		for row in 3:
+			var source_x := source.position.x
+			var dest_x := rect.position.x
+			for col in 3:
+				texture.draw_rect_region(canvas, Rect2(dest_x, dest_y, dest_widths[col], dest_heights[row]), Rect2(source_x, source_y, source_widths[col], source_heights[row]), tint)
+				source_x += source_widths[col]
+				dest_x += dest_widths[col]
+			source_y += source_heights[row]
+			dest_y += dest_heights[row]
 
 ## The live public control entry point. Settings actions, resource-detail close,
 ## and the shell use these same native Button overrides rather than copying a
@@ -123,12 +133,29 @@ static func apply_public_button(button: BaseButton, padding: float = 8.0, role: 
 		button.add_theme_font_size_override("font_size", 15)
 	for state in PUBLIC_STATES:
 		button.add_theme_stylebox_override(state, public_button(state, padding, role))
-	button.add_theme_color_override("font_color", Color("f0f2e9"))
-	button.add_theme_color_override("font_hover_color", Color.WHITE)
-	button.add_theme_color_override("font_pressed_color", Color("19363d"))
-	button.add_theme_color_override("font_hover_pressed_color", Color("19363d"))
-	button.add_theme_color_override("font_focus_color", Color("f0f2e9"))
-	button.add_theme_color_override("font_disabled_color", Color("9cb4b4"))
+	var ink := Color("173c48") if role == "commit" else Color("f0f2e9")
+	button.add_theme_color_override("font_color", ink)
+	button.add_theme_color_override("font_hover_color", ink if role == "commit" else Color.WHITE)
+	button.add_theme_color_override("font_pressed_color", ink)
+	button.add_theme_color_override("font_hover_pressed_color", ink)
+	button.add_theme_color_override("font_focus_color", ink)
+	button.add_theme_color_override("font_disabled_color", Color("889b9c") if role == "commit" else Color("9cb4b4"))
+
+## Module owners may call these on their existing Buttons/OptionButtons. They
+## replace old overrides on the same control; neither adds a new Control layer.
+static func apply_operation_button(button: BaseButton, role: String = "secondary", padding: float = 8.0, selected: bool = false) -> void:
+	apply_public_button(button, padding, role)
+	if selected:
+		button.add_theme_stylebox_override("normal", operation_button("selected", padding, role))
+		button.add_theme_stylebox_override("hover", operation_button("selected_hover", padding, role))
+
+static func apply_operation_select(button: OptionButton, padding: float = 10.0) -> void:
+	apply_public_button(button, padding, "secondary")
+	button.add_theme_stylebox_override("normal", operation_button("selected", padding))
+	button.add_theme_stylebox_override("hover", operation_button("selected_hover", padding))
+	button.add_theme_icon_override("arrow", preload("res://assets/ui/public_shell/stepper-down.svg"))
+	button.add_theme_constant_override("arrow_margin", 8)
+	button.add_theme_constant_override("h_separation", 8)
 
 static func apply_route_button(button: Button, selected: bool) -> void:
 	for state in PUBLIC_STATES:
