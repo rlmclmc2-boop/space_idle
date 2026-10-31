@@ -124,6 +124,7 @@ def setup():
         "contact": material("contact shadow iron", (.018,.033,.042), .08,.85),
         "blue": material("unpowered shield glass", (.006,.045,.11), .25,.16,.035),
         "blue_lit": material("shield field filaments", (.025,.40,.85), .05,.2,1.3),
+        "blue_field": material("deployed field glass", (.025,.28,.52), .12,.12,.30,.38),
         "orange": material("furnace liner", (.24,.075,.022), .18,.53,.035),
         "slag": material("unpowered cooled charge", (.16,.075,.038), .12,.63,.012),
         "orange_lit": molten_material(),
@@ -254,6 +255,33 @@ def molten_bath(name,outline,mat):
     mesh.from_pydata(verts,[],faces)
     mesh.materials.append(mat)
     ob=bpy.data.objects.new(name,mesh)
+    bpy.context.collection.objects.link(ob)
+    for face in mesh.polygons:face.use_smooth=True
+    return ob
+
+
+def field_canopy(mat):
+    """A bowed glass field suspended outside the projector shoe circumference."""
+    rows,columns=28,8
+    verts=[]
+    for i in range(rows+1):
+        theta=-math.pi/2+math.pi*i/rows
+        bow=max(0.0,math.cos(theta))
+        y=172+94*math.sin(theta)
+        for j in range(columns+1):
+            span=j/columns
+            x=1050+(79+49*span)*bow
+            z=54+27*math.sin(math.pi*span)*bow
+            verts.append((x,-y,z))
+    faces=[]
+    for i in range(rows):
+        for j in range(columns):
+            a=i*(columns+1)+j
+            faces.append((a,a+1,a+columns+2,a+columns+1))
+    mesh=bpy.data.meshes.new("deployed field canopy")
+    mesh.from_pydata(verts,[],faces)
+    mesh.materials.append(mat)
+    ob=bpy.data.objects.new("deployed field canopy",mesh)
     bpy.context.collection.objects.link(ob)
     for face in mesh.polygons:face.use_smooth=True
     return ob
@@ -514,6 +542,7 @@ def defence(spec,m):
     disc("field emitter barrel",1050,172,75,18,43,m["dark"])
     disc("recessed dielectric well",1050,172,68,4,53,m["black"])
     convex_lens("convex glass force face",1050,172,57,53,m["blue_lit"])
+    field_canopy(m["blue_field"])
     for j in range(8):
         x0=-39+j*9.5
         x1=x0+8.2
@@ -705,11 +734,12 @@ def run():
             "port_screen": [p2.x*W,(1-p2.y)*H],
             "contract_port": spec["device_port"],
         },indent=2))
-        work_mats={mats["blue_lit"],mats["orange_lit"],mats["violet_lit"]}
+        work_mats={mats["blue_lit"],mats["blue_field"],mats["orange_lit"],mats["violet_lit"]}
         original_slots={ob:[slot.material for slot in ob.material_slots]
                         for ob in bpy.context.scene.objects if ob.type == "MESH"}
         work_objects={ob for ob,slots in original_slots.items() if any(mat in work_mats for mat in slots)}
         for ob,slots in original_slots.items():
+            if ob.name == "deployed field canopy": ob.hide_render=True
             for i,mat in enumerate(slots):
                 if mat == mats["blue_lit"]: ob.material_slots[i].material=mats["blue"]
                 if mat == mats["orange_lit"]: ob.material_slots[i].material=mats["slag"]

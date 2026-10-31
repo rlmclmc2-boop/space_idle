@@ -66,10 +66,12 @@ void fragment() {
         float shell_depth = band(q.x,dome_x-0.030,0.008)*visible_arc;
         float shell_volume = smoothstep(0.70,0.75,q.x)
                              *(1.0-smoothstep(dome_x-0.018,dome_x+0.012,q.x))*visible_arc;
+        float canopy = surface.a*smoothstep(0.83,0.96,q.x);
         float lens = surface.a;
         material = 0.04+0.16*lattice;
         action = ((front*0.95+lattice*0.16+curved*0.25+glancing*0.12)*lens
-                  +shield_shell*1.20+shell_depth*0.33+shell_volume*0.20)*load;
+                  +shield_shell*1.20+shell_depth*0.33+shell_volume*0.12
+                  +canopy*0.95)*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
