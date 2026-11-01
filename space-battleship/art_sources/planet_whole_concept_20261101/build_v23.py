@@ -840,8 +840,8 @@ box("Dock portal recessed soffit",(0,-.64,1.28),
     (.95,.075,.08),KEEL,shipyard,.01)
 for side in (-1,1):
     beam("Dock entrance service pod upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.14,.16,ARMOR,shipyard)
-box("Docked shuttle fuselage",(0,-1.33,.91),(.61,1.30,.22),ARMOR_FACE,shipyard,.04)
-armor_prism("Docked shuttle swept nose",[(0,-2.30),(.31,-1.84),(-.31,-1.84)],.85,1.04,ARMOR_FACE,shipyard)
+box("Docked shuttle fuselage",(0,-1.33,.91),(.61,1.30,.22),ARMOR_SIDE,shipyard,.04)
+armor_prism("Docked shuttle swept nose",[(0,-2.30),(.31,-1.84),(-.31,-1.84)],.85,1.04,ARMOR_MID,shipyard)
 box("Docked shuttle canopy",(0,-1.42,1.045),(.33,.44,.06),GLASS,shipyard,.01)
 for side in (-1,1):
     box("Docked shuttle engine nacelle",(side*.38,-1.50,.83),
@@ -888,11 +888,11 @@ for side in (-1,1):
         (.13,.13,.12),EDGE,shipyard,.01)
     cyl("Dock edge amber beacon",(side*1.06,-1.70,1.53),.038,.10,AMBER,shipyard,8)
     box("Shuttle swept broad wing",(side*.50,-1.35,.94),
-        (.54,.40,.085),ARMOR_FACE,shipyard,.018)
+        (.54,.40,.085),ARMOR_MID,shipyard,.018)
     box("Shuttle wing navy control surface",(side*.70,-1.37,.990),
         (.23,.24,.016),ARMOR_SIDE,shipyard,.004)
     box("Shuttle engine pale upper nacelle",(side*.39,-1.69,.95),
-        (.18,.49,.08),ARMOR_FACE,shipyard,.012)
+        (.18,.49,.08),ARMOR_SOFT,shipyard,.012)
     box("Shuttle engine dark rear nozzle",(side*.39,-2.00,.88),
         (.16,.07,.13),EDGE,shipyard,.008)
 for y in (-1.65,-.85):
@@ -905,7 +905,7 @@ box("Shuttle segmented cockpit frame",(0,-1.52,1.09),
 armor_prism("Shuttle visible swept pressure hull",
             [(-.34,-.72),(.34,-.72),(.43,-1.36),(.28,-1.95),
              (0,-2.42),(-.28,-1.95),(-.43,-1.36)],
-            1.20,1.31,ARMOR_FACE,shipyard)
+            1.20,1.31,ARMOR,shipyard)
 for side in (-1,1):
     armor_prism("Shuttle shallow dorsal navy armor channel",
                 [(side*.29,-.90),(side*.37,-1.34),
@@ -916,11 +916,11 @@ for side in (-1,1):
     armor_prism("Shuttle broad lifting wing",
                 [(side*.26,-1.35),(side*.93,-1.67),
                  (side*.87,-1.92),(side*.25,-1.81)],
-                1.23,1.29,ARMOR_FACE,shipyard)
+                1.23,1.29,ARMOR_MID,shipyard)
     box("Shuttle exposed navy wing flap",(side*.70,-1.79,1.315),
         (.27,.095,.018),ARMOR_SIDE,shipyard,.003)
     box("Shuttle upper engine cowling",(side*.39,-1.31,1.34),
-        (.18,.46,.13),ARMOR_FACE,shipyard,.014)
+        (.18,.46,.13),ARMOR_SOFT,shipyard,.014)
     box("Shuttle engine dark air intake",(side*.39,-1.01,1.35),
         (.14,.035,.08),GLASS,shipyard,.004)
 box("Shuttle visible blue faceted cockpit",(0,-1.35,1.35),
@@ -942,7 +942,7 @@ for child in list(shipyard.children):
     child.matrix_parent_inverse.identity()
     child.matrix_world=world_matrix
 bpy.context.view_layer.update()
-shuttle_shell.scale=(.79,.78,.87)
+shuttle_shell.scale=(.67,.64,.87)
 
 # The reference manufacturing platform is compact beside the planet, while
 # its independently owned track remains the full approved orbital radius.
