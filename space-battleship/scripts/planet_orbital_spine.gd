@@ -207,6 +207,11 @@ func set_stellar_field(tint: Color, strength: float) -> void:
 		material.set_shader_parameter("stellar_field_strength", strength)
 
 func _section_width(kind: String, angle: float) -> float:
+	if kind == "front_bearing":
+		# The equipment/shipyard mating collar swells from the existing transit
+		# hull instead of adding a separate disk above the armored deck.
+		var bearing := 1.0 - smoothstep(0.04, 0.16, absf(angle - PI * 0.5))
+		return _transit_width(angle) + 0.34 * bearing
 	# The same real cross-section grows out of the transit spine at each owned
 	# work node, then returns to a narrow section before any independent join.
 	var distance := absf(angle - FACILITY_ANGLES[kind])
@@ -227,7 +232,7 @@ func _transit_width(angle: float) -> float:
 	return lerpf(REAR_TRANSIT_WIDTH, FRONT_TRANSIT_WIDTH, 0.5 + 0.5 * sin(angle))
 
 func _shoulder_lift(kind: String, angle: float) -> float:
-	if kind == "": return 0.0
+	if kind == "" or kind == "front_bearing": return 0.0
 	var distance := absf(angle - FACILITY_ANGLES[kind])
 	var lift := 0.15 * (1.0 - smoothstep(0.10, 0.29, distance))
 	if kind == "refinery":
@@ -420,14 +425,16 @@ func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
 	join.name = "SectionJoin"
 	parent.add_child(join)
 	var joint_width := _transit_width(angle) + 0.02
+	var front_bearing := kind == "equipment"
+	var section_kind := "front_bearing" if front_bearing else ""
 	# Close the complete load path, including its keel and lit outer wall. A
 	# top-only sleeve leaves an obvious open cut at oblique orbital phases.
-	_add_section_hull(join, angle - 0.12, angle + 0.12, joint_width)
+	_add_section_hull(join, angle - 0.16, angle + 0.16, NODE_WIDTH if front_bearing else joint_width, section_kind)
 	# The refinery deck now returns to the exact mating height. Its two owned
 	# top surfaces meet there, so a second raised sleeve would cover that
 	# shared plane with a visible white step. The bottom load collar remains.
 	if kind != "refinery":
-		_add_curved_deck(join, angle - 0.12, angle + 0.12, joint_width, 0.232, _sleeve, 0.37, 0.63)
+		_add_curved_deck(join, angle - (0.16 if front_bearing else 0.12), angle + (0.16 if front_bearing else 0.12), NODE_WIDTH if front_bearing else joint_width, 0.232, _sleeve, 0.37, 0.63, section_kind)
 	return join
 
 func configure(owned: Array) -> void:
