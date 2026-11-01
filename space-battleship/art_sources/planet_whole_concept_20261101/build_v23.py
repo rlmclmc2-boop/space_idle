@@ -387,9 +387,9 @@ for i in range(32):
     annular_band("Track pressure clamp",RING_RADIUS-.18,RING_RADIUS+.18,-.12,.18,ARMOR_SIDE,a-.009,a+.009,2)
 
 station=root_at("01 / Command district of the orbital city",140)
-station.location.x=(5.22+ORBIT_SHIFT)*cos(140*pi/180)
-station.location.y=(5.22+ORBIT_SHIFT)*sin(140*pi/180)
+station.location.z=-.95
 refinery=root_at("02 / Heat district of the orbital city",35)
+refinery.location.z=-.93
 workshop=root_at("03 / Manufacturing district of the orbital city",-43)
 shipyard=root_at("04 / Open launch district of the orbital city",-130)
 
@@ -419,8 +419,6 @@ cyl("Front attitude cyan inset",front_core,.12,.035,CYAN,shipyard,10)
 
 # The observation platform bears down onto the actual guideway; no second
 # unsupported ribbon floats between the station and its owned track section.
-armor_prism("Command full-width embedded structural plinth",
-            [(-1.02,-.42),(1.02,-.42),(.75,1.43),(-.75,1.43)],.91,1.18,ARMOR,station)
 cyl("Command dark structural foundation",(0,-.32,1.22),1.25,.28,KEEL,station,12)
 cyl("Command lower faceted load deck",(0,-.32,1.35),1.20,.14,ARMOR_SIDE,station,12)
 cyl("Command stepped ivory observation deck",(0,-.32,1.48),1.11,.15,ARMOR,station,12)
@@ -435,10 +433,15 @@ for i in range(12):
                   (.17,.22,.37),ARMOR,station,.02)
         pylon.rotation_euler.z=a
 for side in (-1,1):
-    beam("Command platform load rib into orbital band",
-         (side*.46,.02,1.13),(side*.38,1.10,.12),.19,.22,ARMOR_SIDE,station)
-beam("Command platform broad pressure bridge",
-     (0,.12,1.28),(0,1.10,.14),.58,.40,ARMOR,station)
+    for radial in (-1,1):
+        box("Command through-track armored socket cheek",
+            (side*1.19,radial*.33,1.13),(.43,.23,.66),ARMOR,station)
+        box("Command socket shadow inset",
+            (side*1.42,radial*.25,1.09),(.045,.14,.34),KEEL,station,.008)
+    box("Command through-track overhead lintel",
+        (side*1.19,0,1.48),(.44,.89,.15),ARMOR_SIDE,station)
+    box("Command socket cyan guidance notch",
+        (side*1.39,0,1.46),(.035,.14,.045),CYAN,station,.004)
 cyl("Command rotating bearing",(0,-.32,1.60),.72,.16,EDGE,station,10)
 torus("Command bearing cyan collar",(0,-.32,1.70),.62,.045,CYAN,station)
 cone("Command faceted core",(0,-.32,1.86),.47,.22,.29,ARMOR,station,8)
@@ -452,13 +455,15 @@ torus("Heat chamber recessed observation band",(0,-.32,1.32),1.13,.07,GLASS,refi
 cyl("Heat chamber upper armored ring deck",(0,-.32,1.42),1.06,.12,ARMOR_SIDE,refinery,12)
 torus("Heat chamber gold dome bearing",(0,-.32,1.49),.99,.05,EDGE,refinery)
 for side in (-1,1):
-    beam("Heat node twin pressure spar",(side*.55,.04,1.10),
-         (side*.44,1.36,.36),.19,.23,ARMOR_SIDE,refinery)
-    beam("Heat node contained feed conduit",(side*.41,.05,.89),
-         (side*.35,1.29,.32),.055,.065,CYAN,refinery)
-beam("Heat node enclosed track coupling",(0,.20,.87),
-     (0,1.27,.35),.49,.41,ARMOR_SIDE,refinery)
-box("Heat node coupling armor collar",(0,1.19,.37),(.68,.31,.30),ARMOR,refinery)
+    for radial in (-1,1):
+        box("Heat node through-track socket cheek",
+            (side*1.17,radial*.34,1.15),(.50,.24,.62),ARMOR,refinery)
+        box("Heat socket dark inner lining",
+            (side*1.43,radial*.24,1.11),(.045,.14,.35),KEEL,refinery,.008)
+    box("Heat node track portal lintel",
+        (side*1.17,0,1.48),(.50,.91,.15),ARMOR_SIDE,refinery)
+    box("Heat portal amber service lamp",
+        (side*1.43,0,1.46),(.025,.12,.045),AMBER,refinery,.004)
 faceted_dome("Heat chamber gold faceted crown",refinery,(0,-.32),
              ((1.47,.96),(1.68,.99),(1.94,.80),(2.13,.46),(2.21,.19)))
 cyl("Contained furnace dark collar",(0,-.32,2.22),.19,.08,EDGE,refinery,12)
@@ -474,7 +479,35 @@ for x in (-.58,-.22,.22,.58):
 
 # Manufacturing uses a large opening cut between two roof plate groups.
 # An overhead crane visibly spans the work void inside the curved band.
-owned_arc(workshop,"Manufacturing open work floor",-64,-32,4.17,5.03,.34,.40,MACHINE)
+# The work site is one continuous plated platform with side pressure walls.
+# Its inner guideway remains unobstructed for the tram.
+owned_arc(workshop,"Manufacturing continuous pressure sole",-66,-27,
+          4.53,5.82,.18,.32,ARMOR_SIDE)
+owned_arc(workshop,"Manufacturing full-depth work deck",-65,-28,
+          4.57,5.76,.32,.40,ARMOR_FACE)
+owned_arc(workshop,"Manufacturing dark recessed machine lane",-63,-30,
+          4.81,5.23,.40,.425,MACHINE)
+owned_arc(workshop,"Manufacturing outer dark cavity wall",-65,-28,
+          5.74,5.86,.18,.55,KEEL)
+owned_arc(workshop,"Manufacturing outer armor sill",-65,-28,
+          5.72,5.88,.55,.65,ARMOR_SIDE)
+for a in (-61,-52,-43,-34):
+    owned_arc(workshop,"Manufacturing large deck seam",a,a+.28,
+              4.59,5.73,.40,.416,ARMOR_SIDE)
+for x,y in ((-.48,-1.18),(.05,-1.08),(.55,-1.25)):
+    box("Manufacturing secured cargo cassette",(x,y,.53),
+        (.31,.40,.22),ARMOR_FACE,workshop,.02)
+    box("Manufacturing cassette dark top seam",(x,y,.65),
+        (.21,.31,.025),ARMOR_SIDE,workshop,.004)
+    box("Manufacturing cassette amber lock",(x,y-.215,.56),
+        (.10,.012,.045),AMBER,workshop,.004)
+for a in (-65,-29):
+    owned_arc(workshop,"Manufacturing end housing inner cheek",a,a+2.8,
+              4.02,4.18,.22,.95,ARMOR)
+    owned_arc(workshop,"Manufacturing end housing outer cheek",a,a+2.8,
+              4.53,5.80,.22,.95,ARMOR)
+    owned_arc(workshop,"Manufacturing end housing lintel",a,a+2.8,
+              4.03,5.80,.95,1.10,ARMOR_SIDE)
 for a in (-64,-56,-48,-40):
     owned_arc(workshop,"Amber fabrication transverse working rib",a,a+1.1,
               4.20,5.02,.42,.51,GOLD)

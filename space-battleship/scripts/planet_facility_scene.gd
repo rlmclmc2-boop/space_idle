@@ -140,7 +140,7 @@ func _position_refinery_work(_model: Node3D, clock: float) -> void:
 		var marker := _refinery_feed_markers[index]
 		# The asset uses the shared full-orbit authoring frame. Ore moves across
 		# the refinery's open heat bay rather than around the old local saddle.
-		marker.position = Vector3(lerpf(5.29, 5.61, travel), 1.08, lerpf(-3.27, -3.69, travel))
+		marker.position = Vector3(lerpf(5.29, 5.61, travel), 0.15, lerpf(-3.27, -3.69, travel))
 
 func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned
