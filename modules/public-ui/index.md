@@ -51,3 +51,5 @@
 - [Approved faceted public source: first runtime implementation](faceted-public-implementation-20261101/README.md): b28a0be1 native controls, full-screen affected states and minimal module consumption map.
 
 - [Shared popup panel contour](faceted-popup-panel-20261101/README.md): 9034af81 actual speed/ship menus use one cut-corner panel source.
+
+- 星球固定结构同壳接入 `cb0d0206`：[planet-v7-structural-shared-20261101](planet-v7-structural-shared-20261101/README.md)。

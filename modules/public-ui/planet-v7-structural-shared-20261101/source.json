@@ -1,0 +1,115 @@
+{
+  "runtime_source": "cb0d0206ecd59daf665974fa1dc9e15ec37c8984",
+  "planet_fixed_source": "ef1fd9eecb3e070ed9b2524f55655e5bea692868",
+  "public_theme_source": "9034af815abc0883ba47e4df21c15163a4515c30",
+  "source_blobs": [
+    {
+      "path": "space-battleship/assets/planets/facilities_v6/auto_explore.glb",
+      "blob": "1d2c54aed645f440c28a7c50c3a2cedc0323c2c4"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v6/equipment.glb",
+      "blob": "5aa8b95f4dbe49d7f0a39d86461c1c6dd1756d12"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v6/refinery.glb",
+      "blob": "5b69362bc10292c37b77eec8743a5fc1bb08e62c"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v6/shipyard.glb",
+      "blob": "ff78f6c58b7f905f06383f13a173c47abd46eae4"
+    },
+    {
+      "path": "space-battleship/assets/planets/orbital_spine/deck-armor-continuous.png",
+      "blob": "2e3d71b187b805fba0c7f454115eb89420715bd8"
+    },
+    {
+      "path": "space-battleship/scripts/planet_contact_shadow.gdshader",
+      "blob": "969df9f2d56511d9b28f6b9fa26fb46223220038"
+    },
+    {
+      "path": "space-battleship/scripts/planet_facility_scene.gd",
+      "blob": "00c39b2839ed3c457919b78ec52f0b58851991f4"
+    },
+    {
+      "path": "space-battleship/scripts/planet_orbital_spine.gd",
+      "blob": "ea1a4afc3858c2f12cef72effd407b41177a6c81"
+    },
+    {
+      "path": "space-battleship/scripts/planet_spine_opaque.gdshader",
+      "blob": "ceb94666dc3d6a87e9867c554c35f2c7903f4208"
+    },
+    {
+      "path": "space-battleship/scripts/planet_visual.gd",
+      "blob": "75f7054891dddea721b5b187584a9f4bbdcb1419"
+    },
+    {
+      "path": "space-battleship/scripts/rotating_planet.gd",
+      "blob": "02cc512556e2aeeaca1023587bf7c17cba848db1"
+    }
+  ],
+  "host_panel_preserved": {
+    "path": "space-battleship/src/ui/planet_panel.gd",
+    "blob": "f048e70f2cbdf2cd49b3e2f4be2c74ce47bfb172",
+    "visual_top": 65
+  },
+  "state": "受控星球1／探索240／征服／四设施已建",
+  "coverage": [
+    "星球四设施完整静态整屏",
+    "装备返回整屏",
+    "星图返回整屏",
+    "隐藏星球输入焦点清理"
+  ],
+  "author_visual_observations": [
+    "新设施与环体完整落入左808模块，公共顶轨与导航不相交",
+    "星球本地按钮仍使用旧control-materials.png及私有样式，未同步公共分面轮廓",
+    "当前建筑浅色面仍偏平，主体材质由星球原组继续制作"
+  ],
+  "media": [
+    {
+      "path": "planet-v7-shared-universe-return-1440x900.png",
+      "bytes": 719019,
+      "sha256": "3c6a74e780bdf06341aa610464cd85a1f1d0e30efe07763ebcc7fe4a59aecb28"
+    },
+    {
+      "path": "planet-v7-shared-universe-return-1440x900.jpg",
+      "bytes": 342229,
+      "sha256": "5d794a0b82ffcf7c8a604ec46a80cbcb90a1bc0e0ea510e434f309bee746d77a"
+    },
+    {
+      "path": "planet-v7-shared-equipment-return-1440x900.png",
+      "bytes": 1525113,
+      "sha256": "0a6933b2f916aecfc306e3326350e968bbbef390292d9319117d5768788a46b2"
+    },
+    {
+      "path": "planet-v7-shared-equipment-return-1440x900.jpg",
+      "bytes": 630313,
+      "sha256": "6db1a29d18022ccb683b6604d712c52babe8d99ca1de7848533be2718670ea7a"
+    },
+    {
+      "path": "planet-v7-shared-stage4-1440x900.png",
+      "bytes": 1073547,
+      "sha256": "b14cf9ef265bba3c9030e46e2a18565beb4e90c69cf14046148763909fb03c79"
+    },
+    {
+      "path": "planet-v7-shared-stage4-1440x900.jpg",
+      "bytes": 488890,
+      "sha256": "c8201188aa5c7199b6692f6f2d1dd2b22901bec9cf2eb7c8db353349b730c86d"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 3374,
+      "sha256": "b62914e7ab9e98c557d8e6a548c7a5f6c7fe3ebb0aa40b4fe20ab3eed3f66604"
+    },
+    {
+      "path": "run.log",
+      "bytes": 518,
+      "sha256": "dee89d0af24cf1ccbbe2491d915a3c46a2ab7542e21d43d4e6003e8b1e0975fd"
+    },
+    {
+      "path": "import.log",
+      "bytes": 1639,
+      "sha256": "e02e9df4d264451a6b145acee17f36cc03761ad075533d300c221686afd36d52"
+    }
+  ]
+}
