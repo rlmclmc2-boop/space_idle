@@ -557,7 +557,12 @@ for x in (-.58,-.22,.22,.58):
 box("Manufacturing full pressure sole",(0,-.89,.25),
     (2.80,1.65,.22),KEEL,workshop)
 box("Manufacturing continuous ivory work deck",(0,-.89,.39),
-    (2.70,1.55,.10),ARMOR_FACE,workshop)
+    (2.70,1.55,.10),ARMOR_MID,workshop)
+for x in (-1.11,-.37,.37,1.11):
+    for y in (-1.43,-.96,-.49):
+        if abs(x) < .7 and y < -.7: continue
+        box("Manufacturing segmented load-floor armor tile",(x,y,.448),
+            (.64,.39,.018),ARMOR if (x+y) < -1.0 else ARMOR_FACE,workshop,.006)
 box("Manufacturing recessed machine lane",(0,-.62,.448),
     (2.35,.38,.025),MACHINE,workshop,.007)
 box("Manufacturing open assembly well",(0,-1.10,.453),
@@ -616,7 +621,7 @@ for x in (-1.12,1.12):
         wall_prism("Manufacturing sloped load shoulder",
                    [(x-sign*.10,.81),(x+sign*.20,.81),(x+sign*.20,1.29),
                     (x+sign*.06,1.57),(x-sign*.10,1.57)],
-                   y-.10,y+.10,ARMOR_FACE,workshop)
+                   y-.10,y+.10,ARMOR,workshop)
         box("Manufacturing dark inner jamb",(x-sign*.19,y,1.03),
             (.048,.20,.62),MACHINE,workshop,.012)
 box("Manufacturing outer pressure cavity wall",(0,-.89,.51),(1.92,.13,.52),ARMOR_SIDE,workshop)
@@ -645,7 +650,7 @@ for side in (-1,1):
     box("Fabrication room armored inner wall",(side*.73,-.91,.73),(.075,1.18,.44),ARMOR_MID,workshop,.014)
     slope_shell("Fabrication room chamfered roof",
                 [(x-.28,-1.60),(x+.28,-1.60),(x+.28,-.21),(x-.28,-.21)],
-                [1.08,1.08,1.00,1.00],.11,ARMOR_FACE,workshop)
+                [1.08,1.08,1.00,1.00],.11,ARMOR,workshop)
     box("Fabrication room roof dark expansion joint",(x,-.93,1.08),(.075,1.23,.025),EDGE,workshop,.004)
     for y in (-1.37,-.97,-.57):
         box("Fabrication room removable armor cassette",(side*1.30,y,.91),
@@ -669,6 +674,12 @@ for y in (-1.23,-.55):
     box("Factory traveling winch",(.22,y,1.37),(.25,.28,.28),MACHINE,workshop,.018)
     beam("Factory hanging articulated tool",(.22,y,1.29),(.22,y,1.02),.055,.07,ARMOR_SIDE,workshop)
     box("Factory hanging tool amber tip",(.22,y,.98),(.08,.08,.06),AMBER,workshop,.008)
+    box("Factory traveling bridge rail trolley",(-.22,y,1.34),
+        (.27,.24,.22),ARMOR_SIDE,workshop,.012)
+    beam("Factory traveling bridge suspended cable",
+         (-.22,y,1.28),(-.22,y,.82),.025,.025,EDGE,workshop)
+    box("Factory traveling bridge lower magnetic claw",(-.22,y,.80),
+        (.25,.08,.07),CRANE_ORANGE,workshop,.008)
 for x in (-.48,.48):
     for y in (-1.30,-.82):
         box("Factory floor load bearing cassette",(x,y,.51),(.35,.34,.065),ARMOR_SIDE,workshop,.008)
@@ -691,7 +702,11 @@ for side in (-1,1):
     box("Dock launch clamp jaw",(side*.48,-1.24,.73),(.12,.25,.08),ARMOR_FACE,shipyard,.008)
     box("Dock contained service light",(side*.85,-1.01,.58),(.028,.20,.025),CYAN,shipyard,.004)
 box("Dock dark load-bearing keel",(0,-1.02,.26),(1.95,1.83,.19),KEEL,shipyard)
-box("Dock continuous ivory landing deck",(0,-1.02,.38),(1.81,1.72,.08),ARMOR_FACE,shipyard)
+box("Dock continuous pressure landing deck",(0,-1.02,.38),(1.81,1.72,.08),ARMOR_MID,shipyard)
+for side in (-1,1):
+    for y in (-1.60,-1.16,-.72):
+        box("Dock segmented pale load-floor tile",(side*.71,y,.43),
+            (.27,.37,.016),ARMOR_FACE,shipyard,.004)
 for x in (-.75,.75):
     for y in (-1.60,-1.16,-.72):
         box("Dock side-deck dark removable service plate",(x,y,.435),
@@ -705,6 +720,14 @@ for y in (-.58,-1.04,-1.50):
     box("Dock landing deck panel seam",(0,y,.428),(1.79,.025,.018),ARMOR_SIDE,shipyard,.003)
 for side in (-1,1):
     box("Dock illuminated side guide",(side*.78,-1.06,.44),(.025,1.45,.019),CYAN,shipyard,.003)
+    beam("Dock articulated service arm lower link",
+         (side*.98,-1.18,.72),(side*.59,-1.04,.95),
+         .065,.08,ARMOR_SIDE,shipyard)
+    beam("Dock articulated service arm upper link",
+         (side*.59,-1.04,.95),(side*.48,-.92,1.10),
+         .06,.07,ARMOR_FACE,shipyard)
+    box("Dock articulated arm inspection tool",
+        (side*.48,-.92,1.10),(.11,.12,.07),CRANE_ORANGE,shipyard,.007)
     box("Dock outer service module",(side*.91,-1.53,.71),(.42,.53,.58),ARMOR,shipyard)
     box("Dock service module dark entry",(side*.91,-1.83,.72),(.26,.028,.30),KEEL,shipyard,.007)
     box("Dock service module cyan operating slit",(side*.91,-1.85,.85),(.15,.013,.035),CYAN,shipyard,.003)
@@ -723,7 +746,7 @@ for side in (-1,1):
     box("Dock black recessed portal return",(side*.52,-.60,.81),
         (.075,.17,.75),KEEL,shipyard,.009)
 box("Dock portal upper pressure hood",(0,-.47,1.44),
-    (1.61,.32,.17),ARMOR_FACE,shipyard,.02)
+    (1.61,.32,.17),ARMOR_MID,shipyard,.02)
 box("Dock portal recessed soffit",(0,-.64,1.28),
     (1.33,.075,.10),KEEL,shipyard,.01)
 for side in (-1,1):

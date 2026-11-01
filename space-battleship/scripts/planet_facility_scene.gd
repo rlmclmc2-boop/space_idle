@@ -114,8 +114,12 @@ func _ready() -> void:
 		match kind:
 			"auto_explore": _add_work_light(model, "Command second occupied tier dark hull", Color("79cfe9"), 1.0, 1.9, Vector3(0, 0.28, 0))
 			"refinery": _add_work_light(model, "Heat chamber upper armored ring deck", Color("ffc16e"), 1.7, 2.0, Vector3(0, 0.42, 0))
-			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ffad5c"), 2.0, 2.2, Vector3(0, 0.45, 0))
-			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffb35d"), 1.9, 2.0, Vector3(0, 0.46, 0))
+			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ffad5c"), 1.2, 1.7, Vector3(0, 0.40, 0))
+			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffb35d"), 1.15, 1.5, Vector3(0, 0.42, 0))
+		if kind == "equipment":
+			_add_work_light(model, "Factory traveling winch", Color("ff9b43"), 1.0, 0.75, Vector3(0, -0.24, 0))
+		if kind == "shipyard":
+			_add_work_light(model, "Dock portal recessed soffit", Color("ff9b43"), 0.95, 0.85, Vector3(0, -0.30, 0))
 		model.visible = false
 	resized.connect(_layout)
 	_layout()

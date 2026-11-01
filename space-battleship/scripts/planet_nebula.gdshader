@@ -27,7 +27,12 @@ void fragment() {
     envelope = max(envelope, max(left * bottom, right * bottom) * 0.75);
     float filament = smoothstep(0.48, 0.65,
         detail + value_noise(p * 6.6 + 12.0) * 0.10);
-    float cloud = max(smoothstep(0.30, 0.59, detail), filament * 0.58) * envelope;
+    float fine_gas = value_noise(p * 13.0 + 41.0) * 0.45
+        + value_noise(p * 24.0 + 11.0) * 0.25;
+    float blue_vein = smoothstep(0.55, 0.72, detail + fine_gas * 0.23);
+    float cloud = max(smoothstep(0.30, 0.59, detail), filament * 0.58);
+    cloud = max(cloud, blue_vein * 0.42) * envelope;
     vec3 hue = mix(vec3(0.045, 0.14, 0.39), vec3(0.14, 0.46, 0.90), detail);
-    COLOR = vec4(hue, cloud * 0.72);
+    hue = mix(hue, vec3(0.18, 0.62, 1.0), blue_vein * 0.28);
+    COLOR = vec4(hue, cloud * 0.86);
 }
