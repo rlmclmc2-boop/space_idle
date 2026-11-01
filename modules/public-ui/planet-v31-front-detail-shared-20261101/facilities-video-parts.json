@@ -1,0 +1,22 @@
+{
+  "video": "planet-facilities-1x-6s.mp4",
+  "bytes": 1069344,
+  "sha256": "88337318658accdf67e3cbb7af1f233c45c6d95d48a9dbec14b61e33545362f0",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 180,
+  "duration_seconds": 6,
+  "parts": [
+    {
+      "path": "facilities-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "3bd8fca1a71e523df323f0a250b84a5b95ec416be1c37591585f1734a6270a6c"
+    },
+    {
+      "path": "facilities-parts/part-001.bin",
+      "bytes": 413984,
+      "sha256": "4e357e0dbd7df7667988c4a99291fe7ce8d649323fe1bd5de7fe83a580db8b67"
+    }
+  ]
+}
