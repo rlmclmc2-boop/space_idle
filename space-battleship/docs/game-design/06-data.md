@@ -1,34 +1,25 @@
 # 06 Excel、统一近似数值与存档
 
-[回唯一入口](README.md)。这是新实现数据合同；当前不修改工作簿、不建立新存档、不运行配置发布。
+[回唯一入口](README.md)。本页定义配置数据、Amount数值与存档生命周期合同。
 
 
 ## 1. Excel唯一权威
 
-人工可调整内容只能来自Excel。运行时直接读取已发布的JSON配置，不实时打开Excel、不从工作目录猜选哪份JSON、不在游戏里启动配置编辑器。版本库中的JSON只是生成物，手动修改会被完整重编译比较发现。
+人工可调整内容以正式Excel为权威；运行时直接读取由其转换生成的JSON配置。正式输入集合与字段来源按下文维护。
 
 仓库根`太空战舰.xlsx`经核查是旧总表（8个sheet，同名表均与main正式拆分表不同），只是split工具的历史外部输入，不在新编译manifest。根`config_excel`为正式输入集合，显式manifest列出每个工作簿、sheet、主键、字段、schema版本、归类。`published/`与`level_monGroup_generated.xlsx`是发布/生成副本，`battle_design.xlsx`是设计候选元数据；不得因目录里存在就自动覆盖正式level/mon/monGroup。工具读取任何生成表必须显示其来源类别。正式工作簿来源见[09索引](09-config-catalog.md)，当前输入清单以正式manifest为准。
 
 停用配置保留内容：旧hightech四项、scientistCost/hightechLimit/techPointGet等不再激活旧科研；未消费字段登记“保留但无运行消费者”；资产外观配置仍可消费。已删除的成长项不从历史版本、默认字典或“补齐schema”恢复。当前equipment_evolution.xlsx定义的装备进化继续保留，具体规则见[03成长](03-progression.md#11-属性成长与装备进化)及当前正式工作簿；字段来源按[09索引](09-config-catalog.md)定位；它不授权恢复其他已删除成长项目。
 
-### 1.1 编译流水线
+### 1.1 Excel转换流程
 
-```
-读取完整manifest指定Excel字节快照
-→ 按schema解析（数据行从第4行；空行跳过但保留order字段语义）
-→ 类型/范围/主键校验
-→ 跨表引用/拓扑/布局/预算校验
-→ 规范化稳定ID与顺序，生成普通表JSON
-→ 完成必要关系校验，生成独立发布报告
-→ 写临时JSON并回读校验
-→ 原子替换generated/config.json
-```
+从正式输入清单读取Excel，按字段类型解析，校验主键、范围和本节关系约束，生成普通表JSON。校验和临时文件回读成功后，替换`generated/config.json`；失败保留上一份有效JSON。当前入口、输入清单、输出结构与诊断报告见[foundation](../../foundation/README.md#excel-configuration-publication)。
 
-当前编译命令见[foundation](../../foundation/README.md#excel-configuration-publication)；生产manifest和测试manifest是不同文件，传同一个编译器。schema与转换逻辑共享，数据不共享。命令可在未安装/未运行Godot的环境执行。禁止编译器调用游戏场景或编辑器工具取得“默认值”。
+数据行从第4行读取；空行跳过并保留显式order语义。字段声明literal类型，空值与0分开；可选字段在schema中指定回退目标，例如敌武器空字段→enemy_weapon_base。数值字段使用数值单元格；Amount十进制文本列声明为amount_text。
 
-表字段有明确literal类型；空值和0不同。可选字段的回退目标在schema列出，例如敌武器空字段→enemy_weapon_base。需要数值的字段不接受文本数字；Amount可用专门十进制文本列，但字段类型需声明amount_text。Excel公式如已存在且属于内容，保留原单元格，不由openpyxl假装重算；编译要求可信缓存值且记录公式/值hash，缓存缺失/错误则拒绝发布并给坐标。要求typed_literal的超空间表继续拒绝公式。禁止静默将`#VALUE!`、NaN、INF或空串转换为0。
+已有内容公式保留原单元格，导入读取可信缓存；缓存缺失或错误时报告坐标。typed_literal超空间字段只接受字面值。`#VALUE!`、NaN、INF及无效空串作为数据错误处理。
 
-错误统一为`{workbook,sheet,row,column,key,code,detail}`，一次收集独立错误，有限显示但完整报告保存本地；失败没有半份运行包。重编译相同字节得到相同hash/结构；物理行重排且显式order不变，语义hash应相同（来源hash可不同）。
+错误报告包含`{workbook,sheet,row,column,key,code,detail}`；独立错误一并收集。同一输入得到相同表结构、数值和顺序；来源与输出hash用于导入诊断。
 
 ### 1.2 必须执行的关系校验
 
@@ -88,9 +79,9 @@ MAX从0可付起按1、2、4…扩张数量上界，再整数二分，使用同�
 
 ## 4. 运行配置直接读取
 
-会话直接读取已发布JSON并交给实际业务模块。运行中不热替换半张表；配置更新在明确的会话重建边界生效。编译报告中的来源/输出hash可用于发布诊断，不构成存档与配置绑定。
+会话直接读取已发布JSON，由实际业务模块校验和消费。整份会话使用一份完整配置，更新在明确的会话重建边界生效。来源与输出hash仅用于导入诊断。
 
-存档不保存或要求configHash，也不因当前配置文本hash不同而拒绝加载/导入。候选会话仍校验真实字段、稳定ID、数值、占用及跨域关系；不兼容业务数据给明确错误，不能丢字段、补默认值或重写旧档来伪造成功。删除hash绑定不等于取消必要校验，也不引入任意兼容或迁移承诺。
+存档不保存或要求configHash。加载与导入按保存格式版本以及候选会话的真实字段、稳定ID、数值、占用和跨域关系判断有效性；配置文本hash变化本身不影响接受有效存档。不兼容业务数据返回具体错误并保留原档。
 
 ## 5. 新存档格式与生命周期
 
