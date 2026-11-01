@@ -17,13 +17,12 @@ const FACILITY_ANGLES := {
 # Keep the common load path close to terrestrial globes while leaving the
 # four authored work nodes and their independent owned arc ends intact.
 const RADIUS := 4.35
-const REAR_TRANSIT_WIDTH := 0.46
-const FRONT_TRANSIT_WIDTH := 0.72
-const NODE_WIDTH := 1.18
+const REAR_TRANSIT_WIDTH := 0.22
+const FRONT_TRANSIT_WIDTH := 0.30
+const NODE_WIDTH := 0.36
 const TILT_Y := 0.66
 const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
-const SOCKET_HEIGHT := 0.36
 var _arcs: Dictionary = {}
 var _end_caps: Dictionary = {}
 var _joins: Dictionary = {}
@@ -45,12 +44,9 @@ static func point(angle: float) -> Vector3:
 	return Vector3(RADIUS * cos(angle), -RADIUS * TILT_Y * sin(angle), RADIUS * TILT_Z * sin(angle))
 
 static func socket_position(angle: float, kind: String) -> Vector3:
-	# The refinery upper shell sits inside its real deck node. The station
-	# bears closer to the ring center so its port no longer hangs beyond the
-	# owned side wall; the through passage remains open at both ends.
-	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.44
-	var radial_offset := 0.12 if kind == "auto_explore" else -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
-	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
+	# Every authored segment now shares the beam centerline. Its load walls
+	# overlap the through-beam instead of hovering on a displaced saddle.
+	return point(angle) + plane_normal() * 0.15
 
 func _ready() -> void:
 	_navy = _material(Color("152f43"))
@@ -125,9 +121,9 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float, kind: S
 	var station_tip := kind == "auto_explore"
 	var nose_span := 0.055 if station_tip else 0.09
 	var nose_width := 0.34 if station_tip else 0.32
-	var nose_top := 0.27
-	var nose_edge := 0.19
-	var nose_bottom := -0.10 if station_tip else -0.17
+	var nose_top := 0.13
+	var nose_edge := 0.09
+	var nose_bottom := -0.06 if station_tip else -0.08
 	for step in 8:
 		var t0 := float(step) / 8.0
 		var t1 := float(step + 1) / 8.0
@@ -135,12 +131,12 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float, kind: S
 		var b := angle + outward * nose_span * t1
 		var wa := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t0))
 		var wb := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t1))
-		var ta := lerpf(0.43, nose_top, t0)
-		var tb := lerpf(0.43, nose_top, t1)
-		var ea := lerpf(0.26, nose_edge, t0)
-		var eb := lerpf(0.26, nose_edge, t1)
-		var ba := lerpf(-0.40, nose_bottom, t0)
-		var bb := lerpf(-0.40, nose_bottom, t1)
+		var ta := lerpf(0.43 * 0.46, nose_top, t0)
+		var tb := lerpf(0.43 * 0.46, nose_top, t1)
+		var ea := lerpf(0.26 * 0.46, nose_edge, t0)
+		var eb := lerpf(0.26 * 0.46, nose_edge, t1)
+		var ba := lerpf(-0.40 * 0.46, nose_bottom, t0)
+		var bb := lerpf(-0.40 * 0.46, nose_bottom, t1)
 		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS)
 		var am := point(a) * ((RADIUS - wa * 0.15) / RADIUS)
 		var ap := point(a) * ((RADIUS + wa * 0.15) / RADIUS)
@@ -250,7 +246,7 @@ func _add_side_armor(parent: Node3D, begin: float, finish: float, width: float, 
 				var current_width := _section_width(kind, angle) if kind != "" else width
 				var radius := side * (current_width * 0.5 + cross.x)
 				var rise := _node_section_rise(kind, angle) if cross.y < 0.0 else _shoulder_lift(kind, angle)
-				positions.append(point(angle) * ((RADIUS + radius) / RADIUS) + plane_normal() * (cross.y + rise))
+				positions.append(point(angle) * ((RADIUS + radius) / RADIUS) + plane_normal() * (cross.y + rise) * _shell_scale(kind, angle))
 			var normal := (positions[1] - positions[0]).cross(positions[2] - positions[0]).normalized()
 			for vertex in positions:
 				surface.set_normal(normal)
@@ -274,11 +270,6 @@ func set_stellar_field(tint: Color, strength: float) -> void:
 		material.set_shader_parameter("stellar_field_strength", strength)
 
 func _section_width(kind: String, angle: float) -> float:
-	if kind == "front_bearing":
-		# The equipment/shipyard mating collar swells from the existing transit
-		# hull instead of adding a separate disk above the armored deck.
-		var bearing := 1.0 - smoothstep(0.04, 0.16, absf(angle - PI * 0.5))
-		return _transit_width(angle) + 0.34 * bearing
 	# The same real cross-section grows out of the transit spine at each owned
 	# work node, then returns to a narrow section before any independent join.
 	var distance := absf(angle - FACILITY_ANGLES[kind])
@@ -288,9 +279,9 @@ func _section_width(kind: String, angle: float) -> float:
 	# construction seam, even when the broader node nearly reaches that seam.
 	var bounds: Vector2 = ARC_BOUNDS[kind]
 	blend *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
-	# Give each built work floor a real shoulder matching its pressure feet.
-	# The station stays narrow so its independently built passage stays open.
-	var node_width := 1.36 if kind == "auto_explore" else 1.53 if kind == "refinery" else 1.60 if kind == "equipment" else 1.62 if kind == "shipyard" else NODE_WIDTH
+	# The authored GLB now *is* the wide bearing segment. This runtime mesh is
+	# only the through beam entering its core, not another platform beneath it.
+	var node_width := 0.56 if kind in ["auto_explore", "refinery"] else 0.64
 	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:
@@ -298,8 +289,18 @@ func _transit_width(angle: float) -> float:
 	# section is slimmer before it passes behind the globe.
 	return lerpf(REAR_TRANSIT_WIDTH, FRONT_TRANSIT_WIDTH, 0.5 + 0.5 * sin(angle))
 
+func _shell_scale(kind: String, angle: float) -> float:
+	# Transit is a narrow pressure link. The heavy vertical bearing grows only
+	# inside each facility, so a continuous thick ring cannot read as a road.
+	if not kind in KINDS:
+		return 0.46
+	var node := 1.0 - smoothstep(0.11, 0.34, absf(angle - FACILITY_ANGLES[kind]))
+	var bounds: Vector2 = ARC_BOUNDS[kind]
+	node *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
+	return lerpf(0.46, 0.58, node)
+
 func _shoulder_lift(kind: String, angle: float) -> float:
-	if kind == "" or kind == "front_bearing": return 0.0
+	if kind == "": return 0.0
 	var distance := absf(angle - FACILITY_ANGLES[kind])
 	var lift := 0.21 * (1.0 - smoothstep(0.10, 0.32, distance))
 	if kind == "refinery":
@@ -414,13 +415,7 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
 		var keel_width := 1.0 - smoothstep(0.20, 0.39, absf(current.x + 0.10))
 		height += 0.14 * keel_span * keel_width
-	elif kind == "front_bearing":
-		# The joined deck swells into one bearing crown in its own mesh. Its
-		# flanks still flow into the original transit shoulders and lit sidewall.
-		var crown_span := 1.0 - smoothstep(0.025, 0.16, absf(angle - PI * 0.5))
-		var crown_width := 1.0 - smoothstep(0.16, 0.43, absf(current.x))
-		height += 0.18 * crown_span * crown_width
-	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
+	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height * _shell_scale(kind, angle))
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
 	var surface := SurfaceTool.new()
@@ -434,10 +429,10 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 		var section_b := _node_section_rise(kind, b) if lift < 0.0 else 0.0
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
-		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift + section_a)
-		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift + section_a)
-		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift + section_b)
-		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift + section_b)
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift + section_a) * _shell_scale(kind, a)
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift + section_a) * _shell_scale(kind, a)
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift + section_b) * _shell_scale(kind, b)
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift + section_b) * _shell_scale(kind, b)
 		for vertex in [ai, bi, ao, ao, bi, bo]:
 			surface.set_normal(normal)
 			surface.add_vertex(vertex)
@@ -472,6 +467,10 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 		if top < 0.10:
 			upper_a += section_a
 			upper_b += section_b
+		lower_a *= _shell_scale(kind, a)
+		lower_b *= _shell_scale(kind, b)
+		upper_a *= _shell_scale(kind, a)
+		upper_b *= _shell_scale(kind, b)
 		for vertex in [pa + normal * lower_a, pb + normal * lower_b, pa + normal * upper_a, pa + normal * upper_a, pb + normal * lower_b, pb + normal * upper_b]:
 			surface.set_normal(wall_normal)
 			surface.add_vertex(vertex)
@@ -489,7 +488,7 @@ func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
 	lens.height = 0.11
 	lamp.mesh = lens
 	lamp.material_override = _material(Color("d5a661"), true)
-	lamp.position = point(angle) * ((RADIUS + 0.57) / RADIUS) + plane_normal() * 0.48
+	lamp.position = point(angle) * ((RADIUS + 0.22) / RADIUS) + plane_normal() * 0.15
 	parent.add_child(lamp)
 
 func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
@@ -499,16 +498,15 @@ func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
 	join.name = "SectionJoin"
 	parent.add_child(join)
 	var joint_width := _transit_width(angle) + 0.02
-	var front_bearing := kind == "equipment"
-	var section_kind := "front_bearing" if front_bearing else ""
+	var section_kind := ""
 	# Close the complete load path, including its keel and lit outer wall. A
 	# top-only sleeve leaves an obvious open cut at oblique orbital phases.
-	_add_section_hull(join, angle - 0.16, angle + 0.16, NODE_WIDTH if front_bearing else joint_width, section_kind)
+	_add_section_hull(join, angle - 0.16, angle + 0.16, joint_width, section_kind)
 	# The refinery deck now returns to the exact mating height. Its two owned
 	# top surfaces meet there, so a second raised sleeve would cover that
 	# shared plane with a visible white step. The bottom load collar remains.
 	if kind != "refinery":
-		_add_curved_deck(join, angle - (0.16 if front_bearing else 0.12), angle + (0.16 if front_bearing else 0.12), NODE_WIDTH if front_bearing else joint_width, 0.232, _sleeve, 0.37, 0.63, section_kind)
+		_add_curved_deck(join, angle - 0.12, angle + 0.12, joint_width, 0.232, _sleeve, 0.37, 0.63, section_kind)
 	return join
 
 func configure(owned: Array) -> void:

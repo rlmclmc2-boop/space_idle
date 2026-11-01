@@ -226,8 +226,8 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		if kind in ["shipyard", "equipment", "auto_explore", "refinery"]:
 			# Both open work bays are authored in the owned section's local frame.
 			# The workshop's through axis follows the actual orbit tangent.
-			var outward: Vector3 = _spine.point(a).normalized()
-			var axis_x: Vector3 = -outward if kind == "shipyard" else (_spine.point(a + 0.001) - _spine.point(a - 0.001)).normalized()
+			var axis_x: Vector3 = (_spine.point(a + 0.001) - _spine.point(a - 0.001)).normalized()
+			if kind == "shipyard": axis_x = -axis_x
 			var axis_y: Vector3 = _spine.plane_normal()
 			var model_scale := Vector3(scale_factor, 0.62 if kind == "auto_explore" else scale_factor, scale_factor)
 			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(model_scale), _spine.socket_position(a, kind))
