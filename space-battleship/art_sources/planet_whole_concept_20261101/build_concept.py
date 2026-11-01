@@ -128,6 +128,19 @@ def armor_prism(name, outline, bottom, top, mat, root=None):
     return finish(obj,name,mat,root,.025)
 
 
+def slope_shell(name, outline, top_heights, thickness, mat, root=None):
+    """One continuous angled armor plate with an authored roof plane."""
+    count=len(outline)
+    assert count == len(top_heights)
+    vertices=[(x,y,z-thickness) for (x,y),z in zip(outline,top_heights)]
+    vertices += [(x,y,z) for (x,y),z in zip(outline,top_heights)]
+    faces=[tuple(range(count-1,-1,-1)),tuple(range(count,2*count))]
+    faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update()
+    obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
+    return finish(obj,name,mat,root,.025)
+
+
 # The ring is one dark pressure system with two armored bank beams, a work
 # trough and four built nodes. Short plate gaps expose the same keel below.
 annular_band("Continuous central pressure keel",3.80,4.89,-.43,.12,KEEL)
@@ -236,10 +249,10 @@ for side in (-1,1):
     armor_prism("Twin long armored production hall sidewalls",
                 [(-1.18,side*.55),(1.18,side*.55),(1.32,side*.85),(-1.32,side*.85)],
                 .67,1.32,EDGE,workshop)
-    armor_prism("Steep faceted roof shoulder with central work slot",
+    slope_shell("Pitched armored production canopy around open work slot",
                 [(-1.16,side*.43),(1.16,side*.43),(1.21,side*.79),(-1.21,side*.79)],
-                1.40,1.61,ARMOR,workshop)
-    box("Long upper dark daylight opening",(0,side*.45,1.62),(1.74,.055,.02),GLASS,workshop,.004)
+                [1.72,1.72,1.31,1.31],.17,ARMOR,workshop)
+    box("Long upper dark daylight opening",(0,side*.47,1.73),(1.74,.045,.02),GLASS,workshop,.004)
 for x in (-.97,.97):
     for side in (-1,1):
         beam("Hall inclined primary post",(x,side*.72,.58),(x,side*.61,1.54),.25,.27,ARMOR,workshop)
@@ -274,9 +287,9 @@ for side in (-1,1):
     armor_prism("Tapered pressure hangar shell framing launch void",
                 [(side*.61,.55),(side*1.10,.49),(side*.98,-1.85),(side*.63,-2.17)],
                 .55,1.20,EDGE,shipyard)
-    armor_prism("Long angular side armor along open dock",
+    slope_shell("Deep sloped armored dock shoulder around open launch void",
                 [(side*.74,.43),(side*1.16,.43),(side*1.01,-1.74),(side*.70,-1.96)],
-                1.12,1.34,ARMOR,shipyard)
+                [1.43,1.12,1.12,1.43],.19,ARMOR,shipyard)
 box("Inner dock transfer jaw",(0,.34,.67),(1.76,.48,.53),ARMOR,shipyard,.095)
 box("Blue dock throat",(0,.075,.78),(.78,.06,.16),CYAN,shipyard,.025)
 for side in (-1,1):
