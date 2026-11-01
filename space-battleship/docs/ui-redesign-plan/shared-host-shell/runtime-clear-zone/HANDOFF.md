@@ -4,15 +4,28 @@
 
 ## 当前版本
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `6c7198ee`；当前为制作现场，未合main。
-- 星球固定来源471349769，运行资产fb3b6249e；facilities_v9四GLB及两个脚本同源，保全当前现场。原组已恢复按现成设计图实际制作，后续消费其新同源资产。
-- 反应堆来源a1406959，交接f97aef2d，十三件installation闭包同源，公共主题9034af81、main e845装备、现有公共宿主/导航和战场空间保留。planet_panel与e7591438相同，UI与业务修复保持。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `e3774ee5`，未合main。
+- 星球来源 `cb0b96f86`：facilities_v9四GLB、planet_facility_scene.gd、planet_orbital_spine.gd、planet_visual.gd七件接入。六件同blob；planet_visual仅加固态整组宽度包络适配。planet_panel统一关闭/展开主体安全区，保留e7591438的业务/UI修复。
+- 反应堆当前运行仍为 `6c7198ee`（来源a1406959、交接f97aef2d）。公共主题9034af81、main e845装备、公共宿主/导航和战场空间保持。
 
-## 当前目标
+## 星球当前整页与下一项
 
-星球按原设计图实际制作：`8136cef8`的`scheme-b/solid-integrated-spine-clearance.png`与`1eda07fd`的`solid-integrated-spine-stages-closed.png`，完整Git路径以星球当前交接为准。连续实体环带、嵌入设施和整体比例是后续接入的视觉依据；在完整整页中判断主体质量分布、内外轮廓、功能空间与承力关系。
+原图依据：
 
-公共宿主继续负责主体安全区、操作台、导航及跨模块共同语言；保留现有业务、装备结构及战场空间。
+- `8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`，右侧完整阶段。
+- `1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png`。
+
+当前证据：`archive/design-docs-before-cleanup-20261031@079134ad:modules/public-ui/planet-v24-original-shared-20261101/README.md`。五张1440×900原屏及同尺寸JPEG，总览/设施展开各6秒180连续帧、分片/哈希和两张原图同尺寸JPEG；具体源映射、显示适配补丁和作者整页判断均在同目录。
+
+接入和显示适配完成：整组同比适配顶部状态区与操作台之间的安全空间，两段当前动态内前侧船坞完整、主体不与导航或不同高度详情台相交。采证为受控星球1、探索240、征服/四设施已建，业务快照暂停，显示动画1×；MovieMaker离线固定30fps，不作实时性能或整周结论。
+
+当前仍是制作候选，不作用户确认稿。下一项交星球原组按原图完成主体：
+
+1. 恢复低倾角横向椭圆及星体/前后弧的遮挡比例，当前后方大环仍高出星体、姿态偏直立。
+2. 以平整分段甲板、深侧壁/龙骨和节段接缝建立连续建筑带截面，收敛当前圆软起伏的鼓面。
+3. 观测平台/塔体、热处理穹顶及制造深腔形成主要功能体量，保留开放泊位负形；当前青橙小凸点和浅栏不足以替代原图设施体积。
+
+整体保留当前公共安全区及UI修复，消费原组下一固定资产后看完整整页与受影响动态；不通过独立缩建筑、裁切或挤战场解决原图比例。
 
 ## 反应堆当前同壳判断
 
@@ -22,8 +35,6 @@
 
 当前不直接作用户最终确认稿。四路为Session Owner受控开放/均分，单路为受控Reactor Owner；两片真实Session时钟1×、MovieMaker离线固定30fps，不作实时性能或完整游戏结论。当前无新增明确公共控件修正项。
 
-## 下一步
+## 独立剩余项
 
-1. 星球原组按上述原设计图继续运行资产制作，不等待新图稿确认；新同源资产固定后，整体组对照原图的连续实体环带、嵌入设施及整体比例精确接入，复看公共整页、不同台高及同源动态。
-2. 将上述核心过程的当前可见项交原反应堆组窄收口；整体消费下一固定源后看完整同壳页面与受影响工作动态。
-3. 不新增无依据公共微调、独立复测或main合并。
+反应堆核心过程按上节具体制作要求等原组固定修订后接入；星球按上述主体资产要求继续。当前无新增明确公共控件缺陷，不新增无依据微调、独立复测或main合并。
