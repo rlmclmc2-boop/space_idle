@@ -73,9 +73,11 @@
       "space-battleship/docs/game-design/art/sources.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "f74f465de8cf08d0f479f703fb6856d3680887b3",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "9db928be1c6dd87feca0b0f072d9241aa351bfbc",
+    "producer_advanced": false,
+    "consumed_commit": "9db928be1c6dd87feca0b0f072d9241aa351bfbc",
+    "consumption_verified": true
   },
   "reactor": {
     "source_branch": "implement/reactor-centered-godot",
@@ -99,9 +101,11 @@
       "space-battleship/docs/game-design/art/sources.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "635c775e43c69a9ba9a92023c48b5752981956c8",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "c18480e9196c1d5a50d987ff91901cd0ea4cc989",
+    "producer_advanced": false,
+    "consumed_commit": "9f3bf4c298c1a7c623e022da42e32882004e38cb",
+    "consumption_verified": true
   },
   "planet": {
     "source_branch": "wip/planet-thread-resume-20261101",
@@ -125,9 +129,11 @@
       "space-battleship/docs/game-design/art/sources.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "36134fe9cde9d32535719a38f02f5769df410f16",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "8c9924b3cc63f70d0bd9ff5c4723e02e03d2582e",
+    "producer_advanced": false,
+    "consumed_commit": "8c9924b3cc63f70d0bd9ff5c4723e02e03d2582e",
+    "consumption_verified": true
   },
   "host": {
     "source_branch": "design/clear-zone-host",
@@ -151,9 +157,11 @@
       "space-battleship/docs/game-design/art/sources.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "f69e69fb47b1970379de672fae47741dd4057a5c",
+    "producer_advanced": false,
+    "consumed_commit": "05f9044f1ab09bd57d7c6399d698dd3a7752388e",
+    "consumption_verified": true
   },
   "backend": {
     "source_branch": "feat/amount-safe-previews",
@@ -177,8 +185,10 @@
       "space-battleship/docs/game-design/art/sources.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "fe9c3706c29c86282aefdeb9875a09da0e8fee54",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "4ed909092399bee889e17600317791c8f16388a5",
+    "producer_advanced": false,
+    "consumed_commit": "4ed909092399bee889e17600317791c8f16388a5",
+    "consumption_verified": true
   }
 }

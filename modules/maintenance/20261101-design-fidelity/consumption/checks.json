@@ -1,0 +1,40 @@
+{
+  "stats": {
+    "equipment": {
+      "lines_before": 474,
+      "lines_after": 474,
+      "chars_before": 25691,
+      "chars_after": 25691,
+      "files_checked": 14
+    },
+    "backend": {
+      "lines_before": 474,
+      "lines_after": 474,
+      "chars_before": 25691,
+      "chars_after": 25691,
+      "files_checked": 14
+    },
+    "planet": {
+      "lines_before": 501,
+      "lines_after": 501,
+      "chars_before": 27389,
+      "chars_after": 27389,
+      "files_checked": 14
+    },
+    "host": {
+      "lines_before": 523,
+      "lines_after": 523,
+      "chars_before": 29059,
+      "chars_after": 29059,
+      "files_checked": 14
+    },
+    "reactor": {
+      "lines_before": 465,
+      "lines_after": 467,
+      "chars_before": 24270,
+      "chars_after": 24684,
+      "files_checked": 14
+    }
+  },
+  "errors": []
+}
