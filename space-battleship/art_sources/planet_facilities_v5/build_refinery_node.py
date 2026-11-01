@@ -139,6 +139,7 @@ def vaulted_chamber(name, parent):
 def hopper(name, y, parent):
     """Deep open-topped octagonal bin, made from four thick sloped walls."""
     root=node(name,parent,(0,y,0))
+    root.scale=(.88,.88,.95)
     side=1 if y>0 else -1
     box("Hopper navy pressure cradle",(.08,0,.55),(1.58,.70,.55),navy,root,.08)
     box("Hopper blue lower pressure shell",(.08,0,.97),(1.40,.79,.42),blue,root,.07)
