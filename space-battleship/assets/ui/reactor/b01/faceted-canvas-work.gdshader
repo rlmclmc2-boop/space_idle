@@ -100,9 +100,16 @@ void fragment(){
  }else if(work_kind==3){
   float facing=max(0.0,dot(normalize(facing_normal),normalize(vec3(-.5,.6,.75))));
   float charged=smoothstep(0.0,.43,cycle);
+  float compression=smoothstep(.43,.60,cycle);
   float release=1.0-smoothstep(.60,.76,cycle);
-  color=mix(vec3(.025,.27,.46),vec3(.25,.87,1.0),facing*.75+charged*.15)*strength;
-  opacity=(.52+release*.15+charged*.08)*smoothstep(.01,.25,abs(facing_normal.z));
+  // A luminous containment volume, not an opaque blue painted ball.
+  // Optical depth increases inward; the pole-to-nucleus path remains visible.
+  float optical_depth=clamp(abs(facing_normal.z),0.0,1.0);
+  float limb=pow(1.0-optical_depth,2.0);
+  float axis=exp(-pow((point.x-594.0)/12.0,2.0));
+  vec3 plasma=mix(vec3(.015,.26,.48),vec3(.16,.73,.91),facing*.45+charged*.25);
+  color=(plasma+vec3(.18,.62,.73)*limb+vec3(.40,.72,.80)*axis*(.20+compression*.40))*strength;
+  opacity=(.28+optical_depth*.18+release*.09+charged*.06)*smoothstep(.01,.25,optical_depth);
  }else if(work_kind==4){
   float radius=length(point.xy-vec2(1045.0,-177.0));
   float front=20.0+106.0*formation;

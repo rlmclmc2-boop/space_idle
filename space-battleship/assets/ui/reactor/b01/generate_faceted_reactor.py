@@ -30,7 +30,7 @@ def mesh(name,vertices,faces,mat):
  o=bpy.data.objects.new(name,d);bpy.context.collection.objects.link(o);return o
 
 SIDES={}
-def plate(name,outline,z,depth,mat,shift=(7,6)):
+def plate(name,outline,z,depth,mat,shift=(0,0)):
  k=len(outline);v=[(x,-y,z) for x,y in outline]+[(x+shift[0]+depth*.34,-y-shift[1]-depth*.23,z-depth) for x,y in outline]
  f=[tuple(range(k-1,-1,-1)),tuple(range(k,2*k))]+[(i,(i+1)%k,(i+1)%k+k,i+k) for i in range(k)]
  o=mesh(name,v,f,mat)
@@ -184,7 +184,13 @@ def armor_arc(name,x,y,r,width,z,depth,m,start,end):
  return o
 
 def mount(name,x,y,w,m):
- plate(name+' load platform',[(x-w/2-10,y-17),(x+w/2-12,y-17),(x+w/2+22,y+8),(x-w/2+12,y+8)],5,22,m['shade'])
+ left=x-w/2-10;right=x+w/2+22
+ if y<400:
+  if x<W*.5:left=-55
+  else:right=W+55
+ plate(name+' load platform',[(left,y-17),(right-34,y-17),(right,y+8),(left+22,y+8)],5,22,m['shade'])
+ if y<400:
+  box(name+' wall landing seam',(left+right)/2,y+9,right-left-12,8,23,10,m['dark'])
  box(name+' platform front rail',x+9,y+7,w+7,12,20,13,m['edge'])
  for side in (-1,1):
   q=x+side*w*.32
@@ -276,7 +282,7 @@ def furnace(m):
  faces=[]
  for j in range(4):
   for k in range(4):
-   a=j*4+k;b=j*4+(k+1)%4;faces.append((a,b,b+4,a+4))
+   a=j*4+k;b=j*4+(k+1)%4;faces.append((a,a+4,b+4,b))
  mesh('furnace pour',stream,faces,m['orange'])
  plate('furnace outlet bed',[(226,604),(244,601),(309,662),(293,674)],27,11,m['dark'])
  plate('furnace outlet liquid',[(233,608),(240,607),(300,664),(295,669)],39,3,m['orange'])
@@ -302,6 +308,12 @@ def crystal(m,growth=1.):
  armor_box('crystal feeder housing',950,628,70,78,101,43,m['armor'])
  armor_box('crystal collector shoulder',1087,630,49,78,100,38,m['shade'])
  for yy in (450,638):box('crystal brass clamp',1090,yy,25,10,104,11,m['copper'])
+ plate('crystal collection chute',[(958,608),(985,624),(927,687),(898,671)],37,18,m['dark'])
+ plate('crystal chute left rail',[(954,607),(962,613),(904,676),(894,670)],62,20,m['shade'])
+ plate('crystal chute right rail',[(981,623),(989,629),(932,691),(923,685)],62,20,m['shade'])
+ for i in range(4):
+  xx=967-i*15;yy=633+i*16
+  plate('crystal body delivery '+str(i),[(xx-7,yy+2),(xx+1,yy-10),(xx+9,yy-4),(xx+7,yy+7),(xx-4,yy+8)],57,8,m['violet_light'])
  for xx in (949,1089):
   box('crystal service recess',xx,632,14,22,112,4,m['dark'])
   disc('crystal captive pin',xx,650,4,113,m['copper'],8)
@@ -405,7 +417,11 @@ def core_mount(m):
  plate('central floor facing',[(438,720),(750,720),(882,914),(306,914)],-56,3,m['floor'],shift=(0,0))
  plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,8,m['edge'],shift=(3,3))
  plate('central deck inset',[(405,610),(777,610),(841,685),(777,726),(405,726),(343,685)],-10,4,m['floor'],shift=(0,0))
- box('core lower pedestal',594,591,100,122,18,18,m['dark'])
+ box('core lower pedestal',594,591,100,122,18,42,m['dark'])
+ armor_panel('core flared pedestal',[(557,523),(630,523),(644,628),(683,649),(671,671),(517,671),(502,650),(541,628)],35,44,m['shade'])
+ armor_panel('core pedestal front face',[(567,547),(619,547),(626,635),(645,651),(544,651),(562,635)],51,20,m['armor'])
+ box('core pedestal service inset',594,591,30,56,68,13,m['dark'])
+ box('core pedestal brass seam',594,650,64,8,69,9,m['copper'])
  armor_panel('pedestal left armor',[(539,535),(555,535),(558,640),(539,651),(526,641)],39,12,m['shade'])
  armor_panel('pedestal right armor',[(632,535),(648,535),(663,641),(650,651),(630,640)],39,12,m['shade'])
 
