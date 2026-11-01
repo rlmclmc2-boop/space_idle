@@ -12,6 +12,51 @@
     30.265082956259448,
     0
   ],
+  "single_smelting": {
+    "shifts": {
+      "core": [
+        130,
+        0
+      ],
+      "core_mount": [
+        130,
+        0
+      ],
+      "smelting": [
+        200,
+        -50
+      ]
+    },
+    "route": {
+      "core_port": [
+        593,
+        450
+      ],
+      "controls": [
+        [
+          565,
+          453
+        ],
+        [
+          535,
+          472
+        ]
+      ],
+      "device_port": [
+        513,
+        467
+      ],
+      "axis_to_device": [
+        -0.947,
+        -0.322
+      ],
+      "socket_radius": 26,
+      "socket_depth": 28,
+      "insert_depth": 45
+    },
+    "core_marker": "core/power_out_single_smelting",
+    "device_marker": "smelting/power_in_smelting"
+  },
   "console": {
     "1": {
       "count": 1,
@@ -172,6 +217,15 @@
         1326.0
       ]
     },
+    "core_mount": {
+      "node": "core_mount",
+      "visible_rect_source": [
+        306.84381103515625,
+        86.0,
+        574.3123779296875,
+        828.0
+      ]
+    },
     "core": {
       "node": "core",
       "visible_rect_source": [
@@ -184,10 +238,10 @@
     "weapons": {
       "node": "weapons",
       "visible_rect_source": [
-        21.277908325195312,
+        21.0,
         98.5,
-        323.7900848388672,
-        254.08984375
+        324.2918701171875,
+        254.5
       ]
     },
     "pipe_weapons": {
@@ -251,6 +305,15 @@
         360.95477294921875,
         270.0072021484375,
         240.03558349609375
+      ]
+    },
+    "pipe_single_smelting": {
+      "node": "pipe_single_smelting",
+      "visible_rect_source": [
+        469.869873046875,
+        415.0710754394531,
+        158.8145751953125,
+        81.904052734375
       ]
     },
     "console_1": {
@@ -440,6 +503,6 @@
       "core_marker": "core/power_out_condensation"
     }
   },
-  "generator_sha256": "e1233dfe7e8c64b31f712e3ccde354fb28cb787434e0fb62dbea2a88911d0833",
-  "asset_sha256": "ece5bb9e889af8ebb402d6caffc444b1342d57e2e6557cb2018ea91459da5849"
+  "generator_sha256": "69b212df3e48cdddc070d94c54f8b35346f0f3339dfe9ea581991451a88df398",
+  "asset_sha256": "7e7173778010c7f7aa5bb66ca426bfeea053cfcc04d475719f34594dda49da51"
 }
