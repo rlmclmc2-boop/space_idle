@@ -4,16 +4,16 @@
 
 ## 当前版本与同源证据
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `f553cb30`，未合main。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `fa502483`，未合main。
 - 反应堆 `cfcc9a3552a886283ed07be656ff7247c8a498bf` 的十四件installation闭包逐blob同源，包含私有GLB、Stage、shader及metadata；Owner/原生控件不替换。源交接14f1e0bd；installation在 `archive/reactor-material-refinement-20261101@564cc030:modules/reactor/depth-light-20261101/installation.json`。
-- 星球 `c063e710ef93fa4ea84306b9fa620128e93112b2` 的四GLB、设施场景/轨道、nebula/rotating/spine_opaque三个shader及cloud-density云图十件逐blob同源。planet_visual保留整组包络与独立环境矩形，planet_panel保留主体安全区及业务/UI修复。
-- 本轮仅6件星球生产文件变化：四GLB、planet_facility_scene与nebula，包含分层装甲、曲面蜂巢、上方压力护套及气体颗粒。反应堆十四件闭包、公共背景/主体适配、公共承载ee0e2ff1、主题9034af81、最终装备main e845、main/Owner、导航及战斗空间保持。
+- 星球固定 `c063e710ef93fa4ea84306b9fa620128e93112b2` 的四GLB、设施场景/轨道、rotating/spine_opaque两个shader及cloud-density云图九件逐blob同源。planet_visual保留整组包络与固定环境；planet_panel业务/UI与安全区保持。
+- 本轮公共适配仅planet_visual.gd与planet_nebula.gdshader：固定环境内sky乘色0.52/0.62/0.76、气体透明度0.32/上部退后权重0.80、原柔光透明度0.32；其他环境保持默认。后续原组shader更新须保留两个uniform默认值与宿主参数，不整文件覆盖公共适配。无新控件/遮盖层，建筑体量和战场未改。
 
-星球当前同版证据：`archive/design-docs-before-cleanup-20261031@d0a8b8d67a8ce260b2920ec23a420499c46d8c24:modules/public-ui/planet-pressure-couplers-shared-20261101/README.md`。运行f553cb30的五张1440×900原PNG/同尺寸高质量JPEG、总览/设施展开两段各6秒180连续帧、无损分片/哈希、逐帧总览、批准图等球径及1:1像素对照、全时段半秒抽帧、2..3秒近侧及上方两节点连续原像素序列、author-review.md。
+星球当前同版证据：`archive/design-docs-before-cleanup-20261031@ee9c47303a9872bd96b60aedc98dd15cfd8244b2:modules/public-ui/planet-field-composition-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、总览/设施各6秒180帧动画、无损分片与哈希、半秒整页抽帧、保存的逐帧总览及author-review.md；before两图由f553已有同状态原PNG转换，未重跑。精确两文件差异见host-environment.patch。
 
 反应堆当前同版证据：`archive/design-docs-before-cleanup-20261031@4d4ec6cddc516b034a025ef179da840346ead3f8:modules/public-ui/reactor-depth-light-shared-20261101/README.md`。运行774deace的五张1440×900原PNG/同尺寸高质量JPEG、四路/单炼铁各6秒180连续帧、无损分片/哈希、逐帧总览、批准整图共同屏幕比例并置及author-review.md。
 
-本轮星球导入/运行成功，作者亲看五完整页、两片每0.5秒抽帧、各2.00–2.97秒的30帧原像素近侧序列及总览同段上方节点序列、原尺寸对照及批准图；受控星球1/探索240/四设施已建，固定业务快照、1×显示动画。反应堆证据对应774deace，当前十四件闭包/公共文件保持，不把其影片标成f553重录；其覆盖为受控四路/单炼铁Owner参数、实际鼠标均分/返回装备和1×真实Session时钟。两者均MovieMaker离线30fps，具体版本/覆盖见驱动和segment，不作实时性能或此前点击瞬间覆盖。本轮未追加性能或未改购买状态复测。
+本轮星球导入/运行无ERROR。作者亲看五完整页及两片0–5.5秒每半秒整页抽帧；受控星球1/探索240/四设施已建、固定业务快照、1×显示动画。反应堆证据仍对应774deace，十四件闭包保持。MovieMaker离线30fps不作实时性能；本轮未加性能或未改购买状态复测。
 
 ## 当前整页判断与接续
 
@@ -33,9 +33,9 @@
 
 开放泊位、两端服务舱、单主吊架与纵轨的构图保持，固定环境y65..900、主体min(高×0.21,宽×0.135)整组包络及源光学中心不变；不同高度底台下未见新碰状态条、压台或越导航。当前无需新增公共几何修正。
 
-当前穹顶蜂巢、端口分层护套和近侧装甲边均在实际尺寸可辨；所看上方连续序列中蜂巢保持可读、未见大块跳变，浅船翼点状自阴影未重新出现。背景颗粒和亮点增加，云面内部变化可见。这些改善不构成整体还原通过。
+本轮公共背景上方与四周亮蓝气带退后，总览与三种展开高度下地表/设施先于云层成为视线焦点；下角弱气带保留连续环境变化。固定背景未跟随主体缩放重置，主次较清楚，右侧战场层次保持。没有通过遮缝层或改变建筑大小来解决背景。
 
-按批准图完整品质仍未完成：护套更像醒目的外露白环/短筒，厚侧壁、内层结构和接触阴影不足以解释包覆/承力；穹顶与下部窗舱/承力体的受光和嵌合仍简化。前设施依旧偏大浅面/重复方块，船壳、泊位内壁、制造井的机械与材质层次不足，黄梁/浅前壁较抢。背景虽有细颗粒，仍以宽亮云团和较均匀细噪为主，未还原图稿深黑空间中的细气体丝、光团/小天体与远近关系。原组继续护套承力受光、前设施机械/材料完成度及背景纵深，不以更多细线/白边/噪点代替。当前不是成品确认稿，无待用户验收状态；完整判断和观看范围见本版author-review.md。
+按批准图，建筑整体品质仍未完成：压力护套更像外露白环，厚壁/内构与接触受光不足；穹顶与下层承托仍简化。前泊位、制造井多为浅方块，机械内件、材料反射和接触阴影弱，黄梁较抢。细气丝/小天体纵深也不能以本次曝光替代完整素材还原。原组继续设施材质和体积，当前不是成品确认稿，不等用户。
 
 ## 公共接入边界与下一步
 
@@ -43,7 +43,7 @@
 
 可消费公共源ee0e2ff1：`src/ui/zone_shell.gd`，`assets/ui/public_shell/command-rail.svg`、`navigation-spine.svg`、`nav-idle.svg`、`nav-hover.svg`、`nav-active.svg`（均在space-battleship），删除旧title-plaque.svg。BridgeTheme API与Owner不改；设计要求归13，不在交接另立规范。
 
-1. 本轮闭包接入、必要运行整页/动态与固定交接已完成；当前无新增明确公共几何缺陷，不以此宣称整体美术通过。
+1. 公共固定环境主次适配与同版整页/动态交接完成，待父亲看本版；没有因此新增独立微调或测试。后续星球shader固定更新需合并公共uniform和曝光参数。
 2. 反应堆原组继续武器侧护壳/盾后机体分件、舱室远近明暗、局部受光及单路重心；固定更新后精确消费并重看公共整页。
 3. 星球原组继续前设施内件、局部光聚焦与面板材质，固定更新后按批准图复看完整页面。
 4. 目标机性能依赖单列，当前无同条件目标环境基线，不用离线记录或软件观察替代，不新增无关复测或合main。
