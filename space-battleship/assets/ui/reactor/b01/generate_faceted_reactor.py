@@ -201,6 +201,34 @@ def mount(name,x,y,w,m):
    armor_box(name+' floor foot',q,y+8,44,27,16,30,m['shade'])
 
 
+def service_panel(name,x,y,w,h,z,m):
+ # The seam, return and recessed hatch are one modeled housing detail.
+ box(name+' seam',x,y,w,h,z,3,m['dark'])
+ armor_box(name+' inset',x,y,w-5,h-5,z+1,5,m['steel'])
+ for yy in (y-h*.25,y+h*.25):
+  box(name+' locking slot',x-w*.22,yy,3,min(8,h*.15),z+6,2,m['dark'])
+
+def vent_bank(name,x,y,w,h,z,count,m):
+ box(name+' return',x,y,w,h,z,5,m['dark'])
+ for i in range(count):
+  yy=y-h/2+(i+.5)*h/count
+  plate(name+' louver',[(x-w/2+2,yy-2),(x+w/2-2,yy-2),(x+w/2-1,yy+1),(x-w/2+3,yy+1)],z+4,4,m['steel'])
+
+def refractory_mouth(m):
+ x,y=175,477
+ outline=[(-69,-34),(-44,-58),(40,-58),(68,-32),(68,33),(41,56),(-43,56),(-69,29)]
+ n=len(outline);vertices=[]
+ for scale,z in [(1.,78),(.95,91),(.79,89),(.70,38)]:
+  vertices.extend([(x+dx*scale,-y-dy*scale,z) for dx,dy in outline])
+ faces=[];roles=[]
+ for ring_index in range(3):
+  for i in range(n):
+   j=(i+1)%n;faces.append((ring_index*n+i,ring_index*n+j,(ring_index+1)*n+j,(ring_index+1)*n+i));roles.append(0 if ring_index==0 else 1 if ring_index==1 else 2)
+ o=mesh('furnace refractory assembly',vertices,faces,m['steel']);o.data.materials.append(m['ceramic']);o.data.materials.append(m['glass'])
+ for face,role in zip(o.data.polygons,roles):face.material_index=role
+ for xx in (126,222):box('furnace lining joint',xx,477,3,57,91,2,m['dark'])
+
+
 def weapon(m,phase=.65):
  mount('weapon',180,313,222,m);box('weapon navy shell',183,204,197,207,40,64,m['dark'])
  armor_panel('weapon left armor',[(81,126),(111,102),(142,109),(136,164),(124,184),(128,264),(103,278),(78,258)],65,25,m['armor'])
@@ -211,10 +239,12 @@ def weapon(m,phase=.65):
  for yy in (132,251):box('weapon brass seam',244,yy,23,7,101,8,m['copper'])
  box('weapon chamber',181,195,74,133,38,8,m['glass'])
  opening('weapon aperture return',181,195,104,165,92,40,m)
- rod('weapon chamber glazing',(181,128,48),(181,262,48),37,m['field'])
+
  for i,y in enumerate((153,190,227)):
   charge=max(0.,min(1.,(phase/.65)*3-i))
-  if charge>0.:rod('weapon charge segment '+str(i),(181,y+11-22*charge,60),(181,y+11,60),29,m['cyan'])
+  if charge>0.:rod('weapon charge segment '+str(i),(148,y,68),(214,y,68),14,m['cyan'])
+  rod('weapon chamber glazing '+str(i),(146,y,68),(216,y,68),17,m['field'])
+  for xx in (146,207):rod('weapon capacitor endcap',(xx,y,68),(xx+9,y,68),18,m['steel'])
   box('weapon retainer '+str(i),181,y+12,76,8,100,8,m['edge'])
  box('weapon ship bus bed',63,196,74,25,88,8,m['dark'])
  for y in (182,210):box('weapon ship bus rail',63,y,78,6,112,10,m['edge'])
@@ -227,7 +257,9 @@ def weapon(m,phase=.65):
  for yy in (132,257):
   box('weapon inset seam',104,yy,25,4,104,3,m['dark'])
   disc('weapon captive pin',104,yy+9,3.6,109,m['copper'],8)
- box('weapon shoulder recess',104,195,12,22,109,4,m['dark'])
+ service_panel('weapon shoulder hatch',104,198,23,45,109,m)
+ vent_bank('weapon manifold cooling',246,194,16,43,98,4,m)
+ for xx in (148,208):box('weapon crown joint',xx,112,3,19,105,3,m['dark'])
  socket('weapons',m)
 
 def defence(m,phase=1.):
@@ -251,7 +283,10 @@ def defence(m,phase=1.):
   for k in range(cols):
    a=j*(cols+1)+k;faces.append((a,a+1,a+cols+2,a+cols+1))
  mesh('shield bowed field',verts,faces,m['field'])
- armor_box('shield emitter shoulder',976,180,51,100,110,45,m['armor'])
+ rod('shield rear casing',(945,177,66),(1008,177,66),38,m['shade'])
+ for xx in (960,993):rod('shield bearing collar',(xx,177,66),(xx+7,177,66),43,m['steel'])
+ armor_panel('shield emitter shoulder',[(941,139),(955,122),(980,124),(999,146),(996,215),(980,238),(946,230),(936,209)],110,45,m['armor'])
+ service_panel('shield service hatch',971,182,25,48,116,m)
  for yy in (116,238):box('shield brass key',988,yy,25,12,108,13,m['copper'])
  for obj in set(bpy.data.objects)-before:
   if obj.type!='MESH' or not obj.name.startswith(('shield armor','shield glass','shield load ring','shield active rim','shield joint','shield projector')):continue
@@ -266,7 +301,7 @@ def furnace(m):
  armor_panel('furnace left armor',[(77,421),(105,389),(145,397),(139,436),(120,453),(123,526),(99,548),(75,525)],64,23,m['armor'])
  armor_panel('furnace right armor',[(215,397),(245,405),(275,435),(268,528),(244,547),(221,523),(222,450),(205,431)],64,23,m['shade'])
  armor_box('furnace crown',177,405,112,28,75,16,m['armor']);box('furnace cavity',175,476,103,83,30,6,m['glass'])
- opening('furnace refractory return',175,477,128,112,81,34,m)
+ refractory_mouth(m)
  plate('furnace throat',[(132,483),(220,483),(216,507),(177,520),(136,507)],49,5,m['orange'],shift=(0,0))
  for i in range(3):
   bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=11,location=(160+i*15,-442,67))
@@ -290,6 +325,8 @@ def furnace(m):
   if obj.name.startswith(('furnace vessel','furnace liquid')) and obj.type=='MESH':
    for vertex in obj.data.vertices:vertex.co.y=-597+(vertex.co.y+597)*.48
  for x in (114,233):box('furnace basin support',x,647,24,63,9,26,m['dark'])
+ vent_bank('furnace side heat exchanger',247,486,15,38,99,4,m)
+ service_panel('furnace access',96,479,22,40,110,m)
  for yy in (430,523):
   box('furnace cheek seam',96,yy,24,4,103,3,m['dark'])
   disc('furnace captive pin',96,yy+8,3.6,108,m['copper'],8)
@@ -299,21 +336,56 @@ def crystal(m,growth=1.):
  mount('crystal',1014,683,244,m);box('crystal base',1013,624,218,82,41,54,m['dark']);box('crystal back',1020,514,153,166,28,22,m['glass'])
  for x in (934,1100):
   armor_box('crystal pillar',x,557,30,195,66,27,m['armor'] if x<1000 else m['shade']);box('crystal foot',x,661,53,28,75,17,m['dark'])
- armor_box('crystal crown',1017,433,184,32,78,21,m['armor']);box('crystal seed bed',1017,603,143,29,65,14,m['copper'])
+ armor_panel('crystal crown left',[(921,436),(937,417),(990,418),(1008,436),(994,453),(938,451)],87,32,m['armor'])
+ armor_panel('crystal crown right',[(1028,434),(1043,418),(1096,420),(1111,441),(1094,455),(1040,451)],87,32,m['shade'])
+ box('crystal crown bridge',1017,434,26,27,90,24,m['dark'])
+ box('crystal crown brass key',1017,427,14,5,115,5,m['copper'])
+ box('crystal seed bed',1017,603,143,29,65,14,m['copper'])
  box('crystal chamber front sill',1017,635,151,15,91,16,m['shade'])
- for i,(x,h) in enumerate([(974,53),(997,88),(1022,114),(1047,79),(1071,48)]):
-  hh=12+(h-12)*growth;y=592
-  plate('crystal body '+str(i),[(x-13,y),(x+13,y),(x+15,y-hh+17),(x+2,y-hh),(x-14,y-hh+16)],77,18,m['violet'],shift=(7,4))
-  plate('crystal bright facet '+str(i),[(x+2,y-hh),(x+15,y-hh+17),(x+13,y),(x+2,y-4)],79,1,m['violet_light'],shift=(0,0))
- armor_box('crystal feeder housing',950,628,70,78,101,43,m['armor'])
+ for i,(x,h,radius) in enumerate([(974,53,11),(997,88,13),(1022,114,18),(1047,79,14),(1071,48,11)]):
+  hh=12+(h-12)*growth;y=592;vertices=[]
+  for yy,rr in [(y,radius),(y-hh+15,radius*.86)]:
+   for k in range(6):
+    a=math.tau*k/6;vertices.append((x+rr*math.cos(a),-yy,78+rr*math.sin(a)))
+  vertices.append((x+2,-y+hh,81))
+  faces=[(k,(k+1)%6,(k+1)%6+6,k+6) for k in range(6)]
+  faces.extend([(k+6,(k+1)%6+6,12) for k in range(6)])
+  faces.append(tuple(range(5,-1,-1)))
+  faces=[tuple(reversed(face)) for face in faces]
+  o=mesh('crystal body '+str(i),vertices,faces,m['violet']);o.data.materials.append(m['violet_light'])
+  for face in o.data.polygons:face.material_index=1 if face.index in (1,7) else 0
+ armor_panel('crystal feeder housing',[(921,599),(942,589),(972,603),(984,628),(973,658),(921,659),(906,643),(907,616)],101,43,m['armor'])
  armor_box('crystal collector shoulder',1087,630,49,78,100,38,m['shade'])
  for yy in (450,638):box('crystal brass clamp',1090,yy,25,10,104,11,m['copper'])
- plate('crystal collection chute',[(958,608),(985,624),(927,687),(898,671)],37,18,m['dark'])
- plate('crystal chute left rail',[(954,607),(962,613),(904,676),(894,670)],62,20,m['shade'])
- plate('crystal chute right rail',[(981,623),(989,629),(932,691),(923,685)],62,20,m['shade'])
+ # Front collector receives from the chamber sill and slopes down to the
+ # accessible collection end. Rails and deck share these three sections.
+ center=[Vector((1014,610,103)),Vector((990,640,151)),Vector((940,690,110))]
+ for part in ('deck','left rail','right rail'):
+  vertices=[]
+  for i,c in enumerate(center):
+   direction=(center[min(i+1,2)]-center[max(0,i-1)]).normalized()
+   cross=Vector((-direction.y,direction.x,0)).normalized()
+   if part=='deck':edges=(-15,15);height=0
+   elif part=='left rail':edges=(-22,-15);height=11
+   else:edges=(15,22);height=11
+   for at in edges:
+    q=c+cross*at+Vector((0,0,height));vertices.append((q.x,-q.y,q.z))
+   for at in reversed(edges):
+    q=c+cross*at+Vector((0,0,height-12));vertices.append((q.x,-q.y,q.z))
+  faces=[]
+  for j in range(2):
+   for k in range(4):
+    a=j*4+k;b=j*4+(k+1)%4;faces.append((a,b,b+4,a+4))
+  mesh('crystal collector '+part,vertices,faces,m['dark'] if part=='deck' else m['steel'])
  for i in range(4):
-  xx=967-i*15;yy=633+i*16
-  plate('crystal body delivery '+str(i),[(xx-7,yy+2),(xx+1,yy-10),(xx+9,yy-4),(xx+7,yy+7),(xx-4,yy+8)],57,8,m['violet_light'])
+  t=(i+.5)/4;c=center[1].lerp(center[2],t);xx,yy,zz=c
+  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=8,location=(xx,-yy,zz+12))
+  shard=bpy.context.object;shard.name='crystal body delivery '+str(i);shard.scale=(.75,1.2,.8);shard.data.materials.append(m['violet_light'])
+ verts=[]
+ for yy in (452,610):
+  for k in range(17):
+   a=math.pi*k/16;verts.append((1017+65*math.cos(a),-yy,77+46*math.sin(a)))
+ mesh('crystal containment glass',verts,[(i,i+1,i+18,i+17) for i in range(16)],m['field'])
  for xx in (949,1089):
   box('crystal service recess',xx,632,14,22,112,4,m['dark'])
   disc('crystal captive pin',xx,650,4,113,m['copper'],8)
@@ -358,8 +430,12 @@ def core(m):
   o=bpy.context.object;o.name='core transfer packet '+id;o.data.materials.append(m['cyan'])
  for side in (-1,1):
   xx=x+side*159
-  armor_box('core side constraint',xx,y,86,101,141,68,m['armor'])
-  box('core side inner shoe',xx-side*28,y,25,45,164,28,m['dark'])
+  armor_box('core side constraint casing',xx,y,96,110,123,70,m['shade'])
+  armor_panel('core side constraint armor',[(xx-side*23,y-46),(xx+side*26,y-45),(xx+side*43,y-28),(xx+side*40,y+37),(xx+side*3,y+50),(xx-side*27,y+28)],143,44,m['armor'])
+  for yy in (y-28,y+28):disc('core restraint captive pin',xx+side*19,yy,3.5,154,m['copper'],8)
+  box('core restraint panel seam',xx+side*9,y,3,25,151,3,m['dark'])
+  box('core side inner shoe',xx-side*28,y,25,45,164,28,m['steel'])
+  box('core restraint contact insert',xx-side*38,y,6,33,179,6,m['dark'])
   box('core side brass lock',xx+side*11,y-36,29,10,164,12,m['copper'])
  for yy in (-139,139):
   box('core pole shoe',x,y+yy,48,22,114,28,m['dark'])
@@ -458,7 +534,7 @@ WORK_NAMES={
  'weapons': ['weapon chamber glazing','weapon charge segment','weapon output'],
  'defence': ['shield active rim','shield bowed field'],
  'smelting': ['furnace feed','furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
- 'condensation': ['crystal body','crystal bright facet'],
+ 'condensation': ['crystal containment glass','crystal body','crystal bright facet'],
  'core': ['core field meridian','core energy rim','core containment glass','core plasma kernel','core plasma mass','core plasma strand','core transfer packet']}
 for id in DATA['devices']:WORK_NAMES[id].append(id+' receiver acknowledgement')
 FRONT_NAMES={
@@ -478,7 +554,7 @@ def select_pass(name,layer):
 
 def setup():
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
- colors={'armor':(.78,.76,.68),'shade':(.28,.36,.42),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.045,.10,.16),'window':(.055,.12,.18),'floor':(.09,.14,.20),'lamp':(1.,.76,.39)}
+ colors={'armor':(.78,.76,.68),'steel':(.43,.53,.59),'ceramic':(.62,.48,.29),'shade':(.28,.36,.42),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.045,.10,.16),'window':(.055,.12,.18),'floor':(.09,.14,.20),'lamp':(1.,.76,.39)}
  m={k:material(k,c,k in ['charge','cyan','orange','violet_light','lamp']) for k,c in colors.items()}
  s=bpy.context.scene;s.render.engine='BLENDER_EEVEE_NEXT';s.render.resolution_x=W;s.render.resolution_y=H;s.render.resolution_percentage=100;s.render.film_transparent=True;s.world.color=(.16,.22,.30);s.view_settings.view_transform='Standard'
  for name,loc,color,power,size in [('warm key',(250,-100,600),(1,.82,.60),1800000,650),('cool fill',(1020,-500,380),(.35,.65,1),950000,700)]:

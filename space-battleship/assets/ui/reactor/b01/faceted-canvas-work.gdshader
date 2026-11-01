@@ -180,7 +180,10 @@ void fragment(){
   opacity=envelope*lit*.95;
  }else{
   color*=strength*(0.55+0.45*max(0.0,dot(facing_normal,normalize(vec3(-0.4,0.4,0.8)))));
-  if(work_kind==8 && work_zone==1){color=mix(color,vec3(1.0,.90,.48),response*.48);}
+  if(work_kind==8 && work_zone==1){
+   float electric_face=pow(max(0.0,dot(facing_normal,normalize(vec3(-.3,.5,1.0)))),5.0);
+   color=mix(vec3(.02,.55,.78),vec3(.55,1.0,1.0),electric_face*.60+response*.30)*strength;
+  }else if(work_kind==8 && work_zone==2){color=vec3(.40,.92,1.0)*strength;}
  }
  if(work_kind!=1 && load_fraction<=0.0){opacity=0.0;}
  if(work_kind==3){opacity*=smoothstep(0.01,0.15,abs(facing_normal.z));}
