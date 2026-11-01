@@ -66,6 +66,8 @@ def box(name, pos, size, mat, root=None, bevel=.035):
     obj.dimensions = size
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     finish(obj, name, mat, root, bevel)
+    if mat == ARMOR and size[0] > .55 and size[1] > .24 and size[2] < .75:
+        armor_facets(obj)
     obj.location = pos
     return obj
 
@@ -164,8 +166,9 @@ annular_band("Deep lower pressure hull",4.01,4.66,-.85,-.57,EDGE)
 annular_band("Outer beveled side armor course",4.69,4.79,-.64,-.10,ARMOR)
 annular_band("Inner beveled side armor course",3.88,3.98,-.64,-.10,ARMOR)
 annular_band("Raised central pressure conduit",4.18,4.49,.13,.28,MACHINE)
-annular_band("Contained upper cyan service line",4.15,4.18,.16,.18,CYAN)
-annular_band("Contained lower cyan service line",4.70,4.73,-.34,-.29,CYAN)
+for center in (pi/4,3*pi/4,5*pi/4,7*pi/4):
+    annular_band("Node-only upper energy guide",4.15,4.18,.16,.18,CYAN,center-.18,center+.18,12)
+    annular_band("Node-only lower energy guide",4.70,4.73,-.34,-.29,CYAN,center-.18,center+.18,12)
 for i in range(36):
     a0=i*tau/36+.009
     a1=(i+1)*tau/36-.009
@@ -265,6 +268,9 @@ for x in (-.43,.43):
 
 workshop=socket("03 / Open manufacturing hall",-45)
 box("Open recessed construction floor",(0,0,.48),(2.18,1.18,.22),MACHINE,workshop,.06)
+box("Deep open manufacture chamber mouth",(0,-.77,1.00),(1.48,.12,.68),KEEL,workshop,.025)
+box("Module under fabrication inside mouth",(0,-.85,.83),(.96,.13,.26),EDGE,workshop,.02)
+box("Exposed workpiece armor edge",(0,-.93,.94),(.74,.055,.07),ARMOR,workshop,.012)
 for side in (-1,1):
     box("Lengthwise heavy manufacturing sill",(0,side*.68,.65),(2.66,.33,.39),ARMOR,workshop,.11)
     box("Traveling crane track",(0,side*.46,.88),(2.1,.10,.09),EDGE,workshop,.02)
