@@ -37,6 +37,10 @@ func configure_visual(appearance: Dictionary) -> void:
 		var value = appearance.get(key, VISUAL_DEFAULTS[key])
 		var number := float(value) if value is float or value is int else float(VISUAL_DEFAULTS[key])
 		if not is_finite(number):number = float(VISUAL_DEFAULTS[key])
+		# A compact beamed core needs a legible photosphere. Shorten the beam
+		# relative to its body while keeping approximately the same pixel reach.
+		if key == "beamLength" and float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("radiusScale", 1.0)) <= 0.3:
+			number = minf(number, 5.2)
 		globe_material.set_shader_parameter(VISUAL_UNIFORMS[key], maxf(0.0, number))
 	for key in {"surfaceTint":"surface_tint", "shadowTint":"shadow_tint"}:
 		var fallback := "ffffff" if key == "surfaceTint" else "777777"
