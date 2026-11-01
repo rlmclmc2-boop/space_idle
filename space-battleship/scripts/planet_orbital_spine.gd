@@ -80,7 +80,7 @@ func _ready() -> void:
 		elif kind == "refinery":
 			_add_integrated_hull(root, bounds.x, PI * 1.833333, 1.0, false, true)
 		elif kind == "equipment":
-			_add_integrated_hull(root, 0.27, 1.06, 0.70, true, true)
+			_add_integrated_hull(root, 0.35, 1.0, 0.60, true, true)
 		elif kind == "shipyard":
 			_add_integrated_hull(root, PI * 0.633333, PI * 0.855556, 0.70, true, true)
 		for rib_index in range(1, 6):

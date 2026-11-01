@@ -178,12 +178,44 @@ def owned_arc(root, name, begin, end, inner, outer, bottom, top, mat):
     faces=[]
     for i in range(steps):
         j=i*4
-        faces.extend(((j,j+4,j+5,j+1),(j+2,j+3,j+7,j+6),
-                      (j,j+2,j+6,j+4),(j+1,j+5,j+7,j+3)))
+        faces.extend(((j,j+1,j+5,j+4),(j+2,j+6,j+7,j+3),
+                      (j,j+4,j+6,j+2),(j+1,j+3,j+7,j+5)))
     mesh=bpy.data.meshes.new(name)
     mesh.from_pydata(vertices,[],faces); mesh.update()
     obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
     return finish(obj,name,mat,root)
+
+
+def curved_shell(root, name, begin, end, inner, outer, bottom, top, mat):
+    """Tapered pressure hull whose roof, walls and floor all follow one arc."""
+    bpy.context.view_layer.update()
+    inverse = root.matrix_world.inverted()
+    steps = max(24, int(abs(end-begin)*3))
+    vertices=[]
+    center=(inner+outer)*.5
+    for i in range(steps+1):
+        t=i/steps
+        edge=max(0,min(1,t/.16,(1-t)/.16))
+        edge=edge*edge*(3-2*edge)
+        angle_degrees=begin+(end-begin)*t
+        angle=angle_degrees*pi/180
+        rise=.68*sin(pi*(angle_degrees-25)/130) if 25<=angle_degrees<=155 else 0
+        rin=center-.19+(inner-center+.19)*edge
+        rout=center+.19+(outer-center-.19)*edge
+        high=bottom+.18+(top-bottom-.18)*edge
+        for radius,z in ((rin,high+.06),(rout,high-.07),(rin,bottom),(rout,bottom)):
+            vertices.append(tuple(inverse @ Vector((radius*cos(angle),radius*sin(angle),z+rise))))
+    faces=[]
+    for i in range(steps):
+        j=i*4
+        faces.extend(((j,j+1,j+5,j+4),(j+2,j+6,j+7,j+3),
+                      (j,j+4,j+6,j+2),(j+1,j+3,j+7,j+5)))
+    faces.extend(((0,1,3,2),tuple(range(steps*4,steps*4+4))))
+    mesh=bpy.data.meshes.new(name)
+    mesh.from_pydata(vertices,[],faces); mesh.update()
+    obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+    obj=finish(obj,name,mat,root)
+    return armor_facets(obj) if mat==ARMOR else obj
 
 
 def root_at(name,degrees):
@@ -217,64 +249,46 @@ for root,lo,hi in ((refinery,25,75),(station,75,155)):
     for a in range(lo+5,hi-5,12):
         owned_arc(root,"Arc gallery aperture",a,a+7,4.34,4.41,.56,.68,GLASS)
 
-# Command core grows from the long occupied crescent. Broad stepped roof and
-# inhabited flanks read as one building with the upper arc at page size.
-armor_prism("Command bridge dark pressure base",
-            [(-1.06,-.58),(-.87,-1.05),(.87,-1.05),(1.06,-.58),(.74,.40),(-.74,.40)],
-            .52,1.12,EDGE,station)
-slope_shell("Command bridge faceted top",
-            [(-.98,-.66),(-.76,-1.02),(.76,-1.02),(.98,-.66)],
-            [1.42,1.37,1.37,1.42],.18,ARMOR,station)
-box("Long bridge observation slit",(0,-1.045,1.16),(1.47,.055,.13),GLASS,station,.014)
-for side in (-1,1):
-    slope_shell("Habitat roof bay",
-                [(side*.98,-.63),(side*1.56,-.67),(side*1.55,.14),(side*.91,.10)],
-                [1.13,1.04,.86,1.08],.16,ARMOR,station)
-    box("Habitat outboard armor cassette",(side*1.27,-.71,.78),(.48,.13,.26),ARMOR_MID,station,.02)
-cyl("Closed command bearing integrated in arc",(0,-.34,.88),.47,.27,KEEL,station,10)
-torus("Habitat upper pressure collar",(0,-.34,1.02),.45,.07,ARMOR,station)
-torus("Inboard turquoise bearing",(0,-.34,1.11),.29,.035,CYAN,station)
-cone("Eight-sided raised command citadel",(0,-.34,1.31),.31,.18,.36,KEEL,station,8)
-torus("Continuous command glazing band",(0,-.34,1.37),.23,.025,CYAN,station)
-cyl("Command dark glass crown",(0,-.34,1.52),.17,.07,GLASS,station,8)
-cone("Short command beacon",(0,-.34,1.67),.09,.025,.22,ARMOR,station,8)
-cyl("Amber signal cap",(0,-.34,1.80),.035,.05,AMBER,station,8)
+# The inhabited main body, roof and flanks turn with the arc. The command
+# citadel is a functional crown on that curved hull, rather than its outline.
+curved_shell(station,"Curved inhabited main pressure body",79,149,4.31,5.38,.46,1.22,ARMOR)
+curved_shell(station,"Curved inner observation gallery",88,138,4.18,4.53,.57,.91,EDGE)
+owned_arc(station,"Curved continuous observation glazing",91,135,4.16,4.24,.84,.94,GLASS)
+for lo,hi in ((83,102),(107,121),(126,143)):
+    curved_shell(station,"Stepped inhabited roof bay",lo,hi,4.54,5.28,.96,1.34,ARMOR)
+cyl("Closed command bearing integrated in arc",(0,-.34,1.53),.47,.27,KEEL,station,10)
+torus("Habitat upper pressure collar",(0,-.34,1.67),.45,.07,ARMOR,station)
+torus("Inboard turquoise bearing",(0,-.34,1.76),.29,.035,CYAN,station)
+cone("Eight-sided raised command citadel",(0,-.34,1.96),.31,.18,.36,KEEL,station,8)
+torus("Continuous command glazing band",(0,-.34,2.02),.23,.025,CYAN,station)
+cyl("Command dark glass crown",(0,-.34,2.17),.17,.07,GLASS,station,8)
+cone("Short command beacon",(0,-.34,2.32),.09,.025,.22,ARMOR,station,8)
+cyl("Amber signal cap",(0,-.34,2.45),.035,.05,AMBER,station,8)
 
-# The heat process sits at the end of the same pressure structure. Its small
-# furnace throat opens toward the outer edge; ore channels stay inside.
-armor_prism("Heat throat integrated housing",
-            [(-.78,-.60),(-.55,-1.00),(.56,-1.00),(.78,-.60),(.67,.30),(-.67,.30)],
-            .45,.98,ARMOR,refinery)
-slope_shell("Heat throat tapered shield",
-            [(-.62,-.60),(-.48,-.92),(.48,-.92),(.62,-.60)],
-            [1.12,1.03,1.03,1.12],.14,ARMOR,refinery)
-cyl("Twelve-facet heat chamber",(0,-.47,.96),.35,.50,MACHINE,refinery,12)
-cyl("Contained amber furnace core",(0,-.47,1.23),.25,.05,AMBER,refinery,12)
-torus("Heavy furnace upper clamp",(0,-.47,1.25),.33,.065,EDGE,refinery)
+# The heat body turns with the same architectural centerline. Its process
+# crown marks a short raised bay near one end of the occupied crescent.
+curved_shell(refinery,"Curved heat transfer pressure body",29,72,4.32,5.30,.44,1.02,ARMOR)
+curved_shell(refinery,"Heat throat raised bay",38,57,4.62,5.24,.93,1.28,ARMOR)
+cyl("Twelve-facet heat chamber",(0,-.47,1.41),.35,.50,MACHINE,refinery,12)
+cyl("Contained amber furnace core",(0,-.47,1.68),.25,.05,AMBER,refinery,12)
+torus("Heavy furnace upper clamp",(0,-.47,1.70),.33,.065,EDGE,refinery)
 for side in (-1,1):
     box("Contained vertical furnace vent",(side*.38,-.99,.79),(.10,.05,.31),AMBER,refinery,.012)
     beam("Furnace load buttress",(side*.73,-.42,.54),(side*.30,-.53,1.12),.19,.21,ARMOR,refinery)
     box("Ore intake dark face",(side*.59,-.80,.68),(.17,.32,.20),EDGE,refinery,.025)
 box("Rear crucible return throat",(0,.46,.60),(.48,.47,.19),EDGE,refinery,.025)
 
-# A compact forward manufacturing bay, with its actual work floor recessed
-# within its owned arc, not a stand-alone block on a transit ring.
-owned_arc(workshop,"Manufacturing occupied arc keel",-67,-12,3.89,4.83,-.25,.23,KEEL)
-owned_arc(workshop,"Manufacturing occupied arc armor",-65,-14,3.94,4.79,.23,.45,ARMOR)
-owned_arc(workshop,"Manufacturing inner dark work gallery",-61,-17,3.93,4.04,.45,.62,EDGE)
-box("Recessed arc manufacturing work floor",(0,0,.48),(2.48,.69,.11),MACHINE,workshop,.025)
-for side in (-1,1):
-    armor_prism("Manufacturing pressure wall",
-                [(-1.15,side*.42),(-.92,side*.68),(.92,side*.68),(1.15,side*.42)],
-                .45,1.11,EDGE,workshop)
-    slope_shell("Manufacturing sloping roof",
-                [(-1.10,side*.38),(1.10,side*.38),(.88,side*.68),(-.88,side*.68)],
-                [1.43,1.43,1.12,1.12],.13,ARMOR,workshop)
-    box("Manufacturing lateral dark hatch",(0,side*.72,.86),(1.84,.06,.40),KEEL,workshop,.02)
-    for x in (-.57,0,.57):
-        box("Manufacturing segmented door",(x,side*.76,.86),(.46,.05,.31),ARMOR_SIDE,workshop,.018)
-for x in (-.86,.86):
-    beam("Manufacturing compression arch",(x,-.56,.55),(x,0,1.55),.16,.18,ARMOR,workshop)
+# The manufacturing enclosure follows the ring with a short, angled pressure
+# terminal. The roof bays leave one readable central work aperture.
+curved_shell(workshop,"Manufacturing curved load root",-61,-19,4.03,4.79,-.25,.54,KEEL)
+curved_shell(workshop,"Manufacturing inner curved wall",-57,-23,3.99,4.27,.48,1.13,EDGE)
+curved_shell(workshop,"Manufacturing outer curved wall",-57,-23,4.60,4.96,.48,1.23,ARMOR)
+owned_arc(workshop,"Recessed curved manufacturing work floor",-54,-26,4.25,4.63,.49,.55,MACHINE)
+for lo,hi,rise in ((-57,-46,0),(-36,-23,.12)):
+    curved_shell(workshop,"Stepped curved fabrication roof",lo,hi,4.22,4.78,1.02,1.42+rise,ARMOR)
+box("Manufacturing terminal beveled gate frame",(1.72,.37,.72),(.08,.59,.54),ARMOR_MID,workshop,.025)
+box("Manufacturing recessed terminal door",(1.77,.37,.72),(.05,.46,.39),EDGE,workshop,.012)
+box("Manufacturing terminal work indicator",(1.81,.37,.83),(.025,.29,.035),CYAN,workshop,.005)
 box("Suspended gantry travel bridge",(.17,0,1.26),(.26,.80,.13),MACHINE,workshop,.02)
 beam("Downward working tool",(.17,0,1.21),(.17,0,.77),.09,.10,EDGE,workshop)
 box("Tool work glow",(.17,0,.78),(.16,.18,.04),CYAN,workshop,.01)
@@ -344,8 +358,8 @@ camera_data=bpy.data.cameras.new("Concept orthographic camera")
 camera=bpy.data.objects.new("Concept orthographic camera",camera_data)
 bpy.context.collection.objects.link(camera)
 camera.location=(0,-10.0,11.5)
-camera.rotation_euler=(Vector((0,0,.23))-camera.location).to_track_quat('-Z','Y').to_euler()
-camera_data.type='ORTHO'; camera_data.ortho_scale=17.4
+camera.rotation_euler=(Vector((0,0,.42))-camera.location).to_track_quat('-Z','Y').to_euler()
+camera_data.type='ORTHO'; camera_data.ortho_scale=18.6
 bpy.context.scene.camera=camera
 
 scene=bpy.context.scene
