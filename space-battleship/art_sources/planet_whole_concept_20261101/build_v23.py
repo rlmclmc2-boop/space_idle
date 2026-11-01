@@ -174,6 +174,17 @@ def slope_shell(name, outline, top_heights, thickness, mat, root=None):
     return armor_facets(obj) if mat == ARMOR else obj
 
 
+def wall_prism(name, outline_xz, near_y, far_y, mat, root=None):
+    """Faceted vertical pressure wall or load gusset with a real dark side."""
+    count=len(outline_xz)
+    verts=[(x,y,z) for y in (near_y,far_y) for x,z in outline_xz]
+    faces=[tuple(range(count-1,-1,-1)),tuple(range(count,2*count))]
+    faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces);mesh.update()
+    obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
+    return finish(obj,name,mat,root,.018)
+
+
 def armor_facets(obj):
     """Color the broad upper armor plane separately from its load-bearing flanks."""
     obj.data.materials.append(ARMOR_FACE)
@@ -486,11 +497,26 @@ for x in (-1.12,1.12):
     for y in (-.75,.20):
         beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.62),.24,.28,ARMOR,workshop)
         box("Manufacturing portal dark bearing foot",(x,y,.41),(.32,.39,.24),EDGE,workshop)
+        sign=-1 if x<0 else 1
+        wall_prism("Manufacturing sloped load shoulder",
+                   [(x-sign*.15,.81),(x+sign*.28,.81),(x+sign*.28,1.38),
+                    (x+sign*.07,1.72),(x-sign*.15,1.72)],
+                   y-.15,y+.15,ARMOR_FACE,workshop)
+        box("Manufacturing dark inner jamb",(x-sign*.19,y,1.03),
+            (.075,.26,.76),MACHINE,workshop,.012)
     beam("Manufacturing broad entrance lintel",(x,-.83,1.64),(x,.28,1.64),.29,.34,ARMOR,workshop)
     box("Manufacturing lintel pressure cap",(x,-.28,1.81),(.39,1.34,.13),ARMOR_SIDE,workshop)
+    box("Manufacturing recessed lintel soffit",(x,-.28,1.52),(.27,1.17,.09),KEEL,workshop,.012)
+box("Manufacturing outer pressure cavity wall",(0,-.89,.51),(1.92,.13,.52),ARMOR_SIDE,workshop)
+for x in (-.58,0,.58):
+    box("Manufacturing vented cavity inset",(x,-.97,.55),(.31,.026,.15),KEEL,workshop,.006)
+    box("Manufacturing amber working status",(x,-.99,.58),(.12,.012,.025),AMBER,workshop,.003)
 box("Manufacturing recessed machine bed",(0,-.25,.53),(1.18,.70,.24),ARMOR_SIDE,workshop)
 box("Manufacturing central workpiece",(0,-.25,.72),(.55,.44,.19),MACHINE,workshop)
 box("Manufacturing active work face",(0,-.25,.83),(.40,.25,.025),CYAN,workshop,.008)
+for x in (-.43,.43):
+    box("Manufacturing tool base",(x,.02,.62),(.18,.19,.26),EDGE,workshop,.012)
+    box("Manufacturing machine jaw",(x,-.17,.84),(.19,.23,.07),ARMOR_FACE,workshop,.008)
 beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,workshop)
 for side in (-1,1):
     beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.15,.20,ARMOR_SIDE,workshop)
@@ -508,10 +534,32 @@ for side in (-1,1):
     box("Dock armored entry cheek",(side*.90,-.62,.72),(.38,.88,.84),ARMOR,shipyard)
     box("Dock inset service wall",(side*.70,-1.13,.49),(.16,1.18,.37),ARMOR_SIDE,shipyard)
     box("Dock exterior pressure foot",(side*.87,-1.49,.35),(.34,.52,.25),EDGE,shipyard)
+    box("Dock inner bay shadow liner",(side*.68,-.63,.84),(.075,.71,.67),KEEL,shipyard,.012)
+    wall_prism("Dock sloped outer entrance shoulder",
+               [(side*.67,.31),(side*1.13,.31),(side*1.13,1.10),
+                (side*.96,1.40),(side*.69,1.40)],-.27,.03,ARMOR_FACE,shipyard)
+    box("Dock launch clamp actuator",(side*.57,-1.24,.61),(.21,.30,.21),MACHINE,shipyard,.012)
+    box("Dock launch clamp jaw",(side*.48,-1.24,.73),(.12,.25,.08),ARMOR_FACE,shipyard,.008)
+    box("Dock contained service light",(side*.85,-1.01,.58),(.028,.20,.025),CYAN,shipyard,.004)
 box("Dock recessed launch deck",(0,-1.00,.29),(1.40,1.48,.16),KEEL,shipyard)
 box("Dock inner machine service bed",(0,-.75,.41),(.60,.71,.10),ARMOR_SIDE,shipyard)
+box("Dock entrance dark pressure threshold",(0,-.35,.39),(1.46,.32,.16),EDGE,shipyard,.015)
 beam("Dock portal gantry",(-.83,-.40,1.00),(.83,-.40,1.00),.14,.18,ARMOR,shipyard)
 beam("Dock armored entrance canopy",(-.94,-.35,1.25),(.94,-.35,1.25),.30,.32,ARMOR,shipyard)
+slope_shell("Dock faceted entry roof",
+            [(-1.06,-.39),(1.06,-.39),(1.01,.04),(-1.01,.04)],
+            [1.36,1.36,1.22,1.22],.13,ARMOR,shipyard)
+for side in (-1,1):
+    wall_prism("Dock deep armored portal fascia",
+               [(side*.55,.37),(side*1.14,.37),(side*1.14,1.14),
+                (side*.93,1.43),(side*.70,1.43),(side*.55,1.16)],
+               -.58,-.35,ARMOR_FACE,shipyard)
+    box("Dock black recessed portal return",(side*.52,-.60,.81),
+        (.075,.17,.75),KEEL,shipyard,.009)
+box("Dock portal upper pressure hood",(0,-.47,1.44),
+    (1.61,.32,.17),ARMOR_FACE,shipyard,.02)
+box("Dock portal recessed soffit",(0,-.64,1.28),
+    (1.33,.075,.10),KEEL,shipyard,.01)
 for side in (-1,1):
     beam("Dock entrance upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.25,.27,ARMOR,shipyard)
     beam("Dock outer service portal upright",(side*.82,-1.39,.35),(side*.82,-1.39,1.02),.16,.19,ARMOR_SIDE,shipyard)
