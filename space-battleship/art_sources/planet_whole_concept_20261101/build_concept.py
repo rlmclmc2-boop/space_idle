@@ -159,55 +159,59 @@ def armor_facets(obj):
     return obj
 
 
-# The ring is one dark pressure system with two armored bank beams, a work
-# trough and four built nodes. Short plate gaps expose the same keel below.
-annular_band("Continuous central pressure keel",3.95,4.72,-.57,.12,KEEL)
-annular_band("Deep lower pressure hull",4.01,4.66,-.85,-.57,EDGE)
-annular_band("Outer beveled side armor course",4.69,4.79,-.64,-.10,ARMOR)
-annular_band("Inner beveled side armor course",3.88,3.98,-.64,-.10,ARMOR)
-annular_band("Raised central pressure conduit",4.18,4.49,.13,.28,MACHINE)
+# The four large authored structures are the ring's bearing segments. Between
+# them only a slim enclosed service beam crosses the open orbital span.
+annular_band("Slim orbital through-pressure beam",4.22,4.44,-.23,.10,KEEL)
+annular_band("Through-beam lower armor",4.24,4.42,-.31,-.23,EDGE)
+annular_band("Narrow upper conduit",4.29,4.37,.10,.17,MACHINE)
 for center in (pi/4,3*pi/4,5*pi/4,7*pi/4):
-    annular_band("Node-only upper energy guide",4.15,4.18,.16,.18,CYAN,center-.18,center+.18,12)
-    annular_band("Node-only lower energy guide",4.70,4.73,-.34,-.29,CYAN,center-.18,center+.18,12)
-for i in range(36):
-    a0=i*tau/36+.009
-    a1=(i+1)*tau/36-.009
-    annular_band("Segmented inner load armor",3.96,4.10,.13,.26,ARMOR,a0,a1,5)
-    annular_band("Segmented outer load armor",4.57,4.71,.13,.26,ARMOR,a0,a1,5)
+    annular_band("Node-contained energy guide",4.43,4.45,-.04,.01,CYAN,center-.15,center+.15,12)
+for i in range(24):
+    a0=i*tau/24+.008
+    a1=(i+1)*tau/24-.008
+    annular_band("Thin segmented armor cover",4.21,4.45,.13,.20,ARMOR,a0,a1,4)
     if i % 3 == 0:
         a=(a0+a1)*.5
-        annular_band("Deep pressure joint clamp",3.89,4.78,-.70,.31,EDGE,a-.016,a+.016,2)
-for i in range(12):
-    a=(i+.5)*tau/12
-    annular_band("Radial charcoal bulkhead",3.95,4.72,.19,.26,EDGE,a-.008,a+.008,2)
+        annular_band("Through-beam pressure coupling",4.18,4.48,-.30,.22,EDGE,a-.012,a+.012,2)
 
 
-def socket(name, deg, open_fork=False):
+def socket(name, deg, open_fork=False, section_node=False):
     a=deg*pi/180
     o=parent(name,(4.33*cos(a),4.33*sin(a),.05),a+pi/2)
     if open_fork:
         armor_prism("Open dock root pressure yoke",
                     [(-1.55,.25),(-1.08,-.48),(1.08,-.48),(1.55,.25),
                      (1.55,.78),(1.08,.90),(-1.08,.90),(-1.55,.78)],-.27,.21,KEEL,o)
-    else:
+    elif not section_node:
         armor_prism("Integrated tapered pressure socket",
                     [(-1.55,-.45),(-1.08,-.91),(1.08,-.91),(1.55,-.45),
                      (1.55,.45),(1.08,.91),(-1.08,.91),(-1.55,.45)],-.27,.21,KEEL,o)
+    else:
+        # The hall's two load walls are the bearing. Leave its work floor
+        # open between them instead of placing the whole building on a pad.
+        for side in (-1,1):
+            box("Hall integral longitudinal pressure rail",(0,side*.69,-.03),(2.63,.28,.34),KEEL,o,.06)
     box("Continuous exposed central service spine",(0,0,.22),(2.86,.43,.075),MACHINE,o,.03)
     box("Common through-running enclosed service trace",(0,0,.27),(2.75,.025,.016),CYAN,o,.005)
     for side in (-1,1):
-        armor_prism("Common flared primary load bank",
-                    [(-1.47,side*.38),(-1.02,side*.90),(1.02,side*.90),(1.47,side*.38)],
-                    .20,.46,ARMOR,o)
+        if section_node:
+            box("Section node armored load cheek",(0,side*.70,.28),(2.18,.22,.29),ARMOR,o,.055)
+        else:
+            armor_prism("Common flared primary load bank",
+                        [(-1.47,side*.38),(-1.02,side*.90),(1.02,side*.90),(1.47,side*.38)],
+                        .20,.46,ARMOR,o)
         box("Continuous machine side course",(0,side*.83,-.07),(2.33,.12,.23),EDGE,o,.03)
         box("Contained socket service way",(0,side*.899,.05),(2.1,.025,.034),CYAN,o,.006)
     for x in (-1.00,1.00):
         armor_prism("Visible heavy socket-to-ring shear key",
                     [(x*.90,-.49),(x*1.47,-.42),(x*1.61,.42),(x*.90,.49)],.02,.33,EDGE,o)
         for side in (-1,1):
-            armor_prism("Four flared armored spine transitions",
-                        [(x*.91,side*.43),(x*1.48,side*.43),
-                         (x*1.63,side*.84),(x*.69,side*.86)],.13,.42,ARMOR,o)
+            if section_node:
+                beam("Ring beam enters structural hall wall",(x*.96,side*.70,.25),(x*1.59,side*.39,.18),.17,.18,ARMOR,o)
+            else:
+                armor_prism("Four flared armored spine transitions",
+                            [(x*.91,side*.43),(x*1.48,side*.43),
+                             (x*1.63,side*.84),(x*.69,side*.86)],.13,.42,ARMOR,o)
     return o
 
 
@@ -269,7 +273,7 @@ for x in (-.43,.43):
     beam("Crucible shield shoulder",(x,.32,.67),(x,.87,.88),.13,.17,ARMOR,refinery)
 
 
-workshop=socket("03 / Open manufacturing hall",-45)
+workshop=socket("03 / Open manufacturing hall",-45,section_node=True)
 box("Open recessed construction floor",(0,0,.48),(2.18,1.18,.22),MACHINE,workshop,.06)
 box("Deep open manufacture chamber mouth",(0,-.77,1.00),(1.48,.12,.68),KEEL,workshop,.025)
 box("Module under fabrication inside mouth",(0,-.85,.83),(.96,.13,.26),EDGE,workshop,.02)
@@ -330,7 +334,7 @@ box("Tool work glow",(.19,0,1.015),(.23,.29,.06),CYAN,workshop,.012)
 beam("Visible contained welding column",(.19,0,1.42),(.19,0,1.06),.045,.05,CYAN,workshop)
 
 
-shipyard=socket("04 / Gated launch dock",-135,open_fork=True)
+shipyard=socket("04 / Gated launch dock",-135,open_fork=True,section_node=True)
 box("Narrow free-space launch keel",(0,-.84,.42),(.44,2.91,.18),EDGE,shipyard,.04)
 for side in (-1,1):
     slope_shell("Angled armored dock root into open fork",

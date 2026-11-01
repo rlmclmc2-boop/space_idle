@@ -17,9 +17,9 @@ const FACILITY_ANGLES := {
 # Keep the common load path close to terrestrial globes while leaving the
 # four authored work nodes and their independent owned arc ends intact.
 const RADIUS := 4.35
-const REAR_TRANSIT_WIDTH := 0.46
-const FRONT_TRANSIT_WIDTH := 0.72
-const NODE_WIDTH := 1.18
+const REAR_TRANSIT_WIDTH := 0.22
+const FRONT_TRANSIT_WIDTH := 0.30
+const NODE_WIDTH := 0.36
 const TILT_Y := 0.66
 const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
@@ -125,9 +125,9 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float, kind: S
 	var station_tip := kind == "auto_explore"
 	var nose_span := 0.055 if station_tip else 0.09
 	var nose_width := 0.34 if station_tip else 0.32
-	var nose_top := 0.27
-	var nose_edge := 0.19
-	var nose_bottom := -0.10 if station_tip else -0.17
+	var nose_top := 0.13
+	var nose_edge := 0.09
+	var nose_bottom := -0.06 if station_tip else -0.08
 	for step in 8:
 		var t0 := float(step) / 8.0
 		var t1 := float(step + 1) / 8.0
@@ -135,12 +135,12 @@ func _add_tapered_terminal(parent: Node3D, angle: float, outward: float, kind: S
 		var b := angle + outward * nose_span * t1
 		var wa := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t0))
 		var wb := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t1))
-		var ta := lerpf(0.43, nose_top, t0)
-		var tb := lerpf(0.43, nose_top, t1)
-		var ea := lerpf(0.26, nose_edge, t0)
-		var eb := lerpf(0.26, nose_edge, t1)
-		var ba := lerpf(-0.40, nose_bottom, t0)
-		var bb := lerpf(-0.40, nose_bottom, t1)
+		var ta := lerpf(0.43 * 0.46, nose_top, t0)
+		var tb := lerpf(0.43 * 0.46, nose_top, t1)
+		var ea := lerpf(0.26 * 0.46, nose_edge, t0)
+		var eb := lerpf(0.26 * 0.46, nose_edge, t1)
+		var ba := lerpf(-0.40 * 0.46, nose_bottom, t0)
+		var bb := lerpf(-0.40 * 0.46, nose_bottom, t1)
 		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS)
 		var am := point(a) * ((RADIUS - wa * 0.15) / RADIUS)
 		var ap := point(a) * ((RADIUS + wa * 0.15) / RADIUS)
@@ -250,7 +250,7 @@ func _add_side_armor(parent: Node3D, begin: float, finish: float, width: float, 
 				var current_width := _section_width(kind, angle) if kind != "" else width
 				var radius := side * (current_width * 0.5 + cross.x)
 				var rise := _node_section_rise(kind, angle) if cross.y < 0.0 else _shoulder_lift(kind, angle)
-				positions.append(point(angle) * ((RADIUS + radius) / RADIUS) + plane_normal() * (cross.y + rise))
+				positions.append(point(angle) * ((RADIUS + radius) / RADIUS) + plane_normal() * (cross.y + rise) * _shell_scale(kind, angle))
 			var normal := (positions[1] - positions[0]).cross(positions[2] - positions[0]).normalized()
 			for vertex in positions:
 				surface.set_normal(normal)
@@ -290,13 +290,25 @@ func _section_width(kind: String, angle: float) -> float:
 	blend *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
 	# Give each built work floor a real shoulder matching its pressure feet.
 	# The station stays narrow so its independently built passage stays open.
-	var node_width := 1.36 if kind == "auto_explore" else 1.53 if kind == "refinery" else 1.60 if kind == "equipment" else 1.62 if kind == "shipyard" else NODE_WIDTH
+	var node_width := 1.38 if kind == "auto_explore" else 1.53 if kind == "refinery" else 1.76 if kind == "equipment" else 1.82 if kind == "shipyard" else NODE_WIDTH
 	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:
 	# The front load path carries the visible heavy deck; the rear transit
 	# section is slimmer before it passes behind the globe.
 	return lerpf(REAR_TRANSIT_WIDTH, FRONT_TRANSIT_WIDTH, 0.5 + 0.5 * sin(angle))
+
+func _shell_scale(kind: String, angle: float) -> float:
+	# Transit is a narrow pressure link. The heavy vertical bearing grows only
+	# inside each facility, so a continuous thick ring cannot read as a road.
+	if kind == "front_bearing":
+		return lerpf(0.46, 0.68, 1.0 - smoothstep(0.04, 0.16, absf(angle - PI * 0.5)))
+	if not kind in KINDS:
+		return 0.46
+	var node := 1.0 - smoothstep(0.11, 0.34, absf(angle - FACILITY_ANGLES[kind]))
+	var bounds: Vector2 = ARC_BOUNDS[kind]
+	node *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
+	return lerpf(0.46, 1.0, node)
 
 func _shoulder_lift(kind: String, angle: float) -> float:
 	if kind == "" or kind == "front_bearing": return 0.0
@@ -420,7 +432,7 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		var crown_span := 1.0 - smoothstep(0.025, 0.16, absf(angle - PI * 0.5))
 		var crown_width := 1.0 - smoothstep(0.16, 0.43, absf(current.x))
 		height += 0.18 * crown_span * crown_width
-	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
+	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height * _shell_scale(kind, angle))
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
 	var surface := SurfaceTool.new()
@@ -434,10 +446,10 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 		var section_b := _node_section_rise(kind, b) if lift < 0.0 else 0.0
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
-		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift + section_a)
-		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift + section_a)
-		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift + section_b)
-		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift + section_b)
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift + section_a) * _shell_scale(kind, a)
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift + section_a) * _shell_scale(kind, a)
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift + section_b) * _shell_scale(kind, b)
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift + section_b) * _shell_scale(kind, b)
 		for vertex in [ai, bi, ao, ao, bi, bo]:
 			surface.set_normal(normal)
 			surface.add_vertex(vertex)
@@ -472,6 +484,10 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 		if top < 0.10:
 			upper_a += section_a
 			upper_b += section_b
+		lower_a *= _shell_scale(kind, a)
+		lower_b *= _shell_scale(kind, b)
+		upper_a *= _shell_scale(kind, a)
+		upper_b *= _shell_scale(kind, b)
 		for vertex in [pa + normal * lower_a, pb + normal * lower_b, pa + normal * upper_a, pa + normal * upper_a, pb + normal * lower_b, pb + normal * upper_b]:
 			surface.set_normal(wall_normal)
 			surface.add_vertex(vertex)
