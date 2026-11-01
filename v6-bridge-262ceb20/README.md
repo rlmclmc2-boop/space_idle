@@ -1,0 +1,3 @@
+# Facility haunch and widened ring shoulder checkpoint
+
+Source `wip/planet-thread-resume-20261101@262ceb20`, Blender 4.3.2 and Godot 4.7.2. The v6 facility pressure haunches now span outward toward the ring mesh's expanded four load shoulders. Screenshots show four independent build stages, 70° views and the actual main scene with the existing facility drawer exposed by an in-memory fixture. `complete.jpg` and `building-stage.jpg` are 2048×768 direct-view exports under 1 MiB; source PNGs remain. No obvious globe penetration or drawer clipping in these author views. The overall art is still a WIP, not accepted.
