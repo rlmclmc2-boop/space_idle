@@ -231,6 +231,9 @@ for side in (-1,1):
                 [1.16,.87,.87,1.16],.13,EDGE,station)
     box("Blue glazed observation slit",(side*1.10,-.40,.84),(.51,.035,.08),GLASS,station,.01)
     beam("Outer wing pressure strut",(side*1.44,.06,.54),(side*1.72,.06,.91),.15,.17,EDGE,station)
+    # A pale pressure cap closes the shadow-side wing, so its actual outer
+    # silhouette remains legible against the starfield without an emissive rim.
+    box("Outboard wing armor end cap",(side*1.60,.015,.84),(.23,.30,.17),ARMOR,station,.035)
 cone("Short command beacon",(0,0,1.77),.14,.05,.34,ARMOR,station,8)
 cyl("Amber signal cap",(0,0,1.97),.07,.07,AMBER,station,8)
 
@@ -281,6 +284,15 @@ for side in (-1,1):
                 [(-1.16,side*.43),(1.16,side*.43),(1.21,side*.79),(-1.21,side*.79)],
                 [1.72,1.72,1.31,1.31],.17,ARMOR,workshop)
     box("Long upper dark daylight opening",(0,side*.47,1.73),(1.74,.045,.02),GLASS,workshop,.004)
+# Both pressure sides share one door system as the hall rotates around the
+# planet. Three stepped plates sit proud of a navy recess with real seams.
+for face in (-1,1):
+    box("Manufacturing side door recessed well",(0,face*.902,1.055),(1.93,.045,.58),KEEL,workshop,.025)
+    for x in (-.64,0,.64):
+        box("Manufacturing side door segmented leaf",(x,face*.943,1.035),(.56,.075,.43),ARMOR_SIDE,workshop,.035)
+        box("Manufacturing side door raised lower cassette",(x,face*.985,.878),(.47,.035,.095),EDGE,workshop,.012)
+    box("Manufacturing side door pressure lintel",(0,face*.962,1.326),(2.10,.13,.105),ARMOR,workshop,.025)
+    box("Manufacturing side door armored threshold",(0,face*.969,.760),(2.04,.11,.105),ARMOR,workshop,.022)
 for x in (-.97,.97):
     for side in (-1,1):
         beam("Hall inclined primary post",(x,side*.72,.58),(x,side*.61,1.54),.25,.27,ARMOR,workshop)

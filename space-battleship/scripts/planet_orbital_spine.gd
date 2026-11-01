@@ -35,6 +35,7 @@ var _deck: ShaderMaterial
 var _channel: ShaderMaterial
 var _sleeve: ShaderMaterial
 var _ivory: ShaderMaterial
+var _rear_rim: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
 
 static func plane_normal() -> Vector3:
@@ -61,6 +62,8 @@ func _ready() -> void:
 	# deck reads as their shared structure under the same scene lighting.
 	_deck = _material(Color("d2c5af"))
 	_ivory = _material(Color("a7a18f"))
+	# A narrow, unlit slate bevel separates the rear load path from the navy sky.
+	_rear_rim = _material(Color("91a09e"))
 	_channel = _material(Color("425e69"))
 	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
@@ -196,6 +199,13 @@ func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.004), -0.28, 0.01, _side, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.26, _side, kind)
 		_add_side_armor(parent, begin, finish, width, side, kind)
+	# Only the outer shoulder of the far half receives this edge. It follows
+	# each owned arc and disappears with its section during staged construction.
+	var rear_begin := maxf(begin, PI + 0.06)
+	var rear_end := minf(finish, TAU - 0.06)
+	if rear_begin < rear_end:
+		_add_wall(parent, rear_begin, rear_end, width * 0.5 + 0.048,
+			0.18, 0.235, _rear_rim, kind)
 	if kind in KINDS:
 		# Energy marks the work node; the load-bearing outline remains dark
 		# through transit sections instead of glowing around the whole orbit.
