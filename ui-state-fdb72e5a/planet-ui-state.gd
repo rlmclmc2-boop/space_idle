@@ -122,6 +122,15 @@ func _check() -> void:
     assert(planet.claims == [["1","station1"],["2","station2"]])
     print("OWNER_CLAIM_ADMISSION_OK")
     print("SWITCH_REBINDS_CLAIM_OK")
+    panel._toggle_section("crew")
+    var dispatch: Button
+    for child in panel._drawer_body.get_children():
+        if child is Button and child.text == "派遣": dispatch = child
+    assert(dispatch != null)
+    dispatch.pressed.emit()
+    assert(crew.coordinates.back() == ["worker","planet_explore","2"])
+    assert(panel._feedback.text == "人员已派遣")
+    print("CREW_DISPATCH_CURRENT_ID_OK")
     panel._stop_button.pressed.emit()
     assert(planet.stops == [["2",false]])
     assert(panel._feedback.text == "本次完成后停止自动探索")
