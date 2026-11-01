@@ -618,7 +618,7 @@ func _settings_group(parent: Control, title: String, caption: String) -> VBoxCon
 	contents.add_theme_constant_override("separation", 9)
 	section.add_child(contents)
 	var divider := ColorRect.new()
-	divider.color = Color("6a999a", 0.6)
+	divider.color = Color("556e83", 0.6)
 	divider.custom_minimum_size.y = 1
 	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	contents.add_child(divider)
@@ -767,7 +767,7 @@ func _setup_growth_panel() -> void:
 	# The page's outer PanelContainer is only a layout inset. Settings cards and
 	# module views own their visible surfaces; drawing both made a doubled frame.
 	var page_inset := StyleBoxFlat.new()
-	page_inset.bg_color = Color("0e2835")
+	page_inset.bg_color = Color("101f30")
 	page_inset.content_margin_left = 16
 	page_inset.content_margin_right = 16
 	page_inset.content_margin_top = 14

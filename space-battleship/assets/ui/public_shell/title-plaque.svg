@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="160" height="48" viewBox="0 0 160 48">
-  <defs><linearGradient id="face" x2="0" y2="1"><stop stop-color="#2b5664"/><stop offset="1" stop-color="#173746"/></linearGradient></defs>
-  <path d="M2 11 11 2h138l9 9v26l-9 9H11l-9-9Z" fill="#071c29" stroke="#061923" stroke-width="2"/>
-  <path d="M4 12 12 4h136l8 8v24l-8 8H12l-8-8Z" fill="url(#face)" stroke="#8cb2aa"/>
-  <path d="M8 13 13 8h13M134 8h13l5 5" fill="none" stroke="#d5bc82" stroke-width="1.5" stroke-opacity=".8"/>
+<path d="M10 1h140l9 9v28l-9 9H10l-9-9V10Z" fill="#091725"/>
+<path d="M11 3h138l8 8v25l-8 8H11l-8-8V11Z" fill="#40576a"/>
+<path d="M12 6h136l6 6v22l-6 7H12l-6-7V12Z" fill="#19344b"/>
+<path d="M12 6h136l6 6H7Z" fill="#64808f" opacity=".55"/>
+<path d="M7 34l6 7h134l7-7v3l-6 7H11l-8-8Z" fill="#0c2032"/>
 </svg>

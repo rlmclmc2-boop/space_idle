@@ -1,5 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="72" viewBox="0 0 48 72">
- <defs><linearGradient id="tile" x2="0" y2="1"><stop stop-color="#153b4c" stop-opacity=".64"/><stop offset="1" stop-color="#0c2838" stop-opacity=".2"/></linearGradient></defs>
- <rect x="2" y="2" width="44" height="68" rx="5" fill="url(#tile)"/>
- <path d="M8 7h32" stroke="#7eaaa7" stroke-opacity=".38"/>
+<path d="M7 1h34l6 6v58l-6 6H7l-6-6V7Z" fill="#091725"/>
+<path d="M8 3h32l5 5v55l-5 6H8l-5-6V8Z" fill="#2e4356"/>
+<path d="M9 5h30l4 4v52l-5 5H10l-5-5V9Z" fill="#142a40"/>
+<path d="M9 5h30l4 4H5Z" fill="#42586a"/>
+<path d="M5 61l5 5h28l5-5v3l-4 4H9l-5-4Z" fill="#0c1e30"/>
 </svg>

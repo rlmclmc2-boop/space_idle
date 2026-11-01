@@ -4,7 +4,7 @@
 
 ### S1
 
-公共壳/控件：`src/main.gd`、`src/ui/bridge_theme.gd`。
+公共壳/控件：`src/main.gd`、`src/ui/bridge_theme.gd`、`src/ui/zone_shell.gd`；共用材质源为 `assets/ui/public_shell/faceted-controls.svg`，同目录顶轨/导航/勾选资源承担公共壳。模块沿既有节点消费共同按钮/板面及light/dark数字角色。
 
 ### S2
 

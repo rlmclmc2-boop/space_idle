@@ -16,7 +16,7 @@
 
 ### 2.1 场景与主体
 
-采用现行奶油白/象牙、深蓝、青色与暖金的科幻语言，以实体、空间和局部工作效果表达模块身份。背景、设备、管路、工作层、读数和控件分层，读数与状态实时绘制。持续观看时能辨认当前对象及工作、停顿、完成状态，操作控件与其作用对象关联。
+采用统一简化分面装甲的科幻语言：主体、场景、舰船与控制台使用相近轮廓强度、大体块/中尺度分件、三至四层主要明暗和宽而受控的反射。奶油白/象牙、深蓝、青色与暖金承担材质身份及主辅强调；金属、保护面和玻璃在同一抽象层级下区分。环境受光方向、冷暖关系、接触阴影及遮挡共同解释空间，局部能量光服务于工作过程和整页主次。背景、设备、管路、工作层、读数和控件分层，读数与状态实时绘制。持续观看时能辨认当前对象及工作、停顿、完成状态，操作控件与其作用对象关联。
 
 ### 2.2 全局信息层级与适配
 
@@ -32,7 +32,7 @@
 
 **数字格式。** 通用数值经 `PlayerText.number`，直接消费规范 Amount 文本。按绝对值阈值 10³/10⁶/10⁹/10¹²/10¹⁵ 使用 k/m/b/t/kt，≥10¹⁸ 使用规范 e；保留一位小数，四舍五入跨阈值升单位（999.95k→1.0m，999.95kt→1.0e18，10²⁰→1.0e20）。通用整数保留 .0，零及负零显示0。资源经 `PlayerText.resource_number`：普通整数无 .0（12、12.0→12），大数保留缩写的一位小数（1000→1.0k）。资源读数消费Owner提供的有效整数结果，实际整数化与展示输入由[资源契约](contracts/resources.md)定义。
 
-**数字与控件角色。** `BridgeTheme.number_role_color(role,surface)` 的 current/gain/cost/insufficient 在 light/dark 承载面上保持可读，使用 `apply_number_role`。普通操作深青、主要操作暖金；共用 `operation_plate/operation_button/apply_operation_button/apply_operation_select`，覆盖普通、悬停、按下、选中、不可用与焦点态。
+**数字与控件角色。** `BridgeTheme.number_role_color(role,surface)` 的 current/gain/cost/insufficient 在 light/dark 承载面上保持可读，使用 `apply_number_role`。普通操作深青、主要操作暖金；共用 `operation_plate/operation_button/apply_operation_button/apply_operation_select`，覆盖普通、悬停、按下、选中、不可用与焦点态。板面按文字角色选择light/dark，普通键深青、执行键暖金、不可用键降为冷灰；控件分面和切角属于同一承载结构，组内以一致基线、留白及主辅关系组成完整操作面。
 
 ### 2.3 所有模块共享的状态与反馈
 

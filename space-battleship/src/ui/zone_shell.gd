@@ -26,9 +26,9 @@ const ROUTES := [
 	["hyperspace", "超空", "超空间"], ["archive", "档案", "档案"],
 	["settings", "设置", "设置"]]
 const TEXT := Color("f0f2e9")
-const MUTED := Color("b7cec9")
-const DARK := Color("0d2533")
-const EDGE := Color("6e9697")
+const MUTED := Color("9eb1c4")
+const DARK := Color("182c40")
+const EDGE := Color("516679")
 var _economy
 var _dirty: bool = true
 var _context: Label
@@ -108,7 +108,7 @@ func _init(economy) -> void:
 		caption.size = Vector2(31, 22)
 		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		caption.add_theme_font_size_override("font_size", 12)
+		caption.add_theme_font_size_override("font_size", 13)
 		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(caption)
 		button.pressed.connect(func(): route_requested.emit(str(spec[0])))
@@ -159,11 +159,11 @@ func _init(economy) -> void:
 
 func _draw() -> void:
 	# No decorative battle extension: the right band remains available to its owner.
-	draw_rect(Rect2(1392.125, 0, 47.875, 900), Color("112c43"))
+	draw_rect(Rect2(1392.125, 0, 47.875, 900), Color("101f30"))
 	draw_rect(Rect2(1392, 0, 1, 900), EDGE)
-	draw_rect(Rect2(808, 0, 47.875, 900), Color("102b3a"))
+	draw_rect(Rect2(808, 0, 47.875, 900), Color("101f30"))
 	draw_rect(Rect2(808, 0, 2, 900), EDGE)
-	draw_rect(Rect2(854, 0, 2, 900), Color("63848d"))
+	draw_rect(Rect2(854, 0, 2, 900), Color("3e556a"))
 	# The approved hangar art starts at y=85; the rail occupies only its blank top margin.
 	draw_texture_rect(TOP_RAIL, Rect2(0, 0, 808, 85 if _active_route == "equipment" else 65), false)
 	for x in [180, 316, 451, 640]:
