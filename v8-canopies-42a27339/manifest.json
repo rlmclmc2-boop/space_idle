@@ -1,6 +1,70 @@
 {
   "source_commit": "42a27339",
   "files": {
+    "stage-1": {
+      "sha256": "235de73ce0a7fbe5a101128353ca27442648a46d4382f88e65528af103c21cd4",
+      "bytes": 103421,
+      "size": [
+        2048,
+        768
+      ]
+    },
+    "stage-2": {
+      "sha256": "44bcb9c0755af0788a52535421d676d3b24fde0eb008005845efaee470d56cbc",
+      "bytes": 118558,
+      "size": [
+        2048,
+        768
+      ]
+    },
+    "stage-3": {
+      "sha256": "0c1199177f8c2c995a04d4526222fb4cb6a0c7f3f339b1129ea081914bb3e62c",
+      "bytes": 143415,
+      "size": [
+        2048,
+        768
+      ]
+    },
+    "stage-4": {
+      "sha256": "48a8c15e2e7d53e659f4d69b3ea53c13de515822b3b860be6721a29ad9c1b7a3",
+      "bytes": 165421,
+      "size": [
+        2048,
+        768
+      ]
+    },
+    "side-1": {
+      "sha256": "6cff5e2a9bb4e9a73124a91170e857fb6e709ece079e6d1a753a6e0b712b3a2f",
+      "bytes": 98729,
+      "size": [
+        2048,
+        768
+      ]
+    },
+    "side-4": {
+      "sha256": "126c876cc57eba29763f60a5ac0e2c04402959ad23e7d37cbbbb8c7acf75502b",
+      "bytes": 162166,
+      "size": [
+        2048,
+        768
+      ]
+    },
+    "motion-00": {
+      "sha256": "ea13f4534a6247c79fdc54c9191b45482a1614f77beef541f37280d643eca0f3",
+      "bytes": 190257,
+      "size": [
+        1440,
+        900
+      ]
+    },
+    "motion-31": {
+      "sha256": "120ffc5a956115d85eef829802be37e73743673e076473c4df21a669b49e13bf",
+      "bytes": 196345,
+      "size": [
+        1440,
+        900
+      ]
+    },
     "complete": {
       "sha256": "48a8c15e2e7d53e659f4d69b3ea53c13de515822b3b860be6721a29ad9c1b7a3",
       "bytes": 165421,
