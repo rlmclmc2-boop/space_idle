@@ -1,0 +1,304 @@
+{
+  "runtime_source": "6bf0dd2dd025acd124c11bcffb60b830909e071e",
+  "planet_fixed_handoff": "82526bc820b1b2fa009c0959bf150cb71b40339a",
+  "incoming_blobs": [
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/auto_explore.glb",
+      "blob": "0f02ea76cdb10205ddd60512bb6ec7edb3cde204"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/equipment.glb",
+      "blob": "77cb99e80cfb39063e65fa6632930635d6864299"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/refinery.glb",
+      "blob": "cbf11c969a936e553ec4d398b37f7b2b2770c830"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/shipyard.glb",
+      "blob": "00ed4a923635f7981e4db3a6316bf0a9367dbd28"
+    },
+    {
+      "path": "space-battleship/scripts/planet_facility_scene.gd",
+      "blob": "7bd1e693639c837fb3b3027e7dec9bda043879dc"
+    },
+    {
+      "path": "space-battleship/scripts/planet_orbital_spine.gd",
+      "blob": "f943051a2e3f426da0a1607eb4d47404b2546310"
+    },
+    {
+      "path": "space-battleship/scripts/planet_spine_opaque.gdshader",
+      "blob": "88dff22c7c926d69f5d8f92beee0627e751a2cb0"
+    }
+  ],
+  "preserved_runtime_blobs": {
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/src/ui/zone_shell.gd": "456e502ca77aadf44f7775359a6f0bb9af683a41",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/ui/planet_panel.gd": "47e7214462a1f239694846bfc85050aa8bc73152",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119"
+  },
+  "state": "受控星球1／探索240／征服／四设施已建",
+  "still_takes": "13张实图与动态由同一driver.gd固定30fps MovieMaker运行产生",
+  "movie": {
+    "method": "Godot --fixed-fps30 --write-movie; speed1; offline render",
+    "segment_process_frames": [
+      121,
+      301
+    ],
+    "frames": 180,
+    "fps": 30,
+    "duration_seconds": 6,
+    "raw_avi_sha256": "6f75bf17fcc0480952c4004ad16da897dd2ec94575d49bd49d8a3ffb6c5e97db",
+    "encoding": "ffmpeg trim=start_frame=121:end_frame=301,setpts=N/(30*TB), libx264 crf20 yuv420p cfr30; no interpolation",
+    "subject": "设施已建、探索未派遣时展示层待机运动"
+  },
+  "author_review": "author-review.md",
+  "media": [
+    {
+      "path": "equipment-return.png",
+      "bytes": 1525113,
+      "sha256": "0a6933b2f916aecfc306e3326350e968bbbef390292d9319117d5768788a46b2"
+    },
+    {
+      "path": "equipment-return.jpg",
+      "bytes": 630313,
+      "sha256": "6db1a29d18022ccb683b6604d712c52babe8d99ca1de7848533be2718670ea7a"
+    },
+    {
+      "path": "planet-picker-open.png",
+      "bytes": 1018129,
+      "sha256": "bb67411208359749ef56a77e987c131196d671e9f7be2381ecd5894d30b40462"
+    },
+    {
+      "path": "planet-picker-open.jpg",
+      "bytes": 470042,
+      "sha256": "523922d1bb251da5f5a59d6915dc8c0adfe2b6de767302cf6f34e5d942efc774"
+    },
+    {
+      "path": "planet-closed.png",
+      "bytes": 1014450,
+      "sha256": "cd6e0d0e42c57fd2d68b586079b3c97bd4d11a41cec2fc4523e20eee0fc0dc29"
+    },
+    {
+      "path": "planet-closed.jpg",
+      "bytes": 466501,
+      "sha256": "9f0e9c593cc9ccdad82e1d293d668ef1b080c1292b6f43b102d6a97f15e18b5c"
+    },
+    {
+      "path": "planet-conquest-scroll.png",
+      "bytes": 851502,
+      "sha256": "7e087934777db388f14e11112c023bcd99e4e8851e59d44986d55b9fa4a23ce3"
+    },
+    {
+      "path": "planet-conquest-scroll.jpg",
+      "bytes": 413109,
+      "sha256": "066f214d9842f17dc992f634e9f16a88dd6fdc723d1bf3f67533a1956ee00c5a"
+    },
+    {
+      "path": "planet-conquest-expanded.png",
+      "bytes": 846990,
+      "sha256": "99cf092eac2d3d5d4115d99fdad849068a519aaecd598f83834699bbb550b2c2"
+    },
+    {
+      "path": "planet-conquest-expanded.jpg",
+      "bytes": 420302,
+      "sha256": "afd40110791930fd923def46d12a38ea4fa64cd687551be4c77b1d8a5c214ac0"
+    },
+    {
+      "path": "planet-exploration.png",
+      "bytes": 914927,
+      "sha256": "098d6d49727d5e8e0de4f8d65426cd4873d1af2339cac38fd4a1cf241ed97907"
+    },
+    {
+      "path": "planet-exploration.jpg",
+      "bytes": 451820,
+      "sha256": "f13eeb0642d8fd4c24b9442fb342ec1153a67f35b8cdd789b1b802162317e01f"
+    },
+    {
+      "path": "planet-crew.png",
+      "bytes": 864365,
+      "sha256": "21b83bf1b6883c88b99b3f67a0bd02ae416873cd28c0d284499620045b5f7e19"
+    },
+    {
+      "path": "planet-crew.jpg",
+      "bytes": 435271,
+      "sha256": "a3fd62497b295c7482ca256a33ad7e55dc486590a9e85afd7ba6492c382c382e"
+    },
+    {
+      "path": "planet-facility-3.png",
+      "bytes": 918372,
+      "sha256": "9a919374bc93ea56cab583ee1dd2b5fa0e7f50c9d529b985e277bbf55ac93ef9"
+    },
+    {
+      "path": "planet-facility-3.jpg",
+      "bytes": 453986,
+      "sha256": "492c438b6a015c28e10a56a1ee7613d6b387107b298fc6c25b1c961e96f46d27"
+    },
+    {
+      "path": "planet-facility-2.png",
+      "bytes": 911995,
+      "sha256": "b35129f6115e746521a0413ba0e7f2ba3325cdb503023a5c718ce09041e3a7b5"
+    },
+    {
+      "path": "planet-facility-2.jpg",
+      "bytes": 444976,
+      "sha256": "d4959164cbcddbddcd27f18211fdb20b02daa08591e3fab83af52e0b58b6b2aa"
+    },
+    {
+      "path": "planet-facility-1.png",
+      "bytes": 913026,
+      "sha256": "6344c608c4f53dabf587fc60f1a3decf171bfbce9425f70ca98fbc5aaea058b5"
+    },
+    {
+      "path": "planet-facility-1.jpg",
+      "bytes": 445419,
+      "sha256": "49ca047ec23646032a382cdb860c8a3bc5e394d1e2ab9b920dbabdf6cefade6b"
+    },
+    {
+      "path": "planet-facility-0.png",
+      "bytes": 938456,
+      "sha256": "5c9681097acb6d220673ef3ca06a648c5f0a3b0272be1dc1da69702e0c851c54"
+    },
+    {
+      "path": "planet-facility-0.jpg",
+      "bytes": 450651,
+      "sha256": "eb8828431fb4803a349bfce6f279ba8e5d7a7cf94cb937179b88a8834b96d46b"
+    },
+    {
+      "path": "planet-facilities.png",
+      "bytes": 940167,
+      "sha256": "fbc2d70ba7c3d3a8ee916cc9e17961a02f8941135b9948b5cfd4b0fd70712593"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 451678,
+      "sha256": "d1085f5803be3d2ce7fdb52f7113e0acf1f43e6d3b49aa32dc635fae70dd26d4"
+    },
+    {
+      "path": "planet-overview.png",
+      "bytes": 1017315,
+      "sha256": "0b06a6343e7a1d1ed2f26a14c7eababe7ca25a8ef28bad5c7d45105d088c74fa"
+    },
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 467183,
+      "sha256": "2e0d5ac783a1d6a4bb0c257cea769a49ed4e4e5e6a353d5e9266198d978e20b2"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 6010,
+      "sha256": "f5e69ff8a3553d942b707ad3006cdcf166935fd4149d24ea3cec12df4d92b5f3"
+    },
+    {
+      "path": "run.log",
+      "bytes": 1472,
+      "sha256": "88d44d628234589dfbb718a145a0e6e49d4ecae980b232f1a7b378f64a5980da"
+    },
+    {
+      "path": "import.log",
+      "bytes": 4271,
+      "sha256": "b4e50982d8359ca12bdc1cb6cda24be47dadbb268b5c5437412ba8289f2f8a9b"
+    },
+    {
+      "path": "movie-segment.json",
+      "bytes": 188,
+      "sha256": "cda965fbf84a3c8d0e4f0a2bd7fa04a93cf88fd59c0e1df624355428eedc2ef4"
+    },
+    {
+      "path": "video-parts.json",
+      "bytes": 732,
+      "sha256": "3282a047af1aaddf03ae737fad3652038e441f702c6ae34ff5faa0396c376559"
+    },
+    {
+      "path": "planet-v13-shared-1x-6s.mp4",
+      "bytes": 1342920,
+      "sha256": "aab42fe1a05b15412d70bb607cde77d0bc16c69bed0a9478fd55d166d199631f"
+    },
+    {
+      "path": "video-parts/part-002.bin",
+      "bytes": 32200,
+      "sha256": "a426a037e01138a0be7a8eab86ab8eac77a9bc4f13eb52c6a81c79008583f47d"
+    },
+    {
+      "path": "video-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "59bcba08e635063a6d5b348a0b3188851f530df49bd7f0e181acf990fcb45f8d"
+    },
+    {
+      "path": "video-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "dd44c8f8740e2c1804982bc01874b8b1e7a3f6af8716b5eeaba42111f9ea26a6"
+    },
+    {
+      "path": "motion-review-6.jpg",
+      "bytes": 557841,
+      "sha256": "8a08ef16b2c572ff60fccab5abaad056368bc291d2650959b033ccfc84215e55"
+    },
+    {
+      "path": "motion-review-5.jpg",
+      "bytes": 558034,
+      "sha256": "ccf2914b9fa19ad6e4ccfe4dde484425559c342c67bc0de485af9080eaf664a0"
+    },
+    {
+      "path": "motion-review-4.jpg",
+      "bytes": 560088,
+      "sha256": "f33cc20b291e362a1dbcdd5cf25b3cefd198b8b5a0d5eee50982eb85748fbda8"
+    },
+    {
+      "path": "motion-review-3.jpg",
+      "bytes": 558234,
+      "sha256": "83459c6be868c708e3c57195c87daa3fa2743de17ff53f7d74936b80783cf654"
+    },
+    {
+      "path": "motion-review-2.jpg",
+      "bytes": 558945,
+      "sha256": "ddf48e59d354c408d01c349c31dcbe7884feccade5db8813e63f63a236cf9536"
+    },
+    {
+      "path": "motion-review-1.jpg",
+      "bytes": 558748,
+      "sha256": "b1d9b27646efea293dc3b3fd0183b571f268181799d3e65ef1a194dd3267740d"
+    },
+    {
+      "path": "motion-keyframes/frame-001.jpg",
+      "bytes": 140165,
+      "sha256": "4b3e0c7f24f7b6bdaa4eeacafb41a5913c13390c63f8b1fc6386d926a6bcb6f2"
+    },
+    {
+      "path": "motion-keyframes/frame-031.jpg",
+      "bytes": 144457,
+      "sha256": "ee075b6fa89f1523bdb03c492107a63a7e15816a7af31be6ce8917aeb6901938"
+    },
+    {
+      "path": "motion-keyframes/frame-061.jpg",
+      "bytes": 142963,
+      "sha256": "dbaa202e06e916afde03c55e850c3d50f833a206559254e76b29dd143ab64fc0"
+    },
+    {
+      "path": "motion-keyframes/frame-091.jpg",
+      "bytes": 144389,
+      "sha256": "2cebbefc34633754b6e721d438262d783a7d7f81dff8fd2c798223584ab42811"
+    },
+    {
+      "path": "motion-keyframes/frame-121.jpg",
+      "bytes": 143315,
+      "sha256": "d25f22d8fa0c7675e58ccaad543e2f081820ba68890817db5538764ea73712b4"
+    },
+    {
+      "path": "motion-keyframes/frame-151.jpg",
+      "bytes": 144971,
+      "sha256": "c4f42341827551ddd54d3d4a7568bcc9fe7b88450c785dd9d940bb0ae040788a"
+    },
+    {
+      "path": "motion-keyframes/frame-180.jpg",
+      "bytes": 147949,
+      "sha256": "d995dcc7cba419922a6dd436f6409b4f112808724bb2f0efb0c30e99f87427e4"
+    },
+    {
+      "path": "author-review.md",
+      "bytes": 1699,
+      "sha256": "036adee39dcdb99f1ab353f8dfde865e2310dcda7aa3c139b25e2e9d9063ae91"
+    }
+  ]
+}
