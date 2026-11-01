@@ -1,0 +1,17 @@
+{
+  "video": "reactor-one-1x-6s.mp4",
+  "bytes": 636589,
+  "sha256": "a8d5381073251f55c5ec7fc13cd80a63a573c39006f2f66eb78355d08de47415",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 180,
+  "duration_seconds": 6,
+  "parts": [
+    {
+      "path": "one-parts/part-000.bin",
+      "bytes": 636589,
+      "sha256": "a8d5381073251f55c5ec7fc13cd80a63a573c39006f2f66eb78355d08de47415"
+    }
+  ]
+}

@@ -79,3 +79,5 @@
 - 当前分面反应堆公共组合 `5abb712f`：[faceted-refinement-shared-20261101](faceted-refinement-shared-20261101/README.md)。
 
 - v22弧形建筑完整共享组合及同源动态 `281a17cc`：[planet-v22-shared-20261101](planet-v22-shared-20261101/README.md)。
+
+- 当前核心输送版公共组合 `6c7198ee`：[reactor-volume-shared-20261101](reactor-volume-shared-20261101/README.md)。

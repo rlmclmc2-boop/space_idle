@@ -1,0 +1,332 @@
+{
+  "runtime_source": "6c7198ee77acfb89cd4a7dfb89719249a8ce63a7",
+  "reactor_source": "a1406959e6b2d1cc0639359f5f099169a155ccb0",
+  "incoming_blobs": [
+    {
+      "path": "space-battleship/src/ui/reactor_scene.gd",
+      "blob": "e1dd4d4738440c0ab037cdae9bc93645e0adc703"
+    },
+    {
+      "path": "space-battleship/src/ui/reactor_stage.gd",
+      "blob": "bbc4a7045abcb449d0c852151499f578094925fa"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/README.md",
+      "blob": "3cf079af5bbcd0a450575fa14830ac23366b049a"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+      "blob": "d04ea25a81b502db34081255d708c5c34af8bd95"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+      "blob": "03e4653d9b5c95b18b2e0b9d8b5a341250dfc832"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+      "blob": "11614cfd5aeebca0e8de631d29db6fca25485123"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+      "blob": "ee04d4055311f2416ddba2da246c2f60afe99bc8"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+      "blob": "756f5c4c377f61ee086bad690f73c55b66534fb4"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+      "blob": "517125b45df72df494111067596b764e1541df55"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+      "blob": "0cb2849cc13754fbfea1123863c7d028dbbdd8c1"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+      "blob": "df0d2eb85af7bd6192a538037c2c32ae288c4c57"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+      "blob": "8accd3dc5fbc53f521b5f9e26404da03c797034c"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/reactor_ports.json",
+      "blob": "636512907819e822564937ed6c19431a7a7dff6a"
+    }
+  ],
+  "preserved_blobs": {
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/src/ui/zone_shell.gd": "456e502ca77aadf44f7775359a6f0bb9af683a41",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119",
+    "space-battleship/src/ui/planet_panel.gd": "47e7214462a1f239694846bfc85050aa8bc73152",
+    "space-battleship/scripts/planet_facility_scene.gd": "1f2dd7949f4eef227c6804e10fd6998d3c780feb",
+    "space-battleship/scripts/planet_orbital_spine.gd": "8c28214cf78574a428ff60c1f09be28d5d731907"
+  },
+  "movies": {
+    "four": {
+      "end_process_frame": 555,
+      "fps": 30,
+      "game_time_end": 14.6333333333336,
+      "game_time_start": 2.63333333333333,
+      "method": "Godot MovieMaker fixed30fps offline; current full shared main",
+      "pause_reasons": {},
+      "simulated_seconds": 12,
+      "speed": 1,
+      "stage_phase": 14.6333333333336,
+      "start_process_frame": 195,
+      "state": "四路Owner均分带载"
+    },
+    "one": {
+      "end_process_frame": 853,
+      "fps": 30,
+      "game_time_end": 24.5666666666666,
+      "game_time_start": 18.5666666666669,
+      "method": "Godot MovieMaker fixed30fps offline; current full shared main",
+      "simulated_seconds": 6,
+      "speed": 1,
+      "stage_phase": 23.5666666666665,
+      "start_process_frame": 673,
+      "state": "单路受控Reactor Owner均分带载"
+    }
+  },
+  "author_status": "公共安装/设备/单路关系可保持；核心过程视觉读序继续制作",
+  "media": [
+    {
+      "path": "reactor-four-zero.png",
+      "bytes": 736429,
+      "sha256": "5ea62c7ffaef6c31de21ff18bf37b0c7cd10051961e7aee3c2748b5ade6f36a3"
+    },
+    {
+      "path": "reactor-four-zero.jpg",
+      "bytes": 415222,
+      "sha256": "049e538c59b40865a78f38d0d040cca36bee7acbba6f16dd187e95a8397fd4fe"
+    },
+    {
+      "path": "reactor-four-active.png",
+      "bytes": 733101,
+      "sha256": "e8d182cf7206f43610c98948d3f527c51c4a8ea2639948b6b9c24486a67853d8"
+    },
+    {
+      "path": "reactor-four-active.jpg",
+      "bytes": 432422,
+      "sha256": "9ac54fa7f286eef2a029da1baccf20ff622a92104d4fe430ea4707122f97c9f3"
+    },
+    {
+      "path": "reactor-one-zero.png",
+      "bytes": 601388,
+      "sha256": "480fc74670a6a800ee687c1d47dbf6972748676af71b263cc96cc20f2ff01df4"
+    },
+    {
+      "path": "reactor-one-zero.jpg",
+      "bytes": 312873,
+      "sha256": "72c50fccc69ee4f632916fe0f84b083618a74a541507caddc0deac2b037eeff6"
+    },
+    {
+      "path": "reactor-one-active.png",
+      "bytes": 662169,
+      "sha256": "609dab086b5f5228109377fc88645afffa2502ec26e6ffe34e18b485603aa70c"
+    },
+    {
+      "path": "reactor-one-active.jpg",
+      "bytes": 340376,
+      "sha256": "4c5b917906f70882f59a17753da443a8fd50a057233f94fc7324a872741168ff"
+    },
+    {
+      "path": "equipment-return.png",
+      "bytes": 1437779,
+      "sha256": "15abfd23682c4d14b93b803209b8af8c89704841d64cbf8a21e045e51a0adeab"
+    },
+    {
+      "path": "equipment-return.jpg",
+      "bytes": 597957,
+      "sha256": "67d8e7ccf5296e237ff5e70c83f2d6fae252099ba992aebe8de03d73ae946de9"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 5375,
+      "sha256": "3900ac7995353ec3d50a1eb65c1c8ae8665d97394cb6586ad49a068cfa3ae7c0"
+    },
+    {
+      "path": "run.log",
+      "bytes": 1086,
+      "sha256": "343d30be87450dc497886a1050bf1a45738cbcf9e1fb435b088836a74e354030"
+    },
+    {
+      "path": "import.log",
+      "bytes": 2251,
+      "sha256": "6d383e5e374d17311d4e494987878f78b182bafb249c5a88f18972c1c5ea3b42"
+    },
+    {
+      "path": "movie-segment.json",
+      "bytes": 363,
+      "sha256": "1d1e2addc833dd2591961ebf630ad195552540c430985a98cbcb64c04e3658f5"
+    },
+    {
+      "path": "one-movie-segment.json",
+      "bytes": 353,
+      "sha256": "5be16732d23222793f944283541e06bfebcaead403d2e7314c16f775772ac778"
+    },
+    {
+      "path": "installation.json",
+      "bytes": 1608,
+      "sha256": "3a51c62ac6f7b8c4e84d6b6faa9b24bbfcd523e8ea57dc27878c0b9d4f32a676"
+    },
+    {
+      "path": "four-video-parts.json",
+      "bytes": 727,
+      "sha256": "95a0ce4675cc757073438f51568d9cb2d4f2a03d09baaaa59dd78f33aec0a2ba"
+    },
+    {
+      "path": "one-video-parts.json",
+      "bytes": 402,
+      "sha256": "b3deb4c35a45ecbc88360a97695ec838a863aa81b01710c1f12089505f4e4768"
+    },
+    {
+      "path": "reactor-four-1x-12s.mp4",
+      "bytes": 1418367,
+      "sha256": "9d997edb5018e4b6c3251d50209da4cf048b5a1d55b82d750995af2e4402620a"
+    },
+    {
+      "path": "reactor-one-1x-6s.mp4",
+      "bytes": 636589,
+      "sha256": "a8d5381073251f55c5ec7fc13cd80a63a573c39006f2f66eb78355d08de47415"
+    },
+    {
+      "path": "four-parts/part-002.bin",
+      "bytes": 107647,
+      "sha256": "25da28327cb66c923965d30313a9047a9636dfaa4f53300b10f7fb2b8fddd4e6"
+    },
+    {
+      "path": "four-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "f24fc662a100e487fb547bc1b9a2eb6a41ebdcc4291037fa01f436a3d5e6ed98"
+    },
+    {
+      "path": "four-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "49fdd7d08b938615a70c731aa37e132f3d829be8b65d0dbc52a14f321e2ab146"
+    },
+    {
+      "path": "four-review-12.jpg",
+      "bytes": 553473,
+      "sha256": "d942bb9c9afaf8cb7fb82130c0e4d563a23d6bf1b81032a2edadfc7081d1c4bf"
+    },
+    {
+      "path": "four-review-11.jpg",
+      "bytes": 556613,
+      "sha256": "6850830043b58bbac8ff55a1ec331120fa3dbfca95c4f849f662322de7a0c3b5"
+    },
+    {
+      "path": "four-review-10.jpg",
+      "bytes": 560090,
+      "sha256": "a312fcfb7535cdc2ff3f440da2add022095cebe27ce138595be9a4f76d3baeeb"
+    },
+    {
+      "path": "four-review-9.jpg",
+      "bytes": 565446,
+      "sha256": "9cdca2985c01c2ea2e8e5a7f5874865bf6fc04bd3a6fe8b05ac98dde115366e1"
+    },
+    {
+      "path": "four-review-8.jpg",
+      "bytes": 569977,
+      "sha256": "a841b565413dcc01ac2614ad52f8ae4d7b0f467e4bd9292da0cbfdf2be442171"
+    },
+    {
+      "path": "four-review-7.jpg",
+      "bytes": 549424,
+      "sha256": "44b9379b8a63ef354778cdf6251c1748ab7d64e03038ad500f686d8a177b1cf5"
+    },
+    {
+      "path": "four-review-6.jpg",
+      "bytes": 545380,
+      "sha256": "98698db0d4a685074f12f427c3468e056c28d8a9fb1082279c59b3cc794d9fd2"
+    },
+    {
+      "path": "four-review-5.jpg",
+      "bytes": 551744,
+      "sha256": "f511c668c4188de1cce8027106232f314103d21fff68a15e1599dd83b237376a"
+    },
+    {
+      "path": "four-review-4.jpg",
+      "bytes": 556570,
+      "sha256": "0be2a41082520086c3fa6fca3d995649ec6b84877e02b5579113c937447e5788"
+    },
+    {
+      "path": "four-review-3.jpg",
+      "bytes": 557703,
+      "sha256": "b3e22ada679628f8e6c3dd4dec6786361614ab5b878b5178cf75c17144c2b3a8"
+    },
+    {
+      "path": "four-review-2.jpg",
+      "bytes": 555970,
+      "sha256": "710c30c4e6bad16542a4fb71c307642d844481ac88cd831082bab34b6ba37d2c"
+    },
+    {
+      "path": "four-review-1.jpg",
+      "bytes": 553207,
+      "sha256": "8aa930edfdce7cef0cba140e794a9ec800cced26f8bfd12b8e3a496b40ed4c4d"
+    },
+    {
+      "path": "one-parts/part-000.bin",
+      "bytes": 636589,
+      "sha256": "a8d5381073251f55c5ec7fc13cd80a63a573c39006f2f66eb78355d08de47415"
+    },
+    {
+      "path": "one-review-6.jpg",
+      "bytes": 436376,
+      "sha256": "983523cb7c8c42090981e340605c6dc2be507a0a5a95b06250209a8cdcb75a7e"
+    },
+    {
+      "path": "one-review-5.jpg",
+      "bytes": 439782,
+      "sha256": "d4fcdb166b4da60b912821a175083d6a60653da6862692dc00a565c2c23a19bc"
+    },
+    {
+      "path": "one-review-4.jpg",
+      "bytes": 444311,
+      "sha256": "4fba87ebbb2ea586b6a00a3e2d1d5da7ece5060bcdb047fdcab6263dadf0f1c7"
+    },
+    {
+      "path": "one-review-3.jpg",
+      "bytes": 447730,
+      "sha256": "04564a87f5f23cf57dfd0813cc951dbf94abd2b39d1a9aa556f571dc08bb4577"
+    },
+    {
+      "path": "one-review-2.jpg",
+      "bytes": 450845,
+      "sha256": "339e8df7add053ee30b58f3fdfb85dded97114811f547097a9b3f7a75d36743f"
+    },
+    {
+      "path": "one-review-1.jpg",
+      "bytes": 452973,
+      "sha256": "c4f91bf9b2095477e8d30a73db5d97c95bf03b68427f11949a407ad310d32d1e"
+    },
+    {
+      "path": "four-keyframes/frame-073.jpg",
+      "bytes": 145659,
+      "sha256": "d61488a9f411ca767d3beb45afbf179c0b720e95e75466aa6222d0590af38cda"
+    },
+    {
+      "path": "four-keyframes/frame-091.jpg",
+      "bytes": 145335,
+      "sha256": "5fb29417cb14e169fbc46f67fad7ac878c553f1253fb05c7a8ccee7cb140e250"
+    },
+    {
+      "path": "one-keyframes/frame-001.jpg",
+      "bytes": 109345,
+      "sha256": "28f5df813e8ebad198e01bca48ed6a159b353fa6dc557eb640d2720092fba0b7"
+    },
+    {
+      "path": "one-keyframes/frame-091.jpg",
+      "bytes": 107023,
+      "sha256": "afee9067e2c4428564ddb364b4c035360a4191aa585425c02f2e89dd78e7f46a"
+    },
+    {
+      "path": "author-review.md",
+      "bytes": 3183,
+      "sha256": "4af4a8a529670eb4784a34cb42d9cfeb08b23b26f1ebede2834eb8b1cbf21c16"
+    }
+  ]
+}
