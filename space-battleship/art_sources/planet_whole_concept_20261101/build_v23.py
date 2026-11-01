@@ -36,6 +36,7 @@ GLASS = material("Dark blue glass", (.025,.16,.22), .26, .34)
 CYAN = material("Contained cyan energy", (.025,.65,.84), .08, .40, 1.8)
 AMBER = material("Contained amber heat", (.68,.21,.025), .04, .55, .65)
 GOLD = material("Warm work marking", (.47,.25,.075), .24, .56)
+DOME_GOLD = material("Heat chamber faceted gold armor", (.80,.48,.17), .20, .58)
 
 
 def parent(name, xyz=(0,0,0), angle=0):
@@ -383,10 +384,11 @@ cone("Command short beacon",(0,-.32,2.08),.09,.02,.20,ARMOR,station,8)
 # Heat is a working aperture in the band, marked by a low furnace clamp.
 cyl("Heat chamber dark integrated foundation",(0,-.32,1.05),.73,.22,KEEL,refinery,12)
 cyl("Heat chamber armored lower collar",(0,-.32,1.22),.65,.16,ARMOR,refinery,12)
-cone("Heat chamber gold segmented dome",(0,-.32,1.49),.57,.20,.43,GOLD,refinery,12)
-cyl("Contained furnace dark collar",(0,-.32,1.71),.40,.12,EDGE,refinery,12)
-cyl("Contained furnace amber aperture",(0,-.32,1.78),.32,.055,AMBER,refinery,12)
-torus("Furnace retaining ring",(0,-.32,1.82),.39,.052,ARMOR_SIDE,refinery)
+torus("Heat chamber gold dome bearing",(0,-.32,1.31),.60,.045,EDGE,refinery)
+cone("Heat chamber gold segmented dome",(0,-.32,1.64),.59,.17,.72,DOME_GOLD,refinery,12)
+cyl("Contained furnace dark collar",(0,-.32,2.03),.30,.10,EDGE,refinery,12)
+cyl("Contained furnace amber aperture",(0,-.32,2.09),.23,.05,AMBER,refinery,12)
+torus("Furnace retaining ring",(0,-.32,2.12),.30,.042,ARMOR_SIDE,refinery)
 for x in (-.58,-.22,.22,.58):
     box("Heat exchange outer exhaust slit",(x,-.99,.88),(.085,.045,.25),AMBER,refinery,.008)
 
