@@ -30,15 +30,40 @@ def mesh(name,vertices,faces,mat):
  o=bpy.data.objects.new(name,d);bpy.context.collection.objects.link(o);return o
 
 SIDES={}
-def plate(name,outline,z,depth,mat,shift=(18,15)):
+def plate(name,outline,z,depth,mat,shift=(7,6)):
  k=len(outline);v=[(x,-y,z) for x,y in outline]+[(x+shift[0],-y-shift[1],z-depth) for x,y in outline]
  f=[tuple(range(k-1,-1,-1)),tuple(range(k,2*k))]+[(i,(i+1)%k,(i+1)%k+k,i+k) for i in range(k)]
  o=mesh(name,v,f,mat)
- if mat.name not in SIDES: SIDES[mat.name]=material(mat.name+' side',tuple(c*.48 for c in mat.diffuse_color[:3]),False)
+ if mat.name not in SIDES: SIDES[mat.name]=material(mat.name+' side',tuple(c*.74 for c in mat.diffuse_color[:3]),False)
  o.data.materials.append(SIDES[mat.name])
  for face in o.data.polygons:
   if face.index>0:face.material_index=1
  b=o.modifiers.new('armor arris','BEVEL');b.width=2.4;b.segments=1;o.modifiers.new('face normals','WEIGHTED_NORMAL');return o
+
+def armor_panel(name,outline,z,depth,mat):
+ center=Vector((sum(p[0] for p in outline)/len(outline),sum(p[1] for p in outline)/len(outline)))
+ inset=[]
+ for p in outline:
+  delta=center-Vector(p);inset.append(Vector(p)+delta.normalized()*min(7,delta.length*.16))
+ n=len(outline)
+ vertices=[(x,-y,z-5) for x,y in outline]+[(p.x,-p.y,z+3) for p in inset]
+ vertices.append((center.x,-center.y,z+12))
+ vertices.extend([(x+4,-y-3,z-depth) for x,y in outline])
+ faces=[]
+ for i in range(n):
+  j=(i+1)%n
+  faces.extend([(i,j,n+j,n+i),(n+i,n+j,2*n),(i,2*n+1+i,2*n+1+j,j)])
+ faces.append(tuple(range(3*n,2*n,-1)))
+ faces=[tuple(reversed(face)) for face in faces]
+ o=mesh(name,vertices,faces,mat)
+ # Separate front-plane normals retain broad facets instead of a flat lid.
+ b=o.modifiers.new('formed armor edge','BEVEL');b.width=1.2;b.segments=1
+ o.modifiers.new('formed armor normals','WEIGHTED_NORMAL')
+ return o
+
+def armor_box(name,x,y,w,h,z,depth,mat):
+ c=min(10,w*.16,h*.16)
+ return armor_panel(name,[(x-w/2+c,y-h/2),(x+w/2-c,y-h/2),(x+w/2,y-h/2+c),(x+w/2,y+h/2-c),(x+w/2-c,y+h/2),(x-w/2+c,y+h/2),(x-w/2,y+h/2-c),(x-w/2,y-h/2+c)],z,depth,mat)
 
 def box(name,x,y,w,h,z,depth,mat):
  c=min(12,w*.18,h*.18)
@@ -74,17 +99,26 @@ def hollow_socket(name,p,axis,rise,z,near,far,r,m):
 
 def socket(id,m):
  d=DATA['devices'][id];p=Vector(d['device_port']);axis=Vector(d['axis_to_device']).normalized()
- hollow_socket(id+' hollow receiver',p,axis,.35,28,-15,75,d['socket_radius'],m)
+ far=55 if id=='condensation' else 60
+ hollow_socket(id+' hollow receiver',p,axis,.35,28,-15,far,d['socket_radius'],m)
+ # The socket terminates in a closed receiver body embedded in the machine,
+ # not a second open tube end facing the working chamber.
+ a=p+axis*(far-4);b=p+axis*(far+18)
+ rod(id+' receiver foundation',(a.x,a.y,28+(far-4)*.35),(b.x,b.y,28+(far+18)*.35),d['socket_radius']+8,m['shade'])
 
 
 def mount(name,x,y,w,m):
- box(name+' load foot',x,y,w,29,5,20,m['dark']);box(name+' seat',x,y-8,w-20,13,18,6,m['shade'])
+ box(name+' load foot',x,y,w,18,5,10,m['edge']);box(name+' seat',x,y-6,w-18,9,18,5,m['shade'])
+ if y<400:
+  for side in (-1,1):
+   q=x+side*(w*.32)
+   plate(name+' wall gusset',[(q-12,y+2),(q+12,y+2),(q+8,y+28),(q-8,y+38)],-8,9,m['shade'],shift=(2,2))
 
 def weapon(m,phase=.65):
  mount('weapon',180,313,222,m);box('weapon navy shell',183,204,184,202,40,35,m['dark'])
- plate('weapon left armor',[(81,126),(111,102),(142,109),(136,164),(124,184),(128,264),(103,278),(78,258)],65,25,m['armor'])
- plate('weapon right armor',[(225,107),(255,112),(278,138),(274,258),(249,278),(225,259)],65,25,m['shade'])
- box('weapon top bridge',180,112,108,27,76,16,m['armor']);box('weapon bottom bridge',180,278,113,26,76,16,m['shade'])
+ armor_panel('weapon left armor',[(81,126),(111,102),(142,109),(136,164),(124,184),(128,264),(103,278),(78,258)],65,25,m['armor'])
+ armor_panel('weapon right armor',[(225,107),(255,112),(278,138),(274,258),(249,278),(225,259)],65,25,m['shade'])
+ armor_box('weapon top bridge',180,112,108,27,76,16,m['armor']);armor_box('weapon bottom bridge',180,278,113,26,76,16,m['shade'])
  box('weapon chamber',181,195,74,133,52,8,m['glass'])
  rod('weapon chamber glazing',(181,128,48),(181,262,48),37,m['field'])
  for i,y in enumerate((153,190,227)):
@@ -110,12 +144,12 @@ def defence(m,phase=1.):
  ring('shield active rim',1045,177,61,7,69,6,m['cyan']);disc('shield projector',1045,177,19,91,m['edge'],8)
  # A real bowed surface, divided into broad facets, projects beyond the
  # ring. Its source-space boundary is shared with the work/occlusion export.
- verts=[];rows,cols=16,4
+ verts=[];rows,cols=24,5
  for j in range(rows+1):
-  angle=-1.15+2.30*j/rows
+  angle=math.tau*j/rows
   for k in range(cols+1):
    t=k/cols;radius=20+106*t*max(.03,min(1.,phase))
-   verts.append((1045+radius*math.cos(angle),-(177+radius*math.sin(angle)),55+37*math.sin(math.pi*t)*math.cos(angle)))
+   verts.append((1045+radius*math.cos(angle),-(177+radius*math.sin(angle)),70+62*math.sqrt(max(.0,1-(radius/140)**2))))
  faces=[]
  for j in range(rows):
   for k in range(cols):
@@ -125,11 +159,12 @@ def defence(m,phase=1.):
 
 def furnace(m):
  mount('furnace',198,678,260,m);box('furnace deep shell',173,478,192,162,35,33,m['dark'])
- plate('furnace left armor',[(77,421),(105,389),(145,397),(139,436),(120,453),(123,526),(99,548),(75,525)],64,23,m['armor'])
- plate('furnace right armor',[(215,397),(245,405),(275,435),(268,528),(244,547),(221,523),(222,450),(205,431)],64,23,m['shade'])
- box('furnace crown',177,405,112,28,75,16,m['armor']);box('furnace throat',175,476,103,83,49,7,m['orange'])
+ armor_panel('furnace left armor',[(77,421),(105,389),(145,397),(139,436),(120,453),(123,526),(99,548),(75,525)],64,23,m['armor'])
+ armor_panel('furnace right armor',[(215,397),(245,405),(275,435),(268,528),(244,547),(221,523),(222,450),(205,431)],64,23,m['shade'])
+ armor_box('furnace crown',177,405,112,28,75,16,m['armor']);box('furnace cavity',175,476,103,83,36,6,m['glass'])
+ plate('furnace throat',[(132,483),(220,483),(216,507),(177,520),(136,507)],49,5,m['orange'],shift=(0,0))
  for i in range(3):
-  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=0,radius=8,location=(160+i*15,-442,67))
+  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=11,location=(160+i*15,-442,67))
   o=bpy.context.object;o.name='furnace feed '+str(i);o.data.materials.append(m['copper'])
  box('furnace dark lip',175,522,102,20,77,18,m['dark']);box('furnace tap',175,519,54,15,87,8,m['copper'])
  disc('furnace vessel',176,597,86,34,m['dark'],12);disc('furnace liquid',176,594,67,48,m['orange'],12)
@@ -146,8 +181,8 @@ def furnace(m):
 def crystal(m,growth=1.):
  mount('crystal',1014,683,244,m);box('crystal base',1013,624,202,72,41,27,m['dark']);box('crystal back',1020,514,153,166,28,22,m['glass'])
  for x in (934,1100):
-  box('crystal pillar',x,557,30,195,66,27,m['armor'] if x<1000 else m['shade']);box('crystal foot',x,661,53,28,75,17,m['dark'])
- box('crystal crown',1017,433,184,32,78,21,m['armor']);box('crystal seed bed',1017,603,143,29,65,14,m['copper'])
+  armor_box('crystal pillar',x,557,30,195,66,27,m['armor'] if x<1000 else m['shade']);box('crystal foot',x,661,53,28,75,17,m['dark'])
+ armor_box('crystal crown',1017,433,184,32,78,21,m['armor']);box('crystal seed bed',1017,603,143,29,65,14,m['copper'])
  for i,(x,h) in enumerate([(974,53),(997,88),(1022,114),(1047,79),(1071,48)]):
   hh=12+(h-12)*growth;y=592
   plate('crystal body '+str(i),[(x-13,y),(x+13,y),(x+15,y-hh+17),(x+2,y-hh),(x-14,y-hh+16)],77,18,m['violet'],shift=(7,4))
@@ -183,7 +218,7 @@ def core(m):
    tangent=(points[min(i+1,24)]-points[max(0,i-1)]).normalized()
    u=tangent.cross(Vector((0,0,1))).normalized();v=tangent.cross(u).normalized()
    for k in range(sides):
-    q=p+2.5*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides));vertices.append(q)
+    q=p+4.0*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides));vertices.append(q)
   faces=[]
   for i in range(24):
    for k in range(sides):
@@ -212,28 +247,26 @@ def pipes(m):
   curve.bevel_depth=18;curve.bevel_resolution=1;o=bpy.data.objects.new(id+' conduit',curve);bpy.context.collection.objects.link(o);o.data.materials.append(m['edge'])
 
 def room(m):
- plate('rear blue room',[(-80,0),(W+80,0),(W+80,H),(-80,H)],-90,12,m['room'],shift=(0,0))
- for x in (35,345,830,1140):
-  box('room structural column',x,325,32,650,-68,24,m['dark'])
-  box('room column face',x-5,320,8,610,-43,4,m['edge'])
- for y in (38,337):box('room cross beam',W/2,y,W,35,-45,18,m['edge'])
- for x in (187,590,1010):
-  plate('inset blue wall plane',[(x-135,66),(x+120,66),(x+115,300),(x-125,300)],-74,4,m['window'],shift=(0,0))
- for x in (185,1010):
-  box('upper machine wall shelf',x,330,320,28,-8,24,m['edge'])
-  box('wall shelf warm seam',x,322,278,5,14,3,m['copper'])
- plate('room floor',[(-80,600),(W+80,600),(W+80,H),(-80,H)],-60,15,m['floor'],shift=(0,0))
- plate('console service approach',[(390,720),(800,720),(1095,1088),(92,1088)],-44,8,m['edge'],shift=(0,0))
- plate('console approach inset',[(414,739),(776,739),(1030,1070),(157,1070)],-33,3,m['floor'],shift=(0,0))
- plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,18,m['edge'])
- plate('central deck inset',[(418,615),(762,615),(819,685),(762,719),(418,719),(365,685)],-3,5,m['floor'])
- box('core lower pedestal',594,591,118,122,18,32,m['dark'])
- plate('pedestal left armor',[(526,535),(550,535),(556,640),(528,657),(511,644)],44,17,m['armor'])
- plate('pedestal right armor',[(635,535),(659,535),(677,644),(660,657),(632,640)],44,17,m['shade'])
- for x in (185,1010):box('room overhead light',x,47,82,14,-8,6,m['lamp'])
+ # Continuous hull planes, not a grid of shelving around four exhibits.
+ plate('rear blue room',[(-80,0),(W+80,0),(W+80,H),(-80,H)],-90,8,m['room'],shift=(0,0))
+ plate('port hull shoulder',[(-80,0),(145,0),(102,118),(70,528),(-80,626)],-76,6,m['window'],shift=(0,0))
+ plate('starboard hull shoulder',[(1040,0),(W+80,0),(W+80,626),(1110,528),(1080,118)],-76,6,m['window'],shift=(0,0))
+ plate('upper hull sweep',[(145,0),(1040,0),(1080,76),(1008,65),(188,65),(102,118)],-79,5,m['shade'],shift=(0,0))
+ plate('upper hull inner',[(188,27),(1008,27),(1030,45),(174,45)],-70,3,m['edge'],shift=(0,0))
+ # A shallow central recess gives the reactor a ship-installed setting while
+ # the flanking hull stays quiet behind the device silhouettes.
+ plate('core rear recess',[(430,86),(758,86),(842,324),(759,588),(430,588),(350,324)],-82,3,m['window'],shift=(0,0))
+ plate('room floor',[(-80,600),(W+80,600),(W+80,H),(-80,H)],-60,9,m['floor'],shift=(0,0))
+ plate('central floor facing',[(438,720),(750,720),(882,914),(306,914)],-56,3,m['floor'],shift=(0,0))
+ plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,8,m['edge'],shift=(3,3))
+ plate('central deck inset',[(405,610),(777,610),(841,685),(777,726),(405,726),(343,685)],-10,4,m['floor'],shift=(0,0))
+ box('core lower pedestal',594,591,100,122,18,18,m['dark'])
+ armor_panel('pedestal left armor',[(539,535),(555,535),(558,640),(539,651),(526,641)],39,12,m['shade'])
+ armor_panel('pedestal right armor',[(632,535),(648,535),(663,641),(650,651),(630,640)],39,12,m['shade'])
+ for x in (185,1010):box('room overhead light',x,47,58,6,-55,3,m['lamp'])
 
 def console_layout(count):
- row_h=72;offset=(4-count)*row_h;top=730+offset;header_y=819+offset;rows_top=878+offset
+ row_h=72;offset=(4-count)*row_h-{1:120,2:72,3:36,4:0}[count];top=730+offset;header_y=819+offset;rows_top=878+offset
  footer_y=rows_top+count*row_h+64;bottom=footer_y+78
  return {'count':count,'top':top,'header_y':header_y,'rows_top':rows_top,'footer_y':footer_y,
   'header_rect':[76,header_y-48,1036,96],
@@ -243,16 +276,16 @@ def console_layout(count):
 def console(m,count=4):
  # Every legal display count gets a complete fitted control deck. No empty
  # baked four-row grooves remain behind one or two native allocation rows.
- row_h=72;offset=(4-count)*row_h;top=730+offset;header_y=819+offset;rows_top=878+offset
+ row_h=72;offset=(4-count)*row_h-{1:120,2:72,3:36,4:0}[count];top=730+offset;header_y=819+offset;rows_top=878+offset
  footer_y=rows_top+count*row_h+64;bottom=footer_y+78
- plate('console unified chassis',[(34,top),(1153,top),(1180,top+27),(1180,bottom-37),(1142,bottom),(45,bottom),(8,bottom-37),(8,top+27)],12,35,m['edge'])
+ plate('console unified chassis',[(44,top+12),(1143,top+12),(1164,top+33),(1164,bottom-46),(1137,bottom-12),(52,bottom-12),(24,bottom-46),(24,top+33)],12,16,m['edge'])
  plate('console dark face',[(53,top+23),(1134,top+23),(1154,top+43),(1154,bottom-54),(1124,bottom-23),(64,bottom-23),(34,bottom-54),(34,top+43)],35,10,m['dark'])
  for y,h in ((header_y,96),(rows_top+count*row_h/2,count*row_h-4),(footer_y,96)):
   box('console grouped working glass',594,y,1068,h,48,4,m['glass'])
  for i in range(1,count):box('allocation row separator',594,rows_top+i*row_h,1020,2,54,1,m['edge'])
  for side in (-1,1):
-  x=594+side*556
-  plate('console corner armor',[(x-15,top+37),(x+15,top+37),(x+15,top+92),(x+7,top+106),(x-15,top+83)],62,16,m['armor'])
+  x=594+side*548
+  plate('console corner armor',[(x-5,top+39),(x+5,top+39),(x+5,top+75),(x-5,top+83)],57,6,m['shade'],shift=(2,2))
  return console_layout(count)
 
 # Explicit semantic pass ownership. Front parts are real geometry, not a
@@ -280,7 +313,7 @@ def select_pass(name,layer):
 
 def setup():
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
- colors={'armor':(.94,.88,.73),'shade':(.53,.62,.65),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.035,.095,.16),'window':(.045,.17,.27),'floor':(.13,.19,.24),'lamp':(1.,.76,.39)}
+ colors={'armor':(.64,.69,.66),'shade':(.30,.42,.49),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.045,.10,.16),'window':(.055,.12,.18),'floor':(.09,.14,.20),'lamp':(1.,.76,.39)}
  m={k:material(k,c,k in ['charge','cyan','orange','violet_light','lamp']) for k,c in colors.items()}
  s=bpy.context.scene;s.render.engine='BLENDER_EEVEE_NEXT';s.render.resolution_x=W;s.render.resolution_y=H;s.render.resolution_percentage=100;s.render.film_transparent=True;s.world.color=(.16,.22,.30);s.view_settings.view_transform='Standard'
  for name,loc,color,power,size in [('warm key',(250,-100,600),(1,.82,.60),1800000,650),('cool fill',(1020,-500,380),(.35,.65,1),950000,700)]:

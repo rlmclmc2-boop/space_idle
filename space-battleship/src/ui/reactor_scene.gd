@@ -22,6 +22,8 @@ var _clock: Callable
 var _ui_font_regular: FontVariation
 var _ui_font_medium: FontVariation
 var _ui_font_bold: FontVariation
+var _console_layouts: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/reactor/b01/faceted-layout.json")).console
+var _footer_shift: float=0.0
 var _left_heading: Label
 class AllocationBar extends Control:
 	var ratios: Dictionary={}
@@ -289,10 +291,10 @@ func _build() -> void:
 	_select_quantity(1,false)
 
 func _layout_quote() -> void:
-	_cost.position=_source_ui_rect(320,1207,300,46).position
+	_cost.position=_source_ui_rect(320,1207+_footer_shift,300,46).position
 	_cost.size=Vector2(215,29)
-	_cost_badge.position=_source_ui_rect(320,1209,42,42).position
-	_cost_details.position=_source_ui_rect(374 if _cost_badge.visible else 320,1207,300,46).position
+	_cost_badge.position=_source_ui_rect(320,1209+_footer_shift,42,42).position
+	_cost_details.position=_source_ui_rect(374 if _cost_badge.visible else 320,1207+_footer_shift,300,46).position
 	_cost_details.size=Vector2(195,29)
 
 func _select_quantity(count: int, maximum: bool) -> void:
@@ -413,8 +415,10 @@ func _refresh() -> void:
 	if ids != previous_ids or _visual_loads(model, ids) != previous_loads: _update_stage()
 
 func _layout_enabled_rows(ids: Array) -> void:
-	var offset: float=float(4-maxi(ids.size(),1))*72.0
-	var header_y: float=819.0+offset
+	var layout: Dictionary=_console_layouts[str(maxi(ids.size(),1))]
+	var header_y: float=float(layout.header_y)
+	var offset: float=header_y-819.0
+	_footer_shift=float(layout.footer_y)-1230.0
 	_left_heading.position=_source_ui_rect(100,header_y-22,190,44).position
 	_left_heading.size=Vector2(120,28)
 	_left_heading.visible=not ids.is_empty()
@@ -435,12 +439,12 @@ func _layout_enabled_rows(ids: Array) -> void:
 		_rows[id].control.position=_source_ui_rect(328,center_y-35,552,70).position
 		_rows[id].effect.position=_source_ui_rect(958,center_y-22,148,44).position
 		_rows[id].effect.size=Vector2(94,28)
-	_upgrade_heading.position=_source_ui_rect(100,1207,85,46).position
-	_level.position=_source_ui_rect(205,1204,75,50).position
-	var quantity_rect:=_source_ui_rect(714,1195,130,70)
+	_upgrade_heading.position=_source_ui_rect(100,1207+_footer_shift,85,46).position
+	_level.position=_source_ui_rect(205,1204+_footer_shift,75,50).position
+	var quantity_rect:=_source_ui_rect(714,1195+_footer_shift,130,70)
 	_quantity.position=quantity_rect.position
 	_quantity.size=quantity_rect.size
-	var purchase_rect:=_source_ui_rect(866,1195,240,70)
+	var purchase_rect:=_source_ui_rect(866,1195+_footer_shift,240,70)
 	_purchase.position=purchase_rect.position
 	_purchase.size=purchase_rect.size
 	_layout_quote()
