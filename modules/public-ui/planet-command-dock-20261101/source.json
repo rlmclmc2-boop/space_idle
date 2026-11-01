@@ -1,0 +1,120 @@
+{
+  "runtime_source": "9fd43b9c41c7461a40588855d49efb0e915f912b",
+  "shared_theme": "9034af815abc0883ba47e4df21c15163a4515c30",
+  "planet_structural_integration": "cb0d0206",
+  "blobs": {
+    "space-battleship/src/ui/planet_panel.gd": "b12c465e675a9bbb411052ea8ce4d96e659aad7b",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/assets/ui/public_shell/faceted-controls.svg": "1ce23f7d9596dd15456e2f31a19a15cbc56db55f"
+  },
+  "state": "受控星球1／探索240／征服／四设施已建",
+  "coverage": [
+    "鼠标三页签及征服详情展开",
+    "鼠标滚轮下滚详情并点页签关闭",
+    "星球下拉点击展开",
+    "装备路由返回"
+  ],
+  "author_review": "已亲看九张完整画面。底部深色承载替换旧浅色覆盖；主体保留全模块宽度，三类操作与主体上下成组；长详情限制在260px滚动体内。星球建筑仍为结构WIP。",
+  "media": [
+    {
+      "path": "equipment-return.png",
+      "bytes": 1525956,
+      "sha256": "e7f42abb6e627e191a919ffd10243d46c6afa529ab0f5bdfb4bf97b712da12d2"
+    },
+    {
+      "path": "equipment-return.jpg",
+      "bytes": 630675,
+      "sha256": "bb2a7b498d6a9e81cfedc8b0d4a783fc42c5ee8e7c8fea474e89dbd43e12e22a"
+    },
+    {
+      "path": "planet-picker-open.png",
+      "bytes": 1043189,
+      "sha256": "1eb3c492c77bd22c7d00047d60da7c904bc08447f4b25403fae8e05787b09621"
+    },
+    {
+      "path": "planet-picker-open.jpg",
+      "bytes": 488716,
+      "sha256": "5a8962e580de52b0203574dab3cf33df5d528483c732e93588b516317e01e113"
+    },
+    {
+      "path": "planet-closed.png",
+      "bytes": 1037378,
+      "sha256": "36d090f6a292dd82e73b9808738026f89ca32354046b9577aea1f5620230fa9c"
+    },
+    {
+      "path": "planet-closed.jpg",
+      "bytes": 484620,
+      "sha256": "16326b15bd20c2df48b12fe30fefd64e45ed478a447ff7f52db372232e5a49d6"
+    },
+    {
+      "path": "planet-conquest-scroll.png",
+      "bytes": 962983,
+      "sha256": "99803d1f96c89b5536d1597f9c82efb6248de805cbd19ca3ff198bc2c7450c93"
+    },
+    {
+      "path": "planet-conquest-scroll.jpg",
+      "bytes": 473185,
+      "sha256": "c44970aa76acf43438862abaad7d6d76e2639aefc2d240dc7af39f2924ffbc27"
+    },
+    {
+      "path": "planet-conquest-expanded.png",
+      "bytes": 959367,
+      "sha256": "cbd27b6a476f69d45647aa1bbdcb678804abf4d94fc862a5f585dfa05bfdf342"
+    },
+    {
+      "path": "planet-conquest-expanded.jpg",
+      "bytes": 481431,
+      "sha256": "f47b6344f5e113f2894867e465f36c860721a25de742a049a58c095b1381fd72"
+    },
+    {
+      "path": "planet-exploration.png",
+      "bytes": 1047810,
+      "sha256": "7f94a4b8decb9b27d6af72fd95936a3dc0d18f2ad96fe07902dbd946f95e82a7"
+    },
+    {
+      "path": "planet-exploration.jpg",
+      "bytes": 523714,
+      "sha256": "08ed434720b7477eea7295a01c2b1afab02bab5e1f676def0213fda0078addce"
+    },
+    {
+      "path": "planet-crew.png",
+      "bytes": 988181,
+      "sha256": "076acbdbed75287049e29f5ab0c1e19834e37966c35c634175b14cb2d4aade72"
+    },
+    {
+      "path": "planet-crew.jpg",
+      "bytes": 501794,
+      "sha256": "57c8bb1a3992d2b1c8947cf315553f1e2fa27a3b040744a009065cb834a66456"
+    },
+    {
+      "path": "planet-facilities.png",
+      "bytes": 1050735,
+      "sha256": "cf75db10565fb31be6351f0c2e62ceac7dfa89081e183c8d7d1e111fcf67f29e"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 513048,
+      "sha256": "7306b60a9828662cde7cd941031b0d9cef64b953b8aea16601322ef4f84981a6"
+    },
+    {
+      "path": "planet-overview.png",
+      "bytes": 1050850,
+      "sha256": "97c5d46a9e4d00cd613eb94c1df7174c630423706dd2b4bba0645031780f0954"
+    },
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 488487,
+      "sha256": "3691b7f09a57133bad0a9dc6796decb1e9ec6929944e4d5da817b6f93b09dd12"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 4811,
+      "sha256": "d84f16cf9244f307e65033963625d78cc243253aa30eab142827942bda32fd3c"
+    },
+    {
+      "path": "run.log",
+      "bytes": 608,
+      "sha256": "8864fdf1451ac7d9b8f80213cf60d6a04c3adc368c3dff6b13494ff892bece48"
+    }
+  ]
+}

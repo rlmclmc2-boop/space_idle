@@ -55,3 +55,5 @@
 - 星球固定结构同壳接入 `cb0d0206`：[planet-v7-structural-shared-20261101](planet-v7-structural-shared-20261101/README.md)。
 
 - 星球公共控件源替换 `859ae9c7`：[planet-common-controls-20261101](planet-common-controls-20261101/README.md)。
+
+- 星球深色操作台整页适配 `9fd43b9c`：[planet-command-dock-20261101](planet-command-dock-20261101/README.md)。
