@@ -363,10 +363,10 @@ func _draw_background() -> void:
 				Rect2(anchor * background_layer.size, background_layer.size * Vector2(0.72, 0.84)), false)
 	var stars := RandomNumberGenerator.new()
 	stars.seed = 178
-	for index in (175 if planet_id == "1" else 100):
+	for index in (380 if planet_id == "1" else 100):
 		var point := Vector2(stars.randf(), stars.randf()) * background_layer.size
-		var radius := stars.randf_range(0.5, 1.3)
-		background_layer.draw_circle(point, radius, Color(0.65, 0.84, 0.86, stars.randf_range(0.18, 0.55)))
+		var radius := stars.randf_range(0.32, 0.95) if planet_id == "1" else stars.randf_range(0.5, 1.3)
+		background_layer.draw_circle(point, radius, Color(0.65, 0.84, 0.92, stars.randf_range(0.22, 0.68)))
 		if planet_id == "1" and index % 29 == 0:
 			background_layer.draw_circle(point, radius * 3.3, Color(0.12, 0.53, 0.92, 0.16))
 			background_layer.draw_circle(point, radius * 0.75, Color(0.67, 0.87, 1.0, 0.80))
