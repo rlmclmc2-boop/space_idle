@@ -29,8 +29,8 @@ def material(name, color, metallic=.0, rough=.68, emission=0.0):
     return mat
 
 
-ARMOR = material("Warm faceted ivory armor", (.52,.47,.36), .05, .74)
-ARMOR_FACE = material("Lit ivory armor facets", (.90,.78,.60), .04, .78)
+ARMOR = material("Warm faceted ivory armor", (.68,.64,.54), .05, .74)
+ARMOR_FACE = material("Lit ivory armor facets", (.94,.87,.73), .04, .78)
 ARMOR_SIDE = material("Recessed slate armor flanks", (.10,.17,.21), .09, .78)
 ARMOR_MID = material("Midtone faceted pressure armor", (.40,.46,.45), .05, .78)
 EDGE = material("Dark slate panel edge", (.085,.13,.16), .16, .75)
@@ -40,8 +40,8 @@ GLASS = material("Dark blue glass", (.025,.16,.22), .26, .34)
 WINDOW = material("Habitat cyan window glass", (.025,.34,.43), .08, .50, .42)
 CYAN = material("Contained cyan energy", (.025,.65,.84), .08, .40, 1.8)
 AMBER = material("Contained amber heat", (.68,.21,.025), .04, .55, .65)
-GOLD = material("Warm work marking", (.47,.25,.075), .24, .56)
-DOME_GOLD = material("Heat chamber faceted gold armor", (.80,.48,.17), .20, .58)
+GOLD = material("Warm work marking", (.70,.40,.09), .24, .56)
+DOME_GOLD = material("Heat chamber faceted gold armor", (.90,.56,.20), .20, .58)
 
 
 def parent(name, xyz=(0,0,0), angle=0):

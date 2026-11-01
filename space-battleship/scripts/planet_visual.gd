@@ -54,6 +54,7 @@ func _scene_center() -> Vector2:
 var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)
 var background_layer := Control.new()
+var nebula_layer := ColorRect.new()
 var scene_sky := GradientTexture2D.new()
 var nebula_glow := GradientTexture2D.new()
 var orbit_back_layer := Control.new()
@@ -92,7 +93,12 @@ func _ready() -> void:
 	nebula_glow.fill = GradientTexture2D.FILL_RADIAL
 	nebula_glow.fill_from = Vector2(0.5, 0.5)
 	nebula_glow.fill_to = Vector2(1.0, 0.5)
-	for layer in [background_layer, orbit_back_layer, globe]:
+	var cloud_material := ShaderMaterial.new()
+	cloud_material.shader = preload("res://scripts/planet_nebula.gdshader")
+	nebula_layer.material = cloud_material
+	nebula_layer.color = Color.WHITE
+	nebula_layer.visible = false
+	for layer in [background_layer, nebula_layer, orbit_back_layer, globe]:
 		layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.show_behind_parent = true
 		add_child(layer)
@@ -117,6 +123,7 @@ func _layout_globe() -> void:
 		architecture.position = Vector2.ZERO
 		architecture.scene_center = _scene_center()
 		architecture.size = size
+	nebula_layer.size = size
 	globe.fit_sphere(_scene_center(), minf(size.x, size.y) * 0.43 / maxf(1.0, globe.extent) if icon_mode else _body_radius())
 	background_layer.queue_redraw()
 	orbit_back_layer.queue_redraw()
@@ -200,6 +207,7 @@ func configure(id: String, row: Dictionary) -> void:
 	var appearance_source = row.get("visual", {})
 	appearance_source = _visual_value(appearance_source, {})
 	appearance = appearance_source if appearance_source is Dictionary else {}
+	nebula_layer.visible = id == "1" and not icon_mode
 	if not appearance_initialized or appearance != configured_appearance:
 		if not globe.material_ready or not textures_cached():
 			pending_row=row.duplicate(true)
@@ -222,6 +230,7 @@ func configure(id: String, row: Dictionary) -> void:
 		if architecture != null: architecture.configure_shape(appearance)
 		globe.light_direction = Vector3(-0.65, -0.45, 0.62)
 		globe.apply_settings()
+		globe.globe_material.set_shader_parameter("cloud_coverage", 0.18 if id == "1" else 0.0)
 		_layout_globe()
 	preparing=false;pending_row={};loading.hide();globe.show();set_process(false)
 	var facility_source = row.get("visualFacilities", [])
