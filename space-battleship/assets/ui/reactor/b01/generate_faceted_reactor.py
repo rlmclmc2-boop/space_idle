@@ -672,6 +672,15 @@ def export_glb():
  for count in (1,2,3,4):group('console_'+str(count),lambda count=count:console(m,count))
  def merge(objects,name):
   if not objects:return
+  objects=sorted(objects,key=lambda obj:obj.name)
+  # Join only retains the active object's modifier stack. Resolve every
+  # independently authored bevel/normal before joining the fixed assembly.
+  applied=0
+  for obj in objects:
+   bpy.context.view_layer.objects.active=obj
+   for modifier in list(obj.modifiers):
+    bpy.ops.object.modifier_apply(modifier=modifier.name);applied+=1
+  if applied:print('RESOLVED_PART_MODIFIERS',name,applied)
   bpy.ops.object.select_all(action='DESELECT')
   for o in objects:o.select_set(True)
   bpy.context.view_layer.objects.active=objects[0];bpy.ops.object.join();objects[0].name=name

@@ -4,7 +4,7 @@
 
 ## 可替换静态资产契约
 
-当前源为`assets/ui/reactor/b01/generate_faceted_reactor.py`。本地Blender导出可编辑的`faceted-reactor.glb`与`faceted-layout.json`；GLB聚合包共享材质，内部按稳定ID独立分组，不将设备、管道、工作区和原生控件烘成不可拆的全景图。
+当前源为`assets/ui/reactor/b01/generate_faceted_reactor.py`。本地Blender导出可编辑的`faceted-reactor.glb`与`faceted-layout.json`；导出前逐分件应用倒角和加权法线，再按部件合并；合并顺序按稳定名称排序。GLB聚合包共享材质，内部按稳定ID独立分组，不将设备、管道、工作区和原生控件烘成不可拆的全景图。
 
 稳定模块ID只有`weapons`、`defence`、`smelting`、`condensation`。固定背景为`bay`，核心为`core`；对应管路为`pipe_<id>`，机台为`console_1`至`console_4`。设备组含完整机体、底座、预制空心套筒以及独立工作Mesh；管组含核心出口套筒、管壳、内腔与遮挡件。工作Mesh英文语义名是生成器/呈现层之间的制作接口，不由玩家显示名或图片顺序推断。
 
