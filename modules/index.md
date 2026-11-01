@@ -18,3 +18,5 @@
 - [船员](crew/index.md)
 - [强化与宝石边界](enhancement/index.md)
 - [配置发布](config/index.md)
+
+- [定期资料清理](maintenance/index.md)
