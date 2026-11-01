@@ -4,7 +4,7 @@
 
 ## 当前现场
 
-分支`wip/planet-thread-resume-20261101`，新设计源码检查点`ef1fd9ee`。建筑与环绕按M7整体重新设计。
+分支`wip/planet-thread-resume-20261101`，原实机简模检查点`d2a7ae3f`；独立整体概念草案在`art_sources/planet_whole_concept_20261101/`。建筑与环绕按M7整体重新设计。
 
 新Blender源在`art_sources/planet_integrated_v6/`，四件新模型在`assets/planets/facilities_v6/`，运行端已加载v6；环截面与节点扩幅同步重设。现有动画枢轴、独立owned、球后遮挡和业务接口保留。
 
@@ -12,7 +12,7 @@ Godot4.7.2四段逐建、70°侧角、同版加速转动、第6类和主场景�
 
 ## 下一步
 
-先看归档`v7-macro-ef1fd9ee/complete.jpg`和`building-stage.jpg`的主要体块、空间及分件是否成立；若建筑关系成立，再与已认可整屏方向统一材质明暗，并在同版动态和实际页面核各设施可读性。
+父线程已看`v7-macro-ef1fd9ee/complete.jpg`并退回，认为是浅色简模。先重做独立概念草案的大型装甲外壳与环脊过渡；当前`concept-complete.png`仍显示工坊和船坞简化门架，不能当最终造型框架。整体设计稿成立后才重新制作实机资产，再核同版动态、逐建与整页。不要继续给v6/v7简模补小件。
 
 ## 恢复
 

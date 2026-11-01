@@ -131,6 +131,9 @@ def armor_prism(name, outline, bottom, top, mat, root=None):
 # The ring is one dark pressure system with two armored bank beams, a work
 # trough and four built nodes. Short plate gaps expose the same keel below.
 annular_band("Continuous central pressure keel",3.80,4.89,-.43,.12,KEEL)
+annular_band("Deep lower pressure hull",3.92,4.75,-.77,-.43,EDGE)
+annular_band("Outer beveled side armor course",4.81,4.96,-.56,-.05,ARMOR)
+annular_band("Inner beveled side armor course",3.71,3.86,-.56,-.05,ARMOR)
 annular_band("Recessed machine conduit",4.13,4.56,.13,.15,MACHINE)
 annular_band("Contained upper cyan service line",4.10,4.13,.16,.18,CYAN)
 annular_band("Contained lower cyan service line",4.85,4.88,-.29,-.25,CYAN)
@@ -139,6 +142,9 @@ for i in range(36):
     a1=(i+1)*tau/36-.009
     annular_band("Segmented inner load armor",3.84,3.99,.13,.26,ARMOR,a0,a1,5)
     annular_band("Segmented outer load armor",4.71,4.87,.13,.26,ARMOR,a0,a1,5)
+    if i % 3 == 0:
+        a=(a0+a1)*.5
+        annular_band("Deep pressure joint clamp",3.72,4.96,-.63,.31,EDGE,a-.016,a+.016,2)
 for i in range(12):
     a=(i+.5)*tau/12
     annular_band("Radial charcoal bulkhead",3.83,4.88,.19,.26,EDGE,a-.008,a+.008,2)
@@ -186,6 +192,9 @@ refinery=socket("02 / Faceted heat refinery fortress",45)
 box("One furnace lower pressure foundation",(0,0,.54),(1.65,1.40,.46),KEEL,refinery,.18)
 cyl("Twelve-facet heat chamber",(0,0,1.03),.59,.76,MACHINE,refinery,12)
 cyl("Contained amber furnace core",(0,0,1.44),.36,.05,AMBER,refinery,12)
+for i in range(8):
+    a=i*tau/8
+    box("Heat escaping through armored slit",(.59*cos(a),.59*sin(a),1.00),(.028,.09,.37),AMBER,refinery,.004).rotation_euler.z=a
 torus("Heavy furnace upper clamp",(0,0,1.44),.49,.10,EDGE,refinery)
 for side in (-1,1):
     armor_prism("Tall angled chamber armor",
