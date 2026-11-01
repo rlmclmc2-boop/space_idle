@@ -102,9 +102,16 @@ void fragment() {
         float flow_t=fract(phase*0.47);
         vec2 flow_pos=mix(vec2(0.51,0.49),vec2(0.70,0.53),flow_t);
         float moving_heat=disk(q,flow_pos,vec2(0.045,0.027))*surface.a;
+        // The descending outlet is a modeled open trough, not a light drawn
+        // across the chassis. Its rendered liquid alpha is the final boundary.
+        float outlet_run = conduit(q,vec2(0.65,0.51),vec2(0.73,0.56),0.019)
+                         + conduit(q,vec2(0.73,0.56),vec2(0.77,0.67),0.019)
+                         + conduit(q,vec2(0.77,0.67),vec2(0.79,0.80),0.019);
+        float outlet_front = pow(max(0.0,cos(q.y*32.0-phase*4.6)),5.0);
+        float outlet_heat = min(outlet_run,1.0)*surface.a*(0.26+0.78*outlet_front);
         action = (pool*surface.a*0.08+slot*surface.a*0.08+drop*0.58
                   +inlet_glow*surface.a*0.37+outlet_glow*surface.a*0.38
-                  +moving_heat*0.72+heat_bounce*0.04)*pour*load;
+                  +moving_heat*0.72+heat_bounce*0.04+outlet_heat)*pour*load;
         hue = vec3(1.0,0.38,0.035);
     } else {
         // Five seed sockets feed a growth front up distinct crystal columns.

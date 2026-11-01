@@ -589,6 +589,36 @@ def defence(spec,m):
     socket("shield",spec,m)
 
 
+def furnace_sluice(m):
+    # One continuous open section, from the liquid's right bank down into the
+    # delivery tube. All three surfaces share these vertices and elevations.
+    points=[Vector((216,-551,99)),Vector((240,-557,98)),
+            Vector((258,-575,83)),Vector((273,-598,58)),Vector((282,-617,43))]
+    def ribbon(name,offsets,mat):
+        verts=[]
+        for i,p in enumerate(points):
+            tangent=(points[min(i+1,len(points)-1)]-points[max(0,i-1)])
+            normal=Vector((-tangent.y,tangent.x,0)).normalized()
+            for across,rise in offsets: verts.append(p+normal*across+Vector((0,0,rise)))
+        width=len(offsets)
+        faces=[]
+        for i in range(len(points)-1):
+            for j in range(width-1):
+                a=i*width+j
+                faces.append((a,a+width,a+width+1,a+1))
+        mesh=bpy.data.meshes.new(name)
+        mesh.from_pydata(verts,[],faces)
+        mesh.materials.append(mat)
+        obj=bpy.data.objects.new(name,mesh)
+        bpy.context.collection.objects.link(obj)
+        solid=obj.modifiers.new("cast trough thickness","SOLIDIFY")
+        solid.thickness=2
+        bevel=obj.modifiers.new("rounded refractory lip","BEVEL")
+        bevel.width,bevel.segments=1.3,3
+    ribbon("continuous descending tap trough",[(-11,7),(-11,-3),(11,-3),(11,7)],m["steel"])
+    ribbon("continuous molten outlet surface",[(-7.5,0),(7.5,0)],m["orange_lit"])
+
+
 def smelting(spec,m):
     deck_contact("furnace",201,689,254,m)
     foot("furnace",201,633,280,m)
@@ -648,10 +678,15 @@ def smelting(spec,m):
     cast_plate("front refractory sill",[(127,566),(151,569),(177,565),
                (215,570),(232,577),(228,581),(183,575),(146,577),
                (126,573)],95,4,m["dark"],2)
-    rod("molten tap spill",(205,548),(234,555),4.2,109,m["orange_lit"],12)
+    furnace_sluice(m)
     for sx in (-1,1):
-        cube("refractory throat jamb",179+sx*72,536,13,108,13,86,m["silver"],3)
-        cube("jamb black heat slot",179+sx*72,535,4,84,3,94,m["dark"],1)
+        if sx < 0:
+            cube("refractory throat jamb",107,536,13,108,13,86,m["silver"],3)
+            cube("jamb black heat slot",107,535,4,84,3,94,m["dark"],1)
+        else:
+            # The trough passes through an actual opening in the side wall.
+            cube("right upper throat jamb",251,514,13,64,13,86,m["silver"],3)
+            cube("right lower throat jamb",251,582,13,16,13,86,m["silver"],3)
     for yy in (486,583):
         cube("cast refractory course",179,yy,150,7,8,88,m["steel"],2)
     for y in (510,523,547,560):
@@ -662,7 +697,6 @@ def smelting(spec,m):
     rod("exhaust riser",(104,487),(104,412),16,36,m["dark"])
     rod("exhaust ferrule",(104,419),(104,405),19,39,m["silver"])
     rod("molten delivery",(196,569),(282,617),13,39,m["dark"])
-    rod("covered tapping throat",(203,560),(239,590),11,38,m["steel"])
     tubing("left cooling coil",[(88,534),(74,534),(70,581),(82,603)],5,44,m["brass"])
     tubing("right pressure return",[(254,463),(284,466),(299,488),(298,520)],5,45,m["dark"])
     for x in (106,145,217,251):
