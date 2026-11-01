@@ -59,8 +59,8 @@ func _ready() -> void:
 	_side.render_priority = -2
 	# Match the load armor on all four authored facilities so the continuous
 	# deck reads as their shared structure under the same scene lighting.
-	_deck = _material(Color("e8ddca"))
-	_ivory = _material(Color("b9b3a2"))
+	_deck = _material(Color("d2c5af"))
+	_ivory = _material(Color("a7a18f"))
 	_channel = _material(Color("294451"))
 	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
