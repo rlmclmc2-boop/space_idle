@@ -185,7 +185,7 @@ func _layout() -> void:
 func _render_pixels() -> float:
 	# Compact stellar cores still need an orbital facility structure, but the
 	# full terrestrial ring makes the center read as an empty 700px hole.
-	return maxf(_body_pixels, minf(size.x * (0.16 if _compact_stellar else 0.235), size.y * (0.235 if _compact_stellar else 0.34)))
+	return maxf(_body_pixels, minf(size.x * (0.16 if _compact_stellar else 0.235), size.y * (0.285 if _compact_stellar else 0.34)))
 
 func update_pose(clock: float, surface_phase: float, body_pixels: float, surface_clock: float = -1.0) -> void:
 	_clock = clock
