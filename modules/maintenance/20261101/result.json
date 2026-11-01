@@ -1,0 +1,156 @@
+{
+  "archive_preservation_before_cleanup": {
+    "archive_commit": "3d983bf93594188805f5e808574dd471874c7160",
+    "records": 2864,
+    "unique_blobs": 1393,
+    "source_and_archive_git_blob_match": true,
+    "sha256_readback_match": true,
+    "remote_fetch_confirmed": true
+  },
+  "publication": {
+    "main": {
+      "source": "e845ca58afd39184c3d4c5743021480e393adf74",
+      "commit": "61bde20c1d96167624379ceed41cb0293bb00119",
+      "local_branch": "docs/daily-cleanup-main-20261101",
+      "original_branch": "main",
+      "remote_target": "docs/daily-cleanup-main-20261101",
+      "mode": "prepared_only",
+      "removed": 141,
+      "modified": 11,
+      "production_blobs_unchanged": true,
+      "result": "pushed_readback_match",
+      "observed_original_before_push": "e845ca58afd39184c3d4c5743021480e393adf74",
+      "readback": "61bde20c1d96167624379ceed41cb0293bb00119"
+    },
+    "equipment": {
+      "source": "cd3365c9fc84d27f4b0e3217a55d1104011e2027",
+      "commit": "fb28b60ef8b35c236b15bedb4590dffbc1e7b556",
+      "local_branch": "docs/daily-cleanup-equipment-20261101",
+      "original_branch": "art/equipment-materials-main-20261029",
+      "remote_target": "art/equipment-materials-main-20261029",
+      "mode": "eligible_fast_forward_docs_only",
+      "removed": 0,
+      "modified": 14,
+      "production_blobs_unchanged": true,
+      "result": "pushed_readback_match",
+      "observed_original_before_push": "cd3365c9fc84d27f4b0e3217a55d1104011e2027",
+      "readback": "fb28b60ef8b35c236b15bedb4590dffbc1e7b556"
+    },
+    "reactor": {
+      "source": "749eccd11d6a6c67a91f9a7138c03508481d373c",
+      "commit": "4278ef9334cf313c0a1ab4ae4ab321fc6b464f96",
+      "local_branch": "docs/daily-cleanup-reactor-20261101",
+      "original_branch": "implement/reactor-centered-godot",
+      "remote_target": "implement/reactor-centered-godot",
+      "mode": "eligible_fast_forward_docs_only",
+      "removed": 1245,
+      "modified": 12,
+      "production_blobs_unchanged": true,
+      "result": "pushed_readback_match",
+      "observed_original_before_push": "749eccd11d6a6c67a91f9a7138c03508481d373c",
+      "readback": "4278ef9334cf313c0a1ab4ae4ab321fc6b464f96"
+    },
+    "planet": {
+      "source": "acccaf4ccc5d75c92d8bf2e585b1b2df1479a259",
+      "commit": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e",
+      "local_branch": "docs/daily-cleanup-planet-20261101",
+      "original_branch": "feat/planet-single-side-ui",
+      "remote_target": "docs/daily-cleanup-planet-20261101",
+      "mode": "prepared_only",
+      "removed": 1346,
+      "modified": 6,
+      "production_blobs_unchanged": true,
+      "result": "pushed_readback_match",
+      "observed_original_before_push": "acccaf4ccc5d75c92d8bf2e585b1b2df1479a259",
+      "readback": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e"
+    },
+    "host": {
+      "source": "2d4cb2af222f44beef263099eb86628526d8c924",
+      "commit": "912f5924ab7eb5082703108264f4378b3c9a435a",
+      "local_branch": "docs/daily-cleanup-host-20261101",
+      "original_branch": "design/clear-zone-host",
+      "remote_target": "design/clear-zone-host",
+      "mode": "eligible_fast_forward_docs_only",
+      "removed": 73,
+      "modified": 5,
+      "production_blobs_unchanged": true,
+      "result": "pushed_readback_match",
+      "observed_original_before_push": "2d4cb2af222f44beef263099eb86628526d8c924",
+      "readback": "912f5924ab7eb5082703108264f4378b3c9a435a"
+    },
+    "backend": {
+      "source": "f2f5b47c0112d741cca3546a2cec8f3c69934ba3",
+      "commit": "3dd45f5761d04251bb55478c34898781f8a4d0c3",
+      "local_branch": "docs/daily-cleanup-backend-20261101",
+      "original_branch": "feat/amount-safe-previews",
+      "remote_target": "feat/amount-safe-previews",
+      "mode": "eligible_fast_forward_docs_only",
+      "removed": 1,
+      "modified": 3,
+      "production_blobs_unchanged": true,
+      "result": "pushed_readback_match",
+      "observed_original_before_push": "f2f5b47c0112d741cca3546a2cec8f3c69934ba3",
+      "readback": "3dd45f5761d04251bb55478c34898781f8a4d0c3"
+    },
+    "docs": {
+      "source": "ee802997f84a3627f8f92bdd76fd93ad94676207",
+      "commit": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+      "local_branch": "docs/daily-cleanup-docs-20261101",
+      "original_branch": "docs/design-entry-cleanup-20261031",
+      "remote_target": "docs/design-entry-cleanup-20261031",
+      "mode": "eligible_fast_forward_docs_only",
+      "removed": 0,
+      "modified": 7,
+      "production_blobs_unchanged": true,
+      "result": "pushed_readback_match",
+      "observed_original_before_push": "ee802997f84a3627f8f92bdd76fd93ad94676207",
+      "readback": "8e6d5af48db9384cdebd5add54c9754a0165d254"
+    }
+  },
+  "original_main_and_planet_final_refs": {
+    "feat/planet-single-side-ui": "acccaf4ccc5d75c92d8bf2e585b1b2df1479a259",
+    "main": "e845ca58afd39184c3d4c5743021480e393adf74"
+  },
+  "local_file_links_checked": 2428,
+  "local_file_link_missing": 0,
+  "local_anchors_checked": 671,
+  "local_anchor_missing": 0,
+  "fixed_git_links": {
+    "destinations": 22,
+    "errors": []
+  },
+  "runtime_blobs_unchanged": true,
+  "game_or_performance_tests_run": false,
+  "new_independent_review": false,
+  "network_denial": false,
+  "remaining": {
+    "main": {
+      "status": "prepared_pushed_not_applied_to_main",
+      "reason": "保留根审后main接纳要求；本轮不合功能代码、不直接推进main",
+      "commit": "61bde20c1d96167624379ceed41cb0293bb00119"
+    },
+    "planet": {
+      "status": "prepared_pushed_original_branch_untouched",
+      "reason": "已知原组持续WIP；已读到R114，但未读取其现场。原组消费时逐路径重核HEAD/blob并保最新入口，不整提交覆盖新制作。",
+      "commit": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e",
+      "current_design_inputs_retained": [
+        "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png",
+        "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png"
+      ]
+    },
+    "uncertain_authoring_metadata": {
+      "status": "retained",
+      "reason": "来源JSON内有runtime_regions等制造/裁区事实；未证其全部仅作保存资料，不连带删除。",
+      "examples": [
+        "space-battleship/assets/ui/equipment/materials-20261029/control-materials-sources.json",
+        "space-battleship/assets/ui/equipment/materials-20261029/painted-console-sources.json",
+        "space-battleship/assets/ui/equipment/hangar/sources.json"
+      ],
+      "followup": "由原模块确认当前制造消费后再划分纯归因与制作输入；本次不新建任务、不启动依赖调查"
+    },
+    "production_and_wip": {
+      "status": "untouched",
+      "reason": "所有源码、配置、实际资产、个人文件和WIP保持；公共壳仍运行预载的R5f件即使方案退役也未移出；没有跨工作区同步操作。"
+    }
+  }
+}

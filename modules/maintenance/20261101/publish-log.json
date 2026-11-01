@@ -1,0 +1,44 @@
+[
+  {
+    "branch": "docs/daily-cleanup-main-20261101",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "remote: \nremote: Create a pull request for 'docs/daily-cleanup-main-20261101' on GitHub by visiting:        \nremote:      https://github.com/rlmclmc2-boop/space_idle/pull/new/docs/daily-cleanup-main-20261101        \nremote: \nTo https://github.com/rlmclmc2-boop/space_idle.git\n * [new branch]        docs/daily-cleanup-main-20261101 -> docs/daily-cleanup-main-20261101\n"
+  },
+  {
+    "branch": "art/equipment-materials-main-20261029",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "To https://github.com/rlmclmc2-boop/space_idle.git\n   cd3365c9..fb28b60e  docs/daily-cleanup-equipment-20261101 -> art/equipment-materials-main-20261029\n"
+  },
+  {
+    "branch": "implement/reactor-centered-godot",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "To https://github.com/rlmclmc2-boop/space_idle.git\n   749eccd1..4278ef93  docs/daily-cleanup-reactor-20261101 -> implement/reactor-centered-godot\n"
+  },
+  {
+    "branch": "docs/daily-cleanup-planet-20261101",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "remote: \nremote: Create a pull request for 'docs/daily-cleanup-planet-20261101' on GitHub by visiting:        \nremote:      https://github.com/rlmclmc2-boop/space_idle/pull/new/docs/daily-cleanup-planet-20261101        \nremote: \nTo https://github.com/rlmclmc2-boop/space_idle.git\n * [new branch]        docs/daily-cleanup-planet-20261101 -> docs/daily-cleanup-planet-20261101\n"
+  },
+  {
+    "branch": "design/clear-zone-host",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "To https://github.com/rlmclmc2-boop/space_idle.git\n   2d4cb2af..912f5924  docs/daily-cleanup-host-20261101 -> design/clear-zone-host\n"
+  },
+  {
+    "branch": "feat/amount-safe-previews",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "To https://github.com/rlmclmc2-boop/space_idle.git\n   f2f5b47c..3dd45f57  docs/daily-cleanup-backend-20261101 -> feat/amount-safe-previews\n"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "To https://github.com/rlmclmc2-boop/space_idle.git\n   ee802997..8e6d5af4  docs/daily-cleanup-docs-20261101 -> docs/design-entry-cleanup-20261031\n"
+  }
+]

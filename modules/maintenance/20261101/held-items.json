@@ -1,0 +1,30 @@
+{
+  "main": {
+    "status": "prepared_pushed_not_applied_to_main",
+    "reason": "保留根审后main接纳要求；本轮不合功能代码、不直接推进main",
+    "commit": "61bde20c1d96167624379ceed41cb0293bb00119"
+  },
+  "planet": {
+    "status": "prepared_pushed_original_branch_untouched",
+    "reason": "已知原组持续WIP；已读到R114，但未读取其现场。原组消费时逐路径重核HEAD/blob并保最新入口，不整提交覆盖新制作。",
+    "commit": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e",
+    "current_design_inputs_retained": [
+      "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png",
+      "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png"
+    ]
+  },
+  "uncertain_authoring_metadata": {
+    "status": "retained",
+    "reason": "来源JSON内有runtime_regions等制造/裁区事实；未证其全部仅作保存资料，不连带删除。",
+    "examples": [
+      "space-battleship/assets/ui/equipment/materials-20261029/control-materials-sources.json",
+      "space-battleship/assets/ui/equipment/materials-20261029/painted-console-sources.json",
+      "space-battleship/assets/ui/equipment/hangar/sources.json"
+    ],
+    "followup": "由原模块确认当前制造消费后再划分纯归因与制作输入；本次不新建任务、不启动依赖调查"
+  },
+  "production_and_wip": {
+    "status": "untouched",
+    "reason": "所有源码、配置、实际资产、个人文件和WIP保持；公共壳仍运行预载的R5f件即使方案退役也未移出；没有跨工作区同步操作。"
+  }
+}
