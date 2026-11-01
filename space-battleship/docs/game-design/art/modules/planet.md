@@ -1,6 +1,6 @@
 # M7 星球
 
-[唯一入口](../../README.md) · [全局规范](../../13-art-interaction.md) · [R17当前制作/证据](../../../verification/planet-single-side-godot/visual-r17-curved-spine/README.md) · [公开契约](../../contracts/planet.md)。
+[唯一入口](../../README.md) · [全局规范](../../13-art-interaction.md) · [R17当前制作/证据](https://github.com/rlmclmc2-boop/space_idle/blob/acccaf4ccc5d75c92d8bf2e585b1b2df1479a259/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md) · [公开契约](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/planet.md)。
 
 ### M7 星球探索、地表/轨道设施与领取
 

@@ -6,7 +6,7 @@
 
 ### S1
 
-公共壳与控件：`src/main.gd`、`src/ui/bridge_theme.gd`；当前R3制作与有限状态见[整体入口](../../ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)。
+公共壳与控件：`src/main.gd`、`src/ui/bridge_theme.gd`；当前R3制作与有限状态见[整体入口](https://github.com/rlmclmc2-boop/space_idle/blob/2d4cb2af222f44beef263099eb86628526d8c924/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)。
 
 ### S2
 
@@ -22,7 +22,7 @@
 
 ### S5
 
-反应堆：按用户批准B01的独立核心/设备/实体管路制作，见[B01入口](../../verification/reactor-centered-godot/evidence/b01-redesign/README.md)。资产身份/锚点/导入条件只见[M3资产契约](modules/reactor-asset-contract.md)，不导航回旧整图舞台。
+反应堆：按用户批准B01的独立核心/设备/实体管路制作，见[B01入口](https://github.com/rlmclmc2-boop/space_idle/blob/749eccd11d6a6c67a91f9a7138c03508481d373c/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md)。资产身份/锚点/导入条件只见[M3资产契约](https://github.com/rlmclmc2-boop/space_idle/blob/749eccd11d6a6c67a91f9a7138c03508481d373c/space-battleship/assets/ui/reactor/b01/README.md)，不导航回旧整图舞台。
 
 ### S6
 
@@ -38,7 +38,7 @@
 
 ### S9
 
-星球：现存球体/轨道资产与`planet_visual.gd`、当前R17设施制作；当前批准与原生状态见[R17](../../verification/planet-single-side-godot/visual-r17-curved-spine/README.md)和[M7](modules/planet.md)，不恢复贴地强制分工。
+星球：现存球体/轨道资产与`planet_visual.gd`、当前R17设施制作；当前批准与原生状态见[R17](https://github.com/rlmclmc2-boop/space_idle/blob/acccaf4ccc5d75c92d8bf2e585b1b2df1479a259/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md)和[M7](modules/planet.md)，不恢复贴地强制分工。
 
 ### S10
 

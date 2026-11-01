@@ -1,6 +1,6 @@
 # M3 反应炉
 
-[唯一入口](../../README.md) · [全局规范](../../13-art-interaction.md) · [当前B01制作/证据](../../../verification/reactor-centered-godot/evidence/b01-redesign/README.md) · [公开契约](../../contracts/reactor.md)。
+[唯一入口](../../README.md) · [全局规范](../../13-art-interaction.md) · [当前B01制作/证据](https://github.com/rlmclmc2-boop/space_idle/blob/749eccd11d6a6c67a91f9a7138c03508481d373c/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md) · [公开契约](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/reactor.md)。
 
 ### M3 反应炉供能
 
@@ -14,4 +14,4 @@
 
 ## 可替换静态资产契约
 
-唯一正文移至[资产交付契约](reactor-asset-contract.md#可替换静态资产契约)，保留元数据v1、稳定ID、坐标/锚点、导入与ready条件；仅需要制作/导入时展开。
+唯一正文移至[资产交付契约](https://github.com/rlmclmc2-boop/space_idle/blob/749eccd11d6a6c67a91f9a7138c03508481d373c/space-battleship/assets/ui/reactor/b01/README.md)，保留元数据v1、稳定ID、坐标/锚点、导入与ready条件；仅需要制作/导入时展开。

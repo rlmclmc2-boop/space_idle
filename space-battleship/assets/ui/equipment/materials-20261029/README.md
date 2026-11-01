@@ -1,5 +1,5 @@
-# 装备材质候选来源
+# 装备公共材质装配
 
-当前消费painted-console-shell.png：单件空白手绘漆面壳，完整提示和来源分别见painted-console-prompt.txt、painted-console-sources.json。取实壳区域统一缩至640×189，32px角部固定、直边TILE，中心独立漆面，源壳内白漆柔和接入；不整图跨比拉伸，不烘文字/图标。实际图与源版本见docs/verification/equipment-hangar-godot/workbench-optical-revision/painted-console-rework/README.md。
+painted-console-shell.png 是无文字／图标的手绘壳面：取实壳区统一缩至640×189，32px角部固定，直边平铺，中心独立漆面；不整图跨比拉伸。satin-metal-tile.png 按屏幕像素平铺作按键微粒。实际使用与裁区以本分支运行引用为准，当前制作规则见[装备M/V](../../../../docs/game-design/art/modules/equipment.md)。
 
-satin-metal-tile.png仅按屏幕像素平铺用于按键微粒，原提示及生成来源/hash保持。旧通用硬折边/凹框绘制已撤；旧ba7 atlas/import/提示/来源100%原字节移到docs/verification/equipment-hangar-godot/workbench-optical-revision/rejected-art-sources/ba7并以.gdignore隔离，不runtime消费。历史sources记录只表示对应历史版本，不重写原hash含义。当前艺术效果待原审/根判断。
+保留真实PNG、当前导入及仍可能用于制造的元数据；不能从旧生成记录或已撤候选恢复布局。整页状态只见[当前边界](../../../../docs/game-design/11-stage6-contract.md)。

@@ -1,12 +1,12 @@
 # 太空战舰设计文档：唯一入口
 
-本次文档汇集以`main@e3b38d7b`为底，分别读取五条工作分支；具体固定源见[11当前状态](11-stage6-contract.md)。这不是将其实现合并成同一版。只读本表指定的必要范围，不默认遍历所有链接。规则、呈现规范、参数事实和历史证据分别管理；差异复查统一按[07复查方法](07-verification.md#0-复查方法)执行，[裁定与待定问题](review/conflicts.md)保留来源、结论和未决项，不以旧实现替用户选择未决规则。
+当前各原组来源与审核边界见[11](11-stage6-contract.md)。只读本表指定的必要范围，不默认遍历所有链接。规则、呈现规范、参数事实和历史证据分别管理；差异复查统一按[07复查方法](07-verification.md#0-复查方法)执行，[裁定与待定问题](review/conflicts.md)保留来源、结论和未决项，不以旧实现替用户选择未决规则。
 
 ## 当前阶段的界面范围
 
 当前阶段仅设计、制作与验收桌面宽屏。窄屏布局、适配及专项检查均排除；13及各M/V中的“支持窗口/不同窗口/缩放”只指当前桌面宽屏目标，历史窄屏画面只作来源事实。恢复窄屏工作须用户另行明确，不从旧适配条款或历史尺寸自动启动；未来若恢复，可采用战场/模块切换，本阶段不实施。具体范围见[13全局规范](13-art-interaction.md#20-整屏构图与全局ui)。
 
-当前先读[11固定版本/各组入口](11-stage6-contract.md)，再选本表一个规范模块。R3共同方向已获准推进实机、公共材质已固定；各原组内部接入与整页/整体验收仍未完。公共壳制作从[R3入口](../ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)进入。旧文档不在当前树导航，不能据旧方案恢复实现。
+当前先读[11固定版本/各组入口](11-stage6-contract.md)，再选本表一个规范模块。R3共同方向已获准推进实机、公共材质已固定；各原组内部接入与整页/整体验收仍未完。公共壳制作从[R3入口](https://github.com/rlmclmc2-boop/space_idle/blob/2d4cb2af222f44beef263099eb86628526d8c924/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md)进入。旧文档不在当前树导航，不能据旧方案恢复实现。
 
 ## 按任务确定最小阅读
 
@@ -32,7 +32,7 @@
 | [05架构/现行交接](05-architecture.md)、[06数据/保存](06-data.md) | 对象边界与数据契约；模块级前后端连接统一见[14专页](14-ui-contracts.md)，不在05重复端口表；容量来源及待定身份差异见裁定清单；有既定权威的过时文案已澄清，不重开规则选择 |
 | [13全局美术/交互](13-art-interaction.md) → [模块M/V](13-art-interaction.md#3-按模块读取设计与验收) | 全局构图、信息层级、唯一导航与对齐原则；各模块页仅含本模块设计及可见验收 |
 | [07规则验证](07-verification.md)、[11当前状态](11-stage6-contract.md) | 前者是设计验收场景，后者是分支制作/已有版本覆盖；当前可执行构建命令仍由foundation入口提供 |
-| [资源整数契约](contracts/resources.md) | 实际资源/结算/恢复边界；普通无.0与大数缩写只在13定义，消费者实现版本在11，UI不得自行ceil |
+| [资源整数契约](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/resources.md) | 实际资源/结算/恢复边界；普通无.0与大数缩写只在13定义，消费者实现版本在11，UI不得自行ceil |
 | [09配置参考](09-config-catalog.md)、[舰船尺寸参考](reference/ship-scale.md) | 当前Excel文件入口及舰船尺度约束；参数变更仍需有效决定，不从旧副本取值 |
 | [美术来源](art/sources.md)、[G/D缺口待定](art/open-items.md) | 只按模块查 S、G、D 编号，不复制玩法公式或默认恢复历史资产 |
 | [当前裁定与未决问题](review/conflicts.md) | 保留已裁定结论和待定问题，不因归档而关闭未决项 |

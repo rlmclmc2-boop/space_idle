@@ -1,6 +1,6 @@
 # M2 舰体与装备
 
-[唯一入口](../../README.md) · [全局规范](../../13-art-interaction.md) · [当前制作/证据](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md) · [公开契约](../../contracts/equipment.md)。本页只维护M2/V2，逐版状态不在这里叠加。
+[唯一入口](../../README.md) · [全局规范](../../13-art-interaction.md) · [当前制作/证据](../../../verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md) · [公开契约](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/equipment.md)。本页只维护M2/V2，逐版状态不在这里叠加。
 
 ### M2 舰体、装备卡、换装与属性
 

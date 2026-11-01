@@ -10,7 +10,7 @@
 
 后端拥有规则、费用、Amount、容量/解锁、进度、随机、候选接纳和真实状态。前端只读必要事实、提交稳定对象ID与候选输入、显示实际结果；跨模块动作走现有GameSession协调口或注入callable，普通模块动作保持所属模块直调。**读取查询、命令和消费事件必须区分，不能把所有返回Dictionary的方法当作只读查询。** 不由UI重复计算成长、报价、MAX、伤害、研究速度或任务推进。
 
-分册第2节只列当前main已有的连接，后续具名节定义所需接口及其独立实现范围；规范收录不等于所有分支已集成。资源整数契约见[resources](contracts/resources.md)，f924仅获限定只读复核，不是全局游戏验收。
+分册第2节只列当前main已有的连接，后续具名节定义所需接口及其独立实现范围；规范收录不等于所有分支已集成。资源整数契约见[resources](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/resources.md)，f924仅获限定只读复核，不是全局游戏验收。
 
 数量控件消费[13§2.3](13-art-interaction.md#23-所有模块共享的状态与反馈)：数量键只改本地模式并重读Owner报价，独立执行键才提交；原无MAX的动作不因通用样式新增MAX。费用逐资源不足判断由既有预算/Owner端口提供，仅对应消耗值红；点击执行遭普通资源不足才短提示，其他准入与故障语义保持。资源文本只展示Owner整数事实，UI不ceil或从缩写反算；显示入口/版本按13与11核对。
 
@@ -22,16 +22,16 @@
 
 | 模块 | 唯一模块契约正文 |
 |---|---|
-| 战斗/航程/拾取 | [战斗/航程/拾取](contracts/battle.md) |
-| 舰体/装备 | [舰体/装备](contracts/equipment.md) |
-| 反应炉 | [反应炉](contracts/reactor.md) |
-| 科研 | [科研](contracts/research.md) |
-| 强化 | [强化](contracts/enhancement.md) |
-| 船员 | [船员](contracts/crew.md) |
-| 星球 | [星球](contracts/planet.md) |
-| 星系 | [星系](contracts/galaxy.md) |
-| 超空间 | [超空间](contracts/hyperspace.md) |
-| 档案/通知/设置 | [档案/通知/设置](contracts/persistence.md) |
+| 战斗/航程/拾取 | [战斗/航程/拾取](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/battle.md) |
+| 舰体/装备 | [舰体/装备](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/equipment.md) |
+| 反应炉 | [反应炉](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/reactor.md) |
+| 科研 | [科研](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/research.md) |
+| 强化 | [强化](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/enhancement.md) |
+| 船员 | [船员](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/crew.md) |
+| 星球 | [星球](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/planet.md) |
+| 星系 | [星系](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/galaxy.md) |
+| 超空间 | [超空间](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/hyperspace.md) |
+| 档案/通知/设置 | [档案/通知/设置](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/persistence.md) |
 
 ## 3. 当前接口缺口的处理
 
@@ -80,16 +80,16 @@
 
 ## 7. 已实现出口：敌盾与双条的最小战场展示契约
 
-正文移至[战斗/航程/拾取分册](contracts/battle.md#7-已实现出口敌盾与双条的最小战场展示契约)。
+正文移至[战斗/航程/拾取分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/battle.md#7-已实现出口敌盾与双条的最小战场展示契约)。
 ### 7.1 实现前基线与已实现出口
 
-正文移至[战斗/航程/拾取分册](contracts/battle.md#71-实现前基线与已实现出口)。
+正文移至[战斗/航程/拾取分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/battle.md#71-实现前基线与已实现出口)。
 ### 7.2 身份、快照与失效
 
-正文移至[战斗/航程/拾取分册](contracts/battle.md#72-身份快照与失效)。
+正文移至[战斗/航程/拾取分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/battle.md#72-身份快照与失效)。
 ### 7.3 隔离、Amount与绑定边界
 
-正文移至[战斗/航程/拾取分册](contracts/battle.md#73-隔离amount与绑定边界)。
+正文移至[战斗/航程/拾取分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/battle.md#73-隔离amount与绑定边界)。
 
 <a id="8-已审待实施成员设施与选中节点的最小只读事实"></a>
 
@@ -107,15 +107,15 @@
 
 ### 8.2 Crew：成员事实
 
-正文移至[船员分册](contracts/crew.md#82-crew成员事实)。
+正文移至[船员分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/crew.md#82-crew成员事实)。
 
 ### 8.3 Planet：设施事实
 
-正文移至[星球分册](contracts/planet.md#83-planet设施事实)。
+正文移至[星球分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/planet.md#83-planet设施事实)。
 
 ### 8.4 Galaxy：选中节点事实
 
-正文移至[星系分册](contracts/galaxy.md#84-galaxy选中节点事实)。
+正文移至[星系分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/galaxy.md#84-galaxy选中节点事实)。
 
 ### 8.5 失效通知与独立落地边界
 
@@ -134,11 +134,11 @@
 
 ### 9.2 Reactor：整组分配预览
 
-正文移至[反应炉分册](contracts/reactor.md#92-reactor整组分配预览)。
+正文移至[反应炉分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/reactor.md#92-reactor整组分配预览)。
 
 ### 9.3 Research：单工作点预算预览
 
-正文移至[科研分册](contracts/research.md#93-research单工作点预算预览)。
+正文移至[科研分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/research.md#93-research单工作点预算预览)。
 
 ### 9.4 草稿、来源变化与失效
 
@@ -150,7 +150,7 @@
 
 ## 10. 实现候选：超空间只读预览与星球自动设置
 
-模块正文见[超空间分册](contracts/hyperspace.md#10-实现候选超空间只读预览与星球自动设置)与[星球分册](contracts/planet.md#10-实现候选超空间只读预览与星球自动设置)。
+模块正文见[超空间分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/hyperspace.md#10-实现候选超空间只读预览与星球自动设置)与[星球分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/planet.md#10-实现候选超空间只读预览与星球自动设置)。
 
 优先三项候选实现`4c1de507`原记录称定向双审（主体/模型本次未核实）、未合main，不代表完整游戏验收。基线`cd4169ccbb9cf94b58e29ac6583ff682465a9df2`，仅补现行规则下的读取，未实施同提案其余清单。当前消费状态按11固定版本核对。
 
@@ -158,7 +158,7 @@
 
 ## 11. 实现候选：装备比较、强化摘要与成交回执
 
-模块正文见[装备分册](contracts/equipment.md#11-实现候选装备比较强化摘要与成交回执)与[强化分册](contracts/enhancement.md#11-实现候选装备比较强化摘要与成交回执)。
+模块正文见[装备分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/equipment.md#11-实现候选装备比较强化摘要与成交回执)与[强化分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/enhancement.md#11-实现候选装备比较强化摘要与成交回执)。
 
 设计`0a3a5eb10fa259e3bf1a20d8480a67fc9bbe56d8`原记录称双审通过（主体/模型本次未核实）；候选实现`ab6e8873`原记录称定向双审（主体/模型本次未核实）、未合main，不代表完整游戏验收。仅本节读取与回执边界，未搬入b7bb旧缓存/提前通知；固定实现与未合主线边界按11核对。
 

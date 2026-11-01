@@ -26,11 +26,11 @@
 <a id="d10"></a>
 ## D10 B01分配提交语义（已裁定）
 
-用户2026-10-29：“确认和还原都不需要,但要有升级*10和升级*max”；随后明确“一个按钮切换x1,x10,xmax,另一个按钮负责购买”。分配拖动/均分直接沿所有者命令提交，不设确认/还原；预览只读、提交校验、一次接纳/发布和拒绝不污染已接纳状态继续有效。实际工作动态读取已接纳状态，现行契约见[反应炉分册](../contracts/reactor.md)。B01主体/管路/性能及完整视觉仍未验收。
+用户2026-10-29：“确认和还原都不需要,但要有升级*10和升级*max”；随后明确“一个按钮切换x1,x10,xmax,另一个按钮负责购买”。分配拖动/均分直接沿所有者命令提交，不设确认/还原；预览只读、提交校验、一次接纳/发布和拒绝不污染已接纳状态继续有效。实际工作动态读取已接纳状态，现行契约见[反应炉分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/reactor.md)。B01主体/管路/性能及完整视觉仍未验收。
 
 <a id="d11"></a>
 ## D11 星球设施承载与差异（已裁定）
 
 用户批准“建筑在环带上构成整体”，并明确“环带和星球自转可以分开转，探索船用另一条路线绕星球转”；要求修正后环断裂。后续补充“星球设施,不必须每个星球都一个样.若确有需求,每个星球单独一套也可以”，且“只是建议不强制”。
 
-现行方向是环带与设施整体、可适配各星球接点；覆盖旧地表强制分工，不强制六类同形，也不强制每类独立一套。具体接点、采集端、设施与变体仍需制作，方向批准不等于各类具体资产/实机通过；见[M7](../art/modules/planet.md)与[R17](../../verification/planet-single-side-godot/visual-r17-curved-spine/README.md)。
+现行方向是环带与设施整体、可适配各星球接点；覆盖旧地表强制分工，不强制六类同形，也不强制每类独立一套。具体接点、采集端、设施与变体仍需制作，方向批准不等于各类具体资产/实机通过；见[M7](../art/modules/planet.md)与[R17](https://github.com/rlmclmc2-boop/space_idle/blob/acccaf4ccc5d75c92d8bf2e585b1b2df1479a259/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md)。
