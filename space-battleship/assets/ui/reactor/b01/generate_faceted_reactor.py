@@ -327,9 +327,9 @@ def furnace(m):
  # Rounded, continuous fluid section from tap into the catch basin.
  # A square ribbon has no rounded shoulder and reads as a rigid plate.
  stream=[];sides=12
- for yy,zz,half in [(520,90,14),(532,87,16),(550,77,17),(574,62,19),(590,52,23)]:
+ for xx,yy,zz,half in [(175,520,90,14),(176,532,87,16),(179,550,77,17),(183,574,62,19),(185,590,52,23)]:
   for k in range(sides):
-   a=math.tau*k/sides;stream.append((175+half*math.cos(a),-yy,zz-3.5+5.5*math.sin(a)))
+   a=math.tau*k/sides;stream.append((xx+half*math.cos(a),-yy,zz-3.5+5.5*math.sin(a)))
  faces=[]
  for j in range(4):
   for k in range(sides):

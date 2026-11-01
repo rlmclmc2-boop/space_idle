@@ -16,8 +16,10 @@ uniform mat4 stage_from_canvas=mat4(1.0);
 uniform sampler2D body_depth:filter_nearest;
 varying vec3 world_point;
 varying vec3 facing_normal;
+varying float axial_position;
 vec3 srgb_encode(vec3 c){c=max(c,vec3(0.0));return mix(c*12.92,1.055*pow(c,vec3(1.0/2.4))-0.055,step(vec3(0.0031308),c));}
 void vertex(){
+ axial_position=0.0;
  vec4 data=COLOR;
  vec2 planar=data.ba*2.0-1.0;
  facing_normal=normalize(vec3(planar,sqrt(max(0.0,1.0-dot(planar,planar)))));
@@ -52,6 +54,7 @@ void vertex(){
   vec3 delta=world_point-nucleus;
   vec2 axis=normalize(exit_point.xy-nucleus.xy);
   vec2 across=vec2(-axis.y,axis.x);
+  axial_position=dot(delta.xy,axis)/8.0;
   float size=cycle<.43?mix(1.60,.65,charge):cycle<.60?mix(.65,.35,compression):1.25;
   float stretch=cycle<.60?1.55:2.1;
   vec2 shaped=axis*dot(delta.xy,axis)*stretch+across*dot(delta.xy,across)*.78;
@@ -185,8 +188,10 @@ void fragment(){
   float facing=max(0.0,dot(facing_normal,normalize(vec3(-.4,.6,.8))));
   vec3 dark=transfer_layer>0.0?vec3(.05,.40,.62):vec3(.015,.20,.36);
   vec3 hot=transfer_layer>0.0?vec3(.80,1.0,1.0):vec3(.20,.74,.91);
-  color=mix(dark,hot,.20+facing*.80)*strength;
-  opacity=cycle<.72 && (cycle<.60 || outlet_enabled)?1.0:0.0;
+  float head=smoothstep(-.65,.80,axial_position);
+  color=mix(dark,hot,.10+head*.70+facing*.20)*strength;
+  float tip=smoothstep(-1.0,-.45,axial_position)*(1.0-smoothstep(.82,1.0,axial_position));
+  opacity=cycle<.72 && (cycle<.60 || outlet_enabled)?tip:0.0;
  }else if(work_kind==12){
   float compression=smoothstep(.43,.60,cycle);
   color=mix(vec3(.12,.78,.98),vec3(.60,1.0,1.0),compression*.55)*strength;
