@@ -216,7 +216,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# The built saddle orbits with the spine; the service module keeps an
 		# upright attitude on that saddle, so long solar wings do not roll into
 		# detached vertical slivers as the orbital structure turns.
-		var scale_factor := 0.61 if kind == "auto_explore" else 0.65 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
+		var scale_factor := 0.76 if kind == "auto_explore" else 0.76 if kind == "refinery" else 0.75 if kind == "equipment" else 0.72
 		# The beamed core is limited by its long visible beam envelope. Give its
 		# four real work nodes enough area to retain their individual silhouettes
 		# while the common ring stays compact around the photosphere.
