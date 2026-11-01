@@ -1,0 +1,527 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+16:20:25 | INFO: Starting glTF 2.0 export
+16:20:25 | INFO: Extracting primitive: Torus
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.005
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.009
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.013
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.007
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.004
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.006
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.007
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.008
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.010
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.011
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.012
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.014
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.015
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.005
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.008
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.009
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.029
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.030
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cone.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.021
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.027
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.017
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.019
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.023
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.025
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.004
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.028
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.016
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.018
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.022
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.024
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.020
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.026
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine ivory rail head.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine ivory rail head.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine orbital pressure web.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Torus.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.006
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cone
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.004
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.005
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.006
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital tram guide.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.145
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.146
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Finished glTF 2.0 export in 0.16748952865600586 s
+
+EXPORTED auto_explore /workspace/space_idle/space-battleship/assets/planets/facilities_v9/auto_explore.glb
+16:20:25 | INFO: Starting glTF 2.0 export
+16:20:25 | INFO: Extracting primitive: Cylinder.014
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.013
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.147
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.148
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.149
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine ivory rail head
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine ivory rail head.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine orbital pressure web
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Torus.004
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.010
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Torus.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Heat chamber gold faceted crown
+16:20:25 | INFO: Primitives created: 2
+16:20:25 | INFO: Extracting primitive: Cylinder.011
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Torus.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.012
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.053
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.054
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.055
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.056
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.015
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cylinder.016
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.043
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.044
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.031
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.033
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.037
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.039
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.035
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.041
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.036
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.042
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.045
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.046
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.047
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.048
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.049
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.050
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.051
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.052
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.032
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.034
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.038
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.040
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Torus.005
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Torus.006
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital tram guide
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Finished glTF 2.0 export in 0.15021419525146484 s
+
+EXPORTED refinery /workspace/space_idle/space-battleship/assets/planets/facilities_v9/refinery.glb
+16:20:25 | INFO: Starting glTF 2.0 export
+16:20:25 | INFO: Extracting primitive: Amber fabrication transverse working rib
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Amber fabrication transverse working rib.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Amber fabrication transverse working rib.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Amber fabrication transverse working rib.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.100
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.102
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.103
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.099
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.101
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine ivory rail head.004
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine ivory rail head.005
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Fine orbital pressure web.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.098
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.104
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.105
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.093
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.086
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.088
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.090
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.072
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.075
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.078
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.081
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.059
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.062
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.065
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.058
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.061
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.064
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.092
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing continuous pressure sole
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.074
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.077
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.080
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.083
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing dark recessed machine lane
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing end housing inner cheek
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing end housing inner cheek.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing end housing lintel
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing end housing lintel.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing end housing outer cheek
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing end housing outer cheek.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing full-depth work deck
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.067
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.068
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.070
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.071
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.066
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.069
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing inner orange service rail
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing large deck seam
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing large deck seam.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing large deck seam.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing large deck seam.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.095
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.097
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing orange overhead gate
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing orange overhead gate.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing outer armor sill
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing outer dark cavity wall
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing outer orange service rail
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.084
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.073
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.076
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.079
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.082
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.091
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing recessed work support
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.057
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.060
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.063
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing sloped load shoulder
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing sloped load shoulder.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing sloped load shoulder.002
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing sloped load shoulder.003
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.094
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.096
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.085
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.087
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Cube.089
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing work portal ring
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Manufacturing work portal ring.001
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.007
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.008
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.009
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.010
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital track joint clamp.011
+16:20:25 | INFO: Primitives created: 1
+16:20:25 | INFO: Extracting primitive: Orbital tram guide.002
+16:20:25 | INFO: Primitives created: 1
+16:20:26 | INFO: Finished glTF 2.0 export in 0.23691964149475098 s
+
+EXPORTED equipment /workspace/space_idle/space-battleship/assets/planets/facilities_v9/equipment.glb
+16:20:26 | INFO: Starting glTF 2.0 export
+16:20:26 | INFO: Extracting primitive: Cube.108
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.118
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.150
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.130
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.109
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.119
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock armored entry threshold
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock armored entry threshold.001
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.131
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.132
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.115
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.125
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock deep armored portal fascia
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock deep armored portal fascia.001
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.128
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.135
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.137
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.111
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.121
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock faceted entry roof
+16:20:26 | INFO: Primitives created: 2
+16:20:26 | INFO: Extracting primitive: Cube.112
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.122
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.107
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.117
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.127
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.110
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.120
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.113
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.123
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.114
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.124
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock open bay inner transfer floor
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.106
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.116
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.139
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.136
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.138
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.129
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.134
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.133
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.126
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock sloped outer entrance shoulder
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock sloped outer entrance shoulder.001
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock threshold ivory shoulder
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Dock threshold ivory shoulder.001
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Torus.007
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.141
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cube.140
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Docked shuttle swept nose
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Fine ivory rail head.006
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Fine ivory rail head.007
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Fine orbital pressure web.003
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cylinder.001
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Cylinder
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.012
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.013
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.014
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.015
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.016
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.017
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.018
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital track joint clamp.019
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Extracting primitive: Orbital tram guide.003
+16:20:26 | INFO: Primitives created: 1
+16:20:26 | INFO: Finished glTF 2.0 export in 0.234907865524292 s
+
+EXPORTED shipyard /workspace/space_idle/space-battleship/assets/planets/facilities_v9/shipyard.glb
+Blender 4.3.2
+Read blend: "/workspace/space_idle/space-battleship/art_sources/planet_whole_concept_20261101/concept-v23.blend"
+
+Blender quit
