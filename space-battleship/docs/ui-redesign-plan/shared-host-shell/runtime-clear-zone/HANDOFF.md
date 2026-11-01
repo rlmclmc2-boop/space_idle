@@ -4,21 +4,21 @@
 
 ## 当前版本
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `9d4a708f`（公共承载ee0e2ff1），未合main。
-- 星球来源 `e222b2202e2d6ea8122e298d546a558d6f62c3cc`：facilities_v9四GLB、planet_facility_scene.gd/planet_orbital_spine.gd及nebula/rotating两个shader八件同blob；planet_visual保留公共整组包络并分开环境矩形，planet_panel保持主体安全区和e7591438业务/UI修复。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `a2cba044`（公共承载ee0e2ff1），未合main。
+- 星球来源 `668f304725780171d0740affa713a1501bf466f7`：facilities_v9四GLB、planet_facility_scene.gd/planet_orbital_spine.gd、nebula/rotating两个shader及cloud-density云图九件同blob；planet_visual保留公共整组包络并分开环境矩形，planet_panel保持主体安全区和e7591438业务/UI修复。
 - 反应堆当前已接入 `b9afb41cd34e43372f83f438716a234b3a93edbf`（交接c18480e9）的十四件installation闭包，逐blob同源。公共主题9034af81、main e845装备、公共宿主/导航和战场空间保持。
 
 ## 星球当前批准稿与下一项
 
 制作依据：`archive/planet-resume-20261101@032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/index.md`，同目录 `planet-ring.png`（SHA256 `453078f9be47b45d1cffb809352470feb21f769fc18d5fdfeb640f4cf602e572`）。用户已批准按此图接入游戏，原星球组制作中。
 
-当前按批准图还原大直径细环、四设施体量与接合细节。e222b220为低宽前设施与分件电车中间版，原组继续完整资产和材质，不等用户。
+当前按批准图还原大直径细环、四设施体量、接合/材质与共同受光。668f30472更新建筑开口、后方窗带/穹顶分面、密云和星云表现，原组继续这一轮完整资产与材质制作，不等用户。
 
-同壳9d4a708f精确接入四GLB/轨道脚本五件变化，继承c666的固定环境y65..900、主体min(高×0.21,宽×0.135)包络和源稿光学中心。planet_visual/planet_panel、公共控件及业务/UI修复未改；反应堆保持b9。背景与主体的最小接续仍为planet_visual::set_environment_rect/_layout_environment和planet_panel::_fit_drawer；setter在矩形未变时直接返回，无遮盖层。
+同壳a2cba044合并原组新增云图/星点/表现变化，保留c666固定环境y65..900、主体min(高×0.21,宽×0.135)包络和源稿光学中心；补齐同源cloud-density.png依赖。planet_panel、Owner/业务/UI修复、公共控件及反应堆b9现场保持。当前无需新的公共位置或几何修正。
 
-当前证据：`archive/design-docs-before-cleanup-20261031@cb9453d4bc80d55e30a7ea8df957524a1b4a56ff:modules/public-ui/planet-front-mass-shared-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、约等球径对照，总览和设施展开各6秒180连续帧及分片/哈希；source.json核同源与保留闭包。受控星球1/探索240/四设施已建，业务快照固定、显示动画1×，MovieMaker离线30fps，不作性能结论。
+证据：`archive/design-docs-before-cleanup-20261031@f203bea149308f461f49b80784cd48ea99f12ae8:modules/public-ui/planet-architecture-cloud-shared-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、约等球径对照，总览和设施展开各6秒180连续帧及分片/哈希。受控星球1/探索240/四设施已建，业务快照固定、显示动画1×；MovieMaker离线30fps，不作性能结论。
 
-作者亲看完整页、全部360帧总览/代表帧及批准图等尺度对照。低宽前设施和开放机器床/泊位有实质变化，当前公共边界/背景/详情台关系未新增裁切；总览前弧可辨带窗车舱，远弧与详情展开后车辆身份仍弱。前设施大白面、重复块件、开口/窗带和受光层次，以及球面/星云层次仍与批准图有明显差距。完整当前判断见author-review.md。本版不交用户确认，继续消费原组固定新源，当前无需额外公共几何修改。
+作者亲看五整页、全部360帧总览/代表原尺寸帧及批准图同尺度对照。密云细度、开口和后方建筑层次确有变化，公共边界/底台关系未新增裁切；但前设施的大白面、重复块件、内腔/机械与局部受光仍未完整还原，指挥台层叠和金顶细分也不足，背景仍偏宽模糊蓝团。前弧电车近侧可辨，远弧/详情展开后较弱。具体当前判断见author-review.md。本版仍是制作中间稿，不交用户确认，继续取原组固定更新整页重看。
 
 ## 反应堆当前制作与公共接续
 
@@ -38,5 +38,5 @@
 
 1. 公共适配ee0e2ff1已完成本轮实机检查和固定交接，供原反应堆组接续新舱室；当前无新增明确公共控件缺陷，不以本轮有限状态宣称全局通过。
 2. 反应堆b9体块中间版已接入并交当前整页差距；原组继续设备分件/材质反射/核心光及单路布局，固定新源后继续同壳整页还原判断。
-3. 星球e222低宽设施/电车版已精确接入并固定整页/动态；公共环境与主体适配保持，原组继续完整资产/材质与球面/背景，后续同壳整页重看，不交中间稿验收。
+3. 星球668建筑/密云版已接入，依赖已齐并固定同壳整页/动态；公共环境与主体适配保持，原组继续建筑资产/材质和环境细度，不交中间稿验收。
 4. 目标机性能仍缺同构建、同战场显示/关闭基线，不用软件环境观察替代，不新增无关复测或合main。
