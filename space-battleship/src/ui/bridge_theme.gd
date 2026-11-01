@@ -154,10 +154,16 @@ static func apply_operation_select(button: OptionButton, padding: float = 10.0) 
 	button.add_theme_icon_override("arrow", preload("res://assets/ui/public_shell/stepper-down.svg"))
 	button.add_theme_constant_override("arrow_margin", 8)
 	button.add_theme_constant_override("h_separation", 8)
-	# OptionButton's list is a separate PopupMenu window. Style the native menu
-	# itself so opening a select does not fall back to Godot's gray editor menu.
 	var menu_theme := Theme.new()
-	menu_theme.set_stylebox("panel", "PopupMenu", operation_button("normal", 7.0))
+	_configure_popup_theme(menu_theme)
+	var menu := button.get_popup()
+	menu.theme = menu_theme
+	menu.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR
+
+## Menus opened by native OptionButtons inherit create() too. Both paths use
+## the panel face, rather than stretching a button face around a tall list.
+static func _configure_popup_theme(menu_theme: Theme) -> void:
+	menu_theme.set_stylebox("panel", "PopupMenu", public_panel())
 	menu_theme.set_stylebox("hover", "PopupMenu", operation_button("selected_hover", 5.0))
 	menu_theme.set_font("font", "PopupMenu", public_font())
 	menu_theme.set_font_size("font_size", "PopupMenu", 15)
@@ -169,7 +175,6 @@ static func apply_operation_select(button: OptionButton, padding: float = 10.0) 
 	menu_theme.set_constant("v_separation", "PopupMenu", 5)
 	menu_theme.set_icon("radio_checked", "PopupMenu", preload("res://assets/ui/dialog/radio-on.svg"))
 	menu_theme.set_icon("radio_unchecked", "PopupMenu", preload("res://assets/ui/dialog/radio-off.svg"))
-	button.get_popup().theme = menu_theme
 
 static func apply_route_button(button: Button, selected: bool) -> void:
 	for state in PUBLIC_STATES:
@@ -257,6 +262,7 @@ static func create() -> Theme:
 			theme.set_stylebox(key, type, public_input(key) if type == "LineEdit" else operation_button(key))
 	theme.set_stylebox("read_only", "LineEdit", public_input("read_only"))
 	theme.set_stylebox("panel", "PanelContainer", public_panel())
+	_configure_popup_theme(theme)
 	theme.set_stylebox("panel", "TabContainer", StyleBoxEmpty.new())
 	theme.set_constant("separation", "VBoxContainer", 10)
 	theme.set_constant("separation", "HBoxContainer", 8)
