@@ -1,13 +1,13 @@
-# 11 当前制作与验收边界
+# 11 当前交接入口
 
-[唯一入口](README.md)。以下是 2026-11-01 取回的独立 Git 快照；不把不同分支组合成同版验收，不以此表覆盖原组后续 HEAD 或未提交现场。
+[唯一入口](README.md)。制作规范由13/M页维护。以下为2026-11-01固定来源，接替时按[07](07-verification.md#5-实施顺序)更新本组HEAD、WIP与当前一步。接口要求由[14](14-ui-contracts.md)维护。
 
-| 组 | 固定来源 | 当前事实与审核边界 |
+| 组 | 固定运行来源/交接文件 | 当前工作与已记录覆盖 |
 |---|---|---|
-| 主线／装备 | `main@e845ca58afd39184c3d4c5743021480e393adf74`；[原装备入口](https://github.com/rlmclmc2-boop/space_idle/blob/cd3365c9fc84d27f4b0e3217a55d1104011e2027/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md) | 本轮装备已按用户授权合 main；原组入口记录根与既有原独审确认空槽窄修，作者完成受影响入口检查。仅装备本轮完成，不扩大为全局资源、其他模块或全游戏验收。 |
-| 反应堆 | [原组入口](https://github.com/rlmclmc2-boop/space_idle/blob/749eccd11d6a6c67a91f9a7138c03508481d373c/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md)；运行源 `0bc17ae48107972c88a84069cf5221bf5c1cbb0f` | R12 已有同版八态、边界及正常 1× 250 帧作者证据；尚无独立整页视觉或目标硬件性能通过。下一步由原组处理整页热流、场壳及材质判断。 |
-| 星球 | [原组入口](https://github.com/rlmclmc2-boop/space_idle/blob/acccaf4ccc5d75c92d8bf2e585b1b2df1479a259/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md)；运行源 `14e342c1` | 本次取回已推进至 R114；原组仍制作站环共同主轮廓、四设施共同剪影／材质和紧凑恒星远景可读性。当前只有作者受控图与局部观察，整体艺术尚未通过；未读取其未提交现场。 |
-| 公共壳 | [原组入口](https://github.com/rlmclmc2-boop/space_idle/blob/2d4cb2af222f44beef263099eb86628526d8c924/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md) | 仅完成 R12 文本源闭包准备，尚未接入 R12 二进制或同壳运行；旧 R5f 运行依赖仍须保留，不能因设计已退役就删仍被预载的资产。未授权本组合合 main。 |
-| 后台 | `feat/amount-safe-previews@f2f5b47c0112d741cca3546a2cec8f3c69934ba3` | 仅记录取回版本；既有资源整数、保存去配置绑定及接口合同沿现行规范。本轮未运行或扩大任何独立审核结论。各消费者按自身固定版核接入，不能由后台版本推定全分支已一致。 |
+| 主线/装备 | `main@61bde20c1d96167624379ceed41cb0293bb00119`；[装备入口](https://github.com/rlmclmc2-boop/space_idle/blob/docs/spec-scope-equipment-20261101/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/HANDOFF.md) | 装备运行源771295dc已按用户授权进入e845ca58；父协调与原独审检查空槽窄修，作者记录受影响入口与完整图。装备本轮完成。 |
+| 反应堆 | [反应堆交接](https://github.com/rlmclmc2-boop/space_idle/blob/docs/spec-scope-reactor-20261101/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md)；运行源`0bc17ae48107972c88a84069cf5221bf5c1cbb0f` | 制作整页热流方向、盾场体量及设备/舱室材质关系；作者有同版八态、边界和1×250帧证据，独立整页判断未完成。 |
+| 星球 | [星球交接](https://github.com/rlmclmc2-boop/space_idle/blob/docs/spec-scope-planet-20261101/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md)；运行源`1ab75b99` | 当前候选为共同环与四设施形体，作者记录六类完整态、累积态与25°/70°图；整体艺术未通过。原线程已停机保全至wip/planet-thread-close-20261101@96de0d84，新整执行线程直接接替。 |
+| 公共壳 | [公共壳交接](https://github.com/rlmclmc2-boop/space_idle/blob/docs/spec-scope-host-20261101/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/HANDOFF.md)；运行源`9838e1e77a60f31070bc472e9ed7ca6eca4161ef` | 已接R12固定运行件和e845装备；作者记录同壳完整图及短动态，当前组合待整页判断。 |
+| 后台接口 | `feat/amount-safe-previews@3dd45f5761d04251bb55478c34898781f8a4d0c3` | 资源整数与保存去配置绑定等接口由此固定源提供；各消费者的接入范围由本组当前入口记录。强化MAX仍缺具名出口。 |
 
-现行规则／接口分别见 [13](13-art-interaction.md)、[14](14-ui-contracts.md)、[05](05-architecture.md)与[06](06-data.md)；尚未裁定的问题保留在[当前问题](review/conflicts.md)。方向认可、作者自查、协调者检查、独立审核及用户验收必须分别注明固定版本与范围。每次接替重新核本组当前入口；旧通过、旧退回和旧“待用户”均不能覆盖新事实。
+交接文件为本次文档候选，原组实际消费提交在接入后更新。后台交接见[后台](https://github.com/rlmclmc2-boop/space_idle/blob/docs/spec-scope-backend-20261101/space-battleship/docs/HANDOFF.md)。
