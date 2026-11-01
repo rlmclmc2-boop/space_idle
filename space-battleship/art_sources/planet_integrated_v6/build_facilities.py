@@ -17,8 +17,8 @@ OUT.mkdir(parents=True, exist_ok=True)
 def setup():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     colors = {
-        "armor": ((.68, .66, .58), .22, .58),
-        "edge": ((.49, .50, .46), .25, .52),
+        "armor": ((.54, .53, .47), .22, .58),
+        "edge": ((.43, .45, .42), .25, .52),
         "pressure": ((.055, .15, .20), .22, .64),
         "machinery": ((.12, .29, .36), .26, .53),
         "work": ((.63, .32, .11), .18, .56),
