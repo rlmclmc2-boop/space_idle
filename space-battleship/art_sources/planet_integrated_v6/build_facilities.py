@@ -17,8 +17,8 @@ OUT.mkdir(parents=True, exist_ok=True)
 def setup():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     colors = {
-        "armor": ((.54, .53, .47), .22, .58),
-        "edge": ((.43, .45, .42), .25, .52),
+        "armor": ((.43, .40, .34), .16, .68),
+        "edge": ((.29, .34, .35), .20, .60),
         "pressure": ((.055, .15, .20), .22, .64),
         "machinery": ((.12, .29, .36), .26, .53),
         "work": ((.63, .32, .11), .18, .56),
@@ -198,6 +198,8 @@ def refinery(root, m):
              (-.12,side*.68,.80),.19,.18,m["edge"],root)
         beam("Furnace flank return web",(.12,side*.67,.78),
              (.92,side*.83,.31),.19,.18,m["edge"],root)
+        box("Furnace pressure side inset",(.03,side*.69,.37),
+            (1.10,.045,.11),m["pressure"],root,.012)
     box("Crown receiving lip",(.83,0,.54),(.09,.71,.20),m["edge"],root)
     for side in (-1, 1):
         y = side*.48
@@ -229,6 +231,8 @@ def workshop(root,m):
             (-.88,y,.50,.24,.27),(.88,y,.50,.24,.27),
             (1.12,y,.43,.17,.22),(1.57,y,.27,.08,.11),
         ],m["armor"],root)
+        box("Manufacturing girder side inset",(0,side*.88,.43),
+            (1.70,.045,.13),m["pressure"],root,.012)
         box("Inner running rail",(0,side*.47,.70),(1.69,.085,.08),m["machinery"],root)
         box("Rail power key",(0,side*.42,.75),(1.38,.018,.03),m["service"],root,.004)
         beam("Longitudinal portal tension beam",(-.88,side*.68,1.27),
