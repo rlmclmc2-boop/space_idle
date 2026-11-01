@@ -29,12 +29,12 @@ def material(name, color, metallic=.0, rough=.68, emission=0.0):
     return mat
 
 
-ARMOR = material("Warm faceted ivory armor", (.68,.64,.54), .05, .74)
-ARMOR_FACE = material("Lit ivory armor facets", (.94,.87,.73), .04, .78)
-ARMOR_SOFT = material("Secondary cool ceramic armor", (.56,.59,.58), .07, .72)
+ARMOR = material("Warm faceted ivory armor", (.68,.64,.54), .10, .63)
+ARMOR_FACE = material("Lit ivory armor facets", (.94,.87,.73), .08, .65)
+ARMOR_SOFT = material("Secondary cool ceramic armor", (.56,.59,.58), .12, .62)
 ARMOR_SIDE = material("Recessed slate armor flanks", (.10,.17,.21), .09, .78)
-ARMOR_MID = material("Midtone faceted pressure armor", (.40,.46,.45), .05, .78)
-DECK_METAL = material("Dark modular work deck", (.20,.27,.29), .12, .70)
+ARMOR_MID = material("Midtone faceted pressure armor", (.40,.46,.45), .11, .67)
+DECK_METAL = material("Dark modular work deck", (.20,.27,.29), .18, .59)
 EDGE = material("Dark slate panel edge", (.085,.13,.16), .16, .75)
 KEEL = material("Deep navy pressure keel", (.012,.035,.055), .10, .80)
 MACHINE = material("Machine steel", (.043,.095,.115), .10, .72)
@@ -46,9 +46,9 @@ GOLD = material("Warm work marking", (.70,.40,.09), .24, .56)
 CRANE_ORANGE = material("Factory safety orange machine enamel", (.90,.35,.035), .16, .55, .12)
 WORK_METAL = material("Heated fabrication workpiece", (.38,.19,.07), .15, .70)
 WORK_FACE = material("Contained fabrication heat face", (.75,.25,.035), .06, .62, 1.05)
-DOME_GOLD = material("Heat chamber faceted gold armor", (.90,.56,.20), .20, .58)
-DOME_SHADE = material("Heat dome recessed bronze facets", (.70,.39,.10), .24, .60)
-DOME_LIGHT = material("Heat dome sunward gold facets", (1.0,.68,.20), .18, .50)
+DOME_GOLD = material("Heat chamber faceted gold armor", (.90,.56,.20), .29, .48)
+DOME_SHADE = material("Heat dome recessed bronze facets", (.70,.39,.10), .29, .53)
+DOME_LIGHT = material("Heat dome sunward gold facets", (1.0,.68,.20), .26, .46)
 DOME_SEAM = material("Heat dome panel shadow seam", (.34,.16,.04), .18, .62)
 
 

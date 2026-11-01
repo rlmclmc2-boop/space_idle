@@ -242,6 +242,7 @@ func _depth_clip_orbital_model(node: Node) -> void:
 			material.set_shader_parameter("hull_metallic", original.metallic)
 			material.set_shader_parameter("panel_grid", _armor_panel_grid(node.name))
 			material.set_shader_parameter("armor_reflection", _armor_reflection(node.name))
+			material.set_shader_parameter("armor_surface", _armor_surface(node.name))
 			if String(node.name).to_lower().contains("amber"):
 				material.set_shader_parameter("emission_boost", 1.65)
 			if node.name.begins_with("Dock deep armored portal fascia") or node.name.begins_with("Dock angled end armor cheek") or node.name.begins_with("Manufacturing sloped load shoulder"):
@@ -289,6 +290,24 @@ func _armor_reflection(authored_name: String) -> float:
 			"Shuttle upper", "Dock separated service bay roof",
 			"Fabrication room separated armor roof", "Dock deep armored portal fascia",
 			"Manufacturing sloped load shoulder"]:
+		if authored_name.begins_with(prefix): return 1.0
+	for prefix in ["Dock continuous pressure landing deck", "Dock segmented pale load-floor tile",
+			"Manufacturing segmented load-floor armor tile", "Manufacturing continuous modular work deck",
+			"Fabrication room continuous side pressure shell", "Command stepped ivory observation deck",
+			"Command upper observation cap", "Heat chamber lower armored ring deck",
+			"Heat chamber upper armored ring deck", "Heat chamber gold faceted crown"]:
+		if authored_name.begins_with(prefix): return 0.65
+	return 0.0
+
+func _armor_surface(authored_name: String) -> float:
+	# Only large exposed plates receive the UV-locked surface finish. The
+	# recessed machine beds, windows and emissive signals remain clean.
+	for prefix in ["Dock continuous pressure landing deck", "Dock deep armored portal fascia",
+			"Dock separated service bay roof", "Dock segmented pale load-floor tile",
+			"Manufacturing segmented load-floor armor tile", "Manufacturing outer wall removable armor panel",
+			"Fabrication room separated armor roof", "Fabrication room continuous side pressure shell",
+			"Manufacturing sloped load shoulder", "Command stepped ivory observation deck",
+			"Command upper observation cap", "Heat chamber lower armored ring deck"]:
 		if authored_name.begins_with(prefix): return 1.0
 	return 0.0
 

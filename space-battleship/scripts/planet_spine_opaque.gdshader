@@ -10,6 +10,7 @@ uniform float hull_metallic = 0.10;
 uniform vec2 panel_grid = vec2(0.0);
 uniform float facade_gradient = 0.0;
 uniform float armor_reflection = 0.0;
+uniform float armor_surface = 0.0;
 uniform float emission_boost = 1.0;
 uniform vec3 body_scale = vec3(1.0);
 uniform vec3 stellar_field_tint = vec3(1.0);
@@ -55,6 +56,15 @@ void fragment() {
 	if (facade_gradient > 0.0) {
 		color *= 1.0 - facade_gradient * (1.0 - smoothstep(0.05, 0.90, UV.y));
 	}
+	// Broad, UV-locked ceramic/metal variation gives the large authored plates
+	// a finished surface. Suppress fine detail as it approaches pixel size so
+	// rotation does not turn the armor into glitter or crawling line noise.
+	if (armor_surface > 0.0) {
+		float broad = sin(UV.x * 11.0 + UV.y * 3.0) * sin(UV.y * 8.0 - UV.x * 2.0);
+		float phase = UV.x * 58.0 + UV.y * 9.0;
+		float fine = sin(phase) * (1.0 - smoothstep(0.55, 1.6, fwidth(phase)));
+		color *= 1.0 + armor_surface * (0.16 * broad + 0.025 * fine);
+	}
 	float inner_field = (1.0 - smoothstep(0.025, 0.22, UV.x)) * stellar_field_strength;
 	// Let bright armor turn to a dark faceted edge at grazing angles. The
 	// pressure hull stays navy while its structural silhouette gains definition.
@@ -65,9 +75,13 @@ void fragment() {
 	ALBEDO = mix(faceted, stellar_field_tint, inner_field * 0.22);
 	// Broad armored shells have a controlled satin return; recessed machinery
 	// keeps its original diffuse response. This reads at the actual page scale.
-	float return_light = armor_reflection * pow(max(dot(reflect(-normalize(VIEW), normalize(NORMAL)),
-		normalize(vec3(0.35, 0.72, 0.61))), 0.0), 6.0);
-	ALBEDO += vec3(0.032, 0.044, 0.049) * return_light;
+	vec3 reflected_view = reflect(-normalize(VIEW), normalize(NORMAL));
+	float return_light = armor_reflection * pow(max(dot(reflected_view,
+		normalize(vec3(0.35, 0.72, 0.61))), 0.0), 3.2);
+	float warm_return = armor_reflection * pow(max(dot(reflected_view,
+		normalize(vec3(-0.62, 0.18, 0.75))), 0.0), 4.0);
+	ALBEDO += vec3(0.075, 0.091, 0.104) * return_light;
+	ALBEDO += vec3(0.055, 0.032, 0.014) * warm_return;
 	ROUGHNESS = max(0.36, hull_roughness - (panel_grid.x > 0.5 ? 0.10 : 0.0) - armor_reflection * 0.14);
 	METALLIC = hull_metallic;
 	SPECULAR = mix(0.35, 0.78, armor_reflection);
