@@ -139,3 +139,5 @@
 - 反应堆进深/点光同壳 `b3918fa5`：[reactor-lined-outlet-shared-20261101](reactor-lined-outlet-shared-20261101/README.md)。
 
 - 新批准细环星球中间版 `47ce2422`：[planet-v60-shared-20261101](planet-v60-shared-20261101/README.md)。
+
+- 新批准细环星球中间版 `9c34e6bc`：[planet-v61-shared-20261101](planet-v61-shared-20261101/README.md)。
