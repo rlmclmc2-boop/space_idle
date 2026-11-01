@@ -159,12 +159,17 @@ for side in (-1, 1):
 # view. Their end frames carry load across the section without a painted roof.
 for side in (-1, 1):
     loft("Open bay orange head rail", [
-        (-1.03, side*.85, 1.29, .24, .18),
-        (-.78, side*.85, 1.40, .28, .21),
-        (.78, side*.85, 1.40, .28, .21),
-        (1.03, side*.85, 1.29, .24, .18),
+        (-1.03, side*.85, 1.25, .24, .18),
+        (-.72, side*.85, 1.53, .28, .21),
+        (.72, side*.85, 1.53, .28, .21),
+        (1.03, side*.85, 1.25, .24, .18),
     ], orange, root)
-    box("Head rail ivory edge", (0, side*.87, 1.62), (1.52, .20, .08), ivory, root, .02)
+    loft("Head rail ivory edge", [
+        (-.96, side*.87, 1.43, .11, .035),
+        (-.68, side*.87, 1.74, .11, .035),
+        (.68, side*.87, 1.74, .11, .035),
+        (.96, side*.87, 1.43, .11, .035),
+    ], ivory, root)
     box("Inner head rail dark guide", (0, side*.52, 1.38), (1.26, .06, .06), navy, root, .012)
     for x in (-.58, .58):
         box("Recessed cyan gantry guide", (x, side*.539, 1.37), (.25, .025, .055), cyan, root, .008)
