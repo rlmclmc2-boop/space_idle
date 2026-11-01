@@ -7,6 +7,8 @@ const PlanetSphere := preload("res://scripts/rotating_planet.gd")
 const STELLAR_MAIN := preload("res://assets/planets/stellar-main-granulation.png")
 const STELLAR_RED := preload("res://assets/planets/stellar-red-convection.png")
 const BACKDROP := preload("res://assets/planets/toon/exploration-field.svg")
+const SMALL_MOON := preload("res://assets/planets/backdrop/small_moon.png")
+const FACETED_ASTEROID := preload("res://assets/planets/backdrop/faceted_asteroid.png")
 const FACILITY_COLORS := {
 	"scout_satellite": Color("8ce9ff"),
 	"space_station": Color("ffd89b"),
@@ -358,6 +360,7 @@ func _draw_background() -> void:
 
 func _draw_back_orbits() -> void:
 	if icon_mode:return
+	if planet_id == "1": _draw_reference_bodies()
 	var center := _scene_center()
 	var radius := _orbit_radius()
 	for ring in ([1] if active else []):
@@ -367,6 +370,25 @@ func _draw_back_orbits() -> void:
 	_draw_facilities(center, radius, false, orbit_back_layer)
 	if active and not _scout_in_front():_draw_scout(center, radius, orbit_back_layer)
 	if not active and departure_age < 1.0 and not departure_front:_draw_departure(orbit_back_layer)
+
+func _draw_reference_bodies() -> void:
+	# Small fixed background bodies echo the approved composition. They are drawn
+	# behind the orbit and globe, outside the owned facility silhouettes.
+	var moon_center := Vector2(size.x * 0.10, size.y * 0.13)
+	var moon_radius := minf(size.x, size.y) * 0.034
+	var moon_size := Vector2.ONE * moon_radius * 2.8
+	orbit_back_layer.draw_texture_rect(SMALL_MOON,
+		Rect2(moon_center - moon_size * 0.5, moon_size), false)
+	for body in [Vector3(0.018, 0.73, 0.014),
+			Vector3(0.026, 0.97, 0.050),
+			Vector3(0.125, 0.91, 0.026),
+			Vector3(0.205, 0.98, 0.012),
+			Vector3(0.92, 0.95, 0.018)]:
+		var center := Vector2(body.x * size.x, body.y * size.y)
+		var radius: float = minf(size.x, size.y) * float(body.z)
+		var rock_size := Vector2.ONE * radius * 2.8
+		orbit_back_layer.draw_texture_rect(FACETED_ASTEROID,
+			Rect2(center - rock_size * 0.5, rock_size), false)
 
 func _draw() -> void:
 	if icon_mode:return
