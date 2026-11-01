@@ -50,7 +50,7 @@ for name in ("Command bearing cyan collar","Command faceted core",
              "Command blue canopy"):
     transfer(station,spin,name)
 for side,label in ((-1,"SolarHingeLeft"),(1,"SolarHingeRight")):
-    hinge=pivot(station,label,(side*.62,-.32,1.44))
+    hinge=pivot(station,label,(side*.72,-.32,1.56))
     bpy.ops.mesh.primitive_cube_add(size=1)
     vane=bpy.context.object
     vane.name="Articulated habitat power wing"

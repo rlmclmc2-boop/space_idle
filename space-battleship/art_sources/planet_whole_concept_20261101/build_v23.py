@@ -106,6 +106,28 @@ def torus(name, pos, major, minor, mat, root=None):
     return obj
 
 
+def faceted_dome(name, root, center, rings, sides=12):
+    """Broad polygonal crown with sloping gold panels instead of a cone."""
+    verts=[]
+    for height,radius in rings:
+        for i in range(sides):
+            a=tau*i/sides
+            verts.append((center[0]+radius*cos(a),center[1]+radius*sin(a),height))
+    faces=[]
+    for band in range(len(rings)-1):
+        for i in range(sides):
+            j=(i+1)%sides
+            faces.append((band*sides+i,band*sides+j,(band+1)*sides+j,(band+1)*sides+i))
+    faces.append(tuple((len(rings)-1)*sides+i for i in range(sides)))
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces);mesh.update()
+    obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
+    obj=finish(obj,name,DOME_GOLD,root)
+    obj.data.materials.append(GOLD)
+    for i,face in enumerate(obj.data.polygons):
+        face.material_index = 1 if i%sides in (0,1,6,7) else 0
+    return obj
+
+
 def annular_band(name, inner, outer, zlo, zhi, mat, begin=0, end=tau, n=128):
     verts=[]
     for i in range(n+1):
@@ -286,6 +308,39 @@ def profiled_band(root,name,begin,end,roof_shift=0,inner_shift=0,outer_shift=0,m
     return obj
 
 
+def deck_plate(root, begin, end):
+    """A shallow, planar-feeling armor tile over the continuous pressure hull."""
+    bpy.context.view_layer.update()
+    inverse=root.matrix_world.inverted()
+    steps=max(3,int((end-begin)*1.4))
+    verts=[]
+    for i in range(steps+1):
+        degrees=begin+(end-begin)*i/steps
+        a=degrees*pi/180
+        rin,rout,roof=arc_profile(degrees)
+        mid=(rin+rout)*.5
+        rise=.68*sin(pi*(degrees-25)/130) if 25<=degrees<=155 else 0
+        for thickness in (0,-.055):
+            for r,z in ((rin+.10,roof-.12),(mid,roof+.04),(rout-.10,roof-.17)):
+                verts.append(tuple(inverse @ Vector((r*cos(a),r*sin(a),z+rise+.045+thickness))))
+    faces=[]
+    for i in range(steps):
+        j=i*6
+        faces.extend(((j,j+6,j+7,j+1),(j+1,j+7,j+8,j+2),
+                      (j+3,j+4,j+10,j+9),(j+4,j+5,j+11,j+10),
+                      (j,j+3,j+9,j+6),(j+2,j+8,j+11,j+5)))
+    faces.extend((tuple(range(5,-1,-1)),tuple(range(steps*6,steps*6+6))))
+    mesh=bpy.data.meshes.new("Continuous deck armor tile")
+    mesh.from_pydata(verts,[],faces);mesh.update()
+    obj=bpy.data.objects.new("Continuous deck armor tile",mesh)
+    bpy.context.collection.objects.link(obj)
+    obj=finish(obj,obj.name,ARMOR_FACE,root)
+    obj.data.materials.append(ARMOR_SIDE)
+    for i,face in enumerate(obj.data.polygons):
+        face.material_index = 1 if i%6 in (2,3,4,5) else 0
+    return obj
+
+
 def profiled_outer_ribbon(root,name,begin,end):
     """A thin contained service light follows the real outer hull profile."""
     bpy.context.view_layer.update()
@@ -312,8 +367,8 @@ for i in range(32):
     annular_band("Pressure beam joint",4.17,4.46,-.23,.18,EDGE,a-.010,a+.010,2)
 
 station=root_at("01 / Command district of the orbital city",140)
-station.location.x=5.60*cos(140*pi/180)
-station.location.y=5.60*sin(140*pi/180)
+station.location.x=5.22*cos(140*pi/180)
+station.location.y=5.22*sin(140*pi/180)
 refinery=root_at("02 / Heat district of the orbital city",35)
 workshop=root_at("03 / Manufacturing district of the orbital city",-43)
 shipyard=root_at("04 / Open launch district of the orbital city",-130)
@@ -352,43 +407,63 @@ for root,lo,hi in ((shipyard,-205,-143),(shipyard,-119,-65),
                    (workshop,-65,25),(refinery,25,75),(station,75,155)):
     profiled_outer_ribbon(root,"Continuous contained outer gallery line",lo,hi)
 
-# Wide, individually angled roof plates articulate the changing band profile.
-# Spaces between them are real service reveals, not a second row of buildings.
-for root,intervals in ((station,((88,102),(106,119),(123,138))),
-                       (refinery,((36,47),(52,63))),
-                       (workshop,((-29,-18),(-4,10))),
-                       (shipyard,((-194,-182),(-177,-166),(-108,-97),(-91,-78)))):
-    for lo,hi in intervals:
-        profiled_band(root,"Inset long-span roof armor plate",lo,hi,
-                      roof_shift=.11,inner_shift=.16,outer_shift=-.14)
-        profiled_band(root,"Inset roof bearing shadow",lo+.8,hi-.8,
-                      roof_shift=-.30,inner_shift=.06,outer_shift=-.06,mat=EDGE)
+# Regular hard armor panels cover the long hull. The service reveals stay
+# narrow and continuous; the work and launch openings remain genuine voids.
+for root,spans in ((station,((75,155),)),(refinery,((25,75),)),
+                   (workshop,((-32,25),)),
+                   (shipyard,((-205,-143),(-119,-65)))):
+    for lo,hi in spans:
+        for begin in range(lo,hi,10):
+            finish_angle=min(begin+10,hi)
+            if finish_angle-begin>2:
+                deck_plate(root,begin+.42,finish_angle-.42)
 
 # The arc's inward facing observation ribbon is continuous through command.
 owned_arc(station,"Command district observation pressure ribbon",89,140,3.96,4.06,.62,.74,GLASS)
 for a in (95,104,113,122,131):
     owned_arc(station,"Command observation dark mullion",a,a+.7,3.94,4.10,.60,.77,EDGE)
-cyl("Command dark structural foundation",(0,-.32,1.24),.83,.23,KEEL,station,12)
-cyl("Command stepped ivory observation deck",(0,-.32,1.39),.73,.13,ARMOR,station,12)
+armor_prism("Command full-width embedded structural plinth",
+            [(-.82,-.42),(.82,-.42),(.62,1.43),(-.62,1.43)],.91,1.18,ARMOR,station)
+cyl("Command dark structural foundation",(0,-.32,1.22),1.04,.28,KEEL,station,12)
+cyl("Command lower faceted load deck",(0,-.32,1.35),1.00,.14,ARMOR_SIDE,station,12)
+cyl("Command stepped ivory observation deck",(0,-.32,1.48),.91,.15,ARMOR,station,12)
+torus("Command continuous observation sill",(0,-.32,1.52),.85,.06,ARMOR_FACE,station)
+for i in range(12):
+    a=i*tau/12
+    x=.91*cos(a); y=-.32+.91*sin(a)
+    window=box("Command observation window bay",(x,y,1.36),(.27,.085,.12),GLASS,station,.01)
+    window.rotation_euler.z=a+pi/2
+    if i%3==0:
+        pylon=box("Command exterior armor buttress",(1.01*cos(a),-.32+1.01*sin(a),1.29),
+                  (.17,.22,.37),ARMOR,station,.02)
+        pylon.rotation_euler.z=a
 for side in (-1,1):
     beam("Command platform load rib into orbital band",
          (side*.46,.02,1.13),(side*.38,1.27,.77),.19,.22,ARMOR_SIDE,station)
 beam("Command platform broad pressure bridge",
-     (0,.12,1.28),(0,1.24,.91),.47,.38,ARMOR,station)
-cyl("Command rotating bearing",(0,-.32,1.51),.55,.15,EDGE,station,10)
-torus("Command bearing cyan collar",(0,-.32,1.61),.44,.042,CYAN,station)
-cone("Command faceted core",(0,-.32,1.76),.33,.17,.27,ARMOR,station,8)
-cyl("Command blue canopy",(0,-.32,1.93),.19,.08,GLASS,station,8)
-cone("Command short beacon",(0,-.32,2.08),.09,.02,.20,ARMOR,station,8)
+     (0,.12,1.28),(0,1.24,.91),.58,.40,ARMOR,station)
+cyl("Command rotating bearing",(0,-.32,1.60),.62,.16,EDGE,station,10)
+torus("Command bearing cyan collar",(0,-.32,1.70),.52,.045,CYAN,station)
+cone("Command faceted core",(0,-.32,1.86),.39,.20,.29,ARMOR,station,8)
+cyl("Command blue canopy",(0,-.32,2.04),.23,.09,GLASS,station,8)
+cone("Command short beacon",(0,-.32,2.20),.10,.02,.20,ARMOR,station,8)
 
 # Heat is a working aperture in the band, marked by a low furnace clamp.
-cyl("Heat chamber dark integrated foundation",(0,-.32,1.05),.73,.22,KEEL,refinery,12)
-cyl("Heat chamber armored lower collar",(0,-.32,1.22),.65,.16,ARMOR,refinery,12)
-torus("Heat chamber gold dome bearing",(0,-.32,1.31),.60,.045,EDGE,refinery)
-cone("Heat chamber gold segmented dome",(0,-.32,1.64),.59,.17,.72,DOME_GOLD,refinery,12)
-cyl("Contained furnace dark collar",(0,-.32,2.03),.30,.10,EDGE,refinery,12)
-cyl("Contained furnace amber aperture",(0,-.32,2.09),.23,.05,AMBER,refinery,12)
-torus("Furnace retaining ring",(0,-.32,2.12),.30,.042,ARMOR_SIDE,refinery)
+cyl("Heat chamber dark integrated foundation",(0,-.32,1.06),.91,.25,KEEL,refinery,12)
+cyl("Heat chamber lower armored ring deck",(0,-.32,1.22),.86,.14,ARMOR,refinery,12)
+torus("Heat chamber recessed observation band",(0,-.32,1.32),.79,.07,GLASS,refinery)
+cyl("Heat chamber upper armored ring deck",(0,-.32,1.42),.74,.12,ARMOR_SIDE,refinery,12)
+torus("Heat chamber gold dome bearing",(0,-.32,1.49),.70,.05,EDGE,refinery)
+faceted_dome("Heat chamber gold faceted crown",refinery,(0,-.32),
+             ((1.47,.68),(1.68,.70),(1.94,.57),(2.13,.33),(2.21,.14)))
+cyl("Contained furnace dark collar",(0,-.32,2.22),.19,.08,EDGE,refinery,12)
+cyl("Contained furnace amber aperture",(0,-.32,2.27),.15,.04,AMBER,refinery,12)
+torus("Furnace retaining ring",(0,-.32,2.29),.20,.035,ARMOR_SIDE,refinery)
+for i in range(8):
+    a=i*tau/8
+    window=box("Heat ring amber machinery port",(.84*cos(a),-.32+.84*sin(a),1.24),
+               (.14,.075,.09),AMBER,refinery,.008)
+    window.rotation_euler.z=a+pi/2
 for x in (-.58,-.22,.22,.58):
     box("Heat exchange outer exhaust slit",(x,-.99,.88),(.085,.045,.25),AMBER,refinery,.008)
 
@@ -407,6 +482,15 @@ for a in (-67,-34):
 for a in (-59,-43):
     owned_arc(workshop,"Manufacturing orange overhead gate",a,a+1.4,
               4.18,5.08,1.16,1.28,AMBER)
+for x in (-1.12,1.12):
+    for y in (-.75,.20):
+        beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.62),.24,.28,ARMOR,workshop)
+        box("Manufacturing portal dark bearing foot",(x,y,.41),(.32,.39,.24),EDGE,workshop)
+    beam("Manufacturing broad entrance lintel",(x,-.83,1.64),(x,.28,1.64),.29,.34,ARMOR,workshop)
+    box("Manufacturing lintel pressure cap",(x,-.28,1.81),(.39,1.34,.13),ARMOR_SIDE,workshop)
+box("Manufacturing recessed machine bed",(0,-.25,.53),(1.18,.70,.24),ARMOR_SIDE,workshop)
+box("Manufacturing central workpiece",(0,-.25,.72),(.55,.44,.19),MACHINE,workshop)
+box("Manufacturing active work face",(0,-.25,.83),(.40,.25,.025),CYAN,workshop,.008)
 beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,workshop)
 for side in (-1,1):
     beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.15,.20,ARMOR_SIDE,workshop)
@@ -421,8 +505,13 @@ for side in (-1,1):
     beam("Dock outer launch arm",(side*.76,-.25,.58),(side*.83,-2.16,.58),.20,.23,ARMOR,shipyard)
     beam("Dock inner dark girder",(side*.76,-.25,.35),(side*.83,-2.08,.35),.16,.18,EDGE,shipyard)
     box("Contained dock approach guide",(side*.66,-1.10,.70),(.032,1.67,.022),CYAN,shipyard,.004)
+    box("Dock armored entry cheek",(side*.90,-.62,.72),(.38,.88,.84),ARMOR,shipyard)
+    box("Dock inset service wall",(side*.70,-1.13,.49),(.16,1.18,.37),ARMOR_SIDE,shipyard)
+    box("Dock exterior pressure foot",(side*.87,-1.49,.35),(.34,.52,.25),EDGE,shipyard)
+box("Dock recessed launch deck",(0,-1.00,.29),(1.40,1.48,.16),KEEL,shipyard)
+box("Dock inner machine service bed",(0,-.75,.41),(.60,.71,.10),ARMOR_SIDE,shipyard)
 beam("Dock portal gantry",(-.83,-.40,1.00),(.83,-.40,1.00),.14,.18,ARMOR,shipyard)
-beam("Dock armored entrance canopy",(-.91,-.35,1.19),(.91,-.35,1.19),.22,.25,ARMOR,shipyard)
+beam("Dock armored entrance canopy",(-.94,-.35,1.25),(.94,-.35,1.25),.30,.32,ARMOR,shipyard)
 for side in (-1,1):
     beam("Dock entrance upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.25,.27,ARMOR,shipyard)
     beam("Dock outer service portal upright",(side*.82,-1.39,.35),(side*.82,-1.39,1.02),.16,.19,ARMOR_SIDE,shipyard)
@@ -432,8 +521,8 @@ for a in (-146,-119):
               4.08,5.29,.33,1.03,ARMOR_SIDE)
     owned_arc(shipyard,"Dock threshold ivory shoulder",a,a+2.2,
               4.18,5.18,1.02,1.13,ARMOR)
-box("Docked shuttle fuselage",(0,-1.15,.93),(.37,.96,.18),EDGE,shipyard,.04)
-armor_prism("Docked shuttle swept nose",[(0,-1.88),(.18,-1.53),(-.18,-1.53)],.87,1.04,EDGE,shipyard)
+box("Docked shuttle fuselage",(0,-1.15,.93),(.37,.96,.18),ARMOR_FACE,shipyard,.04)
+armor_prism("Docked shuttle swept nose",[(0,-1.88),(.18,-1.53),(-.18,-1.53)],.87,1.04,ARMOR_FACE,shipyard)
 box("Docked shuttle canopy",(0,-1.27,1.05),(.22,.31,.055),GLASS,shipyard,.01)
 
 
