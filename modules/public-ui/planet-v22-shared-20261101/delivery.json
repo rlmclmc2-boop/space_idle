@@ -1,0 +1,32 @@
+{
+  "runtime_source": "281a17cc7b107e3c2ae3366e641c1a269af33c76",
+  "planet_fixed_handoff": "471349769e4e55adedb96ed2826083d592a63f7a",
+  "ready_for_current_user_review": true,
+  "recommended_attachments": [
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 457824,
+      "sha256": "b0433e8f871544a78b429c1b6576aa2faa4e7eff20e0e88973ffec2f5eac1ca8"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 440833,
+      "sha256": "d2869e8a0871d87a3adc8b64346a135c933a0dc4abdde95089fc785f5ab8edd5"
+    },
+    {
+      "path": "planet-v22-shared-1x-6s.mp4",
+      "bytes": 1065793,
+      "sha256": "5d0fceb605af1feca13d1cf280fc248d1ccfd64cb625369f621b08e9976e1091"
+    }
+  ],
+  "additional_whole_pages": [
+    "planet-crew.jpg",
+    "planet-conquest-expanded.jpg"
+  ],
+  "video_parts_manifest": "video-parts.json",
+  "display_size": [
+    1440,
+    900
+  ],
+  "movie_note": "6秒180帧30fps，展示层1×、MovieMaker离线生成"
+}
