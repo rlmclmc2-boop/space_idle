@@ -23,7 +23,7 @@
 → 原子替换active-manifest指针
 ```
 
-编译入口建议 `python config_tools/compile.py --manifest ... --output ...`；生产manifest和测试manifest是不同文件，传同一个编译器。schema与转换逻辑共享，数据不共享。命令可在未安装/未运行Godot的环境执行。禁止编译器调用游戏场景或编辑器工具取得“默认值”。
+当前编译命令见[foundation](../../foundation/README.md#excel-configuration-publication)；生产manifest和测试manifest是不同文件，传同一个编译器。schema与转换逻辑共享，数据不共享。命令可在未安装/未运行Godot的环境执行。禁止编译器调用游戏场景或编辑器工具取得“默认值”。
 
 表字段有明确literal类型；空值和0不同。可选字段的回退目标在schema列出，例如敌武器空字段→enemy_weapon_base。需要数值的字段不接受文本数字；Amount可用专门十进制文本列，但字段类型需声明amount_text。Excel公式如已存在且属于内容，保留原单元格，不由openpyxl假装重算；编译要求可信缓存值且记录公式/值hash，缓存缺失/错误则拒绝发布并给坐标。要求typed_literal的超空间表继续拒绝公式。禁止静默将`#VALUE!`、NaN、INF或空串转换为0。
 
@@ -97,7 +97,7 @@ extremeCost = ceil(max(T, rawSum))
 
 MAX从0可付起按1、2、4…扩张数量上界，再整数二分，使用同一个quote比较每种资源钱包；最终重算该数量的同一quote并扣其costMap。普通求和、极端max(T,rawSum)与材料和均随数量不减，因此分类边界不会破坏搜索。当前等级+n不可超int64；若到表示界限仍未找到不可付上界，报告数值范围限制，不虚构玩法封顶。测试检查普通拆分可加、跨T单调、极端可付、无NaN/负余额/死循环。
 
-## 4. 运行配置读取边界
+## 4. 运行配置直接读取
 
 运行配置直接读取发布JSON；领域按实际消费读取数据，必要配置有效性校验保留。字段来源与发布哈希由编译报告承担，不作为运行加载/查询包装或存档配置绑定。
 
