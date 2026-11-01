@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+Movie Maker mode enabled, recording movie in 1440×900 @ 30 FPS...
+V54_SHARED_CAPTURE source=c063e710e public-panel=host-safe-region scenes=overview,workshop,crew,conquest-expanded
+--------------------------------------------------------------------------------
+Done recording movie at path: /tmp/space-idle-runtime472/planet-v54-shared/raw.avi
+520 frames at 30 FPS (movie length: 00:00:17:10), recorded in 00:01:14 (22% of real-time speed).
+CPU render time: 12.85 seconds (average: 24.70 ms/frame)
+GPU render time: 12.37 seconds (average: 23.79 ms/frame)
+Encoding time: 9.21 seconds (average: 17.71 ms/frame)
+--------------------------------------------------------------------------------
