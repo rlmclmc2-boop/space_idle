@@ -1,0 +1,27 @@
+{
+  "video": "faceted-refinement-shared-1x-12s.mp4",
+  "bytes": 1555473,
+  "sha256": "280ef6400768cb84b9f83b3a2e026421fc37dc4c1c07c272eb39d40e98f6ef21",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 360,
+  "duration_seconds": 12,
+  "parts": [
+    {
+      "path": "video-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "20fd72df295c5b13f2c5d3415eecbcc27f63ce6599d02ed97d570d3c8c756cc8"
+    },
+    {
+      "path": "video-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "4078ce1a524e8b243f7302a4b3415fb01ff66c9a637114ce94335b43f097bcf3"
+    },
+    {
+      "path": "video-parts/part-002.bin",
+      "bytes": 244753,
+      "sha256": "01bba0abbf93622ff7f1e9e93bbfead2d40798c0c0f66126881a12f6c75108f4"
+    }
+  ]
+}
