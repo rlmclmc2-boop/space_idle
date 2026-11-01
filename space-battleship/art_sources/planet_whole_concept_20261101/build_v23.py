@@ -602,19 +602,19 @@ for side in (-1,1):
         (.35,.78,.13),ARMOR_SIDE,workshop)
 for y in (-.19,-1.54):
     box("Manufacturing amber guided transfer rail",(0,y,.52),
-        (2.42,.065,.08),CRANE_ORANGE,workshop,.008)
-for x in (-.76,0,.76):
+        (2.42,.045,.055),GOLD,workshop,.008)
+for x in (-.76,.76):
     box("Manufacturing transverse crane datum",(x,-.85,.56),
-        (.065,1.27,.075),CRANE_ORANGE,workshop,.008)
-for radial_y in (-.78,.08):
-    box("Manufacturing high gantry travel rail",(0,radial_y,1.44),
-        (1.75,.055,.075),CRANE_ORANGE,workshop,.012)
-    for tangent_x in (-.85,.85):
+        (.055,1.27,.055),ARMOR_SIDE,workshop,.008)
+for tangent_x in (-.77,.77):
+    box("Manufacturing fine longitudinal gantry rail",(tangent_x,-.84,1.44),
+        (.055,1.36,.07),CRANE_ORANGE,workshop,.01)
+    for radial_y in (-1.45,-.22):
         beam("Manufacturing gantry support post",
              (tangent_x,radial_y,.45),(tangent_x,radial_y,1.45),
              .055,.075,ARMOR_SIDE,workshop)
 for x in (-1.12,1.12):
-    for y in (-.75,.20):
+    for y in (.20,):
         beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.50),.16,.19,ARMOR,workshop)
         box("Manufacturing portal dark bearing foot",(x,y,.41),(.25,.31,.18),EDGE,workshop)
         sign=-1 if x<0 else 1
@@ -638,7 +638,7 @@ beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,wo
 for side in (-1,1):
     beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.095,.13,ARMOR_SIDE,workshop)
     box("Fabrication gantry armored foot",(side*.68,0,.58),(.23,.29,.19),ARMOR,workshop)
-box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.10,.08),CRANE_ORANGE,workshop)
+box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.10,.08),ARMOR_SIDE,workshop)
 beam("Downward working tool",(.17,0,1.48),(.17,0,.66),.07,.08,EDGE,workshop)
 box("Work site contained welding line",(.17,0,.76),(.15,.18,.04),CYAN,workshop,.01)
 
@@ -648,9 +648,11 @@ for side in (-1,1):
     x=side*1.02
     box("Fabrication room continuous dark hull",(x,-.91,.73),(.44,1.32,.58),KEEL,workshop,.035)
     box("Fabrication room armored inner wall",(side*.73,-.91,.73),(.075,1.18,.44),ARMOR_MID,workshop,.014)
-    slope_shell("Fabrication room chamfered roof",
-                [(x-.28,-1.60),(x+.28,-1.60),(x+.28,-.21),(x-.28,-.21)],
-                [1.08,1.08,1.00,1.00],.11,ARMOR,workshop)
+    for roof_y in (-1.43,-.91,-.39):
+        slope_shell("Fabrication room separated armor roof",
+                    [(x-.27,roof_y-.18),(x+.27,roof_y-.18),
+                     (x+.25,roof_y+.18),(x-.25,roof_y+.18)],
+                    [1.08,1.08,1.00,1.00],.10,ARMOR,workshop)
     box("Fabrication room roof dark expansion joint",(x,-.93,1.08),(.075,1.23,.025),EDGE,workshop,.004)
     for y in (-1.37,-.97,-.57):
         box("Fabrication room removable armor cassette",(side*1.30,y,.91),
@@ -666,7 +668,7 @@ for side in (-1,1):
             (.15,.10,.80),ARMOR_FACE,workshop,.012)
     beam("Fabrication room exposed service conduit",
          (side*.68,-1.47,1.03),(side*.68,-.35,1.03),.045,.045,GOLD,workshop)
-for y in (-1.23,-.55):
+for y in (-.86,):
     box("Factory traveling bridge dark undercarriage",(0,y,1.48),
         (1.76,.17,.10),EDGE,workshop,.012)
     box("Factory traveling bridge gold load beam",(0,y,1.58),
@@ -691,10 +693,10 @@ for side in (-1,1):
     beam("Dock outer launch arm",(side*.76,-.25,.58),(side*.83,-1.72,.58),.15,.18,ARMOR,shipyard)
     beam("Dock inner dark girder",(side*.76,-.25,.35),(side*.83,-1.68,.35),.16,.18,EDGE,shipyard)
     box("Contained dock approach guide",(side*.66,-.94,.70),(.032,1.24,.022),CYAN,shipyard,.004)
-    box("Dock armored entry cheek",(side*.90,-.62,.72),(.31,.72,.70),ARMOR,shipyard)
-    box("Dock inset service wall",(side*.70,-1.13,.49),(.16,1.18,.37),ARMOR_SIDE,shipyard)
+    box("Dock inner pressure socket cheek",(side*.90,-.34,.72),(.31,.32,.70),ARMOR,shipyard)
+    box("Dock exposed side bearing rail",(side*.74,-1.11,.48),(.08,1.10,.16),ARMOR_SIDE,shipyard)
     box("Dock exterior pressure foot",(side*.87,-1.49,.35),(.34,.52,.25),EDGE,shipyard)
-    box("Dock inner bay shadow liner",(side*.68,-.63,.84),(.075,.71,.67),KEEL,shipyard,.012)
+    box("Dock inner socket shadow liner",(side*.68,-.42,.84),(.075,.30,.67),KEEL,shipyard,.012)
     wall_prism("Dock sloped outer entrance shoulder",
                [(side*.67,.31),(side*1.13,.31),(side*1.13,1.10),
                 (side*.96,1.40),(side*.69,1.40)],-.27,.03,ARMOR_FACE,shipyard)
@@ -728,16 +730,14 @@ for side in (-1,1):
          .06,.07,ARMOR_FACE,shipyard)
     box("Dock articulated arm inspection tool",
         (side*.48,-.92,1.10),(.11,.12,.07),CRANE_ORANGE,shipyard,.007)
-    box("Dock outer service module",(side*.91,-1.53,.71),(.42,.53,.58),ARMOR,shipyard)
-    box("Dock service module dark entry",(side*.91,-1.83,.72),(.26,.028,.30),KEEL,shipyard,.007)
-    box("Dock service module cyan operating slit",(side*.91,-1.85,.85),(.15,.013,.035),CYAN,shipyard,.003)
+    box("Dock outer service pod dark entry",(side*.88,-1.87,.72),(.23,.028,.27),KEEL,shipyard,.007)
+    box("Dock outer service pod cyan operating slit",(side*.88,-1.89,.85),(.15,.013,.035),CYAN,shipyard,.003)
 box("Dock inner machine service bed",(0,-.75,.41),(.60,.71,.10),ARMOR_SIDE,shipyard)
 box("Dock entrance dark pressure threshold",(0,-.35,.39),(1.46,.32,.16),EDGE,shipyard,.015)
-beam("Dock portal gantry",(-.83,-.40,1.00),(.83,-.40,1.00),.14,.18,ARMOR,shipyard)
-beam("Dock armored entrance canopy",(-.94,-.35,1.25),(.94,-.35,1.25),.23,.25,ARMOR,shipyard)
-slope_shell("Dock faceted entry roof",
-            [(-1.06,-.39),(1.06,-.39),(1.01,.04),(-1.01,.04)],
-            [1.36,1.36,1.22,1.22],.13,ARMOR,shipyard)
+beam("Dock narrow inner service bridge",(-.73,-.36,1.08),(.73,-.36,1.08),.08,.12,ARMOR_SIDE,shipyard)
+for side in (-1,1):
+    box("Dock inner service pod roof",(side*.87,-.35,1.34),
+        (.48,.37,.12),ARMOR,shipyard,.02)
 for side in (-1,1):
     wall_prism("Dock deep armored portal fascia",
                [(side*.55,.37),(side*1.14,.37),(side*1.14,1.14),
@@ -746,13 +746,11 @@ for side in (-1,1):
     box("Dock black recessed portal return",(side*.52,-.60,.81),
         (.075,.17,.75),KEEL,shipyard,.009)
 box("Dock portal upper pressure hood",(0,-.47,1.44),
-    (1.61,.32,.17),ARMOR_MID,shipyard,.02)
+    (.94,.20,.11),ARMOR_MID,shipyard,.02)
 box("Dock portal recessed soffit",(0,-.64,1.28),
-    (1.33,.075,.10),KEEL,shipyard,.01)
+    (.95,.075,.08),KEEL,shipyard,.01)
 for side in (-1,1):
-    beam("Dock entrance upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.25,.27,ARMOR,shipyard)
-    beam("Dock outer service portal upright",(side*.82,-1.39,.35),(side*.82,-1.39,1.02),.16,.19,ARMOR_SIDE,shipyard)
-beam("Dock outer service portal header",(-.83,-1.39,1.04),(.83,-1.39,1.04),.16,.19,ARMOR,shipyard)
+    beam("Dock entrance service pod upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.18,.19,ARMOR,shipyard)
 for a in (-146,-119):
     owned_arc(shipyard,"Dock armored entry threshold",a,a+2.2,
               4.08,5.29,.33,1.03,ARMOR_SIDE)
@@ -789,8 +787,8 @@ for side in (-1,1):
             (.22,.32,.07),ARMOR_SIDE,shipyard,.006)
     for y in (-1.68,-.39):
         wall_prism("Dock angled end armor cheek",
-                   [(side*.66,.42),(side*1.16,.42),(side*1.16,1.16),
-                    (side*.99,1.42),(side*.70,1.42)],y-.06,y+.06,
+                   [(side*.66,.42),(side*1.13,.42),(side*1.13,1.02),
+                    (side*.99,1.22),(side*.70,1.22)],y-.06,y+.06,
                    ARMOR_FACE,shipyard)
     box("Dock service pipe housed beneath sill",(side*.62,-1.05,.48),
         (.045,1.32,.045),GOLD,shipyard,.006)
