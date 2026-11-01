@@ -1,16 +1,16 @@
 # 清理发布与实际消费状态
 
-main与清理分支已普通推送并回读。其余原组正在制作，本轮只发布各一份文档候选，由对应执行者按固定父版本安全消费。星球/整体当前HANDOFF不在补丁中；反应堆新资产合同不在本组补丁中。
+main与清理分支已普通推送并回读。五组原执行者均已实际消费并经远端回读，当前制作继续。确切提交和全文核查见[实际消费闭环](consumption/index.md)。星球/整体当前HANDOFF不在补丁中；反应堆新资产合同不在本组补丁中。
 
 | 组 | 固定父版本 | 发布提交 | 分支 | 原分支已消费 |
 |---|---|---|---|---|
 | main | `7b3702af224deff65375861c9a60be3c19e0a659` | `7a20bec9cc6369afbabf597f78d65bd8b65ebca3` | `main` | 已发布回读 |
 | cleanup | `d08fb1b237eee99e1b25ec17c7778888ebd7ee4a` | `54d0e8fca0a093bcf56d5f53a4e5cf499746f07b` | `docs/design-entry-cleanup-20261031` | 已发布回读 |
-| equipment | `de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf` | `f74f465de8cf08d0f479f703fb6856d3680887b3` | `docs/remove-retired-judgments-equipment-20261101` | 待原执行者消费 |
-| reactor | `c20e4c1a121652514de533fe09203114606d0818` | `e0c0c997de5eac799e552a1f9d933b5005c24db6` | `docs/remove-retired-judgments-reactor-20261101` | 待原执行者消费 |
-| planet | `c2ea8202e1693a514be3058195d993a54c1be2fb` | `f8fedf37980df5377e71cb7fd5874d37c3440c0f` | `docs/remove-retired-judgments-planet-20261101` | 待原执行者消费 |
-| host | `6b62f8db8d764f28a4441fdf579f27cf3e3cc381` | `1c452e1776f8b2f958ff0ff167860603c7e314fe` | `docs/remove-retired-judgments-host-20261101` | 待原执行者消费 |
-| backend | `d8097332495b8ef1c1cfcc19fa46637c3d63556d` | `fe9c3706c29c86282aefdeb9875a09da0e8fee54` | `docs/remove-retired-judgments-backend-20261101` | 待原执行者消费 |
+| equipment | `de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf` | `f74f465de8cf08d0f479f703fb6856d3680887b3` | `docs/remove-retired-judgments-equipment-20261101` | 已消费并回读 |
+| reactor | `c20e4c1a121652514de533fe09203114606d0818` | `e0c0c997de5eac799e552a1f9d933b5005c24db6` | `docs/remove-retired-judgments-reactor-20261101` | 已消费并回读 |
+| planet | `c2ea8202e1693a514be3058195d993a54c1be2fb` | `f8fedf37980df5377e71cb7fd5874d37c3440c0f` | `docs/remove-retired-judgments-planet-20261101` | 已消费并回读 |
+| host | `6b62f8db8d764f28a4441fdf579f27cf3e3cc381` | `1c452e1776f8b2f958ff0ff167860603c7e314fe` | `docs/remove-retired-judgments-host-20261101` | 已消费并回读 |
+| backend | `d8097332495b8ef1c1cfcc19fa46637c3d63556d` | `fe9c3706c29c86282aefdeb9875a09da0e8fee54` | `docs/remove-retired-judgments-backend-20261101` | 已消费并回读 |
 
 ## 实际路径与规模
 
@@ -150,4 +150,4 @@ C4父身份/保存水位、首槽换型双零两项待定问题保留；D3/D4/D5
 
 93条原文来源映射、23个唯一Git blob先独立归档并fetch回读，Git对象与SHA256一致。当前修改均为.md，逐组非Markdown树对象完全相同；相对文件/锚点检查无错误；远端发布提交逐项回读。没有运行游戏、构建、Excel转换、性能或独立复测。审核主体：本执行线程文档自核。
 
-原分支仍待消费是执行交接状态，不是权限阻塞；本轮没有自动审批拒绝。无新增待用户裁定问题。
+五组消费已闭环，无剩余消费阻塞。本线程本轮归档写入没有自动审批拒绝。无新增待用户裁定问题。

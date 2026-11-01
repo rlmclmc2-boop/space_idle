@@ -71,9 +71,12 @@
       "space-battleship/docs/game-design/review/conflicts.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "f74f465de8cf08d0f479f703fb6856d3680887b3",
+    "producer_advanced": false,
+    "consumption_commit": "f74f465de8cf08d0f479f703fb6856d3680887b3",
+    "consumption_status": "applied_and_verified",
+    "candidate_match_count": 13
   },
   "reactor": {
     "source_branch": "implement/reactor-centered-godot",
@@ -97,9 +100,12 @@
       "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "c20e4c1a121652514de533fe09203114606d0818",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "98b0dc1e38f17ce35c6b6589cb7878a0f79b3ed6",
+    "producer_advanced": false,
+    "consumption_commit": "98b0dc1e38f17ce35c6b6589cb7878a0f79b3ed6",
+    "consumption_status": "applied_and_verified",
+    "candidate_match_count": 13
   },
   "planet": {
     "source_branch": "wip/planet-thread-resume-20261101",
@@ -122,9 +128,12 @@
       "space-battleship/docs/game-design/review/conflicts.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "c2ea8202e1693a514be3058195d993a54c1be2fb",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "5aad20f10851c6894ac25fd908d75cc4423bcdca",
+    "producer_advanced": false,
+    "consumption_commit": "c777ce0827685b403980952c648137206685a8fa",
+    "consumption_status": "applied_and_verified",
+    "candidate_match_count": 13
   },
   "host": {
     "source_branch": "design/clear-zone-host",
@@ -147,9 +156,12 @@
       "space-battleship/docs/game-design/review/conflicts.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "6b62f8db8d764f28a4441fdf579f27cf3e3cc381",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "3b9f14e5ba5f3013d5581c228b97d3ad5b5f83b7",
+    "producer_advanced": false,
+    "consumption_commit": "367252552754d861555ef1f0a50ae84caa807e84",
+    "consumption_status": "applied_and_verified",
+    "candidate_match_count": 13
   },
   "backend": {
     "source_branch": "feat/amount-safe-previews",
@@ -172,8 +184,11 @@
       "space-battleship/docs/game-design/review/conflicts.md"
     ],
     "runtime_tree_unchanged": true,
-    "actual_source_updated": false,
-    "observed_producer_head": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
-    "producer_advanced": false
+    "actual_source_updated": true,
+    "observed_producer_head": "fe9c3706c29c86282aefdeb9875a09da0e8fee54",
+    "producer_advanced": false,
+    "consumption_commit": "fe9c3706c29c86282aefdeb9875a09da0e8fee54",
+    "consumption_status": "applied_and_verified",
+    "candidate_match_count": 13
   }
 }
