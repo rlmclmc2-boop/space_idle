@@ -447,7 +447,8 @@ func _finish_bake(generation: int) -> void:
 	await RenderingServer.frame_post_draw
 	await get_tree().process_frame
 	if generation!=_cache_generation:return
-	var resting:=ImageTexture.create_from_image(_baker.get_texture().get_image())
+	var resting_image: Image=_baker.get_texture().get_image()
+	var resting:=ImageTexture.create_from_image(resting_image)
 	_background_material.set_shader_parameter("resting_surface",resting)
 	_background_material.set_shader_parameter("working_surface",resting)
 	_background.material=_background_material
@@ -460,7 +461,6 @@ func _finish_bake(generation: int) -> void:
 	_background_material.set_shader_parameter("working_surface",working)
 	_core_lamp.light_energy=0.0
 	var local_surfaces:=Image.create(int(VIEW_SIZE.x)*2,int(VIEW_SIZE.y),false,Image.FORMAT_RGBA8)
-	var resting_image: Image=resting.get_image()
 	for index in 2:
 		var id: String=["defence","smelting"][index]
 		var sample: Image=resting_image

@@ -386,7 +386,12 @@ def furnace(m):
  faces=[];roles=[]
  for j in range(len(sections)):
   for i in range(sides):
+   # Open an actual outlet in the cast wall, aligned with the trough;
+   # do not push a luminous strip through an uninterrupted basin rim.
+   if i in (1,2):continue
    k=(i+1)%sides;faces.append((j*sides+i,j*sides+k,((j+1)%len(sections))*sides+k,((j+1)%len(sections))*sides+i));roles.append(1 if j in (3,4) else 0)
+ for i in (1,3):
+  faces.append(tuple(j*sides+i for j in range(len(sections))));roles.append(1)
  basin=oriented_solid(mesh('furnace basin casting',vertices,faces,m['shade']));basin.data.materials.append(m['ceramic'])
  for polygon,role in zip(basin.data.polygons,roles):polygon.material_index=role
  # Close the bottom with a solid refractory plug, not an open annular ring.
@@ -410,8 +415,32 @@ def furnace(m):
    a=j*sides+k;b=j*sides+(k+1)%sides;faces.append((a,a+sides,b+sides,b))
  pour=mesh('furnace pour',stream,faces,m['orange'])
  for polygon in pour.data.polygons:polygon.use_smooth=True
- plate('furnace outlet bed',[(226,604),(244,601),(309,662),(293,674)],27,11,m['dark'])
- plate('furnace outlet liquid',[(233,608),(240,607),(300,664),(295,669)],39,3,m['orange'])
+ outlet=[Vector((231,610,44)),Vector((270,638,35)),Vector((309,668,18))]
+ # A closed U casting, refractory inner floor and rolled metallic shoulders
+ # share this centerline with the separate liquid surface.
+ profile=[(-20,14),(-12,14),(-12,-7),(12,-7),(12,14),(20,14),(20,-17),(-20,-17)]
+ vertices=[];normals=[]
+ for i,p in enumerate(outlet):
+  tangent=(outlet[min(i+1,len(outlet)-1)]-outlet[max(0,i-1)])
+  normal=Vector((-tangent.y,tangent.x,0)).normalized();normals.append(normal)
+  for width,height in profile:
+   q=p+normal*width;vertices.append((q.x,-q.y,p.z+height))
+ faces=[];roles=[];n=len(profile)
+ for j in range(len(outlet)-1):
+  for k in range(n):
+   faces.append((j*n+k,j*n+(k+1)%n,(j+1)*n+(k+1)%n,(j+1)*n+k));roles.append(1 if k in (1,2,3) else 2 if k in (0,4) else 0)
+ faces.extend([tuple(range(n-1,-1,-1)),tuple((len(outlet)-1)*n+k for k in range(n))]);roles.extend([0,0])
+ trough=oriented_solid(mesh('furnace outlet structure casting',vertices,faces,m['shade']))
+ trough.data.materials.append(material('outlet refractory ceramic',(.11,.085,.055)));trough.data.materials.append(m['steel'])
+ for polygon,role in zip(trough.data.polygons,roles):polygon.material_index=role
+ bevel=trough.modifiers.new('outlet rolled arris','BEVEL');bevel.width=1.5;bevel.segments=2
+ trough.modifiers.new('outlet casting normals','WEIGHTED_NORMAL')
+ vertices=[]
+ for p,normal in zip(outlet,normals):
+  for width in (-9,9):
+   q=p+normal*width;vertices.append((q.x,-q.y,p.z))
+ mesh('furnace outlet liquid',vertices,[(0,1,3,2),(2,3,5,4)],m['orange'])
+ box('furnace outlet structure landing',307,669,33,23,-1,15,m['dark'])
  for obj in bpy.context.scene.objects:
   if obj.name.startswith(('furnace vessel','furnace liquid')) and obj.type=='MESH':
    for vertex in obj.data.vertices:vertex.co.y=-597+(vertex.co.y+597)*.48
