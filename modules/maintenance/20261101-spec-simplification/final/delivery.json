@@ -1,0 +1,130 @@
+{
+  "main": {
+    "source_branch": "main",
+    "source": "622688863e10ba7e6bc7341b6dd776b8d5c1762f",
+    "branch": "main",
+    "commit": "7b3702af224deff65375861c9a60be3c19e0a659",
+    "paths": [
+      "space-battleship/docs/game-design/06-data.md",
+      "space-battleship/docs/game-design/07-verification.md",
+      "space-battleship/docs/game-design/13-art-interaction.md",
+      "space-battleship/docs/game-design/art/modules/planet.md"
+    ],
+    "actual_original_branch_updated": true,
+    "supersedes": null,
+    "non_markdown_tree_identical": true,
+    "remote_readback": "7b3702af224deff65375861c9a60be3c19e0a659",
+    "original_branch_head_at_delivery": "7b3702af224deff65375861c9a60be3c19e0a659"
+  },
+  "equipment": {
+    "source_branch": "art/equipment-materials-main-20261029",
+    "source": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1",
+    "branch": "docs/final-scoped-docs-equipment-20261101",
+    "commit": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
+    "paths": [
+      "space-battleship/docs/game-design/06-data.md",
+      "space-battleship/docs/game-design/07-verification.md",
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/game-design/13-art-interaction.md",
+      "space-battleship/docs/game-design/art/modules/planet.md"
+    ],
+    "actual_original_branch_updated": false,
+    "supersedes": "docs/handoff-consumption-equipment-20261101",
+    "non_markdown_tree_identical": true,
+    "remote_readback": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
+    "original_branch_head_at_delivery": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1"
+  },
+  "reactor": {
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "966a9132569d52ce9a1e641c1845f69c091a8371",
+    "branch": "docs/final-scoped-docs-reactor-20261101",
+    "commit": "a4b1bfc3e9b44a50503bd921f6f3dd98c275376e",
+    "paths": [
+      "space-battleship/docs/game-design/06-data.md",
+      "space-battleship/docs/game-design/07-verification.md",
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/game-design/13-art-interaction.md",
+      "space-battleship/docs/game-design/art/modules/planet.md",
+      "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md"
+    ],
+    "actual_original_branch_updated": false,
+    "supersedes": "docs/handoff-consumption-reactor-20261101",
+    "non_markdown_tree_identical": true,
+    "remote_readback": "a4b1bfc3e9b44a50503bd921f6f3dd98c275376e",
+    "original_branch_head_at_delivery": "966a9132569d52ce9a1e641c1845f69c091a8371"
+  },
+  "host": {
+    "source_branch": "design/clear-zone-host",
+    "source": "b569f0e9d0728e13dc8af798149026cc94f004cf",
+    "branch": "docs/final-scoped-docs-host-20261101",
+    "commit": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
+    "paths": [
+      "space-battleship/docs/game-design/06-data.md",
+      "space-battleship/docs/game-design/07-verification.md",
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/game-design/13-art-interaction.md",
+      "space-battleship/docs/game-design/art/modules/planet.md"
+    ],
+    "actual_original_branch_updated": false,
+    "supersedes": "docs/handoff-consumption-host-20261101",
+    "non_markdown_tree_identical": true,
+    "remote_readback": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
+    "original_branch_head_at_delivery": "b569f0e9d0728e13dc8af798149026cc94f004cf"
+  },
+  "planet": {
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "17beb99aa8bcbaeb6b3a49184ca8b737a057bbe4",
+    "branch": "docs/final-scoped-docs-planet-20261101",
+    "commit": "0d3df5e13fc3ae58a99d5c60ae575dfb919ff147",
+    "paths": [
+      "space-battleship/docs/game-design/06-data.md",
+      "space-battleship/docs/game-design/07-verification.md",
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/game-design/13-art-interaction.md",
+      "space-battleship/docs/game-design/art/modules/planet.md",
+      "space-battleship/docs/verification/planet-single-side-godot/restore.md",
+      "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md"
+    ],
+    "actual_original_branch_updated": false,
+    "supersedes": "docs/handoff-consumption-planet-20261101",
+    "non_markdown_tree_identical": true,
+    "remote_readback": "0d3df5e13fc3ae58a99d5c60ae575dfb919ff147",
+    "original_branch_head_at_delivery": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f"
+  },
+  "backend": {
+    "source_branch": "feat/amount-safe-previews",
+    "source": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8",
+    "branch": "docs/final-scoped-docs-backend-20261101",
+    "commit": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
+    "paths": [
+      "space-battleship/docs/game-design/06-data.md",
+      "space-battleship/docs/game-design/07-verification.md",
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/game-design/13-art-interaction.md",
+      "space-battleship/docs/game-design/art/modules/planet.md"
+    ],
+    "actual_original_branch_updated": false,
+    "supersedes": "docs/handoff-consumption-backend-20261101",
+    "non_markdown_tree_identical": true,
+    "remote_readback": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
+    "original_branch_head_at_delivery": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8"
+  },
+  "cleanup": {
+    "source_branch": "docs/design-entry-cleanup-20261031",
+    "source": "47536e1ec5ee7d5175de5065538b42e0aeb52dfd",
+    "branch": "docs/design-entry-cleanup-20261031",
+    "commit": "08a918a6b0989acc6eb5c86409da2534db5259d7",
+    "paths": [
+      "space-battleship/docs/game-design/06-data.md",
+      "space-battleship/docs/game-design/07-verification.md",
+      "space-battleship/docs/game-design/13-art-interaction.md",
+      "space-battleship/docs/game-design/art/modules/planet.md",
+      "space-battleship/docs/maintenance/HANDOFF.md"
+    ],
+    "actual_original_branch_updated": true,
+    "supersedes": null,
+    "non_markdown_tree_identical": true,
+    "remote_readback": "08a918a6b0989acc6eb5c86409da2534db5259d7",
+    "original_branch_head_at_delivery": "08a918a6b0989acc6eb5c86409da2534db5259d7"
+  }
+}
