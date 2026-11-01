@@ -1,0 +1,39 @@
+{
+  "cleared_stages": {
+    "1": true
+  },
+  "distance": 1152.0,
+  "highest_reached": 2,
+  "origin": 952.0,
+  "point": 1,
+  "points": [
+    {
+      "id": 33006,
+      "position": 0.14
+    },
+    {
+      "id": 33007,
+      "position": 0.288
+    },
+    {
+      "id": 33008,
+      "position": 0.436
+    },
+    {
+      "id": 33009,
+      "position": 0.584
+    },
+    {
+      "id": 33010,
+      "position": 0.732
+    },
+    {
+      "id": 33011,
+      "position": 0.88
+    }
+  ],
+  "speed": 66.6666666666667,
+  "stage": 2,
+  "state": "combat",
+  "wait": 0.0
+}

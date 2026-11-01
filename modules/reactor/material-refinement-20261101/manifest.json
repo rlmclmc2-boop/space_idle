@@ -1,0 +1,138 @@
+{
+  "source_commit": "ff2e22966e54cea1cbebe190eca9ba19d8002c28",
+  "coverage": "controlled four/single zero/active; six actual surface roles; native equal and phase/reflection pause/resume; author candidate, not acceptance",
+  "files": {
+    "README.md": {
+      "bytes": 2466,
+      "sha256": "b99a3c7dfa94ab0a1f4c3d1de9a94cda3f33271dfed11db2697d23f50f9708a1"
+    },
+    "approved-reference.jpg": {
+      "bytes": 941252,
+      "sha256": "950c08409ea0c7a62ef00d6169bae278abc929be19d5dea834224470a1a31d06"
+    },
+    "author-review.md": {
+      "bytes": 1074,
+      "sha256": "6901ec0553602f121d8ab9145f1ba3d819fd2a16ca590fa02a7f346640b76c02"
+    },
+    "export.log": {
+      "bytes": 6616,
+      "sha256": "b5bfd89579979f047d388772cba360030fb46940ad00e01a184e020b66f6975b"
+    },
+    "four-032.png": {
+      "bytes": 919472,
+      "sha256": "dc6f387f362ead87e3b3257407be024e6f82e6ad6e203c6065cc94e69ae051ac"
+    },
+    "four-12s.mp4": {
+      "bytes": 566391,
+      "sha256": "784689ad323c5cb800f3900383d86681947f8ad52c65667552a1e905dca57470"
+    },
+    "four-active.jpg": {
+      "bytes": 221059,
+      "sha256": "ea3e07ba8833568993ac352bb9fceff19272c3ad426333364047981933061d1d"
+    },
+    "four-active.png": {
+      "bytes": 810883,
+      "sha256": "4ac6b5e8f5449764f071eb5a9a43b71d72cb436e57694e2591207341ce23935f"
+    },
+    "four-phases.jpg": {
+      "bytes": 280303,
+      "sha256": "b4597828b34bdb1670ef6137b78a605986fb604e9cfc3fd20edc912686c767c1"
+    },
+    "four-runtime.log": {
+      "bytes": 2298,
+      "sha256": "e4acc27d3ca695eca14d54878b512c00504d7bea48c4ea2c3d82acfe6626c3fa"
+    },
+    "four-zero.jpg": {
+      "bytes": 222654,
+      "sha256": "d1b4f0820cb54911173f5738f78c33fe9b2277db0c945c67dc1538b6770647a8"
+    },
+    "four-zero.png": {
+      "bytes": 803646,
+      "sha256": "7a442076ae065820dcc58d3412f8bedf43b20dbeeff90183437edfc578269452"
+    },
+    "import.log": {
+      "bytes": 2251,
+      "sha256": "6d383e5e374d17311d4e494987878f78b182bafb249c5a88f18972c1c5ea3b42"
+    },
+    "installation.json": {
+      "bytes": 1366,
+      "sha256": "229ccb7a6d0a76a4cc869ee72f466e2e023cd9f2e5b48a119d4a1e40c5568f9d"
+    },
+    "performance-driver.gd": {
+      "bytes": 3595,
+      "sha256": "42113cd71d5c2615e5d57eeaa51a91c1e7ff228e4b70ab11bcb05796f55598a1"
+    },
+    "performance-scene.json": {
+      "bytes": 554,
+      "sha256": "a9509e8e8f508f86d6dd10bbccfdb37682655299374634183533ae3124216e78"
+    },
+    "performance.log": {
+      "bytes": 2625,
+      "sha256": "e0e8f63d1cd8f49b2372ea02ac39d5b40b88c5279ee98a007cdc80b9472c0a98"
+    },
+    "performance.md": {
+      "bytes": 1470,
+      "sha256": "7325ca25a6d1fac11c3fd317db9de7ee7cb6e3d0c704a7629eac287e18a0853b"
+    },
+    "ports-driver.gd": {
+      "bytes": 2206,
+      "sha256": "24056175f8ee20855ccab9b86fc8d21c4b91ffe8089b9bd16375de620a575590"
+    },
+    "ports.log": {
+      "bytes": 844,
+      "sha256": "368534d27fdbf753dd6a636bd0f2b5878a640da8aa97485f093888efc4525943"
+    },
+    "reference-runtime-comparison.jpg": {
+      "bytes": 369206,
+      "sha256": "280402770e5e398b020d7ce0734eb8e9e2e33df967e3dea0aada7d68edccdeba"
+    },
+    "single-032.png": {
+      "bytes": 726095,
+      "sha256": "cddea24e839a933082a22f5bfd64159c4b41817552c09c521507e615b9d7d46b"
+    },
+    "single-12s.mp4": {
+      "bytes": 509118,
+      "sha256": "93d1154bd595dde526f2adc85ef6606a1663a81be08b795fdc36035761620ff4"
+    },
+    "single-active.jpg": {
+      "bytes": 186164,
+      "sha256": "d718dca86f5c445054b466d74b45736f7a7432ebfe5b8440b0f95232b73ddad8"
+    },
+    "single-active.png": {
+      "bytes": 748831,
+      "sha256": "5ed40ddc096f70f971502e98144fb19a45e1f4d0baca644412e05442c9225c59"
+    },
+    "single-phases.jpg": {
+      "bytes": 237044,
+      "sha256": "6d2782a8761d2a58c7654b38e11b54a759423cce79c64cda7823b2a95872dae2"
+    },
+    "single-runtime.log": {
+      "bytes": 1708,
+      "sha256": "2b9c9fb0f9fc3a1f92b770aa47799233a2fe27b7ba44c99066bec6fa24b879f4"
+    },
+    "single-zero.jpg": {
+      "bytes": 183114,
+      "sha256": "638434503ef6ce49e0f4f229b98c2705aa699d22b9f55b700b74cc71241ab8b2"
+    },
+    "single-zero.png": {
+      "bytes": 723576,
+      "sha256": "ef2b142d1b0497dc0dccea65e54d99a7e59583d3c770c7f67e5771a8f54b8f5f"
+    },
+    "source-closure.json": {
+      "bytes": 3477,
+      "sha256": "936767d3f63b20a521a561145f4e77b610e8ee038f6eaf33c797fe25c7b6499b"
+    },
+    "source-closure.tar.gz": {
+      "bytes": 745564,
+      "sha256": "d87ab418fe6d667eede014924a266133392b8738d0970d116d4db06e22ad7725"
+    },
+    "video-probe.json": {
+      "bytes": 539,
+      "sha256": "764d964a4714b1fccce50228e63e2b9cb22a381904356cf625b38386c14568cb"
+    },
+    "visual-driver.gd": {
+      "bytes": 6539,
+      "sha256": "9a5ea7168256b099c8fe22d20b5cba008c133ebefd2a79c67b9439570863d204"
+    }
+  }
+}

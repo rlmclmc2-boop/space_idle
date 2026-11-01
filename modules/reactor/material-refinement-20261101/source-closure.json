@@ -1,0 +1,75 @@
+{
+  "source_commit": "ff2e22966e54cea1cbebe190eca9ba19d8002c28",
+  "files": {
+    "space-battleship/src/ui/reactor_scene.gd": {
+      "bytes": 28924,
+      "sha256": "8b96e5bb14f591225096013933893cc4a5bf3a80ed3e4dc89025c7809edf860e",
+      "git_blob": "e1dd4d4738440c0ab037cdae9bc93645e0adc703"
+    },
+    "space-battleship/src/ui/reactor_stage.gd": {
+      "bytes": 20239,
+      "sha256": "98f503f77a8e23a8af1d915ccadbd6012f488cb1160f7720084c50d6d338de2c",
+      "git_blob": "4053771986785205ca3bbbf6d774c7401a75a513"
+    },
+    "space-battleship/assets/ui/reactor/b01/README.md": {
+      "bytes": 1140,
+      "sha256": "7cbd6a6914476daa1df25f4a8af73d2cc2c0ccf2409d3bce6d2bd41ba5bf0a7c",
+      "git_blob": "3cf079af5bbcd0a450575fa14830ac23366b049a"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader": {
+      "bytes": 267,
+      "sha256": "d5e451ad1d152c6f70de9a8d6d2e4eb5717a43e5565f7deb83ef04dc89939f02",
+      "git_blob": "d04ea25a81b502db34081255d708c5c34af8bd95"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader": {
+      "bytes": 9481,
+      "sha256": "f256987ac9309e5a6b5aff58da6f90af7688a9bf63bf42012a43f47fe209c9be",
+      "git_blob": "4e7abaeee0a4b70c2149df1287a72dcc09b4ef37"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader": {
+      "bytes": 448,
+      "sha256": "5226135db1bb4eab8ec6f364ebbc1291c1f590a3bd223bd34302dbf0b10a5130",
+      "git_blob": "11614cfd5aeebca0e8de631d29db6fca25485123"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json": {
+      "bytes": 10275,
+      "sha256": "51cfb93b511987cae4fc97f2b0c34b2b1b8198e4ef56d8de16f69552969b51a7",
+      "git_blob": "5ac486af34a21a313c0c00f4e6d3c7b51f56d9aa"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg": {
+      "bytes": 1121,
+      "sha256": "a775c0426d287d6bd6a264118f22022365702bd873d71b997279825c76706143",
+      "git_blob": "756f5c4c377f61ee086bad690f73c55b66534fb4"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb": {
+      "bytes": 2263160,
+      "sha256": "ffe4baeca199d280fba545fdb32636f1899f2f7e2c7990c2dc9f1479086528e9",
+      "git_blob": "7b56affaa81a94867d2c21de2a439def1e3eccb4"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg": {
+      "bytes": 341,
+      "sha256": "1f2522f49dce14cdea311656631c1f08aba3a5966c1d629fdffcc9c17b3656c5",
+      "git_blob": "0cb2849cc13754fbfea1123863c7d028dbbdd8c1"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-structure-outline.gdshader": {
+      "bytes": 360,
+      "sha256": "43ffcdd958654088c0982561dc14055835f8d5a9578a925e65314a99f4c61e1b",
+      "git_blob": "d693c5e23f3af0718939dbe0e00270b84430f250"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader": {
+      "bytes": 1636,
+      "sha256": "c0e570a3f91daed2df90f8f025377356640b7976ee157a25ff117d1209ebaee3",
+      "git_blob": "3830e518b673fcea1c761cd785d541ca96df7dac"
+    },
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py": {
+      "bytes": 46681,
+      "sha256": "fbd908b766fa20f305d54343a4605177cfd5a776a1677c4a39f255e26c7c6d2d",
+      "git_blob": "0efe3a7b8913e4fb9e1d422512c4a6d7fde015ee"
+    },
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json": {
+      "bytes": 1738,
+      "sha256": "c9e16ff1c08cef3716fb255a5826c15de1fc1eb4ae67e9188b584ab2553705ff",
+      "git_blob": "198fcd42ace309588cc861b555d87479abba94a1"
+    }
+  }
+}
