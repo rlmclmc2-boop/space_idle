@@ -22,7 +22,7 @@
 
 ### S5
 
-反应堆：按用户批准B01的独立核心/设备/实体管路制作，见[B01入口](../../verification/reactor-centered-godot/evidence/b01-redesign/README.md)。资产身份/锚点/导入条件只见[M3资产契约](modules/reactor-asset-contract.md)，不导航回旧整图舞台。
+反应堆：按用户批准B01的独立核心/设备/实体管路制作，见[B01入口](../../verification/reactor-centered-godot/evidence/b01-redesign/README.md)。资产身份/锚点/导入条件只见[M3资产契约](https://github.com/rlmclmc2-boop/space_idle/blob/749eccd11d6a6c67a91f9a7138c03508481d373c/space-battleship/assets/ui/reactor/b01/README.md)，不导航回旧整图舞台。
 
 ### S6
 

@@ -74,7 +74,7 @@ gain = min(floor(offlineSeconds×rate), floor(capacity-current))
 
 ## 4. 经济账本与收入分类
 
-钱包含铁 `1`、铀 `2`、强化碎片 `jewel`、微粒 `chrono`、四类超空间材料及究极核心。用户明确所有资源无论展示还是实际值均为整数，必要向上取整；实施边界、累计进度和旧档候选恢复见[资源整数契约](contracts/resources.md)。经济数量统一用近似 `Amount`；格数、ID、抽签次数等离散身份使用整数。钱包使用`credit/debit/transfer`具名函数，收入记录明确来源；奖励和掉落使用其本身的唯一ID防重复领取。消费检查全部资源够付才整体扣除，失败不能留下部分扣费。
+钱包含铁 `1`、铀 `2`、强化碎片 `jewel`、微粒 `chrono`、四类超空间材料及究极核心。用户明确所有资源无论展示还是实际值均为整数，必要向上取整；实施边界、累计进度和旧档候选恢复见[资源整数契约](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/resources.md)。经济数量统一用近似 `Amount`；格数、ID、抽签次数等离散身份使用整数。钱包使用`credit/debit/transfer`具名函数，收入记录明确来源；奖励和掉落使用其本身的唯一ID防重复领取。消费检查全部资源够付才整体扣除，失败不能留下部分扣费。
 
 基线把铁/铀掉落分为“基础生产量”和“实际到账量”；新模型显式保存两个字段，不从 UI 显示数反推。收入源至少有 `enemy_drop/timed_drop/fragment_drop/galaxy_yield/hyperspace_material/dismantle/forge_refund`；旧 `furnace` 分支仅作为停用规则记录，不能重新生成炉子。
 

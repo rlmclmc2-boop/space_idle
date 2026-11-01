@@ -1,6 +1,6 @@
 # B01 反应堆：当前制作入口
 
-**现行运行资产固定点（2026-10-31）：**`implement/reactor-centered-godot@0bc17ae48107972c88a84069cf5221bf5c1cbb0f`。同版八态整屏、边界状态与正常 1× 250 帧作者证据固定在[独立归档 `ccb41329`](https://github.com/rlmclmc2-boop/space_idle/blob/ccb413292c6ead5b9fd7f00ca16579f787a62f9f/modules/reactor/r12-centered-20261031/README.md)；录屏实际为 8.333333 秒。现行资产有扩大炉内腔、加深承接熔池及可见落流、拓宽盾机外弯曲半透明场壳、四机金属冷暖反射；炉液 shader 的移动热锋之间现在露出暗壳熔池。作者已看原尺寸整屏及 250 帧炉体顺序接触表，本版尚未获独立整页视觉通过或目标硬件性能验收。设计依据仅为 [M3 反应炉](../../../../game-design/art/modules/reactor.md)、[13 全局呈现](../../../../game-design/13-art-interaction.md)及用户本轮重做要求。历史候选与裁定留在独立 Git archive，不在此入口导航。
+**现行运行资产固定点（2026-10-31）：**`implement/reactor-centered-godot@0bc17ae48107972c88a84069cf5221bf5c1cbb0f`。同版八态整屏、边界状态与正常 1× 250 帧作者证据已单独保全；录屏实际为 8.333333 秒。现行资产有扩大炉内腔、加深承接熔池及可见落流、拓宽盾机外弯曲半透明场壳、四机金属冷暖反射；炉液 shader 的移动热锋之间现在露出暗壳熔池。作者已看原尺寸整屏及 250 帧炉体顺序接触表，本版尚未获独立整页视觉通过或目标硬件性能验收。设计依据仅为 [M3 反应炉](../../../../game-design/art/modules/reactor.md)、[13 全局呈现](../../../../game-design/13-art-interaction.md)及用户本轮重做要求。历史候选与裁定留在独立 Git archive，不在此入口导航。
 
 ## 制作与接入边界
 
