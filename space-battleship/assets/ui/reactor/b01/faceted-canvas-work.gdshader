@@ -112,7 +112,7 @@ void fragment(){
   opacity=(.28+optical_depth*.18+release*.09+charged*.06)*smoothstep(.01,.25,optical_depth);
  }else if(work_kind==4){
   float radius=length(point.xy-vec2(1045.0,-177.0));
-  float front=20.0+106.0*formation;
+  float front=20.0+125.0*formation;
   float mask=1.0-smoothstep(front-4.0,front,radius);
   float panel=pow(1.0-abs(facing_normal.z),2.0);
   float rim=smoothstep(front-12.0,front-4.0,radius);

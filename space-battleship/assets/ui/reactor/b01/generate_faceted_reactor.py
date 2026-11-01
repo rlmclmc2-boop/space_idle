@@ -565,6 +565,7 @@ def export_glb():
   if name in DATA['devices']:
    anchors={'weapons':(183,-204,28),'defence':(1045,-177,28),'smelting':(175,-477,28),'condensation':(1017,-557,28)}
    anchor=Vector(anchors[name]);side=1 if name in ('weapons','smelting') else -1
+   housing_scale={'weapons':Vector((1.45,1.20,1.25)),'defence':Vector((1.25,1.25,1.20)),'smelting':Vector((1.35,1.15,1.20)),'condensation':Vector((1.35,1.15,1.20))}[name]
    installation=Matrix.Rotation(math.radians(13*side),3,'Y')@Matrix.Rotation(math.radians(8),3,'X')
    for obj in objects:
     if obj.type!='MESH' or 'receiver' in obj.name or 'hollow receiver' in obj.name:continue
@@ -572,7 +573,9 @@ def export_glb():
     # Receiver/port bases stay in the declared pipe frame and enter the casing.
     for v in obj.data.vertices:
      world=obj.matrix_world@v.co
-     world=anchor+installation@(world-anchor)
+     scale=Vector((1.15,1.15,1.15)) if obj.name.startswith('shield bowed field') else housing_scale
+     delta=world-anchor
+     world=anchor+installation@Vector((delta.x*scale.x,delta.y*scale.y,delta.z*scale.z))
      v.co=obj.matrix_world.inverted()@world
   root=bpy.data.objects.new(name,None);bpy.context.collection.objects.link(root)
   for o in objects:o.parent=root

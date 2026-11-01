@@ -180,6 +180,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	elif kind==3:part.z_index=1
 	elif kind==2:part.z_index=0
 	var bottom: float=-INF
+	var right: float=-INF
 	for index in range(node.mesh.get_surface_count()):
 		var arrays: Array=node.mesh.surface_get_arrays(index)
 		var raw: PackedVector3Array=arrays[Mesh.ARRAY_VERTEX]
@@ -198,6 +199,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			var depth_code: int=int(roundf(clampf((point.z+256.0)/1024.0,0.0,1.0)*65535.0))
 			colors.append(Color(float(depth_code/256)/255.0,float(depth_code%256)/255.0,normal.x*.5+.5,normal.y*.5+.5))
 			bottom=maxf(bottom,-point.y)
+			right=maxf(right,point.x)
 		var original_indices: PackedInt32Array=arrays[Mesh.ARRAY_INDEX]
 		if original_indices.is_empty():
 			for i in raw.size():original_indices.append(i)
@@ -239,7 +241,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		drawable.material=material
 		part.add_child(drawable)
 		_materials[key].append(material)
-	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"kind":kind})
+	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"right":right,"kind":kind})
 	part.visible=kind==1
 
 func _pipe_key(id: String) -> String:
@@ -375,7 +377,7 @@ func _animate_mechanisms() -> void:
 				if "pulse" in title:
 					var pulse: float=maxf(.01,sin((shot-1.17)/.36*PI))
 					part.scale=Vector2(pulse,1.0)*SOURCE_SCALE
-					part.position=source_point(Vector2(90.0-(90.0-origin.x)*pulse,origin.y))
+					part.position=source_point(Vector2(float(mechanism.right)-(float(mechanism.right)-origin.x)*pulse,origin.y))
 			elif title.begins_with("furnace feed"):
 				var index: int=int(title.get_slice("feed ",1))
 				var descent: float=fmod(age/1.2+float(index)/3,1.0)
