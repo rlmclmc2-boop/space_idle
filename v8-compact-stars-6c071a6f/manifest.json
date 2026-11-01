@@ -1,0 +1,21 @@
+{
+  "source_commit": "6c071a6f",
+  "files": {
+    "white-dwarf-5": {
+      "size": [
+        808,
+        450
+      ],
+      "sha256": "0a137d6df893a6f4d31ed21616c999d498299c4e0f0f5efdac3f70b30c028ba9",
+      "bytes": 29816
+    },
+    "pulsar-6": {
+      "size": [
+        808,
+        450
+      ],
+      "sha256": "2094a031bcec3ab7b30f6e8d2f92bc3a2b09cf162757b17c854e2cc58995a192",
+      "bytes": 32953
+    }
+  }
+}
