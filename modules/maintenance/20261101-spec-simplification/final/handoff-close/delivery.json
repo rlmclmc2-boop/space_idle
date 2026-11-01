@@ -1,0 +1,28 @@
+{
+  "reactor": {
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "59b1086e93a574c7ff17bcbcb96aa7d8f93b0822",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md",
+    "candidate_branch": "docs/handoff-final-trim-reactor-20261101",
+    "before_chars": 932,
+    "after_chars": 819,
+    "commit": "071e9e51d5280624704ad2836b4363dcbd157160",
+    "expected_handoff_blob": "c0bba2c5834cf68e75807b504591aced3c40246c",
+    "actual_producer_consumption": "pending",
+    "producer_head_at_candidate_publication": "59b1086e93a574c7ff17bcbcb96aa7d8f93b0822",
+    "producer_advanced": false
+  },
+  "planet": {
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "e56c0d513cd3398d20bb6d3aa00e100e40b46412",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+    "candidate_branch": "docs/handoff-final-trim-planet-20261101",
+    "before_chars": 705,
+    "after_chars": 671,
+    "commit": "d91be289d8decdd91525214a771aa57f2a279128",
+    "expected_handoff_blob": "765bec19474648ece2cd3a7b19f5db34152f7ab9",
+    "actual_producer_consumption": "pending",
+    "producer_head_at_candidate_publication": "c0d82fb73c01d59b03fe69d2b9ce929363c068ba",
+    "producer_advanced": true
+  }
+}
