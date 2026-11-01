@@ -408,8 +408,6 @@ for root,lo,hi in ((refinery,25,75),(station,75,155),
                   4.15,4.51,-.12,.19,ARMOR_SIDE)
 
 # Local pressure floors under the large work nodes, distinct from the guideway.
-owned_arc(workshop,"Manufacturing recessed work support",-54,-32,
-          4.03,5.16,-.16,.25,KEEL)
 owned_arc(shipyard,"Dock open bay inner transfer floor",-138,-122,
           4.17,4.68,.18,.34,MACHINE)
 bpy.context.view_layer.update()
@@ -490,49 +488,42 @@ for i in range(8):
 for x in (-.58,-.22,.22,.58):
     box("Heat exchange outer exhaust slit",(x,-.99,.88),(.085,.045,.25),AMBER,refinery,.008)
 
-# Manufacturing uses a large opening cut between two roof plate groups.
-# An overhead crane visibly spans the work void inside the curved band.
-# The work site is one continuous plated platform with side pressure walls.
-# Its inner guideway remains unobstructed for the tram.
-owned_arc(workshop,"Manufacturing continuous pressure sole",-66,-27,
-          4.53,5.82,.18,.32,ARMOR_SIDE)
-owned_arc(workshop,"Manufacturing full-depth work deck",-65,-28,
-          4.57,5.76,.32,.40,ARMOR_FACE)
-owned_arc(workshop,"Manufacturing dark recessed machine lane",-63,-30,
-          4.81,5.23,.40,.425,MACHINE)
-owned_arc(workshop,"Manufacturing outer dark cavity wall",-65,-28,
-          5.74,5.86,.18,.55,KEEL)
-owned_arc(workshop,"Manufacturing outer armor sill",-65,-28,
-          5.72,5.88,.55,.65,ARMOR_SIDE)
-for a in (-61,-52,-43,-34):
-    owned_arc(workshop,"Manufacturing large deck seam",a,a+.28,
-              4.59,5.73,.40,.416,ARMOR_SIDE)
+# A straight, complete factory work platform meets the curved orbital guideway
+# through two compact rail collars. This keeps the approved deck broad and flat.
+box("Manufacturing full pressure sole",(0,-.89,.25),
+    (2.80,1.65,.22),KEEL,workshop)
+box("Manufacturing continuous ivory work deck",(0,-.89,.39),
+    (2.70,1.55,.10),ARMOR_FACE,workshop)
+box("Manufacturing recessed machine lane",(0,-.62,.448),
+    (2.35,.38,.025),MACHINE,workshop,.007)
+box("Manufacturing outer dark pressure sidewall",(0,-1.71,.46),
+    (2.82,.17,.38),KEEL,workshop)
+box("Manufacturing outer ivory sill",(0,-1.72,.68),
+    (2.86,.20,.09),ARMOR_SIDE,workshop)
+for x in (-1.02,-.34,.34,1.02):
+    box("Manufacturing plated deck seam",(x,-.89,.446),
+        (.025,1.52,.016),ARMOR_SIDE,workshop,.003)
 for x,y in ((-.48,-1.18),(.05,-1.08),(.55,-1.25)):
-    box("Manufacturing secured cargo cassette",(x,y,.53),
+    box("Manufacturing secured cargo cassette",(x,y,.56),
         (.31,.40,.22),ARMOR_FACE,workshop,.02)
-    box("Manufacturing cassette dark top seam",(x,y,.65),
+    box("Manufacturing cassette dark top seam",(x,y,.68),
         (.21,.31,.025),ARMOR_SIDE,workshop,.004)
-    box("Manufacturing cassette amber lock",(x,y-.215,.56),
+    box("Manufacturing cassette amber lock",(x,y-.215,.59),
         (.10,.012,.045),AMBER,workshop,.004)
-for a in (-65,-29):
-    owned_arc(workshop,"Manufacturing end housing inner cheek",a,a+2.8,
-              4.02,4.18,.22,.95,ARMOR)
-    owned_arc(workshop,"Manufacturing end housing outer cheek",a,a+2.8,
-              4.48,4.64,.22,.95,ARMOR)
-    owned_arc(workshop,"Manufacturing end housing lintel",a,a+2.8,
-              4.03,4.64,.95,1.10,ARMOR_SIDE)
-for a in (-64,-56,-48,-40):
-    owned_arc(workshop,"Amber fabrication transverse working rib",a,a+1.1,
-              4.20,5.02,.42,.51,GOLD)
-owned_arc(workshop,"Manufacturing inner orange service rail",-66,-34,
-          4.16,4.22,.53,.63,AMBER)
-owned_arc(workshop,"Manufacturing outer orange service rail",-66,-34,
-          5.05,5.11,.53,.63,AMBER)
-for a in (-67,-34):
-    owned_arc(workshop,"Manufacturing work portal ring",a,a+1.8,4.07,5.19,.37,1.20,ARMOR_SIDE)
-for a in (-59,-43):
-    owned_arc(workshop,"Manufacturing orange overhead gate",a,a+1.4,
-              4.18,5.08,1.16,1.28,AMBER)
+for side in (-1,1):
+    for radial in (-1,1):
+        box("Manufacturing track entry armor cheek",
+            (side*1.32,radial*.29,.65),(.33,.18,.78),ARMOR,workshop)
+        box("Manufacturing track entry dark return",
+            (side*1.50,radial*.23,.63),(.035,.13,.43),KEEL,workshop,.006)
+    box("Manufacturing track entry lintel",(side*1.32,0,1.09),
+        (.35,.78,.13),ARMOR_SIDE,workshop)
+for y in (-.19,-1.54):
+    box("Manufacturing amber guided transfer rail",(0,y,.52),
+        (2.42,.065,.08),GOLD,workshop,.008)
+for x in (-.76,0,.76):
+    box("Manufacturing transverse crane datum",(x,-.85,.56),
+        (.065,1.27,.075),GOLD,workshop,.008)
 for radial_y in (-.78,.08):
     box("Manufacturing high gantry travel rail",(0,radial_y,1.44),
         (1.75,.085,.10),GOLD,workshop,.014)
@@ -585,7 +576,16 @@ for side in (-1,1):
     box("Dock launch clamp actuator",(side*.57,-1.24,.61),(.21,.30,.21),MACHINE,shipyard,.012)
     box("Dock launch clamp jaw",(side*.48,-1.24,.73),(.12,.25,.08),ARMOR_FACE,shipyard,.008)
     box("Dock contained service light",(side*.85,-1.01,.58),(.028,.20,.025),CYAN,shipyard,.004)
-box("Dock recessed launch deck",(0,-1.00,.29),(1.40,1.48,.16),KEEL,shipyard)
+box("Dock dark load-bearing keel",(0,-1.02,.26),(1.95,1.83,.19),KEEL,shipyard)
+box("Dock continuous ivory landing deck",(0,-1.02,.38),(1.81,1.72,.08),ARMOR_FACE,shipyard)
+box("Dock recessed central landing lane",(0,-1.05,.43),(.62,1.55,.028),ARMOR_SIDE,shipyard,.006)
+for y in (-.58,-1.04,-1.50):
+    box("Dock landing deck panel seam",(0,y,.428),(1.79,.025,.018),ARMOR_SIDE,shipyard,.003)
+for side in (-1,1):
+    box("Dock illuminated side guide",(side*.78,-1.06,.44),(.025,1.45,.019),CYAN,shipyard,.003)
+    box("Dock outer service module",(side*.91,-1.53,.71),(.42,.53,.58),ARMOR,shipyard)
+    box("Dock service module dark entry",(side*.91,-1.83,.72),(.26,.028,.30),KEEL,shipyard,.007)
+    box("Dock service module cyan operating slit",(side*.91,-1.85,.85),(.15,.013,.035),CYAN,shipyard,.003)
 box("Dock inner machine service bed",(0,-.75,.41),(.60,.71,.10),ARMOR_SIDE,shipyard)
 box("Dock entrance dark pressure threshold",(0,-.35,.39),(1.46,.32,.16),EDGE,shipyard,.015)
 beam("Dock portal gantry",(-.83,-.40,1.00),(.83,-.40,1.00),.14,.18,ARMOR,shipyard)
@@ -613,9 +613,32 @@ for a in (-146,-119):
               4.08,5.29,.33,1.03,ARMOR_SIDE)
     owned_arc(shipyard,"Dock threshold ivory shoulder",a,a+2.2,
               4.18,5.18,1.02,1.13,ARMOR)
-box("Docked shuttle fuselage",(0,-1.15,.93),(.37,.96,.18),ARMOR_FACE,shipyard,.04)
-armor_prism("Docked shuttle swept nose",[(0,-1.88),(.18,-1.53),(-.18,-1.53)],.87,1.04,ARMOR_FACE,shipyard)
-box("Docked shuttle canopy",(0,-1.27,1.05),(.22,.31,.055),GLASS,shipyard,.01)
+box("Docked shuttle fuselage",(0,-1.33,.91),(.61,1.30,.22),ARMOR_FACE,shipyard,.04)
+armor_prism("Docked shuttle swept nose",[(0,-2.30),(.31,-1.84),(-.31,-1.84)],.85,1.04,ARMOR_FACE,shipyard)
+box("Docked shuttle canopy",(0,-1.42,1.045),(.33,.44,.06),GLASS,shipyard,.01)
+for side in (-1,1):
+    box("Docked shuttle engine nacelle",(side*.38,-1.50,.83),
+        (.19,.73,.18),ARMOR_SIDE,shipyard,.02)
+    box("Docked shuttle cyan exhaust",(side*.38,-1.91,.83),
+        (.12,.035,.10),CYAN,shipyard,.006)
+
+# The reference manufacturing platform is compact beside the planet, while
+# its independently owned track remains the full approved orbital radius.
+workshop_shell=bpy.data.objects.new("Compact manufacturing work architecture",None)
+bpy.context.collection.objects.link(workshop_shell)
+workshop_shell.parent=workshop
+bpy.context.view_layer.update()
+for child in list(workshop.children):
+    if child==workshop_shell or child.name.startswith((
+            "Fine orbital pressure web","Fine ivory rail head",
+            "Orbital tram guide","Orbital track joint clamp")):
+        continue
+    world_matrix=child.matrix_world.copy()
+    child.parent=workshop_shell
+    child.matrix_parent_inverse.identity()
+    child.matrix_world=world_matrix
+bpy.context.view_layer.update()
+workshop_shell.scale=(.80,.80,.90)
 
 # Author-view tram follows the same fine orbital track. Runtime motion is
 # implemented by planet_orbital_spine.gd and appears only on a completed loop.
