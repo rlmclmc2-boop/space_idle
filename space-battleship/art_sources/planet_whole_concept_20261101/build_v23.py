@@ -430,6 +430,16 @@ cyl("Front attitude cyan inset",front_core,.075,.025,CYAN,shipyard,10)
 # The observation platform bears down onto the actual guideway; no second
 # unsupported ribbon floats between the station and its owned track section.
 cyl("Command dark structural foundation",(0,-.32,1.22),1.25,.28,KEEL,station,12)
+cone("Command tapered occupied lower pressure hull",(0,-.32,.99),.48,1.06,.37,ARMOR_SIDE,station,12)
+torus("Command lower hull ivory stiffening flange",(0,-.32,.82),.53,.055,ARMOR_FACE,station)
+for i in range(8):
+    a=i*tau/8
+    beam("Command lower hull exposed pressure rib",
+         (.52*cos(a),-.32+.52*sin(a),.82),
+         (1.12*cos(a),-.32+1.12*sin(a),1.22),
+         .065,.075,ARMOR_MID,station)
+    cyl("Command underdeck amber service signal",
+        (.91*cos(a),-.32+.91*sin(a),1.03),.045,.08,AMBER,station,8)
 cyl("Command lower faceted load deck",(0,-.32,1.35),1.20,.14,ARMOR_SIDE,station,12)
 cyl("Command stepped ivory observation deck",(0,-.32,1.48),1.11,.15,ARMOR,station,12)
 torus("Command continuous observation sill",(0,-.32,1.52),1.04,.06,ARMOR_FACE,station)
@@ -454,6 +464,13 @@ for side in (-1,1):
         (side*1.19,0,1.48),(.44,.89,.15),ARMOR_SIDE,station)
     box("Command socket cyan guidance notch",
         (side*1.39,0,1.46),(.035,.14,.045),CYAN,station,.004)
+    box("Command rail pressure coupler dark sleeve",
+        (side*1.66,0,1.13),(.42,.49,.34),KEEL,station,.014)
+    for x in (1.52,1.83):
+        box("Command rail coupler ivory locking rib",
+            (side*x,0,1.14),(.075,.55,.43),ARMOR_FACE,station,.009)
+    box("Command rail coupler cyan service slit",
+        (side*1.67,-.258,1.17),(.23,.018,.05),CYAN,station,.003)
 cyl("Command rotating bearing",(0,-.32,1.60),.72,.16,EDGE,station,10)
 torus("Command bearing cyan collar",(0,-.32,2.19),.62,.045,CYAN,station)
 cyl("Command second occupied tier dark hull",(0,-.32,1.94),.78,.30,KEEL,station,12)
@@ -474,6 +491,8 @@ cone("Command faceted core",(0,-.32,2.31),.45,.20,.29,ARMOR,station,8)
 cyl("Command blue canopy",(0,-.32,2.48),.23,.09,GLASS,station,8)
 cone("Command short beacon",(0,-.32,2.63),.10,.02,.20,ARMOR,station,8)
 beam("Command tall navigation mast",(.12,-.32,2.66),(.12,-.32,3.21),.055,.055,ARMOR_SIDE,station)
+cyl("Command mast faceted transmitter collar",(.12,-.32,3.00),.12,.065,ARMOR_FACE,station,8)
+box("Command mast slim communications blade",(.12,-.32,3.18),(.04,.20,.29),ARMOR_FACE,station,.006)
 cyl("Command mast amber signal",(.12,-.32,3.23),.055,.09,AMBER,station,8)
 for side in (-1,1):
     beam("Command secondary bearing mast",(side*.75,-.32,2.14),
@@ -551,6 +570,11 @@ for side in (-1,1):
             (.10,.035,.022),AMBER,workshop,.003)
 box("Manufacturing outer dark pressure sidewall",(0,-1.71,.46),
     (2.82,.17,.38),KEEL,workshop)
+for x in (-1.08,-.62,-.16,.30,.76,1.18):
+    box("Manufacturing outer wall removable armor panel",(x,-1.810,.51),
+        (.34,.026,.23),ARMOR_MID,workshop,.009)
+    box("Manufacturing outer wall recessed status lamp",(x,-1.827,.54),
+        (.075,.012,.04),AMBER,workshop,.003)
 box("Manufacturing outer ivory sill",(0,-1.72,.68),
     (2.86,.20,.09),ARMOR_SIDE,workshop)
 for x in (-1.02,-.34,.34,1.02):
@@ -668,6 +692,10 @@ for side in (-1,1):
     box("Dock contained service light",(side*.85,-1.01,.58),(.028,.20,.025),CYAN,shipyard,.004)
 box("Dock dark load-bearing keel",(0,-1.02,.26),(1.95,1.83,.19),KEEL,shipyard)
 box("Dock continuous ivory landing deck",(0,-1.02,.38),(1.81,1.72,.08),ARMOR_FACE,shipyard)
+for x in (-.75,.75):
+    for y in (-1.60,-1.16,-.72):
+        box("Dock side-deck dark removable service plate",(x,y,.435),
+            (.20,.30,.016),ARMOR_MID,shipyard,.004)
 box("Dock recessed central landing lane",(0,-1.05,.43),(1.12,1.55,.028),ARMOR_SIDE,shipyard,.006)
 for side in (-1,1):
     for y in (-1.49,-1.02,-.55):
