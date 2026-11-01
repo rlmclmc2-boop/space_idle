@@ -433,10 +433,12 @@ cyl("Command dark structural foundation",(0,-.32,1.22),1.25,.28,KEEL,station,12)
 cyl("Command lower faceted load deck",(0,-.32,1.35),1.20,.14,ARMOR_SIDE,station,12)
 cyl("Command stepped ivory observation deck",(0,-.32,1.48),1.11,.15,ARMOR,station,12)
 torus("Command continuous observation sill",(0,-.32,1.52),1.04,.06,ARMOR_FACE,station)
+cyl("Command lower occupied tier dark hull",(0,-.32,1.66),1.055,.22,KEEL,station,12)
+torus("Command lower occupied tier upper sill",(0,-.32,1.78),1.06,.055,ARMOR_FACE,station)
 for i in range(12):
     a=i*tau/12
     x=1.11*cos(a); y=-.32+1.11*sin(a)
-    window=box("Command observation window bay",(x,y,1.36),(.30,.095,.16),WINDOW,station,.01)
+    window=box("Command observation window bay",(x,y,1.66),(.30,.095,.16),WINDOW,station,.01)
     window.rotation_euler.z=a+pi/2
     if i%3==0:
         pylon=box("Command exterior armor buttress",(1.21*cos(a),-.32+1.21*sin(a),1.29),
@@ -453,28 +455,30 @@ for side in (-1,1):
     box("Command socket cyan guidance notch",
         (side*1.39,0,1.46),(.035,.14,.045),CYAN,station,.004)
 cyl("Command rotating bearing",(0,-.32,1.60),.72,.16,EDGE,station,10)
-torus("Command bearing cyan collar",(0,-.32,1.70),.62,.045,CYAN,station)
-cyl("Command second occupied tier dark hull",(0,-.32,1.75),.65,.22,KEEL,station,12)
-torus("Command second tier upper ivory sill",(0,-.32,1.85),.67,.045,ARMOR_FACE,station)
+torus("Command bearing cyan collar",(0,-.32,2.19),.62,.045,CYAN,station)
+cyl("Command second occupied tier dark hull",(0,-.32,1.94),.78,.30,KEEL,station,12)
+torus("Command second tier lower pressure rim",(0,-.32,1.79),.80,.055,ARMOR_FACE,station)
+torus("Command second tier upper ivory sill",(0,-.32,2.10),.80,.055,ARMOR_FACE,station)
 for i in range(12):
     a=i*tau/12
-    x=.657*cos(a);y=-.32+.657*sin(a)
-    window=box("Command upper-tier occupied window",(x,y,1.75),
-               (.23,.045,.11),WINDOW,station,.006)
+    x=.785*cos(a);y=-.32+.785*sin(a)
+    window=box("Command upper-tier occupied window",(x,y,1.95),
+               (.29,.055,.16),WINDOW,station,.006)
     window.rotation_euler.z=a+pi/2
     if i%3==0:
-        rib=box("Command upper-tier load pier",(.70*cos(a),-.32+.70*sin(a),1.75),
-                (.09,.095,.22),ARMOR_FACE,station,.008)
+        rib=box("Command upper-tier load pier",(.82*cos(a),-.32+.82*sin(a),1.94),
+                (.10,.11,.30),ARMOR_FACE,station,.008)
         rib.rotation_euler.z=a+pi/2
-cone("Command faceted core",(0,-.32,1.86),.47,.22,.29,ARMOR,station,8)
-cyl("Command blue canopy",(0,-.32,2.04),.23,.09,GLASS,station,8)
-cone("Command short beacon",(0,-.32,2.20),.10,.02,.20,ARMOR,station,8)
-beam("Command tall navigation mast",(.12,-.32,2.23),(.12,-.32,2.84),.055,.055,ARMOR_SIDE,station)
-cyl("Command mast amber signal",(.12,-.32,2.86),.055,.09,AMBER,station,8)
+cyl("Command upper observation cap",(0,-.32,2.15),.67,.10,ARMOR,station,12)
+cone("Command faceted core",(0,-.32,2.31),.45,.20,.29,ARMOR,station,8)
+cyl("Command blue canopy",(0,-.32,2.48),.23,.09,GLASS,station,8)
+cone("Command short beacon",(0,-.32,2.63),.10,.02,.20,ARMOR,station,8)
+beam("Command tall navigation mast",(.12,-.32,2.66),(.12,-.32,3.21),.055,.055,ARMOR_SIDE,station)
+cyl("Command mast amber signal",(.12,-.32,3.23),.055,.09,AMBER,station,8)
 for side in (-1,1):
-    beam("Command secondary bearing mast",(side*.75,-.32,1.79),
-         (side*.75,-.32,2.32),.045,.045,ARMOR_SIDE,station)
-    cyl("Command secondary amber signal",(side*.75,-.32,2.34),
+    beam("Command secondary bearing mast",(side*.75,-.32,2.14),
+         (side*.75,-.32,2.61),.045,.045,ARMOR_SIDE,station)
+    cyl("Command secondary amber signal",(side*.75,-.32,2.63),
         .045,.075,AMBER,station,8)
 
 # Heat is a working aperture in the band, marked by a low furnace clamp.
@@ -537,6 +541,14 @@ box("Manufacturing continuous ivory work deck",(0,-.89,.39),
     (2.70,1.55,.10),ARMOR_FACE,workshop)
 box("Manufacturing recessed machine lane",(0,-.62,.448),
     (2.35,.38,.025),MACHINE,workshop,.007)
+box("Manufacturing open assembly well",(0,-1.10,.453),
+    (1.55,.68,.026),KEEL,workshop,.008)
+for side in (-1,1):
+    box("Manufacturing assembly well ivory lip",(side*.78,-1.10,.49),
+        (.055,.68,.055),ARMOR_FACE,workshop,.006)
+    for y in (-1.32,-.90):
+        box("Manufacturing amber work-bay light",(side*.69,y,.485),
+            (.10,.035,.022),AMBER,workshop,.003)
 box("Manufacturing outer dark pressure sidewall",(0,-1.71,.46),
     (2.82,.17,.38),KEEL,workshop)
 box("Manufacturing outer ivory sill",(0,-1.72,.68),
@@ -656,7 +668,11 @@ for side in (-1,1):
     box("Dock contained service light",(side*.85,-1.01,.58),(.028,.20,.025),CYAN,shipyard,.004)
 box("Dock dark load-bearing keel",(0,-1.02,.26),(1.95,1.83,.19),KEEL,shipyard)
 box("Dock continuous ivory landing deck",(0,-1.02,.38),(1.81,1.72,.08),ARMOR_FACE,shipyard)
-box("Dock recessed central landing lane",(0,-1.05,.43),(.62,1.55,.028),ARMOR_SIDE,shipyard,.006)
+box("Dock recessed central landing lane",(0,-1.05,.43),(1.12,1.55,.028),ARMOR_SIDE,shipyard,.006)
+for side in (-1,1):
+    for y in (-1.49,-1.02,-.55):
+        box("Dock amber recessed landing lamp",(side*.54,y,.45),
+            (.07,.05,.015),AMBER,shipyard,.003)
 for y in (-.58,-1.04,-1.50):
     box("Dock landing deck panel seam",(0,y,.428),(1.79,.025,.018),ARMOR_SIDE,shipyard,.003)
 for side in (-1,1):

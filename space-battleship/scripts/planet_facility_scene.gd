@@ -55,13 +55,13 @@ func _ready() -> void:
 	environment.environment.background_mode = Environment.BG_CLEAR_COLOR
 	environment.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.environment.ambient_light_color = Color("8095a3")
-	environment.environment.ambient_light_energy = 0.25
+	environment.environment.ambient_light_energy = 0.18
 	_world.add_child(environment)
 	_scene_environment = environment
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-35, -38, 0)
 	light.light_color = Color("fff0d8")
-	light.light_energy = 1.30
+	light.light_energy = 1.12
 	_world.add_child(light)
 	_scene_light = light
 	var fill := DirectionalLight3D.new()
@@ -111,9 +111,28 @@ func _ready() -> void:
 		if kind == "shipyard": _shipyard_crane_base_x = (moving["CraneSlide"] as Node3D).position.x
 		if kind in ["equipment", "shipyard", "refinery"]: _depth_clip_orbital_model(model)
 		if kind == "refinery": _install_refinery_work(model)
+		match kind:
+			"auto_explore": _add_work_light(model, "Command second occupied tier dark hull", Color("79cfe9"), 1.0, 1.9, Vector3(0, 0.28, 0))
+			"refinery": _add_work_light(model, "Heat chamber upper armored ring deck", Color("ffc16e"), 1.7, 2.0, Vector3(0, 0.42, 0))
+			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ffad5c"), 2.0, 2.2, Vector3(0, 0.45, 0))
+			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffb35d"), 1.9, 2.0, Vector3(0, 0.46, 0))
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
+
+func _add_work_light(model: Node3D, anchor_name: String, color: Color,
+		energy: float, light_range: float, offset: Vector3) -> void:
+	var anchor := model.find_child(anchor_name, true, false) as Node3D
+	assert(anchor != null, "Missing authored work-light anchor: " + anchor_name)
+	var light := OmniLight3D.new()
+	light.name = "AuthoredWorkLight"
+	light.light_color = color
+	light.light_energy = energy
+	light.omni_range = light_range
+	light.light_specular = 0.45
+	light.shadow_enabled = anchor_name in ["Manufacturing open assembly well", "Dock recessed central landing lane"]
+	anchor.add_child(light)
+	light.position = offset
 
 func _install_refinery_work(model: Node3D) -> void:
 	# The three moving loads follow the real recessed tread into the furnace
