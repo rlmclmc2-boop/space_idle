@@ -1,0 +1,3 @@
+# v6 shared style direction author checkpoint
+
+Source `wip/planet-thread-resume-20261101@de739d0b`, Blender 4.3.2, Godot 4.7.2. User positively selected the whole-game faceted armor concept at `archive/design-docs-before-cleanup-20261031@24db2a9c:modules/public-ui/unified-abstraction-proposal-20261101/` as a direction. New v6 armor is warmer and more matte, load edges darker, and furnace/workshop side insets emphasize the common dark supporting course. Four stage, 70° and real planet drawer screenshots are attached. The drawer fixture forces the existing planet grant and four built statuses only in memory; it does not verify progression. This implementation is still a WIP, not user acceptance of the in-game art or the cross-screen result.
