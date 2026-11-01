@@ -10,6 +10,6 @@
 - [原文路径、Git blob与SHA256](preservation.json)
 - [逐组修改路径](changes.json)
 - [相对链接、锚点与规模检查](checks.json)
-- [发布及消费状态](delivery.json)（发布后补入）
+- [发布及消费状态](delivery.md) · [精确提交及文件清单](delivery.json)
 
 审核主体：本执行线程文档自核；仅静态文档检查，未运行游戏、编译或复测。main与文档整理分支直接发布；五个制作分支各提供一份基于自身固定源的规范差异，实际消费另记录。
