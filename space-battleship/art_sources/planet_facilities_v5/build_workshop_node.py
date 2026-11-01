@@ -103,9 +103,12 @@ root = node("Facility")
 # These two cheek shells clamp it from both radial sides at two tangent portals.
 for side in (-1, 1):
     y = side * .87
-    cheek = loft("Continuous orange load cheek", [
-        (-1.08, y, .59, .26, .37), (-.88, y, .70, .32, .53),
-        (.81, y, .70, .32, .53), (1.08, y, .59, .26, .37),
+    # One closed pressure section grows around the owned ring wall and rises
+    # into the open work portal. The former separate dark foot is now the
+    # lower course of this same shell, including both tapered transit ends.
+    cheek = loft("Ring-through workshop pressure shell", [
+        (-1.13, y, .43, .35, .51), (-.88, y, .49, .41, .74),
+        (.81, y, .49, .41, .74), (1.13, y, .43, .35, .51),
     ], orange, root)
     bpy.ops.mesh.primitive_cube_add(size=1, location=(0, y, .74))
     window_cut = bpy.context.object
@@ -122,13 +125,12 @@ for side in (-1, 1):
     # across its open work window. It carries the station/refinery ivory into
     # this orange industrial node without flattening its working silhouette.
     cheek.data.materials.append(ivory)
+    cheek.data.materials.append(navy)
     for face in cheek.data.polygons:
         if face.center.z > 1.06:
             face.material_index = 1
-    loft("Deep pressure foot wrapped around section", [
-        (-1.12, side*.86, .06, .35, .18), (-.86, side*.86, .14, .41, .24),
-        (.86, side*.86, .14, .41, .24), (1.12, side*.86, .06, .35, .18),
-    ], navy, root)
+        elif face.center.z < .26:
+            face.material_index = 2
     # The side cut is a real opening into the tool path. Keep its lower sill
     # and upper header as load members, leaving the center visibly open.
     box("Inset inner bay lower sill", (0, side*.575, .32),
