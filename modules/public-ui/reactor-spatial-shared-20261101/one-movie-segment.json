@@ -1,0 +1,12 @@
+{
+  "end_process_frame": 673,
+  "fps": 30,
+  "game_time_end": 18.5666666666669,
+  "game_time_start": 12.5666666666669,
+  "method": "Godot MovieMaker fixed30fps offline; current full shared main",
+  "simulated_seconds": 6,
+  "speed": 1,
+  "stage_phase": 8.9333333333335,
+  "start_process_frame": 493,
+  "state": "单路受控Reactor Owner均分带载"
+}
