@@ -49,7 +49,9 @@ var _task_line := Label.new()
 var _feedback := Label.new()
 var _feedback_seconds := 0.0
 var _drawer := PanelContainer.new()
-var _drawer_box := VBoxContainer.new()
+var _drawer_box := HBoxContainer.new()
+var _drawer_scroll := ScrollContainer.new()
+var _drawer_context := Label.new()
 var _drawer_title := Label.new()
 var _drawer_body := VBoxContainer.new()
 var _detail_text: Label
@@ -145,23 +147,34 @@ func _ready() -> void:
 	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_drawer)
 	var drawer_face := BridgeTheme.operation_plate(13, "dark")
-	drawer_face.set_content_margin_all(13)
+	drawer_face.set_content_margin_all(16)
 	_drawer.add_theme_stylebox_override("panel", drawer_face)
 	_drawer.add_child(_drawer_box)
-	_drawer.draw.connect(_draw_drawer_trim)
-	_drawer_box.add_theme_constant_override("separation", 10)
-	var header := HBoxContainer.new()
+	_drawer_box.add_theme_constant_override("separation", 24)
+	var header := VBoxContainer.new()
+	header.custom_minimum_size.x = 174
+	header.add_theme_constant_override("separation", 12)
 	_drawer_box.add_child(header)
 	_drawer_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_drawer_title.add_theme_font_size_override("font_size", 20)
 	_drawer_title.add_theme_color_override("font_color", Color("f0ead9"))
 	header.add_child(_drawer_title)
+	_drawer_context.add_theme_color_override("font_color", Color("9db7c4"))
+	_drawer_context.add_theme_font_size_override("font_size", 15)
+	header.add_child(_drawer_context)
 	var close := Button.new()
 	close.text = "收起"
 	close.pressed.connect(func(): _toggle_section(_open_section))
 	_paint_secondary(close)
+	close.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	close.custom_minimum_size = Vector2(80, 36)
 	header.add_child(close)
-	_drawer_box.add_child(_drawer_body)
+	_drawer_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_drawer_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_drawer_box.add_child(_drawer_scroll)
+	_drawer_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_drawer_body.add_theme_constant_override("separation", 10)
+	_drawer_scroll.add_child(_drawer_body)
 	_drawer.hide()
 	resized.connect(_layout)
 	_layout()
@@ -177,7 +190,7 @@ func _exit_tree() -> void:
 func _theme() -> Theme:
 	var result := preload("res://src/ui/bridge_theme.gd").create()
 	result.default_font_size = 17
-	result.set_color("font_color", "Label", Color("274554"))
+	result.set_color("font_color", "Label", Color("dce8e8"))
 	var panel := BridgeTheme.operation_plate(13)
 	panel.set_content_margin_all(13)
 	result.set_stylebox("panel", "PanelContainer", panel)
@@ -210,27 +223,14 @@ func _paint_button(button: Button, role := "secondary") -> void:
 func _paint_secondary(button: Button) -> void:
 	_paint_button(button)
 
-func _draw_drawer_trim() -> void:
-	var width := _drawer.size.x
-	var height := _drawer.size.y
-	var header_bottom := _drawer_title.get_global_rect().end.y - _drawer.get_global_rect().position.y + 6.0
-	# The quiet body varies only from top to bottom. Its side and bottom rim are
-	# the same housing, so the title does not read as a pasted-on keycap.
-	_drawer.draw_polygon(
-		PackedVector2Array([Vector2(5, header_bottom), Vector2(width - 5, header_bottom), Vector2(width - 5, height - 11), Vector2(width - 11, height - 5), Vector2(11, height - 5), Vector2(5, height - 11)]),
-		PackedColorArray([Color("e4e3d9"), Color("e4e3d9"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7")]))
-	# Header is the common dark housing itself, with no second keycap layer.
-	_drawer.draw_line(Vector2(5, header_bottom + 1), Vector2(width - 5, header_bottom + 1), Color("fff9e8", 0.25), 1.0)
-	_drawer.draw_line(Vector2(11, height - 5), Vector2(width - 11, height - 5), Color("102d3b", 0.42), 1.0)
-
 func _layout() -> void:
 	if _visual == null: return
-	# Keep the complete scene visible beside an open detail drawer. The full
-	# composition returns when the drawer closes; no facility is masked by it.
+	# The bottom command dock keeps the scene at full module width.
 	var drawer_open := not _open_section.is_empty()
 	var visual_top := 65 if _shared_host_enabled else 90
-	_visual.position = Vector2(292, visual_top) if drawer_open else Vector2(0, visual_top)
-	_visual.size = Vector2(maxf(400, size.x - 292), maxf(500, size.y - visual_top)) if drawer_open else Vector2(size.x, maxf(500, size.y - visual_top))
+	if not drawer_open:
+		_visual.position = Vector2(0, visual_top)
+		_visual.size = Vector2(size.x, maxf(500, size.y - visual_top))
 	_task_button.position = Vector2(258, 112)
 	_task_button.size = Vector2(226, 44)
 	_crew_button.position = Vector2(148, 112)
@@ -248,11 +248,9 @@ func _layout() -> void:
 	_task_line.position = Vector2(22, 168)
 	_task_line.size = Vector2(340, 46 if bool(_snapshot.get("running", false)) else 28)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
-	_feedback.position = Vector2(22, size.y - 80)
-	_feedback.size = Vector2(500, 70)
-	# Shared left drawer belongs to the three scoped entry tabs; facility aligns above it.
-	_drawer.position = Vector2(22, 278)
-	_drawer.size.x = 276
+	_feedback.position = Vector2(22, 208)
+	_feedback.size = Vector2(764, 48)
+	_drawer.size.x = size.x - 44
 	_fit_drawer()
 	_wallet.position = Vector2(200, 14)
 	_wallet.size = Vector2(580, 30)
@@ -260,16 +258,6 @@ func _layout() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	if not _open_section.is_empty():
-		# Extend the scene's quiet blue falloff behind the existing drawer so
-		# resizing its art viewport does not leave a hard vertical void.
-		var visual_top := 65 if _shared_host_enabled else 90
-		for index in 24:
-			var top := float(index) / 24.0
-			var bottom := float(index + 1) / 24.0
-			var tint := Color("061b28").lerp(Color("0b2634"), minf(top * 1.5, 1.0))
-			if top > 0.67: tint = tint.lerp(Color("09212f"), (top - 0.67) / 0.33)
-			draw_rect(Rect2(0, visual_top + (size.y - visual_top) * top, 292, (size.y - visual_top) * (bottom - top) + 1), tint)
 	if not _shared_host_enabled:
 		draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
 		draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
@@ -516,7 +504,7 @@ func _rebuild_drawer() -> void:
 	_clear_body()
 	if _open_section.is_empty(): return
 	_drawer_title.text = str({"facilities": "设施管理", "crew": "人员派遣", "exploration": "探索任务"}[_open_section])
-	if _open_section != "exploration": _caption(_drawer_body, str(_snapshot.get("row", {}).get("name", "无已开放星球")))
+	_drawer_context.text = str(_snapshot.get("row", {}).get("name", "无已开放星球"))
 	if _open_section == "facilities": _build_facility_detail()
 	elif _open_section == "crew": _build_crew_detail()
 	else:
@@ -536,10 +524,13 @@ func _rebuild_drawer() -> void:
 
 func _fit_drawer() -> void:
 	if _drawer == null or not _drawer.visible: return
-	# Content changes when a crew member is assigned. Give the existing housing
-	# its actual minimum height before drawing the side and bottom rim.
+	_drawer_scroll.custom_minimum_size.y = minf(260, _drawer_body.get_combined_minimum_size().y)
 	_drawer.size.y = _drawer.get_combined_minimum_size().y
-	_drawer.queue_redraw()
+	_drawer.position = Vector2(22, size.y - 16 - _drawer.size.y)
+	# Preserve width and spend the available height on the model rather than a
+	# permanent empty side column. The dock owns its own bounded scroll area.
+	_visual.position = Vector2(0, 138)
+	_visual.size = Vector2(size.x, maxf(300, _drawer.position.y - 140))
 
 func _build_conquest_detail() -> void:
 	_read_conquest_if_needed()
@@ -552,7 +543,7 @@ func _build_conquest_detail() -> void:
 	rewards_heading.custom_minimum_size.y = 31
 	rewards_heading.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	rewards_heading.add_theme_font_size_override("font_size", 19)
-	rewards_heading.add_theme_color_override("font_color", Color("173b4b"))
+	rewards_heading.add_theme_color_override("font_color", Color("e9ce8e"))
 	var names := {"level_bonus:equipment": "装备有效等级加成", "level_bonus:enhancement": "强化额外等级", "free_charge:all": "免费充能比例", "luck:all": "幸运加成"}
 	for row in _conquest_rewards:
 		var key: String = str(row.kind) + ":" + str(row.target)
@@ -563,13 +554,13 @@ func _build_conquest_detail() -> void:
 		reward_name.text = str(names.get(key, key))
 		reward_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		reward_name.add_theme_font_size_override("font_size", 16)
-		reward_name.add_theme_color_override("font_color", Color("46606a"))
+		reward_name.add_theme_color_override("font_color", Color("b5c9d0"))
 		reward_line.add_child(reward_name)
 		var reward_value := Label.new()
 		reward_value.text = str(row.display_text)
 		reward_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		reward_value.add_theme_font_size_override("font_size", 16)
-		reward_value.add_theme_color_override("font_color", Color("173b4b"))
+		reward_value.add_theme_color_override("font_color", Color("e9ce8e"))
 		reward_line.add_child(reward_value)
 
 func _build_facility_detail() -> void:
