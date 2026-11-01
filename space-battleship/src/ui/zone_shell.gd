@@ -85,17 +85,17 @@ func _init(economy) -> void:
 	resources.pressed.connect(_show_balances)
 	for index in ROUTES.size():
 		var spec: Array = ROUTES[index]
-		var button := _button("", Rect2(813, 85 + index * 90, 37, 86), true)
+		var button := _button("", Rect2(813, 4 + index * 99, 37, 95), true)
 		BridgeTheme.apply_route_button(button, false)
 		var mark := TextureRect.new()
 		mark.texture = ROUTE_ICONS[index]
-		mark.position = Vector2(9, 17)
+		mark.position = Vector2(9, 22)
 		mark.size = Vector2(19, 19)
 		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(mark)
 		var caption := Label.new()
 		caption.text = str(spec[1])
-		caption.position = Vector2(3, 46)
+		caption.position = Vector2(3, 54)
 		caption.size = Vector2(31, 22)
 		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
