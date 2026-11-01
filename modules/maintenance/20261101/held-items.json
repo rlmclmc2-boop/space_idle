@@ -1,8 +1,8 @@
 {
   "main": {
-    "status": "prepared_pushed_not_applied_to_main",
-    "reason": "仍仅准备61bde20c，未根审、未实际清理main；本轮不直接推进main。",
-    "commit": "61bde20c1d96167624379ceed41cb0293bb00119"
+    "status": "applied_to_main",
+    "commit": "61bde20c1d96167624379ceed41cb0293bb00119",
+    "reason": "父协调已核范围与既有授权；普通快进发布及回读完成，不再待根审/待实际清理。用途未明资料仍保留，不代表全仓历史清零。"
   },
   "planet": {
     "status": "consumed_by_original_owner",

@@ -26,8 +26,24 @@
     "remote_readback": "912f5924ab7eb5082703108264f4378b3c9a435a"
   },
   "main": {
-    "status": "prepared_only_not_root_reviewed_not_applied",
-    "candidate": "61bde20c1d96167624379ceed41cb0293bb00119",
-    "remote_readback": "e845ca58afd39184c3d4c5743021480e393adf74"
+    "status": "main_published_readback_match",
+    "base_main": "e845ca58afd39184c3d4c5743021480e393adf74",
+    "actual_main": "61bde20c1d96167624379ceed41cb0293bb00119",
+    "actual_tree": "86754f25b61753c5fa0245cdc146ceac9d4e6324",
+    "archive_verified_before_push": "4d227f40bce88396ebc385880ade4a935ea92658",
+    "archived_original_paths_verified": 152,
+    "removed_saved_files_absent_from_main": 141,
+    "modified_documents": 11,
+    "entry": "space-battleship/docs/game-design/README.md",
+    "entry_local_file_links_checked": 43,
+    "entry_history_navigation_removed": true,
+    "production_blobs_unchanged": true,
+    "push": "ordinary fast-forward; no force",
+    "fresh_fetch_and_ls_remote_match": true,
+    "review_actor": "父协调核本次差异范围、最新授权及152路径归档结果；本整理执行者再次核基线/范围/可恢复性并发布",
+    "review_scope": "仅用户已授权的main文档/留档清理，不是合功能代码或新增游戏验收",
+    "earlier_deferral": "此前自行将parent reviews before main merge泛化到每日纯清理；当时未尝试推送main、未遇权限/分支保护/审批拒绝",
+    "observed_denial": null,
+    "game_or_independent_tests_run": false
   }
 }
