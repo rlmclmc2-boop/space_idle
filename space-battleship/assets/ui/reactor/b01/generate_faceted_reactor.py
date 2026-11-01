@@ -10,6 +10,8 @@ ROOT=Path(__file__).resolve().parent
 GENERATOR_BYTES=Path(__file__).read_bytes()
 GENERATOR_SHA=hashlib.sha256(GENERATOR_BYTES).hexdigest()
 DATA=json.loads((ROOT/'reactor_ports.json').read_text());W,H=DATA['source_size']
+CRYSTAL_CONVEYOR=[(1014,610,103),(990,640,151),(940,690,110)]
+SHARD_CLEARANCE=6.6
 OUT=Path(os.environ.get('REACTOR_FACETED_BUILD','/tmp/reactor-faceted-build'));OUT.mkdir(parents=True,exist_ok=True)
 (OUT/('generator-'+GENERATOR_SHA+'.py')).write_bytes(GENERATOR_BYTES)
 def material(name,color,glow=False):
@@ -256,18 +258,19 @@ def weapon(m,phase=.65):
   rod('weapon chamber glazing '+str(i),(146,y,68),(216,y,68),17,m['field'])
   for xx in (146,207):rod('weapon capacitor endcap',(xx,y,68),(xx+9,y,68),18,m['steel'])
   box('weapon retainer '+str(i),181,y+12,76,8,100,8,m['edge'])
- box('weapon ship bus bed',63,196,74,25,88,8,m['dark'])
- for y in (182,210):box('weapon ship bus rail',63,y,78,6,112,10,m['edge'])
- box('weapon ship bus wall cap',28,196,14,38,122,12,m['dark'])
- box('weapon focusing exit',117,196,59,35,85,18,m['dark'])
+ box('weapon ship bus bed',63,196,74,25,130,8,m['dark'])
+ for y in (182,210):box('weapon ship bus rail',63,y,78,6,154,10,m['edge'])
+ box('weapon ship bus wall cap',28,196,14,38,164,12,m['dark'])
+ rod('weapon ship bus hull return',(28,196,-148),(28,196,152),10,m['shade'])
+ box('weapon focusing exit mount',107,196,32,38,128,24,m['dark'])
+ hollow_socket('weapon focusing exit',Vector((90,196)),Vector((-1,0)),0.,140,-10,24,10,m)
  if phase>=.65 and phase<.85:
-  pulse=math.sin((phase-.65)/.20*math.pi)
-  box('weapon output',99,196,15,23,97,6,m['charge'])
-  plate('weapon output pulse',[(90,190),(90,202),(62-38*pulse,196)],102,2,m['charge'],shift=(0,0))
+  rod('weapon output',(67,196,140),(65,196,140),8,m['charge'])
+  plate('weapon output pulse',[(65,190),(65,202),(26,196)],140,2,m['charge'],shift=(0,0))
  for yy in (132,257):
   box('weapon inset seam',104,yy,25,4,104,3,m['dark'])
   disc('weapon captive pin',104,yy+9,3.6,109,m['copper'],8)
- service_panel('weapon shoulder hatch',100,191,26,53,129,m)
+ service_panel('weapon shoulder hatch',100,148,24,27,129,m)
  vent_bank('weapon manifold cooling',251,196,17,49,131,5,m)
  for xx in (148,208):box('weapon crown joint',xx,112,3,19,105,3,m['dark'])
  socket('weapons',m)
@@ -458,7 +461,7 @@ def crystal(m,growth=1.):
  for yy in (450,638):box('crystal brass clamp',1090,yy,25,10,104,11,m['copper'])
  # Front collector receives from the chamber sill and slopes down to the
  # accessible collection end. Rails and deck share these three sections.
- center=[Vector((1014,610,103)),Vector((990,640,151)),Vector((940,690,110))]
+ center=[Vector(p) for p in CRYSTAL_CONVEYOR]
  for part in ('deck','left rail','right rail'):
   vertices=[]
   for i,c in enumerate(center):
@@ -478,7 +481,7 @@ def crystal(m,growth=1.):
   mesh('crystal collector '+part,vertices,faces,m['dark'] if part=='deck' else m['steel'])
  for i in range(4):
   t=(i+.5)/4;c=center[1].lerp(center[2],t);xx,yy,zz=c
-  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=8,location=(xx,-yy,zz+12))
+  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=8,location=(xx,-yy,zz+SHARD_CLEARANCE))
   shard=bpy.context.object;shard.name='crystal body delivery '+str(i);shard.scale=(.75,1.2,.8);shard.data.materials.append(m['violet_light'])
  verts=[]
  for yy in (452,610):
@@ -832,9 +835,9 @@ def export_glb():
  double_routes={}
  for id in ('weapons','smelting'):
   original_route=DATA['devices'][id];route=dict(original_route)
-  route['core_port']=[original_route['core_port'][0]+130,original_route['core_port'][1]]
-  route['device_port']=[original_route['device_port'][0]+200,original_route['device_port'][1]]
-  route['controls']=[[original_route['controls'][0][0]+130,original_route['controls'][0][1]],[original_route['controls'][1][0]+200,original_route['controls'][1][1]]]
+  route['core_port']=[original_route['core_port'][0]+170,original_route['core_port'][1]]
+  route['device_port']=[original_route['device_port'][0]+170,original_route['device_port'][1]]
+  route['controls']=[[original_route['controls'][0][0]+170,original_route['controls'][0][1]],[original_route['controls'][1][0]+170,original_route['controls'][1][1]]]
   DATA['devices'][id]=route
   group('pipe_double_'+id,lambda id=id:channel_pipe(id,m))
   double_routes[id]={'route':route,'receiver_u':receiver_u(route)}
@@ -908,8 +911,8 @@ def export_glb():
   ports[id]['core_axis_out_source3d']=list(out)
   ports[id]['device_marker']=id+'/power_in_'+id;ports[id]['core_marker']='core/power_out_'+id
   ports[id]['receiver_u']=receiver_u(d)
- layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,
-  'double_left':{'ids':['weapons','smelting'],'shifts':{'core':[130,0],'core_mount':[130,0],'weapons':[200,0],'smelting':[200,0]},'routes':double_routes},'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+ layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':{'conveyor':[[x,-y,z+SHARD_CLEARANCE] for x,y,z in CRYSTAL_CONVEYOR],'split':(Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length/((Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length+(Vector(CRYSTAL_CONVEYOR[2])-Vector(CRYSTAL_CONVEYOR[1])).length)}},
+  'double_left':{'ids':['weapons','smelting'],'shifts':{'core':[170,0],'core_mount':[170,0],'weapons':[170,0],'smelting':[170,0]},'routes':double_routes},'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])
 

@@ -110,6 +110,28 @@
       ]
     }
   },
+  "work_paths": {
+    "condensation": {
+      "conveyor": [
+        [
+          1014,
+          -610,
+          109.6
+        ],
+        [
+          990,
+          -640,
+          157.6
+        ],
+        [
+          940,
+          -690,
+          116.6
+        ]
+      ],
+      "split": 0.4292842877951828
+    }
+  },
   "double_left": {
     "ids": [
       "weapons",
@@ -117,19 +139,19 @@
     ],
     "shifts": {
       "core": [
-        130,
+        170,
         0
       ],
       "core_mount": [
-        130,
+        170,
         0
       ],
       "weapons": [
-        200,
+        170,
         0
       ],
       "smelting": [
-        200,
+        170,
         0
       ]
     },
@@ -137,21 +159,21 @@
       "weapons": {
         "route": {
           "core_port": [
-            578,
+            618,
             249
           ],
           "controls": [
             [
-              538,
+              578,
               220
             ],
             [
-              570,
+              540,
               195
             ]
           ],
           "device_port": [
-            518,
+            488,
             208
           ],
           "axis_to_device": [
@@ -162,26 +184,26 @@
           "socket_depth": 28,
           "insert_depth": 45
         },
-        "receiver_u": 0.6800080693733578
+        "receiver_u": 0.7889989701876935
       },
       "smelting": {
         "route": {
           "core_port": [
-            593,
+            633,
             450
           ],
           "controls": [
             [
-              540,
+              580,
               479
             ],
             [
-              560,
+              530,
               533
             ]
           ],
           "device_port": [
-            513,
+            483,
             517
           ],
           "axis_to_device": [
@@ -192,7 +214,7 @@
           "socket_depth": 28,
           "insert_depth": 45
         },
-        "receiver_u": 0.7612758264673867
+        "receiver_u": 0.8378928251959266
       }
     }
   },
@@ -504,19 +526,19 @@
     "pipe_double_weapons": {
       "node": "pipe_double_weapons",
       "visible_rect_source": [
-        476.532470703125,
-        177.1708221435547,
-        141.66082763671875,
-        115.14332580566406
+        446.5323486328125,
+        177.15277099609375,
+        211.66094970703125,
+        115.161376953125
       ]
     },
     "pipe_double_smelting": {
       "node": "pipe_double_smelting",
       "visible_rect_source": [
-        470.68463134765625,
+        440.6845703125,
         406.1865539550781,
-        159.70672607421875,
-        139.09640502929688
+        229.706787109375,
+        139.09603881835938
       ]
     },
     "console_1": {
@@ -710,6 +732,6 @@
       "receiver_u": 0.768051532791687
     }
   },
-  "generator_sha256": "0780bcc9fc1733042fa1f563f781bf110e99d98acabbccd2317e6d1aadf80d5f",
-  "asset_sha256": "02034e51897d2dbe7a8bc75b0e262b3c6c8a0093cc9915690b03f1b05bc42a97"
+  "generator_sha256": "45183db525d1ddd3195f3b1620c90f1dea1d4b33f40a4b8e3ad89e97785de294",
+  "asset_sha256": "38bd1331812f931bc19155dbcc4eafd749ad0c422b2360ec752b5dd26401faac"
 }
