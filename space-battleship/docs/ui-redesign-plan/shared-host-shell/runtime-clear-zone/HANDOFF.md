@@ -4,16 +4,16 @@
 
 ## 当前版本与同源证据
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `41506983`，未合main。
-- 反应堆 `0e5ce0067d5d5ffa7a31768e8bdd6835b468eebc` 的十四件installation闭包逐blob同源，包含私有GLB、Stage、shader及metadata；Owner/原生控件不替换。源交接df65d3d6；installation在 `archive/reactor-material-refinement-20261101@d3f1bdd3:modules/reactor/material-refinement-20261101/installation.json`。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `774deace`，未合main。
+- 反应堆 `cfcc9a3552a886283ed07be656ff7247c8a498bf` 的十四件installation闭包逐blob同源，包含私有GLB、Stage、shader及metadata；Owner/原生控件不替换。源交接14f1e0bd；installation在 `archive/reactor-material-refinement-20261101@564cc030:modules/reactor/depth-light-20261101/installation.json`。
 - 星球 `8ccffa6d1d58ee31616c9a8796fe3bc48e120daf` 的四GLB、设施场景/轨道、两个shader及cloud-density云图九件逐blob同源。planet_visual保留整组包络与独立环境矩形，planet_panel保留主体安全区及业务/UI修复。
-- 本轮仅7件星球生产文件变化：四GLB、设施局部光、星云shader及planet_visual星点；后者只合并源三处星点变化，保留固定环境/主体适配。反应堆十四件闭包保持。公共承载ee0e2ff1、主题9034af81、最终装备main e845、main/Owner、导航及战斗空间保持。
+- 本轮仅7件反应堆生产文件变化：模型/layout/生成器、工作/表面shader及Scene/Stage；十四件闭包同版。星球、公共环境/主体适配、公共承载ee0e2ff1、主题9034af81、最终装备main e845、main/Owner、导航及战斗空间保持。
 
 星球当前同版证据：`archive/design-docs-before-cleanup-20261031@9d43eabe2dd9de59b92dfc739f93851249074bc9:modules/public-ui/planet-open-berth-shared-20261101/README.md`。运行41506983的五张1440×900原PNG/同尺寸高质量JPEG、总览/设施展开两段各6秒180连续帧、无损分片/哈希、逐帧总览、批准图等球径对照及author-review.md。
 
-反应堆当前闭包证据保持：`archive/design-docs-before-cleanup-20261031@577bf4557cb958217cd36968beb78f9116b0ddd3:modules/public-ui/reactor-material-planet-couplers-shared-20261101/reactor/author-review.md`，同目录为运行b43a3da6的五整页和两段6秒工作动态；本轮十四件反应堆闭包及公共文件逐blob保持，不把该旧运行号的视频标成415重录。
+反应堆当前同版证据：`archive/design-docs-before-cleanup-20261031@4d4ec6cddc516b034a025ef179da840346ead3f8:modules/public-ui/reactor-depth-light-shared-20261101/README.md`。运行774deace的五张1440×900原PNG/同尺寸高质量JPEG、四路/单炼铁各6秒180连续帧、无损分片/哈希、逐帧总览、批准整图共同屏幕比例并置及author-review.md。
 
-当前星球导入与运行成功。作者亲看五完整页、全部360帧总览和代表原尺寸帧。星球为受控星球1/探索240/四设施已建、固定业务快照和1×显示动画；反应堆证据为受控四路/单炼铁Owner参数、实际鼠标均分/返回装备和1×真实Session时钟。两者均MovieMaker离线30fps，具体版本/覆盖见各驱动与segment，不作实时性能或点击瞬间覆盖。本轮未追加性能或未改购买状态复测。
+反应堆本轮导入/运行成功，作者亲看五完整页、全部360帧总览和代表原尺寸帧；受控四路/单炼铁Owner参数、实际鼠标均分/返回装备，真实Session时钟1×。星球证据对应41506983，十四件反应堆以外的星球/公共文件保持，不把其影片标成774重录；其覆盖为受控星球1/探索240/四设施已建、固定业务快照和1×显示动画。两者均MovieMaker离线30fps，具体版本/覆盖见驱动和segment，不作实时性能或此前点击瞬间覆盖。本轮未追加性能或未改购买状态复测。
 
 ## 当前整页判断与接续
 
@@ -21,9 +21,11 @@
 
 制作依据为获准1586×992共同图：`24db2a9c:modules/public-ui/unified-abstraction-proposal-20261101/whole-game-style-concept.png`。当前已接分件/六类材质/核心局部反光源；原组仍继续整体还原，不等用户。
 
-本轮整页未见公共梁/导航与模块新增相交或截字，均分、数量/升级留在原台面；武器筒、盾环厚壳、炉口返回与前收集槽已有分件。整体仍未达到原图：深舱/回壁/地面透视较弱，管道圆截面与套筒厚度不足，装甲/内腔受光仍偏均匀色面和硬黑边。核心有汇入/缩紧/散开，亮包沿管到设备，但大部分观看仍像椭圆平场加小晶体，盾面/铁流/晶体腔的体积与相邻反光还不够。单路主体/短台留空和重心需连同场景看，满载100%在滑条左端而其他百分比在右端，读数锚点仍需原组统一。具体接续见reactor/author-review.md，不以分件、接口或材质角色存在判整体完成。
+本轮百分比共用轨内右端，单路100%与零载/四路锚点一致，滑块不挤读数；均分与数量/升级保持台面内，公共梁/导航未见新增相交或截字。壁板返回、顶凹井、核心后承托与真实点光进入整页。
 
-原组性能日志已读：首轮异常与后续有界软件复核均保留。当前离线采集无阻止交付的运行错误，但不能据此认定异常消除或目标机性能通过；目标环境同构建/同战场显示与关闭基线仍缺。
+按批准整图，当前仍是制作检查点：墙面偏均匀亮灰蓝，直线/黑轮廓抢眼，舱室远近/暗腔未充分退到设备后面；武器侧护壳、盾后机体的中尺度分件及厚壳受光不足，管道圆截面和套筒遮挡仍弱。核心有汇入/缩紧/释放、管内亮头尾可读，但主体仍多为光滑椭圆场与细线约束单元，层叠能量深度及周边反光少于原图。圆润炉流、盾面与晶体腔也需继续材质/体积层次。单路主体/短台和大墙面/台下留空的重心仍需原组整体校准，不能以本轮指定点完成判整页还原。
+
+具体接续见本版author-review.md：保留核心焦点和固定读数成果，原组继续护壳分件、舱室远近明暗及局部冷暖受光。没有需要宿主叠框或改战斗空间来补的公共几何问题，不交用户作成品确认，不等用户。本版无新FPS测量，目标机同构建/同场景显示关闭基线仍缺，离线采集不能判性能通过。
 
 ### 星球
 
@@ -40,6 +42,6 @@
 可消费公共源ee0e2ff1：`src/ui/zone_shell.gd`，`assets/ui/public_shell/command-rail.svg`、`navigation-spine.svg`、`nav-idle.svg`、`nav-hover.svg`、`nav-active.svg`（均在space-battleship），删除旧title-plaque.svg。BridgeTheme API与Owner不改；设计要求归13，不在交接另立规范。
 
 1. 本轮闭包接入、必要运行整页/动态与固定交接已完成；当前无新增明确公共几何缺陷，不以此宣称整体美术通过。
-2. 反应堆原组继续完整体积/材质/工作过程与单路布局，固定更新后精确消费并重看公共整页。
+2. 反应堆原组继续武器侧护壳/盾后机体分件、舱室远近明暗、局部受光及单路重心；固定更新后精确消费并重看公共整页。
 3. 星球原组继续前设施内件、局部光聚焦与面板材质，固定更新后按批准图复看完整页面。
 4. 目标机性能依赖单列，当前无同条件目标环境基线，不用离线记录或软件观察替代，不新增无关复测或合main。
