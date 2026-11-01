@@ -130,23 +130,23 @@ def loft_x(name, slices, mat, parent, bevel=.025):
     return finish(obj, name, mat, parent, bevel)
 
 
-def ring_transition(root, m, half_length=1.18):
+def ring_transition(root, m, half_length=1.18, spread=1.0):
     # These four facets continue the ring's broad top and dark lower course.
     for side in (-1, 1):
         loft_x("Shared-ring pressure haunch", [
-            (-half_length, side*.68, .14, .16, .21),
-            (-.78, side*.73, .19, .25, .32),
-            (.78, side*.73, .19, .25, .32),
-            (half_length, side*.68, .14, .16, .21),
+            (-half_length, side*.68*spread, .14, .16, .21),
+            (-.78, side*.73*spread, .19, .25, .32),
+            (.78, side*.73*spread, .19, .25, .32),
+            (half_length, side*.68*spread, .14, .16, .21),
         ], m["armor"], root)
-        box("Continuous dark lower course", (0, side*.86, -.08),
+        box("Continuous dark lower course", (0, side*.86*spread, -.08),
             (1.61, .29, .22), m["pressure"], root)
-        box("Outer service seam", (0, side*1.006, .02),
+        box("Outer service seam", (0, side*1.006*spread, .02),
             (1.42, .018, .032), m["service"], root, .005)
 
 
 def station(root, m):
-    ring_transition(root, m, 1.10)
+    ring_transition(root, m, 1.10, 1.15)
     # A low annular junction opens the orbital tangent instead of raising a box.
     cylinder("Radial bearing lower drum", (0, 0, .23), 1.06, .29, m["pressure"], root, 40)
     torus("Ivory annular pressure rim", (0, 0, .46), .91, .14, m["armor"], root)
@@ -178,7 +178,7 @@ def station(root, m):
 
 
 def refinery(root, m):
-    ring_transition(root, m, 1.40)
+    ring_transition(root, m, 1.40, 1.25)
     # The furnace is a horizontal heat vault with exposed paired intakes.
     loft_x("Ring-through furnace vault", [
         (-1.34,0,.26,.32,.16),(-.78,0,.36,.52,.25),
@@ -221,7 +221,7 @@ def refinery(root, m):
 
 
 def workshop(root,m):
-    ring_transition(root,m,1.56)
+    ring_transition(root,m,1.56,1.30)
     # One airy manufacturing gateway: paired low girders, two spanning
     # portals and a visible moving tool, with no enclosing side boxes.
     for side in (-1,1):
