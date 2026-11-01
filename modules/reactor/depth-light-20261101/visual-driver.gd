@@ -81,6 +81,8 @@ func run() -> void:
  print("NATIVE_TRACK_HIT id=",first_id," owner_ratio=",pointer_row.ratio," slider_rect=",tested_slider.get_global_rect()," ratio_anchor=",scene._rows[first_id].ratio.position)
  assert(tested_owner.apply_allocation_plan(zero,session.reactor_inputs(),scene._publish).ok)
  await frames(4)
+ # Let the real prior-command feedback expire; do not hide or replace UI.
+ await create_timer(2.4).timeout
  var role_counts: Dictionary={}
  for material in scene._stage._palette.values():
   var role: int=int(material.get_shader_parameter("surface_role"))

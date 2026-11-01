@@ -6,8 +6,8 @@ OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Devi
 NATIVE_TRACK_HIT id=smelting owner_ratio=0.5 slider_rect=[P: (236.8111, 678.9706), S: (270.0, 44.0)] ratio_anchor=(258.0, 8.0)
 SURFACE_PALETTE_ROLES { 2: 14, 0: 4, 5: 2, 4: 2, 1: 3, 3: 1 }
 VIDEO_CONTEXT paused={  } running=true focused=true pause_root=(1268.844, 31.875)
-VIDEO_START real_time=1x controlled_grants_and_wallet=true pid=231516 game_time=179.783333333368 phase=0.06666666666672
-[x11grab @ 0x55a1899484c0] Cannot get the image data event_error: response_type:0 error_code:128 sequence:5 resource_id:4194304 minor_code:4 major_code:130.
+VIDEO_START real_time=1x controlled_grants_and_wallet=true pid=232313 game_time=182.08333333337 phase=0.06666666666672
+[x11grab @ 0x558bc79324c0] Cannot get the image data event_error: response_type:0 error_code:128 sequence:5 resource_id:4194304 minor_code:4 major_code:130.
 VIDEO_NATIVE_PAUSE frozen_phase=4.0666666666699 frozen_core_light=0.64017531721443
-VIDEO_END wall_s=12.277361 game_s=11.3333333333424 phase=10.3166666666749 ui_before={ "model_reads": 4, "quote_reads": 3, "preview_reads": 1, "commands": 1, "visible_frames": 29 } ui_after={ "model_reads": 5, "quote_reads": 3, "preview_reads": 1, "commands": 2, "visible_frames": 468 } stage_before={ "draws": 0, "field_updates": 4, "active_frames": 3, "cache_renders": 6 } stage_after={ "draws": 0, "field_updates": 5, "active_frames": 368, "cache_renders": 6 }
+VIDEO_END wall_s=12.245698 game_s=11.300000000009 phase=10.2833333333415 ui_before={ "model_reads": 4, "quote_reads": 3, "preview_reads": 1, "commands": 1, "visible_frames": 138 } ui_after={ "model_reads": 5, "quote_reads": 4, "preview_reads": 1, "commands": 2, "visible_frames": 560 } stage_before={ "draws": 0, "field_updates": 4, "active_frames": 3, "cache_renders": 6 } stage_after={ "draws": 0, "field_updates": 5, "active_frames": 357, "cache_renders": 6 }
 VISUAL_OWNER 1 model={ "ok": true, "modules": [{ "id": "smelting", "enabled": true, "ratio": 1.0, "load": 1.0, "has_free": false, "manual": "1e2", "free": "0e0", "effective": "1e2", "factor": "1.3981071705535e0" }], "load": 1.0, "capacity": "1e2", "allocated": "1e2", "remaining": "0e0", &"level": 1, &"can_allocate": true, &"reason": "" } stage_loads={ "core": 1.0, "smelting": 1.0 }

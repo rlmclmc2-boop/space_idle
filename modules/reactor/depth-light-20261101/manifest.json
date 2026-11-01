@@ -1,58 +1,62 @@
 {
-  "source_commit": "9fbab6c2ade6798e1f22512a634d0404d88fc4d5",
+  "source_commit": "cfcc9a3552a886283ed07be656ff7247c8a498bf",
   "coverage": "controlled four/single zero/active, real native track/equal, pause/resume; no independent/user pass; target hardware unmeasured",
   "files": {
     "README.md": {
       "bytes": 3190,
-      "sha256": "a9b2f68c009bb328e9880e749b1ea437b4cef8c4baab065fc4e586ebb6f26db6"
+      "sha256": "6475607f2d96ca46f5a47ec4d66a59712455e15cbfd99aa6ae810a3affce7e06"
     },
     "approved-reference.jpg": {
       "bytes": 941252,
       "sha256": "950c08409ea0c7a62ef00d6169bae278abc929be19d5dea834224470a1a31d06"
+    },
+    "author-review.md": {
+      "bytes": 1284,
+      "sha256": "e176f360feb10637280b68b031dea6200b38f846960638d5dc940ad8e150c642"
     },
     "export.log": {
       "bytes": 7269,
       "sha256": "6a0121b955dd35a797509d1073f2e23a816d5cec4029de78ddc530b82290730b"
     },
     "four-12s.mp4": {
-      "bytes": 561434,
-      "sha256": "3ca3bfd967f5d5b766d7f8ecade6396619985b2fd3c448538eafe2cc3ca21b0b"
+      "bytes": 553052,
+      "sha256": "91f7536ad9ac0e1a37c505194a8f3f9df619490379bd1b3b8ab013ad401b255a"
     },
     "four-2s.png": {
-      "bytes": 993220,
-      "sha256": "3bb1cefe3f003362c2fcfdedd8a77af299f148839b2b34a14258397a546197dd"
+      "bytes": 972270,
+      "sha256": "46932a4fb6df29ee805db7cdd2d064fc66aab8e92e851168df3f19837a774427"
     },
     "four-4s.png": {
-      "bytes": 998456,
-      "sha256": "3243a781aac945299b0585e84132d88c83abb3201af179579d4a7c8a2f8fa4e5"
+      "bytes": 970156,
+      "sha256": "9320368a9d9b4e3619328a65bd61144142c6c5e3f499f332dc9d7d6fa11f5c5b"
     },
     "four-8s.png": {
-      "bytes": 993519,
-      "sha256": "32e8a9711e533b77de693d304937796a8e1fcc883035b71147b75744b08f36c3"
+      "bytes": 977000,
+      "sha256": "7fa3698fd78474738fc249ca8931e516f1741dbfe0670fb9d55b23ffccc34398"
     },
     "four-active.jpg": {
-      "bytes": 258240,
-      "sha256": "be9450ad0a012e18d3babb2f767a61c73e0237f682f0e848b0246a0308148c80"
+      "bytes": 255365,
+      "sha256": "06bde60df52aa88e2fb9eb6267aded0166cf1c9a7013bdc5ebd7eab9c9cb1b0e"
     },
     "four-active.png": {
-      "bytes": 904167,
-      "sha256": "02e78c4aa601c5811531cd8774c01ac8b29d00dc2b1fa3afdeb36b52f087eaf8"
+      "bytes": 872955,
+      "sha256": "cf276bfdde28a9aaf07c9a77b82d147e8f989eba7546940c4b1b32a70d8d6333"
     },
     "four-phases.jpg": {
-      "bytes": 407380,
-      "sha256": "56ceb5bbb7457fc81b3b5f37461643c2a76e4b695de5172161badb60c0dd588f"
+      "bytes": 401467,
+      "sha256": "af96dbd3550cd3df6443c86b3e1dfada61e8992b4fbc742f494af597f0a4b2d0"
     },
     "four-runtime.log": {
-      "bytes": 2436,
-      "sha256": "64744a066cc2b23f4ed15318b9867e74a180fe95f08218f3a4d161c5e653a9e0"
+      "bytes": 2437,
+      "sha256": "974382e41e68e52ef54b4a0423312790a1894bc4102f901ad2d41406fcf5fc32"
     },
     "four-zero.jpg": {
-      "bytes": 261523,
-      "sha256": "3dda70568e14d755a32ef6eafd952c62d65c7fbcadabfe1cb9496d6ffb46d4d1"
+      "bytes": 257026,
+      "sha256": "6a88dbacdd982d56be2e191545d835b02f603b395fa9e2b63f275d4310129a81"
     },
     "four-zero.png": {
-      "bytes": 912132,
-      "sha256": "80097d0236e0581331e6f24a14f9e33de5e9fd24083ae2b4cf07d5689c7fe95f"
+      "bytes": 875627,
+      "sha256": "bb7dc24e59a0264adf749a7532f71f29b5c8096dc8b60b61bfcef308e8386ae4"
     },
     "import.log": {
       "bytes": 2251,
@@ -60,11 +64,11 @@
     },
     "installation.json": {
       "bytes": 1259,
-      "sha256": "223b3b3121796c1c0ac1a96bcf779bd519d5db7179c2ebd6bc02985016f002fb"
+      "sha256": "4ce9ac7be5afc9f4d5dd77ada660bbe6014836bd566ebe086817271bc500b573"
     },
     "performance.md": {
       "bytes": 1599,
-      "sha256": "3adaa614ca11e748696a61458dc04e82cf8f5f477f9c5114864e3ad4291f9304"
+      "sha256": "0ee91ea2f5de83c310d30dbb6709d3f8cbf3bc0c3853aaa410572bca23a3ccee"
     },
     "ports-driver.gd": {
       "bytes": 2206,
@@ -75,72 +79,72 @@
       "sha256": "368534d27fdbf753dd6a636bd0f2b5878a640da8aa97485f093888efc4525943"
     },
     "reference-runtime-comparison.jpg": {
-      "bytes": 395638,
-      "sha256": "38ea163038aea45d2ff14829d6482df4a9fdbc3d803c907386052e79c6e5df0c"
+      "bytes": 393811,
+      "sha256": "45676e5a7bbb65a22a1c87a32116080fab60b4975be71d45ecb467b3df07e0ae"
     },
     "single-12s.mp4": {
-      "bytes": 472193,
-      "sha256": "b1d7897a6f9975f1699b7cc004521d2b5b3ee8611e1d0f8278b05b56dbf017e5"
+      "bytes": 463132,
+      "sha256": "b30ba81d2a4df655a0a0d3cac5b8eb9916b8d688431d67f3dc53821540ceef79"
     },
     "single-2s.png": {
-      "bytes": 799300,
-      "sha256": "a4dc130a8aa1b80a61e8b64bed78d6f77d2a840addfe5bc35a1ace4921c2122a"
+      "bytes": 773104,
+      "sha256": "23b1075e13c1286d4352e58c1ebe1b22b6b61e1e827a8c62f31532672dd29b84"
     },
     "single-4s.png": {
-      "bytes": 802128,
-      "sha256": "269fe03e40b2c6fb2fb622062e16e38a6d064a21733cd78c2a65621582a85e98"
+      "bytes": 773561,
+      "sha256": "58c954d90a022ed82052a4a050a8c0dd01dc6f979e15e223aed5afa7a93594b4"
     },
     "single-8s.png": {
-      "bytes": 797082,
-      "sha256": "80ac717a2966558a423ccd53f2e88ad4d6b43df5843c3e9abb1ca7888b9a800a"
+      "bytes": 769878,
+      "sha256": "a01f8d3520d783b33cabbb175f9fecaea9422b0a336633de1c2998790b21ead8"
     },
     "single-active.jpg": {
-      "bytes": 222305,
-      "sha256": "f0fd284dbd431f1d447cbe5ee0c8f80e3526119bca642047de0c6c2e1b7355b5"
+      "bytes": 218013,
+      "sha256": "e967f31aada1fa067bb7904f9fcdab045f765dcadcf4b565642f1b46ffb31008"
     },
     "single-active.png": {
-      "bytes": 814587,
-      "sha256": "17d93da2231f3c73ca48751523099c7505467511217b00533c6282a2d71e27e1"
+      "bytes": 769835,
+      "sha256": "e54718ce6d41b3cea3f8962aa00928435155390c428b74003b8e84752252c7cc"
     },
     "single-phases.jpg": {
-      "bytes": 387863,
-      "sha256": "d49076fe2007de49e6b122cb701ca7402d337717e490cdb46b6ac56c3e8d74cf"
+      "bytes": 380632,
+      "sha256": "778a918e2847f18039376b8a69ef9d38cd1606831a9933653edffab337b96703"
     },
     "single-runtime.log": {
-      "bytes": 1847,
-      "sha256": "e76812cb4bcd24e13e6f4854dcb168a8c6f7ebeb0d749f35f68505978ec5544c"
+      "bytes": 1846,
+      "sha256": "bfac24356ff553f836b1d1bd296054623d46d9e76f77bfdd63673b5220bf40d3"
     },
     "single-zero.jpg": {
-      "bytes": 224601,
-      "sha256": "9c07215805009cabdd4f3cb7a5839c4bc86fa3955f2893bc8feff6e70a3702a9"
+      "bytes": 218231,
+      "sha256": "641d4fcb16da68a0897ad40990ef08c17dce4a0baac87d8cd8d25659bbabe369"
     },
     "single-zero.png": {
-      "bytes": 820725,
-      "sha256": "acfc618c1294e04395ddc2c1a64ae616d31765eb4ad74565f23952edd791b3f9"
+      "bytes": 772042,
+      "sha256": "7f11524059a98be1a6027679011e946dd5d284bf0e13566d2ad17aac04323a61"
     },
     "source-closure.json": {
       "bytes": 3662,
-      "sha256": "6470fd57ffcc42061be5878b7b4d5cf84e99e3c5c2d801f7f2e9ac5af47e539e"
+      "sha256": "418c5bd9cd97fe0fe68bcd40268d243f7372a86161f58c7e8aa38b861f80a9e5"
     },
     "source-closure.part-01": {
       "bytes": 900000,
-      "sha256": "aea7fbf79fc6deb71af3c489369a65e75623a67aef4bb509b5ee4c8b754a9d11"
+      "sha256": "d0233fd8a08cfcab02a812d2325fa8c1dc12dfd9351223088dcfe3af1ad78e04"
     },
     "source-closure.part-02": {
-      "bytes": 167879,
-      "sha256": "87b1989a3fb5c5394c228e06f981e6ac157204803b4a74dfcd12d9dbdded9a10"
+      "bytes": 167898,
+      "sha256": "47cde25756b613755a0eca90a862d4237e2860208b829a69d0f1068a437bf712"
     },
     "source-closure.tar.gz": {
-      "bytes": 1067879,
-      "sha256": "8da4c0a1b0a9ec2a79fc21630399668a21b0d31fa2807ce66d6a6a1f416d9994"
+      "bytes": 1067898,
+      "sha256": "67699ee8c27904270abbddf0a43e27007d4969ffb462707c4fd22eb274f1aa41"
     },
     "video-probe.json": {
       "bytes": 537,
       "sha256": "38d6a03c417a50190d24322f841506e444771e68acdc5155851bcaa4aca0024e"
     },
     "visual-driver.gd": {
-      "bytes": 7287,
-      "sha256": "8d29655288dc942bb5142360c6f9dd29f6102cecab74cb8f3c322fc07869f551"
+      "bytes": 7394,
+      "sha256": "ee211bea3f7e3cd637e3a92b2ae2885478049d5ba6477dfbccb30d07963b2e55"
     }
   }
 }
