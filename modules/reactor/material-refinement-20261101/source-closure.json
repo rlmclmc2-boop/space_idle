@@ -1,5 +1,5 @@
 {
-  "source_commit": "157109a193d961662c4da80391d5d48fc1a15879",
+  "source_commit": "0e5ce0067d5d5ffa7a31768e8bdd6835b468eebc",
   "files": {
     "space-battleship/src/ui/reactor_scene.gd": {
       "bytes": 28924,
@@ -22,9 +22,9 @@
       "git_blob": "b9a12dc79acb0ed86b4df301e00a9a4000bf5358"
     },
     "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader": {
-      "bytes": 10448,
-      "sha256": "21cbbefc1cc2fed05308b10b2af3537d005e9ee67308059054d725d76fb9018e",
-      "git_blob": "771843e9f21fbd83b8afc1c70be43935023cdeff"
+      "bytes": 10460,
+      "sha256": "51dc79d53a33531be11468a43dccd44d80ff7abcb8099a44e45418f735e03d8d",
+      "git_blob": "64d1cc09096313cc930e67c439419d5a449c728f"
     },
     "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader": {
       "bytes": 448,
@@ -58,8 +58,8 @@
     },
     "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader": {
       "bytes": 1636,
-      "sha256": "c0e570a3f91daed2df90f8f025377356640b7976ee157a25ff117d1209ebaee3",
-      "git_blob": "3830e518b673fcea1c761cd785d541ca96df7dac"
+      "sha256": "c229699b72e6bd3a887626c3edee388df3500c8c546c339f49ccfea2adefbc0a",
+      "git_blob": "21bb0da54b006a8130d91fbccbe5a56756ea951f"
     },
     "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py": {
       "bytes": 47528,
