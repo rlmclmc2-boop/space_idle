@@ -4,8 +4,8 @@
 
 ## 当前版本
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `bf9c52ba`，未合main。
-- 星球来源 `9c1bc8130`：facilities_v9四GLB、planet_facility_scene.gd、planet_orbital_spine.gd六件接入并同blob。planet_visual保留公共固态整组宽度包络，planet_panel保留关闭/展开安全区及e7591438的业务/UI修复。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `6d8a4dd9`，未合main。
+- 星球来源 `415d3bbdf`：facilities_v9四GLB、planet_facility_scene.gd、planet_orbital_spine.gd六件接入并同blob。planet_visual保留公共固态整组宽度包络，planet_panel保留关闭/展开安全区及e7591438的业务/UI修复。
 - 反应堆当前已接入 `c74b5d39`（交接76a03605）的十三件installation闭包，逐blob同源。公共主题9034af81、main e845装备、公共宿主/导航和战场空间保持。
 
 ## 星球当前整页与下一项
@@ -15,13 +15,13 @@
 - `8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`，右侧完整阶段。
 - `1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png`。
 
-当前证据：`archive/design-docs-before-cleanup-20261031@191e4bab:modules/public-ui/planet-v30-original-refined-shared-20261101/README.md`。五张1440×900原屏及同尺寸JPEG，总览/设施展开各6秒180连续帧、分片/哈希、两张原图同尺寸JPEG；源映射和作者整页判断均在同目录。
+当前证据：`archive/design-docs-before-cleanup-20261031@88c4f81d:modules/public-ui/planet-v31-front-detail-shared-20261101/README.md`。五张1440×900原PNG及同尺寸JPEG、总览/设施各6秒180连续帧、分片/哈希和原图同尺寸JPEG；source.json及author-review.md记录来源和完整作者判断。
 
-作者判断已具备交用户评价本轮整体造型及风格关系的条件：星体主焦点、横向实体环带和前后弧遮挡比例接近原图；观测盘/塔、金色热工穹顶、左纵向泊位与右制造舱可凭形状/开口/重点色区分。舱门柱、上梁、舱底及侧壁能读成共同承托，前端收口完整。总览及三种台高、两段当前转动内没有所见新裁切或导航/状态区相交。公共深青与浅装甲/功能重点关系可以保持。
+本版可交父级复看，并作为用户评价整体造型/建筑效果的完整候选。主体横向环带、前后遮挡与负形、四设施功能轮廓和主次保持；前方泊位有斜装甲肩、厚入口、暗内壁回边和夹持部件，制造区有外装甲/暗内口/压力侧壁/工作床层次，均有完整舱底承托且保留开放空间。浅装甲、深腔、功能重点色与舰船/公共层可并置；不同台高和两片当前转动内，没有所见新增裁切、跳位或导航侵入。
 
-材质仍是游戏分面语言下的简化实现：门架大灰梁面、环板分节和观察台侧壁的中尺度机械层次少于原图，不称原图细节等量还原或品质终验。当前未实际发用户；推荐父复看总览、设施展开JPEG和设施6秒片后交付完整候选，不能提前写成用户等待/认可。
+当前仍是原图在游戏简化分面语言中的实现，非原图细节等量还原或用户终验。尚未实际发用户，不能写成等待用户/已认可。推荐父复看planet-overview.jpg、planet-facilities.jpg和planet-facilities-1x-6s.mp4后完整交付，不自行追加装饰或推翻主体。
 
-受控星球1、探索240、征服/四设施已建，业务快照暂停、显示动画1×；MovieMaker固定30fps离线生成，不作实时性能/整周/自然进度结论。保留当前公共安全区和UI修复，不再自行改主体或追加无依据微调。
+受控星球1、探索240、征服/四设施已建，业务快照暂停、正常显示动画1×；MovieMaker固定30fps离线生成，不作自然进度/整周/全交互/实时性能结论。四GLB同源，现有公共安全区和UI修复保持。
 
 ## 反应堆当前同壳判断
 
@@ -34,5 +34,5 @@
 ## 独立剩余项
 
 1. 当前反应堆完整同壳候选交父级复看，随后按用户实际反馈续接；没有本轮发现的独立公共控件缺陷。
-2. 星球fb482dce保留，原组继续前方设施质感，消费其下一固定源后复看完整组合；当前星球图未实际发送不写待用户。
+2. 星球当前完整质感候选交父级复看，随后按用户实际反馈续接；当前图未实际发送，不写待用户。
 3. 目标机性能仍缺上述具体依据。无新增授权动作时不制造微调或扩大矩阵，不新增独立复测或合main。
