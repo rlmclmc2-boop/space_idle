@@ -1,0 +1,49 @@
+{
+  "controlled": true,
+  "source": "9838e1e77a60f31070bc472e9ed7ca6eca4161ef",
+  "states": [
+    {
+      "fixture": "two",
+      "modules": [
+        "weapons",
+        "defence"
+      ],
+      "positive_loads": {
+        "core": 1.0,
+        "defence": 0.5,
+        "weapons": 0.5
+      },
+      "route": "reactor",
+      "scene_rect": "[P: (0.0, 0.0), S: (808.0, 900.0)]",
+      "stage_size": "(808.0, 835.0)",
+      "zero_loads": {
+        "core": 0.0,
+        "defence": 0.0,
+        "weapons": 0.0
+      }
+    },
+    {
+      "fixture": "three",
+      "modules": [
+        "weapons",
+        "defence",
+        "smelting"
+      ],
+      "positive_loads": {
+        "core": 1.0,
+        "defence": 0.33,
+        "smelting": 0.33,
+        "weapons": 0.34
+      },
+      "route": "reactor",
+      "scene_rect": "[P: (0.0, 0.0), S: (808.0, 900.0)]",
+      "stage_size": "(808.0, 835.0)",
+      "zero_loads": {
+        "core": 0.0,
+        "defence": 0.0,
+        "smelting": 0.0,
+        "weapons": 0.0
+      }
+    }
+  ]
+}

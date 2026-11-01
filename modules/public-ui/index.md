@@ -36,3 +36,5 @@
 - [2026-11-01资料清理来源与逐文件哈希](../maintenance/20261101/index.md)。仅存档/移出记录，不追加游戏验收。
 
 - [2026-11-01 R12 and final equipment shared-shell WIP](e845-r12-shared-wip-20261101/README.md): exact runtime closure, affected full screens, actual 1x short video; author observations only.
+
+- [2026-11-01 R12 shared-shell 2/3-route controlled full screens](e845-r12-two-three-controlled-20261101/README.md): current-source zero and Owner-load static states; author evidence only.

@@ -1,0 +1,38 @@
+{
+  "source": "9838e1e77a60f31070bc472e9ed7ca6eca4161ef",
+  "archive_parent": "db4db1fd26cf4fab96ae77def0f48df217fae5e1",
+  "files": {
+    "reactor-two-controlled-zero-1440x900.png": {
+      "sha256": "30ca87c711be1b2df255ac14d8a741b59199ec18b74e8b99e446233f2cd1679e",
+      "bytes": 1799650
+    },
+    "reactor-two-controlled-load-1440x900.png": {
+      "sha256": "05db3bf6b8d3d6d58bc11db292a72baca08599871cdd4340ccdfc66a6e70f976",
+      "bytes": 1811515
+    },
+    "reactor-three-controlled-zero-1440x900.png": {
+      "sha256": "4c603c0ce3e92acb9f1dab89b64697179458440c7aad19d1ef7a74558efad36d",
+      "bytes": 1803775
+    },
+    "reactor-three-controlled-load-1440x900.png": {
+      "sha256": "4f75d73a695a40405a4d7d604b6cb72c48c72d1a4230727caaca99fa11e1ec3b",
+      "bytes": 1816771
+    },
+    "state.json": {
+      "sha256": "dd34f89e254f5ca3cf1166a087a76e67203387c169488bf575dd953d51ffc098",
+      "bytes": 1023
+    },
+    "run.log": {
+      "sha256": "1b02681f48b2616254716349af25d177d4b1e56c2840c9566ff8aeee3de18b33",
+      "bytes": 751
+    },
+    "driver.gd.txt": {
+      "sha256": "8f463088d0286bc77b7d47ae82d216f9afe7285149e21e2f7b061e5beb0bc72a",
+      "bytes": 4836
+    },
+    "README.md": {
+      "sha256": "ddb93302b63c9a81baeff096216e8643ad563360d7c4ffc7ba9aefc53cb5e98e",
+      "bytes": 1872
+    }
+  }
+}
