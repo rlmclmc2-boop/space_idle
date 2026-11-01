@@ -307,8 +307,8 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
 		Vector2(-0.50, 0.04), Vector2(-0.46, 0.15), Vector2(-0.36, 0.22),
-		Vector2(-0.17, 0.235), Vector2(-0.04, 0.22), Vector2(0.0, 0.215),
-		Vector2(0.04, 0.22), Vector2(0.17, 0.235), Vector2(0.36, 0.22),
+		Vector2(-0.17, 0.245), Vector2(-0.04, 0.305), Vector2(0.0, 0.32),
+		Vector2(0.04, 0.305), Vector2(0.17, 0.245), Vector2(0.36, 0.22),
 		Vector2(0.46, 0.15), Vector2(0.50, 0.04),
 	]
 	if kind in ["refinery", "equipment", "shipyard"]:
@@ -337,8 +337,8 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
 		for band in profile.size() - 1:
 			var band_center: float = (profile[band].x + profile[band + 1].x) * 0.5
-			# A broad recessed machinery way breaks up the old road-like armor
-			# surface. Both armor banks remain part of this same load section.
+			# The dark raised central conduit and two beveled armor banks form
+			# one pressure beam rather than a level travel surface.
 			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.27 else surface
 			_deck_vertex(target, profile, band, a, t0, wa, lift, v_start, v_end, kind)
 			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)

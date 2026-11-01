@@ -147,7 +147,7 @@ annular_band("Continuous central pressure keel",3.95,4.72,-.57,.12,KEEL)
 annular_band("Deep lower pressure hull",4.01,4.66,-.85,-.57,EDGE)
 annular_band("Outer beveled side armor course",4.69,4.79,-.64,-.10,ARMOR)
 annular_band("Inner beveled side armor course",3.88,3.98,-.64,-.10,ARMOR)
-annular_band("Recessed machine conduit",4.18,4.49,.13,.15,MACHINE)
+annular_band("Raised central pressure conduit",4.18,4.49,.13,.28,MACHINE)
 annular_band("Contained upper cyan service line",4.15,4.18,.16,.18,CYAN)
 annular_band("Contained lower cyan service line",4.70,4.73,-.34,-.29,CYAN)
 for i in range(36):
@@ -193,26 +193,25 @@ def socket(name, deg, open_fork=False):
 
 
 station=socket("01 / Annular command and habitation bearing",135)
-cyl("Closed annular lower bearing",(0,0,.57),.90,.35,KEEL,station,16)
-torus("Habitat upper pressure collar",(0,0,.86),.78,.16,ARMOR,station)
-torus("Inboard turquoise bearing",(0,0,.92),.46,.042,CYAN,station)
+cyl("Closed annular lower bearing",(0,0,.57),.72,.35,KEEL,station,12)
+torus("Habitat upper pressure collar",(0,0,.86),.62,.13,ARMOR,station)
+torus("Inboard turquoise bearing",(0,0,.92),.39,.042,CYAN,station)
 cone("Eight-sided raised command citadel",(0,0,1.20),.45,.26,.66,KEEL,station,8)
 torus("Continuous command glazing band",(0,0,1.28),.34,.035,CYAN,station)
 cyl("Command dark glass crown",(0,0,1.55),.27,.13,GLASS,station,8)
-for i in range(6):
-    a=i*tau/6
-    x,y=.80*cos(a),.80*sin(a)
-    block=box("Six deep armored habitation sectors",(x,y,.65),(.35,.31,.35),ARMOR,station,.055)
+for i in range(4):
+    a=(i+.5)*tau/4
+    x,y=.65*cos(a),.65*sin(a)
+    block=box("Four armored habitation pressure sectors",(x,y,.65),(.38,.37,.35),ARMOR,station,.055)
     block.rotation_euler.z=a
-for i in range(12):
-    a=i*tau/12
-    x,y=.88*cos(a),.88*sin(a)
-    plate=box("Radial pressure bulkhead over habitat ring",(x,y,.91),(.11,.32,.12),EDGE,station,.01)
-    plate.rotation_euler.z=a
 for side in (-1,1):
-    armor_prism("Swept habitat wing",
-                [(side*.63,-.25),(side*1.22,-.38),(side*1.34,.05),(side*.68,.35)],.39,.76,ARMOR,station)
-    box("Blue glazed observation slit",(side*1.05,-.28,.73),(.36,.025,.055),GLASS,station,.01)
+    armor_prism("Swept outboard habitation wing",
+                [(side*.54,-.38),(side*1.46,-.55),(side*1.72,.06),(side*.65,.38)],.42,.91,ARMOR,station)
+    slope_shell("Habitation wing pitched roof",
+                [(side*.68,-.30),(side*1.43,-.42),(side*1.55,.06),(side*.70,.27)],
+                [1.16,.87,.87,1.16],.13,EDGE,station)
+    box("Blue glazed observation slit",(side*1.10,-.40,.84),(.51,.035,.08),GLASS,station,.01)
+    beam("Outer wing pressure strut",(side*1.44,.06,.54),(side*1.72,.06,.91),.15,.17,EDGE,station)
 cone("Short command beacon",(0,0,1.77),.14,.05,.34,ARMOR,station,8)
 cyl("Amber signal cap",(0,0,1.97),.07,.07,AMBER,station,8)
 
