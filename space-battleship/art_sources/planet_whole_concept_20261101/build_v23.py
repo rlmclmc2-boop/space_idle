@@ -742,7 +742,28 @@ for child in list(workshop.children):
     child.matrix_parent_inverse.identity()
     child.matrix_world=world_matrix
 bpy.context.view_layer.update()
-workshop_shell.scale=(.80,.80,.90)
+workshop_shell.scale=(1.04,.80,.72)
+
+# The approved launch district reads as a broad, low open berth. Keep the
+# rail-bearing geometry in the shared orbit while widening only the occupied
+# dock architecture; its shuttle and service bays retain their relative fit.
+shipyard_shell=bpy.data.objects.new("Broad low open shipyard architecture",None)
+bpy.context.collection.objects.link(shipyard_shell)
+shipyard_shell.parent=shipyard
+bpy.context.view_layer.update()
+for child in list(shipyard.children):
+    if child==shipyard_shell or child.name.startswith((
+            "Fine orbital pressure web","Fine ivory rail head",
+            "Orbital tram guide","Orbital track joint clamp",
+            "Dock armored entry threshold","Dock threshold ivory shoulder",
+            "Low flush front attitude collar","Front attitude cyan inset")):
+        continue
+    world_matrix=child.matrix_world.copy()
+    child.parent=shipyard_shell
+    child.matrix_parent_inverse.identity()
+    child.matrix_world=world_matrix
+bpy.context.view_layer.update()
+shipyard_shell.scale=(1.12,1.04,.78)
 
 # Author-view tram follows the same fine orbital track. Runtime motion is
 # implemented by planet_orbital_spine.gd and appears only on a completed loop.
