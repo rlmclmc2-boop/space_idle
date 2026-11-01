@@ -31,8 +31,10 @@ def material(name, color, metallic=.0, rough=.68, emission=0.0):
 
 ARMOR = material("Warm faceted ivory armor", (.68,.64,.54), .05, .74)
 ARMOR_FACE = material("Lit ivory armor facets", (.94,.87,.73), .04, .78)
+ARMOR_SOFT = material("Secondary cool ceramic armor", (.56,.59,.58), .07, .72)
 ARMOR_SIDE = material("Recessed slate armor flanks", (.10,.17,.21), .09, .78)
 ARMOR_MID = material("Midtone faceted pressure armor", (.40,.46,.45), .05, .78)
+DECK_METAL = material("Dark modular work deck", (.20,.27,.29), .12, .70)
 EDGE = material("Dark slate panel edge", (.085,.13,.16), .16, .75)
 KEEL = material("Deep navy pressure keel", (.012,.035,.055), .10, .80)
 MACHINE = material("Machine steel", (.043,.095,.115), .10, .72)
@@ -626,13 +628,13 @@ for x in (-.58,-.22,.22,.58):
 # through two compact rail collars. This keeps the approved deck broad and flat.
 box("Manufacturing full pressure sole",(0,-.89,.25),
     (2.80,1.65,.22),KEEL,workshop)
-box("Manufacturing continuous ivory work deck",(0,-.89,.39),
-    (2.70,1.55,.10),ARMOR_MID,workshop)
+box("Manufacturing continuous modular work deck",(0,-.89,.39),
+    (2.70,1.55,.10),DECK_METAL,workshop)
 for x in (-1.11,-.37,.37,1.11):
     for y in (-1.43,-.96,-.49):
         if abs(x) < .7 and y < -.7: continue
         box("Manufacturing segmented load-floor armor tile",(x,y,.448),
-            (.64,.39,.018),ARMOR_MID if (x+y) < -1.0 else ARMOR,workshop,.006)
+            (.64,.39,.018),ARMOR_MID if (x+y) < -1.0 else ARMOR_SOFT,workshop,.006)
 box("Manufacturing recessed machine lane",(0,-.62,.448),
     (2.35,.38,.025),MACHINE,workshop,.007)
 box("Manufacturing open assembly well",(0,-1.10,.453),
@@ -657,9 +659,9 @@ for x in (-1.02,-.34,.34,1.02):
         (.025,1.52,.016),ARMOR_SIDE,workshop,.003)
 for x,y in ((-.48,-1.18),(.05,-1.08),(.55,-1.25)):
     box("Manufacturing secured cargo cassette",(x,y,.56),
-        (.31,.40,.22),ARMOR_FACE,workshop,.02)
+        (.31,.40,.22),ARMOR_MID,workshop,.02)
     box("Manufacturing cassette dark top seam",(x,y,.68),
-        (.21,.31,.025),ARMOR_SIDE,workshop,.004)
+        (.21,.31,.025),EDGE,workshop,.004)
     box("Manufacturing cassette amber lock",(x,y-.215,.59),
         (.10,.012,.045),AMBER,workshop,.004)
 for side in (-1,1):
@@ -685,7 +687,7 @@ for tangent_x in (-.77,.77):
              .055,.075,ARMOR_SIDE,workshop)
 for x in (-1.12,1.12):
     for y in (.20,):
-        beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.50),.16,.19,ARMOR,workshop)
+        beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.50),.12,.16,ARMOR,workshop)
         box("Manufacturing portal dark bearing foot",(x,y,.41),(.25,.31,.18),EDGE,workshop)
         sign=-1 if x<0 else 1
         wall_prism("Manufacturing sloped load shoulder",
@@ -709,8 +711,15 @@ for side in (-1,1):
     beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.095,.13,ARMOR_SIDE,workshop)
     box("Fabrication gantry armored foot",(side*.68,0,.58),(.23,.29,.19),ARMOR,workshop)
 box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.10,.08),ARMOR_SIDE,workshop)
-beam("Downward working tool",(.17,0,1.48),(.17,0,.66),.07,.08,EDGE,workshop)
-box("Work site contained welding line",(.17,0,.76),(.15,.18,.04),CYAN,workshop,.01)
+beam("Factory articulated upper tool link",(.17,0,1.48),(.31,-.12,1.17),
+     .07,.08,MACHINE,workshop)
+cyl("Factory articulated elbow bearing",(.31,-.12,1.17),.085,.075,
+    CRANE_ORANGE,workshop,10)
+beam("Factory articulated lower tool link",(.31,-.12,1.17),(.17,-.24,.86),
+     .06,.07,ARMOR_MID,workshop)
+beam("Downward working tool",(.17,-.24,.86),(.17,-.24,.66),
+     .055,.065,EDGE,workshop)
+box("Work site contained welding line",(.17,-.24,.70),(.15,.18,.04),CYAN,workshop,.01)
 
 # The two pressure workshops are complete machine rooms either side of the
 # open fabrication lane. Their dark recesses and roof plates read at page size.
@@ -722,7 +731,7 @@ for side in (-1,1):
         slope_shell("Fabrication room separated armor roof",
                     [(x-.27,roof_y-.18),(x+.27,roof_y-.18),
                      (x+.25,roof_y+.18),(x-.25,roof_y+.18)],
-                    [1.08,1.08,1.00,1.00],.10,ARMOR,workshop)
+                    [1.08,1.08,1.00,1.00],.10,ARMOR_SOFT,workshop)
         # A recessed trapezoid follows the roof pitch. The broad dark shape
         # stays legible at the actual page size without closing the work bay.
         slope_shell("Fabrication room pitched service hatch recess",
@@ -745,7 +754,7 @@ for side in (-1,1):
             (.09,.13,.015),GOLD,workshop,.002)
     for y in (-1.53,-.24):
         box("Fabrication room end-frame corner",(side*1.32,y,.87),
-            (.15,.10,.80),ARMOR_FACE,workshop,.012)
+            (.15,.10,.80),ARMOR,workshop,.012)
     beam("Fabrication room exposed service conduit",
          (side*.68,-1.47,1.03),(side*.68,-.35,1.03),.045,.045,GOLD,workshop)
 for y in (-.86,):
@@ -788,7 +797,7 @@ box("Dock continuous pressure landing deck",(0,-1.02,.38),(1.81,1.72,.08),ARMOR_
 for side in (-1,1):
     for y in (-1.60,-1.16,-.72):
         box("Dock segmented pale load-floor tile",(side*.71,y,.43),
-            (.27,.37,.016),ARMOR_FACE,shipyard,.004)
+            (.27,.37,.016),ARMOR_SOFT,shipyard,.004)
 for x in (-.75,.75):
     for y in (-1.60,-1.16,-.72):
         box("Dock side-deck dark removable service plate",(x,y,.435),
@@ -830,7 +839,7 @@ box("Dock portal upper pressure hood",(0,-.47,1.44),
 box("Dock portal recessed soffit",(0,-.64,1.28),
     (.95,.075,.08),KEEL,shipyard,.01)
 for side in (-1,1):
-    beam("Dock entrance service pod upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.18,.19,ARMOR,shipyard)
+    beam("Dock entrance service pod upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.14,.16,ARMOR,shipyard)
 box("Docked shuttle fuselage",(0,-1.33,.91),(.61,1.30,.22),ARMOR_FACE,shipyard,.04)
 armor_prism("Docked shuttle swept nose",[(0,-2.30),(.31,-1.84),(-.31,-1.84)],.85,1.04,ARMOR_FACE,shipyard)
 box("Docked shuttle canopy",(0,-1.42,1.045),(.33,.44,.06),GLASS,shipyard,.01)
@@ -850,7 +859,7 @@ for side in (-1,1):
         slope_shell("Dock separated service bay roof",
                     [(x-.20,bay_y-.24),(x+.20,bay_y-.24),
                      (x+.20,bay_y+.24),(x-.20,bay_y+.24)],
-                    [1.16,1.16,1.10,1.10],.11,ARMOR_FACE,shipyard)
+                    [1.16,1.16,1.10,1.10],.11,ARMOR_SOFT,shipyard)
         slope_shell("Dock service bay dark pitched roof inset",
                     [(x-.13,bay_y-.17),(x+.13,bay_y-.17),
                      (x+.13,bay_y+.17),(x-.13,bay_y+.17)],
@@ -872,7 +881,7 @@ for side in (-1,1):
         wall_prism("Dock angled end armor cheek",
                    [(side*.66,.42),(side*1.13,.42),(side*1.13,1.02),
                     (side*.99,1.22),(side*.70,1.22)],y-.06,y+.06,
-                   ARMOR_FACE,shipyard)
+                   ARMOR,shipyard)
     box("Dock service pipe housed beneath sill",(side*.62,-1.05,.48),
         (.045,1.32,.045),GOLD,shipyard,.006)
     box("Dock edge beacon armor base",(side*1.06,-1.70,1.43),
