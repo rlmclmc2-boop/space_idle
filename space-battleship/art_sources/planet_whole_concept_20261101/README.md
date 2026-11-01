@@ -1,9 +1,7 @@
-# 星球建筑与环整体概念稿
+# 环向建筑资产源
 
-这是独立生成的建筑与环结构，不引用 `facilities_v5/v6` 的网格。当前设计采用建筑嵌入环的舱段关系、细连接梁与大枢纽比例；继续沿用已认可的整屏分面装甲语言，依据见 `archive/design-docs-before-cleanup-20261031@24db2a9c:modules/public-ui/unified-abstraction-proposal-20261101/`。
+当前制作依据是原设计图：`8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png` 的固态完整态右图，以及 `1eda07fd` 同目录 `solid-integrated-spine-stages-closed.png`。目标是连续宽实体建筑带与嵌入其上的四处功能空间，远弧由球遮挡，近弧越过球下暗空间并保持间隔。
 
-细环从四设施主体的承力墙内穿入穿出，各设施沿环向延展成独立舱段。空间站以指挥核和两翼居中，精炼厂以中央压力炉及两侧进料段居中，工坊由长侧承力墙和错层屋顶围住制造槽，船坞的环段向外分叉为敞开的泊位。青色只表示服务与能源，暖橙只表示热工和作业。
+`build_v23.py`用 Blender 4.3.2 生成 `concept-v23.blend` 和 `concept-v23.png`。四设施分别拥有实体带的一段：空间站观察区、精炼厂热工区、工坊开放制造槽和船坞开口泊位。屋面轮廓、深色承力侧壁及青色服务线沿同一截面连续，制造槽保留下方承力段，船坞为外伸开口。旧版源码留在本目录作为独立历史资产，不参与当前导出。
 
-`silhouette_v19.py`生成整体比例结构稿；`build_v19.py`以 Blender 4.3.2 和已有星球表面贴图生成`concept-v19.blend`及1600×900主构图。上方连续压力弧由空间站与精炼厂各自持有；其主体壳、屋面和内侧廊道一起沿环转弯。制造舱的墙体、错层屋面和承力根部沿较短前弧收束，以有深度的端部舱门结束；开放船坞保留外伸泊位负形。完整态、独立建造及转动以同源实机资产判断。当前为制作候选，不是用户终验。
-
-`export_v19.py`从`concept-v19.blend`导出`assets/planets/facilities_v9/`四件GLB。四设施保留既有运动枢轴名称和业务ID。运行时环保留细承力梁；上弧接合区和下方工作节点由各建造归属段的压力壳接入，宽体设施由GLB承担。轨道角度、独立建造段和球后遮挡由Godot控制。
+`export_v23.py`从同版 Blend 导出 `assets/planets/facilities_v9/` 的四件 GLB，将各段烘到同一轨道中心坐标，同时保留运行所需的运动枢轴名称。`planet_facility_scene.gd`以共同轨道基变换显示它们；独立建造归属、球后遮挡、球与环分别转动及现有业务接口由 Godot 继续负责。图稿和运行资产需以当前固定源码一起判断。

@@ -28,10 +28,13 @@ var _last_size := Vector2.ZERO
 var _last_body_pixels := -1.0
 var _axis_ratio := 1.0
 var _compact_stellar := false
+var _solid_body := false
 var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
+var _workshop_gantry_base_x := 0.0
+var _shipyard_crane_base_x := 0.0
 var _refinery_feed_markers: Array[MeshInstance3D] = []
 var _orbital_depth_materials: Array[ShaderMaterial] = []
 
@@ -73,10 +76,10 @@ func _ready() -> void:
 	_world.add_child(_camera)
 	_spine = preload("res://scripts/planet_orbital_spine.gd").new()
 	_world.add_child(_spine)
-	# Lift the shared plane enough for the rear load path to crest above the
-	# globe; the depth mask still hides the parts behind its silhouette.
-	# The front path crosses the lower limb as one physical ring.
-	_spine.position.y = 0.25
+	# Set the entire tilted construction plane below the globe's visual center.
+	# This keeps a dark gap under the sphere and lets its depth mask occlude the
+	# far band, matching the original complete-state drawing.
+	_spine.position.y = -0.55
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
@@ -103,7 +106,10 @@ func _ready() -> void:
 			moving[part_name] = pivot
 		_parts[kind] = moving
 		if kind == "auto_explore": _depth_clip_orbital_model(model)
-		if kind == "equipment": _workshop_arm_base_y = (moving["ToolArmSweep"] as Node3D).position.y
+		if kind == "equipment":
+			_workshop_arm_base_y = (moving["ToolArmSweep"] as Node3D).position.y
+			_workshop_gantry_base_x = (moving["GantrySlide"] as Node3D).position.x
+		if kind == "shipyard": _shipyard_crane_base_x = (moving["CraneSlide"] as Node3D).position.x
 		if kind in ["equipment", "shipyard", "refinery"]: _depth_clip_orbital_model(model)
 		if kind == "refinery": _install_refinery_work(model)
 		model.visible = false
@@ -133,7 +139,9 @@ func _position_refinery_work(_model: Node3D, clock: float) -> void:
 	for index in _refinery_feed_markers.size():
 		var travel := fposmod(clock * 0.28 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
-		marker.position = Vector3(lerpf(-1.12, -0.42, travel), 0.72, 0.36)
+		# The asset uses the shared full-orbit authoring frame. Ore moves across
+		# the refinery's open heat bay rather than around the old local saddle.
+		marker.position = Vector3(lerpf(3.54, 3.11, travel), 1.14, lerpf(-2.65, -3.12, travel))
 
 func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned
@@ -155,6 +163,7 @@ func _depth_clip_orbital_model(node: Node) -> void:
 func configure_shape(appearance: Dictionary) -> void:
 	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
 	_compact_stellar = float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("radiusScale", 1.0)) <= 0.3
+	_solid_body = float(appearance.get("emission", 0.0)) == 0.0 and float(appearance.get("radiusScale", 1.0)) <= 1.0
 	var scale := float(appearance.get("radiusScale", 1.0))
 	var is_large_star := float(appearance.get("emission", 0.0)) > 0.0 and scale > 0.3
 	var field_tint := Color("e9bd8d") if scale > 1.0 else Color("f1d6a9") if is_large_star else Color(str(appearance.get("atmosphereColor", "fff2df")))
@@ -185,6 +194,7 @@ func _layout() -> void:
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _render_pixels() -> float:
+	if _solid_body: return _body_pixels
 	# Compact stellar cores still need an orbital facility structure, but the
 	# full terrestrial ring makes the center read as an empty 700px hole.
 	return maxf(_body_pixels, minf(size.x * (0.16 if _compact_stellar else 0.235), size.y * (0.285 if _compact_stellar else 0.34)))
@@ -212,27 +222,12 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	for kind in _owned:
 		var model: Node3D = _models[kind]
 		_animate_parts(kind, clock)
-		var a: float = _spine.FACILITY_ANGLES[kind]
-		# The built saddle orbits with the spine; the service module keeps an
-		# upright attitude on that saddle, so long solar wings do not roll into
-		# detached vertical slivers as the orbital structure turns.
-		var scale_factor := 0.85 if kind == "auto_explore" else 0.80 if kind == "refinery" else 0.75 if kind == "equipment" else 0.72
-		# The beamed core is limited by its long visible beam envelope. Give its
-		# four real work nodes enough area to retain their individual silhouettes
-		# while the common ring stays compact around the photosphere.
-		if _compact_stellar and spine_scale < 0.60:
-			scale_factor *= 0.60 / spine_scale
-		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
-		if kind in ["shipyard", "equipment", "auto_explore", "refinery"]:
-			# Both open work bays are authored in the owned section's local frame.
-			# The workshop's through axis follows the actual orbit tangent.
-			var axis_x: Vector3 = (_spine.point(a + 0.001) - _spine.point(a - 0.001)).normalized()
-			if kind == "shipyard": axis_x = -axis_x
-			var axis_y: Vector3 = _spine.plane_normal()
-			var model_scale := Vector3(scale_factor, 0.62 if kind == "auto_explore" else scale_factor, scale_factor)
-			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(model_scale), _spine.socket_position(a, kind))
-		else:
-			model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
+		# All four owned meshes are authored against the same ring center. The
+		# shared basis maps the Blender orbit plane to this tilted runtime plane;
+		# no per-node socket scale may distort their continuous architecture.
+		var orbit_basis := Basis(Vector3.RIGHT, _spine.plane_normal(),
+			Vector3(0.0, -_spine.TILT_Y, _spine.TILT_Z))
+		model.transform = Transform3D(orbit_basis, Vector3.ZERO)
 		if kind == "refinery": _position_refinery_work(model, clock)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
@@ -248,9 +243,9 @@ func _animate_parts(kind: String, clock: float) -> void:
 			(moving["IntakeWheelRight"] as Node3D).rotation.z = -clock * 1.6
 			(moving["CoolingShutters"] as Node3D).rotation.x = sin(clock * 0.70) * 0.13
 		"equipment":
-			(moving["GantrySlide"] as Node3D).position.x = sin(clock * 0.42) * 0.30
+			(moving["GantrySlide"] as Node3D).position.x = _workshop_gantry_base_x + sin(clock * 0.42) * 0.30
 			(moving["ToolArmSweep"] as Node3D).rotation.y = sin(clock * 0.75) * 0.25
 			(moving["ToolArmSweep"] as Node3D).position.y = _workshop_arm_base_y + sin(clock * 0.75) * 0.35
 		"shipyard":
-			(moving["CraneSlide"] as Node3D).position.x = sin(clock * 0.50) * 0.50
+			(moving["CraneSlide"] as Node3D).position.x = _shipyard_crane_base_x + sin(clock * 0.50) * 0.50
 			(moving["DockCollarSpin"] as Node3D).rotation.z = clock * 0.42

@@ -228,18 +228,20 @@ def root_at(name,degrees):
 # The whole-band profile, not a row of facility boxes, determines the silhouette.
 def arc_profile(angle):
     keys = [
+        (-205,4.18,4.67,.39),(-190,4.08,4.92,.53),
+        (-175,4.06,5.04,.61),
         (-160,4.20,4.57,.35),(-151,4.10,5.08,.69),
         (-138,3.98,5.42,.80),(-122,4.03,5.37,.76),
         (-109,4.11,4.91,.51),(-94,4.17,4.70,.40),
         (-78,4.14,4.76,.44),(-67,4.08,4.98,.58),
         (-57,3.94,5.27,1.08),(-42,3.92,5.40,1.37),
-        (-29,3.99,5.17,1.08),(-20,4.18,4.56,.35),
-        (25,4.18,4.60,.36),(34,4.12,5.02,.62),
+        (-29,3.99,5.17,1.08),(-20,4.10,4.94,.53),
+        (0,4.06,5.06,.60),(25,4.12,4.98,.54),(34,4.12,5.02,.62),
         (45,3.96,5.43,1.14),(57,3.96,5.46,1.19),
         (68,4.10,5.02,.73),(75,4.16,4.87,.58),
         (86,4.10,5.02,.73),(102,3.92,5.47,1.24),
         (119,3.91,5.61,1.42),(134,4.02,5.36,1.09),
-        (148,4.12,4.87,.60),(155,4.20,4.55,.34)]
+        (148,4.12,4.87,.60),(155,4.18,4.67,.39)]
     for left,right in zip(keys,keys[1:]):
         if left[0] <= angle <= right[0]:
             t=(angle-left[0])/(right[0]-left[0])
@@ -282,6 +284,25 @@ def profiled_band(root,name,begin,end,roof_shift=0,inner_shift=0,outer_shift=0,m
             poly.material_index=1 if index in roof_faces else 2
     return obj
 
+
+def profiled_outer_ribbon(root,name,begin,end):
+    """A thin contained service light follows the real outer hull profile."""
+    bpy.context.view_layer.update()
+    inverse=root.matrix_world.inverted()
+    steps=max(12,int((end-begin)*2))
+    verts=[]
+    for i in range(steps+1):
+        degrees=begin+(end-begin)*i/steps
+        a=degrees*pi/180
+        radius=arc_profile(degrees)[1]+.018
+        rise=.68*sin(pi*(degrees-25)/130) if 25<=degrees<=155 else 0
+        for z in (.32,.36):
+            verts.append(tuple(inverse @ Vector((radius*cos(a),radius*sin(a),z+rise))))
+    faces=[(2*i,2*i+2,2*i+3,2*i+1) for i in range(steps)]
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces);mesh.update()
+    obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
+    return finish(obj,name,CYAN,root)
+
 # The service beam remains visible only across the two narrow transfer spans.
 annular_band("Deep continuous pressure datum",4.18,4.45,-.22,.13,KEEL)
 annular_band("Inboard service rail",4.22,4.33,.13,.19,MACHINE)
@@ -296,24 +317,39 @@ shipyard=root_at("04 / Open launch district of the orbital city",-130)
 
 # Each built district owns a closed part of the same variable-section band.
 for root,lo,hi in ((refinery,25,75),(station,75,155),
-                   (workshop,-109,-20)):
+                   (workshop,-109,25)):
+    if root==workshop:
+        # Manufacturing opens through the roof without breaking the deep
+        # continuous load-bearing section beneath its work channel.
+        for part_lo,part_hi in ((-109,-68),(-32,25)):
+            profiled_band(root,"Continuous variable-section armored building band",part_lo,part_hi)
+        for part_lo,part_hi in ((-109,-68),(-32,25)):
+            profiled_band(root,"Continuous deep load-bearing underside",part_lo,part_hi,
+                          roof_shift=-.55,inner_shift=-.05,outer_shift=.05,mat=KEEL)
+        profiled_band(root,"Recessed load floor beneath fabrication opening",-68,-32,
+                      roof_shift=-1.18,inner_shift=-.05,outer_shift=.05,mat=KEEL)
+        continue
     profiled_band(root,"Continuous variable-section armored building band",lo,hi)
     profiled_band(root,"Continuous deep load-bearing underside",lo,hi,
                   roof_shift=-.55,inner_shift=-.05,outer_shift=.05,mat=KEEL)
 
 # The dock opens a wide radial bay in the fourth section of the building.
 # Its two curved abutments share the band profile and hold the outward arms.
-for lo,hi in ((-160,-143),(-119,-109)):
+for lo,hi in ((-205,-143),(-119,-109)):
     profiled_band(shipyard,"Dock district curved pressure abutment",lo,hi)
     profiled_band(shipyard,"Dock district deep support",lo,hi,
                   roof_shift=-.52,inner_shift=-.05,outer_shift=.05,mat=KEEL)
 owned_arc(shipyard,"Dock open bay inner transfer floor",-144,-118,4.17,4.68,.18,.34,MACHINE)
+for root,lo,hi in ((shipyard,-205,-143),(shipyard,-119,-109),
+                   (workshop,-109,25),(refinery,25,75),(station,75,155)):
+    profiled_outer_ribbon(root,"Continuous contained outer gallery line",lo,hi)
 
 # Wide, individually angled roof plates articulate the changing band profile.
 # Spaces between them are real service reveals, not a second row of buildings.
 for root,intervals in ((station,((88,102),(106,119),(123,138))),
                        (refinery,((36,47),(52,63))),
-                       (workshop,((-89,-76),(-58,-45),(-41,-29)))):
+                       (workshop,((-99,-86),(-29,-18),(-4,10))),
+                       (shipyard,((-194,-182),(-177,-166)))):
     for lo,hi in intervals:
         profiled_band(root,"Inset long-span roof armor plate",lo,hi,
                       roof_shift=.11,inner_shift=.16,outer_shift=-.14)
@@ -324,22 +360,29 @@ for root,intervals in ((station,((88,102),(106,119),(123,138))),
 owned_arc(station,"Command district observation pressure ribbon",89,140,3.96,4.06,.62,.74,GLASS)
 for a in (95,104,113,122,131):
     owned_arc(station,"Command observation dark mullion",a,a+.7,3.94,4.10,.60,.77,EDGE)
-cyl("Command rotating bearing",(0,-.32,2.22),.43,.20,KEEL,station,10)
-torus("Command bearing cyan collar",(0,-.32,2.36),.30,.035,CYAN,station)
-cone("Command faceted core",(0,-.32,2.50),.27,.15,.26,ARMOR,station,8)
-cyl("Command blue canopy",(0,-.32,2.65),.16,.08,GLASS,station,8)
+cyl("Command rotating bearing",(0,-.32,2.22),.57,.20,KEEL,station,10)
+torus("Command bearing cyan collar",(0,-.32,2.36),.40,.042,CYAN,station)
+cone("Command faceted core",(0,-.32,2.50),.34,.17,.26,ARMOR,station,8)
+cyl("Command blue canopy",(0,-.32,2.65),.19,.08,GLASS,station,8)
 
 # Heat is a working aperture in the band, marked by a low furnace clamp.
-cyl("Contained furnace dark collar",(0,-.32,1.70),.41,.18,EDGE,refinery,12)
-cyl("Contained furnace amber aperture",(0,-.32,1.81),.28,.055,AMBER,refinery,12)
-torus("Furnace retaining ring",(0,-.32,1.85),.34,.055,ARMOR_SIDE,refinery)
+cyl("Contained furnace dark collar",(0,-.32,1.70),.53,.18,EDGE,refinery,12)
+cyl("Contained furnace amber aperture",(0,-.32,1.81),.39,.055,AMBER,refinery,12)
+torus("Furnace retaining ring",(0,-.32,1.85),.46,.060,ARMOR_SIDE,refinery)
 for x in (-.58,-.22,.22,.58):
     box("Heat exchange outer exhaust slit",(x,-.99,.88),(.085,.045,.25),AMBER,refinery,.008)
 
 # Manufacturing uses a large opening cut between two roof plate groups.
 # An overhead crane visibly spans the work void inside the curved band.
-owned_arc(workshop,"Manufacturing open work floor",-64,-42,4.17,5.03,.34,.40,MACHINE)
-for a in (-61,-43):
+owned_arc(workshop,"Manufacturing open work floor",-68,-32,4.17,5.03,.34,.40,MACHINE)
+for a in (-64,-56,-48,-40):
+    owned_arc(workshop,"Amber fabrication transverse working rib",a,a+1.1,
+              4.20,5.02,.42,.51,GOLD)
+owned_arc(workshop,"Manufacturing inner orange service rail",-66,-34,
+          4.16,4.22,.53,.63,AMBER)
+owned_arc(workshop,"Manufacturing outer orange service rail",-66,-34,
+          5.05,5.11,.53,.63,AMBER)
+for a in (-67,-34):
     owned_arc(workshop,"Manufacturing work portal ring",a,a+1.8,4.07,5.19,.37,1.20,ARMOR_SIDE)
 beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,workshop)
 beam("Downward working tool",(.17,0,1.48),(.17,0,.66),.07,.08,EDGE,workshop)

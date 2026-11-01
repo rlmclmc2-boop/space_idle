@@ -110,7 +110,9 @@ func _body_radius() -> float:
 	# The shared orbital structure needs the surrounding space to be part of the
 	# composition. Keep the globe smaller without changing its authored texture.
 	var solid_body := float(appearance.get("emission", 0.0)) == 0.0 and float(appearance.get("radiusScale", 1.0)) <= 1.0
-	var base := minf(size.y * 0.34, size.x * (0.245 if solid_body else 0.235))
+	# The authored solid band reaches farther from its centerline than the
+	# previous short modules. Fit that complete silhouette in the subject area.
+	var base := minf(size.y * (0.28 if solid_body else 0.34), size.x * (0.245 if solid_body else 0.235))
 	var requested := base * clampf(float(appearance.get("radiusScale", 1.0)), 0.08, 1.25)
 	# A compact stellar photosphere remains physically small in the composition,
 	# but needs enough pixels for its limb and field to read beside its own ring.
