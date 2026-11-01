@@ -1,0 +1,90 @@
+[
+  {
+    "key": "equipment",
+    "source": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/equipment/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "388c23754b1281576a1cb42ca7070e741d8557ee",
+    "sha256": "ecd4a23be687af0b8f8086a18a6a11f18b937e1fcde53db923f9c9607d0f0a24"
+  },
+  {
+    "key": "reactor",
+    "source": "966a9132569d52ce9a1e641c1845f69c091a8371",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/reactor/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "388c23754b1281576a1cb42ca7070e741d8557ee",
+    "sha256": "ecd4a23be687af0b8f8086a18a6a11f18b937e1fcde53db923f9c9607d0f0a24"
+  },
+  {
+    "key": "reactor",
+    "source": "966a9132569d52ce9a1e641c1845f69c091a8371",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/reactor/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md",
+    "blob": "8af9edd13591b33f13931879ff96d877d5701618",
+    "sha256": "83d46e097d6e22e27dd4a6c8d2a92ba86f4dc07fff1fd53805fdbdcea2c67e05"
+  },
+  {
+    "key": "host",
+    "source": "b569f0e9d0728e13dc8af798149026cc94f004cf",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/host/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "1fe4cf56c2e8512895abbead3ffb6a1fdfeeb10e",
+    "sha256": "8255949f1b1e6d6193071aab7ff217874a85e55e071cc93c96b46e584c4f8fb3"
+  },
+  {
+    "key": "planet",
+    "source": "f0205036961c3b6566882ae379d8d35f4e30ea76",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/planet/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "388c23754b1281576a1cb42ca7070e741d8557ee",
+    "sha256": "ecd4a23be687af0b8f8086a18a6a11f18b937e1fcde53db923f9c9607d0f0a24"
+  },
+  {
+    "key": "planet",
+    "source": "f0205036961c3b6566882ae379d8d35f4e30ea76",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/planet/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+    "blob": "4278396887bcd8a16032dd5d943be505182acbfc",
+    "sha256": "8c7a77653d1ba429aa47416a65b4855570c769f2fb73f79fd5c4c5856cafe701"
+  },
+  {
+    "key": "planet",
+    "source": "f0205036961c3b6566882ae379d8d35f4e30ea76",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/restore.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/planet/space-battleship/docs/verification/planet-single-side-godot/restore.md",
+    "blob": "70b009561e6c30ecfa2b2cba51864155da307f17",
+    "sha256": "dcd63febe60d592a368cca9d3f5c8e90ad11dbc713429e13b2031d760c47f859"
+  },
+  {
+    "key": "backend",
+    "source": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/backend/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "388c23754b1281576a1cb42ca7070e741d8557ee",
+    "sha256": "ecd4a23be687af0b8f8086a18a6a11f18b937e1fcde53db923f9c9607d0f0a24"
+  },
+  {
+    "key": "cleanup",
+    "source": "91c5946dd54b2702e5dc5958c3e6666569f80509",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/cleanup/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "388c23754b1281576a1cb42ca7070e741d8557ee",
+    "sha256": "ecd4a23be687af0b8f8086a18a6a11f18b937e1fcde53db923f9c9607d0f0a24"
+  },
+  {
+    "key": "cleanup",
+    "source": "91c5946dd54b2702e5dc5958c3e6666569f80509",
+    "path": "space-battleship/docs/maintenance/HANDOFF.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/cleanup/space-battleship/docs/maintenance/HANDOFF.md",
+    "blob": "2d81047efd8601e787ec228d6dd09c8e921999a1",
+    "sha256": "573a9b292b111324232d7f29f015ca1bda825b2272a8e8820631bae0bed53e31"
+  },
+  {
+    "key": "main",
+    "source": "dd8b1f6a72305a7a450e05938a231998e7c3fbc4",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/consumption/original/main/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "388c23754b1281576a1cb42ca7070e741d8557ee",
+    "sha256": "ecd4a23be687af0b8f8086a18a6a11f18b937e1fcde53db923f9c9607d0f0a24"
+  }
+]

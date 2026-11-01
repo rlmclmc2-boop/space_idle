@@ -1,0 +1,41 @@
+{
+  "equipment": {
+    "branch": "art/equipment-materials-main-20261029",
+    "source": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1",
+    "path": "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/HANDOFF.md",
+    "exists": true
+  },
+  "reactor": {
+    "branch": "implement/reactor-centered-godot",
+    "source": "966a9132569d52ce9a1e641c1845f69c091a8371",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md",
+    "exists": true
+  },
+  "host": {
+    "branch": "design/clear-zone-host",
+    "source": "b569f0e9d0728e13dc8af798149026cc94f004cf",
+    "path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/HANDOFF.md",
+    "exists": true
+  },
+  "planet": {
+    "branch": "wip/planet-thread-resume-20261101",
+    "source": "f0205036961c3b6566882ae379d8d35f4e30ea76",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md"
+  },
+  "backend": {
+    "branch": "feat/amount-safe-previews",
+    "source": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8",
+    "path": "space-battleship/docs/HANDOFF.md",
+    "exists": true
+  },
+  "cleanup": {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "91c5946dd54b2702e5dc5958c3e6666569f80509",
+    "path": "space-battleship/docs/maintenance/HANDOFF.md",
+    "exists": true
+  },
+  "main": {
+    "branch": "main",
+    "source": "dd8b1f6a72305a7a450e05938a231998e7c3fbc4"
+  }
+}
