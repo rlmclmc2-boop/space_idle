@@ -6,8 +6,7 @@ const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球�
 const STATES := {"locked": "未达门槛", "building": "施工中", "ready": "待领取", "built": "已领取"}
 const PAUSES := {"ExplorationNotRunning": "探索未运行，施工暂停", "NoExplorer": "缺少探索者，施工暂停", "MissingBuilders": "缺少额外施工人员，施工暂停"}
 const ResourceVisuals := preload("res://src/ui/resource_visuals.gd")
-const CONTROL_MATERIALS := "res://assets/ui/planet/control-materials.png"
-var _material_faces: Dictionary = {}
+const BridgeTheme := preload("res://src/ui/bridge_theme.gd")
 var _host: Callable
 var _planet
 var _crew
@@ -89,17 +88,16 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable, visua
 func _ready() -> void:
 	process_priority = 1
 	theme = _theme()
-	_load_control_materials()
 	_visual = preload("res://scripts/planet_visual.gd").new()
 	_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_visual)
 	for button in [_task_button, _crew_button, _facility_button]:
 		button.toggle_mode = true
 		add_child(button)
-	_paint_button(_task_button, Color("264b58"), Color("31616b"), Color("e6d5ac"), Color("b39a68"), Color("f6efdc"), "tab")
+	_paint_button(_task_button, "tab")
 	for button in [_crew_button, _facility_button]:
-		_paint_button(button, Color("173847"), Color("285464"), Color("e4dcc6"), Color("6f9ba0"), Color("f0ead8"), "tab")
-	_paint_button(world_planet_picker, Color("173847"), Color("285464"), Color("315f6c"), Color("78999c"), Color("eee9d9"), "selector")
+		_paint_button(button, "tab")
+	_paint_button(world_planet_picker)
 	_task_button.pressed.connect(func(): _toggle_section("exploration"))
 	_crew_button.pressed.connect(func(): _toggle_section("crew"))
 	_facility_button.pressed.connect(func(): _toggle_section("facilities"))
@@ -108,8 +106,8 @@ func _ready() -> void:
 	world_planet_picker.item_selected.connect(func(index): select_planet(str(world_planet_picker.get_item_metadata(index))))
 	_stop_button = _action(self, "本次完成后停止", func(): return _planet.set_automatic(_selected_id, false))
 	_cancel_button = _action(self, "立即取消探索", func(): return _cancel.call(_selected_id))
-	_paint_button(_stop_button, Color("173747"), Color("285365"), Color("315f6c"), Color("4b7580"), Color("e8ebdf"))
-	_paint_button(_cancel_button, Color("342f31"), Color("594041"), Color("654848"), Color("9c7264"), Color("f1e3d2"))
+	_paint_button(_stop_button)
+	_paint_button(_cancel_button)
 	for label in [_task_line, _feedback, _wallet]:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(label)
@@ -146,13 +144,8 @@ func _ready() -> void:
 	_progress.show_percentage = false
 	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_drawer)
-	# A stable housing surrounds the header and the variable-height content.
-	# Button glass cannot be stretched down a long drawer without vertical bands.
-	var drawer_face := _skin(Color("203b49"), Color("688184"), 1, 6)
+	var drawer_face := BridgeTheme.operation_plate(13, "dark")
 	drawer_face.set_content_margin_all(13)
-	drawer_face.shadow_color = Color("061824", 0.32)
-	drawer_face.shadow_size = 4
-	drawer_face.shadow_offset = Vector2(1, 2)
 	_drawer.add_theme_stylebox_override("panel", drawer_face)
 	_drawer.add_child(_drawer_box)
 	_drawer.draw.connect(_draw_drawer_trim)
@@ -166,7 +159,7 @@ func _ready() -> void:
 	var close := Button.new()
 	close.text = "收起"
 	close.pressed.connect(func(): _toggle_section(_open_section))
-	_paint_secondary(close, true)
+	_paint_secondary(close)
 	header.add_child(close)
 	_drawer_box.add_child(_drawer_body)
 	_drawer.hide()
@@ -185,37 +178,9 @@ func _theme() -> Theme:
 	var result := preload("res://src/ui/bridge_theme.gd").create()
 	result.default_font_size = 17
 	result.set_color("font_color", "Label", Color("274554"))
-	for type in ["Button", "OptionButton"]:
-		result.set_stylebox("normal", type, _skin(Color("173847"), Color("4d7882")))
-		result.set_stylebox("hover", type, _skin(Color("285464"), Color("8fc6c2"), 2))
-		result.set_stylebox("pressed", type, _skin(Color("e4dcc6"), Color("be9d67"), 2))
-		result.set_stylebox("focus", type, _skin(Color("000000", 0.0), Color("e8c982"), 2))
-		result.set_stylebox("disabled", type, _skin(Color("243743"), Color("4d6269")))
-		for state in ["font_color", "font_hover_color", "font_focus_color"]:
-			result.set_color(state, type, Color("eee9d9"))
-		for state in ["font_pressed_color", "font_hover_pressed_color"]:
-			result.set_color(state, type, Color("173747"))
-		result.set_color("font_disabled_color", type, Color("95a7a8"))
-	var panel := _skin(Color("e6e1d1"), Color("55727a"), 1, 4)
+	var panel := BridgeTheme.operation_plate(13)
 	panel.set_content_margin_all(13)
-	panel.shadow_color = Color("061824", 0.38)
-	panel.shadow_size = 5
-	panel.shadow_offset = Vector2(1, 3)
 	result.set_stylebox("panel", "PanelContainer", panel)
-	var popup := StyleBoxFlat.new()
-	popup.bg_color = Color("143746")
-	popup.border_color = Color("80b9b2")
-	popup.set_border_width_all(1)
-	popup.set_corner_radius_all(7)
-	popup.set_content_margin_all(6)
-	result.set_stylebox("panel", "PopupMenu", popup)
-	var hovered := StyleBoxFlat.new()
-	hovered.bg_color = Color("2a6069")
-	hovered.set_corner_radius_all(4)
-	result.set_stylebox("hover", "PopupMenu", hovered)
-	result.set_font_size("font_size", "PopupMenu", 17)
-	for key in ["font_color", "font_hover_color", "font_accelerator_color"]:
-		result.set_color(key, "PopupMenu", Color("f0eddf"))
 	for state in ["background", "fill"]:
 		var bar := _skin(Color("d6ab6c") if state == "fill" else Color("173747"), Color("325968"), 0, 3)
 		bar.set_content_margin_all(0)
@@ -231,50 +196,19 @@ func _skin(fill: Color, edge: Color, border: int = 1, radius: int = 6) -> StyleB
 	style.set_content_margin_all(8)
 	return style
 
-func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color, visual_role := "") -> void:
-	var role := visual_role if not visual_role.is_empty() else "primary" if normal.r > 0.7 and normal.b < 0.55 else "navy"
-	for state in ["normal", "hover", "pressed"]:
-		var tint: Color
-		if role == "primary":
-			tint = Color(0.82, 0.86, 0.84) if state == "normal" else Color(0.96, 1.0, 0.94) if state == "hover" else Color(0.76, 0.81, 0.78)
-		elif role == "tab":
-			# The native toggle's pressed style is its persistent selected state.
-			# Use the shared cool-face hierarchy: quiet ordinary tabs, warm-lit selection.
-			tint = Color(0.53, 0.63, 0.67) if state == "normal" else Color(0.69, 0.80, 0.82) if state == "hover" else Color(0.91, 0.99, 0.91)
-		elif role == "quiet":
-			tint = Color(0.72, 0.79, 0.82) if state == "normal" else Color(0.86, 0.93, 0.94) if state == "hover" else Color(0.84, 0.91, 0.91)
-		else:
-			tint = Color(0.79, 0.86, 0.88) if state == "normal" else Color(0.94, 1.0, 1.0) if state == "hover" else Color(1.02, 1.06, 1.01)
-		button.add_theme_stylebox_override(state, _material_style("primary" if role == "primary" else "navy", tint))
+func _paint_button(button: Button, role := "secondary") -> void:
+	button.add_theme_font_size_override("font_size", 17)
+	if button is OptionButton:
+		BridgeTheme.apply_operation_select(button)
+	else:
+		BridgeTheme.apply_operation_button(button, "commit" if role == "commit" else "secondary")
 	if role == "tab":
-		button.add_theme_stylebox_override("hover_pressed", _material_style("navy", Color(1.0, 1.05, 0.98)))
-	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c") if role == "primary" else Color("95bfbd"), 1))
-	button.add_theme_stylebox_override("disabled", _material_style("navy", Color(0.62, 0.69, 0.72)))
-	for state in ["font_color", "font_hover_color", "font_focus_color"]:
-		button.add_theme_color_override(state, ink)
-	for state in ["font_pressed_color", "font_hover_pressed_color"]:
-		button.add_theme_color_override(state, Color("173747") if role == "primary" else Color("fff0c6") if role == "tab" else Color("f0edde"))
-	button.add_theme_color_override("font_disabled_color", Color("95a7a8"))
+		# Native toggle owns persistent selection; use the shared selected face.
+		button.add_theme_stylebox_override("pressed", BridgeTheme.operation_button("selected"))
+		button.add_theme_stylebox_override("hover_pressed", BridgeTheme.operation_button("selected_hover"))
 
-func _load_control_materials() -> void:
-	var image: Image = load(CONTROL_MATERIALS).get_image()
-	var regions := {"glass": Rect2i(42, 132, 1366, 256), "primary": Rect2i(42, 472, 1366, 224), "navy": Rect2i(42, 772, 1366, 204)}
-	for id in regions:
-		var face: Image = image.get_region(regions[id])
-		var height := 44 if id.begins_with("glass") else 40
-		face.resize(roundi(face.get_width() * float(height) / face.get_height()), height, Image.INTERPOLATE_LANCZOS)
-		_material_faces[id] = ImageTexture.create_from_image(face)
-
-func _material_style(role: String, tint: Color = Color.WHITE) -> StyleBoxTexture:
-	var style := StyleBoxTexture.new()
-	style.texture = _material_faces[role]
-	style.modulate_color = tint
-	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: style.set_texture_margin(side, 7)
-	style.set_content_margin_all(8)
-	return style
-
-func _paint_secondary(button: Button, quiet := false) -> void:
-	_paint_button(button, Color("1a3e4b"), Color("2b5661"), Color("315f6c"), Color("729296"), Color("eee9d9"), "quiet" if quiet else "selector" if button is OptionButton else "navy")
+func _paint_secondary(button: Button) -> void:
+	_paint_button(button)
 
 func _draw_drawer_trim() -> void:
 	var width := _drawer.size.x
@@ -285,7 +219,7 @@ func _draw_drawer_trim() -> void:
 	_drawer.draw_polygon(
 		PackedVector2Array([Vector2(5, header_bottom), Vector2(width - 5, header_bottom), Vector2(width - 5, height - 11), Vector2(width - 11, height - 5), Vector2(11, height - 5), Vector2(5, height - 11)]),
 		PackedColorArray([Color("e4e3d9"), Color("e4e3d9"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7")]))
-	_drawer.draw_texture_rect(_material_faces.navy, Rect2(3, 3, width - 6, header_bottom - 3), false, Color(0.82, 0.96, 0.96, 0.9))
+	# Header is the common dark housing itself, with no second keycap layer.
 	_drawer.draw_line(Vector2(5, header_bottom + 1), Vector2(width - 5, header_bottom + 1), Color("fff9e8", 0.25), 1.0)
 	_drawer.draw_line(Vector2(11, height - 5), Vector2(width - 11, height - 5), Color("102d3b", 0.42), 1.0)
 
@@ -755,7 +689,7 @@ func _build_crew_detail() -> void:
 		if option.is_empty(): return {"ok": false, "reason": "PlanetBuildingUnavailable"}
 		return _coordinate.call(str(_picker_value(_member_picker)), str(option.kind), str(option.target)))
 	var release := _action(_drawer_body, "撤回本星球人员", func(): return _coordinate.call(str(_picker_value(_member_picker)), "", ""))
-	_paint_button(release, Color("173747"), Color("285365"), Color("315f6c"), Color("4b7580"), Color("e8ebdf"))
+	_paint_button(release)
 	release.disabled = not assigned_here
 	if not assigned_here: release.tooltip_text = "所选船员当前未在本星球任职"
 
@@ -786,7 +720,7 @@ func _action(parent: Control, text: String, action: Callable) -> Button:
 		button.text = text
 		parent.add_child(button)
 		button.pressed.connect(perform)
-	_paint_button(button, Color("c9a364"), Color("e4ba76"), Color("f1d398"), Color("f2d293"), Color("183849"))
+	_paint_button(button, "commit")
 	return button
 
 static func describe_error(reason: String) -> String:
