@@ -93,3 +93,5 @@
 - 当前清晰输送版公共组合 `bf9c52ba`：[reactor-receiver-shared-20261101](reactor-receiver-shared-20261101/README.md)。
 
 - 原图星球同壳候选 `6d8a4dd9`：[planet-v31-front-detail-shared-20261101](planet-v31-front-detail-shared-20261101/README.md)。
+
+- 公共承载结构候选 `ee0e2ff1`：[structural-carrier-20261101](structural-carrier-20261101/README.md)。

@@ -1,0 +1,17 @@
+{
+  "video": "navigation-native-2p4s.mp4",
+  "bytes": 326678,
+  "sha256": "a385a625d5b144e0752a7eea0d9f54cbb5a7dde1b70bc8cd527a96b634295027",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 72,
+  "duration_seconds": 2.4,
+  "parts": [
+    {
+      "path": "navigation-parts/part-000.bin",
+      "bytes": 326678,
+      "sha256": "a385a625d5b144e0752a7eea0d9f54cbb5a7dde1b70bc8cd527a96b634295027"
+    }
+  ]
+}
