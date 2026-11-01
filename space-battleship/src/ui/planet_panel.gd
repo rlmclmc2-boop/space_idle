@@ -248,7 +248,7 @@ func _layout() -> void:
 	_task_line.position = Vector2(22, 168)
 	_task_line.size = Vector2(340, 46 if bool(_snapshot.get("running", false)) else 28)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
-	_feedback.position = Vector2(22, 208)
+	_feedback.position = Vector2(22, _task_line.get_rect().end.y + 10)
 	_feedback.size = Vector2(764, 48)
 	_drawer.size.x = size.x - 44
 	_fit_drawer()
@@ -383,7 +383,9 @@ func _process(dt: float) -> void:
 	if not is_visible_in_tree(): return
 	if _feedback_seconds > 0:
 		_feedback_seconds = maxf(0, _feedback_seconds - dt)
-		if _feedback_seconds == 0: _feedback.text = ""
+		if _feedback_seconds == 0:
+			_feedback.text = ""
+			_layout()
 	_context = _visual_context.call() if _visual_context.is_valid() else {}
 	_update_wallet()
 	if _dirty or _options_dirty:
@@ -527,10 +529,14 @@ func _fit_drawer() -> void:
 	_drawer_scroll.custom_minimum_size.y = minf(260, _drawer_body.get_combined_minimum_size().y)
 	_drawer.size.y = _drawer.get_combined_minimum_size().y
 	_drawer.position = Vector2(22, size.y - 16 - _drawer.size.y)
-	# Preserve width and spend the available height on the model rather than a
-	# permanent empty side column. The dock owns its own bounded scroll area.
-	_visual.position = Vector2(0, 138)
-	_visual.size = Vector2(size.x, maxf(300, _drawer.position.y - 140))
+	# One shared subject region follows the actual status and dock bounds.
+	# The complete globe/ring/building group uses this viewport's common fit;
+	# neither a tab nor a taller detail body nudges an individual building.
+	var subject_top := maxf(_task_line.get_rect().end.y, world_planet_picker.get_rect().end.y) + 24
+	if not _feedback.text.is_empty(): subject_top = maxf(subject_top, _feedback.get_rect().end.y + 16)
+	var subject_bottom := _drawer.position.y - 24
+	_visual.position = Vector2(0, subject_top)
+	_visual.size = Vector2(size.x, maxf(1, subject_bottom - subject_top))
 
 func _build_conquest_detail() -> void:
 	_read_conquest_if_needed()
