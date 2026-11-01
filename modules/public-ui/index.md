@@ -127,3 +127,5 @@
 - 新批准细环星球中间版 `fa502483`：[planet-field-composition-20261101](planet-field-composition-20261101/README.md)。
 
 - 新批准细环星球中间版 `80b7b2ea`：[planet-v54-shared-20261101](planet-v54-shared-20261101/README.md)。
+
+- 新批准细环星球中间版 `c0f19517`：[planet-v56-shared-20261101](planet-v56-shared-20261101/README.md)。

@@ -1,0 +1,401 @@
+{
+  "runtime": "c0f19517b61f3be6b079a267acfaaf68257411e4",
+  "before_runtime": "80b7b2ea",
+  "environment_adapter_blobs": {
+    "space-battleship/scripts/planet_visual.gd": "98e595df88e9b1272125a333d568eb8d5f18492e",
+    "space-battleship/scripts/planet_nebula.gdshader": "14b71e15b23d6aeccb89d80b88140a1e1bdcffaa"
+  },
+  "planet_source": "2293ccd1876c1ab124564f8e5a57bc88578e3846",
+  "reactor_source": "cfcc9a35",
+  "public_carrier": "ee0e2ff1",
+  "planet_same_blobs": {
+    "space-battleship/assets/planets/facilities_v9/auto_explore.glb": "8b63f8fc086f335ebca311e07c27e9387b81976d",
+    "space-battleship/assets/planets/facilities_v9/equipment.glb": "94604c49c7505502ecd58b53808b6daeb384415a",
+    "space-battleship/assets/planets/facilities_v9/refinery.glb": "3cc8c9bc0eb987d2e9ad102d216c912feb0df110",
+    "space-battleship/assets/planets/facilities_v9/shipyard.glb": "fea6eaab7997e9e5e5138af2f757f2bf5d8ca27e",
+    "space-battleship/scripts/planet_facility_scene.gd": "74a53f850091f2e57ff175b709ade665ef491a0c",
+    "space-battleship/scripts/planet_orbital_spine.gd": "146fd5713a49e22b0f7660e84584a3a7bfe96c67",
+    "space-battleship/scripts/rotating_planet.gdshader": "148cf66efbad8a490748330366b54fbbdfceabc2",
+    "space-battleship/assets/planets/painted-v3/cloud-density.png": "37112e48e43820029d9392a1a74460619c637cff",
+    "space-battleship/scripts/planet_spine_opaque.gdshader": "c5725e6b3e4d1b79c68132a61719bf12d07d295d",
+    "space-battleship/assets/planets/backdrop/small_moon.png": "1ac7e88039eab722d6cde22e46662d130e3f2aab",
+    "space-battleship/assets/planets/backdrop/faceted_asteroid.png": "95344890bbf207719e9cae659dfabaf159b48a5e"
+  },
+  "preserved_blobs": {
+    "space-battleship/src/ui/zone_shell.gd": "fc9f760155f88a99a978e7d2b762327f178e9587",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/src/ui/planet_panel.gd": "f3f56ba0f32e0e7953e637e2cf71b09953fc1a8d",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119",
+    "space-battleship/src/ui/reactor_scene.gd": "356dc27f33dfbbb36eeccbfbfe659258e1a79f48",
+    "space-battleship/src/ui/reactor_stage.gd": "378edbc2329d70483d05c5ed7d0d53acfa06499d",
+    "space-battleship/assets/ui/reactor/b01/README.md": "3cf079af5bbcd0a450575fa14830ac23366b049a",
+    "space-battleship/assets/ui/reactor/b01/active-console.png": "6bf84f89db65be52314df81e82b0f87ba99cc1ce",
+    "space-battleship/assets/ui/reactor/b01/active-console.png.import": "7c36ba4f203263625ce5cc0d85f9554253eb2faa",
+    "space-battleship/assets/ui/reactor/b01/control-icons.png": "ad2c2541efd53755049d6f3ab8351c0a6065efd9",
+    "space-battleship/assets/ui/reactor/b01/control-icons.png.import": "d4a14ff4805a3bcfc9c4ee55c4306a67d1d8b4b3",
+    "space-battleship/assets/ui/reactor/b01/effect-mask.png": "21a3d05f95178ef0f4b49034a34c8fdcceba44c9",
+    "space-battleship/assets/ui/reactor/b01/effect-mask.png.import": "9cf0e8df4b713b80391be08b356b155d2ab8717f",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader": "b9a12dc79acb0ed86b4df301e00a9a4000bf5358",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader": "4c7adb8a5817cf6e3b8fa730f794e9d0ff9748cd",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader": "11614cfd5aeebca0e8de631d29db6fca25485123",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json": "dc357adbd9a4b40164e861029ba06de50b6d2e6a",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg": "756f5c4c377f61ee086bad690f73c55b66534fb4",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb": "28e67db5afeb5ea81b7d4f8518f6c843408d91ed",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg": "0cb2849cc13754fbfea1123863c7d028dbbdd8c1",
+    "space-battleship/assets/ui/reactor/b01/faceted-structure-outline.gdshader": "d693c5e23f3af0718939dbe0e00270b84430f250",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader": "5ef743658bd8087b465d1847a72279144a887883",
+    "space-battleship/assets/ui/reactor/b01/generate-controls.py": "2086dd15f68ec2eb3cc228e9a549e52998d457ee",
+    "space-battleship/assets/ui/reactor/b01/generate-effect-mask.py": "c489833036a33391eb3560c854440b5b36417a96",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py": "b7ead6f1b9b56c85d3b960702ea4cec7237e76fa",
+    "space-battleship/assets/ui/reactor/b01/generate_reactor_devices.py": "448eeaaf0316a649ef9747cf6ba93bdb0bf74995",
+    "space-battleship/assets/ui/reactor/b01/idle-console.png": "27d7ee32f66abb1cca374bd03d7680e525996e58",
+    "space-battleship/assets/ui/reactor/b01/idle-console.png.import": "61643b3ae911eaac3179930ef45e940f501e5afe",
+    "space-battleship/assets/ui/reactor/b01/live-material.gdshader": "5b6a69e9113ef44f96d8f06ea8dab22720f5d1cf",
+    "space-battleship/assets/ui/reactor/b01/live-material.gdshader.uid": "812232c5072fff016b32175e264c20683beea9ac",
+    "space-battleship/assets/ui/reactor/b01/locked-active-console.png": "c620842ec1c6328b48e4f3783eeb3592261111cb",
+    "space-battleship/assets/ui/reactor/b01/locked-active-console.png.import": "50b84efbdc3fb7aee494804ff836f8f0c45f8595",
+    "space-battleship/assets/ui/reactor/b01/locked-idle-console.png": "ce6a466fdb43a8550358e42844923f7ad1dec6c8",
+    "space-battleship/assets/ui/reactor/b01/locked-idle-console.png.import": "8d341a3b799e35c0e7059bb75750fe5c4c948470",
+    "space-battleship/assets/ui/reactor/b01/meter-frame.png": "392a1512aae1866664eb761ba97bdbd6f073721b",
+    "space-battleship/assets/ui/reactor/b01/meter-frame.png.import": "c55c9765f467f1f9f27f86ac19d723e462a57e22",
+    "space-battleship/assets/ui/reactor/b01/modular-bay-background.png": "6ada0ad3df84f5ffb7749f1641d07e98f9962815",
+    "space-battleship/assets/ui/reactor/b01/modular-condensation-work.png": "13487c21c1e4bd55c7e102d018e290e058c5212f",
+    "space-battleship/assets/ui/reactor/b01/modular-condensation.png": "c9035ec28c13739a7810ac1714463b47fc242a3d",
+    "space-battleship/assets/ui/reactor/b01/modular-console-compact.png": "98ba714c64171686127c41863ae45b7b9597803e",
+    "space-battleship/assets/ui/reactor/b01/modular-console-four.png": "a1cb58dc7c06e82ef4f8e0e21db3278742b14a52",
+    "space-battleship/assets/ui/reactor/b01/modular-core-clamp-left.png": "370ed166e328f2d7906f050f8c96e36a6146b309",
+    "space-battleship/assets/ui/reactor/b01/modular-core-clamp-right.png": "2437fee6a3b5914a1566b44023e0b6be149d6053",
+    "space-battleship/assets/ui/reactor/b01/modular-core-field.gdshader": "8785791e1683398d73bc4fd0faeef69df0d6bb47",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-00.png": "5b67627bb05d75d982ede30252439140f7b7a248",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-01.png": "41eea76ce9c1eaf34311c379b7925080d3f1cc72",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-02.png": "3067e5c5988c24acb5b6533ff19f097707783500",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-03.png": "abf0aa975aebd4e07b7d07bfb699293232232d93",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-04.png": "d5bc13b76faf032e359d880ddce49fd7c84133b0",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-05.png": "08a3faa8b0ce41c967b4a075ca275cb8ca58ec99",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-06.png": "62170190f74d57995fdcc5124942997bb7b959ee",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-07.png": "0f420ebfc91e7a704927812ceee639d1981dfd7d",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-08.png": "bb553687ea17c81a08e07b8f7883852817ba116e",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-09.png": "126b349be155a059c9d5cb685e2c688a7d98a837",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-10.png": "4b8c9facd6bed8f3fcfdd141908306939c743578",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-front-11.png": "4f4054f673cd5a6fff3753979fe3e90bab415b97",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-00.png": "8effba612e22821b528f2fa9e6089aee350b57f7",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-01.png": "76476df998f93d492e5581d0571e42022f3d080a",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-02.png": "21d96fa5c349285408aa66e1bbe603afdd2fc4d4",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-03.png": "f680906ef6d125d201174d3c630a4159acdd666e",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-04.png": "4093614c811461072de8f5b553b2cc672b98a353",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-05.png": "7e184ad579d1a3009ab64d77122005d43d948a52",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-06.png": "f9a8502ff59c8385eb3ceda1af4f21cd93079f19",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-07.png": "345942ba307c2729f5e3fea437660de58948b84a",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-08.png": "7b257c1428aa673b89a69123773cfba5ceda2e05",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-09.png": "d8f5844253bcb8dd4f32c6ba0029495fdcbc7452",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-10.png": "df117ef29bcbe5759cae67906ef7c37f46f708f5",
+    "space-battleship/assets/ui/reactor/b01/modular-core-gimbal-rear-11.png": "1d65f8b984b0e1cbc4179d3ada2c3dbb32c42446",
+    "space-battleship/assets/ui/reactor/b01/modular-core-work.png": "802513d6d28c79ba36ee8044da06a1e98d4f1dd9",
+    "space-battleship/assets/ui/reactor/b01/modular-core.png": "35712feed4c1174a72cbe992f401f96ee431e04b",
+    "space-battleship/assets/ui/reactor/b01/modular-defence-work.png": "496f10abe4542a16b0ffbe3875b564e836835230",
+    "space-battleship/assets/ui/reactor/b01/modular-defence.png": "df5947974ab3f3b77daf9323a7d6b83874bec8e0",
+    "space-battleship/assets/ui/reactor/b01/modular-module-work.gdshader": "bb0d827aeff14e4258e562bdb9423f344ae16f72",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-condensation-front.png": "e5f6f7476e44de82f71527e6c73044edc2403f6b",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-condensation-insert.png": "c4c309f9b7c78152a5802aed514344e0ed5eff1f",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-condensation-shell.png": "38748537d28f5956e708dde0e774a084e9b1c9c0",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-defence-front.png": "e2999e1c050cdbc6eee782756a0659374b377740",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-defence-insert.png": "0030c3e14c6cbea91a058cd3012f591a72abb49f",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-defence-shell.png": "36ce213d2a7046321b074ca3dba6e94aa08a57f1",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-lumen.gdshader": "9a8ebde17cf8b2be3e3a79fbdea4e92e592a4296",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-smelting-front.png": "a5db8b096917d6b7ee11a0f778880ece44924107",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-smelting-insert.png": "97bd6841ded30fcf2d8c94219c8c738ff71c1c9c",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-smelting-shell.png": "a038906d3914facb07416ae412afe1097e7a42a3",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-weapons-front.png": "2efc5933ba4447f16ec7ed9468ed6f6eda666510",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-weapons-insert.png": "fec08c97b91005bd50b65486aa9725659bbaaff9",
+    "space-battleship/assets/ui/reactor/b01/modular-pipe-weapons-shell.png": "de84645ca31bd2c4d5cb464663aaf65d89412685",
+    "space-battleship/assets/ui/reactor/b01/modular-shield-front-glow.gdshader": "0a79a349f1b5c551fbe94113963fd4e8065ffd38",
+    "space-battleship/assets/ui/reactor/b01/modular-smelting-work.png": "d905d9d7259d37f0cf51c5e268b997f51ca2bc6b",
+    "space-battleship/assets/ui/reactor/b01/modular-smelting.png": "102334bd5ffcfcd8fc274cddda1182d6fb2724de",
+    "space-battleship/assets/ui/reactor/b01/modular-weapons-work.png": "a154a0fbee334fb3854221bc5eb50138ff419846",
+    "space-battleship/assets/ui/reactor/b01/modular-weapons.png": "1f8ce0137853dc411b9344a308f71ef38f7ee21e",
+    "space-battleship/assets/ui/reactor/b01/module-effect-mask.png": "80f139d9f877fd4efb36401f4778daa9558fa8ff",
+    "space-battleship/assets/ui/reactor/b01/module-effect-mask.png.import": "3fe053e981986ad51018d5f69c4ac9ad3bf14ff7",
+    "space-battleship/assets/ui/reactor/b01/module-mask.png": "b90c4f908da7c64c35a57f5a7bc21c4ed7175c94",
+    "space-battleship/assets/ui/reactor/b01/module-mask.png.import": "65a3565227c9d8fe138a19687839b5c1b1415e97",
+    "space-battleship/assets/ui/reactor/b01/one-active-console.png": "7eb8d141ca4130c45e79785c0cc7332d3befc5a4",
+    "space-battleship/assets/ui/reactor/b01/one-active-console.png.import": "488a06757fae68b1bef2df63921d13d8440192a2",
+    "space-battleship/assets/ui/reactor/b01/one-idle-console.png": "57a75560b23b8c24be81b72da9a2904c8c78c756",
+    "space-battleship/assets/ui/reactor/b01/one-idle-console.png.import": "1f72272933d3ab42bc7f79a43673d30b75960394",
+    "space-battleship/assets/ui/reactor/b01/pipe-effect-mask.png": "c6b2804651de7d8070fead4b8d92d2db241afe72",
+    "space-battleship/assets/ui/reactor/b01/pipe-effect-mask.png.import": "aa9c1416a54aa7feedee51eabf185026e20e4e65",
+    "space-battleship/assets/ui/reactor/b01/pipe-mask.png": "a9930b74ba2ca99380e9869f3e8a0b060b561803",
+    "space-battleship/assets/ui/reactor/b01/pipe-mask.png.import": "d5e1b945e6de5a2cafc404abdfd897c85ca09c84",
+    "space-battleship/assets/ui/reactor/b01/r6-condensation-work.png": "47b8e2f296af5e80642b26c0b9a2300f1f5bd206",
+    "space-battleship/assets/ui/reactor/b01/r6-condensation.png": "34ecaa9f08c354ac9d590e1b7787cb737c845637",
+    "space-battleship/assets/ui/reactor/b01/r6-defence-front.png": "aa81aefddffd54b66fb2a3fe3dc0e1bf607a182b",
+    "space-battleship/assets/ui/reactor/b01/r6-defence-work.png": "a16c10f40b2a135cd450a34c638d189ca22fb7fd",
+    "space-battleship/assets/ui/reactor/b01/r6-defence.png": "42192e873f6a3b8869042068c8c67f2d6d6a2265",
+    "space-battleship/assets/ui/reactor/b01/r6-smelting-work.png": "1ac5f361237bedf344226a3efef33fdaaf836013",
+    "space-battleship/assets/ui/reactor/b01/r6-smelting.png": "a0f2e8e9e98697428551f17fb65ab7f054f42b0a",
+    "space-battleship/assets/ui/reactor/b01/r6-weapons-work.png": "ed310f4e77539832487623ee058ea6bfb9fd8a62",
+    "space-battleship/assets/ui/reactor/b01/r6-weapons.png": "b26b87621c032472f9fff9b4e08b3860cfc82583",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json": "198fcd42ace309588cc861b555d87479abba94a1",
+    "space-battleship/assets/ui/reactor/b01/row-instrument.png": "575287bf38f17ce3f2767f279568bef314b5d9cd",
+    "space-battleship/assets/ui/reactor/b01/row-instrument.png.import": "2d013a987137c4ec2765665b8d15b4b2b8bc8216",
+    "space-battleship/assets/ui/reactor/b01/slider-channel.png": "09ec8932578bc52d350545be4848ffa2f69b0085",
+    "space-battleship/assets/ui/reactor/b01/slider-channel.png.import": "b9075986dfd00ff63f5bf2001472fcb32b7d5078",
+    "space-battleship/assets/ui/reactor/b01/slider-glass-fill.png": "49ad3bfe644153938f40deae69f22338eb50a6ed",
+    "space-battleship/assets/ui/reactor/b01/slider-glass-fill.png.import": "d5f744d7037580a5c3fdfaf9fca4c3a09dbfdaf4",
+    "space-battleship/assets/ui/reactor/b01/slider-knob.png": "83b6cd828c3ede93c8d608ff077cee7f86d3ac13",
+    "space-battleship/assets/ui/reactor/b01/slider-knob.png.import": "4e7f7eba333f3ff0ef8fa15e4addc8c8d364805b",
+    "space-battleship/assets/ui/reactor/b01/slider-shell.png": "5cd2a3308fcb67cc9d92116fc6182c8f63eadcd4",
+    "space-battleship/assets/ui/reactor/b01/slider-shell.png.import": "f8c2754e59131832fcc3155e3a57ad21eaabc4c5",
+    "space-battleship/assets/ui/reactor/b01/two-active-console.png": "c883a52691d44ebf40406ad135e57d3cbe9da3ff",
+    "space-battleship/assets/ui/reactor/b01/two-active-console.png.import": "6cbf65d8acd16ae0193540644e876ba303cd26ef",
+    "space-battleship/assets/ui/reactor/b01/two-idle-console.png": "e9213094a95a403345b8cfdcbc8ffb46c57255f8",
+    "space-battleship/assets/ui/reactor/b01/two-idle-console.png.import": "76ca9c1a15f76ee6800edf6c6430f01454d41eb3"
+  },
+  "approved_reference": "032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/planet-ring.png",
+  "host_adaptation": {
+    "planet_visual": "source center offset preserved; solid body/group radius min(height*0.21,width*0.135), replacing source0.27/0.237; same group scale for globe/rail/nodes",
+    "planet_panel": "shared safe region and UI/Owner fixes retained; set existing environment rectangle to module y65..900 independently from subject viewport"
+  },
+  "media": [
+    {
+      "path": "planet-conquest-expanded.png",
+      "bytes": 918198,
+      "sha256": "0e86d5de1ac3ca9b125313ae06156b29ce85e6e16a19ba0fb10c51c4895962bd"
+    },
+    {
+      "path": "planet-conquest-expanded.jpg",
+      "bytes": 446086,
+      "sha256": "74cf39eadb7295284d90e3652a74119ae2eec926d5aba73cb6fe0a702035bbdc"
+    },
+    {
+      "path": "planet-crew.png",
+      "bytes": 936615,
+      "sha256": "8aaa24d1a426a0f7ad85372d43139253b62900db307fcb35641ca75059059270"
+    },
+    {
+      "path": "planet-crew.jpg",
+      "bytes": 461089,
+      "sha256": "411531003cd79720f0efc63db5bcb145dff6a266764db976b6eb02f48a62b3ee"
+    },
+    {
+      "path": "planet-facilities.png",
+      "bytes": 989825,
+      "sha256": "e06fab1508b2a9701c3a9a4aa2735c17470f44491049e28b2f655b38c22d7fe4"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 472273,
+      "sha256": "d76f62b4216dc80c35399c6b187a9b964ed271a72387f98f47ea48c049a5c64e"
+    },
+    {
+      "path": "planet-overview-after-motion.png",
+      "bytes": 1068329,
+      "sha256": "006a364e026eef43cede455a465f5f133e8b2a11bd8bf5c6545e0f5ced85c1e4"
+    },
+    {
+      "path": "planet-overview-after-motion.jpg",
+      "bytes": 474975,
+      "sha256": "8d0961ec016dced684ca235e59f809638375866ca7afde00cd1c7653cd78e631"
+    },
+    {
+      "path": "planet-overview.png",
+      "bytes": 1068902,
+      "sha256": "cfba97ec3fe73992d10477934697a3863ff452ff953b1cd3613bef643ef5b0b3"
+    },
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 475142,
+      "sha256": "013c95392d994540c89d782188cfccbc4e331f273f3593397fe5c36c641ba64f"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 4563,
+      "sha256": "407b9fbf5c306020a5ec7ad11d5f23979c4aa2b0d24f877431bc3969ec0dd93e"
+    },
+    {
+      "path": "run.log",
+      "bytes": 1059,
+      "sha256": "3cbadf390bb83d4a526935ba4eaf6e4b8eb4d7915fc99daed5ad410231b29906"
+    },
+    {
+      "path": "import.log",
+      "bytes": 4352,
+      "sha256": "44fd132944262b3d5b37629e2fec96e2e6c9def75ea18baade8b2b464c2ae126"
+    },
+    {
+      "path": "closed-movie-segment.json",
+      "bytes": 200,
+      "sha256": "2202763d501362b3a05a647317d50f74bdc1e61ed6b534c62f99abbf8a033f31"
+    },
+    {
+      "path": "movie-segment.json",
+      "bytes": 188,
+      "sha256": "72870f4fb43326d75c644a59a07aeb475c91ef66a231ac60457f35306eff78e1"
+    },
+    {
+      "path": "planet-closed-1x-6s.mp4",
+      "bytes": 1765029,
+      "sha256": "618ef5f9af828f3b8ced0ce9bf4308d9105030dc14dad63e1557ecab9776e331"
+    },
+    {
+      "path": "planet-facilities-1x-6s.mp4",
+      "bytes": 1407576,
+      "sha256": "99a09c3d41992a0ce63986a3c9e1fe2269aeef142b68d0a1d48e97c1d23d1293"
+    },
+    {
+      "path": "closed-video-parts.json",
+      "bytes": 732,
+      "sha256": "c909f3e28da4cbd8bef6c1216879c4402c1d87d033e875b9ca21927c7b255ad1"
+    },
+    {
+      "path": "facilities-video-parts.json",
+      "bytes": 747,
+      "sha256": "a23ec1a0908e7eddd8d22faea312130bc7f85e1ae2f8c6ef5d5092ffd95b2505"
+    },
+    {
+      "path": "author-review.md",
+      "bytes": 2871,
+      "sha256": "c079bd2bd845ea124c012381890743636f1b71891482de93cb35adbfc66c6a5a"
+    },
+    {
+      "path": "closed-review-6.jpg",
+      "bytes": 458472,
+      "sha256": "44c35df27ed4e3e6fa99edef9ca2edc0528982faf1dc7542516a8aa39c85bac9"
+    },
+    {
+      "path": "closed-review-5.jpg",
+      "bytes": 458328,
+      "sha256": "3192aea95c798a7ca2ded5249b3e70b85a4957ddfe702ffad85c9017d849bb10"
+    },
+    {
+      "path": "closed-review-4.jpg",
+      "bytes": 457874,
+      "sha256": "e68aa80685c072db44277e566ad5f4e766645576936f0ef0cf6a53539e286f56"
+    },
+    {
+      "path": "closed-review-3.jpg",
+      "bytes": 458221,
+      "sha256": "90bba8347147fd0c5cb59aae3f0da5b45452be375fbe62fc6dde6410fe5ab653"
+    },
+    {
+      "path": "closed-review-2.jpg",
+      "bytes": 458733,
+      "sha256": "a223bc491eeb7a543a67602c57411ed7f449a8111c473ae7430fe20bdd78d201"
+    },
+    {
+      "path": "closed-review-1.jpg",
+      "bytes": 459148,
+      "sha256": "6f6d48e25d128c3e6bf8ebc8205d0b513544a69fe9aa3883b956ebe1a7cd3296"
+    },
+    {
+      "path": "closed-parts/part-002.bin",
+      "bytes": 454309,
+      "sha256": "3b30edc15dcc5970b4a7d2fa6b5db37ca3988b85d8108a9f7ef8f7b77a18b69c"
+    },
+    {
+      "path": "closed-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "f4c4590ce18959c78a090970d8c151cb5d3a2068ce209936c4ed1bc8754dcc18"
+    },
+    {
+      "path": "closed-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "26fa7064dce60ea75950b35c544a7524928245c24742dc736100356149dec9ee"
+    },
+    {
+      "path": "facilities-review-6.jpg",
+      "bytes": 475650,
+      "sha256": "93a6da2d67d8f6735fb91832be81e2a76592de1b77b8415447f3769957132810"
+    },
+    {
+      "path": "facilities-review-5.jpg",
+      "bytes": 475849,
+      "sha256": "d9c2f337b35fe8a6bbeeb6b2cd2ce70f544104002bddc51dde188c5beaf2e824"
+    },
+    {
+      "path": "facilities-review-4.jpg",
+      "bytes": 476011,
+      "sha256": "f81fbc21c9c414e77246d632b30a8c8be4a146785344b63fc8c057966152a958"
+    },
+    {
+      "path": "facilities-review-3.jpg",
+      "bytes": 475011,
+      "sha256": "8f0442dc351cdb4270412288634f1f2e57c1ab1558e0415c495c1e34e535d05f"
+    },
+    {
+      "path": "facilities-review-2.jpg",
+      "bytes": 474937,
+      "sha256": "9b48b74a03232c200009502ca377c3e2c093da1d4fab3537eb33c57980082222"
+    },
+    {
+      "path": "facilities-review-1.jpg",
+      "bytes": 474925,
+      "sha256": "f59cf69afc1008e7bc3dcfed47be88910785edcfef44d1a02ed87a530da3e130"
+    },
+    {
+      "path": "facilities-parts/part-002.bin",
+      "bytes": 96856,
+      "sha256": "dc4d509f7adad193f5c11eb08872e8a73c3998ae76869e260da8461e836d5a02"
+    },
+    {
+      "path": "facilities-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "2be247b15a3e1d4eb3babc8ef1c5ddd6a30b300cb554b9e413458d8fb99d79ec"
+    },
+    {
+      "path": "facilities-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "a67a8b02dad2ff53a9b148eb31d7cd2a6813a109e2cb031a60d2e6b8631b2fd5"
+    },
+    {
+      "path": "approved-reference.jpg",
+      "bytes": 763886,
+      "sha256": "e251cd789083cd06bdb52ccca5480138ddcacc29e72a56dee35d00d5307ee616"
+    },
+    {
+      "path": "approved-vs-game-subject.jpg",
+      "bytes": 394316,
+      "sha256": "f3cb333e7334e8e7ff2461d26b322d970092a04b800b63c97111f58fb37f5cbe"
+    },
+    {
+      "path": "native-surfaces-comparison.jpg",
+      "bytes": 111597,
+      "sha256": "465404306151ace0aa37bfa3951b51405a96a80e9b3f75432aaced21f2f42303"
+    },
+    {
+      "path": "before-planet-overview.jpg",
+      "bytes": 360212,
+      "sha256": "8aa7dcaca59d25c0a6908bed21e705d825905efca20b39938f3f56d6fce63130"
+    },
+    {
+      "path": "before-planet-facilities.jpg",
+      "bytes": 362657,
+      "sha256": "b25a3494a46849d3269cfdc11a38a2113965463f7d0cf80af5d9a3a596369af9"
+    },
+    {
+      "path": "closed-half-second-review.jpg",
+      "bytes": 306353,
+      "sha256": "470669939f0427180ac92e0b3298693832dabca080eb45d0bbd2dbeded78937c"
+    },
+    {
+      "path": "closed-native-edge-sequence.jpg",
+      "bytes": 810624,
+      "sha256": "eb0f876f4ac4b063dcaa28f3ce29f2ee345d19e97e38903ffb6e7ac36765fa0f"
+    },
+    {
+      "path": "facilities-half-second-review.jpg",
+      "bytes": 315038,
+      "sha256": "d29353c3c40b8e2383ff9cb466c37f3fcffa339ec540736fe879b79c50d3baf3"
+    },
+    {
+      "path": "facilities-native-edge-sequence.jpg",
+      "bytes": 785438,
+      "sha256": "bc1cbd709efc15b151be690f2fd43ca4e63e5331feb51b41423fe4c6f86e66c1"
+    },
+    {
+      "path": "host-environment.patch",
+      "bytes": 5613,
+      "sha256": "e8f76bf2f9424cb98ff963466e995732397840a8da46e5a7fc530d5facbddbe9"
+    }
+  ]
+}

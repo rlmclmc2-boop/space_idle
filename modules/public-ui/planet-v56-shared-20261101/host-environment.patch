@@ -1,0 +1,106 @@
+diff --git a/space-battleship/scripts/planet_nebula.gdshader b/space-battleship/scripts/planet_nebula.gdshader
+index cff55157..14b71e15 100644
+--- a/space-battleship/scripts/planet_nebula.gdshader
++++ b/space-battleship/scripts/planet_nebula.gdshader
+@@ -1,6 +1,11 @@
+ shader_type canvas_item;
+ render_mode unshaded;
+ 
++// The enclosing page can retain continuous coverage without promoting the
++// original corner gas to a second foreground. Defaults preserve source use.
++uniform float field_opacity : hint_range(0.0, 1.0) = 1.0;
++uniform float upper_recession : hint_range(0.0, 1.0) = 0.0;
++
+ // Static layered blue gas clouds around the orbit's open corners. Their
+ // placement stays fixed while the planet and its structures move separately.
+ float hash21(vec2 p) {
+@@ -50,5 +55,8 @@ void fragment() {
+     hue = mix(hue, vec3(0.25, 0.75, 1.0), max(blue_vein, bright_wisp) * 0.46);
+     hue += vec3(0.015, 0.055, 0.09) * smoothstep(0.58, 0.80, fine_dust) * blue_vein;
+     hue = mix(hue, vec3(0.45, 0.88, 1.0), blue_star);
+-    COLOR = vec4(hue, min(max(cloud * 0.86, blue_star * 0.84), 0.89));
++    float page_weight = mix(1.0,
++        0.30 + 0.70 * smoothstep(0.15, 0.80, UV.y), upper_recession);
++    COLOR = vec4(hue,
++        min(max(cloud * 0.86, blue_star * 0.84), 0.89) * field_opacity * page_weight);
+ }
+diff --git a/space-battleship/scripts/planet_visual.gd b/space-battleship/scripts/planet_visual.gd
+index b38b6c50..98e595df 100644
+--- a/space-battleship/scripts/planet_visual.gd
++++ b/space-battleship/scripts/planet_visual.gd
+@@ -7,6 +7,8 @@ const PlanetSphere := preload("res://scripts/rotating_planet.gd")
+ const STELLAR_MAIN := preload("res://assets/planets/stellar-main-granulation.png")
+ const STELLAR_RED := preload("res://assets/planets/stellar-red-convection.png")
+ const BACKDROP := preload("res://assets/planets/toon/exploration-field.svg")
++const SMALL_MOON := preload("res://assets/planets/backdrop/small_moon.png")
++const FACETED_ASTEROID := preload("res://assets/planets/backdrop/faceted_asteroid.png")
+ const FACILITY_COLORS := {
+ 	"scout_satellite": Color("8ce9ff"),
+ 	"space_station": Color("ffd89b"),
+@@ -142,6 +144,12 @@ func _layout_environment() -> void:
+ 	background_layer.size = rect.size
+ 	nebula_layer.position = rect.position
+ 	nebula_layer.size = rect.size
++	# Full-module coverage needs its own exposure: the authored corner clouds
++	# must recede behind both the fitted subject and the controls above it.
++	var composed_field := environment_rect.has_area() and planet_id == "1"
++	if nebula_layer.material is ShaderMaterial:
++		nebula_layer.material.set_shader_parameter("field_opacity", 0.32 if composed_field else 1.0)
++		nebula_layer.material.set_shader_parameter("upper_recession", 0.80 if composed_field else 0.0)
+ 	background_layer.queue_redraw()
+ 
+ func _body_radius() -> float:
+@@ -353,14 +361,17 @@ func advance(dt: float, paused: bool) -> void:
+ func _draw_background() -> void:
+ 	if icon_mode:return
+ 	# Static field, separate from the owner-driven sphere and orbital motion.
+-	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, background_layer.size), false)
++	var composed_field := environment_rect.has_area() and planet_id == "1"
++	var sky_tint := Color(0.52, 0.62, 0.76, 1.0) if composed_field else Color.WHITE
++	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, background_layer.size), false, sky_tint)
+ 	if float(appearance.get("emission", 0.0)) == 0.0:
+ 		# Wide, restrained blue cloud light supports the approved deep-space
+ 		# composition while leaving the planet and both rail arcs unobscured.
+ 		for anchor in [Vector2(-0.22, -0.37), Vector2(0.58, -0.35),
+ 				Vector2(-0.29, 0.52), Vector2(0.61, 0.54)]:
+ 			background_layer.draw_texture_rect(nebula_glow,
+-				Rect2(anchor * background_layer.size, background_layer.size * Vector2(0.72, 0.84)), false)
++				Rect2(anchor * background_layer.size, background_layer.size * Vector2(0.72, 0.84)), false,
++				Color(1.0, 1.0, 1.0, 0.32) if composed_field else Color.WHITE)
+ 	var stars := RandomNumberGenerator.new()
+ 	stars.seed = 178
+ 	for index in (380 if planet_id == "1" else 100):
+@@ -373,6 +384,7 @@ func _draw_background() -> void:
+ 
+ func _draw_back_orbits() -> void:
+ 	if icon_mode:return
++	if planet_id == "1": _draw_reference_bodies()
+ 	var center := _scene_center()
+ 	var radius := _orbit_radius()
+ 	for ring in ([1] if active else []):
+@@ -383,6 +395,25 @@ func _draw_back_orbits() -> void:
+ 	if active and not _scout_in_front():_draw_scout(center, radius, orbit_back_layer)
+ 	if not active and departure_age < 1.0 and not departure_front:_draw_departure(orbit_back_layer)
+ 
++func _draw_reference_bodies() -> void:
++	# Small fixed background bodies echo the approved composition. They are drawn
++	# behind the orbit and globe, outside the owned facility silhouettes.
++	var moon_center := Vector2(size.x * 0.10, size.y * 0.13)
++	var moon_radius := minf(size.x, size.y) * 0.034
++	var moon_size := Vector2.ONE * moon_radius * 2.8
++	orbit_back_layer.draw_texture_rect(SMALL_MOON,
++		Rect2(moon_center - moon_size * 0.5, moon_size), false)
++	for body in [Vector3(0.018, 0.73, 0.014),
++			Vector3(0.026, 0.97, 0.050),
++			Vector3(0.125, 0.91, 0.026),
++			Vector3(0.205, 0.98, 0.012),
++			Vector3(0.92, 0.95, 0.018)]:
++		var center := Vector2(body.x * size.x, body.y * size.y)
++		var radius: float = minf(size.x, size.y) * float(body.z)
++		var rock_size := Vector2.ONE * radius * 2.8
++		orbit_back_layer.draw_texture_rect(FACETED_ASTEROID,
++			Rect2(center - rock_size * 0.5, rock_size), false)
++
+ func _draw() -> void:
+ 	if icon_mode:return
+ 	draw_calls += 1
