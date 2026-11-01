@@ -1,0 +1,274 @@
+{
+  "runtime_source": "e3774ee5fddc5b52667a8634c84db8b37e97827d",
+  "planet_fixed_source": "cb0b96f86fe75fe13a76a3e4ab14373ff7fe6916",
+  "incoming_files": [
+    {
+      "path": "space-battleship/assets/planets/facilities_v9/auto_explore.glb",
+      "source_blob": "6ebdb730851d01aa34fe3dc9f73c9d028c963cf3",
+      "runtime_blob": "6ebdb730851d01aa34fe3dc9f73c9d028c963cf3",
+      "exact": true
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v9/equipment.glb",
+      "source_blob": "dcc0276b1423b1d403ddb2e66bb18e98b3096fd0",
+      "runtime_blob": "dcc0276b1423b1d403ddb2e66bb18e98b3096fd0",
+      "exact": true
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v9/refinery.glb",
+      "source_blob": "2cbb59abf5df3defff59eb0f4fe8fee70dbc5df4",
+      "runtime_blob": "2cbb59abf5df3defff59eb0f4fe8fee70dbc5df4",
+      "exact": true
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v9/shipyard.glb",
+      "source_blob": "7627f316e203c117e41ed5d776d8e067acabb355",
+      "runtime_blob": "7627f316e203c117e41ed5d776d8e067acabb355",
+      "exact": true
+    },
+    {
+      "path": "space-battleship/scripts/planet_facility_scene.gd",
+      "source_blob": "8bf22734f38da0bc708e31e9afa118c4c1f9fe88",
+      "runtime_blob": "8bf22734f38da0bc708e31e9afa118c4c1f9fe88",
+      "exact": true
+    },
+    {
+      "path": "space-battleship/scripts/planet_orbital_spine.gd",
+      "source_blob": "e3f9ad75ddc52148397da13840563790465a090d",
+      "runtime_blob": "e3f9ad75ddc52148397da13840563790465a090d",
+      "exact": true
+    },
+    {
+      "path": "space-battleship/scripts/planet_visual.gd",
+      "source_blob": "7e4a242cd1de5916dd11a7b4d244f0b9492a8788",
+      "runtime_blob": "a0d1c6a10903857fefc97195a35bbf973002f897",
+      "exact": false
+    }
+  ],
+  "host_adaptation": "closed/open subject safe region and solid-body perspective width fit; see host-fit.patch",
+  "preserved_blobs": {
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/src/ui/zone_shell.gd": "456e502ca77aadf44f7775359a6f0bb9af683a41",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119",
+    "space-battleship/src/ui/reactor_scene.gd": "e1dd4d4738440c0ab037cdae9bc93645e0adc703",
+    "space-battleship/src/ui/reactor_stage.gd": "bbc4a7045abcb449d0c852151499f578094925fa"
+  },
+  "original_designs": [
+    {
+      "git": "8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png",
+      "png_sha256": "1b081d6b86bdc3d0e7125a258e834412d002a166941cc698af8f41f268c98fad",
+      "same_size_jpeg": "original-clearance.jpg"
+    },
+    {
+      "git": "1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png",
+      "png_sha256": "ada4ea033c1929d9ca17d7c551f32991762501b96ff2a2ab5f28174dc1a4cbe3",
+      "same_size_jpeg": "original-stages.jpg"
+    }
+  ],
+  "state": "受控星球1/探索240/征服/四设施已建",
+  "capture": "业务快照暂停，显示动画1×；MovieMaker30fps离线，两段各180连续帧",
+  "author_conclusion": "接入及显示适配完成；原图比例、建筑带截面及功能主节点体量继续制作",
+  "media": [
+    {
+      "path": "planet-overview.png",
+      "bytes": 959252,
+      "sha256": "6b686160e5e070cb5317c28955093574de07f98bb940de2d8761afe56c079789"
+    },
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 448285,
+      "sha256": "5d157f6220e73aabd039ed2d0fd9da36ae563dc1ad88bb9aef7d4c625cacde59"
+    },
+    {
+      "path": "planet-overview-after-motion.png",
+      "bytes": 957217,
+      "sha256": "e9ac3130a588c789bb4415d534c87263aa246ee55e30a04745f603be14769c2c"
+    },
+    {
+      "path": "planet-overview-after-motion.jpg",
+      "bytes": 448389,
+      "sha256": "e35da100d254a05a4da437b978c0991ad2a9f6e1867a7affadd1b14107ada4b4"
+    },
+    {
+      "path": "planet-facilities.png",
+      "bytes": 883703,
+      "sha256": "8c99506972d1406edaae5c07c789edb762747a77226d252ba7fde7299cbc15e7"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 437420,
+      "sha256": "bb287d701516a22b484ed8ff7a279d1aa1995dfa2522f5ba28576c8c82f82ab7"
+    },
+    {
+      "path": "planet-crew.png",
+      "bytes": 839594,
+      "sha256": "4c310744eaf5488c5fc22e82ac9771020f57a694f8afa3732df746073a4d2a02"
+    },
+    {
+      "path": "planet-crew.jpg",
+      "bytes": 427923,
+      "sha256": "bca054c1d13e957366a0ca3af5fba8ffb31203ce09e0201d7bcdd8e1e80670c8"
+    },
+    {
+      "path": "planet-conquest-expanded.png",
+      "bytes": 826044,
+      "sha256": "b2a9dde5fe277c829bb16177275709e4efefe60a4abe63dc11b322341685d5d3"
+    },
+    {
+      "path": "planet-conquest-expanded.jpg",
+      "bytes": 414560,
+      "sha256": "0fa2f45cb2b6b681b08b4e18afd06f433c5ca846b8a3eb27e45468c59fa620da"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 4564,
+      "sha256": "e4229fc0de02f424ccaab5feb2bb566929cf1aff5a039d64dc70baec7c8ff9f2"
+    },
+    {
+      "path": "run.log",
+      "bytes": 1058,
+      "sha256": "acb2afc3fa1f232463e8df742c983b6338ad0aa8ba44ffc19ddb2b821eacc936"
+    },
+    {
+      "path": "movie-segment.json",
+      "bytes": 188,
+      "sha256": "72870f4fb43326d75c644a59a07aeb475c91ef66a231ac60457f35306eff78e1"
+    },
+    {
+      "path": "closed-movie-segment.json",
+      "bytes": 200,
+      "sha256": "2202763d501362b3a05a647317d50f74bdc1e61ed6b534c62f99abbf8a033f31"
+    },
+    {
+      "path": "facilities-video-parts.json",
+      "bytes": 582,
+      "sha256": "0a7fe76314336143a1625f1b97776af12a06557885527d8c1df8807df168cafe"
+    },
+    {
+      "path": "closed-video-parts.json",
+      "bytes": 732,
+      "sha256": "ac30fc99991ee38d9fd0ed263994bc65109417f56625c1a307d203ee2a2a39cd"
+    },
+    {
+      "path": "planet-facilities-1x-6s.mp4",
+      "bytes": 1065106,
+      "sha256": "696455c5c97ed6e9a1c27758f96e61085b2fafea9714340f1fe64947367515e3"
+    },
+    {
+      "path": "planet-closed-1x-6s.mp4",
+      "bytes": 1458392,
+      "sha256": "8efb715dd53c9a6752499be0d8fe15b74a698e900bc3cfa88b97cf1248723342"
+    },
+    {
+      "path": "original-clearance.jpg",
+      "bytes": 934637,
+      "sha256": "963460c9bedd1cc021bfb3bfe63c53c696f04a57e2e728c199f9be84e484a911"
+    },
+    {
+      "path": "original-stages.jpg",
+      "bytes": 981361,
+      "sha256": "7d7d7868f7c748f3c7652175d51a20a11af224b1653db8e9a1ed5e636f540a8c"
+    },
+    {
+      "path": "import.log",
+      "bytes": 4271,
+      "sha256": "b4e50982d8359ca12bdc1cb6cda24be47dadbb268b5c5437412ba8289f2f8a9b"
+    },
+    {
+      "path": "closed-parts/part-002.bin",
+      "bytes": 147672,
+      "sha256": "41e2c3f17f567ceeb77c6250c62ddbf845878b1dfa2c23ba61d14c105c8b02c7"
+    },
+    {
+      "path": "closed-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "d600e00b7b3684d161665d0da4518ea88aed55af924bd75d828014202df45674"
+    },
+    {
+      "path": "closed-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "d302e5fd4b6e090266424c662234bf47edf385d13e8fd6917c803e79e06d7c46"
+    },
+    {
+      "path": "closed-review-6.jpg",
+      "bytes": 493751,
+      "sha256": "0dcaecb81cd3653b3fa567950614e5de90172d6453a954b82c9a25686de208d6"
+    },
+    {
+      "path": "closed-review-5.jpg",
+      "bytes": 491225,
+      "sha256": "2746023e7b5afa53d1c40993a6da9efc61b8b8fcae6a6bb80028995ab027232e"
+    },
+    {
+      "path": "closed-review-4.jpg",
+      "bytes": 489557,
+      "sha256": "60909edd7d0ab5061a0e6cb1fb187bc6be9812f6bf1726e296797f9a5bddad3a"
+    },
+    {
+      "path": "closed-review-3.jpg",
+      "bytes": 490331,
+      "sha256": "ec7f869cf7e0880ec1b86b1ad42dd1b821b450991a4e906e7a684a993f70a1c9"
+    },
+    {
+      "path": "closed-review-2.jpg",
+      "bytes": 488914,
+      "sha256": "9316cc9923687e91dd750eb4a74651b9a33a5dbeda00c2ba965c9300af44dc70"
+    },
+    {
+      "path": "closed-review-1.jpg",
+      "bytes": 489523,
+      "sha256": "5637afd71ef9ce95ec33d600263f4405f9eeef074f4caf3d97de780c37b8af99"
+    },
+    {
+      "path": "facilities-parts/part-001.bin",
+      "bytes": 409746,
+      "sha256": "0b2a9223e4518fac7702d14c4d9db4ac1d3b4f0c791739b01fcf3a0fc4b8d065"
+    },
+    {
+      "path": "facilities-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "6ed7a8419da92bb7b5283e388d9fbb7353b6348f60cb12c9bf3c54bb23f58ebd"
+    },
+    {
+      "path": "facilities-review-6.jpg",
+      "bytes": 483510,
+      "sha256": "328bbdc0a42ee3ac23d64f7a76cb3be7141215c1b82d9cb6b206999be419d1eb"
+    },
+    {
+      "path": "facilities-review-5.jpg",
+      "bytes": 484634,
+      "sha256": "4ffbc5ab5358985df8d64900318643f775a421e957b479651c1f0afe40fdc18f"
+    },
+    {
+      "path": "facilities-review-4.jpg",
+      "bytes": 486509,
+      "sha256": "86c54332027f2aa0f833a1176e35232a83a10b0179354aae4525d4c1318f0ae9"
+    },
+    {
+      "path": "facilities-review-3.jpg",
+      "bytes": 486293,
+      "sha256": "fcb0f66c9369c711a4a663df824a2fb501ada4b8707b2444d0e192d9a224ffc5"
+    },
+    {
+      "path": "facilities-review-2.jpg",
+      "bytes": 484970,
+      "sha256": "46760ea35020d1e7376e361993fb7fb37fdfa885052f8db86d0dc6412830b64d"
+    },
+    {
+      "path": "facilities-review-1.jpg",
+      "bytes": 485116,
+      "sha256": "45405f5bdc15a7ff930be61e3c2b31f06186c829405539cc0c0d4aa8273ff0e0"
+    },
+    {
+      "path": "host-fit.patch",
+      "bytes": 3246,
+      "sha256": "6e39bf6da1924e46713209227bde07c42a445de2325831c1bfb0139822e5a375"
+    },
+    {
+      "path": "author-review.md",
+      "bytes": 2632,
+      "sha256": "3b6700101e18275542d8704a2703ddf0235f57a593098ea33e806f3275c4cbc6"
+    }
+  ]
+}
