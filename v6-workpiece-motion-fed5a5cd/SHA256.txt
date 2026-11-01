@@ -1,0 +1,8 @@
+e0ca2d9dd0d139cb8e056353ab473b95a02db211c21a5aa54e6bdf1a70e69882  v6-workpiece-motion-fed5a5cd/README.md
+b19ef6d36e743e8db1f9d72eac91408640ef25a8c19824ce8ff08868e0bc98d7  v6-workpiece-motion-fed5a5cd/planet-motion-00.png
+45672a29e3c290ce7482895368b3cc937b02be8662ec5eafdf36fca73f262bb7  v6-workpiece-motion-fed5a5cd/planet-motion-16.png
+bbc1a83e32bbf2482b172d578c4998d9dd2b5096f342914f480cad18e2d241be  v6-workpiece-motion-fed5a5cd/planet-motion-31.png
+18a922b970cad9671dfb1b2d6edb4616bcac11b8f8c499d2af083310084ae851  v6-workpiece-motion-fed5a5cd/planet-resume-motion.gd
+41f6b07f089a92e8aa2c712f882c08b838aba62237b187bf52fa73fc42e86839  v6-workpiece-motion-fed5a5cd/planet-v6-workpiece-ffmpeg.log
+1e2c345440f13277abaf4d2a6de5a450e55e62fa44a752286d3fb15d2eb164fe  v6-workpiece-motion-fed5a5cd/planet-v6-workpiece-motion.log
+73b6e3664f0cd123baf923d089a9532eed27a3c444ca2a3d6952a3670886784a  v6-workpiece-motion-fed5a5cd/planet-v6-workpiece-motion.mp4
