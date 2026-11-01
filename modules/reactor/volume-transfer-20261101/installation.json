@@ -1,0 +1,42 @@
+{
+  "source_commit": "a1406959e6b2d1cc0639359f5f099169a155ccb0",
+  "replace_paths": [
+    "space-battleship/src/ui/reactor_scene.gd",
+    "space-battleship/src/ui/reactor_stage.gd",
+    "space-battleship/assets/ui/reactor/b01/README.md",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json"
+  ],
+  "public_material_source": "9034af81 APIs unchanged",
+  "frame": [
+    808,
+    900
+  ],
+  "internal_content_rect": [
+    0,
+    65,
+    808,
+    835
+  ],
+  "source_geometry": [
+    1187,
+    1326
+  ],
+  "native_layout": "Scene reads generated console table once; header/rows/footer move together for 1/2/3 states",
+  "keep_existing": [
+    "Reactor/Economy Owners",
+    "main/shared navigation",
+    "equipment",
+    "battle",
+    "PlayerText and ResourceVisuals shared helpers"
+  ],
+  "mount": "Do not add the internal y65 twice or nonuniformly stretch the assembly; host retains constructor/bind_presentation/bind_purchase_quote and visibility wiring."
+}
