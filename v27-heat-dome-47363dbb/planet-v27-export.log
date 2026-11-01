@@ -1,0 +1,257 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+13:22:53 | INFO: Starting glTF 2.0 export
+13:22:53 | INFO: Extracting primitive: Cylinder.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Command district observation pressure ribbon
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Command observation dark mullion
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Command observation dark mullion.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Command observation dark mullion.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Command observation dark mullion.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Command observation dark mullion.004
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder.004
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cone.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous contained outer gallery line.004
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous deep load-bearing underside.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous variable-section armored building band.001
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Torus
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder.005
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cone
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.001
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.002
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.030
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.031
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Finished glTF 2.0 export in 0.12320637702941895 s
+
+EXPORTED auto_explore /workspace/space_idle/space-battleship/assets/planets/facilities_v9/auto_explore.glb
+13:22:53 | INFO: Starting glTF 2.0 export
+13:22:53 | INFO: Extracting primitive: Cylinder.009
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder.008
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous contained outer gallery line.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous deep load-bearing underside
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous variable-section armored building band
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Cube.032
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.033
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.034
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Torus.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder.007
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder.006
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Torus.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cone.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.004
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.005
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.006
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.003
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.004
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.004
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Torus.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Torus.004
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Finished glTF 2.0 export in 0.08946728706359863 s
+
+EXPORTED refinery /workspace/space_idle/space-battleship/assets/planets/facilities_v9/refinery.glb
+13:22:53 | INFO: Starting glTF 2.0 export
+13:22:53 | INFO: Extracting primitive: Amber fabrication transverse working rib
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Amber fabrication transverse working rib.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Amber fabrication transverse working rib.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Amber fabrication transverse working rib.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous contained outer gallery line.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous deep load-bearing underside.002
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous deep load-bearing underside.003
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous variable-section armored building band.002
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Continuous variable-section armored building band.003
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Cube.009
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.011
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.012
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.008
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.010
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.007
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.013
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.014
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.005
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.006
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.005
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.006
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Manufacturing inner orange service rail
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Manufacturing open work floor
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Manufacturing orange overhead gate
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Manufacturing orange overhead gate.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Manufacturing outer orange service rail
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Manufacturing work portal ring
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Manufacturing work portal ring.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Recessed load floor beneath fabrication opening
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Finished glTF 2.0 export in 0.11277222633361816 s
+
+EXPORTED equipment /workspace/space_idle/space-battleship/assets/planets/facilities_v9/equipment.glb
+13:22:53 | INFO: Starting glTF 2.0 export
+13:22:53 | INFO: Extracting primitive: Cube.017
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.020
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous contained outer gallery line
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Continuous contained outer gallery line.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.035
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.022
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Dock armored entry threshold
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Dock armored entry threshold.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Dock district curved pressure abutment
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Dock district curved pressure abutment.001
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Dock district deep support
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Dock district deep support.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.023
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.025
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.016
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.019
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Dock open bay inner transfer floor
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.015
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.018
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.027
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.024
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.026
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.021
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Dock threshold ivory shoulder
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Dock threshold ivory shoulder.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Torus.005
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.029
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cube.028
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Docked shuttle swept nose
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder.001
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.007
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.008
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.009
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset long-span roof armor plate.010
+13:22:53 | INFO: Primitives created: 2
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.007
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.008
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.009
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Inset roof bearing shadow.010
+13:22:53 | INFO: Primitives created: 1
+13:22:53 | INFO: Extracting primitive: Cylinder
+13:22:53 | INFO: Primitives created: 1
+13:22:54 | INFO: Finished glTF 2.0 export in 0.11867523193359375 s
+
+EXPORTED shipyard /workspace/space_idle/space-battleship/assets/planets/facilities_v9/shipyard.glb
+Blender 4.3.2
+Read blend: "/workspace/space_idle/space-battleship/art_sources/planet_whole_concept_20261101/concept-v23.blend"
+
+Blender quit
