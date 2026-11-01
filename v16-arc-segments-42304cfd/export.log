@@ -1,0 +1,291 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+10:06:58 | INFO: Starting glTF 2.0 export
+10:06:58 | INFO: Extracting primitive: Cylinder
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.005
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.006
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.001
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.003
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Torus
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Habitation wing inclined upper armor
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Habitation wing inclined upper armor.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cylinder.002
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cylinder.001
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Torus.002
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cone
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Torus.001
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cone.001
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.007
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.009
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.002
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.004
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.008
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.010
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.087
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.088
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Swept inhabited arc wing
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Swept inhabited arc wing.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Swept node load wall
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Swept node load wall.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cube
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Finished glTF 2.0 export in 0.06603193283081055 s
+
+EXPORTED auto_explore /workspace/space_idle/space-battleship/assets/planets/facilities_v8/auto_explore.glb
+10:06:58 | INFO: Starting glTF 2.0 export
+10:06:58 | INFO: Extracting primitive: Cube.016
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.017
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cylinder.004
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.029
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.089
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.090
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.091
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.012
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.014
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.024
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.026
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.025
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.027
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Torus.003
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Torus.004
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Torus.005
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.013
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.015
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Ore chamber sloped pressure roof
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Ore chamber sloped pressure roof.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cube.020
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.023
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.018
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.021
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Ore transfer arc chamber
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Ore transfer arc chamber.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cube.028
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Swept node load wall.002
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Swept node load wall.003
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cube.011
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cylinder.003
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.019
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.022
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Finished glTF 2.0 export in 0.08603310585021973 s
+
+EXPORTED refinery /workspace/space_idle/space-battleship/assets/planets/facilities_v8/refinery.glb
+10:06:58 | INFO: Starting glTF 2.0 export
+10:06:58 | INFO: Extracting primitive: Cube.035
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.036
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Continuous production pressure wall
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Continuous production pressure wall.001
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.031
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.033
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.060
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.061
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.062
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.063
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.048
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.050
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.052
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.054
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.049
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.051
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.053
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.055
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.038
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.043
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.042
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.047
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.032
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.034
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Production wall faceted canopy
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Production wall faceted canopy.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cube.037
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Stepped fabrication roof vault
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Stepped fabrication roof vault.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Stepped fabrication roof vault.002
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Swept node load wall.004
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Swept node load wall.005
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cube.039
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.040
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.041
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.044
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.045
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.046
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.030
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.056
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.057
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.058
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.059
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Finished glTF 2.0 export in 0.09150505065917969 s
+
+EXPORTED equipment /workspace/space_idle/space-battleship/assets/planets/facilities_v8/equipment.glb
+10:06:58 | INFO: Starting glTF 2.0 export
+10:06:58 | INFO: Extracting primitive: Cube.069
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.070
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.092
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.065
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.067
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.071
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.075
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.080
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.074
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.079
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.082
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.076
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.081
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.072
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.077
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Dock root forms occupied ring section
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Dock root forms occupied ring section.001
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Torus.006
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.084
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.083
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.073
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.078
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.066
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.068
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Pointed shuttle nose beyond open clamp
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.085
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Cube.086
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Shuttle swept armored wing
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Shuttle swept armored wing.001
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Extracting primitive: Swept node load wall.006
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Swept node load wall.007
+10:06:58 | INFO: Primitives created: 2
+10:06:58 | INFO: Extracting primitive: Cube.064
+10:06:58 | INFO: Primitives created: 1
+10:06:58 | INFO: Finished glTF 2.0 export in 0.07533693313598633 s
+
+EXPORTED shipyard /workspace/space_idle/space-battleship/assets/planets/facilities_v8/shipyard.glb
+Blender 4.3.2
+Read blend: "/workspace/space_idle/space-battleship/art_sources/planet_whole_concept_20261101/concept.blend"
+
+Blender quit
