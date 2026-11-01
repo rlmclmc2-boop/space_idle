@@ -4,7 +4,7 @@
 
 ## 当前源与交付
 
-运行源 `implement/reactor-centered-godot@3e0240c9ce65780ac4666ee6367a5c70cdc6586d`。独立归档 `archive/reactor-material-refinement-20261101@b01a70290e3b8a52c3ef044bb787e78363c2c74d`，入口 `modules/reactor/continuous-bay-20261101/README.md`。
+运行源 `implement/reactor-centered-godot@3e0240c9ce65780ac4666ee6367a5c70cdc6586d`。独立归档 `archive/reactor-material-refinement-20261101@72c9f5faa08248545f345da72adb9ba99a5e6fca`，入口 `modules/reactor/continuous-bay-20261101/README.md`。
 
 含批准图并置、1/2/3/4路真零/正载整页、四路/单炼铁各12秒正常影片、全时段每0.25秒联系图及2/4/8秒原帧、输入/暂停/导入日志、作者整页判断及源码闭包。JPEG和影片低于1MiB，闭包按source-closure.json顺序分块；52份归档文件与20份源码按manifest核读。按installation.json精确消费私有文件，尤其当前GLB/layout/表面shader必须同版；不整树覆盖公共宿主、Owner、装备。
 
