@@ -179,12 +179,10 @@ for end in (-1, 1):
     x = end * 1.02
     beam("End portal ivory shoulder left", (x, -.91, 1.16), (x, -.42, 1.46), .17, .17, ivory, root)
     beam("End portal ivory shoulder right", (x, .91, 1.16), (x, .42, 1.46), .17, .17, ivory, root)
-    # One terminal keeps the full transverse pressure crown. The near work
-    # mouth uses its four angled shoulders without a second overhead beam,
-    # exposing the existing moving tool from the default and 25° views.
-    if end < 0:
-        box("Portal crown edge", (x, 0, 1.48), (.16, .91, .14), orange, root, .025)
-        box("Portal soffit", (x, 0, 1.35), (.09, .72, .07), navy, root, .014)
+    # A short crown closes each pair of angled shoulders into one through
+    # portal. The work lane remains open below and between the end frames.
+    box("Portal crown edge", (x, 0, 1.48), (.16, .91, .14), orange, root, .025)
+    box("Portal soffit", (x, 0, 1.35), (.09, .72, .07), navy, root, .014)
 
 # Named animation ports from the original runtime. The carriage moves along
 # the local tangent; the actual tool stays within the genuinely open center.
