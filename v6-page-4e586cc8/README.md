@@ -1,0 +1,3 @@
+# v6 author page composition review
+
+Source `wip/planet-thread-resume-20261101@4e586cc8`, Godot 4.7.2, 1440×900 game window. This temporary local capture fixture boots the real main scene and native extension, sets planet 1 available with its four existing building definitions in built state in memory, and shows the real planet panel. It skips startup guidance and dismisses the local save setup modal for an unobstructed screenshot. This verifies page composition only; it does not verify campaign unlock, construction, persistence, or user art acceptance. The scene remains a visually sparse WIP compared with the approved design.
