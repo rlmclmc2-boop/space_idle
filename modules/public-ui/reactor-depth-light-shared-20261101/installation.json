@@ -1,0 +1,26 @@
+{
+  "source_commit": "cfcc9a3552a886283ed07be656ff7247c8a498bf",
+  "replace_paths": [
+    "space-battleship/src/ui/reactor_scene.gd",
+    "space-battleship/src/ui/reactor_stage.gd",
+    "space-battleship/assets/ui/reactor/b01/README.md",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-structure-outline.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json"
+  ],
+  "content_rect": [
+    0,
+    65,
+    808,
+    835
+  ],
+  "scope": "private crowned armor/recessed room, physical surface reflection, energy cell, rounded pour and fixed allocation readout lane; retain Owner and public host"
+}
