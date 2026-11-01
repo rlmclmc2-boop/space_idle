@@ -147,12 +147,15 @@ def ring_transition(root, m, half_length=1.18):
 def station(root, m):
     ring_transition(root, m, 1.10)
     # A low annular junction opens the orbital tangent instead of raising a box.
-    cylinder("Radial bearing lower drum", (0, 0, .23), .91, .29, m["pressure"], root, 40)
-    torus("Ivory annular pressure rim", (0, 0, .46), .75, .13, m["armor"], root)
-    torus("Blue inner bearing race", (0, 0, .51), .50, .055, m["machinery"], root)
+    cylinder("Radial bearing lower drum", (0, 0, .23), 1.06, .29, m["pressure"], root, 40)
+    torus("Ivory annular pressure rim", (0, 0, .46), .91, .14, m["armor"], root)
+    torus("Blue inner bearing race", (0, 0, .51), .63, .055, m["machinery"], root)
     for x in (-.78, .78):
         beam("Tangential ring transfer rib", (x, -.71, .30),
              (x, .71, .30), .18, .20, m["armor"], root)
+        for side in (-1, 1):
+            beam("Bearing-to-ring diagonal web", (x, side*.66, .38),
+                 (x*1.29, side*.88, .17), .15, .17, m["edge"], root)
     spin = empty("HabitatRingSpin", root, (0, 0, .57))
     torus("Rotating open habitat collar", (0, 0, .12), .42, .075, m["armor"], spin)
     torus("Rotating inner glass", (0, 0, .12), .31, .028, m["glass"], spin)
@@ -172,7 +175,13 @@ def refinery(root, m):
         (-.94,0,.36,.52,.25),(-.58,0,.46,.69,.35),
         (.63,0,.46,.69,.35),(.95,0,.36,.52,.25),
     ], m["pressure"], root)
-    ellipsoid("Single hot pressure crown", (.24,0,.72),(.67,.62,.45),m["work"],root)
+    ellipsoid("Armored heat pressure crown", (.24,0,.72),(.70,.65,.44),m["armor"],root)
+    ellipsoid("Recessed hot core", (.27,0,1.04),(.40,.38,.12),m["work"],root)
+    for side in (-1, 1):
+        beam("Furnace flank load web",(-.82,side*.79,.31),
+             (-.12,side*.68,.80),.19,.18,m["edge"],root)
+        beam("Furnace flank return web",(.12,side*.67,.78),
+             (.92,side*.83,.31),.19,.18,m["edge"],root)
     box("Crown receiving lip",(.83,0,.54),(.09,.71,.20),m["edge"],root)
     for side in (-1, 1):
         y = side*.48
@@ -202,19 +211,19 @@ def workshop(root,m):
         loft_x("Continuous manufacturing side girder",[
             (-1.20,y,.46,.15,.20),(-.88,y,.50,.24,.27),
             (.88,y,.50,.24,.27),(1.20,y,.46,.15,.20),
-        ],m["work"],root)
+        ],m["armor"],root)
         box("Inner running rail",(0,side*.47,.70),(1.69,.085,.08),m["machinery"],root)
         box("Rail power key",(0,side*.42,.75),(1.38,.018,.03),m["service"],root,.004)
         beam("Longitudinal portal tension beam",(-.88,side*.68,1.27),
-             (.88,side*.68,1.27),.11,.12,m["work"],root)
+             (.88,side*.68,1.27),.11,.12,m["armor"],root)
     for x in (-.88,.88):
         for side in (-1,1):
             beam("Inclined portal load leg",(x,side*.75,.47),
                  (x,side*.68,1.25),.17,.18,m["armor"],root)
             beam("Triangulated open portal brace",(x,side*.72,.56),
-                 (x,side*.24,1.27),.09,.10,m["work"],root)
+                 (x,side*.24,1.27),.09,.10,m["edge"],root)
         beam("Open portal overhead truss",(x,-.72,1.28),
-             (x,.72,1.28),.13,.16,m["work"],root)
+             (x,.72,1.28),.13,.16,m["armor"],root)
     gantry=empty("GantrySlide",root,(0,0,0))
     box("Sliding bridge",(0,0,1.20),(.39,1.16,.11),m["machinery"],gantry)
     arm=empty("ToolArmSweep",gantry,(0,0,1.16))
