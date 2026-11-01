@@ -36,11 +36,11 @@
       "after_chars": 21432
     },
     "cleanup": {
-      "paths": 4,
-      "before_lines": 372,
-      "after_lines": 363,
-      "before_chars": 20977,
-      "after_chars": 20229
+      "paths": 5,
+      "before_lines": 381,
+      "after_lines": 372,
+      "before_chars": 21399,
+      "after_chars": 20659
     },
     "main": {
       "paths": 4,
@@ -53,6 +53,7 @@
   "errors": [],
   "external_links": [
     "https://github.com/rlmclmc2-boop/space_idle/blob/2118e3218e3016933c8a33c4f70afb111761d68c/modules/reactor/direct-sluice-20261101/README.md",
+    "https://github.com/rlmclmc2-boop/space_idle/blob/archive/design-docs-before-cleanup-20261031/modules/maintenance/20261101-spec-simplification/final/delivery.md",
     "https://github.com/rlmclmc2-boop/space_idle/blob/art/equipment-materials-main-20261029/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/HANDOFF.md",
     "https://github.com/rlmclmc2-boop/space_idle/blob/design/clear-zone-host/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/HANDOFF.md",
     "https://github.com/rlmclmc2-boop/space_idle/blob/docs/design-entry-cleanup-20261031/space-battleship/docs/maintenance/HANDOFF.md",

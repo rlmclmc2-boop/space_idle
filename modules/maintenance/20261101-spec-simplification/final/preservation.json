@@ -430,5 +430,17 @@
     "after_lines": 15,
     "before_chars": 1242,
     "after_chars": 866
+  },
+  {
+    "group": "cleanup",
+    "source": "47536e1ec5ee7d5175de5065538b42e0aeb52dfd",
+    "path": "space-battleship/docs/maintenance/HANDOFF.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/cleanup/space-battleship/docs/maintenance/HANDOFF.md",
+    "blob": "b512311f44b9b1b288c4e992b3d258bc2075d044",
+    "sha256": "5cb5483ef3ab908d4c34e44b43b91b0a3ad7304ee84f9a29c22f843d0d62023b",
+    "before_lines": 9,
+    "after_lines": 9,
+    "before_chars": 422,
+    "after_chars": 430
   }
 ]
