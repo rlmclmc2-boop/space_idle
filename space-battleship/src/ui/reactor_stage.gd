@@ -128,9 +128,10 @@ func _update_canvas_transform() -> void:
 
 func _kind(title: String) -> int:
 	if "core energy rim" in title or "core field meridian" in title:return 12
-	if "core containment glass" in title or "weapon chamber glazing" in title:return 1
+	if "core containment glass" in title or "weapon chamber glazing" in title or "crystal containment glass" in title:return 1
 	if "receiver acknowledgement" in title:return 11
 	if "core transfer packet" in title:return 10
+	if "core polar channel" in title:return 14
 	if "core plasma kernel" in title:return 9
 	if "core plasma strands" in title:return 2
 	if "core plasma mass" in title:return 3
@@ -150,11 +151,14 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		for index in range(node.mesh.get_surface_count()):
 			var original: Material=node.mesh.surface_get_material(index)
 			var color: Color=original.albedo_color if original is BaseMaterial3D else Color.WHITE
-			var palette_key: String=color.to_html()
+			var material_name: String=String(original.resource_name).to_lower() if original!=null else ""
+			var role: int=1 if "steel" in material_name else 3 if "ceramic" in material_name else 4 if "glass" in material_name else 5 if "copper" in material_name else 0 if "armor" in material_name else 2
+			var palette_key: String=color.to_html()+":"+str(role)
 			if not _palette.has(palette_key):
 				var material:=ShaderMaterial.new()
 				material.shader=SURFACE
 				material.set_shader_parameter("base_color",color)
+				material.set_shader_parameter("surface_role",role)
 				_palette[palette_key]=material
 			node.set_surface_override_material(index,_palette[palette_key])
 			colors.append(_palette[palette_key])
@@ -174,9 +178,10 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	part.position=source_point(pivot)
 	part.scale=Vector2.ONE*SOURCE_SCALE
 	_groups[key].add_child(part)
-	if kind==1:part.z_index=4
-	elif kind==9:part.z_index=2
-	elif kind==10:part.z_index=3 if title.get_slice("packet ",1) in ["weapons","condensation"] else 0
+	if kind==1:part.z_index=5
+	elif kind==9:part.z_index=3
+	elif kind in [12,14]:part.z_index=2
+	elif kind==10:part.z_index=4 if title.get_slice("packet ",1) in ["weapons","condensation"] else 0
 	elif kind==3:part.z_index=1
 	elif kind==2:part.z_index=0
 	var bottom: float=-INF
@@ -235,7 +240,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			material.set_shader_parameter("transfer_layer",1.0 if id in ["weapons","condensation"] else -1.0)
 			material.set_meta("outlet",id)
 		if kind==11:material.set_shader_parameter("receiver_u",float(_layout.ports[key].receiver_u))
-		if kind==8:material.set_shader_parameter("work_zone",1 if title.begins_with("weapon") else 0)
+		if kind==8:material.set_shader_parameter("work_zone",2 if title.begins_with("weapon output") else 1 if title.begins_with("weapon") else 0)
 		if kind==4:material.set_shader_parameter("work_zone",1 if "bowed" in title else 0)
 		if kind==5:material.set_shader_parameter("work_zone",0 if "pour" in title else 3 if "outlet" in title else 2 if "liquid" in title else 1)
 		drawable.material=material
@@ -293,10 +298,18 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 		material.set_shader_parameter("load_fraction",core_load)
 		if material.has_meta("outlet"):material.set_shader_parameter("outlet_enabled",str(material.get_meta("outlet")) in ids)
 	for mechanism in _mechanisms.core:mechanism.node.visible=core_load>0.0 or mechanism.kind==1
-	_background_material.set_shader_parameter("core_power",core_load)
+	_update_core_light()
 	if availability_changed:_refresh_bake(ids)
 	_animate_mechanisms()
 	diagnostics.field_updates+=1
+
+func _update_core_light() -> void:
+	var cycle: float=fposmod(_phase/4.8,1.0)
+	var gathering: float=smoothstep(0.0,.43,cycle)*(1.0-smoothstep(.72,.92,cycle))
+	var compression: float=smoothstep(.43,.60,cycle)*(1.0-smoothstep(.66,.80,cycle))
+	var release: float=smoothstep(.60,.64,cycle)*(1.0-smoothstep(.66,.72,cycle))
+	var radiance: float=clampf(.58+.20*gathering+.12*compression+.10*release,0.0,1.0)
+	_background_material.set_shader_parameter("core_power",visibility_power(float(_loads.get("core",0.0)))*radiance)
 
 func _refresh_bake(ids: Array) -> void:
 	for outline in _outlines:outline.visible=true
@@ -310,7 +323,7 @@ func _refresh_bake(ids: Array) -> void:
 		group.visible=_group_visible(key,ids)
 	for material in _palette.values():
 		material.set_shader_parameter("core_power",0.0)
-		material.set_shader_parameter("core_origin",Vector3(724.0 if _single_mode else 594.0,-340.0,100.0))
+		material.set_shader_parameter("core_origin",Vector3(724.0 if _single_mode else 594.0,-340.0,190.0))
 	_baker.msaa_3d=Viewport.MSAA_2X
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	_finish_bake(generation)
@@ -409,6 +422,7 @@ func advance_visual_clock(game_time: float,paused: bool) -> bool:
 	_clock=game_time
 	if paused or elapsed==0.0 or float(_loads.get("core",0.0))<=0.0:return false
 	_phase=fmod(_phase+elapsed,4096.0)
+	_update_core_light()
 	for id in _enabled:
 		if float(_loads.get(id,0.0))<=0.0:continue
 		_age[id]=float(_age[id])+elapsed
