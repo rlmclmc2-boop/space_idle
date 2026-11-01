@@ -12,6 +12,8 @@ const SOURCE_SIZE:=Vector2(1187.0,1326.0)
 const VIEW_SIZE:=Vector2(808.0,835.0)
 const SOURCE_SCALE: float=835.0/1326.0
 const SOURCE_OFFSET:=Vector2((808.0-1187.0*SOURCE_SCALE)*.5,0)
+var _layout: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/reactor/b01/faceted-layout.json"))
+var _single_mode: bool=false
 var _baker: SubViewport
 var _asset: Node3D
 var _environment: Environment
@@ -113,6 +115,7 @@ func _update_canvas_transform() -> void:
 
 func _kind(title: String) -> int:
 	if "core containment glass" in title or "weapon chamber glazing" in title:return 1
+	if "core transfer packet" in title:return 10
 	if "core plasma kernel" in title:return 9
 	if "core plasma strands" in title:return 2
 	if "core plasma mass" in title:return 3
@@ -150,9 +153,10 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	part.scale=Vector2.ONE*SOURCE_SCALE
 	_groups[key].add_child(part)
 	if kind==1:part.z_index=4
-	elif kind==3:part.z_index=3
-	elif kind==2:part.z_index=2
-	elif kind==9:part.z_index=1
+	elif kind==9:part.z_index=3
+	elif kind==10:part.z_index=2
+	elif kind==3:part.z_index=1
+	elif kind==2:part.z_index=0
 	var bottom: float=-INF
 	for index in range(node.mesh.get_surface_count()):
 		var arrays: Array=node.mesh.surface_get_arrays(index)
@@ -200,6 +204,12 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		material.shader=WORK
 		material.set_shader_parameter("base_color",color)
 		material.set_shader_parameter("work_kind",kind)
+		if kind==10:
+			var id: String=title.get_slice("packet ",1)
+			var target: Array=_layout.ports[id].core_interface_source3d
+			material.set_shader_parameter("transfer_target",Vector3(target[0],target[1],target[2]))
+			material.set_shader_parameter("transfer_layer",1.0 if id in ["weapons","condensation"] else -1.0)
+			material.set_meta("outlet",id)
 		if kind==4:material.set_shader_parameter("work_zone",1 if "bowed" in title else 0)
 		if kind==5:material.set_shader_parameter("work_zone",0 if "pour" in title else 3 if "outlet" in title else 2 if "liquid" in title else 1)
 		drawable.material=material
@@ -208,22 +218,46 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"kind":kind})
 	part.visible=kind==1
 
+func _pipe_key(id: String) -> String:
+	return "pipe_single_smelting" if _single_mode and id=="smelting" else "pipe_"+id
+
+func _group_visible(key: String,ids: Array) -> bool:
+	if key=="pipe_single_smelting":return _single_mode
+	if key.begins_with("pipe_"):return key.trim_prefix("pipe_") in ids and not (_single_mode and key=="pipe_smelting")
+	if key in IDS:return key in ids
+	if key.begins_with("console_"):return not ids.is_empty() and int(key.trim_prefix("console_"))==ids.size()
+	return true
+
+func _install_composition(ids: Array) -> void:
+	_single_mode=ids.size()==1 and ids[0]=="smelting"
+	for key in _groups:
+		var shift:=Vector2.ZERO
+		if _single_mode and _layout.single_smelting.shifts.has(key):
+			var raw: Array=_layout.single_smelting.shifts[key]
+			shift=Vector2(raw[0],raw[1])
+		_groups[key].position=shift*SOURCE_SCALE
+		_asset.get_node(NodePath(key)).position=Vector3(shift.x,-shift.y,0)
+		_groups[key].visible=_group_visible(key,ids)
+		for material in _materials[key]:material.set_shader_parameter("assembly_offset",Vector3(shift.x,-shift.y,0))
+
 func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	if ids==_enabled and loads==_loads:return
 	var availability_changed: bool=ids!=_enabled or _cache_generation==0
 	var previous: Dictionary=_loads
+	if availability_changed:_install_composition(ids)
 	_enabled=ids.duplicate()
 	_loads=loads.duplicate()
 	for id in IDS:
 		_groups[id].visible=id in ids
-		_groups["pipe_"+id].visible=id in ids
 		var load: float=float(loads.get(id,0.0)) if id in ids else 0.0
 		if load>0.0 and float(previous.get(id,0.0))<=0.0:_age[id]=0.0
-		for key in [id,"pipe_"+id]:
+		for key in [id,_pipe_key(id)]:
 			for material in _materials[key]:material.set_shader_parameter("load_fraction",visibility_power(load))
 			for mechanism in _mechanisms[key]:mechanism.node.visible=load>0.0 or mechanism.kind==1
 	var core_load: float=visibility_power(float(loads.get("core",0.0)))
-	for material in _materials.core:material.set_shader_parameter("load_fraction",core_load)
+	for material in _materials.core:
+		material.set_shader_parameter("load_fraction",core_load)
+		if material.has_meta("outlet"):material.set_shader_parameter("outlet_enabled",str(material.get_meta("outlet")) in ids)
 	for mechanism in _mechanisms.core:mechanism.node.visible=core_load>0.0 or mechanism.kind==1
 	_background_material.set_shader_parameter("core_power",core_load)
 	if availability_changed:_refresh_bake(ids)
@@ -238,8 +272,10 @@ func _refresh_bake(ids: Array) -> void:
 	var generation: int=_cache_generation
 	for group in _asset.get_children():
 		var key: String=String(group.name)
-		group.visible=key in ids if key in IDS else key.trim_prefix("pipe_") in ids if key.begins_with("pipe_") else not ids.is_empty() and int(key.trim_prefix("console_"))==ids.size() if key.begins_with("console_") else true
-	for material in _palette.values():material.set_shader_parameter("core_power",0.0)
+		group.visible=_group_visible(key,ids)
+	for material in _palette.values():
+		material.set_shader_parameter("core_power",0.0)
+		material.set_shader_parameter("core_origin",Vector3(724.0 if _single_mode else 594.0,-340.0,100.0))
 	_baker.msaa_3d=Viewport.MSAA_2X
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	_finish_bake(generation)
@@ -316,6 +352,11 @@ func _animate_mechanisms() -> void:
 				part.position=source_point(Vector2(origin.x,mechanism.bottom-(mechanism.bottom-origin.y)*growth))
 		for material in _materials[id]:material.set_shader_parameter("formation",minf(age/1.6,1.0))
 
+	for mechanism in _mechanisms.core:
+		if mechanism.kind==10:
+			var id: String=mechanism.title.get_slice("packet ",1)
+			mechanism.node.visible=float(_loads.get("core",0.0))>0.0
+
 func advance_visual_clock(game_time: float,paused: bool) -> bool:
 	if not is_visible_in_tree():
 		_clock=-1.0
@@ -327,7 +368,7 @@ func advance_visual_clock(game_time: float,paused: bool) -> bool:
 	for id in _enabled:
 		if float(_loads.get(id,0.0))<=0.0:continue
 		_age[id]=float(_age[id])+elapsed
-		for key in [id,"pipe_"+id]:
+		for key in [id,_pipe_key(id)]:
 			for material in _materials[key]:material.set_shader_parameter("phase",_phase)
 	for material in _materials.core:material.set_shader_parameter("phase",_phase)
 	_animate_mechanisms()

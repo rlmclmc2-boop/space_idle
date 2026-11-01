@@ -47,7 +47,7 @@ def armor_panel(name,outline,z,depth,mat):
   delta=center-Vector(p);inset.append(Vector(p)+delta.normalized()*min(7,delta.length*.16))
  n=len(outline)
  vertices=[(x,-y,z-5) for x,y in outline]+[(p.x,-p.y,z+3) for p in inset]
- vertices.append((center.x,-center.y,z+12))
+ vertices.append((center.x,-center.y,z+18))
  vertices.extend([(x+4,-y-3,z-depth) for x,y in outline])
  faces=[]
  for i in range(n):
@@ -107,6 +107,35 @@ def socket(id,m):
  rod(id+' receiver foundation',(a.x,a.y,28+(far-4)*.35),(b.x,b.y,28+(far+18)*.35),d['socket_radius']+8,m['shade'])
 
 
+def opening(name,x,y,w,h,front,back,m):
+ # A real tapered cavity: lip, return walls and rear opening share vertices.
+ rings=[]
+ for ww,hh,z in [(w,h,front-4),(w-8,h-8,front),(w-20,h-20,front-4),(w-30,h-30,back)]:
+  rings.extend([(x-ww/2,-y+hh/2,z),(x+ww/2,-y+hh/2,z),(x+ww/2,-y-hh/2,z),(x-ww/2,-y-hh/2,z)])
+ faces=[]
+ for ring_index in range(3):
+  for i in range(4):
+   j=(i+1)%4;faces.append((ring_index*4+i,(ring_index+1)*4+i,(ring_index+1)*4+j,ring_index*4+j))
+ o=mesh(name,rings,faces,m['shade']);o.data.materials.append(m['glass']);o.data.materials.append(m['armor'])
+ for f in o.data.polygons:f.material_index=1 if f.index>=8 else 2 if f.index<4 else 0
+ return o
+
+def armor_arc(name,x,y,r,width,z,depth,m,start,end):
+ profile=[(r,z-depth),(r,z-5),(r-5,z+3),(r-width+5,z+3),(r-width,z-5),(r-width-5,z-depth)]
+ n=5;vertices=[]
+ for i in range(n+1):
+  a=start+(end-start)*i/n
+  for radius,zz in profile:vertices.append((x+radius*math.cos(a),-(y+radius*math.sin(a)),zz))
+ faces=[]
+ for i in range(n):
+  for j in range(len(profile)-1):
+   a=i*6+j;faces.append((a,a+1,a+7,a+6))
+ faces.extend([tuple(range(5,-1,-1)),tuple(n*6+i for i in range(6))])
+ o=mesh(name,vertices,faces,m['armor']);o.data.materials.append(m['shade']);o.data.materials.append(m['glass'])
+ for f in o.data.polygons:
+  band=f.index%5;f.material_index=2 if band==4 else 1 if band in (0,3) else 0
+ return o
+
 def mount(name,x,y,w,m):
  box(name+' load foot',x,y,w,18,5,10,m['edge']);box(name+' seat',x,y-6,w-18,9,18,5,m['shade'])
  if y<400:
@@ -119,7 +148,8 @@ def weapon(m,phase=.65):
  armor_panel('weapon left armor',[(81,126),(111,102),(142,109),(136,164),(124,184),(128,264),(103,278),(78,258)],65,25,m['armor'])
  armor_panel('weapon right armor',[(225,107),(255,112),(278,138),(274,258),(249,278),(225,259)],65,25,m['shade'])
  armor_box('weapon top bridge',180,112,108,27,76,16,m['armor']);armor_box('weapon bottom bridge',180,278,113,26,76,16,m['shade'])
- box('weapon chamber',181,195,74,133,52,8,m['glass'])
+ box('weapon chamber',181,195,74,133,38,8,m['glass'])
+ opening('weapon aperture return',181,195,104,165,92,40,m)
  rod('weapon chamber glazing',(181,128,48),(181,262,48),37,m['field'])
  for i,y in enumerate((153,190,227)):
   charge=max(0.,min(1.,(phase/.65)*3-i))
@@ -137,9 +167,9 @@ def weapon(m,phase=.65):
 
 def defence(m,phase=1.):
  mount('shield',1017,300,220,m);box('shield shell',968,199,102,150,42,28,m['dark'])
- ring('shield load ring',1045,177,84,20,54,26,m['dark']);disc('shield glass',1045,177,63,62,m['glass'])
+ ring('shield load ring',1045,177,84,20,44,26,m['dark']);disc('shield glass',1045,177,63,47,m['glass'])
  for i in range(6):
-  a=math.tau*i/6;ring('shield armor '+str(i),1045,177,91,23,78,18,m['armor'] if i<3 else m['shade'],a+.08,a+.78,3)
+  a=math.tau*i/6;armor_arc('shield armor '+str(i),1045,177,91,23,78,28,m,a+.08,a+.94)
   disc('shield joint '+str(i),1045+74*math.cos(a),177+74*math.sin(a),6,91,m['copper'],6)
  ring('shield active rim',1045,177,61,7,69,6,m['cyan']);disc('shield projector',1045,177,19,91,m['edge'],8)
  # A real bowed surface, divided into broad facets, projects beyond the
@@ -161,7 +191,8 @@ def furnace(m):
  mount('furnace',198,678,260,m);box('furnace deep shell',173,478,192,162,35,33,m['dark'])
  armor_panel('furnace left armor',[(77,421),(105,389),(145,397),(139,436),(120,453),(123,526),(99,548),(75,525)],64,23,m['armor'])
  armor_panel('furnace right armor',[(215,397),(245,405),(275,435),(268,528),(244,547),(221,523),(222,450),(205,431)],64,23,m['shade'])
- armor_box('furnace crown',177,405,112,28,75,16,m['armor']);box('furnace cavity',175,476,103,83,36,6,m['glass'])
+ armor_box('furnace crown',177,405,112,28,75,16,m['armor']);box('furnace cavity',175,476,103,83,30,6,m['glass'])
+ opening('furnace refractory return',175,477,128,112,81,34,m)
  plate('furnace throat',[(132,483),(220,483),(216,507),(177,520),(136,507)],49,5,m['orange'],shift=(0,0))
  for i in range(3):
   bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=11,location=(160+i*15,-442,67))
@@ -183,6 +214,7 @@ def crystal(m,growth=1.):
  for x in (934,1100):
   armor_box('crystal pillar',x,557,30,195,66,27,m['armor'] if x<1000 else m['shade']);box('crystal foot',x,661,53,28,75,17,m['dark'])
  armor_box('crystal crown',1017,433,184,32,78,21,m['armor']);box('crystal seed bed',1017,603,143,29,65,14,m['copper'])
+ box('crystal chamber front sill',1017,635,151,15,91,16,m['shade'])
  for i,(x,h) in enumerate([(974,53),(997,88),(1022,114),(1047,79),(1071,48)]):
   hh=12+(h-12)*growth;y=592
   plate('crystal body '+str(i),[(x-13,y),(x+13,y),(x+15,y-hh+17),(x+2,y-hh),(x-14,y-hh+16)],77,18,m['violet'],shift=(7,4))
@@ -204,26 +236,28 @@ def core(m):
  for polygon in plasma.data.polygons:polygon.use_smooth=True
  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2,radius=28,location=(x,-y,100))
  kernel=bpy.context.object;kernel.name='core plasma kernel';kernel.data.materials.append(m['cyan'])
+ for vertex in kernel.data.vertices:
+  q=vertex.co;vertex.co*=1.0+.12*math.sin(q.x*.13)*math.sin(q.y*.11)*math.sin(q.z*.17)
  for polygon in kernel.data.polygons:polygon.use_smooth=True
  # Each path winds from a pole toward the active mass. These are energy
  # strands, never moving mechanical bars; their real depth passes behind it.
- for j in range(4):
+ for j,(id,d) in enumerate(DATA['devices'].items()):
+  target=Vector((d['core_port'][0]-x,d['core_port'][1]-y));angle=math.atan2(target.y,target.x)
   points=[]
   for i in range(25):
-   t=i/24;angle=j*math.pi/2+t*3.2;r=12*(1-t)+70*math.sin(math.pi*t)
-   pole=-1 if j%2==0 else 1
-   points.append(Vector((x+r*math.cos(angle),-(y+pole*130*(1-t)),100+r*.65*math.sin(angle))))
+   t=i/24;a=angle+.32*t;r=118*(1-t)
+   points.append(Vector((x+r*math.cos(a),-(y+r*math.sin(a)),85+25*math.sin(a))))
   vertices=[];sides=6
   for i,p in enumerate(points):
-   tangent=(points[min(i+1,24)]-points[max(0,i-1)]).normalized()
-   u=tangent.cross(Vector((0,0,1))).normalized();v=tangent.cross(u).normalized()
-   for k in range(sides):
-    q=p+4.0*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides));vertices.append(q)
+   tangent=(points[min(i+1,24)]-points[max(0,i-1)]).normalized();u=tangent.cross(Vector((0,0,1))).normalized();v=tangent.cross(u).normalized()
+   for k in range(sides):vertices.append(p+(2.0+9.0*math.sin(math.pi*i/24)**.7)*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides)))
   faces=[]
   for i in range(24):
    for k in range(sides):
     a=i*sides+k;b=i*sides+(k+1)%sides;faces.append((a,b,b+sides,a+sides))
   mesh('core plasma strand '+str(j),vertices,faces,m['cyan'])
+  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=10,location=(x,-y,100))
+  o=bpy.context.object;o.name='core transfer packet '+id;o.data.materials.append(m['cyan'])
  for yy in (-139,139):
   box('core pole shoe',x,y+yy,48,22,114,28,m['dark'])
   box('core pole contact',x,y+yy,26,9,135,8,m['copper'])
@@ -255,15 +289,17 @@ def room(m):
  plate('upper hull inner',[(188,27),(1008,27),(1030,45),(174,45)],-70,3,m['edge'],shift=(0,0))
  # A shallow central recess gives the reactor a ship-installed setting while
  # the flanking hull stays quiet behind the device silhouettes.
- plate('core rear recess',[(430,86),(758,86),(842,324),(759,588),(430,588),(350,324)],-82,3,m['window'],shift=(0,0))
  plate('room floor',[(-80,600),(W+80,600),(W+80,H),(-80,H)],-60,9,m['floor'],shift=(0,0))
+ for x in (185,1010):box('room overhead light',x,47,58,6,-55,3,m['lamp'])
+
+def core_mount(m):
+ plate('core rear recess',[(430,86),(758,86),(842,324),(759,588),(430,588),(350,324)],-82,3,m['window'],shift=(0,0))
  plate('central floor facing',[(438,720),(750,720),(882,914),(306,914)],-56,3,m['floor'],shift=(0,0))
  plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,8,m['edge'],shift=(3,3))
  plate('central deck inset',[(405,610),(777,610),(841,685),(777,726),(405,726),(343,685)],-10,4,m['floor'],shift=(0,0))
  box('core lower pedestal',594,591,100,122,18,18,m['dark'])
  armor_panel('pedestal left armor',[(539,535),(555,535),(558,640),(539,651),(526,641)],39,12,m['shade'])
  armor_panel('pedestal right armor',[(632,535),(648,535),(663,641),(650,651),(630,640)],39,12,m['shade'])
- for x in (185,1010):box('room overhead light',x,47,58,6,-55,3,m['lamp'])
 
 def console_layout(count):
  row_h=72;offset=(4-count)*row_h-{1:120,2:72,3:36,4:0}[count];top=730+offset;header_y=819+offset;rows_top=878+offset
@@ -295,7 +331,7 @@ WORK_NAMES={
  'defence': ['shield active rim','shield bowed field'],
  'smelting': ['furnace feed','furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
  'condensation': ['crystal body','crystal bright facet'],
- 'core': ['core containment glass','core plasma kernel','core plasma mass','core plasma strand']}
+ 'core': ['core containment glass','core plasma kernel','core plasma mass','core plasma strand','core transfer packet']}
 FRONT_NAMES={
  'weapons':['weapon retainer','weapon focusing exit','weapon top bridge','weapon bottom bridge'],
  'defence':['shield armor','shield joint','shield projector'],
@@ -313,7 +349,7 @@ def select_pass(name,layer):
 
 def setup():
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
- colors={'armor':(.64,.69,.66),'shade':(.30,.42,.49),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.045,.10,.16),'window':(.055,.12,.18),'floor':(.09,.14,.20),'lamp':(1.,.76,.39)}
+ colors={'armor':(.72,.77,.73),'shade':(.30,.42,.49),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.045,.10,.16),'window':(.055,.12,.18),'floor':(.09,.14,.20),'lamp':(1.,.76,.39)}
  m={k:material(k,c,k in ['charge','cyan','orange','violet_light','lamp']) for k,c in colors.items()}
  s=bpy.context.scene;s.render.engine='BLENDER_EEVEE_NEXT';s.render.resolution_x=W;s.render.resolution_y=H;s.render.resolution_percentage=100;s.render.film_transparent=True;s.world.color=(.16,.22,.30);s.view_settings.view_transform='Standard'
  for name,loc,color,power,size in [('warm key',(250,-100,600),(1,.82,.60),1800000,650),('cool fill',(1020,-500,380),(.35,.65,1),950000,700)]:
@@ -379,9 +415,19 @@ def export_glb():
   root=bpy.data.objects.new(name,None);bpy.context.collection.objects.link(root)
   for o in objects:o.parent=root
   groups[name]=root
- group('bay',lambda:room(m));group('core',lambda:core(m))
+ group('bay',lambda:room(m));group('core_mount',lambda:core_mount(m));group('core',lambda:core(m))
  for id,fn in [('weapons',lambda:weapon(m,.72)),('defence',lambda:defence(m,1.)),('smelting',lambda:furnace(m)),('condensation',lambda:crystal(m,1.))]:
   group(id,fn);group('pipe_'+id,lambda id=id:channel_pipe(id,m))
+ # The single-smelter composition is an authored transform of the same
+ # independent parts. Its conduit is generated from those exact transformed
+ # ports, not stretched between visually guessed screen points.
+ original=DATA['devices']['smelting'];single=dict(original)
+ single['core_port']=[original['core_port'][0]+130,original['core_port'][1]]
+ single['device_port']=[original['device_port'][0]+200,original['device_port'][1]-50]
+ single['controls']=[[565,453],[535,472]]
+ DATA['devices']['smelting']=single
+ group('pipe_single_smelting',lambda:channel_pipe('smelting',m))
+ DATA['devices']['smelting']=original
  for count in (1,2,3,4):group('console_'+str(count),lambda count=count:console(m,count))
  def merge(objects,name):
   if not objects:return
@@ -403,6 +449,10 @@ def export_glb():
   delta=Vector(d['controls'][0])-Vector(d['core_port'])
   outlet=bpy.data.objects.new('power_out_'+id,None);bpy.context.collection.objects.link(outlet);outlet.parent=groups['core']
   outlet.location=(d['core_port'][0],-d['core_port'][1],28);outlet.rotation_euler=Vector((delta.x,-delta.y,-12)).to_track_quat('Z','Y').to_euler()
+ delta=Vector(single['controls'][0])-Vector(single['core_port'])
+ marker=bpy.data.objects.new('power_out_single_smelting',None);bpy.context.collection.objects.link(marker);marker.parent=groups['core']
+ marker.location=(single['core_port'][0]-130,-single['core_port'][1],28)
+ marker.rotation_euler=Vector((delta.x,-delta.y,-12)).to_track_quat('Z','Y').to_euler()
  # Export ordinary palette data, not Blender-only ShaderToRGB nodes. Godot
  # supplies the same faceted surface lighting plus distinct working shaders.
  for mat in bpy.data.materials:
@@ -436,7 +486,7 @@ def export_glb():
   ports[id]['core_axis_out_source3d']=list(out)
   ports[id]['device_marker']=id+'/power_in_'+id;ports[id]['core_marker']='core/power_out_'+id
  layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],
-  'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+  'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting'},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])
 

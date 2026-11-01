@@ -2,6 +2,7 @@ shader_type spatial;
 render_mode cull_disabled, specular_disabled;
 uniform vec4 base_color : source_color = vec4(0.8,0.8,0.7,1.0);
 uniform float core_power = 0.0;
+uniform vec3 core_origin=vec3(594.0,-340.0,100.0);
 varying vec3 world_point;
 varying vec3 world_normal;
 void vertex(){
@@ -11,7 +12,7 @@ void vertex(){
 void fragment(){
  ALBEDO=base_color.rgb;
  ROUGHNESS=0.8;
- vec3 delta=vec3(594.0,-340.0,100.0)-world_point;
+ vec3 delta=core_origin-world_point;
  float bounce=max(0.0,dot(normalize(world_normal),normalize(delta)))*exp(-length(delta)/230.0)*core_power;
  EMISSION=vec3(0.008,0.055,0.085)*bounce;
 }
