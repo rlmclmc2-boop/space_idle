@@ -5,6 +5,7 @@ Optional author renders stay under /tmp and never bake native UI text.
 import bpy,bmesh,json,math,os,sys,hashlib
 from pathlib import Path
 from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
 from bpy_extras.object_utils import world_to_camera_view
 ROOT=Path(__file__).resolve().parent
 GENERATOR_BYTES=Path(__file__).read_bytes()
@@ -12,6 +13,7 @@ GENERATOR_SHA=hashlib.sha256(GENERATOR_BYTES).hexdigest()
 DATA=json.loads((ROOT/'reactor_ports.json').read_text());W,H=DATA['source_size']
 CRYSTAL_CONVEYOR=[(1014,610,103),(990,640,151),(940,690,110)]
 SHARD_CLEARANCE=6.6
+def deck_level(y):return -96+(y-553)*.14
 OUT=Path(os.environ.get('REACTOR_FACETED_BUILD','/tmp/reactor-faceted-build'));OUT.mkdir(parents=True,exist_ok=True)
 (OUT/('generator-'+GENERATOR_SHA+'.py')).write_bytes(GENERATOR_BYTES)
 def material(name,color,glow=False):
@@ -619,19 +621,22 @@ def pipes(m):
 
 def room(m):
  plate('aft bulkhead',[(-80,0),(W+80,0),(W+80,760),(-80,760)],-140,24,m['room'],shift=(0,0))
- # Recessed hull bays have their own return thickness and intermediate
- # shoulders. They remain behind devices and do not become display frames.
- for left,right in [(-70,292),(364,758),(823,1258)]:
-  plate('recessed wall bay',[(left,16),(right,16),(right-7,548),(left+12,548)],-132,8,m['dark'],shift=(0,0))
-  plate('recessed wall facing',[(left+16,36),(right-22,36),(right-33,524),(left+29,524)],-125,5,m['room'],shift=(0,0))
-  for side,xx in [(-1,left),(1,right)]:
-   plate('bay depth return',[(xx,14),(xx-side*16,36),(xx-side*29,524),(xx-side*7,548)],-112,20,m['hull_high'],shift=(0,0))
-  for yy in (214,452):
-   box('bay recessed cross joint',(left+right)/2,yy,right-left-63,5,-114,5,m['hull'])
-  for xx in (left+53,right-67):
-   box('aft service housing',xx,289,22,370,-106,13,m['hull'])
-   box('service housing groove',xx-4,289,5,340,-89,4,m['dark'])
-  plate('hull diagonal gusset',[(left+35,390),(left+65,390),(right-47,492),(right-47,523)],-99,12,m['hull'],shift=(0,0))
+ # Staggered pressure plating belongs to one continuous bulkhead. Replace
+ # the old three closed display-bay frames, rather than layering over them.
+ for row,(top,bottom,bounds) in enumerate([
+  (24,194,[-100,192,516,852,1280]),
+  (204,382,[-100,302,702,1050,1280]),
+  (392,552,[-100,178,530,886,1280])]):
+  for col,(left,right) in enumerate(zip(bounds,bounds[1:])):
+   c=16;outline=[(left+c,top),(right-c,top),(right,top+c),(right,bottom-c),(right-c,bottom),(left+c,bottom),(left,bottom-c),(left,top+c)]
+   plate('bulkhead recessed pressure leaf',outline,-126+(col+row)%2*3,13,m['room'],shift=(0,0))
+   # A narrow returned edge and an actual inset shoulder explain the seam.
+   plate('bulkhead leaf upper return',[(left+c,top),(right-c,top),(right-c-10,top+7),(left+c+10,top+7)],-109,24,m['hull'],shift=(0,0))
+   if row==1 and col in (0,2):
+    armor_panel('bulkhead stepped service cheek',[(right-29,top+31),(right-12,top+18),(right-12,bottom-32),(right-29,bottom-18)],-101,26,m['hull'])
+ for x in (74,1114):
+  plate('aft recessed service return',[(x,163),(x+23,151),(x+23,497),(x,511)],-112,18,m['hull'],shift=(0,0))
+  box('aft service recess',x+9,329,7,291,-102,5,m['dark'])
  for x in (-35,340,790,1195):
   plate('hull structural pier',[(x-25,0),(x+16,0),(x+28,584),(x+58,718),(x+9,722),(x-18,584)],-92,48,m['hull'],shift=(0,0))
   box('pier recessed service spine',x+1,278,10,420,-82,9,m['dark'])
@@ -646,10 +651,27 @@ def room(m):
  for yy in (109,362):
   box('aft transverse beam',594,yy,1060,18,-97,25,m['hull'])
   for x in (45,1139):box('beam side anchor',x,yy,34,52,-62,31,m['hull_high'])
- plate('perspective floor',[(-80,553),(W+80,553),(W+80,822),(-80,822)],-89,28,m['floor'],shift=(0,0))
- for x in (-150,105,365,675,980):
-  plate('deck inset slab',[(x+80,563),(x+245,563),(x+322,745),(x+79,745)],-67,12,m['window'],shift=(0,0))
-  plate('deck front edge',[(x+79,745),(x+322,745),(x+331,757),(x+76,757)],-53,10,m['hull'],shift=(0,0))
+ def deck_slab(name,outline,lift,depth,mat):
+  # The floor has a shared slope/vanishing point and real section depth;
+  # it is not another front-facing blue panel below each device.
+  points=[(x,-y,deck_level(y)-4+lift) for x,y in outline]
+  n=len(points);vertices=points+[(x,y,z-depth) for x,y,z in points]
+  faces=[tuple(range(n-1,-1,-1)),tuple(range(n,2*n))]+[(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
+  result=oriented_solid(mesh(name,vertices,faces,mat))
+  bevel=result.modifiers.new('deck plate eased edge','BEVEL');bevel.width=1.2;bevel.segments=1
+  result.modifiers.new('deck plate normals','WEIGHTED_NORMAL');return result
+ deck_slab('continuous bay floor',[(-180,550),(W+180,550),(W+180,1390),(-180,1390)],0,24,m['dark'])
+ secondary_deck=material('secondary deck paint',(.082,.128,.178))
+ rows=[553,638,746,884,1080,1390];front_bounds=[-1350,-850,-350,150,650,1150,1650,2150,2650]
+ def deck_x(x,y):return 594+(x-594)*(y-330)/(1080-330)
+ for row,(back,front) in enumerate(zip(rows,rows[1:])):
+  for col,(left,right) in enumerate(zip(front_bounds,front_bounds[1:])):
+   a,b=back+3,front-3
+   outline=[(deck_x(left,a)+3,a),(deck_x(right,a)-3,a),(deck_x(right,b)-3,b),(deck_x(left,b)+3,b)]
+   deck_slab('perspective deck paving',outline,4+(row+col)%2*1.5,12,m['floor'] if (row+col)%3 else secondary_deck)
+ for side in (-1,1):
+  x=594+side*616
+  plate('wall deck returned skirting',[(x-side*23,514),(x+side*32,514),(x+side*79,605),(x+side*4,605)],-72,28,m['hull'],shift=(0,0))
  # Far side open balustrades link each pair of raised installations to hull.
  for x in (9,1156):
   box('side installation spine',x,347,18,510,-66,32,m['dark'])
@@ -657,17 +679,19 @@ def room(m):
 
 
 def core_mount(m):
- # This is a recessed bulkhead behind the machine, not a flat polygon
- # plinth. Independent wall leaves and returns continue the room's scale.
- for xx in (438,508,578,648,718):
-  plate('central recessed wall leaf',[(xx,86),(xx+65,86),(xx+65,586),(xx,586)],-126,6,m['room'],shift=(0,0))
-  box('central leaf lower joint',xx+32,501,61,4,-116,5,m['hull'])
+ # The room owns the continuous pressure plating. This movable assembly
+ # owns only load-bearing seats, so sparse layouts do not drag a second
+ # coplanar wall sheet over the room.
  for xx in (422,790):
   box('core aft mounting rib',xx,336,18,495,-104,22,m['hull'])
  for yy in (190,490):
   box('aft structural cross seat',604,yy,360,17,-107,16,m['hull_high'])
- plate('central floor facing',[(438,720),(750,720),(882,914),(306,914)],-56,3,m['floor'],shift=(0,0))
- plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,8,m['edge'],shift=(3,3))
+ deck_outline=[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)]
+ n=len(deck_outline)
+ vertices=[(x,-y,-31) for x,y in deck_outline]+[(x,-y,deck_level(y)-2) for x,y in deck_outline]
+ faces=[tuple(range(n-1,-1,-1)),tuple(range(n,2*n))]+[(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
+ oriented_solid(mesh('central deck load foundation',vertices,faces,m['dark']))
+ plate('central service deck',deck_outline,-25,8,m['edge'],shift=(3,3))
  plate('central deck inset',[(405,610),(777,610),(841,685),(777,726),(405,726),(343,685)],-10,4,m['floor'],shift=(0,0))
  box('core lower pedestal',594,591,100,122,18,42,m['dark'])
  armor_panel('core flared pedestal',[(557,523),(630,523),(644,628),(683,649),(671,671),(517,671),(502,650),(541,628)],35,44,m['shade'])
@@ -838,9 +862,10 @@ def export_glb():
    for foot in objects:
     if foot.type!='MESH' or 'floor foot' not in foot.name:continue
     points=[foot.matrix_world@vertex.co for vertex in foot.data.vertices]
-    bottom=min(q.z for q in points);deck=-67.0
+    bottom=min(q.z for q in points)
+    xx=sum(q.x for q in points)/len(points);yy=-sum(q.y for q in points)/len(points)
+    deck=deck_level(yy)
     if bottom>deck+1.0:
-     xx=sum(q.x for q in points)/len(points);yy=-sum(q.y for q in points)/len(points)
      box(name+' deck landing',xx,yy,43,27,bottom+2,bottom-deck+8,m['dark'])
    objects|=set(bpy.data.objects)-supports_before
   root=bpy.data.objects.new(name,None);bpy.context.collection.objects.link(root)
@@ -896,6 +921,34 @@ def export_glb():
   prefixes=WORK_NAMES.get(name,[])
   fixed=[o for o in root.children if o.type=='MESH' and not any(o.name.startswith(v) for v in prefixes) and 'channel work' not in o.name]
   merge(fixed,name+' structure')
+ # Self-cavity is computed on each rigid structure, never against inactive
+ # count variants or moving work meshes. It cannot leave phantom machine
+ # shadows in a one-device room. Cross-part shadows remain the live bake's.
+ for root in groups.values():
+  for obj in root.children:
+   if obj.type!='MESH' or not obj.name.endswith(' structure'):continue
+   data=obj.data;world=obj.matrix_world;normal_matrix=world.to_3x3().inverted().transposed()
+   positions=[world@v.co for v in data.vertices]
+   tree=BVHTree.FromPolygons(positions,[list(p.vertices) for p in data.polygons],all_triangles=False,epsilon=.015)
+   attribute=data.color_attributes.new(name='local_cavity',type='FLOAT_COLOR',domain='CORNER')
+   data.color_attributes.active_color_index=len(data.color_attributes)-1
+   data.color_attributes.render_color_index=len(data.color_attributes)-1
+   cache={};colors=[]
+   for loop,corner in zip(data.loops,data.corner_normals):
+    normal=(normal_matrix@corner.vector).normalized()
+    key=(loop.vertex_index,round(normal.x,3),round(normal.y,3),round(normal.z,3))
+    if key not in cache:
+     tangent=normal.cross(Vector((0,0,1)) if abs(normal.z)<.85 else Vector((0,1,0))).normalized()
+     bitangent=normal.cross(tangent);start=positions[loop.vertex_index]+normal*1.15;blocked=0.
+     for sample in range(8):
+      u=(sample+.5)/8;z=math.sqrt(1-u);r=math.sqrt(u);a=sample*2.399963229728653
+      direction=normal*z+tangent*(r*math.cos(a))+bitangent*(r*math.sin(a))
+      hit=tree.ray_cast(start,direction,72.)
+      if hit[0] is not None:blocked+=(1-hit[3]/72.)**2
+     cache[key]=max(.38,1-blocked/8*.82)
+    value=cache[key];colors.extend((value,value,value,1.))
+   attribute.data.foreach_set('color',colors)
+   print('BAKED_LOCAL_CAVITY',obj.name,len(cache),'samples_per_vertex',8,flush=True)
  for id,d in DATA['devices'].items():
   p=Vector(d['device_port']);axis=Vector(d['axis_to_device']).normalized()
   inlet=bpy.data.objects.new('power_in_'+id,None);bpy.context.collection.objects.link(inlet);inlet.parent=groups[id]
@@ -922,7 +975,7 @@ def export_glb():
    bpy.ops.object.select_all(action='DESELECT');o.select_set(True);bpy.context.view_layer.objects.active=o;bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY',center='BOUNDS')
  bpy.ops.object.select_all(action='SELECT')
  path=ROOT/'faceted-reactor.glb'
- bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',export_yup=False,export_apply=True,export_cameras=False,export_lights=False,export_extras=True)
+ bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',export_yup=False,export_apply=True,export_cameras=False,export_lights=False,export_extras=True,export_vertex_color='ACTIVE')
  bpy.context.view_layer.update()
  parts={}
  for key,root in groups.items():
