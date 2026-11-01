@@ -1,5 +1,5 @@
 {
-  "source_commit": "b7b93143f1a9f43e018f286e9dd4c12b3c3312cb",
+  "source_commit": "bf626b73e09f1974caa458472df59430501b69ca",
   "replace_paths": [
     "space-battleship/src/ui/reactor_scene.gd",
     "space-battleship/src/ui/reactor_stage.gd",
@@ -11,6 +11,7 @@
     "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
     "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
     "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-structure-outline.gdshader",
     "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
     "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
     "space-battleship/assets/ui/reactor/b01/reactor_ports.json"

@@ -1,5 +1,5 @@
 {
-  "source_commit": "b7b93143f1a9f43e018f286e9dd4c12b3c3312cb",
+  "source_commit": "bf626b73e09f1974caa458472df59430501b69ca",
   "files": {
     "space-battleship/src/ui/reactor_scene.gd": {
       "bytes": 28924,
@@ -7,9 +7,9 @@
       "git_blob": "e1dd4d4738440c0ab037cdae9bc93645e0adc703"
     },
     "space-battleship/src/ui/reactor_stage.gd": {
-      "bytes": 18549,
-      "sha256": "f1b9e3cb2d70955137fce971a4b17f87b9203d768795b301511500dfe7073b51",
-      "git_blob": "4dc0b8a5805b1af2276b4fffdf0bfa99a45ae1ec"
+      "bytes": 19197,
+      "sha256": "4ce96ab1c19422b7fc94a50fc89d2a0b083fa0ff5bc365c6c66dd84e901ae618",
+      "git_blob": "4a17a3f1e6ebf7408be7762cd406b72158c5f4cc"
     },
     "space-battleship/assets/ui/reactor/b01/README.md": {
       "bytes": 1140,
@@ -50,6 +50,11 @@
       "bytes": 341,
       "sha256": "1f2522f49dce14cdea311656631c1f08aba3a5966c1d629fdffcc9c17b3656c5",
       "git_blob": "0cb2849cc13754fbfea1123863c7d028dbbdd8c1"
+    },
+    "space-battleship/assets/ui/reactor/b01/faceted-structure-outline.gdshader": {
+      "bytes": 360,
+      "sha256": "43ffcdd958654088c0982561dc14055835f8d5a9578a925e65314a99f4c61e1b",
+      "git_blob": "d693c5e23f3af0718939dbe0e00270b84430f250"
     },
     "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader": {
       "bytes": 1010,
