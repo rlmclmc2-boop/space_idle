@@ -30,9 +30,13 @@ void fragment() {
     float fine_gas = value_noise(p * 13.0 + 41.0) * 0.45
         + value_noise(p * 24.0 + 11.0) * 0.25;
     float blue_vein = smoothstep(0.55, 0.72, detail + fine_gas * 0.23);
+    // Preserve the broad smoky mass while a few fine, broken cyan wisps
+    // catch the light; avoid hard contour bands at page scale.
+    float bright_wisp = smoothstep(0.56, 0.70,
+        detail + value_noise(p * 13.0 + 41.0) * 0.15);
     float cloud = max(smoothstep(0.30, 0.59, detail), filament * 0.58);
-    cloud = max(cloud, blue_vein * 0.42) * envelope;
+    cloud = max(cloud, max(blue_vein * 0.54, bright_wisp * 0.46)) * envelope;
     vec3 hue = mix(vec3(0.045, 0.14, 0.39), vec3(0.14, 0.46, 0.90), detail);
-    hue = mix(hue, vec3(0.18, 0.62, 1.0), blue_vein * 0.28);
+    hue = mix(hue, vec3(0.25, 0.75, 1.0), max(blue_vein, bright_wisp) * 0.46);
     COLOR = vec4(hue, cloud * 0.86);
 }

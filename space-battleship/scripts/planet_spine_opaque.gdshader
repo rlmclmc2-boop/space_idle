@@ -9,6 +9,7 @@ uniform float hull_roughness = 0.68;
 uniform float hull_metallic = 0.10;
 uniform vec2 panel_grid = vec2(0.0);
 uniform float facade_gradient = 0.0;
+uniform float armor_reflection = 0.0;
 uniform vec3 body_scale = vec3(1.0);
 uniform vec3 stellar_field_tint = vec3(1.0);
 uniform float stellar_field_strength = 0.0;
@@ -61,8 +62,14 @@ void fragment() {
 	vec3 faceted = color * (1.0 - 0.52 * bright_armor * edge);
 	faceted += vec3(0.015, 0.027, 0.032) * (1.0 - bright_armor) * smoothstep(0.48, 0.86, edge);
 	ALBEDO = mix(faceted, stellar_field_tint, inner_field * 0.22);
-	ROUGHNESS = max(0.50, hull_roughness - (panel_grid.x > 0.5 ? 0.10 : 0.0));
+	// Broad armored shells have a controlled satin return; recessed machinery
+	// keeps its original diffuse response. This reads at the actual page scale.
+	float return_light = armor_reflection * pow(max(dot(reflect(-normalize(VIEW), normalize(NORMAL)),
+		normalize(vec3(0.35, 0.72, 0.61))), 0.0), 6.0);
+	ALBEDO += vec3(0.032, 0.044, 0.049) * return_light;
+	ROUGHNESS = max(0.36, hull_roughness - (panel_grid.x > 0.5 ? 0.10 : 0.0) - armor_reflection * 0.14);
 	METALLIC = hull_metallic;
+	SPECULAR = mix(0.35, 0.78, armor_reflection);
 	if (luminous) {
 		EMISSION = color * 1.0;
 	} else if (textured) {
