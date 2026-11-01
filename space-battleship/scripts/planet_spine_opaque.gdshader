@@ -7,6 +7,8 @@ uniform bool textured = false;
 uniform bool luminous = false;
 uniform float hull_roughness = 0.68;
 uniform float hull_metallic = 0.10;
+uniform vec2 panel_grid = vec2(0.0);
+uniform float facade_gradient = 0.0;
 uniform vec3 body_scale = vec3(1.0);
 uniform vec3 stellar_field_tint = vec3(1.0);
 uniform float stellar_field_strength = 0.0;
@@ -39,14 +41,27 @@ void fragment() {
 	if (textured) {
 		color *= texture(albedo_tex, UV).rgb;
 	}
+	// Only authored broad armor surfaces opt in to a restrained inset seam.
+	// Authored armor UVs keep detail on selected faces without a noisy world grid.
+	if (panel_grid.x > 0.5) {
+		vec2 cell = abs(fract(UV * panel_grid) - vec2(0.5));
+		float border = max(cell.x, cell.y);
+		float recess = smoothstep(0.455, 0.485, border);
+		float lip = smoothstep(0.405, 0.442, border) * (1.0 - smoothstep(0.445, 0.474, border));
+		color = color * (1.0 - recess * 0.23) + vec3(lip * 0.035);
+	}
+	if (facade_gradient > 0.0) {
+		color *= 1.0 - facade_gradient * (1.0 - smoothstep(0.05, 0.90, UV.y));
+	}
 	float inner_field = (1.0 - smoothstep(0.025, 0.22, UV.x)) * stellar_field_strength;
 	// Let bright armor turn to a dark faceted edge at grazing angles. The
 	// pressure hull stays navy while its structural silhouette gains definition.
 	float bright_armor = smoothstep(0.20, 0.42, dot(color, vec3(0.30, 0.59, 0.11)));
 	float edge = 1.0 - smoothstep(0.12, 0.56, abs(dot(normalize(NORMAL), normalize(VIEW))));
 	vec3 faceted = color * (1.0 - 0.52 * bright_armor * edge);
+	faceted += vec3(0.015, 0.027, 0.032) * (1.0 - bright_armor) * smoothstep(0.48, 0.86, edge);
 	ALBEDO = mix(faceted, stellar_field_tint, inner_field * 0.22);
-	ROUGHNESS = hull_roughness;
+	ROUGHNESS = max(0.50, hull_roughness - (panel_grid.x > 0.5 ? 0.10 : 0.0));
 	METALLIC = hull_metallic;
 	if (luminous) {
 		EMISSION = color * 1.0;

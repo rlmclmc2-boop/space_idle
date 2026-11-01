@@ -178,9 +178,43 @@ func _depth_clip_orbital_model(node: Node) -> void:
 			material.set_shader_parameter("luminous", original.emission_enabled)
 			material.set_shader_parameter("hull_roughness", original.roughness)
 			material.set_shader_parameter("hull_metallic", original.metallic)
+			material.set_shader_parameter("panel_grid", _armor_panel_grid(node.name))
+			if node.name.begins_with("Dock deep armored portal fascia") or node.name.begins_with("Dock angled end armor cheek") or node.name.begins_with("Manufacturing sloped load shoulder"):
+				material.set_shader_parameter("facade_gradient", 0.16)
 			node.set_surface_override_material(index, material)
 			_orbital_depth_materials.append(material)
 	for child in node.get_children(): _depth_clip_orbital_model(child)
+
+func _armor_panel_grid(authored_name: String) -> Vector2:
+	# Broad authored box faces and explicitly UV-mapped armor plates only.
+	# Curved pieces retain their authored facet and silhouette treatment.
+	if authored_name.begins_with("Dock continuous pressure landing deck"):
+		return Vector2(3, 4)
+	if authored_name.begins_with("Docked shuttle fuselage"):
+		return Vector2(2, 3)
+	if authored_name.begins_with("Shuttle visible swept pressure hull"):
+		return Vector2(2, 4)
+	if authored_name.begins_with("Shuttle broad lifting wing"):
+		return Vector2(1, 2)
+	if authored_name.begins_with("Shuttle upper engine cowling"):
+		return Vector2(1, 2)
+	if authored_name.begins_with("Fabrication room separated armor roof"):
+		return Vector2(1, 2)
+	if authored_name.begins_with("Dock separated service bay roof"):
+		return Vector2(1, 1)
+	for prefix in ["Dock deep armored portal fascia", "Dock angled end armor cheek",
+			"Dock sloped outer entrance shoulder", "Manufacturing sloped load shoulder"]:
+		if authored_name.begins_with(prefix): return Vector2(1, 2)
+	if authored_name.begins_with("Fabrication room continuous dark hull"):
+		return Vector2(1, 3)
+	if authored_name.begins_with("Manufacturing full pressure sole"):
+		return Vector2(2, 3)
+	for prefix in ["Dock inner service pod roof", "Dock inner pressure socket cheek",
+			"Dock separated service bay dark hull", "Dock side-deck dark removable service plate",
+			"Manufacturing segmented load-floor armor tile",
+			"Manufacturing outer wall removable armor panel"]:
+		if authored_name.begins_with(prefix): return Vector2.ONE
+	return Vector2.ZERO
 
 func configure_shape(appearance: Dictionary) -> void:
 	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
