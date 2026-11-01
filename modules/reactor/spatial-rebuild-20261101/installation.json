@@ -1,5 +1,5 @@
 {
-  "source_commit": "bf626b73e09f1974caa458472df59430501b69ca",
+  "source_commit": "b9afb41cd34e43372f83f438716a234b3a93edbf",
   "replace_paths": [
     "space-battleship/src/ui/reactor_scene.gd",
     "space-battleship/src/ui/reactor_stage.gd",

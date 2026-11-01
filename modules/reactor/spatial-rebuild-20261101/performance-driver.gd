@@ -43,6 +43,7 @@ func run():
  var started: int=Time.get_ticks_usec();var game_start: float=session.game_time
  scene.bind_presentation(session.reactor_system.presentation_model,func():return {"game_time":game_start+float(Time.get_ticks_usec()-started)/1000000.0,"paused":frozen,"running":true})
  await frames(3)
+ print("PROFILE_SCENE ",JSON.stringify(session.campaign_system.save_state().state))
  print("PROFILE_CONTEXT fixed_battle_and_session=true wall_clock_visual_1x=true renderer=Mesa_llvmpipe_GL_compatibility no_recording=true size=",root.size," loads=",scene._stage._loads)
  await measure("projected_animated_first",scene,5.0)
  frozen=true;await frames(3)
