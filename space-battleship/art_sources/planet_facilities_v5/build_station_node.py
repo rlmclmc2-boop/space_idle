@@ -235,14 +235,14 @@ loft("Station elevated command hull", [
 ], navy, root)
 # The real load walls carry a broad, shallow command pressure saucer. Its
 # annular edge links the observation crown to those walls without a loose pod.
-cylinder("Command load saucer", (0,0,1.44), 1.20,.22, blue, root, 32)
-bpy.ops.mesh.primitive_torus_add(major_radius=1.17, minor_radius=.065,
+cylinder("Command load saucer", (0,0,1.44), 1.08,.22, blue, root, 32)
+bpy.ops.mesh.primitive_torus_add(major_radius=1.05, minor_radius=.065,
                                 major_segments=48, minor_segments=8,
                                 location=(0,0,1.43))
 finish(bpy.context.object, "Command saucer ivory pressure seam", ivory, root, 0)
 for angle_index in range(8):
     a=angle_index*math.tau/8
-    box("Saucer amber service port", (1.15*math.cos(a),1.15*math.sin(a),1.52),
+    box("Saucer amber service port", (1.03*math.cos(a),1.03*math.sin(a),1.52),
         (.08,.08,.045), amber, root, .007)
 box("Command deck crown armor", (0,0,1.78), (.92,1.15,.16), ivory, root, .055)
 for x in (-.36,0,.36):
@@ -253,13 +253,13 @@ for side in (-1, 1):
         box("Bridge frame", (x,side*.85,1.51), (.035,.045,.30), edge, root, .005)
 
 spin = node("HabitatRingSpin", root, (0,0,1.82))
-bpy.ops.mesh.primitive_torus_add(major_radius=1.00, minor_radius=.09,
+bpy.ops.mesh.primitive_torus_add(major_radius=.89, minor_radius=.09,
                                 major_segments=48, minor_segments=10,
                                 location=(0,0,0))
 finish(bpy.context.object, "Turning observation annulus", ivory, spin, 0)
 for i in range(8):
     angle = i*math.tau/8
-    box("Rotating navy sector", (1.00*math.cos(angle),1.00*math.sin(angle),0),
+    box("Rotating navy sector", (.89*math.cos(angle),.89*math.sin(angle),0),
         (.16,.14,.08), navy, spin, .012).rotation_euler.z = angle
 cylinder("Central docking rim", (0,0,1.89), .34,.11,ivory,root)
 cylinder("Dark open docking well", (0,0,1.95), .24,.025,navy,root)
