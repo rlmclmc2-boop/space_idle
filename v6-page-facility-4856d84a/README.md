@@ -1,0 +1,3 @@
+# Existing planet facility drawer selection review
+
+Source `wip/planet-thread-resume-20261101@4856d84a`, Godot 4.7.2 main scene at 1440×900. Local fixture grants the existing planet navigation and sets planet 1's four existing facility definitions to built only in memory. It opens the real facility drawer, selects station, refinery, workshop and shipyard in turn, and checks each selection. Log shows all four selections; screenshot shows the shipyard detail and page composition with drawer open. This checks module display/selection only, not campaign unlock, construction, claim, persistence or art acceptance.
