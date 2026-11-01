@@ -28,11 +28,14 @@
       "space-battleship/docs/game-design/13-art-interaction.md",
       "space-battleship/docs/game-design/art/modules/planet.md"
     ],
-    "actual_original_branch_updated": false,
+    "actual_original_branch_updated": true,
     "supersedes": "docs/handoff-consumption-equipment-20261101",
     "non_markdown_tree_identical": true,
     "remote_readback": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
-    "original_branch_head_at_delivery": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1"
+    "original_branch_head_at_delivery": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1",
+    "consumption_commit": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
+    "latest_observed_original_head": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
+    "consumption_status": "applied_and_readback_verified"
   },
   "reactor": {
     "source_branch": "implement/reactor-centered-godot",
@@ -47,11 +50,14 @@
       "space-battleship/docs/game-design/art/modules/planet.md",
       "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md"
     ],
-    "actual_original_branch_updated": false,
+    "actual_original_branch_updated": true,
     "supersedes": "docs/handoff-consumption-reactor-20261101",
     "non_markdown_tree_identical": true,
     "remote_readback": "a4b1bfc3e9b44a50503bd921f6f3dd98c275376e",
-    "original_branch_head_at_delivery": "966a9132569d52ce9a1e641c1845f69c091a8371"
+    "original_branch_head_at_delivery": "966a9132569d52ce9a1e641c1845f69c091a8371",
+    "consumption_commit": "51b53311ff488b43717343638b80f0348bf8e9ba",
+    "latest_observed_original_head": "59b1086e93a574c7ff17bcbcb96aa7d8f93b0822",
+    "consumption_status": "applied_pending_handoff_cleanup"
   },
   "host": {
     "source_branch": "design/clear-zone-host",
@@ -65,11 +71,14 @@
       "space-battleship/docs/game-design/13-art-interaction.md",
       "space-battleship/docs/game-design/art/modules/planet.md"
     ],
-    "actual_original_branch_updated": false,
+    "actual_original_branch_updated": true,
     "supersedes": "docs/handoff-consumption-host-20261101",
     "non_markdown_tree_identical": true,
     "remote_readback": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
-    "original_branch_head_at_delivery": "b569f0e9d0728e13dc8af798149026cc94f004cf"
+    "original_branch_head_at_delivery": "b569f0e9d0728e13dc8af798149026cc94f004cf",
+    "consumption_commit": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
+    "latest_observed_original_head": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
+    "consumption_status": "applied_and_readback_verified"
   },
   "planet": {
     "source_branch": "wip/planet-thread-resume-20261101",
@@ -85,14 +94,17 @@
       "space-battleship/docs/verification/planet-single-side-godot/restore.md",
       "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md"
     ],
-    "actual_original_branch_updated": false,
+    "actual_original_branch_updated": true,
     "supersedes": [
       "docs/handoff-consumption-planet-20261101",
       "docs/final-scoped-docs-planet-20261101@0d3df5e13fc3ae58a99d5c60ae575dfb919ff147"
     ],
     "non_markdown_tree_identical": true,
     "remote_readback": "0704bcc78dc385855635e06c2134e08b58ac01e9",
-    "original_branch_head_at_delivery": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f"
+    "original_branch_head_at_delivery": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "consumption_commit": "569b98d2c13b9cc50deedaf4557f0c9f21c83042",
+    "latest_observed_original_head": "5fa475ca9ae36346d156c06e9fe67431b2d8821c",
+    "consumption_status": "applied_pending_handoff_cleanup"
   },
   "backend": {
     "source_branch": "feat/amount-safe-previews",
@@ -106,11 +118,14 @@
       "space-battleship/docs/game-design/13-art-interaction.md",
       "space-battleship/docs/game-design/art/modules/planet.md"
     ],
-    "actual_original_branch_updated": false,
+    "actual_original_branch_updated": true,
     "supersedes": "docs/handoff-consumption-backend-20261101",
     "non_markdown_tree_identical": true,
     "remote_readback": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
-    "original_branch_head_at_delivery": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8"
+    "original_branch_head_at_delivery": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8",
+    "consumption_commit": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
+    "latest_observed_original_head": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
+    "consumption_status": "applied_and_readback_verified"
   },
   "cleanup": {
     "source_branch": "docs/design-entry-cleanup-20261031",
