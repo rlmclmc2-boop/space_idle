@@ -11,6 +11,7 @@ uniform vec2 panel_grid = vec2(0.0);
 uniform float facade_gradient = 0.0;
 uniform float armor_reflection = 0.0;
 uniform float armor_surface = 0.0;
+uniform float armor_terminal_zone = 0.0;
 uniform float emission_boost = 1.0;
 uniform vec3 body_scale = vec3(1.0);
 uniform vec3 stellar_field_tint = vec3(1.0);
@@ -55,6 +56,13 @@ void fragment() {
 	}
 	if (facade_gradient > 0.0) {
 		color *= 1.0 - facade_gradient * (1.0 - smoothstep(0.05, 0.90, UV.y));
+	}
+	// The terminal is one continuous pressure shell, with a cooler lower load
+	// region beneath its ivory shoulder. Keep this broad material split inside
+	// the authored facade instead of stacking another box over the open bay.
+	if (armor_terminal_zone > 0.0) {
+		float lower = 1.0 - smoothstep(0.38, 0.54, UV.y);
+		color = mix(color, color * vec3(0.54, 0.66, 0.71), lower * armor_terminal_zone);
 	}
 	// Broad, UV-locked ceramic/metal variation gives the large authored plates
 	// a finished surface. Suppress fine detail as it approaches pixel size so
