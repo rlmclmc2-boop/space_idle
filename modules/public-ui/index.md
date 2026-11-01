@@ -45,3 +45,5 @@
 - [f7d3 descending-sluice shared host](f7d3-sluice-shared-20261101/README.md): fixed 94fb2019 full screens and actual 1x short capture; author observations only.
 
 - [5ae3 shield and bay reflections in shared host](5ae3-shield-bay-shared-20261101/README.md): ec2cea75 zero/load/equipment pages and actual 1x window capture, with full-page author observations.
+
+- [Unified whole-screen abstraction proposal](unified-abstraction-proposal-20261101/README.md): static art-direction candidate and asset scope after ec2cea75 rejection, pending choice.

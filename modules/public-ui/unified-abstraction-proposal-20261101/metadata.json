@@ -1,0 +1,17 @@
+{
+  "kind": "static_art_direction_proposal",
+  "source_runtime_context": "ec2cea75582c06f3fba696d87686d11680eaa329",
+  "generated_with": "image_gen",
+  "concept_canvas": [
+    1586,
+    992
+  ],
+  "implementation_canvas": [
+    1440,
+    900
+  ],
+  "jpeg_quality": 97,
+  "jpeg_subsampling": "4:4:4",
+  "jpeg_bytes": 941252,
+  "implementation_assets_modified": false
+}
