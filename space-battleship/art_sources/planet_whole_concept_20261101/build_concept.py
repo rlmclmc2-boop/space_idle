@@ -26,6 +26,8 @@ def material(name, color, metallic=.0, rough=.68, emission=0.0):
 
 
 ARMOR = material("Warm faceted ivory armor", (.52,.47,.36), .05, .74)
+ARMOR_FACE = material("Lit ivory armor facets", (.90,.78,.60), .04, .78)
+ARMOR_SIDE = material("Recessed slate armor flanks", (.10,.17,.21), .09, .78)
 EDGE = material("Dark slate panel edge", (.085,.13,.16), .16, .75)
 KEEL = material("Deep navy pressure keel", (.012,.035,.055), .10, .80)
 MACHINE = material("Machine steel", (.043,.095,.115), .10, .72)
@@ -70,6 +72,9 @@ def box(name, pos, size, mat, root=None, bevel=.035):
 
 def beam(name, start, end, width, depth, mat, root=None):
     a, b = Vector(start), Vector(end)
+    if mat == ARMOR:
+        width *= .84
+        depth *= .84
     obj = box(name, (a+b)*.5, (width,depth,(b-a).length), mat, root, min(width,depth)*.16)
     obj.rotation_euler = (b-a).to_track_quat('Z','Y').to_euler()
     return obj
@@ -125,7 +130,8 @@ def armor_prism(name, outline, bottom, top, mat, root=None):
     faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
     mesh=bpy.data.meshes.new(name); mesh.from_pydata(vertices,[],faces); mesh.update()
     obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
-    return finish(obj,name,mat,root,.025)
+    obj=finish(obj,name,mat,root,.025)
+    return armor_facets(obj) if mat == ARMOR else obj
 
 
 def slope_shell(name, outline, top_heights, thickness, mat, root=None):
@@ -138,7 +144,17 @@ def slope_shell(name, outline, top_heights, thickness, mat, root=None):
     faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update()
     obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
-    return finish(obj,name,mat,root,.025)
+    obj=finish(obj,name,mat,root,.025)
+    return armor_facets(obj) if mat == ARMOR else obj
+
+
+def armor_facets(obj):
+    """Color the broad upper armor plane separately from its load-bearing flanks."""
+    obj.data.materials.append(ARMOR_FACE)
+    obj.data.materials.append(ARMOR_SIDE)
+    for polygon in obj.data.polygons:
+        polygon.material_index = 1 if polygon.normal.z > .45 else 2
+    return obj
 
 
 # The ring is one dark pressure system with two armored bank beams, a work
@@ -270,9 +286,10 @@ beam("Hall lengthwise raised ridge",(-.97,0,1.86),(.97,0,1.86),.20,.22,EDGE,work
 armor_prism("Rear sealed fabrication vault",
             [(-1.13,.13),(1.13,.13),(1.03,.88),(-1.03,.88)],
             1.53,1.70,EDGE,workshop)
-slope_shell("Broad faceted fabrication vault roof",
-            [(-1.08,.15),(1.08,.15),(1.00,.82),(-1.00,.82)],
-            [1.73,1.73,1.98,1.98],.19,ARMOR,workshop)
+for lo,hi,rise in ((-1.08,-.37,0),(-.36,.36,.10),(.37,1.08,0)):
+    slope_shell("Three stepped armored fabrication roof cassettes",
+                [(lo,.15),(hi,.15),(hi-.04,.82),(lo+.04,.82)],
+                [1.73+rise,1.73+rise,1.98+rise,1.98+rise],.19,ARMOR,workshop)
 for x in (-.63,0,.63):
     beam("Vault transverse armored rib",(x,.14,1.77),(x,.79,1.96),.13,.16,EDGE,workshop)
 box("Vault front dark service hatch",(0,.105,1.41),(1.10,.07,.22),KEEL,workshop,.025)
