@@ -3,16 +3,16 @@ extends Node3D
 ## geometry continues behind the planet's depth mask instead of ending there.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
 const ARC_BOUNDS := {
-	"auto_explore": Vector2(PI * 1.075, PI * 1.39),
-	"refinery": Vector2(PI * 1.39, TAU - 0.16),
-	"equipment": Vector2(-0.16, PI * 0.5),
-	"shipyard": Vector2(PI * 0.5, PI * 1.075),
+	"auto_explore": Vector2(PI * 1.138889, PI * 1.6),
+	"refinery": Vector2(PI * 1.6, TAU + PI / 15.0),
+	"equipment": Vector2(PI / 15.0, PI * 0.6),
+	"shipyard": Vector2(PI * 0.6, PI * 1.138889),
 }
 const FACILITY_ANGLES := {
-	"auto_explore": PI * 1.155,
-	"refinery": TAU - 0.36,
-	"equipment": 0.78,
-	"shipyard": PI - 0.78,
+	"auto_explore": PI * 1.388889,
+	"refinery": PI * 1.722222,
+	"equipment": PI * 0.238889,
+	"shipyard": PI * 0.722222,
 }
 # Keep the common load path close to terrestrial globes while leaving the
 # four authored work nodes and their independent owned arc ends intact.
@@ -75,6 +75,14 @@ func _ready() -> void:
 		# broad warm armor plates. The central channel belongs to this section.
 		_add_section_hull(root, bounds.x, bounds.y, NODE_WIDTH, kind)
 		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
+		if kind == "auto_explore":
+			_add_integrated_hull(root, PI * 1.416667, bounds.y, 1.0, true, false)
+		elif kind == "refinery":
+			_add_integrated_hull(root, bounds.x, PI * 1.833333, 1.0, false, true)
+		elif kind == "equipment":
+			_add_integrated_hull(root, 0.35, 1.0, 0.60, true, true)
+		elif kind == "shipyard":
+			_add_integrated_hull(root, PI * 0.633333, PI * 0.855556, 0.70, true, true)
 		for rib_index in range(1, 6):
 			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
@@ -179,6 +187,56 @@ func _add_terminal_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3
 		surface.set_uv(entry[1])
 		surface.add_vertex(entry[0])
 
+func _integrated_profile(angle: float, shape: float, extent: float) -> Array[Vector3]:
+	var occupied := shape * extent
+	var normal := plane_normal()
+	var radial := point(angle).normalized()
+	var inner := RADIUS - 0.12 - 0.07 * occupied
+	var middle := RADIUS + 0.02 + 0.06 * occupied
+	var outer := RADIUS + 0.13 + 0.30 * occupied
+	var inner_height := 0.19 + 0.27 * occupied
+	var outer_height := 0.19 + 0.47 * occupied
+	var bottom := -0.18 - 0.08 * occupied
+	return [radial * inner + normal * inner_height,
+		radial * middle + normal * (inner_height + 0.025),
+		radial * outer + normal * outer_height,
+		radial * inner + normal * bottom,
+		radial * outer + normal * bottom]
+
+func _add_integrated_hull(parent: Node3D, begin: float, finish: float, extent: float, taper_start: bool, taper_end: bool) -> void:
+	# Each owner carries a closed portion of the same pressurized arc. The two
+	# upper owners meet at full section; lower work bays taper into the transit.
+	var inner_roof := SurfaceTool.new()
+	var armor_roof := SurfaceTool.new()
+	var walls := SurfaceTool.new()
+	var underside := SurfaceTool.new()
+	for surface in [inner_roof, armor_roof, walls, underside]:
+		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var steps := maxi(24, ceili((finish - begin) * 120.0))
+	for index in steps:
+		var t0 := float(index) / float(steps)
+		var t1 := float(index + 1) / float(steps)
+		var a := lerpf(begin, finish, t0)
+		var b := lerpf(begin, finish, t1)
+		var sa := (smoothstep(0.0, 0.10, a - begin) if taper_start else 1.0) * (smoothstep(0.0, 0.10, finish - a) if taper_end else 1.0)
+		var sb := (smoothstep(0.0, 0.10, b - begin) if taper_start else 1.0) * (smoothstep(0.0, 0.10, finish - b) if taper_end else 1.0)
+		var pa := _integrated_profile(a, sa, extent)
+		var pb := _integrated_profile(b, sb, extent)
+		_add_terminal_quad(inner_roof, pa[0], pb[0], pa[1], pb[1], plane_normal(), t0, t1)
+		_add_terminal_quad(armor_roof, pa[1], pb[1], pa[2], pb[2], plane_normal(), t0, t1)
+		_add_terminal_quad(underside, pa[3], pb[3], pa[4], pb[4], -plane_normal(), t0, t1)
+		_add_terminal_quad(walls, pa[3], pb[3], pa[0], pb[0], -point(a).normalized(), t0, t1)
+		_add_terminal_quad(walls, pa[4], pb[4], pa[2], pb[2], point(a).normalized(), t0, t1)
+	for angle in [begin, finish]:
+		var profile := _integrated_profile(angle, 0.0 if (angle == begin and taper_start) or (angle == finish and taper_end) else 1.0, extent)
+		var facing := (point(angle + 0.001) - point(angle - 0.001)).normalized() * (-1.0 if angle == begin else 1.0)
+		_add_terminal_quad(walls, profile[3], profile[4], profile[0], profile[2], facing, 0.0, 1.0)
+	for spec in [[inner_roof, _channel], [armor_roof, _deck], [walls, _side], [underside, _navy]]:
+		var instance := MeshInstance3D.new()
+		instance.mesh = (spec[0] as SurfaceTool).commit()
+		instance.material_override = spec[1]
+		parent.add_child(instance)
+
 func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float, kind: String = "") -> void:
 	# One shared cross-section runs through every owned arc and completed join.
 	# The lit inset is set into its armored wall, above the structural keel.
@@ -281,7 +339,7 @@ func _section_width(kind: String, angle: float) -> float:
 	blend *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
 	# The authored GLB now *is* the wide bearing segment. This runtime mesh is
 	# only the through beam entering its core, not another platform beneath it.
-	var node_width := 0.56 if kind in ["auto_explore", "refinery"] else 0.64
+	var node_width := 0.56 if kind in ["auto_explore", "refinery"] else 0.96
 	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:
@@ -297,7 +355,7 @@ func _shell_scale(kind: String, angle: float) -> float:
 	var node := 1.0 - smoothstep(0.11, 0.34, absf(angle - FACILITY_ANGLES[kind]))
 	var bounds: Vector2 = ARC_BOUNDS[kind]
 	node *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
-	return lerpf(0.46, 0.58, node)
+	return lerpf(0.46, 0.74 if kind in ["equipment", "shipyard"] else 0.58, node)
 
 func _shoulder_lift(kind: String, angle: float) -> float:
 	if kind == "": return 0.0
