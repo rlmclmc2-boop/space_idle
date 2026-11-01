@@ -106,8 +106,8 @@ func _ready() -> void:
 	add_child(world_planet_picker)
 	_track_picker(world_planet_picker)
 	world_planet_picker.item_selected.connect(func(index): select_planet(str(world_planet_picker.get_item_metadata(index))))
-	_stop_button = _action(self, "本次完成后停止", func(): return _planet.set_automatic(_selected_id, false))
-	_cancel_button = _action(self, "立即取消探索", func(): return _cancel.call(_selected_id))
+	_stop_button = _action(self, "本次完成后停止", func(): return _with_success(_planet.set_automatic(_selected_id, false), "本次完成后停止自动探索"))
+	_cancel_button = _action(self, "立即取消探索", func(): return _with_success(_cancel.call(_selected_id), "已取消本次探索"))
 	_paint_button(_stop_button)
 	_paint_button(_cancel_button)
 	for label in [_task_line, _feedback, _wallet]:
@@ -489,10 +489,17 @@ func _toggle_section(section: String) -> void:
 	_layout()
 
 func _clear_body() -> void:
+	_detail_text = null
 	_work_text = null
 	_work_bar = null
 	_unlock_text = null
 	_factor_text = null
+	_claim_button = null
+	_reforge_button = null
+	_auto_button = null
+	_member_picker = null
+	_assignment_picker = null
+	world_building_picker = null
 	for child in _drawer_body.get_children():
 		_drawer_body.remove_child(child)
 		child.queue_free()
@@ -625,7 +632,7 @@ func _build_facility_detail() -> void:
 			_drawer_body.add_child(_reforge_button)
 			_paint_secondary(_reforge_button)
 		if fact.state == "ready":
-			_claim_button = _action(_drawer_body, "领取", func(): return _planet.claim_build(_selected_id, _selected_facility, _publish))
+			_claim_button = _action(_drawer_body, "领取", func(): return _with_success(_planet.claim_build(_selected_id, _selected_facility, _publish), "设施已领取"))
 			_claim_button.disabled = not fact.claim_allowed
 			if not fact.claim_allowed: _caption(_drawer_body, describe_error(str(fact.claim_reason)))
 		break
@@ -670,8 +677,7 @@ func _build_crew_detail() -> void:
 		var fact: Dictionary = member_facts[0]
 		var occupation := str({"": "空闲", "planet_explore": "星球探索", "planet_build": "设施施工", "system_job": "岗位", "galaxy": "星系建设", "hyperspace": "超空间任务"}.get(fact.kind, fact.kind))
 		_caption(_drawer_body, "当前：%s%s" % [occupation, " · " + str(fact.target) if not str(fact.target).is_empty() else ""])
-		for option in _planet.assignment_options([_selected_id]):
-			if fact.kind == option.kind and fact.target == option.target: assigned_here = true
+		assigned_here = (fact.kind == "planet_explore" and str(fact.target) == _selected_id) or (fact.kind == "planet_build" and str(fact.target).begins_with(_selected_id + ":"))
 	_assignment_picker = OptionButton.new()
 	_track_picker(_assignment_picker)
 	_drawer_body.add_child(_assignment_picker)
@@ -684,8 +690,8 @@ func _build_crew_detail() -> void:
 	_action(_drawer_body, "派遣", func():
 		var option: Dictionary = _picker_value(_assignment_picker, {})
 		if option.is_empty(): return {"ok": false, "reason": "PlanetBuildingUnavailable"}
-		return _coordinate.call(str(_picker_value(_member_picker)), str(option.kind), str(option.target)))
-	var release := _action(_drawer_body, "撤回本星球人员", func(): return _coordinate.call(str(_picker_value(_member_picker)), "", ""))
+		return _with_success(_coordinate.call(str(_picker_value(_member_picker)), str(option.kind), str(option.target)), "人员已派遣"))
+	var release := _action(_drawer_body, "撤回本星球人员", func(): return _with_success(_coordinate.call(str(_picker_value(_member_picker)), "", ""), "人员已撤回"))
 	_paint_button(release)
 	release.disabled = not assigned_here
 	if not assigned_here: release.tooltip_text = "所选船员当前未在本星球任职"
@@ -719,6 +725,11 @@ func _action(parent: Control, text: String, action: Callable) -> Button:
 		button.pressed.connect(perform)
 	_paint_button(button, "commit")
 	return button
+
+func _with_success(result: Dictionary, message: String) -> Dictionary:
+	if result.get("ok", false) and not result.has("message"):
+		result["message"] = message
+	return result
 
 static func describe_error(reason: String) -> String:
 	return str(ERRORS.get(reason, preload("res://src/ui/player_text.gd").error(reason)))
