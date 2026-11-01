@@ -1,0 +1,3 @@
+# Full-page runtime blocker
+
+Source `wip/planet-thread-resume-20261101@ece6e462`. Godot 4.7.2 stable; local Linux native library compiled by `addons/native_battle/build_native_linux.py` against the pinned godot-cpp `507ed9d` and dumped 4.7.2 extension API. A temporary .gdextension descriptor loaded the library; the game then crashed with signal 11 in `libspace_native.so` while `Crew._initial` called `api.apply("zero", [])` during `GameSession.initialize`, before the planet page appeared. The first unsuccessful attempt passed the .so directly as SPACE_IDLE_NATIVE_EXTENSION; its error was corrected by supplying the descriptor. The second attempt is the real runtime blocker. No production code was changed for this probe.
