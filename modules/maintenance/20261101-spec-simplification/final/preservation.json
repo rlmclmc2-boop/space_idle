@@ -442,5 +442,89 @@
     "after_lines": 9,
     "before_chars": 422,
     "after_chars": 430
+  },
+  {
+    "group": "planet-v2",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/planet-v2/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "388c23754b1281576a1cb42ca7070e741d8557ee",
+    "sha256": "ecd4a23be687af0b8f8086a18a6a11f18b937e1fcde53db923f9c9607d0f0a24",
+    "before_lines": 14,
+    "after_lines": 12,
+    "before_chars": 1249,
+    "after_chars": 1203
+  },
+  {
+    "group": "planet-v2",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/planet-v2/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+    "blob": "41def71eb63864e149724fd315b442880790b0e7",
+    "sha256": "0a73cf4bef5e3988119f9d83f60325886dd59118067f078f45225b6d5bf349fc",
+    "before_lines": 14,
+    "after_lines": 19,
+    "before_chars": 760,
+    "after_chars": 712
+  },
+  {
+    "group": "planet-v2",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/restore.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/planet-v2/space-battleship/docs/verification/planet-single-side-godot/restore.md",
+    "blob": "70b009561e6c30ecfa2b2cba51864155da307f17",
+    "sha256": "dcd63febe60d592a368cca9d3f5c8e90ad11dbc713429e13b2031d760c47f859",
+    "before_lines": 3,
+    "after_lines": 3,
+    "before_chars": 269,
+    "after_chars": 182
+  },
+  {
+    "group": "planet-v2",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "path": "space-battleship/docs/game-design/06-data.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/planet-v2/space-battleship/docs/game-design/06-data.md",
+    "blob": "413ab292378991fe7bb40b165aec842f52aaa012",
+    "sha256": "bf3ee5d0b5f8f8f5f92eaac7f48613d82e4e7ffa17657b910d8a0c170b5dda8c",
+    "before_lines": 141,
+    "after_lines": 132,
+    "before_chars": 8553,
+    "after_chars": 8207
+  },
+  {
+    "group": "planet-v2",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "path": "space-battleship/docs/game-design/07-verification.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/planet-v2/space-battleship/docs/game-design/07-verification.md",
+    "blob": "8c5ca7184190994e127808ede945e718e593b431",
+    "sha256": "9977c798ae929a37eb2f615127874d87ad6eab77b6d0dc9552914951e833b25d",
+    "before_lines": 126,
+    "after_lines": 126,
+    "before_chars": 7266,
+    "after_chars": 7231
+  },
+  {
+    "group": "planet-v2",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "path": "space-battleship/docs/game-design/13-art-interaction.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/planet-v2/space-battleship/docs/game-design/13-art-interaction.md",
+    "blob": "2b1b944783e4d1770818cee8d0c73842942346f4",
+    "sha256": "ebdfc7b41c698557dc734fc12894e2bd1703bb7ef7545c9107efb34d8e5c8aaa",
+    "before_lines": 90,
+    "after_lines": 90,
+    "before_chars": 3916,
+    "after_chars": 3925
+  },
+  {
+    "group": "planet-v2",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "path": "space-battleship/docs/game-design/art/modules/planet.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/original/planet-v2/space-battleship/docs/game-design/art/modules/planet.md",
+    "blob": "525127e0eaffb62f8c7a26c13b0085672775fcab",
+    "sha256": "5cb70cbd677956baadd0d4aa6df2ea95472e573875d0dc4dfd98c25bf1b4b6ab",
+    "before_lines": 15,
+    "after_lines": 15,
+    "before_chars": 1242,
+    "after_chars": 866
   }
 ]
