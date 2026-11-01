@@ -1,0 +1,34 @@
+{
+  "branch": "design/clear-zone-host",
+  "runtime_source": "079f2ec95df871711bbb32931b027373a9c30e12",
+  "planet_handoff": "23b5e91e875815c8dd2481531a77f0004a11434f",
+  "planet_assets": "38315226",
+  "ready_for_current_user_review": true,
+  "recommended_attachments": [
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 471033,
+      "sha256": "0d148d7a61bd7173b53efec9771adc56ec8df19c6d7f94ec7319a75f7fd42cb0"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 447961,
+      "sha256": "e39a8ae15d00ea2bf9d713f430b2aad905410c0855f3ebf05ea434df97756dfa"
+    },
+    {
+      "path": "planet-v14-shared-1x-6s.mp4",
+      "bytes": 1244164,
+      "sha256": "53f14cc9356929ac689022c54bdba4f1a42b93c3ea9709c7f6726a0b952ae096"
+    }
+  ],
+  "additional_whole_pages": [
+    "planet-crew.jpg",
+    "planet-conquest-expanded.jpg"
+  ],
+  "video_parts_manifest": "video-parts.json",
+  "display_size": [
+    1440,
+    900
+  ],
+  "movie_note": "6秒180帧30fps、展示层1×、MovieMaker离线生成"
+}
