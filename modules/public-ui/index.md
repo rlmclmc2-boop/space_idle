@@ -63,3 +63,5 @@
 - v8星球当前公共宿主组合 `3c63dc9a`：[planet-v8-shared-20261101](planet-v8-shared-20261101/README.md)。
 
 - v12星球公共整页与同版离线动态 `ee5377bf`：[planet-v12-shared-20261101](planet-v12-shared-20261101/README.md)。
+
+- 星球UI修复精确消费 `e7591438`：[planet-ui-fix-shared-20261101](planet-ui-fix-shared-20261101/README.md)。

@@ -1,0 +1,18 @@
+{
+  "runtime_source": "e75914383d3a5df4bf9b34ec0c4c74df7d7cc3a0",
+  "planet_ui_source": "44494e8d6723cb876f2117a79f8c6679238cda3f",
+  "path": "space-battleship/src/ui/planet_panel.gd",
+  "blob": "47e7214462a1f239694846bfc85050aa8bc73152",
+  "reference_fixture": "archive/planet-resume-20261101@bb21a053:ui-state-fdb72e5a/planet-ui-state.gd",
+  "method": "原组FakePlanet/FakeCrew接口夹具，当前panel加载公共主题；仅补退出清理",
+  "result_groups": [
+    "CREW_READY_WITHDRAW_OK",
+    "BUILDING_PROGRESS_AND_PAUSE_OK",
+    "CLAIM_ID_AND_FEEDBACK_OK",
+    "BUILT_STATE_REBINDS_OK",
+    "OWNER_CLAIM_ADMISSION_OK",
+    "SWITCH_REBINDS_CLAIM_OK",
+    "CREW_DISPATCH_CURRENT_ID_OK",
+    "STOP_CANCEL_CURRENT_ID_OK"
+  ]
+}
