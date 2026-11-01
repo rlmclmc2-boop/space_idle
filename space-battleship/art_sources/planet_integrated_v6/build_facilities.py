@@ -270,7 +270,9 @@ def shipyard(root,m):
         beam("Dock open overhead portal",(x,-.77,1.02),(x,.77,1.02),.14,.16,m["work"],root)
         for side in (-1,1):
             beam("Dock portal riser",(x,side*.76,.40),(x,side*.76,1.02),.13,.15,m["armor"],root)
-    shuttle=empty("Docked small craft",root,(-.76,0,.18))
+    # The hull vertices already use dock-local coordinates. A second offset
+    # would push its nose beyond the two cantilevers and hide most of the craft.
+    shuttle=empty("Docked small craft",root)
     loft_x("Shuttle new tapered hull",[
         (-2.36,0,.65,.04,.06),(-1.95,0,.64,.17,.12),
         (-1.25,0,.66,.26,.17),(-.75,0,.64,.19,.12),
