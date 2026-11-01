@@ -1,6 +1,6 @@
 extends Node3D
-## Four owned, load-bearing orbital sections share one tilted plane. Their rear
-## geometry continues behind the planet's depth mask instead of ending there.
+## Four owned orbital guideway sections share one tilted plane. Their fine
+## rails pass through the larger facility nodes of the approved drawing.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
 const ARC_BOUNDS := {
 	"auto_explore": Vector2(PI * 1.138889, PI * 1.583333),
@@ -16,7 +16,7 @@ const FACILITY_ANGLES := {
 }
 # Keep the common load path close to terrestrial globes while leaving the
 # four authored work nodes and their independent owned arc ends intact.
-const RADIUS := 4.35
+const RADIUS := 6.78
 const REAR_TRANSIT_WIDTH := 0.22
 const FRONT_TRANSIT_WIDTH := 0.30
 const NODE_WIDTH := 0.36
@@ -35,6 +35,7 @@ var _channel: ShaderMaterial
 var _sleeve: ShaderMaterial
 var _ivory: ShaderMaterial
 var _rear_rim: ShaderMaterial
+var _tram: Node3D
 var _all_materials: Array[ShaderMaterial] = []
 
 static func plane_normal() -> Vector3:
@@ -71,40 +72,90 @@ func _ready() -> void:
 		root.name = kind + "SpineSection"
 		add_child(root)
 		var bounds: Vector2 = ARC_BOUNDS[kind]
-		# A real thick section: dark keel and side walls remain visible under
-		# broad warm armor plates. The central channel belongs to this section.
-		_add_section_hull(root, bounds.x, bounds.y, NODE_WIDTH, kind)
-		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
-		if kind == "auto_explore":
-			_add_integrated_hull(root, PI * 1.416667, bounds.y, 1.0, true, false)
-		elif kind == "refinery":
-			_add_integrated_hull(root, bounds.x, PI * 1.833333, 1.0, false, true)
-		elif kind == "equipment":
-			_add_integrated_hull(root, 0.35, 1.0, 0.60, true, true)
-		elif kind == "shipyard":
-			_add_integrated_hull(root, PI * 0.633333, PI * 0.855556, 0.70, true, true)
+		_add_thin_track(root, bounds.x, bounds.y)
 		for rib_index in range(1, 6):
 			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
-				# Carry each deck seam around the real owned pressure box; the
-				# transverse clamp interrupts the inset power line at the same cut.
-				_add_curved_deck(root, rib_angle - 0.008, rib_angle + 0.008, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
-				for side in [-1.0, 1.0]:
-					_add_wall(root, rib_angle - 0.008, rib_angle + 0.008,
-						side * (NODE_WIDTH * 0.5 + 0.018), -0.38, 0.27, _side, kind)
-		_add_mount(root, kind, FACILITY_ANGLES[kind])
-		_joins[kind] = _add_join(root, bounds.y, kind)
+				_add_track_box(root, rib_angle - 0.009, rib_angle + 0.009,
+					-0.19, 0.19, -0.13, 0.19, _side)
+		var join := Node3D.new()
+		join.name = "FineTrackJoin"
+		root.add_child(join)
+		_joins[kind] = join
 		var caps: Array[Node3D] = []
 		for angle in [bounds.x, bounds.y]:
 			var cap := Node3D.new()
-			cap.name = "BuiltSectionTaperedTerminal"
-			var outward := -1.0 if angle == bounds.x else 1.0
-			_add_tapered_terminal(cap, angle, outward, kind)
+			cap.name = "ClosedTrackTerminal"
+			_add_track_box(cap, angle - 0.013, angle + 0.013,
+				-0.19, 0.19, -0.14, 0.20, _side)
 			root.add_child(cap)
 			caps.append(cap)
 		_arcs[kind] = root
 		_end_caps[kind] = caps
 		root.visible = false
+	_add_orbital_tram()
+
+func _add_track_box(parent: Node3D, begin: float, finish: float,
+		inner: float, outer: float, bottom: float, top: float, material: Material) -> void:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var up := plane_normal()
+	var steps := maxi(3, ceili(absf(finish - begin) * 96.0))
+	for index in steps:
+		var a := lerpf(begin, finish, float(index) / float(steps))
+		var b := lerpf(begin, finish, float(index + 1) / float(steps))
+		var ai := point(a) * ((RADIUS + inner) / RADIUS)
+		var ao := point(a) * ((RADIUS + outer) / RADIUS)
+		var bi := point(b) * ((RADIUS + inner) / RADIUS)
+		var bo := point(b) * ((RADIUS + outer) / RADIUS)
+		_add_terminal_quad(surface, ai + up * top, bi + up * top,
+			ao + up * top, bo + up * top, up, 0.0, 1.0)
+		_add_terminal_quad(surface, ai + up * bottom, bi + up * bottom,
+			ai + up * top, bi + up * top, -ai.normalized(), 0.0, 1.0)
+		_add_terminal_quad(surface, ao + up * bottom, bo + up * bottom,
+			ao + up * top, bo + up * top, ao.normalized(), 0.0, 1.0)
+	var instance := MeshInstance3D.new()
+	instance.mesh = surface.commit()
+	instance.material_override = material
+	parent.add_child(instance)
+
+func _add_thin_track(parent: Node3D, begin: float, finish: float) -> void:
+	_add_track_box(parent, begin, finish, -0.14, 0.14, -0.10, 0.06, _navy)
+	for radial in [-0.11, 0.11]:
+		_add_track_box(parent, begin, finish, radial - 0.032, radial + 0.032,
+			0.06, 0.145, _deck)
+	_add_track_box(parent, begin, finish, -0.012, 0.012, 0.08, 0.12, _cyan)
+
+func _tram_part(parent: Node3D, name: String, size: Vector3,
+		position: Vector3, material: Material) -> void:
+	var node := MeshInstance3D.new()
+	node.name = name
+	var box := BoxMesh.new()
+	box.size = size
+	node.mesh = box
+	node.position = position
+	node.material_override = material
+	parent.add_child(node)
+
+func _add_orbital_tram() -> void:
+	_tram = Node3D.new()
+	_tram.name = "TrackConstrainedOrbitalTram"
+	add_child(_tram)
+	_tram_part(_tram, "Captured dark bogie", Vector3(0.93, 0.09, 0.23),
+		Vector3(0.0, -0.06, 0.0), _navy)
+	_tram_part(_tram, "Faceted ivory tram cabin", Vector3(0.81, 0.18, 0.26),
+		Vector3(0.0, 0.065, 0.0), _deck)
+	_tram_part(_tram, "Dark beveled tram roof", Vector3(0.66, 0.045, 0.23),
+		Vector3(0.0, 0.177, 0.0), _side)
+	for side in [-1.0, 1.0]:
+		_tram_part(_tram, "Continuous side window", Vector3(0.59, 0.07, 0.014),
+			Vector3(-0.025, 0.092, side * 0.137), _channel)
+		for bogie_x in [-0.26, 0.26]:
+			_tram_part(_tram, "Captured rail bogie", Vector3(0.12, 0.11, 0.055),
+				Vector3(bogie_x, -0.075, side * 0.10), _navy)
+	_tram_part(_tram, "Cyan forward windscreen", Vector3(0.035, 0.10, 0.18),
+		Vector3(0.39, 0.085, 0.0), _cyan)
+	_tram.visible = false
 
 func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
 	var result := ShaderMaterial.new()
@@ -576,6 +627,14 @@ func configure(owned: Array) -> void:
 		var caps: Array = _end_caps[kind]
 		caps[0].visible = KINDS[(index + KINDS.size() - 1) % KINDS.size()] not in _owned
 		caps[1].visible = KINDS[(index + 1) % KINDS.size()] not in _owned
+	_tram.visible = _owned.size() == KINDS.size()
 
 func update_pose(clock: float) -> void:
 	basis = Basis(Vector3(0.0, -TILT_Z, -TILT_Y), clock * 0.045)
+	# The car stays captured by the same physical guideway as the four built
+	# sections. It runs only after the entire loop exists.
+	var angle := fposmod(clock * 0.32 + PI * 0.5, TAU)
+	var tangent := (point(angle + 0.001) - point(angle - 0.001)).normalized()
+	var up := plane_normal()
+	_tram.position = point(angle) + up * 0.25
+	_tram.basis = Basis(tangent, up, tangent.cross(up).normalized())
