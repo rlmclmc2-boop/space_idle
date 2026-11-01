@@ -144,6 +144,41 @@ def faceted_dome(name, root, center, rings, sides=12):
     return obj
 
 
+def dome_honeycomb_seams(root, center, rings, sides=12):
+    """Raised seam lattice following the gold crown's stepped radial profile."""
+    def radius_at(height):
+        for (z0,r0),(z1,r1) in zip(rings,rings[1:]):
+            if z0 <= height <= z1:
+                t=(height-z0)/(z1-z0)
+                return r0+(r1-r0)*t
+        return rings[-1][1]
+    stride=tau/sides
+    half_height=.10
+    seen=set()
+    for row,middle in enumerate((1.79,1.94,2.09)):
+        for sector in range(sides):
+            angle=(sector+(row%2)*.5)*stride
+            # Point-up hexagons tile across each row and into the staggered
+            # next row. Deduplicate shared edges so seams cannot overdraw.
+            outline=((angle,middle+half_height),
+                     (angle+stride*.50,middle+half_height*.50),
+                     (angle+stride*.50,middle-half_height*.50),
+                     (angle,middle-half_height),
+                     (angle-stride*.50,middle-half_height*.50),
+                     (angle-stride*.50,middle+half_height*.50))
+            for start,end in zip(outline,outline[1:]+outline[:1]):
+                key=tuple(sorted(((round(start[0]%tau,5),round(start[1],5)),
+                                  (round(end[0]%tau,5),round(end[1],5)))))
+                if key in seen: continue
+                seen.add(key)
+                def surface(point):
+                    a,z=point
+                    r=radius_at(z)+.030
+                    return (center[0]+r*cos(a),center[1]+r*sin(a),z)
+                beam("Heat dome honeycomb pressure seam",
+                     surface(start),surface(end),.020,.012,DOME_SEAM,root)
+
+
 def annular_band(name, inner, outer, zlo, zhi, mat, begin=0, end=tau, n=128):
     verts=[]
     for i in range(n+1):
@@ -560,13 +595,8 @@ for side in (-1,1):
         (side*1.43,0,1.46),(.025,.12,.045),AMBER,refinery,.004)
 faceted_dome("Heat chamber gold faceted crown",refinery,(0,-.32),
              ((1.47,.96),(1.68,.99),(1.94,.80),(2.13,.46),(2.21,.19)))
-for i in range(12):
-    a=tau*i/12
-    for z0,r0,z1,r1 in ((1.68,1.005,1.94,.82),(1.94,.82,2.13,.48)):
-        beam("Heat dome faceted radial pressure seam",
-             (r0*cos(a),-.32+r0*sin(a),z0),
-             (r1*cos(a),-.32+r1*sin(a),z1),
-             .014,.014,DOME_SEAM,refinery)
+dome_honeycomb_seams(refinery,(0,-.32),
+                     ((1.47,.96),(1.68,.99),(1.94,.80),(2.13,.46),(2.21,.19)))
 cyl("Contained furnace dark collar",(0,-.32,2.22),.19,.08,EDGE,refinery,12)
 cyl("Contained furnace amber aperture",(0,-.32,2.27),.15,.04,AMBER,refinery,12)
 torus("Furnace retaining ring",(0,-.32,2.29),.20,.035,ARMOR_SIDE,refinery)
@@ -684,6 +714,16 @@ for side in (-1,1):
                     [(x-.27,roof_y-.18),(x+.27,roof_y-.18),
                      (x+.25,roof_y+.18),(x-.25,roof_y+.18)],
                     [1.08,1.08,1.00,1.00],.10,ARMOR,workshop)
+        # A recessed trapezoid follows the roof pitch. The broad dark shape
+        # stays legible at the actual page size without closing the work bay.
+        slope_shell("Fabrication room pitched service hatch recess",
+                    [(x-.17,roof_y-.12),(x+.17,roof_y-.12),
+                     (x+.16,roof_y+.12),(x-.16,roof_y+.12)],
+                    [1.092,1.092,1.039,1.039],.014,ARMOR_SIDE,workshop)
+        slope_shell("Fabrication room removable hatch crown",
+                    [(x-.115,roof_y-.083),(x+.115,roof_y-.083),
+                     (x+.105,roof_y+.083),(x-.105,roof_y+.083)],
+                    [1.100,1.100,1.063,1.063],.010,ARMOR_MID,workshop)
     box("Fabrication room roof dark expansion joint",(x,-.93,1.08),(.075,1.23,.025),EDGE,workshop,.004)
     for y in (-1.37,-.97,-.57):
         box("Fabrication room removable armor cassette",(side*1.30,y,.91),
@@ -802,6 +842,14 @@ for side in (-1,1):
                     [(x-.20,bay_y-.24),(x+.20,bay_y-.24),
                      (x+.20,bay_y+.24),(x-.20,bay_y+.24)],
                     [1.16,1.16,1.10,1.10],.11,ARMOR_FACE,shipyard)
+        slope_shell("Dock service bay dark pitched roof inset",
+                    [(x-.13,bay_y-.17),(x+.13,bay_y-.17),
+                     (x+.13,bay_y+.17),(x-.13,bay_y+.17)],
+                    [1.172,1.172,1.130,1.130],.014,ARMOR_SIDE,shipyard)
+        slope_shell("Dock service bay central enamel panel",
+                    [(x-.09,bay_y-.12),(x+.09,bay_y-.12),
+                     (x+.09,bay_y+.12),(x-.09,bay_y+.12)],
+                    [1.180,1.180,1.150,1.150],.010,ARMOR_MID,shipyard)
     for y in (-1.53,-.71):
         box("Dock removable sloped armor bay",(side*1.07,y,.93),
             (.10,.31,.52),ARMOR,shipyard,.012)
@@ -840,6 +888,12 @@ armor_prism("Shuttle visible swept pressure hull",
             [(-.34,-.72),(.34,-.72),(.43,-1.36),(.28,-1.95),
              (0,-2.42),(-.28,-1.95),(-.43,-1.36)],
             1.20,1.31,ARMOR_FACE,shipyard)
+for side in (-1,1):
+    armor_prism("Shuttle shallow dorsal navy armor channel",
+                [(side*.29,-.90),(side*.37,-1.34),
+                 (side*.24,-1.96),(side*.17,-1.87),
+                 (side*.25,-1.33)],
+                1.310,1.326,ARMOR_SIDE,shipyard)
 for side in (-1,1):
     armor_prism("Shuttle broad lifting wing",
                 [(side*.26,-1.35),(side*.93,-1.67),

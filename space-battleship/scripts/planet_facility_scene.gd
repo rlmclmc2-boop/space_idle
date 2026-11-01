@@ -175,7 +175,7 @@ func _depth_clip_orbital_model(node: Node) -> void:
 		# The shallow, overlapping shuttle wing shells self-shadow into a dotted
 		# pattern at the actual page size. The enclosing bay still casts its real
 		# structural shadows across the vessel and landing deck.
-		if node.name.begins_with("Shuttle visible swept pressure hull") or node.name.begins_with("Shuttle broad lifting wing") or node.name.begins_with("Shuttle upper engine cowling"):
+		if node.name.begins_with("Shuttle visible swept pressure hull") or node.name.begins_with("Shuttle broad lifting wing") or node.name.begins_with("Shuttle upper engine cowling") or node.name.begins_with("Shuttle shallow dorsal navy armor channel") or node.name.begins_with("Heat dome honeycomb pressure seam"):
 			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		for index in node.mesh.get_surface_count():
 			var original := node.mesh.surface_get_material(index) as StandardMaterial3D
