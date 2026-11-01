@@ -14,6 +14,7 @@ var _world := Node3D.new()
 var _camera := Camera3D.new()
 var _scene_environment: WorldEnvironment
 var _scene_light: DirectionalLight3D
+var _fill_light: DirectionalLight3D
 var _spine: Node3D
 var _models: Dictionary = {}
 var _parts: Dictionary = {}
@@ -31,18 +32,8 @@ var _pulse_strength := 0.0
 var _pulse_speed := 0.08
 var _surface_clock := 0.0
 var _workshop_arm_base_y := 0.0
-var _workshop_body_sprite: Sprite3D
-var _workshop_arm_sprite: Sprite3D
-var _workshop_carriage_sprite: Sprite3D
-var _workshop_link: MeshInstance3D
-var _refinery_shutter_sprites: Dictionary = {}
-var _refinery_body_sprite: Sprite3D
 var _refinery_feed_markers: Array[MeshInstance3D] = []
-var _shipyard_crane_sprite: Sprite3D
-var _shipyard_ring_sprite: Sprite3D
-const WORKSHOP_ARM_SPLIT_Y := 428.0
-const WORKSHOP_ARM_IMAGE_HEIGHT := 1024.0
-const WORKSHOP_ARM_IMAGE_WIDTH := 1536.0
+var _orbital_depth_materials: Array[ShaderMaterial] = []
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -70,12 +61,22 @@ func _ready() -> void:
 	light.light_energy = 0.95
 	_world.add_child(light)
 	_scene_light = light
+	var fill := DirectionalLight3D.new()
+	fill.rotation_degrees = Vector3(24, 132, 0)
+	fill.light_color = Color("b5d4df")
+	fill.light_energy = 0.18
+	_world.add_child(fill)
+	_fill_light = fill
 	_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	_camera.position.z = 18
 	_world.add_child(_camera)
 	_spine = preload("res://scripts/planet_orbital_spine.gd").new()
 	_world.add_child(_spine)
+	# Lift the shared plane enough for the rear load path to crest above the
+	# globe; the depth mask still hides the parts behind its silhouette.
+	# The front path crosses the lower limb as one physical ring.
+	_spine.position.y = 0.25
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
@@ -92,7 +93,7 @@ func _ready() -> void:
 	_occluder.material_override = mask
 	_world.add_child(_occluder)
 	for kind in KINDS:
-		var model: Node3D = load("res://assets/planets/facilities_v5/" + kind + ".glb").instantiate()
+		var model: Node3D = load("res://assets/planets/facilities_v6/" + kind + ".glb").instantiate()
 		_spine.add_child(model)
 		_models[kind] = model
 		var moving: Dictionary = {}
@@ -101,104 +102,17 @@ func _ready() -> void:
 			assert(pivot != null, "Missing facility work pivot: " + kind + "/" + part_name)
 			moving[part_name] = pivot
 		_parts[kind] = moving
-		if kind == "equipment": _install_workshop_illustration(model, moving)
-		if kind == "refinery": _install_refinery_illustration(model, moving)
-		if kind == "shipyard": _install_shipyard_illustration(model, moving)
-		_transparent_materials(model)
+		if kind == "auto_explore": _depth_clip_orbital_model(model)
+		if kind == "equipment": _workshop_arm_base_y = (moving["ToolArmSweep"] as Node3D).position.y
+		if kind in ["equipment", "shipyard", "refinery"]: _depth_clip_orbital_model(model)
+		if kind == "refinery": _install_refinery_work(model)
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
 
-func _install_workshop_illustration(model: Node3D, moving: Dictionary) -> void:
-	# The approved R5 silhouette is carried by two depth-tested, camera-facing
-	# art layers. The original GLB keeps its named animation pivots and anchor.
-	_hide_imported_meshes(model)
-	var body := Sprite3D.new()
-	body.name = "IllustratedWorkshopBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/workshop-orbit-broad-planes.png")
-	body.pixel_size = 0.0031
-	body.position = Vector3(0, 1.38, 0)
-	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = true
-	body.double_sided = true
-	body.render_priority = 0
-	model.add_child(body)
-	_workshop_body_sprite = body
-	# Both sprites sample the original illustration. Splitting at the shoulder
-	# keeps the ivory carriage on the gantry while the tool works below it.
-	var arm_texture := preload("res://assets/planets/facilities_v5/illustrated/workshop-arm.png")
-	var carriage_texture := AtlasTexture.new()
-	carriage_texture.atlas = arm_texture
-	carriage_texture.region = Rect2(0, 0, WORKSHOP_ARM_IMAGE_WIDTH, WORKSHOP_ARM_SPLIT_Y)
-	var tool_texture := AtlasTexture.new()
-	tool_texture.atlas = arm_texture
-	tool_texture.region = Rect2(0, WORKSHOP_ARM_SPLIT_Y, WORKSHOP_ARM_IMAGE_WIDTH, WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y)
-	var gantry := moving["GantrySlide"] as Node3D
-	var carriage := Sprite3D.new()
-	carriage.name = "IllustratedGantryCarriage"
-	carriage.texture = carriage_texture
-	carriage.pixel_size = body.pixel_size
-	carriage.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	carriage.shaded = true
-	carriage.double_sided = true
-	carriage.render_priority = 2
-	gantry.add_child(carriage)
-	_workshop_carriage_sprite = carriage
-	var link := MeshInstance3D.new()
-	link.name = "TelescopingToolLink"
-	var link_mesh := CylinderMesh.new()
-	link_mesh.top_radius = 0.075
-	link_mesh.bottom_radius = 0.075
-	link_mesh.height = 1.0
-	link.mesh = link_mesh
-	var link_material := StandardMaterial3D.new()
-	link_material.albedo_color = Color("102b48")
-	link_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	link_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	link_material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
-	link_material.render_priority = 0
-	link.material_override = link_material
-	model.add_child(link)
-	_workshop_link = link
-	var arm := Sprite3D.new()
-	arm.name = "IllustratedToolArm"
-	arm.texture = tool_texture
-	arm.pixel_size = body.pixel_size
-	var arm_pivot := moving["ToolArmSweep"] as Node3D
-	_workshop_arm_base_y = arm_pivot.position.y
-	arm.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	arm.shaded = true
-	arm.double_sided = true
-	arm.render_priority = 1
-	arm_pivot.add_child(arm)
-	_workshop_arm_sprite = arm
-
-func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
-	# The upper shell has an open feed port; its lower load path belongs to the
-	# ring-mounted receiver. Cooler shutters keep their working layers.
-	_hide_imported_meshes(model)
-	var body := Sprite3D.new()
-	body.name = "IllustratedRefineryBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/refinery-orbit-broad-planes.png")
-	body.pixel_size = 0.0024
-	body.position = Vector3(0, 1.00, 0)
-	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = true
-	body.double_sided = true
-	model.add_child(body)
-	_refinery_body_sprite = body
-	for side in ["Left", "Right"]:
-		var pivot := moving["IntakeWheel" + side] as Node3D
-		var shutter := Sprite3D.new()
-		shutter.name = "IllustratedCoolerShutter" + side
-		shutter.texture = load("res://assets/planets/facilities_v5/illustrated/refinery-shutter-" + side.to_lower() + ".png")
-		shutter.pixel_size = body.pixel_size
-		shutter.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		shutter.shaded = false
-		shutter.double_sided = true
-		shutter.render_priority = 1
-		pivot.add_child(shutter)
-		_refinery_shutter_sprites[side] = shutter
+func _install_refinery_work(model: Node3D) -> void:
+	# The three moving loads follow the real recessed tread into the furnace
+	# mouth; all static walls, hoppers, and the mouth are imported 3D geometry.
 	var feed_material := StandardMaterial3D.new()
 	feed_material.albedo_color = Color("ffd079")
 	feed_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -208,137 +122,35 @@ func _install_refinery_illustration(model: Node3D, moving: Dictionary) -> void:
 	for index in 3:
 		var marker := MeshInstance3D.new()
 		marker.name = "ConveyorOreMarker%d" % index
-		var quad := QuadMesh.new()
-		quad.size = Vector2(0.065, 0.045)
-		marker.mesh = quad
+		var ore := BoxMesh.new()
+		ore.size = Vector3(0.11, 0.065, 0.12)
+		marker.mesh = ore
 		marker.material_override = feed_material
 		model.add_child(marker)
 		_refinery_feed_markers.append(marker)
 
-func _position_refinery_work(model: Node3D, clock: float) -> void:
-	_spine.aim_refinery_receiver()
-	var camera_to_model := model.global_transform.basis.inverse()
-	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
-	var screen_up := (camera_to_model * Vector3.UP).normalized()
-	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var width := _refinery_body_sprite.scale.x
-	# Seat the shell's open port over the upper end of one rigid receiver. Its
-	# lower tip stays at the refinery section's fixed physical socket.
-	var feed_opening_offset := screen_right * ((640.0 - 768.0) * _refinery_body_sprite.pixel_size) + screen_up * ((512.0 - 760.0) * _refinery_body_sprite.pixel_size)
-	var opening_world: Vector3 = _spine.to_global(_spine.refinery_feed_top()) + Vector3(0, 0, 0.12)
-	_refinery_body_sprite.position = model.to_local(opening_world) - feed_opening_offset
-	var base := _refinery_body_sprite.position + camera_front * 0.25
-	var opening := 0.5 + 0.5 * sin(clock * 0.70)
-	for side in ["Left", "Right"]:
-		var pivot := _parts["refinery"]["IntakeWheel" + side] as Node3D
-		var sign := -1.0 if side == "Left" else 1.0
-		var target := base + screen_up * (0.23 * opening) + screen_right * (sign * 0.10 * opening * width)
-		(_refinery_shutter_sprites[side] as Sprite3D).position = pivot.transform.basis.inverse() * (target - pivot.position)
-	# The existing moving loads travel on the receiver's physical short tread.
-	var tip := model.to_local(_spine.to_global(_spine.refinery_feed_tip()))
-	var upper := model.to_local(opening_world)
+func _position_refinery_work(_model: Node3D, clock: float) -> void:
 	for index in _refinery_feed_markers.size():
-		var travel := fposmod(clock * 0.20 + float(index) / 3.0, 1.0)
+		var travel := fposmod(clock * 0.28 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
-		marker.transform = Transform3D(Basis(screen_right * width, screen_up, camera_front), tip.lerp(upper, travel) + camera_front * 0.10)
+		marker.position = Vector3(lerpf(-1.15, -0.31, travel), 0.0, 0.36)
 
-func _install_shipyard_illustration(model: Node3D, moving: Dictionary) -> void:
-	# The open two-level cantilever stays fixed; only the service crane travels
-	# along its upper berth and the docking ring signals its active station.
-	_hide_imported_meshes(model)
-	var body := Sprite3D.new()
-	body.name = "IllustratedShipyardBody"
-	body.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-orbit-broad-planes.png")
-	body.pixel_size = 0.0030
-	body.position = Vector3(0, 1.36, 0)
-	body.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	body.shaded = true
-	body.double_sided = true
-	model.add_child(body)
-	var crane := Sprite3D.new()
-	crane.name = "IllustratedServiceCrane"
-	crane.texture = preload("res://assets/planets/facilities_v5/illustrated/shipyard-crane.png")
-	crane.pixel_size = body.pixel_size
-	crane.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	crane.shaded = true
-	crane.double_sided = true
-	crane.render_priority = 1
-	(moving["CraneSlide"] as Node3D).add_child(crane)
-	_shipyard_crane_sprite = crane
-	var ring_texture := AtlasTexture.new()
-	ring_texture.atlas = preload("res://assets/planets/facilities_v5/illustrated/shipyard-berth-ring.png")
-	ring_texture.region = Rect2(820, 310, 560, 390)
-	var ring := Sprite3D.new()
-	ring.name = "IllustratedDockCollar"
-	ring.texture = ring_texture
-	ring.pixel_size = body.pixel_size
-	ring.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	ring.shaded = true
-	ring.double_sided = true
-	ring.render_priority = 2
-	(moving["DockCollarSpin"] as Node3D).add_child(ring)
-	_shipyard_ring_sprite = ring
-
-func _position_shipyard_work(model: Node3D, clock: float) -> void:
-	var camera_to_model := model.global_transform.basis.inverse()
-	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
-	var screen_up := (camera_to_model * Vector3.UP).normalized()
-	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var origin := Vector3(0, 1.36, 0) + camera_front * 0.25
-	var crane_pivot := _parts["shipyard"]["CraneSlide"] as Node3D
-	var crane_target := origin + screen_right * (crane_pivot.position.x * 0.50)
-	_shipyard_crane_sprite.position = crane_pivot.transform.basis.inverse() * (crane_target - crane_pivot.position)
-	var ring_pivot := _parts["shipyard"]["DockCollarSpin"] as Node3D
-	# The ring crop is centered at source pixel (1100, 505) of a 1536x1024 artboard.
-	var ring_target := origin + screen_right * (332.0 * _shipyard_ring_sprite.pixel_size) + screen_up * (7.0 * _shipyard_ring_sprite.pixel_size)
-	_shipyard_ring_sprite.position = ring_pivot.transform.basis.inverse() * (ring_target - ring_pivot.position)
-	_shipyard_ring_sprite.modulate.a = 0.80 + 0.20 * (0.5 + 0.5 * sin(clock * 1.3))
-
-func _position_workshop_arm(model: Node3D) -> void:
-	# Keep the illustrated arm on a stable camera-facing layer. A direct child
-	# offset follows the tilted ground normal and crosses the body's depth plane,
-	# making the arm vanish behind opaque pixels during its vertical stroke.
-	var gantry := _parts["equipment"]["GantrySlide"] as Node3D
-	var pivot := _parts["equipment"]["ToolArmSweep"] as Node3D
-	# Sprite3D billboards face the camera. Its source image's X/Y axes are
-	# therefore camera right/up, not the model's tilted ground-tangent axes.
-	var camera_to_model := model.global_transform.basis.inverse()
-	var screen_right := (camera_to_model * Vector3.RIGHT).normalized()
-	var screen_up := (camera_to_model * Vector3.UP).normalized()
-	var camera_front := (camera_to_model * Vector3.BACK).normalized()
-	var width := _workshop_body_sprite.scale.x
-	var origin := _workshop_body_sprite.position + screen_right * (gantry.position.x * width) + camera_front * 0.25
-	var pixel_size := _workshop_arm_sprite.pixel_size
-	var carriage_center := origin + screen_up * (WORKSHOP_ARM_IMAGE_HEIGHT - WORKSHOP_ARM_SPLIT_Y) * pixel_size * 0.5
-	# The pivot still owns the game-clock cycle. Map its full stroke to a
-	# downward extension, keeping the tool below the rail at every phase.
-	var extension := (_workshop_arm_base_y + 0.35 - pivot.position.y) * 0.5
-	var tool_center := origin - screen_up * (WORKSHOP_ARM_SPLIT_Y * pixel_size * 0.5 + extension)
-	_workshop_carriage_sprite.position = carriage_center - gantry.position
-	_workshop_arm_sprite.position = pivot.transform.basis.inverse() * (tool_center - gantry.position - pivot.position)
-	# The telescoping section occupies only the opening below the fixed rail
-	# carriage; the tool art covers its lower end and the carriage covers its top.
-	_workshop_link.visible = extension > 0.01
-	if _workshop_link.visible:
-		var joint := origin - screen_right * (0.10 * width) + screen_up * ((WORKSHOP_ARM_IMAGE_HEIGHT * 0.5 - WORKSHOP_ARM_SPLIT_Y) * pixel_size)
-		_workshop_link.transform = Transform3D(Basis(screen_right, screen_up, camera_front).scaled(Vector3(width, extension + 0.10, 1)), joint - screen_up * extension * 0.5)
-
-func _hide_imported_meshes(node: Node) -> void:
-	if node is MeshInstance3D: node.visible = false
-	for child in node.get_children(): _hide_imported_meshes(child)
-
-func _transparent_materials(node: Node) -> void:
-	if node is MeshInstance3D:
+func _depth_clip_orbital_model(node: Node) -> void:
+	# Imported opaque armor must use the same globe intersection as the owned
+	# ring. A transparent depth mask cannot hide an already drawn opaque GLB.
+	if node is MeshInstance3D and node.mesh != null:
 		for index in node.mesh.get_surface_count():
-			var original = node.mesh.surface_get_material(index)
-			if original is StandardMaterial3D:
-				var material: StandardMaterial3D = original.duplicate()
-				material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-				material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
-				material.albedo_color.a = 0.999
-				material.render_priority = 0
-				node.set_surface_override_material(index, material)
-	for child in node.get_children(): _transparent_materials(child)
+			var original := node.mesh.surface_get_material(index) as StandardMaterial3D
+			if original == null: continue
+			var material := ShaderMaterial.new()
+			material.shader = preload("res://scripts/planet_spine_opaque.gdshader")
+			material.set_shader_parameter("tint", original.albedo_color)
+			material.set_shader_parameter("luminous", original.emission_enabled)
+			material.set_shader_parameter("hull_roughness", original.roughness)
+			material.set_shader_parameter("hull_metallic", original.metallic)
+			node.set_surface_override_material(index, material)
+			_orbital_depth_materials.append(material)
+	for child in node.get_children(): _depth_clip_orbital_model(child)
 
 func configure_shape(appearance: Dictionary) -> void:
 	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
@@ -348,6 +160,7 @@ func configure_shape(appearance: Dictionary) -> void:
 	var field_tint := Color("e9bd8d") if scale > 1.0 else Color("f1d6a9") if is_large_star else Color(str(appearance.get("atmosphereColor", "fff2df")))
 	_spine.set_stellar_field(field_tint, 0.62 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0)
 	_scene_light.light_color = Color("ffd3af") if scale > 1.0 and is_large_star else Color("ffe8c8") if is_large_star else Color("fff0d8")
+	_fill_light.light_color = Color("ffd2b5") if is_large_star else Color("b5d4df")
 	_scene_environment.environment.ambient_light_color = Color("b5a5a0") if scale > 1.0 and is_large_star else Color("a9adb1") if is_large_star else Color("91aeb6")
 	_pulse_strength = clampf(float(appearance.get("pulseStrength", 0.0)), 0.0, 0.05)
 	_pulse_speed = maxf(0, float(appearance.get("pulseSpeed", 0.08)))
@@ -374,7 +187,7 @@ func _layout() -> void:
 func _render_pixels() -> float:
 	# Compact stellar cores still need an orbital facility structure, but the
 	# full terrestrial ring makes the center read as an empty 700px hole.
-	return maxf(_body_pixels, minf(size.x * (0.16 if _compact_stellar else 0.235), size.y * (0.235 if _compact_stellar else 0.34)))
+	return maxf(_body_pixels, minf(size.x * (0.16 if _compact_stellar else 0.235), size.y * (0.285 if _compact_stellar else 0.34)))
 
 func update_pose(clock: float, surface_phase: float, body_pixels: float, surface_clock: float = -1.0) -> void:
 	_clock = clock
@@ -387,7 +200,15 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	var globe_scale := _body_pixels / _render_pixels()
 	_occluder.scale = Vector3(globe_scale * pulse, _axis_ratio * globe_scale * pulse, globe_scale * pulse)
 	_spine.set_body_scale(_occluder.scale)
+	for material in _orbital_depth_materials:
+		material.set_shader_parameter("body_scale", _occluder.scale)
 	_spine.update_pose(clock)
+	# update_pose sets a new rotation basis; apply the compact star scale after
+	# it so the common ring and all four sockets contract as one structure.
+	# A beamed core is capped by its beam envelope. Bring its ring slightly
+	# closer to the photosphere while retaining readable facility scale below.
+	var spine_scale := maxf(0.40, globe_scale) if _compact_stellar else 1.0
+	_spine.scale = Vector3.ONE * spine_scale
 	for kind in _owned:
 		var model: Node3D = _models[kind]
 		_animate_parts(kind, clock)
@@ -395,12 +216,24 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# The built saddle orbits with the spine; the service module keeps an
 		# upright attitude on that saddle, so long solar wings do not roll into
 		# detached vertical slivers as the orbital structure turns.
-		var scale_factor := 0.36 if kind == "auto_explore" else 0.42
+		var scale_factor := 0.85 if kind == "auto_explore" else 0.80 if kind == "refinery" else 0.75 if kind == "equipment" else 0.72
+		# The beamed core is limited by its long visible beam envelope. Give its
+		# four real work nodes enough area to retain their individual silhouettes
+		# while the common ring stays compact around the photosphere.
+		if _compact_stellar and spine_scale < 0.50:
+			scale_factor *= 0.50 / spine_scale
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
-		model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
-		if kind == "equipment": _position_workshop_arm(model)
+		if kind in ["shipyard", "equipment", "auto_explore", "refinery"]:
+			# Both open work bays are authored in the owned section's local frame.
+			# The workshop's through axis follows the actual orbit tangent.
+			var outward: Vector3 = _spine.point(a).normalized()
+			var axis_x: Vector3 = -outward if kind == "shipyard" else (_spine.point(a + 0.001) - _spine.point(a - 0.001)).normalized()
+			var axis_y: Vector3 = _spine.plane_normal()
+			var model_scale := Vector3(scale_factor, 0.62 if kind == "auto_explore" else scale_factor, scale_factor)
+			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(model_scale), _spine.socket_position(a, kind))
+		else:
+			model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
 		if kind == "refinery": _position_refinery_work(model, clock)
-		if kind == "shipyard": _position_shipyard_work(model, clock)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _animate_parts(kind: String, clock: float) -> void:

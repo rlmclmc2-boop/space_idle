@@ -3,24 +3,27 @@ extends Node3D
 ## geometry continues behind the planet's depth mask instead of ending there.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
 const ARC_BOUNDS := {
-	"auto_explore": Vector2(PI, PI * 1.5),
-	"refinery": Vector2(PI * 1.5, TAU),
-	"equipment": Vector2(0.0, PI * 0.5),
-	"shipyard": Vector2(PI * 0.5, PI),
+	"auto_explore": Vector2(PI * 1.075, PI * 1.39),
+	"refinery": Vector2(PI * 1.39, TAU - 0.16),
+	"equipment": Vector2(-0.16, PI * 0.5),
+	"shipyard": Vector2(PI * 0.5, PI * 1.075),
 }
 const FACILITY_ANGLES := {
-	"auto_explore": PI * 1.09,
-	"refinery": TAU - 0.25,
-	"equipment": 0.42,
-	"shipyard": PI - 0.42,
+	"auto_explore": PI * 1.155,
+	"refinery": TAU - 0.36,
+	"equipment": 0.78,
+	"shipyard": PI - 0.78,
 }
-const RADIUS := 4.5
-const TRANSIT_WIDTH := 0.84
-const NODE_WIDTH := 1.50
-const TILT_Y := 0.72
-const TILT_Z := 0.694
+# Keep the common load path close to terrestrial globes while leaving the
+# four authored work nodes and their independent owned arc ends intact.
+const RADIUS := 4.35
+const REAR_TRANSIT_WIDTH := 0.55
+const FRONT_TRANSIT_WIDTH := 0.96
+const NODE_WIDTH := 1.35
+const TILT_Y := 0.66
+const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
-const SOCKET_HEIGHT := 0.65
+const SOCKET_HEIGHT := 0.36
 var _arcs: Dictionary = {}
 var _end_caps: Dictionary = {}
 var _joins: Dictionary = {}
@@ -29,11 +32,10 @@ var _navy: ShaderMaterial
 var _side: ShaderMaterial
 var _cyan: ShaderMaterial
 var _deck: ShaderMaterial
+var _channel: ShaderMaterial
 var _sleeve: ShaderMaterial
+var _ivory: ShaderMaterial
 var _all_materials: Array[ShaderMaterial] = []
-var _refinery_receiver: Node3D
-var _refinery_receiver_vector := Vector3.ZERO
-var _workshop_guides: Node3D
 
 static func plane_normal() -> Vector3:
 	return Vector3(0.0, TILT_Z, TILT_Y)
@@ -42,35 +44,12 @@ static func point(angle: float) -> Vector3:
 	return Vector3(RADIUS * cos(angle), -RADIUS * TILT_Y * sin(angle), RADIUS * TILT_Z * sin(angle))
 
 static func socket_position(angle: float, kind: String) -> Vector3:
-	# The refinery upper shell sits inside its real deck node; its old baked
-	# floor is gone. Other facility roots keep their existing R5 pose.
-	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.53
-	var radial_offset := -0.30 if kind == "refinery" else (-0.16 if kind == "equipment" else 0.0)
+	# The refinery upper shell sits inside its real deck node. The station
+	# bears closer to the ring center so its port no longer hangs beyond the
+	# owned side wall; the through passage remains open at both ends.
+	var height := SOCKET_HEIGHT if kind == "auto_explore" else 0.44
+	var radial_offset := 0.12 if kind == "auto_explore" else -0.30 if kind == "refinery" else -0.16 if kind == "equipment" else -0.24 if kind == "shipyard" else 0.0
 	return point(angle) + point(angle).normalized() * radial_offset + plane_normal() * height
-
-static func refinery_feed_tip() -> Vector3:
-	return point(FACILITY_ANGLES["refinery"]) + plane_normal() * 0.47
-
-static func _refinery_unaimed_feed_top() -> Vector3:
-	var a: float = FACILITY_ANGLES["refinery"]
-	return point(a) * ((RADIUS - 0.12) / RADIUS) + plane_normal() * 0.62
-
-func refinery_feed_top() -> Vector3:
-	return _refinery_receiver.position + _refinery_receiver.basis * _refinery_receiver_vector
-
-func aim_refinery_receiver() -> void:
-	# The short rigid receiver swivels at its fixed ring socket with the
-	# upright service shell. No endpoint selection or section geometry moves.
-	var desired: Vector3 = global_transform.basis.inverse() * Vector3(-0.10, 0.13, 0.18)
-	var from: Vector3 = _refinery_receiver_vector
-	var axis := desired.normalized()
-	var aim := Quaternion(from.normalized(), axis)
-	var facing: Vector3 = global_transform.basis.inverse() * Vector3.BACK
-	var current_up: Vector3 = aim * plane_normal()
-	var roll_from := (current_up - axis * current_up.dot(axis)).normalized()
-	var roll_to := (facing - axis * facing.dot(axis)).normalized()
-	var roll := atan2(axis.dot(roll_from.cross(roll_to)), roll_from.dot(roll_to))
-	_refinery_receiver.basis = Basis(Quaternion(axis, roll) * aim).scaled(Vector3.ONE * (desired.length() / from.length()))
 
 func _ready() -> void:
 	_navy = _material(Color("152f43"))
@@ -78,8 +57,12 @@ func _ready() -> void:
 	_cyan = _material(Color("4cb9c2"), true)
 	_navy.render_priority = -3
 	_side.render_priority = -2
-	_deck = _material(Color("fff2df"))
-	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-albedo.png"))
+	# Match the load armor on all four authored facilities so the continuous
+	# deck reads as their shared structure under the same scene lighting.
+	_deck = _material(Color("e8ddca"))
+	_ivory = _material(Color("b9b3a2"))
+	_channel = _material(Color("294451"))
+	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
 	_sleeve.render_priority = 1
@@ -91,25 +74,25 @@ func _ready() -> void:
 		var bounds: Vector2 = ARC_BOUNDS[kind]
 		# A real thick section: dark keel and side walls remain visible under
 		# broad warm armor plates. The central channel belongs to this section.
-		_add_strip(root, bounds.x, bounds.y, NODE_WIDTH, -0.20, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, 0.75, -0.20, 0.26, _side, kind)
-		_add_wall(root, bounds.x, bounds.y, -0.75, -0.20, 0.26, _navy, kind)
-		_add_wall(root, bounds.x, bounds.y, 0.755, 0.05, 0.09, _cyan, kind)
+		_add_section_hull(root, bounds.x, bounds.y, NODE_WIDTH, kind)
 		_add_curved_deck(root, bounds.x, bounds.y, NODE_WIDTH, 0.22, _deck, 0.0, 1.0, kind)
-		var rib_angle := (bounds.x + bounds.y) * 0.5
-		_add_curved_deck(root, rib_angle - 0.007, rib_angle + 0.007, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
+		for rib_index in range(1, 6):
+			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
+			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
+				# Carry each deck seam around the real owned pressure box; the
+				# transverse clamp interrupts the inset power line at the same cut.
+				_add_curved_deck(root, rib_angle - 0.008, rib_angle + 0.008, NODE_WIDTH + 0.03, 0.236, _side, 0.0, 1.0, kind)
+				for side in [-1.0, 1.0]:
+					_add_wall(root, rib_angle - 0.008, rib_angle + 0.008,
+						side * (NODE_WIDTH * 0.5 + 0.018), -0.38, 0.27, _side, kind)
 		_add_mount(root, kind, FACILITY_ANGLES[kind])
-		_joins[kind] = _add_join(root, bounds.y)
-		var caps: Array[MeshInstance3D] = []
+		_joins[kind] = _add_join(root, bounds.y, kind)
+		var caps: Array[Node3D] = []
 		for angle in [bounds.x, bounds.y]:
-			var cap := MeshInstance3D.new()
-			var box := BoxMesh.new()
-			box.size = Vector3(TRANSIT_WIDTH, 0.65, 0.08)
-			cap.mesh = box
-			cap.material_override = _navy
-			var radial := point(angle).normalized()
-			var normal := plane_normal()
-			cap.transform = Transform3D(Basis(radial, normal, radial.cross(normal)), point(angle) + normal * 0.125)
+			var cap := Node3D.new()
+			cap.name = "BuiltSectionTaperedTerminal"
+			var outward := -1.0 if angle == bounds.x else 1.0
+			_add_tapered_terminal(cap, angle, outward, kind)
 			root.add_child(cap)
 			caps.append(cap)
 		_arcs[kind] = root
@@ -124,6 +107,145 @@ func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
 	_all_materials.append(result)
 	return result
 
+func _add_tapered_terminal(parent: Node3D, angle: float, outward: float, kind: String) -> void:
+	# Continue the actual orbital cross-section before tapering it to a small
+	# closed pressure nose. Nothing is placed underneath or atop a flat cut.
+	var top_mesh := SurfaceTool.new()
+	var side_mesh := SurfaceTool.new()
+	var bottom_mesh := SurfaceTool.new()
+	var light_mesh := SurfaceTool.new()
+	for surface in [top_mesh, side_mesh, bottom_mesh, light_mesh]:
+		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var start_width := _transit_width(angle)
+	# The station's unsupported tip closes as a short pressure shoe in the
+	# same shell as its bearing cheeks, without a long dark prow below them.
+	var station_tip := kind == "auto_explore"
+	var nose_span := 0.055 if station_tip else 0.09
+	var nose_width := 0.34 if station_tip else 0.32
+	var nose_top := 0.27
+	var nose_edge := 0.19
+	var nose_bottom := -0.10 if station_tip else -0.17
+	for step in 8:
+		var t0 := float(step) / 8.0
+		var t1 := float(step + 1) / 8.0
+		var a := angle + outward * nose_span * t0
+		var b := angle + outward * nose_span * t1
+		var wa := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t0))
+		var wb := lerpf(start_width, nose_width, smoothstep(0.0, 1.0, t1))
+		var ta := lerpf(0.43, nose_top, t0)
+		var tb := lerpf(0.43, nose_top, t1)
+		var ea := lerpf(0.26, nose_edge, t0)
+		var eb := lerpf(0.26, nose_edge, t1)
+		var ba := lerpf(-0.40, nose_bottom, t0)
+		var bb := lerpf(-0.40, nose_bottom, t1)
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS)
+		var am := point(a) * ((RADIUS - wa * 0.15) / RADIUS)
+		var ap := point(a) * ((RADIUS + wa * 0.15) / RADIUS)
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS)
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS)
+		var bm := point(b) * ((RADIUS - wb * 0.15) / RADIUS)
+		var bp := point(b) * ((RADIUS + wb * 0.15) / RADIUS)
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS)
+		var up := plane_normal()
+		_add_terminal_quad(top_mesh, ai + up * ea, bi + up * eb, am + up * ta, bm + up * tb, up, t0, t1)
+		_add_terminal_quad(top_mesh, am + up * ta, bm + up * tb, ap + up * ta, bp + up * tb, up, t0, t1)
+		_add_terminal_quad(top_mesh, ap + up * ta, bp + up * tb, ao + up * ea, bo + up * eb, up, t0, t1)
+		_add_terminal_quad(bottom_mesh, ai + up * ba, bi + up * bb, ao + up * ba, bo + up * bb, -up, t0, t1)
+		for side in [-1.0, 1.0]:
+			var pa := ai if side < 0 else ao
+			var pb := bi if side < 0 else bo
+			var outward_normal: Vector3 = point(a).normalized() * float(side)
+			_add_terminal_quad(side_mesh, pa + up * ba, pb + up * bb, pa + up * ea, pb + up * eb, outward_normal, t0, t1)
+			var la := 0.04
+			var lb := 0.04
+			_add_terminal_quad(light_mesh, pa + up * la, pb + up * lb, pa + up * (la + 0.035), pb + up * (lb + 0.035), outward_normal, t0, t1)
+	var end_angle := angle + outward * nose_span
+	var end_center := point(end_angle)
+	var radial := end_center.normalized()
+	var up := plane_normal()
+	var end_normal := (point(end_angle + 0.001) - point(end_angle - 0.001)).normalized() * outward
+	var face := SurfaceTool.new()
+	face.begin(Mesh.PRIMITIVE_TRIANGLES)
+	_add_terminal_quad(face, end_center - radial * nose_width * 0.5 + up * nose_bottom, end_center + up * nose_bottom, end_center - radial * nose_width * 0.5 + up * nose_edge, end_center + up * nose_top, end_normal, 0.0, 1.0)
+	_add_terminal_quad(face, end_center + up * nose_bottom, end_center + radial * nose_width * 0.5 + up * nose_bottom, end_center + up * nose_top, end_center + radial * nose_width * 0.5 + up * nose_edge, end_normal, 0.0, 1.0)
+	for spec in [[top_mesh, _deck], [side_mesh, _side], [bottom_mesh, _side if station_tip else _navy], [light_mesh, _cyan], [face, _ivory if station_tip else _side]]:
+		var instance := MeshInstance3D.new()
+		instance.mesh = (spec[0] as SurfaceTool).commit()
+		instance.material_override = spec[1]
+		parent.add_child(instance)
+
+func _add_terminal_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, t0: float, t1: float) -> void:
+	for entry in [[a, Vector2(0.0, t0)], [b, Vector2(0.0, t1)], [c, Vector2(1.0, t0)], [c, Vector2(1.0, t0)], [b, Vector2(0.0, t1)], [d, Vector2(1.0, t1)]]:
+		surface.set_normal(normal)
+		surface.set_uv(entry[1])
+		surface.add_vertex(entry[0])
+
+func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float, kind: String = "") -> void:
+	# One shared cross-section runs through every owned arc and completed join.
+	# The lit inset is set into its armored wall, above the structural keel.
+	# A second underside closes the lower pressure box all the way to each
+	# independent end plane; the upper blue light remains recessed above it.
+	_add_strip(parent, begin, finish, width, -0.40, _side, kind)
+	var lower_shell := _side if kind == "auto_explore" else _navy
+	for side in [-1.0, 1.0]:
+		_add_wall(parent, begin, finish, side * width * 0.5, -0.40, -0.18, lower_shell, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.003), -0.38, -0.30, _side, kind)
+	_add_strip(parent, begin, finish, width, -0.18, _navy, kind)
+	for side in [-1.0, 1.0]:
+		_add_wall(parent, begin, finish, side * width * 0.5, -0.18, 0.26, _navy, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.004), -0.28, 0.01, _side, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.26, _side, kind)
+		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.008), 0.015, 0.055, _cyan, kind)
+		_add_side_armor(parent, begin, finish, width, side, kind)
+
+func _add_side_armor(parent: Node3D, begin: float, finish: float, width: float, side: float, kind: String) -> void:
+	# An extruded pressure shoulder and lower heel run on the same owned mesh
+	# as the deck. The dark inset between them leaves the cyan service way open.
+	var shoulder := SurfaceTool.new()
+	var heel := SurfaceTool.new()
+	shoulder.begin(Mesh.PRIMITIVE_TRIANGLES)
+	heel.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var steps := maxi(32, ceili((finish - begin) * 128.0))
+	var profile := [
+		[Vector2(-0.055, 0.245), Vector2(0.045, 0.145), shoulder],
+		[Vector2(0.045, 0.145), Vector2(0.045, 0.095), shoulder],
+		[Vector2(0.025, -0.115), Vector2(0.045, -0.245), heel],
+		[Vector2(0.045, -0.245), Vector2(-0.015, -0.305), heel],
+	]
+	for index in steps:
+		var a := lerpf(begin, finish, float(index) / float(steps))
+		var b := lerpf(begin, finish, float(index + 1) / float(steps))
+		if kind in KINDS:
+			var seam := false
+			var bounds: Vector2 = ARC_BOUNDS[kind]
+			for rib_index in range(1, 6):
+				var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
+				if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14 and absf((a + b) * 0.5 - rib_angle) < 0.008:
+					seam = true
+			if seam: continue
+		for band in profile:
+			var surface: SurfaceTool = band[2]
+			var first: Vector2 = band[0]
+			var second: Vector2 = band[1]
+			var positions: Array[Vector3] = []
+			for entry in [[a, first], [b, first], [a, second], [a, second], [b, first], [b, second]]:
+				var angle: float = entry[0]
+				var cross: Vector2 = entry[1]
+				var current_width := _section_width(kind, angle) if kind != "" else width
+				var radius := side * (current_width * 0.5 + cross.x)
+				var rise := _node_section_rise(kind, angle) if cross.y < 0.0 else _shoulder_lift(kind, angle)
+				positions.append(point(angle) * ((RADIUS + radius) / RADIUS) + plane_normal() * (cross.y + rise))
+			var normal := (positions[1] - positions[0]).cross(positions[2] - positions[0]).normalized()
+			for vertex in positions:
+				surface.set_normal(normal)
+				surface.set_uv(Vector2(0.5, float(index) / float(steps)))
+				surface.add_vertex(vertex)
+	for spec in [[shoulder, _ivory], [heel, _side]]:
+		var instance := MeshInstance3D.new()
+		instance.mesh = (spec[0] as SurfaceTool).commit()
+		instance.material_override = spec[1]
+		parent.add_child(instance)
+
 func set_body_scale(scale: Vector3) -> void:
 	for material in _all_materials:
 		material.set_shader_parameter("body_scale", scale)
@@ -136,20 +258,58 @@ func set_stellar_field(tint: Color, strength: float) -> void:
 		material.set_shader_parameter("stellar_field_strength", strength)
 
 func _section_width(kind: String, angle: float) -> float:
+	if kind == "front_bearing":
+		# The equipment/shipyard mating collar swells from the existing transit
+		# hull instead of adding a separate disk above the armored deck.
+		var bearing := 1.0 - smoothstep(0.04, 0.16, absf(angle - PI * 0.5))
+		return _transit_width(angle) + 0.34 * bearing
 	# The same real cross-section grows out of the transit spine at each owned
 	# work node, then returns to a narrow section before any independent join.
 	var distance := absf(angle - FACILITY_ANGLES[kind])
-	var t := clampf((distance - 0.08) / 0.16, 0.0, 1.0)
+	var t := clampf((distance - 0.08) / 0.22, 0.0, 1.0)
 	var blend := 1.0 - t * t * (3.0 - 2.0 * t)
-	return lerpf(TRANSIT_WIDTH, NODE_WIDTH, blend)
+	# Every owned section returns to the common cross-section at its open
+	# construction seam, even when the broader node nearly reaches that seam.
+	var bounds: Vector2 = ARC_BOUNDS[kind]
+	blend *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
+	# Give each built work floor a real shoulder matching its pressure feet.
+	# The station stays narrow so its independently built passage stays open.
+	var node_width := 1.50 if kind == "auto_explore" else 1.68 if kind == "refinery" else 1.78 if kind == "equipment" else 1.80 if kind == "shipyard" else NODE_WIDTH
+	return lerpf(_transit_width(angle), node_width, blend)
+
+func _transit_width(angle: float) -> float:
+	# The front load path carries the visible heavy deck; the rear transit
+	# section is slimmer before it passes behind the globe.
+	return lerpf(REAR_TRANSIT_WIDTH, FRONT_TRANSIT_WIDTH, 0.5 + 0.5 * sin(angle))
+
+func _shoulder_lift(kind: String, angle: float) -> float:
+	if kind == "" or kind == "front_bearing": return 0.0
+	var distance := absf(angle - FACILITY_ANGLES[kind])
+	var lift := 0.21 * (1.0 - smoothstep(0.10, 0.32, distance))
+	if kind == "refinery":
+		lift *= smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
+	return lift
+
+func _node_section_rise(kind: String, angle: float) -> float:
+	if not kind in KINDS: return 0.0
+	# Lift the lower pressure shell into each node's bearing feet. This keeps
+	# the four owned sections closed while removing the hanging hull lobes at
+	# the work floors; both independent ends return to the common section.
+	var bounds: Vector2 = ARC_BOUNDS[kind]
+	var inlet := smoothstep(0.0, 0.045, angle - bounds.x)
+	var outlet := smoothstep(0.0, 0.08, bounds.y - angle)
+	var center: float = FACILITY_ANGLES[kind]
+	var node := 1.0 - smoothstep(0.16, 0.40, absf(angle - center))
+	return (0.30 if kind == "auto_explore" else 0.18) * inlet * outlet * node
 
 func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, v_start: float = 0.0, v_end: float = 1.0, kind: String = "") -> void:
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
-		Vector2(-0.50, 0.04), Vector2(-0.48, 0.11), Vector2(-0.43, 0.18),
-		Vector2(-0.34, 0.215), Vector2(0.0, 0.23), Vector2(0.34, 0.215),
-		Vector2(0.43, 0.18), Vector2(0.48, 0.11), Vector2(0.50, 0.04),
+		Vector2(-0.50, 0.04), Vector2(-0.46, 0.15), Vector2(-0.36, 0.22),
+		Vector2(-0.17, 0.235), Vector2(-0.04, 0.22), Vector2(0.0, 0.215),
+		Vector2(0.04, 0.22), Vector2(0.17, 0.235), Vector2(0.36, 0.22),
+		Vector2(0.46, 0.15), Vector2(0.50, 0.04),
 	]
 	if kind in ["refinery", "equipment", "shipyard"]:
 		var coarse: Array = profile
@@ -164,7 +324,9 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 					break
 		profile = dense
 	var surface := SurfaceTool.new()
+	var channel_surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	channel_surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var steps := maxi(48, ceili((finish - begin) * (256.0 if kind in ["refinery", "equipment", "shipyard"] else 96.0)))
 	for index in steps:
 		var t0 := float(index) / float(steps)
@@ -174,16 +336,25 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
 		for band in profile.size() - 1:
-			_deck_vertex(surface, profile, band, a, t0, wa, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band, b, t1, wb, lift, v_start, v_end, kind)
-			_deck_vertex(surface, profile, band + 1, b, t1, wb, lift, v_start, v_end, kind)
+			var band_center: float = (profile[band].x + profile[band + 1].x) * 0.5
+			# A broad recessed machinery way breaks up the old road-like armor
+			# surface. Both armor banks remain part of this same load section.
+			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.095 else surface
+			_deck_vertex(target, profile, band, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)
+			_deck_vertex(target, profile, band + 1, b, t1, wb, lift, v_start, v_end, kind)
 	var instance := MeshInstance3D.new()
 	instance.mesh = surface.commit()
 	instance.material_override = material
 	parent.add_child(instance)
+	if material in [_deck, _sleeve]:
+		var channel_instance := MeshInstance3D.new()
+		channel_instance.mesh = channel_surface.commit()
+		channel_instance.material_override = _channel
+		parent.add_child(channel_instance)
 
 func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float, t: float, width: float, lift: float, v_start: float, v_end: float, kind: String) -> void:
 	var current: Vector2 = profile[index]
@@ -195,17 +366,44 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 	surface.set_normal(normal)
 	surface.set_uv(Vector2(current.x + 0.5, lerpf(v_start, v_end, t)))
 	var height := lift + current.y
-	if kind == "refinery":
+	# The recessed passage is cut into the same armor extrusion. Its center
+	# texture and flanking shoulders carry through each independent section.
+	if kind != "":
+		# Raise the load-bearing shell beside each work floor, leaving a recessed
+		# center for the facility rather than resting a separate pad on the ring.
+		var shoulder := smoothstep(0.19, 0.38, absf(current.x))
+		height += _shoulder_lift(kind, angle) * shoulder
+	if kind == "auto_explore":
+		# The station's own armored section climbs into both pressure cheeks.
+		# Keep the middle passage sunk so the through-node remains open.
+		var station_span := 1.0 - smoothstep(0.11, 0.29, absf(angle - FACILITY_ANGLES[kind]))
+		var station_cheek := smoothstep(0.19, 0.42, absf(current.x))
+		height += station_span * (0.16 * station_cheek - 0.025 * (1.0 - station_cheek))
+	elif kind == "refinery":
+		var refinery_end_blend := smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
 		var distance := absf(angle - FACILITY_ANGLES[kind])
 		var foot_span: float = 1.0 - smoothstep(0.080, 0.18, distance)
 		var foot_width: float = 1.0 - smoothstep(0.30, 0.46, absf(current.x))
 		var inlet: float = (1.0 - smoothstep(0.023, 0.053, distance)) * (1.0 - smoothstep(0.08, 0.15, absf(current.x - 0.04)))
-		height += 0.18 * foot_span * foot_width * (1.0 - inlet) - 0.035 * inlet
+		height += (0.18 * foot_span * foot_width * (1.0 - inlet) - 0.035 * inlet) * refinery_end_blend
+	elif kind == "equipment":
+		# The load cheeks are raised out of this very deck; the open center
+		# remains the ring's own recessed work path through the orange portal.
+		var bay_span := 1.0 - smoothstep(0.10, 0.24, absf(angle - FACILITY_ANGLES[kind]))
+		var center_path := 1.0 - smoothstep(0.16, 0.32, absf(current.x))
+		var front_lip := smoothstep(0.27, 0.47, current.x)
+		height += bay_span * (0.06 * (1.0 - center_path) - 0.16 * center_path - 0.12 * front_lip)
 	elif kind == "shipyard":
 		# The original deck rises into the cantilevers' one vertical spine.
 		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
 		var keel_width := 1.0 - smoothstep(0.20, 0.39, absf(current.x + 0.10))
 		height += 0.14 * keel_span * keel_width
+	elif kind == "front_bearing":
+		# The joined deck swells into one bearing crown in its own mesh. Its
+		# flanks still flow into the original transit shoulders and lit sidewall.
+		var crown_span := 1.0 - smoothstep(0.025, 0.16, absf(angle - PI * 0.5))
+		var crown_width := 1.0 - smoothstep(0.16, 0.43, absf(current.x))
+		height += 0.18 * crown_span * crown_width
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
@@ -216,12 +414,14 @@ func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift:
 	for index in steps:
 		var a := lerpf(begin, finish, float(index) / float(steps))
 		var b := lerpf(begin, finish, float(index + 1) / float(steps))
+		var section_a := _node_section_rise(kind, a) if lift < 0.0 else 0.0
+		var section_b := _node_section_rise(kind, b) if lift < 0.0 else 0.0
 		var wa := width + (_section_width(kind, a) - NODE_WIDTH if kind != "" else 0.0)
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
-		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * lift
-		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * lift
-		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * lift
-		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * lift
+		var ai := point(a) * ((RADIUS - wa * 0.5) / RADIUS) + normal * (lift + section_a)
+		var ao := point(a) * ((RADIUS + wa * 0.5) / RADIUS) + normal * (lift + section_a)
+		var bi := point(b) * ((RADIUS - wb * 0.5) / RADIUS) + normal * (lift + section_b)
+		var bo := point(b) * ((RADIUS + wb * 0.5) / RADIUS) + normal * (lift + section_b)
 		for vertex in [ai, bi, ao, ao, bi, bo]:
 			surface.set_normal(normal)
 			surface.add_vertex(vertex)
@@ -243,7 +443,20 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 		var pa := point(a) * ((RADIUS + ra) / RADIUS)
 		var pb := point(b) * ((RADIUS + rb) / RADIUS)
 		var wall_normal := (pa + pb).normalized() * signf(radial)
-		for vertex in [pa + normal * bottom, pb + normal * bottom, pa + normal * top, pa + normal * top, pb + normal * bottom, pb + normal * top]:
+		var lift_a := _shoulder_lift(kind, a)
+		var lift_b := _shoulder_lift(kind, b)
+		var lower_a := bottom + (lift_a if material == _cyan else 0.0)
+		var lower_b := bottom + (lift_b if material == _cyan else 0.0)
+		var upper_a := top + lift_a
+		var upper_b := top + lift_b
+		var section_a := _node_section_rise(kind, a)
+		var section_b := _node_section_rise(kind, b)
+		lower_a += section_a
+		lower_b += section_b
+		if top < 0.10:
+			upper_a += section_a
+			upper_b += section_b
+		for vertex in [pa + normal * lower_a, pb + normal * lower_b, pa + normal * upper_a, pa + normal * upper_a, pb + normal * lower_b, pb + normal * upper_b]:
 			surface.set_normal(wall_normal)
 			surface.add_vertex(vertex)
 	var instance := MeshInstance3D.new()
@@ -252,8 +465,6 @@ func _add_wall(parent: Node3D, begin: float, finish: float, radial: float, botto
 	parent.add_child(instance)
 
 func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
-	# Each built section owns the facility root on its continuous deck.
-	_add_facility_socket(parent, kind, angle)
 	# One restrained amber status light makes the socket read as equipment,
 	# without introducing another buildable node.
 	var lamp := MeshInstance3D.new()
@@ -265,159 +476,23 @@ func _add_mount(parent: Node3D, kind: String, angle: float) -> void:
 	lamp.position = point(angle) * ((RADIUS + 0.57) / RADIUS) + plane_normal() * 0.48
 	parent.add_child(lamp)
 
-func _add_facility_socket(parent: Node3D, kind: String, angle: float) -> void:
-	# The three working facilities carry their load collars in their authored
-	# root artwork. The station alone retains its existing circular dock.
-	if kind == "auto_explore":
-		_add_socket_drum(parent, point(angle) + plane_normal() * 0.52, 0.36, 0.42, 0.20, _navy, plane_normal())
-		return
-	if kind == "refinery":
-		_add_refinery_root(parent, angle)
-	elif kind == "equipment":
-		_add_workshop_rails(parent, angle)
-
-func _add_workshop_rails(parent: Node3D, angle: float) -> void:
-	# The upright camera-facing work bay and its two physical guides share
-	# one axis on the tilted deck. The node remains owned by this built arc,
-	# while its bearing holds the work direction as that arc revolves.
-	_workshop_guides = Node3D.new()
-	_workshop_guides.name = "WorkshopBayGuides"
-	_workshop_guides.position = point(angle) + plane_normal() * 0.49
-	parent.add_child(_workshop_guides)
-	for side in [-1.0, 1.0]:
-		var base := SurfaceTool.new()
-		var accent := SurfaceTool.new()
-		base.begin(Mesh.PRIMITIVE_TRIANGLES)
-		accent.begin(Mesh.PRIMITIVE_TRIANGLES)
-		var inner_x := float(side) * 0.22
-		_add_workshop_guide_segment(base, inner_x, -0.28, 0.0, 0.0, 0.075, 0.00)
-		_add_workshop_guide_segment(accent, inner_x, -0.28, 0.0, 0.0, 0.018, 0.012)
-		var rail := MeshInstance3D.new()
-		rail.name = "WorkshopLoadRail" + str(side)
-		rail.mesh = base.commit()
-		rail.material_override = _side
-		_workshop_guides.add_child(rail)
-		var light := MeshInstance3D.new()
-		light.name = "WorkshopGuideTrace" + str(side)
-		light.mesh = accent.commit()
-		light.material_override = _cyan
-		_workshop_guides.add_child(light)
-
-func _add_workshop_guide_segment(surface: SurfaceTool, x0: float, y0: float, x1: float, y1: float, width: float, lift: float) -> void:
-	var direction := Vector2(x1 - x0, y1 - y0).normalized()
-	var across := Vector2(direction.y, -direction.x) * width * 0.5
-	var a := Vector3(x0 - across.x, y0 - across.y, lift)
-	var b := Vector3(x1 - across.x, y1 - across.y, lift)
-	var c := Vector3(x0 + across.x, y0 + across.y, lift)
-	var d := Vector3(x1 + across.x, y1 + across.y, lift)
-	for vertex in [a, b, c, c, b, d]:
-		surface.set_normal(Vector3.BACK)
-		surface.add_vertex(vertex)
-
-func _add_refinery_root(parent: Node3D, angle: float) -> void:
-	# The feed trough and both load cheeks are one ring-owned receiver. Its
-	# distal tread meets the fixed deck socket while its upper end enters the
-	# open port of the separate camera-facing furnace shell.
-	var tip := refinery_feed_tip()
-	var upper := _refinery_unaimed_feed_top()
-	_refinery_receiver_vector = upper - tip
-	_refinery_receiver = Node3D.new()
-	_refinery_receiver.name = "RefineryReceiver"
-	_refinery_receiver.position = tip
-	parent.add_child(_refinery_receiver)
-	var tangent := (point(angle + 0.001) - point(angle - 0.001)).normalized()
-	var up := plane_normal()
-	var belt := SurfaceTool.new()
-	belt.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for step in 6:
-		var t0 := float(step) / 6.0
-		var t1 := float(step + 1) / 6.0
-		var p0 := tip.lerp(upper, t0) - tip
-		var p1 := tip.lerp(upper, t1) - tip
-		var l0 := p0 - tangent * 0.100
-		var r0 := p0 + tangent * 0.100
-		var l1 := p1 - tangent * 0.100
-		var r1 := p1 + tangent * 0.100
-		_add_receiver_quad(belt, l0, l1, r0, r1, up, t0, t1)
-	var tread := MeshInstance3D.new()
-	tread.name = "RefineryRootTread"
-	tread.mesh = belt.commit()
-	tread.material_override = _deck
-	_refinery_receiver.add_child(tread)
-	for side in [-1.0, 1.0]:
-		var rail := SurfaceTool.new()
-		var inner_wall := SurfaceTool.new()
-		rail.begin(Mesh.PRIMITIVE_TRIANGLES)
-		inner_wall.begin(Mesh.PRIMITIVE_TRIANGLES)
-		for step in 6:
-			var t0 := float(step) / 6.0
-			var t1 := float(step + 1) / 6.0
-			var p0 := tip.lerp(upper, t0) - tip
-			var p1 := tip.lerp(upper, t1) - tip
-			var inner0 := p0 + tangent * float(side) * 0.100
-			var inner1 := p1 + tangent * float(side) * 0.100
-			var outer0 := p0 + tangent * float(side) * 0.145
-			var outer1 := p1 + tangent * float(side) * 0.145
-			_add_receiver_quad(rail, inner0 + up * 0.145, inner1 + up * 0.145, outer0 + up * 0.145, outer1 + up * 0.145, up, t0, t1)
-			_add_receiver_quad(inner_wall, inner0, inner1, inner0 + up * 0.145, inner1 + up * 0.145, tangent * -float(side), t0, t1)
-		var rail_mesh := MeshInstance3D.new()
-		rail_mesh.name = "RefineryRootCheek" + str(side)
-		rail_mesh.mesh = rail.commit()
-		rail_mesh.material_override = _deck
-		_refinery_receiver.add_child(rail_mesh)
-		var wall_mesh := MeshInstance3D.new()
-		wall_mesh.name = "RefineryRootInnerWall" + str(side)
-		wall_mesh.mesh = inner_wall.commit()
-		wall_mesh.material_override = _side
-		_refinery_receiver.add_child(wall_mesh)
-
-func _add_receiver_quad(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3, t0: float, t1: float) -> void:
-	for entry in [[a, Vector2(0.46, t0)], [b, Vector2(0.46, t1)], [c, Vector2(0.54, t0)], [c, Vector2(0.54, t0)], [b, Vector2(0.46, t1)], [d, Vector2(0.54, t1)]]:
-		surface.set_normal(normal)
-		surface.set_uv(entry[1])
-		surface.add_vertex(entry[0])
-
-func _add_socket_drum(parent: Node3D, position: Vector3, top: float, bottom: float, height: float, material: Material, normal: Vector3) -> void:
-	var instance := MeshInstance3D.new()
-	var drum := CylinderMesh.new()
-	drum.top_radius = top
-	drum.bottom_radius = bottom
-	drum.height = height
-	instance.mesh = drum
-	instance.material_override = material
-	instance.position = position
-	instance.basis = Basis(Quaternion(Vector3.UP, normal))
-	parent.add_child(instance)
-
-func _add_join(parent: Node3D, angle: float) -> Node3D:
+func _add_join(parent: Node3D, angle: float, kind: String) -> Node3D:
 	# Covers the armor gap where two independently built sections mate. This
 	# collar is owned by the preceding section and appears only after both exist.
 	var join := Node3D.new()
 	join.name = "SectionJoin"
 	parent.add_child(join)
-	# The mating sleeve spans both quarter ends as a real curved deck piece.
-	# It also keeps the broad foreground arc visually closed at oblique phases.
-	_add_curved_deck(join, angle - 0.12, angle + 0.12, TRANSIT_WIDTH + 0.02, 0.232, _sleeve, 0.37, 0.63)
-	var coupling := MeshInstance3D.new()
-	var drum := CylinderMesh.new()
-	drum.top_radius = 0.22
-	drum.bottom_radius = 0.29
-	drum.height = 0.14
-	coupling.mesh = drum
-	coupling.material_override = _side
-	coupling.position = point(angle) + plane_normal() * 0.29
-	coupling.basis = Basis(Quaternion(Vector3.UP, plane_normal()))
-	join.add_child(coupling)
-	var indicator := MeshInstance3D.new()
-	var disk := CylinderMesh.new()
-	disk.top_radius = 0.115
-	disk.bottom_radius = 0.115
-	disk.height = 0.025
-	indicator.mesh = disk
-	indicator.material_override = _cyan
-	indicator.position = point(angle) + plane_normal() * 0.38
-	indicator.basis = coupling.basis
-	join.add_child(indicator)
+	var joint_width := _transit_width(angle) + 0.02
+	var front_bearing := kind == "equipment"
+	var section_kind := "front_bearing" if front_bearing else ""
+	# Close the complete load path, including its keel and lit outer wall. A
+	# top-only sleeve leaves an obvious open cut at oblique orbital phases.
+	_add_section_hull(join, angle - 0.16, angle + 0.16, NODE_WIDTH if front_bearing else joint_width, section_kind)
+	# The refinery deck now returns to the exact mating height. Its two owned
+	# top surfaces meet there, so a second raised sleeve would cover that
+	# shared plane with a visible white step. The bottom load collar remains.
+	if kind != "refinery":
+		_add_curved_deck(join, angle - (0.16 if front_bearing else 0.12), angle + (0.16 if front_bearing else 0.12), NODE_WIDTH if front_bearing else joint_width, 0.232, _sleeve, 0.37, 0.63, section_kind)
 	return join
 
 func configure(owned: Array) -> void:
@@ -432,5 +507,3 @@ func configure(owned: Array) -> void:
 
 func update_pose(clock: float) -> void:
 	basis = Basis(Vector3(0.0, -TILT_Z, -TILT_Y), clock * 0.045)
-	var work_forward := Vector3(0.0, -TILT_Y, TILT_Z)
-	_workshop_guides.basis = basis.inverse() * Basis(Vector3.LEFT, work_forward, plane_normal())
