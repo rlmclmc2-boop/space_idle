@@ -4,12 +4,12 @@
 
 ## 现场
 
-源码分支`wip/planet-thread-resume-20261101@fb3b6249e`。`art_sources/planet_whole_concept_20261101/build_v19.py`、`concept-v19.blend`、`export_v19.py`与`assets/planets/facilities_v9/`四件GLB是同版资产源。空间站、热工与制造舱的屋面、侧壁和根部沿环向转弯，制造舱以短门框收束；屋面已添沿弧装甲分层和暗缝。运行时`planet_orbital_spine.gd`缩短制造舱承力端。原业务、UI、独立建造、动画枢轴与球后遮挡保留。
+源码分支`wip/planet-thread-resume-20261101@528ae261d`。最近运行资产仍为`fb3b6249e`的`build_v19.py`、`concept-v19.blend`、`export_v19.py`与`assets/planets/facilities_v9/`四件GLB；原业务与UI未改。`build_v23.py`仅为保全的未执行网格草稿，未建模、导出或接入。
 
 ## 画面依据
 
-独立归档`archive/planet-resume-20261101@3e3b28e7:v22-armor-layering-fb3b6249/`有当前源码的1440×900 Godot4.7.2设施展开整页与1600×900完整构图及构建、导入、运行日志。前一同结构归档`archive/planet-resume-20261101@89f779d35:v21-curved-architecture-6878ad96/`有四阶段画面、6秒正常速度动态和首中尾抽帧。整页用内存中四设施已建的视觉夹具呈现，不代表自然解锁验证。
+最初方向原图为`8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`，五阶段原图为`1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png`。新整体图稿及具体偏离对照见`archive/planet-resume-20261101@00bea99b8:v23-whole-band-design-draft-20261101/`。当前运行画面留档在`archive/planet-resume-20261101@3e3b28e7:v22-armor-layering-fb3b6249/`。
 
 ## 当前一步
 
-当前固定资产源`fb3b6249e`与上述归档保留为制作现场。下一步重新组织整个环向建筑带的质量分布、内外轮廓和功能开口，让建筑本体构成主要环轨；空间站、热工、制造、船坞成为同一建筑带的功能空间变化。先做完整主剪影，再落实运行资产和实机整页。公共运行源`281a17cc`尚未形成可接受的整体造型，不能视为验收或main合入授权。
+当前只提交设计图稿供用户确认，不继续实际建模或实机接入。图稿把连续宽实体建筑带作为主形，四设施嵌入为观察、热工、泊位和制造开口；球后遮挡及前弧暗空间与原图一致。用户确认整体图稿后，才细化独立建造段并制作运行资产。图稿不是用户验收或main合入授权。
