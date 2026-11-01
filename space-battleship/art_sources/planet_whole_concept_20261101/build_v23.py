@@ -505,9 +505,9 @@ for a in (-65,-29):
     owned_arc(workshop,"Manufacturing end housing inner cheek",a,a+2.8,
               4.02,4.18,.22,.95,ARMOR)
     owned_arc(workshop,"Manufacturing end housing outer cheek",a,a+2.8,
-              4.53,5.80,.22,.95,ARMOR)
+              4.48,4.64,.22,.95,ARMOR)
     owned_arc(workshop,"Manufacturing end housing lintel",a,a+2.8,
-              4.03,5.80,.95,1.10,ARMOR_SIDE)
+              4.03,4.64,.95,1.10,ARMOR_SIDE)
 for a in (-64,-56,-48,-40):
     owned_arc(workshop,"Amber fabrication transverse working rib",a,a+1.1,
               4.20,5.02,.42,.51,GOLD)
