@@ -9,18 +9,6 @@
   ],
   "devices": {
     "weapons": {
-      "rect": [
-        42,
-        60,
-        313,
-        281
-      ],
-      "work_rect": [
-        42,
-        60,
-        313,
-        281
-      ],
       "core_port": [
         448,
         249
@@ -45,39 +33,9 @@
       ],
       "socket_radius": 26,
       "socket_depth": 28,
-      "pipe_shell_rect": [
-        237,
-        162,
-        245,
-        125
-      ],
-      "pipe_front_rect": [
-        236,
-        158,
-        248,
-        133
-      ],
-      "insert_depth": 45,
-      "pipe_insert_rect": [
-        270,
-        162,
-        96,
-        92
-      ]
+      "insert_depth": 45
     },
     "defence": {
-      "rect": [
-        880,
-        82,
-        265,
-        250
-      ],
-      "work_rect": [
-        880,
-        82,
-        307,
-        250
-      ],
       "core_port": [
         741,
         247
@@ -102,39 +60,9 @@
       ],
       "socket_radius": 26,
       "socket_depth": 28,
-      "pipe_shell_rect": [
-        706,
-        151,
-        291,
-        133
-      ],
-      "pipe_front_rect": [
-        703,
-        148,
-        294,
-        139
-      ],
-      "insert_depth": 45,
-      "pipe_insert_rect": [
-        868,
-        153,
-        96,
-        92
-      ]
+      "insert_depth": 45
     },
     "smelting": {
-      "rect": [
-        55,
-        335,
-        295,
-        385
-      ],
-      "work_rect": [
-        55,
-        335,
-        295,
-        325
-      ],
       "core_port": [
         463,
         450
@@ -159,39 +87,9 @@
       ],
       "socket_radius": 26,
       "socket_depth": 28,
-      "pipe_shell_rect": [
-        230,
-        410,
-        264,
-        153
-      ],
-      "pipe_front_rect": [
-        229,
-        407,
-        267,
-        159
-      ],
-      "insert_depth": 45,
-      "pipe_insert_rect": [
-        265,
-        471,
-        96,
-        92
-      ]
+      "insert_depth": 45
     },
     "condensation": {
-      "rect": [
-        850,
-        390,
-        285,
-        330
-      ],
-      "work_rect": [
-        850,
-        390,
-        285,
-        275
-      ],
       "core_port": [
         729,
         446
@@ -216,25 +114,7 @@
       ],
       "socket_radius": 26,
       "socket_depth": 28,
-      "pipe_shell_rect": [
-        695,
-        408,
-        293,
-        155
-      ],
-      "pipe_front_rect": [
-        693,
-        405,
-        296,
-        162
-      ],
-      "insert_depth": 65,
-      "pipe_insert_rect": [
-        841,
-        472,
-        96,
-        92
-      ]
+      "insert_depth": 65
     }
   }
 }

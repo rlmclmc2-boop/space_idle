@@ -1,247 +1,336 @@
 extends Control
-## Composable B01 bay: background, four physical routes, core, four devices.
-const PipeView = preload("res://src/ui/reactor_pipe_view.gd")
-const ModuleView = preload("res://src/ui/reactor_module_view.gd")
-const PortContract = preload("res://src/ui/reactor_port_contract.gd")
-const BAY = preload("res://assets/ui/reactor/b01/modular-bay-background.png")
-const CORE = preload("res://assets/ui/reactor/b01/modular-core.png")
-const CORE_WORK = preload("res://assets/ui/reactor/b01/modular-core-work.png")
-const WEAPONS = preload("res://assets/ui/reactor/b01/r6-weapons.png")
-const DEFENCE = preload("res://assets/ui/reactor/b01/r6-defence.png")
-const SMELTING = preload("res://assets/ui/reactor/b01/r6-smelting.png")
-const CONDENSATION = preload("res://assets/ui/reactor/b01/r6-condensation.png")
-const CORE_FIELD = preload("res://assets/ui/reactor/b01/modular-core-field.gdshader")
-const CONSOLE_COMPACT = preload("res://assets/ui/reactor/b01/modular-console-compact.png")
-const CONSOLE_FOUR = preload("res://assets/ui/reactor/b01/modular-console-four.png")
-const CLAMP_LEFT = preload("res://assets/ui/reactor/b01/modular-core-clamp-left.png")
-const CLAMP_RIGHT = preload("res://assets/ui/reactor/b01/modular-core-clamp-right.png")
-const GIMBAL_REAR = preload("res://assets/ui/reactor/b01/modular-core-gimbal-rear-00.png")
-const GIMBAL_FRONT = preload("res://assets/ui/reactor/b01/modular-core-gimbal-front-00.png")
-const IDS := ["weapons", "defence", "smelting", "condensation"]
-const OPERATING := {"weapons":{"row":0}, "defence":{"row":1}, "smelting":{"row":2}, "condensation":{"row":3}}
-const SOURCE_SIZE := Vector2(1187.0, 1326.0)
-const VIEW_SIZE := Vector2(808.0, 835.0)
-const MODULES := {
-	"weapons": WEAPONS,
-	"defence": DEFENCE,
-	"smelting": SMELTING,
-	"condensation": CONDENSATION,
-}
-var _pipes: Dictionary = {}
-var _modules: Dictionary = {}
-var _insert_tips: Dictionary = {}
-var _bay: Sprite2D
-var _core_field: ColorRect
-var _field_material: ShaderMaterial
-var _console: Sprite2D
-var _clamp_left: Sprite2D
-var _clamp_right: Sprite2D
-var _gimbal_back: Sprite2D
-var _gimbal_front: Sprite2D
-var _enabled: Array = []
-var _loads: Dictionary = {}
-var _static_viewport: SubViewport
-var _static_layer: Sprite2D
-var _static_originals: Array[Sprite2D] = []
-var _static_generation: int = 0
-var _static_ids: Array = []
-var _clock: float = -1.0
-var _phase: float = 0.0
-var diagnostics := {"draws":0, "field_updates":0, "active_frames":0}
+## Editable GLB parts share one orthographic contract. Fixed lighting and exact
+## body depth are baked only when availability changes; projected work geometry
+## retains authored normals, depth and UVs without a full-frame 3D MSAA pass.
+const MODEL=preload("res://assets/ui/reactor/b01/faceted-reactor.glb")
+const SURFACE=preload("res://assets/ui/reactor/b01/faceted-surface.gdshader")
+const DEPTH=preload("res://assets/ui/reactor/b01/faceted-depth.gdshader")
+const BACKGROUND=preload("res://assets/ui/reactor/b01/faceted-canvas-background.gdshader")
+const WORK=preload("res://assets/ui/reactor/b01/faceted-canvas-work.gdshader")
+const IDS := ["weapons","defence","smelting","condensation"]
+const SOURCE_SIZE:=Vector2(1187.0,1326.0)
+const VIEW_SIZE:=Vector2(808.0,835.0)
+const SOURCE_SCALE: float=835.0/1326.0
+const SOURCE_OFFSET:=Vector2((808.0-1187.0*SOURCE_SCALE)*.5,0)
+var _baker: SubViewport
+var _asset: Node3D
+var _environment: Environment
+var _background: ColorRect
+var _background_material: ShaderMaterial
+var _palette: Dictionary={}
+var _bodies: Array=[]
+var _groups: Dictionary={}
+var _materials: Dictionary={}
+var _mechanisms: Dictionary={}
+var _age: Dictionary={}
+var _enabled: Array=[]
+var _loads: Dictionary={}
+var _clock: float=-1.0
+var _phase: float=0.0
+var _cache_generation: int=0
+var _cache_ready: bool=false
+var diagnostics: Dictionary={"draws":0,"field_updates":0,"active_frames":0,"cache_renders":0}
+
+static func source_point(point: Vector2) -> Vector2:return SOURCE_OFFSET+point*SOURCE_SCALE
+static func source_rect(rect: Rect2) -> Rect2:return Rect2(source_point(rect.position),rect.size*SOURCE_SCALE)
+static func visibility_power(value: float) -> float:return maxf(value,.18) if value>0.0 else 0.0
 
 func _init() -> void:
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	custom_minimum_size = VIEW_SIZE
+	mouse_filter=Control.MOUSE_FILTER_IGNORE
+	custom_minimum_size=VIEW_SIZE
 	set_process(false)
-	_bay = _full_layer(BAY)
+	_background=ColorRect.new()
+	_background.size=VIEW_SIZE
+	_background.color=Color("0a1d30")
+	_background.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	add_child(_background)
+	_background_material=ShaderMaterial.new()
+	_background_material.shader=BACKGROUND
+	_baker=SubViewport.new()
+	_baker.size=Vector2i(VIEW_SIZE)
+	_baker.own_world_3d=true
+	_baker.msaa_3d=Viewport.MSAA_2X
+	_baker.render_target_update_mode=SubViewport.UPDATE_DISABLED
+	add_child(_baker)
+	var camera:=Camera3D.new()
+	camera.projection=Camera3D.PROJECTION_ORTHOGONAL
+	camera.size=1326.0
+	camera.near=.5
+	camera.far=4000.0
+	camera.position=Vector3(593.5,-663,1500)
+	_baker.add_child(camera)
+	camera.current=true
+	_environment=Environment.new()
+	_environment.background_mode=Environment.BG_COLOR
+	_environment.background_color=Color("0a1d30")
+	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
+	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
+	_environment.ambient_light_color=Color("3c6592")
+	_environment.ambient_light_energy=.18
+	var environment_node:=WorldEnvironment.new()
+	environment_node.environment=_environment
+	_baker.add_child(environment_node)
+	var light:=DirectionalLight3D.new()
+	light.light_color=Color("fff0d4")
+	light.light_energy=1.0
+	light.light_angular_distance=.6
+	light.shadow_enabled=true
+	light.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
+	light.directional_shadow_max_distance=3000
+	_baker.add_child(light)
+	light.look_at_from_position(Vector3(-400,300,1400),Vector3(594,-400,0))
+	_asset=MODEL.instantiate()
+	_baker.add_child(_asset)
+	for group in _asset.get_children():
+		var key: String=String(group.name)
+		var canvas:=Node2D.new()
+		canvas.name="Working_"+key
+		add_child(canvas)
+		_groups[key]=canvas
+		_materials[key]=[]
+		_mechanisms[key]=[]
+		_age[key]=0.0
+		for child in group.get_children():
+			if child is MeshInstance3D:_prepare_mesh(child,key,group.transform*child.transform)
+		if key in IDS or key.begins_with("pipe_") or key.begins_with("console_"):
+			group.visible=false
+			canvas.visible=false
+
+func _ready() -> void:
+	set_notify_transform(true)
+	_update_canvas_transform()
+
+func _notification(what: int) -> void:
+	if what==NOTIFICATION_TRANSFORM_CHANGED and is_inside_tree():_update_canvas_transform()
+
+func _update_canvas_transform() -> void:
+	var inverse: Transform2D=get_global_transform().affine_inverse()
+	var basis:=Basis(Vector3(inverse.x.x,inverse.x.y,0),Vector3(inverse.y.x,inverse.y.y,0),Vector3(0,0,1))
+	var matrix:=Transform3D(basis,Vector3(inverse.origin.x,inverse.origin.y,0))
+	for materials in _materials.values():
+		for material in materials:material.set_shader_parameter("stage_from_canvas",matrix)
+
+func _kind(title: String) -> int:
+	if "core containment glass" in title or "weapon chamber glazing" in title:return 1
+	if "core plasma kernel" in title:return 9
+	if "core plasma strands" in title:return 2
+	if "core plasma mass" in title:return 3
+	if "shield bowed field" in title or "shield active rim" in title:return 4
+	if title.begins_with("furnace feed"):return 8
+	if title.begins_with("furnace ") and not "structure" in title:return 5
+	if "crystal body" in title:return 6
+	if "channel work" in title:return 7
+	if "weapon charge segment" in title or "weapon output" in title:return 8
+	return 0
+
+func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
+	var title: String=String(node.name).replace("_"," ")
+	var kind: int=_kind(title)
+	if kind==0:
+		var colors: Array=[]
+		for index in range(node.mesh.get_surface_count()):
+			var original: Material=node.mesh.surface_get_material(index)
+			var color: Color=original.albedo_color if original is BaseMaterial3D else Color.WHITE
+			var palette_key: String=color.to_html()
+			if not _palette.has(palette_key):
+				var material:=ShaderMaterial.new()
+				material.shader=SURFACE
+				material.set_shader_parameter("base_color",color)
+				_palette[palette_key]=material
+			node.set_surface_override_material(index,_palette[palette_key])
+			colors.append(_palette[palette_key])
+		_bodies.append({"node":node,"materials":colors})
+		return
+	node.visible=false
+	var part:=Node2D.new()
+	part.name=node.name
+	var pivot:=Vector2(world.origin.x,-world.origin.y)
+	part.position=source_point(pivot)
+	part.scale=Vector2.ONE*SOURCE_SCALE
+	_groups[key].add_child(part)
+	if kind==1:part.z_index=4
+	elif kind==3:part.z_index=3
+	elif kind==2:part.z_index=2
+	elif kind==9:part.z_index=1
+	var bottom: float=-INF
+	for index in range(node.mesh.get_surface_count()):
+		var arrays: Array=node.mesh.surface_get_arrays(index)
+		var raw: PackedVector3Array=arrays[Mesh.ARRAY_VERTEX]
+		var normals: PackedVector3Array=arrays[Mesh.ARRAY_NORMAL]
+		var vertices:=PackedVector2Array()
+		var colors:=PackedColorArray()
+		var points:=PackedVector3Array()
+		var world_normals:=PackedVector3Array()
+		var normal_basis: Basis=world.basis.inverse().transposed()
+		for i in raw.size():
+			var point: Vector3=world*raw[i]
+			var normal: Vector3=(normal_basis*normals[i]).normalized()
+			points.append(point)
+			world_normals.append(normal)
+			vertices.append(Vector2(point.x,-point.y)-pivot)
+			var depth_code: int=int(roundf(clampf((point.z+256.0)/1024.0,0.0,1.0)*65535.0))
+			colors.append(Color(float(depth_code/256)/255.0,float(depth_code%256)/255.0,normal.x*.5+.5,normal.y*.5+.5))
+			bottom=maxf(bottom,-point.y)
+		var original_indices: PackedInt32Array=arrays[Mesh.ARRAY_INDEX]
+		if original_indices.is_empty():
+			for i in raw.size():original_indices.append(i)
+		var indices:=PackedInt32Array()
+		for triangle in range(0,original_indices.size(),3):
+			var a: int=original_indices[triangle]
+			var b: int=original_indices[triangle+1]
+			var c: int=original_indices[triangle+2]
+			# The only open, double-sided part is the bowed projection surface.
+			if kind not in [4,7] and (world_normals[a]+world_normals[b]+world_normals[c]).z<=0.00001:continue
+			indices.append_array(PackedInt32Array([a,b,c]))
+		if indices.is_empty():continue
+		var projected: Array=[]
+		projected.resize(Mesh.ARRAY_MAX)
+		projected[Mesh.ARRAY_VERTEX]=vertices
+		projected[Mesh.ARRAY_COLOR]=colors
+		projected[Mesh.ARRAY_INDEX]=indices
+		projected[Mesh.ARRAY_TEX_UV]=arrays[Mesh.ARRAY_TEX_UV]
+		var mesh:=ArrayMesh.new()
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,projected)
+		var drawable:=MeshInstance2D.new()
+		drawable.mesh=mesh
+		var original: Material=node.mesh.surface_get_material(index)
+		var color: Color=original.albedo_color if original is BaseMaterial3D else Color.WHITE
+		var material:=ShaderMaterial.new()
+		material.shader=WORK
+		material.set_shader_parameter("base_color",color)
+		material.set_shader_parameter("work_kind",kind)
+		if kind==4:material.set_shader_parameter("work_zone",1 if "bowed" in title else 0)
+		if kind==5:material.set_shader_parameter("work_zone",0 if "pour" in title else 3 if "outlet" in title else 2 if "liquid" in title else 1)
+		drawable.material=material
+		part.add_child(drawable)
+		_materials[key].append(material)
+	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"kind":kind})
+	part.visible=kind==1
+
+func show_snapshot(ids: Array,loads: Dictionary) -> void:
+	if ids==_enabled and loads==_loads:return
+	var availability_changed: bool=ids!=_enabled or _cache_generation==0
+	var previous: Dictionary=_loads
+	_enabled=ids.duplicate()
+	_loads=loads.duplicate()
 	for id in IDS:
-		var pipe: Control = PipeView.new()
-		pipe.size = VIEW_SIZE
-		pipe.configure(id)
-		pipe.visible = false
-		add_child(pipe)
-		_pipes[id] = pipe
-	_gimbal_back = _central_layer(GIMBAL_REAR)
-	var core := _source_layer(CORE,Rect2(385,0,418,638))
-	core.visible = true
-	_core_field = ColorRect.new()
-	_core_field.position = Vector2(283,95)
-	_core_field.size = Vector2(244,220)
-	_core_field.color = Color.WHITE
-	_core_field.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_field_material = ShaderMaterial.new()
-	_field_material.shader = CORE_FIELD
-	_field_material.set_shader_parameter("core_work_surface",CORE_WORK)
-	_core_field.material = _field_material
-	_core_field.visible = false
-	add_child(_core_field)
-	_gimbal_front = _central_layer(GIMBAL_FRONT)
-	_clamp_left = _source_layer(CLAMP_LEFT,Rect2(395,285,190,75))
-	_clamp_right = _source_layer(CLAMP_RIGHT,Rect2(603,285,190,75))
-	# Keep the gripping feet on the globe's outer sockets; the centre stays
-	# unobstructed so the chamber and the front/rear bearing read as a volume.
-	_clamp_left.position.x -= 52.0
-	_clamp_right.position.x += 52.0
-	for id in IDS:
-		var module: Control = ModuleView.new()
-		module.configure(id,MODULES[id],PortContract.source_rect(id))
-		module.visible = false
-		add_child(module)
-		_modules[id] = module
-	for id in IDS:
-		var rect_data: Array = PortContract.device(id).pipe_insert_rect
-		var rect := Rect2(float(rect_data[0]),float(rect_data[1]),float(rect_data[2]),float(rect_data[3]))
-		var tip_texture: Texture2D = load("res://assets/ui/reactor/b01/modular-pipe-%s-insert.png" % id)
-		var tip := _source_layer(tip_texture,rect)
-		tip.visible = false
-		_insert_tips[id] = tip
-	_console = _source_layer(CONSOLE_FOUR,Rect2(0,670,1187,656))
-	_console.modulate = Color(0.57,0.76,0.79)
-	# Keep the source assets separate. Only the unchanged background, conduit
-	# shells and console are composed once per availability state in a viewport.
-	_static_viewport = SubViewport.new()
-	_static_viewport.size = Vector2i(VIEW_SIZE)
-	_static_viewport.disable_3d = true
-	_static_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
-	add_child(_static_viewport)
-	_static_layer = Sprite2D.new()
-	_static_layer.centered = false
-	_static_layer.texture = _static_viewport.get_texture()
-	_static_layer.visible = false
-	add_child(_static_layer)
-	move_child(_static_layer, 0)
+		_groups[id].visible=id in ids
+		_groups["pipe_"+id].visible=id in ids
+		var load: float=float(loads.get(id,0.0)) if id in ids else 0.0
+		if load>0.0 and float(previous.get(id,0.0))<=0.0:_age[id]=0.0
+		for key in [id,"pipe_"+id]:
+			for material in _materials[key]:material.set_shader_parameter("load_fraction",visibility_power(load))
+			for mechanism in _mechanisms[key]:mechanism.node.visible=load>0.0 or mechanism.kind==1
+	var core_load: float=visibility_power(float(loads.get("core",0.0)))
+	for material in _materials.core:material.set_shader_parameter("load_fraction",core_load)
+	for mechanism in _mechanisms.core:mechanism.node.visible=core_load>0.0 or mechanism.kind==1
+	_background_material.set_shader_parameter("core_power",core_load)
+	if availability_changed:_refresh_bake(ids)
+	_animate_mechanisms()
+	diagnostics.field_updates+=1
 
-func control_layout(id: String) -> Dictionary:
-	return OPERATING[id]
+func _refresh_bake(ids: Array) -> void:
+	for body in _bodies:
+		for index in body.materials.size():body.node.set_surface_override_material(index,body.materials[index])
+	_environment.background_color=Color("0a1d30")
+	_cache_generation+=1
+	var generation: int=_cache_generation
+	for group in _asset.get_children():
+		var key: String=String(group.name)
+		group.visible=key in ids if key in IDS else key.trim_prefix("pipe_") in ids if key.begins_with("pipe_") else not ids.is_empty() and int(key.trim_prefix("console_"))==ids.size() if key.begins_with("console_") else true
+	for material in _palette.values():material.set_shader_parameter("core_power",0.0)
+	_baker.msaa_3d=Viewport.MSAA_2X
+	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
+	_finish_bake(generation)
 
-static func visibility_power(owner_load: float) -> float:
-	var load: float = clampf(owner_load, 0.0, 1.0)
-	return maxf(load, 0.18) if load > 0.0 else 0.0
-
-func show_snapshot(ids: Array, loads: Dictionary) -> void:
-	var static_changed: bool = ids != _static_ids
-	_enabled = ids.duplicate()
-	_loads = loads.duplicate()
-	_console.texture = CONSOLE_FOUR if _enabled.size() >= 4 else CONSOLE_COMPACT
-	if static_changed:
-		_static_ids = ids.duplicate()
-		_rebuild_static_cache()
-	for id in IDS:
-		var enabled: bool = id in _enabled
-		_pipes[id].visible = enabled
-		_modules[id].visible = enabled
-		_insert_tips[id].visible = enabled
-		var workload: float = visibility_power(float(_loads.get(id,0.0))) if enabled else 0.0
-		_pipes[id].set_workload(workload)
-		_modules[id].set_workload(workload)
-	_core_field.visible = float(_loads.get("core",0.0)) > 0.0
-	_gimbal_back.visible = true
-	_gimbal_front.visible = true
-	_field_material.set_shader_parameter("load_fraction",visibility_power(float(_loads.get("core",0.0))))
-	_field_material.set_shader_parameter("route_loads",Vector4(
-		visibility_power(float(_loads.get("weapons",0.0))) if "weapons" in _enabled else 0.0,
-		visibility_power(float(_loads.get("defence",0.0))) if "defence" in _enabled else 0.0,
-		visibility_power(float(_loads.get("smelting",0.0))) if "smelting" in _enabled else 0.0,
-		visibility_power(float(_loads.get("condensation",0.0))) if "condensation" in _enabled else 0.0))
-	diagnostics.field_updates += 1
-
-func clear_snapshot() -> void:
-	_static_generation += 1
-	_static_ids.clear()
-	_static_layer.visible = false
-	for original in _static_originals: original.visible = true
-	_enabled.clear()
-	_loads.clear()
-	_core_field.visible = false
-	_gimbal_back.visible = false
-	_gimbal_front.visible = false
-	for id in IDS:
-		_pipes[id].visible = false
-		_modules[id].visible = false
-		_insert_tips[id].visible = false
-
-func _rebuild_static_cache() -> void:
-	_static_generation += 1
-	var generation: int = _static_generation
-	_static_layer.visible = false
-	for original in _static_originals: original.visible = true
-	_static_originals.clear()
-	for child in _static_viewport.get_children():
-		_static_viewport.remove_child(child)
-		child.queue_free()
-	_static_originals.append(_bay)
-	_clone_static_sprite(_bay)
-	for id in IDS:
-		if id in _static_ids:
-			var shell: Sprite2D = _pipes[id]._shell
-			_static_originals.append(shell)
-			_clone_static_sprite(shell)
-	_static_originals.append(_console)
-	_clone_static_sprite(_console)
-	_static_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-	_finish_static_cache(generation)
-
-func _clone_static_sprite(original: Sprite2D) -> void:
-	var copy := Sprite2D.new()
-	copy.texture = original.texture
-	copy.centered = original.centered
-	copy.position = original.position
-	copy.scale = original.scale
-	copy.modulate = original.modulate
-	_static_viewport.add_child(copy)
-
-func _finish_static_cache(generation: int) -> void:
+func _finish_bake(generation: int) -> void:
 	await RenderingServer.frame_post_draw
 	await get_tree().process_frame
-	if generation != _static_generation: return
-	_static_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
-	for original in _static_originals: original.visible = false
-	_static_layer.visible = true
+	if generation!=_cache_generation:return
+	var resting:=ImageTexture.create_from_image(_baker.get_texture().get_image())
+	_background_material.set_shader_parameter("resting_surface",resting)
+	_background_material.set_shader_parameter("working_surface",resting)
+	_background.material=_background_material
+	for material in _palette.values():material.set_shader_parameter("core_power",1.0)
+	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
+	await RenderingServer.frame_post_draw
+	await get_tree().process_frame
+	if generation!=_cache_generation:return
+	var working:=ImageTexture.create_from_image(_baker.get_texture().get_image())
+	_background_material.set_shader_parameter("working_surface",working)
+	var depth_material:=ShaderMaterial.new()
+	depth_material.shader=DEPTH
+	for body in _bodies:
+		for index in body.materials.size():body.node.set_surface_override_material(index,depth_material)
+	_environment.background_color=Color.BLACK
+	_baker.msaa_3d=Viewport.MSAA_DISABLED
+	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
+	await RenderingServer.frame_post_draw
+	await get_tree().process_frame
+	if generation!=_cache_generation:return
+	var depth:=ImageTexture.create_from_image(_baker.get_texture().get_image())
+	for materials in _materials.values():
+		for material in materials:
+			material.set_shader_parameter("body_depth",depth)
+			material.set_shader_parameter("depth_ready",true)
+	for body in _bodies:
+		for index in body.materials.size():body.node.set_surface_override_material(index,body.materials[index])
+	_environment.background_color=Color("0a1d30")
+	_baker.render_target_update_mode=SubViewport.UPDATE_DISABLED
+	_cache_ready=true
+	diagnostics.cache_renders+=3
+	queue_redraw()
 
-func advance_visual_clock(game_time: float, paused: bool) -> bool:
-	if not is_visible_in_tree():
-		_clock = -1.0
-		return false
-	var elapsed: float = 0.0 if _clock < 0.0 else maxf(0.0, game_time-_clock)
-	_clock = game_time
-	if paused or elapsed == 0.0 or float(_loads.get("core",0.0)) <= 0.0: return false
-	_phase = fmod(_phase+elapsed,4096.0)
-	_field_material.set_shader_parameter("phase",_phase)
+func clear_snapshot() -> void:show_snapshot([], {})
+
+func _animate_mechanisms() -> void:
 	for id in _enabled:
-		_pipes[id].set_visual_phase(_phase)
-		_modules[id].set_visual_phase(_phase)
-	diagnostics.active_frames += 1
+		if float(_loads.get(id,0.0))<=0.0:continue
+		var age: float=float(_age[id])
+		for mechanism in _mechanisms[id]:
+			var part: Node2D=mechanism.node
+			var title: String=mechanism.title
+			var origin: Vector2=mechanism.origin
+			if title.begins_with("weapon charge segment"):
+				var index: int=int(title.get_slice("segment ",1))
+				var charge: float=clampf(fmod(age,1.8)/1.17*3.0-float(index),0.0,1.0)
+				part.scale=Vector2(1.0,maxf(.02,charge))*SOURCE_SCALE
+				part.position=source_point(Vector2(origin.x,mechanism.bottom-(mechanism.bottom-origin.y)*charge))
+				part.visible=charge>0.0
+			elif title.begins_with("weapon output"):
+				var shot: float=fmod(age,1.8)
+				part.visible=shot>1.17 and shot<1.53
+				if "pulse" in title:
+					var pulse: float=maxf(.01,sin((shot-1.17)/.36*PI))
+					part.scale=Vector2(pulse,1.0)*SOURCE_SCALE
+					part.position=source_point(Vector2(90.0-(90.0-origin.x)*pulse,origin.y))
+			elif title.begins_with("furnace feed"):
+				var index: int=int(title.get_slice("feed ",1))
+				var descent: float=fmod(age/1.2+float(index)/3,1.0)
+				part.position=source_point(Vector2(origin.x,430+60*descent))
+				part.visible=descent<.85
+			elif title.begins_with("crystal body"):
+				var growth: float=.12+.88*smoothstep(0.0,3.5,age)
+				part.scale=Vector2(1.0,growth)*SOURCE_SCALE
+				part.position=source_point(Vector2(origin.x,mechanism.bottom-(mechanism.bottom-origin.y)*growth))
+		for material in _materials[id]:material.set_shader_parameter("formation",minf(age/1.6,1.0))
+
+func advance_visual_clock(game_time: float,paused: bool) -> bool:
+	if not is_visible_in_tree():
+		_clock=-1.0
+		return false
+	var elapsed: float=0.0 if _clock<0.0 else maxf(0.0,game_time-_clock)
+	_clock=game_time
+	if paused or elapsed==0.0 or float(_loads.get("core",0.0))<=0.0:return false
+	_phase=fmod(_phase+elapsed,4096.0)
+	for id in _enabled:
+		if float(_loads.get(id,0.0))<=0.0:continue
+		_age[id]=float(_age[id])+elapsed
+		for key in [id,"pipe_"+id]:
+			for material in _materials[key]:material.set_shader_parameter("phase",_phase)
+	for material in _materials.core:material.set_shader_parameter("phase",_phase)
+	_animate_mechanisms()
+	diagnostics.active_frames+=1
 	return true
-
-func reset_clock() -> void:
-	_clock = -1.0
-
-func visual_phase() -> float:
-	return _phase
-
-func _full_layer(texture: Texture2D) -> Sprite2D:
-	var layer := Sprite2D.new()
-	layer.texture = texture
-	layer.centered = false
-	layer.position = Vector2.ZERO
-	layer.scale = VIEW_SIZE / SOURCE_SIZE
-	add_child(layer)
-	return layer
-
-func _source_layer(texture: Texture2D, source_rect: Rect2) -> Sprite2D:
-	var layer := Sprite2D.new()
-	layer.texture = texture
-	layer.centered = false
-	layer.position = source_rect.position * VIEW_SIZE / SOURCE_SIZE
-	layer.scale = VIEW_SIZE / SOURCE_SIZE
-	add_child(layer)
-	return layer
-
-func _central_layer(texture: Texture2D) -> Sprite2D:
-	var layer := Sprite2D.new()
-	layer.texture = texture
-	layer.position = Vector2(595,330) * VIEW_SIZE / SOURCE_SIZE
-	layer.scale = VIEW_SIZE / SOURCE_SIZE
-	layer.visible = false
-	add_child(layer)
-	return layer
+func reset_clock() -> void:_clock=-1.0
+func visual_phase() -> float:return _phase
