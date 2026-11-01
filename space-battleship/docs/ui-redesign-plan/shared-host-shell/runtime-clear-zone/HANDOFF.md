@@ -9,7 +9,7 @@
 - 星球固定 `c063e710ef93fa4ea84306b9fa620128e93112b2` 的四GLB、设施场景/轨道、rotating/spine_opaque两个shader及cloud-density云图九件逐blob同源。planet_visual保留整组包络与固定环境；planet_panel业务/UI与安全区保持。
 - 本轮公共适配仅planet_visual.gd与planet_nebula.gdshader：固定环境内sky乘色0.52/0.62/0.76、气体透明度0.32/上部退后权重0.80、原柔光透明度0.32；其他环境保持默认。后续原组shader更新须保留两个uniform默认值与宿主参数，不整文件覆盖公共适配。无新控件/遮盖层，建筑体量和战场未改。
 
-星球当前同版证据：`archive/design-docs-before-cleanup-20261031@ee9c47303a9872bd96b60aedc98dd15cfd8244b2:modules/public-ui/planet-field-composition-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、总览/设施各6秒180帧动画、无损分片与哈希、半秒整页抽帧、保存的逐帧总览及author-review.md；before两图由f553已有同状态原PNG转换，未重跑。精确两文件差异见host-environment.patch。
+星球当前同版证据：`archive/design-docs-before-cleanup-20261031@4db20c86edc9652ba06062dbb59a99ab7077ab9d:modules/public-ui/planet-field-composition-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、总览/设施各6秒180帧动画、无损分片与哈希、半秒整页抽帧、保存的逐帧总览及author-review.md；before两图由f553已有同状态原PNG转换，未重跑。精确两文件差异见host-environment.patch。
 
 反应堆当前同版证据：`archive/design-docs-before-cleanup-20261031@4d4ec6cddc516b034a025ef179da840346ead3f8:modules/public-ui/reactor-depth-light-shared-20261101/README.md`。运行774deace的五张1440×900原PNG/同尺寸高质量JPEG、四路/单炼铁各6秒180连续帧、无损分片/哈希、逐帧总览、批准整图共同屏幕比例并置及author-review.md。
 
