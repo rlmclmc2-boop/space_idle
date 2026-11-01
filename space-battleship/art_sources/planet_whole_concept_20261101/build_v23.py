@@ -531,9 +531,6 @@ for x in (-1.12,1.12):
                    y-.15,y+.15,ARMOR_FACE,workshop)
         box("Manufacturing dark inner jamb",(x-sign*.19,y,1.03),
             (.075,.26,.76),MACHINE,workshop,.012)
-    beam("Manufacturing broad entrance lintel",(x,-.83,1.64),(x,.28,1.64),.29,.34,ARMOR,workshop)
-    box("Manufacturing lintel pressure cap",(x,-.28,1.81),(.39,1.34,.13),ARMOR_SIDE,workshop)
-    box("Manufacturing recessed lintel soffit",(x,-.28,1.52),(.27,1.17,.09),KEEL,workshop,.012)
 box("Manufacturing outer pressure cavity wall",(0,-.89,.51),(1.92,.13,.52),ARMOR_SIDE,workshop)
 for x in (-.58,0,.58):
     box("Manufacturing vented cavity inset",(x,-.97,.55),(.31,.026,.15),KEEL,workshop,.006)
