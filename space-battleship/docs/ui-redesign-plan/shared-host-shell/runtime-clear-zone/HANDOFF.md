@@ -1,21 +1,22 @@
 # 公共壳制作交接
 
-制作规范见[13](../../../game-design/13-art-interaction.md)。
+制作规范见[13](../../../game-design/13-art-interaction.md)，反应堆三段控制区及工作语义见[M3](../../../game-design/art/modules/reactor.md)。
 
-## 当前现场与任务
+## 当前运行源与依赖
 
-- 分支 `design/clear-zone-host`，保全运行源 `ec2cea75582c06f3fba696d87686d11680eaa329`，反应堆资产源 `5ae32e28`；工作区 `/workspace/space_idle`。
-- 用户已退回整屏：反应堆写实、舰船卡通、面板另成一体；四设备效果过程不明，升级贴边、均分与控制区构图需重排。此前待确认状态取消。
-- 当前先制定全屏共同造型/渲染语言。已完成装备 `e845ca58`、舰船及其他运行资产保持原状。反应堆由原线程本人据共同方向协调返工。
+- 分支 `design/clear-zone-host`，运行源 `b28a0be19139298bd666df040be317fa1dcff2bf`，工作区 `/workspace/space_idle`。
+- 用户已认可24db2a9c的共同分面方向，当前实施中。公共材质、顶轨/导航、输入/按钮及默认主题已在原绘制路径替换。
+- 模块最小公共新源为 `src/ui/bridge_theme.gd` 与 `assets/ui/public_shell/faceted-controls.svg`；沿用现有字体/图标依赖。`operation_plate(padding,"dark")`配合dark文字角色；默认light及板面.state保留现有装备消费。其他壳体资源、宿主专属文件见下方消费清单。
+- 装备保持e845操作结构；反应堆运行资产仍5ae32e28，新成套造型与控制区由原线程制作；星球新线程固定交接尚未收到。
 
-## 当前方案索引
+## 当前证据与消费索引
 
-独立归档 `archive/design-docs-before-cleanup-20261031@24db2a9c6d6815f52026e0c53a29327238af831d:modules/public-ui/unified-abstraction-proposal-20261101/`：
+独立归档 `archive/design-docs-before-cleanup-20261031@f0667cd900007d017a911cd3caeda4ba50d0c339:modules/public-ui/faceted-public-implementation-20261101/`：
 
-- `whole-game-style-concept.jpg`：静态整屏候选。以简化装甲体块、相近轮廓线与分面明暗统一反应堆、舰船和面板；控制区为总控带—四行分配—底部升级事务带。
-- `README.md`：方向依据、造型/材质/光照/细节密度要求、资产重做范围及实际分区适配关系。父级已查看完整图，并于06:25 UTC作为概念稿真实附件发用户选择，当前待用户结论。
+- `README.md`、`consumption.json`：公共源、模块最小消费及宿主专属路径。
+- `public-states/` 14张、`select-states/` 5张1440×900原屏与同尺寸JPEG；覆盖本轮改变的公共状态、资源弹层、装备板面/选择、舰船页及倍速实际展开确认。作者已看完整画面，导入/check-only及最终运行正常。
 
 ## 下一项与实际依赖
 
-1. 等待用户对已发送的24db2a9c完整风格方案作出选择；相关成套视觉实施依赖此结论。获准后由原反应堆线程实施内部、整体组适配公共语言并看同版整页。
-2. 独立待办：星球新线程 `01a19581-2564-72c7-9ffd-3cfda70140c7` 的固定源交接接入；当前尚未收到，收到后保留装备与公共源继续原接入。
+1. 将固定公共源交反应堆/星球原组消费，沿既有节点适配；按父级对当前公共实图的反馈继续打磨。
+2. 接入各组成套资产固定源，在同版完整页面判断造型、材质、操作区和公共边界；保留装备操作结构和现行战场空间。
