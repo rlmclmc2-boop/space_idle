@@ -1,0 +1,27 @@
+{
+  "video": "planet-closed-1x-6s.mp4",
+  "bytes": 1725384,
+  "sha256": "1ba1303048471ff0a1c2895fbc7334dd3ddbcd9fec105720beb4b3076bff1e4f",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 180,
+  "duration_seconds": 6,
+  "parts": [
+    {
+      "path": "closed-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "7ee0b6a560abc2c4a37b5dc5fca8199265d03304e5add7a16c3bff852e6e8429"
+    },
+    {
+      "path": "closed-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "199f55f29c57944ab0bc8d6ecd12bf920ae3b6e33505689f9fe7e8c24ceef100"
+    },
+    {
+      "path": "closed-parts/part-002.bin",
+      "bytes": 414664,
+      "sha256": "b8b41c066176b9d07380cee6def260131e661cd0227c7c3d5749161b441fccff"
+    }
+  ]
+}
