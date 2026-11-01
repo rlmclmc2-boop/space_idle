@@ -79,7 +79,7 @@ func _ready() -> void:
 	# Set the entire tilted construction plane below the globe's visual center.
 	# This keeps a dark gap under the sphere and lets its depth mask occlude the
 	# far band, matching the original complete-state drawing.
-	_spine.position.y = -0.55
+	_spine.position.y = -0.80
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
@@ -141,7 +141,7 @@ func _position_refinery_work(_model: Node3D, clock: float) -> void:
 		var marker := _refinery_feed_markers[index]
 		# The asset uses the shared full-orbit authoring frame. Ore moves across
 		# the refinery's open heat bay rather than around the old local saddle.
-		marker.position = Vector3(lerpf(3.54, 3.11, travel), 1.14, lerpf(-2.65, -3.12, travel))
+		marker.position = Vector3(lerpf(3.30, 3.62, travel), 1.08, lerpf(-2.08, -2.50, travel))
 
 func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned

@@ -9,8 +9,8 @@ const ARC_BOUNDS := {
 	"shipyard": Vector2(PI * 0.361111, PI * 1.138889),
 }
 const FACILITY_ANGLES := {
-	"auto_explore": PI * 1.388889,
-	"refinery": PI * 1.722222,
+	"auto_explore": PI * 1.222222,
+	"refinery": PI * 1.805556,
 	"equipment": TAU + PI * 0.238889,
 	"shipyard": PI * 0.722222,
 }
@@ -20,8 +20,8 @@ const RADIUS := 4.35
 const REAR_TRANSIT_WIDTH := 0.22
 const FRONT_TRANSIT_WIDTH := 0.30
 const NODE_WIDTH := 0.36
-const TILT_Y := 0.72
-const TILT_Z := 0.694
+const TILT_Y := 0.52
+const TILT_Z := 0.854166
 const DECK_HEIGHT := 0.16
 var _arcs: Dictionary = {}
 var _end_caps: Dictionary = {}
