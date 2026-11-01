@@ -256,6 +256,8 @@ curved_shell(station,"Curved inner observation gallery",88,138,4.18,4.53,.57,.91
 owned_arc(station,"Curved continuous observation glazing",91,135,4.16,4.24,.84,.94,GLASS)
 for lo,hi in ((83,102),(107,121),(126,143)):
     curved_shell(station,"Stepped inhabited roof bay",lo,hi,4.54,5.28,.96,1.34,ARMOR)
+    curved_shell(station,"Inset faceted habitation roof plate",lo+2,hi-2,4.64,5.18,1.34,1.40,ARMOR)
+    owned_arc(station,"Habitation roof outboard shadow reveal",lo+2,hi-2,5.18,5.27,1.32,1.36,ARMOR_SIDE)
 cyl("Closed command bearing integrated in arc",(0,-.34,1.53),.47,.27,KEEL,station,10)
 torus("Habitat upper pressure collar",(0,-.34,1.67),.45,.07,ARMOR,station)
 torus("Inboard turquoise bearing",(0,-.34,1.76),.29,.035,CYAN,station)
@@ -269,6 +271,9 @@ cyl("Amber signal cap",(0,-.34,2.45),.035,.05,AMBER,station,8)
 # crown marks a short raised bay near one end of the occupied crescent.
 curved_shell(refinery,"Curved heat transfer pressure body",29,72,4.32,5.30,.44,1.02,ARMOR)
 curved_shell(refinery,"Heat throat raised bay",38,57,4.62,5.24,.93,1.28,ARMOR)
+for lo,hi in ((30,38),(58,70)):
+    curved_shell(refinery,"Heat line angled roof armor",lo,hi,4.60,5.15,1.00,1.15,ARMOR)
+    owned_arc(refinery,"Heat line roof service recess",lo+1,hi-1,5.17,5.25,1.02,1.08,ARMOR_SIDE)
 cyl("Twelve-facet heat chamber",(0,-.47,1.41),.35,.50,MACHINE,refinery,12)
 cyl("Contained amber furnace core",(0,-.47,1.68),.25,.05,AMBER,refinery,12)
 torus("Heavy furnace upper clamp",(0,-.47,1.70),.33,.065,EDGE,refinery)
@@ -286,6 +291,8 @@ curved_shell(workshop,"Manufacturing outer curved wall",-57,-23,4.60,4.96,.48,1.
 owned_arc(workshop,"Recessed curved manufacturing work floor",-54,-26,4.25,4.63,.49,.55,MACHINE)
 for lo,hi,rise in ((-57,-46,0),(-36,-23,.12)):
     curved_shell(workshop,"Stepped curved fabrication roof",lo,hi,4.22,4.78,1.02,1.42+rise,ARMOR)
+    curved_shell(workshop,"Inset fabrication roof plate",lo+2,hi-2,4.31,4.66,1.43+rise,1.51+rise,ARMOR)
+    owned_arc(workshop,"Fabrication roof outer shadow reveal",lo+2,hi-2,4.67,4.76,1.43+rise,1.47+rise,ARMOR_SIDE)
 box("Manufacturing terminal beveled gate frame",(1.72,.37,.72),(.08,.59,.54),ARMOR_MID,workshop,.025)
 box("Manufacturing recessed terminal door",(1.77,.37,.72),(.05,.46,.39),EDGE,workshop,.012)
 box("Manufacturing terminal work indicator",(1.81,.37,.83),(.025,.29,.035),CYAN,workshop,.005)
