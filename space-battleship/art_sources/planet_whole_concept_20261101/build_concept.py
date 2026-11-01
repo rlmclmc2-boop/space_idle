@@ -28,6 +28,7 @@ def material(name, color, metallic=.0, rough=.68, emission=0.0):
 ARMOR = material("Warm faceted ivory armor", (.52,.47,.36), .05, .74)
 ARMOR_FACE = material("Lit ivory armor facets", (.90,.78,.60), .04, .78)
 ARMOR_SIDE = material("Recessed slate armor flanks", (.10,.17,.21), .09, .78)
+ARMOR_MID = material("Midtone faceted pressure armor", (.40,.46,.45), .05, .78)
 EDGE = material("Dark slate panel edge", (.085,.13,.16), .16, .75)
 KEEL = material("Deep navy pressure keel", (.012,.035,.055), .10, .80)
 MACHINE = material("Machine steel", (.043,.095,.115), .10, .72)
@@ -185,6 +186,7 @@ def section(name, degrees):
                     [(-1.87,side*.15),(-1.48,side*.67),(-.84,side*.82),
                      (.84,side*.82),(1.48,side*.67),(1.87,side*.15)],
                     -.08,.38,ARMOR,root)
+        box("Inset midtone pressure armor",(0,side*.85,.22),(1.52,.055,.25),ARMOR_MID,root,.025)
         box("Dark inner pressure channel",(0,side*.48,.27),(2.42,.09,.16),EDGE,root,.02)
         box("Node-contained service trace",(0,side*.59,.39),(2.22,.025,.024),CYAN,root,.006)
     for x in (-1.63,1.63):
@@ -201,6 +203,7 @@ for side in (-1,1):
                 [(side*.48,-.31),(side*1.42,-.53),(side*1.65,-.13),(side*.52,.27)],
                 [1.08,.90,.82,1.02],.13,ARMOR,station)
     box("Long hab pressure window",(side*1.03,-.59,.72),(.70,.035,.10),GLASS,station,.012)
+    box("Habitation broad outer pressure cassette",(side*1.02,-.69,.57),(.74,.10,.24),ARMOR_MID,station,.035)
     box("Outboard wing armor end cap",(side*1.66,-.13,.70),(.24,.34,.22),ARMOR,station,.035)
 cyl("Closed command bearing integrated in arc",(0,0,.61),.62,.40,KEEL,station,12)
 torus("Habitat upper pressure collar",(0,0,.84),.60,.12,ARMOR,station)
@@ -221,11 +224,14 @@ for side in (-1,1):
                 [(side*.61,-.48),(side*1.36,-.52),(side*1.56,-.12),(side*.65,.34)],
                 [1.19,1.11,.89,1.04],.14,ARMOR,refinery)
     box("Ore intake dark face",(side*1.07,-.60,.72),(.53,.055,.23),EDGE,refinery,.025)
+    box("Ore chamber outer armor cassette",(side*1.14,-.67,.80),(.72,.10,.28),ARMOR_MID,refinery,.035)
     box("Visible hot ore feed",(side*1.07,-.642,.73),(.39,.02,.055),AMBER,refinery,.008)
     beam("Ore duct enters central furnace",(side*1.08,-.35,.79),(side*.42,-.12,.88),.18,.20,MACHINE,refinery)
 cyl("Twelve-facet heat chamber",(0,0,.93),.53,.94,MACHINE,refinery,12)
 cyl("Contained amber furnace core",(0,0,1.43),.34,.055,AMBER,refinery,12)
 torus("Heavy furnace upper clamp",(0,0,1.44),.46,.11,EDGE,refinery)
+for side in (-1,1):
+    box("Contained vertical furnace vent",(0,side*.56,.96),(.11,.055,.48),AMBER,refinery,.014)
 for side in (-1,1):
     beam("Furnace load buttress",(side*.65,-.48,.40),(side*.34,0,1.39),.24,.25,ARMOR,refinery)
     box("Heat transfer socket",(side*.68,.48,.60),(.30,.42,.26),EDGE,refinery,.035)
@@ -245,7 +251,10 @@ for side in (-1,1):
     box("Manufacturing lateral dark hatch",(0,side*.83,.92),(2.12,.07,.53),KEEL,workshop,.025)
     for x in (-.67,0,.67):
         box("Three manufacturing door leaves",(x,side*.88,.92),(.56,.07,.41),ARMOR_SIDE,workshop,.025)
+    for x in (-.335,.335):
+        box("Manufacturing door pressure pier",(x,side*.93,.94),(.09,.10,.53),ARMOR,workshop,.018)
     box("Manufacturing sill is arc wall",(0,side*.91,.66),(2.52,.12,.12),ARMOR,workshop,.025)
+    box("Manufacturing upper pressure fascia",(0,side*.83,1.35),(2.30,.12,.15),ARMOR,workshop,.028)
 for x in (-1.16,1.16):
     for side in (-1,1):
         beam("Hall load post into ring arc",(x,side*.60,.43),(x,side*.50,1.51),.20,.23,ARMOR,workshop)

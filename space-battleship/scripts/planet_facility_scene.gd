@@ -133,7 +133,7 @@ func _position_refinery_work(_model: Node3D, clock: float) -> void:
 	for index in _refinery_feed_markers.size():
 		var travel := fposmod(clock * 0.28 + float(index) / 3.0, 1.0)
 		var marker := _refinery_feed_markers[index]
-		marker.position = Vector3(lerpf(-1.15, -0.31, travel), 0.0, 0.36)
+		marker.position = Vector3(lerpf(-1.12, -0.42, travel), 0.72, 0.36)
 
 func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned
