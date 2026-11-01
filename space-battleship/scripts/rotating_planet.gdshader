@@ -7,6 +7,7 @@ uniform vec4 atmosphere_color : source_color = vec4(0.35, 0.78, 0.94, 1.0);
 uniform float glow_strength = 0.30;
 uniform float shadow_strength = 0.86;
 uniform float cloud_opacity = 0.65;
+uniform float cloud_coverage = 0.0;
 uniform vec3 light_direction = vec3(0.65, -0.45, 0.62);
 uniform float extent = 1.09;
 uniform float visual_clock = 0.0;
@@ -55,7 +56,8 @@ void fragment() {
         vec3 lit_terrain = terrain;
         vec3 night_tint = vec3(0.20, 0.38, 0.52);
         rgb = lit_terrain * mix(vec3(1.0), mix(night_tint * 0.52, vec3(diffuse), day), shadow_strength);
-        float cloud_density = pow(smoothstep(0.24, 0.84, clouds), 1.35) * cloud_opacity;
+        float cloud_density = pow(smoothstep(0.24 - cloud_coverage * 0.62,
+            0.84 - cloud_coverage, clouds), 1.22) * cloud_opacity;
         float cloud_relief = clamp(0.94 + (clouds - cloud_shadow) * 0.8, 0.84, 1.04);
         vec3 cloud_lit = vec3(0.95, 0.97, 0.94) * cloud_relief * (0.15 + 0.85 * day);
         rgb = mix(rgb, cloud_lit, cloud_density);
