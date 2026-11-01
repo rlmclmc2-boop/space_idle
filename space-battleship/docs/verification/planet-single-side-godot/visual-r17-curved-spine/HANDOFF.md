@@ -8,7 +8,7 @@
 
 ## 画面依据
 
-最初方向原图为`8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`，五阶段原图为`1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png`。新整体图稿及具体偏离对照见`archive/planet-resume-20261101@00bea99b8:v23-whole-band-design-draft-20261101/`。当前运行画面留档在`archive/planet-resume-20261101@3e3b28e7:v22-armor-layering-fb3b6249/`。
+最初方向原图为`8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`，五阶段原图为`1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png`。新整体图稿、具体偏离对照和三张同尺寸比较图见`archive/planet-resume-20261101@950cbdeea:v23-whole-band-design-draft-20261101/`。当前运行画面留档在`archive/planet-resume-20261101@3e3b28e7:v22-armor-layering-fb3b6249/`。
 
 ## 当前一步
 
