@@ -216,7 +216,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# The built saddle orbits with the spine; the service module keeps an
 		# upright attitude on that saddle, so long solar wings do not roll into
 		# detached vertical slivers as the orbital structure turns.
-		var scale_factor := 0.76 if kind == "auto_explore" else 0.76 if kind == "refinery" else 0.75 if kind == "equipment" else 0.72
+		var scale_factor := 0.85 if kind == "auto_explore" else 0.80 if kind == "refinery" else 0.75 if kind == "equipment" else 0.72
 		# The beamed core is limited by its long visible beam envelope. Give its
 		# four real work nodes enough area to retain their individual silhouettes
 		# while the common ring stays compact around the photosphere.
@@ -229,7 +229,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 			var outward: Vector3 = _spine.point(a).normalized()
 			var axis_x: Vector3 = -outward if kind == "shipyard" else (_spine.point(a + 0.001) - _spine.point(a - 0.001)).normalized()
 			var axis_y: Vector3 = _spine.plane_normal()
-			var model_scale := Vector3(scale_factor, 0.52 if kind == "auto_explore" else scale_factor, scale_factor)
+			var model_scale := Vector3(scale_factor, 0.62 if kind == "auto_explore" else scale_factor, scale_factor)
 			model.transform = Transform3D(Basis(axis_x, axis_y, axis_x.cross(axis_y)).scaled(model_scale), _spine.socket_position(a, kind))
 		else:
 			model.transform = Transform3D(_spine.basis.inverse() * upright, _spine.socket_position(a, kind))
