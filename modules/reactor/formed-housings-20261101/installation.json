@@ -1,0 +1,32 @@
+{
+  "source_commit": "b23d87dad9d1ec2ab570ed824d60774f7066c243",
+  "replace_paths": [
+    "space-battleship/src/ui/reactor_scene.gd",
+    "space-battleship/src/ui/reactor_stage.gd",
+    "space-battleship/assets/ui/reactor/b01/README.md",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-plasma-work.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-structure-outline.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-work-common.gdshaderinc",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+    "space-battleship/assets/ui/reactor/b01/generate_plasma_atlas.py",
+    "space-battleship/assets/ui/reactor/b01/pack_plasma_atlas.py",
+    "space-battleship/assets/ui/reactor/b01/plasma-volume.json",
+    "space-battleship/assets/ui/reactor/b01/plasma-volume.png",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json"
+  ],
+  "content_rect": [
+    0,
+    65,
+    808,
+    835
+  ],
+  "scope": "private formed housings, shared authored work frames, centered two-device assembly and independent volume atlas; retain Owner and public host"
+}
