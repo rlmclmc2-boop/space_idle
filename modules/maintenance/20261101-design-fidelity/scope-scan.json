@@ -1,0 +1,92 @@
+{
+  "main": [
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/dev/enemy_recognition/README.md:39:112项最小检查通过，包含真实多炮位、25点合法转角采样、实际字段/状态/RNG只读、包络缓存、恢复延迟/增长/中断、暂停、破盾、15槽击毁清理。首轮像素审查发现基础类被正式绘制覆盖，已修正并重拍。既有test_enemy_weapon_positions在其合成夹具出现越界，未作为此轮验收依据、未修改。几何和测试通过不替代父任务亲自看像素。未遍历40敌组、所有玩家舰与全部窗口尺寸，未运行长平衡模拟。",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/dev/enemy_recognition/README.md:75:启动器仅复制六张PNG、字体和两份JSON到输出目录下的隔离Godot项目，用户目录也隔离。没有游戏机制测试或长模拟。已检查正常尺寸和彩色/灰度炮口像素；父任务仍须亲自审图。正式敌群弹幕、入场和随机尺寸的有限样本见live证据；其余玩家舰基准及全部敌组尚未验收。",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/docs/game-design/05-architecture.md:142:页面通过所属模块公开查询、动作与通知连接；所需跨模块命令由Session协调。可见显示帧合并更新，隐藏停止局部投影。对象身份、Amount与事件消费见[14](14-ui-contracts.md)。资产以稳定资源ID和公开状态连接；构图、导航、材质和可见完成标准见[13](13-art-interaction.md)。",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/docs/game-design/08-decisions.md:17:| 11 定时资源 | 生成时确定最终数量；领取只入账该数，生成后研究等倍率变化不改已有物，新物用新倍率；不推广到普通敌人掉落 | [01经济](01-runtime.md)、[05归属](05-architecture.md)、[07验收](07-verification.md) |",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/docs/game-design/14-ui-contracts.md:65:资产、布局与业务以稳定对象ID和公开端口连接；画布、可见边界、锚点、图层与导出约定见[13及M/V](13-art-interaction.md#3-按模块读取设计与验收)。",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/docs/game-design/README.md:3:当前制作来源见[11](11-stage6-contract.md)。按任务选择下表对应内容；规划文档维护自身目标、必要接口和完成标准。",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/docs/game-design/art/open-items.md:3:[全局呈现](../13-art-interaction.md) · [当前制作](../11-stage6-contract.md)。模块目标和完成标准由对应M/V页维护。",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/docs/game-design/contracts/persistence.md:14:当前结构化只读透传仍是未实施的接口缺口，尚需原负责者定向审查；复用现有SaveFiles状态与危险事务，区分纯读取、显式候选准备、内存替换及实际持久完成。不以本文授权保存/UI改动或完整V10验收。",
+    "7a20bec9cc6369afbabf597f78d65bd8b65ebca3:space-battleship/docs/ui-redesign-plan/README.md:3:从[当前制作来源](../game-design/11-stage6-contract.md)进入各原组。全局构图、字体、控件、布局及整页完成标准见[13](../game-design/13-art-interaction.md)，各模块主体由对应 M/V 页定义；Owner 输入输出见[14](../game-design/14-ui-contracts.md)。当前目标为桌面宽屏。"
+  ],
+  "cleanup": [
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/game-design/05-architecture.md:142:页面通过所属模块公开查询、动作与通知连接；所需跨模块命令由Session协调。可见显示帧合并更新，隐藏停止局部投影。对象身份、Amount与事件消费见[14](14-ui-contracts.md)。资产以稳定资源ID和公开状态连接；构图、导航、材质和可见完成标准见[13](13-art-interaction.md)。",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/game-design/08-decisions.md:17:| 11 定时资源 | 生成时确定最终数量；领取只入账该数，生成后研究等倍率变化不改已有物，新物用新倍率；不推广到普通敌人掉落 | [01经济](01-runtime.md)、[05归属](05-architecture.md)、[07验收](07-verification.md) |",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/game-design/08-decisions.md:19:[09参考索引](09-config-catalog.md)直接定位当前正式工作簿，不以旧字段快照建立新要求。[07验收场景](07-verification.md)保留设计场景和数值期望，不表示配套设施已落地或场景已执行。",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/game-design/14-ui-contracts.md:65:资产、布局与业务以稳定对象ID和公开端口连接；画布、可见边界、锚点、图层与导出约定见[13及M/V](13-art-interaction.md#3-按模块读取设计与验收)。",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/game-design/README.md:3:当前制作来源见[11](11-stage6-contract.md)。按任务选择下表对应内容；规划文档维护自身目标、必要接口和完成标准。",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/game-design/art/open-items.md:3:[全局呈现](../13-art-interaction.md) · [当前制作](../11-stage6-contract.md)。模块目标和完成标准由对应M/V页维护。",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/game-design/contracts/persistence.md:14:当前结构化只读透传仍是未实施的接口缺口，尚需原负责者定向审查；复用现有SaveFiles状态与危险事务，区分纯读取、显式候选准备、内存替换及实际持久完成。不以本文授权保存/UI改动或完整V10验收。",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/ui-redesign-plan/README.md:3:从[当前制作来源](../game-design/11-stage6-contract.md)进入各原组。全局构图、字体、控件、布局及整页完成标准见[13](../game-design/13-art-interaction.md)，各模块主体由对应 M/V 页定义；Owner 输入输出见[14](../game-design/14-ui-contracts.md)。当前目标为桌面宽屏。",
+    "54d0e8fca0a093bcf56d5f53a4e5cf499746f07b:space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md:3:制作目标、设计要求与完成标准见[制作规范](../../../game-design/13-art-interaction.md)。"
+  ],
+  "equipment": [
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/dev/enemy_recognition/README.md:39:112项最小检查通过，包含真实多炮位、25点合法转角采样、实际字段/状态/RNG只读、包络缓存、恢复延迟/增长/中断、暂停、破盾、15槽击毁清理。首轮像素审查发现基础类被正式绘制覆盖，已修正并重拍。既有test_enemy_weapon_positions在其合成夹具出现越界，未作为此轮验收依据、未修改。几何和测试通过不替代父任务亲自看像素。未遍历40敌组、所有玩家舰与全部窗口尺寸，未运行长平衡模拟。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/dev/enemy_recognition/README.md:75:启动器仅复制六张PNG、字体和两份JSON到输出目录下的隔离Godot项目，用户目录也隔离。没有游戏机制测试或长模拟。已检查正常尺寸和彩色/灰度炮口像素；父任务仍须亲自审图。正式敌群弹幕、入场和随机尺寸的有限样本见live证据；其余玩家舰基准及全部敌组尚未验收。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/game-design/05-architecture.md:142:页面通过所属模块公开查询、动作与通知连接；所需跨模块命令由Session协调。可见显示帧合并更新，隐藏停止局部投影。对象身份、Amount与事件消费见[14](14-ui-contracts.md)。资产以稳定资源ID和公开状态连接；构图、导航、材质和可见完成标准见[13](13-art-interaction.md)。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/game-design/08-decisions.md:17:| 11 定时资源 | 生成时确定最终数量；领取只入账该数，生成后研究等倍率变化不改已有物，新物用新倍率；不推广到普通敌人掉落 | [01经济](01-runtime.md)、[05归属](05-architecture.md)、[07验收](07-verification.md) |",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/game-design/08-decisions.md:19:[09参考索引](09-config-catalog.md)直接定位当前正式工作簿，不以旧字段快照建立新要求。[07验收场景](07-verification.md)保留设计场景和数值期望，不表示配套设施已落地或场景已执行。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/game-design/14-ui-contracts.md:65:资产、布局与业务以稳定对象ID和公开端口连接；画布、可见边界、锚点、图层与导出约定见[13及M/V](13-art-interaction.md#3-按模块读取设计与验收)。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/game-design/README.md:3:当前制作来源见[11](11-stage6-contract.md)。按任务选择下表对应内容；规划文档维护自身目标、必要接口和完成标准。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/game-design/art/open-items.md:3:[全局呈现](../13-art-interaction.md) · [当前制作](../11-stage6-contract.md)。模块目标和完成标准由对应M/V页维护。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/game-design/contracts/persistence.md:14:当前结构化只读透传仍是未实施的接口缺口，尚需原负责者定向审查；复用现有SaveFiles状态与危险事务，区分纯读取、显式候选准备、内存替换及实际持久完成。不以本文授权保存/UI改动或完整V10验收。",
+    "f74f465de8cf08d0f479f703fb6856d3680887b3:space-battleship/docs/ui-redesign-plan/README.md:3:从[当前制作来源](../game-design/11-stage6-contract.md)进入各原组。全局构图、字体、控件、布局及整页完成标准见[13](../game-design/13-art-interaction.md)，各模块主体由对应 M/V 页定义；Owner 输入输出见[14](../game-design/14-ui-contracts.md)。当前目标为桌面宽屏。"
+  ],
+  "reactor": [
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/assets/ui/reactor/centered-v1/README.md:11:源图完整尺寸、alpha可见边界、区域和未验收项见`manifest.json`，保持draft。`mounting-plate.png`和`mounting-plate-three.png`分别是四设备共用安装面及右下封闭服务口的原生不透明生成资产，原件保留于`/workspace/generated_images/exec-c067f060-c42f-4f4b-b977-6355e88f2e62.png`和`exec-c9d19e58-760b-475d-8b69-495f44825858.png`；两张均为1024×1536，无字无独立设备。唯一端口数值及最终变换在`src/ui/reactor_stage.gd::SOURCE_PORTS/_centre/_ports`，不复制到后端。模组位置由核心端口、轴向、短连接长度与模组输入口反推；等比缩放同时作用于实体/输入/效果。安装面提供埋入式主体通路，各设备输入端加短实体套管与端面；未开放支路使用封闭底板并封盖核心端口。实际近景品质及设计审查仍待独立复核。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/dev/enemy_recognition/README.md:39:112项最小检查通过，包含真实多炮位、25点合法转角采样、实际字段/状态/RNG只读、包络缓存、恢复延迟/增长/中断、暂停、破盾、15槽击毁清理。首轮像素审查发现基础类被正式绘制覆盖，已修正并重拍。既有test_enemy_weapon_positions在其合成夹具出现越界，未作为此轮验收依据、未修改。几何和测试通过不替代父任务亲自看像素。未遍历40敌组、所有玩家舰与全部窗口尺寸，未运行长平衡模拟。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/dev/enemy_recognition/README.md:75:启动器仅复制六张PNG、字体和两份JSON到输出目录下的隔离Godot项目，用户目录也隔离。没有游戏机制测试或长模拟。已检查正常尺寸和彩色/灰度炮口像素；父任务仍须亲自审图。正式敌群弹幕、入场和随机尺寸的有限样本见live证据；其余玩家舰基准及全部敌组尚未验收。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/game-design/05-architecture.md:142:页面通过所属模块公开查询、动作与通知连接；所需跨模块命令由Session协调。可见显示帧合并更新，隐藏停止局部投影。对象身份、Amount与事件消费见[14](14-ui-contracts.md)。资产以稳定资源ID和公开状态连接；构图、导航、材质和可见完成标准见[13](13-art-interaction.md)。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/game-design/08-decisions.md:17:| 11 定时资源 | 生成时确定最终数量；领取只入账该数，生成后研究等倍率变化不改已有物，新物用新倍率；不推广到普通敌人掉落 | [01经济](01-runtime.md)、[05归属](05-architecture.md)、[07验收](07-verification.md) |",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/game-design/08-decisions.md:19:[09参考索引](09-config-catalog.md)直接定位当前正式工作簿，不以旧字段快照建立新要求。[07验收场景](07-verification.md)保留设计场景和数值期望，不表示配套设施已落地或场景已执行。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/game-design/14-ui-contracts.md:65:资产、布局与业务以稳定对象ID和公开端口连接；画布、可见边界、锚点、图层与导出约定见[13及M/V](13-art-interaction.md#3-按模块读取设计与验收)。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/game-design/README.md:3:当前制作来源见[11](11-stage6-contract.md)。按任务选择下表对应内容；规划文档维护自身目标、必要接口和完成标准。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/game-design/art/open-items.md:3:[全局呈现](../13-art-interaction.md) · [当前制作](../11-stage6-contract.md)。模块目标和完成标准由对应M/V页维护。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/game-design/contracts/persistence.md:14:当前结构化只读透传仍是未实施的接口缺口，尚需原负责者定向审查；复用现有SaveFiles状态与危险事务，区分纯读取、显式候选准备、内存替换及实际持久完成。不以本文授权保存/UI改动或完整V10验收。",
+    "635c775e43c69a9ba9a92023c48b5752981956c8:space-battleship/docs/ui-redesign-plan/README.md:3:从[当前制作来源](../game-design/11-stage6-contract.md)进入各原组。全局构图、字体、控件、布局及整页完成标准见[13](../game-design/13-art-interaction.md)，各模块主体由对应 M/V 页定义；Owner 输入输出见[14](../game-design/14-ui-contracts.md)。当前目标为桌面宽屏。"
+  ],
+  "planet": [
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/assets/planets/facilities_v2/README.md:5:用户已要求重做旧星球建筑。本组为新建可编辑几何，不继续采用旧简化图标作为最终资产；当前是待独审/用户检查的接入候选，存在资产不等于品质验收通过。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/assets/planets/facilities_v5/README.md:7:`illustrated/` 中的图是概念与局部形体参考，不是运行时分层贴图，也不作为几何或整体验收证据。当前制作、批准概念和原尺寸验证边界统一见[星球整体结构入口](../../../docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md)。`model-stats.json` 按当前四个 GLB 导入 Blender 后的网格和三角面数记录规模，不代表性能或视觉通过。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/assets/planets/painted-v4/README.md:5:这是未通过独审的资源候选，不承诺纹理接缝或完整周期已验收。实际阶段与限制见 [R3 检查点](../../../docs/verification/planet-single-side-godot/visual-r3/README.md)。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/assets/ui/reactor/centered-v1/README.md:7:源图完整尺寸、alpha可见边界、区域和未验收项见`manifest.json`，保持draft。唯一端口数值及最终变换在`src/ui/reactor_stage.gd::SOURCE_PORTS/_centre/_ports`，不复制到后端。模组位置由核心端口、轴向、短连接长度与模组输入口反推；等比缩放同时作用于实体/输入/效果，管体插入后由设备前唇遮挡，能量段在唇前收口。透明孔和设备唇的实际接合仍待近景视觉审，数值共用不能代替视觉通过。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/dev/enemy_recognition/README.md:39:112项最小检查通过，包含真实多炮位、25点合法转角采样、实际字段/状态/RNG只读、包络缓存、恢复延迟/增长/中断、暂停、破盾、15槽击毁清理。首轮像素审查发现基础类被正式绘制覆盖，已修正并重拍。既有test_enemy_weapon_positions在其合成夹具出现越界，未作为此轮验收依据、未修改。几何和测试通过不替代父任务亲自看像素。未遍历40敌组、所有玩家舰与全部窗口尺寸，未运行长平衡模拟。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/dev/enemy_recognition/README.md:75:启动器仅复制六张PNG、字体和两份JSON到输出目录下的隔离Godot项目，用户目录也隔离。没有游戏机制测试或长模拟。已检查正常尺寸和彩色/灰度炮口像素；父任务仍须亲自审图。正式敌群弹幕、入场和随机尺寸的有限样本见live证据；其余玩家舰基准及全部敌组尚未验收。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/game-design/05-architecture.md:142:页面通过所属模块公开查询、动作与通知连接；所需跨模块命令由Session协调。可见显示帧合并更新，隐藏停止局部投影。对象身份、Amount与事件消费见[14](14-ui-contracts.md)。资产以稳定资源ID和公开状态连接；构图、导航、材质和可见完成标准见[13](13-art-interaction.md)。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/game-design/08-decisions.md:17:| 11 定时资源 | 生成时确定最终数量；领取只入账该数，生成后研究等倍率变化不改已有物，新物用新倍率；不推广到普通敌人掉落 | [01经济](01-runtime.md)、[05归属](05-architecture.md)、[07验收](07-verification.md) |",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/game-design/08-decisions.md:19:[09参考索引](09-config-catalog.md)直接定位当前正式工作簿，不以旧字段快照建立新要求。[07验收场景](07-verification.md)保留设计场景和数值期望，不表示配套设施已落地或场景已执行。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/game-design/14-ui-contracts.md:65:资产、布局与业务以稳定对象ID和公开端口连接；画布、可见边界、锚点、图层与导出约定见[13及M/V](13-art-interaction.md#3-按模块读取设计与验收)。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/game-design/README.md:3:当前制作来源见[11](11-stage6-contract.md)。按任务选择下表对应内容；规划文档维护自身目标、必要接口和完成标准。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/game-design/art/open-items.md:3:[全局呈现](../13-art-interaction.md) · [当前制作](../11-stage6-contract.md)。模块目标和完成标准由对应M/V页维护。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/game-design/contracts/persistence.md:14:当前结构化只读透传仍是未实施的接口缺口，尚需原负责者定向审查；复用现有SaveFiles状态与危险事务，区分纯读取、显式候选准备、内存替换及实际持久完成。不以本文授权保存/UI改动或完整V10验收。",
+    "36134fe9cde9d32535719a38f02f5769df410f16:space-battleship/docs/ui-redesign-plan/README.md:3:从[当前制作来源](../game-design/11-stage6-contract.md)进入各原组。全局构图、字体、控件、布局及整页完成标准见[13](../game-design/13-art-interaction.md)，各模块主体由对应 M/V 页定义；Owner 输入输出见[14](../game-design/14-ui-contracts.md)。当前目标为桌面宽屏。"
+  ],
+  "host": [
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/dev/enemy_recognition/README.md:39:112项最小检查通过，包含真实多炮位、25点合法转角采样、实际字段/状态/RNG只读、包络缓存、恢复延迟/增长/中断、暂停、破盾、15槽击毁清理。首轮像素审查发现基础类被正式绘制覆盖，已修正并重拍。既有test_enemy_weapon_positions在其合成夹具出现越界，未作为此轮验收依据、未修改。几何和测试通过不替代父任务亲自看像素。未遍历40敌组、所有玩家舰与全部窗口尺寸，未运行长平衡模拟。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/dev/enemy_recognition/README.md:75:启动器仅复制六张PNG、字体和两份JSON到输出目录下的隔离Godot项目，用户目录也隔离。没有游戏机制测试或长模拟。已检查正常尺寸和彩色/灰度炮口像素；父任务仍须亲自审图。正式敌群弹幕、入场和随机尺寸的有限样本见live证据；其余玩家舰基准及全部敌组尚未验收。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/game-design/05-architecture.md:142:页面通过所属模块公开查询、动作与通知连接；所需跨模块命令由Session协调。可见显示帧合并更新，隐藏停止局部投影。对象身份、Amount与事件消费见[14](14-ui-contracts.md)。资产以稳定资源ID和公开状态连接；构图、导航、材质和可见完成标准见[13](13-art-interaction.md)。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/game-design/08-decisions.md:17:| 11 定时资源 | 生成时确定最终数量；领取只入账该数，生成后研究等倍率变化不改已有物，新物用新倍率；不推广到普通敌人掉落 | [01经济](01-runtime.md)、[05归属](05-architecture.md)、[07验收](07-verification.md) |",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/game-design/08-decisions.md:19:[09参考索引](09-config-catalog.md)直接定位当前正式工作簿，不以旧字段快照建立新要求。[07验收场景](07-verification.md)保留设计场景和数值期望，不表示配套设施已落地或场景已执行。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/game-design/14-ui-contracts.md:65:资产、布局与业务以稳定对象ID和公开端口连接；画布、可见边界、锚点、图层与导出约定见[13及M/V](13-art-interaction.md#3-按模块读取设计与验收)。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/game-design/README.md:3:当前制作来源见[11](11-stage6-contract.md)。按任务选择下表对应内容；规划文档维护自身目标、必要接口和完成标准。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/game-design/art/open-items.md:3:[全局呈现](../13-art-interaction.md) · [当前制作](../11-stage6-contract.md)。模块目标和完成标准由对应M/V页维护。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/game-design/contracts/persistence.md:14:当前结构化只读透传仍是未实施的接口缺口，尚需原负责者定向审查；复用现有SaveFiles状态与危险事务，区分纯读取、显式候选准备、内存替换及实际持久完成。不以本文授权保存/UI改动或完整V10验收。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/ui-redesign-plan/README.md:3:从[当前制作来源](../game-design/11-stage6-contract.md)进入各原组。全局构图、字体、控件、布局及整页完成标准见[13](../game-design/13-art-interaction.md)，各模块主体由对应 M/V 页定义；Owner 输入输出见[14](../game-design/14-ui-contracts.md)。当前目标为桌面宽屏。",
+    "05d0fab2ca3369d01ee2c1e6e04657ee2faf45a6:space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md:3:制作目标、设计要求与完成标准见[制作规范](../../../game-design/13-art-interaction.md)。"
+  ],
+  "backend": [
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/dev/enemy_recognition/README.md:39:112项最小检查通过，包含真实多炮位、25点合法转角采样、实际字段/状态/RNG只读、包络缓存、恢复延迟/增长/中断、暂停、破盾、15槽击毁清理。首轮像素审查发现基础类被正式绘制覆盖，已修正并重拍。既有test_enemy_weapon_positions在其合成夹具出现越界，未作为此轮验收依据、未修改。几何和测试通过不替代父任务亲自看像素。未遍历40敌组、所有玩家舰与全部窗口尺寸，未运行长平衡模拟。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/dev/enemy_recognition/README.md:75:启动器仅复制六张PNG、字体和两份JSON到输出目录下的隔离Godot项目，用户目录也隔离。没有游戏机制测试或长模拟。已检查正常尺寸和彩色/灰度炮口像素；父任务仍须亲自审图。正式敌群弹幕、入场和随机尺寸的有限样本见live证据；其余玩家舰基准及全部敌组尚未验收。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/HANDOFF.md:7:当前待接：原组按实际消费者核接口供给和消费范围；强化MAX缺具名出口，需求与现有固定数量能力见[强化分册](game-design/contracts/enhancement.md#当前必须补齐数量循环与max)。完成标准为所属接口及当次授权的受影响正确性范围。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/game-design/05-architecture.md:142:页面通过所属模块公开查询、动作与通知连接；所需跨模块命令由Session协调。可见显示帧合并更新，隐藏停止局部投影。对象身份、Amount与事件消费见[14](14-ui-contracts.md)。资产以稳定资源ID和公开状态连接；构图、导航、材质和可见完成标准见[13](13-art-interaction.md)。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/game-design/08-decisions.md:17:| 11 定时资源 | 生成时确定最终数量；领取只入账该数，生成后研究等倍率变化不改已有物，新物用新倍率；不推广到普通敌人掉落 | [01经济](01-runtime.md)、[05归属](05-architecture.md)、[07验收](07-verification.md) |",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/game-design/08-decisions.md:19:[09参考索引](09-config-catalog.md)直接定位当前正式工作簿，不以旧字段快照建立新要求。[07验收场景](07-verification.md)保留设计场景和数值期望，不表示配套设施已落地或场景已执行。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/game-design/14-ui-contracts.md:65:资产、布局与业务以稳定对象ID和公开端口连接；画布、可见边界、锚点、图层与导出约定见[13及M/V](13-art-interaction.md#3-按模块读取设计与验收)。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/game-design/README.md:3:当前制作来源见[11](11-stage6-contract.md)。按任务选择下表对应内容；规划文档维护自身目标、必要接口和完成标准。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/game-design/art/open-items.md:3:[全局呈现](../13-art-interaction.md) · [当前制作](../11-stage6-contract.md)。模块目标和完成标准由对应M/V页维护。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/game-design/contracts/persistence.md:14:当前结构化只读透传仍是未实施的接口缺口，尚需原负责者定向审查；复用现有SaveFiles状态与危险事务，区分纯读取、显式候选准备、内存替换及实际持久完成。不以本文授权保存/UI改动或完整V10验收。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/ui-redesign-plan/README.md:3:从[当前制作来源](../game-design/11-stage6-contract.md)进入各原组。全局构图、字体、控件、布局及整页完成标准见[13](../game-design/13-art-interaction.md)，各模块主体由对应 M/V 页定义；Owner 输入输出见[14](../game-design/14-ui-contracts.md)。当前目标为桌面宽屏。",
+    "fe9c3706c29c86282aefdeb9875a09da0e8fee54:space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md:3:制作目标、设计要求与完成标准见[制作规范](../../../game-design/13-art-interaction.md)。"
+  ]
+}

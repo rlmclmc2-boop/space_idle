@@ -1,0 +1,54 @@
+{
+  "stats": {
+    "main": {
+      "changed": 14,
+      "lines_before": 464,
+      "lines_after": 468,
+      "chars_before": 24026,
+      "chars_after": 25424
+    },
+    "cleanup": {
+      "changed": 14,
+      "lines_before": 470,
+      "lines_after": 474,
+      "chars_before": 24293,
+      "chars_after": 25691
+    },
+    "equipment": {
+      "changed": 14,
+      "lines_before": 470,
+      "lines_after": 474,
+      "chars_before": 24293,
+      "chars_after": 25691
+    },
+    "reactor": {
+      "changed": 14,
+      "lines_before": 461,
+      "lines_after": 465,
+      "chars_before": 22852,
+      "chars_after": 24270
+    },
+    "planet": {
+      "changed": 14,
+      "lines_before": 497,
+      "lines_after": 501,
+      "chars_before": 25951,
+      "chars_after": 27389
+    },
+    "host": {
+      "changed": 14,
+      "lines_before": 519,
+      "lines_after": 523,
+      "chars_before": 27621,
+      "chars_after": 29059
+    },
+    "backend": {
+      "changed": 14,
+      "lines_before": 470,
+      "lines_after": 474,
+      "chars_before": 24293,
+      "chars_after": 25691
+    }
+  },
+  "errors": []
+}

@@ -9,3 +9,5 @@
 - [2026-11-01 最终规范与交接差异](20261101-spec-simplification/final/index.md)
 
 - [2026-11-01 已放弃方向文稿清理](20261101-retired-judgments/index.md)
+
+- [2026-11-01 美术稿件还原标准](20261101-design-fidelity/index.md)
