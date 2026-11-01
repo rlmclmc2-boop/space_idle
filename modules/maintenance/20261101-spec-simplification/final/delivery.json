@@ -73,9 +73,9 @@
   },
   "planet": {
     "source_branch": "wip/planet-thread-resume-20261101",
-    "source": "17beb99aa8bcbaeb6b3a49184ca8b737a057bbe4",
-    "branch": "docs/final-scoped-docs-planet-20261101",
-    "commit": "0d3df5e13fc3ae58a99d5c60ae575dfb919ff147",
+    "source": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
+    "branch": "docs/final-scoped-docs-planet-20261101-v2",
+    "commit": "0704bcc78dc385855635e06c2134e08b58ac01e9",
     "paths": [
       "space-battleship/docs/game-design/06-data.md",
       "space-battleship/docs/game-design/07-verification.md",
@@ -86,9 +86,12 @@
       "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md"
     ],
     "actual_original_branch_updated": false,
-    "supersedes": "docs/handoff-consumption-planet-20261101",
+    "supersedes": [
+      "docs/handoff-consumption-planet-20261101",
+      "docs/final-scoped-docs-planet-20261101@0d3df5e13fc3ae58a99d5c60ae575dfb919ff147"
+    ],
     "non_markdown_tree_identical": true,
-    "remote_readback": "0d3df5e13fc3ae58a99d5c60ae575dfb919ff147",
+    "remote_readback": "0704bcc78dc385855635e06c2134e08b58ac01e9",
     "original_branch_head_at_delivery": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f"
   },
   "backend": {
