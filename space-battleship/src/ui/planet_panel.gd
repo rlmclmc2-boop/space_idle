@@ -540,6 +540,10 @@ func _fit_drawer() -> void:
 	if not _feedback.text.is_empty(): subject_top = maxf(subject_top, _feedback.get_rect().end.y + 16)
 	_visual.position = Vector2(0, subject_top)
 	_visual.size = Vector2(size.x, maxf(1, subject_bottom - subject_top))
+	# The existing environment fills the module; only the subject follows drawers.
+	var environment_top := 65.0 if _shared_host_enabled else 90.0
+	_visual.set_environment_rect(Rect2(Vector2(0, environment_top) - _visual.position,
+		Vector2(size.x, size.y - environment_top)))
 
 func _build_conquest_detail() -> void:
 	_read_conquest_if_needed()
