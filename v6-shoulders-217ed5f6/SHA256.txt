@@ -1,0 +1,14 @@
+880ab16e657d9d0ad973d0d7d20766c227f5aaa64a42eef6e895c406ba7bc98e  v6-shoulders-217ed5f6/README.md
+b59d093332a4ec737fe28ae917c4b08f51cd11f4d554215cb9cf98d5f5c1770a  v6-shoulders-217ed5f6/building-stage.jpg
+1c2e79f02bba960c9c2a2e05a43701b2086c99f9a7dca0c7ada82e86a80a28ac  v6-shoulders-217ed5f6/complete.jpg
+e597e9415fd46ca473438aefb9223ecfd2137d2e73159fa6fe2065c72992efd8  v6-shoulders-217ed5f6/planet-v6-resized-side70-1.png
+ce9f776ad10ee9797107675a9c49279194fa89743514387bf8dff234331bed4f  v6-shoulders-217ed5f6/planet-v6-resized-side70-4.png
+5b7fa5b0206a46ea33c7b3576e75e5054ec49951cef23b96aa7c4dec1051db8b  v6-shoulders-217ed5f6/planet-v6-resized-side70.gd
+204203dae602c0cd3df770fbe5902ff3403a1e95f6d392b2b6d5b358d514c13b  v6-shoulders-217ed5f6/planet-v6-shoulder-import.log
+1e2c345440f13277abaf4d2a6de5a450e55e62fa44a752286d3fb15d2eb164fe  v6-shoulders-217ed5f6/planet-v6-shoulder-side70.log
+1e2c345440f13277abaf4d2a6de5a450e55e62fa44a752286d3fb15d2eb164fe  v6-shoulders-217ed5f6/planet-v6-shoulder-stages.log
+d66743e313318394d8adad91638b7be5c0075550c885d6433a58e5e3b7566571  v6-shoulders-217ed5f6/planet-v6-unified-stage-1.png
+028397c70b6cfd0dfe9ee3c66bf53eadfec0889f8e51f4c4512016600ed29c24  v6-shoulders-217ed5f6/planet-v6-unified-stage-2.png
+42cb14f394be325da0adffed5474d3d43452222b2ce57c245989799ec7183436  v6-shoulders-217ed5f6/planet-v6-unified-stage-3.png
+a33917ad220d77b9886e96bb4452f8276539bdd16ab4833fbb1badfccbed8f94  v6-shoulders-217ed5f6/planet-v6-unified-stage-4.png
+7dfd63b3744bf3a78f02f20ef99377976d585e1bbbf1274aa56aeab5c8729481  v6-shoulders-217ed5f6/planet-v6-unified-stages.gd
