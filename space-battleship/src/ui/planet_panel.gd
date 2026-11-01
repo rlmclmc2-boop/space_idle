@@ -225,12 +225,6 @@ func _paint_secondary(button: Button) -> void:
 
 func _layout() -> void:
 	if _visual == null: return
-	# The bottom command dock keeps the scene at full module width.
-	var drawer_open := not _open_section.is_empty()
-	var visual_top := 65 if _shared_host_enabled else 90
-	if not drawer_open:
-		_visual.position = Vector2(0, visual_top)
-		_visual.size = Vector2(size.x, maxf(500, size.y - visual_top))
 	_task_button.position = Vector2(258, 112)
 	_task_button.size = Vector2(226, 44)
 	_crew_button.position = Vector2(148, 112)
@@ -532,16 +526,18 @@ func _rebuild_drawer() -> void:
 	call_deferred("_fit_drawer")
 
 func _fit_drawer() -> void:
-	if _drawer == null or not _drawer.visible: return
-	_drawer_scroll.custom_minimum_size.y = minf(260, _drawer_body.get_combined_minimum_size().y)
-	_drawer.size.y = _drawer.get_combined_minimum_size().y
-	_drawer.position = Vector2(22, size.y - 16 - _drawer.size.y)
+	if _drawer == null: return
+	var subject_bottom := size.y - 24
+	if _drawer.visible:
+		_drawer_scroll.custom_minimum_size.y = minf(260, _drawer_body.get_combined_minimum_size().y)
+		_drawer.size.y = _drawer.get_combined_minimum_size().y
+		_drawer.position = Vector2(22, size.y - 16 - _drawer.size.y)
+		subject_bottom = _drawer.position.y - 24
 	# One shared subject region follows the actual status and dock bounds.
 	# The complete globe/ring/building group uses this viewport's common fit;
 	# neither a tab nor a taller detail body nudges an individual building.
 	var subject_top := maxf(_task_line.get_rect().end.y, world_planet_picker.get_rect().end.y) + 24
 	if not _feedback.text.is_empty(): subject_top = maxf(subject_top, _feedback.get_rect().end.y + 16)
-	var subject_bottom := _drawer.position.y - 24
 	_visual.position = Vector2(0, subject_top)
 	_visual.size = Vector2(size.x, maxf(1, subject_bottom - subject_top))
 
