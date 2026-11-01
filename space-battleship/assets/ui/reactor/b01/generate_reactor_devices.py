@@ -140,6 +140,17 @@ def setup():
     environment.image = bpy.data.images.load(str(ROOT / "modular-bay-background.png"), check_existing=True)
     world.node_tree.links.new(environment.outputs["Color"],world.node_tree.nodes["Background"].inputs["Color"])
     world.node_tree.nodes["Background"].inputs["Strength"].default_value = .68
+    # The bay has tall window and service-light reflections. A shared pair of
+    # rectangular sources gives broad machine faces the same directional
+    # cues, instead of only making every small metal edge equally bright.
+    for x,color in ((40,(1.0,.76,.49)),(1147,(.43,.72,1.0))):
+        light=bpy.data.lights.new("bay vertical reflection panel","AREA")
+        light.energy,light.shape,light.size,light.size_y=62000,"RECTANGLE",28,380
+        light.color=color
+        obj=bpy.data.objects.new("bay vertical reflection panel",light)
+        bpy.context.collection.objects.link(obj)
+        obj.location=(x,-380,200)
+        obj.rotation_euler=(Vector((W/2,-400,40))-obj.location).to_track_quat("-Z","Y").to_euler()
     for loc, energy, size in [((220,-110,470),105000,360),((950,-390,380),95000,320),((600,200,330),51000,440)]:
         ld = bpy.data.lights.new("bay softbox", "AREA")
         ld.energy, ld.shape, ld.size = energy, "DISK", size
