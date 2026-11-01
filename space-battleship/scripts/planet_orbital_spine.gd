@@ -348,6 +348,12 @@ func _deck_vertex(surface: SurfaceTool, profile: Array, index: int, angle: float
 		var keel_span := 1.0 - smoothstep(0.055, 0.13, absf(angle - FACILITY_ANGLES[kind]))
 		var keel_width := 1.0 - smoothstep(0.20, 0.39, absf(current.x + 0.10))
 		height += 0.14 * keel_span * keel_width
+	elif kind == "front_bearing":
+		# The joined deck swells into one bearing crown in its own mesh. Its
+		# flanks still flow into the original transit shoulders and lit sidewall.
+		var crown_span := 1.0 - smoothstep(0.025, 0.16, absf(angle - PI * 0.5))
+		var crown_width := 1.0 - smoothstep(0.16, 0.43, absf(current.x))
+		height += 0.18 * crown_span * crown_width
 	surface.add_vertex(point(angle) * ((RADIUS + current.x * width) / RADIUS) + plane_normal() * height)
 
 func _add_strip(parent: Node3D, begin: float, finish: float, width: float, lift: float, material: Material, kind: String = "") -> void:
