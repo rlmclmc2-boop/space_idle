@@ -1,0 +1,30 @@
+{
+  "main": {
+    "branch": "main",
+    "source": "7b3702af224deff65375861c9a60be3c19e0a659"
+  },
+  "cleanup": {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "d08fb1b237eee99e1b25ec17c7778888ebd7ee4a"
+  },
+  "equipment": {
+    "branch": "art/equipment-materials-main-20261029",
+    "source": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf"
+  },
+  "reactor": {
+    "branch": "implement/reactor-centered-godot",
+    "source": "c20e4c1a121652514de533fe09203114606d0818"
+  },
+  "planet": {
+    "branch": "wip/planet-thread-resume-20261101",
+    "source": "c2ea8202e1693a514be3058195d993a54c1be2fb"
+  },
+  "host": {
+    "branch": "design/clear-zone-host",
+    "source": "6b62f8db8d764f28a4441fdf579f27cf3e3cc381"
+  },
+  "backend": {
+    "branch": "feat/amount-safe-previews",
+    "source": "d8097332495b8ef1c1cfcc19fa46637c3d63556d"
+  }
+}

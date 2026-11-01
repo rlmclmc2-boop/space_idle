@@ -7,3 +7,5 @@
 - [2026-11-01 规范职责与防御性条款整理](20261101-spec-simplification/index.md)
 
 - [2026-11-01 最终规范与交接差异](20261101-spec-simplification/final/index.md)
+
+- [2026-11-01 已放弃方向文稿清理](20261101-retired-judgments/index.md)
