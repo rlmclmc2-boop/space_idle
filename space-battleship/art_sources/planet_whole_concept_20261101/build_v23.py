@@ -44,6 +44,8 @@ CYAN = material("Contained cyan energy", (.025,.65,.84), .08, .40, 1.8)
 AMBER = material("Contained amber heat", (.68,.21,.025), .04, .55, .65)
 GOLD = material("Warm work marking", (.70,.40,.09), .24, .56)
 CRANE_ORANGE = material("Factory safety orange machine enamel", (.90,.35,.035), .16, .55, .12)
+WORK_METAL = material("Heated fabrication workpiece", (.38,.19,.07), .15, .70)
+WORK_FACE = material("Contained fabrication heat face", (.75,.25,.035), .06, .62, 1.05)
 DOME_GOLD = material("Heat chamber faceted gold armor", (.90,.56,.20), .20, .58)
 DOME_SHADE = material("Heat dome recessed bronze facets", (.70,.39,.10), .24, .60)
 DOME_LIGHT = material("Heat dome sunward gold facets", (1.0,.68,.20), .18, .50)
@@ -504,10 +506,10 @@ for i in range(8):
     a=i*tau/8
     beam("Command lower hull exposed pressure rib",
          (.52*cos(a),-.32+.52*sin(a),.82),
-         (1.12*cos(a),-.32+1.12*sin(a),1.22),
+         (1.25*cos(a),-.32+1.25*sin(a),1.22),
          .065,.075,ARMOR_MID,station)
     cyl("Command underdeck amber service signal",
-        (.91*cos(a),-.32+.91*sin(a),1.03),.045,.08,AMBER,station,8)
+        (1.29*cos(a),-.32+1.29*sin(a),1.16),.055,.08,AMBER,station,8)
 cyl("Command lower faceted load deck",(0,-.32,1.35),1.20,.14,ARMOR_SIDE,station,12)
 cyl("Command stepped ivory observation deck",(0,-.32,1.48),1.11,.15,ARMOR,station,12)
 torus("Command continuous observation sill",(0,-.32,1.52),1.04,.06,ARMOR_FACE,station)
@@ -618,7 +620,7 @@ for side in (-1,1):
         .045,.07,AMBER,refinery,8)
 for i in range(8):
     a=i*tau/8
-    window=box("Heat ring amber machinery port",(1.17*cos(a),-.32+1.17*sin(a),1.24),
+    window=box("Heat ring amber machinery port",(1.28*cos(a),-.32+1.28*sin(a),1.23),
                (.14,.075,.09),AMBER,refinery,.008)
     window.rotation_euler.z=a+pi/2
 for x in (-.58,-.22,.22,.58):
@@ -644,7 +646,7 @@ for side in (-1,1):
         (.055,.68,.055),ARMOR_FACE,workshop,.006)
     for y in (-1.32,-.90):
         box("Manufacturing amber work-bay light",(side*.69,y,.485),
-            (.10,.035,.022),AMBER,workshop,.003)
+            (.15,.065,.022),AMBER,workshop,.003)
 box("Manufacturing outer dark pressure sidewall",(0,-1.71,.46),
     (2.82,.17,.38),KEEL,workshop)
 for x in (-1.08,-.62,-.16,.30,.76,1.18):
@@ -701,8 +703,8 @@ for x in (-.58,0,.58):
     box("Manufacturing vented cavity inset",(x,-.97,.55),(.31,.026,.15),KEEL,workshop,.006)
     box("Manufacturing amber working status",(x,-.99,.58),(.12,.012,.025),AMBER,workshop,.003)
 box("Manufacturing recessed machine bed",(0,-.25,.53),(1.18,.70,.24),ARMOR_SIDE,workshop)
-box("Manufacturing central workpiece",(0,-.25,.72),(.55,.44,.19),MACHINE,workshop)
-box("Manufacturing active work face",(0,-.25,.83),(.40,.25,.025),CYAN,workshop,.008)
+box("Manufacturing central workpiece",(0,-.25,.72),(.55,.44,.19),WORK_METAL,workshop)
+box("Manufacturing active work face",(0,-.25,.83),(.40,.25,.025),WORK_FACE,workshop,.008)
 for x in (-.43,.43):
     box("Manufacturing tool base",(x,.02,.62),(.18,.19,.26),EDGE,workshop,.012)
     box("Manufacturing machine jaw",(x,-.17,.84),(.19,.23,.07),ARMOR_FACE,workshop,.008)
@@ -719,7 +721,7 @@ beam("Factory articulated lower tool link",(.31,-.12,1.17),(.17,-.24,.86),
      .06,.07,ARMOR_MID,workshop)
 beam("Downward working tool",(.17,-.24,.86),(.17,-.24,.66),
      .055,.065,EDGE,workshop)
-box("Work site contained welding line",(.17,-.24,.70),(.15,.18,.04),CYAN,workshop,.01)
+box("Work site contained welding line",(.17,-.24,.70),(.15,.18,.04),WORK_FACE,workshop,.01)
 
 # The two pressure workshops are complete machine rooms either side of the
 # open fabrication lane. Their dark recesses and roof plates read at page size.
@@ -811,7 +813,7 @@ box("Dock recessed central landing lane",(0,-1.05,.43),(1.12,1.55,.028),ARMOR_SI
 for side in (-1,1):
     for y in (-1.49,-1.02,-.55):
         box("Dock amber recessed landing lamp",(side*.54,y,.45),
-            (.07,.05,.015),AMBER,shipyard,.003)
+            (.11,.07,.015),AMBER,shipyard,.003)
 for y in (-.58,-1.04,-1.50):
     box("Dock landing deck panel seam",(0,y,.428),(1.79,.025,.018),ARMOR_SIDE,shipyard,.003)
 for side in (-1,1):

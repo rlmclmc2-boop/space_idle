@@ -120,9 +120,17 @@ func _ready() -> void:
 			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ff9b47"), 0.08, 1.35, Vector3(0, 0.40, 0))
 			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffab4e"), 0.08, 1.35, Vector3(0, 0.42, 0))
 		if kind == "equipment":
-			_add_work_light(model, "Factory traveling winch", Color("ff8e35"), 0.15, 0.9, Vector3(0, -0.24, 0))
+			_add_work_spot(model, "Factory traveling winch", "Manufacturing recessed machine bed",
+				Color("ff9a48"), 6.0, 1.65, 39.0, Vector3(0, 0, -0.08))
 		if kind == "shipyard":
-			_add_work_light(model, "Dock portal recessed soffit", Color("ff8e35"), 0.15, 0.9, Vector3(0, -0.30, 0))
+			_add_work_spot(model, "Dock portal recessed soffit", "Dock recessed central landing lane",
+				Color("ff8e39"), 3.4, 1.7, 42.0, Vector3(0, -0.07, -0.06))
+		if kind == "auto_explore":
+			_add_work_light(model, "Command dark structural foundation", Color("ffae65"), 0.46, 1.45, Vector3(0, 0, -0.10))
+			_add_signal_spill(model, "Command underdeck amber service signal", Color("ff9e51"), 1.30)
+		if kind == "refinery":
+			_add_work_light(model, "Heat chamber dark integrated foundation", Color("ff9a48"), 0.65, 1.55, Vector3(0, 0, -0.08))
+			_add_signal_spill(model, "Heat ring amber machinery port", Color("ff9a48"), 2.16)
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
@@ -140,6 +148,52 @@ func _add_work_light(model: Node3D, anchor_name: String, color: Color,
 	light.shadow_enabled = anchor_name in ["Manufacturing open assembly well", "Dock recessed central landing lane"]
 	anchor.add_child(light)
 	light.position = offset
+
+func _add_work_spot(model: Node3D, anchor_name: String, target_name: String, color: Color,
+		energy: float, light_range: float, cone_degrees: float, offset: Vector3) -> void:
+	var anchor := model.find_child(anchor_name, true, false) as Node3D
+	assert(anchor != null, "Missing authored work spot anchor: " + anchor_name)
+	var target := model.find_child(target_name, true, false) as Node3D
+	assert(target != null, "Missing authored work spot target: " + target_name)
+	var spot := SpotLight3D.new()
+	spot.name = "FocusedWorkSpot"
+	spot.light_color = color
+	spot.light_energy = energy
+	spot.light_specular = 0.22
+	spot.spot_range = light_range
+	spot.spot_angle = cone_degrees
+	# The factory lamp sits inside the moving gantry. Its own shadow map would
+	# occlude the workpiece completely; the directional key still casts the
+	# machine and bay contact shadows onto the deck.
+	spot.shadow_enabled = anchor_name != "Factory traveling winch"
+	spot.shadow_bias = 0.025
+	spot.shadow_normal_bias = 0.35
+	anchor.add_child(spot)
+	spot.position = offset
+	if anchor_name == "Factory traveling winch":
+		# The moving bridge is nearly level with the work bed after the orbit
+		# transform. Place its lamp below the bridge but above the bed normal.
+		spot.global_position = target.global_position + target.global_transform.basis.z.normalized() * 0.50
+	# Imported Blender facilities rotate their local Z into the ring plane.
+	# Aim at the authored work surface in that local frame; both then continue
+	# rotating together with their independently owned facility.
+	spot.look_at(target.global_position, Vector3.BACK)
+
+func _add_signal_spill(model: Node3D, name_prefix: String, color: Color,
+		energy: float) -> void:
+	var signals: Array[MeshInstance3D] = []
+	for child in model.find_children("*", "MeshInstance3D", true, false):
+		if String(child.name).begins_with(name_prefix):
+			signals.append(child as MeshInstance3D)
+	assert(signals.size() >= 4, "Missing authored underdeck lamps: " + name_prefix)
+	for index in [0, int(signals.size() / 2)]:
+		var lamp := OmniLight3D.new()
+		lamp.name = "UnderdeckWorkSpill"
+		lamp.light_color = color
+		lamp.light_energy = energy
+		lamp.omni_range = 1.0
+		lamp.light_specular = 0.18
+		signals[index].add_child(lamp)
 
 func _install_refinery_work(model: Node3D) -> void:
 	# The three moving loads follow the real recessed tread into the furnace
@@ -242,6 +296,8 @@ func configure_shape(appearance: Dictionary) -> void:
 	_axis_ratio = maxf(0.05, float(appearance.get("axisRatio", 1.0)))
 	_compact_stellar = float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("radiusScale", 1.0)) <= 0.3
 	_solid_body = float(appearance.get("emission", 0.0)) == 0.0 and float(appearance.get("radiusScale", 1.0)) <= 1.0
+	_scene_light.light_energy = 0.95 if _solid_body else 1.12
+	_scene_environment.environment.ambient_light_energy = 0.14 if _solid_body else 0.18
 	var scale := float(appearance.get("radiusScale", 1.0))
 	var is_large_star := float(appearance.get("emission", 0.0)) > 0.0 and scale > 0.3
 	var field_tint := Color("e9bd8d") if scale > 1.0 else Color("f1d6a9") if is_large_star else Color(str(appearance.get("atmosphereColor", "fff2df")))
