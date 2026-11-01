@@ -1,10 +1,10 @@
-# 当前裁定与未决问题
+# 当前规则问题
 
-[唯一入口](../README.md)。只保留当前结论、必要引文与未决事实。旧文档只是参考，不能单独成为恢复已撤方案的授权；实现存在或旧测试通过也不能替代有效决定。
+[唯一入口](../README.md)。以下保留未决的双方来源与影响。
 
 ## C1 无人机舰型容量（已裁定）
 
-五舰容量依次为1、2、3、4、5，消费[超空间工作簿](../../../config_excel/hyperspace_config.xlsx)的`hull_id/capacity`；[ship工作簿](../../../config_excel/ship.xlsx)的`para_5`是战舰占地、`para_6`是同种武器上限，均不是无人机容量。仍须同时满足独立全局上限。对应规则见[03](../03-progression.md#1-舰体槽位与升级)。
+现行容量与字段归属见[03§1](../03-progression.md#1-舰体槽位与升级)。
 
 ## C4 parent身份与保存水位（待裁定）
 
@@ -17,20 +17,16 @@
 [03§1](../03-progression.md#1-舰体槽位与升级)允许首防御槽在合法类型间更换、禁止卸空；有盾无甲仍可出击。**换型本身使当前盾甲同时为0时是否立即判死**尚未决定。当前代码`GameSession.publish_equipment_refit → Campaign.retreat_if_dead`已经在换型提交后双零时立即撤退，未走native受击后的重建入口。待用户选择此边界：换型双零立即撤退，还是沿受击死亡链先尝试重建。受击后双零/重建失败才终止死亡的既定规则不因此撤回；也可另定换型准入规则，本次不代选。
 
 <a id="d9"></a>
-## D9 配置查询包装与保存配置绑定（已裁定纠正）
+## D9 配置与保存
 
-**现行要求：**直接读取已发布配置，不恢复ConfigBundle查询包装；保存与配置hash去绑定，不写入或强制要求configHash，不因配置文本hash不同而拒绝加载/导入。文件checksum、payloadHash、格式/代际、稳定ID、金额/状态/占用及真实业务关系校验保留。规范落在[05](../05-architecture.md)、[06§4–5](../06-data.md#4-运行配置直接读取)。
-
-**分支状态：**后台`c38f1c2b06478d1d8b6e98b8571240e693e296fc`已去掉SaveFiles写入/必需configHash及Session前后两次匹配；直接读取与真实校验保留。单独Astra high源码只读核对符合此定向裁定，未运行测试，不代表完整保存、视觉或main验收。main`e3b38d7b`及四制作分支尚有绑定，须由原组精确合并；旧保存探针中的configHash必需/拒配断言仍待原后台清理，不能为旧断言恢复绑定。
+直接读取配置及保存独立性见[05](../05-architecture.md)和[06§4–5](../06-data.md#4-运行配置直接读取)。
 
 <a id="d10"></a>
-## D10 B01分配提交语义（已裁定）
+## D10 反应炉交互
 
-用户2026-10-29：“确认和还原都不需要,但要有升级*10和升级*max”；随后明确“一个按钮切换x1,x10,xmax,另一个按钮负责购买”。分配拖动/均分直接沿所有者命令提交，不设确认/还原；预览只读、提交校验、一次接纳/发布和拒绝不污染已接纳状态继续有效。实际工作动态读取已接纳状态，现行契约见[反应炉分册](https://github.com/rlmclmc2-boop/space_idle/blob/f2f5b47c0112d741cca3546a2cec8f3c69934ba3/space-battleship/docs/game-design/contracts/reactor.md)。B01主体/管路/性能及完整视觉仍未验收。
+直接分配/均分与数量循环见[M3](../art/modules/reactor.md)，接纳和预览见[反应炉接口](../contracts/reactor.md)。
 
 <a id="d11"></a>
-## D11 星球设施承载与差异（已裁定）
+## D11 星球设施
 
-用户批准“建筑在环带上构成整体”，并明确“环带和星球自转可以分开转，探索船用另一条路线绕星球转”；要求修正后环断裂。后续补充“星球设施,不必须每个星球都一个样.若确有需求,每个星球单独一套也可以”，且“只是建议不强制”。
-
-现行方向是环带与设施整体、可适配各星球接点；覆盖旧地表强制分工，不强制六类同形，也不强制每类独立一套。具体接点、采集端、设施与变体仍需制作，方向批准不等于各类具体资产/实机通过；见[M7](../art/modules/planet.md)与[R17](https://github.com/rlmclmc2-boop/space_idle/blob/acccaf4ccc5d75c92d8bf2e585b1b2df1479a259/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md)。
+环带/设施整体及可按需要制作变体见[M7](../art/modules/planet.md)。
