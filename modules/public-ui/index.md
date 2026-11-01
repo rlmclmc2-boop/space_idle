@@ -71,3 +71,5 @@
 - v14星球最终整页交付与同版离线动态 `079f2ec9`：[planet-v14-shared-20261101](planet-v14-shared-20261101/README.md)。
 
 - v16嵌入式环舱共享整页检查点 `85558774`：[planet-v16-shared-20261101](planet-v16-shared-20261101/README.md)。
+
+- v18星球完整共享组合及用户评价附件 `c3b5d426`：[planet-v18-shared-20261101](planet-v18-shared-20261101/README.md)。
