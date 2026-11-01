@@ -15,4 +15,6 @@ void fragment(){
  SPECULAR=surface_role==1?.5:(surface_role==5?.4:(surface_role==3?.1:(surface_role==2?.08:(surface_role==4?.18:.32))));
  CLEARCOAT=surface_role==0?.12:0.0;
  CLEARCOAT_ROUGHNESS=.50;
+ AO=COLOR.r;
+ AO_LIGHT_AFFECT=.28;
 }
