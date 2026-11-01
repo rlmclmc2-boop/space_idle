@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+SUBJECT facilities=[P: (0.0, 225.0), S: (808.0, 487.0)] dock=[P: (22.0, 736.0), S: (764.0, 148.0)]
+SUBJECT crew=[P: (0.0, 225.0), S: (808.0, 382.0)] dock=[P: (22.0, 631.0), S: (764.0, 253.0)]
+SUBJECT conquest=[P: (0.0, 225.0), S: (808.0, 343.0)] dock=[P: (22.0, 592.0), S: (764.0, 292.0)]
+DOCK before_close section=exploration rect=[P: (258.0, 112.0), S: (226.0, 44.0)]
+DOCK after_close section= hovered=true
+PLANET_COMMON_CONTROLS actual_mouse_tabs=facilities,crew,exploration,closed picker_click_open=true route_equipment=true

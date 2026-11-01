@@ -1,0 +1,204 @@
+{
+  "runtime_source": "3c63dc9a24768d40ebf835f6030c812159e4d92b",
+  "planet_fixed_handoff": "f32317a3d1bc0575b151e00c783556f8e636374e",
+  "incoming_blobs": [
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/auto_explore.glb",
+      "blob": "c8295e6dd3dc8a2d895d8776d87e795e19c50dc4"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/equipment.glb",
+      "blob": "4797140a081346beac0a223c4dadef7e4fab8bd3"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/refinery.glb",
+      "blob": "0b365324f3a696bf4cb70269092896ea4da52ff1"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/shipyard.glb",
+      "blob": "0a27f093c518450837abfd0095dc9ad9888b2fc0"
+    },
+    {
+      "path": "space-battleship/scripts/planet_facility_scene.gd",
+      "blob": "ad84bdcb8cc4768abb9c85d92e8fd46625d8382c"
+    },
+    {
+      "path": "space-battleship/scripts/planet_orbital_spine.gd",
+      "blob": "3e900c4d617d6fa620c46fd3d0954fdb3112f536"
+    },
+    {
+      "path": "space-battleship/scripts/planet_spine_opaque.gdshader",
+      "blob": "096f7df6f8cc6272f392309a353bf7a63448ba17"
+    },
+    {
+      "path": "space-battleship/scripts/planet_visual.gd",
+      "blob": "9732eac2352134342ace687961716dc3b352dd89"
+    }
+  ],
+  "preserved_runtime_blobs": {
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/src/ui/zone_shell.gd": "456e502ca77aadf44f7775359a6f0bb9af683a41",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/ui/planet_panel.gd": "fdd56485a08ef0ef515c48824391f5ba02d8d9ab",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119"
+  },
+  "state": "受控星球1／探索240／征服／四设施已建",
+  "interaction_record": {
+    "tabs": "Input鼠标事件",
+    "conquest_scroll_and_close": "Input滚轮按下/释放及鼠标关闭",
+    "facility_details": "原生OptionButton.select + item_selected信号",
+    "equipment_return": "现有公共路由信号"
+  },
+  "author_whole_page_observations": [
+    "新建筑/环体保持在公共导航左侧，设施/人员/征服详情不同高度下顶部状态条与底台间留白存在",
+    "四项设施详情原内容与新资产组合，未出现新增截字或操作台相交",
+    "整组材质仍偏灰、设施功能轮廓辨识仍弱，由星球原组继续制作；本版为同壳整合检查点"
+  ],
+  "media": [
+    {
+      "path": "equipment-return.png",
+      "bytes": 1525113,
+      "sha256": "0a6933b2f916aecfc306e3326350e968bbbef390292d9319117d5768788a46b2"
+    },
+    {
+      "path": "equipment-return.jpg",
+      "bytes": 630313,
+      "sha256": "6db1a29d18022ccb683b6604d712c52babe8d99ca1de7848533be2718670ea7a"
+    },
+    {
+      "path": "planet-picker-open.png",
+      "bytes": 1012667,
+      "sha256": "4c48fc5ddff7deba3ba09322cf710766261c46e8fd061573efc1a05c38cbe023"
+    },
+    {
+      "path": "planet-picker-open.jpg",
+      "bytes": 466784,
+      "sha256": "c51214e684e73b34737f935611e42d81144b0ed22ec8b01a21124a7633c9b0d5"
+    },
+    {
+      "path": "planet-closed.png",
+      "bytes": 1006738,
+      "sha256": "0180a65a1fc74abe50acd3a5ca64bc16ea49b1b407e72a13f5c7b6d604fcd14f"
+    },
+    {
+      "path": "planet-closed.jpg",
+      "bytes": 462783,
+      "sha256": "3a3f1faecbef7a4f3826205e17e7b4ed65fbfd39ab2e5e55a8e4c16a95bf66ab"
+    },
+    {
+      "path": "planet-conquest-scroll.png",
+      "bytes": 848576,
+      "sha256": "3ccb3344bb139fd50347063e0be7158912f9319f92ce9855a0c1a2b2fd5f7057"
+    },
+    {
+      "path": "planet-conquest-scroll.jpg",
+      "bytes": 412679,
+      "sha256": "2873d4b8efb3514338dad36f57abad1b35f70ac553bd7638c5273a7dcfc307d2"
+    },
+    {
+      "path": "planet-conquest-expanded.png",
+      "bytes": 845802,
+      "sha256": "45c661bd4eda9ddd105ddd71e34f6028836f0150053616fbc91be13e75031ca1"
+    },
+    {
+      "path": "planet-conquest-expanded.jpg",
+      "bytes": 419612,
+      "sha256": "aa6ac40c533a2f39c5e1dbedfe17b3e637b362dae10f1bef35ed5464821fbc4e"
+    },
+    {
+      "path": "planet-exploration.png",
+      "bytes": 915166,
+      "sha256": "42ec77ecd02e6ec1597a6e33b55191d5ee622192e36c71bf3997c0fcb64b7c20"
+    },
+    {
+      "path": "planet-exploration.jpg",
+      "bytes": 451681,
+      "sha256": "add654e34c07f76ce9b5de36e2d37adeff967ff4ad6ee7dba75c446344f1e36c"
+    },
+    {
+      "path": "planet-crew.png",
+      "bytes": 865465,
+      "sha256": "3181f7ad0419b526d83c2a20bace39a7022f4018a988298473eb0200cc8c710b"
+    },
+    {
+      "path": "planet-crew.jpg",
+      "bytes": 435341,
+      "sha256": "27f3fa6bfb86cb4874f5afa1a20b87e93dc9512c6e69cdd047a5afa85031fbe8"
+    },
+    {
+      "path": "planet-facility-3.png",
+      "bytes": 919441,
+      "sha256": "71259ece459b7ea41525554b9af3fa794c89deff6d56ab2a13ebb2a673e325cc"
+    },
+    {
+      "path": "planet-facility-3.jpg",
+      "bytes": 453620,
+      "sha256": "ab7137fefaaf32d8126566690c5c0f3576bc5a1ef08ee010cba5a0e049e0e6ad"
+    },
+    {
+      "path": "planet-facility-2.png",
+      "bytes": 913287,
+      "sha256": "115b8e103569fa69d8f1fb0e5fc71ddf2f82d6be48a662faf688a189031b8f72"
+    },
+    {
+      "path": "planet-facility-2.jpg",
+      "bytes": 446142,
+      "sha256": "0793d633a289bec4cb293c909c46b5241b31848926365a2b9b93bbbf01e42ef3"
+    },
+    {
+      "path": "planet-facility-1.png",
+      "bytes": 915050,
+      "sha256": "662a9a0ef20829674f4bbff7380b7b5f83a5224069c9b98ecc78570afe785e7d"
+    },
+    {
+      "path": "planet-facility-1.jpg",
+      "bytes": 446846,
+      "sha256": "8a490b3700995d6eb138196ada2d1d69513fb28dfc5abbb398ce995514db3e1b"
+    },
+    {
+      "path": "planet-facility-0.png",
+      "bytes": 941291,
+      "sha256": "75b57d04218c5c60e37556dba54dae27d8c0aa195d5cabef9861b9cff3ab3a83"
+    },
+    {
+      "path": "planet-facility-0.jpg",
+      "bytes": 452392,
+      "sha256": "315a9ec978d9413818d473065e9a1de3113ff853b1c3f3b61fca7dba4f4d5d5c"
+    },
+    {
+      "path": "planet-facilities.png",
+      "bytes": 941841,
+      "sha256": "266d733880a3e8553797fa014e915c04011e878646aafbdfc7bdbf2b3a1882ed"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 452637,
+      "sha256": "53bdbbb04e093a4fbdc1ae21050236c6cf6e76905fa031d4c90d442c443e0745"
+    },
+    {
+      "path": "planet-overview.png",
+      "bytes": 1022407,
+      "sha256": "a43886839360b88c303a65ede9ad6c791cde637563d599138110318f195e9abd"
+    },
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 470076,
+      "sha256": "33e96e925a423a988c724c700a74f69f6c23ea8911fb47db5c52f37091f3c68a"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 5398,
+      "sha256": "2ab05c4db04548327f422bdae547694b38aae981d8860b5b095c7263b22094db"
+    },
+    {
+      "path": "run.log",
+      "bytes": 897,
+      "sha256": "e0a12dd76d520d7dbc96dc31d30b35586bf5e592627c67247ee6d0dc03471e5b"
+    },
+    {
+      "path": "import.log",
+      "bytes": 4002,
+      "sha256": "408f8831e91cb3ebaa45cbd6565895efe0eb4d6a3b28049dbd2b566e6d66171e"
+    }
+  ]
+}

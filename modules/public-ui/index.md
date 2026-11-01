@@ -59,3 +59,5 @@
 - 星球深色操作台整页适配 `9fd43b9c`：[planet-command-dock-20261101](planet-command-dock-20261101/README.md)。
 
 - 星球主体安全区与公共材质接入 `4e16d9fe`：[planet-subject-clearance-20261101](planet-subject-clearance-20261101/README.md)。
+
+- v8星球当前公共宿主组合 `3c63dc9a`：[planet-v8-shared-20261101](planet-v8-shared-20261101/README.md)。
