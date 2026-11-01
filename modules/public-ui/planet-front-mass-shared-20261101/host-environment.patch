@@ -1,0 +1,77 @@
+diff --git a/space-battleship/scripts/planet_visual.gd b/space-battleship/scripts/planet_visual.gd
+index 2bfecaf4..a913ae6d 100644
+--- a/space-battleship/scripts/planet_visual.gd
++++ b/space-battleship/scripts/planet_visual.gd
+@@ -55,6 +55,7 @@ var frame_accumulator := 0.0
+ var globe = PlanetSphere.new(true)
+ var background_layer := Control.new()
+ var nebula_layer := ColorRect.new()
++var environment_rect := Rect2()
+ var scene_sky := GradientTexture2D.new()
+ var nebula_glow := GradientTexture2D.new()
+ var orbit_back_layer := Control.new()
+@@ -123,12 +124,26 @@ func _layout_globe() -> void:
+ 		architecture.position = Vector2.ZERO
+ 		architecture.scene_center = _scene_center()
+ 		architecture.size = size
+-	nebula_layer.size = size
++	_layout_environment()
+ 	globe.fit_sphere(_scene_center(), minf(size.x, size.y) * 0.43 / maxf(1.0, globe.extent) if icon_mode else _body_radius())
+ 	background_layer.queue_redraw()
+ 	orbit_back_layer.queue_redraw()
+ 	queue_redraw()
+ 
++## Environment coordinates are independent of the fitted globe/facility viewport.
++func set_environment_rect(rect: Rect2) -> void:
++	if environment_rect == rect: return
++	environment_rect = rect
++	_layout_environment()
++
++func _layout_environment() -> void:
++	var rect := environment_rect if environment_rect.has_area() else Rect2(Vector2.ZERO, size)
++	background_layer.position = rect.position
++	background_layer.size = rect.size
++	nebula_layer.position = rect.position
++	nebula_layer.size = rect.size
++	background_layer.queue_redraw()
++
+ func _body_radius() -> float:
+ 	# The shared orbital structure needs the surrounding space to be part of the
+ 	# composition. Keep the globe smaller without changing its authored texture.
+@@ -338,18 +353,18 @@ func advance(dt: float, paused: bool) -> void:
+ func _draw_background() -> void:
+ 	if icon_mode:return
+ 	# Static field, separate from the owner-driven sphere and orbital motion.
+-	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, size), false)
++	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, background_layer.size), false)
+ 	if float(appearance.get("emission", 0.0)) == 0.0:
+ 		# Wide, restrained blue cloud light supports the approved deep-space
+ 		# composition while leaving the planet and both rail arcs unobscured.
+ 		for anchor in [Vector2(-0.22, -0.37), Vector2(0.58, -0.35),
+ 				Vector2(-0.29, 0.52), Vector2(0.61, 0.54)]:
+ 			background_layer.draw_texture_rect(nebula_glow,
+-				Rect2(anchor * size, Vector2(size.x * 0.72, size.y * 0.84)), false)
++				Rect2(anchor * background_layer.size, background_layer.size * Vector2(0.72, 0.84)), false)
+ 	var stars := RandomNumberGenerator.new()
+ 	stars.seed = 178
+ 	for index in 100:
+-		var point := Vector2(stars.randf(), stars.randf()) * size
++		var point := Vector2(stars.randf(), stars.randf()) * background_layer.size
+ 		var radius := stars.randf_range(0.5, 1.3)
+ 		background_layer.draw_circle(point, radius, Color(0.65, 0.84, 0.86, stars.randf_range(0.18, 0.55)))
+ 
+diff --git a/space-battleship/src/ui/planet_panel.gd b/space-battleship/src/ui/planet_panel.gd
+index 877530e5..f3f56ba0 100644
+--- a/space-battleship/src/ui/planet_panel.gd
++++ b/space-battleship/src/ui/planet_panel.gd
+@@ -540,6 +540,10 @@ func _fit_drawer() -> void:
+ 	if not _feedback.text.is_empty(): subject_top = maxf(subject_top, _feedback.get_rect().end.y + 16)
+ 	_visual.position = Vector2(0, subject_top)
+ 	_visual.size = Vector2(size.x, maxf(1, subject_bottom - subject_top))
++	# The existing environment fills the module; only the subject follows drawers.
++	var environment_top := 65.0 if _shared_host_enabled else 90.0
++	_visual.set_environment_rect(Rect2(Vector2(0, environment_top) - _visual.position,
++		Vector2(size.x, size.y - environment_top)))
+ 
+ func _build_conquest_detail() -> void:
+ 	_read_conquest_if_needed()
