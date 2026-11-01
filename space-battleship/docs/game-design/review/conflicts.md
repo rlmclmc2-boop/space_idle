@@ -4,8 +4,8 @@
 
 ## C1 无人机舰型容量：原实现误读占地字段（已裁定并修正）
 
-- 原文A：[03第1节](../03-progression.md#1-舰体槽位与升级)船型表，无人机容量按五舰列 `1、2、3、4、5`；[超空间快照](../reference/config/hyperspace_config.md)“舰型容量”同列该值。
-- 原文B：[ship快照](../reference/config/ship.md)的 `para_5` 五舰为 `1、1、2、2、4`；[历史来源审计](../history/stage6-combat-audit.md#drone-capacity-source-conflict)原文：“`Campaign.ship_facts` returns para_5; Session passes that result to equip/preview/preset/ship-change operations”。
+- 原文A：[03第1节](../03-progression.md#1-舰体槽位与升级)船型表，无人机容量按五舰列 `1、2、3、4、5`；超空间快照（既有来源摘录）“舰型容量”同列该值。
+- 原文B：ship快照（既有来源摘录）的 `para_5` 五舰为 `1、1、2、2、4`；历史来源审计（既有来源摘录）原文：“`Campaign.ship_facts` returns para_5; Session passes that result to equip/preview/preset/ship-change operations”。
 - 影响：驱逐、巡洋、战列、重型战列的可装备总数，以及换舰截断/预设/原生贡献。全局 `maximum_equipped=5` 与舰型更小上限可以并存，不是此矛盾。
 - 归因：正确的舰型容量权威表原已存在；这是实现消费字段错误，不是两个权威规则冲突。
 - 用户裁定：五舰无人机容量依次为 `1、2、3、4、5`。现行权威是[超空间配置工作簿](../../../config_excel/hyperspace_config.xlsx)的“舰型容量”表（`hull_id/capacity`）；该表原值已符合裁定，未修改工作簿。
@@ -15,7 +15,7 @@
 ## C4 parent身份与保存水位：书面要求和已记录实现差异（待裁定）
 
 - 原文A：[02第7节](../02-combat.md#7-衍生攻击和传说连接)：“派生攻击带父AttackId与类型。”[06第5节](../06-data.md#5-新存档格式与生命周期)规定 `next_ids:{encounter,actor,attack,emitter,drop}`。
-- 原文B：[原11身份审计](../history/stage6-combat-audit.md#c10-identity-contract-audit)：“strange packets and counters do not retain a full parent attack relationship, and `next_ids.attack` is a carrier watermark.”原文亦明确“does not waive the design requirement”。
+- 原文B：原11身份审计（既有来源摘录）：“strange packets and counters do not retain a full parent attack relationship, and `next_ids.attack` is a carrier watermark.”原文亦明确“does not waive the design requirement”。
 - 影响：派生溯源、ID语义、checkpoint兼容与审计观察口径；行为矩阵通过不证明完整表示契约等价。
 - 概念区分：直接父攻击身份表示一次派生的直接来源；完整祖先历史是可沿多代追溯的记录，二者不等同。触发许可决定特定来源能否触发某个效果及其次数，不由是否存父对象自动决定。保存水位是ID序号的持久状态，不等于将运行期父链写入存档。
 - 当前状态：C4仅作只读专项审核，直接父身份的最小必要范围、是否需要完整祖先历史、各类触发许可及保存水位语义分别待核；不将所有派生一刀切处理。本次不改战斗实现或保存格式，不把历史“nonblocking”改成自动豁免，也不新增测试ID/保存字段。文档拆分候选通过双审不代表全规范语义已核清。

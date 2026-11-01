@@ -14,7 +14,7 @@
 
 ## 1. 一套规则，一种场景运行器
 
-生产Excel和测试Excel通过同一个ConfigCompiler生成相同ConfigBundle；测试不复制生产表、不在用例代码中构造一套隐藏平衡数据。测试工作簿显式提供所需最小定义，允许专门小数值以便手算，但必须经过同一类型/引用/拓扑校验。每个测试数据包自足，不能运行时从正式大表补缺失行。
+生产Excel和测试Excel通过同一个ConfigCompiler生成同形态配置JSON；测试不复制生产表、不在用例代码中构造一套隐藏平衡数据。测试工作簿显式提供所需最小定义，允许专门小数值以便手算，但必须经过同一类型/引用/拓扑校验。每个测试数据包自足，不能运行时从正式大表补缺失行。
 
 `tests/excel/`规划分包：`core_rules.xlsx`（最小资源/装备/关卡/敌人）、`combat_cases.xlsx`、`progression_cases.xlsx`、`hyperspace_cases.xlsx`、`persistence_cases.xlsx`。这些为测试独立权威；schema与生产共享，内容完全独立。不要求本次文档任务创建这些xlsx。
 
@@ -31,7 +31,7 @@
 | expected_errors | case_id、operation、reason、must_leave_unchanged |
 | fault_schedule | case_id、file_operation、boundary、fault_kind；注入保存写入/导入读取故障 |
 
-运行命令规划为`godot --headless --path . --script tests/run_cases.gd -- --fixture <manifest> --case <id>`。运行器先调用同一Excel编译器，加载小型ConfigBundle，构造真实GameSession和实际SpaceCombatKernel；按actions时刻直接调用具名方法，用clock_segments传入real_dt/focus/speed，推进真实frame。它不创建游戏主场景、显示窗口或GPU图形对象；逻辑几何来自fixture所引用的同一几何函数。native GDExtension是此运行的必需依赖，缺失即启动失败，不改跑另一套战斗。
+运行命令规划为`godot --headless --path . --script tests/run_cases.gd -- --fixture <manifest> --case <id>`。运行器先调用同一Excel编译器，直接读取小型配置JSON，构造真实GameSession和实际SpaceCombatKernel；按actions时刻直接调用具名方法，用clock_segments传入real_dt/focus/speed，推进真实frame。它不创建游戏主场景、显示窗口或GPU图形对象；逻辑几何来自fixture所引用的同一几何函数。native GDExtension是此运行的必需依赖，缺失即启动失败，不改跑另一套战斗。
 
 测试保存使用隔离临时目录；SaveFiles在指定文件操作位置注入错误，不需要一套模拟业务存储。UTC值由加载函数参数显式提供，战斗/世界/改造随机种子由fixture提供，与新档初始化相同。运行器读取完成步的宿主状态、核只读视图和take_results所生成的观察记录，与Excel期望比较；观察记录不再驱动战斗。失败输出首个分歧时间、规则ID、Excel坐标及局部输入/期望。
 

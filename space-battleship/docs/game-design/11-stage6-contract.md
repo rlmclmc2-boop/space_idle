@@ -1,23 +1,13 @@
-# 11 当前验收状态与历史证据索引
+# 11 当前制作与验收边界
 
-[唯一入口](README.md)。本页只维护已记录的验收范围，不定义玩法、布局或测试设施。
+[唯一入口](README.md)。以下是 2026-11-01 取回的独立 Git 快照；不把不同分支组合成同版验收，不以此表覆盖原组后续 HEAD 或未提交现场。
 
-## 当前资产恢复候选（2026-10-27）
+| 组 | 固定来源 | 当前事实与审核边界 |
+|---|---|---|
+| 主线／装备 | `main@e845ca58afd39184c3d4c5743021480e393adf74`；[原装备入口](https://github.com/rlmclmc2-boop/space_idle/blob/cd3365c9fc84d27f4b0e3217a55d1104011e2027/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md) | 本轮装备已按用户授权合 main；原组入口记录根与既有原独审确认空槽窄修，作者完成受影响入口检查。仅装备本轮完成，不扩大为全局资源、其他模块或全游戏验收。 |
+| 反应堆 | [原组入口](https://github.com/rlmclmc2-boop/space_idle/blob/749eccd11d6a6c67a91f9a7138c03508481d373c/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md)；运行源 `0bc17ae48107972c88a84069cf5221bf5c1cbb0f` | R12 已有同版八态、边界及正常 1× 250 帧作者证据；尚无独立整页视觉或目标硬件性能通过。下一步由原组处理整页热流、场壳及材质判断。 |
+| 星球 | [原组入口](https://github.com/rlmclmc2-boop/space_idle/blob/acccaf4ccc5d75c92d8bf2e585b1b2df1479a259/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md)；运行源 `14e342c1` | 本次取回已推进至 R114；原组仍制作站环共同主轮廓、四设施共同剪影／材质和紧凑恒星远景可读性。当前只有作者受控图与局部观察，整体艺术尚未通过；未读取其未提交现场。 |
+| 公共壳 | [原组入口](https://github.com/rlmclmc2-boop/space_idle/blob/2d4cb2af222f44beef263099eb86628526d8c924/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md) | 仅完成 R12 文本源闭包准备，尚未接入 R12 二进制或同壳运行；旧 R5f 运行依赖仍须保留，不能因设计已退役就删仍被预载的资产。未授权本组合合 main。 |
+| 后台 | `feat/amount-safe-previews@f2f5b47c0112d741cca3546a2cec8f3c69934ba3` | 仅记录取回版本；既有资源整数、保存去配置绑定及接口合同沿现行规范。本轮未运行或扩大任何独立审核结论。各消费者按自身固定版核接入，不能由后台版本推定全分支已一致。 |
 
-基线 `main@7a85481` 已包含已确认资产及背景/炮口修复：`de1a96ae` 的持续光束真实目标/端口专项经独立复审，8例/626次检查零失败；`551846a7` 的74.76秒真实窗口对照覆盖第二关三次撤退/再航行，背景专项通过。[资产修复原记录](history/stage6-assets.md)保留提交、平台、哈希和测量细节，[删除清单](12-asset-recovery-deletions.txt)保留278项范围。
-
-这些结论只覆盖其列明的专项，不表示整体 UI、完整玩法、实际音效或最新不限帧 GPU 性能通过。现行美术设计/模块验收从 [13](13-art-interaction.md) 进入；完整包络、盾甲条、最小净空及整体画面品质仍待真实画面与操作证据。已审文档合入不扩大代码/画面验收范围。
-
-**旧存档决定：** 不需要兼容老版存档；配置指纹不匹配保持明确拒绝，保留原文件，不增加迁移、不重写或自动舍弃旧存档。此决定不授权更改现行保存协议；保存规则在 [06](06-data.md)，明显冲突见[裁定清单](review/conflicts.md)。
-
-## 按问题追溯（不默认通读）
-
-| 需要追溯的问题 | 历史证据 |
-|---|---|
-| 资产来源、真实目标、背景 UV、活光束端口 | [资产专项](history/stage6-assets.md) |
-| 页面、恢复/导入、改造确认、会话释放 | [集成与保存修复](history/stage6-integration.md) |
-| 旧构建最大负载、真实10倍、限帧对照、MAX | [性能测量](history/stage6-performance.md)；MAX数值在[战斗审计](history/stage6-combat-audit.md) |
-| C/CR矩阵、parent身份缺口、容量来源分歧 | [战斗审计](history/stage6-combat-audit.md)；未决项见[裁定清单](review/conflicts.md) |
-| 第5阶段端口与阶段性限制 | [历史交接](history/stage5-handoff.md) |
-
-现行跨模块提交契约唯一入口为 [05现行模块交接契约](05-architecture.md#现行模块交接契约)；构建运行指令只从 `foundation/README.md` 读取。旧记录的临时探针名、当时“待合入/已关闭”和性能数据均不是当前执行命令或通用验收结论。
+现行规则／接口分别见 [13](13-art-interaction.md)、[14](14-ui-contracts.md)、[05](05-architecture.md)与[06](06-data.md)；尚未裁定的问题保留在[当前问题](review/conflicts.md)。方向认可、作者自查、协调者检查、独立审核及用户验收必须分别注明固定版本与范围。每次接替重新核本组当前入口；旧通过、旧退回和旧“待用户”均不能覆盖新事实。

@@ -4,9 +4,9 @@
 
 ## 1. Excel唯一权威
 
-人工可调整内容只能来自Excel。运行时使用编译的不可变ConfigBundle，不实时打开Excel、不从工作目录猜选哪份JSON、不在游戏里启动配置编辑器。版本库中的JSON只是生成物，手动修改会被完整重编译比较发现。
+人工可调整内容只能来自Excel。运行时直接读取编译发布的配置JSON，不恢复加载/查询包装层，不实时打开Excel、不从工作目录猜选哪份JSON、不在游戏里启动配置编辑器。版本库中的JSON只是生成物，手动修改会被完整重编译比较发现。
 
-仓库根`太空战舰.xlsx`经核查是旧总表（8个sheet，同名表均与main正式拆分表不同），只是split工具的历史外部输入，不在新编译manifest；详见[旧总表/副本历史核对](history/config-fingerprints.md#6-仓库根旧总表与发布副本核对)。根`config_excel`为正式输入集合，显式manifest列出每个工作簿、sheet、主键、字段、schema版本、归类。`published/`与`level_monGroup_generated.xlsx`是发布/生成副本，`battle_design.xlsx`是设计候选元数据；不得因目录里存在就自动覆盖正式level/mon/monGroup。工具读取任何生成表必须显示其来源类别。原覆盖快照及逐表字段来源见[09索引](09-config-catalog.md)，当前输入清单以正式manifest为准。
+仓库根`太空战舰.xlsx`经核查是旧总表（8个sheet，同名表均与main正式拆分表不同），只是split工具的历史外部输入，不在新编译manifest。根`config_excel`为正式输入集合，显式manifest列出每个工作簿、sheet、主键、字段、schema版本、归类。`published/`与`level_monGroup_generated.xlsx`是发布/生成副本，`battle_design.xlsx`是设计候选元数据；不得因目录里存在就自动覆盖正式level/mon/monGroup。工具读取任何生成表必须显示其来源类别。原覆盖快照及逐表字段来源见[09索引](09-config-catalog.md)，当前输入清单以正式manifest为准。
 
 停用配置保留内容：旧hightech四项、scientistCost/hightechLimit/techPointGet等不再激活旧科研；未消费字段登记“保留但无运行消费者”；资产外观配置仍可消费。已删除的成长项不从历史版本、默认字典或“补齐schema”恢复。现存equipment_evolution.json所定义的装备进化保留并迁入Excel，具体规则见[03成长](03-progression.md#11-属性成长与装备进化)及本节迁移表；字段来源按[09索引](09-config-catalog.md)定位；它不授权恢复其他已删除成长项目。
 
@@ -42,7 +42,7 @@
 
 ## 2. 应配置的硬编码迁移表
 
-下表保留设计迁移目标与语义，不表示本轮新增Excel或各目标表尚未实施。规则/值以01–04对应正文和当前正式Excel为准，字段来源从[09索引](09-config-catalog.md)按表查阅；[旧09目标映射](history/config-migration-targets.md)仅作历史来源，不能作为当前编译前自动应用的指令。本次不改xlsx。
+下表保留设计迁移目标与语义，不表示本轮新增Excel或各目标表尚未实施。规则/值以01–04对应正文和当前正式Excel为准，字段来源从[09索引](09-config-catalog.md)按表查阅。本次不改xlsx。
 
 | 目标表 | 从实现抽出的内容 | 初值/约束 |
 |---|---|---|
@@ -97,20 +97,20 @@ extremeCost = ceil(max(T, rawSum))
 
 MAX从0可付起按1、2、4…扩张数量上界，再整数二分，使用同一个quote比较每种资源钱包；最终重算该数量的同一quote并扣其costMap。普通求和、极端max(T,rawSum)与材料和均随数量不减，因此分类边界不会破坏搜索。当前等级+n不可超int64；若到表示界限仍未找到不可付上界，报告数值范围限制，不虚构玩法封顶。测试检查普通拆分可加、跨T单调、极端可付、无NaN/负余额/死循环。
 
-## 4. ConfigBundle运行结构
+## 4. 运行配置读取边界
 
-包含`schemaVersion, semanticHash, sourceManifestHash, tables, ruleParameters, indices, provenance`。tables按领域定义强类型数据；indices含ID查表、关卡有序战点、科技拓扑、解锁反查、武器规则、几何引用、奖励预算映射。provenance能把一个字段追到Excel坐标，运行时不需要整个工作簿对象。
+运行配置直接读取发布JSON；领域按实际消费读取数据，必要配置有效性校验保留。字段来源与发布哈希由编译报告承担，不作为运行加载/查询包装或存档配置绑定。
 
-整份会话固定使用一个configHash；运行中不热替换半张表。新配置导入先编译完整包，再以明确会话重建/加载校验边界切换；有不可兼容玩家实体时返回结构化错误，不能丢失ID并继续。配置变更不是“偷偷修存档”；跨配置兼容由schema版本与明确迁移处理，不要求支持旧游戏的历史存档。
+整份会话使用一份完整配置；运行中不热替换半张表。新配置导入先编译完整包，再以明确会话重建/加载校验边界切换；有不可兼容玩家实体时返回结构化错误，不能丢失ID并继续。配置变更不是“偷偷修存档”；跨配置兼容由schema版本与明确迁移处理，不要求支持旧游戏的历史存档。
 
 ## 5. 新存档格式与生命周期
 
-不承担旧SAVE_VERSION=11等历史兼容。新格式从1开始，保留明确未来迁移入口。Envelope：
+不承担旧SAVE_VERSION=11等历史兼容。新格式从1开始，保留明确未来迁移入口。存档不与配置hash绑定；必要配置有效性和payload完整性校验仍保留。Envelope：
 
 ```text
 SaveEnvelope {
   formatVersion, sessionId, changeNumber, generation,
-  configHash, savedUtc, payloadHash,
+  savedUtc, payloadHash,
   payload: {
     campaign, economy, equipment:{slots,reactor}, enhancement,
     research, crew, planets, galaxy, hyperspace, notifications,
@@ -135,7 +135,7 @@ Amount编码为`{m:"规范十进制尾数字符串",e:"十进制整数字符串"
 
 ### 5.2 加载、导入、重铸与失败恢复
 
-加载先读取主文件或最高有效A/B generation，失败可明确选择backup。解析、大小/版本/hash检查、ConfigBundle匹配、各领域不变量、跨域ID/占用、凭据状态、Amount合法性全部在候选会话完成。成功后一次替换当前会话，销毁旧表现，重建派生属性、占用索引和各系统到期时刻，再发布Ready。候选失败不部分安装、不“修掉未知无人机”后覆盖原档。
+加载先读取主文件或最高有效A/B generation，失败可明确选择backup。解析、大小/版本/payload完整性检查、当前配置实体与模块有效性检查、各领域不变量、跨域ID/占用、凭据状态、Amount合法性全部在候选会话完成。成功后一次替换当前会话，销毁旧表现，重建派生属性、占用索引和各系统到期时刻，再发布Ready。候选失败不部分安装、不“修掉未知无人机”后覆盖原档。
 
 导入由用户显式选择文件/文本，先预览候选摘要及版本错误；当前会话暂停取得稳定快照并保留可恢复备份，候选有效才替换。导入后的文件写入失败不能同时告诉用户导入成功且文件仍是旧档，结果要区分“内存替换成功、持久化待重试”。重铸先完整创建新会话，成功才替换session；新档清空是独立明确操作，不拿损坏档回退成新档自动覆盖。
 

@@ -101,7 +101,7 @@
 
 **状态：最小只读展示出口已实现；不代表双条画面、G9或全场性能达标。** 实现前设计核对基线为`main@6b8c266556b0b95d8aaa3a97a5a756bd98f653f5`；仅该实现前基线中涉及的运行代码与`317548d7`一致。依据为[只读核对012283f4第6节](https://github.com/rlmclmc2-boop/space_idle/blob/012283f42725aeb8fb316a585489e79284329f95/g0-envelope-and-godot-coordinate-review.md#6-追加可达敌阵的占位归属及三项装配边界)。范围只含敌舰盾状态、双条数值与定位；无人机锚点、敌阵重排、完整装配包络及G9验收分别待定，不混入此提案。
 
-实现版本为`7f77acf6`，dirty合并修订为`f4ccf4ca`。验证记录、适用边界与成本限制见[定向语义证据](../verification/enemy-presentation/7f77acf6/README.md)及[成本证据](../verification/enemy-presentation/cost-7f77acf6/README.md)。
+实现版本为`7f77acf6`，dirty合并修订为`f4ccf4ca`。该版本事实仅限对应接口实现，不代表当前整页或性能重新通过。
 
 ### 7.1 实现前基线与已实现出口
 

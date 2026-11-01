@@ -7,7 +7,7 @@
 | 对象 | 职责与存在原因 |
 |---|---|
 | GameSession | 一局游戏的入口，拥有下面的进度数据与时间余量，并持有Battle模块；按固定顺序调用各系统，避免各页面自行推进时间 |
-| ConfigBundle | 一次编译的只读Excel数据、索引、来源坐标；游戏和测试都直接查询它 |
+| 发布配置JSON | 直接读取正式编译结果；必要真实校验保留，不恢复ConfigBundle加载/查询包装 |
 | 具名系统函数 | equipment/research/crew/planet/galaxy/hyperspace/economy各文件保存本系统公式和动作；直接接收session或所需数据，没有各自隐藏的玩家进度 |
 | SpaceCombatKernel | 现有C++核改造后的唯一战斗实现，管理双方防御、攻击出生、运动、接触、传说和波次；让大批弹体继续使用现有紧凑存储与快路径 |
 | combat_setup.gd | 把槽位与成长结果组装为native配置，计算逻辑舰体与炮口输入；只在实际变更时更新，不逐帧重编译装备 |
