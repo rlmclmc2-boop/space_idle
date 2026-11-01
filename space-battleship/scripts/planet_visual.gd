@@ -55,6 +55,7 @@ var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)
 var background_layer := Control.new()
 var scene_sky := GradientTexture2D.new()
+var nebula_glow := GradientTexture2D.new()
 var orbit_back_layer := Control.new()
 var configured_appearance: Dictionary = {}
 var appearance_initialized := false
@@ -78,6 +79,19 @@ func _ready() -> void:
 	scene_sky.fill = GradientTexture2D.FILL_RADIAL
 	scene_sky.fill_from = Vector2(0.4, 0.6)
 	scene_sky.fill_to = Vector2(1, 0)
+	var cloud_gradient := Gradient.new()
+	cloud_gradient.colors = PackedColorArray([
+		Color(0.09, 0.32, 0.58, 0.21),
+		Color(0.05, 0.18, 0.38, 0.09),
+		Color(0.02, 0.08, 0.20, 0.0),
+	])
+	cloud_gradient.offsets = PackedFloat32Array([0.0, 0.43, 1.0])
+	nebula_glow.gradient = cloud_gradient
+	nebula_glow.width = 256
+	nebula_glow.height = 256
+	nebula_glow.fill = GradientTexture2D.FILL_RADIAL
+	nebula_glow.fill_from = Vector2(0.5, 0.5)
+	nebula_glow.fill_to = Vector2(1.0, 0.5)
 	for layer in [background_layer, orbit_back_layer, globe]:
 		layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.show_behind_parent = true
@@ -112,8 +126,8 @@ func _body_radius() -> float:
 	# The shared orbital structure needs the surrounding space to be part of the
 	# composition. Keep the globe smaller without changing its authored texture.
 	var solid_body := float(appearance.get("emission", 0.0)) == 0.0 and float(appearance.get("radiusScale", 1.0)) <= 1.0
-	# Fit the approved wide orbit, its forward dock and manufacturing bay as
-	# one group inside the shared full-page and drawer subject regions.
+	# Fit the approved wide orbit and complete forward facilities as one
+	# group in both shared overview and drawer subject regions.
 	var base := minf(size.y * (0.21 if solid_body else 0.34), size.x * (0.145 if solid_body else 0.235))
 	var requested := base * clampf(float(appearance.get("radiusScale", 1.0)), 0.08, 1.25)
 	# A compact stellar photosphere remains physically small in the composition,
@@ -199,9 +213,9 @@ func configure(id: String, row: Dictionary) -> void:
 		globe.cloud_map = _map_texture("cloudTexture", PlanetSphere.CLOUDS)
 		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.006))
 		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0073))
-		globe.glow_strength = clampf(maxf(float(appearance.get("glowStrength", 0.62)), 0.68 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0), 0.0, 1.0)
+		globe.glow_strength = clampf(maxf(float(appearance.get("glowStrength", 0.62)), 0.80 if id == "1" else 0.68 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0), 0.0, 1.0)
 		globe.shadow_strength = clampf(float(appearance.get("shadowStrength", 0.86)), 0.0, 1.0)
-		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
+		globe.cloud_opacity = clampf(maxf(float(appearance.get("cloudOpacity", 0.65)), 0.84) if id == "1" else float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
 		globe.atmosphere_color = _color("atmosphereColor", Color("5ac8f0"))
 		globe.configure_visual(appearance)
 		globe.globe_material.set_shader_parameter("authored_stellar_color", id in ["3", "4"])
@@ -316,6 +330,13 @@ func _draw_background() -> void:
 	if icon_mode:return
 	# Static field, separate from the owner-driven sphere and orbital motion.
 	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, size), false)
+	if float(appearance.get("emission", 0.0)) == 0.0:
+		# Wide, restrained blue cloud light supports the approved deep-space
+		# composition while leaving the planet and both rail arcs unobscured.
+		for anchor in [Vector2(-0.22, -0.37), Vector2(0.58, -0.35),
+				Vector2(-0.29, 0.52), Vector2(0.61, 0.54)]:
+			background_layer.draw_texture_rect(nebula_glow,
+				Rect2(anchor * size, Vector2(size.x * 0.72, size.y * 0.84)), false)
 	var stars := RandomNumberGenerator.new()
 	stars.seed = 178
 	for index in 100:
