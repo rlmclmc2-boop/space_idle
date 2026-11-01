@@ -107,9 +107,9 @@ void fragment(){
   float optical_depth=clamp(abs(facing_normal.z),0.0,1.0);
   float limb=pow(1.0-optical_depth,2.0);
   float axis=exp(-pow((point.x-594.0)/12.0,2.0));
-  vec3 plasma=mix(vec3(.015,.26,.48),vec3(.16,.73,.91),facing*.45+charged*.25);
+  vec3 plasma=mix(vec3(.02,.36,.60),vec3(.24,.92,1.0),facing*.55+charged*.25);
   color=(plasma+vec3(.18,.62,.73)*limb+vec3(.40,.72,.80)*axis*(.20+compression*.40))*strength;
-  opacity=(.28+optical_depth*.18+release*.09+charged*.06)*smoothstep(.01,.25,optical_depth);
+  opacity=(.43+optical_depth*.24+release*.09+charged*.06)*smoothstep(.01,.25,optical_depth);
  }else if(work_kind==4){
   float radius=UV.x;
   float front=formation;
@@ -159,14 +159,14 @@ void fragment(){
   color=mix(vec3(0.13,0.035,0.28),base_color.rgb,0.35+face*0.65)*mix(0.65,1.0,strength);
   float seed=1.0-smoothstep(8.0,38.0,abs(point.y+592.0));
   color=mix(color,vec3(.75,.55,1.0),seed*response*.75);
-  color+=vec3(.18,.10,.28)*pow(face,7.0)*strength;
+  color=color*1.18+vec3(.42,.28,.55)*pow(face,10.0)*strength;
  }else if(work_kind==7){
   float progress=(cycle-.72)/.28*1.16-.08;
   float distance=UV.x-progress;
   float head=exp(-pow(distance/.085,2.0))*step(.72,cycle);
   float tail=smoothstep(-.28,-.12,distance)*(1.0-smoothstep(-.08,.02,distance))*step(.72,cycle);
   vec3 flow=vec3(.04,.72,.98)*tail+vec3(.96,1.0,1.0)*head;
-  color=mix(vec3(.003,.045,.075),flow,clamp(head+tail,0.0,1.0))*max(strength,.92);
+  color=mix(vec3(.008,.15,.22),flow,clamp(head+tail,0.0,1.0))*max(strength,.92);
  }else if(work_kind==9){
   float compression=smoothstep(.43,.60,cycle);
   float release=smoothstep(.60,.64,cycle)*(1.0-smoothstep(.66,.72,cycle));
@@ -202,7 +202,7 @@ void fragment(){
   color*=strength*(0.55+0.45*max(0.0,dot(facing_normal,normalize(vec3(-0.4,0.4,0.8)))));
   if(work_kind==8 && work_zone==1){
    float electric_face=pow(max(0.0,dot(facing_normal,normalize(vec3(-.3,.5,1.0)))),5.0);
-   color=mix(vec3(.02,.75,1.0),vec3(.65,1.0,1.0),electric_face*.60+response*.30)*strength;
+   color=mix(vec3(.02,1.10,1.20),vec3(.70,1.25,1.35),electric_face*.60+response*.30)*strength;
   }else if(work_kind==8 && work_zone==2){color=vec3(.40,.92,1.0)*strength;}
  }
  if(work_kind!=1 && load_fraction<=0.0){opacity=0.0;}

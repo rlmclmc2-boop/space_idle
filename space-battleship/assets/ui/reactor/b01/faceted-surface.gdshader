@@ -19,7 +19,7 @@ void fragment(){
  SPECULAR=surface_role==3?0.1:0.4;
  vec3 delta=core_origin-world_point;
  float bounce=max(0.0,dot(normalize(world_normal),normalize(delta)))*exp(-length(delta)/260.0)*core_power;
- EMISSION=vec3(0.06,0.52,0.77)*bounce;
+ EMISSION=vec3(0.07,0.60,0.87)*bounce;
 }
 void light(){
  float facing=dot(NORMAL,LIGHT);
