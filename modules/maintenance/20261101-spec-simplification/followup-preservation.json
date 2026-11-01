@@ -1,0 +1,23 @@
+[
+  {
+    "source": "2ee27743ea303c8324e5975d1e82f069ff23249b",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original-followup/reactor/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md",
+    "blob": "61ebc24fa283300d7edceb61d15838d0e8625892",
+    "sha256": "aa0ad8051cda1120314dc32a8c027dfab6e29ee0502bdd8eefde1e4493287ba1"
+  },
+  {
+    "source": "bcb9ea38bada7d1e41ad631ded8cab2f35a68898",
+    "path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original-followup/host/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md",
+    "blob": "fbf7e15a35fd0050a74e77c9a20fb3d548b48fee",
+    "sha256": "37c0d8941bb5b026ea2e73e1c44a59052fd290d0aa0bfbec31941ee9c68595d1"
+  },
+  {
+    "source": "bcb9ea38bada7d1e41ad631ded8cab2f35a68898",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original-followup/host/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "f86045f2734987fccf19aa585e27b7a478bd8a96",
+    "sha256": "f5f2cb6c9db31bfbb4227fb5cbc1a0c216b4d9ca77118335c8b8da4196cd11a9"
+  }
+]
