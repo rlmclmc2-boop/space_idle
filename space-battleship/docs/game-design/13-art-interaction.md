@@ -30,7 +30,7 @@
 
 **透明图标。** 读取原始带 alpha 纹理/图集区域；图标主体透明度与 UI 背景分层。导入保持 RGBA 与正确 alpha 混合，按最终小尺寸在深浅承载面核边缘、裁切和光学对齐。资源名、读数、底板由原生控件绘制。
 
-**数字格式。** 通用数值经 `PlayerText.number`，直接消费规范 Amount 文本。按绝对值阈值 10³/10⁶/10⁹/10¹²/10¹⁵ 使用 k/m/b/t/kt，≥10¹⁸ 使用规范 e；保留一位小数，四舍五入跨阈值升单位（999.95k→1.0m，999.95kt→1.0e18，10²⁰→1.0e20）。通用整数保留 .0，零及负零显示0。资源经 `PlayerText.resource_number`：普通整数无 .0（12、12.0→12），大数保留缩写的一位小数（1000→1.0k）。异常非整数源值保留原值供定位；实际资源整数化由[资源契约](contracts/resources.md)定义。
+**数字格式。** 通用数值经 `PlayerText.number`，直接消费规范 Amount 文本。按绝对值阈值 10³/10⁶/10⁹/10¹²/10¹⁵ 使用 k/m/b/t/kt，≥10¹⁸ 使用规范 e；保留一位小数，四舍五入跨阈值升单位（999.95k→1.0m，999.95kt→1.0e18，10²⁰→1.0e20）。通用整数保留 .0，零及负零显示0。资源经 `PlayerText.resource_number`：普通整数无 .0（12、12.0→12），大数保留缩写的一位小数（1000→1.0k）。资源读数消费Owner提供的有效整数结果，实际整数化与展示输入由[资源契约](contracts/resources.md)定义。
 
 **数字与控件角色。** `BridgeTheme.number_role_color(role,surface)` 的 current/gain/cost/insufficient 在 light/dark 承载面上保持可读，使用 `apply_number_role`。普通操作深青、主要操作暖金；共用 `operation_plate/operation_button/apply_operation_button/apply_operation_select`，覆盖普通、悬停、按下、选中、不可用与焦点态。
 
