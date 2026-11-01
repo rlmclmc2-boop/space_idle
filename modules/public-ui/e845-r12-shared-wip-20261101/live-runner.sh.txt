@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+out=/tmp/space-idle-runtime472/r12-shared-live
+project=/workspace/space_idle/space-battleship
+mkdir -p "$out"
+rm -f "$out/ready.json" "$out/runtime.json"
+export XDG_CACHE_HOME=/tmp/space-idle-runtime472/xdg-cache
+export XDG_CONFIG_HOME=/tmp/space-idle-runtime472/xdg-config
+export XDG_DATA_HOME=/tmp/space-idle-runtime472/xdg-data
+export SPACE_IDLE_NATIVE_EXTENSION=/tmp/space-idle-native472/space_native.gdextension
+export DISPLAY=:99
+/tmp/space-idle-godot472/Godot_v4.7.2-stable_linux.x86_64 --path "$project" --rendering-method gl_compatibility --audio-driver Dummy --script /tmp/space-idle-runtime472/r12-shared-live-driver.gd > "$out/run.log" 2>&1 &
+godot_pid=$!
+trap 'kill "$godot_pid" 2>/dev/null || true' EXIT
+for ((i=0;i<200;i++)); do
+    if test -f "$out/ready.json"; then break; fi
+    if ! kill -0 "$godot_pid" 2>/dev/null; then exit 1; fi
+    sleep 0.1
+done
+test -f "$out/ready.json"
+xwininfo -root -tree > "$out/windows.txt"
+window_id=$(awk '/R12_SHARED_CAPTURE/{print $1; exit}' "$out/windows.txt")
+test -n "$window_id"
+printf '%s\n' "$window_id" > "$out/window-id.txt"
+capture_start_ns=$(python -c 'import time; print(time.monotonic_ns())')
+ffmpeg -hide_banner -y -loglevel info -f x11grab -framerate 12 -window_id "$window_id" -i :99.0 -t 8 -c:v libx264 -preset ultrafast -crf 18 -pix_fmt yuv420p "$out/r12-shared-live.mp4" > "$out/encode.log" 2>&1
+capture_end_ns=$(python -c 'import time; print(time.monotonic_ns())')
+python -c 'import json,sys; start=int(sys.argv[1]); end=int(sys.argv[2]); json.dump({"capture_wall_start_ns":start,"capture_wall_end_ns":end,"capture_wall_seconds":(end-start)/1e9,"requested_capture_seconds":8,"x11grab_poll_fps":12,"window_id":sys.argv[3]},open(sys.argv[4],"w"),indent=2)' "$capture_start_ns" "$capture_end_ns" "$window_id" "$out/capture-wall.json"
+wait "$godot_pid"
+trap - EXIT
+test -f "$out/runtime.json"

@@ -1,0 +1,26 @@
+{
+  "balance_rows": [
+    {
+      "id": "chrono",
+      "raw": "1.89e2",
+      "text": "时空微粒：189"
+    }
+  ],
+  "controlled_allocation": "Owner.distribute",
+  "drawn_start": 81,
+  "game_time_start": 0.0,
+  "pause_reasons": {},
+  "route": "reactor",
+  "running": true,
+  "skip_guidance": true,
+  "source": "9838e1e77a60f31070bc472e9ed7ca6eca4161ef",
+  "stage_loads": {
+    "condensation": 0.25,
+    "core": 1.0,
+    "defence": 0.25,
+    "smelting": 0.25,
+    "weapons": 0.25
+  },
+  "time_scale": 1.0,
+  "wall_start_us": 11285365
+}

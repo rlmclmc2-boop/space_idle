@@ -34,3 +34,5 @@
 - [2026-10-31 public-shell handoff entry before current-only cleanup](runtime-clear-zone-pre-redesign-cleanup-c2c681f1/README.md): exact c2c681f1 document snapshot with withdrawn R5f assessment and historical provenance.
 
 - [2026-11-01资料清理来源与逐文件哈希](../maintenance/20261101/index.md)。仅存档/移出记录，不追加游戏验收。
+
+- [2026-11-01 R12 and final equipment shared-shell WIP](e845-r12-shared-wip-20261101/README.md): exact runtime closure, affected full screens, actual 1x short video; author observations only.

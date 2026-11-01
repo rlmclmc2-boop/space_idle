@@ -1,0 +1,8 @@
+{
+  "capture_wall_start_ns": 324215052102036,
+  "capture_wall_end_ns": 324223427848504,
+  "capture_wall_seconds": 8.375746468,
+  "requested_capture_seconds": 8,
+  "x11grab_poll_fps": 12,
+  "window_id": "0xc00003"
+}

@@ -1,0 +1,91 @@
+{
+  "source_commit": "9838e1e77a60f31070bc472e9ed7ca6eca4161ef",
+  "reactor_source": "0bc17ae48107972c88a84069cf5221bf5c1cbb0f",
+  "archive_parent": "c0671a0356990c2ad9cfd9b2a6c753df3e0d70f5",
+  "files": {
+    "equipment-final-empty-controlled-1440x900.png": {
+      "sha256": "9ddbffa9e1c75d00b3aa5fbbad98ec4068af22f000c2de670ea1c399d522c954",
+      "bytes": 1630143
+    },
+    "reactor-four-1440x900.png": {
+      "sha256": "68b748af694a0a14522242049a05731cc9ea18015b3ea5ad822e0fe38bd26efe",
+      "bytes": 1794002
+    },
+    "reactor-one-controlled-1440x900.png": {
+      "sha256": "4b5796031f5cb26c30f69598a59ac89d59a438817aa0956d0e02cc3a8d51f6bc",
+      "bytes": 1789685
+    },
+    "equipment-return-after-reactor-1440x900.png": {
+      "sha256": "9ddbffa9e1c75d00b3aa5fbbad98ec4068af22f000c2de670ea1c399d522c954",
+      "bytes": 1630143
+    },
+    "static-driver.gd.txt": {
+      "sha256": "9e917959e7433d373cb16064220d2d6732fd85758fa3edb124672e55fd3c3df7",
+      "bytes": 3962
+    },
+    "static-run.log": {
+      "sha256": "98e0802e994cf7c31dbf4ada5ccb4699ddc696edc33188e4dc6d7285ed8ff87b",
+      "bytes": 557
+    },
+    "r12-shared-live.mp4": {
+      "sha256": "14969bdd0b50f28bf430a6854a771dec7da9613f4f9a677d46dae927e2d011ea",
+      "bytes": 3017241
+    },
+    "frame-at-2s.png": {
+      "sha256": "e1ccd9aa8655450e1c83e076e8edac98d5b079ce5c13a278d52d04a70f8f7624",
+      "bytes": 1787594
+    },
+    "frame-at-6s.png": {
+      "sha256": "946ac6f0eac6ae37039c00297d2b15401f6932a29bb3f5aea665805d136aefe0",
+      "bytes": 1839325
+    },
+    "ready.json": {
+      "sha256": "12a639c48a597e4d3cec26857270855a9a43a5a0607de9daf9097d5b6443aa85",
+      "bytes": 538
+    },
+    "runtime.json": {
+      "sha256": "08805834cb1c6f35806bbc31442133c5f486f046a6455957139185b203cd75b1",
+      "bytes": 623
+    },
+    "capture-wall.json": {
+      "sha256": "8939d0524f80eb0fd349f822c902f6e26cc8e4ca433b09836ad300a714a81cc3",
+      "bytes": 214
+    },
+    "run.log": {
+      "sha256": "f8748c20e9ed9011b9519bc5fe89c046eade10d51e05b40a14bf60f3aad4ef8d",
+      "bytes": 453
+    },
+    "encode.log": {
+      "sha256": "050ed34fed7d115014954e467ee5f4a1f72466801b4076c1978993aeebff7274",
+      "bytes": 4175
+    },
+    "windows.txt": {
+      "sha256": "865da15be5e1ca39e05fece1480850d9644ddcd8f866cbb68c9668bdf041c43a",
+      "bytes": 849
+    },
+    "window-id.txt": {
+      "sha256": "149ebebad59827e0a840a78938a22a5b7d7956a2ded72e256a7d82af6568eb61",
+      "bytes": 9
+    },
+    "live-driver.gd.txt": {
+      "sha256": "a20e74f405aaab5c9d16c2d9c6c5e4a365144c81e1c4a77eb4d7aa51291eb7d0",
+      "bytes": 4029
+    },
+    "live-runner.sh.txt": {
+      "sha256": "d4de09d1d14a4162b78dda83c43035c53ed23b05f8185e68cd60c5ea7b6f7df5",
+      "bytes": 1898
+    },
+    "godot-import.log": {
+      "sha256": "f15ffd4c558b01611d562c8c257508942bdc2dc542124f423ae2a592a46edfa6",
+      "bytes": 1017
+    },
+    "godot-check.log": {
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+      "bytes": 73
+    },
+    "README.md": {
+      "sha256": "ab051f5cdecb1f55da83669ad3b30b69a28da7ced9dc235141a80a1676e4c550",
+      "bytes": 2782
+    }
+  }
+}
