@@ -1,0 +1,20 @@
+[
+  {
+    "group": "reactor",
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "59b1086e93a574c7ff17bcbcb96aa7d8f93b0822",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/handoff-close/original/reactor/HANDOFF.md",
+    "blob": "f82a1eb1246d6e86c956b0e51b217b2ce1a2c514",
+    "sha256": "c2a4d336bcd54bc1d50736ef53a8f9e64654297c88eff0d68d8718513b7b8c3d"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "e56c0d513cd3398d20bb6d3aa00e100e40b46412",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/final/handoff-close/original/planet/HANDOFF.md",
+    "blob": "5bbcd845c7d782e714f9a412dfeeaa9cbd7aef13",
+    "sha256": "5b8192926af93c1615cebc603b30bef1d0037eb51bfe2011407625322290c1ca"
+  }
+]
