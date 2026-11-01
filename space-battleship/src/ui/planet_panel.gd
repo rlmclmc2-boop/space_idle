@@ -6,8 +6,7 @@ const ERRORS := {"UnknownPlanet": "尚未选择星球", "PlanetLocked": "星球�
 const STATES := {"locked": "未达门槛", "building": "施工中", "ready": "待领取", "built": "已领取"}
 const PAUSES := {"ExplorationNotRunning": "探索未运行，施工暂停", "NoExplorer": "缺少探索者，施工暂停", "MissingBuilders": "缺少额外施工人员，施工暂停"}
 const ResourceVisuals := preload("res://src/ui/resource_visuals.gd")
-const CONTROL_MATERIALS := "res://assets/ui/planet/control-materials.png"
-var _material_faces: Dictionary = {}
+const BridgeTheme := preload("res://src/ui/bridge_theme.gd")
 var _host: Callable
 var _planet
 var _crew
@@ -50,7 +49,9 @@ var _task_line := Label.new()
 var _feedback := Label.new()
 var _feedback_seconds := 0.0
 var _drawer := PanelContainer.new()
-var _drawer_box := VBoxContainer.new()
+var _drawer_box := HBoxContainer.new()
+var _drawer_scroll := ScrollContainer.new()
+var _drawer_context := Label.new()
 var _drawer_title := Label.new()
 var _drawer_body := VBoxContainer.new()
 var _detail_text: Label
@@ -89,17 +90,16 @@ func _init(planet, cancel: Callable, publish: Callable, command: Callable, visua
 func _ready() -> void:
 	process_priority = 1
 	theme = _theme()
-	_load_control_materials()
 	_visual = preload("res://scripts/planet_visual.gd").new()
 	_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_visual)
 	for button in [_task_button, _crew_button, _facility_button]:
 		button.toggle_mode = true
 		add_child(button)
-	_paint_button(_task_button, Color("264b58"), Color("31616b"), Color("e6d5ac"), Color("b39a68"), Color("f6efdc"), "tab")
+	_paint_button(_task_button, "tab")
 	for button in [_crew_button, _facility_button]:
-		_paint_button(button, Color("173847"), Color("285464"), Color("e4dcc6"), Color("6f9ba0"), Color("f0ead8"), "tab")
-	_paint_button(world_planet_picker, Color("173847"), Color("285464"), Color("315f6c"), Color("78999c"), Color("eee9d9"), "selector")
+		_paint_button(button, "tab")
+	_paint_button(world_planet_picker)
 	_task_button.pressed.connect(func(): _toggle_section("exploration"))
 	_crew_button.pressed.connect(func(): _toggle_section("crew"))
 	_facility_button.pressed.connect(func(): _toggle_section("facilities"))
@@ -108,8 +108,8 @@ func _ready() -> void:
 	world_planet_picker.item_selected.connect(func(index): select_planet(str(world_planet_picker.get_item_metadata(index))))
 	_stop_button = _action(self, "本次完成后停止", func(): return _planet.set_automatic(_selected_id, false))
 	_cancel_button = _action(self, "立即取消探索", func(): return _cancel.call(_selected_id))
-	_paint_button(_stop_button, Color("173747"), Color("285365"), Color("315f6c"), Color("4b7580"), Color("e8ebdf"))
-	_paint_button(_cancel_button, Color("342f31"), Color("594041"), Color("654848"), Color("9c7264"), Color("f1e3d2"))
+	_paint_button(_stop_button)
+	_paint_button(_cancel_button)
 	for label in [_task_line, _feedback, _wallet]:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(label)
@@ -146,29 +146,35 @@ func _ready() -> void:
 	_progress.show_percentage = false
 	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_drawer)
-	# A stable housing surrounds the header and the variable-height content.
-	# Button glass cannot be stretched down a long drawer without vertical bands.
-	var drawer_face := _skin(Color("203b49"), Color("688184"), 1, 6)
-	drawer_face.set_content_margin_all(13)
-	drawer_face.shadow_color = Color("061824", 0.32)
-	drawer_face.shadow_size = 4
-	drawer_face.shadow_offset = Vector2(1, 2)
+	var drawer_face := BridgeTheme.operation_plate(13, "dark")
+	drawer_face.set_content_margin_all(16)
 	_drawer.add_theme_stylebox_override("panel", drawer_face)
 	_drawer.add_child(_drawer_box)
-	_drawer.draw.connect(_draw_drawer_trim)
-	_drawer_box.add_theme_constant_override("separation", 10)
-	var header := HBoxContainer.new()
+	_drawer_box.add_theme_constant_override("separation", 24)
+	var header := VBoxContainer.new()
+	header.custom_minimum_size.x = 174
+	header.add_theme_constant_override("separation", 12)
 	_drawer_box.add_child(header)
 	_drawer_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_drawer_title.add_theme_font_size_override("font_size", 20)
 	_drawer_title.add_theme_color_override("font_color", Color("f0ead9"))
 	header.add_child(_drawer_title)
+	_drawer_context.add_theme_color_override("font_color", Color("9db7c4"))
+	_drawer_context.add_theme_font_size_override("font_size", 15)
+	header.add_child(_drawer_context)
 	var close := Button.new()
 	close.text = "收起"
 	close.pressed.connect(func(): _toggle_section(_open_section))
-	_paint_secondary(close, true)
+	_paint_secondary(close)
+	close.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	close.custom_minimum_size = Vector2(80, 36)
 	header.add_child(close)
-	_drawer_box.add_child(_drawer_body)
+	_drawer_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_drawer_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_drawer_box.add_child(_drawer_scroll)
+	_drawer_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_drawer_body.add_theme_constant_override("separation", 10)
+	_drawer_scroll.add_child(_drawer_body)
 	_drawer.hide()
 	resized.connect(_layout)
 	_layout()
@@ -184,38 +190,10 @@ func _exit_tree() -> void:
 func _theme() -> Theme:
 	var result := preload("res://src/ui/bridge_theme.gd").create()
 	result.default_font_size = 17
-	result.set_color("font_color", "Label", Color("274554"))
-	for type in ["Button", "OptionButton"]:
-		result.set_stylebox("normal", type, _skin(Color("173847"), Color("4d7882")))
-		result.set_stylebox("hover", type, _skin(Color("285464"), Color("8fc6c2"), 2))
-		result.set_stylebox("pressed", type, _skin(Color("e4dcc6"), Color("be9d67"), 2))
-		result.set_stylebox("focus", type, _skin(Color("000000", 0.0), Color("e8c982"), 2))
-		result.set_stylebox("disabled", type, _skin(Color("243743"), Color("4d6269")))
-		for state in ["font_color", "font_hover_color", "font_focus_color"]:
-			result.set_color(state, type, Color("eee9d9"))
-		for state in ["font_pressed_color", "font_hover_pressed_color"]:
-			result.set_color(state, type, Color("173747"))
-		result.set_color("font_disabled_color", type, Color("95a7a8"))
-	var panel := _skin(Color("e6e1d1"), Color("55727a"), 1, 4)
+	result.set_color("font_color", "Label", Color("dce8e8"))
+	var panel := BridgeTheme.operation_plate(13)
 	panel.set_content_margin_all(13)
-	panel.shadow_color = Color("061824", 0.38)
-	panel.shadow_size = 5
-	panel.shadow_offset = Vector2(1, 3)
 	result.set_stylebox("panel", "PanelContainer", panel)
-	var popup := StyleBoxFlat.new()
-	popup.bg_color = Color("143746")
-	popup.border_color = Color("80b9b2")
-	popup.set_border_width_all(1)
-	popup.set_corner_radius_all(7)
-	popup.set_content_margin_all(6)
-	result.set_stylebox("panel", "PopupMenu", popup)
-	var hovered := StyleBoxFlat.new()
-	hovered.bg_color = Color("2a6069")
-	hovered.set_corner_radius_all(4)
-	result.set_stylebox("hover", "PopupMenu", hovered)
-	result.set_font_size("font_size", "PopupMenu", 17)
-	for key in ["font_color", "font_hover_color", "font_accelerator_color"]:
-		result.set_color(key, "PopupMenu", Color("f0eddf"))
 	for state in ["background", "fill"]:
 		var bar := _skin(Color("d6ab6c") if state == "fill" else Color("173747"), Color("325968"), 0, 3)
 		bar.set_content_margin_all(0)
@@ -231,71 +209,28 @@ func _skin(fill: Color, edge: Color, border: int = 1, radius: int = 6) -> StyleB
 	style.set_content_margin_all(8)
 	return style
 
-func _paint_button(button: Button, normal: Color, hover: Color, pressed: Color, edge: Color, ink: Color, visual_role := "") -> void:
-	var role := visual_role if not visual_role.is_empty() else "primary" if normal.r > 0.7 and normal.b < 0.55 else "navy"
-	for state in ["normal", "hover", "pressed"]:
-		var tint: Color
-		if role == "primary":
-			tint = Color(0.82, 0.86, 0.84) if state == "normal" else Color(0.96, 1.0, 0.94) if state == "hover" else Color(0.76, 0.81, 0.78)
-		elif role == "tab":
-			# The native toggle's pressed style is its persistent selected state.
-			# Use the shared cool-face hierarchy: quiet ordinary tabs, warm-lit selection.
-			tint = Color(0.53, 0.63, 0.67) if state == "normal" else Color(0.69, 0.80, 0.82) if state == "hover" else Color(0.91, 0.99, 0.91)
-		elif role == "quiet":
-			tint = Color(0.72, 0.79, 0.82) if state == "normal" else Color(0.86, 0.93, 0.94) if state == "hover" else Color(0.84, 0.91, 0.91)
-		else:
-			tint = Color(0.79, 0.86, 0.88) if state == "normal" else Color(0.94, 1.0, 1.0) if state == "hover" else Color(1.02, 1.06, 1.01)
-		button.add_theme_stylebox_override(state, _material_style("primary" if role == "primary" else "navy", tint))
+func _paint_button(button: Button, role := "secondary") -> void:
+	button.add_theme_font_size_override("font_size", 17)
+	if button is OptionButton:
+		BridgeTheme.apply_operation_select(button)
+	else:
+		BridgeTheme.apply_operation_button(button, "commit" if role == "commit" else "secondary")
 	if role == "tab":
-		button.add_theme_stylebox_override("hover_pressed", _material_style("navy", Color(1.0, 1.05, 0.98)))
-	button.add_theme_stylebox_override("focus", _skin(Color("000000", 0.0), Color("edc37c") if role == "primary" else Color("95bfbd"), 1))
-	button.add_theme_stylebox_override("disabled", _material_style("navy", Color(0.62, 0.69, 0.72)))
-	for state in ["font_color", "font_hover_color", "font_focus_color"]:
-		button.add_theme_color_override(state, ink)
-	for state in ["font_pressed_color", "font_hover_pressed_color"]:
-		button.add_theme_color_override(state, Color("173747") if role == "primary" else Color("fff0c6") if role == "tab" else Color("f0edde"))
-	button.add_theme_color_override("font_disabled_color", Color("95a7a8"))
+		# Native toggle owns persistent selection; use the shared selected face.
+		button.add_theme_stylebox_override("pressed", BridgeTheme.operation_button("selected"))
+		button.add_theme_stylebox_override("hover_pressed", BridgeTheme.operation_button("selected_hover"))
 
-func _load_control_materials() -> void:
-	var image: Image = load(CONTROL_MATERIALS).get_image()
-	var regions := {"glass": Rect2i(42, 132, 1366, 256), "primary": Rect2i(42, 472, 1366, 224), "navy": Rect2i(42, 772, 1366, 204)}
-	for id in regions:
-		var face: Image = image.get_region(regions[id])
-		var height := 44 if id.begins_with("glass") else 40
-		face.resize(roundi(face.get_width() * float(height) / face.get_height()), height, Image.INTERPOLATE_LANCZOS)
-		_material_faces[id] = ImageTexture.create_from_image(face)
-
-func _material_style(role: String, tint: Color = Color.WHITE) -> StyleBoxTexture:
-	var style := StyleBoxTexture.new()
-	style.texture = _material_faces[role]
-	style.modulate_color = tint
-	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: style.set_texture_margin(side, 7)
-	style.set_content_margin_all(8)
-	return style
-
-func _paint_secondary(button: Button, quiet := false) -> void:
-	_paint_button(button, Color("1a3e4b"), Color("2b5661"), Color("315f6c"), Color("729296"), Color("eee9d9"), "quiet" if quiet else "selector" if button is OptionButton else "navy")
-
-func _draw_drawer_trim() -> void:
-	var width := _drawer.size.x
-	var height := _drawer.size.y
-	var header_bottom := _drawer_title.get_global_rect().end.y - _drawer.get_global_rect().position.y + 6.0
-	# The quiet body varies only from top to bottom. Its side and bottom rim are
-	# the same housing, so the title does not read as a pasted-on keycap.
-	_drawer.draw_polygon(
-		PackedVector2Array([Vector2(5, header_bottom), Vector2(width - 5, header_bottom), Vector2(width - 5, height - 11), Vector2(width - 11, height - 5), Vector2(11, height - 5), Vector2(5, height - 11)]),
-		PackedColorArray([Color("e4e3d9"), Color("e4e3d9"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7"), Color("d6dcd7")]))
-	_drawer.draw_texture_rect(_material_faces.navy, Rect2(3, 3, width - 6, header_bottom - 3), false, Color(0.82, 0.96, 0.96, 0.9))
-	_drawer.draw_line(Vector2(5, header_bottom + 1), Vector2(width - 5, header_bottom + 1), Color("fff9e8", 0.25), 1.0)
-	_drawer.draw_line(Vector2(11, height - 5), Vector2(width - 11, height - 5), Color("102d3b", 0.42), 1.0)
+func _paint_secondary(button: Button) -> void:
+	_paint_button(button)
 
 func _layout() -> void:
 	if _visual == null: return
-	# Keep the complete scene visible beside an open detail drawer. The full
-	# composition returns when the drawer closes; no facility is masked by it.
+	# The bottom command dock keeps the scene at full module width.
 	var drawer_open := not _open_section.is_empty()
-	_visual.position = Vector2(292, 90) if drawer_open else Vector2(0, 90)
-	_visual.size = Vector2(maxf(400, size.x - 292), maxf(500, size.y - 90)) if drawer_open else Vector2(size.x, maxf(500, size.y - 90))
+	var visual_top := 65 if _shared_host_enabled else 90
+	if not drawer_open:
+		_visual.position = Vector2(0, visual_top)
+		_visual.size = Vector2(size.x, maxf(500, size.y - visual_top))
 	_task_button.position = Vector2(258, 112)
 	_task_button.size = Vector2(226, 44)
 	_crew_button.position = Vector2(148, 112)
@@ -313,11 +248,9 @@ func _layout() -> void:
 	_task_line.position = Vector2(22, 168)
 	_task_line.size = Vector2(340, 46 if bool(_snapshot.get("running", false)) else 28)
 	_task_line.add_theme_color_override("font_color", Color("e0eee9"))
-	_feedback.position = Vector2(22, size.y - 80)
-	_feedback.size = Vector2(500, 70)
-	# Shared left drawer belongs to the three scoped entry tabs; facility aligns above it.
-	_drawer.position = Vector2(22, 278)
-	_drawer.size.x = 276
+	_feedback.position = Vector2(22, _task_line.get_rect().end.y + 10)
+	_feedback.size = Vector2(764, 48)
+	_drawer.size.x = size.x - 44
 	_fit_drawer()
 	_wallet.position = Vector2(200, 14)
 	_wallet.size = Vector2(580, 30)
@@ -325,15 +258,6 @@ func _layout() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	if not _open_section.is_empty():
-		# Extend the scene's quiet blue falloff behind the existing drawer so
-		# resizing its art viewport does not leave a hard vertical void.
-		for index in 24:
-			var top := float(index) / 24.0
-			var bottom := float(index + 1) / 24.0
-			var tint := Color("061b28").lerp(Color("0b2634"), minf(top * 1.5, 1.0))
-			if top > 0.67: tint = tint.lerp(Color("09212f"), (top - 0.67) / 0.33)
-			draw_rect(Rect2(0, 90 + (size.y - 90) * top, 292, (size.y - 90) * (bottom - top) + 1), tint)
 	if not _shared_host_enabled:
 		draw_rect(Rect2(0, 0, size.x, 90), Color("f0eddf"))
 		draw_string(get_theme_default_font(), Vector2(22, 34), "远航舰桥", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("243d50"))
@@ -459,7 +383,9 @@ func _process(dt: float) -> void:
 	if not is_visible_in_tree(): return
 	if _feedback_seconds > 0:
 		_feedback_seconds = maxf(0, _feedback_seconds - dt)
-		if _feedback_seconds == 0: _feedback.text = ""
+		if _feedback_seconds == 0:
+			_feedback.text = ""
+			_layout()
 	_context = _visual_context.call() if _visual_context.is_valid() else {}
 	_update_wallet()
 	if _dirty or _options_dirty:
@@ -580,7 +506,7 @@ func _rebuild_drawer() -> void:
 	_clear_body()
 	if _open_section.is_empty(): return
 	_drawer_title.text = str({"facilities": "设施管理", "crew": "人员派遣", "exploration": "探索任务"}[_open_section])
-	if _open_section != "exploration": _caption(_drawer_body, str(_snapshot.get("row", {}).get("name", "无已开放星球")))
+	_drawer_context.text = str(_snapshot.get("row", {}).get("name", "无已开放星球"))
 	if _open_section == "facilities": _build_facility_detail()
 	elif _open_section == "crew": _build_crew_detail()
 	else:
@@ -600,10 +526,17 @@ func _rebuild_drawer() -> void:
 
 func _fit_drawer() -> void:
 	if _drawer == null or not _drawer.visible: return
-	# Content changes when a crew member is assigned. Give the existing housing
-	# its actual minimum height before drawing the side and bottom rim.
+	_drawer_scroll.custom_minimum_size.y = minf(260, _drawer_body.get_combined_minimum_size().y)
 	_drawer.size.y = _drawer.get_combined_minimum_size().y
-	_drawer.queue_redraw()
+	_drawer.position = Vector2(22, size.y - 16 - _drawer.size.y)
+	# One shared subject region follows the actual status and dock bounds.
+	# The complete globe/ring/building group uses this viewport's common fit;
+	# neither a tab nor a taller detail body nudges an individual building.
+	var subject_top := maxf(_task_line.get_rect().end.y, world_planet_picker.get_rect().end.y) + 24
+	if not _feedback.text.is_empty(): subject_top = maxf(subject_top, _feedback.get_rect().end.y + 16)
+	var subject_bottom := _drawer.position.y - 24
+	_visual.position = Vector2(0, subject_top)
+	_visual.size = Vector2(size.x, maxf(1, subject_bottom - subject_top))
 
 func _build_conquest_detail() -> void:
 	_read_conquest_if_needed()
@@ -616,7 +549,7 @@ func _build_conquest_detail() -> void:
 	rewards_heading.custom_minimum_size.y = 31
 	rewards_heading.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	rewards_heading.add_theme_font_size_override("font_size", 19)
-	rewards_heading.add_theme_color_override("font_color", Color("173b4b"))
+	rewards_heading.add_theme_color_override("font_color", Color("e9ce8e"))
 	var names := {"level_bonus:equipment": "装备有效等级加成", "level_bonus:enhancement": "强化额外等级", "free_charge:all": "免费充能比例", "luck:all": "幸运加成"}
 	for row in _conquest_rewards:
 		var key: String = str(row.kind) + ":" + str(row.target)
@@ -627,13 +560,13 @@ func _build_conquest_detail() -> void:
 		reward_name.text = str(names.get(key, key))
 		reward_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		reward_name.add_theme_font_size_override("font_size", 16)
-		reward_name.add_theme_color_override("font_color", Color("46606a"))
+		reward_name.add_theme_color_override("font_color", Color("b5c9d0"))
 		reward_line.add_child(reward_name)
 		var reward_value := Label.new()
 		reward_value.text = str(row.display_text)
 		reward_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		reward_value.add_theme_font_size_override("font_size", 16)
-		reward_value.add_theme_color_override("font_color", Color("173b4b"))
+		reward_value.add_theme_color_override("font_color", Color("e9ce8e"))
 		reward_line.add_child(reward_value)
 
 func _build_facility_detail() -> void:
@@ -753,7 +686,7 @@ func _build_crew_detail() -> void:
 		if option.is_empty(): return {"ok": false, "reason": "PlanetBuildingUnavailable"}
 		return _coordinate.call(str(_picker_value(_member_picker)), str(option.kind), str(option.target)))
 	var release := _action(_drawer_body, "撤回本星球人员", func(): return _coordinate.call(str(_picker_value(_member_picker)), "", ""))
-	_paint_button(release, Color("173747"), Color("285365"), Color("315f6c"), Color("4b7580"), Color("e8ebdf"))
+	_paint_button(release)
 	release.disabled = not assigned_here
 	if not assigned_here: release.tooltip_text = "所选船员当前未在本星球任职"
 
@@ -784,7 +717,7 @@ func _action(parent: Control, text: String, action: Callable) -> Button:
 		button.text = text
 		parent.add_child(button)
 		button.pressed.connect(perform)
-	_paint_button(button, Color("c9a364"), Color("e4ba76"), Color("f1d398"), Color("f2d293"), Color("183849"))
+	_paint_button(button, "commit")
 	return button
 
 static func describe_error(reason: String) -> String:
