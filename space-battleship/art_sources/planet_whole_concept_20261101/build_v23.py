@@ -317,16 +317,16 @@ shipyard=root_at("04 / Open launch district of the orbital city",-130)
 
 # Each built district owns a closed part of the same variable-section band.
 for root,lo,hi in ((refinery,25,75),(station,75,155),
-                   (workshop,-109,25)):
+                   (workshop,-65,25)):
     if root==workshop:
         # Manufacturing opens through the roof without breaking the deep
         # continuous load-bearing section beneath its work channel.
-        for part_lo,part_hi in ((-109,-68),(-32,25)):
+        for part_lo,part_hi in ((-65,-64),(-32,25)):
             profiled_band(root,"Continuous variable-section armored building band",part_lo,part_hi)
-        for part_lo,part_hi in ((-109,-68),(-32,25)):
+        for part_lo,part_hi in ((-65,-64),(-32,25)):
             profiled_band(root,"Continuous deep load-bearing underside",part_lo,part_hi,
                           roof_shift=-.55,inner_shift=-.05,outer_shift=.05,mat=KEEL)
-        profiled_band(root,"Recessed load floor beneath fabrication opening",-68,-32,
+        profiled_band(root,"Recessed load floor beneath fabrication opening",-64,-32,
                       roof_shift=-1.18,inner_shift=-.05,outer_shift=.05,mat=KEEL)
         continue
     profiled_band(root,"Continuous variable-section armored building band",lo,hi)
@@ -335,21 +335,26 @@ for root,lo,hi in ((refinery,25,75),(station,75,155),
 
 # The dock opens a wide radial bay in the fourth section of the building.
 # Its two curved abutments share the band profile and hold the outward arms.
-for lo,hi in ((-205,-143),(-119,-109)):
+for lo,hi in ((-205,-143),(-119,-65)):
     profiled_band(shipyard,"Dock district curved pressure abutment",lo,hi)
     profiled_band(shipyard,"Dock district deep support",lo,hi,
                   roof_shift=-.52,inner_shift=-.05,outer_shift=.05,mat=KEEL)
 owned_arc(shipyard,"Dock open bay inner transfer floor",-144,-118,4.17,4.68,.18,.34,MACHINE)
-for root,lo,hi in ((shipyard,-205,-143),(shipyard,-119,-109),
-                   (workshop,-109,25),(refinery,25,75),(station,75,155)):
+bpy.context.view_layer.update()
+front_node = shipyard.matrix_world.inverted() @ Vector((0,-4.47,.60))
+cyl("Low flush front attitude collar",front_node,.28,.14,EDGE,shipyard,10)
+front_core = shipyard.matrix_world.inverted() @ Vector((0,-4.47,.69))
+cyl("Front attitude cyan inset",front_core,.12,.035,CYAN,shipyard,10)
+for root,lo,hi in ((shipyard,-205,-143),(shipyard,-119,-65),
+                   (workshop,-65,25),(refinery,25,75),(station,75,155)):
     profiled_outer_ribbon(root,"Continuous contained outer gallery line",lo,hi)
 
 # Wide, individually angled roof plates articulate the changing band profile.
 # Spaces between them are real service reveals, not a second row of buildings.
 for root,intervals in ((station,((88,102),(106,119),(123,138))),
                        (refinery,((36,47),(52,63))),
-                       (workshop,((-99,-86),(-29,-18),(-4,10))),
-                       (shipyard,((-194,-182),(-177,-166)))):
+                       (workshop,((-29,-18),(-4,10))),
+                       (shipyard,((-194,-182),(-177,-166),(-108,-97),(-91,-78)))):
     for lo,hi in intervals:
         profiled_band(root,"Inset long-span roof armor plate",lo,hi,
                       roof_shift=.11,inner_shift=.16,outer_shift=-.14)
@@ -374,7 +379,7 @@ for x in (-.58,-.22,.22,.58):
 
 # Manufacturing uses a large opening cut between two roof plate groups.
 # An overhead crane visibly spans the work void inside the curved band.
-owned_arc(workshop,"Manufacturing open work floor",-68,-32,4.17,5.03,.34,.40,MACHINE)
+owned_arc(workshop,"Manufacturing open work floor",-64,-32,4.17,5.03,.34,.40,MACHINE)
 for a in (-64,-56,-48,-40):
     owned_arc(workshop,"Amber fabrication transverse working rib",a,a+1.1,
               4.20,5.02,.42,.51,GOLD)
