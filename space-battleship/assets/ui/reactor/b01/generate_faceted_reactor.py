@@ -14,6 +14,7 @@ DATA=json.loads((ROOT/'reactor_ports.json').read_text());W,H=DATA['source_size']
 CRYSTAL_CONVEYOR=[(1014,610,103),(990,640,151),(940,690,110)]
 CRYSTAL_FOCUS=(1017,466,77)
 CRYSTAL_SEED=(1017,592,78)
+FURNACE_FEED=[(175,435,68),(175,500,58)]
 SHARD_CLEARANCE=6.6
 def deck_level(y):return -96+(y-553)*.14
 OUT=Path(os.environ.get('REACTOR_FACETED_BUILD','/tmp/reactor-faceted-build'));OUT.mkdir(parents=True,exist_ok=True)
@@ -228,15 +229,31 @@ def refractory_mouth(m):
  x,y=175,477
  outline=[(-69,-34),(-44,-58),(40,-58),(68,-32),(68,33),(41,56),(-43,56),(-69,29)]
  n=len(outline);vertices=[]
- for scale,z in [(1.,78),(.95,91),(.79,89),(.70,38)]:
+ for scale,z in [(1.,78),(.97,100),(.90,99)]:
   vertices.extend([(x+dx*scale,-y-dy*scale,z) for dx,dy in outline])
  faces=[];roles=[]
- for ring_index in range(3):
+ for ring_index in range(2):
   for i in range(n):
-   j=(i+1)%n;faces.append((ring_index*n+i,ring_index*n+j,(ring_index+1)*n+j,(ring_index+1)*n+i));roles.append(0 if ring_index==0 else 1 if ring_index==1 else 2)
- o=mesh('furnace refractory assembly',vertices,faces,m['steel']);o.data.materials.append(m['ceramic']);o.data.materials.append(m['glass'])
+   j=(i+1)%n;faces.append((ring_index*n+i,ring_index*n+j,(ring_index+1)*n+j,(ring_index+1)*n+i));roles.append(ring_index)
+ o=mesh('furnace pressure mouth',vertices,faces,m['steel']);o.data.materials.append(m['ceramic'])
  for face,role in zip(o.data.polygons,roles):face.material_index=role
- for xx in (126,222):box('furnace lining joint',xx,477,3,57,91,2,m['dark'])
+ thermal=material('thermal refractory ceramic',(.20,.115,.07))
+ courses=[(.90,98),(.83,83),(.76,58),(.70,34)]
+ for course,((front,z0),(back,z1)) in enumerate(zip(courses,courses[1:])):
+  for i in range(n):
+   a=Vector(outline[i]);b=Vector(outline[(i+1)%n]);gap=min(.08,1.1/(b-a).length)
+   left=a.lerp(b,gap);right=a.lerp(b,1-gap)
+   points=[Vector((x+left.x*front,-y-left.y*front,z0)),Vector((x+right.x*front,-y-right.y*front,z0)),Vector((x+right.x*back,-y-right.y*back,z1)),Vector((x+left.x*back,-y-left.y*back,z1))]
+   normal=(points[1]-points[0]).cross(points[3]-points[0]).normalized()
+   if normal.z<0:normal=-normal
+   verts=[tuple(p) for p in points]+[tuple(p-normal*3.0) for p in points]
+   faces=[(0,1,2,3),(7,6,5,4),(0,4,5,1),(1,5,6,2),(2,6,7,3),(3,7,4,0)]
+   tile=oriented_solid(mesh('furnace refractory course '+str(course)+' segment '+str(i),verts,faces,thermal))
+   bevel=tile.modifiers.new('refractory worn arris','BEVEL');bevel.width=.65;bevel.segments=1
+ for side in (-1,1):
+  top=175+side*27;bottom=175+side*23
+  rod('furnace retort feed guide',(top,441,48),(bottom,484,48),3,m['steel'])
+  for yy in (450,480):box('furnace feed guide mounting',top,yy,10,8,46,17,m['steel'])
 
 
 def weapon(m,phase=.65):
@@ -372,7 +389,7 @@ def furnace(m):
  armor_panel('furnace crown',[(107,403),(126,379),(149,370),(207,378),(245,402),(230,424),(195,408),(143,409),(122,425)],99,42,m['armor'])
  armor_panel('furnace upper return',[(126,379),(145,366),(207,371),(231,384),(207,389),(150,382)],91,29,m['shade'])
  box('furnace crown keyed lock',182,391,31,8,117,11,m['copper'])
- box('furnace cavity',175,476,103,83,30,6,m['glass'])
+ box('furnace cavity',175,476,103,83,30,6,m['dark'])
  refractory_mouth(m)
  plate('furnace throat',[(132,483),(220,483),(216,507),(177,520),(136,507)],49,5,m['orange'],shift=(0,0))
  for i in range(3):
@@ -979,6 +996,8 @@ def export_glb():
    data.color_attributes.active_color_index=len(data.color_attributes)-1
    data.color_attributes.render_color_index=len(data.color_attributes)-1
    cache={};colors=[]
+   heat_frame=work_frames.get('smelting') if root.name=='smelting' else None
+   if heat_frame:heat_inverse=Matrix(heat_frame['basis_columns']).transposed().inverted();heat_origin=Vector(heat_frame['origin'])
    for loop,corner in zip(data.loops,data.corner_normals):
     normal=(normal_matrix@corner.vector).normalized()
     key=(loop.vertex_index,round(normal.x,3),round(normal.y,3),round(normal.z,3))
@@ -991,7 +1010,12 @@ def export_glb():
       hit=tree.ray_cast(start,direction,72.)
       if hit[0] is not None:blocked+=(1-hit[3]/72.)**2
      cache[key]=max(.38,1-blocked/8*.82)
-    value=cache[key];colors.extend((value,value,value,1.))
+    value=cache[key];heat=value
+    if heat_frame:
+     p=heat_inverse@(positions[loop.vertex_index]-heat_origin)
+     depth=max(0.,min(1.,(99-p.z)/65.))
+     heat=math.exp(-((p.x-175)/95.)**2-((p.y+505)/80.)**2)*(.35+.65*depth)
+    colors.extend((value,heat,value,1.))
    attribute.data.foreach_set('color',colors)
    print('BAKED_LOCAL_CAVITY',obj.name,len(cache),'samples_per_vertex',8,flush=True)
  for id,d in DATA['devices'].items():
@@ -1047,7 +1071,7 @@ def export_glb():
  focus=Vector((CRYSTAL_FOCUS[0],-CRYSTAL_FOCUS[1],CRYSTAL_FOCUS[2]));seed=Vector((CRYSTAL_SEED[0],-CRYSTAL_SEED[1],CRYSTAL_SEED[2]))
  growth_path={'conveyor':[[x,-y,z+SHARD_CLEARANCE] for x,y,z in CRYSTAL_CONVEYOR],'split':(Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length/((Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length+(Vector(CRYSTAL_CONVEYOR[2])-Vector(CRYSTAL_CONVEYOR[1])).length),
   'focus_author':list(focus),'seed_author':list(seed),'focus_axis_author':[0,-1,0],'seed_axis_author':[0,1,0],'irradiance_author':list((focus+seed)*.5+Vector((0,-10,39.5))),'focus_marker':'condensation/focus_axis_tip','seed_marker':'condensation/growth_seed_origin'}
- layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':growth_path},
+ layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':growth_path,'smelting':{'feed_author':[[x,-y,z] for x,y,z in FURNACE_FEED],'throat_irradiance_author':[175,-486,80]}},
   'double_left':{'ids':['weapons','smelting'],'shifts':{'core':[170,0],'core_mount':[170,0],'weapons':[170,0],'smelting':[170,0]},'routes':double_routes},'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])

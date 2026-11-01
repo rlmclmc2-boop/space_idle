@@ -157,6 +157,25 @@
       ],
       "focus_marker": "condensation/focus_axis_tip",
       "seed_marker": "condensation/growth_seed_origin"
+    },
+    "smelting": {
+      "feed_author": [
+        [
+          175,
+          -435,
+          68
+        ],
+        [
+          175,
+          -500,
+          58
+        ]
+      ],
+      "throat_irradiance_author": [
+        175,
+        -486,
+        80
+      ]
     }
   },
   "double_left": {
@@ -759,6 +778,6 @@
       "receiver_u": 0.768051532791687
     }
   },
-  "generator_sha256": "167871a2cc61902ba973e5721af7be6c120206c69ae7eba221e3d4da9bf31022",
-  "asset_sha256": "658fa02a2c06ee9199e72857f678dd4e71b48c29e3b06c1107ee75f6e25f3375"
+  "generator_sha256": "5c96972132881ac760849a4d581b558b1ae96b3727e77a38d4d2316b07e05c50",
+  "asset_sha256": "890514a60c038acce51598029db556a4c07dad309d13c0835e7383f3c793bc7e"
 }

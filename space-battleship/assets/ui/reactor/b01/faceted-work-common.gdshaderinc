@@ -65,6 +65,12 @@ void vertex(){
   vec3 moved=(source_from_author*vec4(authored,1.0)).xyz+assembly_offset;
   VERTEX+=vec2(moved.x-world_point.x,world_point.y-moved.y);
   world_point=moved;
+ }else if(work_kind==8 && work_zone==0){
+  vec3 authored=(author_from_source*vec4(world_point-assembly_offset,1.0)).xyz;
+  authored+=mix(transport_start,transport_end,transport_progress)-transport_origin;
+  vec3 moved=(source_from_author*vec4(authored,1.0)).xyz+assembly_offset;
+  VERTEX+=vec2(moved.x-world_point.x,world_point.y-moved.y);
+  world_point=moved;
  }else if(work_kind==3){
   float scale=cycle<0.60?0.94+charge*.03-compression*.18:mix(.79,1.02,smoothstep(.60,.72,cycle));
   vec3 delta=world_point-center;

@@ -26,6 +26,8 @@ var _asset: Node3D
 var _environment: Environment
 var _core_lamp: OmniLight3D
 var _work_lamps: Dictionary={}
+var _throat_lamp: OmniLight3D
+var _thermal_materials: Array[ShaderMaterial]=[]
 var _background: ColorRect
 var _background_material: ShaderMaterial
 var _palette: Dictionary={}
@@ -138,6 +140,14 @@ func _init() -> void:
 		lamp.shadow_opacity=.72
 		_baker.add_child(lamp)
 		_work_lamps[id]=lamp
+	_throat_lamp=OmniLight3D.new()
+	_throat_lamp.light_color=Color("ff9a36")
+	_throat_lamp.light_energy=0.0
+	_throat_lamp.omni_range=200.0
+	_throat_lamp.omni_attenuation=1.35
+	_throat_lamp.shadow_enabled=true
+	_throat_lamp.shadow_opacity=.72
+	_baker.add_child(_throat_lamp)
 	_outline_material=ShaderMaterial.new()
 	_outline_material.shader=OUTLINE
 	_asset=MODEL.instantiate()
@@ -205,7 +215,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			var original: Material=node.mesh.surface_get_material(index)
 			var color: Color=original.albedo_color if original is BaseMaterial3D else Color.WHITE
 			var material_name: String=String(original.resource_name).to_lower() if original!=null else ""
-			var role: int=1 if "steel" in material_name else 3 if "ceramic" in material_name else 4 if "glass" in material_name else 5 if "copper" in material_name else 0 if "armor" in material_name else 2
+			var role: int=6 if "thermal refractory" in material_name else 1 if "steel" in material_name else 3 if "ceramic" in material_name else 4 if "glass" in material_name else 5 if "copper" in material_name else 0 if "armor" in material_name else 2
 			var palette_key: String=color.to_html()+":"+str(role)
 			if not _palette.has(palette_key):
 				var material:=ShaderMaterial.new()
@@ -213,6 +223,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 				material.set_shader_parameter("base_color",color)
 				material.set_shader_parameter("surface_role",role)
 				_palette[palette_key]=material
+				if role==6:_thermal_materials.append(material)
 			node.set_surface_override_material(index,_palette[palette_key])
 			colors.append(_palette[palette_key])
 		var outline:=MeshInstance3D.new()
@@ -226,7 +237,8 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		return
 	var author_from_source:=Transform3D.IDENTITY
 	var source_from_author:=Transform3D.IDENTITY
-	if kind in [4,5,6,16]:
+	var posed_work: bool=kind in [4,5,6,16] or (kind==8 and title.begins_with("furnace feed"))
+	if posed_work:
 		source_from_author=_installation_frame(key)
 		author_from_source=source_from_author.affine_inverse()
 	node.visible=false
@@ -317,7 +329,16 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			material.set_shader_parameter("plasma_frames",int(_plasma_info.frames))
 			material.set_shader_parameter("plasma_source",Vector3(_plasma_info.source_box[0],_plasma_info.source_box[1],_plasma_info.source_box[2]))
 			material.set_shader_parameter("plasma_gain",float(_plasma_info.emission_gain))
-		if kind in [4,5,6,16]:material.set_shader_parameter("author_from_source",author_from_source)
+		if posed_work:material.set_shader_parameter("author_from_source",author_from_source)
+		if kind==8 and title.begins_with("furnace feed"):
+			material.set_shader_parameter("source_from_author",source_from_author)
+			var origin: Vector3=author_from_source*world.origin
+			var path: Array=_layout.work_paths.smelting.feed_author
+			var a: Array=path[0];var b: Array=path[1]
+			var spread: float=origin.x-float(a[0])
+			material.set_shader_parameter("transport_origin",origin)
+			material.set_shader_parameter("transport_start",Vector3(a[0]+spread,a[1],a[2]))
+			material.set_shader_parameter("transport_end",Vector3(b[0]+spread*.25,b[1],b[2]))
 		if kind==6:
 			material.set_shader_parameter("source_from_author",source_from_author)
 			material.set_shader_parameter("growth_base",growth_base)
@@ -425,6 +446,10 @@ func _update_core_light() -> void:
 	_background_material.set_shader_parameter("core_power",visibility_power(float(_loads.get("core",0.0)))*radiance)
 
 func _refresh_bake(ids: Array) -> void:
+	for material in _thermal_materials:material.set_shader_parameter("refractory_temperature",0.0)
+	_throat_lamp.light_energy=0.0
+	var throat: Array=_layout.work_paths.smelting.throat_irradiance_author
+	_throat_lamp.position=_installation_frame("smelting")*Vector3(throat[0],throat[1],throat[2])+_asset.get_node("smelting").position
 	for outline in _outlines:outline.visible=true
 	for body in _bodies:
 		for index in body.materials.size():body.node.set_surface_override_material(index,body.materials[index])
@@ -475,12 +500,18 @@ func _finish_bake(generation: int) -> void:
 		var id: String=active_lights[index]
 		var lamp: OmniLight3D=_work_lamps[id]
 		lamp.light_energy=(1.85 if id=="defence" else 1.65 if id=="condensation" else 3.20)*SOURCE_LIGHT_GAIN
+		if id=="smelting":
+			_throat_lamp.light_energy=1.20*SOURCE_LIGHT_GAIN
+			for material in _thermal_materials:material.set_shader_parameter("refractory_temperature",1.0)
 		_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 		await RenderingServer.frame_post_draw
 		await get_tree().process_frame
 		if generation!=_cache_generation:return
 		var sample: Image=_baker.get_texture().get_image()
 		lamp.light_energy=0.0
+		if id=="smelting":
+			_throat_lamp.light_energy=0.0
+			for material in _thermal_materials:material.set_shader_parameter("refractory_temperature",0.0)
 		diagnostics.cache_renders+=1
 		local_surfaces.blit_rect(sample,Rect2i(Vector2i.ZERO,Vector2i(VIEW_SIZE)),Vector2i(index*int(VIEW_SIZE.x),0))
 	_background_material.set_shader_parameter("local_surfaces",ImageTexture.create_from_image(local_surfaces))
@@ -537,7 +568,7 @@ func _animate_mechanisms() -> void:
 			elif title.begins_with("furnace feed"):
 				var index: int=int(title.get_slice("feed ",1))
 				var descent: float=fmod(age/1.2+float(index)/3,1.0)
-				part.position=source_point(Vector2(origin.x,430+60*descent))
+				for material in mechanism.materials:material.set_shader_parameter("transport_progress",descent)
 				part.visible=descent<.85
 			elif title.begins_with("crystal body"):
 				var delivery: bool="delivery" in title
