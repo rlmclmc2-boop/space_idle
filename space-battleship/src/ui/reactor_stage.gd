@@ -15,6 +15,7 @@ const SOURCE_SCALE: float=835.0/1326.0
 const SOURCE_OFFSET:=Vector2((808.0-1187.0*SOURCE_SCALE)*.5,0)
 var _layout: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/reactor/b01/faceted-layout.json"))
 var _single_mode: bool=false
+var _double_mode: bool=false
 var _baker: SubViewport
 var _asset: Node3D
 var _environment: Environment
@@ -70,6 +71,7 @@ func _init() -> void:
 	_environment.background_mode=Environment.BG_COLOR
 	_environment.background_color=Color("0a1d30")
 	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
+	_environment.tonemap_exposure=.85
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
 	_environment.ambient_light_energy=.18
@@ -103,10 +105,12 @@ func _init() -> void:
 	for x in [185.0,1010.0]:
 		var luminaire:=OmniLight3D.new()
 		luminaire.position=Vector3(x,-78.0,180.0)
-		luminaire.light_color=Color("ffd6a0")
-		luminaire.light_energy=.65
+		luminaire.light_color=Color("ffb969")
+		luminaire.light_energy=1.05
 		luminaire.omni_range=650.0
 		luminaire.omni_attenuation=1.8
+		luminaire.shadow_enabled=true
+		luminaire.shadow_opacity=.45
 		_baker.add_child(luminaire)
 	_core_lamp=OmniLight3D.new()
 	_core_lamp.light_color=Color("5bd8ff")
@@ -194,6 +198,14 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		_outlines.append(outline)
 		_bodies.append({"node":node,"materials":colors})
 		return
+	var author_from_source:=Transform3D.IDENTITY
+	if kind in [4,5,6]:
+		var frame: Dictionary=_layout.work_frames[key]
+		var columns: Array=frame.basis_columns
+		var axes: Array[Vector3]=[]
+		for column in columns:axes.append(Vector3(column[0],column[1],column[2]))
+		var raw_origin: Array=frame.origin
+		author_from_source=Transform3D(Basis(axes[0],axes[1],axes[2]),Vector3(raw_origin[0],raw_origin[1],raw_origin[2])).affine_inverse()
 	node.visible=false
 	var part:=Node2D.new()
 	part.name=node.name
@@ -256,6 +268,8 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		material.shader=WORK
 		material.set_shader_parameter("base_color",color)
 		material.set_shader_parameter("work_kind",kind)
+		if kind in [4,5,6]:material.set_shader_parameter("author_from_source",author_from_source)
+		if kind==1:material.set_shader_parameter("work_zone",1 if "crystal containment" in title else 0)
 		if kind==10:
 			var id: String=title.get_slice("packet ",1)
 			var target: Array=_layout.ports[id].core_interface_source3d
@@ -274,28 +288,37 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	part.visible=kind==1
 
 func _pipe_key(id: String) -> String:
+	if _double_mode and id in _layout.double_left.ids:return "pipe_double_"+id
 	return "pipe_single_smelting" if _single_mode and id=="smelting" else "pipe_"+id
+
+func _receiver_progress(id: String) -> float:
+	if _single_mode and id=="smelting":return float(_layout.single_smelting.receiver_u)
+	if _double_mode and id in _layout.double_left.ids:return float(_layout.double_left.routes[id].receiver_u)
+	return float(_layout.ports[id].receiver_u)
 
 func _group_visible(key: String,ids: Array) -> bool:
 	if key=="pipe_single_smelting":return _single_mode
-	if key.begins_with("pipe_"):return key.trim_prefix("pipe_") in ids and not (_single_mode and key=="pipe_smelting")
+	if key.begins_with("pipe_double_"):return _double_mode and key.trim_prefix("pipe_double_") in ids
+	if key.begins_with("pipe_"):return key.trim_prefix("pipe_") in ids and not _double_mode and not (_single_mode and key=="pipe_smelting")
 	if key in IDS:return key in ids
 	if key.begins_with("console_"):return not ids.is_empty() and int(key.trim_prefix("console_"))==ids.size()
 	return true
 
 func _install_composition(ids: Array) -> void:
 	_single_mode=ids.size()==1 and ids[0]=="smelting"
+	_double_mode=ids.size()==2 and "weapons" in ids and "smelting" in ids
+	var shifts: Dictionary=_layout.single_smelting.shifts if _single_mode else _layout.double_left.shifts if _double_mode else {}
 	for key in _groups:
 		var shift:=Vector2.ZERO
-		if _single_mode and _layout.single_smelting.shifts.has(key):
-			var raw: Array=_layout.single_smelting.shifts[key]
+		if shifts.has(key):
+			var raw: Array=shifts[key]
 			shift=Vector2(raw[0],raw[1])
 		_groups[key].position=shift*SOURCE_SCALE
 		_asset.get_node(NodePath(key)).position=Vector3(shift.x,-shift.y,0)
 		_groups[key].visible=_group_visible(key,ids)
 		for material in _materials[key]:
 			material.set_shader_parameter("assembly_offset",Vector3(shift.x,-shift.y,0))
-			if key in IDS:material.set_shader_parameter("receiver_u",float(_layout.single_smelting.receiver_u) if _single_mode and key=="smelting" else float(_layout.ports[key].receiver_u))
+			if key in IDS:material.set_shader_parameter("receiver_u",_receiver_progress(key))
 
 func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	if ids==_enabled and loads==_loads:return
@@ -345,7 +368,7 @@ func _refresh_bake(ids: Array) -> void:
 	for group in _asset.get_children():
 		var key: String=String(group.name)
 		group.visible=_group_visible(key,ids)
-	_core_lamp.position=Vector3(724.0 if _single_mode else 594.0,-340.0,235.0)
+	_core_lamp.position=Vector3(724.0 if _single_mode or _double_mode else 594.0,-340.0,235.0)
 	_core_lamp.light_energy=0.0
 	_baker.msaa_3d=Viewport.MSAA_2X
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
@@ -424,7 +447,7 @@ func _animate_mechanisms() -> void:
 				part.scale=Vector2(1.0,growth)*SOURCE_SCALE
 				part.position=source_point(Vector2(origin.x,mechanism.bottom-(mechanism.bottom-origin.y)*growth))
 			elif mechanism.kind==11:
-				var u: float=float(_layout.single_smelting.receiver_u) if _single_mode and id=="smelting" else float(_layout.ports[id].receiver_u)
+				var u: float=_receiver_progress(id)
 				var arrival: float=.72+.28*(u+.08)/1.16
 				var age_cycles: float=_phase/4.8-arrival
 				var event_time: float=(floorf(age_cycles)+arrival)*4.8

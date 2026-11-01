@@ -13,8 +13,10 @@ uniform float load_fraction=0.0;
 uniform float formation=1.0;
 uniform bool depth_ready=false;
 uniform mat4 stage_from_canvas=mat4(1.0);
+uniform mat4 author_from_source=mat4(1.0);
 uniform sampler2D body_depth:filter_nearest;
 varying vec3 world_point;
+varying vec3 authored_point;
 varying vec3 facing_normal;
 varying float axial_position;
 vec3 srgb_encode(vec3 c){c=max(c,vec3(0.0));return mix(c*12.92,1.055*pow(c,vec3(1.0/2.4))-0.055,step(vec3(0.0031308),c));}
@@ -62,6 +64,8 @@ void vertex(){
   VERTEX+=vec2(moved.x-world_point.x,world_point.y-moved.y);
   world_point=moved;
  }
+ authored_point=world_point-assembly_offset;
+ if(work_kind==4 || work_kind==5 || work_kind==6){authored_point=(author_from_source*vec4(authored_point,1.0)).xyz;}
 }
 void fragment(){
  if(depth_ready){
@@ -71,7 +75,7 @@ void fragment(){
   float front=(bytes.r*256.0+bytes.g)/65535.0*1024.0-256.0;
   if(world_point.z+0.25<front){discard;}
  }
- vec3 point=world_point-assembly_offset;
+ vec3 point=authored_point;
  float cycle=fract(phase/4.8);
  if(work_kind==2){
   vec2 r=point.xy-vec2(594.0,-340.0);
@@ -93,6 +97,7 @@ void fragment(){
  if(work_kind==1){
   float rim=pow(1.0-abs(facing_normal.z),2.0);
   color=mix(vec3(0.01,0.12,0.22),vec3(0.05,0.65,0.9),rim);
+  if(work_zone==1){color=mix(vec3(.03,.045,.07),vec3(.35,.20,.55),rim*strength);}
   opacity=0.035+rim*(0.12+0.25*strength);
  }else if(work_kind==2){
   float radius=length(point.xy-vec2(594.0,-340.0));
@@ -100,6 +105,7 @@ void fragment(){
   float head=exp(-pow((radius-118.0*(1.0-charge))/18.0,2.0));
   color=mix(vec3(.06,.65,.90),vec3(.82,1.20,1.30),head*.85)*strength;
   opacity=(.24+head*.70)*(1.0-smoothstep(.60,.72,cycle))*pow(abs(facing_normal.z),.8);
+  opacity*=mix(.35,1.0,smoothstep(50.0,155.0,point.z));
  }else if(work_kind==3){
   float facing=max(0.0,dot(normalize(facing_normal),normalize(vec3(-.5,.6,.75))));
   float charged=smoothstep(0.0,.43,cycle);
@@ -143,7 +149,7 @@ void fragment(){
   float face=max(0.0,dot(facing_normal,normalize(vec3(-0.2,0.6,1.0))));
   float thermal=face*0.50+0.12;
   if(work_zone==1){thermal=clamp(1.0-length((point.xy-vec2(175.0,-501.0))/vec2(55.0,38.0)),0.0,1.0);}
-  else if(work_zone==2){thermal=clamp(1.0-length((point.xy-vec2(175.0,-594.0))/vec2(78.0,38.0)),0.0,1.0);}
+  else if(work_zone==2){thermal=clamp(1.0-length((point.xy-vec2(176.0,-595.56))/vec2(78.0,38.0)),0.0,1.0);}
   color=mix(vec3(0.62,0.075,0.008),vec3(1.0,0.86,0.24),thermal)*strength;
   if(work_zone==0 || work_zone==3){
    float center_hot=pow(max(0.0,facing_normal.z),.5);
