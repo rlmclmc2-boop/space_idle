@@ -58,20 +58,19 @@ void fragment() {
         float lattice = min(grid,1.0)*facing*(1.0-smoothstep(front_radius-0.01,front_radius+0.015,r));
         float curved = band(d.y+0.42*d.x*d.x, -0.052+establish*0.075,0.012);
         float glancing = band(d.x-0.33*d.y*d.y,-0.11+establish*0.09,0.009);
-        float sweep_y = (q.y-0.412)/0.31;
-        float visible_arc = 1.0-smoothstep(0.82,1.0,abs(sweep_y));
-        float bow = sqrt(max(0.0,1.0-sweep_y*sweep_y));
-        float dome_x = 0.642+(0.045+0.370*establish)*bow;
-        float shield_shell = band(q.x,dome_x,0.010)*visible_arc;
-        float shell_depth = band(q.x,dome_x-0.030,0.008)*visible_arc;
-        float shell_volume = smoothstep(0.65,0.79,q.x)
-                             *(1.0-smoothstep(dome_x-0.035,dome_x+0.012,q.x))*visible_arc;
-        float canopy = surface.a*smoothstep(0.73,0.89,q.x);
+        // Deploy the actual shaded canopy, not a second procedural silhouette.
+        // Texture-space edge light shares the exact projected glass boundary.
+        float field_region = smoothstep(0.76,0.88,q.x);
+        float revealed = 1.0-smoothstep(0.65+0.43*establish,
+                                      0.70+0.43*establish,q.x);
+        vec2 texel=1.0/vec2(textureSize(work_surface,0));
+        float inner_alpha=min(texture(work_surface,UV+vec2(texel.x*2.0,0.0)).a,
+                              texture(work_surface,UV-vec2(texel.x*2.0,0.0)).a);
+        float edge=max(0.0,surface.a-inner_alpha)*field_region*revealed;
         float lens = surface.a;
-        material = 0.04+0.16*lattice;
+        material = 0.04+0.16*lattice+field_region*revealed*1.32;
         action = ((front*0.95+lattice*0.16+curved*0.25+glancing*0.12)*lens
-                  +shield_shell*1.04+shell_depth*0.29+shell_volume*0.38
-                  +canopy*1.18)*load;
+                  *(1.0-field_region)+edge*0.72)*load;
         hue = vec3(0.08,0.72,1.0);
     } else if (module_kind == 2) {
         // The refractory throat loads at the crown and pours discrete drops.
