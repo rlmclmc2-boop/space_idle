@@ -46,8 +46,10 @@ var last_degree = 0
 var draw_calls := 0
 
 func _scene_center() -> Vector2:
-	# Center the complete ring and its widest solar wings in the module.
-	return size * 0.5
+	# The open dock reaches farther left than the manufacturing bay reaches
+	# right. Keep the approved large orbit balanced inside the subject area.
+	var solid_body := float(appearance.get("emission", 0.0)) == 0.0 and float(appearance.get("radiusScale", 1.0)) <= 1.0
+	return size * 0.5 + Vector2(size.x * 0.025 if solid_body and not icon_mode else 0.0, 0.0)
 
 var frame_accumulator := 0.0
 var globe = PlanetSphere.new(true)

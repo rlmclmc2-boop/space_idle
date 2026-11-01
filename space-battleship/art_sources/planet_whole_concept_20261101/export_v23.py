@@ -50,7 +50,7 @@ for name in ("Command bearing cyan collar","Command faceted core",
              "Command blue canopy"):
     transfer(station,spin,name)
 for side,label in ((-1,"SolarHingeLeft"),(1,"SolarHingeRight")):
-    hinge=pivot(station,label,(side*.72,-.32,1.56))
+    hinge=pivot(station,label,(side*.90,-.32,1.56))
     bpy.ops.mesh.primitive_cube_add(size=1)
     vane=bpy.context.object
     vane.name="Articulated habitat power wing"
@@ -61,7 +61,7 @@ for side,label in ((-1,"SolarHingeLeft"),(1,"SolarHingeRight")):
 
 refinery=bpy.data.objects[roots["refinery"]]
 for side,label in ((-1,"IntakeWheelLeft"),(1,"IntakeWheelRight")):
-    wheel=pivot(refinery,label,(side*.58,-.45,1.16))
+    wheel=pivot(refinery,label,(side*.91,-.45,1.16))
     bpy.ops.mesh.primitive_torus_add(major_radius=.13,minor_radius=.035,
                                     major_segments=24,minor_segments=8)
     rotor=bpy.context.object

@@ -8,6 +8,10 @@ from mathutils import Vector
 HERE = Path(__file__).resolve().parent
 GAME = HERE.parents[1]
 OUT = HERE / "concept-v23.png"
+# The approved drawing keeps the planet size but places a fine guideway well
+# outside it. All globally authored arcs share this radial offset.
+ORBIT_SHIFT = 2.43
+RING_RADIUS = 4.33 + ORBIT_SHIFT
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 
@@ -197,6 +201,8 @@ def armor_facets(obj):
 # A single occupied upper crescent is split at the independent construction
 # seam. Each facility owns its load-bearing portion of the shared section.
 def owned_arc(root, name, begin, end, inner, outer, bottom, top, mat):
+    inner += ORBIT_SHIFT
+    outer += ORBIT_SHIFT
     bpy.context.view_layer.update()
     inverse = root.matrix_world.inverted()
     steps = max(16, int(abs(end-begin)*2))
@@ -204,9 +210,8 @@ def owned_arc(root, name, begin, end, inner, outer, bottom, top, mat):
     for i in range(steps+1):
         angle_degrees = begin+(end-begin)*i/steps
         angle = angle_degrees*pi/180
-        # Raise the middle of the occupied rear crescent above the sphere's
-        # projection, while both independent arc ends meet the through-beam.
-        rise = .68 * sin(pi * (angle_degrees-25) / 130) if 25 <= angle_degrees <= 155 else 0.0
+        # The approved guideway is a single planar ellipse through all nodes.
+        rise = 0.0
         for radius,z in ((inner,top),(outer,top),(inner,bottom),(outer,bottom)):
             vertices.append(tuple(inverse @ Vector((radius*cos(angle),radius*sin(angle),z+rise))))
     faces=[]
@@ -254,7 +259,7 @@ def curved_shell(root, name, begin, end, inner, outer, bottom, top, mat):
 
 def root_at(name,degrees):
     angle=degrees*pi/180
-    return parent(name,(4.33*cos(angle),4.33*sin(angle),.03),angle+pi/2)
+    return parent(name,(RING_RADIUS*cos(angle),RING_RADIUS*sin(angle),.03),angle+pi/2)
 
 
 # A variable-section architectural band. Four ownership roots hold different
@@ -370,109 +375,98 @@ def profiled_outer_ribbon(root,name,begin,end):
     obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
     return finish(obj,name,CYAN,root)
 
-# The service beam remains visible only across the two narrow transfer spans.
-annular_band("Deep continuous pressure datum",4.18,4.45,-.22,.13,KEEL)
-annular_band("Inboard service rail",4.22,4.33,.13,.19,MACHINE)
+# The twin track has a compact structural web, two pale rail heads and a
+# restrained cyan guide. The four exported ownership roots below carry their
+# own stretches; this global copy appears only in the Blender concept.
+annular_band("Dark continuous track web",RING_RADIUS-.13,RING_RADIUS+.13,-.11,.07,KEEL)
+for radial in (-.11,.11):
+    annular_band("Ivory rail head",RING_RADIUS+radial-.026,RING_RADIUS+radial+.026,.07,.14,ARMOR_FACE)
+annular_band("Contained track guide",RING_RADIUS-.011,RING_RADIUS+.011,.075,.105,CYAN)
 for i in range(32):
     a=i*tau/32
-    annular_band("Pressure beam joint",4.17,4.46,-.23,.18,EDGE,a-.010,a+.010,2)
+    annular_band("Track pressure clamp",RING_RADIUS-.18,RING_RADIUS+.18,-.12,.18,ARMOR_SIDE,a-.009,a+.009,2)
 
 station=root_at("01 / Command district of the orbital city",140)
-station.location.x=5.22*cos(140*pi/180)
-station.location.y=5.22*sin(140*pi/180)
+station.location.x=(5.22+ORBIT_SHIFT)*cos(140*pi/180)
+station.location.y=(5.22+ORBIT_SHIFT)*sin(140*pi/180)
 refinery=root_at("02 / Heat district of the orbital city",35)
 workshop=root_at("03 / Manufacturing district of the orbital city",-43)
 shipyard=root_at("04 / Open launch district of the orbital city",-130)
 
-# Each built district owns a closed part of the same variable-section band.
+# Every facility exports its own closed section of the shared fine guideway.
+# The local functional bays below carry the large building masses.
 for root,lo,hi in ((refinery,25,75),(station,75,155),
-                   (workshop,-65,25)):
-    if root==workshop:
-        # Manufacturing opens through the roof without breaking the deep
-        # continuous load-bearing section beneath its work channel.
-        for part_lo,part_hi in ((-65,-64),(-32,25)):
-            profiled_band(root,"Continuous variable-section armored building band",part_lo,part_hi)
-        for part_lo,part_hi in ((-65,-64),(-32,25)):
-            profiled_band(root,"Continuous deep load-bearing underside",part_lo,part_hi,
-                          roof_shift=-.55,inner_shift=-.05,outer_shift=.05,mat=KEEL)
-        owned_arc(root,"Recessed load floor beneath fabrication opening",-64,-32,
-                  4.03,5.16,-.16,.25,KEEL)
-        continue
-    profiled_band(root,"Continuous variable-section armored building band",lo,hi)
-    profiled_band(root,"Continuous deep load-bearing underside",lo,hi,
-                  roof_shift=-.55,inner_shift=-.05,outer_shift=.05,mat=KEEL)
+                   (workshop,-65,25),(shipyard,-205,-65)):
+    owned_arc(root,"Fine orbital pressure web",lo,hi,4.20,4.46,-.11,.07,KEEL)
+    for radial in (-.11,.11):
+        owned_arc(root,"Fine ivory rail head",lo,hi,
+                  4.33+radial-.026,4.33+radial+.026,.07,.14,ARMOR_FACE)
+    owned_arc(root,"Orbital tram guide",lo,hi,4.319,4.341,.075,.105,CYAN)
+    for degree in range(lo+10,hi,18):
+        owned_arc(root,"Orbital track joint clamp",degree-.5,degree+.5,
+                  4.15,4.51,-.12,.19,ARMOR_SIDE)
 
-# The dock opens a wide radial bay in the fourth section of the building.
-# Its two curved abutments share the band profile and hold the outward arms.
-for lo,hi in ((-205,-143),(-119,-65)):
-    profiled_band(shipyard,"Dock district curved pressure abutment",lo,hi)
-    profiled_band(shipyard,"Dock district deep support",lo,hi,
-                  roof_shift=-.52,inner_shift=-.05,outer_shift=.05,mat=KEEL)
-owned_arc(shipyard,"Dock open bay inner transfer floor",-144,-118,4.17,4.68,.18,.34,MACHINE)
+# Local pressure floors under the large work nodes, distinct from the guideway.
+owned_arc(workshop,"Manufacturing recessed work support",-54,-32,
+          4.03,5.16,-.16,.25,KEEL)
+owned_arc(shipyard,"Dock open bay inner transfer floor",-138,-122,
+          4.17,4.68,.18,.34,MACHINE)
 bpy.context.view_layer.update()
-front_node = shipyard.matrix_world.inverted() @ Vector((0,-4.47,.60))
+front_node = shipyard.matrix_world.inverted() @ Vector((0,-(4.47+ORBIT_SHIFT),.60))
 cyl("Low flush front attitude collar",front_node,.28,.14,EDGE,shipyard,10)
-front_core = shipyard.matrix_world.inverted() @ Vector((0,-4.47,.69))
+front_core = shipyard.matrix_world.inverted() @ Vector((0,-(4.47+ORBIT_SHIFT),.69))
 cyl("Front attitude cyan inset",front_core,.12,.035,CYAN,shipyard,10)
-for root,lo,hi in ((shipyard,-205,-143),(shipyard,-119,-65),
-                   (workshop,-65,25),(refinery,25,75),(station,75,155)):
-    profiled_outer_ribbon(root,"Continuous contained outer gallery line",lo,hi)
 
-# Regular hard armor panels cover the long hull. The service reveals stay
-# narrow and continuous; the work and launch openings remain genuine voids.
-for root,spans in ((station,((75,155),)),(refinery,((25,75),)),
-                   (workshop,((-32,25),)),
-                   (shipyard,((-205,-143),(-119,-65)))):
-    for lo,hi in spans:
-        for begin in range(lo,hi,10):
-            finish_angle=min(begin+10,hi)
-            if finish_angle-begin>2:
-                deck_plate(root,begin+.42,finish_angle-.42)
-
-# The arc's inward facing observation ribbon is continuous through command.
-owned_arc(station,"Command district observation pressure ribbon",89,140,3.96,4.06,.62,.74,GLASS)
-for a in (95,104,113,122,131):
-    owned_arc(station,"Command observation dark mullion",a,a+.7,3.94,4.10,.60,.77,EDGE)
+# The observation platform bears down onto the actual guideway; no second
+# unsupported ribbon floats between the station and its owned track section.
 armor_prism("Command full-width embedded structural plinth",
-            [(-.82,-.42),(.82,-.42),(.62,1.43),(-.62,1.43)],.91,1.18,ARMOR,station)
-cyl("Command dark structural foundation",(0,-.32,1.22),1.04,.28,KEEL,station,12)
-cyl("Command lower faceted load deck",(0,-.32,1.35),1.00,.14,ARMOR_SIDE,station,12)
-cyl("Command stepped ivory observation deck",(0,-.32,1.48),.91,.15,ARMOR,station,12)
-torus("Command continuous observation sill",(0,-.32,1.52),.85,.06,ARMOR_FACE,station)
+            [(-1.02,-.42),(1.02,-.42),(.75,1.43),(-.75,1.43)],.91,1.18,ARMOR,station)
+cyl("Command dark structural foundation",(0,-.32,1.22),1.25,.28,KEEL,station,12)
+cyl("Command lower faceted load deck",(0,-.32,1.35),1.20,.14,ARMOR_SIDE,station,12)
+cyl("Command stepped ivory observation deck",(0,-.32,1.48),1.11,.15,ARMOR,station,12)
+torus("Command continuous observation sill",(0,-.32,1.52),1.04,.06,ARMOR_FACE,station)
 for i in range(12):
     a=i*tau/12
-    x=.91*cos(a); y=-.32+.91*sin(a)
+    x=1.11*cos(a); y=-.32+1.11*sin(a)
     window=box("Command observation window bay",(x,y,1.36),(.27,.085,.12),GLASS,station,.01)
     window.rotation_euler.z=a+pi/2
     if i%3==0:
-        pylon=box("Command exterior armor buttress",(1.01*cos(a),-.32+1.01*sin(a),1.29),
+        pylon=box("Command exterior armor buttress",(1.21*cos(a),-.32+1.21*sin(a),1.29),
                   (.17,.22,.37),ARMOR,station,.02)
         pylon.rotation_euler.z=a
 for side in (-1,1):
     beam("Command platform load rib into orbital band",
-         (side*.46,.02,1.13),(side*.38,1.27,.77),.19,.22,ARMOR_SIDE,station)
+         (side*.46,.02,1.13),(side*.38,1.10,.12),.19,.22,ARMOR_SIDE,station)
 beam("Command platform broad pressure bridge",
-     (0,.12,1.28),(0,1.24,.91),.58,.40,ARMOR,station)
-cyl("Command rotating bearing",(0,-.32,1.60),.62,.16,EDGE,station,10)
-torus("Command bearing cyan collar",(0,-.32,1.70),.52,.045,CYAN,station)
-cone("Command faceted core",(0,-.32,1.86),.39,.20,.29,ARMOR,station,8)
+     (0,.12,1.28),(0,1.10,.14),.58,.40,ARMOR,station)
+cyl("Command rotating bearing",(0,-.32,1.60),.72,.16,EDGE,station,10)
+torus("Command bearing cyan collar",(0,-.32,1.70),.62,.045,CYAN,station)
+cone("Command faceted core",(0,-.32,1.86),.47,.22,.29,ARMOR,station,8)
 cyl("Command blue canopy",(0,-.32,2.04),.23,.09,GLASS,station,8)
 cone("Command short beacon",(0,-.32,2.20),.10,.02,.20,ARMOR,station,8)
 
 # Heat is a working aperture in the band, marked by a low furnace clamp.
-cyl("Heat chamber dark integrated foundation",(0,-.32,1.06),.91,.25,KEEL,refinery,12)
-cyl("Heat chamber lower armored ring deck",(0,-.32,1.22),.86,.14,ARMOR,refinery,12)
-torus("Heat chamber recessed observation band",(0,-.32,1.32),.79,.07,GLASS,refinery)
-cyl("Heat chamber upper armored ring deck",(0,-.32,1.42),.74,.12,ARMOR_SIDE,refinery,12)
-torus("Heat chamber gold dome bearing",(0,-.32,1.49),.70,.05,EDGE,refinery)
+cyl("Heat chamber dark integrated foundation",(0,-.32,1.06),1.27,.25,KEEL,refinery,12)
+cyl("Heat chamber lower armored ring deck",(0,-.32,1.22),1.21,.14,ARMOR,refinery,12)
+torus("Heat chamber recessed observation band",(0,-.32,1.32),1.13,.07,GLASS,refinery)
+cyl("Heat chamber upper armored ring deck",(0,-.32,1.42),1.06,.12,ARMOR_SIDE,refinery,12)
+torus("Heat chamber gold dome bearing",(0,-.32,1.49),.99,.05,EDGE,refinery)
+for side in (-1,1):
+    beam("Heat node twin pressure spar",(side*.55,.04,1.10),
+         (side*.44,1.36,.36),.19,.23,ARMOR_SIDE,refinery)
+    beam("Heat node contained feed conduit",(side*.41,.05,.89),
+         (side*.35,1.29,.32),.055,.065,CYAN,refinery)
+beam("Heat node enclosed track coupling",(0,.20,.87),
+     (0,1.27,.35),.49,.41,ARMOR_SIDE,refinery)
+box("Heat node coupling armor collar",(0,1.19,.37),(.68,.31,.30),ARMOR,refinery)
 faceted_dome("Heat chamber gold faceted crown",refinery,(0,-.32),
-             ((1.47,.68),(1.68,.70),(1.94,.57),(2.13,.33),(2.21,.14)))
+             ((1.47,.96),(1.68,.99),(1.94,.80),(2.13,.46),(2.21,.19)))
 cyl("Contained furnace dark collar",(0,-.32,2.22),.19,.08,EDGE,refinery,12)
 cyl("Contained furnace amber aperture",(0,-.32,2.27),.15,.04,AMBER,refinery,12)
 torus("Furnace retaining ring",(0,-.32,2.29),.20,.035,ARMOR_SIDE,refinery)
 for i in range(8):
     a=i*tau/8
-    window=box("Heat ring amber machinery port",(.84*cos(a),-.32+.84*sin(a),1.24),
+    window=box("Heat ring amber machinery port",(1.17*cos(a),-.32+1.17*sin(a),1.24),
                (.14,.075,.09),AMBER,refinery,.008)
     window.rotation_euler.z=a+pi/2
 for x in (-.58,-.22,.22,.58):
@@ -528,9 +522,9 @@ box("Work site contained welding line",(.17,0,.76),(.15,.18,.04),CYAN,workshop,.
 # Two outer launch arms reach from the band's missing section; the void is
 # wider than the shuttle and reads as a bay, not as a self-contained block.
 for side in (-1,1):
-    beam("Dock outer launch arm",(side*.76,-.25,.58),(side*.83,-2.16,.58),.20,.23,ARMOR,shipyard)
-    beam("Dock inner dark girder",(side*.76,-.25,.35),(side*.83,-2.08,.35),.16,.18,EDGE,shipyard)
-    box("Contained dock approach guide",(side*.66,-1.10,.70),(.032,1.67,.022),CYAN,shipyard,.004)
+    beam("Dock outer launch arm",(side*.76,-.25,.58),(side*.83,-1.72,.58),.20,.23,ARMOR,shipyard)
+    beam("Dock inner dark girder",(side*.76,-.25,.35),(side*.83,-1.68,.35),.16,.18,EDGE,shipyard)
+    box("Contained dock approach guide",(side*.66,-.94,.70),(.032,1.24,.022),CYAN,shipyard,.004)
     box("Dock armored entry cheek",(side*.90,-.62,.72),(.38,.88,.84),ARMOR,shipyard)
     box("Dock inset service wall",(side*.70,-1.13,.49),(.16,1.18,.37),ARMOR_SIDE,shipyard)
     box("Dock exterior pressure foot",(side*.87,-1.49,.35),(.34,.52,.25),EDGE,shipyard)
@@ -572,6 +566,13 @@ for a in (-146,-119):
 box("Docked shuttle fuselage",(0,-1.15,.93),(.37,.96,.18),ARMOR_FACE,shipyard,.04)
 armor_prism("Docked shuttle swept nose",[(0,-1.88),(.18,-1.53),(-.18,-1.53)],.87,1.04,ARMOR_FACE,shipyard)
 box("Docked shuttle canopy",(0,-1.27,1.05),(.22,.31,.055),GLASS,shipyard,.01)
+
+# Author-view tram follows the same fine orbital track. Runtime motion is
+# implemented by planet_orbital_spine.gd and appears only on a completed loop.
+tram=parent("Track-constrained orbital tram",(0,-RING_RADIUS,.24))
+box("Tram dark captured bogie",(0,0,-.075),(.64,.21,.09),KEEL,tram,.016)
+box("Tram faceted ivory cabin",(0,0,.035),(.55,.24,.18),ARMOR_FACE,tram,.035)
+box("Tram cyan forward screen",(.23,0,.055),(.025,.18,.105),CYAN,tram,.006)
 
 
 # Painted planet texture is existing source art; the new architecture above

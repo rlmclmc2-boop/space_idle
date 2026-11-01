@@ -76,10 +76,9 @@ func _ready() -> void:
 	_world.add_child(_camera)
 	_spine = preload("res://scripts/planet_orbital_spine.gd").new()
 	_world.add_child(_spine)
-	# Set the entire tilted construction plane below the globe's visual center.
-	# This keeps a dark gap under the sphere and lets its depth mask occlude the
-	# far band, matching the original complete-state drawing.
-	_spine.position.y = -0.80
+	# Lift the large thin orbit as one plane. The globe depth mask still hides
+	# the far rail, while the front rail stays clear of the lower silhouette.
+	_spine.position.y = 0.35
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
@@ -141,7 +140,7 @@ func _position_refinery_work(_model: Node3D, clock: float) -> void:
 		var marker := _refinery_feed_markers[index]
 		# The asset uses the shared full-orbit authoring frame. Ore moves across
 		# the refinery's open heat bay rather than around the old local saddle.
-		marker.position = Vector3(lerpf(3.30, 3.62, travel), 1.08, lerpf(-2.08, -2.50, travel))
+		marker.position = Vector3(lerpf(5.29, 5.61, travel), 1.08, lerpf(-3.27, -3.69, travel))
 
 func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned
