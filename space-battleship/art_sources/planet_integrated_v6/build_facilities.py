@@ -176,9 +176,12 @@ def refinery(root, m):
     box("Crown receiving lip",(.83,0,.54),(.09,.71,.20),m["edge"],root)
     for side in (-1, 1):
         y = side*.48
-        cone("Twin open charge hopper", (-.29,y,1.13), .18,.40,.70,m["work"],root)
-        cylinder("Hopper dark receiving mouth", (-.29,y,1.49),.26,.035,m["pressure"],root)
-        torus("Hopper armored mouth rim",(-.29,y,1.50),.27,.035,m["armor"],root)
+        intake=cone("Twin angled charge intake", (-.29,y,1.13), .18,.40,.70,m["work"],root)
+        intake.rotation_euler=(side*.13,.21,0)
+        mouth=cylinder("Hopper dark receiving mouth", (-.22,y+side*.05,1.48),.26,.035,m["pressure"],root)
+        mouth.rotation_euler=intake.rotation_euler
+        rim=torus("Hopper armored mouth rim",(-.22,y+side*.05,1.49),.27,.035,m["armor"],root)
+        rim.rotation_euler=intake.rotation_euler
         beam("Hopper pressure duct", (-.29,y,.77),(.20,y,.48),.21,.21,m["edge"],root)
         pivot=empty("IntakeWheelLeft" if side<0 else "IntakeWheelRight",root,(.51,side*.73,.48))
         torus("Exposed intake rotor",(0,0,0),.18,.05,m["armor"],pivot)
@@ -202,6 +205,8 @@ def workshop(root,m):
         ],m["work"],root)
         box("Inner running rail",(0,side*.47,.70),(1.69,.085,.08),m["machinery"],root)
         box("Rail power key",(0,side*.42,.75),(1.38,.018,.03),m["service"],root,.004)
+        beam("Longitudinal portal tension beam",(-.88,side*.68,1.27),
+             (.88,side*.68,1.27),.11,.12,m["work"],root)
     for x in (-.88,.88):
         for side in (-1,1):
             beam("Inclined portal load leg",(x,side*.75,.47),
