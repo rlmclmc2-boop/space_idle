@@ -18,6 +18,7 @@ var _single_mode: bool=false
 var _baker: SubViewport
 var _asset: Node3D
 var _environment: Environment
+var _core_lamp: OmniLight3D
 var _background: ColorRect
 var _background_material: ShaderMaterial
 var _palette: Dictionary={}
@@ -107,6 +108,14 @@ func _init() -> void:
 		luminaire.omni_range=650.0
 		luminaire.omni_attenuation=1.8
 		_baker.add_child(luminaire)
+	_core_lamp=OmniLight3D.new()
+	_core_lamp.light_color=Color("5bd8ff")
+	_core_lamp.light_energy=0.0
+	_core_lamp.omni_range=650.0
+	_core_lamp.omni_attenuation=1.35
+	_core_lamp.shadow_enabled=true
+	_core_lamp.shadow_opacity=.72
+	_baker.add_child(_core_lamp)
 	_outline_material=ShaderMaterial.new()
 	_outline_material.shader=OUTLINE
 	_asset=MODEL.instantiate()
@@ -336,9 +345,8 @@ func _refresh_bake(ids: Array) -> void:
 	for group in _asset.get_children():
 		var key: String=String(group.name)
 		group.visible=_group_visible(key,ids)
-	for material in _palette.values():
-		material.set_shader_parameter("core_power",0.0)
-		material.set_shader_parameter("core_origin",Vector3(724.0 if _single_mode else 594.0,-340.0,190.0))
+	_core_lamp.position=Vector3(724.0 if _single_mode else 594.0,-340.0,235.0)
+	_core_lamp.light_energy=0.0
 	_baker.msaa_3d=Viewport.MSAA_2X
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	_finish_bake(generation)
@@ -351,7 +359,7 @@ func _finish_bake(generation: int) -> void:
 	_background_material.set_shader_parameter("resting_surface",resting)
 	_background_material.set_shader_parameter("working_surface",resting)
 	_background.material=_background_material
-	for material in _palette.values():material.set_shader_parameter("core_power",1.0)
+	_core_lamp.light_energy=1.65
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	await RenderingServer.frame_post_draw
 	await get_tree().process_frame
