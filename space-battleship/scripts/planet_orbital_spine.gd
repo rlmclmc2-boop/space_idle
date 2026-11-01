@@ -17,9 +17,9 @@ const FACILITY_ANGLES := {
 # Keep the common load path close to terrestrial globes while leaving the
 # four authored work nodes and their independent owned arc ends intact.
 const RADIUS := 4.35
-const REAR_TRANSIT_WIDTH := 0.55
-const FRONT_TRANSIT_WIDTH := 0.96
-const NODE_WIDTH := 1.35
+const REAR_TRANSIT_WIDTH := 0.46
+const FRONT_TRANSIT_WIDTH := 0.72
+const NODE_WIDTH := 1.18
 const TILT_Y := 0.66
 const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
@@ -274,7 +274,7 @@ func _section_width(kind: String, angle: float) -> float:
 	blend *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
 	# Give each built work floor a real shoulder matching its pressure feet.
 	# The station stays narrow so its independently built passage stays open.
-	var node_width := 1.50 if kind == "auto_explore" else 1.68 if kind == "refinery" else 1.78 if kind == "equipment" else 1.80 if kind == "shipyard" else NODE_WIDTH
+	var node_width := 1.36 if kind == "auto_explore" else 1.53 if kind == "refinery" else 1.60 if kind == "equipment" else 1.62 if kind == "shipyard" else NODE_WIDTH
 	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:

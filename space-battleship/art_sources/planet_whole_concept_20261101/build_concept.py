@@ -25,8 +25,8 @@ def material(name, color, metallic=.0, rough=.68, emission=0.0):
     return mat
 
 
-ARMOR = material("Warm faceted ivory armor", (.35,.32,.26), .05, .74)
-EDGE = material("Dark slate panel edge", (.18,.24,.27), .28, .68)
+ARMOR = material("Warm faceted ivory armor", (.52,.47,.36), .05, .74)
+EDGE = material("Dark slate panel edge", (.085,.13,.16), .16, .75)
 KEEL = material("Deep navy pressure keel", (.012,.035,.055), .10, .80)
 MACHINE = material("Machine steel", (.043,.095,.115), .10, .72)
 GLASS = material("Dark blue glass", (.025,.16,.22), .26, .34)
@@ -143,32 +143,37 @@ def slope_shell(name, outline, top_heights, thickness, mat, root=None):
 
 # The ring is one dark pressure system with two armored bank beams, a work
 # trough and four built nodes. Short plate gaps expose the same keel below.
-annular_band("Continuous central pressure keel",3.80,4.89,-.43,.12,KEEL)
-annular_band("Deep lower pressure hull",3.92,4.75,-.77,-.43,EDGE)
-annular_band("Outer beveled side armor course",4.81,4.96,-.56,-.05,ARMOR)
-annular_band("Inner beveled side armor course",3.71,3.86,-.56,-.05,ARMOR)
-annular_band("Recessed machine conduit",4.13,4.56,.13,.15,MACHINE)
-annular_band("Contained upper cyan service line",4.10,4.13,.16,.18,CYAN)
-annular_band("Contained lower cyan service line",4.85,4.88,-.29,-.25,CYAN)
+annular_band("Continuous central pressure keel",3.95,4.72,-.57,.12,KEEL)
+annular_band("Deep lower pressure hull",4.01,4.66,-.85,-.57,EDGE)
+annular_band("Outer beveled side armor course",4.69,4.79,-.64,-.10,ARMOR)
+annular_band("Inner beveled side armor course",3.88,3.98,-.64,-.10,ARMOR)
+annular_band("Recessed machine conduit",4.18,4.49,.13,.15,MACHINE)
+annular_band("Contained upper cyan service line",4.15,4.18,.16,.18,CYAN)
+annular_band("Contained lower cyan service line",4.70,4.73,-.34,-.29,CYAN)
 for i in range(36):
     a0=i*tau/36+.009
     a1=(i+1)*tau/36-.009
-    annular_band("Segmented inner load armor",3.84,3.99,.13,.26,ARMOR,a0,a1,5)
-    annular_band("Segmented outer load armor",4.71,4.87,.13,.26,ARMOR,a0,a1,5)
+    annular_band("Segmented inner load armor",3.96,4.10,.13,.26,ARMOR,a0,a1,5)
+    annular_band("Segmented outer load armor",4.57,4.71,.13,.26,ARMOR,a0,a1,5)
     if i % 3 == 0:
         a=(a0+a1)*.5
-        annular_band("Deep pressure joint clamp",3.72,4.96,-.63,.31,EDGE,a-.016,a+.016,2)
+        annular_band("Deep pressure joint clamp",3.89,4.78,-.70,.31,EDGE,a-.016,a+.016,2)
 for i in range(12):
     a=(i+.5)*tau/12
-    annular_band("Radial charcoal bulkhead",3.83,4.88,.19,.26,EDGE,a-.008,a+.008,2)
+    annular_band("Radial charcoal bulkhead",3.95,4.72,.19,.26,EDGE,a-.008,a+.008,2)
 
 
-def socket(name, deg):
+def socket(name, deg, open_fork=False):
     a=deg*pi/180
     o=parent(name,(4.33*cos(a),4.33*sin(a),.05),a+pi/2)
-    armor_prism("Integrated tapered pressure socket",
-                [(-1.55,-.45),(-1.08,-.91),(1.08,-.91),(1.55,-.45),
-                 (1.55,.45),(1.08,.91),(-1.08,.91),(-1.55,.45)],-.27,.21,KEEL,o)
+    if open_fork:
+        armor_prism("Open dock root pressure yoke",
+                    [(-1.55,.25),(-1.08,-.48),(1.08,-.48),(1.55,.25),
+                     (1.55,.78),(1.08,.90),(-1.08,.90),(-1.55,.78)],-.27,.21,KEEL,o)
+    else:
+        armor_prism("Integrated tapered pressure socket",
+                    [(-1.55,-.45),(-1.08,-.91),(1.08,-.91),(1.55,-.45),
+                     (1.55,.45),(1.08,.91),(-1.08,.91),(-1.55,.45)],-.27,.21,KEEL,o)
     box("Continuous exposed central service spine",(0,0,.22),(2.86,.43,.075),MACHINE,o,.03)
     box("Common through-running enclosed service trace",(0,0,.27),(2.75,.025,.016),CYAN,o,.005)
     for side in (-1,1):
@@ -191,7 +196,9 @@ station=socket("01 / Annular command and habitation bearing",135)
 cyl("Closed annular lower bearing",(0,0,.57),.90,.35,KEEL,station,16)
 torus("Habitat upper pressure collar",(0,0,.86),.78,.16,ARMOR,station)
 torus("Inboard turquoise bearing",(0,0,.92),.46,.042,CYAN,station)
-cyl("Command dark glass crown",(0,0,.94),.36,.14,GLASS,station,16)
+cone("Eight-sided raised command citadel",(0,0,1.20),.45,.26,.66,KEEL,station,8)
+torus("Continuous command glazing band",(0,0,1.28),.34,.035,CYAN,station)
+cyl("Command dark glass crown",(0,0,1.55),.27,.13,GLASS,station,8)
 for i in range(6):
     a=i*tau/6
     x,y=.80*cos(a),.80*sin(a)
@@ -206,8 +213,8 @@ for side in (-1,1):
     armor_prism("Swept habitat wing",
                 [(side*.63,-.25),(side*1.22,-.38),(side*1.34,.05),(side*.68,.35)],.39,.76,ARMOR,station)
     box("Blue glazed observation slit",(side*1.05,-.28,.73),(.36,.025,.055),GLASS,station,.01)
-cone("Short command beacon",(0,0,1.15),.16,.05,.34,ARMOR,station,8)
-cyl("Amber signal cap",(0,0,1.34),.07,.07,AMBER,station,8)
+cone("Short command beacon",(0,0,1.77),.14,.05,.34,ARMOR,station,8)
+cyl("Amber signal cap",(0,0,1.97),.07,.07,AMBER,station,8)
 
 
 refinery=socket("02 / Faceted heat refinery fortress",45)
@@ -261,6 +268,16 @@ for x in (-.97,.97):
     armor_prism("Sloped armored end roof over production bay",
                 [(x-.25,-.68),(x+.25,-.68),(x+.25,.68),(x-.25,.68)],1.55,1.70,ARMOR,workshop)
 beam("Hall lengthwise raised ridge",(-.97,0,1.86),(.97,0,1.86),.20,.22,EDGE,workshop)
+armor_prism("Rear sealed fabrication vault",
+            [(-1.13,.13),(1.13,.13),(1.03,.88),(-1.03,.88)],
+            1.53,1.70,EDGE,workshop)
+slope_shell("Broad faceted fabrication vault roof",
+            [(-1.08,.15),(1.08,.15),(1.00,.82),(-1.00,.82)],
+            [1.73,1.73,1.98,1.98],.19,ARMOR,workshop)
+for x in (-.63,0,.63):
+    beam("Vault transverse armored rib",(x,.14,1.77),(x,.79,1.96),.13,.16,EDGE,workshop)
+box("Vault front dark service hatch",(0,.105,1.41),(1.10,.07,.22),KEEL,workshop,.025)
+box("Fabrication exhaust crown",(0,.64,2.02),(.47,.34,.23),EDGE,workshop,.045)
 for side in (-1,1):
     armor_prism("Upper lengthwise pressure clerestory",
                 [(-.73,side*.62),(.72,side*.62),(.60,side*.37),(-.60,side*.37)],
@@ -279,17 +296,12 @@ box("Tool work glow",(.19,0,1.015),(.23,.29,.06),CYAN,workshop,.012)
 beam("Visible contained welding column",(.19,0,1.42),(.19,0,1.06),.045,.05,CYAN,workshop)
 
 
-shipyard=socket("04 / Gated launch dock",-135)
-box("Dark launch trench",(0,-.84,.42),(1.56,2.91,.25),KEEL,shipyard,.10)
+shipyard=socket("04 / Gated launch dock",-135,open_fork=True)
+box("Narrow free-space launch keel",(0,-.84,.42),(.44,2.91,.18),EDGE,shipyard,.04)
 for side in (-1,1):
-    armor_prism("Deep dock root hangar mass",
-                [(side*.57,.82),(side*1.08,.68),(side*1.14,-.12),(side*.60,-.18)],.45,1.10,ARMOR,shipyard)
-    armor_prism("Tapered pressure hangar shell framing launch void",
-                [(side*.61,.55),(side*1.10,.49),(side*.98,-1.85),(side*.63,-2.17)],
-                .55,1.20,EDGE,shipyard)
-    slope_shell("Deep sloped armored dock shoulder around open launch void",
-                [(side*.74,.43),(side*1.16,.43),(side*1.01,-1.74),(side*.70,-1.96)],
-                [1.43,1.12,1.12,1.43],.19,ARMOR,shipyard)
+    slope_shell("Angled armored dock root into open fork",
+                [(side*.48,.63),(side*1.12,.54),(side*.98,-.51),(side*.61,-.73)],
+                [1.32,1.02,.78,1.08],.17,ARMOR,shipyard)
 box("Inner dock transfer jaw",(0,.34,.67),(1.76,.48,.53),ARMOR,shipyard,.095)
 box("Blue dock throat",(0,.075,.78),(.78,.06,.16),CYAN,shipyard,.025)
 for side in (-1,1):
@@ -297,17 +309,19 @@ for side in (-1,1):
     beam("Under-fork dark return girder",(side*.68,.56,.42),(side*.74,-2.08,.42),.23,.32,EDGE,shipyard)
     beam("Fork root triangle into ring",(side*.66,.70,.46),(side*.95,1.16,.20),.28,.28,ARMOR,shipyard)
     box("Contained launch guide",(side*.47,-.94,.83),(.045,2.21,.035),CYAN,shipyard,.005)
-for y in (-1.82,-.38):
+for y in (-.38,):
     for side in (-1,1):
         beam("Heavy dock open gate pillar",(side*.73,y,.69),(side*.73,y,1.53),.23,.28,ARMOR,shipyard)
         beam("Dock gate diagonal compression brace",(side*.73,y,.84),(side*.35,y,1.54),.14,.17,EDGE,shipyard)
     beam("Heavy dock overhead load arch",(-.75,y,1.55),(.75,y,1.55),.23,.30,ARMOR,shipyard)
-box("Docked shuttle fuselage",(0,-1.09,1.36),(.53,1.34,.27),ARMOR,shipyard,.11)
+box("Docked shuttle fuselage",(0,-1.09,1.36),(.53,1.34,.27),EDGE,shipyard,.11)
+armor_prism("Pointed shuttle nose beyond open clamp",
+            [(0,-2.16),(.25,-1.67),(-.25,-1.67)],1.27,1.43,EDGE,shipyard)
 box("Docked blue canopy",(0,-1.33,1.53),(.32,.53,.09),GLASS,shipyard,.04)
 for side in (-1,1):
     armor_prism("Shuttle swept armored wing",
                 [(side*.16,-1.50),(side*.57,-1.14),(side*.59,-.63),(side*.18,-.80)],
-                1.33,1.42,ARMOR,shipyard)
+                1.33,1.42,EDGE,shipyard)
     box("Shuttle contained engine",(side*.18,-.43,1.41),(.13,.08,.12),CYAN,shipyard,.018)
 
 

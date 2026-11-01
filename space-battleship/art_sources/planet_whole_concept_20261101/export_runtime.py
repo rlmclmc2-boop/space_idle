@@ -50,7 +50,8 @@ def part(name,mesh,mat,p):
 
 station=bpy.data.objects[roots["auto_explore"]]
 spin=pivot(station,"HabitatRingSpin")
-for name in ("Inboard turquoise bearing","Command dark glass crown",
+for name in ("Inboard turquoise bearing","Eight-sided raised command citadel",
+             "Continuous command glazing band","Command dark glass crown",
              "Short command beacon","Amber signal cap"):
     transfer(station,spin,name)
 for side,label in ((-1,"SolarHingeLeft"),(1,"SolarHingeRight")):
