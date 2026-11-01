@@ -4,14 +4,16 @@
 
 ## 当前版本与同源证据
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `b43a3da6`，未合main。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `41506983`，未合main。
 - 反应堆 `0e5ce0067d5d5ffa7a31768e8bdd6835b468eebc` 的十四件installation闭包逐blob同源，包含私有GLB、Stage、shader及metadata；Owner/原生控件不替换。源交接df65d3d6；installation在 `archive/reactor-material-refinement-20261101@d3f1bdd3:modules/reactor/material-refinement-20261101/installation.json`。
-- 星球 `eedde803682672187a0fd5977159a085e1adf6b5` 的四GLB、设施场景/轨道、两个shader及cloud-density云图九件逐blob同源。planet_visual保留整组包络与独立环境矩形，planet_panel保留主体安全区及业务/UI修复。
-- 本轮仅11件生产文件变化：反应堆7件、星球4件。公共承载ee0e2ff1、主题9034af81、最终装备main e845、main/Owner、导航及战斗空间保持。
+- 星球 `8ccffa6d1d58ee31616c9a8796fe3bc48e120daf` 的四GLB、设施场景/轨道、两个shader及cloud-density云图九件逐blob同源。planet_visual保留整组包络与独立环境矩形，planet_panel保留主体安全区及业务/UI修复。
+- 本轮仅7件星球生产文件变化：四GLB、设施局部光、星云shader及planet_visual星点；后者只合并源三处星点变化，保留固定环境/主体适配。反应堆十四件闭包保持。公共承载ee0e2ff1、主题9034af81、最终装备main e845、main/Owner、导航及战斗空间保持。
 
-同版整页与动态：`archive/design-docs-before-cleanup-20261031@577bf4557cb958217cd36968beb78f9116b0ddd3:modules/public-ui/reactor-material-planet-couplers-shared-20261101/README.md`。reactor/与planet/各五张1440×900原PNG/同尺寸高质量JPEG，各有两段6秒180帧视频、640KiB无损分片/哈希、逐帧总览及author-review.md；source.json记录精确闭包/保留文件。批准原图的格式转换与星球约等球径对照同存。
+星球当前同版证据：`archive/design-docs-before-cleanup-20261031@9d43eabe2dd9de59b92dfc739f93851249074bc9:modules/public-ui/planet-open-berth-shared-20261101/README.md`。运行41506983的五张1440×900原PNG/同尺寸高质量JPEG、总览/设施展开两段各6秒180连续帧、无损分片/哈希、逐帧总览、批准图等球径对照及author-review.md。
 
-导入与运行成功。作者亲看十张完整页面、四段共720帧总览及代表原尺寸帧；录制采用MovieMaker离线30fps，显示/工作时钟1×。反应堆为受控四路及单炼铁Owner参数、实际鼠标均分/返回装备；星球为受控星球1/探索240/四设施已建、固定业务快照和连续显示动画。证据覆盖见驱动与segment，不把工作片段写成此前点击瞬间覆盖。本轮没有追加性能或未改购买状态复测。
+反应堆当前闭包证据保持：`archive/design-docs-before-cleanup-20261031@577bf4557cb958217cd36968beb78f9116b0ddd3:modules/public-ui/reactor-material-planet-couplers-shared-20261101/reactor/author-review.md`，同目录为运行b43a3da6的五整页和两段6秒工作动态；本轮十四件反应堆闭包及公共文件逐blob保持，不把该旧运行号的视频标成415重录。
+
+当前星球导入与运行成功。作者亲看五完整页、全部360帧总览和代表原尺寸帧。星球为受控星球1/探索240/四设施已建、固定业务快照和1×显示动画；反应堆证据为受控四路/单炼铁Owner参数、实际鼠标均分/返回装备和1×真实Session时钟。两者均MovieMaker离线30fps，具体版本/覆盖见各驱动与segment，不作实时性能或点击瞬间覆盖。本轮未追加性能或未改购买状态复测。
 
 ## 当前整页判断与接续
 
@@ -27,9 +29,9 @@
 
 唯一批准稿：`archive/planet-resume-20261101@032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/index.md`，同目录planet-ring.png，SHA256 `453078f9be47b45d1cffb809352470feb21f769fc18d5fdfeb640f4cf602e572`。
 
-本轮双层指挥窗、下部承力舱、端接套及前工位分段已进入公共整页。公共环境固定y65..900，主体min(高×0.21,宽×0.135)整组包络及源光学中心保持；人员/设施/征服不同高度操作台下未见新增裁切、碰顶栏或压台，所看转动序列无布局跳变。
+本轮开放泊位、两端服务舱与连续接轨已进入公共整页，船坞不再先读成封闭工厂；制造区单主吊架和纵轨比重复亮框更能解释开放工位。公共环境固定y65..900，主体min(高×0.21,宽×0.135)整组包络及源光学中心保持；人员/设施/征服不同高度台下未见新增碰状态条、压台或越导航。当前无需再缩主体或调整公共几何。
 
-按批准图同球径，前设施仍以大浅装甲面和重复块件主导，泊位/载具、制造井内机械及内壁深度不足；亮长梁和泛黄装甲抢过暗色作业井，局部暖光尚需聚焦。后方舱体端接/窗带/桅杆和金顶接触细节仍简化，背景宽模糊蓝云未还原细密气体层。近弧电车可辨，远弧/展开后较弱。原组继续前设施内件、面板与受光，不以接口补齐判整体完成；具体见planet/author-review.md。
+按批准图同球径，前设施的服务舱/支架和大浅装甲面仍偏方块堆叠，泊位凹深、承力臂/接轨腔口及制造井内机械层次不足；青色作业面和黄梁受光偏平亮，未形成图中的连续材质/接触阴影。后方舱体/窗带/桅杆与金顶细分仍简化。星点更密、气体边缘增加，但两侧仍是宽亮蓝云团，与原图深黑空间和细气体丝有差距。近弧电车可辨，远弧/展开后较弱。原组继续设施内件、材质受光和星云细层，不以开放泊位或主吊架出现判断整体完成；具体见本版author-review.md。当前不是成品确认稿，无用户等待依赖。
 
 ## 公共接入边界与下一步
 
