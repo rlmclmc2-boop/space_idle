@@ -22,6 +22,7 @@ def setup():
         "pressure": ((.055, .15, .20), .22, .64),
         "machinery": ((.12, .29, .36), .26, .53),
         "work": ((.63, .32, .11), .18, .56),
+        "heat": ((.39, .20, .075), .24, .48),
         "signal": ((.92, .39, .09), .14, .46),
         "service": ((.06, .52, .62), .12, .42),
         "glass": ((.035, .22, .32), .28, .39),
@@ -150,6 +151,14 @@ def station(root, m):
     cylinder("Radial bearing lower drum", (0, 0, .23), 1.06, .29, m["pressure"], root, 40)
     torus("Ivory annular pressure rim", (0, 0, .46), .91, .14, m["armor"], root)
     torus("Blue inner bearing race", (0, 0, .51), .63, .055, m["machinery"], root)
+    for i in range(8):
+        angle = math.tau * i / 8
+        tab = box("Bearing radial armor key",(.97*math.cos(angle),
+                  .97*math.sin(angle),.55),(.24,.17,.10),m["edge"],root,.018)
+        tab.rotation_euler.z = angle
+        if i % 2 == 0:
+            cylinder("Bearing amber status lamp",(.97*math.cos(angle),
+                     .97*math.sin(angle),.62),.037,.025,m["signal"],root,12)
     for x in (-.78, .78):
         beam("Tangential ring transfer rib", (x, -.71, .30),
              (x, .71, .30), .18, .20, m["armor"], root)
@@ -175,8 +184,14 @@ def refinery(root, m):
         (-.94,0,.36,.52,.25),(-.58,0,.46,.69,.35),
         (.63,0,.46,.69,.35),(.95,0,.36,.52,.25),
     ], m["pressure"], root)
-    ellipsoid("Armored heat pressure crown", (.24,0,.72),(.70,.65,.44),m["armor"],root)
+    ellipsoid("Burnished heat pressure crown", (.24,0,.72),(.70,.65,.44),m["heat"],root)
     ellipsoid("Recessed hot core", (.27,0,1.04),(.40,.38,.12),m["work"],root)
+    for y in (-.42,.42):
+        beam("Crown longitudinal armor rib",(-.35,y,.88),
+             (.67,y,.89),.10,.09,m["armor"],root)
+    for x in (-.29,.65):
+        beam("Crown transverse clamp",(x,-.42,.89),
+             (x,.42,.89),.09,.09,m["edge"],root)
     for side in (-1, 1):
         beam("Furnace flank load web",(-.82,side*.79,.31),
              (-.12,side*.68,.80),.19,.18,m["edge"],root)
@@ -224,6 +239,9 @@ def workshop(root,m):
                  (x,side*.24,1.27),.09,.10,m["edge"],root)
         beam("Open portal overhead truss",(x,-.72,1.28),
              (x,.72,1.28),.13,.16,m["armor"],root)
+        for side in (-1,1):
+            beam("Portal triangular upper gusset",(x,side*.67,1.17),
+                 (x,side*.35,1.27),.09,.10,m["edge"],root)
     gantry=empty("GantrySlide",root,(0,0,0))
     box("Sliding bridge",(0,0,1.20),(.39,1.16,.11),m["machinery"],gantry)
     arm=empty("ToolArmSweep",gantry,(0,0,1.16))
