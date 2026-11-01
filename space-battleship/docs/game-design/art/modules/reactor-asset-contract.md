@@ -34,7 +34,7 @@
 | 必填字段 | 类型与固定语义（ready） |
 |---|---|
 | `contract_version`, `status`, `asset_id`, `module_id`, `layer` | int、枚举string、唯一string、枚举string或共享层null、枚举string；layer为`shell/core_housing/trunk/device_bay/device`，与asset_id对应。 |
-| `resource.path`, `resource.sha256`, `resource.canvas_px`, `resource.visible_rect_px` | 项目`res://`资源路径string、64字符十六进制string（仅交付证据，不作运行时守卫）、`[int宽,int高]`、`[number x,y,w,h]`。画布宽高和rect宽高>0，rect在画布内；visible_rect是静态主体边界，不能代替效果包络。 |
+| `resource.path`, `resource.sha256`, `resource.canvas_px`, `resource.visible_rect_px` | 项目`res://`资源路径string、64字符十六进制string（制作/交付标识）、`[int宽,int高]`、`[number x,y,w,h]`。画布宽高和rect宽高>0，rect在画布内；visible_rect是静态主体边界，不能代替效果包络。 |
 | `anchors.install`, `anchors.power_in`, `anchors.power_out`, `anchors.junctions`, `anchors.effects` | install必填`[number x,y]`；device必填power_in，承接供能的核心环境/主管提供power_out，主管junctions按模块ID映射端口。端口对象为`{position_px:[x,y],outward:[dx,dy]}`，方向非零。effects为效果ID→源坐标point的map。shell、device_bay等不适用供能的共享层在ready记录中也允许power_in/power_out为null、junctions为空map；无效果时effects为空map，不制造虚假管口/挂点。 |
 | `layout.canvas_logical_size`, `layout.slot_id`, `layout.install_rect_logical`, `layout.target_anchor_logical` | `[number宽,高]`、唯一string、`[x,y,w,h]`、`[x,y]`。定义模块页面逻辑画布、安装框及install应到达的点，均非源图像素或桌面物理像素。 |
 | `layout.rotation_deg`, `layout.scale_mode`, `layout.max_scale`, `layout.clip_rect_logical` | 有限number、固定`fit_visible`、正number、`[x,y,w,h]`或显式null（不裁切）。具体数值可待定；禁止隐藏的非等比拉伸/翻转。 |
@@ -49,9 +49,9 @@
 
 源坐标以完整资源画布左上为(0,0)，x向右、y向下，单位为源像素；SVG按其声明画布映射为同一坐标。`install`为设备底座/安装定位点；`power_in/power_out/junctions.<module_id>`为语义供能端口。模块页面逻辑坐标同为左上原点、x右y下；正角度按该屏幕坐标顺时针，均匀缩放为正。所有锚点随主体共用变换，不能为管路/光流另估位置。
 
-源点q到页面点的关系固定为：`p_page = a + s × R(theta) × (q - m)`，m为anchors.install，a为layout.target_anchor_logical。先在安装坐标中减m、统一缩放/旋转，再平移到页面a。`fit_visible`选择不超过max_scale、且变换后visible_rect和必需效果包络完整落入install_rect的最大等比s；若无合法正s，在制作/交付/导入核对中退回该记录，不能用静默截断设备作为验收通过，也不为此增设运行时守卫。rect用四角变换后的外接框核对；最后由页面统一的窗口/缩放变换映到屏幕，点击坐标走其逆变换。现有Godot导入设置按process/size_limit缩小贴图时，元数据仍使用源画布坐标，贴图通过源画布归一化UV采样；不能把导入后宽高代入canvas_px再重复缩放锚点。端口outward只旋转并归一化，不平移；相接管口位置一致、向外方向相反，实体管与工作流使用同一组端口。允许的视觉连接容差随最终消费尺寸另定并记录。
+源点q到页面点的关系固定为：`p_page = a + s × R(theta) × (q - m)`，m为anchors.install，a为layout.target_anchor_logical。先在安装坐标中减m、统一缩放/旋转，再平移到页面a。`fit_visible`选择不超过max_scale、且变换后visible_rect和必需效果包络完整落入install_rect的最大等比s；若无合法正s，调整安装框或资产布局后重新交付。rect用四角变换后的外接框核对；最后由页面统一的窗口/缩放变换映到屏幕，点击坐标走其逆变换。现有Godot导入设置按process/size_limit缩小贴图时，元数据仍使用源画布坐标，贴图通过源画布归一化UV采样；不能把导入后宽高代入canvas_px再重复缩放锚点。端口outward只旋转并归一化，不平移；相接管口位置一致、向外方向相反，实体管与工作流使用同一组端口。允许的视觉连接容差随最终消费尺寸另定并记录。
 
-纯转换算例（非美术尺寸）：m=(100,50)、q=(120,50)、a=(10,20)、s=0.5、theta=0，则页面点为(20,20)。这只证明坐标语义，不批准任何设备大小或安装位置。
+纯转换算例（非美术尺寸）：m=(100,50)、q=(120,50)、a=(10,20)、s=0.5、theta=0，则页面点为(20,20)。实际尺寸与安装位置按页面布局确定。
 
 ### 元数据草稿示例
 
