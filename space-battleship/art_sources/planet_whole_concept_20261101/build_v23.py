@@ -384,8 +384,8 @@ for root,lo,hi in ((refinery,25,75),(station,75,155),
         for part_lo,part_hi in ((-65,-64),(-32,25)):
             profiled_band(root,"Continuous deep load-bearing underside",part_lo,part_hi,
                           roof_shift=-.55,inner_shift=-.05,outer_shift=.05,mat=KEEL)
-        profiled_band(root,"Recessed load floor beneath fabrication opening",-64,-32,
-                      roof_shift=-1.18,inner_shift=-.05,outer_shift=.05,mat=KEEL)
+        owned_arc(root,"Recessed load floor beneath fabrication opening",-64,-32,
+                  4.03,5.16,-.16,.25,KEEL)
         continue
     profiled_band(root,"Continuous variable-section armored building band",lo,hi)
     profiled_band(root,"Continuous deep load-bearing underside",lo,hi,
