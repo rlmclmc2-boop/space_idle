@@ -182,6 +182,10 @@
     "work-phases.jpg": {
       "bytes": 233726,
       "sha256": "118e1721e51bde34d4816ff345ee11b258e2c41a90bf4df54322ced3c0da2130"
+    },
+    "installation.json": {
+      "bytes": 1980,
+      "sha256": "993dadfffa4a035fb77f266a56a461f88889d469e5c9d9b975f756da8743cdc9"
     }
   }
 }

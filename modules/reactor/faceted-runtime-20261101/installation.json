@@ -1,0 +1,48 @@
+{
+  "source_commit": "c20e4c1a121652514de533fe09203114606d0818",
+  "replace_paths": [
+    "space-battleship/src/ui/reactor_scene.gd",
+    "space-battleship/src/ui/reactor_stage.gd",
+    "space-battleship/assets/ui/reactor/b01/README.md",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json"
+  ],
+  "do_not_copy": [
+    "space-battleship/src/main.gd",
+    "Owner systems",
+    "equipment or battle sources"
+  ],
+  "required_existing": [
+    "BridgeTheme operation/number APIs from shared 9034af81 or compatible successor",
+    "PlayerText.number/resource_number",
+    "ResourceVisuals.icon/icon_modulate and referenced common textures",
+    "current Reactor presentation/direct allocation/bulk purchase Owner contracts",
+    "NotoSansSC.ttf"
+  ],
+  "mount": {
+    "scene_frame": [
+      808,
+      900
+    ],
+    "internal_content_rect": [
+      0,
+      65,
+      808,
+      835
+    ],
+    "source_frame": [
+      1187,
+      1326
+    ],
+    "rule": "Do not add the top offset twice. If host mounts a separate content-only viewport at y65, compensate the scene frame or adapter there; do not rescale the assembly nonuniformly."
+  },
+  "interface": "Existing ReactorScene constructor/bind_presentation/bind_purchase_quote, visibility and Owner signal wiring remain. Host owns public navigation and its final clip/transform."
+}
