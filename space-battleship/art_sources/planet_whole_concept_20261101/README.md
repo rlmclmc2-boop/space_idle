@@ -6,4 +6,4 @@
 
 `silhouette_v19.py`生成整体比例结构稿；`build_v19.py`以 Blender 4.3.2 和已有星球表面贴图生成`concept-v19.blend`及1600×900主构图。上方连续压力弧由空间站与精炼厂各自持有，制造舱与开放船坞占用较短的前弧；完整态、独立建造及转动须以同源实机资产判断。当前为制作候选，不是用户终验。
 
-`export_v19.py`从`concept-v19.blend`导出`assets/planets/facilities_v9/`四件GLB。四设施保留既有运动枢轴名称和业务ID。运行时环保留穿过舱段的细承力梁，宽截面由设施资产承担；轨道角度、独立建造段和球后遮挡由Godot控制。
+`export_v19.py`从`concept-v19.blend`导出`assets/planets/facilities_v9/`四件GLB。四设施保留既有运动枢轴名称和业务ID。运行时环保留细承力梁；上弧接合区和下方工作节点由各建造归属段的压力壳接入，宽体设施由GLB承担。轨道角度、独立建造段和球后遮挡由Godot控制。
