@@ -32,6 +32,7 @@ def material(name, color, metallic=.0, rough=.68, emission=0.0):
 ARMOR = material("Warm faceted ivory armor", (.68,.64,.54), .10, .63)
 ARMOR_FACE = material("Lit ivory armor facets", (.94,.87,.73), .08, .65)
 ARMOR_SOFT = material("Secondary cool ceramic armor", (.56,.59,.58), .12, .62)
+ARMOR_WARM = material("Service roof warm satin ceramic", (.82,.75,.63), .15, .55)
 ARMOR_SIDE = material("Recessed slate armor flanks", (.10,.17,.21), .09, .78)
 ARMOR_MID = material("Midtone faceted pressure armor", (.40,.46,.45), .11, .67)
 DECK_METAL = material("Dark modular work deck", (.20,.27,.29), .18, .59)
@@ -733,7 +734,8 @@ for side in (-1,1):
         slope_shell("Fabrication room separated armor roof",
                     [(x-.27,roof_y-.18),(x+.27,roof_y-.18),
                      (x+.25,roof_y+.18),(x-.25,roof_y+.18)],
-                    [1.08,1.08,1.00,1.00],.10,ARMOR_SOFT,workshop)
+                    [1.08,1.08,1.00,1.00],.10,
+                    ARMOR_WARM if roof_y == -.91 else ARMOR_SOFT,workshop)
         # A recessed trapezoid follows the roof pitch. The broad dark shape
         # stays legible at the actual page size without closing the work bay.
         slope_shell("Fabrication room pitched service hatch recess",
@@ -847,7 +849,7 @@ for end_y in (-1.65,-.43):
             (.015,.16,.11),WINDOW,shipyard,.004)
     if far_end:
         box("Dock portal upper pressure hood",(0,end_y,1.52),
-            (1.51,.31,.13),ARMOR_SOFT,shipyard,.018)
+            (1.51,.31,.13),ARMOR_WARM,shipyard,.018)
         box("Dock portal dark lintel underside",(0,end_y,1.42),
             (1.36,.29,.055),EDGE,shipyard,.008)
     else:
@@ -856,7 +858,7 @@ for end_y in (-1.65,-.43):
             slope_shell("Dock outer service gate sloped roof",
                         [(x-.26,end_y-.15),(x+.26,end_y-.15),
                          (x+.26,end_y+.15),(x-.26,end_y+.15)],
-                        [1.53,1.53,1.46,1.46],.09,ARMOR_SOFT,shipyard)
+                        [1.53,1.53,1.46,1.46],.09,ARMOR_WARM,shipyard)
         box("Dock outer gate upper pressure tie",(0,end_y,1.54),
             (.88,.09,.045),ARMOR_SIDE,shipyard,.005)
 box("Dock portal recessed soffit",(0,-.62,1.41),
@@ -882,7 +884,8 @@ for side in (-1,1):
         slope_shell("Dock separated service bay roof",
                     [(x-.20,bay_y-.24),(x+.20,bay_y-.24),
                      (x+.20,bay_y+.24),(x-.20,bay_y+.24)],
-                    [1.16,1.16,1.10,1.10],.11,ARMOR_SOFT,shipyard)
+                    [1.16,1.16,1.10,1.10],.11,
+                    ARMOR_WARM if bay_y == -.54 else ARMOR_SOFT,shipyard)
         slope_shell("Dock service bay dark pitched roof inset",
                     [(x-.13,bay_y-.17),(x+.13,bay_y-.17),
                      (x+.13,bay_y+.17),(x-.13,bay_y+.17)],

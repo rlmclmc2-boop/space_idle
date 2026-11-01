@@ -243,6 +243,7 @@ func _depth_clip_orbital_model(node: Node) -> void:
 			material.set_shader_parameter("panel_grid", _armor_panel_grid(node.name))
 			material.set_shader_parameter("armor_reflection", _armor_reflection(node.name))
 			material.set_shader_parameter("armor_surface", _armor_surface(node.name))
+			material.set_shader_parameter("armor_terminal_zone", _armor_terminal_zone(node.name))
 			if String(node.name).to_lower().contains("amber"):
 				material.set_shader_parameter("emission_boost", 1.65)
 			if node.name.begins_with("Dock deep armored portal fascia") or node.name.begins_with("Dock angled end armor cheek") or node.name.begins_with("Manufacturing sloped load shoulder"):
@@ -309,6 +310,13 @@ func _armor_surface(authored_name: String) -> float:
 			"Manufacturing sloped load shoulder", "Command stepped ivory observation deck",
 			"Command upper observation cap", "Heat chamber lower armored ring deck"]:
 		if authored_name.begins_with(prefix): return 1.0
+	return 0.0
+
+func _armor_terminal_zone(authored_name: String) -> float:
+	for prefix in ["Dock deep armored portal fascia", "Dock outer pressure portal shoulder",
+			"Dock sloped outer entrance shoulder", "Dock angled end armor cheek",
+			"Manufacturing sloped load shoulder"]:
+		if authored_name.begins_with(prefix): return 0.9
 	return 0.0
 
 func configure_shape(appearance: Dictionary) -> void:
