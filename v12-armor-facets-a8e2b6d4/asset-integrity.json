@@ -1,0 +1,30 @@
+{
+  "auto_explore": {
+    "sha256": "deead361e897eef5a355ddaadb05911236d388fb2f970ad852d6bf6bdd235b9a",
+    "bytes": 213516,
+    "meshes": 37,
+    "materials": 9,
+    "nodes": 41
+  },
+  "refinery": {
+    "sha256": "41b9c6e505a1f0451e3ac287b3e302ff9c2b415ead1cd6b8687889e3bdd694aa",
+    "bytes": 259060,
+    "meshes": 57,
+    "materials": 9,
+    "nodes": 61
+  },
+  "equipment": {
+    "sha256": "ec50f2c409bd7cacbff9382d66aaecbc08a44fbf5ff8f3b43fa8917963a62551",
+    "bytes": 201552,
+    "meshes": 63,
+    "materials": 9,
+    "nodes": 66
+  },
+  "shipyard": {
+    "sha256": "0722cae9e3515cf788a11ca540e71d30c1f72da4bfaf9a0d2a9df389f5e95dc0",
+    "bytes": 164100,
+    "meshes": 42,
+    "materials": 8,
+    "nodes": 45
+  }
+}

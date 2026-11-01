@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+MOVES auto_explore/HabitatRingSpin
+MOVES auto_explore/SolarHingeLeft
+MOVES auto_explore/SolarHingeRight
+MOVES refinery/IntakeWheelLeft
+MOVES refinery/IntakeWheelRight
+MOVES refinery/CoolingShutters
+MOVES equipment/GantrySlide
+MOVES equipment/ToolArmSweep
+MOVES shipyard/CraneSlide
+MOVES shipyard/DockCollarSpin
