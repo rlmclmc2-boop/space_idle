@@ -237,9 +237,9 @@ for side in (-1,1):
                 [(-1.18,side*.55),(1.18,side*.55),(1.32,side*.85),(-1.32,side*.85)],
                 .67,1.32,EDGE,workshop)
     armor_prism("Steep faceted roof shoulder with central work slot",
-                [(-1.16,side*.30),(1.16,side*.30),(1.21,side*.79),(-1.21,side*.79)],
+                [(-1.16,side*.43),(1.16,side*.43),(1.21,side*.79),(-1.21,side*.79)],
                 1.40,1.61,ARMOR,workshop)
-    box("Long upper dark daylight opening",(0,side*.34,1.62),(1.74,.055,.02),GLASS,workshop,.004)
+    box("Long upper dark daylight opening",(0,side*.45,1.62),(1.74,.055,.02),GLASS,workshop,.004)
 for x in (-.97,.97):
     for side in (-1,1):
         beam("Hall inclined primary post",(x,side*.72,.58),(x,side*.61,1.54),.25,.27,ARMOR,workshop)
@@ -263,6 +263,7 @@ box("Contained active weld seam",(0,0,.98),(.82,.045,.02),AMBER,workshop,.004)
 box("Suspended gantry travel bridge",(.19,0,1.45),(.30,1.17,.19),MACHINE,workshop,.035)
 beam("Downward working tool",(.19,0,1.39),(.19,0,1.02),.13,.15,EDGE,workshop)
 box("Tool work glow",(.19,0,1.015),(.23,.29,.06),CYAN,workshop,.012)
+beam("Visible contained welding column",(.19,0,1.42),(.19,0,1.06),.045,.05,CYAN,workshop)
 
 
 shipyard=socket("04 / Gated launch dock",-135)

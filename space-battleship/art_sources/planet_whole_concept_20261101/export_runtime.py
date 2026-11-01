@@ -87,7 +87,7 @@ workshop=bpy.data.objects[roots["equipment"]]
 gantry=pivot(workshop,"GantrySlide")
 transfer(workshop,gantry,"Suspended gantry travel bridge")
 arm=pivot(gantry,"ToolArmSweep",(.19,0,1.40))
-for name in ("Downward working tool","Tool work glow"):
+for name in ("Downward working tool","Tool work glow","Visible contained welding column"):
     transfer(workshop,arm,name)
 
 shipyard=bpy.data.objects[roots["shipyard"]]
