@@ -1,0 +1,21 @@
+{
+  "source_commit": "42a27339",
+  "files": {
+    "complete": {
+      "sha256": "48a8c15e2e7d53e659f4d69b3ea53c13de515822b3b860be6721a29ad9c1b7a3",
+      "bytes": 165421,
+      "size": [
+        2048,
+        768
+      ]
+    },
+    "page-facilities-open": {
+      "sha256": "f764867ab0187aa9af10e45698675ff09d61495747e45ed47b2ef0503001ca6e",
+      "bytes": 202183,
+      "size": [
+        1440,
+        900
+      ]
+    }
+  }
+}
