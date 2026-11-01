@@ -43,6 +43,9 @@ AMBER = material("Contained amber heat", (.68,.21,.025), .04, .55, .65)
 GOLD = material("Warm work marking", (.70,.40,.09), .24, .56)
 CRANE_ORANGE = material("Factory safety orange machine enamel", (.90,.35,.035), .16, .55, .12)
 DOME_GOLD = material("Heat chamber faceted gold armor", (.90,.56,.20), .20, .58)
+DOME_SHADE = material("Heat dome recessed bronze facets", (.70,.39,.10), .24, .60)
+DOME_LIGHT = material("Heat dome sunward gold facets", (1.0,.68,.20), .18, .50)
+DOME_SEAM = material("Heat dome panel shadow seam", (.34,.16,.04), .18, .62)
 
 
 def parent(name, xyz=(0,0,0), angle=0):
@@ -113,7 +116,7 @@ def torus(name, pos, major, minor, mat, root=None):
 
 
 def faceted_dome(name, root, center, rings, sides=12):
-    """Broad polygonal crown with sloping gold panels instead of a cone."""
+    """Triangulated, stepped crown with individually lit armor facets."""
     verts=[]
     for height,radius in rings:
         for i in range(sides):
@@ -123,14 +126,21 @@ def faceted_dome(name, root, center, rings, sides=12):
     for band in range(len(rings)-1):
         for i in range(sides):
             j=(i+1)%sides
-            faces.append((band*sides+i,band*sides+j,(band+1)*sides+j,(band+1)*sides+i))
+            a=band*sides+i; b=band*sides+j
+            c=(band+1)*sides+j; d=(band+1)*sides+i
+            faces.extend(((a,b,c),(a,c,d)))
     faces.append(tuple((len(rings)-1)*sides+i for i in range(sides)))
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces);mesh.update()
     obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
     obj=finish(obj,name,DOME_GOLD,root)
-    obj.data.materials.append(GOLD)
+    obj.data.materials.append(DOME_SHADE)
+    obj.data.materials.append(DOME_LIGHT)
     for i,face in enumerate(obj.data.polygons):
-        face.material_index = 1 if i%sides in (0,1,6,7) else 0
+        if i >= (len(rings)-1)*sides*2:
+            face.material_index=0
+            continue
+        band=i//(sides*2); sector=(i//2)%sides
+        face.material_index = 1 if (sector+band)%5==0 else 2 if (sector+band)%4==0 else 0
     return obj
 
 
@@ -444,6 +454,18 @@ for side in (-1,1):
         (side*1.39,0,1.46),(.035,.14,.045),CYAN,station,.004)
 cyl("Command rotating bearing",(0,-.32,1.60),.72,.16,EDGE,station,10)
 torus("Command bearing cyan collar",(0,-.32,1.70),.62,.045,CYAN,station)
+cyl("Command second occupied tier dark hull",(0,-.32,1.75),.65,.22,KEEL,station,12)
+torus("Command second tier upper ivory sill",(0,-.32,1.85),.67,.045,ARMOR_FACE,station)
+for i in range(12):
+    a=i*tau/12
+    x=.657*cos(a);y=-.32+.657*sin(a)
+    window=box("Command upper-tier occupied window",(x,y,1.75),
+               (.23,.045,.11),WINDOW,station,.006)
+    window.rotation_euler.z=a+pi/2
+    if i%3==0:
+        rib=box("Command upper-tier load pier",(.70*cos(a),-.32+.70*sin(a),1.75),
+                (.09,.095,.22),ARMOR_FACE,station,.008)
+        rib.rotation_euler.z=a+pi/2
 cone("Command faceted core",(0,-.32,1.86),.47,.22,.29,ARMOR,station,8)
 cyl("Command blue canopy",(0,-.32,2.04),.23,.09,GLASS,station,8)
 cone("Command short beacon",(0,-.32,2.20),.10,.02,.20,ARMOR,station,8)
@@ -459,6 +481,17 @@ for side in (-1,1):
 cyl("Heat chamber dark integrated foundation",(0,-.32,1.06),1.27,.25,KEEL,refinery,12)
 cyl("Heat chamber lower armored ring deck",(0,-.32,1.22),1.21,.14,ARMOR,refinery,12)
 torus("Heat chamber recessed observation band",(0,-.32,1.32),1.13,.07,GLASS,refinery)
+for i in range(16):
+    a=(i+.5)*tau/16
+    window=box("Heat chamber skirt blue occupied window",
+               (1.165*cos(a),-.32+1.165*sin(a),1.31),
+               (.14,.048,.11),WINDOW,refinery,.006)
+    window.rotation_euler.z=a+pi/2
+    if i%4==0:
+        pier=box("Heat chamber skirt armor pier",
+                 (1.18*cos(a),-.32+1.18*sin(a),1.31),
+                 (.08,.09,.22),ARMOR_FACE,refinery,.008)
+        pier.rotation_euler.z=a+pi/2
 cyl("Heat chamber upper armored ring deck",(0,-.32,1.42),1.06,.12,ARMOR_SIDE,refinery,12)
 torus("Heat chamber gold dome bearing",(0,-.32,1.49),.99,.05,EDGE,refinery)
 for side in (-1,1):
@@ -473,6 +506,13 @@ for side in (-1,1):
         (side*1.43,0,1.46),(.025,.12,.045),AMBER,refinery,.004)
 faceted_dome("Heat chamber gold faceted crown",refinery,(0,-.32),
              ((1.47,.96),(1.68,.99),(1.94,.80),(2.13,.46),(2.21,.19)))
+for i in range(12):
+    a=tau*i/12
+    for z0,r0,z1,r1 in ((1.68,1.005,1.94,.82),(1.94,.82,2.13,.48)):
+        beam("Heat dome faceted radial pressure seam",
+             (r0*cos(a),-.32+r0*sin(a),z0),
+             (r1*cos(a),-.32+r1*sin(a),z1),
+             .014,.014,DOME_SEAM,refinery)
 cyl("Contained furnace dark collar",(0,-.32,2.22),.19,.08,EDGE,refinery,12)
 cyl("Contained furnace amber aperture",(0,-.32,2.27),.15,.04,AMBER,refinery,12)
 torus("Furnace retaining ring",(0,-.32,2.29),.20,.035,ARMOR_SIDE,refinery)
@@ -527,22 +567,22 @@ for x in (-.76,0,.76):
         (.065,1.27,.075),CRANE_ORANGE,workshop,.008)
 for radial_y in (-.78,.08):
     box("Manufacturing high gantry travel rail",(0,radial_y,1.44),
-        (1.75,.10,.13),CRANE_ORANGE,workshop,.014)
+        (1.75,.055,.075),CRANE_ORANGE,workshop,.012)
     for tangent_x in (-.85,.85):
         beam("Manufacturing gantry support post",
              (tangent_x,radial_y,.45),(tangent_x,radial_y,1.45),
-             .085,.10,ARMOR_SIDE,workshop)
+             .055,.075,ARMOR_SIDE,workshop)
 for x in (-1.12,1.12):
     for y in (-.75,.20):
-        beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.62),.24,.28,ARMOR,workshop)
-        box("Manufacturing portal dark bearing foot",(x,y,.41),(.32,.39,.24),EDGE,workshop)
+        beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.50),.16,.19,ARMOR,workshop)
+        box("Manufacturing portal dark bearing foot",(x,y,.41),(.25,.31,.18),EDGE,workshop)
         sign=-1 if x<0 else 1
         wall_prism("Manufacturing sloped load shoulder",
-                   [(x-sign*.15,.81),(x+sign*.28,.81),(x+sign*.28,1.38),
-                    (x+sign*.07,1.72),(x-sign*.15,1.72)],
-                   y-.15,y+.15,ARMOR_FACE,workshop)
+                   [(x-sign*.10,.81),(x+sign*.20,.81),(x+sign*.20,1.29),
+                    (x+sign*.06,1.57),(x-sign*.10,1.57)],
+                   y-.10,y+.10,ARMOR_FACE,workshop)
         box("Manufacturing dark inner jamb",(x-sign*.19,y,1.03),
-            (.075,.26,.76),MACHINE,workshop,.012)
+            (.048,.20,.62),MACHINE,workshop,.012)
 box("Manufacturing outer pressure cavity wall",(0,-.89,.51),(1.92,.13,.52),ARMOR_SIDE,workshop)
 for x in (-.58,0,.58):
     box("Manufacturing vented cavity inset",(x,-.97,.55),(.31,.026,.15),KEEL,workshop,.006)
@@ -555,9 +595,9 @@ for x in (-.43,.43):
     box("Manufacturing machine jaw",(x,-.17,.84),(.19,.23,.07),ARMOR_FACE,workshop,.008)
 beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,workshop)
 for side in (-1,1):
-    beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.15,.20,ARMOR_SIDE,workshop)
-    box("Fabrication gantry armored foot",(side*.68,0,.58),(.31,.39,.25),ARMOR,workshop)
-box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.17,.13),CRANE_ORANGE,workshop)
+    beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.095,.13,ARMOR_SIDE,workshop)
+    box("Fabrication gantry armored foot",(side*.68,0,.58),(.23,.29,.19),ARMOR,workshop)
+box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.10,.08),CRANE_ORANGE,workshop)
 beam("Downward working tool",(.17,0,1.48),(.17,0,.66),.07,.08,EDGE,workshop)
 box("Work site contained welding line",(.17,0,.76),(.15,.18,.04),CYAN,workshop,.01)
 
@@ -589,7 +629,7 @@ for y in (-1.23,-.55):
     box("Factory traveling bridge dark undercarriage",(0,y,1.48),
         (1.76,.17,.10),EDGE,workshop,.012)
     box("Factory traveling bridge gold load beam",(0,y,1.58),
-        (1.67,.13,.12),CRANE_ORANGE,workshop,.01)
+        (1.67,.075,.08),CRANE_ORANGE,workshop,.01)
     box("Factory traveling winch",(.22,y,1.37),(.25,.28,.28),MACHINE,workshop,.018)
     beam("Factory hanging articulated tool",(.22,y,1.29),(.22,y,1.02),.055,.07,ARMOR_SIDE,workshop)
     box("Factory hanging tool amber tip",(.22,y,.98),(.08,.08,.06),AMBER,workshop,.008)
@@ -601,10 +641,10 @@ for x in (-.48,.48):
 # Two outer launch arms reach from the band's missing section; the void is
 # wider than the shuttle and reads as a bay, not as a self-contained block.
 for side in (-1,1):
-    beam("Dock outer launch arm",(side*.76,-.25,.58),(side*.83,-1.72,.58),.20,.23,ARMOR,shipyard)
+    beam("Dock outer launch arm",(side*.76,-.25,.58),(side*.83,-1.72,.58),.15,.18,ARMOR,shipyard)
     beam("Dock inner dark girder",(side*.76,-.25,.35),(side*.83,-1.68,.35),.16,.18,EDGE,shipyard)
     box("Contained dock approach guide",(side*.66,-.94,.70),(.032,1.24,.022),CYAN,shipyard,.004)
-    box("Dock armored entry cheek",(side*.90,-.62,.72),(.38,.88,.84),ARMOR,shipyard)
+    box("Dock armored entry cheek",(side*.90,-.62,.72),(.31,.72,.70),ARMOR,shipyard)
     box("Dock inset service wall",(side*.70,-1.13,.49),(.16,1.18,.37),ARMOR_SIDE,shipyard)
     box("Dock exterior pressure foot",(side*.87,-1.49,.35),(.34,.52,.25),EDGE,shipyard)
     box("Dock inner bay shadow liner",(side*.68,-.63,.84),(.075,.71,.67),KEEL,shipyard,.012)
@@ -627,7 +667,7 @@ for side in (-1,1):
 box("Dock inner machine service bed",(0,-.75,.41),(.60,.71,.10),ARMOR_SIDE,shipyard)
 box("Dock entrance dark pressure threshold",(0,-.35,.39),(1.46,.32,.16),EDGE,shipyard,.015)
 beam("Dock portal gantry",(-.83,-.40,1.00),(.83,-.40,1.00),.14,.18,ARMOR,shipyard)
-beam("Dock armored entrance canopy",(-.94,-.35,1.25),(.94,-.35,1.25),.30,.32,ARMOR,shipyard)
+beam("Dock armored entrance canopy",(-.94,-.35,1.25),(.94,-.35,1.25),.23,.25,ARMOR,shipyard)
 slope_shell("Dock faceted entry roof",
             [(-1.06,-.39),(1.06,-.39),(1.01,.04),(-1.01,.04)],
             [1.36,1.36,1.22,1.22],.13,ARMOR,shipyard)
@@ -671,7 +711,7 @@ for side in (-1,1):
                     [(x-.20,bay_y-.24),(x+.20,bay_y-.24),
                      (x+.20,bay_y+.24),(x-.20,bay_y+.24)],
                     [1.16,1.16,1.10,1.10],.11,ARMOR_FACE,shipyard)
-    for y in (-1.53,-1.12,-.71):
+    for y in (-1.53,-.71):
         box("Dock removable sloped armor bay",(side*1.07,y,.93),
             (.10,.31,.52),ARMOR,shipyard,.012)
         box("Dock navy machinery recess",(side*1.131,y,.93),
@@ -725,6 +765,21 @@ box("Shuttle visible blue faceted cockpit",(0,-1.35,1.35),
 for y in (-1.52,-1.32):
     box("Shuttle cockpit segmented white rib",(0,y,1.40),
         (.40,.025,.025),ARMOR_FACE,shipyard,.003)
+
+# Give the parked ship breathing room inside the berth. Keeping its parts
+# under one pivot preserves the swept body and engine alignment as a unit.
+shuttle_shell=parent("Open berth shuttle silhouette",(0,-1.35,1.02))
+shuttle_shell.parent=shipyard
+bpy.context.view_layer.update()
+for child in list(shipyard.children):
+    if child==shuttle_shell or not child.name.startswith(("Shuttle","Docked shuttle")):
+        continue
+    world_matrix=child.matrix_world.copy()
+    child.parent=shuttle_shell
+    child.matrix_parent_inverse.identity()
+    child.matrix_world=world_matrix
+bpy.context.view_layer.update()
+shuttle_shell.scale=(.79,.78,.87)
 
 # The reference manufacturing platform is compact beside the planet, while
 # its independently owned track remains the full approved orbital radius.

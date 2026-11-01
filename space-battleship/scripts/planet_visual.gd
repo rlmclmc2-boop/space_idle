@@ -218,19 +218,19 @@ func configure(id: String, row: Dictionary) -> void:
 		configured_appearance = appearance.duplicate(true)
 		# Legacy texture is a finished globe, never scroll it as an albedo map.
 		globe.surface_map = STELLAR_MAIN if id == "3" else STELLAR_RED if id == "4" else _map_texture("surfaceTexture", PlanetSphere.SURFACE)
-		globe.cloud_map = _map_texture("cloudTexture", PlanetSphere.CLOUDS)
+		globe.cloud_map = preload("res://assets/planets/painted-v3/cloud-density.png") if id == "1" else _map_texture("cloudTexture", PlanetSphere.CLOUDS)
 		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.006))
 		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0073))
 		globe.glow_strength = clampf(maxf(float(appearance.get("glowStrength", 0.62)), 0.80 if id == "1" else 0.68 if float(appearance.get("emission", 0.0)) > 0.0 else 0.0), 0.0, 1.0)
 		globe.shadow_strength = clampf(float(appearance.get("shadowStrength", 0.86)), 0.0, 1.0)
-		globe.cloud_opacity = clampf(maxf(float(appearance.get("cloudOpacity", 0.65)), 0.84) if id == "1" else float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
+		globe.cloud_opacity = clampf(maxf(float(appearance.get("cloudOpacity", 0.65)), 0.82) if id == "1" else float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
 		globe.atmosphere_color = _color("atmosphereColor", Color("5ac8f0"))
 		globe.configure_visual(appearance)
 		globe.globe_material.set_shader_parameter("authored_stellar_color", id in ["3", "4"])
 		if architecture != null: architecture.configure_shape(appearance)
 		globe.light_direction = Vector3(-0.65, -0.45, 0.62)
 		globe.apply_settings()
-		globe.globe_material.set_shader_parameter("cloud_coverage", 0.18 if id == "1" else 0.0)
+		globe.globe_material.set_shader_parameter("cloud_coverage", 0.12 if id == "1" else 0.0)
 		_layout_globe()
 	preparing=false;pending_row={};loading.hide();globe.show();set_process(false)
 	var facility_source = row.get("visualFacilities", [])
@@ -348,10 +348,13 @@ func _draw_background() -> void:
 				Rect2(anchor * size, Vector2(size.x * 0.72, size.y * 0.84)), false)
 	var stars := RandomNumberGenerator.new()
 	stars.seed = 178
-	for index in 100:
+	for index in (175 if planet_id == "1" else 100):
 		var point := Vector2(stars.randf(), stars.randf()) * size
 		var radius := stars.randf_range(0.5, 1.3)
 		background_layer.draw_circle(point, radius, Color(0.65, 0.84, 0.86, stars.randf_range(0.18, 0.55)))
+		if planet_id == "1" and index % 29 == 0:
+			background_layer.draw_circle(point, radius * 3.3, Color(0.12, 0.53, 0.92, 0.16))
+			background_layer.draw_circle(point, radius * 0.75, Color(0.67, 0.87, 1.0, 0.80))
 
 func _draw_back_orbits() -> void:
 	if icon_mode:return
