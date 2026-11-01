@@ -744,8 +744,11 @@ for side in (-1,1):
                     [1.100,1.100,1.063,1.063],.010,ARMOR_MID,workshop)
     box("Fabrication room roof dark expansion joint",(x,-.93,1.08),(.075,1.23,.025),EDGE,workshop,.004)
     for y in (-1.37,-.97,-.57):
-        box("Fabrication room removable armor cassette",(side*1.30,y,.91),
-            (.055,.29,.46),ARMOR,workshop,.012)
+        wall_prism("Fabrication room removable armor cassette",
+                   [(side*1.265,.67),(side*1.33,.67),
+                    (side*1.33,1.02),(side*1.29,1.13),
+                    (side*1.265,1.13)],y-.145,y+.145,
+                   ARMOR,workshop)
         box("Fabrication room inset service window",(side*1.337,y,1.03),
             (.022,.20,.09),WINDOW,workshop,.004)
         box("Fabrication room lower cooling louver",(side*1.34,y,.70),
@@ -854,8 +857,10 @@ for side in (-1,1):
 for side in (-1,1):
     x=side*.88
     for bay_y in (-1.63,-.54):
-        box("Dock separated service bay dark hull",(x,bay_y,.76),
-            (.30,.44,.59),KEEL,shipyard,.018)
+        wall_prism("Dock separated service bay dark hull",
+                   [(x-.18,.46),(x+.18,.46),(x+.18,.97),
+                    (x+.10,1.07),(x-.10,1.07),(x-.18,.97)],
+                   bay_y-.22,bay_y+.22,KEEL,shipyard)
         slope_shell("Dock separated service bay roof",
                     [(x-.20,bay_y-.24),(x+.20,bay_y-.24),
                      (x+.20,bay_y+.24),(x-.20,bay_y+.24)],
@@ -869,8 +874,11 @@ for side in (-1,1):
                      (x+.09,bay_y+.12),(x-.09,bay_y+.12)],
                     [1.180,1.180,1.150,1.150],.010,ARMOR_MID,shipyard)
     for y in (-1.53,-.71):
-        box("Dock removable sloped armor bay",(side*1.07,y,.93),
-            (.10,.31,.52),ARMOR,shipyard,.012)
+        wall_prism("Dock removable sloped armor bay",
+                   [(side*1.02,.67),(side*1.13,.67),
+                    (side*1.13,1.00),(side*1.07,1.19),
+                    (side*1.02,1.19)],y-.155,y+.155,
+                   ARMOR,shipyard)
         box("Dock navy machinery recess",(side*1.131,y,.93),
             (.018,.21,.23),MACHINE,shipyard,.003)
         box("Dock cyan status slit",(side*1.144,y,1.00),
