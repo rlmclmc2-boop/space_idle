@@ -368,8 +368,8 @@
     },
     {
       "path": "closed-native-edge-sequence.jpg",
-      "bytes": 1184225,
-      "sha256": "ec18b2abb74dc524ef75a33d4c7dae2171537921d620d1011dd50119a4dcd4ed"
+      "bytes": 944393,
+      "sha256": "0bcee0ed3f793d6365b2f8d8f5272f3e846c00b08f5e6e81a2ca94c2f1ece408"
     },
     {
       "path": "facilities-half-second-review.jpg",
@@ -378,8 +378,8 @@
     },
     {
       "path": "facilities-native-edge-sequence.jpg",
-      "bytes": 1122345,
-      "sha256": "7579187a887bc8faf2567567f8c66385d9d52a6bc66bdf5aeea8a5dac37a8970"
+      "bytes": 902027,
+      "sha256": "a49b198c8128558cedb7c219a74a074f9bf41578625b53aa214f571a75c84d34"
     },
     {
       "path": "host-environment.patch",
