@@ -698,8 +698,8 @@ for side in (-1,1):
     box("Dock exterior pressure foot",(side*.87,-1.49,.35),(.34,.52,.25),EDGE,shipyard)
     box("Dock inner socket shadow liner",(side*.68,-.42,.84),(.075,.30,.67),KEEL,shipyard,.012)
     wall_prism("Dock sloped outer entrance shoulder",
-               [(side*.67,.31),(side*1.13,.31),(side*1.13,1.10),
-                (side*.96,1.40),(side*.69,1.40)],-.27,.03,ARMOR_FACE,shipyard)
+               [(side*.78,.31),(side*1.09,.31),(side*1.09,.98),
+                (side*.96,1.18),(side*.78,1.18)],-.27,.03,ARMOR,shipyard)
     box("Dock launch clamp actuator",(side*.57,-1.24,.61),(.21,.30,.21),MACHINE,shipyard,.012)
     box("Dock launch clamp jaw",(side*.48,-1.24,.73),(.12,.25,.08),ARMOR_FACE,shipyard,.008)
     box("Dock contained service light",(side*.85,-1.01,.58),(.028,.20,.025),CYAN,shipyard,.004)
@@ -740,9 +740,9 @@ for side in (-1,1):
         (.48,.37,.12),ARMOR,shipyard,.02)
 for side in (-1,1):
     wall_prism("Dock deep armored portal fascia",
-               [(side*.55,.37),(side*1.14,.37),(side*1.14,1.14),
-                (side*.93,1.43),(side*.70,1.43),(side*.55,1.16)],
-               -.58,-.35,ARMOR_FACE,shipyard)
+               [(side*.72,.37),(side*1.10,.37),(side*1.10,.98),
+                (side*.95,1.20),(side*.76,1.20),(side*.72,1.03)],
+               -.58,-.35,ARMOR_MID,shipyard)
     box("Dock black recessed portal return",(side*.52,-.60,.81),
         (.075,.17,.75),KEEL,shipyard,.009)
 box("Dock portal upper pressure hood",(0,-.47,1.44),
