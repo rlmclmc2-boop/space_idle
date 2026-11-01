@@ -248,6 +248,17 @@ def workshop(root,m):
         for side in (-1,1):
             beam("Portal triangular upper gusset",(x,side*.67,1.17),
                  (x,side*.35,1.27),.09,.10,m["edge"],root)
+    # The open bay carries a visible unfinished module below the traveling
+    # tool, so the node reads as manufacturing at the real page scale.
+    loft_x("Open fabrication workpiece",[
+        (-.66,0,.78,.08,.06),(-.43,0,.79,.24,.11),
+        (.43,0,.79,.24,.11),(.67,0,.78,.08,.06),
+    ],m["pressure"],root,.014)
+    for x in (-.35,.03,.40):
+        box("Exposed module assembly rib",(x,0,.91),
+            (.07,.40,.07),m["edge"],root,.008)
+    box("Active fabrication seam",(.02,0,.954),
+        (.60,.035,.022),m["signal"],root,.004)
     gantry=empty("GantrySlide",root,(0,0,0))
     box("Sliding bridge",(0,0,1.20),(.39,1.16,.11),m["machinery"],gantry)
     arm=empty("ToolArmSweep",gantry,(0,0,1.16))
