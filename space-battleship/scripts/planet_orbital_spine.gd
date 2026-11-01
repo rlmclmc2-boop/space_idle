@@ -3,16 +3,16 @@ extends Node3D
 ## geometry continues behind the planet's depth mask instead of ending there.
 const KINDS := ["auto_explore", "refinery", "equipment", "shipyard"]
 const ARC_BOUNDS := {
-	"auto_explore": Vector2(PI * 1.075, PI * 1.39),
-	"refinery": Vector2(PI * 1.39, TAU - 0.16),
-	"equipment": Vector2(-0.16, PI * 0.5),
-	"shipyard": Vector2(PI * 0.5, PI * 1.075),
+	"auto_explore": Vector2(PI * 1.138889, PI * 1.6),
+	"refinery": Vector2(PI * 1.6, TAU + PI / 15.0),
+	"equipment": Vector2(PI / 15.0, PI * 0.6),
+	"shipyard": Vector2(PI * 0.6, PI * 1.138889),
 }
 const FACILITY_ANGLES := {
-	"auto_explore": PI * 1.155,
-	"refinery": TAU - 0.36,
-	"equipment": 0.78,
-	"shipyard": PI - 0.78,
+	"auto_explore": PI * 1.388889,
+	"refinery": PI * 1.722222,
+	"equipment": PI * 0.238889,
+	"shipyard": PI * 0.722222,
 }
 # Keep the common load path close to terrestrial globes while leaving the
 # four authored work nodes and their independent owned arc ends intact.
