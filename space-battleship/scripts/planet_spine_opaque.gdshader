@@ -40,12 +40,17 @@ void fragment() {
 		color *= texture(albedo_tex, UV).rgb;
 	}
 	float inner_field = (1.0 - smoothstep(0.025, 0.22, UV.x)) * stellar_field_strength;
-	ALBEDO = mix(min(color * 1.35, vec3(1.0)), stellar_field_tint, inner_field * 0.22);
+	// Let bright armor turn to a dark faceted edge at grazing angles. The
+	// pressure hull stays navy while its structural silhouette gains definition.
+	float bright_armor = smoothstep(0.20, 0.42, dot(color, vec3(0.30, 0.59, 0.11)));
+	float edge = 1.0 - smoothstep(0.08, 0.35, abs(dot(normalize(NORMAL), normalize(VIEW))));
+	vec3 faceted = color * (1.0 - 0.35 * bright_armor * edge);
+	ALBEDO = mix(faceted, stellar_field_tint, inner_field * 0.22);
 	ROUGHNESS = hull_roughness;
 	METALLIC = hull_metallic;
 	if (luminous) {
 		EMISSION = color * 1.0;
 	} else if (textured) {
-		EMISSION = color * 0.63 + stellar_field_tint * inner_field * 0.42;
+		EMISSION = color * 0.35 + stellar_field_tint * inner_field * 0.42;
 	}
 }
