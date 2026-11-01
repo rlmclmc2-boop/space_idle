@@ -530,11 +530,13 @@ for side in (-1,1):
         (side*1.19,0,1.48),(.44,.89,.15),ARMOR_SIDE,station)
     box("Command socket cyan guidance notch",
         (side*1.39,0,1.46),(.035,.14,.045),CYAN,station,.004)
-    box("Command rail pressure coupler dark sleeve",
-        (side*1.66,0,1.13),(.42,.49,.34),KEEL,station,.014)
+    sleeve=cyl("Command rail pressure coupler faceted dark sleeve",
+               (side*1.66,0,1.13),.25,.42,KEEL,station,10)
+    sleeve.rotation_euler.y=pi/2
     for x in (1.52,1.83):
-        box("Command rail coupler ivory locking rib",
-            (side*x,0,1.14),(.075,.55,.43),ARMOR_FACE,station,.009)
+        rib=cyl("Command rail coupler ivory locking collar",
+                (side*x,0,1.13),.31,.075,ARMOR_FACE,station,10)
+        rib.rotation_euler.y=pi/2
     box("Command rail coupler cyan service slit",
         (side*1.67,-.258,1.17),(.23,.018,.05),CYAN,station,.003)
 cyl("Command rotating bearing",(0,-.32,1.60),.72,.16,EDGE,station,10)
@@ -593,6 +595,13 @@ for side in (-1,1):
         (side*1.17,0,1.48),(.50,.91,.15),ARMOR_SIDE,refinery)
     box("Heat portal amber service lamp",
         (side*1.43,0,1.46),(.025,.12,.045),AMBER,refinery,.004)
+    sleeve=cyl("Heat rail pressure coupler faceted dark sleeve",
+               (side*1.66,0,1.13),.25,.42,KEEL,refinery,10)
+    sleeve.rotation_euler.y=pi/2
+    for x in (1.52,1.83):
+        rib=cyl("Heat rail coupler ivory locking collar",
+                (side*x,0,1.13),.31,.075,ARMOR_FACE,refinery,10)
+        rib.rotation_euler.y=pi/2
 faceted_dome("Heat chamber gold faceted crown",refinery,(0,-.32),
              ((1.47,.96),(1.68,.99),(1.94,.80),(2.13,.46),(2.21,.19)))
 dome_honeycomb_seams(refinery,(0,-.32),
