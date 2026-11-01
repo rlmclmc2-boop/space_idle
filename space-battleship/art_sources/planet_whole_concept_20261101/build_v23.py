@@ -406,6 +406,10 @@ for a in (-59,-43):
     owned_arc(workshop,"Manufacturing orange overhead gate",a,a+1.4,
               4.18,5.08,1.16,1.28,AMBER)
 beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,workshop)
+for side in (-1,1):
+    beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.15,.20,ARMOR_SIDE,workshop)
+    box("Fabrication gantry armored foot",(side*.68,0,.58),(.31,.39,.25),ARMOR,workshop)
+box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.17,.13),GOLD,workshop)
 beam("Downward working tool",(.17,0,1.48),(.17,0,.66),.07,.08,EDGE,workshop)
 box("Work site contained welding line",(.17,0,.76),(.15,.18,.04),CYAN,workshop,.01)
 
@@ -417,6 +421,10 @@ for side in (-1,1):
     box("Contained dock approach guide",(side*.66,-1.10,.70),(.032,1.67,.022),CYAN,shipyard,.004)
 beam("Dock portal gantry",(-.83,-.40,1.00),(.83,-.40,1.00),.14,.18,ARMOR,shipyard)
 beam("Dock armored entrance canopy",(-.91,-.35,1.19),(.91,-.35,1.19),.22,.25,ARMOR,shipyard)
+for side in (-1,1):
+    beam("Dock entrance upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.25,.27,ARMOR,shipyard)
+    beam("Dock outer service portal upright",(side*.82,-1.39,.35),(side*.82,-1.39,1.02),.16,.19,ARMOR_SIDE,shipyard)
+beam("Dock outer service portal header",(-.83,-1.39,1.04),(.83,-1.39,1.04),.16,.19,ARMOR,shipyard)
 for a in (-146,-119):
     owned_arc(shipyard,"Dock armored entry threshold",a,a+2.2,
               4.08,5.29,.33,1.03,ARMOR_SIDE)
