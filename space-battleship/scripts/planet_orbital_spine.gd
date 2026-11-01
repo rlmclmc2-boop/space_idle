@@ -215,6 +215,14 @@ func _add_side_armor(parent: Node3D, begin: float, finish: float, width: float, 
 	for index in steps:
 		var a := lerpf(begin, finish, float(index) / float(steps))
 		var b := lerpf(begin, finish, float(index + 1) / float(steps))
+		if kind in KINDS:
+			var seam := false
+			var bounds: Vector2 = ARC_BOUNDS[kind]
+			for rib_index in range(1, 6):
+				var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
+				if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14 and absf((a + b) * 0.5 - rib_angle) < 0.008:
+					seam = true
+			if seam: continue
 		for band in profile:
 			var surface: SurfaceTool = band[2]
 			var first: Vector2 = band[0]
