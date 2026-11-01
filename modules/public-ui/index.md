@@ -38,3 +38,5 @@
 - [2026-11-01 R12 and final equipment shared-shell WIP](e845-r12-shared-wip-20261101/README.md): exact runtime closure, affected full screens, actual 1x short video; author observations only.
 
 - [2026-11-01 R12 shared-shell 2/3-route controlled full screens](e845-r12-two-three-controlled-20261101/README.md): current-source zero and Owner-load static states; author evidence only.
+
+- [2026-11-01 R12 actual pointer route and resource handoff](e845-r12-pointer-handoff-20261101/README.md): 19 event-phase original screens, hidden-stage lifecycle; author evidence only.

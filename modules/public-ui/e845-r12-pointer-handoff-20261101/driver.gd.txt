@@ -1,0 +1,100 @@
+extends SceneTree
+const OUT := "/tmp/space-idle-runtime472/r12-pointer-handoff/"
+var game
+var timeline: Array = []
+var serial := 0
+func _initialize() -> void: call_deferred("run")
+func frames(n: int) -> void:
+	for i in n: await process_frame
+func record(label: String) -> void:
+	await RenderingServer.frame_post_draw
+	var path := "%02d-%s.png" % [serial, label]
+	root.get_texture().get_image().save_png(OUT + path)
+	var scene = game.reactor_scene
+	timeline.append({"file":path,"label":label,"drawn_frame":Engine.get_frames_drawn(),"route":game._zone_shell._active_route,"equipment_visible":game.equipment_scene.visible,"reactor_visible":scene.visible,"reactor_processing":scene.is_processing(),"stage_update":scene._stage_viewport.render_target_update_mode,"visible_frames":scene.presentation_counts.visible_frames,"detail_visible":game._zone_shell._details.visible,"navigation_blocked":game._zone_navigation_blocked()})
+	serial += 1
+func pointer(point: Vector2, down: bool) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	motion.global_position = point
+	Input.parse_input_event(motion)
+	var event := InputEventMouseButton.new()
+	event.position = point
+	event.global_position = point
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = down
+	Input.parse_input_event(event)
+func click_route(id: String) -> void:
+	var button: Button = game._zone_shell._route_buttons[id]
+	var point := button.get_global_rect().get_center()
+	pointer(point, true)
+	await frames(1)
+	await record(id + "-down")
+	await frames(1)
+	await record(id + "-held")
+	pointer(point, false)
+	await frames(1)
+	await record(id + "-released")
+	await frames(1)
+	await record(id + "-settled")
+	assert(game._zone_shell._active_route == id)
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	root.content_scale_size = Vector2i(1440,900)
+	game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(70)
+	assert(game.startup_error.is_empty())
+	var session = game.session
+	var saved: Dictionary = session.campaign_system.save_state()
+	saved.grants["feature:reactor"] = true
+	saved.grants["reactor_module:condensation"] = true
+	assert(session.campaign_system.restore_state(saved).ok)
+	session.reactor_system.refresh_availability(session.campaign_system.available)
+	assert(session.reactor_system.refresh(session.reactor_inputs(),session.publish_reactor).ok)
+	game._skip_tutorial = true
+	var pending: Dictionary = session.pending_guidance()
+	while not pending.is_empty():
+		assert(session.dismiss_guidance(str(pending.kind),str(pending.id)).ok)
+		pending = session.pending_guidance()
+	game._sync_guidance()
+	game._refresh_feature_visibility()
+	session.set_pause("user",false)
+	assert(session.reactor_system.distribute(session.reactor_inputs(),session.publish_reactor).ok)
+	await click_route("equipment")
+	await click_route("reactor")
+	# Open the actual resource button, not PopupPanel.popup() or its signal.
+	pointer(Vector2(730,32),true)
+	await frames(1)
+	pointer(Vector2(730,32),false)
+	await frames(3)
+	assert(game._zone_shell._details.visible)
+	await record("resources-open-on-reactor")
+	var details: PopupPanel = game._zone_shell._details
+	var close: Button = details.get_child(0).get_child(details.get_child(0).get_child_count()-1)
+	var point: Vector2 = Vector2(details.position) + close.get_global_rect().get_center()
+	print("POPUP_CLOSE position=",details.position," local_rect=",close.get_global_rect()," root_point=",point)
+	pointer(point,true)
+	await frames(1)
+	pointer(point,false)
+	await frames(1)
+	await frames(2)
+	assert(not details.visible)
+	await record("resources-closed-on-reactor")
+	await click_route("equipment")
+	var hidden_count: int = game.reactor_scene.presentation_counts.visible_frames
+	await frames(8)
+	assert(game.reactor_scene.presentation_counts.visible_frames == hidden_count)
+	assert(not game.reactor_scene.is_processing())
+	assert(game.reactor_scene._stage_viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED)
+	await record("equipment-hidden-reactor-stable")
+	await click_route("reactor")
+	assert(game.reactor_scene.is_processing())
+	var file := FileAccess.open(OUT + "timeline.json",FileAccess.WRITE)
+	file.store_string(JSON.stringify({"runtime_source":"9838e1e77a60f31070bc472e9ed7ca6eca4161ef","input":"Input.parse_input_event root pointer; embedded PopupWindow close via root pointer","setup":"controlled campaign grants; Owner.distribute; tutorial dismissed","frames":timeline},"  "))
+	file.close()
+	print("R12_POINTER_HANDOFF saved=",serial," hidden_frames_stable=true actual_root_pointer_routes=true")
+	if session.save_files != null: session.save_files.close(2000)
+	game.queue_free()
+	await frames(3)
+	quit()
