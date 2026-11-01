@@ -31,7 +31,7 @@
         -0.972,
         0.243
       ],
-      "socket_radius": 26,
+      "socket_radius": 33,
       "socket_depth": 28,
       "insert_depth": 45
     },
@@ -58,7 +58,7 @@
         0.976,
         0.215
       ],
-      "socket_radius": 26,
+      "socket_radius": 33,
       "socket_depth": 28,
       "insert_depth": 45
     },
@@ -85,7 +85,7 @@
         -0.947,
         -0.322
       ],
-      "socket_radius": 26,
+      "socket_radius": 33,
       "socket_depth": 28,
       "insert_depth": 45
     },
@@ -112,7 +112,7 @@
         0.986,
         -0.169
       ],
-      "socket_radius": 26,
+      "socket_radius": 33,
       "socket_depth": 28,
       "insert_depth": 65
     }

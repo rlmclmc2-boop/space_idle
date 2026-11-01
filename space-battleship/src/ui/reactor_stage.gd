@@ -68,7 +68,7 @@ func _init() -> void:
 	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
-	_environment.ambient_light_energy=.18
+	_environment.ambient_light_energy=.26
 	var environment_node:=WorldEnvironment.new()
 	environment_node.environment=_environment
 	_baker.add_child(environment_node)
@@ -77,11 +77,19 @@ func _init() -> void:
 	light.light_energy=1.0
 	light.light_angular_distance=.6
 	light.shadow_enabled=true
-	light.shadow_opacity=.32
+	light.shadow_opacity=.62
 	light.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
 	light.directional_shadow_max_distance=3000
 	_baker.add_child(light)
-	light.look_at_from_position(Vector3(100,-120,2200),Vector3(594,-400,0))
+	light.look_at_from_position(Vector3(80,-20,650),Vector3(594,-400,0))
+	for x in [185.0,1010.0]:
+		var luminaire:=OmniLight3D.new()
+		luminaire.position=Vector3(x,-78.0,180.0)
+		luminaire.light_color=Color("ffd6a0")
+		luminaire.light_energy=.65
+		luminaire.omni_range=650.0
+		luminaire.omni_attenuation=1.8
+		_baker.add_child(luminaire)
 	_asset=MODEL.instantiate()
 	_baker.add_child(_asset)
 	for group in _asset.get_children():
@@ -114,6 +122,7 @@ func _update_canvas_transform() -> void:
 		for material in materials:material.set_shader_parameter("stage_from_canvas",matrix)
 
 func _kind(title: String) -> int:
+	if "core energy rim" in title or "core field meridian" in title:return 12
 	if "core containment glass" in title or "weapon chamber glazing" in title:return 1
 	if "receiver acknowledgement" in title:return 11
 	if "core transfer packet" in title:return 10

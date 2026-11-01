@@ -29,7 +29,7 @@ void vertex(){
  float compression=smoothstep(0.43,0.60,cycle);
  vec3 center=vec3(594.0,-340.0,70.0)+assembly_offset;
  if(work_kind==3){
-  float scale=cycle<0.60?0.80+charge*.12-compression*.26:mix(.66,.95,smoothstep(.60,.72,cycle));
+  float scale=cycle<0.60?0.94+charge*.03-compression*.18:mix(.79,1.02,smoothstep(.60,.72,cycle));
   vec3 delta=world_point-center;
   vec3 shaped=delta*vec3(scale*(1.0-compression*.18),scale*.90,scale);
   VERTEX+=vec2(shaped.x-delta.x,delta.y-shaped.y);
@@ -90,26 +90,26 @@ void fragment(){
  if(work_kind==1){
   float rim=pow(1.0-abs(facing_normal.z),2.0);
   color=mix(vec3(0.01,0.12,0.22),vec3(0.05,0.65,0.9),rim);
-  opacity=0.025+rim*(0.12+0.22*strength);
+  opacity=0.10+rim*(0.20+0.30*strength);
  }else if(work_kind==2){
   float radius=length(point.xy-vec2(594.0,-340.0));
   float charge=smoothstep(0.0,.43,cycle);
   float head=exp(-pow((radius-118.0*(1.0-charge))/18.0,2.0));
-  color=vec3(.08,.46,.68)*strength;
-  opacity=(.025+head*.10)*(1.0-smoothstep(.60,.72,cycle))*pow(abs(facing_normal.z),.8);
+  color=vec3(.14,.77,1.0)*strength;
+  opacity=(.05+head*.50)*(1.0-smoothstep(.60,.72,cycle))*pow(abs(facing_normal.z),.8);
  }else if(work_kind==3){
   float facing=max(0.0,dot(normalize(facing_normal),normalize(vec3(-.5,.6,.75))));
   float charged=smoothstep(0.0,.43,cycle);
   float release=1.0-smoothstep(.60,.76,cycle);
-  color=mix(vec3(.015,.13,.26),vec3(.18,.67,.85),facing*.75+charged*.15)*strength;
-  opacity=(.32+release*.20+charged*.06)*smoothstep(.01,.25,abs(facing_normal.z));
+  color=mix(vec3(.025,.27,.46),vec3(.25,.87,1.0),facing*.75+charged*.15)*strength;
+  opacity=(.52+release*.15+charged*.08)*smoothstep(.01,.25,abs(facing_normal.z));
  }else if(work_kind==4){
   float radius=length(point.xy-vec2(1045.0,-177.0));
   float front=20.0+106.0*formation;
   float mask=1.0-smoothstep(front-4.0,front,radius);
   float panel=pow(1.0-abs(facing_normal.z),2.0);
   float rim=smoothstep(front-12.0,front-4.0,radius);
-  opacity=work_zone==1?mask*(0.10+panel*0.45+rim*0.28):0.6;
+  opacity=work_zone==1?mask*(0.42+panel*0.30+rim*0.25):0.6;
   color=mix(vec3(0.035,0.42,0.65),vec3(0.30,0.90,1.0),panel+rim*0.4)*strength;
   if(work_zone==0){color=mix(color,vec3(.65,.97,1.0),response*.70);}
  }else if(work_kind==5){
@@ -117,7 +117,11 @@ void fragment(){
   float thermal=face*0.50+0.12;
   if(work_zone==1){thermal=clamp(1.0-length((point.xy-vec2(175.0,-501.0))/vec2(55.0,38.0)),0.0,1.0);}
   else if(work_zone==2){thermal=clamp(1.0-length((point.xy-vec2(175.0,-594.0))/vec2(78.0,38.0)),0.0,1.0);}
-  color=mix(vec3(0.34,0.045,0.008),vec3(1.0,0.76,0.20),thermal)*strength;
+  color=mix(vec3(0.62,0.075,0.008),vec3(1.0,0.86,0.24),thermal)*strength;
+  if(work_zone==0 || work_zone==3){
+   float center_hot=pow(max(0.0,facing_normal.z),.5);
+   color=mix(vec3(.92,.27,.015),vec3(1.0,.91,.36),center_hot*.80)*strength;
+  }
   if(work_zone==1){
    float travel=clamp((received_age-.045)/.10,0.0,1.0);
    vec2 impact=mix(vec2(210.0,-490.0),vec2(175.0,-504.0),travel);
@@ -156,6 +160,10 @@ void fragment(){
   vec3 hot=transfer_layer>0.0?vec3(.80,1.0,1.0):vec3(.20,.74,.91);
   color=mix(dark,hot,.20+facing*.80)*strength;
   opacity=cycle<.72 && (cycle<.60 || outlet_enabled)?1.0:0.0;
+ }else if(work_kind==12){
+  float compression=smoothstep(.43,.60,cycle);
+  color=mix(vec3(.12,.78,.98),vec3(.60,1.0,1.0),compression*.55)*strength;
+  opacity=.66+compression*.18;
  }else if(work_kind==11){
   float fill=smoothstep(0.0,.06,received_age);
   float envelope=smoothstep(0.0,.012,received_age)*(1.0-smoothstep(.15,.22,received_age));
