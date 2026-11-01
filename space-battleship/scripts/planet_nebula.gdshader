@@ -1,6 +1,11 @@
 shader_type canvas_item;
 render_mode unshaded;
 
+// The enclosing page can retain continuous coverage without promoting the
+// original corner gas to a second foreground. Defaults preserve source use.
+uniform float field_opacity : hint_range(0.0, 1.0) = 1.0;
+uniform float upper_recession : hint_range(0.0, 1.0) = 0.0;
+
 // Static layered blue gas clouds around the orbit's open corners. Their
 // placement stays fixed while the planet and its structures move separately.
 float hash21(vec2 p) {
@@ -50,5 +55,8 @@ void fragment() {
     hue = mix(hue, vec3(0.25, 0.75, 1.0), max(blue_vein, bright_wisp) * 0.46);
     hue += vec3(0.015, 0.055, 0.09) * smoothstep(0.58, 0.80, fine_dust) * blue_vein;
     hue = mix(hue, vec3(0.45, 0.88, 1.0), blue_star);
-    COLOR = vec4(hue, min(max(cloud * 0.86, blue_star * 0.84), 0.89));
+    float page_weight = mix(1.0,
+        0.30 + 0.70 * smoothstep(0.15, 0.80, UV.y), upper_recession);
+    COLOR = vec4(hue,
+        min(max(cloud * 0.86, blue_star * 0.84), 0.89) * field_opacity * page_weight);
 }

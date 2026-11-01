@@ -142,6 +142,12 @@ func _layout_environment() -> void:
 	background_layer.size = rect.size
 	nebula_layer.position = rect.position
 	nebula_layer.size = rect.size
+	# Full-module coverage needs its own exposure: the authored corner clouds
+	# must recede behind both the fitted subject and the controls above it.
+	var composed_field := environment_rect.has_area() and planet_id == "1"
+	if nebula_layer.material is ShaderMaterial:
+		nebula_layer.material.set_shader_parameter("field_opacity", 0.32 if composed_field else 1.0)
+		nebula_layer.material.set_shader_parameter("upper_recession", 0.80 if composed_field else 0.0)
 	background_layer.queue_redraw()
 
 func _body_radius() -> float:
@@ -353,14 +359,17 @@ func advance(dt: float, paused: bool) -> void:
 func _draw_background() -> void:
 	if icon_mode:return
 	# Static field, separate from the owner-driven sphere and orbital motion.
-	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, background_layer.size), false)
+	var composed_field := environment_rect.has_area() and planet_id == "1"
+	var sky_tint := Color(0.52, 0.62, 0.76, 1.0) if composed_field else Color.WHITE
+	background_layer.draw_texture_rect(scene_sky, Rect2(Vector2.ZERO, background_layer.size), false, sky_tint)
 	if float(appearance.get("emission", 0.0)) == 0.0:
 		# Wide, restrained blue cloud light supports the approved deep-space
 		# composition while leaving the planet and both rail arcs unobscured.
 		for anchor in [Vector2(-0.22, -0.37), Vector2(0.58, -0.35),
 				Vector2(-0.29, 0.52), Vector2(0.61, 0.54)]:
 			background_layer.draw_texture_rect(nebula_glow,
-				Rect2(anchor * background_layer.size, background_layer.size * Vector2(0.72, 0.84)), false)
+				Rect2(anchor * background_layer.size, background_layer.size * Vector2(0.72, 0.84)), false,
+				Color(1.0, 1.0, 1.0, 0.32) if composed_field else Color.WHITE)
 	var stars := RandomNumberGenerator.new()
 	stars.seed = 178
 	for index in (380 if planet_id == "1" else 100):
