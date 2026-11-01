@@ -4,7 +4,7 @@
 
 ## 当前现场
 
-分支`wip/planet-thread-resume-20261101`，原实机简模检查点`d2a7ae3f`；独立整体概念草案在`art_sources/planet_whole_concept_20261101/`。建筑与环绕按M7整体重新设计。
+分支`wip/planet-thread-resume-20261101`，原实机简模检查点`d2a7ae3f`；独立整体概念与其v8实机导出源在`art_sources/planet_whole_concept_20261101/`。建筑与环绕按M7整体重新设计。
 
 新Blender源在`art_sources/planet_integrated_v6/`，四件新模型在`assets/planets/facilities_v6/`，运行端已加载v6；环截面与节点扩幅同步重设。现有动画枢轴、独立owned、球后遮挡和业务接口保留。
 
@@ -12,7 +12,7 @@ Godot4.7.2四段逐建、70°侧角、同版加速转动、第6类和主场景�
 
 ## 下一步
 
-父线程已看`v7-macro-ef1fd9ee/complete.jpg`并退回，认为是浅色简模。独立概念稿现有四设施大外壳、热工出料、船坞开放泊位及四处扩口装甲；看`art_sources/planet_whole_concept_20261101/concept-complete.jpg`评估整套建筑关系。下一步以该概念为新资产基线，重作实机四设施和环的源模型，再核同版动态、逐建与整页；不要继续给v6/v7简模补小件。
+父线程已看`v7-macro-ef1fd9ee/complete.jpg`并退回，认为是浅色简模。独立概念稿现有四设施大外壳、热工出料、船坞开放泊位及四处扩口装甲；看`art_sources/planet_whole_concept_20261101/concept-complete.jpg`评估整套建筑关系。v8新GLB已从概念源直接导出，运行端现加载v8；环脊上表面改为深色机械通道和两侧窄装甲承力面。Godot4.7.2已跑同版逐建1至4、70°侧角、32帧加速转动与1440×900实机页面；本地看无漂浮运动件、球面穿透或抽屉挤压，设施抽屉四项均可选择。下一步对照整屏认可的24db2a9c风格，继续做主材质层次、工坊工作过程与不同星体的尺度可读性；同时核实机整页结构是否获得美术认可，未获得前不宣称完成。
 
 ## 恢复
 

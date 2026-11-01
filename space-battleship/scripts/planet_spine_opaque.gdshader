@@ -40,12 +40,12 @@ void fragment() {
 		color *= texture(albedo_tex, UV).rgb;
 	}
 	float inner_field = (1.0 - smoothstep(0.025, 0.22, UV.x)) * stellar_field_strength;
-	ALBEDO = mix(min(color * 1.20, vec3(1.0)), stellar_field_tint, inner_field * 0.22);
+	ALBEDO = mix(color, stellar_field_tint, inner_field * 0.22);
 	ROUGHNESS = hull_roughness;
 	METALLIC = hull_metallic;
 	if (luminous) {
 		EMISSION = color * 1.0;
 	} else if (textured) {
-		EMISSION = color * 0.63 + stellar_field_tint * inner_field * 0.42;
+		EMISSION = color * 0.35 + stellar_field_tint * inner_field * 0.42;
 	}
 }

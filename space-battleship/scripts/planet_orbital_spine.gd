@@ -61,7 +61,7 @@ func _ready() -> void:
 	# deck reads as their shared structure under the same scene lighting.
 	_deck = _material(Color("d2c5af"))
 	_ivory = _material(Color("a7a18f"))
-	_channel = _material(Color("294451"))
+	_channel = _material(Color("425e69"))
 	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
@@ -339,7 +339,7 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 			var band_center: float = (profile[band].x + profile[band + 1].x) * 0.5
 			# A broad recessed machinery way breaks up the old road-like armor
 			# surface. Both armor banks remain part of this same load section.
-			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.095 else surface
+			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.27 else surface
 			_deck_vertex(target, profile, band, a, t0, wa, lift, v_start, v_end, kind)
 			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)
 			_deck_vertex(target, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
