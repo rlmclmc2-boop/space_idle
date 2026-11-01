@@ -43,8 +43,8 @@ void fragment() {
 	// Let bright armor turn to a dark faceted edge at grazing angles. The
 	// pressure hull stays navy while its structural silhouette gains definition.
 	float bright_armor = smoothstep(0.20, 0.42, dot(color, vec3(0.30, 0.59, 0.11)));
-	float edge = 1.0 - smoothstep(0.08, 0.35, abs(dot(normalize(NORMAL), normalize(VIEW))));
-	vec3 faceted = color * (1.0 - 0.35 * bright_armor * edge);
+	float edge = 1.0 - smoothstep(0.12, 0.56, abs(dot(normalize(NORMAL), normalize(VIEW))));
+	vec3 faceted = color * (1.0 - 0.52 * bright_armor * edge);
 	ALBEDO = mix(faceted, stellar_field_tint, inner_field * 0.22);
 	ROUGHNESS = hull_roughness;
 	METALLIC = hull_metallic;

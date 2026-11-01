@@ -195,8 +195,14 @@ func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float
 		_add_wall(parent, begin, finish, side * width * 0.5, -0.18, 0.26, _navy, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.004), -0.28, 0.01, _side, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.26, _side, kind)
-		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.008), 0.015, 0.055, _cyan, kind)
 		_add_side_armor(parent, begin, finish, width, side, kind)
+	if kind in KINDS:
+		# Energy marks the work node; the load-bearing outline remains dark
+		# through transit sections instead of glowing around the whole orbit.
+		var guide_begin := maxf(begin, FACILITY_ANGLES[kind] - 0.19)
+		var guide_end := minf(finish, FACILITY_ANGLES[kind] + 0.19)
+		for side in [-1.0, 1.0]:
+			_add_wall(parent, guide_begin, guide_end, side * (width * 0.5 + 0.008), 0.015, 0.055, _cyan, kind)
 
 func _add_side_armor(parent: Node3D, begin: float, finish: float, width: float, side: float, kind: String) -> void:
 	# An extruded pressure shoulder and lower heel run on the same owned mesh
