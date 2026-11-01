@@ -19,9 +19,13 @@ void vertex(){
  float s=835.0/1326.0;
  world_point=vec3((screen.x-(808.0-1187.0*s)*0.5)/s,-screen.y/s,(data.r*255.0*256.0+data.g*255.0)/65535.0*1024.0-256.0);
  if(work_kind==3){
-  float warp=sin(world_point.x*0.07+phase*2.1)*sin(world_point.y*0.08-phase*1.7)*6.0*abs(facing_normal.z);
-  VERTEX+=vec2(facing_normal.x,-facing_normal.y)*warp;
-  world_point+=facing_normal*warp;
+  float cycle=fract(phase*0.65);
+  float charge=smoothstep(0.05,0.76,cycle);
+  float release=smoothstep(0.76,0.83,cycle)*(1.0-smoothstep(0.83,0.98,cycle));
+  float compression=0.82+0.16*charge-0.10*release;
+  vec3 delta=world_point-vec3(594.0,-340.0,70.0);
+  VERTEX+=vec2(delta.x,-delta.y)*(compression-1.0);
+  world_point=vec3(594.0,-340.0,70.0)+delta*compression;
  }
 }
 void fragment(){
@@ -50,20 +54,26 @@ void fragment(){
   color=mix(vec3(0.01,0.18,0.35),vec3(0.45,0.95,1.0),pulse)*strength;
  }else if(work_kind==3){
   float facing=dot(facing_normal,normalize(vec3(-0.4,0.6,0.8)));
-  float inner=sin(world_point.x*0.075+world_point.z*0.09+phase*2.7)*sin(world_point.y*0.063-phase*1.8);
-  color=mix(vec3(0.03,0.40,0.75),vec3(0.65,1.0,1.0),clamp(facing*0.48+0.45+inner*0.15,0.0,1.0))*strength;
+  float charge=smoothstep(0.05,0.76,fract(phase*0.65));
+  color=mix(vec3(0.03,0.40,0.75),vec3(0.65,1.0,1.0),clamp(facing*0.42+0.34+charge*0.22,0.0,1.0))*strength;
   float discharge=pow(max(0.0,cos((phase*0.65-0.8)*6.2831853)),8.0);
   color+=vec3(0.18,0.24,0.25)*discharge*strength;
   color=mix(vec3(1.0),color,smoothstep(12.0,98.0,length(world_point.xy-vec2(594.0,-340.0))));
-  opacity=0.65;
+  opacity=0.42+charge*0.24;
  }else if(work_kind==4){
   float radius=length(world_point.xy-vec2(1045.0,-177.0));
-  opacity=work_zone==1?(1.0-smoothstep(16.0+106.0*formation,20.0+106.0*formation,radius))*0.68:0.75;
+  float front=20.0+106.0*formation;
+  float mask=1.0-smoothstep(front-4.0,front,radius);
   float panel=pow(1.0-abs(facing_normal.z),2.0);
-  color=mix(vec3(0.035,0.50,0.72),vec3(0.30,0.90,1.0),panel)*strength;
+  float rim=smoothstep(front-12.0,front-4.0,radius);
+  opacity=work_zone==1?mask*(0.10+panel*0.45+rim*0.28):0.6;
+  color=mix(vec3(0.035,0.42,0.65),vec3(0.30,0.90,1.0),panel+rim*0.4)*strength;
  }else if(work_kind==5){
   float face=max(0.0,dot(facing_normal,normalize(vec3(-0.2,0.6,1.0))));
-  color=mix(vec3(0.9,0.13,0.006),vec3(1.0,0.72,0.10),face*0.68+0.18)*strength;
+  float thermal=face*0.50+0.12;
+  if(work_zone==1){thermal=clamp(1.0-length((world_point.xy-vec2(175.0,-501.0))/vec2(55.0,38.0)),0.0,1.0);}
+  else if(work_zone==2){thermal=clamp(1.0-length((world_point.xy-vec2(175.0,-594.0))/vec2(78.0,38.0)),0.0,1.0);}
+  color=mix(vec3(0.34,0.045,0.008),vec3(1.0,0.76,0.20),thermal)*strength;
   // Transport highlights stay inside the actual falling stream / outlet.
   // The furnace throat and catch pool never receive a scrolling wave layer.
   if(work_zone==0 || work_zone==3){

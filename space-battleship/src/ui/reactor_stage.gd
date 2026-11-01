@@ -75,10 +75,11 @@ func _init() -> void:
 	light.light_energy=1.0
 	light.light_angular_distance=.6
 	light.shadow_enabled=true
+	light.shadow_opacity=.32
 	light.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
 	light.directional_shadow_max_distance=3000
 	_baker.add_child(light)
-	light.look_at_from_position(Vector3(-400,300,1400),Vector3(594,-400,0))
+	light.look_at_from_position(Vector3(100,-120,2200),Vector3(594,-400,0))
 	_asset=MODEL.instantiate()
 	_baker.add_child(_asset)
 	for group in _asset.get_children():

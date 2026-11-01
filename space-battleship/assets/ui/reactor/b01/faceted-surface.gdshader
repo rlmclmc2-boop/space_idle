@@ -17,6 +17,6 @@ void fragment(){
 }
 void light(){
  float facing=dot(NORMAL,LIGHT);
- float band=facing>0.60?1.0:(facing>0.05?0.63:0.10);
+ float band=facing>0.85?0.95:(facing>0.60?0.78:(facing>0.25?0.58:0.32));
  DIFFUSE_LIGHT+=ALBEDO*LIGHT_COLOR*ATTENUATION*band/3.14159265;
 }
