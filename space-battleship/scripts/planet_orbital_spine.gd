@@ -266,15 +266,15 @@ func _section_width(kind: String, angle: float) -> float:
 	# The same real cross-section grows out of the transit spine at each owned
 	# work node, then returns to a narrow section before any independent join.
 	var distance := absf(angle - FACILITY_ANGLES[kind])
-	var t := clampf((distance - 0.08) / 0.16, 0.0, 1.0)
+	var t := clampf((distance - 0.08) / 0.22, 0.0, 1.0)
 	var blend := 1.0 - t * t * (3.0 - 2.0 * t)
-	if kind == "refinery":
-		# The furnace sits close to its next independent section. Its near
-		# shoulder must return to transit width at the actual mating plane.
-		blend *= smoothstep(0.0, 0.10, ARC_BOUNDS[kind].y - angle)
+	# Every owned section returns to the common cross-section at its open
+	# construction seam, even when the broader node nearly reaches that seam.
+	var bounds: Vector2 = ARC_BOUNDS[kind]
+	blend *= smoothstep(0.0, 0.10, angle - bounds.x) * smoothstep(0.0, 0.10, bounds.y - angle)
 	# Give each built work floor a real shoulder matching its pressure feet.
 	# The station stays narrow so its independently built passage stays open.
-	var node_width := 1.22 if kind == "auto_explore" else 1.43 if kind == "refinery" else 1.54 if kind == "equipment" else 1.58 if kind == "shipyard" else NODE_WIDTH
+	var node_width := 1.50 if kind == "auto_explore" else 1.68 if kind == "refinery" else 1.78 if kind == "equipment" else 1.80 if kind == "shipyard" else NODE_WIDTH
 	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:
@@ -285,7 +285,7 @@ func _transit_width(angle: float) -> float:
 func _shoulder_lift(kind: String, angle: float) -> float:
 	if kind == "" or kind == "front_bearing": return 0.0
 	var distance := absf(angle - FACILITY_ANGLES[kind])
-	var lift := 0.15 * (1.0 - smoothstep(0.10, 0.29, distance))
+	var lift := 0.21 * (1.0 - smoothstep(0.10, 0.32, distance))
 	if kind == "refinery":
 		lift *= smoothstep(0.0, 0.085, ARC_BOUNDS[kind].y - angle)
 	return lift
