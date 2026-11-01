@@ -156,7 +156,9 @@ void fragment(){
   float panel=pow(1.0-abs(facing_normal.z),2.0);
   float rim=smoothstep(front-.085,front-.025,radius);
   opacity=work_zone==1?mask*(0.50+panel*0.35+rim*0.45):0.6;
-  color=mix(vec3(0.035,0.42,0.65),vec3(0.30,0.90,1.0),panel+rim*0.4)*strength;
+  float lit_face=clamp(dot(facing_normal,normalize(vec3(-.48,.55,.82))),0.0,1.0);
+  float transmission=.15+.50*lit_face+.35*panel;
+  color=mix(vec3(.012,.16,.31),vec3(.20,.80,1.0),clamp(transmission+rim*.45,0.0,1.0))*strength;
   if(work_zone==0){color=mix(color,vec3(.65,.97,1.0),response*.70);}
   else{
    // Stationary constraint cells live on the actual bowed field surface.
