@@ -127,10 +127,10 @@ for side in (-1, 1):
     cheek.data.materials.append(ivory)
     cheek.data.materials.append(navy)
     for face in cheek.data.polygons:
-        if face.center.z > 1.06:
-            face.material_index = 1
-        elif face.center.z < .26:
+        if face.center.z < .22:
             face.material_index = 2
+        elif face.center.z < .58 or face.center.z > 1.06:
+            face.material_index = 1
     # The side cut is a real opening into the tool path. Keep its lower sill
     # and upper header as load members, leaving the center visibly open.
     box("Inset inner bay lower sill", (0, side*.575, .32),
