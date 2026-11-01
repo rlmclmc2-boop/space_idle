@@ -315,7 +315,7 @@ func _armor_surface(authored_name: String) -> float:
 func _armor_terminal_zone(authored_name: String) -> float:
 	for prefix in ["Dock deep armored portal fascia", "Dock outer pressure portal shoulder",
 			"Dock sloped outer entrance shoulder", "Dock angled end armor cheek",
-			"Manufacturing sloped load shoulder"]:
+			"Manufacturing sloped load shoulder", "Fabrication room continuous side pressure shell"]:
 		if authored_name.begins_with(prefix): return 0.9
 	return 0.0
 

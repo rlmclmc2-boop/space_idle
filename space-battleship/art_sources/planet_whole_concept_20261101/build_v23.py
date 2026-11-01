@@ -735,7 +735,7 @@ for side in (-1,1):
                     [(x-.27,roof_y-.18),(x+.27,roof_y-.18),
                      (x+.25,roof_y+.18),(x-.25,roof_y+.18)],
                     [1.08,1.08,1.00,1.00],.10,
-                    ARMOR_WARM if roof_y == -.91 else ARMOR_SOFT,workshop)
+                    ARMOR_SOFT if roof_y == -.91 else ARMOR_WARM,workshop)
         # A recessed trapezoid follows the roof pitch. The broad dark shape
         # stays legible at the actual page size without closing the work bay.
         slope_shell("Fabrication room pitched service hatch recess",
@@ -750,7 +750,7 @@ for side in (-1,1):
     wall_prism("Fabrication room continuous side pressure shell",
                [(side*1.23,.58),(side*1.38,.58),
                 (side*1.38,.88),(side*1.29,1.02),
-                (side*1.23,1.02)],-1.60,-.27,ARMOR_MID,workshop)
+                (side*1.23,1.02)],-1.60,-.27,ARMOR_SOFT,workshop)
     box("Fabrication room lower dark pressure sill",(side*1.39,-.94,.64),
         (.018,1.20,.10),ARMOR_SIDE,workshop,.004)
     for y in (-1.36,-.56):
