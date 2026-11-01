@@ -89,3 +89,5 @@
 - 原图星球同壳候选 `79329163`：[planet-v28-original-framing-shared-20261101](planet-v28-original-framing-shared-20261101/README.md)。
 
 - 原图星球同壳候选 `fb482dce`：[planet-v30-original-refined-shared-20261101](planet-v30-original-refined-shared-20261101/README.md)。
+
+- 当前清晰输送版公共组合 `bf9c52ba`：[reactor-receiver-shared-20261101](reactor-receiver-shared-20261101/README.md)。

@@ -1,0 +1,22 @@
+{
+  "video": "reactor-one-1x-12s.mp4",
+  "bytes": 1109100,
+  "sha256": "3791070684c37bdbdae3511b535b4c3bbcd06f7b74a1d23761b318e4ea614a31",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 360,
+  "duration_seconds": 12,
+  "parts": [
+    {
+      "path": "one-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "055d3f3ceaf908ee04e1463162c110bf075b8dd1f6d076915ff9529306af2b06"
+    },
+    {
+      "path": "one-parts/part-001.bin",
+      "bytes": 453740,
+      "sha256": "6c4cc3bcf567a60c068040f5eead55a419c0467bc8f5300828a434ac4626474d"
+    }
+  ]
+}
