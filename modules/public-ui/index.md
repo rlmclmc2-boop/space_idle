@@ -101,3 +101,5 @@
 - 新批准细环星球中间版 `0d54b732`：[planet-thin-orbit-shared-20261101](planet-thin-orbit-shared-20261101/README.md)。
 
 - 新批准细环星球中间版 `7742b28f`：[planet-facility-proportion-shared-20261101](planet-facility-proportion-shared-20261101/README.md)。
+
+- 新批准细环星球中间版 `c666ba86`：[planet-cloud-material-shared-20261101](planet-cloud-material-shared-20261101/README.md)。
