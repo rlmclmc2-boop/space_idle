@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PORT weapons device position_error=0.0 axis_error=0.00000014675942
+PORT weapons core position_error=0.0 axis_error=0.00000016049042
+PORT defence device position_error=0.0 axis_error=0.00000015269147
+PORT defence core position_error=0.0 axis_error=0.00000023888379
+PORT smelting device position_error=0.0 axis_error=0.00000018371385
+PORT smelting core position_error=0.0 axis_error=0.00000028624197
+PORT condensation device position_error=0.0 axis_error=0.00000019992005
+PORT condensation core position_error=0.0 axis_error=0.00000038165595
+PORT_CHECK_OK eight explicit GLB markers match shared metadata; geometry-only, not visual acceptance

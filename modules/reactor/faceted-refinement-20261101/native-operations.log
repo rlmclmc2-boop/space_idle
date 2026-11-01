@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+VIDEO_CONTEXT paused={  } running=true focused=true pause_root=(1268.844, 31.875)
+VIDEO_START real_time=1x controlled_grants_and_wallet=true pid=206927 game_time=0.0 phase=0.0
+[x11grab @ 0x55e7444194c0] Cannot get the image data event_error: response_type:0 error_code:128 sequence:5 resource_id:4194304 minor_code:4 major_code:130.
+VIDEO_NATIVE_PAUSE frozen_phase=4.01666666666666
+VIDEO_END wall_s=12.274519 game_s=10.1666666666668 phase=10.1500000000001 ui_before={ "model_reads": 1, "quote_reads": 2, "preview_reads": 0, "commands": 0, "visible_frames": 13 } ui_after={ "model_reads": 2, "quote_reads": 2, "preview_reads": 0, "commands": 1, "visible_frames": 432 } stage_before={ "draws": 0, "field_updates": 1, "active_frames": 0, "cache_renders": 3 } stage_after={ "draws": 0, "field_updates": 2, "active_frames": 339, "cache_renders": 3 }
+TEN_BEFORE level=1 uranium_integer=1000 balances=[{ "id": "chrono", "text": "时空微粒：13.8k" }, { "id": "2", "text": "铀：1.0k" }] quote={ "ok": true, "count": 10, "costs": { "2": "5.5e2" }, "cost_integer_texts": { "2": "550" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" }
+TEN_AFTER result={ "ok": true, "defence_changed": false } uranium_integer=450 balances=[{ "id": "chrono", "text": "时空微粒：13.8k" }, { "id": "2", "text": "铀：450.0" }] notice=已升级 10 级
+MAX_BEFORE level=11 uranium_integer=1000450 balances=[{ "id": "chrono", "text": "时空微粒：13.8k" }, { "id": "2", "text": "铀：1.0m" }] quote={ "ok": true, "count": 24, "costs": { "2": "7.70837e5" }, "cost_integer_texts": { "2": "770837" }, "cost_resource_ids": ["2"], "can_purchase": true, "reason": "" }
+MAX_AFTER result={ "ok": true, "defence_changed": false, &"count": 24, &"costs": { "2": "7.70837e5" }, &"cost_integer_texts": { "2": "770837" } } uranium_integer=229613 balances=[{ "id": "chrono", "text": "时空微粒：13.8k" }, { "id": "2", "text": "铀：229.6k" }] notice=已升级 24 级 stage_loads={ "core": 0.00000103014224, "weapons": 0.00000025753556, "defence": 0.00000025753556, "smelting": 0.00000025753556, "condensation": 0.00000025753556 }
