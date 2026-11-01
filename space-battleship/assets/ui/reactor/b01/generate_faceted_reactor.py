@@ -82,32 +82,71 @@ def rod(name,a,b,r,mat):
  bpy.ops.mesh.primitive_cylinder_add(vertices=12,radius=r,depth=d.length,location=(a+b)/2)
  o=bpy.context.object;o.name=name;o.rotation_euler=d.to_track_quat('Z','Y').to_euler();o.data.materials.append(mat);return o
 
-def hollow_socket(name,p,axis,rise,z,near,far,r,m):
- axis=Vector(axis).normalized();normal=Vector((-axis.y,axis.x));factor=math.sqrt(1+rise*rise)
- centers=[p+axis*near,p+axis*far];n=16;v=[]
- for c,rr in [(centers[0],r+6),(centers[1],r+6),(centers[0],r),(centers[1],r)]:
+def socket_surface(p,axis,rise,z,along,radius,angle):
+ normal=Vector((-axis.y,axis.x));height=radius*math.sin(angle)/math.sqrt(1+rise*rise)
+ q=p+axis*along+normal*radius*math.cos(angle)-axis*(rise*height)
+ return Vector((q.x,-q.y,z+along*rise+height))
+
+def hollow_socket(name,p,axis,rise,z,near,far,r,m,inspection=False):
+ axis=Vector(axis).normalized();n=16
+ along=[near,-3,38,far] if inspection else [near,far]
+ vertices=[]
+ for at in along:
+  for rr in (r+6,r):
+   for i in range(n):vertices.append(socket_surface(p,axis,rise,z,at,rr,math.tau*i/n))
+ faces=[];roles=[]
+ for band in range(len(along)-1):
+  a=band*2*n;b=(band+1)*2*n
   for i in range(n):
-   a=math.tau*i/n;height=rr*math.sin(a)/factor
-   q=c+normal*rr*math.cos(a)-axis*(rise*height)
-   v.append((q.x,-q.y,z+(c-p).dot(axis)*rise+height))
- faces=[]
- for i in range(n):
-  j=(i+1)%n;faces.extend([(i,j,n+j,n+i),(2*n+j,2*n+i,3*n+i,3*n+j),(i,2*n+i,2*n+j,j),(n+j,3*n+j,3*n+i,n+i)])
- o=mesh(name,v,faces,m['edge']);o.data.materials.append(m['dark']);o.data.materials.append(m['copper'])
- for polygon in o.data.polygons:polygon.material_index=1 if polygon.index%4==1 else 2 if polygon.index%4==2 else 0
+   j=(i+1)%n
+   if inspection and band==1 and 2<=i<6:continue
+   faces.extend([(a+i,a+j,b+j,b+i),(a+n+j,a+n+i,b+n+i,b+n+j)]);roles.extend([0,1])
+ # Axial front/back rings and the four return walls around the actual window.
+ for end in [0,len(along)-1]:
+  a=end*2*n
+  for i in range(n):
+   j=(i+1)%n;faces.append((a+i,a+n+i,a+n+j,a+j));roles.append(2 if end==0 else 0)
+ if inspection:
+  for band in [1,2]:
+   a=band*2*n
+   for i in range(2,6):
+    j=i+1;faces.append((a+i,a+j,a+n+j,a+n+i));roles.append(0)
+  for i in [2,6]:
+   a=2*n;b=4*n;faces.append((a+i,a+n+i,b+n+i,b+i));roles.append(0)
+ o=mesh(name,vertices,faces,m['edge']);o.data.materials.append(m['dark']);o.data.materials.append(m['copper'])
+ for face,role in zip(o.data.polygons,roles):face.material_index=role
  return o
+
+def receiver_window(id,p,axis,r,m):
+ axis=Vector(axis).normalized()
+ for name,radius,mat in [(' window seat',r+2.7,m['glass']),(' acknowledgement',r+4.0,m['cyan'])]:
+  vertices=[];longitudinal=6;radial=8
+  for j in range(longitudinal+1):
+   along=-1+37*j/longitudinal
+   for k in range(radial+1):
+    angle=math.pi*.25+.08+(math.pi*.50-.16)*k/radial
+    vertices.append(socket_surface(p,axis,.35,28,along,radius,angle))
+  faces=[]
+  for j in range(longitudinal):
+   for k in range(radial):
+    a=j*(radial+1)+k;face=(a,a+1,a+radial+2,a+radial+1)
+    if (vertices[face[1]]-vertices[face[0]]).cross(vertices[face[2]]-vertices[face[0]]).z<0:face=face[::-1]
+    faces.append(face)
+  o=mesh(id+' receiver'+name,vertices,faces,mat)
+  uv=o.data.uv_layers.new(name='receiver_axial_fill')
+  for face in o.data.polygons:
+   for loop in face.loop_indices:
+    i=o.data.loops[loop].vertex_index;uv.data[loop].uv=(i//(radial+1)/longitudinal,i%(radial+1)/radial)
 
 def socket(id,m):
  d=DATA['devices'][id];p=Vector(d['device_port']);axis=Vector(d['axis_to_device']).normalized()
  far=55 if id=='condensation' else 60
- hollow_socket(id+' hollow receiver',p,axis,.35,28,-15,far,d['socket_radius'],m)
+ hollow_socket(id+' hollow receiver',p,axis,.35,28,-15,far,d['socket_radius'],m,inspection=True)
  # The socket terminates in a closed receiver body embedded in the machine,
  # not a second open tube end facing the working chamber.
  a=p+axis*(far-4);b=p+axis*(far+18)
  rod(id+' receiver foundation',(a.x,a.y,28+(far-4)*.35),(b.x,b.y,28+(far+18)*.35),d['socket_radius']+8,m['shade'])
- contact=p-axis*7
- a=contact-axis*1.5;b=contact+axis*1.5
- rod(id+' receiver acknowledgement',(a.x,a.y,28+(a-p).dot(axis)*.35),(b.x,b.y,28+(b-p).dot(axis)*.35),d['socket_radius']-4,m['cyan'])
+ receiver_window(id,p,axis,d['socket_radius'],m)
 
 
 def opening(name,x,y,w,h,front,back,m):
@@ -378,8 +417,8 @@ def route_distances(d):
  return pts,[v/distances[-1] for v in distances]
 
 def receiver_u(d):
- pts,distances=route_distances(d);axis=Vector(d['axis_to_device']).normalized();p=Vector(d['device_port'])-axis*7
- target=Vector((p.x,p.y,28-7*.35))
+ pts,distances=route_distances(d);axis=Vector(d['axis_to_device']).normalized();p=Vector(d['device_port'])-axis*3
+ target=Vector((p.x,p.y,28-3*.35))
  return distances[min(range(len(pts)),key=lambda i:(pts[i]-target).length_squared)]
 
 def channel_pipe(id,m):

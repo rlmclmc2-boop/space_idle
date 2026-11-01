@@ -212,6 +212,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			material.set_shader_parameter("transfer_layer",1.0 if id in ["weapons","condensation"] else -1.0)
 			material.set_meta("outlet",id)
 		if kind==11:material.set_shader_parameter("receiver_u",float(_layout.ports[key].receiver_u))
+		if kind==8:material.set_shader_parameter("work_zone",1 if title.begins_with("weapon") else 0)
 		if kind==4:material.set_shader_parameter("work_zone",1 if "bowed" in title else 0)
 		if kind==5:material.set_shader_parameter("work_zone",0 if "pour" in title else 3 if "outlet" in title else 2 if "liquid" in title else 1)
 		drawable.material=material
@@ -258,7 +259,9 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	for id in IDS:
 		_groups[id].visible=id in ids
 		var load: float=float(loads.get(id,0.0)) if id in ids else 0.0
-		if load>0.0 and float(previous.get(id,0.0))<=0.0:_age[id]=0.0
+		if load>0.0 and float(previous.get(id,0.0))<=0.0:
+			_age[id]=0.0
+			for material in _materials[id]:material.set_shader_parameter("powered_at",_phase)
 		for key in [id,_pipe_key(id)]:
 			for material in _materials[key]:material.set_shader_parameter("load_fraction",visibility_power(load))
 			for mechanism in _mechanisms[key]:mechanism.node.visible=load>0.0 or mechanism.kind==1
@@ -359,7 +362,11 @@ func _animate_mechanisms() -> void:
 				part.scale=Vector2(1.0,growth)*SOURCE_SCALE
 				part.position=source_point(Vector2(origin.x,mechanism.bottom-(mechanism.bottom-origin.y)*growth))
 			elif mechanism.kind==11:
-				var shown: bool=fmod(_phase,4.8)>=4.8*.72
+				var u: float=float(_layout.single_smelting.receiver_u) if _single_mode and id=="smelting" else float(_layout.ports[id].receiver_u)
+				var arrival: float=.72+.28*(u+.08)/1.16
+				var age_cycles: float=_phase/4.8-arrival
+				var event_time: float=(floorf(age_cycles)+arrival)*4.8
+				var shown: bool=age_cycles>=0.0 and event_time+0.001>=_phase-age and fposmod(age_cycles,1.0)<.22
 				if part.visible!=shown:part.visible=shown
 		for material in _materials[id]:material.set_shader_parameter("formation",minf(age/1.6,1.0))
 
