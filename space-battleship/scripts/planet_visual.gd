@@ -123,7 +123,7 @@ func _body_radius() -> float:
 	# The beam's mathematical tip is already transparent. Fit its visible
 	# envelope, including the nearly vertical sweep phase, so the compact
 	# photosphere remains legible inside its owned ring.
-	var beam_fit := 0.88 if float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("beamLength", 0.0)) > 0.0 else 1.0
+	var beam_fit := 0.72 if float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("beamLength", 0.0)) > 0.0 else 1.0
 	return minf(minf(requested, size.x * 0.245), available / maxf(1.0, globe.extent * beam_fit))
 
 func _orbit_radius() -> float:

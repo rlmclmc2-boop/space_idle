@@ -207,7 +207,7 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 	# it so the common ring and all four sockets contract as one structure.
 	# A beamed core is capped by its beam envelope. Bring its ring slightly
 	# closer to the photosphere while retaining readable facility scale below.
-	var spine_scale := maxf(0.40, globe_scale) if _compact_stellar else 1.0
+	var spine_scale := maxf(0.50, globe_scale) if _compact_stellar else 1.0
 	_spine.scale = Vector3.ONE * spine_scale
 	for kind in _owned:
 		var model: Node3D = _models[kind]
@@ -220,8 +220,8 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# The beamed core is limited by its long visible beam envelope. Give its
 		# four real work nodes enough area to retain their individual silhouettes
 		# while the common ring stays compact around the photosphere.
-		if _compact_stellar and spine_scale < 0.50:
-			scale_factor *= 0.50 / spine_scale
+		if _compact_stellar and spine_scale < 0.60:
+			scale_factor *= 0.60 / spine_scale
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
 		if kind in ["shipyard", "equipment", "auto_explore", "refinery"]:
 			# Both open work bays are authored in the owned section's local frame.
