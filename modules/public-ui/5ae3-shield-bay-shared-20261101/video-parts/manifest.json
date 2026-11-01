@@ -1,0 +1,45 @@
+{
+  "source_commit": "691a92828e86b15766b8d8e23a83be0580f0bd98",
+  "source_path": "modules/public-ui/5ae3-shield-bay-shared-20261101/shield-bay-shared.mp4",
+  "runtime_source": "ec2cea75582c06f3fba696d87686d11680eaa329",
+  "video_bytes": 3062016,
+  "video_sha256": "3e4a43a7a6135e10cd8fe55e191bcae88d150887bb6143f64b23f6890540af98",
+  "join": "Concatenate part bytes in ascending order. No header or separator.",
+  "parts": [
+    {
+      "order": 1,
+      "filename": "shield-bay-shared.mp4.part001",
+      "offset": 0,
+      "bytes": 737280,
+      "sha256": "103cb824c366e113800903c8b27747a4162d661629987c12e3de57fbbbb24491"
+    },
+    {
+      "order": 2,
+      "filename": "shield-bay-shared.mp4.part002",
+      "offset": 737280,
+      "bytes": 737280,
+      "sha256": "bfd32f22e2991947a510796587078a84fb04a2c08caa5b6cbd14e7a30357627a"
+    },
+    {
+      "order": 3,
+      "filename": "shield-bay-shared.mp4.part003",
+      "offset": 1474560,
+      "bytes": 737280,
+      "sha256": "9d0f84a7b1647f735b0fbecbbeae0df84964a3bfdcf585251595a887c3dea9ae"
+    },
+    {
+      "order": 4,
+      "filename": "shield-bay-shared.mp4.part004",
+      "offset": 2211840,
+      "bytes": 737280,
+      "sha256": "59d7595acd117055f3e05a6d52dd3607576279c9b7792bfb142bd1c8f90c5dec"
+    },
+    {
+      "order": 5,
+      "filename": "shield-bay-shared.mp4.part005",
+      "offset": 2949120,
+      "bytes": 112896,
+      "sha256": "e713e6739e875b4db0d40be494e7a2a35e6c939b30edab800a8623bad71d020d"
+    }
+  ]
+}
