@@ -66,13 +66,13 @@ func _init() -> void:
 	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
-	_environment.ambient_light_energy=.38
+	_environment.ambient_light_energy=.18
 	var environment_node:=WorldEnvironment.new()
 	environment_node.environment=_environment
 	_baker.add_child(environment_node)
 	var light:=DirectionalLight3D.new()
 	light.light_color=Color("fff0d4")
-	light.light_energy=1.3
+	light.light_energy=1.0
 	light.light_angular_distance=.6
 	light.shadow_enabled=true
 	light.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -96,8 +96,23 @@ func _init() -> void:
 			group.visible=false
 			canvas.visible=false
 
+func _ready() -> void:
+	set_notify_transform(true)
+	_update_canvas_transform()
+
+func _notification(what: int) -> void:
+	if what==NOTIFICATION_TRANSFORM_CHANGED and is_inside_tree():_update_canvas_transform()
+
+func _update_canvas_transform() -> void:
+	var inverse: Transform2D=get_global_transform().affine_inverse()
+	var basis:=Basis(Vector3(inverse.x.x,inverse.x.y,0),Vector3(inverse.y.x,inverse.y.y,0),Vector3(0,0,1))
+	var matrix:=Transform3D(basis,Vector3(inverse.origin.x,inverse.origin.y,0))
+	for materials in _materials.values():
+		for material in materials:material.set_shader_parameter("stage_from_canvas",matrix)
+
 func _kind(title: String) -> int:
-	if "core containment glass" in title:return 1
+	if "core containment glass" in title or "weapon chamber glazing" in title:return 1
+	if "core plasma kernel" in title:return 9
 	if "core plasma strands" in title:return 2
 	if "core plasma mass" in title:return 3
 	if "shield bowed field" in title or "shield active rim" in title:return 4
@@ -133,9 +148,10 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	part.position=source_point(pivot)
 	part.scale=Vector2.ONE*SOURCE_SCALE
 	_groups[key].add_child(part)
-	if kind==1:part.z_index=3
-	elif kind==3:part.z_index=2
-	elif kind==2:part.z_index=1
+	if kind==1:part.z_index=4
+	elif kind==3:part.z_index=3
+	elif kind==2:part.z_index=2
+	elif kind==9:part.z_index=1
 	var bottom: float=-INF
 	for index in range(node.mesh.get_surface_count()):
 		var arrays: Array=node.mesh.surface_get_arrays(index)
@@ -204,7 +220,7 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 		if load>0.0 and float(previous.get(id,0.0))<=0.0:_age[id]=0.0
 		for key in [id,"pipe_"+id]:
 			for material in _materials[key]:material.set_shader_parameter("load_fraction",visibility_power(load))
-			for mechanism in _mechanisms[key]:mechanism.node.visible=load>0.0
+			for mechanism in _mechanisms[key]:mechanism.node.visible=load>0.0 or mechanism.kind==1
 	var core_load: float=visibility_power(float(loads.get("core",0.0)))
 	for material in _materials.core:material.set_shader_parameter("load_fraction",core_load)
 	for mechanism in _mechanisms.core:mechanism.node.visible=core_load>0.0 or mechanism.kind==1
@@ -263,7 +279,7 @@ func _finish_bake(generation: int) -> void:
 	_baker.render_target_update_mode=SubViewport.UPDATE_DISABLED
 	_cache_ready=true
 	diagnostics.cache_renders+=3
-	get_viewport().render_target_update_mode=SubViewport.UPDATE_ONCE
+	queue_redraw()
 
 func clear_snapshot() -> void:show_snapshot([], {})
 

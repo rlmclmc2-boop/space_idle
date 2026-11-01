@@ -1,83 +1,40 @@
-# 反应炉静态资产交付契约
+# 反应炉资产与安装契约
 
-[M3目标与状态呈现](reactor.md) · [全局资产呈现](../../13-art-interaction.md)。本页维护制作/导入期的资产元数据与装配接口。
+[M3目标与状态呈现](reactor.md) · [全局呈现](../../13-art-interaction.md)。本页维护当前分件资产的制作、导入与装配关系；现场状态只写B01 HANDOFF。
 
 ## 可替换静态资产契约
 
-设备、核心、管壳、工作层和前景控件分层交付。元数据提供画布、可见边界、安全留白、底座/端口/效果锚点、安装框、裁切区与动态包络。按可见边界等比适配，实体端口与流动效果使用同一变换；文字和数值由原生控件绘制。控件以稳定模块ID绑定Owner。
+当前源为`assets/ui/reactor/b01/generate_faceted_reactor.py`。本地Blender导出可编辑的`faceted-reactor.glb`与`faceted-layout.json`；GLB聚合包共享材质，内部按稳定ID独立分组，不将设备、管道、工作区和原生控件烘成不可拆的全景图。
 
-当前端口/轴向/插入深度由`reactor_ports.json`维护；分面几何由本地Blender生成器导出`faceted-reactor.glb`，部件按稳定ID独立分组，工作结构为独立Mesh。`faceted-layout.json`记录源画布、机台内区、等比变换及生成器/资产SHA；Godot原生读控共用该源坐标。背景覆盖与主体等比尺度分开，不能通过拉伸整机补边。静态主体与工作效果分别核包络，工作状态输入遵[M3](reactor.md)。同版整页检查装配端接、净空、材质和工作/停机表现。
+稳定模块ID只有`weapons`、`defence`、`smelting`、`condensation`。固定背景为`bay`，核心为`core`；对应管路为`pipe_<id>`，机台为`console_1`至`console_4`。设备组含完整机体、底座、预制空心套筒以及独立工作Mesh；管组含核心出口套筒、管壳、内腔与遮挡件。工作Mesh英文语义名是生成器/呈现层之间的制作接口，不由玩家显示名或图片顺序推断。
 
-### v1元数据结构与稳定身份
+`reactor_ports.json`是接口输入，逐设备提供核心出口、控制点、设备入口、入口轴向、口径与插入深度。先确定这些值再建模；模型、管道、光流消费同一源数据。`faceted-layout.json`交付以下真实输出：
 
-以下JSON是制作/交付/导入期资源记录：`contract_version=1`，`status=draft/ready`。draft可将未定值记null；ready具备完整有效字段和引用。格式、版本与SHA在交付/导入期检查。
-
-
-稳定模块ID仅为`weapons`、`defence`、`smelting`、`condensation`，共享层`module_id=null`；不能用中文名、图片顺序或文件名推断模块。资产ID为`reactor.shell`、`reactor.core_housing`、`reactor.trunk`、`reactor.device_bay`或`reactor.device.<module_id>`；对应布局槽ID在`layout.slot_id`显式绑定（设备使用`reactor.slot.<module_id>`），业务仍按module_id查询/提交。
-
-| 必填字段 | 类型与固定语义（ready） |
+| 字段 | 含义 |
 |---|---|
-| `contract_version`, `status`, `asset_id`, `module_id`, `layer` | int、枚举string、唯一string、枚举string或共享层null、枚举string；layer为`shell/core_housing/trunk/device_bay/device`，与asset_id对应。 |
-| `resource.path`, `resource.sha256`, `resource.canvas_px`, `resource.visible_rect_px` | 项目`res://`资源路径string、64字符十六进制string（仅交付证据，不作运行时守卫）、`[int宽,int高]`、`[number x,y,w,h]`。画布宽高和rect宽高>0，rect在画布内；visible_rect是静态主体边界，不能代替效果包络。 |
-| `anchors.install`, `anchors.power_in`, `anchors.power_out`, `anchors.junctions`, `anchors.effects` | install必填`[number x,y]`；device必填power_in，承接供能的核心环境/主管提供power_out，主管junctions按模块ID映射端口。端口对象为`{position_px:[x,y],outward:[dx,dy]}`，方向非零。effects为效果ID→源坐标point的map。shell、device_bay等不适用供能的共享层在ready记录中也允许power_in/power_out为null、junctions为空map；无效果时effects为空map，不制造虚假管口/挂点。 |
-| `layout.canvas_logical_size`, `layout.slot_id`, `layout.install_rect_logical`, `layout.target_anchor_logical` | `[number宽,高]`、唯一string、`[x,y,w,h]`、`[x,y]`。定义模块页面逻辑画布、安装框及install应到达的点，均非源图像素或桌面物理像素。 |
-| `layout.rotation_deg`, `layout.scale_mode`, `layout.max_scale`, `layout.clip_rect_logical` | 有限number、固定`fit_visible`、正number、`[x,y,w,h]`或显式null（不裁切）。具体数值可待定；禁止隐藏的非等比拉伸/翻转。 |
-| `regions`, `effects` | 两个必填map。regions以语义区ID映射`{rect_logical:[x,y,w,h],binding:string,role:readout或control,hit_rect_logical:rect或null}`；effects以局部效果ID映射`{anchor_key:string,envelope_rect_px:rect,clip_rect_px:rect或null,binding:string}`。没有该层内容时用空map。 |
-| `import.source_import_path`, `import.settings_snapshot` | 现有Godot资源`.import`路径string、原始设置键→原始值的map（bool/int/number/string）。仅记录该文件真实设置，如`compress/mode`、`mipmaps/generate`、`process/fix_alpha_border`、`process/premult_alpha`、`process/size_limit`及SVG实际存在的`svg/scale`；不能用记录回写或覆盖导入设置，也不虚构独立色彩/过滤配置。现有Godot导入设置是唯一权威，记录过时应更新证据；过滤/repeat等现有消费端属性仍在其原位置维护。 |
+| `source_size` / `content_size` | 源正交标定画布1187×1326；模块内容808×835 |
+| `scale` / `offset` | 等比缩放与源原点在模块内的位置 |
+| `parts` | 各稳定节点组的真实源空间可见边界，不使用旧PNG裁图框 |
+| `ports` | 设备及核心接口的三维位置、归一轴向、套筒口与管端、口径和实际插入长度 |
+| `console` | 1–4路状态的总控带、分配行与升级事务带内区 |
+| `generator_sha256` / `asset_sha256` | 导出时生成器与GLB的实际哈希，用于交付绑定 |
 
-所有number必须有限，rect和point的数组长度固定，ID在作用域内唯一，资源、锚点及binding引用必须存在。控制区的`hit_rect_logical`必填有效rect；只读区可null，不能把透明边缘自动当点击区域。语义区键：共享控制区用`core_level/capacity/purchase/equalize`，设备区用`name/manual_supply/free_supply/effective_supply/effect_summary/clear/allocation_input/allocation_minus/allocation_plus`；不适用项不生成可见区域。binding是显示/操作语义键，消费端统一映射现有公开模型/命令，不在图片元数据中写公式或可执行代码。
+背景几何可延伸到标定画布之外以覆盖客户区；它的真实边界不等同主体安装安全框。生成器保留实际坐标，不为把边界塞进矩形而裁断或非等比拉伸设备。
 
-`effects.<效果ID>.anchor_key`只允许同一资产记录内的路径：`anchors.install`、`anchors.power_in.position_px`、`anchors.power_out.position_px`、`anchors.junctions.<模块ID>.position_px`或`anchors.effects.<效果ID>`。ready记录中目标必须为非null point；不支持跨资产引用、页面/regions路径或任意可执行字段路径。引用点、`effects.envelope_rect_px`与`effects.clip_rect_px`均属于同一资源的源画布坐标，rect为绝对源坐标，不是挂点相对偏移或页面坐标；统一经下式变换。页面逻辑裁切只使用layout.clip_rect_logical，不能混用单位。
+## 坐标与端接
 
-### 坐标、锚点与转换约定
+源平面左上为(0,0)，x向右、y向下，单位为源像素；对应三维坐标为(x,-y,z)，z向观看者。正交相机位置(593.5,-663,1500)，标定高度1326。主体统一使用`s=835/1326`与`o=((808-1187s)/2,0)`，源点q在模块内容中为`o+s*q`。Scene内部内容从y65起；共享宿主的最终Canvas变换另行作用，呈现层使用其逆变换采样同一源深度。
 
-源坐标以完整资源画布左上为(0,0)，x向右、y向下，单位为源像素；SVG按其声明画布映射为同一坐标。`install`为设备底座/安装定位点；`power_in/power_out/junctions.<module_id>`为语义供能端口。模块页面逻辑坐标同为左上原点、x右y下；正角度按该屏幕坐标顺时针，均匀缩放为正。所有锚点随主体共用变换，不能为管路/光流另估位置。
+`axis_to_device`定义屏幕轴向；三维升角与径向基底由生成器统一构造。套筒与管端使用相同中心线和截面平面，起止切线明确固定。`projected_insert_depth_px`是源平面插入量，`axial_insert_depth_source_units`是对应的三维轴向长度，二者不能混用。管段不得只碰孔边、停在旁边或靠遮片假接。GLB的`<id>/power_in_<id>`与`core/power_out_<id>`保留显式接口标记，局部Z轴指向流动方向；交付元数据提供对应节点路径。
 
-源点q到页面点的关系固定为：`p_page = a + s × R(theta) × (q - m)`，m为anchors.install，a为layout.target_anchor_logical。先在安装坐标中减m、统一缩放/旋转，再平移到页面a。`fit_visible`选择不超过max_scale、且变换后visible_rect和必需效果包络完整落入install_rect的最大等比s；若无合法正s，在制作/交付/导入核对中退回该记录，不能用静默截断设备作为验收通过，也不为此增设运行时守卫。rect用四角变换后的外接框核对；最后由页面统一的窗口/缩放变换映到屏幕，点击坐标走其逆变换。现有Godot导入设置按process/size_limit缩小贴图时，元数据仍使用源画布坐标，贴图通过源画布归一化UV采样；不能把导入后宽高代入canvas_px再重复缩放锚点。端口outward只旋转并归一化，不平移；相接管口位置一致、向外方向相反，实体管与工作流使用同一组端口。允许的视觉连接容差随最终消费尺寸另定并记录。
+实际装配必须读出：管壳进入空心套筒、连续内腔、正确近侧遮挡和端面厚度。流光沿同一几何UV从核心输送到设备，在真实卡箍/壳体后被遮挡；不另估一条屏幕路径。某路未开放时，设备、管路、核心出口套筒、工作层与该路原生控件成套隐藏；房间结构保持连续，不用临时多边形盖住。
 
-纯转换算例（非美术尺寸）：m=(100,50)、q=(120,50)、a=(10,20)、s=0.5、theta=0，则页面点为(20,20)。这只证明坐标语义，不批准任何设备大小或安装位置。
+## 运行分层与更新
 
-### 元数据草稿示例
+固定机壳、房间、机台及结构阴影由同一三维源在设备范围改变时采样，颜色保留2×MSAA。无工作光/核心反光两份颜色缓存由实际核心负载混合。背景缓存是可重建的渲染结果，不能替代分件源，也不含玩家文字、按钮或数值。
 
-以下为draft资源记录示例，null表示待定字段。
+工作Mesh保留原始顶点、法线、UV及源深度，按固定正交关系投影到Canvas。三维机壳深度以16位保存，工作片元与其比较，不能将发光绘制到前景金属上。能量表面自身边缘用连续透明度处理；不得用降低更新频率、取消效果或隐藏机器替代性能优化。改变视角、标定范围或机体时，重新生成对应几何/深度并检查同版画面。
 
-```json
-{
-  "contract_version": 1,
-  "status": "draft",
-  "asset_id": "reactor.device.weapons",
-  "module_id": "weapons",
-  "layer": "device",
-  "resource": {"path": null, "sha256": null, "canvas_px": null, "visible_rect_px": null},
-  "anchors": {"install": null, "power_in": null, "power_out": null, "junctions": {}, "effects": {"work": null}},
-  "layout": {
-    "canvas_logical_size": null,
-    "slot_id": "reactor.slot.weapons",
-    "install_rect_logical": null,
-    "target_anchor_logical": null,
-    "rotation_deg": 0,
-    "scale_mode": "fit_visible",
-    "max_scale": null,
-    "clip_rect_logical": null
-  },
-  "regions": {},
-  "effects": {"work": {"anchor_key": "anchors.effects.work", "envelope_rect_px": null, "clip_rect_px": null, "binding": "effective_supply"}},
-  "import": {"source_import_path": null, "settings_snapshot": {}}
-}
-```
+普通数值变化只更新对应读数、原生滑条或工作输入；工作时钟只推进工作过程，不重建节点、重读Owner或重采样静态场景。暂停冻结本地过程，隐藏停止局部循环，重开读取当前快照。静态缓存重建与工作动画分别记录计数，交付性能报告区分录制/未录制、固定渲染诊断/完整游戏及已向用户报告的上一次指标。
 
-转ready前填齐适用字段、语义区与端口，核对格式、引用及交付SHA，并记录Godot导入设置；最终装配按V3检查真实页面的端接、净空与工作效果。
-
-## 共同视觉方案的可替换边界
-
-当前本组为整体方案提供结构和过程需求，不以现有写实舱室固定风格。运行中的源画布1187×1326、模块内容口808×835及reactor_ports.json为当前安装坐标事实；整体若需改变内容口，由整体组先交新的明确范围，再更新这份坐标来源。
-
-| 交付层 | 可替换内容 | 保持的关系 |
-|---|---|---|
-| 舱室/背景 | 造型简化程度、色块、材质及光照 | 模块边界、安装位与可见工作区；公共壳不烘入本图 |
-| 核心与四设备本体 | 壳体、骨架、玻璃、接口及底座的共同语言 | 稳定ID、预制端口中心/轴向/尺寸/深度、安装锚点和同源变换 |
-| 工作层 | 蓄能/场面/物料/晶体的实体阶段、表面与局部光 | 输入、作用区、输出的连续关系；效果包络与本体遮挡 |
-| 前景结构 | 约束件、槽岸、玻璃边界、投射足 | 明确前后关系，与工作层共用坐标，不能靠遮片掩接缝 |
-| 原生读控 | 总量/均分、分配身份/滑条、升级费用/数量/动作分组 | 同一Owner字段和命令；文字、比例及费用不烘焙入资产 |
-
-过程输入沿现有可见状态、已接纳负载、游戏时间及暂停/隐藏状态。表现过程只组织这些输入，不增添新的玩法阶段、资源计算或触发规则。每个工作过程交明确的输入/工作/输出锚点、时间顺序、零态及低正载表达；具体造型和渲染方法随共同方案选择。工作遮罩、结构遮挡及表面受光可分离，避免把全套高光、工作值和机台烧在一张不能更换的整图上。现有PNG/Shader是当前运行方式，不作为新视觉方案的能力上限。
+文字、费用、倍率与原生操作遵M3/13/14和Owner接口。控件命中区按实际承载内面确定；所有普通值、长费用、零态/低正载、设备范围变化及正常工作动态在同一固定版本检查。格式、资产哈希、接口坐标与导入设置属于制作/交付核对，不为此新增运行时规则或全页刷新守卫。

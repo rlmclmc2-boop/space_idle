@@ -66,7 +66,6 @@ class PowerTrack extends Control:
 			draw_style_box(fill,Rect2(4,13,fill_width,16))
 			draw_line(Vector2(6,14),Vector2(maxf(6,fill_width+2),14),tint.lightened(.32),2)
 var _stage: Control
-var _stage_viewport: SubViewport
 var _allocation_bar: AllocationBar
 var _rows: Dictionary = {}
 var _ids: Array = []
@@ -120,19 +119,11 @@ func _init(owner = null, inputs: Callable = Callable(), payment: Callable = Call
 	theme.default_font = _ui_font_regular
 	theme.default_font_size = 15
 	theme.set_font("font", "Button", _ui_font_bold)
-	var surface := SubViewportContainer.new()
-	surface.position = Vector2(0, 65)
-	surface.size = Vector2(808, 835)
-	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(surface)
-	_stage_viewport = SubViewport.new()
-	_stage_viewport.size = Vector2i(808,835)
-	_stage_viewport.disable_3d = true
-	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-	surface.add_child(_stage_viewport)
-	_stage = Stage.new()
-	_stage.size = Vector2(808, 835)
-	_stage_viewport.add_child(_stage)
+	_stage=Stage.new()
+	_stage.position=Vector2(0,65)
+	_stage.size=Vector2(808,835)
+	_stage.clip_contents=true
+	add_child(_stage)
 	_build()
 
 ## Reader is the owner's read-only presentation; context is host display time.
@@ -189,12 +180,8 @@ func _panel(rect: Rect2, opacity: float = 0.90) -> Panel:
 	panel.position = rect.position
 	panel.size = rect.size
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.05, 0.16, 0.22, opacity)
-	box.border_color = Color(0.62, 0.77, 0.75, 0.55)
-	box.set_border_width_all(1)
-	box.set_corner_radius_all(10)
-	panel.add_theme_stylebox_override("panel", box)
+	var box: StyleBox=BridgeTheme.operation_plate(6.0,"dark")
+	panel.add_theme_stylebox_override("panel",box)
 	add_child(panel)
 	return panel
 
@@ -302,10 +289,10 @@ func _build() -> void:
 	_select_quantity(1,false)
 
 func _layout_quote() -> void:
-	_cost.position=_source_ui_rect(300,1207,300,46).position
+	_cost.position=_source_ui_rect(320,1207,300,46).position
 	_cost.size=Vector2(215,29)
-	_cost_badge.position=_source_ui_rect(300,1209,42,42).position
-	_cost_details.position=_source_ui_rect(354 if _cost_badge.visible else 300,1207,300,46).position
+	_cost_badge.position=_source_ui_rect(320,1209,42,42).position
+	_cost_details.position=_source_ui_rect(374 if _cost_badge.visible else 320,1207,300,46).position
 	_cost_details.size=Vector2(195,29)
 
 func _select_quantity(count: int, maximum: bool) -> void:
@@ -338,7 +325,6 @@ func _ready() -> void:
 	visibility_changed.connect(func():
 		set_process(is_visible_in_tree())
 		_stage.reset_clock()
-		_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE if is_visible_in_tree() else SubViewport.UPDATE_DISABLED
 		if is_visible_in_tree(): invalidate())
 	set_process(is_visible_in_tree())
 
@@ -353,8 +339,7 @@ func _process(_dt: float) -> void:
 			_set_running(false)
 			return
 		_set_running(bool(context.running))
-		if _stage.advance_visual_clock(float(context.game_time),bool(context.paused)):
-			_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+		_stage.advance_visual_clock(float(context.game_time),bool(context.paused))
 	if _message_until > 0 and Time.get_ticks_msec() >= _message_until:
 		_message_until = 0
 		_set_notice("")
@@ -366,11 +351,10 @@ func _set_notice(message: String, rejected: bool = false) -> void:
 	_notice.text = message
 	_notice.visible = not message.is_empty()
 	_notice_panel.visible = _notice.visible
-	var box: StyleBoxFlat = _notice_panel.get_theme_stylebox("panel").duplicate()
-	box.bg_color = Color("4d2630",0.97) if rejected else Color("193b42",0.95)
-	box.border_color = Color("f1a997") if rejected else Color("80c7ad")
+	var box: StyleBoxTexture = _notice_panel.get_theme_stylebox("panel").duplicate()
+	box.modulate_color = Color(1.10,0.78,0.72) if rejected else Color.WHITE
 	_notice_panel.add_theme_stylebox_override("panel",box)
-	_notice.add_theme_color_override("font_color",Color("ffe1d7") if rejected else Color("e0f5e9"))
+	BridgeTheme.apply_number_role(_notice,"insufficient" if rejected else "current","dark")
 
 func _set_running(running: bool) -> void:
 	if _running == running: return
@@ -486,12 +470,13 @@ func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 			_rows[id].effect.tooltip_text = "增益 ×" + str(row.factor)
 		if new_row or old_row.get("ratio") != row.ratio or old_row.get("manual") != row.manual or old_row.get("free") != row.free or old_row.get("effective") != row.effective:
 			_rows[id].slider.tooltip_text = "分配 " + _ratio_text(float(row.ratio)) + " · 手动 " + str(row.manual) + " / 免费 " + str(row.free) + " / 有效 " + str(row.effective)
-	var level_text := str(_model.level)
+	var level_text := PlayerText.resource_number(str(_model.level))
 	var budget_text := PlayerText.resource_number(str(_model.allocated)) + " / " + PlayerText.resource_number(str(_model.capacity))
 	var detail := "容量 " + str(_model.capacity) + " / 已分配 " + str(_model.allocated) + " / 剩余 " + str(_model.remaining)
 	if _level.text != level_text: _level.text = level_text
 	if _budget.text != budget_text: _budget.text = budget_text
-	if _level.tooltip_text != detail: _level.tooltip_text = detail
+	var level_detail: String="等级 "+str(_model.level)+"\n"+detail
+	if _level.tooltip_text != level_detail: _level.tooltip_text = level_detail
 	if _budget.tooltip_text != detail: _budget.tooltip_text = detail
 	var ratios: Dictionary = {}
 	for row in _model.modules:
@@ -528,7 +513,6 @@ func _unknown(message: String) -> void:
 	_set_notice(message,true)
 	_stage.clear_snapshot()
 	_allocation_bar.update_ratios({})
-	_stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	_update_buttons()
 
 func _refresh_quote() -> void:
@@ -666,4 +650,3 @@ func _update_stage() -> void:
 		return
 	var loads: Dictionary = _visual_loads(_model, _ids)
 	_stage.show_snapshot(_ids,loads)
-	if is_visible_in_tree(): _stage_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE

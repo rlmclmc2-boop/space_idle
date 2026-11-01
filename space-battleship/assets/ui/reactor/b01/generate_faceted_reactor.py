@@ -1,6 +1,6 @@
-"""Local Blender shape study for the approved unified faceted style.
-Source-pixel ports remain exact. Outputs stay in /tmp until a complete set
-of bodies, work states and occlusion passes is ready for game installation.
+"""Deterministic faceted reactor parts with one source-coordinate port contract.
+--export-glb writes the editable runtime model and installation metadata.
+Optional author renders stay under /tmp and never bake native UI text.
 """
 import bpy,json,math,os,sys,hashlib
 from pathlib import Path
@@ -57,21 +57,25 @@ def rod(name,a,b,r,mat):
  bpy.ops.mesh.primitive_cylinder_add(vertices=12,radius=r,depth=d.length,location=(a+b)/2)
  o=bpy.context.object;o.name=name;o.rotation_euler=d.to_track_quat('Z','Y').to_euler();o.data.materials.append(mat);return o
 
-def socket(id,m):
- d=DATA['devices'][id];p=Vector(d['device_port']);axis=Vector(d['axis_to_device']).normalized();normal=Vector((-axis.y,axis.x));r=d['socket_radius'];n=16
- centers=[p-axis*15,p+axis*75];v=[]
+def hollow_socket(name,p,axis,rise,z,near,far,r,m):
+ axis=Vector(axis).normalized();normal=Vector((-axis.y,axis.x));factor=math.sqrt(1+rise*rise)
+ centers=[p+axis*near,p+axis*far];n=16;v=[]
  for c,rr in [(centers[0],r+6),(centers[1],r+6),(centers[0],r),(centers[1],r)]:
   for i in range(n):
-   a=math.tau*i/n
-   # Receiver rises into the front housing. This gives a visible mouth
-   # instead of an edge-on flat slab, while preserving the screen axis.
-   q=c+normal*rr*math.cos(a)+axis*(-.35*rr*math.sin(a))
-   v.append((q.x,-q.y,28+(c-p).dot(axis)*.35+rr*math.sin(a)))
- f=[]
+   a=math.tau*i/n;height=rr*math.sin(a)/factor
+   q=c+normal*rr*math.cos(a)-axis*(rise*height)
+   v.append((q.x,-q.y,z+(c-p).dot(axis)*rise+height))
+ faces=[]
  for i in range(n):
-  j=(i+1)%n;f.extend([(i,j,n+j,n+i),(2*n+j,2*n+i,3*n+i,3*n+j),(i,2*n+i,2*n+j,j),(n+j,3*n+j,3*n+i,n+i)])
- mesh(id+' hollow receiver',v,f,m['edge'])
- (OUT/(id+'-port.json')).write_text(json.dumps({'module_id':id,'center_px':list(p),'axis_to_device':list(axis),'axis_rise_per_source_px':.35,'insertion_source_px':d['insert_depth'],'receiver_mouth_px':list(p-axis*15),'pipe_insert_end_px':list(p+axis*(d['insert_depth']-15)),'receiver_body_end_px':list(p+axis*75),'radius':r,'depth':28,'canvas_px':[W,H],'rect':d['rect']},indent=2))
+  j=(i+1)%n;faces.extend([(i,j,n+j,n+i),(2*n+j,2*n+i,3*n+i,3*n+j),(i,2*n+i,2*n+j,j),(n+j,3*n+j,3*n+i,n+i)])
+ o=mesh(name,v,faces,m['edge']);o.data.materials.append(m['dark']);o.data.materials.append(m['copper'])
+ for polygon in o.data.polygons:polygon.material_index=1 if polygon.index%4==1 else 2 if polygon.index%4==2 else 0
+ return o
+
+def socket(id,m):
+ d=DATA['devices'][id];p=Vector(d['device_port']);axis=Vector(d['axis_to_device']).normalized()
+ hollow_socket(id+' hollow receiver',p,axis,.35,28,-15,75,d['socket_radius'],m)
+
 
 def mount(name,x,y,w,m):
  box(name+' load foot',x,y,w,29,5,20,m['dark']);box(name+' seat',x,y-8,w-20,13,18,6,m['shade'])
@@ -82,10 +86,14 @@ def weapon(m,phase=.65):
  plate('weapon right armor',[(225,107),(255,112),(278,138),(274,258),(249,278),(225,259)],65,25,m['shade'])
  box('weapon top bridge',180,112,108,27,76,16,m['armor']);box('weapon bottom bridge',180,278,113,26,76,16,m['shade'])
  box('weapon chamber',181,195,74,133,52,8,m['glass'])
+ rod('weapon chamber glazing',(181,128,48),(181,262,48),37,m['field'])
  for i,y in enumerate((153,190,227)):
   charge=max(0.,min(1.,(phase/.65)*3-i))
-  if charge>0.:box('weapon charge segment '+str(i),181,y+11*(1-charge),60,22*charge,65,9,m['charge'])
-  box('weapon retainer '+str(i),181,y+12,76,8,79,8,m['edge'])
+  if charge>0.:rod('weapon charge segment '+str(i),(181,y+11-22*charge,60),(181,y+11,60),29,m['charge'])
+  box('weapon retainer '+str(i),181,y+12,76,8,100,8,m['edge'])
+ box('weapon ship bus bed',63,196,74,25,88,8,m['dark'])
+ for y in (182,210):box('weapon ship bus rail',63,y,78,6,112,10,m['edge'])
+ box('weapon ship bus wall cap',28,196,14,38,122,12,m['dark'])
  box('weapon focusing exit',117,196,59,35,85,18,m['dark'])
  if phase>=.65 and phase<.85:
   pulse=math.sin((phase-.65)/.20*math.pi)
@@ -155,10 +163,13 @@ def core(m):
  disc('core rear cavity',x,y,144,24,m['glass'],24)
  bpy.ops.mesh.primitive_uv_sphere_add(segments=24,ring_count=12,radius=145,location=(x,-y,70))
  globe=bpy.context.object;globe.name='core containment glass';globe.scale.z=.82;globe.data.materials.append(m['field'])
- bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3,radius=66,location=(x,-y,100))
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3,radius=108,location=(x,-y,70))
  plasma=bpy.context.object;plasma.name='core plasma mass';plasma.scale=(.92,1.10,.94);plasma.rotation_euler=(.17,.31,.20)
  plasma.data.materials.append(m['cyan'])
  for polygon in plasma.data.polygons:polygon.use_smooth=True
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2,radius=28,location=(x,-y,100))
+ kernel=bpy.context.object;kernel.name='core plasma kernel';kernel.data.materials.append(m['cyan'])
+ for polygon in kernel.data.polygons:polygon.use_smooth=True
  # Each path winds from a pole toward the active mass. These are energy
  # strands, never moving mechanical bars; their real depth passes behind it.
  for j in range(4):
@@ -247,11 +258,11 @@ def console(m,count=4):
 # Explicit semantic pass ownership. Front parts are real geometry, not a
 # rectangle painted over a failed joint. Names are emitted by this generator.
 WORK_NAMES={
- 'weapons': ['weapon charge segment','weapon output'],
+ 'weapons': ['weapon chamber glazing','weapon charge segment','weapon output'],
  'defence': ['shield active rim','shield bowed field'],
  'smelting': ['furnace feed','furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
  'condensation': ['crystal body','crystal bright facet'],
- 'core': ['core containment glass','core plasma mass','core plasma strand']}
+ 'core': ['core containment glass','core plasma kernel','core plasma mass','core plasma strand']}
 FRONT_NAMES={
  'weapons':['weapon retainer','weapon focusing exit','weapon top bridge','weapon bottom bridge'],
  'defence':['shield armor','shield joint','shield projector'],
@@ -290,33 +301,42 @@ def route_samples(d,steps=40):
 
 def channel_pipe(id,m):
  d=DATA['devices'][id];pts=route_samples(d);normals=[]
+ delta=Vector(d['controls'][0])-Vector(d['core_port']);core_axis=delta.normalized();rise=-12.0/delta.length
+ hollow_socket(id+' core outlet',Vector(d['core_port']),core_axis,rise,28,-20,26,24,m)
+ verticals=[]
  for i,p in enumerate(pts):
   tangent=(pts[min(i+1,len(pts)-1)]-pts[max(0,i-1)]).normalized()
+  if i==0:
+   delta=Vector((*d['controls'][0],16))-Vector((*d['core_port'],28));tangent=delta.normalized()
+  elif i==len(pts)-1:
+   axis=Vector(d['axis_to_device']).normalized();tangent=Vector((axis.x,axis.y,.35)).normalized()
   normals.append(Vector((-tangent.y,tangent.x,0)).normalized())
+  denominator=tangent.x*tangent.x+tangent.y*tangent.y
+  verticals.append(Vector((-tangent.x*tangent.z/denominator,-tangent.y*tangent.z/denominator,1)).normalized())
  # Open U-profile. A recessed working channel lies below the two lips;
  # the inlet collars and receiver therefore occlude it by actual depth.
  profile=[(-18,-12),(-18,12),(-10,17),(-8,6),(8,6),(10,17),(18,12),(18,-12)]
  vertices=[]
- for p,n in zip(pts,normals):
+ for p,n,vertical in zip(pts,normals,verticals):
   for side,height in profile:
-   q=p+n*side;vertices.append((q.x,-q.y,q.z+height))
+   q=p+n*side+vertical*height;vertices.append((q.x,-q.y,q.z))
  faces=[]
  for i in range(len(pts)-1):
   for j in range(len(profile)):
    a=i*8+j;b=i*8+(j+1)%8;faces.append((a,b,b+8,a+8))
  shell=mesh(id+' channel shell',vertices,faces,m['edge'])
  v=[]
- for p,n in zip(pts,normals):
+ for p,n,vertical in zip(pts,normals,verticals):
   for side in (-7,7):
-   q=p+n*side;v.append((q.x,-q.y,q.z+7))
+   q=p+n*side+vertical*7;v.append((q.x,-q.y,q.z))
  work=mesh(id+' channel work',v,[(i*2,i*2+1,i*2+3,i*2+2) for i in range(len(pts)-1)],m['cyan'])
  uv=work.data.uv_layers.new(name='route_distance')
  for polygon in work.data.polygons:
   for loop in polygon.loop_indices:
    idx=work.data.loops[loop].vertex_index;uv.data[loop].uv=(idx//2/(len(pts)-1),idx%2)
  for idx in (1,len(pts)-3):
-  p=pts[idx];n=normals[idx]
-  rod(id+' channel collar', (p.x+n.x*21,p.y+n.y*21,p.z+18),(p.x-n.x*21,p.y-n.y*21,p.z+18),5,m['dark'])
+  p=pts[idx]+verticals[idx]*18;n=normals[idx]
+  rod(id+' channel collar', (p.x+n.x*21,p.y+n.y*21,p.z),(p.x-n.x*21,p.y-n.y*21,p.z),5,m['dark'])
  return shell,work
 
 def export_glb():
@@ -343,6 +363,13 @@ def export_glb():
   prefixes=WORK_NAMES.get(name,[])
   fixed=[o for o in root.children if o.type=='MESH' and not any(o.name.startswith(v) for v in prefixes) and 'channel work' not in o.name]
   merge(fixed,name+' structure')
+ for id,d in DATA['devices'].items():
+  p=Vector(d['device_port']);axis=Vector(d['axis_to_device']).normalized()
+  inlet=bpy.data.objects.new('power_in_'+id,None);bpy.context.collection.objects.link(inlet);inlet.parent=groups[id]
+  inlet.location=(p.x,-p.y,28);inlet.rotation_euler=Vector((axis.x,-axis.y,.35)).to_track_quat('Z','Y').to_euler();inlet['bore_radius']=d['socket_radius']
+  delta=Vector(d['controls'][0])-Vector(d['core_port'])
+  outlet=bpy.data.objects.new('power_out_'+id,None);bpy.context.collection.objects.link(outlet);outlet.parent=groups['core']
+  outlet.location=(d['core_port'][0],-d['core_port'][1],28);outlet.rotation_euler=Vector((delta.x,-delta.y,-12)).to_track_quat('Z','Y').to_euler()
  # Export ordinary palette data, not Blender-only ShaderToRGB nodes. Godot
  # supplies the same faceted surface lighting plus distinct working shaders.
  for mat in bpy.data.materials:
@@ -359,8 +386,24 @@ def export_glb():
  bpy.ops.object.select_all(action='SELECT')
  path=ROOT/'faceted-reactor.glb'
  bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',export_yup=False,export_apply=True,export_cameras=False,export_lights=False,export_extras=True)
+ bpy.context.view_layer.update()
+ parts={}
+ for key,root in groups.items():
+  points=[o.matrix_world@Vector(corner) for o in root.children if o.type=='MESH' for corner in o.bound_box]
+  x0=min(q.x for q in points);y0=min(-q.y for q in points);x1=max(q.x for q in points);y1=max(-q.y for q in points)
+  parts[key]={'node':key,'visible_rect_source':[x0,y0,x1-x0,y1-y0]}
+ ports={}
+ for id,d in DATA['devices'].items():
+  p=Vector(d['device_port']);axis=Vector(d['axis_to_device']).normalized();mouth=p-axis*15;end=p+axis*(d['insert_depth']-15)
+  ports[id]={'interface_center_source3d':[p.x,-p.y,28],'axis_to_device_source3d':list(Vector((axis.x,-axis.y,.35)).normalized()),
+   'receiver_mouth_source3d':[mouth.x,-mouth.y,22.75],'pipe_end_source3d':[end.x,-end.y,28+(d['insert_depth']-15)*.35],
+   'bore_radius':d['socket_radius'],'projected_insert_depth_px':d['insert_depth'],'axial_insert_depth_source_units':d['insert_depth']*math.sqrt(1+.35*.35)}
+  delta=Vector(d['controls'][0])-Vector(d['core_port']);out=Vector((delta.x,-delta.y,-12.0)).normalized()
+  ports[id]['core_interface_source3d']=[d['core_port'][0],-d['core_port'][1],28]
+  ports[id]['core_axis_out_source3d']=list(out)
+  ports[id]['device_marker']=id+'/power_in_'+id;ports[id]['core_marker']='core/power_out_'+id
  layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],
-  'console':{str(i):console_layout(i) for i in (1,2,3,4)},'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+  'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])
 

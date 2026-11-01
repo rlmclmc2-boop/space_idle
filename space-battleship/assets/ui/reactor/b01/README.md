@@ -1,16 +1,10 @@
-# B01 当前运行资产
+# 分面反应堆运行资产
 
-唯一状态及视觉完成标准见 [B01 当前重做入口](../../../../docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md)。本目录仅保留当前运行闭包和可重复生成它的本地脚本。
+规范：[M3](../../../../docs/game-design/art/modules/reactor.md)及[安装契约](../../../../docs/game-design/art/modules/reactor-asset-contract.md)。制作状态只见当前B01 HANDOFF。
 
-源画布为 1187×1326，运行舞台为 808×835。`reactor_ports.json` 是四设备入口、核心出口、三次贝塞尔管路控制点、端面半径/深度、设备/工作层裁图和管段图层裁图的唯一坐标源。`generate_reactor_devices.py` 在 Blender 中逐设备创建机械本体和内置可见接口，按照合同记录端口投影；`assemble_reactor_devices.py` 对齐该投影至合同中心并输出 `r6-*.png` 与 `r6-*-work.png`。`generate_modular_pipes.py` 使用同一端点与轴线生成管壳，`assemble_reactor_pipes.py` 按合同矩形裁图并断言渲染端实际可见。中间全画布图只生成在 `/tmp/reactor-r6-build`（可用 `REACTOR_BUILD_DIR` 覆盖），不放入制作树。
-
-从 `space-battleship` 根目录执行：
-
-```bash
-blender -b -t 2 --python assets/ui/reactor/b01/generate_reactor_devices.py
-python3 assets/ui/reactor/b01/assemble_reactor_devices.py
-blender -b -t 2 --python assets/ui/reactor/b01/generate_modular_pipes.py
-python3 assets/ui/reactor/b01/assemble_reactor_pipes.py
-```
-
-`reactor_stage.gd` 按合同放置设备及管段，静态舱室、玻璃核心、控制台、固定夹具仍是当前运行材质；核心和四设备的真实工作光由独立 shader 及工作层在 Owner 正载时驱动。控件文字、按钮、滑条及实际数字仍由 `reactor_scene.gd` 原生绘制。视觉完成标准见M3及当前制作入口。
+- `generate_faceted_reactor.py`：本地Blender生成源；`blender -b --python generate_faceted_reactor.py -- --export-glb`。
+- `faceted-reactor.glb`：稳定ID的独立机体、工作结构和管道节点，聚合包共享材质；节点可单独替换/实例化，并非不可拆的场景贴图。
+- `reactor_ports.json`：预制接口中心、方向、口径及插入深度的输入；`faceted-layout.json`记录实际导出边界、三维接口及等比变换。
+- `faceted-surface`／`faceted-depth`：固定相机下的静态受光、真实结构阴影和16位深度采样。
+- `faceted-canvas-background`／`faceted-canvas-work`：静态缓存合成及原始工作几何的投影、遮挡和过程材质。渲染缓存不含文字/按钮，也不替代可编辑的分件GLB。
+- 两份SVG为透明模块身份图及滑块；按钮消费公共BridgeTheme，文字/分配/费用全部是Godot原生控件。

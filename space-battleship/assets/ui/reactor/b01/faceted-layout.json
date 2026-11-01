@@ -162,6 +162,284 @@
       "visible_bottom": 1308
     }
   },
-  "generator_sha256": "fb041ecfa9d0f34822a0e1980cb1e235d87102c41a8f37a85ede1cfba33d41af",
-  "asset_sha256": "23198584b2c019022a865168d7a24b27fecd5deeacd8bdec92793e4a31736895"
+  "parts": {
+    "bay": {
+      "node": "bay",
+      "visible_rect_source": [
+        -80.0,
+        -0.0,
+        1347.0,
+        1326.0
+      ]
+    },
+    "core": {
+      "node": "core",
+      "visible_rect_source": [
+        405.59796142578125,
+        151.59906005859375,
+        380.8040771484375,
+        380.8018798828125
+      ]
+    },
+    "weapons": {
+      "node": "weapons",
+      "visible_rect_source": [
+        21.24200439453125,
+        98.70958709716797,
+        323.92547607421875,
+        243.6065444946289
+      ]
+    },
+    "pipe_weapons": {
+      "node": "pipe_weapons",
+      "visible_rect_source": [
+        267.1794738769531,
+        129.47926330566406,
+        220.48583984375,
+        198.5586395263672
+      ]
+    },
+    "defence": {
+      "node": "defence",
+      "visible_rect_source": [
+        889.1788940429688,
+        61.99174499511719,
+        281.82110595703125,
+        267.5082550048828
+      ]
+    },
+    "pipe_defence": {
+      "node": "pipe_defence",
+      "visible_rect_source": [
+        701.5425415039062,
+        96.62924194335938,
+        265.6258544921875,
+        251.80154418945312
+      ]
+    },
+    "smelting": {
+      "node": "smelting",
+      "visible_rect_source": [
+        68.29124450683594,
+        389.364990234375,
+        277.41749572753906,
+        317.873779296875
+      ]
+    },
+    "pipe_smelting": {
+      "node": "pipe_smelting",
+      "visible_rect_source": [
+        263.3365173339844,
+        392.82208251953125,
+        236.82061767578125,
+        180.08111572265625
+      ]
+    },
+    "condensation": {
+      "node": "condensation",
+      "visible_rect_source": [
+        862.5206298828125,
+        417.0,
+        291.4793701171875,
+        295.5
+      ]
+    },
+    "pipe_condensation": {
+      "node": "pipe_condensation",
+      "visible_rect_source": [
+        689.9696655273438,
+        360.95477294921875,
+        270.0072021484375,
+        240.03558349609375
+      ]
+    },
+    "console_1": {
+      "node": "console_1",
+      "visible_rect_source": [
+        8.73919677734375,
+        946.63671875,
+        1188.5215454101562,
+        375.7265625
+      ]
+    },
+    "console_2": {
+      "node": "console_2",
+      "visible_rect_source": [
+        8.02325439453125,
+        874.02001953125,
+        1189.9535522460938,
+        448.9599609375
+      ]
+    },
+    "console_3": {
+      "node": "console_3",
+      "visible_rect_source": [
+        8.02325439453125,
+        802.02001953125,
+        1189.9535522460938,
+        520.9599609375
+      ]
+    },
+    "console_4": {
+      "node": "console_4",
+      "visible_rect_source": [
+        8.02325439453125,
+        730.02001953125,
+        1189.9535522460938,
+        592.9599609375
+      ]
+    }
+  },
+  "ports": {
+    "weapons": {
+      "interface_center_source3d": [
+        318.0,
+        -208.0,
+        28
+      ],
+      "axis_to_device_source3d": [
+        -0.9156771302223206,
+        -0.22891928255558014,
+        0.330350399017334
+      ],
+      "receiver_mouth_source3d": [
+        332.5521240234375,
+        -204.36196899414062,
+        22.75
+      ],
+      "pipe_end_source3d": [
+        288.8957214355469,
+        -215.27606201171875,
+        38.5
+      ],
+      "bore_radius": 26,
+      "projected_insert_depth_px": 45,
+      "axial_insert_depth_source_units": 47.67664522593845,
+      "core_interface_source3d": [
+        448,
+        -249,
+        28
+      ],
+      "core_axis_out_source3d": [
+        -0.7867372632026672,
+        0.5703845024108887,
+        -0.23602119088172913
+      ],
+      "device_marker": "weapons/power_in_weapons",
+      "core_marker": "core/power_out_weapons"
+    },
+    "defence": {
+      "interface_center_source3d": [
+        916.0,
+        -199.0,
+        28
+      ],
+      "axis_to_device_source3d": [
+        0.9217585325241089,
+        -0.20305131375789642,
+        0.330350399017334
+      ],
+      "receiver_mouth_source3d": [
+        901.3511962890625,
+        -195.7730712890625,
+        22.75
+      ],
+      "pipe_end_source3d": [
+        945.2975463867188,
+        -205.45387268066406,
+        38.5
+      ],
+      "bore_radius": 26,
+      "projected_insert_depth_px": 45,
+      "axial_insert_depth_source_units": 47.67664522593845,
+      "core_interface_source3d": [
+        741,
+        -247,
+        28
+      ],
+      "core_axis_out_source3d": [
+        0.7396002411842346,
+        0.6471502184867859,
+        -0.18490006029605865
+      ],
+      "device_marker": "defence/power_in_defence",
+      "core_marker": "core/power_out_defence"
+    },
+    "smelting": {
+      "interface_center_source3d": [
+        313.0,
+        -517.0,
+        28
+      ],
+      "axis_to_device_source3d": [
+        -0.8936136364936829,
+        0.3038475215435028,
+        0.33035045862197876
+      ],
+      "receiver_mouth_source3d": [
+        327.2015075683594,
+        -521.8287963867188,
+        22.75
+      ],
+      "pipe_end_source3d": [
+        284.5970153808594,
+        -507.3423767089844,
+        38.5
+      ],
+      "bore_radius": 26,
+      "projected_insert_depth_px": 45,
+      "axial_insert_depth_source_units": 47.67664522593845,
+      "core_interface_source3d": [
+        463,
+        -450,
+        28
+      ],
+      "core_axis_out_source3d": [
+        -0.8604531288146973,
+        -0.47081395983695984,
+        -0.19481956958770752
+      ],
+      "device_marker": "smelting/power_in_smelting",
+      "core_marker": "core/power_out_smelting"
+    },
+    "condensation": {
+      "interface_center_source3d": [
+        889.0,
+        -518.0,
+        28
+      ],
+      "axis_to_device_source3d": [
+        0.9302923083305359,
+        0.15945172309875488,
+        0.330350399017334
+      ],
+      "receiver_mouth_source3d": [
+        874.215576171875,
+        -520.5340576171875,
+        22.75
+      ],
+      "pipe_end_source3d": [
+        938.2813720703125,
+        -509.5531921386719,
+        45.5
+      ],
+      "bore_radius": 26,
+      "projected_insert_depth_px": 65,
+      "axial_insert_depth_source_units": 68.86626532635555,
+      "core_interface_source3d": [
+        729,
+        -446,
+        28
+      ],
+      "core_axis_out_source3d": [
+        0.7780561447143555,
+        -0.59595787525177,
+        -0.19865262508392334
+      ],
+      "device_marker": "condensation/power_in_condensation",
+      "core_marker": "core/power_out_condensation"
+    }
+  },
+  "generator_sha256": "ab7f8263f33ede89c897532d7f529b889db7f1f6ced48775c44ce20330aff9f9",
+  "asset_sha256": "81cc745455f576fd774c494f20b3951087550591beba60482da899b34fb21503"
 }
