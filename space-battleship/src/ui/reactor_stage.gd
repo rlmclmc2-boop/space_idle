@@ -131,6 +131,7 @@ func _kind(title: String) -> int:
 	if "core containment glass" in title or "weapon chamber glazing" in title or "crystal containment glass" in title:return 1
 	if "receiver acknowledgement" in title:return 11
 	if "core transfer packet" in title:return 10
+	if "core polar channel" in title:return 14
 	if "core plasma kernel" in title:return 9
 	if "core plasma strands" in title:return 2
 	if "core plasma mass" in title:return 3
@@ -177,9 +178,10 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	part.position=source_point(pivot)
 	part.scale=Vector2.ONE*SOURCE_SCALE
 	_groups[key].add_child(part)
-	if kind==1:part.z_index=4
-	elif kind==9:part.z_index=2
-	elif kind==10:part.z_index=3 if title.get_slice("packet ",1) in ["weapons","condensation"] else 0
+	if kind==1:part.z_index=5
+	elif kind==9:part.z_index=3
+	elif kind in [12,14]:part.z_index=2
+	elif kind==10:part.z_index=4 if title.get_slice("packet ",1) in ["weapons","condensation"] else 0
 	elif kind==3:part.z_index=1
 	elif kind==2:part.z_index=0
 	var bottom: float=-INF

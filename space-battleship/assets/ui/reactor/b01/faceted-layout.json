@@ -258,9 +258,9 @@
       "node": "defence",
       "visible_rect_source": [
         868.8294677734375,
-        45.67388916015625,
+        30.3985595703125,
         439.0953369140625,
-        358.5196228027344
+        373.7949523925781
       ]
     },
     "pipe_defence": {
@@ -508,6 +508,6 @@
       "receiver_u": 0.768051532791687
     }
   },
-  "generator_sha256": "cdfeaa79996fe2f5f400741a1323b87db79150ec179ba4c1779be9a26f25a48e",
-  "asset_sha256": "22a11529ae9d707029c4d6a1042cee047c4176237fef202fba0f58beee48e83c"
+  "generator_sha256": "7b538eb8718cba7b7f0a7ed79fab0d4af608175b6d9c73b73ca704998d7eea8e",
+  "asset_sha256": "4d44eb6b707a59344c55483222a613c05f70af7a0df2f0a22987bd95ee5ce9fa"
 }

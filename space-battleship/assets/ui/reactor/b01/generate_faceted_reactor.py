@@ -262,6 +262,10 @@ def weapon(m,phase=.65):
  for xx in (148,208):box('weapon crown joint',xx,112,3,19,105,3,m['dark'])
  socket('weapons',m)
 
+def shield_axis_point(x,y,z):
+ dx=x-1045;dz=z-70
+ return Vector((1045+dx*.64+dz*.77,y,70-dx*.77+dz*.64))
+
 def defence(m,phase=1.):
  before=set(bpy.data.objects)
  mount('shield',1017,300,220,m);box('shield shell',968,199,128,174,42,62,m['dark'])
@@ -273,16 +277,23 @@ def defence(m,phase=1.):
  # A real bowed surface, divided into broad facets, projects beyond the
  # ring. Its source-space boundary is shared with the work/occlusion export.
  verts=[];rows,cols=20,8
+ emitter=shield_axis_point(1045,177,91)+Vector((.77,0,.64))
+ axis=Vector((.77,0,.64))
  for j in range(rows+1):
   angle=-math.pi*.5+math.pi*j/rows
   for k in range(cols+1):
    t=k/cols;radius=126*t*max(.03,min(1.,phase))
-   verts.append((1045+radius*math.cos(angle),-(177+radius*math.sin(angle)),104+42*(1-t*t)))
+   q=emitter+axis*(radius*math.cos(angle)*1.60)+Vector((0,radius*math.sin(angle),40*math.sin(math.pi*t)))
+   verts.append((q.x,-q.y,q.z))
  faces=[]
  for j in range(rows):
   for k in range(cols):
    a=j*(cols+1)+k;faces.append((a,a+1,a+cols+2,a+cols+1))
- mesh('shield bowed field',verts,faces,m['field'])
+ field=mesh('shield bowed field',verts,faces,m['field'])
+ uv=field.data.uv_layers.new(name='field_radial_formation')
+ for face in field.data.polygons:
+  for loop in face.loop_indices:
+   index=field.data.loops[loop].vertex_index;uv.data[loop].uv=(index%(cols+1)/cols,index//(cols+1)/rows)
  rod('shield rear casing',(945,177,66),(1008,177,66),38,m['shade'])
  for xx in (960,993):rod('shield bearing collar',(xx,177,66),(xx+7,177,66),43,m['steel'])
  armor_panel('shield emitter shoulder',[(941,139),(955,122),(980,124),(999,146),(996,215),(980,238),(946,230),(936,209)],110,45,m['armor'])
@@ -291,9 +302,8 @@ def defence(m,phase=1.):
  for obj in set(bpy.data.objects)-before:
   if obj.type!='MESH' or not obj.name.startswith(('shield armor','shield glass','shield load ring','shield active rim','shield joint','shield projector')):continue
   for v in obj.data.vertices:
-   p=obj.matrix_world@v.co;dx=p.x-1045;dz=p.z-70
-   p.x=1045+dx*.64+dz*.77;p.z=70-dx*.77+dz*.64
-   v.co=obj.matrix_world.inverted()@p
+   p=obj.matrix_world@v.co;q=shield_axis_point(p.x,-p.y,p.z)
+   v.co=obj.matrix_world.inverted()@Vector((q.x,-q.y,q.z))
  socket('defence',m)
 
 def furnace(m):
@@ -454,7 +464,7 @@ def core(m):
   for i in range(48):
    a,b=points[i],points[i+1]
    rod('core field meridian '+str(axis_angle)+' '+str(i),(a.x,-a.y,a.z),(b.x,-b.y,b.z),1.8,m['cyan'])
- rod('core plasma axial channel',(x,y-126,101),(x,y+126,101),4,m['cyan'])
+ rod('core polar channel',(x,y-136,102),(x,y+136,102),4.5,m['cyan'])
  ring('core glass rim',x,y,148,5,49,6,m['edge'],segments=24)
  for i,a in enumerate((0,math.pi/2,math.pi,math.pi*1.5)):
   armor_arc('core armor '+str(i),x,y,198,36,101,73,m,a+.16,a+1.39)
@@ -535,7 +545,7 @@ WORK_NAMES={
  'defence': ['shield active rim','shield bowed field'],
  'smelting': ['furnace feed','furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
  'condensation': ['crystal containment glass','crystal body','crystal bright facet'],
- 'core': ['core field meridian','core energy rim','core containment glass','core plasma kernel','core plasma mass','core plasma strand','core transfer packet']}
+ 'core': ['core polar channel','core field meridian','core energy rim','core containment glass','core plasma kernel','core plasma mass','core plasma strand','core transfer packet']}
 for id in DATA['devices']:WORK_NAMES[id].append(id+' receiver acknowledgement')
 FRONT_NAMES={
  'weapons':['weapon retainer','weapon focusing exit','weapon top bridge','weapon bottom bridge'],
@@ -649,7 +659,7 @@ def export_glb():
     # Receiver/port bases stay in the declared pipe frame and enter the casing.
     for v in obj.data.vertices:
      world=obj.matrix_world@v.co
-     scale=Vector((1.15,1.15,1.15)) if obj.name.startswith('shield bowed field') else housing_scale
+     scale=housing_scale
      delta=world-anchor
      world=anchor+installation@Vector((delta.x*scale.x,delta.y*scale.y,delta.z*scale.z))
      v.co=obj.matrix_world.inverted()@world

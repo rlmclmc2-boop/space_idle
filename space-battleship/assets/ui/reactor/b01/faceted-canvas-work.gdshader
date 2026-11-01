@@ -111,14 +111,26 @@ void fragment(){
   color=(plasma+vec3(.18,.62,.73)*limb+vec3(.40,.72,.80)*axis*(.20+compression*.40))*strength;
   opacity=(.28+optical_depth*.18+release*.09+charged*.06)*smoothstep(.01,.25,optical_depth);
  }else if(work_kind==4){
-  float radius=length(point.xy-vec2(1045.0,-177.0));
-  float front=20.0+125.0*formation;
-  float mask=1.0-smoothstep(front-4.0,front,radius);
+  float radius=UV.x;
+  float front=formation;
+  float mask=1.0-smoothstep(front-.025,front,radius);
   float panel=pow(1.0-abs(facing_normal.z),2.0);
-  float rim=smoothstep(front-12.0,front-4.0,radius);
-  opacity=work_zone==1?mask*(0.42+panel*0.30+rim*0.25):0.6;
+  float rim=smoothstep(front-.085,front-.025,radius);
+  opacity=work_zone==1?mask*(0.50+panel*0.35+rim*0.45):0.6;
   color=mix(vec3(0.035,0.42,0.65),vec3(0.30,0.90,1.0),panel+rim*0.4)*strength;
   if(work_zone==0){color=mix(color,vec3(.65,.97,1.0),response*.70);}
+  else{
+   // Stationary constraint cells live on the actual bowed field surface.
+   vec2 p=vec2(point.x-1045.0+(point.z-104.0)*.25,point.y+177.0)/22.0;
+   vec2 spacing=vec2(1.0,1.7320508);
+   vec2 a=mod(p,spacing)-spacing*.5;
+   vec2 b=mod(p-spacing*.5,spacing)-spacing*.5;
+   vec2 cell=dot(a,a)<dot(b,b)?a:b;
+   float border=.5-max(dot(abs(cell),vec2(.5,.8660254)),abs(cell.x));
+   float grid=1.0-smoothstep(.035,.070,abs(border));
+   color=mix(color,vec3(.30,.87,1.0)*strength,grid*.45);
+   opacity=clamp(opacity+grid*mask*.12,0.0,1.0);
+  }
  }else if(work_kind==5){
   float face=max(0.0,dot(facing_normal,normalize(vec3(-0.2,0.6,1.0))));
   float thermal=face*0.50+0.12;
@@ -147,6 +159,7 @@ void fragment(){
   color=mix(vec3(0.13,0.035,0.28),base_color.rgb,0.35+face*0.65)*mix(0.65,1.0,strength);
   float seed=1.0-smoothstep(8.0,38.0,abs(point.y+592.0));
   color=mix(color,vec3(.75,.55,1.0),seed*response*.75);
+  color+=vec3(.18,.10,.28)*pow(face,7.0)*strength;
  }else if(work_kind==7){
   float progress=(cycle-.72)/.28*1.16-.08;
   float distance=UV.x-progress;
@@ -171,6 +184,13 @@ void fragment(){
   float compression=smoothstep(.43,.60,cycle);
   color=mix(vec3(.12,.78,.98),vec3(.60,1.0,1.0),compression*.55)*strength;
   opacity=.66+compression*.18;
+ }else if(work_kind==14){
+  float gathering=smoothstep(0.0,.43,cycle);
+  float compression=smoothstep(.43,.60,cycle)*(1.0-smoothstep(.66,.80,cycle));
+  float distance_from_nucleus=abs(point.y+340.0);
+  float arrival=exp(-pow((distance_from_nucleus-136.0*(1.0-gathering))/16.0,2.0));
+  color=mix(vec3(.07,.66,.91),vec3(.85,1.0,1.0),arrival*.72+compression*.25)*strength;
+  opacity=.40+arrival*.40+compression*.15;
  }else if(work_kind==11){
   float fill=smoothstep(0.0,.06,received_age);
   float envelope=smoothstep(0.0,.012,received_age)*(1.0-smoothstep(.15,.22,received_age));
@@ -182,7 +202,7 @@ void fragment(){
   color*=strength*(0.55+0.45*max(0.0,dot(facing_normal,normalize(vec3(-0.4,0.4,0.8)))));
   if(work_kind==8 && work_zone==1){
    float electric_face=pow(max(0.0,dot(facing_normal,normalize(vec3(-.3,.5,1.0)))),5.0);
-   color=mix(vec3(.02,.55,.78),vec3(.55,1.0,1.0),electric_face*.60+response*.30)*strength;
+   color=mix(vec3(.02,.75,1.0),vec3(.65,1.0,1.0),electric_face*.60+response*.30)*strength;
   }else if(work_kind==8 && work_zone==2){color=vec3(.40,.92,1.0)*strength;}
  }
  if(work_kind!=1 && load_fraction<=0.0){opacity=0.0;}
