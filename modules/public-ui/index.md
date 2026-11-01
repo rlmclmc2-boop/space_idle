@@ -117,3 +117,5 @@
 - 反应堆进深/点光同壳 `774deace`：[reactor-depth-light-shared-20261101](reactor-depth-light-shared-20261101/README.md)。
 
 - 新批准细环星球中间版 `c5ba56ce`：[planet-panel-surfaces-shared-20261101](planet-panel-surfaces-shared-20261101/README.md)。
+
+- 新批准细环星球中间版 `da633beb`：[planet-light-gas-shared-20261101](planet-light-gas-shared-20261101/README.md)。
