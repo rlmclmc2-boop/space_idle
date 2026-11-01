@@ -4,6 +4,7 @@ extends Control
 ## retains authored normals, depth and UVs without a full-frame 3D MSAA pass.
 const MODEL=preload("res://assets/ui/reactor/b01/faceted-reactor.glb")
 const SURFACE=preload("res://assets/ui/reactor/b01/faceted-surface.gdshader")
+const OUTLINE=preload("res://assets/ui/reactor/b01/faceted-structure-outline.gdshader")
 const DEPTH=preload("res://assets/ui/reactor/b01/faceted-depth.gdshader")
 const BACKGROUND=preload("res://assets/ui/reactor/b01/faceted-canvas-background.gdshader")
 const WORK=preload("res://assets/ui/reactor/b01/faceted-canvas-work.gdshader")
@@ -21,6 +22,8 @@ var _background: ColorRect
 var _background_material: ShaderMaterial
 var _palette: Dictionary={}
 var _bodies: Array=[]
+var _outlines: Array[MeshInstance3D]=[]
+var _outline_material: ShaderMaterial
 var _groups: Dictionary={}
 var _materials: Dictionary={}
 var _mechanisms: Dictionary={}
@@ -90,6 +93,8 @@ func _init() -> void:
 		luminaire.omni_range=650.0
 		luminaire.omni_attenuation=1.8
 		_baker.add_child(luminaire)
+	_outline_material=ShaderMaterial.new()
+	_outline_material.shader=OUTLINE
 	_asset=MODEL.instantiate()
 	_baker.add_child(_asset)
 	for group in _asset.get_children():
@@ -153,6 +158,13 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 				_palette[palette_key]=material
 			node.set_surface_override_material(index,_palette[palette_key])
 			colors.append(_palette[palette_key])
+		var outline:=MeshInstance3D.new()
+		outline.name="StructureSilhouette"
+		outline.mesh=node.mesh
+		outline.material_override=_outline_material
+		outline.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.add_child(outline)
+		_outlines.append(outline)
 		_bodies.append({"node":node,"materials":colors})
 		return
 	node.visible=false
@@ -285,6 +297,7 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	diagnostics.field_updates+=1
 
 func _refresh_bake(ids: Array) -> void:
+	for outline in _outlines:outline.visible=true
 	for body in _bodies:
 		for index in body.materials.size():body.node.set_surface_override_material(index,body.materials[index])
 	_environment.background_color=Color("0a1d30")
@@ -315,6 +328,7 @@ func _finish_bake(generation: int) -> void:
 	if generation!=_cache_generation:return
 	var working:=ImageTexture.create_from_image(_baker.get_texture().get_image())
 	_background_material.set_shader_parameter("working_surface",working)
+	for outline in _outlines:outline.visible=false
 	var depth_material:=ShaderMaterial.new()
 	depth_material.shader=DEPTH
 	for body in _bodies:
@@ -334,6 +348,7 @@ func _finish_bake(generation: int) -> void:
 		for index in body.materials.size():body.node.set_surface_override_material(index,body.materials[index])
 	_environment.background_color=Color("0a1d30")
 	_baker.render_target_update_mode=SubViewport.UPDATE_DISABLED
+	for outline in _outlines:outline.visible=true
 	_cache_ready=true
 	diagnostics.cache_renders+=3
 	queue_redraw()
