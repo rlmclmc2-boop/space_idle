@@ -8,20 +8,15 @@
 - 星球来源 `415d3bbdf`：facilities_v9四GLB、planet_facility_scene.gd、planet_orbital_spine.gd六件接入并同blob。planet_visual保留公共固态整组宽度包络，planet_panel保留关闭/展开安全区及e7591438的业务/UI修复。
 - 反应堆当前已接入 `c74b5d39`（交接76a03605）的十三件installation闭包，逐blob同源。公共主题9034af81、main e845装备、公共宿主/导航和战场空间保持。
 
-## 星球当前整页与下一项
+## 星球当前批准稿与下一项
 
-原图依据：
+制作依据：`archive/planet-resume-20261101@032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/index.md`，同目录 `planet-ring.png`（SHA256 `453078f9be47b45d1cffb809352470feb21f769fc18d5fdfeb640f4cf602e572`）。用户已批准按此图接入游戏，原星球组制作中。
 
-- `8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`，右侧完整阶段。
-- `1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png`。
+当前目标是按批准图还原大直径、细窄环体、四设施的体量比例，以及建筑与环之间的承托和管线接合细节；原组可尝试环轨电车。公共组保留当前运行现场、主体安全区和业务/UI修复，待新资产固定后继续同壳整页适配，核总览与不同详情台高度下的比例、遮挡、留白和正常动态。不等待旧实机评价，不在当前旧资产上追加美术迭代。
 
-当前证据：`archive/design-docs-before-cleanup-20261031@88c4f81d:modules/public-ui/planet-v31-front-detail-shared-20261101/README.md`。五张1440×900原PNG及同尺寸JPEG、总览/设施各6秒180连续帧、分片/哈希和原图同尺寸JPEG；source.json及author-review.md记录来源和完整作者判断。
+当前运行仍为星球 `415d3bbdf` / 公共接入 `6d8a4dd9`。其证据保存在独立归档 `archive/design-docs-before-cleanup-20261031@88c4f81d:modules/public-ui/planet-v31-front-detail-shared-20261101/README.md`；新批准稿尚未作为运行资产接入。
 
-本版已由父实际发送完整实机图和视频，发送记录 `Sentinel_c9c0790924ac819196175fc798d7a926`，已回读三附件；当前仅整体造型/建筑效果的视觉评价等用户，尚无独审或用户通过。主体横向环带、前后遮挡与负形、四设施功能轮廓和主次保持；前方泊位有斜装甲肩、厚入口、暗内壁回边和夹持部件，制造区有外装甲/暗内口/压力侧壁/工作床层次，均有完整舱底承托且保留开放空间。浅装甲、深腔、功能重点色与舰船/公共层可并置；不同台高和两片当前转动内，没有所见新增裁切、跳位或导航侵入。
-
-当前仍是原图在游戏简化分面语言中的实现，非原图细节等量还原或用户终验。运行源及证据保留，不自行追加装饰或推翻主体。
-
-受控星球1、探索240、征服/四设施已建，业务快照暂停、正常显示动画1×；MovieMaker固定30fps离线生成，不作自然进度/整周/全交互/实时性能结论。四GLB同源，现有公共安全区和UI修复保持。
+本线程已核批准稿文字入口；图片blob读取受工具二进制解码限制，尚未完成该图片的本地视觉核对。新资产到位时须连同批准原图读取并对照，不能以文字目标代替图稿。
 
 ## 反应堆当前制作与公共接续
 
@@ -37,5 +32,5 @@
 
 1. 公共适配ee0e2ff1已完成本轮实机检查和固定交接，供原反应堆组接续新舱室；当前无新增明确公共控件缺陷，不以本轮有限状态宣称全局通过。
 2. 反应堆原组按共同原图整体制作中，固定新源后继续同壳接入，按台体/舱室/管路/能量体积及受光完整重看，不等用户、不用当前基线代替。
-3. 星球6d8a4dd9对应已发送三附件的本轮视觉评价仍等用户，保持源码/证据。
+3. 星球原组按032b2f18批准稿制作中；保留当前6d8a4dd9现场，待新资产固定后继续同壳整页与正常动态适配。
 4. 目标机性能仍缺同构建、同战场显示/关闭基线，不用软件环境观察替代，不新增无关复测或合main。
