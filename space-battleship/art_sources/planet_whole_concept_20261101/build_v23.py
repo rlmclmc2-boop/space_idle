@@ -164,6 +164,34 @@ def annular_band(name, inner, outer, zlo, zhi, mat, begin=0, end=tau, n=128):
     return obj
 
 
+def planar_armor_uv(mesh):
+    """Stable panel coordinates for authored plates; top and side share seams."""
+    xs=[v.co.x for v in mesh.vertices]
+    ys=[v.co.y for v in mesh.vertices]
+    xlo,ylo=min(xs),min(ys)
+    dx=max(0.001,max(xs)-xlo)
+    dy=max(0.001,max(ys)-ylo)
+    layer=mesh.uv_layers.new(name="Authored plate UV")
+    for polygon in mesh.polygons:
+        for loop_index in polygon.loop_indices:
+            vertex=mesh.vertices[mesh.loops[loop_index].vertex_index].co
+            layer.data[loop_index].uv=((vertex.x-xlo)/dx,(vertex.y-ylo)/dy)
+
+
+def facade_armor_uv(mesh):
+    """Panel coordinates across a vertical portal face rather than its depth."""
+    xs=[v.co.x for v in mesh.vertices]
+    zs=[v.co.z for v in mesh.vertices]
+    xlo,zlo=min(xs),min(zs)
+    dx=max(0.001,max(xs)-xlo)
+    dz=max(0.001,max(zs)-zlo)
+    layer=mesh.uv_layers.new(name="Authored facade UV")
+    for polygon in mesh.polygons:
+        for loop_index in polygon.loop_indices:
+            vertex=mesh.vertices[mesh.loops[loop_index].vertex_index].co
+            layer.data[loop_index].uv=((vertex.x-xlo)/dx,(vertex.z-zlo)/dz)
+
+
 def armor_prism(name, outline, bottom, top, mat, root=None):
     """One thick faceted load/pressure plate; outline is authored in node space."""
     count=len(outline)
@@ -171,6 +199,7 @@ def armor_prism(name, outline, bottom, top, mat, root=None):
     faces=[tuple(range(count-1,-1,-1)),tuple(range(count,2*count))]
     faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
     mesh=bpy.data.meshes.new(name); mesh.from_pydata(vertices,[],faces); mesh.update()
+    planar_armor_uv(mesh)
     obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
     obj=finish(obj,name,mat,root,.025)
     return armor_facets(obj) if mat == ARMOR else obj
@@ -185,6 +214,7 @@ def slope_shell(name, outline, top_heights, thickness, mat, root=None):
     faces=[tuple(range(count-1,-1,-1)),tuple(range(count,2*count))]
     faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update()
+    planar_armor_uv(mesh)
     obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
     obj=finish(obj,name,mat,root,.025)
     return armor_facets(obj) if mat == ARMOR else obj
@@ -197,6 +227,7 @@ def wall_prism(name, outline_xz, near_y, far_y, mat, root=None):
     faces=[tuple(range(count-1,-1,-1)),tuple(range(count,2*count))]
     faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces);mesh.update()
+    facade_armor_uv(mesh)
     obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
     return finish(obj,name,mat,root,.018)
 
@@ -562,7 +593,7 @@ for x in (-1.11,-.37,.37,1.11):
     for y in (-1.43,-.96,-.49):
         if abs(x) < .7 and y < -.7: continue
         box("Manufacturing segmented load-floor armor tile",(x,y,.448),
-            (.64,.39,.018),ARMOR if (x+y) < -1.0 else ARMOR_FACE,workshop,.006)
+            (.64,.39,.018),ARMOR_MID if (x+y) < -1.0 else ARMOR,workshop,.006)
 box("Manufacturing recessed machine lane",(0,-.62,.448),
     (2.35,.38,.025),MACHINE,workshop,.007)
 box("Manufacturing open assembly well",(0,-1.10,.453),
