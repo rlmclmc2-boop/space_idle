@@ -1,6 +1,6 @@
 # 反应炉静态资产交付契约
 
-[M3目标与状态呈现](reactor.md) · [全局资产呈现](../../13-art-interaction.md)。本页维护制作/导入期的资产元数据与装配接口。
+[M3目标与状态呈现](reactor.md) · [全局资产呈现](../../13-art-interaction.md)。本页维护制作/导入期的资产元数据与装配接口。 技术交付与装配按本页核对；美术完成按[13§6](../../13-art-interaction.md#6-制作与双审证据口径)及M3对照批准稿判断。
 
 ## 可替换静态资产契约
 
@@ -26,7 +26,7 @@
 
 ### v1元数据结构与稳定身份
 
-以下JSON是制作/交付/导入期资源记录：`contract_version=1`，`status=draft/ready`。draft可将未定值记null；ready具备完整有效字段和引用。格式、版本与SHA在交付/导入期检查。
+以下JSON是制作/交付/导入期资源记录：`contract_version=1`，`status=draft/ready`。draft可将未定值记null；ready表示技术交付字段与引用已齐备。格式、版本与SHA在交付/导入期检查。
 
 
 稳定模块ID仅为`weapons`、`defence`、`smelting`、`condensation`，共享层`module_id=null`；不能用中文名、图片顺序或文件名推断模块。资产ID为`reactor.shell`、`reactor.core_housing`、`reactor.trunk`、`reactor.device_bay`或`reactor.device.<module_id>`；对应布局槽ID在`layout.slot_id`显式绑定（设备使用`reactor.slot.<module_id>`），业务仍按module_id查询/提交。
@@ -82,4 +82,4 @@
 }
 ```
 
-转ready前填齐适用字段、语义区与端口，核对格式、引用及交付SHA，并记录Godot导入设置；最终装配按V3检查真实页面的端接、净空与工作效果。
+转ready前填齐适用字段、语义区与端口，核对格式、引用及交付SHA，并记录Godot导入设置；最终装配按V3对照批准稿的整体呈现、端接空间与工作过程。
