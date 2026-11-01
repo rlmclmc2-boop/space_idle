@@ -743,16 +743,18 @@ for side in (-1,1):
                      (x+.105,roof_y+.083),(x-.105,roof_y+.083)],
                     [1.100,1.100,1.063,1.063],.010,ARMOR_MID,workshop)
     box("Fabrication room roof dark expansion joint",(x,-.93,1.08),(.075,1.23,.025),EDGE,workshop,.004)
+    wall_prism("Fabrication room continuous side pressure shell",
+               [(side*1.23,.58),(side*1.38,.58),
+                (side*1.38,.88),(side*1.29,1.02),
+                (side*1.23,1.02)],-1.60,-.27,ARMOR_MID,workshop)
+    box("Fabrication room lower dark pressure sill",(side*1.39,-.94,.64),
+        (.018,1.20,.10),ARMOR_SIDE,workshop,.004)
+    for y in (-1.36,-.56):
+        box("Fabrication room inset service window",(side*1.395,y,.84),
+            (.022,.26,.08),WINDOW,workshop,.004)
+        box("Fabrication room lower cooling louver",(side*1.397,y,.69),
+            (.023,.24,.045),MACHINE,workshop,.003)
     for y in (-1.37,-.97,-.57):
-        wall_prism("Fabrication room removable armor cassette",
-                   [(side*1.265,.67),(side*1.33,.67),
-                    (side*1.33,1.02),(side*1.29,1.13),
-                    (side*1.265,1.13)],y-.145,y+.145,
-                   ARMOR,workshop)
-        box("Fabrication room inset service window",(side*1.337,y,1.03),
-            (.022,.20,.09),WINDOW,workshop,.004)
-        box("Fabrication room lower cooling louver",(side*1.34,y,.70),
-            (.023,.20,.055),MACHINE,workshop,.003)
         box("Fabrication room roof amber access mark",(x,y,1.095),
             (.09,.13,.015),GOLD,workshop,.002)
     for y in (-1.53,-.24):
@@ -827,22 +829,36 @@ for side in (-1,1):
 box("Dock inner machine service bed",(0,-.75,.41),(.60,.71,.10),ARMOR_SIDE,shipyard)
 box("Dock entrance dark pressure threshold",(0,-.35,.39),(1.46,.32,.16),EDGE,shipyard,.015)
 beam("Dock narrow inner service bridge",(-.73,-.36,1.08),(.73,-.36,1.08),.08,.12,ARMOR_SIDE,shipyard)
-for side in (-1,1):
-    box("Dock inner service pod roof",(side*.87,-.35,1.34),
-        (.48,.37,.12),ARMOR,shipyard,.02)
-for side in (-1,1):
-    wall_prism("Dock deep armored portal fascia",
-               [(side*.72,.37),(side*1.10,.37),(side*1.10,.98),
-                (side*.95,1.20),(side*.76,1.20),(side*.72,1.03)],
-               -.58,-.35,ARMOR_MID,shipyard)
-    box("Dock black recessed portal return",(side*.52,-.60,.81),
-        (.075,.17,.75),KEEL,shipyard,.009)
-box("Dock portal upper pressure hood",(0,-.47,1.44),
-    (.94,.20,.11),ARMOR_MID,shipyard,.02)
-box("Dock portal recessed soffit",(0,-.64,1.28),
-    (.95,.075,.08),KEEL,shipyard,.01)
-for side in (-1,1):
-    beam("Dock entrance service pod upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.14,.16,ARMOR,shipyard)
+# The two service chambers form the end walls of one open pressure berth.
+# Each end has a full-width raised arch with a dark, ship-height aperture;
+# the far end grows directly into the two rail-entry fairings above.
+for end_y in (-1.65,-.43):
+    far_end=end_y > -1.0
+    for side in (-1,1):
+        wall_prism("Dock deep armored portal fascia" if far_end else "Dock outer pressure portal shoulder",
+                   [(side*.68,.42),(side*1.11,.42),(side*1.11,1.20),
+                    (side*.84,1.20),(side*.74,1.51),(side*.68,1.51)],
+                   end_y-.15,end_y+.15,ARMOR,shipyard)
+        box("Dock black recessed portal return",(side*.65,end_y,1.01),
+            (.055,.32,.77),KEEL,shipyard,.009)
+        box("Dock portal side window",(side*1.119,end_y,.91),
+            (.015,.16,.11),WINDOW,shipyard,.004)
+    if far_end:
+        box("Dock portal upper pressure hood",(0,end_y,1.52),
+            (1.51,.31,.13),ARMOR_SOFT,shipyard,.018)
+        box("Dock portal dark lintel underside",(0,end_y,1.42),
+            (1.36,.29,.055),EDGE,shipyard,.008)
+    else:
+        for side in (-1,1):
+            x=side*.83
+            slope_shell("Dock outer service gate sloped roof",
+                        [(x-.26,end_y-.15),(x+.26,end_y-.15),
+                         (x+.26,end_y+.15),(x-.26,end_y+.15)],
+                        [1.53,1.53,1.46,1.46],.09,ARMOR_SOFT,shipyard)
+        box("Dock outer gate upper pressure tie",(0,end_y,1.54),
+            (.88,.09,.045),ARMOR_SIDE,shipyard,.005)
+box("Dock portal recessed soffit",(0,-.62,1.41),
+    (.95,.075,.06),KEEL,shipyard,.01)
 box("Docked shuttle fuselage",(0,-1.33,.91),(.61,1.30,.22),ARMOR_SIDE,shipyard,.04)
 armor_prism("Docked shuttle swept nose",[(0,-2.30),(.31,-1.84),(-.31,-1.84)],.85,1.04,ARMOR_MID,shipyard)
 box("Docked shuttle canopy",(0,-1.42,1.045),(.33,.44,.06),GLASS,shipyard,.01)
