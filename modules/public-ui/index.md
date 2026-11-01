@@ -99,3 +99,5 @@
 - 反应堆体块同壳中间稿 `47e385ee`：[reactor-spatial-shared-20261101](reactor-spatial-shared-20261101/README.md)。
 
 - 新批准细环星球中间版 `0d54b732`：[planet-thin-orbit-shared-20261101](planet-thin-orbit-shared-20261101/README.md)。
+
+- 新批准细环星球中间版 `7742b28f`：[planet-facility-proportion-shared-20261101](planet-facility-proportion-shared-20261101/README.md)。
