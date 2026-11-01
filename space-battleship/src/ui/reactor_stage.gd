@@ -72,7 +72,7 @@ func _init() -> void:
 	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
-	_environment.ambient_light_energy=.26
+	_environment.ambient_light_energy=.18
 	# The same broad cool hull / warm deck environment is reflected by metal.
 	# This is initialized once for the cached structure, never per work tick.
 	var sky_material:=ProceduralSkyMaterial.new()
@@ -80,8 +80,8 @@ func _init() -> void:
 	sky_material.sky_horizon_color=Color("9eb8c8")
 	sky_material.ground_horizon_color=Color("b6a17c")
 	sky_material.ground_bottom_color=Color("122132")
-	sky_material.sky_energy_multiplier=.65
-	sky_material.ground_energy_multiplier=.45
+	sky_material.sky_energy_multiplier=.45
+	sky_material.ground_energy_multiplier=.30
 	var sky:=Sky.new()
 	sky.radiance_size=Sky.RADIANCE_SIZE_128
 	sky.sky_material=sky_material
