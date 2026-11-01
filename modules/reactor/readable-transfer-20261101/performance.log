@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+PROFILE_CONTEXT fixed_battle_and_session=true wall_clock_visual_1x=true renderer=Mesa_llvmpipe_GL_compatibility no_recording=true size=(1440, 900) loads={ "core": 1.0, "weapons": 0.25, "defence": 0.25, "smelting": 0.25, "condensation": 0.25 }
+PROFILE {"fps":43.3847336286812,"frames":218,"mean_ms":23.0495825688073,"mode":"projected_animated_first","p50_ms":22.526,"p95_ms":25.286,"root_children_after":30,"root_children_before":30,"stage_delta":{"active_frames":218,"cache_renders":0,"draws":0,"field_updates":0},"ui_delta":{"commands":0,"model_reads":0,"preview_reads":0,"quote_reads":0,"visible_frames":218},"wall_ms":5024.809}
+PROFILE {"fps":39.6801105140927,"frames":199,"mean_ms":25.2015427135678,"mode":"projected_frozen_same_render","p50_ms":22.6,"p95_ms":38.239,"root_children_after":30,"root_children_before":30,"stage_delta":{"active_frames":0,"cache_renders":0,"draws":0,"field_updates":0},"ui_delta":{"commands":0,"model_reads":0,"preview_reads":0,"quote_reads":0,"visible_frames":199},"wall_ms":5015.107}
+PROFILE {"fps":57.9879616991513,"frames":290,"mean_ms":17.2449586206897,"mode":"projected_hidden_no_replacement","p50_ms":16.808,"p95_ms":19.683,"root_children_after":30,"root_children_before":30,"stage_delta":{"active_frames":0,"cache_renders":0,"draws":0,"field_updates":0},"ui_delta":{"commands":0,"model_reads":0,"preview_reads":0,"quote_reads":0,"visible_frames":0},"wall_ms":5001.038}
+PROFILE {"fps":44.2181924798001,"frames":222,"mean_ms":22.6151261261261,"mode":"projected_animated_return","p50_ms":22.25,"p95_ms":25.088,"root_children_after":30,"root_children_before":30,"stage_delta":{"active_frames":222,"cache_renders":0,"draws":0,"field_updates":0},"ui_delta":{"commands":0,"model_reads":0,"preview_reads":0,"quote_reads":0,"visible_frames":222},"wall_ms":5020.558}
+PROJECTED_CACHE_END { "draws": 0, "field_updates": 2, "active_frames": 446, "cache_renders": 3 }

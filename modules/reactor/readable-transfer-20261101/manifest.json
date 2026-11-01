@@ -1,0 +1,128 @@
+{
+  "source_commit": "ba1379381066cc3f2f44a214557b33f7002b2d3f",
+  "asset_sha256": "697d94f57fa462ec84edb7af45a4611defb2c10c6f30094378f00ff0120915c2",
+  "generator_sha256": "0f7ba99301d0dcaba4ce87434ad30b74be2f93986be3a74c5253aa53a1c3210a",
+  "coverage": "controlled four and single smelter normal videos/zero/active; author candidate",
+  "files": {
+    "README.md": {
+      "bytes": 2109,
+      "sha256": "8cd7538f0534ab598b0d4f666e2cb030d9ce55d954aa4c97789eb8138ac714f4"
+    },
+    "author-review.md": {
+      "bytes": 1170,
+      "sha256": "bbc1601a19c5a7f1295f59a1065c6aae4817cf90426bc592fd065cd5b652a469"
+    },
+    "check-only.log": {
+      "bytes": 73,
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e"
+    },
+    "contact.jpg": {
+      "bytes": 161162,
+      "sha256": "62e68b05b6302c66f80e39b75cfbe101f1904bd3b24de0a6e7f1fc7af8c03c2d"
+    },
+    "contact.png": {
+      "bytes": 648102,
+      "sha256": "7b79004064578aeedee382f5e85e46d6d4332214b83902ddf533fb9b9a47162f"
+    },
+    "four-12s.mp4": {
+      "bytes": 463656,
+      "sha256": "44affaf8ddbd5c163e91e4d81601b03b19c13b376581065cbb86cc255e29c299"
+    },
+    "four-active.jpg": {
+      "bytes": 179242,
+      "sha256": "1fb5bbe06eeaf050466eab2b816affe81a0c8db46de04496e34bae6c16a5e23b"
+    },
+    "four-active.png": {
+      "bytes": 695562,
+      "sha256": "423a57a131f56ba9af1a1ff3d1d6c94c984b3eecd726da5066aa1baf569d5332"
+    },
+    "four-half-second-phases.jpg": {
+      "bytes": 187810,
+      "sha256": "3a49693a0649edae1ed7cc4e1db6ee59e5137ba95e48e8756e42086b9bed8537"
+    },
+    "four-runtime.log": {
+      "bytes": 2189,
+      "sha256": "c187db016aeaa2d3841a443757dca011b0079ab1766a590c5bac2bbea9e8d408"
+    },
+    "four-zero.jpg": {
+      "bytes": 165997,
+      "sha256": "7307e02ab5015f207ac21de408f685b325a358bb3e8834d1769affb9b7cbe5ca"
+    },
+    "four-zero.png": {
+      "bytes": 688775,
+      "sha256": "fc714536c1fb50cbc2664924ecb18d6bd8cdf262534af4705d46ab610449c7c8"
+    },
+    "installation.json": {
+      "bytes": 1490,
+      "sha256": "75dd31fedd22e2b15e27aab286a76a09293c1d3bdcb48fae2ae831ff4192f1b5"
+    },
+    "midpipe.jpg": {
+      "bytes": 161186,
+      "sha256": "bc8d836b38697d68ea346416dc76489311519cdd180b34f0c3364f0d01f6fd4c"
+    },
+    "midpipe.png": {
+      "bytes": 647445,
+      "sha256": "88b3de618c9bc44caa26997c2b363f904ac8589680242b9a3b6f361ed45d9bc4"
+    },
+    "performance-driver.gd": {
+      "bytes": 3511,
+      "sha256": "00960430f49aea3ae25a541cdea09643b12fcf6656b5b7619fecca6419778c67"
+    },
+    "performance.log": {
+      "bytes": 2263,
+      "sha256": "864427d20c5221d66e16bc39929ee26cccf3896274e97228c01c2d7ac63e4695"
+    },
+    "performance.md": {
+      "bytes": 1663,
+      "sha256": "51a049e499d1edba0b0608dd3293d3813468fdd7addbd6d64e013dc953b01bc8"
+    },
+    "port-check.log": {
+      "bytes": 844,
+      "sha256": "368534d27fdbf753dd6a636bd0f2b5878a640da8aa97485f093888efc4525943"
+    },
+    "port-driver.gd": {
+      "bytes": 2206,
+      "sha256": "24056175f8ee20855ccab9b86fc8d21c4b91ffe8089b9bd16375de620a575590"
+    },
+    "single-12s.mp4": {
+      "bytes": 401330,
+      "sha256": "970a411a5ebb6e338115a67d157357262053b1f005f52bd23f0dab6302d3ccd1"
+    },
+    "single-active.jpg": {
+      "bytes": 137178,
+      "sha256": "a28baa7997e986dc04d394b6e50b1185b59792d78bf61444d14262caacedbb98"
+    },
+    "single-active.png": {
+      "bytes": 633588,
+      "sha256": "8a280abcb2960e69fbe3e85bc1460daef11826c9a68d12a56b2e2bd337824194"
+    },
+    "single-half-second-phases.jpg": {
+      "bytes": 131346,
+      "sha256": "757733f3a839106bd49854c30288d6ef54c050fefe5fb9994e4d90ceb0298094"
+    },
+    "single-runtime.log": {
+      "bytes": 1598,
+      "sha256": "9d0bceabcb157b68bde5710203b157132210df2d02479ef46bf625d41326ddde"
+    },
+    "single-zero.jpg": {
+      "bytes": 130177,
+      "sha256": "67c17c92c1000d6b853794895cb6890efac64be67713609a2dcd7c305239fa83"
+    },
+    "single-zero.png": {
+      "bytes": 637296,
+      "sha256": "0331d7bf58f97fcf86220d86a93a3a44361b8e202a65ed2b2d3377f157c84247"
+    },
+    "source-closure.json": {
+      "bytes": 3221,
+      "sha256": "a18baf312c5440df90ae00293815afddf420b4e3f020b59df276d5988e96806d"
+    },
+    "source-closure.tar.gz": {
+      "bytes": 359701,
+      "sha256": "a54fd3f61cab055adb6c890d2a704ed4fbf3e34d75b00fd8e55009193cf91335"
+    },
+    "visual-driver.gd": {
+      "bytes": 6044,
+      "sha256": "76e7300b50b0284edaefb785ed487306c706eb331c4731732cb5bc412bf3887e"
+    }
+  }
+}
