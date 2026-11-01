@@ -1,21 +1,19 @@
 # B01反应堆制作交接
 
-过程/目标见[M3](../../../../game-design/art/modules/reactor.md)，分层与安装见[资产接口](../../../../game-design/art/modules/reactor-asset-contract.md)。
+目标见[M3](../../../../game-design/art/modules/reactor.md)，安装见[资产接口](../../../../game-design/art/modules/reactor-asset-contract.md)。
 
 ## 当前现场
 
-分支`implement/reactor-centered-godot`，旧主体运行资产5ae32e28仍保全、外观已退回。公共控件已接49364764，并在19092a64精确取入9034af81的bridge_theme.gd后继修正；没有取公共main或导航。用户已对[24db2a9c共同风格概念](https://github.com/rlmclmc2-boop/space_idle/blob/24db2a9c6d6815f52026e0c53a29327238af831d/modules/public-ui/unified-abstraction-proposal-20261101/README.md)表示“这个好很多”，按简化分面装甲、共同轮廓/明暗/材质和三段操作台实施；此为方向认可，非实机验收。公共壳/装备操作结构由整体组保持。
+分支`implement/reactor-centered-godot`。用户认可24db2a9c共同分面方向，非实机终验。公共材质精确消费9034af81，plate.state保留；未改Owner、装备、舰船、main或共享导航。本线程本人制作，不使用子智能体。
 
-## 当前实作
+已用本地Blender生成独立GLB：舱室、核心、四设备、同源空心接头/管腔及1–4路机台。`generate_faceted_reactor.py -- --export-glb`输出`faceted-reactor.glb`和`faceted-layout.json`；端口读取`reactor_ports.json`，位置/轴向/插入深度一致。源1187×1326等比放入808×835，背景独立覆盖。渲染资产只用持续免费本地工具。
 
-本线程已实际查看概念PNG与完整说明，新增`assets/ui/reactor/b01/generate_faceted_reactor.py`，使用本地Blender/Eevee重新制作同语言舱室、核心、四设备和三段机台。设备/核心可按base/work/front分别导出；接口中心、轴向和插入深度直接消费reactor_ports.json。套筒延伸到机体内部，管端按轴向插入，最终切线显式固定。源像素端口投影检查通过，尚未等同真实成品接合通过。
+`reactor_scene.gd`已替换旧两栏控件布局：总控/均分带、完整分配行、底部等级/费用/数量/升级带。按钮预算和玻璃内区一起确定；比例在轨内，并随把手避让；沿公共字体/按钮/数字角色。已有实屏和原生拖动、×10/MAX成交扣费记录，当前仍需按最终渲染版重新绑定证据，不能拿中途图作最终交付。
 
-已实际看过装配样机、武器本体与1路机台。作者发现核心像同心色盘、管壳过重、设备受光偏灰，因此正在改核心实体焦点、细化管腔比例和分层亮面，没有将样机当可交用户稿。最新装配研究已实际看图，固定独立归档90750485c2535791e877cc660b9233618807cb4c（archive/reactor-faceted-study-20261101），入口modules/reactor/faceted-study-20261101/README.md。图/生成器快照/端口记录与SHA对应，blob已核；作者仍认为核心圆盘/符号感及设备中尺度分件、工作过程不足。不是Godot实图或视觉通过。
+## 当前具体一步
 
-机台已按1–4行生成收紧的三段承载面，底部事务带位置保持、空槽不保留。源画布1187×1326统一按835/1326等比映射至808×835，x居中，原生文字与控件消费同一变换；背景覆盖与主体尺度分开。布局元数据由生成器输出，不沿用旧逐轴拉伸。
+实时三维试作存在严重软件渲染开销，未通过性能。固定战场的诊断显示冻结写入仍慢，UI无重读/节点增长，三维整屏MSAA/绘制是主要成本。现在将同一GLB工作几何投影到Canvas：保留顶点法线、UV及16位深度，与三维机壳深度比较遮挡；静态材质/真实阴影仍由2×MSAA离屏绘制，只在设备范围变化时缓存。不是恢复旧整图/水波方案，也没有将关闭特效或降低刷新作为成品优化。
 
-下一步：看最新装配原尺寸，继续解决作者已发现的主体体积/材质问题；再输出完整独立本体/工作过程/前景遮挡闭包，并将原生读控迁入总控带—分配行—升级事务带。当前尚未安装新运行纹理或新控件布局，尚无新实机动态/性能结论。武器分段蓄能/释放、盾场逐步展开与晶体实体增长已有几何参数；熔料连续过程和核心运行层仍需完成，不回旧波纹表皮。
+正核对`faceted-depth.gdshader`及`faceted-canvas-work.gdshader`的兼容渲染器编码/正面关系，修工作层压机件。当前运行检查日志`/tmp/reactor-faceted-depth-check.log`，图`/tmp/reactor-faceted-native-4-active.png`。在目视和深度探针通过前不可声称端接/效果通过。旧实时三维参考代码保全于/tmp/reactor-spatial-reference.gd，诊断日志在/tmp/reactor-faceted-*-profile*.log；未作为当前性能结论发布。
 
-## 保持
-
-仅使用持续免费且无次数配额的本地Blender4.3.2/Godot4.7.2/Python工具。Owner、舰船、装备和共享导航不由本组重写；实际区域仍为模块808×835。运行资产在替换闭包完成前保留，新图/片独立Git归档。本线程本人制作，不使用子智能体。
+下一步：闭合遮挡后继续核心体积/汇聚释放和四设备工作过程的整体判断；完成同版1/2/3/4显示、原生操作、正常速度连续片与当前性能报告，再独立Git归档。上次已对用户报告的31.29→32.33、31.61→32.23属于旧软件ABAB；本轮架构/场景变化，不能拼接比较或声称目标硬件已通过。暂无权限阻塞，不等待用户。

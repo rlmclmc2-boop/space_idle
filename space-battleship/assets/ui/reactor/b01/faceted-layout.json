@@ -1,0 +1,167 @@
+{
+  "source_size": [
+    1187,
+    1326
+  ],
+  "content_size": [
+    808,
+    835
+  ],
+  "scale": 0.6297134238310709,
+  "offset": [
+    30.265082956259448,
+    0
+  ],
+  "console": {
+    "1": {
+      "count": 1,
+      "top": 946,
+      "header_y": 1035,
+      "rows_top": 1094,
+      "footer_y": 1230,
+      "header_rect": [
+        76,
+        987,
+        1036,
+        96
+      ],
+      "row_rects": [
+        [
+          76,
+          1102,
+          1036,
+          56
+        ]
+      ],
+      "transaction_rect": [
+        76,
+        1182,
+        1036,
+        96
+      ],
+      "visible_bottom": 1308
+    },
+    "2": {
+      "count": 2,
+      "top": 874,
+      "header_y": 963,
+      "rows_top": 1022,
+      "footer_y": 1230,
+      "header_rect": [
+        76,
+        915,
+        1036,
+        96
+      ],
+      "row_rects": [
+        [
+          76,
+          1030,
+          1036,
+          56
+        ],
+        [
+          76,
+          1102,
+          1036,
+          56
+        ]
+      ],
+      "transaction_rect": [
+        76,
+        1182,
+        1036,
+        96
+      ],
+      "visible_bottom": 1308
+    },
+    "3": {
+      "count": 3,
+      "top": 802,
+      "header_y": 891,
+      "rows_top": 950,
+      "footer_y": 1230,
+      "header_rect": [
+        76,
+        843,
+        1036,
+        96
+      ],
+      "row_rects": [
+        [
+          76,
+          958,
+          1036,
+          56
+        ],
+        [
+          76,
+          1030,
+          1036,
+          56
+        ],
+        [
+          76,
+          1102,
+          1036,
+          56
+        ]
+      ],
+      "transaction_rect": [
+        76,
+        1182,
+        1036,
+        96
+      ],
+      "visible_bottom": 1308
+    },
+    "4": {
+      "count": 4,
+      "top": 730,
+      "header_y": 819,
+      "rows_top": 878,
+      "footer_y": 1230,
+      "header_rect": [
+        76,
+        771,
+        1036,
+        96
+      ],
+      "row_rects": [
+        [
+          76,
+          886,
+          1036,
+          56
+        ],
+        [
+          76,
+          958,
+          1036,
+          56
+        ],
+        [
+          76,
+          1030,
+          1036,
+          56
+        ],
+        [
+          76,
+          1102,
+          1036,
+          56
+        ]
+      ],
+      "transaction_rect": [
+        76,
+        1182,
+        1036,
+        96
+      ],
+      "visible_bottom": 1308
+    }
+  },
+  "generator_sha256": "fb041ecfa9d0f34822a0e1980cb1e235d87102c41a8f37a85ede1cfba33d41af",
+  "asset_sha256": "23198584b2c019022a865168d7a24b27fecd5deeacd8bdec92793e4a31736895"
+}

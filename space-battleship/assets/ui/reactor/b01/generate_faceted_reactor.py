@@ -106,7 +106,7 @@ def defence(m,phase=1.):
  for j in range(rows+1):
   angle=-1.15+2.30*j/rows
   for k in range(cols+1):
-   t=k/cols;radius=66+60*t*max(.03,min(1.,phase))
+   t=k/cols;radius=20+106*t*max(.03,min(1.,phase))
    verts.append((1045+radius*math.cos(angle),-(177+radius*math.sin(angle)),55+37*math.sin(math.pi*t)*math.cos(angle)))
  faces=[]
  for j in range(rows):
@@ -120,12 +120,20 @@ def furnace(m):
  plate('furnace left armor',[(77,421),(105,389),(145,397),(139,436),(120,453),(123,526),(99,548),(75,525)],64,23,m['armor'])
  plate('furnace right armor',[(215,397),(245,405),(275,435),(268,528),(244,547),(221,523),(222,450),(205,431)],64,23,m['shade'])
  box('furnace crown',177,405,112,28,75,16,m['armor']);box('furnace throat',175,476,103,83,49,7,m['orange'])
+ for i in range(3):
+  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=0,radius=8,location=(160+i*15,-442,67))
+  o=bpy.context.object;o.name='furnace feed '+str(i);o.data.materials.append(m['copper'])
  box('furnace dark lip',175,522,102,20,77,18,m['dark']);box('furnace tap',175,519,54,15,87,8,m['copper'])
  disc('furnace vessel',176,597,86,34,m['dark'],12);disc('furnace liquid',176,594,67,48,m['orange'],12)
- ring('furnace vessel bank',176,597,87,17,58,23,m['shade'],.15,math.tau-.15,12)
+ ring('furnace vessel bank',176,597,87,17,58,23,m['shade'],.50,math.tau-.10,12)
  rod('furnace pour',(175,520,90),(175,582,58),10,m['orange'])
  plate('furnace outlet bed',[(226,604),(244,601),(309,662),(293,674)],27,11,m['dark'])
- plate('furnace outlet liquid',[(233,608),(240,607),(300,664),(295,669)],39,3,m['orange']);socket('smelting',m)
+ plate('furnace outlet liquid',[(233,608),(240,607),(300,664),(295,669)],39,3,m['orange'])
+ for obj in bpy.context.scene.objects:
+  if obj.name.startswith(('furnace vessel','furnace liquid')) and obj.type=='MESH':
+   for vertex in obj.data.vertices:vertex.co.y=-597+(vertex.co.y+597)*.48
+ for x in (114,233):box('furnace basin support',x,647,24,63,9,26,m['dark'])
+ socket('smelting',m)
 
 def crystal(m,growth=1.):
  mount('crystal',1014,683,244,m);box('crystal base',1013,624,202,72,41,27,m['dark']);box('crystal back',1020,514,153,166,28,22,m['glass'])
@@ -139,29 +147,45 @@ def crystal(m,growth=1.):
  socket('condensation',m)
 
 def core(m):
- x,y=594,340;disc('core seat',x,y,181,14,m['dark'],24);ring('core copper restraint',x,y,174,15,32,18,m['copper'],segments=24)
- # A true faceted volume replaces the first flat colour-disc study.
- bpy.ops.mesh.primitive_uv_sphere_add(segments=24,ring_count=12,radius=147,location=(x,-y,42))
- sphere=bpy.context.object;sphere.name='core faceted energy volume';sphere.scale.z=.70
- glass=bpy.data.materials.new('core facing gradient');glass.use_nodes=True
- n=glass.node_tree.nodes;n.clear();out=n.new('ShaderNodeOutputMaterial');emit=n.new('ShaderNodeEmission')
- geo=n.new('ShaderNodeNewGeometry');dot=n.new('ShaderNodeVectorMath');dot.operation='DOT_PRODUCT';dot.inputs[1].default_value=(0,0,1)
- ramp=n.new('ShaderNodeValToRGB');ramp.color_ramp.elements[0].position=.1;ramp.color_ramp.elements[0].color=(.006,.10,.20,1)
- ramp.color_ramp.elements[1].position=.95;ramp.color_ramp.elements[1].color=(.13,.65,.82,1)
- mid=ramp.color_ramp.elements.new(.60);mid.color=(.018,.29,.50,1)
- glass.node_tree.links.new(geo.outputs['Normal'],dot.inputs[0]);glass.node_tree.links.new(dot.outputs['Value'],ramp.inputs[0]);glass.node_tree.links.new(ramp.outputs[0],emit.inputs['Color']);glass.node_tree.links.new(emit.outputs[0],out.inputs['Surface']);sphere.data.materials.append(glass)
- rod('core vertical constraint',(x,206,174),(x,470,174),7,m['cyan'])
- # The focal mass is a true faceted polyhedron, independent of the
- # enclosing field. Broad faces explain its volume at final game size.
- bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=67,location=(x,-y,213))
- ignition=bpy.context.object;ignition.name='core ignition mass';ignition.rotation_euler=(.17,.31,.20)
- ignition.data.materials.append(m['cyan']);ignition.data.materials.append(m['field']);ignition.data.materials.append(m['charge'])
- for face in ignition.data.polygons:face.material_index=0 if face.normal.z>.45 else (1 if face.normal.x<.5 else 2)
- for yy in (-54,54):
-  ring('core ignition restraint',x,y+yy,46,4,205,3,m['cyan'],start=.15,end=math.pi-.15,segments=8)
- ring('core glass rim',x,y,148,8,49,6,m['field'],segments=24)
+ x,y=594,340
+ disc('core seat',x,y,181,14,m['dark'],24)
+ ring('core copper restraint',x,y,174,11,32,18,m['copper'],segments=24)
+ # Open containment volume: dark rear cavity, an internal three-dimensional
+ # plasma mass and sparse field paths. There is no opaque facing-gradient disc.
+ disc('core rear cavity',x,y,144,24,m['glass'],24)
+ bpy.ops.mesh.primitive_uv_sphere_add(segments=24,ring_count=12,radius=145,location=(x,-y,70))
+ globe=bpy.context.object;globe.name='core containment glass';globe.scale.z=.82;globe.data.materials.append(m['field'])
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3,radius=66,location=(x,-y,100))
+ plasma=bpy.context.object;plasma.name='core plasma mass';plasma.scale=(.92,1.10,.94);plasma.rotation_euler=(.17,.31,.20)
+ plasma.data.materials.append(m['cyan'])
+ for polygon in plasma.data.polygons:polygon.use_smooth=True
+ # Each path winds from a pole toward the active mass. These are energy
+ # strands, never moving mechanical bars; their real depth passes behind it.
+ for j in range(4):
+  points=[]
+  for i in range(25):
+   t=i/24;angle=j*math.pi/2+t*3.2;r=12*(1-t)+70*math.sin(math.pi*t)
+   pole=-1 if j%2==0 else 1
+   points.append(Vector((x+r*math.cos(angle),-(y+pole*130*(1-t)),100+r*.65*math.sin(angle))))
+  vertices=[];sides=6
+  for i,p in enumerate(points):
+   tangent=(points[min(i+1,24)]-points[max(0,i-1)]).normalized()
+   u=tangent.cross(Vector((0,0,1))).normalized();v=tangent.cross(u).normalized()
+   for k in range(sides):
+    q=p+2.5*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides));vertices.append(q)
+  faces=[]
+  for i in range(24):
+   for k in range(sides):
+    a=i*sides+k;b=i*sides+(k+1)%sides;faces.append((a,b,b+sides,a+sides))
+  mesh('core plasma strand '+str(j),vertices,faces,m['cyan'])
+ for yy in (-139,139):
+  box('core pole shoe',x,y+yy,48,22,114,28,m['dark'])
+  box('core pole contact',x,y+yy,26,9,135,8,m['copper'])
+ ring('core glass rim',x,y,148,5,49,6,m['edge'],segments=24)
  for i,a in enumerate((0,math.pi/2,math.pi,math.pi*1.5)):
-  ring('core armor '+str(i),x,y,191,43,68,24,m['armor'] if i<2 else m['shade'],a+.15,a+1.42,4)
+  ring('core armor '+str(i),x,y,191,35,68,38,m['armor'] if i<2 else m['shade'],a+.16,a+1.39,4)
+  aa=a+.77
+  box('core armor lock '+str(i),x+171*math.cos(aa),y+171*math.sin(aa),20,17,105,10,m['dark'])
 
 def pipes(m):
  for id,d in DATA['devices'].items():
@@ -177,7 +201,7 @@ def pipes(m):
   curve.bevel_depth=18;curve.bevel_resolution=1;o=bpy.data.objects.new(id+' conduit',curve);bpy.context.collection.objects.link(o);o.data.materials.append(m['edge'])
 
 def room(m):
- plate('rear blue room',[(0,0),(W,0),(W,H),(0,H)],-90,12,m['room'],shift=(0,0))
+ plate('rear blue room',[(-80,0),(W+80,0),(W+80,H),(-80,H)],-90,12,m['room'],shift=(0,0))
  for x in (35,345,830,1140):
   box('room structural column',x,325,32,650,-68,24,m['dark'])
   box('room column face',x-5,320,8,610,-43,4,m['edge'])
@@ -187,7 +211,9 @@ def room(m):
  for x in (185,1010):
   box('upper machine wall shelf',x,330,320,28,-8,24,m['edge'])
   box('wall shelf warm seam',x,322,278,5,14,3,m['copper'])
- plate('room floor',[(0,600),(W,600),(W,H),(0,H)],-60,15,m['floor'],shift=(0,0))
+ plate('room floor',[(-80,600),(W+80,600),(W+80,H),(-80,H)],-60,15,m['floor'],shift=(0,0))
+ plate('console service approach',[(390,720),(800,720),(1095,1088),(92,1088)],-44,8,m['edge'],shift=(0,0))
+ plate('console approach inset',[(414,739),(776,739),(1030,1070),(157,1070)],-33,3,m['floor'],shift=(0,0))
  plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,18,m['edge'])
  plate('central deck inset',[(418,615),(762,615),(819,685),(762,719),(418,719),(365,685)],-3,5,m['floor'])
  box('core lower pedestal',594,591,118,122,18,32,m['dark'])
@@ -196,21 +222,21 @@ def room(m):
  for x in (185,1010):box('room overhead light',x,47,82,14,-8,6,m['lamp'])
 
 def console_layout(count):
- row_h=67;offset=(4-count)*row_h;top=766+offset;header_y=835+offset;rows_top=894+offset
+ row_h=72;offset=(4-count)*row_h;top=730+offset;header_y=819+offset;rows_top=878+offset
  footer_y=rows_top+count*row_h+64;bottom=footer_y+78
  return {'count':count,'top':top,'header_y':header_y,'rows_top':rows_top,'footer_y':footer_y,
-  'header_rect':[76,header_y-38,1036,76],
+  'header_rect':[76,header_y-48,1036,96],
   'row_rects':[[76,rows_top+i*row_h+8,1036,row_h-16] for i in range(count)],
   'transaction_rect':[76,footer_y-48,1036,96],'visible_bottom':bottom}
 
 def console(m,count=4):
  # Every legal display count gets a complete fitted control deck. No empty
  # baked four-row grooves remain behind one or two native allocation rows.
- row_h=67;offset=(4-count)*row_h;top=766+offset;header_y=835+offset;rows_top=894+offset
+ row_h=72;offset=(4-count)*row_h;top=730+offset;header_y=819+offset;rows_top=878+offset
  footer_y=rows_top+count*row_h+64;bottom=footer_y+78
  plate('console unified chassis',[(34,top),(1153,top),(1180,top+27),(1180,bottom-37),(1142,bottom),(45,bottom),(8,bottom-37),(8,top+27)],12,35,m['edge'])
  plate('console dark face',[(53,top+23),(1134,top+23),(1154,top+43),(1154,bottom-54),(1124,bottom-23),(64,bottom-23),(34,bottom-54),(34,top+43)],35,10,m['dark'])
- for y,h in ((header_y,76),(rows_top+count*row_h/2,count*row_h-4),(footer_y,96)):
+ for y,h in ((header_y,96),(rows_top+count*row_h/2,count*row_h-4),(footer_y,96)):
   box('console grouped working glass',594,y,1068,h,48,4,m['glass'])
  for i in range(1,count):box('allocation row separator',594,rows_top+i*row_h,1020,2,54,1,m['edge'])
  for side in (-1,1):
@@ -223,9 +249,9 @@ def console(m,count=4):
 WORK_NAMES={
  'weapons': ['weapon charge segment','weapon output'],
  'defence': ['shield active rim','shield bowed field'],
- 'smelting': ['furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
+ 'smelting': ['furnace feed','furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
  'condensation': ['crystal body','crystal bright facet'],
- 'core': ['core faceted energy volume','core vertical constraint','core ignition mass','core ignition restraint','core glass rim']}
+ 'core': ['core containment glass','core plasma mass','core plasma strand']}
 FRONT_NAMES={
  'weapons':['weapon retainer','weapon focusing exit','weapon top bridge','weapon bottom bridge'],
  'defence':['shield armor','shield joint','shield projector'],
@@ -253,6 +279,91 @@ def setup():
  ls=bpy.context.view_layer.freestyle_settings.linesets[0];ls.select_silhouette=True;ls.select_crease=False;ls.linestyle.color=(.012,.025,.04);ls.linestyle.thickness=1.3
  return m
 
+def route_samples(d,steps=40):
+ from mathutils.geometry import interpolate_bezier
+ p0=Vector((*d['core_port'],28));p1=Vector((*d['controls'][0],16));p2=Vector((*d['controls'][1],10))
+ axis=Vector(d['axis_to_device']).normalized();end=Vector(d['device_port'])+axis*(d['insert_depth']-15)
+ p3=Vector((end.x,end.y,28+(d['insert_depth']-15)*.35))
+ # Cubic has a prescribed endpoint tangent, identical to the receiver.
+ h=p3-Vector((axis.x,axis.y,.35))*55
+ return interpolate_bezier(p0,p1,h,p3,steps)
+
+def channel_pipe(id,m):
+ d=DATA['devices'][id];pts=route_samples(d);normals=[]
+ for i,p in enumerate(pts):
+  tangent=(pts[min(i+1,len(pts)-1)]-pts[max(0,i-1)]).normalized()
+  normals.append(Vector((-tangent.y,tangent.x,0)).normalized())
+ # Open U-profile. A recessed working channel lies below the two lips;
+ # the inlet collars and receiver therefore occlude it by actual depth.
+ profile=[(-18,-12),(-18,12),(-10,17),(-8,6),(8,6),(10,17),(18,12),(18,-12)]
+ vertices=[]
+ for p,n in zip(pts,normals):
+  for side,height in profile:
+   q=p+n*side;vertices.append((q.x,-q.y,q.z+height))
+ faces=[]
+ for i in range(len(pts)-1):
+  for j in range(len(profile)):
+   a=i*8+j;b=i*8+(j+1)%8;faces.append((a,b,b+8,a+8))
+ shell=mesh(id+' channel shell',vertices,faces,m['edge'])
+ v=[]
+ for p,n in zip(pts,normals):
+  for side in (-7,7):
+   q=p+n*side;v.append((q.x,-q.y,q.z+7))
+ work=mesh(id+' channel work',v,[(i*2,i*2+1,i*2+3,i*2+2) for i in range(len(pts)-1)],m['cyan'])
+ uv=work.data.uv_layers.new(name='route_distance')
+ for polygon in work.data.polygons:
+  for loop in polygon.loop_indices:
+   idx=work.data.loops[loop].vertex_index;uv.data[loop].uv=(idx//2/(len(pts)-1),idx%2)
+ for idx in (1,len(pts)-3):
+  p=pts[idx];n=normals[idx]
+  rod(id+' channel collar', (p.x+n.x*21,p.y+n.y*21,p.z+18),(p.x-n.x*21,p.y-n.y*21,p.z+18),5,m['dark'])
+ return shell,work
+
+def export_glb():
+ m=setup();groups={}
+ def group(name,fn):
+  before=set(bpy.data.objects);fn();objects=set(bpy.data.objects)-before
+  root=bpy.data.objects.new(name,None);bpy.context.collection.objects.link(root)
+  for o in objects:o.parent=root
+  groups[name]=root
+ group('bay',lambda:room(m));group('core',lambda:core(m))
+ for id,fn in [('weapons',lambda:weapon(m,.72)),('defence',lambda:defence(m,1.)),('smelting',lambda:furnace(m)),('condensation',lambda:crystal(m,1.))]:
+  group(id,fn);group('pipe_'+id,lambda id=id:channel_pipe(id,m))
+ for count in (1,2,3,4):group('console_'+str(count),lambda count=count:console(m,count))
+ def merge(objects,name):
+  if not objects:return
+  bpy.ops.object.select_all(action='DESELECT')
+  for o in objects:o.select_set(True)
+  bpy.context.view_layer.objects.active=objects[0];bpy.ops.object.join();objects[0].name=name
+ # Consolidate fixed geometry by part. Runtime keeps only genuinely moving
+ # working mechanisms separate; tiny bolts/strands do not become draw nodes.
+ merge([o for o in groups['core'].children if o.name.startswith('core plasma strand')],'core plasma strands')
+ for i in range(5):merge([o for o in groups['condensation'].children if o.name in ('crystal body '+str(i),'crystal bright facet '+str(i))],'crystal body '+str(i))
+ for name,root in groups.items():
+  prefixes=WORK_NAMES.get(name,[])
+  fixed=[o for o in root.children if o.type=='MESH' and not any(o.name.startswith(v) for v in prefixes) and 'channel work' not in o.name]
+  merge(fixed,name+' structure')
+ # Export ordinary palette data, not Blender-only ShaderToRGB nodes. Godot
+ # supplies the same faceted surface lighting plus distinct working shaders.
+ for mat in bpy.data.materials:
+  color=mat.diffuse_color[:];mat.use_nodes=True;nodes=mat.node_tree.nodes;nodes.clear()
+  out=nodes.new('ShaderNodeOutputMaterial');bsdf=nodes.new('ShaderNodeBsdfPrincipled');bsdf.inputs['Base Color'].default_value=color;bsdf.inputs['Roughness'].default_value=.72
+  mat.node_tree.links.new(bsdf.outputs['BSDF'],out.inputs['Surface'])
+ for o in list(bpy.context.scene.objects):
+  if o.type in ('LIGHT','CAMERA'):bpy.data.objects.remove(o,do_unlink=True)
+ for o in list(bpy.context.scene.objects):
+  if o.type=='CURVE':
+   bpy.ops.object.select_all(action='DESELECT');o.select_set(True);bpy.context.view_layer.objects.active=o;bpy.ops.object.convert(target='MESH')
+  if o.type=='MESH':
+   bpy.ops.object.select_all(action='DESELECT');o.select_set(True);bpy.context.view_layer.objects.active=o;bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY',center='BOUNDS')
+ bpy.ops.object.select_all(action='SELECT')
+ path=ROOT/'faceted-reactor.glb'
+ bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',export_yup=False,export_apply=True,export_cameras=False,export_lights=False,export_extras=True)
+ layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],
+  'console':{str(i):console_layout(i) for i in (1,2,3,4)},'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+ (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
+ print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])
+
 def arg(key,default):
  return sys.argv[sys.argv.index(key)+1] if key in sys.argv else default
 
@@ -279,7 +390,9 @@ def run():
   'console_layout':console_layout(count) if name in ('console','assembly') else None,
   'image':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'source_generator_sha256':GENERATOR_SHA},indent=2))
  print('FACETED_PROTOTYPE',stem,'source_canvas',W,H)
-if '--export-study' in sys.argv:
+if '--export-glb' in sys.argv:
+ export_glb()
+elif '--export-study' in sys.argv:
  for name,layer,count in [('weapons','base',4),('weapons','work',4),('weapons','front',4),('console','composite',1),('console','composite',4),('assembly','composite',4)]:
   sys.argv=['blender','--only',name,'--pass',layer,'--count',str(count)]
   run()
