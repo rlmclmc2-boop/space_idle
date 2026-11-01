@@ -1,0 +1,87 @@
+[
+  {
+    "path": "saved-tmp/planet-r132-side70-1.png",
+    "bytes": 429270,
+    "sha256": "62024f99d8205ffc709e9d243fbd9651a2e7da1847dc306c35ba9cc4e46af265"
+  },
+  {
+    "path": "saved-tmp/planet-r132-side70-4.png",
+    "bytes": 673098,
+    "sha256": "3ad7e3120205be2c3473e739f3e83a083c88fcfde40a205ac3b0cf73165edd23"
+  },
+  {
+    "path": "saved-tmp/planet-r132-side70.gd",
+    "bytes": 1105,
+    "sha256": "0b7a3f17009b93768e853116e3fadb746cc4f4ef89d98c9d3c8b9a9cfa4ad700"
+  },
+  {
+    "path": "saved-tmp/planet-r132-side70.log",
+    "bytes": 1295,
+    "sha256": "f04c85fc7fb66037412fa449ed116942587e199b83f5e7b5f1ab9ec306ab14dc"
+  },
+  {
+    "path": "saved-tmp/planet-r132-six.gd",
+    "bytes": 1240,
+    "sha256": "737e05be1b4d68213c25d5a10aa1236f2a74349b16d87c70bdf8887fc611bfd0"
+  },
+  {
+    "path": "saved-tmp/planet-r132-six.log",
+    "bytes": 368,
+    "sha256": "052211730d2e6bad1bb27d0ba1621ed54bb0ef792b898c4c8600ed8b3be20a67"
+  },
+  {
+    "path": "saved-tmp/planet-r132-stage-1.png",
+    "bytes": 453120,
+    "sha256": "c07c9d656fb819128092c206cd843e229a15085bd4983302d8089de6c5a01d05"
+  },
+  {
+    "path": "saved-tmp/planet-r132-stage-2.png",
+    "bytes": 503768,
+    "sha256": "3b23661511cc95d323607223b425ba91600b69a385f83af7c55bad53e216fcf0"
+  },
+  {
+    "path": "saved-tmp/planet-r132-stage-3.png",
+    "bytes": 598355,
+    "sha256": "5318ed8ba315002076db6621cf40dc9c696adfc794c2cde09a1beb616e16b74f"
+  },
+  {
+    "path": "saved-tmp/planet-r132-stage-4.png",
+    "bytes": 691206,
+    "sha256": "4c9ee57a8fb40799fcb2f3d7eec1ecf24aeb6b4da83bd8fdc2f58616183688f7"
+  },
+  {
+    "path": "saved-tmp/planet-r132-stages.gd",
+    "bytes": 1089,
+    "sha256": "d50b4d1118faf66ab924be193cec744901f9f711e8468262260e5493b7eb647a"
+  },
+  {
+    "path": "saved-tmp/planet-r132-stages.log",
+    "bytes": 1295,
+    "sha256": "f04c85fc7fb66037412fa449ed116942587e199b83f5e7b5f1ab9ec306ab14dc"
+  },
+  {
+    "path": "saved-tmp/planet-r132-variant-6.png",
+    "bytes": 248850,
+    "sha256": "3c84841771345014e6333cd1a9040bc3d7a33cf6ed292b5ecc30ee92177f94ec"
+  },
+  {
+    "path": "saved-tmp/planet-r132-variant6-prior.png",
+    "bytes": 223547,
+    "sha256": "1ffab796c3a60737bb4733fb7d8f1b13f26b69d6f05b84fca6aab5bbd9977ac2"
+  },
+  {
+    "path": "preexisting-untracked/refinery-orbit-supported.png",
+    "bytes": 1649627,
+    "sha256": "8b5d1a1067fb70ed0eb777d851eff0e230df467a4c10464573dfd330a84666e2"
+  },
+  {
+    "path": "preexisting-untracked/shipyard-docked-shuttle.png",
+    "bytes": 1673265,
+    "sha256": "f31affeb4257533d6ca8746887774b10ea5590dc47fd7924cbc2cc9f26ad7659"
+  },
+  {
+    "path": "README.md",
+    "bytes": 840,
+    "sha256": "be1c41715edd5f2a2f7589e7724a7ed513de1be7a6837c272a7a314bd0415139"
+  }
+]
