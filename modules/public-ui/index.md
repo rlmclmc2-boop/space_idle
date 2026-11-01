@@ -133,3 +133,5 @@
 - 反应堆进深/点光同壳 `38f5d8b3`：[reactor-formed-housings-shared-20261101](reactor-formed-housings-shared-20261101/README.md)。
 
 - 新批准细环星球中间版 `42b3e7e1`：[planet-v57-shared-20261101](planet-v57-shared-20261101/README.md)。
+
+- 新批准细环星球中间版 `0522528e`：[planet-v58-shared-20261101](planet-v58-shared-20261101/README.md)。
