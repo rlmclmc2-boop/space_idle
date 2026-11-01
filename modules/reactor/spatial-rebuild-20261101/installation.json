@@ -1,0 +1,26 @@
+{
+  "source_commit": "6665ce7f6a7d2bfa144c9a07bf3754074d7933cf",
+  "replace_paths": [
+    "space-battleship/src/ui/reactor_scene.gd",
+    "space-battleship/src/ui/reactor_stage.gd",
+    "space-battleship/assets/ui/reactor/b01/README.md",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json"
+  ],
+  "content_rect": [
+    0,
+    65,
+    808,
+    835
+  ],
+  "scope": "private reactor geometry/material/work assets and stage; keep scene bindings/native controls and public host",
+  "note": "Model, port JSON, layout, stage and shaders are one closure; no whole-tree merge or old host replacement."
+}

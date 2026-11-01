@@ -1,0 +1,122 @@
+{
+  "source_commit": "6665ce7f6a7d2bfa144c9a07bf3754074d7933cf",
+  "coverage": "controlled four/single zero, active, native equal, pause/resume; current author checkpoint, not art acceptance",
+  "files": {
+    "README.md": {
+      "bytes": 2087,
+      "sha256": "f44ea49cccc3c1593c9935c1b82a2481e0b5fa30fd18b611528b424d8fcec707"
+    },
+    "approved-reference.jpg": {
+      "bytes": 941252,
+      "sha256": "950c08409ea0c7a62ef00d6169bae278abc929be19d5dea834224470a1a31d06"
+    },
+    "author-review.md": {
+      "bytes": 1174,
+      "sha256": "aab31ec66e148667c2bf04b92b9822e6f0223b1b81146aba95dd25301a491bd5"
+    },
+    "export.log": {
+      "bytes": 5813,
+      "sha256": "a1fcf74f8e5aa0a008c472128c41191a6d6cf05a33edb408a05c31adc5274895"
+    },
+    "four-032.png": {
+      "bytes": 766383,
+      "sha256": "a78c3582736dcdca88da713e0179ddc12924510391d1e448bd35fcc18a211204"
+    },
+    "four-12s.mp4": {
+      "bytes": 526313,
+      "sha256": "a4e7498d22877dd66f42fcc8eb6092d413688ad9ee92990ee2ffa336501a9c93"
+    },
+    "four-active.jpg": {
+      "bytes": 200342,
+      "sha256": "c56d35a447fb19012d1dfd90bcc53995a7c2b1dda00886d38b94af64bbb852f5"
+    },
+    "four-active.png": {
+      "bytes": 772364,
+      "sha256": "a179a369faeaa89e3d3a54aa7015b4b44aa3356bd8507c0555d3feb834865a4d"
+    },
+    "four-phases.jpg": {
+      "bytes": 248732,
+      "sha256": "fa4606061949066080827f065ea58c8cef0f351ce5b4d70640c4af518b75be9b"
+    },
+    "four-runtime.log": {
+      "bytes": 2189,
+      "sha256": "4313ce5cc6502b82d4c5d87e0155a3d500b2522af4063cce03dd2fd552eeb434"
+    },
+    "four-zero.jpg": {
+      "bytes": 186701,
+      "sha256": "ed80a35d261a5c970f1f12cf77c8ac536cf659ac0a9a2453bd4bdd1be644b72e"
+    },
+    "four-zero.png": {
+      "bytes": 759673,
+      "sha256": "4169795fbf197fde2331d2b3f5f9737443655474506c81b827fa314cd88b63d1"
+    },
+    "import.log": {
+      "bytes": 2251,
+      "sha256": "6d383e5e374d17311d4e494987878f78b182bafb249c5a88f18972c1c5ea3b42"
+    },
+    "installation.json": {
+      "bytes": 1250,
+      "sha256": "b5571a3084c9e44468bce8a3bb35c2a11f1cca93fe67bc81833774c3ac41ec4c"
+    },
+    "ports-driver.gd": {
+      "bytes": 2206,
+      "sha256": "24056175f8ee20855ccab9b86fc8d21c4b91ffe8089b9bd16375de620a575590"
+    },
+    "ports.log": {
+      "bytes": 2726,
+      "sha256": "26953ccecd50fb4efe1af2e920fe62483db82e1e2127a2535792a04334c73d71"
+    },
+    "reference-runtime-comparison.jpg": {
+      "bytes": 351980,
+      "sha256": "b335ab6f8bba6b52de503f74cfd7dec594286e216ae652f0c36d52486ab7aa0f"
+    },
+    "single-032.png": {
+      "bytes": 598859,
+      "sha256": "bedea54c3fb6630ede272d507804773b012a9788f25c2176693d34e1e1b88f3e"
+    },
+    "single-12s.mp4": {
+      "bytes": 454723,
+      "sha256": "9367a73bb409d47f8a3c32120d1065771a3c8ff6bbf74483b8d9edbe1f9c98d2"
+    },
+    "single-active.jpg": {
+      "bytes": 162632,
+      "sha256": "4dc4fc3145c385e844601d20591db73679b27921fac90858c12c9aa38f5c0af6"
+    },
+    "single-active.png": {
+      "bytes": 708424,
+      "sha256": "2049aafa9354e43d61bfa13906f7e0494b1a2845f9c82a920110072d55685a5d"
+    },
+    "single-phases.jpg": {
+      "bytes": 206629,
+      "sha256": "b4049691f56dea79e25ef7cb66645d21c8a40bf7624cd7bab064c26ce4e4f0d5"
+    },
+    "single-runtime.log": {
+      "bytes": 1598,
+      "sha256": "13337316bb9e9b5244dfc32eb47c1fa90125a31fa4e4b3d2314df30ee28e961a"
+    },
+    "single-zero.jpg": {
+      "bytes": 152593,
+      "sha256": "bf8de7b2a018a18ade72c61d05c789c4dcb47a6b5d98bbe65d3fc984de1c957b"
+    },
+    "single-zero.png": {
+      "bytes": 696734,
+      "sha256": "25d122800dcccff04ef7d36046fd75cd82df56969aea21181b4b7af70fb3282e"
+    },
+    "source-closure.json": {
+      "bytes": 3222,
+      "sha256": "bf57a3c512cc0cd582c70b01824f69539095a06d24041861781be21d80f26e63"
+    },
+    "source-closure.tar.gz": {
+      "bytes": 693365,
+      "sha256": "7cbd9f1ec0dc1a96e934775523665745fa77d937ea665e5b8e1c7a97b1a06fd0"
+    },
+    "video-probe.json": {
+      "bytes": 537,
+      "sha256": "38d6a03c417a50190d24322f841506e444771e68acdc5155851bcaa4aca0024e"
+    },
+    "visual-driver.gd": {
+      "bytes": 6044,
+      "sha256": "76e7300b50b0284edaefb785ed487306c706eb331c4731732cb5bc412bf3887e"
+    }
+  }
+}

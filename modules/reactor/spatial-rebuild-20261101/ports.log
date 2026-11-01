@@ -1,0 +1,50 @@
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+ERROR: Could not create directory: '/home/agent/.local/share/godot'.
+   at: make_dir_recursive (core/io/dir_access.cpp:179)
+ERROR: Error attempting to create data dir: /home/agent/.local/share/godot/app_userdata/太空战舰.
+   at: ensure_user_data_dir (core/os/os.cpp:442)
+ERROR: Could not create directory: 'user://logs'.
+   at: make_dir_recursive (core/io/dir_access.cpp:179)
+ERROR: Failed to open log file for writing: user://logs/godot.log
+   at: rotate_file (core/io/logger.cpp:169)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PORT weapons device position_error=0.0 axis_error=0.00000014675942
+PORT weapons core position_error=0.0 axis_error=0.00000016049042
+PORT defence device position_error=0.0 axis_error=0.00000015269147
+PORT defence core position_error=0.0 axis_error=0.00000023888379
+PORT smelting device position_error=0.0 axis_error=0.00000018371385
+PORT smelting core position_error=0.0 axis_error=0.00000028624197
+PORT condensation device position_error=0.0 axis_error=0.00000019992005
+PORT condensation core position_error=0.0 axis_error=0.00000038165595
+SINGLE_PORT core position_error=0.0 axis_error=0.00000036041101
+SINGLE_PORT device position_error=0.0 axis_error=0.00000018371385
+PORT_CHECK_OK eight explicit GLB markers match shared metadata; geometry-only, not visual acceptance
