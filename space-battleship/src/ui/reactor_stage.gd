@@ -11,6 +11,7 @@ const WORK=preload("res://assets/ui/reactor/b01/faceted-canvas-work.gdshader")
 const PLASMA_WORK=preload("res://assets/ui/reactor/b01/faceted-plasma-work.gdshader")
 const PLASMA_VOLUME=preload("res://assets/ui/reactor/b01/plasma-volume.png")
 const IDS := ["weapons","defence","smelting","condensation"]
+const WORK_LIGHTS := ["defence","smelting","condensation"]
 const SOURCE_SIZE:=Vector2(1187.0,1326.0)
 const VIEW_SIZE:=Vector2(808.0,835.0)
 const SOURCE_SCALE: float=835.0/1326.0
@@ -127,11 +128,11 @@ func _init() -> void:
 	_baker.add_child(_core_lamp)
 	# Local work light is sampled against the real metal/lining and shadow
 	# geometry only at installation time. Allocation changes mix those samples.
-	for id in ["defence","smelting"]:
+	for id in WORK_LIGHTS:
 		var lamp:=OmniLight3D.new()
-		lamp.light_color=Color("64cfff") if id=="defence" else Color("ff9a36")
+		lamp.light_color=Color("64cfff") if id=="defence" else Color("bc8aff") if id=="condensation" else Color("ff9a36")
 		lamp.light_energy=0.0
-		lamp.omni_range=330.0 if id=="defence" else 310.0
+		lamp.omni_range=330.0 if id=="defence" else 250.0 if id=="condensation" else 310.0
 		lamp.omni_attenuation=1.35
 		lamp.shadow_enabled=true
 		lamp.shadow_opacity=.72
@@ -182,6 +183,7 @@ func _kind(title: String) -> int:
 	if "shield bowed field" in title or "shield active rim" in title:return 4
 	if title.begins_with("furnace feed"):return 8
 	if title.begins_with("furnace ") and not "structure" in title:return 5
+	if title.begins_with("crystal field emitter"):return 16
 	if "crystal body" in title:return 6
 	if "channel work" in title:return 7
 	if "weapon charge segment" in title or "weapon output" in title:return 8
@@ -224,7 +226,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		return
 	var author_from_source:=Transform3D.IDENTITY
 	var source_from_author:=Transform3D.IDENTITY
-	if kind in [4,5,6]:
+	if kind in [4,5,6,16]:
 		source_from_author=_installation_frame(key)
 		author_from_source=source_from_author.affine_inverse()
 	node.visible=false
@@ -315,10 +317,12 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			material.set_shader_parameter("plasma_frames",int(_plasma_info.frames))
 			material.set_shader_parameter("plasma_source",Vector3(_plasma_info.source_box[0],_plasma_info.source_box[1],_plasma_info.source_box[2]))
 			material.set_shader_parameter("plasma_gain",float(_plasma_info.emission_gain))
-		if kind in [4,5,6]:material.set_shader_parameter("author_from_source",author_from_source)
+		if kind in [4,5,6,16]:material.set_shader_parameter("author_from_source",author_from_source)
 		if kind==6:
 			material.set_shader_parameter("source_from_author",source_from_author)
 			material.set_shader_parameter("growth_base",growth_base)
+			var seed: Array=_layout.work_paths.condensation.seed_author
+			material.set_shader_parameter("seed_origin",Vector3(seed[0],seed[1],seed[2]))
 			if "delivery" in title:
 				material.set_shader_parameter("work_zone",1)
 				material.set_shader_parameter("transport_origin",author_from_source*world.origin)
@@ -435,6 +439,9 @@ func _refresh_bake(ids: Array) -> void:
 	for id in _work_lamps:
 		var lamp: OmniLight3D=_work_lamps[id]
 		var author_point:=Vector3(1090,-177,160) if id=="defence" else Vector3(177,-555,170)
+		if id=="condensation":
+			var anchor: Array=_layout.work_paths.condensation.irradiance_author
+			author_point=Vector3(anchor[0],anchor[1],anchor[2])
 		lamp.position=_installation_frame(id)*author_point+_asset.get_node(NodePath(id)).position
 		lamp.light_energy=0.0
 		var image_center:=source_point(Vector2(lamp.position.x,-lamp.position.y))
@@ -460,22 +467,25 @@ func _finish_bake(generation: int) -> void:
 	var working:=ImageTexture.create_from_image(_baker.get_texture().get_image())
 	_background_material.set_shader_parameter("working_surface",working)
 	_core_lamp.light_energy=0.0
-	var local_surfaces:=Image.create(int(VIEW_SIZE.x)*2,int(VIEW_SIZE.y),false,Image.FORMAT_RGBA8)
-	for index in 2:
-		var id: String=["defence","smelting"][index]
-		var sample: Image=resting_image
-		if id in _enabled:
-			var lamp: OmniLight3D=_work_lamps[id]
-			lamp.light_energy=(1.85 if id=="defence" else 3.20)*SOURCE_LIGHT_GAIN
-			_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
-			await RenderingServer.frame_post_draw
-			await get_tree().process_frame
-			if generation!=_cache_generation:return
-			sample=_baker.get_texture().get_image()
-			lamp.light_energy=0.0
-			diagnostics.cache_renders+=1
+	var active_lights: Array=WORK_LIGHTS.filter(func(id):return id in _enabled)
+	var columns: int=maxi(1,active_lights.size())
+	var local_surfaces:=Image.create(int(VIEW_SIZE.x)*columns,int(VIEW_SIZE.y),false,Image.FORMAT_RGBA8)
+	if active_lights.is_empty():local_surfaces.blit_rect(resting_image,Rect2i(Vector2i.ZERO,Vector2i(VIEW_SIZE)),Vector2i.ZERO)
+	for index in active_lights.size():
+		var id: String=active_lights[index]
+		var lamp: OmniLight3D=_work_lamps[id]
+		lamp.light_energy=(1.85 if id=="defence" else 1.65 if id=="condensation" else 3.20)*SOURCE_LIGHT_GAIN
+		_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
+		await RenderingServer.frame_post_draw
+		await get_tree().process_frame
+		if generation!=_cache_generation:return
+		var sample: Image=_baker.get_texture().get_image()
+		lamp.light_energy=0.0
+		diagnostics.cache_renders+=1
 		local_surfaces.blit_rect(sample,Rect2i(Vector2i.ZERO,Vector2i(VIEW_SIZE)),Vector2i(index*int(VIEW_SIZE.x),0))
 	_background_material.set_shader_parameter("local_surfaces",ImageTexture.create_from_image(local_surfaces))
+	_background_material.set_shader_parameter("local_columns",float(columns))
+	for id in WORK_LIGHTS:_background_material.set_shader_parameter(id+"_light_slot",float(active_lights.find(id)))
 	for outline in _outlines:outline.visible=false
 	var depth_material:=ShaderMaterial.new()
 	depth_material.shader=DEPTH
@@ -557,7 +567,7 @@ func _animate_mechanisms() -> void:
 				var event_time: float=(floorf(age_cycles)+arrival)*4.8
 				var shown: bool=age_cycles>=0.0 and event_time+0.001>=_phase-age and fposmod(age_cycles,1.0)<.22
 				if part.visible!=shown:part.visible=shown
-		for material in _materials[id]:material.set_shader_parameter("formation",minf(age/1.6,1.0))
+		for material in _materials[id]:material.set_shader_parameter("formation",minf(age/(3.5 if id=="condensation" else 1.6),1.0))
 
 	for mechanism in _mechanisms.core:
 		if mechanism.kind==10:

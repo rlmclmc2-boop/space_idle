@@ -129,7 +129,34 @@
           116.6
         ]
       ],
-      "split": 0.4292842877951828
+      "split": 0.4292842877951828,
+      "focus_author": [
+        1017.0,
+        -466.0,
+        77.0
+      ],
+      "seed_author": [
+        1017.0,
+        -592.0,
+        78.0
+      ],
+      "focus_axis_author": [
+        0,
+        -1,
+        0
+      ],
+      "seed_axis_author": [
+        0,
+        1,
+        0
+      ],
+      "irradiance_author": [
+        1017.0,
+        -539.0,
+        117.0
+      ],
+      "focus_marker": "condensation/focus_axis_tip",
+      "seed_marker": "condensation/growth_seed_origin"
     }
   },
   "double_left": {
@@ -500,9 +527,9 @@
       "node": "condensation",
       "visible_rect_source": [
         852.8139038085938,
-        409.2310485839844,
+        386.45489501953125,
         372.87713623046875,
-        332.4778137207031
+        355.25396728515625
       ]
     },
     "pipe_condensation": {
@@ -732,6 +759,6 @@
       "receiver_u": 0.768051532791687
     }
   },
-  "generator_sha256": "cd1825458c054ee685d26c5f8073094eaab2a16bece3358d79218d9d0f6983e4",
-  "asset_sha256": "6fd65627af2896cf20402a1464264baccab44b26d8bcdc573303b724cdcaaefd"
+  "generator_sha256": "167871a2cc61902ba973e5721af7be6c120206c69ae7eba221e3d4da9bf31022",
+  "asset_sha256": "658fa02a2c06ee9199e72857f678dd4e71b48c29e3b06c1107ee75f6e25f3375"
 }

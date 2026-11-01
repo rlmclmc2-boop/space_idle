@@ -12,6 +12,8 @@ GENERATOR_BYTES=Path(__file__).read_bytes()
 GENERATOR_SHA=hashlib.sha256(GENERATOR_BYTES).hexdigest()
 DATA=json.loads((ROOT/'reactor_ports.json').read_text());W,H=DATA['source_size']
 CRYSTAL_CONVEYOR=[(1014,610,103),(990,640,151),(940,690,110)]
+CRYSTAL_FOCUS=(1017,466,77)
+CRYSTAL_SEED=(1017,592,78)
 SHARD_CLEARANCE=6.6
 def deck_level(y):return -96+(y-553)*.14
 OUT=Path(os.environ.get('REACTOR_FACETED_BUILD','/tmp/reactor-faceted-build'));OUT.mkdir(parents=True,exist_ok=True)
@@ -455,12 +457,30 @@ def furnace(m):
  socket('smelting',m)
 
 def crystal(m,growth=1.):
+ def growth_axis_part(name,profile,mat,closed=False,gap=()):
+  # All crown/seed parts share the chamber's actual vertical X/Z section.
+  sides=32;vertices=[]
+  for rx,rz,yy in profile:
+   for i in range(sides):
+    a=math.tau*i/sides;vertices.append((CRYSTAL_FOCUS[0]+rx*math.cos(a),-yy,CRYSTAL_FOCUS[2]+rz*math.sin(a)))
+  faces=[];rings=len(profile)
+  for j in range(rings if closed else rings-1):
+   for i in range(sides):
+    if i in gap:continue
+    k=(i+1)%sides;n=(j+1)%rings
+    faces.append((j*sides+i,j*sides+k,n*sides+k,n*sides+i))
+  if gap:
+   for i in (min(gap),(max(gap)+1)%sides):faces.append(tuple(j*sides+i for j in range(rings)))
+  elif not closed:
+   faces.extend([tuple(range(sides-1,-1,-1)),tuple((rings-1)*sides+i for i in range(sides))])
+  result=oriented_solid(mesh(name,vertices,faces,mat))
+  return result
  mount('crystal',1014,683,244,m);box('crystal base',1013,624,218,82,41,54,m['dark']);box('crystal back',1020,514,153,166,28,22,m['glass'])
  for x in (934,1100):
   armor_box('crystal pillar',x,557,30,195,66,27,m['armor'] if x<1000 else m['shade']);box('crystal foot',x,661,53,28,75,17,m['dark'])
  # The growth cylinder and its crown share the same X/Z section.
  # This is a three-dimensional pressure collar seated on both pillars.
- profile=[(83,425),(83,457),(67,457),(65,447),(67,425)]
+ profile=[(83,405),(83,421),(67,421),(65,411),(67,405)]
  for segment in range(4):
   a0=segment*math.pi/4+.025;a1=(segment+1)*math.pi/4-.025;vertices=[];steps=6
   for i in range(steps+1):
@@ -471,15 +491,40 @@ def crystal(m,growth=1.):
    for j in range(n):faces.append((i*n+j,i*n+(j+1)%n,(i+1)*n+(j+1)%n,(i+1)*n+j))
   faces.extend([tuple(range(n-1,-1,-1)),tuple(steps*n+i for i in range(n))])
   oriented_solid(mesh('crystal crown collar '+str(segment),vertices,faces,m['armor'] if segment<3 else m['shade']))
- box('crystal crown rear saddle',1017,437,159,26,49,27,m['dark'])
- box('crystal crown brass key',1017,444,22,6,140,6,m['copper'])
- box('crystal seed bed',1017,603,143,29,65,14,m['copper'])
+ box('crystal crown rear saddle',1017,417,159,26,49,27,m['dark'])
+ box('crystal crown brass key',1017,424,22,6,140,6,m['copper'])
+ for xx in (934,1100):
+  armor_panel('crystal crown load shoe',[(xx-17,416),(xx+17,416),(xx+17,467),(xx+11,477),(xx-14,468)],92,38,m['armor'] if xx<1000 else m['shade'])
+ growth_axis_part('crystal focusing pressure body',[(31,31,421),(35,35,439),(28,28,451),(16,16,458)],m['steel'])
+ growth_axis_part('crystal focusing compression collar',[(30,30,449),(30,30,455),(17,17,459)],m['copper'])
+ armor_panel('crystal focusing drive face',[(989,426),(1045,426),(1055,437),(1050,454),(1035,460),(997,460),(984,449)],114,30,m['shade'])
+ box('crystal focusing service inset',1017,452,29,10,126,4,m['dark'])
+ for a in (math.pi/6,math.pi*5/6,math.pi*3/2):
+  tip=(1017+18*math.cos(a),465,77+18*math.sin(a))
+  rod('crystal focusing finger',(1017+28*math.cos(a),450,77+28*math.sin(a)),tip,4,m['steel'])
+  rod('crystal focusing terminal',(tip[0],462,tip[2]),(tip[0],466,tip[2]),5,m['copper'])
+ fy=CRYSTAL_FOCUS[1]
+ growth_axis_part('crystal field emitter aperture',[(20,20,fy-4),(20,20,fy),(14,14,fy),(14,14,fy-4)],m['violet_light'],closed=True)
+ # The common seed well is recessed, rather than a solid gold label below
+ # the crystals. Its real front opening meets the conveyor's first point.
+ growth_axis_part('crystal seed well casing',[(80,40,590),(80,40,612),(70,29,612),(70,29,598),(70,29,590)],m['steel'],closed=True,gap=(6,7,8,9))
+ growth_axis_part('crystal seed refractory bed',[(70,29,594),(70,29,603)],material('seed refractory ceramic',(.075,.065,.10)))
+ growth_axis_part('crystal seed copper register',[(70,29,590),(70,29,595),(66,25,595),(66,25,590)],m['copper'],closed=True,gap=(6,7,8,9))
+ box('crystal seed carriage',1017,615,160,20,63,49,m['dark'])
+ for xx in (974,997,1022,1047,1071):
+  armor_box('crystal seed contact',xx,594,12,5,90,7,m['copper'])
+ target=Vector(CRYSTAL_CONVEYOR[0]);front=target+Vector((0,-16,-12))
+ vertices=[]
+ for point in (front,target):
+  for x in (-21,21):vertices.append((point.x+x,-point.y,point.z))
+ vertices.extend([(x,y,z-9) for x,y,z in list(vertices)])
+ oriented_solid(mesh('crystal seed collection throat',vertices,[(0,1,3,2),(4,6,7,5),(0,4,5,1),(2,3,7,6),(0,2,6,4),(1,5,7,3)],m['dark']))
  box('crystal chamber front sill',1017,635,151,15,91,16,m['shade'])
  for i,(x,h,radius) in enumerate([(974,53,11),(997,88,13),(1022,114,18),(1047,79,14),(1071,48,11)]):
-  hh=12+(h-12)*growth;y=592;vertices=[]
+  hh=12+(h-12)*growth;y=CRYSTAL_SEED[1];vertices=[]
   for yy,rr in [(y,radius),(y-hh+15,radius*.86)]:
    for k in range(6):
-    a=math.tau*k/6;vertices.append((x+rr*math.cos(a),-yy,78+rr*math.sin(a)))
+    a=math.tau*k/6;vertices.append((x+rr*math.cos(a),-yy,CRYSTAL_SEED[2]+rr*math.sin(a)))
   vertices.append((x+2,-y+hh,81))
   faces=[(k,(k+1)%6,(k+1)%6+6,k+6) for k in range(6)]
   faces.extend([(k+6,(k+1)%6+6,12) for k in range(6)])
@@ -515,7 +560,7 @@ def crystal(m,growth=1.):
   bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=8,location=(xx,-yy,zz+SHARD_CLEARANCE))
   shard=bpy.context.object;shard.name='crystal body delivery '+str(i);shard.scale=(.75,1.2,.8);shard.data.materials.append(m['violet_light'])
  verts=[]
- for yy in (452,610):
+ for yy in (426,610):
   for k in range(17):
    a=math.pi*k/16;verts.append((1017+65*math.cos(a),-yy,77+46*math.sin(a)))
  mesh('crystal containment glass',verts,[(i,i+1,i+18,i+17) for i in range(16)],m['field'])
@@ -734,7 +779,7 @@ WORK_NAMES={
  'weapons': ['weapon chamber glazing','weapon charge segment','weapon output'],
  'defence': ['shield active rim','shield bowed field'],
  'smelting': ['furnace feed','furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
- 'condensation': ['crystal containment glass','crystal body','crystal bright facet'],
+ 'condensation': ['crystal containment glass','crystal body','crystal bright facet','crystal field emitter'],
  'core': ['core polar channel','core field meridian','core energy rim','core containment glass','core plasma kernel','core plasma mass','core plasma strand','core transfer packet']}
 for id in DATA['devices']:WORK_NAMES[id].append(id+' receiver acknowledgement')
 FRONT_NAMES={
@@ -960,6 +1005,12 @@ def export_glb():
  marker=bpy.data.objects.new('power_out_single_smelting',None);bpy.context.collection.objects.link(marker);marker.parent=groups['core']
  marker.location=(single['core_port'][0]-130,-single['core_port'][1],28)
  marker.rotation_euler=Vector((delta.x,-delta.y,-12)).to_track_quat('Z','Y').to_euler()
+ growth_frame=work_frames['condensation'];growth_basis=Matrix(growth_frame['basis_columns']).transposed();growth_origin=Vector(growth_frame['origin'])
+ for marker_name,point in [('focus_axis_tip',CRYSTAL_FOCUS),('growth_seed_origin',CRYSTAL_SEED)]:
+  marker=bpy.data.objects.new(marker_name,None);bpy.context.collection.objects.link(marker);marker.parent=groups['condensation']
+  marker.location=growth_basis@Vector((point[0],-point[1],point[2]))+growth_origin
+  axis=Vector((0,-1,0)) if marker_name=='focus_axis_tip' else Vector((0,1,0))
+  marker.rotation_euler=(growth_basis@axis).normalized().to_track_quat('Z','Y').to_euler()
  # Export ordinary palette data, not Blender-only ShaderToRGB nodes. Godot
  # supplies the same faceted surface lighting plus distinct working shaders.
  for mat in bpy.data.materials:
@@ -993,7 +1044,10 @@ def export_glb():
   ports[id]['core_axis_out_source3d']=list(out)
   ports[id]['device_marker']=id+'/power_in_'+id;ports[id]['core_marker']='core/power_out_'+id
   ports[id]['receiver_u']=receiver_u(d)
- layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':{'conveyor':[[x,-y,z+SHARD_CLEARANCE] for x,y,z in CRYSTAL_CONVEYOR],'split':(Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length/((Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length+(Vector(CRYSTAL_CONVEYOR[2])-Vector(CRYSTAL_CONVEYOR[1])).length)}},
+ focus=Vector((CRYSTAL_FOCUS[0],-CRYSTAL_FOCUS[1],CRYSTAL_FOCUS[2]));seed=Vector((CRYSTAL_SEED[0],-CRYSTAL_SEED[1],CRYSTAL_SEED[2]))
+ growth_path={'conveyor':[[x,-y,z+SHARD_CLEARANCE] for x,y,z in CRYSTAL_CONVEYOR],'split':(Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length/((Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length+(Vector(CRYSTAL_CONVEYOR[2])-Vector(CRYSTAL_CONVEYOR[1])).length),
+  'focus_author':list(focus),'seed_author':list(seed),'focus_axis_author':[0,-1,0],'seed_axis_author':[0,1,0],'irradiance_author':list((focus+seed)*.5+Vector((0,-10,39.5))),'focus_marker':'condensation/focus_axis_tip','seed_marker':'condensation/growth_seed_origin'}
+ layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':growth_path},
   'double_left':{'ids':['weapons','smelting'],'shifts':{'core':[170,0],'core_mount':[170,0],'weapons':[170,0],'smelting':[170,0]},'routes':double_routes},'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])

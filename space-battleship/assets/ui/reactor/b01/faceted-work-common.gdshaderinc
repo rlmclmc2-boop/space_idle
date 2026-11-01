@@ -20,6 +20,7 @@ uniform mat4 stage_from_canvas=mat4(1.0);
 uniform mat4 author_from_source=mat4(1.0);
 uniform mat4 source_from_author=mat4(1.0);
 uniform float growth_base=0.0;
+uniform vec3 seed_origin=vec3(1017.0,-592.0,78.0);
 uniform float mechanism_growth=1.0;
 uniform float pulse_strength=1.0;
 uniform vec3 transport_origin=vec3(0.0);
@@ -97,7 +98,7 @@ void vertex(){
   world_point=moved;
  }
  authored_point=world_point-assembly_offset;
- if(work_kind==4 || work_kind==5 || work_kind==6){authored_point=(author_from_source*vec4(authored_point,1.0)).xyz;}
+ if(work_kind==4 || work_kind==5 || work_kind==6 || work_kind==16){authored_point=(author_from_source*vec4(authored_point,1.0)).xyz;}
 }
 void fragment(){
  if(work_kind==6 && facing_normal.z<=0.0){discard;}
@@ -120,7 +121,7 @@ void fragment(){
  vec3 color=base_color.rgb;float opacity=1.0;
  float received_age=1.0;
  float response=0.0;
- if((work_kind==4 && work_zone==0) || (work_kind==5 && work_zone==1) || work_kind==6 || (work_kind==8 && work_zone==1) || work_kind==11){
+ if((work_kind==4 && work_zone==0) || (work_kind==5 && work_zone==1) || work_kind==6 || work_kind==16 || (work_kind==8 && work_zone==1) || work_kind==11){
   float arrival=.72+.28*(receiver_u+.08)/1.16;
   float elapsed=phase/4.8-arrival;
   float event_time=(floor(elapsed)+arrival)*4.8;
@@ -198,9 +199,14 @@ void fragment(){
  }else if(work_kind==6){
   float face=max(0.0,dot(facing_normal,normalize(vec3(-0.6,0.4,0.8))));
   color=mix(vec3(0.13,0.035,0.28),base_color.rgb,0.35+face*0.65)*mix(0.65,1.0,strength);
-  float seed=1.0-smoothstep(8.0,38.0,abs(point.y+592.0));
+  float seed=1.0-smoothstep(8.0,38.0,abs(point.y-seed_origin.y));
   color=mix(color,vec3(.75,.55,1.0),seed*response*.75);
   color=color*1.18+vec3(.42,.28,.55)*pow(face,10.0)*strength;
+ }else if(work_kind==16){
+  float face=max(0.0,dot(facing_normal,normalize(vec3(-.35,.45,.82))));
+  color=mix(vec3(.22,.06,.40),vec3(.72,.48,1.0),.45+face*.55)*strength;
+  color*=.65+.35*smoothstep(0.0,1.0,formation);
+  color+=vec3(.28,.19,.35)*response*strength;
  }else if(work_kind==7){
   float progress=(cycle-.72)/.28*1.16-.08;
   float distance=UV.x-progress;
