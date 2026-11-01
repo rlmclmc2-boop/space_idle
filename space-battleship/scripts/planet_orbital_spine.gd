@@ -17,9 +17,9 @@ const FACILITY_ANGLES := {
 # Keep the common load path close to terrestrial globes while leaving the
 # four authored work nodes and their independent owned arc ends intact.
 const RADIUS := 4.35
-const REAR_TRANSIT_WIDTH := 0.50
-const FRONT_TRANSIT_WIDTH := 0.82
-const NODE_WIDTH := 1.30
+const REAR_TRANSIT_WIDTH := 0.55
+const FRONT_TRANSIT_WIDTH := 0.96
+const NODE_WIDTH := 1.35
 const TILT_Y := 0.66
 const TILT_Z := 0.751
 const DECK_HEIGHT := 0.16
@@ -274,7 +274,7 @@ func _section_width(kind: String, angle: float) -> float:
 		blend *= smoothstep(0.0, 0.10, ARC_BOUNDS[kind].y - angle)
 	# Give each built work floor a real shoulder matching its pressure feet.
 	# The station stays narrow so its independently built passage stays open.
-	var node_width := 1.10 if kind == "auto_explore" else 1.36 if kind == "refinery" else 1.50 if kind == "equipment" else 1.55 if kind == "shipyard" else NODE_WIDTH
+	var node_width := 1.22 if kind == "auto_explore" else 1.43 if kind == "refinery" else 1.54 if kind == "equipment" else 1.58 if kind == "shipyard" else NODE_WIDTH
 	return lerpf(_transit_width(angle), node_width, blend)
 
 func _transit_width(angle: float) -> float:
@@ -306,11 +306,10 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 	# A continuous bevelled load-bearing surface, UV mapped to an authored
 	# armor tile. Each independent quarter owns its whole physical arc.
 	var profile := [
-		Vector2(-0.50, 0.04), Vector2(-0.47, 0.12), Vector2(-0.40, 0.21),
-		Vector2(-0.29, 0.24), Vector2(-0.14, 0.22), Vector2(-0.05, 0.20),
-		Vector2(0.0, 0.19), Vector2(0.05, 0.20), Vector2(0.14, 0.22),
-		Vector2(0.29, 0.24), Vector2(0.40, 0.21), Vector2(0.47, 0.12),
-		Vector2(0.50, 0.04),
+		Vector2(-0.50, 0.04), Vector2(-0.46, 0.15), Vector2(-0.36, 0.22),
+		Vector2(-0.17, 0.235), Vector2(-0.04, 0.22), Vector2(0.0, 0.215),
+		Vector2(0.04, 0.22), Vector2(0.17, 0.235), Vector2(0.36, 0.22),
+		Vector2(0.46, 0.15), Vector2(0.50, 0.04),
 	]
 	if kind in ["refinery", "equipment", "shipyard"]:
 		var coarse: Array = profile
@@ -338,7 +337,7 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
 		for band in profile.size() - 1:
 			var band_center: float = (profile[band].x + profile[band + 1].x) * 0.5
-			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.04 else surface
+			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.035 else surface
 			_deck_vertex(target, profile, band, a, t0, wa, lift, v_start, v_end, kind)
 			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)
 			_deck_vertex(target, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)

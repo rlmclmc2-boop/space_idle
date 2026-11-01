@@ -93,7 +93,7 @@ func _ready() -> void:
 	_occluder.material_override = mask
 	_world.add_child(_occluder)
 	for kind in KINDS:
-		var model: Node3D = load("res://assets/planets/facilities_v5/" + kind + ".glb").instantiate()
+		var model: Node3D = load("res://assets/planets/facilities_v6/" + kind + ".glb").instantiate()
 		_spine.add_child(model)
 		_models[kind] = model
 		var moving: Dictionary = {}
