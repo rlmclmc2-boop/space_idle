@@ -10,6 +10,7 @@ uniform float hull_metallic = 0.10;
 uniform vec2 panel_grid = vec2(0.0);
 uniform float facade_gradient = 0.0;
 uniform float armor_reflection = 0.0;
+uniform float emission_boost = 1.0;
 uniform vec3 body_scale = vec3(1.0);
 uniform vec3 stellar_field_tint = vec3(1.0);
 uniform float stellar_field_strength = 0.0;
@@ -71,7 +72,7 @@ void fragment() {
 	METALLIC = hull_metallic;
 	SPECULAR = mix(0.35, 0.78, armor_reflection);
 	if (luminous) {
-		EMISSION = color * 1.0;
+		EMISSION = color * emission_boost;
 	} else if (textured) {
 		EMISSION = color * 0.35 + stellar_field_tint * inner_field * 0.42;
 	}

@@ -117,12 +117,12 @@ func _ready() -> void:
 		match kind:
 			"auto_explore": _add_work_light(model, "Command second occupied tier dark hull", Color("79cfe9"), 1.0, 1.9, Vector3(0, 0.28, 0))
 			"refinery": _add_work_light(model, "Heat chamber upper armored ring deck", Color("ffc16e"), 1.7, 2.0, Vector3(0, 0.42, 0))
-			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ffad5c"), 1.2, 1.7, Vector3(0, 0.40, 0))
-			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffb35d"), 1.15, 1.5, Vector3(0, 0.42, 0))
+			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ff9b47"), 2.0, 1.9, Vector3(0, 0.40, 0))
+			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffab4e"), 1.85, 1.7, Vector3(0, 0.42, 0))
 		if kind == "equipment":
-			_add_work_light(model, "Factory traveling winch", Color("ff9b43"), 1.0, 0.75, Vector3(0, -0.24, 0))
+			_add_work_light(model, "Factory traveling winch", Color("ff8e35"), 1.45, 1.0, Vector3(0, -0.24, 0))
 		if kind == "shipyard":
-			_add_work_light(model, "Dock portal recessed soffit", Color("ff9b43"), 0.95, 0.85, Vector3(0, -0.30, 0))
+			_add_work_light(model, "Dock portal recessed soffit", Color("ff8e35"), 1.45, 1.1, Vector3(0, -0.30, 0))
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
@@ -136,7 +136,7 @@ func _add_work_light(model: Node3D, anchor_name: String, color: Color,
 	light.light_color = color
 	light.light_energy = energy
 	light.omni_range = light_range
-	light.light_specular = 0.45
+	light.light_specular = 0.60
 	light.shadow_enabled = anchor_name in ["Manufacturing open assembly well", "Dock recessed central landing lane"]
 	anchor.add_child(light)
 	light.position = offset
@@ -172,6 +172,11 @@ func _depth_clip_orbital_model(node: Node) -> void:
 	# Imported opaque armor must use the same globe intersection as the owned
 	# ring. A transparent depth mask cannot hide an already drawn opaque GLB.
 	if node is MeshInstance3D and node.mesh != null:
+		# The shallow, overlapping shuttle wing shells self-shadow into a dotted
+		# pattern at the actual page size. The enclosing bay still casts its real
+		# structural shadows across the vessel and landing deck.
+		if node.name.begins_with("Shuttle visible swept pressure hull") or node.name.begins_with("Shuttle broad lifting wing") or node.name.begins_with("Shuttle upper engine cowling"):
+			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		for index in node.mesh.get_surface_count():
 			var original := node.mesh.surface_get_material(index) as StandardMaterial3D
 			if original == null: continue
@@ -183,8 +188,12 @@ func _depth_clip_orbital_model(node: Node) -> void:
 			material.set_shader_parameter("hull_metallic", original.metallic)
 			material.set_shader_parameter("panel_grid", _armor_panel_grid(node.name))
 			material.set_shader_parameter("armor_reflection", _armor_reflection(node.name))
+			if String(node.name).to_lower().contains("amber"):
+				material.set_shader_parameter("emission_boost", 1.65)
 			if node.name.begins_with("Dock deep armored portal fascia") or node.name.begins_with("Dock angled end armor cheek") or node.name.begins_with("Manufacturing sloped load shoulder"):
 				material.set_shader_parameter("facade_gradient", 0.29)
+			elif node.name.begins_with("Dock inner pressure socket cheek") or node.name.begins_with("Manufacturing track entry armor cheek") or node.name.begins_with("Fabrication room armored inner wall"):
+				material.set_shader_parameter("facade_gradient", 0.22)
 			node.set_surface_override_material(index, material)
 			_orbital_depth_materials.append(material)
 	for child in node.get_children(): _depth_clip_orbital_model(child)
