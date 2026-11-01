@@ -310,8 +310,10 @@ for i in range(32):
     a=i*tau/32
     annular_band("Pressure beam joint",4.17,4.46,-.23,.18,EDGE,a-.010,a+.010,2)
 
-station=root_at("01 / Command district of the orbital city",110)
-refinery=root_at("02 / Heat district of the orbital city",48)
+station=root_at("01 / Command district of the orbital city",140)
+station.location.x=5.60*cos(140*pi/180)
+station.location.y=5.60*sin(140*pi/180)
+refinery=root_at("02 / Heat district of the orbital city",35)
 workshop=root_at("03 / Manufacturing district of the orbital city",-43)
 shipyard=root_at("04 / Open launch district of the orbital city",-130)
 
@@ -365,15 +367,26 @@ for root,intervals in ((station,((88,102),(106,119),(123,138))),
 owned_arc(station,"Command district observation pressure ribbon",89,140,3.96,4.06,.62,.74,GLASS)
 for a in (95,104,113,122,131):
     owned_arc(station,"Command observation dark mullion",a,a+.7,3.94,4.10,.60,.77,EDGE)
-cyl("Command rotating bearing",(0,-.32,2.22),.57,.20,KEEL,station,10)
-torus("Command bearing cyan collar",(0,-.32,2.36),.40,.042,CYAN,station)
-cone("Command faceted core",(0,-.32,2.50),.34,.17,.26,ARMOR,station,8)
-cyl("Command blue canopy",(0,-.32,2.65),.19,.08,GLASS,station,8)
+cyl("Command dark structural foundation",(0,-.32,1.24),.83,.23,KEEL,station,12)
+cyl("Command stepped ivory observation deck",(0,-.32,1.39),.73,.13,ARMOR,station,12)
+for side in (-1,1):
+    beam("Command platform load rib into orbital band",
+         (side*.46,.02,1.13),(side*.38,1.27,.77),.19,.22,ARMOR_SIDE,station)
+beam("Command platform broad pressure bridge",
+     (0,.12,1.28),(0,1.24,.91),.47,.38,ARMOR,station)
+cyl("Command rotating bearing",(0,-.32,1.51),.55,.15,EDGE,station,10)
+torus("Command bearing cyan collar",(0,-.32,1.61),.44,.042,CYAN,station)
+cone("Command faceted core",(0,-.32,1.76),.33,.17,.27,ARMOR,station,8)
+cyl("Command blue canopy",(0,-.32,1.93),.19,.08,GLASS,station,8)
+cone("Command short beacon",(0,-.32,2.08),.09,.02,.20,ARMOR,station,8)
 
 # Heat is a working aperture in the band, marked by a low furnace clamp.
-cyl("Contained furnace dark collar",(0,-.32,1.70),.53,.18,EDGE,refinery,12)
-cyl("Contained furnace amber aperture",(0,-.32,1.81),.39,.055,AMBER,refinery,12)
-torus("Furnace retaining ring",(0,-.32,1.85),.46,.060,ARMOR_SIDE,refinery)
+cyl("Heat chamber dark integrated foundation",(0,-.32,1.05),.73,.22,KEEL,refinery,12)
+cyl("Heat chamber armored lower collar",(0,-.32,1.22),.65,.16,ARMOR,refinery,12)
+cone("Heat chamber gold segmented dome",(0,-.32,1.49),.57,.20,.43,GOLD,refinery,12)
+cyl("Contained furnace dark collar",(0,-.32,1.71),.40,.12,EDGE,refinery,12)
+cyl("Contained furnace amber aperture",(0,-.32,1.78),.32,.055,AMBER,refinery,12)
+torus("Furnace retaining ring",(0,-.32,1.82),.39,.052,ARMOR_SIDE,refinery)
 for x in (-.58,-.22,.22,.58):
     box("Heat exchange outer exhaust slit",(x,-.99,.88),(.085,.045,.25),AMBER,refinery,.008)
 
@@ -389,6 +402,9 @@ owned_arc(workshop,"Manufacturing outer orange service rail",-66,-34,
           5.05,5.11,.53,.63,AMBER)
 for a in (-67,-34):
     owned_arc(workshop,"Manufacturing work portal ring",a,a+1.8,4.07,5.19,.37,1.20,ARMOR_SIDE)
+for a in (-59,-43):
+    owned_arc(workshop,"Manufacturing orange overhead gate",a,a+1.4,
+              4.18,5.08,1.16,1.28,AMBER)
 beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,workshop)
 beam("Downward working tool",(.17,0,1.48),(.17,0,.66),.07,.08,EDGE,workshop)
 box("Work site contained welding line",(.17,0,.76),(.15,.18,.04),CYAN,workshop,.01)
@@ -400,6 +416,12 @@ for side in (-1,1):
     beam("Dock inner dark girder",(side*.76,-.25,.35),(side*.83,-2.08,.35),.16,.18,EDGE,shipyard)
     box("Contained dock approach guide",(side*.66,-1.10,.70),(.032,1.67,.022),CYAN,shipyard,.004)
 beam("Dock portal gantry",(-.83,-.40,1.00),(.83,-.40,1.00),.14,.18,ARMOR,shipyard)
+beam("Dock armored entrance canopy",(-.91,-.35,1.19),(.91,-.35,1.19),.22,.25,ARMOR,shipyard)
+for a in (-146,-119):
+    owned_arc(shipyard,"Dock armored entry threshold",a,a+2.2,
+              4.08,5.29,.33,1.03,ARMOR_SIDE)
+    owned_arc(shipyard,"Dock threshold ivory shoulder",a,a+2.2,
+              4.18,5.18,1.02,1.13,ARMOR)
 box("Docked shuttle fuselage",(0,-1.15,.93),(.37,.96,.18),EDGE,shipyard,.04)
 armor_prism("Docked shuttle swept nose",[(0,-1.88),(.18,-1.53),(-.18,-1.53)],.87,1.04,EDGE,shipyard)
 box("Docked shuttle canopy",(0,-1.27,1.05),(.22,.31,.055),GLASS,shipyard,.01)
@@ -410,6 +432,7 @@ box("Docked shuttle canopy",(0,-1.27,1.05),(.22,.31,.055),GLASS,shipyard,.01)
 bpy.ops.mesh.primitive_uv_sphere_add(segments=96, ring_count=48, radius=2.51)
 globe=bpy.context.object
 globe.name="Existing painted planet for proportion only"
+globe.location.z=1.45
 for polygon in globe.data.polygons: polygon.use_smooth=True
 planet_mat=material("Painted planet surface",(.8,.8,.8),0,1)
 tex=planet_mat.node_tree.nodes.new('ShaderNodeTexImage')
@@ -446,7 +469,7 @@ light("Controlled front fill",(0,-3,7),400,(.72,.86,1.0),8)
 camera_data=bpy.data.cameras.new("Concept orthographic camera")
 camera=bpy.data.objects.new("Concept orthographic camera",camera_data)
 bpy.context.collection.objects.link(camera)
-camera.location=(0,-10.0,11.5)
+camera.location=(0,-12.0,7.0)
 camera.rotation_euler=(Vector((0,0,.42))-camera.location).to_track_quat('-Z','Y').to_euler()
 camera_data.type='ORTHO'; camera_data.ortho_scale=18.6
 bpy.context.scene.camera=camera

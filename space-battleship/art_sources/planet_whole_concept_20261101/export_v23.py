@@ -50,18 +50,18 @@ for name in ("Command bearing cyan collar","Command faceted core",
              "Command blue canopy"):
     transfer(station,spin,name)
 for side,label in ((-1,"SolarHingeLeft"),(1,"SolarHingeRight")):
-    hinge=pivot(station,label,(side*1.09,0,.63))
+    hinge=pivot(station,label,(side*.62,-.32,1.44))
     bpy.ops.mesh.primitive_cube_add(size=1)
     vane=bpy.context.object
     vane.name="Articulated habitat power wing"
     vane.parent=hinge
-    vane.location=(side*.19,0,.03)
-    vane.dimensions=(.35,.44,.055)
+    vane.location=(side*.10,0,.03)
+    vane.dimensions=(.22,.28,.045)
     vane.data.materials.append(bpy.data.materials["Dark blue glass"])
 
 refinery=bpy.data.objects[roots["refinery"]]
 for side,label in ((-1,"IntakeWheelLeft"),(1,"IntakeWheelRight")):
-    wheel=pivot(refinery,label,(side*.80,-.56,.73))
+    wheel=pivot(refinery,label,(side*.58,-.45,1.16))
     bpy.ops.mesh.primitive_torus_add(major_radius=.13,minor_radius=.035,
                                     major_segments=24,minor_segments=8)
     rotor=bpy.context.object
@@ -69,7 +69,7 @@ for side,label in ((-1,"IntakeWheelLeft"),(1,"IntakeWheelRight")):
     rotor.parent=wheel
     rotor.location=(0,0,0)
     rotor.data.materials.append(bpy.data.materials["Warm faceted ivory armor"])
-shutters=pivot(refinery,"CoolingShutters",(0,.74,.82))
+shutters=pivot(refinery,"CoolingShutters",(0,-.25,1.22))
 for x in (-.30,0,.30):
     bpy.ops.mesh.primitive_cube_add(size=1)
     shutter=bpy.context.object
