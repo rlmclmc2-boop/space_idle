@@ -1,0 +1,10 @@
+# Approved thin orbit: completed front-facility author candidate
+
+Source: `wip/planet-thread-resume-20261101@51b5a69bd8a7782c2dcb827f56f4be1a13cfd761`.
+Approved drawing: `archive/planet-resume-20261101@032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/planet-ring.png` (SHA256 `453078f9be47b45d1cffb809352470feb21f769fc18d5fdfeb640f4cf602e572`).
+
+`main-page.jpg` is the real Godot 4.7.2 page, with all four facilities built and its normal facility drawer. `stage-1.jpg` through `stage-4.jpg` show the four independently owned construction states in the existing memory visual fixture. `normal-speed-6s.mp4` contains 90 actual frames at 15 fps. `tram-front-motion.jpg` is its frame 30, where the paneled tram is clear on the front track. `concept.jpg` is the Blender author render. `approved-vs-game-subject.jpg` places the approved drawing and game subject at nearly equal globe diameter.
+
+Relative to v36, the dock now has distinct front and rear service bays, a visible swept shuttle with canopy and engines, faceted entry shell, dark inner lining, cooling panels and service lights. Manufacturing has low enclosed machine rooms on either side of an open fabrication lane, removable panels, service windows, load cassettes, overhead traveling bridges, winches and orange crane enamel. The front rail web, heads and clamps are slimmer; the tram has separated passenger windows, a door mark, rail bogies and a prow, and travels across the visible front arc. The large orbit radius, four separate ownership sections, existing business/UI interfaces, planet motion and orbital motion remain.
+
+The author checked the complete page, stage views and motion frames. Import and capture logs contain no script/parse errors. `ERR_CANT_OPEN` is the environment's missing ALSA sound device; Godot falls back to dummy audio. The stage views are visual fixtures, not evidence of natural game unlock. The painted approved image still has finer panel seams, light pools, cloud geography and nebula structure than the 3D game asset. This is a fixed candidate for shared-host review, not user acceptance or main integration.
