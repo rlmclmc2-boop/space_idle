@@ -83,3 +83,5 @@
 - 当前核心输送版公共组合 `6c7198ee`：[reactor-volume-shared-20261101](reactor-volume-shared-20261101/README.md)。
 
 - 原图星球同壳候选 `e3774ee5`：[planet-v24-original-shared-20261101](planet-v24-original-shared-20261101/README.md)。
+
+- 当前清晰输送版公共组合 `ad184682`：[reactor-readable-shared-20261101](reactor-readable-shared-20261101/README.md)。

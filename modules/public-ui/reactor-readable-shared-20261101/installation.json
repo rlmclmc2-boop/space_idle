@@ -1,0 +1,37 @@
+{
+  "source_commit": "ba1379381066cc3f2f44a214557b33f7002b2d3f",
+  "replace_paths": [
+    "space-battleship/src/ui/reactor_scene.gd",
+    "space-battleship/src/ui/reactor_stage.gd",
+    "space-battleship/assets/ui/reactor/b01/README.md",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json"
+  ],
+  "frame": [
+    808,
+    900
+  ],
+  "internal_content": [
+    0,
+    65,
+    808,
+    835
+  ],
+  "public_material_api": "9034af81 or compatible successor; unchanged",
+  "changed_private_asset_data": "receiver_u and cumulative-arc UVs; consume model/layout/Stage/shader together",
+  "preserve": [
+    "main/public navigation",
+    "Owner/Economy",
+    "equipment",
+    "accepted body/one-module pose/native operation anchors"
+  ],
+  "mount": "Keep existing binding and host offset; do not add internal y65 twice or nonuniformly stretch."
+}
