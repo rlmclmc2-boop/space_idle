@@ -22,7 +22,7 @@
 
 出击与撤退结束按02、03把防御**当前余量**重置至各自最大容量；`max_armour`或装甲装备数只表示容量，不是死亡信号，也不能单独拦截有护盾的出击。护盾余量为0而装甲仍有余量同样存活。首防御槽不得卸空，因此不能以用户卸空所有防御槽作为出击或撤退分支；更换首槽类型时若两类当前余量瞬间均为0，死亡判定时序仍待单独决定。
 
-基线还含 `UPGRADE/DEFEAT` 等旧状态名称，新方案不要求原样保留无独立行为的枚举。升级面板是显示模式，不是全游戏暂停状态。
+升级面板是显示模式；暂停状态由当前运行流程管理。
 
 航行速度 `max(ship.moveSpeed, (nextPoint-origin)/3)`，将一段航行限制在最多 3 秒；其中 origin 在本段开始固定，不能每帧更新造成渐近减速。若没有下一个战点，使用船速。非负距离、关卡长度、战点顺序由编译器验证。
 
@@ -76,7 +76,7 @@ gain = min(floor(offlineSeconds×rate), floor(capacity-current))
 
 钱包含铁 `1`、铀 `2`、强化碎片 `jewel`、微粒 `chrono`、四类超空间材料及究极核心。用户明确所有资源无论展示还是实际值均为整数，必要向上取整；实施边界、累计进度和旧档候选恢复见[资源整数契约](contracts/resources.md)。经济数量统一用近似 `Amount`；格数、ID、抽签次数等离散身份使用整数。钱包使用`credit/debit/transfer`具名函数，收入记录明确来源；奖励和掉落使用其本身的唯一ID防重复领取。消费检查全部资源够付才整体扣除，失败不能留下部分扣费。
 
-基线把铁/铀掉落分为“基础生产量”和“实际到账量”；新模型显式保存两个字段，不从 UI 显示数反推。收入源至少有 `enemy_drop/timed_drop/fragment_drop/galaxy_yield/hyperspace_material/dismantle/forge_refund`；旧 `furnace` 分支仅作为停用规则记录，不能重新生成炉子。
+铁/铀掉落分别保存“基础生产量”和“实际到账量”。收入源至少有 `enemy_drop/timed_drop/fragment_drop/galaxy_yield/hyperspace_material/dismantle/forge_refund`。
 
 | 来源 | 数量计算与到账时点 | 是否计入研究/峰值/星系基数 |
 |---|---|---|

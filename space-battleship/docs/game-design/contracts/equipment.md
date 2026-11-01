@@ -2,7 +2,7 @@
 
 [唯一入口](../README.md) · [共同读取/接纳协议](../14-ui-contracts.md)。本页维护本模块公开接口；当前实现和消费源见[11](../11-stage6-contract.md)。
 
-当前换装语义按[03§1](../03-progression.md#1-舰体槽位与升级)：免费且可立即切回，旧10秒换装锁已撤销；实现分支是否已消费此决定须按当前入口核对。当前实现与未完项见[M2入口](../art/modules/equipment.md)。
+换装免费且可立即切回，规则见[03§1](../03-progression.md#1-舰体槽位与升级)；制作要求见[M2](../art/modules/equipment.md)，执行现场见[11](../11-stage6-contract.md)。
 
 ## 2. 主线现有模块连接
 
@@ -18,7 +18,7 @@
 
 | 入口/消费者 | 最小读取契约 |
 |---|---|
-| Session `equipment_slot_facts()` → M2槽卡 | Equipment.slot_facts按已接纳全部保留槽给id/category/index/equipment_id、paid/effective_level、dormant、switch_ready_at/cooldown_remaining。空槽与休眠独立，未知有效等级为null。换装锁已撤销，switch_ready_at仅可作旧字段兼容，cooldown_remaining应为0，不给购级加新禁令。 |
+| Session `equipment_slot_facts()` → M2槽卡 | Equipment.slot_facts按已接纳全部保留槽给id/category/index/equipment_id、paid/effective_level、dormant、switch_ready_at/cooldown_remaining。空槽与休眠独立，未知有效等级为null。switch_ready_at为兼容字段，cooldown_remaining恒为0；购买按所属Owner报价与准入执行。 |
 | Session `equipment_comparison(slot_id,candidate_id,count=1,maximum=false)` → M2比较台/固定报价区 | 薄装配实际世界/AI/反应炉及预算，Equipment.slot_comparison只读输出`scope=charged_base`、current/upgrade/candidate、quote、affordable/payment_reason、switch_admission、dormant。current为现装，upgrade按本次quote实际count，candidate沿当前付费级；不组合候选换装+购级。行给装备/等级、主值规范Amount文本或null、status/reason及有单位配置特性；不输出拼接中文当数据。 |
 | Equipment `quote_slot(slot_id,n)` / `quote_max_levels(slot_id,inputs,can_pay)` → M2数量/费用 | 确定数量复用原_quote_levels；MAX薄包装原_quote_affordable_levels。保留count/costs/extreme与原reason，costs为resource id→原Amount。单槽+10完整报价不缩成可购2；MAX候选报价错误/不可支付作搜索边界，0统一NoChange，原离散极限保持。不新增整组预览，不把独立MAX相加成批量总价。 |
 
