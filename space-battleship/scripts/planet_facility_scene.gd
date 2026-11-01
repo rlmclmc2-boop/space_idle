@@ -117,12 +117,12 @@ func _ready() -> void:
 		match kind:
 			"auto_explore": _add_work_light(model, "Command second occupied tier dark hull", Color("79cfe9"), 1.0, 1.9, Vector3(0, 0.28, 0))
 			"refinery": _add_work_light(model, "Heat chamber upper armored ring deck", Color("ffc16e"), 1.7, 2.0, Vector3(0, 0.42, 0))
-			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ff9b47"), 2.0, 1.9, Vector3(0, 0.40, 0))
-			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffab4e"), 1.85, 1.7, Vector3(0, 0.42, 0))
+			"equipment": _add_work_light(model, "Manufacturing open assembly well", Color("ff9b47"), 0.08, 1.35, Vector3(0, 0.40, 0))
+			"shipyard": _add_work_light(model, "Dock recessed central landing lane", Color("ffab4e"), 0.08, 1.35, Vector3(0, 0.42, 0))
 		if kind == "equipment":
-			_add_work_light(model, "Factory traveling winch", Color("ff8e35"), 1.45, 1.0, Vector3(0, -0.24, 0))
+			_add_work_light(model, "Factory traveling winch", Color("ff8e35"), 0.15, 0.9, Vector3(0, -0.24, 0))
 		if kind == "shipyard":
-			_add_work_light(model, "Dock portal recessed soffit", Color("ff8e35"), 1.45, 1.1, Vector3(0, -0.30, 0))
+			_add_work_light(model, "Dock portal recessed soffit", Color("ff8e35"), 0.15, 0.9, Vector3(0, -0.30, 0))
 		model.visible = false
 	resized.connect(_layout)
 	_layout()
