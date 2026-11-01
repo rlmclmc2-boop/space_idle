@@ -1,9 +1,9 @@
 # 文档整理交接
 
-规范整理已发布至`main@dd8b1f6a72305a7a450e05938a231998e7c3fbc4`；制作规范与交接的维护方法见[07](../game-design/07-verification.md#5-实施顺序)。
+现行规范固定于`main@7b3702af224deff65375861c9a60be3c19e0a659`；规范与交接维护方法见[07](../game-design/07-verification.md#5-实施顺序)。
 
-当前一步：回读各原组实际消费后的入口和交接全文，清掉回填的历史过程与范围外提醒，并核导航指向实际执行分支。原组现场保留，由对应执行者消费最小文档差异。
+当前一步：原执行者消费本轮各组最终文档差异后，回读其实际入口、规范与交接全文，核当前进度和WIP。五组差异已合并导航/交接及06、07、13、M7修正，每组一份。
 
-[当前消费核查与文件清单](https://github.com/rlmclmc2-boop/space_idle/blob/archive/design-docs-before-cleanup-20261031/modules/maintenance/20261101-spec-simplification/consumption/index.md)。
+本轮固定源、文件清单及消费状态见[归档记录](https://github.com/rlmclmc2-boop/space_idle/blob/archive/design-docs-before-cleanup-20261031/modules/maintenance/20261101-spec-simplification/final/delivery.md)。
 
-恢复：从本清理分支固定Git版本接续，核工作区改动；按上述当前一步继续。
+恢复：从本清理分支固定Git版本接续，核工作区改动，再推进上述当前一步。
