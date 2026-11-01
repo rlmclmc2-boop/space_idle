@@ -30,6 +30,7 @@ var _owned: Array = []
 var _navy: ShaderMaterial
 var _side: ShaderMaterial
 var _cyan: ShaderMaterial
+var _amber: ShaderMaterial
 var _deck: ShaderMaterial
 var _channel: ShaderMaterial
 var _sleeve: ShaderMaterial
@@ -62,6 +63,7 @@ func _ready() -> void:
 	# A narrow, unlit slate bevel separates the rear load path from the navy sky.
 	_rear_rim = _material(Color("91a09e"))
 	_channel = _material(Color("425e69"))
+	_amber = _material(Color("e29431"))
 	_deck.set_shader_parameter("albedo_tex", preload("res://assets/planets/orbital_spine/deck-armor-continuous.png"))
 	_deck.set_shader_parameter("textured", true)
 	_sleeve = _deck.duplicate()
@@ -77,7 +79,7 @@ func _ready() -> void:
 			var rib_angle: float = lerpf(bounds.x, bounds.y, float(rib_index) / 6.0)
 			if absf(rib_angle - FACILITY_ANGLES[kind]) > 0.14:
 				_add_track_box(root, rib_angle - 0.009, rib_angle + 0.009,
-					-0.19, 0.19, -0.13, 0.19, _side)
+					-0.145, 0.145, -0.10, 0.16, _side)
 		var join := Node3D.new()
 		join.name = "FineTrackJoin"
 		root.add_child(join)
@@ -87,7 +89,7 @@ func _ready() -> void:
 			var cap := Node3D.new()
 			cap.name = "ClosedTrackTerminal"
 			_add_track_box(cap, angle - 0.013, angle + 0.013,
-				-0.19, 0.19, -0.14, 0.20, _side)
+				-0.15, 0.15, -0.11, 0.17, _side)
 			root.add_child(cap)
 			caps.append(cap)
 		_arcs[kind] = root
@@ -120,10 +122,10 @@ func _add_track_box(parent: Node3D, begin: float, finish: float,
 	parent.add_child(instance)
 
 func _add_thin_track(parent: Node3D, begin: float, finish: float) -> void:
-	_add_track_box(parent, begin, finish, -0.14, 0.14, -0.10, 0.06, _navy)
-	for radial in [-0.11, 0.11]:
-		_add_track_box(parent, begin, finish, radial - 0.032, radial + 0.032,
-			0.06, 0.145, _deck)
+	_add_track_box(parent, begin, finish, -0.105, 0.105, -0.09, 0.055, _navy)
+	for radial in [-0.085, 0.085]:
+		_add_track_box(parent, begin, finish, radial - 0.022, radial + 0.022,
+			0.055, 0.125, _deck)
 	_add_track_box(parent, begin, finish, -0.012, 0.012, 0.08, 0.12, _cyan)
 
 func _tram_part(parent: Node3D, name: String, size: Vector3,
@@ -141,20 +143,25 @@ func _add_orbital_tram() -> void:
 	_tram = Node3D.new()
 	_tram.name = "TrackConstrainedOrbitalTram"
 	add_child(_tram)
-	_tram_part(_tram, "Captured dark bogie", Vector3(0.93, 0.09, 0.23),
+	_tram_part(_tram, "Captured dark bogie", Vector3(1.06, 0.09, 0.23),
 		Vector3(0.0, -0.06, 0.0), _navy)
-	_tram_part(_tram, "Faceted ivory tram cabin", Vector3(0.81, 0.18, 0.26),
+	_tram_part(_tram, "Faceted ivory tram cabin", Vector3(0.91, 0.18, 0.26),
 		Vector3(0.0, 0.065, 0.0), _deck)
-	_tram_part(_tram, "Dark beveled tram roof", Vector3(0.66, 0.045, 0.23),
+	_tram_part(_tram, "Dark beveled tram roof", Vector3(0.74, 0.045, 0.23),
 		Vector3(0.0, 0.177, 0.0), _side)
 	for side in [-1.0, 1.0]:
-		_tram_part(_tram, "Continuous side window", Vector3(0.59, 0.07, 0.014),
-			Vector3(-0.025, 0.092, side * 0.137), _channel)
+		for window_x in [-0.23, 0.0, 0.23]:
+			_tram_part(_tram, "Separate passenger window", Vector3(0.15, 0.075, 0.016),
+				Vector3(window_x, 0.099, side * 0.139), _channel)
+		_tram_part(_tram, "Amber doorway marker", Vector3(0.055, 0.13, 0.018),
+			Vector3(-0.39, 0.055, side * 0.141), _amber)
 		for bogie_x in [-0.26, 0.26]:
 			_tram_part(_tram, "Captured rail bogie", Vector3(0.12, 0.11, 0.055),
 				Vector3(bogie_x, -0.075, side * 0.10), _navy)
 	_tram_part(_tram, "Cyan forward windscreen", Vector3(0.035, 0.10, 0.18),
-		Vector3(0.39, 0.085, 0.0), _cyan)
+		Vector3(0.455, 0.085, 0.0), _cyan)
+	_tram_part(_tram, "Forward prow pressure nose", Vector3(0.12, 0.09, 0.17),
+		Vector3(0.49, 0.052, 0.0), _deck)
 	_tram.visible = false
 
 func _material(color: Color, unshaded: bool = false) -> ShaderMaterial:
@@ -633,7 +640,7 @@ func update_pose(clock: float) -> void:
 	basis = Basis(Vector3(0.0, -TILT_Z, -TILT_Y), clock * 0.045)
 	# The car stays captured by the same physical guideway as the four built
 	# sections. It runs only after the entire loop exists.
-	var angle := fposmod(clock * 0.32 + PI * 0.5, TAU)
+	var angle := fposmod(clock * 0.32 + PI * 0.18, TAU)
 	var tangent := (point(angle + 0.001) - point(angle - 0.001)).normalized()
 	var up := plane_normal()
 	_tram.position = point(angle) + up * 0.25

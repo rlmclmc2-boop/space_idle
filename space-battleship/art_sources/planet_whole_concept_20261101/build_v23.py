@@ -41,6 +41,7 @@ WINDOW = material("Habitat cyan window glass", (.025,.34,.43), .08, .50, .42)
 CYAN = material("Contained cyan energy", (.025,.65,.84), .08, .40, 1.8)
 AMBER = material("Contained amber heat", (.68,.21,.025), .04, .55, .65)
 GOLD = material("Warm work marking", (.70,.40,.09), .24, .56)
+CRANE_ORANGE = material("Factory safety orange machine enamel", (.90,.35,.035), .16, .55, .12)
 DOME_GOLD = material("Heat chamber faceted gold armor", (.90,.56,.20), .20, .58)
 
 
@@ -379,13 +380,13 @@ def profiled_outer_ribbon(root,name,begin,end):
 # The twin track has a compact structural web, two pale rail heads and a
 # restrained cyan guide. The four exported ownership roots below carry their
 # own stretches; this global copy appears only in the Blender concept.
-annular_band("Dark continuous track web",RING_RADIUS-.13,RING_RADIUS+.13,-.11,.07,KEEL)
-for radial in (-.11,.11):
-    annular_band("Ivory rail head",RING_RADIUS+radial-.026,RING_RADIUS+radial+.026,.07,.14,ARMOR_FACE)
+annular_band("Dark continuous track web",RING_RADIUS-.105,RING_RADIUS+.105,-.09,.055,KEEL)
+for radial in (-.085,.085):
+    annular_band("Ivory rail head",RING_RADIUS+radial-.021,RING_RADIUS+radial+.021,.055,.125,ARMOR_FACE)
 annular_band("Contained track guide",RING_RADIUS-.011,RING_RADIUS+.011,.075,.105,CYAN)
 for i in range(32):
     a=i*tau/32
-    annular_band("Track pressure clamp",RING_RADIUS-.18,RING_RADIUS+.18,-.12,.18,ARMOR_SIDE,a-.009,a+.009,2)
+    annular_band("Track pressure clamp",RING_RADIUS-.135,RING_RADIUS+.135,-.10,.15,ARMOR_SIDE,a-.008,a+.008,2)
 
 station=root_at("01 / Command district of the orbital city",140)
 station.location.z=-.95
@@ -398,23 +399,23 @@ shipyard=root_at("04 / Open launch district of the orbital city",-130)
 # The local functional bays below carry the large building masses.
 for root,lo,hi in ((refinery,25,75),(station,75,155),
                    (workshop,-65,25),(shipyard,-205,-65)):
-    owned_arc(root,"Fine orbital pressure web",lo,hi,4.20,4.46,-.11,.07,KEEL)
-    for radial in (-.11,.11):
+    owned_arc(root,"Fine orbital pressure web",lo,hi,4.225,4.435,-.09,.055,KEEL)
+    for radial in (-.085,.085):
         owned_arc(root,"Fine ivory rail head",lo,hi,
-                  4.33+radial-.026,4.33+radial+.026,.07,.14,ARMOR_FACE)
+                  4.33+radial-.021,4.33+radial+.021,.055,.125,ARMOR_FACE)
     owned_arc(root,"Orbital tram guide",lo,hi,4.319,4.341,.075,.105,CYAN)
     for degree in range(lo+10,hi,18):
         owned_arc(root,"Orbital track joint clamp",degree-.5,degree+.5,
-                  4.15,4.51,-.12,.19,ARMOR_SIDE)
+                  4.195,4.465,-.10,.16,ARMOR_SIDE)
 
 # Local pressure floors under the large work nodes, distinct from the guideway.
 owned_arc(shipyard,"Dock open bay inner transfer floor",-138,-122,
           4.17,4.68,.18,.34,MACHINE)
 bpy.context.view_layer.update()
 front_node = shipyard.matrix_world.inverted() @ Vector((0,-(4.47+ORBIT_SHIFT),.60))
-cyl("Low flush front attitude collar",front_node,.28,.14,EDGE,shipyard,10)
-front_core = shipyard.matrix_world.inverted() @ Vector((0,-(4.47+ORBIT_SHIFT),.69))
-cyl("Front attitude cyan inset",front_core,.12,.035,CYAN,shipyard,10)
+cyl("Low flush front attitude collar",front_node,.18,.10,EDGE,shipyard,10)
+front_core = shipyard.matrix_world.inverted() @ Vector((0,-(4.47+ORBIT_SHIFT),.66))
+cyl("Front attitude cyan inset",front_core,.075,.025,CYAN,shipyard,10)
 
 # The observation platform bears down onto the actual guideway; no second
 # unsupported ribbon floats between the station and its owned track section.
@@ -520,13 +521,13 @@ for side in (-1,1):
         (.35,.78,.13),ARMOR_SIDE,workshop)
 for y in (-.19,-1.54):
     box("Manufacturing amber guided transfer rail",(0,y,.52),
-        (2.42,.065,.08),GOLD,workshop,.008)
+        (2.42,.065,.08),CRANE_ORANGE,workshop,.008)
 for x in (-.76,0,.76):
     box("Manufacturing transverse crane datum",(x,-.85,.56),
-        (.065,1.27,.075),GOLD,workshop,.008)
+        (.065,1.27,.075),CRANE_ORANGE,workshop,.008)
 for radial_y in (-.78,.08):
     box("Manufacturing high gantry travel rail",(0,radial_y,1.44),
-        (1.75,.085,.10),GOLD,workshop,.014)
+        (1.75,.10,.13),CRANE_ORANGE,workshop,.014)
     for tangent_x in (-.85,.85):
         beam("Manufacturing gantry support post",
              (tangent_x,radial_y,.45),(tangent_x,radial_y,1.45),
@@ -556,9 +557,46 @@ beam("Overhead fabrication gantry",(-.65,0,1.55),(.66,0,1.55),.14,.22,MACHINE,wo
 for side in (-1,1):
     beam("Fabrication gantry load leg",(side*.68,0,.56),(side*.68,0,1.57),.15,.20,ARMOR_SIDE,workshop)
     box("Fabrication gantry armored foot",(side*.68,0,.58),(.31,.39,.25),ARMOR,workshop)
-box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.17,.13),GOLD,workshop)
+box("Fabrication gantry hanging crane rail",(0,0,1.63),(.99,.17,.13),CRANE_ORANGE,workshop)
 beam("Downward working tool",(.17,0,1.48),(.17,0,.66),.07,.08,EDGE,workshop)
 box("Work site contained welding line",(.17,0,.76),(.15,.18,.04),CYAN,workshop,.01)
+
+# The two pressure workshops are complete machine rooms either side of the
+# open fabrication lane. Their dark recesses and roof plates read at page size.
+for side in (-1,1):
+    x=side*1.02
+    box("Fabrication room continuous dark hull",(x,-.91,.73),(.44,1.32,.58),KEEL,workshop,.035)
+    box("Fabrication room armored inner wall",(side*.73,-.91,.73),(.075,1.18,.44),ARMOR_MID,workshop,.014)
+    slope_shell("Fabrication room chamfered roof",
+                [(x-.28,-1.60),(x+.28,-1.60),(x+.28,-.21),(x-.28,-.21)],
+                [1.08,1.08,1.00,1.00],.11,ARMOR_FACE,workshop)
+    box("Fabrication room roof dark expansion joint",(x,-.93,1.08),(.075,1.23,.025),EDGE,workshop,.004)
+    for y in (-1.37,-.97,-.57):
+        box("Fabrication room removable armor cassette",(side*1.30,y,.91),
+            (.055,.29,.46),ARMOR,workshop,.012)
+        box("Fabrication room inset service window",(side*1.337,y,1.03),
+            (.022,.20,.09),WINDOW,workshop,.004)
+        box("Fabrication room lower cooling louver",(side*1.34,y,.70),
+            (.023,.20,.055),MACHINE,workshop,.003)
+        box("Fabrication room roof amber access mark",(x,y,1.095),
+            (.09,.13,.015),GOLD,workshop,.002)
+    for y in (-1.53,-.24):
+        box("Fabrication room end-frame corner",(side*1.32,y,.87),
+            (.15,.10,.80),ARMOR_FACE,workshop,.012)
+    beam("Fabrication room exposed service conduit",
+         (side*.68,-1.47,1.03),(side*.68,-.35,1.03),.045,.045,GOLD,workshop)
+for y in (-1.23,-.55):
+    box("Factory traveling bridge dark undercarriage",(0,y,1.48),
+        (1.76,.17,.10),EDGE,workshop,.012)
+    box("Factory traveling bridge gold load beam",(0,y,1.58),
+        (1.67,.13,.12),CRANE_ORANGE,workshop,.01)
+    box("Factory traveling winch",(.22,y,1.37),(.25,.28,.28),MACHINE,workshop,.018)
+    beam("Factory hanging articulated tool",(.22,y,1.29),(.22,y,1.02),.055,.07,ARMOR_SIDE,workshop)
+    box("Factory hanging tool amber tip",(.22,y,.98),(.08,.08,.06),AMBER,workshop,.008)
+for x in (-.48,.48):
+    for y in (-1.30,-.82):
+        box("Factory floor load bearing cassette",(x,y,.51),(.35,.34,.065),ARMOR_SIDE,workshop,.008)
+        box("Factory cassette center machine top",(x,y,.56),(.21,.22,.045),MACHINE,workshop,.006)
 
 # Two outer launch arms reach from the band's missing section; the void is
 # wider than the shuttle and reads as a bay, not as a self-contained block.
@@ -621,6 +659,72 @@ for side in (-1,1):
         (.19,.73,.18),ARMOR_SIDE,shipyard,.02)
     box("Docked shuttle cyan exhaust",(side*.38,-1.91,.83),
         (.12,.035,.10),CYAN,shipyard,.006)
+
+# Dock pressure housing stays open at the nose, but has a legible occupied
+# cross-section: layered outer armor, black bay lining, service machinery.
+for side in (-1,1):
+    x=side*.88
+    for bay_y in (-1.63,-.54):
+        box("Dock separated service bay dark hull",(x,bay_y,.76),
+            (.30,.44,.59),KEEL,shipyard,.018)
+        slope_shell("Dock separated service bay roof",
+                    [(x-.20,bay_y-.24),(x+.20,bay_y-.24),
+                     (x+.20,bay_y+.24),(x-.20,bay_y+.24)],
+                    [1.16,1.16,1.10,1.10],.11,ARMOR_FACE,shipyard)
+    for y in (-1.53,-1.12,-.71):
+        box("Dock removable sloped armor bay",(side*1.07,y,.93),
+            (.10,.31,.52),ARMOR,shipyard,.012)
+        box("Dock navy machinery recess",(side*1.131,y,.93),
+            (.018,.21,.23),MACHINE,shipyard,.003)
+        box("Dock cyan status slit",(side*1.144,y,1.00),
+            (.011,.17,.035),CYAN,shipyard,.002)
+        box("Dock lower pressure flange",(side*1.06,y,.57),
+            (.22,.32,.07),ARMOR_SIDE,shipyard,.006)
+    for y in (-1.68,-.39):
+        wall_prism("Dock angled end armor cheek",
+                   [(side*.66,.42),(side*1.16,.42),(side*1.16,1.16),
+                    (side*.99,1.42),(side*.70,1.42)],y-.06,y+.06,
+                   ARMOR_FACE,shipyard)
+    box("Dock service pipe housed beneath sill",(side*.62,-1.05,.48),
+        (.045,1.32,.045),GOLD,shipyard,.006)
+    box("Dock edge beacon armor base",(side*1.06,-1.70,1.43),
+        (.13,.13,.12),EDGE,shipyard,.01)
+    cyl("Dock edge amber beacon",(side*1.06,-1.70,1.53),.038,.10,AMBER,shipyard,8)
+    box("Shuttle swept broad wing",(side*.50,-1.35,.94),
+        (.54,.40,.085),ARMOR_FACE,shipyard,.018)
+    box("Shuttle wing navy control surface",(side*.70,-1.37,.990),
+        (.23,.24,.016),ARMOR_SIDE,shipyard,.004)
+    box("Shuttle engine pale upper nacelle",(side*.39,-1.69,.95),
+        (.18,.49,.08),ARMOR_FACE,shipyard,.012)
+    box("Shuttle engine dark rear nozzle",(side*.39,-2.00,.88),
+        (.16,.07,.13),EDGE,shipyard,.008)
+for y in (-1.65,-.85):
+    box("Dock transverse maintenance threshold",(0,y,.46),
+        (1.48,.075,.04),ARMOR_SIDE,shipyard,.006)
+    box("Dock amber guidance chevron",(0,y,.487),
+        (.19,.045,.014),GOLD,shipyard,.002)
+box("Shuttle segmented cockpit frame",(0,-1.52,1.09),
+    (.37,.06,.04),ARMOR_FACE,shipyard,.005)
+armor_prism("Shuttle visible swept pressure hull",
+            [(-.34,-.72),(.34,-.72),(.43,-1.36),(.28,-1.95),
+             (0,-2.42),(-.28,-1.95),(-.43,-1.36)],
+            1.20,1.31,ARMOR_FACE,shipyard)
+for side in (-1,1):
+    armor_prism("Shuttle broad lifting wing",
+                [(side*.26,-1.35),(side*.93,-1.67),
+                 (side*.87,-1.92),(side*.25,-1.81)],
+                1.23,1.29,ARMOR_FACE,shipyard)
+    box("Shuttle exposed navy wing flap",(side*.70,-1.79,1.315),
+        (.27,.095,.018),ARMOR_SIDE,shipyard,.003)
+    box("Shuttle upper engine cowling",(side*.39,-1.31,1.34),
+        (.18,.46,.13),ARMOR_FACE,shipyard,.014)
+    box("Shuttle engine dark air intake",(side*.39,-1.01,1.35),
+        (.14,.035,.08),GLASS,shipyard,.004)
+box("Shuttle visible blue faceted cockpit",(0,-1.35,1.35),
+    (.38,.47,.08),GLASS,shipyard,.018)
+for y in (-1.52,-1.32):
+    box("Shuttle cockpit segmented white rib",(0,y,1.40),
+        (.40,.025,.025),ARMOR_FACE,shipyard,.003)
 
 # The reference manufacturing platform is compact beside the planet, while
 # its independently owned track remains the full approved orbital radius.
