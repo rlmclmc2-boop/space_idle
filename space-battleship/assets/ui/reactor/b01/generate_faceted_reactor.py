@@ -105,6 +105,9 @@ def socket(id,m):
  # not a second open tube end facing the working chamber.
  a=p+axis*(far-4);b=p+axis*(far+18)
  rod(id+' receiver foundation',(a.x,a.y,28+(far-4)*.35),(b.x,b.y,28+(far+18)*.35),d['socket_radius']+8,m['shade'])
+ contact=p-axis*7
+ a=contact-axis*1.5;b=contact+axis*1.5
+ rod(id+' receiver acknowledgement',(a.x,a.y,28+(a-p).dot(axis)*.35),(b.x,b.y,28+(b-p).dot(axis)*.35),d['socket_radius']-4,m['cyan'])
 
 
 def opening(name,x,y,w,h,front,back,m):
@@ -332,6 +335,7 @@ WORK_NAMES={
  'smelting': ['furnace feed','furnace throat','furnace liquid','furnace pour','furnace outlet liquid'],
  'condensation': ['crystal body','crystal bright facet'],
  'core': ['core containment glass','core plasma kernel','core plasma mass','core plasma strand','core transfer packet']}
+for id in DATA['devices']:WORK_NAMES[id].append(id+' receiver acknowledgement')
 FRONT_NAMES={
  'weapons':['weapon retainer','weapon focusing exit','weapon top bridge','weapon bottom bridge'],
  'defence':['shield armor','shield joint','shield projector'],
@@ -368,8 +372,18 @@ def route_samples(d,steps=40):
  h=p3-Vector((axis.x,axis.y,.35))*55
  return interpolate_bezier(p0,p1,h,p3,steps)
 
+def route_distances(d):
+ pts=route_samples(d);distances=[0.0]
+ for a,b in zip(pts,pts[1:]):distances.append(distances[-1]+(b-a).length)
+ return pts,[v/distances[-1] for v in distances]
+
+def receiver_u(d):
+ pts,distances=route_distances(d);axis=Vector(d['axis_to_device']).normalized();p=Vector(d['device_port'])-axis*7
+ target=Vector((p.x,p.y,28-7*.35))
+ return distances[min(range(len(pts)),key=lambda i:(pts[i]-target).length_squared)]
+
 def channel_pipe(id,m):
- d=DATA['devices'][id];pts=route_samples(d);normals=[]
+ d=DATA['devices'][id];pts,distances=route_distances(d);normals=[]
  delta=Vector(d['controls'][0])-Vector(d['core_port']);core_axis=delta.normalized();rise=-12.0/delta.length
  hollow_socket(id+' core outlet',Vector(d['core_port']),core_axis,rise,28,-20,26,24,m)
  verticals=[]
@@ -402,7 +416,7 @@ def channel_pipe(id,m):
  uv=work.data.uv_layers.new(name='route_distance')
  for polygon in work.data.polygons:
   for loop in polygon.loop_indices:
-   idx=work.data.loops[loop].vertex_index;uv.data[loop].uv=(idx//2/(len(pts)-1),idx%2)
+   idx=work.data.loops[loop].vertex_index;uv.data[loop].uv=(distances[idx//2],idx%2)
  for idx in (1,len(pts)-3):
   p=pts[idx]+verticals[idx]*18;n=normals[idx]
   rod(id+' channel collar', (p.x+n.x*21,p.y+n.y*21,p.z),(p.x-n.x*21,p.y-n.y*21,p.z),5,m['dark'])
@@ -485,8 +499,9 @@ def export_glb():
   ports[id]['core_interface_source3d']=[d['core_port'][0],-d['core_port'][1],28]
   ports[id]['core_axis_out_source3d']=list(out)
   ports[id]['device_marker']=id+'/power_in_'+id;ports[id]['core_marker']='core/power_out_'+id
+  ports[id]['receiver_u']=receiver_u(d)
  layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],
-  'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting'},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+  'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])
 

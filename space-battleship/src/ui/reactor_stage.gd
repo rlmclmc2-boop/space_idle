@@ -115,6 +115,7 @@ func _update_canvas_transform() -> void:
 
 func _kind(title: String) -> int:
 	if "core containment glass" in title or "weapon chamber glazing" in title:return 1
+	if "receiver acknowledgement" in title:return 11
 	if "core transfer packet" in title:return 10
 	if "core plasma kernel" in title:return 9
 	if "core plasma strands" in title:return 2
@@ -153,8 +154,8 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	part.scale=Vector2.ONE*SOURCE_SCALE
 	_groups[key].add_child(part)
 	if kind==1:part.z_index=4
-	elif kind==9:part.z_index=3
-	elif kind==10:part.z_index=2
+	elif kind==9:part.z_index=2
+	elif kind==10:part.z_index=3 if title.get_slice("packet ",1) in ["weapons","condensation"] else 0
 	elif kind==3:part.z_index=1
 	elif kind==2:part.z_index=0
 	var bottom: float=-INF
@@ -210,6 +211,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			material.set_shader_parameter("transfer_target",Vector3(target[0],target[1],target[2]))
 			material.set_shader_parameter("transfer_layer",1.0 if id in ["weapons","condensation"] else -1.0)
 			material.set_meta("outlet",id)
+		if kind==11:material.set_shader_parameter("receiver_u",float(_layout.ports[key].receiver_u))
 		if kind==4:material.set_shader_parameter("work_zone",1 if "bowed" in title else 0)
 		if kind==5:material.set_shader_parameter("work_zone",0 if "pour" in title else 3 if "outlet" in title else 2 if "liquid" in title else 1)
 		drawable.material=material
@@ -238,7 +240,9 @@ func _install_composition(ids: Array) -> void:
 		_groups[key].position=shift*SOURCE_SCALE
 		_asset.get_node(NodePath(key)).position=Vector3(shift.x,-shift.y,0)
 		_groups[key].visible=_group_visible(key,ids)
-		for material in _materials[key]:material.set_shader_parameter("assembly_offset",Vector3(shift.x,-shift.y,0))
+		for material in _materials[key]:
+			material.set_shader_parameter("assembly_offset",Vector3(shift.x,-shift.y,0))
+			if key in IDS:material.set_shader_parameter("receiver_u",float(_layout.single_smelting.receiver_u) if _single_mode and key=="smelting" else float(_layout.ports[key].receiver_u))
 
 func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	if ids==_enabled and loads==_loads:return
@@ -247,6 +251,10 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	if availability_changed:_install_composition(ids)
 	_enabled=ids.duplicate()
 	_loads=loads.duplicate()
+	if float(loads.get("core",0.0))>0.0 and float(previous.get("core",0.0))<=0.0:
+		_phase=0.0
+		for key in ["core"]+ids+ids.map(func(id):return _pipe_key(str(id))):
+			for material in _materials[key]:material.set_shader_parameter("phase",_phase)
 	for id in IDS:
 		_groups[id].visible=id in ids
 		var load: float=float(loads.get(id,0.0)) if id in ids else 0.0
@@ -350,6 +358,9 @@ func _animate_mechanisms() -> void:
 				var growth: float=.12+.88*smoothstep(0.0,3.5,age)
 				part.scale=Vector2(1.0,growth)*SOURCE_SCALE
 				part.position=source_point(Vector2(origin.x,mechanism.bottom-(mechanism.bottom-origin.y)*growth))
+			elif mechanism.kind==11:
+				var shown: bool=fmod(_phase,4.8)>=4.8*.72
+				if part.visible!=shown:part.visible=shown
 		for material in _materials[id]:material.set_shader_parameter("formation",minf(age/1.6,1.0))
 
 	for mechanism in _mechanisms.core:

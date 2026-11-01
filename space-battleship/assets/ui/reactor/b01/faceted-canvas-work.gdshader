@@ -6,6 +6,7 @@ uniform float phase=0.0;
 uniform vec3 assembly_offset=vec3(0.0);
 uniform vec3 transfer_target=vec3(594.0,-340.0,28.0);
 uniform float transfer_layer=1.0;
+uniform float receiver_u=0.8;
 uniform bool outlet_enabled=true;
 uniform float load_fraction=0.0;
 uniform float formation=1.0;
@@ -22,30 +23,38 @@ void vertex(){
  vec2 screen=(stage_from_canvas*MODEL_MATRIX*vec4(VERTEX,0.0,1.0)).xy;
  float s=835.0/1326.0;
  world_point=vec3((screen.x-(808.0-1187.0*s)*0.5)/s,-screen.y/s,(data.r*255.0*256.0+data.g*255.0)/65535.0*1024.0-256.0);
- float cycle=fract(phase/3.0);
- float charge=smoothstep(0.0,0.50,cycle);
- float compression=smoothstep(0.50,0.65,cycle);
+ float cycle=fract(phase/4.8);
+ float charge=smoothstep(0.0,0.43,cycle);
+ float compression=smoothstep(0.43,0.60,cycle);
  vec3 center=vec3(594.0,-340.0,70.0)+assembly_offset;
  if(work_kind==3){
-  float scale=cycle<0.65?0.78+charge*0.16-compression*0.27:mix(0.67,1.05,smoothstep(0.65,0.78,cycle));
+  float scale=cycle<0.60?0.80+charge*.12-compression*.26:mix(.66,.95,smoothstep(.60,.72,cycle));
   vec3 delta=world_point-center;
-  VERTEX+=vec2(delta.x,-delta.y)*(scale-1.0);
-  world_point=center+delta*scale;
+  vec3 shaped=delta*vec3(scale*(1.0-compression*.18),scale*.90,scale);
+  VERTEX+=vec2(shaped.x-delta.x,delta.y-shaped.y);
+  world_point=center+shaped;
  }else if(work_kind==9){
   vec3 nucleus=vec3(594.0,-340.0,100.0)+assembly_offset;
-  float scale=cycle<0.75?0.65+charge*0.5+compression*0.35:0.65;
+  float size=.80+charge*.40;
+  vec3 scale=mix(vec3(size),vec3(.52,1.35,.66),compression);
+  if(cycle>=.60){scale=mix(vec3(.52,1.35,.66),vec3(.72),smoothstep(.60,.72,cycle));}
   vec3 delta=world_point-nucleus;
-  VERTEX+=vec2(delta.x,-delta.y)*(scale-1.0);
-  world_point=nucleus+delta*scale;
+  vec3 moved=nucleus+delta*scale;
+  VERTEX+=vec2(moved.x-world_point.x,world_point.y-moved.y);
+  world_point=moved;
  }else if(work_kind==10){
   vec3 nucleus=vec3(594.0,-340.0,100.0)+assembly_offset;
   vec3 exit_point=transfer_target+assembly_offset;
   vec3 intake=nucleus+(exit_point-nucleus)*0.62;
   intake.z=100.0+transfer_layer*38.0;
-  vec3 position=cycle<0.50?mix(intake,nucleus,charge):cycle<0.65?nucleus:mix(nucleus,exit_point,smoothstep(0.65,0.75,cycle));
+  vec3 position=cycle<.43?mix(intake,nucleus,charge):cycle<.60?nucleus:mix(nucleus,exit_point,smoothstep(.60,.72,cycle));
   vec3 delta=world_point-nucleus;
-  float scale=cycle<0.50?1.0-charge*0.45:cycle<0.65?0.55-compression*0.20:0.85;
-  vec3 moved=position+delta*scale;
+  vec2 axis=normalize(exit_point.xy-nucleus.xy);
+  vec2 across=vec2(-axis.y,axis.x);
+  float size=cycle<.43?mix(1.60,.65,charge):cycle<.60?mix(.65,.35,compression):1.25;
+  float stretch=cycle<.60?1.55:2.1;
+  vec2 shaped=axis*dot(delta.xy,axis)*stretch+across*dot(delta.xy,across)*.78;
+  vec3 moved=position+vec3(shaped,delta.z)*size;
   VERTEX+=vec2(moved.x-world_point.x,world_point.y-moved.y);
   world_point=moved;
  }
@@ -59,7 +68,7 @@ void fragment(){
   if(world_point.z+0.25<front){discard;}
  }
  vec3 point=world_point-assembly_offset;
- float cycle=fract(phase/3.0);
+ float cycle=fract(phase/4.8);
  if(work_kind==2){
   vec2 r=point.xy-vec2(594.0,-340.0);
   float squared=dot(r,r);
@@ -74,23 +83,16 @@ void fragment(){
   opacity=0.025+rim*(0.12+0.22*strength);
  }else if(work_kind==2){
   float radius=length(point.xy-vec2(594.0,-340.0));
-  float charge=smoothstep(0.0,0.5,cycle);
-  float head=exp(-pow((radius-118.0*(1.0-charge))/21.0,2.0));
-  float heat=1.0-smoothstep(15.0,115.0,radius);
-  float fade=1.0-smoothstep(0.65,0.79,cycle);
-  color=mix(vec3(0.015,0.18,0.40),vec3(0.50,0.95,1.0),clamp(head*.65+heat*.45,0.0,1.0))*strength;
-  opacity=(0.06+head*.24+heat*charge*.10)*fade*pow(abs(facing_normal.z),0.7);
+  float charge=smoothstep(0.0,.43,cycle);
+  float head=exp(-pow((radius-118.0*(1.0-charge))/18.0,2.0));
+  color=vec3(.08,.46,.68)*strength;
+  opacity=(.025+head*.10)*(1.0-smoothstep(.60,.72,cycle))*pow(abs(facing_normal.z),.8);
  }else if(work_kind==3){
-  float facing=dot(facing_normal,normalize(vec3(-0.4,0.6,0.8)));
-  float charge=smoothstep(0.0,0.5,cycle);
-  float compression=smoothstep(0.5,0.65,cycle);
-  // Advected three-dimensional plasma cells, not a screen-space wave or
-  // concentric ripple. Density, normal and depth retain the confined volume.
-  float cells=sin(point.x*.071+point.z*.083+phase*1.2)*sin(point.y*.063-phase*.7)+sin(point.z*.091-point.x*.037+phase*.43)*.38;
-  float density=smoothstep(-.35,.75,cells);
-  float temperature=clamp(density*.50+max(0.0,facing)*.30+charge*.13+compression*.18,0.0,1.0);
-  color=mix(vec3(0.012,0.12,0.30),vec3(0.58,0.96,1.0),temperature)*strength;
-  opacity=(.18+density*.46+charge*.10)*(1.0-smoothstep(.68,.83,cycle)*.55)*smoothstep(.02,.35,abs(facing_normal.z));
+  float facing=max(0.0,dot(normalize(facing_normal),normalize(vec3(-.5,.6,.75))));
+  float charged=smoothstep(0.0,.43,cycle);
+  float release=1.0-smoothstep(.60,.76,cycle);
+  color=mix(vec3(.015,.13,.26),vec3(.18,.67,.85),facing*.75+charged*.15)*strength;
+  opacity=(.32+release*.20+charged*.06)*smoothstep(.01,.25,abs(facing_normal.z));
  }else if(work_kind==4){
   float radius=length(point.xy-vec2(1045.0,-177.0));
   float front=20.0+106.0*formation;
@@ -116,19 +118,30 @@ void fragment(){
   float face=max(0.0,dot(facing_normal,normalize(vec3(-0.6,0.4,0.8))));
   color=mix(vec3(0.13,0.035,0.28),base_color.rgb,0.35+face*0.65)*mix(0.65,1.0,strength);
  }else if(work_kind==7){
-  float progress=(cycle-0.75)/0.23;
-  float pulse=exp(-pow((UV.x-progress)*9.0,2.0))*step(0.75,cycle);
-  color=mix(vec3(0.005,0.08,0.14),vec3(0.35,0.96,1.0),pulse)*strength;
+  float progress=(cycle-.72)/.28*1.16-.08;
+  float distance=UV.x-progress;
+  float head=exp(-pow(distance/.085,2.0))*step(.72,cycle);
+  float tail=smoothstep(-.28,-.12,distance)*(1.0-smoothstep(-.08,.02,distance))*step(.72,cycle);
+  vec3 flow=vec3(.04,.72,.98)*tail+vec3(.96,1.0,1.0)*head;
+  color=mix(vec3(.003,.045,.075),flow,clamp(head+tail,0.0,1.0))*max(strength,.92);
  }else if(work_kind==9){
-  float compression=smoothstep(0.50,0.65,cycle);
-  float release=smoothstep(0.65,0.69,cycle)*(1.0-smoothstep(0.70,0.75,cycle));
-  float facing=max(0.0,dot(facing_normal,normalize(vec3(-0.4,0.6,0.8))));
-  vec3 nucleus=mix(vec3(0.20,0.55,0.75),vec3(0.85,1.0,1.0),facing);
+  float compression=smoothstep(.43,.60,cycle);
+  float release=smoothstep(.60,.64,cycle)*(1.0-smoothstep(.66,.72,cycle));
+  float facing=max(0.0,dot(facing_normal,normalize(vec3(-.4,.6,.8))));
+  vec3 nucleus=mix(vec3(.22,.58,.78),vec3(.82,.99,1.0),facing);
   color=mix(nucleus,vec3(1.0),compression*.55+release*.45)*strength;
-  opacity=smoothstep(0.01,0.50,abs(facing_normal.z));
+  opacity=smoothstep(.01,.50,abs(facing_normal.z));
  }else if(work_kind==10){
-  color=mix(vec3(0.12,0.62,0.9),vec3(0.70,1.0,1.0),max(0.0,facing_normal.z))*strength;
-  opacity=cycle<0.75 && (cycle<0.65 || outlet_enabled)?(point.z<100.0?0.45:0.95):0.0;
+  float facing=max(0.0,dot(facing_normal,normalize(vec3(-.4,.6,.8))));
+  vec3 dark=transfer_layer>0.0?vec3(.05,.40,.62):vec3(.015,.20,.36);
+  vec3 hot=transfer_layer>0.0?vec3(.80,1.0,1.0):vec3(.20,.74,.91);
+  color=mix(dark,hot,.20+facing*.80)*strength;
+  opacity=cycle<.72 && (cycle<.60 || outlet_enabled)?1.0:0.0;
+ }else if(work_kind==11){
+  float progress=(cycle-.72)/.28*1.16-.08;
+  float received=exp(-pow((progress-receiver_u)/.13,2.0))*step(.72,cycle);
+  color=vec3(.60,.96,1.0)*max(strength,.92);
+  opacity=received*.92;
  }else{
   color*=strength*(0.55+0.45*max(0.0,dot(facing_normal,normalize(vec3(-0.4,0.4,0.8)))));
  }
