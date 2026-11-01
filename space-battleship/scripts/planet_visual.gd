@@ -120,10 +120,10 @@ func _body_radius() -> float:
 	var available := maxf(1.0, minf(size.x, size.y) * 0.5 - 16.0)
 	# The orbital facility envelope extends beyond the globe. A large stellar
 	# radius must leave room for its built nodes at the module's left edge.
-	# The long beam is diagonal in this desktop framing; its full model extent
-	# overestimates the vertical reach. Use the visible projected envelope so
-	# the compact photosphere does not collapse inside its owned ring.
-	var beam_fit := 0.80 if float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("beamLength", 0.0)) > 0.0 else 1.0
+	# The beam's mathematical tip is already transparent. Fit its visible
+	# envelope, including the nearly vertical sweep phase, so the compact
+	# photosphere remains legible inside its owned ring.
+	var beam_fit := 0.88 if float(appearance.get("emission", 0.0)) > 0.0 and float(appearance.get("beamLength", 0.0)) > 0.0 else 1.0
 	return minf(minf(requested, size.x * 0.245), available / maxf(1.0, globe.extent * beam_fit))
 
 func _orbit_radius() -> float:
