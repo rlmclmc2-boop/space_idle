@@ -1,0 +1,23 @@
+{
+  "README.md": "59406612ed9db312b598eecb2732a7ebc337907f576e646cd63b25aec4820e32",
+  "consumption.json": "ccdc8b68a596c2c5757d2e5a0a61684c9a1bb4aa4b629f8488ce7cf526d1f23c",
+  "driver.gd.txt": "0d2d2cb1a14a065a23ec8baf55758d37a4218d50afa72647931756256a9ee989",
+  "run.log": "adb48a1fc6918f956bba9b1600819afd63f851de565f42ecaf262d3612832c49",
+  "settings-before.jpg": "843948aa125114d5cbd4c6556739ab15df7f05f608d6a048507f946783a4c01d",
+  "settings-before.png": "222132e665053aee473bad98e4188f117d643bfc880e65f129e58ae3e8e1f48e",
+  "ship-menu.json": "19c05d037870512c81cbfa25b1e0262c3254a4510d62dfe312a3dc17134dab5e",
+  "ship-selector-closed.jpg": "a6a0bb1f1880bf92f2beb8b617e93834e06e6c93fa9b87aa6892d271052a38d0",
+  "ship-selector-closed.png": "411c11c9fe7c3253648b57c8afda95d4409740c8dd6ffaf25f3c4308769493db",
+  "ship-selector-open.jpg": "7cd007ecbab14ffdb88950b0a850bec9b4eafd6ad87b367ac624f3188eef832e",
+  "ship-selector-open.png": "a3d2515b2c10fcf177f4e0163a48b0586d2a58061fb6453368a297bebe1b51c4",
+  "source.json": "66da65b57f2c239bf96d87973a6c5f44a8f522479132d4cc81aeaed28876852c",
+  "speed-click-open.jpg": "f18b201496574826314de497c33fb57ea32d839360c6df715c4cdfd95aa4a273",
+  "speed-click-open.png": "561293af8e10dbf619c8e10fa0053b7c089e8942c6f37a22a8299cd7695a93e8",
+  "speed-dismissed.jpg": "9bd8ef6768542f9a35785fcfded98480fae1d17e8d6b7cfe315f699bebca3421",
+  "speed-dismissed.png": "d5580c49f32dd5f223eb85d0ba47216f20bc017bc3ccd8a3a84562ac6b332551",
+  "speed-key-confirmed.jpg": "a46978ccf108dda2d0a8063f2903dff2e899c2397675d66c4a30ac3c53323438",
+  "speed-key-confirmed.png": "33dedbed6ed680b0b790278031fd567507dfe3428a218f4d1cee1b82e9456985",
+  "speed-key-highlight.jpg": "1e1a151a286c296a691787298ae2608c224d3090825d7daf9e48447e92091e58",
+  "speed-key-highlight.png": "2ffef2fb188fb529d80545eb9bf77edf5c262136722674f4e8d93fb66cde4f40",
+  "states.json": "d488258ea7c82b81bbf6f70fb93209f7e8720a49da1ab1bf52f1fca44977b1a2"
+}

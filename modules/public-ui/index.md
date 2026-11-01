@@ -49,3 +49,5 @@
 - [Unified whole-screen abstraction proposal](unified-abstraction-proposal-20261101/README.md): static art-direction candidate and asset scope after ec2cea75 rejection, pending choice.
 
 - [Approved faceted public source: first runtime implementation](faceted-public-implementation-20261101/README.md): b28a0be1 native controls, full-screen affected states and minimal module consumption map.
+
+- [Shared popup panel contour](faceted-popup-panel-20261101/README.md): 9034af81 actual speed/ship menus use one cut-corner panel source.

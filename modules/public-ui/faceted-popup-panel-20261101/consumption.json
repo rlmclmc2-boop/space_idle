@@ -1,0 +1,17 @@
+{
+  "source_commit": "9034af815abc0883ba47e4df21c15163a4515c30",
+  "module_required_paths": [
+    "space-battleship/src/ui/bridge_theme.gd",
+    "space-battleship/assets/ui/public_shell/faceted-controls.svg"
+  ],
+  "baseline_public_assets_commit": "b28a0be19139298bd666df040be317fa1dcff2bf",
+  "existing_dependency_paths": [
+    "assets/fonts/NotoSansSC.ttf",
+    "assets/ui/public_shell/stepper-down.svg",
+    "assets/ui/public_shell/stepper-pair.svg",
+    "assets/ui/public_shell/stepper-pair-disabled.svg",
+    "assets/ui/dialog/radio-on.svg",
+    "assets/ui/dialog/radio-off.svg"
+  ],
+  "interfaces": "Same apply_operation_button/select and operation_plate(light/dark), including plate.state. Explicit and inherited PopupMenu paths now share the panel face."
+}

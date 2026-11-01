@@ -1,0 +1,7 @@
+{
+  "explicit_menu_theme": false,
+  "menu_rect": "[P: (16, 424), S: (750, 168)]",
+  "panel_class": "StyleBoxTexture",
+  "panel_region": "[P: (256.0, 96.0), S: (256.0, 192.0)]",
+  "route": "ship"
+}

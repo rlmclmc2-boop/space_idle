@@ -1,0 +1,63 @@
+{
+  "source_commit": "9034af815abc0883ba47e4df21c15163a4515c30",
+  "changed_path": "space-battleship/src/ui/bridge_theme.gd",
+  "source_blob": "2783fad5744a78ad026bb5115141131ad76c463e",
+  "images": [
+    {
+      "png": "settings-before.png",
+      "jpeg": "settings-before.jpg",
+      "width": 1440,
+      "height": 900,
+      "quality": 97,
+      "bytes": 379823
+    },
+    {
+      "png": "ship-selector-closed.png",
+      "jpeg": "ship-selector-closed.jpg",
+      "width": 1440,
+      "height": 900,
+      "quality": 97,
+      "bytes": 363288
+    },
+    {
+      "png": "ship-selector-open.png",
+      "jpeg": "ship-selector-open.jpg",
+      "width": 1440,
+      "height": 900,
+      "quality": 97,
+      "bytes": 367553
+    },
+    {
+      "png": "speed-click-open.png",
+      "jpeg": "speed-click-open.jpg",
+      "width": 1440,
+      "height": 900,
+      "quality": 97,
+      "bytes": 416358
+    },
+    {
+      "png": "speed-dismissed.png",
+      "jpeg": "speed-dismissed.jpg",
+      "width": 1440,
+      "height": 900,
+      "quality": 97,
+      "bytes": 374841
+    },
+    {
+      "png": "speed-key-confirmed.png",
+      "jpeg": "speed-key-confirmed.jpg",
+      "width": 1440,
+      "height": 900,
+      "quality": 97,
+      "bytes": 380007
+    },
+    {
+      "png": "speed-key-highlight.png",
+      "jpeg": "speed-key-highlight.jpg",
+      "width": 1440,
+      "height": 900,
+      "quality": 97,
+      "bytes": 419231
+    }
+  ]
+}
