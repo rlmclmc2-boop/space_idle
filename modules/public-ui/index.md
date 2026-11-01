@@ -40,3 +40,6 @@
 - [2026-11-01 R12 shared-shell 2/3-route controlled full screens](e845-r12-two-three-controlled-20261101/README.md): current-source zero and Owner-load static states; author evidence only.
 
 - [2026-11-01 R12 actual pointer route and resource handoff](e845-r12-pointer-handoff-20261101/README.md): 19 event-phase original screens, hidden-stage lifecycle; author evidence only.
+
+- [Settings speed select actual-click handoff](settings-speed-select-handoff-20261101/README.md): scoped five-screen author evidence from 9838e1e7.
+- [f7d3 descending-sluice shared host](f7d3-sluice-shared-20261101/README.md): fixed 94fb2019 full screens and actual 1x short capture; author observations only.

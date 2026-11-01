@@ -1,0 +1,29 @@
+{
+  "budget_changed": false,
+  "drawn_delta": 138,
+  "drawn_end": 219,
+  "drawn_start": 81,
+  "game_time_delta": 10.3833333333334,
+  "game_time_end": 10.3833333333334,
+  "game_time_start": 0.0,
+  "pause_reasons_end": {},
+  "resource_text_end": [
+    "0",
+    "0",
+    "0"
+  ],
+  "route_end": "reactor",
+  "running_end": true,
+  "source": "94fb201916792ca2b3b4677cdb43dbfd6e499fad",
+  "stage_loads_end": {
+    "condensation": 0.25,
+    "core": 1.0,
+    "defence": 0.25,
+    "smelting": 0.25,
+    "weapons": 0.25
+  },
+  "time_scale": 1.0,
+  "wall_end_us": 21389771,
+  "wall_seconds": 11.07666,
+  "wall_start_us": 10313111
+}
