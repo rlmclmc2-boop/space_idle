@@ -1,0 +1,9 @@
+# Approved thin orbit facility proportions — source 3da415ca74053cdc4f896925a3d04811c278b5a5
+
+Approved drawing: `archive/planet-resume-20261101@032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/planet-ring.png`, SHA256 `453078f9be47b45d1cffb809352470feb21f769fc18d5fdfeb640f4cf602e572`.
+
+`main-page.jpg` is the actual Godot 4.7.2 full page, four facilities built with the facility drawer open. `approved-vs-game-subject.jpg` compares the drawing and a game subject crop at approximately equal globe diameters. `stage-1.jpg` to `stage-4.jpg` show independent construction using the existing memory visual fixture, not natural unlock. `normal-speed-6s.mp4` is 90 real frames at 15 fps, showing the globe, rail and track-constrained tram. `concept.jpg` is the Blender author render. Build, export, import and capture logs are included.
+
+The manufacturing architecture is now 80% of its former horizontal footprint without shrinking its owned fine track. Its work deck, sidewall and guide rails have a straight platform profile with compact track collars, gantry and cargo work area. The shipyard now has a complete plated berth, service modules and a larger visible docked shuttle. The four facilities, independent construction, business/UI interfaces and large thin orbital loop remain. The solid globe has stronger cloud/rim treatment and a restrained blue space glow. Godot reported no script or parse errors; ALSA ERR_CANT_OPEN is caused by the missing sound device and falls back to dummy audio.
+
+At the same globe size, the core facility placement and mass are closer to the approved drawing. The game's surface map, nebula and fine facility panel work remain much simpler than the painted reference. This is an author candidate for shared-host review, not user acceptance or main integration.
