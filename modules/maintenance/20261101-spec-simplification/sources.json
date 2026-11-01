@@ -1,0 +1,26 @@
+{
+  "main": {
+    "branch": "main",
+    "source": "61bde20c1d96167624379ceed41cb0293bb00119"
+  },
+  "reactor": {
+    "branch": "implement/reactor-centered-godot",
+    "source": "820a2ef0284c5d52abd7dadd572e26e3c995e894"
+  },
+  "host": {
+    "branch": "design/clear-zone-host",
+    "source": "dce746972a8b4b681bd585d800d6ab97654a324c"
+  },
+  "planet": {
+    "branch": "feat/planet-single-side-ui",
+    "source": "c46c1b2e6d3470b972b0f6444900dc3373a8335e"
+  },
+  "backend": {
+    "branch": "feat/amount-safe-previews",
+    "source": "3dd45f5761d04251bb55478c34898781f8a4d0c3"
+  },
+  "equipment": {
+    "branch": "art/equipment-materials-main-20261029",
+    "source": "fb28b60ef8b35c236b15bedb4590dffbc1e7b556"
+  }
+}
