@@ -14,6 +14,7 @@ const IDS := ["weapons","defence","smelting","condensation"]
 const SOURCE_SIZE:=Vector2(1187.0,1326.0)
 const VIEW_SIZE:=Vector2(808.0,835.0)
 const SOURCE_SCALE: float=835.0/1326.0
+const SOURCE_LIGHT_GAIN: float=100.0 # Geometry is authored in source pixels, not metres.
 const SOURCE_OFFSET:=Vector2((808.0-1187.0*SOURCE_SCALE)*.5,0)
 var _layout: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/reactor/b01/faceted-layout.json"))
 var _plasma_info: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/reactor/b01/plasma-volume.json"))
@@ -23,6 +24,7 @@ var _baker: SubViewport
 var _asset: Node3D
 var _environment: Environment
 var _core_lamp: OmniLight3D
+var _work_lamps: Dictionary={}
 var _background: ColorRect
 var _background_material: ShaderMaterial
 var _palette: Dictionary={}
@@ -109,7 +111,7 @@ func _init() -> void:
 		var luminaire:=OmniLight3D.new()
 		luminaire.position=Vector3(x,-78.0,180.0)
 		luminaire.light_color=Color("ffb969")
-		luminaire.light_energy=1.05
+		luminaire.light_energy=1.05*SOURCE_LIGHT_GAIN
 		luminaire.omni_range=650.0
 		luminaire.omni_attenuation=1.8
 		luminaire.shadow_enabled=true
@@ -123,6 +125,18 @@ func _init() -> void:
 	_core_lamp.shadow_enabled=true
 	_core_lamp.shadow_opacity=.72
 	_baker.add_child(_core_lamp)
+	# Local work light is sampled against the real metal/lining and shadow
+	# geometry only at installation time. Allocation changes mix those samples.
+	for id in ["defence","smelting"]:
+		var lamp:=OmniLight3D.new()
+		lamp.light_color=Color("64cfff") if id=="defence" else Color("ff9a36")
+		lamp.light_energy=0.0
+		lamp.omni_range=330.0 if id=="defence" else 310.0
+		lamp.omni_attenuation=1.35
+		lamp.shadow_enabled=true
+		lamp.shadow_opacity=.72
+		_baker.add_child(lamp)
+		_work_lamps[id]=lamp
 	_outline_material=ShaderMaterial.new()
 	_outline_material.shader=OUTLINE
 	_asset=MODEL.instantiate()
@@ -173,6 +187,13 @@ func _kind(title: String) -> int:
 	if "weapon charge segment" in title or "weapon output" in title:return 8
 	return 0
 
+func _installation_frame(id: String) -> Transform3D:
+	var frame: Dictionary=_layout.work_frames[id]
+	var axes: Array[Vector3]=[]
+	for column in frame.basis_columns:axes.append(Vector3(column[0],column[1],column[2]))
+	var origin: Array=frame.origin
+	return Transform3D(Basis(axes[0],axes[1],axes[2]),Vector3(origin[0],origin[1],origin[2]))
+
 func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	var title: String=String(node.name).replace("_"," ")
 	var kind: int=_kind(title)
@@ -204,12 +225,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	var author_from_source:=Transform3D.IDENTITY
 	var source_from_author:=Transform3D.IDENTITY
 	if kind in [4,5,6]:
-		var frame: Dictionary=_layout.work_frames[key]
-		var columns: Array=frame.basis_columns
-		var axes: Array[Vector3]=[]
-		for column in columns:axes.append(Vector3(column[0],column[1],column[2]))
-		var raw_origin: Array=frame.origin
-		source_from_author=Transform3D(Basis(axes[0],axes[1],axes[2]),Vector3(raw_origin[0],raw_origin[1],raw_origin[2]))
+		source_from_author=_installation_frame(key)
 		author_from_source=source_from_author.affine_inverse()
 	node.visible=false
 	var part:=Node2D.new()
@@ -389,6 +405,9 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 		if material.has_meta("outlet"):material.set_shader_parameter("outlet_enabled",str(material.get_meta("outlet")) in ids)
 	for mechanism in _mechanisms.core:mechanism.node.visible=core_load>0.0 or mechanism.kind==1
 	_update_core_light()
+	for id in _work_lamps:
+		var power: float=visibility_power(float(loads.get(id,0.0))) if id in ids else 0.0
+		_background_material.set_shader_parameter(id+"_power",sqrt(power))
 	if availability_changed:_refresh_bake(ids)
 	_animate_mechanisms()
 	diagnostics.field_updates+=1
@@ -411,8 +430,15 @@ func _refresh_bake(ids: Array) -> void:
 	for group in _asset.get_children():
 		var key: String=String(group.name)
 		group.visible=_group_visible(key,ids)
-	_core_lamp.position=Vector3(594.0,-340.0,235.0)+_asset.get_node("core").position
+	_core_lamp.position=Vector3(594.0,-340.0,320.0)+_asset.get_node("core").position
 	_core_lamp.light_energy=0.0
+	for id in _work_lamps:
+		var lamp: OmniLight3D=_work_lamps[id]
+		var author_point:=Vector3(1090,-177,160) if id=="defence" else Vector3(177,-555,170)
+		lamp.position=_installation_frame(id)*author_point+_asset.get_node(NodePath(id)).position
+		lamp.light_energy=0.0
+		var image_center:=source_point(Vector2(lamp.position.x,-lamp.position.y))
+		_background_material.set_shader_parameter(id+"_light_bounds",Vector3(image_center.x,image_center.y,lamp.omni_range*SOURCE_SCALE))
 	_baker.msaa_3d=Viewport.MSAA_2X
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	_finish_bake(generation)
@@ -425,13 +451,31 @@ func _finish_bake(generation: int) -> void:
 	_background_material.set_shader_parameter("resting_surface",resting)
 	_background_material.set_shader_parameter("working_surface",resting)
 	_background.material=_background_material
-	_core_lamp.light_energy=1.65
+	_core_lamp.light_energy=4.20*SOURCE_LIGHT_GAIN
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	await RenderingServer.frame_post_draw
 	await get_tree().process_frame
 	if generation!=_cache_generation:return
 	var working:=ImageTexture.create_from_image(_baker.get_texture().get_image())
 	_background_material.set_shader_parameter("working_surface",working)
+	_core_lamp.light_energy=0.0
+	var local_surfaces:=Image.create(int(VIEW_SIZE.x)*2,int(VIEW_SIZE.y),false,Image.FORMAT_RGBA8)
+	var resting_image: Image=resting.get_image()
+	for index in 2:
+		var id: String=["defence","smelting"][index]
+		var sample: Image=resting_image
+		if id in _enabled:
+			var lamp: OmniLight3D=_work_lamps[id]
+			lamp.light_energy=(1.85 if id=="defence" else 3.20)*SOURCE_LIGHT_GAIN
+			_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
+			await RenderingServer.frame_post_draw
+			await get_tree().process_frame
+			if generation!=_cache_generation:return
+			sample=_baker.get_texture().get_image()
+			lamp.light_energy=0.0
+			diagnostics.cache_renders+=1
+		local_surfaces.blit_rect(sample,Rect2i(Vector2i.ZERO,Vector2i(VIEW_SIZE)),Vector2i(index*int(VIEW_SIZE.x),0))
+	_background_material.set_shader_parameter("local_surfaces",ImageTexture.create_from_image(local_surfaces))
 	for outline in _outlines:outline.visible=false
 	var depth_material:=ShaderMaterial.new()
 	depth_material.shader=DEPTH
