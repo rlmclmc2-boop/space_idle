@@ -1,42 +1,43 @@
 # 公共壳制作交接
 
-规范入口：[公共美术](../../../game-design/13-art-interaction.md)、[星球M7](../../../game-design/art/modules/planet.md)、[反应堆资产接口](../../../game-design/art/modules/reactor-asset-contract.md)。
+规范入口：[公共美术](../../../game-design/13-art-interaction.md)、[星球M7](../../../game-design/art/modules/planet.md)、[反应堆资产接口](../../../game-design/art/modules/reactor-asset-contract.md)。本人直接执行，不使用子智能体。
 
-## 当前版本
+## 当前版本与同源证据
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `34836efd`（公共承载ee0e2ff1），未合main。
-- 星球来源 `f013a72609aaba77ac666874a3108eae89dc1395`：facilities_v9四GLB、planet_facility_scene.gd/planet_orbital_spine.gd、nebula/rotating两个shader及cloud-density云图九件同blob；planet_visual保留公共整组包络并分开环境矩形，planet_panel保持主体安全区和e7591438业务/UI修复。
-- 反应堆当前已接入 `b9afb41cd34e43372f83f438716a234b3a93edbf`（交接c18480e9）的十四件installation闭包，逐blob同源。公共主题9034af81、main e845装备、公共宿主/导航和战场空间保持。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `b43a3da6`，未合main。
+- 反应堆 `0e5ce0067d5d5ffa7a31768e8bdd6835b468eebc` 的十四件installation闭包逐blob同源，包含私有GLB、Stage、shader及metadata；Owner/原生控件不替换。源交接df65d3d6；installation在 `archive/reactor-material-refinement-20261101@d3f1bdd3:modules/reactor/material-refinement-20261101/installation.json`。
+- 星球 `eedde803682672187a0fd5977159a085e1adf6b5` 的四GLB、设施场景/轨道、两个shader及cloud-density云图九件逐blob同源。planet_visual保留整组包络与独立环境矩形，planet_panel保留主体安全区及业务/UI修复。
+- 本轮仅11件生产文件变化：反应堆7件、星球4件。公共承载ee0e2ff1、主题9034af81、最终装备main e845、main/Owner、导航及战斗空间保持。
 
-## 星球当前批准稿与下一项
+同版整页与动态：`archive/design-docs-before-cleanup-20261031@577bf4557cb958217cd36968beb78f9116b0ddd3:modules/public-ui/reactor-material-planet-couplers-shared-20261101/README.md`。reactor/与planet/各五张1440×900原PNG/同尺寸高质量JPEG，各有两段6秒180帧视频、640KiB无损分片/哈希、逐帧总览及author-review.md；source.json记录精确闭包/保留文件。批准原图的格式转换与星球约等球径对照同存。
 
-制作依据：`archive/planet-resume-20261101@032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/index.md`，同目录 `planet-ring.png`（SHA256 `453078f9be47b45d1cffb809352470feb21f769fc18d5fdfeb640f4cf602e572`）。用户已批准按此图接入游戏，原星球组制作中。
+导入与运行成功。作者亲看十张完整页面、四段共720帧总览及代表原尺寸帧；录制采用MovieMaker离线30fps，显示/工作时钟1×。反应堆为受控四路及单炼铁Owner参数、实际鼠标均分/返回装备；星球为受控星球1/探索240/四设施已建、固定业务快照和连续显示动画。证据覆盖见驱动与segment，不把工作片段写成此前点击瞬间覆盖。本轮没有追加性能或未改购买状态复测。
 
-当前按批准图还原大直径细环、四设施体量、接合/材质与共同受光。f013a726更新四GLB及设施局部受光脚本：指挥台双层占用舱/窗带、制造工作井/暖光、船坞暗通道与局部照明。原组仍继续端接和面板细化，不等用户。
+## 当前整页判断与接续
 
-同壳34836efd精确接入上述五件变化，九件星球闭包逐blob同源；保留c666固定环境y65..900、主体min(高×0.21,宽×0.135)包络和源稿光学中心。planet_panel、Owner/业务/UI修复、公共控件及反应堆b9现场保持。当前无需新的公共位置或几何修正。
+### 反应堆
 
-证据：`archive/design-docs-before-cleanup-20261031@b4cedaa0b667760fdb39a1e9c0fa7b45da1ea831:modules/public-ui/planet-material-light-shared-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、约等球径对照，总览和设施展开各6秒180连续帧及分片/哈希。受控星球1/探索240/四设施已建，业务快照固定、显示动画1×；MovieMaker离线30fps。
+制作依据为获准1586×992共同图：`24db2a9c:modules/public-ui/unified-abstraction-proposal-20261101/whole-game-style-concept.png`。当前已接分件/六类材质/核心局部反光源；原组仍继续整体还原，不等用户。
 
-作者亲看五整页、全部360帧总览/代表原尺寸帧及批准图同尺度对照。指挥台两层窗带、制造暖光与船坞暗腔已进入整页，所看公共边界/底台关系与连续转动未新增裁切或跳变。整体仍未完整还原：前设施的大浅面与重复块件占主导；制造区亮梁和泛黄装甲抢过工作井，泊位/载具及内腔机械层次不足；后方建筑端接偏粗、金顶与舱体层次简化；背景仍偏宽模糊蓝团。前弧电车可辨，远弧/详情展开后较弱。具体当前判断见author-review.md。本版仍是制作中间稿，不交用户确认，继续取原组端接/面板固定更新整页重看。
+本轮整页未见公共梁/导航与模块新增相交或截字，均分、数量/升级留在原台面；武器筒、盾环厚壳、炉口返回与前收集槽已有分件。整体仍未达到原图：深舱/回壁/地面透视较弱，管道圆截面与套筒厚度不足，装甲/内腔受光仍偏均匀色面和硬黑边。核心有汇入/缩紧/散开，亮包沿管到设备，但大部分观看仍像椭圆平场加小晶体，盾面/铁流/晶体腔的体积与相邻反光还不够。单路主体/短台留空和重心需连同场景看，满载100%在滑条左端而其他百分比在右端，读数锚点仍需原组统一。具体接续见reactor/author-review.md，不以分件、接口或材质角色存在判整体完成。
 
-## 反应堆当前制作与公共接续
+原组性能日志已读：首轮异常与后续有界软件复核均保留。当前离线采集无阻止交付的运行错误，但不能据此认定异常消除或目标机性能通过；目标环境同构建/同战场显示与关闭基线仍缺。
 
-反应堆由原组按获准1586×992共同图整体制作中。当前47e385ee是体块中间版同壳接入，不作为完整确认稿。原组继续设备分件、材质反射与核心受光。
+### 星球
 
-本轮同源证据：`archive/design-docs-before-cleanup-20261031@e73578cdc563e6be122c54534b881493540f811d:modules/public-ui/reactor-spatial-shared-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG，四路与单路零载/带载、装备返回；两段各6秒180连续帧的真实Session1×工作片段及无损分片/哈希。模块数/钱包受控，单路使用Reactor Owner参数；原生鼠标均分和回装备实际执行。MovieMaker固定30fps离线采集，不作性能结论，不把工作片段冒充点击瞬间覆盖。
+唯一批准稿：`archive/planet-resume-20261101@032b2f184da0932574b1e08fc091c294cc397875:approved-design-20261101-thin-orbit/index.md`，同目录planet-ring.png，SHA256 `453078f9be47b45d1cffb809352470feb21f769fc18d5fdfeb640f4cf602e572`。
 
-整页作者判断与原组具体接续在同目录author-review.md：公共梁/导航和模块边界未见新增相交，核心基座/设备座的承托更明确；但深舱透视、设备厚壳与内腔受光、粗管圆截面、核心能量体积仍未尽可能还原原图，与当前装备机库的材质完成度仍有明显差距。单路主体/短台与留空需整体校准，100%在滑轨左端而零载/四路在右端的读数锚点差异需原组修正。公共层保持原有完整承载，不向模块内叠遮盖框；新材质和主体固定后继续同壳整页判断，不等用户。
+本轮双层指挥窗、下部承力舱、端接套及前工位分段已进入公共整页。公共环境固定y65..900，主体min(高×0.21,宽×0.135)整组包络及源光学中心保持；人员/设施/征服不同高度操作台下未见新增裁切、碰顶栏或压台，所看转动序列无布局跳变。
 
-公共承载适配已固定ee0e2ff1：资源栏替换为单一完整承载梁，移除独立标题牌控件和title-plaque.svg，导航面按完整竖脊排布。保持模块x0..808、顶栏y0..65、导航x808..855.875和原战斗投影。装备原有y65..85空白接续保留；模块组拥有y65以下舱室/台体，公共组不在内部叠新框。新舱室上边/右边应以真实结构面和接触阴影接到公共梁体，光源与共同图一致；下方控制台自身的厚度/侧壁由原反应堆组连同主体完成。
+按批准图同球径，前设施仍以大浅装甲面和重复块件主导，泊位/载具、制造井内机械及内壁深度不足；亮长梁和泛黄装甲抢过暗色作业井，局部暖光尚需聚焦。后方舱体端接/窗带/桅杆和金顶接触细节仍简化，背景宽模糊蓝云未还原细密气体层。近弧电车可辨，远弧/展开后较弱。原组继续前设施内件、面板与受光，不以接口补齐判整体完成；具体见planet/author-review.md。
 
-公共同源证据：`archive/design-docs-before-cleanup-20261031@33ace275:modules/public-ui/structural-carrier-20261101/README.md`。八张1440×900原屏/同尺寸JPEG，两方向原生鼠标hover→按住→释放共2.4秒72连续帧、哈希、驱动及完整作者判断。长余额1.2e22/999.9kt可读；当前所看文字/图标和释放后的路由对应。当前是公共适配候选，须与反应堆新成套舱室复看，不作为整体还原/通过。
+## 公共接入边界与下一步
 
-原组可精确消费的公共差异为 `src/ui/zone_shell.gd` 及 `assets/ui/public_shell/command-rail.svg`、`navigation-spine.svg`、`nav-idle.svg`、`nav-hover.svg`、`nav-active.svg`（均位于space-battleship）；移除旧title-plaque.svg。BridgeTheme API、main、Owner、模块内部和战斗投影未改。造型依据与承托要求在13§2.1“共同图形依据”，不是另立风格规范。
+公共资源栏为单一完整承载梁，导航为完整竖脊；模块x0..808、顶栏y0..65、导航x808..855.875及原战斗投影保持。公共组不在y65以下叠框遮盖，模块的舱室/台体以真实侧面、端接和接触受光接到公共结构。装备现有y65..85接续及已完成操作结构保持。
 
-## 独立剩余项
+可消费公共源ee0e2ff1：`src/ui/zone_shell.gd`，`assets/ui/public_shell/command-rail.svg`、`navigation-spine.svg`、`nav-idle.svg`、`nav-hover.svg`、`nav-active.svg`（均在space-battleship），删除旧title-plaque.svg。BridgeTheme API与Owner不改；设计要求归13，不在交接另立规范。
 
-1. 公共适配ee0e2ff1已完成本轮实机检查和固定交接，供原反应堆组接续新舱室；当前无新增明确公共控件缺陷，不以本轮有限状态宣称全局通过。
-2. 反应堆b9体块中间版已接入并交当前整页差距；原组继续设备分件/材质反射/核心光及单路布局，固定新源后继续同壳整页还原判断。
-3. 星球f013占用舱体/局部受光版已接入，依赖已齐并固定同壳整页/动态；公共环境与主体适配保持，原组继续端接、面板分件及材质受光，不交中间稿验收。
-4. 目标机性能仍缺同构建、同战场显示/关闭基线，不用软件环境观察替代，不新增无关复测或合main。
+1. 本轮闭包接入、必要运行整页/动态与固定交接已完成；当前无新增明确公共几何缺陷，不以此宣称整体美术通过。
+2. 反应堆原组继续完整体积/材质/工作过程与单路布局，固定更新后精确消费并重看公共整页。
+3. 星球原组继续前设施内件、局部光聚焦与面板材质，固定更新后按批准图复看完整页面。
+4. 目标机性能依赖单列，当前无同条件目标环境基线，不用离线记录或软件观察替代，不新增无关复测或合main。
