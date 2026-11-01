@@ -7,6 +7,7 @@ uniform vec3 assembly_offset=vec3(0.0);
 uniform vec3 transfer_target=vec3(594.0,-340.0,28.0);
 uniform float transfer_layer=1.0;
 uniform float receiver_u=0.8;
+uniform float powered_at=0.0;
 uniform bool outlet_enabled=true;
 uniform float load_fraction=0.0;
 uniform float formation=1.0;
@@ -77,6 +78,15 @@ void fragment(){
 
  float strength=load_fraction>0.0?mix(0.58,1.0,sqrt(load_fraction)):0.0;
  vec3 color=base_color.rgb;float opacity=1.0;
+ float received_age=1.0;
+ float response=0.0;
+ if((work_kind==4 && work_zone==0) || (work_kind==5 && work_zone==1) || work_kind==6 || (work_kind==8 && work_zone==1) || work_kind==11){
+  float arrival=.72+.28*(receiver_u+.08)/1.16;
+  float elapsed=phase/4.8-arrival;
+  float event_time=(floor(elapsed)+arrival)*4.8;
+  if(elapsed>=0.0 && event_time+0.001>=powered_at){received_age=fract(elapsed);}
+  response=smoothstep(.045,.085,received_age)*(1.0-smoothstep(.13,.22,received_age));
+ }
  if(work_kind==1){
   float rim=pow(1.0-abs(facing_normal.z),2.0);
   color=mix(vec3(0.01,0.12,0.22),vec3(0.05,0.65,0.9),rim);
@@ -101,12 +111,19 @@ void fragment(){
   float rim=smoothstep(front-12.0,front-4.0,radius);
   opacity=work_zone==1?mask*(0.10+panel*0.45+rim*0.28):0.6;
   color=mix(vec3(0.035,0.42,0.65),vec3(0.30,0.90,1.0),panel+rim*0.4)*strength;
+  if(work_zone==0){color=mix(color,vec3(.65,.97,1.0),response*.70);}
  }else if(work_kind==5){
   float face=max(0.0,dot(facing_normal,normalize(vec3(-0.2,0.6,1.0))));
   float thermal=face*0.50+0.12;
   if(work_zone==1){thermal=clamp(1.0-length((point.xy-vec2(175.0,-501.0))/vec2(55.0,38.0)),0.0,1.0);}
   else if(work_zone==2){thermal=clamp(1.0-length((point.xy-vec2(175.0,-594.0))/vec2(78.0,38.0)),0.0,1.0);}
   color=mix(vec3(0.34,0.045,0.008),vec3(1.0,0.76,0.20),thermal)*strength;
+  if(work_zone==1){
+   float travel=clamp((received_age-.045)/.10,0.0,1.0);
+   vec2 impact=mix(vec2(210.0,-490.0),vec2(175.0,-504.0),travel);
+   float reaction=1.0-smoothstep(.35,1.0,length((point.xy-impact)/vec2(28.0,18.0)));
+   color+=vec3(.55,.43,.14)*reaction*response;
+  }
   // Transport highlights stay inside the actual falling stream / outlet.
   // The furnace throat and catch pool never receive a scrolling wave layer.
   if(work_zone==0 || work_zone==3){
@@ -117,6 +134,8 @@ void fragment(){
  }else if(work_kind==6){
   float face=max(0.0,dot(facing_normal,normalize(vec3(-0.6,0.4,0.8))));
   color=mix(vec3(0.13,0.035,0.28),base_color.rgb,0.35+face*0.65)*mix(0.65,1.0,strength);
+  float seed=1.0-smoothstep(8.0,38.0,abs(point.y+592.0));
+  color=mix(color,vec3(.75,.55,1.0),seed*response*.75);
  }else if(work_kind==7){
   float progress=(cycle-.72)/.28*1.16-.08;
   float distance=UV.x-progress;
@@ -138,12 +157,15 @@ void fragment(){
   color=mix(dark,hot,.20+facing*.80)*strength;
   opacity=cycle<.72 && (cycle<.60 || outlet_enabled)?1.0:0.0;
  }else if(work_kind==11){
-  float progress=(cycle-.72)/.28*1.16-.08;
-  float received=exp(-pow((progress-receiver_u)/.13,2.0))*step(.72,cycle);
-  color=vec3(.60,.96,1.0)*max(strength,.92);
-  opacity=received*.92;
+  float fill=smoothstep(0.0,.06,received_age);
+  float envelope=smoothstep(0.0,.012,received_age)*(1.0-smoothstep(.15,.22,received_age));
+  float lit=1.0-smoothstep(fill-.08,fill+.02,UV.x);
+  float leading=exp(-pow((UV.x-fill)/.10,2.0));
+  color=mix(vec3(.04,.62,.86),vec3(.90,1.0,1.0),leading)*max(strength,.92);
+  opacity=envelope*lit*.95;
  }else{
   color*=strength*(0.55+0.45*max(0.0,dot(facing_normal,normalize(vec3(-0.4,0.4,0.8)))));
+  if(work_kind==8 && work_zone==1){color=mix(color,vec3(1.0,.90,.48),response*.48);}
  }
  if(work_kind!=1 && load_fraction<=0.0){opacity=0.0;}
  if(work_kind==3){opacity*=smoothstep(0.01,0.15,abs(facing_normal.z));}
