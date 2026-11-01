@@ -79,7 +79,7 @@ func _ready() -> void:
 	# Set the entire tilted construction plane below the globe's visual center.
 	# This keeps a dark gap under the sphere and lets its depth mask occlude the
 	# far band, matching the original complete-state drawing.
-	_spine.position.y = -1.45
+	_spine.position.y = -0.80
 	var sphere := SphereMesh.new()
 	sphere.radius = _radius
 	sphere.height = _radius * 2
