@@ -4,6 +4,7 @@ signal route_requested(id: String)
 const BridgeTheme = preload("res://src/ui/bridge_theme.gd")
 const PlayerText = preload("res://src/ui/player_text.gd")
 const ResourceVisuals = preload("res://src/ui/resource_visuals.gd")
+const NAVIGATION_SPINE = preload("res://assets/ui/public_shell/navigation-spine.svg")
 const TOP_RAIL = preload("res://assets/ui/public_shell/command-rail.svg")
 const STATUS_IDLE = preload("res://assets/ui/public_shell/status-idle.svg")
 const STATUS_ALERT = preload("res://assets/ui/public_shell/status-alert.svg")
@@ -54,17 +55,7 @@ func _init(economy) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = BridgeTheme.create()
 	theme.set_stylebox("panel", "PopupPanel", BridgeTheme.public_panel())
-	var context_back := NinePatchRect.new()
-	context_back.texture = preload("res://assets/ui/public_shell/title-plaque.svg")
-	context_back.set_patch_margin(SIDE_LEFT, 12)
-	context_back.set_patch_margin(SIDE_RIGHT, 12)
-	context_back.set_patch_margin(SIDE_TOP, 12)
-	context_back.set_patch_margin(SIDE_BOTTOM, 12)
-	context_back.position = Vector2(18, 12)
-	context_back.size = Vector2(148, 41)
-	context_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(context_back)
-	_context = _label("装备", Rect2(28, 12, 128, 41), 20, TEXT)
+	_context = _label("装备", Rect2(28, 12, 128, 41), 22, TEXT)
 	_context.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_context.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	for index in 3:
@@ -73,12 +64,12 @@ func _init(economy) -> void:
 		var resource_id: String = ["1", "2", "chrono"][index]
 		mark.texture = ResourceVisuals.icon(resource_id)
 		mark.modulate = ResourceVisuals.icon_modulate(resource_id)
-		mark.position = Vector2(spec[0] + 10, 24)
-		mark.size = Vector2(17, 17)
+		mark.position = Vector2(spec[0] + 10, 22)
+		mark.size = Vector2(20, 20)
 		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(mark)
 		# The icon carries the resource name; give the Amount's visible order room.
-		var cell := _label("", Rect2(spec[0] + 34, 12, spec[1] - 30, 41), 16, TEXT)
+		var cell := _label("", Rect2(spec[0] + 34, 12, spec[1] - 30, 41), 18, TEXT)
 		cell.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		cell.clip_text = true
 		cell.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -94,17 +85,17 @@ func _init(economy) -> void:
 	resources.pressed.connect(_show_balances)
 	for index in ROUTES.size():
 		var spec: Array = ROUTES[index]
-		var button := _button("", Rect2(813, 93 + index * 90, 37, 70), true)
+		var button := _button("", Rect2(813, 85 + index * 90, 37, 86), true)
 		BridgeTheme.apply_route_button(button, false)
 		var mark := TextureRect.new()
 		mark.texture = ROUTE_ICONS[index]
-		mark.position = Vector2(9, 10)
+		mark.position = Vector2(9, 17)
 		mark.size = Vector2(19, 19)
 		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(mark)
 		var caption := Label.new()
 		caption.text = str(spec[1])
-		caption.position = Vector2(3, 37)
+		caption.position = Vector2(3, 46)
 		caption.size = Vector2(31, 22)
 		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -161,11 +152,13 @@ func _draw() -> void:
 	# No decorative battle extension: the right band remains available to its owner.
 	draw_rect(Rect2(1392.125, 0, 47.875, 900), Color("101f30"))
 	draw_rect(Rect2(1392, 0, 1, 900), EDGE)
-	draw_rect(Rect2(808, 0, 47.875, 900), Color("101f30"))
-	draw_rect(Rect2(808, 0, 2, 900), EDGE)
-	draw_rect(Rect2(854, 0, 2, 900), Color("3e556a"))
-	# The approved hangar art starts at y=85; the rail occupies only its blank top margin.
-	draw_texture_rect(TOP_RAIL, Rect2(0, 0, 808, 85 if _active_route == "equipment" else 65), false)
+	draw_texture_rect(NAVIGATION_SPINE, Rect2(808, 0, 47.875, 900), false)
+	# Replace the flat rail and separate title plaque with one load-bearing face.
+	# The equipment owner's blank 65..85 margin is its existing header apron.
+	if _active_route == "equipment":
+		draw_rect(Rect2(0, 65, 808, 20), Color("091b2b"))
+		draw_line(Vector2(0, 84), Vector2(808, 84), Color("243e50"), 2)
+	draw_texture_rect(TOP_RAIL, Rect2(0, 0, 808, 65), false)
 	for x in [180, 316, 451, 640]:
 		draw_rect(Rect2(x, 18, 1, 28), Color("6e9697", 0.42))
 
@@ -211,8 +204,8 @@ func _process(_delta: float) -> void:
 		var amount: String = next_text.substr(separator + 1) if separator >= 0 else next_text
 		# Economy supplies the same resource_number value to rail and detail.
 		var font: Font = label.get_theme_font("font")
-		var size: int = 16
-		for candidate in [16, 14, 12]:
+		var size: int = 18
+		for candidate in [18, 16, 14, 12]:
 			size = candidate
 			if font.get_string_size(amount, HORIZONTAL_ALIGNMENT_LEFT, -1, candidate).x <= label.size.x:
 				break
