@@ -1,0 +1,44 @@
+{
+  "source_commit": "b28a0be19139298bd666df040be317fa1dcff2bf",
+  "module_required_changed_paths": [
+    "space-battleship/src/ui/bridge_theme.gd",
+    "space-battleship/assets/ui/public_shell/faceted-controls.svg"
+  ],
+  "shell_shared_changed_paths": [
+    "space-battleship/assets/ui/public_shell/check-off-disabled.svg",
+    "space-battleship/assets/ui/public_shell/check-off.svg",
+    "space-battleship/assets/ui/public_shell/check-on-disabled.svg",
+    "space-battleship/assets/ui/public_shell/check-on.svg",
+    "space-battleship/assets/ui/public_shell/command-rail.svg",
+    "space-battleship/assets/ui/public_shell/faceted-controls.svg",
+    "space-battleship/assets/ui/public_shell/nav-active.svg",
+    "space-battleship/assets/ui/public_shell/nav-hover.svg",
+    "space-battleship/assets/ui/public_shell/nav-idle.svg",
+    "space-battleship/assets/ui/public_shell/stepper-pair-disabled.svg",
+    "space-battleship/assets/ui/public_shell/stepper-pair.svg",
+    "space-battleship/assets/ui/public_shell/title-plaque.svg",
+    "space-battleship/assets/ui/public_shell/top-control-hover.svg",
+    "space-battleship/assets/ui/public_shell/top-control.svg"
+  ],
+  "host_only_paths": [
+    "space-battleship/src/main.gd",
+    "space-battleship/src/ui/zone_shell.gd"
+  ],
+  "norm_paths": [
+    "space-battleship/docs/game-design/13-art-interaction.md",
+    "space-battleship/docs/game-design/art/modules/reactor.md",
+    "space-battleship/docs/game-design/art/sources.md"
+  ],
+  "existing_dependencies": [
+    "assets/fonts/NotoSansSC.ttf",
+    "assets/ui/public_shell/stepper-down.svg",
+    "assets/ui/dialog/radio-on.svg",
+    "assets/ui/dialog/radio-off.svg"
+  ],
+  "interfaces": {
+    "operation_button": "operation_button(state,padding=10,role=\"secondary\")",
+    "operation_plate": "operation_plate(padding=10,surface=\"light\"); \"dark\" face supported; returned plate retains .state",
+    "apply": "apply_operation_button / apply_operation_select on existing native controls",
+    "text": "number_role_color / apply_number_role use matching light/dark surface"
+  }
+}

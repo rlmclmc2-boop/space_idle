@@ -1,0 +1,192 @@
+[
+  {
+    "png": "public-states/equipment-choice-shared-plate-1440x900.png",
+    "jpeg": "public-states/equipment-choice-shared-plate-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 597600
+  },
+  {
+    "png": "public-states/equipment-shared-material-1440x900.png",
+    "jpeg": "public-states/equipment-shared-material-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 618221
+  },
+  {
+    "png": "public-states/public-source-action-disabled-1440x900.png",
+    "jpeg": "public-states/public-source-action-disabled-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 371265
+  },
+  {
+    "png": "public-states/public-source-action-held-1440x900.png",
+    "jpeg": "public-states/public-source-action-held-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 371954
+  },
+  {
+    "png": "public-states/public-source-resources-1440x900.png",
+    "jpeg": "public-states/public-source-resources-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 380494
+  },
+  {
+    "png": "public-states/public-source-settings-disabled-1440x900.png",
+    "jpeg": "public-states/public-source-settings-disabled-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 378378
+  },
+  {
+    "png": "public-states/public-source-settings-focus-1440x900.png",
+    "jpeg": "public-states/public-source-settings-focus-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 379693
+  },
+  {
+    "png": "public-states/public-source-settings-hover-1440x900.png",
+    "jpeg": "public-states/public-source-settings-hover-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 379112
+  },
+  {
+    "png": "public-states/public-source-settings-normal-1440x900.png",
+    "jpeg": "public-states/public-source-settings-normal-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 379116
+  },
+  {
+    "png": "public-states/public-source-top-held-1440x900.png",
+    "jpeg": "public-states/public-source-top-held-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 374091
+  },
+  {
+    "png": "public-states/ship-shared-material-1440x900.png",
+    "jpeg": "public-states/ship-shared-material-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 360452
+  },
+  {
+    "png": "public-states/spin-editable-restored-1440x900.png",
+    "jpeg": "public-states/spin-editable-restored-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 369319
+  },
+  {
+    "png": "public-states/spin-readonly-1440x900.png",
+    "jpeg": "public-states/spin-readonly-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 373668
+  },
+  {
+    "png": "public-states/spin-readonly-focus-1440x900.png",
+    "jpeg": "public-states/spin-readonly-focus-1440x900.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 370523
+  },
+  {
+    "png": "select-states/settings-before.png",
+    "jpeg": "select-states/settings-before.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 378802
+  },
+  {
+    "png": "select-states/speed-click-open.png",
+    "jpeg": "select-states/speed-click-open.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 416108
+  },
+  {
+    "png": "select-states/speed-dismissed.png",
+    "jpeg": "select-states/speed-dismissed.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 374858
+  },
+  {
+    "png": "select-states/speed-key-confirmed.png",
+    "jpeg": "select-states/speed-key-confirmed.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 378997
+  },
+  {
+    "png": "select-states/speed-key-highlight.png",
+    "jpeg": "select-states/speed-key-highlight.jpg",
+    "size": [
+      1440,
+      900
+    ],
+    "jpeg_quality": 97,
+    "jpeg_bytes": 418989
+  }
+]

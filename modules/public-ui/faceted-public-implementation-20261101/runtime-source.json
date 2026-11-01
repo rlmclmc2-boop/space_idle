@@ -1,0 +1,74 @@
+{
+  "source_commit": "b28a0be19139298bd666df040be317fa1dcff2bf",
+  "runtime_files": [
+    {
+      "path": "space-battleship/assets/ui/public_shell/check-off-disabled.svg",
+      "blob": "9e6bfaa99e5f318026de3aaf73f90a4ea7b0f2e6"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/check-off.svg",
+      "blob": "fd6a9f5c96b60922ecd62ffcdf8ed958adf3b37f"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/check-on-disabled.svg",
+      "blob": "6b756cd68531f3a8e8621f06fa8865e81ca14b23"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/check-on.svg",
+      "blob": "7e6aa6343527ca1992a10d53bd481d027f1fe078"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/command-rail.svg",
+      "blob": "bc032d800d9e76820a68cae37030df6410eb38cf"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/faceted-controls.svg",
+      "blob": "1ce23f7d9596dd15456e2f31a19a15cbc56db55f"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/nav-active.svg",
+      "blob": "d86fe5e617c6b890ee119e41f3e8dfa93671fa6c"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/nav-hover.svg",
+      "blob": "8f78af0f70c433b7e6f3d0c373c67a928eaeb9a4"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/nav-idle.svg",
+      "blob": "5cc689230ca75ba901d43f293290e38d8f75c53a"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/stepper-pair-disabled.svg",
+      "blob": "7a47ebf10fdedfe59fe24bfdefd155c7ce8cbdd7"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/stepper-pair.svg",
+      "blob": "6345f1e4d13340cee147d9d6d14675c48f521ce1"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/title-plaque.svg",
+      "blob": "27873e8205874b68d7ad5710f07e59eaaccaaa91"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/top-control-hover.svg",
+      "blob": "0e0092b7ba531165eeb329683aae9e350bb793de"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/top-control.svg",
+      "blob": "ddf9d2b0ba5161171a2f0b9a93f9840101715947"
+    },
+    {
+      "path": "space-battleship/src/main.gd",
+      "blob": "c724b18e788059b5c48e173b0415153d9a8e0474"
+    },
+    {
+      "path": "space-battleship/src/ui/bridge_theme.gd",
+      "blob": "4be09e634b0f4d634a2802216a5bfa5273e10f6c"
+    },
+    {
+      "path": "space-battleship/src/ui/zone_shell.gd",
+      "blob": "456e502ca77aadf44f7775359a6f0bb9af683a41"
+    }
+  ],
+  "capture": "working tree byte-checked against this fixed commit after the final captures"
+}

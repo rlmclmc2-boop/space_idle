@@ -1,0 +1,61 @@
+{
+  "input": "root Input.parse_input_event mouse; root keyboard down/enter/escape",
+  "source": "faceted-public-working-tree",
+  "states": [
+    {
+      "control_rect": "[P: (438.0, 357.0), S: (330.0, 37.0)]",
+      "image": "settings-before.png",
+      "menu_rect": "[P: (0, 0), S: (100, 100)]",
+      "menu_visible": false,
+      "owner_speed": 1,
+      "popup_focused_item": -1,
+      "route": "settings",
+      "selected": 0,
+      "selected_id": 1
+    },
+    {
+      "control_rect": "[P: (438.0, 357.0), S: (330.0, 37.0)]",
+      "image": "speed-click-open.png",
+      "menu_rect": "[P: (438, 394), S: (330, 294)]",
+      "menu_visible": true,
+      "owner_speed": 1,
+      "popup_focused_item": -1,
+      "route": "settings",
+      "selected": 0,
+      "selected_id": 1
+    },
+    {
+      "control_rect": "[P: (438.0, 357.0), S: (330.0, 37.0)]",
+      "image": "speed-key-highlight.png",
+      "menu_rect": "[P: (438, 394), S: (330, 294)]",
+      "menu_visible": true,
+      "owner_speed": 1,
+      "popup_focused_item": 1,
+      "route": "settings",
+      "selected": 0,
+      "selected_id": 1
+    },
+    {
+      "control_rect": "[P: (438.0, 357.0), S: (330.0, 37.0)]",
+      "image": "speed-key-confirmed.png",
+      "menu_rect": "[P: (438, 394), S: (330, 294)]",
+      "menu_visible": false,
+      "owner_speed": 2,
+      "popup_focused_item": -1,
+      "route": "settings",
+      "selected": 1,
+      "selected_id": 2
+    },
+    {
+      "control_rect": "[P: (438.0, 357.0), S: (330.0, 37.0)]",
+      "image": "speed-dismissed.png",
+      "menu_rect": "[P: (438, 394), S: (330, 294)]",
+      "menu_visible": false,
+      "owner_speed": 2,
+      "popup_focused_item": -1,
+      "route": "settings",
+      "selected": 1,
+      "selected_id": 2
+    }
+  ]
+}

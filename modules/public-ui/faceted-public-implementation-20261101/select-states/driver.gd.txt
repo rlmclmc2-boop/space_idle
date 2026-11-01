@@ -1,0 +1,86 @@
+extends SceneTree
+const OUT := "/tmp/space-idle-runtime472/faceted-select/"
+var game
+var speed: OptionButton
+var states: Array = []
+func _initialize() -> void: call_deferred("run")
+func frames(n: int) -> void:
+	for i in n: await process_frame
+func mouse(point: Vector2, down: bool) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	Input.parse_input_event(motion)
+	var event := InputEventMouseButton.new()
+	event.position = point
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = down
+	Input.parse_input_event(event)
+func click(point: Vector2) -> void:
+	mouse(point,true)
+	await frames(1)
+	mouse(point,false)
+	await frames(2)
+func shot(label: String) -> void:
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(OUT + label + ".png")
+	states.append({"image":label+".png","route":game._zone_shell._active_route,"control_rect":str(speed.get_global_rect()),"menu_visible":speed.get_popup().visible,"menu_rect":str(Rect2i(speed.get_popup().position,speed.get_popup().size)),"selected":speed.selected,"selected_id":speed.get_selected_id(),"owner_speed":game.session.current_chrono_speed(),"popup_focused_item":speed.get_popup().get_focused_item()})
+func find_speed(node: Node) -> OptionButton:
+	if node is OptionButton and node.item_count > 0 and node.get_item_text(0).contains("倍速"):
+		return node
+	for child in node.get_children():
+		var found := find_speed(child)
+		if found != null: return found
+	return null
+func key(code: Key) -> void:
+	for down in [true,false]:
+		var event := InputEventKey.new()
+		event.keycode = code
+		event.pressed = down
+		Input.parse_input_event(event)
+		await frames(1)
+func run() -> void:
+	root.size = Vector2i(1440,900)
+	root.content_scale_size = Vector2i(1440,900)
+	game = load("res://src/main.tscn").instantiate()
+	root.add_child(game)
+	await frames(70)
+	assert(game.startup_error.is_empty())
+	game._skip_tutorial = true
+	var session = game.session
+	var pending: Dictionary = session.pending_guidance()
+	while not pending.is_empty():
+		assert(session.dismiss_guidance(str(pending.kind),str(pending.id)).ok)
+		pending = session.pending_guidance()
+	game._sync_guidance()
+	await click(game._zone_shell._route_buttons.settings.get_global_rect().get_center())
+	assert(game._zone_shell._active_route == "settings")
+	speed = find_speed(game.growth_panel)
+	assert(speed != null)
+	await shot("settings-before")
+	await click(speed.get_global_rect().get_center())
+	assert(speed.get_popup().visible)
+	await shot("speed-click-open")
+	var before := speed.selected
+	await key(KEY_DOWN)
+	await key(KEY_DOWN)
+	await shot("speed-key-highlight")
+	await key(KEY_ENTER)
+	await frames(2)
+	assert(not speed.get_popup().visible)
+	assert(speed.selected != before)
+	assert(speed.get_selected_id() == session.current_chrono_speed())
+	await shot("speed-key-confirmed")
+	await click(speed.get_global_rect().get_center())
+	assert(speed.get_popup().visible)
+	await key(KEY_ESCAPE)
+	await frames(2)
+	assert(not speed.get_popup().visible)
+	await shot("speed-dismissed")
+	var file := FileAccess.open(OUT+"states.json",FileAccess.WRITE)
+	file.store_string(JSON.stringify({"source":"faceted-public-working-tree","input":"root Input.parse_input_event mouse; root keyboard down/enter/escape","states":states},"  "))
+	file.close()
+	print("SETTINGS_SELECT actual_click_open=true keyboard_confirm=true owner_matches=true escape_dismiss=true")
+	if session.save_files != null: session.save_files.close(2000)
+	game.queue_free()
+	await frames(3)
+	quit()
