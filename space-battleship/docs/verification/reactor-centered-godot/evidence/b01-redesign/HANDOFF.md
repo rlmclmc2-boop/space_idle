@@ -4,13 +4,13 @@
 
 ## 当前现场
 
-分支`implement/reactor-centered-godot`，旧主体运行资产5ae32e28仍保全、外观已退回。公共控件已接49364764，并精确取入9034af81的bridge_theme.gd后继修正（当前待固定）；没有取公共main或导航。用户已对[24db2a9c共同风格概念](https://github.com/rlmclmc2-boop/space_idle/blob/24db2a9c6d6815f52026e0c53a29327238af831d/modules/public-ui/unified-abstraction-proposal-20261101/README.md)表示“这个好很多”，按简化分面装甲、共同轮廓/明暗/材质和三段操作台实施；此为方向认可，非实机验收。公共壳/装备操作结构由整体组保持。
+分支`implement/reactor-centered-godot`，旧主体运行资产5ae32e28仍保全、外观已退回。公共控件已接49364764，并在19092a64精确取入9034af81的bridge_theme.gd后继修正；没有取公共main或导航。用户已对[24db2a9c共同风格概念](https://github.com/rlmclmc2-boop/space_idle/blob/24db2a9c6d6815f52026e0c53a29327238af831d/modules/public-ui/unified-abstraction-proposal-20261101/README.md)表示“这个好很多”，按简化分面装甲、共同轮廓/明暗/材质和三段操作台实施；此为方向认可，非实机验收。公共壳/装备操作结构由整体组保持。
 
 ## 当前实作
 
 本线程已实际查看概念PNG与完整说明，新增`assets/ui/reactor/b01/generate_faceted_reactor.py`，使用本地Blender/Eevee重新制作同语言舱室、核心、四设备和三段机台。设备/核心可按base/work/front分别导出；接口中心、轴向和插入深度直接消费reactor_ports.json。套筒延伸到机体内部，管端按轴向插入，最终切线显式固定。源像素端口投影检查通过，尚未等同真实成品接合通过。
 
-已实际看过装配样机、武器本体与1路机台。作者发现核心像同心色盘、管壳过重、设备受光偏灰，因此正在改核心实体焦点、细化管腔比例和分层亮面，没有将样机当可交用户稿。当前最后一轮装配渲染：`/tmp/reactor-faceted-assembly-current.log`，输出`/tmp/reactor-faceted-build/assembly.png`；同目录分层图是制作研究，不能冒充Godot实图。每次新渲染保存所执行生成器快照及SHA。
+已实际看过装配样机、武器本体与1路机台。作者发现核心像同心色盘、管壳过重、设备受光偏灰，因此正在改核心实体焦点、细化管腔比例和分层亮面，没有将样机当可交用户稿。最新装配研究已实际看图，固定独立归档90750485c2535791e877cc660b9233618807cb4c（archive/reactor-faceted-study-20261101），入口modules/reactor/faceted-study-20261101/README.md。图/生成器快照/端口记录与SHA对应，blob已核；作者仍认为核心圆盘/符号感及设备中尺度分件、工作过程不足。不是Godot实图或视觉通过。
 
 机台已按1–4行生成收紧的三段承载面，底部事务带位置保持、空槽不保留。源画布1187×1326统一按835/1326等比映射至808×835，x居中，原生文字与控件消费同一变换；背景覆盖与主体尺度分开。布局元数据由生成器输出，不沿用旧逐轴拉伸。
 
