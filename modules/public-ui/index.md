@@ -73,3 +73,5 @@
 - v16嵌入式环舱共享整页检查点 `85558774`：[planet-v16-shared-20261101](planet-v16-shared-20261101/README.md)。
 
 - v18星球完整共享组合及用户评价附件 `c3b5d426`：[planet-v18-shared-20261101](planet-v18-shared-20261101/README.md)。
+
+- 当前分面反应堆公共组合 `839e5cc3`：[faceted-reactor-shared-20261101](faceted-reactor-shared-20261101/README.md)。

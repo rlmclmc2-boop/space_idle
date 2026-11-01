@@ -1,0 +1,27 @@
+{
+  "video": "faceted-reactor-shared-1x-12s.mp4",
+  "bytes": 1470578,
+  "sha256": "25acb9fc8b2740aae8defdf3ad661e840c73ae3f6aafc5c32e967fc4a181c9f5",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 360,
+  "duration_seconds": 12,
+  "parts": [
+    {
+      "path": "video-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "fd72e852bb5348dbed27d64c0a801c539427b37ce03a7a6f80cbded10ce5921d"
+    },
+    {
+      "path": "video-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "2aac77b91d972b4d7e396befdc90451b434c61ee5aae92b52033bf110cdcd5d6"
+    },
+    {
+      "path": "video-parts/part-002.bin",
+      "bytes": 159858,
+      "sha256": "40eed72e198bec45f30ff3981d17ee27f94acf7024cb57db40e0e41b0c3ced99"
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+  "runtime_source": "839e5cc30f86506655669397496a2f351bf12e3a",
+  "reactor_fixed_source": "c20e4c1a121652514de533fe09203114606d0818",
+  "incoming_blobs": [
+    {
+      "path": "space-battleship/src/ui/reactor_scene.gd",
+      "blob": "2facc7ec0f0e82bf9acc3837b9c5201f90de9e0c"
+    },
+    {
+      "path": "space-battleship/src/ui/reactor_stage.gd",
+      "blob": "9c8c2dafc9d2750475c4ebe3d1180653631fcce1"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/README.md",
+      "blob": "3cf079af5bbcd0a450575fa14830ac23366b049a"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader",
+      "blob": "d04ea25a81b502db34081255d708c5c34af8bd95"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader",
+      "blob": "70bd29471dfe41470ea5d15b8012b1ca89487d94"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader",
+      "blob": "11614cfd5aeebca0e8de631d29db6fca25485123"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+      "blob": "6bc97b12efe74afa67e4dd4bbd02e7faa1125558"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg",
+      "blob": "756f5c4c377f61ee086bad690f73c55b66534fb4"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+      "blob": "450de6660ee9285e3ba3815784ddaf089097c551"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg",
+      "blob": "0cb2849cc13754fbfea1123863c7d028dbbdd8c1"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader",
+      "blob": "dbee9c88af4040bc75f8f153cdd528f6e2a73294"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py",
+      "blob": "433349c8ac1ef87198470607bb54e8ebd0e71807"
+    },
+    {
+      "path": "space-battleship/assets/ui/reactor/b01/reactor_ports.json",
+      "blob": "636512907819e822564937ed6c19431a7a7dff6a"
+    }
+  ],
+  "preserved_blobs": {
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/src/ui/zone_shell.gd": "456e502ca77aadf44f7775359a6f0bb9af683a41",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119",
+    "space-battleship/src/ui/planet_panel.gd": "47e7214462a1f239694846bfc85050aa8bc73152"
+  },
+  "public_theme": "9034af81",
+  "movie": {
+    "end_process_frame": 555,
+    "fps": 30,
+    "game_time_end": 14.6333333333336,
+    "game_time_start": 2.63333333333333,
+    "method": "Godot MovieMaker fixed30fps offline; current full shared main",
+    "pause_reasons": {},
+    "simulated_seconds": 12,
+    "speed": 1,
+    "stage_phase": 14.6333333333336,
+    "start_process_frame": 195,
+    "state": "四路Owner均分带载"
+  },
+  "states": [
+    "四路Session Owner零态/均分带载",
+    "单路受控Reactor Owner零态/均分带载",
+    "装备返回"
+  ],
+  "integration_status": "安装完成；整页美术仍需原组制作",
+  "author_review": "author-review.md",
+  "media": [
+    {
+      "path": "reactor-four-zero.png",
+      "bytes": 762768,
+      "sha256": "7978ead8e34a6c84446a581413a5b0ff8a679f7542ea1561312a3b4ef0047092"
+    },
+    {
+      "path": "reactor-four-zero.jpg",
+      "bytes": 462876,
+      "sha256": "d140315ba2d3ba469a8177c8e651415e682ccaf4283d19e4595274ab39520e7c"
+    },
+    {
+      "path": "reactor-four-active.png",
+      "bytes": 745445,
+      "sha256": "accac23e0c48f38841d11fcd75b12654d03782e739a7981becb7d552ad79e7ac"
+    },
+    {
+      "path": "reactor-four-active.jpg",
+      "bytes": 479454,
+      "sha256": "b1811a5fad494d5c60a61a8b189b554ba4fd441c3ab9e8a9a4169bcdb0c7a3ca"
+    },
+    {
+      "path": "reactor-one-zero.png",
+      "bytes": 626672,
+      "sha256": "5e4b8af659a826dfcf77a3d73360eb41f26cc3d0e4f600d9749c3de5aba938bd"
+    },
+    {
+      "path": "reactor-one-zero.jpg",
+      "bytes": 375306,
+      "sha256": "2f3a5e8cae9306486631f7cc9a6f0d0de1c0c486327bf76a04b249350e1126fa"
+    },
+    {
+      "path": "reactor-one-active.png",
+      "bytes": 681282,
+      "sha256": "6c8b4fb87b4d952f712bac2b284c7586914e1eb6245a8c414b9cd2304f6b7c8d"
+    },
+    {
+      "path": "reactor-one-active.jpg",
+      "bytes": 405763,
+      "sha256": "5093b891951e8d6af6ed5c6921e1396827376b50b569efbda8093257f85c18b4"
+    },
+    {
+      "path": "equipment-return.png",
+      "bytes": 1475834,
+      "sha256": "dea8801cacfcf111149e2c42f13a08dd2c9c70d87a1e15cdc87b887fd182f6fe"
+    },
+    {
+      "path": "equipment-return.jpg",
+      "bytes": 614781,
+      "sha256": "767ac2a9b63cd6965d1b447f74306449c9e4abdd69cd02db178b50b0b4818205"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 4743,
+      "sha256": "71cb5a579a60792b560483ce26a50a3a327043f101d6425a2dd712cd5837a550"
+    },
+    {
+      "path": "run.log",
+      "bytes": 1087,
+      "sha256": "5533ea84894b2dee3faacef44d6807628b65a3b17f94227be7323bc5dddd0fa3"
+    },
+    {
+      "path": "import.log",
+      "bytes": 2865,
+      "sha256": "5f742a493c237909c8199faa542d71f50cc159789f3d8ae2c15da86c20988efe"
+    },
+    {
+      "path": "movie-segment.json",
+      "bytes": 363,
+      "sha256": "1d1e2addc833dd2591961ebf630ad195552540c430985a98cbcb64c04e3658f5"
+    },
+    {
+      "path": "video-parts.json",
+      "bytes": 740,
+      "sha256": "a8f7bd4ae1cabf0676780741b69a8de18a9c89a85edb9a3bab2f5845d060e677"
+    },
+    {
+      "path": "installation.json",
+      "bytes": 1979,
+      "sha256": "7e2223fb42361e34076b847780c8236de7f1664ebdef79df577ee93c2dacd35e"
+    },
+    {
+      "path": "faceted-reactor-shared-1x-12s.mp4",
+      "bytes": 1470578,
+      "sha256": "25acb9fc8b2740aae8defdf3ad661e840c73ae3f6aafc5c32e967fc4a181c9f5"
+    },
+    {
+      "path": "video-parts/part-002.bin",
+      "bytes": 159858,
+      "sha256": "40eed72e198bec45f30ff3981d17ee27f94acf7024cb57db40e0e41b0c3ced99"
+    },
+    {
+      "path": "video-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "2aac77b91d972b4d7e396befdc90451b434c61ee5aae92b52033bf110cdcd5d6"
+    },
+    {
+      "path": "video-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "fd72e852bb5348dbed27d64c0a801c539427b37ce03a7a6f80cbded10ce5921d"
+    },
+    {
+      "path": "motion-review-12.jpg",
+      "bytes": 604451,
+      "sha256": "0e2b1c720350dca5bf3af7f4b0a77177c6766ac3a51f008d9b3b8b553d276382"
+    },
+    {
+      "path": "motion-review-11.jpg",
+      "bytes": 607579,
+      "sha256": "2d49dd88e78efd09f22b8e35a1113b4a44c0e0780f2b735b27bb47c0c18a42c4"
+    },
+    {
+      "path": "motion-review-10.jpg",
+      "bytes": 609449,
+      "sha256": "ade6e5753df2cab5658aea5902d40ac536034cbb8ac8bde1e2d570dad5be3fab"
+    },
+    {
+      "path": "motion-review-9.jpg",
+      "bytes": 615869,
+      "sha256": "7ffb3b4308826fd8117006fb23a068cbe769b66753e771e74e688f7dd34181ba"
+    },
+    {
+      "path": "motion-review-8.jpg",
+      "bytes": 619150,
+      "sha256": "b723d06d2b7d4e7cf8ffad49e3829b6dc2ff7deca603e01bcbc7a54c6af9e01a"
+    },
+    {
+      "path": "motion-review-7.jpg",
+      "bytes": 599203,
+      "sha256": "d8542dae050138e2e1eb6edbbe85b798c6cb42151405fcd58e8a84c62cce2ae1"
+    },
+    {
+      "path": "motion-review-6.jpg",
+      "bytes": 595389,
+      "sha256": "c44b46f69c4ef1dea651b58563bc3227f638cd4720da87dd0f6522c934c4488c"
+    },
+    {
+      "path": "motion-review-5.jpg",
+      "bytes": 600702,
+      "sha256": "3c2b1c2c626c4356245d34f41cfcc76540aa469899322ab9a169416544f61344"
+    },
+    {
+      "path": "motion-review-4.jpg",
+      "bytes": 606272,
+      "sha256": "99b0fe69510978f26d58bacff2e319c573aa98b83519682fed2b7b838911cbc7"
+    },
+    {
+      "path": "motion-review-3.jpg",
+      "bytes": 607680,
+      "sha256": "98d5d26b9b8c536b2bd219611bcadde061138482d76f98c3700f4fd7d85b9408"
+    },
+    {
+      "path": "motion-review-2.jpg",
+      "bytes": 605199,
+      "sha256": "657d3cb89b3e70620ac47650c831b7c3e9ab88aee5bc25d2707537fe7328b17f"
+    },
+    {
+      "path": "motion-review-1.jpg",
+      "bytes": 602933,
+      "sha256": "abb6681f0f01500df155048e532b766e70ec50d0ce229aba7c2b95a8936db761"
+    },
+    {
+      "path": "motion-keyframes/frame-001.jpg",
+      "bytes": 157208,
+      "sha256": "76271172eda29987b51ae6039ad8d0d3f6c6ccb5b3c119f7ab1eb201f706c681"
+    },
+    {
+      "path": "motion-keyframes/frame-181.jpg",
+      "bytes": 156604,
+      "sha256": "38b852c42ed4e9e0e5fe1a93b7034b9a3d5b8977a0492635bf55686747a3375d"
+    },
+    {
+      "path": "motion-keyframes/frame-360.jpg",
+      "bytes": 155908,
+      "sha256": "5cc07353766f98a0c3643947adad737dc153cb4cffd3af27ce030f1d12f73f15"
+    },
+    {
+      "path": "author-review.md",
+      "bytes": 3174,
+      "sha256": "a6ecce0918e305a648365ba9d4b20fd9202b1a717696c111b958a5126b7bd822"
+    }
+  ]
+}
