@@ -1,0 +1,230 @@
+{
+  "equipment": {
+    "branch": "art/equipment-materials-main-20261029",
+    "head": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
+    "paths": [
+      {
+        "path": "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/HANDOFF.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/equipment/HANDOFF.md",
+        "blob": "5ce4024a412038c2b9456be0f3285b6edf500c86",
+        "sha256": "d321c000921586c02cb7b4d96c37ee89e16a2216003fbd62f2c5b7ac98e34649"
+      },
+      {
+        "path": "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/equipment/README.md",
+        "blob": "e181ed38cd43ddaa37170fa627ea9fb82a8caf18",
+        "sha256": "071e9d58bee0598253fc24d500f8fa2f4712c2fb37f8f3c280156348c6111ae6"
+      }
+    ],
+    "norms": [
+      {
+        "path": "space-battleship/docs/game-design/06-data.md",
+        "blob": "bc76dce55a77baee9037e195cd46d2f70e13c628",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/07-verification.md",
+        "blob": "9ea390fafcfa6c1dcf0585ade90b2c0d6265171c",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/13-art-interaction.md",
+        "blob": "4493495624750045cc2ab34ac11ff6b9dc5ec1c8",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/art/modules/planet.md",
+        "blob": "49ac6842aa7ad7d2a3baf9e917d8674526ec6b9d",
+        "matches_final_candidate": true
+      }
+    ]
+  },
+  "reactor": {
+    "branch": "implement/reactor-centered-godot",
+    "head": "ce23969fba783160bb49abf882d1205faf5d332f",
+    "paths": [
+      {
+        "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/reactor/HANDOFF.md",
+        "blob": "c0bba2c5834cf68e75807b504591aced3c40246c",
+        "sha256": "808517da35417ea2ab996d8b609e7d1c79830582a64f7b87a8099c12dbda2e8f"
+      },
+      {
+        "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/reactor/README.md",
+        "blob": "f2719d4e10f2360749407dcce6c32dbbe54e41a1",
+        "sha256": "b56117eb4b9251d6dbb3bf111f6497c2dc1b795a074767b388907d85e6087989"
+      }
+    ],
+    "norms": [
+      {
+        "path": "space-battleship/docs/game-design/06-data.md",
+        "blob": "bc76dce55a77baee9037e195cd46d2f70e13c628",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/07-verification.md",
+        "blob": "9ea390fafcfa6c1dcf0585ade90b2c0d6265171c",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/13-art-interaction.md",
+        "blob": "4493495624750045cc2ab34ac11ff6b9dc5ec1c8",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/art/modules/planet.md",
+        "blob": "49ac6842aa7ad7d2a3baf9e917d8674526ec6b9d",
+        "matches_final_candidate": true
+      }
+    ]
+  },
+  "host": {
+    "branch": "design/clear-zone-host",
+    "head": "a6e99f785426ea8a3775493df934646c41fa99c8",
+    "paths": [
+      {
+        "path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/HANDOFF.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/host/HANDOFF.md",
+        "blob": "fa1a8072f619d00965698efa2171bcb50053e65a",
+        "sha256": "456ac01af6405e8248a979f8be7e77582f302e16206c81b19797de060faa711c"
+      },
+      {
+        "path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/host/README.md",
+        "blob": "91ca863be52843bb80883af7de0b919ed262fc73",
+        "sha256": "0fdc560394a1015977af200ef710ade46128acc37626978730f04f72748ed87a"
+      }
+    ],
+    "norms": [
+      {
+        "path": "space-battleship/docs/game-design/06-data.md",
+        "blob": "bc76dce55a77baee9037e195cd46d2f70e13c628",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/07-verification.md",
+        "blob": "9ea390fafcfa6c1dcf0585ade90b2c0d6265171c",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/13-art-interaction.md",
+        "blob": "4493495624750045cc2ab34ac11ff6b9dc5ec1c8",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/art/modules/planet.md",
+        "blob": "49ac6842aa7ad7d2a3baf9e917d8674526ec6b9d",
+        "matches_final_candidate": true
+      }
+    ]
+  },
+  "planet": {
+    "branch": "wip/planet-thread-resume-20261101",
+    "head": "4e586cc8a2b63e26f0c4d23fbb3485956a67606b",
+    "paths": [
+      {
+        "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/planet/HANDOFF.md",
+        "blob": "7fdd84db673f1416c13950ce699fb8447bf512db",
+        "sha256": "e4cf65b9c3c35e788f70a6262bdc49e8462c7d2087d0aff5f49e2c575e04e3c0"
+      },
+      {
+        "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/planet/README.md",
+        "blob": "f72133570db00979233acbfcf1fa84ce099394f3",
+        "sha256": "89e4861d136be58809405211e4736135eb645cc948c356e386cf223ab9d8e2a4"
+      }
+    ],
+    "norms": [
+      {
+        "path": "space-battleship/docs/game-design/06-data.md",
+        "blob": "bc76dce55a77baee9037e195cd46d2f70e13c628",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/07-verification.md",
+        "blob": "9ea390fafcfa6c1dcf0585ade90b2c0d6265171c",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/13-art-interaction.md",
+        "blob": "4493495624750045cc2ab34ac11ff6b9dc5ec1c8",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/art/modules/planet.md",
+        "blob": "49ac6842aa7ad7d2a3baf9e917d8674526ec6b9d",
+        "matches_final_candidate": true
+      }
+    ]
+  },
+  "backend": {
+    "branch": "feat/amount-safe-previews",
+    "head": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
+    "paths": [
+      {
+        "path": "space-battleship/docs/HANDOFF.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/backend/HANDOFF.md",
+        "blob": "735e39c974a4e64b3def0b5ad1d07d9bea75b34a",
+        "sha256": "3d63014cdc2ed2c272fac0eb569b49ada29a5341f2dd0526fc501e9c124ca9e8"
+      }
+    ],
+    "norms": [
+      {
+        "path": "space-battleship/docs/game-design/06-data.md",
+        "blob": "bc76dce55a77baee9037e195cd46d2f70e13c628",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/07-verification.md",
+        "blob": "9ea390fafcfa6c1dcf0585ade90b2c0d6265171c",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/13-art-interaction.md",
+        "blob": "4493495624750045cc2ab34ac11ff6b9dc5ec1c8",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/art/modules/planet.md",
+        "blob": "49ac6842aa7ad7d2a3baf9e917d8674526ec6b9d",
+        "matches_final_candidate": true
+      }
+    ]
+  },
+  "cleanup": {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "head": "08a918a6b0989acc6eb5c86409da2534db5259d7",
+    "paths": [
+      {
+        "path": "space-battleship/docs/maintenance/HANDOFF.md",
+        "archive_path": "modules/maintenance/20261101-spec-simplification/final/closeout/readback/cleanup/HANDOFF.md",
+        "blob": "f1cee3be359c009768742a33d50a08e40825f0c6",
+        "sha256": "2e55e7e6d5af74be7b63df77671ee7071f23dee15d457c84298eb4d4e438da05"
+      }
+    ],
+    "norms": [
+      {
+        "path": "space-battleship/docs/game-design/06-data.md",
+        "blob": "bc76dce55a77baee9037e195cd46d2f70e13c628",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/07-verification.md",
+        "blob": "9ea390fafcfa6c1dcf0585ade90b2c0d6265171c",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/13-art-interaction.md",
+        "blob": "4493495624750045cc2ab34ac11ff6b9dc5ec1c8",
+        "matches_final_candidate": true
+      },
+      {
+        "path": "space-battleship/docs/game-design/art/modules/planet.md",
+        "blob": "49ac6842aa7ad7d2a3baf9e917d8674526ec6b9d",
+        "matches_final_candidate": true
+      }
+    ]
+  }
+}

@@ -35,7 +35,7 @@
     "original_branch_head_at_delivery": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1",
     "consumption_commit": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
     "latest_observed_original_head": "de7f796b9ee39c9a6a4cffbc21dc2dab346b1faf",
-    "consumption_status": "applied_and_readback_verified"
+    "consumption_status": "applied_and_fulltext_verified"
   },
   "reactor": {
     "source_branch": "implement/reactor-centered-godot",
@@ -56,8 +56,9 @@
     "remote_readback": "a4b1bfc3e9b44a50503bd921f6f3dd98c275376e",
     "original_branch_head_at_delivery": "966a9132569d52ce9a1e641c1845f69c091a8371",
     "consumption_commit": "51b53311ff488b43717343638b80f0348bf8e9ba",
-    "latest_observed_original_head": "59b1086e93a574c7ff17bcbcb96aa7d8f93b0822",
-    "consumption_status": "applied_pending_handoff_cleanup"
+    "latest_observed_original_head": "ce23969fba783160bb49abf882d1205faf5d332f",
+    "consumption_status": "applied_and_fulltext_verified",
+    "final_handoff_consumption_commit": "ce23969fba783160bb49abf882d1205faf5d332f"
   },
   "host": {
     "source_branch": "design/clear-zone-host",
@@ -77,8 +78,8 @@
     "remote_readback": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
     "original_branch_head_at_delivery": "b569f0e9d0728e13dc8af798149026cc94f004cf",
     "consumption_commit": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
-    "latest_observed_original_head": "46b5120333ca9faf02a84a4ca8a7c0f60a96a978",
-    "consumption_status": "applied_and_readback_verified"
+    "latest_observed_original_head": "a6e99f785426ea8a3775493df934646c41fa99c8",
+    "consumption_status": "applied_and_fulltext_verified"
   },
   "planet": {
     "source_branch": "wip/planet-thread-resume-20261101",
@@ -103,8 +104,9 @@
     "remote_readback": "0704bcc78dc385855635e06c2134e08b58ac01e9",
     "original_branch_head_at_delivery": "c1cb1af2f6c673401b20ba0e1d9755e61f9c025f",
     "consumption_commit": "569b98d2c13b9cc50deedaf4557f0c9f21c83042",
-    "latest_observed_original_head": "5fa475ca9ae36346d156c06e9fe67431b2d8821c",
-    "consumption_status": "applied_pending_handoff_cleanup"
+    "latest_observed_original_head": "4e586cc8a2b63e26f0c4d23fbb3485956a67606b",
+    "consumption_status": "applied_and_fulltext_verified",
+    "final_handoff_consumption_commit": "28bec23125f60147a058d9ca516efecc0e54c492"
   },
   "backend": {
     "source_branch": "feat/amount-safe-previews",
@@ -125,7 +127,7 @@
     "original_branch_head_at_delivery": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8",
     "consumption_commit": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
     "latest_observed_original_head": "d8097332495b8ef1c1cfcc19fa46637c3d63556d",
-    "consumption_status": "applied_and_readback_verified"
+    "consumption_status": "applied_and_fulltext_verified"
   },
   "cleanup": {
     "source_branch": "docs/design-entry-cleanup-20261031",
@@ -143,6 +145,8 @@
     "supersedes": null,
     "non_markdown_tree_identical": true,
     "remote_readback": "08a918a6b0989acc6eb5c86409da2534db5259d7",
-    "original_branch_head_at_delivery": "08a918a6b0989acc6eb5c86409da2534db5259d7"
+    "original_branch_head_at_delivery": "08a918a6b0989acc6eb5c86409da2534db5259d7",
+    "latest_observed_original_head": "08a918a6b0989acc6eb5c86409da2534db5259d7",
+    "consumption_status": "applied_and_fulltext_verified"
   }
 }
