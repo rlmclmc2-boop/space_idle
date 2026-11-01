@@ -57,7 +57,7 @@ shotBase = ceil(enemyWeapon.dmg × mon.dmgMultiple × atkRatio)
 
 **Higgs炮**：仅符合主触发权限的炮建立Higgs贯穿。发射时冻结起点、瞄准方向、到战场边界并向外延伸一个full_width的线段，以及当时各活敌的命中点。宽度`full_width=max(12,rail_trail_width)×max(1,1+area_bonus)`；点投影在线段范围内且到线段距离≤full_width/2才入候选，不把敌舰完整包络与射线相交当成此规则。候选按冻结命中点到起点距离平方升序排列，在同次调用依次emit impact并命中，每目标仅一次；每次仍由命中函数检查存活。若过程中遭遇终止/清场使该次射线失效，就停止剩余候选；最后退役射线。整条射线在同一发射逻辑时刻处理，不按弹速等待前后目标分别到达，也不在下一帧重采样敌位置。
 
-当前执行由`src/systems/battle.gd`组装同一native核；我方炮在发射同clock内impact→hit_enemy→retire，Higgs沿同核冻结候选规则执行。不恢复已退出的battlefield/presented_battle_game/game旧业务入口。
+当前执行由`src/systems/battle.gd`组装同一native核；我方炮在发射同clock内impact→hit_enemy→retire，Higgs沿同核冻结候选规则执行。
 
 **飞行弹体**：普通玩家laser以及敌方炮/激光保留飞行，沿逻辑路径检查实际接触后扣血；敌炮不套用我方炮的即时命中规则。导弹按3.1执行。**连锁载体**无论由哪种主武器触发，都独立以720速度到达额外目标才结算；即时炮的主命中不会把其连锁也改成即时。一次攻击的同一连锁机会只能消费一次。连续光束的连锁连接与每跳伤害分别处理，死目标断开，不在每个绘制帧重新抽目标。
 

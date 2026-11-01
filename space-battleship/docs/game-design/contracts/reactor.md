@@ -1,6 +1,6 @@
 # 反应炉前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[唯一入口](../README.md) · [共同读取/接纳协议](../14-ui-contracts.md)。本页维护本模块公开接口；当前实现和消费源见[11](../11-stage6-contract.md)。
 [本组版本状态、Amount边界与草稿失效](../14-ui-contracts.md#9-已审设计反应炉整组草稿与科研预算的amount安全预览)。
 
 用户已明确取消分配确认/还原，见[D10](../review/conflicts.md#d10)。分配操作直接沿原所有者提交；本节预览/接纳分离是后台边界，不要求额外确认控件。
@@ -36,12 +36,11 @@
 
 ### 9.2.1 实现候选：真实展示与局部变化通知
 
-**状态：设计`3d14ded8`原记录为根协调者及原独审限定通过（模型本次未核实）；接口已在后台候选存在，实际消费状态见11、未合main，不代表UI或完整游戏验收。** 现有整组接口以已审`09af963cf6f66146e019cecd08353426ab6d6abb`为基线；本增补不改变它们或原购级/均分/发布语义。不恢复旧候选缓存或提前通知；当前消费者按11区分。
 
 | 运行候选出口 | 最小职责与字段 |
 |---|---|
 | `Reactor.presentation_model()` | 仅读已接纳状态与容量/效果缓存，给ok、level、capacity/allocated/remaining规范Amount文本、can_allocate/reason、modules及core load；不带预算/购级报价，不把即时inputs或prepared预测为current。缺已接纳缓存给ReactorSnapshotUnavailable，不伪造0或factor=1。modules沿已接纳开放ID及顺序，给id/enabled、manual/free/effective/factor规范文本、has_free及有限ratio/load。当前准入开放集合与已接纳缓存不一致时明确不可用，不混成一个成功快照。 |
-| `Reactor.purchase_preview(can_pay: Callable, count: int = 1)` | 当前固定数量报价统一按下节9.2.2，已支持×1/×10，MAX用独立具名出口。原+1-only签名和“count固定1”限制已失效，不恢复。 |
+| `Reactor.purchase_preview(can_pay: Callable, count: int = 1)` | 当前固定数量报价统一按下节9.2.2，已支持×1/×10，MAX用独立具名出口。 |
 | 原`allocation_plan_preview`及实际结果的current/target行 | 在共用_plan_readings中补同口径ratio/load/has_free；沿现行_amounts/shares/equal准备求值，不另写均分或效果算法。current仍已接纳，target仍脱离候选；命令及其canonical金额、拒绝顺序和回执原字段不变。 |
 | `Reactor.presentation_changed(changes: PackedStringArray)` | 仅该Reactor实例的局部deferred合并通知；变化类别限level/capacity/availability/allocation/free/effect/readiness。只标记失效，不携带或接纳候选。level/availability才影响+1报价/准入；当前/来源相关变化才重读场景与必要草稿比较。 |
 | `Economy.budget_changed(resource_ids: PackedStringArray)` | 仅真实已接纳余额的局部deferred变化提示；由Economy拥有，保留原display_changed语义。宿主仅把与+1 costs资源集合相交的事件标记为报价可支付性失效；不触发场景/草稿预览/效果/滑杆重建。 |
@@ -62,7 +61,6 @@ UI只订阅本实例及相关预算资源；通知只置局部dirty，下一可�
 
 ### 9.2.2 实现候选：手动升级×10与MAX
 
-**状态：设计固定`c6170694`，按根线程继续授权实施；后台aaba6683及其后f924/c38已实现；本次仅来源核对、未合main，不代表消费者或完整游戏验收。** 用户已要求×10/MAX；9.2.1只保展示/通知；批量出口以本节为准。当前Owner与消费者按11分别核对。UI风格、分配确认/还原的移除及消费接线归反应炉组；本节不扩展分配或自动岗位。
 
 | 实现候选所有者出口 | 字段与精确语义 |
 |---|---|
@@ -78,3 +76,9 @@ UI只订阅本实例及相关预算资源；通知只置局部dirty，下一可�
 **既有业务不变：** 手动×1/×10/MAX固定automatic=false，不设置_distribute、不自动花掉新增容量；现有自动岗位仍每秒买1级并均分。原_purchase的原等级/费用准入、原_evaluate、Session.publish_reactor的native→Reactor.accept→贡献/钱包接纳及原故障语义复用，不宣称native故障可回滚。不得新增确认/还原步骤；已有分配相关UI由反应炉组按用户指示处理，不改后台分配规则。
 
 **失效与消费：** 等级或开放变化使相应固定数量及MAX报价失效；钱包变化按cost_resource_ids交集使支付性及MAX数量失效，尤其MAX=0时也必须订阅原资源ID。×1和×10费用/文本可按level/count及会话固定配置缓存，预算变化仅重验固定数量支付性；MAX须重新搜索当下支付边界，可为新探测数量调用原_quote，不能套用旧+1“所有预算刷新零报价计算”的验证结论。报价不锁价；命令当下重算，成功后以实际回执和已接纳模型更新。原presentation_changed/budget_changed局部dirty、隐藏停止投影、换Session重绑继续适用，不新增全局总线或轮询。
+
+## 草稿与来源变化
+
+已显示的canonical金额目标保留；容量、开放设备或效果来源变化时按amounts重读可容纳性和效果。主动修改比例才重新生成目标，分配操作提交该金额映射；拖动/均分直接提交，动态读取已接纳值。UI接收容量、开放设备及当前/目标结果，Owner管理内部输入与失效。命令以当前事实校验本次金额，实际回执替换旧效果。
+
+choices_changed、预算及贡献变化驱动相关读取；时钟相关事实在可见显示帧按实际需要重读，隐藏停投影、重开取最新。静态定义与未变效果按来源复用。
