@@ -22,5 +22,9 @@
   "equipment": {
     "branch": "art/equipment-materials-main-20261029",
     "source": "fb28b60ef8b35c236b15bedb4590dffbc1e7b556"
+  },
+  "cleanup": {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254"
   }
 }

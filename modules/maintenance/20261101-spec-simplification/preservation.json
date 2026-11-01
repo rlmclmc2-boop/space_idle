@@ -1678,5 +1678,333 @@
     "archive_path": "modules/maintenance/20261101-spec-simplification/original/equipment/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
     "blob": "2b45530e5f3e6d31be0aae2a4d460c877291e360",
     "sha256": "5e10da9d9de8c8affb9910da21f22696fefe61fb0bacd322d3be9255dd06f077"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/foundation/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/foundation/README.md",
+    "blob": "df09550a3a21794934db54a4f51238614bd14d13",
+    "sha256": "d357d9d441dcb495c566b44f4e0dcdeb02daa427feeae3ff168f81be62182a1e"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/ui-redesign-plan/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/ui-redesign-plan/README.md",
+    "blob": "a7a8e9fc3ba7f52561f66b1a39dd05cba1f78129",
+    "sha256": "130a71cc507a53b61c25016c5da42d823759bbf2b79e95be675c2e6a3f940104"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/README.md",
+    "blob": "2d7fd7cc1b3d1f68b69d8950952ded67255fef32",
+    "sha256": "6e9263c8374278723fac44dd4f17641a2e8cf57ce644a5a7835edd227eb8d746"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/14-ui-contracts.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/14-ui-contracts.md",
+    "blob": "0743db460ad948ee027364e12ad4206f10780986",
+    "sha256": "14bfc6df0f118be9f7ebef5faf317ea0bf69a22321cc810e7aa65098f9b3d993"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/13-art-interaction.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/13-art-interaction.md",
+    "blob": "5ef78fbaa0e2e2d30429fce3d01a66e69ed57e78",
+    "sha256": "67219261404f810342f1b5f09bb73d7bfd5a850f0d104b05d1d4b8551ccd94fc"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/11-stage6-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/11-stage6-contract.md",
+    "blob": "631be63d91eacbd5f35de7ca09048321da80edbc",
+    "sha256": "23125276da539b0c442993790a88ccbb493ed2e6033bc3e2efc27c963e015e34"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/08-decisions.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/08-decisions.md",
+    "blob": "3c1d597a83b44679716b07d4eeb9e49b095f3bfd",
+    "sha256": "6423b33a3181cc7c79e1a1a81bf121a97a74cc2a4f9887f5032bd3522d777201"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/07-verification.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/07-verification.md",
+    "blob": "d68cf98b19952ebb73b36daf7c09fc9e37803a79",
+    "sha256": "fd559fed817db21c999bf57a359b82862b7e8f5262de6f633de30192347dd23e"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/06-data.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/06-data.md",
+    "blob": "458ece01dc4ef73f61b9fddc1a83e31eaebba8a5",
+    "sha256": "dbdbbfb059df7b375be41d931232a43d1e76f70f2d3cba081bcc8abbf2a031ba"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/05-architecture.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/05-architecture.md",
+    "blob": "a1ec4ea600cbbef7b4e451b7ece2e9e74f71bc0e",
+    "sha256": "9199eb0aad3eddb3d3ff66f5f4e0e1bbb075ad11945fe4baae1608d426347c6c"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/02-combat.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/02-combat.md",
+    "blob": "79ce8ab49e40e591f541315b1a2fd1944fba47ac",
+    "sha256": "6b48e5beda6531a10a810def2c3a47ae04afd922a39b42d624ecec7180cedb41"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/README.md",
+    "blob": "641c50f8479813b2756bce64d09eb565f69eb877",
+    "sha256": "a03ea9e975f144919b616198d007915a48fb78fb1ae77ecf1ef4d5f020a14e60"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md",
+    "blob": "7a02a868ab4aef32ccb896dcfc466a7fdb5ad090",
+    "sha256": "40526e3c92ec78b9b52034fc439afeb92ed88b53a7c8e58a0a84d008ef020b81"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/README.md",
+    "blob": "70e1ae9aebb8f3d4a33c5dbbb7f27badfeb73524",
+    "sha256": "1424e503c3cc79ff9dff8fbb50ca3ade0f3538186e3d5eeecc932cf8f0837884"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/README.md",
+    "blob": "3e02ce33364cc1fad32d9e4f2ad90e1f194ee434",
+    "sha256": "2199d7b2f927160832b4a82adf0561935f029680d0d18247db913472e56a4185"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/review/conflicts.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/review/conflicts.md",
+    "blob": "39dc101d969a5c6e3842726f67b068292a84dc26",
+    "sha256": "56df84e74422dbc46dfdf762398a022c49eb2fcb5e813aa6f474485bcad4b8e7"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/resources.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/resources.md",
+    "blob": "43c2c1d478613eef12b6c69a138ae84df36dac1e",
+    "sha256": "c74a7bc833fa024f6781d06aa3d70cbc18a38e88a3c67054d943ad1a991062bb"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/research.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/research.md",
+    "blob": "6534570284cff5f8385476c9dc4be2bac65385f9",
+    "sha256": "83fe953e3c3b8c3e828640df35680ed0cc5c60bfa19103c37f4ed459dd2807c7"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/reactor.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/reactor.md",
+    "blob": "397415393e5e2b55ec05ab19624950736230da54",
+    "sha256": "b4ea49eca3837ddf984ce062be7b956995cc11d4c72f681821d579f78f72b24c"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/planet.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/planet.md",
+    "blob": "a15f4b25b78247b1a1919e882d7630b94f05bb1e",
+    "sha256": "42a6d8e9b9102f1b431ff394e77dcb0ebc615feee0253eaad5f781e76163c49d"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/persistence.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/persistence.md",
+    "blob": "01fa03bbea5989315fc226e3a85c81d68a7211f7",
+    "sha256": "9031a03d0f303142f61725ebb55dd79d5e308a8a7e07ba7060489ba8da25e79b"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/hyperspace.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/hyperspace.md",
+    "blob": "718ada16eeaa0357f88413c6f09d0ddeabb3d1ec",
+    "sha256": "57e5dd7ee6796584939b070ddd08d1799a785d56a6339dc7200bc7d613917b19"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/galaxy.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/galaxy.md",
+    "blob": "ea340d063972cebd467546ee9ff2703f0ca87b2e",
+    "sha256": "71e8f724791d346146f57f86e9b87d809d50d087c4fc2d601e2a595b36030dc9"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/equipment.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/equipment.md",
+    "blob": "77313d691dd76e1c4e0ee72f9a2d7ed92343f681",
+    "sha256": "11b63b985f74937a4fcf93d5e98f9a4edbe5656a65a6ec6863059ab7469ba5ab"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/enhancement.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/enhancement.md",
+    "blob": "ec645b10d3ea4888261fc4e9f4f9a83cef5e2d08",
+    "sha256": "aa2870563d65bc2b5c756d25b9d6998cda0caeb0ba913a8cd73c336adbeb340f"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/crew.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/crew.md",
+    "blob": "b1d4259fa24e6b01163e4f5f5157b40a229eef47",
+    "sha256": "95f9e0aefb85c30cd77f9043b9dfc81f33a06e828c1869aa5e5e45785238be78"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/contracts/battle.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/contracts/battle.md",
+    "blob": "b70861ade9808e1e027794f808553b17f7389dc2",
+    "sha256": "53074cdd315b8c8267d95b5c8e5277b6eb8c2a18709016c8bd37c826883c8d21"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/sources.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/sources.md",
+    "blob": "f10dc2ea6646e8196b6b75a18287efaf7284a216",
+    "sha256": "5ab75416fc2af9b9ebe67dd31fee18be399f6a5b8c70f8805d55c16fe53195e7"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/open-items.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/open-items.md",
+    "blob": "cffbc304b515f7a855b118fff967b596626ca386",
+    "sha256": "976d4722bbd0c116f07022dfd450736ce9f15e9cc2ad2366e30bd0708bd5079e"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/research.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/research.md",
+    "blob": "9bdd75187f443f0454a8559c762d2c36a3e12c7a",
+    "sha256": "c362df3e839681db89b025c9f6e4067280a8508672adcc68aca67e9d9fb2f711"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/reactor.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/reactor.md",
+    "blob": "560bc0902ad86b93f594f74e33fcbee4aef448f5",
+    "sha256": "eaf006a79f0006ac98d704e42c9a7fff511760d5be5e84e233e7b741c6e58982"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/reactor-asset-contract.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/reactor-asset-contract.md",
+    "blob": "0dcc64caa02f5030002f5db2ce9189204ab76bd1",
+    "sha256": "11017518ebbcecaadaec98b0eb293865365b7f17ed7c9f3b7b99a6ba4835ab9b"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/planet.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/planet.md",
+    "blob": "72032d513218dc2dbae1b123559e864de0a9e5f7",
+    "sha256": "f6d0aa3fb65b5eb31de2eb8b359faf419039b4f632150cea9beed8e364e59fd4"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/persistence.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/persistence.md",
+    "blob": "b8cbe146f07e8d24659b17d3f8a5cb055eefa780",
+    "sha256": "46e2780cf6af05ed9fd66b24c562bf7406c8b6af2eb264c98e8951f5277c9ef7"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/hyperspace.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/hyperspace.md",
+    "blob": "59bf8f2118e5162c801c1363e1c23c8e991dae72",
+    "sha256": "857e0bec404ae6f1f917b8c88928b5a494d32ad2e04ed388b3c760688b629664"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/galaxy.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/galaxy.md",
+    "blob": "5530fc1d39236ad8599343a38a405b8e595af0d7",
+    "sha256": "8c4413f5d68502243742957bcdd22bfbc981b3b6672131ef4b5dce16ee627973"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/equipment.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/equipment.md",
+    "blob": "9ca66f6864ec224298bd0039b53d52b791f45d9c",
+    "sha256": "8a8c36247b1419623958e7182da0696feef2fd7f2a6963cecbe139fe0a2ea0d1"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/enhancement.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/enhancement.md",
+    "blob": "c6b919860bcb80fe7eb62a95bf8b56e7f3bd88db",
+    "sha256": "0e0c0a6d4a8f538a39a0f4a78a8c4103c7ddf6949fbce74d2ef1a42d3edcb305"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/crew.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/crew.md",
+    "blob": "67ffdba43287b3572e9fee63b7e4f124801f0d7a",
+    "sha256": "9650809ee3d7297840c4385fdf90ad32b02cf165f0079211f7ccf8835a56894e"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/docs/game-design/art/modules/battle.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/docs/game-design/art/modules/battle.md",
+    "blob": "bc5c4bd7e4134fd6cd0651603c3f1c606254e00b",
+    "sha256": "33d1350eec5e6b5de2d8873b5aebc620aff6781fca5234561215d76a501fef79"
+  },
+  {
+    "branch": "docs/design-entry-cleanup-20261031",
+    "source": "8e6d5af48db9384cdebd5add54c9754a0165d254",
+    "path": "space-battleship/assets/hightech/README.md",
+    "archive_path": "modules/maintenance/20261101-spec-simplification/original/cleanup/space-battleship/assets/hightech/README.md",
+    "blob": "3346e3b1e5d456750ce2ca8f641da5ed919a2d21",
+    "sha256": "1463f1fe726fd317478b16da8d332103ea39b8e4571664a8af57b5d9cd8c43de"
   }
 ]
