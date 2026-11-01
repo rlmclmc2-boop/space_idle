@@ -4,6 +4,7 @@ extends Control
 ## retains authored normals, depth and UVs without a full-frame 3D MSAA pass.
 const MODEL=preload("res://assets/ui/reactor/b01/faceted-reactor.glb")
 const SURFACE=preload("res://assets/ui/reactor/b01/faceted-surface.gdshader")
+const OUTLINE=preload("res://assets/ui/reactor/b01/faceted-structure-outline.gdshader")
 const DEPTH=preload("res://assets/ui/reactor/b01/faceted-depth.gdshader")
 const BACKGROUND=preload("res://assets/ui/reactor/b01/faceted-canvas-background.gdshader")
 const WORK=preload("res://assets/ui/reactor/b01/faceted-canvas-work.gdshader")
@@ -21,6 +22,8 @@ var _background: ColorRect
 var _background_material: ShaderMaterial
 var _palette: Dictionary={}
 var _bodies: Array=[]
+var _outlines: Array[MeshInstance3D]=[]
+var _outline_material: ShaderMaterial
 var _groups: Dictionary={}
 var _materials: Dictionary={}
 var _mechanisms: Dictionary={}
@@ -68,7 +71,7 @@ func _init() -> void:
 	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
-	_environment.ambient_light_energy=.18
+	_environment.ambient_light_energy=.26
 	var environment_node:=WorldEnvironment.new()
 	environment_node.environment=_environment
 	_baker.add_child(environment_node)
@@ -77,11 +80,21 @@ func _init() -> void:
 	light.light_energy=1.0
 	light.light_angular_distance=.6
 	light.shadow_enabled=true
-	light.shadow_opacity=.32
+	light.shadow_opacity=.62
 	light.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
 	light.directional_shadow_max_distance=3000
 	_baker.add_child(light)
-	light.look_at_from_position(Vector3(100,-120,2200),Vector3(594,-400,0))
+	light.look_at_from_position(Vector3(80,-20,650),Vector3(594,-400,0))
+	for x in [185.0,1010.0]:
+		var luminaire:=OmniLight3D.new()
+		luminaire.position=Vector3(x,-78.0,180.0)
+		luminaire.light_color=Color("ffd6a0")
+		luminaire.light_energy=.65
+		luminaire.omni_range=650.0
+		luminaire.omni_attenuation=1.8
+		_baker.add_child(luminaire)
+	_outline_material=ShaderMaterial.new()
+	_outline_material.shader=OUTLINE
 	_asset=MODEL.instantiate()
 	_baker.add_child(_asset)
 	for group in _asset.get_children():
@@ -114,6 +127,7 @@ func _update_canvas_transform() -> void:
 		for material in materials:material.set_shader_parameter("stage_from_canvas",matrix)
 
 func _kind(title: String) -> int:
+	if "core energy rim" in title or "core field meridian" in title:return 12
 	if "core containment glass" in title or "weapon chamber glazing" in title:return 1
 	if "receiver acknowledgement" in title:return 11
 	if "core transfer packet" in title:return 10
@@ -144,6 +158,13 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 				_palette[palette_key]=material
 			node.set_surface_override_material(index,_palette[palette_key])
 			colors.append(_palette[palette_key])
+		var outline:=MeshInstance3D.new()
+		outline.name="StructureSilhouette"
+		outline.mesh=node.mesh
+		outline.material_override=_outline_material
+		outline.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.add_child(outline)
+		_outlines.append(outline)
 		_bodies.append({"node":node,"materials":colors})
 		return
 	node.visible=false
@@ -159,6 +180,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	elif kind==3:part.z_index=1
 	elif kind==2:part.z_index=0
 	var bottom: float=-INF
+	var right: float=-INF
 	for index in range(node.mesh.get_surface_count()):
 		var arrays: Array=node.mesh.surface_get_arrays(index)
 		var raw: PackedVector3Array=arrays[Mesh.ARRAY_VERTEX]
@@ -177,6 +199,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			var depth_code: int=int(roundf(clampf((point.z+256.0)/1024.0,0.0,1.0)*65535.0))
 			colors.append(Color(float(depth_code/256)/255.0,float(depth_code%256)/255.0,normal.x*.5+.5,normal.y*.5+.5))
 			bottom=maxf(bottom,-point.y)
+			right=maxf(right,point.x)
 		var original_indices: PackedInt32Array=arrays[Mesh.ARRAY_INDEX]
 		if original_indices.is_empty():
 			for i in raw.size():original_indices.append(i)
@@ -218,7 +241,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		drawable.material=material
 		part.add_child(drawable)
 		_materials[key].append(material)
-	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"kind":kind})
+	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"right":right,"kind":kind})
 	part.visible=kind==1
 
 func _pipe_key(id: String) -> String:
@@ -276,6 +299,7 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	diagnostics.field_updates+=1
 
 func _refresh_bake(ids: Array) -> void:
+	for outline in _outlines:outline.visible=true
 	for body in _bodies:
 		for index in body.materials.size():body.node.set_surface_override_material(index,body.materials[index])
 	_environment.background_color=Color("0a1d30")
@@ -306,6 +330,7 @@ func _finish_bake(generation: int) -> void:
 	if generation!=_cache_generation:return
 	var working:=ImageTexture.create_from_image(_baker.get_texture().get_image())
 	_background_material.set_shader_parameter("working_surface",working)
+	for outline in _outlines:outline.visible=false
 	var depth_material:=ShaderMaterial.new()
 	depth_material.shader=DEPTH
 	for body in _bodies:
@@ -325,6 +350,7 @@ func _finish_bake(generation: int) -> void:
 		for index in body.materials.size():body.node.set_surface_override_material(index,body.materials[index])
 	_environment.background_color=Color("0a1d30")
 	_baker.render_target_update_mode=SubViewport.UPDATE_DISABLED
+	for outline in _outlines:outline.visible=true
 	_cache_ready=true
 	diagnostics.cache_renders+=3
 	queue_redraw()
@@ -351,7 +377,7 @@ func _animate_mechanisms() -> void:
 				if "pulse" in title:
 					var pulse: float=maxf(.01,sin((shot-1.17)/.36*PI))
 					part.scale=Vector2(pulse,1.0)*SOURCE_SCALE
-					part.position=source_point(Vector2(90.0-(90.0-origin.x)*pulse,origin.y))
+					part.position=source_point(Vector2(float(mechanism.right)-(float(mechanism.right)-origin.x)*pulse,origin.y))
 			elif title.begins_with("furnace feed"):
 				var index: int=int(title.get_slice("feed ",1))
 				var descent: float=fmod(age/1.2+float(index)/3,1.0)
