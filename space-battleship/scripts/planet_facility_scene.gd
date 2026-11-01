@@ -122,9 +122,11 @@ func _ready() -> void:
 		if kind == "equipment":
 			_add_work_spot(model, "Factory traveling winch", "Manufacturing recessed machine bed",
 				Color("ff9a48"), 6.0, 1.65, 39.0, Vector3(0, 0, -0.08))
+			_add_signal_spill(model, "Manufacturing entrance amber soffit lamp", Color("ff9b55"), 0.38, 0.75)
 		if kind == "shipyard":
 			_add_work_spot(model, "Dock portal recessed soffit", "Dock recessed central landing lane",
 				Color("ff8e39"), 3.4, 1.7, 42.0, Vector3(0, -0.07, -0.06))
+			_add_signal_spill(model, "Dock entrance amber pressure lamp", Color("ff9850"), 0.46, 0.75)
 		if kind == "auto_explore":
 			_add_work_light(model, "Command dark structural foundation", Color("ffae65"), 0.46, 1.45, Vector3(0, 0, -0.10))
 			_add_signal_spill(model, "Command underdeck amber service signal", Color("ff9e51"), 1.30)
@@ -180,18 +182,18 @@ func _add_work_spot(model: Node3D, anchor_name: String, target_name: String, col
 	spot.look_at(target.global_position, Vector3.BACK)
 
 func _add_signal_spill(model: Node3D, name_prefix: String, color: Color,
-		energy: float) -> void:
+		energy: float, light_range: float = 1.0) -> void:
 	var signals: Array[MeshInstance3D] = []
 	for child in model.find_children("*", "MeshInstance3D", true, false):
 		if String(child.name).begins_with(name_prefix):
 			signals.append(child as MeshInstance3D)
-	assert(signals.size() >= 4, "Missing authored underdeck lamps: " + name_prefix)
+	assert(signals.size() >= 4, "Missing authored service lamps: " + name_prefix)
 	for index in [0, int(signals.size() / 2)]:
 		var lamp := OmniLight3D.new()
-		lamp.name = "UnderdeckWorkSpill"
+		lamp.name = "AuthoredServiceSpill"
 		lamp.light_color = color
 		lamp.light_energy = energy
-		lamp.omni_range = 1.0
+		lamp.omni_range = light_range
 		lamp.light_specular = 0.18
 		signals[index].add_child(lamp)
 

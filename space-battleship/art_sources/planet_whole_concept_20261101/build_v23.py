@@ -751,6 +751,12 @@ for side in (-1,1):
                [(side*1.23,.58),(side*1.38,.58),
                 (side*1.38,.88),(side*1.29,1.02),
                 (side*1.23,1.02)],-1.60,-.27,ARMOR_SOFT,workshop)
+    slope_shell("Fabrication continuous roof load shoulder",
+                [(side*1.21,-1.61),(side*1.40,-1.61),
+                 (side*1.40,-.26),(side*1.21,-.26)],
+                [1.13,1.04,1.04,1.13],.09,ARMOR_SOFT,workshop)
+    box("Fabrication roof shoulder inner shadow return",(side*1.21,-.94,1.00),
+        (.04,1.28,.12),KEEL,workshop,.006)
     box("Fabrication room lower dark pressure sill",(side*1.39,-.94,.64),
         (.018,1.20,.10),ARMOR_SIDE,workshop,.004)
     for y in (-1.36,-.56):
@@ -764,6 +770,8 @@ for side in (-1,1):
     for y in (-1.53,-.24):
         box("Fabrication room end-frame corner",(side*1.32,y,.87),
             (.15,.10,.80),ARMOR,workshop,.012)
+        box("Manufacturing entrance amber soffit lamp",(side*.71,y,1.04),
+            (.09,.06,.03),AMBER,workshop,.004)
     beam("Fabrication room exposed service conduit",
          (side*.68,-1.47,1.03),(side*.68,-.35,1.03),.045,.045,GOLD,workshop)
 for y in (-.86,):
@@ -876,6 +884,14 @@ for side in (-1,1):
 # cross-section: layered outer armor, black bay lining, service machinery.
 for side in (-1,1):
     x=side*.88
+    slope_shell("Dock continuous upper pressure shoulder",
+                [(side*.94,-1.82),(side*1.13,-1.82),
+                 (side*1.13,-.28),(side*.94,-.28)],
+                [1.19,1.09,1.09,1.19],.10,ARMOR_SOFT,shipyard)
+    box("Dock shoulder dark inner return",(side*.92,-1.05,1.04),
+        (.05,1.48,.13),KEEL,shipyard,.008)
+    box("Dock continuous lower pressure belt",(side*1.09,-1.05,.57),
+        (.08,1.52,.14),ARMOR_MID,shipyard,.010)
     for bay_y in (-1.63,-.54):
         wall_prism("Dock separated service bay dark hull",
                    [(x-.18,.46),(x+.18,.46),(x+.18,.97),
@@ -911,6 +927,8 @@ for side in (-1,1):
                    [(side*.66,.42),(side*1.13,.42),(side*1.13,1.02),
                     (side*.99,1.22),(side*.70,1.22)],y-.06,y+.06,
                    ARMOR,shipyard)
+        box("Dock entrance amber pressure lamp",(side*.64,y,1.35),
+            (.10,.07,.03),AMBER,shipyard,.004)
     box("Dock service pipe housed beneath sill",(side*.62,-1.05,.48),
         (.045,1.32,.045),GOLD,shipyard,.006)
     box("Dock edge beacon armor base",(side*1.06,-1.70,1.43),
