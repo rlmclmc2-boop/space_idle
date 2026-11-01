@@ -1,0 +1,42 @@
+{
+  "source_commit": "efd9c113",
+  "godot": "4.7.2",
+  "images": {
+    "complete.jpg": {
+      "bytes": 163642,
+      "sha256": "e3e1dc2db4aa2f3a7e5987418f62bb829d8bd64a9e7c5e722b857bc6496c4944"
+    },
+    "motion-00.jpg": {
+      "bytes": 187614,
+      "sha256": "64d8a3aa1b418c26fea229f91da4ff746f5395c0e4eacd2a0421cc7e5c928e8b"
+    },
+    "motion-31.jpg": {
+      "bytes": 196073,
+      "sha256": "f56e865f5f3d5ca4fc85950b072bb4e99d13b3420730561cae70a31f7a1f198e"
+    },
+    "page.jpg": {
+      "bytes": 187071,
+      "sha256": "61f9292296e71fd12916f9b75ea16b8a8bc891aee053113b7787d242f4a78bbe"
+    },
+    "side-1.jpg": {
+      "bytes": 98705,
+      "sha256": "06b04cc3375bebedadac55713a85d474d2ea26337cce3525182a10b1f8890e0d"
+    },
+    "side-4.jpg": {
+      "bytes": 161480,
+      "sha256": "acd5506b0cc96946e8aa15ae80494bffaf43d850a1c302f352290f9588cee27f"
+    },
+    "stage-1.jpg": {
+      "bytes": 103427,
+      "sha256": "7380f729632b203c917983a3aba6de1539aad427dcedeff9a8a71a03db5b3aa4"
+    },
+    "stage-2.jpg": {
+      "bytes": 118492,
+      "sha256": "21275c3439d533f0125ec72a6ba07dfc9167af6ce497cf143c15af87f605f875"
+    },
+    "stage-3.jpg": {
+      "bytes": 142242,
+      "sha256": "835465a530364ba4f658dea959efe0592f9c1ed78725e852bc968bab8f701b07"
+    }
+  }
+}
