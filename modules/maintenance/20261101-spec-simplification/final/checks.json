@@ -1,0 +1,63 @@
+{
+  "stats": {
+    "equipment": {
+      "paths": 5,
+      "before_lines": 386,
+      "after_lines": 375,
+      "before_chars": 22350,
+      "after_chars": 21432
+    },
+    "reactor": {
+      "paths": 6,
+      "before_lines": 405,
+      "after_lines": 392,
+      "before_chars": 23264,
+      "after_chars": 22088
+    },
+    "host": {
+      "paths": 5,
+      "before_lines": 386,
+      "after_lines": 375,
+      "before_chars": 22128,
+      "after_chars": 21432
+    },
+    "planet": {
+      "paths": 7,
+      "before_lines": 403,
+      "after_lines": 395,
+      "before_chars": 23258,
+      "after_chars": 22199
+    },
+    "backend": {
+      "paths": 5,
+      "before_lines": 386,
+      "after_lines": 375,
+      "before_chars": 22226,
+      "after_chars": 21432
+    },
+    "cleanup": {
+      "paths": 4,
+      "before_lines": 372,
+      "after_lines": 363,
+      "before_chars": 20977,
+      "after_chars": 20229
+    },
+    "main": {
+      "paths": 4,
+      "before_lines": 377,
+      "after_lines": 368,
+      "before_chars": 21499,
+      "after_chars": 20751
+    }
+  },
+  "errors": [],
+  "external_links": [
+    "https://github.com/rlmclmc2-boop/space_idle/blob/2118e3218e3016933c8a33c4f70afb111761d68c/modules/reactor/direct-sluice-20261101/README.md",
+    "https://github.com/rlmclmc2-boop/space_idle/blob/art/equipment-materials-main-20261029/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/inline-slot-workbench-concept/HANDOFF.md",
+    "https://github.com/rlmclmc2-boop/space_idle/blob/design/clear-zone-host/space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/HANDOFF.md",
+    "https://github.com/rlmclmc2-boop/space_idle/blob/docs/design-entry-cleanup-20261031/space-battleship/docs/maintenance/HANDOFF.md",
+    "https://github.com/rlmclmc2-boop/space_idle/blob/feat/amount-safe-previews/space-battleship/docs/HANDOFF.md",
+    "https://github.com/rlmclmc2-boop/space_idle/blob/implement/reactor-centered-godot/space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md",
+    "https://github.com/rlmclmc2-boop/space_idle/blob/wip/planet-thread-resume-20261101/space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md"
+  ]
+}
