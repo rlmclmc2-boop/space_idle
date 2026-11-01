@@ -2,7 +2,7 @@
 --export-glb writes the editable runtime model and installation metadata.
 Optional author renders stay under /tmp and never bake native UI text.
 """
-import bpy,json,math,os,sys,hashlib
+import bpy,bmesh,json,math,os,sys,hashlib
 from pathlib import Path
 from mathutils import Vector,Matrix
 from bpy_extras.object_utils import world_to_camera_view
@@ -10,6 +10,8 @@ ROOT=Path(__file__).resolve().parent
 GENERATOR_BYTES=Path(__file__).read_bytes()
 GENERATOR_SHA=hashlib.sha256(GENERATOR_BYTES).hexdigest()
 DATA=json.loads((ROOT/'reactor_ports.json').read_text());W,H=DATA['source_size']
+CRYSTAL_CONVEYOR=[(1014,610,103),(990,640,151),(940,690,110)]
+SHARD_CLEARANCE=6.6
 OUT=Path(os.environ.get('REACTOR_FACETED_BUILD','/tmp/reactor-faceted-build'));OUT.mkdir(parents=True,exist_ok=True)
 (OUT/('generator-'+GENERATOR_SHA+'.py')).write_bytes(GENERATOR_BYTES)
 def material(name,color,glow=False):
@@ -171,19 +173,20 @@ def opening(name,x,y,w,h,front,back,m):
  return o
 
 def armor_arc(name,x,y,r,width,z,depth,m,start,end):
- profile=[(r,z-depth),(r,z-5),(r-5,z+3),(r-width+5,z+3),(r-width,z-5),(r-width-5,z-depth)]
- n=5;vertices=[]
+ profile=[(r,z-depth),(r,z-5),(r-5,z+3),(r-width*.52,z+9),(r-width+5,z+3),(r-width,z-5),(r-width-5,z-depth)]
+ n=5;stride=len(profile);vertices=[]
  for i in range(n+1):
   a=start+(end-start)*i/n
   for radius,zz in profile:vertices.append((x+radius*math.cos(a),-(y+radius*math.sin(a)),zz))
  faces=[]
  for i in range(n):
-  for j in range(len(profile)-1):
-   a=i*6+j;faces.append((a,a+1,a+7,a+6))
- faces.extend([tuple(range(5,-1,-1)),tuple(n*6+i for i in range(6))])
- o=mesh(name,vertices,faces,m['armor']);o.data.materials.append(m['shade']);o.data.materials.append(m['glass'])
+  for j in range(stride-1):
+   a=i*stride+j;faces.append((a,a+1,a+stride+1,a+stride))
+ faces.extend([tuple(range(stride-1,-1,-1)),tuple(n*stride+i for i in range(stride))])
+ o=oriented_solid(mesh(name,vertices,faces,m['armor']));o.data.materials.append(m['shade']);o.data.materials.append(m['glass'])
  for f in o.data.polygons:
-  band=f.index%5;f.material_index=2 if band==4 else 1 if band in (0,3) else 0
+  band=f.index%(stride-1);f.material_index=2 if band==5 else 1 if band in (0,4) else 0
+ bevel=o.modifiers.new('formed arc bevel','BEVEL');bevel.width=1.3;bevel.segments=2;o.modifiers.new('formed arc normals','WEIGHTED_NORMAL')
  return o
 
 def mount(name,x,y,w,m):
@@ -199,7 +202,7 @@ def mount(name,x,y,w,m):
   q=x+side*w*.32
   if y<400:
    plate(name+' wall bracket',[(q-12,y-8),(q+14,y-8),(q+20,y+28),(q-3,y+64),(q-13,y+58)],-8,28,m['dark'])
-   box(name+' wall anchor',q+10,y+29,24,63,-27,19,m['shade'])
+   box(name+' wall anchor',q+10,y+29,24,63,-27,110,m['shade'])
   else:
    armor_box(name+' floor foot',q,y+8,44,27,16,30,m['shade'])
 
@@ -237,8 +240,14 @@ def weapon(m,phase=.65):
  armor_panel('weapon left armor',[(81,126),(111,102),(142,109),(136,164),(124,184),(128,264),(103,278),(78,258)],65,25,m['armor'])
  armor_panel('weapon right armor',[(225,107),(255,112),(278,138),(274,258),(249,278),(225,259)],65,25,m['shade'])
  armor_panel('weapon top bridge',[(118,113),(141,91),(216,94),(249,116),(232,135),(213,122),(146,120)],86,38,m['armor']);armor_panel('weapon bottom bridge',[(121,269),(146,280),(217,279),(246,261),(259,280),(226,300),(143,299),(115,284)],86,33,m['shade'])
- armor_box('weapon outer shoulder',105,188,39,113,96,36,m['armor'])
- armor_box('weapon energy manifold',246,195,30,88,88,28,m['shade'])
+ # Replace the single shallow shoulder with a formed load-bearing door.
+ armor_panel('weapon outer shoulder',[(77,132),(90,115),(116,121),(128,148),(125,240),(112,266),(83,260),(74,240)],112,48,m['armor'])
+ armor_panel('weapon shoulder upper shoe',[(77,131),(88,108),(120,110),(135,130),(127,146),(102,136)],122,26,m['shade'])
+ armor_panel('weapon shoulder lower shoe',[(76,240),(95,248),(121,246),(135,266),(121,283),(85,276)],120,29,m['shade'])
+ box('weapon shoulder lower brass lock',106,265,25,7,140,9,m['copper'])
+ armor_panel('weapon energy manifold',[(234,140),(263,139),(284,157),(286,234),(268,257),(238,249),(227,231)],103,53,m['shade'])
+ armor_panel('weapon manifold cover',[(240,148),(258,148),(269,162),(269,230),(258,242),(240,235)],116,16,m['armor'])
+ box('weapon manifold exposed lower joint',251,248,25,9,117,13,m['steel'])
  for yy in (132,251):box('weapon brass seam',244,yy,23,7,101,8,m['copper'])
  box('weapon chamber',181,195,74,133,38,8,m['glass'])
  opening('weapon aperture return',181,195,104,165,92,40,m)
@@ -249,21 +258,57 @@ def weapon(m,phase=.65):
   rod('weapon chamber glazing '+str(i),(146,y,68),(216,y,68),17,m['field'])
   for xx in (146,207):rod('weapon capacitor endcap',(xx,y,68),(xx+9,y,68),18,m['steel'])
   box('weapon retainer '+str(i),181,y+12,76,8,100,8,m['edge'])
- box('weapon ship bus bed',63,196,74,25,88,8,m['dark'])
- for y in (182,210):box('weapon ship bus rail',63,y,78,6,112,10,m['edge'])
- box('weapon ship bus wall cap',28,196,14,38,122,12,m['dark'])
- box('weapon focusing exit',117,196,59,35,85,18,m['dark'])
+ box('weapon ship bus bed',63,196,74,25,130,8,m['dark'])
+ for y in (182,210):box('weapon ship bus rail',63,y,78,6,154,10,m['edge'])
+ box('weapon ship bus wall cap',28,196,14,38,164,12,m['dark'])
+ rod('weapon ship bus hull return',(28,196,-148),(28,196,152),10,m['shade'])
+ box('weapon focusing exit mount',107,196,32,38,128,24,m['dark'])
+ hollow_socket('weapon focusing exit',Vector((90,196)),Vector((-1,0)),0.,140,-10,24,10,m)
  if phase>=.65 and phase<.85:
-  pulse=math.sin((phase-.65)/.20*math.pi)
-  box('weapon output',99,196,15,23,97,6,m['charge'])
-  plate('weapon output pulse',[(90,190),(90,202),(62-38*pulse,196)],102,2,m['charge'],shift=(0,0))
+  rod('weapon output',(67,196,140),(65,196,140),8,m['charge'])
+  plate('weapon output pulse',[(65,190),(65,202),(26,196)],140,2,m['charge'],shift=(0,0))
  for yy in (132,257):
   box('weapon inset seam',104,yy,25,4,104,3,m['dark'])
   disc('weapon captive pin',104,yy+9,3.6,109,m['copper'],8)
- service_panel('weapon shoulder hatch',104,198,23,45,109,m)
- vent_bank('weapon manifold cooling',246,194,16,43,98,4,m)
+ service_panel('weapon shoulder hatch',100,148,24,27,129,m)
+ vent_bank('weapon manifold cooling',251,196,17,49,131,5,m)
  for xx in (148,208):box('weapon crown joint',xx,112,3,19,105,3,m['dark'])
  socket('weapons',m)
+
+def oriented_solid(o):
+ # Closed pressure housings need consistently outward normals on returns.
+ bm=bmesh.new();bm.from_mesh(o.data);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(o.data);bm.free();o.data.update()
+ return o
+
+def axial_casing(name,x,y,sections,mat,sides=24):
+ vertices=[]
+ for z,r in sections:
+  for i in range(sides):
+   a=math.tau*i/sides;vertices.append((x+r*math.cos(a),-y-r*math.sin(a),z))
+ last=(len(sections)-1)*sides
+ for z in (sections[-1][0],sections[0][0]+12):
+  for i in range(sides):
+   a=math.tau*i/sides;vertices.append((x+50*math.cos(a),-y-50*math.sin(a),z))
+ inner=len(sections)*sides;rear=inner+sides;faces=[]
+ for k in range(len(sections)-1):
+  for i in range(sides):
+   j=(i+1)%sides;faces.append((k*sides+i,(k+1)*sides+i,(k+1)*sides+j,k*sides+j))
+ faces.append(tuple(range(sides-1,-1,-1)))
+ for i in range(sides):
+  j=(i+1)%sides;faces.extend([(last+i,inner+i,inner+j,last+j),(inner+i,rear+i,rear+j,inner+j)])
+ faces.append(tuple(rear+i for i in range(sides)))
+ return oriented_solid(mesh(name,vertices,faces,mat))
+
+def barrel_panel(name,x,y,r,thickness,z0,z1,a0,a1,mat):
+ profile=[(r,z0),(r,z1),(r-thickness,z1),(r-thickness,z0)];vertices=[];steps=4
+ for i in range(steps+1):
+  a=a0+(a1-a0)*i/steps
+  for radius,z in profile:vertices.append((x+radius*math.cos(a),-y-radius*math.sin(a),z))
+ faces=[]
+ for i in range(steps):
+  for k in range(4):faces.append((i*4+k,i*4+(k+1)%4,(i+1)*4+(k+1)%4,(i+1)*4+k))
+ faces.extend([tuple(range(3,-1,-1)),tuple(steps*4+i for i in range(4))])
+ o=oriented_solid(mesh(name,vertices,faces,mat));b=o.modifiers.new('pressure armor return bevel','BEVEL');b.width=1.6;b.segments=2;o.modifiers.new('pressure armor normals','WEIGHTED_NORMAL');return o
 
 def shield_axis_point(x,y,z):
  dx=x-1045;dz=z-70
@@ -297,13 +342,20 @@ def defence(m,phase=1.):
  for face in field.data.polygons:
   for loop in face.loop_indices:
    index=field.data.loops[loop].vertex_index;uv.data[loop].uv=(index%(cols+1)/cols,index//(cols+1)/rows)
- rod('shield rear casing',(945,177,66),(1008,177,66),38,m['shade'])
- for xx in (960,993):rod('shield bearing collar',(xx,177,66),(xx+7,177,66),43,m['steel'])
+ # A stepped pressure body extends backward along the projector's own
+ # normal. Its axis is shared with the front ring instead of a sideways rod.
+ axial_casing('shield barrel pressure body',1045,177,[(-78,55),(-61,71),(-38,79),(22,79),(47,69)],m['shade'])
+ for z,radius in [(-56,75),(-31,83),(23,83)]:
+  barrel_panel('shield barrel bearing collar',1045,177,radius,7,z-4,z+4,0,math.tau,m['steel'])
+ for i in range(6):
+  a=math.tau*i/6
+  barrel_panel('shield barrel armor '+str(i),1045,177,85,7,-31,22,a+.09,a+.86,m['armor'] if i in (0,1,5) else m['shade'])
+  barrel_panel('shield barrel coupling key '+str(i),1045,177,87,5,-19,-7,a+.27,a+.58,m['copper'])
  armor_panel('shield emitter shoulder',[(941,139),(955,122),(980,124),(999,146),(996,215),(980,238),(946,230),(936,209)],110,45,m['armor'])
  service_panel('shield service hatch',971,182,25,48,116,m)
  for yy in (116,238):box('shield brass key',988,yy,25,12,108,13,m['copper'])
  for obj in set(bpy.data.objects)-before:
-  if obj.type!='MESH' or not obj.name.startswith(('shield armor','shield glass','shield load ring','shield active rim','shield joint','shield projector')):continue
+  if obj.type!='MESH' or not obj.name.startswith(('shield armor','shield glass','shield load ring','shield active rim','shield joint','shield projector','shield barrel')):continue
   for v in obj.data.vertices:
    p=obj.matrix_world@v.co;q=shield_axis_point(p.x,-p.y,p.z)
    v.co=obj.matrix_world.inverted()@Vector((q.x,-q.y,q.z))
@@ -313,7 +365,10 @@ def furnace(m):
  mount('furnace',198,678,260,m);box('furnace deep shell',173,478,204,177,35,65,m['dark'])
  armor_panel('furnace left armor',[(77,421),(105,389),(145,397),(139,436),(120,453),(123,526),(99,548),(75,525)],64,23,m['armor'])
  armor_panel('furnace right armor',[(215,397),(245,405),(275,435),(268,528),(244,547),(221,523),(222,450),(205,431)],64,23,m['shade'])
- armor_box('furnace crown',177,405,112,28,75,16,m['armor']);box('furnace cavity',175,476,103,83,30,6,m['glass'])
+ armor_panel('furnace crown',[(107,403),(126,379),(149,370),(207,378),(245,402),(230,424),(195,408),(143,409),(122,425)],99,42,m['armor'])
+ armor_panel('furnace upper return',[(126,379),(145,366),(207,371),(231,384),(207,389),(150,382)],91,29,m['shade'])
+ box('furnace crown keyed lock',182,391,31,8,117,11,m['copper'])
+ box('furnace cavity',175,476,103,83,30,6,m['glass'])
  refractory_mouth(m)
  plate('furnace throat',[(132,483),(220,483),(216,507),(177,520),(136,507)],49,5,m['orange'],shift=(0,0))
  for i in range(3):
@@ -322,8 +377,27 @@ def furnace(m):
  armor_box('furnace outer cheek',95,484,37,78,97,34,m['armor'])
  armor_box('furnace tap shield',247,482,30,65,89,26,m['shade'])
  box('furnace dark lip',175,522,102,20,77,18,m['dark']);box('furnace tap',175,519,54,15,87,8,m['copper'])
- disc('furnace vessel',176,597,86,34,m['dark'],12);disc('furnace liquid',176,594,67,48,m['orange'],12)
- ring('furnace vessel bank',176,597,87,17,58,23,m['shade'],.50,math.tau-.10,12)
+ # A cast basin has a rolled rim, deep tapered wall and inner lining;
+ # the working liquid remains a separate surface below that lip.
+ vertices=[];sections=[(87,58),(90,44),(76,10),(66,10),(60,30),(67,48)];sides=24
+ for r,z in sections:
+  for i in range(sides):
+   a=math.tau*i/sides;vertices.append((176+r*math.cos(a),-597-r*.48*math.sin(a),z))
+ faces=[];roles=[]
+ for j in range(len(sections)):
+  for i in range(sides):
+   k=(i+1)%sides;faces.append((j*sides+i,j*sides+k,((j+1)%len(sections))*sides+k,((j+1)%len(sections))*sides+i));roles.append(1 if j in (3,4) else 0)
+ basin=oriented_solid(mesh('furnace basin casting',vertices,faces,m['shade']));basin.data.materials.append(m['ceramic'])
+ for polygon,role in zip(basin.data.polygons,roles):polygon.material_index=role
+ # Close the bottom with a solid refractory plug, not an open annular ring.
+ vertices=[]
+ for r,z in [(66,10),(60,30)]:
+  for i in range(sides):
+   a=math.tau*i/sides;vertices.append((176+r*math.cos(a),-597-r*.48*math.sin(a),z))
+ faces=[(i,(i+1)%sides,(i+1)%sides+sides,i+sides) for i in range(sides)]
+ faces.extend([tuple(range(sides-1,-1,-1)),tuple(sides+i for i in range(sides))])
+ plug=oriented_solid(mesh('furnace basin refractory bottom',vertices,faces,m['ceramic']))
+ disc('furnace liquid',176,594,67,48,m['orange'],24)
  # Rounded, continuous fluid section from tap into the catch basin.
  # A square ribbon has no rounded shoulder and reads as a rigid plate.
  stream=[];sides=12
@@ -353,10 +427,21 @@ def crystal(m,growth=1.):
  mount('crystal',1014,683,244,m);box('crystal base',1013,624,218,82,41,54,m['dark']);box('crystal back',1020,514,153,166,28,22,m['glass'])
  for x in (934,1100):
   armor_box('crystal pillar',x,557,30,195,66,27,m['armor'] if x<1000 else m['shade']);box('crystal foot',x,661,53,28,75,17,m['dark'])
- armor_panel('crystal crown left',[(921,436),(937,417),(990,418),(1008,436),(994,453),(938,451)],87,32,m['armor'])
- armor_panel('crystal crown right',[(1028,434),(1043,418),(1096,420),(1111,441),(1094,455),(1040,451)],87,32,m['shade'])
- box('crystal crown bridge',1017,434,26,27,90,24,m['dark'])
- box('crystal crown brass key',1017,427,14,5,115,5,m['copper'])
+ # The growth cylinder and its crown share the same X/Z section.
+ # This is a three-dimensional pressure collar seated on both pillars.
+ profile=[(83,425),(83,457),(67,457),(65,447),(67,425)]
+ for segment in range(4):
+  a0=segment*math.pi/4+.025;a1=(segment+1)*math.pi/4-.025;vertices=[];steps=6
+  for i in range(steps+1):
+   a=a0+(a1-a0)*i/steps
+   for r,yy in profile:vertices.append((1017+r*math.cos(a),-yy-10*math.sin(a),77+r*.72*math.sin(a)))
+  faces=[];n=len(profile)
+  for i in range(steps):
+   for j in range(n):faces.append((i*n+j,i*n+(j+1)%n,(i+1)*n+(j+1)%n,(i+1)*n+j))
+  faces.extend([tuple(range(n-1,-1,-1)),tuple(steps*n+i for i in range(n))])
+  oriented_solid(mesh('crystal crown collar '+str(segment),vertices,faces,m['armor'] if segment<3 else m['shade']))
+ box('crystal crown rear saddle',1017,437,159,26,49,27,m['dark'])
+ box('crystal crown brass key',1017,444,22,6,140,6,m['copper'])
  box('crystal seed bed',1017,603,143,29,65,14,m['copper'])
  box('crystal chamber front sill',1017,635,151,15,91,16,m['shade'])
  for i,(x,h,radius) in enumerate([(974,53,11),(997,88,13),(1022,114,18),(1047,79,14),(1071,48,11)]):
@@ -376,7 +461,7 @@ def crystal(m,growth=1.):
  for yy in (450,638):box('crystal brass clamp',1090,yy,25,10,104,11,m['copper'])
  # Front collector receives from the chamber sill and slopes down to the
  # accessible collection end. Rails and deck share these three sections.
- center=[Vector((1014,610,103)),Vector((990,640,151)),Vector((940,690,110))]
+ center=[Vector(p) for p in CRYSTAL_CONVEYOR]
  for part in ('deck','left rail','right rail'):
   vertices=[]
   for i,c in enumerate(center):
@@ -396,7 +481,7 @@ def crystal(m,growth=1.):
   mesh('crystal collector '+part,vertices,faces,m['dark'] if part=='deck' else m['steel'])
  for i in range(4):
   t=(i+.5)/4;c=center[1].lerp(center[2],t);xx,yy,zz=c
-  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=8,location=(xx,-yy,zz+12))
+  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=8,location=(xx,-yy,zz+SHARD_CLEARANCE))
   shard=bpy.context.object;shard.name='crystal body delivery '+str(i);shard.scale=(.75,1.2,.8);shard.data.materials.append(m['violet_light'])
  verts=[]
  for yy in (452,610):
@@ -447,6 +532,20 @@ def core(m):
   bpy.ops.mesh.primitive_uv_sphere_add(segments=16,ring_count=8,radius=8,location=(x,-y,100))
   o=bpy.context.object;o.name='core transfer packet '+id;o.data.materials.append(m['cyan'])
   for polygon in o.data.polygons:polygon.use_smooth=True
+ for index in range(2):
+  points=[];steps=36
+  for i in range(steps+1):
+   t=i/steps;a=t*math.tau*1.25+index*math.pi;r=12+35*math.sin(math.pi*t)
+   points.append(Vector((x+r*math.cos(a),-y+116-232*t,98+r*math.sin(a))))
+  vertices=[];sides=6
+  for i,p in enumerate(points):
+   tangent=(points[min(i+1,steps)]-points[max(0,i-1)]).normalized();u=tangent.cross(Vector((0,0,1))).normalized();v=tangent.cross(u).normalized()
+   for k in range(sides):vertices.append(p+2.3*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides)))
+  faces=[]
+  for i in range(steps):
+   for k in range(sides):
+    a=i*sides+k;b=i*sides+(k+1)%sides;faces.append((a,b,b+sides,a+sides))
+  mesh('core plasma strand axial '+str(index),vertices,faces,m['cyan'])
  for side in (-1,1):
   xx=x+side*159
   armor_box('core side constraint casing',xx,y,96,110,123,70,m['shade'])
@@ -461,9 +560,11 @@ def core(m):
   box('core pole contact',x,y+yy,26,9,135,8,m['copper'])
  for sign in (-1,1):
   yy=y+sign*162
-  armor_box('core pole armor',x,yy,74,83,131,75,m['armor'])
-  box('core pole dark insert',x,yy-sign*9,32,42,150,27,m['dark'])
-  box('core pole brass key',x,yy+sign*23,40,11,159,11,m['copper'])
+  outline=[(-30,62),(30,62),(46,32),(40,-36),(28,-50),(-26,-50),(-42,-15),(-40,30)]
+  armor_panel('core pole armor',[(x+dx,yy+sign*dy) for dx,dy in outline],141,75,m['armor'])
+  box('core pole dark insert',x,yy-sign*9,32,61,164,27,m['dark'])
+  box('core pole brass key',x,yy+sign*33,40,11,173,11,m['copper'])
+  for side in (-1,1):box('core pole flank joint',x+side*28,yy+sign*10,4,31,160,8,m['shade'])
  ring('core energy rim',x,y,142,8,122,4,m['cyan'],segments=48)
  for axis_angle in (-.64,.64):
   points=[]
@@ -475,6 +576,8 @@ def core(m):
    rod('core field meridian '+str(axis_angle)+' '+str(i),(a.x,-a.y,a.z),(b.x,-b.y,b.z),1.8,m['cyan'])
  rod('core polar channel',(x,y-136,102),(x,y+136,102),4.5,m['cyan'])
  ring('core glass rim',x,y,148,5,49,6,m['edge'],segments=24)
+ ring('core inner alloy return',x,y,162,10,105,13,m['steel'],segments=48)
+ ring('core restraint gasket',x,y,164,3,111,8,m['copper'],segments=48)
  for i,a in enumerate((0,math.pi/2,math.pi,math.pi*1.5)):
   armor_arc('core armor '+str(i),x,y,198,36,101,73,m,a+.16,a+1.39)
   aa=a+.77
@@ -493,35 +596,35 @@ def room(m):
   plate('recessed wall bay',[(left,16),(right,16),(right-7,548),(left+12,548)],-132,8,m['dark'],shift=(0,0))
   plate('recessed wall facing',[(left+16,36),(right-22,36),(right-33,524),(left+29,524)],-125,5,m['room'],shift=(0,0))
   for side,xx in [(-1,left),(1,right)]:
-   plate('bay depth return',[(xx,14),(xx-side*16,36),(xx-side*29,524),(xx-side*7,548)],-112,20,m['shade'],shift=(0,0))
+   plate('bay depth return',[(xx,14),(xx-side*16,36),(xx-side*29,524),(xx-side*7,548)],-112,20,m['hull_high'],shift=(0,0))
   for yy in (214,452):
-   box('bay recessed cross joint',(left+right)/2,yy,right-left-63,5,-114,5,m['edge'])
+   box('bay recessed cross joint',(left+right)/2,yy,right-left-63,5,-114,5,m['hull'])
   for xx in (left+53,right-67):
-   box('aft service housing',xx,289,22,370,-106,13,m['edge'])
+   box('aft service housing',xx,289,22,370,-106,13,m['hull'])
    box('service housing groove',xx-4,289,5,340,-89,4,m['dark'])
-  plate('hull diagonal gusset',[(left+35,390),(left+65,390),(right-47,492),(right-47,523)],-99,12,m['edge'],shift=(0,0))
+  plate('hull diagonal gusset',[(left+35,390),(left+65,390),(right-47,492),(right-47,523)],-99,12,m['hull'],shift=(0,0))
  for x in (-35,340,790,1195):
-  plate('hull structural pier',[(x-25,0),(x+16,0),(x+28,584),(x+58,718),(x+9,722),(x-18,584)],-92,48,m['edge'],shift=(0,0))
+  plate('hull structural pier',[(x-25,0),(x+16,0),(x+28,584),(x+58,718),(x+9,722),(x-18,584)],-92,48,m['hull'],shift=(0,0))
   box('pier recessed service spine',x+1,278,10,420,-82,9,m['dark'])
  # Ceiling returns converge toward the rear rather than a flat backdrop.
  for left,right in [(-40,310),(354,785),(817,1230)]:
-  plate('overhead coffering',[(left,0),(right,0),(right-55,61),(left+40,61)],-109,17,m['shade'],shift=(0,0))
+  plate('overhead coffering',[(left,0),(right,0),(right-55,61),(left+40,61)],-109,17,m['hull_high'],shift=(0,0))
   plate('overhead recess',[(left+35,4),(right-36,4),(right-68,42),(left+57,42)],-91,8,m['dark'],shift=(0,0))
  for x in (96,973):
-  plate('angled bay shoulder',[(x,0),(x+115,0),(x+84,64),(x+57,98),(x-8,138),(x-28,111)],-69,42,m['shade'])
+  plate('angled bay shoulder',[(x,0),(x+115,0),(x+84,64),(x+57,98),(x-8,138),(x-28,111)],-69,42,m['hull_high'])
   box('overhead luminaire shell',x+30,72,73,25,-32,26,m['dark'])
   box('overhead warm luminaire',x+28,78,50,8,-7,6,m['lamp'])
  for yy in (109,362):
-  box('aft transverse beam',594,yy,1060,18,-97,25,m['edge'])
-  for x in (45,1139):box('beam side anchor',x,yy,34,52,-62,31,m['shade'])
+  box('aft transverse beam',594,yy,1060,18,-97,25,m['hull'])
+  for x in (45,1139):box('beam side anchor',x,yy,34,52,-62,31,m['hull_high'])
  plate('perspective floor',[(-80,553),(W+80,553),(W+80,822),(-80,822)],-89,28,m['floor'],shift=(0,0))
  for x in (-150,105,365,675,980):
   plate('deck inset slab',[(x+80,563),(x+245,563),(x+322,745),(x+79,745)],-67,12,m['window'],shift=(0,0))
-  plate('deck front edge',[(x+79,745),(x+322,745),(x+331,757),(x+76,757)],-53,10,m['edge'],shift=(0,0))
+  plate('deck front edge',[(x+79,745),(x+322,745),(x+331,757),(x+76,757)],-53,10,m['hull'],shift=(0,0))
  # Far side open balustrades link each pair of raised installations to hull.
  for x in (9,1156):
   box('side installation spine',x,347,18,510,-66,32,m['dark'])
-  for yy in (276,645):box('side deck anchorage',x,yy,42,25,-32,36,m['shade'])
+  for yy in (276,645):box('side deck anchorage',x,yy,42,25,-32,36,m['hull_high'])
 
 
 def core_mount(m):
@@ -529,11 +632,11 @@ def core_mount(m):
  # plinth. Independent wall leaves and returns continue the room's scale.
  for xx in (438,508,578,648,718):
   plate('central recessed wall leaf',[(xx,86),(xx+65,86),(xx+65,586),(xx,586)],-126,6,m['room'],shift=(0,0))
-  box('central leaf lower joint',xx+32,501,61,4,-116,5,m['edge'])
+  box('central leaf lower joint',xx+32,501,61,4,-116,5,m['hull'])
  for xx in (422,790):
-  box('core aft mounting rib',xx,336,18,495,-104,22,m['edge'])
+  box('core aft mounting rib',xx,336,18,495,-104,22,m['hull'])
  for yy in (190,490):
-  box('aft structural cross seat',604,yy,360,17,-107,16,m['shade'])
+  box('aft structural cross seat',604,yy,360,17,-107,16,m['hull_high'])
  plate('central floor facing',[(438,720),(750,720),(882,914),(306,914)],-56,3,m['floor'],shift=(0,0))
  plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,8,m['edge'],shift=(3,3))
  plate('central deck inset',[(405,610),(777,610),(841,685),(777,726),(405,726),(343,685)],-10,4,m['floor'],shift=(0,0))
@@ -598,7 +701,7 @@ def select_pass(name,layer):
 
 def setup():
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
- colors={'armor':(.78,.76,.68),'steel':(.43,.53,.59),'ceramic':(.62,.48,.29),'shade':(.28,.36,.42),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.045,.10,.16),'window':(.055,.12,.18),'floor':(.09,.14,.20),'lamp':(1.,.76,.39)}
+ colors={'armor':(.78,.76,.68),'steel':(.43,.53,.59),'ceramic':(.62,.48,.29),'shade':(.28,.36,.42),'dark':(.035,.085,.13),'edge':(.16,.28,.35),'glass':(.015,.055,.095),'copper':(.55,.33,.12),'charge':(.95,.62,.13),'cyan':(.04,.64,.83),'orange':(.94,.31,.025),'violet':(.32,.09,.58),'violet_light':(.65,.31,.94),'field':(.035,.30,.47),'room':(.030,.065,.115),'window':(.030,.075,.12),'floor':(.070,.11,.16),'hull':(.10,.18,.25),'hull_high':(.17,.23,.28),'lamp':(1.,.76,.39)}
  m={k:material(k,c,k in ['charge','cyan','orange','violet_light','lamp']) for k,c in colors.items()}
  s=bpy.context.scene;s.render.engine='BLENDER_EEVEE_NEXT';s.render.resolution_x=W;s.render.resolution_y=H;s.render.resolution_percentage=100;s.render.film_transparent=True;s.world.color=(.16,.22,.30);s.view_settings.view_transform='Standard'
  for name,loc,color,power,size in [('warm key',(250,-100,600),(1,.82,.60),1800000,650),('cool fill',(1020,-500,380),(.35,.65,1),950000,700)]:
@@ -679,7 +782,7 @@ def channel_pipe(id,m):
  return shell,work
 
 def export_glb():
- m=setup();groups={}
+ m=setup();groups={};work_frames={}
  def group(name,fn):
   before=set(bpy.data.objects);fn();objects=set(bpy.data.objects)-before
   if name in DATA['devices']:
@@ -687,6 +790,9 @@ def export_glb():
    anchor=Vector(anchors[name]);side=1 if name in ('weapons','smelting') else -1
    housing_scale={'weapons':Vector((1.45,1.20,1.25)),'defence':Vector((1.25,1.25,1.20)),'smelting':Vector((1.35,1.15,1.20)),'condensation':Vector((1.35,1.15,1.20))}[name]
    installation=Matrix.Rotation(math.radians(13*side),3,'Y')@Matrix.Rotation(math.radians(8),3,'X')
+   source_basis=installation@Matrix.Diagonal(housing_scale)
+   source_origin=anchor-source_basis@anchor
+   work_frames[name]={'basis_columns':[list(source_basis.col[i]) for i in range(3)],'origin':list(source_origin)}
    for obj in objects:
     if obj.type!='MESH' or 'receiver' in obj.name or 'hollow receiver' in obj.name:continue
     # The machine and every working mesh share one rigid mounting attitude.
@@ -697,6 +803,17 @@ def export_glb():
      delta=world-anchor
      world=anchor+installation@Vector((delta.x*scale.x,delta.y*scale.y,delta.z*scale.z))
      v.co=obj.matrix_world.inverted()@world
+   # Source-space landing blocks bridge only actual gaps to the deck. The
+   # formed feet retain the machine pose while their supports meet the hull.
+   supports_before=set(bpy.data.objects)
+   for foot in objects:
+    if foot.type!='MESH' or 'floor foot' not in foot.name:continue
+    points=[foot.matrix_world@vertex.co for vertex in foot.data.vertices]
+    bottom=min(q.z for q in points);deck=-67.0
+    if bottom>deck+1.0:
+     xx=sum(q.x for q in points)/len(points);yy=-sum(q.y for q in points)/len(points)
+     box(name+' deck landing',xx,yy,43,27,bottom+2,bottom-deck+8,m['dark'])
+   objects|=set(bpy.data.objects)-supports_before
   root=bpy.data.objects.new(name,None);bpy.context.collection.objects.link(root)
   for o in objects:o.parent=root
   groups[name]=root
@@ -713,6 +830,18 @@ def export_glb():
  DATA['devices']['smelting']=single
  group('pipe_single_smelting',lambda:channel_pipe('smelting',m))
  DATA['devices']['smelting']=original
+ # Two left-side consumers use an intentionally balanced assembly, with
+ # every variant generated from translated copies of the declared ports.
+ double_routes={}
+ for id in ('weapons','smelting'):
+  original_route=DATA['devices'][id];route=dict(original_route)
+  route['core_port']=[original_route['core_port'][0]+170,original_route['core_port'][1]]
+  route['device_port']=[original_route['device_port'][0]+170,original_route['device_port'][1]]
+  route['controls']=[[original_route['controls'][0][0]+170,original_route['controls'][0][1]],[original_route['controls'][1][0]+170,original_route['controls'][1][1]]]
+  DATA['devices'][id]=route
+  group('pipe_double_'+id,lambda id=id:channel_pipe(id,m))
+  double_routes[id]={'route':route,'receiver_u':receiver_u(route)}
+  DATA['devices'][id]=original_route
  for count in (1,2,3,4):group('console_'+str(count),lambda count=count:console(m,count))
  def merge(objects,name):
   if not objects:return
@@ -782,8 +911,8 @@ def export_glb():
   ports[id]['core_axis_out_source3d']=list(out)
   ports[id]['device_marker']=id+'/power_in_'+id;ports[id]['core_marker']='core/power_out_'+id
   ports[id]['receiver_u']=receiver_u(d)
- layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],
-  'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+ layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':{'conveyor':[[x,-y,z+SHARD_CLEARANCE] for x,y,z in CRYSTAL_CONVEYOR],'split':(Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length/((Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length+(Vector(CRYSTAL_CONVEYOR[2])-Vector(CRYSTAL_CONVEYOR[1])).length)}},
+  'double_left':{'ids':['weapons','smelting'],'shifts':{'core':[170,0],'core_mount':[170,0],'weapons':[170,0],'smelting':[170,0]},'routes':double_routes},'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])
 

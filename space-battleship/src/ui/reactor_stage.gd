@@ -8,13 +8,17 @@ const OUTLINE=preload("res://assets/ui/reactor/b01/faceted-structure-outline.gds
 const DEPTH=preload("res://assets/ui/reactor/b01/faceted-depth.gdshader")
 const BACKGROUND=preload("res://assets/ui/reactor/b01/faceted-canvas-background.gdshader")
 const WORK=preload("res://assets/ui/reactor/b01/faceted-canvas-work.gdshader")
+const PLASMA_WORK=preload("res://assets/ui/reactor/b01/faceted-plasma-work.gdshader")
+const PLASMA_VOLUME=preload("res://assets/ui/reactor/b01/plasma-volume.png")
 const IDS := ["weapons","defence","smelting","condensation"]
 const SOURCE_SIZE:=Vector2(1187.0,1326.0)
 const VIEW_SIZE:=Vector2(808.0,835.0)
 const SOURCE_SCALE: float=835.0/1326.0
 const SOURCE_OFFSET:=Vector2((808.0-1187.0*SOURCE_SCALE)*.5,0)
 var _layout: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/reactor/b01/faceted-layout.json"))
+var _plasma_info: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/ui/reactor/b01/plasma-volume.json"))
 var _single_mode: bool=false
+var _double_mode: bool=false
 var _baker: SubViewport
 var _asset: Node3D
 var _environment: Environment
@@ -70,6 +74,7 @@ func _init() -> void:
 	_environment.background_mode=Environment.BG_COLOR
 	_environment.background_color=Color("0a1d30")
 	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
+	_environment.tonemap_exposure=.85
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
 	_environment.ambient_light_energy=.18
@@ -103,10 +108,12 @@ func _init() -> void:
 	for x in [185.0,1010.0]:
 		var luminaire:=OmniLight3D.new()
 		luminaire.position=Vector3(x,-78.0,180.0)
-		luminaire.light_color=Color("ffd6a0")
-		luminaire.light_energy=.65
+		luminaire.light_color=Color("ffb969")
+		luminaire.light_energy=1.05
 		luminaire.omni_range=650.0
 		luminaire.omni_attenuation=1.8
+		luminaire.shadow_enabled=true
+		luminaire.shadow_opacity=.45
 		_baker.add_child(luminaire)
 	_core_lamp=OmniLight3D.new()
 	_core_lamp.light_color=Color("5bd8ff")
@@ -194,6 +201,16 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		_outlines.append(outline)
 		_bodies.append({"node":node,"materials":colors})
 		return
+	var author_from_source:=Transform3D.IDENTITY
+	var source_from_author:=Transform3D.IDENTITY
+	if kind in [4,5,6]:
+		var frame: Dictionary=_layout.work_frames[key]
+		var columns: Array=frame.basis_columns
+		var axes: Array[Vector3]=[]
+		for column in columns:axes.append(Vector3(column[0],column[1],column[2]))
+		var raw_origin: Array=frame.origin
+		source_from_author=Transform3D(Basis(axes[0],axes[1],axes[2]),Vector3(raw_origin[0],raw_origin[1],raw_origin[2]))
+		author_from_source=source_from_author.affine_inverse()
 	node.visible=false
 	var part:=Node2D.new()
 	part.name=node.name
@@ -208,7 +225,13 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	elif kind==3:part.z_index=1
 	elif kind==2:part.z_index=2
 	var bottom: float=-INF
-	var right: float=-INF
+	var growth_base: float=INF
+	var part_materials: Array[ShaderMaterial]=[]
+	var part_geometry: Array=[]
+	if kind==6:
+		for surface in node.mesh.get_surface_count():
+			var authored_vertices: PackedVector3Array=node.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]
+			for vertex in authored_vertices:growth_base=minf(growth_base,(author_from_source*(world*vertex)).y)
 	for index in range(node.mesh.get_surface_count()):
 		var arrays: Array=node.mesh.surface_get_arrays(index)
 		var raw: PackedVector3Array=arrays[Mesh.ARRAY_VERTEX]
@@ -227,18 +250,20 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			var depth_code: int=int(roundf(clampf((point.z+256.0)/1024.0,0.0,1.0)*65535.0))
 			colors.append(Color(float(depth_code/256)/255.0,float(depth_code%256)/255.0,normal.x*.5+.5,normal.y*.5+.5))
 			bottom=maxf(bottom,-point.y)
-			right=maxf(right,point.x)
 		var original_indices: PackedInt32Array=arrays[Mesh.ARRAY_INDEX]
 		if original_indices.is_empty():
 			for i in raw.size():original_indices.append(i)
 		var indices:=PackedInt32Array()
+		var front_indices:=PackedInt32Array()
 		for triangle in range(0,original_indices.size(),3):
 			var a: int=original_indices[triangle]
 			var b: int=original_indices[triangle+1]
 			var c: int=original_indices[triangle+2]
 			# The only open, double-sided part is the bowed projection surface.
-			if kind not in [4,7] and (world_normals[a]+world_normals[b]+world_normals[c]).z<=0.00001:continue
+			var front_facing: bool=(world_normals[a]+world_normals[b]+world_normals[c]).z>0.00001
+			if kind not in [4,6,7] and not front_facing:continue
 			indices.append_array(PackedInt32Array([a,b,c]))
+			if kind==6 and front_facing:front_indices.append_array(PackedInt32Array([a,b,c]))
 		if indices.is_empty():continue
 		var projected: Array=[]
 		projected.resize(Mesh.ARRAY_MAX)
@@ -246,16 +271,47 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		projected[Mesh.ARRAY_COLOR]=colors
 		projected[Mesh.ARRAY_INDEX]=indices
 		projected[Mesh.ARRAY_TEX_UV]=arrays[Mesh.ARRAY_TEX_UV]
+		if kind==6:
+			var normal_z:=PackedVector2Array()
+			for normal in world_normals:normal_z.append(Vector2(normal.z,0.0))
+			projected[Mesh.ARRAY_TEX_UV]=normal_z
 		var mesh:=ArrayMesh.new()
 		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,projected)
 		var drawable:=MeshInstance2D.new()
 		drawable.mesh=mesh
+		if kind==6:
+			var front_mesh: ArrayMesh
+			if not front_indices.is_empty():
+				var front_arrays: Array=projected.duplicate()
+				front_arrays[Mesh.ARRAY_INDEX]=front_indices
+				front_mesh=ArrayMesh.new()
+				front_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,front_arrays)
+			part_geometry.append({"drawable":drawable,"full":mesh,"front":front_mesh})
 		var original: Material=node.mesh.surface_get_material(index)
 		var color: Color=original.albedo_color if original is BaseMaterial3D else Color.WHITE
 		var material:=ShaderMaterial.new()
-		material.shader=WORK
+		material.shader=PLASMA_WORK if kind==3 else WORK
 		material.set_shader_parameter("base_color",color)
 		material.set_shader_parameter("work_kind",kind)
+		if kind==3:
+			material.set_shader_parameter("plasma_atlas",PLASMA_VOLUME)
+			material.set_shader_parameter("plasma_grid",Vector2(_plasma_info.grid[0],_plasma_info.grid[1]))
+			material.set_shader_parameter("plasma_frames",int(_plasma_info.frames))
+			material.set_shader_parameter("plasma_source",Vector3(_plasma_info.source_box[0],_plasma_info.source_box[1],_plasma_info.source_box[2]))
+			material.set_shader_parameter("plasma_gain",float(_plasma_info.emission_gain))
+		if kind in [4,5,6]:material.set_shader_parameter("author_from_source",author_from_source)
+		if kind==6:
+			material.set_shader_parameter("source_from_author",source_from_author)
+			material.set_shader_parameter("growth_base",growth_base)
+			if "delivery" in title:
+				material.set_shader_parameter("work_zone",1)
+				material.set_shader_parameter("transport_origin",author_from_source*world.origin)
+				var path: Dictionary=_layout.work_paths.condensation
+				for j in 3:
+					var q: Array=path.conveyor[j]
+					material.set_shader_parameter(["transport_start","transport_middle","transport_end"][j],Vector3(q[0],q[1],q[2]))
+				material.set_shader_parameter("transport_split",float(path.split))
+		if kind==1:material.set_shader_parameter("work_zone",1 if "crystal containment" in title else 0)
 		if kind==10:
 			var id: String=title.get_slice("packet ",1)
 			var target: Array=_layout.ports[id].core_interface_source3d
@@ -270,32 +326,42 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		drawable.material=material
 		part.add_child(drawable)
 		_materials[key].append(material)
-	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"right":right,"kind":kind})
+		part_materials.append(material)
+	_mechanisms[key].append({"node":part,"title":title,"origin":pivot,"bottom":bottom,"kind":kind,"materials":part_materials,"geometry":part_geometry})
 	part.visible=kind==1
 
 func _pipe_key(id: String) -> String:
+	if _double_mode and id in _layout.double_left.ids:return "pipe_double_"+id
 	return "pipe_single_smelting" if _single_mode and id=="smelting" else "pipe_"+id
+
+func _receiver_progress(id: String) -> float:
+	if _single_mode and id=="smelting":return float(_layout.single_smelting.receiver_u)
+	if _double_mode and id in _layout.double_left.ids:return float(_layout.double_left.routes[id].receiver_u)
+	return float(_layout.ports[id].receiver_u)
 
 func _group_visible(key: String,ids: Array) -> bool:
 	if key=="pipe_single_smelting":return _single_mode
-	if key.begins_with("pipe_"):return key.trim_prefix("pipe_") in ids and not (_single_mode and key=="pipe_smelting")
+	if key.begins_with("pipe_double_"):return _double_mode and key.trim_prefix("pipe_double_") in ids
+	if key.begins_with("pipe_"):return key.trim_prefix("pipe_") in ids and not _double_mode and not (_single_mode and key=="pipe_smelting")
 	if key in IDS:return key in ids
 	if key.begins_with("console_"):return not ids.is_empty() and int(key.trim_prefix("console_"))==ids.size()
 	return true
 
 func _install_composition(ids: Array) -> void:
 	_single_mode=ids.size()==1 and ids[0]=="smelting"
+	_double_mode=ids.size()==2 and "weapons" in ids and "smelting" in ids
+	var shifts: Dictionary=_layout.single_smelting.shifts if _single_mode else _layout.double_left.shifts if _double_mode else {}
 	for key in _groups:
 		var shift:=Vector2.ZERO
-		if _single_mode and _layout.single_smelting.shifts.has(key):
-			var raw: Array=_layout.single_smelting.shifts[key]
+		if shifts.has(key):
+			var raw: Array=shifts[key]
 			shift=Vector2(raw[0],raw[1])
 		_groups[key].position=shift*SOURCE_SCALE
 		_asset.get_node(NodePath(key)).position=Vector3(shift.x,-shift.y,0)
 		_groups[key].visible=_group_visible(key,ids)
 		for material in _materials[key]:
 			material.set_shader_parameter("assembly_offset",Vector3(shift.x,-shift.y,0))
-			if key in IDS:material.set_shader_parameter("receiver_u",float(_layout.single_smelting.receiver_u) if _single_mode and key=="smelting" else float(_layout.ports[key].receiver_u))
+			if key in IDS:material.set_shader_parameter("receiver_u",_receiver_progress(key))
 
 func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	if ids==_enabled and loads==_loads:return
@@ -345,7 +411,7 @@ func _refresh_bake(ids: Array) -> void:
 	for group in _asset.get_children():
 		var key: String=String(group.name)
 		group.visible=_group_visible(key,ids)
-	_core_lamp.position=Vector3(724.0 if _single_mode else 594.0,-340.0,235.0)
+	_core_lamp.position=Vector3(594.0,-340.0,235.0)+_asset.get_node("core").position
 	_core_lamp.light_energy=0.0
 	_baker.msaa_3d=Viewport.MSAA_2X
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
@@ -409,22 +475,39 @@ func _animate_mechanisms() -> void:
 				part.visible=charge>0.0
 			elif title.begins_with("weapon output"):
 				var shot: float=fmod(age,1.8)
-				part.visible=shot>1.17 and shot<1.53
-				if "pulse" in title:
+				var emitting: bool=shot>1.17 and shot<1.53
+				if part.visible!=emitting:part.visible=emitting
+				if emitting:
 					var pulse: float=maxf(.01,sin((shot-1.17)/.36*PI))
-					part.scale=Vector2(pulse,1.0)*SOURCE_SCALE
-					part.position=source_point(Vector2(float(mechanism.right)-(float(mechanism.right)-origin.x)*pulse,origin.y))
+					for material in mechanism.materials:material.set_shader_parameter("pulse_strength",pulse)
 			elif title.begins_with("furnace feed"):
 				var index: int=int(title.get_slice("feed ",1))
 				var descent: float=fmod(age/1.2+float(index)/3,1.0)
 				part.position=source_point(Vector2(origin.x,430+60*descent))
 				part.visible=descent<.85
 			elif title.begins_with("crystal body"):
-				var growth: float=.12+.88*smoothstep(0.0,3.5,age)
-				part.scale=Vector2(1.0,growth)*SOURCE_SCALE
-				part.position=source_point(Vector2(origin.x,mechanism.bottom-(mechanism.bottom-origin.y)*growth))
+				var delivery: bool="delivery" in title
+				var forming: bool=false
+				if delivery:
+					var shown: bool=age>=3.5
+					if part.visible!=shown:part.visible=shown
+					if shown:
+						var index: int=int(title.get_slice("delivery ",1))
+						var travel: float=fposmod((age-3.5)/2.8+float(index)/4.0,1.0)
+						for material in mechanism.materials:material.set_shader_parameter("transport_progress",travel)
+				else:
+					var growth: float=.12+.88*smoothstep(0.0,3.5,age)
+					if not is_equal_approx(float(mechanism.get("growth",-1.0)),growth):
+						mechanism.growth=growth
+						for material in mechanism.materials:material.set_shader_parameter("mechanism_growth",growth)
+					forming=growth<.9999
+				if forming!=bool(mechanism.get("forming",true)):
+					mechanism.forming=forming
+					for geometry in mechanism.geometry:
+						geometry.drawable.visible=forming or geometry.front!=null
+						if geometry.drawable.visible:geometry.drawable.mesh=geometry.full if forming else geometry.front
 			elif mechanism.kind==11:
-				var u: float=float(_layout.single_smelting.receiver_u) if _single_mode and id=="smelting" else float(_layout.ports[id].receiver_u)
+				var u: float=_receiver_progress(id)
 				var arrival: float=.72+.28*(u+.08)/1.16
 				var age_cycles: float=_phase/4.8-arrival
 				var event_time: float=(floorf(age_cycles)+arrival)*4.8
