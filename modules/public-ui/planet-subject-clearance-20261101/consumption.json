@@ -1,0 +1,38 @@
+{
+  "branch": "design/clear-zone-host",
+  "source": "4e16d9fe2a91ddc491785c175342ece6e8a29d7e",
+  "paths": [
+    {
+      "path": "space-battleship/src/ui/planet_panel.gd",
+      "blob": "fdd56485a08ef0ef515c48824391f5ba02d8d9ab"
+    },
+    {
+      "path": "space-battleship/src/ui/bridge_theme.gd",
+      "blob": "2783fad5744a78ad026bb5115141131ad76c463e"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/faceted-controls.svg",
+      "blob": "1ce23f7d9596dd15456e2f31a19a15cbc56db55f"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/stepper-down.svg",
+      "blob": "d692d344a512d46addd790fe9ebe15fc2bea9463"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/stepper-pair.svg",
+      "blob": "6345f1e4d13340cee147d9d6d14675c48f521ce1"
+    },
+    {
+      "path": "space-battleship/assets/ui/public_shell/stepper-pair-disabled.svg",
+      "blob": "7a47ebf10fdedfe59fe24bfdefd155c7ce8cbdd7"
+    }
+  ],
+  "material_layout_combined": "planet_panel includes shared button adoption, 9fd43b9c dark dock and this safe-region correction",
+  "retain": "原星球组模型/材质/动画、Owner业务和并发WIP；不取宿主main/导航或模型目录",
+  "existing_dependencies": [
+    "assets/fonts/NotoSansSC.ttf",
+    "assets/ui/dialog/radio-on.svg",
+    "assets/ui/dialog/radio-off.svg"
+  ],
+  "assembly_rule": "主体显示区上缘=状态条/选择器实际下缘最大值+24；下缘=操作台上缘-24；整组统一适配。反馈出现时纳入上缘计算，结束后恢复布局。"
+}
