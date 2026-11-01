@@ -1,0 +1,8 @@
+{
+  "commit": "d08fb1b237eee99e1b25ec17c7778888ebd7ee4a",
+  "branch": "docs/design-entry-cleanup-20261031",
+  "path": "space-battleship/docs/maintenance/HANDOFF.md",
+  "verified_blob": "19b6036b2d65eb89627b0ae5dc456285e094097b",
+  "source_preserved_at": "4b51e541bfce8eca1cfd80505a638b310c220a4b",
+  "scope": "Only cleanup HANDOFF current-state update; production and runtime untouched."
+}
