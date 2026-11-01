@@ -60,13 +60,16 @@ class PowerTrack extends Control:
 		track.set_border_width_all(2)
 		track.set_corner_radius_all(7)
 		draw_style_box(track,Rect2(0,9,size.x,24))
-		var fill_width: float=(size.x-8)*fraction
+		# The right end of the same instrument is its fixed readout lane.
+		# Keep the thumb travel clear of 100% without moving the label anchor.
+		var fill_width: float=(size.x-86)*fraction
 		if fill_width>0.0:
 			var fill:=StyleBoxFlat.new()
 			fill.bg_color=tint.darkened(.13)
 			fill.set_corner_radius_all(4)
 			draw_style_box(fill,Rect2(4,13,fill_width,16))
 			draw_line(Vector2(6,14),Vector2(maxf(6,fill_width+2),14),tint.lightened(.32),2)
+		draw_line(Vector2(size.x-76,13),Vector2(size.x-76,29),Color("406076"),1)
 var _stage: Control
 var _allocation_bar: AllocationBar
 var _rows: Dictionary = {}
@@ -229,7 +232,7 @@ func _build() -> void:
 		strip.add_child(track)
 		var slider:=HSlider.new()
 		slider.name="Allocation_"+id
-		slider.size=strip.size
+		slider.size=Vector2(strip.size.x-78.0,strip.size.y)
 		slider.max_value=10000
 		slider.step=100
 		slider.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
@@ -465,8 +468,8 @@ func _show_current_readings(previous: Dictionary, previous_ids: Array) -> void:
 			_rows[id].slider.set_value_no_signal(adopted_share)
 			_rows[id].track.update_fraction(float(row.ratio))
 			_rows[id].ratio.text = _ratio_text(float(row.ratio))
-			_rows[id].ratio.position.x=12.0 if float(row.ratio)>0.7 else 258.0
-			_rows[id].ratio.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT if float(row.ratio)>0.7 else HORIZONTAL_ALIGNMENT_RIGHT
+			_rows[id].ratio.position.x=258.0
+			_rows[id].ratio.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 		if new_row or previous.get("can_allocate", false) != _model.can_allocate:
 			_rows[id].slider.editable = _running and bool(_model.can_allocate)
 		if new_row or old_row.get("factor") != row.factor:

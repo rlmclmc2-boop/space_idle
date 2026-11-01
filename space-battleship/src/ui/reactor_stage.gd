@@ -18,6 +18,7 @@ var _single_mode: bool=false
 var _baker: SubViewport
 var _asset: Node3D
 var _environment: Environment
+var _core_lamp: OmniLight3D
 var _background: ColorRect
 var _background_material: ShaderMaterial
 var _palette: Dictionary={}
@@ -71,7 +72,21 @@ func _init() -> void:
 	_environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
-	_environment.ambient_light_energy=.26
+	_environment.ambient_light_energy=.18
+	# The same broad cool hull / warm deck environment is reflected by metal.
+	# This is initialized once for the cached structure, never per work tick.
+	var sky_material:=ProceduralSkyMaterial.new()
+	sky_material.sky_top_color=Color("20394f")
+	sky_material.sky_horizon_color=Color("9eb8c8")
+	sky_material.ground_horizon_color=Color("b6a17c")
+	sky_material.ground_bottom_color=Color("122132")
+	sky_material.sky_energy_multiplier=.45
+	sky_material.ground_energy_multiplier=.30
+	var sky:=Sky.new()
+	sky.radiance_size=Sky.RADIANCE_SIZE_128
+	sky.sky_material=sky_material
+	_environment.sky=sky
+	_environment.reflected_light_source=Environment.REFLECTION_SOURCE_SKY
 	var environment_node:=WorldEnvironment.new()
 	environment_node.environment=_environment
 	_baker.add_child(environment_node)
@@ -93,6 +108,14 @@ func _init() -> void:
 		luminaire.omni_range=650.0
 		luminaire.omni_attenuation=1.8
 		_baker.add_child(luminaire)
+	_core_lamp=OmniLight3D.new()
+	_core_lamp.light_color=Color("5bd8ff")
+	_core_lamp.light_energy=0.0
+	_core_lamp.omni_range=650.0
+	_core_lamp.omni_attenuation=1.35
+	_core_lamp.shadow_enabled=true
+	_core_lamp.shadow_opacity=.72
+	_baker.add_child(_core_lamp)
 	_outline_material=ShaderMaterial.new()
 	_outline_material.shader=OUTLINE
 	_asset=MODEL.instantiate()
@@ -183,7 +206,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	elif kind in [12,14]:part.z_index=2
 	elif kind==10:part.z_index=4 if title.get_slice("packet ",1) in ["weapons","condensation"] else 0
 	elif kind==3:part.z_index=1
-	elif kind==2:part.z_index=0
+	elif kind==2:part.z_index=2
 	var bottom: float=-INF
 	var right: float=-INF
 	for index in range(node.mesh.get_surface_count()):
@@ -241,6 +264,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			material.set_meta("outlet",id)
 		if kind==11:material.set_shader_parameter("receiver_u",float(_layout.ports[key].receiver_u))
 		if kind==8:material.set_shader_parameter("work_zone",2 if title.begins_with("weapon output") else 1 if title.begins_with("weapon") else 0)
+		if kind==9:material.set_shader_parameter("work_zone",1 if "cyan" in String(original.resource_name).to_lower() else 0)
 		if kind==4:material.set_shader_parameter("work_zone",1 if "bowed" in title else 0)
 		if kind==5:material.set_shader_parameter("work_zone",0 if "pour" in title else 3 if "outlet" in title else 2 if "liquid" in title else 1)
 		drawable.material=material
@@ -321,9 +345,8 @@ func _refresh_bake(ids: Array) -> void:
 	for group in _asset.get_children():
 		var key: String=String(group.name)
 		group.visible=_group_visible(key,ids)
-	for material in _palette.values():
-		material.set_shader_parameter("core_power",0.0)
-		material.set_shader_parameter("core_origin",Vector3(724.0 if _single_mode else 594.0,-340.0,190.0))
+	_core_lamp.position=Vector3(724.0 if _single_mode else 594.0,-340.0,235.0)
+	_core_lamp.light_energy=0.0
 	_baker.msaa_3d=Viewport.MSAA_2X
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	_finish_bake(generation)
@@ -336,7 +359,7 @@ func _finish_bake(generation: int) -> void:
 	_background_material.set_shader_parameter("resting_surface",resting)
 	_background_material.set_shader_parameter("working_surface",resting)
 	_background.material=_background_material
-	for material in _palette.values():material.set_shader_parameter("core_power",1.0)
+	_core_lamp.light_energy=1.65
 	_baker.render_target_update_mode=SubViewport.UPDATE_ONCE
 	await RenderingServer.frame_post_draw
 	await get_tree().process_frame

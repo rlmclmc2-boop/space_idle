@@ -47,7 +47,10 @@ def armor_panel(name,outline,z,depth,mat):
   delta=center-Vector(p);inset.append(Vector(p)+delta.normalized()*min(7,delta.length*.16))
  n=len(outline)
  vertices=[(x,-y,z-5) for x,y in outline]+[(p.x,-p.y,z+3) for p in inset]
- vertices.append((center.x,-center.y,z+3))
+ # Crown the actual formed panel rather than a coplanar triangle fan.
+ # The shallow raised center produces broad, differently lit armor facets.
+ crown=min(11.0,max(4.0,min(max(p[0] for p in outline)-min(p[0] for p in outline),max(p[1] for p in outline)-min(p[1] for p in outline))*.095))
+ vertices.append((center.x,-center.y,z+3+crown))
  vertices.extend([(x+depth*.45,-y-depth*.30,z-depth) for x,y in outline])
  faces=[]
  for i in range(n):
@@ -321,14 +324,18 @@ def furnace(m):
  box('furnace dark lip',175,522,102,20,77,18,m['dark']);box('furnace tap',175,519,54,15,87,8,m['copper'])
  disc('furnace vessel',176,597,86,34,m['dark'],12);disc('furnace liquid',176,594,67,48,m['orange'],12)
  ring('furnace vessel bank',176,597,87,17,58,23,m['shade'],.50,math.tau-.10,12)
- stream=[]
- for yy,zz,half in [(520,90,14),(532,87,16),(550,77,17),(574,62,19),(590,52,23)]:
-  stream.extend([(175-half,-yy,zz),(175+half,-yy,zz),(175+half,-yy,zz-7),(175-half,-yy,zz-7)])
+ # Rounded, continuous fluid section from tap into the catch basin.
+ # A square ribbon has no rounded shoulder and reads as a rigid plate.
+ stream=[];sides=12
+ for xx,yy,zz,half in [(175,520,90,14),(176,532,87,16),(179,550,77,17),(183,574,62,19),(185,590,52,23)]:
+  for k in range(sides):
+   a=math.tau*k/sides;stream.append((xx+half*math.cos(a),-yy,zz-3.5+5.5*math.sin(a)))
  faces=[]
  for j in range(4):
-  for k in range(4):
-   a=j*4+k;b=j*4+(k+1)%4;faces.append((a,a+4,b+4,b))
- mesh('furnace pour',stream,faces,m['orange'])
+  for k in range(sides):
+   a=j*sides+k;b=j*sides+(k+1)%sides;faces.append((a,a+sides,b+sides,b))
+ pour=mesh('furnace pour',stream,faces,m['orange'])
+ for polygon in pour.data.polygons:polygon.use_smooth=True
  plate('furnace outlet bed',[(226,604),(244,601),(309,662),(293,674)],27,11,m['dark'])
  plate('furnace outlet liquid',[(233,608),(240,607),(300,664),(295,669)],39,3,m['orange'])
  for obj in bpy.context.scene.objects:
@@ -414,11 +421,12 @@ def core(m):
  plasma=bpy.context.object;plasma.name='core plasma mass';plasma.scale=(.92,1.10,.94);plasma.rotation_euler=(.17,.31,.20)
  plasma.data.materials.append(m['cyan'])
  for polygon in plasma.data.polygons:polygon.use_smooth=True
- bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2,radius=39,location=(x,-y,100))
- kernel=bpy.context.object;kernel.name='core plasma kernel';kernel.data.materials.append(m['cyan'])
- for vertex in kernel.data.vertices:
-  q=vertex.co;vertex.co*=1.0+.12*math.sin(q.x*.13)*math.sin(q.y*.11)*math.sin(q.z*.17)
- for polygon in kernel.data.polygons:polygon.use_smooth=False
+ # The approved core has a bounded transparent charge cell, not a white
+ # faceted rock. Its luminous edges are energy confinement, not iron bars.
+ box('core plasma kernel',x,y,68,62,144,47,m['field'])
+ corners=[Vector((x+dx,y+dy,z)) for z in (97,144) for dy in (-31,31) for dx in (-34,34)]
+ for i,j in [(0,1),(0,2),(1,3),(2,3),(4,5),(4,6),(5,7),(6,7),(0,4),(1,5),(2,6),(3,7)]:
+  rod('core plasma kernel edge',corners[i],corners[j],1.4,m['cyan'])
  # Each path winds from a pole toward the active mass. These are energy
  # strands, never moving mechanical bars; their real depth passes behind it.
  for j,(id,d) in enumerate(DATA['devices'].items()):
@@ -426,18 +434,19 @@ def core(m):
   points=[]
   for i in range(25):
    t=i/24;a=angle+.32*t;r=118*(1-t)
-   points.append(Vector((x+r*math.cos(a),-(y+r*math.sin(a)),85+25*math.sin(a))))
+   points.append(Vector((x+r*math.cos(a),-(y+r*math.sin(a)),98+58*math.sin(a))))
   vertices=[];sides=6
   for i,p in enumerate(points):
    tangent=(points[min(i+1,24)]-points[max(0,i-1)]).normalized();u=tangent.cross(Vector((0,0,1))).normalized();v=tangent.cross(u).normalized()
-   for k in range(sides):vertices.append(p+(2.0+9.0*math.sin(math.pi*i/24)**.7)*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides)))
+   for k in range(sides):vertices.append(p+(1.6+2.8*math.sin(math.pi*i/24)**.7)*(u*math.cos(math.tau*k/sides)+v*math.sin(math.tau*k/sides)))
   faces=[]
   for i in range(24):
    for k in range(sides):
     a=i*sides+k;b=i*sides+(k+1)%sides;faces.append((a,b,b+sides,a+sides))
   mesh('core plasma strand '+str(j),vertices,faces,m['cyan'])
-  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=10,location=(x,-y,100))
+  bpy.ops.mesh.primitive_uv_sphere_add(segments=16,ring_count=8,radius=8,location=(x,-y,100))
   o=bpy.context.object;o.name='core transfer packet '+id;o.data.materials.append(m['cyan'])
+  for polygon in o.data.polygons:polygon.use_smooth=True
  for side in (-1,1):
   xx=x+side*159
   armor_box('core side constraint casing',xx,y,96,110,123,70,m['shade'])
@@ -478,9 +487,26 @@ def pipes(m):
 
 def room(m):
  plate('aft bulkhead',[(-80,0),(W+80,0),(W+80,760),(-80,760)],-140,24,m['room'],shift=(0,0))
+ # Recessed hull bays have their own return thickness and intermediate
+ # shoulders. They remain behind devices and do not become display frames.
+ for left,right in [(-70,292),(364,758),(823,1258)]:
+  plate('recessed wall bay',[(left,16),(right,16),(right-7,548),(left+12,548)],-132,8,m['dark'],shift=(0,0))
+  plate('recessed wall facing',[(left+16,36),(right-22,36),(right-33,524),(left+29,524)],-125,5,m['room'],shift=(0,0))
+  for side,xx in [(-1,left),(1,right)]:
+   plate('bay depth return',[(xx,14),(xx-side*16,36),(xx-side*29,524),(xx-side*7,548)],-112,20,m['shade'],shift=(0,0))
+  for yy in (214,452):
+   box('bay recessed cross joint',(left+right)/2,yy,right-left-63,5,-114,5,m['edge'])
+  for xx in (left+53,right-67):
+   box('aft service housing',xx,289,22,370,-106,13,m['edge'])
+   box('service housing groove',xx-4,289,5,340,-89,4,m['dark'])
+  plate('hull diagonal gusset',[(left+35,390),(left+65,390),(right-47,492),(right-47,523)],-99,12,m['edge'],shift=(0,0))
  for x in (-35,340,790,1195):
   plate('hull structural pier',[(x-25,0),(x+16,0),(x+28,584),(x+58,718),(x+9,722),(x-18,584)],-92,48,m['edge'],shift=(0,0))
   box('pier recessed service spine',x+1,278,10,420,-82,9,m['dark'])
+ # Ceiling returns converge toward the rear rather than a flat backdrop.
+ for left,right in [(-40,310),(354,785),(817,1230)]:
+  plate('overhead coffering',[(left,0),(right,0),(right-55,61),(left+40,61)],-109,17,m['shade'],shift=(0,0))
+  plate('overhead recess',[(left+35,4),(right-36,4),(right-68,42),(left+57,42)],-91,8,m['dark'],shift=(0,0))
  for x in (96,973):
   plate('angled bay shoulder',[(x,0),(x+115,0),(x+84,64),(x+57,98),(x-8,138),(x-28,111)],-69,42,m['shade'])
   box('overhead luminaire shell',x+30,72,73,25,-32,26,m['dark'])
@@ -499,7 +525,15 @@ def room(m):
 
 
 def core_mount(m):
- plate('core rear recess',[(430,86),(758,86),(842,324),(759,588),(430,588),(350,324)],-82,3,m['window'],shift=(0,0))
+ # This is a recessed bulkhead behind the machine, not a flat polygon
+ # plinth. Independent wall leaves and returns continue the room's scale.
+ for xx in (438,508,578,648,718):
+  plate('central recessed wall leaf',[(xx,86),(xx+65,86),(xx+65,586),(xx,586)],-126,6,m['room'],shift=(0,0))
+  box('central leaf lower joint',xx+32,501,61,4,-116,5,m['edge'])
+ for xx in (422,790):
+  box('core aft mounting rib',xx,336,18,495,-104,22,m['edge'])
+ for yy in (190,490):
+  box('aft structural cross seat',604,yy,360,17,-107,16,m['shade'])
  plate('central floor facing',[(438,720),(750,720),(882,914),(306,914)],-56,3,m['floor'],shift=(0,0))
  plate('central service deck',[(390,600),(790,600),(862,688),(790,739),(390,739),(320,688)],-25,8,m['edge'],shift=(3,3))
  plate('central deck inset',[(405,610),(777,610),(841,685),(777,726),(405,726),(343,685)],-10,4,m['floor'],shift=(0,0))
@@ -698,6 +732,7 @@ def export_glb():
  # working mechanisms separate; tiny bolts/strands do not become draw nodes.
  merge([o for o in groups['core'].children if o.name.startswith(('core plasma strand','core plasma axial channel'))],'core plasma strands')
  merge([o for o in groups['core'].children if o.name.startswith('core field meridian')],'core field meridians')
+ merge([o for o in groups['core'].children if o.name.startswith('core plasma kernel')],'core plasma kernel')
  for i in range(5):merge([o for o in groups['condensation'].children if o.name in ('crystal body '+str(i),'crystal bright facet '+str(i))],'crystal body '+str(i))
  for name,root in groups.items():
   prefixes=WORK_NAMES.get(name,[])
