@@ -1,6 +1,6 @@
 # 星球前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[唯一入口](../README.md) · [共同读取/接纳协议](../14-ui-contracts.md)。本页维护本模块公开接口；当前实现和消费源见[11](../11-stage6-contract.md)。
 [本组版本状态、共同身份与失效边界](../14-ui-contracts.md#8-实现候选成员设施与选中节点的最小只读事实)。
 
 ## 2. 主线现有模块连接
@@ -40,7 +40,6 @@
 
 ## 11. 实现候选：当前星球征服事实与累计来源摘要
 
-**状态：设计候选`1865da2f`原记录为根协调者及原星球独审限定通过（模型本次未核实）；接口已在后台候选存在，实际消费状态见11、未合main，不代表完整M7/V7验收。** 当前消费者依11固定源核对。 固定业务基线`26832431d6546a436774c802e80aff2dc086f7dd`；消费者`a91f65b4`的实际缺口、权威来源和验证边界见短提案。本节不改变征服/重铸、Buff叠加、保存或开放规则。
 
 候选新增`Planet.conquest_facts(planet_id: String) -> Dictionary`，仅消费当前已正式绑定Session的Planet已接纳状态。未知/未开放沿现有Planet可用性判定返回`ok=false/reason=PlanetLocked`，不泄露该球详情或伪造成功空奖励。成功给`ok/planet_id/conquered/shared_experience/rewards`；conquered取该球原标记，shared_experience沿原`_buff(state,buffs,"crew_exp_share","all",planet_id)>0`，只指该球探索经验是否共享，不给未来经验或人数。
 
@@ -60,3 +59,7 @@ planet_unlock仍复用is_available/planet_options的实际开放结果（同时�
 候选新增局部`Planet.conquest_changed(changed_planet_ids: PackedStringArray, cumulative_changed: bool)`。仅成功accept_reforge及restore_state的征服事实可能使其失效；赋值前保存首次征服标记/四项来源基准，deferred按原纯助手比较最终净变化，同批合并。标记相同且四项来源相同不发，A→B→A不发，读取/拒绝及prepare_reforge只读预览不发；候选Planet实例若执行restore_state/accept_reforge，同样可排队并按净差发信号，但事件不传当前页面、不改旧会话；发送前清队列/更新基准，重入不被旧快照覆盖。基准仅为瞬时通知比较，不是持久奖励账本。
 
 当前星球的标记/共享经验仅在自身ID改变时重读，累计区仅在cumulative_changed=true时重读；普通探索计时、人员、自动开关和设施领取不刷新此摘要。初次绑定、切球及换Session重绑时读一次，隐藏只积累相关dirty、停止投影，重开仅消费相关失效；不轮询、不全页面重建、不增Session全局广播。原status/buildings/availability通知保持各自职责。候选恢复/重铸的Planet实例不绑定当前页面；原事务完整成功替换后才重绑，不把本口或其通知当作native全链已完成的凭据。
+
+## 对象身份与自动设置
+
+设施身份为`(planet_id,id)`，planet_id使用规范十进制String，id使用实际设施定义键。`Planet.visual_snapshot`提供星体/探索时钟。关闭自动只改变后续继续设置，正在进行的探索按现行规则完成；立即取消使用独立命令。

@@ -1,6 +1,6 @@
 # 强化前后端契约
 
-[回唯一入口](../README.md) · [版本与共同边界](../14-ui-contracts.md#1-版本与使用边界)。本分册为本模块唯一契约正文；沿用第14章节号并明确当前版本范围，不表示实现或合入状态升级。跨节“本页第N节”依[共同页索引](../14-ui-contracts.md)定位；第4–6节接纳/通知/本地状态约束一并适用。
+[唯一入口](../README.md) · [共同读取/接纳协议](../14-ui-contracts.md)。本页维护本模块公开接口；当前实现和消费源见[11](../11-stage6-contract.md)。
 
 ## 2. 主线现有模块连接
 
@@ -23,6 +23,10 @@
 
 ## 当前必须补齐：数量循环与MAX
 
-用户全局要求一个按钮循环×1→×10→MAX，另一个按钮负责购买，强化同样完整适用。当前固定源main及五工作分支的UI仍为两个直接购买键，后台c38只有固定count的purchase_preview/purchase和Session.enhancement_purchase_preview，尚无具名MAX预览/执行出口。由原负责组补齐真实MAX报价、可购数量、执行时重验与实际成交回执，并完成对应控件接入；不得由UI自行重算或用当前无接口缩减需求。
+界面使用[13](../13-art-interaction.md#23-所有模块共享的状态与反馈)完整数量模式。当前所核后台`3dd45f57`仅提供固定count预览/购买；需由强化Owner提供MAX报价、可购数量、执行时重验及实际成交回执。固定数量的部分成交、支付与接纳语义保持，MAX按现行Amount、资源与领域合同确定。
 
-既有固定数量购买及支付/接纳合同不在本文改写；MAX具体边界沿现行Amount、资源与领域合同落实，有真实冲突再问用户。本次仅登记需求和缺口，不实现算法，也不以现有“最多10可部分成交”作为替代MAX或覆盖其他合同的新决定。
+## 实际成交与刷新
+
+购买回执给commit_status、实际count/spent，保留原ok/reason及部分成交政策。未提交为not_submitted，普通发布拒绝为rejected，已接纳为accepted；提交后fault为fault_unknown、spent=null。早期拒绝可无回执。回执表示上次成交，下一报价重新读取。
+
+强化查询使用独立只读输入，经Equipment.accepted_armours读取已接纳槽，避免evaluate写_pending_output。原命令输入保持候选语义。可见时同步重读purchase、改序、分支和外部bonus/armours经accept_output的变化；Session整批接纳完成后刷新。对象消失清详情，输入变化清报价，保留未提交草稿。

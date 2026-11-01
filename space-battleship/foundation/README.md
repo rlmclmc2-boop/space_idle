@@ -1,6 +1,6 @@
-# 构建、配置发布与运行命令
+# 构建与运行入口
 
-[设计与当前制作入口](../docs/game-design/README.md)。本页只维护命令和依赖；各分支状态、现场与证据范围从设计入口查，不将历史阶段限制当当前任务。文档整理仅检查文档差异、引用和版本，不运行游戏。其他任务的运行/验证范围由本次用户授权及分支交接确定。
+从`space-battleship/`执行下列命令。当前任务的验证范围见[07](../docs/game-design/07-verification.md)，制作来源见[11](../docs/game-design/11-stage6-contract.md)。运行架构由[05](../docs/game-design/05-architecture.md)、模块接口由[14](../docs/game-design/14-ui-contracts.md)维护。
 
 ## Excel configuration publication
 
@@ -19,7 +19,8 @@ powershell -ExecutionPolicy Bypass -File addons/native_battle/build_native.ps1
 
 Windows 构建前提供 `SPACE_IDLE_GODOT_CPP`（godot-cpp checkout）、`SPACE_IDLE_LLVM_MINGW`（llvm-mingw 安装根目录）及 `SPACE_IDLE_GODOT_API`（导出的 extension_api.json），也可分别用 `-GodotCpp`、`-LlvmMingw`、`-Api` 参数指定；Python 需安装 SCons，可用 `-Python` 或 `SPACE_IDLE_PYTHON` 指定。构建目录默认在用户 LocalAppData 下，可用 `-BuildRoot` 或 `SPACE_IDLE_BUILD_ROOT` 改到任意有写权限的盘。脚本校验 godot-cpp 10.0.0-stable 固定提交、Clang 23.1.3 x86_64 工具链及 Godot 4.7.2 单精度 API 哈希，输出 DLL 与 GDExtension 清单；依赖工具不随仓库交付。现有 native retained/GPU 表现读取同一个战斗核。
 
-## 独立 Amount 正确性检查
+
+## Amount直接正确性测试
 
 `foundation/tests/amount_value_tests.cpp` 直接包含 `amount_value.hpp`，不依赖 Godot、Excel、配置或保存设施。它覆盖大数四则运算、幂、等比和、取整、编码范围及非法输入边界；含 0–10000 整数的 floor/ceil 一致性回归。必须启用 assert，不使用 `-DNDEBUG`。
 
@@ -28,7 +29,8 @@ Windows 构建前提供 `SPACE_IDLE_GODOT_CPP`（godot-cpp checkout）、`SPACE_
 if ($LASTEXITCODE -eq 0) { & "$env:TEMP/space-idle-amount.exe" }
 ```
 
-## 正常游戏启动
+
+## 运行入口
 
 在本目录运行：
 
@@ -37,8 +39,9 @@ powershell -ExecutionPolicy Bypass -File addons/native_battle/build_native.ps1
 powershell -ExecutionPolicy Bypass -File run_game.ps1
 ```
 
-启动前设置 `SPACE_IDLE_GODOT` 为 Godot 4.7.2 程序路径，或以 `-Godot` 参数传入；`run_game.ps1` 与构建脚本使用相同的 `BuildRoot` 默认值或覆盖值。启动脚本先按原路线将 Excel 导入为 JSON，再运行正常 Godot 主场景。它是游戏启动入口，不是测试 runner。编译检查不会执行该启动脚本。
+启动前设置 `SPACE_IDLE_GODOT` 为 Godot 4.7.2 程序路径，或以 `-Godot` 参数传入；`run_game.ps1` 与构建脚本使用相同的 `BuildRoot` 默认值或覆盖值。启动脚本先按原路线将 Excel 导入为 JSON，再运行正常 Godot 主场景。该脚本启动正常游戏。
 
-## 当前职责
 
-模块归属以 [05 现行模块交接契约](../docs/game-design/05-architecture.md#现行模块交接契约)为准；页面连接见 [14](../docs/game-design/14-ui-contracts.md)，数据/保存见 [06](../docs/game-design/06-data.md)，设计场景与证据判定见 [07](../docs/game-design/07-verification.md)。
+## 保存接口
+
+`foundation/host/save_files.gd`接收显式目录，`request()`提交payload快照，`poll()`回收写入结果，`dirty()/close()`提供状态。文件及保存生命周期契约见[06](../docs/game-design/06-data.md)。
