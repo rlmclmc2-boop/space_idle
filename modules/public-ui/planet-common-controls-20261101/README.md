@@ -1,0 +1,9 @@
+# 星球公共材质替换
+
+运行源 `859ae9c7d7f8e161ecae8ac864e3a0fa224181d5`，公共源9034af81，星球结构接入cb0d0206。
+
+移除planet_panel的旧control-materials图集读取、裁图缓存、私有按钮状态与圆角PopupMenu主题；原Button/OptionButton调用BridgeTheme。页签持续选中用公共selected/selected_hover，执行键用commit，普通/禁用/焦点读公共状态。抽屉改公共dark承载，保留13px原生内容内距及浅色正文；不增加Control覆盖层。
+
+六张原始1440×900 PNG与同尺寸JPEG均来自本版运行，driver记录真实鼠标点击三页签、关闭和下拉展开；装备返回由现有路由信号执行。作者亲看完整画面后保留当前公共适配，不将建筑结构WIP作为整页新美术验收。run.log无脚本、资源、着色器报错，VSync为当前软件驱动既有警告。
+
+下一依赖是星球新成套模型/材质及反应堆新主体和三段控制区固定源；现有公共按钮适配无需再等建筑。

@@ -53,3 +53,5 @@
 - [Shared popup panel contour](faceted-popup-panel-20261101/README.md): 9034af81 actual speed/ship menus use one cut-corner panel source.
 
 - 星球固定结构同壳接入 `cb0d0206`：[planet-v7-structural-shared-20261101](planet-v7-structural-shared-20261101/README.md)。
+
+- 星球公共控件源替换 `859ae9c7`：[planet-common-controls-20261101](planet-common-controls-20261101/README.md)。
