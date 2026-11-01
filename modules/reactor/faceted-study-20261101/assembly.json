@@ -1,0 +1,71 @@
+{
+  "status": "study",
+  "canvas_px": [
+    1187,
+    1326
+  ],
+  "layer": "composite",
+  "part": "assembly",
+  "growth": 1.0,
+  "phase": 0.72,
+  "uniform_transform": {
+    "scale": 0.6297134238310709,
+    "offset": [
+      30.265082956259448,
+      0
+    ],
+    "content_size": [
+      808,
+      835
+    ]
+  },
+  "console_layout": {
+    "count": 4,
+    "top": 766,
+    "header_y": 835,
+    "rows_top": 894,
+    "footer_y": 1226,
+    "header_rect": [
+      76,
+      797,
+      1036,
+      76
+    ],
+    "row_rects": [
+      [
+        76,
+        902,
+        1036,
+        51
+      ],
+      [
+        76,
+        969,
+        1036,
+        51
+      ],
+      [
+        76,
+        1036,
+        1036,
+        51
+      ],
+      [
+        76,
+        1103,
+        1036,
+        51
+      ]
+    ],
+    "transaction_rect": [
+      76,
+      1178,
+      1036,
+      96
+    ],
+    "visible_bottom": 1304
+  },
+  "image": "assembly.png",
+  "sha256": "3e9900d04e4e4e20b3c8c22a190ad4ff1d729cf29f52e54a9b8aff573521fca9",
+  "source_generator_sha256": "fee9a9d5a10aa3467f61ab0f32bbc1b7e3ce95de97500a4ba0d9ff4b443f9bef"
+}

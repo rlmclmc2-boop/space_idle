@@ -1,0 +1,37 @@
+{
+  "module_id": "smelting",
+  "center_px": [
+    313.0,
+    517.0
+  ],
+  "axis_to_device": [
+    -0.9467666149139404,
+    -0.32192063331604004
+  ],
+  "axis_rise_per_source_px": 0.35,
+  "insertion_source_px": 45,
+  "receiver_mouth_px": [
+    327.2015075683594,
+    521.8287963867188
+  ],
+  "pipe_insert_end_px": [
+    284.5970153808594,
+    507.3423767089844
+  ],
+  "receiver_body_end_px": [
+    241.99249267578125,
+    492.85595703125
+  ],
+  "radius": 26,
+  "depth": 28,
+  "canvas_px": [
+    1187,
+    1326
+  ],
+  "rect": [
+    55,
+    335,
+    295,
+    385
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "module_id": "weapons",
+  "center_px": [
+    318.0,
+    208.0
+  ],
+  "axis_to_device": [
+    -0.9701425433158875,
+    0.24253563582897186
+  ],
+  "axis_rise_per_source_px": 0.35,
+  "insertion_source_px": 45,
+  "receiver_mouth_px": [
+    332.5521240234375,
+    204.36196899414062
+  ],
+  "pipe_insert_end_px": [
+    288.8957214355469,
+    215.27606201171875
+  ],
+  "receiver_body_end_px": [
+    245.23931884765625,
+    226.19017028808594
+  ],
+  "radius": 26,
+  "depth": 28,
+  "canvas_px": [
+    1187,
+    1326
+  ],
+  "rect": [
+    42,
+    60,
+    313,
+    281
+  ]
+}

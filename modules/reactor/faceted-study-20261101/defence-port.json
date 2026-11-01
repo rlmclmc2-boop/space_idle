@@ -1,0 +1,37 @@
+{
+  "module_id": "defence",
+  "center_px": [
+    916.0,
+    199.0
+  ],
+  "axis_to_device": [
+    0.9765856862068176,
+    0.21512901782989502
+  ],
+  "axis_rise_per_source_px": 0.35,
+  "insertion_source_px": 45,
+  "receiver_mouth_px": [
+    901.3511962890625,
+    195.7730712890625
+  ],
+  "pipe_insert_end_px": [
+    945.2975463867188,
+    205.45387268066406
+  ],
+  "receiver_body_end_px": [
+    989.243896484375,
+    215.13467407226562
+  ],
+  "radius": 26,
+  "depth": 28,
+  "canvas_px": [
+    1187,
+    1326
+  ],
+  "rect": [
+    880,
+    82,
+    265,
+    250
+  ]
+}

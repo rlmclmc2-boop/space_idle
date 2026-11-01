@@ -1,0 +1,37 @@
+{
+  "module_id": "condensation",
+  "center_px": [
+    889.0,
+    518.0
+  ],
+  "axis_to_device": [
+    0.9856270551681519,
+    -0.16893607378005981
+  ],
+  "axis_rise_per_source_px": 0.35,
+  "insertion_source_px": 65,
+  "receiver_mouth_px": [
+    874.215576171875,
+    520.5340576171875
+  ],
+  "pipe_insert_end_px": [
+    938.2813720703125,
+    509.5531921386719
+  ],
+  "receiver_body_end_px": [
+    962.9219970703125,
+    505.3298034667969
+  ],
+  "radius": 26,
+  "depth": 28,
+  "canvas_px": [
+    1187,
+    1326
+  ],
+  "rect": [
+    850,
+    390,
+    285,
+    330
+  ]
+}
