@@ -191,7 +191,7 @@ for side in (-1, 1):
         (.58, .13, .10), ivory, gantry, .018)
 for side in (-1, 1):
     box("Carriage bearing", (0, side*.39, 1.22), (.26, .16, .18), navy, gantry, .025)
-arm = node("ToolArmSweep", gantry, (0, 0, 1.10))
+arm = node("ToolArmSweep", gantry, (0, 0, 1.35))
 box("Tool moving mast", (0, 0, -.23), (.25, .28, .57), blue, arm, .035)
 box("Tool ivory collar", (0, 0, -.54), (.43, .40, .22), ivory, arm, .04)
 loft("Broad service tool", [(-.29, 0, -.75, .24, .14),

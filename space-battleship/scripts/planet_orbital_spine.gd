@@ -196,6 +196,47 @@ func _add_section_hull(parent: Node3D, begin: float, finish: float, width: float
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.004), -0.28, 0.01, _side, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.005), -0.02, 0.26, _side, kind)
 		_add_wall(parent, begin, finish, side * (width * 0.5 + 0.008), 0.015, 0.055, _cyan, kind)
+		_add_side_armor(parent, begin, finish, width, side, kind)
+
+func _add_side_armor(parent: Node3D, begin: float, finish: float, width: float, side: float, kind: String) -> void:
+	# An extruded pressure shoulder and lower heel run on the same owned mesh
+	# as the deck. The dark inset between them leaves the cyan service way open.
+	var shoulder := SurfaceTool.new()
+	var heel := SurfaceTool.new()
+	shoulder.begin(Mesh.PRIMITIVE_TRIANGLES)
+	heel.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var steps := maxi(32, ceili((finish - begin) * 128.0))
+	var profile := [
+		[Vector2(-0.055, 0.245), Vector2(0.045, 0.145), shoulder],
+		[Vector2(0.045, 0.145), Vector2(0.045, 0.095), shoulder],
+		[Vector2(0.025, -0.115), Vector2(0.045, -0.245), heel],
+		[Vector2(0.045, -0.245), Vector2(-0.015, -0.305), heel],
+	]
+	for index in steps:
+		var a := lerpf(begin, finish, float(index) / float(steps))
+		var b := lerpf(begin, finish, float(index + 1) / float(steps))
+		for band in profile:
+			var surface: SurfaceTool = band[2]
+			var first: Vector2 = band[0]
+			var second: Vector2 = band[1]
+			var positions: Array[Vector3] = []
+			for entry in [[a, first], [b, first], [a, second], [a, second], [b, first], [b, second]]:
+				var angle: float = entry[0]
+				var cross: Vector2 = entry[1]
+				var current_width := _section_width(kind, angle) if kind != "" else width
+				var radius := side * (current_width * 0.5 + cross.x)
+				var rise := _node_section_rise(kind, angle) if cross.y < 0.0 else _shoulder_lift(kind, angle)
+				positions.append(point(angle) * ((RADIUS + radius) / RADIUS) + plane_normal() * (cross.y + rise))
+			var normal := (positions[1] - positions[0]).cross(positions[2] - positions[0]).normalized()
+			for vertex in positions:
+				surface.set_normal(normal)
+				surface.set_uv(Vector2(0.5, float(index) / float(steps)))
+				surface.add_vertex(vertex)
+	for spec in [[shoulder, _ivory], [heel, _side]]:
+		var instance := MeshInstance3D.new()
+		instance.mesh = (spec[0] as SurfaceTool).commit()
+		instance.material_override = spec[1]
+		parent.add_child(instance)
 
 func set_body_scale(scale: Vector3) -> void:
 	for material in _all_materials:

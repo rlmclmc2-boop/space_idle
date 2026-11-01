@@ -215,10 +215,11 @@ func update_pose(clock: float, surface_phase: float, body_pixels: float, surface
 		# upright attitude on that saddle, so long solar wings do not roll into
 		# detached vertical slivers as the orbital structure turns.
 		var scale_factor := 0.61 if kind == "auto_explore" else 0.65 if kind == "refinery" else 0.62 if kind == "equipment" else 0.60
-		# Compensate only for the beamed core's smaller shared spine scale;
-		# the four mounted work nodes keep their prior on-screen size.
-		if _compact_stellar and spine_scale < 0.42:
-			scale_factor *= 0.42 / spine_scale
+		# The beamed core is limited by its long visible beam envelope. Give its
+		# four real work nodes enough area to retain their individual silhouettes
+		# while the common ring stays compact around the photosphere.
+		if _compact_stellar and spine_scale < 0.50:
+			scale_factor *= 0.50 / spine_scale
 		var upright := Basis.from_euler(Vector3(0.90, -0.25, 0.10)).scaled(Vector3.ONE * scale_factor)
 		if kind in ["shipyard", "equipment", "auto_explore", "refinery"]:
 			# Both open work bays are authored in the owned section's local frame.
